@@ -7,7 +7,7 @@ Static multi-page demo for TaxIQ / Nexora Touch.
 Open `index.html` directly in a browser:
 
 ```text
-taxiq-demo/index.html
+html/index.html
 ```
 
 No build step is required. The demo uses Tailwind Play CDN, so open it while online for full Tailwind styling.
@@ -15,7 +15,7 @@ No build step is required. The demo uses Tailwind Play CDN, so open it while onl
 ## Structure
 
 ```text
-taxiq-demo/
+html/
   index.html
   assets/
     styles.css
@@ -39,7 +39,11 @@ taxiq-demo/
     share-links.html
     gps-mileage.html
     cpa-review.html
+    tip-ledger.html
+    tax-estimate.html
     webhooks.html
+    audit-log.html
+    notifications.html
     settings.html
 ```
 
@@ -49,17 +53,25 @@ taxiq-demo/
 - Shared sidebar/topbar/navigation comes from `assets/layout.js`.
 - Screen data, page content, modals, and demo actions come from `assets/app.js`.
 - Sidebar groups OCR Vault, Share Links, GPS Mileage, CPA Review, and AI Advisor under `Tax IQ`.
+- Sidebar also includes Tip Ledger and Tax Estimate under `Tax IQ`.
+- System screens now include Webhooks, Audit Log, Notifications, and Settings.
 - Tailwind utility classes drive the main layout and components through Tailwind Play CDN.
 - `assets/styles.css` keeps only small demo helpers for responsive grids, modal state, and fallback button/card styling.
 - Important workflows use demo modals:
+  - Add/edit/delete employer, employee, connection, receipt, trip, payout, and tip records
   - Create payroll run
   - Finalize run
   - Create payout
   - Capture receipt
   - Create share link
+  - View QR / revoke share link
   - Start GPS trip
   - Invite CPA
   - Generate report package
+  - Add and review tips for No Tax on Tips support
+  - Review tax estimate and deposit schedule alerts
+  - Inspect audit log and webhook payloads
+  - Create API key for integrations
 
 ## Product Scope
 
@@ -71,4 +83,9 @@ taxiq-demo/
 - Share Links
 - GPS Mileage
 - CPA Review
+- Tip Ledger / No Tax on Tips support
+- Tax Estimate dashboard
+- Connections management
 - Webhook monitor
+- Audit log
+- Notifications

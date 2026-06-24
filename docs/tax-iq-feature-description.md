@@ -21,7 +21,18 @@ Trong demo hiện tại, các module sau được đặt trong nhóm Tax IQ:
 | Share Links | Tạo link/QR cho CPA, technician, reviewer hoặc bên ngoài upload/review thông tin. |
 | GPS Mileage | Theo dõi chuyến đi business và mileage deduction evidence. |
 | CPA Review | Kết nối CPA/bookkeeper/tax preparer bên thứ ba để review và chuẩn bị tax filing package. |
+| Tip Ledger | Track tips by method, source, proof, qualified status, and CPA export readiness. |
+| Tax Estimate | Show estimated tax, quarterly estimate, deposit alerts, and CPA review prompts. |
 | AI Advisor | AI CFO, rule watch, deduction checklist, financial/tax planning prompts. |
+
+Supporting demo screens outside the Tax IQ group:
+
+| Screen | Purpose |
+| --- | --- |
+| Connections | Manage payroll, HRIS, accounting, payout, and webhook-only integrations. |
+| Audit Log | Review immutable action history for view, update, export, delete, and webhook events. |
+| Notifications | Surface deposit alerts, exceptions, CPA requests, webhook failures, and tip cap warnings. |
+| Settings | Manage role access, data protection, API keys, and notification preferences. |
 
 ## 2. Business Goals
 
@@ -31,6 +42,8 @@ Trong demo hiện tại, các module sau được đặt trong nhóm Tax IQ:
 - Tạo CPA-ready package gồm ledger, receipts, payouts, mileage, payroll forms và audit log.
 - Cho merchant xem trước chi phí CPA/bookkeeper trước khi kết nối, ví dụ giá mỗi giờ, số giờ dự kiến, retainer và tổng estimate.
 - Cho người dùng có AI CFO để hỏi về cash flow, tax planning, missing records và câu hỏi nên hỏi CPA.
+- Track daily tips and No Tax on Tips supporting records without making final tax eligibility claims.
+- Show tax estimate and deposit reminders so owners can plan cash flow before deadlines.
 
 ## 3. Target Users
 
@@ -49,11 +62,13 @@ Trong demo hiện tại, các module sau được đặt trong nhóm Tax IQ:
 3. Merchant lưu receipt, invoice, payout proof qua OCR Vault.
 4. Merchant tạo Share Link cho CPA, technician hoặc reviewer upload/review dữ liệu.
 5. Merchant bật GPS Mileage để lưu business trip evidence.
-6. AI Advisor nhắc thiếu dữ liệu, gợi ý deduction checklist và cash-flow/tax planning.
-7. Merchant kết nối CPA/bookkeeper bên thứ ba.
-8. Hệ thống hiển thị cost preview trước khi gửi invite: rate/hour, estimated hours, retainer, estimated total.
-9. CPA review read-only data, comment, request missing evidence, prepare filing package.
-10. Merchant approve export/share/final package before final filing action.
+6. Technician hoặc owner ghi nhận tips vào Tip Ledger nếu business có tip.
+7. Tax Estimate hiển thị estimated tax, deposit due và quarterly review prompts.
+8. AI Advisor nhắc thiếu dữ liệu, gợi ý deduction checklist và cash-flow/tax planning.
+9. Merchant kết nối CPA/bookkeeper bên thứ ba.
+10. Hệ thống hiển thị cost preview trước khi gửi invite: rate/hour, estimated hours, retainer, estimated total.
+11. CPA review read-only data, comment, request missing evidence, prepare filing package.
+12. Merchant approve export/share/final package before final filing action.
 
 ## 5. Screen Map
 
@@ -68,8 +83,13 @@ Trong demo hiện tại, các module sau được đặt trong nhóm Tax IQ:
 | Share Links | Tạo secure link/QR để upload hoặc review thông tin. |
 | GPS Mileage | Lưu trip, route, mileage, business purpose, deduction candidate. |
 | CPA Review | Kết nối CPA/accountant, xem giá estimate, share records, manage filing workflow. |
+| Tip Ledger | Track tips, proof, method, source, qualified status, and No Tax on Tips reporting support. |
+| Tax Estimate | Estimate annual/quarterly tax, jurisdiction balances, deposit alerts, and CPA review prompts. |
 | AI Advisor | AI CFO, government rule watch, deduction checklist, guided help. |
+| Connections | Manage external payroll, HRIS, accounting, payout, and webhook-only integrations. |
 | Webhooks | Theo dõi outbound event delivery cho integration bên ngoài. |
+| Audit Log | Review immutable actions across payroll, Tax IQ, tips, receipts, reports, and webhooks. |
+| Notifications | Show deposit alerts, open exceptions, CPA requests, webhook dead letters, and tip cap warnings. |
 | Settings | Role, security, data retention, PII/tokenization controls. |
 
 ## 6. Key Workflows And Modals
@@ -181,6 +201,51 @@ Example output:
 - Ask CPA whether a route is deductible or commute-like.
 - Identify high-risk payout or worker classification questions.
 
+### Add Tip
+
+Purpose: ghi nhận tip theo ngày, method, source, proof, service và qualified review status.
+
+Data needed:
+
+- Tip amount
+- Payment method
+- Service type
+- Source: cash, direct, POS owner paid
+- Proof type
+- Voluntary tip confirmation
+- Service charge confirmation
+- Qualified status
+- Audit history
+
+### Review Tax Estimate
+
+Purpose: giúp owner xem estimated tax, quarterly estimate, deposit due và khoản cần CPA review.
+
+Data needed:
+
+- YTD income
+- YTD withheld
+- Estimated annual tax
+- Estimated balance
+- Quarterly estimate
+- Jurisdiction breakdown
+- Deposit schedule alerts
+- CPA review status
+
+### Manage Connections
+
+Purpose: kết nối payroll, HRIS, accounting, payout hoặc webhook-only systems.
+
+Data needed:
+
+- System type
+- Auth method
+- Environment
+- Scopes
+- Webhook signing
+- Retry policy
+- Last sync
+
 ## 7. Permissions And Privacy
 
 | Actor | Permission |
@@ -210,8 +275,13 @@ Important rules:
 | mileage_trips | GPS trip records and business purpose. |
 | cpa_connections | CPA/bookkeeper firm access, scope and status. |
 | cpa_requests | Missing document/comment/request workflow. |
+| tip_entries | Tip amount, method, source, proof, qualified status, and audit history. |
+| tax_estimates | Quarterly estimates, jurisdiction balances, deposit due alerts, and CPA review status. |
+| connections | External payroll, HRIS, accounting, payout, or webhook-only integrations. |
 | report_packages | CPA-ready export packages. |
 | audit_logs | Every important action across modules. |
+| notifications | Deposit alerts, exceptions, CPA requests, webhook failures, and tip cap warnings. |
+| api_keys | Scoped integration keys for report automation, webhooks, or developer access. |
 
 ## 9. Production Requirements
 
@@ -225,6 +295,10 @@ Important rules:
 - CPA portal invite and secure link system.
 - Cost estimate and billing approval workflow.
 - AI backend for AI CFO, deduction checklist and rule watch.
+- Tip ledger service with add, edit, soft delete, proof, and CPA export.
+- Tax estimate service with quarterly estimates, jurisdiction breakdowns, and deposit alerts.
+- Connection management for OAuth, API key, SFTP, and webhook-only integrations.
+- Notification engine and API key management.
 
 ### Integrations
 
@@ -233,6 +307,7 @@ Important rules:
 - Accounting export.
 - CPA/bookkeeper portal.
 - Webhook event delivery.
+- Notification delivery.
 - Optional GPS/mobile app capture.
 
 ### Compliance Guardrails
@@ -249,7 +324,9 @@ Implemented in static demo:
 
 - Multi-page Tax IQ navigation.
 - Tailwind-based layout.
-- Tax IQ group contains ledger, exceptions, jurisdictions, forms, OCR, share links, GPS, CPA review and AI advisor.
+- Current static project lives in `html/`.
+- Tax IQ group contains ledger, exceptions, jurisdictions, forms, OCR, share links, GPS, CPA review, tip ledger, tax estimate and AI advisor.
+- System group contains webhooks, audit log, notifications and settings.
 - Detailed modals for all key actions.
 - CPA cost preview before invite.
 - AI CFO prompt workflow.
@@ -257,6 +334,9 @@ Implemented in static demo:
 - Share link workflow.
 - GPS mileage workflow.
 - CPA review and filing package workflow.
+- Tip Ledger / No Tax on Tips workflow.
+- Tax Estimate and deposit schedule workflow.
+- Connections, API keys, audit log and notification workflows.
 
 Not implemented yet:
 
@@ -268,4 +348,5 @@ Not implemented yet:
 - Real GPS capture.
 - Real tax filing or e-file integration.
 - Real webhook delivery.
-
+- Real notification delivery.
+- Real API key issuance and secret storage.

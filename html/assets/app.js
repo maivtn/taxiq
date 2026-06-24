@@ -80,9 +80,13 @@ const data = {
     ["evt_01JZ001","employee.tax_profile.validated","tenant_biz_1024","8","Dead Letter","5h ago","-"]
   ],
   receipts:[
-    ["rcpt_001","Beauty Supply Warehouse","Supplies","$384.20","AI photo capture","Extracted","Owner"],
-    ["rcpt_002","Phone utility bill","Utilities","$129.00","Email import","Needs Review","Bookkeeper"],
-    ["rcpt_003","Unknown Zelle memo","Payment evidence","$250.00","Payout upload","Missing purpose","Finance"]
+    // [id, vendor, category, amount, source, status, owner, confidence, tax, rcpt_num, captured_at, image_ref]
+    ["rcpt_001","Beauty Supply Warehouse","Supplies","$384.20","Camera","Approved","Owner","94%","$31.60","REC-0042","Jun 18 14:00","rcpt_001.jpg"],
+    ["rcpt_002","AT&T Phone Bill","Utilities","$129.00","Email import","Needs Review","Bookkeeper","67%","$0.00","INV-0918","Jun 20 09:15","rcpt_002.jpg"],
+    ["rcpt_003","Unknown Zelle memo","Payment evidence","$250.00","Payout upload","Missing purpose","Finance","—","—","—","Jun 15 18:21","—"],
+    ["rcpt_004","Nail Supply Co.","Supplies","$212.50","File upload","Approved","Owner","91%","$17.50","NS-8812","Jun 22 10:30","rcpt_004.jpg"],
+    ["rcpt_005","City Water Dept","Utilities","$88.00","Email import","Processing","Owner","—","—","—","Jun 24 11:00","—"],
+    ["rcpt_006","Square POS Receipt","Equipment","$495.00","Camera","Needs Review","Owner","72%","$40.75","SQ-2026061","Jun 23 16:20","rcpt_006.jpg"]
   ],
   shareLinks:[
     ["shr_001","CPA Review","Ledger + receipts","15 days","Active"],
@@ -280,8 +284,72 @@ function renderAiAdvisor(){return `<div class="grid-4" style="margin-bottom:14px
 
 /* ─── OCR VAULT ─── */
 function renderOcr(){
-  const receiptRows = data.receipts.map(r=>row([`<span class="mono">${r[0]}</span>`,...r.slice(1,5),status(r[5]),r[6],rowActions(actionBtn("View","view-receipt"),actionBtn("Edit","edit-receipt"),actionBtn("Approve",""),actionBtn("Delete","delete-receipt"))]));
-  return `<div class="grid-4" style="margin-bottom:14px">${[["Stored Records","3","Bills and evidence","green"],["Needs Review","2","Manual category check","cyan"],["OCR Sources","4","Camera, email, upload, payout","yellow"],["Lost Receipt Risk","Low","Vault enabled","red"]].map(metric).join("")}</div>${panel("Receipt Vault + AI OCR",table(["ID","Vendor","Type","Amount","Source","Status","Owner","Actions"],receiptRows),`<button class="btn primary" data-modal="receipt">Capture Receipt</button>`)}${panel("OCR Review Fields",table(["Field","Purpose","Required"],[["Receipt image","Preserve evidence and run AI extraction.","When expense exists"],["Vendor / payee","Map expense to category and CPA package.","Yes"],["Business purpose","Explain deduction relevance.","Yes"]].map(row)))}`;
+  const approved  = data.receipts.filter(r=>/Approved|Extracted/.test(r[5]));
+  const review    = data.receipts.filter(r=>/Needs Review|Missing purpose/.test(r[5]));
+  const processing= data.receipts.filter(r=>r[5]==="Processing");
+
+  function confColor(c){
+    if(c==="—") return "text-slate-500";
+    const n=parseInt(c);
+    return n>=90?"text-emerald-400":n>=75?"text-amber-400":"text-rose-400";
+  }
+
+  const vaultRows = [...approved,...review].map(r=>row([
+    `<span class="mono">${r[0]}</span>`,r[1],r[2],r[3],r[4],
+    `<span class="${confColor(r[7])} font-black text-xs">${r[7]}</span>`,
+    r[8], status(r[5]), r[6],
+    rowActions(actionBtn("View","view-receipt"),actionBtn("Edit","edit-receipt"),
+      r[7]!=="—"&&parseInt(r[7])<90 ? actionBtn("Review OCR","ocr-review") : actionBtn("Approve",""),
+      actionBtn("Delete","delete-receipt"))
+  ]));
+
+  const processingRows = processing.map(r=>row([
+    `<span class="mono">${r[0]}</span>`,r[1],r[2],r[3],r[4],r[10],
+    `<span class="inline-flex items-center gap-1.5 text-xs text-amber-300 font-black">
+      <span class="h-2 w-2 rounded-full bg-amber-400 animate-pulse inline-block"></span>Processing
+    </span>`,
+    "—"
+  ]));
+
+  return `
+    <div class="grid-4" style="margin-bottom:14px">
+      ${[
+        ["Vault Records",String(approved.length),"Approved & extracted","green"],
+        ["Needs Review",String(review.length),"Low confidence or missing field","yellow"],
+        ["Processing",String(processing.length),"OCR running","cyan"],
+        ["Sources","4","Camera · Upload · Email · Payout","red"]
+      ].map(metric).join("")}
+    </div>
+    ${filterBar(
+      ["All statuses",["Approved","Needs Review","Missing purpose","Processing"]],
+      ["All categories",["Supplies","Utilities","Payment evidence","Equipment","Meals","Travel"]],
+      ["All sources",["Camera","File upload","Email import","Payout upload"]],
+      ["Confidence",["≥90% (high)","75–89% (medium)","<75% (low)"]]
+    )}
+    ${processing.length ? panel("OCR Processing Queue",table(
+      ["ID","Vendor","Category","Amount","Source","Queued","Status","Est. Time"],
+      processingRows.length ? processingRows : [row(["—","—","—","—","—","—","No items processing","—"])]
+    ),`<button class="btn" data-toast="Processing queue refreshed.">Refresh</button>`) : ""}
+    ${panel("Receipt Vault — AI OCR",
+      table(["ID","Vendor","Category","Amount","Source","Confidence","Tax","Status","Owner","Actions"],vaultRows),
+      `<button class="btn primary" data-modal="receipt">Capture Receipt</button> <button class="btn" data-modal="ocr-batch-approve">Approve High Confidence</button> <button class="btn" data-toast="Vault exported to CPA package.">Export to CPA</button>`
+    )}
+    <div class="grid-2" style="margin-top:14px">
+      ${panel("OCR Extraction Fields",table(["Field","Extracted From","Confidence Target","Required"],[
+        row(["Vendor / Payee","Merchant name, top of receipt","≥ 85%","Yes"]),
+        row(["Total amount","Bottom total line, bold/large","≥ 90%","Yes"]),
+        row(["Tax amount","Tax line, labeled 'Tax' or 'GST'","≥ 80%","Recommended"]),
+        row(["Date","Header date, ISO or US format","≥ 88%","Yes"]),
+        row(["Receipt number","'Receipt #' or 'Invoice #' line","≥ 75%","Recommended"]),
+        row(["Category","Vendor name → category lookup","≥ 80%","Auto-assigned"])
+      ]))}
+      ${panel("Capture Sources",`<div class="panel-body list">
+        ${listItem("Camera (in-app)","Point at receipt — AI crops, deskews, and enhances before OCR. Best for paper bills.","green")}
+        ${listItem("File upload","PDF, PNG, JPG up to 10 MB. Supports multi-page invoices. Drag-and-drop supported.","blue")}
+        ${listItem("Email import","Forward bills to your TaxIQ inbox address. Automatic attachment extraction.","cyan")}
+        ${listItem("Payout upload","Attach screenshot directly from Staff Payouts when creating a payout record.","yellow")}
+      </div>`,`<button class="btn primary" data-modal="receipt">Capture Receipt</button>`)}
+    </div>`;
 }
 
 /* ─── SHARE LINKS ─── */
@@ -745,48 +813,95 @@ const modalCopy = {
 
   /* OCR VAULT MODALS */
   receipt:{
-    title:"Capture Receipt",
-    body:"Upload or take a photo. AI extracts vendor, amount, date, category, and confidence.",
-    cta:"Queue OCR",
+    title:"Capture Receipt / Bill",
+    body:"Take a photo, upload a file, or import from email. AI extracts vendor, amount, tax, date, and category automatically.",
+    cta:"Queue for OCR",
     content:()=>[
-      modalSection("Upload Source", modalGrid([
-        modalSelect("Source",[["Camera capture",true],["File upload"],["Email import"],["Payout evidence"]]),
-        modalField("Owner","Owner"),
-        modalField("Business purpose","Supplies for salon operations"),
-        modalSelect("Initial category",[["Supplies",true],["Utilities"],["Payment evidence"],["Travel"],["Meals"]])
+      modalSection("Step 1 — Capture Source", `
+        <div class="grid-4" style="gap:8px;margin-bottom:12px">
+          ${["Camera","Upload File","Email Import","From Payout"].map((s,i)=>`<button class="${ui.btn} ${i===0?ui.primary:""}" data-toast="Source: ${s}">${s}</button>`).join("")}
+        </div>`),
+      modalSection("Camera — Point at Receipt", `
+        <div style="border:2px dashed #334155;border-radius:12px;background:#0f172a;position:relative;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-bottom:8px">
+          <div style="width:200px;height:140px;border:2px solid #4f46e5;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#1e293b">
+            <span style="color:#64748b;font-size:11px;font-weight:900;letter-spacing:.06em;text-align:center">CAMERA VIEWFINDER<br><br><span style="font-weight:400;font-size:10px">Align receipt within frame</span></span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="${ui.btn} ${ui.primary}" data-toast="Photo captured. Queuing OCR...">Capture Photo</button>
+            <button class="${ui.btn}" data-toast="Flash toggled.">Flash</button>
+            <button class="${ui.btn}" data-toast="Switching to back camera.">Flip</button>
+          </div>
+          <p style="color:#64748b;font-size:10px;text-align:center;margin:0">Tip: Lay receipt flat · Good lighting · Include all corners</p>
+        </div>`),
+      modalSection("Or Drop File Here", `
+        <div style="border:2px dashed #334155;border-radius:12px;padding:28px;text-align:center;color:#64748b;cursor:pointer" data-toast="File picker opened.">
+          <div style="font-size:11px;font-weight:900;letter-spacing:.06em">DRAG & DROP FILE</div>
+          <div style="font-size:10px;margin-top:8px">PDF · PNG · JPG · HEIC · up to 10 MB · Multi-page invoices supported</div>
+          <button class="${ui.btn}" style="margin-top:12px" data-toast="File browser opened.">Browse Files</button>
+        </div>`),
+      modalSection("Step 2 — AI Extraction Preview", `
+        <div class="notice" style="margin-bottom:10px">After capture, OCR runs in background (avg 3–8 seconds). Fields below show a sample result.</div>
+        ${table(["Field","Extracted Value","Confidence","Override"],[
+          row(["Vendor","Beauty Supply Warehouse",`<span class="text-emerald-400 font-black">94%</span>`,modalField("","Beauty Supply Warehouse")]),
+          row(["Total Amount","$384.20",`<span class="text-emerald-400 font-black">91%</span>`,modalField("","$384.20")]),
+          row(["Tax","$31.60",`<span class="text-amber-400 font-black">72%</span>`,modalField("","$31.60")]),
+          row(["Date","Jun 18, 2026",`<span class="text-emerald-400 font-black">88%</span>`,modalField("","Jun 18, 2026")]),
+          row(["Receipt #","REC-0042",`<span class="text-amber-400 font-black">80%</span>`,modalField("","REC-0042")]),
+          row(["Category","Supplies (auto)",`<span class="text-emerald-400 font-black">86%</span>`,modalSelect("",[["Supplies",true],["Utilities"],["Equipment"],["Meals"],["Travel"],["Other"]])])
+        ])}`),
+      modalSection("Step 3 — Business Details", modalGrid([
+        modalField("Business purpose","Supplies for salon operations — gel nails, acetone, files"),
+        modalSelect("Owner",[["Owner",true],["Bookkeeper"],["Finance"],["Manager"]]),
+        modalSelect("Attach to payout",[["None",true],["PAY-2026-001"],["PAY-2026-002"]]),
+        modalSelect("Include in CPA package",[["Yes — standard package",true],["Yes — on request only"],["No"]])
       ])),
-      modalSection("AI Extraction Preview", table(["Field","Value","Confidence"],[
-        row(["Vendor","Beauty Supply Warehouse","94%"]),
-        row(["Amount","$384.20","91%"]),
-        row(["Date","Jun 18, 2026","88%"]),
-        row(["Category","Supplies","86%"])
-      ])),
-      modalSection("Review Rules", `<div class="list">${modalCheck("Require human review below 90% confidence","Low-confidence fields enter review queue.")}${modalCheck("Store original image","Keep source proof for CPA package and audit trail.")}${modalCheck("Detect duplicate receipt","Compare vendor, amount, date, and image hash.")}</div>`)
+      modalSection("Step 4 — OCR Settings", `<div class="list">
+        ${modalCheck("Flag for human review if confidence < 90%","Low-confidence fields enter the review queue before approval.")}
+        ${modalCheck("Store original image","Preserve source photo or file for CPA package and 7-year audit trail.")}
+        ${modalCheck("Detect duplicate receipt","Compare vendor, amount, and date against existing vault records.")}
+        ${modalCheck("Auto-approve if all fields ≥ 90% confidence","Skip manual review step for high-confidence extractions.",false)}
+      </div>`)
     ].join("")
   },
   "view-receipt":{
-    title:"Receipt Detail",
-    body:"Full OCR extraction, confidence scores, business purpose, category, and audit trail.",
-    cta:"Approve",
+    title:"Receipt Detail — rcpt_001",
+    body:"Full OCR extraction, confidence scores, original image, business purpose, and audit trail.",
+    cta:"Approve Receipt",
     content:()=>[
-      modalSection("Extracted Fields", table(["Field","Value","Confidence"],[
-        row(["Vendor","Beauty Supply Warehouse","94%"]),
-        row(["Amount","$384.20","91%"]),
-        row(["Date","Jun 18, 2026","88%"]),
-        row(["Category","Supplies","86%"]),
-        row(["Tax","$31.60","72%"]),
-        row(["Receipt number","REC-20260618-0042","80%"])
-      ])),
+      modalSection("Original Image", `
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div style="flex-shrink:0;width:160px;min-height:200px;border:2px solid #334155;border-radius:8px;background:#0f172a;display:flex;align-items:center;justify-content:center">
+            <span style="color:#64748b;font-size:10px;font-weight:900;letter-spacing:.05em;text-align:center;padding:12px">RECEIPT IMAGE<br>PLACEHOLDER<br><br><span style="font-weight:400">rcpt_001.jpg<br>Camera · Jun 18</span></span>
+          </div>
+          <div style="flex:1">${table(["Field","Extracted Value","Confidence"],[
+            row(["Vendor","Beauty Supply Warehouse",`<span class="text-emerald-400 font-black">94%</span>`]),
+            row(["Total Amount","$384.20",`<span class="text-emerald-400 font-black">91%</span>`]),
+            row(["Tax Amount","$31.60",`<span class="text-amber-400 font-black">72%</span>`]),
+            row(["Date","Jun 18, 2026",`<span class="text-emerald-400 font-black">88%</span>`]),
+            row(["Receipt #","REC-0042",`<span class="text-amber-400 font-black">80%</span>`]),
+            row(["Category","Supplies",`<span class="text-emerald-400 font-black">86%</span>`])
+          ])}</div>
+        </div>`),
       modalSection("Business Details", modalGrid([
-        modalField("Business purpose","Supplies for salon operations"),
+        modalField("Business purpose","Supplies for salon operations — gel nails, acetone, files"),
         modalField("Owner","Owner"),
-        modalSelect("Category",[["Supplies",true],["Utilities"],["Payment evidence"],["Travel"]]),
-        modalField("Related payout","—")
+        modalSelect("Category",[["Supplies",true],["Utilities"],["Equipment"],["Payment evidence"],["Travel"],["Meals"]]),
+        modalField("Related payout","—"),
+        modalSelect("CPA package",[["Yes — standard package",true],["Yes — on request only"],["No"]]),
+        modalField("Vendor address","1234 Commerce Blvd, Houston TX (OCR extracted)")
+      ])),
+      modalSection("Status", table(["Check","Result","Detail"],[
+        row(["Duplicate check",status("Ready"),"No matching vendor+amount+date in vault"]),
+        row(["All fields extracted",status("Review"),"Tax field confidence 72% — human review recommended"]),
+        row(["Business purpose",status("Active"),"Documented"]),
+        row(["CPA package",status("Ready"),"Included in standard export"])
       ])),
       modalSection("Audit Trail", table(["Time","Actor","Event"],[
-        row(["Jun 18 14:00","system","OCR processed — 94% confidence"]),
-        row(["Jun 18 14:05","owner_user","Receipt created via camera capture"]),
-        row(["Pending","—","Awaiting human approval"])
+        row(["Jun 18 14:00","system","Photo captured via in-app camera"]),
+        row(["Jun 18 14:03","system","OCR processed — avg confidence 86% — flagged tax field 72%"]),
+        row(["Jun 18 14:05","owner_user","Business purpose added: 'Supplies for salon operations'"]),
+        row(["Jun 18 14:10","owner_user","Category confirmed: Supplies"]),
+        row(["Pending","—","Awaiting final approval"])
       ]))
     ].join("")
   },
@@ -798,7 +913,9 @@ const modalCopy = {
       modalSection("Edit Fields", modalGrid([
         modalField("Vendor","Beauty Supply Warehouse"),
         modalField("Amount","$384.20"),
+        modalField("Tax amount","$31.60"),
         modalField("Date","Jun 18, 2026"),
+        modalField("Receipt number","REC-0042"),
         modalSelect("Category",[["Supplies",true],["Utilities"],["Payment evidence"],["Travel"],["Meals"],["Equipment"],["Software"]]),
         modalField("Business purpose","Supplies for salon operations"),
         modalField("Owner","Owner")
@@ -808,6 +925,55 @@ const modalCopy = {
         modalSelect("Include in CPA package",[["Yes",true],["No"]])
       ])),
       modalSection("Edit Note", modalField("Reason for change","Correcting category from 'Unknown' to 'Supplies' based on vendor name.","textarea"))
+    ].join("")
+  },
+  "ocr-review":{
+    title:"Review Low-Confidence Fields",
+    body:"One or more extracted fields have confidence below 90%. Review and correct each field before approving the receipt.",
+    cta:"Save & Approve",
+    content:()=>[
+      modalSection("Original Image", `
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div style="flex-shrink:0;width:140px;min-height:180px;border:2px solid #f59e0b;border-radius:8px;background:#0f172a;display:flex;align-items:center;justify-content:center">
+            <span style="color:#64748b;font-size:10px;font-weight:900;text-align:center;padding:10px">RECEIPT IMAGE<br>rcpt_002.jpg</span>
+          </div>
+          <div style="flex:1"><div class="notice" style="margin-bottom:8px">Fields highlighted in amber have confidence below 90% and require manual confirmation.</div>
+          ${table(["Field","OCR Result","Confidence","Correct Value"],[
+            row(["Vendor","AT&T Phone Bill",`<span class="text-emerald-400 font-black">91%</span>`,"<span class='text-slate-400 text-xs'>Auto-accepted</span>"]),
+            row(["Total Amount","$129.00",`<span class="text-emerald-400 font-black">93%</span>`,"<span class='text-slate-400 text-xs'>Auto-accepted</span>"]),
+            row(["Tax Amount","$0.00",`<span class="text-amber-400 font-black">67%</span>`,modalField("","$0.00")]),
+            row(["Date","Jun 20, 2026",`<span class="text-amber-400 font-black">79%</span>`,modalField("","Jun 20, 2026")]),
+            row(["Receipt #","INV-0918",`<span class="text-amber-400 font-black">74%</span>`,modalField("","INV-0918")])
+          ])}</div>
+        </div>`),
+      modalSection("Business Details", modalGrid([
+        modalField("Business purpose","Monthly phone bill — business line for salon"),
+        modalSelect("Category",[["Utilities",true],["Supplies"],["Equipment"],["Software"],["Other"]]),
+        modalSelect("Deductible portion",[["100% business",true],["50% business / 50% personal"],["Custom %"]]),
+        modalSelect("Include in CPA package",[["Yes",true],["No"]])
+      ])),
+      modalSection("Reviewer Note (Optional)", modalField("Note","Tax field OCR read $0 — confirmed correct, phone plan is tax-exempt.","textarea"))
+    ].join("")
+  },
+  "ocr-batch-approve":{
+    title:"Approve High-Confidence Receipts",
+    body:"Review and approve all receipts where every extracted field is ≥ 90% confidence. Low-confidence items are excluded.",
+    cta:"Approve All Listed",
+    content:()=>[
+      modalSection("Eligible for Batch Approval", table(["ID","Vendor","Amount","Avg Confidence","Category","Status"],[
+        row([`<span class="mono">rcpt_001</span>`,"Beauty Supply Warehouse","$384.20",`<span class="text-emerald-400 font-black">91%</span>`,"Supplies",status("Extracted")]),
+        row([`<span class="mono">rcpt_004</span>`,"Nail Supply Co.","$212.50",`<span class="text-emerald-400 font-black">91%</span>`,"Supplies",status("Extracted")])
+      ])),
+      modalSection("Excluded — Needs Manual Review", table(["ID","Vendor","Issue"],[
+        row([`<span class="mono">rcpt_002</span>`,"AT&T Phone Bill","Tax field 67%, Date 79% — below threshold"]),
+        row([`<span class="mono">rcpt_003</span>`,"Unknown Zelle memo","No OCR data — payout upload without image"]),
+        row([`<span class="mono">rcpt_006</span>`,"Square POS Receipt","Multiple fields below 80% — manual review required"])
+      ])),
+      modalSection("Approval Settings", `<div class="list">
+        ${modalCheck("Add reviewer note to each record","Tag batch approval with actor and date.")}
+        ${modalCheck("Include in CPA package immediately","Approved receipts enter standard CPA export queue.")}
+        ${modalCheck("Alert if business purpose is missing","Do not approve records without a documented purpose.", false)}
+      </div>`)
     ].join("")
   },
 
