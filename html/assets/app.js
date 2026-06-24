@@ -245,13 +245,13 @@ function renderRunDetail(){
 
 /* ─── CONNECTIONS ─── */
 function renderConnections(){
-  const connRows = data.connections.map(c=>row([`<span class="mono">${c[0]}</span>`,c[1],c[2],c[3],c[4],c[5],status(c[6]),c[7],rowActions(actionBtn("Test","test-connection"),actionBtn("Edit","edit-connection"),actionBtn("Revoke",""))]));
+  const connRows = data.connections.map(c=>row([`<span class="mono">${c[0]}</span>`,c[1],c[2],c[3],c[4],c[5],status(c[6]),c[7],rowActions(actionBtn("Test","test-connection"),actionBtn("Edit","edit-connection"),`<button class="${ui.btn}" data-revoke-conn="${c[0]}">Revoke</button>`)]));
   return `${filterBar(["All statuses",["Connected","Degraded"]],["All auth",["OAuth 2.0","API Key"]])}${panel("Connections",table(["Conn ID","Name","Employer","Auth","Signing","Scopes","Status","Last Sync","Actions"],connRows),`<button class="btn primary" data-modal="connection">Add Connection</button>`)}`;
 }
 
 /* ─── PAYOUTS ─── */
 function renderPayouts(){
-  return `${filterBar(["All periods",["Jun 1-15","May 16-31","May 1-15"]],["All methods",["Zelle","PayPal","Cash","ACH","Check"]],["All statuses",["Confirmed","Pending","Cancelled"]])}<div style="display:flex;justify-content:flex-end;margin-bottom:10px">${actionBtn("Export CSV","")}</div>${panel("Staff Payouts",table(["Payout","Worker","Staff ID","Period","Amount","Method","Type","Status","Evidence","Actions"],data.payouts.map(p=>row([`<span class="mono">${p[0]}</span>`,...p.slice(1,7),status(p[7]),p[8],rowActions(actionBtn("Review","payout-detail"),actionBtn("Mark Paid",""),actionBtn("Dispute",""))]))),`<button class="btn primary" data-modal="payout">Create Payout</button>`)}`;
+  return `${filterBar(["All periods",["Jun 1-15","May 16-31","May 1-15"]],["All methods",["Zelle","PayPal","Cash","ACH","Check"]],["All statuses",["Confirmed","Pending","Cancelled"]])}<div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="${ui.btn}" data-toast="CSV export prepared and downloading.">Export CSV</button></div>${panel("Staff Payouts",table(["Payout","Worker","Staff ID","Period","Amount","Method","Type","Status","Evidence","Actions"],data.payouts.map(p=>row([`<span class="mono">${p[0]}</span>`,...p.slice(1,7),status(p[7]),p[8],rowActions(actionBtn("Review","payout-detail"),`<button class="${ui.btn}" data-mark-paid="${p[0]}">Mark Paid</button>`,`<button class="${ui.btn}" data-toast="Dispute opened for ${p[0]}. Finance team notified.">Dispute</button>`)]))),`<button class="btn primary" data-modal="payout">Create Payout</button>`)}`;
 }
 
 /* ─── TAX LEDGER ─── */
@@ -262,7 +262,7 @@ function renderLedger(){
 
 /* ─── EXCEPTIONS ─── */
 function renderExceptions(){
-  const exRows = data.exceptions.map(e=>row([`<span class="mono">${e[0]}</span>`,e[1],status(e[2]),e[3],status(e[4]),e[5],e[6],rowActions(actionBtn("Resolve","resolve-exception"),actionBtn("Assign",""),actionBtn("Note",""))],{wrap:6}));
+  const exRows = data.exceptions.map(e=>row([`<span class="mono">${e[0]}</span>`,e[1],status(e[2]),e[3],status(e[4]),e[5],e[6],rowActions(`<button class="${ui.btn}" data-resolve-exc="${e[0]}">Resolve</button>`,`<button class="${ui.btn}" data-toast="Assigned ${e[0]} to ${e[3]} team.">Assign</button>`,`<button class="${ui.btn}" data-toast="Note saved for ${e[0]}.">Note</button>`)],{wrap:6}));
   return `${filterBar(["All statuses",["Open","Reviewing","Closed"]],["All severities",["High","Medium","Low"]],["All owners",["Payroll","HR","Tax"]])}${panel("Exceptions Queue",table(["ID","Type","Severity","Owner","Status","Run","Description","Actions"],exRows))}`;
 }
 
@@ -299,8 +299,8 @@ function renderOcr(){
     `<span class="${confColor(r[7])} font-black text-xs">${r[7]}</span>`,
     r[8], status(r[5]), r[6],
     rowActions(actionBtn("View","view-receipt"),actionBtn("Edit","edit-receipt"),
-      r[7]!=="—"&&parseInt(r[7])<90 ? actionBtn("Review OCR","ocr-review") : actionBtn("Approve",""),
-      actionBtn("Delete","delete-receipt"))
+      r[7]!=="—"&&parseInt(r[7])<90 ? actionBtn("Review OCR","ocr-review") : `<button class="${ui.btn}" data-approve-receipt="${r[0]}">Approve</button>`,
+      `<button class="${ui.btn}" data-modal="delete-receipt" data-ctx-id="${r[0]}">Delete</button>`)
   ]));
 
   const processingRows = processing.map(r=>row([
@@ -354,7 +354,7 @@ function renderOcr(){
 
 /* ─── SHARE LINKS ─── */
 function renderShareLinks(){
-  const linkRows = data.shareLinks.map(s=>row([`<span class="mono">${s[0]}</span>`,s[1],s[2],s[3],status(s[4]),rowActions(actionBtn("View","share-link-detail"),actionBtn("Copy",""),actionBtn("QR","share-link-qr"),actionBtn("Revoke","revoke-share-link"))]));
+  const linkRows = data.shareLinks.map(s=>row([`<span class="mono">${s[0]}</span>`,s[1],s[2],s[3],status(s[4]),rowActions(actionBtn("View","share-link-detail"),`<button class="${ui.btn}" data-copy="taxiq.link/${s[0]}">Copy Link</button>`,actionBtn("QR","share-link-qr"),`<button class="${ui.btn}" data-modal="revoke-share-link" data-ctx-id="${s[0]}">Revoke</button>`)]));
   return `<div class="grid-4" style="margin-bottom:14px">${[["Active Links","2","Upload/review access","green"],["Default Expiry","15d","Can be never expire","cyan"],["QR Support","Yes","Same permission model","yellow"],["Audit Log","On","Every open/upload","red"]].map(metric).join("")}</div>${panel("Payout / Profile Share Links",table(["Link ID","Recipient","Access","Expires","Status","Actions"],linkRows),`<button class="btn primary" data-modal="share-link">Create Link</button>`)}${panel("Share Link Rules",`<div class="panel-body list">${listItem("Upload-only","Recipient can upload receipts, W-9, payout evidence, or missing profile fields.","blue")}${listItem("Review-only","CPA or reviewer can inspect selected ledger and evidence records.","green")}${listItem("Expiration","Default is 15 days. Public profile links may never expire.","yellow")}</div>`)}`;
 }
 
@@ -398,7 +398,7 @@ function renderAuditLog(){
 
 /* ─── SETTINGS ─── */
 function renderSettings(){
-  const keyRows = data.apiKeys.map(k=>row([`<span class="mono">${k[0]}</span>`,k[1],`<span class="mono">${k[2]}</span>`,k[3],k[4],status(k[5]),k[6],rowActions(actionBtn("Rotate",""),actionBtn("Revoke",""))]));
+  const keyRows = data.apiKeys.map(k=>row([`<span class="mono">${k[0]}</span>`,k[1],`<span class="mono">${k[2]}</span>`,k[3],k[4],status(k[5]),k[6],rowActions(`<button class="${ui.btn}" data-rotate-key="${k[0]}">Rotate</button>`,`<button class="${ui.btn}" data-revoke-key="${k[0]}">Revoke</button>`)]));
   return `<div class="grid-2">${panel("US Payroll Scope",`<div class="panel-body"><div class="row"><span>Country</span><span>United States</span></div><div class="row"><span>Tax levels</span><span>Federal, State, Local</span></div><div class="row"><span>Employee forms</span><span>W-4, W-2</span></div><div class="row"><span>Employer returns</span><span>941, 940, SUTA</span></div></div>`)}${panel("Role & Access",table(["Permission","Payroll Admin","CPA","Auditor","Action"],[["Export data",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Finalize run",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")],["Review package",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Manage settings",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")]].map(row)))}${panel("Data Protection",`<div class="panel-body"><div class="row"><span>SSN/TIN storage</span><span>Tokenized</span></div><div class="row"><span>PII export approval</span><span>Required</span></div><div class="row"><span>Webhook signing</span><span>HMAC SHA-256</span></div><div class="row"><span>Audit retention</span><span>7 years</span></div></div>`,`${actionBtn("Configure","")}`)}${panel("Guided Help",`<div class="panel-body list">${listItem("First-time tour","Explain payroll, payout, Tax IQ, OCR, share links, GPS, CPA review.","blue")}${listItem("What next","Show recommended next action when a workflow is blocked.","green")}</div>`,`<button class="btn primary" data-toast="Tour started. Follow the guided steps.">Start Tour</button>`)}</div><div class="grid-2" style="margin-top:14px">${panel("API Keys",table(["Key ID","Name","Env","Scopes","Created","Status","Owner","Actions"],keyRows),`<button class="btn primary" data-modal="create-api-key">Create Key</button>`)}${panel("Notification Preferences",`<div class="panel-body">${[["Deposit due reminders","3-day and same-day alerts for scheduled tax deposits.",true],["Exception open alerts","Immediate alert when blocking exception is created.",true],["CPA request notifications","When CPA flags a missing record or requests files.",true],["Webhook dead letter alerts","When webhook delivery fails after max retries.",true],["Tip cap warnings","When worker approaches the $25,000 annual tip cap.",false]].map(([l,t,c])=>modalCheck(l,t,c)).join("")}</div>`,`<button class="btn primary" data-action-toast="Notification preferences saved.">Save Preferences</button>`)}</div>`;
 }
 
@@ -410,14 +410,14 @@ function renderNotifications(){
     n.at,
     `<span class="flex items-center gap-2">${!n.read?`<span class="h-2 w-2 shrink-0 rounded-full bg-indigo-400 inline-block"></span>`:"<span class='h-2 w-2 inline-block'></span>"}<span>${n.title}</span></span>`,
     n.body,status(n.severity),
-    `<a class="${ui.btn}" href="${pageHref(n.resource)}">Open</a> ${n.read?"":actionBtn("Mark Read","")}`
+    `<a class="${ui.btn}" href="${pageHref(n.resource)}">Open</a> ${n.read?"":`<button class="${ui.btn}" data-mark-read="${n.id}">Mark Read</button>`}`
   ],{wrap:2}));
   return `<div class="grid-4" style="margin-bottom:14px">${[
     ["Unread",String(unread),"Require attention","red"],
     ["Deposit Alerts","1","Jun 24 due today","yellow"],
     ["CPA Requests","1","Missing receipt flagged","cyan"],
     ["System Events","2","Webhook + exception","green"]
-  ].map(metric).join("")}</div><div style="display:flex;justify-content:flex-end;margin-bottom:10px">${actionBtn("Mark All Read","")}</div>${filterBar(["All severities",["High","Medium","Low"]],["All types",["DEPOSIT_ALERT","EXCEPTION_OPEN","CPA_REQUEST","TIN_PENDING","WEBHOOK_DEAD_LETTER","TIP_CAP"]])}${panel("Notification Center",table(["Time","Title","Detail","Severity","Actions"],nRows))}`;
+  ].map(metric).join("")}</div><div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="${ui.btn}" data-mark-all-read>Mark All Read</button></div>${filterBar(["All severities",["High","Medium","Low"]],["All types",["DEPOSIT_ALERT","EXCEPTION_OPEN","CPA_REQUEST","TIN_PENDING","WEBHOOK_DEAD_LETTER","TIP_CAP"]])}${panel("Notification Center",table(["Time","Title","Detail","Severity","Actions"],nRows))}`;
 }
 
 /* ─── UI HELPERS ─── */
@@ -447,6 +447,20 @@ const modalCopy = {
     title:"Create Payroll Run",
     body:"Open a new pay period, import line items, and run validation before approval.",
     cta:"Create Draft",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const inputs = modal.querySelectorAll("input.form-control");
+        const employer = inputs[0]?.value || "New Employer";
+        const start    = inputs[1]?.value || "2026-07-01";
+        const end      = inputs[2]?.value || "2026-07-14";
+        const payDate  = inputs[3]?.value || "2026-07-18";
+        const runId    = "pr_"+start.replace(/-/g,"").slice(2);
+        data.runs.unshift([runId,start+" to "+end,payDate,payDate,"0","$0","$0","—","Pending"]);
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage(); toast("Draft run created: "+runId);
+      });
+    },
     content:()=>[
       modalSection("Run Setup", modalGrid([
         modalField("Employer","Acme Manufacturing LLC"),
@@ -472,6 +486,18 @@ const modalCopy = {
     title:"Finalize Payroll Run",
     body:"Strict mode checks blocking exceptions, TIN/W-4 status, jurisdiction setup, and ledger reconciliation.",
     cta:"Finalize",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const note = modal.querySelector("textarea")?.value || "";
+        if(!note.trim()){ toast("Required: enter an approval note before finalizing."); return; }
+        const run = data.runs.find(r=>r[0]==="pr_2026_06_15");
+        if(run) run[8]="Ledger Posted";
+        data.auditLog.unshift(["2026-06-24 "+new Date().toTimeString().slice(0,5),"payroll_admin_44","FINALIZED","payroll_run","pr_2026_06_15",note.slice(0,80)]);
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage(); toast("Payroll run finalized and posted to ledger.");
+      });
+    },
     content:()=>[
       modalSection("Finalization Gate", `<div class="list">${listItem("Ledger reconciliation","Employee and employer tax totals match generated ledger entries.","green")}${listItem("TIN/W-4 warning","1 worker has pending TIN verification. Admin override requires note.","yellow")}${listItem("Deposit schedule","Federal semiweekly deposit date is Jun 24, 2026.","green")}</div>`),
       modalSection("Approval Note", modalField("Required note","Approved with one documented TIN warning. CPA package will flag this item.","textarea")),
@@ -503,6 +529,18 @@ const modalCopy = {
     title:"Add Employer",
     body:"Create business profile, locations, registrations, deposit schedule, and integration setup.",
     cta:"Save Employer",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const inputs = modal.querySelectorAll("input.form-control");
+        const name = (inputs[0]?.value||"").trim() || "New Employer";
+        const ein  = (inputs[1]?.value||"").trim() || "00-0000000";
+        const id   = "biz_"+Math.floor(Math.random()*9000+1000);
+        data.employers.push([name,id,inputs[2]?.value||"Service","0","FED","Monthly","—","—","Active"]);
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage(); toast("Employer saved: "+name+" ("+id+")");
+      });
+    },
     content:()=>[
       modalSection("Business Profile", modalGrid([
         modalField("Legal business name","Acme Manufacturing LLC"),
@@ -565,6 +603,18 @@ const modalCopy = {
     title:"Invite Employee",
     body:"Send an employee self-service link for tax profile and W-4 collection.",
     cta:"Send Invite",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const inputs = modal.querySelectorAll("input.form-control");
+        const name  = (inputs[0]?.value||"").trim() || "New Employee";
+        const email = (inputs[1]?.value||"").trim() || "—";
+        const empId = "emp_"+Math.floor(Math.random()*9000+1000);
+        data.employees.push([name,empId,"—","TX","TX","Pending","Missing","Unknown","Today","0"]);
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage(); toast("Invite sent to "+name+" ("+email+")");
+      });
+    },
     content:()=>[
       modalSection("Employee Invite", modalGrid([
         modalField("Legal name","Jane A. Nguyen"),
@@ -710,6 +760,14 @@ const modalCopy = {
     title:"Verify Ledger Hash",
     body:"Confirm the cryptographic integrity of this tax ledger entry. Hash is immutable and stored at posting time.",
     cta:"Copy Hash",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const hashText = "sha256:a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0";
+        navigator.clipboard?.writeText(hashText).catch(()=>{});
+        toast("Hash copied to clipboard.");
+      });
+    },
     content:()=>[
       modalSection("Entry", table(["Field","Value"],[
         row(["Entry ID","tle_001"]),
@@ -824,6 +882,28 @@ const modalCopy = {
       });
       const mainCta = $("#modalMainCta");
       if(mainCta) mainCta.style.display="none";
+
+      /* ── Save to Vault — real action ── */
+      mainCta?.addEventListener("click", e=>{
+        e.stopPropagation(); // block generic data-action-toast handler
+        const vendor   = ($("#ocrVendor")?.value||"").trim()||"Unknown Vendor";
+        const total    = ($("#ocrTotal")?.value ||"").trim()||"—";
+        const tax      = ($("#ocrTax")?.value   ||"").trim()||"—";
+        const rcptNo   = ($("#ocrNum")?.value   ||"").trim()||"—";
+        const category = $("#ocrCategory")?.value||"Supplies";
+        const owner    = modal.querySelector("select")?.value||"Owner";
+        const id       = "rcpt_"+(data.receipts.length+1).toString().padStart(3,"0");
+        const stamp    = new Date().toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+        data.receipts.unshift([id, vendor, category, total, "Camera", "Needs Review", owner, "—", tax, rcptNo, stamp, "—"]);
+        /* stop camera, close modal */
+        modal.querySelectorAll("video").forEach(v=>{
+          if(v.srcObject){v.srcObject.getTracks().forEach(t=>t.stop());v.srcObject=null;}
+        });
+        if(modal._camStream) modal._camStream.stop();
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage();
+        toast("Receipt saved to vault: "+vendor+" "+total);
+      });
 
       /* ── load Tesseract.js from CDN (once) ── */
       const loadTesseract = ()=>window.Tesseract
@@ -1137,6 +1217,29 @@ const modalCopy = {
     title:"Create Share Link",
     body:"Choose recipient, access type, expiration, QR option, and audit controls.",
     cta:"Create Link",
+    afterOpen(modal){
+      // Passcode toggle
+      const pcToggle = modal.querySelector("#slPcToggle");
+      const pcRow    = modal.querySelector("#slPcRow");
+      pcToggle?.addEventListener("change", ()=>{
+        if(pcRow) pcRow.style.display = pcToggle.value==="No" ? "none" : "";
+      });
+      // Save
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const inputs   = modal.querySelectorAll("input.form-control");
+        const name     = (inputs[0]?.value||"").trim() || "New Recipient";
+        const access   = modal.querySelectorAll("select.form-control")[2]?.value || "Review-only";
+        const expiry   = modal.querySelectorAll("select.form-control")[3]?.value || "15 days";
+        const passcode = (modal.querySelector("#slPasscode")?.value||"").trim();
+        const hasPC    = pcToggle?.value!=="No" && passcode;
+        const linkId   = "shr_"+String(data.shareLinks.length+1).padStart(3,"0");
+        data.shareLinks.push([linkId,name,access,expiry,"Active"]);
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage();
+        toast("Share link created: "+linkId+(hasPC?" (passcode protected)":""));
+      });
+    },
     content:()=>[
       modalSection("Recipient & Access", modalGrid([
         modalSelect("Recipient type",[["CPA / tax preparer",true],["Technician"],["Friend/referral"],["External reviewer"]]),
@@ -1145,16 +1248,21 @@ const modalCopy = {
         modalSelect("Expiration",[["15 days",true],["7 days"],["30 days"],["Never expires"]])
       ])),
       modalSection("Shared Data", `<div class="list">${modalCheck("Tax ledger summary","Share selected tax ledger entries.")}${modalCheck("Receipts and proof index","Allow recipient to review OCR evidence.")}${modalCheck("Payout evidence","Include payout records and screenshots.")}${modalCheck("Public profile QR","Only for non-sensitive business profile links.", false)}</div>`),
-      modalSection("Security", modalGrid([
-        modalSelect("Require passcode",[["Yes",true],["No"]]),
-        modalSelect("Download permission",[["Disabled",true],["PDF only"],["PDF + CSV"]])
-      ]))
+      modalSection("Security", `<div class="modal-grid"><label class="form-field"><span>Require passcode</span><select id="slPcToggle" class="form-control"><option selected>Yes</option><option>No</option></select></label><label class="form-field"><span>Download permission</span><select class="form-control"><option selected>Disabled</option><option>PDF only</option><option>PDF + CSV</option></select></label></div><div id="slPcRow" class="modal-grid" style="margin-top:8px"><label class="form-field"><span>Passcode</span><input id="slPasscode" class="form-control" type="text" placeholder="e.g. 1234 or SALON2026" autocomplete="off"></label></div>`)
     ].join("")
   },
   "share-link-detail":{
     title:"Share Link Detail",
     body:"View recipient access, expiration, upload permissions, QR behavior, and audit history before copying or disabling the link.",
     cta:"Copy Link",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const url = modal.querySelector("input[value*='taxiq.link']")?.value || "taxiq.link/shr_001";
+        navigator.clipboard?.writeText("https://"+url).catch(()=>{});
+        toast("Link copied: https://"+url);
+      });
+    },
     content:()=>[
       modalSection("Link Summary", modalGrid([
         modalField("Link ID","shr_001"),
@@ -1196,6 +1304,17 @@ const modalCopy = {
     title:"Revoke Share Link",
     body:"Immediately disable this link. The recipient will lose access on their next attempt to open it.",
     cta:"Revoke Link",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const ctx = window._modalCtx||{};
+        const id  = ctx.ctxId || data.shareLinks[0]?.[0];
+        const lnk = data.shareLinks.find(s=>s[0]===id);
+        if(lnk){ lnk[4]="Revoked"; }
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage(); toast("Share link revoked: "+id+". Recipient access removed immediately.");
+      });
+    },
     content:()=>[
       modalSection("Link Being Revoked", table(["Field","Value"],[
         row(["Link ID","shr_001"]),
@@ -1276,6 +1395,21 @@ const modalCopy = {
     title:"Create Payout",
     body:"Record technician payout, method, type, period, evidence, and TaxIQ sync status.",
     cta:"Save Payout",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const inputs = modal.querySelectorAll("input.form-control");
+        const worker = (inputs[0]?.value||"").trim() || "Unknown Worker";
+        const amount = (inputs[1]?.value||"").trim() || "$0.00";
+        const method = modal.querySelectorAll("select.form-control")[0]?.value || "Zelle";
+        const type   = modal.querySelectorAll("select.form-control")[1]?.value || "Tip + wage";
+        const period = (inputs[2]?.value||"").trim() || "—";
+        const payId  = "PAY-2026-"+String(data.payouts.length+1).padStart(3,"0");
+        data.payouts.unshift([payId,worker.split("/")[0].trim(),"NL-NEW",period,amount,method,type,"Pending","None"]);
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage(); toast("Payout saved: "+payId+" — "+amount+" via "+method);
+      });
+    },
     content:()=>[
       modalSection("Payout Detail", modalGrid([
         modalField("Worker","likesaa / NL501TESX"),
@@ -1335,6 +1469,14 @@ const modalCopy = {
     title:"Webhook Event Payload",
     body:"View the full event payload, delivery headers, response, and attempt history for this webhook event.",
     cta:"Copy Payload",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const payload = modal.querySelector("pre")?.textContent || "{}";
+        navigator.clipboard?.writeText(payload).catch(()=>{});
+        toast("Payload copied to clipboard.");
+      });
+    },
     content:()=>[
       modalSection("Event Details", table(["Field","Value"],[
         row(["Event ID","evt_01JZ006"]),
@@ -1462,6 +1604,32 @@ const modalCopy = {
     title:"Add Tip",
     body:"Manually record a tip entry. All tips are timestamped and stored in your Tax IQ Tip Ledger.",
     cta:"Save Tip",
+    afterOpen(modal){
+      let selectedMethod = "Cash";
+      // Method chip selection
+      modal.querySelectorAll(".btn[data-toast^='Method:']").forEach(btn=>{
+        btn.addEventListener("click", e=>{
+          e.stopPropagation();
+          selectedMethod = btn.textContent.trim();
+          modal.querySelectorAll(".btn[data-toast^='Method:']").forEach(b=>b.classList.remove("primary"));
+          btn.classList.add("primary");
+        });
+      });
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const amtInput = modal.querySelector("input.form-control");
+        const amount   = (amtInput?.value||"$0.00").replace(/[^0-9.]/g,"");
+        const service  = modal.querySelectorAll("select.form-control")[0]?.value || "Other";
+        const date     = modal.querySelectorAll("input.form-control")[2]?.value || "2026-06-24";
+        if(!parseFloat(amount)){ toast("Enter a tip amount before saving."); return; }
+        const tipId = "tip_"+String(data.tips.length+1).padStart(3,"0");
+        const now   = new Date().toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+        data.tips.unshift([tipId,date,selectedMethod,"$"+parseFloat(amount).toFixed(2),service,
+          /Cash/.test(selectedMethod)?"CASH":"DIRECT","LIKELY_QUALIFIED",now,"None"]);
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage(); toast("Tip saved: $"+parseFloat(amount).toFixed(2)+" via "+selectedMethod);
+      });
+    },
     content:()=>[
       modalSection("Tip Amount & Method", `<div class="panel-body"><label class="form-field" style="margin-bottom:12px"><span>Tip Amount</span><input class="form-control" style="font-size:28px;font-weight:900;height:56px;text-align:center" value="$0.00"></label><div class="grid-4" style="gap:8px">${["Cash","Zelle","Venmo","Cash App","Card/POS","QR","PayPal","Other"].map((m,i)=>`<button class="btn ${i===0?"primary":""}" data-toast="Method: ${m}">${m}</button>`).join("")}</div></div>`),
       modalSection("Service Details", modalGrid([
@@ -1525,6 +1693,19 @@ const modalCopy = {
     title:"Delete Tip Entry",
     body:"Soft delete only. The record is preserved in the audit log with actor, reason, and timestamp. No tax record is ever hard-deleted.",
     cta:"Delete Tip",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const reason = modal.querySelector("textarea")?.value?.trim();
+        if(!reason){ toast("A deletion reason is required."); return; }
+        const ctx = window._modalCtx||{};
+        const id  = ctx.ctxId || data.tips[0]?.[0];
+        const idx = data.tips.findIndex(t=>t[0]===id);
+        if(idx>=0) data.tips.splice(idx,1);
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage(); toast("Tip deleted (soft). Audit record preserved.");
+      });
+    },
     content:()=>[
       modalSection("Tip Being Deleted", table(["Field","Value"],[
         row(["Tip ID","tip_002"]),
@@ -1540,6 +1721,19 @@ const modalCopy = {
     title:"Delete Receipt",
     body:"Soft delete only. The receipt image and OCR data are preserved for audit. The record is removed from the active vault.",
     cta:"Delete Receipt",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const reason = modal.querySelector("textarea")?.value?.trim();
+        if(!reason){ toast("A deletion reason is required."); return; }
+        const ctx = window._modalCtx||{};
+        const id  = ctx.ctxId || data.receipts[0]?.[0];
+        const idx = data.receipts.findIndex(r=>r[0]===id);
+        if(idx>=0) data.receipts.splice(idx,1);
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage(); toast("Receipt deleted (soft). Image preserved in cold storage.");
+      });
+    },
     content:()=>[
       modalSection("Receipt Being Deleted", table(["Field","Value"],[
         row(["Receipt ID","rcpt_001"]),
@@ -1555,6 +1749,19 @@ const modalCopy = {
     title:"Delete Trip",
     body:"Soft delete only. GPS route and purpose are preserved in the audit log. The trip is removed from the active mileage deduction list.",
     cta:"Delete Trip",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const reason = modal.querySelector("textarea")?.value?.trim();
+        if(!reason){ toast("A deletion reason is required."); return; }
+        const ctx = window._modalCtx||{};
+        const id  = ctx.ctxId || data.trips[0]?.[0];
+        const idx = data.trips.findIndex(t=>t[0]===id);
+        if(idx>=0) data.trips.splice(idx,1);
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage(); toast("Trip deleted (soft). GPS data preserved in audit log.");
+      });
+    },
     content:()=>[
       modalSection("Trip Being Deleted", table(["Field","Value"],[
         row(["Trip ID","trip_001"]),
@@ -1572,6 +1779,30 @@ const modalCopy = {
     title:"Create API Key",
     body:"Generate a new API key for payroll system integration, report automation, or developer access. Keys are shown only once.",
     cta:"Generate Key",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const inputs = modal.querySelectorAll("input.form-control");
+        const name = (inputs[0]?.value||"").trim() || "New API Key";
+        const env  = modal.querySelectorAll("select.form-control")[0]?.value || "Production (LIVE)";
+        const scope= modal.querySelectorAll("select.form-control")[1]?.value || "Full access";
+        const isLive = /production/i.test(env);
+        const prefix = isLive ? "taxiq_live_" : "taxiq_test_";
+        const newKey = prefix+[...Array(32)].map(()=>Math.floor(Math.random()*36).toString(36)).join("");
+        const shortId= "key_"+(isLive?"live":"test")+"_"+Math.random().toString(36).slice(2,6);
+        data.apiKeys.unshift([shortId,name,isLive?"LIVE":"TEST",scope,"Jun 24, 2026","Active","payroll_admin_44"]);
+        // Show key in modal body
+        const body = modal.querySelector(".modal-body");
+        if(body){
+          const notice = document.createElement("div");
+          notice.style.cssText="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:16px;margin-top:12px";
+          notice.innerHTML=`<div style="color:#f8fafc;font-size:11px;font-weight:900;margin-bottom:8px">⚠️ Copy this key now — it will never be shown again</div><div style="font-family:monospace;font-size:11px;color:#a5f3fc;word-break:break-all;background:#020617;padding:10px;border-radius:6px">${newKey}</div><button class="${ui.btn}" style="margin-top:10px" data-copy="${newKey}">Copy Key</button>`;
+          body.appendChild(notice);
+          modal.querySelector("#modalMainCta").style.display="none";
+        }
+        renderPage(); toast("API key generated: "+shortId);
+      });
+    },
     content:()=>[
       modalSection("Key Configuration", modalGrid([
         modalField("Key name","CPA Export Automation"),
@@ -1611,7 +1842,7 @@ document.addEventListener("click", event=>{
   const linkRow = event.target.closest("[data-href]");
   if(linkRow) window.location.href = linkRow.dataset.href;
   const modalBtn = event.target.closest("[data-modal]");
-  if(modalBtn) openModal(modalBtn.dataset.modal);
+  if(modalBtn){ window._modalCtx = Object.assign({},modalBtn.dataset); openModal(modalBtn.dataset.modal); }
   const close = event.target.closest("[data-close]");
   if(close){
     // stop any live camera stream
@@ -1624,6 +1855,64 @@ document.addEventListener("click", event=>{
   }
   const msg = event.target.closest("[data-toast],[data-action-toast]");
   if(msg) toast(msg.dataset.toast || msg.dataset.actionToast);
+
+  /* ── real action handlers ── */
+  // Approve receipt
+  const approveRcpt = event.target.closest("[data-approve-receipt]");
+  if(approveRcpt){
+    const r = data.receipts.find(x=>x[0]===approveRcpt.dataset.approveReceipt);
+    if(r){ r[5]="Approved"; renderPage(); toast("Receipt approved: "+r[1]); }
+  }
+  // Resolve exception
+  const resolveExc = event.target.closest("[data-resolve-exc]");
+  if(resolveExc){
+    const e = data.exceptions.find(x=>x[0]===resolveExc.dataset.resolveExc);
+    if(e){ e[4]="Closed"; renderPage(); toast("Exception resolved: "+e[0]); }
+  }
+  // Mark single notification read
+  const markRead = event.target.closest("[data-mark-read]");
+  if(markRead){
+    const n = data.notifications.find(x=>x.id===markRead.dataset.markRead);
+    if(n){ n.read=true; renderPage(); toast("Notification marked as read."); }
+  }
+  // Mark all notifications read
+  const markAll = event.target.closest("[data-mark-all-read]");
+  if(markAll){ data.notifications.forEach(n=>n.read=true); renderPage(); toast("All notifications marked as read."); }
+  // Clipboard copy
+  const copyEl = event.target.closest("[data-copy]");
+  if(copyEl){
+    navigator.clipboard?.writeText(copyEl.dataset.copy).catch(()=>{});
+    toast("Copied to clipboard: "+copyEl.dataset.copy.slice(0,40));
+  }
+  // Revoke connection
+  const revokeConn = event.target.closest("[data-revoke-conn]");
+  if(revokeConn){
+    const c = data.connections.find(x=>x[0]===revokeConn.dataset.revokeConn);
+    if(c){ c[6]="Revoked"; renderPage(); toast("Connection revoked: "+c[1]); }
+  }
+  // Mark payout as paid
+  const markPaid = event.target.closest("[data-mark-paid]");
+  if(markPaid){
+    const p = data.payouts.find(x=>x[0]===markPaid.dataset.markPaid);
+    if(p){ p[7]="Confirmed"; renderPage(); toast("Payout confirmed: "+p[0]); }
+  }
+  // Revoke API key
+  const revokeKey = event.target.closest("[data-revoke-key]");
+  if(revokeKey){
+    const k = data.apiKeys.find(x=>x[0]===revokeKey.dataset.revokeKey);
+    if(k){ k[5]="Revoked"; renderPage(); toast("API key revoked."); }
+  }
+  // Rotate API key
+  const rotateKey = event.target.closest("[data-rotate-key]");
+  if(rotateKey){
+    const k = data.apiKeys.find(x=>x[0]===rotateKey.dataset.rotateKey);
+    if(k){
+      const suffix = Math.random().toString(36).slice(2,6);
+      k[0] = k[0].replace(/_[^_]+$/,"_"+suffix);
+      k[4] = "Jun 24, 2026"; k[5] = "Active";
+      renderPage(); toast("API key rotated. Save the new key ID immediately.");
+    }
+  }
 });
 document.addEventListener("input", event=>{
   if(event.target.id !== "globalSearch") return;

@@ -18,6 +18,21 @@ const TaxIQLayout = (() => {
     input:"min-w-0 flex-1 border-0 bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-600"
   };
 
+  const pageIcons = {
+    dashboard:"fa-solid fa-chart-pie",       analytics:"fa-solid fa-chart-line",
+    employers:"fa-solid fa-building",         employees:"fa-solid fa-users",
+    "employee-profile":"fa-solid fa-user",    "payroll-runs":"fa-solid fa-money-bill-wave",
+    "run-detail":"fa-solid fa-list-check",    connections:"fa-solid fa-plug",
+    payouts:"fa-solid fa-hand-holding-dollar",ledger:"fa-solid fa-book",
+    exceptions:"fa-solid fa-triangle-exclamation", jurisdictions:"fa-solid fa-map",
+    forms:"fa-solid fa-file-lines",           "ai-advisor":"fa-solid fa-robot",
+    ocr:"fa-solid fa-receipt",                "share-links":"fa-solid fa-link",
+    gps:"fa-solid fa-location-dot",           cpa:"fa-solid fa-user-tie",
+    "tip-ledger":"fa-solid fa-coins",         "tax-estimate":"fa-solid fa-calculator",
+    webhooks:"fa-solid fa-globe",             "audit-log":"fa-solid fa-magnifying-glass",
+    notifications:"fa-solid fa-bell",         settings:"fa-solid fa-gear"
+  };
+
   const pages = {
     dashboard:{title:"Dashboard", file:"index.html", subtitle:"US payroll, payout, Tax IQ, and advisory overview."},
     analytics:{title:"Analytics", file:"analytics.html", subtitle:"Risk, tax, payout, and operational trends."},
@@ -64,8 +79,8 @@ const TaxIQLayout = (() => {
   function renderSidebar(){
     return `
       <aside class="sidebar fixed inset-y-0 left-0 z-20 flex w-[260px] flex-col border-r border-slate-800 bg-slate-900 max-md:static max-md:w-full">
-        <div class="brand flex h-[68px] items-center gap-3 border-b border-slate-800 px-4"><div class="mark grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 text-xs font-black text-white">TIQ</div><div><h1 class="m-0 text-sm font-black leading-none">TaxIQ Demo</h1><p class="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">US Payroll + Payout</p></div></div>
-        <nav class="nav max-md:grid max-md:grid-cols-2">${navGroups.map(([label,ids])=>`<div class="group-label px-4 pb-2 pt-4 text-[10px] font-black uppercase tracking-widest text-slate-600 max-md:col-span-2">${label}</div>${ids.map(id=>`<a class="${ui.nav} ${id===currentPage?ui.navActive:""}" href="${pageHref(id)}"><span class="${ui.iconBox}">${icon(id)}</span><span>${pages[id].title}</span></a>`).join("")}`).join("")}</nav>
+        <div class="brand flex h-[68px] items-center gap-3 border-b border-slate-800 px-4"><div class="mark grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 text-xs font-black text-white">TIQ</div><div><h1 class="m-0 text-sm font-black leading-none">TaxIQ</h1><p class="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">US Payroll + Payout</p></div></div>
+        <nav class="nav max-md:grid max-md:grid-cols-2">${navGroups.map(([label,ids])=>`<div class="group-label px-4 pb-2 pt-4 text-[10px] font-black uppercase tracking-widest text-slate-600 max-md:col-span-2">${label}</div>${ids.map(id=>`<a class="${ui.nav} ${id===currentPage?ui.navActive:""}" href="${pageHref(id)}"><i class="${pageIcons[id]||''} fa-fw" style="width:16px;font-size:13px;opacity:.75;text-align:center"></i><span>${pages[id].title}</span></a>`).join("")}`).join("")}</nav>
         <div class="account mt-auto flex items-center gap-3 border-t border-slate-800 p-4"><div class="avatar grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-400 text-xs font-black text-white">PA</div><div><strong class="block text-xs font-black">Payroll Admin</strong><span class="block text-[10px] text-slate-500">tenant_demo_001</span></div></div>
       </aside>`;
   }
@@ -80,7 +95,13 @@ const TaxIQLayout = (() => {
 
   function renderShell(renderContent){
     const meta = pages[currentPage] || pages.dashboard;
-    document.title = `TaxIQ Demo - ${meta.title}`;
+    document.title = `TaxIQ - ${meta.title}`;
+    if (!document.getElementById("fa-cdn")) {
+      const lnk = document.createElement("link");
+      lnk.id = "fa-cdn"; lnk.rel = "stylesheet";
+      lnk.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css";
+      document.head.appendChild(lnk);
+    }
     document.getElementById("app").innerHTML = `
       <div class="app min-h-screen bg-slate-950 text-slate-100 md:flex">
         ${renderSidebar()}
