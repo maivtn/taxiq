@@ -814,54 +814,209 @@ const modalCopy = {
   /* OCR VAULT MODALS */
   receipt:{
     title:"Capture Receipt / Bill",
-    body:"Take a photo, upload a file, or import from email. AI extracts vendor, amount, tax, date, and category automatically.",
-    cta:"Queue for OCR",
-    content:()=>[
-      modalSection("Step 1 — Capture Source", `
-        <div class="grid-4" style="gap:8px;margin-bottom:12px">
-          ${["Camera","Upload File","Email Import","From Payout"].map((s,i)=>`<button class="${ui.btn} ${i===0?ui.primary:""}" data-toast="Source: ${s}">${s}</button>`).join("")}
-        </div>`),
-      modalSection("Camera — Point at Receipt", `
-        <div style="border:2px dashed #334155;border-radius:12px;background:#0f172a;position:relative;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-bottom:8px">
-          <div style="width:200px;height:140px;border:2px solid #4f46e5;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#1e293b">
-            <span style="color:#64748b;font-size:11px;font-weight:900;letter-spacing:.06em;text-align:center">CAMERA VIEWFINDER<br><br><span style="font-weight:400;font-size:10px">Align receipt within frame</span></span>
+    body:"Photo or file → OCR runs in your browser → fields auto-filled. No data sent to server.",
+    cta:"Save to Vault",
+    afterOpen(modal){
+      /* ── helpers ── */
+      const $  = id => modal.querySelector(id);
+      const show = id => ["rcpt-pick","rcpt-cam","rcpt-proc","rcpt-result"].forEach(s=>{
+        const el=modal.querySelector("#"+s); if(el) el.style.display=(s===id)?"":"none";
+      });
+      const mainCta = $("#modalMainCta");
+      if(mainCta) mainCta.style.display="none";
+
+      /* ── load Tesseract.js from CDN (once) ── */
+      const loadTesseract = ()=>window.Tesseract
+        ? Promise.resolve()
+        : new Promise((ok,fail)=>{
+            const s=document.createElement("script");
+            s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+            s.onload=ok; s.onerror=fail;
+            document.head.appendChild(s);
+          });
+
+      /* ── parse raw OCR text into structured fields ── */
+      const parse = txt => {
+        const lines = txt.split("\n").map(l=>l.trim()).filter(Boolean);
+        const vendor = lines.find(l=>/[a-zA-Z]{3}/.test(l))||"";
+        const dollars= [...txt.matchAll(/\$?\s*(\d{1,5}[,.]?\d{2})/g)]
+                         .map(m=>parseFloat(m[1].replace(",",".")));
+        const total  = dollars.length ? "$"+Math.max(...dollars).toFixed(2) : "";
+        const taxM   = txt.match(/tax[:\s]+\$?\s*([\d,.]+)/i);
+        const tax    = taxM ? "$"+parseFloat(taxM[1].replace(",",".")).toFixed(2) : "";
+        const dateM  = txt.match(/\b(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*\.?\s+\d{1,2},?\s+\d{4})\b/i);
+        const date   = dateM ? dateM[0] : "";
+        const numM   = txt.match(/(?:receipt|invoice|order|ref|no\.?)[:\s#]*([A-Z0-9\-]{3,20})/i);
+        const rcptNo = numM ? numM[1] : "";
+        return {vendor,total,tax,date,rcptNo};
+      };
+
+      /* ── run OCR on an image src (dataURL or blob URL) ── */
+      const runOCR = async src => {
+        show("rcpt-proc");
+        const bar = $("#rcptBar");
+        try {
+          await loadTesseract();
+          const {data:{text}} = await Tesseract.recognize(src,"eng",{
+            logger:m=>{ if(m.status==="recognizing text"&&bar) bar.style.width=(m.progress*100)+"%"; }
+          });
+          const p = parse(text);
+          /* populate inputs */
+          [["#ocrVendor",p.vendor],["#ocrTotal",p.total],["#ocrTax",p.tax],
+           ["#ocrDate",p.date],   ["#ocrNum",p.rcptNo]].forEach(([id,v])=>{
+            const el=$(id); if(el) el.value=v;
+          });
+          const raw=$("#ocrRaw"); if(raw) raw.textContent=text.trim().slice(0,800)||(text.trim()||"(no text found)");
+        } catch(e) {
+          const raw=$("#ocrRaw"); if(raw) raw.textContent="OCR error: "+e.message;
+        }
+        show("rcpt-result");
+        if(mainCta) mainCta.style.display="";
+      };
+
+      /* ── handle image (dataURL or File) ── */
+      const handleImg = (src, file) => {
+        const prev=$("#rcptPreview");
+        if(prev){ prev.src=src||URL.createObjectURL(file); prev.style.display="block"; }
+        runOCR(src||URL.createObjectURL(file));
+      };
+      const handleFile = f => {
+        if(!f) return;
+        if(f.type.startsWith("image/")){
+          const r=new FileReader(); r.onload=e=>handleImg(e.target.result); r.readAsDataURL(f);
+        } else { handleImg(null,f); } // PDF — pass blob URL directly
+      };
+
+      /* ── Camera button ── */
+      $("#rcptCamBtn")?.addEventListener("click", async ()=>{
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if(isMobile){
+          // Mobile: trigger native camera via file input
+          $("#rcptCamInput")?.click();
+        } else {
+          // Desktop: show live viewfinder
+          show("rcpt-cam");
+          let facing="environment", stream=null;
+          const video=$("#rcptVideo");
+          const startCam = async mode=>{
+            if(stream) stream.getTracks().forEach(t=>t.stop());
+            try{
+              stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:mode}}});
+              video.srcObject=stream; await video.play();
+            }catch{
+              // No camera permission → show file upload instead
+              show("rcpt-pick");
+              alert("Camera access denied. Please use Upload File instead, or allow camera in browser settings.");
+            }
+          };
+          await startCam(facing);
+          $("#rcptCapture")?.addEventListener("click",()=>{
+            const c=document.createElement("canvas");
+            c.width=video.videoWidth||640; c.height=video.videoHeight||480;
+            c.getContext("2d").drawImage(video,0,0);
+            if(stream) stream.getTracks().forEach(t=>t.stop());
+            handleImg(c.toDataURL("image/jpeg",.92));
+          });
+          $("#rcptFlip")?.addEventListener("click",()=>{
+            facing=facing==="environment"?"user":"environment"; startCam(facing);
+          });
+          // store stream ref for cleanup on modal close
+          modal._camStream = {stop:()=>{ if(stream) stream.getTracks().forEach(t=>t.stop()); }};
+        }
+      });
+
+      /* ── Upload & Camera file inputs ── */
+      $("#rcptFileBtn") ?.addEventListener("click",  ()=>$("#rcptFileInput")?.click());
+      $("#rcptFileInput")?.addEventListener("change", e=>handleFile(e.target.files[0]));
+      $("#rcptCamInput") ?.addEventListener("change", e=>handleFile(e.target.files[0]));
+
+      /* ── Drag-drop on pick area ── */
+      const drop=$("#rcpt-pick");
+      drop?.addEventListener("dragover", e=>{e.preventDefault(); drop.style.outlineColor="#4f46e5";});
+      drop?.addEventListener("dragleave",()=>{ drop.style.outlineColor=""; });
+      drop?.addEventListener("drop", e=>{
+        e.preventDefault(); drop.style.outlineColor="";
+        handleFile(e.dataTransfer.files[0]);
+      });
+    },
+    content:()=>`
+      <!-- STEP 1: Pick source -->
+      <div id="rcpt-pick" style="outline:2px dashed #334155;border-radius:12px;padding:32px;text-align:center">
+        <div style="font-size:48px;line-height:1;margin-bottom:12px;opacity:.55">🧾</div>
+        <div style="font-weight:900;font-size:15px;color:#e2e8f0;margin-bottom:6px">Take a photo or upload a receipt</div>
+        <div style="font-size:11px;color:#64748b;margin-bottom:24px">JPG · PNG · PDF — any nail salon expense receipt</div>
+        <div style="display:flex;gap:12px;max-width:380px;margin:0 auto 14px">
+          <button id="rcptCamBtn"  class="${ui.btn} ${ui.primary}" style="flex:1;height:44px;font-size:13px">📷 Camera</button>
+          <button id="rcptFileBtn" class="${ui.btn}"               style="flex:1;height:44px;font-size:13px">📁 Upload File</button>
+        </div>
+        <div style="font-size:10px;color:#475569">OCR runs locally in your browser — no data is sent to any server</div>
+        <!-- hidden inputs -->
+        <input id="rcptCamInput"  type="file" accept="image/*" capture="environment" style="display:none">
+        <input id="rcptFileInput" type="file" accept="image/*,application/pdf"       style="display:none">
+      </div>
+
+      <!-- STEP 2: Desktop camera viewfinder -->
+      <div id="rcpt-cam" style="display:none">
+        <div style="position:relative;background:#000;border-radius:12px;overflow:hidden">
+          <video id="rcptVideo" autoplay playsinline muted style="width:100%;max-height:300px;display:block;object-fit:cover"></video>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:62%;height:66%;border:2px solid rgba(99,102,241,.7);border-radius:6px;box-shadow:0 0 0 9999px rgba(0,0,0,.35);pointer-events:none"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:6px;text-align:center;font-size:10px;color:rgba(255,255,255,.45)">Align receipt within the frame · good lighting · all 4 corners visible</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;justify-content:center">
+          <button id="rcptCapture" class="${ui.btn} ${ui.primary}" style="height:40px">Capture Photo</button>
+          <button id="rcptFlip"    class="${ui.btn}"               style="height:40px">Flip Camera</button>
+          <button class="${ui.btn}" style="height:40px" onclick="document.getElementById('rcpt-cam').style.display='none';document.getElementById('rcpt-pick').style.display=''">Back</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: OCR processing -->
+      <div id="rcpt-proc" style="display:none;text-align:center;padding:40px 24px">
+        <img id="rcptPreview" style="max-height:120px;max-width:100%;object-fit:contain;border-radius:8px;margin-bottom:16px;display:none">
+        <div style="font-weight:900;color:#e2e8f0;margin-bottom:6px">Reading receipt with Tesseract OCR...</div>
+        <div style="font-size:11px;color:#64748b;margin-bottom:16px">Running locally in browser · no network request</div>
+        <div style="margin:0 auto 10px;width:280px;height:6px;background:#1e293b;border-radius:3px;overflow:hidden">
+          <div id="rcptBar" style="height:100%;width:0;background:linear-gradient(90deg,#4f46e5,#06b6d4);border-radius:3px;transition:width .25s linear"></div>
+        </div>
+        <div style="font-size:10px;color:#475569">5–15 seconds depending on image size and quality</div>
+      </div>
+
+      <!-- STEP 4: Results + business details -->
+      <div id="rcpt-result" style="display:none">
+        <div class="grid-2" style="gap:16px;margin-bottom:16px">
+          <div>
+            <img id="rcptPreview" style="width:100%;max-height:160px;object-fit:contain;border-radius:8px;background:#0f172a;margin-bottom:10px;display:none">
+            ${modalSection("Extracted Fields — edit if wrong", `
+              <div class="panel-body" style="display:grid;gap:8px">
+                <label class="form-field"><span>Vendor / Payee</span><input id="ocrVendor" class="form-control" placeholder="e.g. Beauty Supply Warehouse"></label>
+                <label class="form-field"><span>Total Amount</span>  <input id="ocrTotal"  class="form-control" placeholder="e.g. $384.20"></label>
+                <label class="form-field"><span>Tax Amount</span>    <input id="ocrTax"    class="form-control" placeholder="e.g. $31.60"></label>
+                <label class="form-field"><span>Date</span>          <input id="ocrDate"   class="form-control" placeholder="e.g. Jun 18, 2026"></label>
+                <label class="form-field"><span>Receipt #</span>     <input id="ocrNum"    class="form-control" placeholder="e.g. REC-0042"></label>
+                <label class="form-field"><span>Category</span>
+                  <select id="ocrCategory" class="form-control">
+                    <option>Supplies</option><option>Utilities</option><option>Equipment</option>
+                    <option>Payment evidence</option><option>Travel</option><option>Meals</option>
+                    <option>Software</option><option>Other</option>
+                  </select>
+                </label>
+              </div>`)}
           </div>
-          <div style="display:flex;gap:8px">
-            <button class="${ui.btn} ${ui.primary}" data-toast="Photo captured. Queuing OCR...">Capture Photo</button>
-            <button class="${ui.btn}" data-toast="Flash toggled.">Flash</button>
-            <button class="${ui.btn}" data-toast="Switching to back camera.">Flip</button>
+          <div>
+            ${modalSection("Raw OCR text",`<div class="panel-body"><pre id="ocrRaw" style="font-size:9px;color:#64748b;white-space:pre-wrap;max-height:260px;overflow-y:auto;line-height:1.5;font-family:monospace">Waiting...</pre></div>`)}
           </div>
-          <p style="color:#64748b;font-size:10px;text-align:center;margin:0">Tip: Lay receipt flat · Good lighting · Include all corners</p>
-        </div>`),
-      modalSection("Or Drop File Here", `
-        <div style="border:2px dashed #334155;border-radius:12px;padding:28px;text-align:center;color:#64748b;cursor:pointer" data-toast="File picker opened.">
-          <div style="font-size:11px;font-weight:900;letter-spacing:.06em">DRAG & DROP FILE</div>
-          <div style="font-size:10px;margin-top:8px">PDF · PNG · JPG · HEIC · up to 10 MB · Multi-page invoices supported</div>
-          <button class="${ui.btn}" style="margin-top:12px" data-toast="File browser opened.">Browse Files</button>
-        </div>`),
-      modalSection("Step 2 — AI Extraction Preview", `
-        <div class="notice" style="margin-bottom:10px">After capture, OCR runs in background (avg 3–8 seconds). Fields below show a sample result.</div>
-        ${table(["Field","Extracted Value","Confidence","Override"],[
-          row(["Vendor","Beauty Supply Warehouse",`<span class="text-emerald-400 font-black">94%</span>`,modalField("","Beauty Supply Warehouse")]),
-          row(["Total Amount","$384.20",`<span class="text-emerald-400 font-black">91%</span>`,modalField("","$384.20")]),
-          row(["Tax","$31.60",`<span class="text-amber-400 font-black">72%</span>`,modalField("","$31.60")]),
-          row(["Date","Jun 18, 2026",`<span class="text-emerald-400 font-black">88%</span>`,modalField("","Jun 18, 2026")]),
-          row(["Receipt #","REC-0042",`<span class="text-amber-400 font-black">80%</span>`,modalField("","REC-0042")]),
-          row(["Category","Supplies (auto)",`<span class="text-emerald-400 font-black">86%</span>`,modalSelect("",[["Supplies",true],["Utilities"],["Equipment"],["Meals"],["Travel"],["Other"]])])
-        ])}`),
-      modalSection("Step 3 — Business Details", modalGrid([
-        modalField("Business purpose","Supplies for salon operations — gel nails, acetone, files"),
-        modalSelect("Owner",[["Owner",true],["Bookkeeper"],["Finance"],["Manager"]]),
-        modalSelect("Attach to payout",[["None",true],["PAY-2026-001"],["PAY-2026-002"]]),
-        modalSelect("Include in CPA package",[["Yes — standard package",true],["Yes — on request only"],["No"]])
-      ])),
-      modalSection("Step 4 — OCR Settings", `<div class="list">
-        ${modalCheck("Flag for human review if confidence < 90%","Low-confidence fields enter the review queue before approval.")}
-        ${modalCheck("Store original image","Preserve source photo or file for CPA package and 7-year audit trail.")}
-        ${modalCheck("Detect duplicate receipt","Compare vendor, amount, and date against existing vault records.")}
-        ${modalCheck("Auto-approve if all fields ≥ 90% confidence","Skip manual review step for high-confidence extractions.",false)}
-      </div>`)
-    ].join("")
+        </div>
+        ${modalSection("Business Details", modalGrid([
+          modalField("Business purpose","e.g. Supplies for salon — gel nails, acetone, files"),
+          modalSelect("Owner",[["Owner",true],["Bookkeeper"],["Finance"],["Manager"]]),
+          modalSelect("Attach to payout",[["None",true],["PAY-2026-001"],["PAY-2026-002"]]),
+          modalSelect("CPA package",[["Yes — standard package",true],["Yes — on request only"],["No"]])
+        ]))}
+        ${modalSection("Storage Settings",`<div class="list">
+          ${modalCheck("Flag for review if any field < 90% confidence","Low-confidence fields enter the review queue.")}
+          ${modalCheck("Store original image","Keep source for 7-year audit trail and CPA package.")}
+          ${modalCheck("Detect duplicates","Compare vendor + amount + date against existing vault.")}
+        </div>`)}
+      </div>`
   },
   "view-receipt":{
     title:"Receipt Detail — rcpt_001",
@@ -1440,8 +1595,9 @@ function openModal(key){
   const {title, body, cta} = config;
   if(!cta) return;
   const root = document.getElementById("modalRoot");
-  root.innerHTML = `<div class="modal max-h-[88vh] w-full max-w-5xl overflow-auto rounded-xl border border-slate-800 bg-slate-950 shadow-2xl shadow-slate-950/60"><div class="modal-head flex items-start justify-between gap-4 border-b border-slate-800 p-5"><div><h3 class="m-0 text-lg font-black text-slate-50">${title}</h3><p class="mt-1 text-xs text-slate-500">${body}</p></div><button class="${ui.btn}" data-close>Close</button></div><div class="modal-body p-5">${config.content()}</div><div class="modal-foot flex justify-end gap-2 border-t border-slate-800 px-5 py-4"><button class="${ui.btn}" data-close>Cancel</button><button class="${ui.btn} ${ui.primary}" data-action-toast="${cta} queued.">${cta}</button></div></div>`;
+  root.innerHTML = `<div class="modal max-h-[88vh] w-full max-w-5xl overflow-auto rounded-xl border border-slate-800 bg-slate-950 shadow-2xl shadow-slate-950/60"><div class="modal-head flex items-start justify-between gap-4 border-b border-slate-800 p-5"><div><h3 class="m-0 text-lg font-black text-slate-50">${title}</h3><p class="mt-1 text-xs text-slate-500">${body}</p></div><button class="${ui.btn}" data-close>Close</button></div><div class="modal-body p-5">${config.content()}</div><div class="modal-foot flex justify-end gap-2 border-t border-slate-800 px-5 py-4"><button class="${ui.btn}" data-close>Cancel</button><button class="${ui.btn} ${ui.primary}" id="modalMainCta" data-action-toast="${cta} queued.">${cta}</button></div></div>`;
   root.classList.add("open");
+  if(config.afterOpen) config.afterOpen(root.querySelector(".modal"));
 }
 function toast(msg){
   const box = document.getElementById("toast");
@@ -1457,7 +1613,15 @@ document.addEventListener("click", event=>{
   const modalBtn = event.target.closest("[data-modal]");
   if(modalBtn) openModal(modalBtn.dataset.modal);
   const close = event.target.closest("[data-close]");
-  if(close) document.getElementById("modalRoot").classList.remove("open");
+  if(close){
+    // stop any live camera stream
+    document.querySelectorAll("#modalRoot video").forEach(v=>{
+      if(v.srcObject){v.srcObject.getTracks().forEach(t=>t.stop());v.srcObject=null;}
+    });
+    const modal=document.querySelector("#modalRoot .modal");
+    if(modal?._camStream) modal._camStream.stop();
+    document.getElementById("modalRoot").classList.remove("open");
+  }
   const msg = event.target.closest("[data-toast],[data-action-toast]");
   if(msg) toast(msg.dataset.toast || msg.dataset.actionToast);
 });
