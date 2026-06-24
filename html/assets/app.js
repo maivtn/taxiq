@@ -144,7 +144,26 @@ const data = {
       ["US-CA","California","$59,600","$10,122","$49,478","Semiweekly","Medium"],
       ["US-NY","New York","$40,000","$4,603","$35,397","Monthly","Medium"]
     ]
-  }
+  },
+  connections:[
+    ["conn_nt_biz789","Nexora Touch Payroll","biz_789","OAuth 2.0","HMAC SHA-256","payroll+employees+webhooks","Connected","2 min ago"],
+    ["conn_hrcloud_biz1024","TechCorp HRIS","biz_1024","API Key","HMAC SHA-256","employees+webhooks","Connected","8 min ago"],
+    ["conn_retail_biz2201","Retail Partners Payroll","biz_2201","API Key","HMAC SHA-256","payroll+webhooks","Degraded","47 min ago"],
+    ["conn_qbo_biz789","QuickBooks Accounting","biz_789","OAuth 2.0","None","accounting+reports","Connected","1h ago"]
+  ],
+  notifications:[
+    {id:"ntf_001",type:"DEPOSIT_ALERT",severity:"High",title:"Federal deposit due today — Jun 24",body:"$54,621 federal semiweekly deposit is due today. Ensure account is funded.",resource:"tax-estimate",at:"Jun 24 08:00",read:false},
+    {id:"ntf_002",type:"EXCEPTION_OPEN",severity:"High",title:"5 exceptions require review",body:"4 blocking exceptions in strict mode. Next payroll run will be blocked.",resource:"exceptions",at:"Jun 24 07:45",read:false},
+    {id:"ntf_003",type:"CPA_REQUEST",severity:"Medium",title:"CPA flagged missing receipt — rcpt_003",body:"Nguyen CPA Group requested business purpose for unknown Zelle memo $250.",resource:"cpa",at:"Jun 23 15:30",read:false},
+    {id:"ntf_004",type:"TIN_PENDING",severity:"Medium",title:"TIN verification pending — 6 workers",body:"6 employees have unverified SSN/TIN. Strict mode run will be blocked.",resource:"employees",at:"Jun 23 09:00",read:true},
+    {id:"ntf_005",type:"WEBHOOK_DEAD_LETTER",severity:"High",title:"Webhook dead letter — evt_01JZ001",body:"employee.tax_profile.validated failed after 8 attempts. Manual review required.",resource:"webhooks",at:"Jun 21 09:45",read:true},
+    {id:"ntf_006",type:"TIP_CAP",severity:"Low",title:"No Tax on Tips — cap at 7.4% for likesaa",body:"$1,850 of $25,000 federal limit tracked for tax year 2026.",resource:"tip-ledger",at:"Jun 21 08:00",read:true}
+  ],
+  apiKeys:[
+    ["key_live_a1b2","Production API Key","LIVE","Full access","Jun 1, 2026","Active","payroll_admin_44"],
+    ["key_live_c3d4","CPA Report Export Key","LIVE","Reports only","Jun 18, 2026","Active","finance_user"],
+    ["key_test_e5f6","Developer Sandbox Key","TEST","Full access","Jun 1, 2026","Active","payroll_admin_44"]
+  ]
 };
 
 function statusClass(v){return /posted|delivered|ready|active|verified|connected|confirmed|extracted|calculated|candidate|qualified|paid/i.test(v) ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 before:bg-emerald-400" : /review|pending|draft|retry|requested|watch|needs|invited|medium/i.test(v) ? "border-amber-500/30 bg-amber-500/10 text-amber-300 before:bg-amber-400" : /failed|dead|missing|open|high|cancelled/i.test(v) ? "border-rose-500/30 bg-rose-500/10 text-rose-300 before:bg-rose-400" : "border-indigo-500/30 bg-indigo-500/10 text-indigo-300 before:bg-indigo-400";}
@@ -171,7 +190,8 @@ const renderers = {
   forms:renderForms, "ai-advisor":renderAiAdvisor, ocr:renderOcr,
   "share-links":renderShareLinks, gps:renderGps, cpa:renderCpa,
   "tip-ledger":renderTipLedger, "tax-estimate":renderTaxEstimate,
-  webhooks:renderWebhooks, "audit-log":renderAuditLog, settings:renderSettings
+  webhooks:renderWebhooks, "audit-log":renderAuditLog,
+  notifications:renderNotifications, settings:renderSettings
 };
 
 function renderPage(){
@@ -199,7 +219,7 @@ function renderEmployers(){
 
 /* ─── EMPLOYEES ─── */
 function renderEmployees(){
-  return panel("Employees",table(["Employee","ID","Dept","Residence","Work","TIN","W-4","Filing","Updated","Risk"],data.employees.map(e=>row([e[0],`<span class="mono">${e[1]}</span>`,e[2],e[3],e[4],status(e[5]),status(e[6]),e[7],e[8],e[9]],{click:true,href:pageHref("employee-profile")}))),`<button class="btn primary" data-modal="employee">Invite Employee</button>`);
+  return `${filterBar(["All TIN statuses",["Verified","Pending","Missing"]],["All W-4 years",["2026","2024","Missing"]],["All departments",["Finance","Engineering","Operations","Sales","Support"]])}${panel("Employees",table(["Employee","ID","Dept","Residence","Work","TIN","W-4","Filing","Updated","Risk"],data.employees.map(e=>row([e[0],`<span class="mono">${e[1]}</span>`,e[2],e[3],e[4],status(e[5]),status(e[6]),e[7],e[8],e[9]],{click:true,href:pageHref("employee-profile")}))),`<button class="btn primary" data-modal="employee">Invite Employee</button> <button class="btn" data-toast="Employee roster exported.">Export Roster</button>`)}`;
 }
 
 /* ─── EMPLOYEE PROFILE ─── */
@@ -208,7 +228,9 @@ function renderEmployeeProfile(){
 }
 
 /* ─── PAYROLL RUNS ─── */
-function renderRuns(){return panel("Payroll Runs",table(["Run ID","Period","Pay Date","Deposit Due","Employees","Gross","Tax","Risk","Status"],data.runs.map(r=>row([`<span class="mono">${r[0]}</span>`,r[1],r[2],r[3],r[4],r[5],r[6],r[7],status(r[8])],{click:true,href:pageHref("run-detail")}))),`<button class="btn primary" data-modal="create-run">Create Run</button>`);}
+function renderRuns(){
+  return `${filterBar(["All statuses",["Ledger Posted","Review Required","Pending","Validation Failed"]],["All employers",["Acme Manufacturing LLC","TechCorp Solutions Inc.","Retail Partners Group"]])}${panel("Payroll Runs",table(["Run ID","Period","Pay Date","Deposit Due","Employees","Gross","Tax","Risk","Status"],data.runs.map(r=>row([`<span class="mono">${r[0]}</span>`,r[1],r[2],r[3],r[4],r[5],r[6],r[7],status(r[8])],{click:true,href:pageHref("run-detail")}))),`<button class="btn primary" data-modal="create-run">Create Run</button>`)}`;
+}
 
 /* ─── RUN DETAIL ─── */
 function renderRunDetail(){
@@ -219,8 +241,8 @@ function renderRunDetail(){
 
 /* ─── CONNECTIONS ─── */
 function renderConnections(){
-  const connRows = data.employers.map((e,i)=>row([e[0],`<span class="mono">conn_nt_${e[1]}</span>`,"client_credentials","HMAC SHA-256",status(e[8]==="Active"?"Connected":"Degraded"),"6 min ago",rowActions(actionBtn("Test","test-connection"),actionBtn("Edit","edit-connection"),actionBtn("Revoke",""))]));
-  return panel("Connections",table(["Employer","Conn ID","Auth","Signing","Status","Last Sync","Actions"],connRows),`<button class="btn primary" data-modal="connection">Add Connection</button>`);
+  const connRows = data.connections.map(c=>row([`<span class="mono">${c[0]}</span>`,c[1],c[2],c[3],c[4],c[5],status(c[6]),c[7],rowActions(actionBtn("Test","test-connection"),actionBtn("Edit","edit-connection"),actionBtn("Revoke",""))]));
+  return `${filterBar(["All statuses",["Connected","Degraded"]],["All auth",["OAuth 2.0","API Key"]])}${panel("Connections",table(["Conn ID","Name","Employer","Auth","Signing","Scopes","Status","Last Sync","Actions"],connRows),`<button class="btn primary" data-modal="connection">Add Connection</button>`)}`;
 }
 
 /* ─── PAYOUTS ─── */
@@ -248,8 +270,8 @@ function renderJurisdictions(){
 
 /* ─── FORMS & REPORTS ─── */
 function renderForms(){
-  const formRows = data.forms.map(f=>row([f[0],f[1],f[2],f[3],f[4],status(f[5]),rowActions(actionBtn("Preview","preview-form"),actionBtn("Share","share-form"),actionBtn("Download",""))]));
-  return panel("Forms & Reports",table(["Report","Period","Records","Source","Due","Status","Actions"],formRows),`<button class="btn primary" data-modal="report">Generate Package</button>`);
+  const formRows = data.forms.map(f=>row([f[0],f[1],f[2],f[3],f[4],status(f[5]),rowActions(actionBtn("Preview","preview-form"),actionBtn("Share","share-form"),actionBtn("Download",""),actionBtn("Archive",""))]));
+  return `${filterBar(["All types",["W-2","1099","941","940","SUTA"]],["All periods",["YTD 2026","Q2 2026"]],["All statuses",["Ready","Draft","Needs Review"]])}${panel("Forms & Reports",table(["Report","Period","Records","Source","Due","Status","Actions"],formRows),`<button class="btn primary" data-modal="report">Generate Package</button>`)}`;
 }
 
 /* ─── AI ADVISOR ─── */
@@ -258,7 +280,7 @@ function renderAiAdvisor(){return `<div class="grid-4" style="margin-bottom:14px
 
 /* ─── OCR VAULT ─── */
 function renderOcr(){
-  const receiptRows = data.receipts.map(r=>row([`<span class="mono">${r[0]}</span>`,...r.slice(1,5),status(r[5]),r[6],rowActions(actionBtn("View","view-receipt"),actionBtn("Edit","edit-receipt"),actionBtn("Approve",""))]));
+  const receiptRows = data.receipts.map(r=>row([`<span class="mono">${r[0]}</span>`,...r.slice(1,5),status(r[5]),r[6],rowActions(actionBtn("View","view-receipt"),actionBtn("Edit","edit-receipt"),actionBtn("Approve",""),actionBtn("Delete","delete-receipt"))]));
   return `<div class="grid-4" style="margin-bottom:14px">${[["Stored Records","3","Bills and evidence","green"],["Needs Review","2","Manual category check","cyan"],["OCR Sources","4","Camera, email, upload, payout","yellow"],["Lost Receipt Risk","Low","Vault enabled","red"]].map(metric).join("")}</div>${panel("Receipt Vault + AI OCR",table(["ID","Vendor","Type","Amount","Source","Status","Owner","Actions"],receiptRows),`<button class="btn primary" data-modal="receipt">Capture Receipt</button>`)}${panel("OCR Review Fields",table(["Field","Purpose","Required"],[["Receipt image","Preserve evidence and run AI extraction.","When expense exists"],["Vendor / payee","Map expense to category and CPA package.","Yes"],["Business purpose","Explain deduction relevance.","Yes"]].map(row)))}`;
 }
 
@@ -270,7 +292,7 @@ function renderShareLinks(){
 
 /* ─── GPS MILEAGE ─── */
 function renderGps(){
-  const tripRows = data.trips.map(t=>row([`<span class="mono">${t[0]}</span>`,...t.slice(1,4),status(t[4]),rowActions(actionBtn("View","view-trip"),actionBtn("Edit","edit-trip"),actionBtn("Mark Reviewed",""))]));
+  const tripRows = data.trips.map(t=>row([`<span class="mono">${t[0]}</span>`,...t.slice(1,4),status(t[4]),rowActions(actionBtn("View","view-trip"),actionBtn("Edit","edit-trip"),actionBtn("Mark Reviewed",""),actionBtn("Delete","delete-trip"))]));
   return `<div class="grid-4" style="margin-bottom:14px">${[["Trips","3","Tracked or pending review","green"],["Total Miles","30.3","Prototype sample","cyan"],["Deduction Candidates","2","CPA should review","yellow"],["Policy Checks","1","Ambiguous route purpose","red"]].map(metric).join("")}</div>${panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">Start Trip</button>`)}${panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence.","When mileage is claimed"],["Business purpose","Explains deduction relevance.","Yes"],["Vehicle profile","Supports owner/worker mileage records.","Recommended"]].map(row)))}`;
 }
 
@@ -282,7 +304,7 @@ function renderCpa(){
 
 /* ─── TIP LEDGER ─── */
 function renderTipLedger(){
-  const tipRows = data.tips.map(t=>row([`<span class="mono">${t[0]}</span>`,t[1],t[2],t[3],t[4],t[5],status(t[6]),t[7],t[8],rowActions(actionBtn("Detail","tip-detail"),actionBtn("Edit","edit-tip"))]));
+  const tipRows = data.tips.map(t=>row([`<span class="mono">${t[0]}</span>`,t[1],t[2],t[3],t[4],t[5],status(t[6]),t[7],t[8],rowActions(actionBtn("Detail","tip-detail"),actionBtn("Edit","edit-tip"),actionBtn("Delete","delete-tip"))]));
   return `<div class="notice" style="margin-bottom:14px">Tax IQ is a record keeping and reporting tool, not legal or tax advice. Eligibility, final deduction amount, and tax forms must be confirmed by a licensed tax professional.</div><div class="grid-4" style="margin-bottom:14px">${[["Today's Tips","$75.00","Cash + Zelle — Jun 24","green"],["Month-to-Date","$215.00","Jun 2026 tracked","cyan"],["Year-to-Date","$1,850.00","Tax year 2026","yellow"],["$25K Cap Used","7.4%","$1,850 of $25,000","red"]].map(metric).join("")}</div>${filterBar(["All methods",["Cash","Zelle","Venmo","Cash App","Card/POS","QR","Other"]],["All sources",["CASH","DIRECT","POS_OWNER_PAID"]],["All statuses",["LIKELY_QUALIFIED","NEEDS_REVIEW","NOT_QUALIFIED"]])}${panel("Tip Ledger — Tax Year 2026",table(["ID","Date","Method","Amount","Service","Source","Qualified Status","Entered","Proof","Actions"],tipRows),`<button class="btn primary" data-modal="add-tip">Add Tip</button> <button class="btn" data-modal="report">Export CPA Package</button>`)}<div class="grid-2" style="margin-top:14px">${panel("YTD by Method",table(["Method","Total","Tips","Avg","Status"],[row(["Cash","$625.00","8","$78.13",status("LIKELY_QUALIFIED")]),row(["Zelle","$480.00","6","$80.00",status("LIKELY_QUALIFIED")]),row(["Card/POS","$415.00","5","$83.00",status("LIKELY_QUALIFIED")]),row(["Venmo","$210.00","4","$52.50",status("NEEDS_REVIEW")]),row(["Cash App","$120.00","2","$60.00",status("LIKELY_QUALIFIED")])]))}${panel("Qualified Status Breakdown",`<div class="panel-body list">${listItem("Likely Qualified — $1,640 (88.6%)","Voluntary, tipped occupation, proof attached or payment method confirmed.","green")}${listItem("Needs Review — $210 (11.4%)","Venmo entries missing occupation confirmation. Ask CPA before claiming deduction.","yellow")}${listItem("Cap Progress","$1,850 of $25,000 federal limit used. MAGI phase-out may apply above $150K single / $300K joint.","blue")}</div>`,`<button class="btn" data-modal="report">View Yearly Report</button>`)}</div>`;
 }
 
@@ -296,8 +318,8 @@ function renderTaxEstimate(){
 
 /* ─── WEBHOOKS ─── */
 function renderWebhooks(){
-  const wRows = data.webhooks.map(e=>row([`<span class="mono">${e[0]}</span>`,e[1],e[2],e[3],status(e[4]),e[5],e[6],rowActions(actionBtn("Payload","webhook-payload"),actionBtn("Retry",""))]));
-  return `<div class="grid-4" style="margin-bottom:14px">${[["Delivered","1,284","99.7% success rate","green"],["Pending","7","In delivery queue","cyan"],["Retrying","3","Next retry in 5 min","yellow"],["Dead Letter","1","Manual review required","red"]].map(metric).join("")}</div>${panel("Recent Events",table(["Event ID","Type","Tenant","Attempts","Status","Created","Delivered","Actions"],wRows),`<button class="btn primary" data-modal="webhook-retry">Retry Failed</button>`)}`;
+  const wRows = data.webhooks.map(e=>row([`<span class="mono">${e[0]}</span>`,e[1],e[2],e[3],status(e[4]),e[5],e[6],rowActions(actionBtn("Payload","webhook-payload"),actionBtn("Retry","webhook-retry"))]));
+  return `<div class="grid-4" style="margin-bottom:14px">${[["Delivered","1,284","99.7% success rate","green"],["Pending","7","In delivery queue","cyan"],["Retrying","3","Next retry in 5 min","yellow"],["Dead Letter","1","Manual review required","red"]].map(metric).join("")}</div>${filterBar(["All statuses",["Delivered","Retrying","Dead Letter","Pending"]],["All event types",["tax_iq.ledger.posted","tax_iq.validation.warning","tax_iq.validation.failed","employee.tax_profile.validated"]])}${panel("Recent Events",table(["Event ID","Type","Tenant","Attempts","Status","Created","Delivered","Actions"],wRows),`<button class="btn primary" data-modal="webhook-retry">Retry Failed</button>`)}`;
 }
 
 /* ─── AUDIT LOG ─── */
@@ -308,7 +330,26 @@ function renderAuditLog(){
 
 /* ─── SETTINGS ─── */
 function renderSettings(){
-  return `<div class="grid-2">${panel("US Payroll Scope",`<div class="panel-body"><div class="row"><span>Country</span><span>United States</span></div><div class="row"><span>Tax levels</span><span>Federal, State, Local</span></div><div class="row"><span>Employee forms</span><span>W-4, W-2</span></div><div class="row"><span>Employer returns</span><span>941, 940, SUTA</span></div></div>`)}${panel("Role & Access",table(["Permission","Payroll Admin","CPA","Auditor","Action"],[["Export data",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Finalize run",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")],["Review package",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Manage settings",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")]].map(row)))}${panel("Data Protection",`<div class="panel-body"><div class="row"><span>SSN/TIN storage</span><span>Tokenized</span></div><div class="row"><span>PII export approval</span><span>Required</span></div><div class="row"><span>Webhook signing</span><span>HMAC SHA-256</span></div><div class="row"><span>Audit retention</span><span>7 years</span></div></div>`,`${actionBtn("Configure","")}`)}${panel("Guided Help",`<div class="panel-body list">${listItem("First-time tour","Explain payroll, payout, Tax IQ, OCR, share links, GPS, CPA review.","blue")}${listItem("What next","Show recommended next action when a workflow is blocked.","green")}</div>`,`<button class="btn primary" data-toast="Tour started. Follow the guided steps.">Start Tour</button>`)}</div>`;
+  const keyRows = data.apiKeys.map(k=>row([`<span class="mono">${k[0]}</span>`,k[1],`<span class="mono">${k[2]}</span>`,k[3],k[4],status(k[5]),k[6],rowActions(actionBtn("Rotate",""),actionBtn("Revoke",""))]));
+  return `<div class="grid-2">${panel("US Payroll Scope",`<div class="panel-body"><div class="row"><span>Country</span><span>United States</span></div><div class="row"><span>Tax levels</span><span>Federal, State, Local</span></div><div class="row"><span>Employee forms</span><span>W-4, W-2</span></div><div class="row"><span>Employer returns</span><span>941, 940, SUTA</span></div></div>`)}${panel("Role & Access",table(["Permission","Payroll Admin","CPA","Auditor","Action"],[["Export data",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Finalize run",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")],["Review package",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Manage settings",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")]].map(row)))}${panel("Data Protection",`<div class="panel-body"><div class="row"><span>SSN/TIN storage</span><span>Tokenized</span></div><div class="row"><span>PII export approval</span><span>Required</span></div><div class="row"><span>Webhook signing</span><span>HMAC SHA-256</span></div><div class="row"><span>Audit retention</span><span>7 years</span></div></div>`,`${actionBtn("Configure","")}`)}${panel("Guided Help",`<div class="panel-body list">${listItem("First-time tour","Explain payroll, payout, Tax IQ, OCR, share links, GPS, CPA review.","blue")}${listItem("What next","Show recommended next action when a workflow is blocked.","green")}</div>`,`<button class="btn primary" data-toast="Tour started. Follow the guided steps.">Start Tour</button>`)}</div><div class="grid-2" style="margin-top:14px">${panel("API Keys",table(["Key ID","Name","Env","Scopes","Created","Status","Owner","Actions"],keyRows),`<button class="btn primary" data-modal="create-api-key">Create Key</button>`)}${panel("Notification Preferences",`<div class="panel-body">${[["Deposit due reminders","3-day and same-day alerts for scheduled tax deposits.",true],["Exception open alerts","Immediate alert when blocking exception is created.",true],["CPA request notifications","When CPA flags a missing record or requests files.",true],["Webhook dead letter alerts","When webhook delivery fails after max retries.",true],["Tip cap warnings","When worker approaches the $25,000 annual tip cap.",false]].map(([l,t,c])=>modalCheck(l,t,c)).join("")}</div>`,`<button class="btn primary" data-action-toast="Notification preferences saved.">Save Preferences</button>`)}</div>`;
+}
+
+/* ─── NOTIFICATIONS ─── */
+function renderNotifications(){
+  const unread = data.notifications.filter(n=>!n.read).length;
+  const sev = {High:"red",Medium:"yellow",Low:"blue"};
+  const nRows = data.notifications.map(n=>row([
+    n.at,
+    `<span class="flex items-center gap-2">${!n.read?`<span class="h-2 w-2 shrink-0 rounded-full bg-indigo-400 inline-block"></span>`:"<span class='h-2 w-2 inline-block'></span>"}<span>${n.title}</span></span>`,
+    n.body,status(n.severity),
+    `<a class="${ui.btn}" href="${pageHref(n.resource)}">Open</a> ${n.read?"":actionBtn("Mark Read","")}`
+  ],{wrap:2}));
+  return `<div class="grid-4" style="margin-bottom:14px">${[
+    ["Unread",String(unread),"Require attention","red"],
+    ["Deposit Alerts","1","Jun 24 due today","yellow"],
+    ["CPA Requests","1","Missing receipt flagged","cyan"],
+    ["System Events","2","Webhook + exception","green"]
+  ].map(metric).join("")}</div><div style="display:flex;justify-content:flex-end;margin-bottom:10px">${actionBtn("Mark All Read","")}</div>${filterBar(["All severities",["High","Medium","Low"]],["All types",["DEPOSIT_ALERT","EXCEPTION_OPEN","CPA_REQUEST","TIN_PENDING","WEBHOOK_DEAD_LETTER","TIP_CAP"]])}${panel("Notification Center",table(["Time","Title","Detail","Severity","Actions"],nRows))}`;
 }
 
 /* ─── UI HELPERS ─── */
@@ -954,7 +995,6 @@ const modalCopy = {
   },
 
   /* WEBHOOK MODALS */
-  webhooks:{title:"Webhooks",body:"",cta:"",content:()=>""},
   "webhook-retry":{
     title:"Retry Webhook Delivery",
     body:"Review failed webhook events, retry policy, signing status, and dead-letter handling before requeueing delivery.",
@@ -1157,6 +1197,70 @@ const modalCopy = {
       modalSection("Edit Reason", modalField("Required reason for edit","Correcting service type from 'Pedicure' to 'Manicure'.","textarea")),
       modalSection("Disclaimer", `<div class="notice">Edits are logged permanently in the audit trail. The original value is preserved before/after for CPA review.</div>`)
     ].join("")
+  },
+
+  /* SOFT DELETE MODALS */
+  "delete-tip":{
+    title:"Delete Tip Entry",
+    body:"Soft delete only. The record is preserved in the audit log with actor, reason, and timestamp. No tax record is ever hard-deleted.",
+    cta:"Delete Tip",
+    content:()=>[
+      modalSection("Tip Being Deleted", table(["Field","Value"],[
+        row(["Tip ID","tip_002"]),
+        row(["Date","Jun 24, 2026 2:15pm"]),
+        row(["Amount","$30.00 via Zelle"]),
+        row(["Qualified Status",status("LIKELY_QUALIFIED")])
+      ])),
+      modalSection("Deletion Reason (Required)", modalField("Reason","Entered in error — duplicate entry for same Zelle transaction.","textarea")),
+      modalSection("Policy", `<div class="list">${listItem("Soft delete only","Record is preserved in audit log. Hard deletion is not permitted for tax records.","red")}${listItem("Audit logged","Deletion actor, reason, and before-state are permanently stored.","blue")}${listItem("YTD adjusted","YTD tip total and cap progress will update immediately after deletion.","yellow")}</div>`)
+    ].join("")
+  },
+  "delete-receipt":{
+    title:"Delete Receipt",
+    body:"Soft delete only. The receipt image and OCR data are preserved for audit. The record is removed from the active vault.",
+    cta:"Delete Receipt",
+    content:()=>[
+      modalSection("Receipt Being Deleted", table(["Field","Value"],[
+        row(["Receipt ID","rcpt_001"]),
+        row(["Vendor","Beauty Supply Warehouse"]),
+        row(["Amount","$384.20"]),
+        row(["Status",status("Extracted")])
+      ])),
+      modalSection("Deletion Reason (Required)", modalField("Reason","Duplicate capture — original already stored from email import.","textarea")),
+      modalSection("Policy", `<div class="list">${listItem("Image preserved","Original photo and OCR extraction are kept in cold storage.","blue")}${listItem("CPA impact","If this receipt is in an active CPA package, the package will flag the removal.","yellow")}${listItem("Audit logged","Deletion is recorded with before-state, actor, and reason.","red")}</div>`)
+    ].join("")
+  },
+  "delete-trip":{
+    title:"Delete Trip",
+    body:"Soft delete only. GPS route and purpose are preserved in the audit log. The trip is removed from the active mileage deduction list.",
+    cta:"Delete Trip",
+    content:()=>[
+      modalSection("Trip Being Deleted", table(["Field","Value"],[
+        row(["Trip ID","trip_001"]),
+        row(["Route","Home to salon — 18.4 mi"]),
+        row(["Status",status("Needs CPA policy check")]),
+        row(["Deduction estimate","~$12.33 removed from mileage total"])
+      ])),
+      modalSection("Deletion Reason (Required)", modalField("Reason","Commute route — CPA confirmed home-to-workplace is not deductible.","textarea")),
+      modalSection("Policy", `<div class="list">${listItem("Soft delete only","GPS coordinates and trip data preserved in audit.","blue")}${listItem("Mileage adjusted","YTD deduction total updates when trip is removed.","yellow")}${listItem("Audit logged","Deletion is permanent and audit-trailed. Cannot be undone.","red")}</div>`)
+    ].join("")
+  },
+
+  /* API KEY MODAL */
+  "create-api-key":{
+    title:"Create API Key",
+    body:"Generate a new API key for payroll system integration, report automation, or developer access. Keys are shown only once.",
+    cta:"Generate Key",
+    content:()=>[
+      modalSection("Key Configuration", modalGrid([
+        modalField("Key name","CPA Export Automation"),
+        modalSelect("Environment",[["Production (LIVE)",true],["Sandbox (TEST)"]]),
+        modalSelect("Scopes",[["Full access",true],["Reports only"],["Read-only"],["Webhooks only"],["Payroll only"]]),
+        modalSelect("Expiration",[["Never",true],["90 days"],["1 year"],["Custom"]])
+      ])),
+      modalSection("Security Controls", `<div class="list">${modalCheck("Restrict to IP allowlist","Limit key usage to known IP ranges. Requests from other IPs will be rejected.")}${modalCheck("Require webhook signing","Key can only be used with HMAC-verified endpoint configurations.")}${modalCheck("Log every API call","Record endpoint, actor, HTTP status, and timestamp for each request.")}${modalCheck("Alert on unusual usage","Notify admin if request volume or IP range changes unexpectedly.", false)}</div>`),
+      modalSection("Important Notice", `<div class="notice">Your key will be shown only once after creation. Copy it to a secure secrets manager immediately. Tax IQ does not store unmasked key values. If lost, rotate the key from this settings page.</div>`)
+    ].join("")
   }
 };
 
@@ -1195,6 +1299,17 @@ document.addEventListener("input", event=>{
   if(event.target.id !== "globalSearch") return;
   const q = event.target.value.toLowerCase();
   document.querySelectorAll("tbody tr,.item").forEach(el=>{el.style.display = el.textContent.toLowerCase().includes(q) ? "" : "none";});
+});
+document.addEventListener("change", event=>{
+  const sel = event.target.closest("select.form-control");
+  if(!sel) return;
+  const bar = sel.parentElement;
+  const active = [...bar.querySelectorAll("select.form-control")]
+    .map(s => s.value === s.options[0].text ? null : s.value.toLowerCase())
+    .filter(Boolean);
+  document.querySelectorAll("tbody tr, .item").forEach(el=>{
+    el.style.display = !active.length || active.every(f => el.textContent.toLowerCase().includes(f)) ? "" : "none";
+  });
 });
 
 renderShell(renderPage);

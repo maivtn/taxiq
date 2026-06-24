@@ -41,6 +41,7 @@ const TaxIQLayout = (() => {
     "tax-estimate":{title:"Tax Estimate", file:"tax-estimate.html", subtitle:"Quarterly and annual federal/state estimated tax dashboard."},
     webhooks:{title:"Webhooks", file:"webhooks.html", subtitle:"Outbound event delivery monitor."},
     "audit-log":{title:"Audit Log", file:"audit-log.html", subtitle:"Immutable action log — every view, change, export, and system event."},
+    notifications:{title:"Notifications", file:"notifications.html", subtitle:"Alerts, deposit reminders, CPA requests, and compliance notices."},
     settings:{title:"Settings", file:"settings.html", subtitle:"Roles, security, data retention, and tenant controls."}
   };
 
@@ -48,7 +49,7 @@ const TaxIQLayout = (() => {
     ["Overview",["dashboard","analytics"]],
     ["Payroll",["employers","employees","payroll-runs","payouts","connections"]],
     ["Tax IQ",["ledger","exceptions","jurisdictions","forms","ocr","share-links","gps","cpa","tip-ledger","tax-estimate","ai-advisor"]],
-    ["System",["webhooks","audit-log","settings"]]
+    ["System",["webhooks","audit-log","notifications","settings"]]
   ];
 
   function pageHref(id){
@@ -73,7 +74,7 @@ const TaxIQLayout = (() => {
     return `
       <header class="topbar sticky top-0 z-10 flex min-h-[68px] items-center justify-between gap-5 border-b border-slate-800 bg-slate-900/95 px-6 py-3 backdrop-blur max-md:flex-col max-md:items-start max-md:px-4">
         <div class="title"><h2 class="m-0 text-lg font-black text-slate-50">${meta.title}</h2><p class="mt-1 text-xs text-slate-500">${meta.subtitle}</p></div>
-        <div class="tools flex min-w-0 items-center gap-2 max-md:w-full"><label class="search flex h-9 min-w-72 items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 text-xs font-bold text-slate-500 max-md:min-w-0 max-md:flex-1">Search <input class="${ui.input}" id="globalSearch" placeholder="runs, workers, issues..." autocomplete="off"></label><button class="${ui.btn} ${ui.primary}" data-modal="create-run">New Run</button></div>
+        <div class="tools flex min-w-0 items-center gap-2 max-md:w-full"><label class="search flex h-9 min-w-72 items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 text-xs font-bold text-slate-500 max-md:min-w-0 max-md:flex-1">Search <input class="${ui.input}" id="globalSearch" placeholder="runs, workers, issues..." autocomplete="off"></label><a class="${ui.btn}" href="${pageHref("notifications")}" style="position:relative">Alerts <span style="background:#ef4444;color:#fff;border-radius:9px;padding:1px 5px;font-size:9px;margin-left:2px;font-weight:900">3</span></a><button class="${ui.btn} ${ui.primary}" data-modal="create-run">New Run</button></div>
       </header>`;
   }
 
