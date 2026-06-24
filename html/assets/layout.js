@@ -92,8 +92,8 @@ const TaxIQLayout = (() => {
     ].join("");
   }
 
-  /* ── sidebar state ── always starts expanded ── */
-  let _sbOpen = true;
+  /* ── sidebar state ── persisted in localStorage ── */
+  let _sbOpen = localStorage.getItem("taxiq_sb") !== "0";
 
   function injectSidebarCSS(){
     if(document.getElementById("taxiq-sb-css")) return;
@@ -185,7 +185,7 @@ const TaxIQLayout = (() => {
     }).join("");
 
     return [
-      '<aside id="taxiq-sidebar" class="sidebar fixed inset-y-0 left-0 z-20 flex flex-col border-r border-slate-800 bg-slate-900">',
+      '<aside id="taxiq-sidebar" class="sidebar fixed inset-y-0 left-0 z-20 flex flex-col border-r border-slate-800 bg-slate-900' + (_sbOpen ? '' : ' sb-collapsed') + '">',
         /* Brand row */
         '<div class="sb-brand-row flex h-[68px] shrink-0 items-center justify-between border-b border-slate-800 px-3">',
           '<div class="flex min-w-0 flex-1 items-center overflow-hidden">',
@@ -225,11 +225,11 @@ const TaxIQLayout = (() => {
       document.head.appendChild(lnk);
     }
     injectSidebarCSS();
-    _sbOpen = true;
+    _sbOpen = localStorage.getItem("taxiq_sb") !== "0";
     document.getElementById("app").innerHTML = [
       '<div class="app min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row">',
         renderSidebar(),
-        '<main id="taxiq-main" class="main min-h-screen flex-1" style="margin-left:260px">',
+        '<main id="taxiq-main" class="main min-h-screen flex-1" style="margin-left:' + (_sbOpen ? '260' : '80') + 'px">',
           renderHeader(meta),
           '<section class="content p-6 max-md:p-4" id="content"></section>',
         '</main>',
@@ -238,8 +238,10 @@ const TaxIQLayout = (() => {
       '<div class="toast fixed bottom-5 right-5 z-50 grid gap-2" id="toast"></div>'
     ].join("");
     renderContent();
+    applySidebarState(_sbOpen);
     window.taxiqToggleSidebar = function(){
       _sbOpen = !_sbOpen;
+      localStorage.setItem("taxiq_sb", _sbOpen ? "1" : "0");
       applySidebarState(_sbOpen);
     };
   }

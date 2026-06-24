@@ -853,6 +853,26 @@ const modalCopy = {
     title:"Generate Report Package",
     body:"Build a CPA-ready package with ledger, payout, receipt, mileage, and report files.",
     cta:"Generate",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const selects = modal.querySelectorAll("select");
+        const type    = selects[0]?.value || "CPA year-end package";
+        const range   = selects[1]?.value || "Q2 2026";
+        const fmt     = selects[2]?.value || "PDF + CSV";
+        const pii     = selects[3]?.value || "Masked SSN/TIN";
+        const checks  = [...modal.querySelectorAll("input[type=checkbox]:checked")].map(c=>c.closest("label,div")?.textContent?.trim()?.split("\n")[0]||"").filter(Boolean);
+        const rptId   = "rpt_" + Date.now().toString(36);
+        const stamp   = new Date().toLocaleString("en-US",{year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+        const sections= checks.length ? checks.join(", ") : "all sections";
+        data.auditLog.unshift([stamp,"payroll_admin_44","EXPORTED","report",rptId,
+          type + " generated: " + fmt + " — " + range + " — " + sections + " — " + pii + "."
+        ]);
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage();
+        toast("Report package generated: " + type + " (" + range + ", " + fmt + ")");
+      });
+    },
     content:()=>[
       modalSection("Package Scope", modalGrid([
         modalSelect("Report type",[["CPA year-end package",true],["Payroll run package"],["1099 support package"],["Mileage package"],["Tip ledger package"]]),
