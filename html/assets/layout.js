@@ -86,7 +86,6 @@ const TaxIQLayout = (() => {
           '<a class="' + ui.btn + '" href="' + pageHref("notifications") + '" style="position:relative">',
             'Alerts <span style="background:#ef4444;color:#fff;border-radius:9px;padding:1px 5px;font-size:9px;margin-left:2px;font-weight:900">3</span>',
           '</a>',
-          '<button class="' + ui.btn + ' ' + ui.primary + '" data-modal="create-run">New Run</button>',
         '</div>',
       '</header>'
     ].join("");
