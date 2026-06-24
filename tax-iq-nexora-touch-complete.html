@@ -1,0 +1,1003 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TAX IQ - Nexora Touch US Payroll</title>
+  <style>
+    :root{
+      --bg:#0f1117;--surface:#161b27;--surface-2:#1b2231;--line:#253044;
+      --text:#e6edf6;--muted:#8b9bb0;--dim:#5c6b80;--blue:#6366f1;
+      --blue-2:#818cf8;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444;
+      --cyan:#14b8a6;--radius:8px;--shadow:0 18px 45px rgba(0,0,0,.24);
+    }
+    *{box-sizing:border-box}html,body{height:100%}
+    body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+    button,input,select{font:inherit}
+    button{border:0}
+    .app{display:flex;height:100%}
+    .sidebar{width:236px;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0}
+    .brand{height:64px;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--line)}
+    .mark{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:grid;place-items:center;font-weight:900;font-size:12px;color:white}
+    .brand h1{margin:0;font-size:14px;line-height:1.1}.brand p{margin:3px 0 0;color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+    .nav{padding:10px 0;overflow-y:auto}.group-label{padding:12px 15px 7px;color:var(--dim);font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+    .nav button{width:100%;height:36px;display:flex;align-items:center;gap:10px;padding:0 15px;background:transparent;color:var(--muted);cursor:pointer;border-right:3px solid transparent;text-align:left}
+    .nav button:hover,.nav button.active{background:rgba(99,102,241,.1);color:var(--text);border-right-color:var(--blue)}
+    .nav .ico{width:19px;height:19px;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:900;background:#20283a;color:#aeb9ca}
+    .badge{margin-left:auto;min-width:22px;height:20px;padding:0 6px;border-radius:99px;display:grid;place-items:center;font-size:10px;font-weight:800;color:white;background:var(--blue)}
+    .badge.red{background:var(--red)}.badge.yellow{background:var(--yellow)}
+    .account{margin-top:auto;padding:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+    .avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--blue),#a78bfa);font-weight:800;font-size:11px}
+    .account strong{display:block;font-size:12px}.account span{display:block;color:var(--dim);font-size:10px}
+    .main{flex:1;min-width:0;display:flex;flex-direction:column}
+    .topbar{height:64px;background:var(--surface);border-bottom:1px solid var(--line);padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-shrink:0}
+    .title h2{margin:0;font-size:16px}.title p{margin:3px 0 0;color:var(--dim);font-size:11px}
+    .tools{display:flex;align-items:center;gap:10px;min-width:0}.search{height:36px;min-width:230px;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:0 11px;color:var(--dim)}
+    .search input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font-size:12px}
+    .segments{display:flex;gap:3px;border:1px solid var(--line);border-radius:8px;padding:3px;background:var(--bg)}
+    .segments button{height:28px;padding:0 10px;border-radius:6px;background:transparent;color:var(--dim);font-size:12px;font-weight:700;cursor:pointer}
+    .segments button.active{background:var(--blue);color:white}
+    .btn{height:36px;padding:0 13px;border-radius:8px;display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:750;font-size:12px;cursor:pointer;white-space:nowrap}
+    .btn:hover{background:var(--surface-2);color:var(--text)}.btn.primary{background:var(--blue);border-color:var(--blue);color:white}.btn.primary:hover{background:#4f46e5}
+    .content{flex:1;overflow:auto;padding:20px}.screen{display:none}.screen.active{display:block}
+    .grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .card,.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .metric{position:relative;overflow:hidden;padding:16px}.metric:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--blue)}
+    .metric.green:before{background:var(--green)}.metric.yellow:before{background:var(--yellow)}.metric.red:before{background:var(--red)}.metric.cyan:before{background:var(--cyan)}
+    .label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-weight:850}.value{margin-top:7px;font-size:25px;font-weight:900;letter-spacing:0}.sub{margin-top:4px;color:var(--dim);font-size:11px}.up{color:var(--green)}.down{color:var(--red)}
+    .panel-head{min-height:48px;padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-head h3{margin:0;font-size:13px}
+    .panel-body{padding:14px}.split{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:14px}.detail{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:14px}
+    .table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}td{padding:12px;border-bottom:1px solid #20283a;color:#cbd6e4;white-space:nowrap}tbody tr.clickable{cursor:pointer}tbody tr.clickable:hover{background:#1b2231}td:first-child{color:var(--text);font-weight:650}
+    .status{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:99px;font-size:11px;font-weight:800}.status:before{content:"";width:6px;height:6px;border-radius:50%}
+    .ok{background:rgba(34,197,94,.12);color:#4ade80}.ok:before{background:var(--green)}.warn{background:rgba(245,158,11,.12);color:#fbbf24}.warn:before{background:var(--yellow)}
+    .fail{background:rgba(239,68,68,.12);color:#f87171}.fail:before{background:var(--red)}.info{background:rgba(99,102,241,.12);color:#a5b4fc}.info:before{background:var(--blue)}
+    .risk{display:flex;align-items:center;gap:8px;min-width:92px}.track{height:5px;min-width:58px;flex:1;border-radius:99px;background:#273146;overflow:hidden}.fill{height:100%;border-radius:99px}.low{background:var(--green)}.medium{background:var(--yellow)}.high{background:var(--red)}.risk span{width:24px;text-align:right;font-weight:850;font-size:11px}
+    .list{display:grid;gap:9px}.issue,.event,.connection{display:flex;align-items:flex-start;gap:11px;padding:11px;border:1px solid var(--line);background:var(--bg);border-radius:8px}.dot{width:10px;height:10px;border-radius:50%;margin-top:4px;flex-shrink:0}.dot.green{background:var(--green)}.dot.yellow{background:var(--yellow)}.dot.red{background:var(--red)}.dot.blue{background:var(--blue)}
+    .item-title{font-size:12px;font-weight:850}.item-text{margin-top:3px;color:var(--muted);font-size:12px;line-height:1.45}.mono{font-family:"SFMono-Regular",Consolas,monospace}.muted{color:var(--dim)}.chip{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;background:rgba(99,102,241,.12);color:#a5b4fc;font-size:10px;font-weight:850}.chip.green{background:rgba(34,197,94,.12);color:#4ade80}.chip.yellow{background:rgba(245,158,11,.12);color:#fbbf24}
+    .row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #20283a;font-size:12px}.row:last-child{border-bottom:0}.row span:first-child{color:var(--dim)}.row span:last-child{font-weight:750;text-align:right}
+    .steps{display:grid;grid-template-columns:repeat(6,1fr);margin-bottom:14px}.step{padding:10px;border:1px solid var(--line);background:#1b2231;text-align:center;color:var(--dim);font-size:11px;font-weight:800}.step:first-child{border-radius:8px 0 0 8px}.step:last-child{border-radius:0 8px 8px 0}.step.done{color:#4ade80;background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.35)}.step.current{color:#a5b4fc;background:rgba(99,102,241,.14);border-color:var(--blue)}
+    .profile{display:grid;grid-template-columns:280px minmax(0,1fr);gap:14px}.profile-card{text-align:center;padding:20px}.big-avatar{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;margin:0 auto 12px;background:linear-gradient(135deg,var(--blue),#a78bfa);font-size:22px;font-weight:900}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}.stat{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;text-align:left}.stat div:first-child{color:var(--dim);font-size:10px}.stat div:last-child{margin-top:4px;font-weight:900;font-size:13px}
+    .actions{display:flex;gap:7px;flex-wrap:wrap}.notice{border:1px solid rgba(245,158,11,.3);background:rgba(245,158,11,.09);color:#fbbf24;border-radius:8px;padding:10px 12px;font-size:12px;margin-bottom:12px}
+    .toast{position:fixed;right:18px;bottom:18px;z-index:20;display:grid;gap:8px}.toast div{background:#eef2ff;color:#172033;border-radius:8px;padding:11px 13px;box-shadow:0 14px 36px rgba(0,0,0,.3);font-size:12px;font-weight:800}
+    .empty{padding:28px;text-align:center;color:var(--dim);border:1px dashed var(--line);border-radius:8px;background:rgba(255,255,255,.02)}
+    .gate{display:grid;gap:10px}.check{display:flex;align-items:flex-start;gap:10px;padding:10px 11px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+    .check .signal{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;font-size:11px;font-weight:900}.signal.pass{background:rgba(34,197,94,.14);color:#4ade80}.signal.warn{background:rgba(245,158,11,.14);color:#fbbf24}.signal.block{background:rgba(239,68,68,.14);color:#f87171}
+    .check-title{font-size:12px;font-weight:850}.check-text{margin-top:3px;color:var(--muted);font-size:11px;line-height:1.45}.check-meta{margin-top:4px;color:var(--dim);font-size:10px}
+    .timeline{display:grid;gap:9px}.audit{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;padding:9px 0;border-bottom:1px solid #20283a}.audit:last-child{border-bottom:0}.audit-time{color:var(--dim);font-size:10px;white-space:nowrap}.audit-body{font-size:12px;color:#cbd6e4}.audit-body strong{color:var(--text)}
+    .field-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.field{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px}.field span{display:block;color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:.06em}.field strong{display:block;margin-top:5px;font-size:13px}
+    .mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.permission{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #20283a;font-size:12px}.permission:last-child{border-bottom:0}
+    .role-select{height:32px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:0 9px;font-size:12px}
+    @media (max-width:1100px){.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}.split,.detail,.profile{grid-template-columns:1fr}.tools{flex-wrap:wrap;justify-content:flex-end}.topbar{height:auto;min-height:64px;padding:12px 16px}.search{min-width:180px}}
+    @media (max-width:760px){body{overflow:auto}.app{display:block;height:auto}.sidebar{width:auto;height:auto}.nav{display:grid;grid-template-columns:repeat(2,1fr);max-height:none}.group-label{grid-column:1/-1}.main{min-height:100vh}.grid-4,.grid-3,.grid-2,.field-grid,.mini-grid{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}.tools{width:100%;justify-content:flex-start}.search{width:100%}.content{padding:14px}.steps{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><div class="mark">NT</div><div><h1>Nexora Touch</h1><p>US Payroll Tax</p></div></div>
+      <nav class="nav" id="nav"></nav>
+      <div class="account"><div class="avatar">PA</div><div><strong>Payroll Admin</strong><span>tenant_demo_001</span></div></div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="title"><h2 id="pageTitle">Dashboard</h2><p id="pageSubtitle">US payroll tax compliance health across federal, state, and local obligations.</p></div>
+        <div class="tools">
+          <label class="search">Search <input id="searchInput" placeholder="employees, runs, issues..." autocomplete="off"></label>
+          <div class="segments" id="periodTabs"></div>
+          <button class="btn primary" id="newRunBtn">New Run</button>
+        </div>
+      </header>
+      <section class="content">
+        <div id="screen-dashboard" class="screen active"></div>
+        <div id="screen-analytics" class="screen"></div>
+        <div id="screen-employers" class="screen"></div>
+        <div id="screen-employees" class="screen"></div>
+        <div id="screen-runs" class="screen"></div>
+        <div id="screen-run-detail" class="screen"></div>
+        <div id="screen-employee-profile" class="screen"></div>
+        <div id="screen-connections" class="screen"></div>
+        <div id="screen-ledger" class="screen"></div>
+        <div id="screen-exceptions" class="screen"></div>
+        <div id="screen-jurisdictions" class="screen"></div>
+        <div id="screen-forms" class="screen"></div>
+        <div id="screen-ai-advisor" class="screen"></div>
+        <div id="screen-ocr" class="screen"></div>
+        <div id="screen-share-links" class="screen"></div>
+        <div id="screen-gps" class="screen"></div>
+        <div id="screen-webhooks" class="screen"></div>
+        <div id="screen-settings" class="screen"></div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const state = {
+      screen: "share-links",
+      period: "Q2 2026",
+      query: "",
+      selectedRun: "pr_2026_06_15",
+      selectedEmployee: "emp_1002",
+      role: "Payroll Admin",
+      scope: "United States"
+    };
+
+    const navGroups = [
+      ["Overview", [["dashboard","DB","Dashboard"],["analytics","AN","Analytics"]]],
+      ["Payroll", [["employers","ER","Employers"],["employees","EE","Employees"],["runs","PR","Payroll Runs"],["connections","CN","Connections"]]],
+      ["Tax IQ", [["ledger","TL","Tax Ledger"],["exceptions","EX","Exceptions","","yellow"],["jurisdictions","JR","Jurisdictions"],["forms","FR","Forms & Reports"],["ocr","OC","OCR Vault"],["share-links","SL","Share Links"],["gps","GP","GPS Mileage"],["ai-advisor","AI","AI Advisor"]]],
+      ["System", [["webhooks","WH","Webhooks"],["settings","ST","Settings"]]]
+    ];
+
+    const employers = [
+      {id:"biz_789", name:"Acme Manufacturing LLC", industry:"Manufacturing", employees:142, status:"Active", health:99.8, registrations:"FED, TX, CA", depositSchedule:"Semiweekly", nextDeposit:"Jun 24, 2026", lastSync:"6 min ago"},
+      {id:"biz_1024", name:"TechCorp Solutions Inc.", industry:"Software", employees:387, status:"Active", health:100, registrations:"FED, NY", depositSchedule:"Monthly", nextDeposit:"Jul 15, 2026", lastSync:"12 min ago"},
+      {id:"biz_2201", name:"Retail Partners Group", industry:"Retail", employees:91, status:"Degraded", health:74, registrations:"FED, TX", depositSchedule:"Monthly", nextDeposit:"Jul 15, 2026", lastSync:"3h ago"}
+    ];
+
+    const employees = [
+      {id:"emp_1002", name:"Jane A. Nguyen", dept:"Finance", employer:"Acme Manufacturing LLC", salary:85000, residence:"TX", work:"TX", tin:"Pending", w4:"2026", filing:"Single", dependents:0, profileUpdated:"Jun 10, 2026", risk:18, gross:3769.23, tax:698.89, net:2750.34},
+      {id:"emp_0891", name:"Marcus Chen", dept:"Engineering", employer:"Acme Manufacturing LLC", salary:110000, residence:"TX", work:"TX", tin:"Verified", w4:"2026", filing:"Married filing jointly", dependents:2, profileUpdated:"May 28, 2026", risk:10, gross:4230.77, tax:784.22, net:2996.55},
+      {id:"emp_0334", name:"Sofia Reyes", dept:"Operations", employer:"Acme Manufacturing LLC", salary:75000, residence:"TX", work:"TX", tin:"Verified", w4:"2026", filing:"Single", dependents:1, profileUpdated:"Apr 16, 2026", risk:8, gross:2884.62, tax:535.11, net:2149.51},
+      {id:"emp_0112", name:"David Kim", dept:"Sales", employer:"Acme Manufacturing LLC", salary:90000, residence:"TX", work:"CA", tin:"Verified", w4:"2024", filing:"Head of household", dependents:1, profileUpdated:"Dec 20, 2024", risk:35, gross:3461.54, tax:641.88, net:2499.66},
+      {id:"emp_0445", name:"Aisha Okafor", dept:"HR", employer:"Acme Manufacturing LLC", salary:84000, residence:"TX", work:"TX", tin:"Verified", w4:"2026", filing:"Single", dependents:0, profileUpdated:"Jan 15, 2026", risk:5, gross:3230.77, tax:599.22, net:2361.55},
+      {id:"emp_1441", name:"Noah Patel", dept:"Support", employer:"TechCorp Solutions Inc.", salary:72000, residence:"NY", work:"NY", tin:"Missing", w4:"Missing", filing:"Unknown", dependents:null, profileUpdated:"Not started", risk:61, gross:2769.23, tax:0, net:2769.23}
+    ];
+
+    const runs = [
+      {id:"pr_2026_06_15", period:"Jun 1-14", payDate:"Jun 19, 2026", employees:142, gross:312448, tax:54621, employerTax:26402, risk:18, status:"Ledger Posted", source:"Nexora Payroll API", approvedBy:"finance_approver_02", depositDue:"Jun 24, 2026"},
+      {id:"pr_2026_06_01", period:"May 18-31", payDate:"Jun 5, 2026", employees:142, gross:309882, tax:53974, employerTax:26128, risk:12, status:"Ledger Posted", source:"Nexora Payroll API", approvedBy:"finance_approver_02", depositDue:"Jun 11, 2026"},
+      {id:"pr_2026_05_15", period:"May 1-17", payDate:"May 22, 2026", employees:139, gross:304122, tax:53061, employerTax:25400, risk:42, status:"Review Required", source:"Nexora Payroll API", approvedBy:"Pending", depositDue:"May 28, 2026"},
+      {id:"pr_bonus_q2", period:"Q2 Bonus", payDate:"Jun 15, 2026", employees:48, gross:124000, tax:31000, employerTax:0, risk:8, status:"Ledger Posted", source:"Manual bonus import", approvedBy:"finance_approver_02", depositDue:"Jun 18, 2026"},
+      {id:"pr_2026_07_01", period:"Jun 15-28", payDate:"Jul 3, 2026", employees:144, gross:0, tax:0, employerTax:0, risk:null, status:"Pending", source:"Scheduled", approvedBy:"Pending", depositDue:"Jul 8, 2026"},
+      {id:"pr_correction_01", period:"Correction", payDate:"Jun 20, 2026", employees:3, gross:4840, tax:689, employerTax:0, risk:68, status:"Validation Failed", source:"Correction upload", approvedBy:"Pending", depositDue:"Jun 24, 2026"}
+    ];
+
+    const exceptions = [
+      {id:"ex_001", type:"WITHHOLDING_DISCREPANCY", severity:"High", owner:"Payroll", status:"Open", run:"pr_correction_01", blocking:true, age:"4h", evidence:"payroll_upload_0620.csv", detail:"Payroll submitted $690.00. Tax IQ expected $698.89. Difference $8.89 blocks strict finalization."},
+      {id:"ex_002", type:"TIN_VERIFICATION_PENDING", severity:"Medium", owner:"HR", status:"Open", run:"Q2", blocking:true, age:"1d", evidence:"tin_batch_7781", detail:"6 employees have unverified SSN/TIN and may require backup withholding if not resolved."},
+      {id:"ex_003", type:"W4_STALE", severity:"Medium", owner:"HR", status:"Open", run:"YTD", blocking:false, age:"5d", evidence:"profile_age_report", detail:"3 employees are still using 2024 W-4 forms. Request updated forms before year-end."},
+      {id:"ex_004", type:"JURISDICTION_MISMATCH", severity:"Medium", owner:"Tax", status:"Reviewing", run:"pr_2026_05_15", blocking:true, age:"2d", evidence:"location_change_feed", detail:"Work CA vs residence TX for 2 employees. Confirm CA registration and withholding treatment."},
+      {id:"ex_005", type:"TAX_PROFILE_MISSING", severity:"Low", owner:"HR", status:"Open", run:"pr_2026_07_01", blocking:true, age:"3h", evidence:"new_hire_sync", detail:"2 new hires are missing tax profiles. Strict mode will block next finalization."}
+    ];
+
+    const ledger = [
+      {id:"tle_001", run:"pr_2026_06_15", employee:"Jane Nguyen", emp:"emp_1002", payDate:"Jun 19", jurisdiction:"US-FED", type:"federal_income_tax", taxable:3449.23, employeeTax:410.55, employerTax:0, hash:"sha256:a1b2"},
+      {id:"tle_002", run:"pr_2026_06_15", employee:"Jane Nguyen", emp:"emp_1002", payDate:"Jun 19", jurisdiction:"US-FED", type:"social_security", taxable:3769.23, employeeTax:233.69, employerTax:233.69, hash:"sha256:c3d4"},
+      {id:"tle_003", run:"pr_2026_06_15", employee:"Jane Nguyen", emp:"emp_1002", payDate:"Jun 19", jurisdiction:"US-FED", type:"medicare", taxable:3769.23, employeeTax:54.65, employerTax:54.65, hash:"sha256:e5f6"},
+      {id:"tle_004", run:"pr_2026_06_15", employee:"Marcus Chen", emp:"emp_0891", payDate:"Jun 19", jurisdiction:"US-FED", type:"federal_income_tax", taxable:3780.77, employeeTax:491.50, employerTax:0, hash:"sha256:g7h8"},
+      {id:"tle_005", run:"pr_2026_06_15", employee:"Marcus Chen", emp:"emp_0891", payDate:"Jun 19", jurisdiction:"US-FED", type:"social_security", taxable:4230.77, employeeTax:262.31, employerTax:262.31, hash:"sha256:i9j0"},
+      {id:"tle_006", run:"pr_2026_05_15", employee:"David Kim", emp:"emp_0112", payDate:"May 22", jurisdiction:"US-CA", type:"ca_state_income_tax", taxable:3141.54, employeeTax:314.15, employerTax:0, hash:"sha256:k1l2"}
+    ];
+
+    const events = [
+      {id:"evt_01JZ006", type:"tax_iq.ledger.posted", tenant:"tenant_demo_001", attempts:1, status:"Delivered", created:"2 min ago", delivered:"2 min ago"},
+      {id:"evt_01JZ005", type:"tax_iq.validation.warning", tenant:"tenant_demo_001", attempts:1, status:"Delivered", created:"2 min ago", delivered:"2 min ago"},
+      {id:"evt_01JZ004", type:"payroll_run.finalized", tenant:"tenant_demo_001", attempts:1, status:"Delivered", created:"3 min ago", delivered:"3 min ago"},
+      {id:"evt_01JZ003", type:"tax_iq.validation.failed", tenant:"tenant_demo_001", attempts:3, status:"Retrying", created:"47 min ago", delivered:"-"},
+      {id:"evt_01JZ002", type:"tax_iq.jurisdiction_mismatch", tenant:"tenant_demo_001", attempts:1, status:"Delivered", created:"2h ago", delivered:"2h ago"},
+      {id:"evt_01JZ001", type:"employee.tax_profile.validated", tenant:"tenant_biz_1024", attempts:8, status:"Dead Letter", created:"5h ago", delivered:"-"}
+    ];
+
+    const jurisdictions = [
+      {id:"US-FED", name:"Federal", employeeTax:348011, employerTax:148238, registrations:"Active", depositSchedule:"Semiweekly", nextDue:"Jun 24, 2026", risk:8},
+      {id:"US-TX", name:"Texas", employeeTax:0, employerTax:48821, registrations:"Active", depositSchedule:"Quarterly", nextDue:"Jul 31, 2026", risk:6},
+      {id:"US-CA", name:"California", employeeTax:112440, employerTax:10122, registrations:"Review", depositSchedule:"Semiweekly", nextDue:"Jun 24, 2026", risk:42},
+      {id:"US-NY", name:"New York", employeeTax:37768, employerTax:4603, registrations:"Missing setup", depositSchedule:"Monthly", nextDue:"Jul 15, 2026", risk:61}
+    ];
+
+    const forms = [
+      {name:"W-2 Wage Summary", period:"YTD 2026", status:"Draft", records:142, due:"Jan 31, 2027", source:"Payroll ledger", owner:"Payroll"},
+      {name:"1099 Contractor Report", period:"Q2 2026", status:"Ready", records:18, due:"Jan 31, 2027", source:"Vendor ledger", owner:"Finance"},
+      {name:"Federal 941 Worksheet", period:"Q2 2026", status:"Ready", records:1, due:"Jul 31, 2026", source:"Tax ledger", owner:"Tax"},
+      {name:"Federal 940 FUTA Worksheet", period:"YTD 2026", status:"Draft", records:1, due:"Jan 31, 2027", source:"Employer tax ledger", owner:"Tax"},
+      {name:"State SUTA Reconciliation", period:"Q2 2026", status:"Needs Review", records:3, due:"Varies by state", source:"State wage base ledger", owner:"Tax"},
+      {name:"State Withholding CSV", period:"Q2 2026", status:"Needs Review", records:4, due:"Jul 15, 2026", source:"Jurisdiction ledger", owner:"Tax"}
+    ];
+
+    const taxPrograms = [
+      {program:"Federal income tax withholding", agency:"IRS", forms:"W-4, 941, W-2", level:"Federal", owner:"Payroll"},
+      {program:"Social Security and Medicare", agency:"IRS", forms:"941, W-2", level:"Federal", owner:"Payroll"},
+      {program:"Federal unemployment tax", agency:"IRS", forms:"940", level:"Federal", owner:"Tax"},
+      {program:"State income tax withholding", agency:"State revenue agencies", forms:"State withholding returns", level:"State", owner:"Tax"},
+      {program:"State unemployment insurance", agency:"State workforce agencies", forms:"SUTA wage reports", level:"State", owner:"Tax"},
+      {program:"Local payroll tax", agency:"Local tax agencies", forms:"Local returns where applicable", level:"Local", owner:"Tax"}
+    ];
+
+    const workflowSteps = ["Draft","Imported","Validated","Tax Preview","Approved","Finalized","Ledger Posted","Reported"];
+
+    const roles = {
+      "Payroll Admin":["create_run","verify_tin","resolve_exception","finalize_run","export_data","manage_settings"],
+      "HR Specialist":["verify_tin","resolve_exception","export_data"],
+      "Tax Reviewer":["resolve_exception","finalize_run","export_data"],
+      "Auditor":["export_data"],
+      "Tenant Owner":["create_run","verify_tin","resolve_exception","finalize_run","export_data","manage_settings"]
+    };
+
+    const lineItems = [
+      {run:"pr_2026_06_15", employee:"emp_1002", gross:3769.23, taxable:3449.23, preTax:320, employeeTax:698.89, employerTax:288.34, net:2750.34, status:"Calculated"},
+      {run:"pr_2026_06_15", employee:"emp_0891", gross:4230.77, taxable:3780.77, preTax:450, employeeTax:784.22, employerTax:312.31, net:2996.55, status:"Calculated"},
+      {run:"pr_2026_06_15", employee:"emp_0334", gross:2884.62, taxable:2634.62, preTax:250, employeeTax:535.11, employerTax:220.11, net:2149.51, status:"Calculated"},
+      {run:"pr_2026_06_15", employee:"emp_0445", gross:3230.77, taxable:2980.77, preTax:250, employeeTax:599.22, employerTax:245.11, net:2361.55, status:"Calculated"},
+      {run:"pr_2026_05_15", employee:"emp_0112", gross:3461.54, taxable:3141.54, preTax:320, employeeTax:641.88, employerTax:268.80, net:2499.66, status:"Needs Review"},
+      {run:"pr_correction_01", employee:"emp_1002", gross:1200, taxable:1200, preTax:0, employeeTax:185, employerTax:91.80, net:1015, status:"Blocked"},
+      {run:"pr_correction_01", employee:"emp_0112", gross:2140, taxable:2140, preTax:0, employeeTax:314, employerTax:163.71, net:1826, status:"Blocked"},
+      {run:"pr_correction_01", employee:"emp_0334", gross:1500, taxable:1500, preTax:0, employeeTax:190, employerTax:114.75, net:1310, status:"Blocked"}
+    ];
+
+    const runValidations = {
+      pr_2026_06_15:[
+        {name:"Schema and source integrity", status:"pass", detail:"142 employee records matched import checksum.", owner:"System"},
+        {name:"TIN/W-4 readiness", status:"warn", detail:"1 TIN is pending, allowed because manual review note is attached.", owner:"HR"},
+        {name:"Jurisdiction registration", status:"pass", detail:"FED/TX accounts active for all included employees.", owner:"Tax"},
+        {name:"Ledger reconciliation", status:"pass", detail:"Employee and employer taxes match posted ledger.", owner:"Finance"}
+      ],
+      pr_2026_05_15:[
+        {name:"Jurisdiction registration", status:"block", detail:"CA work location requires registration confirmation before finalization.", owner:"Tax"},
+        {name:"Tax calculation", status:"warn", detail:"Two employee location changes were detected after preview.", owner:"Payroll"}
+      ],
+      pr_2026_07_01:[
+        {name:"Employee tax profiles", status:"block", detail:"2 new hires are missing required tax profiles.", owner:"HR"},
+        {name:"Payroll import", status:"warn", detail:"Scheduled run is waiting for final gross pay import.", owner:"Payroll"}
+      ],
+      pr_correction_01:[
+        {name:"Withholding variance", status:"block", detail:"Submitted withholding differs from Tax IQ expected amount by $8.89.", owner:"Payroll"},
+        {name:"Approval", status:"block", detail:"Correction run requires Tax Reviewer approval.", owner:"Tax"}
+      ]
+    };
+
+    const auditLogs = [
+      {time:"Jun 18 21:30", actor:"payroll_admin_44", target:"pr_2026_06_15", action:"Finalized payroll run", detail:"Validation passed with one documented warning."},
+      {time:"Jun 18 21:31", actor:"system", target:"pr_2026_06_15", action:"Posted tax ledger", detail:"Generated 426 immutable ledger entries."},
+      {time:"Jun 20 09:42", actor:"system", target:"pr_correction_01", action:"Blocked finalization", detail:"Withholding discrepancy exceeded tenant threshold."},
+      {time:"Jun 20 10:05", actor:"tax_reviewer_08", target:"ex_004", action:"Started jurisdiction review", detail:"CA registration evidence requested."}
+    ];
+
+    const advisoryModules = [
+      {name:"Government Rule Watch", status:"Concept", owner:"Tax", detail:"Track official IRS, state, and local changes so merchants see new rules, deadlines, and action items."},
+      {name:"Receipt Vault + AI OCR", status:"MVP Candidate", owner:"Merchant", detail:"Capture bills, invoices, and receipts before they are lost; AI reads vendor, amount, date, category, and tax relevance."},
+      {name:"Payment Review", status:"MVP Candidate", owner:"Finance", detail:"Store payout/payment evidence and flag unusual methods, missing confirmation, duplicate payments, or unclear business purpose."},
+      {name:"AI CFO", status:"Phase 2", owner:"Owner", detail:"Provide financial advice prompts, cash-flow guidance, tax planning reminders, and questions to ask the CPA."},
+      {name:"CPA Review Portal", status:"Phase 1.2", owner:"CPA", detail:"Let a CPA connect, review merchant records, comment, request missing evidence, and prepare filing packages."},
+      {name:"Share Link / QR Profile", status:"Phase 1.2", owner:"Owner", detail:"Create expiring or non-expiring links for workers, friends, CPA, or reviewers to upload/review selected information."},
+      {name:"Mileage GPS", status:"Phase 1.2", owner:"Owner", detail:"Track business trips from home to shop, client, bank, supply store, or worksite for mileage deduction support."},
+      {name:"Industry Deduction Checklist", status:"Phase 1.3", owner:"AI", detail:"Generate industry-specific reminders so merchants do not forget common deductible expenses."}
+    ];
+
+    const ruleUpdates = [
+      {source:"IRS / State agencies", topic:"Payroll and 1099 deadline monitor", impact:"Review", action:"Connect official-source feed before production alerts."},
+      {source:"State revenue agencies", topic:"Sales tax and local payroll changes", impact:"Watch", action:"Map merchant location to state/local alert rules."},
+      {source:"Labor and workforce agencies", topic:"Worker classification and SUTA notices", impact:"High", action:"Create classification warning before payout sync."}
+    ];
+
+    const receiptVault = [
+      {id:"rcpt_001", vendor:"Beauty Supply Warehouse", type:"Supplies", amount:384.20, source:"AI photo capture", status:"Extracted", owner:"Owner"},
+      {id:"rcpt_002", vendor:"Phone utility bill", type:"Utilities", amount:129.00, source:"Email import", status:"Needs Review", owner:"Bookkeeper"},
+      {id:"rcpt_003", vendor:"Unknown Zelle memo", type:"Payment evidence", amount:250.00, source:"Payout upload", status:"Missing purpose", owner:"Finance"}
+    ];
+
+    const paymentReviews = [
+      {id:"pay_review_01", issue:"Duplicate-looking Zelle payout", risk:"Medium", record:"PAY-2026-001", action:"Confirm receipt image and worker."},
+      {id:"pay_review_02", issue:"Cash payout has no evidence", risk:"High", record:"PAY-2026-004", action:"Request upload link from owner."},
+      {id:"pay_review_03", issue:"Payout type says wage but worker is 1099", risk:"High", record:"PAY-2026-003", action:"Review classification before CPA export."}
+    ];
+
+    const infoCollectionFields = [
+      {field:"Worker classification", purpose:"Decide W-2 payroll vs 1099 contractor reporting.", required:"Yes"},
+      {field:"W-9 / W-4 / TIN status", purpose:"Validate tax identity before reports.", required:"Yes"},
+      {field:"Receipt image and OCR fields", purpose:"Preserve bills and suggest deduction category.", required:"When expense exists"},
+      {field:"Payment method and confirmation", purpose:"Audit Zelle, Venmo, PayPal, cash, check, and ACH records.", required:"Yes"},
+      {field:"Business purpose and category", purpose:"Explain deduction or income treatment for CPA review.", required:"Yes"},
+      {field:"GPS trip start/end and mileage", purpose:"Support business mileage deduction records.", required:"When mileage is claimed"},
+      {field:"Share link consent and expiration", purpose:"Control who can review or upload information.", required:"When sharing"}
+    ];
+
+    const shareLinks = [
+      {id:"shr_001", recipient:"CPA Review", access:"Ledger + receipts", expires:"15 days", status:"Active"},
+      {id:"shr_002", recipient:"Technician upload", access:"Payout evidence only", expires:"Never", status:"Active"},
+      {id:"shr_003", recipient:"Friend referral profile", access:"Public business profile", expires:"15 days", status:"Draft"}
+    ];
+
+    const cpaReviews = [
+      {firm:"Nguyen CPA Group", scope:"1099 package + receipt review", status:"Invited", next:"Waiting for portal acceptance"},
+      {firm:"Internal bookkeeper", scope:"Monthly close review", status:"Connected", next:"Review missing evidence"},
+      {firm:"Tax partner", scope:"Quarterly estimate", status:"Requested", next:"Owner approval required"}
+    ];
+
+    const mileageTrips = [
+      {id:"trip_001", route:"Home to salon", miles:18.4, purpose:"Owner business commute review", status:"Needs CPA policy check"},
+      {id:"trip_002", route:"Salon to supply store", miles:7.8, purpose:"Business supplies", status:"Deduction candidate"},
+      {id:"trip_003", route:"Salon to bank", miles:4.1, purpose:"Cash deposit", status:"Deduction candidate"}
+    ];
+
+    const deductionChecklists = [
+      {industry:"Nail salon", checklist:"Supplies, booth rent, merchant fees, towels, uniforms, licenses, insurance, software, marketing, mileage."},
+      {industry:"Beauty business", checklist:"Product inventory, training, equipment, booking software, business phone, client amenities, rent."},
+      {industry:"Contractor", checklist:"Tools, mileage, phone, home office, payment fees, tax prep, education, insurance."}
+    ];
+
+    function money(n){return n == null ? "-" : n.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:n%1?2:0});}
+    function riskClass(score){return score == null ? "" : score >= 60 ? "high" : score >= 30 ? "medium" : "low";}
+    function statusClass(status){
+      if(["Ledger Posted","Delivered","Ready","Active","Verified","Resolved","Calculated","Finalized","Approved","Pass"].includes(status)) return "ok";
+      if(["Review Required","Retrying","Draft","Pending","Needs Review","Review","Reviewing","Degraded","Requested","Warn"].includes(status)) return "warn";
+      if(["Validation Failed","Dead Letter","Missing","Missing setup","Open","Blocked","Block"].includes(status)) return "fail";
+      return "info";
+    }
+    function statusPill(status){return `<span class="status ${statusClass(status)}">${status}</span>`;}
+    function riskBar(score){return score == null ? `<span class="muted">-</span>` : `<div class="risk"><div class="track"><div class="fill ${riskClass(score)}" style="width:${score}%"></div></div><span class="${riskClass(score)}">${score}</span></div>`;}
+    function matches(item){
+      const q = state.query.trim().toLowerCase();
+      return !q || JSON.stringify(item).toLowerCase().includes(q);
+    }
+    function sum(arr,key){return arr.reduce((total,item)=>total+(Number(item[key])||0),0);}
+    function avg(arr,key){
+      const values = arr.map(item => Number(item[key])).filter(Number.isFinite);
+      return values.length ? Math.round(values.reduce((a,b)=>a+b,0)/values.length) : 0;
+    }
+    function currentPermissions(){return roles[state.role] || [];}
+    function can(action){return currentPermissions().includes(action);}
+    function badgeFor(id){
+      if(id === "runs") return runs.filter(r => !["Ledger Posted","Reported"].includes(r.status)).length || "";
+      if(id === "exceptions") return exceptions.filter(e => e.status !== "Resolved").length || "";
+      return "";
+    }
+    function runLineItems(runId){return lineItems.filter(item => item.run === runId);}
+    function runLedgerEntries(runId){return ledger.filter(entry => entry.run === runId);}
+    function employeeById(id){return employees.find(e => e.id === id) || {id, name:id, dept:"-", tin:"-", risk:null};}
+    function runExceptions(runId){
+      const run = runs.find(item => item.id === runId);
+      const includeGlobal = run && !["Ledger Posted","Reported"].includes(run.status);
+      return exceptions.filter(e => e.run === runId || (includeGlobal && runId.startsWith("pr_2026_06") && e.run === "Q2") || (includeGlobal && e.run === "YTD"));
+    }
+    function runChecks(runId){return runValidations[runId] || [{name:"Validation model", status:"warn", detail:"No validation profile has been generated for this run yet.", owner:"System"}];}
+    function hasBlockingItems(run){
+      return runChecks(run.id).some(check => check.status === "block") || runExceptions(run.id).some(ex => ex.blocking && ex.status !== "Resolved");
+    }
+    function workflowIndex(run){
+      if(run.status === "Pending") return 0;
+      if(run.status === "Validation Failed") return 2;
+      if(run.status === "Review Required") return 4;
+      if(run.status === "Ledger Posted") return 6;
+      if(run.status === "Reported") return 7;
+      return 3;
+    }
+    function workflowMarkup(run){
+      const current = workflowIndex(run);
+      return `<div class="steps">${workflowSteps.map((step,index) => `<div class="step ${index < current ? "done" : index === current ? "current" : ""}">${step}</div>`).join("")}</div>`;
+    }
+    function checksMarkup(checks){
+      return `<div class="gate">${checks.map(check => {
+        const label = check.status === "pass" ? "Pass" : check.status === "warn" ? "Warn" : "Block";
+        const icon = check.status === "pass" ? "OK" : check.status === "warn" ? "!" : "X";
+        return `<div class="check"><span class="signal ${check.status}">${icon}</span><div><div class="check-title">${check.name} ${statusPill(label)}</div><div class="check-text">${check.detail}</div><div class="check-meta">Owner: ${check.owner}</div></div></div>`;
+      }).join("")}</div>`;
+    }
+    function auditFor(target){
+      return auditLogs.filter(log => log.target === target || log.detail.includes(target)).slice(-6).reverse();
+    }
+    function auditMarkup(items){
+      return `<div class="panel-body timeline">${items.length ? items.map(log => `<div class="audit"><div class="audit-time">${log.time}</div><div class="audit-body"><strong>${log.action}</strong><br><span class="muted">${log.actor} - ${log.detail}</span></div></div>`).join("") : `<div class="empty">No audit activity yet.</div>`}</div>`;
+    }
+    function addAudit(target, action, detail){
+      auditLogs.push({time:"Now", actor:state.role.toLowerCase().replaceAll(" ","_"), target, action, detail});
+    }
+    function recomputeRunFromLines(run){
+      const items = runLineItems(run.id);
+      if(!items.length) return;
+      run.employees = items.length;
+      run.gross = sum(items,"gross");
+      run.tax = sum(items,"employeeTax");
+      run.employerTax = sum(items,"employerTax");
+    }
+
+    function renderNav(){
+      document.getElementById("nav").innerHTML = navGroups.map(([label,items]) => `
+        <div class="group-label">${label}</div>
+        ${items.map(([id,icon,text,badge,color]) => {
+          const dynamicBadge = badgeFor(id) || badge;
+          return `
+          <button data-nav="${id}" class="${state.screen===id ? "active" : ""}">
+            <span class="ico">${icon}</span><span>${text}</span>${dynamicBadge ? `<span class="badge ${color||"red"}">${dynamicBadge}</span>` : ""}
+          </button>`;
+        }).join("")}
+      `).join("");
+      document.querySelectorAll("[data-nav]").forEach(btn => btn.addEventListener("click", () => showScreen(btn.dataset.nav)));
+    }
+
+    function renderPeriods(){
+      const tabs = ["Q2 2026","Q1 2026","YTD"];
+      document.getElementById("periodTabs").innerHTML = tabs.map(p => `<button class="${state.period===p ? "active" : ""}" data-period="${p}">${p}</button>`).join("");
+      document.querySelectorAll("[data-period]").forEach(btn => btn.addEventListener("click", () => {
+        state.period = btn.dataset.period;
+        toast(`Period switched to ${state.period}`);
+        render();
+      }));
+    }
+
+    function setTitle(title, subtitle){
+      document.getElementById("pageTitle").textContent = title;
+      document.getElementById("pageSubtitle").textContent = subtitle;
+    }
+
+    function table(headers, rows){
+      return `<div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("") || `<tr><td colspan="${headers.length}"><div class="empty">No matching records.</div></td></tr>`}</tbody></table></div>`;
+    }
+
+    function renderDashboard(){
+      setTitle("Dashboard","US payroll tax compliance health across federal, state, and local obligations.");
+      const openIssues = exceptions.filter(e=>e.status!=="Resolved").length;
+      const blockers = exceptions.filter(e=>e.blocking && e.status!=="Resolved").length;
+      const recent = runs.filter(matches).slice(0,6);
+      const issueCards = exceptions.filter(matches).slice(0,5).map(e => `
+        <div class="issue"><span class="dot ${e.severity==="High"?"red":e.severity==="Medium"?"yellow":"blue"}"></span>
+          <div><div class="item-title">${e.type} ${e.blocking ? statusPill("Blocked") : ""}</div><div class="item-text">${e.detail}</div><div class="item-text mono muted">${e.id} - ${e.run} - ${e.age}</div></div>
+        </div>`).join("");
+      document.getElementById("screen-dashboard").innerHTML = `
+        <div class="grid-4" style="margin-bottom:14px">
+          <div class="metric green card"><div class="label">Total Gross Pay (${state.period})</div><div class="value">${money(sum(runs,"gross"))}</div><div class="sub"><span class="up">Up 8.4%</span> vs previous period</div></div>
+          <div class="metric cyan card"><div class="label">Employee Tax Withheld</div><div class="value">${money(sum(runs,"tax"))}</div><div class="sub"><span class="up">Up 6.2%</span> vs previous period</div></div>
+          <div class="metric yellow card"><div class="label">Open Issues</div><div class="value">${openIssues}</div><div class="sub"><span class="down">5 new</span> this week</div></div>
+          <div class="metric red card"><div class="label">US Tax Programs</div><div class="value">${taxPrograms.length}</div><div class="sub">${blockers} blocker(s) across payroll obligations</div></div>
+        </div>
+        <div class="split" style="margin-bottom:14px">
+          <div class="panel"><div class="panel-head"><h3>Recent Payroll Runs</h3><div class="actions"><span class="chip">${runs.length} total</span><button class="btn" data-export="runs">Export CSV</button></div></div>
+            ${runTable(recent)}
+          </div>
+          <div class="panel"><div class="panel-head"><h3>Tax IQ Issues</h3><span class="badge yellow">${openIssues}</span></div><div class="panel-body list">${issueCards || `<div class="empty">No matching issues.</div>`}</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="panel"><div class="panel-head"><h3>Jurisdiction Summary</h3><button class="btn" data-go="jurisdictions">View All</button></div>${jurisdictionMini()}</div>
+          <div class="panel"><div class="panel-head"><h3>Webhook & Event Activity</h3><span class="chip green">Live</span></div><div class="panel-body list">${events.slice(0,6).map(eventCard).join("")}</div></div>
+        </div>`;
+    }
+
+    function runTable(items){
+      return table(["Run ID","Pay Period","Pay Date","Deposit Due","Employees","Gross Pay","Tax Withheld","Risk","Status"], items.map(r => `
+        <tr class="clickable" data-run="${r.id}">
+          <td class="mono">${r.id}</td><td>${r.period}</td><td>${r.payDate}</td><td>${r.depositDue}</td><td>${r.employees}</td><td>${money(r.gross)}</td><td>${money(r.tax)}</td><td>${riskBar(r.risk)}</td><td>${statusPill(r.status)}</td>
+        </tr>`));
+    }
+
+    function employeeTable(items){
+      return table(["Employee","Dept","Employer","Residence","Work","TIN","W-4","Filing","Updated","Risk"], items.map(e => `
+        <tr class="clickable" data-employee="${e.id}">
+          <td>${e.name}<br><span class="mono muted">${e.id}</span></td><td>${e.dept}</td><td>${e.employer}</td><td>${e.residence}</td><td>${e.work}</td><td>${statusPill(e.tin)}</td><td>${statusPill(e.w4)}</td><td>${e.filing}</td><td>${e.profileUpdated}</td><td>${riskBar(e.risk)}</td>
+        </tr>`));
+    }
+
+    function jurisdictionMini(){
+      return `<div class="panel-body">${jurisdictions.map(j => `<div class="row"><span>${j.name} <em class="mono muted">${j.id}</em><br><small class="muted">${j.depositSchedule} - due ${j.nextDue}</small></span><span>${money(j.employeeTax)} / ${money(j.employerTax)}</span></div>`).join("")}</div>`;
+    }
+
+    function eventCard(e){
+      const dot = e.status==="Delivered" ? "green" : e.status==="Retrying" ? "yellow" : "red";
+      return `<div class="event"><span class="dot ${dot}"></span><div><div class="item-title mono">${e.type}</div><div class="item-text">${e.status} - ${e.attempts} attempt(s) - ${e.created}</div></div></div>`;
+    }
+
+    function exceptionCard(e){
+      return `<div class="issue"><span class="dot ${e.severity==="High"?"red":e.severity==="Medium"?"yellow":"blue"}"></span><div style="flex:1"><div class="item-title">${e.type} - ${e.run} ${e.blocking ? statusPill("Blocked") : ""}</div><div class="item-text">${e.detail}</div><div class="item-text mono muted">${e.id} - Owner: ${e.owner} - Age: ${e.age} - Evidence: ${e.evidence}</div></div><div class="actions">${statusPill(e.status)}<button class="btn" data-action="assign">Assign</button><button class="btn primary" data-resolve="${e.id}">Resolve</button></div></div>`;
+    }
+
+    function renderRuns(){
+      setTitle("Payroll Runs","Create, review, approve, and finalize payroll runs.");
+      document.getElementById("screen-runs").innerHTML = `
+        <div class="panel">
+          <div class="panel-head"><h3>Payroll Runs</h3><div class="actions"><button class="btn" data-export="runs">Export CSV</button><button class="btn primary" data-action="new-run">Create Run</button></div></div>
+          ${runTable(runs.filter(matches))}
+        </div>`;
+    }
+
+    function renderRunDetail(){
+      const run = runs.find(r=>r.id===state.selectedRun) || runs[0];
+      const items = runLineItems(run.id).filter(matches);
+      const entries = runLedgerEntries(run.id).filter(matches);
+      const relatedExceptions = runExceptions(run.id).filter(matches);
+      const checks = runChecks(run.id);
+      const blocked = hasBlockingItems(run);
+      setTitle("Payroll Run Detail",`${run.id} - ${run.period} - ${run.payDate}`);
+      document.getElementById("screen-run-detail").innerHTML = `
+        <div class="actions" style="margin-bottom:14px"><button class="btn" data-go="runs">Back to Runs</button><button class="btn" data-export="line-items">Export Line Items</button><button class="btn primary" data-action="finalize">Finalize Run</button>${statusPill(run.status)}${blocked ? statusPill("Blocked") : ""}</div>
+        ${workflowMarkup(run)}
+        <div class="detail">
+          <div>
+            <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>Validation Gate</h3><span class="chip ${blocked ? "yellow" : "green"}">${blocked ? "Action required" : "Ready"}</span></div><div class="panel-body">${checksMarkup(checks)}</div></div>
+            <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>Pay Statement Line Items</h3><span class="chip">${items.length} shown</span></div>${lineItemTable(items)}</div>
+            <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>Run Exceptions</h3><span class="badge ${blocked ? "red" : "yellow"}">${relatedExceptions.length}</span></div><div class="panel-body list">${relatedExceptions.length ? relatedExceptions.map(exceptionCard).join("") : `<div class="empty">No exceptions linked to this run.</div>`}</div></div>
+            <div class="panel"><div class="panel-head"><h3>Employee Tax Breakdown by Type</h3></div>${ledgerTable(entries)}</div>
+          </div>
+          <div>
+            <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>Run Summary</h3></div><div class="panel-body">
+              <div class="row"><span>Payroll Run ID</span><span class="mono">${run.id}</span></div><div class="row"><span>Source</span><span>${run.source}</span></div><div class="row"><span>Employees</span><span>${run.employees}</span></div><div class="row"><span>Gross Pay</span><span>${money(run.gross)}</span></div><div class="row"><span>Employee Taxes</span><span>${money(run.tax)}</span></div><div class="row"><span>Employer Taxes</span><span>${money(run.employerTax)}</span></div><div class="row"><span>Pay Date</span><span>${run.payDate}</span></div><div class="row"><span>Deposit Due</span><span>${run.depositDue}</span></div><div class="row"><span>Approved By</span><span>${run.approvedBy}</span></div>
+            </div></div>
+            <div class="panel"><div class="panel-head"><h3>Tax IQ Status</h3></div><div class="panel-body">
+              <div style="text-align:center;padding:10px 0 18px"><div class="value ${riskClass(run.risk)}">${run.risk ?? "-"}</div><div class="sub">Risk Score</div></div>
+              <div class="row"><span>Tracking Status</span><span>${run.status}</span></div><div class="row"><span>Tax Ledger ID</span><span class="mono">taxledger_01JZ005</span></div><div class="row"><span>Reconciliation</span><span>Matched</span></div><div class="row"><span>Audit Hash</span><span class="mono muted">sha256:7b4f</span></div>
+            </div></div>
+            <div class="panel" style="margin-top:14px"><div class="panel-head"><h3>Audit Trail</h3><span class="chip">${auditFor(run.id).length}</span></div>${auditMarkup(auditFor(run.id))}</div>
+          </div>
+        </div>`;
+    }
+
+    function lineItemTable(items){
+      return table(["Employee","Department","Gross Pay","Taxable","Pre-tax","Employee Tax","Employer Tax","Net Pay","Status"], items.map(item => {
+        const e = employeeById(item.employee);
+        return `<tr class="clickable" data-employee="${e.id}"><td>${e.name}<br><span class="mono muted">${e.id}</span></td><td>${e.dept}</td><td>${money(item.gross)}</td><td>${money(item.taxable)}</td><td>${money(item.preTax)}</td><td>${money(item.employeeTax)}</td><td>${money(item.employerTax)}</td><td>${money(item.net)}</td><td>${statusPill(item.status)}</td></tr>`;
+      }));
+    }
+
+    function renderEmployeeProfile(){
+      const emp = employees.find(e=>e.id===state.selectedEmployee) || employees[0];
+      const history = lineItems.filter(item => item.employee === emp.id).filter(matches);
+      setTitle("Employee Profile",`${emp.name} - ${emp.id}`);
+      document.getElementById("screen-employee-profile").innerHTML = `
+        <div class="actions" style="margin-bottom:14px"><button class="btn" data-go="employees">Back to Employees</button><button class="btn" data-action="send-w4">Send W-4 Link</button><button class="btn primary" data-action="verify-tin">Verify TIN</button></div>
+        <div class="profile">
+          <div>
+            <div class="profile-card card"><div class="big-avatar">${emp.name.split(" ").map(x=>x[0]).slice(0,2).join("")}</div><h3>${emp.name}</h3><p class="muted">${emp.dept} - ${emp.employer}</p>${statusPill(emp.tin)}
+              <div class="stats"><div class="stat"><div>YTD Gross</div><div>${money(emp.gross*6)}</div></div><div class="stat"><div>YTD Tax</div><div>${money(emp.tax*6)}</div></div><div class="stat"><div>Risk</div><div>${emp.risk}</div></div><div class="stat"><div>Status</div><div>tracking_ready</div></div></div>
+            </div>
+            <div class="panel" style="margin-top:14px"><div class="panel-head"><h3>Employee Audit</h3></div>${auditMarkup(auditFor(emp.id))}</div>
+          </div>
+          <div>
+            <div class="grid-2" style="margin-bottom:14px">
+              <div class="panel"><div class="panel-head"><h3>Employment Info</h3></div><div class="panel-body">
+                <div class="row"><span>Employee ID</span><span class="mono">${emp.id}</span></div><div class="row"><span>Annual Salary</span><span>${money(emp.salary)}</span></div><div class="row"><span>Residence</span><span>${emp.residence}</span></div><div class="row"><span>Work Location</span><span>${emp.work}</span></div><div class="row"><span>Worker Type</span><span>Employee (W-2)</span></div>
+              </div></div>
+              <div class="panel"><div class="panel-head"><h3>Tax Profile</h3>${statusPill(emp.w4)}</div><div class="panel-body">
+                ${emp.tin!=="Verified" ? `<div class="notice">TIN verification is ${emp.tin.toLowerCase()}. Resolve before the next payroll close.</div>` : ""}
+                <div class="row"><span>Form Type</span><span>W-4 (${emp.w4})</span></div><div class="row"><span>Filing Status</span><span>${emp.filing}</span></div><div class="row"><span>Dependents</span><span>${emp.dependents ?? "-"}</span></div><div class="row"><span>Extra W/H per period</span><span>$25.00</span></div><div class="row"><span>Profile Updated</span><span>${emp.profileUpdated}</span></div><div class="row"><span>SSN</span><span class="mono">***-**-6789</span></div><div class="row"><span>Token</span><span class="mono muted">tok_ssn_abc123</span></div>
+              </div></div>
+            </div>
+            <div class="panel"><div class="panel-head"><h3>Payroll Tax History</h3><span class="chip">${history.length} line(s)</span></div>${lineItemTable(history)}</div>
+          </div>
+        </div>`;
+    }
+
+    function renderEmployees(){
+      setTitle("Employees","Search employee tax profiles, W-4 status, and payroll risk.");
+      document.getElementById("screen-employees").innerHTML = `<div class="panel"><div class="panel-head"><h3>Employees</h3><div class="actions"><button class="btn" data-export="employees">Export CSV</button><button class="btn primary" data-action="invite-employee">Invite Employee</button></div></div>${employeeTable(employees.filter(matches))}</div>`;
+    }
+
+    function renderEmployers(){
+      setTitle("Employers","Businesses and employer tax registrations managed in Tax IQ.");
+      const rows = employers.filter(matches).map(e => `<tr><td>${e.name}<br><span class="mono muted">${e.id}</span></td><td>${e.industry}</td><td>${e.employees}</td><td>${e.registrations}</td><td>${e.depositSchedule}</td><td>${e.nextDeposit}</td><td>${e.lastSync}</td><td>${e.health}%</td><td>${statusPill(e.status)}</td><td><button class="btn" data-action="sync">Sync Now</button></td></tr>`);
+      document.getElementById("screen-employers").innerHTML = `<div class="panel"><div class="panel-head"><h3>Employers</h3><button class="btn primary" data-action="add-employer">Add Employer</button></div>${table(["Employer","Industry","Employees","Registrations","Deposit Schedule","Next Deposit","Last Sync","API Health","Status","Action"],rows)}</div>`;
+    }
+
+    function renderAnalytics(){
+      setTitle("Analytics","Risk, tax, and operational trends across payroll periods.");
+      const openIssues = exceptions.filter(e=>e.status!=="Resolved");
+      const successRate = Math.round(events.filter(e=>e.status==="Delivered").length / events.length * 1000) / 10;
+      document.getElementById("screen-analytics").innerHTML = `
+        <div class="grid-4" style="margin-bottom:14px">
+          <div class="metric green card"><div class="label">Average Risk</div><div class="value">${avg(runs,"risk")}</div><div class="sub">Across scored payroll runs</div></div>
+          <div class="metric yellow card"><div class="label">Open Exceptions</div><div class="value">${openIssues.length}</div><div class="sub">${openIssues.filter(e=>e.blocking).length} blocking strict mode</div></div>
+          <div class="metric cyan card"><div class="label">Webhook Success</div><div class="value">${successRate}%</div><div class="sub">Current event sample</div></div>
+          <div class="metric red card"><div class="label">Missing Tax Profiles</div><div class="value">${employees.filter(e=>e.tin==="Missing" || e.w4==="Missing").length}</div><div class="sub">Blocks next strict run</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="panel"><div class="panel-head"><h3>Risk by Payroll Run</h3></div><div class="panel-body">${runs.map(r=>`<div class="row"><span class="mono">${r.id}</span><span>${riskBar(r.risk)}</span></div>`).join("")}</div></div>
+          <div class="panel"><div class="panel-head"><h3>Tax Distribution</h3></div>${jurisdictionMini()}</div>
+          <div class="panel"><div class="panel-head"><h3>Blocking Reasons</h3></div><div class="panel-body">${openIssues.filter(e=>e.blocking).map(e=>`<div class="row"><span>${e.type}</span><span>${e.owner}</span></div>`).join("") || `<div class="empty">No blocking exceptions.</div>`}</div></div>
+          <div class="panel"><div class="panel-head"><h3>Deposit Calendar</h3></div><div class="panel-body">${jurisdictions.map(j=>`<div class="row"><span>${j.name} <span class="mono muted">${j.id}</span></span><span>${j.nextDue}</span></div>`).join("")}</div></div>
+        </div>`;
+    }
+
+    function renderConnections(){
+      setTitle("Connections","Payroll and HRIS integrations connected to Tax IQ.");
+      const cards = employers.filter(matches).map(e => `<div class="connection"><div class="mark">${e.name.slice(0,2).toUpperCase()}</div><div style="flex:1"><div class="item-title">${e.name}</div><div class="item-text mono">conn_nt_${e.id} - client_credentials - webhook signed - scopes: payroll.read, employee.tax_profile.write</div><div class="item-text">Last sync: ${e.lastSync} - Deposit schedule: ${e.depositSchedule}</div></div><div>${statusPill(e.status)}</div><div style="min-width:120px">${riskBar(Math.round(100-e.health))}</div><button class="btn" data-action="test-connection">Test</button></div>`).join("");
+      document.getElementById("screen-connections").innerHTML = `<div class="panel"><div class="panel-head"><h3>Payroll Connections</h3><button class="btn primary" data-action="add-connection">Add Connection</button></div><div class="panel-body list">${cards}</div></div>`;
+    }
+
+    function ledgerTable(items){
+      return table(["Entry ID","Employee","Pay Date","Jurisdiction","Tax Type","Taxable Wages","Employee Tax","Employer Tax","Audit Hash"], items.map(l => `<tr><td class="mono muted">${l.id}</td><td>${l.employee}<br><span class="mono muted">${l.emp}</span></td><td>${l.payDate}</td><td><span class="chip">${l.jurisdiction}</span></td><td class="mono">${l.type}</td><td>${money(l.taxable)}</td><td>${money(l.employeeTax)}</td><td>${money(l.employerTax)}</td><td class="mono muted">${l.hash}</td></tr>`));
+    }
+
+    function renderLedger(){
+      setTitle("Tax Ledger","Immutable tax ledger entries for finalized payroll runs.");
+      document.getElementById("screen-ledger").innerHTML = `<div class="panel"><div class="panel-head"><h3>Ledger Entries</h3><div class="actions"><button class="btn" data-export="ledger">Export CSV</button><button class="btn primary" data-action="download-report">Download Report</button></div></div>${ledgerTable(ledger.filter(matches))}</div>`;
+    }
+
+    function renderExceptions(){
+      setTitle("Exceptions Queue","Issues requiring admin review before payroll finalization.");
+      const cards = exceptions.filter(matches).map(exceptionCard).join("");
+      document.getElementById("screen-exceptions").innerHTML = `<div class="panel"><div class="panel-head"><h3>Open Exceptions</h3><button class="btn" data-export="exceptions">Export CSV</button></div><div class="panel-body list">${cards || `<div class="empty">No matching exceptions.</div>`}</div></div>`;
+    }
+
+    function renderJurisdictions(){
+      setTitle("Jurisdictions","Federal, state, and local tax footprint by employer.");
+      const rows = jurisdictions.filter(matches).map(j => `<tr><td>${j.name}<br><span class="mono muted">${j.id}</span></td><td>${money(j.employeeTax)}</td><td>${money(j.employerTax)}</td><td>${statusPill(j.registrations)}</td><td>${j.depositSchedule}</td><td>${j.nextDue}</td><td>${riskBar(j.risk)}</td><td><button class="btn" data-action="review-jurisdiction">Review</button></td></tr>`);
+      const programRows = taxPrograms.filter(matches).map(p => `<tr><td>${p.program}</td><td>${p.level}</td><td>${p.agency}</td><td>${p.forms}</td><td>${p.owner}</td></tr>`);
+      document.getElementById("screen-jurisdictions").innerHTML = `
+        <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>Jurisdiction Summary</h3><button class="btn primary" data-action="add-registration">Add Registration</button></div>${table(["Jurisdiction","Employee Tax","Employer Tax","Registration","Deposit Schedule","Next Due","Risk","Action"],rows)}</div>
+        <div class="panel"><div class="panel-head"><h3>US Payroll Tax Programs</h3><span class="chip">${state.scope}</span></div>${table(["Program","Level","Agency","Forms / Returns","Owner"],programRows)}</div>`;
+    }
+
+    function renderForms(){
+      setTitle("Forms & Reports","Generate payroll tax reports and year-end files.");
+      const rows = forms.filter(matches).map(f => `<tr><td>${f.name}</td><td>${f.period}</td><td>${f.records}</td><td>${f.owner}</td><td>${f.source}</td><td>${f.due}</td><td>${statusPill(f.status)}</td><td><button class="btn" data-action="preview-report">Preview</button> <button class="btn primary" data-action="download-report">Download</button></td></tr>`);
+      document.getElementById("screen-forms").innerHTML = `<div class="panel"><div class="panel-head"><h3>Reports</h3><button class="btn" data-action="generate-report">Generate New</button></div>${table(["Report","Period","Records","Owner","Source","Due Date","Status","Action"],rows)}</div>`;
+    }
+
+    function renderAiAdvisor(){
+      setTitle("AI Advisor","Financial guidance, official-rule watch, support prompts, and industry deduction reminders.");
+      const advisorModules = advisoryModules.filter(m => ["Government Rule Watch","AI CFO","Industry Deduction Checklist"].includes(m.name)).filter(matches);
+      const moduleRows = advisorModules.map(m => `<tr><td>${m.name}</td><td>${statusPill(m.status)}</td><td>${m.owner}</td><td>${m.detail}</td></tr>`);
+      const ruleRows = ruleUpdates.filter(matches).map(r => `<tr><td>${r.source}</td><td>${r.topic}</td><td>${statusPill(r.impact)}</td><td>${r.action}</td></tr>`);
+      const checklistRows = deductionChecklists.filter(matches).map(d => `<tr><td>${d.industry}</td><td>${d.checklist}</td><td><button class="btn" data-action="generate-checklist">Generate</button></td></tr>`);
+      const prompts = [
+        {area:"Cash flow", prompt:"Review upcoming payroll, payout, rent, supplies, and tax deposit pressure."},
+        {area:"Tax planning", prompt:"Find missing records before quarter close and list questions for CPA."},
+        {area:"Support", prompt:"Explain what screen to use next when a workflow is blocked."}
+      ].filter(matches).map(p => `<tr><td>${p.area}</td><td>${p.prompt}</td><td><button class="btn primary" data-action="ask-ai-cfo">Ask</button></td></tr>`);
+      document.getElementById("screen-ai-advisor").innerHTML = `
+        <div class="grid-4" style="margin-bottom:14px">
+          <div class="metric green card"><div class="label">Advisor Modules</div><div class="value">${advisorModules.length}</div><div class="sub">AI CFO, rules, checklist</div></div>
+          <div class="metric cyan card"><div class="label">Rule Sources</div><div class="value">${ruleUpdates.length}</div><div class="sub">Official-source monitor design</div></div>
+          <div class="metric yellow card"><div class="label">Deduction Lists</div><div class="value">${deductionChecklists.length}</div><div class="sub">Industry reminders</div></div>
+          <div class="metric red card"><div class="label">Guidance Mode</div><div class="value">On</div><div class="sub">Contextual support ideas</div></div>
+        </div>
+        <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>AI Advisor Modules</h3><div class="actions"><button class="btn" data-action="open-guide">Guided Tour</button><button class="btn primary" data-action="ask-ai-cfo">Ask AI CFO</button></div></div>${table(["Module","Status","Owner","Purpose"],moduleRows)}</div>
+        <div class="grid-2" style="margin-bottom:14px">
+          <div class="panel"><div class="panel-head"><h3>Government Rule Watch</h3><span class="chip">Official sources required</span></div>${table(["Source","Topic","Impact","Next Action"],ruleRows)}</div>
+          <div class="panel"><div class="panel-head"><h3>AI CFO Prompt Starters</h3></div>${table(["Area","Prompt","Action"],prompts)}</div>
+        </div>
+        <div class="panel"><div class="panel-head"><h3>Industry Deduction Checklist</h3></div>${table(["Industry","Checklist Ideas","Action"],checklistRows)}</div>`;
+    }
+
+    function renderOcr(){
+      setTitle("OCR Vault","Capture bills, invoices, receipts, and payout evidence before records are lost.");
+      const receiptRows = receiptVault.filter(matches).map(r => `<tr><td class="mono">${r.id}</td><td>${r.vendor}</td><td>${r.type}</td><td>${money(r.amount)}</td><td>${r.source}</td><td>${statusPill(r.status)}</td><td>${r.owner}</td></tr>`);
+      const fieldRows = infoCollectionFields.filter(f => ["Receipt image and OCR fields","Payment method and confirmation","Business purpose and category"].includes(f.field)).filter(matches).map(f => `<tr><td>${f.field}</td><td>${f.purpose}</td><td>${f.required}</td></tr>`);
+      document.getElementById("screen-ocr").innerHTML = `
+        <div class="grid-4" style="margin-bottom:14px">
+          <div class="metric green card"><div class="label">Stored Records</div><div class="value">${receiptVault.length}</div><div class="sub">Bills, receipts, evidence</div></div>
+          <div class="metric cyan card"><div class="label">Needs Review</div><div class="value">${receiptVault.filter(r=>r.status!=="Extracted").length}</div><div class="sub">Manual category check</div></div>
+          <div class="metric yellow card"><div class="label">OCR Sources</div><div class="value">4</div><div class="sub">Camera, email, upload, payout</div></div>
+          <div class="metric red card"><div class="label">Lost Receipt Risk</div><div class="value">Low</div><div class="sub">Vault enabled</div></div>
+        </div>
+        <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>Receipt Vault + AI OCR</h3><button class="btn primary" data-action="capture-ocr">Capture Receipt</button></div>${table(["ID","Vendor","Type","Amount","Source","Status","Owner"],receiptRows)}</div>
+        <div class="panel"><div class="panel-head"><h3>OCR Data To Collect</h3></div>${table(["Field","Why It Matters","Required"],fieldRows)}</div>`;
+    }
+
+    function renderShareLinks(){
+      setTitle("Share Links","Create secure upload and review links for CPA, technicians, friends, or external reviewers.");
+      const shareRows = shareLinks.filter(matches).map(s => `<tr><td class="mono">${s.id}</td><td>${s.recipient}</td><td>${s.access}</td><td>${s.expires}</td><td>${statusPill(s.status)}</td><td><button class="btn" data-action="copy-share-link">Copy</button></td></tr>`);
+      const fieldRows = infoCollectionFields.filter(f => ["Share link consent and expiration","Worker classification","W-9 / W-4 / TIN status"].includes(f.field)).filter(matches).map(f => `<tr><td>${f.field}</td><td>${f.purpose}</td><td>${f.required}</td></tr>`);
+      document.getElementById("screen-share-links").innerHTML = `
+        <div class="grid-4" style="margin-bottom:14px">
+          <div class="metric green card"><div class="label">Active Links</div><div class="value">${shareLinks.filter(s=>s.status==="Active").length}</div><div class="sub">Upload/review access</div></div>
+          <div class="metric cyan card"><div class="label">Default Expiry</div><div class="value">15d</div><div class="sub">Can be set to never expire</div></div>
+          <div class="metric yellow card"><div class="label">QR Support</div><div class="value">Yes</div><div class="sub">Same permission model</div></div>
+          <div class="metric red card"><div class="label">Audit Log</div><div class="value">On</div><div class="sub">Every upload/review event</div></div>
+        </div>
+        <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>Payout / Profile Share Links</h3><button class="btn primary" data-action="create-share-link">Create Link</button></div>${table(["Link ID","Recipient","Access","Expires","Status","Action"],shareRows)}</div>
+        <div class="panel"><div class="panel-head"><h3>Share Link Data Rules</h3></div>${table(["Field","Why It Matters","Required"],fieldRows)}</div>`;
+    }
+
+    function renderGps(){
+      setTitle("GPS Mileage","Track business trips and mileage evidence for deduction review.");
+      const mileageRows = mileageTrips.filter(matches).map(t => `<tr><td class="mono">${t.id}</td><td>${t.route}</td><td>${t.miles}</td><td>${t.purpose}</td><td>${statusPill(t.status)}</td></tr>`);
+      const fieldRows = infoCollectionFields.filter(f => f.field === "GPS trip start/end and mileage").filter(matches).map(f => `<tr><td>${f.field}</td><td>${f.purpose}</td><td>${f.required}</td></tr>`);
+      document.getElementById("screen-gps").innerHTML = `
+        <div class="grid-4" style="margin-bottom:14px">
+          <div class="metric green card"><div class="label">Trips</div><div class="value">${mileageTrips.length}</div><div class="sub">Tracked or pending review</div></div>
+          <div class="metric cyan card"><div class="label">Total Miles</div><div class="value">${sum(mileageTrips,"miles")}</div><div class="sub">Prototype sample</div></div>
+          <div class="metric yellow card"><div class="label">Deduction Candidates</div><div class="value">${mileageTrips.filter(t=>t.status==="Deduction candidate").length}</div><div class="sub">CPA should review</div></div>
+          <div class="metric red card"><div class="label">Policy Checks</div><div class="value">${mileageTrips.filter(t=>t.status.includes("check")).length}</div><div class="sub">Ambiguous route purpose</div></div>
+        </div>
+        <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>GPS Mileage Tracker</h3><button class="btn primary" data-action="start-mileage">Start Trip</button></div>${table(["Trip ID","Route","Miles","Purpose","Status"],mileageRows)}</div>
+        <div class="panel"><div class="panel-head"><h3>Mileage Data To Collect</h3></div>${table(["Field","Why It Matters","Required"],fieldRows)}</div>`;
+    }
+
+    function renderWebhooks(){
+      setTitle("Webhook Monitor","Outbox delivery log for connected payroll systems.");
+      document.getElementById("screen-webhooks").innerHTML = `
+        <div class="grid-4" style="margin-bottom:14px">
+          <div class="metric green card"><div class="label">Delivered (24h)</div><div class="value">1,284</div><div class="sub">99.7% success rate</div></div>
+          <div class="metric cyan card"><div class="label">Pending</div><div class="value">7</div><div class="sub">In delivery queue</div></div>
+          <div class="metric yellow card"><div class="label">Retrying</div><div class="value">3</div><div class="sub">Next retry in 5 min</div></div>
+          <div class="metric red card"><div class="label">Dead Letter</div><div class="value">1</div><div class="sub">Manual review required</div></div>
+        </div>
+        <div class="panel"><div class="panel-head"><h3>Recent Events</h3><button class="btn" data-action="retry-webhooks">Retry Failed</button></div>
+          ${table(["Event ID","Type","Tenant","Attempts","Status","Created","Delivered"], events.filter(matches).map(e=>`<tr><td class="mono">${e.id}</td><td class="mono">${e.type}</td><td>${e.tenant}</td><td>${e.attempts}</td><td>${statusPill(e.status)}</td><td>${e.created}</td><td>${e.delivered}</td></tr>`))}
+        </div>`;
+    }
+
+    function renderSettings(){
+      setTitle("Settings","Configure tenant security, strict mode, and notification behavior.");
+      document.getElementById("screen-settings").innerHTML = `
+        <div class="grid-2">
+          <div class="panel"><div class="panel-head"><h3>US Payroll Scope</h3><span class="chip green">${state.scope}</span></div><div class="panel-body">
+            <div class="row"><span>Supported country</span><span>United States</span></div>
+            <div class="row"><span>Tax levels</span><span>Federal, State, Local</span></div>
+            <div class="row"><span>Employee forms</span><span>W-4, W-2</span></div>
+            <div class="row"><span>Employer returns</span><span>941, 940, SUTA</span></div>
+            <div class="row"><span>Identity fields</span><span>SSN / TIN tokenized</span></div>
+          </div></div>
+          <div class="panel"><div class="panel-head"><h3>Compliance Controls</h3></div><div class="panel-body">
+            <div class="row"><span>Strict finalization mode</span><span><input type="checkbox" checked> Enabled</span></div>
+            <div class="row"><span>Require TIN verification</span><span><input type="checkbox" checked> Enabled</span></div>
+            <div class="row"><span>Mask SSN in UI</span><span><input type="checkbox" checked> Enabled</span></div>
+            <div class="row"><span>Block missing state registration</span><span><input type="checkbox" checked> Enabled</span></div>
+            <div class="row"><span>Track FUTA/SUTA obligations</span><span><input type="checkbox" checked> Enabled</span></div>
+            <div class="row"><span>Audit retention</span><span>7 years</span></div>
+          </div></div>
+          <div class="panel"><div class="panel-head"><h3>Notifications</h3></div><div class="panel-body">
+            <div class="row"><span>Exception digest</span><span>Daily</span></div>
+            <div class="row"><span>Webhook failure alerts</span><span>Immediate</span></div>
+            <div class="row"><span>Owner escalation</span><span>After 2 days</span></div>
+            <button class="btn primary" data-action="save-settings">Save Settings</button>
+          </div></div>
+          <div class="panel"><div class="panel-head"><h3>Role & Access</h3><select class="role-select" id="roleSelect">${Object.keys(roles).map(role => `<option ${role===state.role ? "selected" : ""}>${role}</option>`).join("")}</select></div><div class="panel-body">
+            ${["create_run","verify_tin","resolve_exception","finalize_run","export_data","manage_settings"].map(permission => `<div class="permission"><span class="mono">${permission}</span><span>${can(permission) ? statusPill("Active") : statusPill("Missing")}</span></div>`).join("")}
+          </div></div>
+          <div class="panel"><div class="panel-head"><h3>Data Protection</h3></div><div class="panel-body">
+            <div class="row"><span>SSN/TIN storage</span><span>Tokenized</span></div>
+            <div class="row"><span>PII export approval</span><span>Required</span></div>
+            <div class="row"><span>Webhook signing</span><span>HMAC SHA-256</span></div>
+            <div class="row"><span>Idempotency window</span><span>24 hours</span></div>
+          </div></div>
+        </div>`;
+    }
+
+    const renderers = {
+      dashboard: renderDashboard, analytics: renderAnalytics, employers: renderEmployers, employees: renderEmployees, runs: renderRuns,
+      "run-detail": renderRunDetail, "employee-profile": renderEmployeeProfile, connections: renderConnections, ledger: renderLedger,
+      exceptions: renderExceptions, jurisdictions: renderJurisdictions, forms: renderForms,
+      "ai-advisor": renderAiAdvisor, ocr: renderOcr, "share-links": renderShareLinks, gps: renderGps,
+      webhooks: renderWebhooks, settings: renderSettings
+    };
+
+    function showScreen(name){
+      state.screen = renderers[name] ? name : "dashboard";
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(`screen-${state.screen}`).classList.add("active");
+      if(window.location.hash.slice(1) !== state.screen){
+        history.replaceState(null, "", `#${state.screen}`);
+      }
+      render();
+    }
+
+    function render(){
+      renderNav();
+      renderPeriods();
+      renderers[state.screen]();
+      bindDynamicEvents();
+    }
+
+    function bindDynamicEvents(){
+      document.querySelectorAll("[data-go]").forEach(el => el.addEventListener("click", () => showScreen(el.dataset.go)));
+      document.querySelectorAll("[data-run]").forEach(el => el.addEventListener("click", () => {state.selectedRun = el.dataset.run; showScreen("run-detail");}));
+      document.querySelectorAll("[data-employee]").forEach(el => el.addEventListener("click", () => {state.selectedEmployee = el.dataset.employee; showScreen("employee-profile");}));
+      document.querySelectorAll("[data-action]").forEach(el => el.addEventListener("click", () => handleAction(el.dataset.action, el)));
+      document.querySelectorAll("[data-export]").forEach(el => el.addEventListener("click", () => exportCsv(el.dataset.export)));
+      document.querySelectorAll("[data-resolve]").forEach(el => el.addEventListener("click", () => {
+        if(!can("resolve_exception")){ toast(`${state.role} cannot resolve exceptions.`); return; }
+        const ex = exceptions.find(x => x.id === el.dataset.resolve);
+        if(ex){
+          ex.status = "Resolved";
+          addAudit(ex.id, "Resolved exception", `${ex.type} resolved from ${state.screen}.`);
+          toast(`${ex.id} marked resolved`);
+          render();
+        }
+      }));
+      const roleSelect = document.getElementById("roleSelect");
+      if(roleSelect){
+        roleSelect.addEventListener("change", () => {
+          state.role = roleSelect.value;
+          toast(`Role switched to ${state.role}`);
+          render();
+        });
+      }
+    }
+
+    function handleAction(action){
+      if(action === "new-run"){
+        if(!can("create_run")){ toast(`${state.role} cannot create payroll runs.`); return; }
+        const id = `pr_draft_${Date.now().toString().slice(-5)}`;
+        runs.unshift({id, period:"Next Regular", payDate:"Jul 17, 2026", employees:0, gross:0, tax:0, employerTax:0, risk:null, status:"Pending", source:"Manual draft", approvedBy:"Pending", depositDue:"Jul 22, 2026"});
+        runValidations[id] = [{name:"Payroll import", status:"warn", detail:"Draft run is waiting for employee line items.", owner:"Payroll"}];
+        addAudit(id, "Created draft run", "Run created from Tax IQ workspace.");
+        state.selectedRun = id;
+        toast(`Draft run ${id} created.`);
+        showScreen("run-detail");
+        return;
+      }
+      if(action === "finalize"){
+        const run = runs.find(r=>r.id===state.selectedRun);
+        if(!run){ toast("No payroll run selected."); return; }
+        if(!can("finalize_run")){ toast(`${state.role} cannot finalize runs.`); return; }
+        if(["Ledger Posted","Reported"].includes(run.status)){ toast(`${run.id} is already finalized.`); return; }
+        if(!runLineItems(run.id).length){
+          run.status = "Pending";
+          addAudit(run.id, "Finalization blocked", "No line items are attached to the run.");
+          toast("Cannot finalize: payroll line items are missing.");
+          render();
+          return;
+        }
+        if(hasBlockingItems(run)){
+          run.status = "Validation Failed";
+          addAudit(run.id, "Finalization blocked", "Blocking validation or exception is still open.");
+          toast("Cannot finalize: resolve blocking items first.");
+          render();
+          return;
+        }
+        run.status = "Ledger Posted";
+        run.approvedBy = state.role;
+        run.risk = Math.min(run.risk ?? 12, 18);
+        addAudit(run.id, "Finalized payroll run", "Validation passed and ledger was posted.");
+        toast(`${run.id} finalized and posted to ledger.`);
+        render();
+        return;
+      }
+      if(action === "verify-tin"){
+        if(!can("verify_tin")){ toast(`${state.role} cannot verify TINs.`); return; }
+        const emp = employees.find(e=>e.id===state.selectedEmployee);
+        if(emp){
+          emp.tin = "Verified";
+          emp.risk = Math.max(0, emp.risk - 12);
+          addAudit(emp.id, "Verified TIN", "Employee tax identity was marked verified.");
+          toast(`${emp.name} TIN verified.`);
+          render();
+        }
+        return;
+      }
+      if(action === "send-w4"){
+        const emp = employees.find(e=>e.id===state.selectedEmployee);
+        if(emp){
+          emp.w4 = emp.w4 === "Missing" ? "Requested" : emp.w4;
+          addAudit(emp.id, "Queued W-4 request", "Employee self-service link was queued.");
+          toast(`W-4 request queued for ${emp.name}.`);
+          render();
+        }
+        return;
+      }
+      if(action === "sync"){
+        employers.forEach(employer => {
+          if(matches(employer)){ employer.lastSync = "Now"; employer.health = Math.max(employer.health, 99); employer.status = "Active"; }
+        });
+        addAudit("connections", "Synced employer connections", "Matching employers were refreshed.");
+        toast("Employer sync completed.");
+        render();
+        return;
+      }
+      if(action === "generate-report"){
+        forms.unshift({name:"Payroll Tax Control Report", period:state.period, status:"Draft", records:runs.length, due:"Internal", source:"Tax IQ audit ledger", owner:state.role});
+        addAudit("forms", "Generated report draft", `Payroll Tax Control Report for ${state.period}.`);
+        toast("Report draft generated.");
+        render();
+        return;
+      }
+      if(action === "retry-webhooks"){
+        events.forEach(event => {
+          if(event.status === "Retrying" || event.status === "Dead Letter"){
+            event.status = "Delivered";
+            event.attempts += 1;
+            event.delivered = "Now";
+          }
+        });
+        addAudit("webhooks", "Retried failed webhooks", "Retrying and dead-letter events were queued for delivery.");
+        toast("Failed webhooks retried.");
+        render();
+        return;
+      }
+      if(action === "save-settings"){
+        if(!can("manage_settings")){ toast(`${state.role} cannot update settings.`); return; }
+        addAudit("settings", "Saved tenant settings", "Compliance controls and notifications reviewed.");
+        toast("Settings saved.");
+        return;
+      }
+      if(action === "add-registration"){
+        const missing = jurisdictions.find(j => j.registrations === "Missing setup");
+        if(missing){
+          missing.registrations = "Review";
+          addAudit(missing.id, "Started registration workflow", `${missing.name} registration moved to review.`);
+          toast(`${missing.name} registration workflow started.`);
+          render();
+          return;
+        }
+      }
+      if(action === "capture-ocr"){
+        const id = `rcpt_${String(receiptVault.length + 1).padStart(3,"0")}`;
+        receiptVault.unshift({id, vendor:"AI capture pending", type:"Uncategorized", amount:0, source:"Camera upload", status:"Needs Review", owner:state.role});
+        addAudit(id, "Captured receipt for OCR", "AI extraction queued for merchant review.");
+        toast("Receipt captured and queued for AI OCR.");
+        render();
+        return;
+      }
+      if(action === "create-share-link"){
+        const id = `shr_${String(shareLinks.length + 1).padStart(3,"0")}`;
+        shareLinks.unshift({id, recipient:"New reviewer", access:"Selected records", expires:"15 days", status:"Active"});
+        addAudit(id, "Created share link", "Secure upload/review link created with 15-day default expiration.");
+        toast("Secure share link created.");
+        render();
+        return;
+      }
+      if(action === "connect-cpa"){
+        cpaReviews.unshift({firm:"New CPA invite", scope:"Tax IQ ledger review", status:"Invited", next:"Waiting for CPA acceptance"});
+        addAudit("cpa", "Invited CPA reviewer", "CPA portal invite queued.");
+        toast("CPA invite created.");
+        render();
+        return;
+      }
+      if(action === "start-mileage"){
+        const id = `trip_${String(mileageTrips.length + 1).padStart(3,"0")}`;
+        mileageTrips.unshift({id, route:"GPS capture in progress", miles:0, purpose:"Business trip", status:"Tracking"});
+        addAudit(id, "Started mileage capture", "GPS mileage trip opened for deduction review.");
+        toast("Mileage tracking started.");
+        render();
+        return;
+      }
+      toast(actionMessage(action));
+    }
+
+    function actionMessage(action){
+      const labels = {
+        "new-run":"Draft payroll run created.",
+        "finalize":"Finalize workflow opened. Validation must pass first.",
+        "send-w4":"W-4 request link queued for employee.",
+        "verify-tin":"TIN verification request started.",
+        "invite-employee":"Employee invitation flow opened.",
+        "sync":"Employer sync requested.",
+        "add-employer":"Employer setup wizard opened.",
+        "add-connection":"Connection wizard opened.",
+        "test-connection":"Connection health check started.",
+        "download-report":"Report download prepared.",
+        "assign":"Assignment panel opened.",
+        "review-jurisdiction":"Jurisdiction review opened.",
+        "add-registration":"Tax registration workflow opened.",
+        "preview-report":"Report preview opened.",
+        "generate-report":"Report generation started.",
+        "retry-webhooks":"Failed webhook retry queued.",
+        "save-settings":"Settings saved.",
+        "open-guide":"Guided help opened for this workspace.",
+        "ask-ai-cfo":"AI CFO is preparing cash-flow and tax planning advice.",
+        "generate-checklist":"Industry deduction checklist generated.",
+        "copy-share-link":"Secure share link copied."
+      };
+      return labels[action] || "Action received.";
+    }
+
+    function exportCsv(type){
+      if(!can("export_data")){ toast(`${state.role} cannot export data.`); return; }
+      const map = {runs, employees, exceptions, ledger, "line-items": runLineItems(state.selectedRun)};
+      const data = map[type] || [];
+      if(!data.length){ toast("No data to export."); return; }
+      const headers = Object.keys(data[0]);
+      const csv = [headers.join(","), ...data.map(row => headers.map(h => `"${String(row[h] ?? "").replaceAll('"','""')}"`).join(","))].join("\n");
+      const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `tax-iq-${type}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast(`${type} CSV exported.`);
+    }
+
+    function toast(message){
+      const box = document.getElementById("toast");
+      const item = document.createElement("div");
+      item.textContent = message;
+      box.appendChild(item);
+      setTimeout(() => item.remove(), 2800);
+    }
+
+    document.getElementById("searchInput").addEventListener("input", (event) => {
+      state.query = event.target.value;
+      renderers[state.screen]();
+      bindDynamicEvents();
+    });
+    document.getElementById("newRunBtn").addEventListener("click", () => showScreen("runs"));
+    window.addEventListener("hashchange", () => {
+      const screen = window.location.hash.slice(1);
+      if(renderers[screen]) showScreen(screen);
+    });
+    const initialScreen = window.location.hash.slice(1);
+    showScreen(renderers[initialScreen] ? initialScreen : state.screen);
+  </script>
+</body>
+</html>

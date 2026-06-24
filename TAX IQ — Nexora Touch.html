@@ -1,0 +1,603 @@
+
+<!-- saved from url=(0065)https://www.w3schools.com/html/tryit.asp?filename=tryhtml_default -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TAX IQ — Nexora Touch</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:#0f1117;color:#e2e8f0;display:flex;height:100vh;overflow:hidden}
+.sidebar{width:220px;background:#161b27;border-right:1px solid #1e2533;display:flex;flex-direction:column;flex-shrink:0}
+.logo{padding:18px 16px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #1e2533}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.logo-text{font-size:14px;font-weight:700;color:#f1f5f9}.logo-sub{font-size:10px;color:#64748b;letter-spacing:.05em}
+.ns{padding:10px 0}.nl{font-size:10px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.08em;padding:0 14px 6px}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 14px;font-size:12.5px;color:#94a3b8;cursor:pointer;transition:all .15s;position:relative;border-right:2px solid transparent}
+.ni:hover{background:#1e2533;color:#e2e8f0}.ni.active{background:rgba(99,102,241,.1);color:#818cf8;border-right-color:#6366f1}
+.ni .ic{width:15px;text-align:center;font-size:13px}
+.bx{display:inline-flex;align-items:center;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;margin-left:auto}
+.bx.r{background:#ef4444;color:#fff}.bx.y{background:#f59e0b;color:#fff}.bx.b{background:#6366f1;color:#fff}
+.sf{margin-top:auto;padding:14px;border-top:1px solid #1e2533;display:flex;align-items:center;gap:9px}
+.av{width:30px;height:30px;background:linear-gradient(135deg,#6366f1,#a78bfa);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.un{font-size:12px;font-weight:600;color:#e2e8f0}.ur{font-size:10px;color:#64748b}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:#161b27;border-bottom:1px solid #1e2533;padding:0 22px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.pt{font-size:15px;font-weight:700;color:#f1f5f9}.bc{font-size:11px;color:#64748b}
+.tr{display:flex;align-items:center;gap:10px}
+.btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:5px;transition:all .15s}
+.bp{background:#6366f1;color:#fff}.bp:hover{background:#4f46e5}
+.bg{background:transparent;color:#94a3b8;border:1px solid #1e2533}.bg:hover{background:#1e2533;color:#e2e8f0}
+.sb{display:flex;align-items:center;gap:7px;background:#0f1117;border:1px solid #1e2533;border-radius:8px;padding:7px 11px;color:#64748b;font-size:12px}
+.sb input{background:transparent;border:none;outline:none;color:#e2e8f0;font-size:12px;width:160px}
+.sb input::placeholder{color:#475569}
+.tabs{display:flex;gap:2px;background:#0f1117;border:1px solid #1e2533;border-radius:8px;padding:3px}
+.tab{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;color:#64748b;transition:all .15s}
+.tab.active{background:#6366f1;color:#fff}
+.content{flex:1;overflow-y:auto;padding:20px}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.sc{background:#161b27;border:1px solid #1e2533;border-radius:12px;padding:18px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sc.gn::before{background:linear-gradient(90deg,#10b981,#34d399)}.sc.bl::before{background:linear-gradient(90deg,#6366f1,#818cf8)}
+.sc.yw::before{background:linear-gradient(90deg,#f59e0b,#fbbf24)}.sc.rd::before{background:linear-gradient(90deg,#ef4444,#f87171)}
+.sl{font-size:10px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.sv{font-size:24px;font-weight:800;color:#f1f5f9;font-feature-settings:'tnum'}.sv.sm{font-size:20px}
+.ss{font-size:11px;color:#475569;margin-top:3px}.ss .up{color:#10b981}.ss .dn{color:#ef4444}
+.si{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:26px;opacity:.12}
+.panels{display:grid;grid-template-columns:1fr 360px;gap:14px;margin-bottom:20px}
+.panel{background:#161b27;border:1px solid #1e2533;border-radius:12px;overflow:hidden}
+.ph{padding:14px 18px;border-bottom:1px solid #1e2533;display:flex;align-items:center;justify-content:space-between}
+.ptl{font-size:13px;font-weight:700;color:#f1f5f9}.pb{padding:18px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{text-align:left;padding:9px 11px;font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #1e2533;white-space:nowrap}
+tbody tr{border-bottom:1px solid #1a2030;transition:background .1s;cursor:pointer}
+tbody tr:hover{background:#1a2030}
+tbody td{padding:11px;color:#cbd5e1;white-space:nowrap}
+tbody td:first-child{color:#e2e8f0;font-weight:500}
+.st{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.st::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.st.ok{background:rgba(16,185,129,.12);color:#34d399}.st.ok::before{background:#10b981}
+.st.rv{background:rgba(245,158,11,.12);color:#fbbf24}.st.rv::before{background:#f59e0b}
+.st.pd{background:rgba(99,102,241,.12);color:#818cf8}.st.pd::before{background:#6366f1}
+.st.fl{background:rgba(239,68,68,.12);color:#f87171}.st.fl::before{background:#ef4444}
+.rb{display:flex;align-items:center;gap:7px}
+.rt{flex:1;height:4px;background:#1e2533;border-radius:99px;overflow:hidden}
+.rf{height:100%;border-radius:99px}
+.rf.lw{background:#10b981}.rf.md{background:#f59e0b}.rf.hi{background:#ef4444}
+.rn{font-size:11px;font-weight:700;width:24px;text-align:right}
+.rn.lw{color:#10b981}.rn.md{color:#f59e0b}.rn.hi{color:#ef4444}
+.ii{display:flex;align-items:flex-start;gap:10px;padding:11px;border-radius:8px;margin-bottom:7px;background:#0f1117;border:1px solid #1e2533}
+.iic{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.iic.er{background:rgba(239,68,68,.15)}.iic.wn{background:rgba(245,158,11,.15)}.iic.in{background:rgba(99,102,241,.15)}
+.it{font-size:12px;font-weight:600;color:#e2e8f0;margin-bottom:2px}
+.id{font-size:11px;color:#64748b}.ie{font-size:10px;color:#475569;margin-top:2px;font-family:monospace}
+.br2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.jr{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #1a2030}
+.jr:last-child{border:none}.jn{font-size:12px;color:#94a3b8;font-weight:500;display:flex;align-items:center;gap:5px}
+.jv{display:flex;gap:20px}.jvv{text-align:right}
+.jvv .lbl{font-size:10px;color:#475569}.jvv .amt{font-size:12px;font-weight:600;color:#e2e8f0;font-feature-settings:'tnum'}
+.af{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid #1a2030}
+.af:last-child{border:none}
+.ad{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.ad.gn{background:#10b981;box-shadow:0 0 5px rgba(16,185,129,.5)}
+.ad.yw{background:#f59e0b;box-shadow:0 0 5px rgba(245,158,11,.5)}
+.ad.pp{background:#6366f1;box-shadow:0 0 5px rgba(99,102,241,.5)}
+.ad.rd{background:#ef4444;box-shadow:0 0 5px rgba(239,68,68,.5)}
+.at{font-size:12px;color:#94a3b8;line-height:1.5}.at strong{color:#e2e8f0}
+.atm{font-size:10px;color:#475569;margin-top:2px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#1e2533;border-radius:99px}
+.chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(99,102,241,.12);color:#818cf8}
+.chip.gn{background:rgba(16,185,129,.12);color:#34d399}
+/* SCREENS */
+.screen{display:none}.screen.active{display:block}
+/* DETAIL SCREEN */
+.detail-grid{display:grid;grid-template-columns:1fr 320px;gap:14px}
+.info-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #1a2030;font-size:12px}
+.info-row:last-child{border:none}.info-label{color:#64748b}.info-val{color:#e2e8f0;font-weight:500;font-feature-settings:'tnum'}
+.steps{display:flex;gap:0;margin-bottom:20px}
+.step{flex:1;text-align:center;padding:10px;background:#1a2030;border:1px solid #1e2533;font-size:11px;font-weight:600;color:#64748b;position:relative}
+.step:first-child{border-radius:8px 0 0 8px}.step:last-child{border-radius:0 8px 8px 0}
+.step.done{background:rgba(16,185,129,.1);color:#34d399;border-color:rgba(16,185,129,.3)}
+.step.curr{background:rgba(99,102,241,.15);color:#818cf8;border-color:#6366f1}
+.step-num{display:block;font-size:16px;margin-bottom:2px}
+/* EMPLOYEE PROFILE */
+.profile-grid{display:grid;grid-template-columns:280px 1fr;gap:14px}
+.profile-card{background:#161b27;border:1px solid #1e2533;border-radius:12px;padding:22px;text-align:center}
+.emp-avatar{width:64px;height:64px;background:linear-gradient(135deg,#6366f1,#a78bfa);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin:0 auto 14px}
+.emp-name{font-size:16px;font-weight:700;color:#f1f5f9;margin-bottom:4px}
+.emp-title{font-size:12px;color:#64748b;margin-bottom:14px}
+.emp-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600;background:rgba(16,185,129,.12);color:#34d399;margin-bottom:14px}
+.emp-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left}
+.emp-stat{background:#0f1117;border:1px solid #1e2533;border-radius:8px;padding:10px}
+.emp-stat .lbl{font-size:10px;color:#475569;margin-bottom:3px}.emp-stat .val{font-size:13px;font-weight:700;color:#f1f5f9}
+/* LEDGER */
+.ledger-header{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.lh-left .lh-title{font-size:13px;font-weight:700;color:#34d399}.lh-left .lh-sub{font-size:11px;color:#64748b;margin-top:2px}
+.lh-right{display:flex;gap:20px;text-align:right}
+.lh-stat .lbl{font-size:10px;color:#475569}.lh-stat .val{font-size:14px;font-weight:700;color:#f1f5f9}
+.lock-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:#34d399;font-size:12px;font-weight:600}
+/* EXCEPTIONS */
+.exc-item{background:#161b27;border:1px solid #1e2533;border-radius:10px;padding:14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px}
+.exc-sev{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.exc-sev.hi{background:rgba(239,68,68,.15)}.exc-sev.md{background:rgba(245,158,11,.15)}.exc-sev.lo{background:rgba(99,102,241,.15)}
+.exc-title{font-size:13px;font-weight:600;color:#f1f5f9;margin-bottom:3px}
+.exc-desc{font-size:12px;color:#94a3b8;margin-bottom:6px}.exc-meta{font-size:10px;color:#475569;font-family:monospace}
+.exc-actions{margin-left:auto;display:flex;gap:6px;flex-shrink:0}
+/* CONNECTIONS */
+.conn-card{background:#161b27;border:1px solid #1e2533;border-radius:12px;padding:18px;margin-bottom:12px;display:flex;align-items:center;gap:14px}
+.conn-logo{width:44px;height:44px;border-radius:10px;background:#1e2533;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.conn-name{font-size:14px;font-weight:700;color:#f1f5f9}.conn-id{font-size:11px;color:#64748b;margin-top:2px;font-family:monospace}
+.conn-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.conn-stat{text-align:right}.conn-stat .lbl{font-size:10px;color:#475569}.conn-stat .val{font-size:12px;font-weight:600;color:#e2e8f0}
+.health-bar{width:80px;height:6px;background:#1e2533;border-radius:99px;overflow:hidden;margin-top:4px}
+.health-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#10b981,#34d399)}
+</style></head><body>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">NT</div>
+    <div><div class="logo-text">Nexora Touch</div><div class="logo-sub">TAX IQ Platform</div></div>
+  </div>
+  <div class="ns">
+    <div class="nl">Overview</div>
+    <div class="ni" onclick="showScreen(&#39;dashboard&#39;)"><span class="ic">&#11035;</span> Dashboard</div>
+    <div class="ni" onclick="showScreen(&#39;analytics&#39;)"><span class="ic">&#128202;</span> Analytics</div>
+  </div>
+  <div class="ns">
+    <div class="nl">Payroll</div>
+    <div class="ni" onclick="showScreen(&#39;employers&#39;)"><span class="ic">&#127970;</span> Employers</div>
+    <div class="ni" onclick="showScreen(&#39;employees&#39;)"><span class="ic">&#128101;</span> Employees</div>
+    <div class="ni" onclick="showScreen(&#39;runs&#39;)"><span class="ic">&#128184;</span> Payroll Runs <span class="bx r">3</span></div>
+    <div class="ni" onclick="showScreen(&#39;connections&#39;)"><span class="ic">&#128279;</span> Connections</div>
+  </div>
+  <div class="ns">
+    <div class="nl">Tax IQ</div>
+    <div class="ni" onclick="showScreen(&#39;ledger&#39;)"><span class="ic">&#128210;</span> Tax Ledger</div>
+    <div class="ni" onclick="showScreen(&#39;exceptions&#39;)"><span class="ic">&#9888;&#65039;</span> Exceptions <span class="bx y">5</span></div>
+    <div class="ni" onclick="showScreen(&#39;dashboard&#39;)"><span class="ic">&#127760;</span> Jurisdictions</div>
+    <div class="ni" onclick="showScreen(&#39;dashboard&#39;)"><span class="ic">&#128196;</span> Forms &amp; Reports</div>
+  </div>
+  <div class="ns">
+    <div class="nl">System</div>
+    <div class="ni" onclick="showScreen(&#39;webhooks&#39;)"><span class="ic">&#128276;</span> Webhooks</div>
+    <div class="ni"><span class="ic">&#9881;&#65039;</span> Settings</div>
+  </div>
+  <div class="sf">
+    <div class="av">PA</div>
+    <div><div class="un">Payroll Admin</div><div class="ur">tenant_demo_001</div></div>
+    <span style="color:#475569;cursor:pointer;margin-left:auto;font-size:16px">&#8942;</span>
+  </div>
+</div>
+<!-- MAIN -->
+<div class="main">
+<div class="topbar" id="topbar">
+  <div><div class="pt" id="page-title">Dashboard</div><div class="bc">Nexora Touch / Tax IQ Overview</div></div>
+  <div class="tr">
+    <div class="sb"><span>&#128269;</span><input placeholder="Search employees, runs..."></div>
+    <div class="tabs"><div class="tab active">Q2 2026</div><div class="tab">Q1 2026</div><div class="tab">YTD</div></div>
+    <button class="btn bp" onclick="showScreen(&#39;runs&#39;)">&#65291; New Payroll Run</button>
+  </div>
+</div>
+<div class="content">
+
+<!-- SCREEN: DASHBOARD -->
+<div id="s-dashboard" class="screen active">
+  <div class="sg">
+    <div class="sc gn"><div class="sl">Total Gross Pay (Q2)</div><div class="sv sm">$2,847,320</div><div class="ss"><span class="up">&#8593; 8.4%</span> vs Q1 2026</div><div class="si">&#128176;</div></div>
+    <div class="sc bl"><div class="sl">Employee Tax Withheld</div><div class="sv sm">$498,219</div><div class="ss"><span class="up">&#8593; 6.2%</span> vs Q1 2026</div><div class="si">&#127963;&#65039;</div></div>
+    <div class="sc yw"><div class="sl">Open Issues</div><div class="sv">17</div><div class="ss"><span class="dn">&#8593; 5</span> new this week</div><div class="si">&#9888;&#65039;</div></div>
+    <div class="sc rd"><div class="sl">Finalized Payroll Runs</div><div class="sv">24</div><div class="ss">3 pending finalization</div><div class="si">&#9989;</div></div>
+  </div>
+  <div class="panels">
+    <div class="panel">
+      <div class="ph"><div class="ptl">Recent Payroll Runs</div><div style="display:flex;gap:7px"><span class="chip">24 total</span><button class="btn bg" style="padding:5px 9px;font-size:11px">Export CSV</button></div></div>
+      <div style="overflow-x:auto">
+      <table><thead><tr><th>Run ID</th><th>Pay Period</th><th>Pay Date</th><th>Employees</th><th>Gross Pay</th><th>Tax Withheld</th><th>Risk</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr onclick="showScreen(&#39;run-detail&#39;)"><td>pr_2026_06_15</td><td>Jun 1–14</td><td>Jun 19</td><td>142</td><td>$312,448</td><td>$54,621</td><td><div class="rb"><div class="rt"><div class="rf lw" style="width:18%"></div></div><span class="rn lw">18</span></div></td><td><span class="st ok">Ledger Posted</span></td></tr>
+        <tr onclick="showScreen(&#39;run-detail&#39;)"><td>pr_2026_06_01</td><td>May 18–31</td><td>Jun 5</td><td>142</td><td>$309,882</td><td>$53,974</td><td><div class="rb"><div class="rt"><div class="rf lw" style="width:12%"></div></div><span class="rn lw">12</span></div></td><td><span class="st ok">Ledger Posted</span></td></tr>
+        <tr onclick="showScreen(&#39;run-detail&#39;)"><td>pr_2026_05_15</td><td>May 1–17</td><td>May 22</td><td>139</td><td>$304,122</td><td>$53,061</td><td><div class="rb"><div class="rt"><div class="rf md" style="width:42%"></div></div><span class="rn md">42</span></div></td><td><span class="st rv">Review Required</span></td></tr>
+        <tr><td>pr_bonus_q2</td><td>Q2 Bonus</td><td>Jun 15</td><td>48</td><td>$124,000</td><td>$31,000</td><td><div class="rb"><div class="rt"><div class="rf lw" style="width:8%"></div></div><span class="rn lw">8</span></div></td><td><span class="st ok">Ledger Posted</span></td></tr>
+        <tr><td>pr_2026_07_01</td><td>Jun 15–28</td><td>Jul 3</td><td>144</td><td>—</td><td>—</td><td><div class="rb"><div class="rt"></div><span class="rn" style="color:#475569">—</span></div></td><td><span class="st pd">Pending</span></td></tr>
+        <tr onclick="showScreen(&#39;exceptions&#39;)"><td>pr_correction_01</td><td>Correction</td><td>Jun 20</td><td>3</td><td>$4,840</td><td>$689</td><td><div class="rb"><div class="rt"><div class="rf hi" style="width:68%"></div></div><span class="rn hi">68</span></div></td><td><span class="st fl">Validation Failed</span></td></tr>
+      </tbody></table></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><div class="ptl">Tax IQ Issues</div><span class="bx r">17</span></div>
+      <div class="pb" style="max-height:320px;overflow-y:auto">
+        <div class="ii"><div class="iic er">&#128308;</div><div><div class="it">Validation Failed — Tax Correction</div><div class="id">pr_correction_01: Federal withholding mismatch &#916; $8.89</div><div class="ie">emp_3301, emp_3302, emp_3303</div></div></div>
+        <div class="ii"><div class="iic wn">&#128993;</div><div><div class="it">TIN Verification Pending</div><div class="id">6 employees with unverified SSN/TIN. May trigger backup withholding (24%).</div><div class="ie">emp_1002, emp_1089, +4 more</div></div></div>
+        <div class="ii"><div class="iic wn">&#128993;</div><div><div class="it">W-4 Stale — 2024 Form</div><div class="id">3 employees still on 2024 W-4.</div><div class="ie">emp_0044, emp_0078, emp_0112</div></div></div>
+        <div class="ii"><div class="iic wn">&#128993;</div><div><div class="it">Jurisdiction Mismatch</div><div class="id">Work (CA) vs residence (TX) for 2 employees in pr_2026_05_15.</div><div class="ie">emp_0890, emp_0991</div></div></div>
+        <div class="ii"><div class="iic in">&#128995;</div><div><div class="it">New Work Location Detected</div><div class="id">NY not matched to existing tax registrations.</div><div class="ie">emp_1234</div></div></div>
+        <div class="ii"><div class="iic in">&#128995;</div><div><div class="it">Tax Profile Missing</div><div class="id">2 new hires missing tax profile. Will block finalize (strict mode).</div><div class="ie">emp_1441, emp_1442</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="br2">
+    <div class="panel">
+      <div class="ph"><div class="ptl">Jurisdiction Summary — Q2 2026</div><button class="btn bg" style="padding:5px 9px;font-size:11px">View All</button></div>
+      <div class="pb">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #1e2533;text-align:center">
+          <div><div style="font-size:10px;color:#475569;text-transform:uppercase;margin-bottom:3px">Employee Tax</div><div style="font-size:17px;font-weight:800;color:#818cf8">$498,219</div></div>
+          <div><div style="font-size:10px;color:#475569;text-transform:uppercase;margin-bottom:3px">Employer Tax</div><div style="font-size:17px;font-weight:800;color:#34d399">$211,784</div></div>
+          <div><div style="font-size:10px;color:#475569;text-transform:uppercase;margin-bottom:3px">Backup W/H</div><div style="font-size:17px;font-weight:800;color:#fbbf24">$0</div></div>
+        </div>
+        <div class="jr"><div class="jn">&#127482;&#127480; Federal (US-FED)</div><div class="jv"><div class="jvv"><div class="lbl">Employee</div><div class="amt">$348,011</div></div><div class="jvv"><div class="lbl">Employer</div><div class="amt">$148,238</div></div></div></div>
+        <div class="jr"><div class="jn">&#127963;&#65039; Texas (US-TX)</div><div class="jv"><div class="jvv"><div class="lbl">Employee</div><div class="amt">$0</div></div><div class="jvv"><div class="lbl">Employer</div><div class="amt">$48,821</div></div></div></div>
+        <div class="jr"><div class="jn">&#127963;&#65039; California (US-CA)</div><div class="jv"><div class="jvv"><div class="lbl">Employee</div><div class="amt">$112,440</div></div><div class="jvv"><div class="lbl">Employer</div><div class="amt">$10,122</div></div></div></div>
+        <div class="jr"><div class="jn">&#127963;&#65039; New York (US-NY)</div><div class="jv"><div class="jvv"><div class="lbl">Employee</div><div class="amt">$37,768</div></div><div class="jvv"><div class="lbl">Employer</div><div class="amt">$4,603</div></div></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><div class="ptl">Webhook &amp; Event Activity</div><span class="chip gn">Real-time</span></div>
+      <div class="pb">
+        <div class="af"><div class="ad gn"></div><div><div class="at"><strong>tax_iq.ledger.posted</strong> — pr_2026_06_15 finalized. 142 employees, $312K gross. Risk: 18 (low).</div><div class="atm">2 minutes ago · tenant_demo_001</div></div></div>
+        <div class="af"><div class="ad yw"></div><div><div class="at"><strong>tax_iq.validation.warning</strong> — TIN_VERIFICATION_PENDING for emp_1002.</div><div class="atm">2 minutes ago</div></div></div>
+        <div class="af"><div class="ad gn"></div><div><div class="at"><strong>payroll_run.finalized</strong> — pr_2026_06_15 locked. Outbox: 2 events.</div><div class="atm">3 minutes ago</div></div></div>
+        <div class="af"><div class="ad rd"></div><div><div class="at"><strong>tax_iq.validation.failed</strong> — pr_correction_01: withholding mismatch $8.89. Payroll blocked.</div><div class="atm">47 minutes ago</div></div></div>
+        <div class="af"><div class="ad yw"></div><div><div class="at"><strong>tax_iq.jurisdiction_mismatch</strong> — emp_0890 work CA vs residence TX.</div><div class="atm">2 hours ago</div></div></div>
+        <div class="af"><div class="ad pp"></div><div><div class="at"><strong>employee.tax_profile.validated</strong> — emp_1441 onboarded. Tracking ready.</div><div class="atm">5 hours ago</div></div></div>
+        <div class="af"><div class="ad gn"></div><div><div class="at"><strong>tax_iq.reconciliation.completed</strong> — pr_bonus_q2 matched. $124K gross.</div><div class="atm">Yesterday 4:18 PM</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- SCREEN: RUN DETAIL -->
+<div id="s-run-detail" class="screen">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+    <button class="btn bg" onclick="showScreen(&#39;dashboard&#39;)" style="padding:6px 10px;font-size:12px">&#8592; Back</button>
+    <div><div style="font-size:16px;font-weight:700;color:#f1f5f9">pr_2026_06_15 — Biweekly Payroll</div><div style="font-size:11px;color:#64748b">Pay Period: Jun 1–14, 2026 · Pay Date: Jun 19, 2026</div></div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <span class="st ok" style="font-size:12px;padding:5px 12px">&#10003; Ledger Posted</span>
+      <div class="lock-badge">&#128274; Immutable</div>
+    </div>
+  </div>
+  <div class="steps">
+    <div class="step done"><span class="step-num">&#10003;</span>Created</div>
+    <div class="step done"><span class="step-num">&#10003;</span>Line Items</div>
+    <div class="step done"><span class="step-num">&#10003;</span>Tax Preview</div>
+    <div class="step done"><span class="step-num">&#10003;</span>Approved</div>
+    <div class="step curr"><span class="step-num">&#11035;</span>Finalized</div>
+    <div class="step"><span class="step-num">&#9723;</span>Year-End</div>
+  </div>
+  <div class="detail-grid">
+    <div>
+      <div class="panel" style="margin-bottom:14px">
+        <div class="ph"><div class="ptl">Pay Statement Line Items</div><span class="chip">142 employees</span></div>
+        <div style="overflow-x:auto">
+        <table><thead><tr><th>Employee</th><th>Department</th><th>Gross Pay</th><th>Pre-Tax Ded.</th><th>Employee Tax</th><th>Net Pay</th><th>TIN Status</th><th>Risk</th></tr></thead>
+        <tbody>
+          <tr onclick="showScreen(&#39;employee-profile&#39;)"><td>Jane Nguyen (emp_1002)</td><td>Finance</td><td>$3,769.23</td><td>$320.00</td><td>$698.89</td><td>$2,750.34</td><td><span class="st rv">Pending</span></td><td><div class="rb"><div class="rt"><div class="rf md" style="width:18%"></div></div><span class="rn lw">18</span></div></td></tr>
+          <tr onclick="showScreen(&#39;employee-profile&#39;)"><td>Marcus Chen (emp_0891)</td><td>Engineering</td><td>$4,230.77</td><td>$450.00</td><td>$784.22</td><td>$2,996.55</td><td><span class="st ok">Verified</span></td><td><div class="rb"><div class="rt"><div class="rf lw" style="width:10%"></div></div><span class="rn lw">10</span></div></td></tr>
+          <tr><td>Sofia Reyes (emp_0334)</td><td>Operations</td><td>$2,884.62</td><td>$200.00</td><td>$535.11</td><td>$2,149.51</td><td><span class="st ok">Verified</span></td><td><div class="rb"><div class="rt"><div class="rf lw" style="width:8%"></div></div><span class="rn lw">8</span></div></td></tr>
+          <tr><td>David Kim (emp_0112)</td><td>Sales</td><td>$3,461.54</td><td>$320.00</td><td>$641.88</td><td>$2,499.66</td><td><span class="st rv">Stale W-4</span></td><td><div class="rb"><div class="rt"><div class="rf md" style="width:35%"></div></div><span class="rn md">35</span></div></td></tr>
+          <tr><td>Aisha Okafor (emp_0445)</td><td>HR</td><td>$3,230.77</td><td>$270.00</td><td>$599.22</td><td>$2,361.55</td><td><span class="st ok">Verified</span></td><td><div class="rb"><div class="rt"><div class="rf lw" style="width:5%"></div></div><span class="rn lw">5</span></div></td></tr>
+          <tr><td style="color:#64748b">... 137 more employees</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><div class="ptl">Employee Tax Breakdown by Type</div></div>
+        <div style="overflow-x:auto">
+        <table><thead><tr><th>Tax Type</th><th>Jurisdiction</th><th>Taxable Wages</th><th>Employee W/H</th><th>Employer Tax</th></tr></thead>
+        <tbody>
+          <tr><td>Federal Income Tax</td><td>US-FED</td><td>$298,441</td><td>$38,799</td><td>—</td></tr>
+          <tr><td>Social Security (6.2%)</td><td>US-FED</td><td>$312,448</td><td>$19,372</td><td>$19,372</td></tr>
+          <tr><td>Medicare (1.45%)</td><td>US-FED</td><td>$312,448</td><td>$4,531</td><td>$4,531</td></tr>
+          <tr><td>TX Unemployment (FUTA)</td><td>US-TX</td><td>$312,448</td><td>—</td><td>$2,499</td></tr>
+          <tr><td>CA State Income Tax</td><td>US-CA</td><td>$89,220</td><td>$8,922</td><td>—</td></tr>
+          <tr><td>CA SDI (1.1%)</td><td>US-CA</td><td>$89,220</td><td>$981</td><td>—</td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+    <div>
+      <div class="panel" style="margin-bottom:14px">
+        <div class="ph"><div class="ptl">Run Summary</div></div>
+        <div class="pb">
+          <div class="info-row"><span class="info-label">Payroll Run ID</span><span class="info-val">pr_2026_06_15</span></div>
+          <div class="info-row"><span class="info-label">Type</span><span class="info-val">Regular Biweekly</span></div>
+          <div class="info-row"><span class="info-label">Pay Date</span><span class="info-val">Jun 19, 2026</span></div>
+          <div class="info-row"><span class="info-label">Employees</span><span class="info-val">142</span></div>
+          <div class="info-row"><span class="info-label">Gross Pay</span><span class="info-val" style="color:#34d399">$312,448.00</span></div>
+          <div class="info-row"><span class="info-label">Pre-Tax Deductions</span><span class="info-val">&#8722;$38,220.00</span></div>
+          <div class="info-row"><span class="info-label">Employee Taxes</span><span class="info-val">&#8722;$54,621.00</span></div>
+          <div class="info-row"><span class="info-label">Employer Taxes</span><span class="info-val">$26,402.00</span></div>
+          <div class="info-row"><span class="info-label">Net Pay</span><span class="info-val" style="color:#818cf8">$219,607.00</span></div>
+          <div class="info-row"><span class="info-label">Currency</span><span class="info-val">USD</span></div>
+          <div class="info-row"><span class="info-label">Finalized By</span><span class="info-val">payroll_admin_44</span></div>
+          <div class="info-row"><span class="info-label">Finalized At</span><span class="info-val">Jun 18, 2026 9:30 PM</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><div class="ptl">Tax IQ Status</div></div>
+        <div class="pb">
+          <div style="text-align:center;padding:14px 0">
+            <div style="font-size:36px;font-weight:900;color:#10b981">18</div>
+            <div style="font-size:11px;color:#64748b;margin-bottom:14px">Risk Score — LOW</div>
+            <div class="rb" style="margin-bottom:16px"><div class="rt"><div class="rf lw" style="width:18%"></div></div></div>
+          </div>
+          <div class="info-row"><span class="info-label">Tracking Status</span><span class="info-val" style="color:#34d399">ledger_posted</span></div>
+          <div class="info-row"><span class="info-label">Tax Ledger ID</span><span class="info-val" style="font-size:11px;font-family:monospace">taxledger_01JZ005</span></div>
+          <div class="info-row"><span class="info-label">Reconciliation</span><span class="info-val" style="color:#34d399">Matched &#10003;</span></div>
+          <div class="info-row"><span class="info-label">Open Issues</span><span class="info-val" style="color:#f59e0b">1 warning</span></div>
+          <div class="info-row"><span class="info-label">Audit Hash</span><span class="info-val" style="font-size:10px;font-family:monospace;color:#475569">sha256:7b4f…</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- SCREEN: EMPLOYEE PROFILE -->
+<div id="s-employee-profile" class="screen">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+    <button class="btn bg" onclick="showScreen(&#39;run-detail&#39;)" style="padding:6px 10px;font-size:12px">&#8592; Back to Run</button>
+    <div><div style="font-size:16px;font-weight:700;color:#f1f5f9">Jane A. Nguyen</div><div style="font-size:11px;color:#64748b">emp_1002 · Payroll Analyst · Finance</div></div>
+  </div>
+  <div class="profile-grid">
+    <div>
+      <div class="profile-card" style="margin-bottom:14px">
+        <div class="emp-avatar">JN</div>
+        <div class="emp-name">Jane A. Nguyen</div>
+        <div class="emp-title">Payroll Analyst — Finance Dept.</div>
+        <div class="emp-badge">&#9679; Tracking Ready</div>
+        <div class="emp-stats">
+          <div class="emp-stat"><div class="lbl">YTD Gross</div><div class="val">$22,615</div></div>
+          <div class="emp-stat"><div class="lbl">YTD Tax W/H</div><div class="val">$4,193</div></div>
+          <div class="emp-stat"><div class="lbl">Risk Score</div><div class="val" style="color:#f59e0b">18 &#9888;</div></div>
+          <div class="emp-stat"><div class="lbl">Tax IQ Status</div><div class="val" style="color:#34d399;font-size:11px">ledger_posted</div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><div class="ptl">Employment Info</div></div>
+        <div class="pb">
+          <div class="info-row"><span class="info-label">Employee ID</span><span class="info-val" style="font-family:monospace">emp_1002</span></div>
+          <div class="info-row"><span class="info-label">Hire Date</span><span class="info-val">Jan 15, 2026</span></div>
+          <div class="info-row"><span class="info-label">Worker Type</span><span class="info-val">Employee (W-2)</span></div>
+          <div class="info-row"><span class="info-label">Pay Type</span><span class="info-val">Salary</span></div>
+          <div class="info-row"><span class="info-label">Annual Salary</span><span class="info-val">$85,000</span></div>
+          <div class="info-row"><span class="info-label">Status</span><span class="info-val"><span class="st ok">Active</span></span></div>
+          <div class="info-row"><span class="info-label">Residence</span><span class="info-val">Dallas, TX 75201</span></div>
+          <div class="info-row"><span class="info-label">Work Location</span><span class="info-val">Austin, TX 78701</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="panel" style="margin-bottom:14px">
+        <div class="ph"><div class="ptl">Tax Profile (W-4 — Federal)</div><span class="bx y">TIN Pending</span></div>
+        <div class="pb">
+          <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#fbbf24">&#9888; TIN verification pending — may trigger 24% backup withholding if not resolved before next payroll run.</div>
+          <div class="info-row"><span class="info-label">Form Type</span><span class="info-val">W-4 (2026)</span></div>
+          <div class="info-row"><span class="info-label">Filing Status</span><span class="info-val">Single</span></div>
+          <div class="info-row"><span class="info-label">Multiple Jobs</span><span class="info-val">No</span></div>
+          <div class="info-row"><span class="info-label">Dependent Credits</span><span class="info-val">$0</span></div>
+          <div class="info-row"><span class="info-label">Other Income</span><span class="info-val">$0</span></div>
+          <div class="info-row"><span class="info-label">Deductions (Step 4b)</span><span class="info-val">$0</span></div>
+          <div class="info-row"><span class="info-label">Extra W/H per period</span><span class="info-val">$25.00</span></div>
+          <div class="info-row"><span class="info-label">Exempt from W/H</span><span class="info-val">No</span></div>
+          <div class="info-row"><span class="info-label">Form Received</span><span class="info-val">Jan 15, 2026</span></div>
+          <div class="info-row"><span class="info-label">Document Hash</span><span class="info-val" style="font-size:10px;font-family:monospace;color:#475569">sha256:abc…</span></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-bottom:14px">
+        <div class="ph"><div class="ptl">Tax Identifier</div></div>
+        <div class="pb">
+          <div class="info-row"><span class="info-label">Type</span><span class="info-val">SSN</span></div>
+          <div class="info-row"><span class="info-label">Last 4</span><span class="info-val" style="font-family:monospace">••••-••••-6789</span></div>
+          <div class="info-row"><span class="info-label">Token</span><span class="info-val" style="font-size:10px;font-family:monospace;color:#475569">tok_ssn_abc123</span></div>
+          <div class="info-row"><span class="info-label">Verification</span><span class="info-val"><span class="st rv">Pending</span></span></div>
+          <div class="info-row"><span class="info-label">Nonresident Alien</span><span class="info-val">No</span></div>
+          <div class="info-row"><span class="info-label">Tax Treaty</span><span class="info-val">No</span></div>
+          <div class="info-row"><span class="info-label">Lock-in Letter</span><span class="info-val">No</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><div class="ptl">YTD Summary — 2026</div></div>
+        <div class="pb">
+          <div class="info-row"><span class="info-label">Gross Pay YTD</span><span class="info-val">$22,615.38</span></div>
+          <div class="info-row"><span class="info-label">Federal Taxable Wages</span><span class="info-val">$20,695.38</span></div>
+          <div class="info-row"><span class="info-label">Federal Income Tax W/H</span><span class="info-val">$2,463.30</span></div>
+          <div class="info-row"><span class="info-label">Social Security W/H</span><span class="info-val">$1,402.15</span></div>
+          <div class="info-row"><span class="info-label">Medicare W/H</span><span class="info-val">$327.92</span></div>
+          <div class="info-row"><span class="info-label">Net Pay YTD</span><span class="info-val" style="color:#818cf8">$16,502.04</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- SCREEN: LEDGER -->
+<div id="s-ledger" class="screen">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+    <div style="flex:1"><div style="font-size:16px;font-weight:700;color:#f1f5f9">Tax IQ Ledger</div><div style="font-size:11px;color:#64748b">Immutable ledger entries — all finalized payroll runs</div></div>
+    <button class="btn bg" style="font-size:12px">Export CSV</button>
+    <button class="btn bp" style="font-size:12px">Download 1099 Report</button>
+  </div>
+  <div class="ledger-header">
+    <div class="lh-left"><div class="lh-title">&#128274; Ledger ID: taxledger_01JZ005 — pr_2026_06_15</div><div class="lh-sub">Finalized Jun 18, 2026 9:30 PM · by payroll_admin_44 · audit_hash: sha256:7b4f…</div></div>
+    <div class="lh-right">
+      <div class="lh-stat"><div class="lbl">Total Entries</div><div class="val">852</div></div>
+      <div class="lh-stat"><div class="lbl">Gross Pay</div><div class="val">$312,448</div></div>
+      <div class="lh-stat"><div class="lbl">Employee Tax</div><div class="val">$54,621</div></div>
+      <div class="lh-stat"><div class="lbl">Employer Tax</div><div class="val">$26,402</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ph">
+      <div class="ptl">Ledger Entries</div>
+      <div style="display:flex;gap:7px">
+        <select style="background:#0f1117;border:1px solid #1e2533;color:#94a3b8;padding:5px 8px;border-radius:6px;font-size:12px"><option>All Jurisdictions</option><option>US-FED</option><option>US-TX</option><option>US-CA</option></select>
+        <select style="background:#0f1117;border:1px solid #1e2533;color:#94a3b8;padding:5px 8px;border-radius:6px;font-size:12px"><option>All Tax Types</option><option>federal_income_tax</option><option>social_security</option><option>medicare</option></select>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+    <table><thead><tr><th>Ledger Entry ID</th><th>Employee</th><th>Pay Date</th><th>Jurisdiction</th><th>Tax Type</th><th>Taxable Wages</th><th>Employee Tax</th><th>Employer Tax</th><th>Audit Hash</th></tr></thead>
+    <tbody>
+      <tr><td style="font-family:monospace;font-size:10px;color:#475569">tle_001</td><td>Jane Nguyen (emp_1002)</td><td>Jun 19</td><td><span class="chip">US-FED</span></td><td>federal_income_tax</td><td>$3,449.23</td><td>$410.55</td><td>—</td><td style="font-family:monospace;font-size:10px;color:#475569">sha256:a1b2…</td></tr>
+      <tr><td style="font-family:monospace;font-size:10px;color:#475569">tle_002</td><td>Jane Nguyen (emp_1002)</td><td>Jun 19</td><td><span class="chip">US-FED</span></td><td>social_security</td><td>$3,769.23</td><td>$233.69</td><td>$233.69</td><td style="font-family:monospace;font-size:10px;color:#475569">sha256:c3d4…</td></tr>
+      <tr><td style="font-family:monospace;font-size:10px;color:#475569">tle_003</td><td>Jane Nguyen (emp_1002)</td><td>Jun 19</td><td><span class="chip">US-FED</span></td><td>medicare</td><td>$3,769.23</td><td>$54.65</td><td>$54.65</td><td style="font-family:monospace;font-size:10px;color:#475569">sha256:e5f6…</td></tr>
+      <tr><td style="font-family:monospace;font-size:10px;color:#475569">tle_004</td><td>Marcus Chen (emp_0891)</td><td>Jun 19</td><td><span class="chip">US-FED</span></td><td>federal_income_tax</td><td>$3,780.77</td><td>$491.50</td><td>—</td><td style="font-family:monospace;font-size:10px;color:#475569">sha256:g7h8…</td></tr>
+      <tr><td style="font-family:monospace;font-size:10px;color:#475569">tle_005</td><td>Marcus Chen (emp_0891)</td><td>Jun 19</td><td><span class="chip">US-FED</span></td><td>social_security</td><td>$4,230.77</td><td>$262.31</td><td>$262.31</td><td style="font-family:monospace;font-size:10px;color:#475569">sha256:i9j0…</td></tr>
+      <tr><td style="font-family:monospace;font-size:10px;color:#475569">tle_006</td><td>David Kim (emp_0112)</td><td>Jun 19</td><td><span class="chip">US-CA</span></td><td>ca_state_income_tax</td><td>$3,141.54</td><td>$314.15</td><td>—</td><td style="font-family:monospace;font-size:10px;color:#475569">sha256:k1l2…</td></tr>
+      <tr><td style="color:#64748b;font-size:11px" colspan="9">... 846 more entries</td></tr>
+    </tbody></table></div>
+  </div>
+</div>
+<!-- SCREEN: EXCEPTIONS -->
+<div id="s-exceptions" class="screen">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+    <div style="flex:1"><div style="font-size:16px;font-weight:700;color:#f1f5f9">Exceptions Queue</div><div style="font-size:11px;color:#64748b">Issues requiring admin review before next payroll finalization</div></div>
+    <div style="display:flex;gap:7px">
+      <select style="background:#0f1117;border:1px solid #1e2533;color:#94a3b8;padding:6px 10px;border-radius:6px;font-size:12px"><option>All Severities</option><option>Critical</option><option>High</option><option>Medium</option></select>
+      <select style="background:#0f1117;border:1px solid #1e2533;color:#94a3b8;padding:6px 10px;border-radius:6px;font-size:12px"><option>All Types</option><option>Validation Failed</option><option>TIN Pending</option><option>Jurisdiction</option></select>
+    </div>
+  </div>
+  <div class="exc-item">
+    <div class="exc-sev hi">&#128308;</div>
+    <div style="flex:1">
+      <div class="exc-title">WITHHOLDING_DISCREPANCY — pr_correction_01</div>
+      <div class="exc-desc">Federal withholding mismatch detected: payroll submitted $690.00, Tax IQ expected $698.89. Difference: $8.89. Payroll finalization is blocked in strict mode.</div>
+      <div class="exc-meta">emp_3301, emp_3302, emp_3303 · Detected Jun 20, 2026 · pr_correction_01</div>
+    </div>
+    <div class="exc-actions"><button class="btn bg" style="font-size:11px;padding:6px 10px">View Run</button><button class="btn bp" style="font-size:11px;padding:6px 10px">Create Adjustment</button></div>
+  </div>
+  <div class="exc-item">
+    <div class="exc-sev md">&#128993;</div>
+    <div style="flex:1">
+      <div class="exc-title">TIN_VERIFICATION_PENDING — 6 Employees</div>
+      <div class="exc-desc">6 employees have unverified SSN/TIN. If not resolved before year-end, backup withholding at 24% may apply. Currently advisory — payroll is not blocked.</div>
+      <div class="exc-meta">emp_1002, emp_1089, emp_1134, emp_1245, emp_1302, emp_1388 · Ongoing</div>
+    </div>
+    <div class="exc-actions"><button class="btn bg" style="font-size:11px;padding:6px 10px">View Employees</button><button class="btn bg" style="font-size:11px;padding:6px 10px">Send Reminder</button></div>
+  </div>
+  <div class="exc-item">
+    <div class="exc-sev md">&#128993;</div>
+    <div style="flex:1">
+      <div class="exc-title">W4_STALE — 3 Employees on 2024 Form</div>
+      <div class="exc-desc">3 employees are still using 2024 W-4 forms. IRS guidance recommends employers request updated forms annually. No blocking — advisory only.</div>
+      <div class="exc-meta">emp_0044, emp_0078, emp_0112 · Last W-4 received: Jan 2024</div>
+    </div>
+    <div class="exc-actions"><button class="btn bg" style="font-size:11px;padding:6px 10px">View Profiles</button><button class="btn bp" style="font-size:11px;padding:6px 10px">Request New W-4</button></div>
+  </div>
+  <div class="exc-item">
+    <div class="exc-sev md">&#128993;</div>
+    <div style="flex:1">
+      <div class="exc-title">JURISDICTION_MISMATCH — Work CA vs Residence TX</div>
+      <div class="exc-desc">2 employees have work location in California but residence in Texas. CA SDI/income tax may be required. Employer tax registration for US-CA should be verified.</div>
+      <div class="exc-meta">emp_0890, emp_0991 · Detected May 22, 2026 · pr_2026_05_15</div>
+    </div>
+    <div class="exc-actions"><button class="btn bg" style="font-size:11px;padding:6px 10px">Review</button><button class="btn bp" style="font-size:11px;padding:6px 10px">Mark Resolved</button></div>
+  </div>
+  <div class="exc-item">
+    <div class="exc-sev lo">&#128995;</div>
+    <div style="flex:1">
+      <div class="exc-title">TAX_PROFILE_MISSING — 2 New Hires</div>
+      <div class="exc-desc">2 new employees in pr_2026_07_01 are missing tax profiles. In strict mode, this will block finalization. Employees must submit W-4 before next pay date (Jul 3).</div>
+      <div class="exc-meta">emp_1441 (hired Jun 10), emp_1442 (hired Jun 12) · pr_2026_07_01</div>
+    </div>
+    <div class="exc-actions"><button class="btn bg" style="font-size:11px;padding:6px 10px">View Employees</button><button class="btn bp" style="font-size:11px;padding:6px 10px">Send W-4 Link</button></div>
+  </div>
+</div>
+
+<!-- SCREEN: CONNECTIONS -->
+<div id="s-connections" class="screen">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+    <div style="flex:1"><div style="font-size:16px;font-weight:700;color:#f1f5f9">Payroll Connections</div><div style="font-size:11px;color:#64748b">Enterprise payroll systems connected to Nexora Touch Tax IQ</div></div>
+    <button class="btn bp" style="font-size:12px">&#65291; Add Connection</button>
+  </div>
+  <div class="conn-card">
+    <div class="conn-logo">&#127981;</div>
+    <div><div class="conn-name">Acme Manufacturing LLC</div><div class="conn-id">conn_nt_01JZABC · custom_enterprise_payroll · biz_789</div></div>
+    <div class="conn-right">
+      <div class="conn-stat"><div class="lbl">Employees Synced</div><div class="val">142</div></div>
+      <div class="conn-stat"><div class="lbl">Last Sync</div><div class="val">2 min ago</div></div>
+      <div class="conn-stat"><div class="lbl">API Health</div><div class="val" style="color:#34d399">99.8%</div><div class="health-bar"><div class="health-fill" style="width:99%"></div></div></div>
+      <span class="st ok" style="font-size:12px">Active</span>
+    </div>
+  </div>
+  <div class="conn-card">
+    <div class="conn-logo">&#128717;&#65039;</div>
+    <div><div class="conn-name">TechCorp Solutions Inc.</div><div class="conn-id">conn_nt_01JZDEF · workday_hris · biz_1024</div></div>
+    <div class="conn-right">
+      <div class="conn-stat"><div class="lbl">Employees Synced</div><div class="val">387</div></div>
+      <div class="conn-stat"><div class="lbl">Last Sync</div><div class="val">18 min ago</div></div>
+      <div class="conn-stat"><div class="lbl">API Health</div><div class="val" style="color:#34d399">100%</div><div class="health-bar"><div class="health-fill" style="width:100%"></div></div></div>
+      <span class="st ok" style="font-size:12px">Active</span>
+    </div>
+  </div>
+  <div class="conn-card">
+    <div class="conn-logo">&#128663;</div>
+    <div><div class="conn-name">Retail Partners Group</div><div class="conn-id">conn_nt_01JZGHI · adp_payroll · biz_2201</div></div>
+    <div class="conn-right">
+      <div class="conn-stat"><div class="lbl">Employees Synced</div><div class="val">91</div></div>
+      <div class="conn-stat"><div class="lbl">Last Sync</div><div class="val">3 hours ago</div></div>
+      <div class="conn-stat"><div class="lbl">API Health</div><div class="val" style="color:#f59e0b">74%</div><div class="health-bar"><div class="health-fill" style="width:74%;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div></div>
+      <span class="st rv" style="font-size:12px">Degraded</span>
+    </div>
+  </div>
+  <div style="margin-top:20px">
+    <div class="panel">
+      <div class="ph"><div class="ptl">OAuth / API Key Config — Acme Manufacturing LLC</div></div>
+      <div class="pb" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div>
+          <div class="info-row"><span class="info-label">Auth Method</span><span class="info-val">OAuth 2.0 Client Credentials</span></div>
+          <div class="info-row"><span class="info-label">Client ID</span><span class="info-val" style="font-family:monospace;font-size:11px">nt_client_abc123</span></div>
+          <div class="info-row"><span class="info-label">Scopes</span><span class="info-val" style="font-size:11px">employers.write employees.write payroll_runs.write tax_iq.read</span></div>
+          <div class="info-row"><span class="info-label">Token Expires</span><span class="info-val">in 47 min</span></div>
+        </div>
+        <div>
+          <div class="info-row"><span class="info-label">Webhook URL</span><span class="info-val" style="font-size:11px;font-family:monospace">https://payroll.acme.com/webhooks/nexora</span></div>
+          <div class="info-row"><span class="info-label">Webhook Status</span><span class="info-val"><span class="st ok">Healthy</span></span></div>
+          <div class="info-row"><span class="info-label">HMAC Signing</span><span class="info-val" style="color:#34d399">&#10003; Enabled</span></div>
+          <div class="info-row"><span class="info-label">Sync Mode</span><span class="info-val">event_driven</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN: WEBHOOKS -->
+<div id="s-webhooks" class="screen">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+    <div style="flex:1"><div style="font-size:16px;font-weight:700;color:#f1f5f9">Webhook Monitor</div><div style="font-size:11px;color:#64748b">Outbox delivery log — all events sent from Nexora Touch to connected payroll systems</div></div>
+    <span class="chip gn">&#9679; Live</span>
+  </div>
+  <div class="sg" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+    <div class="sc gn"><div class="sl">Delivered (24h)</div><div class="sv">1,284</div><div class="ss"><span class="up">99.7%</span> success rate</div></div>
+    <div class="sc bl"><div class="sl">Pending</div><div class="sv">7</div><div class="ss">in delivery queue</div></div>
+    <div class="sc yw"><div class="sl">Retrying</div><div class="sv">3</div><div class="ss">next retry in 5 min</div></div>
+    <div class="sc rd"><div class="sl">Dead Letter</div><div class="sv">1</div><div class="ss">requires manual review</div></div>
+  </div>
+  <div class="panel">
+    <div class="ph"><div class="ptl">Recent Events</div><div style="display:flex;gap:7px"><select style="background:#0f1117;border:1px solid #1e2533;color:#94a3b8;padding:5px 8px;border-radius:6px;font-size:12px"><option>All Events</option><option>tax_iq.*</option><option>payroll_run.*</option><option>employee.*</option></select></div></div>
+    <div style="overflow-x:auto">
+    <table><thead><tr><th>Event ID</th><th>Type</th><th>Tenant</th><th>Attempts</th><th>Status</th><th>Created</th><th>Delivered</th></tr></thead>
+    <tbody>
+      <tr><td style="font-family:monospace;font-size:10px">evt_01JZ006</td><td>tax_iq.ledger.posted</td><td>tenant_demo_001</td><td>1</td><td><span class="st ok">Delivered</span></td><td>2 min ago</td><td>2 min ago</td></tr>
+      <tr><td style="font-family:monospace;font-size:10px">evt_01JZ005</td><td>tax_iq.validation.warning</td><td>tenant_demo_001</td><td>1</td><td><span class="st ok">Delivered</span></td><td>2 min ago</td><td>2 min ago</td></tr>
+      <tr><td style="font-family:monospace;font-size:10px">evt_01JZ004</td><td>payroll_run.finalized</td><td>tenant_demo_001</td><td>1</td><td><span class="st ok">Delivered</span></td><td>3 min ago</td><td>3 min ago</td></tr>
+      <tr><td style="font-family:monospace;font-size:10px">evt_01JZ003</td><td>tax_iq.validation.failed</td><td>tenant_demo_001</td><td>3</td><td><span class="st rv">Retrying</span></td><td>47 min ago</td><td>—</td></tr>
+      <tr><td style="font-family:monospace;font-size:10px">evt_01JZ002</td><td>tax_iq.jurisdiction_mismatch</td><td>tenant_demo_001</td><td>1</td><td><span class="st ok">Delivered</span></td><td>2h ago</td><td>2h ago</td></tr>
+      <tr><td style="font-family:monospace;font-size:10px">evt_01JZ001</td><td>employee.tax_profile.validated</td><td>tenant_biz_1024</td><td>8</td><td><span class="st fl">Dead Letter</span></td><td>5h ago</td><td>—</td></tr>
+    </tbody></table></div>
+  </div>
+</div>
+
+</div><!-- end content -->
+</div><!-- end main -->
+<script>
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  var el = document.getElementById('s-' + name);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  var titles = {
+    'dashboard': 'Dashboard',
+    'run-detail': 'Payroll Run Detail',
+    'employee-profile': 'Employee Profile',
+    'ledger': 'Tax Ledger',
+    'exceptions': 'Exceptions Queue',
+    'connections': 'Connections',
+    'webhooks': 'Webhook Monitor'
+  };
+  var pt = document.getElementById('page-title');
+  if (pt && titles[name]) pt.textContent = titles[name];
+  var navMap = {
+    'dashboard': 0, 'run-detail': 4, 'employee-profile': 3,
+    'ledger': 7, 'exceptions': 8, 'connections': 5, 'webhooks': 11
+  };
+}
+</script>
+</body></html>
