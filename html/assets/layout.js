@@ -69,50 +69,179 @@ const TaxIQLayout = (() => {
 
   function pageHref(id){
     if(id === "dashboard") return rootPath === "." ? "index.html" : "../index.html";
-    return rootPath === "." ? `pages/${pages[id].file}` : pages[id].file;
-  }
-
-  function icon(id){
-    return pages[id].title.split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
-  }
-
-  function renderSidebar(){
-    return `
-      <aside class="sidebar fixed inset-y-0 left-0 z-20 flex w-[260px] flex-col border-r border-slate-800 bg-slate-900 max-md:static max-md:w-full">
-        <div class="brand flex h-[68px] items-center gap-3 border-b border-slate-800 px-4"><div class="mark grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 text-xs font-black text-white">TIQ</div><div><h1 class="m-0 text-sm font-black leading-none">TaxIQ</h1><p class="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">US Payroll + Payout</p></div></div>
-        <nav class="nav max-md:grid max-md:grid-cols-2">${navGroups.map(([label,ids])=>`<div class="group-label px-4 pb-2 pt-4 text-[10px] font-black uppercase tracking-widest text-slate-600 max-md:col-span-2">${label}</div>${ids.map(id=>`<a class="${ui.nav} ${id===currentPage?ui.navActive:""}" href="${pageHref(id)}"><i class="${pageIcons[id]||''} fa-fw" style="width:16px;font-size:13px;opacity:.75;text-align:center"></i><span>${pages[id].title}</span></a>`).join("")}`).join("")}</nav>
-        <div class="account mt-auto flex items-center gap-3 border-t border-slate-800 p-4"><div class="avatar grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-400 text-xs font-black text-white">PA</div><div><strong class="block text-xs font-black">Payroll Admin</strong><span class="block text-[10px] text-slate-500">tenant_demo_001</span></div></div>
-      </aside>`;
+    return rootPath === "." ? "pages/" + pages[id].file : pages[id].file;
   }
 
   function renderHeader(meta){
-    return `
-      <header class="topbar sticky top-0 z-10 flex min-h-[68px] items-center justify-between gap-5 border-b border-slate-800 bg-slate-900/95 px-6 py-3 backdrop-blur max-md:flex-col max-md:items-start max-md:px-4">
-        <div class="title"><h2 class="m-0 text-lg font-black text-slate-50">${meta.title}</h2><p class="mt-1 text-xs text-slate-500">${meta.subtitle}</p></div>
-        <div class="tools flex min-w-0 items-center gap-2 max-md:w-full"><label class="search flex h-9 min-w-72 items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 text-xs font-bold text-slate-500 max-md:min-w-0 max-md:flex-1">Search <input class="${ui.input}" id="globalSearch" placeholder="runs, workers, issues..." autocomplete="off"></label><a class="${ui.btn}" href="${pageHref("notifications")}" style="position:relative">Alerts <span style="background:#ef4444;color:#fff;border-radius:9px;padding:1px 5px;font-size:9px;margin-left:2px;font-weight:900">3</span></a><button class="${ui.btn} ${ui.primary}" data-modal="create-run">New Run</button></div>
-      </header>`;
+    return [
+      '<header class="topbar sticky top-0 z-10 flex min-h-[68px] items-center justify-between gap-5 border-b border-slate-800 bg-slate-900/95 px-6 py-3 backdrop-blur max-md:flex-col max-md:items-start max-md:px-4">',
+        '<div class="title">',
+          '<h2 class="m-0 text-lg font-black text-slate-50">' + meta.title + '</h2>',
+          '<p class="mt-1 text-xs text-slate-500">' + meta.subtitle + '</p>',
+        '</div>',
+        '<div class="tools flex min-w-0 items-center gap-2 max-md:w-full">',
+          '<label class="search flex h-9 min-w-72 items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 text-xs font-bold text-slate-500 max-md:min-w-0 max-md:flex-1">',
+            'Search <input class="' + ui.input + '" id="globalSearch" placeholder="runs, workers, issues..." autocomplete="off">',
+          '</label>',
+          '<a class="' + ui.btn + '" href="' + pageHref("notifications") + '" style="position:relative">',
+            'Alerts <span style="background:#ef4444;color:#fff;border-radius:9px;padding:1px 5px;font-size:9px;margin-left:2px;font-weight:900">3</span>',
+          '</a>',
+          '<button class="' + ui.btn + ' ' + ui.primary + '" data-modal="create-run">New Run</button>',
+        '</div>',
+      '</header>'
+    ].join("");
+  }
+
+  /* ── sidebar state ── always starts expanded ── */
+  let _sbOpen = true;
+
+  function injectSidebarCSS(){
+    if(document.getElementById("taxiq-sb-css")) return;
+    const s = document.createElement("style");
+    s.id = "taxiq-sb-css";
+    s.textContent = [
+      /* sidebar shell */
+      "#taxiq-sidebar{width:260px;transition:width .22s cubic-bezier(.4,0,.2,1);overflow:hidden}",
+      "#taxiq-main{transition:margin-left .22s cubic-bezier(.4,0,.2,1)}",
+      /* nav items */
+      ".sb-item{display:flex;align-items:center;gap:10px;padding:0 10px;height:44px;border-radius:8px;",
+        "text-decoration:none;color:#94a3b8;font-size:13px;font-weight:600;",
+        "overflow:hidden;white-space:nowrap;transition:background .12s,color .12s;cursor:pointer}",
+      ".sb-item:not(.sb-active):hover{background:rgba(255,255,255,.06);color:#e2e8f0}",
+      ".sb-item.sb-active{background:rgba(99,102,241,.15);color:#a5b4fc}",
+      /* group labels */
+      ".sb-group-label{padding:14px 10px 4px;font-size:10px;font-weight:900;",
+        "text-transform:uppercase;letter-spacing:.08em;color:#475569;",
+        "white-space:nowrap;overflow:hidden;",
+        "transition:opacity .15s,height .22s cubic-bezier(.4,0,.2,1),padding .22s cubic-bezier(.4,0,.2,1)}",
+      /* brand + account text */
+      ".sb-brand-text,.sb-acct-text{overflow:hidden;white-space:nowrap;margin-left:10px;",
+        "transition:opacity .18s,max-width .22s cubic-bezier(.4,0,.2,1),margin-left .22s cubic-bezier(.4,0,.2,1);",
+        "max-width:180px}",
+      /* toggle icon spin */
+      "#sb-toggle-icon{transition:transform .22s cubic-bezier(.4,0,.2,1);display:block}",
+      /* mobile: sidebar becomes top bar */
+      "@media(max-width:767px){",
+        "#taxiq-sidebar{position:static!important;width:100%!important;border-right:none;border-bottom:1px solid #1e293b}",
+        "#taxiq-sidebar .sb-brand-row{padding:0 12px}",
+        "#taxiq-sidebar .sb-toggle-btn{display:none}",
+        "#taxiq-sidebar .sb-nav{flex-direction:row;overflow-x:auto;overflow-y:hidden;flex:none;padding:6px 8px;gap:2px}",
+        "#taxiq-sidebar .sb-group-label{display:none}",
+        "#taxiq-sidebar .sb-item{flex-direction:column;align-items:center;justify-content:center;",
+          "gap:3px;height:auto;min-height:54px;min-width:58px;padding:6px 4px;",
+          "white-space:normal;overflow:visible;border-radius:8px}",
+        "#taxiq-sidebar .sb-label{font-size:9px;text-align:center;line-height:1.2;",
+          "max-width:56px;word-break:break-word;white-space:normal}",
+        "#taxiq-sidebar .sb-icon{font-size:16px!important;width:auto!important}",
+        "#taxiq-sidebar .sb-acct-row{display:none}",
+        "#taxiq-main{margin-left:0!important}",
+      "}",
+      /* ── collapsed (desktop) ── */
+      "#taxiq-sidebar.sb-collapsed{width:80px}",
+      "#taxiq-sidebar.sb-collapsed .sb-brand-text,",
+      "#taxiq-sidebar.sb-collapsed .sb-acct-text{opacity:0;max-width:0;margin-left:0}",
+      "#taxiq-sidebar.sb-collapsed .sb-group-label{opacity:0;height:0;padding:0}",
+      "#taxiq-sidebar.sb-collapsed .sb-item{",
+        "flex-direction:column;justify-content:center;align-items:center;",
+        "gap:3px;height:auto;min-height:56px;padding:8px 4px;",
+        "white-space:normal;overflow:visible}",
+      "#taxiq-sidebar.sb-collapsed .sb-label{",
+        "font-size:9px;text-align:center;line-height:1.3;",
+        "max-width:68px;word-break:break-word;white-space:normal;overflow:visible}",
+      "#taxiq-sidebar.sb-collapsed .sb-icon{font-size:17px!important;width:auto!important}",
+      "#taxiq-sidebar.sb-collapsed #sb-toggle-icon{transform:rotate(180deg)}",
+      /* collapsed brand row — reduce padding so logo+toggle fit in 80px */
+      "#taxiq-sidebar.sb-collapsed .sb-brand-row{padding:0 6px}"
+    ].join("");
+    document.head.appendChild(s);
+  }
+
+  function applySidebarState(open){
+    const sidebar = document.getElementById("taxiq-sidebar");
+    const main    = document.getElementById("taxiq-main");
+    if(!sidebar) return;
+    if(open){
+      sidebar.classList.remove("sb-collapsed");
+      if(main) main.style.marginLeft = "260px";
+    } else {
+      sidebar.classList.add("sb-collapsed");
+      if(main) main.style.marginLeft = "80px";
+    }
+  }
+
+  function renderSidebar(){
+    const navHTML = navGroups.map(function(group){
+      const label = group[0];
+      const ids   = group[1];
+      return '<div class="sb-group-label">' + label + '</div>' +
+        ids.map(function(id){
+          const active = id === currentPage ? " sb-active" : "";
+          const icon   = pageIcons[id] || "fa-solid fa-circle";
+          return '<a class="sb-item' + active + '" href="' + pageHref(id) + '">' +
+            '<i class="' + icon + ' fa-fw sb-icon" style="font-size:16px;width:20px;text-align:center;flex-shrink:0"></i>' +
+            '<span class="sb-label">' + pages[id].title + '</span>' +
+          '</a>';
+        }).join("");
+    }).join("");
+
+    return [
+      '<aside id="taxiq-sidebar" class="sidebar fixed inset-y-0 left-0 z-20 flex flex-col border-r border-slate-800 bg-slate-900">',
+        /* Brand row */
+        '<div class="sb-brand-row flex h-[68px] shrink-0 items-center justify-between border-b border-slate-800 px-3">',
+          '<div class="flex min-w-0 flex-1 items-center overflow-hidden">',
+            '<div class="shrink-0 grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 text-[11px] font-black text-white">TIQ</div>',
+            '<div class="sb-brand-text">',
+              '<p class="text-sm font-black text-slate-100 leading-none">TaxIQ</p>',
+              '<p class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-0.5">US Payroll + Tax</p>',
+            '</div>',
+          '</div>',
+          '<button onclick="window.taxiqToggleSidebar()" class="sb-toggle-btn shrink-0 flex h-7 w-7 items-center justify-center rounded-full border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors" style="min-width:28px;cursor:pointer">',
+            '<i id="sb-toggle-icon" class="fa-solid fa-chevron-left" style="font-size:9px"></i>',
+          '</button>',
+        '</div>',
+        /* Nav */
+        '<nav class="sb-nav flex-1 overflow-y-auto overflow-x-hidden px-2 py-1">',
+          navHTML,
+        '</nav>',
+        /* Account */
+        '<div class="sb-acct-row flex shrink-0 items-center border-t border-slate-800 px-3 py-3">',
+          '<div class="shrink-0 grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-400 text-xs font-black text-white">PA</div>',
+          '<div class="sb-acct-text">',
+            '<p class="text-xs font-black text-slate-100 leading-none">Payroll Admin</p>',
+            '<p class="text-[10px] text-slate-500 mt-0.5">tenant_demo_001</p>',
+          '</div>',
+        '</div>',
+      '</aside>'
+    ].join("");
   }
 
   function renderShell(renderContent){
     const meta = pages[currentPage] || pages.dashboard;
-    document.title = `TaxIQ - ${meta.title}`;
+    document.title = "TaxIQ - " + meta.title;
     if (!document.getElementById("fa-cdn")) {
       const lnk = document.createElement("link");
       lnk.id = "fa-cdn"; lnk.rel = "stylesheet";
       lnk.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css";
       document.head.appendChild(lnk);
     }
-    document.getElementById("app").innerHTML = `
-      <div class="app min-h-screen bg-slate-950 text-slate-100 md:flex">
-        ${renderSidebar()}
-        <main class="main min-h-screen flex-1 md:ml-[260px]">
-          ${renderHeader(meta)}
-          <section class="content p-6 max-md:p-4" id="content"></section>
-        </main>
-      </div>
-      <div class="modal-backdrop fixed inset-0 z-40 hidden items-center justify-center bg-slate-950/70 p-5 backdrop-blur-sm" id="modalRoot"></div>
-      <div class="toast fixed bottom-5 right-5 z-50 grid gap-2" id="toast"></div>`;
+    injectSidebarCSS();
+    _sbOpen = true;
+    document.getElementById("app").innerHTML = [
+      '<div class="app min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row">',
+        renderSidebar(),
+        '<main id="taxiq-main" class="main min-h-screen flex-1" style="margin-left:260px">',
+          renderHeader(meta),
+          '<section class="content p-6 max-md:p-4" id="content"></section>',
+        '</main>',
+      '</div>',
+      '<div class="modal-backdrop fixed inset-0 z-40 hidden items-center justify-center bg-slate-950/70 p-5 backdrop-blur-sm" id="modalRoot"></div>',
+      '<div class="toast fixed bottom-5 right-5 z-50 grid gap-2" id="toast"></div>'
+    ].join("");
     renderContent();
+    window.taxiqToggleSidebar = function(){
+      _sbOpen = !_sbOpen;
+      applySidebarState(_sbOpen);
+    };
   }
 
   return { currentPage, pageHref, pages, renderShell, ui };
