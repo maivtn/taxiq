@@ -25,8 +25,10 @@ TaxIQ / Nexora Touch prototype.
 - No Tax on Tips module: track voluntary cash/electronic/QR/POS tips, proof archive, yearly cap progress, worker privacy, CPA-ready PDF/CSV exports, and audit trail.
 - Advisory expansion: official-rule updates, evidence preservation, AI OCR, CPA review, share links, AI CFO, mileage, and deduction checklists.
 - Current demo location: the multi-page static demo lives in `html/`, with shared layout in `html/assets/layout.js` and page/modal rendering in `html/assets/app.js`.
+- Current layout behavior: sidebar uses Font Awesome icons, supports desktop collapse/expand with `localStorage`, and switches to a horizontal mobile nav.
 - Tax IQ workspace grouping: OCR Vault, Share Links, GPS Mileage, CPA Review, Tip Ledger, Tax Estimate, and AI Advisor are separate Tax IQ modules with their own workflows and modals.
 - System support screens: Webhooks, Audit Log, Notifications, Settings, API Keys, and connection health support integration monitoring and operational review.
+- OCR Vault scope now includes local-browser receipt/bill capture, Tesseract OCR extraction, processing queue, low-confidence review, batch approval, soft delete, and CPA export.
 - Vietnamese documentation: the feature description now includes a glossary for specialized payroll, tax, CPA, OCR, GPS, AI, privacy, and integration keywords.
 
 ## Implementation Notes
@@ -36,6 +38,7 @@ TaxIQ / Nexora Touch prototype.
 - Finalized payout records should create immutable Tax IQ ledger entries and audit logs.
 - CPA export should support month, quarter, year, and technician-level packages.
 - No Tax on Tips implementation should keep direct tips private by default, classify tip entries through a rules engine, retain proof images, and avoid guaranteed deduction/refund language.
+- OCR production implementation should define whether OCR runs client-side, server-side, or hybrid, and document file retention, original-image preservation, duplicate detection, confidence thresholds, and CPA export rules.
 - Tax Estimate should stay advisory only: show estimates, deposit reminders, and CPA review prompts without presenting final tax liability as guaranteed.
 - Audit Log should remain append-only/immutable in production, including soft-delete events for tax records, receipt records, trip records, and tip entries.
 - Use `tax-iq-feature-description.md` as the product overview before drilling into screen-level implementation details.

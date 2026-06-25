@@ -10,7 +10,7 @@ Open `index.html` directly in a browser:
 html/index.html
 ```
 
-No build step is required. The demo uses Tailwind Play CDN, so open it while online for full Tailwind styling.
+No build step is required. The demo uses CDN assets for Tailwind, Font Awesome icons, and browser OCR, so open it while online for full styling, icons, and OCR behavior.
 
 ## Structure
 
@@ -51,6 +51,7 @@ html/
 
 - Each major screen is a separate HTML page.
 - Shared sidebar/topbar/navigation comes from `assets/layout.js`.
+- Sidebar uses Font Awesome icons, supports collapse/expand on desktop, persists state in `localStorage`, and becomes a horizontal scroll nav on mobile.
 - Screen data, page content, modals, and demo actions come from `assets/app.js`.
 - Sidebar groups OCR Vault, Share Links, GPS Mileage, CPA Review, and AI Advisor under `Tax IQ`.
 - Sidebar also includes Tip Ledger and Tax Estimate under `Tax IQ`.
@@ -62,7 +63,9 @@ html/
   - Create payroll run
   - Finalize run
   - Create payout
-  - Capture receipt
+  - Capture receipt / bill with local browser OCR
+  - Review low-confidence OCR fields
+  - Batch approve high-confidence receipts
   - Create share link
   - View QR / revoke share link
   - Start GPS trip
@@ -72,6 +75,7 @@ html/
   - Review tax estimate and deposit schedule alerts
   - Inspect audit log and webhook payloads
   - Create API key for integrations
+- Some action buttons mutate the in-memory demo data, including approve receipt, resolve exception, mark notifications read, copy share link, revoke connection, mark payout paid, rotate/revoke API key, and soft-delete receipt/trip/tip records.
 
 ## Product Scope
 
@@ -80,6 +84,7 @@ html/
 - Tax IQ ledger and audit trail
 - AI Advisor
 - OCR Vault
+- Local-browser OCR prototype with camera/file capture, extraction review, processing queue, batch approval, and CPA export
 - Share Links
 - GPS Mileage
 - CPA Review

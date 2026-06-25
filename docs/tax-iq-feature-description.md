@@ -3,7 +3,7 @@
 Version: Phase 1 Demo  
 Product: Nexora Touch / Tax IQ  
 Market scope: U.S. payroll, payout, tax record keeping, CPA review, and merchant advisory  
-Last updated: 2026-06-24
+Last updated: 2026-06-25
 
 ## 1. Feature Summary
 
@@ -108,20 +108,36 @@ Data needed:
 - Payroll source
 - Employee tax profile readiness
 
-### Capture Receipt
+### Capture Receipt / Bill
 
-Purpose: lưu bill, invoice, receipt hoặc payout proof trước khi bị mất.
+Purpose: lưu bill, invoice, receipt hoặc payout proof trước khi bị mất. Current demo supports camera/file capture, local-browser OCR with Tesseract.js, extracted fields, raw OCR text, confidence review, batch approval and CPA export.
 
 Data needed:
 
-- Source: camera, upload, email import, payout evidence
+- Source: camera, file upload, email import, payout evidence
 - Vendor/payee
 - Amount
+- Tax amount
 - Date
+- Receipt or invoice number
 - Category
 - Business purpose
 - Original image/proof file
 - OCR confidence
+- Raw OCR text
+- Processing status
+- CPA package inclusion
+
+Current OCR actions:
+
+- Capture Receipt / Bill
+- View Receipt Detail
+- Edit Receipt
+- Review low-confidence OCR fields
+- Approve single receipt
+- Batch approve high-confidence receipts
+- Soft delete receipt
+- Export vault to CPA package
 
 ### Create Share Link
 
@@ -270,7 +286,8 @@ Important rules:
 | --- | --- |
 | tax_ledger_entries | Immutable tax/payroll/payout ledger records. |
 | exceptions | Blocking or warning items requiring review. |
-| receipt_records | OCR receipts, bills, invoices and proof files. |
+| receipt_records | OCR receipts, bills, invoices, proof files, raw OCR text, confidence, tax amount, receipt number, and review status. |
+| ocr_jobs | OCR processing queue records with source, queued time, status, and estimated time. |
 | share_links | Link/QR access records with scope and expiration. |
 | mileage_trips | GPS trip records and business purpose. |
 | cpa_connections | CPA/bookkeeper firm access, scope and status. |
@@ -290,7 +307,8 @@ Important rules:
 - Real authentication and role-based access control.
 - Tenant isolation for merchant data.
 - File storage for receipts, images, PDFs and CSV exports.
-- OCR processing queue.
+- OCR processing queue, confidence scoring, low-confidence review, batch approval and duplicate detection.
+- OCR architecture decision: client-side, server-side or hybrid. The current demo uses browser-side Tesseract.js OCR.
 - Ledger/audit table with append-only behavior.
 - CPA portal invite and secure link system.
 - Cost estimate and billing approval workflow.
@@ -325,23 +343,28 @@ Implemented in static demo:
 - Multi-page Tax IQ navigation.
 - Tailwind-based layout.
 - Current static project lives in `html/`.
+- Font Awesome sidebar icons.
+- Collapsible desktop sidebar with `localStorage` persistence.
+- Mobile horizontal navigation.
 - Tax IQ group contains ledger, exceptions, jurisdictions, forms, OCR, share links, GPS, CPA review, tip ledger, tax estimate and AI advisor.
 - System group contains webhooks, audit log, notifications and settings.
 - Detailed modals for all key actions.
 - CPA cost preview before invite.
 - AI CFO prompt workflow.
-- OCR receipt capture workflow.
+- OCR receipt/bill capture workflow with camera/file input, local-browser OCR, raw OCR text, field extraction, confidence review, processing queue and batch approval.
 - Share link workflow.
 - GPS mileage workflow.
 - CPA review and filing package workflow.
 - Tip Ledger / No Tax on Tips workflow.
 - Tax Estimate and deposit schedule workflow.
 - Connections, API keys, audit log and notification workflows.
+- In-memory demo action handlers for approve receipt, resolve exception, mark notifications read, copy share link, revoke connection, mark payout paid, rotate/revoke API key, and soft-delete receipt/trip/tip records.
 
 Not implemented yet:
 
 - Real backend database.
 - Real OCR.
+- Real OCR storage, queue, backfill and duplicate-detection services.
 - Real AI model call.
 - Real CPA portal login.
 - Real payment/billing.

@@ -3,7 +3,7 @@
 Phiên bản: Phase 1 Demo  
 Sản phẩm: Nexora Touch / Tax IQ  
 Phạm vi áp dụng: U.S. payroll, payout, lưu trữ chứng từ thuế, Tip Ledger, Tax Estimate, CPA review, AI Advisor  
-Ngày cập nhật: 2026-06-24
+Ngày cập nhật: 2026-06-25
 
 ## 1. Mục Đích Của Tài Liệu
 
@@ -122,7 +122,7 @@ Giá trị: owner thấy lỗi sớm, không đợi đến cuối năm mới ph�
 
 ### 7.3 OCR Vault
 
-OCR Vault là kho lưu chứng từ. User có thể chụp ảnh hoặc upload receipt/bill/invoice. AI OCR sẽ đọc ảnh và trích xuất thông tin.
+OCR Vault là kho lưu chứng từ. User có thể chụp ảnh hoặc upload receipt/bill/invoice. Trong demo hiện tại, màn hình này đã chi tiết hơn: user có thể capture receipt/bill bằng camera hoặc file upload, OCR chạy trong browser bằng Tesseract.js, sau đó hệ thống tự điền field để user review trước khi lưu vào vault.
 
 Thông tin cần collect:
 
@@ -135,8 +135,39 @@ Thông tin cần collect:
 - Business purpose.
 - Link với payroll, payout, mileage, worker hoặc CPA package nếu có.
 - OCR confidence, tức độ tin cậy của kết quả AI đọc dữ liệu.
+- Raw OCR text, tức đoạn chữ thô đọc được từ hình ảnh.
+- Receipt number hoặc invoice number nếu OCR nhận ra.
+- Tax amount nếu có dòng thuế riêng.
+- Trạng thái xử lý: processing, needs review, approved, missing purpose.
 
 Giá trị: khi CPA hỏi bill/receipt, merchant có thể mở lại ngay thay vì tìm trong tin nhắn, email hoặc album ảnh.
+
+Các phần hiện có trong demo:
+
+- Vault metrics: số record đã approved/extracted, số record cần review, số record đang processing, số nguồn capture.
+- Filter bar: lọc theo status, category, source và confidence.
+- OCR Processing Queue: theo dõi receipt đang được xử lý.
+- Receipt Vault table: hiển thị vendor, category, amount, source, confidence, tax, status, owner và actions.
+- OCR Extraction Fields: định nghĩa field nào cần đọc từ receipt và confidence target.
+- Capture Sources: camera in-app, file upload, email import, payout upload.
+
+Các action trong demo:
+
+- Capture Receipt / Bill.
+- View Receipt Detail.
+- Edit Receipt.
+- Review OCR nếu confidence dưới ngưỡng.
+- Approve từng receipt.
+- Approve High Confidence để batch approve receipt có confidence cao.
+- Delete Receipt theo cơ chế soft delete.
+- Export to CPA.
+
+Nguyên tắc OCR:
+
+- Nếu confidence thấp, user phải review thủ công trước khi approve.
+- Original image nên được lưu để CPA/audit có bằng chứng.
+- Hệ thống cần duplicate detection theo vendor, amount, date và image hash.
+- Demo hiện chạy OCR local trong browser. Production cần quyết định dùng client-side OCR, server-side OCR hoặc hybrid tùy bảo mật, hiệu năng và chi phí.
 
 ### 7.4 Share Links
 
@@ -405,7 +436,8 @@ Nguyên tắc bảo mật:
 | --- | --- |
 | tax_ledger_entries | Dòng sổ cái tax/payroll/payout đã được ghi lại. |
 | exceptions | Lỗi hoặc cảnh báo cần user xử lý. |
-| receipt_records | Receipt, bill, invoice, payout proof và kết quả OCR. |
+| receipt_records | Receipt, bill, invoice, payout proof, raw OCR text, confidence, tax amount, receipt number và kết quả review. |
+| ocr_jobs | Trạng thái OCR processing, queued time, source file và estimated processing time. |
 | share_links | Link/QR, scope, expiration, passcode, status. |
 | mileage_trips | Trip GPS, miles, route, purpose và review status. |
 | cpa_connections | Thông tin CPA/bookkeeper được kết nối. |
@@ -427,7 +459,8 @@ Backend cần có:
 - Role-based access control.
 - Database riêng theo tenant/merchant.
 - File storage cho receipt, image, PDF, CSV.
-- OCR processing queue.
+- OCR processing queue, confidence scoring, low-confidence review, batch approval và duplicate detection.
+- Chính sách OCR client-side/server-side/hybrid, bao gồm việc có dùng Tesseract.js trong browser hay OCR service ở backend.
 - AI backend cho AI CFO và deduction checklist.
 - Tip ledger service cho add/edit/soft delete/export tip entries.
 - Tax estimate service cho quarterly estimate, jurisdiction estimate và deposit alerts.
@@ -463,12 +496,15 @@ Compliance guardrails cần có:
 
 - Multi-page Tax IQ project.
 - Tailwind layout.
+- Font Awesome icons.
+- Collapsible sidebar trên desktop, lưu trạng thái bằng `localStorage`.
+- Mobile horizontal sidebar/navigation.
 - Sidebar/header/menu load bằng JavaScript.
 - Tax IQ group gồm Ledger, Exceptions, Jurisdictions, Forms, OCR, Share Links, GPS, CPA Review, Tip Ledger, Tax Estimate, AI Advisor.
 - Modal chi tiết cho các action chính.
 - CPA cost preview trước khi connect.
 - AI CFO prompt workflow.
-- OCR receipt capture workflow.
+- OCR receipt/bill capture workflow với camera/upload, local-browser OCR, raw text, extracted fields, confidence review, processing queue và batch approval.
 - Share link workflow.
 - GPS mileage workflow.
 - CPA review và filing package workflow.
@@ -478,11 +514,13 @@ Compliance guardrails cần có:
 - Audit Log page với immutable action history.
 - Notifications page cho deposit, exception, CPA request, webhook và tip cap alerts.
 - Settings page có API Keys và Notification Preferences.
+- Một số action đã cập nhật dữ liệu demo trong bộ nhớ: approve receipt, resolve exception, mark notification read, copy share link, revoke connection, mark payout paid, rotate/revoke API key, soft-delete receipt/trip/tip.
 
 Chưa có trong demo:
 
 - Real backend database.
 - Real OCR engine.
+- Real OCR storage/queue/backfill service.
 - Real AI model call.
 - Real CPA portal login.
 - Real payment/billing.
@@ -546,6 +584,14 @@ Chưa có trong demo:
 | OCR | Optical Character Recognition, đọc chữ từ ảnh. | Đọc receipt/bill/invoice từ hình chụp. |
 | AI OCR | AI đọc và trích xuất dữ liệu từ ảnh. | Lấy vendor, amount, date, category, confidence. |
 | OCR Vault | Kho lưu ảnh/chứng từ và kết quả OCR. | Giữ receipt không bị mất. |
+| Tesseract.js | Thư viện OCR chạy bằng JavaScript trong browser. | Demo dùng để đọc receipt local trong trình duyệt. |
+| Local-browser OCR | OCR chạy trên máy/trình duyệt của user. | Giảm việc gửi ảnh lên server trong demo. |
+| Processing queue | Hàng đợi xử lý. | Theo dõi receipt đang OCR hoặc chờ OCR. |
+| Confidence threshold | Ngưỡng độ tin cậy. | Dưới ngưỡng thì bắt user review thủ công. |
+| Batch approval | Phê duyệt nhiều record cùng lúc. | Approve receipt có confidence cao. |
+| Raw OCR text | Text thô đọc được từ ảnh. | Dùng để kiểm tra lại kết quả extract. |
+| Duplicate detection | Phát hiện trùng lặp. | So vendor, amount, date và image hash để tránh lưu trùng. |
+| Image hash | Dấu vân tay kỹ thuật của ảnh. | Dùng để phát hiện receipt bị upload nhiều lần. |
 | Receipt | Hóa đơn/biên nhận. | Evidence cho expense hoặc payment. |
 | Bill | Hóa đơn cần thanh toán hoặc đã thanh toán. | Lưu vào OCR Vault để CPA xem. |
 | Invoice | Hóa đơn yêu cầu thanh toán. | Lưu và link với vendor/payee. |
@@ -596,6 +642,10 @@ Chưa có trong demo:
 | Tenant isolation | Cách ly dữ liệu giữa các merchant. | Merchant A không thấy dữ liệu merchant B. |
 | Backend | Phần server/database/API. | Cần để demo thành sản phẩm thật. |
 | Frontend | Giao diện người dùng. | Các page, modal, form, table. |
+| Font Awesome | Thư viện icon. | Demo dùng icon cho sidebar. |
+| Collapsible sidebar | Sidebar có thể thu gọn/mở rộng. | Giúp màn hình rộng có thêm không gian làm việc. |
+| localStorage | Bộ nhớ nhỏ trong browser. | Lưu trạng thái sidebar đang mở hay thu gọn. |
+| In-memory demo data | Dữ liệu demo nằm trong JavaScript, chưa lưu database. | Action thay đổi dữ liệu tạm trong phiên demo. |
 | API | Cách hệ thống nói chuyện với nhau bằng request/response. | Frontend gọi backend hoặc partner system. |
 | API Key | Khóa truy cập API. | Cho integration hoặc automation gọi hệ thống. |
 | API Scope | Phạm vi quyền của API key. | Giới hạn key chỉ đọc report, payroll, webhook hoặc full access. |
