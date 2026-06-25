@@ -143,6 +143,18 @@ Current OCR actions:
 
 Purpose: cho CPA, technician hoặc reviewer upload/review thông tin qua link hoặc QR.
 
+Final business purpose: Share Links creates a temporary, scoped, auditable access path for people outside the main Tax IQ account. It lets external users upload missing documents or review selected records without receiving full system access.
+
+Share Links is not the system of record. It is an intake/share channel. Uploaded or reviewed data should flow back into the correct Tax IQ module:
+
+| Uploaded or reviewed information | Destination module |
+| --- | --- |
+| Receipt, bill, invoice | OCR Vault |
+| Payout proof or payment screenshot | Payouts / OCR Vault |
+| W-9, profile information, worker document | Employees / worker profile / CPA Review |
+| CPA comment or missing-file request | CPA Review |
+| Ledger or report package | Tax Ledger / Forms & Reports |
+
 Access modes:
 
 - Upload-only
@@ -155,6 +167,8 @@ Controls:
 - Passcode
 - Download permission
 - Audit every open/upload
+- Revoke link anytime
+- Block full PII export unless merchant approves
 
 ### Start GPS Trip
 

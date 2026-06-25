@@ -173,6 +173,16 @@ Nguyên tắc OCR:
 
 Share Links là tính năng tạo link hoặc QR để gửi cho người bên ngoài.
 
+Mục đích cuối của Share Links là tạo một cổng truy cập tạm thời, có giới hạn và có audit log để người ngoài hệ thống có thể upload hoặc review đúng phần thông tin được cho phép, mà không cần tạo tài khoản đầy đủ trong Tax IQ.
+
+Nói cách dễ hiểu: Share Links không phải nơi lưu dữ liệu chính. Nó là cách thu thập hoặc chia sẻ dữ liệu an toàn. Sau khi người nhận upload hoặc review, dữ liệu sẽ được đưa về các module chính như OCR Vault, Payouts, CPA Review, Tax Ledger hoặc Forms & Reports.
+
+Share Links giải quyết 3 nhu cầu nghiệp vụ:
+
+- Lấy thêm hồ sơ còn thiếu từ technician, worker, CPA hoặc external reviewer.
+- Chia sẻ một phần hồ sơ cho CPA/reviewer xem nhanh mà không mở toàn bộ hệ thống.
+- Theo dõi ai đã mở link, upload gì, download gì và link còn hiệu lực hay không.
+
 Có 3 kiểu access chính:
 
 - Upload-only: người nhận chỉ được upload file/thông tin.
@@ -186,6 +196,16 @@ Ví dụ sử dụng:
 - A gửi B link để upload thông tin review.
 - Tạo profile information link có expire sau 15 ngày hoặc never expire tùy cấu hình.
 
+Thông tin sau khi upload sẽ đi về đâu:
+
+| Loại thông tin upload/review | Module nhận dữ liệu |
+| --- | --- |
+| Receipt, bill, invoice | OCR Vault |
+| Payout proof, screenshot Zelle/Venmo/Cash App | Payouts hoặc OCR Vault |
+| W-9, profile information, worker document | Employees / worker profile hoặc CPA Review |
+| CPA comment, missing-file request | CPA Review |
+| Ledger/report package được share | Forms & Reports hoặc Tax Ledger |
+
 Yêu cầu bảo mật:
 
 - Mỗi link có scope rõ ràng.
@@ -193,6 +213,8 @@ Yêu cầu bảo mật:
 - Có thể thêm passcode.
 - Có audit log mỗi lần mở link, upload, download.
 - Không cho xem toàn bộ system, chỉ xem dữ liệu được share.
+- Full PII như SSN/TIN không được export qua link nếu merchant chưa approve.
+- Link có thể revoke bất cứ lúc nào, kể cả khi chưa hết hạn.
 
 ### 7.5 GPS Mileage
 
