@@ -4,13 +4,20 @@ Static multi-page demo for TaxIQ / Nexora Touch.
 
 ## How To Open
 
-Open `index.html` directly in a browser:
+Run a lightweight local server from the `html/` folder, then open the local URL:
 
-```text
-html/index.html
+```bash
+cd html
+python3 -m http.server 8123
 ```
 
-No build step is required. The demo uses CDN assets for Tailwind, Font Awesome icons, and browser OCR, so open it while online for full styling, icons, and OCR behavior.
+Then open:
+
+```text
+http://localhost:8123/
+```
+
+No build step is required. The demo uses CDN assets for Tailwind, Font Awesome icons, and browser OCR, so open it while online for full styling, icons, and OCR behavior. A local server is recommended because the app now loads `assets/mock-data.json`; opening through `file://` may be blocked by browser security.
 
 ## Structure
 
@@ -20,9 +27,12 @@ html/
   assets/
     styles.css
     layout.js
+    mock-data.json
+    mock-data.js
     app.js
   pages/
     analytics.html
+    onboarding.html
     employers.html
     employees.html
     employee-profile.html
@@ -32,6 +42,7 @@ html/
     payouts.html
     tax-ledger.html
     exceptions.html
+    data-quality.html
     jurisdictions.html
     forms-reports.html
     ai-advisor.html
@@ -44,6 +55,7 @@ html/
     webhooks.html
     audit-log.html
     notifications.html
+    compliance-review.html
     billing.html
     settings.html
 ```
@@ -53,10 +65,13 @@ html/
 - Each major screen is a separate HTML page.
 - Shared sidebar/topbar/navigation comes from `assets/layout.js`.
 - Sidebar uses Font Awesome icons, supports collapse/expand on desktop, persists state in `localStorage`, and becomes a horizontal scroll nav on mobile.
-- Screen data, page content, modals, and demo actions come from `assets/app.js`.
+- Screen data comes from `assets/mock-data.json`; `assets/mock-data.js` is only a small loader that fetches the JSON for the browser.
+- Page rendering, modals, and demo actions come from `assets/app.js`.
 - Sidebar groups OCR Vault, Share Links, GPS Mileage, CPA Review, and AI Advisor under `Tax IQ`.
 - Sidebar also includes Tip Ledger and Tax Estimate under `Tax IQ`.
-- System screens now include Webhooks, Audit Log, Notifications, Billing & Plans, and Settings.
+- Overview screens now include Dashboard, Analytics, and Onboarding.
+- Tax IQ screens now include Data Quality Center for missing data, evidence gaps, integration errors, and CPA readiness.
+- System screens now include Webhooks, Audit Log, Notifications, Compliance Review, Billing & Plans, and Settings.
 - Tailwind utility classes drive the main layout and components through Tailwind Play CDN.
 - `assets/styles.css` keeps only small demo helpers for responsive grids, modal state, and fallback button/card styling.
 - Important workflows use demo modals:
@@ -76,6 +91,10 @@ html/
   - Review tax estimate and deposit schedule alerts
   - Inspect audit log and webhook payloads
   - Review merchant plan, invoices, CPA billing approval, and upgrade path
+  - Review merchant onboarding, empty-state acceptance criteria, and ICP fit
+  - Track data quality gaps and create cleanup tasks
+  - Review legal/compliance go-live checklist and risk wording rules
+  - Review detailed role permission matrix
   - Create API key for integrations
 - Some action buttons mutate the in-memory demo data, including approve receipt, resolve exception, mark notifications read, copy share link, revoke connection, mark payout paid, rotate/revoke API key, and soft-delete receipt/trip/tip records.
 
@@ -96,4 +115,7 @@ html/
 - Webhook monitor
 - Audit log
 - Notifications
+- Merchant onboarding
+- Data Quality Center
+- Compliance Review
 - Billing & Plans

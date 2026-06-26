@@ -25,11 +25,13 @@ TaxIQ / Nexora Touch prototype.
 - Key compliance split: W-2 payroll records versus 1099 contractor payout records.
 - No Tax on Tips module: track voluntary cash/electronic/QR/POS tips, proof archive, yearly cap progress, worker privacy, CPA-ready PDF/CSV exports, and audit trail.
 - Advisory expansion: official-rule updates, evidence preservation, AI OCR, CPA review, share links, AI CFO, mileage, and deduction checklists.
-- Current demo location: the multi-page static demo lives in `html/`, with shared layout in `html/assets/layout.js` and page/modal rendering in `html/assets/app.js`.
+- Current demo location: the multi-page static demo lives in `html/`, with shared layout in `html/assets/layout.js`, mock data in `html/assets/mock-data.json`, a browser loader in `html/assets/mock-data.js`, and page/modal rendering in `html/assets/app.js`.
 - Current layout behavior: sidebar uses Font Awesome icons, supports desktop collapse/expand with `localStorage`, and switches to a horizontal mobile nav.
-- Tax IQ workspace grouping: OCR Vault, Share Links, GPS Mileage, CPA Review, Tip Ledger, Tax Estimate, and AI Advisor are separate Tax IQ modules with their own workflows and modals.
-- System support screens: Webhooks, Audit Log, Notifications, Settings, API Keys, and connection health support integration monitoring and operational review.
+- Tax IQ workspace grouping: OCR Vault, Share Links, GPS Mileage, CPA Review, Tip Ledger, Tax Estimate, AI Advisor, and Data Quality Center are separate Tax IQ modules with their own workflows and modals.
+- System support screens: Webhooks, Audit Log, Notifications, Compliance Review, Settings, API Keys, and connection health support integration monitoring and operational review.
+- Onboarding screen now captures first merchant setup, ICP fit, happy path, and empty-state acceptance criteria.
 - Billing & Plans now documents the proposed merchant subscription model, CPA cost approval, partner API future path, invoices, upgrade rules, and loading state pattern.
+- Compliance Review now captures legal review, privacy/data retention, disclaimer placement, CPA handoff language, API/backend controls, and go-live blockers.
 - OCR Vault scope now includes local-browser receipt/bill capture, Tesseract OCR extraction, processing queue, low-confidence review, batch approval, soft delete, and CPA export.
 - Vietnamese documentation: the feature description now includes a glossary for specialized payroll, tax, CPA, OCR, GPS, AI, privacy, and integration keywords.
 
@@ -46,3 +48,4 @@ TaxIQ / Nexora Touch prototype.
 - Use `tax-iq-feature-description.md` as the product overview before drilling into screen-level implementation details.
 - Use `tax-iq-feature-description-vi.md` for Vietnamese stakeholder review, business explanation, demo preparation, and terminology alignment.
 - Use `tax-iq-stakeholder-ba-dev-next-steps-vi.md` to align stakeholder, BA, and dev priorities before the next sprint.
+- Before API implementation, keep sample data in `html/assets/mock-data.json` so UI logic can be swapped to API responses without rewriting screen layouts.

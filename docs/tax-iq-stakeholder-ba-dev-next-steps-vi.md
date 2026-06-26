@@ -1,7 +1,7 @@
 # Tax IQ - Gop Y Stakeholder, BA va Dev
 
 Ngay cap nhat: 2026-06-26  
-Pham vi: Tax IQ demo, US payroll/tax, payout, OCR, Share Links, GPS Mileage, CPA Review, Tip Ledger, Tax Estimate, Billing
+Pham vi: Tax IQ demo, US payroll/tax, payout, OCR, Share Links, GPS Mileage, CPA Review, Tip Ledger, Tax Estimate, Onboarding, Data Quality, Compliance Review, Billing
 
 ## 1. Muc Dich Tai Lieu
 
@@ -12,6 +12,7 @@ Muc tieu cuoi:
 - Stakeholder chot business model va ICP.
 - BA viet ro user stories, permission matrix, state machine va billing spec.
 - Dev co danh sach fix UI/UX, loading state va huong tach mock data sang API.
+- Demo hien tai da co man hinh de minh hoa cac quyet dinh nay: Onboarding, Data Quality, Compliance Review, Billing, Permission Matrix.
 
 ## 2. Gop Y Cho Stakeholder
 
@@ -111,6 +112,12 @@ BA can spec:
 
 ### 4.1 Da xu ly trong demo hien tai
 
+- Da tach mock data sang `html/assets/mock-data.json`; `html/assets/mock-data.js` chi con la loader, `app.js` chi render UI va xu ly demo actions.
+- Da co man hinh Onboarding cho first merchant setup, ICP fit, happy path, va empty-state acceptance criteria.
+- Da co man hinh Data Quality Center cho missing TIN/W-4, receipt gap, OCR confidence, connection error, webhook dead letter, GPS review, CPA missing evidence, state setup.
+- Da co man hinh Compliance Review cho legal/privacy/disclaimer/CPA handoff/API/backend go-live gate.
+- Settings da co Permission Matrix Detail theo role.
+- Dashboard da co widget mo nhanh cho Onboarding, Data Quality va Compliance Review.
 - Payroll Runs da co contextual action buttons.
 - Dashboard KPI cards da clickable.
 - Analytics da co chart.
@@ -127,7 +134,7 @@ BA can spec:
 | Hang muc | Can lam |
 | --- | --- |
 | Loading state | Dung skeleton UI cho KPI, table, OCR queue, billing invoice. |
-| Mock data migration | Tach data ra JSON/mock service truoc, sau do swap sang API. |
+| API migration | Mock data da tach ra JSON rieng; buoc tiep theo la thay `mock-data.json` bang API/mock service co loading/error/retry. |
 | API error state | Moi table/page can co loading, empty, error, retry. |
 | Permission enforcement | UI hide button la chua du; backend phai enforce permission. |
 | Audit log | Moi mutation phai tao audit event. |
@@ -137,19 +144,19 @@ BA can spec:
 
 ### Sprint tiep theo
 
-1. Stakeholder chot business model va ICP.
-2. BA viet permission matrix, payroll run state machine, billing spec.
-3. Dev fix/polish UI: overflow, action buttons, clickable KPI, charts, audit filter, webhook endpoint.
+1. Stakeholder chot business model va ICP tren man hinh Billing + Onboarding.
+2. BA review Onboarding, Data Quality, Permission Matrix, Payroll Run state machine, Billing spec.
+3. Legal/CPA review man hinh Compliance Review, disclaimer, privacy/data retention, CPA handoff language.
 
-Trang thai demo: cac muc Dev polish chinh da duoc bo sung vao HTML demo.
+Trang thai demo: cac muc Dev polish chinh va cac man hinh feedback moi da duoc bo sung vao HTML demo.
 
 ### Sprint sau
 
-1. Build Billing/Plans production flow.
-2. Build merchant onboarding flow.
-3. Build CPA portal happy path.
-4. Tach mock data sang JSON/mock service.
-5. Them loading/error/empty state production.
+1. Build Billing/Plans production flow voi provider that.
+2. Build merchant onboarding flow co backend va user account.
+3. Build CPA portal happy path co role/permission that.
+4. Thay `mock-data.json` bang API/mock service.
+5. Them loading/error/empty state production va backend permission enforcement.
 
 ## 6. Keyword Giai Thich
 
@@ -167,6 +174,9 @@ Trang thai demo: cac muc Dev polish chinh da duoc bo sung vao HTML demo.
 | Permission matrix | Bang role nao duoc xem/lam gi trong he thong. |
 | Empty state | Giao dien khi chua co du lieu, thuong co huong dan va CTA tiep theo. |
 | Skeleton UI | Man hinh loading dang khung xam/shimmer de tranh layout shift. |
+| Data Quality | Chat luong du lieu dau vao; vi du thieu TIN/W-4, receipt thieu purpose, webhook loi, OCR confidence thap. |
+| Go-live gate | Danh sach dieu kien phai dat truoc khi cho khach hang that su dung. |
+| Disclaimer | Cau thong bao gioi han trach nhiem, vi du Tax IQ chi ho tro ghi nhan/du doan, khong thay the CPA/luat su. |
 | Feature gate | Chan/mo tinh nang dua tren plan hoac permission. |
 | Proration | Tinh phi nang/ha goi theo phan con lai cua chu ky billing. |
 | Audit log | Nhat ky bat bien ghi lai ai lam gi, luc nao, tren record nao. |

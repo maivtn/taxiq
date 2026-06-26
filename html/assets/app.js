@@ -8,7 +8,7 @@ const tones = {
   blue:"border-indigo-500 text-indigo-300 bg-indigo-500/10"
 };
 
-const data = window.TaxIQMockData;
+let data = null;
 
 let activeGpsTrip = null;
 
@@ -33,7 +33,7 @@ function gpsPointLabel(point){
   return point.label || `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
 }
 
-function statusClass(v){return /posted|delivered|ready|active|verified|connected|confirmed|extracted|calculated|candidate|qualified|paid/i.test(v) ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 before:bg-emerald-400" : /review|pending|draft|retry|requested|watch|needs|invited|medium/i.test(v) ? "border-amber-500/30 bg-amber-500/10 text-amber-300 before:bg-amber-400" : /failed|dead|missing|open|high|cancelled/i.test(v) ? "border-rose-500/30 bg-rose-500/10 text-rose-300 before:bg-rose-400" : "border-indigo-500/30 bg-indigo-500/10 text-indigo-300 before:bg-indigo-400";}
+function statusClass(v){return /posted|delivered|ready|active|verified|connected|confirmed|extracted|calculated|candidate|qualified|paid|completed|covered|pass/i.test(v) ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 before:bg-emerald-400" : /review|pending|draft|retry|requested|watch|needs|invited|medium|progress/i.test(v) ? "border-amber-500/30 bg-amber-500/10 text-amber-300 before:bg-amber-400" : /failed|dead|missing|open|high|cancelled|blocked|required|not ready/i.test(v) ? "border-rose-500/30 bg-rose-500/10 text-rose-300 before:bg-rose-400" : "border-indigo-500/30 bg-indigo-500/10 text-indigo-300 before:bg-indigo-400";}
 function status(v){return `<span class="status inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[11px] font-black before:block before:h-1.5 before:w-1.5 before:rounded-full ${statusClass(v)}">${v}</span>`;}
 function metric([label,value,sub,color,href]){
   const body = `<div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div>`;
@@ -86,6 +86,7 @@ function skeletonPreview(){
 
 const renderers = {
   dashboard:renderDashboard, analytics:renderAnalytics,
+  onboarding:renderOnboarding, "data-quality":renderDataQuality,
   employers:renderEmployers, employees:renderEmployees, "employee-profile":renderEmployeeProfile,
   "payroll-runs":renderRuns, "run-detail":renderRunDetail,
   connections:renderConnections, payouts:renderPayouts,
@@ -94,11 +95,18 @@ const renderers = {
   "share-links":renderShareLinks, gps:renderGps, cpa:renderCpa,
   "tip-ledger":renderTipLedger, "tax-estimate":renderTaxEstimate,
   webhooks:renderWebhooks, "audit-log":renderAuditLog,
-  notifications:renderNotifications, billing:renderBilling, settings:renderSettings
+  notifications:renderNotifications, "compliance-review":renderComplianceReview,
+  billing:renderBilling, settings:renderSettings
 };
 
 function renderPage(){
   document.getElementById("content").innerHTML = (renderers[currentPage] || renderDashboard)();
+}
+
+function renderDataLoadError(){
+  const error = window.TaxIQDataLoadError;
+  const detail = error ? error.message : "Mock data is not available.";
+  document.getElementById("content").innerHTML = panel("Mock Data JSON Not Loaded", `<div class="panel-body list">${listItem("Run the demo through a local server","Because the app now loads assets/mock-data.json, opening the HTML as file:// may be blocked by browser security.","yellow")}${listItem("Recommended command","From the html folder, run: python3 -m http.server 8123, then open http://localhost:8123/.","blue")}${listItem("Error detail",detail,"red")}</div>`);
 }
 
 /* ─── DASHBOARD ─── */
@@ -111,7 +119,10 @@ function renderDashboard(){
     ["Share Links","Secure Links","CPA, technician, and profile links are active.","yellow","share-links"],
     ["Tax Estimate","Quarterly Forecast","Federal, SUTA, and state balances are ready.","red","tax-estimate"],
     ["Tip Ledger","No Tax on Tips","YTD qualified tip tracking and cap warnings.","cyan","tip-ledger"],
-    ["GPS Mileage","Route Evidence","A to B mileage trips ready for CPA review.","green","gps"]
+    ["GPS Mileage","Route Evidence","A to B mileage trips ready for CPA review.","green","gps"],
+    ["Onboarding","Merchant Setup","First-time setup and empty-state checklist.","blue","onboarding"],
+    ["Data Quality","Readiness Center","Missing data, evidence gaps, and integration issues.","yellow","data-quality"],
+    ["Compliance Review","Go-live Gate","Legal, privacy, disclaimer, and API readiness.","red","compliance-review"]
   ].map(([title,item,text,color,href])=>panel(title,`<div class="panel-body">${listItem(item,text,color)}</div>`,`<a class="btn" href="${pageHref(href)}">Open</a>`)).join("");
   return `<div class="grid-4" style="margin-bottom:14px">${data.metrics.map(metric).join("")}</div><div class="split"><div>${panel("Recent Payroll Runs",table(["Run ID","Period","Pay Date","Gross","Tax","Risk","Status"],runRows),`<a class="btn" href="${pageHref("payroll-runs")}">View All</a>`)}</div>${panel("TaxIQ Issues",`<div class="panel-body list">${issues}</div>`,`<a class="btn" href="${pageHref("exceptions")}">Open Queue</a>`)}</div><div class="grid-3" style="margin-top:14px">${workflowCards}</div>`;
 }
@@ -127,6 +138,58 @@ function renderAnalytics(){
   ]);
   const riskTrend = barChart(data.runs.map(r=>({label:r[0],value:Number(r[7]) || 0,display:r[7],sub:r[1],color:(Number(r[7]) || 0) > 50 ? "red" : (Number(r[7]) || 0) > 25 ? "yellow" : "green"})));
   return `${filterBar(["All periods",["Q1 2026","Q2 2026","YTD 2026"]],["All employers",["Acme Manufacturing LLC","TechCorp Solutions Inc.","Retail Partners Group"]])}<div class="grid-4" style="margin-bottom:14px">${[["Average Risk","24","Across scored runs","green"],["Webhook Success","99.7%","Current sample","cyan"],["Blocking Exceptions","4","Strict mode blockers","yellow"],["Missing Profiles","2","Tax profiles needed","red"]].map(metric).join("")}</div><div class="grid-2">${panel("Risk Trend by Payroll Run",riskTrend)}${panel("Tax by Jurisdiction",jurisdictionChart)}</div><div class="grid-2" style="margin-top:14px">${panel("Risk by Run",table(["Run","Period","Risk","Status"],riskRows))}${panel("Deposit Calendar",table(["Jurisdiction","Schedule","Next Due"],data.jurisdictions.map(j=>row([j[1],j[5],j[6]]))))}</div>`;
+}
+
+/* ─── ONBOARDING ─── */
+function renderOnboarding(){
+  const completed = data.onboarding.filter(o=>/Completed|Ready/i.test(o[2])).length;
+  const progress = Math.round(completed / data.onboarding.length * 100);
+  const onboardingRows = data.onboarding.map(o=>{
+    const step = o[0].toLowerCase();
+    const target = step.includes("billing") || step.includes("plan") ? "billing" : step.includes("cpa") ? "cpa" : step.includes("receipt") || step.includes("payout") ? "ocr" : step.includes("payroll") || step.includes("accounting") ? "connections" : "settings";
+    return row([o[0],o[1],status(o[2]),o[3],rowActions(actionBtn("Open","onboarding-step"),`<a class="${ui.btn}" href="${pageHref(target)}">Go</a>`)],{wrap:[0,3]});
+  });
+  const emptyRows = [
+    ["Employers","No business profile yet.","Add Employer","employers"],
+    ["Employees","No workers have been invited.","Invite Employee","employees"],
+    ["Payroll Runs","No payroll run exists.","Create Run","payroll-runs"],
+    ["OCR Vault","No receipts or bills saved.","Capture Receipt","ocr"],
+    ["Share Links","No upload/review link created.","Create Link","share-links"],
+    ["CPA Review","No CPA connected.","Connect CPA","cpa"]
+  ].map(e=>row([e[0],e[1],e[2],`<a class="${ui.btn}" href="${pageHref(e[3])}">Open</a>`]));
+  return `<div class="grid-4" style="margin-bottom:14px">${[
+    ["Setup Progress",progress+"%","Merchant launch readiness","green"],
+    ["Open Setup Items",String(data.onboarding.length-completed),"Need owner/admin action","yellow"],
+    ["Initial ICP","Nail / Beauty","Best first vertical","cyan"],
+    ["Go-live Gate","Not Ready","Legal + API work remains","red"]
+  ].map(metric).join("")}</div><div class="grid-2" style="margin-bottom:14px">${panel("Merchant First-time Setup",table(["Step","Owner","Status","Why It Matters","Actions"],onboardingRows),`<button class="btn primary" data-modal="onboarding-step">Continue Setup</button>`)}${panel("MVP ICP Fit",`<div class="panel-body list">${listItem("Best starting customer","Vietnamese-owned nail salons and beauty businesses in the U.S. with staff payouts, tips, receipts, mileage, and CPA needs.","green")}${listItem("Owner experience","Simple dashboard, upload/share links, CPA approval, billing, and guided next action.","blue")}${listItem("Admin/CPA experience","Payroll runs, Tax Estimate, ledger, evidence vault, audit log, and filing package review.","yellow")}${listItem("Avoid broad payroll positioning","For MVP demo, position Tax IQ as tax/evidence assistant for nail and beauty merchants first.","red")}</div>`)}</div><div class="grid-2">${panel("Core Happy Path",table(["Phase","User","Output"],[
+    ["1. Onboard merchant","Business Owner","Business profile, EIN, plan, terms, and ICP setup."],
+    ["2. Connect data","Payroll Admin","Payroll, accounting, payout, receipt, tip, GPS, and webhook sources."],
+    ["3. Resolve gaps","Owner / Admin","TIN/W-4, receipts, state setup, connection errors, and evidence gaps."],
+    ["4. Review with CPA","CPA / Bookkeeper","Portal link, cost approval, comments, missing-file requests, and filing package."],
+    ["5. Approve export","Merchant Owner","Final package approval, audit log, and report/invoice archive."]
+  ].map(r=>row(r,{wrap:2}))))}${panel("Empty State Acceptance Criteria",table(["Screen","Empty Message","Primary CTA","Action"],emptyRows))}</div>`;
+}
+
+/* ─── DATA QUALITY ─── */
+function renderDataQuality(){
+  const highCount = data.qualityIssues.filter(q=>q[2]==="High").length;
+  const evidenceCount = data.qualityIssues.filter(q=>/OCR|CPA|GPS/i.test(q[1])).length;
+  const integrationCount = data.qualityIssues.filter(q=>/Connections|Webhooks/i.test(q[1])).length;
+  const issueRows = data.qualityIssues.map(q=>row([q[0],q[1],status(q[2]),q[3],q[4],q[5],`<a class="${ui.btn}" href="${pageHref(q[6])}">Open</a>`],{wrap:[0,5]}));
+  const readiness = barChart([
+    {label:"Business profile",value:95,display:"95%",sub:"EIN, address, contacts",color:"green"},
+    {label:"Payroll profiles",value:72,display:"72%",sub:"TIN/W-4 gaps remain",color:"yellow"},
+    {label:"Evidence vault",value:64,display:"64%",sub:"Receipts and payout proof",color:"yellow"},
+    {label:"CPA package",value:58,display:"58%",sub:"Missing evidence requests",color:"red"},
+    {label:"Integrations",value:76,display:"76%",sub:"One degraded connection",color:"yellow"}
+  ]);
+  return `<div class="grid-4" style="margin-bottom:14px">${[
+    ["Blocking Issues",String(highCount),"Must fix before strict go-live","red"],
+    ["Evidence Gaps",String(evidenceCount),"Receipts, GPS, CPA requests","yellow"],
+    ["Integration Gaps",String(integrationCount),"Connection or webhook failures","cyan"],
+    ["CPA Ready Score","58%","Package not ready yet","blue"]
+  ].map(metric).join("")}</div>${filterBar(["All severity",["High","Medium"]],["All owners",["HR","Bookkeeper","Owner","Admin","Developer","CPA","Merchant","Tax Admin"]],["All sources",["Employees","OCR Vault","Connections","Webhooks","GPS Mileage","CPA Review","Jurisdictions"]])}${panel("Data Quality Center",table(["Issue","Source","Severity","Owner","Count","Next Action","Open"],issueRows),`<button class="btn primary" data-modal="data-quality-task">Create Cleanup Task</button> <button class="btn" data-toast="Quality report exported.">Export Quality Report</button>`)}<div class="grid-2" style="margin-top:14px">${panel("Readiness by Area",readiness)}${panel("Quality Rules",`<div class="panel-body list">${listItem("No strict payroll finalization with blocking tax profile gaps","TIN/W-4 and jurisdiction setup must be resolved or explicitly overridden with audit note.","red")}${listItem("No CPA package export with unresolved evidence requests","Missing receipt purpose, low OCR confidence, and payout proof gaps should be fixed before sharing.","yellow")}${listItem("No partner go-live with webhook dead letters","Endpoint URL, signing, retry, and dead-letter handling must be verified before partner launch.","blue")}${listItem("No mileage deduction without route and business purpose","Point A, point B, miles, vehicle, and business purpose are required for GPS export.","green")}</div>`)}</div>`;
 }
 
 /* ─── EMPLOYERS ─── */
@@ -324,6 +387,32 @@ function renderAuditLog(){
   return `${dateRange}${filterBar(["All resource types",["payroll_run","tax_ledger","employee","payout","receipt","share_link","webhook_event","tip_entry","report","connection"]],["All actions",["CREATED","UPDATED","FINALIZED","EXPORTED","POSTED","WEBHOOK_DELIVERED","WEBHOOK_FAILED","OCR_PROCESSED","TIP_CLASSIFIED"]],["All actors",["payroll_admin_44","finance_user","hr_user","owner_user","system"]])}<div style="display:flex;justify-content:flex-end;margin-bottom:10px">${actionBtn("Export Log","")}</div>${panel("Audit Log — Immutable Action Record",table(["Timestamp","Actor","Action","Resource Type","Resource ID","Detail"],logRows))}${panel("Audit Policy",`<div class="panel-body list">${listItem("Immutable records","Every create, update, delete, and export is logged. Records cannot be modified.","green")}${listItem("7-year retention","Audit logs are retained for 7 years per tax compliance requirements.","blue")}${listItem("Full PII export requires approval","Actor must be authorized merchant admin. Logged immediately.","yellow")}${listItem("Soft deletes only","No data is hard-deleted. Deletion events are logged with actor and reason.","red")}</div>`)}`;
 }
 
+/* ─── COMPLIANCE REVIEW ─── */
+function renderComplianceReview(){
+  const blocked = data.complianceChecklist.filter(c=>/Blocked|Pending/i.test(c[2])).length;
+  const checklistRows = data.complianceChecklist.map(c=>row([c[0],c[1],status(c[2]),c[3],rowActions(actionBtn("Review","compliance-task"),actionBtn("Assign",""))],{wrap:[0,3]}));
+  const goLiveRows = [
+    ["Business model","Stakeholder","Merchant subscription chosen for MVP; CPA marketplace and API partner are later phases.",status("Ready")],
+    ["ICP","Stakeholder","Initial ICP is U.S. nail/beauty merchant with tips, payouts, OCR, GPS, and CPA needs.",status("Ready")],
+    ["Legal terms","Legal","Terms, limitation of liability, CPA handoff, and tax advice language require counsel review.",status("Blocked")],
+    ["Data privacy","Security","Define PII retention, export approval, consent, and deletion policy.",status("Review")],
+    ["Backend enforcement","Engineering","UI roles are not enough; API must enforce permissions and audit every mutation.",status("Pending")],
+    ["API migration","Engineering","Static mock data must move to API/mock service with loading, empty, error, and retry states.",status("Pending")]
+  ].map(r=>row(r,{wrap:2}));
+  return `<div class="grid-4" style="margin-bottom:14px">${[
+    ["Go-live Status","Blocked",String(blocked)+" blocker(s) remain","red"],
+    ["Disclaimers","Covered","Tax Estimate, Tips, GPS, AI CFO","green"],
+    ["PII Controls","Review","TIN/SSN/export policy needed","yellow"],
+    ["Legal Review","Required","Before real customers","cyan"]
+  ].map(metric).join("")}</div>${panel("Compliance & Legal Checklist",table(["Item","Owner","Status","Next Action","Actions"],checklistRows),`<button class="btn primary" data-modal="compliance-task">Add Compliance Task</button> <button class="btn" data-toast="Compliance checklist exported.">Export Checklist</button>`)}<div class="grid-2" style="margin-top:14px">${panel("Production Go-live Gate",table(["Area","Owner","Decision / Requirement","Status"],goLiveRows))}${panel("Risk Wording Rules",`<div class="panel-body list">${listItem("Do not promise tax savings","Use estimate, likely, candidate, needs CPA review, and based on current records instead of guaranteed refund or guaranteed deduction.","red")}${listItem("Separate software from professional advice","Tax IQ organizes records and highlights issues; CPA/bookkeeper/legal counsel makes final professional determination.","yellow")}${listItem("Show source and effective date","Government rule watch must identify official source, effective date, affected state, and action owner.","blue")}${listItem("Require merchant approval for exports and CPA work","CPA cost, profile link access, PII export, and final package share must be explicitly approved and logged.","green")}</div>`)}</div><div class="grid-2" style="margin-top:14px">${panel("Disclaimer Placement",table(["Feature","Required Message","Status"],[
+    ["Tax Estimate","Estimate only; final tax liability must be confirmed by licensed professional.",status("Covered")],
+    ["Tip Ledger","Recordkeeping support only; eligibility, cap, and phase-out require CPA review.",status("Covered")],
+    ["GPS Mileage","Route evidence only; commute and deduction policy require CPA review.",status("Covered")],
+    ["AI CFO / Advisor","General planning assistance; not legal, tax, or investment advice.",status("Covered")],
+    ["CPA Review","CPA/bookkeeper is third party; merchant must approve scope, cost, and export.",status("Review")]
+  ].map(r=>row(r,{wrap:1}))))}${panel("Backend Controls Needed",`<div class="panel-body list">${listItem("Permission enforcement","Hide buttons in UI, but enforce role permissions on backend routes and exports.","red")}${listItem("Mutation audit event","Create audit log record for every create, update, delete, approve, export, and share action.","yellow")}${listItem("Loading, empty, error, retry","API screens need skeleton loading, empty state, API error copy, and retry buttons.","blue")}${listItem("Data source migration","Current mock data is stored in mock-data.json and loaded through mock-data.js, so API replacement has a clear target.","green")}</div>`)}</div>`;
+}
+
 /* ─── SETTINGS ─── */
 function renderBilling(){
   const planRows = data.plans.map(p=>row([p[0],p[1],p[2],p[3],p[4],rowActions(actionBtn("Select","billing-plan"),actionBtn("Compare","billing-plan"))],{wrap:[3,4]}));
@@ -338,7 +427,8 @@ function renderBilling(){
 
 function renderSettings(){
   const keyRows = data.apiKeys.map(k=>row([`<span class="mono">${k[0]}</span>`,k[1],`<span class="mono">${k[2]}</span>`,k[3],k[4],status(k[5]),k[6],rowActions(`<button class="${ui.btn}" data-rotate-key="${k[0]}">Rotate</button>`,`<button class="${ui.btn}" data-revoke-key="${k[0]}">Revoke</button>`)]));
-  return `<div class="grid-2">${panel("US Payroll Scope",`<div class="panel-body"><div class="row"><span>Country</span><span>United States</span></div><div class="row"><span>Tax levels</span><span>Federal, State, Local</span></div><div class="row"><span>Employee forms</span><span>W-4, W-2</span></div><div class="row"><span>Employer returns</span><span>941, 940, SUTA</span></div></div>`)}${panel("Role & Access",table(["Permission","Payroll Admin","CPA","Auditor","Action"],[["Export data",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Finalize run",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")],["Review package",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Manage settings",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")]].map(row)))}${panel("Data Protection",`<div class="panel-body"><div class="row"><span>SSN/TIN storage</span><span>Tokenized</span></div><div class="row"><span>PII export approval</span><span>Required</span></div><div class="row"><span>Webhook signing</span><span>HMAC SHA-256</span></div><div class="row"><span>Audit retention</span><span>7 years</span></div></div>`,`${actionBtn("Configure","")}`)}${panel("Guided Help",`<div class="panel-body list">${listItem("First-time tour","Explain payroll, payout, Tax IQ, OCR, share links, GPS, CPA review.","blue")}${listItem("What next","Show recommended next action when a workflow is blocked.","green")}</div>`,`<button class="btn primary" data-toast="Tour started. Follow the guided steps.">Start Tour</button>`)}</div><div class="grid-2" style="margin-top:14px">${panel("API Keys",table(["Key ID","Name","Env","Scopes","Created","Status","Owner","Actions"],keyRows),`<button class="btn primary" data-modal="create-api-key">Create Key</button>`)}${panel("Notification Preferences",`<div class="panel-body">${[["Deposit due reminders","3-day and same-day alerts for scheduled tax deposits.",true],["Exception open alerts","Immediate alert when blocking exception is created.",true],["CPA request notifications","When CPA flags a missing record or requests files.",true],["Webhook dead letter alerts","When webhook delivery fails after max retries.",true],["Tip cap warnings","When worker approaches the $25,000 annual tip cap.",false]].map(([l,t,c])=>modalCheck(l,t,c)).join("")}</div>`,`<button class="btn primary" data-action-toast="Notification preferences saved.">Save Preferences</button>`)}</div>`;
+  const permissionRows = data.permissionMatrix.map(p=>row([p[0],p[1],p[2],p[3],rowActions(actionBtn("Edit","permission-role"),actionBtn("Audit",""))],{wrap:[1,2,3]}));
+  return `<div class="grid-2">${panel("US Payroll Scope",`<div class="panel-body"><div class="row"><span>Country</span><span>United States</span></div><div class="row"><span>Tax levels</span><span>Federal, State, Local</span></div><div class="row"><span>Employee forms</span><span>W-4, W-2</span></div><div class="row"><span>Employer returns</span><span>941, 940, SUTA</span></div></div>`)}${panel("Role & Access",table(["Permission","Payroll Admin","CPA","Auditor","Action"],[["Export data",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Finalize run",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")],["Review package",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Manage settings",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")]].map(row)))}${panel("Data Protection",`<div class="panel-body"><div class="row"><span>SSN/TIN storage</span><span>Tokenized</span></div><div class="row"><span>PII export approval</span><span>Required</span></div><div class="row"><span>Webhook signing</span><span>HMAC SHA-256</span></div><div class="row"><span>Audit retention</span><span>7 years</span></div></div>`,`${actionBtn("Configure","")}`)}${panel("Guided Help",`<div class="panel-body list">${listItem("First-time tour","Explain payroll, payout, Tax IQ, OCR, share links, GPS, CPA review.","blue")}${listItem("What next","Show recommended next action when a workflow is blocked.","green")}</div>`,`<button class="btn primary" data-toast="Tour started. Follow the guided steps.">Start Tour</button>`)}</div><div style="margin-top:14px">${panel("Permission Matrix Detail",table(["Role","Can Do","Blocked From","Notes","Actions"],permissionRows),`<button class="btn primary" data-modal="permission-role">Edit Role</button>`)}</div><div class="grid-2" style="margin-top:14px">${panel("API Keys",table(["Key ID","Name","Env","Scopes","Created","Status","Owner","Actions"],keyRows),`<button class="btn primary" data-modal="create-api-key">Create Key</button>`)}${panel("Notification Preferences",`<div class="panel-body">${[["Deposit due reminders","3-day and same-day alerts for scheduled tax deposits.",true],["Exception open alerts","Immediate alert when blocking exception is created.",true],["CPA request notifications","When CPA flags a missing record or requests files.",true],["Webhook dead letter alerts","When webhook delivery fails after max retries.",true],["Tip cap warnings","When worker approaches the $25,000 annual tip cap.",false]].map(([l,t,c])=>modalCheck(l,t,c)).join("")}</div>`,`<button class="btn primary" data-action-toast="Notification preferences saved.">Save Preferences</button>`)}</div>`;
 }
 
 /* ─── NOTIFICATIONS ─── */
@@ -1859,6 +1949,76 @@ const modalCopy = {
     ].join("")
   },
 
+  /* ONBOARDING / QUALITY / COMPLIANCE MODALS */
+  "onboarding-step":{
+    title:"Merchant Onboarding Step",
+    body:"Review the setup item, owner, evidence needed, and exact next action for a new merchant launch.",
+    cta:"Save Step",
+    content:()=>[
+      modalSection("Setup Item", modalGrid([
+        modalSelect("Step",[["Choose Tax IQ plan",true],["Add business profile and EIN"],["Connect payroll/accounting"],["Upload receipts and payout evidence"],["Invite CPA/bookkeeper"],["Review billing and terms"]]),
+        modalSelect("Owner",[["Merchant Owner",true],["Payroll Admin"],["Bookkeeper"],["CPA"],["TaxIQ Admin"]]),
+        modalSelect("Status",[["Pending",true],["In progress"],["Review"],["Ready"],["Completed"]]),
+        modalField("Target date","2026-06-30")
+      ])),
+      modalSection("Required Evidence", `<div class="list">${modalCheck("Business profile","Legal name, DBA, EIN, address, owner contact, industry.")}${modalCheck("Payroll/accounting connection","OAuth/API key, scopes, webhook endpoint, signing status.")}${modalCheck("Receipt/payout evidence","Initial OCR records, payout screenshots, payment purpose, and category.")}${modalCheck("CPA/billing approval","Cost preview, retainer, share scope, Terms, and audit event.", false)}</div>`),
+      modalSection("Guided Empty State Copy", table(["Screen","Copy","CTA"],[
+        row(["Employers","Add your business profile before creating payroll runs.","Add Employer"],{wrap:1}),
+        row(["OCR Vault","Capture receipts and bills so Tax IQ can prepare evidence for CPA review.","Capture Receipt"],{wrap:1}),
+        row(["CPA Review","Connect a CPA or bookkeeper only after reviewing estimated cost and access scope.","Connect CPA"],{wrap:1})
+      ]))
+    ].join("")
+  },
+  "data-quality-task":{
+    title:"Data Quality Cleanup Task",
+    body:"Create a trackable task for missing tax profile data, evidence gaps, integration failures, or CPA requests.",
+    cta:"Create Task",
+    content:()=>[
+      modalSection("Task Details", modalGrid([
+        modalSelect("Issue type",[["Missing or pending TIN/W-4",true],["Receipt missing business purpose"],["Low OCR confidence"],["Degraded payroll connection"],["Webhook dead letter"],["Commute-like GPS route"],["CPA missing evidence request"],["State setup missing"]]),
+        modalSelect("Severity",[["High",true],["Medium"],["Low"]]),
+        modalSelect("Owner",[["HR",true],["Owner"],["Bookkeeper"],["CPA"],["Developer"],["Tax Admin"]]),
+        modalField("Due date","2026-06-28")
+      ])),
+      modalSection("Resolution Requirements", `<div class="list">${modalCheck("Add source record link","Task must link to employee, receipt, webhook event, trip, jurisdiction, or CPA request.")}${modalCheck("Require reviewer note","Closing task requires note explaining what changed and who approved it.")}${modalCheck("Create audit event","Resolution must create audit log entry with before/after status.")}${modalCheck("Block related workflow until fixed","High severity items block strict payroll, CPA export, or partner go-live.", false)}</div>`),
+      modalSection("Quality Task Preview", table(["Field","Value"],[
+        row(["Task ID","dq_"+String(data.qualityIssues.length+1).padStart(3,"0")]),
+        row(["Source","Employees / OCR / Webhooks / CPA Review"]),
+        row(["Output","A clean record ready for payroll finalization, CPA package, or API delivery."])
+      ]))
+    ].join("")
+  },
+  "compliance-task":{
+    title:"Compliance Review Task",
+    body:"Define a go-live compliance task, owner, required decision, and launch blocker status.",
+    cta:"Save Compliance Task",
+    content:()=>[
+      modalSection("Task Setup", modalGrid([
+        modalSelect("Compliance area",[["Terms of Service legal review",true],["Privacy and data retention policy"],["Tax advice disclaimer coverage"],["CPA handoff language"],["Billing approval rules"],["Webhook/API SLA and security"],["Go-live data migration gate"]]),
+        modalSelect("Owner",[["Legal counsel",true],["Security / Legal"],["Product / Legal"],["Engineering"],["Finance"],["CPA Ops"]]),
+        modalSelect("Status",[["Blocked",true],["Review"],["In progress"],["Ready"],["Pending"]]),
+        modalField("Required by","Before real customer go-live")
+      ])),
+      modalSection("Acceptance Criteria", `<div class="list">${modalCheck("Decision documented","Stakeholder/legal decision recorded with effective date and approver.")}${modalCheck("UI wording reviewed","Relevant screens have disclaimer or risk wording approved.")}${modalCheck("Backend enforcement specified","Permissions, audit, export controls, and data retention are enforceable outside the UI.")}${modalCheck("Go-live blocker resolved","Launch checklist cannot move to Ready while this task is Blocked.")}</div>`),
+      modalSection("Risk Language", `<div class="notice">Use recordkeeping, estimate, likely, candidate, needs review, and based on current records. Avoid guaranteed tax savings, guaranteed deduction, guaranteed refund, or final advice language.</div>`)
+    ].join("")
+  },
+  "permission-role":{
+    title:"Permission Role Detail",
+    body:"Define exactly what a role can do, what it cannot do, and which backend checks must enforce it.",
+    cta:"Save Role",
+    content:()=>[
+      modalSection("Role Setup", modalGrid([
+        modalSelect("Role",[["Merchant Owner",true],["Payroll Admin"],["CPA / Bookkeeper"],["Auditor"],["Employee / Worker"]]),
+        modalSelect("PII access",[["Masked by default",true],["Full PII with approval"],["No PII"],["Own profile only"]]),
+        modalSelect("Export permission",[["Approval required",true],["Allowed"],["Blocked"],["Own data only"]]),
+        modalSelect("Billing visibility",[["Owner/admin only",true],["CPA estimate only"],["No billing access"]])
+      ])),
+      modalSection("Permission Matrix", table(["Role","Can Do","Blocked From","Notes"],data.permissionMatrix.map(p=>row(p,{wrap:[1,2,3]})))),
+      modalSection("Backend Enforcement", `<div class="list">${modalCheck("Do not rely on hidden buttons","Every API route checks role, tenant, resource, and scope.")}${modalCheck("Audit every privileged action","PII view/export, share link, CPA package, billing, and finalization actions are logged.")}${modalCheck("Require owner approval for sensitive exports","CPA, auditor, and API keys cannot export hidden PII without approval.")}</div>`)
+    ].join("")
+  },
+
   /* BILLING MODALS */
   "billing-plan":{
     title:"Plan & Feature Packaging",
@@ -1938,7 +2098,7 @@ function openModal(key){
     title:"Workflow Detail",
     body:"Review and complete this Tax IQ workflow.",
     cta:"Continue",
-    content:()=>modalSection("Details", `<div class="panel-body">No additional configuration is required for this workflow.</div>`)
+    content:()=>modalSection("Workflow Controls", `<div class="panel-body list">${listItem("Audit required","This action should record actor, timestamp, tenant, resource, and before/after state.","blue")}${listItem("Permission required","Backend permission checks must confirm the current role can perform this action.","yellow")}${listItem("Owner approval when sensitive","PII export, CPA package sharing, billing approval, and final filing package actions require explicit merchant approval.","red")}</div>`)
   };
   const {title, body, cta} = config;
   if(!cta) return;
@@ -2054,4 +2214,15 @@ document.addEventListener("change", event=>{
   });
 });
 
-renderShell(renderPage);
+function bootTaxIQ(){
+  const ready = window.TaxIQDataReady || Promise.resolve(window.TaxIQMockData);
+  ready.then(loadedData => {
+    data = loadedData || window.TaxIQMockData;
+    renderShell(data ? renderPage : renderDataLoadError);
+  }).catch(error => {
+    window.TaxIQDataLoadError = error;
+    renderShell(renderDataLoadError);
+  });
+}
+
+bootTaxIQ();

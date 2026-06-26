@@ -65,6 +65,7 @@ Tax IQ giải quyết bằng cách biến dữ liệu rời rạc thành một b
 | --- | --- | --- |
 | Tax Ledger | Sổ cái thuế/payout/payroll ghi lại các giao dịch quan trọng. | Có lịch sử rõ ràng để đối chiếu với CPA. |
 | Exceptions | Danh sách lỗi, thiếu dữ liệu hoặc điểm cần review. | Giảm rủi ro trước khi payroll/tax package được chốt. |
+| Data Quality | Trung tâm gom các lỗi dữ liệu: thiếu TIN/W-4, receipt thiếu purpose, OCR confidence thấp, connection/webhook lỗi, CPA thiếu chứng từ. | Biết chính xác dữ liệu nào cần sửa trước khi finalize hoặc export. |
 | Jurisdictions | Nơi quản lý phạm vi thuế federal, state, local. | Biết doanh nghiệp đang liên quan đến bang/khu vực thuế nào. |
 | Forms & Reports | Nơi tạo report/export cho CPA, payroll, 1099, year-end. | Giúp CPA có file PDF/CSV và summary rõ ràng. |
 | OCR Vault | Kho lưu receipt, bill, invoice, payout proof; AI đọc ảnh và trích xuất dữ liệu. | Giảm mất chứng từ, tăng tốc độ nhập liệu. |
@@ -78,7 +79,10 @@ Tax IQ giải quyết bằng cách biến dữ liệu rời rạc thành một b
 | Webhooks | Theo dõi event gửi sang hệ thống bên ngoài. | Kết nối integration với accounting, payroll, CRM hoặc partner system. |
 | Audit Log | Lưu lịch sử hành động bất biến: view, update, export, delete, webhook. | Dùng cho review, dispute, compliance và CPA evidence. |
 | Notifications | Trung tâm cảnh báo deposit due, exception, CPA request, webhook lỗi, tip cap. | Giúp user biết việc nào cần xử lý trước. |
-| Settings | Quản lý role, permission, retention, PII, security. | Đảm bảo dữ liệu nhạy cảm được bảo vệ. |
+| Onboarding | Hướng dẫn merchant mới setup business, chọn plan, connect data, invite CPA và hiểu empty state. | Giảm overwhelm khi user mới vào hệ thống. |
+| Compliance Review | Checklist legal, privacy, disclaimer, CPA handoff, API/backend trước go-live. | Giúp stakeholder biết điều kiện nào còn block production. |
+| Billing & Plans | Quản lý plan, invoice, CPA estimate approval và hướng partner API sau này. | Làm rõ ai trả tiền cho ai và chi phí nào cần merchant approve. |
+| Settings | Quản lý role, permission matrix, retention, PII, security. | Đảm bảo dữ liệu nhạy cảm được bảo vệ. |
 
 ## 6. Luồng Nghiệp Vụ Tổng Thể
 
@@ -699,6 +703,12 @@ Chưa có trong demo:
 | Finalize | Chốt dữ liệu. | Sau finalize nên ghi ledger và audit log. |
 | Approval | Phê duyệt của merchant. | Cần trước export PII, billing, filing package. |
 | Notification | Cảnh báo trong hệ thống. | Nhắc user xử lý deposit, exception, CPA request. |
+| Onboarding | Quy trình hướng dẫn user mới setup hệ thống. | Thêm business, chọn plan, connect data, invite CPA, xử lý empty state. |
+| Empty state | Giao diện khi chưa có dữ liệu. | Hướng dẫn user biết bước tiếp theo thay vì chỉ thấy bảng trống. |
+| Data Quality | Chất lượng và độ đầy đủ của dữ liệu. | Gom missing TIN/W-4, receipt thiếu purpose, OCR thấp, webhook lỗi, CPA request. |
+| Compliance Review | Màn hình review điều kiện pháp lý/vận hành trước go-live. | Legal, privacy, disclaimer, CPA handoff, API/backend controls. |
+| Go-live gate | Điều kiện phải đạt trước khi chạy production. | Nếu còn blocker thì chưa nên mở cho khách hàng thật. |
+| Mock data | Dữ liệu giả dùng cho demo. | Hiện đã tách vào `mock-data.json`; `mock-data.js` chỉ load JSON để sau này đổi sang API dễ hơn. |
 | Soft delete | Xóa khỏi giao diện nhưng vẫn giữ lịch sử. | Tax records, receipt, trip, tip vẫn được giữ trong audit log. |
 | Hard delete | Xóa hẳn dữ liệu. | Không nên dùng cho tax/audit records. |
 | Usage audit | Lịch sử sử dụng API/key/action. | Theo dõi ai gọi API, lúc nào, kết quả gì. |

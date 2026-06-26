@@ -15,6 +15,7 @@ Trong demo hiện tại, các module sau được đặt trong nhóm Tax IQ:
 | --- | --- |
 | Tax Ledger | Lưu ledger thuế, payout, payroll tax và hash/audit trail. |
 | Exceptions | Theo dõi lỗi hoặc thiếu dữ liệu làm ảnh hưởng payroll/tax review. |
+| Data Quality | Track missing profile data, evidence gaps, OCR issues, integration errors, and CPA readiness. |
 | Jurisdictions | Quản lý phạm vi federal, state, local tax footprint. |
 | Forms & Reports | Tạo report package cho payroll, 1099, CPA, year-end. |
 | OCR Vault | Lưu bills, invoices, receipts, payout proof và AI extraction. |
@@ -29,10 +30,13 @@ Supporting demo screens outside the Tax IQ group:
 
 | Screen | Purpose |
 | --- | --- |
+| Onboarding | Guide first merchant setup, ICP fit, happy path, and empty-state acceptance criteria. |
 | Connections | Manage payroll, HRIS, accounting, payout, and webhook-only integrations. |
 | Audit Log | Review immutable action history for view, update, export, delete, and webhook events. |
 | Notifications | Surface deposit alerts, exceptions, CPA requests, webhook failures, and tip cap warnings. |
-| Settings | Manage role access, data protection, API keys, and notification preferences. |
+| Compliance Review | Track legal, privacy, disclaimer, CPA handoff, API, and go-live readiness. |
+| Billing & Plans | Show merchant subscription plans, CPA estimate approval, invoices, and partner API future path. |
+| Settings | Manage role access, permission matrix, data protection, API keys, and notification preferences. |
 
 ## 2. Business Goals
 
@@ -74,9 +78,11 @@ Supporting demo screens outside the Tax IQ group:
 
 | Screen | Main Job |
 | --- | --- |
-| Dashboard | Tổng quan payroll, Tax IQ issues, AI Advisor, OCR Vault, Share Links. |
+| Dashboard | Tổng quan payroll, Tax IQ issues, feature widgets, onboarding, data quality, and compliance shortcuts. |
+| Onboarding | First merchant setup, ICP fit, happy path, and empty-state acceptance criteria. |
 | Tax Ledger | Xem immutable tax ledger records theo run, employee, jurisdiction, type, hash. |
 | Exceptions | Queue các vấn đề cần xử lý trước payroll/tax review. |
+| Data Quality | Aggregate missing TIN/W-4, receipt purpose, OCR confidence, connection/webhook errors, GPS review, and CPA missing evidence. |
 | Jurisdictions | Quản lý federal, state, local tax setup và due dates. |
 | Forms & Reports | Tạo CPA-ready report package theo period hoặc scope. |
 | OCR Vault | Lưu và review receipt/bill/invoice/payment evidence. |
@@ -90,7 +96,9 @@ Supporting demo screens outside the Tax IQ group:
 | Webhooks | Theo dõi outbound event delivery cho integration bên ngoài. |
 | Audit Log | Review immutable actions across payroll, Tax IQ, tips, receipts, reports, and webhooks. |
 | Notifications | Show deposit alerts, open exceptions, CPA requests, webhook dead letters, and tip cap warnings. |
-| Settings | Role, security, data retention, PII/tokenization controls. |
+| Compliance Review | Legal/privacy/disclaimer/CPA handoff/API go-live gate. |
+| Billing & Plans | Merchant subscription, CPA cost approval, invoices, upgrade path, and partner API notes. |
+| Settings | Role, permission matrix, security, data retention, PII/tokenization controls. |
 
 ## 6. Key Workflows And Modals
 

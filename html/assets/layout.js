@@ -20,6 +20,7 @@ const TaxIQLayout = (() => {
 
   const pageIcons = {
     dashboard:"fa-solid fa-chart-pie",       analytics:"fa-solid fa-chart-line",
+    onboarding:"fa-solid fa-clipboard-list", "data-quality":"fa-solid fa-clipboard-check",
     employers:"fa-solid fa-building",         employees:"fa-solid fa-users",
     "employee-profile":"fa-solid fa-user",    "payroll-runs":"fa-solid fa-money-bill-wave",
     "run-detail":"fa-solid fa-list-check",    connections:"fa-solid fa-plug",
@@ -29,6 +30,7 @@ const TaxIQLayout = (() => {
     ocr:"fa-solid fa-receipt",                "share-links":"fa-solid fa-link",
     gps:"fa-solid fa-location-dot",           cpa:"fa-solid fa-user-tie",
     "tip-ledger":"fa-solid fa-coins",         "tax-estimate":"fa-solid fa-calculator",
+    "compliance-review":"fa-solid fa-scale-balanced",
     webhooks:"fa-solid fa-globe",             "audit-log":"fa-solid fa-magnifying-glass",
     notifications:"fa-solid fa-bell",         billing:"fa-solid fa-credit-card",
     settings:"fa-solid fa-gear"
@@ -37,6 +39,7 @@ const TaxIQLayout = (() => {
   const pages = {
     dashboard:{title:"Dashboard", file:"index.html", subtitle:"US payroll, payout, Tax IQ, and advisory overview."},
     analytics:{title:"Analytics", file:"analytics.html", subtitle:"Risk, tax, payout, and operational trends."},
+    onboarding:{title:"Onboarding", file:"onboarding.html", subtitle:"First merchant setup, ICP fit, guided empty states, and launch checklist."},
     employers:{title:"Employers", file:"employers.html", subtitle:"Businesses, locations, registrations, and deposit schedules."},
     employees:{title:"Employees", file:"employees.html", subtitle:"Employee and worker tax profiles."},
     "employee-profile":{title:"Employee Profile", file:"employee-profile.html", subtitle:"Profile detail, payroll history, and tax status."},
@@ -46,6 +49,7 @@ const TaxIQLayout = (() => {
     payouts:{title:"Staff Payouts", file:"payouts.html", subtitle:"Technician payout ledger, evidence, and 1099 sync."},
     ledger:{title:"Tax Ledger", file:"tax-ledger.html", subtitle:"Immutable tax and payout ledger records."},
     exceptions:{title:"Exceptions", file:"exceptions.html", subtitle:"Blocking issues and review workflow."},
+    "data-quality":{title:"Data Quality", file:"data-quality.html", subtitle:"Missing data, evidence gaps, integration errors, and CPA readiness."},
     jurisdictions:{title:"Jurisdictions", file:"jurisdictions.html", subtitle:"Federal, state, and local tax footprint."},
     forms:{title:"Forms & Reports", file:"forms-reports.html", subtitle:"Payroll, 1099, CPA, and year-end export center."},
     "ai-advisor":{title:"AI Advisor", file:"ai-advisor.html", subtitle:"AI CFO, official-rule watch, support, and deduction reminders."},
@@ -58,15 +62,16 @@ const TaxIQLayout = (() => {
     webhooks:{title:"Webhooks", file:"webhooks.html", subtitle:"Outbound event delivery monitor."},
     "audit-log":{title:"Audit Log", file:"audit-log.html", subtitle:"Immutable action log — every view, change, export, and system event."},
     notifications:{title:"Notifications", file:"notifications.html", subtitle:"Alerts, deposit reminders, CPA requests, and compliance notices."},
+    "compliance-review":{title:"Compliance Review", file:"compliance-review.html", subtitle:"Legal, privacy, disclaimer, and go-live readiness checklist."},
     billing:{title:"Billing & Plans", file:"billing.html", subtitle:"Merchant subscription, feature packaging, invoices, and upgrade path."},
     settings:{title:"Settings", file:"settings.html", subtitle:"Roles, security, data retention, and tenant controls."}
   };
 
   const navGroups = [
-    ["Overview",["dashboard","analytics"]],
+    ["Overview",["dashboard","analytics","onboarding"]],
     ["Payroll",["employers","employees","payroll-runs","payouts","connections"]],
-    ["Tax IQ",["ledger","exceptions","jurisdictions","forms","ocr","share-links","gps","cpa","tip-ledger","tax-estimate","ai-advisor"]],
-    ["System",["webhooks","audit-log","notifications","billing","settings"]]
+    ["Tax IQ",["ledger","exceptions","data-quality","jurisdictions","forms","ocr","share-links","gps","cpa","tip-ledger","tax-estimate","ai-advisor"]],
+    ["System",["webhooks","audit-log","notifications","compliance-review","billing","settings"]]
   ];
 
   function pageHref(id){
