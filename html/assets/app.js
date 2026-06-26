@@ -63,13 +63,145 @@ function barChart(items){
       <div class="chart-value">${item.display || item.value}</div>
     </div>`).join("")}</div>`;
 }
-function miniMap(){
-  return `<div class="route-map" aria-label="Route preview placeholder">
-    <div class="map-grid"></div>
-    <div class="map-route"></div>
-    <div class="map-pin start">A</div>
-    <div class="map-pin end">B</div>
+const demoGpsRoutes = {
+  "Home to salon":{
+    origin:"30.329520,-97.756260",
+    destination:"30.267153,-97.743057",
+    originLabel:"Home",
+    destinationLabel:"Salon",
+    title:"Home to Salon"
+  },
+  "Salon to supply store":{
+    origin:"30.267153,-97.743057",
+    destination:"30.307182,-97.755996",
+    originLabel:"Salon",
+    destinationLabel:"Supply Store",
+    title:"Salon to Supply Store"
+  },
+  "Salon to bank":{
+    origin:"30.267153,-97.743057",
+    destination:"30.271128,-97.754182",
+    originLabel:"Salon",
+    destinationLabel:"Bank",
+    title:"Salon to Bank"
+  }
+};
+const googleMapsConfig = {
+  apiKey:"AIzaSyC-ZPoAyR-9lppZmp2t2VJw0Jd32vQJlQs",
+  mapId:"5ab6ed32b88b9c639b598afc"
+};
+let googleMapsPromise = null;
+function googleMapsEmbedUrl(route){
+  return `https://maps.google.com/maps?output=embed&saddr=${encodeURIComponent(route.origin)}&daddr=${encodeURIComponent(route.destination)}&dirflg=d`;
+}
+function googleMapsOpenUrl(route){
+  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(route.origin)}&destination=${encodeURIComponent(route.destination)}&travelmode=driving`;
+}
+function shouldUseGoogleMapsJsApi(){
+  const params = new URLSearchParams(window.location.search);
+  if(params.get("mapsJs") === "1") return true;
+  if(params.get("mapsJs") === "0") return false;
+  return !/^(127\.0\.0\.1|localhost)$/i.test(window.location.hostname);
+}
+function googleRouteMap(routeName="Salon to supply store"){
+  const route = demoGpsRoutes[routeName] || demoGpsRoutes["Salon to supply store"];
+  return `<div class="route-map google-route-map" data-google-route="${routeName}" aria-label="Google Maps route preview">
+    <div class="map-loading">Loading Google Maps route...</div>
+  </div>
+  <div class="map-meta">
+    <div><strong>${route.title}</strong><span>${route.originLabel} → ${route.destinationLabel}</span></div>
+    <a class="${ui.btn}" href="${googleMapsOpenUrl(route)}" target="_blank" rel="noopener">Open in Google Maps</a>
   </div>`;
+}
+function parseLatLng(value){
+  const parts = String(value).split(",").map(Number);
+  return { lat:parts[0] || 0, lng:parts[1] || 0 };
+}
+function loadGoogleMapsApi(){
+  if(window.google?.maps) return Promise.resolve(window.google.maps);
+  if(googleMapsPromise) return googleMapsPromise;
+  googleMapsPromise = new Promise((resolve,reject)=>{
+    const callbackName = "__taxiqGoogleMapsReady";
+    window[callbackName] = () => resolve(window.google.maps);
+    window.gm_authFailure = () => {
+      const error = new Error("Google Maps API key is not allowed for this localhost referrer.");
+      document.querySelectorAll("[data-google-route]").forEach(node=>{
+        const route = demoGpsRoutes[node.dataset.googleRoute] || demoGpsRoutes["Salon to supply store"];
+        node.dataset.mapInit = "error";
+        mapFallback(node, route, error.message);
+      });
+      reject(error);
+    };
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(googleMapsConfig.apiKey)}&callback=${callbackName}&v=weekly&loading=async`;
+    script.async = true;
+    script.defer = true;
+    script.onerror = () => reject(new Error("Google Maps JavaScript API failed to load."));
+    document.head.appendChild(script);
+  });
+  return googleMapsPromise;
+}
+function mapFallback(node, route, message){
+  node.innerHTML = `<iframe title="${route.title} Google Maps route fallback" src="${googleMapsEmbedUrl(route)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="map-error floating"><strong>${message}</strong><span>Allow referrers: http://127.0.0.1:8123/* and http://localhost:8123/*</span><a href="${googleMapsOpenUrl(route)}" target="_blank" rel="noopener">Open route in Google Maps</a></div>`;
+}
+function initGoogleRouteMap(node){
+  const route = demoGpsRoutes[node.dataset.googleRoute] || demoGpsRoutes["Salon to supply store"];
+  const origin = parseLatLng(route.origin);
+  const destination = parseLatLng(route.destination);
+  node.innerHTML = "";
+  const map = new google.maps.Map(node, {
+    center:{ lat:(origin.lat + destination.lat) / 2, lng:(origin.lng + destination.lng) / 2 },
+    zoom:12,
+    mapId:googleMapsConfig.mapId,
+    mapTypeControl:false,
+    streetViewControl:false,
+    fullscreenControl:true
+  });
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer({
+    map,
+    suppressMarkers:false,
+    polylineOptions:{ strokeColor:"#6366f1", strokeOpacity:.95, strokeWeight:5 }
+  });
+  directionsService.route({
+    origin,
+    destination,
+    travelMode:google.maps.TravelMode.DRIVING
+  }, (result, routeStatus)=>{
+    if(routeStatus === "OK" && result){
+      directionsRenderer.setDirections(result);
+      node.dataset.mapInit = "done";
+      return;
+    }
+    node.dataset.mapInit = "error";
+    mapFallback(node, route, "Google Maps route could not be rendered: " + routeStatus);
+  });
+  window.setTimeout(()=>{
+    if(node.dataset.mapInit === "loading"){
+      node.dataset.mapInit = "error";
+      mapFallback(node, route, "Google Maps JavaScript API did not authorize this page.");
+    }
+  }, 3500);
+}
+function initGoogleRouteMaps(scope=document){
+  const nodes = [...scope.querySelectorAll("[data-google-route]")].filter(node=>!node.dataset.mapInit);
+  if(!nodes.length) return;
+  if(!shouldUseGoogleMapsJsApi()){
+    nodes.forEach(node=>{
+      const route = demoGpsRoutes[node.dataset.googleRoute] || demoGpsRoutes["Salon to supply store"];
+      node.dataset.mapInit = "iframe";
+      mapFallback(node, route, "Google Maps iframe preview. Add ?mapsJs=1 after authorizing localhost referrers to test JS API mapId.");
+    });
+    return;
+  }
+  nodes.forEach(node=>{ node.dataset.mapInit = "loading"; });
+  loadGoogleMapsApi()
+    .then(()=>nodes.forEach(initGoogleRouteMap))
+    .catch(error=>nodes.forEach(node=>{
+      const route = demoGpsRoutes[node.dataset.googleRoute] || demoGpsRoutes["Salon to supply store"];
+      node.dataset.mapInit = "error";
+      mapFallback(node, route, error.message);
+    }));
 }
 function skeletonPreview(){
   return `<div class="skeleton-stack" aria-label="Loading state preview">
@@ -101,6 +233,7 @@ const renderers = {
 
 function renderPage(){
   document.getElementById("content").innerHTML = (renderers[currentPage] || renderDashboard)();
+  initGoogleRouteMaps(document);
 }
 
 function renderDataLoadError(){
@@ -351,7 +484,7 @@ function renderGps(){
   const policyCount = data.trips.filter(t=>/check|review/i.test(t[4])).length;
   const activePanel = activeGpsTrip ? panel("Active Trip Tracking",`<div class="panel-body list">${listItem("Tracking in progress",`${activeGpsTrip.startLabel} → destination pending. ${activeGpsTrip.points.length} GPS point(s) captured so far.`,"green")}${listItem("Stop to save A → B route","Open Start Trip and press Stop Trip when you arrive at the destination.","blue")}</div>`,`<button class="btn primary" data-modal="trip">Stop Trip</button>`) : "";
   const deductionEstimate = moneyText(Number(totalMiles) * 0.725);
-  return `<div class="grid-4" style="margin-bottom:14px">${[[ "Trips",String(data.trips.length),"Tracked or pending review","green"],["Total Miles",totalMiles,"Current demo records","cyan"],["2026 IRS Rate","$0.725/mi","Business mileage estimate","yellow"],["Est. Deduction",deductionEstimate,"Before CPA review","red"]].map(metric).join("")}</div>${activePanel}<div class="grid-2" style="margin-bottom:14px">${panel("Route Preview",`<div class="panel-body">${miniMap()}<div class="sub">Map placeholder for point A → point B route preview. Production can render Google Maps, Mapbox, or Apple Maps based on merchant location consent.</div></div>`)}${panel("Mileage Policy Notes",`<div class="panel-body list">${listItem("Business purpose required","Every trip must explain why it was business related before export.","green")}${listItem("Commute-like routes need CPA review","Home to regular workplace may need special review and cannot be auto-approved.","yellow")}${listItem("Rate versioning","Rate should be stored by tax year and updated from official source monitor.","blue")}</div>`)}</div>${panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button>`)}${panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence.","When mileage is claimed"],["Point A → Point B route","Saves the route when user presses Stop at destination.","Yes"],["Business purpose","Explains deduction relevance.","Yes"],["Vehicle profile","Supports owner/worker mileage records.","Recommended"]].map(row)))}`;
+  return `<div class="grid-4" style="margin-bottom:14px">${[[ "Trips",String(data.trips.length),"Tracked or pending review","green"],["Total Miles",totalMiles,"Current demo records","cyan"],["2026 IRS Rate","$0.725/mi","Business mileage estimate","yellow"],["Est. Deduction",deductionEstimate,"Before CPA review","red"]].map(metric).join("")}</div>${activePanel}<div class="grid-2" style="margin-bottom:14px">${panel("Route Preview",`<div class="panel-body">${googleRouteMap("Salon to supply store")}<div class="sub">Google Maps preview for a saved point A → point B business route. Production should store user consent, GPS coordinates, route source, and CPA review status.</div></div>`)}${panel("Mileage Policy Notes",`<div class="panel-body list">${listItem("Business purpose required","Every trip must explain why it was business related before export.","green")}${listItem("Commute-like routes need CPA review","Home to regular workplace may need special review and cannot be auto-approved.","yellow")}${listItem("Rate versioning","Rate should be stored by tax year and updated from official source monitor.","blue")}</div>`)}</div>${panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button>`)}${panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence.","When mileage is claimed"],["Point A → Point B route","Saves the route when user presses Stop at destination.","Yes"],["Business purpose","Explains deduction relevance.","Yes"],["Vehicle profile","Supports owner/worker mileage records.","Recommended"]].map(row)))}`;
 }
 
 /* ─── CPA REVIEW ─── */
@@ -1544,7 +1677,7 @@ const modalCopy = {
         row(["CPA recommendation","Include in mileage log — purpose is clearly business."]),
         row(["Proof","GPS track start/end captured"])
       ])),
-      modalSection("Route Map", `<div class="panel-body text-center"><div style="border:2px dashed #334155;border-radius:12px;padding:40px;color:#64748b;font-size:11px;font-weight:900;letter-spacing:.06em">MAP PLACEHOLDER<br><span style="font-size:10px;font-weight:400">Salon → Supply Store: 7.8 mi</span></div></div>`)
+      modalSection("Route Map", `<div class="panel-body">${googleRouteMap("Salon to supply store")}<div class="sub">Route preview uses Google Maps. The saved Tax IQ record should still store GPS start/end, miles, purpose, vehicle, and CPA review status.</div></div>`)
     ].join("")
   },
   "edit-trip":{
@@ -2106,6 +2239,7 @@ function openModal(key){
   root.innerHTML = `<div class="modal max-h-[88vh] w-full max-w-5xl overflow-auto rounded-xl border border-slate-800 bg-slate-950 shadow-2xl shadow-slate-950/60"><div class="modal-head flex items-start justify-between gap-4 border-b border-slate-800 p-5"><div><h3 class="m-0 text-lg font-black text-slate-50">${title}</h3><p class="mt-1 text-xs text-slate-500">${body}</p></div><button class="${ui.btn}" data-close>Close</button></div><div class="modal-body p-5">${config.content()}</div><div class="modal-foot flex justify-end gap-2 border-t border-slate-800 px-5 py-4"><button class="${ui.btn}" data-close>Cancel</button><button class="${ui.btn} ${ui.primary}" id="modalMainCta" data-action-toast="${cta} queued.">${cta}</button></div></div>`;
   root.classList.add("open");
   if(config.afterOpen) config.afterOpen(root.querySelector(".modal"));
+  initGoogleRouteMaps(root);
 }
 function toast(msg){
   const box = document.getElementById("toast");

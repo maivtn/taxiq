@@ -74,6 +74,8 @@ html/
 - System screens now include Webhooks, Audit Log, Notifications, Compliance Review, Billing & Plans, and Settings.
 - Tailwind utility classes drive the main layout and components through Tailwind Play CDN.
 - `assets/styles.css` keeps only small demo helpers for responsive grids, modal state, and fallback button/card styling.
+- GPS Route Preview uses Google Maps JavaScript API with the configured `mapId`; production should restrict the browser API key by HTTP referrer/domain in Google Cloud.
+- For local demo, the page defaults to a Google Maps iframe preview to avoid API-key referrer errors. To test the JavaScript API and `mapId` locally, first allow `http://127.0.0.1:8123/*` and `http://localhost:8123/*` in the Google Maps API key referrer restrictions, then open `gps-mileage.html?mapsJs=1`.
 - Important workflows use demo modals:
   - Add/edit/delete employer, employee, connection, receipt, trip, payout, and tip records
   - Create payroll run
@@ -84,7 +86,7 @@ html/
   - Batch approve high-confidence receipts
   - Create share link
   - View QR / revoke share link
-  - Start GPS trip at point A, stop at point B, and save route/miles to the tracker
+  - Start GPS trip at point A, stop at point B, save route/miles to the tracker, and preview saved routes with Google Maps
   - Invite CPA
   - Generate report package
   - Add and review tips for No Tax on Tips support
