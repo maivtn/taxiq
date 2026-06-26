@@ -235,6 +235,228 @@ a {
   text-align: center;
 }
 
+.empty strong,
+.empty span {
+  display: block;
+}
+
+.empty strong {
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.empty span {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.metric-link {
+  cursor: pointer;
+}
+
+.sticky-last-col table {
+  position: relative;
+}
+
+.sticky-last-col th:last-child,
+.sticky-last-col td:last-child {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  background: #0f172a;
+  box-shadow: -12px 0 18px rgba(2, 6, 23, .28);
+}
+
+.sticky-last-col th:last-child {
+  z-index: 2;
+  background: #0f172a;
+}
+
+.chart-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.chart-row {
+  display: grid;
+  grid-template-columns: minmax(120px, .8fr) minmax(180px, 1.4fr) 72px;
+  align-items: center;
+  gap: 12px;
+}
+
+.chart-label strong,
+.chart-label span {
+  display: block;
+}
+
+.chart-label strong {
+  color: #e2e8f0;
+  font-size: 12px;
+}
+
+.chart-label span {
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.chart-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #1e293b;
+}
+
+.chart-bar {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.chart-bar.green { background: #22c55e; }
+.chart-bar.blue { background: #6366f1; }
+.chart-bar.yellow { background: #f59e0b; }
+.chart-bar.red { background: #ef4444; }
+
+.chart-value {
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.route-map {
+  position: relative;
+  min-height: 210px;
+  overflow: hidden;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0b1220, #111827);
+}
+
+.map-grid {
+  position: absolute;
+  inset: 0;
+  opacity: .45;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, .08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, .08) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.map-route {
+  position: absolute;
+  left: 19%;
+  top: 60%;
+  width: 62%;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22c55e, #6366f1, #06b6d4);
+  transform: rotate(-18deg);
+  box-shadow: 0 0 18px rgba(99, 102, 241, .35);
+}
+
+.map-pin {
+  position: absolute;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 999px;
+  color: #020617;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(2, 6, 23, .42);
+}
+
+.map-pin.start {
+  left: 16%;
+  top: 54%;
+  background: #22c55e;
+}
+
+.map-pin.end {
+  right: 16%;
+  top: 30%;
+  background: #06b6d4;
+}
+
+.pagination-bar,
+.filter-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.filter-strip {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin: 0 0 12px;
+}
+
+.form-field.compact {
+  min-width: 170px;
+}
+
+.read-row {
+  opacity: .58;
+}
+
+.skeleton-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.skeleton-line,
+.skeleton-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #1e293b;
+}
+
+.skeleton-line {
+  height: 14px;
+}
+
+.skeleton-line.short {
+  width: 58%;
+}
+
+.skeleton-line.w-40 {
+  width: 160px;
+}
+
+.skeleton-card {
+  height: 72px;
+}
+
+.skeleton-line::after,
+.skeleton-card::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  transform: translateX(-100%);
+  animation: skeleton-shimmer 1.4s infinite;
+  background: linear-gradient(90deg, transparent, rgba(148, 163, 184, .16), transparent);
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .notice {
   border: 1px solid rgba(245, 158, 11, .35);
   border-radius: 8px;
@@ -388,5 +610,23 @@ select.form-control {
 
   .steps {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chart-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .chart-value {
+    text-align: left;
+  }
+
+  .pagination-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .skeleton-grid {
+    grid-template-columns: 1fr;
   }
 }

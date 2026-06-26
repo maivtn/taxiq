@@ -44,6 +44,7 @@ html/
     webhooks.html
     audit-log.html
     notifications.html
+    billing.html
     settings.html
 ```
 
@@ -55,7 +56,7 @@ html/
 - Screen data, page content, modals, and demo actions come from `assets/app.js`.
 - Sidebar groups OCR Vault, Share Links, GPS Mileage, CPA Review, and AI Advisor under `Tax IQ`.
 - Sidebar also includes Tip Ledger and Tax Estimate under `Tax IQ`.
-- System screens now include Webhooks, Audit Log, Notifications, and Settings.
+- System screens now include Webhooks, Audit Log, Notifications, Billing & Plans, and Settings.
 - Tailwind utility classes drive the main layout and components through Tailwind Play CDN.
 - `assets/styles.css` keeps only small demo helpers for responsive grids, modal state, and fallback button/card styling.
 - Important workflows use demo modals:
@@ -74,6 +75,7 @@ html/
   - Add and review tips for No Tax on Tips support
   - Review tax estimate and deposit schedule alerts
   - Inspect audit log and webhook payloads
+  - Review merchant plan, invoices, CPA billing approval, and upgrade path
   - Create API key for integrations
 - Some action buttons mutate the in-memory demo data, including approve receipt, resolve exception, mark notifications read, copy share link, revoke connection, mark payout paid, rotate/revoke API key, and soft-delete receipt/trip/tip records.
 
@@ -94,3 +96,4 @@ html/
 - Webhook monitor
 - Audit log
 - Notifications
+- Billing & Plans

@@ -8,167 +8,7 @@ const tones = {
   blue:"border-indigo-500 text-indigo-300 bg-indigo-500/10"
 };
 
-const data = {
-  metrics:[
-    ["Total Gross Pay","$1.05M","Q2 payroll and bonus gross","green"],
-    ["Tax Withheld","$193.3K","Federal/state employee taxes","cyan"],
-    ["Open Exceptions","5","4 blocking strict mode","yellow"],
-    ["Evidence Vault","3","Receipts and payout proofs","red"]
-  ],
-  runs:[
-    ["pr_2026_06_15","Jun 1-14","Jun 19, 2026","Jun 24, 2026","142","$312,448","$54,621","18","Ledger Posted"],
-    ["pr_2026_06_01","May 18-31","Jun 5, 2026","Jun 11, 2026","142","$309,882","$53,974","12","Ledger Posted"],
-    ["pr_2026_05_15","May 1-17","May 22, 2026","May 28, 2026","139","$304,122","$53,061","42","Review Required"],
-    ["pr_bonus_q2","Q2 Bonus","Jun 15, 2026","Jun 18, 2026","48","$124,000","$31,000","8","Ledger Posted"],
-    ["pr_2026_07_01","Jun 15-28","Jul 3, 2026","Jul 8, 2026","144","$0","$0","-","Pending"],
-    ["pr_correction_01","Correction","Jun 20, 2026","Jun 24, 2026","3","$4,840","$689","68","Validation Failed"]
-  ],
-  lineItems:[
-    ["Jane A. Nguyen","Finance","$3,769.23","$3,449.23","$320.00","$698.89","$288.34","$2,750.34","Calculated"],
-    ["Marcus Chen","Engineering","$4,230.77","$3,780.77","$450.00","$784.22","$312.31","$2,996.55","Calculated"],
-    ["Sofia Reyes","Operations","$2,884.62","$2,634.62","$250.00","$535.11","$220.11","$2,149.51","Calculated"],
-    ["David Kim","Sales","$3,461.54","$3,141.54","$320.00","$641.88","$268.80","$2,499.66","Needs Review"]
-  ],
-  employees:[
-    ["Jane A. Nguyen","emp_1002","Finance","TX","TX","Pending","2026","Single","Jun 10, 2026","18"],
-    ["Marcus Chen","emp_0891","Engineering","TX","TX","Verified","2026","Married filing jointly","May 28, 2026","10"],
-    ["Sofia Reyes","emp_0334","Operations","TX","TX","Verified","2026","Single","Apr 16, 2026","8"],
-    ["David Kim","emp_0112","Sales","TX","CA","Verified","2024","Head of household","Dec 20, 2024","35"],
-    ["Noah Patel","emp_1441","Support","NY","NY","Missing","Missing","Unknown","Not started","61"]
-  ],
-  employers:[
-    ["Acme Manufacturing LLC","biz_789","Manufacturing","142","FED, TX, CA","Semiweekly","Jun 24, 2026","99.8%","Active"],
-    ["TechCorp Solutions Inc.","biz_1024","Software","387","FED, NY","Monthly","Jul 15, 2026","100%","Active"],
-    ["Retail Partners Group","biz_2201","Retail","91","FED, TX","Monthly","Jul 15, 2026","74%","Degraded"]
-  ],
-  payouts:[
-    ["PAY-2026-001","likesaa","NL501TESX","01-15 Jun","$250.00","Zelle","Tip + wage","Confirmed","1 image"],
-    ["PAY-2026-002","anna","NL502ANNA","01-15 Jun","$180.00","Zelle","Tip","Pending","2 images"],
-    ["PAY-2026-003","mai","NL503MAIV","01-10 Jun","$95.00","PayPal","Bonus","Confirmed","None"],
-    ["PAY-2026-004","likesaa","NL501TESX","16-31 May","$715.00","Zelle","Wage + tip","Cancelled","1 image"]
-  ],
-  exceptions:[
-    ["ex_001","WITHHOLDING_DISCREPANCY","High","Payroll","Open","pr_correction_01","Payroll submitted $690. Tax IQ expected $698.89."],
-    ["ex_002","TIN_VERIFICATION_PENDING","Medium","HR","Open","Q2","6 employees have unverified SSN/TIN."],
-    ["ex_003","W4_STALE","Medium","HR","Open","YTD","3 employees are still using 2024 W-4 forms."],
-    ["ex_004","JURISDICTION_MISMATCH","Medium","Tax","Reviewing","pr_2026_05_15","Work CA vs residence TX for 2 employees."],
-    ["ex_005","TAX_PROFILE_MISSING","Low","HR","Open","pr_2026_07_01","2 new hires are missing tax profiles."]
-  ],
-  ledger:[
-    ["tle_001","pr_2026_06_15","Jane Nguyen","US-FED","federal_income_tax","$3,449.23","$410.55","$0","sha256:a1b2"],
-    ["tle_002","pr_2026_06_15","Jane Nguyen","US-FED","social_security","$3,769.23","$233.69","$233.69","sha256:c3d4"],
-    ["tle_003","pr_2026_06_15","Jane Nguyen","US-FED","medicare","$3,769.23","$54.65","$54.65","sha256:e5f6"],
-    ["tle_006","pr_2026_05_15","David Kim","US-CA","ca_state_income_tax","$3,141.54","$314.15","$0","sha256:k1l2"]
-  ],
-  jurisdictions:[
-    ["US-FED","Federal","$348,011","$148,238","Active","Semiweekly","Jun 24, 2026","8"],
-    ["US-TX","Texas","$0","$48,821","Active","Quarterly","Jul 31, 2026","6"],
-    ["US-CA","California","$112,440","$10,122","Review","Semiweekly","Jun 24, 2026","42"],
-    ["US-NY","New York","$37,768","$4,603","Missing setup","Monthly","Jul 15, 2026","61"]
-  ],
-  forms:[
-    ["W-2 Wage Summary","YTD 2026","142","Payroll ledger","Jan 31, 2027","Draft"],
-    ["1099 Contractor Report","Q2 2026","18","Vendor ledger","Jan 31, 2027","Ready"],
-    ["Federal 941 Worksheet","Q2 2026","1","Tax ledger","Jul 31, 2026","Ready"],
-    ["Federal 940 FUTA Worksheet","YTD 2026","1","Employer tax ledger","Jan 31, 2027","Draft"],
-    ["State SUTA Reconciliation","Q2 2026","3","State wage base ledger","Varies by state","Needs Review"]
-  ],
-  webhooks:[
-    ["evt_01JZ006","tax_iq.ledger.posted","tenant_demo_001","1","Delivered","2 min ago","2 min ago"],
-    ["evt_01JZ005","tax_iq.validation.warning","tenant_demo_001","1","Delivered","2 min ago","2 min ago"],
-    ["evt_01JZ003","tax_iq.validation.failed","tenant_demo_001","3","Retrying","47 min ago","-"],
-    ["evt_01JZ001","employee.tax_profile.validated","tenant_biz_1024","8","Dead Letter","5h ago","-"]
-  ],
-  receipts:[
-    // [id, vendor, category, amount, source, status, owner, confidence, tax, rcpt_num, captured_at, image_ref]
-    ["rcpt_001","Beauty Supply Warehouse","Supplies","$384.20","Camera","Approved","Owner","94%","$31.60","REC-0042","Jun 18 14:00","rcpt_001.jpg"],
-    ["rcpt_002","AT&T Phone Bill","Utilities","$129.00","Email import","Needs Review","Bookkeeper","67%","$0.00","INV-0918","Jun 20 09:15","rcpt_002.jpg"],
-    ["rcpt_003","Unknown Zelle memo","Payment evidence","$250.00","Payout upload","Missing purpose","Finance","—","—","—","Jun 15 18:21","—"],
-    ["rcpt_004","Nail Supply Co.","Supplies","$212.50","File upload","Approved","Owner","91%","$17.50","NS-8812","Jun 22 10:30","rcpt_004.jpg"],
-    ["rcpt_005","City Water Dept","Utilities","$88.00","Email import","Processing","Owner","—","—","—","Jun 24 11:00","—"],
-    ["rcpt_006","Square POS Receipt","Equipment","$495.00","Camera","Needs Review","Owner","72%","$40.75","SQ-2026061","Jun 23 16:20","rcpt_006.jpg"]
-  ],
-  shareLinks:[
-    ["shr_001","CPA Review","Ledger + receipts","15 days","Active"],
-    ["shr_002","Technician upload","Payout evidence only","Never","Active"],
-    ["shr_003","Friend referral profile","Public business profile","15 days","Draft"]
-  ],
-  trips:[
-    ["trip_001","Home to salon","18.4","Owner business commute review","Needs CPA policy check"],
-    ["trip_002","Salon to supply store","7.8","Business supplies","Deduction candidate"],
-    ["trip_003","Salon to bank","4.1","Cash deposit","Deduction candidate"]
-  ],
-  cpa:[
-    ["Nguyen CPA Group","1099 package + receipt review","Invited","Waiting for portal acceptance"],
-    ["Internal bookkeeper","Monthly close review","Connected","Review missing evidence"],
-    ["Tax partner","Quarterly estimate","Requested","Owner approval required"]
-  ],
-  cpaRates:[
-    ["Nguyen CPA Group","CPA firm","$185/hr","3.5 hr","$647.50","$250 retainer","Best for tax filing package"],
-    ["Internal bookkeeper","Bookkeeper","$75/hr","2.0 hr","$150.00","No retainer","Best for monthly cleanup"],
-    ["Tax partner","Tax preparer","$125/hr","1.5 hr","$187.50","$100 retainer","Best for quarterly estimate"]
-  ],
-  tips:[
-    ["tip_001","2026-06-24","Cash","$45.00","Pedicure","CASH","LIKELY_QUALIFIED","Jun 24 4:30pm","receipt_photo"],
-    ["tip_002","2026-06-24","Zelle","$30.00","Manicure","DIRECT","LIKELY_QUALIFIED","Jun 24 2:15pm","screenshot"],
-    ["tip_003","2026-06-23","Venmo","$20.00","Eyebrows","DIRECT","NEEDS_REVIEW","Jun 23 6:00pm","None"],
-    ["tip_004","2026-06-23","Card/POS","$55.00","Nail Full Set","POS_OWNER_PAID","LIKELY_QUALIFIED","Jun 23 5:30pm","POS record"],
-    ["tip_005","2026-06-22","Cash","$25.00","Pedicure","CASH","LIKELY_QUALIFIED","Jun 22 3:45pm","None"],
-    ["tip_006","2026-06-20","Cash App","$40.00","Lashes","DIRECT","LIKELY_QUALIFIED","Jun 20 7:00pm","screenshot"]
-  ],
-  auditLog:[
-    ["2026-06-24 16:30","payroll_admin_44","FINALIZED","payroll_run","pr_2026_06_15","Payroll run finalized with 1 TIN warning. Admin override noted."],
-    ["2026-06-24 16:25","system","POSTED","tax_ledger","tle_001","Immutable ledger entries generated for pr_2026_06_15."],
-    ["2026-06-24 10:22","payroll_admin_44","CREATED","share_link","shr_001","CPA review link created with 15-day expiry for Nguyen CPA Group."],
-    ["2026-06-24 09:10","finance_user","UPDATED","payout","PAY-2026-001","Evidence image attached. Business purpose confirmed."],
-    ["2026-06-23 15:00","system","WEBHOOK_DELIVERED","webhook_event","evt_01JZ006","tax_iq.ledger.posted delivered to tenant_demo_001."],
-    ["2026-06-22 11:00","payroll_admin_44","EXPORTED","report","rpt_q2_2026","CPA report package generated: PDF + CSV for Q2 2026."],
-    ["2026-06-21 09:45","system","WEBHOOK_FAILED","webhook_event","evt_01JZ001","employee.tax_profile.validated — dead letter after 8 attempts."],
-    ["2026-06-20 09:00","hr_user","UPDATED","employee","emp_1002","TIN verification initiated. Secure link sent to employee."],
-    ["2026-06-18 14:00","system","OCR_PROCESSED","receipt","rcpt_001","AI extraction completed with 94% confidence."],
-    ["2026-06-18 09:30","payroll_admin_44","CREATED","connection","conn_nt_biz_789","Nexora Touch payroll connection added with webhook signing."],
-    ["2026-06-15 18:21","owner_user","CREATED","payout","PAY-2026-001","Payout created for likesaa — $250 via Zelle."],
-    ["2026-06-15 17:00","system","TIP_CLASSIFIED","tip_entry","tip_004","POS/card tip auto-classified as LIKELY_QUALIFIED."]
-  ],
-  taxEstimate:{
-    ytdIncome:"$1,050,000",
-    ytdWithheld:"$193,300",
-    estimatedAnnual:"$4,200,000",
-    estimatedTax:"$840,000",
-    estimatedBalance:"$646,700",
-    quarters:[
-      ["Q1 2026","$252,000","$48,000","$50,400","Due","Paid","Apr 15, 2026"],
-      ["Q2 2026","$298,000","$54,621","$59,600","Due Jul 15","Review","Jul 15, 2026"],
-      ["Q3 2026 (est.)","$280,000","—","$56,000","Not yet","Pending","Sep 15, 2026"],
-      ["Q4 2026 (est.)","$220,000","—","$44,000","Not yet","Pending","Jan 15, 2027"]
-    ],
-    byJurisdiction:[
-      ["US-FED","Federal","$210,000","$48,000","$162,000","Semiweekly","High"],
-      ["US-TX","Texas","$0","$48,821","—","Quarterly","Low"],
-      ["US-CA","California","$59,600","$10,122","$49,478","Semiweekly","Medium"],
-      ["US-NY","New York","$40,000","$4,603","$35,397","Monthly","Medium"]
-    ]
-  },
-  connections:[
-    ["conn_nt_biz789","Nexora Touch Payroll","biz_789","OAuth 2.0","HMAC SHA-256","payroll+employees+webhooks","Connected","2 min ago"],
-    ["conn_hrcloud_biz1024","TechCorp HRIS","biz_1024","API Key","HMAC SHA-256","employees+webhooks","Connected","8 min ago"],
-    ["conn_retail_biz2201","Retail Partners Payroll","biz_2201","API Key","HMAC SHA-256","payroll+webhooks","Degraded","47 min ago"],
-    ["conn_qbo_biz789","QuickBooks Accounting","biz_789","OAuth 2.0","None","accounting+reports","Connected","1h ago"]
-  ],
-  notifications:[
-    {id:"ntf_001",type:"DEPOSIT_ALERT",severity:"High",title:"Federal deposit due today — Jun 24",body:"$54,621 federal semiweekly deposit is due today. Ensure account is funded.",resource:"tax-estimate",at:"Jun 24 08:00",read:false},
-    {id:"ntf_002",type:"EXCEPTION_OPEN",severity:"High",title:"5 exceptions require review",body:"4 blocking exceptions in strict mode. Next payroll run will be blocked.",resource:"exceptions",at:"Jun 24 07:45",read:false},
-    {id:"ntf_003",type:"CPA_REQUEST",severity:"Medium",title:"CPA flagged missing receipt — rcpt_003",body:"Nguyen CPA Group requested business purpose for unknown Zelle memo $250.",resource:"cpa",at:"Jun 23 15:30",read:false},
-    {id:"ntf_004",type:"TIN_PENDING",severity:"Medium",title:"TIN verification pending — 6 workers",body:"6 employees have unverified SSN/TIN. Strict mode run will be blocked.",resource:"employees",at:"Jun 23 09:00",read:true},
-    {id:"ntf_005",type:"WEBHOOK_DEAD_LETTER",severity:"High",title:"Webhook dead letter — evt_01JZ001",body:"employee.tax_profile.validated failed after 8 attempts. Manual review required.",resource:"webhooks",at:"Jun 21 09:45",read:true},
-    {id:"ntf_006",type:"TIP_CAP",severity:"Low",title:"No Tax on Tips — cap at 7.4% for likesaa",body:"$1,850 of $25,000 federal limit tracked for tax year 2026.",resource:"tip-ledger",at:"Jun 21 08:00",read:true}
-  ],
-  apiKeys:[
-    ["key_live_a1b2","Production API Key","LIVE","Full access","Jun 1, 2026","Active","payroll_admin_44"],
-    ["key_live_c3d4","CPA Report Export Key","LIVE","Reports only","Jun 18, 2026","Active","finance_user"],
-    ["key_test_e5f6","Developer Sandbox Key","TEST","Full access","Jun 1, 2026","Active","payroll_admin_44"]
-  ]
-};
+const data = window.TaxIQMockData;
 
 let activeGpsTrip = null;
 
@@ -195,18 +35,54 @@ function gpsPointLabel(point){
 
 function statusClass(v){return /posted|delivered|ready|active|verified|connected|confirmed|extracted|calculated|candidate|qualified|paid/i.test(v) ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 before:bg-emerald-400" : /review|pending|draft|retry|requested|watch|needs|invited|medium/i.test(v) ? "border-amber-500/30 bg-amber-500/10 text-amber-300 before:bg-amber-400" : /failed|dead|missing|open|high|cancelled/i.test(v) ? "border-rose-500/30 bg-rose-500/10 text-rose-300 before:bg-rose-400" : "border-indigo-500/30 bg-indigo-500/10 text-indigo-300 before:bg-indigo-400";}
 function status(v){return `<span class="status inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[11px] font-black before:block before:h-1.5 before:w-1.5 before:rounded-full ${statusClass(v)}">${v}</span>`;}
-function metric([label,value,sub,color]){return `<div class="${ui.card} border-t-4 ${tones[color] || tones.blue} p-4"><div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div></div>`;}
+function metric([label,value,sub,color,href]){
+  const body = `<div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div>`;
+  const cls = `${ui.card} border-t-4 ${tones[color] || tones.blue} p-4 ${href ? "metric-link block transition hover:-translate-y-0.5 hover:border-indigo-400 hover:bg-slate-900" : ""}`;
+  return href ? `<a class="${cls}" href="${pageHref(href)}">${body}</a>` : `<div class="${cls}">${body}</div>`;
+}
+function moneyNumber(value){return Number(String(value ?? "").replace(/[^0-9.-]/g,"")) || 0;}
+function moneyText(value){return value.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:value % 1 ? 2 : 0});}
 function table(headers, rows){
-  return `<div class="${ui.tableWrap}"><table class="w-full border-collapse text-xs"><thead><tr>${headers.map(h=>`<th class="${ui.th}">${h}</th>`).join("")}</tr></thead><tbody>${rows.join("") || `<tr><td class="${ui.td}" colspan="${headers.length}"><div class="empty">No records.</div></td></tr>`}</tbody></table></div>`;
+  const sticky = /actions?/i.test(headers[headers.length - 1] || "");
+  return `<div class="${ui.tableWrap} ${sticky ? "sticky-last-col" : ""}"><table class="w-full border-collapse text-xs"><thead><tr>${headers.map(h=>`<th class="${ui.th}">${h}</th>`).join("")}</tr></thead><tbody>${rows.join("") || `<tr><td class="${ui.td}" colspan="${headers.length}"><div class="empty"><strong>No records yet.</strong><span>Add a record or adjust filters to continue.</span></div></td></tr>`}</tbody></table></div>`;
 }
 function row(cells, opts={}){
-  return `<tr class="${opts.click ? "clickable cursor-pointer hover:bg-slate-800/60" : "hover:bg-slate-800/30"}" ${opts.href ? `data-href="${opts.href}"` : ""}>${cells.map((c,i)=>`<td class="${ui.td} ${opts.wrap && i===opts.wrap ? "wrap whitespace-normal min-w-64" : ""}">${c}</td>`).join("")}</tr>`;
+  return `<tr class="${opts.className || ""} ${opts.click ? "clickable cursor-pointer hover:bg-slate-800/60" : "hover:bg-slate-800/30"}" ${opts.href ? `data-href="${opts.href}"` : ""}>${cells.map((c,i)=>`<td class="${ui.td} ${Array.isArray(opts.wrap) ? (opts.wrap.includes(i) ? "wrap whitespace-normal min-w-64" : "") : (opts.wrap === i ? "wrap whitespace-normal min-w-64" : "")}">${c}</td>`).join("")}</tr>`;
 }
 function panel(title, body, actions=""){return `<div class="${ui.panel}"><div class="${ui.panelHead}"><h3 class="text-sm font-black text-slate-100">${title}</h3><div class="actions">${actions}</div></div>${body}</div>`;}
 function listItem(title,text,color="blue"){return `<div class="item flex items-start gap-3 rounded-lg border border-slate-800 bg-slate-950/60 p-3"><span class="mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${color==="green"?"bg-emerald-400":color==="yellow"?"bg-amber-400":color==="red"?"bg-rose-400":"bg-indigo-400"}"></span><div><div class="item-title text-xs font-black text-slate-100">${title}</div><div class="item-text mt-1 text-xs leading-relaxed text-slate-400">${text}</div></div></div>`;}
 function rowActions(...btns){return `<div class="flex gap-1 flex-nowrap">${btns.join("")}</div>`;}
 function actionBtn(label, modal){return modal ? `<button class="${ui.btn}" data-modal="${modal}">${label}</button>` : `<button class="${ui.btn}" data-toast="${label} queued.">${label}</button>`;}
 function filterBar(...selects){return `<div class="flex flex-wrap gap-2 mb-4">${selects.map(([label,opts])=>`<select class="form-control" style="width:auto;min-width:150px"><option>${label}</option>${opts.map(o=>`<option>${o}</option>`).join("")}</select>`).join("")}</div>`;}
+function barChart(items){
+  const max = Math.max(...items.map(i=>i.value), 1);
+  return `<div class="chart-panel">${items.map(item=>`
+    <div class="chart-row">
+      <div class="chart-label"><strong>${item.label}</strong><span>${item.sub || ""}</span></div>
+      <div class="chart-track"><div class="chart-bar ${item.color || "blue"}" style="width:${Math.max(8, Math.round(item.value / max * 100))}%"></div></div>
+      <div class="chart-value">${item.display || item.value}</div>
+    </div>`).join("")}</div>`;
+}
+function miniMap(){
+  return `<div class="route-map" aria-label="Route preview placeholder">
+    <div class="map-grid"></div>
+    <div class="map-route"></div>
+    <div class="map-pin start">A</div>
+    <div class="map-pin end">B</div>
+  </div>`;
+}
+function skeletonPreview(){
+  return `<div class="skeleton-stack" aria-label="Loading state preview">
+    <div class="skeleton-line w-40"></div>
+    <div class="skeleton-grid">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line short"></div>
+  </div>`;
+}
 
 const renderers = {
   dashboard:renderDashboard, analytics:renderAnalytics,
@@ -218,7 +94,7 @@ const renderers = {
   "share-links":renderShareLinks, gps:renderGps, cpa:renderCpa,
   "tip-ledger":renderTipLedger, "tax-estimate":renderTaxEstimate,
   webhooks:renderWebhooks, "audit-log":renderAuditLog,
-  notifications:renderNotifications, settings:renderSettings
+  notifications:renderNotifications, billing:renderBilling, settings:renderSettings
 };
 
 function renderPage(){
@@ -229,24 +105,40 @@ function renderPage(){
 function renderDashboard(){
   const runRows = data.runs.slice(0,5).map(r=>row([`<span class="mono">${r[0]}</span>`,r[1],r[2],r[5],r[6],r[7],status(r[8])],{click:true,href:pageHref("run-detail")}));
   const issues = data.exceptions.slice(0,4).map(e=>listItem(e[1],`${e[6]} Owner: ${e[3]}.`,e[2]==="High"?"red":"yellow")).join("");
-  return `<div class="grid-4" style="margin-bottom:14px">${data.metrics.map(metric).join("")}</div><div class="split"><div>${panel("Recent Payroll Runs",table(["Run ID","Period","Pay Date","Gross","Tax","Risk","Status"],runRows),`<a class="btn" href="${pageHref("payroll-runs")}">View All</a>`)}</div>${panel("TaxIQ Issues",`<div class="panel-body list">${issues}</div>`,`<a class="btn" href="${pageHref("exceptions")}">Open Queue</a>`)}</div><div class="grid-3" style="margin-top:14px">${panel("AI Advisor",`<div class="panel-body">${listItem("AI CFO","Cash-flow and tax planning prompts are ready.","green")}</div>`,`<a class="btn" href="${pageHref("ai-advisor")}">Open</a>`)}${panel("OCR Vault",`<div class="panel-body">${listItem("Receipt Capture","3 evidence records are stored for review.","blue")}</div>`,`<a class="btn" href="${pageHref("ocr")}">Open</a>`)}${panel("Share Links",`<div class="panel-body">${listItem("Secure Links","CPA, technician, and profile links are active.","yellow")}</div>`,`<a class="btn" href="${pageHref("share-links")}">Open</a>`)}</div>`;
+  const workflowCards = [
+    ["AI Advisor","AI CFO","Cash-flow and tax planning prompts are ready.","green","ai-advisor"],
+    ["OCR Vault","Receipt Capture","6 evidence records are stored for review.","blue","ocr"],
+    ["Share Links","Secure Links","CPA, technician, and profile links are active.","yellow","share-links"],
+    ["Tax Estimate","Quarterly Forecast","Federal, SUTA, and state balances are ready.","red","tax-estimate"],
+    ["Tip Ledger","No Tax on Tips","YTD qualified tip tracking and cap warnings.","cyan","tip-ledger"],
+    ["GPS Mileage","Route Evidence","A to B mileage trips ready for CPA review.","green","gps"]
+  ].map(([title,item,text,color,href])=>panel(title,`<div class="panel-body">${listItem(item,text,color)}</div>`,`<a class="btn" href="${pageHref(href)}">Open</a>`)).join("");
+  return `<div class="grid-4" style="margin-bottom:14px">${data.metrics.map(metric).join("")}</div><div class="split"><div>${panel("Recent Payroll Runs",table(["Run ID","Period","Pay Date","Gross","Tax","Risk","Status"],runRows),`<a class="btn" href="${pageHref("payroll-runs")}">View All</a>`)}</div>${panel("TaxIQ Issues",`<div class="panel-body list">${issues}</div>`,`<a class="btn" href="${pageHref("exceptions")}">Open Queue</a>`)}</div><div class="grid-3" style="margin-top:14px">${workflowCards}</div>`;
 }
 
 /* ─── ANALYTICS ─── */
 function renderAnalytics(){
   const riskRows = data.runs.map(r=>row([`<span class="mono">${r[0]}</span>`,r[1],r[7],status(r[8])]));
-  return `${filterBar(["All periods",["Q1 2026","Q2 2026","YTD 2026"]],["All employers",["Acme Manufacturing LLC","TechCorp Solutions Inc.","Retail Partners Group"]])}<div class="grid-4" style="margin-bottom:14px">${[["Average Risk","24","Across scored runs","green"],["Webhook Success","99.7%","Current sample","cyan"],["Blocking Exceptions","4","Strict mode blockers","yellow"],["Missing Profiles","2","Tax profiles needed","red"]].map(metric).join("")}</div><div class="grid-2">${panel("Risk by Run",table(["Run","Period","Risk","Status"],riskRows))}${panel("Deposit Calendar",table(["Jurisdiction","Schedule","Next Due"],data.jurisdictions.map(j=>row([j[1],j[5],j[6]]))))}</div>`;
+  const jurisdictionChart = barChart([
+    {label:"Federal",value:210000,display:"$210K",sub:"Income + FICA",color:"red"},
+    {label:"California",value:59600,display:"$59.6K",sub:"State withholding",color:"yellow"},
+    {label:"New York",value:40000,display:"$40K",sub:"State withholding",color:"blue"},
+    {label:"Texas SUTA",value:6920,display:"$6.9K",sub:"Employer tax",color:"green"}
+  ]);
+  const riskTrend = barChart(data.runs.map(r=>({label:r[0],value:Number(r[7]) || 0,display:r[7],sub:r[1],color:(Number(r[7]) || 0) > 50 ? "red" : (Number(r[7]) || 0) > 25 ? "yellow" : "green"})));
+  return `${filterBar(["All periods",["Q1 2026","Q2 2026","YTD 2026"]],["All employers",["Acme Manufacturing LLC","TechCorp Solutions Inc.","Retail Partners Group"]])}<div class="grid-4" style="margin-bottom:14px">${[["Average Risk","24","Across scored runs","green"],["Webhook Success","99.7%","Current sample","cyan"],["Blocking Exceptions","4","Strict mode blockers","yellow"],["Missing Profiles","2","Tax profiles needed","red"]].map(metric).join("")}</div><div class="grid-2">${panel("Risk Trend by Payroll Run",riskTrend)}${panel("Tax by Jurisdiction",jurisdictionChart)}</div><div class="grid-2" style="margin-top:14px">${panel("Risk by Run",table(["Run","Period","Risk","Status"],riskRows))}${panel("Deposit Calendar",table(["Jurisdiction","Schedule","Next Due"],data.jurisdictions.map(j=>row([j[1],j[5],j[6]]))))}</div>`;
 }
 
 /* ─── EMPLOYERS ─── */
 function renderEmployers(){
-  const empRows = data.employers.map(e=>row([e[0],`<span class="mono">${e[1]}</span>`,e[2],e[3],e[4],e[5],e[6],e[7],status(e[8]),rowActions(actionBtn("Edit","edit-employer"),actionBtn("Registrations","employer-registrations"))]));
+  const empRows = data.employers.map(e=>row([e[0],`<span class="mono">${e[1]}</span>`,e[2],e[3],e[4],e[5],e[6],e[7],status(e[8]),rowActions(actionBtn("View","employer-detail"),actionBtn("Edit","edit-employer"),actionBtn("Registrations","employer-registrations"))]));
   return panel("Employers",table(["Employer","ID","Industry","Employees","Registrations","Deposit Schedule","Next Deposit","Health","Status","Actions"],empRows),`<button class="btn primary" data-modal="employer">Add Employer</button>`);
 }
 
 /* ─── EMPLOYEES ─── */
 function renderEmployees(){
-  return `${filterBar(["All TIN statuses",["Verified","Pending","Missing"]],["All W-4 years",["2026","2024","Missing"]],["All departments",["Finance","Engineering","Operations","Sales","Support"]])}${panel("Employees",table(["Employee","ID","Dept","Residence","Work","TIN","W-4","Filing","Updated","Risk"],data.employees.map(e=>row([e[0],`<span class="mono">${e[1]}</span>`,e[2],e[3],e[4],status(e[5]),status(e[6]),e[7],e[8],e[9]],{click:true,href:pageHref("employee-profile")}))),`<button class="btn primary" data-modal="employee">Invite Employee</button> <button class="btn" data-toast="Employee roster exported.">Export Roster</button>`)}`;
+  const empRows = data.employees.map(e=>row([e[0],`<span class="mono">${e[1]}</span>`,e[2],e[3],e[4],status(e[5]),status(e[6]),e[7],e[8],e[9],rowActions(`<a class="${ui.btn}" href="${pageHref("employee-profile")}">View</a>`,actionBtn("Verify","tin-verification"),actionBtn("Request W-4",""))]));
+  return `${filterBar(["All TIN statuses",["Verified","Pending","Missing"]],["All W-4 years",["2026","2024","Missing"]],["All departments",["Finance","Engineering","Operations","Sales","Support"]])}${panel("Employees",table(["Employee","ID","Dept","Residence","Work","TIN","W-4","Filing","Updated","Risk","Actions"],empRows),`<button class="btn primary" data-modal="employee">Invite Employee</button> <button class="btn" data-toast="Employee roster exported.">Export Roster</button>`)}<div class="pagination-bar"><span>Showing 1-5 of 142 employees</span><div><button class="${ui.btn}" disabled>Previous</button><button class="${ui.btn}">Page 1</button><button class="${ui.btn}">Next</button></div></div>`;
 }
 
 /* ─── EMPLOYEE PROFILE ─── */
@@ -256,7 +148,11 @@ function renderEmployeeProfile(){
 
 /* ─── PAYROLL RUNS ─── */
 function renderRuns(){
-  return `${filterBar(["All statuses",["Ledger Posted","Review Required","Pending","Validation Failed"]],["All employers",["Acme Manufacturing LLC","TechCorp Solutions Inc.","Retail Partners Group"]])}${panel("Payroll Runs",table(["Run ID","Period","Pay Date","Deposit Due","Employees","Gross","Tax","Risk","Status"],data.runs.map(r=>row([`<span class="mono">${r[0]}</span>`,r[1],r[2],r[3],r[4],r[5],r[6],r[7],status(r[8])],{click:true,href:pageHref("run-detail")}))),`<button class="btn primary" data-modal="create-run">Create Run</button>`)}`;
+  const runActions = r => {
+    const primary = /Pending|Validation Failed/i.test(r[8]) ? actionBtn("Finalize","finalize") : /Review Required/i.test(r[8]) ? actionBtn("Review","line-items") : actionBtn("Report","report");
+    return rowActions(`<a class="${ui.btn}" href="${pageHref("run-detail")}">View</a>`,primary,actionBtn("Line Items","line-items"));
+  };
+  return `${filterBar(["All statuses",["Ledger Posted","Review Required","Pending","Validation Failed"]],["All employers",["Acme Manufacturing LLC","TechCorp Solutions Inc.","Retail Partners Group"]])}${panel("Payroll Runs",table(["Run ID","Period","Pay Date","Deposit Due","Employees","Gross","Tax","Risk","Status","Actions"],data.runs.map(r=>row([`<span class="mono">${r[0]}</span>`,r[1],r[2],r[3],r[4],r[5],r[6],r[7],status(r[8]),runActions(r)]))),`<button class="btn primary" data-modal="create-run">Create Run</button>`)}`;
 }
 
 /* ─── RUN DETAIL ─── */
@@ -268,8 +164,8 @@ function renderRunDetail(){
 
 /* ─── CONNECTIONS ─── */
 function renderConnections(){
-  const connRows = data.connections.map(c=>row([`<span class="mono">${c[0]}</span>`,c[1],c[2],c[3],c[4],c[5],status(c[6]),c[7],rowActions(actionBtn("Test","test-connection"),actionBtn("Edit","edit-connection"),`<button class="${ui.btn}" data-revoke-conn="${c[0]}">Revoke</button>`)]));
-  return `${filterBar(["All statuses",["Connected","Degraded"]],["All auth",["OAuth 2.0","API Key"]])}${panel("Connections",table(["Conn ID","Name","Employer","Auth","Signing","Scopes","Status","Last Sync","Actions"],connRows),`<button class="btn primary" data-modal="connection">Add Connection</button>`)}`;
+  const connRows = data.connections.map(c=>row([`<span class="mono">${c[0]}</span>`,c[1],c[2],c[3],c[4],c[5],status(c[6]),c[7],`<span class="mono">${c[8]}</span>`,c[9],rowActions(actionBtn("Test","test-connection"),actionBtn("Edit","edit-connection"),`<button class="${ui.btn}" data-revoke-conn="${c[0]}">Revoke</button>`)],{wrap:[8,9]}));
+  return `${filterBar(["All statuses",["Connected","Degraded"]],["All auth",["OAuth 2.0","API Key"]])}${panel("Connections",table(["Conn ID","Name","Employer","Auth","Signing","Scopes","Status","Last Sync","Endpoint URL","Last Error","Actions"],connRows),`<button class="btn primary" data-modal="connection">Add Connection</button>`)}`;
 }
 
 /* ─── PAYOUTS ─── */
@@ -280,7 +176,10 @@ function renderPayouts(){
 /* ─── TAX LEDGER ─── */
 function renderLedger(){
   const ledRows = data.ledger.map(l=>row([`<span class="mono">${l[0]}</span>`,...l.slice(1,l.length-1),`<span class="mono text-[10px] text-slate-600">${l[l.length-1]}</span>`,actionBtn("Verify","verify-hash")]));
-  return `${filterBar(["All jurisdictions",["US-FED","US-TX","US-CA","US-NY"]],["All types",["federal_income_tax","social_security","medicare","ca_state_income_tax"]],["All runs",["pr_2026_06_15","pr_2026_06_01","pr_2026_05_15"]])}${panel("Tax Ledger",table(["Entry","Run","Employee","Jurisdiction","Type","Taxable","Employee Tax","Employer Tax","Hash","Action"],ledRows),`<button class="btn primary" data-modal="report">Download Report</button>`)}`;
+  const taxable = data.ledger.reduce((sum,l)=>sum + moneyNumber(l[5]),0);
+  const employeeTax = data.ledger.reduce((sum,l)=>sum + moneyNumber(l[6]),0);
+  const employerTax = data.ledger.reduce((sum,l)=>sum + moneyNumber(l[7]),0);
+  return `${filterBar(["All jurisdictions",["US-FED","US-TX","US-CA","US-NY"]],["All types",["federal_income_tax","social_security","medicare","ca_state_income_tax","suta_employer_tax"]],["All runs",["pr_2026_06_15","pr_2026_06_01","pr_2026_05_15","pr_bonus_q2"]])}<div class="grid-3" style="margin-bottom:14px">${[["Taxable Wages",moneyText(taxable),"Across visible ledger","green"],["Employee Tax",moneyText(employeeTax),"Withholding entries","cyan"],["Employer Tax",moneyText(employerTax),"FICA/SUTA entries","yellow"]].map(metric).join("")}</div>${panel("Tax Ledger",table(["Entry","Run","Employee","Jurisdiction","Type","Taxable","Employee Tax","Employer Tax","Hash","Action"],ledRows),`<button class="btn primary" data-modal="report">Download Report</button>`)}`;
 }
 
 /* ─── EXCEPTIONS ─── */
@@ -292,7 +191,7 @@ function renderExceptions(){
 /* ─── JURISDICTIONS ─── */
 function renderJurisdictions(){
   const jRows = data.jurisdictions.map(j=>row([j[0],j[1],j[2],j[3],status(j[4]),j[5],j[6],j[7],rowActions(actionBtn("Edit","edit-jurisdiction"),actionBtn("Sync",""))]));
-  return `<div class="grid-2">${panel("Jurisdiction Summary",table(["ID","Name","Employee Tax","Employer Tax","Registration","Schedule","Next Due","Risk","Actions"],jRows))}${panel("US Payroll Tax Programs",table(["Program","Level","Agency","Forms"],[["Federal income tax withholding","Federal","IRS","W-4, 941, W-2"],["Social Security and Medicare","Federal","IRS","941, W-2"],["FUTA","Federal","IRS","940"],["State withholding","State","State revenue agencies","State returns"],["SUTA","State","State workforce agencies","SUTA wage reports"]].map(row)))}</div>`;
+  return `<div class="grid-2">${panel("Jurisdiction Summary",table(["ID","Name","Employee Tax","Employer Tax","Registration","Schedule","Next Due","Risk","Actions"],jRows))}${panel("US Payroll Tax Programs",table(["Program","Level","Agency","Forms"],[["Federal income tax withholding","Federal","IRS","W-4, 941, W-2"],["Social Security and Medicare","Federal","IRS","941, W-2"],["FUTA","Federal","IRS","940"],["State withholding","State","State revenue agencies","State withholding returns"],["SUTA","State","State workforce agencies","SUTA wage reports"]].map(r=>row(r,{wrap:3}))))}</div>`;
 }
 
 /* ─── FORMS & REPORTS ─── */
@@ -302,7 +201,7 @@ function renderForms(){
 }
 
 /* ─── AI ADVISOR ─── */
-function renderAiAdvisor(){return `<div class="grid-4" style="margin-bottom:14px">${[["AI CFO","On","Cash-flow and tax prompts","green"],["Rule Watch","Concept","Official sources required","cyan"],["Deduction Lists","3","Industry reminders","yellow"],["Guided Help","Ready","Context support","red"]].map(metric).join("")}</div><div class="grid-2">${panel("AI CFO Prompt Starters",table(["Area","Prompt","Action"],[["Cash flow","Review upcoming payroll, payout, rent, supplies, and tax pressure.","Ask"],["Tax planning","Find missing records before quarter close.","Ask"],["Support","Explain what screen to use next when blocked.","Ask"]].map(r=>row([r[0],r[1],`<button class="btn primary" data-modal="ai-cfo">${r[2]}</button>`],{wrap:1}))))}${panel("Government Rule Watch",table(["Source","Topic","Impact","Next Action"],[["IRS / State agencies","Payroll and 1099 deadline monitor",status("Review"),"Connect official-source feed."],["State revenue agencies","Sales tax and local payroll changes",status("Watch"),"Map merchant location."],["Workforce agencies","Worker classification and SUTA notices",status("High"),"Create classification warning."]].map(row)))}</div>${panel("Industry Deduction Checklist",table(["Industry","Checklist Ideas"],[["Nail salon","Supplies, booth rent, merchant fees, towels, uniforms, licenses, insurance, software, marketing, mileage."],["Beauty business","Product inventory, training, equipment, booking software, business phone, client amenities, rent."],["Contractor","Tools, mileage, phone, home office, payment fees, tax prep, education, insurance."]].map(r=>row(r,{wrap:1}))))}`;
+function renderAiAdvisor(){return `<div class="grid-4" style="margin-bottom:14px">${[["AI CFO","On","Cash-flow and tax prompts","green"],["Rule Watch","Beta","Official-source monitor enabled","cyan"],["Deduction Lists","6","Industry reminders","yellow"],["Guided Help","Ready","Context support","red"]].map(metric).join("")}</div><div class="grid-2">${panel("AI CFO Prompt Starters",table(["Area","Prompt","Action"],[["Cash flow","Review upcoming payroll, payout, rent, supplies, and tax pressure.","Ask"],["Tax planning","Find missing records before quarter close.","Ask"],["Support","Explain what screen to use next when blocked.","Ask"]].map(r=>row([r[0],r[1],`<button class="btn primary" data-modal="ai-cfo">${r[2]}</button>`],{wrap:1}))))}${panel("Government Rule Watch",table(["Source","Topic","Impact","Next Action"],[["IRS / State agencies","Payroll and 1099 deadline monitor",status("Review"),"Verify official feed source, map deadlines to merchant profile, then create owner task."],["State revenue agencies","Sales tax and local payroll changes",status("Watch"),"Map merchant location to state/local rules and show changes by effective date."],["Workforce agencies","Worker classification and SUTA notices",status("High"),"Create classification warning before payout sync or CPA package export."],["IRS mileage rate feed","Business mileage standard rate",status("Active"),"Version rate by tax year and surface estimate inside GPS Mileage."],["Tip legislation watch","No Tax on Tips eligibility and caps",status("Beta"),"Track updates by tax year and show CPA review note when rule changes."]].map(r=>row(r,{wrap:[1,3]}))))}</div>${panel("Industry Deduction Checklist",table(["Industry","Checklist Ideas"],[["Nail salon","Supplies, booth rent, merchant fees, towels, uniforms, licenses, insurance, software, marketing, mileage."],["Beauty business","Product inventory, training, equipment, booking software, business phone, client amenities, rent."],["Contractor","Tools, mileage, phone, home office, payment fees, tax prep, education, insurance."],["Restaurant","Food inventory, delivery platform fees, kitchen supplies, uniforms, POS fees, cleaning, licenses, tips and payroll records."],["Freelancer / Gig worker","Mileage, phone, laptop, software, home office, payment processing fees, marketing, education."],["Healthcare / clinic","Medical supplies, licensing, malpractice insurance, continuing education, booking software, mileage."]].map(r=>row(r,{wrap:1}))))}`;
 }
 
 /* ─── OCR VAULT ─── */
@@ -331,7 +230,7 @@ function renderOcr(){
     `<span class="inline-flex items-center gap-1.5 text-xs text-amber-300 font-black">
       <span class="h-2 w-2 rounded-full bg-amber-400 animate-pulse inline-block"></span>Processing
     </span>`,
-    "—"
+    "~2 min"
   ]));
 
   return `
@@ -377,7 +276,7 @@ function renderOcr(){
 
 /* ─── SHARE LINKS ─── */
 function renderShareLinks(){
-  const linkRows = data.shareLinks.map(s=>row([`<span class="mono">${s[0]}</span>`,s[1],s[2],s[3],status(s[4]),rowActions(actionBtn("View","share-link-detail"),`<button class="${ui.btn}" data-copy="taxiq.link/${s[0]}">Copy Link</button>`,actionBtn("QR","share-link-qr"),`<button class="${ui.btn}" data-modal="revoke-share-link" data-ctx-id="${s[0]}">Revoke</button>`)]));
+  const linkRows = data.shareLinks.map(s=>row([`<span class="mono">${s[0]}</span>`,s[1],s[2],s[3],status(s[4]),rowActions(actionBtn("View","share-link-detail"),`<button class="${ui.btn}" data-copy="taxiq.link/${s[0]}">Copy Link</button>`,actionBtn("QR","share-link-qr"),s[4]==="Draft" ? `<button class="${ui.btn} primary" data-publish-share="${s[0]}">Publish</button>` : `<button class="${ui.btn}" data-modal="revoke-share-link" data-ctx-id="${s[0]}">Revoke</button>`)]));
   return `<div class="grid-4" style="margin-bottom:14px">${[["Active Links","2","Upload/review access","green"],["Default Expiry","15d","Can be never expire","cyan"],["QR Support","Yes","Same permission model","yellow"],["Audit Log","On","Every open/upload","red"]].map(metric).join("")}</div>${panel("Payout / Profile Share Links",table(["Link ID","Recipient","Access","Expires","Status","Actions"],linkRows),`<button class="btn primary" data-modal="share-link">Create Link</button>`)}${panel("Share Link Rules",`<div class="panel-body list">${listItem("Upload-only","Recipient can upload receipts, W-9, payout evidence, or missing profile fields.","blue")}${listItem("Review-only","CPA or reviewer can inspect selected ledger and evidence records.","green")}${listItem("Expiration","Default is 15 days. Public profile links may never expire.","yellow")}</div>`)}`;
 }
 
@@ -388,13 +287,14 @@ function renderGps(){
   const candidateCount = data.trips.filter(t=>/candidate/i.test(t[4])).length;
   const policyCount = data.trips.filter(t=>/check|review/i.test(t[4])).length;
   const activePanel = activeGpsTrip ? panel("Active Trip Tracking",`<div class="panel-body list">${listItem("Tracking in progress",`${activeGpsTrip.startLabel} → destination pending. ${activeGpsTrip.points.length} GPS point(s) captured so far.`,"green")}${listItem("Stop to save A → B route","Open Start Trip and press Stop Trip when you arrive at the destination.","blue")}</div>`,`<button class="btn primary" data-modal="trip">Stop Trip</button>`) : "";
-  return `<div class="grid-4" style="margin-bottom:14px">${[[ "Trips",String(data.trips.length),"Tracked or pending review","green"],["Total Miles",totalMiles,"Current demo records","cyan"],["Deduction Candidates",String(candidateCount),"CPA should review","yellow"],["Policy Checks",String(policyCount),"Ambiguous route purpose","red"]].map(metric).join("")}</div>${activePanel}${panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button>`)}${panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence.","When mileage is claimed"],["Point A → Point B route","Saves the route when user presses Stop at destination.","Yes"],["Business purpose","Explains deduction relevance.","Yes"],["Vehicle profile","Supports owner/worker mileage records.","Recommended"]].map(row)))}`;
+  const deductionEstimate = moneyText(Number(totalMiles) * 0.725);
+  return `<div class="grid-4" style="margin-bottom:14px">${[[ "Trips",String(data.trips.length),"Tracked or pending review","green"],["Total Miles",totalMiles,"Current demo records","cyan"],["2026 IRS Rate","$0.725/mi","Business mileage estimate","yellow"],["Est. Deduction",deductionEstimate,"Before CPA review","red"]].map(metric).join("")}</div>${activePanel}<div class="grid-2" style="margin-bottom:14px">${panel("Route Preview",`<div class="panel-body">${miniMap()}<div class="sub">Map placeholder for point A → point B route preview. Production can render Google Maps, Mapbox, or Apple Maps based on merchant location consent.</div></div>`)}${panel("Mileage Policy Notes",`<div class="panel-body list">${listItem("Business purpose required","Every trip must explain why it was business related before export.","green")}${listItem("Commute-like routes need CPA review","Home to regular workplace may need special review and cannot be auto-approved.","yellow")}${listItem("Rate versioning","Rate should be stored by tax year and updated from official source monitor.","blue")}</div>`)}</div>${panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button>`)}${panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence.","When mileage is claimed"],["Point A → Point B route","Saves the route when user presses Stop at destination.","Yes"],["Business purpose","Explains deduction relevance.","Yes"],["Vehicle profile","Supports owner/worker mileage records.","Recommended"]].map(row)))}`;
 }
 
 /* ─── CPA REVIEW ─── */
 function renderCpa(){
   const cpaRows = data.cpa.map(c=>row([c[0],c[1],status(c[2]),c[3],rowActions(actionBtn("Portal","cpa-portal"),actionBtn("Upload","cpa-upload"),actionBtn("Revoke",""))]));
-  return `<div class="grid-4" style="margin-bottom:14px">${[["CPA Connections","3","Third-party firms","green"],["Est. Review Cost","$647.50","Example CPA package","cyan"],["Missing Evidence","4","Open CPA requests","yellow"],["Merchant Approval","Required","Before filing/export","red"]].map(metric).join("")}</div>${panel("Third-party CPA / Accountant Connections",table(["Firm","Scope","Status","Next Step","Actions"],cpaRows),`<button class="btn primary" data-modal="cpa">Connect CPA Firm</button>`)}<div class="grid-2" style="margin-top:14px">${panel("Cost Preview Before Connecting",table(["Provider","Type","Rate","Est. Hours","Est. Total","Retainer","Best For"],data.cpaRates.map(r=>row(r))))}${panel("Tax Filing Review Workflow",table(["Step","Owner","Output","Status"],[["1. Connect CPA / bookkeeper","Merchant","Secure portal invite + access scope",status("Invited")],["2. Share merchant package","Tax IQ","Ledger, receipts, payouts, mileage, payroll reports",status("Ready")],["3. CPA reviews records","CPA / accountant","Comments, missing-file requests, risk notes",status("Review")],["4. Prepare filing package","CPA / accountant","Draft tax filing support package",status("Requested")],["5. Merchant approval","Merchant","Approve export/share before final filing",status("Required")]].map(row)))}</div><div class="grid-2" style="margin-top:14px">${panel("CPA Work Queue",`<div class="panel-body list">${listItem("Request missing receipt","rcpt_003 needs business purpose and clear vendor.","yellow")}${listItem("Review worker classification","Payout says wage but worker is 1099 contractor.","red")}${listItem("Prepare merchant filing package","Export payout, receipt, mileage, payroll, and Tax IQ ledger records for accountant review.","green")}${listItem("Merchant filing approval","CPA can prepare package, but merchant must approve final export/share action.","blue")}</div>`)}${panel("Pricing Rules",`<div class="panel-body list">${listItem("Preview before invite","Merchant sees hourly rate, estimated hours, retainer, and estimated total before connecting accountant.","green")}${listItem("Approval before billing","No CPA work starts until merchant approves the estimate or accepts a custom quote.","yellow")}${listItem("Actual bill may change","Final cost depends on missing records, filing complexity, and CPA scope changes.","blue")}</div>`)}</div>`;
+  return `<div class="grid-4" style="margin-bottom:14px">${[["CPA Connections","3","Third-party firms","green"],["Est. Review Cost","$647.50","Example CPA package","cyan"],["Missing Evidence","4","Open CPA requests","yellow"],["Merchant Approval","Required","Before filing/export","red"]].map(metric).join("")}</div>${panel("Third-party CPA / Accountant Connections",table(["Firm","Scope","Status","Next Step","Actions"],cpaRows),`<button class="btn primary" data-modal="cpa">Connect CPA Firm</button>`)}<div class="grid-2" style="margin-top:14px">${panel("Cost Preview Before Connecting",table(["Provider","Type","Rate","Est. Hours","Est. Total","Retainer","Best For"],data.cpaRates.map(r=>row(r,{wrap:6}))))}${panel("Tax Filing Review Workflow",table(["Step","Owner","Output","Status"],[["1. Connect CPA / bookkeeper","Merchant","Secure portal invite + access scope",status("Invited")],["2. Share merchant package","Tax IQ","Ledger, receipts, payouts, mileage, payroll reports",status("Ready")],["3. CPA reviews records","CPA / accountant","Comments, missing-file requests, risk notes",status("Review")],["4. Prepare filing package","CPA / accountant","Draft tax filing support package",status("Requested")],["5. Merchant approval","Merchant","Approve export/share before final filing",status("Required")]].map(r=>row(r,{wrap:[0,2]}))))}</div><div class="grid-2" style="margin-top:14px">${panel("CPA Work Queue",`<div class="panel-body list">${listItem("Request missing receipt","rcpt_003 needs business purpose and clear vendor.","yellow")}${listItem("Review worker classification","Payout says wage but worker is 1099 contractor.","red")}${listItem("Prepare merchant filing package","Export payout, receipt, mileage, payroll, and Tax IQ ledger records for accountant review.","green")}${listItem("Merchant filing approval","CPA can prepare package, but merchant must approve final export/share action.","blue")}</div>`)}${panel("Pricing Rules",`<div class="panel-body list">${listItem("Preview before invite","Merchant sees hourly rate, estimated hours, retainer, and estimated total before connecting accountant.","green")}${listItem("Approval before billing","No CPA work starts until merchant approves the estimate or accepts a custom quote.","yellow")}${listItem("Actual bill may change","Final cost depends on missing records, filing complexity, and CPA scope changes.","blue")}</div>`)}</div>`;
 }
 
 /* ─── TIP LEDGER ─── */
@@ -407,23 +307,35 @@ function renderTipLedger(){
 function renderTaxEstimate(){
   const d = data.taxEstimate;
   const qRows = d.quarters.map(q=>row([q[0],q[1],q[2],q[3],q[4],status(q[5]),q[6]]));
-  const jRows = d.byJurisdiction.map(j=>row([j[0],j[1],j[2],j[3],j[4],j[5],status(j[6])]));
+  const jRows = d.byJurisdiction.map(j=>row([j[0],j[1],j[2],j[3],j[4],j[5],status(j[6])],{wrap:1}));
   return `<div class="grid-4" style="margin-bottom:14px">${[["Est. Annual Tax","$840,000","Federal + state combined","red"],["YTD Withheld","$193,300","Through Jun 2026","green"],["Estimated Balance","$646,700","Subject to withholding changes","yellow"],["Next Deposit","Jun 24, 2026","Federal semiweekly","cyan"]].map(metric).join("")}</div><div class="notice" style="margin-bottom:14px">Estimates are based on current payroll data and may change. Final tax liability must be confirmed by a licensed tax professional or CPA.</div><div class="grid-2">${panel("Quarterly Estimate",table(["Quarter","Gross","Withheld","Est. Tax","Amount Due","Status","Due Date"],qRows))}${panel("By Jurisdiction",table(["ID","Name","Est. Tax","Deposited","Balance","Schedule","Risk"],jRows))}</div><div class="grid-2" style="margin-top:14px">${panel("Deposit Schedule Alerts",`<div class="panel-body list">${listItem("Federal semiweekly — Jun 24, 2026","$54,621 employee tax due. Ensure account funded by deposit date.","red")}${listItem("Texas SUTA — Jul 31, 2026","Quarterly SUTA payment. Verify wage base and rate.","yellow")}${listItem("California semiweekly — Jun 24, 2026","$10,122 CA withholding due.","yellow")}${listItem("New York monthly — Jul 15, 2026","$4,603 NY withholding due.","blue")}</div>`,`<button class="btn" data-modal="report">Export Deposit Schedule</button>`)}${panel("Actions",`<div class="panel-body list">${listItem("Connect CPA for final estimate","CPA can review estimate assumptions and adjust for deductions, credits, and filing status.","green")}${listItem("Update withholding","If estimate is significantly off, update W-4 instructions or employer withholding.","yellow")}</div>`,`<button class="btn primary" data-modal="cpa">Connect CPA</button>`)}</div>`;
 }
 
 /* ─── WEBHOOKS ─── */
 function renderWebhooks(){
-  const wRows = data.webhooks.map(e=>row([`<span class="mono">${e[0]}</span>`,e[1],e[2],e[3],status(e[4]),e[5],e[6],rowActions(actionBtn("Payload","webhook-payload"),actionBtn("Retry","webhook-retry"))]));
-  return `<div class="grid-4" style="margin-bottom:14px">${[["Delivered","1,284","99.7% success rate","green"],["Pending","7","In delivery queue","cyan"],["Retrying","3","Next retry in 5 min","yellow"],["Dead Letter","1","Manual review required","red"]].map(metric).join("")}</div>${filterBar(["All statuses",["Delivered","Retrying","Dead Letter","Pending"]],["All event types",["tax_iq.ledger.posted","tax_iq.validation.warning","tax_iq.validation.failed","employee.tax_profile.validated"]])}${panel("Recent Events",table(["Event ID","Type","Tenant","Attempts","Status","Created","Delivered","Actions"],wRows),`<button class="btn primary" data-modal="webhook-retry">Retry Failed</button>`)}`;
+  const wRows = data.webhooks.map(e=>row([`<span class="mono">${e[0]}</span>`,e[1],e[2],`<span class="mono">${e[3]}</span>`,e[4],status(e[5]),e[6],e[7],e[8],rowActions(actionBtn("Payload","webhook-payload"),actionBtn("Retry","webhook-retry"))],{wrap:[3,8]}));
+  return `<div class="grid-4" style="margin-bottom:14px">${[["Delivered","1,284","99.7% success rate","green"],["Pending","7","In delivery queue","cyan"],["Retrying","3","Next retry in 5 min","yellow"],["Dead Letter","1","Manual review required","red"]].map(metric).join("")}</div>${filterBar(["All statuses",["Delivered","Retrying","Dead Letter","Pending"]],["All event types",["tax_iq.ledger.posted","tax_iq.validation.warning","tax_iq.validation.failed","employee.tax_profile.validated"]])}${panel("Recent Events",table(["Event ID","Type","Tenant","Endpoint URL","Attempts","Status","Created","Delivered","Last Error","Actions"],wRows),`<button class="btn primary" data-modal="webhook-retry">Retry Failed</button>`)}`;
 }
 
 /* ─── AUDIT LOG ─── */
 function renderAuditLog(){
   const logRows = data.auditLog.map(l=>row([l[0],l[1],`<span class="mono text-indigo-300">${l[2]}</span>`,l[3],`<span class="mono">${l[4]}</span>`,l[5]]));
-  return `${filterBar(["All resource types",["payroll_run","tax_ledger","employee","payout","receipt","share_link","webhook_event","tip_entry","report","connection"]],["All actions",["CREATED","UPDATED","FINALIZED","EXPORTED","POSTED","WEBHOOK_DELIVERED","WEBHOOK_FAILED","OCR_PROCESSED","TIP_CLASSIFIED"]],["All actors",["payroll_admin_44","finance_user","hr_user","owner_user","system"]])}<div style="display:flex;justify-content:flex-end;margin-bottom:10px">${actionBtn("Export Log","")}</div>${panel("Audit Log — Immutable Action Record",table(["Timestamp","Actor","Action","Resource Type","Resource ID","Detail"],logRows))}${panel("Audit Policy",`<div class="panel-body list">${listItem("Immutable records","Every create, update, delete, and export is logged. Records cannot be modified.","green")}${listItem("7-year retention","Audit logs are retained for 7 years per tax compliance requirements.","blue")}${listItem("Full PII export requires approval","Actor must be authorized merchant admin. Logged immediately.","yellow")}${listItem("Soft deletes only","No data is hard-deleted. Deletion events are logged with actor and reason.","red")}</div>`)}`;
+  const dateRange = `<div class="filter-strip"><label class="form-field compact"><span>From</span><input class="form-control" type="date" value="2026-06-18"></label><label class="form-field compact"><span>To</span><input class="form-control" type="date" value="2026-06-24"></label><button class="${ui.btn}" data-toast="Audit date range applied.">Apply Date Range</button></div>`;
+  return `${dateRange}${filterBar(["All resource types",["payroll_run","tax_ledger","employee","payout","receipt","share_link","webhook_event","tip_entry","report","connection"]],["All actions",["CREATED","UPDATED","FINALIZED","EXPORTED","POSTED","WEBHOOK_DELIVERED","WEBHOOK_FAILED","OCR_PROCESSED","TIP_CLASSIFIED"]],["All actors",["payroll_admin_44","finance_user","hr_user","owner_user","system"]])}<div style="display:flex;justify-content:flex-end;margin-bottom:10px">${actionBtn("Export Log","")}</div>${panel("Audit Log — Immutable Action Record",table(["Timestamp","Actor","Action","Resource Type","Resource ID","Detail"],logRows))}${panel("Audit Policy",`<div class="panel-body list">${listItem("Immutable records","Every create, update, delete, and export is logged. Records cannot be modified.","green")}${listItem("7-year retention","Audit logs are retained for 7 years per tax compliance requirements.","blue")}${listItem("Full PII export requires approval","Actor must be authorized merchant admin. Logged immediately.","yellow")}${listItem("Soft deletes only","No data is hard-deleted. Deletion events are logged with actor and reason.","red")}</div>`)}`;
 }
 
 /* ─── SETTINGS ─── */
+function renderBilling(){
+  const planRows = data.plans.map(p=>row([p[0],p[1],p[2],p[3],p[4],rowActions(actionBtn("Select","billing-plan"),actionBtn("Compare","billing-plan"))],{wrap:[3,4]}));
+  const invoiceRows = data.invoices.map(i=>row([`<span class="mono">${i[0]}</span>`,i[1],i[2],i[3],status(i[4]),i[5],rowActions(i[4]==="Pending approval" ? actionBtn("Approve","billing-approval") : actionBtn("View","billing-approval"),actionBtn("Download",""))],{wrap:2}));
+  return `<div class="grid-4" style="margin-bottom:14px">${[
+    ["Current Plan","Growth","Merchant subscription","green"],
+    ["MRR","$249","Per merchant location group","cyan"],
+    ["CPA Add-on","Approval required","No work starts before approval","yellow"],
+    ["API Partner","Future","Separate contract path","red"]
+  ].map(metric).join("")}</div><div class="grid-2" style="margin-bottom:14px">${panel("Business Model Decision",`<div class="panel-body list">${listItem("Primary model: merchant subscription","Merchant pays Tax IQ monthly for records, OCR, GPS, Tip Ledger, Tax Estimate, CPA package, and compliance workflow.","green")}${listItem("Secondary model: CPA marketplace referral","CPA/bookkeeper cost is shown as a separate estimate. Merchant must approve before work starts.","yellow")}${listItem("Partner model: API licensing","Payroll/accounting partners can buy embedded Tax IQ APIs later. This needs separate architecture and contract.","blue")}</div>`)}${panel("ICP Packaging",`<div class="panel-body list">${listItem("Best initial ICP","Vietnamese-owned nail salons and beauty businesses in the U.S. with staff payouts, tips, receipts, GPS, and CPA needs.","green")}${listItem("Owner UX","Simple dashboard, upload/share, CPA approval, billing, and guided next steps.","blue")}${listItem("Admin/CPA UX","Deeper ledger, payroll run, tax estimate, evidence, audit, and filing package workflows.","yellow")}</div>`)}</div>${panel("Plans",table(["Plan","Price","Limit","Included Features","Best For","Actions"],planRows),`<button class="btn primary" data-modal="billing-plan">Upgrade Plan</button>`)}<div class="grid-2" style="margin-top:14px">${panel("Invoices & Approvals",table(["Invoice","Period","Item","Amount","Status","Date","Actions"],invoiceRows))}${panel("Loading State Pattern",`<div class="panel-body">${skeletonPreview()}<div class="sub">Use this skeleton pattern when replacing mock data with API calls, especially tables, KPI cards, OCR queue, and billing invoices.</div></div>`)}</div>${panel("Production Billing Rules",`<div class="panel-body list">${listItem("Who can view billing","Merchant owner and tenant admin. CPA can only see CPA engagement cost, not merchant subscription billing.","green")}${listItem("Upgrade / downgrade","Show feature delta, prorated charge, renewal date, and Terms acceptance before plan change.","yellow")}${listItem("Invoice delivery","In-app invoice center plus email copy to billing contact. Every billing event goes to Audit Log.","blue")}${listItem("Compliance disclaimer","Billing approval is separate from tax/legal advice. CPA marketplace work requires explicit merchant approval.","red")}</div>`)}`;
+}
+
 function renderSettings(){
   const keyRows = data.apiKeys.map(k=>row([`<span class="mono">${k[0]}</span>`,k[1],`<span class="mono">${k[2]}</span>`,k[3],k[4],status(k[5]),k[6],rowActions(`<button class="${ui.btn}" data-rotate-key="${k[0]}">Rotate</button>`,`<button class="${ui.btn}" data-revoke-key="${k[0]}">Revoke</button>`)]));
   return `<div class="grid-2">${panel("US Payroll Scope",`<div class="panel-body"><div class="row"><span>Country</span><span>United States</span></div><div class="row"><span>Tax levels</span><span>Federal, State, Local</span></div><div class="row"><span>Employee forms</span><span>W-4, W-2</span></div><div class="row"><span>Employer returns</span><span>941, 940, SUTA</span></div></div>`)}${panel("Role & Access",table(["Permission","Payroll Admin","CPA","Auditor","Action"],[["Export data",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Finalize run",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")],["Review package",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Manage settings",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")]].map(row)))}${panel("Data Protection",`<div class="panel-body"><div class="row"><span>SSN/TIN storage</span><span>Tokenized</span></div><div class="row"><span>PII export approval</span><span>Required</span></div><div class="row"><span>Webhook signing</span><span>HMAC SHA-256</span></div><div class="row"><span>Audit retention</span><span>7 years</span></div></div>`,`${actionBtn("Configure","")}`)}${panel("Guided Help",`<div class="panel-body list">${listItem("First-time tour","Explain payroll, payout, Tax IQ, OCR, share links, GPS, CPA review.","blue")}${listItem("What next","Show recommended next action when a workflow is blocked.","green")}</div>`,`<button class="btn primary" data-toast="Tour started. Follow the guided steps.">Start Tour</button>`)}</div><div class="grid-2" style="margin-top:14px">${panel("API Keys",table(["Key ID","Name","Env","Scopes","Created","Status","Owner","Actions"],keyRows),`<button class="btn primary" data-modal="create-api-key">Create Key</button>`)}${panel("Notification Preferences",`<div class="panel-body">${[["Deposit due reminders","3-day and same-day alerts for scheduled tax deposits.",true],["Exception open alerts","Immediate alert when blocking exception is created.",true],["CPA request notifications","When CPA flags a missing record or requests files.",true],["Webhook dead letter alerts","When webhook delivery fails after max retries.",true],["Tip cap warnings","When worker approaches the $25,000 annual tip cap.",false]].map(([l,t,c])=>modalCheck(l,t,c)).join("")}</div>`,`<button class="btn primary" data-action-toast="Notification preferences saved.">Save Preferences</button>`)}</div>`;
@@ -436,15 +348,15 @@ function renderNotifications(){
   const nRows = data.notifications.map(n=>row([
     n.at,
     `<span class="flex items-center gap-2">${!n.read?`<span class="h-2 w-2 shrink-0 rounded-full bg-indigo-400 inline-block"></span>`:"<span class='h-2 w-2 inline-block'></span>"}<span>${n.title}</span></span>`,
-    n.body,status(n.severity),
+    n.body,status(n.severity),status(n.read ? "Read" : "Unread"),
     `<a class="${ui.btn}" href="${pageHref(n.resource)}">Open</a> ${n.read?"":`<button class="${ui.btn}" data-mark-read="${n.id}">Mark Read</button>`}`
-  ],{wrap:2}));
+  ],{wrap:2,className:n.read ? "read-row" : "unread-row"}));
   return `<div class="grid-4" style="margin-bottom:14px">${[
     ["Unread",String(unread),"Require attention","red"],
     ["Deposit Alerts","1","Jun 24 due today","yellow"],
     ["CPA Requests","1","Missing receipt flagged","cyan"],
     ["System Events","2","Webhook + exception","green"]
-  ].map(metric).join("")}</div><div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="${ui.btn}" data-mark-all-read>Mark All Read</button></div>${filterBar(["All severities",["High","Medium","Low"]],["All types",["DEPOSIT_ALERT","EXCEPTION_OPEN","CPA_REQUEST","TIN_PENDING","WEBHOOK_DEAD_LETTER","TIP_CAP"]])}${panel("Notification Center",table(["Time","Title","Detail","Severity","Actions"],nRows))}`;
+  ].map(metric).join("")}</div><div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="${ui.btn}" data-mark-all-read>Mark All Read</button></div>${filterBar(["Read status",["Unread","Read"]],["All severities",["High","Medium","Low"]],["All types",["DEPOSIT_ALERT","EXCEPTION_OPEN","CPA_REQUEST","TIN_PENDING","WEBHOOK_DEAD_LETTER","TIP_CAP"]])}${panel("Notification Center",table(["Time","Title","Detail","Severity","Read Status","Actions"],nRows))}`;
 }
 
 /* ─── UI HELPERS ─── */
@@ -603,6 +515,29 @@ const modalCopy = {
         modalField("Next deposit due","Jun 24, 2026")
       ])),
       modalSection("Strict Mode", `<div class="list">${modalCheck("Require TIN verification","Block finalization if TIN is unverified.")}${modalCheck("Require W-4 current year","Warn if employee W-4 is prior year.")}</div>`)
+    ].join("")
+  },
+  "employer-detail":{
+    title:"Employer Detail",
+    body:"View employer profile, locations, registrations, contacts, payroll history, and recent audit events.",
+    cta:"Close",
+    content:()=>[
+      modalSection("Business Profile", table(["Field","Value"],[
+        row(["Legal name","Acme Manufacturing LLC"]),
+        row(["Employer ID","biz_789"]),
+        row(["EIN","**-***6789"]),
+        row(["Industry","Manufacturing"]),
+        row(["Primary address","1200 Commerce Park Dr, Austin, TX"]),
+        row(["Contact person","Patricia Adams — payroll_admin@acme.example"])
+      ])),
+      modalSection("Registration Footprint", table(["Jurisdiction","Registration","Deposit Schedule","Next Due","Owner"],[
+        row(["US-FED",status("Active"),"Semiweekly","Jun 24, 2026","Payroll"]),
+        row(["US-TX",status("Active"),"Quarterly","Jul 31, 2026","Tax"]),
+        row(["US-CA",status("Review"),"Semiweekly","Jun 24, 2026","CPA"]),
+        row(["US-NY",status("Missing setup"),"Monthly","Jul 15, 2026","Tax"])
+      ])),
+      modalSection("Recent Payroll Runs", table(["Run","Period","Gross","Tax","Status"],data.runs.slice(0,4).map(r=>row([`<span class="mono">${r[0]}</span>`,r[1],r[5],r[6],status(r[8])])))),
+      modalSection("Recent Activity", `<div class="list">${listItem("Payroll run finalized","pr_2026_06_15 was finalized and posted to ledger.","green")}${listItem("CA registration review","CPA requested confirmation for CA work location.","yellow")}${listItem("Connection healthy","Nexora Touch Payroll synced 2 min ago.","blue")}</div>`)
     ].join("")
   },
   "employer-registrations":{
@@ -1924,6 +1859,38 @@ const modalCopy = {
     ].join("")
   },
 
+  /* BILLING MODALS */
+  "billing-plan":{
+    title:"Plan & Feature Packaging",
+    body:"Compare subscription plans and confirm which revenue model the product should support first.",
+    cta:"Request Upgrade",
+    content:()=>[
+      modalSection("Recommended Business Model", table(["Model","Who Pays","When To Use","Architecture Impact"],[
+        row(["Merchant subscription","Business owner / merchant","MVP and vertical nail/beauty rollout","Tenant billing, plan gates, invoice center"],{wrap:[2,3]}),
+        row(["CPA marketplace referral","Merchant approves CPA estimate","CPA review and filing package add-on","CPA engagement approval, referral fee tracking"],{wrap:[2,3]}),
+        row(["Partner API licensing","Payroll/accounting partner","Embedded Tax IQ in another platform","API metering, partner contract, webhook SLAs"],{wrap:[2,3]})
+      ])),
+      modalSection("Plan Comparison", table(["Plan","Price","Limit","Included Features","Best For"],data.plans.map(p=>row(p,{wrap:[3,4]})))),
+      modalSection("Upgrade Approval", `<div class="list">${modalCheck("Show feature delta","Merchant sees what unlocks before upgrade.")}${modalCheck("Show prorated charge","Billing engine calculates current-cycle difference.")}${modalCheck("Require Terms acceptance","Plan change is audit logged with actor, timestamp, and accepted terms version.")}</div>`)
+    ].join("")
+  },
+  "billing-approval":{
+    title:"Billing Approval",
+    body:"Review a subscription invoice or CPA estimate before approving payment.",
+    cta:"Approve",
+    content:()=>[
+      modalSection("Invoice / Estimate", table(["Field","Value"],[
+        row(["Invoice","inv_cpa_001"]),
+        row(["Item","Nguyen CPA Group retainer"]),
+        row(["Amount","$250.00"]),
+        row(["Status",status("Pending approval")]),
+        row(["Approver","Merchant owner"])
+      ])),
+      modalSection("Approval Rules", `<div class="list">${listItem("Merchant approval required","No CPA work starts until owner accepts the estimate or retainer.","yellow")}${listItem("Audit logged","Approval, rejection, and payment events are written to immutable audit log.","blue")}${listItem("Separate from subscription","CPA engagement cost is separate from Tax IQ monthly plan.","green")}</div>`),
+      modalSection("Approval Note", modalField("Note","Approve retainer for Q2 CPA package review.","textarea"))
+    ].join("")
+  },
+
   /* API KEY MODAL */
   "create-api-key":{
     title:"Create API Key",
@@ -2033,6 +2000,12 @@ document.addEventListener("click", event=>{
   if(copyEl){
     navigator.clipboard?.writeText(copyEl.dataset.copy).catch(()=>{});
     toast("Copied to clipboard: "+copyEl.dataset.copy.slice(0,40));
+  }
+  // Publish draft share link
+  const publishShare = event.target.closest("[data-publish-share]");
+  if(publishShare){
+    const s = data.shareLinks.find(x=>x[0]===publishShare.dataset.publishShare);
+    if(s){ s[4]="Active"; renderPage(); toast("Share link published: "+s[0]); }
   }
   // Revoke connection
   const revokeConn = event.target.closest("[data-revoke-conn]");

@@ -30,7 +30,8 @@ const TaxIQLayout = (() => {
     gps:"fa-solid fa-location-dot",           cpa:"fa-solid fa-user-tie",
     "tip-ledger":"fa-solid fa-coins",         "tax-estimate":"fa-solid fa-calculator",
     webhooks:"fa-solid fa-globe",             "audit-log":"fa-solid fa-magnifying-glass",
-    notifications:"fa-solid fa-bell",         settings:"fa-solid fa-gear"
+    notifications:"fa-solid fa-bell",         billing:"fa-solid fa-credit-card",
+    settings:"fa-solid fa-gear"
   };
 
   const pages = {
@@ -57,6 +58,7 @@ const TaxIQLayout = (() => {
     webhooks:{title:"Webhooks", file:"webhooks.html", subtitle:"Outbound event delivery monitor."},
     "audit-log":{title:"Audit Log", file:"audit-log.html", subtitle:"Immutable action log — every view, change, export, and system event."},
     notifications:{title:"Notifications", file:"notifications.html", subtitle:"Alerts, deposit reminders, CPA requests, and compliance notices."},
+    billing:{title:"Billing & Plans", file:"billing.html", subtitle:"Merchant subscription, feature packaging, invoices, and upgrade path."},
     settings:{title:"Settings", file:"settings.html", subtitle:"Roles, security, data retention, and tenant controls."}
   };
 
@@ -64,7 +66,7 @@ const TaxIQLayout = (() => {
     ["Overview",["dashboard","analytics"]],
     ["Payroll",["employers","employees","payroll-runs","payouts","connections"]],
     ["Tax IQ",["ledger","exceptions","jurisdictions","forms","ocr","share-links","gps","cpa","tip-ledger","tax-estimate","ai-advisor"]],
-    ["System",["webhooks","audit-log","notifications","settings"]]
+    ["System",["webhooks","audit-log","notifications","billing","settings"]]
   ];
 
   function pageHref(id){

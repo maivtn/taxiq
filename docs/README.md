@@ -14,6 +14,7 @@ TaxIQ / Nexora Touch prototype.
 | `advisory-ai-cfo-product-ideas.md` | Backlog for AI Advisor, OCR Vault, Share Links, GPS Mileage, CPA Review, and Deduction Checklist ideas. | These are separate modules, not one combined screen. |
 | `tax-iq-feature-description.md` | Product feature description for the current Tax IQ demo. | Covers business goals, target users, screen map, key workflows, permissions, data objects, production requirements, and demo status. |
 | `tax-iq-feature-description-vi.md` | Vietnamese feature description for the current Tax IQ demo. | Includes business explanation, module details, production notes, and a glossary explaining payroll/tax/CPA/technical keywords. |
+| `tax-iq-stakeholder-ba-dev-next-steps-vi.md` | Vietnamese stakeholder/BA/dev decision and backlog document. | Captures business model, ICP, BA user stories, payroll state machine, permission matrix, billing spec, dev backlog, sprint priorities, and glossary. |
 
 ## Business Scope Captured
 
@@ -28,6 +29,7 @@ TaxIQ / Nexora Touch prototype.
 - Current layout behavior: sidebar uses Font Awesome icons, supports desktop collapse/expand with `localStorage`, and switches to a horizontal mobile nav.
 - Tax IQ workspace grouping: OCR Vault, Share Links, GPS Mileage, CPA Review, Tip Ledger, Tax Estimate, and AI Advisor are separate Tax IQ modules with their own workflows and modals.
 - System support screens: Webhooks, Audit Log, Notifications, Settings, API Keys, and connection health support integration monitoring and operational review.
+- Billing & Plans now documents the proposed merchant subscription model, CPA cost approval, partner API future path, invoices, upgrade rules, and loading state pattern.
 - OCR Vault scope now includes local-browser receipt/bill capture, Tesseract OCR extraction, processing queue, low-confidence review, batch approval, soft delete, and CPA export.
 - Vietnamese documentation: the feature description now includes a glossary for specialized payroll, tax, CPA, OCR, GPS, AI, privacy, and integration keywords.
 
@@ -43,3 +45,4 @@ TaxIQ / Nexora Touch prototype.
 - Audit Log should remain append-only/immutable in production, including soft-delete events for tax records, receipt records, trip records, and tip entries.
 - Use `tax-iq-feature-description.md` as the product overview before drilling into screen-level implementation details.
 - Use `tax-iq-feature-description-vi.md` for Vietnamese stakeholder review, business explanation, demo preparation, and terminology alignment.
+- Use `tax-iq-stakeholder-ba-dev-next-steps-vi.md` to align stakeholder, BA, and dev priorities before the next sprint.
