@@ -66,10 +66,11 @@
     .check-title{font-size:12px;font-weight:850}.check-text{margin-top:3px;color:var(--muted);font-size:11px;line-height:1.45}.check-meta{margin-top:4px;color:var(--dim);font-size:10px}
     .timeline{display:grid;gap:9px}.audit{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;padding:9px 0;border-bottom:1px solid #20283a}.audit:last-child{border-bottom:0}.audit-time{color:var(--dim);font-size:10px;white-space:nowrap}.audit-body{font-size:12px;color:#cbd6e4}.audit-body strong{color:var(--text)}
     .field-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.field{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px}.field span{display:block;color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:.06em}.field strong{display:block;margin-top:5px;font-size:13px}
+    .form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.form-control{display:grid;gap:6px}.form-control label{color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:850}.form-control input,.form-control select{height:36px;width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:0 10px;font-size:12px;outline:0}.form-control input::placeholder{color:var(--dim)}.form-control input:focus,.form-control select:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(99,102,241,.18)}
     .mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.permission{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #20283a;font-size:12px}.permission:last-child{border-bottom:0}
     .role-select{height:32px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:0 9px;font-size:12px}
     @media (max-width:1100px){.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}.split,.detail,.profile{grid-template-columns:1fr}.tools{flex-wrap:wrap;justify-content:flex-end}.topbar{height:auto;min-height:64px;padding:12px 16px}.search{min-width:180px}}
-    @media (max-width:760px){body{overflow:auto}.app{display:block;height:auto}.sidebar{width:auto;height:auto}.nav{display:grid;grid-template-columns:repeat(2,1fr);max-height:none}.group-label{grid-column:1/-1}.main{min-height:100vh}.grid-4,.grid-3,.grid-2,.field-grid,.mini-grid{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}.tools{width:100%;justify-content:flex-start}.search{width:100%}.content{padding:14px}.steps{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:760px){body{overflow:auto}.app{display:block;height:auto}.sidebar{width:auto;height:auto}.nav{display:grid;grid-template-columns:repeat(2,1fr);max-height:none}.group-label{grid-column:1/-1}.main{min-height:100vh}.grid-4,.grid-3,.grid-2,.field-grid,.form-grid,.mini-grid{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}.tools{width:100%;justify-content:flex-start}.search{width:100%}.content{padding:14px}.steps{grid-template-columns:repeat(2,1fr)}}
   </style>
 </head>
 <body>
@@ -261,7 +262,7 @@
       {name:"AI CFO", status:"Phase 2", owner:"Owner", detail:"Provide financial advice prompts, cash-flow guidance, tax planning reminders, and questions to ask the CPA."},
       {name:"CPA Review Portal", status:"Phase 1.2", owner:"CPA", detail:"Let a CPA connect, review merchant records, comment, request missing evidence, and prepare filing packages."},
       {name:"Share Link / QR Profile", status:"Phase 1.2", owner:"Owner", detail:"Create expiring or non-expiring links for workers, friends, CPA, or reviewers to upload/review selected information."},
-      {name:"Mileage GPS", status:"Phase 1.2", owner:"Owner", detail:"Track business trips from home to shop, client, bank, supply store, or worksite for mileage deduction support."},
+      {name:"Mileage GPS", status:"Phase 1.2", owner:"Owner", detail:"Track business trips from point A to point B, save route, miles, time, vehicle, and purpose for mileage deduction support."},
       {name:"Industry Deduction Checklist", status:"Phase 1.3", owner:"AI", detail:"Generate industry-specific reminders so merchants do not forget common deductible expenses."}
     ];
 
@@ -289,7 +290,7 @@
       {field:"Receipt image and OCR fields", purpose:"Preserve bills and suggest deduction category.", required:"When expense exists"},
       {field:"Payment method and confirmation", purpose:"Audit Zelle, Venmo, PayPal, cash, check, and ACH records.", required:"Yes"},
       {field:"Business purpose and category", purpose:"Explain deduction or income treatment for CPA review.", required:"Yes"},
-      {field:"GPS trip start/end and mileage", purpose:"Support business mileage deduction records.", required:"When mileage is claimed"},
+      {field:"GPS trip start/end and mileage", purpose:"Save point A to point B route, miles, time, vehicle, and purpose for deduction review.", required:"When mileage is claimed"},
       {field:"Share link consent and expiration", purpose:"Control who can review or upload information.", required:"When sharing"}
     ];
 
@@ -310,6 +311,8 @@
       {id:"trip_002", route:"Salon to supply store", miles:7.8, purpose:"Business supplies", status:"Deduction candidate"},
       {id:"trip_003", route:"Salon to bank", miles:4.1, purpose:"Cash deposit", status:"Deduction candidate"}
     ];
+
+    let activeMileageTrip = null;
 
     const deductionChecklists = [
       {industry:"Nail salon", checklist:"Supplies, booth rent, merchant fees, towels, uniforms, licenses, insurance, software, marketing, mileage."},
@@ -332,6 +335,35 @@
       return !q || JSON.stringify(item).toLowerCase().includes(q);
     }
     function sum(arr,key){return arr.reduce((total,item)=>total+(Number(item[key])||0),0);}
+    function gpsToRad(value){return value * Math.PI / 180;}
+    function gpsPointLabel(point){
+      if(!point) return "Waiting for GPS";
+      if(point.label) return point.label;
+      if(point.lat == null || point.lng == null) return "Manual location";
+      return `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
+    }
+    function gpsDistanceMiles(points){
+      const usable = points.filter(point => point && point.lat != null && point.lng != null && !point.manual);
+      if(usable.length < 2) return 0;
+      let total = 0;
+      for(let i = 1; i < usable.length; i += 1){
+        const prev = usable[i - 1];
+        const next = usable[i];
+        const dLat = gpsToRad(next.lat - prev.lat);
+        const dLng = gpsToRad(next.lng - prev.lng);
+        const a = Math.sin(dLat / 2) ** 2 + Math.cos(gpsToRad(prev.lat)) * Math.cos(gpsToRad(next.lat)) * Math.sin(dLng / 2) ** 2;
+        total += 3958.8 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      }
+      return Math.round(total * 10) / 10;
+    }
+    function manualMileagePoint(label){
+      return {label, manual:true, at:new Date().toLocaleString()};
+    }
+    function stopMileageWatch(){
+      if(activeMileageTrip && activeMileageTrip.watchId != null && navigator.geolocation){
+        navigator.geolocation.clearWatch(activeMileageTrip.watchId);
+      }
+    }
     function avg(arr,key){
       const values = arr.map(item => Number(item[key])).filter(Number.isFinite);
       return values.length ? Math.round(values.reduce((a,b)=>a+b,0)/values.length) : 0;
@@ -679,16 +711,49 @@
 
     function renderGps(){
       setTitle("GPS Mileage","Track business trips and mileage evidence for deduction review.");
+      const activeMiles = activeMileageTrip ? gpsDistanceMiles(activeMileageTrip.points) || activeMileageTrip.expectedMiles || 0 : 0;
+      const totalMiles = Math.round((sum(mileageTrips,"miles") + activeMiles) * 10) / 10;
       const mileageRows = mileageTrips.filter(matches).map(t => `<tr><td class="mono">${t.id}</td><td>${t.route}</td><td>${t.miles}</td><td>${t.purpose}</td><td>${statusPill(t.status)}</td></tr>`);
-      const fieldRows = infoCollectionFields.filter(f => f.field === "GPS trip start/end and mileage").filter(matches).map(f => `<tr><td>${f.field}</td><td>${f.purpose}</td><td>${f.required}</td></tr>`);
+      const routeField = {field:"Point A to Point B route", purpose:"When Stop is pressed at the destination, save origin, destination, miles, time, vehicle, and purpose.", required:"Yes"};
+      const fieldRows = [
+        ...infoCollectionFields.filter(f => f.field === "GPS trip start/end and mileage").filter(matches),
+        ...(matches(routeField) ? [routeField] : [])
+      ].map(f => `<tr><td>${f.field}</td><td>${f.purpose}</td><td>${f.required}</td></tr>`);
+      const setupPanel = activeMileageTrip ? "" : `
+        <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>Start Point A to Point B Trip</h3></div><div class="panel-body">
+          <div class="form-grid">
+            <div class="form-control"><label for="mileageStartLabel">Point A</label><input id="mileageStartLabel" value="Current location" placeholder="Home, salon, shop"></div>
+            <div class="form-control"><label for="mileageEndLabel">Point B</label><input id="mileageEndLabel" value="Destination" placeholder="Client, supply store, bank"></div>
+            <div class="form-control"><label for="mileageExpectedMiles">Expected miles</label><input id="mileageExpectedMiles" type="number" min="0" step="0.1" value="0"></div>
+            <div class="form-control"><label for="mileagePurpose">Business purpose</label><select id="mileagePurpose"><option>Business supplies</option><option>Client visit</option><option>Cash deposit</option><option>Job site</option><option>CPA meeting</option><option>Other business trip</option></select></div>
+            <div class="form-control"><label for="mileageVehicle">Vehicle</label><input id="mileageVehicle" value="Business vehicle"></div>
+            <div class="form-control"><label>Tracking rule</label><input value="Start at A, stop at B to save" readonly></div>
+          </div>
+          <div class="notice" style="margin-top:12px;margin-bottom:0">Workflow: press Start at point A, drive to point B, then press Stop. Tax IQ saves the trip into the table for deduction and CPA review.</div>
+        </div></div>`;
+      const latestPoint = activeMileageTrip ? activeMileageTrip.points[activeMileageTrip.points.length - 1] : null;
+      const activePanel = activeMileageTrip ? `
+        <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>Active Mileage Capture</h3>${statusPill("Tracking")}</div><div class="panel-body">
+          <div class="field-grid">
+            <div class="field"><span>Trip ID</span><strong class="mono">${activeMileageTrip.id}</strong></div>
+            <div class="field"><span>Point A</span><strong>${gpsPointLabel(activeMileageTrip.startPoint)}</strong></div>
+            <div class="field"><span>Current / Point B</span><strong>${gpsPointLabel(latestPoint)}</strong></div>
+            <div class="field"><span>Miles so far</span><strong>${activeMiles}</strong></div>
+            <div class="field"><span>Purpose</span><strong>${activeMileageTrip.purpose}</strong></div>
+            <div class="field"><span>GPS status</span><strong>${activeMileageTrip.gpsStatus}</strong></div>
+          </div>
+          <div class="notice" style="margin-top:12px;margin-bottom:0">When you arrive at point B, press Stop Trip at Point B. The system will save route, miles, start time, stop time, vehicle, and purpose.</div>
+        </div></div>` : "";
       document.getElementById("screen-gps").innerHTML = `
         <div class="grid-4" style="margin-bottom:14px">
           <div class="metric green card"><div class="label">Trips</div><div class="value">${mileageTrips.length}</div><div class="sub">Tracked or pending review</div></div>
-          <div class="metric cyan card"><div class="label">Total Miles</div><div class="value">${sum(mileageTrips,"miles")}</div><div class="sub">Prototype sample</div></div>
+          <div class="metric cyan card"><div class="label">Total Miles</div><div class="value">${totalMiles}</div><div class="sub">Saved plus active capture</div></div>
           <div class="metric yellow card"><div class="label">Deduction Candidates</div><div class="value">${mileageTrips.filter(t=>t.status==="Deduction candidate").length}</div><div class="sub">CPA should review</div></div>
           <div class="metric red card"><div class="label">Policy Checks</div><div class="value">${mileageTrips.filter(t=>t.status.includes("check")).length}</div><div class="sub">Ambiguous route purpose</div></div>
         </div>
-        <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>GPS Mileage Tracker</h3><button class="btn primary" data-action="start-mileage">Start Trip</button></div>${table(["Trip ID","Route","Miles","Purpose","Status"],mileageRows)}</div>
+        ${setupPanel}
+        ${activePanel}
+        <div class="panel" style="margin-bottom:14px"><div class="panel-head"><h3>GPS Mileage Tracker</h3><button class="btn primary" data-action="start-mileage">${activeMileageTrip ? "Stop Trip at Point B" : "Start Trip at Point A"}</button></div>${table(["Trip ID","Route","Miles","Purpose","Status"],mileageRows)}</div>
         <div class="panel"><div class="panel-head"><h3>Mileage Data To Collect</h3></div>${table(["Field","Why It Matters","Required"],fieldRows)}</div>`;
     }
 
@@ -924,10 +989,100 @@
         return;
       }
       if(action === "start-mileage"){
+        if(activeMileageTrip){
+          stopMileageWatch();
+          const lastPoint = activeMileageTrip.points[activeMileageTrip.points.length - 1];
+          let finalPoint;
+          if(lastPoint && !lastPoint.manual){
+            finalPoint = {...lastPoint, label:activeMileageTrip.endLabel || "Point B"};
+            if(activeMileageTrip.points.length > 1){
+              activeMileageTrip.points[activeMileageTrip.points.length - 1] = finalPoint;
+            } else {
+              activeMileageTrip.points.push(finalPoint);
+            }
+          } else {
+            finalPoint = manualMileagePoint(activeMileageTrip.endLabel || "Point B: destination stop");
+            activeMileageTrip.points.push(finalPoint);
+          }
+
+          const gpsMiles = gpsDistanceMiles(activeMileageTrip.points);
+          const miles = gpsMiles || activeMileageTrip.expectedMiles || 0;
+          const route = `${gpsPointLabel(activeMileageTrip.startPoint)} to ${gpsPointLabel(finalPoint)}`;
+          const savedTrip = {
+            id: activeMileageTrip.id,
+            route,
+            miles,
+            purpose: activeMileageTrip.purpose,
+            status: miles > 0 ? "Deduction candidate" : "Needs CPA policy check",
+            pointA: gpsPointLabel(activeMileageTrip.startPoint),
+            pointB: gpsPointLabel(finalPoint),
+            vehicle: activeMileageTrip.vehicle,
+            started: activeMileageTrip.startedAt,
+            stopped: new Date().toLocaleString()
+          };
+          mileageTrips.unshift(savedTrip);
+          addAudit(savedTrip.id, "Stopped mileage capture", `Saved route ${savedTrip.pointA} to ${savedTrip.pointB} with ${savedTrip.miles} miles.`);
+          activeMileageTrip = null;
+          toast(`Trip saved: ${route}`);
+          render();
+          return;
+        }
+
         const id = `trip_${String(mileageTrips.length + 1).padStart(3,"0")}`;
-        mileageTrips.unshift({id, route:"GPS capture in progress", miles:0, purpose:"Business trip", status:"Tracking"});
-        addAudit(id, "Started mileage capture", "GPS mileage trip opened for deduction review.");
-        toast("Mileage tracking started.");
+        const startLabel = document.getElementById("mileageStartLabel")?.value.trim() || "Point A: current location";
+        const endLabel = document.getElementById("mileageEndLabel")?.value.trim() || "Point B: destination";
+        const expectedMiles = Number(document.getElementById("mileageExpectedMiles")?.value || 0);
+        const purpose = document.getElementById("mileagePurpose")?.value || "Business trip";
+        const vehicle = document.getElementById("mileageVehicle")?.value.trim() || "Business vehicle";
+        const startPoint = manualMileagePoint(startLabel);
+        activeMileageTrip = {
+          id,
+          startLabel,
+          endLabel,
+          expectedMiles:Number.isFinite(expectedMiles) ? Math.max(expectedMiles, 0) : 0,
+          purpose,
+          vehicle,
+          startedAt:new Date().toLocaleString(),
+          startPoint,
+          points:[startPoint],
+          gpsStatus:navigator.geolocation ? "Requesting GPS permission" : "Manual mode: GPS unavailable",
+          watchId:null
+        };
+
+        if(navigator.geolocation){
+          try{
+            activeMileageTrip.watchId = navigator.geolocation.watchPosition(position => {
+              if(!activeMileageTrip || activeMileageTrip.id !== id) return;
+              const point = {
+                lat:position.coords.latitude,
+                lng:position.coords.longitude,
+                accuracy:Math.round(position.coords.accuracy || 0),
+                at:new Date(position.timestamp).toLocaleString()
+              };
+              if(activeMileageTrip.points.length === 1 && activeMileageTrip.points[0].manual){
+                point.label = activeMileageTrip.startLabel;
+                activeMileageTrip.points[0] = point;
+                activeMileageTrip.startPoint = point;
+              } else {
+                activeMileageTrip.points.push(point);
+              }
+              activeMileageTrip.gpsStatus = "Tracking live GPS";
+              if(state.screen === "gps" && activeMileageTrip.points.length <= 2){
+                render();
+              }
+            }, () => {
+              if(!activeMileageTrip || activeMileageTrip.id !== id) return;
+              activeMileageTrip.gpsStatus = "Manual mode: GPS permission denied";
+              toast("GPS permission denied. Expected miles will be used when stopped.");
+              render();
+            }, {enableHighAccuracy:true, maximumAge:10000, timeout:12000});
+          } catch(error){
+            activeMileageTrip.gpsStatus = "Manual mode: GPS unavailable";
+          }
+        }
+
+        addAudit(id, "Started mileage capture", `Started point A to point B trip from ${startLabel}.`);
+        toast("Mileage tracking started at Point A.");
         render();
         return;
       }

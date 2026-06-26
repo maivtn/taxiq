@@ -68,7 +68,7 @@ html/
   - Batch approve high-confidence receipts
   - Create share link
   - View QR / revoke share link
-  - Start GPS trip
+  - Start GPS trip at point A, stop at point B, and save route/miles to the tracker
   - Invite CPA
   - Generate report package
   - Add and review tips for No Tax on Tips support

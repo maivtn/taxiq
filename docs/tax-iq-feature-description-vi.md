@@ -3,7 +3,7 @@
 Phiên bản: Phase 1 Demo  
 Sản phẩm: Nexora Touch / Tax IQ  
 Phạm vi áp dụng: U.S. payroll, payout, lưu trữ chứng từ thuế, Tip Ledger, Tax Estimate, CPA review, AI Advisor  
-Ngày cập nhật: 2026-06-25
+Ngày cập nhật: 2026-06-26
 
 ## 1. Mục Đích Của Tài Liệu
 
@@ -220,6 +220,18 @@ Yêu cầu bảo mật:
 
 GPS Mileage dùng để ghi lại các chuyến đi liên quan đến business.
 
+Mục đích cuối của GPS Mileage là lưu lại bằng chứng tuyến đường từ điểm A đến điểm B. User bấm Start khi bắt đầu đi ở điểm A, đến nơi ở điểm B thì bấm Stop. Khi bấm Stop, hệ thống lưu lại route A → B, số miles, thời gian bắt đầu/kết thúc, xe sử dụng, business purpose và trạng thái để CPA review.
+
+Flow hiện tại trong demo:
+
+1. User mở GPS Mileage và bấm Start Trip.
+2. Nhập Point A, Point B, vehicle, trip type, expected miles fallback và business purpose.
+3. Bấm Start Tracking at Point A.
+4. Browser bắt đầu ghi GPS points nếu user cho quyền location.
+5. Khi đến điểm B, user bấm Stop Trip at Point B & Save.
+6. Hệ thống tạo trip mới trong bảng GPS Mileage Tracker.
+7. Nếu browser không cho GPS permission, hệ thống vẫn cho lưu bằng nhãn Point A/Point B và expected miles fallback để CPA review.
+
 Thông tin cần collect:
 
 - Xe nào được dùng.
@@ -228,7 +240,8 @@ Thông tin cần collect:
 - Số miles.
 - Mục đích chuyến đi.
 - Người tạo trip.
-- Evidence GPS/route nếu có.
+- GPS points, route A → B và evidence GPS/route nếu có.
+- Expected miles fallback nếu GPS không khả dụng.
 - CPA review flag nếu route có thể gây nhầm lẫn giữa business trip và commute.
 
 Ví dụ:
@@ -461,7 +474,7 @@ Nguyên tắc bảo mật:
 | receipt_records | Receipt, bill, invoice, payout proof, raw OCR text, confidence, tax amount, receipt number và kết quả review. |
 | ocr_jobs | Trạng thái OCR processing, queued time, source file và estimated processing time. |
 | share_links | Link/QR, scope, expiration, passcode, status. |
-| mileage_trips | Trip GPS, miles, route, purpose và review status. |
+| mileage_trips | Trip GPS, point A, point B, GPS points, miles, route, purpose, start/stop time và review status. |
 | cpa_connections | Thông tin CPA/bookkeeper được kết nối. |
 | cpa_requests | Yêu cầu bổ sung file/comment từ CPA. |
 | tip_entries | Dòng tip theo ngày, method, source, proof và qualified status. |

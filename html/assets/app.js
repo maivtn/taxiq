@@ -170,6 +170,29 @@ const data = {
   ]
 };
 
+let activeGpsTrip = null;
+
+function gpsToRad(value){return value * Math.PI / 180;}
+function gpsDistanceMiles(points){
+  if(!points || points.length < 2) return 0;
+  const radiusMiles = 3958.8;
+  let total = 0;
+  for(let i = 1; i < points.length; i++){
+    const a = points[i - 1], b = points[i];
+    const dLat = gpsToRad(b.lat - a.lat);
+    const dLon = gpsToRad(b.lng - a.lng);
+    const lat1 = gpsToRad(a.lat);
+    const lat2 = gpsToRad(b.lat);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+    total += radiusMiles * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+  }
+  return total;
+}
+function gpsPointLabel(point){
+  if(!point) return "Waiting for GPS";
+  return point.label || `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
+}
+
 function statusClass(v){return /posted|delivered|ready|active|verified|connected|confirmed|extracted|calculated|candidate|qualified|paid/i.test(v) ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 before:bg-emerald-400" : /review|pending|draft|retry|requested|watch|needs|invited|medium/i.test(v) ? "border-amber-500/30 bg-amber-500/10 text-amber-300 before:bg-amber-400" : /failed|dead|missing|open|high|cancelled/i.test(v) ? "border-rose-500/30 bg-rose-500/10 text-rose-300 before:bg-rose-400" : "border-indigo-500/30 bg-indigo-500/10 text-indigo-300 before:bg-indigo-400";}
 function status(v){return `<span class="status inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[11px] font-black before:block before:h-1.5 before:w-1.5 before:rounded-full ${statusClass(v)}">${v}</span>`;}
 function metric([label,value,sub,color]){return `<div class="${ui.card} border-t-4 ${tones[color] || tones.blue} p-4"><div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div></div>`;}
@@ -361,7 +384,11 @@ function renderShareLinks(){
 /* ─── GPS MILEAGE ─── */
 function renderGps(){
   const tripRows = data.trips.map(t=>row([`<span class="mono">${t[0]}</span>`,...t.slice(1,4),status(t[4]),rowActions(actionBtn("View","view-trip"),actionBtn("Edit","edit-trip"),actionBtn("Mark Reviewed",""),actionBtn("Delete","delete-trip"))]));
-  return `<div class="grid-4" style="margin-bottom:14px">${[["Trips","3","Tracked or pending review","green"],["Total Miles","30.3","Prototype sample","cyan"],["Deduction Candidates","2","CPA should review","yellow"],["Policy Checks","1","Ambiguous route purpose","red"]].map(metric).join("")}</div>${panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">Start Trip</button>`)}${panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence.","When mileage is claimed"],["Business purpose","Explains deduction relevance.","Yes"],["Vehicle profile","Supports owner/worker mileage records.","Recommended"]].map(row)))}`;
+  const totalMiles = data.trips.reduce((sum,t)=>sum + (parseFloat(t[2]) || 0), 0).toFixed(1);
+  const candidateCount = data.trips.filter(t=>/candidate/i.test(t[4])).length;
+  const policyCount = data.trips.filter(t=>/check|review/i.test(t[4])).length;
+  const activePanel = activeGpsTrip ? panel("Active Trip Tracking",`<div class="panel-body list">${listItem("Tracking in progress",`${activeGpsTrip.startLabel} → destination pending. ${activeGpsTrip.points.length} GPS point(s) captured so far.`,"green")}${listItem("Stop to save A → B route","Open Start Trip and press Stop Trip when you arrive at the destination.","blue")}</div>`,`<button class="btn primary" data-modal="trip">Stop Trip</button>`) : "";
+  return `<div class="grid-4" style="margin-bottom:14px">${[[ "Trips",String(data.trips.length),"Tracked or pending review","green"],["Total Miles",totalMiles,"Current demo records","cyan"],["Deduction Candidates",String(candidateCount),"CPA should review","yellow"],["Policy Checks",String(policyCount),"Ambiguous route purpose","red"]].map(metric).join("")}</div>${activePanel}${panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button>`)}${panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence.","When mileage is claimed"],["Point A → Point B route","Saves the route when user presses Stop at destination.","Yes"],["Business purpose","Explains deduction relevance.","Yes"],["Vehicle profile","Supports owner/worker mileage records.","Recommended"]].map(row)))}`;
 }
 
 /* ─── CPA REVIEW ─── */
@@ -1351,24 +1378,127 @@ const modalCopy = {
   /* GPS MILEAGE MODALS */
   trip:{
     title:"Start GPS Trip",
-    body:"Capture start/end, route, miles, vehicle, and business purpose for deduction review.",
-    cta:"Start Tracking",
-    content:()=>[
-      modalSection("Trip Setup", modalGrid([
-        modalField("Vehicle","2022 Toyota Sienna"),
-        modalSelect("Trip type",[["Business supplies",true],["Client visit"],["Bank deposit"],["Commute review"],["Other"]]),
-        modalField("Start location","Salon"),
-        modalField("End location","Beauty Supply Warehouse"),
-        modalField("Start time","Now"),
-        modalField("Expected miles","7.8")
-      ])),
-      modalSection("Deduction Evidence", `<div class="list">${modalCheck("Capture GPS start/end","Required for route evidence.")}${modalCheck("Require business purpose","Needed before CPA package export.")}${modalCheck("Flag commute-like routes","Trips from home to regular workplace need CPA review.", false)}</div>`),
-      modalSection("Estimate", table(["Metric","Value"],[
-        row(["Mileage rate","IRS rate configured in settings"]),
-        row(["Estimated miles","7.8"]),
-        row(["Status",status("Deduction candidate")])
-      ]))
-    ].join("")
+    body:"Start at point A, stop at point B, then save route, miles, time, vehicle, and business purpose for CPA review.",
+    cta:"Close",
+    afterOpen(modal){
+      const $ = sel => modal.querySelector(sel);
+      const mainCta = $("#modalMainCta");
+      if(mainCta) mainCta.style.display = "none";
+
+      const setText = (sel, text) => { const el = $(sel); if(el) el.textContent = text; };
+      const readField = sel => ($(sel)?.value || "").trim();
+      const addPoint = pos => {
+        if(!activeGpsTrip) return;
+        activeGpsTrip.points.push({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
+          at: new Date().toISOString()
+        });
+        updateUi();
+      };
+      const updateUi = () => {
+        const running = !!activeGpsTrip;
+        const miles = running ? gpsDistanceMiles(activeGpsTrip.points).toFixed(2) : "0.00";
+        setText("#gpsState", running ? "Tracking active" : "Ready to start");
+        setText("#gpsStartValue", running ? activeGpsTrip.startLabel : readField("#gpsStartLabel") || "Point A not set");
+        setText("#gpsEndValue", running ? "Destination pending" : readField("#gpsEndLabel") || "Point B not set");
+        setText("#gpsPointCount", running ? String(activeGpsTrip.points.length) : "0");
+        setText("#gpsLiveMiles", miles);
+        const startBtn = $("#gpsStartBtn"), stopBtn = $("#gpsStopBtn");
+        if(startBtn) startBtn.disabled = running;
+        if(stopBtn) stopBtn.disabled = !running;
+      };
+      const getManualPoint = label => ({lat: 0, lng: 0, label, manual: true, at: new Date().toISOString()});
+
+      $("#gpsStartBtn")?.addEventListener("click", () => {
+        const startLabel = readField("#gpsStartLabel") || "Point A";
+        const vehicle = readField("#gpsVehicle") || "2022 Toyota Sienna";
+        const purpose = readField("#gpsPurpose") || "Business purpose pending";
+        const tripType = $("#gpsTripType")?.value || "Business supplies";
+        activeGpsTrip = {startLabel, vehicle, purpose, tripType, startedAt:new Date(), points:[]};
+        setText("#gpsMessage","Tracking started. Drive to point B, then press Stop Trip.");
+
+        if(navigator.geolocation){
+          activeGpsTrip.watchId = navigator.geolocation.watchPosition(addPoint, () => {
+            activeGpsTrip.points.push(getManualPoint(startLabel));
+            setText("#gpsMessage","GPS permission unavailable. Trip can still be saved using manual point A/B labels and expected miles.");
+            updateUi();
+          }, {enableHighAccuracy:true, maximumAge:5000, timeout:10000});
+        } else {
+          activeGpsTrip.points.push(getManualPoint(startLabel));
+          setText("#gpsMessage","GPS is not available in this browser. Trip can still be saved manually.");
+        }
+        updateUi();
+      });
+
+      $("#gpsStopBtn")?.addEventListener("click", () => {
+        if(!activeGpsTrip) return;
+        const endLabel = readField("#gpsEndLabel") || "Point B";
+        const expectedMiles = parseFloat(readField("#gpsExpectedMiles"));
+        const points = activeGpsTrip.points.slice();
+        if(points.length < 2) points.push(getManualPoint(endLabel));
+        if(navigator.geolocation){
+          navigator.geolocation.getCurrentPosition(pos => {
+            points.push({lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy,at:new Date().toISOString()});
+            saveTrip(points);
+          }, () => saveTrip(points), {enableHighAccuracy:true, maximumAge:5000, timeout:8000});
+        } else {
+          saveTrip(points);
+        }
+
+        function saveTrip(finalPoints){
+          if(activeGpsTrip?.watchId && navigator.geolocation) navigator.geolocation.clearWatch(activeGpsTrip.watchId);
+          const canUseGpsMiles = finalPoints.length > 1 && finalPoints.every(p => !p.manual);
+          const gpsMiles = canUseGpsMiles ? gpsDistanceMiles(finalPoints) : 0;
+          const miles = gpsMiles > 0.01 ? gpsMiles : (Number.isFinite(expectedMiles) && expectedMiles > 0 ? expectedMiles : 0);
+          const id = "trip_" + (data.trips.length + 1).toString().padStart(3,"0");
+          const route = `${activeGpsTrip.startLabel} to ${endLabel}`;
+          data.trips.unshift([id, route, miles.toFixed(1), activeGpsTrip.purpose, "Deduction candidate", {
+            vehicle: activeGpsTrip.vehicle,
+            tripType: activeGpsTrip.tripType,
+            startedAt: activeGpsTrip.startedAt.toISOString(),
+            endedAt: new Date().toISOString(),
+            start: gpsPointLabel(finalPoints[0]),
+            end: gpsPointLabel(finalPoints[finalPoints.length - 1]),
+            points: finalPoints
+          }]);
+          activeGpsTrip = null;
+          document.getElementById("modalRoot").classList.remove("open");
+          renderPage();
+          toast(`Trip saved: ${route} (${miles.toFixed(1)} mi)`);
+        }
+      });
+
+      updateUi();
+    },
+    content:()=>`
+      ${modalSection("Point A to Point B Tracker", `
+        <div class="grid-2">
+          <label class="form-field"><span>Point A / Start label</span><input id="gpsStartLabel" class="form-control" value="Salon"></label>
+          <label class="form-field"><span>Point B / Destination label</span><input id="gpsEndLabel" class="form-control" value="Beauty Supply Warehouse"></label>
+          <label class="form-field"><span>Vehicle</span><input id="gpsVehicle" class="form-control" value="2022 Toyota Sienna"></label>
+          <label class="form-field"><span>Trip type</span><select id="gpsTripType" class="form-control"><option>Business supplies</option><option>Client visit</option><option>Bank deposit</option><option>Commute review</option><option>Other</option></select></label>
+          <label class="form-field"><span>Expected miles fallback</span><input id="gpsExpectedMiles" class="form-control" value="7.8"></label>
+          <label class="form-field"><span>Business purpose</span><input id="gpsPurpose" class="form-control" value="Supplies for salon operations"></label>
+        </div>
+        <div class="notice" style="margin-top:12px" id="gpsMessage">Press Start at point A. When you arrive at point B, press Stop Trip to save the route.</div>
+      `)}
+      ${modalSection("Live Tracking Status", table(["Field","Value"],[
+        row(["State",`<span id="gpsState">Ready to start</span>`]),
+        row(["Start",`<span id="gpsStartValue">Point A not set</span>`]),
+        row(["Destination",`<span id="gpsEndValue">Point B not set</span>`]),
+        row(["GPS points captured",`<span id="gpsPointCount">0</span>`]),
+        row(["Live miles",`<span id="gpsLiveMiles">0.00</span>`])
+      ]))}
+      ${modalSection("Actions", `
+        <div class="panel-body" style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" id="gpsStartBtn" type="button">Start Tracking at Point A</button>
+          <button class="btn" id="gpsStopBtn" type="button" disabled>Stop Trip at Point B & Save</button>
+        </div>
+      `)}
+      ${modalSection("Deduction Evidence", `<div class="list">${modalCheck("Capture GPS start/end","Required for route evidence.")}${modalCheck("Save A → B route when stopped","The trip is saved only after user presses Stop at destination.")}${modalCheck("Require business purpose","Needed before CPA package export.")}${modalCheck("Flag commute-like routes","Trips from home to regular workplace need CPA review.", false)}</div>`)}
+    `
   },
   "view-trip":{
     title:"Trip Detail",

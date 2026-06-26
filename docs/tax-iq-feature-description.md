@@ -3,7 +3,7 @@
 Version: Phase 1 Demo  
 Product: Nexora Touch / Tax IQ  
 Market scope: U.S. payroll, payout, tax record keeping, CPA review, and merchant advisory  
-Last updated: 2026-06-25
+Last updated: 2026-06-26
 
 ## 1. Feature Summary
 
@@ -174,6 +174,18 @@ Controls:
 
 Purpose: ghi lại mileage evidence cho business deduction review.
 
+Final business purpose: save proof of a business route from point A to point B. User starts tracking at point A, stops at point B, and the system saves route, miles, start/end time, vehicle, business purpose and CPA review status.
+
+Current demo flow:
+
+1. User opens GPS Mileage and clicks Start Trip.
+2. User enters Point A, Point B, vehicle, trip type, expected miles fallback and business purpose.
+3. User clicks Start Tracking at Point A.
+4. Browser records GPS points if location permission is granted.
+5. User clicks Stop Trip at Point B & Save on arrival.
+6. System adds a new trip to GPS Mileage Tracker.
+7. If GPS permission is unavailable, system can still save Point A/Point B labels and expected miles fallback for CPA review.
+
 Data needed:
 
 - Vehicle
@@ -182,6 +194,8 @@ Data needed:
 - Start/end time
 - Miles
 - Business purpose
+- GPS points / route A to B
+- Expected miles fallback
 - CPA policy review flag for ambiguous routes
 
 ### Connect CPA / Accountant
@@ -303,7 +317,7 @@ Important rules:
 | receipt_records | OCR receipts, bills, invoices, proof files, raw OCR text, confidence, tax amount, receipt number, and review status. |
 | ocr_jobs | OCR processing queue records with source, queued time, status, and estimated time. |
 | share_links | Link/QR access records with scope and expiration. |
-| mileage_trips | GPS trip records and business purpose. |
+| mileage_trips | GPS trip records with point A, point B, GPS points, miles, route, purpose, start/stop time and review status. |
 | cpa_connections | CPA/bookkeeper firm access, scope and status. |
 | cpa_requests | Missing document/comment/request workflow. |
 | tip_entries | Tip amount, method, source, proof, qualified status, and audit history. |
