@@ -65,140 +65,106 @@ function barChart(items){
 }
 const demoGpsRoutes = {
   "Home to salon":{
-    origin:"30.329520,-97.756260",
-    destination:"30.267153,-97.743057",
+    origin:[30.329520,-97.756260],
+    destination:[30.267153,-97.743057],
+    path:[[30.329520,-97.756260],[30.300100,-97.751900],[30.267153,-97.743057]],
     originLabel:"Home",
     destinationLabel:"Salon",
     title:"Home to Salon"
   },
   "Salon to supply store":{
-    origin:"30.267153,-97.743057",
-    destination:"30.307182,-97.755996",
+    origin:[30.267153,-97.743057],
+    destination:[30.307182,-97.755996],
+    path:[[30.267153,-97.743057],[30.281900,-97.750120],[30.295600,-97.754200],[30.307182,-97.755996]],
     originLabel:"Salon",
     destinationLabel:"Supply Store",
     title:"Salon to Supply Store"
   },
   "Salon to bank":{
-    origin:"30.267153,-97.743057",
-    destination:"30.271128,-97.754182",
+    origin:[30.267153,-97.743057],
+    destination:[30.271128,-97.754182],
+    path:[[30.267153,-97.743057],[30.268800,-97.748700],[30.271128,-97.754182]],
     originLabel:"Salon",
     destinationLabel:"Bank",
     title:"Salon to Bank"
   }
 };
-const googleMapsConfig = {
-  apiKey:"AIzaSyC-ZPoAyR-9lppZmp2t2VJw0Jd32vQJlQs",
-  mapId:"5ab6ed32b88b9c639b598afc"
-};
-let googleMapsPromise = null;
-function googleMapsEmbedUrl(route){
-  return `https://maps.google.com/maps?output=embed&saddr=${encodeURIComponent(route.origin)}&daddr=${encodeURIComponent(route.destination)}&dirflg=d`;
+let leafletPromise = null;
+function osmDirectionsUrl(route){
+  return `https://www.openstreetmap.org/directions?route=${route.origin[0]}%2C${route.origin[1]}%3B${route.destination[0]}%2C${route.destination[1]}`;
 }
-function googleMapsOpenUrl(route){
-  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(route.origin)}&destination=${encodeURIComponent(route.destination)}&travelmode=driving`;
-}
-function shouldUseGoogleMapsJsApi(){
-  const params = new URLSearchParams(window.location.search);
-  if(params.get("mapsJs") === "1") return true;
-  if(params.get("mapsJs") === "0") return false;
-  return !/^(127\.0\.0\.1|localhost)$/i.test(window.location.hostname);
-}
-function googleRouteMap(routeName="Salon to supply store"){
+function freeRouteMap(routeName="Salon to supply store"){
   const route = demoGpsRoutes[routeName] || demoGpsRoutes["Salon to supply store"];
-  return `<div class="route-map google-route-map" data-google-route="${routeName}" aria-label="Google Maps route preview">
-    <div class="map-loading">Loading Google Maps route...</div>
+  return `<div class="route-map osm-route-map" data-osm-route="${routeName}" aria-label="OpenStreetMap route preview">
+    <div class="map-loading">Loading free OpenStreetMap route...</div>
   </div>
   <div class="map-meta">
     <div><strong>${route.title}</strong><span>${route.originLabel} → ${route.destinationLabel}</span></div>
-    <a class="${ui.btn}" href="${googleMapsOpenUrl(route)}" target="_blank" rel="noopener">Open in Google Maps</a>
+    <a class="${ui.btn}" href="${osmDirectionsUrl(route)}" target="_blank" rel="noopener">Open in OpenStreetMap</a>
   </div>`;
 }
-function parseLatLng(value){
-  const parts = String(value).split(",").map(Number);
-  return { lat:parts[0] || 0, lng:parts[1] || 0 };
-}
-function loadGoogleMapsApi(){
-  if(window.google?.maps) return Promise.resolve(window.google.maps);
-  if(googleMapsPromise) return googleMapsPromise;
-  googleMapsPromise = new Promise((resolve,reject)=>{
-    const callbackName = "__taxiqGoogleMapsReady";
-    window[callbackName] = () => resolve(window.google.maps);
-    window.gm_authFailure = () => {
-      const error = new Error("Google Maps API key is not allowed for this localhost referrer.");
-      document.querySelectorAll("[data-google-route]").forEach(node=>{
-        const route = demoGpsRoutes[node.dataset.googleRoute] || demoGpsRoutes["Salon to supply store"];
-        node.dataset.mapInit = "error";
-        mapFallback(node, route, error.message);
-      });
-      reject(error);
-    };
+function loadLeaflet(){
+  if(window.L) return Promise.resolve(window.L);
+  if(leafletPromise) return leafletPromise;
+  leafletPromise = new Promise((resolve,reject)=>{
+    if(!document.getElementById("leaflet-css")){
+      const link = document.createElement("link");
+      link.id = "leaflet-css";
+      link.rel = "stylesheet";
+      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+      document.head.appendChild(link);
+    }
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(googleMapsConfig.apiKey)}&callback=${callbackName}&v=weekly&loading=async`;
+    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
     script.async = true;
-    script.defer = true;
-    script.onerror = () => reject(new Error("Google Maps JavaScript API failed to load."));
+    script.onload = () => resolve(window.L);
+    script.onerror = () => {
+      leafletPromise = null;
+      reject(new Error("OpenStreetMap preview library could not be loaded."));
+    };
     document.head.appendChild(script);
   });
-  return googleMapsPromise;
+  return leafletPromise;
 }
 function mapFallback(node, route, message){
-  node.innerHTML = `<iframe title="${route.title} Google Maps route fallback" src="${googleMapsEmbedUrl(route)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="map-error floating"><strong>${message}</strong><span>Allow referrers: http://127.0.0.1:8123/* and http://localhost:8123/*</span><a href="${googleMapsOpenUrl(route)}" target="_blank" rel="noopener">Open route in Google Maps</a></div>`;
+  node.innerHTML = `<div class="map-error"><strong>${message}</strong><span>${route.originLabel} → ${route.destinationLabel}</span><a href="${osmDirectionsUrl(route)}" target="_blank" rel="noopener">Open route in OpenStreetMap</a></div>`;
 }
-function initGoogleRouteMap(node){
-  const route = demoGpsRoutes[node.dataset.googleRoute] || demoGpsRoutes["Salon to supply store"];
-  const origin = parseLatLng(route.origin);
-  const destination = parseLatLng(route.destination);
+function routeMarker(label){
+  return window.L.divIcon({
+    className:`route-marker route-marker-${String(label).toLowerCase()}`,
+    html:`<span>${label}</span>`,
+    iconSize:[30,30],
+    iconAnchor:[15,15]
+  });
+}
+function initFreeRouteMap(node){
+  const route = demoGpsRoutes[node.dataset.osmRoute] || demoGpsRoutes["Salon to supply store"];
+  const L = window.L;
   node.innerHTML = "";
-  const map = new google.maps.Map(node, {
-    center:{ lat:(origin.lat + destination.lat) / 2, lng:(origin.lng + destination.lng) / 2 },
-    zoom:12,
-    mapId:googleMapsConfig.mapId,
-    mapTypeControl:false,
-    streetViewControl:false,
-    fullscreenControl:true
+  const map = L.map(node, {
+    attributionControl:true,
+    zoomControl:true,
+    scrollWheelZoom:false
   });
-  const directionsService = new google.maps.DirectionsService();
-  const directionsRenderer = new google.maps.DirectionsRenderer({
-    map,
-    suppressMarkers:false,
-    polylineOptions:{ strokeColor:"#6366f1", strokeOpacity:.95, strokeWeight:5 }
-  });
-  directionsService.route({
-    origin,
-    destination,
-    travelMode:google.maps.TravelMode.DRIVING
-  }, (result, routeStatus)=>{
-    if(routeStatus === "OK" && result){
-      directionsRenderer.setDirections(result);
-      node.dataset.mapInit = "done";
-      return;
-    }
-    node.dataset.mapInit = "error";
-    mapFallback(node, route, "Google Maps route could not be rendered: " + routeStatus);
-  });
-  window.setTimeout(()=>{
-    if(node.dataset.mapInit === "loading"){
-      node.dataset.mapInit = "error";
-      mapFallback(node, route, "Google Maps JavaScript API did not authorize this page.");
-    }
-  }, 3500);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom:19,
+    attribution:'&copy; OpenStreetMap contributors'
+  }).addTo(map);
+  const line = L.polyline(route.path, { color:"#4f46e5", weight:5, opacity:.9 }).addTo(map);
+  L.marker(route.origin, { icon:routeMarker("A") }).addTo(map).bindPopup(route.originLabel);
+  L.marker(route.destination, { icon:routeMarker("B") }).addTo(map).bindPopup(route.destinationLabel);
+  map.fitBounds(line.getBounds(), { padding:[28,28] });
+  node._taxiqMap = map;
+  node.dataset.mapInit = "done";
 }
-function initGoogleRouteMaps(scope=document){
-  const nodes = [...scope.querySelectorAll("[data-google-route]")].filter(node=>!node.dataset.mapInit);
+function initFreeRouteMaps(scope=document){
+  const nodes = [...scope.querySelectorAll("[data-osm-route]")].filter(node=>!node.dataset.mapInit);
   if(!nodes.length) return;
-  if(!shouldUseGoogleMapsJsApi()){
-    nodes.forEach(node=>{
-      const route = demoGpsRoutes[node.dataset.googleRoute] || demoGpsRoutes["Salon to supply store"];
-      node.dataset.mapInit = "iframe";
-      mapFallback(node, route, "Google Maps iframe preview. Add ?mapsJs=1 after authorizing localhost referrers to test JS API mapId.");
-    });
-    return;
-  }
   nodes.forEach(node=>{ node.dataset.mapInit = "loading"; });
-  loadGoogleMapsApi()
-    .then(()=>nodes.forEach(initGoogleRouteMap))
+  loadLeaflet()
+    .then(()=>nodes.forEach(initFreeRouteMap))
     .catch(error=>nodes.forEach(node=>{
-      const route = demoGpsRoutes[node.dataset.googleRoute] || demoGpsRoutes["Salon to supply store"];
+      const route = demoGpsRoutes[node.dataset.osmRoute] || demoGpsRoutes["Salon to supply store"];
       node.dataset.mapInit = "error";
       mapFallback(node, route, error.message);
     }));
@@ -214,6 +180,215 @@ function skeletonPreview(){
     <div class="skeleton-line"></div>
     <div class="skeleton-line short"></div>
   </div>`;
+}
+
+const pageGuides = {
+  dashboard:{
+    focus:"Owner command center for open tax work, payroll risk, evidence, CPA requests, and next actions.",
+    role:"Owner / Payroll Admin",
+    next:"Clear blocking data gaps before final payroll, CPA export, or tax deposit review.",
+    actions:[["Fix Data Gaps","data-quality"],["Review Estimate","tax-estimate"],["CPA Package","cpa"]]
+  },
+  analytics:{
+    focus:"Trend view for payroll risk, deposit pressure, jurisdiction tax exposure, and operational health.",
+    role:"Owner / Finance Lead",
+    next:"Use high-risk runs and tax-by-jurisdiction trends to decide what needs review first.",
+    actions:[["Risk Runs","payroll-runs"],["Tax Estimate","tax-estimate"],["Exceptions","exceptions"]]
+  },
+  onboarding:{
+    focus:"First merchant setup: business profile, worker records, integrations, evidence, CPA, and billing.",
+    role:"Owner / Admin",
+    next:"Complete the launch checklist before moving the tenant into live payroll and tax workflows.",
+    actions:[["Data Quality","data-quality"],["Billing","billing"],["Settings","settings"]]
+  },
+  employers:{
+    focus:"Business entities, EINs, deposit schedules, state registrations, locations, and employer contacts.",
+    role:"Payroll Admin",
+    next:"Verify EIN and state payroll registrations before employee setup or payroll finalization.",
+    actions:[["Jurisdictions","jurisdictions"],["Payroll Runs","payroll-runs"],["Settings","settings"]]
+  },
+  employees:{
+    focus:"Worker tax profiles, W-4/TIN readiness, work state, residence state, and profile exceptions.",
+    role:"Payroll Admin / HR",
+    next:"Resolve missing TIN, W-4, and jurisdiction data before the next payroll run.",
+    actions:[["Data Quality","data-quality"],["Payroll Runs","payroll-runs"],["Employee Detail","employee-profile"]]
+  },
+  "employee-profile":{
+    focus:"Single worker view for tax profile status, payroll history, tip records, and open actions.",
+    role:"Payroll Admin / HR",
+    next:"Finish tax profile verification or request updated forms when the profile is not ready.",
+    actions:[["Employees","employees"],["Tip Ledger","tip-ledger"],["Payroll Runs","payroll-runs"]]
+  },
+  "payroll-runs":{
+    focus:"Payroll run control table with status-based review, approve, finalize, and report actions.",
+    role:"Payroll Admin",
+    next:"Open any review-required run, resolve exceptions, then finalize only after validation passes.",
+    actions:[["Run Detail","run-detail"],["Exceptions","exceptions"],["Tax Ledger","ledger"]]
+  },
+  "run-detail":{
+    focus:"Validation gate for one payroll run: line items, tax breakdown, audit trail, and finalization.",
+    role:"Payroll Admin / CPA",
+    next:"Review warnings, confirm tax ledger totals, then finalize or export the report package.",
+    actions:[["Payroll Runs","payroll-runs"],["Tax Ledger","ledger"],["Audit Log","audit-log"]]
+  },
+  connections:{
+    focus:"Payroll, HRIS, payout, accounting, and webhook source connections with status and last error.",
+    role:"Admin / Developer",
+    next:"Fix degraded connectors before relying on imported payroll, payout, or receipt data.",
+    actions:[["Webhooks","webhooks"],["Data Quality","data-quality"],["Settings","settings"]]
+  },
+  payouts:{
+    focus:"Staff payout recordkeeping for cash, ACH, Zelle, PayPal, checks, and 1099 support.",
+    role:"Owner / Bookkeeper",
+    next:"Attach evidence and classify payout type before exporting to CPA or tax reports.",
+    actions:[["OCR Vault","ocr"],["CPA Review","cpa"],["Forms","forms"]]
+  },
+  ledger:{
+    focus:"Immutable tax ledger entries for employee tax, employer tax, payout evidence, and report exports.",
+    role:"CPA / Auditor",
+    next:"Use ledger totals and hash checks when reviewing payroll tax accuracy and audit support.",
+    actions:[["Tax Estimate","tax-estimate"],["Audit Log","audit-log"],["Forms","forms"]]
+  },
+  exceptions:{
+    focus:"Blocking queue for payroll, worker profile, jurisdiction, evidence, and integration issues.",
+    role:"Payroll Admin / Tax Admin",
+    next:"Resolve high-severity exceptions before finalizing runs or sharing CPA packages.",
+    actions:[["Data Quality","data-quality"],["Payroll Runs","payroll-runs"],["Notifications","notifications"]]
+  },
+  "data-quality":{
+    focus:"Readiness center for missing data, evidence gaps, integration errors, and CPA package blockers.",
+    role:"Owner / Admin / CPA",
+    next:"Work top-down from high severity to evidence gaps so downstream reports stay usable.",
+    actions:[["OCR Vault","ocr"],["GPS Mileage","gps"],["CPA Review","cpa"]]
+  },
+  jurisdictions:{
+    focus:"Federal, state, and local tax footprint, registration status, forms, and deposit schedule.",
+    role:"Tax Admin / CPA",
+    next:"Confirm state withholding, SUTA, and local registrations for every work/residence state.",
+    actions:[["Tax Estimate","tax-estimate"],["Forms","forms"],["Settings","settings"]]
+  },
+  forms:{
+    focus:"Export center for payroll reports, W-2/1099 support, 941/940, SUTA, and CPA packages.",
+    role:"CPA / Payroll Admin",
+    next:"Generate only after payroll, evidence, and CPA review blockers are resolved.",
+    actions:[["CPA Review","cpa"],["Audit Log","audit-log"],["Tax Ledger","ledger"]]
+  },
+  "ai-advisor":{
+    focus:"AI CFO, tax readiness prompts, government rule watch, deduction reminders, and guided support.",
+    role:"Owner / Admin",
+    next:"Use AI suggestions as planning support, then route tax decisions to CPA review.",
+    actions:[["Tax Estimate","tax-estimate"],["Data Quality","data-quality"],["CPA Review","cpa"]]
+  },
+  ocr:{
+    focus:"Receipt, bill, invoice, payout proof, and document vault with OCR extraction review.",
+    role:"Owner / Bookkeeper",
+    next:"Approve high-confidence documents and complete business purpose on low-confidence records.",
+    actions:[["Share Links","share-links"],["CPA Review","cpa"],["Data Quality","data-quality"]]
+  },
+  "share-links":{
+    focus:"Secure upload, review, QR, and profile links for CPA, technicians, vendors, and invited reviewers.",
+    role:"Owner / Admin",
+    next:"Pick the minimum access scope, set expiration, then revoke links when review is done.",
+    actions:[["OCR Vault","ocr"],["CPA Review","cpa"],["Audit Log","audit-log"]]
+  },
+  gps:{
+    focus:"Business mileage evidence: point A, point B, route, miles, vehicle, purpose, and CPA review.",
+    role:"Owner / Worker / CPA",
+    next:"Start at point A, stop at point B, save route evidence, then flag commute-like trips for CPA.",
+    actions:[["Tax Estimate","tax-estimate"],["CPA Review","cpa"],["OCR Vault","ocr"]]
+  },
+  cpa:{
+    focus:"Third-party CPA/bookkeeper connection, cost preview, missing-file requests, and filing package review.",
+    role:"Owner / CPA",
+    next:"Approve scope and estimated cost before giving access or starting CPA review work.",
+    actions:[["Share Links","share-links"],["Billing","billing"],["Forms","forms"]]
+  },
+  "tip-ledger":{
+    focus:"No Tax on Tips support: tip entries, source proof, qualification status, cap tracking, and CPA review.",
+    role:"Owner / Worker / CPA",
+    next:"Record tips with proof, monitor cap and phase-out risks, and let CPA confirm final treatment.",
+    actions:[["OCR Vault","ocr"],["Tax Estimate","tax-estimate"],["CPA Review","cpa"]]
+  },
+  "tax-estimate":{
+    focus:"Estimated federal/state tax exposure, deposits, balances, and readiness before payment or filing.",
+    role:"Owner / CPA",
+    next:"Review deposit dates and open balances, then confirm assumptions with CPA before acting.",
+    actions:[["Jurisdictions","jurisdictions"],["Tax Ledger","ledger"],["CPA Review","cpa"]]
+  },
+  webhooks:{
+    focus:"Outbound event delivery, endpoint visibility, retry status, payload review, and delivery errors.",
+    role:"Developer / Admin",
+    next:"Fix dead letters and degraded endpoints before partner or accounting automation goes live.",
+    actions:[["Connections","connections"],["Audit Log","audit-log"],["Settings","settings"]]
+  },
+  "audit-log":{
+    focus:"Immutable record of create, update, approve, export, share, webhook, and system actions.",
+    role:"Auditor / Admin",
+    next:"Filter by date, actor, resource, and action before exporting evidence for CPA or audit review.",
+    actions:[["Compliance","compliance-review"],["Forms","forms"],["Notifications","notifications"]]
+  },
+  notifications:{
+    focus:"Deposit reminders, CPA requests, data gaps, webhook failures, and compliance alerts.",
+    role:"Owner / Admin",
+    next:"Filter unread items first, open the linked workflow, then mark items complete.",
+    actions:[["Data Quality","data-quality"],["Tax Estimate","tax-estimate"],["CPA Review","cpa"]]
+  },
+  "compliance-review":{
+    focus:"Go-live gate for legal wording, privacy, permissions, evidence retention, and production controls.",
+    role:"Stakeholder / Legal / Engineering",
+    next:"Resolve blocked legal and backend-control items before onboarding real customers.",
+    actions:[["Settings","settings"],["Audit Log","audit-log"],["Billing","billing"]]
+  },
+  billing:{
+    focus:"Merchant subscription, CPA add-on approval, invoices, plan comparison, and business model clarity.",
+    role:"Owner / Stakeholder",
+    next:"Confirm merchant subscription as MVP path and approve any CPA engagement before billing starts.",
+    actions:[["CPA Review","cpa"],["Settings","settings"],["Compliance","compliance-review"]]
+  },
+  settings:{
+    focus:"Tenant controls for US payroll scope, roles, permissions, API keys, notifications, and retention.",
+    role:"Admin / Security",
+    next:"Keep UI permissions aligned with backend enforcement before production launch.",
+    actions:[["Compliance","compliance-review"],["Webhooks","webhooks"],["Billing","billing"]]
+  }
+};
+
+function guideActionLinks(actions){
+  return actions.map(([label,id],index)=>`<a class="guide-action ${index === 0 ? "primary" : ""}" href="${pageHref(id)}">${label}<i class="fa-solid fa-arrow-right"></i></a>`).join("");
+}
+function pageGuide(){
+  const guide = pageGuides[currentPage];
+  if(!guide) return "";
+  return `<section class="page-guide" aria-label="Page workflow guidance">
+    <div class="guide-main">
+      <div class="guide-kicker">Workflow Focus</div>
+      <h3>${guide.focus}</h3>
+      <div class="guide-meta">
+        <span><strong>Best for</strong>${guide.role}</span>
+        <span><strong>Next</strong>${guide.next}</span>
+      </div>
+    </div>
+    <div class="guide-actions">${guideActionLinks(guide.actions)}</div>
+  </section>`;
+}
+function usTaxReadinessPanel(){
+  const readinessRows = [
+    ["Business identity","EIN, legal name, business address, owner contact, entity type, and tax year.",status("Ready"),`<a class="${ui.btn}" href="${pageHref("employers")}">Review</a>`],
+    ["Worker setup","W-4 for employees, W-9/TIN for contractors, work state, residence state, and classification.",status("Needs Review"),`<a class="${ui.btn}" href="${pageHref("employees")}">Fix</a>`],
+    ["Federal payroll taxes","Federal income tax withholding, Social Security, Medicare, FUTA, deposit schedule, and Form 941/940 support.",status("Active"),`<a class="${ui.btn}" href="${pageHref("tax-estimate")}">Estimate</a>`],
+    ["State payroll setup","State withholding, SUTA wage base/rate, local taxes where applicable, registrations, and due dates.",status("Review"),`<a class="${ui.btn}" href="${pageHref("jurisdictions")}">Map</a>`],
+    ["Evidence vault","Receipts, bills, payout proof, tip records, GPS route evidence, and CPA comments.",status("Open"),`<a class="${ui.btn}" href="${pageHref("ocr")}">Collect</a>`],
+    ["CPA filing package","Payroll reports, ledger exports, 1099/W-2 support, estimate assumptions, missing-file requests, and approval log.",status("Required"),`<a class="${ui.btn}" href="${pageHref("cpa")}">Send</a>`]
+  ].map(r=>row(r,{wrap:[0,1]}));
+  return panel("US Tax Readiness Checklist",table(["Area","Required Records","Status","Action"],readinessRows),`<a class="btn" href="${pageHref("compliance-review")}">Go-live Gate</a>`);
+}
+function priorityActionPanel(){
+  return panel("Recommended Next Actions",`<div class="panel-body list">
+    ${listItem("Resolve payroll blockers first","Fix missing TIN/W-4, state registrations, and high-severity exceptions before run finalization.","red")}
+    ${listItem("Collect evidence before CPA export","Save receipts, bills, payout proof, tip records, and GPS mileage evidence in OCR Vault or Share Links.","yellow")}
+    ${listItem("Confirm tax assumptions with CPA","Use Tax Estimate and Tip Ledger as preparation tools, then let CPA/bookkeeper confirm final filing treatment.","blue")}
+    ${listItem("Protect access and audit trail","Use expiring Share Links, minimum scope, approval logs, and audit records for sensitive tax data.","green")}
+  </div>`,`<a class="btn primary" href="${pageHref("data-quality")}">Open Data Quality</a>`);
 }
 
 const renderers = {
@@ -232,8 +407,8 @@ const renderers = {
 };
 
 function renderPage(){
-  document.getElementById("content").innerHTML = (renderers[currentPage] || renderDashboard)();
-  initGoogleRouteMaps(document);
+  document.getElementById("content").innerHTML = pageGuide() + (renderers[currentPage] || renderDashboard)();
+  initFreeRouteMaps(document);
 }
 
 function renderDataLoadError(){
@@ -257,7 +432,7 @@ function renderDashboard(){
     ["Data Quality","Readiness Center","Missing data, evidence gaps, and integration issues.","yellow","data-quality"],
     ["Compliance Review","Go-live Gate","Legal, privacy, disclaimer, and API readiness.","red","compliance-review"]
   ].map(([title,item,text,color,href])=>panel(title,`<div class="panel-body">${listItem(item,text,color)}</div>`,`<a class="btn" href="${pageHref(href)}">Open</a>`)).join("");
-  return `<div class="grid-4" style="margin-bottom:14px">${data.metrics.map(metric).join("")}</div><div class="split"><div>${panel("Recent Payroll Runs",table(["Run ID","Period","Pay Date","Gross","Tax","Risk","Status"],runRows),`<a class="btn" href="${pageHref("payroll-runs")}">View All</a>`)}</div>${panel("TaxIQ Issues",`<div class="panel-body list">${issues}</div>`,`<a class="btn" href="${pageHref("exceptions")}">Open Queue</a>`)}</div><div class="grid-3" style="margin-top:14px">${workflowCards}</div>`;
+  return `<div class="grid-4" style="margin-bottom:14px">${data.metrics.map(metric).join("")}</div><div class="grid-2" style="margin-bottom:14px">${usTaxReadinessPanel()}${priorityActionPanel()}</div><div class="split"><div>${panel("Recent Payroll Runs",table(["Run ID","Period","Pay Date","Gross","Tax","Risk","Status"],runRows),`<a class="btn" href="${pageHref("payroll-runs")}">View All</a>`)}</div>${panel("TaxIQ Issues",`<div class="panel-body list">${issues}</div>`,`<a class="btn" href="${pageHref("exceptions")}">Open Queue</a>`)}</div><div class="grid-3" style="margin-top:14px">${workflowCards}</div>`;
 }
 
 /* ─── ANALYTICS ─── */
@@ -484,7 +659,7 @@ function renderGps(){
   const policyCount = data.trips.filter(t=>/check|review/i.test(t[4])).length;
   const activePanel = activeGpsTrip ? panel("Active Trip Tracking",`<div class="panel-body list">${listItem("Tracking in progress",`${activeGpsTrip.startLabel} → destination pending. ${activeGpsTrip.points.length} GPS point(s) captured so far.`,"green")}${listItem("Stop to save A → B route","Open Start Trip and press Stop Trip when you arrive at the destination.","blue")}</div>`,`<button class="btn primary" data-modal="trip">Stop Trip</button>`) : "";
   const deductionEstimate = moneyText(Number(totalMiles) * 0.725);
-  return `<div class="grid-4" style="margin-bottom:14px">${[[ "Trips",String(data.trips.length),"Tracked or pending review","green"],["Total Miles",totalMiles,"Current demo records","cyan"],["2026 IRS Rate","$0.725/mi","Business mileage estimate","yellow"],["Est. Deduction",deductionEstimate,"Before CPA review","red"]].map(metric).join("")}</div>${activePanel}<div class="grid-2" style="margin-bottom:14px">${panel("Route Preview",`<div class="panel-body">${googleRouteMap("Salon to supply store")}<div class="sub">Google Maps preview for a saved point A → point B business route. Production should store user consent, GPS coordinates, route source, and CPA review status.</div></div>`)}${panel("Mileage Policy Notes",`<div class="panel-body list">${listItem("Business purpose required","Every trip must explain why it was business related before export.","green")}${listItem("Commute-like routes need CPA review","Home to regular workplace may need special review and cannot be auto-approved.","yellow")}${listItem("Rate versioning","Rate should be stored by tax year and updated from official source monitor.","blue")}</div>`)}</div>${panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button>`)}${panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence.","When mileage is claimed"],["Point A → Point B route","Saves the route when user presses Stop at destination.","Yes"],["Business purpose","Explains deduction relevance.","Yes"],["Vehicle profile","Supports owner/worker mileage records.","Recommended"]].map(row)))}`;
+  return `<div class="grid-4" style="margin-bottom:14px">${[[ "Trips",String(data.trips.length),"Tracked or pending review","green"],["Total Miles",totalMiles,"Current demo records","cyan"],["2026 IRS Rate","$0.725/mi","Business mileage estimate","yellow"],["Est. Deduction",deductionEstimate,"Before CPA review","red"]].map(metric).join("")}</div>${activePanel}<div class="grid-2" style="margin-bottom:14px">${panel("Route Preview",`<div class="panel-body">${freeRouteMap("Salon to supply store")}<div class="sub">Free OpenStreetMap preview for a saved point A → point B business route. Production should store user consent, GPS coordinates, route source, and CPA review status.</div></div>`)}${panel("Mileage Policy Notes",`<div class="panel-body list">${listItem("Business purpose required","Every trip must explain why it was business related before export.","green")}${listItem("Commute-like routes need CPA review","Home to regular workplace may need special review and cannot be auto-approved.","yellow")}${listItem("Rate versioning","Rate should be stored by tax year and updated from official source monitor.","blue")}</div>`)}</div>${panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button>`)}${panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence.","When mileage is claimed"],["Point A → Point B route","Saves the route when user presses Stop at destination.","Yes"],["Business purpose","Explains deduction relevance.","Yes"],["Vehicle profile","Supports owner/worker mileage records.","Recommended"]].map(row)))}`;
 }
 
 /* ─── CPA REVIEW ─── */
@@ -504,7 +679,7 @@ function renderTaxEstimate(){
   const d = data.taxEstimate;
   const qRows = d.quarters.map(q=>row([q[0],q[1],q[2],q[3],q[4],status(q[5]),q[6]]));
   const jRows = d.byJurisdiction.map(j=>row([j[0],j[1],j[2],j[3],j[4],j[5],status(j[6])],{wrap:1}));
-  return `<div class="grid-4" style="margin-bottom:14px">${[["Est. Annual Tax","$840,000","Federal + state combined","red"],["YTD Withheld","$193,300","Through Jun 2026","green"],["Estimated Balance","$646,700","Subject to withholding changes","yellow"],["Next Deposit","Jun 24, 2026","Federal semiweekly","cyan"]].map(metric).join("")}</div><div class="notice" style="margin-bottom:14px">Estimates are based on current payroll data and may change. Final tax liability must be confirmed by a licensed tax professional or CPA.</div><div class="grid-2">${panel("Quarterly Estimate",table(["Quarter","Gross","Withheld","Est. Tax","Amount Due","Status","Due Date"],qRows))}${panel("By Jurisdiction",table(["ID","Name","Est. Tax","Deposited","Balance","Schedule","Risk"],jRows))}</div><div class="grid-2" style="margin-top:14px">${panel("Deposit Schedule Alerts",`<div class="panel-body list">${listItem("Federal semiweekly — Jun 24, 2026","$54,621 employee tax due. Ensure account funded by deposit date.","red")}${listItem("Texas SUTA — Jul 31, 2026","Quarterly SUTA payment. Verify wage base and rate.","yellow")}${listItem("California semiweekly — Jun 24, 2026","$10,122 CA withholding due.","yellow")}${listItem("New York monthly — Jul 15, 2026","$4,603 NY withholding due.","blue")}</div>`,`<button class="btn" data-modal="report">Export Deposit Schedule</button>`)}${panel("Actions",`<div class="panel-body list">${listItem("Connect CPA for final estimate","CPA can review estimate assumptions and adjust for deductions, credits, and filing status.","green")}${listItem("Update withholding","If estimate is significantly off, update W-4 instructions or employer withholding.","yellow")}</div>`,`<button class="btn primary" data-modal="cpa">Connect CPA</button>`)}</div>`;
+  return `<div class="grid-4" style="margin-bottom:14px">${[["Est. Annual Tax","$840,000","Federal + state combined","red"],["YTD Withheld","$193,300","Through Jun 2026","green"],["Estimated Balance","$646,700","Subject to withholding changes","yellow"],["Next Deposit","Jun 24, 2026","Federal semiweekly","cyan"]].map(metric).join("")}</div><div class="notice" style="margin-bottom:14px">Estimates are based on current payroll data and may change. Final tax liability must be confirmed by a licensed tax professional or CPA.</div><div class="grid-2" style="margin-bottom:14px">${usTaxReadinessPanel()}${panel("Before Paying or Filing",`<div class="panel-body list">${listItem("Match deposits to payroll ledger","Federal, state, and SUTA balances should tie back to payroll run tax ledger entries.","green")}${listItem("Check state/local footprint","Work state, residence state, business location, and SUTA registrations can change liability.","yellow")}${listItem("Confirm evidence-dependent deductions","Tips, mileage, receipts, and payouts should be reviewed before relying on estimates.","blue")}${listItem("Route professional decisions to CPA","Tax IQ prepares records and highlights risk; final filing decisions need CPA/bookkeeper review.","red")}</div>`,`<a class="btn primary" href="${pageHref("cpa")}">CPA Review</a>`)}</div><div class="grid-2">${panel("Quarterly Estimate",table(["Quarter","Gross","Withheld","Est. Tax","Amount Due","Status","Due Date"],qRows))}${panel("By Jurisdiction",table(["ID","Name","Est. Tax","Deposited","Balance","Schedule","Risk"],jRows))}</div><div class="grid-2" style="margin-top:14px">${panel("Deposit Schedule Alerts",`<div class="panel-body list">${listItem("Federal semiweekly — Jun 24, 2026","$54,621 employee tax due. Ensure account funded by deposit date.","red")}${listItem("Texas SUTA — Jul 31, 2026","Quarterly SUTA payment. Verify wage base and rate.","yellow")}${listItem("California semiweekly — Jun 24, 2026","$10,122 CA withholding due.","yellow")}${listItem("New York monthly — Jul 15, 2026","$4,603 NY withholding due.","blue")}</div>`,`<button class="btn" data-modal="report">Export Deposit Schedule</button>`)}${panel("Actions",`<div class="panel-body list">${listItem("Connect CPA for final estimate","CPA can review estimate assumptions and adjust for deductions, credits, and filing status.","green")}${listItem("Update withholding","If estimate is significantly off, update W-4 instructions or employer withholding.","yellow")}</div>`,`<button class="btn primary" data-modal="cpa">Connect CPA</button>`)}</div>`;
 }
 
 /* ─── WEBHOOKS ─── */
@@ -1677,7 +1852,7 @@ const modalCopy = {
         row(["CPA recommendation","Include in mileage log — purpose is clearly business."]),
         row(["Proof","GPS track start/end captured"])
       ])),
-      modalSection("Route Map", `<div class="panel-body">${googleRouteMap("Salon to supply store")}<div class="sub">Route preview uses Google Maps. The saved Tax IQ record should still store GPS start/end, miles, purpose, vehicle, and CPA review status.</div></div>`)
+      modalSection("Route Map", `<div class="panel-body">${freeRouteMap("Salon to supply store")}<div class="sub">Route preview uses free OpenStreetMap tiles through Leaflet. The saved Tax IQ record should still store GPS start/end, miles, purpose, vehicle, and CPA review status.</div></div>`)
     ].join("")
   },
   "edit-trip":{
@@ -2239,7 +2414,7 @@ function openModal(key){
   root.innerHTML = `<div class="modal max-h-[88vh] w-full max-w-5xl overflow-auto rounded-xl border border-slate-800 bg-slate-950 shadow-2xl shadow-slate-950/60"><div class="modal-head flex items-start justify-between gap-4 border-b border-slate-800 p-5"><div><h3 class="m-0 text-lg font-black text-slate-50">${title}</h3><p class="mt-1 text-xs text-slate-500">${body}</p></div><button class="${ui.btn}" data-close>Close</button></div><div class="modal-body p-5">${config.content()}</div><div class="modal-foot flex justify-end gap-2 border-t border-slate-800 px-5 py-4"><button class="${ui.btn}" data-close>Cancel</button><button class="${ui.btn} ${ui.primary}" id="modalMainCta" data-action-toast="${cta} queued.">${cta}</button></div></div>`;
   root.classList.add("open");
   if(config.afterOpen) config.afterOpen(root.querySelector(".modal"));
-  initGoogleRouteMaps(root);
+  initFreeRouteMaps(root);
 }
 function toast(msg){
   const box = document.getElementById("toast");

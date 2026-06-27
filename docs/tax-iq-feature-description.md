@@ -193,9 +193,9 @@ Current demo flow:
 5. User clicks Stop Trip at Point B & Save on arrival.
 6. System adds a new trip to GPS Mileage Tracker.
 7. If GPS permission is unavailable, system can still save Point A/Point B labels and expected miles fallback for CPA review.
-8. Route Preview renders the saved route through Google Maps JavaScript API with the configured `mapId` and includes an external Google Maps link.
+8. Route Preview renders the saved route with Leaflet and OpenStreetMap tiles, no Google Maps API key required for the demo, and includes an external OpenStreetMap directions link.
 
-Production note: the Google Maps browser API key must be restricted by HTTP referrer/domain in Google Cloud Console, with quota, billing, and alerting configured.
+Production note: public OpenStreetMap tiles are useful for demo/prototype work, but production traffic should use an approved tile provider or self-hosted tiles with quota/SLA, attribution, caching, privacy review, and monitoring.
 
 Data needed:
 

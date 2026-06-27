@@ -235,9 +235,9 @@ Flow hiện tại trong demo:
 5. Khi đến điểm B, user bấm Stop Trip at Point B & Save.
 6. Hệ thống tạo trip mới trong bảng GPS Mileage Tracker.
 7. Nếu browser không cho GPS permission, hệ thống vẫn cho lưu bằng nhãn Point A/Point B và expected miles fallback để CPA review.
-8. Route Preview hiển thị tuyến đường bằng Google Maps JavaScript API, dùng `mapId` cấu hình cho demo, và có nút mở trực tiếp trên Google Maps.
+8. Route Preview hiển thị tuyến đường bằng Leaflet và OpenStreetMap tiles, không cần Google Maps API key cho demo, và có nút mở trực tiếp trên OpenStreetMap.
 
-Ghi chú production: Google Maps browser API key phải được restrict theo HTTP referrer/domain trong Google Cloud Console, đồng thời bật quota/billing/alert để tránh bị dùng ngoài ý muốn.
+Ghi chú production: public OpenStreetMap tiles phù hợp cho demo/prototype, nhưng khi chạy production nên dùng tile provider có quota/SLA hoặc self-host tiles, kèm attribution, caching, privacy review và monitoring.
 
 Thông tin cần collect:
 
