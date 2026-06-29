@@ -3,7 +3,7 @@
 Version: Phase 1 Demo  
 Product: Nexora Touch / Tax IQ  
 Market scope: U.S. payroll, payout, tax record keeping, CPA review, and merchant advisory  
-Last updated: 2026-06-26
+Last updated: 2026-06-29
 
 ## 1. Feature Summary
 
@@ -74,12 +74,38 @@ Supporting demo screens outside the Tax IQ group:
 11. CPA review read-only data, comment, request missing evidence, prepare filing package.
 12. Merchant approve export/share/final package before final filing action.
 
+## 4.1 Nexora Touch Payout / Pay Engine / 1099 Supplement
+
+The latest Nexora Touch supplemental docs add more detail before data reaches Tax IQ:
+
+- Quick Pay creates fast payments for tip, wage, bonus, advance, reimbursement, or adjustment. The standard flow is payment type, worker, amount, method, memo, preview, and confirm.
+- Pay Engine configures hourly, commission, hybrid, and tiered pay, including overtime, commission split, over-threshold bonus, KPI bonus, and pay schedule.
+- Weekly Payroll summarizes hours, sales, hourly pay, commission, bonus, tips, gross/net, and pay actions.
+- Payout Hub handles 1099 contractor payouts with calculate, owner approval/send, payment proof, and YTD 1099 rollup.
+- Tax Center 1099/W-2 tracks W-9/TIN readiness, contractor classification, 1099-NEC Box 1 support, W-2 split, recipient delivery, and CPA/merchant approval.
+
+Data routing:
+
+| Source flow | Output | Tax IQ destination |
+| --- | --- | --- |
+| Quick Pay | Payment type, worker, amount, method, memo, proof | Quick Pay, Payouts, OCR Vault, Tax Ledger, Audit Log |
+| Pay Engine | Pay type, commission split, overtime, bonus, schedule | Pay Engine, Employees, Payroll Runs, Payouts |
+| Weekly Payroll | Gross/net, hours, sales, commission, tips, bonus | Weekly Payroll, Payroll Runs, Payouts, Tax Estimate |
+| Payout Hub 1099 | Confirmed contractor payout, deductions, proof, approval | Payouts, Tax Center 1099/W-2, CPA Review, Tax Ledger |
+| Tax Center 1099/W-2 | YTD rollup, W-9/TIN, 1099-NEC/W-2 readiness | Tax Center 1099/W-2, Forms & Reports, CPA Review, Compliance Review |
+
+Production note: 1099 deadlines, thresholds, filing method rules, and state requirements should be stored in official-source rule tables by tax year, not hard-coded into the UI.
+
 ## 5. Screen Map
 
 | Screen | Main Job |
 | --- | --- |
 | Dashboard | Tổng quan payroll, Tax IQ issues, feature widgets, onboarding, data quality, and compliance shortcuts. |
 | Onboarding | First merchant setup, ICP fit, happy path, and empty-state acceptance criteria. |
+| Quick Pay | Create fast tip, wage, bonus, advance, reimbursement, or adjustment payments with preview, memo, proof, and audit trail. |
+| Pay Engine | Configure hourly, commission, hybrid, tiered, bonus, overtime, and pay schedule rules before payroll/payout review. |
+| Weekly Payroll | Review weekly hours, sales, commission, tips, bonus, gross/net, and pay-one/pay-all actions. |
+| Tax Center 1099/W-2 | Review W-9/TIN, contractor classification, 1099-NEC Box 1, W-2 split, recipient delivery, and filing readiness. |
 | Tax Ledger | Xem immutable tax ledger records theo run, employee, jurisdiction, type, hash. |
 | Exceptions | Queue các vấn đề cần xử lý trước payroll/tax review. |
 | Data Quality | Aggregate missing TIN/W-4, receipt purpose, OCR confidence, connection/webhook errors, GPS review, and CPA missing evidence. |

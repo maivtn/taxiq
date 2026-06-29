@@ -91,6 +91,7 @@ a {
 
 .card,
 .panel {
+  min-width: 0;
   border: 1px solid #1e293b;
   border-radius: 8px;
   background: #0f172a;
@@ -228,6 +229,85 @@ a {
   gap: 9px;
 }
 
+/* ── AI Assistant toggle switch ── */
+.switch {
+  position: relative;
+  display: inline-flex;
+  height: 22px;
+  width: 40px;
+  flex: none;
+  align-items: center;
+  cursor: pointer;
+}
+.switch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.switch .track {
+  height: 22px;
+  width: 40px;
+  border-radius: 99px;
+  background: #334155;
+  transition: background .18s ease;
+}
+.switch .dot {
+  position: absolute;
+  left: 3px;
+  height: 16px;
+  width: 16px;
+  border-radius: 99px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(2, 6, 23, .4);
+  transition: transform .18s ease;
+}
+.switch input:checked + .track {
+  background: #6366f1;
+}
+.switch input:checked ~ .dot {
+  transform: translateX(18px);
+}
+
+/* ── AI Assistant chat ── */
+.chat-thread {
+  display: grid;
+  gap: 14px;
+  max-height: 440px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.chat-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.chat-row.me {
+  flex-direction: row-reverse;
+}
+.chat-bubble {
+  max-width: 82%;
+  border-radius: 16px;
+  padding: 11px 14px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.chat-bubble.ai {
+  border: 1px solid #1e293b;
+  border-top-left-radius: 4px;
+  background: rgba(2, 6, 23, .7);
+  color: #cbd5e1;
+}
+.chat-bubble.me {
+  border-top-right-radius: 4px;
+  background: #6366f1;
+  color: #fff;
+  font-weight: 600;
+}
+
 .grid-4,
 .grid-3,
 .grid-2,
@@ -235,6 +315,15 @@ a {
 .detail {
   display: grid;
   gap: 14px;
+  min-width: 0;
+}
+
+.grid-4 > *,
+.grid-3 > *,
+.grid-2 > *,
+.split > *,
+.detail > * {
+  min-width: 0;
 }
 
 .grid-4 {
@@ -259,6 +348,724 @@ a {
 
 .table-wrap table {
   min-width: 760px;
+}
+
+.table-wrap {
+  max-width: 100%;
+  min-width: 0;
+  overscroll-behavior-x: contain;
+}
+
+/* ── Nexora Touch source-style sections used by payout/payroll/1099 docs ── */
+.nexora-source {
+  color: #e6edf3;
+  font-size: 14px;
+}
+
+.nexora-source .section-box {
+  margin-bottom: 20px;
+  overflow: auto;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  background: #161b22;
+}
+
+.nexora-source .section-box-title {
+  border-bottom: 1px solid #30363d;
+  background: #1c2128;
+  padding: 14px 18px;
+  color: #e6edf3;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.nexora-source table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.nexora-source thead tr,
+.nexora-source .total-row td {
+  background: #1c2128;
+}
+
+.nexora-source th {
+  border-bottom: 1px solid #30363d;
+  padding: 10px 14px;
+  color: #8b949e;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.nexora-source td {
+  border-bottom: 1px solid #21262d;
+  padding: 10px 14px;
+  color: #e6edf3;
+  vertical-align: top;
+}
+
+.nexora-source tr:last-child td {
+  border-bottom: 0;
+}
+
+.nexora-source tr:hover td {
+  background: #1c2128;
+}
+
+.nexora-source .total-row td {
+  border-top: 2px solid #30363d;
+}
+
+.nexora-source .badge {
+  display: inline-block;
+  border-radius: 20px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nexora-source .badge-green { border: 1px solid #2ea043; background: #1a3a2a; color: #3fb950; }
+.nexora-source .badge-blue { border: 1px solid #1f6feb; background: #1a2b3a; color: #58a6ff; }
+.nexora-source .badge-orange { border: 1px solid #d29922; background: #3a2a10; color: #f0883e; }
+.nexora-source .badge-purple { border: 1px solid #8957e5; background: #2a1a3a; color: #bc8cff; }
+.nexora-source .badge-red { border: 1px solid #da3633; background: #3a1a1a; color: #f85149; }
+.nexora-source .badge-gray { border: 1px solid #30363d; background: #21262d; color: #8b949e; }
+
+.nexora-source .alert {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+}
+
+.nexora-source .alert-green { border: 1px solid #2ea043; background: #1a3a2a; color: #3fb950; }
+.nexora-source .alert-blue { border: 1px solid #1f6feb; background: #1a2b3a; color: #79c0ff; }
+.nexora-source .alert-orange { border: 1px solid #d29922; background: #3a2a10; color: #f0883e; }
+.nexora-source .alert-red { border: 1px solid #da3633; background: #3a1a1a; color: #f85149; }
+
+.nexora-source .stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.nexora-source .stat-card {
+  min-width: 0;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  background: #161b22;
+  padding: 16px;
+}
+
+.nexora-source .stat-label {
+  margin-bottom: 6px;
+  color: #8b949e;
+  font-size: 11px;
+}
+
+.nexora-source .stat-val {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.nexora-source .stat-sub {
+  margin-top: 4px;
+  color: #8b949e;
+  font-size: 11px;
+}
+
+.nexora-source .green { color: #3fb950; }
+.nexora-source .blue { color: #58a6ff; }
+.nexora-source .orange { color: #f0883e; }
+.nexora-source .purple { color: #bc8cff; }
+.nexora-source .red { color: #f85149; }
+.nexora-source .gray { color: #8b949e; }
+.nexora-source .amt { color: #3fb950; font-weight: 600; }
+.nexora-source .tip { color: #f0883e; }
+.nexora-source .deduct { color: #f85149; }
+
+.nexora-source .card-grid-3,
+.nexora-source .card-grid-4,
+.nexora-source .quick-actions {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.nexora-source .card-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.nexora-source .card-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.nexora-source .quick-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+.nexora-source .info-card {
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.nexora-source .info-icon {
+  margin-bottom: 8px;
+  font-size: 24px;
+}
+
+.nexora-source .info-title {
+  margin-bottom: 8px;
+  color: #e6edf3;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.nexora-source .info-card ul {
+  padding-left: 16px;
+  color: #8b949e;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.nexora-source .info-card p {
+  color: #8b949e;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.nexora-source .info-orange { border-color: #d29922; background: #251a0a; }
+.nexora-source .info-blue { border-color: #1f6feb; background: #0d1b2a; }
+.nexora-source .info-purple { border-color: #8957e5; background: #1a1030; }
+.nexora-source .info-green { border-color: #2ea043; background: #0d2018; }
+
+.nexora-source .step {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 6px;
+  border: 0;
+  border-radius: 50%;
+  background: #6e40c9;
+  color: #fff;
+  padding: 0;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.nexora-source .calc-box {
+  margin: 12px 16px;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  background: #1c2128;
+  padding: 10px 14px;
+  color: #8b949e;
+  font-size: 12px;
+}
+
+.nexora-source .payout-card {
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  background: #1c2128;
+  padding: 14px;
+}
+
+.nexora-source .payout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.nexora-source .payout-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.nexora-source .payout-note {
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: #0d1117;
+  padding: 8px 12px;
+  color: #8b949e;
+  font-size: 12px;
+}
+
+.nexora-source .payout-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.nexora-source .btn-green,
+.nexora-source .btn-gray,
+.nexora-source .btn-purple,
+.nexora-source .qa-btn {
+  display: inline-block;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.nexora-source .btn-green {
+  flex: 1;
+  border: 1px solid #2ea043;
+  background: #1a3a2a;
+  color: #3fb950;
+  padding: 8px 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.nexora-source .btn-gray {
+  border: 1px solid #30363d;
+  background: #21262d;
+  color: #8b949e;
+  padding: 8px 14px;
+}
+
+.nexora-source .btn-purple {
+  border: 1px solid #8957e5;
+  background: #2a1a3a;
+  color: #bc8cff;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nexora-source .qa-btn {
+  border-radius: 8px;
+  padding: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.nexora-source .qa-btn small {
+  color: rgba(255,255,255,.6);
+  font-weight: 400;
+}
+
+.nexora-source .qa-purple { border: 1px solid #8957e5; background: #2a1a3a; color: #bc8cff; }
+.nexora-source .qa-blue { border: 1px solid #1f6feb; background: #1a2b3a; color: #58a6ff; }
+.nexora-source .qa-green { border: 1px solid #2ea043; background: #1a3a2a; color: #3fb950; }
+.nexora-source .qa-orange { border: 1px solid #d29922; background: #3a2a10; color: #f0883e; }
+
+.nexora-source .checklist {
+  list-style: none;
+  padding: 16px;
+}
+
+.nexora-source .checklist li {
+  border-bottom: 1px solid #21262d;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.nexora-source .checklist li:last-child {
+  border-bottom: 0;
+}
+
+.nexora-source .check-done { color: #3fb950; }
+.nexora-source .check-todo { color: #8b949e; }
+
+.nexora-source .source-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.nexora-source .source-title {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.nexora-source .source-subtitle {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.nexora-source .source-button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #1e2d4d;
+  color: #cbd5e1;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.nexora-source .source-button.primary {
+  border-color: #7c3aed;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  color: #fff;
+}
+
+.nexora-source .source-button.orange {
+  border-color: #d97706;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+}
+
+.nexora-source .qp-layout,
+.nexora-source .hub-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 18px;
+  align-items: start;
+}
+
+.nexora-source .pay-type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.nexora-source .pay-type-card,
+.nexora-source .worker-item,
+.nexora-source .preview-card,
+.nexora-source .recent-card,
+.nexora-source .profile-card,
+.nexora-source .station-card,
+.nexora-source .queue-card,
+.nexora-source .review-row {
+  border: 1px solid #24324d;
+  border-radius: 10px;
+  background: #111827;
+}
+
+.nexora-source .pay-type-card {
+  min-height: 108px;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  text-align: center;
+}
+
+.nexora-source .pay-type-card.active {
+  border-color: #f59e0b;
+  background: #1f2a44;
+  box-shadow: inset 0 0 0 1px rgba(245,158,11,.45);
+}
+
+.nexora-source .pay-type-icon {
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+.nexora-source .worker-list {
+  display: grid;
+  gap: 10px;
+}
+
+.nexora-source .worker-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #192640;
+}
+
+.nexora-source .worker-item.active {
+  border-color: #f59e0b;
+  box-shadow: inset 0 0 0 1px rgba(245,158,11,.45);
+}
+
+.nexora-source .avatar {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  color: #fff;
+  font-weight: 900;
+}
+
+.nexora-source .avatar.green { background: #4fb779; color: #fff; }
+.nexora-source .avatar.blue { background: #4d7ee8; color: #fff; }
+.nexora-source .avatar.pink { background: #df4e99; color: #fff; }
+.nexora-source .avatar.orange { background: #f59e0b; color: #fff; }
+.nexora-source .avatar.red { background: #ef5350; color: #fff; }
+
+.nexora-source .pay-method-pill {
+  display: inline-flex;
+  min-width: 150px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-radius: 8px;
+  background: rgba(34,197,94,.12);
+  padding: 8px 10px;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.nexora-source .preview-card {
+  padding: 20px;
+  text-align: center;
+}
+
+.nexora-source .preview-amount {
+  margin: 18px 0;
+  color: rgba(148,163,184,.28);
+  font-size: 46px;
+  font-weight: 900;
+}
+
+.nexora-source .preview-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-radius: 8px;
+  background: #1d2b49;
+  padding: 10px 12px;
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.nexora-source .recent-list {
+  display: grid;
+  gap: 0;
+}
+
+.nexora-source .recent-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  border-bottom: 1px solid #24324d;
+  padding: 12px 0;
+}
+
+.nexora-source .recent-row:last-child {
+  border-bottom: 0;
+}
+
+.nexora-source .source-input,
+.nexora-source .source-textarea {
+  width: 100%;
+  border: 1px solid #263755;
+  border-radius: 8px;
+  background: #1d2b49;
+  color: #e2e8f0;
+  padding: 12px;
+  outline: none;
+}
+
+.nexora-source .source-input.amount {
+  height: 58px;
+  border-color: #f59e0b;
+  color: #e5e7eb;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.nexora-source .amount-buttons,
+.nexora-source .method-grid,
+.nexora-source .tab-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nexora-source .method-card {
+  min-width: 130px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #1d2b49;
+  color: #cbd5e1;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.nexora-source .method-card.active {
+  border-color: #22c55e;
+  background: rgba(34,197,94,.12);
+}
+
+.nexora-source .tab-pill {
+  border: 1px solid #263755;
+  border-radius: 8px;
+  background: #121b2e;
+  color: #94a3b8;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.nexora-source .tab-pill.active {
+  border-color: #7c3aed;
+  background: #7c3aed;
+  color: #fff;
+}
+
+.nexora-source .pending-pill {
+  border: 1px solid rgba(245,158,11,.35);
+  border-radius: 10px;
+  background: rgba(245,158,11,.12);
+  padding: 14px 20px;
+  color: #f59e0b;
+  text-align: center;
+  font-weight: 900;
+}
+
+.nexora-source .profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.nexora-source .profile-card {
+  padding: 18px;
+  background: #111a2d;
+}
+
+.nexora-source .profile-head,
+.nexora-source .station-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.nexora-source .pay-channel {
+  border-left: 3px solid #22c55e;
+  border-radius: 8px;
+  background: #1d2b49;
+  padding: 10px 12px;
+}
+
+.nexora-source .pos-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.nexora-source .pos-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+  border-top: 1px solid #24324d;
+  padding-top: 18px;
+}
+
+.nexora-source .station-card {
+  min-height: 188px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-color: #334155;
+  padding: 18px;
+  text-align: center;
+}
+
+.nexora-source .station-card.purple { border-color: #7c3aed; }
+.nexora-source .station-card.green { border-color: #4fb779; }
+.nexora-source .station-card.orange { border-color: #f59e0b; }
+
+.nexora-source .progress-track {
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: #17213a;
+  overflow: hidden;
+  margin: 12px 0 8px;
+}
+
+.nexora-source .progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: #7c3aed;
+}
+
+.nexora-source .queue-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.nexora-source .queue-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  border-left: 3px solid #f59e0b;
+  padding: 14px;
+}
+
+.nexora-source .review-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  border-radius: 0;
+  border-width: 0 0 1px;
+  background: transparent;
+  padding: 18px 16px;
+}
+
+.nexora-source .review-avatar {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 999px;
+  background: #263755;
+  color: #94a3b8;
+}
+
+.nexora-source .stars {
+  color: #fbbf24;
+  font-size: 15px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .nexora-source .qp-layout,
+  .nexora-source .hub-layout {
+    grid-template-columns: 1fr;
+  }
+  .nexora-source .pos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .nexora-source .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .nexora-source .stats-row,
+  .nexora-source .card-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .nexora-source .stats-row,
+  .nexora-source .card-grid-3,
+  .nexora-source .card-grid-4,
+  .nexora-source .quick-actions {
+    grid-template-columns: 1fr;
+  }
 }
 
 .row {
@@ -800,4 +1607,412 @@ select.form-control {
   .skeleton-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Nexora Touch color polish for Tax IQ
+   ────────────────────────────────────────────────────────────── */
+:root {
+  --nx-bg: #0b1020;
+  --nx-bg-2: #11172b;
+  --nx-surface: rgba(20, 27, 48, .92);
+  --nx-surface-2: rgba(26, 36, 65, .86);
+  --nx-line: rgba(88, 108, 160, .34);
+  --nx-line-strong: rgba(124, 58, 237, .52);
+  --nx-purple: #7c3aed;
+  --nx-purple-2: #a855f7;
+  --nx-blue: #4d7ee8;
+  --nx-cyan: #22d3ee;
+  --nx-green: #4fb779;
+  --nx-amber: #f59e0b;
+  --nx-red: #ef5350;
+}
+
+html,
+body {
+  background:
+    radial-gradient(circle at 18% -10%, rgba(124, 58, 237, .28), transparent 32%),
+    radial-gradient(circle at 92% 4%, rgba(34, 211, 238, .16), transparent 28%),
+    linear-gradient(180deg, #0c1120 0%, #090d18 54%, #070b12 100%) !important;
+}
+
+body {
+  color: #e9eefb;
+}
+
+.app,
+.main {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(99, 102, 241, .13), transparent 36%),
+    linear-gradient(180deg, rgba(16, 23, 42, .98), rgba(8, 12, 22, .98)) !important;
+}
+
+.content {
+  position: relative;
+}
+
+.content::before {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 220px;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(124, 58, 237, .18), rgba(34, 211, 238, .08), rgba(245, 158, 11, .06));
+  opacity: .7;
+  mask-image: linear-gradient(to bottom, #000, transparent);
+}
+
+.btn,
+.guide-action,
+.source-button {
+  border-color: rgba(99, 102, 241, .38);
+  background: linear-gradient(180deg, rgba(35, 47, 84, .95), rgba(23, 33, 59, .95));
+  color: #dbe7ff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 10px 24px rgba(2, 6, 23, .18);
+}
+
+.btn:hover,
+.guide-action:hover,
+.source-button:hover {
+  border-color: rgba(168, 85, 247, .82);
+  background: linear-gradient(135deg, rgba(79, 70, 229, .38), rgba(14, 165, 233, .2));
+  color: #fff;
+}
+
+.btn.primary,
+.guide-action.primary,
+.source-button.primary {
+  border-color: rgba(168, 85, 247, .9) !important;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 46%, #4f46e5 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 14px 32px rgba(124, 58, 237, .32), inset 0 1px 0 rgba(255, 255, 255, .18);
+}
+
+.btn.green {
+  border-color: rgba(34, 197, 94, .75);
+  background: linear-gradient(135deg, #4fb779, #22c55e);
+  color: #03140a;
+}
+
+.panel,
+.card {
+  position: relative;
+  overflow: hidden;
+  border-color: var(--nx-line);
+  background:
+    linear-gradient(180deg, rgba(26, 34, 61, .96), rgba(15, 23, 42, .94)),
+    var(--nx-surface);
+  box-shadow:
+    0 24px 55px rgba(0, 0, 0, .32),
+    inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+
+.panel::before,
+.card::before {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  content: "";
+  background: linear-gradient(90deg, var(--nx-purple), var(--nx-cyan), var(--nx-amber));
+  opacity: .86;
+}
+
+.panel:hover,
+.card:hover {
+  border-color: rgba(124, 58, 237, .58);
+  box-shadow:
+    0 28px 62px rgba(0, 0, 0, .38),
+    0 0 0 1px rgba(124, 58, 237, .12),
+    inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+.panel > *,
+.card > * {
+  position: relative;
+}
+
+.panel .border-b,
+.panel-head,
+.panel [class*="border-b"] {
+  border-color: rgba(88, 108, 160, .28) !important;
+}
+
+.label {
+  color: #8797c3;
+}
+
+.value {
+  color: #fff;
+  text-shadow: 0 0 22px rgba(124, 58, 237, .18);
+}
+
+.card.border-emerald-500 .value,
+.card .text-emerald-300 {
+  color: #62d391 !important;
+}
+
+.card.border-cyan-500 .value,
+.card .text-cyan-300 {
+  color: #67e8f9 !important;
+}
+
+.card.border-amber-500 .value,
+.card .text-amber-300 {
+  color: #fbbf24 !important;
+}
+
+.card.border-rose-500 .value,
+.card .text-rose-300 {
+  color: #fb7185 !important;
+}
+
+.card.border-indigo-500 .value,
+.card .text-indigo-300 {
+  color: #a78bfa !important;
+}
+
+.card.border-emerald-500 { background: linear-gradient(180deg, rgba(20, 54, 46, .9), rgba(17, 24, 39, .96)); }
+.card.border-cyan-500 { background: linear-gradient(180deg, rgba(18, 50, 70, .9), rgba(17, 24, 39, .96)); }
+.card.border-amber-500 { background: linear-gradient(180deg, rgba(70, 47, 18, .88), rgba(17, 24, 39, .96)); }
+.card.border-rose-500 { background: linear-gradient(180deg, rgba(70, 26, 40, .9), rgba(17, 24, 39, .96)); }
+.card.border-indigo-500 { background: linear-gradient(180deg, rgba(43, 35, 86, .94), rgba(17, 24, 39, .96)); }
+
+.page-guide {
+  border-color: rgba(124, 58, 237, .44);
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, .24), rgba(34, 211, 238, .10) 54%, rgba(245, 158, 11, .08)),
+    rgba(17, 24, 39, .94);
+}
+
+.guide-kicker {
+  color: #a78bfa;
+}
+
+.guide-meta span,
+.item,
+.check-row {
+  border-color: rgba(88, 108, 160, .28);
+  background: rgba(11, 16, 32, .76);
+}
+
+.item:nth-child(4n + 1) { border-left: 3px solid var(--nx-purple); }
+.item:nth-child(4n + 2) { border-left: 3px solid var(--nx-green); }
+.item:nth-child(4n + 3) { border-left: 3px solid var(--nx-amber); }
+.item:nth-child(4n + 4) { border-left: 3px solid var(--nx-blue); }
+
+.table-wrap {
+  border-radius: 8px;
+  background: rgba(8, 13, 25, .46);
+}
+
+thead tr {
+  background: linear-gradient(90deg, rgba(124, 58, 237, .14), rgba(34, 211, 238, .08));
+}
+
+th {
+  color: #91a4d2 !important;
+}
+
+td {
+  border-color: rgba(88, 108, 160, .22) !important;
+}
+
+tbody tr:hover td {
+  background: rgba(79, 70, 229, .12) !important;
+}
+
+.status {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+.form-control {
+  border-color: rgba(88, 108, 160, .36);
+  background-color: rgba(14, 22, 41, .92);
+  color: #e6edf7;
+}
+
+.form-control:focus {
+  border-color: rgba(168, 85, 247, .95);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, .2), 0 0 28px rgba(34, 211, 238, .08);
+}
+
+.row {
+  border-color: rgba(88, 108, 160, .24);
+}
+
+.step {
+  border-color: rgba(88, 108, 160, .34);
+  background: rgba(18, 27, 50, .9);
+}
+
+.step.done {
+  background: linear-gradient(135deg, rgba(34, 197, 94, .18), rgba(20, 184, 166, .10));
+}
+
+.chart-panel {
+  background: rgba(8, 13, 25, .36);
+}
+
+.chart-track {
+  background: rgba(30, 41, 59, .9);
+}
+
+.chart-bar.green,
+.chart-bar.cyan,
+.chart-bar.blue,
+.chart-bar.yellow,
+.chart-bar.red {
+  box-shadow: 0 0 18px currentColor;
+}
+
+/* Source-style pages: make Nexora Touch screens richer and closer to the reference screenshots. */
+.nexora-source {
+  color: #eef4ff;
+}
+
+.nexora-source .source-hero {
+  border-bottom: 1px solid rgba(88, 108, 160, .28);
+  border-radius: 10px;
+  background:
+    linear-gradient(90deg, rgba(124, 58, 237, .16), rgba(34, 211, 238, .08), rgba(245, 158, 11, .06));
+  padding: 18px 20px;
+}
+
+.nexora-source .source-title {
+  color: #fff;
+  text-shadow: 0 0 28px rgba(124, 58, 237, .22);
+}
+
+.nexora-source .source-subtitle {
+  color: #8fa0c7;
+}
+
+.nexora-source .section-box,
+.nexora-source .stat-card,
+.nexora-source .payout-card,
+.nexora-source .info-card,
+.nexora-source .pay-type-card,
+.nexora-source .worker-item,
+.nexora-source .preview-card,
+.nexora-source .recent-card,
+.nexora-source .profile-card,
+.nexora-source .station-card,
+.nexora-source .queue-card {
+  border-color: rgba(79, 99, 152, .58);
+  background:
+    linear-gradient(180deg, rgba(26, 35, 62, .96), rgba(15, 23, 42, .96));
+  box-shadow: 0 20px 42px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+
+.nexora-source .section-box-title {
+  border-color: rgba(79, 99, 152, .42);
+  background: linear-gradient(90deg, rgba(35, 44, 76, .98), rgba(28, 36, 66, .92));
+  color: #f3f7ff;
+}
+
+.nexora-source .stats-row .stat-card:nth-child(4n + 1) { border-color: rgba(124, 58, 237, .68); background: linear-gradient(180deg, rgba(49, 35, 93, .85), rgba(18, 26, 48, .96)); }
+.nexora-source .stats-row .stat-card:nth-child(4n + 2) { border-color: rgba(79, 183, 121, .68); background: linear-gradient(180deg, rgba(18, 68, 50, .82), rgba(18, 26, 48, .96)); }
+.nexora-source .stats-row .stat-card:nth-child(4n + 3) { border-color: rgba(77, 126, 232, .68); background: linear-gradient(180deg, rgba(28, 54, 103, .82), rgba(18, 26, 48, .96)); }
+.nexora-source .stats-row .stat-card:nth-child(4n + 4) { border-color: rgba(245, 158, 11, .70); background: linear-gradient(180deg, rgba(82, 51, 14, .78), rgba(18, 26, 48, .96)); }
+
+.nexora-source .stat-label {
+  color: #8797c3;
+  font-weight: 900;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.nexora-source .stat-val {
+  font-weight: 900;
+}
+
+.nexora-source .stat-val.green { color: #62d391; }
+.nexora-source .stat-val.blue { color: #7dd3fc; }
+.nexora-source .stat-val.orange { color: #fbbf24; }
+.nexora-source .stat-val.purple { color: #c4b5fd; }
+.nexora-source .stat-val.red { color: #fb7185; }
+
+.nexora-source .pay-type-card.active,
+.nexora-source .worker-item.active {
+  border-color: rgba(245, 158, 11, .92);
+  background: linear-gradient(135deg, rgba(89, 54, 16, .68), rgba(44, 35, 88, .62));
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, .24), 0 18px 34px rgba(245, 158, 11, .10);
+}
+
+.nexora-source .station-card.purple,
+.nexora-source .tab-pill.active {
+  border-color: rgba(124, 58, 237, .95);
+  box-shadow: 0 0 0 1px rgba(124, 58, 237, .18), 0 20px 40px rgba(124, 58, 237, .12);
+}
+
+.nexora-source .station-card.green,
+.nexora-source .method-card.active,
+.nexora-source .pay-channel {
+  border-color: rgba(79, 183, 121, .92);
+}
+
+.nexora-source .station-card.orange,
+.nexora-source .queue-card {
+  border-color: rgba(245, 158, 11, .92);
+}
+
+.nexora-source .tab-pill {
+  border-color: rgba(88, 108, 160, .45);
+  background: linear-gradient(180deg, rgba(26, 36, 65, .95), rgba(16, 25, 46, .95));
+  color: #aab8db;
+}
+
+.nexora-source .tab-pill.active {
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  color: #fff;
+}
+
+.nexora-source .source-input,
+.nexora-source .source-textarea,
+.nexora-source .method-card,
+.nexora-source .preview-row,
+.nexora-source .pay-method-pill {
+  border-color: rgba(88, 108, 160, .42);
+  background: rgba(28, 42, 75, .88);
+}
+
+.nexora-source .source-input.amount {
+  border-color: rgba(245, 158, 11, .95);
+  background: linear-gradient(90deg, rgba(63, 42, 16, .9), rgba(28, 42, 75, .88));
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, .14);
+}
+
+.nexora-source .review-row:hover {
+  background: rgba(79, 70, 229, .10);
+}
+
+.nexora-source .pay-type-card,
+.nexora-source .worker-item,
+.nexora-source .method-card,
+.nexora-source .tab-pill,
+.nexora-source .source-button,
+.nexora-source .station-card .source-button,
+.nexora-source .queue-card .source-button,
+.nexora-source .review-row .source-button {
+  cursor: pointer;
+}
+
+.nexora-source .pay-type-card:hover,
+.nexora-source .worker-item:hover,
+.nexora-source .method-card:hover,
+.nexora-source .queue-card:hover,
+.nexora-source .profile-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(168, 85, 247, .72);
+  box-shadow: 0 22px 44px rgba(0, 0, 0, .32), 0 0 0 1px rgba(124, 58, 237, .14);
+}
+
+.nexora-source table {
+  background: rgba(8, 13, 25, .25);
+}
+
+.nexora-source thead tr,
+.nexora-source .total-row td {
+  background: linear-gradient(90deg, rgba(124, 58, 237, .16), rgba(34, 211, 238, .08));
 }

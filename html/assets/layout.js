@@ -23,10 +23,14 @@ const TaxIQLayout = (() => {
     onboarding:"fa-solid fa-clipboard-list", "data-quality":"fa-solid fa-clipboard-check",
     employers:"fa-solid fa-building",         employees:"fa-solid fa-users",
     "employee-profile":"fa-solid fa-user",    "payroll-runs":"fa-solid fa-money-bill-wave",
-    "run-detail":"fa-solid fa-list-check",    connections:"fa-solid fa-plug",
+    "run-detail":"fa-solid fa-list-check",    "quick-pay":"fa-solid fa-bolt",
+    "pay-engine":"fa-solid fa-sliders",       "weekly-payroll":"fa-solid fa-calendar-week",
+    pos:"fa-solid fa-display",                reviews:"fa-solid fa-star",
+    "tax-1099":"fa-solid fa-file-invoice-dollar", connections:"fa-solid fa-plug",
     payouts:"fa-solid fa-hand-holding-dollar",ledger:"fa-solid fa-book",
     exceptions:"fa-solid fa-triangle-exclamation", jurisdictions:"fa-solid fa-map",
     forms:"fa-solid fa-file-lines",           "ai-advisor":"fa-solid fa-robot",
+    "ai-assistant":"fa-solid fa-wand-magic-sparkles",
     ocr:"fa-solid fa-receipt",                "share-links":"fa-solid fa-link",
     gps:"fa-solid fa-location-dot",           cpa:"fa-solid fa-user-tie",
     "tip-ledger":"fa-solid fa-coins",         "tax-estimate":"fa-solid fa-calculator",
@@ -45,20 +49,27 @@ const TaxIQLayout = (() => {
     "employee-profile":{title:"Employee Profile", file:"employee-profile.html", subtitle:"Profile detail, payroll history, and tax status."},
     "payroll-runs":{title:"Payroll Runs", file:"payroll-runs.html", subtitle:"Create, review, approve, and finalize payroll runs."},
     "run-detail":{title:"Payroll Run Detail", file:"run-detail.html", subtitle:"Validation, line items, exceptions, ledger, and audit."},
+    "quick-pay":{title:"Quick Pay — Thanh Toán Nhanh", file:"quick-pay.html", subtitle:"Dashboard → Quick Pay"},
+    "pay-engine":{title:"Cấu Hình Lương — Pay Engine", file:"pay-engine.html", subtitle:"Staff → Lương → Cấu Hình Lương"},
+    "weekly-payroll":{title:"Bảng Lương Tuần 23-28/6/2025", file:"weekly-payroll.html", subtitle:"Staff → Lương → Tuần Này"},
+    pos:{title:"POS — Điểm Bán Hàng", file:"pos.html", subtitle:"Check in · Turn Board · Checkout"},
     connections:{title:"Connections", file:"connections.html", subtitle:"Payroll, HRIS, payout, and webhook integrations."},
-    payouts:{title:"Staff Payouts", file:"payouts.html", subtitle:"Technician payout ledger, evidence, and 1099 sync."},
+    payouts:{title:"Payout Hub — Thanh Toán Nhân Viên 1099", file:"payouts.html", subtitle:"Payout → Tổng Quan"},
     ledger:{title:"Tax Ledger", file:"tax-ledger.html", subtitle:"Immutable tax and payout ledger records."},
     exceptions:{title:"Exceptions", file:"exceptions.html", subtitle:"Blocking issues and review workflow."},
     "data-quality":{title:"Data Quality", file:"data-quality.html", subtitle:"Missing data, evidence gaps, integration errors, and CPA readiness."},
     jurisdictions:{title:"Jurisdictions", file:"jurisdictions.html", subtitle:"Federal, state, and local tax footprint."},
     forms:{title:"Forms & Reports", file:"forms-reports.html", subtitle:"Payroll, 1099, CPA, and year-end export center."},
     "ai-advisor":{title:"AI Advisor", file:"ai-advisor.html", subtitle:"AI CFO, official-rule watch, support, and deduction reminders."},
+    "ai-assistant":{title:"AI Assistant", file:"ai-assistant.html", subtitle:"Real-time AI receptionist, scheduling, bookkeeping, and revenue insights for your shop."},
+    reviews:{title:"Đánh Giá & Review", file:"reviews.html", subtitle:"Google · Yelp · Facebook · Phản hồi khách hàng"},
     ocr:{title:"OCR Vault", file:"ocr-vault.html", subtitle:"Receipts, bills, invoices, and AI extraction review."},
     "share-links":{title:"Share Links", file:"share-links.html", subtitle:"Secure upload, review, QR, and profile links."},
     gps:{title:"GPS Mileage", file:"gps-mileage.html", subtitle:"Trip tracking and mileage deduction review."},
     cpa:{title:"CPA Review", file:"cpa-review.html", subtitle:"Connect third-party CPA/bookkeeper to review records and prepare merchant tax filing packages."},
     "tip-ledger":{title:"Tip Ledger", file:"tip-ledger.html", subtitle:"No Tax on Tips — track, classify, and report qualified tips year-round."},
     "tax-estimate":{title:"Tax Estimate", file:"tax-estimate.html", subtitle:"Quarterly and annual federal/state estimated tax dashboard."},
+    "tax-1099":{title:"Tax Center — 1099/W-2", file:"tax-1099.html", subtitle:"Tax → 1099/W-2 · Deadline: 1099-NEC → Jan 31 · Form 1096 → Feb 28"},
     webhooks:{title:"Webhooks", file:"webhooks.html", subtitle:"Outbound event delivery monitor."},
     "audit-log":{title:"Audit Log", file:"audit-log.html", subtitle:"Immutable action log — every view, change, export, and system event."},
     notifications:{title:"Notifications", file:"notifications.html", subtitle:"Alerts, deposit reminders, CPA requests, and compliance notices."},
@@ -69,8 +80,9 @@ const TaxIQLayout = (() => {
 
   const navGroups = [
     ["Overview",["dashboard","analytics","onboarding"]],
-    ["Payroll",["employers","employees","payroll-runs","payouts","connections"]],
-    ["Tax IQ",["ledger","exceptions","data-quality","jurisdictions","forms","ocr","share-links","gps","cpa","tip-ledger","tax-estimate","ai-advisor"]],
+    ["Merchant Ops",["pos","quick-pay","payouts","reviews","ai-assistant"]],
+    ["Payroll",["employers","employees","payroll-runs","pay-engine","weekly-payroll","connections"]],
+    ["Tax IQ",["ledger","exceptions","data-quality","jurisdictions","forms","tax-1099","ocr","share-links","gps","cpa","tip-ledger","tax-estimate","ai-advisor"]],
     ["System",["webhooks","audit-log","notifications","compliance-review","billing","settings"]]
   ];
 
@@ -81,13 +93,13 @@ const TaxIQLayout = (() => {
 
   function renderHeader(meta){
     return [
-      '<header class="topbar sticky top-0 z-10 flex min-h-[68px] items-center justify-between gap-5 border-b border-slate-800 bg-slate-900/95 px-6 py-3 backdrop-blur max-md:flex-col max-md:items-start max-md:px-4">',
+      '<header class="topbar sticky top-0 z-10 flex min-h-[68px] items-center justify-between gap-5 border-b border-slate-800 bg-slate-900/95 px-6 py-3 backdrop-blur max-md:flex-col max-md:items-start max-md:px-4" style="background:linear-gradient(90deg,rgba(16,23,42,.98),rgba(27,31,58,.98) 48%,rgba(21,31,56,.98));border-color:rgba(88,108,160,.30);box-shadow:0 14px 36px rgba(0,0,0,.20)">',
         '<div class="title">',
-          '<h2 class="m-0 text-lg font-black text-slate-50">' + meta.title + '</h2>',
-          '<p class="mt-1 text-xs text-slate-500">' + meta.subtitle + '</p>',
+          '<h2 class="m-0 text-lg font-black text-slate-50" style="text-shadow:0 0 22px rgba(124,58,237,.22)">' + meta.title + '</h2>',
+          '<p class="mt-1 text-xs text-slate-500" style="color:#8797c3">' + meta.subtitle + '</p>',
         '</div>',
         '<div class="tools flex min-w-0 items-center gap-2 max-md:w-full">',
-          '<label class="search flex h-9 min-w-72 items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 text-xs font-bold text-slate-500 max-md:min-w-0 max-md:flex-1">',
+          '<label class="search flex h-9 min-w-72 items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 text-xs font-bold text-slate-500 max-md:min-w-0 max-md:flex-1" style="border-color:rgba(88,108,160,.42);background:rgba(6,10,22,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)">',
             'Search <input class="' + ui.input + '" id="globalSearch" placeholder="runs, workers, issues..." autocomplete="off">',
           '</label>',
           '<a class="' + ui.btn + '" href="' + pageHref("notifications") + '" style="position:relative">',
@@ -107,17 +119,18 @@ const TaxIQLayout = (() => {
     s.id = "taxiq-sb-css";
     s.textContent = [
       /* sidebar shell */
-      "#taxiq-sidebar{width:260px;transition:width .22s cubic-bezier(.4,0,.2,1);overflow:hidden}",
-      "#taxiq-main{transition:margin-left .22s cubic-bezier(.4,0,.2,1)}",
+      "#taxiq-sidebar{width:260px;transition:width .22s cubic-bezier(.4,0,.2,1);overflow:hidden;background:linear-gradient(180deg,#10162a 0%,#0d1224 52%,#090d19 100%)!important;border-color:rgba(88,108,160,.28)!important;box-shadow:18px 0 45px rgba(0,0,0,.22)}",
+      "#taxiq-main{min-width:0;transition:margin-left .22s cubic-bezier(.4,0,.2,1),width .22s cubic-bezier(.4,0,.2,1)}",
       /* nav items */
       ".sb-item{display:flex;align-items:center;gap:10px;padding:0 10px;height:44px;border-radius:8px;",
-        "text-decoration:none;color:#94a3b8;font-size:13px;font-weight:600;",
-        "overflow:hidden;white-space:nowrap;transition:background .12s,color .12s;cursor:pointer}",
-      ".sb-item:not(.sb-active):hover{background:rgba(255,255,255,.06);color:#e2e8f0}",
-      ".sb-item.sb-active{background:rgba(99,102,241,.15);color:#a5b4fc}",
+        "text-decoration:none;color:#97a6cf;font-size:13px;font-weight:700;",
+        "overflow:hidden;white-space:nowrap;transition:background .12s,color .12s,border-color .12s,box-shadow .12s;cursor:pointer;border:1px solid transparent}",
+      ".sb-item:not(.sb-active):hover{background:rgba(124,58,237,.13);border-color:rgba(124,58,237,.22);color:#e9efff}",
+      ".sb-item.sb-active{background:linear-gradient(90deg,rgba(124,58,237,.75),rgba(79,70,229,.46));border-color:rgba(168,85,247,.55);color:#fff;box-shadow:0 10px 26px rgba(124,58,237,.22),inset 0 1px 0 rgba(255,255,255,.12)}",
+      ".sb-item.sb-active .sb-icon{color:#fff;text-shadow:0 0 16px rgba(255,255,255,.28)}",
       /* group labels */
       ".sb-group-label{padding:14px 10px 4px;font-size:10px;font-weight:900;",
-        "text-transform:uppercase;letter-spacing:.08em;color:#475569;",
+        "text-transform:uppercase;letter-spacing:.09em;color:#68799f;",
         "white-space:nowrap;overflow:hidden;",
         "transition:opacity .15s,height .22s cubic-bezier(.4,0,.2,1),padding .22s cubic-bezier(.4,0,.2,1)}",
       /* brand + account text */
@@ -128,7 +141,7 @@ const TaxIQLayout = (() => {
       "#sb-toggle-icon{transition:transform .22s cubic-bezier(.4,0,.2,1);display:block}",
       /* mobile: sidebar becomes top bar */
       "@media(max-width:767px){",
-        "#taxiq-sidebar{position:static!important;width:100%!important;border-right:none;border-bottom:1px solid #1e293b}",
+        "#taxiq-sidebar{position:static!important;width:100%!important;border-right:none;border-bottom:1px solid rgba(88,108,160,.30)}",
         "#taxiq-sidebar .sb-brand-row{padding:0 12px}",
         "#taxiq-sidebar .sb-toggle-btn{display:none}",
         "#taxiq-sidebar .sb-nav{flex-direction:row;overflow-x:auto;overflow-y:hidden;flex:none;padding:6px 8px;gap:2px}",
@@ -140,7 +153,7 @@ const TaxIQLayout = (() => {
           "max-width:56px;word-break:break-word;white-space:normal}",
         "#taxiq-sidebar .sb-icon{font-size:16px!important;width:auto!important}",
         "#taxiq-sidebar .sb-acct-row{display:none}",
-        "#taxiq-main{margin-left:0!important}",
+        "#taxiq-main{margin-left:0!important;width:100%!important}",
       "}",
       /* ── collapsed (desktop) ── */
       "#taxiq-sidebar.sb-collapsed{width:80px}",
@@ -169,9 +182,11 @@ const TaxIQLayout = (() => {
     if(open){
       sidebar.classList.remove("sb-collapsed");
       if(main) main.style.marginLeft = "260px";
+      if(main) main.style.width = "calc(100% - 260px)";
     } else {
       sidebar.classList.add("sb-collapsed");
       if(main) main.style.marginLeft = "80px";
+      if(main) main.style.width = "calc(100% - 80px)";
     }
   }
 
@@ -235,7 +250,7 @@ const TaxIQLayout = (() => {
     document.getElementById("app").innerHTML = [
       '<div class="app min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row">',
         renderSidebar(),
-        '<main id="taxiq-main" class="main min-h-screen flex-1" style="margin-left:' + (_sbOpen ? '260' : '80') + 'px">',
+        '<main id="taxiq-main" class="main min-h-screen flex-1" style="margin-left:' + (_sbOpen ? '260' : '80') + 'px;width:calc(100% - ' + (_sbOpen ? '260' : '80') + 'px)">',
           renderHeader(meta),
           '<section class="content p-6 max-md:p-4" id="content"></section>',
         '</main>',

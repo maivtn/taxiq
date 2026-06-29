@@ -1368,6 +1368,286 @@
       "Self-service data contributor."
     ]
   ],
+  "quickPayTypes": [
+    [
+      "Tip",
+      "Cash tip, pool tip, direct electronic tip, or tip adjustment.",
+      "Tip Ledger + Payout evidence"
+    ],
+    [
+      "Wage / Service Pay",
+      "Regular worker payment for services or weekly pay.",
+      "Payroll Runs or 1099 rollup depending on classification"
+    ],
+    [
+      "Bonus",
+      "KPI bonus, over-threshold bonus, holiday bonus, or owner adjustment.",
+      "Pay Engine + Tax Ledger"
+    ],
+    [
+      "Advance",
+      "Early payment against future pay period.",
+      "Payouts + deduction/adjustment tracking"
+    ],
+    [
+      "Reimbursement",
+      "Supplies, travel, or business expense reimbursement.",
+      "OCR Vault + CPA review"
+    ],
+    [
+      "Adjustment",
+      "Correction for prior payout, disputed tip, or under/over payment.",
+      "Audit Log + adjustment ledger"
+    ]
+  ],
+  "workerPayProfiles": [
+    [
+      "Amy T.",
+      "1099",
+      "Hybrid",
+      "35%",
+      "$12/hr",
+      "Weekly",
+      "Zelle",
+      "W-9 on file"
+    ],
+    [
+      "Linda P.",
+      "1099",
+      "Commission",
+      "40%",
+      "—",
+      "Weekly",
+      "Venmo",
+      "W-9 on file"
+    ],
+    [
+      "Kevin M.",
+      "W-2",
+      "Hourly",
+      "—",
+      "$15/hr",
+      "Weekly",
+      "ACH",
+      "W-4 ready"
+    ],
+    [
+      "Sarah J.",
+      "1099",
+      "Tiered",
+      "38%",
+      "—",
+      "Weekly",
+      "Cash App",
+      "TIN review"
+    ],
+    [
+      "Brian L.",
+      "1099",
+      "Hybrid",
+      "30%",
+      "$10/hr",
+      "Weekly",
+      "Check",
+      "W-9 on file"
+    ]
+  ],
+  "weeklyPayroll": [
+    [
+      "Amy T.",
+      "1099",
+      "Hybrid",
+      "50.5h",
+      "$2,195",
+      "$543",
+      "$768",
+      "+$176",
+      "$318",
+      "$1,804.85",
+      "Ready"
+    ],
+    [
+      "Linda P.",
+      "1099",
+      "Commission",
+      "50.5h",
+      "$2,853",
+      "$0",
+      "$1,141",
+      "+$371",
+      "$412",
+      "$1,924.09",
+      "Ready"
+    ],
+    [
+      "Kevin M.",
+      "W-2",
+      "Hourly",
+      "48.5h",
+      "$0",
+      "$720",
+      "$0",
+      "—",
+      "$223",
+      "$1,019.50",
+      "Payroll Tax"
+    ],
+    [
+      "Sarah J.",
+      "1099",
+      "Tiered",
+      "49h",
+      "$2,357",
+      "$0",
+      "$892",
+      "+$94",
+      "$344",
+      "$1,329.93",
+      "Review"
+    ],
+    [
+      "Brian L.",
+      "1099",
+      "Hybrid",
+      "46.5h",
+      "$1,648",
+      "$465",
+      "$494",
+      "+$66",
+      "$222",
+      "$1,247.32",
+      "Ready"
+    ]
+  ],
+  "weeklyDailyDetail": [
+    [
+      "Mon Jun 23",
+      "Gel Full Set, Pedicure, Nail Art",
+      "8.5h",
+      "$342",
+      "$48",
+      "~$232"
+    ],
+    [
+      "Tue Jun 24",
+      "Gel Polish, Eyebrow",
+      "9h",
+      "$415",
+      "$62",
+      "~$281"
+    ],
+    [
+      "Wed Jun 25",
+      "Pedicure, Manicure",
+      "8h",
+      "$298",
+      "$35",
+      "~$202"
+    ],
+    [
+      "Thu Jun 26",
+      "Gel Full Set, Nail Art, Pedicure",
+      "8.5h",
+      "$388",
+      "$55",
+      "~$263"
+    ],
+    [
+      "Fri Jun 27",
+      "Acrylic Full Set, Fill In, Pedicure",
+      "9.5h",
+      "$467",
+      "$78",
+      "~$316"
+    ],
+    [
+      "Sat Jun 28",
+      "Gel Polish, Pedicure",
+      "7h",
+      "$285",
+      "$40",
+      "~$193"
+    ]
+  ],
+  "tax1099Workers": [
+    [
+      "Amy T.",
+      "1099",
+      "$29,341",
+      "$25,445",
+      "$3,896",
+      "W-9 on file",
+      "Ready"
+    ],
+    [
+      "Linda P.",
+      "1099",
+      "$37,188",
+      "$32,720",
+      "$4,468",
+      "W-9 on file",
+      "Ready"
+    ],
+    [
+      "Sarah J.",
+      "1099",
+      "$19,766",
+      "$17,280",
+      "$2,486",
+      "TIN review",
+      "Needs Review"
+    ],
+    [
+      "Brian L.",
+      "1099",
+      "$14,881",
+      "$13,050",
+      "$1,831",
+      "W-9 on file",
+      "Ready"
+    ],
+    [
+      "Kevin M.",
+      "W-2",
+      "$12,480",
+      "W-2 wages",
+      "$0",
+      "W-4 ready",
+      "W-2 Flow"
+    ]
+  ],
+  "tax1099Checklist": [
+    [
+      "W-9 on file",
+      "Collect legal name, address, and TIN for each contractor.",
+      "Review"
+    ],
+    [
+      "TIN/name match",
+      "Validate TIN format and resolve mismatches before filing.",
+      "Needs Review"
+    ],
+    [
+      "Box 1 rollup",
+      "Reconcile nonemployee compensation against payout ledger.",
+      "Ready"
+    ],
+    [
+      "Payment proof",
+      "Attach Zelle, Venmo, Cash App, check, ACH, or cash memo proof.",
+      "Ready"
+    ],
+    [
+      "Recipient delivery",
+      "Track PDF/email/print delivery status and audit log.",
+      "Pending"
+    ],
+    [
+      "IRS e-file readiness",
+      "Verify IRIS/FIRE process, payer information, corrections, and annual deadline.",
+      "Review"
+    ]
+  ],
   "complianceChecklist": [
     [
       "Terms of Service legal review",

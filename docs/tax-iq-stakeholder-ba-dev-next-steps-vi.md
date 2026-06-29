@@ -71,6 +71,11 @@ Truoc go-live can legal review:
 | Flow | User story can viet |
 | --- | --- |
 | Merchant onboarding | Merchant tao account, chon industry, them business, them EIN, chon plan, connect payroll/accounting, moi CPA neu can. |
+| Quick Pay | Owner tao thanh toan nhanh: chon type, worker, amount, method, memo, preview, confirm, sau do record vao payout/evidence/audit log. |
+| Pay Engine config | Admin cau hinh hourly, commission, hybrid, tiered, overtime, bonus, KPI va pay schedule rieng cho tung worker. |
+| Weekly payroll payout | Owner xem bang luong tuan, review gross/net/tips/bonus, tra tung nguoi hoac tra tat ca, roi sync sang Tax IQ ledger. |
+| 1099 Payout Hub | Owner approve payout contractor 1099, gui payment method, dinh kem proof, va cap nhat YTD 1099 support. |
+| Tax Center 1099/W-2 | CPA/Admin review W-9/TIN, 1099-NEC Box 1, W-2 split, generate package, delivery status va filing readiness. |
 | Payroll Admin approve run | Payroll Admin xem run, xem validation, fix exception, approve/finalize, tao ledger va audit log. |
 | CPA portal review | CPA nhan share/portal link, xem package, comment, request missing evidence, mark ready for filing. |
 | Billing approval | Merchant xem plan/invoice/CPA estimate, approve hoac reject, audit log ghi lai. |
@@ -146,7 +151,8 @@ BA can spec:
 
 1. Stakeholder chot business model va ICP tren man hinh Billing + Onboarding.
 2. BA review Onboarding, Data Quality, Permission Matrix, Payroll Run state machine, Billing spec.
-3. Legal/CPA review man hinh Compliance Review, disclaimer, privacy/data retention, CPA handoff language.
+3. BA review bo sung Nexora Touch docs: Quick Pay, Pay Engine, Weekly Payroll, Payout Hub 1099 va Tax Center 1099/W-2.
+4. Legal/CPA review man hinh Compliance Review, disclaimer, privacy/data retention, CPA handoff language va 1099 deadline/threshold logic.
 
 Trang thai demo: cac muc Dev polish chinh va cac man hinh feedback moi da duoc bo sung vao HTML demo.
 

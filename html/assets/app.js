@@ -103,6 +103,55 @@ function freeRouteMap(routeName="Salon to supply store"){
     <a class="${ui.btn}" href="${osmDirectionsUrl(route)}" target="_blank" rel="noopener">Open in OpenStreetMap</a>
   </div>`;
 }
+function demoEscape(value){
+  return String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+function updateQuickPayPreview(scope=document){
+  const root = scope.querySelector?.(".nexora-source") || document.querySelector(".nexora-source");
+  if(!root) return;
+  const preview = root.querySelector(".preview-card");
+  if(!preview) return;
+  const payCard = root.querySelector(".pay-type-card.active");
+  const worker  = root.querySelector(".worker-item.active");
+  const method  = root.querySelector(".method-grid button.method-card.active") || root.querySelector(".method-grid .method-card.active");
+  const amountInput = root.querySelector(".source-input.amount");
+  const payIcon = payCard?.querySelector(".pay-type-icon")?.textContent.trim() || "💰";
+  const payTitle = payCard?.querySelector(".text-lg")?.textContent.trim() || "Trả Tip";
+  const workerName = worker?.querySelector(".text-sm")?.childNodes?.[0]?.textContent?.trim() || "Brian L.";
+  const methodText = method?.textContent.replace(/\s+/g," ").trim() || "Zelle";
+  const amount = moneyNumber(amountInput?.value || "$0");
+  const iconEl = preview.querySelector(".text-3xl");
+  const titleEl = preview.querySelector(".text-sm.font-black");
+  const nameEl = preview.querySelector(".rounded-lg.bg-slate-800");
+  const amountEl = preview.querySelector(".preview-amount");
+  const rows = preview.querySelectorAll(".preview-row strong");
+  const cta = preview.querySelector("button.source-button");
+  if(iconEl) iconEl.textContent = payIcon;
+  if(titleEl) titleEl.textContent = payTitle;
+  if(nameEl) nameEl.textContent = workerName;
+  if(amountEl) amountEl.textContent = moneyText(amount);
+  if(rows[0]) rows[0].textContent = methodText.toUpperCase();
+  if(cta){
+    cta.textContent = amount > 0 ? "Preview đã sẵn sàng để tạo thanh toán" : "Điền thông tin để xem preview";
+    cta.classList.toggle("primary", amount > 0);
+  }
+}
+function appendAiMessage(thread, who, text){
+  if(!thread) return;
+  const row = document.createElement("div");
+  row.className = "chat-row" + (who === "me" ? " me" : "");
+  row.innerHTML = `${who === "me" ? "" : `<span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 text-xs text-white"><i class="fa-solid fa-robot"></i></span>`}<div class="chat-bubble ${who === "me" ? "me" : "ai"}">${demoEscape(text)}</div>`;
+  thread.appendChild(row);
+  thread.scrollTop = thread.scrollHeight;
+}
+function aiDemoReply(question){
+  const q = question.toLowerCase();
+  if(q.includes("amy")) return "Amy T. tuần này đang ở mức $1,804.85 tổng nhận. Nếu anh muốn, em có thể mở Quick Pay để tạo payout cho Amy.";
+  if(q.includes("lịch") || q.includes("appointment")) return "Hôm nay AI đã tự đặt 4 lịch. Khung 2:00-4:00 PM còn trống 2 slot, phù hợp cho Gel Polish hoặc Manicure.";
+  if(q.includes("thuế") || q.includes("tax")) return "Về thuế, Tax IQ đang khuyến nghị giữ lại chứng từ tip, payout, receipt và mileage trước khi CPA review. Các ước tính chưa phải tax advice.";
+  if(q.includes("doanh thu") || q.includes("service")) return "Dịch vụ hot nhất tháng này là Gel Full Set: 148 lần, khoảng $9,620 doanh thu.";
+  return "Em đã nhận câu hỏi. Trong bản demo này AI sẽ phản hồi theo dữ liệu mẫu của tiệm; bản production sẽ nối backend AI và dữ liệu thật.";
+}
 function loadLeaflet(){
   if(window.L) return Promise.resolve(window.L);
   if(leafletPromise) return leafletPromise;
@@ -225,6 +274,24 @@ const pageGuides = {
     next:"Open any review-required run, resolve exceptions, then finalize only after validation passes.",
     actions:[["Run Detail","run-detail"],["Exceptions","exceptions"],["Tax Ledger","ledger"]]
   },
+  "quick-pay":{
+    focus:"Create fast tip, wage, bonus, advance, reimbursement, or adjustment payments with preview and audit evidence.",
+    role:"Owner / Manager",
+    next:"Choose payment type, worker, amount, method, memo, then confirm only after preview matches.",
+    actions:[["Staff Payouts","payouts"],["OCR Vault","ocr"],["Tax Center","tax-1099"]]
+  },
+  "pay-engine":{
+    focus:"Configure worker pay rules: hourly, commission, hybrid, tiered, overtime, bonus, KPI, and pay schedule.",
+    role:"Owner / Payroll Admin",
+    next:"Review worker classification before using pay rules for payroll tax or 1099 rollups.",
+    actions:[["Weekly Payroll","weekly-payroll"],["Employees","employees"],["Tax Center","tax-1099"]]
+  },
+  "weekly-payroll":{
+    focus:"Review weekly hours, sales, hourly pay, commission, bonus, tips, totals, and pay actions.",
+    role:"Owner / Payroll Admin",
+    next:"Pay individual workers or send all ready payouts after resolving W-2/1099 review flags.",
+    actions:[["Quick Pay","quick-pay"],["Payroll Runs","payroll-runs"],["Payouts","payouts"]]
+  },
   "run-detail":{
     focus:"Validation gate for one payroll run: line items, tax breakdown, audit trail, and finalization.",
     role:"Payroll Admin / CPA",
@@ -238,9 +305,9 @@ const pageGuides = {
     actions:[["Webhooks","webhooks"],["Data Quality","data-quality"],["Settings","settings"]]
   },
   payouts:{
-    focus:"Staff payout recordkeeping for cash, ACH, Zelle, PayPal, checks, and 1099 support.",
+    focus:"Quick Pay, Pay Engine payouts, cash/Zelle/Venmo/Cash App evidence, and 1099 support.",
     role:"Owner / Bookkeeper",
-    next:"Attach evidence and classify payout type before exporting to CPA or tax reports.",
+    next:"Create or approve payouts, attach proof, then roll contractor payments into the 1099 package.",
     actions:[["OCR Vault","ocr"],["CPA Review","cpa"],["Forms","forms"]]
   },
   ledger:{
@@ -314,6 +381,12 @@ const pageGuides = {
     role:"Owner / CPA",
     next:"Review deposit dates and open balances, then confirm assumptions with CPA before acting.",
     actions:[["Jurisdictions","jurisdictions"],["Tax Ledger","ledger"],["CPA Review","cpa"]]
+  },
+  "tax-1099":{
+    focus:"1099-NEC and W-2 readiness center for W-9/TIN, YTD payout rollups, recipient delivery, and e-file prep.",
+    role:"Owner / CPA / Bookkeeper",
+    next:"Resolve TIN/classification gaps, reconcile Box 1 totals, then generate CPA-reviewed year-end package.",
+    actions:[["Forms","forms"],["Payouts","payouts"],["CPA Review","cpa"]]
   },
   webhooks:{
     focus:"Outbound event delivery, endpoint visibility, retry status, payload review, and delivery errors.",
@@ -390,24 +463,55 @@ function priorityActionPanel(){
     ${listItem("Protect access and audit trail","Use expiring Share Links, minimum scope, approval logs, and audit records for sensitive tax data.","green")}
   </div>`,`<a class="btn primary" href="${pageHref("data-quality")}">Open Data Quality</a>`);
 }
+function quickPayWorkflowPanel(){
+  const rows = [
+    ["1. Payment type","Choose Tip, Wage, Bonus, Advance, Reimbursement, or Adjustment.","Sets tax/evidence classification before payment."],
+    ["2. Worker","Pick the worker/technician. Primary method loads automatically.","Prevents sending to the wrong Zelle/Venmo/Cash App profile."],
+    ["3. Amount","Enter amount or use quick chips such as $20, $50, $100, $200.","Creates a preview before posting the payout."],
+    ["4. Method","Use Zelle, Cash, Venmo, Cash App, Check, ACH, or Bank/DD.","Stores payment channel for 1099/W-2 support and audit trail."],
+    ["5. Note + confirm","Add purpose, review preview, then create payment.","Feeds Payouts, OCR evidence, Tax Ledger, and CPA package."]
+  ].map(r=>row(r,{wrap:[1,2]}));
+  return panel("Quick Pay Workflow",table(["Step","User Action","Tax IQ Impact"],rows),`<button class="btn primary" data-modal="payout">Create Quick Pay</button>`);
+}
+function payEngineRulesPanel(){
+  const rows = [
+    ["Hourly","Hours x rate, with overtime rule such as 1.5x after 40 hours.","W-2 employees or hourly staff."],
+    ["Commission","Revenue x split percent, common nail/beauty range 35-45%.","1099 contractors or commission staff, subject to classification review."],
+    ["Hybrid","Hourly base + commission + tips + bonus.","Technicians with mixed pay structure."],
+    ["Tiered","Commission percent increases after revenue threshold.","High performers or stepped salon compensation."],
+    ["Bonus rules","Over-threshold bonus and KPI bonus can add percentage or fixed amount.","Must be logged as wage/bonus/taxable compensation as applicable."],
+    ["Pay schedule","Weekly, biweekly, semi-monthly, or monthly per worker.","Controls payroll run, payout period, and report grouping."]
+  ].map(r=>row(r,{wrap:[1,2]}));
+  return panel("Pay Engine Configuration Rules",table(["Rule","Configuration","Use Case / Tax Note"],rows),`<button class="btn" data-modal="employee">Review Worker Setup</button>`);
+}
+function contractor1099ReadinessPanel(){
+  return panel("1099 Contractor Readiness",`<div class="panel-body list">
+    ${listItem("W-9 and TIN before year-end","Every 1099 contractor should have W-9/TIN status and legal name/address verified before forms are prepared.","red")}
+    ${listItem("Track Box 1 nonemployee compensation","Payouts for services, commission, bonus, and applicable reimbursement records should roll up into the 1099 support package.","yellow")}
+    ${listItem("Jan 31 deadline watch","IRS guidance requires Form 1099-NEC by Jan 31 using paper or electronic filing. The app should verify annual rules from official sources.","blue")}
+    ${listItem("Evidence is not optional","Payment proof, memo, approval, worker classification, and audit log are needed before CPA export.","green")}
+  </div>`,`<a class="btn primary" href="${pageHref("forms")}">Open 1099 Center</a>`);
+}
 
 const renderers = {
-  dashboard:renderDashboard, analytics:renderAnalytics,
+  dashboard:renderDashboard, analytics:renderAnalytics, pos:renderPos, reviews:renderReviews,
   onboarding:renderOnboarding, "data-quality":renderDataQuality,
   employers:renderEmployers, employees:renderEmployees, "employee-profile":renderEmployeeProfile,
-  "payroll-runs":renderRuns, "run-detail":renderRunDetail,
+  "payroll-runs":renderRuns, "quick-pay":renderQuickPay, "pay-engine":renderPayEngine,
+  "weekly-payroll":renderWeeklyPayroll, "run-detail":renderRunDetail,
   connections:renderConnections, payouts:renderPayouts,
   ledger:renderLedger, exceptions:renderExceptions, jurisdictions:renderJurisdictions,
-  forms:renderForms, "ai-advisor":renderAiAdvisor, ocr:renderOcr,
+  forms:renderForms, "ai-advisor":renderAiAdvisor, "ai-assistant":renderAiAssistant, ocr:renderOcr,
   "share-links":renderShareLinks, gps:renderGps, cpa:renderCpa,
-  "tip-ledger":renderTipLedger, "tax-estimate":renderTaxEstimate,
+  "tip-ledger":renderTipLedger, "tax-estimate":renderTaxEstimate, "tax-1099":renderTax1099,
   webhooks:renderWebhooks, "audit-log":renderAuditLog,
   notifications:renderNotifications, "compliance-review":renderComplianceReview,
   billing:renderBilling, settings:renderSettings
 };
 
 function renderPage(){
-  document.getElementById("content").innerHTML = pageGuide() + (renderers[currentPage] || renderDashboard)();
+  const sourceLikePages = new Set(["pos","quick-pay","pay-engine","weekly-payroll","payouts","tax-1099","reviews","ai-assistant"]);
+  document.getElementById("content").innerHTML = (sourceLikePages.has(currentPage) ? "" : pageGuide()) + (renderers[currentPage] || renderDashboard)();
   initFreeRouteMaps(document);
 }
 
@@ -417,15 +521,104 @@ function renderDataLoadError(){
   document.getElementById("content").innerHTML = panel("Mock Data JSON Not Loaded", `<div class="panel-body list">${listItem("Run the demo through a local server","Because the app now loads assets/mock-data.json, opening the HTML as file:// may be blocked by browser security.","yellow")}${listItem("Recommended command","From the html folder, run: python3 -m http.server 8123, then open http://localhost:8123/.","blue")}${listItem("Error detail",detail,"red")}</div>`);
 }
 
+/* ─── POS ─── */
+function renderPos(){
+  const stations = [
+    ["AT","Amy T.","Lisa N.","Acrylic Full Set","10:05 → 11:20","purple","75%","Checkout"],
+    ["LP","Linda P.","● Trống","","","green","0%","+ Giao Khách"],
+    ["KM","Kevin M.","● Trống","","","green","0%","+ Giao Khách"],
+    ["SJ","Sarah J.","Emma W.","Fill In + Pedicure","10:15 → 11:45","orange","40%","Checkout"],
+    ["BL","Brian L.","Break","Nghỉ giải lao","","","0%",""]
+  ];
+  const stationCards = stations.map(s=>`<div class="station-card ${s[5]}">
+    <div class="avatar ${s[5]==="green"?"green":s[5]==="orange"?"orange":s[0]==="BL"?"red":""}">${s[0]}</div>
+    <div class="mt-3 text-sm font-black text-slate-100">${s[1]}</div>
+    <div class="mt-2 text-xs ${s[2].includes("Trống") ? "text-emerald-300" : s[2]==="Break" ? "text-amber-400" : "text-slate-400"}">${s[2]}</div>
+    <div class="mt-1 text-[11px] text-slate-500">${s[3] || "—"}</div>
+    ${s[6] !== "0%" ? `<div class="progress-track"><div class="progress-fill" style="width:${s[6]};background:${s[5]==="orange"?"#f59e0b":"#7c3aed"}"></div></div>` : ""}
+    <div class="text-[11px] text-slate-500">${s[4] || "—"}</div>
+    ${s[7] ? `<button class="source-button ${s[7].includes("Checkout") ? "" : ""}" style="width:100%;margin-top:14px;background:${s[7].includes("Checkout") ? "#4fb779" : "#27406f"};color:#fff;border-color:transparent">${s[7]}</button>` : ""}
+  </div>`).join("");
+  const queue = [
+    ["Anna Kim","#A003","Gel Polish","đợi 8p"],
+    ["Rachel M.","#A004","Pedicure","đợi 15p"],
+    ["Tom N.","#A005","Manicure","đợi 22p"]
+  ].map(q=>`<div class="queue-card"><div><div class="text-sm font-black text-slate-100">${q[0]} <span class="text-[11px] text-slate-600">${q[1]}</span></div><div class="mt-1 text-xs text-slate-500">${q[2]} · <span class="text-amber-400">${q[3]}</span></div></div><button class="source-button primary">Giao</button></div>`).join("");
+  return `<div class="nexora-source">
+    <div class="source-hero">
+      <div><h2 class="source-title">🖥️ POS — Điểm Bán Hàng</h2><div class="source-subtitle">Check in · Turn Board · Checkout</div></div>
+      <div class="source-subtitle" style="color:#a78bfa;font-weight:900">09:56:01</div>
+    </div>
+    <div class="pos-tabs">
+      <button class="tab-pill">🟢 Check In</button>
+      <button class="tab-pill active">📋 Turn Board</button>
+      <button class="tab-pill">💳 Checkout</button>
+    </div>
+    <div class="pos-grid">${stationCards}</div>
+    <div class="section-box">
+      <div class="section-box-title">⏳ Hàng Chờ (3 khách)</div>
+      <div class="queue-grid" style="padding:16px">${queue}</div>
+    </div>
+  </div>`;
+}
+
+/* ─── REVIEWS ─── */
+function renderReviews(){
+  const reviewRows = [
+    ["Jennifer Tran","Google · 2 giờ trước","Tuyệt vời! Amy làm nail rất đẹp và tỉ mỉ. Tiệm sạch sẽ, nhân viên thân thiện.","★★★★★","Phản hồi"],
+    ["Emma Wilson","Google · 5 giờ trước","Linda làm balayage đỉnh lắm! Màu đẹp lắm, giữ được lâu.","★★★★★","Đã phản hồi"],
+    ["Anonymous","Yelp · 1 ngày trước","Chờ hơi lâu nhưng kết quả OK.","★★★","Phản hồi"],
+    ["Maria Garcia","Facebook · 2 ngày trước","Lần đầu đến đây, rất hài lòng! Sẽ quay lại.","★★★★★","Đã phản hồi"],
+    ["Lisa Nguyen","Google · 3 ngày trước","Tiệm đẹp, nhân viên nhiệt tình. Chỉ chờ hơi lâu.","★★★★","Phản hồi"]
+  ].map(r=>`<div class="review-row">
+    <div class="review-avatar"><i class="fa-solid fa-user"></i></div>
+    <div>
+      <div class="text-sm font-black text-slate-100">${r[0]}</div>
+      <div class="text-xs text-slate-500">${r[1]}</div>
+      <div class="mt-3 text-sm text-slate-400">"${r[2]}"</div>
+    </div>
+    <div class="text-right">
+      <div class="stars">${r[3]}</div>
+      <button class="source-button ${r[4].includes("Đã") ? "" : "primary"}" style="height:28px;margin-top:8px">${r[4]}</button>
+    </div>
+  </div>`).join("");
+  return `<div class="nexora-source">
+    <div class="source-hero">
+      <div><h2 class="source-title">⭐ Đánh Giá & Review</h2><div class="source-subtitle">Google · Yelp · Facebook · Phản hồi khách hàng</div></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Rating TB</div><div class="stat-val orange">4.9</div><div class="stat-sub">★★★★★</div></div>
+      <div class="stat-card"><div class="stat-label">Tổng Review</div><div class="stat-val green">847</div><div class="stat-sub">+18 tuần này</div></div>
+      <div class="stat-card"><div class="stat-label">Review mới</div><div class="stat-val red">5</div><div class="stat-sub">Chưa phản hồi</div></div>
+      <div class="stat-card"><div class="stat-label">Cần phản hồi</div><div class="stat-val orange">3</div><div class="stat-sub">Dưới 4 sao</div></div>
+    </div>
+    <div class="section-box">
+      <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+        Review Gần Đây
+        <div class="tab-row"><span class="tab-pill active">Tất cả</span><span class="tab-pill">Google</span><span class="tab-pill">Yelp</span><span class="tab-pill">Facebook</span></div>
+      </div>
+      <div>${reviewRows}</div>
+    </div>
+  </div>`;
+}
+
 /* ─── DASHBOARD ─── */
 function renderDashboard(){
   const runRows = data.runs.slice(0,5).map(r=>row([`<span class="mono">${r[0]}</span>`,r[1],r[2],r[5],r[6],r[7],status(r[8])],{click:true,href:pageHref("run-detail")}));
   const issues = data.exceptions.slice(0,4).map(e=>listItem(e[1],`${e[6]} Owner: ${e[3]}.`,e[2]==="High"?"red":"yellow")).join("");
   const workflowCards = [
+    ["POS","Turn Board","Check-in, assign customer to technician, track service status, and checkout.","blue","pos"],
     ["AI Advisor","AI CFO","Cash-flow and tax planning prompts are ready.","green","ai-advisor"],
+    ["Quick Pay","Fast Payout","Tip, wage, bonus, advance, and reimbursement flow.","green","quick-pay"],
+    ["Payout Hub","1099 Profiles","Worker payment profiles, pending invites, proof, W-9, and instant payout actions.","yellow","payouts"],
+    ["Pay Engine","Pay Rules","Hourly, commission, hybrid, tiered, bonus, and schedule config.","blue","pay-engine"],
+    ["Weekly Payroll","Pay Review","Hours, sales, commission, tips, bonus, and pay-all review.","cyan","weekly-payroll"],
+    ["Reviews","Reputation","Google, Yelp, and Facebook review queue with reply workflow.","red","reviews"],
+    ["AI Assistant","Shop Automation","AI receptionist, scheduling, bookkeeping, campaigns, and revenue forecast.","green","ai-assistant"],
     ["OCR Vault","Receipt Capture","6 evidence records are stored for review.","blue","ocr"],
     ["Share Links","Secure Links","CPA, technician, and profile links are active.","yellow","share-links"],
     ["Tax Estimate","Quarterly Forecast","Federal, SUTA, and state balances are ready.","red","tax-estimate"],
+    ["Tax Center 1099","Year-end Forms","W-9/TIN, Box 1 rollups, recipient delivery, and e-file readiness.","red","tax-1099"],
     ["Tip Ledger","No Tax on Tips","YTD qualified tip tracking and cap warnings.","cyan","tip-ledger"],
     ["GPS Mileage","Route Evidence","A to B mileage trips ready for CPA review.","green","gps"],
     ["Onboarding","Merchant Setup","First-time setup and empty-state checklist.","blue","onboarding"],
@@ -526,6 +719,277 @@ function renderRuns(){
   return `${filterBar(["All statuses",["Ledger Posted","Review Required","Pending","Validation Failed"]],["All employers",["Acme Manufacturing LLC","TechCorp Solutions Inc.","Retail Partners Group"]])}${panel("Payroll Runs",table(["Run ID","Period","Pay Date","Deposit Due","Employees","Gross","Tax","Risk","Status","Actions"],data.runs.map(r=>row([`<span class="mono">${r[0]}</span>`,r[1],r[2],r[3],r[4],r[5],r[6],r[7],status(r[8]),runActions(r)]))),`<button class="btn primary" data-modal="create-run">Create Run</button>`)}`;
 }
 
+/* ─── QUICK PAY ─── */
+function renderQuickPay(){
+  return `<div class="nexora-source">
+    <div class="source-hero">
+      <div><h2 class="source-title">⚡ Quick Pay</h2><div class="source-subtitle">Tạo thanh toán · Tip · Lương · Bonus · Advance</div></div>
+      <a class="source-button" href="${pageHref("payouts")}">← Payout Hub</a>
+    </div>
+
+    <div class="qp-layout">
+      <div>
+        <div class="section-box">
+          <div class="section-box-title">① LOẠI THANH TOÁN</div>
+          <div class="pay-type-grid" style="padding:16px">
+            <div class="pay-type-card active"><div><div class="pay-type-icon">💰</div><div class="text-lg font-black text-amber-400">Trả Tip</div><div class="mt-2 text-xs text-slate-500">Cash · Pool · Điều chỉnh</div></div></div>
+            <div class="pay-type-card"><div><div class="pay-type-icon">💼</div><div class="text-lg font-black text-slate-200">Trả Lương</div><div class="mt-2 text-xs text-slate-500">Payout · Ứng lương · Điều chỉnh</div></div></div>
+            <div class="pay-type-card"><div><div class="pay-type-icon">🎁</div><div class="text-lg font-black text-slate-200">Thưởng</div><div class="mt-2 text-xs text-slate-500">KPI · Lễ tết · Giới thiệu</div></div></div>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <div class="section-box-title">② CHỌN THỢ</div>
+          <div class="worker-list" style="padding:16px">
+            <div class="worker-item"><div class="avatar">AT</div><div><div class="text-sm font-black text-slate-100">Amy T. <span class="badge badge-purple">1099</span></div><div class="text-xs text-slate-500">amy.t@gmail.com</div></div><div class="pay-method-pill">🕊️ Zelle <span>✓</span></div></div>
+            <div class="worker-item"><div class="avatar blue">LP</div><div><div class="text-sm font-black text-slate-100">Linda P. <span class="badge badge-purple">1099</span></div><div class="text-xs text-slate-500">linda.p@gmail.com</div></div><div class="pay-method-pill">🕊️ Zelle <span>✓</span></div></div>
+            <div class="worker-item"><div class="avatar green">KM</div><div><div class="text-sm font-black text-slate-100">Kevin M. <span class="badge badge-blue">W2</span></div><div class="text-xs text-slate-500">kevin.m@gmail.com</div></div><div class="pay-method-pill">🏦 Direct Deposit <span>✓</span></div></div>
+            <div class="worker-item"><div class="avatar pink">SJ</div><div><div class="text-sm font-black text-slate-100">Sarah J. <span class="badge badge-purple">1099</span></div><div class="text-xs text-slate-500">sarah.j@gmail.com</div></div><div class="pay-method-pill">💚 Cash App <span>✓</span></div></div>
+            <div class="worker-item active"><div class="avatar orange">BL</div><div><div class="text-sm font-black text-slate-100">Brian L. <span class="badge badge-purple">1099</span></div><div class="text-xs text-slate-500">brian.l@gmail.com</div></div><div class="pay-method-pill" style="background:rgba(124,58,237,.14)">💜 Venmo <span style="color:#f59e0b">✓</span></div></div>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <div class="section-box-title">③ CHI TIẾT</div>
+          <div style="padding:16px;display:grid;gap:14px">
+            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Nguồn thanh toán</div><select class="source-input"><option>💳 Card tip từ POS</option><option>Cash tip</option><option>Manual adjustment</option></select></label>
+            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Ngày nhập tip</div><input class="source-input" value="06/28/2024"></label>
+            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Số Tiền Tip ($)</div><input class="source-input amount" value="$ 150"></label>
+            <div class="amount-buttons">${["$10","$20","$30","$50","$100","$150","$200"].map(x=>`<button class="source-button">${x}</button>`).join("")}</div>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <div class="section-box-title">④ PHƯƠNG THỨC THANH TOÁN <span class="badge badge-green" style="float:right">✓ Từ profile của thợ</span></div>
+          <div style="padding:16px;display:grid;gap:14px">
+            <div class="alert alert-green" style="margin:0">
+              <strong>🕊️ THÔNG TIN CỦA AMY T. (TỰ SETUP)</strong>
+              <div class="method-grid" style="margin-top:10px">
+                <div class="method-card active">🕊️ Zelle <span class="badge badge-green">Verified</span><br><small>amy.t@gmail.com</small></div>
+                <div class="method-card">💜 Venmo <span class="badge badge-gray">Backup</span><br><small>@amytran-nails</small></div>
+              </div>
+            </div>
+            <div class="method-grid">${["🕊️ Zelle","💵 Cash","💜 Venmo","💚 Cash App","📝 Check","🏦 Bank/DD"].map((m,i)=>`<button class="method-card ${i===0?"active":""}">${m}</button>`).join("")}</div>
+            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">🕊️ Zelle email / số điện thoại</div><input class="source-input" placeholder="email@example.com hoặc +1 (xxx)"></label>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <div class="section-box-title">⑤ GHI CHÚ</div>
+          <div style="padding:16px"><textarea class="source-textarea" rows="3" placeholder="Lý do thanh toán (lưu vào bằng chứng)..."></textarea></div>
+        </div>
+
+        <button class="source-button primary" style="width:100%;height:54px;font-size:15px">⚡ Tạo Thanh Toán Ngay</button>
+      </div>
+
+      <div>
+        <div class="preview-card">
+          <div class="text-3xl">💰</div>
+          <div class="mt-2 text-sm font-black text-amber-400">Trả Tip</div>
+          <div class="mt-4 text-left text-[10px] uppercase text-slate-500">Cho</div>
+          <div class="mt-1 rounded-lg bg-slate-800 p-4 text-left text-lg font-black text-slate-100">Brian L.</div>
+          <div class="mt-4 text-xs uppercase text-slate-600">Số tiền</div>
+          <div class="preview-amount">$0.00</div>
+          <div class="preview-row"><span>Phương thức</span><strong>🕊️ ZELLE</strong></div>
+          <div class="preview-row" style="margin-top:0"><span>Ngày tạo</span><strong>2024-06-28</strong></div>
+          <button class="source-button" style="width:100%;margin-top:14px;background:#1d2b49">Điền thông tin để xem preview</button>
+        </div>
+
+        <div class="section-box" style="margin-top:14px">
+          <div class="section-box-title">◉ Gần Đây</div>
+          <div class="recent-list" style="padding:0 16px">
+            <div class="recent-row"><span>💼</span><div><strong>Payout — Jun 22-28 2024</strong><br><small class="gray">Brian L. · 2024-06-28</small></div><strong class="blue">$1990</strong></div>
+            <div class="recent-row"><span>🎁</span><div><strong>Performance Bonus — June</strong><br><small class="gray">Amy T. · 2024-06-15</small></div><strong class="green">$200</strong></div>
+            <div class="recent-row"><span>💰</span><div><strong>Cash Tip Adjustment</strong><br><small class="gray">Linda P. · 2024-06-18</small></div><strong class="orange">$45</strong></div>
+            <div class="recent-row"><span>💼</span><div><strong>Salary Advance</strong><br><small class="gray">Kevin M. · 2024-06-10</small></div><strong class="blue">$300</strong></div>
+          </div>
+          <div style="padding:12px 16px;text-align:center;color:#64748b;font-size:12px">Xem tất cả →</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ─── PAY ENGINE ─── */
+function renderPayEngine(){
+  return `<div class="nexora-source">
+    <div class="alert alert-blue">💡 Cấu hình <strong>riêng cho từng nhân viên</strong>. Click tên thợ trên hàng avatar để chuyển. Bên phải luôn preview kết quả <strong>real-time</strong>.</div>
+
+    <div class="section-box">
+      <div class="section-box-title">① Kiểu Lương — Chọn 1 trong 4</div>
+      <div class="card-grid-4">
+        <div class="info-card info-blue"><div class="info-icon">⏰</div><div class="info-title">Theo Giờ</div><p>Giờ × mức lương<br>OT tự tính 1.5x</p></div>
+        <div class="info-card info-green"><div class="info-icon">📊</div><div class="info-title">Hoa Hồng %</div><p>% từ tổng doanh số<br>Không có lương giờ</p></div>
+        <div class="info-card info-purple" style="border-color:#bc8cff;"><div class="info-icon">⚡</div><div class="info-title">Kết Hợp ⭐</div><p>Giờ + hoa hồng<br>Phổ biến nhất</p></div>
+        <div class="info-card info-orange"><div class="info-icon">📈</div><div class="info-title">Theo Bậc</div><p>% tăng dần theo<br>mức doanh số</p></div>
+      </div>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">② Lương Giờ</div>
+      <table>
+        <thead><tr><th>Trường</th><th>Mô Tả</th><th>Ví Dụ</th><th>Ghi Chú</th></tr></thead>
+        <tbody>
+          <tr><td>Mức lương / giờ ($)</td><td>Số tiền trả cho mỗi giờ làm việc</td><td>$12/giờ</td><td>Giờ thường</td></tr>
+          <tr><td>Overtime sau (giờ/tuần)</td><td>Sau bao nhiêu giờ/tuần thì tính OT</td><td>40 giờ/tuần</td><td>OT = lương giờ × 1.5 tự động</td></tr>
+        </tbody>
+      </table>
+      <div class="calc-box">
+        <strong>Ví dụ Amy T.:</strong> 40h × $12 = $480 (giờ thường) + 10.5h × $18 = $189 (OT) = <span class="amt">$669 lương giờ</span>
+      </div>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">③ Ăn Chia — Tỷ Lệ Hoa Hồng <span class="badge badge-orange">Bổ sung sau</span></div>
+      <table>
+        <thead><tr><th>Cài Đặt</th><th>Mô Tả</th><th>Ví Dụ</th></tr></thead>
+        <tbody>
+          <tr><td>Thanh trượt <strong>20% → 65%</strong></td><td>Kéo trái/phải để điều chỉnh % hoa hồng trên tổng doanh số</td><td>Amy T.: 35% × $2,195 DS = <span class="amt">$768.25</span></td></tr>
+          <tr><td>Gợi ý hệ thống</td><td>Phổ biến ngành nail: <strong>35-45%</strong></td><td>Linda P.: 40% · Sarah J.: 38%</td></tr>
+        </tbody>
+      </table>
+      <div class="alert alert-orange" style="margin:12px 16px;">⚠️ Phần này <strong>bị thiếu</strong> trong lần hướng dẫn đầu tiên — đã bổ sung sau khi anh phát hiện.</div>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">④ Bonus Vượt Bao 🎯</div>
+      <table>
+        <thead><tr><th>Trường</th><th>Mô Tả</th><th>Ví Dụ</th></tr></thead>
+        <tbody>
+          <tr><td>Bật/Tắt</td><td>Toggle để kích hoạt hoặc vô hiệu hóa</td><td>Đang BẬT cho Amy T.</td></tr>
+          <tr><td>Ngưỡng ($)</td><td>Doanh số phải vượt qua để nhận bonus</td><td>$1,200</td></tr>
+          <tr><td>Bonus thêm (%)</td><td>% cộng thêm tính trên toàn bộ doanh số khi vượt ngưỡng</td><td>5% → DS $1,800: bonus = 5% × $1,800 = <span class="amt">+$90</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">⑤ KPI Bonus 🏆</div>
+      <table>
+        <thead><tr><th>Trường</th><th>Mô Tả</th><th>Ví Dụ Amy T.</th></tr></thead>
+        <tbody>
+          <tr><td>Mục tiêu KPI ($)</td><td>Mức doanh số cần đạt để nhận KPI bonus</td><td>$1,500</td></tr>
+          <tr><td>Bonus % khi đạt</td><td>% tổng doanh số thưởng khi đạt KPI</td><td>3% × $2,195 = <span class="amt">+$65.85</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">⑥ Kỳ Thanh Toán 📅 <span class="badge badge-orange">Bổ sung sau</span></div>
+      <div class="card-grid-4">
+        <div class="info-card info-purple" style="border-color:#bc8cff;"><div class="info-title">Hàng Tuần</div><p>Trả mỗi tuần<br><em>Amy T., Linda P.</em></p></div>
+        <div class="info-card info-blue"><div class="info-title">2 Tuần / lần</div><p>Trả mỗi 2 tuần<br><em>Kevin M.</em></p></div>
+        <div class="info-card info-orange"><div class="info-title">15 &amp; 30</div><p>Trả ngày 15<br>và ngày 30</p></div>
+        <div class="info-card info-green"><div class="info-title">Hàng Tháng</div><p>Trả 1 lần<br>mỗi tháng</p></div>
+      </div>
+      <div class="alert alert-orange" style="margin:12px 16px;">⚠️ Phần này <strong>bị thiếu</strong> trong lần hướng dẫn đầu tiên — đã bổ sung sau khi anh phát hiện.</div>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">💡 Preview Kết Quả Real-Time (Amy T. — Tuần 23-28/6)</div>
+      <table>
+        <thead><tr><th>Khoản Mục</th><th>Tính Toán</th><th>Số Tiền</th></tr></thead>
+        <tbody>
+          <tr><td>Giờ làm</td><td>40h × $12</td><td class="amt">$480.00</td></tr>
+          <tr><td>Overtime</td><td>10.5h × $18.00</td><td class="amt">$63.00</td></tr>
+          <tr><td>Ăn chia</td><td>35% × $2,195 doanh số</td><td class="amt">$768.25</td></tr>
+          <tr><td>Bonus Vượt Bao 🎯</td><td>Vượt ngưỡng $1,200 → +5% tổng DS</td><td class="amt">$109.75</td></tr>
+          <tr><td>KPI Bonus 🏆</td><td>Vượt $1,500 → +3% tổng DS</td><td class="amt">$65.85</td></tr>
+          <tr><td>Tips riêng</td><td>Tips cá nhân</td><td class="tip">+$318</td></tr>
+          <tr style="background:#1c2128;"><td colspan="2"><strong>TỔNG NHẬN</strong></td><td class="amt" style="font-size:16px;font-weight:700;">$1,804.85</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ─── WEEKLY PAYROLL ─── */
+function renderWeeklyPayroll(){
+  return `<div class="nexora-source">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Tổng Lương Tuần</div><div class="stat-val green">$7,325.69</div></div>
+      <div class="stat-card"><div class="stat-label">Tổng Doanh Số</div><div class="stat-val orange">$9,048</div></div>
+      <div class="stat-card"><div class="stat-label">Tổng Tips</div><div class="stat-val orange">$1,519</div></div>
+      <div class="stat-card"><div class="stat-label">Tổng Bonus</div><div class="stat-val purple">+$707</div></div>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+        📊 Bảng Lương Chi Tiết
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="badge badge-gray">📄 Xuất PDF</span>
+          <span class="badge badge-gray">📊 Xuất CSV</span>
+          <span class="badge badge-purple">⚡ Trả Tất Cả ($7,325.69)</span>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Nhân Viên</th><th>Kiểu</th><th>Giờ</th><th>Doanh Số</th><th>Lương Giờ</th><th>Hoa Hồng</th><th>Bonus</th><th>Tips</th><th>Tổng Nhận</th><th>Thao Tác</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Amy T.</strong><br><small style="color:#8b949e;">Kết Hợp</small></td>
+            <td><span class="badge badge-orange">1099</span></td>
+            <td>50.5h</td><td class="tip">$2,195</td><td>$543</td><td>$768</td><td class="tip">+$176</td><td class="tip">$318</td>
+            <td class="amt"><strong>$1,804.85</strong></td>
+            <td><span class="badge badge-green">➡ Trả</span></td>
+          </tr>
+          <tr>
+            <td><strong>Linda P.</strong><br><small style="color:#8b949e;">Hoa Hồng</small></td>
+            <td><span class="badge badge-orange">1099</span></td>
+            <td>50.5h</td><td class="tip">$2,853</td><td>$0</td><td>$1,141</td><td class="tip">+$371</td><td class="tip">$412</td>
+            <td class="amt"><strong>$1,924.09</strong></td>
+            <td><span class="badge badge-green">➡ Trả</span></td>
+          </tr>
+          <tr>
+            <td><strong>Kevin M.</strong><br><small style="color:#8b949e;">Theo Giờ</small></td>
+            <td><span class="badge badge-blue">W-2</span></td>
+            <td>48.5h</td><td class="gray">$0</td><td>$720</td><td>$0</td><td class="gray">—</td><td class="tip">$223</td>
+            <td class="amt"><strong>$1,019.50</strong></td>
+            <td><span class="badge badge-green">➡ Trả</span></td>
+          </tr>
+          <tr>
+            <td><strong>Sarah J.</strong><br><small style="color:#8b949e;">Theo Bậc</small></td>
+            <td><span class="badge badge-orange">1099</span></td>
+            <td>49h</td><td class="tip">$2,357</td><td>$0</td><td>$892</td><td class="tip">+$94</td><td class="tip">$344</td>
+            <td class="amt"><strong>$1,329.93</strong></td>
+            <td><span class="badge badge-green">➡ Trả</span></td>
+          </tr>
+          <tr>
+            <td><strong>Brian L.</strong><br><small style="color:#8b949e;">Kết Hợp</small></td>
+            <td><span class="badge badge-orange">1099</span></td>
+            <td>46.5h</td><td class="tip">$1,648</td><td>$465</td><td>$494</td><td class="tip">+$66</td><td class="tip">$222</td>
+            <td class="amt"><strong>$1,247.32</strong></td>
+            <td><span class="badge badge-green">➡ Trả</span></td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="4"><strong>TỔNG CỘNG</strong></td>
+            <td><strong>$1,728</strong></td><td><strong>$3,295</strong></td><td class="tip"><strong>+$707</strong></td><td class="tip"><strong>$1,519</strong></td>
+            <td class="amt" style="font-size:15px;"><strong>$7,325.69</strong></td>
+            <td><span class="badge badge-purple">⚡ Tất Cả</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">📅 Chi Tiết Từng Ngày — Amy T.</div>
+      <table>
+        <thead><tr><th>Ngày</th><th>Dịch Vụ</th><th>Giờ</th><th>Doanh Số</th><th>Tips</th><th>Lương Ước</th></tr></thead>
+        <tbody>
+          <tr><td>Thứ 2 — 23/6</td><td>Gel Full Set · Pedicure · Nail Art</td><td>8.5h</td><td class="tip">$342</td><td class="tip">$48</td><td class="amt">~$232</td></tr>
+          <tr><td>Thứ 3 — 24/6</td><td>Gel Polish · Eyebrow</td><td>9h</td><td class="tip">$415</td><td class="tip">$62</td><td class="amt">~$281</td></tr>
+          <tr><td>Thứ 4 — 25/6</td><td>Pedicure · Manicure</td><td>8h</td><td class="tip">$298</td><td class="tip">$35</td><td class="amt">~$202</td></tr>
+          <tr><td>Thứ 5 — 26/6</td><td>Gel Full Set · Nail Art · Pedicure</td><td>8.5h</td><td class="tip">$388</td><td class="tip">$55</td><td class="amt">~$263</td></tr>
+          <tr><td>Thứ 6 — 27/6</td><td>Acrylic Full Set · Fill In · Pedicure</td><td>9.5h</td><td class="tip">$467</td><td class="tip">$78</td><td class="amt">~$316</td></tr>
+          <tr><td>Thứ 7 — 28/6</td><td>Gel Polish · Pedicure</td><td>7h</td><td class="tip">$285</td><td class="tip">$40</td><td class="amt">~$193</td></tr>
+          <tr class="total-row"><td><strong>TỔNG TUẦN</strong></td><td></td><td><strong>50.5h</strong></td><td class="tip"><strong>$2,195</strong></td><td class="tip"><strong>$318</strong></td><td class="amt"><strong>$1,487</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
 /* ─── RUN DETAIL ─── */
 function renderRunDetail(){
   const steps=["Draft","Imported","Validated","Tax Preview","Approved","Finalized","Ledger Posted","Reported"].map((s,i)=>`<div class="step ${i<6?"done":i===6?"current":""}">${s}</div>`).join("");
@@ -541,7 +1005,58 @@ function renderConnections(){
 
 /* ─── PAYOUTS ─── */
 function renderPayouts(){
-  return `${filterBar(["All periods",["Jun 1-15","May 16-31","May 1-15"]],["All methods",["Zelle","PayPal","Cash","ACH","Check"]],["All statuses",["Confirmed","Pending","Cancelled"]])}<div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="${ui.btn}" data-toast="CSV export prepared and downloading.">Export CSV</button></div>${panel("Staff Payouts",table(["Payout","Worker","Staff ID","Period","Amount","Method","Type","Status","Evidence","Actions"],data.payouts.map(p=>row([`<span class="mono">${p[0]}</span>`,...p.slice(1,7),status(p[7]),p[8],rowActions(actionBtn("Review","payout-detail"),`<button class="${ui.btn}" data-mark-paid="${p[0]}">Mark Paid</button>`,`<button class="${ui.btn}" data-toast="Dispute opened for ${p[0]}. Finance team notified.">Dispute</button>`)]))),`<button class="btn primary" data-modal="payout">Create Payout</button>`)}`;
+  return `<div class="nexora-source">
+    <div class="source-hero">
+      <div>
+        <h2 class="source-title">💼 Payout & Compliance Hub</h2>
+        <div class="source-subtitle">Cấu hình · Bằng chứng · 1099/W-2 · AI Bookkeeping · IRS Defense</div>
+      </div>
+      <div class="pending-pill">⏳ CHỜ THANH TOÁN<br><span style="font-size:24px">$2,945</span><br><small>2 thợ</small></div>
+    </div>
+
+    <div class="tab-row" style="margin-bottom:18px">
+      <span class="tab-pill">📊 Tổng Quan</span>
+      <span class="tab-pill active">👥 Thợ & Profiles</span>
+      <span class="tab-pill">🗓️ Lịch Sử</span>
+      <span class="tab-pill">🔒 Bằng Chứng</span>
+      <span class="tab-pill">📄 1099 / W-2</span>
+      <span class="tab-pill">🤖 Bookkeeping</span>
+      <span class="tab-pill">⚙️ Cấu Hình</span>
+      <a class="tab-pill" style="background:#f59e0b;color:#fff;border-color:#d97706" href="${pageHref("quick-pay")}">⚡ Quick Pay</a>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap">
+      <div><strong>5</strong> thợ đã kết nối · <span class="orange">1 chờ chấp nhận invite</span></div>
+      <button class="source-button primary">✉️ Invite Thợ Mới</button>
+    </div>
+
+    <div class="alert alert-orange">⏳ <strong>Đang chờ thợ setup thông tin nhận tiền</strong><br><span class="gray">Jenny N. · jenny.n@gmail.com · Invite gửi 2024-06-25</span><span style="float:right"><button class="source-button orange" style="height:30px">📩 Gửi lại</button> <button class="source-button" style="height:30px">✕ Hủy</button></span></div>
+
+    <div class="profile-grid">
+      ${[
+        ["AT","Amy T.","1099","amy.t@gmail.com · (713)555-0201","2024-01-06","***-4821","Zelle","amy.t@gmail.com","Venmo","@amytran-nails"],
+        ["LP","Linda P.","1099","linda.p@gmail.com · (713)555-0187","2022-11-11","***-7392","Zelle","linda.p@gmail.com","Cash App","$lindapnails"],
+        ["KM","Kevin M.","W2","kevin.m@gmail.com · (713)555-0344","2024-01-16","***-1190","Direct Deposit","****4521","Check","Backup"],
+        ["SJ","Sarah J.","1099","sarah.j@gmail.com · (713)555-0156","2024-02-02","***-6047","Cash App","$sarahj_nails","Zelle","sarah.j@gmail.com"]
+      ].map(w=>`<div class="profile-card">
+        <div class="profile-head">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="avatar ${w[0]==="LP"?"blue":w[0]==="KM"?"green":w[0]==="SJ"?"pink":""}">${w[0]}</div>
+            <div><div class="text-lg font-black">${w[1]} <span class="badge badge-purple">${w[2]}</span></div><div class="text-xs text-slate-500">${w[3]}</div><div class="text-xs green">✅ Đã setup từ ${w[4]}</div></div>
+          </div>
+          <button class="source-button" style="height:30px">✏️ Sửa</button>
+        </div>
+        <div class="text-xs font-black uppercase text-slate-500">💳 NHẬN TIỀN QUA</div>
+        <div class="pay-channel" style="margin-top:10px"><strong>🕊️ ${w[6]}</strong> <span class="badge badge-green">PRIMARY</span> <span class="badge badge-green">✓ Đã xác nhận</span><br><small class="gray">${w[7]}</small></div>
+        <div class="pay-channel" style="margin-top:8px;border-left-color:#64748b"><strong>${w[8]==="Venmo"?"💜":w[8]==="Cash App"?"💚":"🏦"} ${w[8]}</strong> <span class="badge badge-gray">BACKUP</span><br><small class="gray">${w[9]}</small></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+          <div class="text-xs"><span class="gray">SSN LAST 4</span><br><strong>${w[5]}</strong></div>
+          <div class="text-xs"><span class="gray">W-9</span><br><span class="green">✅ Nộp rồi</span></div>
+          <button class="source-button primary">⚡ Trả tiền ngay →</button>
+        </div>
+      </div>`).join("")}
+    </div>
+  </div>`;
 }
 
 /* ─── TAX LEDGER ─── */
@@ -568,11 +1083,172 @@ function renderJurisdictions(){
 /* ─── FORMS & REPORTS ─── */
 function renderForms(){
   const formRows = data.forms.map(f=>row([f[0],f[1],f[2],f[3],f[4],status(f[5]),rowActions(actionBtn("Preview","preview-form"),actionBtn("Share","share-form"),actionBtn("Download",""),actionBtn("Archive",""))]));
-  return `${filterBar(["All types",["W-2","1099","941","940","SUTA"]],["All periods",["YTD 2026","Q2 2026"]],["All statuses",["Ready","Draft","Needs Review"]])}${panel("Forms & Reports",table(["Report","Period","Records","Source","Due","Status","Actions"],formRows),`<button class="btn primary" data-modal="report">Generate Package</button>`)}`;
+  return `${filterBar(["All types",["W-2","1099","941","940","SUTA"]],["All periods",["YTD 2026","Q2 2026"]],["All statuses",["Ready","Draft","Needs Review"]])}<div class="grid-2" style="margin-bottom:14px">${contractor1099ReadinessPanel()}${panel("1099 / W-2 Tax Center Checklist",`<div class="panel-body list">${listItem("Completed before PDF","W-9 on file, TIN/name/address verified, contractor classification reviewed, YTD payout rollup checked.","green")}${listItem("Before filing","Generate and review 1099-NEC PDFs, reconcile Box 1 totals, confirm state boxes if needed, then CPA/merchant approval.","yellow")}${listItem("Recipient delivery","Email/download statements for workers and log delivery status in Audit Log.","blue")}${listItem("IRS e-file readiness","If filing information returns electronically, validate IRIS/FIRE workflow, payer TIN, contact, and correction process.","red")}</div>`,`<a class="btn" href="${pageHref("tax-1099")}">Open Tax Center</a>`)}</div>${panel("Forms & Reports",table(["Report","Period","Records","Source","Due","Status","Actions"],formRows),`<button class="btn primary" data-modal="report">Generate Package</button>`)}`;
+}
+
+/* ─── TAX CENTER 1099/W-2 ─── */
+function renderTax1099(){
+  return `<div class="nexora-source">
+    <div class="alert alert-red">⏰ <strong>Deadlines quan trọng:</strong> 1099-NEC gửi cho thợ &amp; nộp IRS → <strong>Jan 31</strong> &nbsp;|&nbsp; Form 1096 (tổng hợp) → <strong>Feb 28</strong> mỗi năm thuế.</div>
+
+    <div class="section-box">
+      <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+        📋 IRS Form 1096 — Annual Summary · Năm Thuế 2024
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="badge badge-purple">📄 Tạo Form 1096 PDF</span>
+          <span class="badge badge-blue">📤 E-file Tất Cả → IRS</span>
+          <span class="badge badge-gray">📦 Xuất ZIP (4 files)</span>
+          <span class="badge badge-gray">📧 Email tất cả thợ</span>
+        </div>
+      </div>
+      <div class="stats-row" style="margin:0;padding:16px;">
+        <div class="stat-card"><div class="stat-label">Tổng Forms</div><div class="stat-val purple">4</div></div>
+        <div class="stat-card"><div class="stat-label">Total Box 1</div><div class="stat-val green">$101,176</div></div>
+        <div class="stat-card"><div class="stat-label">Sẵn sàng nộp</div><div class="stat-val green">4/4</div></div>
+        <div class="stat-card"><div class="stat-label">W-9 on file</div><div class="stat-val green">4/4</div></div>
+      </div>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">👥 Thống Kê 1099-NEC Từng Thợ</div>
+      <table>
+        <thead>
+          <tr><th>Nhân Viên</th><th>SSN</th><th>Box 1 Total</th><th>Service Income</th><th>Tips + Bonus</th><th>Số TT</th><th>W-9</th><th>Địa Chỉ</th><th>Trạng Thái</th><th>Thao Tác</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Amy T.</strong><br><small style="color:#8b949e;">amy.t@gmail.com</small></td>
+            <td style="font-family:monospace;color:#8b949e;font-size:11px;">***-**-4821</td>
+            <td class="amt"><strong>$29,341</strong></td><td>$25,445</td><td class="tip">$3,896</td>
+            <td>24 lần</td>
+            <td><span class="badge badge-green">✅ On file</span></td>
+            <td style="font-size:11px;color:#8b949e;">1234 Main St, Houston TX 77001</td>
+            <td><span class="badge badge-green">Sẵn sàng</span></td>
+            <td style="white-space:nowrap;font-size:12px;">👁 <a href="#" style="color:#58a6ff;">Preview</a> · 📄 <a href="#" style="color:#58a6ff;">PDF</a> · 📧 <a href="#" style="color:#58a6ff;">Email</a> · 📤 <a href="#" style="color:#58a6ff;">IRS</a></td>
+          </tr>
+          <tr>
+            <td><strong>Linda P.</strong><br><small style="color:#8b949e;">linda.p@gmail.com</small></td>
+            <td style="font-family:monospace;color:#8b949e;font-size:11px;">***-**-7392</td>
+            <td class="amt"><strong>$37,188</strong></td><td>$32,720</td><td class="tip">$4,468</td>
+            <td>24 lần</td>
+            <td><span class="badge badge-green">✅ On file</span></td>
+            <td style="font-size:11px;color:#8b949e;">5678 Oak Ave, Houston TX 77002</td>
+            <td><span class="badge badge-green">Sẵn sàng</span></td>
+            <td style="white-space:nowrap;font-size:12px;">👁 <a href="#" style="color:#58a6ff;">Preview</a> · 📄 <a href="#" style="color:#58a6ff;">PDF</a> · 📧 <a href="#" style="color:#58a6ff;">Email</a> · 📤 <a href="#" style="color:#58a6ff;">IRS</a></td>
+          </tr>
+          <tr>
+            <td><strong>Sarah J.</strong><br><small style="color:#8b949e;">sarah.j@gmail.com</small></td>
+            <td style="font-family:monospace;color:#8b949e;font-size:11px;">***-**-6047</td>
+            <td class="amt"><strong>$19,766</strong></td><td>$17,280</td><td class="tip">$2,486</td>
+            <td>20 lần</td>
+            <td><span class="badge badge-green">✅ On file</span></td>
+            <td style="font-size:11px;color:#8b949e;">234 Elm St, Houston TX 77004</td>
+            <td><span class="badge badge-green">Sẵn sàng</span></td>
+            <td style="white-space:nowrap;font-size:12px;">👁 <a href="#" style="color:#58a6ff;">Preview</a> · 📄 <a href="#" style="color:#58a6ff;">PDF</a> · 📧 <a href="#" style="color:#58a6ff;">Email</a> · 📤 <a href="#" style="color:#58a6ff;">IRS</a></td>
+          </tr>
+          <tr>
+            <td><strong>Brian L.</strong><br><small style="color:#8b949e;">brian.l@gmail.com</small></td>
+            <td style="font-family:monospace;color:#8b949e;font-size:11px;">***-**-3356</td>
+            <td class="amt"><strong>$14,881</strong></td><td>$13,050</td><td class="tip">$1,831</td>
+            <td>16 lần</td>
+            <td><span class="badge badge-green">✅ On file</span></td>
+            <td style="font-size:11px;color:#8b949e;">567 Maple Dr, Houston TX 77005</td>
+            <td><span class="badge badge-green">Sẵn sàng</span></td>
+            <td style="white-space:nowrap;font-size:12px;">👁 <a href="#" style="color:#58a6ff;">Preview</a> · 📄 <a href="#" style="color:#58a6ff;">PDF</a> · 📧 <a href="#" style="color:#58a6ff;">Email</a> · 📤 <a href="#" style="color:#58a6ff;">IRS</a></td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="2"><strong>TỔNG (Form 1096)</strong></td>
+            <td class="amt"><strong>$101,176</strong></td>
+            <td colspan="7" style="color:#8b949e;font-size:12px;">→ Bấm "📤 E-file Tất Cả → IRS" để nộp toàn bộ một lần</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="section-box">
+        <div class="section-box-title">✅ Checklist Đã Hoàn Thành</div>
+        <ul class="checklist">
+          <li class="check-done">✅ Thu thập W-9 từ tất cả contractors</li>
+          <li class="check-done">✅ Xác nhận địa chỉ và SSN từng thợ</li>
+          <li class="check-done">✅ Tổng hợp tổng chi trả theo từng người</li>
+          <li class="check-done">✅ Kiểm tra ngưỡng $600 — 4/4 đạt</li>
+        </ul>
+      </div>
+      <div class="section-box">
+        <div class="section-box-title">⬜ Checklist Cần Làm</div>
+        <ul class="checklist">
+          <li class="check-todo">⬜ Tạo và review PDF 1099-NEC từng thợ</li>
+          <li class="check-todo">⬜ Gửi bản copy cho thợ trước Jan 31</li>
+          <li class="check-todo">⬜ Tạo Form 1096 transmittal</li>
+          <li class="check-todo">⬜ E-file hoặc mail đến IRS trước Jan/Feb 31</li>
+        </ul>
+      </div>
+    </div>
+  </div>`;
 }
 
 /* ─── AI ADVISOR ─── */
 function renderAiAdvisor(){return `<div class="grid-4" style="margin-bottom:14px">${[["AI CFO","On","Cash-flow and tax prompts","green"],["Rule Watch","Beta","Official-source monitor enabled","cyan"],["Deduction Lists","6","Industry reminders","yellow"],["Guided Help","Ready","Context support","red"]].map(metric).join("")}</div><div class="grid-2">${panel("AI CFO Prompt Starters",table(["Area","Prompt","Action"],[["Cash flow","Review upcoming payroll, payout, rent, supplies, and tax pressure.","Ask"],["Tax planning","Find missing records before quarter close.","Ask"],["Support","Explain what screen to use next when blocked.","Ask"]].map(r=>row([r[0],r[1],`<button class="btn primary" data-modal="ai-cfo">${r[2]}</button>`],{wrap:1}))))}${panel("Government Rule Watch",table(["Source","Topic","Impact","Next Action"],[["IRS / State agencies","Payroll and 1099 deadline monitor",status("Review"),"Verify official feed source, map deadlines to merchant profile, then create owner task."],["State revenue agencies","Sales tax and local payroll changes",status("Watch"),"Map merchant location to state/local rules and show changes by effective date."],["Workforce agencies","Worker classification and SUTA notices",status("High"),"Create classification warning before payout sync or CPA package export."],["IRS mileage rate feed","Business mileage standard rate",status("Active"),"Version rate by tax year and surface estimate inside GPS Mileage."],["Tip legislation watch","No Tax on Tips eligibility and caps",status("Beta"),"Track updates by tax year and show CPA review note when rule changes."]].map(r=>row(r,{wrap:[1,3]}))))}</div>${panel("Industry Deduction Checklist",table(["Industry","Checklist Ideas"],[["Nail salon","Supplies, booth rent, merchant fees, towels, uniforms, licenses, insurance, software, marketing, mileage."],["Beauty business","Product inventory, training, equipment, booking software, business phone, client amenities, rent."],["Contractor","Tools, mileage, phone, home office, payment fees, tax prep, education, insurance."],["Restaurant","Food inventory, delivery platform fees, kitchen supplies, uniforms, POS fees, cleaning, licenses, tips and payroll records."],["Freelancer / Gig worker","Mileage, phone, laptop, software, home office, payment processing fees, marketing, education."],["Healthcare / clinic","Medical supplies, licensing, malpractice insurance, continuing education, booking software, mileage."]].map(r=>row(r,{wrap:1}))))}`;
+}
+
+/* ─── AI ASSISTANT ─── */
+function renderAiAssistant(){
+  const stats = [
+    ["CUỘC GỌI AI XỬ LÝ","8","Hôm nay","blue"],
+    ["LỊCH AI TỰ ĐẶT","4","Không cần nhân viên","green"],
+    ["AI BOOKKEEPING","Cập nhật","Real-time P&L","cyan"],
+    ["TIẾT KIỆM THỜI GIAN","3.2h/ngày","So với thủ công","yellow"]
+  ];
+
+  const chatMsg = (who,text) => `<div class="chat-row ${who === "me" ? "me" : ""}">${who === "me" ? "" : `<span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 text-xs text-white"><i class="fa-solid fa-robot"></i></span>`}<div class="chat-bubble ${who === "me" ? "me" : "ai"}">${text}</div></div>`;
+
+  const conversation = [
+    chatMsg("ai","Xin chào! Tôi là AI Assistant của Nexora. Tôi có thể giúp phân tích doanh thu, lên lịch nhân viên, hay trả lời bất kỳ câu hỏi nào về tiệm."),
+    chatMsg("me","Amy tuần này làm được bao nhiêu?"),
+    chatMsg("ai","Amy T., tuần 23-28/6: doanh số $2,195, lương $1,486.85 (kết hợp: $480 giờ + $768 hoa hồng + $238 bonus vượt KPI), tổng nhận $1,804.85 (kể cả tips $318). Hiệu suất 127% KPI target."),
+    chatMsg("me","Dịch vụ nào đang hot nhất tháng này?"),
+    chatMsg("ai","Top 3 tháng 6: (1) Gel Full Set — 148 lần, $9,620; (2) Acrylic — 114 lần, $6,840; (3) Dip Powder — 96 lần, $5,280.")
+  ].join("");
+
+  const chatPanel = `<div class="section-box">
+    <div class="section-box-title">💬 AI Assistant</div>
+    <div class="${ui.panelBody}">
+    <div class="chat-thread">${conversation}</div>
+    <div class="mt-3 flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950 px-3 py-2">
+      <input class="${ui.input}" data-ai-input placeholder="Hỏi AI bất cứ điều gì về tiệm..." autocomplete="off">
+      <button class="${ui.btn} ${ui.primary}" data-ai-send>Gửi</button>
+    </div>
+  </div></div>`;
+
+  const features = [
+    ["fa-headset","AI Receptionist","Đang trực 24/7",true],
+    ["fa-calendar-check","Smart Scheduling","Tự tối ưu lịch",true],
+    ["fa-chart-pie","AI Bookkeeping","Real-time P&L",true],
+    ["fa-star","Auto Review Reply","Tự phản hồi review",false],
+    ["fa-bullhorn","Smart Campaigns","Tự gợi ý SMS",true],
+    ["fa-chart-line","Revenue Forecast","Dự báo tuần tới",true]
+  ];
+  const featureRow = ([icon,title,sub,on]) => `<div class="flex items-center justify-between gap-3 rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2.5">
+    <div class="flex min-w-0 items-center gap-3">
+      <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-slate-800 text-sm text-indigo-300"><i class="fa-solid ${icon}"></i></span>
+      <div class="min-w-0">
+        <div class="text-xs font-black text-slate-100">${title}</div>
+        <div class="truncate text-[11px] text-slate-500">${sub}</div>
+      </div>
+    </div>
+    <label class="switch ai-toggle"><input type="checkbox"${on ? " checked" : ""}><span class="track"></span><span class="dot"></span></label>
+  </div>`;
+  const featurePanel = `<div class="section-box"><div class="section-box-title">⚡ AI Đang Làm Việc</div><div class="${ui.panelBody} list">${features.map(featureRow).join("")}</div></div>`;
+
+  return `<div class="nexora-source">
+    <div class="source-hero">
+      <div><h2 class="source-title">🤖 IQ AI — Trí Tuệ Nhân Tạo</h2><div class="source-subtitle">AI Assistant · Phân tích · Dự đoán · Tự động hóa</div></div>
+      <span class="source-button primary">AI POWERED</span>
+    </div>
+    <div class="grid-4" style="margin-bottom:14px">${stats.map(metric).join("")}</div>
+    <div class="grid gap-3.5 lg:grid-cols-3"><div class="lg:col-span-2">${chatPanel}</div><div>${featurePanel}</div></div>
+  </div>`;
 }
 
 /* ─── OCR VAULT ─── */
@@ -2439,6 +3115,169 @@ document.addEventListener("click", event=>{
     if(modal?._camStream) modal._camStream.stop();
     document.getElementById("modalRoot").classList.remove("open");
   }
+
+  /* ── Nexora Touch interactive demo screens ── */
+  const aiSend = event.target.closest("[data-ai-send]");
+  if(aiSend){
+    const box = aiSend.closest(".section-box");
+    const input = box?.querySelector("[data-ai-input]");
+    const question = (input?.value || "").trim();
+    if(!question){ toast("Nhập câu hỏi trước khi gửi AI."); return; }
+    const thread = box.querySelector(".chat-thread");
+    appendAiMessage(thread,"me",question);
+    input.value = "";
+    setTimeout(()=>appendAiMessage(thread,"ai",aiDemoReply(question)),180);
+    toast("AI Assistant đã phản hồi trong chat.");
+    return;
+  }
+
+  const sourceTab = event.target.closest(".nexora-source .tab-pill");
+  if(sourceTab && !sourceTab.matches("a")){
+    const group = sourceTab.closest(".tab-row,.pos-tabs");
+    group?.querySelectorAll(".tab-pill").forEach(tab=>tab.classList.remove("active"));
+    sourceTab.classList.add("active");
+    if(currentPage === "reviews"){
+      const filter = sourceTab.textContent.trim();
+      document.querySelectorAll(".review-row").forEach(row=>{
+        row.style.display = filter === "Tất cả" || row.textContent.includes(filter) ? "" : "none";
+      });
+      toast("Đã lọc review: "+filter);
+    } else {
+      toast("Đã chuyển tab: "+sourceTab.textContent.trim());
+    }
+    return;
+  }
+
+  const reviewAction = event.target.closest(".review-row .source-button");
+  if(reviewAction && currentPage === "reviews"){
+    if(reviewAction.textContent.includes("Phản hồi")){
+      reviewAction.textContent = "Đã phản hồi";
+      reviewAction.classList.remove("primary");
+      reviewAction.classList.add("badge-green");
+      toast("Đã lưu phản hồi review. Audit log sẽ ghi lại trong production.");
+    }
+    return;
+  }
+
+  const queueAssign = event.target.closest(".queue-card .source-button.primary");
+  if(queueAssign && currentPage === "pos"){
+    const queueCard = queueAssign.closest(".queue-card");
+    const customer = queueCard?.querySelector(".text-sm")?.childNodes?.[0]?.textContent?.trim() || "Khách";
+    const service = queueCard?.querySelector(".text-xs")?.childNodes?.[0]?.textContent?.trim() || "Service";
+    const station = [...document.querySelectorAll(".station-card")].find(card=>card.textContent.includes("Trống"));
+    if(!station){ toast("Không còn thợ trống để giao khách."); return; }
+    const avatar = station.querySelector(".avatar")?.textContent || "ST";
+    const tech = station.querySelector(".mt-3")?.textContent || "Technician";
+    station.classList.remove("green");
+    station.classList.add("purple");
+    station.innerHTML = `
+      <div class="avatar">${avatar}</div>
+      <div class="mt-3 text-sm font-black text-slate-100">${tech}</div>
+      <div class="mt-2 text-xs text-slate-400">${demoEscape(customer)}</div>
+      <div class="mt-1 text-[11px] text-slate-500">${demoEscape(service)}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:18%;background:#7c3aed"></div></div>
+      <div class="text-[11px] text-slate-500">Vừa giao khách</div>
+      <button class="source-button" style="width:100%;margin-top:14px;background:#4fb779;color:#fff;border-color:transparent">Checkout</button>`;
+    queueCard.remove();
+    const title = document.querySelector(".section-box-title");
+    const count = document.querySelectorAll(".queue-card").length;
+    if(title?.textContent.includes("Hàng Chờ")) title.textContent = `⏳ Hàng Chờ (${count} khách)`;
+    toast(`Đã giao ${customer} cho ${tech}.`);
+    return;
+  }
+
+  const stationButton = event.target.closest(".station-card .source-button");
+  if(stationButton && currentPage === "pos"){
+    const station = stationButton.closest(".station-card");
+    const tech = station?.querySelector(".mt-3")?.textContent || "Technician";
+    const avatar = station?.querySelector(".avatar")?.textContent || "ST";
+    if(stationButton.textContent.includes("Checkout")){
+      station.className = "station-card green";
+      station.innerHTML = `
+        <div class="avatar green">${avatar}</div>
+        <div class="mt-3 text-sm font-black text-slate-100">${tech}</div>
+        <div class="mt-2 text-xs text-emerald-300">● Trống</div>
+        <div class="mt-1 text-[11px] text-slate-500">—</div>
+        <div class="text-[11px] text-slate-500">—</div>
+        <button class="source-button" style="width:100%;margin-top:14px;background:#27406f;color:#fff;border-color:transparent">+ Giao Khách</button>`;
+      toast(`Checkout xong. ${tech} đã trống.`);
+    } else {
+      toast("Chọn khách trong hàng chờ rồi bấm Giao để đưa vào thợ này.");
+    }
+    return;
+  }
+
+  const payTypeCard = event.target.closest(".pay-type-card");
+  if(payTypeCard && currentPage === "quick-pay"){
+    payTypeCard.closest(".pay-type-grid")?.querySelectorAll(".pay-type-card").forEach(card=>card.classList.remove("active"));
+    payTypeCard.classList.add("active");
+    updateQuickPayPreview();
+    toast("Đã chọn loại thanh toán: "+payTypeCard.querySelector(".text-lg")?.textContent.trim());
+    return;
+  }
+
+  const workerItem = event.target.closest(".worker-item");
+  if(workerItem && currentPage === "quick-pay"){
+    workerItem.closest(".worker-list")?.querySelectorAll(".worker-item").forEach(item=>item.classList.remove("active"));
+    workerItem.classList.add("active");
+    updateQuickPayPreview();
+    toast("Đã chọn thợ: "+workerItem.querySelector(".text-sm")?.childNodes?.[0]?.textContent.trim());
+    return;
+  }
+
+  const amountChip = event.target.closest(".amount-buttons .source-button");
+  if(amountChip && currentPage === "quick-pay"){
+    const amountInput = document.querySelector(".source-input.amount");
+    if(amountInput) amountInput.value = amountChip.textContent.trim();
+    updateQuickPayPreview();
+    toast("Đã nhập số tiền: "+amountChip.textContent.trim());
+    return;
+  }
+
+  const methodCard = event.target.closest(".method-grid .method-card");
+  if(methodCard && currentPage === "quick-pay"){
+    methodCard.closest(".method-grid")?.querySelectorAll(".method-card").forEach(card=>card.classList.remove("active"));
+    methodCard.classList.add("active");
+    updateQuickPayPreview();
+    toast("Đã chọn phương thức: "+methodCard.textContent.replace(/\s+/g," ").trim());
+    return;
+  }
+
+  const quickCreate = event.target.closest("button.source-button.primary");
+  if(quickCreate && currentPage === "quick-pay" && quickCreate.textContent.includes("Tạo Thanh Toán")){
+    const amount = moneyNumber(document.querySelector(".source-input.amount")?.value || 0);
+    if(!amount){ toast("Nhập số tiền trước khi tạo thanh toán."); return; }
+    const worker = document.querySelector(".worker-item.active .text-sm")?.childNodes?.[0]?.textContent?.trim() || "Worker";
+    const type = document.querySelector(".pay-type-card.active .text-lg")?.textContent?.trim() || "Thanh toán";
+    const method = (document.querySelector(".method-grid button.method-card.active") || document.querySelector(".method-grid .method-card.active"))?.textContent?.replace(/\s+/g," ").trim() || "Zelle";
+    const recent = document.querySelector(".recent-list");
+    const row = document.createElement("div");
+    row.className = "recent-row";
+    row.innerHTML = `<span>⚡</span><div><strong>${demoEscape(type)} — vừa tạo</strong><br><small class="gray">${demoEscape(worker)} · ${new Date().toISOString().slice(0,10)} · ${demoEscape(method)}</small></div><strong class="green">${moneyText(amount)}</strong>`;
+    recent?.prepend(row);
+    data.payouts?.unshift?.([`PAY-${Date.now().toString().slice(-5)}`,worker,"NL-NEW","Current",moneyText(amount),method,type,"Pending","Draft"]);
+    toast(`Đã tạo ${type} cho ${worker}: ${moneyText(amount)}.`);
+    return;
+  }
+
+  const payoutButton = event.target.closest(".profile-card .source-button, .alert .source-button, .nexora-source .source-button.primary");
+  if(payoutButton && currentPage === "payouts"){
+    const text = payoutButton.textContent.trim();
+    if(text.includes("Invite")){
+      openModal("employee");
+    } else if(text.includes("Gửi lại")){
+      toast("Đã gửi lại invite cho Jenny N.");
+    } else if(text.includes("Hủy")){
+      payoutButton.closest(".alert")?.remove();
+      toast("Đã hủy pending invite.");
+    } else if(text.includes("Sửa")){
+      openModal("employee");
+    } else if(text.includes("Trả tiền")){
+      window.location.href = pageHref("quick-pay");
+    }
+    return;
+  }
+
   const msg = event.target.closest("[data-toast],[data-action-toast]");
   if(msg) toast(msg.dataset.toast || msg.dataset.actionToast);
 
@@ -2507,11 +3346,27 @@ document.addEventListener("click", event=>{
   }
 });
 document.addEventListener("input", event=>{
+  if(currentPage === "quick-pay" && event.target.closest(".source-input.amount")){
+    updateQuickPayPreview();
+    return;
+  }
   if(event.target.id !== "globalSearch") return;
   const q = event.target.value.toLowerCase();
   document.querySelectorAll("tbody tr,.item").forEach(el=>{el.style.display = el.textContent.toLowerCase().includes(q) ? "" : "none";});
 });
+document.addEventListener("keydown", event=>{
+  if(event.key !== "Enter" || !event.target.matches("[data-ai-input]")) return;
+  event.preventDefault();
+  event.target.closest(".section-box")?.querySelector("[data-ai-send]")?.click();
+});
 document.addEventListener("change", event=>{
+  const aiToggle = event.target.closest(".ai-toggle input");
+  if(aiToggle){
+    const row = aiToggle.closest(".flex");
+    const name = row?.querySelector(".text-xs.font-black")?.textContent || "AI feature";
+    toast(`${name}: ${aiToggle.checked ? "đã bật" : "đã tắt"}.`);
+    return;
+  }
   const sel = event.target.closest("select.form-control");
   if(!sel) return;
   const bar = sel.parentElement;

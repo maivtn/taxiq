@@ -12,6 +12,7 @@ TaxIQ / Nexora Touch prototype.
 | `TaxIQ_No_Tax_On_Tips_Module_Dev_Business_UI_Flow.docx` | Source BA/dev/UI document for the TaxIQ No Tax on Tips module. | Covers business rules, user roles, tip flows, UI screens, data model, APIs, webhooks, rules engine, CPA report, and roadmap. |
 | `TaxIQ_No_Tax_On_Tips_Module_Dev_Business_UI_Flow.md` | Markdown extraction of the No Tax on Tips DOCX for search, review, and implementation planning. | Generated from the DOCX; if content differs, trust the DOCX. |
 | `advisory-ai-cfo-product-ideas.md` | Backlog for AI Advisor, OCR Vault, Share Links, GPS Mileage, CPA Review, and Deduction Checklist ideas. | These are separate modules, not one combined screen. |
+| `nexora-touch-payout-payroll-1099-supplement-vi.md` | Vietnamese supplement from the latest Nexora Touch payout docs. | Covers Quick Pay, Pay Engine, Weekly Payroll, Payout Hub 1099, Tax Center 1099/W-2, 1099 readiness, and keyword explanations. |
 | `tax-iq-feature-description.md` | Product feature description for the current Tax IQ demo. | Covers business goals, target users, screen map, key workflows, permissions, data objects, production requirements, and demo status. |
 | `tax-iq-feature-description-vi.md` | Vietnamese feature description for the current Tax IQ demo. | Includes business explanation, module details, production notes, and a glossary explaining payroll/tax/CPA/technical keywords. |
 | `tax-iq-stakeholder-ba-dev-next-steps-vi.md` | Vietnamese stakeholder/BA/dev decision and backlog document. | Captures business model, ICP, BA user stories, payroll state machine, permission matrix, billing spec, dev backlog, sprint priorities, and glossary. |
@@ -21,6 +22,8 @@ TaxIQ / Nexora Touch prototype.
 - Default market: Vietnamese-owned nail salons and beauty businesses in the U.S.
 - Product value: payout ledger plus Tax IQ sync, not a full payroll-provider replacement in MVP.
 - Core flows: technician setup, worker classification, pay period creation, payout review, owner approval, finalization, Tax IQ sync, CPA export.
+- Nexora Touch payout supplement: Quick Pay, Pay Engine configuration, weekly payroll, 1099 Payout Hub, and 1099/W-2 Tax Center are now captured as the detailed payout/payroll source for Tax IQ.
+- Current HTML demo now includes dedicated pages for Quick Pay, Pay Engine, Weekly Payroll, and Tax Center 1099/W-2, plus summary entry points on Dashboard, Payouts, Forms & Reports, and sidebar navigation.
 - Key ledgers: payout, tip, revenue, receipt OCR, mileage, Tax IQ ledger.
 - Key compliance split: W-2 payroll records versus 1099 contractor payout records.
 - No Tax on Tips module: track voluntary cash/electronic/QR/POS tips, proof archive, yearly cap progress, worker privacy, CPA-ready PDF/CSV exports, and audit trail.
@@ -48,4 +51,5 @@ TaxIQ / Nexora Touch prototype.
 - Use `tax-iq-feature-description.md` as the product overview before drilling into screen-level implementation details.
 - Use `tax-iq-feature-description-vi.md` for Vietnamese stakeholder review, business explanation, demo preparation, and terminology alignment.
 - Use `tax-iq-stakeholder-ba-dev-next-steps-vi.md` to align stakeholder, BA, and dev priorities before the next sprint.
+- Use `nexora-touch-payout-payroll-1099-supplement-vi.md` when implementing Quick Pay, Pay Engine rules, Weekly Payroll, Payout Hub 1099, 1099 rollups, and year-end 1099/W-2 readiness.
 - Before API implementation, keep sample data in `html/assets/mock-data.json` so UI logic can be swapped to API responses without rewriting screen layouts.

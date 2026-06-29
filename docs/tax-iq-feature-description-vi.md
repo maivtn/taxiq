@@ -3,7 +3,7 @@
 Phiên bản: Phase 1 Demo  
 Sản phẩm: Nexora Touch / Tax IQ  
 Phạm vi áp dụng: U.S. payroll, payout, lưu trữ chứng từ thuế, Tip Ledger, Tax Estimate, CPA review, AI Advisor  
-Ngày cập nhật: 2026-06-26
+Ngày cập nhật: 2026-06-29
 
 ## 1. Mục Đích Của Tài Liệu
 
@@ -68,6 +68,10 @@ Tax IQ giải quyết bằng cách biến dữ liệu rời rạc thành một b
 | Data Quality | Trung tâm gom các lỗi dữ liệu: thiếu TIN/W-4, receipt thiếu purpose, OCR confidence thấp, connection/webhook lỗi, CPA thiếu chứng từ. | Biết chính xác dữ liệu nào cần sửa trước khi finalize hoặc export. |
 | Jurisdictions | Nơi quản lý phạm vi thuế federal, state, local. | Biết doanh nghiệp đang liên quan đến bang/khu vực thuế nào. |
 | Forms & Reports | Nơi tạo report/export cho CPA, payroll, 1099, year-end. | Giúp CPA có file PDF/CSV và summary rõ ràng. |
+| Quick Pay | Màn hình tạo thanh toán nhanh cho tip, wage, bonus, advance, reimbursement hoặc adjustment. | Owner xử lý payment nhỏ nhanh nhưng vẫn có audit trail và tax routing. |
+| Pay Engine | Màn hình cấu hình rule tính lương/payout theo giờ, hoa hồng, hybrid, tiered, bonus và pay schedule. | Giảm lỗi tính lương trước khi qua Weekly Payroll hoặc Payout Hub. |
+| Weekly Payroll | Màn hình tổng hợp payroll tuần theo worker, hours, sales, commission, tips, bonus, net/gross và action pay. | Owner review và trả từng người hoặc trả tất cả với dữ liệu rõ ràng. |
+| Tax Center 1099/W-2 | Màn hình kiểm tra W-9/TIN, 1099-NEC, W-2 split, recipient delivery và filing readiness. | Chuẩn bị hồ sơ cuối năm cho CPA/merchant mà không trộn W-2 và 1099. |
 | OCR Vault | Kho lưu receipt, bill, invoice, payout proof; AI đọc ảnh và trích xuất dữ liệu. | Giảm mất chứng từ, tăng tốc độ nhập liệu. |
 | Share Links | Tạo link/QR để bên ngoài upload hoặc review thông tin. | Gửi cho CPA, technician, reviewer mà không cần mở toàn bộ system. |
 | GPS Mileage | Ghi nhận chuyến đi business, miles, route, purpose. | Tạo evidence để CPA xem có thể đưa vào deduction hay không. |
@@ -98,6 +102,30 @@ Tax IQ giải quyết bằng cách biến dữ liệu rời rạc thành một b
 10. Hệ thống hiển thị cost preview: giá mỗi giờ, số giờ dự kiến, retainer, tổng estimate.
 11. CPA vào portal read-only để review, comment, request missing files.
 12. Merchant approve package/export trước khi chia sẻ đầy đủ hoặc dùng cho filing.
+
+## 6.1 Bổ Sung Từ Nexora Touch Payout / Pay Engine / 1099 Docs
+
+Bộ tài liệu bổ sung mới làm rõ phần trước Tax IQ: cách merchant tạo payment, cấu hình lương, trả lương tuần và gom số liệu 1099/W-2.
+
+Các điểm cần đưa vào nghiệp vụ:
+
+- Quick Pay: dùng để tạo thanh toán nhanh cho tip, wage/lương, bonus, advance, reimbursement hoặc adjustment. Flow chuẩn là chọn loại thanh toán, chọn worker, nhập amount, chọn method, thêm note và confirm.
+- Pay Engine: cấu hình lương theo hourly, commission, hybrid hoặc tiered; có overtime, commission split, bonus vượt bao, KPI bonus và pay schedule.
+- Weekly Payroll: bảng tổng hợp giờ làm, doanh số, lương giờ, hoa hồng, bonus, tips và tổng nhận; owner có thể trả từng người hoặc trả tất cả.
+- Payout Hub 1099: dùng cho contractor/technician 1099, có bước calculate payout, owner approve/send, sau đó sync vào hồ sơ 1099.
+- Tax Center 1099/W-2: tổng hợp YTD, W-9/TIN, contractor classification, 1099-NEC Box 1, W-2 split và CPA/merchant approval.
+
+Dữ liệu từ các flow này chảy vào Tax IQ như sau:
+
+| Source flow | Dữ liệu tạo ra | Tax IQ module nhận |
+| --- | --- | --- |
+| Quick Pay | Payment type, worker, amount, method, memo, proof | Quick Pay, Payouts, OCR Vault, Tax Ledger, Audit Log |
+| Pay Engine | Pay type, commission split, overtime, bonus, pay schedule | Pay Engine, Employees, Payroll Runs, Payouts |
+| Weekly Payroll | Gross/net, hours, sales, commission, tips, bonus | Weekly Payroll, Payroll Runs, Payouts, Tax Estimate |
+| Payout Hub 1099 | Confirmed contractor payout, deduction, proof, approval | Payouts, Tax Center 1099/W-2, CPA Review, Tax Ledger |
+| Tax Center 1099/W-2 | YTD rollup, W-9/TIN, 1099-NEC/W-2 readiness | Tax Center 1099/W-2, Forms & Reports, CPA Review, Compliance Review |
+
+Ghi chú quan trọng: Form 1099-NEC và các deadline phải kiểm tra theo IRS official source mỗi tax year. Không nên hard-code một ngày hạn chung cho mọi form trong production.
 
 ## 7. Mô Tả Chi Tiết Từng Tính Năng
 
