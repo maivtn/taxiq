@@ -494,7 +494,7 @@ function contractor1099ReadinessPanel(){
 }
 
 const renderers = {
-  dashboard:renderDashboard, analytics:renderAnalytics, pos:renderPos, reviews:renderReviews,
+  dashboard:renderDashboard, analytics:renderAnalytics, pos:renderPos, checkout:renderCheckout, reviews:renderReviews,
   onboarding:renderOnboarding, "data-quality":renderDataQuality,
   employers:renderEmployers, employees:renderEmployees, "employee-profile":renderEmployeeProfile,
   "payroll-runs":renderRuns, "quick-pay":renderQuickPay, "pay-engine":renderPayEngine,
@@ -510,7 +510,7 @@ const renderers = {
 };
 
 function renderPage(){
-  const sourceLikePages = new Set(["pos","quick-pay","pay-engine","weekly-payroll","payouts","tax-1099","reviews","ai-assistant"]);
+  const sourceLikePages = new Set(["pos","checkout","quick-pay","pay-engine","weekly-payroll","payouts","tax-1099","reviews","ai-assistant"]);
   document.getElementById("content").innerHTML = (sourceLikePages.has(currentPage) ? "" : pageGuide()) + (renderers[currentPage] || renderDashboard)();
   initFreeRouteMaps(document);
 }
@@ -552,12 +552,119 @@ function renderPos(){
     <div class="pos-tabs">
       <button class="tab-pill">🟢 Check In</button>
       <button class="tab-pill active">📋 Turn Board</button>
-      <button class="tab-pill">💳 Checkout</button>
+      <a class="tab-pill" href="${pageHref("checkout")}">💳 Checkout</a>
     </div>
     <div class="pos-grid">${stationCards}</div>
     <div class="section-box">
       <div class="section-box-title">⏳ Hàng Chờ (3 khách)</div>
       <div class="queue-grid" style="padding:16px">${queue}</div>
+    </div>
+  </div>`;
+}
+
+/* ─── CHECKOUT ─── */
+function renderCheckout(){
+  const serviceRows = [
+    ["Acrylic Full Set","Amy T.","$72.00","$10.00","$82.00"],
+    ["Gel polish add-on","Amy T.","$18.00","$0.00","$18.00"],
+    ["Nail art x2","Amy T.","$12.00","$0.00","$12.00"]
+  ].map(item=>`<div class="checkout-line">
+    <div>
+      <div class="checkout-line-title">${item[0]}</div>
+      <div class="checkout-line-sub">Thợ: ${item[1]}</div>
+    </div>
+    <div>${item[2]}</div>
+    <div>${item[3]}</div>
+    <strong>${item[4]}</strong>
+  </div>`).join("");
+  const payments = ["Visa **** 4242","Cash","Gift Card","Split Pay"].map((item,index)=>`<button class="pay-method-card ${index===0 ? "active" : ""}" data-checkout-pay>
+    <i class="fa-solid ${index===0 ? "fa-credit-card" : index===1 ? "fa-money-bill" : index===2 ? "fa-gift" : "fa-layer-group"}"></i>
+    <span>${item}</span>
+  </button>`).join("");
+  return `<div class="nexora-source checkout-screen">
+    <div class="source-hero">
+      <div><h2 class="source-title">💳 Checkout — Thanh Toán</h2><div class="source-subtitle">Ticket #A002 · Emma W. · Station Amy T.</div></div>
+      <a class="source-button" href="${pageHref("pos")}">← POS Board</a>
+    </div>
+
+    <div class="checkout-layout">
+      <section class="checkout-main">
+        <div class="section-box">
+          <div class="section-box-title">① Vé Đang Checkout</div>
+          <div class="checkout-ticket-head">
+            <div>
+              <div class="checkout-customer">Emma W.</div>
+              <div class="checkout-meta">10:05 AM · Acrylic Full Set · Amy T.</div>
+            </div>
+            <span class="badge badge-purple">In Service</span>
+          </div>
+          <div class="checkout-line header"><span>Dịch vụ</span><span>Giá</span><span>Tip</span><span>Tổng</span></div>
+          ${serviceRows}
+          <div class="checkout-add-row">
+            <button class="source-button">+ Thêm dịch vụ</button>
+            <button class="source-button">+ Discount</button>
+            <button class="source-button">+ Coupon</button>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <div class="section-box-title">② Tip & Phân Bổ Cho Thợ</div>
+          <div class="tip-grid">
+            <button class="tip-chip">$10</button>
+            <button class="tip-chip active">$15</button>
+            <button class="tip-chip">18%</button>
+            <button class="tip-chip">20%</button>
+            <button class="tip-chip">Custom</button>
+          </div>
+          <div class="tip-split-card">
+            <div>
+              <strong>Amy T.</strong>
+              <span>100% tip từ ticket này</span>
+            </div>
+            <div class="tip-amount">$15.00</div>
+          </div>
+          <div class="alert alert-blue">Tip sẽ được ghi vào Tip Ledger và TaxIQ audit trail sau khi hoàn tất thanh toán.</div>
+        </div>
+
+        <div class="section-box">
+          <div class="section-box-title">③ Phương Thức Thanh Toán</div>
+          <div class="payment-method-grid">${payments}</div>
+          <div class="checkout-form-grid">
+            <label><span>Email receipt</span><input class="source-input" value="emma.w@example.com"></label>
+            <label><span>Phone</span><input class="source-input" value="(512) 555-0194"></label>
+          </div>
+        </div>
+      </section>
+
+      <aside class="checkout-summary">
+        <div class="section-box sticky-summary">
+          <div class="section-box-title">Tóm Tắt Thanh Toán</div>
+          <div class="receipt-preview">
+            <div class="receipt-logo">Nexora Nail Studio</div>
+            <div class="receipt-row"><span>Services</span><strong>$102.00</strong></div>
+            <div class="receipt-row"><span>Tip</span><strong>$15.00</strong></div>
+            <div class="receipt-row"><span>Discount</span><strong>-$5.00</strong></div>
+            <div class="receipt-row"><span>Sales tax</span><strong>$8.42</strong></div>
+            <div class="receipt-row total"><span>Total</span><strong>$120.42</strong></div>
+          </div>
+          <button class="source-button primary checkout-pay-button" data-checkout-complete>Charge $120.42</button>
+          <div class="checkout-sync">
+            <div><i class="fa-solid fa-receipt"></i><span>Receipt saved</span></div>
+            <div><i class="fa-solid fa-coins"></i><span>Tip Ledger ready</span></div>
+            <div><i class="fa-solid fa-book"></i><span>TaxIQ sync pending</span></div>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <div class="section-box-title">Sau Checkout</div>
+          <div class="checkout-next-list">
+            <div><strong>Send receipt</strong><span>Email/SMS receipt cho khách.</span></div>
+            <div><strong>Free station</strong><span>Amy T. trở lại Turn Board.</span></div>
+            <div><strong>Post tip</strong><span>Tip được đẩy qua Tip Ledger.</span></div>
+            <div><strong>Audit</strong><span>Lưu actor, amount, payment method, timestamp.</span></div>
+          </div>
+        </div>
+      </aside>
     </div>
   </div>`;
 }
@@ -3189,21 +3296,37 @@ document.addEventListener("click", event=>{
   const stationButton = event.target.closest(".station-card .source-button");
   if(stationButton && currentPage === "pos"){
     const station = stationButton.closest(".station-card");
-    const tech = station?.querySelector(".mt-3")?.textContent || "Technician";
-    const avatar = station?.querySelector(".avatar")?.textContent || "ST";
     if(stationButton.textContent.includes("Checkout")){
-      station.className = "station-card green";
-      station.innerHTML = `
-        <div class="avatar green">${avatar}</div>
-        <div class="mt-3 text-sm font-black text-slate-100">${tech}</div>
-        <div class="mt-2 text-xs text-emerald-300">● Trống</div>
-        <div class="mt-1 text-[11px] text-slate-500">—</div>
-        <div class="text-[11px] text-slate-500">—</div>
-        <button class="source-button" style="width:100%;margin-top:14px;background:#27406f;color:#fff;border-color:transparent">+ Giao Khách</button>`;
-      toast(`Checkout xong. ${tech} đã trống.`);
+      window.location.href = pageHref("checkout");
     } else {
       toast("Chọn khách trong hàng chờ rồi bấm Giao để đưa vào thợ này.");
     }
+    return;
+  }
+
+  const checkoutPayMethod = event.target.closest("[data-checkout-pay]");
+  if(checkoutPayMethod && currentPage === "checkout"){
+    checkoutPayMethod.closest(".payment-method-grid")?.querySelectorAll("[data-checkout-pay]").forEach(btn=>btn.classList.remove("active"));
+    checkoutPayMethod.classList.add("active");
+    toast("Đã chọn phương thức: "+checkoutPayMethod.textContent.trim());
+    return;
+  }
+
+  const tipChip = event.target.closest(".tip-chip");
+  if(tipChip && currentPage === "checkout"){
+    tipChip.closest(".tip-grid")?.querySelectorAll(".tip-chip").forEach(btn=>btn.classList.remove("active"));
+    tipChip.classList.add("active");
+    toast("Đã cập nhật tip: "+tipChip.textContent.trim());
+    return;
+  }
+
+  const checkoutComplete = event.target.closest("[data-checkout-complete]");
+  if(checkoutComplete && currentPage === "checkout"){
+    checkoutComplete.textContent = "Paid · Receipt Sent";
+    checkoutComplete.classList.remove("primary");
+    checkoutComplete.classList.add("green");
+    document.querySelector(".checkout-sync")?.classList.add("complete");
+    toast("Thanh toán hoàn tất. Receipt, Tip Ledger, và TaxIQ sync đã được tạo trong demo.");
     return;
   }
 

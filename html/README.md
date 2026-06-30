@@ -42,6 +42,7 @@ html/
     quick-pay.html
     pay-engine.html
     weekly-payroll.html
+    checkout.html
     payouts.html
     tax-1099.html
     tax-ledger.html
@@ -74,6 +75,7 @@ html/
 - Sidebar groups OCR Vault, Share Links, GPS Mileage, CPA Review, and AI Advisor under `Tax IQ`.
 - Sidebar also includes Tip Ledger and Tax Estimate under `Tax IQ`.
 - Overview screens now include Dashboard, Analytics, and Onboarding.
+- Merchant POS screens now include a dedicated Checkout flow for ticket review, tip allocation, payment, receipt delivery, and TaxIQ sync.
 - Tax IQ screens now include Data Quality Center for missing data, evidence gaps, integration errors, and CPA readiness.
 - System screens now include Webhooks, Audit Log, Notifications, Compliance Review, Billing & Plans, and Settings.
 - Nexora Touch payout/payroll docs are now represented as dedicated pages: Quick Pay, Pay Engine, Weekly Payroll, and Tax Center 1099/W-2.

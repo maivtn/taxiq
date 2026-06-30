@@ -1012,6 +1012,277 @@ a {
   padding: 14px;
 }
 
+.nexora-source .checkout-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, .8fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.nexora-source .checkout-main {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.nexora-source .checkout-ticket-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid #24324d;
+  padding: 16px;
+}
+
+.nexora-source .checkout-customer {
+  color: #f8fafc;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.nexora-source .checkout-meta,
+.nexora-source .checkout-line-sub {
+  margin-top: 4px;
+  color: #8b949e;
+  font-size: 12px;
+}
+
+.nexora-source .checkout-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 78px 78px 86px;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #24324d;
+  padding: 12px 16px;
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.nexora-source .checkout-line.header {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.nexora-source .checkout-line-title {
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.nexora-source .checkout-line > :not(:first-child) {
+  text-align: right;
+}
+
+.nexora-source .checkout-add-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 16px 16px;
+}
+
+.nexora-source .tip-grid,
+.nexora-source .payment-method-grid,
+.nexora-source .checkout-form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 16px;
+}
+
+.nexora-source .tip-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding-bottom: 0;
+}
+
+.nexora-source .tip-chip,
+.nexora-source .pay-method-card {
+  min-height: 46px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #111a2d;
+  color: #cbd5e1;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.nexora-source .tip-chip.active,
+.nexora-source .pay-method-card.active {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, .18);
+  color: #fff;
+}
+
+.nexora-source .pay-method-card {
+  display: flex;
+  min-height: 72px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.nexora-source .tip-split-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 16px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #111a2d;
+  padding: 14px;
+}
+
+.nexora-source .tip-split-card strong,
+.nexora-source .tip-split-card span {
+  display: block;
+}
+
+.nexora-source .tip-split-card strong {
+  color: #f8fafc;
+  font-size: 13px;
+}
+
+.nexora-source .tip-split-card span {
+  margin-top: 3px;
+  color: #8b949e;
+  font-size: 12px;
+}
+
+.nexora-source .tip-amount {
+  color: #3fb950;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.nexora-source .checkout-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-top: 0;
+}
+
+.nexora-source .checkout-form-grid label {
+  display: grid;
+  gap: 7px;
+}
+
+.nexora-source .checkout-form-grid span {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.nexora-source .checkout-summary {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.nexora-source .sticky-summary {
+  position: sticky;
+  top: 86px;
+}
+
+.nexora-source .receipt-preview {
+  margin: 16px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #020617;
+  padding: 14px;
+}
+
+.nexora-source .receipt-logo {
+  margin-bottom: 12px;
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.nexora-source .receipt-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px dashed #334155;
+  padding: 10px 0;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.nexora-source .receipt-row strong {
+  color: #e2e8f0;
+}
+
+.nexora-source .receipt-row.total {
+  color: #f8fafc;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.nexora-source .checkout-pay-button {
+  width: calc(100% - 32px);
+  height: 42px;
+  margin: 0 16px 16px;
+}
+
+.nexora-source .checkout-sync,
+.nexora-source .checkout-next-list {
+  display: grid;
+  gap: 10px;
+  padding: 0 16px 16px;
+}
+
+.nexora-source .checkout-sync div,
+.nexora-source .checkout-next-list div {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  border: 1px solid #24324d;
+  border-radius: 8px;
+  background: #111a2d;
+  padding: 10px;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.nexora-source .checkout-sync.complete div {
+  border-color: #2ea043;
+  background: #0d2018;
+  color: #3fb950;
+}
+
+.nexora-source .checkout-next-list {
+  padding-top: 16px;
+}
+
+.nexora-source .checkout-next-list div {
+  display: block;
+}
+
+.nexora-source .checkout-next-list strong,
+.nexora-source .checkout-next-list span {
+  display: block;
+}
+
+.nexora-source .checkout-next-list strong {
+  color: #f8fafc;
+  font-size: 12px;
+}
+
+.nexora-source .checkout-next-list span {
+  margin-top: 3px;
+  color: #8b949e;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
 .nexora-source .review-row {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -1047,6 +1318,12 @@ a {
   .nexora-source .pos-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .nexora-source .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+  .nexora-source .sticky-summary {
+    position: static;
+  }
   .nexora-source .profile-grid {
     grid-template-columns: 1fr;
   }
@@ -1065,6 +1342,33 @@ a {
   .nexora-source .card-grid-4,
   .nexora-source .quick-actions {
     grid-template-columns: 1fr;
+  }
+  .nexora-source .pos-tabs {
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+  .nexora-source .checkout-line {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .nexora-source .checkout-line.header {
+    display: none;
+  }
+  .nexora-source .checkout-line > :not(:first-child) {
+    text-align: left;
+  }
+  .nexora-source .checkout-line > :nth-child(2),
+  .nexora-source .checkout-line > :nth-child(3) {
+    display: none;
+  }
+  .nexora-source .tip-grid,
+  .nexora-source .payment-method-grid,
+  .nexora-source .checkout-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .nexora-source .checkout-ticket-head,
+  .nexora-source .tip-split-card {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 

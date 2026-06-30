@@ -25,7 +25,8 @@ const TaxIQLayout = (() => {
     "employee-profile":"fa-solid fa-user",    "payroll-runs":"fa-solid fa-money-bill-wave",
     "run-detail":"fa-solid fa-list-check",    "quick-pay":"fa-solid fa-bolt",
     "pay-engine":"fa-solid fa-sliders",       "weekly-payroll":"fa-solid fa-calendar-week",
-    pos:"fa-solid fa-display",                reviews:"fa-solid fa-star",
+    pos:"fa-solid fa-display",                checkout:"fa-solid fa-cash-register",
+    reviews:"fa-solid fa-star",
     "tax-1099":"fa-solid fa-file-invoice-dollar", connections:"fa-solid fa-plug",
     payouts:"fa-solid fa-hand-holding-dollar",ledger:"fa-solid fa-book",
     exceptions:"fa-solid fa-triangle-exclamation", jurisdictions:"fa-solid fa-map",
@@ -53,6 +54,7 @@ const TaxIQLayout = (() => {
     "pay-engine":{title:"Cấu Hình Lương — Pay Engine", file:"pay-engine.html", subtitle:"Staff → Lương → Cấu Hình Lương"},
     "weekly-payroll":{title:"Bảng Lương Tuần 23-28/6/2025", file:"weekly-payroll.html", subtitle:"Staff → Lương → Tuần Này"},
     pos:{title:"POS — Điểm Bán Hàng", file:"pos.html", subtitle:"Check in · Turn Board · Checkout"},
+    checkout:{title:"Checkout — Thanh Toán", file:"checkout.html", subtitle:"Ticket · Tip · Payment · Receipt · TaxIQ sync"},
     connections:{title:"Connections", file:"connections.html", subtitle:"Payroll, HRIS, payout, and webhook integrations."},
     payouts:{title:"Payout Hub — Thanh Toán Nhân Viên 1099", file:"payouts.html", subtitle:"Payout → Tổng Quan"},
     ledger:{title:"Tax Ledger", file:"tax-ledger.html", subtitle:"Immutable tax and payout ledger records."},
@@ -80,7 +82,7 @@ const TaxIQLayout = (() => {
 
   const navGroups = [
     ["Overview",["dashboard","analytics","onboarding"]],
-    ["Merchant Ops",["pos","quick-pay","payouts","reviews","ai-assistant"]],
+    ["Merchant Ops",["pos","checkout","quick-pay","payouts","reviews","ai-assistant"]],
     ["Payroll",["employers","employees","payroll-runs","pay-engine","weekly-payroll","connections"]],
     ["Tax IQ",["ledger","exceptions","data-quality","jurisdictions","forms","tax-1099","ocr","share-links","gps","cpa","tip-ledger","tax-estimate","ai-advisor"]],
     ["System",["webhooks","audit-log","notifications","compliance-review","billing","settings"]]
