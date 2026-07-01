@@ -55,6 +55,7 @@
       width: min(100%, 390px);
       margin-inline: auto;
       color: #0B1C30;
+      border-radius: 36px !important;
     }
 
     .phone-frame::before {
@@ -79,7 +80,25 @@
     }
 
     .phone-scroll section.rounded-lg {
-      border-radius: 18px;
+      border-radius: 22px !important;
+    }
+
+    .phone-scroll div.rounded-lg {
+      border-radius: 16px !important;
+    }
+
+    .phone-scroll .rounded-xl {
+      border-radius: 18px !important;
+    }
+
+    .phone-scroll .rounded-2xl {
+      border-radius: 24px !important;
+    }
+
+    .phone-scroll button.rounded-lg,
+    .phone-scroll a.rounded-lg,
+    .phone-scroll .rounded-md {
+      border-radius: 12px !important;
     }
 
     .phone-scroll .shadow-card {
@@ -100,6 +119,31 @@
       background:
         linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.98) 46%, rgba(233, 233, 255, 0.95) 100%),
         linear-gradient(90deg, rgba(70, 72, 212, 0.14), rgba(45, 46, 170, 0.14));
+    }
+
+    .ds-tint-primary {
+      border-color: rgba(70, 72, 212, 0.22) !important;
+      background: linear-gradient(135deg, #FFFFFF 0%, rgba(70, 72, 212, 0.08) 100%) !important;
+    }
+
+    .ds-tint-primary-active {
+      border-color: rgba(45, 46, 170, 0.24) !important;
+      background: linear-gradient(135deg, #FFFFFF 0%, rgba(45, 46, 170, 0.10) 100%) !important;
+    }
+
+    .ds-tint-success {
+      border-color: rgba(16, 185, 129, 0.24) !important;
+      background: linear-gradient(135deg, #FFFFFF 0%, rgba(16, 185, 129, 0.10) 100%) !important;
+    }
+
+    .ds-tint-warning {
+      border-color: rgba(245, 158, 11, 0.28) !important;
+      background: linear-gradient(135deg, #FFFFFF 0%, rgba(245, 158, 11, 0.10) 100%) !important;
+    }
+
+    .ds-tint-error {
+      border-color: rgba(239, 68, 68, 0.24) !important;
+      background: linear-gradient(135deg, #FFFFFF 0%, rgba(239, 68, 68, 0.10) 100%) !important;
     }
 
     @media (hover: hover) and (pointer: fine) {
@@ -276,15 +320,15 @@
                 </div>
 
                 <div class="space-y-1">
-                  <div class="grid min-h-[42px] grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-amber-100 bg-amber-50/80 px-2 py-1.5">
-                    <span class="grid h-7 w-7 place-items-center rounded-lg bg-amber-500 text-[11px] font-semibold text-white">7</span>
+                  <div class="ds-tint-warning grid min-h-[42px] grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border px-2 py-1.5">
+                    <span class="grid h-7 w-7 place-items-center rounded-lg bg-nexoraWarning text-[11px] font-semibold text-white">7</span>
                     <div class="min-w-0">
                       <p class="text-[11px] font-semibold leading-[14px]">Tips Awaiting Shop Confirmation</p>
                       <p class="text-[10px] font-medium leading-[13px] text-nexoraMuted">$1,875 across 42 transactions</p>
                     </div>
-                    <i data-lucide="chevron-right" class="h-3.5 w-3.5 text-amber-700"></i>
+                    <i data-lucide="chevron-right" class="h-3.5 w-3.5 text-nexoraWarning"></i>
                   </div>
-                  <div class="grid min-h-[42px] grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-[#E9E9FF] bg-[#F8FAFC] px-2 py-1.5">
+                  <div class="ds-tint-primary grid min-h-[42px] grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border px-2 py-1.5">
                     <span class="grid h-7 w-7 place-items-center rounded-lg bg-nexoraBrand text-[11px] font-semibold text-white">2</span>
                     <div class="min-w-0">
                       <p class="text-[11px] font-semibold leading-[14px]">Staff Access Requests</p>
@@ -292,13 +336,13 @@
                     </div>
                     <i data-lucide="chevron-right" class="h-3.5 w-3.5 text-nexoraBrandDark"></i>
                   </div>
-                  <div class="grid min-h-[42px] grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50/80 px-2 py-1.5">
+                  <div class="ds-tint-success grid min-h-[42px] grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border px-2 py-1.5">
                     <span class="grid h-7 w-7 place-items-center rounded-lg bg-nexoraSuccess text-[11px] font-semibold text-white">12</span>
                     <div class="min-w-0">
                       <p class="text-[11px] font-semibold leading-[14px]">Touchpoints Active</p>
                       <p class="text-[10px] font-medium leading-[13px] text-nexoraMuted">Front desk and tables online</p>
                     </div>
-                    <i data-lucide="chevron-right" class="h-3.5 w-3.5 text-emerald-700"></i>
+                    <i data-lucide="chevron-right" class="h-3.5 w-3.5 text-nexoraSuccess"></i>
                   </div>
                 </div>
               </section>
@@ -333,7 +377,7 @@
                 <div class="rounded-lg border border-nailBlush bg-white p-2.5 shadow-card">
                   <div class="flex items-center justify-between gap-2">
                     <div class="flex min-w-0 items-center gap-1.5">
-                      <span class="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-sky-500 text-white"><i data-lucide="users" class="h-3.5 w-3.5"></i></span>
+                      <span class="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-nexoraBrand text-white"><i data-lucide="users" class="h-3.5 w-3.5"></i></span>
                       <p class="truncate text-[9px] font-semibold uppercase text-nexoraSubtle">Active Staff</p>
                     </div>
                     <i data-lucide="chevron-right" class="h-3.5 w-3.5 shrink-0 text-nexoraSubtle"></i>
@@ -364,20 +408,20 @@
                   <button class="inline-flex h-7 min-w-[56px] items-center justify-center rounded-md px-2 text-[11px] font-semibold text-nexoraBrandDark">Manage</button>
                 </div>
                 <div class="grid grid-cols-4 gap-2">
-                  <button class="grid h-14 content-center justify-items-center gap-1 rounded-lg border border-[#E3DEFF] bg-[#F4F3FF] px-1 text-center">
+                  <button class="ds-tint-primary grid h-14 content-center justify-items-center gap-1 rounded-lg border px-1 text-center">
                     <i data-lucide="user-plus" class="h-4 w-4 text-nexoraBrandDark"></i>
                     <span class="text-[10px] font-semibold">Staff</span>
                   </button>
-                  <button class="grid h-14 content-center justify-items-center gap-1 rounded-lg border border-[#BFDBFE] bg-[#EFF6FF] px-1 text-center">
-                    <i data-lucide="qr-code" class="h-4 w-4 text-blue-600"></i>
+                  <button class="ds-tint-success grid h-14 content-center justify-items-center gap-1 rounded-lg border px-1 text-center">
+                    <i data-lucide="qr-code" class="h-4 w-4 text-nexoraSuccess"></i>
                     <span class="text-[10px] font-semibold">QR</span>
                   </button>
-                  <button class="grid h-14 content-center justify-items-center gap-1 rounded-lg border border-[#BBF7D0] bg-[#F0FDF4] px-1 text-center">
-                    <i data-lucide="line-chart" class="h-4 w-4 text-emerald-600"></i>
+                  <button class="ds-tint-warning grid h-14 content-center justify-items-center gap-1 rounded-lg border px-1 text-center">
+                    <i data-lucide="line-chart" class="h-4 w-4 text-nexoraWarning"></i>
                     <span class="text-[10px] font-semibold">Reports</span>
                   </button>
-                  <button class="grid h-14 content-center justify-items-center gap-1 rounded-lg border border-[#FED7AA] bg-[#FFF7ED] px-1 text-center">
-                    <i data-lucide="star" class="h-4 w-4 text-amber-600"></i>
+                  <button class="ds-tint-error grid h-14 content-center justify-items-center gap-1 rounded-lg border px-1 text-center">
+                    <i data-lucide="star" class="h-4 w-4 text-nexoraDanger"></i>
                     <span class="text-[10px] font-semibold">Reviews</span>
                   </button>
                 </div>
@@ -385,7 +429,7 @@
 
               <section>
                 <div class="grid grid-cols-2 gap-2">
-                  <div class="rounded-xl border border-nailBlush bg-[linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_54%,#E9E9FF_100%)] p-2">
+                  <div class="ds-tint-primary rounded-xl border p-2">
                     <div class="flex items-start gap-2">
                       <div
                         class="qr-code h-[58px] w-[58px] shrink-0 rounded-lg border-4 border-white shadow-card"
@@ -393,7 +437,7 @@
                         data-qr-value="https://pay.nexoratouch.com/m/bitcoin-nail-bar?method=zelle"
                       ></div>
                       <div class="min-w-0">
-                        <p class="whitespace-nowrap text-[8px] font-semibold uppercase text-nexoraBrand">Payment & Tip QR</p>
+                        <p class="whitespace-nowrap text-[8px] font-semibold uppercase text-nexoraBrandDark">Payment & Tip QR</p>
                         <p class="mt-0.5 text-[9px] font-medium leading-[13px] text-nexoraMuted">Payments and tips</p>
                         <div class="mt-1.5 flex gap-1">
                           <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View payment and tip QR" data-dashboard-qr-view data-dashboard-qr-label="Payment & Tip QR" data-dashboard-qr-title="Bitcoin Nail Bar" data-dashboard-qr-subtitle="Customer payments and tips" data-dashboard-qr-link="pay.nexoratouch.com/m/bitcoin-nail-bar?method=zelle" data-dashboard-qr-value="https://pay.nexoratouch.com/m/bitcoin-nail-bar?method=zelle"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
@@ -402,7 +446,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="rounded-xl border border-nailBlush bg-[linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_54%,#E9E9FF_100%)] p-2">
+                  <div class="ds-tint-primary-active rounded-xl border p-2">
                     <div class="flex items-start gap-2">
                       <div
                         class="qr-code h-[58px] w-[58px] shrink-0 rounded-lg border-4 border-white shadow-card"
@@ -410,7 +454,7 @@
                         data-qr-value="https://nexoratouch.com/ref/bitcoin-nail-bar"
                       ></div>
                       <div class="min-w-0">
-                        <p class="whitespace-nowrap text-[9px] font-semibold uppercase text-nexoraBrand">Referral QR</p>
+                        <p class="whitespace-nowrap text-[9px] font-semibold uppercase text-nexoraViolet">Referral QR</p>
                         <p class="mt-0.5 text-[9px] font-medium leading-[13px] text-nexoraMuted">Shop invite link</p>
                         <div class="mt-1.5 flex gap-1">
                           <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View referral QR" data-dashboard-qr-view data-dashboard-qr-label="Referral QR" data-dashboard-qr-title="Bitcoin Nail Bar" data-dashboard-qr-subtitle="Shop invite link" data-dashboard-qr-link="nexoratouch.com/ref/bitcoin-nail-bar" data-dashboard-qr-value="https://nexoratouch.com/ref/bitcoin-nail-bar"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
@@ -433,21 +477,21 @@
                       <p class="truncate text-[13px] font-semibold">Manicure Table 5</p>
                       <p class="truncate text-[11px] font-medium text-nexoraMuted">Table</p>
                     </div>
-                    <span class="rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-semibold text-emerald-700">Active</span>
+                    <span class="rounded-full bg-nexoraSuccess/10 px-3 py-1.5 text-[11px] font-semibold text-nexoraSuccess">Active</span>
                   </div>
                   <div class="flex items-center justify-between gap-3 py-2">
                     <div class="min-w-0">
                       <p class="truncate text-[13px] font-semibold">Pedicure Table 1</p>
                       <p class="truncate text-[11px] font-medium text-nexoraMuted">Table</p>
                     </div>
-                    <span class="rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-semibold text-emerald-700">Active</span>
+                    <span class="rounded-full bg-nexoraSuccess/10 px-3 py-1.5 text-[11px] font-semibold text-nexoraSuccess">Active</span>
                   </div>
                   <div class="flex items-center justify-between gap-3 py-2 last:pb-0">
                     <div class="min-w-0">
                       <p class="truncate text-[13px] font-semibold">Front Desk</p>
                       <p class="truncate text-[11px] font-medium text-nexoraMuted">Table</p>
                     </div>
-                    <span class="rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-semibold text-emerald-700">Active</span>
+                    <span class="rounded-full bg-nexoraSuccess/10 px-3 py-1.5 text-[11px] font-semibold text-nexoraSuccess">Active</span>
                   </div>
                 </div>
               </section>
@@ -479,43 +523,43 @@
                 <div class="divide-y divide-nailBlush">
                   <div class="flex items-center justify-between gap-3 py-2 first:pt-0">
                     <div class="flex min-w-0 items-center gap-2.5">
-                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-sky-100 bg-sky-50 text-sky-500 shadow-sm"><i data-lucide="message-circle" class="h-4 w-4"></i></span>
+                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-nexoraBrand/20 bg-nexoraBrand/10 text-nexoraBrandDark shadow-sm"><i data-lucide="message-circle" class="h-4 w-4"></i></span>
                       <div class="min-w-0">
                         <p class="truncate text-[13px] font-semibold">J.</p>
                         <p class="truncate text-[11px] font-medium text-nexoraMuted">Nail Technician</p>
                       </div>
                     </div>
-                    <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">Active</span>
+                    <span class="rounded-full bg-nexoraSuccess/10 px-2.5 py-1 text-[10px] font-semibold text-nexoraSuccess">Active</span>
                   </div>
                   <div class="flex items-center justify-between gap-3 py-2">
                     <div class="flex min-w-0 items-center gap-2.5">
-                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-nailBlush text-[11px] font-semibold text-nexoraBrandDark">ST</span>
+                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-nexoraSuccess/20 bg-nexoraSuccess/10 text-[11px] font-semibold text-nexoraSuccess shadow-sm">ST</span>
                       <div class="min-w-0">
                         <p class="truncate text-[13px] font-semibold">Sota Truong</p>
                         <p class="truncate text-[11px] font-medium text-nexoraMuted">Nail Technician</p>
                       </div>
                     </div>
-                    <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">Active</span>
+                    <span class="rounded-full bg-nexoraSuccess/10 px-2.5 py-1 text-[10px] font-semibold text-nexoraSuccess">Active</span>
                   </div>
                   <div class="flex items-center justify-between gap-3 py-2">
                     <div class="flex min-w-0 items-center gap-2.5">
-                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-nailBlush text-[11px] font-semibold text-nexoraBrandDark">NL</span>
+                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-nexoraDanger/20 bg-nexoraDanger/10 text-[11px] font-semibold text-nexoraDanger shadow-sm">NL</span>
                       <div class="min-w-0">
                         <p class="truncate text-[13px] font-semibold">Nguyen local 03</p>
                         <p class="truncate text-[11px] font-medium text-nexoraMuted">Nail Technician</p>
                       </div>
                     </div>
-                    <span class="rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-semibold text-rose-700">Inactive</span>
+                    <span class="rounded-full bg-nexoraDanger/10 px-2.5 py-1 text-[10px] font-semibold text-nexoraDanger">Inactive</span>
                   </div>
                   <div class="flex items-center justify-between gap-3 py-2 last:pb-0">
                     <div class="flex min-w-0 items-center gap-2.5">
-                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-nailBlush text-[11px] font-semibold text-nexoraBrandDark">JT</span>
+                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-nexoraWarning/20 bg-nexoraWarning/10 text-[11px] font-semibold text-nexoraWarning shadow-sm">JT</span>
                       <div class="min-w-0">
                         <p class="truncate text-[13px] font-semibold">Jenny T.</p>
                         <p class="truncate text-[11px] font-medium text-nexoraMuted">Senior Nail Technician</p>
                       </div>
                     </div>
-                    <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">Active</span>
+                    <span class="rounded-full bg-nexoraSuccess/10 px-2.5 py-1 text-[10px] font-semibold text-nexoraSuccess">Active</span>
                   </div>
                 </div>
               </section>
@@ -526,19 +570,19 @@
                   <button class="inline-flex h-7 min-w-[56px] items-center justify-center rounded-md px-2 text-[11px] font-semibold text-nexoraBrandDark">Details</button>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                  <div class="rounded-xl border border-nailBlush bg-nailPearl p-2.5">
+                  <div class="ds-tint-success rounded-xl border p-2.5">
                     <div class="flex items-center">
-                      <p class="text-[9px] font-semibold uppercase text-nexoraSubtle">This Month</p>
+                      <p class="text-[9px] font-semibold uppercase text-nexoraSuccess">This Month</p>
                     </div>
                     <p class="mt-1 text-lg font-semibold">$236.40</p>
                     <p class="mt-0.5 text-[11px] font-medium text-nexoraMuted">$7,880 x 3%</p>
-                    <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-nailBlush">
-                      <span class="block h-full w-3/4 rounded-full bg-nexoraBrand"></span>
+                    <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-nexoraSuccess/10">
+                      <span class="block h-full w-3/4 rounded-full bg-nexoraSuccess"></span>
                     </div>
                   </div>
-                  <div class="rounded-xl border border-nailBlush bg-nailPearl p-2.5">
+                  <div class="ds-tint-primary rounded-xl border p-2.5">
                     <div class="flex items-center">
-                      <p class="text-[9px] font-semibold uppercase text-nexoraSubtle">This Year</p>
+                      <p class="text-[9px] font-semibold uppercase text-nexoraBrandDark">This Year</p>
                     </div>
                     <p class="mt-1 text-lg font-semibold">$2,845</p>
                     <p class="mt-0.5 text-[11px] font-medium text-nexoraMuted">Estimated saved</p>
@@ -643,10 +687,10 @@
                 </div>
               </section>
 
-              <section class="rounded-lg border border-[#E9E9FF] bg-[linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_54%,#E9E9FF_100%)] p-2.5 shadow-lift">
+              <section class="ds-tint-primary rounded-lg border p-2.5 shadow-lift">
                 <div class="mb-1.5 flex items-center justify-between gap-3">
                   <div>
-                    <p class="inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-700">Needs Confirmation</p>
+                    <p class="inline-flex rounded-full bg-nexoraWarning/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-nexoraWarning">Needs Confirmation</p>
                     <div class="mt-0.5 flex items-baseline gap-1.5">
                       <h4 class="text-sm font-semibold">$1,875 pending</h4>
                       <p class="text-[10px] font-semibold text-nexoraMuted">42 tips</p>
@@ -715,14 +759,14 @@
                 <div class="rounded-lg border border-nailBlush bg-white p-2.5 shadow-card">
                   <div class="flex items-center justify-between gap-2">
                     <div class="flex min-w-0 items-center gap-1.5">
-                      <span class="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-amber-500 text-white"><i data-lucide="clock3" class="h-3.5 w-3.5"></i></span>
+                      <span class="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-nexoraWarning text-white"><i data-lucide="clock3" class="h-3.5 w-3.5"></i></span>
                       <p class="truncate text-[9px] font-semibold uppercase text-nexoraSubtle">Pending</p>
                     </div>
                     <i data-lucide="chevron-right" class="h-3.5 w-3.5 shrink-0 text-nexoraSubtle"></i>
                   </div>
                   <div class="mt-1 flex items-baseline justify-between gap-2">
                     <p class="text-base font-semibold leading-none">$1,875</p>
-                    <p class="truncate text-[11px] font-semibold text-amber-600">42 awaiting</p>
+                    <p class="truncate text-[11px] font-semibold text-nexoraWarning">42 awaiting</p>
                   </div>
                 </div>
                 <div class="rounded-lg border border-nailBlush bg-white p-2.5 shadow-card">
@@ -743,7 +787,7 @@
 
               <section>
                 <div class="grid grid-cols-2 gap-2">
-                  <div class="rounded-xl border border-nailBlush bg-[linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_54%,#E9E9FF_100%)] p-2">
+                  <div class="ds-tint-primary rounded-xl border p-2">
                     <div class="flex items-start gap-2">
                       <div
                         class="qr-code h-[58px] w-[58px] shrink-0 rounded-lg border-4 border-white shadow-card"
@@ -751,7 +795,7 @@
                         data-qr-value="https://pay.nexoratouch.com/tip/david-le918747?merchant=bitcoin-nail-bar"
                       ></div>
                       <div class="min-w-0">
-                        <p class="whitespace-nowrap text-[9px] font-semibold uppercase text-nexoraBrand">Personal QR</p>
+                        <p class="whitespace-nowrap text-[9px] font-semibold uppercase text-nexoraBrandDark">Personal QR</p>
                         <p class="mt-0.5 text-[9px] font-medium leading-[13px] text-nexoraMuted">Get Customer Tips</p>
                         <div class="mt-1.5 flex gap-1">
                           <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View personal QR" data-dashboard-qr-view data-dashboard-qr-label="Personal QR" data-dashboard-qr-title="Personal QR" data-dashboard-qr-subtitle="Get Customer Tips" data-dashboard-qr-link="pay.nexoratouch.com/tip/david-le918747" data-dashboard-qr-value="https://pay.nexoratouch.com/tip/david-le918747?merchant=bitcoin-nail-bar"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
@@ -760,7 +804,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="rounded-xl border border-nailBlush bg-[linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_54%,#E9E9FF_100%)] p-2">
+                  <div class="ds-tint-primary-active rounded-xl border p-2">
                     <div class="flex items-start gap-2">
                       <div
                         class="qr-code h-[58px] w-[58px] shrink-0 rounded-lg border-4 border-white shadow-card"
@@ -768,7 +812,7 @@
                         data-qr-value="https://nexoratouch.com/ref/david-le918747?merchant=bitcoin-nail-bar"
                       ></div>
                       <div class="min-w-0">
-                        <p class="whitespace-nowrap text-[9px] font-semibold uppercase text-nexoraBrand">Referral QR</p>
+                        <p class="whitespace-nowrap text-[9px] font-semibold uppercase text-nexoraViolet">Referral QR</p>
                         <p class="mt-0.5 text-[9px] font-medium leading-[13px] text-nexoraMuted">Staff invite link</p>
                         <div class="mt-1.5 flex gap-1">
                           <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View referral QR" data-dashboard-qr-view data-dashboard-qr-label="Referral QR" data-dashboard-qr-title="Referral QR" data-dashboard-qr-subtitle="Staff invite link" data-dashboard-qr-link="nexoratouch.com/ref/david-le918747?merchant=bitcoin-nail-bar" data-dashboard-qr-value="https://nexoratouch.com/ref/david-le918747?merchant=bitcoin-nail-bar"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
@@ -786,24 +830,24 @@
                   <button class="inline-flex h-7 min-w-[56px] items-center justify-center rounded-md px-2 text-[11px] font-semibold text-nexoraBrandDark">Manage</button>
                 </div>
                 <div class="grid grid-cols-5 gap-2">
-                  <button class="grid h-14 content-center justify-items-center gap-1 rounded-lg border border-[#E3DEFF] bg-[#F4F3FF] px-1 text-center">
+                  <button class="ds-tint-primary grid h-14 content-center justify-items-center gap-1 rounded-lg border px-1 text-center">
                     <i data-lucide="qr-code" class="h-4 w-4 text-nexoraBrandDark"></i>
                     <span class="text-[10px] font-semibold">My QR</span>
                   </button>
-                  <button class="grid h-14 content-center justify-items-center gap-1 rounded-lg border border-[#BBF7D0] bg-[#F0FDF4] px-1 text-center">
-                    <i data-lucide="circle-dollar-sign" class="h-4 w-4 text-emerald-600"></i>
+                  <button class="ds-tint-success grid h-14 content-center justify-items-center gap-1 rounded-lg border px-1 text-center">
+                    <i data-lucide="circle-dollar-sign" class="h-4 w-4 text-nexoraSuccess"></i>
                     <span class="text-[10px] font-semibold">Tips</span>
                   </button>
-                  <button class="grid h-14 content-center justify-items-center gap-1 rounded-lg border border-[#FED7AA] bg-[#FFF7ED] px-1 text-center">
-                    <i data-lucide="star" class="h-4 w-4 text-amber-600"></i>
+                  <button class="ds-tint-warning grid h-14 content-center justify-items-center gap-1 rounded-lg border px-1 text-center">
+                    <i data-lucide="star" class="h-4 w-4 text-nexoraWarning"></i>
                     <span class="text-[10px] font-semibold">Reviews</span>
                   </button>
-                  <button class="grid h-14 content-center justify-items-center gap-1 rounded-lg border border-[#BFDBFE] bg-[#EFF6FF] px-1 text-center">
-                    <i data-lucide="credit-card" class="h-4 w-4 text-blue-600"></i>
+                  <button class="ds-tint-primary grid h-14 content-center justify-items-center gap-1 rounded-lg border px-1 text-center">
+                    <i data-lucide="credit-card" class="h-4 w-4 text-nexoraBrandDark"></i>
                     <span class="text-[10px] font-semibold">QR Pay</span>
                   </button>
-                  <button class="grid h-14 content-center justify-items-center gap-1 rounded-lg border border-[#FBCFE8] bg-[#FDF2F8] px-1 text-center">
-                    <i data-lucide="gift" class="h-4 w-4 text-fuchsia-600"></i>
+                  <button class="ds-tint-error grid h-14 content-center justify-items-center gap-1 rounded-lg border px-1 text-center">
+                    <i data-lucide="gift" class="h-4 w-4 text-nexoraDanger"></i>
                     <span class="text-[10px] font-semibold">Refer</span>
                   </button>
                 </div>
@@ -812,10 +856,10 @@
               <section class="rounded-lg border border-nailBlush bg-white px-3 pb-3 pt-2 shadow-card">
                 <div class="mb-1.5 flex items-center justify-between">
                   <h4 class="text-sm font-semibold">Payout Readiness</h4>
-                  <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">Ready</span>
+                  <span class="rounded-full bg-nexoraSuccess/10 px-2.5 py-1 text-[10px] font-semibold text-nexoraSuccess">Ready</span>
                 </div>
                 <div class="flex items-center gap-3">
-                  <span class="grid h-9 w-9 place-items-center rounded-lg bg-emerald-50 text-emerald-700"><i data-lucide="badge-check" class="h-4 w-4"></i></span>
+                  <span class="grid h-9 w-9 place-items-center rounded-lg bg-nexoraSuccess/10 text-nexoraSuccess"><i data-lucide="badge-check" class="h-4 w-4"></i></span>
                   <div>
                     <p class="text-[13px] font-semibold">Zelle and Cash App enabled</p>
                     <p class="text-[11px] font-medium text-nexoraMuted">Customers can tip directly.</p>
@@ -836,7 +880,7 @@
                       <p class="truncate text-[11px] font-medium text-nexoraMuted">Active profile</p>
                     </div>
                   </div>
-                  <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">Active</span>
+                  <span class="rounded-full bg-nexoraSuccess/10 px-2.5 py-1 text-[10px] font-semibold text-nexoraSuccess">Active</span>
                 </div>
               </section>
 
@@ -925,7 +969,7 @@
               <section class="px-0.5">
                 <div class="flex items-center justify-between gap-3">
                   <h3 class="min-w-0 text-[15px] font-semibold leading-tight tracking-tight">My QR</h3>
-                  <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">Ready</span>
+                  <span class="rounded-full bg-nexoraSuccess/10 px-2.5 py-1 text-[10px] font-semibold text-nexoraSuccess">Ready</span>
                 </div>
               </section>
 
@@ -968,7 +1012,7 @@
                     <p class="text-[10px] font-semibold uppercase text-nexoraBrand" data-my-qr-label>Personal QR</p>
                     <h4 class="text-[15px] font-semibold" data-my-qr-title>Get Customer Tips</h4>
                   </div>
-                  <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700" data-my-qr-status>Active</span>
+                  <span class="rounded-full bg-nexoraSuccess/10 px-2.5 py-1 text-[10px] font-semibold text-nexoraSuccess" data-my-qr-status>Active</span>
                 </div>
                 <div class="mt-3 grid justify-items-center">
                   <div
@@ -996,7 +1040,7 @@
                   <span class="rounded-full bg-nailPearl px-2.5 py-1 text-[10px] font-semibold text-nexoraBrandDark">3 salons</span>
                 </div>
                 <div class="space-y-1.5">
-                  <div class="grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-nailBlush bg-[linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_54%,#E9E9FF_100%)] p-2">
+                  <div class="ds-tint-primary grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border p-2">
                     <div
                       class="qr-code h-[62px] w-[62px] rounded-lg border-4 border-white shadow-card"
                       aria-label="Payment and tip QR for Bitcoin Nail Bar"
@@ -1013,7 +1057,7 @@
                       <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-nexoraBrand text-white" aria-label="Copy Bitcoin Nail Bar salon QR link"><i data-lucide="link" class="h-3.5 w-3.5"></i></button>
                     </div>
                   </div>
-                  <div class="grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-nailBlush bg-[linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_54%,#E9E9FF_100%)] p-2">
+                  <div class="ds-tint-primary grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border p-2">
                     <div
                       class="qr-code h-[62px] w-[62px] rounded-lg border-4 border-white shadow-card"
                       aria-label="Payment and tip QR for Lux Nail Lounge"
@@ -1030,7 +1074,7 @@
                       <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-nexoraBrand text-white" aria-label="Copy Lux Nail Lounge salon QR link"><i data-lucide="link" class="h-3.5 w-3.5"></i></button>
                     </div>
                   </div>
-                  <div class="grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-nailBlush bg-[linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_54%,#E9E9FF_100%)] p-2">
+                  <div class="ds-tint-primary grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border p-2">
                     <div
                       class="qr-code h-[62px] w-[62px] rounded-lg border-4 border-white shadow-card"
                       aria-label="Payment and tip QR for Rose Studio Nails"
@@ -1066,7 +1110,7 @@
                         <p class="truncate text-[10px] font-medium text-nexoraMuted">david.le918747@nexoratouch.com</p>
                       </div>
                     </div>
-                    <span class="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-semibold text-emerald-700">Active</span>
+                    <span class="rounded-full bg-nexoraSuccess/10 px-2 py-1 text-[9px] font-semibold text-nexoraSuccess">Active</span>
                   </div>
                   <div class="flex items-center justify-between gap-3 py-1.5">
                     <div class="flex min-w-0 items-center gap-2">
@@ -1078,7 +1122,7 @@
                         <p class="truncate text-[10px] font-medium text-nexoraMuted">(918) 747-2026</p>
                       </div>
                     </div>
-                    <span class="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-semibold text-emerald-700">Active</span>
+                    <span class="rounded-full bg-nexoraSuccess/10 px-2 py-1 text-[9px] font-semibold text-nexoraSuccess">Active</span>
                   </div>
                   <div class="flex items-center justify-between gap-3 py-1.5 last:pb-0">
                     <div class="flex min-w-0 items-center gap-2">
@@ -1090,7 +1134,7 @@
                         <p class="truncate text-[10px] font-medium text-nexoraMuted">@david-nails</p>
                       </div>
                     </div>
-                    <span class="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-semibold text-emerald-700">Active</span>
+                    <span class="rounded-full bg-nexoraSuccess/10 px-2 py-1 text-[9px] font-semibold text-nexoraSuccess">Active</span>
                   </div>
                   <div class="flex items-center justify-between gap-3 py-1.5 last:pb-0">
                     <div class="flex min-w-0 items-center gap-2">
@@ -1102,7 +1146,7 @@
                         <p class="truncate text-[10px] font-medium text-nexoraMuted">david@nexoratouch.com</p>
                       </div>
                     </div>
-                    <span class="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-semibold text-emerald-700">Active</span>
+                    <span class="rounded-full bg-nexoraSuccess/10 px-2 py-1 text-[9px] font-semibold text-nexoraSuccess">Active</span>
                   </div>
                   <div class="flex items-center justify-between gap-3 py-1.5 last:pb-0">
                     <div class="flex min-w-0 items-center gap-2">
@@ -1114,7 +1158,7 @@
                         <p class="truncate text-[10px] font-medium text-nexoraMuted">$davidnails</p>
                       </div>
                     </div>
-                    <span class="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-semibold text-emerald-700">Active</span>
+                    <span class="rounded-full bg-nexoraSuccess/10 px-2 py-1 text-[9px] font-semibold text-nexoraSuccess">Active</span>
                   </div>
                 </div>
               </section>
