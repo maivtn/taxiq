@@ -557,6 +557,35 @@
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="qr-code" class="h-5 w-5"></i>QR</a>
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="user-circle" class="h-5 w-5"></i>Profile</a>
           </nav>
+
+          <div class="absolute inset-0 z-50 hidden items-center justify-center bg-nexoraInk/45 px-5 backdrop-blur-sm" data-dashboard-qr-modal>
+            <div class="w-full rounded-2xl border border-nailBlush bg-white p-4 shadow-phone">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="text-[10px] font-semibold uppercase text-nexoraBrand" data-dashboard-modal-label>Payment & Tip QR</p>
+                  <h3 class="mt-0.5 truncate text-lg font-semibold leading-tight" data-dashboard-modal-title>Bitcoin Nail Bar</h3>
+                  <p class="mt-0.5 text-[11px] font-medium text-nexoraMuted" data-dashboard-modal-subtitle>Customer payments and tips</p>
+                </div>
+                <button class="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="Close QR preview" data-dashboard-modal-close>
+                  <i data-lucide="x" class="h-4 w-4"></i>
+                </button>
+              </div>
+              <div class="mt-4 grid justify-items-center">
+                <div
+                  class="qr-code h-[230px] w-[230px] rounded-2xl border-8 border-white shadow-card"
+                  aria-label="Large QR preview"
+                  data-qr-size="230"
+                  data-qr-value="https://pay.nexoratouch.com/m/bitcoin-nail-bar?method=zelle"
+                  data-dashboard-modal-qr
+                ></div>
+              </div>
+              <p class="mt-3 truncate rounded-lg bg-nailPearl px-2 py-1.5 text-center text-[10px] font-semibold text-nexoraMuted" data-dashboard-modal-link>pay.nexoratouch.com/m/bitcoin-nail-bar?method=zelle</p>
+              <div class="mt-3 grid grid-cols-2 gap-2">
+                <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nailBlush bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Copy QR link" data-dashboard-modal-copy data-copy-link="pay.nexoratouch.com/m/bitcoin-nail-bar?method=zelle"><i data-lucide="link" class="h-3.5 w-3.5"></i>Copy Link</button>
+                <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-nexoraBrand text-[10px] font-semibold text-white" aria-label="Save QR"><i data-lucide="download" class="h-3.5 w-3.5"></i>Save QR</button>
+              </div>
+            </div>
+          </div>
         </div>
       </article>
 
@@ -811,6 +840,35 @@
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="star" class="h-5 w-5"></i>Reviews</a>
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="user-circle" class="h-5 w-5"></i>Profile</a>
           </nav>
+
+          <div class="absolute inset-0 z-50 hidden items-center justify-center bg-nexoraInk/45 px-5 backdrop-blur-sm" data-dashboard-qr-modal>
+            <div class="w-full rounded-2xl border border-nailBlush bg-white p-4 shadow-phone">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="text-[10px] font-semibold uppercase text-nexoraBrand" data-dashboard-modal-label>Personal QR</p>
+                  <h3 class="mt-0.5 truncate text-lg font-semibold leading-tight" data-dashboard-modal-title>David L.</h3>
+                  <p class="mt-0.5 text-[11px] font-medium text-nexoraMuted" data-dashboard-modal-subtitle>Get Customer Tips</p>
+                </div>
+                <button class="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="Close QR preview" data-dashboard-modal-close>
+                  <i data-lucide="x" class="h-4 w-4"></i>
+                </button>
+              </div>
+              <div class="mt-4 grid justify-items-center">
+                <div
+                  class="qr-code h-[230px] w-[230px] rounded-2xl border-8 border-white shadow-card"
+                  aria-label="Large QR preview"
+                  data-qr-size="230"
+                  data-qr-value="https://pay.nexoratouch.com/tip/david-le918747?merchant=bitcoin-nail-bar"
+                  data-dashboard-modal-qr
+                ></div>
+              </div>
+              <p class="mt-3 truncate rounded-lg bg-nailPearl px-2 py-1.5 text-center text-[10px] font-semibold text-nexoraMuted" data-dashboard-modal-link>pay.nexoratouch.com/tip/david-le918747</p>
+              <div class="mt-3 grid grid-cols-2 gap-2">
+                <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nailBlush bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Copy QR link" data-dashboard-modal-copy data-copy-link="pay.nexoratouch.com/tip/david-le918747"><i data-lucide="link" class="h-3.5 w-3.5"></i>Copy Link</button>
+                <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-nexoraBrand text-[10px] font-semibold text-white" aria-label="Save QR"><i data-lucide="download" class="h-3.5 w-3.5"></i>Save QR</button>
+              </div>
+            </div>
+          </div>
         </div>
       </article>
 
@@ -1087,36 +1145,6 @@
     </section>
   </main>
 
-  <div class="fixed inset-0 z-[80] hidden items-center justify-center bg-nexoraInk/55 px-5 backdrop-blur-sm" data-dashboard-qr-modal>
-    <div class="w-full max-w-[330px] rounded-2xl border border-nailBlush bg-white p-4 shadow-phone">
-      <div class="flex items-start justify-between gap-3">
-        <div class="min-w-0">
-          <p class="text-[10px] font-semibold uppercase text-nexoraBrand" data-dashboard-modal-label>Payment & Tip QR</p>
-          <h3 class="mt-0.5 truncate text-lg font-semibold leading-tight" data-dashboard-modal-title>Bitcoin Nail Bar</h3>
-          <p class="mt-0.5 text-[11px] font-medium text-nexoraMuted" data-dashboard-modal-subtitle>Customer payments and tips</p>
-        </div>
-        <button class="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="Close QR preview" data-dashboard-modal-close>
-          <i data-lucide="x" class="h-4 w-4"></i>
-        </button>
-      </div>
-      <div class="mt-4 grid justify-items-center">
-        <div
-          class="qr-code h-[230px] w-[230px] rounded-2xl border-8 border-white shadow-card"
-          aria-label="Large QR preview"
-          data-qr-size="230"
-          data-qr-value="https://pay.nexoratouch.com/m/bitcoin-nail-bar?method=zelle"
-          data-dashboard-modal-qr
-        ></div>
-      </div>
-      <div class="mt-3 flex items-center gap-2">
-        <p class="min-w-0 flex-1 truncate rounded-lg bg-nailPearl px-2 py-1.5 text-center text-[10px] font-semibold text-nexoraMuted" data-dashboard-modal-link>pay.nexoratouch.com/m/bitcoin-nail-bar?method=zelle</p>
-        <button class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-nexoraBrand text-white" aria-label="Copy QR link" data-dashboard-modal-copy data-copy-link="pay.nexoratouch.com/m/bitcoin-nail-bar?method=zelle">
-          <i data-lucide="link" class="h-3.5 w-3.5"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
   <script>
     lucide.createIcons({ attrs: { 'stroke-width': 2.35 } });
 
@@ -1142,10 +1170,6 @@
     };
 
     document.querySelectorAll('.qr-code').forEach(renderQr);
-
-    const dashboardQrModal = document.querySelector('[data-dashboard-qr-modal]');
-    const dashboardModalQr = document.querySelector('[data-dashboard-modal-qr]');
-    const dashboardModalCopy = document.querySelector('[data-dashboard-modal-copy]');
 
     const copyLink = async (value, trigger) => {
       if (!value) return;
@@ -1187,13 +1211,20 @@
       }
     };
 
-    const closeDashboardQrModal = () => {
-      dashboardQrModal.classList.add('hidden');
-      dashboardQrModal.classList.remove('flex');
+    const closeDashboardQrModal = (modal) => {
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
     };
 
     document.querySelectorAll('[data-dashboard-qr-view]').forEach((button) => {
       button.addEventListener('click', () => {
+        const dashboardQrModal = button.closest('.phone-frame')?.querySelector('[data-dashboard-qr-modal]');
+        if (!dashboardQrModal) return;
+
+        const dashboardModalQr = dashboardQrModal.querySelector('[data-dashboard-modal-qr]');
+        const dashboardModalCopy = dashboardQrModal.querySelector('[data-dashboard-modal-copy]');
+
         dashboardQrModal.querySelector('[data-dashboard-modal-label]').textContent = button.dataset.dashboardQrLabel;
         dashboardQrModal.querySelector('[data-dashboard-modal-title]').textContent = button.dataset.dashboardQrTitle;
         dashboardQrModal.querySelector('[data-dashboard-modal-subtitle]').textContent = button.dataset.dashboardQrSubtitle;
@@ -1211,9 +1242,14 @@
       button.addEventListener('click', () => copyLink(button.dataset.copyLink, button));
     });
 
-    document.querySelector('[data-dashboard-modal-close]').addEventListener('click', closeDashboardQrModal);
-    dashboardQrModal.addEventListener('click', (event) => {
-      if (event.target === dashboardQrModal) closeDashboardQrModal();
+    document.querySelectorAll('[data-dashboard-modal-close]').forEach((button) => {
+      button.addEventListener('click', () => closeDashboardQrModal(button.closest('[data-dashboard-qr-modal]')));
+    });
+
+    document.querySelectorAll('[data-dashboard-qr-modal]').forEach((modal) => {
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) closeDashboardQrModal(modal);
+      });
     });
 
     const myQrTabs = document.querySelectorAll('[data-my-qr-tab]');
