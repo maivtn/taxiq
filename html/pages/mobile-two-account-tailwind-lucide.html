@@ -10,35 +10,35 @@
       theme: {
         extend: {
           colors: {
-            nexoraCanvas: '#F6F8FB',
+            nexoraCanvas: '#F8F3FF',
             nexoraSurface: '#FFFFFF',
-            nexoraSurfaceMuted: '#F2F6FA',
-            nexoraBorder: '#DDE5EF',
-            nexoraRule: '#E8EEF6',
+            nexoraSurfaceMuted: '#F5EEFF',
+            nexoraBorder: '#E8D7FF',
+            nexoraRule: '#F0E4FF',
             nexoraText: '#0B1220',
             nexoraMuted: '#4D5870',
             nexoraSubtle: '#7A8296',
-            nexoraBrand: '#4648D8',
-            nexoraBrandDark: '#3335A8',
-            nexoraViolet: '#8E4DF8',
-            nexoraElectric: '#2B59FF',
-            nexoraCyan: '#16B7FF',
+            nexoraBrand: '#6000F0',
+            nexoraBrandDark: '#3710E8',
+            nexoraViolet: '#D020FF',
+            nexoraElectric: '#8A20FF',
+            nexoraCyan: '#16C8FF',
             nexoraSuccess: '#0EA66B',
             nexoraWarning: '#D97706',
-            nexoraDanger: '#E11D48',
+            nexoraDanger: '#F01872',
             nexoraInk: '#071025',
             nexoraSidebar: '#081F49',
-            nailPearl: '#FFF7FB',
-            nailBlush: '#FCE7F3',
-            nailRose: '#C65D8A',
-            nailPlum: '#5B2146',
-            nailGold: '#C8A45D',
+            nailPearl: '#FFF7FE',
+            nailBlush: '#EBD6FF',
+            nailRose: '#E040D4',
+            nailPlum: '#3A0A6A',
+            nailGold: '#D5AF58',
             nailMint: '#EAFBF3'
           },
           boxShadow: {
-            phone: '0 22px 62px rgba(70, 72, 216, 0.14)',
-            card: '0 7px 20px rgba(70, 72, 216, 0.07)',
-            lift: '0 12px 28px rgba(70, 72, 216, 0.12)'
+            phone: '0 24px 68px rgba(96, 0, 240, 0.18)',
+            card: '0 8px 24px rgba(96, 0, 240, 0.09)',
+            lift: '0 14px 32px rgba(96, 0, 240, 0.16)'
           }
         }
       }
@@ -54,6 +54,7 @@
     .phone-frame {
       width: min(100%, 390px);
       margin-inline: auto;
+      color: #0B1220;
     }
 
     .phone-frame::before {
@@ -82,12 +83,23 @@
     }
 
     .phone-scroll .shadow-card {
-      box-shadow: 0 7px 20px rgba(70, 72, 216, 0.07);
+      box-shadow: 0 8px 24px rgba(96, 0, 240, 0.09);
     }
 
     .phone-scroll button,
     .phone-scroll a {
       -webkit-tap-highlight-color: transparent;
+    }
+
+    .phone-scroll button[class*="bg-nexoraBrand"],
+    .phone-scroll span[class*="bg-nexoraBrand"] {
+      background-image: linear-gradient(135deg, #6000F0 0%, #D020FF 100%);
+    }
+
+    .phone-scroll .brand-sheen {
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 247, 254, 0.98) 42%, rgba(241, 229, 255, 0.96) 100%),
+        linear-gradient(90deg, rgba(96, 0, 240, 0.18), rgba(208, 32, 255, 0.22));
     }
 
     @media (hover: hover) and (pointer: fine) {
@@ -111,34 +123,34 @@
       .phone-scroll div.rounded-lg:hover,
       .phone-scroll .rounded-xl:hover,
       .phone-scroll .divide-y > div:hover {
-        border-color: rgba(70, 72, 216, 0.28);
-        box-shadow: 0 10px 24px rgba(70, 72, 216, 0.11);
+        border-color: rgba(208, 32, 255, 0.34);
+        box-shadow: 0 12px 28px rgba(96, 0, 240, 0.14);
         transform: translateY(-1px);
       }
 
       .phone-scroll button:hover,
       .phone-scroll a:hover,
       .phone-frame > nav a:hover {
-        color: #3335A8;
+        color: #3710E8;
         transform: translateY(-1px);
       }
 
       .phone-scroll button[class*="bg-nexoraBrand"]:hover {
-        background-color: #3335A8;
-        box-shadow: 0 8px 18px rgba(70, 72, 216, 0.22);
+        background-image: linear-gradient(135deg, #3710E8 0%, #B100FF 100%);
+        box-shadow: 0 9px 20px rgba(96, 0, 240, 0.28);
         color: #fff;
       }
 
       .phone-scroll button[class*="bg-white"]:hover,
       .phone-scroll button[class*="bg-nailBlush"]:hover {
-        background-color: #FFF7FB;
-        border-color: rgba(70, 72, 216, 0.24);
-        box-shadow: 0 8px 18px rgba(70, 72, 216, 0.1);
+        background-color: #FFF7FE;
+        border-color: rgba(208, 32, 255, 0.28);
+        box-shadow: 0 8px 18px rgba(96, 0, 240, 0.12);
       }
 
       .phone-frame > nav a:hover svg,
       .phone-scroll button:hover svg {
-        stroke: #3335A8;
+        stroke: #3710E8;
       }
 
       .phone-scroll button[class*="bg-nexoraBrand"]:hover svg {
@@ -157,7 +169,7 @@
     .phone-scroll button:focus-visible,
     .phone-scroll a:focus-visible,
     .phone-frame > nav a:focus-visible {
-      outline: 2px solid rgba(70, 72, 216, 0.45);
+      outline: 2px solid rgba(96, 0, 240, 0.45);
       outline-offset: 2px;
     }
 
@@ -176,22 +188,22 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-[linear-gradient(180deg,#FFF7FB_0%,#F5F7FB_48%,#EDF2F8_100%)] text-nexoraText">
+<body class="min-h-screen bg-[radial-gradient(circle_at_18%_8%,rgba(208,32,255,0.34)_0,transparent_28%),radial-gradient(circle_at_86%_18%,rgba(22,200,255,0.2)_0,transparent_24%),linear-gradient(145deg,#07051B_0%,#12052F_44%,#030712_100%)] text-white">
   <main class="mx-auto max-w-[1360px] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
     <header class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
       <div>
-        <p class="text-xs font-semibold uppercase tracking-wide text-nexoraBrand">Tailwind + Lucide HTML Mockup</p>
-        <h1 class="mt-2 text-2xl font-semibold tracking-tight sm:text-4xl">Role-specific mobile dashboards</h1>
-        <p class="mt-3 max-w-2xl text-sm font-semibold leading-6 text-nexoraMuted">
+        <p class="text-xs font-semibold uppercase tracking-wide text-[#F050FF]">Tailwind + Lucide HTML Mockup</p>
+        <h1 class="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-4xl">Role-specific mobile dashboards</h1>
+        <p class="mt-3 max-w-2xl text-sm font-semibold leading-6 text-white/70">
           A cleaner mobile-first dashboard direction for two account types: merchant focuses on shop operations,
           staff focuses on personal earnings, confirmations, and payout readiness. Color is used for status and priority,
           while the layout stays task-first.
         </p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <span class="rounded-full border border-nailBlush bg-white px-3 py-2 text-xs font-semibold text-nexoraBrandDark shadow-sm">390px mobile</span>
-        <span class="rounded-full border border-nailBlush bg-white px-3 py-2 text-xs font-semibold text-nexoraBrandDark shadow-sm">768px tablet</span>
-        <span class="rounded-full border border-nailBlush bg-white px-3 py-2 text-xs font-semibold text-nexoraBrandDark shadow-sm">1440px desktop</span>
+        <span class="rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white shadow-sm backdrop-blur-xl">390px mobile</span>
+        <span class="rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white shadow-sm backdrop-blur-xl">768px tablet</span>
+        <span class="rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white shadow-sm backdrop-blur-xl">1440px desktop</span>
       </div>
     </header>
 
@@ -200,20 +212,20 @@
       <article class="w-full max-w-[430px]">
         <div class="mb-3 flex items-end justify-between gap-4 px-1">
           <div>
-            <h2 class="text-lg font-semibold">Merchant Account</h2>
-            <p class="text-[13px] font-semibold text-nexoraMuted">Shop operations dashboard</p>
+            <h2 class="text-lg font-semibold text-white">Merchant Account</h2>
+            <p class="text-[13px] font-semibold text-white/60">Shop operations dashboard</p>
           </div>
-          <span class="rounded-full border border-nailBlush bg-nailPearl px-3 py-1.5 text-xs font-semibold text-nexoraBrandDark">Merchant IA</span>
+          <span class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-xl">Merchant IA</span>
         </div>
 
-        <div class="phone-frame relative h-[844px] overflow-hidden rounded-[32px] border border-nailBlush bg-[linear-gradient(180deg,#FFF7FB_0%,#F7F9FC_42%,#F6F8FB_100%)] shadow-phone">
+        <div class="phone-frame relative h-[844px] overflow-hidden rounded-[32px] border border-nailBlush bg-[linear-gradient(180deg,#FFF8FE_0%,#F7EEFF_42%,#EFF7FF_100%)] shadow-phone">
           <div class="phone-scroll h-full overflow-y-auto pb-20">
             <header class="sticky top-0 z-30 flex min-h-[58px] items-center justify-between border-b border-nailBlush/80 bg-white/95 px-3 backdrop-blur-xl">
               <div class="flex items-center gap-2">
                 <button class="grid h-9 w-9 place-items-center rounded-lg border border-nailBlush bg-white text-nexoraText shadow-sm">
                   <i data-lucide="menu" class="h-4 w-4"></i>
                 </button>
-                <img src="https://test-web.nexoratouch.com/assets/nexora-logo.png" alt="Nexora" class="h-6 w-6 object-contain" />
+                <img src="https://test-web.nexoratouch.com/assets/nexora-logo.png" alt="Nexora" class="h-6 w-6 object-contain drop-shadow-[0_4px_10px_rgba(208,32,255,0.38)]" />
               </div>
               <div class="flex items-center gap-2">
                 <button class="relative grid h-9 w-9 place-items-center rounded-lg border border-nailBlush bg-white shadow-sm">
@@ -235,7 +247,7 @@
                 <h3 class="text-base font-semibold leading-tight tracking-tight">Run Today's Shop Flow</h3>
               </section>
 
-              <section class="rounded-lg border border-nailBlush bg-gradient-to-br from-white via-nailPearl to-white p-3 shadow-card">
+              <section class="brand-sheen rounded-lg border border-nailBlush p-3 shadow-lift">
                 <div class="space-y-2">
                   <div class="flex items-start justify-between gap-3">
                     <p class="text-[10px] font-semibold uppercase tracking-wide text-nexoraSubtle">Money Saved This Month</p>
@@ -254,7 +266,7 @@
                 </div>
               </section>
 
-              <section class="rounded-lg border border-nailBlush bg-white p-2.5 shadow-card">
+              <section class="rounded-lg border border-nailBlush bg-white/95 p-2.5 shadow-card">
                 <div class="mb-1.5 flex items-center justify-between">
                   <div>
                     <h4 class="text-[13px] font-semibold">Today's priorities</h4>
@@ -272,7 +284,7 @@
                     </div>
                     <i data-lucide="chevron-right" class="h-3.5 w-3.5 text-amber-700"></i>
                   </div>
-                  <div class="grid min-h-[42px] grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-indigo-100 bg-indigo-50/80 px-2 py-1.5">
+                  <div class="grid min-h-[42px] grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-[#E1D0FF] bg-[#F3ECFF] px-2 py-1.5">
                     <span class="grid h-7 w-7 place-items-center rounded-lg bg-nexoraBrand text-[11px] font-semibold text-white">2</span>
                     <div class="min-w-0">
                       <p class="text-[11px] font-semibold leading-[14px]">Staff Access Requests</p>
@@ -373,7 +385,7 @@
 
               <section>
                 <div class="grid grid-cols-2 gap-2">
-                  <div class="rounded-xl border border-nailBlush bg-nailPearl p-2">
+                  <div class="rounded-xl border border-nailBlush bg-[linear-gradient(135deg,#FFF7FE_0%,#F4E8FF_100%)] p-2">
                     <div class="flex items-start gap-2">
                       <div
                         class="qr-code h-[58px] w-[58px] shrink-0 rounded-lg border-4 border-white shadow-card"
@@ -390,7 +402,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="rounded-xl border border-nailBlush bg-nailPearl p-2">
+                  <div class="rounded-xl border border-nailBlush bg-[linear-gradient(135deg,#FFF7FE_0%,#F4E8FF_100%)] p-2">
                     <div class="flex items-start gap-2">
                       <div
                         class="qr-code h-[58px] w-[58px] shrink-0 rounded-lg border-4 border-white shadow-card"
@@ -550,7 +562,7 @@
             </div>
           </div>
 
-          <nav class="absolute inset-x-0 bottom-0 z-40 grid h-[66px] grid-cols-5 border-t border-nailBlush bg-white/95 px-1 shadow-[0_-12px_24px_rgba(70,72,216,0.08)] backdrop-blur-xl">
+          <nav class="absolute inset-x-0 bottom-0 z-40 grid h-[66px] grid-cols-5 border-t border-nailBlush bg-white/95 px-1 shadow-[0_-12px_24px_rgba(96,0,240,0.12)] backdrop-blur-xl">
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraBrandDark" href="#"><i data-lucide="home" class="h-5 w-5"></i>Home</a>
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="users" class="h-5 w-5"></i>Staff</a>
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="circle-dollar-sign" class="h-5 w-5"></i>Tips</a>
@@ -593,20 +605,20 @@
       <article class="w-full max-w-[430px]">
         <div class="mb-3 flex items-end justify-between gap-4 px-1">
           <div>
-            <h2 class="text-lg font-semibold">Staff Account</h2>
-            <p class="text-[13px] font-semibold text-nexoraMuted">Personal earnings dashboard</p>
+            <h2 class="text-lg font-semibold text-white">Staff Account</h2>
+            <p class="text-[13px] font-semibold text-white/60">Personal earnings dashboard</p>
           </div>
-          <span class="rounded-full border border-nailBlush bg-nailPearl px-3 py-1.5 text-xs font-semibold text-nexoraBrandDark">Staff IA</span>
+          <span class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-xl">Staff IA</span>
         </div>
 
-        <div class="phone-frame relative h-[844px] overflow-hidden rounded-[32px] border border-nailBlush bg-[linear-gradient(180deg,#FFF7FB_0%,#F7F9FC_42%,#F6F8FB_100%)] shadow-phone">
+        <div class="phone-frame relative h-[844px] overflow-hidden rounded-[32px] border border-nailBlush bg-[linear-gradient(180deg,#FFF8FE_0%,#F7EEFF_42%,#EFF7FF_100%)] shadow-phone">
           <div class="phone-scroll h-full overflow-y-auto pb-20">
             <header class="sticky top-0 z-30 flex min-h-[58px] items-center justify-between border-b border-nailBlush/80 bg-white/95 px-3 backdrop-blur-xl">
               <div class="flex items-center gap-2">
                 <button class="grid h-9 w-9 place-items-center rounded-lg border border-nailBlush bg-white text-nexoraText shadow-sm">
                   <i data-lucide="menu" class="h-4 w-4"></i>
                 </button>
-                <img src="https://test-web.nexoratouch.com/assets/nexora-logo.png" alt="Nexora" class="h-6 w-6 object-contain" />
+                <img src="https://test-web.nexoratouch.com/assets/nexora-logo.png" alt="Nexora" class="h-6 w-6 object-contain drop-shadow-[0_4px_10px_rgba(208,32,255,0.38)]" />
               </div>
               <div class="flex items-center gap-2">
                 <button class="grid h-9 w-9 place-items-center rounded-lg border border-nailBlush bg-white shadow-sm">
@@ -629,7 +641,7 @@
                 </div>
               </section>
 
-              <section class="rounded-lg border border-amber-100 bg-[#FFF9EA] p-2.5 shadow-card">
+              <section class="rounded-lg border border-[#FFD48A] bg-[linear-gradient(135deg,#FFF9EA_0%,#FFF1C8_62%,#F4E7FF_100%)] p-2.5 shadow-lift">
                 <div class="mb-1.5 flex items-center justify-between gap-3">
                   <div>
                     <p class="text-[9px] font-semibold uppercase tracking-wide text-amber-700">Needs Confirmation</p>
@@ -723,7 +735,7 @@
 
               <section>
                 <div class="grid grid-cols-2 gap-2">
-                  <div class="rounded-xl border border-nailBlush bg-nailPearl p-2">
+                  <div class="rounded-xl border border-nailBlush bg-[linear-gradient(135deg,#FFF7FE_0%,#F4E8FF_100%)] p-2">
                     <div class="flex items-start gap-2">
                       <div
                         class="qr-code h-[58px] w-[58px] shrink-0 rounded-lg border-4 border-white shadow-card"
@@ -740,7 +752,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="rounded-xl border border-nailBlush bg-nailPearl p-2">
+                  <div class="rounded-xl border border-nailBlush bg-[linear-gradient(135deg,#FFF7FE_0%,#F4E8FF_100%)] p-2">
                     <div class="flex items-start gap-2">
                       <div
                         class="qr-code h-[58px] w-[58px] shrink-0 rounded-lg border-4 border-white shadow-card"
@@ -833,7 +845,7 @@
             </div>
           </div>
 
-          <nav class="absolute inset-x-0 bottom-0 z-40 grid h-[66px] grid-cols-5 border-t border-nailBlush bg-white/95 px-1 shadow-[0_-12px_24px_rgba(70,72,216,0.08)] backdrop-blur-xl">
+          <nav class="absolute inset-x-0 bottom-0 z-40 grid h-[66px] grid-cols-5 border-t border-nailBlush bg-white/95 px-1 shadow-[0_-12px_24px_rgba(96,0,240,0.12)] backdrop-blur-xl">
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraBrandDark" href="#"><i data-lucide="home" class="h-5 w-5"></i>Home</a>
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="qr-code" class="h-5 w-5"></i>My QR</a>
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="circle-dollar-sign" class="h-5 w-5"></i>Tips</a>
@@ -876,20 +888,20 @@
       <article class="w-full max-w-[430px]">
         <div class="mb-3 flex items-end justify-between gap-4 px-1">
           <div>
-            <h2 class="text-lg font-semibold">Staff Account</h2>
-            <p class="text-[13px] font-semibold text-nexoraMuted">My QR screen</p>
+            <h2 class="text-lg font-semibold text-white">Staff Account</h2>
+            <p class="text-[13px] font-semibold text-white/60">My QR screen</p>
           </div>
-          <span class="rounded-full border border-nailBlush bg-nailPearl px-3 py-1.5 text-xs font-semibold text-nexoraBrandDark">My QR</span>
+          <span class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-xl">My QR</span>
         </div>
 
-        <div class="phone-frame relative h-[844px] overflow-hidden rounded-[32px] border border-nailBlush bg-[linear-gradient(180deg,#FFF7FB_0%,#F7F9FC_42%,#F6F8FB_100%)] shadow-phone">
+        <div class="phone-frame relative h-[844px] overflow-hidden rounded-[32px] border border-nailBlush bg-[linear-gradient(180deg,#FFF8FE_0%,#F7EEFF_42%,#EFF7FF_100%)] shadow-phone">
           <div class="phone-scroll h-full overflow-y-auto pb-20">
             <header class="sticky top-0 z-30 flex min-h-[58px] items-center justify-between border-b border-nailBlush/80 bg-white/95 px-3 backdrop-blur-xl">
               <div class="flex items-center gap-2">
                 <button class="grid h-9 w-9 place-items-center rounded-lg border border-nailBlush bg-white text-nexoraText shadow-sm">
                   <i data-lucide="menu" class="h-4 w-4"></i>
                 </button>
-                <img src="https://test-web.nexoratouch.com/assets/nexora-logo.png" alt="Nexora" class="h-6 w-6 object-contain" />
+                <img src="https://test-web.nexoratouch.com/assets/nexora-logo.png" alt="Nexora" class="h-6 w-6 object-contain drop-shadow-[0_4px_10px_rgba(208,32,255,0.38)]" />
               </div>
               <div class="flex items-center gap-2">
                 <button class="grid h-9 w-9 place-items-center rounded-lg border border-nailBlush bg-white shadow-sm">
@@ -914,7 +926,7 @@
 
               <section class="grid grid-cols-3 gap-1 rounded-full border border-nailBlush bg-nailPearl/80 p-1 shadow-card" data-my-qr-tabs>
                 <button
-                  class="inline-flex h-7 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-nexoraBrand to-nexoraViolet text-[11px] font-semibold text-white shadow-[0_7px_16px_rgba(70,72,216,0.22)]"
+                  class="inline-flex h-7 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-nexoraBrand to-nexoraViolet text-[11px] font-semibold text-white shadow-[0_8px_18px_rgba(96,0,240,0.28)]"
                   data-my-qr-tab
                   data-active="true"
                   data-label="Personal QR"
@@ -979,7 +991,7 @@
                   <span class="rounded-full bg-nailPearl px-2.5 py-1 text-[10px] font-semibold text-nexoraBrandDark">3 salons</span>
                 </div>
                 <div class="space-y-1.5">
-                  <div class="grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-nailBlush bg-nailPearl p-2">
+                  <div class="grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-nailBlush bg-[linear-gradient(135deg,#FFF7FE_0%,#F4E8FF_100%)] p-2">
                     <div
                       class="qr-code h-[62px] w-[62px] rounded-lg border-4 border-white shadow-card"
                       aria-label="Payment and tip QR for Bitcoin Nail Bar"
@@ -996,7 +1008,7 @@
                       <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-nexoraBrand text-white" aria-label="Copy Bitcoin Nail Bar salon QR link"><i data-lucide="link" class="h-3.5 w-3.5"></i></button>
                     </div>
                   </div>
-                  <div class="grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-nailBlush bg-nailPearl p-2">
+                  <div class="grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-nailBlush bg-[linear-gradient(135deg,#FFF7FE_0%,#F4E8FF_100%)] p-2">
                     <div
                       class="qr-code h-[62px] w-[62px] rounded-lg border-4 border-white shadow-card"
                       aria-label="Payment and tip QR for Lux Nail Lounge"
@@ -1013,7 +1025,7 @@
                       <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-nexoraBrand text-white" aria-label="Copy Lux Nail Lounge salon QR link"><i data-lucide="link" class="h-3.5 w-3.5"></i></button>
                     </div>
                   </div>
-                  <div class="grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-nailBlush bg-nailPearl p-2">
+                  <div class="grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-nailBlush bg-[linear-gradient(135deg,#FFF7FE_0%,#F4E8FF_100%)] p-2">
                     <div
                       class="qr-code h-[62px] w-[62px] rounded-lg border-4 border-white shadow-card"
                       aria-label="Payment and tip QR for Rose Studio Nails"
@@ -1104,7 +1116,7 @@
             </div>
           </div>
 
-          <nav class="absolute inset-x-0 bottom-0 z-40 grid h-[66px] grid-cols-5 border-t border-nailBlush bg-white/95 px-1 shadow-[0_-12px_24px_rgba(70,72,216,0.08)] backdrop-blur-xl">
+          <nav class="absolute inset-x-0 bottom-0 z-40 grid h-[66px] grid-cols-5 border-t border-nailBlush bg-white/95 px-1 shadow-[0_-12px_24px_rgba(96,0,240,0.12)] backdrop-blur-xl">
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="home" class="h-5 w-5"></i>Home</a>
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraBrandDark" href="#"><i data-lucide="qr-code" class="h-5 w-5"></i>My QR</a>
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="circle-dollar-sign" class="h-5 w-5"></i>Tips</a>
@@ -1258,7 +1270,7 @@
     const payoutSettings = document.querySelector('[data-payout-settings="staff-my-qr"]');
     const salonQrModal = document.querySelector('[data-salon-qr-modal]');
     const salonModalQr = document.querySelector('[data-salon-modal-qr]');
-    const activeTabClasses = ['bg-gradient-to-r', 'from-nexoraBrand', 'to-nexoraViolet', 'text-white', 'shadow-[0_7px_16px_rgba(70,72,216,0.22)]'];
+    const activeTabClasses = ['bg-gradient-to-r', 'from-nexoraBrand', 'to-nexoraViolet', 'text-white', 'shadow-[0_8px_18px_rgba(96,0,240,0.28)]'];
     const inactiveTabClasses = ['text-nexoraBrandDark'];
     const syncPayoutSettings = (tab) => {
       if (!payoutSettings || !tab) return;
