@@ -23,6 +23,7 @@
             nexoraViolet: '#2D2EAA',
             nexoraElectric: '#4648D4',
             nexoraCyan: '#3A3BBF',
+            nexoraInfo: '#0284C7',
             nexoraSuccess: '#10B981',
             nexoraWarning: '#F59E0B',
             nexoraDanger: '#EF4444',
@@ -110,8 +111,8 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .phone-scroll button[class*="bg-nexoraBrand"],
-    .phone-scroll span[class*="bg-nexoraBrand"] {
+    .phone-scroll button[class~="bg-nexoraBrand"],
+    .phone-scroll span[class~="bg-nexoraBrand"] {
       background-image: linear-gradient(135deg, #4648D4 0%, #3A3BBF 100%);
     }
 
@@ -134,6 +135,11 @@
     .ds-tint-success {
       border-color: rgba(16, 185, 129, 0.24) !important;
       background: linear-gradient(135deg, #FFFFFF 0%, rgba(16, 185, 129, 0.10) 100%) !important;
+    }
+
+    .ds-tint-info {
+      border-color: rgba(2, 132, 199, 0.22) !important;
+      background: linear-gradient(135deg, #FFFFFF 0%, rgba(14, 165, 233, 0.10) 100%) !important;
     }
 
     .ds-tint-warning {
@@ -429,7 +435,7 @@
 
               <section>
                 <div class="grid grid-cols-2 gap-2">
-                  <div class="ds-tint-primary rounded-xl border p-2">
+                  <div class="ds-tint-info rounded-xl border p-2">
                     <div class="flex items-start gap-2">
                       <div
                         class="qr-code h-[58px] w-[58px] shrink-0 rounded-lg border-4 border-white shadow-card"
@@ -437,7 +443,7 @@
                         data-qr-value="https://pay.nexoratouch.com/m/bitcoin-nail-bar?method=zelle"
                       ></div>
                       <div class="min-w-0">
-                        <p class="whitespace-nowrap text-[8px] font-semibold uppercase text-nexoraBrandDark">Payment & Tip QR</p>
+                        <p class="whitespace-nowrap text-[8px] font-semibold uppercase text-nexoraInfo">Payment & Tip QR</p>
                         <p class="mt-0.5 text-[9px] font-medium leading-[13px] text-nexoraMuted">Payments and tips</p>
                         <div class="mt-1.5 flex gap-1">
                           <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View payment and tip QR" data-dashboard-qr-view data-dashboard-qr-label="Payment & Tip QR" data-dashboard-qr-title="Bitcoin Nail Bar" data-dashboard-qr-subtitle="Customer payments and tips" data-dashboard-qr-link="pay.nexoratouch.com/m/bitcoin-nail-bar?method=zelle" data-dashboard-qr-value="https://pay.nexoratouch.com/m/bitcoin-nail-bar?method=zelle"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
@@ -446,7 +452,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="ds-tint-primary-active rounded-xl border p-2">
+                  <div class="ds-tint-primary rounded-xl border p-2">
                     <div class="flex items-start gap-2">
                       <div
                         class="qr-code h-[58px] w-[58px] shrink-0 rounded-lg border-4 border-white shadow-card"
@@ -454,7 +460,7 @@
                         data-qr-value="https://nexoratouch.com/ref/bitcoin-nail-bar"
                       ></div>
                       <div class="min-w-0">
-                        <p class="whitespace-nowrap text-[9px] font-semibold uppercase text-nexoraViolet">Referral QR</p>
+                        <p class="whitespace-nowrap text-[9px] font-semibold uppercase text-nexoraBrandDark">Referral QR</p>
                         <p class="mt-0.5 text-[9px] font-medium leading-[13px] text-nexoraMuted">Shop invite link</p>
                         <div class="mt-1.5 flex gap-1">
                           <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View referral QR" data-dashboard-qr-view data-dashboard-qr-label="Referral QR" data-dashboard-qr-title="Bitcoin Nail Bar" data-dashboard-qr-subtitle="Shop invite link" data-dashboard-qr-link="nexoratouch.com/ref/bitcoin-nail-bar" data-dashboard-qr-value="https://nexoratouch.com/ref/bitcoin-nail-bar"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
@@ -523,7 +529,7 @@
                 <div class="divide-y divide-nailBlush">
                   <div class="flex items-center justify-between gap-3 py-2 first:pt-0">
                     <div class="flex min-w-0 items-center gap-2.5">
-                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-nexoraBrand/20 bg-nexoraBrand/10 text-nexoraBrandDark shadow-sm"><i data-lucide="message-circle" class="h-4 w-4"></i></span>
+                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-nexoraBrand/10 bg-nexoraBrand/5 text-nexoraBrandDark/80 shadow-sm"><i data-lucide="message-circle" class="h-4 w-4"></i></span>
                       <div class="min-w-0">
                         <p class="truncate text-[13px] font-semibold">J.</p>
                         <p class="truncate text-[11px] font-medium text-nexoraMuted">Nail Technician</p>
@@ -533,7 +539,7 @@
                   </div>
                   <div class="flex items-center justify-between gap-3 py-2">
                     <div class="flex min-w-0 items-center gap-2.5">
-                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-nexoraSuccess/20 bg-nexoraSuccess/10 text-[11px] font-semibold text-nexoraSuccess shadow-sm">ST</span>
+                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-nexoraSuccess/10 bg-nexoraSuccess/5 text-[11px] font-semibold text-nexoraSuccess/80 shadow-sm">ST</span>
                       <div class="min-w-0">
                         <p class="truncate text-[13px] font-semibold">Sota Truong</p>
                         <p class="truncate text-[11px] font-medium text-nexoraMuted">Nail Technician</p>
@@ -543,7 +549,7 @@
                   </div>
                   <div class="flex items-center justify-between gap-3 py-2">
                     <div class="flex min-w-0 items-center gap-2.5">
-                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-nexoraDanger/20 bg-nexoraDanger/10 text-[11px] font-semibold text-nexoraDanger shadow-sm">NL</span>
+                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-nexoraDanger/10 bg-nexoraDanger/5 text-[11px] font-semibold text-nexoraDanger/80 shadow-sm">NL</span>
                       <div class="min-w-0">
                         <p class="truncate text-[13px] font-semibold">Nguyen local 03</p>
                         <p class="truncate text-[11px] font-medium text-nexoraMuted">Nail Technician</p>
@@ -553,7 +559,7 @@
                   </div>
                   <div class="flex items-center justify-between gap-3 py-2 last:pb-0">
                     <div class="flex min-w-0 items-center gap-2.5">
-                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-nexoraWarning/20 bg-nexoraWarning/10 text-[11px] font-semibold text-nexoraWarning shadow-sm">JT</span>
+                      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-nexoraWarning/10 bg-nexoraWarning/5 text-[11px] font-semibold text-nexoraWarning/80 shadow-sm">JT</span>
                       <div class="min-w-0">
                         <p class="truncate text-[13px] font-semibold">Jenny T.</p>
                         <p class="truncate text-[11px] font-medium text-nexoraMuted">Senior Nail Technician</p>
@@ -787,7 +793,7 @@
 
               <section>
                 <div class="grid grid-cols-2 gap-2">
-                  <div class="ds-tint-primary rounded-xl border p-2">
+                  <div class="ds-tint-info rounded-xl border p-2">
                     <div class="flex items-start gap-2">
                       <div
                         class="qr-code h-[58px] w-[58px] shrink-0 rounded-lg border-4 border-white shadow-card"
@@ -795,7 +801,7 @@
                         data-qr-value="https://pay.nexoratouch.com/tip/david-le918747?merchant=bitcoin-nail-bar"
                       ></div>
                       <div class="min-w-0">
-                        <p class="whitespace-nowrap text-[9px] font-semibold uppercase text-nexoraBrandDark">Personal QR</p>
+                        <p class="whitespace-nowrap text-[9px] font-semibold uppercase text-nexoraInfo">Personal QR</p>
                         <p class="mt-0.5 text-[9px] font-medium leading-[13px] text-nexoraMuted">Get Customer Tips</p>
                         <div class="mt-1.5 flex gap-1">
                           <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View personal QR" data-dashboard-qr-view data-dashboard-qr-label="Personal QR" data-dashboard-qr-title="Personal QR" data-dashboard-qr-subtitle="Get Customer Tips" data-dashboard-qr-link="pay.nexoratouch.com/tip/david-le918747" data-dashboard-qr-value="https://pay.nexoratouch.com/tip/david-le918747?merchant=bitcoin-nail-bar"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
@@ -804,7 +810,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="ds-tint-primary-active rounded-xl border p-2">
+                  <div class="ds-tint-primary rounded-xl border p-2">
                     <div class="flex items-start gap-2">
                       <div
                         class="qr-code h-[58px] w-[58px] shrink-0 rounded-lg border-4 border-white shadow-card"
@@ -812,7 +818,7 @@
                         data-qr-value="https://nexoratouch.com/ref/david-le918747?merchant=bitcoin-nail-bar"
                       ></div>
                       <div class="min-w-0">
-                        <p class="whitespace-nowrap text-[9px] font-semibold uppercase text-nexoraViolet">Referral QR</p>
+                        <p class="whitespace-nowrap text-[9px] font-semibold uppercase text-nexoraBrandDark">Referral QR</p>
                         <p class="mt-0.5 text-[9px] font-medium leading-[13px] text-nexoraMuted">Staff invite link</p>
                         <div class="mt-1.5 flex gap-1">
                           <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View referral QR" data-dashboard-qr-view data-dashboard-qr-label="Referral QR" data-dashboard-qr-title="Referral QR" data-dashboard-qr-subtitle="Staff invite link" data-dashboard-qr-link="nexoratouch.com/ref/david-le918747?merchant=bitcoin-nail-bar" data-dashboard-qr-value="https://nexoratouch.com/ref/david-le918747?merchant=bitcoin-nail-bar"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
