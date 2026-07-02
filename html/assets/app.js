@@ -449,7 +449,7 @@ const pageGuides = {
   "tax-1099":{
     focus:"1099-NEC and W-2 readiness center for W-9/TIN, YTD payout rollups, recipient delivery, and e-file prep.",
     role:"Owner / CPA / Bookkeeper",
-    next:"Resolve TIN/classification gaps, reconcile Box 1 totals, then generate CPA-reviewed year-end package.",
+    next:"Resolve TIN/classification gaps, reconcile Box 1a totals, then generate CPA-reviewed year-end package.",
     actions:[["Forms","forms"],["Payouts","payouts"],["CPA Review","cpa"]]
   },
   webhooks:{
@@ -541,10 +541,134 @@ function payEngineRulesPanel(){
 function contractor1099ReadinessPanel(){
   return panel("1099 Contractor Readiness",`<div class="panel-body list">
     ${listItem("W-9 and TIN before year-end","Every 1099 contractor should have W-9/TIN status and legal name/address verified before forms are prepared.","red")}
-    ${listItem("Track Box 1 nonemployee compensation","Payouts for services, commission, bonus, and applicable reimbursement records should roll up into the 1099 support package.","yellow")}
+    ${listItem("Track Box 1a nonemployee compensation","Payouts for services, commission, bonus, and applicable reimbursement records should roll up into the 1099 support package.","yellow")}
     ${listItem("Jan 31 deadline watch","IRS guidance requires Form 1099-NEC by Jan 31 using paper or electronic filing. The app should verify annual rules from official sources.","blue")}
     ${listItem("Evidence is not optional","Payment proof, memo, approval, worker classification, and audit log are needed before CPA export.","green")}
   </div>`,`<a class="btn primary" href="${pageHref("forms")}">Open 1099 Center</a>`);
+}
+function irs1099MiscRecord(workerName="Amy T."){
+  const records = {
+    "Amy T.":{tin:"***-**-4821", address:"1234 Main St, Houston TX 77001", other:"3,896.00", cashTips:"3,896.00", ttoc:"605", overtime:"0.00", stateIncome:"3,896.00"},
+    "Linda P.":{tin:"***-**-7392", address:"5678 Oak Ave, Houston TX 77002", other:"4,468.00", cashTips:"4,468.00", ttoc:"605", overtime:"0.00", stateIncome:"4,468.00"},
+    "Sarah J.":{tin:"***-**-6047", address:"234 Elm St, Houston TX 77004", other:"2,486.00", cashTips:"2,486.00", ttoc:"605", overtime:"0.00", stateIncome:"2,486.00"},
+    "Brian L.":{tin:"***-**-3356", address:"567 Maple Dr, Houston TX 77005", other:"1,831.00", cashTips:"1,831.00", ttoc:"605", overtime:"0.00", stateIncome:"1,831.00"}
+  };
+  const base = records[workerName] || records["Amy T."];
+  return {
+    workerName,
+    year:"2026",
+    payer:"Nexora Nail Spa LLC",
+    payerAddress:"1200 Bellaire Blvd, Houston TX 77036",
+    payerTin:"12-3456789",
+    payerPhone:"(713) 555-0100",
+    recipientTin:base.tin,
+    recipientAddress:base.address,
+    box3:base.other,
+    box13a:base.cashTips,
+    box13b:base.ttoc,
+    box14:base.overtime,
+    box17:"TX / TX-XXXX",
+    box18:base.stateIncome
+  };
+}
+function irs1099NecRecord(workerName="Amy T."){
+  const records = {
+    "Amy T.":{tin:"***-**-4821", address:"1234 Main St, Houston TX 77001", service:"25,445.00", cashTips:"3,896.00", total:"29,341.00", ttoc:"605"},
+    "Linda P.":{tin:"***-**-7392", address:"5678 Oak Ave, Houston TX 77002", service:"32,720.00", cashTips:"4,468.00", total:"37,188.00", ttoc:"605"},
+    "Sarah J.":{tin:"***-**-6047", address:"234 Elm St, Houston TX 77004", service:"17,280.00", cashTips:"2,486.00", total:"19,766.00", ttoc:"605"},
+    "Brian L.":{tin:"***-**-3356", address:"567 Maple Dr, Houston TX 77005", service:"13,050.00", cashTips:"1,831.00", total:"14,881.00", ttoc:"605"}
+  };
+  const base = records[workerName] || records["Amy T."];
+  return {
+    workerName,
+    year:"2026",
+    payer:"Nexora Nail Spa LLC",
+    payerAddress:"1200 Bellaire Blvd, Houston TX 77036",
+    payerTin:"12-3456789",
+    payerPhone:"(713) 555-0100",
+    recipientTin:base.tin,
+    recipientAddress:base.address,
+    service:base.service,
+    box1a:base.total,
+    box1b:base.cashTips,
+    box1c:base.ttoc,
+    box1d:"0.00",
+    box4:"0.00",
+    box6:"TX / TX-XXXX",
+    box7:base.total
+  };
+}
+function irsBox(label, value="", extra=""){
+  return `<div class="irs-box ${extra}"><span>${label}</span><strong>${value || "&nbsp;"}</strong></div>`;
+}
+function irs1099NecPrintSheet(record=irs1099NecRecord()){
+  return `<div class="irs-print-sheet" aria-label="Printable Form 1099-NEC worksheet">
+    <div class="irs-sheet-top">
+      <div>
+        <div class="irs-copy">Recipient / Owner Worksheet</div>
+        <h3>Form 1099-NEC</h3>
+        <p>Nonemployee Compensation · Tax Year ${demoEscape(record.year)}</p>
+      </div>
+      <div class="irs-sheet-note">1099 worker tip reporting</div>
+    </div>
+    <div class="irs-warning">For 1099 technicians, customer tips paid through the salon are included in Box 1a total nonemployee compensation and separately shown in Box 1b cash tips. Box 1b is not added a second time.</div>
+    <div class="irs-form-grid">
+      ${irsBox("Payer's name",demoEscape(record.payer),"wide")}
+      ${irsBox("Payer's TIN",demoEscape(record.payerTin))}
+      ${irsBox("Recipient's TIN",demoEscape(record.recipientTin))}
+      ${irsBox("Payer address / phone",`${demoEscape(record.payerAddress)} · ${demoEscape(record.payerPhone)}`,"wide")}
+      ${irsBox("Recipient name",demoEscape(record.workerName),"wide")}
+      ${irsBox("Recipient address",demoEscape(record.recipientAddress),"wide")}
+      ${irsBox("Service / commission support",`$${demoEscape(record.service)}`,"money")}
+      ${irsBox("1a Nonemployee compensation",`$${demoEscape(record.box1a)}`,"money")}
+      ${irsBox("1b Cash tips included in 1a",`$${demoEscape(record.box1b)}`,"money")}
+      ${irsBox("1c TTOC",demoEscape(record.box1c))}
+      ${irsBox("1d Overtime compensation",`$${demoEscape(record.box1d)}`,"money")}
+      ${irsBox("4 Federal income tax withheld",`$${demoEscape(record.box4)}`,"money")}
+      ${irsBox("6 State / payer's state no.",demoEscape(record.box6))}
+      ${irsBox("7 State income",`$${demoEscape(record.box7)}`,"money")}
+    </div>
+    <div class="irs-sheet-bottom">
+      <strong>Owner review checklist</strong>
+      <span>Confirm W-9/TIN, worker classification, Box 1a total, Box 1b cash tips, TTOC 605 for manicurist/pedicurist when applicable, state fields, and CPA approval before filing.</span>
+    </div>
+  </div>`;
+}
+function irs1099MiscPrintSheet(record=irs1099MiscRecord()){
+  return `<div class="irs-print-sheet" aria-label="Printable Form 1099-MISC worksheet">
+    <div class="irs-sheet-top">
+      <div>
+        <div class="irs-copy">Recipient / Owner Worksheet</div>
+        <h3>Form 1099-MISC</h3>
+        <p>Miscellaneous Information · Tax Year ${demoEscape(record.year)}</p>
+      </div>
+      <div class="irs-sheet-note">Not Copy A for IRS paper filing</div>
+    </div>
+    <div class="irs-warning">IRS Copy A from the downloadable PDF is informational only and should not be printed and mailed to the IRS. Use this sheet for owner review or recipient furnishing workflow; use official scannable forms or e-file/IRIS for IRS filing.</div>
+    <div class="irs-form-grid">
+      ${irsBox("Payer's name",demoEscape(record.payer),"wide")}
+      ${irsBox("Payer's TIN",demoEscape(record.payerTin))}
+      ${irsBox("Recipient's TIN",demoEscape(record.recipientTin))}
+      ${irsBox("Payer address / phone",`${demoEscape(record.payerAddress)} · ${demoEscape(record.payerPhone)}`,"wide")}
+      ${irsBox("Recipient name",demoEscape(record.workerName),"wide")}
+      ${irsBox("Recipient address",demoEscape(record.recipientAddress),"wide")}
+      ${irsBox("1 Rents","")}
+      ${irsBox("2 Royalties","")}
+      ${irsBox("3 Other income",`$${demoEscape(record.box3)}`,"money")}
+      ${irsBox("4 Federal income tax withheld","")}
+      ${irsBox("6 Medical and health care payments","")}
+      ${irsBox("10 Gross proceeds paid to an attorney","")}
+      ${irsBox("13a Cash tips",`$${demoEscape(record.box13a)}`,"money")}
+      ${irsBox("13b TTOC",demoEscape(record.box13b))}
+      ${irsBox("14 Overtime compensation",`$${demoEscape(record.box14)}`,"money")}
+      ${irsBox("17 State / Payer's state no.",demoEscape(record.box17))}
+      ${irsBox("18 State income",`$${demoEscape(record.box18)}`,"money")}
+    </div>
+    <div class="irs-sheet-bottom">
+      <strong>Owner review checklist</strong>
+      <span>Confirm form type, W-9/TIN, address, cash tips, TTOC, overtime, backup withholding, state fields, and CPA approval before filing.</span>
+    </div>
+  </div>`;
 }
 
 const renderers = {
@@ -1347,19 +1471,49 @@ function renderJurisdictions(){
 /* ─── FORMS & REPORTS ─── */
 function renderForms(){
   const formRows = data.forms.map(f=>row([f[0],f[1],f[2],f[3],f[4],status(f[5]),rowActions(actionBtn("Preview","preview-form"),actionBtn("Share","share-form"),actionBtn("Download",""),actionBtn("Archive",""))]));
-  return `${filterBar(["All types",["W-2","1099","941","940","SUTA"]],["All periods",["YTD 2026","Q2 2026"]],["All statuses",["Ready","Draft","Needs Review"]])}<div class="grid-2" style="margin-bottom:14px">${contractor1099ReadinessPanel()}${panel("1099 / W-2 Tax Center Checklist",`<div class="panel-body list">${listItem("Completed before PDF","W-9 on file, TIN/name/address verified, contractor classification reviewed, YTD payout rollup checked.","green")}${listItem("Before filing","Generate and review 1099-NEC PDFs, reconcile Box 1 totals, confirm state boxes if needed, then CPA/merchant approval.","yellow")}${listItem("Recipient delivery","Email/download statements for workers and log delivery status in Audit Log.","blue")}${listItem("IRS e-file readiness","If filing information returns electronically, validate IRIS/FIRE workflow, payer TIN, contact, and correction process.","red")}</div>`,`<a class="btn" href="${pageHref("tax-1099")}">Open Tax Center</a>`)}</div>${panel("Forms & Reports",table(["Report","Period","Records","Source","Due","Status","Actions"],formRows),`<button class="btn primary" data-modal="report">Generate Package</button>`)}`;
+  return `${filterBar(["All types",["W-2","1099","941","940","SUTA"]],["All periods",["YTD 2026","Q2 2026"]],["All statuses",["Ready","Draft","Needs Review"]])}<div class="grid-2" style="margin-bottom:14px">${contractor1099ReadinessPanel()}${panel("1099 / W-2 Tax Center Checklist",`<div class="panel-body list">${listItem("Completed before PDF","W-9 on file, TIN/name/address verified, contractor classification reviewed, YTD payout rollup checked.","green")}${listItem("Before filing","Generate and review 1099-NEC PDFs, reconcile Box 1a totals, confirm state boxes if needed, then CPA/merchant approval.","yellow")}${listItem("Recipient delivery","Email/download statements for workers and log delivery status in Audit Log.","blue")}${listItem("IRS e-file readiness","If filing information returns electronically, validate IRIS/FIRE workflow, payer TIN, contact, and correction process.","red")}</div>`,`<a class="btn" href="${pageHref("tax-1099")}">Open Tax Center</a>`)}</div>${panel("Forms & Reports",table(["Report","Period","Records","Source","Due","Status","Actions"],formRows),`<button class="btn primary" data-modal="report">Generate Package</button>`)}`;
 }
 
 /* ─── TAX CENTER 1099/W-2 ─── */
 function renderTax1099(){
-  const tax1099Actions = worker => `<span class="tax-action-row"><button class="text-link" data-modal="preview-form" data-ctx-id="${demoEscape(worker)}">Preview</button><button class="text-link" data-toast="1099 PDF queued for ${demoEscape(worker)}.">PDF</button><button class="text-link" data-toast="Recipient email queued for ${demoEscape(worker)}.">Email</button><button class="text-link" data-toast="IRS e-file queued for ${demoEscape(worker)} after merchant approval.">IRS</button></span>`;
+  const tax1099Actions = worker => `<span class="tax-action-row"><button class="text-link" data-modal="preview-form" data-ctx-id="${demoEscape(worker)}">Preview</button><button class="text-link" data-modal="print-1099-nec" data-ctx-id="${demoEscape(worker)}">Print NEC</button><button class="text-link" data-toast="1099-NEC PDF queued for ${demoEscape(worker)}.">PDF</button><button class="text-link" data-toast="Recipient email queued for ${demoEscape(worker)}.">Email</button><button class="text-link" data-toast="IRS e-file queued for ${demoEscape(worker)} after merchant approval.">IRS</button></span>`;
+  const necWorkers = ["Amy T.","Linda P.","Sarah J.","Brian L."].map(irs1099NecRecord);
+  const necWorkerRows = necWorkers.map(w=>{
+    const workerEmail = w.workerName.toLowerCase().replace(/[^a-z]+/g,".").replace(/^\.+|\.+$/g,"");
+    return row([
+      `<strong>${demoEscape(w.workerName)}</strong><br><small style="color:#8b949e;">${demoEscape(workerEmail)}@gmail.com</small>`,
+      `<span style="font-family:monospace;color:#8b949e;font-size:11px;">${demoEscape(w.recipientTin)}</span>`,
+      `$${demoEscape(w.service)}`,
+      `<span class="tip">$${demoEscape(w.box1b)}</span>`,
+      `<strong>$${demoEscape(w.box1a)}</strong><br><small style="color:#8b949e;">includes Box 1b</small>`,
+      `<span class="badge badge-purple">${demoEscape(w.box1c)}</span>`,
+      `$${demoEscape(w.box1d)}`,
+      `<span class="badge badge-green">On file</span>`,
+      status("Ready"),
+      tax1099Actions(w.workerName)
+    ],{wrap:0});
+  });
+  const necTipGuideRows = [
+    ["Form","Use 1099-NEC for contractor service pay and tips paid through the salon.","1099-NEC"],
+    ["Box 1a","Total paid to the 1099 worker: service/commission/bonus plus customer tips.","$29,341"],
+    ["Box 1b","Cash tips portion already included in Box 1a. Do not add twice.","$3,896"],
+    ["Box 1c","Treasury Tipped Occupation Code for the tip occupation.","605"],
+    ["Box 1d","Qualified overtime compensation if applicable.","$0"]
+  ].map(r=>row(r,{wrap:[1,2]}));
   return `<div class="nexora-source">
-    <div class="alert alert-red">⏰ <strong>Important deadlines:</strong> 1099-NEC sent to workers &amp; filed with IRS → <strong>Jan 31</strong> &nbsp;|&nbsp; Form 1096 summary → <strong>Feb 28</strong> each tax year.</div>
+    <div class="alert alert-red">⏰ <strong>Important deadlines:</strong> 1099-NEC worker copy and IRS filing → <strong>Jan 31</strong>. Paper filing uses Form 1096 with the 1099-NEC package; e-file uses IRS IRIS/FIRE.</div>
+    <div class="alert alert-blue">💡 <strong>For 1099 technicians, report customer tips on Form 1099-NEC.</strong><br><span class="gray">Box 1a = total nonemployee compensation including tips. Box 1b = cash tips included inside Box 1a. Box 1c = TTOC, usually 605 for manicurist/pedicurist. W-2 employees stay in payroll/W-2 workflow, not 1099-NEC.</span><span style="float:right"><button class="source-button" data-modal="print-1099-nec" data-ctx-id="Amy T." style="height:30px">Print 1099-NEC</button></span></div>
+
+    <div class="grid-2" style="margin-bottom:14px">
+      ${panel("How To Write 1099 Worker Tips",table(["Field","What Owner Enters","Amy T. Example"],necTipGuideRows),`<button class="btn primary" data-modal="print-1099-nec" data-ctx-id="Amy T.">Print 1099-NEC</button>`)}
+      ${panel("When 1099-MISC Applies",`<div class="panel-body list">${listItem("Not the main contractor pay form","Regular 1099 technician service pay belongs in 1099-NEC, not MISC.","red")}${listItem("Use MISC only for true miscellaneous categories","Examples include Box 3 other income, rents, royalties, gross proceeds to attorney, and other MISC-specific boxes.","yellow")}${listItem("MISC tips field exists for applicable MISC income","If MISC is truly the correct form, cash tips go to Box 13a and TTOC to Box 13b; Box 13a is included in Box 3.","blue")}</div>`,`<button class="btn" data-modal="print-1099-misc" data-ctx-id="Amy T.">Open MISC Worksheet</button>`)}
+    </div>
 
     <div class="section-box">
       <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-        📋 IRS Form 1096 — Annual Summary · Tax Year 2024
+        📋 IRS Form 1096 — Annual Summary · Tax Year 2026
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="badge badge-green" data-modal="print-1099-nec" data-ctx-id="Amy T.">🖨️ Print 1099-NEC</button>
           <button class="badge badge-purple" data-toast="Form 1096 PDF generation queued.">📄 Create Form 1096 PDF</button>
           <button class="badge badge-blue" data-toast="IRS batch e-file queued after merchant approval.">📤 E-file All → IRS</button>
           <button class="badge badge-gray" data-toast="1099 ZIP export queued.">📦 Export ZIP (4 files)</button>
@@ -1368,63 +1522,26 @@ function renderTax1099(){
       </div>
       <div class="stats-row" style="margin:0;padding:16px;">
         <div class="stat-card"><div class="stat-label">Total Forms</div><div class="stat-val purple">4</div></div>
-        <div class="stat-card"><div class="stat-label">Total Box 1</div><div class="stat-val green">$101,176</div></div>
+        <div class="stat-card"><div class="stat-label">Total Box 1a</div><div class="stat-val green">$101,176</div></div>
         <div class="stat-card"><div class="stat-label">Ready to File</div><div class="stat-val green">4/4</div></div>
         <div class="stat-card"><div class="stat-label">W-9 on file</div><div class="stat-val green">4/4</div></div>
       </div>
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">👥 1099-NEC Worker Summary</div>
+      <div class="section-box-title">👥 1099-NEC Worker Summary · Tips Included Correctly</div>
       <table>
         <thead>
-          <tr><th>Worker</th><th>SSN</th><th>Box 1 Total</th><th>Service Income</th><th>Tips + Bonus</th><th>Payments</th><th>W-9</th><th>Address</th><th>Status</th><th>Actions</th></tr>
+          <tr><th>Worker</th><th>TIN</th><th>Service / Commission</th><th>Box 1b Cash Tips</th><th>Box 1a Total</th><th>Box 1c TTOC</th><th>Box 1d OT</th><th>W-9</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td><strong>Amy T.</strong><br><small style="color:#8b949e;">amy.t@gmail.com</small></td>
-            <td style="font-family:monospace;color:#8b949e;font-size:11px;">***-**-4821</td>
-            <td class="amt"><strong>$29,341</strong></td><td>$25,445</td><td class="tip">$3,896</td>
-            <td>24 payments</td>
-            <td><span class="badge badge-green">✅ On file</span></td>
-            <td style="font-size:11px;color:#8b949e;">1234 Main St, Houston TX 77001</td>
-            <td><span class="badge badge-green">Ready</span></td>
-            <td style="white-space:nowrap;font-size:12px;">${tax1099Actions("Amy T.")}</td>
-          </tr>
-          <tr>
-            <td><strong>Linda P.</strong><br><small style="color:#8b949e;">linda.p@gmail.com</small></td>
-            <td style="font-family:monospace;color:#8b949e;font-size:11px;">***-**-7392</td>
-            <td class="amt"><strong>$37,188</strong></td><td>$32,720</td><td class="tip">$4,468</td>
-            <td>24 payments</td>
-            <td><span class="badge badge-green">✅ On file</span></td>
-            <td style="font-size:11px;color:#8b949e;">5678 Oak Ave, Houston TX 77002</td>
-            <td><span class="badge badge-green">Ready</span></td>
-            <td style="white-space:nowrap;font-size:12px;">${tax1099Actions("Linda P.")}</td>
-          </tr>
-          <tr>
-            <td><strong>Sarah J.</strong><br><small style="color:#8b949e;">sarah.j@gmail.com</small></td>
-            <td style="font-family:monospace;color:#8b949e;font-size:11px;">***-**-6047</td>
-            <td class="amt"><strong>$19,766</strong></td><td>$17,280</td><td class="tip">$2,486</td>
-            <td>20 payments</td>
-            <td><span class="badge badge-green">✅ On file</span></td>
-            <td style="font-size:11px;color:#8b949e;">234 Elm St, Houston TX 77004</td>
-            <td><span class="badge badge-green">Ready</span></td>
-            <td style="white-space:nowrap;font-size:12px;">${tax1099Actions("Sarah J.")}</td>
-          </tr>
-          <tr>
-            <td><strong>Brian L.</strong><br><small style="color:#8b949e;">brian.l@gmail.com</small></td>
-            <td style="font-family:monospace;color:#8b949e;font-size:11px;">***-**-3356</td>
-            <td class="amt"><strong>$14,881</strong></td><td>$13,050</td><td class="tip">$1,831</td>
-            <td>16 payments</td>
-            <td><span class="badge badge-green">✅ On file</span></td>
-            <td style="font-size:11px;color:#8b949e;">567 Maple Dr, Houston TX 77005</td>
-            <td><span class="badge badge-green">Ready</span></td>
-            <td style="white-space:nowrap;font-size:12px;">${tax1099Actions("Brian L.")}</td>
-          </tr>
+          ${necWorkerRows.join("")}
           <tr class="total-row">
             <td colspan="2"><strong>TOTAL (Form 1096)</strong></td>
+            <td class="amt"><strong>$88,495</strong></td>
+            <td class="amt"><strong>$12,681</strong></td>
             <td class="amt"><strong>$101,176</strong></td>
-            <td colspan="7" style="color:#8b949e;font-size:12px;">Use E-file All after merchant approval and CPA review.</td>
+            <td colspan="5" style="color:#8b949e;font-size:12px;">Box 1b cash tips are included inside Box 1a total. Use E-file All after merchant approval and CPA review.</td>
           </tr>
         </tbody>
       </table>
@@ -1435,9 +1552,9 @@ function renderTax1099(){
         <div class="section-box-title">✅ Completed Checklist</div>
         <ul class="checklist">
           <li class="check-done">✅ Collected W-9 from all contractors</li>
-          <li class="check-done">✅ Confirmed each worker's address and SSN</li>
+          <li class="check-done">✅ Confirmed each worker's address and TIN</li>
           <li class="check-done">✅ Summarized total payments by person</li>
-          <li class="check-done">✅ Checked $600 threshold — 4/4 qualify</li>
+          <li class="check-done">✅ Checked 2026 $2,000 threshold — 4/4 qualify</li>
         </ul>
       </div>
       <div class="section-box">
@@ -1446,7 +1563,7 @@ function renderTax1099(){
           <li class="check-todo">⬜ Create and review each worker's 1099-NEC PDF</li>
           <li class="check-todo">⬜ Send worker copies before Jan 31</li>
           <li class="check-todo">⬜ Create Form 1096 transmittal</li>
-          <li class="check-todo">⬜ E-file or mail to IRS before Jan/Feb deadlines</li>
+          <li class="check-todo">⬜ E-file or paper file 1099-NEC package by Jan 31</li>
         </ul>
       </div>
     </div>
@@ -1731,7 +1848,8 @@ function renderSettings(){
       <div class="grid-2">${panel("Guided Help",`<div class="panel-body list">${listItem("First-time tour","Explain payroll, payout, Tax IQ, OCR, share links, GPS, CPA review.","blue")}${listItem("What next","Show recommended next action when a workflow is blocked.","green")}${listItem("Merchant setup path","Keep first-run setup focused on plan, business profile, payroll connection, worker pay setup, evidence, and billing approval.","yellow")}</div>`,`<button class="btn primary" data-toast="Tour started. Follow the guided steps.">Start Tour</button>`)}${panel("Operational Playbooks",table(["Workflow","When It Appears","Open"],[
         row(["Worker payout setup","Before Quick Pay or Weekly Payroll can pay a worker",`<a class="${ui.btn}" href="${pageHref("payouts")}">Payout Hub</a>`]),
         row(["Receipt evidence","When CPA export or deduction support needs proof",`<a class="${ui.btn}" href="${pageHref("ocr")}">OCR Vault</a>`]),
-        row(["CPA handoff","When merchant approves review/export scope",`<a class="${ui.btn}" href="${pageHref("cpa")}">CPA Review</a>`])
+        row(["CPA handoff","When merchant approves review/export scope",`<a class="${ui.btn}" href="${pageHref("cpa")}">CPA Review</a>`]),
+        row(["Print Form 1099-NEC","When owner needs a contractor worksheet for service pay plus cash tips, TTOC, and overtime fields",`<button class="${ui.btn}" data-modal="print-1099-nec" data-ctx-id="Amy T.">Print</button>`])
       ]))}</div>
     </div>
   </div>`;
@@ -2239,10 +2357,10 @@ const modalCopy = {
       modalSection("Filing Instructions", `<div class="list">${listItem("Due Jul 31, 2026","Q2 941 due date. File electronically via IRS e-file or approved EFTPS.","yellow")}${listItem("Signature required","Authorized officer must sign before submission.","blue")}</div>`)
     ].join("")
   },
-  "share-form":{
-    title:"Share Form with CPA",
-    body:"Grant read-only access to this form for your connected CPA or bookkeeper.",
-    cta:"Share",
+	  "share-form":{
+	    title:"Share Form with CPA",
+	    body:"Grant read-only access to this form for your connected CPA or bookkeeper.",
+	    cta:"Share",
     content:()=>[
       modalSection("Share To", modalGrid([
         modalSelect("CPA / Recipient",[["Nguyen CPA Group",true],["Internal bookkeeper"],["Tax partner"]]),
@@ -2252,11 +2370,53 @@ const modalCopy = {
       modalSection("Form Being Shared", table(["Form","Period","Status"],[
         row(["Federal 941 Worksheet","Q2 2026",status("Ready")])
       ])),
-      modalSection("Notification", `<div class="list">${modalCheck("Email CPA with direct link","Send secure link to CPA's registered email.")}${modalCheck("Log share to audit trail","Record who shared what, when, and to whom.")}</div>`)
-    ].join("")
-  },
-  report:{
-    title:"Generate Report Package",
+	      modalSection("Notification", `<div class="list">${modalCheck("Email CPA with direct link","Send secure link to CPA's registered email.")}${modalCheck("Log share to audit trail","Record who shared what, when, and to whom.")}</div>`)
+	    ].join("")
+	  },
+	  "print-1099-nec":{
+	    title:"Print Form 1099-NEC",
+	    body:"Print a contractor worksheet for service pay, commission, bonus, cash tips, TTOC, overtime, and state fields before owner or CPA filing approval.",
+	    cta:"Print Form",
+	    afterOpen(modal){
+	      const cta = modal.querySelector("#modalMainCta");
+	      if(cta){
+	        cta.dataset.printIrsForm = "1099-nec";
+	        cta.removeAttribute("data-action-toast");
+	      }
+	    },
+	    content:()=>{
+	      const worker = window._modalCtx?.ctxId || "Amy T.";
+	      const record = irs1099NecRecord(worker);
+	      return [
+	        modalSection("Before Printing", `<div class="list">${listItem("Use NEC for 1099 technicians","Contractor service pay, commission, bonus, and customer tips paid through the salon belong on Form 1099-NEC.","green")}${listItem("Tips are not added twice","Box 1a is the total nonemployee compensation. Box 1b separately shows the cash tip portion already included in Box 1a.","blue")}${listItem("Nail occupation code","Use TTOC 605 for manicurists/pedicurists when applicable, then confirm with CPA before filing.","yellow")}${listItem("IRS filing caution","Use official scannable forms or e-file/IRIS for IRS filing. This worksheet is for owner review, recipient workflow, and print preview.","red")}</div>`),
+	        `<div class="irs-print-actions"><a class="btn" href="https://www.irs.gov/pub/irs-pdf/f1099nec.pdf" target="_blank" rel="noopener">Open IRS 1099-NEC PDF</a><a class="btn" href="${pageHref("tax-1099")}">Open 1099 Center</a></div>`,
+	        irs1099NecPrintSheet(record)
+	      ].join("");
+	    }
+	  },
+	  "print-1099-misc":{
+	    title:"Print Form 1099-MISC",
+	    body:"Print a recipient/owner worksheet for Form 1099-MISC. Use official scannable forms or e-file/IRIS for IRS Copy A filing.",
+	    cta:"Print Form",
+	    afterOpen(modal){
+	      const cta = modal.querySelector("#modalMainCta");
+	      if(cta){
+	        cta.dataset.printIrsForm = "1099-misc";
+	        cta.removeAttribute("data-action-toast");
+	      }
+	    },
+	    content:()=>{
+	      const worker = window._modalCtx?.ctxId || "Amy T.";
+	      const record = irs1099MiscRecord(worker);
+	      return [
+	        modalSection("Before Printing", `<div class="list">${listItem("Print purpose","This helps the owner review or furnish a recipient copy/worksheet from Tax IQ records.","green")}${listItem("IRS filing caution","Do not print the red Copy A from the downloadable PDF and mail it to IRS. Use official scannable forms or e-file/IRIS.","red")}${listItem("Form choice check","Contractor service pay normally belongs on Form 1099-NEC. Use 1099-MISC only for categories that belong on MISC, such as Box 3 other income, cash tips, TTOC, or overtime fields when applicable.","yellow")}</div>`),
+	        `<div class="irs-print-actions"><a class="btn" href="https://www.irs.gov/pub/irs-pdf/f1099msc.pdf" target="_blank" rel="noopener">Open IRS PDF</a><a class="btn" href="${pageHref("tax-1099")}">Open 1099 Center</a></div>`,
+	        irs1099MiscPrintSheet(record)
+	      ].join("");
+	    }
+	  },
+	  report:{
+	    title:"Generate Report Package",
     body:"Build a CPA-ready package with ledger, payout, receipt, mileage, and report files.",
     cta:"Generate",
     afterOpen(modal){
@@ -3676,6 +3836,14 @@ document.addEventListener("click", event=>{
     } else if(text.includes("Pay Now")){
       window.location.href = pageHref("quick-pay");
     }
+    return;
+  }
+
+  const printIrsForm = event.target.closest("[data-print-irs-form]");
+  if(printIrsForm){
+    window.print();
+    const formName = printIrsForm.dataset.printIrsForm === "1099-nec" ? "1099-NEC" : "1099-MISC";
+    toast(`Print dialog opened for Form ${formName}.`);
     return;
   }
 
