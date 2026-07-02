@@ -132,8 +132,14 @@ function updateQuickPayPreview(scope=document){
   if(amountEl) amountEl.textContent = moneyText(amount);
   if(rows[0]) rows[0].textContent = methodText.toUpperCase();
   if(cta){
-    cta.textContent = amount > 0 ? "Preview is ready to create payment" : "Enter details to preview";
+    cta.textContent = amount > 0 ? "Preview ready - use Create Payment Now" : "Enter amount to preview";
     cta.classList.toggle("primary", amount > 0);
+    cta.disabled = amount <= 0;
+    if(amount > 0){
+      cta.dataset.actionToast = "Quick Pay preview checked. Use Create Payment Now to create the payment.";
+    } else {
+      delete cta.dataset.actionToast;
+    }
   }
 }
 function appendAiMessage(thread, who, text){
@@ -463,16 +469,6 @@ function priorityActionPanel(){
     ${listItem("Protect access and audit trail","Use expiring Share Links, minimum scope, approval logs, and audit records for sensitive tax data.","green")}
   </div>`,`<a class="btn primary" href="${pageHref("data-quality")}">Open Data Quality</a>`);
 }
-function quickPayWorkflowPanel(){
-  const rows = [
-    ["1. Payment type","Choose Tip, Wage, Bonus, Advance, Reimbursement, or Adjustment.","Sets tax/evidence classification before payment."],
-    ["2. Worker","Pick the worker/technician. Primary method loads automatically.","Prevents sending to the wrong Zelle/Venmo/Cash App profile."],
-    ["3. Amount","Enter amount or use quick chips such as $20, $50, $100, $200.","Creates a preview before posting the payout."],
-    ["4. Method","Use Zelle, Cash, Venmo, Cash App, Check, ACH, or Bank/DD.","Stores payment channel for 1099/W-2 support and audit trail."],
-    ["5. Note + confirm","Add purpose, review preview, then create payment.","Feeds Payouts, OCR evidence, Tax Ledger, and CPA package."]
-  ].map(r=>row(r,{wrap:[1,2]}));
-  return panel("Quick Pay Workflow",table(["Step","User Action","Tax IQ Impact"],rows),`<button class="btn primary" data-modal="payout">Create Quick Pay</button>`);
-}
 function payEngineRulesPanel(){
   const rows = [
     ["Hourly","Hours x rate, with overtime rule such as 1.5x after 40 hours.","W-2 employees or hourly staff."],
@@ -513,6 +509,7 @@ function renderPage(){
   const sourceLikePages = new Set(["pos","checkout","quick-pay","pay-engine","weekly-payroll","payouts","tax-1099","reviews","ai-assistant"]);
   document.getElementById("content").innerHTML = (sourceLikePages.has(currentPage) ? "" : pageGuide()) + (renderers[currentPage] || renderDashboard)();
   initFreeRouteMaps(document);
+  if(currentPage === "quick-pay") updateQuickPayPreview();
 }
 
 function renderDataLoadError(){
@@ -601,9 +598,9 @@ function renderCheckout(){
           <div class="checkout-line header"><span>Service</span><span>Price</span><span>Tip</span><span>Total</span></div>
           ${serviceRows}
           <div class="checkout-add-row">
-            <button class="source-button">+ Add Service</button>
-            <button class="source-button">+ Discount</button>
-            <button class="source-button">+ Coupon</button>
+            <button class="source-button" data-action-toast="Add service drawer queued for this checkout ticket.">+ Add Service</button>
+            <button class="source-button" data-action-toast="Discount approval queued for this checkout ticket.">+ Discount</button>
+            <button class="source-button" data-action-toast="Coupon lookup queued for this checkout ticket.">+ Coupon</button>
           </div>
         </div>
 
@@ -694,7 +691,7 @@ function renderReviews(){
       <div><h2 class="source-title">⭐ Reviews</h2><div class="source-subtitle">Google · Yelp · Facebook · Customer feedback</div></div>
     </div>
     <div class="stats-row">
-      <div class="stat-card"><div class="stat-label">Rating TB</div><div class="stat-val orange">4.9</div><div class="stat-sub">★★★★★</div></div>
+      <div class="stat-card"><div class="stat-label">Average Rating</div><div class="stat-val orange">4.9</div><div class="stat-sub">★★★★★</div></div>
       <div class="stat-card"><div class="stat-label">Total Reviews</div><div class="stat-val green">847</div><div class="stat-sub">+18 this week</div></div>
       <div class="stat-card"><div class="stat-label">New Reviews</div><div class="stat-val red">5</div><div class="stat-sub">Not replied</div></div>
       <div class="stat-card"><div class="stat-label">Needs Reply</div><div class="stat-val orange">3</div><div class="stat-sub">Under 4 stars</div></div>
@@ -799,7 +796,7 @@ function renderEmployers(){
 /* ─── EMPLOYEES ─── */
 function renderEmployees(){
   const empRows = data.employees.map(e=>row([e[0],`<span class="mono">${e[1]}</span>`,e[2],e[3],e[4],status(e[5]),status(e[6]),e[7],e[8],e[9],rowActions(`<a class="${ui.btn}" href="${pageHref("employee-profile")}">View</a>`,actionBtn("Verify","tin-verification"),actionBtn("Request W-4",""))]));
-  return `${filterBar(["All TIN statuses",["Verified","Pending","Missing"]],["All W-4 years",["2026","2024","Missing"]],["All departments",["Finance","Engineering","Operations","Sales","Support"]])}${panel("Employees",table(["Employee","ID","Dept","Residence","Work","TIN","W-4","Filing","Updated","Risk","Actions"],empRows),`<button class="btn primary" data-modal="employee">Invite Employee</button> <button class="btn" data-toast="Employee roster exported.">Export Roster</button>`)}<div class="pagination-bar"><span>Showing 1-5 of 142 employees</span><div><button class="${ui.btn}" disabled>Previous</button><button class="${ui.btn}">Page 1</button><button class="${ui.btn}">Next</button></div></div>`;
+  return `${filterBar(["All TIN statuses",["Verified","Pending","Missing"]],["All W-4 years",["2026","2024","Missing"]],["All departments",["Finance","Engineering","Operations","Sales","Support"]])}${panel("Employees",table(["Employee","ID","Dept","Residence","Work","TIN","W-4","Filing","Updated","Risk","Actions"],empRows),`<button class="btn primary" data-modal="employee">Invite Employee</button> <button class="btn" data-toast="Employee roster exported.">Export Roster</button>`)}<div class="pagination-bar"><span>Showing 1-5 of 142 employees</span><div><button class="${ui.btn}" disabled>Previous</button><button class="${ui.btn}" data-toast="Already showing page 1 of the employee demo roster.">Page 1</button><button class="${ui.btn}" data-toast="Next employee page queued for backend pagination.">Next</button></div></div>`;
 }
 
 /* ─── EMPLOYEE PROFILE ─── */
@@ -1161,6 +1158,8 @@ function renderPayouts(){
       <div class="alert alert-blue" style="margin:12px 16px;">Simple rule: Pay Engine decides <strong>how much</strong>; Payout Hub decides <strong>where money goes</strong>; Quick Pay or Weekly Payroll creates the actual payment.</div>
     </div>
 
+    <div class="alert alert-blue">🔎 <strong>Latest payout proof ready for review</strong><br><span class="gray">PAY-2026-001 · Amy T. · Zelle · Evidence matched</span><span style="float:right"><button class="source-button" data-modal="payout-detail" style="height:30px">Review Payout Detail</button></span></div>
+
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap">
       <div><strong>5</strong> technicians connected · <span class="orange">1 invite pending acceptance</span></div>
       <button class="source-button primary">✉️ Invite New Technician</button>
@@ -1206,7 +1205,7 @@ function renderLedger(){
 
 /* ─── EXCEPTIONS ─── */
 function renderExceptions(){
-  const exRows = data.exceptions.map(e=>row([`<span class="mono">${e[0]}</span>`,e[1],status(e[2]),e[3],status(e[4]),e[5],e[6],rowActions(`<button class="${ui.btn}" data-resolve-exc="${e[0]}">Resolve</button>`,`<button class="${ui.btn}" data-toast="Assigned ${e[0]} to ${e[3]} team.">Assign</button>`,`<button class="${ui.btn}" data-toast="Note saved for ${e[0]}.">Note</button>`)],{wrap:6}));
+  const exRows = data.exceptions.map(e=>row([`<span class="mono">${e[0]}</span>`,e[1],status(e[2]),e[3],status(e[4]),e[5],e[6],rowActions(`<button class="${ui.btn}" data-modal="resolve-exception" data-ctx-id="${e[0]}">Resolve</button>`,`<button class="${ui.btn}" data-toast="Assigned ${e[0]} to ${e[3]} team.">Assign</button>`,`<button class="${ui.btn}" data-toast="Note saved for ${e[0]}.">Note</button>`)],{wrap:6}));
   return `${filterBar(["All statuses",["Open","Reviewing","Closed"]],["All severities",["High","Medium","Low"]],["All owners",["Payroll","HR","Tax"]])}${panel("Exceptions Queue",table(["ID","Type","Severity","Owner","Status","Run","Description","Actions"],exRows))}`;
 }
 
@@ -1943,6 +1942,19 @@ const modalCopy = {
     title:"Resolve Exception",
     body:"Document the resolution, override justification, and notify the relevant owner before clearing the exception.",
     cta:"Mark Resolved",
+    afterOpen(modal){
+      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
+        e.stopPropagation();
+        const note = modal.querySelector("textarea")?.value || "";
+        if(!note.trim()){ toast("Required: enter a resolution note before closing the exception."); return; }
+        const id = window._modalCtx?.ctxId || "ex_001";
+        const item = data.exceptions.find(x=>x[0]===id);
+        if(item) item[4] = "Closed";
+        document.getElementById("modalRoot").classList.remove("open");
+        renderPage();
+        toast("Exception resolved: "+id);
+      });
+    },
     content:()=>[
       modalSection("Exception Detail", table(["Field","Value"],[
         row(["ID","ex_001"]),
@@ -2721,42 +2733,6 @@ const modalCopy = {
   },
 
   /* PAYOUT MODALS */
-  payout:{
-    title:"Create Payout",
-    body:"Record technician payout, method, type, period, evidence, and TaxIQ sync status.",
-    cta:"Save Payout",
-    afterOpen(modal){
-      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
-        e.stopPropagation();
-        const inputs = modal.querySelectorAll("input.form-control");
-        const worker = (inputs[0]?.value||"").trim() || "Unknown Worker";
-        const amount = (inputs[1]?.value||"").trim() || "$0.00";
-        const method = modal.querySelectorAll("select.form-control")[0]?.value || "Zelle";
-        const type   = modal.querySelectorAll("select.form-control")[1]?.value || "Tip + wage";
-        const period = (inputs[2]?.value||"").trim() || "—";
-        const payId  = "PAY-2026-"+String(data.payouts.length+1).padStart(3,"0");
-        data.payouts.unshift([payId,worker.split("/")[0].trim(),"NL-NEW",period,amount,method,type,"Pending","None"]);
-        document.getElementById("modalRoot").classList.remove("open");
-        renderPage(); toast("Payout saved: "+payId+" — "+amount+" via "+method);
-      });
-    },
-    content:()=>[
-      modalSection("Payout Detail", modalGrid([
-        modalField("Worker","likesaa / NL501TESX"),
-        modalField("Amount","$250.00"),
-        modalSelect("Method",[["Zelle",true],["Cash"],["PayPal"],["Check"],["ACH"]]),
-        modalSelect("Type",[["Tip + wage",true],["Tip"],["Bonus"],["Reimbursement"]]),
-        modalField("Period","2026-06-01 to 2026-06-15"),
-        modalField("Reference","ZELLE-250-0615")
-      ])),
-      modalSection("Evidence", `<div class="list">${modalCheck("Payment screenshot","Required for Zelle/PayPal/Cash App payouts.")}${modalCheck("Business purpose","Required when payout type is unclear.")}${modalCheck("Sync to Tax IQ ledger","Create immutable payout evidence record.")}</div>`),
-      modalSection("Classification Review", table(["Question","Answer","Status"],[
-        row(["Worker classification","1099 contractor",status("Review")]),
-        row(["Tax form support","1099 package",status("Ready")]),
-        row(["Duplicate payout check","No duplicate found",status("Ready")])
-      ]))
-    ].join("")
-  },
   "payout-detail":{
     title:"Payout Detail",
     body:"Review payout method, worker profile, evidence image count, tax sync status, and any unclear business purpose.",
@@ -3476,12 +3452,6 @@ document.addEventListener("click", event=>{
     const r = data.receipts.find(x=>x[0]===approveRcpt.dataset.approveReceipt);
     if(r){ r[5]="Approved"; renderPage(); toast("Receipt approved: "+r[1]); }
   }
-  // Resolve exception
-  const resolveExc = event.target.closest("[data-resolve-exc]");
-  if(resolveExc){
-    const e = data.exceptions.find(x=>x[0]===resolveExc.dataset.resolveExc);
-    if(e){ e[4]="Closed"; renderPage(); toast("Exception resolved: "+e[0]); }
-  }
   // Mark single notification read
   const markRead = event.target.closest("[data-mark-read]");
   if(markRead){
@@ -3508,12 +3478,6 @@ document.addEventListener("click", event=>{
   if(revokeConn){
     const c = data.connections.find(x=>x[0]===revokeConn.dataset.revokeConn);
     if(c){ c[6]="Revoked"; renderPage(); toast("Connection revoked: "+c[1]); }
-  }
-  // Mark payout as paid
-  const markPaid = event.target.closest("[data-mark-paid]");
-  if(markPaid){
-    const p = data.payouts.find(x=>x[0]===markPaid.dataset.markPaid);
-    if(p){ p[7]="Confirmed"; renderPage(); toast("Payout confirmed: "+p[0]); }
   }
   // Revoke API key
   const revokeKey = event.target.closest("[data-revoke-key]");
