@@ -153,6 +153,113 @@ function quickPayMethodFieldLabel(method){
   };
   return labels[method] || "Payment reference";
 }
+function quickPaySelectedOption(select){
+  return select?.selectedOptions?.[0] || select?.options?.[select?.selectedIndex || 0] || null;
+}
+function quickPayDisplayDate(value){
+  if(!value) return "Not scheduled";
+  const [year, month, day] = String(value).split("-");
+  if(!year || !month || !day) return value;
+  return new Date(Number(year), Number(month) - 1, Number(day)).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
+}
+function getQuickPayState(scope=document){
+  const root = scope.querySelector?.(".nexora-source") || document.querySelector(".nexora-source");
+  const payCard = root?.querySelector(".pay-type-card.active");
+  const worker = root?.querySelector(".worker-item.active");
+  const method = root?.querySelector(".method-grid button.method-card.active") || root?.querySelector(".method-grid .method-card.active");
+  const sourceSelect = root?.querySelector("[data-source-select]");
+  const selectedSource = quickPaySelectedOption(sourceSelect);
+  const amountInput = root?.querySelector(".source-input.amount");
+  const contactInput = root?.querySelector("[data-payout-contact]");
+  const dateInput = root?.querySelector("[data-payment-date]");
+  const memoInput = root?.querySelector("[data-payment-memo]");
+  const methodKey = method?.dataset.method || worker?.dataset.primaryMethod || "zelle";
+  const primaryMethod = worker?.dataset.primaryMethod || "zelle";
+  const backupMethod = worker?.dataset.backupMethod || "venmo";
+  const primaryContact = worker?.dataset.primaryContact || "";
+  const backupContact = worker?.dataset.backupContact || "";
+  const profileContact = methodKey === backupMethod ? backupContact : methodKey === primaryMethod ? primaryContact : "";
+  return {
+    root,
+    type: payCard?.dataset.payType || "tip",
+    typeIcon: payCard?.dataset.payIcon || payCard?.querySelector(".pay-type-icon")?.textContent.trim() || "💰",
+    typeTitle: payCard?.dataset.payTitle || payCard?.querySelector(".text-lg")?.textContent.trim() || "Tip Payout",
+    taxTreatment: payCard?.dataset.taxTreatment || "Tip Ledger support",
+    approvalLimit: Number(payCard?.dataset.approvalLimit || 500),
+    evidenceRule: payCard?.dataset.evidenceRule || "Payment proof recommended",
+    workerName: worker?.dataset.workerName || "Worker",
+    workerType: worker?.dataset.workerType || "1099",
+    workerEmail: worker?.dataset.workerEmail || "",
+    primaryMethod,
+    primaryContact,
+    backupMethod,
+    backupContact,
+    methodKey,
+    methodText: `${quickPayMethodIcon(methodKey)} ${quickPayMethodText(methodKey)}`,
+    amount: moneyNumber(amountInput?.value || 0),
+    amountText: amountInput?.value || "",
+    source: sourceSelect?.value || "pos_tip",
+    sourceLabel: selectedSource?.textContent?.trim() || "Card tip from POS",
+    sourceEvidence: selectedSource?.dataset.evidence || "Source selected",
+    paymentDate: dateInput?.value || "",
+    memo: memoInput?.value?.trim() || "",
+    contact: contactInput?.value?.trim() || profileContact
+  };
+}
+function validateQuickPayState(state){
+  const errors = [];
+  const warnings = [];
+  if(!state.workerName || state.workerName === "Worker") errors.push("Select a worker.");
+  if(!state.amount || state.amount <= 0) errors.push("Enter a payment amount.");
+  if(!state.paymentDate) errors.push("Choose a payment date.");
+  if(!state.contact) errors.push(`Enter ${quickPayMethodFieldLabel(state.methodKey).toLowerCase()}.`);
+  if(state.memo.length < 8) errors.push("Add a short business purpose note.");
+  if(state.amount > state.approvalLimit) warnings.push(`Owner approval required above ${moneyText(state.approvalLimit)}.`);
+  if(/cash|check/i.test(state.methodKey) && !/receipt|drawer|check|proof|memo/i.test(state.memo)){
+    warnings.push("Attach or reference cash/check proof before CPA export.");
+  }
+  const evidenceStatus = errors.length ? "Missing required fields" : warnings.length ? `${state.sourceEvidence} · owner review` : state.sourceEvidence;
+  const riskStatus = errors.length ? "Blocked" : warnings.length ? "Review" : "Ready";
+  return {errors,warnings,evidenceStatus,riskStatus,canCreate:errors.length === 0};
+}
+function createQuickPayRecord(state, validation){
+  const id = `PAY-${Date.now().toString().slice(-6)}`;
+  return {
+    id,
+    worker: state.workerName,
+    workerType: state.workerType,
+    period: "Current",
+    amount: moneyText(state.amount),
+    method: state.methodText,
+    type: state.typeTitle,
+    source: state.sourceLabel,
+    date: state.paymentDate,
+    status: validation.warnings.length ? "Pending approval" : "Ready to send",
+    evidence: validation.evidenceStatus,
+    audit: `Audit queued: ${id} · ${state.workerName} · ${state.typeTitle} · ${moneyText(state.amount)}`
+  };
+}
+function quickPayRecordToPayoutRow(record){
+  return [record.id,record.worker,"NL-NEW",record.period,record.amount,record.method,record.type,record.status,record.evidence];
+}
+function persistQuickPayRecord(record){
+  try {
+    const key = "taxiq:quick-pay-records";
+    const existing = JSON.parse(window.sessionStorage?.getItem(key) || "[]");
+    window.sessionStorage?.setItem(key, JSON.stringify([record, ...existing].slice(0, 12)));
+  } catch {}
+}
+function hydrateQuickPayRecords(){
+  if(!data?.payouts) return;
+  try {
+    const records = JSON.parse(window.sessionStorage?.getItem("taxiq:quick-pay-records") || "[]");
+    records.slice().reverse().forEach(record=>{
+      if(record?.id && !data.payouts.some(row=>row[0] === record.id)){
+        data.payouts.unshift(quickPayRecordToPayoutRow(record));
+      }
+    });
+  } catch {}
+}
 function syncQuickPayWorkerMethod(root=document, worker){
   const scope = root.querySelector?.(".nexora-source") || document.querySelector(".nexora-source");
   if(!scope || !worker) return;
@@ -166,52 +273,62 @@ function updateQuickPayPreview(scope=document){
   if(!root) return;
   const preview = root.querySelector(".preview-card");
   if(!preview) return;
-  const payCard = root.querySelector(".pay-type-card.active");
-  const worker  = root.querySelector(".worker-item.active");
-  const method  = root.querySelector(".method-grid button.method-card.active") || root.querySelector(".method-grid .method-card.active");
-  const amountInput = root.querySelector(".source-input.amount");
-  const payIcon = payCard?.querySelector(".pay-type-icon")?.textContent.trim() || "💰";
-  const payTitle = payCard?.querySelector(".text-lg")?.textContent.trim() || "Tip Payout";
-  const workerName = worker?.dataset.workerName || worker?.querySelector(".text-sm")?.childNodes?.[0]?.textContent?.trim() || "Brian L.";
-  const methodKey = method?.dataset.method || worker?.dataset.primaryMethod || "zelle";
-  const methodText = `${quickPayMethodIcon(methodKey)} ${quickPayMethodText(methodKey)}`;
-  const primaryMethod = worker?.dataset.primaryMethod || "zelle";
-  const backupMethod = worker?.dataset.backupMethod || "venmo";
-  const activeContact = methodKey === backupMethod ? worker?.dataset.backupContact : methodKey === primaryMethod ? worker?.dataset.primaryContact : "";
-  const amount = moneyNumber(amountInput?.value || "$0");
-  const iconEl = preview.querySelector(".text-3xl");
-  const titleEl = preview.querySelector(".text-sm.font-black");
-  const nameEl = preview.querySelector(".rounded-lg.bg-slate-800");
+  const state = getQuickPayState(root);
+  const validation = validateQuickPayState(state);
+  const activeContact = state.methodKey === state.backupMethod ? state.backupContact : state.methodKey === state.primaryMethod ? state.primaryContact : "";
+  const iconEl = preview.querySelector("[data-preview-icon]");
+  const titleEl = preview.querySelector("[data-preview-title]");
+  const nameEl = preview.querySelector("[data-preview-worker]");
   const amountEl = preview.querySelector(".preview-amount");
-  const rows = preview.querySelectorAll(".preview-row strong");
   const profileTitle = root.querySelector("[data-worker-pay-title]");
   const primaryProfile = root.querySelector("[data-primary-profile]");
   const backupProfile = root.querySelector("[data-backup-profile]");
   const fieldLabel = root.querySelector("[data-payout-field-label]");
   const contactInput = root.querySelector("[data-payout-contact]");
-  const cta = preview.querySelector("button.source-button");
-  if(iconEl) iconEl.textContent = payIcon;
-  if(titleEl) titleEl.textContent = payTitle;
-  if(nameEl) nameEl.textContent = workerName;
-  if(amountEl) amountEl.textContent = moneyText(amount);
-  if(rows[0]) rows[0].textContent = methodText.toUpperCase();
-  if(profileTitle) profileTitle.textContent = `${quickPayMethodIcon(primaryMethod)} ${workerName.toUpperCase()} PAYMENT INFO (SELF-SETUP)`;
-  if(primaryProfile) primaryProfile.innerHTML = `<strong>${quickPayMethodIcon(primaryMethod)} ${quickPayMethodText(primaryMethod)}</strong> <span class="badge badge-green">PRIMARY</span> <span class="badge badge-green">Verified</span><br><small>${demoEscape(worker?.dataset.primaryContact || "")}</small>`;
-  if(backupProfile) backupProfile.innerHTML = `<strong>${quickPayMethodIcon(backupMethod)} ${quickPayMethodText(backupMethod)}</strong> <span class="badge badge-gray">BACKUP</span><br><small>${demoEscape(worker?.dataset.backupContact || "")}</small>`;
-  if(fieldLabel) fieldLabel.textContent = quickPayMethodFieldLabel(methodKey);
+  const createBtn = root.querySelector("[data-create-quick-pay]");
+  const previewCta = preview.querySelector("[data-preview-cta]");
+  const audit = root.querySelector("[data-quick-pay-audit]");
+  if(iconEl) iconEl.textContent = state.typeIcon;
+  if(titleEl) titleEl.textContent = state.typeTitle;
+  if(nameEl) nameEl.textContent = `${state.workerName} · ${state.workerType}`;
+  if(amountEl) amountEl.textContent = moneyText(state.amount);
+  const previewValues = {
+    "[data-preview-method]": state.methodText.toUpperCase(),
+    "[data-preview-date]": quickPayDisplayDate(state.paymentDate),
+    "[data-preview-source]": state.sourceLabel,
+    "[data-preview-tax-treatment]": state.taxTreatment,
+    "[data-preview-risk]": validation.riskStatus,
+    "[data-preview-evidence]": validation.evidenceStatus,
+    "[data-preview-memo]": state.memo || "No purpose note yet"
+  };
+  Object.entries(previewValues).forEach(([selector,value])=>{
+    const el = preview.querySelector(selector);
+    if(el) el.textContent = value;
+  });
+  preview.dataset.state = validation.riskStatus.toLowerCase();
+  if(profileTitle) profileTitle.textContent = `${quickPayMethodIcon(state.primaryMethod)} ${state.workerName.toUpperCase()} PAYMENT INFO (SELF-SETUP)`;
+  if(primaryProfile) primaryProfile.innerHTML = `<strong>${quickPayMethodIcon(state.primaryMethod)} ${quickPayMethodText(state.primaryMethod)}</strong> <span class="badge badge-green">PRIMARY</span> <span class="badge badge-green">Verified</span><br><small>${demoEscape(state.primaryContact || "")}</small>`;
+  if(backupProfile) backupProfile.innerHTML = `<strong>${quickPayMethodIcon(state.backupMethod)} ${quickPayMethodText(state.backupMethod)}</strong> <span class="badge badge-gray">BACKUP</span><br><small>${demoEscape(state.backupContact || "")}</small>`;
+  if(fieldLabel) fieldLabel.textContent = quickPayMethodFieldLabel(state.methodKey);
   if(contactInput && document.activeElement !== contactInput){
     contactInput.placeholder = activeContact || "Enter payment reference";
     contactInput.value = activeContact || "";
   }
-  if(cta){
-    cta.textContent = amount > 0 ? "Preview ready - use Create Payment Now" : "Enter amount to preview";
-    cta.classList.toggle("primary", amount > 0);
-    cta.disabled = amount <= 0;
-    if(amount > 0){
-      cta.dataset.actionToast = "Quick Pay preview checked. Use Create Payment Now to create the payment.";
-    } else {
-      delete cta.dataset.actionToast;
-    }
+  if(previewCta){
+    previewCta.textContent = validation.canCreate ? "Preview ready - create payment below" : validation.errors[0] || "Complete required fields";
+    previewCta.classList.toggle("primary", validation.canCreate);
+    previewCta.disabled = !validation.canCreate;
+  }
+  if(createBtn){
+    createBtn.disabled = !validation.canCreate;
+    createBtn.classList.toggle("is-disabled", !validation.canCreate);
+    createBtn.textContent = validation.canCreate ? `⚡ Create ${state.typeTitle} · ${moneyText(state.amount)}` : "Complete Quick Pay details";
+  }
+  if(audit){
+    const messages = [...validation.errors, ...validation.warnings];
+    audit.innerHTML = messages.length
+      ? messages.map(message=>`<div><span class="audit-dot ${validation.errors.includes(message) ? "red" : "orange"}"></span>${demoEscape(message)}</div>`).join("")
+      : `<div><span class="audit-dot green"></span>Ready to create ledger draft, payout audit event, and evidence task.</div>`;
   }
 }
 function appendAiMessage(thread, who, text){
@@ -776,7 +893,7 @@ function activateSourceTab(sourceTab, options={}){
     window.sessionStorage?.setItem(`taxiq:${currentPage}:tab`, sourceTab.dataset.tab);
   } catch {}
   if(foundPanel && options.updateHash !== false && window.history?.replaceState){
-    history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${encodeURIComponent(sourceTab.dataset.tab)}`);
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${encodeURIComponent(sourceTab.dataset.tab)}`);
   }
   if(options.announce !== false) toast("Opened tab: "+sourceTab.textContent.trim().replace(/\s+/g," "));
   return foundPanel;
@@ -1197,10 +1314,12 @@ function renderRuns(){
 /* ─── QUICK PAY ─── */
 function renderQuickPay(){
   const payTypes = [
-    ["💰","Tip Payout","Cash · Pool · Adjustment",true],
-    ["💼","Wage Payout","Payout · Advance · Adjustment",false],
-    ["🎁","Bonus","KPI · Holiday · Referral",false]
-  ].map(([icon,title,sub,active])=>`<button type="button" class="pay-type-card ${active ? "active" : ""}"><div><div class="pay-type-icon">${icon}</div><div class="text-lg font-black ${active ? "text-amber-400" : "text-slate-200"}">${title}</div><div class="mt-2 text-xs text-slate-500">${sub}</div></div></button>`).join("");
+    ["tip","💰","Tip Payout","Card, cash, or direct tips","Tip Ledger + 1099/W-2 support","Receipt or payment proof required",500,true],
+    ["wage","💼","Wage Payout","Advance, correction, or off-cycle pay","Payroll wage / withholding review","Payroll run or owner approval required",1000,false],
+    ["bonus","🎁","Bonus","KPI, holiday, referral, or retention","Bonus compensation / 1099 review","Bonus memo and approval required",750,false]
+  ].map(([key,icon,title,sub,taxTreatment,evidenceRule,approvalLimit,active])=>`<button type="button" class="pay-type-card ${active ? "active" : ""}" data-pay-type="${key}" data-pay-icon="${icon}" data-pay-title="${demoEscape(title)}" data-tax-treatment="${demoEscape(taxTreatment)}" data-evidence-rule="${demoEscape(evidenceRule)}" data-approval-limit="${approvalLimit}">
+    <div><div class="pay-type-icon">${icon}</div><div class="text-lg font-black">${title}</div><div class="mt-2 text-xs text-slate-500">${sub}</div><div class="pay-type-rule">${taxTreatment}</div></div>
+  </button>`).join("");
   const workers = [
     ["AT","Amy T.","1099","amy.t@gmail.com","","zelle","amy.t@gmail.com","venmo","@amytran-nails"],
     ["LP","Linda P.","1099","linda.p@gmail.com","blue","zelle","linda.p@gmail.com","cashapp","$lindapnails"],
@@ -1208,7 +1327,7 @@ function renderQuickPay(){
     ["SJ","Sarah J.","1099","sarah.j@gmail.com","pink","cashapp","$sarahj_nails","zelle","sarah.j@gmail.com"],
     ["BL","Brian L.","1099","brian.l@gmail.com","orange","venmo","@brianlnails","zelle","brian.l@gmail.com",true]
   ];
-  const workerCards = workers.map(([initials,name,type,email,color,primaryMethod,primaryContact,backupMethod,backupContact,active])=>`<button type="button" class="worker-item ${active ? "active" : ""}" data-worker-name="${demoEscape(name)}" data-primary-method="${primaryMethod}" data-primary-contact="${demoEscape(primaryContact)}" data-backup-method="${backupMethod}" data-backup-contact="${demoEscape(backupContact)}"><div class="avatar ${color || ""}">${initials}</div><div><div class="text-sm font-black text-slate-100">${name} <span class="badge ${type==="W2" ? "badge-blue" : "badge-purple"}">${type}</span></div><div class="text-xs text-slate-500">${email}</div></div><div class="pay-method-pill">${quickPayMethodIcon(primaryMethod)} ${quickPayMethodText(primaryMethod)} <span>✓</span></div></button>`).join("");
+  const workerCards = workers.map(([initials,name,type,email,color,primaryMethod,primaryContact,backupMethod,backupContact,active])=>`<button type="button" class="worker-item ${active ? "active" : ""}" data-worker-name="${demoEscape(name)}" data-worker-type="${type}" data-worker-email="${demoEscape(email)}" data-primary-method="${primaryMethod}" data-primary-contact="${demoEscape(primaryContact)}" data-backup-method="${backupMethod}" data-backup-contact="${demoEscape(backupContact)}"><div class="avatar ${color || ""}">${initials}</div><div><div class="text-sm font-black text-slate-100">${name} <span class="badge ${type==="W2" ? "badge-blue" : "badge-purple"}">${type}</span></div><div class="text-xs text-slate-500">${email}</div></div><div class="pay-method-pill">${quickPayMethodIcon(primaryMethod)} ${quickPayMethodText(primaryMethod)} <span>✓</span></div></button>`).join("");
   const methodButtons = [
     ["zelle","Zelle"],
     ["cash","Cash"],
@@ -1217,6 +1336,8 @@ function renderQuickPay(){
     ["check","Check"],
     ["bank","Bank/DD"]
   ].map(([key,label])=>`<button type="button" class="method-card ${key==="venmo" ? "active" : ""}" data-method="${key}">${quickPayMethodIcon(key)} ${label}</button>`).join("");
+  const payoutIcon = type => /bonus/i.test(type) ? "🎁" : /tip/i.test(type) ? "💰" : "💼";
+  const recentRows = (data.payouts || []).slice(0,4).map(p=>`<div class="recent-row"><span>${payoutIcon(p[6])}</span><div><strong>${demoEscape(p[6])} — ${demoEscape(p[7])}</strong><br><small class="gray">${demoEscape(p[1])} · ${demoEscape(p[3])} · ${demoEscape(p[5])} · ${demoEscape(p[8] || "Evidence pending")}</small></div><strong class="${/pending|review/i.test(p[7]) ? "orange" : "green"}">${demoEscape(p[4])}</strong></div>`).join("");
   return `<div class="nexora-source">
     <div class="source-hero">
       <div><h2 class="source-title">⚡ Quick Pay</h2><div class="source-subtitle">Create payments · Tips · Wages · Bonuses · Advances</div></div>
@@ -1242,10 +1363,10 @@ function renderQuickPay(){
         <div class="section-box">
           <div class="section-box-title">③ DETAILS</div>
           <div style="padding:16px;display:grid;gap:14px">
-            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Payment source</div><select class="source-input"><option>💳 Card tip from POS</option><option>Cash tip</option><option>Manual adjustment</option></select></label>
-            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Tip entry date</div><input class="source-input" value="06/28/2024"></label>
-            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Tip Amount ($)</div><input class="source-input amount" value="$ 150"></label>
-            <div class="amount-buttons">${["$10","$20","$30","$50","$100","$150","$200"].map(x=>`<button class="source-button">${x}</button>`).join("")}</div>
+            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Payment source</div><select class="source-input" data-source-select><option value="pos_tip" data-evidence="POS ticket A002 + receipt">💳 Card tip from POS</option><option value="cash_tip" data-evidence="Cash drawer receipt required">💵 Cash tip</option><option value="manual_adjustment" data-evidence="Owner note required">✏️ Manual adjustment</option><option value="payroll_correction" data-evidence="Payroll run reference required">🧾 Payroll correction</option></select></label>
+            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Payment date</div><input class="source-input" type="date" data-payment-date value="2026-07-02"></label>
+            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Amount</div><input class="source-input amount" data-payment-amount value="$150.00"></label>
+            <div class="amount-buttons">${["$10","$20","$30","$50","$100","$150","$200"].map(x=>`<button type="button" class="source-button" data-amount-chip="${x}">${x}</button>`).join("")}</div>
           </div>
         </div>
 
@@ -1266,32 +1387,41 @@ function renderQuickPay(){
 
         <div class="section-box">
           <div class="section-box-title">⑤ NOTES</div>
-          <div style="padding:16px"><textarea class="source-textarea" rows="3" placeholder="Payment reason (saved as proof)..."></textarea></div>
+          <div style="padding:16px"><textarea class="source-textarea" rows="3" data-payment-memo placeholder="Payment reason (saved as proof)...">Tip payout for Brian L. from POS ticket A002.</textarea></div>
         </div>
 
-        <button class="source-button primary" style="width:100%;height:54px;font-size:15px">⚡ Create Payment Now</button>
+        <button class="source-button primary" data-create-quick-pay style="width:100%;height:54px;font-size:15px">⚡ Create Payment Now</button>
       </div>
 
       <div>
         <div class="preview-card">
-          <div class="text-3xl">💰</div>
-          <div class="mt-2 text-sm font-black text-amber-400">Tip Payout</div>
+          <div class="text-3xl" data-preview-icon>💰</div>
+          <div class="mt-2 text-sm font-black text-amber-400" data-preview-title>Tip Payout</div>
           <div class="mt-4 text-left text-[10px] uppercase text-slate-500">For</div>
-          <div class="mt-1 rounded-lg bg-slate-800 p-4 text-left text-lg font-black text-slate-100">Brian L.</div>
+          <div class="mt-1 rounded-lg bg-slate-800 p-4 text-left text-lg font-black text-slate-100" data-preview-worker>Brian L. · 1099</div>
           <div class="mt-4 text-xs uppercase text-slate-600">Amount</div>
           <div class="preview-amount">$0.00</div>
-          <div class="preview-row"><span>Method</span><strong>🕊️ ZELLE</strong></div>
-          <div class="preview-row" style="margin-top:0"><span>Created date</span><strong>2024-06-28</strong></div>
-          <button class="source-button" style="width:100%;margin-top:14px;background:#1d2b49">Enter details to preview</button>
+          <div class="preview-row"><span>Method</span><strong data-preview-method>💜 VENMO</strong></div>
+          <div class="preview-row"><span>Payment date</span><strong data-preview-date>Jul 2, 2026</strong></div>
+          <div class="preview-row"><span>Source</span><strong data-preview-source>Card tip from POS</strong></div>
+          <div class="preview-row"><span>Tax treatment</span><strong data-preview-tax-treatment>Tip Ledger + 1099/W-2 support</strong></div>
+          <div class="preview-row"><span>Risk</span><strong data-preview-risk>Ready</strong></div>
+          <div class="preview-row"><span>Evidence</span><strong data-preview-evidence>Proof ready</strong></div>
+          <div class="preview-note"><span>Memo</span><strong data-preview-memo>Tip payout for Brian L. from POS ticket A002.</strong></div>
+          <button class="source-button" data-preview-cta style="width:100%;margin-top:14px;background:#1d2b49">Preview ready - create payment below</button>
+        </div>
+
+        <div class="section-box" style="margin-top:14px">
+          <div class="section-box-title">Audit & Ledger Readiness</div>
+          <div class="quick-pay-audit" data-quick-pay-audit>
+            <div><span class="audit-dot green"></span>Ready to create ledger draft, payout audit event, and evidence task.</div>
+          </div>
         </div>
 
         <div class="section-box" style="margin-top:14px">
           <div class="section-box-title">◉ Recent</div>
           <div class="recent-list" style="padding:0 16px">
-            <div class="recent-row"><span>💼</span><div><strong>Payout — Jun 22-28 2024</strong><br><small class="gray">Brian L. · 2024-06-28</small></div><strong class="blue">$1990</strong></div>
-            <div class="recent-row"><span>🎁</span><div><strong>Performance Bonus — June</strong><br><small class="gray">Amy T. · 2024-06-15</small></div><strong class="green">$200</strong></div>
-            <div class="recent-row"><span>💰</span><div><strong>Cash Tip Adjustment</strong><br><small class="gray">Linda P. · 2024-06-18</small></div><strong class="orange">$45</strong></div>
-            <div class="recent-row"><span>💼</span><div><strong>Salary Advance</strong><br><small class="gray">Kevin M. · 2024-06-10</small></div><strong class="blue">$300</strong></div>
+            ${recentRows}
           </div>
           <div style="padding:12px 16px;text-align:center"><a class="source-button" href="${pageHref("payouts")}" style="display:inline-flex;height:30px">View all payouts</a></div>
         </div>
@@ -4190,7 +4320,8 @@ document.addEventListener("click", event=>{
   const amountChip = event.target.closest(".amount-buttons .source-button");
   if(amountChip && currentPage === "quick-pay"){
     const amountInput = document.querySelector(".source-input.amount");
-    if(amountInput) amountInput.value = amountChip.textContent.trim();
+    amountChip.closest(".amount-buttons")?.querySelectorAll(".source-button").forEach(btn=>btn.classList.toggle("active", btn === amountChip));
+    if(amountInput) amountInput.value = amountChip.dataset.amountChip || amountChip.textContent.trim();
     updateQuickPayPreview();
     toast("Entered amount: "+amountChip.textContent.trim());
     return;
@@ -4205,20 +4336,26 @@ document.addEventListener("click", event=>{
     return;
   }
 
-  const quickCreate = event.target.closest("button.source-button.primary");
-  if(quickCreate && currentPage === "quick-pay" && quickCreate.textContent.includes("Create Payment")){
-    const amount = moneyNumber(document.querySelector(".source-input.amount")?.value || 0);
-    if(!amount){ toast("Enter an amount before creating the payment."); return; }
-    const worker = document.querySelector(".worker-item.active .text-sm")?.childNodes?.[0]?.textContent?.trim() || "Worker";
-    const type = document.querySelector(".pay-type-card.active .text-lg")?.textContent?.trim() || "Payment";
-    const method = (document.querySelector(".method-grid button.method-card.active") || document.querySelector(".method-grid .method-card.active"))?.textContent?.replace(/\s+/g," ").trim() || "Zelle";
+  const quickCreate = event.target.closest("[data-create-quick-pay]");
+  if(quickCreate && currentPage === "quick-pay"){
+    const state = getQuickPayState(document);
+    const validation = validateQuickPayState(state);
+    updateQuickPayPreview();
+    if(!validation.canCreate){
+      toast(validation.errors[0] || "Complete Quick Pay details before creating payment.");
+      return;
+    }
+    const record = createQuickPayRecord(state, validation);
     const recent = document.querySelector(".recent-list");
     const row = document.createElement("div");
     row.className = "recent-row";
-    row.innerHTML = `<span>⚡</span><div><strong>${demoEscape(type)} — just created</strong><br><small class="gray">${demoEscape(worker)} · ${new Date().toISOString().slice(0,10)} · ${demoEscape(method)}</small></div><strong class="green">${moneyText(amount)}</strong>`;
+    row.innerHTML = `<span>${state.typeIcon}</span><div><strong>${demoEscape(record.type)} — ${demoEscape(record.status)}</strong><br><small class="gray">${demoEscape(record.worker)} · ${quickPayDisplayDate(record.date)} · ${demoEscape(record.method)} · ${demoEscape(record.evidence)}</small></div><strong class="${validation.warnings.length ? "orange" : "green"}">${record.amount}</strong>`;
     recent?.prepend(row);
-    data.payouts?.unshift?.([`PAY-${Date.now().toString().slice(-5)}`,worker,"NL-NEW","Current",moneyText(amount),method,type,"Pending","Draft"]);
-    toast(`Created ${type} for ${worker}: ${moneyText(amount)}.`);
+    data.payouts?.unshift?.(quickPayRecordToPayoutRow(record));
+    persistQuickPayRecord(record);
+    const audit = document.querySelector("[data-quick-pay-audit]");
+    if(audit) audit.innerHTML = `<div><span class="audit-dot green"></span>${demoEscape(record.audit)}</div><div><span class="audit-dot ${validation.warnings.length ? "orange" : "green"}"></span>${demoEscape(record.evidence)} · ${demoEscape(record.status)}</div>`;
+    toast(`Created ${record.type} for ${record.worker}: ${record.amount}.`);
     return;
   }
 
@@ -4304,7 +4441,7 @@ document.addEventListener("click", event=>{
   }
 });
 document.addEventListener("input", event=>{
-  if(currentPage === "quick-pay" && event.target.closest(".source-input.amount")){
+  if(currentPage === "quick-pay" && event.target.closest(".source-input.amount,[data-payment-date],[data-payment-memo],[data-payout-contact]")){
     updateQuickPayPreview();
     return;
   }
@@ -4333,6 +4470,10 @@ document.addEventListener("keydown", event=>{
   event.target.closest(".section-box")?.querySelector("[data-ai-send]")?.click();
 });
 document.addEventListener("change", event=>{
+  if(currentPage === "quick-pay" && event.target.closest("[data-source-select],[data-payment-date]")){
+    updateQuickPayPreview();
+    return;
+  }
   const aiToggle = event.target.closest(".ai-toggle input");
   if(aiToggle){
     const row = aiToggle.closest(".flex");
@@ -4355,6 +4496,7 @@ function bootTaxIQ(){
   const ready = window.TaxIQDataReady || Promise.resolve(window.TaxIQMockData);
   ready.then(loadedData => {
     data = loadedData || window.TaxIQMockData;
+    hydrateQuickPayRecords();
     renderShell(data ? renderPage : renderDataLoadError);
   }).catch(error => {
     window.TaxIQDataLoadError = error;
