@@ -66,7 +66,12 @@ function row(cells, opts={}){
 function panel(title, body, actions=""){return `<div class="${ui.panel}"><div class="${ui.panelHead}"><h3 class="text-sm font-black text-slate-100">${title}</h3><div class="actions">${actions}</div></div>${body}</div>`;}
 function listItem(title,text,color="blue"){return `<div class="item flex items-start gap-3 rounded-lg border border-slate-800 bg-slate-950/60 p-3"><span class="mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${color==="green"?"bg-emerald-400":color==="yellow"?"bg-amber-400":color==="red"?"bg-rose-400":"bg-indigo-400"}"></span><div><div class="item-title text-xs font-black text-slate-100">${title}</div><div class="item-text mt-1 text-xs leading-relaxed text-slate-400">${text}</div></div></div>`;}
 function rowActions(...btns){return `<div class="flex gap-1 flex-nowrap">${btns.join("")}</div>`;}
-function actionBtn(label, modal){return modal ? `<button class="${ui.btn}" data-modal="${modal}">${label}</button>` : `<button class="${ui.btn}" data-toast="${label} queued.">${label}</button>`;}
+function actionBtn(label, modal){
+  if(modal) return `<button class="${ui.btn}" data-modal="${modal}">${label}</button>`;
+  if(/^download$/i.test(label)) return `<button class="${ui.btn}" data-export="current-row" data-export-format="csv">${label}</button>`;
+  if(/export/i.test(label)) return `<button class="${ui.btn}" data-export="current-table" data-export-format="csv">${label}</button>`;
+  return `<button class="${ui.btn}" data-toast="${label} queued.">${label}</button>`;
+}
 function filterBar(...selects){return `<div class="flex flex-wrap gap-2 mb-4">${selects.map(([label,opts])=>`<select class="form-control" style="width:auto;min-width:150px"><option>${label}</option>${opts.map(o=>`<option>${o}</option>`).join("")}</select>`).join("")}</div>`;}
 function barChart(items){
   const max = Math.max(...items.map(i=>i.value), 1);
@@ -119,6 +124,264 @@ function freeRouteMap(routeName="Salon to supply store"){
 }
 function demoEscape(value){
   return String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+function exportSlug(value){
+  return String(value || "taxiq-export").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"") || "taxiq-export";
+}
+function exportTimestamp(){
+  const now = new Date();
+  return [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2,"0"),
+    String(now.getDate()).padStart(2,"0"),
+    String(now.getHours()).padStart(2,"0") + String(now.getMinutes()).padStart(2,"0")
+  ].join("-");
+}
+function exportText(value){
+  const raw = String(value ?? "");
+  if(typeof document === "undefined") return raw.replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();
+  const el = document.createElement("div");
+  el.innerHTML = raw;
+  return (el.textContent || el.innerText || "").replace(/\s+/g," ").trim();
+}
+function csvEscape(value){
+  const text = exportText(value);
+  return /[",\n]/.test(text) ? `"${text.replace(/"/g,'""')}"` : text;
+}
+function toCsv(headers, rows){
+  return [headers, ...rows].map(line => line.map(csvEscape).join(",")).join("\n") + "\n";
+}
+function tableCellsToText(cells){
+  return Array.from(cells || []).map(cell => exportText(cell.textContent));
+}
+function findExportTable(trigger){
+  const rowTable = trigger?.closest?.("table");
+  if(rowTable) return rowTable;
+  const container = trigger?.closest?.(".panel,.section-box,.detail,.grid-2,.grid-3,.grid-4,.nexora-source,main") || document;
+  return container.querySelector?.("table") || document.querySelector("table");
+}
+function tableToCsv(tableEl){
+  const headers = tableCellsToText(tableEl?.querySelectorAll?.("thead th") || []);
+  const rows = Array.from(tableEl?.querySelectorAll?.("tbody tr") || []).map(tr => tableCellsToText(tr.querySelectorAll("td")));
+  return toCsv(headers, rows);
+}
+function rowToExportPayload(trigger){
+  const tableEl = trigger?.closest?.("table");
+  const tr = trigger?.closest?.("tr");
+  if(!tableEl || !tr) return null;
+  const headers = tableCellsToText(tableEl.querySelectorAll("thead th"));
+  const cells = tableCellsToText(tr.querySelectorAll("td"));
+  const actionIndex = headers.findIndex(header => /actions?/i.test(header));
+  const limit = actionIndex >= 0 ? actionIndex : cells.length;
+  return {
+    title: "Selected Record",
+    filename: `selected-record-${exportTimestamp()}.csv`,
+    mime: "text/csv;charset=utf-8",
+    content: toCsv(headers.slice(0, limit), [cells.slice(0, limit)])
+  };
+}
+function htmlReport(title, headers, rows){
+  const generated = new Date().toLocaleString("en-US");
+  return `<!doctype html>
+<html><head><meta charset="utf-8"><title>${demoEscape(title)}</title>
+<style>
+body{font-family:Inter,Arial,sans-serif;margin:32px;color:#0f172a}
+h1{font-size:22px;margin:0 0 4px}p{color:#475569;margin:0 0 20px}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #cbd5e1;padding:8px;text-align:left;vertical-align:top}
+th{background:#e2e8f0;text-transform:uppercase;font-size:10px;letter-spacing:.04em}
+</style></head><body><h1>${demoEscape(title)}</h1><p>Generated by Tax IQ on ${demoEscape(generated)}.</p>
+<table><thead><tr>${headers.map(h=>`<th>${demoEscape(exportText(h))}</th>`).join("")}</tr></thead>
+<tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${demoEscape(exportText(c))}</td>`).join("")}</tr>`).join("")}</tbody></table>
+</body></html>`;
+}
+function exportDefinitions(){
+  return {
+    "tax-ledger":{
+      title:"Tax Ledger Report",
+      filename:"tax-ledger-report",
+      headers:["Entry","Run","Employee","Jurisdiction","Type","Taxable","Employee Tax","Employer Tax","Hash"],
+      rows:()=>data?.ledger || []
+    },
+    "weekly-payroll":{
+      title:"Weekly Payroll Report",
+      filename:"weekly-payroll",
+      headers:["Employee","Worker Type","Pay Formula","Hours","Sales","Hourly Pay","Commission","Bonus","Tips","Take-home","Status"],
+      rows:()=>data?.weeklyPayroll || []
+    },
+    "forms":{
+      title:"Forms and Reports Package",
+      filename:"forms-reports-package",
+      headers:["Report","Period","Records","Source","Due","Status"],
+      rows:()=>data?.forms || []
+    },
+    "tax-1099":{
+      title:"1099 Worker Package",
+      filename:"1099-worker-package",
+      headers:["Worker","Type","Box 1a Total","Service Pay","Cash Tips","W-9","Status"],
+      rows:()=>data?.tax1099Workers || []
+    },
+    "employee-roster":{
+      title:"Employee Roster",
+      filename:"employee-roster",
+      headers:["Employee","ID","Dept","Residence","Work","TIN","W-4","Filing","Updated","Risk"],
+      rows:()=>data?.employees || []
+    },
+    "quality-report":{
+      title:"Data Quality Report",
+      filename:"data-quality-report",
+      headers:["Issue","Source","Severity","Owner","Count","Next Action","Open"],
+      rows:()=>data?.qualityIssues || []
+    },
+    "audit-log":{
+      title:"Audit Log Export",
+      filename:"audit-log",
+      headers:["Timestamp","Actor","Action","Resource Type","Resource ID","Detail"],
+      rows:()=>data?.auditLog || []
+    },
+    "compliance-checklist":{
+      title:"Compliance Checklist",
+      filename:"compliance-checklist",
+      headers:["Item","Owner","Status","Next Action"],
+      rows:()=>data?.complianceChecklist || []
+    },
+    "billing-invoices":{
+      title:"Billing Invoices",
+      filename:"billing-invoices",
+      headers:["Invoice","Period","Item","Amount","Status","Date"],
+      rows:()=>data?.invoices || []
+    },
+    "tip-ledger":{
+      title:"Tip Ledger Export",
+      filename:"tip-ledger",
+      headers:["ID","Date","Method","Amount","Service","Source","Qualified Status","Entered","Proof"],
+      rows:()=>data?.tips || []
+    },
+    "receipts":{
+      title:"OCR Vault Export",
+      filename:"ocr-vault",
+      headers:["Receipt","Vendor","Category","Total","Source","Status","Owner","Confidence","Tax","Receipt No.","Captured","File"],
+      rows:()=>data?.receipts || []
+    },
+    "mileage-log":{
+      title:"Mileage Log",
+      filename:"mileage-log",
+      headers:["Trip ID","Route","Miles","Purpose","Status"],
+      rows:()=>data?.trips || []
+    },
+    "payouts":{
+      title:"Payout Ledger",
+      filename:"payout-ledger",
+      headers:["Payout ID","Worker","Reference","Period","Amount","Method","Type","Status","Evidence"],
+      rows:()=>data?.payouts || []
+    },
+    "tax-estimate":{
+      title:"Tax Estimate Schedule",
+      filename:"tax-estimate-schedule",
+      headers:["Quarter","Gross","Withheld","Est. Tax","Amount Due","Status","Due Date"],
+      rows:()=>data?.taxEstimate?.quarters || []
+    }
+  };
+}
+function inferExportKind(trigger){
+  const text = `${trigger?.textContent || ""} ${trigger?.dataset?.toast || ""} ${trigger?.dataset?.actionToast || ""} ${currentPage || ""}`;
+  if(/weekly payroll/i.test(text) || currentPage === "weekly-payroll") return "weekly-payroll";
+  if(/1099|1096|nec|irs|zip/i.test(text) || currentPage === "tax-1099") return "tax-1099";
+  if(/tax ledger|ledger report/i.test(text) || currentPage === "ledger") return "tax-ledger";
+  if(/employee|roster|w-4/i.test(text) || currentPage === "employees") return "employee-roster";
+  if(/quality/i.test(text) || currentPage === "data-quality") return "quality-report";
+  if(/audit|log/i.test(text) || currentPage === "audit-log") return "audit-log";
+  if(/compliance|checklist/i.test(text) || currentPage === "compliance-review") return "compliance-checklist";
+  if(/invoice|billing/i.test(text) || currentPage === "billing") return "billing-invoices";
+  if(/tip/i.test(text) || currentPage === "tip-ledger") return "tip-ledger";
+  if(/receipt|ocr|vault/i.test(text) || currentPage === "ocr") return "receipts";
+  if(/mileage|gps/i.test(text) || currentPage === "gps") return "mileage-log";
+  if(/payout/i.test(text) || currentPage === "payouts") return "payouts";
+  if(/deposit|estimate/i.test(text) || currentPage === "tax-estimate") return "tax-estimate";
+  if(/form|report|package/i.test(text) || currentPage === "forms") return "forms";
+  return "current-table";
+}
+function inferExportFormat(trigger){
+  const text = `${trigger?.textContent || ""} ${trigger?.dataset?.toast || ""} ${trigger?.dataset?.actionToast || ""}`.toLowerCase();
+  if(text.includes("csv")) return "csv";
+  if(text.includes("json") || text.includes("zip")) return "json";
+  if(text.includes("pdf") || text.includes("report") || text.includes("package")) return "html";
+  return trigger?.dataset?.exportFormat || "csv";
+}
+function buildExportPayload(kind, format="csv", trigger=null){
+  if(kind === "current-row"){
+    const rowPayload = rowToExportPayload(trigger);
+    if(rowPayload) return rowPayload;
+    kind = "current-table";
+  }
+  if(kind === "current-table"){
+    const tableEl = findExportTable(trigger);
+    if(!tableEl) throw new Error("No table available to export.");
+    return {
+      title:"Visible Table Export",
+      filename:`visible-table-${exportTimestamp()}.csv`,
+      mime:"text/csv;charset=utf-8",
+      content:tableToCsv(tableEl)
+    };
+  }
+  const definition = exportDefinitions()[kind];
+  if(!definition) return buildExportPayload("current-table", format, trigger);
+  const headers = definition.headers;
+  const rows = (definition.rows() || []).map(row => Array.from(row).map(exportText));
+  const stamp = exportTimestamp();
+  const baseName = `${definition.filename}-${stamp}`;
+  if(format === "json"){
+    return {
+      title:definition.title,
+      filename:`${baseName}.json`,
+      mime:"application/json;charset=utf-8",
+      content:JSON.stringify({title:definition.title, generatedAt:new Date().toISOString(), rows:rows.map(row => Object.fromEntries(headers.map((h,i)=>[h,row[i] ?? ""])))}, null, 2)
+    };
+  }
+  if(format === "html"){
+    return {
+      title:definition.title,
+      filename:`${baseName}.html`,
+      mime:"text/html;charset=utf-8",
+      content:htmlReport(definition.title, headers, rows)
+    };
+  }
+  return {
+    title:definition.title,
+    filename:`${baseName}.csv`,
+    mime:"text/csv;charset=utf-8",
+    content:toCsv(headers, rows)
+  };
+}
+function downloadTextFile(filename, content, mime="text/plain;charset=utf-8"){
+  const blob = new Blob([content], { type:mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+function logExportAudit(payload){
+  const stamp = new Date().toISOString().slice(0,16).replace("T"," ");
+  const id = `export_${Date.now().toString(36)}`;
+  data?.auditLog?.unshift?.([stamp,"current_user","EXPORTED","report",id,`${payload.title} downloaded as ${payload.filename}.`]);
+}
+function handleExportAction(trigger, overrides={}){
+  const kind = overrides.kind || trigger?.dataset?.export || inferExportKind(trigger);
+  const format = overrides.format || trigger?.dataset?.exportFormat || inferExportFormat(trigger);
+  const payload = buildExportPayload(kind, format, trigger);
+  downloadTextFile(payload.filename, payload.content, payload.mime);
+  logExportAudit(payload);
+  toast(`Downloaded ${payload.filename}.`);
+  return payload;
+}
+function handleSmartToastAction(trigger){
+  const text = `${trigger?.textContent || ""} ${trigger?.dataset?.toast || ""} ${trigger?.dataset?.actionToast || ""}`;
+  if(!/download|export|report|csv|pdf|package|zip/i.test(text)) return false;
+  handleExportAction(trigger, { kind:inferExportKind(trigger), format:inferExportFormat(trigger) });
+  return true;
 }
 function quickPayMethodText(method){
   const labels = {
@@ -1282,7 +1545,7 @@ function renderDataQuality(){
     ["Evidence Gaps",String(evidenceCount),"Receipts, GPS, CPA requests","yellow"],
     ["Integration Gaps",String(integrationCount),"Connection or webhook failures","cyan"],
     ["CPA Ready Score","58%","Package not ready yet","blue"]
-  ].map(metric).join("")}</div>${filterBar(["All severity",["High","Medium"]],["All owners",["HR","Bookkeeper","Owner","Admin","Developer","CPA","Merchant","Tax Admin"]],["All sources",["Employees","OCR Vault","Connections","Webhooks","GPS Mileage","CPA Review","Jurisdictions"]])}${panel("Data Quality Center",table(["Issue","Source","Severity","Owner","Count","Next Action","Open"],issueRows),`<button class="btn primary" data-modal="data-quality-task">Create Cleanup Task</button> <button class="btn" data-toast="Quality report exported.">Export Quality Report</button>`)}<div class="grid-2" style="margin-top:14px">${panel("Readiness by Area",readiness)}${panel("Quality Rules",`<div class="panel-body list">${listItem("No strict payroll finalization with blocking tax profile gaps","TIN/W-4 and jurisdiction setup must be resolved or explicitly overridden with audit note.","red")}${listItem("No CPA package export with unresolved evidence requests","Missing receipt purpose, low OCR confidence, and payout proof gaps should be fixed before sharing.","yellow")}${listItem("No partner go-live with webhook dead letters","Endpoint URL, signing, retry, and dead-letter handling must be verified before partner launch.","blue")}${listItem("No mileage deduction without route and business purpose","Point A, point B, miles, vehicle, and business purpose are required for GPS export.","green")}</div>`)}</div>`;
+  ].map(metric).join("")}</div>${filterBar(["All severity",["High","Medium"]],["All owners",["HR","Bookkeeper","Owner","Admin","Developer","CPA","Merchant","Tax Admin"]],["All sources",["Employees","OCR Vault","Connections","Webhooks","GPS Mileage","CPA Review","Jurisdictions"]])}${panel("Data Quality Center",table(["Issue","Source","Severity","Owner","Count","Next Action","Open"],issueRows),`<button class="btn primary" data-modal="data-quality-task">Create Cleanup Task</button> <button class="btn" data-export="quality-report" data-export-format="csv">Export Quality Report</button>`)}<div class="grid-2" style="margin-top:14px">${panel("Readiness by Area",readiness)}${panel("Quality Rules",`<div class="panel-body list">${listItem("No strict payroll finalization with blocking tax profile gaps","TIN/W-4 and jurisdiction setup must be resolved or explicitly overridden with audit note.","red")}${listItem("No CPA package export with unresolved evidence requests","Missing receipt purpose, low OCR confidence, and payout proof gaps should be fixed before sharing.","yellow")}${listItem("No partner go-live with webhook dead letters","Endpoint URL, signing, retry, and dead-letter handling must be verified before partner launch.","blue")}${listItem("No mileage deduction without route and business purpose","Point A, point B, miles, vehicle, and business purpose are required for GPS export.","green")}</div>`)}</div>`;
 }
 
 /* ─── EMPLOYERS ─── */
@@ -1294,7 +1557,7 @@ function renderEmployers(){
 /* ─── EMPLOYEES ─── */
 function renderEmployees(){
   const empRows = data.employees.map(e=>row([e[0],`<span class="mono">${e[1]}</span>`,e[2],e[3],e[4],status(e[5]),status(e[6]),e[7],e[8],e[9],rowActions(`<a class="${ui.btn}" href="${pageHref("employee-profile")}">View</a>`,actionBtn("Verify","tin-verification"),actionBtn("Request W-4",""))]));
-  return `${filterBar(["All TIN statuses",["Verified","Pending","Missing"]],["All W-4 years",["2026","2024","Missing"]],["All departments",["Finance","Engineering","Operations","Sales","Support"]])}${panel("Employees",table(["Employee","ID","Dept","Residence","Work","TIN","W-4","Filing","Updated","Risk","Actions"],empRows),`<button class="btn primary" data-modal="employee">Invite Employee</button> <button class="btn" data-toast="Employee roster exported.">Export Roster</button>`)}<div class="pagination-bar"><span>Showing 1-5 of 142 employees</span><div><button class="${ui.btn}" disabled>Previous</button><button class="${ui.btn}" data-toast="Already showing page 1 of the employee demo roster.">Page 1</button><button class="${ui.btn}" data-toast="Next employee page queued for backend pagination.">Next</button></div></div>`;
+  return `${filterBar(["All TIN statuses",["Verified","Pending","Missing"]],["All W-4 years",["2026","2024","Missing"]],["All departments",["Finance","Engineering","Operations","Sales","Support"]])}${panel("Employees",table(["Employee","ID","Dept","Residence","Work","TIN","W-4","Filing","Updated","Risk","Actions"],empRows),`<button class="btn primary" data-modal="employee">Invite Employee</button> <button class="btn" data-export="employee-roster" data-export-format="csv">Export Roster</button>`)}<div class="pagination-bar"><span>Showing 1-5 of 142 employees</span><div><button class="${ui.btn}" disabled>Previous</button><button class="${ui.btn}" data-toast="Already showing page 1 of the employee demo roster.">Page 1</button><button class="${ui.btn}" data-toast="Next employee page queued for backend pagination.">Next</button></div></div>`;
 }
 
 /* ─── EMPLOYEE PROFILE ─── */
@@ -1562,8 +1825,8 @@ function renderWeeklyPayroll(){
       <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
         📊 Detailed Payroll
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="badge badge-gray" data-toast="Weekly payroll PDF export queued.">📄 Export PDF</button>
-          <button class="badge badge-gray" data-toast="Weekly payroll CSV export queued.">📊 Export CSV</button>
+          <button class="badge badge-gray" data-export="weekly-payroll" data-export-format="html">📄 Export Report</button>
+          <button class="badge badge-gray" data-export="weekly-payroll" data-export-format="csv">📊 Export CSV</button>
           <a class="badge badge-purple" href="${pageHref("quick-pay")}">⚡ Pay All ($7,325.69)</a>
         </div>
       </div>
@@ -1783,7 +2046,7 @@ function renderLedger(){
   const taxable = data.ledger.reduce((sum,l)=>sum + moneyNumber(l[5]),0);
   const employeeTax = data.ledger.reduce((sum,l)=>sum + moneyNumber(l[6]),0);
   const employerTax = data.ledger.reduce((sum,l)=>sum + moneyNumber(l[7]),0);
-  return `${filterBar(["All jurisdictions",["US-FED","US-TX","US-CA","US-NY"]],["All types",["federal_income_tax","social_security","medicare","ca_state_income_tax","suta_employer_tax"]],["All runs",["pr_2026_06_15","pr_2026_06_01","pr_2026_05_15","pr_bonus_q2"]])}<div class="grid-3" style="margin-bottom:14px">${[["Taxable Wages",moneyText(taxable),"Across visible ledger","green"],["Employee Tax",moneyText(employeeTax),"Withholding entries","cyan"],["Employer Tax",moneyText(employerTax),"FICA/SUTA entries","yellow"]].map(metric).join("")}</div>${panel("Tax Ledger",table(["Entry","Run","Employee","Jurisdiction","Type","Taxable","Employee Tax","Employer Tax","Hash","Action"],ledRows),`<button class="btn primary" data-modal="report">Download Report</button>`)}`;
+  return `${filterBar(["All jurisdictions",["US-FED","US-TX","US-CA","US-NY"]],["All types",["federal_income_tax","social_security","medicare","ca_state_income_tax","suta_employer_tax"]],["All runs",["pr_2026_06_15","pr_2026_06_01","pr_2026_05_15","pr_bonus_q2"]])}<div class="grid-3" style="margin-bottom:14px">${[["Taxable Wages",moneyText(taxable),"Across visible ledger","green"],["Employee Tax",moneyText(employeeTax),"Withholding entries","cyan"],["Employer Tax",moneyText(employerTax),"FICA/SUTA entries","yellow"]].map(metric).join("")}</div>${panel("Tax Ledger",table(["Entry","Run","Employee","Jurisdiction","Type","Taxable","Employee Tax","Employer Tax","Hash","Action"],ledRows),`<button class="btn primary" data-export="tax-ledger" data-export-format="csv">Download CSV</button> <button class="btn" data-export="tax-ledger" data-export-format="html">Report HTML</button>`)}`;
 }
 
 /* ─── EXCEPTIONS ─── */
@@ -1801,12 +2064,12 @@ function renderJurisdictions(){
 /* ─── FORMS & REPORTS ─── */
 function renderForms(){
   const formRows = data.forms.map(f=>row([f[0],f[1],f[2],f[3],f[4],status(f[5]),rowActions(actionBtn("Preview","preview-form"),actionBtn("Share","share-form"),actionBtn("Download",""),actionBtn("Archive",""))]));
-  return `${filterBar(["All types",["W-2","1099","941","940","SUTA"]],["All periods",["YTD 2026","Q2 2026"]],["All statuses",["Ready","Draft","Needs Review"]])}<div class="grid-2" style="margin-bottom:14px">${contractor1099ReadinessPanel()}${panel("1099 / W-2 Tax Center Checklist",`<div class="panel-body list">${listItem("Completed before PDF","W-9 on file, TIN/name/address verified, contractor classification reviewed, YTD payout rollup checked.","green")}${listItem("Before filing","Generate and review 1099-NEC PDFs, reconcile Box 1a totals, confirm state boxes if needed, then CPA/merchant approval.","yellow")}${listItem("Recipient delivery","Email/download statements for workers and log delivery status in Audit Log.","blue")}${listItem("IRS e-file readiness","If filing information returns electronically, validate IRIS/FIRE workflow, payer TIN, contact, and correction process.","red")}</div>`,`<a class="btn" href="${pageHref("tax-1099")}">Open Tax Center</a>`)}</div>${panel("Forms & Reports",table(["Report","Period","Records","Source","Due","Status","Actions"],formRows),`<button class="btn primary" data-modal="report">Generate Package</button>`)}`;
+  return `${filterBar(["All types",["W-2","1099","941","940","SUTA"]],["All periods",["YTD 2026","Q2 2026"]],["All statuses",["Ready","Draft","Needs Review"]])}<div class="grid-2" style="margin-bottom:14px">${contractor1099ReadinessPanel()}${panel("1099 / W-2 Tax Center Checklist",`<div class="panel-body list">${listItem("Completed before PDF","W-9 on file, TIN/name/address verified, contractor classification reviewed, YTD payout rollup checked.","green")}${listItem("Before filing","Generate and review 1099-NEC PDFs, reconcile Box 1a totals, confirm state boxes if needed, then CPA/merchant approval.","yellow")}${listItem("Recipient delivery","Email/download statements for workers and log delivery status in Audit Log.","blue")}${listItem("IRS e-file readiness","If filing information returns electronically, validate IRIS/FIRE workflow, payer TIN, contact, and correction process.","red")}</div>`,`<a class="btn" href="${pageHref("tax-1099")}">Open Tax Center</a>`)}</div>${panel("Forms & Reports",table(["Report","Period","Records","Source","Due","Status","Actions"],formRows),`<button class="btn primary" data-export="forms" data-export-format="html">Generate Package</button> <button class="btn" data-export="forms" data-export-format="csv">Export CSV</button>`)}`;
 }
 
 /* ─── TAX CENTER 1099/W-2 ─── */
 function renderTax1099(){
-  const tax1099Actions = worker => `<span class="tax-action-row"><button class="text-link" data-modal="preview-form" data-ctx-id="${demoEscape(worker)}">Preview</button><button class="text-link" data-modal="print-1099-nec" data-ctx-id="${demoEscape(worker)}">Print NEC</button><button class="text-link" data-toast="1099-NEC PDF queued for ${demoEscape(worker)}.">PDF</button><button class="text-link" data-modal="email-1099-nec" data-ctx-id="${demoEscape(worker)}">Email</button><button class="text-link" data-toast="IRS e-file queued for ${demoEscape(worker)} after merchant approval.">IRS</button></span>`;
+  const tax1099Actions = worker => `<span class="tax-action-row"><button class="text-link" data-modal="preview-form" data-ctx-id="${demoEscape(worker)}">Preview</button><button class="text-link" data-modal="print-1099-nec" data-ctx-id="${demoEscape(worker)}">Print NEC</button><button class="text-link" data-export="current-row" data-export-format="csv">CSV</button><button class="text-link" data-modal="email-1099-nec" data-ctx-id="${demoEscape(worker)}">Email</button><button class="text-link" data-toast="IRS e-file queued for ${demoEscape(worker)} after merchant approval.">IRS</button></span>`;
   const necWorkers = ["Amy T.","Linda P.","Sarah J.","Brian L."].map(irs1099NecRecord);
   const necWorkerRows = necWorkers.map(w=>{
     const workerEmail = workerEmailFromName(w.workerName);
@@ -1844,9 +2107,9 @@ function renderTax1099(){
         📋 IRS Form 1096 — Annual Summary · Tax Year 2026
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="badge badge-green" data-modal="print-1099-nec" data-ctx-id="Amy T.">🖨️ Print 1099-NEC</button>
-          <button class="badge badge-purple" data-toast="Form 1096 PDF generation queued.">📄 Create Form 1096 PDF</button>
+          <button class="badge badge-purple" data-export="tax-1099" data-export-format="html">📄 Create 1096 Report</button>
           <button class="badge badge-blue" data-toast="IRS batch e-file queued after merchant approval.">📤 E-file All → IRS</button>
-          <button class="badge badge-gray" data-toast="1099 ZIP export queued.">📦 Export ZIP (4 files)</button>
+          <button class="badge badge-gray" data-export="tax-1099" data-export-format="json">📦 Export Package JSON</button>
           <button class="badge badge-gray" data-modal="email-1099-batch">📧 Email all workers</button>
         </div>
       </div>
@@ -2013,7 +2276,7 @@ function renderOcr(){
     ),`<button class="btn" data-toast="Processing queue refreshed.">Refresh</button>`) : ""}
     ${panel("Receipt Vault — AI OCR",
       table(["ID","Vendor","Category","Amount","Source","Confidence","Tax","Status","Owner","Actions"],vaultRows),
-      `<button class="btn primary" data-modal="receipt">Capture Receipt</button> <button class="btn" data-modal="ocr-batch-approve">Approve High Confidence</button> <button class="btn" data-toast="Vault exported to CPA package.">Export to CPA</button>`
+      `<button class="btn primary" data-modal="receipt">Capture Receipt</button> <button class="btn" data-modal="ocr-batch-approve">Approve High Confidence</button> <button class="btn" data-export="receipts" data-export-format="csv">Export to CPA</button>`
     )}
     <div class="grid-2" style="margin-top:14px">
       ${panel("OCR Extraction Fields",table(["Field","Extracted From","Confidence Target","Required"],[
@@ -2083,7 +2346,7 @@ function renderGps(){
     row(["Temporary assignment","Generally one year or less; indefinite work assignment is not auto-deductible.","Route to CPA if expectation changes."],{wrap:[1,2]}),
     row(["Ordinary and necessary","Expense must be common/helpful for business, not personal, lavish, or extravagant.","Owner approval required."],{wrap:[1,2]})
   ];
-  const mileageTrackerPanel = panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Est. Deduction","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button> <button class="btn" data-toast="Mileage export queued for CPA review.">Export Mileage Log</button>`);
+  const mileageTrackerPanel = panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Est. Deduction","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button> <button class="btn" data-export="mileage-log" data-export-format="csv">Export Mileage Log</button>`);
   const mileageDataPanel = panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence and distance calculation.","When mileage is claimed"],["Point A → Point B route","Saves the route when user presses Stop at destination.","Yes"],["Date/time + tax year","Locks the correct IRS mileage rate version.","Yes"],["Business purpose","Explains deduction relevance.","Yes"],["Business/personal classification","Prevents personal or commute-like trips from auto-counting.","Yes"],["Vehicle profile","Supports owner/worker mileage records and method choice.","Recommended"],["Parking/tolls","Separately deductible when business-related; not part of cents-per-mile amount.","Optional"]].map(r=>row(r,{wrap:1}))));
   return `<div class="grid-4" style="margin-bottom:14px">${[[ "Trips",String(data.trips.length),`${candidateCount} candidates · ${policyCount} review`,"green"],["Eligible Miles",eligibleMiles,`${reviewMiles} mi held for CPA review`,"cyan"],["2026 IRS Rate",`${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢/mi`,`Effective ${IRS_MILEAGE_2026.effective}`,"yellow"],["Est. Deduction",deductionEstimate,"Eligible miles only","red"]].map(metric).join("")}</div>${activePanel}${mileageTrackerPanel}<div class="notice" style="margin-bottom:14px"><strong>2026 U.S. business mileage:</strong> Tax IQ estimates eligible business trips at ${(IRS_MILEAGE_2026.business * 100).toFixed(1)} cents per mile. Standard mileage is optional; owner/CPA can choose actual expenses instead when eligible.</div><div class="grid-2" style="margin-bottom:14px">${panel("Topic 511 Travel Expense Template",table(["Expense Group","What To Capture","Proof"],travelExpenseRows),`<button class="btn primary" data-modal="travel-expense-template">Open Template</button>`)}${panel("Away From Tax Home Gate",table(["Rule","Topic 511 Test","Tax IQ Action"],travelGateRows),`<button class="btn" data-modal="travel-expense-template">Create Worksheet</button>`)}</div><div class="grid-2" style="margin-bottom:14px">${panel("Route Preview",`<div class="panel-body">${freeRouteMap("Salon to supply store")}<div class="sub">Free OpenStreetMap preview for a saved point A → point B business route. Production should store user consent, GPS coordinates, route source, tax year rate, and CPA review status.</div></div>`)}${panel("IRS 2026 Mileage Rates",table(["Use","2026 Rate","How Tax IQ Applies It"],rateRows),`<button class="btn" data-modal="mileage-rules">View Rules</button>`)}</div><div class="grid-2" style="margin-bottom:14px">${panel("Deduction Qualification",table(["Rule","App Gate","Owner/CPA Note"],qualificationRows))}${panel("Mileage Policy Notes",`<div class="panel-body list">${listItem("Business purpose required","Every trip must explain why it was business related before export.","green")}${listItem("Commute-like routes need CPA review","Home to regular workplace is held out of the automatic estimate until reviewed.","yellow")}${listItem("Rate versioning","Saved trips store the tax year and mileage rate used for the estimate.","blue")}${listItem("Employee unreimbursed travel warning","Unreimbursed employee travel is generally not auto-deducted; route to CPA review when worker type is W-2.","red")}</div>`)}</div>${mileageDataPanel}`;
 }
@@ -2097,7 +2360,7 @@ function renderCpa(){
 /* ─── TIP LEDGER ─── */
 function renderTipLedger(){
   const tipRows = data.tips.map(t=>row([`<span class="mono">${t[0]}</span>`,t[1],t[2],t[3],t[4],t[5],status(t[6]),t[7],t[8],rowActions(actionBtn("Detail","tip-detail"),actionBtn("Edit","edit-tip"),actionBtn("Delete","delete-tip"))]));
-  return `<div class="notice" style="margin-bottom:14px">Tax IQ is a record keeping and reporting tool, not legal or tax advice. Eligibility, final deduction amount, and tax forms must be confirmed by a licensed tax professional.</div><div class="grid-4" style="margin-bottom:14px">${[["Today's Tips","$75.00","Cash + Zelle — Jun 24","green"],["Month-to-Date","$215.00","Jun 2026 tracked","cyan"],["Year-to-Date","$1,850.00","Tax year 2026","yellow"],["$25K Cap Used","7.4%","$1,850 of $25,000","red"]].map(metric).join("")}</div>${filterBar(["All methods",["Cash","Zelle","Venmo","Cash App","Card/POS","QR","Other"]],["All sources",["CASH","DIRECT","POS_OWNER_PAID"]],["All statuses",["LIKELY_QUALIFIED","NEEDS_REVIEW","NOT_QUALIFIED"]])}${panel("Tip Ledger — Tax Year 2026",table(["ID","Date","Method","Amount","Service","Source","Qualified Status","Entered","Proof","Actions"],tipRows),`<button class="btn primary" data-modal="add-tip">Add Tip</button> <button class="btn" data-modal="report">Export CPA Package</button>`)}<div class="grid-2" style="margin-top:14px">${panel("YTD by Method",table(["Method","Total","Tips","Avg","Status"],[row(["Cash","$625.00","8","$78.13",status("LIKELY_QUALIFIED")]),row(["Zelle","$480.00","6","$80.00",status("LIKELY_QUALIFIED")]),row(["Card/POS","$415.00","5","$83.00",status("LIKELY_QUALIFIED")]),row(["Venmo","$210.00","4","$52.50",status("NEEDS_REVIEW")]),row(["Cash App","$120.00","2","$60.00",status("LIKELY_QUALIFIED")])]))}${panel("Qualified Status Breakdown",`<div class="panel-body list">${listItem("Likely Qualified — $1,640 (88.6%)","Voluntary, tipped occupation, proof attached or payment method confirmed.","green")}${listItem("Needs Review — $210 (11.4%)","Venmo entries missing occupation confirmation. Ask CPA before claiming deduction.","yellow")}${listItem("Cap Progress","$1,850 of $25,000 federal limit used. MAGI phase-out may apply above $150K single / $300K joint.","blue")}</div>`,`<button class="btn" data-modal="report">View Yearly Report</button>`)}</div>`;
+  return `<div class="notice" style="margin-bottom:14px">Tax IQ is a record keeping and reporting tool, not legal or tax advice. Eligibility, final deduction amount, and tax forms must be confirmed by a licensed tax professional.</div><div class="grid-4" style="margin-bottom:14px">${[["Today's Tips","$75.00","Cash + Zelle — Jun 24","green"],["Month-to-Date","$215.00","Jun 2026 tracked","cyan"],["Year-to-Date","$1,850.00","Tax year 2026","yellow"],["$25K Cap Used","7.4%","$1,850 of $25,000","red"]].map(metric).join("")}</div>${filterBar(["All methods",["Cash","Zelle","Venmo","Cash App","Card/POS","QR","Other"]],["All sources",["CASH","DIRECT","POS_OWNER_PAID"]],["All statuses",["LIKELY_QUALIFIED","NEEDS_REVIEW","NOT_QUALIFIED"]])}${panel("Tip Ledger — Tax Year 2026",table(["ID","Date","Method","Amount","Service","Source","Qualified Status","Entered","Proof","Actions"],tipRows),`<button class="btn primary" data-modal="add-tip">Add Tip</button> <button class="btn" data-export="tip-ledger" data-export-format="csv">Export CPA Package</button>`)}<div class="grid-2" style="margin-top:14px">${panel("YTD by Method",table(["Method","Total","Tips","Avg","Status"],[row(["Cash","$625.00","8","$78.13",status("LIKELY_QUALIFIED")]),row(["Zelle","$480.00","6","$80.00",status("LIKELY_QUALIFIED")]),row(["Card/POS","$415.00","5","$83.00",status("LIKELY_QUALIFIED")]),row(["Venmo","$210.00","4","$52.50",status("NEEDS_REVIEW")]),row(["Cash App","$120.00","2","$60.00",status("LIKELY_QUALIFIED")])]))}${panel("Qualified Status Breakdown",`<div class="panel-body list">${listItem("Likely Qualified — $1,640 (88.6%)","Voluntary, tipped occupation, proof attached or payment method confirmed.","green")}${listItem("Needs Review — $210 (11.4%)","Venmo entries missing occupation confirmation. Ask CPA before claiming deduction.","yellow")}${listItem("Cap Progress","$1,850 of $25,000 federal limit used. MAGI phase-out may apply above $150K single / $300K joint.","blue")}</div>`,`<button class="btn" data-export="tip-ledger" data-export-format="html">View Yearly Report</button>`)}</div>`;
 }
 
 /* ─── TAX ESTIMATE ─── */
@@ -2105,7 +2368,7 @@ function renderTaxEstimate(){
   const d = data.taxEstimate;
   const qRows = d.quarters.map(q=>row([q[0],q[1],q[2],q[3],q[4],status(q[5]),q[6]]));
   const jRows = d.byJurisdiction.map(j=>row([j[0],j[1],j[2],j[3],j[4],j[5],status(j[6])],{wrap:1}));
-  return `<div class="grid-4" style="margin-bottom:14px">${[["Est. Annual Tax","$840,000","Federal + state combined","red"],["YTD Withheld","$193,300","Through Jun 2026","green"],["Estimated Balance","$646,700","Subject to withholding changes","yellow"],["Next Deposit","Jun 24, 2026","Federal semiweekly","cyan"]].map(metric).join("")}</div><div class="notice" style="margin-bottom:14px">Estimates are based on current payroll data and may change. Final tax liability must be confirmed by a licensed tax professional or CPA.</div><div class="grid-2" style="margin-bottom:14px">${usTaxReadinessPanel()}${panel("Before Paying or Filing",`<div class="panel-body list">${listItem("Match deposits to payroll ledger","Federal, state, and SUTA balances should tie back to payroll run tax ledger entries.","green")}${listItem("Check state/local footprint","Work state, residence state, business location, and SUTA registrations can change liability.","yellow")}${listItem("Confirm evidence-dependent deductions","Tips, mileage, receipts, and payouts should be reviewed before relying on estimates.","blue")}${listItem("Route professional decisions to CPA","Tax IQ prepares records and highlights risk; final filing decisions need CPA/bookkeeper review.","red")}</div>`,`<a class="btn primary" href="${pageHref("cpa")}">CPA Review</a>`)}</div><div class="grid-2">${panel("Quarterly Estimate",table(["Quarter","Gross","Withheld","Est. Tax","Amount Due","Status","Due Date"],qRows))}${panel("By Jurisdiction",table(["ID","Name","Est. Tax","Deposited","Balance","Schedule","Risk"],jRows))}</div><div class="grid-2" style="margin-top:14px">${panel("Deposit Schedule Alerts",`<div class="panel-body list">${listItem("Federal semiweekly — Jun 24, 2026","$54,621 employee tax due. Ensure account funded by deposit date.","red")}${listItem("Texas SUTA — Jul 31, 2026","Quarterly SUTA payment. Verify wage base and rate.","yellow")}${listItem("California semiweekly — Jun 24, 2026","$10,122 CA withholding due.","yellow")}${listItem("New York monthly — Jul 15, 2026","$4,603 NY withholding due.","blue")}</div>`,`<button class="btn" data-modal="report">Export Deposit Schedule</button>`)}${panel("Actions",`<div class="panel-body list">${listItem("Connect CPA for final estimate","CPA can review estimate assumptions and adjust for deductions, credits, and filing status.","green")}${listItem("Update withholding","If estimate is significantly off, update W-4 instructions or employer withholding.","yellow")}</div>`,`<button class="btn primary" data-modal="cpa">Connect CPA</button>`)}</div>`;
+  return `<div class="grid-4" style="margin-bottom:14px">${[["Est. Annual Tax","$840,000","Federal + state combined","red"],["YTD Withheld","$193,300","Through Jun 2026","green"],["Estimated Balance","$646,700","Subject to withholding changes","yellow"],["Next Deposit","Jun 24, 2026","Federal semiweekly","cyan"]].map(metric).join("")}</div><div class="notice" style="margin-bottom:14px">Estimates are based on current payroll data and may change. Final tax liability must be confirmed by a licensed tax professional or CPA.</div><div class="grid-2" style="margin-bottom:14px">${usTaxReadinessPanel()}${panel("Before Paying or Filing",`<div class="panel-body list">${listItem("Match deposits to payroll ledger","Federal, state, and SUTA balances should tie back to payroll run tax ledger entries.","green")}${listItem("Check state/local footprint","Work state, residence state, business location, and SUTA registrations can change liability.","yellow")}${listItem("Confirm evidence-dependent deductions","Tips, mileage, receipts, and payouts should be reviewed before relying on estimates.","blue")}${listItem("Route professional decisions to CPA","Tax IQ prepares records and highlights risk; final filing decisions need CPA/bookkeeper review.","red")}</div>`,`<a class="btn primary" href="${pageHref("cpa")}">CPA Review</a>`)}</div><div class="grid-2">${panel("Quarterly Estimate",table(["Quarter","Gross","Withheld","Est. Tax","Amount Due","Status","Due Date"],qRows))}${panel("By Jurisdiction",table(["ID","Name","Est. Tax","Deposited","Balance","Schedule","Risk"],jRows))}</div><div class="grid-2" style="margin-top:14px">${panel("Deposit Schedule Alerts",`<div class="panel-body list">${listItem("Federal semiweekly — Jun 24, 2026","$54,621 employee tax due. Ensure account funded by deposit date.","red")}${listItem("Texas SUTA — Jul 31, 2026","Quarterly SUTA payment. Verify wage base and rate.","yellow")}${listItem("California semiweekly — Jun 24, 2026","$10,122 CA withholding due.","yellow")}${listItem("New York monthly — Jul 15, 2026","$4,603 NY withholding due.","blue")}</div>`,`<button class="btn" data-export="tax-estimate" data-export-format="csv">Export Deposit Schedule</button>`)}${panel("Actions",`<div class="panel-body list">${listItem("Connect CPA for final estimate","CPA can review estimate assumptions and adjust for deductions, credits, and filing status.","green")}${listItem("Update withholding","If estimate is significantly off, update W-4 instructions or employer withholding.","yellow")}</div>`,`<button class="btn primary" data-modal="cpa">Connect CPA</button>`)}</div>`;
 }
 
 /* ─── WEBHOOKS ─── */
@@ -2138,7 +2401,7 @@ function renderComplianceReview(){
     ["Disclaimers","Covered","Tax Estimate, Tips, GPS, AI CFO","green"],
     ["PII Controls","Review","TIN/SSN/export policy needed","yellow"],
     ["Legal Review","Required","Before real customers","cyan"]
-  ].map(metric).join("")}</div>${panel("Compliance & Legal Checklist",table(["Item","Owner","Status","Next Action","Actions"],checklistRows),`<button class="btn primary" data-modal="compliance-task">Add Compliance Task</button> <button class="btn" data-toast="Compliance checklist exported.">Export Checklist</button>`)}<div class="grid-2" style="margin-top:14px">${panel("Production Go-live Gate",table(["Area","Owner","Decision / Requirement","Status"],goLiveRows))}${panel("Risk Wording Rules",`<div class="panel-body list">${listItem("Do not promise tax savings","Use estimate, likely, candidate, needs CPA review, and based on current records instead of guaranteed refund or guaranteed deduction.","red")}${listItem("Separate software from professional advice","Tax IQ organizes records and highlights issues; CPA/bookkeeper/legal counsel makes final professional determination.","yellow")}${listItem("Show source and effective date","Government rule watch must identify official source, effective date, affected state, and action owner.","blue")}${listItem("Require merchant approval for exports and CPA work","CPA cost, profile link access, PII export, and final package share must be explicitly approved and logged.","green")}</div>`)}</div><div class="grid-2" style="margin-top:14px">${panel("Disclaimer Placement",table(["Feature","Required Message","Status"],[
+  ].map(metric).join("")}</div>${panel("Compliance & Legal Checklist",table(["Item","Owner","Status","Next Action","Actions"],checklistRows),`<button class="btn primary" data-modal="compliance-task">Add Compliance Task</button> <button class="btn" data-export="compliance-checklist" data-export-format="csv">Export Checklist</button>`)}<div class="grid-2" style="margin-top:14px">${panel("Production Go-live Gate",table(["Area","Owner","Decision / Requirement","Status"],goLiveRows))}${panel("Risk Wording Rules",`<div class="panel-body list">${listItem("Do not promise tax savings","Use estimate, likely, candidate, needs CPA review, and based on current records instead of guaranteed refund or guaranteed deduction.","red")}${listItem("Separate software from professional advice","Tax IQ organizes records and highlights issues; CPA/bookkeeper/legal counsel makes final professional determination.","yellow")}${listItem("Show source and effective date","Government rule watch must identify official source, effective date, affected state, and action owner.","blue")}${listItem("Require merchant approval for exports and CPA work","CPA cost, profile link access, PII export, and final package share must be explicitly approved and logged.","green")}</div>`)}</div><div class="grid-2" style="margin-top:14px">${panel("Disclaimer Placement",table(["Feature","Required Message","Status"],[
     ["Tax Estimate","Estimate only; final tax liability must be confirmed by licensed professional.",status("Covered")],
     ["Tip Ledger","Recordkeeping support only; eligibility, cap, and phase-out require CPA review.",status("Covered")],
     ["GPS Mileage","Route evidence only; commute and deduction policy require CPA review.",status("Covered")],
@@ -4385,8 +4648,27 @@ document.addEventListener("click", event=>{
     return;
   }
 
+  const exportAction = event.target.closest("[data-export]");
+  if(exportAction){
+    try {
+      handleExportAction(exportAction);
+    } catch(err){
+      toast(err?.message || "No exportable data was found.");
+    }
+    return;
+  }
+
   const msg = event.target.closest("[data-toast],[data-action-toast]");
-  if(msg) toast(msg.dataset.toast || msg.dataset.actionToast);
+  if(msg){
+    try {
+      if(handleSmartToastAction(msg)) return;
+    } catch(err){
+      toast(err?.message || "No exportable data was found.");
+      return;
+    }
+    toast(msg.dataset.toast || msg.dataset.actionToast);
+    return;
+  }
 
   /* ── real action handlers ── */
   // Approve receipt
