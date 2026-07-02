@@ -482,7 +482,7 @@ function payEngineRulesPanel(){
     ["Bonus rules","Over-threshold bonus and KPI bonus can add percentage or fixed amount.","Must be logged as wage/bonus/taxable compensation as applicable."],
     ["Pay schedule","Weekly, biweekly, semi-monthly, or monthly per worker.","Controls payroll run, payout period, and report grouping."]
   ].map(r=>row(r,{wrap:[1,2]}));
-  return panel("Pay Engine Configuration Rules",table(["Rule","Configuration","Use Case / Tax Note"],rows),`<button class="btn" data-modal="employee">Review Worker Setup</button>`);
+  return panel("Pay Engine Configuration Rules",table(["Rule","Configuration","Use Case / Tax Note"],rows),`<button class="btn" data-modal="payment-setup">Review Worker Setup</button>`);
 }
 function contractor1099ReadinessPanel(){
   return panel("1099 Contractor Readiness",`<div class="panel-body list">
@@ -1771,6 +1771,41 @@ const modalCopy = {
   },
 
   /* EMPLOYEE MODALS */
+  "payment-setup":{
+    title:"Employee Payment Setup",
+    body:"Complete this before the first payment: confirm the worker, choose how pay is calculated, set where money goes, and require payment proof.",
+    cta:"Save Setup",
+    content:()=>[
+      modalSection("1. Worker + Tax Readiness", modalGrid([
+        modalSelect("Technician",[["Amy T. - 1099",true],["Linda P. - 1099"],["Kevin M. - W-2"],["Sarah J. - 1099"],["Brian L. - 1099"]]),
+        modalSelect("Worker status",[["Ready for pay setup",true],["Missing tax form"],["TIN review"],["Inactive"]]),
+        modalSelect("Tax profile",[["W-9 on file - 1099",true],["W-4 ready - W-2"],["TIN review"],["Missing form"]]),
+        modalSelect("Pay schedule",[["Weekly",true],["Biweekly"],["15th and 30th"],["Monthly"]])
+      ])),
+      modalSection("2. Pay Formula", modalGrid([
+        modalSelect("Pay type",[["Hybrid - hourly + commission",true],["Hourly"],["Commission"],["Tiered commission"]]),
+        modalField("Hourly rate","$12.00"),
+        modalField("Commission rate","35%"),
+        modalField("Overtime after","40 hours / week"),
+        modalField("Sales threshold bonus","5% after $1,200 sales"),
+        modalField("KPI bonus","3% after $1,500 sales")
+      ])),
+      modalSection("3. Payout Method", modalGrid([
+        modalSelect("Primary method",[["Zelle",true],["ACH / direct deposit"],["Venmo"],["Cash App"],["Check"],["Cash"]]),
+        modalField("Primary destination","amy.t@gmail.com"),
+        modalSelect("Backup method",[["Venmo",true],["ACH / direct deposit"],["Cash App"],["Check"],["Cash"],["None"]]),
+        modalField("Backup destination","@amytran-nails")
+      ])),
+      modalSection("4. Proof + Blocking Rules", `<div class="list">${modalCheck("Require payment proof","Screenshot, bank memo, check number, or cash receipt is required before marking paid.")}${modalCheck("Sync proof to payout ledger","Create immutable payout evidence for CPA and tax package review.")}${modalCheck("Block payment if tax profile is missing","Worker cannot be paid until W-4/W-9/TIN status is ready.")}${modalCheck("Allow owner override with audit note","Only owner/admin can override a warning, and the note is saved.", false)}</div>`),
+      modalSection("5. Ready To Pay Gate", table(["Check","Status","Where To Fix"],[
+        row(["Worker classification",status("Ready"),"Employees"]),
+        row(["Pay formula",status("Ready"),"Pay Engine"]),
+        row(["Payout method",status("Verified"),"Payout Hub"]),
+        row(["Proof rule",status("Required"),"Payout Hub"]),
+        row(["First payment action",status("After setup"),"Quick Pay or Weekly Payroll"])
+      ]))
+    ].join("")
+  },
   employee:{
     title:"Invite Employee",
     body:"Send an employee self-service link for tax profile and W-4 collection.",
@@ -3424,7 +3459,7 @@ document.addEventListener("click", event=>{
       payoutButton.closest(".alert")?.remove();
       toast("Pending invite canceled.");
     } else if(text.includes("Edit")){
-      openModal("employee");
+      openModal("payment-setup");
     } else if(text.includes("Pay Now")){
       window.location.href = pageHref("quick-pay");
     }
