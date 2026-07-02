@@ -1,14 +1,18 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-const root = path.join(__dirname, "../html");
-const vietnamesePattern = /[À-ỹ]/u;
-const allowedExtensions = new Set([".html", ".js", ".json"]);
+const root = path.join(__dirname, "..");
+const vietnamesePattern = /[\u00C0-\u1EF9]/u;
+const allowedExtensions = new Set([".html", ".js", ".json", ".css", ".md"]);
+const ignoredDirectories = new Set([".git", "node_modules"]);
 
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) return walk(fullPath);
+    if (entry.isDirectory()) {
+      if (ignoredDirectories.has(entry.name)) return [];
+      return walk(fullPath);
+    }
     return [fullPath];
   });
 }
