@@ -132,7 +132,7 @@ a {
 
 .page-guide {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, auto);
   align-items: center;
   gap: 18px;
   margin-bottom: 14px;
@@ -143,6 +143,10 @@ a {
     #0f172a;
   box-shadow: 0 18px 42px rgba(2, 6, 23, .24);
   padding: 14px;
+}
+
+.guide-main {
+  min-width: 0;
 }
 
 .guide-kicker {
@@ -194,11 +198,22 @@ a {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
+  min-width: 0;
+}
+
+.guide-action-caption {
+  width: 100%;
+  color: #64748b;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-align: right;
+  text-transform: uppercase;
 }
 
 .guide-action {
   display: inline-flex;
-  height: 34px;
+  min-height: 34px;
   align-items: center;
   justify-content: center;
   gap: 8px;
@@ -209,7 +224,8 @@ a {
   padding: 0 12px;
   font-size: 12px;
   font-weight: 900;
-  white-space: nowrap;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .guide-action.primary {
@@ -954,6 +970,11 @@ a {
 }
 
 .nexora-source .tab-pill {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   border: 1px solid #263755;
   border-radius: 8px;
   background: #121b2e;
@@ -961,12 +982,51 @@ a {
   padding: 10px 14px;
   font-size: 12px;
   font-weight: 800;
+  line-height: 1.15;
+  cursor: pointer;
 }
 
 .nexora-source .tab-pill.active {
   border-color: #7c3aed;
   background: #7c3aed;
   color: #fff;
+}
+
+.nexora-source .tab-context,
+.nexora-source .review-filter-meta {
+  margin: 0 0 14px;
+  border: 1px solid rgba(122, 142, 180, .24);
+  border-radius: 8px;
+  background: rgba(8, 13, 25, .46);
+  color: #aab8cf;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.nexora-source .review-tab-count {
+  display: inline-flex;
+  min-width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .14);
+  color: inherit;
+  padding: 0 6px;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.nexora-source .review-empty {
+  margin: 0 16px 16px;
+  border: 1px dashed rgba(122, 142, 180, .42);
+  border-radius: 8px;
+  background: rgba(8, 13, 25, .5);
+  color: #aab8cf;
+  padding: 18px;
+  font-size: 12px;
+  text-align: center;
 }
 
 .nexora-source .tab-panel {
@@ -2091,6 +2151,10 @@ select.form-control {
     justify-content: flex-start;
   }
 
+  .guide-action-caption {
+    text-align: left;
+  }
+
   .steps {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2520,6 +2584,50 @@ tbody tr:hover td {
 .nexora-source thead tr,
 .nexora-source .total-row td {
   background: linear-gradient(90deg, rgba(124, 58, 237, .16), rgba(34, 211, 238, .08));
+}
+
+/* Muted text lift: keep the original color system, only brighten hard-to-read copy. */
+:root {
+  --muted-readable: #9fb0d3;
+  --muted-readable-soft: #8fa0c2;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.label,
+.sub,
+.guide-action-caption,
+.form-field span,
+.nexora-source .source-subtitle,
+.nexora-source .stat-label,
+.nexora-source .stat-sub,
+.nexora-source .info-card p,
+.nexora-source .info-card ul,
+.nexora-source .calc-box,
+.nexora-source .payout-note,
+.nexora-source .gray,
+.nexora-source .checkout-meta,
+.nexora-source .checkout-line-sub,
+.nexora-source .checkout-line.header,
+.nexora-source .badge-gray,
+.nexora-source .btn-gray,
+.nexora-source .check-todo,
+.text-slate-500,
+.text-slate-600 {
+  color: var(--muted-readable) !important;
+}
+
+.text-slate-400,
+.nexora-source th,
+#taxiq-sidebar .sb-group-label {
+  color: var(--muted-readable-soft) !important;
+}
+
+.nexora-source .qa-btn small {
+  color: rgba(226, 232, 240, .78);
 }
 
 @media print {

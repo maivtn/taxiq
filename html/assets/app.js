@@ -55,6 +55,7 @@ function metric([label,value,sub,color,href]){
 }
 function moneyNumber(value){return Number(String(value ?? "").replace(/[^0-9.-]/g,"")) || 0;}
 function moneyText(value){return value.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:value % 1 ? 2 : 0});}
+function moneyTextCents(value){return Number(value || 0).toLocaleString("en-US",{style:"currency",currency:"USD",minimumFractionDigits:2,maximumFractionDigits:2});}
 function table(headers, rows){
   const sticky = /actions?/i.test(headers[headers.length - 1] || "");
   return `<div class="${ui.tableWrap} ${sticky ? "sticky-last-col" : ""}"><table class="w-full border-collapse text-xs"><thead><tr>${headers.map(h=>`<th class="${ui.th}">${h}</th>`).join("")}</tr></thead><tbody>${rows.join("") || `<tr><td class="${ui.td}" colspan="${headers.length}"><div class="empty"><strong>No records yet.</strong><span>Add a record or adjust filters to continue.</span></div></td></tr>`}</tbody></table></div>`;
@@ -321,47 +322,65 @@ const pageGuides = {
     next:"Use high-risk runs and tax-by-jurisdiction trends to decide what needs review first.",
     actions:[["Risk Runs","payroll-runs"],["Tax Estimate","tax-estimate"],["Exceptions","exceptions"]]
   },
+  pos:{
+    focus:"Turn Board for check-in, assigning guests to technicians, and moving finished tickets to checkout.",
+    role:"Owner / Front Desk",
+    next:"Assign waiting guests to an open technician first; checkout completed services when a station is ready.",
+    actions:[["Assign Next Guest",".queue-grid","scroll"],["Open Checkout","checkout"],["Quick Pay","quick-pay"]]
+  },
+  checkout:{
+    focus:"Complete the active ticket: review services, tip split, payment method, receipt, and TaxIQ sync.",
+    role:"Owner / Front Desk",
+    next:"Confirm the total and tip, pick the payment method, then charge the customer.",
+    actions:[["Charge Ticket",".checkout-pay-button","scroll"],["POS Board","pos"],["Tip Ledger","tip-ledger"]]
+  },
+  reviews:{
+    focus:"Reply to customer reviews from Google, Yelp, and Facebook while keeping owner oversight.",
+    role:"Owner / Manager",
+    next:"Reply to new reviews first, then check lower-star reviews for service recovery.",
+    actions:[["Reply To Reviews",".review-row .source-button","scroll"],["AI Assistant","ai-assistant"],["Notifications","notifications"]]
+  },
   onboarding:{
     focus:"First merchant setup: business profile, worker records, integrations, evidence, CPA, and billing.",
     role:"Owner / Admin",
     next:"Complete the launch checklist before moving the tenant into live payroll and tax workflows.",
-    actions:[["Data Quality","data-quality"],["Billing","billing"],["Settings","settings"]]
+    actions:[["Start Setup","onboarding-step","modal"],["Data Quality","data-quality"],["Billing","billing"]]
   },
   employers:{
     focus:"Business entities, EINs, deposit schedules, state registrations, locations, and employer contacts.",
     role:"Payroll Admin",
     next:"Verify EIN and state payroll registrations before employee setup or payroll finalization.",
-    actions:[["Jurisdictions","jurisdictions"],["Payroll Runs","payroll-runs"],["Settings","settings"]]
+    actions:[["Add Employer","employer","modal"],["Jurisdictions","jurisdictions"],["Settings","settings"]]
   },
   employees:{
     focus:"Worker tax profiles, W-4/TIN readiness, work state, residence state, and profile exceptions.",
     role:"Payroll Admin / HR",
     next:"Resolve missing TIN, W-4, and jurisdiction data before the next payroll run.",
-    actions:[["Data Quality","data-quality"],["Payroll Runs","payroll-runs"],["Employee Detail","employee-profile"]]
+    actions:[["Invite Worker","employee","modal"],["Data Quality","data-quality"],["Payroll Runs","payroll-runs"]]
   },
   "employee-profile":{
     focus:"Single worker view for tax profile status, payroll history, tip records, and open actions.",
     role:"Payroll Admin / HR",
     next:"Finish tax profile verification or request updated forms when the profile is not ready.",
-    actions:[["Employees","employees"],["Tip Ledger","tip-ledger"],["Payroll Runs","payroll-runs"]]
+    actions:[["Verify Tax Profile","tin-verification","modal"],["Employees","employees"],["Tip Ledger","tip-ledger"]]
   },
   "payroll-runs":{
     focus:"Payroll run control table with status-based review, approve, finalize, and report actions.",
     role:"Payroll Admin",
     next:"Open any review-required run, resolve exceptions, then finalize only after validation passes.",
-    actions:[["Run Detail","run-detail"],["Exceptions","exceptions"],["Tax Ledger","ledger"]]
+    actions:[["Create Run","create-run","modal"],["Review Run","run-detail"],["Exceptions","exceptions"]]
   },
   "quick-pay":{
     focus:"Create fast tip, wage, bonus, advance, reimbursement, or adjustment payments with preview and audit evidence.",
     role:"Owner / Manager",
     next:"Choose payment type, worker, amount, method, memo, then confirm only after preview matches.",
-    actions:[["Staff Payouts","payouts"],["OCR Vault","ocr"],["Tax Center","tax-1099"]]
+    actions:[["Create Payment",".qp-layout","scroll"],["Staff Payouts","payouts"],["Tax Center","tax-1099"]]
   },
   "pay-engine":{
     focus:"Configure worker pay rules: hourly, commission, hybrid, tiered, overtime, bonus, KPI, and pay schedule.",
     role:"Owner / Payroll Admin",
     next:"Review worker classification before using pay rules for payroll tax or 1099 rollups.",
-    actions:[["Weekly Payroll","weekly-payroll"],["Employees","employees"],["Tax Center","tax-1099"]]
+    actions:[["Review Worker Setup","payment-setup","modal"],["Weekly Payroll","weekly-payroll"],["Employees","employees"]]
   },
   "weekly-payroll":{
     focus:"Review weekly hours, sales, hourly pay, commission, bonus, tips, totals, and pay actions.",
@@ -379,7 +398,7 @@ const pageGuides = {
     focus:"Payroll, HRIS, payout, accounting, and webhook source connections with status and last error.",
     role:"Admin / Developer",
     next:"Fix degraded connectors before relying on imported payroll, payout, or receipt data.",
-    actions:[["Webhooks","webhooks"],["Data Quality","data-quality"],["Settings","settings"]]
+    actions:[["Add Connection","connection","modal"],["Webhooks","webhooks"],["Data Quality","data-quality"]]
   },
   payouts:{
     focus:"Quick Pay, Pay Engine payouts, cash/Zelle/Venmo/Cash App evidence, and 1099 support.",
@@ -397,61 +416,67 @@ const pageGuides = {
     focus:"Blocking queue for payroll, worker profile, jurisdiction, evidence, and integration issues.",
     role:"Payroll Admin / Tax Admin",
     next:"Resolve high-severity exceptions before finalizing runs or sharing CPA packages.",
-    actions:[["Data Quality","data-quality"],["Payroll Runs","payroll-runs"],["Notifications","notifications"]]
+    actions:[["Resolve Exception","resolve-exception","modal"],["Data Quality","data-quality"],["Payroll Runs","payroll-runs"]]
   },
   "data-quality":{
     focus:"Readiness center for missing data, evidence gaps, integration errors, and CPA package blockers.",
     role:"Owner / Admin / CPA",
     next:"Work top-down from high severity to evidence gaps so downstream reports stay usable.",
-    actions:[["OCR Vault","ocr"],["GPS Mileage","gps"],["CPA Review","cpa"]]
+    actions:[["Create Cleanup Task","data-quality-task","modal"],["OCR Vault","ocr"],["CPA Review","cpa"]]
   },
   jurisdictions:{
     focus:"Federal, state, and local tax footprint, registration status, forms, and deposit schedule.",
     role:"Tax Admin / CPA",
     next:"Confirm state withholding, SUTA, and local registrations for every work/residence state.",
-    actions:[["Tax Estimate","tax-estimate"],["Forms","forms"],["Settings","settings"]]
+    actions:[["Edit Jurisdiction","edit-jurisdiction","modal"],["Tax Estimate","tax-estimate"],["Forms","forms"]]
   },
   forms:{
     focus:"Export center for payroll reports, W-2/1099 support, 941/940, SUTA, and CPA packages.",
     role:"CPA / Payroll Admin",
     next:"Generate only after payroll, evidence, and CPA review blockers are resolved.",
-    actions:[["CPA Review","cpa"],["Audit Log","audit-log"],["Tax Ledger","ledger"]]
+    actions:[["Generate Package","report","modal"],["CPA Review","cpa"],["Audit Log","audit-log"]]
   },
   "ai-advisor":{
     focus:"AI CFO, tax readiness prompts, government rule watch, deduction reminders, and guided support.",
     role:"Owner / Admin",
     next:"Use AI suggestions as planning support, then route tax decisions to CPA review.",
-    actions:[["Tax Estimate","tax-estimate"],["Data Quality","data-quality"],["CPA Review","cpa"]]
+    actions:[["Ask AI CFO","ai-cfo","modal"],["Tax Estimate","tax-estimate"],["CPA Review","cpa"]]
+  },
+  "ai-assistant":{
+    focus:"Ask AI about revenue, scheduling, technician performance, bookkeeping, and shop automation.",
+    role:"Owner / Manager",
+    next:"Ask one concrete question first, then turn on only the automations the shop is ready to use.",
+    actions:[["Ask AI Now","[data-ai-input]","scroll"],["Reviews","reviews"],["Tax Estimate","tax-estimate"]]
   },
   ocr:{
     focus:"Receipt, bill, invoice, payout proof, and document vault with OCR extraction review.",
     role:"Owner / Bookkeeper",
     next:"Approve high-confidence documents and complete business purpose on low-confidence records.",
-    actions:[["Share Links","share-links"],["CPA Review","cpa"],["Data Quality","data-quality"]]
+    actions:[["Capture Receipt","receipt","modal"],["Share Links","share-links"],["CPA Review","cpa"]]
   },
   "share-links":{
     focus:"Secure upload, review, QR, and profile links for CPA, technicians, vendors, and invited reviewers.",
     role:"Owner / Admin",
     next:"Pick the minimum access scope, set expiration, then revoke links when review is done.",
-    actions:[["OCR Vault","ocr"],["CPA Review","cpa"],["Audit Log","audit-log"]]
+    actions:[["Create Share Link","share-link","modal"],["OCR Vault","ocr"],["Audit Log","audit-log"]]
   },
   gps:{
     focus:"Business mileage evidence: point A, point B, route, miles, vehicle, purpose, and CPA review.",
     role:"Owner / Worker / CPA",
     next:"Start at point A, stop at point B, save route evidence, then flag commute-like trips for CPA.",
-    actions:[["Tax Estimate","tax-estimate"],["CPA Review","cpa"],["OCR Vault","ocr"]]
+    actions:[["Start Trip","trip","modal"],["Travel Template","travel-expense-template","modal"],["CPA Review","cpa"]]
   },
   cpa:{
     focus:"Third-party CPA/bookkeeper connection, cost preview, missing-file requests, and filing package review.",
     role:"Owner / CPA",
     next:"Approve scope and estimated cost before giving access or starting CPA review work.",
-    actions:[["Share Links","share-links"],["Billing","billing"],["Forms","forms"]]
+    actions:[["Connect CPA","cpa","modal"],["Share Links","share-links"],["Billing","billing"]]
   },
   "tip-ledger":{
     focus:"No Tax on Tips support: tip entries, source proof, qualification status, cap tracking, and CPA review.",
     role:"Owner / Worker / CPA",
     next:"Record tips with proof, monitor cap and phase-out risks, and let CPA confirm final treatment.",
-    actions:[["OCR Vault","ocr"],["Tax Estimate","tax-estimate"],["CPA Review","cpa"]]
+    actions:[["Add Tip","add-tip","modal"],["Tax Estimate","tax-estimate"],["CPA Review","cpa"]]
   },
   "tax-estimate":{
     focus:"Estimated federal/state tax exposure, deposits, balances, and readiness before payment or filing.",
@@ -463,7 +488,7 @@ const pageGuides = {
     focus:"1099-NEC and W-2 readiness center for W-9/TIN, YTD payout rollups, recipient delivery, and e-file prep.",
     role:"Owner / CPA / Bookkeeper",
     next:"Resolve TIN/classification gaps, reconcile Box 1a totals, then generate CPA-reviewed year-end package.",
-    actions:[["Forms","forms"],["Payouts","payouts"],["CPA Review","cpa"]]
+    actions:[["Email All Workers","email-1099-batch","modal"],["Print 1099-NEC","print-1099-nec","modal"],["Payouts","payouts"]]
   },
   webhooks:{
     focus:"Outbound event delivery, endpoint visibility, retry status, payload review, and delivery errors.",
@@ -487,38 +512,47 @@ const pageGuides = {
     focus:"Go-live gate for legal wording, privacy, permissions, evidence retention, and production controls.",
     role:"Stakeholder / Legal / Engineering",
     next:"Resolve blocked legal and backend-control items before onboarding real customers.",
-    actions:[["Settings","settings"],["Audit Log","audit-log"],["Billing","billing"]]
+    actions:[["Create Review Task","compliance-task","modal"],["Settings","settings"],["Audit Log","audit-log"]]
   },
   billing:{
     focus:"Merchant subscription, CPA add-on approval, invoices, plan comparison, and business model clarity.",
     role:"Owner / Stakeholder",
     next:"Confirm merchant subscription as MVP path and approve any CPA engagement before billing starts.",
-    actions:[["CPA Review","cpa"],["Settings","settings"],["Compliance","compliance-review"]]
+    actions:[["Approve Billing","billing-approval","modal"],["Plan Packaging","billing-plan","modal"],["CPA Review","cpa"]]
   },
   settings:{
     focus:"Tenant controls for US payroll scope, roles, permissions, API keys, notifications, and retention.",
     role:"Admin / Security",
     next:"Keep UI permissions aligned with backend enforcement before production launch.",
-    actions:[["Compliance","compliance-review"],["Webhooks","webhooks"],["Billing","billing"]]
+    actions:[["Create API Key","create-api-key","modal"],["Compliance","compliance-review"],["Webhooks","webhooks"]]
   }
 };
 
 function guideActionLinks(actions){
-  return actions.map(([label,id],index)=>`<a class="guide-action ${index === 0 ? "primary" : ""}" href="${pageHref(id)}">${label}<i class="fa-solid fa-arrow-right"></i></a>`).join("");
+  return actions.map(([label,target,type],index)=>{
+    const cls = `guide-action ${index === 0 ? "primary" : ""}`;
+    const icon = `<i class="fa-solid ${type === "scroll" ? "fa-location-arrow" : type === "modal" ? "fa-bolt" : "fa-arrow-right"}"></i>`;
+    if(type === "modal") return `<button type="button" class="${cls}" data-modal="${demoEscape(target)}">${demoEscape(label)}${icon}</button>`;
+    if(type === "scroll") return `<button type="button" class="${cls}" data-guide-scroll="${demoEscape(target)}">${demoEscape(label)}${icon}</button>`;
+    return `<a class="${cls}" href="${pageHref(target)}">${demoEscape(label)}${icon}</a>`;
+  }).join("");
 }
 function pageGuide(){
   const guide = pageGuides[currentPage];
   if(!guide) return "";
+  const actions = currentPage === "gps"
+    ? [[activeGpsTrip ? "Stop Active Trip" : "Start Trip","trip","modal"],["Travel Template","travel-expense-template","modal"],["CPA Review","cpa"]]
+    : guide.actions;
   return `<section class="page-guide" aria-label="Page workflow guidance">
     <div class="guide-main">
-      <div class="guide-kicker">Workflow Focus</div>
+      <div class="guide-kicker">Main action</div>
       <h3>${guide.focus}</h3>
       <div class="guide-meta">
-        <span><strong>Best for</strong>${guide.role}</span>
-        <span><strong>Next</strong>${guide.next}</span>
+        <span><strong>Who uses this</strong>${guide.role}</span>
+        <span><strong>Do this first</strong>${guide.next}</span>
       </div>
     </div>
-    <div class="guide-actions">${guideActionLinks(guide.actions)}</div>
+    <div class="guide-actions"><span class="guide-action-caption">Start here</span>${guideActionLinks(actions)}</div>
   </section>`;
 }
 function usTaxReadinessPanel(){
@@ -704,16 +738,157 @@ const renderers = {
 };
 
 function renderPage(){
-  const sourceLikePages = new Set(["pos","checkout","quick-pay","pay-engine","weekly-payroll","payouts","tax-1099","reviews","ai-assistant"]);
-  document.getElementById("content").innerHTML = (sourceLikePages.has(currentPage) ? "" : pageGuide()) + (renderers[currentPage] || renderDashboard)();
+  document.getElementById("content").innerHTML = pageGuide() + (renderers[currentPage] || renderDashboard)();
   initFreeRouteMaps(document);
+  initSourceTabs(document);
   if(currentPage === "quick-pay") updateQuickPayPreview();
+  if(currentPage === "checkout") updateCheckoutSummary();
 }
 
 function renderDataLoadError(){
   const error = window.TaxIQDataLoadError;
   const detail = error ? error.message : "Mock data is not available.";
   document.getElementById("content").innerHTML = panel("Mock Data JSON Not Loaded", `<div class="panel-body list">${listItem("Run the demo through a local server","Because the app now loads assets/mock-data.json, opening the HTML as file:// may be blocked by browser security.","yellow")}${listItem("Recommended command","From the html folder, run: python3 -m http.server 8123, then open http://localhost:8123/.","blue")}${listItem("Error detail",detail,"red")}</div>`);
+}
+
+function activateSourceTab(sourceTab, options={}){
+  if(!sourceTab || sourceTab.matches("a")) return false;
+  const root = sourceTab.closest(".nexora-source") || document;
+  const group = sourceTab.closest(".tab-row,.pos-tabs");
+  group?.querySelectorAll(".tab-pill").forEach(tab=>{
+    const active = tab === sourceTab;
+    tab.classList.toggle("active", active);
+    if(tab.hasAttribute("role")) tab.setAttribute("aria-selected", String(active));
+    if(tab.dataset.tab) tab.setAttribute("tabindex", active ? "0" : "-1");
+  });
+
+  if(!sourceTab.dataset.tab) return false;
+  let foundPanel = false;
+  root.querySelectorAll("[data-tab-panel]").forEach(panel=>{
+    const active = panel.dataset.tabPanel === sourceTab.dataset.tab;
+    panel.hidden = !active;
+    panel.classList.toggle("active", active);
+    if(active) foundPanel = true;
+  });
+  const summary = root.querySelector("[data-tab-summary]");
+  if(summary && sourceTab.dataset.tabSummary) summary.textContent = sourceTab.dataset.tabSummary;
+  try {
+    window.sessionStorage?.setItem(`taxiq:${currentPage}:tab`, sourceTab.dataset.tab);
+  } catch {}
+  if(foundPanel && options.updateHash !== false && window.history?.replaceState){
+    history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${encodeURIComponent(sourceTab.dataset.tab)}`);
+  }
+  if(options.announce !== false) toast("Opened tab: "+sourceTab.textContent.trim().replace(/\s+/g," "));
+  return foundPanel;
+}
+
+function initSourceTabs(root=document){
+  root.querySelectorAll?.(".nexora-source").forEach(source=>{
+    const tabs = [...source.querySelectorAll(".tab-pill[data-tab]")];
+    if(!tabs.length) return;
+    tabs.forEach(tab=>{
+      const panel = source.querySelector(`[data-tab-panel="${tab.dataset.tab}"]`);
+      const idBase = `${currentPage}-${tab.dataset.tab}`;
+      if(!tab.id) tab.id = `${idBase}-tab`;
+      tab.setAttribute("role", tab.getAttribute("role") || "tab");
+      tab.setAttribute("aria-selected", tab.classList.contains("active") ? "true" : "false");
+      tab.setAttribute("tabindex", tab.classList.contains("active") ? "0" : "-1");
+      if(panel){
+        if(!panel.id) panel.id = `${idBase}-panel`;
+        tab.setAttribute("aria-controls", panel.id);
+        panel.setAttribute("aria-labelledby", tab.id);
+        panel.setAttribute("tabindex", "0");
+      }
+    });
+    const hashTab = decodeURIComponent((window.location.hash || "").replace(/^#/,""));
+    let storedTab = "";
+    try { storedTab = window.sessionStorage?.getItem(`taxiq:${currentPage}:tab`) || ""; } catch {}
+    const initialTab = tabs.find(tab=>tab.dataset.tab === hashTab)
+      || tabs.find(tab=>tab.dataset.tab === storedTab)
+      || tabs.find(tab=>tab.classList.contains("active"))
+      || tabs[0];
+    activateSourceTab(initialTab,{announce:false,updateHash:false});
+  });
+  initReviewFilters(root);
+}
+
+function syncReviewStats(root=document){
+  const scope = root.querySelector?.(".nexora-source") || document.querySelector(".nexora-source");
+  if(!scope) return;
+  const rows = [...scope.querySelectorAll("[data-review-row]")];
+  const pending = rows.filter(row=>row.dataset.reviewStatus === "Reply").length;
+  const lowPending = rows.filter(row=>row.dataset.reviewStatus === "Reply" && Number(row.dataset.reviewRating || 0) < 4).length;
+  const pendingEl = scope.querySelector("[data-review-pending-count]");
+  const lowEl = scope.querySelector("[data-review-low-count]");
+  if(pendingEl) pendingEl.textContent = pending;
+  if(lowEl) lowEl.textContent = lowPending;
+}
+
+function applyReviewFilter(filter="All", options={}){
+  const root = document.querySelector(".nexora-source");
+  if(!root) return;
+  const rows = [...root.querySelectorAll("[data-review-row]")];
+  let visible = 0;
+  rows.forEach(row=>{
+    const show = filter === "All" || row.dataset.reviewSource === filter;
+    row.hidden = !show;
+    row.style.display = show ? "" : "none";
+    if(show) visible += 1;
+  });
+  root.querySelectorAll("[data-review-filter]").forEach(tab=>{
+    const active = tab.dataset.reviewFilter === filter;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-pressed", String(active));
+    const count = tab.dataset.reviewFilter === "All"
+      ? rows.length
+      : rows.filter(row=>row.dataset.reviewSource === tab.dataset.reviewFilter).length;
+    const countEl = tab.querySelector("[data-review-count]");
+    if(countEl) countEl.textContent = count;
+  });
+  const summary = root.querySelector("[data-review-summary]");
+  if(summary){
+    summary.textContent = filter === "All"
+      ? `Showing ${visible} recent reviews across every connected channel.`
+      : `Showing ${visible} ${filter} reviews with live reply state.`;
+  }
+  const list = root.querySelector("[data-review-list]");
+  if(list) list.dataset.activeFilter = filter;
+  const empty = root.querySelector("[data-review-empty]");
+  if(empty) empty.hidden = visible > 0;
+  syncReviewStats(root);
+  if(options.announce !== false) toast(`Filtered reviews: ${filter} (${visible})`);
+}
+
+function initReviewFilters(root=document){
+  const first = root.querySelector?.("[data-review-filter].active") || root.querySelector?.("[data-review-filter]");
+  if(first) applyReviewFilter(first.dataset.reviewFilter || "All",{announce:false});
+}
+
+function updateCheckoutSummary(tipChip){
+  const root = document.querySelector(".checkout-screen");
+  if(!root) return;
+  const activeTip = tipChip || root.querySelector(".tip-chip.active");
+  const serviceTotal = Number(root.dataset.serviceTotal || 102);
+  const discount = Number(root.dataset.checkoutDiscount || -5);
+  const salesTax = Number(root.dataset.salesTax || 8.42);
+  const tipValue = Number(activeTip?.dataset.tipValue || 15);
+  const tip = activeTip?.dataset.tipMode === "percent" ? serviceTotal * tipValue / 100 : tipValue;
+  const total = serviceTotal + tip + discount + salesTax;
+  const payMethod = root.querySelector("[data-checkout-pay].active")?.dataset.paymentLabel
+    || root.querySelector("[data-checkout-pay].active")?.textContent.trim()
+    || "Visa **** 4242";
+  const tipText = moneyTextCents(tip);
+  const totalText = moneyTextCents(total);
+  const tipEls = root.querySelectorAll("[data-checkout-tip]");
+  tipEls.forEach(el=>{ el.textContent = tipText; });
+  const totalEl = root.querySelector("[data-checkout-total]");
+  if(totalEl) totalEl.textContent = totalText;
+  const methodEl = root.querySelector("[data-checkout-method-label]");
+  if(methodEl) methodEl.textContent = payMethod;
+  const button = root.querySelector(".checkout-pay-button");
+  if(button && !button.classList.contains("green")) button.textContent = `Charge ${totalText}`;
+  root.dataset.checkoutTotal = totalText;
+  return { tip, total, payMethod };
 }
 
 /* ─── POS ─── */
@@ -772,11 +947,11 @@ function renderCheckout(){
     <div>${item[3]}</div>
     <strong>${item[4]}</strong>
   </div>`).join("");
-  const payments = ["Visa **** 4242","Cash","Gift Card","Split Pay"].map((item,index)=>`<button class="pay-method-card ${index===0 ? "active" : ""}" data-checkout-pay>
+  const payments = ["Visa **** 4242","Cash","Gift Card","Split Pay"].map((item,index)=>`<button class="pay-method-card ${index===0 ? "active" : ""}" data-checkout-pay data-payment-label="${demoEscape(item)}">
     <i class="fa-solid ${index===0 ? "fa-credit-card" : index===1 ? "fa-money-bill" : index===2 ? "fa-gift" : "fa-layer-group"}"></i>
     <span>${item}</span>
   </button>`).join("");
-  return `<div class="nexora-source checkout-screen">
+  return `<div class="nexora-source checkout-screen" data-service-total="102" data-checkout-discount="-5" data-sales-tax="8.42">
     <div class="source-hero">
       <div><h2 class="source-title">💳 Checkout</h2><div class="source-subtitle">Ticket #A002 · Emma W. · Station Amy T.</div></div>
       <a class="source-button" href="${pageHref("pos")}">← POS Board</a>
@@ -805,18 +980,18 @@ function renderCheckout(){
         <div class="section-box">
           <div class="section-box-title">② Tip & Technician Split</div>
           <div class="tip-grid">
-            <button class="tip-chip">$10</button>
-            <button class="tip-chip active">$15</button>
-            <button class="tip-chip">18%</button>
-            <button class="tip-chip">20%</button>
-            <button class="tip-chip">Custom</button>
+            <button class="tip-chip" data-tip-mode="fixed" data-tip-value="10">$10</button>
+            <button class="tip-chip active" data-tip-mode="fixed" data-tip-value="15">$15</button>
+            <button class="tip-chip" data-tip-mode="percent" data-tip-value="18">18%</button>
+            <button class="tip-chip" data-tip-mode="percent" data-tip-value="20">20%</button>
+            <button class="tip-chip" data-tip-mode="fixed" data-tip-value="25">Custom</button>
           </div>
           <div class="tip-split-card">
             <div>
               <strong>Amy T.</strong>
               <span>100% of this ticket's tip</span>
             </div>
-            <div class="tip-amount">$15.00</div>
+            <div class="tip-amount" data-checkout-tip>$15.00</div>
           </div>
           <div class="alert alert-blue">The tip will be posted to Tip Ledger and the TaxIQ audit trail after payment is completed.</div>
         </div>
@@ -837,10 +1012,11 @@ function renderCheckout(){
           <div class="receipt-preview">
             <div class="receipt-logo">Nexora Nail Studio</div>
             <div class="receipt-row"><span>Services</span><strong>$102.00</strong></div>
-            <div class="receipt-row"><span>Tip</span><strong>$15.00</strong></div>
+            <div class="receipt-row"><span>Tip</span><strong data-checkout-tip>$15.00</strong></div>
             <div class="receipt-row"><span>Discount</span><strong>-$5.00</strong></div>
             <div class="receipt-row"><span>Sales tax</span><strong>$8.42</strong></div>
-            <div class="receipt-row total"><span>Total</span><strong>$120.42</strong></div>
+            <div class="receipt-row"><span>Payment</span><strong data-checkout-method-label>Visa **** 4242</strong></div>
+            <div class="receipt-row total"><span>Total</span><strong data-checkout-total>$120.42</strong></div>
           </div>
           <button class="source-button primary checkout-pay-button" data-checkout-complete>Charge $120.42</button>
           <div class="checkout-sync">
@@ -866,24 +1042,29 @@ function renderCheckout(){
 
 /* ─── REVIEWS ─── */
 function renderReviews(){
-  const reviewRows = [
-    ["Jennifer Tran","Google · 2 hours ago","Amazing! Amy did a beautiful, detailed nail set. The salon was clean and the staff was friendly.","★★★★★","Reply"],
-    ["Emma Wilson","Google · 5 hours ago","Linda's balayage was excellent. The color looks great and lasts well.","★★★★★","Replied"],
-    ["Anonymous","Yelp · 1 day ago","The wait was a bit long, but the result was good.","★★★","Reply"],
-    ["Maria Garcia","Facebook · 2 days ago","First time here and very happy. I will come back.","★★★★★","Replied"],
-    ["Lisa Nguyen","Google · 3 days ago","Beautiful salon and helpful staff. The wait was just a little long.","★★★★","Reply"]
-  ].map(r=>`<div class="review-row">
+  const reviews = [
+    {name:"Jennifer Tran",source:"Google",time:"2 hours ago",text:"Amazing! Amy did a beautiful, detailed nail set. The salon was clean and the staff was friendly.",stars:"★★★★★",rating:5,status:"Reply"},
+    {name:"Emma Wilson",source:"Google",time:"5 hours ago",text:"Linda's balayage was excellent. The color looks great and lasts well.",stars:"★★★★★",rating:5,status:"Replied"},
+    {name:"Anonymous",source:"Yelp",time:"1 day ago",text:"The wait was a bit long, but the result was good.",stars:"★★★",rating:3,status:"Reply"},
+    {name:"Maria Garcia",source:"Facebook",time:"2 days ago",text:"First time here and very happy. I will come back.",stars:"★★★★★",rating:5,status:"Replied"},
+    {name:"Lisa Nguyen",source:"Google",time:"3 days ago",text:"Beautiful salon and helpful staff. The wait was just a little long.",stars:"★★★★",rating:4,status:"Reply"}
+  ];
+  const sourceCount = source => source === "All" ? reviews.length : reviews.filter(r=>r.source === source).length;
+  const reviewTabs = ["All","Google","Yelp","Facebook"].map((source,index)=>`<button class="tab-pill ${index===0 ? "active" : ""}" type="button" data-review-filter="${source}" aria-pressed="${index===0 ? "true" : "false"}">${source}<span class="review-tab-count" data-review-count>${sourceCount(source)}</span></button>`).join("");
+  const reviewRows = reviews.map(r=>`<div class="review-row" data-review-row data-review-source="${r.source}" data-review-status="${r.status}" data-review-rating="${r.rating}">
     <div class="review-avatar"><i class="fa-solid fa-user"></i></div>
     <div>
-      <div class="text-sm font-black text-slate-100">${r[0]}</div>
-      <div class="text-xs text-slate-500">${r[1]}</div>
-      <div class="mt-3 text-sm text-slate-400">"${r[2]}"</div>
+      <div class="text-sm font-black text-slate-100">${r.name}</div>
+      <div class="text-xs text-slate-500">${r.source} · ${r.time}</div>
+      <div class="mt-3 text-sm text-slate-400">"${r.text}"</div>
     </div>
     <div class="text-right">
-      <div class="stars">${r[3]}</div>
-      <button class="source-button ${r[4].includes("Replied") ? "" : "primary"}" style="height:28px;margin-top:8px">${r[4]}</button>
+      <div class="stars">${r.stars}</div>
+      <button class="source-button ${r.status.includes("Replied") ? "" : "primary"}" style="height:28px;margin-top:8px" data-review-action>${r.status}</button>
     </div>
   </div>`).join("");
+  const pendingReplies = reviews.filter(r=>r.status === "Reply").length;
+  const lowPending = reviews.filter(r=>r.status === "Reply" && r.rating < 4).length;
   return `<div class="nexora-source">
     <div class="source-hero">
       <div><h2 class="source-title">⭐ Reviews</h2><div class="source-subtitle">Google · Yelp · Facebook · Customer feedback</div></div>
@@ -891,15 +1072,17 @@ function renderReviews(){
     <div class="stats-row">
       <div class="stat-card"><div class="stat-label">Average Rating</div><div class="stat-val orange">4.9</div><div class="stat-sub">★★★★★</div></div>
       <div class="stat-card"><div class="stat-label">Total Reviews</div><div class="stat-val green">847</div><div class="stat-sub">+18 this week</div></div>
-      <div class="stat-card"><div class="stat-label">New Reviews</div><div class="stat-val red">5</div><div class="stat-sub">Not replied</div></div>
-      <div class="stat-card"><div class="stat-label">Needs Reply</div><div class="stat-val orange">3</div><div class="stat-sub">Under 4 stars</div></div>
+      <div class="stat-card"><div class="stat-label">New Reviews</div><div class="stat-val red" data-review-pending-count>${pendingReplies}</div><div class="stat-sub">Not replied</div></div>
+      <div class="stat-card"><div class="stat-label">Needs Reply</div><div class="stat-val orange" data-review-low-count>${lowPending}</div><div class="stat-sub">Under 4 stars</div></div>
     </div>
     <div class="section-box">
       <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
         Recent Reviews
-        <div class="tab-row"><button class="tab-pill active" data-review-filter="All">All</button><button class="tab-pill" data-review-filter="Google">Google</button><button class="tab-pill" data-review-filter="Yelp">Yelp</button><button class="tab-pill" data-review-filter="Facebook">Facebook</button></div>
+        <div class="tab-row" aria-label="Review channel filters">${reviewTabs}</div>
       </div>
-      <div>${reviewRows}</div>
+      <div class="review-filter-meta" data-review-summary>Showing ${reviews.length} recent reviews across every connected channel.</div>
+      <div data-review-list>${reviewRows}</div>
+      <div class="review-empty" data-review-empty hidden>No reviews match this channel right now.</div>
     </div>
   </div>`;
 }
@@ -1378,11 +1561,12 @@ function renderPayouts(){
       <div class="pending-pill">⏳ PENDING PAYMENT<br><span style="font-size:24px">$2,945</span><br><small>2 technicians</small></div>
     </div>
 
-    <div class="tab-row" style="margin-bottom:18px" role="tablist" aria-label="Payout Hub sections">
-      ${payoutTabs.map(([id,label],index)=>`<button class="tab-pill ${index===1 ? "active" : ""}" type="button" data-tab="${id}" role="tab" aria-selected="${index===1 ? "true" : "false"}">${label}</button>`).join("")}
+    <div class="tab-row" style="margin-bottom:10px" role="tablist" aria-label="Payout Hub sections">
+      ${payoutTabs.map(([id,label],index)=>`<button class="tab-pill ${index===0 ? "active" : ""}" type="button" data-tab="${id}" data-tab-summary="${demoEscape(label)} is open. Actions and tables below are scoped to this payout workflow." role="tab" aria-selected="${index===0 ? "true" : "false"}">${label}</button>`).join("")}
     </div>
+    <div class="tab-context" data-tab-summary>Overview is open. Actions and tables below are scoped to this payout workflow.</div>
 
-    <div class="tab-panel" data-tab-panel="overview" hidden>
+    <div class="tab-panel active" data-tab-panel="overview" role="tabpanel">
       <div class="grid-4" style="margin-bottom:14px">${[
         ["Ready Workers","4","Can receive payouts now","green"],
         ["Pending Setup","1","Jenny N. needs payment method","yellow"],
@@ -1396,7 +1580,7 @@ function renderPayouts(){
       ]))}</div>
     </div>
 
-    <div class="tab-panel active" data-tab-panel="profiles">
+    <div class="tab-panel" data-tab-panel="profiles" role="tabpanel" hidden>
       <div class="section-box">
         <div class="section-box-title">Employee Payment Method Setup</div>
         <table>
@@ -1423,11 +1607,11 @@ function renderPayouts(){
       <div class="profile-grid">${profileCards}</div>
     </div>
 
-    <div class="tab-panel" data-tab-panel="history" hidden>
+    <div class="tab-panel" data-tab-panel="history" role="tabpanel" hidden>
       ${panel("Payout History",table(["Payout ID","Worker","Period","Amount","Method","Type","Status","Actions"],historyRows),`<a class="btn primary" href="${pageHref("quick-pay")}">Create New Payout</a>`)}
     </div>
 
-    <div class="tab-panel" data-tab-panel="proof" hidden>
+    <div class="tab-panel" data-tab-panel="proof" role="tabpanel" hidden>
       ${panel("Proof Review Queue",table(["Proof Item","Worker","Method","Evidence","Status","Action"],[
         row(["PAY-2026-001","Amy T.","Zelle","Screenshot + memo",status("Matched"),actionBtn("Review","payout-detail")]),
         row(["PAY-2026-002","Linda P.","Cash App","Receipt missing purpose",status("Review"),`<a class="${ui.btn}" href="${pageHref("ocr")}">Open Vault</a>`]),
@@ -1435,7 +1619,7 @@ function renderPayouts(){
       ]),`<a class="btn primary" href="${pageHref("ocr")}">Open Proof Vault</a>`)}
     </div>
 
-    <div class="tab-panel" data-tab-panel="tax" hidden>
+    <div class="tab-panel" data-tab-panel="tax" role="tabpanel" hidden>
       <div class="grid-2">${panel("1099 / W-2 Readiness",table(["Area","Current State","Next Action"],[
         row(["W-9 / W-4 coverage",status("4/5 Ready"),"Collect Jenny N. W-9 before first payout."]),
         row(["TIN verification",status("Review"),"Verify contractor TIN/name match before year-end."]),
@@ -1443,7 +1627,7 @@ function renderPayouts(){
       ]))}${panel("Tax Center Workflow",`<div class="panel-body list">${listItem("Before paying","Worker profile and payout method must be complete.","green")}${listItem("Before filing","YTD payout rollup, W-9/W-4, address, and classification must be reviewed.","yellow")}${listItem("Open full center","Generate PDFs, email recipients, export ZIP, and prepare e-file batch.","blue")}</div>`,`<a class="btn primary" href="${pageHref("tax-1099")}">Open 1099 / W-2 Center</a>`)}</div>
     </div>
 
-    <div class="tab-panel" data-tab-panel="bookkeeping" hidden>
+    <div class="tab-panel" data-tab-panel="bookkeeping" role="tabpanel" hidden>
       <div class="grid-2">${panel("Bookkeeping Mapping",table(["Payout Type","Books Category","TaxIQ Record"],[
         row(["Tip payout","Tips payable","Tip Ledger + payout proof"]),
         row(["Wage payout","Payroll clearing","Weekly Payroll + tax ledger"]),
@@ -1452,7 +1636,7 @@ function renderPayouts(){
       ]))}${panel("Sync Controls",`<div class="panel-body list">${listItem("Auto-create ledger item","Every confirmed payout creates an immutable Tax Ledger record.","green")}${listItem("Attach proof before export","CPA package blocks export if required proof is missing.","yellow")}${listItem("Review uncategorized payouts","AI bookkeeping flags unclear business purpose for owner review.","blue")}</div>`,`<button class="btn primary" data-toast="Bookkeeping sync queued.">Sync Bookkeeping</button>`)}</div>
     </div>
 
-    <div class="tab-panel" data-tab-panel="settings" hidden>
+    <div class="tab-panel" data-tab-panel="settings" role="tabpanel" hidden>
       ${panel("Payout Hub Settings",table(["Setting","Current Value","Why It Matters","Action"],[
         row(["Allowed methods","Zelle, ACH/DD, Venmo, Cash App, check, cash","Controls what worker can select during setup.",actionBtn("Edit","payment-setup")]),
         row(["Proof required","Required for all non-ACH payouts","Supports CPA review and dispute trail.",`<a class="${ui.btn}" href="${pageHref("ocr")}">Proof Rules</a>`]),
@@ -1864,11 +2048,12 @@ function renderSettings(){
   const permissionRows = data.permissionMatrix.map(p=>row([p[0],p[1],p[2],p[3],rowActions(actionBtn("Edit","permission-role"),`<a class="${ui.btn}" href="${pageHref("audit-log")}">Audit</a>`)],{wrap:[1,2,3]}));
   const notificationPrefs = [["Deposit due reminders","3-day and same-day alerts for scheduled tax deposits.",true],["Exception open alerts","Immediate alert when blocking exception is created.",true],["CPA request notifications","When CPA flags a missing record or requests files.",true],["Webhook dead letter alerts","When webhook delivery fails after max retries.",true],["Tip cap warnings","When worker approaches the $25,000 annual tip cap.",false]].map(([l,t,c])=>modalCheck(l,t,c)).join("");
   return `<div class="nexora-source">
-    <div class="tab-row" style="margin-bottom:18px" role="tablist" aria-label="Settings sections">
-      ${settingsTabs.map(([id,label],index)=>`<button class="tab-pill ${index===0 ? "active" : ""}" type="button" data-tab="${id}" role="tab" aria-selected="${index===0 ? "true" : "false"}">${label}</button>`).join("")}
+    <div class="tab-row" style="margin-bottom:10px" role="tablist" aria-label="Settings sections">
+      ${settingsTabs.map(([id,label],index)=>`<button class="tab-pill ${index===0 ? "active" : ""}" type="button" data-tab="${id}" data-tab-summary="${demoEscape(label)} settings are open. Changes in this section should be backed by backend policy and audit logging." role="tab" aria-selected="${index===0 ? "true" : "false"}">${label}</button>`).join("")}
     </div>
+    <div class="tab-context" data-tab-summary>Scope settings are open. Changes in this section should be backed by backend policy and audit logging.</div>
 
-    <div class="tab-panel active" data-tab-panel="scope">
+    <div class="tab-panel active" data-tab-panel="scope" role="tabpanel">
       <div class="grid-2">${panel("US Payroll Scope",`<div class="panel-body"><div class="row"><span>Country</span><span>United States</span></div><div class="row"><span>Tax levels</span><span>Federal, State, Local</span></div><div class="row"><span>Employee forms</span><span>W-4, W-2</span></div><div class="row"><span>Employer returns</span><span>941, 940, SUTA</span></div></div>`,`<button class="btn primary" data-modal="payroll-scope">Configure Scope</button>`)}${panel("Setup Coverage",table(["Setup Area","Required To Operate","Current State","Action"],[
         row(["Business profile","Legal name, DBA, EIN, business address",status("Ready"),`<button class="${ui.btn}" data-modal="payroll-scope">Edit</button>`]),
         row(["Registration footprint","Federal, state, local, SUTA deposit schedule",status("Review"),`<a class="${ui.btn}" href="${pageHref("jurisdictions")}">Open Jurisdictions</a>`]),
@@ -1877,19 +2062,19 @@ function renderSettings(){
       ]))}</div>
     </div>
 
-    <div class="tab-panel" data-tab-panel="roles" hidden>
+    <div class="tab-panel" data-tab-panel="roles" role="tabpanel" hidden>
       <div class="grid-2">${panel("Role & Access",table(["Permission","Payroll Admin","CPA","Auditor","Action"],roleAccessRows),`<button class="btn primary" data-modal="permission-role">Edit Role</button>`)}${panel("Permission Matrix Detail",table(["Role","Can Do","Blocked From","Notes","Actions"],permissionRows),`<button class="btn primary" data-modal="permission-role">Edit Role</button>`)}</div>
     </div>
 
-    <div class="tab-panel" data-tab-panel="security" hidden>
+    <div class="tab-panel" data-tab-panel="security" role="tabpanel" hidden>
       <div class="grid-2">${panel("Data Protection",`<div class="panel-body"><div class="row"><span>SSN/TIN storage</span><span>Tokenized</span></div><div class="row"><span>PII export approval</span><span>Required</span></div><div class="row"><span>Webhook signing</span><span>HMAC SHA-256</span></div><div class="row"><span>Audit retention</span><span>7 years</span></div></div>`,`<button class="btn primary" data-modal="data-protection">Configure Security</button>`)}${panel("Security Enforcement Checklist",`<div class="panel-body list">${listItem("Tokenize tax identifiers","SSN/TIN values are stored as tokens; UI shows masked values by default.","green")}${listItem("Require approval for sensitive exports","PII export, CPA package sharing, and full tax profile download need owner approval.","yellow")}${listItem("Sign integrations","Webhook requests use HMAC signing and failed deliveries route to Webhooks.","blue")}${listItem("Audit every privileged action","Settings, key rotation, exports, and permission changes write to Audit Log.","red")}</div>`,`<a class="btn" href="${pageHref("audit-log")}">Open Audit Log</a>`)}</div>
     </div>
 
-    <div class="tab-panel" data-tab-panel="api" hidden>
+    <div class="tab-panel" data-tab-panel="api" role="tabpanel" hidden>
       ${panel("API Keys",table(["Key ID","Name","Env","Scopes","Created","Status","Owner","Actions"],keyRows),`<button class="btn primary" data-modal="create-api-key">Create Key</button>`)}
     </div>
 
-    <div class="tab-panel" data-tab-panel="alerts" hidden>
+    <div class="tab-panel" data-tab-panel="alerts" role="tabpanel" hidden>
       <div class="grid-2">${panel("Notification Preferences",`<div class="panel-body">${notificationPrefs}</div>`,`<button class="btn primary" data-action-toast="Notification preferences saved.">Save Preferences</button>`)}${panel("Alert Routing",table(["Alert Type","Primary Owner","Backup","Destination"],[
         row(["Deposit due","Merchant Owner","Payroll Admin","Email + in-app"]),
         row(["Exception open","Payroll Admin","Merchant Owner","In-app + badge"]),
@@ -1898,7 +2083,7 @@ function renderSettings(){
       ]),`<a class="btn" href="${pageHref("notifications")}">Open Notification Center</a>`)}</div>
     </div>
 
-    <div class="tab-panel" data-tab-panel="help" hidden>
+    <div class="tab-panel" data-tab-panel="help" role="tabpanel" hidden>
       <div class="grid-2">${panel("Guided Help",`<div class="panel-body list">${listItem("First-time tour","Explain payroll, payout, Tax IQ, OCR, share links, GPS, CPA review.","blue")}${listItem("What next","Show recommended next action when a workflow is blocked.","green")}${listItem("Merchant setup path","Keep first-run setup focused on plan, business profile, payroll connection, worker pay setup, evidence, and billing approval.","yellow")}</div>`,`<button class="btn primary" data-toast="Tour started. Follow the guided steps.">Start Tour</button>`)}${panel("Operational Playbooks",table(["Workflow","When It Appears","Open"],[
         row(["Worker payout setup","Before Quick Pay or Weekly Payroll can pay a worker",`<a class="${ui.btn}" href="${pageHref("payouts")}">Payout Hub</a>`]),
         row(["Receipt evidence","When CPA export or deduction support needs proof",`<a class="${ui.btn}" href="${pageHref("ocr")}">OCR Vault</a>`]),
@@ -3846,6 +4031,19 @@ function toast(msg){
 document.addEventListener("click", event=>{
   const linkRow = event.target.closest("[data-href]");
   if(linkRow) window.location.href = linkRow.dataset.href;
+  const guideScroll = event.target.closest("[data-guide-scroll]");
+  if(guideScroll){
+    const target = document.querySelector(guideScroll.dataset.guideScroll);
+    if(target){
+      target.scrollIntoView({behavior:"smooth", block:"center"});
+      const focusTarget = target.matches("button,input,select,textarea,a") ? target : target.querySelector("button,input,select,textarea,a");
+      setTimeout(()=>focusTarget?.focus?.({preventScroll:true}), 220);
+      toast("Opened main action: " + guideScroll.textContent.trim());
+    } else {
+      toast("Main action is not visible on this screen yet.");
+    }
+    return;
+  }
   const modalBtn = event.target.closest("[data-modal]");
   if(modalBtn){ window._modalCtx = Object.assign({},modalBtn.dataset); openModal(modalBtn.dataset.modal); }
   const close = event.target.closest("[data-close]");
@@ -3876,27 +4074,16 @@ document.addEventListener("click", event=>{
 
   const sourceTab = event.target.closest(".nexora-source .tab-pill");
   if(sourceTab && !sourceTab.matches("a")){
-    const group = sourceTab.closest(".tab-row,.pos-tabs");
-    group?.querySelectorAll(".tab-pill").forEach(tab=>tab.classList.remove("active"));
-    sourceTab.classList.add("active");
-    group?.querySelectorAll("[role='tab']").forEach(tab=>tab.setAttribute("aria-selected", tab === sourceTab ? "true" : "false"));
-    if(sourceTab.dataset.tab){
-      const root = sourceTab.closest(".nexora-source");
-      root?.querySelectorAll("[data-tab-panel]").forEach(panel=>{
-        const active = panel.dataset.tabPanel === sourceTab.dataset.tab;
-        panel.hidden = !active;
-        panel.classList.toggle("active", active);
-      });
-      toast("Opened tab: "+sourceTab.textContent.trim());
-    } else if(currentPage === "reviews"){
-      const filter = sourceTab.dataset.reviewFilter || sourceTab.textContent.trim();
-      document.querySelectorAll(".review-row").forEach(row=>{
-        row.style.display = filter === "All" || row.textContent.includes(filter) ? "" : "none";
-      });
-      toast("Filtered reviews: "+filter);
-    } else {
-      toast("Switched tab: "+sourceTab.textContent.trim());
+    if(sourceTab.dataset.reviewFilter){
+      applyReviewFilter(sourceTab.dataset.reviewFilter);
+      return;
     }
+    if(sourceTab.dataset.tab){
+      activateSourceTab(sourceTab);
+      return;
+    }
+    sourceTab.closest(".tab-row,.pos-tabs")?.querySelectorAll(".tab-pill").forEach(tab=>tab.classList.toggle("active", tab === sourceTab));
+    toast("Switched tab: "+sourceTab.textContent.trim());
     return;
   }
 
@@ -3906,6 +4093,10 @@ document.addEventListener("click", event=>{
       reviewAction.textContent = "Replied";
       reviewAction.classList.remove("primary");
       reviewAction.classList.add("badge-green");
+      const row = reviewAction.closest("[data-review-row]");
+      if(row) row.dataset.reviewStatus = "Replied";
+      const filter = document.querySelector("[data-review-filter].active")?.dataset.reviewFilter || "All";
+      applyReviewFilter(filter,{announce:false});
       toast("Review reply saved. Audit Log will record it in production.");
     }
     return;
@@ -3953,7 +4144,8 @@ document.addEventListener("click", event=>{
   if(checkoutPayMethod && currentPage === "checkout"){
     checkoutPayMethod.closest(".payment-method-grid")?.querySelectorAll("[data-checkout-pay]").forEach(btn=>btn.classList.remove("active"));
     checkoutPayMethod.classList.add("active");
-    toast("Selected payment method: "+checkoutPayMethod.textContent.trim());
+    const summary = updateCheckoutSummary();
+    toast("Selected payment method: "+(summary?.payMethod || checkoutPayMethod.textContent.trim()));
     return;
   }
 
@@ -3961,7 +4153,8 @@ document.addEventListener("click", event=>{
   if(tipChip && currentPage === "checkout"){
     tipChip.closest(".tip-grid")?.querySelectorAll(".tip-chip").forEach(btn=>btn.classList.remove("active"));
     tipChip.classList.add("active");
-    toast("Updated tip: "+tipChip.textContent.trim());
+    const summary = updateCheckoutSummary(tipChip);
+    toast(`Updated tip: ${moneyTextCents(summary?.tip || 0)}. Total is ${moneyTextCents(summary?.total || 0)}.`);
     return;
   }
 
@@ -4120,6 +4313,21 @@ document.addEventListener("input", event=>{
   document.querySelectorAll("tbody tr,.item").forEach(el=>{el.style.display = el.textContent.toLowerCase().includes(q) ? "" : "none";});
 });
 document.addEventListener("keydown", event=>{
+  const activeTab = event.target.closest?.(".nexora-source .tab-pill[role='tab']");
+  if(activeTab && ["ArrowRight","ArrowLeft","Home","End"].includes(event.key)){
+    const tabs = [...activeTab.closest("[role='tablist']")?.querySelectorAll(".tab-pill[role='tab']") || []];
+    if(tabs.length){
+      event.preventDefault();
+      const currentIndex = tabs.indexOf(activeTab);
+      const nextIndex = event.key === "Home" ? 0
+        : event.key === "End" ? tabs.length - 1
+        : event.key === "ArrowRight" ? (currentIndex + 1) % tabs.length
+        : (currentIndex - 1 + tabs.length) % tabs.length;
+      tabs[nextIndex]?.focus();
+      activateSourceTab(tabs[nextIndex]);
+      return;
+    }
+  }
   if(event.key !== "Enter" || !event.target.matches("[data-ai-input]")) return;
   event.preventDefault();
   event.target.closest(".section-box")?.querySelector("[data-ai-send]")?.click();

@@ -141,7 +141,7 @@ const TaxIQLayout = (() => {
       ".sb-item.sb-active .sb-icon{color:#fff;text-shadow:0 0 16px rgba(255,255,255,.28)}",
       /* group labels */
       ".sb-group-label{padding:14px 10px 4px;font-size:10px;font-weight:900;",
-        "text-transform:uppercase;letter-spacing:.09em;color:#68799f;",
+        "text-transform:uppercase;letter-spacing:.09em;color:#8ea0c3;",
         "white-space:nowrap;overflow:hidden;",
         "transition:opacity .15s,height .22s cubic-bezier(.4,0,.2,1),padding .22s cubic-bezier(.4,0,.2,1)}",
       /* brand + account text */
