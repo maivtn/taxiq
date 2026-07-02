@@ -95,13 +95,13 @@ const TaxIQLayout = (() => {
 
   function renderHeader(meta){
     return [
-      '<header class="topbar sticky top-0 z-10 flex min-h-[68px] items-center justify-between gap-5 border-b border-slate-800 bg-slate-900/95 px-6 py-3 backdrop-blur max-md:flex-col max-md:items-start max-md:px-4" style="background:linear-gradient(90deg,rgba(16,23,42,.98),rgba(27,31,58,.98) 48%,rgba(21,31,56,.98));border-color:rgba(88,108,160,.30);box-shadow:0 14px 36px rgba(0,0,0,.20)">',
-        '<div class="title">',
+      '<header class="topbar sticky top-0 z-10 flex min-h-[68px] items-center justify-between gap-5 border-b border-slate-800 bg-slate-900/95 px-6 py-3 backdrop-blur max-lg:flex-col max-lg:items-start max-md:px-4" style="background:linear-gradient(90deg,rgba(16,23,42,.98),rgba(27,31,58,.98) 48%,rgba(21,31,56,.98));border-color:rgba(88,108,160,.30);box-shadow:0 14px 36px rgba(0,0,0,.20)">',
+        '<div class="title min-w-0">',
           '<h2 class="m-0 text-lg font-black text-slate-50" style="text-shadow:0 0 22px rgba(124,58,237,.22)">' + meta.title + '</h2>',
           '<p class="mt-1 text-xs text-slate-500" style="color:#8797c3">' + meta.subtitle + '</p>',
         '</div>',
-        '<div class="tools flex min-w-0 items-center gap-2 max-md:w-full">',
-          '<label class="search flex h-9 min-w-72 items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 text-xs font-bold text-slate-500 max-md:min-w-0 max-md:flex-1" style="border-color:rgba(88,108,160,.42);background:rgba(6,10,22,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)">',
+        '<div class="tools flex min-w-0 items-center gap-2 max-lg:w-full">',
+          '<label class="search flex h-9 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 text-xs font-bold text-slate-500 lg:max-w-sm" style="border-color:rgba(88,108,160,.42);background:rgba(6,10,22,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)">',
             'Search <input class="' + ui.input + '" id="globalSearch" placeholder="runs, workers, issues..." autocomplete="off">',
           '</label>',
           '<a class="' + ui.btn + '" href="' + pageHref("notifications") + '" style="position:relative">',
@@ -141,16 +141,20 @@ const TaxIQLayout = (() => {
         "max-width:180px}",
       /* toggle icon spin */
       "#sb-toggle-icon{transition:transform .22s cubic-bezier(.4,0,.2,1);display:block}",
-      /* mobile: sidebar becomes top bar */
+      /* mobile: sidebar becomes a sticky horizontal icon strip at the top */
       "@media(max-width:767px){",
-        "#taxiq-sidebar{position:static!important;width:100%!important;border-right:none;border-bottom:1px solid rgba(88,108,160,.30)}",
-        "#taxiq-sidebar .sb-brand-row{padding:0 12px}",
+        "#taxiq-sidebar{position:sticky!important;top:0;width:100%!important;z-index:30;border-right:none;border-bottom:1px solid rgba(88,108,160,.30)}",
+        "#taxiq-sidebar .sb-brand-row{height:52px;padding:0 12px}",
         "#taxiq-sidebar .sb-toggle-btn{display:none}",
-        "#taxiq-sidebar .sb-nav{flex-direction:row;overflow-x:auto;overflow-y:hidden;flex:none;padding:6px 8px;gap:2px}",
+        /* the flex-1 utility only sets flex-grow — must set display:flex for row layout to take effect */
+        "#taxiq-sidebar .sb-nav{display:flex;flex-direction:row;flex:none;gap:4px;",
+          "overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;",
+          "padding:6px 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}",
+        "#taxiq-sidebar .sb-nav::-webkit-scrollbar{display:none}",
         "#taxiq-sidebar .sb-group-label{display:none}",
-        "#taxiq-sidebar .sb-item{flex-direction:column;align-items:center;justify-content:center;",
-          "gap:3px;height:auto;min-height:54px;min-width:58px;padding:6px 4px;",
-          "white-space:normal;overflow:visible;border-radius:8px}",
+        "#taxiq-sidebar .sb-item{flex:0 0 auto;flex-direction:column;align-items:center;justify-content:center;",
+          "gap:3px;height:auto;min-height:54px;width:60px;min-width:60px;padding:6px 4px;",
+          "scroll-snap-align:start;white-space:normal;overflow:visible;border-radius:10px}",
         "#taxiq-sidebar .sb-label{font-size:9px;text-align:center;line-height:1.2;",
           "max-width:56px;word-break:break-word;white-space:normal}",
         "#taxiq-sidebar .sb-icon{font-size:16px!important;width:auto!important}",
@@ -262,6 +266,13 @@ const TaxIQLayout = (() => {
     ].join("");
     renderContent();
     applySidebarState(_sbOpen);
+    /* on the mobile horizontal nav strip, bring the active item into view */
+    if (window.matchMedia("(max-width:767px)").matches) {
+      const active = document.querySelector("#taxiq-sidebar .sb-item.sb-active");
+      if (active && active.scrollIntoView) {
+        active.scrollIntoView({ inline: "center", block: "nearest" });
+      }
+    }
     window.taxiqToggleSidebar = function(){
       _sbOpen = !_sbOpen;
       localStorage.setItem("taxiq_sb", _sbOpen ? "1" : "0");
