@@ -11,6 +11,15 @@ const tones = {
 let data = null;
 
 let activeGpsTrip = null;
+const IRS_MILEAGE_2026 = {
+  year:"2026",
+  effective:"Jan 1, 2026",
+  business:0.725,
+  medical:0.205,
+  moving:0.205,
+  charity:0.14,
+  source:"IRS IR-2025-128 / Notice 2026-10"
+};
 
 function gpsToRad(value){return value * Math.PI / 180;}
 function gpsDistanceMiles(points){
@@ -31,6 +40,10 @@ function gpsDistanceMiles(points){
 function gpsPointLabel(point){
   if(!point) return "Waiting for GPS";
   return point.label || `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
+}
+function gpsDeductionText(miles, rate=IRS_MILEAGE_2026.business){
+  const amount = Math.round((((Number(miles) || 0) * rate) + 1e-9) * 100) / 100;
+  return moneyText(amount);
 }
 
 function statusClass(v){return /posted|delivered|ready|active|verified|connected|confirmed|extracted|calculated|candidate|qualified|paid|completed|covered|pass/i.test(v) ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 before:bg-emerald-400" : /review|pending|draft|retry|requested|watch|needs|invited|medium|progress/i.test(v) ? "border-amber-500/30 bg-amber-500/10 text-amber-300 before:bg-amber-400" : /failed|dead|missing|open|high|cancelled|blocked|required|not ready/i.test(v) ? "border-rose-500/30 bg-rose-500/10 text-rose-300 before:bg-rose-400" : "border-indigo-500/30 bg-indigo-500/10 text-indigo-300 before:bg-indigo-400";}
@@ -1714,13 +1727,35 @@ function renderShareLinks(){
 
 /* ─── GPS MILEAGE ─── */
 function renderGps(){
-  const tripRows = data.trips.map(t=>row([`<span class="mono">${t[0]}</span>`,...t.slice(1,4),status(t[4]),rowActions(actionBtn("View","view-trip"),actionBtn("Edit","edit-trip"),actionBtn("Mark Reviewed",""),actionBtn("Delete","delete-trip"))]));
-  const totalMiles = data.trips.reduce((sum,t)=>sum + (parseFloat(t[2]) || 0), 0).toFixed(1);
+  const tripRows = data.trips.map(t=>{
+    const miles = parseFloat(t[2]) || 0;
+    const canEstimate = /candidate|approved|ready/i.test(t[4]);
+    const deduction = canEstimate ? gpsDeductionText(miles) : "CPA review";
+    return row([`<span class="mono">${t[0]}</span>`,...t.slice(1,4),deduction,status(t[4]),rowActions(actionBtn("View","view-trip"),actionBtn("Edit","edit-trip"),actionBtn("Mark Reviewed",""),actionBtn("Delete","delete-trip"))]);
+  });
+  const totalMilesNumber = data.trips.reduce((sum,t)=>sum + (parseFloat(t[2]) || 0), 0);
+  const eligibleMilesNumber = data.trips.filter(t=>/candidate|approved|ready/i.test(t[4])).reduce((sum,t)=>sum + (parseFloat(t[2]) || 0), 0);
+  const totalMiles = totalMilesNumber.toFixed(1);
+  const eligibleMiles = eligibleMilesNumber.toFixed(1);
+  const reviewMiles = Math.max(0,totalMilesNumber - eligibleMilesNumber).toFixed(1);
   const candidateCount = data.trips.filter(t=>/candidate/i.test(t[4])).length;
   const policyCount = data.trips.filter(t=>/check|review/i.test(t[4])).length;
   const activePanel = activeGpsTrip ? panel("Active Trip Tracking",`<div class="panel-body list">${listItem("Tracking in progress",`${activeGpsTrip.startLabel} → destination pending. ${activeGpsTrip.points.length} GPS point(s) captured so far.`,"green")}${listItem("Stop to save A → B route","Open Start Trip and press Stop Trip when you arrive at the destination.","blue")}</div>`,`<button class="btn primary" data-modal="trip">Stop Trip</button>`) : "";
-  const deductionEstimate = moneyText(Number(totalMiles) * 0.725);
-  return `<div class="grid-4" style="margin-bottom:14px">${[[ "Trips",String(data.trips.length),"Tracked or pending review","green"],["Total Miles",totalMiles,"Current demo records","cyan"],["2026 IRS Rate","$0.725/mi","Business mileage estimate","yellow"],["Est. Deduction",deductionEstimate,"Before CPA review","red"]].map(metric).join("")}</div>${activePanel}<div class="grid-2" style="margin-bottom:14px">${panel("Route Preview",`<div class="panel-body">${freeRouteMap("Salon to supply store")}<div class="sub">Free OpenStreetMap preview for a saved point A → point B business route. Production should store user consent, GPS coordinates, route source, and CPA review status.</div></div>`)}${panel("Mileage Policy Notes",`<div class="panel-body list">${listItem("Business purpose required","Every trip must explain why it was business related before export.","green")}${listItem("Commute-like routes need CPA review","Home to regular workplace may need special review and cannot be auto-approved.","yellow")}${listItem("Rate versioning","Rate should be stored by tax year and updated from official source monitor.","blue")}</div>`)}</div>${panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button>`)}${panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence.","When mileage is claimed"],["Point A → Point B route","Saves the route when user presses Stop at destination.","Yes"],["Business purpose","Explains deduction relevance.","Yes"],["Vehicle profile","Supports owner/worker mileage records.","Recommended"]].map(row)))}`;
+  const deductionEstimate = gpsDeductionText(eligibleMilesNumber);
+  const rateRows = [
+    row(["Business",`${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢ / mile`,"Use for eligible business miles; app estimates Schedule C support after CPA review."],{wrap:2}),
+    row(["Medical",`${(IRS_MILEAGE_2026.medical * 100).toFixed(1)}¢ / mile`,"Tracked separately; not mixed with salon business deduction."],{wrap:2}),
+    row(["Moving",`${(IRS_MILEAGE_2026.moving * 100).toFixed(1)}¢ / mile`,"Only for certain active-duty Armed Forces and certain intelligence community moves."],{wrap:2}),
+    row(["Charitable",`${(IRS_MILEAGE_2026.charity * 100).toFixed(0)}¢ / mile`,"Charity rate is separate and not used for business route estimates."],{wrap:2})
+  ];
+  const qualificationRows = [
+    row(["Business purpose","Required before export","Why did the owner/worker drive? Example: supplies, bank deposit, client visit."],{wrap:2}),
+    row(["Business vs personal split","Required","Only business-use portion is estimated; personal miles are excluded."],{wrap:2}),
+    row(["Standard vs actual expense","Owner/CPA choice","Standard mileage is optional; actual expenses may be compared outside GPS log."],{wrap:2}),
+    row(["Parking/tolls","Separate add-on","Business parking fees and tolls can be tracked separately from mileage."],{wrap:2}),
+    row(["Commute-like route","CPA review","Home to regular workplace is flagged instead of auto-counted."],{wrap:2})
+  ];
+  return `<div class="grid-4" style="margin-bottom:14px">${[[ "Trips",String(data.trips.length),`${candidateCount} candidates · ${policyCount} review`,"green"],["Eligible Miles",eligibleMiles,`${reviewMiles} mi held for CPA review`,"cyan"],["2026 IRS Rate",`${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢/mi`,`Effective ${IRS_MILEAGE_2026.effective}`,"yellow"],["Est. Deduction",deductionEstimate,"Eligible miles only","red"]].map(metric).join("")}</div>${activePanel}<div class="notice" style="margin-bottom:14px"><strong>2026 U.S. business mileage:</strong> Tax IQ estimates eligible business trips at ${(IRS_MILEAGE_2026.business * 100).toFixed(1)} cents per mile. Standard mileage is optional; owner/CPA can choose actual expenses instead when eligible.</div><div class="grid-2" style="margin-bottom:14px">${panel("Route Preview",`<div class="panel-body">${freeRouteMap("Salon to supply store")}<div class="sub">Free OpenStreetMap preview for a saved point A → point B business route. Production should store user consent, GPS coordinates, route source, tax year rate, and CPA review status.</div></div>`)}${panel("IRS 2026 Mileage Rates",table(["Use","2026 Rate","How Tax IQ Applies It"],rateRows),`<button class="btn" data-modal="mileage-rules">View Rules</button>`)}</div><div class="grid-2" style="margin-bottom:14px">${panel("Deduction Qualification",table(["Rule","App Gate","Owner/CPA Note"],qualificationRows))}${panel("Mileage Policy Notes",`<div class="panel-body list">${listItem("Business purpose required","Every trip must explain why it was business related before export.","green")}${listItem("Commute-like routes need CPA review","Home to regular workplace is held out of the automatic estimate until reviewed.","yellow")}${listItem("Rate versioning","Saved trips store the tax year and mileage rate used for the estimate.","blue")}${listItem("Employee unreimbursed travel warning","Unreimbursed employee travel is generally not auto-deducted; route to CPA review when worker type is W-2.","red")}</div>`)}</div>${panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Est. Deduction","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button> <button class="btn" data-toast="Mileage export queued for CPA review.">Export Mileage Log</button>`)}${panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence and distance calculation.","When mileage is claimed"],["Point A → Point B route","Saves the route when user presses Stop at destination.","Yes"],["Date/time + tax year","Locks the correct IRS mileage rate version.","Yes"],["Business purpose","Explains deduction relevance.","Yes"],["Business/personal classification","Prevents personal or commute-like trips from auto-counting.","Yes"],["Vehicle profile","Supports owner/worker mileage records and method choice.","Recommended"],["Parking/tolls","Separately deductible when business-related; not part of cents-per-mile amount.","Optional"]].map(r=>row(r,{wrap:1}))))}`;
 }
 
 /* ─── CPA REVIEW ─── */
@@ -2993,7 +3028,29 @@ const modalCopy = {
     ].join("")
   },
 
-  /* GPS MILEAGE MODALS */
+	  /* GPS MILEAGE MODALS */
+  "mileage-rules":{
+    title:"2026 IRS Mileage Deduction Rules",
+    body:"Review the official 2026 standard mileage rates and what Tax IQ requires before estimating a business mileage deduction.",
+    cta:"Close",
+    afterOpen(modal){
+      const cta = modal.querySelector("#modalMainCta");
+      if(cta){
+        cta.removeAttribute("data-action-toast");
+        cta.setAttribute("data-close","");
+      }
+    },
+    content:()=>[
+      modalSection("2026 Standard Mileage Rates", table(["Use","Rate","Tax IQ Treatment"],[
+        row(["Business",`${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢ per mile`,"Used for eligible business route estimates."],{wrap:2}),
+        row(["Medical",`${(IRS_MILEAGE_2026.medical * 100).toFixed(1)}¢ per mile`,"Tracked separately from salon business miles."],{wrap:2}),
+        row(["Moving",`${(IRS_MILEAGE_2026.moving * 100).toFixed(1)}¢ per mile`,"Only for certain active-duty Armed Forces and certain intelligence community moves."],{wrap:2}),
+        row(["Charitable",`${(IRS_MILEAGE_2026.charity * 100).toFixed(0)}¢ per mile`,"Separate charity category; not used for business trips."],{wrap:2})
+      ])),
+      modalSection("Business Deduction Gate", `<div class="list">${modalCheck("Business purpose is documented","The log must explain why the trip was for the business.")}${modalCheck("Personal/commute miles are excluded","Commute-like routes are held for CPA review and not auto-counted.")}${modalCheck("Vehicle and date are saved","Trip stores vehicle, date/time, tax year, and rate version.")}${modalCheck("Owner/CPA can choose actual expenses instead","Standard mileage is optional when the taxpayer qualifies.")}${modalCheck("Parking and tolls tracked separately","Business parking/tolls are not part of the cents-per-mile rate.")}</div>`),
+      modalSection("Source", `<div class="notice">${IRS_MILEAGE_2026.source}: business rate ${(IRS_MILEAGE_2026.business * 100).toFixed(1)} cents per mile effective ${IRS_MILEAGE_2026.effective}. Tax IQ prepares records; final deduction decisions should be reviewed by CPA/bookkeeper. <a class="text-link" href="https://www.irs.gov/newsroom/irs-sets-2026-business-standard-mileage-rate-at-725-cents-per-mile-up-25-cents" target="_blank" rel="noopener">Open IRS source</a></div>`)
+    ].join("")
+  },
   trip:{
     title:"Start GPS Trip",
     body:"Start at point A, stop at point B, then save route, miles, time, vehicle, and business purpose for CPA review.",
@@ -3023,6 +3080,7 @@ const modalCopy = {
         setText("#gpsEndValue", running ? "Destination pending" : readField("#gpsEndLabel") || "Point B not set");
         setText("#gpsPointCount", running ? String(activeGpsTrip.points.length) : "0");
         setText("#gpsLiveMiles", miles);
+        setText("#gpsLiveDeduction", gpsDeductionText(Number(miles)));
         const startBtn = $("#gpsStartBtn"), stopBtn = $("#gpsStopBtn");
         if(startBtn) startBtn.disabled = running;
         if(stopBtn) stopBtn.disabled = !running;
@@ -3072,9 +3130,13 @@ const modalCopy = {
           const miles = gpsMiles > 0.01 ? gpsMiles : (Number.isFinite(expectedMiles) && expectedMiles > 0 ? expectedMiles : 0);
           const id = "trip_" + (data.trips.length + 1).toString().padStart(3,"0");
           const route = `${activeGpsTrip.startLabel} to ${endLabel}`;
+          const estimatedDeduction = miles * IRS_MILEAGE_2026.business;
           data.trips.unshift([id, route, miles.toFixed(1), activeGpsTrip.purpose, "Deduction candidate", {
             vehicle: activeGpsTrip.vehicle,
             tripType: activeGpsTrip.tripType,
+            taxYear: IRS_MILEAGE_2026.year,
+            mileageRate: IRS_MILEAGE_2026.business,
+            estimatedDeduction: estimatedDeduction.toFixed(2),
             startedAt: activeGpsTrip.startedAt.toISOString(),
             endedAt: new Date().toISOString(),
             start: gpsPointLabel(finalPoints[0]),
@@ -3084,7 +3146,7 @@ const modalCopy = {
           activeGpsTrip = null;
           document.getElementById("modalRoot").classList.remove("open");
           renderPage();
-          toast(`Trip saved: ${route} (${miles.toFixed(1)} mi)`);
+          toast(`Trip saved: ${route} (${miles.toFixed(1)} mi, ${gpsDeductionText(miles)} est.)`);
         }
       });
 
@@ -3100,14 +3162,15 @@ const modalCopy = {
           <label class="form-field"><span>Expected miles fallback</span><input id="gpsExpectedMiles" class="form-control" value="7.8"></label>
           <label class="form-field"><span>Business purpose</span><input id="gpsPurpose" class="form-control" value="Supplies for salon operations"></label>
         </div>
-        <div class="notice" style="margin-top:12px" id="gpsMessage">Press Start at point A. When you arrive at point B, press Stop Trip to save the route.</div>
+        <div class="notice" style="margin-top:12px" id="gpsMessage">Press Start at point A. When you arrive at point B, press Stop Trip to save the route. 2026 business estimate uses ${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢ per mile.</div>
       `)}
       ${modalSection("Live Tracking Status", table(["Field","Value"],[
         row(["State",`<span id="gpsState">Ready to start</span>`]),
         row(["Start",`<span id="gpsStartValue">Point A not set</span>`]),
         row(["Destination",`<span id="gpsEndValue">Point B not set</span>`]),
         row(["GPS points captured",`<span id="gpsPointCount">0</span>`]),
-        row(["Live miles",`<span id="gpsLiveMiles">0.00</span>`])
+        row(["Live miles",`<span id="gpsLiveMiles">0.00</span>`]),
+        row(["Live deduction estimate",`<span id="gpsLiveDeduction">$0</span> at ${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢/mile`])
       ]))}
       ${modalSection("Actions", `
         <div class="panel-body" style="display:flex;gap:10px;flex-wrap:wrap">
@@ -3115,7 +3178,7 @@ const modalCopy = {
           <button class="btn" id="gpsStopBtn" type="button" disabled>Stop Trip at Point B & Save</button>
         </div>
       `)}
-      ${modalSection("Deduction Evidence", `<div class="list">${modalCheck("Capture GPS start/end","Required for route evidence.")}${modalCheck("Save A → B route when stopped","The trip is saved only after user presses Stop at destination.")}${modalCheck("Require business purpose","Needed before CPA package export.")}${modalCheck("Flag commute-like routes","Trips from home to regular workplace need CPA review.", false)}</div>`)}
+      ${modalSection("Deduction Evidence", `<div class="list">${modalCheck("Capture GPS start/end","Required for route evidence.")}${modalCheck("Save A → B route when stopped","The trip is saved only after user presses Stop at destination.")}${modalCheck("Store 2026 rate version","Trip stores ${IRS_MILEAGE_2026.year} business rate ${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢ per mile.")}${modalCheck("Require business purpose","Needed before CPA package export.")}${modalCheck("Flag commute-like routes","Trips from home to regular workplace need CPA review.", false)}</div>`)}
     `
   },
   "view-trip":{
@@ -3132,7 +3195,8 @@ const modalCopy = {
         modalField("Purpose","Business supplies")
       ])),
       modalSection("Deduction Analysis", table(["Item","Value"],[
-        row(["Estimated deduction","$5.28 (at IRS 67¢/mile rate)"]),
+        row(["Estimated deduction",`${gpsDeductionText(7.8)} (7.8 mi × ${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢ IRS ${IRS_MILEAGE_2026.year} business rate)`]),
+        row(["Rate source",IRS_MILEAGE_2026.source]),
         row(["Status",status("Deduction candidate")]),
         row(["CPA recommendation","Include in mileage log — purpose is clearly business."]),
         row(["Proof","GPS track start/end captured"])
@@ -3154,6 +3218,11 @@ const modalCopy = {
         modalField("Start location","Salon — 1234 Main St")
       ])),
       modalSection("Purpose & Evidence", `<div class="list">${modalCheck("Business purpose documented","Required for deduction claim.")}${modalCheck("GPS proof captured","Start and end coordinates logged.")}${modalCheck("Submit to CPA package","Include in next export.")}</div>`),
+      modalSection("Rate Version", table(["Field","Value"],[
+        row(["Tax year",IRS_MILEAGE_2026.year]),
+        row(["Business rate",`${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢ per mile`]),
+        row(["Method","Standard mileage estimate; CPA can compare actual expenses."])
+      ])),
       modalSection("Edit Reason", modalField("Reason for change","Correcting mileage from estimated to actual GPS reading.","textarea"))
     ].join("")
   },
@@ -3499,7 +3568,7 @@ const modalCopy = {
         row(["Trip ID","trip_001"]),
         row(["Route","Home to salon — 18.4 mi"]),
         row(["Status",status("Needs CPA policy check")]),
-        row(["Deduction estimate","~$12.33 removed from mileage total"])
+        row(["Deduction estimate",`${gpsDeductionText(18.4)} held for CPA review before counting`])
       ])),
       modalSection("Deletion Reason (Required)", modalField("Reason","Commute route — CPA confirmed home-to-workplace is not deductible.","textarea")),
       modalSection("Policy", `<div class="list">${listItem("Soft delete only","GPS coordinates and trip data preserved in audit.","blue")}${listItem("Mileage adjusted","YTD deduction total updates when trip is removed.","yellow")}${listItem("Audit logged","Deletion is permanent and audit-trailed. Cannot be undone.","red")}</div>`)
