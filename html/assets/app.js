@@ -106,6 +106,47 @@ function freeRouteMap(routeName="Salon to supply store"){
 function demoEscape(value){
   return String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 }
+function quickPayMethodText(method){
+  const labels = {
+    zelle:"Zelle",
+    venmo:"Venmo",
+    cashapp:"Cash App",
+    cash:"Cash",
+    check:"Check",
+    bank:"Bank/DD"
+  };
+  return labels[method] || method || "Zelle";
+}
+function quickPayMethodIcon(method){
+  const icons = {
+    zelle:"🕊️",
+    venmo:"💜",
+    cashapp:"💚",
+    cash:"💵",
+    check:"📝",
+    bank:"🏦"
+  };
+  return icons[method] || "💳";
+}
+function quickPayMethodFieldLabel(method){
+  const labels = {
+    zelle:"Zelle email / phone number",
+    venmo:"Venmo username",
+    cashapp:"Cash App handle",
+    cash:"Cash receipt / drawer reference",
+    check:"Check number",
+    bank:"Bank / direct deposit token"
+  };
+  return labels[method] || "Payment reference";
+}
+function syncQuickPayWorkerMethod(root=document, worker){
+  const scope = root.querySelector?.(".nexora-source") || document.querySelector(".nexora-source");
+  if(!scope || !worker) return;
+  const primary = worker.dataset.primaryMethod || "zelle";
+  scope.querySelectorAll(".method-grid button.method-card").forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.method === primary);
+  });
+}
 function updateQuickPayPreview(scope=document){
   const root = scope.querySelector?.(".nexora-source") || document.querySelector(".nexora-source");
   if(!root) return;
@@ -117,20 +158,37 @@ function updateQuickPayPreview(scope=document){
   const amountInput = root.querySelector(".source-input.amount");
   const payIcon = payCard?.querySelector(".pay-type-icon")?.textContent.trim() || "💰";
   const payTitle = payCard?.querySelector(".text-lg")?.textContent.trim() || "Tip Payout";
-  const workerName = worker?.querySelector(".text-sm")?.childNodes?.[0]?.textContent?.trim() || "Brian L.";
-  const methodText = method?.textContent.replace(/\s+/g," ").trim() || "Zelle";
+  const workerName = worker?.dataset.workerName || worker?.querySelector(".text-sm")?.childNodes?.[0]?.textContent?.trim() || "Brian L.";
+  const methodKey = method?.dataset.method || worker?.dataset.primaryMethod || "zelle";
+  const methodText = `${quickPayMethodIcon(methodKey)} ${quickPayMethodText(methodKey)}`;
+  const primaryMethod = worker?.dataset.primaryMethod || "zelle";
+  const backupMethod = worker?.dataset.backupMethod || "venmo";
+  const activeContact = methodKey === backupMethod ? worker?.dataset.backupContact : methodKey === primaryMethod ? worker?.dataset.primaryContact : "";
   const amount = moneyNumber(amountInput?.value || "$0");
   const iconEl = preview.querySelector(".text-3xl");
   const titleEl = preview.querySelector(".text-sm.font-black");
   const nameEl = preview.querySelector(".rounded-lg.bg-slate-800");
   const amountEl = preview.querySelector(".preview-amount");
   const rows = preview.querySelectorAll(".preview-row strong");
+  const profileTitle = root.querySelector("[data-worker-pay-title]");
+  const primaryProfile = root.querySelector("[data-primary-profile]");
+  const backupProfile = root.querySelector("[data-backup-profile]");
+  const fieldLabel = root.querySelector("[data-payout-field-label]");
+  const contactInput = root.querySelector("[data-payout-contact]");
   const cta = preview.querySelector("button.source-button");
   if(iconEl) iconEl.textContent = payIcon;
   if(titleEl) titleEl.textContent = payTitle;
   if(nameEl) nameEl.textContent = workerName;
   if(amountEl) amountEl.textContent = moneyText(amount);
   if(rows[0]) rows[0].textContent = methodText.toUpperCase();
+  if(profileTitle) profileTitle.textContent = `${quickPayMethodIcon(primaryMethod)} ${workerName.toUpperCase()} PAYMENT INFO (SELF-SETUP)`;
+  if(primaryProfile) primaryProfile.innerHTML = `<strong>${quickPayMethodIcon(primaryMethod)} ${quickPayMethodText(primaryMethod)}</strong> <span class="badge badge-green">PRIMARY</span> <span class="badge badge-green">Verified</span><br><small>${demoEscape(worker?.dataset.primaryContact || "")}</small>`;
+  if(backupProfile) backupProfile.innerHTML = `<strong>${quickPayMethodIcon(backupMethod)} ${quickPayMethodText(backupMethod)}</strong> <span class="badge badge-gray">BACKUP</span><br><small>${demoEscape(worker?.dataset.backupContact || "")}</small>`;
+  if(fieldLabel) fieldLabel.textContent = quickPayMethodFieldLabel(methodKey);
+  if(contactInput && document.activeElement !== contactInput){
+    contactInput.placeholder = activeContact || "Enter payment reference";
+    contactInput.value = activeContact || "";
+  }
   if(cta){
     cta.textContent = amount > 0 ? "Preview ready - use Create Payment Now" : "Enter amount to preview";
     cta.classList.toggle("primary", amount > 0);
@@ -547,8 +605,8 @@ function renderPos(){
       <div class="source-subtitle" style="color:#a78bfa;font-weight:900">09:56:01</div>
     </div>
     <div class="pos-tabs">
-      <button class="tab-pill">🟢 Check In</button>
-      <button class="tab-pill active">📋 Turn Board</button>
+      <span class="badge badge-green">🟢 Check-in queue: 3 waiting</span>
+      <span class="badge badge-purple">📋 Turn Board active</span>
       <a class="tab-pill" href="${pageHref("checkout")}">💳 Checkout</a>
     </div>
     <div class="pos-grid">${stationCards}</div>
@@ -699,7 +757,7 @@ function renderReviews(){
     <div class="section-box">
       <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
         Recent Reviews
-        <div class="tab-row"><span class="tab-pill active">All</span><span class="tab-pill">Google</span><span class="tab-pill">Yelp</span><span class="tab-pill">Facebook</span></div>
+        <div class="tab-row"><button class="tab-pill active" data-review-filter="All">All</button><button class="tab-pill" data-review-filter="Google">Google</button><button class="tab-pill" data-review-filter="Yelp">Yelp</button><button class="tab-pill" data-review-filter="Facebook">Facebook</button></div>
       </div>
       <div>${reviewRows}</div>
     </div>
@@ -815,6 +873,27 @@ function renderRuns(){
 
 /* ─── QUICK PAY ─── */
 function renderQuickPay(){
+  const payTypes = [
+    ["💰","Tip Payout","Cash · Pool · Adjustment",true],
+    ["💼","Wage Payout","Payout · Advance · Adjustment",false],
+    ["🎁","Bonus","KPI · Holiday · Referral",false]
+  ].map(([icon,title,sub,active])=>`<button type="button" class="pay-type-card ${active ? "active" : ""}"><div><div class="pay-type-icon">${icon}</div><div class="text-lg font-black ${active ? "text-amber-400" : "text-slate-200"}">${title}</div><div class="mt-2 text-xs text-slate-500">${sub}</div></div></button>`).join("");
+  const workers = [
+    ["AT","Amy T.","1099","amy.t@gmail.com","","zelle","amy.t@gmail.com","venmo","@amytran-nails"],
+    ["LP","Linda P.","1099","linda.p@gmail.com","blue","zelle","linda.p@gmail.com","cashapp","$lindapnails"],
+    ["KM","Kevin M.","W2","kevin.m@gmail.com","green","bank","****4521","check","Backup"],
+    ["SJ","Sarah J.","1099","sarah.j@gmail.com","pink","cashapp","$sarahj_nails","zelle","sarah.j@gmail.com"],
+    ["BL","Brian L.","1099","brian.l@gmail.com","orange","venmo","@brianlnails","zelle","brian.l@gmail.com",true]
+  ];
+  const workerCards = workers.map(([initials,name,type,email,color,primaryMethod,primaryContact,backupMethod,backupContact,active])=>`<button type="button" class="worker-item ${active ? "active" : ""}" data-worker-name="${demoEscape(name)}" data-primary-method="${primaryMethod}" data-primary-contact="${demoEscape(primaryContact)}" data-backup-method="${backupMethod}" data-backup-contact="${demoEscape(backupContact)}"><div class="avatar ${color || ""}">${initials}</div><div><div class="text-sm font-black text-slate-100">${name} <span class="badge ${type==="W2" ? "badge-blue" : "badge-purple"}">${type}</span></div><div class="text-xs text-slate-500">${email}</div></div><div class="pay-method-pill">${quickPayMethodIcon(primaryMethod)} ${quickPayMethodText(primaryMethod)} <span>✓</span></div></button>`).join("");
+  const methodButtons = [
+    ["zelle","Zelle"],
+    ["cash","Cash"],
+    ["venmo","Venmo"],
+    ["cashapp","Cash App"],
+    ["check","Check"],
+    ["bank","Bank/DD"]
+  ].map(([key,label])=>`<button type="button" class="method-card ${key==="venmo" ? "active" : ""}" data-method="${key}">${quickPayMethodIcon(key)} ${label}</button>`).join("");
   return `<div class="nexora-source">
     <div class="source-hero">
       <div><h2 class="source-title">⚡ Quick Pay</h2><div class="source-subtitle">Create payments · Tips · Wages · Bonuses · Advances</div></div>
@@ -826,20 +905,14 @@ function renderQuickPay(){
         <div class="section-box">
           <div class="section-box-title">① PAYMENT TYPE</div>
           <div class="pay-type-grid" style="padding:16px">
-            <div class="pay-type-card active"><div><div class="pay-type-icon">💰</div><div class="text-lg font-black text-amber-400">Tip Payout</div><div class="mt-2 text-xs text-slate-500">Cash · Pool · Adjustment</div></div></div>
-            <div class="pay-type-card"><div><div class="pay-type-icon">💼</div><div class="text-lg font-black text-slate-200">Wage Payout</div><div class="mt-2 text-xs text-slate-500">Payout · Advance · Adjustment</div></div></div>
-            <div class="pay-type-card"><div><div class="pay-type-icon">🎁</div><div class="text-lg font-black text-slate-200">Bonus</div><div class="mt-2 text-xs text-slate-500">KPI · Holiday · Referral</div></div></div>
+            ${payTypes}
           </div>
         </div>
 
         <div class="section-box">
           <div class="section-box-title">② SELECT TECHNICIAN</div>
           <div class="worker-list" style="padding:16px">
-            <div class="worker-item"><div class="avatar">AT</div><div><div class="text-sm font-black text-slate-100">Amy T. <span class="badge badge-purple">1099</span></div><div class="text-xs text-slate-500">amy.t@gmail.com</div></div><div class="pay-method-pill">🕊️ Zelle <span>✓</span></div></div>
-            <div class="worker-item"><div class="avatar blue">LP</div><div><div class="text-sm font-black text-slate-100">Linda P. <span class="badge badge-purple">1099</span></div><div class="text-xs text-slate-500">linda.p@gmail.com</div></div><div class="pay-method-pill">🕊️ Zelle <span>✓</span></div></div>
-            <div class="worker-item"><div class="avatar green">KM</div><div><div class="text-sm font-black text-slate-100">Kevin M. <span class="badge badge-blue">W2</span></div><div class="text-xs text-slate-500">kevin.m@gmail.com</div></div><div class="pay-method-pill">🏦 Direct Deposit <span>✓</span></div></div>
-            <div class="worker-item"><div class="avatar pink">SJ</div><div><div class="text-sm font-black text-slate-100">Sarah J. <span class="badge badge-purple">1099</span></div><div class="text-xs text-slate-500">sarah.j@gmail.com</div></div><div class="pay-method-pill">💚 Cash App <span>✓</span></div></div>
-            <div class="worker-item active"><div class="avatar orange">BL</div><div><div class="text-sm font-black text-slate-100">Brian L. <span class="badge badge-purple">1099</span></div><div class="text-xs text-slate-500">brian.l@gmail.com</div></div><div class="pay-method-pill" style="background:rgba(124,58,237,.14)">💜 Venmo <span style="color:#f59e0b">✓</span></div></div>
+            ${workerCards}
           </div>
         </div>
 
@@ -857,14 +930,14 @@ function renderQuickPay(){
           <div class="section-box-title">④ PAYMENT METHOD <span class="badge badge-green" style="float:right">✓ From technician profile</span></div>
           <div style="padding:16px;display:grid;gap:14px">
             <div class="alert alert-green" style="margin:0">
-              <strong>🕊️ AMY T. PAYMENT INFO (SELF-SETUP)</strong>
+              <strong data-worker-pay-title>💜 BRIAN L. PAYMENT INFO (SELF-SETUP)</strong>
               <div class="method-grid" style="margin-top:10px">
-                <div class="method-card active">🕊️ Zelle <span class="badge badge-green">Verified</span><br><small>amy.t@gmail.com</small></div>
-                <div class="method-card">💜 Venmo <span class="badge badge-gray">Backup</span><br><small>@amytran-nails</small></div>
+                <div class="pay-channel" data-primary-profile><strong>💜 Venmo</strong> <span class="badge badge-green">PRIMARY</span> <span class="badge badge-green">Verified</span><br><small>@brianlnails</small></div>
+                <div class="pay-channel" data-backup-profile><strong>🕊️ Zelle</strong> <span class="badge badge-gray">BACKUP</span><br><small>brian.l@gmail.com</small></div>
               </div>
             </div>
-            <div class="method-grid">${["🕊️ Zelle","💵 Cash","💜 Venmo","💚 Cash App","📝 Check","🏦 Bank/DD"].map((m,i)=>`<button class="method-card ${i===0?"active":""}">${m}</button>`).join("")}</div>
-            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">🕊️ Zelle email / phone number</div><input class="source-input" placeholder="email@example.com or +1 (xxx)"></label>
+            <div class="method-grid">${methodButtons}</div>
+            <label><div class="mb-2 text-xs font-black uppercase text-slate-500" data-payout-field-label>Venmo username</div><input class="source-input" data-payout-contact value="@brianlnails" placeholder="@username or payment reference"></label>
           </div>
         </div>
 
@@ -897,7 +970,7 @@ function renderQuickPay(){
             <div class="recent-row"><span>💰</span><div><strong>Cash Tip Adjustment</strong><br><small class="gray">Linda P. · 2024-06-18</small></div><strong class="orange">$45</strong></div>
             <div class="recent-row"><span>💼</span><div><strong>Salary Advance</strong><br><small class="gray">Kevin M. · 2024-06-10</small></div><strong class="blue">$300</strong></div>
           </div>
-          <div style="padding:12px 16px;text-align:center;color:#64748b;font-size:12px">View all →</div>
+          <div style="padding:12px 16px;text-align:center"><a class="source-button" href="${pageHref("payouts")}" style="display:inline-flex;height:30px">View all payouts</a></div>
         </div>
       </div>
     </div>
@@ -1036,9 +1109,9 @@ function renderWeeklyPayroll(){
       <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
         📊 Detailed Payroll
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <span class="badge badge-gray">📄 Export PDF</span>
-          <span class="badge badge-gray">📊 Export CSV</span>
-          <span class="badge badge-purple">⚡ Pay All ($7,325.69)</span>
+          <button class="badge badge-gray" data-toast="Weekly payroll PDF export queued.">📄 Export PDF</button>
+          <button class="badge badge-gray" data-toast="Weekly payroll CSV export queued.">📊 Export CSV</button>
+          <a class="badge badge-purple" href="${pageHref("quick-pay")}">⚡ Pay All ($7,325.69)</a>
         </div>
       </div>
       <table>
@@ -1051,41 +1124,41 @@ function renderWeeklyPayroll(){
             <td><span class="badge badge-orange">1099</span></td>
             <td>50.5h</td><td class="tip">$2,195</td><td>$543</td><td>$768</td><td class="tip">+$176</td><td class="tip">$318</td>
             <td class="amt"><strong>$1,804.85</strong></td>
-            <td><span class="badge badge-green">➡ Pay</span></td>
+            <td><a class="badge badge-green" href="${pageHref("quick-pay")}">Pay</a></td>
           </tr>
           <tr>
             <td><strong>Linda P.</strong><br><small style="color:#8b949e;">Commission</small></td>
             <td><span class="badge badge-orange">1099</span></td>
             <td>50.5h</td><td class="tip">$2,853</td><td>$0</td><td>$1,141</td><td class="tip">+$371</td><td class="tip">$412</td>
             <td class="amt"><strong>$1,924.09</strong></td>
-            <td><span class="badge badge-green">➡ Pay</span></td>
+            <td><a class="badge badge-green" href="${pageHref("quick-pay")}">Pay</a></td>
           </tr>
           <tr>
             <td><strong>Kevin M.</strong><br><small style="color:#8b949e;">Hourly</small></td>
             <td><span class="badge badge-blue">W-2</span></td>
             <td>48.5h</td><td class="gray">$0</td><td>$720</td><td>$0</td><td class="gray">—</td><td class="tip">$223</td>
             <td class="amt"><strong>$1,019.50</strong></td>
-            <td><span class="badge badge-green">➡ Pay</span></td>
+            <td><a class="badge badge-green" href="${pageHref("quick-pay")}">Pay</a></td>
           </tr>
           <tr>
             <td><strong>Sarah J.</strong><br><small style="color:#8b949e;">Tiered</small></td>
             <td><span class="badge badge-orange">1099</span></td>
             <td>49h</td><td class="tip">$2,357</td><td>$0</td><td>$892</td><td class="tip">+$94</td><td class="tip">$344</td>
             <td class="amt"><strong>$1,329.93</strong></td>
-            <td><span class="badge badge-green">➡ Pay</span></td>
+            <td><a class="badge badge-green" href="${pageHref("quick-pay")}">Pay</a></td>
           </tr>
           <tr>
             <td><strong>Brian L.</strong><br><small style="color:#8b949e;">Hybrid</small></td>
             <td><span class="badge badge-orange">1099</span></td>
             <td>46.5h</td><td class="tip">$1,648</td><td>$465</td><td>$494</td><td class="tip">+$66</td><td class="tip">$222</td>
             <td class="amt"><strong>$1,247.32</strong></td>
-            <td><span class="badge badge-green">➡ Pay</span></td>
+            <td><a class="badge badge-green" href="${pageHref("quick-pay")}">Pay</a></td>
           </tr>
           <tr class="total-row">
             <td colspan="4"><strong>TOTAL</strong></td>
             <td><strong>$1,728</strong></td><td><strong>$3,295</strong></td><td class="tip"><strong>+$707</strong></td><td class="tip"><strong>$1,519</strong></td>
             <td class="amt" style="font-size:15px;"><strong>$7,325.69</strong></td>
-            <td><span class="badge badge-purple">⚡ All</span></td>
+            <td><a class="badge badge-purple" href="${pageHref("quick-pay")}">Pay All</a></td>
           </tr>
         </tbody>
       </table>
@@ -1124,6 +1197,38 @@ function renderConnections(){
 
 /* ─── PAYOUTS ─── */
 function renderPayouts(){
+  const payoutTabs = [
+    ["overview","Overview"],
+    ["profiles","Worker Profiles"],
+    ["history","History"],
+    ["proof","Proof"],
+    ["tax","1099 / W-2"],
+    ["bookkeeping","Bookkeeping"],
+    ["settings","Settings"]
+  ];
+  const profileCards = [
+    ["AT","Amy T.","1099","amy.t@gmail.com · (713)555-0201","2024-01-06","***-4821","Zelle","amy.t@gmail.com","Venmo","@amytran-nails"],
+    ["LP","Linda P.","1099","linda.p@gmail.com · (713)555-0187","2022-11-11","***-7392","Zelle","linda.p@gmail.com","Cash App","$lindapnails"],
+    ["KM","Kevin M.","W2","kevin.m@gmail.com · (713)555-0344","2024-01-16","***-1190","Direct Deposit","****4521","Check","Backup"],
+    ["SJ","Sarah J.","1099","sarah.j@gmail.com · (713)555-0156","2024-02-02","***-6047","Cash App","$sarahj_nails","Zelle","sarah.j@gmail.com"]
+  ].map(w=>`<div class="profile-card">
+    <div class="profile-head">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="avatar ${w[0]==="LP"?"blue":w[0]==="KM"?"green":w[0]==="SJ"?"pink":""}">${w[0]}</div>
+        <div><div class="text-lg font-black">${w[1]} <span class="badge badge-purple">${w[2]}</span></div><div class="text-xs text-slate-500">${w[3]}</div><div class="text-xs green">✅ Set up since ${w[4]}</div></div>
+      </div>
+      <button class="source-button" style="height:30px">✏️ Edit</button>
+    </div>
+    <div class="text-xs font-black uppercase text-slate-500">💳 GET PAID VIA</div>
+    <div class="pay-channel" style="margin-top:10px"><strong>🕊️ ${w[6]}</strong> <span class="badge badge-green">PRIMARY</span> <span class="badge badge-green">✓ Verified</span><br><small class="gray">${w[7]}</small></div>
+    <div class="pay-channel" style="margin-top:8px;border-left-color:#64748b"><strong>${w[8]==="Venmo"?"💜":w[8]==="Cash App"?"💚":"🏦"} ${w[8]}</strong> <span class="badge badge-gray">BACKUP</span><br><small class="gray">${w[9]}</small></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+      <div class="text-xs"><span class="gray">SSN LAST 4</span><br><strong>${w[5]}</strong></div>
+      <div class="text-xs"><span class="gray">W-9</span><br><span class="green">✅ Filed</span></div>
+      <button class="source-button primary">⚡ Pay Now →</button>
+    </div>
+  </div>`).join("");
+  const historyRows = data.payouts.slice(0,6).map(p=>row([`<span class="mono">${p[0]}</span>`,p[1],p[3],p[4],p[5],p[6],status(p[7]),rowActions(actionBtn("Review","payout-detail"),`<a class="${ui.btn}" href="${pageHref("quick-pay")}">Pay Again</a>`)]));
   return `<div class="nexora-source">
     <div class="source-hero">
       <div>
@@ -1133,63 +1238,87 @@ function renderPayouts(){
       <div class="pending-pill">⏳ PENDING PAYMENT<br><span style="font-size:24px">$2,945</span><br><small>2 technicians</small></div>
     </div>
 
-    <div class="tab-row" style="margin-bottom:18px">
-      <span class="tab-pill">📊 Overview</span>
-      <span class="tab-pill active">👥 Technicians & Profiles</span>
-      <span class="tab-pill">🗓️ History</span>
-      <span class="tab-pill">🔒 Proof</span>
-      <span class="tab-pill">📄 1099 / W-2</span>
-      <span class="tab-pill">🤖 Bookkeeping</span>
-      <span class="tab-pill">⚙️ Settings</span>
-      <a class="tab-pill" style="background:#f59e0b;color:#fff;border-color:#d97706" href="${pageHref("quick-pay")}">⚡ Quick Pay</a>
+    <div class="tab-row" style="margin-bottom:18px" role="tablist" aria-label="Payout Hub sections">
+      ${payoutTabs.map(([id,label],index)=>`<button class="tab-pill ${index===1 ? "active" : ""}" type="button" data-tab="${id}" role="tab" aria-selected="${index===1 ? "true" : "false"}">${label}</button>`).join("")}
     </div>
 
-    <div class="section-box">
-      <div class="section-box-title">Employee Payment Method Setup</div>
-      <table>
-        <thead><tr><th>Setup Item</th><th>What Merchant Enters</th><th>Used By</th><th>Status Rule</th></tr></thead>
-        <tbody>
-          <tr><td>Primary payout method</td><td>Zelle email/phone, ACH account token, Venmo, Cash App, check, or cash</td><td>Quick Pay + Weekly Payroll</td><td><span class="badge badge-green">Required</span></td></tr>
-          <tr><td>Backup method</td><td>Second method in case primary payout fails or worker asks for a different method</td><td>Payout retry</td><td><span class="badge badge-orange">Recommended</span></td></tr>
-          <tr><td>Worker tax profile</td><td>W-2/W-4 or 1099/W-9, TIN status, work/residence state</td><td>Tax Center + Payroll</td><td><span class="badge badge-green">Required</span></td></tr>
-          <tr><td>Payment proof rule</td><td>Screenshot, bank memo, check number, cash receipt, or owner note</td><td>OCR Vault + CPA Review</td><td><span class="badge badge-green">Required</span></td></tr>
-        </tbody>
-      </table>
-      <div class="alert alert-blue" style="margin:12px 16px;">Simple rule: Pay Engine decides <strong>how much</strong>; Payout Hub decides <strong>where money goes</strong>; Quick Pay or Weekly Payroll creates the actual payment.</div>
+    <div class="tab-panel" data-tab-panel="overview" hidden>
+      <div class="grid-4" style="margin-bottom:14px">${[
+        ["Ready Workers","4","Can receive payouts now","green"],
+        ["Pending Setup","1","Jenny N. needs payment method","yellow"],
+        ["Proof Queue","3","Evidence items need review","cyan"],
+        ["Tax Ready","4/5","W-9/W-4 profile coverage","red"]
+      ].map(metric).join("")}</div>
+      <div class="grid-2">${panel("Today’s Payout Control Room",`<div class="panel-body list">${listItem("Pay rules are configured","Hourly, commission, hybrid, bonus, and schedule rules live in Pay Engine.","green")}${listItem("Proof is attached before CPA export","Bank memo, screenshot, cash receipt, or owner note is required.","blue")}${listItem("Jenny N. invite is pending","Resend setup link or cancel invite if this worker is no longer active.","yellow")}</div>`,`<a class="btn primary" href="${pageHref("quick-pay")}">Open Quick Pay</a>`)}${panel("Next Best Actions",table(["Priority","Action","Owner","Open"],[
+        row(["High","Review latest payout proof","Owner",actionBtn("Review","payout-detail")]),
+        row(["High","Configure missing worker payout method","Payroll Admin",actionBtn("Setup","payment-setup")]),
+        row(["Medium","Export payout package for CPA","Bookkeeper",`<a class="${ui.btn}" href="${pageHref("cpa")}">CPA Review</a>`])
+      ]))}</div>
     </div>
 
-    <div class="alert alert-blue">🔎 <strong>Latest payout proof ready for review</strong><br><span class="gray">PAY-2026-001 · Amy T. · Zelle · Evidence matched</span><span style="float:right"><button class="source-button" data-modal="payout-detail" style="height:30px">Review Payout Detail</button></span></div>
+    <div class="tab-panel active" data-tab-panel="profiles">
+      <div class="section-box">
+        <div class="section-box-title">Employee Payment Method Setup</div>
+        <table>
+          <thead><tr><th>Setup Item</th><th>What Merchant Enters</th><th>Used By</th><th>Status Rule</th></tr></thead>
+          <tbody>
+            <tr><td>Primary payout method</td><td>Zelle email/phone, ACH account token, Venmo, Cash App, check, or cash</td><td>Quick Pay + Weekly Payroll</td><td><span class="badge badge-green">Required</span></td></tr>
+            <tr><td>Backup method</td><td>Second method in case primary payout fails or worker asks for a different method</td><td>Payout retry</td><td><span class="badge badge-orange">Recommended</span></td></tr>
+            <tr><td>Worker tax profile</td><td>W-2/W-4 or 1099/W-9, TIN status, work/residence state</td><td>Tax Center + Payroll</td><td><span class="badge badge-green">Required</span></td></tr>
+            <tr><td>Payment proof rule</td><td>Screenshot, bank memo, check number, cash receipt, or owner note</td><td>OCR Vault + CPA Review</td><td><span class="badge badge-green">Required</span></td></tr>
+          </tbody>
+        </table>
+        <div class="alert alert-blue" style="margin:12px 16px;">Simple rule: Pay Engine decides <strong>how much</strong>; Payout Hub decides <strong>where money goes</strong>; Quick Pay or Weekly Payroll creates the actual payment.</div>
+      </div>
 
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap">
-      <div><strong>5</strong> technicians connected · <span class="orange">1 invite pending acceptance</span></div>
-      <button class="source-button primary">✉️ Invite New Technician</button>
+      <div class="alert alert-blue">🔎 <strong>Latest payout proof ready for review</strong><br><span class="gray">PAY-2026-001 · Amy T. · Zelle · Evidence matched</span><span style="float:right"><button class="source-button" data-modal="payout-detail" style="height:30px">Review Payout Detail</button></span></div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap">
+        <div><strong>5</strong> technicians connected · <span class="orange">1 invite pending acceptance</span></div>
+        <button class="source-button primary">✉️ Invite New Technician</button>
+      </div>
+
+      <div class="alert alert-orange">⏳ <strong>Waiting for technician to set up payment info</strong><br><span class="gray">Jenny N. · jenny.n@gmail.com · Invite sent 2024-06-25</span><span style="float:right"><button class="source-button orange" style="height:30px">📩 Resend</button> <button class="source-button" style="height:30px">✕ Cancel</button></span></div>
+
+      <div class="profile-grid">${profileCards}</div>
     </div>
 
-    <div class="alert alert-orange">⏳ <strong>Waiting for technician to set up payment info</strong><br><span class="gray">Jenny N. · jenny.n@gmail.com · Invite sent 2024-06-25</span><span style="float:right"><button class="source-button orange" style="height:30px">📩 Resend</button> <button class="source-button" style="height:30px">✕ Cancel</button></span></div>
+    <div class="tab-panel" data-tab-panel="history" hidden>
+      ${panel("Payout History",table(["Payout ID","Worker","Period","Amount","Method","Type","Status","Actions"],historyRows),`<a class="btn primary" href="${pageHref("quick-pay")}">Create New Payout</a>`)}
+    </div>
 
-    <div class="profile-grid">
-      ${[
-        ["AT","Amy T.","1099","amy.t@gmail.com · (713)555-0201","2024-01-06","***-4821","Zelle","amy.t@gmail.com","Venmo","@amytran-nails"],
-        ["LP","Linda P.","1099","linda.p@gmail.com · (713)555-0187","2022-11-11","***-7392","Zelle","linda.p@gmail.com","Cash App","$lindapnails"],
-        ["KM","Kevin M.","W2","kevin.m@gmail.com · (713)555-0344","2024-01-16","***-1190","Direct Deposit","****4521","Check","Backup"],
-        ["SJ","Sarah J.","1099","sarah.j@gmail.com · (713)555-0156","2024-02-02","***-6047","Cash App","$sarahj_nails","Zelle","sarah.j@gmail.com"]
-      ].map(w=>`<div class="profile-card">
-        <div class="profile-head">
-          <div style="display:flex;gap:12px;align-items:center">
-            <div class="avatar ${w[0]==="LP"?"blue":w[0]==="KM"?"green":w[0]==="SJ"?"pink":""}">${w[0]}</div>
-            <div><div class="text-lg font-black">${w[1]} <span class="badge badge-purple">${w[2]}</span></div><div class="text-xs text-slate-500">${w[3]}</div><div class="text-xs green">✅ Set up since ${w[4]}</div></div>
-          </div>
-          <button class="source-button" style="height:30px">✏️ Edit</button>
-        </div>
-        <div class="text-xs font-black uppercase text-slate-500">💳 GET PAID VIA</div>
-        <div class="pay-channel" style="margin-top:10px"><strong>🕊️ ${w[6]}</strong> <span class="badge badge-green">PRIMARY</span> <span class="badge badge-green">✓ Verified</span><br><small class="gray">${w[7]}</small></div>
-        <div class="pay-channel" style="margin-top:8px;border-left-color:#64748b"><strong>${w[8]==="Venmo"?"💜":w[8]==="Cash App"?"💚":"🏦"} ${w[8]}</strong> <span class="badge badge-gray">BACKUP</span><br><small class="gray">${w[9]}</small></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
-          <div class="text-xs"><span class="gray">SSN LAST 4</span><br><strong>${w[5]}</strong></div>
-          <div class="text-xs"><span class="gray">W-9</span><br><span class="green">✅ Filed</span></div>
-          <button class="source-button primary">⚡ Pay Now →</button>
-        </div>
-      </div>`).join("")}
+    <div class="tab-panel" data-tab-panel="proof" hidden>
+      ${panel("Proof Review Queue",table(["Proof Item","Worker","Method","Evidence","Status","Action"],[
+        row(["PAY-2026-001","Amy T.","Zelle","Screenshot + memo",status("Matched"),actionBtn("Review","payout-detail")]),
+        row(["PAY-2026-002","Linda P.","Cash App","Receipt missing purpose",status("Review"),`<a class="${ui.btn}" href="${pageHref("ocr")}">Open Vault</a>`]),
+        row(["PAY-2026-003","Kevin M.","Direct Deposit","Bank trace attached",status("Ready"),actionBtn("Review","payout-detail")])
+      ]),`<a class="btn primary" href="${pageHref("ocr")}">Open Proof Vault</a>`)}
+    </div>
+
+    <div class="tab-panel" data-tab-panel="tax" hidden>
+      <div class="grid-2">${panel("1099 / W-2 Readiness",table(["Area","Current State","Next Action"],[
+        row(["W-9 / W-4 coverage",status("4/5 Ready"),"Collect Jenny N. W-9 before first payout."]),
+        row(["TIN verification",status("Review"),"Verify contractor TIN/name match before year-end."]),
+        row(["Recipient delivery",status("Ready"),"Email/download statements after merchant approval."])
+      ]))}${panel("Tax Center Workflow",`<div class="panel-body list">${listItem("Before paying","Worker profile and payout method must be complete.","green")}${listItem("Before filing","YTD payout rollup, W-9/W-4, address, and classification must be reviewed.","yellow")}${listItem("Open full center","Generate PDFs, email recipients, export ZIP, and prepare e-file batch.","blue")}</div>`,`<a class="btn primary" href="${pageHref("tax-1099")}">Open 1099 / W-2 Center</a>`)}</div>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="bookkeeping" hidden>
+      <div class="grid-2">${panel("Bookkeeping Mapping",table(["Payout Type","Books Category","TaxIQ Record"],[
+        row(["Tip payout","Tips payable","Tip Ledger + payout proof"]),
+        row(["Wage payout","Payroll clearing","Weekly Payroll + tax ledger"]),
+        row(["Bonus","Contract labor / payroll bonus","Pay Engine rule + proof"]),
+        row(["Reimbursement","Expense reimbursement","Receipt + owner note"])
+      ]))}${panel("Sync Controls",`<div class="panel-body list">${listItem("Auto-create ledger item","Every confirmed payout creates an immutable Tax Ledger record.","green")}${listItem("Attach proof before export","CPA package blocks export if required proof is missing.","yellow")}${listItem("Review uncategorized payouts","AI bookkeeping flags unclear business purpose for owner review.","blue")}</div>`,`<button class="btn primary" data-toast="Bookkeeping sync queued.">Sync Bookkeeping</button>`)}</div>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="settings" hidden>
+      ${panel("Payout Hub Settings",table(["Setting","Current Value","Why It Matters","Action"],[
+        row(["Allowed methods","Zelle, ACH/DD, Venmo, Cash App, check, cash","Controls what worker can select during setup.",actionBtn("Edit","payment-setup")]),
+        row(["Proof required","Required for all non-ACH payouts","Supports CPA review and dispute trail.",`<a class="${ui.btn}" href="${pageHref("ocr")}">Proof Rules</a>`]),
+        row(["Approval gate","Owner approval above $500","Protects against accidental large payouts.",`<button class="${ui.btn}" data-toast="Approval threshold settings queued.">Edit</button>`]),
+        row(["Audit logging","On for every setup and payout action","Keeps payout changes traceable.",`<a class="${ui.btn}" href="${pageHref("audit-log")}">Audit Log</a>`])
+      ]),`<button class="btn primary" data-modal="payment-setup">Configure Payout Setup</button>`)}
     </div>
   </div>`;
 }
@@ -1223,6 +1352,7 @@ function renderForms(){
 
 /* ─── TAX CENTER 1099/W-2 ─── */
 function renderTax1099(){
+  const tax1099Actions = worker => `<span class="tax-action-row"><button class="text-link" data-modal="preview-form" data-ctx-id="${demoEscape(worker)}">Preview</button><button class="text-link" data-toast="1099 PDF queued for ${demoEscape(worker)}.">PDF</button><button class="text-link" data-toast="Recipient email queued for ${demoEscape(worker)}.">Email</button><button class="text-link" data-toast="IRS e-file queued for ${demoEscape(worker)} after merchant approval.">IRS</button></span>`;
   return `<div class="nexora-source">
     <div class="alert alert-red">⏰ <strong>Important deadlines:</strong> 1099-NEC sent to workers &amp; filed with IRS → <strong>Jan 31</strong> &nbsp;|&nbsp; Form 1096 summary → <strong>Feb 28</strong> each tax year.</div>
 
@@ -1230,10 +1360,10 @@ function renderTax1099(){
       <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
         📋 IRS Form 1096 — Annual Summary · Tax Year 2024
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <span class="badge badge-purple">📄 Create Form 1096 PDF</span>
-          <span class="badge badge-blue">📤 E-file All → IRS</span>
-          <span class="badge badge-gray">📦 Export ZIP (4 files)</span>
-          <span class="badge badge-gray">📧 Email all workers</span>
+          <button class="badge badge-purple" data-toast="Form 1096 PDF generation queued.">📄 Create Form 1096 PDF</button>
+          <button class="badge badge-blue" data-toast="IRS batch e-file queued after merchant approval.">📤 E-file All → IRS</button>
+          <button class="badge badge-gray" data-toast="1099 ZIP export queued.">📦 Export ZIP (4 files)</button>
+          <button class="badge badge-gray" data-toast="Recipient email batch queued.">📧 Email all workers</button>
         </div>
       </div>
       <div class="stats-row" style="margin:0;padding:16px;">
@@ -1259,7 +1389,7 @@ function renderTax1099(){
             <td><span class="badge badge-green">✅ On file</span></td>
             <td style="font-size:11px;color:#8b949e;">1234 Main St, Houston TX 77001</td>
             <td><span class="badge badge-green">Ready</span></td>
-            <td style="white-space:nowrap;font-size:12px;">👁 <a href="#" style="color:#58a6ff;">Preview</a> · 📄 <a href="#" style="color:#58a6ff;">PDF</a> · 📧 <a href="#" style="color:#58a6ff;">Email</a> · 📤 <a href="#" style="color:#58a6ff;">IRS</a></td>
+            <td style="white-space:nowrap;font-size:12px;">${tax1099Actions("Amy T.")}</td>
           </tr>
           <tr>
             <td><strong>Linda P.</strong><br><small style="color:#8b949e;">linda.p@gmail.com</small></td>
@@ -1269,7 +1399,7 @@ function renderTax1099(){
             <td><span class="badge badge-green">✅ On file</span></td>
             <td style="font-size:11px;color:#8b949e;">5678 Oak Ave, Houston TX 77002</td>
             <td><span class="badge badge-green">Ready</span></td>
-            <td style="white-space:nowrap;font-size:12px;">👁 <a href="#" style="color:#58a6ff;">Preview</a> · 📄 <a href="#" style="color:#58a6ff;">PDF</a> · 📧 <a href="#" style="color:#58a6ff;">Email</a> · 📤 <a href="#" style="color:#58a6ff;">IRS</a></td>
+            <td style="white-space:nowrap;font-size:12px;">${tax1099Actions("Linda P.")}</td>
           </tr>
           <tr>
             <td><strong>Sarah J.</strong><br><small style="color:#8b949e;">sarah.j@gmail.com</small></td>
@@ -1279,7 +1409,7 @@ function renderTax1099(){
             <td><span class="badge badge-green">✅ On file</span></td>
             <td style="font-size:11px;color:#8b949e;">234 Elm St, Houston TX 77004</td>
             <td><span class="badge badge-green">Ready</span></td>
-            <td style="white-space:nowrap;font-size:12px;">👁 <a href="#" style="color:#58a6ff;">Preview</a> · 📄 <a href="#" style="color:#58a6ff;">PDF</a> · 📧 <a href="#" style="color:#58a6ff;">Email</a> · 📤 <a href="#" style="color:#58a6ff;">IRS</a></td>
+            <td style="white-space:nowrap;font-size:12px;">${tax1099Actions("Sarah J.")}</td>
           </tr>
           <tr>
             <td><strong>Brian L.</strong><br><small style="color:#8b949e;">brian.l@gmail.com</small></td>
@@ -1289,12 +1419,12 @@ function renderTax1099(){
             <td><span class="badge badge-green">✅ On file</span></td>
             <td style="font-size:11px;color:#8b949e;">567 Maple Dr, Houston TX 77005</td>
             <td><span class="badge badge-green">Ready</span></td>
-            <td style="white-space:nowrap;font-size:12px;">👁 <a href="#" style="color:#58a6ff;">Preview</a> · 📄 <a href="#" style="color:#58a6ff;">PDF</a> · 📧 <a href="#" style="color:#58a6ff;">Email</a> · 📤 <a href="#" style="color:#58a6ff;">IRS</a></td>
+            <td style="white-space:nowrap;font-size:12px;">${tax1099Actions("Brian L.")}</td>
           </tr>
           <tr class="total-row">
             <td colspan="2"><strong>TOTAL (Form 1096)</strong></td>
             <td class="amt"><strong>$101,176</strong></td>
-            <td colspan="7" style="color:#8b949e;font-size:12px;">→ Click "📤 E-file All → IRS" to submit everything in one batch</td>
+            <td colspan="7" style="color:#8b949e;font-size:12px;">Use E-file All after merchant approval and CPA review.</td>
           </tr>
         </tbody>
       </table>
@@ -1379,7 +1509,7 @@ function renderAiAssistant(){
   return `<div class="nexora-source">
     <div class="source-hero">
       <div><h2 class="source-title">🤖 IQ AI — Artificial Intelligence</h2><div class="source-subtitle">AI Assistant · Analytics · Forecasting · Automation</div></div>
-      <span class="source-button primary">AI POWERED</span>
+      <span class="badge badge-purple" style="display:inline-flex;align-items:center;padding:10px 14px">AI Powered</span>
     </div>
     <div class="grid-4" style="margin-bottom:14px">${stats.map(metric).join("")}</div>
     <div class="grid gap-3.5 lg:grid-cols-3"><div class="lg:col-span-2">${chatPanel}</div><div>${featurePanel}</div></div>
@@ -1546,8 +1676,65 @@ function renderBilling(){
 
 function renderSettings(){
   const keyRows = data.apiKeys.map(k=>row([`<span class="mono">${k[0]}</span>`,k[1],`<span class="mono">${k[2]}</span>`,k[3],k[4],status(k[5]),k[6],rowActions(`<button class="${ui.btn}" data-rotate-key="${k[0]}">Rotate</button>`,`<button class="${ui.btn}" data-revoke-key="${k[0]}">Revoke</button>`)]));
-  const permissionRows = data.permissionMatrix.map(p=>row([p[0],p[1],p[2],p[3],rowActions(actionBtn("Edit","permission-role"),actionBtn("Audit",""))],{wrap:[1,2,3]}));
-  return `<div class="grid-2">${panel("US Payroll Scope",`<div class="panel-body"><div class="row"><span>Country</span><span>United States</span></div><div class="row"><span>Tax levels</span><span>Federal, State, Local</span></div><div class="row"><span>Employee forms</span><span>W-4, W-2</span></div><div class="row"><span>Employer returns</span><span>941, 940, SUTA</span></div></div>`)}${panel("Role & Access",table(["Permission","Payroll Admin","CPA","Auditor","Action"],[["Export data",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Finalize run",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")],["Review package",status("Active"),status("Active"),status("Active"),actionBtn("Edit","")],["Manage settings",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","")]].map(row)))}${panel("Data Protection",`<div class="panel-body"><div class="row"><span>SSN/TIN storage</span><span>Tokenized</span></div><div class="row"><span>PII export approval</span><span>Required</span></div><div class="row"><span>Webhook signing</span><span>HMAC SHA-256</span></div><div class="row"><span>Audit retention</span><span>7 years</span></div></div>`,`${actionBtn("Configure","")}`)}${panel("Guided Help",`<div class="panel-body list">${listItem("First-time tour","Explain payroll, payout, Tax IQ, OCR, share links, GPS, CPA review.","blue")}${listItem("What next","Show recommended next action when a workflow is blocked.","green")}</div>`,`<button class="btn primary" data-toast="Tour started. Follow the guided steps.">Start Tour</button>`)}</div><div style="margin-top:14px">${panel("Permission Matrix Detail",table(["Role","Can Do","Blocked From","Notes","Actions"],permissionRows),`<button class="btn primary" data-modal="permission-role">Edit Role</button>`)}</div><div class="grid-2" style="margin-top:14px">${panel("API Keys",table(["Key ID","Name","Env","Scopes","Created","Status","Owner","Actions"],keyRows),`<button class="btn primary" data-modal="create-api-key">Create Key</button>`)}${panel("Notification Preferences",`<div class="panel-body">${[["Deposit due reminders","3-day and same-day alerts for scheduled tax deposits.",true],["Exception open alerts","Immediate alert when blocking exception is created.",true],["CPA request notifications","When CPA flags a missing record or requests files.",true],["Webhook dead letter alerts","When webhook delivery fails after max retries.",true],["Tip cap warnings","When worker approaches the $25,000 annual tip cap.",false]].map(([l,t,c])=>modalCheck(l,t,c)).join("")}</div>`,`<button class="btn primary" data-action-toast="Notification preferences saved.">Save Preferences</button>`)}</div>`;
+  const settingsTabs = [
+    ["scope","Scope"],
+    ["roles","Roles"],
+    ["security","Security"],
+    ["api","API Keys"],
+    ["alerts","Notifications"],
+    ["help","Help"]
+  ];
+  const roleAccessRows = [
+    ["Export data",status("Active"),status("Active"),status("Active"),actionBtn("Edit","permission-role")],
+    ["Finalize run",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","permission-role")],
+    ["Review package",status("Active"),status("Active"),status("Active"),actionBtn("Edit","permission-role")],
+    ["Manage settings",status("Active"),status("Missing"),status("Missing"),actionBtn("Edit","permission-role")]
+  ].map(row);
+  const permissionRows = data.permissionMatrix.map(p=>row([p[0],p[1],p[2],p[3],rowActions(actionBtn("Edit","permission-role"),`<a class="${ui.btn}" href="${pageHref("audit-log")}">Audit</a>`)],{wrap:[1,2,3]}));
+  const notificationPrefs = [["Deposit due reminders","3-day and same-day alerts for scheduled tax deposits.",true],["Exception open alerts","Immediate alert when blocking exception is created.",true],["CPA request notifications","When CPA flags a missing record or requests files.",true],["Webhook dead letter alerts","When webhook delivery fails after max retries.",true],["Tip cap warnings","When worker approaches the $25,000 annual tip cap.",false]].map(([l,t,c])=>modalCheck(l,t,c)).join("");
+  return `<div class="nexora-source">
+    <div class="tab-row" style="margin-bottom:18px" role="tablist" aria-label="Settings sections">
+      ${settingsTabs.map(([id,label],index)=>`<button class="tab-pill ${index===0 ? "active" : ""}" type="button" data-tab="${id}" role="tab" aria-selected="${index===0 ? "true" : "false"}">${label}</button>`).join("")}
+    </div>
+
+    <div class="tab-panel active" data-tab-panel="scope">
+      <div class="grid-2">${panel("US Payroll Scope",`<div class="panel-body"><div class="row"><span>Country</span><span>United States</span></div><div class="row"><span>Tax levels</span><span>Federal, State, Local</span></div><div class="row"><span>Employee forms</span><span>W-4, W-2</span></div><div class="row"><span>Employer returns</span><span>941, 940, SUTA</span></div></div>`,`<button class="btn primary" data-modal="payroll-scope">Configure Scope</button>`)}${panel("Setup Coverage",table(["Setup Area","Required To Operate","Current State","Action"],[
+        row(["Business profile","Legal name, DBA, EIN, business address",status("Ready"),`<button class="${ui.btn}" data-modal="payroll-scope">Edit</button>`]),
+        row(["Registration footprint","Federal, state, local, SUTA deposit schedule",status("Review"),`<a class="${ui.btn}" href="${pageHref("jurisdictions")}">Open Jurisdictions</a>`]),
+        row(["Worker forms","W-4/W-2 for employees, W-9/1099 for contractors",status("Active"),`<a class="${ui.btn}" href="${pageHref("employees")}">Open Workers</a>`]),
+        row(["Evidence policy","Receipts, payout proof, audit retention",status("Active"),`<button class="${ui.btn}" data-modal="data-protection">Review</button>`])
+      ]))}</div>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="roles" hidden>
+      <div class="grid-2">${panel("Role & Access",table(["Permission","Payroll Admin","CPA","Auditor","Action"],roleAccessRows),`<button class="btn primary" data-modal="permission-role">Edit Role</button>`)}${panel("Permission Matrix Detail",table(["Role","Can Do","Blocked From","Notes","Actions"],permissionRows),`<button class="btn primary" data-modal="permission-role">Edit Role</button>`)}</div>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="security" hidden>
+      <div class="grid-2">${panel("Data Protection",`<div class="panel-body"><div class="row"><span>SSN/TIN storage</span><span>Tokenized</span></div><div class="row"><span>PII export approval</span><span>Required</span></div><div class="row"><span>Webhook signing</span><span>HMAC SHA-256</span></div><div class="row"><span>Audit retention</span><span>7 years</span></div></div>`,`<button class="btn primary" data-modal="data-protection">Configure Security</button>`)}${panel("Security Enforcement Checklist",`<div class="panel-body list">${listItem("Tokenize tax identifiers","SSN/TIN values are stored as tokens; UI shows masked values by default.","green")}${listItem("Require approval for sensitive exports","PII export, CPA package sharing, and full tax profile download need owner approval.","yellow")}${listItem("Sign integrations","Webhook requests use HMAC signing and failed deliveries route to Webhooks.","blue")}${listItem("Audit every privileged action","Settings, key rotation, exports, and permission changes write to Audit Log.","red")}</div>`,`<a class="btn" href="${pageHref("audit-log")}">Open Audit Log</a>`)}</div>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="api" hidden>
+      ${panel("API Keys",table(["Key ID","Name","Env","Scopes","Created","Status","Owner","Actions"],keyRows),`<button class="btn primary" data-modal="create-api-key">Create Key</button>`)}
+    </div>
+
+    <div class="tab-panel" data-tab-panel="alerts" hidden>
+      <div class="grid-2">${panel("Notification Preferences",`<div class="panel-body">${notificationPrefs}</div>`,`<button class="btn primary" data-action-toast="Notification preferences saved.">Save Preferences</button>`)}${panel("Alert Routing",table(["Alert Type","Primary Owner","Backup","Destination"],[
+        row(["Deposit due","Merchant Owner","Payroll Admin","Email + in-app"]),
+        row(["Exception open","Payroll Admin","Merchant Owner","In-app + badge"]),
+        row(["CPA request","Merchant Owner","Bookkeeper","Email + share link"]),
+        row(["Webhook dead letter","Developer","Admin","In-app + Webhooks page"])
+      ]),`<a class="btn" href="${pageHref("notifications")}">Open Notification Center</a>`)}</div>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="help" hidden>
+      <div class="grid-2">${panel("Guided Help",`<div class="panel-body list">${listItem("First-time tour","Explain payroll, payout, Tax IQ, OCR, share links, GPS, CPA review.","blue")}${listItem("What next","Show recommended next action when a workflow is blocked.","green")}${listItem("Merchant setup path","Keep first-run setup focused on plan, business profile, payroll connection, worker pay setup, evidence, and billing approval.","yellow")}</div>`,`<button class="btn primary" data-toast="Tour started. Follow the guided steps.">Start Tour</button>`)}${panel("Operational Playbooks",table(["Workflow","When It Appears","Open"],[
+        row(["Worker payout setup","Before Quick Pay or Weekly Payroll can pay a worker",`<a class="${ui.btn}" href="${pageHref("payouts")}">Payout Hub</a>`]),
+        row(["Receipt evidence","When CPA export or deduction support needs proof",`<a class="${ui.btn}" href="${pageHref("ocr")}">OCR Vault</a>`]),
+        row(["CPA handoff","When merchant approves review/export scope",`<a class="${ui.btn}" href="${pageHref("cpa")}">CPA Review</a>`])
+      ]))}</div>
+    </div>
+  </div>`;
 }
 
 /* ─── NOTIFICATIONS ─── */
@@ -1755,9 +1942,9 @@ const modalCopy = {
     cta:"Save Registrations",
     content:()=>[
       modalSection("Current Registrations", table(["Jurisdiction","Account Number","Registration","Deposit Schedule","Next Due","Action"],[
-        row(["US-FED","XX-XXXXXXX (masked)",status("Active"),"Semiweekly","Jun 24, 2026",actionBtn("Edit","")]),
-        row(["US-TX","TX-XXXX (masked)",status("Active"),"Quarterly","Jul 31, 2026",actionBtn("Edit","")]),
-        row(["US-CA","CA-XXXX (masked)",status("Review"),"Semiweekly","Jun 24, 2026",actionBtn("Edit","")]),
+        row(["US-FED","XX-XXXXXXX (masked)",status("Active"),"Semiweekly","Jun 24, 2026",actionBtn("Edit","edit-jurisdiction")]),
+        row(["US-TX","TX-XXXX (masked)",status("Active"),"Quarterly","Jul 31, 2026",actionBtn("Edit","edit-jurisdiction")]),
+        row(["US-CA","CA-XXXX (masked)",status("Review"),"Semiweekly","Jun 24, 2026",actionBtn("Edit","edit-jurisdiction")]),
         row(["US-NY","—",status("Missing setup"),"—","—",actionBtn("Add","edit-jurisdiction")])
       ])),
       modalSection("Add Registration", modalGrid([
@@ -3135,6 +3322,46 @@ const modalCopy = {
       modalSection("Risk Language", `<div class="notice">Use recordkeeping, estimate, likely, candidate, needs review, and based on current records. Avoid guaranteed tax savings, guaranteed deduction, guaranteed refund, or final advice language.</div>`)
     ].join("")
   },
+  /* SETTINGS MODALS */
+  "payroll-scope":{
+    title:"Payroll Scope Settings",
+    body:"Configure the merchant's business footprint, payroll tax levels, worker form requirements, and deposit schedule assumptions.",
+    cta:"Save Scope",
+    content:()=>[
+      modalSection("Business Footprint", modalGrid([
+        modalField("Legal business name","Nexora Nail Spa LLC"),
+        modalField("DBA","Nexora Nails"),
+        modalField("EIN","12-3456789"),
+        modalSelect("Primary state",[["Texas",true],["California"],["New York"],["Florida"]])
+      ])),
+      modalSection("Payroll Tax Scope", table(["Tax Level","Required Setup","Current Rule"],[
+        row(["Federal","EIN, deposit schedule, Forms 941/940/W-2/1099","Enabled"]),
+        row(["State","Withholding/SUTA account where required by worker footprint","Review by jurisdiction"]),
+        row(["Local","City/county payroll taxes if business or worker location requires it","Optional by location"])
+      ],{wrap:1})),
+      modalSection("Worker Form Rules", `<div class="list">${modalCheck("W-2 employees require W-4 before payroll","Blocks strict payroll finalization when missing.")}${modalCheck("1099 contractors require W-9 before first payout","Blocks Quick Pay and yearly 1099 prep when missing.")}${modalCheck("TIN/name mismatch creates a review task","Routes to Data Quality and Audit Log.")}${modalCheck("State footprint review before year-end filing","Checks work state, residence state, and business location.", false)}</div>`)
+    ].join("")
+  },
+  "data-protection":{
+    title:"Data Protection Settings",
+    body:"Set the rules for PII, tax identifiers, webhook signing, evidence retention, and sensitive exports.",
+    cta:"Save Security Rules",
+    content:()=>[
+      modalSection("Protection Controls", modalGrid([
+        modalSelect("SSN / TIN storage",[["Tokenized",true],["Masked only"],["Do not store"]]),
+        modalSelect("PII export approval",[["Owner approval required",true],["Admin approval required"],["Blocked"]]),
+        modalSelect("Webhook signing",[["HMAC SHA-256",true],["HMAC SHA-512"],["Disabled for sandbox only"]]),
+        modalSelect("Audit retention",[["7 years",true],["3 years"],["Custom"]])
+      ])),
+      modalSection("Sensitive Action Gates", `<div class="list">${modalCheck("Require approval before full PII export","Approval is logged with actor, role, tenant, and resource scope.")}${modalCheck("Require purpose note for CPA package share","Merchant must confirm who receives access and why.")}${modalCheck("Block unsigned production webhooks","Unsigned or failed-signature events move to Webhooks for review.")}${modalCheck("Mask tax identifiers by default","Only authorized owner/admin can request reveal with audit event.")}</div>`),
+      modalSection("Audit Output", table(["Action","Audit Record"],[
+        row(["Permission change","Before/after role matrix, actor, timestamp"]),
+        row(["API key rotation","Old key ID, new key ID, owner, environment"]),
+        row(["PII export","Approver, recipient, data scope, export time"]),
+        row(["Security setting update","Changed fields, previous values, new values"])
+      ],{wrap:1}))
+    ].join("")
+  },
   "permission-role":{
     title:"Permission Role Detail",
     body:"Define exactly what a role can do, what it cannot do, and which backend checks must enforce it.",
@@ -3284,8 +3511,17 @@ document.addEventListener("click", event=>{
     const group = sourceTab.closest(".tab-row,.pos-tabs");
     group?.querySelectorAll(".tab-pill").forEach(tab=>tab.classList.remove("active"));
     sourceTab.classList.add("active");
-    if(currentPage === "reviews"){
-      const filter = sourceTab.textContent.trim();
+    group?.querySelectorAll("[role='tab']").forEach(tab=>tab.setAttribute("aria-selected", tab === sourceTab ? "true" : "false"));
+    if(sourceTab.dataset.tab){
+      const root = sourceTab.closest(".nexora-source");
+      root?.querySelectorAll("[data-tab-panel]").forEach(panel=>{
+        const active = panel.dataset.tabPanel === sourceTab.dataset.tab;
+        panel.hidden = !active;
+        panel.classList.toggle("active", active);
+      });
+      toast("Opened tab: "+sourceTab.textContent.trim());
+    } else if(currentPage === "reviews"){
+      const filter = sourceTab.dataset.reviewFilter || sourceTab.textContent.trim();
       document.querySelectorAll(".review-row").forEach(row=>{
         row.style.display = filter === "All" || row.textContent.includes(filter) ? "" : "none";
       });
@@ -3384,8 +3620,9 @@ document.addEventListener("click", event=>{
   if(workerItem && currentPage === "quick-pay"){
     workerItem.closest(".worker-list")?.querySelectorAll(".worker-item").forEach(item=>item.classList.remove("active"));
     workerItem.classList.add("active");
+    syncQuickPayWorkerMethod(document, workerItem);
     updateQuickPayPreview();
-    toast("Selected technician: "+workerItem.querySelector(".text-sm")?.childNodes?.[0]?.textContent.trim());
+    toast("Selected technician: "+(workerItem.dataset.workerName || workerItem.querySelector(".text-sm")?.childNodes?.[0]?.textContent.trim()));
     return;
   }
 

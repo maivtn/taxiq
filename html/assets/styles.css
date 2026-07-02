@@ -428,6 +428,42 @@ a {
   white-space: nowrap;
 }
 
+.nexora-source button.badge,
+.nexora-source a.badge {
+  appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.nexora-source button.badge:hover,
+.nexora-source a.badge:hover {
+  filter: brightness(1.12);
+}
+
+.nexora-source .tax-action-row {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.nexora-source .text-link {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #58a6ff;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+.nexora-source .text-link:hover {
+  color: #8ec5ff;
+  text-decoration: underline;
+}
+
 .nexora-source .badge-green { border: 1px solid #2ea043; background: #1a3a2a; color: #3fb950; }
 .nexora-source .badge-blue { border: 1px solid #1f6feb; background: #1a2b3a; color: #58a6ff; }
 .nexora-source .badge-orange { border: 1px solid #d29922; background: #3a2a10; color: #f0883e; }
@@ -756,6 +792,23 @@ a {
   text-align: center;
 }
 
+.nexora-source button.pay-type-card,
+.nexora-source button.worker-item,
+.nexora-source button.method-card {
+  appearance: none;
+  font-family: inherit;
+}
+
+.nexora-source button.pay-type-card,
+.nexora-source button.worker-item {
+  width: 100%;
+  color: inherit;
+}
+
+.nexora-source button.worker-item {
+  text-align: left;
+}
+
 .nexora-source .pay-type-card.active {
   border-color: #f59e0b;
   background: #1f2a44;
@@ -914,6 +967,15 @@ a {
   border-color: #7c3aed;
   background: #7c3aed;
   color: #fff;
+}
+
+.nexora-source .tab-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.nexora-source .tab-panel[hidden] {
+  display: none;
 }
 
 .nexora-source .pending-pill {
