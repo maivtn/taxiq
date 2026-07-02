@@ -1184,7 +1184,7 @@
                 </div>
               </section>
 
-              <section class="rounded-lg border border-nailBlush bg-white p-2.5 shadow-card" data-payout-settings="staff-my-qr">
+              <section class="hidden rounded-lg border border-nailBlush bg-white p-2.5 shadow-card" data-payout-settings="staff-my-qr">
                 <div class="mb-1.5 flex items-center justify-between">
                   <h4 class="text-[13px] font-semibold">Payout settings</h4>
                   <button class="inline-flex h-7 min-w-[56px] items-center justify-center rounded-md px-2 text-[11px] font-semibold text-nexoraBrandDark">Settings</button>
@@ -1415,7 +1415,7 @@
     const syncPayoutSettings = (tab) => {
       if (!tab) return;
       const isVisible = tab.dataset.showPayoutSettings === 'true';
-      if (payoutSettings) payoutSettings.classList.toggle('hidden', !isVisible);
+      if (payoutSettings) payoutSettings.classList.add('hidden');
       payoutContextCards.forEach((card) => card.classList.toggle('hidden', !isVisible));
     };
 
