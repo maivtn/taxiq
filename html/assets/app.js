@@ -598,6 +598,9 @@ function irs1099NecRecord(workerName="Amy T."){
     box7:base.total
   };
 }
+function workerEmailFromName(workerName="Amy T."){
+  return `${workerName.toLowerCase().replace(/[^a-z]+/g,".").replace(/^\.+|\.+$/g,"")}@gmail.com`;
+}
 function irsBox(label, value="", extra=""){
   return `<div class="irs-box ${extra}"><span>${label}</span><strong>${value || "&nbsp;"}</strong></div>`;
 }
@@ -1476,12 +1479,12 @@ function renderForms(){
 
 /* ─── TAX CENTER 1099/W-2 ─── */
 function renderTax1099(){
-  const tax1099Actions = worker => `<span class="tax-action-row"><button class="text-link" data-modal="preview-form" data-ctx-id="${demoEscape(worker)}">Preview</button><button class="text-link" data-modal="print-1099-nec" data-ctx-id="${demoEscape(worker)}">Print NEC</button><button class="text-link" data-toast="1099-NEC PDF queued for ${demoEscape(worker)}.">PDF</button><button class="text-link" data-toast="Recipient email queued for ${demoEscape(worker)}.">Email</button><button class="text-link" data-toast="IRS e-file queued for ${demoEscape(worker)} after merchant approval.">IRS</button></span>`;
+  const tax1099Actions = worker => `<span class="tax-action-row"><button class="text-link" data-modal="preview-form" data-ctx-id="${demoEscape(worker)}">Preview</button><button class="text-link" data-modal="print-1099-nec" data-ctx-id="${demoEscape(worker)}">Print NEC</button><button class="text-link" data-toast="1099-NEC PDF queued for ${demoEscape(worker)}.">PDF</button><button class="text-link" data-modal="email-1099-nec" data-ctx-id="${demoEscape(worker)}">Email</button><button class="text-link" data-toast="IRS e-file queued for ${demoEscape(worker)} after merchant approval.">IRS</button></span>`;
   const necWorkers = ["Amy T.","Linda P.","Sarah J.","Brian L."].map(irs1099NecRecord);
   const necWorkerRows = necWorkers.map(w=>{
-    const workerEmail = w.workerName.toLowerCase().replace(/[^a-z]+/g,".").replace(/^\.+|\.+$/g,"");
+    const workerEmail = workerEmailFromName(w.workerName);
     return row([
-      `<strong>${demoEscape(w.workerName)}</strong><br><small style="color:#8b949e;">${demoEscape(workerEmail)}@gmail.com</small>`,
+      `<strong>${demoEscape(w.workerName)}</strong><br><small style="color:#8b949e;">${demoEscape(workerEmail)}</small>`,
       `<span style="font-family:monospace;color:#8b949e;font-size:11px;">${demoEscape(w.recipientTin)}</span>`,
       `$${demoEscape(w.service)}`,
       `<span class="tip">$${demoEscape(w.box1b)}</span>`,
@@ -1502,7 +1505,7 @@ function renderTax1099(){
   ].map(r=>row(r,{wrap:[1,2]}));
   return `<div class="nexora-source">
     <div class="alert alert-red">⏰ <strong>Important deadlines:</strong> 1099-NEC worker copy and IRS filing → <strong>Jan 31</strong>. Paper filing uses Form 1096 with the 1099-NEC package; e-file uses IRS IRIS/FIRE.</div>
-    <div class="alert alert-blue">💡 <strong>For 1099 technicians, report customer tips on Form 1099-NEC.</strong><br><span class="gray">Box 1a = total nonemployee compensation including tips. Box 1b = cash tips included inside Box 1a. Box 1c = TTOC, usually 605 for manicurist/pedicurist. W-2 employees stay in payroll/W-2 workflow, not 1099-NEC.</span><span style="float:right"><button class="source-button" data-modal="print-1099-nec" data-ctx-id="Amy T." style="height:30px">Print 1099-NEC</button></span></div>
+    <div class="alert alert-blue" style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;"><div style="min-width:260px;flex:1">💡 <strong>For 1099 technicians, report customer tips on Form 1099-NEC.</strong><br><span class="gray">Box 1a = total nonemployee compensation including tips. Box 1b = cash tips included inside Box 1a. Box 1c = TTOC, usually 605 for manicurist/pedicurist. W-2 employees stay in payroll/W-2 workflow, not 1099-NEC.</span></div><button class="source-button" data-modal="print-1099-nec" data-ctx-id="Amy T." style="height:30px">Print 1099-NEC</button></div>
 
     <div class="grid-2" style="margin-bottom:14px">
       ${panel("How To Write 1099 Worker Tips",table(["Field","What Owner Enters","Amy T. Example"],necTipGuideRows),`<button class="btn primary" data-modal="print-1099-nec" data-ctx-id="Amy T.">Print 1099-NEC</button>`)}
@@ -1517,7 +1520,7 @@ function renderTax1099(){
           <button class="badge badge-purple" data-toast="Form 1096 PDF generation queued.">📄 Create Form 1096 PDF</button>
           <button class="badge badge-blue" data-toast="IRS batch e-file queued after merchant approval.">📤 E-file All → IRS</button>
           <button class="badge badge-gray" data-toast="1099 ZIP export queued.">📦 Export ZIP (4 files)</button>
-          <button class="badge badge-gray" data-toast="Recipient email batch queued.">📧 Email all workers</button>
+          <button class="badge badge-gray" data-modal="email-1099-batch">📧 Email all workers</button>
         </div>
       </div>
       <div class="stats-row" style="margin:0;padding:16px;">
@@ -2391,6 +2394,82 @@ const modalCopy = {
 	        modalSection("Before Printing", `<div class="list">${listItem("Use NEC for 1099 technicians","Contractor service pay, commission, bonus, and customer tips paid through the salon belong on Form 1099-NEC.","green")}${listItem("Tips are not added twice","Box 1a is the total nonemployee compensation. Box 1b separately shows the cash tip portion already included in Box 1a.","blue")}${listItem("Nail occupation code","Use TTOC 605 for manicurists/pedicurists when applicable, then confirm with CPA before filing.","yellow")}${listItem("IRS filing caution","Use official scannable forms or e-file/IRIS for IRS filing. This worksheet is for owner review, recipient workflow, and print preview.","red")}</div>`),
 	        `<div class="irs-print-actions"><a class="btn" href="https://www.irs.gov/pub/irs-pdf/f1099nec.pdf" target="_blank" rel="noopener">Open IRS 1099-NEC PDF</a><a class="btn" href="${pageHref("tax-1099")}">Open 1099 Center</a></div>`,
 	        irs1099NecPrintSheet(record)
+	      ].join("");
+	    }
+	  },
+	  "email-1099-nec":{
+	    title:"Email Form 1099-NEC To Worker",
+	    body:"Send the reviewed worker copy by secure email link, keep delivery proof, and log the action for year-end records.",
+	    cta:"Send Email",
+	    afterOpen(modal){
+	      const cta = modal.querySelector("#modalMainCta");
+	      if(cta){
+	        cta.removeAttribute("data-action-toast");
+	        cta.addEventListener("click", e=>{
+	          e.stopPropagation();
+	          const worker = window._modalCtx?.ctxId || "Amy T.";
+	          const email = modal.querySelector("[data-worker-email]")?.value || workerEmailFromName(worker);
+	          document.getElementById("modalRoot").classList.remove("open");
+	          toast(`Form 1099-NEC email sent to ${email}. Delivery proof saved for ${worker}.`);
+	        });
+	      }
+	    },
+	    content:()=>{
+	      const worker = window._modalCtx?.ctxId || "Amy T.";
+	      const record = irs1099NecRecord(worker);
+	      const email = workerEmailFromName(worker);
+	      return [
+	        modalSection("Recipient", modalGrid([
+	          modalField("Worker",record.workerName),
+	          `<label class="form-field"><span>Email</span><input class="form-control" data-worker-email type="email" value="${demoEscape(email)}"></label>`,
+	          modalSelect("Form",[["1099-NEC recipient copy",true],["1099-NEC corrected copy"]]),
+	          modalSelect("Delivery",[["Secure link + PDF download",true],["Secure link only"],["Owner review draft only"]]),
+	          modalSelect("Link expires",[["15 days",true],["7 days"],["30 days"]]),
+	          modalSelect("Language",[["English",true],["Vietnamese note"]])
+	        ])),
+	        modalSection("Form Summary", table(["Field","Amount / Value","Email Note"],[
+	          row(["Box 1a",`$${demoEscape(record.box1a)}`,"Total nonemployee compensation, including Box 1b tips."],{wrap:2}),
+	          row(["Box 1b",`$${demoEscape(record.box1b)}`,"Cash tips shown separately; not added twice."],{wrap:2}),
+	          row(["Box 1c",demoEscape(record.box1c),"TTOC for nail technician when applicable."],{wrap:2}),
+	          row(["TIN","Masked in email","Full TIN stays behind secure link after access check."],{wrap:2})
+	        ])),
+	        modalSection("Message Preview", `<div class="notice"><strong>Subject:</strong> Your ${demoEscape(record.year)} Form 1099-NEC is ready<br><br>Hi ${demoEscape(record.workerName)},<br>Your ${demoEscape(record.year)} Form 1099-NEC from Nexora Nail Spa LLC is ready. Open the secure link to review and download your copy. Your total Box 1a is $${demoEscape(record.box1a)}; cash tips included in that amount are shown in Box 1b as $${demoEscape(record.box1b)}.</div>`),
+	        modalSection("Send Controls", `<div class="list">${modalCheck("Owner approved form before sending","Locks this worker copy against casual edits after email is sent.")}${modalCheck("Send secure link, not raw TIN in email","Email body keeps TIN masked and routes worker to the protected copy.")}${modalCheck("Log delivery proof","Audit Log records sender, recipient, form, tax year, timestamp, and link expiration.")}${modalCheck("Allow resend if worker cannot access link","Future resend keeps the same audit chain.", false)}</div>`)
+	      ].join("");
+	    }
+	  },
+	  "email-1099-batch":{
+	    title:"Email All 1099-NEC Forms",
+	    body:"Send reviewed 1099-NEC worker copies to all ready contractors and record recipient delivery status.",
+	    cta:"Send Batch",
+	    afterOpen(modal){
+	      const cta = modal.querySelector("#modalMainCta");
+	      if(cta){
+	        cta.removeAttribute("data-action-toast");
+	        cta.addEventListener("click", e=>{
+	          e.stopPropagation();
+	          document.getElementById("modalRoot").classList.remove("open");
+	          toast("4 Form 1099-NEC emails sent. Recipient delivery proof saved.");
+	        });
+	      }
+	    },
+	    content:()=>{
+	      const workers = ["Amy T.","Linda P.","Sarah J.","Brian L."].map(irs1099NecRecord);
+	      return [
+	        modalSection("Batch Recipients", table(["Worker","Email","Box 1a","Box 1b Tips","Delivery"],workers.map(w=>row([
+	          w.workerName,
+	          workerEmailFromName(w.workerName),
+	          `$${w.box1a}`,
+	          `$${w.box1b}`,
+	          status("Ready")
+	        ])))),
+	        modalSection("Batch Settings", modalGrid([
+	          modalSelect("Send timing",[["Send now",true],["Schedule Jan 15"],["Save draft only"]]),
+	          modalSelect("Delivery",[["Secure link + PDF download",true],["Secure link only"]]),
+	          modalSelect("Link expires",[["15 days",true],["7 days"],["30 days"]]),
+	          modalSelect("After send",[["Mark recipient delivery sent",true],["Keep needs review"]])
+	        ])),
+	        modalSection("Before Sending", `<div class="list">${modalCheck("All worker copies reviewed","Each 1099-NEC amount has owner/CPA review before email.")}${modalCheck("W-9/TIN and address verified","Recipient identity is complete before delivery.")}${modalCheck("Audit delivery proof","One delivery event per worker is written to Audit Log.")}${modalCheck("Do not email IRS Copy A","Worker email contains recipient copy access only; IRS filing stays in e-file/paper filing workflow.")}</div>`)
 	      ].join("");
 	    }
 	  },
