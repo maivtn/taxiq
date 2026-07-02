@@ -713,26 +713,7 @@ function renderReviews(){
 function renderDashboard(){
   const runRows = data.runs.slice(0,5).map(r=>row([`<span class="mono">${r[0]}</span>`,r[1],r[2],r[5],r[6],r[7],status(r[8])],{click:true,href:pageHref("run-detail")}));
   const issues = data.exceptions.slice(0,4).map(e=>listItem(e[1],`${e[6]} Owner: ${e[3]}.`,e[2]==="High"?"red":"yellow")).join("");
-  const workflowCards = [
-    ["POS","Turn Board","Check-in, assign customer to technician, track service status, and checkout.","blue","pos"],
-    ["AI Advisor","AI CFO","Cash-flow and tax planning prompts are ready.","green","ai-advisor"],
-    ["Quick Pay","Fast Payout","Tip, wage, bonus, advance, and reimbursement flow.","green","quick-pay"],
-    ["Payout Hub","1099 Profiles","Worker payment profiles, pending invites, proof, W-9, and instant payout actions.","yellow","payouts"],
-    ["Pay Engine","Pay Rules","Hourly, commission, hybrid, tiered, bonus, and schedule config.","blue","pay-engine"],
-    ["Weekly Payroll","Pay Review","Hours, sales, commission, tips, bonus, and pay-all review.","cyan","weekly-payroll"],
-    ["Reviews","Reputation","Google, Yelp, and Facebook review queue with reply workflow.","red","reviews"],
-    ["AI Assistant","Shop Automation","AI receptionist, scheduling, bookkeeping, campaigns, and revenue forecast.","green","ai-assistant"],
-    ["OCR Vault","Receipt Capture","6 evidence records are stored for review.","blue","ocr"],
-    ["Share Links","Secure Links","CPA, technician, and profile links are active.","yellow","share-links"],
-    ["Tax Estimate","Quarterly Forecast","Federal, SUTA, and state balances are ready.","red","tax-estimate"],
-    ["Tax Center 1099","Year-end Forms","W-9/TIN, Box 1 rollups, recipient delivery, and e-file readiness.","red","tax-1099"],
-    ["Tip Ledger","No Tax on Tips","YTD qualified tip tracking and cap warnings.","cyan","tip-ledger"],
-    ["GPS Mileage","Route Evidence","A to B mileage trips ready for CPA review.","green","gps"],
-    ["Onboarding","Merchant Setup","First-time setup and empty-state checklist.","blue","onboarding"],
-    ["Data Quality","Readiness Center","Missing data, evidence gaps, and integration issues.","yellow","data-quality"],
-    ["Compliance Review","Go-live Gate","Legal, privacy, disclaimer, and API readiness.","red","compliance-review"]
-  ].map(([title,item,text,color,href])=>panel(title,`<div class="panel-body">${listItem(item,text,color)}</div>`,`<a class="btn" href="${pageHref(href)}">Open</a>`)).join("");
-  return `<div class="grid-4" style="margin-bottom:14px">${data.metrics.map(metric).join("")}</div><div class="grid-2" style="margin-bottom:14px">${usTaxReadinessPanel()}${priorityActionPanel()}</div><div class="split"><div>${panel("Recent Payroll Runs",table(["Run ID","Period","Pay Date","Gross","Tax","Risk","Status"],runRows),`<a class="btn" href="${pageHref("payroll-runs")}">View All</a>`)}</div>${panel("TaxIQ Issues",`<div class="panel-body list">${issues}</div>`,`<a class="btn" href="${pageHref("exceptions")}">Open Queue</a>`)}</div><div class="grid-3" style="margin-top:14px">${workflowCards}</div>`;
+  return `<div class="grid-4" style="margin-bottom:14px">${data.metrics.map(metric).join("")}</div><div class="grid-2" style="margin-bottom:14px">${usTaxReadinessPanel()}${priorityActionPanel()}</div><div class="split"><div>${panel("Recent Payroll Runs",table(["Run ID","Period","Pay Date","Gross","Tax","Risk","Status"],runRows),`<a class="btn" href="${pageHref("payroll-runs")}">View All</a>`)}</div>${panel("TaxIQ Issues",`<div class="panel-body list">${issues}</div>`,`<a class="btn" href="${pageHref("exceptions")}">Open Queue</a>`)}</div>`;
 }
 
 /* ─── ANALYTICS ─── */
@@ -750,12 +731,21 @@ function renderAnalytics(){
 
 /* ─── ONBOARDING ─── */
 function renderOnboarding(){
-  const completed = data.onboarding.filter(o=>/Completed|Ready/i.test(o[2])).length;
-  const progress = Math.round(completed / data.onboarding.length * 100);
-  const onboardingRows = data.onboarding.map(o=>{
+  const requiredSteps = [
+    "Choose Tax IQ plan",
+    "Add business profile and EIN",
+    "Connect payroll/accounting",
+    "Upload receipts and payout evidence",
+    "Review billing and terms"
+  ];
+  const paymentSetupStep = ["Set worker pay rules and payout methods","Payroll Admin","Review","Choose pay formula in Pay Engine, then verify each worker payout method in Payout Hub."];
+  const requiredOnboarding = [...data.onboarding.filter(o => requiredSteps.includes(o[0])), paymentSetupStep];
+  const completed = requiredOnboarding.filter(o=>/Completed|Ready/i.test(o[2])).length;
+  const progress = Math.round(completed / requiredOnboarding.length * 100);
+  const onboardingRows = requiredOnboarding.map(o=>{
     const step = o[0].toLowerCase();
-    const target = step.includes("billing") || step.includes("plan") ? "billing" : step.includes("cpa") ? "cpa" : step.includes("receipt") || step.includes("payout") ? "ocr" : step.includes("payroll") || step.includes("accounting") ? "connections" : "settings";
-    return row([o[0],o[1],status(o[2]),o[3],rowActions(actionBtn("Open","onboarding-step"),`<a class="${ui.btn}" href="${pageHref(target)}">Go</a>`)],{wrap:[0,3]});
+    const target = step.includes("worker pay") || step.includes("payout method") ? "pay-engine" : step.includes("billing") || step.includes("plan") ? "billing" : step.includes("cpa") ? "cpa" : step.includes("receipt") || step.includes("payout") ? "ocr" : step.includes("payroll") || step.includes("accounting") ? "connections" : "settings";
+    return row([o[0],o[1],status(o[2]),o[3],rowActions(actionBtn("Open","onboarding-step"),`<a class="${ui.btn}" href="${pageHref(target)}">Go</a>`),status("Required")],{wrap:[0,4]});
   });
   const emptyRows = [
     ["Employers","No business profile yet.","Add Employer","employers"],
@@ -767,10 +757,10 @@ function renderOnboarding(){
   ].map(e=>row([e[0],e[1],e[2],`<a class="${ui.btn}" href="${pageHref(e[3])}">Open</a>`]));
   return `<div class="grid-4" style="margin-bottom:14px">${[
     ["Setup Progress",progress+"%","Merchant launch readiness","green"],
-    ["Open Setup Items",String(data.onboarding.length-completed),"Need owner/admin action","yellow"],
+    ["Open Setup Items",String(requiredOnboarding.length-completed),"Must complete before payroll and payout","yellow"],
     ["Initial ICP","Nail / Beauty","Best first vertical","cyan"],
     ["Go-live Gate","Not Ready","Legal + API work remains","red"]
-  ].map(metric).join("")}</div><div class="grid-2" style="margin-bottom:14px">${panel("Merchant First-time Setup",table(["Step","Owner","Status","Why It Matters","Actions"],onboardingRows),`<button class="btn primary" data-modal="onboarding-step">Continue Setup</button>`)}${panel("MVP ICP Fit",`<div class="panel-body list">${listItem("Best starting customer","Vietnamese-owned nail salons and beauty businesses in the U.S. with staff payouts, tips, receipts, mileage, and CPA needs.","green")}${listItem("Owner experience","Simple dashboard, upload/share links, CPA approval, billing, and guided next action.","blue")}${listItem("Admin/CPA experience","Payroll runs, Tax Estimate, ledger, evidence vault, audit log, and filing package review.","yellow")}${listItem("Avoid broad payroll positioning","For MVP demo, position Tax IQ as tax/evidence assistant for nail and beauty merchants first.","red")}</div>`)}</div><div class="grid-2">${panel("Core Happy Path",table(["Phase","User","Output"],[
+  ].map(metric).join("")}</div><div class="grid-2" style="margin-bottom:14px">${panel("Merchant First-time Setup",table(["Step","Owner","Status","Why It Matters","Actions","Priority"],onboardingRows),`<button class="btn primary" data-modal="onboarding-step">Continue Setup</button>`)}${panel("MVP ICP Fit",`<div class="panel-body list">${listItem("Best starting customer","Vietnamese-owned nail salons and beauty businesses in the U.S. with staff payouts, tips, receipts, mileage, and CPA needs.","green")}${listItem("Owner experience","Simple dashboard, upload/share links, CPA approval, billing, and guided next action.","blue")}${listItem("Admin/CPA experience","Payroll runs, Tax Estimate, ledger, evidence vault, audit log, and filing package review.","yellow")}${listItem("Avoid broad payroll positioning","For MVP demo, position Tax IQ as tax/evidence assistant for nail and beauty merchants first.","red")}</div>`)}</div><div class="grid-2">${panel("Core Happy Path",table(["Phase","User","Output"],[
     ["1. Onboard merchant","Business Owner","Business profile, EIN, plan, terms, and ICP setup."],
     ["2. Connect data","Payroll Admin","Payroll, accounting, payout, receipt, tip, GPS, and webhook sources."],
     ["3. Resolve gaps","Owner / Admin","TIN/W-4, receipts, state setup, connection errors, and evidence gaps."],
@@ -920,10 +910,35 @@ function renderQuickPay(){
 /* ─── PAY ENGINE ─── */
 function renderPayEngine(){
   return `<div class="nexora-source">
-    <div class="alert alert-blue">💡 Configure pay rules <strong>per employee</strong>. Click a technician name in the avatar row to switch. The right side always previews results in <strong>real time</strong>.</div>
+    <div class="alert alert-blue">💡 <strong>Employee Payment Setup</strong> is the control room for how each worker gets paid. Set the worker profile, pay formula, pay schedule, and payout method before using Quick Pay or Weekly Payroll.</div>
 
     <div class="section-box">
-      <div class="section-box-title">① Pay Type — Choose 1 of 4</div>
+      <div class="section-box-title">Payment Setup Flow — What merchant must finish first</div>
+      <div class="card-grid-4">
+        <div class="info-card info-blue"><div class="info-title">1. Worker Profile</div><p>Confirm W-2 / 1099, W-4 or W-9/TIN, email, phone, and status.</p><a class="source-button" href="${pageHref("employees")}">Open Employees</a></div>
+        <div class="info-card info-green"><div class="info-title">2. Pay Rule</div><p>Choose hourly, commission, hybrid, tiered, bonus, overtime, and pay period.</p><button class="source-button primary" data-modal="employee">Configure Rule</button></div>
+        <div class="info-card info-orange"><div class="info-title">3. Payout Method</div><p>Set primary method: Zelle, ACH/direct deposit, Venmo, Cash App, check, or cash.</p><a class="source-button" href="${pageHref("payouts")}">Open Payout Hub</a></div>
+        <div class="info-card info-purple" style="border-color:#bc8cff;"><div class="info-title">4. Pay Worker</div><p>Use Weekly Payroll for normal payroll, or Quick Pay for tip, bonus, advance, and adjustment.</p><a class="source-button" href="${pageHref("quick-pay")}">Open Quick Pay</a></div>
+      </div>
+      <div class="alert alert-orange" style="margin:12px 16px;">Required before first payment: worker classification, tax form status, pay formula, pay schedule, payout method, and proof rule.</div>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">Which screen does what?</div>
+      <table>
+        <thead><tr><th>Need</th><th>Go To</th><th>What Gets Saved</th><th>Before Pay?</th></tr></thead>
+        <tbody>
+          <tr><td>Worker identity + tax form</td><td>Employees</td><td>W-2/1099, W-4/W-9, TIN status, work state</td><td><span class="badge badge-green">Required</span></td></tr>
+          <tr><td>How pay is calculated</td><td>Pay Engine</td><td>Hourly rate, commission %, hybrid/tiered rule, bonus, pay period</td><td><span class="badge badge-green">Required</span></td></tr>
+          <tr><td>Where money is sent</td><td>Payout Hub</td><td>Zelle, ACH, Venmo, Cash App, check, cash, backup method</td><td><span class="badge badge-green">Required</span></td></tr>
+          <tr><td>One-off payment</td><td>Quick Pay</td><td>Tip payout, bonus, advance, reimbursement, adjustment</td><td><span class="badge badge-orange">After setup</span></td></tr>
+          <tr><td>Weekly batch payment</td><td>Weekly Payroll</td><td>Hours, sales, tips, bonus, take-home, pay-all approval</td><td><span class="badge badge-orange">After setup</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">Pay Formula — Choose 1 of 4</div>
       <div class="card-grid-4">
         <div class="info-card info-blue"><div class="info-icon">⏰</div><div class="info-title">Hourly</div><p>Hours x rate<br>OT auto-calculates at 1.5x</p></div>
         <div class="info-card info-green"><div class="info-icon">📊</div><div class="info-title">Commission %</div><p>% of total sales<br>No hourly wage</p></div>
@@ -933,7 +948,7 @@ function renderPayEngine(){
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">② Hourly Pay</div>
+      <div class="section-box-title">Hourly Pay Settings</div>
       <table>
         <thead><tr><th>Field</th><th>Description</th><th>Example</th><th>Notes</th></tr></thead>
         <tbody>
@@ -947,7 +962,7 @@ function renderPayEngine(){
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">③ Revenue Split — Commission Rate <span class="badge badge-orange">Added later</span></div>
+      <div class="section-box-title">Commission Settings — Revenue Split</div>
       <table>
         <thead><tr><th>Setting</th><th>Description</th><th>Example</th></tr></thead>
         <tbody>
@@ -955,11 +970,11 @@ function renderPayEngine(){
           <tr><td>System suggestion</td><td>Common nail industry range: <strong>35-45%</strong></td><td>Linda P.: 40% · Sarah J.: 38%</td></tr>
         </tbody>
       </table>
-      <div class="alert alert-orange" style="margin:12px 16px;">⚠️ This section was <strong>missing</strong> from the first walkthrough and was added after review.</div>
+      <div class="alert alert-orange" style="margin:12px 16px;">Use this when a technician earns a percentage of service sales.</div>
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">④ Sales Threshold Bonus 🎯</div>
+      <div class="section-box-title">Sales Threshold Bonus</div>
       <table>
         <thead><tr><th>Field</th><th>Description</th><th>Example</th></tr></thead>
         <tbody>
@@ -971,7 +986,7 @@ function renderPayEngine(){
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">⑤ KPI Bonus 🏆</div>
+      <div class="section-box-title">KPI Bonus</div>
       <table>
         <thead><tr><th>Field</th><th>Description</th><th>Amy T. Example</th></tr></thead>
         <tbody>
@@ -982,18 +997,18 @@ function renderPayEngine(){
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">⑥ Pay Period 📅 <span class="badge badge-orange">Added later</span></div>
+      <div class="section-box-title">Pay Schedule</div>
       <div class="card-grid-4">
         <div class="info-card info-purple" style="border-color:#bc8cff;"><div class="info-title">Weekly</div><p>Pay every week<br><em>Amy T., Linda P.</em></p></div>
         <div class="info-card info-blue"><div class="info-title">Biweekly</div><p>Pay every 2 weeks<br><em>Kevin M.</em></p></div>
         <div class="info-card info-orange"><div class="info-title">15th &amp; 30th</div><p>Pay on the 15th<br>and 30th</p></div>
         <div class="info-card info-green"><div class="info-title">Monthly</div><p>Pay once<br>each month</p></div>
       </div>
-      <div class="alert alert-orange" style="margin:12px 16px;">⚠️ This section was <strong>missing</strong> from the first walkthrough and was added after review.</div>
+      <div class="alert alert-orange" style="margin:12px 16px;">This decides when the worker appears in Weekly Payroll.</div>
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">💡 Real-Time Result Preview (Amy T. — Week of Jun 23-28)</div>
+      <div class="section-box-title">Real-Time Result Preview — Amy T. Week of Jun 23-28</div>
       <table>
         <thead><tr><th>Line Item</th><th>Calculation</th><th>Amount</th></tr></thead>
         <tbody>
@@ -1130,6 +1145,20 @@ function renderPayouts(){
       <span class="tab-pill">🤖 Bookkeeping</span>
       <span class="tab-pill">⚙️ Settings</span>
       <a class="tab-pill" style="background:#f59e0b;color:#fff;border-color:#d97706" href="${pageHref("quick-pay")}">⚡ Quick Pay</a>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">Employee Payment Method Setup</div>
+      <table>
+        <thead><tr><th>Setup Item</th><th>What Merchant Enters</th><th>Used By</th><th>Status Rule</th></tr></thead>
+        <tbody>
+          <tr><td>Primary payout method</td><td>Zelle email/phone, ACH account token, Venmo, Cash App, check, or cash</td><td>Quick Pay + Weekly Payroll</td><td><span class="badge badge-green">Required</span></td></tr>
+          <tr><td>Backup method</td><td>Second method in case primary payout fails or worker asks for a different method</td><td>Payout retry</td><td><span class="badge badge-orange">Recommended</span></td></tr>
+          <tr><td>Worker tax profile</td><td>W-2/W-4 or 1099/W-9, TIN status, work/residence state</td><td>Tax Center + Payroll</td><td><span class="badge badge-green">Required</span></td></tr>
+          <tr><td>Payment proof rule</td><td>Screenshot, bank memo, check number, cash receipt, or owner note</td><td>OCR Vault + CPA Review</td><td><span class="badge badge-green">Required</span></td></tr>
+        </tbody>
+      </table>
+      <div class="alert alert-blue" style="margin:12px 16px;">Simple rule: Pay Engine decides <strong>how much</strong>; Payout Hub decides <strong>where money goes</strong>; Quick Pay or Weekly Payroll creates the actual payment.</div>
     </div>
 
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap">
@@ -3047,7 +3076,8 @@ const modalCopy = {
     cta:"Save Step",
     content:()=>[
       modalSection("Setup Item", modalGrid([
-        modalSelect("Step",[["Choose Tax IQ plan",true],["Add business profile and EIN"],["Connect payroll/accounting"],["Upload receipts and payout evidence"],["Invite CPA/bookkeeper"],["Review billing and terms"]]),
+        modalSelect("Step",[["Choose Tax IQ plan",true],["Add business profile and EIN"],["Connect payroll/accounting"],["Set worker pay rules and payout methods"],["Upload receipts and payout evidence"],["Review billing and terms"]]),
+        modalSelect("Optional (if needed)",[["Invite CPA/bookkeeper"]]),
         modalSelect("Owner",[["Merchant Owner",true],["Payroll Admin"],["Bookkeeper"],["CPA"],["TaxIQ Admin"]]),
         modalSelect("Status",[["Pending",true],["In progress"],["Review"],["Ready"],["Completed"]]),
         modalField("Target date","2026-06-30")
