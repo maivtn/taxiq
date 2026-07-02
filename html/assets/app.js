@@ -1755,7 +1755,23 @@ function renderGps(){
     row(["Parking/tolls","Separate add-on","Business parking fees and tolls can be tracked separately from mileage."],{wrap:2}),
     row(["Commute-like route","CPA review","Home to regular workplace is flagged instead of auto-counted."],{wrap:2})
   ];
-  return `<div class="grid-4" style="margin-bottom:14px">${[[ "Trips",String(data.trips.length),`${candidateCount} candidates · ${policyCount} review`,"green"],["Eligible Miles",eligibleMiles,`${reviewMiles} mi held for CPA review`,"cyan"],["2026 IRS Rate",`${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢/mi`,`Effective ${IRS_MILEAGE_2026.effective}`,"yellow"],["Est. Deduction",deductionEstimate,"Eligible miles only","red"]].map(metric).join("")}</div>${activePanel}<div class="notice" style="margin-bottom:14px"><strong>2026 U.S. business mileage:</strong> Tax IQ estimates eligible business trips at ${(IRS_MILEAGE_2026.business * 100).toFixed(1)} cents per mile. Standard mileage is optional; owner/CPA can choose actual expenses instead when eligible.</div><div class="grid-2" style="margin-bottom:14px">${panel("Route Preview",`<div class="panel-body">${freeRouteMap("Salon to supply store")}<div class="sub">Free OpenStreetMap preview for a saved point A → point B business route. Production should store user consent, GPS coordinates, route source, tax year rate, and CPA review status.</div></div>`)}${panel("IRS 2026 Mileage Rates",table(["Use","2026 Rate","How Tax IQ Applies It"],rateRows),`<button class="btn" data-modal="mileage-rules">View Rules</button>`)}</div><div class="grid-2" style="margin-bottom:14px">${panel("Deduction Qualification",table(["Rule","App Gate","Owner/CPA Note"],qualificationRows))}${panel("Mileage Policy Notes",`<div class="panel-body list">${listItem("Business purpose required","Every trip must explain why it was business related before export.","green")}${listItem("Commute-like routes need CPA review","Home to regular workplace is held out of the automatic estimate until reviewed.","yellow")}${listItem("Rate versioning","Saved trips store the tax year and mileage rate used for the estimate.","blue")}${listItem("Employee unreimbursed travel warning","Unreimbursed employee travel is generally not auto-deducted; route to CPA review when worker type is W-2.","red")}</div>`)}</div>${panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Est. Deduction","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button> <button class="btn" data-toast="Mileage export queued for CPA review.">Export Mileage Log</button>`)}${panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence and distance calculation.","When mileage is claimed"],["Point A → Point B route","Saves the route when user presses Stop at destination.","Yes"],["Date/time + tax year","Locks the correct IRS mileage rate version.","Yes"],["Business purpose","Explains deduction relevance.","Yes"],["Business/personal classification","Prevents personal or commute-like trips from auto-counting.","Yes"],["Vehicle profile","Supports owner/worker mileage records and method choice.","Recommended"],["Parking/tolls","Separately deductible when business-related; not part of cents-per-mile amount.","Optional"]].map(r=>row(r,{wrap:1}))))}`;
+  const travelExpenseRows = [
+    row(["Transportation","Airplane, train, bus, car, taxi/rideshare, airport-to-hotel, hotel-to-work site.","Receipt or mileage log required."],{wrap:[1,2]}),
+    row(["Car at destination","Standard mileage or actual expenses, plus business tolls and parking.","Business-use portion only."],{wrap:[1,2]}),
+    row(["Lodging","Hotel or lodging while away from tax home for business.","No lavish or personal portion."],{wrap:[1,2]}),
+    row(["Meals","Non-entertainment meals while away from home.","Usually limited; CPA review before final deduction."],{wrap:[1,2]}),
+    row(["Baggage / shipping","Baggage, samples, display material, or business supplies moved between work locations.","Attach proof."],{wrap:[1,2]}),
+    row(["Laundry / calls / tips","Dry cleaning, laundry, business calls, and tips tied to deductible travel services.","Tie to travel record."],{wrap:[1,2]})
+  ];
+  const travelGateRows = [
+    row(["Away from tax home","Must be outside the general area of main business/work location.","Do not use for normal local errands."],{wrap:[1,2]}),
+    row(["Sleep or rest test","Trip must be substantially longer than an ordinary workday and require sleep/rest.","Overnight or rest evidence helps."],{wrap:[1,2]}),
+    row(["Temporary assignment","Generally one year or less; indefinite work assignment is not auto-deductible.","Route to CPA if expectation changes."],{wrap:[1,2]}),
+    row(["Ordinary and necessary","Expense must be common/helpful for business, not personal, lavish, or extravagant.","Owner approval required."],{wrap:[1,2]})
+  ];
+  const mileageTrackerPanel = panel("GPS Mileage Tracker",table(["Trip ID","Route","Miles","Purpose","Est. Deduction","Status","Actions"],tripRows),`<button class="btn primary" data-modal="trip">${activeGpsTrip ? "Stop Active Trip" : "Start Trip"}</button> <button class="btn" data-toast="Mileage export queued for CPA review.">Export Mileage Log</button>`);
+  const mileageDataPanel = panel("Mileage Data To Collect",table(["Field","Why It Matters","Required"],[["GPS start/end","Supports route evidence and distance calculation.","When mileage is claimed"],["Point A → Point B route","Saves the route when user presses Stop at destination.","Yes"],["Date/time + tax year","Locks the correct IRS mileage rate version.","Yes"],["Business purpose","Explains deduction relevance.","Yes"],["Business/personal classification","Prevents personal or commute-like trips from auto-counting.","Yes"],["Vehicle profile","Supports owner/worker mileage records and method choice.","Recommended"],["Parking/tolls","Separately deductible when business-related; not part of cents-per-mile amount.","Optional"]].map(r=>row(r,{wrap:1}))));
+  return `<div class="grid-4" style="margin-bottom:14px">${[[ "Trips",String(data.trips.length),`${candidateCount} candidates · ${policyCount} review`,"green"],["Eligible Miles",eligibleMiles,`${reviewMiles} mi held for CPA review`,"cyan"],["2026 IRS Rate",`${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢/mi`,`Effective ${IRS_MILEAGE_2026.effective}`,"yellow"],["Est. Deduction",deductionEstimate,"Eligible miles only","red"]].map(metric).join("")}</div>${activePanel}${mileageTrackerPanel}<div class="notice" style="margin-bottom:14px"><strong>2026 U.S. business mileage:</strong> Tax IQ estimates eligible business trips at ${(IRS_MILEAGE_2026.business * 100).toFixed(1)} cents per mile. Standard mileage is optional; owner/CPA can choose actual expenses instead when eligible.</div><div class="grid-2" style="margin-bottom:14px">${panel("Topic 511 Travel Expense Template",table(["Expense Group","What To Capture","Proof"],travelExpenseRows),`<button class="btn primary" data-modal="travel-expense-template">Open Template</button>`)}${panel("Away From Tax Home Gate",table(["Rule","Topic 511 Test","Tax IQ Action"],travelGateRows),`<button class="btn" data-modal="travel-expense-template">Create Worksheet</button>`)}</div><div class="grid-2" style="margin-bottom:14px">${panel("Route Preview",`<div class="panel-body">${freeRouteMap("Salon to supply store")}<div class="sub">Free OpenStreetMap preview for a saved point A → point B business route. Production should store user consent, GPS coordinates, route source, tax year rate, and CPA review status.</div></div>`)}${panel("IRS 2026 Mileage Rates",table(["Use","2026 Rate","How Tax IQ Applies It"],rateRows),`<button class="btn" data-modal="mileage-rules">View Rules</button>`)}</div><div class="grid-2" style="margin-bottom:14px">${panel("Deduction Qualification",table(["Rule","App Gate","Owner/CPA Note"],qualificationRows))}${panel("Mileage Policy Notes",`<div class="panel-body list">${listItem("Business purpose required","Every trip must explain why it was business related before export.","green")}${listItem("Commute-like routes need CPA review","Home to regular workplace is held out of the automatic estimate until reviewed.","yellow")}${listItem("Rate versioning","Saved trips store the tax year and mileage rate used for the estimate.","blue")}${listItem("Employee unreimbursed travel warning","Unreimbursed employee travel is generally not auto-deducted; route to CPA review when worker type is W-2.","red")}</div>`)}</div>${mileageDataPanel}`;
 }
 
 /* ─── CPA REVIEW ─── */
@@ -3028,7 +3044,51 @@ const modalCopy = {
     ].join("")
   },
 
-	  /* GPS MILEAGE MODALS */
+		  /* GPS MILEAGE MODALS */
+  "travel-expense-template":{
+    title:"Business Travel Expense Worksheet",
+    body:"Capture Topic 511 away-from-home travel expenses for CPA review: tax home, destination, business purpose, receipts, and deduction gates.",
+    cta:"Save Worksheet",
+    afterOpen(modal){
+      const cta = modal.querySelector("#modalMainCta");
+      if(cta){
+        cta.removeAttribute("data-action-toast");
+        cta.addEventListener("click", e=>{
+          e.stopPropagation();
+          const destination = modal.querySelector("[data-travel-destination]")?.value || "Business destination";
+          document.getElementById("modalRoot").classList.remove("open");
+          toast(`Travel expense worksheet saved for ${destination}. CPA review required before deduction.`);
+        });
+      }
+    },
+    content:()=>[
+      modalSection("Trip Header", modalGrid([
+        modalField("Tax home / main work area","Houston, TX - Nexora Nail Spa"),
+        `<label class="form-field"><span>Business destination</span><input class="form-control" data-travel-destination value="Dallas Beauty Expo"></label>`,
+        modalField("Departure date","2026-08-12"),
+        modalField("Return date","2026-08-14"),
+        modalSelect("Away-from-home test",[["Overnight / sleep or rest required",true],["Same-day local trip"],["CPA review needed"]]),
+        modalSelect("Assignment type",[["Temporary - expected one year or less",true],["Indefinite / over one year"],["Convention / trade show"]])
+      ])),
+      modalSection("Topic 511 Eligibility", table(["Gate","Worksheet Answer","Action"],[
+        row(["Tax home","Owner is away from the general Houston business area.","Required before travel expenses are estimated."],{wrap:[1,2]}),
+        row(["Sleep/rest","Trip includes two nights away for business education and vendor meetings.","Keep hotel/agenda proof."],{wrap:[1,2]}),
+        row(["Business benefit","Expo attendance supports salon supplies, product training, and vendor pricing.","Attach agenda or meeting notes."],{wrap:[1,2]}),
+        row(["Not lavish/personal","Personal sightseeing, family costs, and excessive expenses are excluded.","Split personal portion before export."],{wrap:[1,2]})
+      ])),
+      modalSection("Expense Lines", table(["Category","Example Amount","Proof Needed"],[
+        row(["Transportation to destination","$188.40","Flight/bus/train receipt, rental record, or mileage route."],{wrap:2}),
+        row(["Taxi / rideshare / local transit","$46.20","Airport-to-hotel and hotel-to-meeting receipts."],{wrap:2}),
+        row(["Business mileage at destination",`${gpsDeductionText(18.6)} est.`,"Miles, route, vehicle, tolls, and parking fees."],{wrap:2}),
+        row(["Lodging","$318.00","Hotel invoice; exclude personal upgrades or family portion."],{wrap:2}),
+        row(["Meals","$126.50","Non-entertainment meals; limit reviewed by CPA."],{wrap:2}),
+        row(["Baggage / sample shipping","$34.75","Baggage, samples, or display material receipt."],{wrap:2}),
+        row(["Laundry / business calls / tips","$29.00","Travel-related services tied to this trip."],{wrap:2})
+      ])),
+      modalSection("CPA Export Controls", `<div class="list">${modalCheck("Attach receipts or OCR records","Each expense line should link to a receipt, invoice, route, or note.")}${modalCheck("Separate personal portion","Personal, family, sightseeing, lavish, or extravagant costs stay excluded.")}${modalCheck("Apply meal limitation review","Meals are generally limited; CPA confirms final treatment.")}${modalCheck("Check employee status","Most employees cannot deduct unreimbursed travel expenses; route W-2 cases to CPA.")}${modalCheck("Source saved","Worksheet cites IRS Topic 511 and records date/source used.")}</div>`),
+      modalSection("Source", `<div class="notice">IRS Topic 511: business travel expenses are ordinary and necessary expenses of traveling away from home for business. Tax IQ uses this worksheet for records and CPA review, not final tax advice. <a class="text-link" href="https://www.irs.gov/taxtopics/tc511" target="_blank" rel="noopener">Open IRS Topic 511</a></div>`)
+    ].join("")
+  },
   "mileage-rules":{
     title:"2026 IRS Mileage Deduction Rules",
     body:"Review the official 2026 standard mileage rates and what Tax IQ requires before estimating a business mileage deduction.",
@@ -3164,6 +3224,12 @@ const modalCopy = {
         </div>
         <div class="notice" style="margin-top:12px" id="gpsMessage">Press Start at point A. When you arrive at point B, press Stop Trip to save the route. 2026 business estimate uses ${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢ per mile.</div>
       `)}
+      ${modalSection("Trip Controls", `
+        <div class="panel-body" style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" id="gpsStartBtn" type="button">Start Tracking at Point A</button>
+          <button class="btn" id="gpsStopBtn" type="button" disabled>Stop Trip at Point B & Save</button>
+        </div>
+      `)}
       ${modalSection("Live Tracking Status", table(["Field","Value"],[
         row(["State",`<span id="gpsState">Ready to start</span>`]),
         row(["Start",`<span id="gpsStartValue">Point A not set</span>`]),
@@ -3172,12 +3238,6 @@ const modalCopy = {
         row(["Live miles",`<span id="gpsLiveMiles">0.00</span>`]),
         row(["Live deduction estimate",`<span id="gpsLiveDeduction">$0</span> at ${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢/mile`])
       ]))}
-      ${modalSection("Actions", `
-        <div class="panel-body" style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn primary" id="gpsStartBtn" type="button">Start Tracking at Point A</button>
-          <button class="btn" id="gpsStopBtn" type="button" disabled>Stop Trip at Point B & Save</button>
-        </div>
-      `)}
       ${modalSection("Deduction Evidence", `<div class="list">${modalCheck("Capture GPS start/end","Required for route evidence.")}${modalCheck("Save A → B route when stopped","The trip is saved only after user presses Stop at destination.")}${modalCheck("Store 2026 rate version","Trip stores ${IRS_MILEAGE_2026.year} business rate ${(IRS_MILEAGE_2026.business * 100).toFixed(1)}¢ per mile.")}${modalCheck("Require business purpose","Needed before CPA package export.")}${modalCheck("Flag commute-like routes","Trips from home to regular workplace need CPA review.", false)}</div>`)}
     `
   },

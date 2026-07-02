@@ -1705,6 +1705,8 @@ a {
 
 .route-map {
   position: relative;
+  z-index: 0;
+  isolation: isolate;
   min-height: 210px;
   overflow: hidden;
   border: 1px solid #1e293b;
@@ -1717,7 +1719,19 @@ a {
   place-items: center;
   min-height: 280px;
   height: 280px;
+  z-index: 0;
   background: #020617;
+}
+
+.osm-route-map.leaflet-container,
+.osm-route-map .leaflet-pane,
+.osm-route-map .leaflet-top,
+.osm-route-map .leaflet-bottom {
+  z-index: 1 !important;
+}
+
+.osm-route-map .leaflet-control {
+  z-index: 2 !important;
 }
 
 .osm-route-map .leaflet-control-attribution {
@@ -2018,6 +2032,20 @@ select.form-control {
 
 .modal-backdrop.open {
   display: flex !important;
+}
+
+#modalRoot.modal-backdrop {
+  z-index: 10000 !important;
+  isolation: isolate;
+}
+
+#modalRoot .modal {
+  position: relative;
+  z-index: 10001;
+}
+
+#toast {
+  z-index: 10020 !important;
 }
 
 .toast div {
