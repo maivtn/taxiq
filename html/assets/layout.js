@@ -1,6 +1,7 @@
 const TaxIQLayout = (() => {
   const rootPath = document.body.dataset.root || ".";
   const currentPage = document.body.dataset.page || "dashboard";
+  const isPagesShell = rootPath === "..";
 
   const ui = {
     btn:"btn inline-flex h-8 items-center justify-center gap-2 rounded-lg border border-slate-700 px-3 text-xs font-bold text-slate-300 transition hover:bg-slate-800 hover:text-white",
@@ -50,13 +51,13 @@ const TaxIQLayout = (() => {
     "employee-profile":{title:"Employee Profile", file:"employee-profile.html", subtitle:"Profile detail, payroll history, and tax status."},
     "payroll-runs":{title:"Payroll Runs", file:"payroll-runs.html", subtitle:"Create, review, approve, and finalize payroll runs."},
     "run-detail":{title:"Payroll Run Detail", file:"run-detail.html", subtitle:"Validation, line items, exceptions, ledger, and audit."},
-    "quick-pay":{title:"Quick Pay — Thanh Toán Nhanh", file:"quick-pay.html", subtitle:"Dashboard → Quick Pay"},
-    "pay-engine":{title:"Cấu Hình Lương — Pay Engine", file:"pay-engine.html", subtitle:"Staff → Lương → Cấu Hình Lương"},
-    "weekly-payroll":{title:"Bảng Lương Tuần 23-28/6/2025", file:"weekly-payroll.html", subtitle:"Staff → Lương → Tuần Này"},
-    pos:{title:"POS — Điểm Bán Hàng", file:"pos.html", subtitle:"Check in · Turn Board · Checkout"},
-    checkout:{title:"Checkout — Thanh Toán", file:"checkout.html", subtitle:"Ticket · Tip · Payment · Receipt · TaxIQ sync"},
+    "quick-pay":{title:"Quick Pay", file:"quick-pay.html", subtitle:"Dashboard > Quick Pay"},
+    "pay-engine":{title:"Pay Engine", file:"pay-engine.html", subtitle:"Staff > Payroll > Pay Engine"},
+    "weekly-payroll":{title:"Weekly Payroll", file:"weekly-payroll.html", subtitle:"Staff > Payroll > This Week"},
+    pos:{title:"POS", file:"pos.html", subtitle:"Check in > Turn Board > Checkout"},
+    checkout:{title:"Checkout", file:"checkout.html", subtitle:"Ticket > Tip > Payment > Receipt > TaxIQ sync"},
     connections:{title:"Connections", file:"connections.html", subtitle:"Payroll, HRIS, payout, and webhook integrations."},
-    payouts:{title:"Payout Hub — Thanh Toán Nhân Viên 1099", file:"payouts.html", subtitle:"Payout → Tổng Quan"},
+    payouts:{title:"Payout Hub", file:"payouts.html", subtitle:"Payout > Overview"},
     ledger:{title:"Tax Ledger", file:"tax-ledger.html", subtitle:"Immutable tax and payout ledger records."},
     exceptions:{title:"Exceptions", file:"exceptions.html", subtitle:"Blocking issues and review workflow."},
     "data-quality":{title:"Data Quality", file:"data-quality.html", subtitle:"Missing data, evidence gaps, integration errors, and CPA readiness."},
@@ -64,7 +65,7 @@ const TaxIQLayout = (() => {
     forms:{title:"Forms & Reports", file:"forms-reports.html", subtitle:"Payroll, 1099, CPA, and year-end export center."},
     "ai-advisor":{title:"AI Advisor", file:"ai-advisor.html", subtitle:"AI CFO, official-rule watch, support, and deduction reminders."},
     "ai-assistant":{title:"AI Assistant", file:"ai-assistant.html", subtitle:"Real-time AI receptionist, scheduling, bookkeeping, and revenue insights for your shop."},
-    reviews:{title:"Đánh Giá & Review", file:"reviews.html", subtitle:"Google · Yelp · Facebook · Phản hồi khách hàng"},
+    reviews:{title:"Reviews", file:"reviews.html", subtitle:"Google > Yelp > Facebook > Customer feedback"},
     ocr:{title:"OCR Vault", file:"ocr-vault.html", subtitle:"Receipts, bills, invoices, and AI extraction review."},
     "share-links":{title:"Share Links", file:"share-links.html", subtitle:"Secure upload, review, QR, and profile links."},
     gps:{title:"GPS Mileage", file:"gps-mileage.html", subtitle:"Trip tracking and mileage deduction review."},
@@ -94,11 +95,19 @@ const TaxIQLayout = (() => {
   }
 
   function renderHeader(meta){
+    const mobileMenuButton = isPagesShell ? [
+      '<button class="mobile-menu-btn hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-700 bg-slate-950 text-slate-200 transition hover:bg-slate-800 hover:text-white max-md:inline-flex" type="button" aria-label="Open navigation menu" aria-controls="taxiq-sidebar" aria-expanded="false" data-mobile-sidebar-open>',
+        '<i class="fa-solid fa-bars" aria-hidden="true"></i>',
+      '</button>'
+    ].join("") : "";
     return [
       '<header class="topbar sticky top-0 z-10 flex min-h-[68px] items-center justify-between gap-5 border-b border-slate-800 bg-slate-900/95 px-6 py-3 backdrop-blur max-lg:flex-col max-lg:items-start max-md:px-4" style="background:linear-gradient(90deg,rgba(16,23,42,.98),rgba(27,31,58,.98) 48%,rgba(21,31,56,.98));border-color:rgba(88,108,160,.30);box-shadow:0 14px 36px rgba(0,0,0,.20)">',
-        '<div class="title min-w-0">',
-          '<h2 class="m-0 text-lg font-black text-slate-50" style="text-shadow:0 0 22px rgba(124,58,237,.22)">' + meta.title + '</h2>',
-          '<p class="mt-1 text-xs text-slate-500" style="color:#8797c3">' + meta.subtitle + '</p>',
+        '<div class="flex min-w-0 items-start gap-3 max-md:w-full">',
+          mobileMenuButton,
+          '<div class="title min-w-0 flex-1">',
+            '<h2 class="m-0 text-lg font-black text-slate-50" style="text-shadow:0 0 22px rgba(124,58,237,.22)">' + meta.title + '</h2>',
+            '<p class="mt-1 text-xs text-slate-500" style="color:#8797c3">' + meta.subtitle + '</p>',
+          '</div>',
         '</div>',
         '<div class="tools flex min-w-0 items-center gap-2 max-lg:w-full">',
           '<label class="search flex h-9 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 text-xs font-bold text-slate-500 lg:max-w-sm" style="border-color:rgba(88,108,160,.42);background:rgba(6,10,22,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)">',
@@ -160,6 +169,21 @@ const TaxIQLayout = (() => {
         "#taxiq-sidebar .sb-icon{font-size:16px!important;width:auto!important}",
         "#taxiq-sidebar .sb-acct-row{display:none}",
         "#taxiq-main{margin-left:0!important;width:100%!important}",
+        ".taxiq-pages-shell #taxiq-sidebar{position:fixed!important;inset:0 auto 0 0!important;top:0!important;width:300px!important;max-width:86vw!important;z-index:45;border-right:1px solid rgba(88,108,160,.30)!important;border-bottom:0;transform:translateX(-105%);transition:transform .24s cubic-bezier(.4,0,.2,1),width .22s cubic-bezier(.4,0,.2,1)}",
+        ".taxiq-pages-shell #taxiq-sidebar.mobile-drawer-open{transform:translateX(0)}",
+        ".taxiq-pages-shell #taxiq-sidebar.sb-collapsed{width:300px!important;max-width:86vw!important}",
+        ".taxiq-pages-shell #taxiq-sidebar .sb-brand-row{height:68px;padding:0 14px!important}",
+        ".taxiq-pages-shell #taxiq-sidebar .sb-toggle-btn{display:none!important}",
+        ".taxiq-pages-shell #taxiq-sidebar .mobile-sidebar-close{display:flex!important}",
+        ".taxiq-pages-shell #taxiq-sidebar .sb-nav{display:block!important;flex:1;overflow-y:auto;overflow-x:hidden;padding:8px}",
+        ".taxiq-pages-shell #taxiq-sidebar .sb-group-label{display:block!important;opacity:1!important;height:auto!important;padding:14px 10px 4px!important}",
+        ".taxiq-pages-shell #taxiq-sidebar .sb-item{flex:0 0 auto!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;height:44px!important;min-height:44px!important;width:auto!important;min-width:0!important;padding:0 10px!important;white-space:nowrap!important;overflow:hidden!important;border-radius:8px!important}",
+        ".taxiq-pages-shell #taxiq-sidebar .sb-label{font-size:13px!important;text-align:left!important;line-height:1.25!important;max-width:none!important;word-break:normal!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}",
+        ".taxiq-pages-shell #taxiq-sidebar .sb-icon{font-size:16px!important;width:20px!important}",
+        ".taxiq-pages-shell #taxiq-sidebar .sb-acct-row{display:flex!important}",
+        ".taxiq-pages-shell #taxiq-sidebar .sb-brand-text,",
+        ".taxiq-pages-shell #taxiq-sidebar .sb-acct-text{opacity:1!important;max-width:180px!important;margin-left:10px!important}",
+        "body.taxiq-mobile-menu-open{overflow:hidden}",
       "}",
       /* ── collapsed (desktop) ── */
       "#taxiq-sidebar.sb-collapsed{width:80px}",
@@ -225,6 +249,7 @@ const TaxIQLayout = (() => {
           '<button onclick="window.taxiqToggleSidebar()" class="sb-toggle-btn shrink-0 flex h-7 w-7 items-center justify-center rounded-full border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors" style="min-width:28px;cursor:pointer">',
             '<i id="sb-toggle-icon" class="fa-solid fa-chevron-left" style="font-size:9px"></i>',
           '</button>',
+          isPagesShell ? '<button type="button" class="mobile-sidebar-close hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-700 bg-slate-800 text-slate-300 transition hover:bg-slate-700 hover:text-white" aria-label="Close navigation menu" data-mobile-sidebar-close><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>' : '',
         '</div>',
         /* Nav */
         '<nav class="sb-nav flex-1 overflow-y-auto overflow-x-hidden px-2 py-1">',
@@ -242,6 +267,46 @@ const TaxIQLayout = (() => {
     ].join("");
   }
 
+  function setMobileDrawerOpen(open){
+    if(!isPagesShell) return;
+    const sidebar = document.getElementById("taxiq-sidebar");
+    const button = document.querySelector("[data-mobile-sidebar-open]");
+    const backdrop = document.querySelector("[data-mobile-sidebar-backdrop]");
+    if(sidebar) sidebar.classList.toggle("mobile-drawer-open", open);
+    if(button) button.setAttribute("aria-expanded", open ? "true" : "false");
+    if(backdrop){
+      backdrop.classList.toggle("hidden", !open);
+      backdrop.setAttribute("aria-hidden", open ? "false" : "true");
+    }
+    if(document.body && document.body.classList){
+      document.body.classList.toggle("taxiq-mobile-menu-open", open);
+    }
+  }
+
+  function wireMobileDrawer(){
+    if(!isPagesShell) return;
+    const button = document.querySelector("[data-mobile-sidebar-open]");
+    const backdrop = document.querySelector("[data-mobile-sidebar-backdrop]");
+    const closeButton = document.querySelector("[data-mobile-sidebar-close]");
+    const sidebar = document.getElementById("taxiq-sidebar");
+
+    if(button) button.addEventListener("click", function(){ setMobileDrawerOpen(true); });
+    if(backdrop) backdrop.addEventListener("click", function(){ setMobileDrawerOpen(false); });
+    if(closeButton) closeButton.addEventListener("click", function(){ setMobileDrawerOpen(false); });
+    if(sidebar){
+      sidebar.querySelectorAll("a").forEach(function(link){
+        link.addEventListener("click", function(){ setMobileDrawerOpen(false); });
+      });
+    }
+    if(!window.taxiqMobileDrawerKeydownWired){
+      document.addEventListener("keydown", function(event){
+        if(event.key === "Escape") setMobileDrawerOpen(false);
+      });
+      window.taxiqMobileDrawerKeydownWired = true;
+    }
+    setMobileDrawerOpen(false);
+  }
+
   function renderShell(renderContent){
     const meta = pages[currentPage] || pages.dashboard;
     document.title = "TaxIQ - " + meta.title;
@@ -254,18 +319,20 @@ const TaxIQLayout = (() => {
     injectSidebarCSS();
     _sbOpen = localStorage.getItem("taxiq_sb") !== "0";
     document.getElementById("app").innerHTML = [
-      '<div class="app min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row">',
+      '<div class="app min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row' + (isPagesShell ? ' taxiq-pages-shell' : '') + '">',
         renderSidebar(),
         '<main id="taxiq-main" class="main min-h-screen flex-1" style="margin-left:' + (_sbOpen ? '260' : '80') + 'px;width:calc(100% - ' + (_sbOpen ? '260' : '80') + 'px)">',
           renderHeader(meta),
           '<section class="content p-6 max-md:p-4" id="content"></section>',
         '</main>',
       '</div>',
+      isPagesShell ? '<button type="button" class="mobile-sidebar-backdrop fixed inset-0 z-40 hidden bg-slate-950/70 backdrop-blur-sm md:hidden" aria-label="Close navigation menu" aria-hidden="true" data-mobile-sidebar-backdrop></button>' : '',
       '<div class="modal-backdrop fixed inset-0 z-40 hidden items-center justify-center bg-slate-950/70 p-5 backdrop-blur-sm" id="modalRoot"></div>',
       '<div class="toast fixed bottom-5 right-5 z-50 grid gap-2" id="toast"></div>'
     ].join("");
     renderContent();
     applySidebarState(_sbOpen);
+    wireMobileDrawer();
     /* on the mobile horizontal nav strip, bring the active item into view */
     if (window.matchMedia("(max-width:767px)").matches) {
       const active = document.querySelector("#taxiq-sidebar .sb-item.sb-active");

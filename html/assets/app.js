@@ -116,7 +116,7 @@ function updateQuickPayPreview(scope=document){
   const method  = root.querySelector(".method-grid button.method-card.active") || root.querySelector(".method-grid .method-card.active");
   const amountInput = root.querySelector(".source-input.amount");
   const payIcon = payCard?.querySelector(".pay-type-icon")?.textContent.trim() || "💰";
-  const payTitle = payCard?.querySelector(".text-lg")?.textContent.trim() || "Trả Tip";
+  const payTitle = payCard?.querySelector(".text-lg")?.textContent.trim() || "Tip Payout";
   const workerName = worker?.querySelector(".text-sm")?.childNodes?.[0]?.textContent?.trim() || "Brian L.";
   const methodText = method?.textContent.replace(/\s+/g," ").trim() || "Zelle";
   const amount = moneyNumber(amountInput?.value || "$0");
@@ -132,7 +132,7 @@ function updateQuickPayPreview(scope=document){
   if(amountEl) amountEl.textContent = moneyText(amount);
   if(rows[0]) rows[0].textContent = methodText.toUpperCase();
   if(cta){
-    cta.textContent = amount > 0 ? "Preview đã sẵn sàng để tạo thanh toán" : "Điền thông tin để xem preview";
+    cta.textContent = amount > 0 ? "Preview is ready to create payment" : "Enter details to preview";
     cta.classList.toggle("primary", amount > 0);
   }
 }
@@ -146,11 +146,11 @@ function appendAiMessage(thread, who, text){
 }
 function aiDemoReply(question){
   const q = question.toLowerCase();
-  if(q.includes("amy")) return "Amy T. tuần này đang ở mức $1,804.85 tổng nhận. Nếu anh muốn, em có thể mở Quick Pay để tạo payout cho Amy.";
-  if(q.includes("lịch") || q.includes("appointment")) return "Hôm nay AI đã tự đặt 4 lịch. Khung 2:00-4:00 PM còn trống 2 slot, phù hợp cho Gel Polish hoặc Manicure.";
-  if(q.includes("thuế") || q.includes("tax")) return "Về thuế, Tax IQ đang khuyến nghị giữ lại chứng từ tip, payout, receipt và mileage trước khi CPA review. Các ước tính chưa phải tax advice.";
-  if(q.includes("doanh thu") || q.includes("service")) return "Dịch vụ hot nhất tháng này là Gel Full Set: 148 lần, khoảng $9,620 doanh thu.";
-  return "Em đã nhận câu hỏi. Trong bản demo này AI sẽ phản hồi theo dữ liệu mẫu của tiệm; bản production sẽ nối backend AI và dữ liệu thật.";
+  if(q.includes("amy")) return "Amy T. is at $1,804.85 total take-home this week. I can open Quick Pay to create Amy's payout.";
+  if(q.includes("schedule") || q.includes("appointment")) return "AI booked 4 appointments today. The 2:00-4:00 PM window still has 2 open slots, which fits Gel Polish or Manicure.";
+  if(q.includes("tax")) return "For taxes, Tax IQ recommends keeping tip, payout, receipt, and mileage proof ready before CPA review. These estimates are not tax advice.";
+  if(q.includes("revenue") || q.includes("service")) return "The hottest service this month is Gel Full Set: 148 services and about $9,620 in revenue.";
+  return "I received your question. In this demo, AI replies from sample shop data; production will connect to backend AI and live data.";
 }
 function loadLeaflet(){
   if(window.L) return Promise.resolve(window.L);
@@ -525,28 +525,28 @@ function renderDataLoadError(){
 function renderPos(){
   const stations = [
     ["AT","Amy T.","Lisa N.","Acrylic Full Set","10:05 → 11:20","purple","75%","Checkout"],
-    ["LP","Linda P.","● Trống","","","green","0%","+ Giao Khách"],
-    ["KM","Kevin M.","● Trống","","","green","0%","+ Giao Khách"],
+    ["LP","Linda P.","● Open","","","green","0%","+ Assign Guest"],
+    ["KM","Kevin M.","● Open","","","green","0%","+ Assign Guest"],
     ["SJ","Sarah J.","Emma W.","Fill In + Pedicure","10:15 → 11:45","orange","40%","Checkout"],
-    ["BL","Brian L.","Break","Nghỉ giải lao","","","0%",""]
+    ["BL","Brian L.","Break","On break","","","0%",""]
   ];
   const stationCards = stations.map(s=>`<div class="station-card ${s[5]}">
     <div class="avatar ${s[5]==="green"?"green":s[5]==="orange"?"orange":s[0]==="BL"?"red":""}">${s[0]}</div>
     <div class="mt-3 text-sm font-black text-slate-100">${s[1]}</div>
-    <div class="mt-2 text-xs ${s[2].includes("Trống") ? "text-emerald-300" : s[2]==="Break" ? "text-amber-400" : "text-slate-400"}">${s[2]}</div>
+    <div class="mt-2 text-xs ${s[2].includes("Open") ? "text-emerald-300" : s[2]==="Break" ? "text-amber-400" : "text-slate-400"}">${s[2]}</div>
     <div class="mt-1 text-[11px] text-slate-500">${s[3] || "—"}</div>
     ${s[6] !== "0%" ? `<div class="progress-track"><div class="progress-fill" style="width:${s[6]};background:${s[5]==="orange"?"#f59e0b":"#7c3aed"}"></div></div>` : ""}
     <div class="text-[11px] text-slate-500">${s[4] || "—"}</div>
     ${s[7] ? `<button class="source-button ${s[7].includes("Checkout") ? "" : ""}" style="width:100%;margin-top:14px;background:${s[7].includes("Checkout") ? "#4fb779" : "#27406f"};color:#fff;border-color:transparent">${s[7]}</button>` : ""}
   </div>`).join("");
   const queue = [
-    ["Anna Kim","#A003","Gel Polish","đợi 8p"],
-    ["Rachel M.","#A004","Pedicure","đợi 15p"],
-    ["Tom N.","#A005","Manicure","đợi 22p"]
-  ].map(q=>`<div class="queue-card"><div><div class="text-sm font-black text-slate-100">${q[0]} <span class="text-[11px] text-slate-600">${q[1]}</span></div><div class="mt-1 text-xs text-slate-500">${q[2]} · <span class="text-amber-400">${q[3]}</span></div></div><button class="source-button primary">Giao</button></div>`).join("");
+    ["Anna Kim","#A003","Gel Polish","waiting 8m"],
+    ["Rachel M.","#A004","Pedicure","waiting 15m"],
+    ["Tom N.","#A005","Manicure","waiting 22m"]
+  ].map(q=>`<div class="queue-card"><div><div class="text-sm font-black text-slate-100">${q[0]} <span class="text-[11px] text-slate-600">${q[1]}</span></div><div class="mt-1 text-xs text-slate-500">${q[2]} · <span class="text-amber-400">${q[3]}</span></div></div><button class="source-button primary">Assign</button></div>`).join("");
   return `<div class="nexora-source">
     <div class="source-hero">
-      <div><h2 class="source-title">🖥️ POS — Điểm Bán Hàng</h2><div class="source-subtitle">Check in · Turn Board · Checkout</div></div>
+      <div><h2 class="source-title">🖥️ POS</h2><div class="source-subtitle">Check in · Turn Board · Checkout</div></div>
       <div class="source-subtitle" style="color:#a78bfa;font-weight:900">09:56:01</div>
     </div>
     <div class="pos-tabs">
@@ -556,7 +556,7 @@ function renderPos(){
     </div>
     <div class="pos-grid">${stationCards}</div>
     <div class="section-box">
-      <div class="section-box-title">⏳ Hàng Chờ (3 khách)</div>
+      <div class="section-box-title">⏳ Waitlist (3 guests)</div>
       <div class="queue-grid" style="padding:16px">${queue}</div>
     </div>
   </div>`;
@@ -571,7 +571,7 @@ function renderCheckout(){
   ].map(item=>`<div class="checkout-line">
     <div>
       <div class="checkout-line-title">${item[0]}</div>
-      <div class="checkout-line-sub">Thợ: ${item[1]}</div>
+      <div class="checkout-line-sub">Technician: ${item[1]}</div>
     </div>
     <div>${item[2]}</div>
     <div>${item[3]}</div>
@@ -583,14 +583,14 @@ function renderCheckout(){
   </button>`).join("");
   return `<div class="nexora-source checkout-screen">
     <div class="source-hero">
-      <div><h2 class="source-title">💳 Checkout — Thanh Toán</h2><div class="source-subtitle">Ticket #A002 · Emma W. · Station Amy T.</div></div>
+      <div><h2 class="source-title">💳 Checkout</h2><div class="source-subtitle">Ticket #A002 · Emma W. · Station Amy T.</div></div>
       <a class="source-button" href="${pageHref("pos")}">← POS Board</a>
     </div>
 
     <div class="checkout-layout">
       <section class="checkout-main">
         <div class="section-box">
-          <div class="section-box-title">① Vé Đang Checkout</div>
+          <div class="section-box-title">① Active Checkout Ticket</div>
           <div class="checkout-ticket-head">
             <div>
               <div class="checkout-customer">Emma W.</div>
@@ -598,17 +598,17 @@ function renderCheckout(){
             </div>
             <span class="badge badge-purple">In Service</span>
           </div>
-          <div class="checkout-line header"><span>Dịch vụ</span><span>Giá</span><span>Tip</span><span>Tổng</span></div>
+          <div class="checkout-line header"><span>Service</span><span>Price</span><span>Tip</span><span>Total</span></div>
           ${serviceRows}
           <div class="checkout-add-row">
-            <button class="source-button">+ Thêm dịch vụ</button>
+            <button class="source-button">+ Add Service</button>
             <button class="source-button">+ Discount</button>
             <button class="source-button">+ Coupon</button>
           </div>
         </div>
 
         <div class="section-box">
-          <div class="section-box-title">② Tip & Phân Bổ Cho Thợ</div>
+          <div class="section-box-title">② Tip & Technician Split</div>
           <div class="tip-grid">
             <button class="tip-chip">$10</button>
             <button class="tip-chip active">$15</button>
@@ -619,15 +619,15 @@ function renderCheckout(){
           <div class="tip-split-card">
             <div>
               <strong>Amy T.</strong>
-              <span>100% tip từ ticket này</span>
+              <span>100% of this ticket's tip</span>
             </div>
             <div class="tip-amount">$15.00</div>
           </div>
-          <div class="alert alert-blue">Tip sẽ được ghi vào Tip Ledger và TaxIQ audit trail sau khi hoàn tất thanh toán.</div>
+          <div class="alert alert-blue">The tip will be posted to Tip Ledger and the TaxIQ audit trail after payment is completed.</div>
         </div>
 
         <div class="section-box">
-          <div class="section-box-title">③ Phương Thức Thanh Toán</div>
+          <div class="section-box-title">③ Payment Method</div>
           <div class="payment-method-grid">${payments}</div>
           <div class="checkout-form-grid">
             <label><span>Email receipt</span><input class="source-input" value="emma.w@example.com"></label>
@@ -638,7 +638,7 @@ function renderCheckout(){
 
       <aside class="checkout-summary">
         <div class="section-box sticky-summary">
-          <div class="section-box-title">Tóm Tắt Thanh Toán</div>
+          <div class="section-box-title">Payment Summary</div>
           <div class="receipt-preview">
             <div class="receipt-logo">Nexora Nail Studio</div>
             <div class="receipt-row"><span>Services</span><strong>$102.00</strong></div>
@@ -656,12 +656,12 @@ function renderCheckout(){
         </div>
 
         <div class="section-box">
-          <div class="section-box-title">Sau Checkout</div>
+          <div class="section-box-title">After Checkout</div>
           <div class="checkout-next-list">
-            <div><strong>Send receipt</strong><span>Email/SMS receipt cho khách.</span></div>
-            <div><strong>Free station</strong><span>Amy T. trở lại Turn Board.</span></div>
-            <div><strong>Post tip</strong><span>Tip được đẩy qua Tip Ledger.</span></div>
-            <div><strong>Audit</strong><span>Lưu actor, amount, payment method, timestamp.</span></div>
+            <div><strong>Send receipt</strong><span>Email/SMS receipt to the guest.</span></div>
+            <div><strong>Free station</strong><span>Amy T. returns to the Turn Board.</span></div>
+            <div><strong>Post tip</strong><span>Tip is posted to Tip Ledger.</span></div>
+            <div><strong>Audit</strong><span>Save actor, amount, payment method, and timestamp.</span></div>
           </div>
         </div>
       </aside>
@@ -672,11 +672,11 @@ function renderCheckout(){
 /* ─── REVIEWS ─── */
 function renderReviews(){
   const reviewRows = [
-    ["Jennifer Tran","Google · 2 giờ trước","Tuyệt vời! Amy làm nail rất đẹp và tỉ mỉ. Tiệm sạch sẽ, nhân viên thân thiện.","★★★★★","Phản hồi"],
-    ["Emma Wilson","Google · 5 giờ trước","Linda làm balayage đỉnh lắm! Màu đẹp lắm, giữ được lâu.","★★★★★","Đã phản hồi"],
-    ["Anonymous","Yelp · 1 ngày trước","Chờ hơi lâu nhưng kết quả OK.","★★★","Phản hồi"],
-    ["Maria Garcia","Facebook · 2 ngày trước","Lần đầu đến đây, rất hài lòng! Sẽ quay lại.","★★★★★","Đã phản hồi"],
-    ["Lisa Nguyen","Google · 3 ngày trước","Tiệm đẹp, nhân viên nhiệt tình. Chỉ chờ hơi lâu.","★★★★","Phản hồi"]
+    ["Jennifer Tran","Google · 2 hours ago","Amazing! Amy did a beautiful, detailed nail set. The salon was clean and the staff was friendly.","★★★★★","Reply"],
+    ["Emma Wilson","Google · 5 hours ago","Linda's balayage was excellent. The color looks great and lasts well.","★★★★★","Replied"],
+    ["Anonymous","Yelp · 1 day ago","The wait was a bit long, but the result was good.","★★★","Reply"],
+    ["Maria Garcia","Facebook · 2 days ago","First time here and very happy. I will come back.","★★★★★","Replied"],
+    ["Lisa Nguyen","Google · 3 days ago","Beautiful salon and helpful staff. The wait was just a little long.","★★★★","Reply"]
   ].map(r=>`<div class="review-row">
     <div class="review-avatar"><i class="fa-solid fa-user"></i></div>
     <div>
@@ -686,23 +686,23 @@ function renderReviews(){
     </div>
     <div class="text-right">
       <div class="stars">${r[3]}</div>
-      <button class="source-button ${r[4].includes("Đã") ? "" : "primary"}" style="height:28px;margin-top:8px">${r[4]}</button>
+      <button class="source-button ${r[4].includes("Replied") ? "" : "primary"}" style="height:28px;margin-top:8px">${r[4]}</button>
     </div>
   </div>`).join("");
   return `<div class="nexora-source">
     <div class="source-hero">
-      <div><h2 class="source-title">⭐ Đánh Giá & Review</h2><div class="source-subtitle">Google · Yelp · Facebook · Phản hồi khách hàng</div></div>
+      <div><h2 class="source-title">⭐ Reviews</h2><div class="source-subtitle">Google · Yelp · Facebook · Customer feedback</div></div>
     </div>
     <div class="stats-row">
       <div class="stat-card"><div class="stat-label">Rating TB</div><div class="stat-val orange">4.9</div><div class="stat-sub">★★★★★</div></div>
-      <div class="stat-card"><div class="stat-label">Tổng Review</div><div class="stat-val green">847</div><div class="stat-sub">+18 tuần này</div></div>
-      <div class="stat-card"><div class="stat-label">Review mới</div><div class="stat-val red">5</div><div class="stat-sub">Chưa phản hồi</div></div>
-      <div class="stat-card"><div class="stat-label">Cần phản hồi</div><div class="stat-val orange">3</div><div class="stat-sub">Dưới 4 sao</div></div>
+      <div class="stat-card"><div class="stat-label">Total Reviews</div><div class="stat-val green">847</div><div class="stat-sub">+18 this week</div></div>
+      <div class="stat-card"><div class="stat-label">New Reviews</div><div class="stat-val red">5</div><div class="stat-sub">Not replied</div></div>
+      <div class="stat-card"><div class="stat-label">Needs Reply</div><div class="stat-val orange">3</div><div class="stat-sub">Under 4 stars</div></div>
     </div>
     <div class="section-box">
       <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-        Review Gần Đây
-        <div class="tab-row"><span class="tab-pill active">Tất cả</span><span class="tab-pill">Google</span><span class="tab-pill">Yelp</span><span class="tab-pill">Facebook</span></div>
+        Recent Reviews
+        <div class="tab-row"><span class="tab-pill active">All</span><span class="tab-pill">Google</span><span class="tab-pill">Yelp</span><span class="tab-pill">Facebook</span></div>
       </div>
       <div>${reviewRows}</div>
     </div>
@@ -830,23 +830,23 @@ function renderRuns(){
 function renderQuickPay(){
   return `<div class="nexora-source">
     <div class="source-hero">
-      <div><h2 class="source-title">⚡ Quick Pay</h2><div class="source-subtitle">Tạo thanh toán · Tip · Lương · Bonus · Advance</div></div>
+      <div><h2 class="source-title">⚡ Quick Pay</h2><div class="source-subtitle">Create payments · Tips · Wages · Bonuses · Advances</div></div>
       <a class="source-button" href="${pageHref("payouts")}">← Payout Hub</a>
     </div>
 
     <div class="qp-layout">
       <div>
         <div class="section-box">
-          <div class="section-box-title">① LOẠI THANH TOÁN</div>
+          <div class="section-box-title">① PAYMENT TYPE</div>
           <div class="pay-type-grid" style="padding:16px">
-            <div class="pay-type-card active"><div><div class="pay-type-icon">💰</div><div class="text-lg font-black text-amber-400">Trả Tip</div><div class="mt-2 text-xs text-slate-500">Cash · Pool · Điều chỉnh</div></div></div>
-            <div class="pay-type-card"><div><div class="pay-type-icon">💼</div><div class="text-lg font-black text-slate-200">Trả Lương</div><div class="mt-2 text-xs text-slate-500">Payout · Ứng lương · Điều chỉnh</div></div></div>
-            <div class="pay-type-card"><div><div class="pay-type-icon">🎁</div><div class="text-lg font-black text-slate-200">Thưởng</div><div class="mt-2 text-xs text-slate-500">KPI · Lễ tết · Giới thiệu</div></div></div>
+            <div class="pay-type-card active"><div><div class="pay-type-icon">💰</div><div class="text-lg font-black text-amber-400">Tip Payout</div><div class="mt-2 text-xs text-slate-500">Cash · Pool · Adjustment</div></div></div>
+            <div class="pay-type-card"><div><div class="pay-type-icon">💼</div><div class="text-lg font-black text-slate-200">Wage Payout</div><div class="mt-2 text-xs text-slate-500">Payout · Advance · Adjustment</div></div></div>
+            <div class="pay-type-card"><div><div class="pay-type-icon">🎁</div><div class="text-lg font-black text-slate-200">Bonus</div><div class="mt-2 text-xs text-slate-500">KPI · Holiday · Referral</div></div></div>
           </div>
         </div>
 
         <div class="section-box">
-          <div class="section-box-title">② CHỌN THỢ</div>
+          <div class="section-box-title">② SELECT TECHNICIAN</div>
           <div class="worker-list" style="padding:16px">
             <div class="worker-item"><div class="avatar">AT</div><div><div class="text-sm font-black text-slate-100">Amy T. <span class="badge badge-purple">1099</span></div><div class="text-xs text-slate-500">amy.t@gmail.com</div></div><div class="pay-method-pill">🕊️ Zelle <span>✓</span></div></div>
             <div class="worker-item"><div class="avatar blue">LP</div><div><div class="text-sm font-black text-slate-100">Linda P. <span class="badge badge-purple">1099</span></div><div class="text-xs text-slate-500">linda.p@gmail.com</div></div><div class="pay-method-pill">🕊️ Zelle <span>✓</span></div></div>
@@ -857,60 +857,60 @@ function renderQuickPay(){
         </div>
 
         <div class="section-box">
-          <div class="section-box-title">③ CHI TIẾT</div>
+          <div class="section-box-title">③ DETAILS</div>
           <div style="padding:16px;display:grid;gap:14px">
-            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Nguồn thanh toán</div><select class="source-input"><option>💳 Card tip từ POS</option><option>Cash tip</option><option>Manual adjustment</option></select></label>
-            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Ngày nhập tip</div><input class="source-input" value="06/28/2024"></label>
-            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Số Tiền Tip ($)</div><input class="source-input amount" value="$ 150"></label>
+            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Payment source</div><select class="source-input"><option>💳 Card tip from POS</option><option>Cash tip</option><option>Manual adjustment</option></select></label>
+            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Tip entry date</div><input class="source-input" value="06/28/2024"></label>
+            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">Tip Amount ($)</div><input class="source-input amount" value="$ 150"></label>
             <div class="amount-buttons">${["$10","$20","$30","$50","$100","$150","$200"].map(x=>`<button class="source-button">${x}</button>`).join("")}</div>
           </div>
         </div>
 
         <div class="section-box">
-          <div class="section-box-title">④ PHƯƠNG THỨC THANH TOÁN <span class="badge badge-green" style="float:right">✓ Từ profile của thợ</span></div>
+          <div class="section-box-title">④ PAYMENT METHOD <span class="badge badge-green" style="float:right">✓ From technician profile</span></div>
           <div style="padding:16px;display:grid;gap:14px">
             <div class="alert alert-green" style="margin:0">
-              <strong>🕊️ THÔNG TIN CỦA AMY T. (TỰ SETUP)</strong>
+              <strong>🕊️ AMY T. PAYMENT INFO (SELF-SETUP)</strong>
               <div class="method-grid" style="margin-top:10px">
                 <div class="method-card active">🕊️ Zelle <span class="badge badge-green">Verified</span><br><small>amy.t@gmail.com</small></div>
                 <div class="method-card">💜 Venmo <span class="badge badge-gray">Backup</span><br><small>@amytran-nails</small></div>
               </div>
             </div>
             <div class="method-grid">${["🕊️ Zelle","💵 Cash","💜 Venmo","💚 Cash App","📝 Check","🏦 Bank/DD"].map((m,i)=>`<button class="method-card ${i===0?"active":""}">${m}</button>`).join("")}</div>
-            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">🕊️ Zelle email / số điện thoại</div><input class="source-input" placeholder="email@example.com hoặc +1 (xxx)"></label>
+            <label><div class="mb-2 text-xs font-black uppercase text-slate-500">🕊️ Zelle email / phone number</div><input class="source-input" placeholder="email@example.com or +1 (xxx)"></label>
           </div>
         </div>
 
         <div class="section-box">
-          <div class="section-box-title">⑤ GHI CHÚ</div>
-          <div style="padding:16px"><textarea class="source-textarea" rows="3" placeholder="Lý do thanh toán (lưu vào bằng chứng)..."></textarea></div>
+          <div class="section-box-title">⑤ NOTES</div>
+          <div style="padding:16px"><textarea class="source-textarea" rows="3" placeholder="Payment reason (saved as proof)..."></textarea></div>
         </div>
 
-        <button class="source-button primary" style="width:100%;height:54px;font-size:15px">⚡ Tạo Thanh Toán Ngay</button>
+        <button class="source-button primary" style="width:100%;height:54px;font-size:15px">⚡ Create Payment Now</button>
       </div>
 
       <div>
         <div class="preview-card">
           <div class="text-3xl">💰</div>
-          <div class="mt-2 text-sm font-black text-amber-400">Trả Tip</div>
-          <div class="mt-4 text-left text-[10px] uppercase text-slate-500">Cho</div>
+          <div class="mt-2 text-sm font-black text-amber-400">Tip Payout</div>
+          <div class="mt-4 text-left text-[10px] uppercase text-slate-500">For</div>
           <div class="mt-1 rounded-lg bg-slate-800 p-4 text-left text-lg font-black text-slate-100">Brian L.</div>
-          <div class="mt-4 text-xs uppercase text-slate-600">Số tiền</div>
+          <div class="mt-4 text-xs uppercase text-slate-600">Amount</div>
           <div class="preview-amount">$0.00</div>
-          <div class="preview-row"><span>Phương thức</span><strong>🕊️ ZELLE</strong></div>
-          <div class="preview-row" style="margin-top:0"><span>Ngày tạo</span><strong>2024-06-28</strong></div>
-          <button class="source-button" style="width:100%;margin-top:14px;background:#1d2b49">Điền thông tin để xem preview</button>
+          <div class="preview-row"><span>Method</span><strong>🕊️ ZELLE</strong></div>
+          <div class="preview-row" style="margin-top:0"><span>Created date</span><strong>2024-06-28</strong></div>
+          <button class="source-button" style="width:100%;margin-top:14px;background:#1d2b49">Enter details to preview</button>
         </div>
 
         <div class="section-box" style="margin-top:14px">
-          <div class="section-box-title">◉ Gần Đây</div>
+          <div class="section-box-title">◉ Recent</div>
           <div class="recent-list" style="padding:0 16px">
             <div class="recent-row"><span>💼</span><div><strong>Payout — Jun 22-28 2024</strong><br><small class="gray">Brian L. · 2024-06-28</small></div><strong class="blue">$1990</strong></div>
             <div class="recent-row"><span>🎁</span><div><strong>Performance Bonus — June</strong><br><small class="gray">Amy T. · 2024-06-15</small></div><strong class="green">$200</strong></div>
             <div class="recent-row"><span>💰</span><div><strong>Cash Tip Adjustment</strong><br><small class="gray">Linda P. · 2024-06-18</small></div><strong class="orange">$45</strong></div>
             <div class="recent-row"><span>💼</span><div><strong>Salary Advance</strong><br><small class="gray">Kevin M. · 2024-06-10</small></div><strong class="blue">$300</strong></div>
           </div>
-          <div style="padding:12px 16px;text-align:center;color:#64748b;font-size:12px">Xem tất cả →</div>
+          <div style="padding:12px 16px;text-align:center;color:#64748b;font-size:12px">View all →</div>
         </div>
       </div>
     </div>
@@ -920,52 +920,52 @@ function renderQuickPay(){
 /* ─── PAY ENGINE ─── */
 function renderPayEngine(){
   return `<div class="nexora-source">
-    <div class="alert alert-blue">💡 Cấu hình <strong>riêng cho từng nhân viên</strong>. Click tên thợ trên hàng avatar để chuyển. Bên phải luôn preview kết quả <strong>real-time</strong>.</div>
+    <div class="alert alert-blue">💡 Configure pay rules <strong>per employee</strong>. Click a technician name in the avatar row to switch. The right side always previews results in <strong>real time</strong>.</div>
 
     <div class="section-box">
-      <div class="section-box-title">① Kiểu Lương — Chọn 1 trong 4</div>
+      <div class="section-box-title">① Pay Type — Choose 1 of 4</div>
       <div class="card-grid-4">
-        <div class="info-card info-blue"><div class="info-icon">⏰</div><div class="info-title">Theo Giờ</div><p>Giờ × mức lương<br>OT tự tính 1.5x</p></div>
-        <div class="info-card info-green"><div class="info-icon">📊</div><div class="info-title">Hoa Hồng %</div><p>% từ tổng doanh số<br>Không có lương giờ</p></div>
-        <div class="info-card info-purple" style="border-color:#bc8cff;"><div class="info-icon">⚡</div><div class="info-title">Kết Hợp ⭐</div><p>Giờ + hoa hồng<br>Phổ biến nhất</p></div>
-        <div class="info-card info-orange"><div class="info-icon">📈</div><div class="info-title">Theo Bậc</div><p>% tăng dần theo<br>mức doanh số</p></div>
+        <div class="info-card info-blue"><div class="info-icon">⏰</div><div class="info-title">Hourly</div><p>Hours x rate<br>OT auto-calculates at 1.5x</p></div>
+        <div class="info-card info-green"><div class="info-icon">📊</div><div class="info-title">Commission %</div><p>% of total sales<br>No hourly wage</p></div>
+        <div class="info-card info-purple" style="border-color:#bc8cff;"><div class="info-icon">⚡</div><div class="info-title">Hybrid ⭐</div><p>Hourly + commission<br>Most common</p></div>
+        <div class="info-card info-orange"><div class="info-icon">📈</div><div class="info-title">Tiered</div><p>% increases with<br>sales levels</p></div>
       </div>
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">② Lương Giờ</div>
+      <div class="section-box-title">② Hourly Pay</div>
       <table>
-        <thead><tr><th>Trường</th><th>Mô Tả</th><th>Ví Dụ</th><th>Ghi Chú</th></tr></thead>
+        <thead><tr><th>Field</th><th>Description</th><th>Example</th><th>Notes</th></tr></thead>
         <tbody>
-          <tr><td>Mức lương / giờ ($)</td><td>Số tiền trả cho mỗi giờ làm việc</td><td>$12/giờ</td><td>Giờ thường</td></tr>
-          <tr><td>Overtime sau (giờ/tuần)</td><td>Sau bao nhiêu giờ/tuần thì tính OT</td><td>40 giờ/tuần</td><td>OT = lương giờ × 1.5 tự động</td></tr>
+          <tr><td>Hourly rate ($)</td><td>Amount paid for each hour worked</td><td>$12/hour</td><td>Regular hours</td></tr>
+          <tr><td>Overtime after (hours/week)</td><td>Weekly hour threshold before OT starts</td><td>40 hours/week</td><td>OT = hourly rate x 1.5 automatically</td></tr>
         </tbody>
       </table>
       <div class="calc-box">
-        <strong>Ví dụ Amy T.:</strong> 40h × $12 = $480 (giờ thường) + 10.5h × $18 = $189 (OT) = <span class="amt">$669 lương giờ</span>
+        <strong>Amy T. example:</strong> 40h x $12 = $480 (regular hours) + 10.5h x $18 = $189 (OT) = <span class="amt">$669 hourly pay</span>
       </div>
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">③ Ăn Chia — Tỷ Lệ Hoa Hồng <span class="badge badge-orange">Bổ sung sau</span></div>
+      <div class="section-box-title">③ Revenue Split — Commission Rate <span class="badge badge-orange">Added later</span></div>
       <table>
-        <thead><tr><th>Cài Đặt</th><th>Mô Tả</th><th>Ví Dụ</th></tr></thead>
+        <thead><tr><th>Setting</th><th>Description</th><th>Example</th></tr></thead>
         <tbody>
-          <tr><td>Thanh trượt <strong>20% → 65%</strong></td><td>Kéo trái/phải để điều chỉnh % hoa hồng trên tổng doanh số</td><td>Amy T.: 35% × $2,195 DS = <span class="amt">$768.25</span></td></tr>
-          <tr><td>Gợi ý hệ thống</td><td>Phổ biến ngành nail: <strong>35-45%</strong></td><td>Linda P.: 40% · Sarah J.: 38%</td></tr>
+          <tr><td>Slider <strong>20% → 65%</strong></td><td>Drag left/right to adjust commission % on total sales</td><td>Amy T.: 35% x $2,195 sales = <span class="amt">$768.25</span></td></tr>
+          <tr><td>System suggestion</td><td>Common nail industry range: <strong>35-45%</strong></td><td>Linda P.: 40% · Sarah J.: 38%</td></tr>
         </tbody>
       </table>
-      <div class="alert alert-orange" style="margin:12px 16px;">⚠️ Phần này <strong>bị thiếu</strong> trong lần hướng dẫn đầu tiên — đã bổ sung sau khi anh phát hiện.</div>
+      <div class="alert alert-orange" style="margin:12px 16px;">⚠️ This section was <strong>missing</strong> from the first walkthrough and was added after review.</div>
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">④ Bonus Vượt Bao 🎯</div>
+      <div class="section-box-title">④ Sales Threshold Bonus 🎯</div>
       <table>
-        <thead><tr><th>Trường</th><th>Mô Tả</th><th>Ví Dụ</th></tr></thead>
+        <thead><tr><th>Field</th><th>Description</th><th>Example</th></tr></thead>
         <tbody>
-          <tr><td>Bật/Tắt</td><td>Toggle để kích hoạt hoặc vô hiệu hóa</td><td>Đang BẬT cho Amy T.</td></tr>
-          <tr><td>Ngưỡng ($)</td><td>Doanh số phải vượt qua để nhận bonus</td><td>$1,200</td></tr>
-          <tr><td>Bonus thêm (%)</td><td>% cộng thêm tính trên toàn bộ doanh số khi vượt ngưỡng</td><td>5% → DS $1,800: bonus = 5% × $1,800 = <span class="amt">+$90</span></td></tr>
+          <tr><td>On/Off</td><td>Toggle to enable or disable</td><td>ON for Amy T.</td></tr>
+          <tr><td>Threshold ($)</td><td>Sales must exceed this amount to earn the bonus</td><td>$1,200</td></tr>
+          <tr><td>Extra bonus (%)</td><td>Additional % on all sales once threshold is exceeded</td><td>5% → sales $1,800: bonus = 5% x $1,800 = <span class="amt">+$90</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -973,37 +973,37 @@ function renderPayEngine(){
     <div class="section-box">
       <div class="section-box-title">⑤ KPI Bonus 🏆</div>
       <table>
-        <thead><tr><th>Trường</th><th>Mô Tả</th><th>Ví Dụ Amy T.</th></tr></thead>
+        <thead><tr><th>Field</th><th>Description</th><th>Amy T. Example</th></tr></thead>
         <tbody>
-          <tr><td>Mục tiêu KPI ($)</td><td>Mức doanh số cần đạt để nhận KPI bonus</td><td>$1,500</td></tr>
-          <tr><td>Bonus % khi đạt</td><td>% tổng doanh số thưởng khi đạt KPI</td><td>3% × $2,195 = <span class="amt">+$65.85</span></td></tr>
+          <tr><td>KPI target ($)</td><td>Sales level required to earn KPI bonus</td><td>$1,500</td></tr>
+          <tr><td>Bonus % when reached</td><td>% of total sales paid as a bonus after hitting KPI</td><td>3% x $2,195 = <span class="amt">+$65.85</span></td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">⑥ Kỳ Thanh Toán 📅 <span class="badge badge-orange">Bổ sung sau</span></div>
+      <div class="section-box-title">⑥ Pay Period 📅 <span class="badge badge-orange">Added later</span></div>
       <div class="card-grid-4">
-        <div class="info-card info-purple" style="border-color:#bc8cff;"><div class="info-title">Hàng Tuần</div><p>Trả mỗi tuần<br><em>Amy T., Linda P.</em></p></div>
-        <div class="info-card info-blue"><div class="info-title">2 Tuần / lần</div><p>Trả mỗi 2 tuần<br><em>Kevin M.</em></p></div>
-        <div class="info-card info-orange"><div class="info-title">15 &amp; 30</div><p>Trả ngày 15<br>và ngày 30</p></div>
-        <div class="info-card info-green"><div class="info-title">Hàng Tháng</div><p>Trả 1 lần<br>mỗi tháng</p></div>
+        <div class="info-card info-purple" style="border-color:#bc8cff;"><div class="info-title">Weekly</div><p>Pay every week<br><em>Amy T., Linda P.</em></p></div>
+        <div class="info-card info-blue"><div class="info-title">Biweekly</div><p>Pay every 2 weeks<br><em>Kevin M.</em></p></div>
+        <div class="info-card info-orange"><div class="info-title">15th &amp; 30th</div><p>Pay on the 15th<br>and 30th</p></div>
+        <div class="info-card info-green"><div class="info-title">Monthly</div><p>Pay once<br>each month</p></div>
       </div>
-      <div class="alert alert-orange" style="margin:12px 16px;">⚠️ Phần này <strong>bị thiếu</strong> trong lần hướng dẫn đầu tiên — đã bổ sung sau khi anh phát hiện.</div>
+      <div class="alert alert-orange" style="margin:12px 16px;">⚠️ This section was <strong>missing</strong> from the first walkthrough and was added after review.</div>
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">💡 Preview Kết Quả Real-Time (Amy T. — Tuần 23-28/6)</div>
+      <div class="section-box-title">💡 Real-Time Result Preview (Amy T. — Week of Jun 23-28)</div>
       <table>
-        <thead><tr><th>Khoản Mục</th><th>Tính Toán</th><th>Số Tiền</th></tr></thead>
+        <thead><tr><th>Line Item</th><th>Calculation</th><th>Amount</th></tr></thead>
         <tbody>
-          <tr><td>Giờ làm</td><td>40h × $12</td><td class="amt">$480.00</td></tr>
-          <tr><td>Overtime</td><td>10.5h × $18.00</td><td class="amt">$63.00</td></tr>
-          <tr><td>Ăn chia</td><td>35% × $2,195 doanh số</td><td class="amt">$768.25</td></tr>
-          <tr><td>Bonus Vượt Bao 🎯</td><td>Vượt ngưỡng $1,200 → +5% tổng DS</td><td class="amt">$109.75</td></tr>
-          <tr><td>KPI Bonus 🏆</td><td>Vượt $1,500 → +3% tổng DS</td><td class="amt">$65.85</td></tr>
-          <tr><td>Tips riêng</td><td>Tips cá nhân</td><td class="tip">+$318</td></tr>
-          <tr style="background:#1c2128;"><td colspan="2"><strong>TỔNG NHẬN</strong></td><td class="amt" style="font-size:16px;font-weight:700;">$1,804.85</td></tr>
+          <tr><td>Hours worked</td><td>40h x $12</td><td class="amt">$480.00</td></tr>
+          <tr><td>Overtime</td><td>10.5h x $18.00</td><td class="amt">$63.00</td></tr>
+          <tr><td>Revenue split</td><td>35% x $2,195 sales</td><td class="amt">$768.25</td></tr>
+          <tr><td>Sales Threshold Bonus 🎯</td><td>Exceeded $1,200 threshold → +5% total sales</td><td class="amt">$109.75</td></tr>
+          <tr><td>KPI Bonus 🏆</td><td>Exceeded $1,500 → +3% total sales</td><td class="amt">$65.85</td></tr>
+          <tr><td>Direct tips</td><td>Personal tips</td><td class="tip">+$318</td></tr>
+          <tr style="background:#1c2128;"><td colspan="2"><strong>TOTAL TAKE-HOME</strong></td><td class="amt" style="font-size:16px;font-weight:700;">$1,804.85</td></tr>
         </tbody>
       </table>
     </div>
@@ -1014,83 +1014,83 @@ function renderPayEngine(){
 function renderWeeklyPayroll(){
   return `<div class="nexora-source">
     <div class="stats-row">
-      <div class="stat-card"><div class="stat-label">Tổng Lương Tuần</div><div class="stat-val green">$7,325.69</div></div>
-      <div class="stat-card"><div class="stat-label">Tổng Doanh Số</div><div class="stat-val orange">$9,048</div></div>
-      <div class="stat-card"><div class="stat-label">Tổng Tips</div><div class="stat-val orange">$1,519</div></div>
-      <div class="stat-card"><div class="stat-label">Tổng Bonus</div><div class="stat-val purple">+$707</div></div>
+      <div class="stat-card"><div class="stat-label">Total Weekly Pay</div><div class="stat-val green">$7,325.69</div></div>
+      <div class="stat-card"><div class="stat-label">Total Sales</div><div class="stat-val orange">$9,048</div></div>
+      <div class="stat-card"><div class="stat-label">Total Tips</div><div class="stat-val orange">$1,519</div></div>
+      <div class="stat-card"><div class="stat-label">Total Bonus</div><div class="stat-val purple">+$707</div></div>
     </div>
 
     <div class="section-box">
       <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-        📊 Bảng Lương Chi Tiết
+        📊 Detailed Payroll
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <span class="badge badge-gray">📄 Xuất PDF</span>
-          <span class="badge badge-gray">📊 Xuất CSV</span>
-          <span class="badge badge-purple">⚡ Trả Tất Cả ($7,325.69)</span>
+          <span class="badge badge-gray">📄 Export PDF</span>
+          <span class="badge badge-gray">📊 Export CSV</span>
+          <span class="badge badge-purple">⚡ Pay All ($7,325.69)</span>
         </div>
       </div>
       <table>
         <thead>
-          <tr><th>Nhân Viên</th><th>Kiểu</th><th>Giờ</th><th>Doanh Số</th><th>Lương Giờ</th><th>Hoa Hồng</th><th>Bonus</th><th>Tips</th><th>Tổng Nhận</th><th>Thao Tác</th></tr>
+          <tr><th>Employee</th><th>Type</th><th>Hours</th><th>Sales</th><th>Hourly Pay</th><th>Commission</th><th>Bonus</th><th>Tips</th><th>Take-Home</th><th>Actions</th></tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>Amy T.</strong><br><small style="color:#8b949e;">Kết Hợp</small></td>
+            <td><strong>Amy T.</strong><br><small style="color:#8b949e;">Hybrid</small></td>
             <td><span class="badge badge-orange">1099</span></td>
             <td>50.5h</td><td class="tip">$2,195</td><td>$543</td><td>$768</td><td class="tip">+$176</td><td class="tip">$318</td>
             <td class="amt"><strong>$1,804.85</strong></td>
-            <td><span class="badge badge-green">➡ Trả</span></td>
+            <td><span class="badge badge-green">➡ Pay</span></td>
           </tr>
           <tr>
-            <td><strong>Linda P.</strong><br><small style="color:#8b949e;">Hoa Hồng</small></td>
+            <td><strong>Linda P.</strong><br><small style="color:#8b949e;">Commission</small></td>
             <td><span class="badge badge-orange">1099</span></td>
             <td>50.5h</td><td class="tip">$2,853</td><td>$0</td><td>$1,141</td><td class="tip">+$371</td><td class="tip">$412</td>
             <td class="amt"><strong>$1,924.09</strong></td>
-            <td><span class="badge badge-green">➡ Trả</span></td>
+            <td><span class="badge badge-green">➡ Pay</span></td>
           </tr>
           <tr>
-            <td><strong>Kevin M.</strong><br><small style="color:#8b949e;">Theo Giờ</small></td>
+            <td><strong>Kevin M.</strong><br><small style="color:#8b949e;">Hourly</small></td>
             <td><span class="badge badge-blue">W-2</span></td>
             <td>48.5h</td><td class="gray">$0</td><td>$720</td><td>$0</td><td class="gray">—</td><td class="tip">$223</td>
             <td class="amt"><strong>$1,019.50</strong></td>
-            <td><span class="badge badge-green">➡ Trả</span></td>
+            <td><span class="badge badge-green">➡ Pay</span></td>
           </tr>
           <tr>
-            <td><strong>Sarah J.</strong><br><small style="color:#8b949e;">Theo Bậc</small></td>
+            <td><strong>Sarah J.</strong><br><small style="color:#8b949e;">Tiered</small></td>
             <td><span class="badge badge-orange">1099</span></td>
             <td>49h</td><td class="tip">$2,357</td><td>$0</td><td>$892</td><td class="tip">+$94</td><td class="tip">$344</td>
             <td class="amt"><strong>$1,329.93</strong></td>
-            <td><span class="badge badge-green">➡ Trả</span></td>
+            <td><span class="badge badge-green">➡ Pay</span></td>
           </tr>
           <tr>
-            <td><strong>Brian L.</strong><br><small style="color:#8b949e;">Kết Hợp</small></td>
+            <td><strong>Brian L.</strong><br><small style="color:#8b949e;">Hybrid</small></td>
             <td><span class="badge badge-orange">1099</span></td>
             <td>46.5h</td><td class="tip">$1,648</td><td>$465</td><td>$494</td><td class="tip">+$66</td><td class="tip">$222</td>
             <td class="amt"><strong>$1,247.32</strong></td>
-            <td><span class="badge badge-green">➡ Trả</span></td>
+            <td><span class="badge badge-green">➡ Pay</span></td>
           </tr>
           <tr class="total-row">
-            <td colspan="4"><strong>TỔNG CỘNG</strong></td>
+            <td colspan="4"><strong>TOTAL</strong></td>
             <td><strong>$1,728</strong></td><td><strong>$3,295</strong></td><td class="tip"><strong>+$707</strong></td><td class="tip"><strong>$1,519</strong></td>
             <td class="amt" style="font-size:15px;"><strong>$7,325.69</strong></td>
-            <td><span class="badge badge-purple">⚡ Tất Cả</span></td>
+            <td><span class="badge badge-purple">⚡ All</span></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">📅 Chi Tiết Từng Ngày — Amy T.</div>
+      <div class="section-box-title">📅 Daily Detail — Amy T.</div>
       <table>
-        <thead><tr><th>Ngày</th><th>Dịch Vụ</th><th>Giờ</th><th>Doanh Số</th><th>Tips</th><th>Lương Ước</th></tr></thead>
+        <thead><tr><th>Date</th><th>Services</th><th>Hours</th><th>Sales</th><th>Tips</th><th>Estimated Pay</th></tr></thead>
         <tbody>
-          <tr><td>Thứ 2 — 23/6</td><td>Gel Full Set · Pedicure · Nail Art</td><td>8.5h</td><td class="tip">$342</td><td class="tip">$48</td><td class="amt">~$232</td></tr>
-          <tr><td>Thứ 3 — 24/6</td><td>Gel Polish · Eyebrow</td><td>9h</td><td class="tip">$415</td><td class="tip">$62</td><td class="amt">~$281</td></tr>
-          <tr><td>Thứ 4 — 25/6</td><td>Pedicure · Manicure</td><td>8h</td><td class="tip">$298</td><td class="tip">$35</td><td class="amt">~$202</td></tr>
-          <tr><td>Thứ 5 — 26/6</td><td>Gel Full Set · Nail Art · Pedicure</td><td>8.5h</td><td class="tip">$388</td><td class="tip">$55</td><td class="amt">~$263</td></tr>
-          <tr><td>Thứ 6 — 27/6</td><td>Acrylic Full Set · Fill In · Pedicure</td><td>9.5h</td><td class="tip">$467</td><td class="tip">$78</td><td class="amt">~$316</td></tr>
-          <tr><td>Thứ 7 — 28/6</td><td>Gel Polish · Pedicure</td><td>7h</td><td class="tip">$285</td><td class="tip">$40</td><td class="amt">~$193</td></tr>
-          <tr class="total-row"><td><strong>TỔNG TUẦN</strong></td><td></td><td><strong>50.5h</strong></td><td class="tip"><strong>$2,195</strong></td><td class="tip"><strong>$318</strong></td><td class="amt"><strong>$1,487</strong></td></tr>
+          <tr><td>Mon — Jun 23</td><td>Gel Full Set · Pedicure · Nail Art</td><td>8.5h</td><td class="tip">$342</td><td class="tip">$48</td><td class="amt">~$232</td></tr>
+          <tr><td>Tue — Jun 24</td><td>Gel Polish · Eyebrow</td><td>9h</td><td class="tip">$415</td><td class="tip">$62</td><td class="amt">~$281</td></tr>
+          <tr><td>Wed — Jun 25</td><td>Pedicure · Manicure</td><td>8h</td><td class="tip">$298</td><td class="tip">$35</td><td class="amt">~$202</td></tr>
+          <tr><td>Thu — Jun 26</td><td>Gel Full Set · Nail Art · Pedicure</td><td>8.5h</td><td class="tip">$388</td><td class="tip">$55</td><td class="amt">~$263</td></tr>
+          <tr><td>Fri — Jun 27</td><td>Acrylic Full Set · Fill In · Pedicure</td><td>9.5h</td><td class="tip">$467</td><td class="tip">$78</td><td class="amt">~$316</td></tr>
+          <tr><td>Sat — Jun 28</td><td>Gel Polish · Pedicure</td><td>7h</td><td class="tip">$285</td><td class="tip">$40</td><td class="amt">~$193</td></tr>
+          <tr class="total-row"><td><strong>WEEK TOTAL</strong></td><td></td><td><strong>50.5h</strong></td><td class="tip"><strong>$2,195</strong></td><td class="tip"><strong>$318</strong></td><td class="amt"><strong>$1,487</strong></td></tr>
         </tbody>
       </table>
     </div>
@@ -1116,28 +1116,28 @@ function renderPayouts(){
     <div class="source-hero">
       <div>
         <h2 class="source-title">💼 Payout & Compliance Hub</h2>
-        <div class="source-subtitle">Cấu hình · Bằng chứng · 1099/W-2 · AI Bookkeeping · IRS Defense</div>
+        <div class="source-subtitle">Configuration · Proof · 1099/W-2 · AI Bookkeeping · IRS Defense</div>
       </div>
-      <div class="pending-pill">⏳ CHỜ THANH TOÁN<br><span style="font-size:24px">$2,945</span><br><small>2 thợ</small></div>
+      <div class="pending-pill">⏳ PENDING PAYMENT<br><span style="font-size:24px">$2,945</span><br><small>2 technicians</small></div>
     </div>
 
     <div class="tab-row" style="margin-bottom:18px">
-      <span class="tab-pill">📊 Tổng Quan</span>
-      <span class="tab-pill active">👥 Thợ & Profiles</span>
-      <span class="tab-pill">🗓️ Lịch Sử</span>
-      <span class="tab-pill">🔒 Bằng Chứng</span>
+      <span class="tab-pill">📊 Overview</span>
+      <span class="tab-pill active">👥 Technicians & Profiles</span>
+      <span class="tab-pill">🗓️ History</span>
+      <span class="tab-pill">🔒 Proof</span>
       <span class="tab-pill">📄 1099 / W-2</span>
       <span class="tab-pill">🤖 Bookkeeping</span>
-      <span class="tab-pill">⚙️ Cấu Hình</span>
+      <span class="tab-pill">⚙️ Settings</span>
       <a class="tab-pill" style="background:#f59e0b;color:#fff;border-color:#d97706" href="${pageHref("quick-pay")}">⚡ Quick Pay</a>
     </div>
 
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap">
-      <div><strong>5</strong> thợ đã kết nối · <span class="orange">1 chờ chấp nhận invite</span></div>
-      <button class="source-button primary">✉️ Invite Thợ Mới</button>
+      <div><strong>5</strong> technicians connected · <span class="orange">1 invite pending acceptance</span></div>
+      <button class="source-button primary">✉️ Invite New Technician</button>
     </div>
 
-    <div class="alert alert-orange">⏳ <strong>Đang chờ thợ setup thông tin nhận tiền</strong><br><span class="gray">Jenny N. · jenny.n@gmail.com · Invite gửi 2024-06-25</span><span style="float:right"><button class="source-button orange" style="height:30px">📩 Gửi lại</button> <button class="source-button" style="height:30px">✕ Hủy</button></span></div>
+    <div class="alert alert-orange">⏳ <strong>Waiting for technician to set up payment info</strong><br><span class="gray">Jenny N. · jenny.n@gmail.com · Invite sent 2024-06-25</span><span style="float:right"><button class="source-button orange" style="height:30px">📩 Resend</button> <button class="source-button" style="height:30px">✕ Cancel</button></span></div>
 
     <div class="profile-grid">
       ${[
@@ -1149,17 +1149,17 @@ function renderPayouts(){
         <div class="profile-head">
           <div style="display:flex;gap:12px;align-items:center">
             <div class="avatar ${w[0]==="LP"?"blue":w[0]==="KM"?"green":w[0]==="SJ"?"pink":""}">${w[0]}</div>
-            <div><div class="text-lg font-black">${w[1]} <span class="badge badge-purple">${w[2]}</span></div><div class="text-xs text-slate-500">${w[3]}</div><div class="text-xs green">✅ Đã setup từ ${w[4]}</div></div>
+            <div><div class="text-lg font-black">${w[1]} <span class="badge badge-purple">${w[2]}</span></div><div class="text-xs text-slate-500">${w[3]}</div><div class="text-xs green">✅ Set up since ${w[4]}</div></div>
           </div>
-          <button class="source-button" style="height:30px">✏️ Sửa</button>
+          <button class="source-button" style="height:30px">✏️ Edit</button>
         </div>
-        <div class="text-xs font-black uppercase text-slate-500">💳 NHẬN TIỀN QUA</div>
-        <div class="pay-channel" style="margin-top:10px"><strong>🕊️ ${w[6]}</strong> <span class="badge badge-green">PRIMARY</span> <span class="badge badge-green">✓ Đã xác nhận</span><br><small class="gray">${w[7]}</small></div>
+        <div class="text-xs font-black uppercase text-slate-500">💳 GET PAID VIA</div>
+        <div class="pay-channel" style="margin-top:10px"><strong>🕊️ ${w[6]}</strong> <span class="badge badge-green">PRIMARY</span> <span class="badge badge-green">✓ Verified</span><br><small class="gray">${w[7]}</small></div>
         <div class="pay-channel" style="margin-top:8px;border-left-color:#64748b"><strong>${w[8]==="Venmo"?"💜":w[8]==="Cash App"?"💚":"🏦"} ${w[8]}</strong> <span class="badge badge-gray">BACKUP</span><br><small class="gray">${w[9]}</small></div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
           <div class="text-xs"><span class="gray">SSN LAST 4</span><br><strong>${w[5]}</strong></div>
-          <div class="text-xs"><span class="gray">W-9</span><br><span class="green">✅ Nộp rồi</span></div>
-          <button class="source-button primary">⚡ Trả tiền ngay →</button>
+          <div class="text-xs"><span class="gray">W-9</span><br><span class="green">✅ Filed</span></div>
+          <button class="source-button primary">⚡ Pay Now →</button>
         </div>
       </div>`).join("")}
     </div>
@@ -1196,77 +1196,77 @@ function renderForms(){
 /* ─── TAX CENTER 1099/W-2 ─── */
 function renderTax1099(){
   return `<div class="nexora-source">
-    <div class="alert alert-red">⏰ <strong>Deadlines quan trọng:</strong> 1099-NEC gửi cho thợ &amp; nộp IRS → <strong>Jan 31</strong> &nbsp;|&nbsp; Form 1096 (tổng hợp) → <strong>Feb 28</strong> mỗi năm thuế.</div>
+    <div class="alert alert-red">⏰ <strong>Important deadlines:</strong> 1099-NEC sent to workers &amp; filed with IRS → <strong>Jan 31</strong> &nbsp;|&nbsp; Form 1096 summary → <strong>Feb 28</strong> each tax year.</div>
 
     <div class="section-box">
       <div class="section-box-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-        📋 IRS Form 1096 — Annual Summary · Năm Thuế 2024
+        📋 IRS Form 1096 — Annual Summary · Tax Year 2024
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <span class="badge badge-purple">📄 Tạo Form 1096 PDF</span>
-          <span class="badge badge-blue">📤 E-file Tất Cả → IRS</span>
-          <span class="badge badge-gray">📦 Xuất ZIP (4 files)</span>
-          <span class="badge badge-gray">📧 Email tất cả thợ</span>
+          <span class="badge badge-purple">📄 Create Form 1096 PDF</span>
+          <span class="badge badge-blue">📤 E-file All → IRS</span>
+          <span class="badge badge-gray">📦 Export ZIP (4 files)</span>
+          <span class="badge badge-gray">📧 Email all workers</span>
         </div>
       </div>
       <div class="stats-row" style="margin:0;padding:16px;">
-        <div class="stat-card"><div class="stat-label">Tổng Forms</div><div class="stat-val purple">4</div></div>
+        <div class="stat-card"><div class="stat-label">Total Forms</div><div class="stat-val purple">4</div></div>
         <div class="stat-card"><div class="stat-label">Total Box 1</div><div class="stat-val green">$101,176</div></div>
-        <div class="stat-card"><div class="stat-label">Sẵn sàng nộp</div><div class="stat-val green">4/4</div></div>
+        <div class="stat-card"><div class="stat-label">Ready to File</div><div class="stat-val green">4/4</div></div>
         <div class="stat-card"><div class="stat-label">W-9 on file</div><div class="stat-val green">4/4</div></div>
       </div>
     </div>
 
     <div class="section-box">
-      <div class="section-box-title">👥 Thống Kê 1099-NEC Từng Thợ</div>
+      <div class="section-box-title">👥 1099-NEC Worker Summary</div>
       <table>
         <thead>
-          <tr><th>Nhân Viên</th><th>SSN</th><th>Box 1 Total</th><th>Service Income</th><th>Tips + Bonus</th><th>Số TT</th><th>W-9</th><th>Địa Chỉ</th><th>Trạng Thái</th><th>Thao Tác</th></tr>
+          <tr><th>Worker</th><th>SSN</th><th>Box 1 Total</th><th>Service Income</th><th>Tips + Bonus</th><th>Payments</th><th>W-9</th><th>Address</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody>
           <tr>
             <td><strong>Amy T.</strong><br><small style="color:#8b949e;">amy.t@gmail.com</small></td>
             <td style="font-family:monospace;color:#8b949e;font-size:11px;">***-**-4821</td>
             <td class="amt"><strong>$29,341</strong></td><td>$25,445</td><td class="tip">$3,896</td>
-            <td>24 lần</td>
+            <td>24 payments</td>
             <td><span class="badge badge-green">✅ On file</span></td>
             <td style="font-size:11px;color:#8b949e;">1234 Main St, Houston TX 77001</td>
-            <td><span class="badge badge-green">Sẵn sàng</span></td>
+            <td><span class="badge badge-green">Ready</span></td>
             <td style="white-space:nowrap;font-size:12px;">👁 <a href="#" style="color:#58a6ff;">Preview</a> · 📄 <a href="#" style="color:#58a6ff;">PDF</a> · 📧 <a href="#" style="color:#58a6ff;">Email</a> · 📤 <a href="#" style="color:#58a6ff;">IRS</a></td>
           </tr>
           <tr>
             <td><strong>Linda P.</strong><br><small style="color:#8b949e;">linda.p@gmail.com</small></td>
             <td style="font-family:monospace;color:#8b949e;font-size:11px;">***-**-7392</td>
             <td class="amt"><strong>$37,188</strong></td><td>$32,720</td><td class="tip">$4,468</td>
-            <td>24 lần</td>
+            <td>24 payments</td>
             <td><span class="badge badge-green">✅ On file</span></td>
             <td style="font-size:11px;color:#8b949e;">5678 Oak Ave, Houston TX 77002</td>
-            <td><span class="badge badge-green">Sẵn sàng</span></td>
+            <td><span class="badge badge-green">Ready</span></td>
             <td style="white-space:nowrap;font-size:12px;">👁 <a href="#" style="color:#58a6ff;">Preview</a> · 📄 <a href="#" style="color:#58a6ff;">PDF</a> · 📧 <a href="#" style="color:#58a6ff;">Email</a> · 📤 <a href="#" style="color:#58a6ff;">IRS</a></td>
           </tr>
           <tr>
             <td><strong>Sarah J.</strong><br><small style="color:#8b949e;">sarah.j@gmail.com</small></td>
             <td style="font-family:monospace;color:#8b949e;font-size:11px;">***-**-6047</td>
             <td class="amt"><strong>$19,766</strong></td><td>$17,280</td><td class="tip">$2,486</td>
-            <td>20 lần</td>
+            <td>20 payments</td>
             <td><span class="badge badge-green">✅ On file</span></td>
             <td style="font-size:11px;color:#8b949e;">234 Elm St, Houston TX 77004</td>
-            <td><span class="badge badge-green">Sẵn sàng</span></td>
+            <td><span class="badge badge-green">Ready</span></td>
             <td style="white-space:nowrap;font-size:12px;">👁 <a href="#" style="color:#58a6ff;">Preview</a> · 📄 <a href="#" style="color:#58a6ff;">PDF</a> · 📧 <a href="#" style="color:#58a6ff;">Email</a> · 📤 <a href="#" style="color:#58a6ff;">IRS</a></td>
           </tr>
           <tr>
             <td><strong>Brian L.</strong><br><small style="color:#8b949e;">brian.l@gmail.com</small></td>
             <td style="font-family:monospace;color:#8b949e;font-size:11px;">***-**-3356</td>
             <td class="amt"><strong>$14,881</strong></td><td>$13,050</td><td class="tip">$1,831</td>
-            <td>16 lần</td>
+            <td>16 payments</td>
             <td><span class="badge badge-green">✅ On file</span></td>
             <td style="font-size:11px;color:#8b949e;">567 Maple Dr, Houston TX 77005</td>
-            <td><span class="badge badge-green">Sẵn sàng</span></td>
+            <td><span class="badge badge-green">Ready</span></td>
             <td style="white-space:nowrap;font-size:12px;">👁 <a href="#" style="color:#58a6ff;">Preview</a> · 📄 <a href="#" style="color:#58a6ff;">PDF</a> · 📧 <a href="#" style="color:#58a6ff;">Email</a> · 📤 <a href="#" style="color:#58a6ff;">IRS</a></td>
           </tr>
           <tr class="total-row">
-            <td colspan="2"><strong>TỔNG (Form 1096)</strong></td>
+            <td colspan="2"><strong>TOTAL (Form 1096)</strong></td>
             <td class="amt"><strong>$101,176</strong></td>
-            <td colspan="7" style="color:#8b949e;font-size:12px;">→ Bấm "📤 E-file Tất Cả → IRS" để nộp toàn bộ một lần</td>
+            <td colspan="7" style="color:#8b949e;font-size:12px;">→ Click "📤 E-file All → IRS" to submit everything in one batch</td>
           </tr>
         </tbody>
       </table>
@@ -1274,21 +1274,21 @@ function renderTax1099(){
 
     <div class="grid-2">
       <div class="section-box">
-        <div class="section-box-title">✅ Checklist Đã Hoàn Thành</div>
+        <div class="section-box-title">✅ Completed Checklist</div>
         <ul class="checklist">
-          <li class="check-done">✅ Thu thập W-9 từ tất cả contractors</li>
-          <li class="check-done">✅ Xác nhận địa chỉ và SSN từng thợ</li>
-          <li class="check-done">✅ Tổng hợp tổng chi trả theo từng người</li>
-          <li class="check-done">✅ Kiểm tra ngưỡng $600 — 4/4 đạt</li>
+          <li class="check-done">✅ Collected W-9 from all contractors</li>
+          <li class="check-done">✅ Confirmed each worker's address and SSN</li>
+          <li class="check-done">✅ Summarized total payments by person</li>
+          <li class="check-done">✅ Checked $600 threshold — 4/4 qualify</li>
         </ul>
       </div>
       <div class="section-box">
-        <div class="section-box-title">⬜ Checklist Cần Làm</div>
+        <div class="section-box-title">⬜ To-Do Checklist</div>
         <ul class="checklist">
-          <li class="check-todo">⬜ Tạo và review PDF 1099-NEC từng thợ</li>
-          <li class="check-todo">⬜ Gửi bản copy cho thợ trước Jan 31</li>
-          <li class="check-todo">⬜ Tạo Form 1096 transmittal</li>
-          <li class="check-todo">⬜ E-file hoặc mail đến IRS trước Jan/Feb 31</li>
+          <li class="check-todo">⬜ Create and review each worker's 1099-NEC PDF</li>
+          <li class="check-todo">⬜ Send worker copies before Jan 31</li>
+          <li class="check-todo">⬜ Create Form 1096 transmittal</li>
+          <li class="check-todo">⬜ E-file or mail to IRS before Jan/Feb deadlines</li>
         </ul>
       </div>
     </div>
@@ -1302,20 +1302,20 @@ function renderAiAdvisor(){return `<div class="grid-4" style="margin-bottom:14px
 /* ─── AI ASSISTANT ─── */
 function renderAiAssistant(){
   const stats = [
-    ["CUỘC GỌI AI XỬ LÝ","8","Hôm nay","blue"],
-    ["LỊCH AI TỰ ĐẶT","4","Không cần nhân viên","green"],
-    ["AI BOOKKEEPING","Cập nhật","Real-time P&L","cyan"],
-    ["TIẾT KIỆM THỜI GIAN","3.2h/ngày","So với thủ công","yellow"]
+    ["AI CALLS HANDLED","8","Today","blue"],
+    ["AI-BOOKED APPOINTMENTS","4","No staff needed","green"],
+    ["AI BOOKKEEPING","Updated","Real-time P&L","cyan"],
+    ["TIME SAVED","3.2h/day","Compared with manual work","yellow"]
   ];
 
   const chatMsg = (who,text) => `<div class="chat-row ${who === "me" ? "me" : ""}">${who === "me" ? "" : `<span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 text-xs text-white"><i class="fa-solid fa-robot"></i></span>`}<div class="chat-bubble ${who === "me" ? "me" : "ai"}">${text}</div></div>`;
 
   const conversation = [
-    chatMsg("ai","Xin chào! Tôi là AI Assistant của Nexora. Tôi có thể giúp phân tích doanh thu, lên lịch nhân viên, hay trả lời bất kỳ câu hỏi nào về tiệm."),
-    chatMsg("me","Amy tuần này làm được bao nhiêu?"),
-    chatMsg("ai","Amy T., tuần 23-28/6: doanh số $2,195, lương $1,486.85 (kết hợp: $480 giờ + $768 hoa hồng + $238 bonus vượt KPI), tổng nhận $1,804.85 (kể cả tips $318). Hiệu suất 127% KPI target."),
-    chatMsg("me","Dịch vụ nào đang hot nhất tháng này?"),
-    chatMsg("ai","Top 3 tháng 6: (1) Gel Full Set — 148 lần, $9,620; (2) Acrylic — 114 lần, $6,840; (3) Dip Powder — 96 lần, $5,280.")
+    chatMsg("ai","Hi! I am Nexora's AI Assistant. I can help analyze revenue, schedule staff, or answer questions about the shop."),
+    chatMsg("me","How much did Amy earn this week?"),
+    chatMsg("ai","Amy T., week of Jun 23-28: sales $2,195, pay $1,486.85 (hybrid: $480 hourly + $768 commission + $238 KPI bonus), total take-home $1,804.85 including $318 in tips. Performance is 127% of KPI target."),
+    chatMsg("me","Which service is hottest this month?"),
+    chatMsg("ai","Top 3 in June: (1) Gel Full Set — 148 services, $9,620; (2) Acrylic — 114 services, $6,840; (3) Dip Powder — 96 services, $5,280.")
   ].join("");
 
   const chatPanel = `<div class="section-box">
@@ -1323,18 +1323,18 @@ function renderAiAssistant(){
     <div class="${ui.panelBody}">
     <div class="chat-thread">${conversation}</div>
     <div class="mt-3 flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950 px-3 py-2">
-      <input class="${ui.input}" data-ai-input placeholder="Hỏi AI bất cứ điều gì về tiệm..." autocomplete="off">
-      <button class="${ui.btn} ${ui.primary}" data-ai-send>Gửi</button>
+      <input class="${ui.input}" data-ai-input placeholder="Ask AI anything about the shop..." autocomplete="off">
+      <button class="${ui.btn} ${ui.primary}" data-ai-send>Send</button>
     </div>
   </div></div>`;
 
   const features = [
-    ["fa-headset","AI Receptionist","Đang trực 24/7",true],
-    ["fa-calendar-check","Smart Scheduling","Tự tối ưu lịch",true],
+    ["fa-headset","AI Receptionist","On duty 24/7",true],
+    ["fa-calendar-check","Smart Scheduling","Auto-optimizes schedule",true],
     ["fa-chart-pie","AI Bookkeeping","Real-time P&L",true],
-    ["fa-star","Auto Review Reply","Tự phản hồi review",false],
-    ["fa-bullhorn","Smart Campaigns","Tự gợi ý SMS",true],
-    ["fa-chart-line","Revenue Forecast","Dự báo tuần tới",true]
+    ["fa-star","Auto Review Reply","Auto-replies to reviews",false],
+    ["fa-bullhorn","Smart Campaigns","Suggests SMS campaigns",true],
+    ["fa-chart-line","Revenue Forecast","Forecasts next week",true]
   ];
   const featureRow = ([icon,title,sub,on]) => `<div class="flex items-center justify-between gap-3 rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2.5">
     <div class="flex min-w-0 items-center gap-3">
@@ -1346,11 +1346,11 @@ function renderAiAssistant(){
     </div>
     <label class="switch ai-toggle"><input type="checkbox"${on ? " checked" : ""}><span class="track"></span><span class="dot"></span></label>
   </div>`;
-  const featurePanel = `<div class="section-box"><div class="section-box-title">⚡ AI Đang Làm Việc</div><div class="${ui.panelBody} list">${features.map(featureRow).join("")}</div></div>`;
+  const featurePanel = `<div class="section-box"><div class="section-box-title">⚡ AI at Work</div><div class="${ui.panelBody} list">${features.map(featureRow).join("")}</div></div>`;
 
   return `<div class="nexora-source">
     <div class="source-hero">
-      <div><h2 class="source-title">🤖 IQ AI — Trí Tuệ Nhân Tạo</h2><div class="source-subtitle">AI Assistant · Phân tích · Dự đoán · Tự động hóa</div></div>
+      <div><h2 class="source-title">🤖 IQ AI — Artificial Intelligence</h2><div class="source-subtitle">AI Assistant · Analytics · Forecasting · Automation</div></div>
       <span class="source-button primary">AI POWERED</span>
     </div>
     <div class="grid-4" style="margin-bottom:14px">${stats.map(metric).join("")}</div>
@@ -3229,12 +3229,12 @@ document.addEventListener("click", event=>{
     const box = aiSend.closest(".section-box");
     const input = box?.querySelector("[data-ai-input]");
     const question = (input?.value || "").trim();
-    if(!question){ toast("Nhập câu hỏi trước khi gửi AI."); return; }
+    if(!question){ toast("Enter a question before sending it to AI."); return; }
     const thread = box.querySelector(".chat-thread");
     appendAiMessage(thread,"me",question);
     input.value = "";
     setTimeout(()=>appendAiMessage(thread,"ai",aiDemoReply(question)),180);
-    toast("AI Assistant đã phản hồi trong chat.");
+    toast("AI Assistant replied in chat.");
     return;
   }
 
@@ -3246,22 +3246,22 @@ document.addEventListener("click", event=>{
     if(currentPage === "reviews"){
       const filter = sourceTab.textContent.trim();
       document.querySelectorAll(".review-row").forEach(row=>{
-        row.style.display = filter === "Tất cả" || row.textContent.includes(filter) ? "" : "none";
+        row.style.display = filter === "All" || row.textContent.includes(filter) ? "" : "none";
       });
-      toast("Đã lọc review: "+filter);
+      toast("Filtered reviews: "+filter);
     } else {
-      toast("Đã chuyển tab: "+sourceTab.textContent.trim());
+      toast("Switched tab: "+sourceTab.textContent.trim());
     }
     return;
   }
 
   const reviewAction = event.target.closest(".review-row .source-button");
   if(reviewAction && currentPage === "reviews"){
-    if(reviewAction.textContent.includes("Phản hồi")){
-      reviewAction.textContent = "Đã phản hồi";
+    if(reviewAction.textContent.includes("Reply")){
+      reviewAction.textContent = "Replied";
       reviewAction.classList.remove("primary");
       reviewAction.classList.add("badge-green");
-      toast("Đã lưu phản hồi review. Audit log sẽ ghi lại trong production.");
+      toast("Review reply saved. Audit Log will record it in production.");
     }
     return;
   }
@@ -3269,10 +3269,10 @@ document.addEventListener("click", event=>{
   const queueAssign = event.target.closest(".queue-card .source-button.primary");
   if(queueAssign && currentPage === "pos"){
     const queueCard = queueAssign.closest(".queue-card");
-    const customer = queueCard?.querySelector(".text-sm")?.childNodes?.[0]?.textContent?.trim() || "Khách";
+    const customer = queueCard?.querySelector(".text-sm")?.childNodes?.[0]?.textContent?.trim() || "Guest";
     const service = queueCard?.querySelector(".text-xs")?.childNodes?.[0]?.textContent?.trim() || "Service";
-    const station = [...document.querySelectorAll(".station-card")].find(card=>card.textContent.includes("Trống"));
-    if(!station){ toast("Không còn thợ trống để giao khách."); return; }
+    const station = [...document.querySelectorAll(".station-card")].find(card=>card.textContent.includes("Open"));
+    if(!station){ toast("No open technician is available to assign this guest."); return; }
     const avatar = station.querySelector(".avatar")?.textContent || "ST";
     const tech = station.querySelector(".mt-3")?.textContent || "Technician";
     station.classList.remove("green");
@@ -3283,13 +3283,13 @@ document.addEventListener("click", event=>{
       <div class="mt-2 text-xs text-slate-400">${demoEscape(customer)}</div>
       <div class="mt-1 text-[11px] text-slate-500">${demoEscape(service)}</div>
       <div class="progress-track"><div class="progress-fill" style="width:18%;background:#7c3aed"></div></div>
-      <div class="text-[11px] text-slate-500">Vừa giao khách</div>
+      <div class="text-[11px] text-slate-500">Guest just assigned</div>
       <button class="source-button" style="width:100%;margin-top:14px;background:#4fb779;color:#fff;border-color:transparent">Checkout</button>`;
     queueCard.remove();
     const title = document.querySelector(".section-box-title");
     const count = document.querySelectorAll(".queue-card").length;
-    if(title?.textContent.includes("Hàng Chờ")) title.textContent = `⏳ Hàng Chờ (${count} khách)`;
-    toast(`Đã giao ${customer} cho ${tech}.`);
+    if(title?.textContent.includes("Waitlist")) title.textContent = `⏳ Waitlist (${count} guests)`;
+    toast(`Assigned ${customer} to ${tech}.`);
     return;
   }
 
@@ -3299,7 +3299,7 @@ document.addEventListener("click", event=>{
     if(stationButton.textContent.includes("Checkout")){
       window.location.href = pageHref("checkout");
     } else {
-      toast("Chọn khách trong hàng chờ rồi bấm Giao để đưa vào thợ này.");
+      toast("Select a guest from the waitlist, then click Assign to send them to this technician.");
     }
     return;
   }
@@ -3308,7 +3308,7 @@ document.addEventListener("click", event=>{
   if(checkoutPayMethod && currentPage === "checkout"){
     checkoutPayMethod.closest(".payment-method-grid")?.querySelectorAll("[data-checkout-pay]").forEach(btn=>btn.classList.remove("active"));
     checkoutPayMethod.classList.add("active");
-    toast("Đã chọn phương thức: "+checkoutPayMethod.textContent.trim());
+    toast("Selected payment method: "+checkoutPayMethod.textContent.trim());
     return;
   }
 
@@ -3316,7 +3316,7 @@ document.addEventListener("click", event=>{
   if(tipChip && currentPage === "checkout"){
     tipChip.closest(".tip-grid")?.querySelectorAll(".tip-chip").forEach(btn=>btn.classList.remove("active"));
     tipChip.classList.add("active");
-    toast("Đã cập nhật tip: "+tipChip.textContent.trim());
+    toast("Updated tip: "+tipChip.textContent.trim());
     return;
   }
 
@@ -3326,7 +3326,7 @@ document.addEventListener("click", event=>{
     checkoutComplete.classList.remove("primary");
     checkoutComplete.classList.add("green");
     document.querySelector(".checkout-sync")?.classList.add("complete");
-    toast("Thanh toán hoàn tất. Receipt, Tip Ledger, và TaxIQ sync đã được tạo trong demo.");
+    toast("Payment complete. Receipt, Tip Ledger, and TaxIQ sync were created in the demo.");
     return;
   }
 
@@ -3335,7 +3335,7 @@ document.addEventListener("click", event=>{
     payTypeCard.closest(".pay-type-grid")?.querySelectorAll(".pay-type-card").forEach(card=>card.classList.remove("active"));
     payTypeCard.classList.add("active");
     updateQuickPayPreview();
-    toast("Đã chọn loại thanh toán: "+payTypeCard.querySelector(".text-lg")?.textContent.trim());
+    toast("Selected payment type: "+payTypeCard.querySelector(".text-lg")?.textContent.trim());
     return;
   }
 
@@ -3344,7 +3344,7 @@ document.addEventListener("click", event=>{
     workerItem.closest(".worker-list")?.querySelectorAll(".worker-item").forEach(item=>item.classList.remove("active"));
     workerItem.classList.add("active");
     updateQuickPayPreview();
-    toast("Đã chọn thợ: "+workerItem.querySelector(".text-sm")?.childNodes?.[0]?.textContent.trim());
+    toast("Selected technician: "+workerItem.querySelector(".text-sm")?.childNodes?.[0]?.textContent.trim());
     return;
   }
 
@@ -3353,7 +3353,7 @@ document.addEventListener("click", event=>{
     const amountInput = document.querySelector(".source-input.amount");
     if(amountInput) amountInput.value = amountChip.textContent.trim();
     updateQuickPayPreview();
-    toast("Đã nhập số tiền: "+amountChip.textContent.trim());
+    toast("Entered amount: "+amountChip.textContent.trim());
     return;
   }
 
@@ -3362,24 +3362,24 @@ document.addEventListener("click", event=>{
     methodCard.closest(".method-grid")?.querySelectorAll(".method-card").forEach(card=>card.classList.remove("active"));
     methodCard.classList.add("active");
     updateQuickPayPreview();
-    toast("Đã chọn phương thức: "+methodCard.textContent.replace(/\s+/g," ").trim());
+    toast("Selected method: "+methodCard.textContent.replace(/\s+/g," ").trim());
     return;
   }
 
   const quickCreate = event.target.closest("button.source-button.primary");
-  if(quickCreate && currentPage === "quick-pay" && quickCreate.textContent.includes("Tạo Thanh Toán")){
+  if(quickCreate && currentPage === "quick-pay" && quickCreate.textContent.includes("Create Payment")){
     const amount = moneyNumber(document.querySelector(".source-input.amount")?.value || 0);
-    if(!amount){ toast("Nhập số tiền trước khi tạo thanh toán."); return; }
+    if(!amount){ toast("Enter an amount before creating the payment."); return; }
     const worker = document.querySelector(".worker-item.active .text-sm")?.childNodes?.[0]?.textContent?.trim() || "Worker";
-    const type = document.querySelector(".pay-type-card.active .text-lg")?.textContent?.trim() || "Thanh toán";
+    const type = document.querySelector(".pay-type-card.active .text-lg")?.textContent?.trim() || "Payment";
     const method = (document.querySelector(".method-grid button.method-card.active") || document.querySelector(".method-grid .method-card.active"))?.textContent?.replace(/\s+/g," ").trim() || "Zelle";
     const recent = document.querySelector(".recent-list");
     const row = document.createElement("div");
     row.className = "recent-row";
-    row.innerHTML = `<span>⚡</span><div><strong>${demoEscape(type)} — vừa tạo</strong><br><small class="gray">${demoEscape(worker)} · ${new Date().toISOString().slice(0,10)} · ${demoEscape(method)}</small></div><strong class="green">${moneyText(amount)}</strong>`;
+    row.innerHTML = `<span>⚡</span><div><strong>${demoEscape(type)} — just created</strong><br><small class="gray">${demoEscape(worker)} · ${new Date().toISOString().slice(0,10)} · ${demoEscape(method)}</small></div><strong class="green">${moneyText(amount)}</strong>`;
     recent?.prepend(row);
     data.payouts?.unshift?.([`PAY-${Date.now().toString().slice(-5)}`,worker,"NL-NEW","Current",moneyText(amount),method,type,"Pending","Draft"]);
-    toast(`Đã tạo ${type} cho ${worker}: ${moneyText(amount)}.`);
+    toast(`Created ${type} for ${worker}: ${moneyText(amount)}.`);
     return;
   }
 
@@ -3388,14 +3388,14 @@ document.addEventListener("click", event=>{
     const text = payoutButton.textContent.trim();
     if(text.includes("Invite")){
       openModal("employee");
-    } else if(text.includes("Gửi lại")){
-      toast("Đã gửi lại invite cho Jenny N.");
-    } else if(text.includes("Hủy")){
+    } else if(text.includes("Resend")){
+      toast("Invite resent to Jenny N.");
+    } else if(text.includes("Cancel")){
       payoutButton.closest(".alert")?.remove();
-      toast("Đã hủy pending invite.");
-    } else if(text.includes("Sửa")){
+      toast("Pending invite canceled.");
+    } else if(text.includes("Edit")){
       openModal("employee");
-    } else if(text.includes("Trả tiền")){
+    } else if(text.includes("Pay Now")){
       window.location.href = pageHref("quick-pay");
     }
     return;
@@ -3487,7 +3487,7 @@ document.addEventListener("change", event=>{
   if(aiToggle){
     const row = aiToggle.closest(".flex");
     const name = row?.querySelector(".text-xs.font-black")?.textContent || "AI feature";
-    toast(`${name}: ${aiToggle.checked ? "đã bật" : "đã tắt"}.`);
+    toast(`${name}: ${aiToggle.checked ? "enabled" : "disabled"}.`);
     return;
   }
   const sel = event.target.closest("select.form-control");
