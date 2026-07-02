@@ -916,7 +916,7 @@ function renderPayEngine(){
       <div class="section-box-title">Payment Setup Flow — What merchant must finish first</div>
       <div class="card-grid-4">
         <div class="info-card info-blue"><div class="info-title">1. Worker Profile</div><p>Confirm W-2 / 1099, W-4 or W-9/TIN, email, phone, and status.</p><a class="source-button" href="${pageHref("employees")}">Open Employees</a></div>
-        <div class="info-card info-green"><div class="info-title">2. Pay Rule</div><p>Choose hourly, commission, hybrid, tiered, bonus, overtime, and pay period.</p><button class="source-button primary" data-modal="employee">Configure Rule</button></div>
+        <div class="info-card info-green"><div class="info-title">2. Pay Rule</div><p>Choose hourly, commission, hybrid, tiered, bonus, overtime, and pay period.</p><button class="source-button primary" data-modal="payment-setup">Configure Rule</button></div>
         <div class="info-card info-orange"><div class="info-title">3. Payout Method</div><p>Set primary method: Zelle, ACH/direct deposit, Venmo, Cash App, check, or cash.</p><a class="source-button" href="${pageHref("payouts")}">Open Payout Hub</a></div>
         <div class="info-card info-purple" style="border-color:#bc8cff;"><div class="info-title">4. Pay Worker</div><p>Use Weekly Payroll for normal payroll, or Quick Pay for tip, bonus, advance, and adjustment.</p><a class="source-button" href="${pageHref("quick-pay")}">Open Quick Pay</a></div>
       </div>
