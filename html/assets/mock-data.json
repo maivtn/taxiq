@@ -1180,22 +1180,22 @@
       "Growth",
       "$249/mo",
       "Up to 3 locations",
-      "Tax Estimate, CPA Review, payroll sync, audit log",
+      "Tax Estimate, CPA Review, payroll sync, approval history",
       "Growing merchant with staff payouts"
     ],
     [
       "Pro",
       "$499/mo",
       "Multi-location",
-      "API access, webhooks, advanced role controls, custom reports",
+      "Multi-location controls, advanced roles, custom reports, priority support",
       "Franchise or accounting-heavy operator"
     ],
     [
-      "Partner API",
-      "Custom",
-      "Partner volume",
-      "Embedded Tax IQ APIs, webhook package, partner support",
-      "Payroll/accounting software partner"
+      "Scale",
+      "$899/mo",
+      "Up to 10 locations",
+      "Dedicated onboarding, quarterly CPA package, premium support",
+      "Multi-location owner group"
     ]
   ],
   "invoices": [

@@ -2469,14 +2469,14 @@ function renderBilling(){
   const planSummaryRows = [
     ["Plan","Growth"],
     ["Billing cycle","Monthly"],
-    ["Next invoice","Jul 1, 2026"],
-    ["Payment method","Visa ending 4242"],
+    ["Next invoice","Aug 1, 2026"],
+    ["Payment method","Visa ending 9184"],
     ["Billing contact","billing@nexoranails.com"],
     ["CPA add-on","Requires owner approval"]
   ].map(r=>row(r,{wrap:1}));
   return `<div class="grid-4" style="margin-bottom:14px">${[
     ["Current Plan","Growth","Monthly subscription","green"],
-    ["Monthly Total","$249","Next invoice Jul 1, 2026","cyan"],
+    ["Monthly Total","$249","Next invoice Aug 1, 2026","cyan"],
     ["CPA Add-on","Approval required","No work starts before approval","yellow"],
     ["Payment Method","Card on file","Autopay enabled","blue"]
   ].map(metric).join("")}</div><div class="grid-2" style="margin-bottom:14px">${panel("Plan Summary",table(["Field","Value"],planSummaryRows))}${panel("Billing Controls",`<div class="panel-body list">${listItem("Plan changes need owner approval","Upgrade, downgrade, and cancellation actions record the approver and effective date.","green")}${listItem("Invoices stay available in-app","Each invoice can be viewed or downloaded from the invoice table below.","blue")}${listItem("CPA add-ons are separate approvals","Retainers and estimates must be accepted before any CPA work starts.","yellow")}${listItem("Billing access is role-gated","Only merchant owner or tenant admin can approve charges or change billing settings.","red")}</div>`)}</div>${panel("Plans",table(["Plan","Price","Limit","Included Features","Best For","Actions"],planRows),`<button class="btn primary" data-modal="billing-plan">Upgrade Plan</button>`)}<div class="grid-2" style="margin-top:14px">${panel("Invoices & Approvals",table(["Invoice","Period","Item","Amount","Status","Date","Actions"],invoiceRows))}${panel("Payment & Approval Rules",`<div class="panel-body list">${listItem("Charges show before confirmation","Plan and CPA charges show amount, renewal date, and approver before submission.","green")}${listItem("Receipts are sent to billing contact","Paid invoices remain downloadable and a copy is sent to the saved billing email.","blue")}${listItem("Pending invoices require review","Approval-required invoices stay pending until an authorized owner accepts the charge.","yellow")}${listItem("Tax advice stays separate","Billing approval does not replace CPA or legal review for filing decisions.","red")}</div>`)}</div>`;
@@ -4380,17 +4380,19 @@ const modalCopy = {
 
   /* BILLING MODALS */
   "billing-plan":{
-    title:"Plan & Feature Packaging",
-    body:"Compare subscription plans and confirm which revenue model the product should support first.",
-    cta:"Request Upgrade",
+    title:"Change Plan",
+    body:"Review the current plan, requested plan, billing date, and owner approval before changing the subscription.",
+    cta:"Request Plan Change",
     content:()=>[
-      modalSection("Recommended Business Model", table(["Model","Who Pays","When To Use","Architecture Impact"],[
-        row(["Merchant subscription","Business owner / merchant","MVP and vertical nail/beauty rollout","Tenant billing, plan gates, invoice center"],{wrap:[2,3]}),
-        row(["CPA marketplace referral","Merchant approves CPA estimate","CPA review and filing package add-on","CPA engagement approval, referral fee tracking"],{wrap:[2,3]}),
-        row(["Partner API licensing","Payroll/accounting partner","Embedded Tax IQ in another platform","API metering, partner contract, webhook SLAs"],{wrap:[2,3]})
-      ])),
+      modalSection("Plan Change Review", table(["Field","Current","Requested"],[
+        row(["Plan","Growth","Pro"]),
+        row(["Monthly price","$249/mo","$499/mo"]),
+        row(["Location limit","Up to 3 locations","Multi-location"]),
+        row(["Effective date","Current cycle","Aug 1, 2026"]),
+        row(["Approval",status("Required"),"Merchant owner"])
+      ],{wrap:[1,2]})),
       modalSection("Plan Comparison", table(["Plan","Price","Limit","Included Features","Best For"],data.plans.map(p=>row(p,{wrap:[3,4]})))),
-      modalSection("Upgrade Approval", `<div class="list">${modalCheck("Show feature delta","Merchant sees what unlocks before upgrade.")}${modalCheck("Show prorated charge","Billing engine calculates current-cycle difference.")}${modalCheck("Require Terms acceptance","Plan change is audit logged with actor, timestamp, and accepted terms version.")}</div>`)
+      modalSection("Before Changing Plan", `<div class="list">${modalCheck("Review price change","Merchant sees the new monthly price and effective date before submitting.")}${modalCheck("Confirm billing contact","Receipt and plan change notice are sent to the saved billing email.")}${modalCheck("Require Terms acceptance","Plan change records actor, timestamp, and accepted terms version.")}</div>`)
     ].join("")
   },
   "billing-approval":{
