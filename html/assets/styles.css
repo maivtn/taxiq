@@ -2061,57 +2061,6 @@ a {
   opacity: .58;
 }
 
-.skeleton-stack {
-  display: grid;
-  gap: 12px;
-}
-
-.skeleton-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.skeleton-line,
-.skeleton-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  background: #1e293b;
-}
-
-.skeleton-line {
-  height: 14px;
-}
-
-.skeleton-line.short {
-  width: 58%;
-}
-
-.skeleton-line.w-40 {
-  width: 160px;
-}
-
-.skeleton-card {
-  height: 72px;
-}
-
-.skeleton-line::after,
-.skeleton-card::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  transform: translateX(-100%);
-  animation: skeleton-shimmer 1.4s infinite;
-  background: linear-gradient(90deg, transparent, rgba(148, 163, 184, .16), transparent);
-}
-
-@keyframes skeleton-shimmer {
-  100% {
-    transform: translateX(100%);
-  }
-}
-
 .notice {
   border: 1px solid rgba(245, 158, 11, .35);
   border-radius: 8px;
@@ -2308,9 +2257,6 @@ select.form-control {
     flex-direction: column;
   }
 
-  .skeleton-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* ──────────────────────────────────────────────────────────────

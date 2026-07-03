@@ -709,18 +709,6 @@ function initFreeRouteMaps(scope=document){
       mapFallback(node, route, error.message);
     }));
 }
-function skeletonPreview(){
-  return `<div class="skeleton-stack" aria-label="Loading state preview">
-    <div class="skeleton-line w-40"></div>
-    <div class="skeleton-grid">
-      <div class="skeleton-card"></div>
-      <div class="skeleton-card"></div>
-      <div class="skeleton-card"></div>
-    </div>
-    <div class="skeleton-line"></div>
-    <div class="skeleton-line short"></div>
-  </div>`;
-}
 
 const pageGuides = {
   dashboard:{
@@ -928,10 +916,10 @@ const pageGuides = {
     actions:[["Create Review Task","compliance-task","modal"],["Settings","settings"],["Audit Log","audit-log"]]
   },
   billing:{
-    focus:"Merchant subscription, CPA add-on approval, invoices, plan comparison, and business model clarity.",
-    role:"Owner / Stakeholder",
-    next:"Confirm merchant subscription as MVP path and approve any CPA engagement before billing starts.",
-    actions:[["Approve Billing","billing-approval","modal"],["Plan Packaging","billing-plan","modal"],["CPA Review","cpa"]]
+    focus:"Plan, billing contact, CPA add-on approval, invoices, and payment controls.",
+    role:"Owner / Tenant Admin",
+    next:"Review the current plan, approve pending CPA charges, and download invoices when needed.",
+    actions:[["Approve Billing","billing-approval","modal"],["Change Plan","billing-plan","modal"],["CPA Review","cpa"]]
   },
   settings:{
     focus:"Tenant controls for US payroll scope, roles, permissions, notifications, and retention.",
@@ -2478,12 +2466,20 @@ function renderComplianceReview(){
 function renderBilling(){
   const planRows = data.plans.map(p=>row([p[0],p[1],p[2],p[3],p[4],rowActions(actionBtn("Select","billing-plan"),actionBtn("Compare","billing-plan"))],{wrap:[3,4]}));
   const invoiceRows = data.invoices.map(i=>row([`<span class="mono">${i[0]}</span>`,i[1],i[2],i[3],status(i[4]),i[5],rowActions(i[4]==="Pending approval" ? actionBtn("Approve","billing-approval") : actionBtn("View","billing-approval"),actionBtn("Download",""))],{wrap:2}));
+  const planSummaryRows = [
+    ["Plan","Growth"],
+    ["Billing cycle","Monthly"],
+    ["Next invoice","Jul 1, 2026"],
+    ["Payment method","Visa ending 4242"],
+    ["Billing contact","billing@nexoranails.com"],
+    ["CPA add-on","Requires owner approval"]
+  ].map(r=>row(r,{wrap:1}));
   return `<div class="grid-4" style="margin-bottom:14px">${[
-    ["Current Plan","Growth","Merchant subscription","green"],
-    ["MRR","$249","Per merchant location group","cyan"],
+    ["Current Plan","Growth","Monthly subscription","green"],
+    ["Monthly Total","$249","Next invoice Jul 1, 2026","cyan"],
     ["CPA Add-on","Approval required","No work starts before approval","yellow"],
-    ["API Partner","Future","Separate contract path","red"]
-  ].map(metric).join("")}</div><div class="grid-2" style="margin-bottom:14px">${panel("Business Model Decision",`<div class="panel-body list">${listItem("Primary model: merchant subscription","Merchant pays Tax IQ monthly for records, OCR, GPS, Tip Ledger, Tax Estimate, CPA package, and compliance workflow.","green")}${listItem("Secondary model: CPA marketplace referral","CPA/bookkeeper cost is shown as a separate estimate. Merchant must approve before work starts.","yellow")}${listItem("Partner model: API licensing","Payroll/accounting partners can buy embedded Tax IQ APIs later. This needs separate architecture and contract.","blue")}</div>`)}${panel("ICP Packaging",`<div class="panel-body list">${listItem("Best initial ICP","Vietnamese-owned nail salons and beauty businesses in the U.S. with staff payouts, tips, receipts, GPS, and CPA needs.","green")}${listItem("Owner UX","Simple dashboard, upload/share, CPA approval, billing, and guided next steps.","blue")}${listItem("Admin/CPA UX","Deeper ledger, payroll run, tax estimate, evidence, audit, and filing package workflows.","yellow")}</div>`)}</div>${panel("Plans",table(["Plan","Price","Limit","Included Features","Best For","Actions"],planRows),`<button class="btn primary" data-modal="billing-plan">Upgrade Plan</button>`)}<div class="grid-2" style="margin-top:14px">${panel("Invoices & Approvals",table(["Invoice","Period","Item","Amount","Status","Date","Actions"],invoiceRows))}${panel("Loading State Pattern",`<div class="panel-body">${skeletonPreview()}<div class="sub">Use this skeleton pattern when replacing mock data with API calls, especially tables, KPI cards, OCR queue, and billing invoices.</div></div>`)}</div>${panel("Production Billing Rules",`<div class="panel-body list">${listItem("Who can view billing","Merchant owner and tenant admin. CPA can only see CPA engagement cost, not merchant subscription billing.","green")}${listItem("Upgrade / downgrade","Show feature delta, prorated charge, renewal date, and Terms acceptance before plan change.","yellow")}${listItem("Invoice delivery","In-app invoice center plus email copy to billing contact. Every billing event goes to Audit Log.","blue")}${listItem("Compliance disclaimer","Billing approval is separate from tax/legal advice. CPA marketplace work requires explicit merchant approval.","red")}</div>`)}`;
+    ["Payment Method","Card on file","Autopay enabled","blue"]
+  ].map(metric).join("")}</div><div class="grid-2" style="margin-bottom:14px">${panel("Plan Summary",table(["Field","Value"],planSummaryRows))}${panel("Billing Controls",`<div class="panel-body list">${listItem("Plan changes need owner approval","Upgrade, downgrade, and cancellation actions record the approver and effective date.","green")}${listItem("Invoices stay available in-app","Each invoice can be viewed or downloaded from the invoice table below.","blue")}${listItem("CPA add-ons are separate approvals","Retainers and estimates must be accepted before any CPA work starts.","yellow")}${listItem("Billing access is role-gated","Only merchant owner or tenant admin can approve charges or change billing settings.","red")}</div>`)}</div>${panel("Plans",table(["Plan","Price","Limit","Included Features","Best For","Actions"],planRows),`<button class="btn primary" data-modal="billing-plan">Upgrade Plan</button>`)}<div class="grid-2" style="margin-top:14px">${panel("Invoices & Approvals",table(["Invoice","Period","Item","Amount","Status","Date","Actions"],invoiceRows))}${panel("Payment & Approval Rules",`<div class="panel-body list">${listItem("Charges show before confirmation","Plan and CPA charges show amount, renewal date, and approver before submission.","green")}${listItem("Receipts are sent to billing contact","Paid invoices remain downloadable and a copy is sent to the saved billing email.","blue")}${listItem("Pending invoices require review","Approval-required invoices stay pending until an authorized owner accepts the charge.","yellow")}${listItem("Tax advice stays separate","Billing approval does not replace CPA or legal review for filing decisions.","red")}</div>`)}</div>`;
 }
 
 function renderSettings(){
