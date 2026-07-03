@@ -31,7 +31,7 @@ const TaxIQLayout = (() => {
     "tax-1099":"fa-solid fa-file-invoice-dollar", connections:"fa-solid fa-plug",
     payouts:"fa-solid fa-hand-holding-dollar",ledger:"fa-solid fa-book",
     exceptions:"fa-solid fa-triangle-exclamation", jurisdictions:"fa-solid fa-map",
-    forms:"fa-solid fa-file-lines",           "ai-advisor":"fa-solid fa-brain",
+    forms:"fa-solid fa-file-lines",
     "ai-assistant":"fa-solid fa-wand-magic-sparkles",
     ocr:"fa-solid fa-receipt",                "share-links":"fa-solid fa-link",
     gps:"fa-solid fa-location-dot",           cpa:"fa-solid fa-user-tie",
@@ -140,6 +140,9 @@ const TaxIQLayout = (() => {
       ".sb-item:not(.sb-active):hover{background:rgba(124,58,237,.13);border-color:rgba(124,58,237,.22);color:#e9efff}",
       ".sb-item.sb-active{background:linear-gradient(90deg,rgba(124,58,237,.75),rgba(79,70,229,.46));border-color:rgba(168,85,247,.55);color:#fff;box-shadow:0 10px 26px rgba(124,58,237,.22),inset 0 1px 0 rgba(255,255,255,.12)}",
       ".sb-item.sb-active .sb-icon{color:#fff;text-shadow:0 0 16px rgba(255,255,255,.28)}",
+      ".taxiq-ai-icon{position:relative;display:inline-grid!important;place-items:center;width:20px!important;height:20px!important;line-height:1;color:inherit;text-shadow:none!important;flex-shrink:0}",
+      ".taxiq-ai-icon-box{display:grid;place-items:center;width:17px;height:17px;border:2px solid currentColor;border-radius:5px;font-size:8px;font-weight:950;letter-spacing:-.03em;line-height:1;background:transparent}",
+      ".taxiq-ai-sparkle{position:absolute;right:-2px;top:-3px;width:9px;height:9px;background:currentColor;clip-path:polygon(50% 0,62% 35%,100% 50%,62% 65%,50% 100%,38% 65%,0 50%,38% 35%);filter:drop-shadow(0 0 5px rgba(255,255,255,.28))}",
       /* group labels */
       ".sb-group-label{padding:14px 10px 4px;font-size:10px;font-weight:900;",
         "text-transform:uppercase;letter-spacing:.09em;color:#8ea0c3;",
@@ -201,7 +204,9 @@ const TaxIQLayout = (() => {
       "#taxiq-sidebar.sb-collapsed .sb-icon{font-size:17px!important;width:auto!important}",
       "#taxiq-sidebar.sb-collapsed #sb-toggle-icon{transform:rotate(180deg)}",
       /* collapsed brand row — reduce padding so logo+toggle fit in 80px */
-      "#taxiq-sidebar.sb-collapsed .sb-brand-row{padding:0 6px}"
+      "#taxiq-sidebar.sb-collapsed .sb-brand-row{padding:0 6px}",
+      "#taxiq-sidebar .taxiq-ai-icon{width:20px!important;height:20px!important;font-size:initial!important}",
+      "#taxiq-sidebar.sb-collapsed .taxiq-ai-icon{width:22px!important;height:22px!important}"
     ].join("");
     document.head.appendChild(s);
   }
@@ -221,6 +226,19 @@ const TaxIQLayout = (() => {
     }
   }
 
+  function renderPageIcon(id){
+    if(id === "ai-advisor"){
+      return [
+        '<span class="taxiq-ai-icon sb-icon" aria-hidden="true" style="flex-shrink:0">',
+          '<span class="taxiq-ai-icon-box">AI</span>',
+          '<span class="taxiq-ai-sparkle"></span>',
+        '</span>'
+      ].join("");
+    }
+    const icon = pageIcons[id] || "fa-solid fa-circle";
+    return '<i class="' + icon + ' fa-fw sb-icon" style="font-size:16px;width:20px;text-align:center;flex-shrink:0"></i>';
+  }
+
   function renderSidebar(){
     const navHTML = navGroups.map(function(group){
       const label = group[0];
@@ -228,9 +246,8 @@ const TaxIQLayout = (() => {
       return '<div class="sb-group-label">' + label + '</div>' +
         ids.map(function(id){
           const active = id === currentPage ? " sb-active" : "";
-          const icon   = pageIcons[id] || "fa-solid fa-circle";
           return '<a class="sb-item' + active + '" href="' + pageHref(id) + '">' +
-            '<i class="' + icon + ' fa-fw sb-icon" style="font-size:16px;width:20px;text-align:center;flex-shrink:0"></i>' +
+            renderPageIcon(id) +
             '<span class="sb-label">' + pages[id].title + '</span>' +
           '</a>';
         }).join("");
