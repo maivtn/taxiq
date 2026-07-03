@@ -352,16 +352,49 @@ function buildExportPayload(kind, format="csv", trigger=null){
     content:toCsv(headers, rows)
   };
 }
+function exportByteText(bytes){
+  if(bytes > 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+  if(bytes > 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${bytes} bytes`;
+}
+function removeExportResult(){
+  const box = document.getElementById("exportResult");
+  if(!box) return;
+  if(box.dataset.objectUrl) URL.revokeObjectURL(box.dataset.objectUrl);
+  box.remove();
+}
+function showExportResult(filename, url, bytes){
+  let box = document.getElementById("exportResult");
+  if(!box){
+    box = document.createElement("div");
+    box.id = "exportResult";
+    box.style.cssText = "position:fixed;right:18px;bottom:18px;z-index:60;display:flex;align-items:center;gap:12px;max-width:min(520px,calc(100vw - 32px));padding:12px 14px;border:1px solid rgba(99,102,241,.45);border-radius:12px;background:#020617;box-shadow:0 18px 45px rgba(0,0,0,.42);color:#e5e7eb";
+    document.body.appendChild(box);
+  } else if(box.dataset.objectUrl && box.dataset.objectUrl !== url){
+    URL.revokeObjectURL(box.dataset.objectUrl);
+  }
+  box.dataset.objectUrl = url;
+  box.innerHTML = `<div style="min-width:0;flex:1"><div style="font-size:12px;font-weight:900;color:#f8fafc">Export ready</div><div style="font-size:11px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${demoEscape(filename)} · ${demoEscape(exportByteText(bytes))}</div></div><a class="${ui.btn} ${ui.primary}" href="${url}" download="${demoEscape(filename)}">Download</a><button class="${ui.btn}" data-export-dismiss>Close</button>`;
+}
 function downloadTextFile(filename, content, mime="text/plain;charset=utf-8"){
   const blob = new Blob([content], { type:mime });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
+  a.style.display = "none";
   document.body.appendChild(a);
+  window.__taxiqLastDownload = { filename, mime, bytes:blob.size };
+  showExportResult(filename, url, blob.size);
   a.click();
-  a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  setTimeout(()=>{
+    a.remove();
+    if(document.getElementById("exportResult")?.dataset.objectUrl === url){
+      removeExportResult();
+    } else {
+      URL.revokeObjectURL(url);
+    }
+  }, 120000);
 }
 function logExportAudit(payload){
   const stamp = new Date().toISOString().slice(0,16).replace("T"," ");
@@ -901,10 +934,10 @@ const pageGuides = {
     actions:[["Approve Billing","billing-approval","modal"],["Plan Packaging","billing-plan","modal"],["CPA Review","cpa"]]
   },
   settings:{
-    focus:"Tenant controls for US payroll scope, roles, permissions, API keys, notifications, and retention.",
+    focus:"Tenant controls for US payroll scope, roles, permissions, notifications, and retention.",
     role:"Admin / Security",
     next:"Keep UI permissions aligned with backend enforcement before production launch.",
-    actions:[["Create API Key","create-api-key","modal"],["Compliance","compliance-review"],["Webhooks","webhooks"]]
+    actions:[["Edit Role","permission-role","modal"],["Compliance","compliance-review"],["Notifications","notifications"]]
   }
 };
 
@@ -1294,20 +1327,51 @@ function renderPos(){
     ["Rachel M.","#A004","Pedicure","waiting 15m"],
     ["Tom N.","#A005","Manicure","waiting 22m"]
   ].map(q=>`<div class="queue-card"><div><div class="text-sm font-black text-slate-100">${q[0]} <span class="text-[11px] text-slate-600">${q[1]}</span></div><div class="mt-1 text-xs text-slate-500">${q[2]} · <span class="text-amber-400">${q[3]}</span></div></div><button class="source-button primary">Assign</button></div>`).join("");
+  const posTabs = [
+    ["checkin","fa-user-plus","Check-in queue","3 waiting"],
+    ["turn-board","fa-table-cells-large","Turn Board","2 active"],
+    ["checkout","fa-credit-card","Checkout","2 ready"]
+  ];
   return `<div class="nexora-source">
     <div class="source-hero">
       <div><h2 class="source-title">🖥️ POS</h2><div class="source-subtitle">Check in · Turn Board · Checkout</div></div>
       <div class="source-subtitle" style="color:#a78bfa;font-weight:900">09:56:01</div>
     </div>
-    <div class="pos-tabs">
-      <span class="badge badge-green">🟢 Check-in queue: 3 waiting</span>
-      <span class="badge badge-purple">📋 Turn Board active</span>
-      <a class="tab-pill" href="${pageHref("checkout")}">💳 Checkout</a>
+
+    <div class="pos-tabs" role="tablist" aria-label="POS workflow tabs">
+      ${posTabs.map(([id,icon,label,meta])=>`<button class="tab-pill pos-tab ${id==="turn-board" ? "active" : ""}" type="button" data-tab="${id}" data-tab-summary="${demoEscape(label)} is open. POS actions below are scoped to this workflow." role="tab" aria-selected="${id==="turn-board" ? "true" : "false"}"><i class="fa-solid ${icon}"></i><span>${label}</span><strong>${meta}</strong></button>`).join("")}
     </div>
-    <div class="pos-grid">${stationCards}</div>
-    <div class="section-box">
-      <div class="section-box-title">⏳ Waitlist (3 guests)</div>
-      <div class="queue-grid" style="padding:16px">${queue}</div>
+    <div class="tab-context" data-tab-summary>Turn Board is open. POS actions below are scoped to this workflow.</div>
+
+    <div class="tab-panel" data-tab-panel="checkin" role="tabpanel" hidden>
+      <div class="grid-3" style="margin-bottom:14px">${[
+        ["Waiting","3","Oldest wait: 22m","yellow"],
+        ["Open stations","2","Linda P. and Kevin M.","green"],
+        ["Next ticket","#A003","Anna Kim · Gel Polish","cyan"]
+      ].map(metric).join("")}</div>
+      <div class="section-box">
+        <div class="section-box-title">⏳ Waitlist (3 guests)</div>
+        <div class="queue-grid" style="padding:16px">${queue}</div>
+      </div>
+    </div>
+
+    <div class="tab-panel active" data-tab-panel="turn-board" role="tabpanel">
+      <div class="pos-grid">${stationCards}</div>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="checkout" role="tabpanel" hidden>
+      <div class="grid-3" style="margin-bottom:14px">${[
+        ["Ready tickets","2","Amy T. and Sarah J.","green"],
+        ["Open total","$214","Before tips and tax sync","cyan"],
+        ["Next handoff","#A002","Emma W. · Station Amy T.","yellow"]
+      ].map(metric).join("")}</div>
+      <div class="grid-2">
+        ${panel("Active Checkout Ticket",table(["Ticket","Guest","Technician","Services","Status","Action"],[
+          row(["#A002","Emma W.","Amy T.","Acrylic Full Set + add-ons",status("Ready"),`<a class="${ui.btn} primary" href="${pageHref("checkout")}">Open Checkout</a>`]),
+          row(["#A006","Lisa N.","Sarah J.","Fill In + Pedicure",status("Ready"),`<a class="${ui.btn}" href="${pageHref("checkout")}">Open Checkout</a>`])
+        ],{wrap:3}))}
+        ${panel("Checkout Sync",`<div class="panel-body list">${listItem("Charge customer","Open the full checkout screen to choose tip, payment method, and receipt delivery.","green")}${listItem("Free station after payment","Completed checkout returns the technician to the Turn Board.","blue")}${listItem("TaxIQ sync","Receipt, tip, payout proof, and audit record are created after payment.","yellow")}</div>`,`<a class="btn primary" href="${pageHref("checkout")}">Go to Full Checkout</a>`)}
+      </div>
     </div>
   </div>`;
 }
@@ -2423,12 +2487,10 @@ function renderBilling(){
 }
 
 function renderSettings(){
-  const keyRows = data.apiKeys.map(k=>row([`<span class="mono">${k[0]}</span>`,k[1],`<span class="mono">${k[2]}</span>`,k[3],k[4],status(k[5]),k[6],rowActions(`<button class="${ui.btn}" data-rotate-key="${k[0]}">Rotate</button>`,`<button class="${ui.btn}" data-revoke-key="${k[0]}">Revoke</button>`)]));
   const settingsTabs = [
     ["scope","Scope"],
     ["roles","Roles"],
     ["security","Security"],
-    ["api","API Keys"],
     ["alerts","Notifications"],
     ["help","Help"]
   ];
@@ -2461,10 +2523,6 @@ function renderSettings(){
 
     <div class="tab-panel" data-tab-panel="security" role="tabpanel" hidden>
       <div class="grid-2">${panel("Data Protection",`<div class="panel-body"><div class="row"><span>SSN/TIN storage</span><span>Tokenized</span></div><div class="row"><span>PII export approval</span><span>Required</span></div><div class="row"><span>Webhook signing</span><span>HMAC SHA-256</span></div><div class="row"><span>Audit retention</span><span>7 years</span></div></div>`,`<button class="btn primary" data-modal="data-protection">Configure Security</button>`)}${panel("Security Enforcement Checklist",`<div class="panel-body list">${listItem("Tokenize tax identifiers","SSN/TIN values are stored as tokens; UI shows masked values by default.","green")}${listItem("Require approval for sensitive exports","PII export, CPA package sharing, and full tax profile download need owner approval.","yellow")}${listItem("Sign integrations","Webhook requests use HMAC signing and failed deliveries route to Webhooks.","blue")}${listItem("Audit every privileged action","Settings, key rotation, exports, and permission changes write to Audit Log.","red")}</div>`,`<a class="btn" href="${pageHref("audit-log")}">Open Audit Log</a>`)}</div>
-    </div>
-
-    <div class="tab-panel" data-tab-panel="api" role="tabpanel" hidden>
-      ${panel("API Keys",table(["Key ID","Name","Env","Scopes","Created","Status","Owner","Actions"],keyRows),`<button class="btn primary" data-modal="create-api-key">Create Key</button>`)}
     </div>
 
     <div class="tab-panel" data-tab-panel="alerts" role="tabpanel" hidden>
@@ -4354,47 +4412,6 @@ const modalCopy = {
       modalSection("Approval Rules", `<div class="list">${listItem("Merchant approval required","No CPA work starts until owner accepts the estimate or retainer.","yellow")}${listItem("Audit logged","Approval, rejection, and payment events are written to immutable audit log.","blue")}${listItem("Separate from subscription","CPA engagement cost is separate from Tax IQ monthly plan.","green")}</div>`),
       modalSection("Approval Note", modalField("Note","Approve retainer for Q2 CPA package review.","textarea"))
     ].join("")
-  },
-
-  /* API KEY MODAL */
-  "create-api-key":{
-    title:"Create API Key",
-    body:"Generate a new API key for payroll system integration, report automation, or developer access. Keys are shown only once.",
-    cta:"Generate Key",
-    afterOpen(modal){
-      modal.querySelector("#modalMainCta")?.addEventListener("click", e=>{
-        e.stopPropagation();
-        const inputs = modal.querySelectorAll("input.form-control");
-        const name = (inputs[0]?.value||"").trim() || "New API Key";
-        const env  = modal.querySelectorAll("select.form-control")[0]?.value || "Production (LIVE)";
-        const scope= modal.querySelectorAll("select.form-control")[1]?.value || "Full access";
-        const isLive = /production/i.test(env);
-        const prefix = isLive ? "taxiq_live_" : "taxiq_test_";
-        const newKey = prefix+[...Array(32)].map(()=>Math.floor(Math.random()*36).toString(36)).join("");
-        const shortId= "key_"+(isLive?"live":"test")+"_"+Math.random().toString(36).slice(2,6);
-        data.apiKeys.unshift([shortId,name,isLive?"LIVE":"TEST",scope,"Jun 24, 2026","Active","payroll_admin_44"]);
-        // Show key in modal body
-        const body = modal.querySelector(".modal-body");
-        if(body){
-          const notice = document.createElement("div");
-          notice.style.cssText="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:16px;margin-top:12px";
-          notice.innerHTML=`<div style="color:#f8fafc;font-size:11px;font-weight:900;margin-bottom:8px">⚠️ Copy this key now — it will never be shown again</div><div style="font-family:monospace;font-size:11px;color:#a5f3fc;word-break:break-all;background:#020617;padding:10px;border-radius:6px">${newKey}</div><button class="${ui.btn}" style="margin-top:10px" data-copy="${newKey}">Copy Key</button>`;
-          body.appendChild(notice);
-          modal.querySelector("#modalMainCta").style.display="none";
-        }
-        renderPage(); toast("API key generated: "+shortId);
-      });
-    },
-    content:()=>[
-      modalSection("Key Configuration", modalGrid([
-        modalField("Key name","CPA Export Automation"),
-        modalSelect("Environment",[["Production (LIVE)",true],["Sandbox (TEST)"]]),
-        modalSelect("Scopes",[["Full access",true],["Reports only"],["Read-only"],["Webhooks only"],["Payroll only"]]),
-        modalSelect("Expiration",[["Never",true],["90 days"],["1 year"],["Custom"]])
-      ])),
-      modalSection("Security Controls", `<div class="list">${modalCheck("Restrict to IP allowlist","Limit key usage to known IP ranges. Requests from other IPs will be rejected.")}${modalCheck("Require webhook signing","Key can only be used with HMAC-verified endpoint configurations.")}${modalCheck("Log every API call","Record endpoint, actor, HTTP status, and timestamp for each request.")}${modalCheck("Alert on unusual usage","Notify admin if request volume or IP range changes unexpectedly.", false)}</div>`),
-      modalSection("Important Notice", `<div class="notice">Your key will be shown only once after creation. Copy it to a secure secrets manager immediately. Tax IQ does not store unmasked key values. If lost, rotate the key from this settings page.</div>`)
-    ].join("")
   }
 };
 
@@ -4422,6 +4439,11 @@ function toast(msg){
 }
 
 document.addEventListener("click", event=>{
+  const exportDismiss = event.target.closest("[data-export-dismiss]");
+  if(exportDismiss){
+    removeExportResult();
+    return;
+  }
   const linkRow = event.target.closest("[data-href]");
   if(linkRow) window.location.href = linkRow.dataset.href;
   const guideScroll = event.target.closest("[data-guide-scroll]");
@@ -4703,23 +4725,6 @@ document.addEventListener("click", event=>{
   if(revokeConn){
     const c = data.connections.find(x=>x[0]===revokeConn.dataset.revokeConn);
     if(c){ c[6]="Revoked"; renderPage(); toast("Connection revoked: "+c[1]); }
-  }
-  // Revoke API key
-  const revokeKey = event.target.closest("[data-revoke-key]");
-  if(revokeKey){
-    const k = data.apiKeys.find(x=>x[0]===revokeKey.dataset.revokeKey);
-    if(k){ k[5]="Revoked"; renderPage(); toast("API key revoked."); }
-  }
-  // Rotate API key
-  const rotateKey = event.target.closest("[data-rotate-key]");
-  if(rotateKey){
-    const k = data.apiKeys.find(x=>x[0]===rotateKey.dataset.rotateKey);
-    if(k){
-      const suffix = Math.random().toString(36).slice(2,6);
-      k[0] = k[0].replace(/_[^_]+$/,"_"+suffix);
-      k[4] = "Jun 24, 2026"; k[5] = "Active";
-      renderPage(); toast("API key rotated. Save the new key ID immediately.");
-    }
   }
 });
 document.addEventListener("input", event=>{

@@ -356,12 +356,19 @@ const sidebar = document.getElementById("taxiq-sidebar");
 const backdrop = document.querySelector("[data-mobile-sidebar-backdrop]");
 const closeButton = document.querySelector("[data-mobile-sidebar-close]");
 const navLink = sidebar?.querySelector(".sb-item");
+const sidebarHrefs = sidebar ? sidebar.querySelectorAll(".sb-item").map((link) => link.getAttribute("href")) : [];
+const aiAdvisorIcon = sidebar?.querySelector('a[href="ai-advisor.html"] i');
 
 assert(mobileButton, "mobile hamburger button should render on shared html/pages shells");
 assert(sidebar, "sidebar should render");
 assert(backdrop, "mobile backdrop should render");
 assert(closeButton, "mobile drawer close button should render");
 assert(navLink, "sidebar nav link should render");
+assert(!sidebarHrefs.includes("webhooks.html"), "Webhooks menu item should stay hidden from the sidebar");
+assert(!sidebarHrefs.includes("audit-log.html"), "Audit Log menu item should stay hidden from the sidebar");
+assert(aiAdvisorIcon, "AI Advisor nav icon should render");
+assert(aiAdvisorIcon.classList.contains("fa-brain"), "AI Advisor should use a modern AI brain icon");
+assert(!aiAdvisorIcon.classList.contains("fa-robot"), "AI Advisor should no longer use the generic robot icon");
 assert(mobileButton.getAttribute("aria-expanded") === "false", "hamburger starts closed");
 assert(!sidebar.classList.contains("mobile-drawer-open"), "sidebar starts closed on mobile");
 

@@ -31,7 +31,7 @@ const TaxIQLayout = (() => {
     "tax-1099":"fa-solid fa-file-invoice-dollar", connections:"fa-solid fa-plug",
     payouts:"fa-solid fa-hand-holding-dollar",ledger:"fa-solid fa-book",
     exceptions:"fa-solid fa-triangle-exclamation", jurisdictions:"fa-solid fa-map",
-    forms:"fa-solid fa-file-lines",           "ai-advisor":"fa-solid fa-robot",
+    forms:"fa-solid fa-file-lines",           "ai-advisor":"fa-solid fa-brain",
     "ai-assistant":"fa-solid fa-wand-magic-sparkles",
     ocr:"fa-solid fa-receipt",                "share-links":"fa-solid fa-link",
     gps:"fa-solid fa-location-dot",           cpa:"fa-solid fa-user-tie",
@@ -88,6 +88,7 @@ const TaxIQLayout = (() => {
     ["Tax IQ",["ledger","exceptions","data-quality","jurisdictions","forms","tax-1099","ocr","share-links","gps","cpa","tip-ledger","tax-estimate","ai-advisor"]],
     ["System",["webhooks","audit-log","notifications","compliance-review","billing","settings"]]
   ];
+  const hiddenNavItems = new Set(["webhooks","audit-log"]);
 
   function pageHref(id){
     if(id === "dashboard") return rootPath === "." ? "index.html" : "../index.html";
@@ -223,7 +224,7 @@ const TaxIQLayout = (() => {
   function renderSidebar(){
     const navHTML = navGroups.map(function(group){
       const label = group[0];
-      const ids   = group[1];
+      const ids   = group[1].filter(function(id){ return !hiddenNavItems.has(id); });
       return '<div class="sb-group-label">' + label + '</div>' +
         ids.map(function(id){
           const active = id === currentPage ? " sb-active" : "";

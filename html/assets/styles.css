@@ -1264,8 +1264,67 @@ a {
 
 .nexora-source .pos-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 18px;
+  border: 1px solid rgba(71, 85, 105, .55);
+  border-radius: 8px;
+  background: rgba(8, 13, 25, .52);
+  padding: 8px;
+}
+
+.nexora-source .pos-tabs .pos-tab {
+  flex: 1 1 190px;
+  min-height: 46px;
+  justify-content: flex-start;
+  border-color: rgba(71, 85, 105, .72);
+  background: #101827;
+  color: #cbd5e1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
+}
+
+.nexora-source .pos-tabs .pos-tab i {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, .12);
+  color: #93c5fd;
+}
+
+.nexora-source .pos-tabs .pos-tab span {
+  min-width: 0;
+  flex: 1;
+  text-align: left;
+}
+
+.nexora-source .pos-tabs .pos-tab strong {
+  display: inline-flex;
+  min-width: 64px;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, .9);
+  color: #a7f3d0;
+  padding: 4px 8px;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.nexora-source .pos-tabs .pos-tab.active {
+  border-color: rgba(56, 189, 248, .78);
+  background: rgba(14, 165, 233, .16);
+  color: #f8fafc;
+}
+
+.nexora-source .pos-tabs .pos-tab.active i {
+  background: #0ea5e9;
+  color: #fff;
+}
+
+.nexora-source .pos-tabs .pos-tab.active strong {
+  background: rgba(14, 165, 233, .28);
+  color: #e0f2fe;
 }
 
 .nexora-source .pos-grid {
