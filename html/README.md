@@ -1,6 +1,6 @@
-# TaxIQ Demo Project
+# TaxIQ App
 
-Static multi-page demo for TaxIQ / Nexora Touch.
+Static multi-page TaxIQ / Nexora Touch application shell.
 
 ## How To Open
 
@@ -17,7 +17,7 @@ Then open:
 http://localhost:8123/
 ```
 
-No build step is required. The demo uses CDN assets for Tailwind, Font Awesome icons, and browser OCR, so open it while online for full styling, icons, and OCR behavior. A local server is recommended because the app now loads `assets/mock-data.json`; opening through `file://` may be blocked by browser security.
+No build step is required. The app uses CDN assets for Tailwind, Font Awesome icons, and browser OCR, so open it while online for full styling, icons, and OCR behavior. A local server is recommended because the app loads `assets/app-data.json`; opening through `file://` may be blocked by browser security.
 
 ## Structure
 
@@ -27,8 +27,8 @@ html/
   assets/
     styles.css
     layout.js
-    mock-data.json
-    mock-data.js
+    app-data.json
+    app-data.js
     app.js
   pages/
     analytics.html
@@ -65,13 +65,13 @@ html/
     settings.html
 ```
 
-## Demo Coverage
+## App Coverage
 
 - Each major screen is a separate HTML page.
 - Shared sidebar/topbar/navigation comes from `assets/layout.js`.
 - Sidebar uses Font Awesome icons, supports collapse/expand on desktop, persists state in `localStorage`, and becomes a horizontal scroll nav on mobile.
-- Screen data comes from `assets/mock-data.json`; `assets/mock-data.js` is only a small loader that fetches the JSON for the browser.
-- Page rendering, modals, and demo actions come from `assets/app.js`.
+- Screen data comes from `assets/app-data.json`; `assets/app-data.js` is only a small loader that fetches the JSON for the browser.
+- Page rendering, modals, and interactive actions come from `assets/app.js`.
 - Sidebar groups OCR Vault, Share Links, GPS Mileage, CPA Review, and AI Advisor under `Tax IQ`.
 - Sidebar also includes Tip Ledger and Tax Estimate under `Tax IQ`.
 - Overview screens now include Dashboard, Analytics, and Onboarding.
@@ -80,15 +80,15 @@ html/
 - System screens now include Webhooks, Audit Log, Notifications, Compliance Review, Billing & Plans, and Settings.
 - Nexora Touch payout/payroll docs are now represented as dedicated pages: Quick Pay, Pay Engine, Weekly Payroll, and Tax Center 1099/W-2.
 - Tailwind utility classes drive the main layout and components through Tailwind Play CDN.
-- `assets/styles.css` keeps only small demo helpers for responsive grids, modal state, and fallback button/card styling.
-- GPS Route Preview uses Leaflet with OpenStreetMap tiles, so the demo does not need a Google Maps key.
+- `assets/styles.css` keeps shared helpers for responsive grids, modal state, and fallback button/card styling.
+- GPS Route Preview uses Leaflet with OpenStreetMap tiles, so the app does not need a Google Maps key.
 - For production traffic, use an approved tile provider with quota/SLA, cache policy, attribution, and privacy review; high-volume apps should not depend on the public OpenStreetMap tile service directly.
-- Each page includes a compact workflow guide with purpose, target role, next action, and quick links so the demo is easier to navigate during stakeholder review.
+- Each page includes a compact workflow guide with purpose, target role, next action, and quick links.
 - Dashboard and Tax Estimate include a US Tax Readiness checklist for EIN/business setup, worker tax forms, federal payroll taxes, state/SUTA setup, evidence vault, and CPA filing package readiness.
 - Payouts now includes Nexora Touch supplemental workflows for Quick Pay, Pay Engine configuration, 1099 contractor readiness, and Payout Hub approval rules.
 - Forms & Reports now includes a 1099/W-2 Tax Center checklist for W-9/TIN readiness, 1099-NEC package review, recipient delivery, and IRS e-file readiness.
 - Dedicated Quick Pay, Pay Engine, Weekly Payroll, and Tax Center 1099/W-2 pages provide the detailed operational views behind those summary panels.
-- Important workflows use demo modals:
+- Important workflows use interactive modals:
   - Add/edit/delete employer, employee, connection, receipt, trip, payout, and tip records
   - Create payroll run
   - Create Quick Pay payment
@@ -109,12 +109,11 @@ html/
   - Review tax estimate and deposit schedule alerts
   - Inspect audit log and webhook payloads
   - Review merchant plan, invoices, CPA billing approval, and upgrade path
-  - Review merchant onboarding, empty-state acceptance criteria, and ICP fit
+  - Review merchant onboarding, empty-state acceptance criteria, and operating profile
   - Track data quality gaps and create cleanup tasks
-  - Review legal/compliance go-live checklist and risk wording rules
+  - Review legal/compliance controls and risk wording rules
   - Review detailed role permission matrix
-  - Create API key for integrations
-- Some action buttons mutate the in-memory demo data, including approve receipt, resolve exception, mark notifications read, copy share link, revoke connection, mark payout paid, rotate/revoke API key, and soft-delete receipt/trip/tip records.
+- Some action buttons mutate the in-memory app data, including approve receipt, resolve exception, mark notifications read, copy share link, revoke connection, mark payout paid, and soft-delete receipt/trip/tip records.
 
 ## Product Scope
 
@@ -124,7 +123,7 @@ html/
 - Tax IQ ledger and audit trail
 - AI Advisor
 - OCR Vault
-- Local-browser OCR prototype with camera/file capture, extraction review, processing queue, batch approval, and CPA export
+- Local-browser OCR workflow with camera/file capture, extraction review, processing queue, batch approval, and CPA export
 - Share Links
 - GPS Mileage
 - CPA Review

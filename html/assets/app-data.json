@@ -458,7 +458,7 @@
     [
       "tle_012",
       "pr_2026_06_15",
-      "Retail sample",
+      "Retail Group",
       "US-TX",
       "suta_employer_tax",
       "$18,420.00",
@@ -555,7 +555,7 @@
     [
       "evt_01JZ006",
       "tax_iq.ledger.posted",
-      "tenant_demo_001",
+      "tenant_001",
       "https://api.nexora.example/webhooks/taxiq",
       "1",
       "Delivered",
@@ -566,7 +566,7 @@
     [
       "evt_01JZ005",
       "tax_iq.validation.warning",
-      "tenant_demo_001",
+      "tenant_001",
       "https://api.nexora.example/webhooks/taxiq",
       "1",
       "Delivered",
@@ -577,7 +577,7 @@
     [
       "evt_01JZ003",
       "tax_iq.validation.failed",
-      "tenant_demo_001",
+      "tenant_001",
       "https://retail.example.com/taxiq/events",
       "3",
       "Retrying",
@@ -885,7 +885,7 @@
       "WEBHOOK_DELIVERED",
       "webhook_event",
       "evt_01JZ006",
-      "tax_iq.ledger.posted delivered to tenant_demo_001."
+      "tax_iq.ledger.posted delivered to tenant_001."
     ],
     [
       "2026-06-22 11:00",
@@ -1159,9 +1159,9 @@
       "finance_user"
     ],
     [
-      "key_test_e5f6",
-      "Developer Sandbox Key",
-      "TEST",
+      "key_ops_e5f6",
+      "Restricted Service Key",
+      "LIVE",
       "Full access",
       "Jun 1, 2026",
       "Active",
@@ -1229,7 +1229,7 @@
       "Choose Tax IQ plan",
       "Merchant Owner",
       "Completed",
-      "Growth plan selected for nail/beauty MVP."
+      "Growth plan selected for nail and beauty operations."
     ],
     [
       "Add business profile and EIN",
@@ -1259,7 +1259,7 @@
       "Review billing and terms",
       "Merchant Owner",
       "Pending",
-      "Approve subscription, CPA estimate, terms, and privacy policy before go-live."
+      "Approve subscription, CPA estimate, terms, and privacy policy before sensitive workflows."
     ]
   ],
   "qualityIssues": [
@@ -1686,10 +1686,10 @@
       "Define signing, retry, dead-letter, audit, rate limits, and partner support expectations."
     ],
     [
-      "Go-live data migration gate",
+      "Data retention review",
       "Engineering / QA",
       "Pending",
-      "Replace static mock data with API service, loading/error states, and backend permission enforcement."
+      "Confirm source records, retry states, audit events, and permission checks for sensitive workflows."
     ]
   ]
 }

@@ -1,17 +1,17 @@
 (function(){
   const script = document.currentScript;
   const src = script && script.src
-    ? script.src.replace(/mock-data\.js(\?.*)?$/, "mock-data.json$1")
-    : "mock-data.json";
+    ? script.src.replace(/app-data\.js(\?.*)?$/, "app-data.json$1")
+    : "app-data.json";
 
-  window.TaxIQMockData = null;
+  window.TaxIQAppData = null;
   window.TaxIQDataReady = fetch(src, { cache: "no-store" })
     .then(response => {
-      if(!response.ok) throw new Error("Unable to load mock data: " + response.status);
+      if(!response.ok) throw new Error("Unable to load app data: " + response.status);
       return response.json();
     })
     .then(data => {
-      window.TaxIQMockData = data;
+      window.TaxIQAppData = data;
       return data;
     })
     .catch(error => {

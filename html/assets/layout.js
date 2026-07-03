@@ -45,7 +45,7 @@ const TaxIQLayout = (() => {
   const pages = {
     dashboard:{title:"Dashboard", file:"index.html", subtitle:"US payroll, payout, Tax IQ, and advisory overview."},
     analytics:{title:"Analytics", file:"analytics.html", subtitle:"Risk, tax, payout, and operational trends."},
-    onboarding:{title:"Onboarding", file:"onboarding.html", subtitle:"First merchant setup, ICP fit, guided empty states, and launch checklist."},
+    onboarding:{title:"Onboarding", file:"onboarding.html", subtitle:"First merchant setup, business profile, connections, and launch checklist."},
     employers:{title:"Employers", file:"employers.html", subtitle:"Businesses, locations, registrations, and deposit schedules."},
     employees:{title:"Employees", file:"employees.html", subtitle:"Employee and worker tax profiles."},
     "employee-profile":{title:"Employee Profile", file:"employee-profile.html", subtitle:"Profile detail, payroll history, and tax status."},
@@ -76,7 +76,7 @@ const TaxIQLayout = (() => {
     webhooks:{title:"Webhooks", file:"webhooks.html", subtitle:"Outbound event delivery monitor."},
     "audit-log":{title:"Audit Log", file:"audit-log.html", subtitle:"Immutable action log — every view, change, export, and system event."},
     notifications:{title:"Notifications", file:"notifications.html", subtitle:"Alerts, deposit reminders, CPA requests, and compliance notices."},
-    "compliance-review":{title:"Compliance Review", file:"compliance-review.html", subtitle:"Legal, privacy, disclaimer, and go-live readiness checklist."},
+    "compliance-review":{title:"Compliance Review", file:"compliance-review.html", subtitle:"Legal, privacy, disclaimer, and operational readiness checklist."},
     billing:{title:"Billing & Plans", file:"billing.html", subtitle:"Merchant subscription, feature packaging, invoices, and upgrade path."},
     settings:{title:"Settings", file:"settings.html", subtitle:"Roles, security, data retention, and tenant controls."}
   };
@@ -278,7 +278,7 @@ const TaxIQLayout = (() => {
           '<div class="shrink-0 grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-400 text-xs font-black text-white">PA</div>',
           '<div class="sb-acct-text">',
             '<p class="text-xs font-black text-slate-100 leading-none">Payroll Admin</p>',
-            '<p class="text-[10px] text-slate-500 mt-0.5">tenant_demo_001</p>',
+            '<p class="text-[10px] text-slate-500 mt-0.5">tenant_001</p>',
           '</div>',
         '</div>',
       '</aside>'

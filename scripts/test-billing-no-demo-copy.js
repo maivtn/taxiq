@@ -2,15 +2,15 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const appPath = path.join(__dirname, "..", "html", "assets", "app.js");
-const dataPath = path.join(__dirname, "..", "html", "assets", "mock-data.json");
+const dataPath = path.join(__dirname, "..", "html", "assets", "app-data.json");
 const source = fs.readFileSync(appPath, "utf8");
-const mockData = JSON.parse(fs.readFileSync(dataPath, "utf8"));
+const appData = JSON.parse(fs.readFileSync(dataPath, "utf8"));
 const billingBlock = source.match(/function renderBilling\(\)\{[\s\S]*?\n}\n\nfunction renderSettings/)?.[0] || "";
 const billingGuideBlock = source.match(/billing:\{[\s\S]*?\n  \},\n  settings:/)?.[0] || "";
 const billingModalBlock = source.match(/\/\* BILLING MODALS \*\/[\s\S]*?\n};\n\nfunction openModal/)?.[0] || "";
 const billingData = JSON.stringify({
-  plans: mockData.plans,
-  invoices: mockData.invoices
+  plans: appData.plans,
+  invoices: appData.invoices
 });
 const billingSurface = `${billingGuideBlock}\n${billingBlock}\n${billingModalBlock}\n${billingData}`;
 
