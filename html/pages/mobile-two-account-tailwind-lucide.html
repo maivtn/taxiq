@@ -464,6 +464,7 @@
         max-height: 7in !important;
         background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.12) 0, transparent 20%), radial-gradient(circle at 12% 24%, rgba(244, 114, 182, 0.32) 0, transparent 26%), radial-gradient(circle at 90% 58%, rgba(34, 211, 238, 0.3) 0, transparent 27%), linear-gradient(160deg, #050505 0%, #0B0F1A 45%, #111056 100%) !important;
         color: #ffffff !important;
+        padding: 0.22in 0.28in 0.28in !important;
         transform: translateX(-50%) !important;
         box-shadow: none !important;
         border-radius: 0 !important;
@@ -502,10 +503,24 @@
         -webkit-text-fill-color: #ffffff !important;
       }
 
+      body.is-printing-salon-qr [data-print-powered] {
+        display: block !important;
+        margin-top: 0.06in !important;
+      }
+
       body.is-printing-salon-qr [data-print-panel] {
+        width: 88% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
         background: rgba(11, 16, 36, 0.92) !important;
         border-color: rgba(103, 232, 249, 0.72) !important;
         box-shadow: inset 0 0 18px rgba(244, 114, 182, 0.12), 0 0 18px rgba(34, 211, 238, 0.18) !important;
+      }
+
+      body.is-printing-salon-qr [data-print-benefits] {
+        width: 88% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
       }
 
       body.is-printing-salon-qr [data-salon-modal-close],
@@ -1560,7 +1575,7 @@
                     <p class="bg-[linear-gradient(90deg,#F472B6_0%,#8B5CF6_46%,#22D3EE_100%)] bg-clip-text text-[47px] font-extrabold uppercase leading-[0.88] tracking-wide text-transparent drop-shadow-[0_0_16px_rgba(34,211,238,0.26)]" data-print-rewarded>Rewarded</p>
                     <p class="mx-auto mt-2 max-w-[282px] text-[12px] font-medium leading-snug text-white/84" data-print-body>Pay, tip, review, and earn more on eligible visits.</p>
                   </div>
-                  <div class="relative mt-4 grid grid-cols-4 gap-1.5 text-center">
+                  <div class="relative mt-4 grid grid-cols-4 gap-1.5 text-center" data-print-benefits>
                     <div class="border-r border-dashed border-white/16 px-1 py-1.5 last:border-r-0">
                       <i data-lucide="circle-star" class="mx-auto h-9 w-9 text-[#F472B6] drop-shadow-[0_0_12px_rgba(244,114,182,0.62)]"></i>
                       <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Earn<br />Rewards</p>
@@ -3023,15 +3038,17 @@
                 box-shadow: none !important;
                 background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.12) 0, transparent 20%), radial-gradient(circle at 12% 24%, rgba(244, 114, 182, 0.32) 0, transparent 26%), radial-gradient(circle at 90% 58%, rgba(34, 211, 238, 0.3) 0, transparent 27%), linear-gradient(160deg, #050505 0%, #0B0F1A 45%, #111056 100%) !important;
                 color: #ffffff !important;
+                padding: 0 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
               }
               [data-print-content=\"salon-qr\"] {
-                --print-scale: 0.745;
+                --print-scale: 0.72;
+                --print-side-gutter: 0.24in;
                 position: relative !important;
                 z-index: 2 !important;
-                width: calc(100% / var(--print-scale));
-                margin-left: 0;
+                width: calc((100% - (var(--print-side-gutter) * 2)) / var(--print-scale));
+                margin: 0.45in 0 0 var(--print-side-gutter);
                 transform: scale(var(--print-scale));
                 transform-origin: top left;
               }
@@ -3057,10 +3074,22 @@
                 color: #ffffff !important;
                 -webkit-text-fill-color: #ffffff !important;
               }
+              [data-print-powered] {
+                display: block !important;
+                margin-top: 0.06in !important;
+              }
               [data-print-panel] {
+                width: 88% !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
                 background: rgba(11, 16, 36, 0.92) !important;
                 border-color: rgba(103, 232, 249, 0.72) !important;
                 box-shadow: inset 0 0 18px rgba(244, 114, 182, 0.12), 0 0 18px rgba(34, 211, 238, 0.18) !important;
+              }
+              [data-print-benefits] {
+                width: 88% !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
               }
             </style>
           </head>
