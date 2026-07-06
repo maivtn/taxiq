@@ -2896,6 +2896,18 @@
       salonQrModal.classList.remove('flex');
     });
 
+    document.querySelector('[data-salon-modal-print]').addEventListener('click', () => {
+      const cleanupPrintMode = () => {
+        document.body.classList.remove('is-printing-salon-qr');
+        window.removeEventListener('afterprint', cleanupPrintMode);
+      };
+
+      document.body.classList.add('is-printing-salon-qr');
+      window.addEventListener('afterprint', cleanupPrintMode, { once: true });
+      window.print();
+      window.setTimeout(cleanupPrintMode, 1500);
+    });
+
     salonQrModal.addEventListener('click', (event) => {
       if (event.target === salonQrModal) {
         salonQrModal.classList.add('hidden');
