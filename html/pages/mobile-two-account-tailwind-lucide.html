@@ -398,15 +398,38 @@
     .qr-code {
       display: grid;
       place-items: center;
+      position: relative;
       background: #fff;
+      overflow: hidden;
     }
 
-    .qr-code canvas,
-    .qr-code img {
+    .qr-code > canvas,
+    .qr-code > img:not(.qr-logo-img) {
       width: 100%;
       height: 100%;
       border-radius: 6px;
       image-rendering: pixelated;
+    }
+
+    .qr-logo-mark {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      display: grid;
+      place-items: center;
+      transform: translate(-50%, -50%);
+      border: 2px solid #fff;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(11, 28, 48, 0.18);
+      pointer-events: none;
+    }
+
+    .qr-logo-img {
+      display: block;
+      object-fit: contain;
+      border-radius: 6px;
+      image-rendering: auto;
     }
   </style>
 </head>
@@ -1288,8 +1311,8 @@
                       <p class="mt-0.5 truncate text-[9px] font-semibold text-nexoraBrandDark">pay.nexoratouch.com/salon/bitcoin</p>
                     </div>
                     <div class="flex items-center gap-1">
-                      <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View Bitcoin Nail Bar salon QR" data-salon-qr-view data-salon-name="Bitcoin Nail Bar" data-salon-link="pay.nexoratouch.com/salon/bitcoin-nail-bar/staff/david-le918747" data-salon-qr-value="https://pay.nexoratouch.com/salon/bitcoin-nail-bar/staff/david-le918747"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
-                      <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-nexoraBrand text-white" aria-label="Copy Bitcoin Nail Bar salon QR link"><i data-lucide="link" class="h-3.5 w-3.5"></i></button>
+                      <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View Bitcoin Nail Bar salon QR" data-salon-qr-view data-salon-name="Bitcoin Nail Bar" data-salon-initials="BI" data-salon-location="Houston, TX" data-salon-address="9738 Hammerly Blvd Ste A, Houston, TX 77080" data-salon-phone="(832) 418-9406" data-salon-hours="Mon-Sat 9:00 AM-7:00 PM" data-salon-status="Active" data-salon-usage="Payment and tip QR" data-salon-staff="David L." data-salon-station="Front desk and table QR" data-salon-methods="Zelle, Apple Cash, Venmo, PayPal, Cash App" data-salon-link="pay.nexoratouch.com/salon/bitcoin-nail-bar/staff/david-le918747" data-salon-qr-value="https://pay.nexoratouch.com/salon/bitcoin-nail-bar/staff/david-le918747"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
+                      <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-nexoraBrand text-white" aria-label="Copy Bitcoin Nail Bar salon QR link" data-copy-link="pay.nexoratouch.com/salon/bitcoin-nail-bar/staff/david-le918747"><i data-lucide="link" class="h-3.5 w-3.5"></i></button>
                     </div>
                   </div>
                   <div class="ds-tint-primary grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border p-2">
@@ -1305,8 +1328,8 @@
                       <p class="mt-0.5 truncate text-[9px] font-semibold text-nexoraBrandDark">pay.nexoratouch.com/salon/lux</p>
                     </div>
                     <div class="flex items-center gap-1">
-                      <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View Lux Nail Lounge salon QR" data-salon-qr-view data-salon-name="Lux Nail Lounge" data-salon-link="pay.nexoratouch.com/salon/lux-nail-lounge/staff/david-le918747" data-salon-qr-value="https://pay.nexoratouch.com/salon/lux-nail-lounge/staff/david-le918747"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
-                      <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-nexoraBrand text-white" aria-label="Copy Lux Nail Lounge salon QR link"><i data-lucide="link" class="h-3.5 w-3.5"></i></button>
+                      <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View Lux Nail Lounge salon QR" data-salon-qr-view data-salon-name="Lux Nail Lounge" data-salon-initials="LX" data-salon-location="Houston, TX" data-salon-address="1818 Post Oak Blvd, Houston, TX 77056" data-salon-phone="(713) 555-0188" data-salon-hours="Mon-Sat 10:00 AM-7:00 PM" data-salon-status="Active" data-salon-usage="Payment and tip QR" data-salon-staff="David L." data-salon-station="Salon checkout QR" data-salon-methods="Zelle, Venmo, Cash App" data-salon-link="pay.nexoratouch.com/salon/lux-nail-lounge/staff/david-le918747" data-salon-qr-value="https://pay.nexoratouch.com/salon/lux-nail-lounge/staff/david-le918747"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
+                      <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-nexoraBrand text-white" aria-label="Copy Lux Nail Lounge salon QR link" data-copy-link="pay.nexoratouch.com/salon/lux-nail-lounge/staff/david-le918747"><i data-lucide="link" class="h-3.5 w-3.5"></i></button>
                     </div>
                   </div>
                   <div class="ds-tint-primary grid grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border p-2">
@@ -1322,8 +1345,8 @@
                       <p class="mt-0.5 truncate text-[9px] font-semibold text-nexoraBrandDark">pay.nexoratouch.com/salon/rose</p>
                     </div>
                     <div class="flex items-center gap-1">
-                      <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View Rose Studio Nails salon QR" data-salon-qr-view data-salon-name="Rose Studio Nails" data-salon-link="pay.nexoratouch.com/salon/rose-studio-nails/staff/david-le918747" data-salon-qr-value="https://pay.nexoratouch.com/salon/rose-studio-nails/staff/david-le918747"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
-                      <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-nexoraBrand text-white" aria-label="Copy Rose Studio Nails salon QR link"><i data-lucide="link" class="h-3.5 w-3.5"></i></button>
+                      <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="View Rose Studio Nails salon QR" data-salon-qr-view data-salon-name="Rose Studio Nails" data-salon-initials="RS" data-salon-location="Houston, TX" data-salon-address="1648 Westheimer Rd, Houston, TX 77006" data-salon-phone="(713) 555-0142" data-salon-hours="Tue-Sun 9:30 AM-6:30 PM" data-salon-status="Active" data-salon-usage="Payment and tip QR" data-salon-staff="David L." data-salon-station="Rose Studio checkout QR" data-salon-methods="Zelle, Cash App" data-salon-link="pay.nexoratouch.com/salon/rose-studio-nails/staff/david-le918747" data-salon-qr-value="https://pay.nexoratouch.com/salon/rose-studio-nails/staff/david-le918747"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
+                      <button class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-nexoraBrand text-white" aria-label="Copy Rose Studio Nails salon QR link" data-copy-link="pay.nexoratouch.com/salon/rose-studio-nails/staff/david-le918747"><i data-lucide="link" class="h-3.5 w-3.5"></i></button>
                     </div>
                   </div>
                 </div>
@@ -1431,31 +1454,80 @@
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="user-circle" class="h-5 w-5"></i>Profile</a>
           </nav>
 
-          <div class="absolute inset-0 z-50 hidden items-center justify-center bg-nexoraInk/45 px-5 backdrop-blur-sm" data-salon-qr-modal>
-            <div class="w-full rounded-2xl border border-nailBlush bg-white p-4 shadow-phone">
-              <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                  <p class="text-[10px] font-semibold uppercase text-nexoraBrand">Salon QR</p>
-                  <h4 class="truncate text-lg font-semibold" data-salon-modal-name>Bitcoin Nail Bar</h4>
-                  <p class="mt-0.5 text-[11px] font-medium text-nexoraMuted">Customer payment & tip QR</p>
+          <div class="absolute inset-0 z-50 hidden items-center justify-center bg-nexoraInk/45 px-3 backdrop-blur-sm" data-salon-qr-modal>
+            <div class="max-h-[calc(100%-24px)] w-full overflow-y-auto rounded-[26px] bg-white p-2 shadow-phone">
+              <div class="overflow-hidden rounded-[22px] border border-nexoraBrand/20 bg-white">
+                <div class="relative overflow-hidden bg-[linear-gradient(135deg,#4648D4_0%,#2D2EAA_58%,#F59E0B_100%)] p-3 text-white">
+                  <span class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-white/15"></span>
+                  <span class="absolute -bottom-10 left-8 h-20 w-20 rounded-full bg-white/10"></span>
+                  <div class="relative flex items-start justify-between gap-3">
+                    <div class="flex min-w-0 items-start gap-2.5">
+                      <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/20 text-[13px] font-bold text-white shadow-card ring-1 ring-white/35" data-salon-modal-initials>BI</span>
+                      <div class="min-w-0">
+                        <div class="flex min-w-0 items-center gap-1.5">
+                          <p class="text-[9px] font-semibold uppercase tracking-wide text-white/75">Nexora Pay</p>
+                          <span class="rounded-full bg-white/18 px-2 py-0.5 text-[9px] font-semibold text-white" data-salon-modal-status>Active</span>
+                        </div>
+                        <h4 class="mt-0.5 truncate text-[17px] font-semibold leading-tight" data-salon-modal-name>Bitcoin Nail Bar</h4>
+                        <p class="mt-0.5 flex items-center gap-1 truncate text-[10px] font-medium text-white/80">
+                          <i data-lucide="map-pin" class="h-3 w-3 shrink-0"></i>
+                          <span data-salon-modal-location>Houston, TX</span>
+                        </p>
+                      </div>
+                    </div>
+                    <button class="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/25 bg-white/15 text-white backdrop-blur" aria-label="Close salon QR preview" data-salon-modal-close>
+                      <i data-lucide="x" class="h-4 w-4"></i>
+                    </button>
+                  </div>
+                  <div class="relative mt-3 rounded-2xl bg-white/14 p-3 ring-1 ring-white/20">
+                    <p class="text-[22px] font-semibold leading-none">Scan to Pay or Tip</p>
+                    <p class="mt-1 text-[11px] font-medium leading-snug text-white/82">Fast, secure checkout for services, tips, and salon support.</p>
+                    <div class="mt-2 flex flex-wrap gap-1.5">
+                      <span class="rounded-full bg-white px-2 py-1 text-[9px] font-semibold text-nexoraBrandDark">No app needed</span>
+                      <span class="rounded-full bg-white/18 px-2 py-1 text-[9px] font-semibold text-white" data-salon-modal-usage>Payment and tip QR</span>
+                    </div>
+                  </div>
                 </div>
-                <button class="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-nailBlush bg-white text-nexoraBrandDark" aria-label="Close salon QR preview" data-salon-modal-close>
-                  <i data-lucide="x" class="h-4 w-4"></i>
-                </button>
-              </div>
-              <div class="mt-4 grid justify-items-center">
-                <div
-                  class="qr-code h-[210px] w-[210px] rounded-2xl border-8 border-white shadow-card"
-                  aria-label="Large salon QR preview"
-                  data-qr-size="210"
-                  data-qr-value="https://pay.nexoratouch.com/salon/bitcoin-nail-bar/staff/david-le918747"
-                  data-salon-modal-qr
-                ></div>
-              </div>
-              <p class="mt-3 truncate rounded-lg bg-nailPearl px-2 py-1.5 text-center text-[10px] font-semibold text-nexoraMuted" data-salon-modal-link>pay.nexoratouch.com/salon/bitcoin-nail-bar/staff/david-le918747</p>
-              <div class="mt-3 grid grid-cols-2 gap-2">
-                <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nailBlush bg-white text-[10px] font-semibold text-nexoraBrandDark"><i data-lucide="link" class="h-3.5 w-3.5"></i>Copy Link</button>
-                <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-nexoraBrand text-[10px] font-semibold text-white"><i data-lucide="download" class="h-3.5 w-3.5"></i>Save QR</button>
+                <div class="bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FAFC_52%,#E9E9FF_100%)] p-3">
+                  <div class="rounded-[22px] border border-white bg-white/80 p-3 shadow-[0_12px_28px_rgba(70,72,212,0.14)]">
+                    <div class="grid justify-items-center">
+                      <div
+                        class="qr-code h-[224px] w-[224px] rounded-[18px] border-[10px] border-white shadow-card"
+                        aria-label="Large salon QR preview"
+                        data-qr-size="224"
+                        data-qr-value="https://pay.nexoratouch.com/salon/bitcoin-nail-bar/staff/david-le918747"
+                        data-salon-modal-qr
+                      ></div>
+                    </div>
+                    <p class="mt-2 truncate rounded-xl bg-nailPearl px-2 py-1.5 text-center text-[10px] font-semibold text-nexoraBrandDark" data-salon-modal-link>pay.nexoratouch.com/salon/bitcoin-nail-bar/staff/david-le918747</p>
+                  </div>
+                  <div class="mt-3 grid grid-cols-2 gap-2">
+                    <div class="rounded-xl border border-nexoraBrand/15 bg-white px-2.5 py-2">
+                      <p class="flex items-center gap-1 text-[8px] font-semibold uppercase text-nexoraMuted"><i data-lucide="map-pinned" class="h-3 w-3 text-nexoraBrandDark"></i> Address</p>
+                      <p class="mt-0.5 line-clamp-2 text-[10px] font-semibold leading-snug text-nexoraInk" data-salon-modal-address>9738 Hammerly Blvd Ste A, Houston, TX 77080</p>
+                    </div>
+                    <div class="rounded-xl border border-nexoraBrand/15 bg-white px-2.5 py-2">
+                      <p class="flex items-center gap-1 text-[8px] font-semibold uppercase text-nexoraMuted"><i data-lucide="clock-3" class="h-3 w-3 text-nexoraBrandDark"></i> Hours</p>
+                      <p class="mt-0.5 line-clamp-2 text-[10px] font-semibold leading-snug text-nexoraInk" data-salon-modal-hours>Mon-Sat 9:00 AM-7:00 PM</p>
+                    </div>
+                    <div class="rounded-xl border border-nexoraBrand/15 bg-white px-2.5 py-2">
+                      <p class="flex items-center gap-1 text-[8px] font-semibold uppercase text-nexoraMuted"><i data-lucide="phone" class="h-3 w-3 text-nexoraBrandDark"></i> Phone</p>
+                      <p class="mt-0.5 truncate text-[10px] font-semibold text-nexoraInk" data-salon-modal-phone>(832) 418-9406</p>
+                    </div>
+                    <div class="rounded-xl border border-nexoraBrand/15 bg-white px-2.5 py-2">
+                      <p class="flex items-center gap-1 text-[8px] font-semibold uppercase text-nexoraMuted"><i data-lucide="store" class="h-3 w-3 text-nexoraBrandDark"></i> Station</p>
+                      <p class="mt-0.5 truncate text-[10px] font-semibold text-nexoraInk" data-salon-modal-station>Front desk and table QR</p>
+                    </div>
+                  </div>
+                  <div class="mt-2 rounded-xl border border-nexoraBrand/15 bg-white px-2.5 py-2">
+                    <p class="flex items-center gap-1 text-[8px] font-semibold uppercase text-nexoraMuted"><i data-lucide="wallet-cards" class="h-3 w-3 text-nexoraBrandDark"></i> Accepted payout methods</p>
+                    <p class="mt-0.5 truncate text-[10px] font-semibold text-nexoraInk" data-salon-modal-methods>Zelle, Apple Cash, Venmo, PayPal, Cash App</p>
+                  </div>
+                  <div class="mt-3 grid grid-cols-2 gap-2">
+                    <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Copy salon QR link" data-salon-modal-copy data-copy-link="pay.nexoratouch.com/salon/bitcoin-nail-bar/staff/david-le918747"><i data-lucide="link" class="h-3.5 w-3.5"></i>Copy Link</button>
+                    <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-nexoraBrand text-[10px] font-semibold text-white"><i data-lucide="download" class="h-3.5 w-3.5"></i>Save QR</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -2591,6 +2663,22 @@
         colorLight: '#FFFFFF',
         correctLevel: QRCode.CorrectLevel.Q
       });
+
+      const logoSize = Math.max(16, Math.round(size * 0.18));
+      const logoPadding = Math.max(3, Math.round(size * 0.035));
+      const logoBadge = document.createElement('span');
+      const logoImage = document.createElement('img');
+      logoBadge.className = 'qr-logo-mark';
+      logoBadge.style.width = `${logoSize}px`;
+      logoBadge.style.height = `${logoSize}px`;
+      logoBadge.style.padding = `${logoPadding}px`;
+      logoImage.className = 'qr-logo-img';
+      logoImage.src = 'https://test-web.nexoratouch.com/assets/nexora-logo.png';
+      logoImage.alt = 'Nexora';
+      logoImage.style.width = '100%';
+      logoImage.style.height = '100%';
+      logoBadge.append(logoImage);
+      node.append(logoBadge);
     };
 
     document.querySelectorAll('.qr-code').forEach(renderQr);
@@ -2735,10 +2823,20 @@
 
     document.querySelectorAll('[data-salon-qr-view]').forEach((button) => {
       button.addEventListener('click', () => {
+        const salonModalCopy = salonQrModal.querySelector('[data-salon-modal-copy]');
+
         salonQrModal.classList.remove('hidden');
         salonQrModal.classList.add('flex');
+        salonQrModal.querySelector('[data-salon-modal-initials]').textContent = button.dataset.salonInitials;
         salonQrModal.querySelector('[data-salon-modal-name]').textContent = button.dataset.salonName;
+        salonQrModal.querySelector('[data-salon-modal-status]').textContent = button.dataset.salonStatus;
+        salonQrModal.querySelector('[data-salon-modal-location]').textContent = button.dataset.salonLocation;
+        salonQrModal.querySelector('[data-salon-modal-usage]').textContent = button.dataset.salonUsage;
+        salonQrModal.querySelector('[data-salon-modal-staff]').textContent = button.dataset.salonStaff;
+        salonQrModal.querySelector('[data-salon-modal-station]').textContent = button.dataset.salonStation;
+        salonQrModal.querySelector('[data-salon-modal-methods]').textContent = button.dataset.salonMethods;
         salonQrModal.querySelector('[data-salon-modal-link]').textContent = button.dataset.salonLink;
+        salonModalCopy.dataset.copyLink = button.dataset.salonLink;
         salonModalQr.dataset.qrValue = button.dataset.salonQrValue;
         salonModalQr.setAttribute('aria-label', `Large payment and tip QR for ${button.dataset.salonName}`);
         renderQr(salonModalQr);
@@ -2748,6 +2846,13 @@
     document.querySelector('[data-salon-modal-close]').addEventListener('click', () => {
       salonQrModal.classList.add('hidden');
       salonQrModal.classList.remove('flex');
+    });
+
+    salonQrModal.addEventListener('click', (event) => {
+      if (event.target === salonQrModal) {
+        salonQrModal.classList.add('hidden');
+        salonQrModal.classList.remove('flex');
+      }
     });
 
     const promoBannerData = {
