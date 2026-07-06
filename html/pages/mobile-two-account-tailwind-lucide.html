@@ -431,6 +431,42 @@
       border-radius: 6px;
       image-rendering: auto;
     }
+
+    @media print {
+      @page {
+        margin: 0.35in;
+      }
+
+      body.is-printing-salon-qr {
+        background: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      body.is-printing-salon-qr * {
+        visibility: hidden !important;
+      }
+
+      body.is-printing-salon-qr [data-salon-print-card],
+      body.is-printing-salon-qr [data-salon-print-card] * {
+        visibility: visible !important;
+      }
+
+      body.is-printing-salon-qr [data-salon-print-card] {
+        position: fixed !important;
+        top: 0.15in !important;
+        left: 50% !important;
+        width: 3.75in !important;
+        max-width: calc(100vw - 0.2in) !important;
+        transform: translateX(-50%) !important;
+        box-shadow: none !important;
+      }
+
+      body.is-printing-salon-qr [data-salon-modal-close],
+      body.is-printing-salon-qr [data-salon-modal-actions] {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen bg-[radial-gradient(circle_at_18%_8%,rgba(245,158,11,0.2)_0,transparent_28%),radial-gradient(circle_at_86%_18%,rgba(70,72,212,0.22)_0,transparent_24%),linear-gradient(145deg,#050505_0%,#111827_52%,#0D1117_100%)] text-white">
@@ -1456,7 +1492,7 @@
 
           <div class="absolute inset-0 z-50 hidden items-center justify-center bg-nexoraInk/45 px-3 backdrop-blur-sm" data-salon-qr-modal>
             <div class="max-h-[calc(100%-24px)] w-full overflow-y-auto rounded-[26px] bg-white p-2 shadow-phone">
-              <div class="overflow-hidden rounded-[22px] border border-nexoraBrand/20 bg-white">
+              <div class="overflow-hidden rounded-[22px] border border-nexoraBrand/20 bg-white" data-salon-print-card>
                 <div class="relative overflow-hidden bg-[linear-gradient(135deg,#4648D4_0%,#5B4BF2_56%,#7C3AED_100%)] p-3 text-white">
                   <span class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-white/15"></span>
                   <span class="absolute -bottom-10 left-8 h-20 w-20 rounded-full bg-white/10"></span>
@@ -1518,8 +1554,9 @@
                     <p class="flex items-center gap-1 text-[8px] font-semibold uppercase text-nexoraMuted"><i data-lucide="wallet-cards" class="h-3 w-3 text-nexoraBrandDark"></i> Accepted payout methods</p>
                     <p class="mt-0.5 truncate text-[10px] font-semibold text-nexoraInk" data-salon-modal-methods>Zelle, Apple Cash, Venmo, PayPal, Cash App</p>
                   </div>
-                  <div class="mt-3 grid grid-cols-2 gap-2">
+                  <div class="mt-3 grid grid-cols-3 gap-2" data-salon-modal-actions>
                     <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Copy salon QR link" data-salon-modal-copy data-copy-link="pay.nexoratouch.com/salon/bitcoin-nail-bar/staff/david-le918747"><i data-lucide="link" class="h-3.5 w-3.5"></i>Copy Link</button>
+                    <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Print salon QR" data-salon-modal-print><i data-lucide="printer" class="h-3.5 w-3.5"></i>Print</button>
                     <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-nexoraBrand text-[10px] font-semibold text-white"><i data-lucide="download" class="h-3.5 w-3.5"></i>Save QR</button>
                   </div>
                 </div>
