@@ -462,9 +462,61 @@
         min-height: 7in !important;
         max-width: 5in !important;
         max-height: 7in !important;
+        background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.12) 0, transparent 20%), radial-gradient(circle at 12% 24%, rgba(244, 114, 182, 0.32) 0, transparent 26%), radial-gradient(circle at 90% 58%, rgba(34, 211, 238, 0.3) 0, transparent 27%), linear-gradient(160deg, #050505 0%, #0B0F1A 45%, #111056 100%) !important;
+        color: #ffffff !important;
         transform: translateX(-50%) !important;
         box-shadow: none !important;
         border-radius: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body.is-printing-salon-qr [data-salon-print-card]::before {
+        content: "" !important;
+        position: absolute !important;
+        inset: 0.14in !important;
+        border: 1.6px solid rgba(103, 232, 249, 0.72) !important;
+        border-radius: 0.22in !important;
+        box-shadow: inset 0 0 0 1px rgba(244, 114, 182, 0.5), inset 0 0 24px rgba(34, 211, 238, 0.18), 0 0 18px rgba(34, 211, 238, 0.24) !important;
+        pointer-events: none !important;
+        z-index: 1 !important;
+      }
+
+      body.is-printing-salon-qr [data-print-content="salon-qr"] {
+        position: relative !important;
+        z-index: 2 !important;
+      }
+
+      body.is-printing-salon-qr [data-print-get] {
+        background: none !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+      }
+
+      body.is-printing-salon-qr [data-print-rewarded] {
+        background: none !important;
+        color: #67E8F9 !important;
+        -webkit-text-fill-color: #67E8F9 !important;
+      }
+
+      body.is-printing-salon-qr [data-print-accent] {
+        background: none !important;
+        color: #F0ABFC !important;
+        -webkit-text-fill-color: #F0ABFC !important;
+      }
+
+      body.is-printing-salon-qr [data-print-body],
+      body.is-printing-salon-qr [data-print-benefit-label],
+      body.is-printing-salon-qr [data-print-powered] {
+        background: none !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+      }
+
+      body.is-printing-salon-qr [data-print-panel] {
+        background: rgba(11, 16, 36, 0.92) !important;
+        border-color: rgba(103, 232, 249, 0.72) !important;
+        box-shadow: inset 0 0 18px rgba(244, 114, 182, 0.12), 0 0 18px rgba(34, 211, 238, 0.18) !important;
       }
 
       body.is-printing-salon-qr [data-salon-modal-close],
@@ -1500,7 +1552,6 @@
               <div class="overflow-hidden rounded-[24px] border border-white/15 bg-[#050505] text-white shadow-[0_18px_44px_rgba(0,0,0,0.42)]">
                 <div class="relative min-h-[720px] w-full overflow-hidden bg-[radial-gradient(circle_at_50%_-4%,rgba(255,255,255,0.16)_0,transparent_19%),radial-gradient(circle_at_14%_22%,rgba(236,72,153,0.34)_0,transparent_25%),radial-gradient(circle_at_91%_58%,rgba(34,211,238,0.32)_0,transparent_26%),linear-gradient(160deg,#050505_0%,#0B0F1A_46%,#111056_100%)] px-4 py-4" data-salon-print-card>
                   <div class="absolute inset-0 opacity-[0.16] [background-image:radial-gradient(circle,rgba(255,255,255,0.52)_0.55px,transparent_0.8px)] [background-size:3px_3px]"></div>
-                  <div class="absolute inset-x-5 top-[102px] h-px bg-[linear-gradient(90deg,transparent,#F472B6,#22D3EE,transparent)] opacity-70"></div>
                   <button class="absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-lg border border-white/20 bg-white/10 text-white backdrop-blur" aria-label="Close salon QR preview" data-salon-modal-close>
                     <i data-lucide="x" class="h-4 w-4"></i>
                   </button>
