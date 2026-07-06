@@ -434,7 +434,8 @@
 
     @media print {
       @page {
-        margin: 0.35in;
+        size: 5in 7in;
+        margin: 0;
       }
 
       body.is-printing-salon-qr {
@@ -454,12 +455,16 @@
 
       body.is-printing-salon-qr [data-salon-print-card] {
         position: fixed !important;
-        top: 0.15in !important;
+        top: 0 !important;
         left: 50% !important;
-        width: 3.75in !important;
-        max-width: calc(100vw - 0.2in) !important;
+        width: 5in !important;
+        height: 7in !important;
+        min-height: 7in !important;
+        max-width: 5in !important;
+        max-height: 7in !important;
         transform: translateX(-50%) !important;
         box-shadow: none !important;
+        border-radius: 0 !important;
       }
 
       body.is-printing-salon-qr [data-salon-modal-close],
@@ -1492,73 +1497,85 @@
 
           <div class="absolute inset-0 z-50 hidden items-center justify-center bg-nexoraInk/45 px-3 backdrop-blur-sm" data-salon-qr-modal>
             <div class="max-h-[calc(100%-24px)] w-full overflow-y-auto rounded-[26px] bg-white p-2 shadow-phone">
-              <div class="overflow-hidden rounded-[22px] border border-nexoraBrand/20 bg-white" data-salon-print-card>
-                <div class="relative overflow-hidden bg-[linear-gradient(135deg,#4648D4_0%,#5B4BF2_56%,#7C3AED_100%)] p-3 text-white">
-                  <span class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-white/15"></span>
-                  <span class="absolute -bottom-10 left-8 h-20 w-20 rounded-full bg-white/10"></span>
-                  <div class="relative flex items-start justify-between gap-3">
-                    <div class="flex min-w-0 items-start gap-2.5">
-                      <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white p-1 text-[13px] font-bold text-nexoraBrandDark shadow-card ring-1 ring-white/45">
-                        <img src="assets/bitcoinnailbar_logo.webp" alt="Bitcoin Nail Bar logo" class="hidden h-full w-full rounded-xl object-contain" data-salon-modal-logo />
+              <div class="overflow-hidden rounded-[22px] border border-white/15 bg-[#070914] text-white shadow-[0_18px_44px_rgba(0,0,0,0.42)]">
+                <div class="relative min-h-[720px] w-full overflow-hidden bg-[radial-gradient(circle_at_82%_8%,rgba(255,255,255,0.18)_0,transparent_22%),radial-gradient(circle_at_18%_28%,rgba(236,72,153,0.26)_0,transparent_24%),radial-gradient(circle_at_88%_62%,rgba(34,211,238,0.24)_0,transparent_26%),linear-gradient(150deg,#050505_0%,#111827_44%,#161044_100%)] px-4 py-4" data-salon-print-card>
+                  <div class="absolute inset-0 opacity-[0.13] [background-image:linear-gradient(90deg,rgba(255,255,255,0.28)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.2)_1px,transparent_1px)] [background-size:18px_18px]"></div>
+                  <button class="absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-lg border border-white/20 bg-white/10 text-white backdrop-blur" aria-label="Close salon QR preview" data-salon-modal-close>
+                    <i data-lucide="x" class="h-4 w-4"></i>
+                  </button>
+                  <div class="relative mx-auto grid justify-items-center text-center">
+                    <img src="assets/nexora-logo-light-mode.png" alt="Nexora Touch" class="h-auto w-[136px] object-contain drop-shadow-[0_0_18px_rgba(34,211,238,0.42)]" />
+                    <div class="mt-3 flex max-w-full items-center gap-2 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 backdrop-blur">
+                      <span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white p-1 text-[10px] font-bold text-nexoraBrandDark shadow-card">
+                        <img src="assets/bitcoinnailbar_logo.webp" alt="Bitcoin Nail Bar logo" class="hidden h-full w-full rounded-full object-contain" data-salon-modal-logo />
                         <span data-salon-modal-initials>BI</span>
                       </span>
-                      <div class="min-w-0">
-                        <div class="flex min-w-0 items-center gap-1.5">
-                          <p class="text-[9px] font-semibold uppercase tracking-wide text-white/75">Nexora Pay</p>
-                          <span class="rounded-full bg-white/18 px-2 py-0.5 text-[9px] font-semibold text-white" data-salon-modal-status>Active</span>
-                        </div>
-                        <h4 class="mt-0.5 truncate text-[17px] font-semibold leading-tight" data-salon-modal-name>Bitcoin Nail Bar</h4>
-                      </div>
+                      <span class="truncate text-[12px] font-semibold" data-salon-modal-name>Bitcoin Nail Bar</span>
+                      <span class="rounded-full bg-emerald-400/18 px-1.5 py-0.5 text-[8px] font-semibold text-emerald-200" data-salon-modal-status>Active</span>
                     </div>
-                    <button class="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/25 bg-white/15 text-white backdrop-blur" aria-label="Close salon QR preview" data-salon-modal-close>
-                      <i data-lucide="x" class="h-4 w-4"></i>
-                    </button>
                   </div>
-                  <div class="relative mt-3 rounded-2xl bg-white/14 p-3 ring-1 ring-white/20">
-                    <p class="text-[22px] font-semibold leading-none">Scan to Pay or Tip</p>
-                    <p class="mt-1 text-[11px] font-medium leading-snug text-white/82">Fast, secure checkout for services, tips, and salon support.</p>
+                  <div class="relative mt-4 text-center">
+                    <p class="text-[31px] font-extrabold uppercase leading-[0.9] tracking-[0.05em] text-white">Get</p>
+                    <p class="bg-[linear-gradient(90deg,#F472B6_0%,#8B5CF6_46%,#22D3EE_100%)] bg-clip-text text-[42px] font-extrabold uppercase leading-[0.9] tracking-wide text-transparent">Rewarded</p>
+                    <p class="mx-auto mt-2 max-w-[270px] text-[11px] font-medium leading-snug text-white/80">Pay, tip, review — and earn more on eligible visits.</p>
                   </div>
-                </div>
-                <div class="bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FAFC_52%,#E9E9FF_100%)] p-3">
-                  <div class="rounded-[22px] border border-white bg-white/80 p-3 shadow-[0_12px_28px_rgba(70,72,212,0.14)]">
+                  <div class="relative mt-4 grid grid-cols-4 gap-1.5 text-center">
+                    <div class="border-r border-dashed border-white/16 px-1 py-1.5 last:border-r-0">
+                      <i data-lucide="circle-star" class="mx-auto h-8 w-8 text-[#F472B6] drop-shadow-[0_0_10px_rgba(244,114,182,0.55)]"></i>
+                      <p class="mt-1 text-[8px] font-semibold leading-tight text-white">Earn<br />Rewards</p>
+                    </div>
+                    <div class="border-r border-dashed border-white/16 px-1 py-1.5 last:border-r-0">
+                      <i data-lucide="user-round-check" class="mx-auto h-8 w-8 text-[#C084FC] drop-shadow-[0_0_10px_rgba(192,132,252,0.55)]"></i>
+                      <p class="mt-1 text-[8px] font-semibold leading-tight text-white">Member<br />Perks</p>
+                    </div>
+                    <div class="border-r border-dashed border-white/16 px-1 py-1.5 last:border-r-0">
+                      <i data-lucide="cake" class="mx-auto h-8 w-8 text-[#67E8F9] drop-shadow-[0_0_10px_rgba(103,232,249,0.5)]"></i>
+                      <p class="mt-1 text-[8px] font-semibold leading-tight text-white">Birthday<br />Surprise</p>
+                    </div>
+                    <div class="px-1 py-1.5">
+                      <i data-lucide="gem" class="mx-auto h-8 w-8 text-[#93C5FD] drop-shadow-[0_0_10px_rgba(147,197,253,0.5)]"></i>
+                      <p class="mt-1 text-[8px] font-semibold leading-tight text-white">VIP<br />Benefits</p>
+                    </div>
+                  </div>
+                  <div class="relative mt-4 grid grid-cols-[72px_minmax(0,1fr)] items-center gap-3 rounded-[18px] border border-[#67E8F9]/60 bg-[#0B1024]/70 p-3 shadow-[0_0_22px_rgba(34,211,238,0.22),inset_0_0_18px_rgba(244,114,182,0.1)]">
+                    <div class="grid h-[58px] w-[58px] place-items-center rounded-xl border border-white/12 bg-white/[0.05] text-[#67E8F9]">
+                      <i data-lucide="gift" class="h-9 w-9 drop-shadow-[0_0_12px_rgba(103,232,249,0.55)]"></i>
+                    </div>
+                    <div class="min-w-0 text-left">
+                      <p class="bg-[linear-gradient(90deg,#F472B6,#22D3EE)] bg-clip-text text-[19px] font-semibold leading-tight text-transparent">Customer Rewards</p>
+                      <p class="mt-1 text-[11px] font-medium leading-snug text-white/78">Ask our team about points, offers, and member rewards.</p>
+                    </div>
+                  </div>
+                  <div class="relative mt-4 rounded-[18px] border border-[#67E8F9]/45 bg-[#0B1024]/86 p-2.5 shadow-[0_0_24px_rgba(34,211,238,0.22),inset_0_0_18px_rgba(244,114,182,0.12)]">
                     <div class="grid justify-items-center">
                       <div
-                        class="qr-code h-[224px] w-[224px] rounded-[18px] border-[10px] border-white shadow-card"
+                        class="qr-code aspect-square w-[56%] rounded-[16px] border-[8px] border-white shadow-[0_0_24px_rgba(255,255,255,0.16)]"
                         aria-label="Large salon QR preview"
-                        data-qr-size="224"
+                        data-qr-size="240"
                         data-qr-value="https://pay.nexoratouch.com/salon/bitcoin-nail-bar"
                         data-salon-modal-qr
                       ></div>
                     </div>
-                    <p class="mt-2 truncate rounded-xl bg-nailPearl px-2 py-1.5 text-center text-[10px] font-semibold text-nexoraBrandDark" data-salon-modal-link>pay.nexoratouch.com/salon/bitcoin-nail-bar</p>
+                    <p class="mt-2 truncate rounded-lg border border-white/10 bg-white/10 px-2 py-1.5 text-center text-[10px] font-semibold text-cyan-100" data-salon-modal-link>pay.nexoratouch.com/salon/bitcoin-nail-bar</p>
+                    <p class="mt-1 text-center text-[9px] font-medium text-white/60">Scan to pay, tip, and leave a review.</p>
                   </div>
-                  <div class="mt-3 grid grid-cols-2 gap-2">
-                    <div class="rounded-xl border border-nexoraBrand/15 bg-white px-2.5 py-2">
-                      <p class="flex items-center gap-1 text-[8px] font-semibold uppercase text-nexoraMuted"><i data-lucide="map-pinned" class="h-3 w-3 text-nexoraBrandDark"></i> Address</p>
-                      <p class="mt-0.5 line-clamp-2 text-[10px] font-semibold leading-snug text-nexoraInk" data-salon-modal-address>9738 Hammerly Blvd Ste A, Houston, TX 77080</p>
-                    </div>
-                    <div class="rounded-xl border border-nexoraBrand/15 bg-white px-2.5 py-2">
-                      <p class="flex items-center gap-1 text-[8px] font-semibold uppercase text-nexoraMuted"><i data-lucide="clock-3" class="h-3 w-3 text-nexoraBrandDark"></i> Hours</p>
-                      <p class="mt-0.5 line-clamp-2 text-[10px] font-semibold leading-snug text-nexoraInk" data-salon-modal-hours>Mon-Sat 9:00 AM-7:00 PM</p>
-                    </div>
-                    <div class="rounded-xl border border-nexoraBrand/15 bg-white px-2.5 py-2">
-                      <p class="flex items-center gap-1 text-[8px] font-semibold uppercase text-nexoraMuted"><i data-lucide="phone" class="h-3 w-3 text-nexoraBrandDark"></i> Phone</p>
-                      <p class="mt-0.5 truncate text-[10px] font-semibold text-nexoraInk" data-salon-modal-phone>(832) 418-9406</p>
-                    </div>
-                    <div class="rounded-xl border border-nexoraBrand/15 bg-white px-2.5 py-2">
-                      <p class="flex items-center gap-1 text-[8px] font-semibold uppercase text-nexoraMuted"><i data-lucide="store" class="h-3 w-3 text-nexoraBrandDark"></i> Station</p>
-                      <p class="mt-0.5 truncate text-[10px] font-semibold text-nexoraInk" data-salon-modal-station>Front desk and table QR</p>
-                    </div>
+                  <div class="hidden">
+                    <p data-salon-modal-address>9738 Hammerly Blvd Ste A, Houston, TX 77080</p>
+                    <p data-salon-modal-hours>Mon-Sat 9:00 AM-7:00 PM</p>
+                    <p data-salon-modal-phone>(832) 418-9406</p>
+                    <p class="hidden" data-salon-modal-station>Front desk and table QR</p>
                   </div>
-                  <div class="mt-2 rounded-xl border border-nexoraBrand/15 bg-white px-2.5 py-2">
-                    <p class="flex items-center gap-1 text-[8px] font-semibold uppercase text-nexoraMuted"><i data-lucide="wallet-cards" class="h-3 w-3 text-nexoraBrandDark"></i> Accepted payout methods</p>
-                    <p class="mt-0.5 truncate text-[10px] font-semibold text-nexoraInk" data-salon-modal-methods>Zelle, Apple Cash, Venmo, PayPal, Cash App</p>
+                  <div class="relative mt-3 text-center">
+                    <div class="mx-auto mb-1 h-px w-[76%] bg-[linear-gradient(90deg,transparent,#F472B6,#22D3EE,transparent)]"></div>
+                    <p class="text-[16px] font-semibold bg-[linear-gradient(90deg,#F472B6,#22D3EE)] bg-clip-text text-transparent">Thank you for visiting</p>
+                    <p class="mt-1 text-[7px] font-semibold uppercase tracking-[0.2em] text-white/42">Powered by VLINKPAY</p>
+                    <p class="hidden" data-salon-modal-methods>Zelle, Apple Cash, Venmo, PayPal, Cash App</p>
                   </div>
-                  <div class="mt-3 grid grid-cols-3 gap-2" data-salon-modal-actions>
-                    <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Copy salon QR link" data-salon-modal-copy data-copy-link="pay.nexoratouch.com/salon/bitcoin-nail-bar"><i data-lucide="link" class="h-3.5 w-3.5"></i>Copy Link</button>
-                    <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Print salon QR" data-salon-modal-print><i data-lucide="printer" class="h-3.5 w-3.5"></i>Print</button>
-                    <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-nexoraBrand text-[10px] font-semibold text-white"><i data-lucide="download" class="h-3.5 w-3.5"></i>Save QR</button>
-                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 border-t border-nexoraBrand/15 bg-[#EEF2FF]/95 p-3 backdrop-blur" data-salon-modal-actions>
+                  <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Copy salon QR link" data-salon-modal-copy data-copy-link="pay.nexoratouch.com/salon/bitcoin-nail-bar"><i data-lucide="link" class="h-3.5 w-3.5"></i>Copy Link</button>
+                  <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Print salon QR" data-salon-modal-print><i data-lucide="printer" class="h-3.5 w-3.5"></i>Print</button>
+                  <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-nexoraBrand text-[10px] font-semibold text-white"><i data-lucide="download" class="h-3.5 w-3.5"></i>Save QR</button>
                 </div>
               </div>
             </div>
@@ -2919,6 +2936,13 @@
         printCanvas.replaceWith(image);
       });
 
+      const printContent = document.createElement('div');
+      printContent.dataset.printContent = 'salon-qr';
+      while (printCard.firstChild) {
+        printContent.append(printCard.firstChild);
+      }
+      printCard.append(printContent);
+
       const printFrame = document.createElement('iframe');
       printFrame.setAttribute('aria-hidden', 'true');
       printFrame.dataset.printFrame = 'salon-qr';
@@ -2943,10 +2967,11 @@
             <title>Salon QR Print</title>
             ${headMarkup}
             <style>
-              @page { margin: 0.35in; }
+              @page { size: 5in 7in; margin: 0; }
               html, body { margin: 0; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-              body { display: grid; min-height: 100vh; place-items: start center; padding-top: 0.15in; }
-              [data-salon-print-card] { width: 3.75in !important; max-width: 3.75in !important; box-shadow: none !important; }
+              body { display: grid; min-height: 100vh; place-items: start center; }
+              [data-salon-print-card] { width: 5in !important; height: 7in !important; min-height: 7in !important; max-width: 5in !important; max-height: 7in !important; border-radius: 0 !important; box-shadow: none !important; overflow: hidden !important; }
+              [data-print-content=\"salon-qr\"] { --print-scale: 0.79; width: calc(100% / var(--print-scale)); margin-left: 0; transform: scale(var(--print-scale)); transform-origin: top left; }
             </style>
           </head>
           <body>
