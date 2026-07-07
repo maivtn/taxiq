@@ -507,8 +507,17 @@
       }
 
       body.is-printing-salon-qr [data-print-logo] {
-        width: 168px !important;
-        max-width: 168px !important;
+        width: 196px !important;
+        max-width: 196px !important;
+        height: auto !important;
+        object-fit: contain !important;
+        object-position: center !important;
+        margin-top: -0.2in !important;
+        margin-bottom: -0.34in !important;
+      }
+
+      body.is-printing-salon-qr [data-print-headline] {
+        margin-top: 0 !important;
       }
 
       body.is-printing-salon-qr [data-print-get] {
@@ -1614,7 +1623,7 @@
                       <span data-salon-modal-status>Active</span>
                     </div>
                   </div>
-                  <div class="relative mt-5 text-center">
+                  <div class="relative mt-5 text-center" data-print-headline>
                     <p class="bg-[linear-gradient(90deg,#FCE7F3_0%,#FFFFFF_45%,#67E8F9_100%)] bg-clip-text text-[42px] font-extrabold uppercase leading-[0.88] tracking-[0.06em] text-transparent drop-shadow-[0_0_16px_rgba(34,211,238,0.28)]" data-print-rewarded>Scan Here</p>
                     <p class="mt-1 text-[19px] font-semibold leading-tight text-white" data-print-body>
                       Payment <span class="px-1 text-[#F472B6]">•</span> Tip <span class="px-1 text-[#67E8F9]">•</span> Review
@@ -3139,7 +3148,7 @@
               [data-print-content=\"salon-qr\"] {
                 --print-scale: 0.70;
                 --print-side-gutter: 0.24in;
-                --print-top-offset: 0.24in;
+                --print-top-offset: 0.16in;
                 position: relative !important;
                 z-index: 2 !important;
                 width: calc((100% - (var(--print-side-gutter) * 2)) / var(--print-scale));
@@ -3151,8 +3160,16 @@
                 width: 285px !important;
               }
               [data-print-logo] {
-                width: 168px !important;
-                max-width: 168px !important;
+                width: 196px !important;
+                max-width: 196px !important;
+                height: auto !important;
+                object-fit: contain !important;
+                object-position: center !important;
+                margin-top: -0.2in !important;
+                margin-bottom: -0.34in !important;
+              }
+              [data-print-headline] {
+                margin-top: 0 !important;
               }
               [data-print-get] {
                 background: none !important;
