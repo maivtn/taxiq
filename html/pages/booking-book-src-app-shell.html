@@ -2861,9 +2861,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(3, 7, 18, 0.66);
+      background: rgba(8, 31, 73, 0.42);
       padding: 18px;
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(10px);
     }
 
     .trial-modal[hidden] {
@@ -2872,17 +2872,15 @@
 
     .trial-dialog {
       position: relative;
-      width: min(100%, 500px);
+      width: min(100%, 680px);
       max-height: min(940px, calc(100vh - 28px));
       overflow-y: auto;
-      border: 1px solid rgba(168, 85, 247, 0.28);
-      border-radius: 20px;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.2), transparent 32%),
-        linear-gradient(180deg, #070817 0%, #0d0d22 100%);
-      box-shadow: 0 32px 90px rgba(3, 7, 18, 0.48);
+      border: 1px solid var(--nexora-border);
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 28px 80px rgba(8, 31, 73, 0.24);
       scrollbar-width: thin;
-      scrollbar-color: rgba(168, 85, 247, 0.42) transparent;
+      scrollbar-color: var(--brand-cyan) transparent;
     }
 
     .trial-close {
@@ -2894,85 +2892,92 @@
       height: 34px;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(255, 255, 255, 0.13);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      color: #d9d6ff;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: var(--nexora-surface-muted);
+      color: var(--nexora-muted);
       font-size: 16px;
       font-weight: 900;
       z-index: 1;
     }
 
     .trial-head {
-      padding: 26px 18px 14px;
-      text-align: center;
+      border-bottom: 1px solid var(--nexora-rule);
+      background: linear-gradient(180deg, #fff, #f8fbff);
+      padding: 22px 22px 16px;
+      text-align: left;
     }
 
     .trial-brand {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(168, 85, 247, 0.42);
+      gap: 7px;
+      border: 1px solid rgba(70, 72, 216, 0.18);
       border-radius: 999px;
-      background: rgba(124, 58, 237, 0.16);
+      background: color-mix(in srgb, var(--nexora-brand) 8%, white);
       padding: 7px 13px;
-      color: #d7c7ff;
+      color: var(--nexora-brand);
       font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 0.08em;
+      font-weight: 800;
+      letter-spacing: 0.02em;
       text-transform: uppercase;
     }
 
     .trial-title {
-      max-width: 410px;
-      margin: 16px auto 0;
-      color: #f8fafc;
-      font-size: 25px;
-      font-weight: 900;
-      line-height: 1.08;
+      max-width: 560px;
+      margin: 14px 0 0;
+      color: var(--nexora-text);
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.14;
     }
 
     .trial-title strong {
       display: block;
-      background: linear-gradient(90deg, #8b5cf6, #22d3ee);
+      background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
 
     .trial-subtitle {
-      margin: 12px auto 0;
-      max-width: 410px;
-      color: #a7a5c7;
+      margin: 10px 0 0;
+      max-width: 560px;
+      color: var(--nexora-muted);
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 500;
       line-height: 1.55;
     }
 
     .trial-benefits {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 8px;
-      padding: 0 18px 18px;
+      background: var(--nexora-surface-muted);
+      padding: 12px 22px;
     }
 
     .trial-benefit {
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid var(--nexora-border);
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
+      background: #fff;
       padding: 7px 11px;
-      color: #ecebff;
+      color: var(--nexora-text);
       font-size: 10px;
-      font-weight: 900;
+      font-weight: 800;
     }
 
     .trial-body {
-      margin: 0 18px 20px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.045);
-      padding: 18px;
+      margin: 18px 22px 20px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 14px;
+      background: var(--nexora-canvas);
+      padding: 16px;
     }
 
     .trial-grid {
@@ -2991,10 +2996,11 @@
     }
 
     .trial-label {
-      color: #d6d3ff;
+      color: var(--nexora-subtle);
       font-size: 11px;
-      font-weight: 900;
+      font-weight: 800;
       letter-spacing: 0;
+      text-transform: uppercase;
     }
 
     .trial-label span {
@@ -3002,30 +3008,31 @@
     }
 
     .trial-optional {
-      color: #76739b;
-      font-weight: 800;
+      color: var(--nexora-subtle);
+      font-weight: 600;
+      text-transform: none;
     }
 
     .trial-label .trial-optional {
-      color: #76739b;
+      color: var(--nexora-subtle);
     }
 
     .trial-input,
     .trial-select {
       width: 100%;
       min-height: 42px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.065);
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
       padding: 0 14px;
-      color: #f8fafc;
+      color: var(--nexora-text);
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 600;
       outline: none;
     }
 
     .trial-input::placeholder {
-      color: #817ea3;
+      color: var(--nexora-subtle);
     }
 
     .trial-select option {
@@ -3034,14 +3041,17 @@
 
     .trial-input:focus,
     .trial-select:focus {
-      border-color: rgba(168, 85, 247, 0.64);
-      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.14);
+      border-color: rgba(70, 72, 216, 0.42);
+      box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.1);
     }
 
     .trial-note {
-      color: #7d7a9d;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--nexora-muted);
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 500;
       line-height: 1.45;
     }
 
@@ -3054,20 +3064,20 @@
 
     .trial-chip,
     .trial-day {
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      border: 1px solid var(--nexora-border);
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.055);
+      background: #fff;
       padding: 8px 12px;
-      color: #d6d3ff;
+      color: var(--nexora-muted);
       font-size: 11px;
-      font-weight: 900;
+      font-weight: 800;
     }
 
     .trial-chip.is-active,
     .trial-day.is-active {
-      border-color: rgba(168, 85, 247, 0.74);
-      background: rgba(124, 58, 237, 0.28);
-      color: #fff;
+      border-color: rgba(70, 72, 216, 0.46);
+      background: color-mix(in srgb, var(--nexora-brand) 8%, white);
+      color: var(--nexora-brand);
     }
 
     .trial-time-row {
@@ -3078,61 +3088,68 @@
     }
 
     .trial-time-separator {
-      color: #8582a7;
-      font-weight: 900;
+      color: var(--nexora-subtle);
+      font-weight: 800;
     }
 
     .trial-credit {
-      color: #18e0a6;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--nexora-success);
       font-size: 10px;
-      font-weight: 900;
+      font-weight: 800;
     }
 
     .trial-submit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       width: 100%;
       min-height: 52px;
       margin-top: 14px;
       border: 0;
-      border-radius: 13px;
-      background: linear-gradient(90deg, #7c3aed, #32d7ff);
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet));
       color: #fff;
       font-size: 14px;
-      font-weight: 900;
-      box-shadow: 0 18px 36px rgba(50, 215, 255, 0.18);
+      font-weight: 800;
+      box-shadow: 0 14px 28px rgba(70, 72, 216, 0.2);
     }
 
     .trial-footer {
       margin-top: 12px;
-      color: #747196;
+      color: var(--nexora-subtle);
       text-align: center;
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 500;
       line-height: 1.45;
     }
 
     .trial-contact {
-      margin: -6px 18px 22px;
-      color: #7d7a9d;
+      margin: -6px 22px 22px;
+      color: var(--nexora-muted);
       text-align: center;
       font-size: 10px;
-      font-weight: 800;
+      font-weight: 600;
       line-height: 1.6;
     }
 
     .trial-contact strong,
     .trial-contact a {
-      color: #38d9ff;
+      color: var(--nexora-brand);
       text-decoration: none;
     }
 
     .trial-email-preview {
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid var(--nexora-border);
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.06);
+      background: #fff;
       padding: 14px;
-      color: #a7a5c7;
+      color: var(--nexora-muted);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 500;
       line-height: 1.55;
     }
 
@@ -3992,11 +4009,11 @@
 
     .tech-modal-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
     }
 
-    .tech-modal-grid .settings-field:nth-child(3),
+    .tech-modal-grid .settings-field:nth-child(4),
     .tech-modal-grid .settings-field:last-child {
       grid-column: 1 / -1;
     }
@@ -5623,17 +5640,17 @@
                             </label>
                             <div class="tech-select-menu" id="tech-select-menu" data-tech-select-menu hidden>
                               <div class="tech-choice-grid" role="listbox" aria-label="Danh sách thợ">
-                                <button class="tech-choice-card is-active" type="button" role="option" data-tech-choice="kim" data-name="Kim Nguyễn" data-phone="832-555-0161" data-services="Gel, Full Set, Dip" data-zelle="kim.nails@zelle" data-venmo="@kim-nails">
+                                <button class="tech-choice-card is-active" type="button" role="option" data-tech-choice="kim" data-name="Kim Nguyễn" data-phone="832-555-0161" data-email="kim@nexoratouch.com" data-services="Gel, Full Set, Dip" data-zelle="kim.nails@zelle" data-venmo="@kim-nails">
                                   <span class="tech-avatar">K</span>
-                                  <span><span class="tech-choice-name">Kim Nguyễn</span><span class="tech-choice-meta">832-555-0161 · Gel · Full Set · Dip</span></span>
+                                  <span><span class="tech-choice-name">Kim Nguyễn</span><span class="tech-choice-meta">kim@nexoratouch.com · 832-555-0161</span></span>
                                 </button>
-                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="lan" data-name="Lan Trần" data-phone="713-555-0192" data-services="Pedicure, Gel, Nail Art" data-zelle="lan.tran@zelle" data-venmo="@lan-nailart">
+                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="lan" data-name="Lan Trần" data-phone="713-555-0192" data-email="lan.tran@nexoratouch.com" data-services="Pedicure, Gel, Nail Art" data-zelle="lan.tran@zelle" data-venmo="@lan-nailart">
                                   <span class="tech-avatar" style="background: linear-gradient(135deg, var(--brand-cyan), var(--nexora-electric));">L</span>
-                                  <span><span class="tech-choice-name">Lan Trần</span><span class="tech-choice-meta">713-555-0192 · Pedicure · Gel · Nail Art</span></span>
+                                  <span><span class="tech-choice-name">Lan Trần</span><span class="tech-choice-meta">lan.tran@nexoratouch.com · 713-555-0192</span></span>
                                 </button>
-                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="mai" data-name="Mai Phạm" data-phone="281-555-0138" data-services="Acrylic, Dip, Pedicure" data-zelle="mai.pham@zelle" data-venmo="@maipham-nails">
+                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="mai" data-name="Mai Phạm" data-phone="281-555-0138" data-email="mai.pham@nexoratouch.com" data-services="Acrylic, Dip, Pedicure" data-zelle="mai.pham@zelle" data-venmo="@maipham-nails">
                                   <span class="tech-avatar" style="background: linear-gradient(135deg, #f472b6, var(--nexora-violet));">M</span>
-                                  <span><span class="tech-choice-name">Mai Phạm</span><span class="tech-choice-meta">281-555-0138 · Acrylic · Dip · Pedicure</span></span>
+                                  <span><span class="tech-choice-name">Mai Phạm</span><span class="tech-choice-meta">mai.pham@nexoratouch.com · 281-555-0138</span></span>
                                 </button>
                               </div>
                               <div class="tech-empty" data-tech-empty>Không tìm thấy thợ phù hợp.</div>
@@ -5648,8 +5665,9 @@
                         <div class="tech-modal-grid">
                           <label class="settings-field"><span class="settings-label">Tên thợ</span><input class="settings-input" type="text" data-tech-field="name" value="Kim Nguyễn"></label>
                           <label class="settings-field"><span class="settings-label">Số điện thoại</span><input class="settings-input" type="tel" data-tech-field="phone" value="832-555-0161"></label>
+                          <label class="settings-field"><span class="settings-label">Email</span><input class="settings-input" type="email" data-tech-field="email" value="kim@nexoratouch.com"></label>
                           <div class="settings-field">
-                            <span class="settings-label">Dịch vụ mạnh</span>
+                            <span class="settings-label">Dịch vụ</span>
                             <div class="tech-service-checks" data-tech-field="services">
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Gel" value="Gel" checked>Gel</label>
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Full Set" value="Full Set" checked>Full Set</label>
@@ -6454,19 +6472,19 @@
 
     <div class="trial-modal" data-trial-modal hidden role="dialog" aria-modal="true" aria-labelledby="trial-modal-title">
       <div class="trial-dialog">
-        <button class="trial-close" type="button" data-trial-close aria-label="Đóng modal">×</button>
+        <button class="trial-close" type="button" data-trial-close aria-label="Đóng modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
 
         <div class="trial-step" data-trial-step="form">
           <div class="trial-head">
-            <div class="trial-brand">🎁 14 ngày free - không cần thẻ</div>
+            <div class="trial-brand"><i class="bi bi-gift" aria-hidden="true"></i>14 ngày free - không cần thẻ</div>
             <h2 class="trial-title" id="trial-modal-title">Để AI Trả Lời Điện Thoại, <strong>Tiệm Không Mất Khách Nữa</strong></h2>
             <p class="trial-subtitle">Điền 60 giây - đội NEXORA setup toàn bộ giùm chị trong 24 giờ. Không cần rành công nghệ.</p>
           </div>
 
           <div class="trial-benefits">
-            <div class="trial-benefit">✓ Setup giùm 100%</div>
-            <div class="trial-benefit">✓ Hủy lúc nào cũng được</div>
-            <div class="trial-benefit">✓ Nói tiếng Việt</div>
+            <div class="trial-benefit"><i class="bi bi-check2" aria-hidden="true"></i> Setup giùm 100%</div>
+            <div class="trial-benefit"><i class="bi bi-check2" aria-hidden="true"></i> Hủy lúc nào cũng được</div>
+            <div class="trial-benefit"><i class="bi bi-check2" aria-hidden="true"></i> Nói tiếng Việt</div>
           </div>
 
           <div class="trial-body">
@@ -6489,7 +6507,7 @@
               <div class="trial-field trial-span-2">
                 <label class="trial-label" for="trial-email">Email <span>*</span></label>
                 <input class="trial-input" id="trial-email" data-trial-email type="email" value="chi.mai@gmail.com" placeholder="chi.mai@gmail.com">
-                <div class="trial-note">📧 Nhận link kích hoạt + báo cáo hằng tháng qua email này</div>
+                <div class="trial-note"><i class="bi bi-envelope" aria-hidden="true"></i> Nhận link kích hoạt + báo cáo hằng tháng qua email này</div>
               </div>
 
               <div class="trial-field trial-span-2">
@@ -6559,11 +6577,11 @@
               <div class="trial-field trial-span-2">
                 <label class="trial-label" for="trial-ref">Mã giới thiệu <span class="trial-optional">(không bắt buộc)</span></label>
                 <input class="trial-input" id="trial-ref" data-trial-ref type="text" placeholder="VD: BRIAN90" style="text-transform: uppercase;">
-                <div class="trial-credit">🎁 Có mã = +200 credits khi kích hoạt</div>
+                <div class="trial-credit"><i class="bi bi-gift" aria-hidden="true"></i> Có mã = +200 credits khi kích hoạt</div>
               </div>
             </div>
 
-            <button class="trial-submit" type="button" data-trial-submit>🚀 Bắt đầu 14 Ngày Free</button>
+            <button class="trial-submit" type="button" data-trial-submit><i class="bi bi-rocket-takeoff" aria-hidden="true"></i> Bắt đầu 14 Ngày Free</button>
             <div class="trial-footer">Không cần thẻ tín dụng · Không tự động tính phí · Bấm gửi là chị đồng ý cho NEXORA liên hệ qua SMS/email</div>
           </div>
           <div class="trial-contact">
@@ -6576,7 +6594,7 @@
           <div class="trial-head">
             <div class="trial-brand">NEXORA TOUCH</div>
             <h2 class="trial-title">Kiểm tra email của bạn</h2>
-            <p class="trial-subtitle">Email kích hoạt đã gửi tới <strong style="color: #38d9ff;" data-trial-email-show></strong>. Bấm kích hoạt để bắt đầu 14 ngày dùng thử.</p>
+            <p class="trial-subtitle">Email kích hoạt đã gửi tới <strong style="color: var(--nexora-brand);" data-trial-email-show></strong>. Bấm kích hoạt để bắt đầu 14 ngày dùng thử.</p>
           </div>
 
           <div class="trial-body">
@@ -6584,11 +6602,11 @@
               <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                 <span class="avatar" style="width: 32px; height: 32px;">N</span>
                 <div>
-                  <div style="color: #f8fafc; font-weight: 700;">NEXORA TOUCH</div>
+                  <div style="color: var(--nexora-text); font-weight: 700;">NEXORA TOUCH</div>
                   <div style="font-size: 10px;">no-reply@nexoratouch.com · bây giờ</div>
                 </div>
               </div>
-              <div style="color: #f8fafc; font-weight: 700;">Kích hoạt tài khoản NEXORA của bạn</div>
+              <div style="color: var(--nexora-text); font-weight: 700;">Kích hoạt tài khoản NEXORA của bạn</div>
               <div style="margin-top: 5px;">Chào bạn! Bấm nút bên dưới để kích hoạt tài khoản và bắt đầu 14 ngày dùng thử.</div>
             </div>
 
@@ -6820,6 +6838,7 @@
         var haystack = [
           choice.dataset.name,
           choice.dataset.phone,
+          choice.dataset.email,
           choice.dataset.services,
           choice.textContent
         ].join(' ').toLowerCase();
@@ -6857,6 +6876,7 @@
 
       setTechField('name', isCreate ? '' : choice.dataset.name);
       setTechField('phone', isCreate ? '' : choice.dataset.phone);
+      setTechField('email', isCreate ? '' : choice.dataset.email);
       setTechField('services', isCreate ? '' : choice.dataset.services);
       setTechField('zelle', isCreate ? '' : choice.dataset.zelle);
       setTechField('venmo', isCreate ? '' : choice.dataset.venmo);
@@ -6920,6 +6940,7 @@
       var initial = (data.name || 'T').charAt(0).toUpperCase();
       card.className = 'tech-card';
       card.dataset.techId = data.id || ('tech-' + Date.now());
+      card.dataset.email = data.email || '';
       card.innerHTML = '' +
         '<div class="tech-top">' +
           '<div class="tech-avatar">' + escapeHtml(initial) + '</div>' +
@@ -6948,6 +6969,7 @@
       var data = {
         name: getTechField('name') || 'Thợ mới',
         phone: getTechField('phone') || 'Chưa có số',
+        email: getTechField('email'),
         services: getTechField('services') || 'Gel',
         zelle: getTechField('zelle') || '-',
         venmo: getTechField('venmo') || '-'
@@ -6958,13 +6980,14 @@
       } else if (active && active.hasAttribute('data-tech-choice')) {
         active.dataset.name = data.name;
         active.dataset.phone = data.phone;
+        active.dataset.email = data.email;
         active.dataset.services = data.services;
         active.dataset.zelle = data.zelle;
         active.dataset.venmo = data.venmo;
         var choiceName = active.querySelector('.tech-choice-name');
         var choiceMeta = active.querySelector('.tech-choice-meta');
         if (choiceName) choiceName.textContent = data.name;
-        if (choiceMeta) choiceMeta.textContent = data.services.replace(/,\s*/g, ' · ');
+        if (choiceMeta) choiceMeta.textContent = [data.email, data.phone].filter(Boolean).join(' · ') || data.services.replace(/,\s*/g, ' · ');
         updateTechCard(document.querySelector('[data-tech-id="' + active.dataset.techChoice + '"]'), data);
       }
 
