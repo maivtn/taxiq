@@ -3817,10 +3817,46 @@
       margin-bottom: 10px;
     }
 
+    .tech-search {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .tech-search i {
+      position: absolute;
+      top: 50%;
+      left: 12px;
+      color: var(--nexora-subtle);
+      font-size: 13px;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .tech-search input {
+      width: 100%;
+      height: 40px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      outline: 0;
+      background: #fff;
+      padding: 0 12px 0 34px;
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .tech-search input:focus {
+      border-color: rgba(70, 72, 216, 0.42);
+      box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.1);
+    }
+
     .tech-choice-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 2px;
     }
 
     .tech-choice-card {
@@ -3860,10 +3896,58 @@
       font-weight: 500;
     }
 
+    .tech-empty {
+      display: none;
+      border: 1px dashed var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .tech-empty.is-visible {
+      display: block;
+    }
+
     .tech-modal-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 10px;
+    }
+
+    .tech-service-checks {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
+      gap: 6px;
+    }
+
+    .tech-service-check {
+      display: flex;
+      min-height: 34px;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 9px;
+      background: #fff;
+      padding: 7px 8px;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .tech-service-check input {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+      accent-color: var(--nexora-brand);
+    }
+
+    .tech-service-check:has(input:checked) {
+      border-color: rgba(70, 72, 216, 0.42);
+      background: color-mix(in srgb, var(--nexora-brand) 7%, white);
+      color: var(--nexora-text);
     }
 
     .tech-modal-actions {
@@ -5540,13 +5624,17 @@
                     <div class="tech-modal-head">
                       <div>
                         <div class="tech-modal-title" id="tech-modal-title">Thông Tin Thợ</div>
-                        <div class="tech-modal-sub">Chọn thợ có sẵn để chỉnh nhanh hoặc tạo profile mới cho SMS, QR tip và booking.</div>
+                        <div class="tech-modal-sub">Tìm thợ theo tên, chỉnh nhanh profile hoặc tạo mới cho SMS, QR tip và booking.</div>
                       </div>
                       <button class="tech-modal-close" type="button" data-tech-modal-close aria-label="Close tech modal">×</button>
                     </div>
                     <div class="tech-modal-body">
                       <div class="tech-modal-section">
                         <div class="tech-modal-section-title"><i class="bi bi-people" aria-hidden="true"></i>Chọn từ danh sách</div>
+                        <label class="tech-search">
+                          <i class="bi bi-search" aria-hidden="true"></i>
+                          <input type="search" data-tech-search placeholder="Tìm theo tên thợ..." autocomplete="off">
+                        </label>
                         <div class="tech-choice-grid">
                           <button class="tech-choice-card is-active" type="button" data-tech-choice="kim" data-name="Kim Nguyễn" data-phone="832-555-0161" data-services="Gel, Full Set, Dip" data-zelle="kim.nails@zelle" data-venmo="@kim-nails">
                             <span class="tech-avatar">K</span>
@@ -5565,6 +5653,7 @@
                             <span><span class="tech-choice-name">Tạo thợ mới</span><span class="tech-choice-meta">Điền profile mới từ đầu</span></span>
                           </button>
                         </div>
+                        <div class="tech-empty" data-tech-empty>Không tìm thấy thợ phù hợp. Bạn có thể tạo thợ mới.</div>
                       </div>
 
                       <div class="tech-modal-section">
@@ -5572,7 +5661,19 @@
                         <div class="tech-modal-grid">
                           <label class="settings-field"><span class="settings-label">Tên thợ</span><input class="settings-input" type="text" data-tech-field="name" value="Kim Nguyễn"></label>
                           <label class="settings-field"><span class="settings-label">Số điện thoại</span><input class="settings-input" type="tel" data-tech-field="phone" value="832-555-0161"></label>
-                          <label class="settings-field"><span class="settings-label">Dịch vụ mạnh</span><input class="settings-input" type="text" data-tech-field="services" value="Gel, Full Set, Dip"></label>
+                          <div class="settings-field">
+                            <span class="settings-label">Dịch vụ mạnh</span>
+                            <div class="tech-service-checks" data-tech-field="services">
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Gel" value="Gel" checked>Gel</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Full Set" value="Full Set" checked>Full Set</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Dip" value="Dip" checked>Dip</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Pedicure" value="Pedicure">Pedicure</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Nail Art" value="Nail Art">Nail Art</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Acrylic" value="Acrylic">Acrylic</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Waxing" value="Waxing">Waxing</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Eyelash" value="Eyelash">Eyelash</label>
+                            </div>
+                          </div>
                           <label class="settings-field"><span class="settings-label">Zelle</span><input class="settings-input" type="text" data-tech-field="zelle" value="kim.nails@zelle"></label>
                           <label class="settings-field"><span class="settings-label">Venmo</span><input class="settings-input" type="text" data-tech-field="venmo" value="@kim-nails"></label>
                           <label class="settings-field"><span class="settings-label">Ghi chú SMS</span><textarea class="settings-textarea" data-tech-field="note">Nhận SMS khi có booking mới, tip và review nhắc tên.</textarea></label>
@@ -6702,11 +6803,28 @@
     }
 
     function setTechField(name, value) {
+      if (name === 'services') {
+        var selectedServices = (value || '').split(',').map(function(service) {
+          return service.trim().toLowerCase();
+        }).filter(Boolean);
+
+        document.querySelectorAll('[data-tech-service]').forEach(function(option) {
+          option.checked = selectedServices.indexOf(option.value.toLowerCase()) !== -1;
+        });
+        return;
+      }
+
       var field = document.querySelector('[data-tech-field="' + name + '"]');
       if (field) field.value = value || '';
     }
 
     function getTechField(name) {
+      if (name === 'services') {
+        return Array.from(document.querySelectorAll('[data-tech-service]:checked')).map(function(option) {
+          return option.value;
+        }).join(', ');
+      }
+
       var field = document.querySelector('[data-tech-field="' + name + '"]');
       return field ? field.value.trim() : '';
     }
@@ -6715,6 +6833,26 @@
       var div = document.createElement('div');
       div.textContent = value || '';
       return div.innerHTML;
+    }
+
+    function filterTechChoices(query) {
+      var normalized = (query || '').trim().toLowerCase();
+      var visibleCount = 0;
+
+      document.querySelectorAll('[data-tech-choice]').forEach(function(choice) {
+        var haystack = [
+          choice.dataset.name,
+          choice.dataset.phone,
+          choice.dataset.services,
+          choice.textContent
+        ].join(' ').toLowerCase();
+        var visible = !normalized || haystack.indexOf(normalized) !== -1;
+        choice.hidden = !visible;
+        if (visible) visibleCount++;
+      });
+
+      var empty = document.querySelector('[data-tech-empty]');
+      if (empty) empty.classList.toggle('is-visible', Boolean(normalized) && visibleCount === 0);
     }
 
     function fillTechModalFromChoice(choice) {
@@ -6745,7 +6883,11 @@
 
       modal.hidden = false;
       document.body.style.overflow = 'hidden';
+      var search = document.querySelector('[data-tech-search]');
+      if (search) search.value = '';
+      filterTechChoices('');
       fillTechModalFromChoice(document.querySelector('[data-tech-choice].is-active') || document.querySelector('[data-tech-choice]'));
+      if (search) search.focus();
     }
 
     function closeTechModal() {
@@ -7393,6 +7535,13 @@
       var trialChip = event.target.closest('[data-trial-chip], [data-trial-day]');
       if (trialChip) {
         trialChip.classList.toggle('is-active');
+      }
+    });
+
+    document.addEventListener('input', function(event) {
+      var techSearch = event.target.closest('[data-tech-search]');
+      if (techSearch) {
+        filterTechChoices(techSearch.value);
       }
     });
 
