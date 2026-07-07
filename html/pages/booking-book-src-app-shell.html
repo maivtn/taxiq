@@ -2188,19 +2188,19 @@
     }
 
     .settings-service-list.settings-service-body {
-      gap: 6px;
+      gap: 5px;
       border: 1px solid var(--nexora-border);
       border-radius: 14px;
       background: color-mix(in srgb, var(--nexora-canvas) 72%, white);
-      padding: 8px;
+      padding: 7px;
     }
 
     .settings-service-header {
       display: grid;
-      grid-template-columns: 34px minmax(96px, 1fr) 64px 72px 28px;
+      grid-template-columns: 30px minmax(82px, 1fr) 58px 70px 28px;
       align-items: center;
-      gap: 6px;
-      padding: 0 8px 4px;
+      gap: 5px;
+      padding: 0 7px 4px;
       color: var(--nexora-subtle);
       font-size: 10px;
       font-weight: 750;
@@ -2211,12 +2211,12 @@
     .settings-service-row {
       display: grid;
       grid-template-columns: minmax(0, 1fr);
-      gap: 10px;
+      gap: 0;
       align-items: center;
       border: 1px solid var(--nexora-border);
-      border-radius: 11px;
+      border-radius: 10px;
       background: #fff;
-      padding: 10px;
+      padding: 7px;
     }
 
     .settings-service-row.is-compact {
@@ -2228,8 +2228,9 @@
 
     .settings-service-edit-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
+      grid-template-columns: 30px minmax(82px, 1fr) 58px 70px 28px;
+      align-items: center;
+      gap: 5px;
     }
 
     .settings-service-row.is-compact .settings-service-edit-grid {
@@ -2238,20 +2239,16 @@
       align-items: center;
     }
 
-    .settings-service-row.is-compact .settings-service-note {
-      display: none;
-    }
-
     .settings-service-visual {
       display: inline-flex;
-      width: 34px;
-      height: 34px;
+      width: 30px;
+      height: 30px;
       align-items: center;
       justify-content: center;
       border: 1px solid var(--nexora-border);
-      border-radius: 10px;
+      border-radius: 9px;
       background: var(--nexora-canvas);
-      font-size: 15px;
+      font-size: 14px;
     }
 
     .settings-service-input-wrap {
@@ -2261,23 +2258,23 @@
 
     .settings-service-input {
       width: 100%;
-      min-height: 38px;
+      min-height: 34px;
       border: 1px solid var(--nexora-border);
       border-radius: 9px;
       background: #fff;
-      padding: 0 11px;
+      padding: 0 8px;
       color: var(--nexora-text);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
       outline: none;
     }
 
     .settings-service-input.price {
-      padding-left: 24px;
+      padding-left: 20px;
     }
 
     .settings-service-input.duration {
-      padding-right: 34px;
+      padding-right: 24px;
     }
 
     .settings-service-row.is-compact .settings-service-input {
@@ -2307,11 +2304,11 @@
     }
 
     .settings-service-prefix {
-      left: 10px;
+      left: 8px;
     }
 
     .settings-service-suffix {
-      right: 10px;
+      right: 8px;
     }
 
     .settings-service-input:focus {
@@ -2325,13 +2322,6 @@
       font-weight: 700;
     }
 
-    .settings-service-note {
-      margin-top: 3px;
-      color: var(--nexora-muted);
-      font-size: 10.5px;
-      font-weight: 500;
-    }
-
     .settings-service-meta {
       display: flex;
       flex-wrap: wrap;
@@ -2340,7 +2330,7 @@
 
     .settings-service-remove {
       display: inline-flex;
-      width: 34px;
+      width: 28px;
       height: 34px;
       align-items: center;
       justify-content: center;
@@ -3821,7 +3811,7 @@
 
     .tech-modal-body {
       display: grid;
-      grid-template-columns: minmax(230px, 0.85fr) minmax(0, 1.15fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 12px;
       overflow: auto;
       padding: 12px;
@@ -4217,7 +4207,6 @@
     .booking-detail,
     .booking-soft-desc,
     .settings-card-sub,
-    .settings-service-note,
     .settings-template-desc,
     .settings-offer-desc,
     .settings-save-copy,
