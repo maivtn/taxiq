@@ -3139,10 +3139,11 @@
               [data-print-content=\"salon-qr\"] {
                 --print-scale: 0.70;
                 --print-side-gutter: 0.24in;
+                --print-top-offset: 0.24in;
                 position: relative !important;
                 z-index: 2 !important;
                 width: calc((100% - (var(--print-side-gutter) * 2)) / var(--print-scale));
-                margin: 0.45in 0 0 var(--print-side-gutter);
+                margin: var(--print-top-offset) 0 0 var(--print-side-gutter);
                 transform: scale(var(--print-scale));
                 transform-origin: top left;
               }
