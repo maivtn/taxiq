@@ -472,6 +472,23 @@
         print-color-adjust: exact !important;
       }
 
+      body.is-printing-salon-qr [data-salon-print-card]::before {
+        content: "" !important;
+        position: absolute !important;
+        inset: 0 !important;
+        z-index: 1 !important;
+        pointer-events: none !important;
+        opacity: 0.16 !important;
+        background-image: radial-gradient(circle, rgba(255, 255, 255, 0.52) 0.55px, transparent 0.8px) !important;
+        background-size: 3px 3px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body.is-printing-salon-qr [data-print-dot-overlay] {
+        display: none !important;
+      }
+
       body.is-printing-salon-qr [data-print-content="salon-qr"] {
         position: relative !important;
         z-index: 2 !important;
@@ -521,6 +538,16 @@
         width: 88% !important;
         margin-left: auto !important;
         margin-right: auto !important;
+      }
+
+      body.is-printing-salon-qr [data-print-steps] {
+        width: 88% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+
+      body.is-printing-salon-qr [data-print-rewards-panel] {
+        width: 78% !important;
       }
 
       body.is-printing-salon-qr [data-salon-modal-close],
@@ -1555,7 +1582,7 @@
             <div class="max-h-[calc(100%-18px)] w-full overflow-y-auto rounded-[28px] bg-white/95 p-1.5 shadow-phone">
               <div class="overflow-hidden rounded-[24px] border border-white/15 bg-[#050505] text-white shadow-[0_18px_44px_rgba(0,0,0,0.42)]">
                 <div class="relative min-h-[720px] w-full overflow-hidden bg-[radial-gradient(circle_at_50%_-4%,rgba(255,255,255,0.16)_0,transparent_19%),radial-gradient(circle_at_14%_22%,rgba(236,72,153,0.34)_0,transparent_25%),radial-gradient(circle_at_91%_58%,rgba(34,211,238,0.32)_0,transparent_26%),linear-gradient(160deg,#050505_0%,#0B0F1A_46%,#111056_100%)] px-4 py-4" data-salon-print-card>
-                  <div class="absolute inset-0 opacity-[0.16] [background-image:radial-gradient(circle,rgba(255,255,255,0.52)_0.55px,transparent_0.8px)] [background-size:3px_3px]"></div>
+                  <div class="absolute inset-0 opacity-[0.16] [background-image:radial-gradient(circle,rgba(255,255,255,0.52)_0.55px,transparent_0.8px)] [background-size:3px_3px]" data-print-dot-overlay></div>
                   <button class="absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-lg border border-white/20 bg-white/10 text-white backdrop-blur" aria-label="Close salon QR preview" data-salon-modal-close>
                     <i data-lucide="x" class="h-4 w-4"></i>
                   </button>
@@ -1571,49 +1598,69 @@
                     </div>
                   </div>
                   <div class="relative mt-5 text-center">
-                    <p class="text-[34px] font-extrabold uppercase leading-[0.88] tracking-[0.06em] text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.22)]" data-print-get>Get</p>
-                    <p class="bg-[linear-gradient(90deg,#F472B6_0%,#8B5CF6_46%,#22D3EE_100%)] bg-clip-text text-[47px] font-extrabold uppercase leading-[0.88] tracking-wide text-transparent drop-shadow-[0_0_16px_rgba(34,211,238,0.26)]" data-print-rewarded>Rewarded</p>
-                    <p class="mx-auto mt-2 max-w-[282px] text-[12px] font-medium leading-snug text-white/84" data-print-body>Pay, tip, review, and earn more on eligible visits.</p>
+                    <p class="bg-[linear-gradient(90deg,#FCE7F3_0%,#FFFFFF_45%,#67E8F9_100%)] bg-clip-text text-[42px] font-extrabold uppercase leading-[0.88] tracking-[0.06em] text-transparent drop-shadow-[0_0_16px_rgba(34,211,238,0.28)]" data-print-rewarded>Scan Here</p>
+                    <p class="mt-1 text-[19px] font-semibold leading-tight text-white" data-print-body>
+                      Payment <span class="px-1 text-[#F472B6]">•</span> Tip <span class="px-1 text-[#67E8F9]">•</span> Review
+                    </p>
+                    <p class="mt-1 text-[10px] font-medium text-white/70" data-print-body>
+                      Fast <span class="px-1 text-[#F472B6]">•</span> Transparent <span class="px-1 text-[#67E8F9]">•</span> Professional
+                    </p>
                   </div>
-                  <div class="relative mt-4 grid grid-cols-4 gap-1.5 text-center" data-print-benefits>
-                    <div class="border-r border-dashed border-white/16 px-1 py-1.5 last:border-r-0">
-                      <i data-lucide="circle-star" class="mx-auto h-9 w-9 text-[#F472B6] drop-shadow-[0_0_12px_rgba(244,114,182,0.62)]"></i>
-                      <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Earn<br />Rewards</p>
-                    </div>
-                    <div class="border-r border-dashed border-white/16 px-1 py-1.5 last:border-r-0">
-                      <i data-lucide="user-round-check" class="mx-auto h-9 w-9 text-[#C084FC] drop-shadow-[0_0_12px_rgba(192,132,252,0.62)]"></i>
-                      <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Member<br />Perks</p>
-                    </div>
-                    <div class="border-r border-dashed border-white/16 px-1 py-1.5 last:border-r-0">
-                      <i data-lucide="cake" class="mx-auto h-9 w-9 text-[#67E8F9] drop-shadow-[0_0_12px_rgba(103,232,249,0.58)]"></i>
-                      <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Birthday<br />Surprise</p>
-                    </div>
-                    <div class="px-1 py-1.5">
-                      <i data-lucide="gem" class="mx-auto h-9 w-9 text-[#93C5FD] drop-shadow-[0_0_12px_rgba(147,197,253,0.58)]"></i>
-                      <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>VIP<br />Benefits</p>
-                    </div>
-                  </div>
-                  <div class="relative mt-4 grid grid-cols-[70px_minmax(0,1fr)] items-center gap-3 rounded-[18px] border border-[#67E8F9]/65 bg-[#0B1024]/76 p-3 shadow-[0_0_24px_rgba(34,211,238,0.28),inset_0_0_20px_rgba(244,114,182,0.12)]" data-print-panel>
-                    <div class="grid h-[58px] w-[58px] place-items-center rounded-xl border border-white/14 bg-white/[0.05] text-[#67E8F9]">
-                      <i data-lucide="gift" class="h-10 w-10 drop-shadow-[0_0_14px_rgba(103,232,249,0.62)]"></i>
-                    </div>
-                    <div class="min-w-0 text-left">
-                      <p class="bg-[linear-gradient(90deg,#F472B6,#22D3EE)] bg-clip-text text-[20px] font-semibold leading-tight text-transparent" data-print-accent>Customer Rewards</p>
-                      <p class="mt-1 text-[11px] font-medium leading-snug text-white/78" data-print-body>Ask our team about points, offers, and member rewards.</p>
-                    </div>
-                  </div>
-                  <div class="relative mt-4 rounded-[18px] border border-[#67E8F9]/45 bg-[#0B1024]/86 p-2.5 shadow-[0_0_24px_rgba(34,211,238,0.24),inset_0_0_18px_rgba(244,114,182,0.12)]" data-print-panel>
-                    <div class="grid justify-items-center">
+                  <div class="relative mt-3 grid justify-items-center" data-print-qr-focus>
+                    <div class="rounded-[24px] border border-[#67E8F9]/70 bg-[#0B1024]/76 p-2 shadow-[0_0_26px_rgba(34,211,238,0.34),0_0_18px_rgba(244,114,182,0.16)]">
                       <div
-                        class="qr-code aspect-square w-[56%] rounded-[16px] border-[8px] border-white bg-white shadow-[0_0_24px_rgba(255,255,255,0.18)]"
+                        class="qr-code aspect-square w-[285px] rounded-[18px] border-[9px] border-white bg-white shadow-[0_0_24px_rgba(255,255,255,0.18)]"
                         aria-label="Large salon QR preview"
-                        data-qr-size="240"
+                        data-qr-size="260"
                         data-qr-value="https://pay.nexoratouch.com/salon/bitcoin-nail-bar"
                         data-salon-modal-qr
                       ></div>
                     </div>
                     <p class="hidden" data-salon-modal-link>pay.nexoratouch.com/salon/bitcoin-nail-bar</p>
-                    <p class="mt-1 text-center text-[9px] font-medium text-white/64" data-print-body>Scan to pay, tip, and leave a review.</p>
+                  </div>
+                  <div class="relative mt-3 grid grid-cols-3 items-end gap-2 text-center" data-print-steps>
+                    <div class="border-r border-white/18 px-1">
+                      <span class="mx-auto grid h-6 w-6 place-items-center rounded-full border border-[#F472B6] text-[12px] font-bold text-[#F472B6]">1</span>
+                      <i data-lucide="qr-code" class="mx-auto mt-1 h-7 w-7 text-white drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]"></i>
+                      <p class="mt-0.5 text-[10px] font-semibold text-white" data-print-benefit-label>Scan</p>
+                    </div>
+                    <div class="border-r border-white/18 px-1">
+                      <span class="mx-auto grid h-6 w-6 place-items-center rounded-full border border-[#C084FC] text-[12px] font-bold text-[#C084FC]">2</span>
+                      <i data-lucide="credit-card" class="mx-auto mt-1 h-7 w-7 text-white drop-shadow-[0_0_10px_rgba(192,132,252,0.5)]"></i>
+                      <p class="mt-0.5 text-[10px] font-semibold text-white" data-print-benefit-label>Pay or Tip</p>
+                    </div>
+                    <div class="px-1">
+                      <span class="mx-auto grid h-6 w-6 place-items-center rounded-full border border-[#67E8F9] text-[12px] font-bold text-[#67E8F9]">3</span>
+                      <i data-lucide="star" class="mx-auto mt-1 h-7 w-7 text-white drop-shadow-[0_0_10px_rgba(103,232,249,0.5)]"></i>
+                      <p class="mt-0.5 text-[10px] font-semibold text-white" data-print-benefit-label>Leave a Review</p>
+                    </div>
+                  </div>
+                  <div class="relative mt-3 grid grid-cols-[70px_minmax(0,1fr)] items-center gap-3 rounded-[18px] border border-[#67E8F9]/65 bg-[#0B1024]/76 p-3 shadow-[0_0_24px_rgba(34,211,238,0.28),inset_0_0_20px_rgba(244,114,182,0.12)]" data-print-panel data-print-rewards-panel>
+                    <div class="grid h-[58px] w-[58px] place-items-center rounded-xl border border-white/14 bg-white/[0.05] text-[#F472B6]">
+                      <i data-lucide="gift" class="h-10 w-10 drop-shadow-[0_0_14px_rgba(244,114,182,0.62)]"></i>
+                    </div>
+                    <div class="min-w-0 text-left">
+                      <p class="bg-[linear-gradient(90deg,#F472B6,#22D3EE)] bg-clip-text text-[20px] font-semibold leading-tight text-transparent" data-print-accent>Customer Rewards</p>
+                      <p class="mt-1 text-[10px] font-medium leading-snug text-white/78" data-print-body>Earn rewards, offers, and member perks.</p>
+                    </div>
+                  </div>
+                  <div class="relative mt-3 grid grid-cols-4 gap-1.5 text-center" data-print-benefits>
+                    <div class="border-r border-white/18 px-1 py-1">
+                      <i data-lucide="wallet" class="mx-auto h-7 w-7 text-[#F0ABFC] drop-shadow-[0_0_10px_rgba(240,171,252,0.5)]"></i>
+                      <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Easy<br />Payment</p>
+                    </div>
+                    <div class="border-r border-white/18 px-1 py-1">
+                      <i data-lucide="heart" class="mx-auto h-7 w-7 text-[#F472B6] drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]"></i>
+                      <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Easy<br />Tipping</p>
+                    </div>
+                    <div class="border-r border-white/18 px-1 py-1">
+                      <i data-lucide="bell" class="mx-auto h-7 w-7 text-[#67E8F9] drop-shadow-[0_0_10px_rgba(103,232,249,0.5)]"></i>
+                      <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Review<br />Reminder</p>
+                    </div>
+                    <div class="px-1 py-1">
+                      <i data-lucide="gift" class="mx-auto h-7 w-7 text-[#F0ABFC] drop-shadow-[0_0_10px_rgba(240,171,252,0.5)]"></i>
+                      <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Earn<br />Rewards</p>
+                    </div>
                   </div>
                   <div class="hidden">
                     <p data-salon-modal-address>9738 Hammerly Blvd Ste A, Houston, TX 77080</p>
@@ -3042,8 +3089,23 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
               }
+              [data-salon-print-card]::before {
+                content: "" !important;
+                position: absolute !important;
+                inset: 0 !important;
+                z-index: 1 !important;
+                pointer-events: none !important;
+                opacity: 0.16 !important;
+                background-image: radial-gradient(circle, rgba(255, 255, 255, 0.52) 0.55px, transparent 0.8px) !important;
+                background-size: 3px 3px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }
+              [data-print-dot-overlay] {
+                display: none !important;
+              }
               [data-print-content=\"salon-qr\"] {
-                --print-scale: 0.72;
+                --print-scale: 0.70;
                 --print-side-gutter: 0.24in;
                 position: relative !important;
                 z-index: 2 !important;
@@ -3090,6 +3152,14 @@
                 width: 88% !important;
                 margin-left: auto !important;
                 margin-right: auto !important;
+              }
+              [data-print-steps] {
+                width: 88% !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+              }
+              [data-print-rewards-panel] {
+                width: 78% !important;
               }
             </style>
           </head>
