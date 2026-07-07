@@ -432,6 +432,14 @@
       image-rendering: auto;
     }
 
+    @media screen {
+      [data-salon-qr-modal] [data-salon-print-card] {
+        transform: scale(0.84);
+        transform-origin: top center;
+        margin-bottom: -145px;
+      }
+    }
+
     @media print {
       @page {
         size: 5in 7in;
@@ -492,6 +500,15 @@
       body.is-printing-salon-qr [data-print-content="salon-qr"] {
         position: relative !important;
         z-index: 2 !important;
+      }
+
+      body.is-printing-salon-qr [data-salon-modal-qr] {
+        width: 285px !important;
+      }
+
+      body.is-printing-salon-qr [data-print-logo] {
+        width: 168px !important;
+        max-width: 168px !important;
       }
 
       body.is-printing-salon-qr [data-print-get] {
@@ -578,7 +595,7 @@
 
     <section class="grid justify-items-center gap-9 lg:grid-cols-2 lg:items-start lg:gap-8 xl:grid-cols-3">
       <!-- Merchant -->
-      <article class="w-full max-w-[430px]">
+      <article class="hidden w-full max-w-[430px]" aria-hidden="true">
         <div class="mb-3 flex items-end justify-between gap-4 px-1">
           <div>
             <h2 class="text-lg font-semibold text-white">Merchant Account</h2>
@@ -1587,7 +1604,7 @@
                     <i data-lucide="x" class="h-4 w-4"></i>
                   </button>
                   <div class="relative mx-auto grid justify-items-center text-center">
-                    <img src="https://i.ibb.co/mCt5J2dK/Xexora-TOUCH-USPTO-03.png" alt="Nexora Touch" class="h-auto w-[118px] object-contain drop-shadow-[0_0_20px_rgba(34,211,238,0.48)]" />
+                    <img src="https://i.ibb.co/mCt5J2dK/Xexora-TOUCH-USPTO-03.png" alt="Nexora Touch" class="h-auto w-[118px] object-contain drop-shadow-[0_0_20px_rgba(34,211,238,0.48)]" data-print-logo />
                     <div class="hidden">
                       <span>
                         <img src="assets/bitcoinnailbar_logo.webp" alt="Bitcoin Nail Bar logo" class="hidden h-full w-full rounded-full object-contain" data-salon-modal-logo />
@@ -1609,7 +1626,7 @@
                   <div class="relative mt-3 grid justify-items-center" data-print-qr-focus>
                     <div class="rounded-[24px] border border-[#67E8F9]/70 bg-[#0B1024]/76 p-2 shadow-[0_0_26px_rgba(34,211,238,0.34),0_0_18px_rgba(244,114,182,0.16)]">
                       <div
-                        class="qr-code aspect-square w-[285px] rounded-[18px] border-[9px] border-white bg-white shadow-[0_0_24px_rgba(255,255,255,0.18)]"
+                        class="qr-code aspect-square w-[255px] rounded-[18px] border-[9px] border-white bg-white shadow-[0_0_24px_rgba(255,255,255,0.18)]"
                         aria-label="Large salon QR preview"
                         data-qr-size="260"
                         data-qr-value="https://pay.nexoratouch.com/salon/bitcoin-nail-bar"
@@ -1647,18 +1664,30 @@
                       <p class="mt-0.5 text-[9px] font-medium leading-tight text-white/78" data-print-body>Ask our team about points, offers, or member rewards</p>
                     </div>
                   </div>
-                  <div class="relative mt-3 grid grid-cols-4 gap-1.5 text-center" data-print-benefits>
+                  <div class="relative mt-3 grid grid-cols-[1fr_28px_1fr_28px_1fr_28px_1fr] items-start gap-0 text-center" data-print-benefits>
                     <div class="px-1 py-1">
                       <i data-lucide="wallet" class="mx-auto h-6 w-6 text-[#F0ABFC] drop-shadow-[0_0_10px_rgba(240,171,252,0.5)]"></i>
                       <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Easy<br />Payment</p>
+                    </div>
+                    <div class="relative mt-[15px] h-2" aria-hidden="true">
+                      <span class="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-[#F0ABFC]/45 via-[#F472B6]/85 to-[#C084FC]/45"></span>
+                      <span class="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#F472B6] shadow-[0_0_8px_rgba(244,114,182,0.7)]"></span>
                     </div>
                     <div class="px-1 py-1">
                       <i data-lucide="heart" class="mx-auto h-6 w-6 text-[#F472B6] drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]"></i>
                       <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Easy<br />Tipping</p>
                     </div>
+                    <div class="relative mt-[15px] h-2" aria-hidden="true">
+                      <span class="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-[#F472B6]/45 via-[#C084FC]/85 to-[#67E8F9]/45"></span>
+                      <span class="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C084FC] shadow-[0_0_8px_rgba(192,132,252,0.7)]"></span>
+                    </div>
                     <div class="px-1 py-1">
                       <i data-lucide="bell" class="mx-auto h-6 w-6 text-[#67E8F9] drop-shadow-[0_0_10px_rgba(103,232,249,0.5)]"></i>
                       <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Review<br />Reminder</p>
+                    </div>
+                    <div class="relative mt-[15px] h-2" aria-hidden="true">
+                      <span class="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-[#67E8F9]/45 via-[#F0ABFC]/85 to-[#F472B6]/45"></span>
+                      <span class="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#67E8F9] shadow-[0_0_8px_rgba(103,232,249,0.7)]"></span>
                     </div>
                     <div class="px-1 py-1">
                       <i data-lucide="gift" class="mx-auto h-6 w-6 text-[#F0ABFC] drop-shadow-[0_0_10px_rgba(240,171,252,0.5)]"></i>
@@ -3116,6 +3145,13 @@
                 margin: 0.45in 0 0 var(--print-side-gutter);
                 transform: scale(var(--print-scale));
                 transform-origin: top left;
+              }
+              [data-salon-modal-qr] {
+                width: 285px !important;
+              }
+              [data-print-logo] {
+                width: 168px !important;
+                max-width: 168px !important;
               }
               [data-print-get] {
                 background: none !important;
