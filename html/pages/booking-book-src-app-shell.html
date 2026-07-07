@@ -3745,11 +3745,13 @@
     }
 
     .tech-dialog {
-      width: min(100%, 760px);
-      max-height: min(86vh, 760px);
-      overflow: auto;
+      display: flex;
+      width: min(100%, 920px);
+      max-height: min(88vh, 760px);
+      overflow: hidden;
+      flex-direction: column;
       border: 1px solid var(--nexora-border);
-      border-radius: 16px;
+      border-radius: 14px;
       background: #fff;
       box-shadow: 0 28px 80px rgba(8, 31, 73, 0.24);
     }
@@ -3764,12 +3766,35 @@
     }
 
     .tech-modal-head {
+      flex-shrink: 0;
       border-bottom: 1px solid var(--nexora-border);
+      background: linear-gradient(180deg, #fff, #f8fbff);
+      padding: 14px 16px;
+    }
+
+    .tech-modal-heading {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tech-title-mark {
+      display: inline-flex;
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      border-radius: 11px;
+      background: color-mix(in srgb, var(--nexora-brand) 10%, white);
+      color: var(--nexora-brand);
+      font-size: 16px;
     }
 
     .tech-modal-title {
       color: var(--nexora-text);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
     }
 
@@ -3796,15 +3821,18 @@
 
     .tech-modal-body {
       display: grid;
-      gap: 14px;
-      padding: 16px 18px;
+      grid-template-columns: minmax(230px, 0.85fr) minmax(0, 1.15fr);
+      gap: 12px;
+      overflow: auto;
+      padding: 12px;
     }
 
     .tech-modal-section {
       border: 1px solid var(--nexora-border);
-      border-radius: 12px;
-      background: var(--nexora-canvas);
+      border-radius: 11px;
+      background: #fff;
       padding: 12px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
     }
 
     .tech-modal-section-title {
@@ -3817,9 +3845,27 @@
       margin-bottom: 10px;
     }
 
+    .tech-modal-section:first-child {
+      position: relative;
+      z-index: 3;
+    }
+
+    .tech-select-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 8px;
+    }
+
+    .tech-combobox {
+      position: relative;
+      min-width: 0;
+    }
+
     .tech-search {
       position: relative;
-      margin-bottom: 10px;
+      display: block;
+      margin: 0;
     }
 
     .tech-search i {
@@ -3832,43 +3878,78 @@
       pointer-events: none;
     }
 
+    .tech-search .tech-select-chevron {
+      right: 12px;
+      left: auto;
+      font-size: 12px;
+    }
+
+    .tech-combobox.is-open .tech-select-chevron {
+      transform: translateY(-50%) rotate(180deg);
+    }
+
     .tech-search input {
       width: 100%;
-      height: 40px;
+      height: 42px;
       border: 1px solid var(--nexora-border);
       border-radius: 10px;
       outline: 0;
       background: #fff;
-      padding: 0 12px 0 34px;
+      padding: 0 34px;
       color: var(--nexora-text);
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 13px;
+      font-weight: 700;
     }
 
     .tech-search input:focus {
-      border-color: rgba(70, 72, 216, 0.42);
-      box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.1);
+      border-color: rgba(0, 184, 115, 0.72);
+      box-shadow: 0 0 0 3px rgba(0, 184, 115, 0.12);
+    }
+
+    .tech-select-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      left: 0;
+      z-index: 8;
+      max-height: 292px;
+      overflow-y: auto;
+      border: 1px solid var(--nexora-border);
+      border-radius: 12px;
+      background: #fff;
+      padding: 6px;
+      box-shadow: 0 18px 45px rgba(8, 31, 73, 0.16);
+    }
+
+    .tech-select-menu[hidden] {
+      display: none;
     }
 
     .tech-choice-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 8px;
-      max-height: 260px;
-      overflow-y: auto;
+      gap: 7px;
+      max-height: none;
+      overflow: visible;
       padding-right: 2px;
     }
 
     .tech-choice-card {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
       border: 1px solid var(--nexora-border);
-      border-radius: 11px;
+      border-radius: 10px;
       background: #fff;
-      padding: 10px;
+      padding: 8px;
       color: var(--nexora-muted);
       text-align: left;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .tech-choice-card:hover {
+      border-color: rgba(70, 72, 216, 0.25);
+      background: var(--nexora-surface-muted);
     }
 
     .tech-choice-card.is-active {
@@ -3878,8 +3959,8 @@
     }
 
     .tech-choice-card .tech-avatar {
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       font-size: 12px;
     }
 
@@ -3911,10 +3992,23 @@
       display: block;
     }
 
+    .tech-create-button {
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
     .tech-modal-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
+    }
+
+    .tech-modal-grid .settings-field:nth-child(3),
+    .tech-modal-grid .settings-field:last-child {
+      grid-column: 1 / -1;
     }
 
     .tech-service-checks {
@@ -3951,9 +4045,44 @@
     }
 
     .tech-modal-actions {
+      flex-shrink: 0;
       justify-content: flex-end;
       border-top: 1px solid var(--nexora-border);
-      background: var(--nexora-canvas);
+      background: #fff;
+      padding: 12px 16px;
+    }
+
+    @media (max-width: 767px) {
+      .tech-modal {
+        padding: 10px;
+      }
+
+      .tech-dialog {
+        max-height: 92vh;
+        border-radius: 12px;
+      }
+
+      .tech-modal-head {
+        padding: 12px;
+      }
+
+      .tech-modal-body {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 10px;
+      }
+
+      .tech-choice-grid {
+        max-height: 190px;
+      }
+
+      .tech-modal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tech-service-checks {
+        grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+      }
     }
 
     .sms-preview-grid {
@@ -5484,38 +5613,45 @@
                 <div class="tech-modal" data-tech-modal hidden>
                   <div class="tech-dialog" role="dialog" aria-modal="true" aria-labelledby="tech-modal-title">
                     <div class="tech-modal-head">
-                      <div>
-                        <div class="tech-modal-title" id="tech-modal-title">Thông Tin Thợ</div>
-                        <div class="tech-modal-sub">Tìm thợ theo tên, chỉnh nhanh profile hoặc tạo mới cho SMS, QR tip và booking.</div>
+                      <div class="tech-modal-heading">
+                        <span class="tech-title-mark"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
+                        <div>
+                          <div class="tech-modal-title" id="tech-modal-title">Thông Tin Thợ</div>
+                          <div class="tech-modal-sub">Tìm thợ, chỉnh profile hoặc tạo mới cho SMS, QR tip và booking.</div>
+                        </div>
                       </div>
-                      <button class="tech-modal-close" type="button" data-tech-modal-close aria-label="Close tech modal">×</button>
+                      <button class="tech-modal-close" type="button" data-tech-modal-close aria-label="Close tech modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
                     </div>
                     <div class="tech-modal-body">
                       <div class="tech-modal-section">
                         <div class="tech-modal-section-title"><i class="bi bi-people" aria-hidden="true"></i>Chọn từ danh sách</div>
-                        <label class="tech-search">
-                          <i class="bi bi-search" aria-hidden="true"></i>
-                          <input type="search" data-tech-search placeholder="Tìm theo tên thợ..." autocomplete="off">
-                        </label>
-                        <div class="tech-choice-grid">
-                          <button class="tech-choice-card is-active" type="button" data-tech-choice="kim" data-name="Kim Nguyễn" data-phone="832-555-0161" data-services="Gel, Full Set, Dip" data-zelle="kim.nails@zelle" data-venmo="@kim-nails">
-                            <span class="tech-avatar">K</span>
-                            <span><span class="tech-choice-name">Kim Nguyễn</span><span class="tech-choice-meta">Gel · Full Set · Dip</span></span>
-                          </button>
-                          <button class="tech-choice-card" type="button" data-tech-choice="lan" data-name="Lan Trần" data-phone="713-555-0192" data-services="Pedicure, Gel, Nail Art" data-zelle="lan.tran@zelle" data-venmo="@lan-nailart">
-                            <span class="tech-avatar" style="background: linear-gradient(135deg, var(--brand-cyan), var(--nexora-electric));">L</span>
-                            <span><span class="tech-choice-name">Lan Trần</span><span class="tech-choice-meta">Pedicure · Gel · Nail Art</span></span>
-                          </button>
-                          <button class="tech-choice-card" type="button" data-tech-choice="mai" data-name="Mai Phạm" data-phone="281-555-0138" data-services="Acrylic, Dip, Pedicure" data-zelle="mai.pham@zelle" data-venmo="@maipham-nails">
-                            <span class="tech-avatar" style="background: linear-gradient(135deg, #f472b6, var(--nexora-violet));">M</span>
-                            <span><span class="tech-choice-name">Mai Phạm</span><span class="tech-choice-meta">Acrylic · Dip · Pedicure</span></span>
-                          </button>
-                          <button class="tech-choice-card" type="button" data-tech-create>
-                            <span class="tech-avatar"><i class="bi bi-plus-lg" aria-hidden="true"></i></span>
-                            <span><span class="tech-choice-name">Tạo thợ mới</span><span class="tech-choice-meta">Điền profile mới từ đầu</span></span>
-                          </button>
+                        <div class="tech-select-row">
+                          <div class="tech-combobox" data-tech-combobox>
+                            <label class="tech-search">
+                              <i class="bi bi-search" aria-hidden="true"></i>
+                              <input type="search" data-tech-search data-tech-select-input role="combobox" aria-controls="tech-select-menu" aria-expanded="false" placeholder="Tìm hoặc chọn thợ..." autocomplete="off">
+                              <i class="bi bi-chevron-down tech-select-chevron" aria-hidden="true"></i>
+                            </label>
+                            <div class="tech-select-menu" id="tech-select-menu" data-tech-select-menu hidden>
+                              <div class="tech-choice-grid" role="listbox" aria-label="Danh sách thợ">
+                                <button class="tech-choice-card is-active" type="button" role="option" data-tech-choice="kim" data-name="Kim Nguyễn" data-phone="832-555-0161" data-services="Gel, Full Set, Dip" data-zelle="kim.nails@zelle" data-venmo="@kim-nails">
+                                  <span class="tech-avatar">K</span>
+                                  <span><span class="tech-choice-name">Kim Nguyễn</span><span class="tech-choice-meta">832-555-0161 · Gel · Full Set · Dip</span></span>
+                                </button>
+                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="lan" data-name="Lan Trần" data-phone="713-555-0192" data-services="Pedicure, Gel, Nail Art" data-zelle="lan.tran@zelle" data-venmo="@lan-nailart">
+                                  <span class="tech-avatar" style="background: linear-gradient(135deg, var(--brand-cyan), var(--nexora-electric));">L</span>
+                                  <span><span class="tech-choice-name">Lan Trần</span><span class="tech-choice-meta">713-555-0192 · Pedicure · Gel · Nail Art</span></span>
+                                </button>
+                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="mai" data-name="Mai Phạm" data-phone="281-555-0138" data-services="Acrylic, Dip, Pedicure" data-zelle="mai.pham@zelle" data-venmo="@maipham-nails">
+                                  <span class="tech-avatar" style="background: linear-gradient(135deg, #f472b6, var(--nexora-violet));">M</span>
+                                  <span><span class="tech-choice-name">Mai Phạm</span><span class="tech-choice-meta">281-555-0138 · Acrylic · Dip · Pedicure</span></span>
+                                </button>
+                              </div>
+                              <div class="tech-empty" data-tech-empty>Không tìm thấy thợ phù hợp.</div>
+                            </div>
+                          </div>
+                          <button class="booking-secondary-button tech-create-button" type="button" data-tech-create><i class="bi bi-plus-lg" aria-hidden="true"></i>Tạo mới</button>
                         </div>
-                        <div class="tech-empty" data-tech-empty>Không tìm thấy thợ phù hợp. Bạn có thể tạo thợ mới.</div>
                       </div>
 
                       <div class="tech-modal-section">
@@ -5543,8 +5679,8 @@
                       </div>
                     </div>
                     <div class="tech-modal-actions">
-                      <button class="booking-secondary-button" type="button" data-tech-modal-close>Close</button>
-                      <button class="booking-primary-button" type="button" data-tech-modal-save>Save</button>
+                      <button class="booking-secondary-button" type="button" data-tech-modal-close>Đóng</button>
+                      <button class="booking-primary-button" type="button" data-tech-modal-save><i class="bi bi-check2" aria-hidden="true"></i>Lưu thợ</button>
                     </div>
                   </div>
                 </div>
@@ -5970,7 +6106,6 @@
                         </div>
                         <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
                       </div>
-                      <div class="settings-service-note">AI Voice báo giá · LP hiển thị · Schema cập nhật</div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
@@ -5986,7 +6121,6 @@
                         </div>
                         <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
                       </div>
-                      <div class="settings-service-note">Dịch vụ nền để AI tư vấn nhanh cho khách mới.</div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
@@ -6002,7 +6136,6 @@
                         </div>
                         <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
                       </div>
-                      <div class="settings-service-note">Gắn vào LP, AI Voice báo giá trước khi book.</div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
@@ -6018,7 +6151,6 @@
                         </div>
                         <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
                       </div>
-                      <div class="settings-service-note">Giá thị trường đã điền sẵn, chủ tiệm sửa được.</div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
@@ -6034,7 +6166,6 @@
                         </div>
                         <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
                       </div>
-                      <div class="settings-service-note">Chu kỳ touch-up dùng dịch vụ này để nhắc khách quay lại.</div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
@@ -6050,7 +6181,6 @@
                         </div>
                         <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
                       </div>
-                      <div class="settings-service-note">Hiển thị trên landing page và menu AI Voice.</div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
@@ -6066,7 +6196,6 @@
                         </div>
                         <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
                       </div>
-                      <div class="settings-service-note">AI dùng làm gợi ý nâng cấp khi khách hỏi pedicure.</div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
@@ -6082,7 +6211,6 @@
                         </div>
                         <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
                       </div>
-                      <div class="settings-service-note">Dịch vụ bundle, AI gợi ý upsell nail art.</div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
@@ -6098,7 +6226,6 @@
                         </div>
                         <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
                       </div>
-                      <div class="settings-service-note">Dùng cho gói cuối tuần mẹ và bé.</div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
@@ -6114,7 +6241,6 @@
                         </div>
                         <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
                       </div>
-                      <div class="settings-service-note">Món quà thường dùng trong birthday, review và Mother's Day.</div>
                     </div>
                   </div>
                 </article>
@@ -6717,6 +6843,16 @@
       if (empty) empty.classList.toggle('is-visible', Boolean(normalized) && visibleCount === 0);
     }
 
+    function setTechSelectOpen(open) {
+      var menu = document.querySelector('[data-tech-select-menu]');
+      var input = document.querySelector('[data-tech-select-input]');
+      var combobox = document.querySelector('[data-tech-combobox]');
+
+      if (menu) menu.hidden = !open;
+      if (input) input.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (combobox) combobox.classList.toggle('is-open', Boolean(open));
+    }
+
     function fillTechModalFromChoice(choice) {
       if (!choice) return;
 
@@ -6726,7 +6862,9 @@
 
       var isCreate = choice.hasAttribute('data-tech-create');
       var modal = document.querySelector('[data-tech-modal]');
+      var selectInput = document.querySelector('[data-tech-select-input]');
       if (modal) modal.dataset.techMode = isCreate ? 'create' : 'edit';
+      if (selectInput) selectInput.value = isCreate ? '' : (choice.dataset.name || '');
 
       setTechField('name', isCreate ? '' : choice.dataset.name);
       setTechField('phone', isCreate ? '' : choice.dataset.phone);
@@ -6736,6 +6874,7 @@
       setTechField('note', isCreate ? 'Nhận SMS khi có booking mới, tip và review nhắc tên.' : 'Nhận SMS khi có booking mới, tip và review nhắc tên.');
 
       var nameField = document.querySelector('[data-tech-field="name"]');
+      setTechSelectOpen(false);
       if (nameField) nameField.focus();
     }
 
@@ -6749,7 +6888,7 @@
       if (search) search.value = '';
       filterTechChoices('');
       fillTechModalFromChoice(document.querySelector('[data-tech-choice].is-active') || document.querySelector('[data-tech-choice]'));
-      if (search) search.focus();
+      setTechSelectOpen(false);
     }
 
     function closeTechModal() {
@@ -6757,6 +6896,7 @@
       if (!modal) return;
 
       modal.hidden = true;
+      setTechSelectOpen(false);
       document.body.style.overflow = '';
     }
 
@@ -6976,8 +7116,7 @@
             '<span class="settings-service-suffix">min</span>' +
           '</div>' +
           '<button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>' +
-        '</div>' +
-        '<div class="settings-service-note">Dịch vụ mới, sửa giá/thời lượng rồi bấm Lưu Cấu Hình.</div>';
+        '</div>';
       list.appendChild(row);
       setSettingsStatus('Đã thêm dịch vụ: ' + name + '.');
     }
@@ -7318,6 +7457,11 @@
         return;
       }
 
+      var techCombobox = event.target.closest('[data-tech-combobox]');
+      if (techCombobox && !event.target.closest('[data-tech-choice]')) {
+        setTechSelectOpen(true);
+      }
+
       var techChoice = event.target.closest('[data-tech-choice], [data-tech-create]');
       if (techChoice) {
         fillTechModalFromChoice(techChoice);
@@ -7334,6 +7478,11 @@
       if (techModalClose || event.target.matches('[data-tech-modal]')) {
         closeTechModal();
         return;
+      }
+
+      var techModal = document.querySelector('[data-tech-modal]');
+      if (techModal && !techModal.hidden && !event.target.closest('[data-tech-combobox]')) {
+        setTechSelectOpen(false);
       }
 
       var settingsAction = event.target.closest('[data-settings-action]');
@@ -7404,12 +7553,26 @@
       var techSearch = event.target.closest('[data-tech-search]');
       if (techSearch) {
         filterTechChoices(techSearch.value);
+        setTechSelectOpen(true);
+      }
+    });
+
+    document.addEventListener('focusin', function(event) {
+      var techSelectInput = event.target.closest('[data-tech-select-input]');
+      if (techSelectInput) {
+        setTechSelectOpen(true);
       }
     });
 
     document.addEventListener('keydown', function(event) {
       var modal = document.querySelector('[data-offer-modal]');
       var techModal = document.querySelector('[data-tech-modal]');
+      var techSelectMenu = document.querySelector('[data-tech-select-menu]');
+
+      if (event.key === 'Escape' && techSelectMenu && !techSelectMenu.hidden) {
+        setTechSelectOpen(false);
+        return;
+      }
 
       if (event.key === 'Escape' && techModal && !techModal.hidden) {
         closeTechModal();
