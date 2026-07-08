@@ -80,6 +80,8 @@ assert(!/data-automation-timeline/.test(todayPanel), "Lịch hôm nay should not
 assert(!/reserveOnlineBooking|showAutomation|data-online-book-button/.test(html), "Booking side-stack JavaScript should be removed with the side stack");
 assert(/grid-template-columns:\s*1fr;/.test(desktopBookingGridCss), "Desktop booking grid should be one column after removing the side stack");
 assert(!/SMS Thợ Nhận Được/.test(teamPanel), "Đội thợ should not show the received SMS preview card");
+assert(/<button class="booking-primary-button" type="button" data-tech-modal-open>/.test(teamPanel), "Đội thợ add-tech button should use the primary style");
+assert(!/<button class="booking-secondary-button" type="button" data-tech-modal-open>/.test(teamPanel), "Đội thợ add-tech button should not use the secondary style");
 assert(!/\bZelle\b/i.test(teamPanel), "Đội thợ should not show Zelle fields or rows");
 assert(!/\bVenmo\b/i.test(teamPanel), "Đội thợ should not show Venmo fields or rows");
 assert(!/tech-payment/.test(teamPanel), "Đội thợ should not render payment method blocks");
