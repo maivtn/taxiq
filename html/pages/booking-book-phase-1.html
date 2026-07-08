@@ -584,7 +584,7 @@
     @media (max-width: 767px) {
       .page-tabs {
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 4px;
         margin-top: 14px;
       }
@@ -2814,22 +2814,6 @@
       margin-top: 8px;
     }
 
-    .settings-automation-card .settings-config-row {
-      grid-template-columns: minmax(0, 1fr) auto;
-    }
-
-    .settings-automation-card .settings-config-row > div:first-child {
-      min-width: 0;
-    }
-
-    .settings-automation-card .settings-select {
-      width: 86px;
-      min-width: 86px;
-      max-width: 86px;
-      padding-left: 10px;
-      padding-right: 24px;
-    }
-
     .settings-save-bar {
       display: grid;
       gap: 12px;
@@ -3606,12 +3590,15 @@
     }
 
     .tech-grid {
-      display: grid;
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-wrap: wrap;
       gap: 12px;
     }
 
     .tech-card {
+      flex: 0 1 280px;
+      width: 280px;
+      max-width: 100%;
       border: 1px solid var(--nexora-border);
       border-radius: 12px;
       background: #fff;
@@ -3691,33 +3678,9 @@
       margin-bottom: 10px;
     }
 
-    .tech-payment {
-      display: grid;
-      gap: 7px;
-      border: 1px solid var(--nexora-border);
-      border-radius: 10px;
-      background: var(--nexora-canvas);
-      padding: 10px;
-      color: var(--nexora-muted);
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .tech-payment-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .tech-payment-row strong {
-      color: var(--nexora-brand);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 10px;
-    }
-
     .tech-stats {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: 1fr;
       gap: 8px;
       margin-top: 10px;
       text-align: center;
@@ -4239,7 +4202,6 @@
     .voice-bubble,
     .voice-bridge,
     .voice-log-row,
-    .tech-payment,
     .tech-stat span,
     .trial-note,
     .trial-footer,
@@ -4336,10 +4298,6 @@
         grid-template-columns: minmax(120px, 0.4fr) minmax(0, 1fr);
       }
 
-      .settings-automation-card .settings-config-row {
-        grid-template-columns: minmax(0, 1fr) auto;
-      }
-
       .settings-service-row {
         grid-template-columns: minmax(0, 1fr) auto;
       }
@@ -4394,7 +4352,6 @@
         grid-template-columns: 1fr 1fr;
       }
 
-      .tech-grid,
       .sms-preview-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
@@ -5075,16 +5032,7 @@
             <h1 class="page-title">Booking Book</h1>
             <p class="page-description">Manage salon bookings, appointments, and client scheduling from this workspace.</p>
             <div class="page-tabs" role="tablist" aria-label="Booking Book sections">
-              <button class="page-tab is-active" type="button" role="tab" aria-selected="true" data-tab-target="overview" aria-controls="panel-overview">
-                <span class="page-tab-icon">
-                  <svg class="bi bi-window-dock" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                    <path d="M3.5 11a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm4.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"></path>
-                    <path d="M14 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2zM2 14h12a1 1 0 0 0 1-1V5H1v8a1 1 0 0 0 1 1M2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1z"></path>
-                  </svg>
-                </span>
-                <span>Overview</span>
-              </button>
-              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="booking" aria-controls="panel-booking">
+              <button class="page-tab is-active" type="button" role="tab" aria-selected="true" data-tab-target="booking" aria-controls="panel-booking">
                 <span class="page-tab-icon">
                   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M8 2v4"></path>
@@ -5100,12 +5048,6 @@
                   </svg>
                 </span>
                 <span>Booking Book</span>
-              </button>
-              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="voice" aria-controls="panel-voice">
-                <span class="page-tab-icon">
-                  <i class="bi bi-telephone" aria-hidden="true"></i>
-                </span>
-                <span>AI Voice</span>
               </button>
               <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="plans" aria-controls="panel-plans">
                 <span class="page-tab-icon">
@@ -5123,7 +5065,7 @@
           </div>
 
           <div class="tab-content">
-            <section class="tab-panel is-active" id="panel-overview" data-tab-panel="overview" aria-label="Overview dashboard">
+            <section class="tab-panel" id="panel-overview" aria-label="Overview dashboard" hidden>
             <div class="overview-toolbar">
               <div class="sync-note">Synced 8:02 AM</div>
             </div>
@@ -5252,7 +5194,7 @@
             </div>
             </section>
 
-            <section class="tab-panel" id="panel-booking" data-tab-panel="booking" aria-label="Booking Book panel">
+            <section class="tab-panel is-active" id="panel-booking" data-tab-panel="booking" aria-label="Booking Book panel">
               <div class="booking-toolbar">
                 <div class="booking-subtabs" role="tablist" aria-label="Booking Book views">
                   <button class="booking-subtab is-active" type="button" role="tab" aria-selected="true" data-booking-subtab-target="today" aria-controls="booking-subpanel-today">
@@ -5333,20 +5275,6 @@
                     <div class="kpi-trend">No review request sent</div>
                   </article>
 
-                  <article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-violet);">
-                    <div class="kpi-top">
-                      <div class="kpi-icon">
-                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                          <path d="M3 3v18h18"></path>
-                          <path d="m19 9-5 5-4-4-3 3"></path>
-                        </svg>
-                      </div>
-                      <span class="badge badge-plan">4 sources</span>
-                    </div>
-                    <div class="kpi-label">Tracking Rate</div>
-                    <div class="kpi-value">95%</div>
-                    <div class="kpi-trend">All visits tied to automation</div>
-                  </article>
                 </div>
 
                 <div class="booking-grid">
@@ -5559,12 +5487,7 @@
                       <span class="badge badge-plan">Full Set</span>
                       <span class="badge badge-plan">Dip</span>
                     </div>
-                    <div class="tech-payment">
-                      <div class="tech-payment-row"><span>Zelle</span><strong>kim.nails@zelle</strong></div>
-                      <div class="tech-payment-row"><span>Venmo</span><strong>@kim-nails</strong></div>
-                    </div>
                     <div class="tech-stats">
-                      <div class="tech-stat"><strong>$1,240</strong><span>Tip tháng này</span></div>
                       <div class="tech-stat"><strong>3</strong><span>Khách hôm nay</span></div>
                     </div>
                   </article>
@@ -5583,12 +5506,7 @@
                       <span class="badge badge-plan">Gel</span>
                       <span class="badge badge-plan">Nail Art</span>
                     </div>
-                    <div class="tech-payment">
-                      <div class="tech-payment-row"><span>Zelle</span><strong>lan.tran@zelle</strong></div>
-                      <div class="tech-payment-row"><span>Venmo</span><strong>@lan-nailart</strong></div>
-                    </div>
                     <div class="tech-stats">
-                      <div class="tech-stat"><strong>$980</strong><span>Tip tháng này</span></div>
                       <div class="tech-stat"><strong>2</strong><span>Khách hôm nay</span></div>
                     </div>
                   </article>
@@ -5607,12 +5525,7 @@
                       <span class="badge badge-plan">Dip</span>
                       <span class="badge badge-plan">Pedicure</span>
                     </div>
-                    <div class="tech-payment">
-                      <div class="tech-payment-row"><span>Zelle</span><strong>mai.pham@zelle</strong></div>
-                      <div class="tech-payment-row"><span>Venmo</span><strong>@maipham-nails</strong></div>
-                    </div>
                     <div class="tech-stats">
-                      <div class="tech-stat"><strong>$1,105</strong><span>Tip tháng này</span></div>
                       <div class="tech-stat"><strong>2</strong><span>Khách hôm nay</span></div>
                     </div>
                   </article>
@@ -5642,15 +5555,15 @@
                             </label>
                             <div class="tech-select-menu" id="tech-select-menu" data-tech-select-menu hidden>
                               <div class="tech-choice-grid" role="listbox" aria-label="Danh sách thợ">
-                                <button class="tech-choice-card is-active" type="button" role="option" data-tech-choice="kim" data-name="Kim Nguyễn" data-phone="832-555-0161" data-email="kim@nexoratouch.com" data-services="Gel, Full Set, Dip" data-zelle="kim.nails@zelle" data-venmo="@kim-nails">
+                                <button class="tech-choice-card is-active" type="button" role="option" data-tech-choice="kim" data-name="Kim Nguyễn" data-phone="832-555-0161" data-email="kim@nexoratouch.com" data-services="Gel, Full Set, Dip">
                                   <span class="tech-avatar">K</span>
                                   <span><span class="tech-choice-name">Kim Nguyễn</span><span class="tech-choice-meta">kim@nexoratouch.com · 832-555-0161</span></span>
                                 </button>
-                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="lan" data-name="Lan Trần" data-phone="713-555-0192" data-email="lan.tran@nexoratouch.com" data-services="Pedicure, Gel, Nail Art" data-zelle="lan.tran@zelle" data-venmo="@lan-nailart">
+                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="lan" data-name="Lan Trần" data-phone="713-555-0192" data-email="lan.tran@nexoratouch.com" data-services="Pedicure, Gel, Nail Art">
                                   <span class="tech-avatar" style="background: linear-gradient(135deg, var(--brand-cyan), var(--nexora-electric));">L</span>
                                   <span><span class="tech-choice-name">Lan Trần</span><span class="tech-choice-meta">lan.tran@nexoratouch.com · 713-555-0192</span></span>
                                 </button>
-                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="mai" data-name="Mai Phạm" data-phone="281-555-0138" data-email="mai.pham@nexoratouch.com" data-services="Acrylic, Dip, Pedicure" data-zelle="mai.pham@zelle" data-venmo="@maipham-nails">
+                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="mai" data-name="Mai Phạm" data-phone="281-555-0138" data-email="mai.pham@nexoratouch.com" data-services="Acrylic, Dip, Pedicure">
                                   <span class="tech-avatar" style="background: linear-gradient(135deg, #f472b6, var(--nexora-violet));">M</span>
                                   <span><span class="tech-choice-name">Mai Phạm</span><span class="tech-choice-meta">mai.pham@nexoratouch.com · 281-555-0138</span></span>
                                 </button>
@@ -5681,8 +5594,6 @@
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Eyelash" value="Eyelash">Eyelash</label>
                             </div>
                           </div>
-                          <label class="settings-field"><span class="settings-label">Zelle</span><input class="settings-input" type="text" data-tech-field="zelle" value="kim.nails@zelle"></label>
-                          <label class="settings-field"><span class="settings-label">Venmo</span><input class="settings-input" type="text" data-tech-field="venmo" value="@kim-nails"></label>
                           <label class="settings-field"><span class="settings-label">Ghi chú SMS</span><textarea class="settings-textarea" data-tech-field="note">Nhận SMS khi có booking mới, tip và review nhắc tên.</textarea></label>
                         </div>
                       </div>
@@ -5694,30 +5605,10 @@
                   </div>
                 </div>
 
-                <article class="overview-card overview-card-pad" style="margin-top: 16px;">
-                  <div class="card-heading">
-                    <h2 class="card-title">SMS Thợ Nhận Được</h2>
-                    <span class="card-meta">Automatic</span>
-                  </div>
-                  <div class="sms-preview-grid">
-                    <div class="message-card" style="border-left-color: var(--brand-cyan);">
-                      <strong>Khách mới book</strong>
-                      "Kim ơi, chị có khách 2pm nay: Mai Nguyen · Gel Full Set $45. Reply OK để xác nhận."
-                    </div>
-                    <div class="message-card" style="border-left-color: var(--nexora-success);">
-                      <strong>Tip về</strong>
-                      "Mai Nguyen vừa tip chị $25 qua Zelle. Tổng tip hôm nay: $87."
-                    </div>
-                    <div class="message-card" style="border-left-color: var(--nexora-warning);">
-                      <strong>Review nhắc tên</strong>
-                      "5 sao mới: Chị Kim làm đẹp lắm! Đã đăng lên Google."
-                    </div>
-                  </div>
-                </article>
               </div>
             </section>
 
-            <section class="tab-panel" id="panel-voice" data-tab-panel="voice" aria-label="AI Voice panel">
+            <section class="tab-panel" id="panel-voice" aria-label="AI Voice panel" hidden>
               <div class="voice-kpi-section">
                 <div class="voice-kpis">
                   <article class="overview-card kpi-card" style="--kpi-accent: var(--brand-cyan);" data-voice-card="calls">
@@ -5904,23 +5795,6 @@
                   </div>
                 </div>
 
-                <article class="settings-card is-featured" data-settings-card="magic">
-                  <div class="settings-card-head">
-                    <div>
-                      <div class="settings-card-title">🪄 Magic Fill - Tự Động Lấy Thông Tin</div>
-                      <div class="settings-card-sub">Nhập tên tiệm hoặc website. AI tự điền thông tin tiệm, giờ mở cửa, dịch vụ, giá trong 60 giây.</div>
-                    </div>
-                    <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Thu gọn Magic Fill"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
-                  </div>
-                  <div class="settings-input-row">
-                    <input class="settings-input" type="text" value="bitcoinnailbar.com" aria-label="Magic Fill input">
-                    <button class="booking-primary-button" type="button" data-settings-action="magic">Tự Động Điền</button>
-                    <button class="booking-secondary-button" type="button" data-settings-action="template">Dùng Form Mẫu</button>
-                    <button class="booking-secondary-button" type="button" data-settings-action="sms">Gửi Link SMS</button>
-                  </div>
-                  <div class="settings-progress" data-settings-progress hidden></div>
-                </article>
-
                 <div class="settings-grid">
                   <article class="settings-card">
                     <div class="settings-card-head">
@@ -6058,10 +5932,11 @@
                   </article>
                 </div>
 
-                <article class="settings-card">
-                  <div class="settings-card-head">
-                    <div>
-                      <div class="settings-card-title"><i class="bi bi-currency-dollar" aria-hidden="true"></i>Dịch Vụ & Giá</div>
+                <div class="settings-two-grid">
+                  <article class="settings-card">
+                    <div class="settings-card-head">
+                      <div>
+                        <div class="settings-card-title"><i class="bi bi-currency-dollar" aria-hidden="true"></i>Dịch Vụ & Giá</div>
                       <div class="settings-card-sub">Thời lượng quyết định giờ gửi SMS review và chu kỳ promo touch-up.</div>
                     </div>
                     <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Thu gọn dịch vụ và giá"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
@@ -6254,117 +6129,6 @@
                   </div>
                 </article>
 
-                <article class="settings-card">
-                  <div class="settings-card-head">
-                    <div>
-                      <div class="settings-card-title"><i class="bi bi-gift" aria-hidden="true"></i>Khuyến Mãi & Quà Tặng</div>
-                      <div class="settings-card-sub">Tạo 1 lần, gắn vào QR, SMS Journey, Campaign và landing page.</div>
-                    </div>
-                    <div class="settings-card-actions">
-                      <button class="booking-primary-button" type="button" data-settings-action="new-offer">+ Tạo Ưu Đãi</button>
-                      <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Thu gọn khuyến mãi và quà tặng"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
-                    </div>
-                  </div>
-
-                  <div class="settings-loyalty-card">
-                    <div class="settings-config-row" style="border: 0; background: transparent; padding: 0;">
-                      <div class="settings-loyalty-copy">
-                        <div class="settings-config-title">⭐ Chương Trình Tích Điểm</div>
-                        <div class="settings-config-desc">Khách tích điểm mỗi lần ghé, đổi quà tự động qua QR và SMS.</div>
-                      </div>
-                      <button class="toggle-pill is-on" type="button" aria-label="Toggle loyalty points"></button>
-                    </div>
-                    <div class="settings-loyalty-form">
-                      <label class="settings-field">
-                        <span class="settings-label">Điểm mỗi lần ghé</span>
-                        <input class="settings-input" type="number" value="10">
-                      </label>
-                      <label class="settings-field">
-                        <span class="settings-label">Mốc đổi quà</span>
-                        <input class="settings-input" type="text" value="100 điểm = Free Gel Manicure">
-                      </label>
-                    </div>
-                  </div>
-
-                  <div class="settings-template-library">
-                    <div class="settings-section-head">
-                      <div class="settings-section-title"><i class="bi bi-collection" aria-hidden="true"></i>Mẫu Có Sẵn - Bấm Là Dùng</div>
-                      <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Thu gọn mẫu có sẵn"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
-                    </div>
-                    <div class="settings-card-sub" style="margin-bottom: 10px;">15 chương trình đã chứng minh hiệu quả trong ngành nail - chọn mẫu, sửa số, chạy.</div>
-                    <div class="settings-chip-row" style="margin-bottom: 10px;">
-                      <button class="settings-filter-button is-active" type="button" data-template-filter="all">Tất cả</button>
-                      <button class="settings-filter-button" type="button" data-template-filter="holiday">🎉 Dịp Lễ</button>
-                      <button class="settings-filter-button" type="button" data-template-filter="fill">📅 Lấp Slot</button>
-                      <button class="settings-filter-button" type="button" data-template-filter="growth">📈 Kéo Khách</button>
-                      <button class="settings-filter-button" type="button" data-template-filter="group">👯 Nhóm</button>
-                    </div>
-                    <div class="settings-template-grid" data-template-grid>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="holiday"><div class="settings-template-head"><span class="settings-template-icon tone-rose">🧧</span><div><div class="settings-template-name">Tết Nguyên Đán</div><div class="settings-template-code">TET25 · 25%</div></div></div><div class="settings-template-desc">Tết đến rước Tết - mùa đông nhất năm của tiệm nail Việt.</div><div class="settings-template-effect">🎯 Book kín 1 tuần trước Tết</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="holiday"><div class="settings-template-head"><span class="settings-template-icon tone-rose">💝</span><div><div class="settings-template-name">Valentine</div><div class="settings-template-code">VDAY20 · 20%</div></div></div><div class="settings-template-desc">Tuần trước 14/2 - combo đôi mẹ-con, bạn thân.</div><div class="settings-template-effect">🎯 Tăng booking đôi +40%</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="holiday"><div class="settings-template-head"><span class="settings-template-icon tone-amber">👩‍👧</span><div><div class="settings-template-name">Mother's Day</div><div class="settings-template-code">MOM30 · Free Nail Art</div></div></div><div class="settings-template-desc">Con mua gift card tặng mẹ - kèm free nail art cho mẹ.</div><div class="settings-template-effect">🎯 Bán gift card mạnh nhất năm</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="holiday"><div class="settings-template-head"><span class="settings-template-icon tone-violet">🎓</span><div><div class="settings-template-name">Prom & Graduation</div><div class="settings-template-code">PROM15 · 15%</div></div></div><div class="settings-template-desc">Tháng 4-5, target học sinh - đi theo nhóm 3-5 bạn.</div><div class="settings-template-effect">🎯 Nhóm học sinh book cả dãy ghế</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="holiday"><div class="settings-template-head"><span class="settings-template-icon tone-emerald">🎄</span><div><div class="settings-template-name">Christmas Party Season</div><div class="settings-template-code">HOLIDAY25 · 25%</div></div></div><div class="settings-template-desc">Đầu tháng 12 - mùa tiệc công ty, móng lấp lánh.</div><div class="settings-template-effect">🎯 Tháng doanh thu cao nhất</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="fill"><div class="settings-template-head"><span class="settings-template-icon tone-sky">📅</span><div><div class="settings-template-name">Thứ 3 - Thứ 4 Vắng</div><div class="settings-template-code">MIDWEEK25 · 25%</div></div></div><div class="settings-template-desc">Ghế trống giữa tuần - tiền bốc hơi. Giảm sâu chỉ áp dụng T3-T4.</div><div class="settings-template-effect">🎯 Lấp 60% slot trống</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="fill"><div class="settings-template-head"><span class="settings-template-icon tone-amber">🌅</span><div><div class="settings-template-name">Giờ Sáng Sớm</div><div class="settings-template-code">EARLYBIRD10 · $10 off</div></div></div><div class="settings-template-desc">Slot 9-11am thường trống - giảm cho khách tới sớm.</div><div class="settings-template-effect">🎯 Thợ có việc từ giờ mở cửa</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="fill"><div class="settings-template-head"><span class="settings-template-icon tone-violet">⚡</span><div><div class="settings-template-name">Flash Sale 24 Giờ</div><div class="settings-template-code">FLASH24 · 30%</div></div></div><div class="settings-template-desc">Ngày mai trống bất thường? Bắn tối nay, chỉ hiệu lực ngày mai.</div><div class="settings-template-effect">🎯 Cấp cứu ngày vắng trong 24h</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="growth"><div class="settings-template-head"><span class="settings-template-icon tone-cyan">😴</span><div><div class="settings-template-name">Win-Back 30 Ngày</div><div class="settings-template-code">MISSYOU20 · 20%</div></div></div><div class="settings-template-desc">Khách 30+ ngày chưa về - trước khi họ thành khách tiệm khác.</div><div class="settings-template-effect">🎯 18-25% quay lại</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="growth"><div class="settings-template-head"><span class="settings-template-icon tone-emerald">🤝</span><div><div class="settings-template-name">Giới Thiệu Bạn</div><div class="settings-template-code">REF10 · $10 + $10</div></div></div><div class="settings-template-desc">Chạy quanh năm - khách 5★ thành người bán hàng.</div><div class="settings-template-effect">🎯 Khách mới chi phí $10, LTV $800+</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="growth"><div class="settings-template-head"><span class="settings-template-icon tone-sky">🏡</span><div><div class="settings-template-name">Chào Hàng Xóm Mới</div><div class="settings-template-code">NEIGHBOR15 · 15%</div></div></div><div class="settings-template-desc">In flyer QR cho khu apartment/khu dân cư mới gần tiệm.</div><div class="settings-template-effect">🎯 Khai phá nguồn khách đi bộ</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="growth"><div class="settings-template-head"><span class="settings-template-icon tone-amber">⭐</span><div><div class="settings-template-name">Thưởng Review</div><div class="settings-template-code">REVIEWGIFT · x2 điểm</div></div></div><div class="settings-template-desc">Cần tăng review velocity cho AIO - thưởng điểm khi review.</div><div class="settings-template-effect">🎯 Review velocity x3-5</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="group"><div class="settings-template-head"><span class="settings-template-icon tone-rose">👰</span><div><div class="settings-template-name">Bridal Party</div><div class="settings-template-code">BRIDAL · Cô dâu Free</div></div></div><div class="settings-template-desc">Nhóm 4+ phù dâu - cô dâu miễn phí. Book trước 2 tuần.</div><div class="settings-template-effect">🎯 1 đám cưới = $300-500/booking</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="group"><div class="settings-template-head"><span class="settings-template-icon tone-violet">👯</span><div><div class="settings-template-name">Nhóm Bạn 4+</div><div class="settings-template-code">GROUP4 · 15%</div></div></div><div class="settings-template-desc">Nhóm bạn đi chung 4 người trở lên - mỗi người giảm 15%.</div><div class="settings-template-effect">🎯 Ticket trung bình x4</div></div>
-                      <div class="settings-template-card" role="button" tabindex="0" data-offer-template-open data-template-cat="group"><div class="settings-template-head"><span class="settings-template-icon tone-amber">👩‍👧</span><div><div class="settings-template-name">Mẹ & Bé Cuối Tuần</div><div class="settings-template-code">MOMKID · Kid $15</div></div></div><div class="settings-template-desc">CN thường vắng - mẹ làm full giá, bé chỉ $15.</div><div class="settings-template-effect">🎯 CN thành ngày gia đình</div></div>
-                    </div>
-                  </div>
-
-                  <div class="settings-subsection">
-                    <div class="settings-section-head">
-                      <div class="settings-section-title" style="color: var(--nexora-muted);"><i class="bi bi-bullseye" aria-hidden="true"></i>ĐANG CHẠY CỦA TIỆM</div>
-                      <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Thu gọn ưu đãi đang chạy"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
-                    </div>
-                    <div class="settings-offer-grid is-list">
-                    <div class="settings-offer-card is-row"><span class="settings-offer-icon tone-violet">🟣</span><div><div class="settings-offer-name">QR Reward <span style="color: var(--nexora-success);">10%</span></div><div class="settings-offer-desc">Giảm 10% lần sau - khách quét QR tại quầy · Đã dùng: 127 · Hạn: 30 ngày</div><div class="settings-offer-tags"><span class="badge booking-source-voice">QR</span></div></div><div class="settings-offer-actions"><button class="settings-icon-button" type="button" data-offer-edit-open aria-label="Sửa QR Reward">✎</button><button class="toggle-pill is-on" type="button" aria-label="Toggle QR Reward"></button></div></div>
-                    <div class="settings-offer-card is-row"><span class="settings-offer-icon tone-amber">👋</span><div><div class="settings-offer-name">WELCOME10 <span style="color: var(--nexora-success);">10%</span></div><div class="settings-offer-desc">Khách mới lần đầu - gửi kèm SMS chào · Đã dùng: 38 · Hạn: 14 ngày</div><div class="settings-offer-tags"><span class="badge booking-source-web">Journey</span></div></div><div class="settings-offer-actions"><button class="settings-icon-button" type="button" data-offer-edit-open aria-label="Sửa WELCOME10">✎</button><button class="toggle-pill is-on" type="button" aria-label="Toggle WELCOME10"></button></div></div>
-                    <div class="settings-offer-card is-row"><span class="settings-offer-icon tone-rose">🎂</span><div><div class="settings-offer-name">Birthday Gift <span style="color: var(--nexora-success);">Free Nail Art</span></div><div class="settings-offer-desc">+ giảm 15% cho bạn đi cùng · Đã dùng: 14 · Hạn: 7 ngày</div><div class="settings-offer-tags"><span class="badge booking-source-web">Journey</span></div></div><div class="settings-offer-actions"><button class="settings-icon-button" type="button" data-offer-edit-open aria-label="Sửa Birthday Gift">✎</button><button class="toggle-pill is-on" type="button" aria-label="Toggle Birthday Gift"></button></div></div>
-                    <div class="settings-offer-card is-row"><span class="settings-offer-icon tone-emerald">🤝</span><div><div class="settings-offer-name">Referral $10 <span style="color: var(--nexora-success);">$10 + $10</span></div><div class="settings-offer-desc">Cả người giới thiệu và bạn mới đều nhận $10 · Đã dùng: 9 · Hạn: 60 ngày</div><div class="settings-offer-tags"><span class="badge booking-source-web">Journey</span><span class="badge booking-source-voice">QR</span></div></div><div class="settings-offer-actions"><button class="settings-icon-button" type="button" data-offer-edit-open aria-label="Sửa Referral">✎</button><button class="toggle-pill is-on" type="button" aria-label="Toggle Referral"></button></div></div>
-                    <div class="settings-offer-card is-row"><span class="settings-offer-icon tone-cyan">😴</span><div><div class="settings-offer-name">NAIL20 <span style="color: var(--nexora-success);">20%</span></div><div class="settings-offer-desc">Win-back khách 30+ ngày - kèm free nail art · Đã dùng: 67 · Hạn: CN này</div><div class="settings-offer-tags"><span class="badge booking-source-admin">Campaign</span><span class="badge booking-source-voice">SMS</span></div></div><div class="settings-offer-actions"><button class="settings-icon-button" type="button" data-offer-edit-open aria-label="Sửa NAIL20">✎</button><button class="toggle-pill is-on" type="button" aria-label="Toggle NAIL20"></button></div></div>
-                    <div class="settings-offer-card is-row is-muted"><span class="settings-offer-icon tone-amber">👑</span><div><div class="settings-offer-name">VIP Upgrade <span style="color: var(--nexora-success);">Free Deluxe</span></div><div class="settings-offer-desc">Visit thứ 5 - upgrade pedicure miễn phí · Đã dùng: 0 · Hạn: --</div><div class="settings-offer-tags"><span class="badge booking-source-web">Journey</span></div></div><div class="settings-offer-actions"><button class="settings-icon-button" type="button" data-offer-edit-open aria-label="Sửa VIP Upgrade">✎</button><button class="toggle-pill" type="button" aria-label="Toggle VIP Upgrade"></button></div></div>
-                    </div>
-                  </div>
-
-                  <div class="settings-offer-modal" data-offer-modal hidden>
-                    <div class="settings-offer-dialog" role="dialog" aria-modal="true" aria-labelledby="settings-offer-modal-title">
-                      <div class="settings-offer-modal-head">
-                        <div>
-                          <div class="settings-offer-modal-title" id="settings-offer-modal-title" data-offer-modal-title>Offer</div>
-                          <div class="settings-offer-modal-sub" data-offer-modal-sub>Auto-filled từ item đã chọn.</div>
-                        </div>
-                        <button class="settings-offer-modal-close" type="button" data-offer-modal-close aria-label="Close offer modal">×</button>
-                      </div>
-                      <div class="settings-offer-modal-body">
-                        <div class="settings-offer-modal-grid">
-                          <label class="settings-field"><span class="settings-label">Tên chương trình</span><input class="settings-input" type="text" data-offer-field="name"></label>
-                          <label class="settings-field"><span class="settings-label">Mã code</span><input class="settings-input" type="text" data-offer-field="code"></label>
-                          <label class="settings-field"><span class="settings-label">Giá trị</span><input class="settings-input" type="text" data-offer-field="value"></label>
-                          <label class="settings-field"><span class="settings-label">Nhóm / loại</span><input class="settings-input" type="text" data-offer-field="category"></label>
-                          <label class="settings-field"><span class="settings-label">Kênh</span><input class="settings-input" type="text" data-offer-field="channel"></label>
-                          <label class="settings-field"><span class="settings-label">Trạng thái</span><input class="settings-input" type="text" data-offer-field="status"></label>
-                          <label class="settings-field"><span class="settings-label">Đã dùng</span><input class="settings-input" type="text" data-offer-field="used"></label>
-                          <label class="settings-field"><span class="settings-label">Hạn</span><input class="settings-input" type="text" data-offer-field="expiry"></label>
-                        </div>
-                        <label class="settings-field"><span class="settings-label">Mô tả</span><textarea class="settings-textarea" data-offer-field="description"></textarea></label>
-                        <label class="settings-field"><span class="settings-label">Kết quả / ghi chú</span><textarea class="settings-textarea" data-offer-field="result"></textarea></label>
-                      </div>
-                      <div class="settings-offer-modal-actions">
-                        <button class="booking-secondary-button" type="button" data-offer-modal-close>Close</button>
-                        <button class="booking-primary-button" type="button" data-offer-modal-save>Save</button>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-
-                <div class="settings-two-grid">
                   <article class="settings-card">
                     <div class="settings-card-head">
                       <div>
@@ -6391,37 +6155,6 @@
                     <button class="booking-secondary-button" type="button" data-settings-action="preview" style="margin-top: 10px;">🔊 Nghe Thử</button>
                   </article>
 
-                  <article class="settings-card settings-automation-card">
-                    <div class="settings-card-head">
-                      <div>
-                        <div class="settings-card-title">⚡ Automation Timing</div>
-                        <div class="settings-card-sub">Điều khiển lúc hệ thống gửi review, reminder và tip SMS.</div>
-                      </div>
-                      <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Thu gọn automation timing"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
-                    </div>
-                    <div class="settings-config-stack">
-                      <div class="settings-config-row">
-                        <div><div class="settings-config-title">⭐ SMS review sau khi xong</div><div class="settings-config-desc">Tự gắn theo dịch vụ trong Booking Book.</div></div>
-                        <select class="settings-select settings-automation-select"><option>+1h</option><option selected>+2h</option><option>+4h</option></select>
-                      </div>
-                      <div class="settings-config-row">
-                        <div><div class="settings-config-title">💅 Promo touch-up sau</div><div class="settings-config-desc">Nhắc khách quay lại đúng chu kỳ làm đẹp.</div></div>
-                        <select class="settings-select settings-automation-select"><option>+14d</option><option selected>+18d</option><option>+21d</option></select>
-                      </div>
-                      <div class="settings-config-row">
-                        <div><div class="settings-config-title">🔔 Reminder trước hẹn</div><div class="settings-config-desc">Giảm no-show cho lịch đã đặt.</div></div>
-                        <select class="settings-select settings-automation-select"><option selected>24h</option><option>4h</option><option>2h</option></select>
-                      </div>
-                      <div class="settings-config-row">
-                        <div><div class="settings-config-title">📲 SMS báo thợ khi có booking</div><div class="settings-config-desc">Thợ nhận tên khách, dịch vụ, giờ hẹn.</div></div>
-                        <button class="toggle-pill is-on" type="button" aria-label="Toggle booking SMS to tech"></button>
-                      </div>
-                      <div class="settings-config-row">
-                        <div><div class="settings-config-title">💵 SMS tip cho thợ sau dịch vụ</div><div class="settings-config-desc">Gửi link tip Zelle/Venmo sau khi khách vui.</div></div>
-                        <button class="toggle-pill is-on" type="button" aria-label="Toggle tip SMS"></button>
-                      </div>
-                    </div>
-                  </article>
                 </div>
 
                 <div class="settings-save-bar">
@@ -6437,7 +6170,40 @@
         </section>
       </main>
     </div>
- 
+
+    <nav class="bottom-nav" aria-label="Mobile bottom navigation">
+      <button type="button">
+        <img src="../../public/assets/menu/dashboard.png" alt="">
+        <span>Home</span>
+      </button>
+      <button type="button">
+        <img src="../../public/assets/menu/staff.png" alt="">
+        <span>Staff</span>
+      </button>
+      <button class="is-active" type="button">
+        <svg class="lucide-menu-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M8 2v4"></path>
+          <path d="M16 2v4"></path>
+          <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+          <path d="M3 10h18"></path>
+          <path d="M8 14h.01"></path>
+          <path d="M12 14h.01"></path>
+          <path d="M16 14h.01"></path>
+          <path d="M8 18h.01"></path>
+          <path d="M12 18h.01"></path>
+          <path d="M16 18h.01"></path>
+        </svg>
+        <span>Booking</span>
+      </button>
+      <button type="button">
+        <img src="../../public/assets/menu/touchpoint.png" alt="">
+        <span>QR</span>
+      </button>
+      <button type="button">
+        <img src="../../public/assets/menu/setting.png" alt="">
+        <span>Profile</span>
+      </button>
+    </nav>
 
     <div class="trial-modal" data-trial-modal hidden role="dialog" aria-modal="true" aria-labelledby="trial-modal-title">
       <div class="trial-dialog">
@@ -6588,7 +6354,7 @@
   </div>
 
   <script>
-    var DEFAULT_MAIN_TAB = 'overview';
+    var DEFAULT_MAIN_TAB = 'booking';
 
     function getValidMainTab(target) {
       var tabs = Array.from(document.querySelectorAll('[data-tab-target]')).map(function(tab) {
@@ -6847,8 +6613,6 @@
       setTechField('phone', isCreate ? '' : choice.dataset.phone);
       setTechField('email', isCreate ? '' : choice.dataset.email);
       setTechField('services', isCreate ? '' : choice.dataset.services);
-      setTechField('zelle', isCreate ? '' : choice.dataset.zelle);
-      setTechField('venmo', isCreate ? '' : choice.dataset.venmo);
       setTechField('note', isCreate ? 'Nhận SMS khi có booking mới, tip và review nhắc tên.' : 'Nhận SMS khi có booking mới, tip và review nhắc tên.');
 
       var nameField = document.querySelector('[data-tech-field="name"]');
@@ -6894,14 +6658,11 @@
       var name = card.querySelector('.tech-name');
       var phone = card.querySelector('.tech-phone');
       var services = card.querySelector('.tech-services');
-      var paymentRows = card.querySelectorAll('.tech-payment-row strong');
 
       if (avatar) avatar.textContent = initial;
       if (name) name.textContent = data.name || 'Thợ mới';
       if (phone) phone.textContent = data.phone || 'Chưa có số';
       if (services) services.innerHTML = renderTechBadges(data.services);
-      if (paymentRows[0]) paymentRows[0].textContent = data.zelle || '-';
-      if (paymentRows[1]) paymentRows[1].textContent = data.venmo || '-';
     }
 
     function createTechCard(data) {
@@ -6920,12 +6681,7 @@
           '<button class="toggle-pill is-on" type="button" aria-label="Toggle tech SMS notify"></button>' +
         '</div>' +
         '<div class="tech-services">' + renderTechBadges(data.services) + '</div>' +
-        '<div class="tech-payment">' +
-          '<div class="tech-payment-row"><span>Zelle</span><strong>' + escapeHtml(data.zelle || '-') + '</strong></div>' +
-          '<div class="tech-payment-row"><span>Venmo</span><strong>' + escapeHtml(data.venmo || '-') + '</strong></div>' +
-        '</div>' +
         '<div class="tech-stats">' +
-          '<div class="tech-stat"><strong>$0</strong><span>Tip tháng này</span></div>' +
           '<div class="tech-stat"><strong>0</strong><span>Khách hôm nay</span></div>' +
         '</div>';
       return card;
@@ -6939,9 +6695,7 @@
         name: getTechField('name') || 'Thợ mới',
         phone: getTechField('phone') || 'Chưa có số',
         email: getTechField('email'),
-        services: getTechField('services') || 'Gel',
-        zelle: getTechField('zelle') || '-',
-        venmo: getTechField('venmo') || '-'
+        services: getTechField('services') || 'Gel'
       };
 
       if (modal && modal.dataset.techMode === 'create' && grid) {
@@ -6951,8 +6705,6 @@
         active.dataset.phone = data.phone;
         active.dataset.email = data.email;
         active.dataset.services = data.services;
-        active.dataset.zelle = data.zelle;
-        active.dataset.venmo = data.venmo;
         var choiceName = active.querySelector('.tech-choice-name');
         var choiceMeta = active.querySelector('.tech-choice-meta');
         if (choiceName) choiceName.textContent = data.name;
@@ -7120,24 +6872,7 @@
       setSettingsStatus(panel.hidden ? 'Đã ẩn gợi ý ngành.' : 'Đã mở gợi ý ngành.');
     }
 
-    function runSettingsAction(action, button) {
-      var progress = document.querySelector('[data-settings-progress]');
-
-      if (action === 'magic' && progress) {
-        progress.hidden = false;
-        progress.innerHTML = '✓ Đọc website bitcoinnailbar.com<br>✓ Lấy địa chỉ, giờ mở cửa, review link<br>✓ Nhận diện 24 dịch vụ nail phổ biến<br>✓ Đồng bộ AI Voice, SMS, LP, Schema';
-        setSettingsStatus('Magic Fill đã cập nhật dữ liệu mẫu cho tiệm.');
-        if (button) button.textContent = 'Đã Điền';
-        return;
-      }
-
-      if (action === 'template' && progress) {
-        progress.hidden = false;
-        progress.innerHTML = '✓ Đã nạp form mẫu tiệm nail Houston<br>✓ Chủ tiệm chỉ cần sửa giá, giờ mở cửa và số nhận booking';
-        setSettingsStatus('Form mẫu đã sẵn sàng để chỉnh.');
-        return;
-      }
-
+    function runSettingsAction(action) {
       if (action === 'photo') {
         showServiceScanPanel();
         return;
@@ -7148,29 +6883,8 @@
         return;
       }
 
-                      if (action === 'add-service') {
-                        addSettingsServiceRow('Dịch vụ mới', 30, 45);
-                        return;
-                      }
-
-      if (action === 'new-offer') {
-        openSettingsOfferModal({
-          name: 'Ưu đãi mới',
-          code: '',
-          value: '',
-          category: 'Custom',
-          channel: 'QR, SMS Journey, Campaign',
-          status: 'Draft',
-          used: '0',
-          expiry: '14 ngày',
-          description: '',
-          result: ''
-        }, 'create');
-        return;
-      }
-
-      if (action === 'sms') {
-        setSettingsStatus('Link form cấu hình đã gửi SMS cho chủ tiệm.');
+      if (action === 'add-service') {
+        addSettingsServiceRow('Dịch vụ mới', 30, 45);
         return;
       }
 
