@@ -256,6 +256,7 @@
     }
 
     .lucide-menu-icon {
+      display: block;
       width: 28px;
       height: 28px;
       color: #fff;
@@ -273,7 +274,10 @@
     }
 
     .lucide-menu-icon path,
-    .lucide-menu-icon rect {
+    .lucide-menu-icon rect,
+    .lucide-menu-icon circle,
+    .lucide-menu-icon line,
+    .lucide-menu-icon polyline {
       stroke: currentColor;
       stroke-width: 2;
       stroke-linecap: round;
@@ -3216,14 +3220,12 @@
 
     .booking-subtab-icon svg,
     .booking-action-icon svg,
-    .booking-soft-icon svg,
     .tech-mini-icon svg {
       width: 16px;
       height: 16px;
     }
 
     .booking-action-icon .bi,
-    .booking-soft-icon .bi,
     .tech-mini-icon .bi {
       font-size: 16px;
       line-height: 1;
@@ -3235,9 +3237,6 @@
     .booking-action-icon svg path,
     .booking-action-icon svg rect,
     .booking-action-icon svg circle,
-    .booking-soft-icon svg path,
-    .booking-soft-icon svg rect,
-    .booking-soft-icon svg circle,
     .tech-mini-icon svg path,
     .tech-mini-icon svg rect,
     .tech-mini-icon svg circle {
@@ -3281,7 +3280,6 @@
     }
 
     .booking-action-icon,
-    .booking-soft-icon,
     .tech-mini-icon {
       display: inline-flex;
       width: 34px;
@@ -3428,149 +3426,6 @@
     .booking-source-qr {
       background: rgba(142, 77, 248, 0.13);
       color: var(--nexora-violet);
-    }
-
-    .booking-side-stack {
-      display: grid;
-      gap: 12px;
-    }
-
-    .booking-soft-card {
-      border: 1px solid var(--nexora-border);
-      border-radius: 12px;
-      background: var(--nexora-surface);
-      padding: 16px;
-      box-shadow: var(--nexora-card-shadow);
-    }
-
-    .booking-soft-head {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .booking-soft-title {
-      color: var(--nexora-text);
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .booking-soft-desc {
-      margin-top: 3px;
-      color: var(--nexora-muted);
-      font-size: 11px;
-      font-weight: 600;
-      line-height: 1.45;
-    }
-
-    .booking-form {
-      display: grid;
-      gap: 8px;
-    }
-
-    .booking-form-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
-
-    .booking-input,
-    .booking-select {
-      width: 100%;
-      min-height: 40px;
-      border: 1px solid var(--nexora-border);
-      border-radius: 8px;
-      background: #fff;
-      padding: 0 11px;
-      color: var(--nexora-text);
-      font-size: 13px;
-      font-weight: 600;
-      outline: none;
-    }
-
-    .booking-input:focus,
-    .booking-select:focus {
-      border-color: rgba(70, 72, 216, 0.42);
-      box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.1);
-    }
-
-    .sms-preview-stack {
-      display: grid;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .message-card {
-      border: 1px solid var(--nexora-border);
-      border-left: 3px solid var(--nexora-brand);
-      border-radius: 10px;
-      background: var(--nexora-canvas);
-      padding: 10px;
-      color: var(--nexora-muted);
-      font-size: 11px;
-      font-weight: 600;
-      line-height: 1.55;
-    }
-
-    .message-card strong {
-      display: block;
-      margin-bottom: 3px;
-      color: var(--nexora-text);
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .automation-timeline {
-      display: grid;
-      gap: 0;
-    }
-
-    .timeline-row {
-      position: relative;
-      display: grid;
-      grid-template-columns: 28px minmax(0, 1fr);
-      gap: 10px;
-      padding-bottom: 14px;
-    }
-
-    .timeline-row:not(:last-child)::after {
-      content: "";
-      position: absolute;
-      top: 28px;
-      bottom: 0;
-      left: 13px;
-      width: 2px;
-      background: var(--nexora-rule);
-    }
-
-    .timeline-dot {
-      display: inline-flex;
-      width: 28px;
-      height: 28px;
-      align-items: center;
-      justify-content: center;
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--nexora-brand) 12%, white);
-      color: var(--nexora-brand);
-      font-size: 12px;
-      font-weight: 900;
-      z-index: 1;
-    }
-
-    .timeline-title {
-      color: var(--nexora-text);
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .timeline-desc {
-      margin-top: 3px;
-      color: var(--nexora-muted);
-      font-size: 11px;
-      line-height: 1.45;
     }
 
     .tech-intro {
@@ -4141,7 +3996,6 @@
     .owner-feed-copy,
     .booking-date,
     .booking-name-row,
-    .booking-soft-title,
     .settings-card-title,
     .settings-config-title,
     .settings-service-name,
@@ -4149,7 +4003,6 @@
     .settings-offer-name,
     .service-plan-name,
     .business-name,
-    .timeline-title,
     .tech-name {
       font-weight: 700;
     }
@@ -4173,7 +4026,6 @@
     .plan-rec,
     .plan-check,
     .booking-time,
-    .message-card strong,
     .trial-brand,
     .trial-benefit,
     .trial-chip,
@@ -4192,7 +4044,6 @@
     .kpi-trend,
     .action-desc,
     .booking-detail,
-    .booking-soft-desc,
     .settings-card-sub,
     .settings-template-desc,
     .settings-offer-desc,
@@ -4348,10 +4199,6 @@
         justify-content: flex-end;
       }
 
-      .booking-form-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
       .sms-preview-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
@@ -4387,7 +4234,7 @@
       }
 
       .overview-kpis {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
       .overview-grid {
@@ -4399,7 +4246,7 @@
       }
 
       .booking-grid {
-        grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+        grid-template-columns: 1fr;
       }
 
       .voice-grid {
@@ -4454,6 +4301,12 @@
         margin-top: 8px;
         font-size: 11px;
         line-height: 1.38;
+      }
+
+      .tech-card {
+        flex: 0 1 calc(50% - 6px);
+        width: calc(50% - 6px);
+        max-width: calc(50% - 6px);
       }
 
       #panel-plans .roi-grid {
@@ -4815,7 +4668,7 @@
       }
 
       .booking-sub-panel .overview-kpis {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 6px;
       }
 
@@ -4900,7 +4753,7 @@
       <nav class="sidebar-nav" aria-label="Main menu">
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
-            <img class="sidebar-icon" src="../../public/assets/menu/home.png" alt="">
+            <i class="lucide-menu-icon" data-lucide="home" aria-hidden="true"></i>
           </span>
           <span>Home</span>
         </button>
@@ -4909,72 +4762,61 @@
 
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
-            <img class="sidebar-icon" src="../../public/assets/menu/dashboard.png" alt="">
+            <i class="lucide-menu-icon" data-lucide="layout-dashboard" aria-hidden="true"></i>
           </span>
           <span>Dashboard</span>
         </button>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
-            <img class="sidebar-icon" src="../../public/assets/menu/staff.png" alt="">
+            <i class="lucide-menu-icon" data-lucide="users-round" aria-hidden="true"></i>
           </span>
           <span>Staff</span>
         </button>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
-            <img class="sidebar-icon" src="../../public/assets/menu/tips.png" alt="">
+            <i class="lucide-menu-icon" data-lucide="hand-coins" aria-hidden="true"></i>
           </span>
           <span>Tips</span>
         </button>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
-            <img class="sidebar-icon" src="../../public/assets/menu/reviews.png" alt="">
+            <i class="lucide-menu-icon" data-lucide="star" aria-hidden="true"></i>
           </span>
           <span>Reviews</span>
         </button>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
-            <img class="sidebar-icon" src="../../public/assets/menu/transaction.png" alt="">
+            <i class="lucide-menu-icon" data-lucide="credit-card" aria-hidden="true"></i>
           </span>
           <span>Transactions</span>
         </button>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
-            <img class="sidebar-icon" src="../../public/assets/menu/touchpoint.png" alt="">
+            <i class="lucide-menu-icon" data-lucide="qr-code" aria-hidden="true"></i>
           </span>
           <span>Stations & QR Codes</span>
         </button>
         <button class="nav-item is-active" type="button" aria-current="page">
           <span class="sidebar-icon-wrap">
-            <svg class="lucide-menu-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M8 2v4"></path>
-              <path d="M16 2v4"></path>
-              <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-              <path d="M3 10h18"></path>
-              <path d="M8 14h.01"></path>
-              <path d="M12 14h.01"></path>
-              <path d="M16 14h.01"></path>
-              <path d="M8 18h.01"></path>
-              <path d="M12 18h.01"></path>
-              <path d="M16 18h.01"></path>
-            </svg>
+            <i class="lucide-menu-icon" data-lucide="calendar-days" aria-hidden="true"></i>
           </span>
           <span>Booking Hub</span>
         </button>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
-            <img class="sidebar-icon" src="../../public/assets/menu/analytics.png" alt="">
+            <i class="lucide-menu-icon" data-lucide="chart-no-axes-combined" aria-hidden="true"></i>
           </span>
           <span>Analytics</span>
         </button>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
-            <img class="sidebar-icon" src="../../public/assets/menu/setting.png" alt="">
+            <i class="lucide-menu-icon" data-lucide="settings" aria-hidden="true"></i>
           </span>
           <span>Settings</span>
         </button>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
-            <img class="sidebar-icon" src="../../public/assets/menu/support.png" alt="">
+            <i class="lucide-menu-icon" data-lucide="circle-question-mark" aria-hidden="true"></i>
           </span>
           <span>Support</span>
         </button>
@@ -5365,104 +5207,8 @@
                         </div>
                       </div>
 
-                      <div class="booking-item" data-booking-item data-online-booking-row data-booking-name="Vy Nguyen" hidden>
-                        <div class="booking-time" data-online-time>6:00</div>
-                        <div>
-                          <div class="booking-name-row"><span data-online-name>Vy Nguyen</span> <span class="badge booking-source-lp">Landing Page</span></div>
-                          <div class="booking-detail"><span data-online-service>Pedicure + Gel $70</span> · Thợ: <span data-online-tech>Lan T.</span></div>
-                        </div>
-                        <div class="booking-actions">
-                          <button class="booking-mini-button primary" type="button" data-booking-action="done">✓ Xong</button>
-                          <button class="booking-mini-button" type="button" data-booking-action="noshow">No-show</button>
-                        </div>
-                      </div>
                     </div>
                   </article>
-
-                  <div class="booking-side-stack">
-                    <article class="booking-soft-card">
-                      <div class="booking-soft-head">
-                        <span class="booking-soft-icon">
-                          <i class="bi bi-globe2" aria-hidden="true"></i>
-                        </span>
-                        <div>
-                          <div class="booking-soft-title">Khách Book Online</div>
-                          <div class="booking-soft-desc">nexoratouch.com/btcnailbar/book</div>
-                        </div>
-                      </div>
-                      <div class="booking-form">
-                        <input class="booking-input" type="text" value="Vy Nguyen" data-online-field="name" aria-label="Tên khách">
-                        <div class="booking-form-grid">
-                          <select class="booking-select" data-online-field="service" aria-label="Dịch vụ">
-                            <option>Gel Manicure $35</option>
-                            <option>Full Set Acrylic $45</option>
-                            <option>Dip Powder $40</option>
-                            <option selected>Pedicure + Gel $70</option>
-                          </select>
-                          <select class="booking-select" data-online-field="time" aria-label="Giờ hẹn">
-                            <option>3:00 PM</option>
-                            <option>3:30 PM</option>
-                            <option>4:30 PM</option>
-                            <option selected>6:00 PM</option>
-                          </select>
-                        </div>
-                        <select class="booking-select" data-online-field="tech" aria-label="Thợ">
-                          <option value="Auto">Thợ nào cũng được / Any tech</option>
-                          <option value="Kim N.">Kim Nguyễn</option>
-                          <option value="Lan T." selected>Lan Trần</option>
-                          <option value="Mai P.">Mai Phạm</option>
-                        </select>
-                        <button class="booking-primary-button" type="button" data-online-book-button>Giữ Chỗ Ngay</button>
-                      </div>
-                      <div class="sms-preview-stack" data-online-sms hidden>
-                        <div class="message-card" style="border-left-color: var(--nexora-success);">
-                          <strong>SMS → Khách</strong>
-                          <span data-online-customer-sms>Bitcoin Nail Bar xác nhận lịch của Vy Nguyen.</span>
-                        </div>
-                        <div class="message-card" style="border-left-color: var(--brand-cyan);">
-                          <strong>SMS → Thợ</strong>
-                          <span data-online-tech-sms>Lan ơi, khách online mới cần xác nhận.</span>
-                        </div>
-                      </div>
-                    </article>
-
-                    <article class="booking-soft-card" data-automation-timeline hidden>
-                      <div class="card-heading">
-                        <h2 class="card-title">Chuỗi tự động đã kích hoạt</h2>
-                        <span class="badge badge-success" data-automation-name>Visit</span>
-                      </div>
-                      <div class="automation-timeline">
-                        <div class="timeline-row">
-                          <span class="timeline-dot">✓</span>
-                          <div>
-                            <div class="timeline-title">Visit ghi nhận</div>
-                            <div class="timeline-desc">POST /v1/visits · last_visit updated</div>
-                          </div>
-                        </div>
-                        <div class="timeline-row">
-                          <span class="timeline-dot">★</span>
-                          <div>
-                            <div class="timeline-title">+2h — SMS xin review</div>
-                            <div class="timeline-desc">Vui → Google · Buồn → tin riêng chủ</div>
-                          </div>
-                        </div>
-                        <div class="timeline-row">
-                          <span class="timeline-dot">$</span>
-                          <div>
-                            <div class="timeline-title">+2h — SMS tip cho thợ</div>
-                            <div class="timeline-desc">Zelle/Venmo khi khách còn vui</div>
-                          </div>
-                        </div>
-                        <div class="timeline-row">
-                          <span class="timeline-dot">18</span>
-                          <div>
-                            <div class="timeline-title">+18 ngày — SMS promo touch-up</div>
-                            <div class="timeline-desc">"Móng chị đến lúc touch-up — giảm 15%"</div>
-                          </div>
-                        </div>
-                      </div>
-                    </article>
-                  </div>
                 </div>
               </div>
 
@@ -6171,39 +5917,7 @@
       </main>
     </div>
 
-    <nav class="bottom-nav" aria-label="Mobile bottom navigation">
-      <button type="button">
-        <img src="../../public/assets/menu/dashboard.png" alt="">
-        <span>Home</span>
-      </button>
-      <button type="button">
-        <img src="../../public/assets/menu/staff.png" alt="">
-        <span>Staff</span>
-      </button>
-      <button class="is-active" type="button">
-        <svg class="lucide-menu-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M8 2v4"></path>
-          <path d="M16 2v4"></path>
-          <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-          <path d="M3 10h18"></path>
-          <path d="M8 14h.01"></path>
-          <path d="M12 14h.01"></path>
-          <path d="M16 14h.01"></path>
-          <path d="M8 18h.01"></path>
-          <path d="M12 18h.01"></path>
-          <path d="M16 18h.01"></path>
-        </svg>
-        <span>Booking</span>
-      </button>
-      <button type="button">
-        <img src="../../public/assets/menu/touchpoint.png" alt="">
-        <span>QR</span>
-      </button>
-      <button type="button">
-        <img src="../../public/assets/menu/setting.png" alt="">
-        <span>Profile</span>
-      </button>
-    </nav>
+    
 
     <div class="trial-modal" data-trial-modal hidden role="dialog" aria-modal="true" aria-labelledby="trial-modal-title">
       <div class="trial-dialog">
@@ -6353,8 +6067,17 @@
     </div>
   </div>
 
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
     var DEFAULT_MAIN_TAB = 'booking';
+
+    function renderLucideIcons() {
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    renderLucideIcons();
 
     function getValidMainTab(target) {
       var tabs = Array.from(document.querySelectorAll('[data-tab-target]')).map(function(tab) {
@@ -6451,16 +6174,8 @@
       if (noshowEl) noshowEl.textContent = noshow;
     }
 
-    function showAutomation(name) {
-      var timeline = document.querySelector('[data-automation-timeline]');
-      var label = document.querySelector('[data-automation-name]');
-      if (label) label.textContent = name || 'Visit';
-      if (timeline) timeline.hidden = false;
-    }
-
     function completeBookingItem(item) {
       if (!item) return;
-      var name = item.dataset.bookingName || item.querySelector('.booking-name-row')?.textContent?.trim() || 'Visit';
       var actions = item.querySelector('.booking-actions');
 
       item.classList.remove('is-noshow');
@@ -6469,7 +6184,6 @@
         actions.innerHTML = '<span class="badge badge-success booking-status">SMS đã lên lịch</span>';
       }
 
-      showAutomation(name);
       updateBookingKpis();
     }
 
@@ -6482,52 +6196,6 @@
       if (actions) {
         actions.innerHTML = '<span class="badge badge-warning booking-status">No-show</span>';
       }
-
-      updateBookingKpis();
-    }
-
-    function reserveOnlineBooking() {
-      var row = document.querySelector('[data-online-booking-row]');
-      var sms = document.querySelector('[data-online-sms]');
-      var nameField = document.querySelector('[data-online-field="name"]');
-      var serviceField = document.querySelector('[data-online-field="service"]');
-      var timeField = document.querySelector('[data-online-field="time"]');
-      var techField = document.querySelector('[data-online-field="tech"]');
-
-      if (!row || !nameField || !serviceField || !timeField || !techField) return;
-
-      var name = nameField.value.trim() || 'Vy Nguyen';
-      var service = serviceField.value;
-      var time = timeField.value;
-      var tech = techField.value;
-      var techName = techField.selectedOptions && techField.selectedOptions[0]
-        ? techField.selectedOptions[0].textContent
-        : tech;
-
-      row.hidden = false;
-      row.dataset.bookingName = name;
-      row.classList.remove('is-done', 'is-noshow');
-      row.querySelector('[data-online-time]').textContent = time.replace(' PM', '').replace(' AM', '');
-      row.querySelector('[data-online-name]').textContent = name;
-      row.querySelector('[data-online-service]').textContent = service;
-      row.querySelector('[data-online-tech]').textContent = tech;
-
-      var actions = row.querySelector('.booking-actions');
-      if (actions && !actions.querySelector('[data-booking-action]')) {
-        actions.innerHTML = '<button class="booking-mini-button primary" type="button" data-booking-action="done">✓ Xong</button><button class="booking-mini-button" type="button" data-booking-action="noshow">No-show</button>';
-      }
-
-      var customerSms = document.querySelector('[data-online-customer-sms]');
-      var techSms = document.querySelector('[data-online-tech-sms]');
-      if (customerSms) {
-        customerSms.textContent = 'Bitcoin Nail Bar xác nhận: ' + service + ' lúc ' + time + ' hôm nay cho ' + name + '.';
-      }
-      if (techSms) {
-        techSms.textContent = tech === 'Auto'
-          ? 'Chủ tiệm nhận báo booking chưa gán thợ: ' + name + ' · ' + service + ' · ' + time + '.'
-          : techName + ' nhận SMS booking mới: ' + name + ' · ' + service + ' · ' + time + '.';
-      }
-      if (sms) sms.hidden = false;
 
       updateBookingKpis();
     }
@@ -7336,11 +7004,6 @@
         closeTrialModal();
       }
     });
-
-    var onlineButton = document.querySelector('[data-online-book-button]');
-    if (onlineButton) {
-      onlineButton.addEventListener('click', reserveOnlineBooking);
-    }
 
     document.querySelectorAll('.toggle-pill').forEach(function(toggle) {
       toggle.addEventListener('click', function() {
