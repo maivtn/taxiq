@@ -3460,6 +3460,17 @@
       background: var(--nexora-brand);
     }
 
+    .booking-mini-button.booking-noshow-action {
+      border-color: transparent;
+      background: #ef4444;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(239, 68, 68, 0.2);
+    }
+
+    .booking-mini-button.booking-noshow-action:hover {
+      background: #dc2626;
+    }
+
     .booking-mini-button.icon-only {
       width: 34px;
       min-width: 34px;
@@ -3591,6 +3602,10 @@
 
     .booking-table-row.is-done {
       background: rgba(0, 184, 115, 0.04);
+    }
+
+    .booking-table-row.is-noshow {
+      background: rgba(239, 68, 68, 0.04);
     }
 
     .booking-customer,
@@ -3928,6 +3943,11 @@
     .booking-status-done {
       background: rgba(0, 184, 115, 0.12);
       color: var(--nexora-success);
+    }
+
+    .booking-status-noshow {
+      background: rgba(239, 68, 68, 0.12);
+      color: #dc2626;
     }
 
     .booking-actions {
@@ -4569,25 +4589,36 @@
 
     .tech-schedule-row {
       display: grid;
-      grid-template-columns: auto minmax(52px, 72px) minmax(0, 1fr);
+      grid-template-columns: minmax(82px, 1fr) auto minmax(0, 300px);
       align-items: center;
       gap: 8px;
-      border: 1px solid transparent;
+      border: 1px solid var(--nexora-border);
       border-radius: 10px;
-      background: var(--nexora-canvas);
+      background: #fff;
       padding: 8px;
-      transition: border-color 0.2s, background 0.2s;
+      transition: border-color 0.2s, background 0.2s, opacity 0.2s;
     }
 
-    .tech-schedule-row.is-enabled {
-      border-color: rgba(70, 72, 216, 0.26);
-      background: color-mix(in srgb, var(--nexora-brand) 5%, white);
+    .tech-schedule-row.is-day-off {
+      border-color: var(--nexora-rule);
+      background: var(--nexora-canvas);
+      opacity: 0.62;
     }
 
     .tech-schedule-toggle {
       width: 16px;
       height: 16px;
       accent-color: var(--nexora-brand);
+    }
+
+    .tech-schedule-off {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
     }
 
     .tech-schedule-day {
@@ -4623,7 +4654,7 @@
     }
 
     .tech-schedule-time input:disabled {
-      background: transparent;
+      background: var(--nexora-surface-muted);
       color: var(--nexora-subtle);
     }
 
@@ -4668,7 +4699,11 @@
       }
 
       .tech-schedule-row {
-        grid-template-columns: auto minmax(48px, 60px) minmax(0, 1fr);
+        grid-template-columns: minmax(78px, 1fr) auto;
+      }
+
+      .tech-schedule-time {
+        grid-column: 1 / -1;
       }
     }
 
@@ -5947,7 +5982,7 @@
                         <path d="M16 14h.01"></path>
                       </svg>
                     </span>
-                    <span>Lịch hôm nay</span>
+                    <span>Lịch Hẹn</span>
                   </button>
                   <button class="booking-subtab" type="button" role="tab" aria-selected="false" data-booking-subtab-target="team" aria-controls="booking-subpanel-team">
                     <span class="booking-subtab-icon">
@@ -5966,35 +6001,21 @@
 
               <div class="booking-sub-panel is-active" id="booking-subpanel-today" data-booking-sub-panel="today">
                 <div class="overview-kpis">
-                  <article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-warning);">
+                  <article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-electric);">
                     <div class="kpi-top">
                       <div class="kpi-icon">
                         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                          <path d="M12 8v4"></path>
-                          <path d="M12 16h.01"></path>
-                          <circle cx="12" cy="12" r="10"></circle>
+                          <path d="M8 2v4"></path>
+                          <path d="M16 2v4"></path>
+                          <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                          <path d="M3 10h18"></path>
                         </svg>
                       </div>
-                      <span class="badge badge-warning">Needs SMS</span>
+                      <span class="badge booking-status booking-status-new">New</span>
                     </div>
-                    <div class="kpi-label">New</div>
-                    <div class="kpi-value" data-booking-kpi="new">4</div>
-                    <div class="kpi-trend">Chờ gửi SMS xác nhận</div>
-                  </article>
-
-                  <article class="overview-card kpi-card" style="--kpi-accent: var(--brand-cyan);">
-                    <div class="kpi-top">
-                      <div class="kpi-icon">
-                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                          <path d="M22 2 11 13"></path>
-                          <path d="m22 2-7 20-4-9-9-4Z"></path>
-                        </svg>
-                      </div>
-                      <span class="badge booking-source-sms">SMS sent</span>
-                    </div>
-                    <div class="kpi-label">Đã gửi SMS</div>
-                    <div class="kpi-value" data-booking-kpi="sms">1</div>
-                    <div class="kpi-trend">Chờ khách tới hoặc hoàn tất</div>
+                    <div class="kpi-label">Hẹn Hôm Nay</div>
+                    <div class="kpi-value" data-booking-kpi="today">4</div>
+                    <div class="kpi-trend">Tổng lịch hẹn hôm nay</div>
                   </article>
 
                   <article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-success);">
@@ -6004,11 +6025,26 @@
                           <path d="M20 6 9 17l-5-5"></path>
                         </svg>
                       </div>
-                      <span class="badge badge-success">Done</span>
+                      <span class="badge booking-status booking-status-done">SMS đã kích hoạt</span>
                     </div>
-                    <div class="kpi-label">Hoàn tất</div>
+                    <div class="kpi-label">Đã Xong</div>
                     <div class="kpi-value" data-booking-kpi="done">1</div>
-                    <div class="kpi-trend">Có thể gửi review/reward SMS</div>
+                    <div class="kpi-trend">SMS review đã sẵn sàng</div>
+                  </article>
+
+                  <article class="overview-card kpi-card" style="--kpi-accent: #ef4444;">
+                    <div class="kpi-top">
+                      <div class="kpi-icon">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M18 6 6 18"></path>
+                          <path d="m6 6 12 12"></path>
+                        </svg>
+                      </div>
+                      <span class="badge booking-status booking-status-noshow">No-show</span>
+                    </div>
+                    <div class="kpi-label">Không gửi review</div>
+                    <div class="kpi-value" data-booking-kpi="noshow">0</div>
+                    <div class="kpi-trend">No-show sẽ không gửi review</div>
                   </article>
 
                 </div>
@@ -6127,6 +6163,7 @@
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only primary booking-done-action" type="button" data-booking-action="done" aria-label="Done" title="Done"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Done</span></button>
+                                <button class="booking-mini-button icon-only booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="sr-only">No-show</span></button>
                                 <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
                               </div>
                             </td>
@@ -6158,6 +6195,7 @@
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
+                                <button class="booking-mini-button icon-only booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="sr-only">No-show</span></button>
                                 <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
                               </div>
                             </td>
@@ -6189,6 +6227,7 @@
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
+                                <button class="booking-mini-button icon-only booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="sr-only">No-show</span></button>
                                 <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
                               </div>
                             </td>
@@ -6220,6 +6259,7 @@
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
+                                <button class="booking-mini-button icon-only booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="sr-only">No-show</span></button>
                                 <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
                               </div>
                             </td>
@@ -6251,6 +6291,7 @@
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
+                                <button class="booking-mini-button icon-only booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="sr-only">No-show</span></button>
                                 <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
                               </div>
                             </td>
@@ -6312,20 +6353,6 @@
                           <div>
                             <div class="booking-detail-label">Nguồn</div>
                             <div class="booking-detail-value booking-source-list" data-booking-detail-source></div>
-                          </div>
-                        </div>
-                        <div class="booking-detail-info-item">
-                          <span class="booking-detail-info-icon"><i class="bi bi-telephone" aria-hidden="true"></i></span>
-                          <div>
-                            <div class="booking-detail-label">Phone</div>
-                            <div class="booking-detail-value" data-booking-detail-phone-copy></div>
-                          </div>
-                        </div>
-                        <div class="booking-detail-info-item">
-                          <span class="booking-detail-info-icon"><i class="bi bi-envelope" aria-hidden="true"></i></span>
-                          <div>
-                            <div class="booking-detail-label">Email</div>
-                            <div class="booking-detail-value" data-booking-detail-email-copy></div>
                           </div>
                         </div>
                       </div>
@@ -6495,71 +6522,71 @@
                       </div>
 
                       <div class="tech-modal-section" data-tech-schedule-section>
-                        <div class="tech-modal-section-title"><i class="bi bi-calendar-week" aria-hidden="true"></i>Lịch làm việc</div>
+                        <div class="tech-modal-section-title"><i class="bi bi-calendar-week" aria-hidden="true"></i>Lịch làm việc hằng tuần</div>
                         <div class="tech-schedule" data-tech-field="schedule">
-                          <label class="tech-schedule-row">
-                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="mon" value="mon">
-                            <span class="tech-schedule-day">Mon</span>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Monday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="mon" value="mon">Day off</label>
                             <span class="tech-schedule-time">
-                              <input type="time" data-tech-schedule-start="mon" value="" disabled>
+                              <input type="time" data-tech-schedule-start="mon" value="">
                               <span>to</span>
-                              <input type="time" data-tech-schedule-end="mon" value="" disabled>
+                              <input type="time" data-tech-schedule-end="mon" value="">
                             </span>
-                          </label>
-                          <label class="tech-schedule-row">
-                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="tue" value="tue">
-                            <span class="tech-schedule-day">Tue</span>
+                          </div>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Tuesday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="tue" value="tue">Day off</label>
                             <span class="tech-schedule-time">
-                              <input type="time" data-tech-schedule-start="tue" value="" disabled>
+                              <input type="time" data-tech-schedule-start="tue" value="">
                               <span>to</span>
-                              <input type="time" data-tech-schedule-end="tue" value="" disabled>
+                              <input type="time" data-tech-schedule-end="tue" value="">
                             </span>
-                          </label>
-                          <label class="tech-schedule-row">
-                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="wed" value="wed">
-                            <span class="tech-schedule-day">Wed</span>
+                          </div>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Wednesday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="wed" value="wed">Day off</label>
                             <span class="tech-schedule-time">
-                              <input type="time" data-tech-schedule-start="wed" value="" disabled>
+                              <input type="time" data-tech-schedule-start="wed" value="">
                               <span>to</span>
-                              <input type="time" data-tech-schedule-end="wed" value="" disabled>
+                              <input type="time" data-tech-schedule-end="wed" value="">
                             </span>
-                          </label>
-                          <label class="tech-schedule-row">
-                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="thu" value="thu">
-                            <span class="tech-schedule-day">Thu</span>
+                          </div>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Thursday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="thu" value="thu">Day off</label>
                             <span class="tech-schedule-time">
-                              <input type="time" data-tech-schedule-start="thu" value="" disabled>
+                              <input type="time" data-tech-schedule-start="thu" value="">
                               <span>to</span>
-                              <input type="time" data-tech-schedule-end="thu" value="" disabled>
+                              <input type="time" data-tech-schedule-end="thu" value="">
                             </span>
-                          </label>
-                          <label class="tech-schedule-row">
-                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="fri" value="fri">
-                            <span class="tech-schedule-day">Fri</span>
+                          </div>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Friday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="fri" value="fri">Day off</label>
                             <span class="tech-schedule-time">
-                              <input type="time" data-tech-schedule-start="fri" value="" disabled>
+                              <input type="time" data-tech-schedule-start="fri" value="">
                               <span>to</span>
-                              <input type="time" data-tech-schedule-end="fri" value="" disabled>
+                              <input type="time" data-tech-schedule-end="fri" value="">
                             </span>
-                          </label>
-                          <label class="tech-schedule-row">
-                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="sat" value="sat">
-                            <span class="tech-schedule-day">Sat</span>
+                          </div>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Saturday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="sat" value="sat">Day off</label>
                             <span class="tech-schedule-time">
-                              <input type="time" data-tech-schedule-start="sat" value="" disabled>
+                              <input type="time" data-tech-schedule-start="sat" value="">
                               <span>to</span>
-                              <input type="time" data-tech-schedule-end="sat" value="" disabled>
+                              <input type="time" data-tech-schedule-end="sat" value="">
                             </span>
-                          </label>
-                          <label class="tech-schedule-row">
-                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="sun" value="sun">
-                            <span class="tech-schedule-day">Sun</span>
+                          </div>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Sunday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="sun" value="sun">Day off</label>
                             <span class="tech-schedule-time">
-                              <input type="time" data-tech-schedule-start="sun" value="" disabled>
+                              <input type="time" data-tech-schedule-start="sun" value="">
                               <span>to</span>
-                              <input type="time" data-tech-schedule-end="sun" value="" disabled>
+                              <input type="time" data-tech-schedule-end="sun" value="">
                             </span>
-                          </label>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -7301,6 +7328,7 @@
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
     var DEFAULT_MAIN_TAB = 'booking';
+    var BOOKING_TODAY_DATE = '2026-07-09';
     var BOOKING_SEARCH_PLACEHOLDERS = {
       name: 'Nhập tên khách hàng',
       phone: 'Nhập số phone',
@@ -7424,23 +7452,23 @@
       var items = Array.from(panel.querySelectorAll('[data-booking-item]')).filter(function(item) {
         return !item.hidden;
       });
-      var newCount = items.filter(function(item) {
-        return item.classList.contains('is-new');
-      }).length;
-      var smsCount = items.filter(function(item) {
-        return item.classList.contains('is-sms-sent');
+      var todayCount = items.filter(function(item) {
+        return item.dataset.bookingDate === BOOKING_TODAY_DATE;
       }).length;
       var done = items.filter(function(item) {
         return item.classList.contains('is-done');
       }).length;
+      var noshow = items.filter(function(item) {
+        return item.classList.contains('is-noshow');
+      }).length;
 
-      var newEl = panel.querySelector('[data-booking-kpi="new"]');
-      var smsEl = panel.querySelector('[data-booking-kpi="sms"]');
+      var todayEl = panel.querySelector('[data-booking-kpi="today"]');
       var doneEl = panel.querySelector('[data-booking-kpi="done"]');
+      var noshowEl = panel.querySelector('[data-booking-kpi="noshow"]');
 
-      if (newEl) newEl.textContent = newCount;
-      if (smsEl) smsEl.textContent = smsCount;
+      if (todayEl) todayEl.textContent = todayCount;
       if (doneEl) doneEl.textContent = done;
+      if (noshowEl) noshowEl.textContent = noshow;
 
       var emptyState = panel.querySelector('[data-booking-empty]');
       if (emptyState) emptyState.hidden = items.length > 0;
@@ -7509,6 +7537,9 @@
       } else if (item && item.classList.contains('is-sms-sent')) {
         actions += '<button class="booking-mini-button icon-only primary booking-done-action" type="button" data-booking-action="done" aria-label="Done" title="Done"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Done</span></button>';
       }
+      if (item && (item.classList.contains('is-new') || item.classList.contains('is-sms-sent'))) {
+        actions += '<button class="booking-mini-button icon-only booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="sr-only">No-show</span></button>';
+      }
       actions += '<button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>';
       return actions;
     }
@@ -7559,7 +7590,7 @@
       var statusCell = item.querySelector('.booking-status-cell');
       var actions = item.querySelector('.booking-actions');
 
-      item.classList.remove('is-new', 'is-sms-sent', 'is-done');
+      item.classList.remove('is-new', 'is-sms-sent', 'is-done', 'is-noshow');
 
       if (status === 'sms-sent') {
         item.classList.add('is-sms-sent');
@@ -7570,6 +7601,11 @@
         item.classList.add('is-done');
         if (statusCell) {
           statusCell.innerHTML = '<span class="badge booking-status booking-status-done">Hoàn tất</span>';
+        }
+      } else if (status === 'noshow') {
+        item.classList.add('is-noshow');
+        if (statusCell) {
+          statusCell.innerHTML = '<span class="badge booking-status booking-status-noshow">No-show</span>';
         }
       } else {
         item.classList.add('is-new');
@@ -7592,6 +7628,10 @@
 
     function completeBookingItem(item) {
       setBookingStatus(item, 'done');
+    }
+
+    function markBookingNoShow(item) {
+      setBookingStatus(item, 'noshow');
     }
 
     function getBookingSearchValue(item, field) {
@@ -7743,9 +7783,7 @@
       setBookingDetailText('[data-booking-detail-initials]', getBookingCustomerInitials(item.dataset.bookingName));
       setBookingDetailText('[data-booking-detail-name]', item.dataset.bookingName);
       setBookingDetailText('[data-booking-detail-phone]', phone);
-      setBookingDetailText('[data-booking-detail-phone-copy]', phone);
       setBookingDetailText('[data-booking-detail-email]', item.dataset.bookingEmail);
-      setBookingDetailText('[data-booking-detail-email-copy]', item.dataset.bookingEmail);
       setBookingDetailSource(item);
       setBookingDetailServices(item);
       setBookingDetailText('[data-booking-detail-tech]', item.dataset.bookingTech);
@@ -7785,41 +7823,43 @@
       return schedule;
     }
 
-    function syncTechScheduleRow(toggle) {
-      if (!toggle) return;
+    function syncTechDayOffRow(dayOff) {
+      if (!dayOff) return;
 
-      var day = toggle.dataset.techScheduleDay;
-      var row = toggle.closest('.tech-schedule-row');
+      var day = dayOff.dataset.techDayOff;
+      var row = dayOff.closest('.tech-schedule-row');
       var start = document.querySelector('[data-tech-schedule-start="' + day + '"]');
       var end = document.querySelector('[data-tech-schedule-end="' + day + '"]');
-      var enabled = Boolean(toggle.checked);
+      var isDayOff = Boolean(dayOff.checked);
 
-      if (row) row.classList.toggle('is-enabled', enabled);
+      if (row) row.classList.toggle('is-day-off', isDayOff);
       [start, end].forEach(function(input) {
         if (!input) return;
-        input.disabled = !enabled;
-        if (!enabled) input.value = '';
+        input.disabled = isDayOff;
+        if (isDayOff) input.value = '';
       });
     }
 
-    function setTechScheduleValue(value) {
+    function setTechScheduleValue(value, options) {
       var schedule = parseTechSchedule(value);
-      document.querySelectorAll('[data-tech-schedule-day]').forEach(function(toggle) {
-        var day = toggle.dataset.techScheduleDay;
+      document.querySelectorAll('[data-tech-day-off]').forEach(function(dayOff) {
+        var day = dayOff.dataset.techDayOff;
         var daySchedule = schedule[day];
         var start = document.querySelector('[data-tech-schedule-start="' + day + '"]');
         var end = document.querySelector('[data-tech-schedule-end="' + day + '"]');
 
-        toggle.checked = Boolean(daySchedule);
+        dayOff.checked = options && options.blank ? false : !daySchedule;
         if (start) start.value = daySchedule ? daySchedule.start : '';
         if (end) end.value = daySchedule ? daySchedule.end : '';
-        syncTechScheduleRow(toggle);
+        syncTechDayOffRow(dayOff);
       });
     }
 
     function getTechScheduleValue() {
-      return Array.from(document.querySelectorAll('[data-tech-schedule-day]:checked')).map(function(toggle) {
-        var day = toggle.dataset.techScheduleDay;
+      return Array.from(document.querySelectorAll('[data-tech-day-off]')).map(function(dayOff) {
+        if (dayOff.checked) return '';
+
+        var day = dayOff.dataset.techDayOff;
         var start = document.querySelector('[data-tech-schedule-start="' + day + '"]');
         var end = document.querySelector('[data-tech-schedule-end="' + day + '"]');
         var startValue = start ? start.value : '';
@@ -7828,7 +7868,7 @@
       }).filter(Boolean).join(';');
     }
 
-    function setTechField(name, value) {
+    function setTechField(name, value, options) {
       if (name === 'services') {
         var selectedServices = (value || '').split(',').map(function(service) {
           return service.trim().toLowerCase();
@@ -7841,7 +7881,7 @@
       }
 
       if (name === 'schedule') {
-        setTechScheduleValue(value);
+        setTechScheduleValue(value, options);
         return;
       }
 
@@ -7922,7 +7962,7 @@
       setTechField('phone', isCreate ? '' : choice.dataset.phone);
       setTechField('email', isCreate ? '' : choice.dataset.email);
       setTechField('services', isCreate ? '' : choice.dataset.services);
-      setTechField('schedule', isCreate ? '' : choice.dataset.schedule);
+      setTechField('schedule', choice.dataset.schedule, { blank: isCreate });
 
       var nameField = document.querySelector('[data-tech-field="name"]');
       setTechSelectOpen(false);
@@ -8489,10 +8529,10 @@
       bookingClearFilters.addEventListener('click', clearBookingFilters);
     }
 
-    document.querySelectorAll('[data-tech-schedule-day]').forEach(function(toggle) {
-      syncTechScheduleRow(toggle);
-      toggle.addEventListener('change', function() {
-        syncTechScheduleRow(toggle);
+    document.querySelectorAll('[data-tech-day-off]').forEach(function(dayOff) {
+      syncTechDayOffRow(dayOff);
+      dayOff.addEventListener('change', function() {
+        syncTechDayOffRow(dayOff);
       });
     });
 
@@ -8510,6 +8550,8 @@
           sendBookingSms(item);
         } else if (bookingAction.dataset.bookingAction === 'done') {
           completeBookingItem(item);
+        } else if (bookingAction.dataset.bookingAction === 'noshow') {
+          markBookingNoShow(item);
         } else if (bookingAction.dataset.bookingAction === 'detail') {
           openBookingDetailModal(item);
         }
