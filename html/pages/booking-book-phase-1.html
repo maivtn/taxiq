@@ -3570,12 +3570,16 @@
       background: rgba(70, 72, 216, 0.03);
     }
 
-    .booking-table-row.is-done {
-      background: rgba(0, 184, 115, 0.04);
+    .booking-table-row.is-new {
+      background: rgba(245, 158, 11, 0.035);
     }
 
-    .booking-table-row.is-noshow {
-      opacity: 0.58;
+    .booking-table-row.is-sms-sent {
+      background: rgba(50, 215, 255, 0.035);
+    }
+
+    .booking-table-row.is-done {
+      background: rgba(0, 184, 115, 0.04);
     }
 
     .booking-customer,
@@ -5856,21 +5860,35 @@
 
               <div class="booking-sub-panel is-active" id="booking-subpanel-today" data-booking-sub-panel="today">
                 <div class="overview-kpis">
+                  <article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-warning);">
+                    <div class="kpi-top">
+                      <div class="kpi-icon">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M12 8v4"></path>
+                          <path d="M12 16h.01"></path>
+                          <circle cx="12" cy="12" r="10"></circle>
+                        </svg>
+                      </div>
+                      <span class="badge badge-warning">Needs SMS</span>
+                    </div>
+                    <div class="kpi-label">New</div>
+                    <div class="kpi-value" data-booking-kpi="new">4</div>
+                    <div class="kpi-trend">Chờ gửi SMS xác nhận</div>
+                  </article>
+
                   <article class="overview-card kpi-card" style="--kpi-accent: var(--brand-cyan);">
                     <div class="kpi-top">
                       <div class="kpi-icon">
                         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                          <path d="M8 2v4"></path>
-                          <path d="M16 2v4"></path>
-                          <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-                          <path d="M3 10h18"></path>
+                          <path d="M22 2 11 13"></path>
+                          <path d="m22 2-7 20-4-9-9-4Z"></path>
                         </svg>
                       </div>
-                      <span class="badge booking-source-voice">/v1/bookings</span>
+                      <span class="badge booking-source-sms">SMS sent</span>
                     </div>
-                    <div class="kpi-label">Tất Cả Hẹn</div>
-                    <div class="kpi-value" data-booking-kpi="total">6</div>
-                    <div class="kpi-trend">Voice · Landing Page · SMS · QR</div>
+                    <div class="kpi-label">Đã gửi SMS</div>
+                    <div class="kpi-value" data-booking-kpi="sms">1</div>
+                    <div class="kpi-trend">Chờ khách tới hoặc hoàn tất</div>
                   </article>
 
                   <article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-success);">
@@ -5880,27 +5898,11 @@
                           <path d="M20 6 9 17l-5-5"></path>
                         </svg>
                       </div>
-                      <span class="badge badge-success">SMS fired</span>
+                      <span class="badge badge-success">Done</span>
                     </div>
-                    <div class="kpi-label">Đã Xác Nhận</div>
-                    <div class="kpi-value" data-booking-kpi="done">2</div>
-                    <div class="kpi-trend">SMS confirm + reminder scheduled</div>
-                  </article>
-
-                  <article class="overview-card kpi-card" style="--kpi-accent: #ef4444;">
-                    <div class="kpi-top">
-                      <div class="kpi-icon">
-                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <path d="m15 9-6 6"></path>
-                          <path d="m9 9 6 6"></path>
-                        </svg>
-                      </div>
-                      <span class="badge badge-warning">Skipped</span>
-                    </div>
-                    <div class="kpi-label">No-show</div>
-                    <div class="kpi-value" data-booking-kpi="noshow">0</div>
-                    <div class="kpi-trend">No review request sent</div>
+                    <div class="kpi-label">Hoàn tất</div>
+                    <div class="kpi-value" data-booking-kpi="done">1</div>
+                    <div class="kpi-trend">Có thể gửi review/reward SMS</div>
                   </article>
 
                 </div>
@@ -5985,15 +5987,15 @@
                                 <div class="booking-time-date">July 9, 2026</div>
                               </div>
                             </td>
-                            <td class="booking-status-cell"><span class="badge badge-success booking-status">Đã xác nhận</span></td>
+                            <td class="booking-status-cell"><span class="badge badge-success booking-status">Hoàn tất</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>
+                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
                               </div>
                             </td>
                           </tr>
 
-                          <tr class="booking-table-row is-done" data-booking-item data-booking-id="booking-sophie-tran" data-booking-name="Sophie Tran" data-booking-phone="2815550196" data-booking-email="sophie.tran@example.com" data-booking-service="Gel Manicure Nail Art" data-booking-tech="Kim N." data-booking-date="2026-07-09" data-booking-note="Booked from landing page after seeing the gel manicure promo. Customer wants a neutral pink base with one simple accent nail.">
+                          <tr class="booking-table-row is-sms-sent" data-booking-item data-booking-id="booking-sophie-tran" data-booking-name="Sophie Tran" data-booking-phone="2815550196" data-booking-email="sophie.tran@example.com" data-booking-service="Gel Manicure Nail Art" data-booking-tech="Kim N." data-booking-date="2026-07-09" data-booking-note="Booked from landing page after seeing the gel manicure promo. Customer wants a neutral pink base with one simple accent nail.">
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Sophie Tran <span class="badge booking-source-lp">Landing Page</span></div>
@@ -6015,15 +6017,16 @@
                                 <div class="booking-time-date">July 9, 2026</div>
                               </div>
                             </td>
-                            <td class="booking-status-cell"><span class="badge badge-success booking-status">SMS đã lên lịch</span></td>
+                            <td class="booking-status-cell"><span class="badge booking-source-sms booking-status">Đã gửi SMS</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>
+                                <button class="booking-mini-button icon-only primary booking-done-action" type="button" data-booking-action="done" aria-label="Done" title="Done"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Done</span></button>
+                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
                               </div>
                             </td>
                           </tr>
 
-                          <tr class="booking-table-row" data-booking-item data-booking-id="booking-mai-nguyen" data-booking-name="Mai Nguyen" data-booking-phone="8325550164" data-booking-email="mai.nguyen@example.com" data-booking-service="Gel Full Set Removal" data-booking-tech="Linda" data-booking-date="2026-07-09" data-booking-note="Customer initially requested Elio but he was unavailable; booked with Linda instead. Phone: 14182188221. Please confirm almond shape and light pink finish before start time.">
+                          <tr class="booking-table-row is-new" data-booking-item data-booking-id="booking-mai-nguyen" data-booking-name="Mai Nguyen" data-booking-phone="8325550164" data-booking-email="mai.nguyen@example.com" data-booking-service="Gel Full Set Removal" data-booking-tech="Linda" data-booking-date="2026-07-09" data-booking-note="Customer initially requested Elio but he was unavailable; booked with Linda instead. Phone: 14182188221. Please confirm almond shape and light pink finish before start time.">
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Mai Nguyen <span class="badge booking-source-voice">Voice</span> <span class="badge badge-warning">Request</span></div>
@@ -6048,13 +6051,13 @@
                             <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button icon-only primary booking-confirm-action" type="button" data-booking-action="done" aria-label="Xác nhận" title="Xác nhận"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Xác nhận</span></button>
-                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>
+                                <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
+                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
                               </div>
                             </td>
                           </tr>
 
-                          <tr class="booking-table-row" data-booking-item data-booking-id="booking-jennifer-s" data-booking-name="Jennifer S." data-booking-phone="7135550127" data-booking-email="jennifer.s@example.com" data-booking-service="Full Set Acrylic French Tip" data-booking-tech="Mai P." data-booking-date="2026-07-09" data-booking-note="Customer asked for a quiet corner and extra time for acrylic removal. She may bring a reference photo for the French tip shape.">
+                          <tr class="booking-table-row is-new" data-booking-item data-booking-id="booking-jennifer-s" data-booking-name="Jennifer S." data-booking-phone="7135550127" data-booking-email="jennifer.s@example.com" data-booking-service="Full Set Acrylic French Tip" data-booking-tech="Mai P." data-booking-date="2026-07-09" data-booking-note="Customer asked for a quiet corner and extra time for acrylic removal. She may bring a reference photo for the French tip shape.">
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Jennifer S. <span class="badge booking-source-sms">SMS</span></div>
@@ -6079,13 +6082,13 @@
                             <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button icon-only primary booking-confirm-action" type="button" data-booking-action="done" aria-label="Xác nhận" title="Xác nhận"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Xác nhận</span></button>
-                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>
+                                <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
+                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
                               </div>
                             </td>
                           </tr>
 
-                          <tr class="booking-table-row" data-booking-item data-booking-id="booking-tina-vo" data-booking-name="Tina Vo" data-booking-phone="3465550188" data-booking-email="tina.vo@example.com" data-booking-service="Dip Powder Chrome Design" data-booking-tech="Lan T." data-booking-date="2026-07-17" data-booking-note="Requested chrome design but has not picked a color yet. Send reminder SMS the morning of the appointment.">
+                          <tr class="booking-table-row is-new" data-booking-item data-booking-id="booking-tina-vo" data-booking-name="Tina Vo" data-booking-phone="3465550188" data-booking-email="tina.vo@example.com" data-booking-service="Dip Powder Chrome Design" data-booking-tech="Lan T." data-booking-date="2026-07-17" data-booking-note="Requested chrome design but has not picked a color yet. Send reminder SMS the morning of the appointment.">
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Tina Vo <span class="badge booking-source-lp">Landing Page</span></div>
@@ -6110,13 +6113,13 @@
                             <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button icon-only primary booking-confirm-action" type="button" data-booking-action="done" aria-label="Xác nhận" title="Xác nhận"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Xác nhận</span></button>
-                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>
+                                <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
+                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
                               </div>
                             </td>
                           </tr>
 
-                          <tr class="booking-table-row" data-booking-item data-booking-id="booking-anna-le" data-booking-name="Anna Le" data-booking-phone="2815550119" data-booking-email="anna.le@example.com" data-booking-service="Pedicure Gel Polish" data-booking-tech="Mai P." data-booking-date="2026-07-17" data-booking-note="QR booking request came in after hours. Customer prefers an evening slot and asked to be notified if an earlier opening appears.">
+                          <tr class="booking-table-row is-new" data-booking-item data-booking-id="booking-anna-le" data-booking-name="Anna Le" data-booking-phone="2815550119" data-booking-email="anna.le@example.com" data-booking-service="Pedicure Gel Polish" data-booking-tech="Mai P." data-booking-date="2026-07-17" data-booking-note="QR booking request came in after hours. Customer prefers an evening slot and asked to be notified if an earlier opening appears.">
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Anna Le <span class="badge booking-source-qr">QR</span> <span class="badge badge-warning">Request</span></div>
@@ -6138,11 +6141,11 @@
                                 <div class="booking-time-date">July 17, 2026</div>
                               </div>
                             </td>
-                            <td class="booking-status-cell"><span class="badge booking-source-lp booking-status">Chờ xác nhận</span></td>
+                            <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button icon-only primary booking-confirm-action" type="button" data-booking-action="done" aria-label="Xác nhận" title="Xác nhận"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Xác nhận</span></button>
-                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>
+                                <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
+                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
                               </div>
                             </td>
                           </tr>
@@ -6196,13 +6199,6 @@
                           <div>
                             <div class="booking-detail-label">Thời gian</div>
                             <div class="booking-detail-value" data-booking-detail-time></div>
-                          </div>
-                        </div>
-                        <div class="booking-detail-info-item">
-                          <span class="booking-detail-info-icon"><i class="bi bi-calendar2-week" aria-hidden="true"></i></span>
-                          <div>
-                            <div class="booking-detail-label">Ngày</div>
-                            <div class="booking-detail-value" data-booking-detail-date></div>
                           </div>
                         </div>
                         <div class="booking-detail-info-item">
@@ -7253,20 +7249,23 @@
       var items = Array.from(panel.querySelectorAll('[data-booking-item]')).filter(function(item) {
         return !item.hidden;
       });
+      var newCount = items.filter(function(item) {
+        return item.classList.contains('is-new');
+      }).length;
+      var smsCount = items.filter(function(item) {
+        return item.classList.contains('is-sms-sent');
+      }).length;
       var done = items.filter(function(item) {
         return item.classList.contains('is-done');
       }).length;
-      var noshow = items.filter(function(item) {
-        return item.classList.contains('is-noshow');
-      }).length;
 
-      var totalEl = panel.querySelector('[data-booking-kpi="total"]');
+      var newEl = panel.querySelector('[data-booking-kpi="new"]');
+      var smsEl = panel.querySelector('[data-booking-kpi="sms"]');
       var doneEl = panel.querySelector('[data-booking-kpi="done"]');
-      var noshowEl = panel.querySelector('[data-booking-kpi="noshow"]');
 
-      if (totalEl) totalEl.textContent = items.length;
+      if (newEl) newEl.textContent = newCount;
+      if (smsEl) smsEl.textContent = smsCount;
       if (doneEl) doneEl.textContent = done;
-      if (noshowEl) noshowEl.textContent = noshow;
 
       var emptyState = panel.querySelector('[data-booking-empty]');
       if (emptyState) emptyState.hidden = items.length > 0;
@@ -7328,11 +7327,14 @@
       return time + ' · ' + date;
     }
 
-    function renderBookingCardActions(item) {
-      var actions = '<button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>';
-      if (!item.classList.contains('is-done') && !item.classList.contains('is-noshow')) {
-        actions = '<button class="booking-mini-button icon-only primary booking-confirm-action" type="button" data-booking-action="done" aria-label="Xác nhận" title="Xác nhận"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Xác nhận</span></button>' + actions;
+    function renderBookingActionButtons(item) {
+      var actions = '';
+      if (item && item.classList.contains('is-new')) {
+        actions += '<button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>';
+      } else if (item && item.classList.contains('is-sms-sent')) {
+        actions += '<button class="booking-mini-button icon-only primary booking-done-action" type="button" data-booking-action="done" aria-label="Done" title="Done"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Done</span></button>';
       }
+      actions += '<button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>';
       return actions;
     }
 
@@ -7366,7 +7368,7 @@
             '<div class="booking-card-info-row"><span class="booking-card-label">Thời gian</span><span class="booking-card-value">' + escapeHtml(getBookingCardTimeText(item)) + '</span></div>' +
             '<div class="booking-card-info-row"><span class="booking-card-label">Nguồn</span><span class="booking-card-value booking-source-list">' + renderBookingSourceBadges(item) + '</span></div>' +
           '</div>' +
-          '<div class="booking-card-actions">' + renderBookingCardActions(item) + '</div>' +
+          '<div class="booking-card-actions">' + renderBookingActionButtons(item) + '</div>' +
         '</article>';
       }).join('');
     }
@@ -7377,48 +7379,44 @@
       setBookingViewMode(isMobile ? 'card' : 'table');
     }
 
-    function completeBookingItem(item) {
+    function setBookingStatus(item, status) {
       if (!item) return;
       var statusCell = item.querySelector('.booking-status-cell');
-      var confirmButton = item.querySelector('.booking-confirm-action');
+      var actions = item.querySelector('.booking-actions');
 
-      item.classList.remove('is-noshow');
-      item.classList.add('is-done');
-      if (statusCell) {
-        statusCell.innerHTML = '<span class="badge badge-success booking-status">Đã xác nhận</span>';
+      item.classList.remove('is-new', 'is-sms-sent', 'is-done');
+
+      if (status === 'sms-sent') {
+        item.classList.add('is-sms-sent');
+        if (statusCell) {
+          statusCell.innerHTML = '<span class="badge booking-source-sms booking-status">Đã gửi SMS</span>';
+        }
+      } else if (status === 'done') {
+        item.classList.add('is-done');
+        if (statusCell) {
+          statusCell.innerHTML = '<span class="badge badge-success booking-status">Hoàn tất</span>';
+        }
+      } else {
+        item.classList.add('is-new');
+        if (statusCell) {
+          statusCell.innerHTML = '<span class="badge badge-warning booking-status">New</span>';
+        }
       }
-      if (confirmButton) {
-        confirmButton.disabled = true;
-        confirmButton.classList.remove('primary');
-        confirmButton.setAttribute('aria-label', 'Đã xác nhận');
-        confirmButton.setAttribute('title', 'Đã xác nhận');
-        confirmButton.innerHTML = '<i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Đã xác nhận</span>';
+
+      if (actions) {
+        actions.innerHTML = renderBookingActionButtons(item);
       }
 
       updateBookingKpis();
       renderBookingCards();
     }
 
-    function markBookingNoShow(item) {
-      if (!item) return;
-      var statusCell = item.querySelector('.booking-status-cell');
-      var confirmButton = item.querySelector('.booking-confirm-action');
+    function sendBookingSms(item) {
+      setBookingStatus(item, 'sms-sent');
+    }
 
-      item.classList.remove('is-done');
-      item.classList.add('is-noshow');
-      if (statusCell) {
-        statusCell.innerHTML = '<span class="badge badge-warning booking-status">No-show</span>';
-      }
-      if (confirmButton) {
-        confirmButton.disabled = true;
-        confirmButton.classList.remove('primary');
-        confirmButton.setAttribute('aria-label', 'No-show');
-        confirmButton.setAttribute('title', 'No-show');
-        confirmButton.innerHTML = '<i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">No-show</span>';
-      }
-
-      updateBookingKpis();
-      renderBookingCards();
+    function completeBookingItem(item) {
+      setBookingStatus(item, 'done');
     }
 
     function getBookingSearchValue(item, field) {
@@ -7565,8 +7563,6 @@
       if (!modal || !item) return;
 
       var status = item.querySelector('.booking-status');
-      var time = item.querySelector('.booking-time-main');
-      var date = item.querySelector('.booking-time-date');
       var phone = formatBookingPhone(item.dataset.bookingPhone);
 
       setBookingDetailText('[data-booking-detail-initials]', getBookingCustomerInitials(item.dataset.bookingName));
@@ -7579,8 +7575,7 @@
       setBookingDetailServices(item);
       setBookingDetailText('[data-booking-detail-tech]', item.dataset.bookingTech);
       setBookingDetailText('[data-booking-detail-status]', status ? status.textContent.trim() : '-');
-      setBookingDetailText('[data-booking-detail-time]', time ? time.textContent.trim() : '-');
-      setBookingDetailText('[data-booking-detail-date]', date ? date.textContent.trim() : '-');
+      setBookingDetailText('[data-booking-detail-time]', getBookingCardTimeText(item));
       setBookingDetailText('[data-booking-detail-note]', item.dataset.bookingNote);
 
       modal.hidden = false;
@@ -7697,9 +7692,18 @@
       var search = document.querySelector('[data-tech-search]');
       if (search) search.value = '';
       filterTechChoices('');
-      fillTechModalFromChoice(initialChoice || document.querySelector('[data-tech-choice].is-active') || document.querySelector('[data-tech-choice]'));
+      var createButton = document.querySelector('[data-tech-create]');
+      var fallbackChoice = mode === 'create'
+        ? createButton
+        : document.querySelector('[data-tech-choice].is-active') || document.querySelector('[data-tech-choice]');
+      fillTechModalFromChoice(initialChoice || fallbackChoice);
       if (mode === 'detail') modal.dataset.techMode = 'detail';
       setTechSelectOpen(false);
+    }
+
+    function openNewTechModal() {
+      var createButton = document.querySelector('[data-tech-create]');
+      openTechModal(createButton, 'create');
     }
 
     function openTechDetailFromCard(button) {
@@ -8246,10 +8250,10 @@
       var bookingAction = event.target.closest('[data-booking-action]');
       if (bookingAction) {
         var item = findBookingItemFromAction(bookingAction);
-        if (bookingAction.dataset.bookingAction === 'done') {
+        if (bookingAction.dataset.bookingAction === 'send-sms') {
+          sendBookingSms(item);
+        } else if (bookingAction.dataset.bookingAction === 'done') {
           completeBookingItem(item);
-        } else if (bookingAction.dataset.bookingAction === 'noshow') {
-          markBookingNoShow(item);
         } else if (bookingAction.dataset.bookingAction === 'detail') {
           openBookingDetailModal(item);
         }
@@ -8262,7 +8266,7 @@
 
       var techModalOpen = event.target.closest('[data-tech-modal-open]');
       if (techModalOpen) {
-        openTechModal();
+        openNewTechModal();
         return;
       }
 
