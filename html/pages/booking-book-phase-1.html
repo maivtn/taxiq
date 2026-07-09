@@ -4525,6 +4525,72 @@
       color: var(--nexora-text);
     }
 
+    .tech-schedule {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 7px;
+    }
+
+    .tech-schedule-row {
+      display: grid;
+      grid-template-columns: auto minmax(52px, 72px) minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: var(--nexora-canvas);
+      padding: 8px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .tech-schedule-row.is-enabled {
+      border-color: rgba(70, 72, 216, 0.26);
+      background: color-mix(in srgb, var(--nexora-brand) 5%, white);
+    }
+
+    .tech-schedule-toggle {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--nexora-brand);
+    }
+
+    .tech-schedule-day {
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .tech-schedule-time {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tech-schedule-time span {
+      color: var(--nexora-muted);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .tech-schedule-time input {
+      width: 100%;
+      height: 32px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: #fff;
+      padding: 0 8px;
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tech-schedule-time input:disabled {
+      background: transparent;
+      color: var(--nexora-subtle);
+    }
+
     .tech-modal-actions {
       flex-shrink: 0;
       justify-content: flex-end;
@@ -4563,6 +4629,10 @@
 
       .tech-service-checks {
         grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+      }
+
+      .tech-schedule-row {
+        grid-template-columns: auto minmax(48px, 60px) minmax(0, 1fr);
       }
     }
 
@@ -6340,15 +6410,15 @@
                             </label>
                             <div class="tech-select-menu" id="tech-select-menu" data-tech-select-menu hidden>
                               <div class="tech-choice-grid" role="listbox" aria-label="Danh sách thợ">
-                                <button class="tech-choice-card is-active" type="button" role="option" data-tech-choice="kim" data-name="Kim Nguyễn" data-phone="832-555-0161" data-email="kim@nexoratouch.com" data-services="Gel, Full Set, Dip">
+                                <button class="tech-choice-card is-active" type="button" role="option" data-tech-choice="kim" data-name="Kim Nguyễn" data-phone="832-555-0161" data-email="kim@nexoratouch.com" data-services="Gel, Full Set, Dip" data-schedule="mon=09:00-18:00;tue=09:00-18:00;wed=09:00-18:00;thu=10:00-19:00;fri=09:00-18:00">
                                   <span class="tech-avatar">K</span>
                                   <span><span class="tech-choice-name">Kim Nguyễn</span><span class="tech-choice-meta">kim@nexoratouch.com · 832-555-0161</span></span>
                                 </button>
-                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="lan" data-name="Lan Trần" data-phone="713-555-0192" data-email="lan.tran@nexoratouch.com" data-services="Pedicure, Gel, Nail Art">
+                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="lan" data-name="Lan Trần" data-phone="713-555-0192" data-email="lan.tran@nexoratouch.com" data-services="Pedicure, Gel, Nail Art" data-schedule="tue=10:00-19:00;wed=10:00-19:00;thu=10:00-19:00;fri=10:00-19:00;sat=09:00-16:00">
                                   <span class="tech-avatar" style="background: linear-gradient(135deg, var(--brand-cyan), var(--nexora-electric));">L</span>
                                   <span><span class="tech-choice-name">Lan Trần</span><span class="tech-choice-meta">lan.tran@nexoratouch.com · 713-555-0192</span></span>
                                 </button>
-                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="mai" data-name="Mai Phạm" data-phone="281-555-0138" data-email="mai.pham@nexoratouch.com" data-services="Acrylic, Dip, Pedicure">
+                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="mai" data-name="Mai Phạm" data-phone="281-555-0138" data-email="mai.pham@nexoratouch.com" data-services="Acrylic, Dip, Pedicure" data-schedule="mon=11:00-20:00;wed=11:00-20:00;fri=11:00-20:00;sat=10:00-17:00;sun=10:00-15:00">
                                   <span class="tech-avatar" style="background: linear-gradient(135deg, #f472b6, var(--nexora-violet));">M</span>
                                   <span><span class="tech-choice-name">Mai Phạm</span><span class="tech-choice-meta">mai.pham@nexoratouch.com · 281-555-0138</span></span>
                                 </button>
@@ -6356,28 +6426,28 @@
                               <div class="tech-empty" data-tech-empty>Không tìm thấy thợ phù hợp.</div>
                             </div>
                           </div>
-                          <button class="booking-secondary-button tech-create-button" type="button" data-tech-create><i class="bi bi-plus-lg" aria-hidden="true"></i>Tạo mới</button>
+                          <button class="booking-secondary-button tech-create-button" type="button" data-tech-create><i class="bi bi-plus-lg" aria-hidden="true"></i>Tự nhập</button>
                         </div>
                       </div>
 
                       <div class="tech-modal-section">
                         <div class="tech-modal-section-title"><i class="bi bi-person-vcard" aria-hidden="true"></i>Thông tin profile</div>
                         <div class="tech-modal-grid">
-                          <label class="settings-field"><span class="settings-label">Tên thợ</span><input class="settings-input" type="text" data-tech-field="name" value="Kim Nguyễn"></label>
+                          <label class="settings-field"><span class="settings-label">Tên thợ</span><input class="settings-input" type="text" data-tech-field="name" value=""></label>
                           <label class="settings-field">
                             <span class="settings-label">Số điện thoại</span>
                             <span class="phone-input-shell">
                               <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option></select>
-                              <input class="settings-input phone-mask-input" type="tel" data-tech-field="phone" value="(832) 555-0161" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
+                              <input class="settings-input phone-mask-input" type="tel" data-tech-field="phone" value="" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
                             </span>
                           </label>
-                          <label class="settings-field"><span class="settings-label">Email</span><input class="settings-input" type="email" data-tech-field="email" value="kim@nexoratouch.com"></label>
+                          <label class="settings-field"><span class="settings-label">Email</span><input class="settings-input" type="email" data-tech-field="email" value=""></label>
                           <div class="settings-field">
                             <span class="settings-label">Dịch vụ</span>
                             <div class="tech-service-checks" data-tech-field="services">
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Gel" value="Gel" checked>Gel</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Full Set" value="Full Set" checked>Full Set</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Dip" value="Dip" checked>Dip</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Gel" value="Gel">Gel</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Full Set" value="Full Set">Full Set</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Dip" value="Dip">Dip</label>
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Pedicure" value="Pedicure">Pedicure</label>
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Nail Art" value="Nail Art">Nail Art</label>
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Acrylic" value="Acrylic">Acrylic</label>
@@ -6385,6 +6455,75 @@
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Eyelash" value="Eyelash">Eyelash</label>
                             </div>
                           </div>
+                        </div>
+                      </div>
+
+                      <div class="tech-modal-section" data-tech-schedule-section>
+                        <div class="tech-modal-section-title"><i class="bi bi-calendar-week" aria-hidden="true"></i>Lịch làm việc</div>
+                        <div class="tech-schedule" data-tech-field="schedule">
+                          <label class="tech-schedule-row">
+                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="mon" value="mon">
+                            <span class="tech-schedule-day">Mon</span>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="mon" value="" disabled>
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="mon" value="" disabled>
+                            </span>
+                          </label>
+                          <label class="tech-schedule-row">
+                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="tue" value="tue">
+                            <span class="tech-schedule-day">Tue</span>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="tue" value="" disabled>
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="tue" value="" disabled>
+                            </span>
+                          </label>
+                          <label class="tech-schedule-row">
+                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="wed" value="wed">
+                            <span class="tech-schedule-day">Wed</span>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="wed" value="" disabled>
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="wed" value="" disabled>
+                            </span>
+                          </label>
+                          <label class="tech-schedule-row">
+                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="thu" value="thu">
+                            <span class="tech-schedule-day">Thu</span>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="thu" value="" disabled>
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="thu" value="" disabled>
+                            </span>
+                          </label>
+                          <label class="tech-schedule-row">
+                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="fri" value="fri">
+                            <span class="tech-schedule-day">Fri</span>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="fri" value="" disabled>
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="fri" value="" disabled>
+                            </span>
+                          </label>
+                          <label class="tech-schedule-row">
+                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="sat" value="sat">
+                            <span class="tech-schedule-day">Sat</span>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="sat" value="" disabled>
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="sat" value="" disabled>
+                            </span>
+                          </label>
+                          <label class="tech-schedule-row">
+                            <input class="tech-schedule-toggle" type="checkbox" data-tech-schedule-day="sun" value="sun">
+                            <span class="tech-schedule-day">Sun</span>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="sun" value="" disabled>
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="sun" value="" disabled>
+                            </span>
+                          </label>
                         </div>
                       </div>
                     </div>
@@ -7592,6 +7731,67 @@
       document.body.style.overflow = '';
     }
 
+    function parseTechSchedule(value) {
+      var schedule = {};
+      (value || '').split(';').forEach(function(entry) {
+        var parts = entry.split('=');
+        if (parts.length !== 2) return;
+
+        var day = parts[0].trim();
+        var range = parts[1].split('-');
+        if (!day || range.length !== 2) return;
+
+        schedule[day] = {
+          start: range[0].trim(),
+          end: range[1].trim()
+        };
+      });
+      return schedule;
+    }
+
+    function syncTechScheduleRow(toggle) {
+      if (!toggle) return;
+
+      var day = toggle.dataset.techScheduleDay;
+      var row = toggle.closest('.tech-schedule-row');
+      var start = document.querySelector('[data-tech-schedule-start="' + day + '"]');
+      var end = document.querySelector('[data-tech-schedule-end="' + day + '"]');
+      var enabled = Boolean(toggle.checked);
+
+      if (row) row.classList.toggle('is-enabled', enabled);
+      [start, end].forEach(function(input) {
+        if (!input) return;
+        input.disabled = !enabled;
+        if (!enabled) input.value = '';
+      });
+    }
+
+    function setTechScheduleValue(value) {
+      var schedule = parseTechSchedule(value);
+      document.querySelectorAll('[data-tech-schedule-day]').forEach(function(toggle) {
+        var day = toggle.dataset.techScheduleDay;
+        var daySchedule = schedule[day];
+        var start = document.querySelector('[data-tech-schedule-start="' + day + '"]');
+        var end = document.querySelector('[data-tech-schedule-end="' + day + '"]');
+
+        toggle.checked = Boolean(daySchedule);
+        if (start) start.value = daySchedule ? daySchedule.start : '';
+        if (end) end.value = daySchedule ? daySchedule.end : '';
+        syncTechScheduleRow(toggle);
+      });
+    }
+
+    function getTechScheduleValue() {
+      return Array.from(document.querySelectorAll('[data-tech-schedule-day]:checked')).map(function(toggle) {
+        var day = toggle.dataset.techScheduleDay;
+        var start = document.querySelector('[data-tech-schedule-start="' + day + '"]');
+        var end = document.querySelector('[data-tech-schedule-end="' + day + '"]');
+        var startValue = start ? start.value : '';
+        var endValue = end ? end.value : '';
+        return startValue && endValue ? day + '=' + startValue + '-' + endValue : '';
+      }).filter(Boolean).join(';');
+    }
+
     function setTechField(name, value) {
       if (name === 'services') {
         var selectedServices = (value || '').split(',').map(function(service) {
@@ -7601,6 +7801,11 @@
         document.querySelectorAll('[data-tech-service]').forEach(function(option) {
           option.checked = selectedServices.indexOf(option.value.toLowerCase()) !== -1;
         });
+        return;
+      }
+
+      if (name === 'schedule') {
+        setTechScheduleValue(value);
         return;
       }
 
@@ -7617,6 +7822,10 @@
         return Array.from(document.querySelectorAll('[data-tech-service]:checked')).map(function(option) {
           return option.value;
         }).join(', ');
+      }
+
+      if (name === 'schedule') {
+        return getTechScheduleValue();
       }
 
       var field = document.querySelector('[data-tech-field="' + name + '"]');
@@ -7677,6 +7886,7 @@
       setTechField('phone', isCreate ? '' : choice.dataset.phone);
       setTechField('email', isCreate ? '' : choice.dataset.email);
       setTechField('services', isCreate ? '' : choice.dataset.services);
+      setTechField('schedule', isCreate ? '' : choice.dataset.schedule);
 
       var nameField = document.querySelector('[data-tech-field="name"]');
       setTechSelectOpen(false);
@@ -7751,6 +7961,7 @@
       card.className = 'tech-card';
       card.dataset.techId = data.id || ('tech-' + Date.now());
       card.dataset.email = data.email || '';
+      card.dataset.schedule = data.schedule || '';
       card.innerHTML = '' +
         '<div class="tech-top">' +
           '<div class="tech-avatar">' + escapeHtml(initial) + '</div>' +
@@ -7777,7 +7988,8 @@
         name: getTechField('name') || 'Thợ mới',
         phone: getTechField('phone') || 'Chưa có số',
         email: getTechField('email'),
-        services: getTechField('services') || 'Gel'
+        services: getTechField('services') || 'Gel',
+        schedule: getTechField('schedule')
       };
 
       if (modal && modal.dataset.techMode === 'create' && grid) {
@@ -7787,6 +7999,7 @@
         active.dataset.phone = data.phone;
         active.dataset.email = data.email;
         active.dataset.services = data.services;
+        active.dataset.schedule = data.schedule;
         var choiceName = active.querySelector('.tech-choice-name');
         var choiceMeta = active.querySelector('.tech-choice-meta');
         if (choiceName) choiceName.textContent = data.name;
@@ -8239,6 +8452,13 @@
     if (bookingClearFilters) {
       bookingClearFilters.addEventListener('click', clearBookingFilters);
     }
+
+    document.querySelectorAll('[data-tech-schedule-day]').forEach(function(toggle) {
+      syncTechScheduleRow(toggle);
+      toggle.addEventListener('change', function() {
+        syncTechScheduleRow(toggle);
+      });
+    });
 
     document.querySelectorAll('[data-booking-view-target]').forEach(function(button) {
       button.addEventListener('click', function() {
