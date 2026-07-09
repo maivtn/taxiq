@@ -3269,6 +3269,37 @@
       margin-bottom: 14px;
     }
 
+    .booking-view-switch {
+      display: inline-flex;
+      flex-shrink: 0;
+      gap: 4px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: var(--nexora-surface-muted);
+      padding: 4px;
+    }
+
+    .booking-view-button {
+      display: inline-flex;
+      min-height: 32px;
+      align-items: center;
+      gap: 6px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      padding: 0 10px;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 800;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+
+    .booking-view-button.is-active {
+      background: #fff;
+      color: var(--nexora-brand);
+      box-shadow: var(--nexora-card-shadow);
+    }
+
     .booking-date {
       display: flex;
       min-width: 0;
@@ -3348,64 +3379,521 @@
       color: #fff;
     }
 
-    .booking-list {
+    .booking-controls {
       display: grid;
-      gap: 9px;
-    }
-
-    .booking-item {
-      display: grid;
-      grid-template-columns: 52px minmax(0, 1fr);
-      gap: 12px;
-      align-items: center;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
       border: 1px solid var(--nexora-border);
-      border-radius: 12px;
-      background: #fff;
+      border-radius: 10px;
+      background: var(--nexora-canvas);
       padding: 12px;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-      transition: border-color 0.2s, background 0.2s, opacity 0.2s;
     }
 
-    .booking-item.is-done {
-      border-color: rgba(0, 184, 115, 0.24);
+    .booking-control-field {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .booking-control-label {
+      color: var(--nexora-subtle);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .booking-select,
+    .booking-input {
+      width: 100%;
+      height: 40px;
+      min-width: 0;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      outline: 0;
+      background: #fff;
+      padding: 0 11px;
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 700;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .booking-select:focus,
+    .booking-input:focus {
+      border-color: var(--nexora-brand);
+      box-shadow: 0 0 0 2px rgba(70, 72, 216, 0.16);
+    }
+
+    .booking-clear-button {
+      align-self: end;
+      height: 40px;
+      white-space: nowrap;
+    }
+
+    .booking-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .booking-table-wrap[hidden],
+    .booking-card-panel[hidden] {
+      display: none;
+    }
+
+    .booking-table {
+      width: 100%;
+      min-width: 1040px;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .booking-table th {
+      padding: 11px 14px;
+      background: var(--nexora-canvas);
+      color: var(--nexora-muted);
+      text-align: left;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .booking-table td {
+      border-top: 1px solid var(--nexora-rule);
+      padding: 14px;
+      color: var(--nexora-muted);
+      font-weight: 600;
+      vertical-align: middle;
+    }
+
+    .booking-table-row {
+      transition: background 0.2s, opacity 0.2s;
+    }
+
+    .booking-table-row:hover {
+      background: rgba(70, 72, 216, 0.03);
+    }
+
+    .booking-table-row.is-done {
       background: rgba(0, 184, 115, 0.04);
     }
 
-    .booking-item.is-noshow {
-      border-color: rgba(239, 68, 68, 0.18);
-      opacity: 0.55;
+    .booking-table-row.is-noshow {
+      opacity: 0.58;
     }
 
-    .booking-time {
-      color: var(--brand-cyan);
-      text-align: center;
-      font-size: 13px;
-      font-weight: 900;
+    .booking-customer,
+    .booking-service,
+    .booking-time-block {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
     }
 
-    .booking-name-row {
+    .booking-customer-name,
+    .booking-time-main {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       gap: 7px;
       color: var(--nexora-text);
       font-size: 13px;
-      font-weight: 900;
+      font-weight: 800;
+      line-height: 1.3;
     }
 
-    .booking-detail {
+    .booking-customer-meta,
+    .booking-time-date {
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .booking-time-main {
+      color: var(--nexora-text);
+    }
+
+    .booking-service-list,
+    .booking-source-list {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .booking-service-chip {
+      display: inline-flex;
+      min-height: 24px;
+      align-items: center;
+      border: 1px solid rgba(70, 72, 216, 0.12);
+      border-radius: 999px;
+      background: var(--nexora-surface-muted);
+      padding: 3px 9px;
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    .booking-tech {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .booking-tech-name {
+      display: inline-flex;
+      min-height: 26px;
+      align-items: center;
+      border-radius: 999px;
+      background: rgba(50, 215, 255, 0.12);
+      padding: 4px 10px;
+      color: #087c99;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .booking-detail-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 130;
+      display: grid;
+      place-items: center;
+      background: rgba(8, 31, 73, 0.42);
+      padding: 18px;
+      backdrop-filter: blur(8px);
+    }
+
+    .booking-detail-modal[hidden] {
+      display: none;
+    }
+
+    .booking-detail-dialog {
+      display: flex;
+      width: min(100%, 820px);
+      max-height: min(88vh, 720px);
+      overflow: hidden;
+      flex-direction: column;
+      border: 1px solid var(--nexora-border);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 28px 80px rgba(8, 31, 73, 0.24);
+    }
+
+    .booking-detail-head,
+    .booking-detail-actions {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--nexora-border);
+      background: linear-gradient(180deg, #fff, #f8fbff);
+      padding: 16px 18px;
+    }
+
+    .booking-detail-actions {
+      border-top: 1px solid var(--nexora-border);
+      border-bottom: 0;
+      background: #fff;
+      justify-content: flex-end;
+    }
+
+    .booking-detail-title {
+      color: var(--nexora-text);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .booking-detail-sub {
       margin-top: 3px;
       color: var(--nexora-muted);
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 500;
       line-height: 1.45;
     }
 
-    .booking-actions {
-      grid-column: 1 / -1;
+    .booking-detail-close {
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--nexora-muted);
+      font-size: 16px;
+    }
+
+    .booking-detail-body {
+      display: grid;
+      gap: 14px;
+      overflow: auto;
+      background: #f7f9fc;
+      padding: 16px;
+    }
+
+    .booking-detail-hero {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 14px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+    }
+
+    .booking-detail-avatar {
+      display: inline-flex;
+      width: 52px;
+      height: 52px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--nexora-electric), var(--brand-cyan));
+      color: #fff;
+      font-size: 17px;
+      font-weight: 800;
+      box-shadow: 0 12px 28px rgba(43, 89, 255, 0.2);
+    }
+
+    .booking-detail-name {
+      color: var(--nexora-text);
+      font-size: 19px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .booking-detail-hero-sub {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .booking-detail-status-pill {
+      display: inline-flex;
+      min-height: 30px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: rgba(0, 184, 115, 0.12);
+      padding: 5px 12px;
+      color: var(--nexora-success);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .booking-detail-section {
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 14px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+    }
+
+    .booking-detail-section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .booking-detail-service-chips {
       display: flex;
       flex-wrap: wrap;
       gap: 7px;
+      min-height: 28px;
+      align-items: center;
+    }
+
+    .booking-detail-service-chips .booking-service-chip {
+      min-height: 28px;
+      background: #eef7ff;
+      color: #075985;
+    }
+
+    .booking-detail-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .booking-detail-info-item {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: #fbfdff;
+      padding: 10px;
+    }
+
+    .booking-detail-info-icon {
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: rgba(70, 72, 216, 0.1);
+      color: var(--nexora-brand);
+      font-size: 15px;
+    }
+
+    .booking-detail-label {
+      color: var(--nexora-subtle);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .booking-detail-value {
+      margin-top: 5px;
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .booking-detail-note-card {
+      border: 1px solid rgba(70, 72, 216, 0.18);
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(70, 72, 216, 0.08), rgba(50, 215, 255, 0.05));
+      padding: 14px;
+    }
+
+    .booking-detail-note {
+      margin-top: 6px;
+      color: var(--nexora-muted);
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.55;
+    }
+
+    .booking-status-cell {
+      white-space: nowrap;
+    }
+
+    .booking-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 7px;
+      min-width: 170px;
+    }
+
+    .booking-empty {
+      border: 1px dashed var(--nexora-border);
+      border-radius: 10px;
+      background: var(--nexora-canvas);
+      padding: 18px;
+      color: var(--nexora-muted);
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .booking-card-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+
+    .booking-appointment-card {
+      display: grid;
+      gap: 12px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 14px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+    }
+
+    .booking-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .booking-card-name {
+      color: var(--nexora-text);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .booking-card-contact {
+      margin-top: 4px;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .booking-card-info-list {
+      display: grid;
+      gap: 7px;
+      border-top: 1px solid var(--nexora-rule);
+      padding-top: 10px;
+    }
+
+    .booking-card-info-row {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr);
+      align-items: baseline;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .booking-card-label {
+      color: var(--nexora-subtle);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .booking-card-value {
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .booking-card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 7px;
+      padding-top: 1px;
     }
 
     .booking-source-voice {
@@ -3451,13 +3939,15 @@
     }
 
     .tech-card {
+      display: grid;
+      gap: 10px;
       flex: 0 1 280px;
       width: 280px;
       max-width: 100%;
       border: 1px solid var(--nexora-border);
       border-radius: 12px;
       background: #fff;
-      padding: 16px;
+      padding: 14px;
       box-shadow: var(--nexora-card-shadow);
     }
 
@@ -3465,7 +3955,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 0;
     }
 
     .tech-avatar {
@@ -3530,35 +4020,63 @@
       display: flex;
       flex-wrap: wrap;
       gap: 5px;
-      margin-bottom: 10px;
+      margin-bottom: 0;
     }
 
     .tech-stats {
-      display: grid;
-      grid-template-columns: 1fr;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 0;
+      text-align: left;
+    }
+
+    .tech-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 8px;
-      margin-top: 10px;
-      text-align: center;
+      margin-top: 2px;
+    }
+
+    .tech-card-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .tech-card-actions .booking-secondary-button {
+      min-height: 34px;
+      padding: 8px 11px;
+      font-size: 11px;
     }
 
     .tech-stat {
-      border: 1px solid var(--nexora-border);
-      border-radius: 10px;
-      background: var(--nexora-canvas);
-      padding: 9px;
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      gap: 6px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--nexora-surface-muted);
+      padding: 4px 9px;
     }
 
     .tech-stat strong {
-      display: block;
+      display: inline;
       color: var(--nexora-text);
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 900;
+      line-height: 1;
     }
 
     .tech-stat span {
       color: var(--nexora-muted);
       font-size: 10px;
       font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
     }
 
     .tech-modal {
@@ -3680,6 +4198,10 @@
     .tech-modal-section:first-child {
       position: relative;
       z-index: 3;
+    }
+
+    .tech-modal[data-tech-mode="detail"] [data-tech-picker-section] {
+      display: none;
     }
 
     .tech-select-row {
@@ -3995,7 +4517,7 @@
     .owner-action-title,
     .owner-feed-copy,
     .booking-date,
-    .booking-name-row,
+    .booking-customer-name,
     .settings-card-title,
     .settings-config-title,
     .settings-service-name,
@@ -4025,7 +4547,7 @@
     .settings-mini-stat,
     .plan-rec,
     .plan-check,
-    .booking-time,
+    .booking-time-main,
     .trial-brand,
     .trial-benefit,
     .trial-chip,
@@ -4043,7 +4565,8 @@
 
     .kpi-trend,
     .action-desc,
-    .booking-detail,
+    .booking-customer-meta,
+    .booking-time-date,
     .settings-card-sub,
     .settings-template-desc,
     .settings-offer-desc,
@@ -4190,8 +4713,9 @@
         grid-template-columns: repeat(4, minmax(0, 1fr));
       }
 
-      .booking-item {
-        grid-template-columns: 52px minmax(0, 1fr) auto;
+      .booking-controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: end;
       }
 
       .booking-actions {
@@ -4247,6 +4771,10 @@
 
       .booking-grid {
         grid-template-columns: 1fr;
+      }
+
+      .booking-controls {
+        grid-template-columns: minmax(130px, 0.7fr) minmax(220px, 1.4fr) repeat(2, minmax(140px, 0.75fr)) auto;
       }
 
       .voice-grid {
@@ -4307,6 +4835,125 @@
         flex: 0 1 calc(50% - 6px);
         width: calc(50% - 6px);
         max-width: calc(50% - 6px);
+      }
+
+      .booking-controls {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      }
+
+      .booking-controls .booking-control-field:nth-child(1) {
+        grid-column: 1 / 2;
+      }
+
+      .booking-controls .booking-control-field:nth-child(2) {
+        grid-column: 2 / 4;
+      }
+
+      .booking-controls .booking-control-field:nth-child(3) {
+        grid-column: 1 / 2;
+      }
+
+      .booking-controls .booking-control-field:nth-child(4) {
+        grid-column: 2 / 3;
+      }
+
+      .booking-controls .booking-clear-button {
+        grid-column: 3 / 4;
+        width: auto;
+        min-width: 52px;
+        padding: 0 10px;
+      }
+
+      .booking-table-wrap {
+        overflow-x: visible;
+        border: 0;
+        background: transparent;
+      }
+
+      .booking-table {
+        display: block;
+        min-width: 0;
+        border-collapse: separate;
+        font-size: 12px;
+      }
+
+      .booking-table thead {
+        display: none;
+      }
+
+      .booking-table tbody {
+        display: grid;
+        gap: 10px;
+      }
+
+      .booking-table-row {
+        display: grid;
+        gap: 10px;
+        border: 1px solid var(--nexora-border);
+        border-radius: 10px;
+        background: #fff;
+        padding: 12px;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+      }
+
+      .booking-table td {
+        display: grid;
+        grid-template-columns: 76px minmax(0, 1fr);
+        align-items: start;
+        gap: 9px;
+        border-top: 0;
+        padding: 0;
+      }
+
+      .booking-table td::before {
+        color: var(--nexora-subtle);
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        line-height: 1.4;
+        text-transform: uppercase;
+      }
+
+      .booking-table td:nth-child(1)::before {
+        content: "Khách hàng";
+      }
+
+      .booking-table td:nth-child(2)::before {
+        content: "Dịch vụ";
+      }
+
+      .booking-table td:nth-child(3)::before {
+        content: "Thợ";
+      }
+
+      .booking-table td:nth-child(4)::before {
+        content: "Thời gian";
+      }
+
+      .booking-table td:nth-child(5)::before {
+        content: "Status";
+      }
+
+      .booking-table td:nth-child(6)::before {
+        content: "Action";
+      }
+
+      .booking-status-cell {
+        white-space: normal;
+      }
+
+      .booking-actions {
+        min-width: 0;
+        justify-content: flex-start;
+      }
+
+      .booking-detail-hero,
+      .booking-detail-info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .booking-detail-status-pill {
+        justify-self: start;
       }
 
       #panel-plans .roi-grid {
@@ -5082,7 +5729,7 @@
                       </div>
                       <span class="badge booking-source-voice">/v1/bookings</span>
                     </div>
-                    <div class="kpi-label">Hẹn Hôm Nay</div>
+                    <div class="kpi-label">Tất Cả Hẹn</div>
                     <div class="kpi-value" data-booking-kpi="total">6</div>
                     <div class="kpi-trend">Voice · Landing Page · SMS · QR</div>
                   </article>
@@ -5096,9 +5743,9 @@
                       </div>
                       <span class="badge badge-success">SMS fired</span>
                     </div>
-                    <div class="kpi-label">Đã Xong</div>
+                    <div class="kpi-label">Đã Xác Nhận</div>
                     <div class="kpi-value" data-booking-kpi="done">2</div>
-                    <div class="kpi-trend">Review + tip + promo scheduled</div>
+                    <div class="kpi-trend">SMS confirm + reminder scheduled</div>
                   </article>
 
                   <article class="overview-card kpi-card" style="--kpi-accent: #ef4444;">
@@ -5131,84 +5778,326 @@
                             <path d="M3 10h18"></path>
                           </svg>
                         </span>
-                        <span>Thứ 6, 3 Tháng 7</span>
+                        <span>Tổng quan lịch hẹn</span>
                       </div>
-                      <button class="booking-secondary-button" type="button">+ Thêm Hẹn</button>
+                      <div class="booking-view-switch" role="group" aria-label="Booking view mode">
+                        <button class="booking-view-button" type="button" data-booking-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
+                        <button class="booking-view-button" type="button" data-booking-view-target="card" aria-pressed="false"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
+                      </div>
                     </div>
 
-                    <div class="booking-list" data-booking-list>
-                      <div class="booking-item is-done" data-booking-item>
-                        <div class="booking-time">9:00</div>
-                        <div>
-                          <div class="booking-name-row">Kim Phan <span class="badge booking-source-voice">Voice</span></div>
-                          <div class="booking-detail">Pedicure $35 · Thợ: Lan T.</div>
-                        </div>
-                        <div class="booking-actions">
-                          <span class="badge badge-success booking-status">SMS đã lên lịch</span>
-                        </div>
-                      </div>
-
-                      <div class="booking-item is-done" data-booking-item>
-                        <div class="booking-time">10:30</div>
-                        <div>
-                          <div class="booking-name-row">Sophie Tran <span class="badge booking-source-lp">Landing Page</span></div>
-                          <div class="booking-detail">Gel Manicure $35 · Thợ: Kim N.</div>
-                        </div>
-                        <div class="booking-actions">
-                          <span class="badge badge-success booking-status">SMS đã lên lịch</span>
-                        </div>
-                      </div>
-
-                      <div class="booking-item" data-booking-item data-booking-name="Mai Nguyen">
-                        <div class="booking-time">1:00</div>
-                        <div>
-                          <div class="booking-name-row">Mai Nguyen <span class="badge booking-source-voice">Voice</span> <span class="badge badge-warning">Request</span></div>
-                          <div class="booking-detail">Gel Full Set $45 · Thợ: Kim N.</div>
-                        </div>
-                        <div class="booking-actions">
-                          <button class="booking-mini-button primary" type="button" data-booking-action="done">✓ Xong</button>
-                          <button class="booking-mini-button" type="button" data-booking-action="noshow">No-show</button>
-                        </div>
-                      </div>
-
-                      <div class="booking-item" data-booking-item data-booking-name="Jennifer S.">
-                        <div class="booking-time">2:30</div>
-                        <div>
-                          <div class="booking-name-row">Jennifer S. <span class="badge booking-source-sms">SMS</span></div>
-                          <div class="booking-detail">Full Set Acrylic $45 · Thợ: Mai P.</div>
-                        </div>
-                        <div class="booking-actions">
-                          <button class="booking-mini-button primary" type="button" data-booking-action="done">✓ Xong</button>
-                          <button class="booking-mini-button" type="button" data-booking-action="noshow">No-show</button>
-                        </div>
-                      </div>
-
-                      <div class="booking-item" data-booking-item data-booking-name="Tina Vo">
-                        <div class="booking-time">4:00</div>
-                        <div>
-                          <div class="booking-name-row">Tina Vo <span class="badge booking-source-lp">Landing Page</span></div>
-                          <div class="booking-detail">Dip Powder $40 · Thợ: Lan T.</div>
-                        </div>
-                        <div class="booking-actions">
-                          <button class="booking-mini-button primary" type="button" data-booking-action="done">✓ Xong</button>
-                          <button class="booking-mini-button" type="button" data-booking-action="noshow">No-show</button>
-                        </div>
-                      </div>
-
-                      <div class="booking-item" data-booking-item data-booking-name="Anna Le">
-                        <div class="booking-time">5:30</div>
-                        <div>
-                          <div class="booking-name-row">Anna Le <span class="badge booking-source-qr">QR</span> <span class="badge badge-warning">Request</span></div>
-                          <div class="booking-detail">Pedicure + Gel $70 · Thợ: Mai P.</div>
-                        </div>
-                        <div class="booking-actions">
-                          <button class="booking-mini-button primary" type="button" data-booking-action="done">✓ Xong</button>
-                          <button class="booking-mini-button" type="button" data-booking-action="noshow">No-show</button>
-                        </div>
-                      </div>
-
+                    <div class="booking-controls" aria-label="Booking filters">
+                      <label class="booking-control-field">
+                        <span class="booking-control-label">Search by</span>
+                        <select class="booking-select" data-booking-search-field>
+                          <option value="name">Name</option>
+                          <option value="phone">Phone</option>
+                          <option value="email">Email</option>
+                          <option value="service">Service</option>
+                        </select>
+                      </label>
+                      <label class="booking-control-field">
+                        <span class="booking-control-label">Keyword</span>
+                        <input class="booking-input" type="search" placeholder="Nhập tên khách hàng" data-booking-search-input>
+                      </label>
+                      <label class="booking-control-field">
+                        <span class="booking-control-label">Date from</span>
+                        <input class="booking-input" type="date" data-booking-date-from>
+                      </label>
+                      <label class="booking-control-field">
+                        <span class="booking-control-label">Date to</span>
+                        <input class="booking-input" type="date" data-booking-date-to>
+                      </label>
+                      <button class="booking-mini-button booking-clear-button" type="button" data-booking-clear-filters>Clear</button>
                     </div>
+
+                    <div class="booking-table-wrap" data-booking-view-panel="table">
+                      <table class="booking-table" data-booking-table>
+                        <thead>
+                          <tr>
+                            <th scope="col">Khách hàng</th>
+                            <th scope="col">Dịch vụ</th>
+                            <th scope="col">Thợ</th>
+                            <th scope="col">Thời gian</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr class="booking-table-row is-done" data-booking-item data-booking-id="booking-kim-phan" data-booking-name="Kim Phan" data-booking-phone="7135550148" data-booking-email="kim.phan@example.com" data-booking-service="Pedicure Gel Polish" data-booking-tech="Lan T." data-booking-date="2026-07-09" data-booking-note="Prefers warm water and extra heel care. Customer confirmed arrival by phone and asked to keep the same chair as last visit.">
+                            <td>
+                              <div class="booking-customer">
+                                <div class="booking-customer-name">Kim Phan <span class="badge booking-source-voice">Voice</span></div>
+                                <div class="booking-customer-meta">(713) 555-0148 · kim.phan@example.com</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-service">
+                                <div class="booking-service-list">
+                                  <span class="booking-service-chip">Pedicure</span>
+                                  <span class="booking-service-chip">Gel Polish</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><div class="booking-tech"><span class="booking-tech-name">Lan T.</span></div></td>
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main">Today 9:00 AM</div>
+                                <div class="booking-time-date">July 9, 2026</div>
+                              </div>
+                            </td>
+                            <td class="booking-status-cell"><span class="badge badge-success booking-status">Đã xác nhận</span></td>
+                            <td>
+                              <div class="booking-actions">
+                                <button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          <tr class="booking-table-row is-done" data-booking-item data-booking-id="booking-sophie-tran" data-booking-name="Sophie Tran" data-booking-phone="2815550196" data-booking-email="sophie.tran@example.com" data-booking-service="Gel Manicure Nail Art" data-booking-tech="Kim N." data-booking-date="2026-07-09" data-booking-note="Booked from landing page after seeing the gel manicure promo. Customer wants a neutral pink base with one simple accent nail.">
+                            <td>
+                              <div class="booking-customer">
+                                <div class="booking-customer-name">Sophie Tran <span class="badge booking-source-lp">Landing Page</span></div>
+                                <div class="booking-customer-meta">(281) 555-0196 · sophie.tran@example.com</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-service">
+                                <div class="booking-service-list">
+                                  <span class="booking-service-chip">Gel Manicure</span>
+                                  <span class="booking-service-chip">Nail Art</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><div class="booking-tech"><span class="booking-tech-name">Kim N.</span></div></td>
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main">Today 10:30 AM</div>
+                                <div class="booking-time-date">July 9, 2026</div>
+                              </div>
+                            </td>
+                            <td class="booking-status-cell"><span class="badge badge-success booking-status">SMS đã lên lịch</span></td>
+                            <td>
+                              <div class="booking-actions">
+                                <button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          <tr class="booking-table-row" data-booking-item data-booking-id="booking-mai-nguyen" data-booking-name="Mai Nguyen" data-booking-phone="8325550164" data-booking-email="mai.nguyen@example.com" data-booking-service="Gel Full Set Removal" data-booking-tech="Linda" data-booking-date="2026-07-09" data-booking-note="Customer initially requested Elio but he was unavailable; booked with Linda instead. Phone: 14182188221. Please confirm almond shape and light pink finish before start time.">
+                            <td>
+                              <div class="booking-customer">
+                                <div class="booking-customer-name">Mai Nguyen <span class="badge booking-source-voice">Voice</span> <span class="badge badge-warning">Request</span></div>
+                                <div class="booking-customer-meta">(832) 555-0164 · mai.nguyen@example.com</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-service">
+                                <div class="booking-service-list">
+                                  <span class="booking-service-chip">Gel Full Set</span>
+                                  <span class="booking-service-chip">Removal</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><div class="booking-tech"><span class="booking-tech-name">Linda</span></div></td>
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main">Today 1:00 PM</div>
+                                <div class="booking-time-date">July 9, 2026</div>
+                              </div>
+                            </td>
+                            <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
+                            <td>
+                              <div class="booking-actions">
+                                <button class="booking-mini-button primary booking-confirm-action" type="button" data-booking-action="done">Xác nhận</button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          <tr class="booking-table-row" data-booking-item data-booking-id="booking-jennifer-s" data-booking-name="Jennifer S." data-booking-phone="7135550127" data-booking-email="jennifer.s@example.com" data-booking-service="Full Set Acrylic French Tip" data-booking-tech="Mai P." data-booking-date="2026-07-09" data-booking-note="Customer asked for a quiet corner and extra time for acrylic removal. She may bring a reference photo for the French tip shape.">
+                            <td>
+                              <div class="booking-customer">
+                                <div class="booking-customer-name">Jennifer S. <span class="badge booking-source-sms">SMS</span></div>
+                                <div class="booking-customer-meta">(713) 555-0127 · jennifer.s@example.com</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-service">
+                                <div class="booking-service-list">
+                                  <span class="booking-service-chip">Full Set Acrylic</span>
+                                  <span class="booking-service-chip">French Tip</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><div class="booking-tech"><span class="booking-tech-name">Mai P.</span></div></td>
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main">Today 2:00 PM</div>
+                                <div class="booking-time-date">July 9, 2026</div>
+                              </div>
+                            </td>
+                            <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
+                            <td>
+                              <div class="booking-actions">
+                                <button class="booking-mini-button primary booking-confirm-action" type="button" data-booking-action="done">Xác nhận</button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          <tr class="booking-table-row" data-booking-item data-booking-id="booking-tina-vo" data-booking-name="Tina Vo" data-booking-phone="3465550188" data-booking-email="tina.vo@example.com" data-booking-service="Dip Powder Chrome Design" data-booking-tech="Lan T." data-booking-date="2026-07-17" data-booking-note="Requested chrome design but has not picked a color yet. Send reminder SMS the morning of the appointment.">
+                            <td>
+                              <div class="booking-customer">
+                                <div class="booking-customer-name">Tina Vo <span class="badge booking-source-lp">Landing Page</span></div>
+                                <div class="booking-customer-meta">(346) 555-0188 · tina.vo@example.com</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-service">
+                                <div class="booking-service-list">
+                                  <span class="booking-service-chip">Dip Powder</span>
+                                  <span class="booking-service-chip">Chrome Design</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><div class="booking-tech"><span class="booking-tech-name">Lan T.</span></div></td>
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main">Next Friday 4:00 PM</div>
+                                <div class="booking-time-date">July 17, 2026</div>
+                              </div>
+                            </td>
+                            <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
+                            <td>
+                              <div class="booking-actions">
+                                <button class="booking-mini-button primary booking-confirm-action" type="button" data-booking-action="done">Xác nhận</button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          <tr class="booking-table-row" data-booking-item data-booking-id="booking-anna-le" data-booking-name="Anna Le" data-booking-phone="2815550119" data-booking-email="anna.le@example.com" data-booking-service="Pedicure Gel Polish" data-booking-tech="Mai P." data-booking-date="2026-07-17" data-booking-note="QR booking request came in after hours. Customer prefers an evening slot and asked to be notified if an earlier opening appears.">
+                            <td>
+                              <div class="booking-customer">
+                                <div class="booking-customer-name">Anna Le <span class="badge booking-source-qr">QR</span> <span class="badge badge-warning">Request</span></div>
+                                <div class="booking-customer-meta">(281) 555-0119 · anna.le@example.com</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-service">
+                                <div class="booking-service-list">
+                                  <span class="booking-service-chip">Pedicure</span>
+                                  <span class="booking-service-chip">Gel Polish</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><div class="booking-tech"><span class="booking-tech-name">Mai P.</span></div></td>
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main">Next Friday 5:30 PM</div>
+                                <div class="booking-time-date">July 17, 2026</div>
+                              </div>
+                            </td>
+                            <td class="booking-status-cell"><span class="badge booking-source-lp booking-status">Chờ xác nhận</span></td>
+                            <td>
+                              <div class="booking-actions">
+                                <button class="booking-mini-button primary booking-confirm-action" type="button" data-booking-action="done">Xác nhận</button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="booking-card-panel" data-booking-view-panel="card" hidden>
+                      <div class="booking-card-list" data-booking-card-list></div>
+                    </div>
+                    <div class="booking-empty" data-booking-empty hidden>Không tìm thấy booking phù hợp.</div>
                   </article>
+                </div>
+
+                <div class="booking-detail-modal" data-booking-detail-modal hidden>
+                  <div class="booking-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="booking-detail-title">
+                    <div class="booking-detail-head">
+                      <div>
+                        <div class="booking-detail-title" id="booking-detail-title">Chi tiết lịch hẹn</div>
+                        <div class="booking-detail-sub" data-booking-detail-sub>Thông tin khách, dịch vụ, thợ, trạng thái và ghi chú nội bộ.</div>
+                      </div>
+                      <button class="booking-detail-close" type="button" data-booking-detail-close aria-label="Đóng chi tiết lịch hẹn"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="booking-detail-body">
+                      <div class="booking-detail-hero">
+                        <div class="booking-detail-avatar" data-booking-detail-initials></div>
+                        <div>
+                          <div class="booking-detail-name" data-booking-detail-name></div>
+                          <div class="booking-detail-hero-sub">
+                            <span data-booking-detail-phone></span>
+                            <span data-booking-detail-email></span>
+                          </div>
+                        </div>
+                        <div class="booking-detail-status-pill" data-booking-detail-status></div>
+                      </div>
+
+                      <div class="booking-detail-section">
+                        <div class="booking-detail-section-title"><i class="bi bi-stars" aria-hidden="true"></i>Dịch vụ đã book</div>
+                        <div class="booking-detail-service-chips" data-booking-detail-services></div>
+                      </div>
+
+                      <div class="booking-detail-info-grid">
+                        <div class="booking-detail-info-item">
+                          <span class="booking-detail-info-icon"><i class="bi bi-person-workspace" aria-hidden="true"></i></span>
+                          <div>
+                            <div class="booking-detail-label">Thợ</div>
+                            <div class="booking-detail-value" data-booking-detail-tech></div>
+                          </div>
+                        </div>
+                        <div class="booking-detail-info-item">
+                          <span class="booking-detail-info-icon"><i class="bi bi-clock" aria-hidden="true"></i></span>
+                          <div>
+                            <div class="booking-detail-label">Thời gian</div>
+                            <div class="booking-detail-value" data-booking-detail-time></div>
+                          </div>
+                        </div>
+                        <div class="booking-detail-info-item">
+                          <span class="booking-detail-info-icon"><i class="bi bi-calendar2-week" aria-hidden="true"></i></span>
+                          <div>
+                            <div class="booking-detail-label">Ngày</div>
+                            <div class="booking-detail-value" data-booking-detail-date></div>
+                          </div>
+                        </div>
+                        <div class="booking-detail-info-item">
+                          <span class="booking-detail-info-icon"><i class="bi bi-broadcast" aria-hidden="true"></i></span>
+                          <div>
+                            <div class="booking-detail-label">Nguồn</div>
+                            <div class="booking-detail-value booking-source-list" data-booking-detail-source></div>
+                          </div>
+                        </div>
+                        <div class="booking-detail-info-item">
+                          <span class="booking-detail-info-icon"><i class="bi bi-telephone" aria-hidden="true"></i></span>
+                          <div>
+                            <div class="booking-detail-label">Phone</div>
+                            <div class="booking-detail-value" data-booking-detail-phone-copy></div>
+                          </div>
+                        </div>
+                        <div class="booking-detail-info-item">
+                          <span class="booking-detail-info-icon"><i class="bi bi-envelope" aria-hidden="true"></i></span>
+                          <div>
+                            <div class="booking-detail-label">Email</div>
+                            <div class="booking-detail-value" data-booking-detail-email-copy></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="booking-detail-note-card">
+                        <div class="booking-detail-section-title"><i class="bi bi-journal-text" aria-hidden="true"></i>Note</div>
+                        <div class="booking-detail-note" data-booking-detail-note></div>
+                      </div>
+                    </div>
+                    <div class="booking-detail-actions">
+                      <button class="booking-secondary-button" type="button" data-booking-detail-close>Đóng</button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -5233,8 +6122,13 @@
                       <span class="badge badge-plan">Full Set</span>
                       <span class="badge badge-plan">Dip</span>
                     </div>
-                    <div class="tech-stats">
-                      <div class="tech-stat"><strong>3</strong><span>Khách hôm nay</span></div>
+                    <div class="tech-card-footer">
+                      <div class="tech-stats">
+                        <div class="tech-stat"><strong>3</strong><span>Khách hôm nay</span></div>
+                      </div>
+                      <div class="tech-card-actions">
+                        <button class="booking-secondary-button" type="button" data-tech-detail-open="kim"><i class="bi bi-eye" aria-hidden="true"></i>View Details</button>
+                      </div>
                     </div>
                   </article>
 
@@ -5252,8 +6146,13 @@
                       <span class="badge badge-plan">Gel</span>
                       <span class="badge badge-plan">Nail Art</span>
                     </div>
-                    <div class="tech-stats">
-                      <div class="tech-stat"><strong>2</strong><span>Khách hôm nay</span></div>
+                    <div class="tech-card-footer">
+                      <div class="tech-stats">
+                        <div class="tech-stat"><strong>2</strong><span>Khách hôm nay</span></div>
+                      </div>
+                      <div class="tech-card-actions">
+                        <button class="booking-secondary-button" type="button" data-tech-detail-open="lan"><i class="bi bi-eye" aria-hidden="true"></i>View Details</button>
+                      </div>
                     </div>
                   </article>
 
@@ -5271,8 +6170,13 @@
                       <span class="badge badge-plan">Dip</span>
                       <span class="badge badge-plan">Pedicure</span>
                     </div>
-                    <div class="tech-stats">
-                      <div class="tech-stat"><strong>2</strong><span>Khách hôm nay</span></div>
+                    <div class="tech-card-footer">
+                      <div class="tech-stats">
+                        <div class="tech-stat"><strong>2</strong><span>Khách hôm nay</span></div>
+                      </div>
+                      <div class="tech-card-actions">
+                        <button class="booking-secondary-button" type="button" data-tech-detail-open="mai"><i class="bi bi-eye" aria-hidden="true"></i>View Details</button>
+                      </div>
                     </div>
                   </article>
                 </div>
@@ -5290,7 +6194,7 @@
                       <button class="tech-modal-close" type="button" data-tech-modal-close aria-label="Close tech modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
                     </div>
                     <div class="tech-modal-body">
-                      <div class="tech-modal-section">
+                      <div class="tech-modal-section" data-tech-picker-section>
                         <div class="tech-modal-section-title"><i class="bi bi-people" aria-hidden="true"></i>Chọn từ danh sách</div>
                         <div class="tech-select-row">
                           <div class="tech-combobox" data-tech-combobox>
@@ -6070,6 +6974,12 @@
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
     var DEFAULT_MAIN_TAB = 'booking';
+    var BOOKING_SEARCH_PLACEHOLDERS = {
+      name: 'Nhập tên khách hàng',
+      phone: 'Nhập số phone',
+      email: 'Nhập email',
+      service: 'Nhập tên dịch vụ'
+    };
 
     function renderLucideIcons() {
       if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -6157,7 +7067,9 @@
       var panel = document.getElementById('panel-booking');
       if (!panel) return;
 
-      var items = Array.from(panel.querySelectorAll('[data-booking-item]:not([hidden])'));
+      var items = Array.from(panel.querySelectorAll('[data-booking-item]')).filter(function(item) {
+        return !item.hidden;
+      });
       var done = items.filter(function(item) {
         return item.classList.contains('is-done');
       }).length;
@@ -6172,32 +7084,330 @@
       if (totalEl) totalEl.textContent = items.length;
       if (doneEl) doneEl.textContent = done;
       if (noshowEl) noshowEl.textContent = noshow;
+
+      var emptyState = panel.querySelector('[data-booking-empty]');
+      if (emptyState) emptyState.hidden = items.length > 0;
+    }
+
+    function setBookingViewMode(mode) {
+      var panel = document.getElementById('booking-subpanel-today');
+      if (!panel) return;
+
+      var nextMode = mode === 'card' ? 'card' : 'table';
+      panel.dataset.bookingViewMode = nextMode;
+
+      panel.querySelectorAll('[data-booking-view-panel]').forEach(function(viewPanel) {
+        viewPanel.hidden = viewPanel.dataset.bookingViewPanel !== nextMode;
+      });
+
+      panel.querySelectorAll('[data-booking-view-target]').forEach(function(button) {
+        var isActive = button.dataset.bookingViewTarget === nextMode;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+    }
+
+    function findBookingItemById(id) {
+      return Array.from(document.querySelectorAll('[data-booking-item]')).find(function(item) {
+        return item.dataset.bookingId === id;
+      }) || null;
+    }
+
+    function findBookingItemFromAction(action) {
+      if (!action) return null;
+      var item = action.closest('[data-booking-item]');
+      if (item) return item;
+
+      var card = action.closest('[data-booking-card-id]');
+      return card ? findBookingItemById(card.dataset.bookingCardId) : null;
+    }
+
+    function getBookingStatusText(item) {
+      var status = item.querySelector('.booking-status');
+      return status ? status.textContent.trim() : '-';
+    }
+
+    function getBookingTimeText(item) {
+      var time = item.querySelector('.booking-time-main');
+      return time ? time.textContent.trim() : '-';
+    }
+
+    function getBookingDateText(item) {
+      var date = item.querySelector('.booking-time-date');
+      return date ? date.textContent.trim() : '-';
+    }
+
+    function getBookingCardTimeText(item) {
+      var time = getBookingTimeText(item);
+      var date = getBookingDateText(item);
+      if (time === '-') return date;
+      if (date === '-') return time;
+      return time + ' · ' + date;
+    }
+
+    function renderBookingCardActions(item) {
+      var actions = '<button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>';
+      if (!item.classList.contains('is-done') && !item.classList.contains('is-noshow')) {
+        actions = '<button class="booking-mini-button primary booking-confirm-action" type="button" data-booking-action="done">Xác nhận</button>' + actions;
+      }
+      return actions;
+    }
+
+    function renderBookingCards() {
+      var panel = document.getElementById('booking-subpanel-today');
+      if (!panel) return;
+
+      var list = panel.querySelector('[data-booking-card-list]');
+      if (!list) return;
+
+      var rows = Array.from(panel.querySelectorAll('[data-booking-item]')).filter(function(item) {
+        return !item.hidden;
+      });
+
+      list.innerHTML = rows.map(function(item) {
+        var statusBadge = item.querySelector('.booking-status');
+        var statusClass = statusBadge ? statusBadge.className : 'badge booking-status';
+        var services = Array.from(item.querySelectorAll('.booking-service-chip')).map(function(service) {
+          return '<span class="booking-service-chip">' + escapeHtml(service.textContent.trim()) + '</span>';
+        }).join('');
+
+        return '<article class="booking-appointment-card" data-booking-card-id="' + escapeHtml(item.dataset.bookingId) + '">' +
+          '<div class="booking-card-top">' +
+            '<div><div class="booking-card-name">' + escapeHtml(item.dataset.bookingName || '-') + '</div>' +
+            '<div class="booking-card-contact">' + escapeHtml(formatBookingPhone(item.dataset.bookingPhone)) + ' · ' + escapeHtml(item.dataset.bookingEmail || '-') + '</div></div>' +
+            '<span class="' + escapeHtml(statusClass) + '">' + escapeHtml(getBookingStatusText(item)) + '</span>' +
+          '</div>' +
+          '<div class="booking-service-list">' + services + '</div>' +
+          '<div class="booking-card-info-list">' +
+            '<div class="booking-card-info-row"><span class="booking-card-label">Thợ</span><span class="booking-card-value">' + escapeHtml(item.dataset.bookingTech || '-') + '</span></div>' +
+            '<div class="booking-card-info-row"><span class="booking-card-label">Thời gian</span><span class="booking-card-value">' + escapeHtml(getBookingCardTimeText(item)) + '</span></div>' +
+            '<div class="booking-card-info-row"><span class="booking-card-label">Nguồn</span><span class="booking-card-value booking-source-list">' + renderBookingSourceBadges(item) + '</span></div>' +
+          '</div>' +
+          '<div class="booking-card-actions">' + renderBookingCardActions(item) + '</div>' +
+        '</article>';
+      }).join('');
+    }
+
+    function initBookingViewMode() {
+      renderBookingCards();
+      var isMobile = window.matchMedia('(max-width: 767px)').matches;
+      setBookingViewMode(isMobile ? 'card' : 'table');
     }
 
     function completeBookingItem(item) {
       if (!item) return;
-      var actions = item.querySelector('.booking-actions');
+      var statusCell = item.querySelector('.booking-status-cell');
+      var confirmButton = item.querySelector('.booking-confirm-action');
 
       item.classList.remove('is-noshow');
       item.classList.add('is-done');
-      if (actions) {
-        actions.innerHTML = '<span class="badge badge-success booking-status">SMS đã lên lịch</span>';
+      if (statusCell) {
+        statusCell.innerHTML = '<span class="badge badge-success booking-status">Đã xác nhận</span>';
+      }
+      if (confirmButton) {
+        confirmButton.disabled = true;
+        confirmButton.classList.remove('primary');
+        confirmButton.textContent = 'Đã xác nhận';
       }
 
       updateBookingKpis();
+      renderBookingCards();
     }
 
     function markBookingNoShow(item) {
       if (!item) return;
-      var actions = item.querySelector('.booking-actions');
+      var statusCell = item.querySelector('.booking-status-cell');
+      var confirmButton = item.querySelector('.booking-confirm-action');
 
       item.classList.remove('is-done');
       item.classList.add('is-noshow');
-      if (actions) {
-        actions.innerHTML = '<span class="badge badge-warning booking-status">No-show</span>';
+      if (statusCell) {
+        statusCell.innerHTML = '<span class="badge badge-warning booking-status">No-show</span>';
+      }
+      if (confirmButton) {
+        confirmButton.disabled = true;
+        confirmButton.classList.remove('primary');
+        confirmButton.textContent = 'No-show';
       }
 
       updateBookingKpis();
+      renderBookingCards();
+    }
+
+    function getBookingSearchValue(item, field) {
+      var key = 'booking' + field.charAt(0).toUpperCase() + field.slice(1);
+      return (item.dataset[key] || '').toLowerCase();
+    }
+
+    function updateBookingSearchPlaceholder() {
+      var panel = document.getElementById('booking-subpanel-today');
+      if (!panel) return;
+
+      var fieldControl = panel.querySelector('[data-booking-search-field]');
+      var searchInput = panel.querySelector('[data-booking-search-input]');
+      if (!searchInput) return;
+
+      var field = fieldControl ? fieldControl.value : 'name';
+      searchInput.placeholder = BOOKING_SEARCH_PLACEHOLDERS[field] || BOOKING_SEARCH_PLACEHOLDERS.name;
+    }
+
+    function filterBookingItems() {
+      var panel = document.getElementById('booking-subpanel-today');
+      if (!panel) return;
+
+      var fieldControl = panel.querySelector('[data-booking-search-field]');
+      var searchInput = panel.querySelector('[data-booking-search-input]');
+      var dateFromInput = panel.querySelector('[data-booking-date-from]');
+      var dateToInput = panel.querySelector('[data-booking-date-to]');
+      var field = fieldControl ? fieldControl.value : 'name';
+      var query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      var dateFrom = dateFromInput ? dateFromInput.value : '';
+      var dateTo = dateToInput ? dateToInput.value : '';
+
+      Array.from(panel.querySelectorAll('[data-booking-item]')).forEach(function(item) {
+        var searchValue = getBookingSearchValue(item, field);
+        var itemDate = item.dataset.bookingDate || '';
+        var matchesSearch = !query || searchValue.indexOf(query) !== -1;
+        var matchesDateFrom = !dateFrom || itemDate >= dateFrom;
+        var matchesDateTo = !dateTo || itemDate <= dateTo;
+        item.hidden = !(matchesSearch && matchesDateFrom && matchesDateTo);
+      });
+
+      updateBookingKpis();
+      renderBookingCards();
+    }
+
+    function clearBookingFilters() {
+      var panel = document.getElementById('booking-subpanel-today');
+      if (!panel) return;
+
+      var fieldControl = panel.querySelector('[data-booking-search-field]');
+      var searchInput = panel.querySelector('[data-booking-search-input]');
+      var dateFromInput = panel.querySelector('[data-booking-date-from]');
+      var dateToInput = panel.querySelector('[data-booking-date-to]');
+
+      if (fieldControl) fieldControl.value = 'name';
+      if (searchInput) searchInput.value = '';
+      if (dateFromInput) dateFromInput.value = '';
+      if (dateToInput) dateToInput.value = '';
+
+      updateBookingSearchPlaceholder();
+      filterBookingItems();
+    }
+
+    function setBookingDetailText(selector, value) {
+      var target = document.querySelector(selector);
+      if (target) target.textContent = value || '-';
+    }
+
+    function formatBookingPhone(phone) {
+      var digits = (phone || '').replace(/\D/g, '');
+      if (digits.length === 10) {
+        return '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+      }
+      if (digits.length === 11) {
+        return '+' + digits.slice(0, 1) + ' (' + digits.slice(1, 4) + ') ' + digits.slice(4, 7) + '-' + digits.slice(7);
+      }
+      return phone || '-';
+    }
+
+    function getBookingServiceText(item) {
+      var services = Array.from(item.querySelectorAll('.booking-service-chip')).map(function(service) {
+        return service.textContent.trim();
+      }).filter(Boolean);
+      return services.length ? services.join(', ') : (item.dataset.bookingService || '-');
+    }
+
+    function getBookingCustomerInitials(name) {
+      return (name || '').split(/\s+/).filter(Boolean).slice(0, 2).map(function(part) {
+        return part.charAt(0).toUpperCase();
+      }).join('') || 'BK';
+    }
+
+    function setBookingDetailServices(item) {
+      var target = document.querySelector('[data-booking-detail-services]');
+      if (!target) return;
+
+      var services = Array.from(item.querySelectorAll('.booking-service-chip')).map(function(service) {
+        return service.textContent.trim();
+      }).filter(Boolean);
+
+      target.innerHTML = services.map(function(service) {
+        return '<span class="booking-service-chip">' + escapeHtml(service) + '</span>';
+      }).join('');
+
+      if (!target.innerHTML) {
+        target.textContent = item.dataset.bookingService || '-';
+      }
+    }
+
+    function getBookingSourceBadges(item) {
+      return Array.from(item.querySelectorAll('.booking-customer-name .badge')).map(function(badge) {
+        return {
+          className: badge.className,
+          text: badge.textContent.trim()
+        };
+      }).filter(function(source) {
+        return source.text;
+      });
+    }
+
+    function renderBookingSourceBadges(item) {
+      var badges = getBookingSourceBadges(item);
+      if (!badges.length) return '-';
+
+      return badges.map(function(source) {
+        return '<span class="' + escapeHtml(source.className) + '">' + escapeHtml(source.text) + '</span>';
+      }).join('');
+    }
+
+    function getBookingSourceText(item) {
+      var badges = getBookingSourceBadges(item).map(function(source) {
+        return source.text;
+      });
+      return badges.length ? badges.join(' · ') : '-';
+    }
+
+    function setBookingDetailSource(item) {
+      var target = document.querySelector('[data-booking-detail-source]');
+      if (target) target.innerHTML = renderBookingSourceBadges(item);
+    }
+
+    function openBookingDetailModal(item) {
+      var modal = document.querySelector('[data-booking-detail-modal]');
+      if (!modal || !item) return;
+
+      var status = item.querySelector('.booking-status');
+      var time = item.querySelector('.booking-time-main');
+      var date = item.querySelector('.booking-time-date');
+      var phone = formatBookingPhone(item.dataset.bookingPhone);
+
+      setBookingDetailText('[data-booking-detail-initials]', getBookingCustomerInitials(item.dataset.bookingName));
+      setBookingDetailText('[data-booking-detail-name]', item.dataset.bookingName);
+      setBookingDetailText('[data-booking-detail-phone]', phone);
+      setBookingDetailText('[data-booking-detail-phone-copy]', phone);
+      setBookingDetailText('[data-booking-detail-email]', item.dataset.bookingEmail);
+      setBookingDetailText('[data-booking-detail-email-copy]', item.dataset.bookingEmail);
+      setBookingDetailSource(item);
+      setBookingDetailServices(item);
+      setBookingDetailText('[data-booking-detail-tech]', item.dataset.bookingTech);
+      setBookingDetailText('[data-booking-detail-status]', status ? status.textContent.trim() : '-');
+      setBookingDetailText('[data-booking-detail-time]', time ? time.textContent.trim() : '-');
+      setBookingDetailText('[data-booking-detail-date]', date ? date.textContent.trim() : '-');
+      setBookingDetailText('[data-booking-detail-note]', item.dataset.bookingNote);
+
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      var closeButton = modal.querySelector('[data-booking-detail-close]');
+      if (closeButton) closeButton.focus();
+    }
+
+    function closeBookingDetailModal() {
+      var modal = document.querySelector('[data-booking-detail-modal]');
+      if (!modal) return;
+
+      modal.hidden = true;
+      document.body.style.overflow = '';
     }
 
     function setTechField(name, value) {
@@ -6288,7 +7498,7 @@
       if (nameField) nameField.focus();
     }
 
-    function openTechModal() {
+    function openTechModal(initialChoice, mode) {
       var modal = document.querySelector('[data-tech-modal]');
       if (!modal) return;
 
@@ -6297,8 +7507,16 @@
       var search = document.querySelector('[data-tech-search]');
       if (search) search.value = '';
       filterTechChoices('');
-      fillTechModalFromChoice(document.querySelector('[data-tech-choice].is-active') || document.querySelector('[data-tech-choice]'));
+      fillTechModalFromChoice(initialChoice || document.querySelector('[data-tech-choice].is-active') || document.querySelector('[data-tech-choice]'));
+      if (mode === 'detail') modal.dataset.techMode = 'detail';
       setTechSelectOpen(false);
+    }
+
+    function openTechDetailFromCard(button) {
+      if (!button) return;
+
+      var choice = document.querySelector('[data-tech-choice="' + button.dataset.techDetailOpen + '"]');
+      openTechModal(choice, 'detail');
     }
 
     function closeTechModal() {
@@ -6349,8 +7567,10 @@
           '<button class="toggle-pill is-on" type="button" aria-label="Toggle tech SMS notify"></button>' +
         '</div>' +
         '<div class="tech-services">' + renderTechBadges(data.services) + '</div>' +
-        '<div class="tech-stats">' +
-          '<div class="tech-stat"><strong>0</strong><span>Khách hôm nay</span></div>' +
+        '<div class="tech-card-footer">' +
+          '<div class="tech-stats">' +
+            '<div class="tech-stat"><strong>0</strong><span>Khách hôm nay</span></div>' +
+          '</div>' +
         '</div>';
       return card;
     }
@@ -6798,14 +8018,50 @@
       });
     });
 
+    var bookingSearchField = document.querySelector('[data-booking-search-field]');
+    if (bookingSearchField) {
+      bookingSearchField.addEventListener('change', function() {
+        updateBookingSearchPlaceholder();
+        filterBookingItems();
+      });
+    }
+
+    var bookingSearchInput = document.querySelector('[data-booking-search-input]');
+    if (bookingSearchInput) {
+      bookingSearchInput.addEventListener('input', filterBookingItems);
+    }
+
+    var bookingDateFrom = document.querySelector('[data-booking-date-from]');
+    if (bookingDateFrom) {
+      bookingDateFrom.addEventListener('change', filterBookingItems);
+    }
+
+    var bookingDateTo = document.querySelector('[data-booking-date-to]');
+    if (bookingDateTo) {
+      bookingDateTo.addEventListener('change', filterBookingItems);
+    }
+
+    var bookingClearFilters = document.querySelector('[data-booking-clear-filters]');
+    if (bookingClearFilters) {
+      bookingClearFilters.addEventListener('click', clearBookingFilters);
+    }
+
+    document.querySelectorAll('[data-booking-view-target]').forEach(function(button) {
+      button.addEventListener('click', function() {
+        setBookingViewMode(button.dataset.bookingViewTarget);
+      });
+    });
+
     document.addEventListener('click', function(event) {
       var bookingAction = event.target.closest('[data-booking-action]');
       if (bookingAction) {
-        var item = bookingAction.closest('[data-booking-item]');
+        var item = findBookingItemFromAction(bookingAction);
         if (bookingAction.dataset.bookingAction === 'done') {
           completeBookingItem(item);
         } else if (bookingAction.dataset.bookingAction === 'noshow') {
           markBookingNoShow(item);
+        } else if (bookingAction.dataset.bookingAction === 'detail') {
+          openBookingDetailModal(item);
         }
       }
 
@@ -6817,6 +8073,12 @@
       var techModalOpen = event.target.closest('[data-tech-modal-open]');
       if (techModalOpen) {
         openTechModal();
+        return;
+      }
+
+      var techDetailOpen = event.target.closest('[data-tech-detail-open]');
+      if (techDetailOpen) {
+        openTechDetailFromCard(techDetailOpen);
         return;
       }
 
@@ -6834,6 +8096,12 @@
       var techModalSave = event.target.closest('[data-tech-modal-save]');
       if (techModalSave) {
         saveTechModal();
+        return;
+      }
+
+      var bookingDetailClose = event.target.closest('[data-booking-detail-close]');
+      if (bookingDetailClose || event.target.matches('[data-booking-detail-modal]')) {
+        closeBookingDetailModal();
         return;
       }
 
@@ -6930,10 +8198,16 @@
     document.addEventListener('keydown', function(event) {
       var modal = document.querySelector('[data-offer-modal]');
       var techModal = document.querySelector('[data-tech-modal]');
+      var bookingDetailModal = document.querySelector('[data-booking-detail-modal]');
       var techSelectMenu = document.querySelector('[data-tech-select-menu]');
 
       if (event.key === 'Escape' && techSelectMenu && !techSelectMenu.hidden) {
         setTechSelectOpen(false);
+        return;
+      }
+
+      if (event.key === 'Escape' && bookingDetailModal && !bookingDetailModal.hidden) {
+        closeBookingDetailModal();
         return;
       }
 
@@ -7011,6 +8285,8 @@
       });
     });
 
+    updateBookingSearchPlaceholder();
+    initBookingViewMode();
     updateBookingKpis();
     activateMainTabFromUrl();
   </script>
