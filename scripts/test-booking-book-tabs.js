@@ -64,6 +64,7 @@ const mobileBookingTableHeadCss = mobileMediaCss.match(/\.booking-table thead\s*
 const mobileBookingTableBodyCss = mobileMediaCss.match(/\.booking-table tbody\s*\{[\s\S]*?\n      \}/)?.[0] || "";
 const mobileBookingTableRowCss = mobileMediaCss.match(/\.booking-table-row\s*\{[\s\S]*?\n      \}/)?.[0] || "";
 const mobileBookingTableCellCss = mobileMediaCss.match(/\.booking-table td\s*\{[\s\S]*?\n      \}/)?.[0] || "";
+const mobileBookingStatusBadgeCss = mobileMediaCss.match(/\.booking-status-cell \.booking-status\s*\{[\s\S]*?\n      \}/)?.[0] || "";
 const desktopMediaStart = html.indexOf("@media (min-width: 1024px)");
 const desktopMediaEnd = html.indexOf("@media (max-width: 767px)", desktopMediaStart);
 const desktopMediaCss = desktopMediaStart >= 0 && desktopMediaEnd > desktopMediaStart ? html.slice(desktopMediaStart, desktopMediaEnd) : "";
@@ -127,6 +128,8 @@ assert(/display:\s*none;/.test(mobileBookingTableHeadCss), "Mobile booking table
 assert(/display:\s*grid;/.test(mobileBookingTableBodyCss), "Mobile booking table body should stack rows as cards");
 assert(/display:\s*grid;/.test(mobileBookingTableRowCss), "Mobile booking table rows should render as responsive cards");
 assert(/grid-template-columns:\s*76px minmax\(0,\s*1fr\);/.test(mobileBookingTableCellCss), "Mobile booking table cells should show label and value columns");
+assert(/justify-self:\s*start;/.test(mobileBookingStatusBadgeCss), "Mobile status badge should align to its content instead of stretching");
+assert(/width:\s*auto;/.test(mobileBookingStatusBadgeCss), "Mobile status badge should use auto width");
 assert(/\.booking-table td:nth-child\(1\)::before[\s\S]*content:\s*"Khách hàng";/.test(mobileMediaCss), "Mobile booking table should label customer cells");
 assert(/\.booking-table td:nth-child\(6\)::before[\s\S]*content:\s*"Action";/.test(mobileMediaCss), "Mobile booking table should label action cells");
 assert(/<th[^>]*>Khách hàng<\/th>[\s\S]*<th[^>]*>Dịch vụ<\/th>[\s\S]*<th[^>]*>Thợ<\/th>[\s\S]*<th[^>]*>Thời gian<\/th>[\s\S]*<th[^>]*>Status<\/th>[\s\S]*<th[^>]*>Action<\/th>/.test(todayFullPanel), "Booking table should expose customer, service, tech, time, status, and action columns");
