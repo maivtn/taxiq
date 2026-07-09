@@ -303,6 +303,13 @@ assert(/data-tech-picker-section/.test(teamPanel), "Tech modal list picker shoul
 assert(/data-tech-create[\s\S]*Tự nhập<\/button>/.test(teamPanel), "Tech create action in the picker should be labeled Tự nhập");
 assert(/\.tech-modal\[data-tech-mode="detail"\]\s+\[data-tech-picker-section\]\s*\{[\s\S]*display:\s*none;/.test(html), "Tech detail mode should hide the Chọn từ danh sách picker card");
 assert(/openTechModal\(choice,\s*'detail'\)/.test(html), "Tech card detail clicks should open the tech modal in detail mode");
+assert(/data-tech-modal-title/.test(teamPanel), "Tech modal title should be addressable for mode-specific copy");
+assert(/data-tech-modal-sub/.test(teamPanel), "Tech modal subtitle should be addressable for mode-specific copy");
+assert(/function updateTechModalCopy\(mode, choice\)/.test(html), "Tech modal should update title and subtitle by create/edit mode");
+assert(/title\.textContent = isCreate \? 'Thông Tin Thợ' : 'Chỉnh Thông Tin Thợ';/.test(html), "Tech modal edit mode should change the title copy");
+assert(/sub\.textContent = isCreate \? 'Tự nhập thông tin thợ mới, dịch vụ và lịch làm việc hằng tuần\.' : \('Cập nhật profile, dịch vụ và lịch làm việc cho ' \+ techName \+ '\.'\);/.test(html), "Tech modal edit mode should change the subtitle copy");
+assert(/updateTechModalCopy\(isCreate \? 'create' : 'edit', choice\);/.test(html), "Choosing an existing tech should switch the modal copy to edit mode");
+assert(/if \(mode === 'detail'\) \{[\s\S]*modal\.dataset\.techMode = 'detail';[\s\S]*updateTechModalCopy\('edit', initialChoice \|\| fallbackChoice\);[\s\S]*\}/.test(html), "Opening a tech detail card should use edit copy instead of create/search copy");
 assert(/function openNewTechModal\(\)[\s\S]*document\.querySelector\('\[data-tech-create\]'\)[\s\S]*openTechModal\(createButton,\s*'create'\)/.test(html), "Add-tech should open the modal through an explicit create-mode helper");
 assert(/data-tech-modal-open[\s\S]*openNewTechModal\(\);/.test(html), "Clicking Thêm Thợ should open a blank create form");
 assert(/setTechField\('name', isCreate \? '' : choice\.dataset\.name\);[\s\S]*setTechField\('phone', isCreate \? '' : choice\.dataset\.phone\);[\s\S]*setTechField\('email', isCreate \? '' : choice\.dataset\.email\);[\s\S]*setTechField\('services', isCreate \? '' : choice\.dataset\.services\);/.test(html), "Create mode should clear name, phone, email, and services controls");
