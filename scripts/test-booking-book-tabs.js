@@ -52,6 +52,7 @@ const bookingTimeMainCss = bookingTimeMainCssBlocks[bookingTimeMainCssBlocks.len
 const mobileMediaStart = html.lastIndexOf("@media (max-width: 767px)");
 const mobileMediaCss = mobileMediaStart >= 0 ? html.slice(mobileMediaStart) : "";
 const mobileTechCardCss = mobileMediaCss.match(/\.tech-card\s*\{[\s\S]*?\n      \}/)?.[0] || "";
+const mobileTechAvatarCss = mobileMediaCss.match(/\.tech-avatar\s*\{[\s\S]*?\n      \}/)?.[0] || "";
 const mobileBookingControlsCss = mobileMediaCss.match(/\.booking-controls\s*\{[\s\S]*?\n      \}/)?.[0] || "";
 const mobileBookingFirstControlCss = mobileMediaCss.match(/\.booking-controls \.booking-control-field:nth-child\(1\)\s*\{[\s\S]*?\n      \}/)?.[0] || "";
 const mobileBookingSecondControlCss = mobileMediaCss.match(/\.booking-controls \.booking-control-field:nth-child\(2\)\s*\{[\s\S]*?\n      \}/)?.[0] || "";
@@ -240,7 +241,11 @@ assert(/margin-top:\s*2px;/.test(techCardFooterCss), "Tech card footer should si
 assert(/margin-top:\s*0;/.test(techCardActionsCss), "Tech card actions should not add extra vertical gap in the footer");
 assert(/padding-top:\s*0;/.test(techCardActionsCss), "Tech card actions should not render a separated lower band");
 assert(!/border-top:\s*1px solid var\(--nexora-rule\);/.test(techCardActionsCss), "Tech card actions should not keep the old divider line");
-assert(/width:\s*calc\(50% - 6px\);/.test(mobileTechCardCss), "Mobile Đội thợ tech cards should fit two columns with the grid gap");
-assert(/flex:\s*0 1 calc\(50% - 6px\);/.test(mobileTechCardCss), "Mobile Đội thợ tech cards should wrap from a two-column basis");
+assert(/width:\s*100%;/.test(mobileTechCardCss), "Mobile Đội thợ tech cards should take one full row");
+assert(/flex:\s*0 1 100%;/.test(mobileTechCardCss), "Mobile Đội thợ tech cards should wrap one card per row");
+assert(/max-width:\s*100%;/.test(mobileTechCardCss), "Mobile Đội thợ tech cards should not overflow");
+assert(/width:\s*36px;/.test(mobileTechAvatarCss), "Mobile tech avatars should be smaller");
+assert(/height:\s*36px;/.test(mobileTechAvatarCss), "Mobile tech avatars should keep a smaller square size");
+assert(/font-size:\s*13px;/.test(mobileTechAvatarCss), "Mobile tech avatar initials should scale down with the avatar");
 
 console.log("booking book tabs regression passed");
