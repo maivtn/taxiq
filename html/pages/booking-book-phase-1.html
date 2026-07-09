@@ -3449,6 +3449,17 @@
       color: #fff;
     }
 
+    .booking-mini-button.booking-sms-action {
+      border-color: transparent;
+      background: var(--nexora-electric);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(43, 89, 255, 0.2);
+    }
+
+    .booking-mini-button.booking-sms-action:hover {
+      background: var(--nexora-brand);
+    }
+
     .booking-mini-button.icon-only {
       width: 34px;
       min-width: 34px;
@@ -3892,6 +3903,31 @@
 
     .booking-status-cell {
       white-space: nowrap;
+    }
+
+    .booking-status {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+    }
+
+    .booking-status-new {
+      background: rgba(245, 158, 11, 0.14);
+      color: #9a5a00;
+    }
+
+    .booking-status-sms {
+      background: rgba(70, 72, 216, 0.12);
+      color: var(--nexora-brand);
+    }
+
+    .booking-status-done {
+      background: rgba(0, 184, 115, 0.12);
+      color: var(--nexora-success);
     }
 
     .booking-actions {
@@ -6057,7 +6093,7 @@
                                 <div class="booking-time-date">July 9, 2026</div>
                               </div>
                             </td>
-                            <td class="booking-status-cell"><span class="badge badge-success booking-status">Hoàn tất</span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-done">Hoàn tất</span></td>
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
@@ -6087,7 +6123,7 @@
                                 <div class="booking-time-date">July 9, 2026</div>
                               </div>
                             </td>
-                            <td class="booking-status-cell"><span class="badge booking-source-sms booking-status">Đã gửi SMS</span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-sms">Đã gửi SMS</span></td>
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only primary booking-done-action" type="button" data-booking-action="done" aria-label="Done" title="Done"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Done</span></button>
@@ -6118,7 +6154,7 @@
                                 <div class="booking-time-date">July 9, 2026</div>
                               </div>
                             </td>
-                            <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
@@ -6149,7 +6185,7 @@
                                 <div class="booking-time-date">July 9, 2026</div>
                               </div>
                             </td>
-                            <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
@@ -6180,7 +6216,7 @@
                                 <div class="booking-time-date">July 17, 2026</div>
                               </div>
                             </td>
-                            <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
@@ -6211,7 +6247,7 @@
                                 <div class="booking-time-date">July 17, 2026</div>
                               </div>
                             </td>
-                            <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
@@ -6438,7 +6474,7 @@
                             <span class="settings-label">Số điện thoại</span>
                             <span class="phone-input-shell">
                               <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option></select>
-                              <input class="settings-input phone-mask-input" type="tel" data-tech-field="phone" value="" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
+                              <input class="settings-input phone-mask-input" type="tel" data-tech-field="phone" value="" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
                             </span>
                           </label>
                           <label class="settings-field"><span class="settings-label">Email</span><input class="settings-input" type="email" data-tech-field="email" value=""></label>
@@ -6742,7 +6778,7 @@
                         <span class="settings-label">Số điện thoại tiệm</span>
                         <span class="phone-input-shell">
                           <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option></select>
-                          <input class="settings-input phone-mask-input" type="tel" value="(346) 802-4906" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
+                          <input class="settings-input phone-mask-input" type="tel" value="(346) 802-4906" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
                         </span>
                         <span class="settings-help">Số khách đang gọi hiện tại, sẽ forward về số AI.</span>
                       </label>
@@ -6750,7 +6786,7 @@
                         <span class="settings-label">Số AI trả lời</span>
                         <span class="phone-input-shell">
                           <select class="phone-country-select" aria-label="Country code" disabled><option value="+1" selected>+1</option></select>
-                          <input class="settings-input phone-mask-input" type="tel" value="(832) 786-5576" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel-national" data-phone-mask readonly>
+                          <input class="settings-input phone-mask-input" type="tel" value="(832) 786-5576" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask readonly>
                         </span>
                         <span class="settings-help">NEXORA cấp, AI bắt máy 24/7 trên số này.</span>
                       </label>
@@ -6758,7 +6794,7 @@
                         <span class="settings-label">Số nhận thông báo booking</span>
                         <span class="phone-input-shell">
                           <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option></select>
-                          <input class="settings-input phone-mask-input" type="tel" value="" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
+                          <input class="settings-input phone-mask-input" type="tel" value="" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
                         </span>
                         <span class="settings-help">SMS báo khi có khách book hoặc khách nhắn - có thể là số chủ hoặc quản lý.</span>
                       </label>
@@ -7144,7 +7180,7 @@
                 <label class="trial-label" for="trial-phone">Số phone <span>*</span></label>
                 <div class="phone-input-shell">
                   <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option></select>
-                  <input class="trial-input phone-mask-input" id="trial-phone" data-trial-phone type="tel" value="(346) 802-4906" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
+                  <input class="trial-input phone-mask-input" id="trial-phone" data-trial-phone type="tel" value="(346) 802-4906" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
                 </div>
               </div>
 
@@ -7528,17 +7564,17 @@
       if (status === 'sms-sent') {
         item.classList.add('is-sms-sent');
         if (statusCell) {
-          statusCell.innerHTML = '<span class="badge booking-source-sms booking-status">Đã gửi SMS</span>';
+          statusCell.innerHTML = '<span class="badge booking-status booking-status-sms">Đã gửi SMS</span>';
         }
       } else if (status === 'done') {
         item.classList.add('is-done');
         if (statusCell) {
-          statusCell.innerHTML = '<span class="badge badge-success booking-status">Hoàn tất</span>';
+          statusCell.innerHTML = '<span class="badge booking-status booking-status-done">Hoàn tất</span>';
         }
       } else {
         item.classList.add('is-new');
         if (statusCell) {
-          statusCell.innerHTML = '<span class="badge badge-warning booking-status">New</span>';
+          statusCell.innerHTML = '<span class="badge booking-status booking-status-new">New</span>';
         }
       }
 

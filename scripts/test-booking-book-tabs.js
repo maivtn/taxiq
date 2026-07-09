@@ -57,6 +57,10 @@ const techCardActionsCss = html.match(/\.tech-card-actions\s*\{[\s\S]*?\n    \}/
 const techCardActionButtonCss = html.match(/\.tech-card-actions \.booking-secondary-button\s*\{[\s\S]*?\n    \}/)?.[0] || "";
 const bookingTimeMainCssBlocks = Array.from(html.matchAll(/\.booking-time-main\s*\{[\s\S]*?\n    \}/g)).map((match) => match[0]);
 const bookingTimeMainCss = bookingTimeMainCssBlocks[bookingTimeMainCssBlocks.length - 1] || "";
+const bookingSmsActionCss = html.match(/\.booking-mini-button\.booking-sms-action\s*\{[\s\S]*?\n    \}/)?.[0] || "";
+const bookingStatusNewCss = html.match(/\.booking-status-new\s*\{[\s\S]*?\n    \}/)?.[0] || "";
+const bookingStatusSmsCss = html.match(/\.booking-status-sms\s*\{[\s\S]*?\n    \}/)?.[0] || "";
+const bookingStatusDoneCss = html.match(/\.booking-status-done\s*\{[\s\S]*?\n    \}/)?.[0] || "";
 const mobileMediaStart = html.lastIndexOf("@media (max-width: 767px)");
 const mobileMediaCss = mobileMediaStart >= 0 ? html.slice(mobileMediaStart) : "";
 const mobileTechCardCss = mobileMediaCss.match(/\.tech-card\s*\{[\s\S]*?\n      \}/)?.[0] || "";
@@ -98,6 +102,7 @@ assert(phoneMaskInputs.length >= 5, "Every phone field should use the shared pho
 assert(telInputs.length === phoneMaskInputs.length, "Every tel input should opt into the phone mask");
 phoneMaskInputs.forEach(function(input) {
   assert(/placeholder="\(\d{3}\) \d{3}-\d{4}"/.test(input), "Masked phone inputs should show the US phone placeholder");
+  assert(input.includes('placeholder="(123) 456-7890"'), "Masked phone inputs should use the requested sample phone placeholder");
   assert(/inputmode="numeric"/.test(input), "Masked phone inputs should use numeric mobile keyboards");
 });
 assert((html.match(/class="phone-input-shell"/g) || []).length >= phoneMaskInputs.length, "Every phone input should sit inside a country-code shell");
@@ -176,6 +181,18 @@ assert(!/No-show|Đã Xác Nhận|SMS đã lên lịch|Chờ xác nhận|Đã x�
 assert((todayFullPanel.match(/class="booking-table-row is-new"/g) || []).length === 4, "New booking rows should use the is-new state");
 assert((todayFullPanel.match(/class="booking-table-row is-sms-sent"/g) || []).length === 1, "SMS-sent booking rows should use the is-sms-sent state");
 assert((todayFullPanel.match(/class="booking-table-row is-done"/g) || []).length === 1, "Done booking rows should use the is-done state");
+assert(/class="badge booking-status booking-status-new">New<\/span>/.test(todayFullPanel), "New status should use a dedicated status badge color");
+assert(/class="badge booking-status booking-status-sms">Đã gửi SMS<\/span>/.test(todayFullPanel), "SMS-sent status should use a dedicated status badge color");
+assert(/class="badge booking-status booking-status-done">Hoàn tất<\/span>/.test(todayFullPanel), "Done status should use a dedicated status badge color");
+assert(!/badge-warning booking-status|booking-source-sms booking-status|badge-success booking-status/.test(todayFullPanel), "Booking statuses should not reuse generic or source badge colors");
+assert(/background:\s*var\(--nexora-electric\);/.test(bookingSmsActionCss), "Send SMS action should use a blue action color");
+assert(!/background:\s*var\(--nexora-success\);/.test(bookingSmsActionCss), "Send SMS action should not share the green Done color");
+assert(/background:\s*rgba\(245,\s*158,\s*11,\s*0\.14\);/.test(bookingStatusNewCss), "New status should keep an amber badge background");
+assert(/background:\s*rgba\(70,\s*72,\s*216,\s*0\.12\);/.test(bookingStatusSmsCss), "SMS-sent status should use an indigo badge background");
+assert(/background:\s*rgba\(0,\s*184,\s*115,\s*0\.12\);/.test(bookingStatusDoneCss), "Done status should use a green badge background");
+assert(/statusCell\.innerHTML = '<span class="badge booking-status booking-status-sms">Đã gửi SMS<\/span>';/.test(html), "SMS status transitions should render the dedicated SMS status badge");
+assert(/statusCell\.innerHTML = '<span class="badge booking-status booking-status-done">Hoàn tất<\/span>';/.test(html), "Done status transitions should render the dedicated Done status badge");
+assert(/statusCell\.innerHTML = '<span class="badge booking-status booking-status-new">New<\/span>';/.test(html), "New status transitions should render the dedicated New status badge");
 assert(/class="booking-mini-button icon-only primary booking-sms-action"[^>]*data-booking-action="send-sms"[^>]*aria-label="Send SMS"[^>]*title="Send SMS"[\s\S]*<i class="bi bi-send" aria-hidden="true"><\/i>/.test(todayFullPanel), "New booking rows should render Send SMS actions");
 assert(/class="booking-mini-button icon-only primary booking-done-action"[^>]*data-booking-action="done"[^>]*aria-label="Done"[^>]*title="Done"[\s\S]*<i class="bi bi-check-lg" aria-hidden="true"><\/i>/.test(todayFullPanel), "SMS-sent booking rows should render Done actions");
 assert(/class="booking-mini-button icon-only"[^>]*data-booking-action="detail"[^>]*aria-label="View"[^>]*title="View"[\s\S]*<i class="bi bi-eye" aria-hidden="true"><\/i>/.test(todayFullPanel), "Booking detail actions should render as eye icons");
