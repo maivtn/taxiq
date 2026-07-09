@@ -36,6 +36,18 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     html,
     body {
       margin: 0;
@@ -2015,6 +2027,64 @@
       box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.1);
     }
 
+    .phone-input-shell {
+      display: flex;
+      width: 100%;
+      min-height: 42px;
+      overflow: hidden;
+      align-items: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .phone-input-shell:focus-within {
+      border-color: rgba(0, 184, 115, 0.9);
+      box-shadow: 0 0 0 3px rgba(0, 184, 115, 0.12);
+    }
+
+    .settings-business-grid .phone-input-shell {
+      min-height: 46px;
+    }
+
+    .phone-country-select {
+      width: 74px;
+      min-height: 100%;
+      flex-shrink: 0;
+      border: 0;
+      border-right: 1px solid var(--nexora-border);
+      background: transparent;
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 800;
+      outline: none;
+      padding: 0 12px;
+    }
+
+    .phone-mask-input,
+    .phone-input-shell .settings-input,
+    .phone-input-shell .trial-input {
+      flex: 1;
+      min-width: 0;
+      min-height: auto;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      padding: 0 14px;
+    }
+
+    .phone-input-shell .settings-input:focus,
+    .phone-input-shell .trial-input:focus {
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    .phone-mask-input[readonly] {
+      color: var(--brand-cyan);
+    }
+
     .settings-help {
       color: var(--nexora-muted);
       font-size: 10.5px;
@@ -3379,6 +3449,27 @@
       color: #fff;
     }
 
+    .booking-mini-button.icon-only {
+      width: 34px;
+      min-width: 34px;
+      height: 34px;
+      padding: 0;
+      gap: 0;
+    }
+
+    .booking-secondary-button.icon-only {
+      width: 34px;
+      min-width: 34px;
+      height: 34px;
+      padding: 0;
+      gap: 0;
+    }
+
+    .booking-mini-button.icon-only .bi,
+    .booking-secondary-button.icon-only .bi {
+      font-size: 13px;
+    }
+
     .booking-controls {
       display: grid;
       grid-template-columns: 1fr;
@@ -3804,7 +3895,7 @@
       flex-wrap: wrap;
       justify-content: flex-end;
       gap: 7px;
-      min-width: 170px;
+      min-width: 78px;
     }
 
     .booking-empty {
@@ -3940,19 +4031,20 @@
 
     .tech-card {
       display: grid;
-      gap: 10px;
+      gap: 9px;
       flex: 0 1 280px;
       width: 280px;
       max-width: 100%;
       border: 1px solid var(--nexora-border);
       border-radius: 12px;
       background: #fff;
-      padding: 14px;
+      padding: 13px;
       box-shadow: var(--nexora-card-shadow);
     }
 
     .tech-top {
-      display: flex;
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr) auto;
       align-items: center;
       gap: 10px;
       margin-bottom: 0;
@@ -3960,29 +4052,43 @@
 
     .tech-avatar {
       display: inline-flex;
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       flex-shrink: 0;
       align-items: center;
       justify-content: center;
       border-radius: 999px;
       background: linear-gradient(135deg, var(--nexora-electric), var(--nexora-violet));
       color: #fff;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 900;
     }
 
+    .tech-profile {
+      display: grid;
+      min-width: 0;
+      gap: 2px;
+    }
+
     .tech-name {
+      overflow: hidden;
       color: var(--nexora-text);
       font-size: 13px;
       font-weight: 900;
+      line-height: 1.18;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .tech-phone {
       margin-top: 2px;
+      overflow: hidden;
       color: var(--nexora-muted);
       font-size: 11px;
       font-weight: 700;
+      line-height: 1.18;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .toggle-pill {
@@ -4019,8 +4125,14 @@
     .tech-services {
       display: flex;
       flex-wrap: wrap;
-      gap: 5px;
+      gap: 6px;
       margin-bottom: 0;
+    }
+
+    .tech-services .badge {
+      min-height: 20px;
+      padding: 3px 7px;
+      line-height: 1;
     }
 
     .tech-stats {
@@ -4037,6 +4149,9 @@
       justify-content: space-between;
       gap: 8px;
       margin-top: 2px;
+      border-radius: 10px;
+      background: var(--nexora-canvas);
+      padding: 6px 7px;
     }
 
     .tech-card-actions {
@@ -4047,9 +4162,17 @@
     }
 
     .tech-card-actions .booking-secondary-button {
-      min-height: 34px;
-      padding: 8px 11px;
+      min-height: 30px;
+      padding: 6px 9px;
+      border-radius: 8px;
       font-size: 11px;
+    }
+
+    .tech-card-actions .booking-secondary-button.icon-only {
+      width: 30px;
+      min-width: 30px;
+      height: 30px;
+      padding: 0;
     }
 
     .tech-stat {
@@ -4059,7 +4182,7 @@
       gap: 6px;
       border: 0;
       border-radius: 999px;
-      background: var(--nexora-surface-muted);
+      background: #fff;
       padding: 4px 9px;
     }
 
@@ -4835,6 +4958,11 @@
         flex: 0 1 100%;
         width: 100%;
         max-width: 100%;
+      }
+
+      .tech-top {
+        grid-template-columns: 36px minmax(0, 1fr) auto;
+        gap: 9px;
       }
 
       .tech-avatar {
@@ -5860,7 +5988,7 @@
                             <td class="booking-status-cell"><span class="badge badge-success booking-status">Đã xác nhận</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>
+                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>
                               </div>
                             </td>
                           </tr>
@@ -5890,7 +6018,7 @@
                             <td class="booking-status-cell"><span class="badge badge-success booking-status">SMS đã lên lịch</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>
+                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>
                               </div>
                             </td>
                           </tr>
@@ -5920,8 +6048,8 @@
                             <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button primary booking-confirm-action" type="button" data-booking-action="done">Xác nhận</button>
-                                <button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>
+                                <button class="booking-mini-button icon-only primary booking-confirm-action" type="button" data-booking-action="done" aria-label="Xác nhận" title="Xác nhận"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Xác nhận</span></button>
+                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>
                               </div>
                             </td>
                           </tr>
@@ -5951,8 +6079,8 @@
                             <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button primary booking-confirm-action" type="button" data-booking-action="done">Xác nhận</button>
-                                <button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>
+                                <button class="booking-mini-button icon-only primary booking-confirm-action" type="button" data-booking-action="done" aria-label="Xác nhận" title="Xác nhận"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Xác nhận</span></button>
+                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>
                               </div>
                             </td>
                           </tr>
@@ -5982,8 +6110,8 @@
                             <td class="booking-status-cell"><span class="badge badge-warning booking-status">New</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button primary booking-confirm-action" type="button" data-booking-action="done">Xác nhận</button>
-                                <button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>
+                                <button class="booking-mini-button icon-only primary booking-confirm-action" type="button" data-booking-action="done" aria-label="Xác nhận" title="Xác nhận"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Xác nhận</span></button>
+                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>
                               </div>
                             </td>
                           </tr>
@@ -6013,8 +6141,8 @@
                             <td class="booking-status-cell"><span class="badge booking-source-lp booking-status">Chờ xác nhận</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button primary booking-confirm-action" type="button" data-booking-action="done">Xác nhận</button>
-                                <button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>
+                                <button class="booking-mini-button icon-only primary booking-confirm-action" type="button" data-booking-action="done" aria-label="Xác nhận" title="Xác nhận"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Xác nhận</span></button>
+                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>
                               </div>
                             </td>
                           </tr>
@@ -6122,7 +6250,7 @@
                   <article class="tech-card" data-tech-id="kim">
                     <div class="tech-top">
                       <div class="tech-avatar">K</div>
-                      <div style="flex: 1; min-width: 0;">
+                      <div class="tech-profile">
                         <div class="tech-name">Kim Nguyễn</div>
                         <div class="tech-phone">832-555-0161</div>
                       </div>
@@ -6138,7 +6266,7 @@
                         <div class="tech-stat"><strong>3</strong><span>Khách hôm nay</span></div>
                       </div>
                       <div class="tech-card-actions">
-                        <button class="booking-secondary-button" type="button" data-tech-detail-open="kim"><i class="bi bi-eye" aria-hidden="true"></i>View Details</button>
+                        <button class="booking-secondary-button icon-only" type="button" data-tech-detail-open="kim" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View Details</span></button>
                       </div>
                     </div>
                   </article>
@@ -6146,7 +6274,7 @@
                   <article class="tech-card" data-tech-id="lan">
                     <div class="tech-top">
                       <div class="tech-avatar" style="background: linear-gradient(135deg, var(--brand-cyan), var(--nexora-electric));">L</div>
-                      <div style="flex: 1; min-width: 0;">
+                      <div class="tech-profile">
                         <div class="tech-name">Lan Trần</div>
                         <div class="tech-phone">713-555-0192</div>
                       </div>
@@ -6162,7 +6290,7 @@
                         <div class="tech-stat"><strong>2</strong><span>Khách hôm nay</span></div>
                       </div>
                       <div class="tech-card-actions">
-                        <button class="booking-secondary-button" type="button" data-tech-detail-open="lan"><i class="bi bi-eye" aria-hidden="true"></i>View Details</button>
+                        <button class="booking-secondary-button icon-only" type="button" data-tech-detail-open="lan" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View Details</span></button>
                       </div>
                     </div>
                   </article>
@@ -6170,7 +6298,7 @@
                   <article class="tech-card" data-tech-id="mai">
                     <div class="tech-top">
                       <div class="tech-avatar" style="background: linear-gradient(135deg, #f472b6, var(--nexora-violet));">M</div>
-                      <div style="flex: 1; min-width: 0;">
+                      <div class="tech-profile">
                         <div class="tech-name">Mai Phạm</div>
                         <div class="tech-phone">281-555-0138</div>
                       </div>
@@ -6186,7 +6314,7 @@
                         <div class="tech-stat"><strong>2</strong><span>Khách hôm nay</span></div>
                       </div>
                       <div class="tech-card-actions">
-                        <button class="booking-secondary-button" type="button" data-tech-detail-open="mai"><i class="bi bi-eye" aria-hidden="true"></i>View Details</button>
+                        <button class="booking-secondary-button icon-only" type="button" data-tech-detail-open="mai" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View Details</span></button>
                       </div>
                     </div>
                   </article>
@@ -6240,7 +6368,13 @@
                         <div class="tech-modal-section-title"><i class="bi bi-person-vcard" aria-hidden="true"></i>Thông tin profile</div>
                         <div class="tech-modal-grid">
                           <label class="settings-field"><span class="settings-label">Tên thợ</span><input class="settings-input" type="text" data-tech-field="name" value="Kim Nguyễn"></label>
-                          <label class="settings-field"><span class="settings-label">Số điện thoại</span><input class="settings-input" type="tel" data-tech-field="phone" value="832-555-0161"></label>
+                          <label class="settings-field">
+                            <span class="settings-label">Số điện thoại</span>
+                            <span class="phone-input-shell">
+                              <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option></select>
+                              <input class="settings-input phone-mask-input" type="tel" data-tech-field="phone" value="(832) 555-0161" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
+                            </span>
+                          </label>
                           <label class="settings-field"><span class="settings-label">Email</span><input class="settings-input" type="email" data-tech-field="email" value="kim@nexoratouch.com"></label>
                           <div class="settings-field">
                             <span class="settings-label">Dịch vụ</span>
@@ -6255,7 +6389,6 @@
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Eyelash" value="Eyelash">Eyelash</label>
                             </div>
                           </div>
-                          <label class="settings-field"><span class="settings-label">Ghi chú SMS</span><textarea class="settings-textarea" data-tech-field="note">Nhận SMS khi có booking mới, tip và review nhắc tên.</textarea></label>
                         </div>
                       </div>
                     </div>
@@ -6472,17 +6605,26 @@
                       </label>
                       <label class="settings-field">
                         <span class="settings-label">Số điện thoại tiệm</span>
-                        <input class="settings-input" type="text" value="346-802-4906">
+                        <span class="phone-input-shell">
+                          <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option></select>
+                          <input class="settings-input phone-mask-input" type="tel" value="(346) 802-4906" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
+                        </span>
                         <span class="settings-help">Số khách đang gọi hiện tại, sẽ forward về số AI.</span>
                       </label>
                       <label class="settings-field">
                         <span class="settings-label">Số AI trả lời</span>
-                        <input class="settings-input" type="text" value="832-786-5576" readonly style="color: var(--brand-cyan);">
+                        <span class="phone-input-shell">
+                          <select class="phone-country-select" aria-label="Country code" disabled><option value="+1" selected>+1</option></select>
+                          <input class="settings-input phone-mask-input" type="tel" value="(832) 786-5576" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel-national" data-phone-mask readonly>
+                        </span>
                         <span class="settings-help">NEXORA cấp, AI bắt máy 24/7 trên số này.</span>
                       </label>
                       <label class="settings-field">
                         <span class="settings-label">Số nhận thông báo booking</span>
-                        <input class="settings-input" type="text" value="832-xxx-xxxx">
+                        <span class="phone-input-shell">
+                          <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option></select>
+                          <input class="settings-input phone-mask-input" type="tel" value="" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
+                        </span>
                         <span class="settings-help">SMS báo khi có khách book hoặc khách nhắn - có thể là số chủ hoặc quản lý.</span>
                       </label>
                       <label class="settings-field settings-span-full" style="grid-column: 1 / -1;">
@@ -6865,7 +7007,10 @@
 
               <div class="trial-field">
                 <label class="trial-label" for="trial-phone">Số phone <span>*</span></label>
-                <input class="trial-input" id="trial-phone" data-trial-phone type="tel" value="346-802-4906" placeholder="346-802-4906">
+                <div class="phone-input-shell">
+                  <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option></select>
+                  <input class="trial-input phone-mask-input" id="trial-phone" data-trial-phone type="tel" value="(346) 802-4906" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
+                </div>
               </div>
 
               <div class="trial-field trial-span-2">
@@ -6998,7 +7143,34 @@
       }
     }
 
+    function formatUsPhoneInput(value) {
+      var raw = value || '';
+      var digits = raw.replace(/\D/g, '');
+      if (/^\s*\+1/.test(raw) && digits.charAt(0) === '1') {
+        digits = digits.slice(1);
+      }
+      if (!digits) return '';
+      if (digits.length <= 3) return '(' + digits;
+      if (digits.length <= 6) return '(' + digits.slice(0, 3) + ') ' + digits.slice(3);
+      return '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+    }
+
+    function maskPhoneInput(input) {
+      if (!input) return;
+      input.value = formatUsPhoneInput(input.value);
+    }
+
+    function initPhoneMasks() {
+      document.querySelectorAll('[data-phone-mask]').forEach(function(input) {
+        maskPhoneInput(input);
+        input.addEventListener('input', function() {
+          maskPhoneInput(input);
+        });
+      });
+    }
+
     renderLucideIcons();
+    initPhoneMasks();
 
     function getValidMainTab(target) {
       var tabs = Array.from(document.querySelectorAll('[data-tab-target]')).map(function(tab) {
@@ -7157,9 +7329,9 @@
     }
 
     function renderBookingCardActions(item) {
-      var actions = '<button class="booking-mini-button" type="button" data-booking-action="detail">Xem chi tiết</button>';
+      var actions = '<button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="Xem chi tiết" title="Xem chi tiết"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">Xem chi tiết</span></button>';
       if (!item.classList.contains('is-done') && !item.classList.contains('is-noshow')) {
-        actions = '<button class="booking-mini-button primary booking-confirm-action" type="button" data-booking-action="done">Xác nhận</button>' + actions;
+        actions = '<button class="booking-mini-button icon-only primary booking-confirm-action" type="button" data-booking-action="done" aria-label="Xác nhận" title="Xác nhận"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Xác nhận</span></button>' + actions;
       }
       return actions;
     }
@@ -7218,7 +7390,9 @@
       if (confirmButton) {
         confirmButton.disabled = true;
         confirmButton.classList.remove('primary');
-        confirmButton.textContent = 'Đã xác nhận';
+        confirmButton.setAttribute('aria-label', 'Đã xác nhận');
+        confirmButton.setAttribute('title', 'Đã xác nhận');
+        confirmButton.innerHTML = '<i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Đã xác nhận</span>';
       }
 
       updateBookingKpis();
@@ -7238,7 +7412,9 @@
       if (confirmButton) {
         confirmButton.disabled = true;
         confirmButton.classList.remove('primary');
-        confirmButton.textContent = 'No-show';
+        confirmButton.setAttribute('aria-label', 'No-show');
+        confirmButton.setAttribute('title', 'No-show');
+        confirmButton.innerHTML = '<i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">No-show</span>';
       }
 
       updateBookingKpis();
@@ -7434,7 +7610,11 @@
       }
 
       var field = document.querySelector('[data-tech-field="' + name + '"]');
-      if (field) field.value = value || '';
+      if (field && field.matches('[data-phone-mask]')) {
+        field.value = formatUsPhoneInput(value);
+      } else if (field) {
+        field.value = value || '';
+      }
     }
 
     function getTechField(name) {
@@ -7502,7 +7682,6 @@
       setTechField('phone', isCreate ? '' : choice.dataset.phone);
       setTechField('email', isCreate ? '' : choice.dataset.email);
       setTechField('services', isCreate ? '' : choice.dataset.services);
-      setTechField('note', isCreate ? 'Nhận SMS khi có booking mới, tip và review nhắc tên.' : 'Nhận SMS khi có booking mới, tip và review nhắc tên.');
 
       var nameField = document.querySelector('[data-tech-field="name"]');
       setTechSelectOpen(false);
@@ -7571,7 +7750,7 @@
       card.innerHTML = '' +
         '<div class="tech-top">' +
           '<div class="tech-avatar">' + escapeHtml(initial) + '</div>' +
-          '<div style="flex: 1; min-width: 0;">' +
+          '<div class="tech-profile">' +
             '<div class="tech-name">' + escapeHtml(data.name || 'Thợ mới') + '</div>' +
             '<div class="tech-phone">' + escapeHtml(data.phone || 'Chưa có số') + '</div>' +
           '</div>' +
