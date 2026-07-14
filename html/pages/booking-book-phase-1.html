@@ -3983,6 +3983,57 @@
       color: #dc2626;
     }
 
+    .booking-status-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .booking-status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 999px;
+      background: #fff;
+      padding: 7px 13px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .booking-status-chip:hover {
+      border-color: rgba(70, 72, 216, 0.4);
+    }
+
+    .booking-status-chip.is-active {
+      border-color: rgba(70, 72, 216, 0.5);
+      background: color-mix(in srgb, var(--nexora-brand) 8%, white);
+      color: var(--nexora-brand);
+    }
+
+    .booking-status-chip-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 18px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: var(--nexora-canvas);
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .booking-status-chip.is-active .booking-status-chip-count {
+      background: var(--nexora-brand);
+      color: #fff;
+    }
+
     .booking-actions {
       display: flex;
       flex-wrap: wrap;
@@ -6100,6 +6151,14 @@
                         <button class="booking-view-button" type="button" data-booking-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
                         <button class="booking-view-button" type="button" data-booking-view-target="card" aria-pressed="false"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
                       </div>
+                    </div>
+
+                    <div class="booking-status-chips" data-booking-status-chips role="group" aria-label="Lọc theo trạng thái">
+                      <button class="booking-status-chip is-active" type="button" data-booking-status-chip="all" aria-pressed="true">All <span class="booking-status-chip-count" data-booking-status-count="all">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="new" aria-pressed="false">New <span class="booking-status-chip-count" data-booking-status-count="new">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="sms-sent" aria-pressed="false">Đã gửi SMS <span class="booking-status-chip-count" data-booking-status-count="sms-sent">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="done" aria-pressed="false">Hoàn tất <span class="booking-status-chip-count" data-booking-status-count="done">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="noshow" aria-pressed="false">No-show <span class="booking-status-chip-count" data-booking-status-count="noshow">0</span></button>
                     </div>
 
                     <div class="booking-controls" aria-label="Booking filters">
