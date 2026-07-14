@@ -1597,6 +1597,27 @@
         : { points: 0, credits: 0, expiringPoints: null };
     }
 
+    function validateStoredBalance(appState, businessId) {
+      const balance = isRecord(appState?.balances) ? appState.balances[businessId] : null;
+      const expiringPoints = balance?.expiringPoints;
+      const validExpiring = expiringPoints === null
+        || (isRecord(expiringPoints)
+          && typeof expiringPoints.amount === 'number'
+          && Number.isFinite(expiringPoints.amount)
+          && expiringPoints.amount >= 0
+          && typeof expiringPoints.date === 'string'
+          && expiringPoints.date.trim().length > 0);
+      if (!isRecord(balance)
+        || typeof balance.points !== 'number'
+        || !Number.isFinite(balance.points)
+        || balance.points < 0
+        || typeof balance.credits !== 'number'
+        || !Number.isFinite(balance.credits)
+        || balance.credits < 0
+        || !validExpiring) return { ok: false, code: 'invalid_balance' };
+      return { ok: true, balance };
+    }
+
     function getValidBusiness(appState, businessId) {
       if (typeof businessId !== 'string' || !businessId) return null;
       const business = isRecord(appState?.businesses) ? appState.businesses[businessId] : null;
@@ -2045,12 +2066,15 @@
 
     function completeCheckin(appState, checkin, now = Date.now(), preparedLedgerId = null) {
       if (!isRecord(appState) || !Array.isArray(appState.checkins) || !Array.isArray(appState.ledger)
-        || !isRecord(appState.balances) || !isRecord(checkin)) return { ok: false, code: 'invalid_state' };
+        || !Array.isArray(appState.offlineQueue) || !isRecord(appState.businesses)
+        || !isRecord(appState.balances) || !isRecord(appState.staffProfiles) || !isRecord(checkin)) return { ok: false, code: 'invalid_state' };
       const timestamp = domainTimestamp(now);
       if (!timestamp.ok) return timestamp;
       const normalized = normalizeCheckinRecord(appState, checkin);
       if (!normalized) return { ok: false, code: 'invalid_checkin' };
       if (normalized.id !== checkin.id) return { ok: false, code: 'invalid_checkin' };
+      const storedBalance = validateStoredBalance(appState, normalized.businessId);
+      if (!storedBalance.ok) return storedBalance;
       const matchingCheckins = appState.checkins.filter((item) => isRecord(item) && item.id === normalized.id);
       if (matchingCheckins.length > 1) return { ok: false, code: 'invalid_checkin' };
       const canonicalCheckin = matchingCheckins[0];
@@ -2072,8 +2096,7 @@
         return { ok: true, checkin: normalized, points: validEntries[0].pointsDelta, idempotent: true };
       }
       if (normalized.status === 'confirmed') return { ok: false, code: 'ledger_missing' };
-      const balance = getBusinessBalance(appState, normalized.businessId);
-      if (!isRecord(balance) || !Number.isFinite(balance.points)) return { ok: false, code: 'invalid_balance' };
+      const balance = storedBalance.balance;
       const ledgerIdResult = preparedLedgerId ? { ok: true, value: preparedLedgerId } : createDomainId('ledger');
       if (!ledgerIdResult.ok) return ledgerIdResult;
       const ledger = checkinLedgerEntry(appState, normalized, ledgerIdResult.value);
@@ -2111,6 +2134,8 @@
       if (parsed.staffProfileId && (!isRecord(staff) || staff.id !== parsed.staffProfileId || staff.businessId !== parsed.businessId)) {
         return { ok: false, code: 'invalid_qr' };
       }
+      const storedBalance = validateStoredBalance(appState, parsed.businessId);
+      if (!storedBalance.ok) return storedBalance;
       const duplicate = appState.checkins.some((item) => {
         if (!isRecord(item) || item.businessId !== parsed.businessId) return false;
         const scanned = Date.parse(item.scannedAt);
@@ -2154,7 +2179,10 @@
         const result = checkin.status === 'confirmed'
           ? completeCheckin(appState, checkin, now)
           : checkin.status === 'queued' ? completeCheckin(appState, checkin, now) : { ok: false };
-        if (result.ok) retried += result.idempotent ? 0 : 1;
+        if (result.ok) {
+          if (result.idempotent) appState.offlineQueue = appState.offlineQueue.filter((queueId) => queueId !== checkin.id);
+          retried += result.idempotent ? 0 : 1;
+        }
       });
       return { ok: true, retried };
     }

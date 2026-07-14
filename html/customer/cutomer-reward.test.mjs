@@ -2912,3 +2912,63 @@ test('quarantines tampered persisted check-in claims and queue references', () =
   assert.equal(JSON.stringify(migrated.offlineQueue), '[]');
   assert.equal(migrated.ledger.some((entry) => entry.refId === id), false);
 });
+
+test('fails closed on malformed check-in balances before UUID or queue mutation', () => {
+  const payload = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+  for (const malformed of [
+    undefined,
+    null,
+    { points: '120', credits: 0, expiringPoints: null },
+    { points: Number.NaN, credits: 0, expiringPoints: null },
+    { points: -1, credits: 0, expiringPoints: null },
+    { points: 120, credits: Number.NaN, expiringPoints: null },
+    { points: 120, credits: 0, expiringPoints: { amount: '80', date: '2026-08-30' } }
+  ]) {
+    let uuidCalls = 0;
+    const { api } = testApi({}, { randomUUID: () => {
+      uuidCalls += 1;
+      return '00000000-0000-4000-8000-000000000004';
+    } });
+    const app = api.createDefaultState();
+    app.balances['bitcoin-nail-bar'] = malformed;
+    const before = JSON.stringify(app);
+    assert.equal(api.submitCheckin(app, payload, true, 1000).code, 'invalid_balance');
+    assert.equal(JSON.stringify(app), before);
+    assert.equal(uuidCalls, 0);
+
+    const validApi = testApi().api;
+    const queuedApp = validApi.createDefaultState();
+    const queued = validApi.submitCheckin(queuedApp, payload, false, 1000);
+    assert.equal(queued.ok, true);
+    queuedApp.balances['bitcoin-nail-bar'] = malformed;
+    const queuedBefore = JSON.stringify(queuedApp);
+    const retry = validApi.retryQueuedCheckins(queuedApp, true, 5000);
+    assert.equal(retry.ok, true);
+    assert.equal(JSON.stringify(queuedApp), queuedBefore);
+    assert.equal(queued.checkin.status, 'queued');
+  }
+});
+
+test('rejects a missing offline queue before completeCheckin can partially mutate', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const queued = api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', false, 1000);
+  assert.equal(queued.ok, true);
+  app.offlineQueue = null;
+  const before = JSON.stringify(app);
+  assert.equal(api.completeCheckin(app, queued.checkin, 5000).code, 'invalid_state');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('completeCheckin rejects malformed domain collections before mutation', () => {
+  const { api } = testApi();
+  for (const field of ['businesses', 'balances', 'staffProfiles', 'checkins', 'ledger', 'offlineQueue']) {
+    const app = api.createDefaultState();
+    const pending = api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', false, 1000);
+    assert.equal(pending.ok, true);
+    app[field] = null;
+    const before = JSON.stringify(app);
+    assert.equal(api.completeCheckin(app, pending.checkin, 5000).code, 'invalid_state', field);
+    assert.equal(JSON.stringify(app), before, field);
+  }
+});
