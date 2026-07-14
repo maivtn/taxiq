@@ -1,0 +1,3200 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXORA TOUCH — SMS Campaign Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a26;
+    --border: #2a2a3d;
+    --purple: #7c3aed;
+    --purple-light: #a855f7;
+    --cyan: #06b6d4;
+    --pink: #ec4899;
+    --green: #10b981;
+    --orange: #f59e0b;
+    --red: #ef4444;
+    --text: #f1f0ff;
+    --text-muted: #8b8ba7;
+    --text-dim: #5a5a7a;
+    --gradient: linear-gradient(135deg, #7c3aed, #06b6d4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+  }
+
+  .logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+
+  .logo-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo-sub { font-size: 10px; color: var(--text-dim); margin-top: 2px; letter-spacing: 1px; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    background: none;
+    border-top: none; border-right: none; border-bottom: none;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+  }
+
+  .nav-item:hover:not(:disabled) { color: var(--text); background: rgba(124,58,237,0.08); }
+  .nav-item.active { color: var(--purple-light); border-left-color: var(--purple); background: rgba(124,58,237,0.12); }
+  .nav-item:disabled { opacity: 0.4; cursor: not-allowed; }
+  .nav-icon { font-size: 15px; }
+  .nav-label { white-space: nowrap; }
+
+  .credits-box {
+    margin: auto 16px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+
+  .credits-label { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+  .credits-amount { font-size: 22px; font-weight: 700; color: var(--cyan); margin: 4px 0; }
+  .credits-amount.low { color: var(--red); }
+  .credits-sub { font-size: 11px; color: var(--text-muted); }
+
+  .buy-btn {
+    display: block;
+    margin-top: 10px;
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    font-family: inherit;
+  }
+
+  /* MAIN */
+  .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-width: 0; }
+
+  .view { display: none; flex-direction: column; height: 100%; }
+  .view.active { display: flex; }
+
+  .topbar {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .topbar-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 600; }
+  .topbar-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .btn-primary {
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.15s;
+    font-family: inherit;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .btn-outline:hover { border-color: var(--purple); color: var(--text); }
+
+  .content { padding: 24px 28px; flex: 1; overflow-y: auto; }
+
+  /* STATS */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+  .stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .stat-value { font-size: 28px; font-weight: 700; margin: 6px 0 4px; }
+  .stat-change { font-size: 12px; color: var(--green); }
+
+  /* CAMPAIGN LIST */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .section-title { font-size: 15px; font-weight: 600; }
+
+  .campaign-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+
+  .campaign-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .campaign-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent, var(--purple)); }
+  .campaign-card:hover { border-color: var(--purple); transform: translateY(-2px); }
+
+  .campaign-icon { font-size: 24px; margin-bottom: 10px; }
+  .campaign-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .campaign-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5; }
+  .campaign-meta { display: flex; justify-content: space-between; align-items: center; }
+  .campaign-count { font-size: 20px; font-weight: 700; color: var(--cyan); }
+  .campaign-count-label { font-size: 10px; color: var(--text-dim); }
+
+  .campaign-badge { font-size: 10px; padding: 4px 8px; border-radius: 20px; font-weight: 600; }
+  .badge-ready { background: rgba(16,185,129,0.15); color: var(--green); }
+  .badge-scheduled { background: rgba(124,58,237,0.15); color: var(--purple-light); }
+  .badge-sent { background: rgba(6,182,212,0.15); color: var(--cyan); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    padding: 16px;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 680px;
+    max-width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: var(--card);
+    z-index: 2;
+  }
+
+  .modal-title { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 600; }
+  .modal-close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
+  .modal-body { padding: 24px 28px; }
+
+  .field-group { margin-bottom: 20px; }
+  .field-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+
+  /* SEGMENT SELECTOR */
+  .segment-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+  .segment-btn {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    font-family: inherit;
+    color: var(--text);
+  }
+  .segment-btn:hover { border-color: var(--purple); }
+  .segment-btn.selected { border-color: var(--purple); background: rgba(124,58,237,0.1); }
+  .segment-btn-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+  .segment-btn-name { font-size: 12px; font-weight: 600; display: block; }
+  .segment-btn-count { font-size: 11px; color: var(--cyan); display: block; margin-top: 2px; }
+
+  /* SMS COMPOSER */
+  .sms-composer { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .sms-toolbar { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+  .tag-btn {
+    background: rgba(124,58,237,0.15);
+    color: var(--purple-light);
+    border: none;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: inherit;
+  }
+  .tag-btn:hover { background: rgba(124,58,237,0.3); }
+
+  .sms-textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    padding: 14px;
+    resize: none;
+    height: 100px;
+    outline: none;
+    line-height: 1.6;
+  }
+
+  .sms-footer {
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .char-count { color: var(--cyan); font-weight: 600; }
+  .char-count.multi { color: var(--orange); }
+
+  /* SMS PHONE PREVIEW */
+  .sms-preview {
+    margin-top: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .sms-preview-label { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .sms-bubble {
+    background: #2b2b3d;
+    border-radius: 16px 16px 16px 4px;
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 85%;
+    word-wrap: break-word;
+    color: var(--text);
+  }
+  .sms-bubble .lnk { color: var(--cyan); text-decoration: underline; }
+  .sms-preview-empty { font-size: 12px; color: var(--text-dim); font-style: italic; }
+
+  /* TEMPLATES */
+  .template-list { display: flex; flex-direction: column; gap: 8px; }
+  .template-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+    color: var(--text);
+  }
+  .template-item:hover { border-color: var(--purple); }
+  .template-item-title { font-size: 12px; font-weight: 600; color: var(--purple-light); margin-bottom: 4px; }
+  .template-item-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+  /* LANDING PAGE BUILDER */
+  .lp-builder { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; height: calc(100vh - 140px); }
+  .lp-form { overflow-y: auto; }
+  .lp-preview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .preview-bar { background: var(--card); padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .preview-url {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 0 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .lp-iframe { flex: 1; border: none; width: 100%; }
+
+  /* FORM FIELDS */
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--purple); }
+  .form-select option { background: var(--card); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+
+  .modal-footer {
+    padding: 20px 28px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: sticky;
+    bottom: 0;
+    background: var(--card);
+  }
+
+  .cost-preview { background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.3); border-radius: 10px; padding: 10px 16px; }
+  .cost-preview.warn { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.35); }
+  .cost-preview-label { font-size: 11px; color: var(--text-muted); }
+  .cost-preview-amount { font-size: 16px; font-weight: 700; color: var(--cyan); }
+  .cost-preview.warn .cost-preview-amount { color: var(--red); }
+
+  /* SCHEDULE */
+  .schedule-options { display: flex; gap: 10px; }
+  .schedule-opt {
+    flex: 1;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    font-family: inherit;
+    color: var(--text);
+  }
+  .schedule-opt:hover { border-color: var(--purple); }
+  .schedule-opt.selected { border-color: var(--purple); background: rgba(124,58,237,0.1); }
+  .schedule-opt-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+  .schedule-opt-label { font-size: 12px; font-weight: 600; }
+
+  .time-input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+
+  /* CONFIRM STEP */
+  .confirm-box {
+    display: none;
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.35);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .confirm-box.show { display: block; }
+  .confirm-title { font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 8px; }
+  .confirm-detail { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+  .confirm-detail strong { color: var(--text); }
+
+  /* SUCCESS */
+  .success-banner {
+    display: none;
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    align-items: center;
+    gap: 12px;
+  }
+  .success-banner.show { display: flex; }
+  .success-icon { font-size: 24px; }
+  .success-text { font-size: 14px; color: var(--green); font-weight: 500; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* LP FORM SECTIONS */
+  .lp-section { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+  .lp-section-title { font-size: 13px; font-weight: 600; color: var(--purple-light); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+  .color-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .color-chip {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: border-color 0.15s;
+    padding: 0;
+  }
+  .color-chip.selected { border-color: white; }
+
+  .offer-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .offer-toggle:last-child { border-bottom: none; }
+  .offer-toggle-label { font-size: 13px; }
+
+  .toggle {
+    width: 36px; height: 20px;
+    background: var(--border);
+    border-radius: 10px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle.on { background: var(--purple); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: white;
+    top: 3px; left: 3px;
+    transition: left 0.2s;
+  }
+  .toggle.on::after { left: 19px; }
+
+  .link-preview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--cyan);
+    font-family: monospace;
+    margin-top: 8px;
+    word-break: break-all;
+  }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* ===== DASHBOARD ===== */
+  .dash-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; margin-bottom: 24px; }
+
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+  .panel-title { font-size: 13px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .panel-title-sub { font-size: 11px; color: var(--text-dim); font-weight: 400; }
+
+  /* Bar chart thuần CSS */
+  .bar-chart { display: flex; align-items: flex-end; gap: 12px; height: 160px; padding-top: 8px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+  .bar-val { font-size: 10px; color: var(--text-muted); }
+  .bar {
+    width: 100%;
+    max-width: 42px;
+    background: var(--gradient);
+    border-radius: 6px 6px 2px 2px;
+    min-height: 4px;
+    transition: opacity 0.15s;
+  }
+  .bar:hover { opacity: 0.8; }
+  .bar.current { box-shadow: 0 0 12px rgba(124,58,237,0.5); }
+  .bar-label { font-size: 10px; color: var(--text-dim); }
+
+  /* Funnel */
+  .funnel-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .funnel-label { width: 90px; font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+  .funnel-track { flex: 1; background: var(--surface); border-radius: 6px; height: 22px; overflow: hidden; }
+  .funnel-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 8px; font-size: 10px; font-weight: 700; color: white; white-space: nowrap; }
+
+  /* Bảng campaign */
+  .dash-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .dash-table th {
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+  }
+  .dash-table td { padding: 10px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+  .dash-table tr:last-child td { border-bottom: none; }
+  .dash-table td:first-child { color: var(--text); font-weight: 500; }
+  .dash-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .rate-good { color: var(--green); font-weight: 600; }
+  .rate-mid { color: var(--orange); font-weight: 600; }
+
+  @media (max-width: 1100px) {
+    .dash-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .dash-table th:nth-child(4), .dash-table td:nth-child(4) { display: none; }
+    .bar-chart { gap: 6px; }
+  }
+
+  /* ===== CUSTOMERS & CALL LOG ===== */
+  .filter-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .filter-bar .form-input { flex: 1; min-width: 200px; max-width: 320px; }
+
+  .chip-filter {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .chip-filter:hover { border-color: var(--purple); color: var(--text); }
+  .chip-filter.active { border-color: var(--purple); color: var(--purple-light); background: rgba(124,58,237,0.1); font-weight: 600; }
+
+  .mini-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+    white-space: nowrap;
+    background: rgba(124,58,237,0.15);
+    color: var(--purple-light);
+  }
+
+  .row-action {
+    background: rgba(6,182,212,0.12);
+    color: var(--cyan);
+    border: none;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .row-action:hover { background: rgba(6,182,212,0.25); }
+  .row-action.warn { background: rgba(236,72,153,0.12); color: var(--pink); }
+  .row-action.warn:hover { background: rgba(236,72,153,0.25); }
+
+  .call-status { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+  .call-answered { background: rgba(6,182,212,0.15); color: var(--cyan); }
+  .call-missed { background: rgba(239,68,68,0.15); color: var(--red); }
+  .call-booked { background: rgba(16,185,129,0.15); color: var(--green); }
+  .call-voicemail { background: rgba(245,158,11,0.15); color: var(--orange); }
+
+  .empty-row { text-align: center; padding: 24px !important; color: var(--text-dim); font-style: italic; }
+  .table-count { font-size: 12px; color: var(--text-dim); margin-left: auto; }
+
+  /* ===== QR CODES ===== */
+  .qr-box {
+    background: white;
+    border-radius: 12px;
+    padding: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 168px;
+    min-height: 168px;
+  }
+  .qr-box img, .qr-box canvas { display: block; }
+  .qr-fallback { color: #333; font-size: 11px; text-align: center; max-width: 140px; }
+
+  .qr-display-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+  .qr-actions { display: flex; flex-direction: column; gap: 8px; }
+  .kiosk-overlay { position: fixed; inset: 0; z-index: 200; background: #0a0a0f; display: none; flex-direction: column; }
+  .kiosk-overlay.open { display: flex; }
+  .kiosk-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .kiosk-hint { font-size: 12px; color: var(--text-dim); }
+  .kiosk-overlay iframe { flex: 1; border: none; width: 100%; }
+
+  .consent-note {
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 11px;
+    color: var(--orange);
+    line-height: 1.5;
+    margin-top: 10px;
+  }
+
+  .lead-flow-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+  .lead-flow-note strong { color: var(--cyan); }
+
+  /* Verify code panel (staff) */
+  .verify-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .verify-row .form-input { flex: 1; min-width: 180px; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; }
+  .verify-result { border-radius: 10px; padding: 14px; margin-top: 12px; font-size: 13px; line-height: 1.6; display: none; }
+  .verify-result.show { display: block; }
+  .verify-result.ok { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.35); }
+  .verify-result.used { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.35); color: var(--orange); }
+  .verify-result.bad { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.35); color: var(--red); }
+  .verify-name { font-size: 16px; font-weight: 800; }
+  .verify-meta { color: var(--text-dim); font-size: 12px; margin: 4px 0 10px; }
+
+  /* Landing page template gallery */
+  .lp-steps { display: flex; gap: 8px; flex-wrap: wrap; font-size: 11px; color: var(--text-dim); margin-bottom: 12px; }
+  .lp-steps span { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px; }
+  .lp-steps strong { color: var(--cyan); }
+  .lp-tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .lp-tpl-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, transform 0.15s;
+    color: var(--text);
+    font-family: inherit;
+  }
+  .lp-tpl-card:hover { transform: translateY(-1px); border-color: var(--purple); }
+  .lp-tpl-card.selected { border-color: var(--purple); background: rgba(124,58,237,0.12); }
+  .lp-tpl-emoji { font-size: 20px; }
+  .lp-tpl-name { font-size: 12px; font-weight: 700; margin: 4px 0 2px; }
+  .lp-tpl-desc { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
+
+  /* Danh sách landing pages đã tạo */
+  .lp-page-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;
+  }
+  .lp-page-row.editing { border-color: var(--purple); background: rgba(124,58,237,0.08); }
+  .lp-page-info { flex: 1; min-width: 0; }
+  .lp-page-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lp-page-url { font-size: 11px; color: var(--cyan); font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lp-page-stats { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+  .lp-badge { font-size: 10px; padding: 3px 8px; border-radius: 12px; font-weight: 700; flex-shrink: 0; }
+  .lp-badge.live { background: rgba(16,185,129,0.15); color: var(--green); }
+  .lp-badge.draft { background: rgba(245,158,11,0.15); color: var(--orange); }
+  .lp-page-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .lp-page-actions button {
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: 6px 9px; font-size: 11px; cursor: pointer; font-family: inherit;
+  }
+  .lp-page-actions button:hover { border-color: var(--purple); }
+  .lp-page-actions button.danger:hover { border-color: var(--red); color: var(--red); }
+
+  /* Hướng dẫn quy trình QR */
+  .guide-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .guide-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
+  .guide-phase-title { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+  .guide-step { display: flex; gap: 10px; margin-bottom: 10px; font-size: 12px; line-height: 1.55; }
+  .guide-step strong { color: var(--text); }
+  .guide-num {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 11px;
+    background: rgba(124,58,237,0.18); color: #b794f6;
+  }
+  .guide-num.c2 { background: rgba(6,182,212,0.15); color: var(--cyan); }
+  .guide-num.c3 { background: rgba(16,185,129,0.15); color: var(--green); }
+  .guide-tips {
+    margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text-dim); line-height: 1.7;
+  }
+  .guide-tips strong { color: var(--orange); }
+
+  /* Import wizard */
+  .import-steps { display: flex; gap: 6px; margin-bottom: 18px; }
+  .import-steps span { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
+  .import-steps span.done { background: var(--purple); }
+  .import-drop {
+    border: 2px dashed var(--border); border-radius: 12px;
+    padding: 28px 20px; text-align: center; cursor: pointer;
+    color: var(--text-dim); font-size: 13px; line-height: 1.7;
+    transition: border-color 0.15s;
+  }
+  .import-drop:hover { border-color: var(--purple); color: var(--text); }
+  .import-hint { font-size: 11px; color: var(--text-dim); line-height: 1.7; margin-top: 14px; }
+  .import-hint strong { color: var(--cyan); }
+  .map-row { display: grid; grid-template-columns: 130px 1fr; gap: 10px; align-items: center; margin-bottom: 10px; }
+  .map-label { font-size: 12px; font-weight: 600; }
+  .map-label .req { color: var(--red); }
+  .import-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .import-stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; font-size: 11px; color: var(--text-dim); }
+  .import-stat b { display: block; font-size: 18px; color: var(--text); font-family: 'Space Grotesk', sans-serif; }
+  .import-stat.warn b { color: var(--orange); }
+  .import-stat.bad b { color: var(--red); }
+  .optin-badge { font-size: 9px; background: rgba(245,158,11,0.15); color: var(--orange); border-radius: 10px; padding: 2px 7px; margin-left: 6px; font-weight: 700; white-space: nowrap; }
+
+  @media (max-width: 720px) {
+    .cust-table th:nth-child(5), .cust-table td:nth-child(5),
+    .cust-table th:nth-child(6), .cust-table td:nth-child(6) { display: none; }
+    .call-table th:nth-child(5), .call-table td:nth-child(5) { display: none; }
+    .book-table th:nth-child(5), .book-table td:nth-child(5),
+    .book-table th:nth-child(7), .book-table td:nth-child(7) { display: none; }
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1100px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .campaign-grid { grid-template-columns: repeat(2, 1fr); }
+    .lp-builder { grid-template-columns: 1fr; height: auto; }
+    .lp-preview { min-height: 480px; }
+    .content { overflow-y: auto !important; padding-bottom: 24px !important; }
+  }
+
+  @media (max-width: 720px) {
+    .sidebar { width: 64px; min-width: 64px; padding: 16px 0; }
+    .logo { padding: 0 8px 16px; text-align: center; }
+    .logo-text { font-size: 9px; letter-spacing: 1px; }
+    .logo-sub { display: none; }
+    .nav-item { justify-content: center; padding: 12px 0; }
+    .nav-label { display: none; }
+    .credits-box { margin: auto 6px 8px; padding: 8px 6px; text-align: center; }
+    .credits-amount { font-size: 15px; }
+    .credits-sub, .credits-label { display: none; }
+    .buy-btn { font-size: 10px; padding: 6px 2px; }
+    .stats-row { grid-template-columns: 1fr; }
+    .campaign-grid { grid-template-columns: 1fr; }
+    .segment-grid { grid-template-columns: repeat(2, 1fr); }
+    .content, .topbar { padding-left: 16px; padding-right: 16px; }
+    .schedule-options { flex-direction: column; }
+    .modal-footer { flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-text">NEXORA TOUCH</div>
+    <div class="logo-sub">Bitcoin Nail Bar</div>
+  </div>
+
+  <nav id="mainNav">
+    <button class="nav-item" data-view="dashboard"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></button>
+    <button class="nav-item active" data-view="sms"><span class="nav-icon">💬</span><span class="nav-label">SMS Campaigns</span></button>
+    <button class="nav-item" data-view="landingpage"><span class="nav-icon">🌐</span><span class="nav-label">Landing Pages</span></button>
+    <button class="nav-item" data-view="qrcodes"><span class="nav-icon">🔳</span><span class="nav-label">QR Codes</span></button>
+    <button class="nav-item" data-view="customers"><span class="nav-icon">👥</span><span class="nav-label">Customers</span></button>
+    <button class="nav-item" data-view="calllog"><span class="nav-icon">📞</span><span class="nav-label">Call Log</span></button>
+    <button class="nav-item" data-view="booking"><span class="nav-icon">📅</span><span class="nav-label">Booking</span></button>
+    <button class="nav-item" data-view="pos"><span class="nav-icon">🔌</span><span class="nav-label">Kết nối POS</span></button>
+    <button class="nav-item" disabled title="Coming soon"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></button>
+  </nav>
+
+  <div class="credits-box">
+    <div class="credits-label">SMS Credits</div>
+    <div class="credits-amount" id="creditsDisplay">847</div>
+    <div class="credits-sub" id="creditsUsd">≈ $21.18 remaining</div>
+    <button class="buy-btn" id="buyCreditsBtn">+ Buy Credits</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ===== SMS CAMPAIGNS VIEW ===== -->
+  <div class="view active" id="view-sms">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">💬 SMS Campaigns</div>
+        <div class="topbar-sub">Chọn nhóm khách → Soạn tin → Gửi hoặc hẹn giờ</div>
+      </div>
+      <button class="btn-primary" id="newCampaignBtn">✦ Tạo Campaign Mới</button>
+    </div>
+
+    <div class="content">
+      <div id="successBanner" class="success-banner">
+        <span class="success-icon">✅</span>
+        <span class="success-text" id="successText"></span>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Tổng khách</div>
+          <div class="stat-value" style="color:var(--cyan)">1,284</div>
+          <div class="stat-change">↑ +23 tuần này</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">SMS đã gửi tháng này</div>
+          <div class="stat-value" style="color:var(--purple-light)">3,412</div>
+          <div class="stat-change">↑ +18% so tháng trước</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Khách quay lại</div>
+          <div class="stat-value" style="color:var(--green)">147</div>
+          <div class="stat-change">↑ từ SMS tháng này</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Revenue từ SMS</div>
+          <div class="stat-value" style="color:var(--orange)">$8,820</div>
+          <div class="stat-change">↑ avg $60/khách quay lại</div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">Nhóm khách — Chọn để gửi campaign</div>
+      </div>
+
+      <!-- Rendered from SEGMENTS data -->
+      <div class="campaign-grid" id="campaignGrid"></div>
+    </div>
+  </div>
+
+  <!-- ===== LANDING PAGE VIEW ===== -->
+  <div class="view" id="view-landingpage">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">🌐 Landing Page Builder</div>
+        <div class="topbar-sub">Tạo trang đích cho SMS campaign — khách bấm link là thấy offer ngay</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-outline" id="previewLpBtn">👁 Preview</button>
+        <button class="btn-primary" id="publishLpBtn">🚀 Publish & Lấy Link</button>
+      </div>
+    </div>
+
+    <div class="content" style="overflow:hidden; padding-bottom:0;">
+      <div class="lp-builder">
+
+        <!-- FORM -->
+        <div class="lp-form">
+          <div class="lp-section">
+            <div class="lp-section-title" style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <span>📄 Các chương trình đang giới thiệu</span>
+              <button class="btn-outline" id="lpNewBtn" style="font-size:11px;padding:6px 10px;">➕ Trang mới</button>
+            </div>
+            <div id="lpPagesList"></div>
+          </div>
+
+          <div class="lp-section">
+            <div class="lp-section-title">📦 Bộ mẫu có sẵn — bấm 1 cái là điền hết</div>
+            <div class="lp-steps">
+              <span><strong>1.</strong> Chọn mẫu</span>
+              <span><strong>2.</strong> Sửa chữ nếu muốn</span>
+              <span><strong>3.</strong> Bấm Publish → copy link vào SMS</span>
+            </div>
+            <div class="lp-tpl-grid" id="lpTplGrid"></div>
+          </div>
+
+          <div class="lp-section">
+            <div class="lp-section-title">🏷️ Tiêu đề & Nội dung</div>
+
+            <div class="field-group">
+              <div class="field-label">Tiêu đề chính (Headline)</div>
+              <input class="form-input" id="lpHeadline" placeholder="VD: Móng Đẹp Giá Sốc — Chỉ Tuần Này!" value="💅 Chào Mừng Khách Quay Lại!">
+            </div>
+
+            <div class="field-group">
+              <div class="field-label">Dòng phụ (Subheadline)</div>
+              <input class="form-input" id="lpSub" placeholder="VD: Book ngay hôm nay — Nhận ưu đãi độc quyền" value="Bitcoin Nail Bar dành riêng cho bạn ưu đãi đặc biệt tháng này">
+            </div>
+
+            <div class="field-group">
+              <div class="field-label">Nội dung offer</div>
+              <textarea class="form-textarea" id="lpOffer">✨ Giảm 20% toàn bộ dịch vụ
+🎁 Tặng nail art miễn phí khi làm full set
+⏰ Chỉ áp dụng đến Chủ Nhật tuần này</textarea>
+            </div>
+          </div>
+
+          <div class="lp-section">
+            <div class="lp-section-title">🎨 Màu sắc & Phong cách</div>
+            <div class="field-label" style="margin-bottom:10px">Màu chủ đạo</div>
+            <div class="color-row" id="colorRow">
+              <button class="color-chip selected" style="background:#7c3aed" data-color="#7c3aed" title="Purple"></button>
+              <button class="color-chip" style="background:#06b6d4" data-color="#06b6d4" title="Cyan"></button>
+              <button class="color-chip" style="background:#ec4899" data-color="#ec4899" title="Pink"></button>
+              <button class="color-chip" style="background:#10b981" data-color="#10b981" title="Green"></button>
+              <button class="color-chip" style="background:#f59e0b" data-color="#f59e0b" title="Gold"></button>
+              <button class="color-chip" style="background:#ef4444" data-color="#ef4444" title="Red"></button>
+            </div>
+          </div>
+
+          <div class="lp-section">
+            <div class="lp-section-title">📋 Tính năng trang</div>
+            <div id="featureToggles">
+              <div class="offer-toggle" data-feature="showPhone">
+                <span class="offer-toggle-label">📞 Nút gọi điện</span>
+                <div class="toggle on"></div>
+              </div>
+              <div class="offer-toggle" data-feature="showBook">
+                <span class="offer-toggle-label">📅 Nút đặt lịch</span>
+                <div class="toggle on"></div>
+              </div>
+              <div class="offer-toggle" data-feature="showCountdown">
+                <span class="offer-toggle-label">⏱️ Đồng hồ đếm ngược</span>
+                <div class="toggle on"></div>
+              </div>
+              <div class="offer-toggle" data-feature="showReviews">
+                <span class="offer-toggle-label">⭐ Hiển thị reviews</span>
+                <div class="toggle"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lp-section">
+            <div class="lp-section-title">🔗 Link chia sẻ</div>
+            <div class="field-label">Slug URL</div>
+            <input class="form-input" id="lpSlug" value="comeback-offer-july">
+            <div class="link-preview" id="linkPreview">nexora.ai/btcnailbar/comeback-offer-july</div>
+          </div>
+        </div>
+
+        <!-- PREVIEW -->
+        <div class="lp-preview">
+          <div class="preview-bar">
+            <div class="preview-dot" style="background:#ff5f57"></div>
+            <div class="preview-dot" style="background:#febc2e"></div>
+            <div class="preview-dot" style="background:#28c840"></div>
+            <div class="preview-url" id="previewUrl">nexora.ai/btcnailbar/comeback-offer-july</div>
+            📱
+          </div>
+          <iframe class="lp-iframe" id="lpIframe" title="Landing page preview"></iframe>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== QR CODES VIEW ===== -->
+  <div class="view" id="view-qrcodes">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">🔳 QR Codes</div>
+        <div class="topbar-sub">Khách scan → điền tên + SĐT → nhận mã qua SMS → AI voice chào đúng tên khi gọi</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-outline" id="qrGuideBtn">📖 Ẩn hướng dẫn</button>
+        <button class="btn-primary" id="publishQrBtn">🚀 Publish QR</button>
+      </div>
+    </div>
+
+    <div class="content" style="overflow-y:auto; padding-bottom:0;">
+
+      <div class="guide-panel" id="qrGuide">
+        <div class="guide-cols">
+          <div>
+            <div class="guide-phase-title" style="color:#b794f6;">🛠 Bước 1 — Chủ tiệm setup (làm 1 lần, ~3 phút)</div>
+            <div class="guide-step"><div class="guide-num">1</div><div>Chọn <strong>chương trình khuyến mãi</strong> trong dropdown — khách scan sẽ nhận đúng offer này.</div></div>
+            <div class="guide-step"><div class="guide-num">2</div><div>Sửa <strong>tiêu đề + nội dung form</strong> nếu muốn. Nhìn preview điện thoại bên phải — khách thấy y như vậy. Có nút VI/EN cho khách Mỹ.</div></div>
+            <div class="guide-step"><div class="guide-num">3</div><div>Bấm <strong>🚀 Publish QR</strong> → <strong>⬇️ Tải PNG</strong> → in ra, dán tại quầy, bàn làm nail, chỗ khách ngồi chờ.</div></div>
+          </div>
+          <div>
+            <div class="guide-phase-title" style="color:var(--cyan);">📱 Bước 2 — Khách scan (tự động, không cần làm gì)</div>
+            <div class="guide-step"><div class="guide-num c2">4</div><div>Khách mở camera điện thoại, scan QR → hiện form: <strong>tên + số phone</strong> + ô đồng ý nhận SMS.</div></div>
+            <div class="guide-step"><div class="guide-num c2">5</div><div>Khách bấm gửi → <strong>promotion code về SMS trong 30 giây</strong>, mỗi khách 1 code riêng.</div></div>
+            <div class="guide-step"><div class="guide-num c2">6</div><div>Tên + phone tự vào <strong>Customers</strong> → lần sau khách gọi, AI voice <strong>chào đúng tên</strong>.</div></div>
+          </div>
+          <div>
+            <div class="guide-phase-title" style="color:var(--green);">💵 Bước 3 — Nhân viên tại quầy (mỗi lần khách dùng code)</div>
+            <div class="guide-step"><div class="guide-num c3">7</div><div>Khách đưa code khi thanh toán → gõ vào ô <strong>"Verify code tại quầy"</strong> bên dưới, bấm Kiểm tra.</div></div>
+            <div class="guide-step"><div class="guide-num c3">8</div><div><span style="color:var(--green);font-weight:700;">Xanh</span> = hợp lệ → giảm giá, bấm <strong>"Áp dụng & đánh dấu đã dùng"</strong>. <span style="color:var(--orange);font-weight:700;">Cam</span> = code đã dùng → từ chối. <span style="color:var(--red);font-weight:700;">Đỏ</span> = code sai → nhờ khách mở lại SMS.</div></div>
+          </div>
+        </div>
+        <div class="guide-tips">
+          <strong>⚠️ 3 lỗi hay gặp:</strong> quên bấm "đánh dấu đã dùng" → khách xài lại code, tiệm mất tiền •
+          in QR quá nhỏ → khách scan không được, in tối thiểu 5×5 cm •
+          tự ý bỏ ô đồng ý nhận SMS → phạm luật TCPA, phạt $500–1,500/tin nhắn.
+        </div>
+      </div>
+
+      <div class="lp-builder">
+
+        <!-- FORM -->
+        <div class="lp-form">
+
+          <div class="lp-section">
+            <div class="lp-section-title">🎁 Chương trình khuyến mãi</div>
+            <div class="field-group">
+              <div class="field-label">Tên chiến dịch QR</div>
+              <input class="form-input" id="qrName" value="QR tại quầy — Tháng 7">
+            </div>
+            <div class="field-group" style="margin-bottom:0;">
+              <div class="field-label">Chọn khuyến mãi khi khách scan</div>
+              <select class="form-select" id="qrPromo"></select>
+            </div>
+          </div>
+
+          <div class="lp-section">
+            <div class="lp-section-title">📝 Form khách điền</div>
+            <div class="field-group">
+              <div class="field-label">Tiêu đề form</div>
+              <input class="form-input" id="qrFormTitle" value="🎁 Nhận ưu đãi độc quyền từ Bitcoin Nail Bar!">
+            </div>
+            <div class="field-group" style="margin-bottom:0;">
+              <div class="field-label">Nội dung / điều kiện nhận ưu đãi</div>
+              <textarea class="form-textarea" id="qrQuestion">Nhập tên và số phone bên dưới — promotion code sẽ gửi qua SMS trong 30 giây. Đưa code cho nhân viên khi thanh toán. Mỗi khách 1 code, áp dụng đến hết tháng 7.</textarea>
+            </div>
+            <div class="consent-note">
+              ⚠️ Checkbox đồng ý nhận SMS (TCPA) là <strong>bắt buộc theo luật Mỹ</strong> — form luôn hiển thị, không tắt được. Không có consent, gửi SMS marketing có thể bị phạt $500–$1,500/tin.
+            </div>
+          </div>
+
+          <div class="lp-section">
+            <div class="lp-section-title">🔗 Link & Mã QR</div>
+            <div class="field-label">Slug URL</div>
+            <input class="form-input" id="qrSlug" value="qr-thang7">
+            <div class="link-preview" id="qrLinkPreview">nexora.ai/btcnailbar/qr/qr-thang7</div>
+            <div class="qr-display-row">
+              <div class="qr-box" id="qrCanvas"></div>
+              <div class="qr-actions">
+                <button class="btn-outline" id="qrDownloadBtn">⬇️ Tải PNG (in tại quầy)</button>
+                <button class="btn-outline" id="qrPrintBtn">🖨 In poster (A4)</button>
+                <button class="btn-outline" id="kioskBtn">🖥 Chế độ Kiosk (tablet tại quầy)</button>
+                <div class="lead-flow-note">
+                  Khách điền form → tự động thêm vào <strong>Customers</strong><br>
+                  → AI voice nhận diện số & <strong>chào đúng tên</strong> khi khách gọi
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lp-section">
+            <div class="lp-section-title">✅ Verify code tại quầy (nhân viên)</div>
+            <div class="field-label">Khách đưa code → gõ vào đây để kiểm tra trước khi giảm giá</div>
+            <div class="verify-row">
+              <input class="form-input" id="verifyInput" placeholder="VD: NAIL20-8Q2F" autocomplete="off">
+              <button class="btn-primary" id="verifyBtn">🔍 Kiểm tra</button>
+            </div>
+            <div class="verify-result" id="verifyResult"></div>
+          </div>
+
+          <div class="lp-section">
+            <div class="lp-section-title">👥 Leads đã thu từ QR này</div>
+            <div style="overflow-x:auto;">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>Thời gian</th>
+                    <th>Tên khách</th>
+                    <th>Điện thoại</th>
+                    <th>Promotion Code</th>
+                    <th>Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody id="qrLeadsBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PREVIEW -->
+        <div class="lp-preview">
+          <div class="preview-bar">
+            <div class="preview-dot" style="background:#ff5f57"></div>
+            <div class="preview-dot" style="background:#febc2e"></div>
+            <div class="preview-dot" style="background:#28c840"></div>
+            <div class="preview-url" id="qrPreviewUrl">nexora.ai/btcnailbar/qr/qr-thang7</div>
+            📱
+          </div>
+          <iframe class="lp-iframe" id="qrIframe" title="QR scan page preview"></iframe>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD VIEW ===== -->
+  <div class="view" id="view-dashboard">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">📊 Dashboard</div>
+        <div class="topbar-sub">Tổng quan hoạt động tháng 7/2026</div>
+      </div>
+      <button class="btn-primary" id="dashNewCampaignBtn">✦ Tạo Campaign Mới</button>
+    </div>
+    <div class="content">
+
+      <!-- KPI -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Tổng khách</div>
+          <div class="stat-value" style="color:var(--cyan)">1,284</div>
+          <div class="stat-change">↑ +23 tuần này</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">SMS đã gửi tháng này</div>
+          <div class="stat-value" style="color:var(--purple-light)">3,412</div>
+          <div class="stat-change">↑ +18% so tháng trước</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Khách quay lại từ SMS</div>
+          <div class="stat-value" style="color:var(--green)">147</div>
+          <div class="stat-change">↑ tỷ lệ 4.3% / tin gửi</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Revenue từ SMS</div>
+          <div class="stat-value" style="color:var(--orange)">$8,820</div>
+          <div class="stat-change">↑ ROI ~29x chi phí SMS</div>
+        </div>
+      </div>
+
+      <!-- CHART + FUNNEL -->
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-title">
+            SMS gửi theo tháng
+            <span class="panel-title-sub">6 tháng gần nhất</span>
+          </div>
+          <div class="bar-chart" id="smsBarChart"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">
+            Funnel tháng này
+            <span class="panel-title-sub">SMS → Doanh thu</span>
+          </div>
+          <div id="funnelChart"></div>
+        </div>
+      </div>
+
+      <!-- CAMPAIGN HISTORY -->
+      <div class="panel">
+        <div class="panel-title">
+          Campaign gần đây
+          <span class="panel-title-sub">30 ngày qua</span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Campaign</th>
+                <th>Ngày gửi</th>
+                <th class="num">Đã gửi</th>
+                <th class="num">Delivered</th>
+                <th class="num">Quay lại</th>
+                <th class="num">Revenue</th>
+              </tr>
+            </thead>
+            <tbody id="campaignHistoryBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== CUSTOMERS VIEW ===== -->
+  <div class="view" id="view-customers">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">👥 Customer List</div>
+        <div class="topbar-sub">Lọc theo nhóm, tìm kiếm, gửi SMS từng khách</div>
+      </div>
+      <button class="btn-primary" id="importBtn">📥 Import khách</button>
+    </div>
+    <div class="content">
+      <div class="filter-bar">
+        <input class="form-input" id="custSearch" placeholder="🔍 Tìm tên hoặc số điện thoại...">
+        <div id="custSegFilter" style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="chip-filter active" data-seg="all">Tất cả</button>
+        </div>
+        <span class="table-count" id="custCount"></span>
+      </div>
+
+      <div class="panel" style="padding:0;">
+        <div style="overflow-x:auto;">
+          <table class="dash-table cust-table">
+            <thead>
+              <tr>
+                <th>Khách hàng</th>
+                <th>Điện thoại</th>
+                <th>Nhóm</th>
+                <th>Nguồn</th>
+                <th class="num">Số lần ghé</th>
+                <th>Lần cuối</th>
+                <th class="num">Tổng chi</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="custTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CALL LOG VIEW ===== -->
+  <div class="view" id="view-calllog">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">📞 Call Log</div>
+        <div class="topbar-sub">Cuộc gọi đến tiệm — theo dõi cuộc nhỡ để follow-up SMS</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="stats-row" id="callStats"></div>
+
+      <div class="filter-bar">
+        <div id="callStatusFilter" style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="chip-filter active" data-status="all">Tất cả</button>
+          <button class="chip-filter" data-status="missed">❌ Nhỡ</button>
+          <button class="chip-filter" data-status="answered">✅ Đã nghe</button>
+          <button class="chip-filter" data-status="booked">📅 Đặt lịch</button>
+          <button class="chip-filter" data-status="voicemail">📩 Voicemail</button>
+        </div>
+        <span class="table-count" id="callCount"></span>
+      </div>
+
+      <div class="panel" style="padding:0;">
+        <div style="overflow-x:auto;">
+          <table class="dash-table call-table">
+            <thead>
+              <tr>
+                <th>Thời gian</th>
+                <th>Người gọi</th>
+                <th>Số điện thoại</th>
+                <th>Trạng thái</th>
+                <th class="num">Thời lượng</th>
+                <th>Ghi chú</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="callTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== VIEW: BOOKING ===== -->
+  <div class="view" id="view-booking">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">📅 Booking</div>
+        <div class="topbar-sub">Lịch hẹn từ mọi nguồn — SMS xác nhận & nhắc hẹn tự động</div>
+      </div>
+    </div>
+    <div class="content" style="overflow-y:auto;">
+      <div class="stats-row" id="bookStats"></div>
+
+      <div class="panel" style="margin-bottom:16px;padding:14px 18px;">
+        <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--text-dim);line-height:1.7;">
+          <span>📩 <strong style="color:var(--text)">Đặt lịch xong</strong> → SMS xác nhận ngay</span>
+          <span>🔔 <strong style="color:var(--text)">Trước 24h</strong> → SMS nhắc hẹn</span>
+          <span>⏰ <strong style="color:var(--text)">Trước 2h</strong> → SMS nhắc lần cuối</span>
+          <span style="color:var(--orange);">⚖️ 3 tin này là giao dịch (khách tự đặt) — win-back sau no-show là marketing, chỉ gửi khi khách đã opt-in</span>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div id="bookStatusFilter" style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="chip-filter active" data-status="all">Tất cả</button>
+          <button class="chip-filter" data-status="pending">⏳ Chờ xác nhận</button>
+          <button class="chip-filter" data-status="confirmed">✅ Đã xác nhận</button>
+          <button class="chip-filter" data-status="done">💅 Đã đến</button>
+          <button class="chip-filter" data-status="noshow">🚫 No-show</button>
+        </div>
+        <span class="table-count" id="bookCount"></span>
+      </div>
+
+      <div class="panel" style="padding:0;">
+        <div style="overflow-x:auto;">
+          <table class="dash-table book-table">
+            <thead>
+              <tr>
+                <th>Thời gian hẹn</th>
+                <th>Khách</th>
+                <th>Số điện thoại</th>
+                <th>Dịch vụ</th>
+                <th>Nguồn</th>
+                <th>Trạng thái</th>
+                <th>SMS</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="bookTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== VIEW: KẾT NỐI POS ===== -->
+  <div class="view" id="view-pos">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">🔌 Kết nối POS</div>
+        <div class="topbar-sub">Đưa data khách từ POS vào NEXORA — 3 cách, từ dễ đến tự động</div>
+      </div>
+    </div>
+    <div class="content" style="overflow-y:auto;">
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:16px;">
+
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <strong style="font-size:15px;">📥 CSV Import</strong>
+            <span class="call-status call-booked">✅ Sẵn sàng</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:14px;">
+            Export danh sách khách từ POS bất kỳ (NailSoft, NailSolution, Square...) ra file CSV/Excel
+            → import 3 bước, tự nhận diện cột, tự chia nhóm khách.
+            <br><strong style="color:var(--text)">Hoạt động với 100% POS.</strong> Nhược điểm: phải lặp lại mỗi tháng.
+          </div>
+          <button class="btn-outline" id="posImportBtn">📥 Mở Import wizard</button>
+        </div>
+
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <strong style="font-size:15px;">📧 Email Report tự động</strong>
+            <span class="call-status call-voicemail">⚙️ Setup 1 lần</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:10px;">
+            Hầu hết POS có chức năng <strong style="color:var(--text)">gửi email report hàng ngày</strong>.
+            Trỏ report về địa chỉ riêng của tiệm — NEXORA tự đọc & cập nhật khách mỗi sáng, không cần đụng tay.
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <code style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 10px;font-size:12px;color:var(--cyan);overflow:hidden;text-overflow:ellipsis;">import-btcnailbar@nexora.ai</code>
+            <button class="btn-outline" id="posCopyBtn" style="white-space:nowrap;">📋 Copy</button>
+          </div>
+          <div style="font-size:11px;color:var(--text-dim);">Trạng thái: <span style="color:var(--green);">đã nhận 3 report tuần này</span> (demo)</div>
+        </div>
+
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <strong style="font-size:15px;">🔌 API trực tiếp (real-time)</strong>
+            <span class="call-status call-answered">⚡ Tự động 100%</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:12px;">
+            Khách mới, giao dịch, booking đồng bộ ngay lập tức — chỉ với POS có API công khai.
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span>▪️ Square</span><button class="row-action" data-pos="square">Kết nối</button></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span>🍀 Clover</span><button class="row-action" data-pos="clover">Kết nối</button></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;color:var(--text-dim);"><span>💅 NailSoft</span><span style="font-size:11px;">🔒 Không có API — dùng CSV/email</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;color:var(--text-dim);"><span>💅 NailSolution</span><span style="font-size:11px;">🔒 Không có API — dùng CSV/email</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="panel" style="border-left:3px solid var(--green);">
+        <div style="font-size:13px;line-height:1.8;color:var(--text-dim);">
+          💡 <strong style="color:var(--text)">POS chỉ là nguồn khởi đầu.</strong> NEXORA tự nuôi data mỗi ngày mà không cần POS:
+          📞 AI voice bắt số khách gọi vào &nbsp;·&nbsp; 🔳 QR tại quầy &nbsp;·&nbsp; 🖥 Kiosk &nbsp;·&nbsp; 📅 Booking online —
+          tất cả đổ thẳng về tab <strong style="color:var(--text)">Customers</strong> kèm nguồn gốc & trạng thái opt-in.
+          Tiệm không cần đổi POS, không cần chờ ai cho phép.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== CAMPAIGN COMPOSER MODAL ===== -->
+<div class="modal-overlay" id="composerModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✦ Tạo SMS Campaign</div>
+      <button class="modal-close" id="closeComposerBtn" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- STEP 1: SEGMENT -->
+      <div class="field-group">
+        <div class="field-label">Bước 1 — Chọn nhóm khách</div>
+        <div class="segment-grid" id="segmentGrid"></div>
+      </div>
+
+      <!-- STEP 2: TEMPLATES -->
+      <div class="field-group">
+        <div class="field-label">Bước 2 — Chọn template hoặc tự viết</div>
+        <div class="template-list" id="templateList"></div>
+      </div>
+
+      <!-- STEP 3: COMPOSER -->
+      <div class="field-group">
+        <div class="field-label">Bước 3 — Soạn nội dung SMS</div>
+        <div class="sms-composer">
+          <div class="sms-toolbar" id="tagToolbar">
+            <span style="font-size:11px;color:var(--text-dim);">Chèn:</span>
+            <button class="tag-btn" data-tag="{TenKhach}">👤 Tên khách</button>
+            <button class="tag-btn" data-tag="{TenTiem}">💅 Tên tiệm</button>
+            <button class="tag-btn" data-tag="{Link}">🔗 Link offer</button>
+            <button class="tag-btn" data-tag="{SoDT}">📞 Số điện thoại</button>
+          </div>
+          <textarea class="sms-textarea" id="smsText" placeholder="Soạn tin nhắn..."></textarea>
+          <div class="sms-footer">
+            <span>Reply STOP để hủy nhận tin</span>
+            <span class="char-count" id="charCountBox">0 ký tự — 0 tin</span>
+          </div>
+        </div>
+
+        <!-- PHONE PREVIEW -->
+        <div class="sms-preview">
+          <div class="sms-preview-label">📱 Preview trên điện thoại khách</div>
+          <div class="sms-bubble" id="smsBubble"><span class="sms-preview-empty">Tin nhắn sẽ hiển thị ở đây...</span></div>
+        </div>
+      </div>
+
+      <!-- STEP 4: LANDING PAGE -->
+      <div class="field-group">
+        <div class="field-label">Bước 4 — Đính kèm Landing Page (tùy chọn)</div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <select class="form-select" style="flex:1;min-width:200px;" id="lpSelect">
+            <option value="">-- Không đính kèm --</option>
+            <option value="comeback">✅ Comeback Offer July (nexora.ai/btcnailbar/comeback-offer-july)</option>
+            <option value="birthday">🎂 Birthday Special (nexora.ai/btcnailbar/birthday-july)</option>
+          </select>
+          <button class="btn-outline" id="createLpBtn">+ Tạo trang</button>
+        </div>
+      </div>
+
+      <!-- STEP 5: SCHEDULE -->
+      <div class="field-group">
+        <div class="field-label">Bước 5 — Lịch gửi</div>
+        <div class="schedule-options" id="scheduleOptions">
+          <button class="schedule-opt selected" data-mode="now">
+            <span class="schedule-opt-icon">⚡</span>
+            <span class="schedule-opt-label">Gửi ngay</span>
+          </button>
+          <button class="schedule-opt" data-mode="schedule">
+            <span class="schedule-opt-icon">🕐</span>
+            <span class="schedule-opt-label">Hẹn giờ</span>
+          </button>
+          <button class="schedule-opt" data-mode="auto">
+            <span class="schedule-opt-icon">🤖</span>
+            <span class="schedule-opt-label">Tự động</span>
+          </button>
+        </div>
+        <div class="time-input-row" id="timeInputRow" style="display:none;">
+          <input class="form-input" type="date" id="schedDate">
+          <input class="form-input" type="time" id="schedTime" value="10:00">
+        </div>
+      </div>
+
+      <!-- CONFIRM STEP -->
+      <div class="confirm-box" id="confirmBox">
+        <div class="confirm-title">⚠️ Xác nhận trước khi gửi</div>
+        <div class="confirm-detail" id="confirmDetail"></div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <div class="cost-preview" id="costBox">
+        <div class="cost-preview-label" id="costLabel">Chi phí ước tính</div>
+        <div class="cost-preview-amount" id="costPreview">—</div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-outline" id="cancelComposerBtn">Hủy</button>
+        <button class="btn-primary" id="sendCampaignBtn">🚀 Gửi Campaign</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== IMPORT MODAL ===== -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📥 Import khách từ POS / CSV</div>
+      <button class="modal-close" id="closeImportBtn" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body" id="importBody"></div>
+    <div class="modal-footer" id="importFooter" style="justify-content:flex-end;"></div>
+  </div>
+</div>
+
+<!-- ===== KIOSK MODE ===== -->
+<div class="kiosk-overlay" id="kioskOverlay">
+  <div class="kiosk-bar">
+    <span class="kiosk-hint">🖥 Chế độ Kiosk — đặt tablet tại quầy, form tự reset sau mỗi khách</span>
+    <button class="btn-outline" id="kioskExit">✕ Thoát Kiosk</button>
+  </div>
+  <iframe id="kioskIframe" title="Kiosk đăng ký nhận ưu đãi"></iframe>
+</div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   DATA — một nguồn duy nhất cho segments, templates, giá
+   ============================================================ */
+const PRICE_PER_SMS = 0.025; // $ mỗi tin (1 segment)
+
+const SEGMENTS = [
+  { id: 'new',      icon: '🌟', name: 'Khách Mới',           shortName: 'Khách Mới', count: 234, accent: 'var(--cyan)',   badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
+    desc: 'Gọi lần đầu, chưa quay lại. Welcome + offer để chốt lần 2.' },
+  { id: 'day15',    icon: '📅', name: '15 Ngày Chưa Ghé',    shortName: '15 Ngày',   count: 187, accent: 'var(--green)',  badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
+    desc: 'Nhắc nhở nhẹ nhàng — móng cần touch up chưa?' },
+  { id: 'day30',    icon: '⏰', name: '30 Ngày Chưa Ghé',    shortName: '30 Ngày',   count: 312, accent: 'var(--purple)', badge: 'scheduled', badgeText: 'Hẹn giờ',  countLabel: 'khách',
+    desc: 'Lâu không gặp — gửi offer hấp dẫn để kéo về.' },
+  { id: 'day60',    icon: '🔥', name: '60 Ngày Inactive',    shortName: '60 Ngày',   count: 156, accent: 'var(--orange)', badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
+    desc: 'Sắp mất khách — win-back offer mạnh nhất.' },
+  { id: 'vip',      icon: '💎', name: 'Khách VIP',           shortName: 'VIP',       count: 89,  accent: 'var(--pink)',   badge: 'sent',      badgeText: 'Đã gửi',   countLabel: 'khách',
+    desc: 'Top spenders — priority booking, exclusive offers.' },
+  { id: 'birthday', icon: '🎂', name: 'Sinh Nhật Tháng Này', shortName: 'Sinh Nhật', count: 42,  accent: 'linear-gradient(90deg, var(--pink), var(--orange))', badge: 'scheduled', badgeText: 'Auto', countLabel: 'khách tháng 7',
+    desc: 'Gửi tự động — tặng free nail art hoặc discount.' }
+];
+
+const TEMPLATES = {
+  new: [
+    { title: '🌟 Welcome Back', text: 'Xin chào {TenKhach}! Cảm ơn đã ghé {TenTiem}. Book lại hôm nay và nhận 15% OFF cho lần tiếp theo! {Link}' },
+    { title: '🎁 First Return Offer', text: 'Hi {TenKhach}! {TenTiem} dành cho bạn ưu đãi đặc biệt — Miễn phí nail art khi làm full set lần này. Đặt lịch: {Link}' }
+  ],
+  day15: [
+    { title: '💅 Touch Up Reminder', text: 'Chào {TenKhach}! Móng của bạn đến lúc touch up rồi đó. {TenTiem} có slot trống tuần này — Đặt ngay: {Link}' },
+    { title: '⭐ Quick Check-in', text: 'Hi {TenKhach}! Lâu rồi không gặp. {TenTiem} đang có deal đặc biệt tuần này. Xem ngay: {Link}' }
+  ],
+  day30: [
+    { title: '🔥 30-Day Comeback', text: '{TenKhach} ơi! Đã 1 tháng rồi nè. {TenTiem} nhớ bạn — Giảm 20% khi quay lại tuần này. Đặt lịch: {Link}' },
+    { title: '💖 Miss You Offer', text: 'Chào {TenKhach}! {TenTiem} có chương trình khuyến mãi cho khách quen. Xem ngay trước khi hết: {Link}' }
+  ],
+  day60: [
+    { title: '🔥 Win-Back Offer', text: 'Chào {TenKhach}! {TenTiem} dành cho bạn ưu đãi đặc biệt — Giảm 30% + Tặng gel tay miễn phí. Chỉ trong tuần này: {Link}' },
+    { title: '💎 VIP Win-Back', text: 'Hi {TenKhach}! Chúng tôi nhớ bạn. Quay lại {TenTiem} tuần này nhận ngay combo đặc biệt: {Link}' }
+  ],
+  vip: [
+    { title: '💎 VIP Priority', text: 'Chào {TenKhach}! Với tư cách khách VIP, bạn được ưu tiên đặt lịch trước cho mùa hè này. Book ngay: {Link}' },
+    { title: '⭐ Exclusive VIP Offer', text: 'Hi {TenKhach}! {TenTiem} vừa ra dịch vụ mới — VIP khách được thử miễn phí. Đặt lịch: {Link}' }
+  ],
+  birthday: [
+    { title: '🎂 Happy Birthday', text: 'Chúc mừng sinh nhật {TenKhach}! {TenTiem} tặng bạn FREE nail art hôm nay. Đặt lịch sinh nhật: {Link}' },
+    { title: '🎁 Birthday Gift', text: 'Happy Birthday {TenKhach}! Quà sinh nhật từ {TenTiem}: Giảm 25% + Tặng chăm sóc tay miễn phí. Book: {Link}' }
+  ]
+};
+
+// Giá trị mẫu để preview tin nhắn
+const TAG_SAMPLES = {
+  '{TenKhach}': 'Linh',
+  '{TenTiem}': 'Bitcoin Nail Bar',
+  '{Link}': 'nexora.ai/b/x7k2',
+  '{SoDT}': '832-786-5576'
+};
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  segment: SEGMENTS[0],
+  scheduleMode: 'now',
+  credits: 847,
+  confirming: false,
+  lpColor: '#7c3aed',
+  features: { showPhone: true, showBook: true, showCountdown: true, showReviews: false }
+};
+
+const $ = id => document.getElementById(id);
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+/* ============================================================
+   ĐẾM SMS ĐÚNG CHUẨN — GSM-7 vs UCS-2
+   GSM-7: 160 ký tự/tin (153 nếu nhiều tin, ký tự mở rộng tính 2)
+   UCS-2 (tiếng Việt có dấu, emoji): 70 ký tự/tin (67 nếu nhiều tin)
+   ============================================================ */
+const GSM7_BASIC = '@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&\'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà';
+const GSM7_EXT = '^{}\\[~]|€';
+
+function smsInfo(text) {
+  if (!text) return { units: 0, parts: 0, encoding: 'GSM-7', perPart: 160 };
+
+  let isUnicode = false;
+  let gsmUnits = 0;
+  for (const ch of text) {
+    if (GSM7_BASIC.includes(ch)) gsmUnits += 1;
+    else if (GSM7_EXT.includes(ch)) gsmUnits += 2;
+    else { isUnicode = true; break; }
+  }
+
+  if (isUnicode) {
+    const units = text.length; // UTF-16 units = UCS-2 units (emoji = 2)
+    const parts = units <= 70 ? 1 : Math.ceil(units / 67);
+    return { units, parts, encoding: 'UCS-2', perPart: units <= 70 ? 70 : 67 };
+  }
+  const parts = gsmUnits <= 160 ? 1 : Math.ceil(gsmUnits / 153);
+  return { units: gsmUnits, parts, encoding: 'GSM-7', perPart: gsmUnits <= 160 ? 160 : 153 };
+}
+
+/* ============================================================
+   RENDER — campaign cards & segment buttons từ SEGMENTS
+   ============================================================ */
+function renderCampaignCards() {
+  $('campaignGrid').innerHTML = SEGMENTS.map(s => `
+    <div class="campaign-card" data-segment="${s.id}" style="--accent:${s.accent}">
+      <div class="campaign-icon">${s.icon}</div>
+      <div class="campaign-name">${escapeHtml(s.name)}</div>
+      <div class="campaign-desc">${escapeHtml(s.desc)}</div>
+      <div class="campaign-meta">
+        <div>
+          <div class="campaign-count">${s.count}</div>
+          <div class="campaign-count-label">${escapeHtml(s.countLabel)}</div>
+        </div>
+        <span class="campaign-badge badge-${s.badge}">${escapeHtml(s.badgeText)}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderSegmentButtons() {
+  $('segmentGrid').innerHTML = SEGMENTS.map(s => `
+    <button class="segment-btn" data-segment="${s.id}" id="seg-${s.id}">
+      <span class="segment-btn-icon">${s.icon}</span>
+      <span class="segment-btn-name">${escapeHtml(s.shortName)}</span>
+      <span class="segment-btn-count">${s.count} khách</span>
+    </button>
+  `).join('');
+}
+
+function renderTemplates(segId) {
+  const list = TEMPLATES[segId] || [];
+  $('templateList').innerHTML = list.map((t, i) => `
+    <button class="template-item" data-index="${i}">
+      <div class="template-item-title">${escapeHtml(t.title)}</div>
+      <div class="template-item-text">${escapeHtml(t.text)}</div>
+    </button>
+  `).join('');
+}
+
+/* ============================================================
+   COMPOSER
+   ============================================================ */
+function openComposer(segId) {
+  const seg = SEGMENTS.find(s => s.id === segId) || SEGMENTS[0];
+  state.segment = seg;
+  state.confirming = false;
+  $('confirmBox').classList.remove('show');
+  $('sendCampaignBtn').textContent = '🚀 Gửi Campaign';
+
+  document.querySelectorAll('.segment-btn').forEach(b => b.classList.toggle('selected', b.dataset.segment === seg.id));
+  renderTemplates(seg.id);
+  updateCost();
+  $('composerModal').classList.add('open');
+}
+
+function closeComposer() {
+  $('composerModal').classList.remove('open');
+  state.confirming = false;
+  $('confirmBox').classList.remove('show');
+  $('sendCampaignBtn').textContent = '🚀 Gửi Campaign';
+}
+
+function updateCharCount() {
+  const text = $('smsText').value;
+  const info = smsInfo(text);
+  const box = $('charCountBox');
+  box.textContent = `${info.units} ký tự — ${info.parts} tin (${info.encoding}, ${info.perPart}/tin)`;
+  box.classList.toggle('multi', info.parts > 1);
+  updateSmsPreview(text);
+  updateCost();
+  // Người dùng sửa nội dung sau khi bấm xác nhận → reset bước xác nhận
+  if (state.confirming) {
+    state.confirming = false;
+    $('confirmBox').classList.remove('show');
+    $('sendCampaignBtn').textContent = '🚀 Gửi Campaign';
+  }
+}
+
+function updateSmsPreview(text) {
+  const bubble = $('smsBubble');
+  if (!text.trim()) {
+    bubble.innerHTML = '<span class="sms-preview-empty">Tin nhắn sẽ hiển thị ở đây...</span>';
+    return;
+  }
+  let safe = escapeHtml(text);
+  for (const [tag, val] of Object.entries(TAG_SAMPLES)) {
+    const safeTag = escapeHtml(tag);
+    const rendered = tag === '{Link}' ? `<span class="lnk">${escapeHtml(val)}</span>` : `<strong>${escapeHtml(val)}</strong>`;
+    safe = safe.split(safeTag).join(rendered);
+  }
+  bubble.innerHTML = safe.replace(/\n/g, '<br>');
+}
+
+function updateCost() {
+  const info = smsInfo($('smsText').value);
+  const parts = Math.max(info.parts, 1);
+  const totalSms = state.segment.count * parts;
+  const cost = (totalSms * PRICE_PER_SMS).toFixed(2);
+  const enough = state.credits >= totalSms;
+
+  $('costPreview').textContent = `${state.segment.count} khách × ${parts} tin = ${totalSms} SMS ($${cost})`;
+  $('costLabel').textContent = enough ? 'Chi phí ước tính' : `⚠️ Không đủ credits (còn ${state.credits})`;
+  $('costBox').classList.toggle('warn', !enough);
+  $('sendCampaignBtn').disabled = !enough;
+}
+
+function updateCredits(newVal) {
+  state.credits = newVal;
+  const el = $('creditsDisplay');
+  el.textContent = newVal.toLocaleString();
+  el.classList.toggle('low', newVal < 100);
+  $('creditsUsd').textContent = `≈ $${(newVal * PRICE_PER_SMS).toFixed(2)} remaining`;
+}
+
+function sendCampaign() {
+  const text = $('smsText').value.trim();
+  if (!text) { alert('Vui lòng soạn nội dung SMS trước.'); return; }
+
+  if (state.scheduleMode === 'schedule' && !$('schedDate').value) {
+    alert('Vui lòng chọn ngày gửi.');
+    return;
+  }
+
+  const info = smsInfo(text);
+  const totalSms = state.segment.count * info.parts;
+
+  if (state.credits < totalSms) {
+    alert(`Không đủ credits: cần ${totalSms}, còn ${state.credits}. Vui lòng mua thêm.`);
+    return;
+  }
+
+  // Bước xác nhận — bấm lần 1 hiện chi tiết, lần 2 mới gửi
+  if (!state.confirming) {
+    state.confirming = true;
+    const when = state.scheduleMode === 'now' ? 'Gửi ngay lập tức'
+      : state.scheduleMode === 'schedule' ? `Hẹn giờ: ${$('schedDate').value} lúc ${$('schedTime').value}`
+      : 'Tự động theo điều kiện segment';
+    $('confirmDetail').innerHTML =
+      `Nhóm: <strong>${escapeHtml(state.segment.name)}</strong> (${state.segment.count} khách)<br>` +
+      `Số tin: <strong>${totalSms} SMS</strong> (${info.parts} tin/khách, ${info.encoding})<br>` +
+      `Chi phí: <strong>$${(totalSms * PRICE_PER_SMS).toFixed(2)}</strong> — trừ ${totalSms} credits<br>` +
+      `Lịch: <strong>${when}</strong>`;
+    $('confirmBox').classList.add('show');
+    $('confirmBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    $('sendCampaignBtn').textContent = '✅ Xác nhận gửi';
+    return;
+  }
+
+  // Đã xác nhận → gửi
+  updateCredits(state.credits - totalSms);
+  closeComposer();
+
+  const msg = state.scheduleMode === 'now'
+    ? `✅ Đã gửi ${totalSms} SMS đến ${state.segment.count} khách (${state.segment.name}).`
+    : state.scheduleMode === 'schedule'
+      ? `⏰ Đã lên lịch ${totalSms} SMS — gửi ${$('schedDate').value} lúc ${$('schedTime').value}.`
+      : `🤖 Đã bật gửi tự động cho nhóm ${state.segment.name}.`;
+  $('successText').textContent = msg;
+  $('successBanner').classList.add('show');
+  clearTimeout(sendCampaign._t);
+  sendCampaign._t = setTimeout(() => $('successBanner').classList.remove('show'), 6000);
+}
+
+/* ============================================================
+   VIEWS & NAV
+   ============================================================ */
+function showView(viewId) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.view === viewId));
+  const view = $('view-' + viewId);
+  if (view) view.classList.add('active');
+  if (viewId === 'landingpage') updateLpPreview();
+  if (viewId === 'qrcodes') refreshQr();
+}
+
+/* ============================================================
+   LANDING PAGE BUILDER
+   ============================================================ */
+/* Bộ mẫu — 1 click điền toàn bộ nội dung, màu, tính năng, slug */
+const LP_TEMPLATES = [
+  {
+    id: 'comeback', emoji: '💜', name: 'Khách quay lại', desc: 'Kéo khách 30–60 ngày chưa ghé',
+    headline: '💅 Chào Mừng Khách Quay Lại!',
+    sub: 'Bitcoin Nail Bar dành riêng cho bạn ưu đãi đặc biệt tháng này',
+    offer: '✨ Giảm 20% toàn bộ dịch vụ\n🎁 Tặng nail art miễn phí khi làm full set\n⏰ Chỉ áp dụng đến Chủ Nhật tuần này',
+    color: '#7c3aed', slug: 'comeback-offer',
+    features: { showPhone: true, showBook: true, showCountdown: true, showReviews: false }
+  },
+  {
+    id: 'grandopen', emoji: '🎉', name: 'Khai trương / Grand Opening', desc: 'Ra mắt tiệm hoặc tiệm mới sang chủ',
+    headline: '🎉 Grand Opening — Ưu Đãi Khai Trương!',
+    sub: 'Tuần lễ khai trương duy nhất — giá không bao giờ lặp lại',
+    offer: '💅 Full set chỉ từ $35 (giá gốc $55)\n🥤 Miễn phí nước uống + massage vai 10 phút\n🎁 100 khách đầu tiên nhận quà tặng',
+    color: '#f59e0b', slug: 'grand-opening',
+    features: { showPhone: true, showBook: true, showCountdown: true, showReviews: false }
+  },
+  {
+    id: 'birthday', emoji: '🎂', name: 'Sinh nhật khách', desc: 'Gửi trong tháng sinh nhật',
+    headline: '🎂 Chúc Mừng Sinh Nhật Từ Bitcoin Nail Bar!',
+    sub: 'Món quà nhỏ cho ngày đặc biệt của bạn — cả tháng này đều dùng được',
+    offer: '🎁 Giảm 25% một dịch vụ bất kỳ\n💐 Tặng hoa tai xinh khi thanh toán\n👑 Ưu tiên chọn giờ đẹp cuối tuần',
+    color: '#ec4899', slug: 'birthday-gift',
+    features: { showPhone: true, showBook: true, showCountdown: false, showReviews: false }
+  },
+  {
+    id: 'referral', emoji: '👯', name: 'Giới thiệu bạn', desc: 'Khách cũ kéo khách mới — cả 2 được giảm',
+    headline: '👯 Rủ Bạn Đi Làm Nail — Cả Hai Cùng Lời!',
+    sub: 'Bạn giảm $10, người bạn giới thiệu cũng giảm $10. Không giới hạn số lần.',
+    offer: '💵 Bạn: giảm $10 lần tới\n💵 Bạn của bạn: giảm $10 lần đầu\n♾️ Giới thiệu càng nhiều giảm càng nhiều',
+    color: '#06b6d4', slug: 'refer-a-friend',
+    features: { showPhone: true, showBook: true, showCountdown: false, showReviews: true }
+  },
+  {
+    id: 'holiday', emoji: '🎆', name: 'Lễ lớn / Holiday', desc: 'July 4th, Thanksgiving, Christmas, Tết',
+    headline: '🎆 Holiday Sale — Đẹp Đón Lễ!',
+    sub: 'Đặt lịch sớm kẻo hết chỗ — lễ nào tiệm cũng kín từ 2 ngày trước',
+    offer: '✨ Giảm 15% mọi dịch vụ trước ngày lễ\n💅 Mẫu nail theo chủ đề lễ — miễn phí tư vấn\n📅 Đặt trước 3 ngày tặng thêm gel top coat',
+    color: '#ef4444', slug: 'holiday-sale',
+    features: { showPhone: true, showBook: true, showCountdown: true, showReviews: false }
+  },
+  {
+    id: 'newservice', emoji: '💎', name: 'Dịch vụ mới', desc: 'Ra mắt Gel-X, dip powder, design mới',
+    headline: '💎 Gel-X Đã Có Mặt Tại Bitcoin Nail Bar!',
+    sub: 'Bền hơn acrylic, nhẹ hơn, không hại móng thật — thử ngay với giá ra mắt',
+    offer: '💎 Gel-X full set giảm 15% lần đầu\n🖐️ Tư vấn dáng móng miễn phí\n⭐ Thợ được đào tạo chứng chỉ Gel-X',
+    color: '#10b981', slug: 'gelx-launch',
+    features: { showPhone: true, showBook: true, showCountdown: false, showReviews: true }
+  }
+];
+
+let lpTplSelected = 'comeback';
+
+/* Nhiều chương trình — mỗi chương trình 1 landing page riêng */
+const LP_PAGES = [
+  {
+    id: 1, headline: '💅 Chào Mừng Khách Quay Lại!',
+    sub: 'Bitcoin Nail Bar dành riêng cho bạn ưu đãi đặc biệt tháng này',
+    offer: '✨ Giảm 20% toàn bộ dịch vụ\n🎁 Tặng nail art miễn phí khi làm full set\n⏰ Chỉ áp dụng đến Chủ Nhật tuần này',
+    color: '#7c3aed', slug: 'comeback-offer-july',
+    features: { showPhone: true, showBook: true, showCountdown: true, showReviews: false },
+    status: 'published', clicks: 486
+  },
+  {
+    id: 2, headline: '💎 Gel-X Đã Có Mặt Tại Bitcoin Nail Bar!',
+    sub: 'Bền hơn acrylic, nhẹ hơn, không hại móng thật — thử ngay với giá ra mắt',
+    offer: '💎 Gel-X full set giảm 15% lần đầu\n🖐️ Tư vấn dáng móng miễn phí\n⭐ Thợ được đào tạo chứng chỉ Gel-X',
+    color: '#10b981', slug: 'gelx-launch',
+    features: { showPhone: true, showBook: true, showCountdown: false, showReviews: true },
+    status: 'draft', clicks: 0
+  }
+];
+let lpEditingId = 1;
+let lpNextId = 3;
+
+function lpGatherForm() {
+  return {
+    headline: $('lpHeadline').value,
+    sub: $('lpSub').value,
+    offer: $('lpOffer').value,
+    slug: $('lpSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-') || 'trang-moi',
+    color: state.lpColor,
+    features: { ...state.features }
+  };
+}
+
+function syncLpControls(color, features) {
+  state.lpColor = color;
+  document.querySelectorAll('.color-chip').forEach(c => c.classList.toggle('selected', c.dataset.color === color));
+  state.features = { ...features };
+  document.querySelectorAll('#featureToggles .offer-toggle').forEach(row => {
+    row.querySelector('.toggle').classList.toggle('on', !!features[row.dataset.feature]);
+  });
+}
+
+function renderLpPages() {
+  if (!LP_PAGES.length) {
+    $('lpPagesList').innerHTML = '<div class="lead-flow-note">Chưa có chương trình nào — chọn mẫu bên dưới rồi bấm Publish.</div>';
+    return;
+  }
+  $('lpPagesList').innerHTML = LP_PAGES.map(p => `
+    <div class="lp-page-row${p.id === lpEditingId ? ' editing' : ''}">
+      <div class="lp-page-info">
+        <div class="lp-page-name">${escapeHtml(p.headline)}</div>
+        <div class="lp-page-url">nexora.ai/btcnailbar/${escapeHtml(p.slug)}</div>
+        <div class="lp-page-stats">${p.status === 'published' ? '👆 ' + p.clicks + ' lượt bấm link' : 'Chưa publish — khách chưa thấy trang này'}</div>
+      </div>
+      <span class="lp-badge ${p.status === 'published' ? 'live' : 'draft'}">${p.status === 'published' ? '● LIVE' : 'NHÁP'}</span>
+      <div class="lp-page-actions">
+        <button data-action="edit" data-id="${p.id}">✏️ Sửa</button>
+        <button data-action="copy" data-id="${p.id}">📋 Nhân bản</button>
+        <button class="danger" data-action="del" data-id="${p.id}">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadLpPage(id) {
+  const p = LP_PAGES.find(x => x.id === id);
+  if (!p) return;
+  lpEditingId = id;
+  $('lpHeadline').value = p.headline;
+  $('lpSub').value = p.sub;
+  $('lpOffer').value = p.offer;
+  $('lpSlug').value = p.slug;
+  syncLpControls(p.color, p.features);
+  renderLpPages();
+  updateSlug();
+  updateLpPreview();
+}
+
+function newLpPage() {
+  lpEditingId = null;
+  $('lpHeadline').value = '';
+  $('lpSub').value = '';
+  $('lpOffer').value = '';
+  $('lpSlug').value = 'trang-moi';
+  renderLpPages();
+  updateSlug();
+  updateLpPreview();
+}
+
+function publishLpPage() {
+  const data = lpGatherForm();
+  if (!data.headline.trim()) { alert('Nhập tiêu đề trước khi publish — hoặc chọn 1 mẫu có sẵn.'); return; }
+  if (LP_PAGES.some(p => p.slug === data.slug && p.id !== lpEditingId)) {
+    alert('Slug "' + data.slug + '" đã dùng cho chương trình khác. Đổi slug để mỗi chương trình có link riêng.');
+    return;
+  }
+  let page = LP_PAGES.find(p => p.id === lpEditingId);
+  if (page) {
+    Object.assign(page, data, { status: 'published' });
+  } else {
+    page = { id: lpNextId++, ...data, status: 'published', clicks: 0 };
+    LP_PAGES.push(page);
+    lpEditingId = page.id;
+  }
+  renderLpPages();
+  updateSlug();
+  alert(`🚀 Chương trình đã LIVE!\n\nLink riêng:\nhttps://nexora.ai/btcnailbar/${page.slug}\n\nCopy link này vào SMS campaign. Mỗi chương trình 1 link → biết khách bấm từ chương trình nào.`);
+}
+
+function renderLpTemplates() {
+  $('lpTplGrid').innerHTML = LP_TEMPLATES.map(t => `
+    <button class="lp-tpl-card${t.id === lpTplSelected ? ' selected' : ''}" data-tpl="${t.id}">
+      <div class="lp-tpl-emoji">${t.emoji}</div>
+      <div class="lp-tpl-name">${escapeHtml(t.name)}</div>
+      <div class="lp-tpl-desc">${escapeHtml(t.desc)}</div>
+    </button>
+  `).join('');
+}
+
+function applyLpTemplate(id) {
+  const t = LP_TEMPLATES.find(x => x.id === id);
+  if (!t) return;
+  lpTplSelected = id;
+  $('lpHeadline').value = t.headline;
+  $('lpSub').value = t.sub;
+  $('lpOffer').value = t.offer;
+  $('lpSlug').value = t.slug;
+  state.lpColor = t.color;
+  document.querySelectorAll('.color-chip').forEach(c => c.classList.toggle('selected', c.dataset.color === t.color));
+  state.features = { ...t.features };
+  document.querySelectorAll('#featureToggles .offer-toggle').forEach(row => {
+    row.querySelector('.toggle').classList.toggle('on', !!t.features[row.dataset.feature]);
+  });
+  renderLpTemplates();
+  updateSlug();
+  updateLpPreview();
+}
+
+function updateSlug() {
+  const slug = $('lpSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+  const url = `nexora.ai/btcnailbar/${slug}`;
+  $('linkPreview').textContent = url;
+  $('previewUrl').textContent = url;
+}
+
+function updateLpPreview() {
+  const headline = escapeHtml($('lpHeadline').value);
+  const sub = escapeHtml($('lpSub').value);
+  const offer = $('lpOffer').value;
+  const color = state.lpColor;
+  const f = state.features;
+
+  const phoneBtn = f.showPhone ? `<a href="tel:+18327865576" style="display:block;background:white;color:${color};text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;margin-bottom:10px;">📞 Gọi Đặt Lịch Ngay</a>` : '';
+  const bookBtn = f.showBook ? `<a href="#" style="display:block;background:rgba(255,255,255,0.2);color:white;text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;border:2px solid rgba(255,255,255,0.4);">📅 Đặt Lịch Online</a>` : '';
+  const countdown = f.showCountdown ? `<div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:12px;text-align:center;margin-bottom:16px;"><div style="font-size:11px;color:rgba(255,255,255,0.7);margin-bottom:6px;">⏱️ ƯU ĐÃI KẾT THÚC SAU</div><div style="font-size:24px;font-weight:800;letter-spacing:4px;">02 : 14 : 37</div></div>` : '';
+  const reviews = f.showReviews ? `<div style="margin-top:16px;"><div style="font-size:13px;font-weight:600;margin-bottom:8px;">⭐ Khách hàng nói gì</div><div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:10px;font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:6px;">"Tiệm đẹp, nhân viên thân thiện. Sẽ quay lại!" — Linh T.</div><div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:10px;font-size:12px;color:rgba(255,255,255,0.8);">"Làm nail ở đây 2 năm rồi, không chỗ nào bằng!" — Mai N.</div></div>` : '';
+
+  const offerLines = offer.split('\n').filter(l => l.trim()).map(l =>
+    `<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.15);font-size:14px;">${escapeHtml(l)}</div>`
+  ).join('');
+
+  $('lpIframe').srcdoc = `<!DOCTYPE html><html><head>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+      *{margin:0;padding:0;box-sizing:border-box;}
+      body{font-family:'Inter',sans-serif;background:linear-gradient(160deg,${color},#0a0a0f);color:white;min-height:100vh;padding:20px;}
+      .logo{text-align:center;font-size:11px;letter-spacing:2px;opacity:0.6;margin-bottom:20px;}
+      .card{background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border-radius:20px;padding:24px;border:1px solid rgba(255,255,255,0.15);}
+      h1{font-size:22px;font-weight:800;line-height:1.3;margin-bottom:8px;}
+      .sub{font-size:13px;color:rgba(255,255,255,0.75);margin-bottom:20px;line-height:1.5;}
+      .offer-box{background:rgba(255,255,255,0.1);border-radius:12px;padding:14px;margin-bottom:16px;}
+      .offer-title{font-size:11px;letter-spacing:2px;opacity:0.7;margin-bottom:8px;}
+    </style></head><body>
+    <div class="logo">NEXORA TOUCH × BITCOIN NAIL BAR</div>
+    <div class="card">
+      <h1>${headline}</h1>
+      <div class="sub">${sub}</div>
+      ${countdown}
+      <div class="offer-box">
+        <div class="offer-title">ƯU ĐÃI DÀNH CHO BẠN</div>
+        ${offerLines}
+      </div>
+      ${phoneBtn}
+      ${bookBtn}
+      ${reviews}
+      <div style="text-align:center;font-size:10px;color:rgba(255,255,255,0.4);margin-top:20px;">Bitcoin Nail Bar • 832-786-5576<br>Powered by NEXORA TOUCH</div>
+    </div>
+    </body></html>`;
+}
+
+/* ============================================================
+   DASHBOARD — mock data, thay bằng API khi có backend
+   ============================================================ */
+const DASH = {
+  monthlySms: [
+    { label: 'T2', value: 1840 },
+    { label: 'T3', value: 2210 },
+    { label: 'T4', value: 1950 },
+    { label: 'T5', value: 2680 },
+    { label: 'T6', value: 2890 },
+    { label: 'T7', value: 3412, current: true }
+  ],
+  funnel: [
+    { label: 'SMS gửi',    value: 3412, color: 'var(--purple)' },
+    { label: 'Delivered',  value: 3290, color: 'var(--cyan)' },
+    { label: 'Bấm link',   value: 486,  color: 'var(--orange)' },
+    { label: 'Quay lại',   value: 147,  color: 'var(--green)' }
+  ],
+  campaigns: [
+    { name: '🔥 Win-Back 60 ngày',   date: '02/07/2026', sent: 156, delivered: 149, returned: 18, revenue: 1240 },
+    { name: '💎 VIP Summer Priority', date: '28/06/2026', sent: 89,  delivered: 88,  returned: 21, revenue: 2870 },
+    { name: '⏰ Comeback 30 ngày',    date: '21/06/2026', sent: 312, delivered: 301, returned: 34, revenue: 2140 },
+    { name: '🎂 Birthday June',       date: '15/06/2026', sent: 38,  delivered: 37,  returned: 15, revenue: 980 },
+    { name: '💅 Touch Up 15 ngày',    date: '10/06/2026', sent: 187, delivered: 180, returned: 26, revenue: 1590 }
+  ]
+};
+
+function renderDashboard() {
+  // Bar chart
+  const max = Math.max(...DASH.monthlySms.map(m => m.value));
+  $('smsBarChart').innerHTML = DASH.monthlySms.map(m => `
+    <div class="bar-col">
+      <span class="bar-val">${m.value.toLocaleString()}</span>
+      <div class="bar${m.current ? ' current' : ''}" style="height:${Math.round(m.value / max * 100)}%" title="${m.label}: ${m.value.toLocaleString()} SMS"></div>
+      <span class="bar-label">${m.label}</span>
+    </div>
+  `).join('');
+
+  // Funnel
+  const fmax = DASH.funnel[0].value;
+  $('funnelChart').innerHTML = DASH.funnel.map(f => `
+    <div class="funnel-row">
+      <span class="funnel-label">${escapeHtml(f.label)}</span>
+      <div class="funnel-track">
+        <div class="funnel-fill" style="width:${Math.max(f.value / fmax * 100, 8)}%;background:${f.color}">${f.value.toLocaleString()}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Bảng campaign — tỷ lệ quay lại tô màu theo ngưỡng
+  $('campaignHistoryBody').innerHTML = DASH.campaigns.map(c => {
+    const rate = (c.returned / c.sent * 100);
+    const rateClass = rate >= 10 ? 'rate-good' : 'rate-mid';
+    return `
+      <tr>
+        <td>${escapeHtml(c.name)}</td>
+        <td>${c.date}</td>
+        <td class="num">${c.sent}</td>
+        <td class="num">${c.delivered} (${Math.round(c.delivered / c.sent * 100)}%)</td>
+        <td class="num ${rateClass}">${c.returned} (${rate.toFixed(1)}%)</td>
+        <td class="num">$${c.revenue.toLocaleString()}</td>
+      </tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   CUSTOMERS — mock data, thay bằng API khi có backend
+   ============================================================ */
+/* Nguồn đăng ký — cửa vào quyết định loại consent */
+const SRC_META = {
+  qr:      { icon: '🔳', label: 'QR',        title: 'Scan QR nhận ưu đãi — có consent marketing' },
+  receipt: { icon: '🧾', label: 'Biên lai',  title: 'Nhập phone nhận biên lai — chỉ consent giao dịch' },
+  call:    { icon: '📞', label: 'Gọi vào',   title: 'AI voice bắt số khi khách gọi — xin consent qua giọng nói' },
+  pos:     { icon: '📥', label: 'Import',    title: 'Import từ POS — cần gửi tin xin phép' }
+};
+
+const CUSTOMERS = [
+  { name: 'Linh Trần',      phone: '(832) 431-8827', seg: 'vip',      visits: 24, last: '05/07/2026', spent: 2140, src: 'qr' },
+  { name: 'Mai Nguyễn',     phone: '(713) 552-0194', seg: 'vip',      visits: 31, last: '03/07/2026', spent: 2890, src: 'receipt' },
+  { name: 'Jessica Kim',    phone: '(832) 906-4471', seg: 'day15',    visits: 8,  last: '22/06/2026', spent: 640,  src: 'call' },
+  { name: 'Hằng Phạm',      phone: '(281) 774-3358', seg: 'new',      visits: 1,  last: '01/07/2026', spent: 55,   src: 'qr' },
+  { name: 'Ashley Brown',   phone: '(832) 118-9902', seg: 'day30',    visits: 5,  last: '06/06/2026', spent: 385,  src: 'receipt' },
+  { name: 'Thảo Lê',        phone: '(713) 662-8815', seg: 'day60',    visits: 12, last: '02/05/2026', spent: 970,  src: 'receipt' },
+  { name: 'Maria Gonzalez', phone: '(832) 340-2276', seg: 'birthday', visits: 9,  last: '18/06/2026', spent: 720,  src: 'qr' },
+  { name: 'Kim Đặng',       phone: '(281) 907-5541', seg: 'day15',    visits: 6,  last: '21/06/2026', spent: 480,  src: 'call' },
+  { name: 'Sarah Johnson',  phone: '(713) 225-7809', seg: 'new',      visits: 1,  last: '04/07/2026', spent: 70,   src: 'qr' },
+  { name: 'Ngọc Vũ',        phone: '(832) 543-1120', seg: 'vip',      visits: 19, last: '30/06/2026', spent: 1650, src: 'receipt' },
+  { name: 'Emily Chen',     phone: '(281) 660-3387', seg: 'day30',    visits: 4,  last: '04/06/2026', spent: 310,  src: 'call' },
+  { name: 'Trang Hoàng',    phone: '(713) 889-4462', seg: 'day60',    visits: 7,  last: '25/04/2026', spent: 560,  src: 'receipt' },
+  { name: 'Amanda Davis',   phone: '(832) 271-6693', seg: 'birthday', visits: 11, last: '15/06/2026', spent: 830,  src: 'qr' },
+  { name: 'Quỳnh Bùi',      phone: '(281) 435-9078', seg: 'new',      visits: 1,  last: '06/07/2026', spent: 45,   src: 'call' },
+  { name: 'Tiffany Võ',     phone: '(713) 508-2214', seg: 'day15',    visits: 14, last: '23/06/2026', spent: 1120, src: 'qr' }
+];
+
+let custFilter = { search: '', seg: 'all' };
+
+function renderCustomers() {
+  const q = custFilter.search.toLowerCase();
+  const qDigits = q.replace(/\D/g, '');
+  const rows = CUSTOMERS.filter(c =>
+    (custFilter.seg === 'all' || c.seg === custFilter.seg) &&
+    (!q || c.name.toLowerCase().includes(q) || (qDigits && c.phone.replace(/\D/g, '').includes(qDigits)))
+  );
+
+  $('custCount').textContent = `${rows.length}/${CUSTOMERS.length} khách (demo — bản thật: 1,284)`;
+
+  if (!rows.length) {
+    $('custTableBody').innerHTML = '<tr><td colspan="8" class="empty-row">Không tìm thấy khách nào</td></tr>';
+    return;
+  }
+
+  $('custTableBody').innerHTML = rows.map(c => {
+    const seg = SEGMENTS.find(s => s.id === c.seg);
+    return `
+      <tr>
+        <td>${escapeHtml(c.name)}${c.optIn === false ? '<span class="optin-badge">⏳ chưa opt-in</span>' : ''}</td>
+        <td>${c.phone}</td>
+        <td><span class="mini-badge">${seg ? seg.icon + ' ' + escapeHtml(seg.shortName) : c.seg}</span></td>
+        <td><span class="mini-badge" title="${SRC_META[c.src] ? SRC_META[c.src].title : ''}">${SRC_META[c.src] ? SRC_META[c.src].icon + ' ' + SRC_META[c.src].label : '—'}</span></td>
+        <td class="num">${c.visits}</td>
+        <td>${c.last}</td>
+        <td class="num">$${c.spent.toLocaleString()}</td>
+        <td><button class="row-action" data-seg="${c.seg}">💬 Gửi SMS</button></td>
+      </tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   IMPORT KHÁCH — CSV từ POS (Square, Clover, Fresha, NailSoft...)
+   ============================================================ */
+const IMPORT_SAMPLE = `First Name,Last Name,Phone Number,Email Address,Last Visit,Total Spent
+Tina,Phan,8322104455,tina.p@gmail.com,06/28/2026,$420
+Kevin,Lý,(713) 908-1234,kevinly@yahoo.com,05/12/2026,$185
+Linh,Trần,832-431-8827,linh.tran@gmail.com,07/05/2026,$2140
+Brittany,Miller,2818873390,bmiller@outlook.com,06/10/2026,$95
+Hoa,Đỗ,17134426688,hoado@gmail.com,04/18/2026,$1310
+Sarah,Johnson,7132257809,sjohnson@gmail.com,07/04/2026,$70
+Amy,Wong,555-12,amywong@gmail.com,06/30/2026,$260
+Diana,Rodriguez,8329981102,,03/22/2026,$540`;
+
+const importState = { step: 1, headers: [], rows: [], map: { name: '', phone: '', last: '', spent: '' }, preview: [] };
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [], cell = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+      else if (ch === '"') inQ = false;
+      else cell += ch;
+    } else if (ch === '"') inQ = true;
+    else if (ch === ',') { row.push(cell); cell = ''; }
+    else if (ch === '\n' || ch === '\r') {
+      if (ch === '\r' && text[i + 1] === '\n') i++;
+      row.push(cell); cell = '';
+      if (row.some(c => c.trim() !== '')) rows.push(row);
+      row = [];
+    } else cell += ch;
+  }
+  row.push(cell);
+  if (row.some(c => c.trim() !== '')) rows.push(row);
+  return rows;
+}
+
+function normPhone(s) {
+  let d = String(s || '').replace(/\D/g, '');
+  if (d.length === 11 && d[0] === '1') d = d.slice(1);
+  if (d.length !== 10) return null;
+  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+}
+
+function daysSince(s) {
+  if (!s) return null;
+  let dt = new Date(s);
+  if (isNaN(dt)) {
+    const m = String(s).match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+    if (m) dt = new Date(+m[3], +m[1] - 1, +m[2]);
+  }
+  if (isNaN(dt)) return null;
+  return Math.floor((Date.now() - dt.getTime()) / 86400000);
+}
+
+function segForImport(days, spent) {
+  if (spent >= 1000) return 'vip';
+  if (days === null) return 'day30';
+  if (days >= 60) return 'day60';
+  if (days >= 30) return 'day30';
+  if (days >= 15) return 'day15';
+  return 'new';
+}
+
+function guessMap(headers) {
+  const find = re => { const i = headers.findIndex(h => re.test(h)); return i >= 0 ? String(i) : ''; };
+  const map = {
+    name: find(/^(customer\s*)?name$|full\s*name|tên|khách/i),
+    phone: find(/phone|mobile|cell|sđt|điện thoại/i),
+    last: find(/last\s*visit|visit\s*date|lần cuối|recent/i),
+    spent: find(/spent|total|lifetime|chi tiêu/i)
+  };
+  if (!map.name && headers.some(h => /first\s*name/i.test(h)) && headers.some(h => /last\s*name/i.test(h))) map.name = '__fl';
+  return map;
+}
+
+function importCellName(row) {
+  if (importState.map.name === '__fl') {
+    const fi = importState.headers.findIndex(h => /first\s*name/i.test(h));
+    const li = importState.headers.findIndex(h => /last\s*name/i.test(h));
+    return ((row[fi] || '') + ' ' + (row[li] || '')).trim();
+  }
+  return (row[+importState.map.name] || '').trim();
+}
+
+function buildImportPreview() {
+  const existing = new Set(CUSTOMERS.map(c => c.phone.replace(/\D/g, '')));
+  importState.preview = importState.rows.map(r => {
+    const name = importCellName(r) || '(không tên)';
+    const phone = importState.map.phone === '' ? null : normPhone(r[+importState.map.phone]);
+    const days = importState.map.last === '' ? null : daysSince(r[+importState.map.last]);
+    const spent = importState.map.spent === '' ? 0 : (parseFloat(String(r[+importState.map.spent]).replace(/[^0-9.]/g, '')) || 0);
+    return {
+      name, phone, spent,
+      last: days !== null ? new Date(Date.now() - days * 86400000).toLocaleDateString('vi-VN') : '—',
+      seg: segForImport(days, spent),
+      dup: phone ? existing.has(phone.replace(/\D/g, '')) : false
+    };
+  });
+}
+
+function renderImportStep() {
+  const s = importState.step;
+  $('importBody').innerHTML = `<div class="import-steps">${[1, 2, 3].map(i => `<span class="${i <= s ? 'done' : ''}"></span>`).join('')}</div>` + (
+    s === 1 ? `
+      <div class="import-drop" id="importDrop">
+        <div style="font-size:30px;">📄</div>
+        <strong style="color:var(--text);">Bấm để chọn file CSV</strong><br>
+        export từ POS của tiệm (Clients → Export)
+      </div>
+      <input type="file" id="importFile" accept=".csv,text/csv" style="display:none;">
+      <div style="text-align:center;margin-top:12px;">
+        <button class="btn-outline" id="importSampleBtn" style="font-size:12px;">🧪 Chưa có file? Dùng file mẫu demo (Square)</button>
+      </div>
+      <div class="import-hint">
+        <strong>Export ở đâu?</strong> Square: Customers → Export • Clover: Customers → Export • Fresha: Clients → Export CSV • Booksy/GlossGenius/Vagaro: Clients → Export • NailSoft/iPOS: hỏi support xuất danh sách khách ra Excel rồi lưu thành CSV.
+      </div>` :
+    s === 2 ? `
+      <div style="font-size:13px;margin-bottom:14px;">File có <strong>${importState.rows.length} khách</strong>. Ghép cột trong file với dữ liệu NEXORA — em đã đoán sẵn, kiểm tra lại rồi bấm Tiếp:</div>
+      ${['name|Tên khách', 'phone|Số điện thoại|req', 'last|Lần ghé cuối', 'spent|Tổng chi tiêu'].map(f => {
+        const [key, label, req] = f.split('|');
+        const opts = importState.headers.map((h, i) => `<option value="${i}" ${importState.map[key] === String(i) ? 'selected' : ''}>${escapeHtml(h)}</option>`).join('');
+        const fl = key === 'name' ? `<option value="__fl" ${importState.map.name === '__fl' ? 'selected' : ''}>First Name + Last Name</option>` : '';
+        return `<div class="map-row"><div class="map-label">${label}${req ? ' <span class="req">*</span>' : ''}</div>
+          <select class="form-select" data-map="${key}"><option value="">— bỏ qua —</option>${fl}${opts}</select></div>`;
+      }).join('')}
+      <div class="import-hint">Nhóm khách (segment) sẽ tự xếp: chi tiêu ≥ $1,000 → VIP • theo ngày ghé cuối → 15/30/60 ngày.</div>` : `
+      ${(() => {
+        const p = importState.preview;
+        const ok = p.filter(x => x.phone && !x.dup), dup = p.filter(x => x.dup), bad = p.filter(x => !x.phone);
+        return `<div class="import-stats">
+          <div class="import-stat"><b>${p.length}</b>dòng trong file</div>
+          <div class="import-stat"><b style="color:var(--green);">${ok.length}</b>sẽ import</div>
+          <div class="import-stat warn"><b>${dup.length}</b>trùng — bỏ qua</div>
+          <div class="import-stat bad"><b>${bad.length}</b>phone lỗi — bỏ qua</div>
+        </div>
+        <div style="overflow-x:auto;"><table class="dash-table"><thead><tr><th>Tên</th><th>Phone</th><th>Nhóm</th><th class="num">Chi tiêu</th><th></th></tr></thead><tbody>
+        ${p.slice(0, 6).map(x => {
+          const seg = SEGMENTS.find(g => g.id === x.seg);
+          const flag = !x.phone ? '<span style="color:var(--red);font-size:11px;">✕ phone lỗi</span>' : x.dup ? '<span style="color:var(--orange);font-size:11px;">≡ đã có</span>' : '<span style="color:var(--green);font-size:11px;">✓</span>';
+          return `<tr><td>${escapeHtml(x.name)}</td><td>${x.phone || '—'}</td><td><span class="mini-badge">${seg ? seg.icon + ' ' + seg.shortName : ''}</span></td><td class="num">$${x.spent.toLocaleString()}</td><td>${flag}</td></tr>`;
+        }).join('')}
+        ${p.length > 6 ? `<tr><td colspan="5" class="empty-row">… và ${p.length - 6} dòng nữa</td></tr>` : ''}
+        </tbody></table></div>
+        <div class="consent-note" style="margin-top:14px;">⚠️ ${ok.length} khách import sẽ gắn cờ <strong>"chưa opt-in"</strong> — chỉ được gửi 1 tin xin phép "Reply YES để nhận ưu đãi". Ai reply YES mới vào danh sách marketing (luật TCPA).</div>`;
+      })()}`
+  );
+  $('importFooter').innerHTML = (s > 1 ? `<button class="btn-outline" id="importBackBtn">← Lại</button>` : '') +
+    (s === 2 ? `<button class="btn-primary" id="importNextBtn">Xem trước →</button>` : '') +
+    (s === 3 ? `<button class="btn-primary" id="importDoBtn">📥 Import ${importState.preview.filter(x => x.phone && !x.dup).length} khách</button>` : '');
+}
+
+function importLoadCsv(text) {
+  const all = parseCsv(text);
+  if (all.length < 2) { alert('File không có dữ liệu (cần dòng tiêu đề + ít nhất 1 khách).'); return; }
+  importState.headers = all[0].map(h => h.trim());
+  importState.rows = all.slice(1);
+  importState.map = guessMap(importState.headers);
+  importState.step = 2;
+  renderImportStep();
+}
+
+function doImport() {
+  const add = importState.preview.filter(x => x.phone && !x.dup);
+  add.forEach(x => CUSTOMERS.push({ name: x.name, phone: x.phone, seg: x.seg, visits: 1, last: x.last, spent: Math.round(x.spent), optIn: false, src: 'pos' }));
+  renderCustomers();
+  $('importModal').classList.remove('open');
+  alert(`✅ Đã import ${add.length} khách!\n\nTất cả đang ở trạng thái "chưa opt-in".\nBước tiếp theo: vào Campaigns → gửi tin xin phép cho nhóm này. Ai reply YES mới nhắn marketing được.`);
+}
+
+function renderCustSegFilter() {
+  $('custSegFilter').innerHTML =
+    '<button class="chip-filter active" data-seg="all">Tất cả</button>' +
+    SEGMENTS.map(s => `<button class="chip-filter" data-seg="${s.id}">${s.icon} ${escapeHtml(s.shortName)}</button>`).join('');
+}
+
+/* ============================================================
+   CALL LOG — mock data
+   ============================================================ */
+const CALLS = [
+  { time: 'Hôm nay 14:32', name: 'Linh Trần',      phone: '(832) 431-8827', status: 'booked',    dur: 184, note: 'Đặt full set gel — Thứ 6 15:00' },
+  { time: 'Hôm nay 13:05', name: 'Số lạ',           phone: '(346) 220-1187', status: 'missed',    dur: 0,   note: 'Gọi 2 lần liên tiếp' },
+  { time: 'Hôm nay 11:48', name: 'Jessica Kim',     phone: '(832) 906-4471', status: 'answered',  dur: 96,  note: 'Hỏi giá dip powder' },
+  { time: 'Hôm nay 10:22', name: 'Số lạ',           phone: '(713) 990-4453', status: 'voicemail', dur: 31,  note: 'Để lại lời nhắn hỏi giờ mở cửa' },
+  { time: 'Hôm nay 09:15', name: 'Mai Nguyễn',      phone: '(713) 552-0194', status: 'booked',    dur: 142, note: 'Đặt pedicure combo — CN 11:00' },
+  { time: 'Hôm qua 18:47', name: 'Số lạ',           phone: '(832) 605-7731', status: 'missed',    dur: 0,   note: 'Sau giờ đóng cửa' },
+  { time: 'Hôm qua 16:30', name: 'Ashley Brown',    phone: '(832) 118-9902', status: 'answered',  dur: 205, note: 'Hỏi về nail art design' },
+  { time: 'Hôm qua 15:12', name: 'Số lạ',           phone: '(281) 344-2209', status: 'missed',    dur: 0,   note: 'Giờ cao điểm — tiệm full' },
+  { time: 'Hôm qua 12:58', name: 'Ngọc Vũ',         phone: '(832) 543-1120', status: 'booked',    dur: 118, note: 'Đặt 2 slot cùng bạn — Thứ 7' },
+  { time: 'Hôm qua 10:03', name: 'Maria Gonzalez',  phone: '(832) 340-2276', status: 'answered',  dur: 87,  note: 'Dời lịch từ Thứ 4 sang Thứ 5' }
+];
+
+let callFilter = 'all';
+
+function formatDur(sec) {
+  if (!sec) return '—';
+  return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+}
+
+const CALL_STATUS_META = {
+  answered:  { cls: 'call-answered',  label: '✅ Đã nghe' },
+  missed:    { cls: 'call-missed',    label: '❌ Nhỡ' },
+  booked:    { cls: 'call-booked',    label: '📅 Đặt lịch' },
+  voicemail: { cls: 'call-voicemail', label: '📩 Voicemail' }
+};
+
+function renderCallStats() {
+  const today = CALLS.filter(c => c.time.startsWith('Hôm nay'));
+  const missed = today.filter(c => c.status === 'missed').length;
+  const booked = today.filter(c => c.status === 'booked').length;
+  const answeredRate = today.length ? Math.round((today.length - missed) / today.length * 100) : 0;
+
+  $('callStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Cuộc gọi hôm nay</div>
+      <div class="stat-value" style="color:var(--cyan)">${today.length}</div>
+      <div class="stat-change">tính đến hiện tại</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Gọi nhỡ</div>
+      <div class="stat-value" style="color:var(--red)">${missed}</div>
+      <div class="stat-change" style="color:var(--pink)">cần follow-up SMS</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Đặt lịch qua điện thoại</div>
+      <div class="stat-value" style="color:var(--green)">${booked}</div>
+      <div class="stat-change">↑ booking hôm nay</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Tỷ lệ trả lời</div>
+      <div class="stat-value" style="color:var(--purple-light)">${answeredRate}%</div>
+      <div class="stat-change">${answeredRate >= 80 ? '↑ tốt' : '⚠️ cần cải thiện'}</div>
+    </div>`;
+}
+
+function renderCalls() {
+  const rows = CALLS.filter(c => callFilter === 'all' || c.status === callFilter);
+  $('callCount').textContent = `${rows.length}/${CALLS.length} cuộc gọi`;
+
+  if (!rows.length) {
+    $('callTableBody').innerHTML = '<tr><td colspan="7" class="empty-row">Không có cuộc gọi nào</td></tr>';
+    return;
+  }
+
+  $('callTableBody').innerHTML = rows.map(c => {
+    const meta = CALL_STATUS_META[c.status];
+    const action = c.status === 'missed'
+      ? `<button class="row-action warn" data-phone="${c.phone}">💬 Follow-up</button>`
+      : '';
+    return `
+      <tr>
+        <td>${escapeHtml(c.time)}</td>
+        <td>${escapeHtml(c.name)}</td>
+        <td>${c.phone}</td>
+        <td><span class="call-status ${meta.cls}">${meta.label}</span></td>
+        <td class="num">${formatDur(c.dur)}</td>
+        <td>${escapeHtml(c.note)}</td>
+        <td>${action}</td>
+      </tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   BOOKING — lịch hẹn + pipeline SMS xác nhận/nhắc
+   ============================================================ */
+const BOOK_SRC = {
+  call:   { icon: '📞', label: 'AI voice',  title: 'Khách gọi vào — AI đặt lịch trong cuộc gọi' },
+  qr:     { icon: '🔳', label: 'QR',        title: 'Khách tự đặt trên trang scan QR sau khi nhận code' },
+  lp:     { icon: '🌐', label: 'Landing',   title: 'Khách bấm nút đặt lịch trên landing page' },
+  walkin: { icon: '🚶', label: 'Tại tiệm',  title: 'Nhân viên tạo tay khi khách đặt trực tiếp' }
+};
+
+const BOOK_STATUS = {
+  pending:   { cls: 'call-voicemail', label: '⏳ Chờ xác nhận' },
+  confirmed: { cls: 'call-booked',    label: '✅ Đã xác nhận' },
+  done:      { cls: 'call-answered',  label: '💅 Đã đến' },
+  noshow:    { cls: 'call-missed',    label: '🚫 No-show' }
+};
+
+const BOOKINGS = [
+  { id: 'b1', time: 'Hôm nay 15:00',  name: 'Linh Trần',     phone: '(832) 431-8827', service: 'Full set gel',      src: 'call',   status: 'confirmed', reminded: true },
+  { id: 'b2', time: 'Hôm nay 16:30',  name: 'Kelly Trương',  phone: '(832) 615-0442', service: 'Combo mani + pedi', src: 'qr',     status: 'pending',   reminded: false },
+  { id: 'b3', time: 'Hôm nay 17:00',  name: 'Ashley Brown',  phone: '(832) 118-9902', service: 'Nail art design',   src: 'lp',     status: 'confirmed', reminded: false },
+  { id: 'b4', time: 'Ngày mai 10:00', name: 'Mai Nguyễn',    phone: '(713) 552-0194', service: 'Pedicure combo',    src: 'call',   status: 'confirmed', reminded: false },
+  { id: 'b5', time: 'Ngày mai 11:30', name: 'Hằng Phạm',     phone: '(281) 774-3358', service: 'Dip powder',        src: 'qr',     status: 'pending',   reminded: false },
+  { id: 'b6', time: 'Ngày mai 14:00', name: 'Sarah Johnson', phone: '(713) 225-7809', service: 'Gel manicure',      src: 'walkin', status: 'confirmed', reminded: false },
+  { id: 'b7', time: 'Thứ 7 09:30',   name: 'Ngọc Vũ',       phone: '(832) 543-1120', service: '2 slot cùng bạn',   src: 'call',   status: 'confirmed', reminded: false },
+  { id: 'b8', time: 'Hôm qua 15:00', name: 'Vy Lâm',        phone: '(346) 887-2210', service: 'Gel-X full set',    src: 'qr',     status: 'noshow',    reminded: true },
+  { id: 'b9', time: 'Hôm qua 11:00', name: 'Maria Gonzalez', phone: '(832) 340-2276', service: 'Pedicure deluxe',   src: 'lp',     status: 'done',      reminded: true }
+];
+
+let bookFilter = 'all';
+
+function renderBookStats() {
+  const today = BOOKINGS.filter(b => b.time.startsWith('Hôm nay')).length;
+  const pending = BOOKINGS.filter(b => b.status === 'pending').length;
+  const noshow = BOOKINGS.filter(b => b.status === 'noshow').length;
+  const fromAuto = BOOKINGS.filter(b => b.src !== 'walkin').length;
+  const autoRate = Math.round(fromAuto / BOOKINGS.length * 100);
+
+  $('bookStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Lịch hẹn hôm nay</div>
+      <div class="stat-value" style="color:var(--cyan)">${today}</div>
+      <div class="stat-change">đã gửi SMS xác nhận</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Chờ xác nhận</div>
+      <div class="stat-value" style="color:var(--orange)">${pending}</div>
+      <div class="stat-change" style="color:var(--orange)">bấm ✔ để gửi SMS xác nhận</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Đặt tự động (không cần nhân viên)</div>
+      <div class="stat-value" style="color:var(--green)">${autoRate}%</div>
+      <div class="stat-change">AI voice + QR + landing page</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">No-show tuần này</div>
+      <div class="stat-value" style="color:var(--red)">${noshow}</div>
+      <div class="stat-change">nhắc 24h + 2h giúp giảm no-show</div>
+    </div>`;
+}
+
+function renderBookings() {
+  const rows = BOOKINGS.filter(b => bookFilter === 'all' || b.status === bookFilter);
+  $('bookCount').textContent = `${rows.length}/${BOOKINGS.length} lịch hẹn`;
+
+  if (!rows.length) {
+    $('bookTableBody').innerHTML = '<tr><td colspan="8" class="empty-row">Không có lịch hẹn nào</td></tr>';
+    return;
+  }
+
+  $('bookTableBody').innerHTML = rows.map(b => {
+    const src = BOOK_SRC[b.src];
+    const st = BOOK_STATUS[b.status];
+    const sms = b.status === 'pending' ? '—'
+      : b.status === 'noshow' ? '📩 xác nhận' + (b.reminded ? ' + 🔔 nhắc' : '')
+      : '📩 xác nhận' + (b.reminded ? ' + 🔔 đã nhắc' : ' · 🔔 chờ nhắc 24h');
+    let actions = '';
+    if (b.status === 'pending') actions = `<button class="row-action" data-act="confirm" data-id="${b.id}">✔ Xác nhận</button>`;
+    else if (b.status === 'confirmed') actions = `${b.reminded ? '' : `<button class="row-action" data-act="remind" data-id="${b.id}">🔔 Nhắc ngay</button>`}<button class="row-action warn" data-act="noshow" data-id="${b.id}">🚫</button>`;
+    else if (b.status === 'noshow') actions = `<button class="row-action warn" data-act="winback" data-id="${b.id}">💬 Win-back</button>`;
+    return `
+      <tr>
+        <td>${escapeHtml(b.time)}</td>
+        <td>${escapeHtml(b.name)}</td>
+        <td>${b.phone}</td>
+        <td>${escapeHtml(b.service)}</td>
+        <td><span class="mini-badge" title="${src.title}">${src.icon} ${src.label}</span></td>
+        <td><span class="call-status ${st.cls}">${st.label}</span></td>
+        <td style="font-size:11px;color:var(--text-dim);white-space:nowrap;">${sms}</td>
+        <td style="white-space:nowrap;">${actions}</td>
+      </tr>`;
+  }).join('');
+}
+
+function bookAction(act, id) {
+  const b = BOOKINGS.find(x => x.id === id);
+  if (!b) return;
+  if (act === 'confirm') {
+    b.status = 'confirmed';
+    alert(`📩 SMS xác nhận đã gửi tới ${b.phone}:\n\n"Bitcoin Nail Bar: Lịch hẹn ${b.service} — ${b.time} đã được xác nhận. Cần đổi giờ? Gọi 832-786-5576. Reply STOP để hủy nhận tin."`);
+  } else if (act === 'remind') {
+    b.reminded = true;
+    alert(`🔔 SMS nhắc hẹn đã gửi tới ${b.phone}:\n\n"Bitcoin Nail Bar nhắc bạn: hẹn ${b.service} — ${b.time}. Hẹn gặp bạn! 💅"`);
+  } else if (act === 'noshow') {
+    if (!confirm(`Đánh dấu ${b.name} no-show?`)) return;
+    b.status = 'noshow';
+  } else if (act === 'winback') {
+    alert(`⚖️ SMS win-back là tin MARKETING — hệ thống tự kiểm tra:\n\n✅ ${b.name} đã opt-in → mở composer với tin soạn sẵn:\n"Tiếc quá, hẹn hôm trước lỡ mất 😢 ${b.name} ơi, đặt lại tuần này Bitcoin Nail Bar giảm 15% giữ chỗ cho bạn nha!"\n\n(Khách chưa opt-in sẽ bị chặn tự động)`);
+    return;
+  }
+  renderBookStats();
+  renderBookings();
+}
+
+/* ============================================================
+   QR CODES — chương trình khuyến mãi + form thu leads
+   ============================================================ */
+const QR_PROMOS = [
+  { id: 'promo20',  label: '💅 Giảm 20% toàn bộ dịch vụ',        codePrefix: 'NAIL20' },
+  { id: 'freeart',  label: '🎨 Free nail art khi làm full set',   codePrefix: 'FREEART' },
+  { id: 'combo25',  label: '✨ Combo mani + pedi giảm 25%',       codePrefix: 'COMBO25' },
+  { id: 'refer10',  label: '👯 Giới thiệu bạn — cả 2 giảm $10',   codePrefix: 'REF10' },
+  { id: 'gel15',    label: '💎 Gel-X giảm 15% lần đầu',           codePrefix: 'GELX15' }
+];
+
+const QR_LEADS = [
+  { time: 'Hôm nay 15:20', name: 'Hằng Phạm',    phone: '(281) 774-3358', code: 'NAIL20-8Q2F', status: 'Đã dùng code' },
+  { time: 'Hôm nay 12:41', name: 'Kelly Trương', phone: '(832) 615-0442', code: 'NAIL20-3XKD', status: 'Đã gửi SMS' },
+  { time: 'Hôm qua 17:05', name: 'Sarah Johnson', phone: '(713) 225-7809', code: 'NAIL20-9BM1', status: 'Đã dùng code' },
+  { time: 'Hôm qua 13:30', name: 'Vy Lâm',       phone: '(346) 887-2210', code: 'NAIL20-Kk7P', status: 'Đã gửi SMS' }
+];
+
+const qrState = { promo: QR_PROMOS[0] };
+let qrInstance = null;
+
+function qrUrl() {
+  const slug = $('qrSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-') || 'qr';
+  return `nexora.ai/btcnailbar/qr/${slug}`;
+}
+
+function renderQrPromoOptions() {
+  $('qrPromo').innerHTML = QR_PROMOS.map(p => `<option value="${p.id}">${p.label}</option>`).join('');
+}
+
+function renderQrCode() {
+  const box = $('qrCanvas');
+  box.innerHTML = '';
+  if (typeof QRCode === 'undefined') {
+    box.innerHTML = '<div class="qr-fallback">⚠️ Không tải được thư viện QR (cần mạng). Link vẫn hoạt động: ' + escapeHtml(qrUrl()) + '</div>';
+    return;
+  }
+  qrInstance = new QRCode(box, {
+    text: 'https://' + qrUrl(),
+    width: 140,
+    height: 140,
+    colorDark: '#0a0a0f',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+function renderQrLeads() {
+  $('qrLeadsBody').innerHTML = QR_LEADS.map(l => `
+    <tr>
+      <td>${escapeHtml(l.time)}</td>
+      <td>${escapeHtml(l.name)}</td>
+      <td>${l.phone}</td>
+      <td style="font-family:monospace;color:var(--cyan);">${l.code}</td>
+      <td><span class="call-status ${l.status === 'Đã dùng code' ? 'call-booked' : 'call-answered'}">${l.status}</span></td>
+    </tr>
+  `).join('');
+}
+
+/* Verify code tại quầy — chặn xài lại / share code */
+function verifyCode() {
+  const box = $('verifyResult');
+  const raw = $('verifyInput').value.trim().toUpperCase();
+  if (!raw) { box.className = 'verify-result'; return; }
+  const lead = QR_LEADS.find(l => l.code.toUpperCase() === raw);
+  if (!lead) {
+    box.className = 'verify-result show bad';
+    box.innerHTML = `❌ Code <strong style="font-family:monospace;">${escapeHtml(raw)}</strong> không tồn tại. Kiểm tra lại chính tả hoặc hỏi khách xem SMS gốc.`;
+    return;
+  }
+  const promo = QR_PROMOS.find(p => lead.code.toUpperCase().startsWith(p.codePrefix)) || qrState.promo;
+  if (lead.status === 'Đã dùng code') {
+    box.className = 'verify-result show used';
+    box.innerHTML = `⚠️ Code này <strong>đã được dùng</strong>${lead.usedAt ? ' lúc ' + escapeHtml(lead.usedAt) : ''} — không áp dụng lại.<br>Khách: <strong>${escapeHtml(lead.name)}</strong> • ${lead.phone}`;
+    return;
+  }
+  box.className = 'verify-result show ok';
+  box.innerHTML = `
+    <div class="verify-name">✅ ${escapeHtml(lead.name)}</div>
+    <div class="verify-meta">${lead.phone} • ${escapeHtml(promo.label)} • Nhận code: ${escapeHtml(lead.time)}</div>
+    <button class="btn-primary" id="markUsedBtn" data-code="${escapeHtml(lead.code)}">✔ Áp dụng & đánh dấu đã dùng</button>`;
+}
+
+function markCodeUsed(code) {
+  const lead = QR_LEADS.find(l => l.code === code);
+  if (!lead) return;
+  lead.status = 'Đã dùng code';
+  lead.usedAt = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' hôm nay';
+  renderQrLeads();
+  const box = $('verifyResult');
+  box.className = 'verify-result show ok';
+  box.innerHTML = `✅ Đã áp dụng khuyến mãi cho <strong>${escapeHtml(lead.name)}</strong>. Code khóa lại — không dùng được lần 2.`;
+  $('verifyInput').value = '';
+}
+
+function buildQrPageHtml(kiosk) {
+  const title = escapeHtml($('qrFormTitle').value);
+  const question = escapeHtml($('qrQuestion').value).replace(/\n/g, '<br>');
+  const promo = qrState.promo;
+  const sampleCode = promo.codePrefix + '-X7K2';
+
+  return `<!DOCTYPE html><html><head>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+      *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+      body{background:linear-gradient(160deg,#7c3aed,#0a0a0f);color:white;min-height:100vh;padding:20px;}
+      .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+      .logo{font-size:11px;letter-spacing:2px;opacity:0.6;}
+      .lang{display:flex;gap:4px;}
+      .lang button{width:auto;background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.2);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;}
+      .lang button.on{background:white;color:#7c3aed;}
+      .card{background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border-radius:20px;padding:22px;border:1px solid rgba(255,255,255,0.15);}
+      h1{font-size:19px;font-weight:800;line-height:1.35;margin-bottom:10px;}
+      .promo{background:rgba(255,255,255,0.14);border-radius:12px;padding:12px;font-size:14px;font-weight:700;margin-bottom:12px;text-align:center;}
+      .cond{font-size:12px;color:rgba(255,255,255,0.75);line-height:1.6;margin-bottom:16px;}
+      label{font-size:11px;letter-spacing:1px;text-transform:uppercase;opacity:0.7;display:block;margin-bottom:6px;}
+      input[type=text],input[type=tel],input[type=date],select{width:100%;padding:15px 14px;border-radius:12px;border:none;font-size:16px;margin-bottom:14px;background:white;color:#111;}
+      .consent{display:flex;gap:10px;align-items:flex-start;font-size:11px;color:rgba(255,255,255,0.8);line-height:1.5;margin-bottom:14px;}
+      .consent input{width:20px;height:20px;flex-shrink:0;margin-top:1px;}
+      button{width:100%;background:white;color:#7c3aed;border:none;padding:17px;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;}
+      button:disabled{opacity:0.5;}
+      .success{display:none;text-align:center;padding:10px 0;}
+      .success .code{font-family:monospace;font-size:26px;font-weight:800;background:rgba(255,255,255,0.15);border-radius:12px;padding:14px;margin:12px 0;letter-spacing:2px;}
+      .footer{text-align:center;font-size:10px;color:rgba(255,255,255,0.4);margin-top:16px;}
+    </style>${kiosk ? `<style>
+      body{padding:40px;max-width:640px;margin:0 auto;}
+      h1{font-size:30px;}
+      .promo{font-size:20px;padding:18px;}
+      .cond{font-size:16px;}
+      label{font-size:14px;}
+      input[type=text],input[type=tel]{font-size:22px;padding:20px;}
+      .consent{font-size:14px;}
+      .consent input{width:26px;height:26px;}
+      button{font-size:22px;padding:22px;}
+      .success .code{font-size:40px;}
+      .footer{font-size:13px;}
+    </style>` : ''}</head><body>
+    <div class="top">
+      <div class="logo">BITCOIN NAIL BAR</div>
+      <div class="lang"><button id="lvi" class="on">VI</button><button id="len">EN</button></div>
+    </div>
+    <div class="card">
+      <h1>${title}</h1>
+      <div class="promo">${escapeHtml(promo.label)}</div>
+      <div class="cond">${question}</div>
+      <div id="frm">
+        <label id="tNm">Tên của bạn</label>
+        <input type="text" id="nm" placeholder="VD: Linh Trần" autocomplete="name">
+        <label id="tPh">Số điện thoại</label>
+        <input type="tel" id="ph" placeholder="(832) 000-0000" inputmode="numeric" autocomplete="tel" maxlength="14">
+        <div class="consent">
+          <input type="checkbox" id="cs">
+          <span id="tCs">Tôi đồng ý nhận tin nhắn từ Bitcoin Nail Bar. Tần suất thay đổi. Reply STOP để hủy, HELP để được hỗ trợ. Có thể tính phí tin nhắn & dữ liệu.</span>
+        </div>
+        <button id="go">📩 Nhận Promotion Code qua SMS</button>
+      </div>
+      <div class="success" id="ok">
+        <div style="font-size:34px;">✅</div>
+        <div style="font-size:14px;font-weight:600;margin-top:6px;" id="tOk">Promotion code đã gửi qua SMS!</div>
+        <div class="code">${sampleCode}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);" id="tShow">Đưa code này cho nhân viên khi thanh toán 💅</div>
+        <button id="bk" style="margin-top:16px;background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);">📅 Đặt lịch giữ chỗ luôn</button>
+        <div id="bkf" style="display:none;text-align:left;margin-top:16px;">
+          <label id="tSv">Dịch vụ</label>
+          <select id="sv">
+            <option>💅 Gel Manicure — $35</option>
+            <option>🦶 Pedicure Deluxe — $45</option>
+            <option>✨ Combo Mani + Pedi — $70</option>
+            <option>💎 Dip Powder — $50</option>
+            <option>🌸 Full Set Gel-X — $65</option>
+          </select>
+          <label id="tDt">Ngày</label>
+          <input type="date" id="dt">
+          <label id="tTm">Giờ</label>
+          <select id="tm">
+            <option value="">— chọn giờ —</option>
+            <option>10:00</option><option>11:00</option><option>12:00</option>
+            <option>13:00</option><option>14:00</option><option>15:00</option>
+            <option>16:00</option><option>17:00</option><option>18:00</option>
+          </select>
+          <button id="bkgo">✅ Xác nhận đặt lịch</button>
+        </div>
+        <div id="bok" style="display:none;margin-top:16px;font-size:14px;font-weight:600;background:rgba(16,185,129,0.25);border-radius:12px;padding:14px;">📅 Đã đặt lịch! SMS xác nhận đã gửi — hẹn gặp bạn 💅</div>
+      </div>
+      <div class="footer">Bitcoin Nail Bar • 832-786-5576<br>Powered by NEXORA TOUCH</div>
+    </div>
+    <scr` + `ipt>
+      var I18N={
+        vi:{nm:'Tên của bạn',ph:'Số điện thoại',cs:'Tôi đồng ý nhận tin nhắn từ Bitcoin Nail Bar. Tần suất thay đổi. Reply STOP để hủy, HELP để được hỗ trợ. Có thể tính phí tin nhắn & dữ liệu.',go:'📩 Nhận Promotion Code qua SMS',ok:'Promotion code đã gửi qua SMS!',show:'Đưa code này cho nhân viên khi thanh toán 💅',pNm:'VD: Linh Trần',e1:'Vui lòng điền tên và số điện thoại.',e2:'Số điện thoại chưa đủ 10 số.',e3:'Vui lòng đồng ý nhận tin nhắn để nhận code.',bk:'📅 Đặt lịch giữ chỗ luôn',sv:'Dịch vụ',dt:'Ngày',tm:'Giờ',bkgo:'✅ Xác nhận đặt lịch',bok:'📅 Đã đặt lịch! SMS xác nhận đã gửi — hẹn gặp bạn 💅',e4:'Vui lòng chọn ngày và giờ.'},
+        en:{nm:'Your name',ph:'Phone number',cs:'I agree to receive text messages from Bitcoin Nail Bar. Message frequency varies. Reply STOP to cancel, HELP for help. Msg & data rates may apply.',go:'📩 Text Me My Promotion Code',ok:'Promotion code sent via SMS!',show:'Show this code to our staff at checkout 💅',pNm:'e.g. Jessica Smith',e1:'Please enter your name and phone number.',e2:'Phone number must be 10 digits.',e3:'Please agree to receive messages to get your code.',bk:'📅 Book an appointment now',sv:'Service',dt:'Date',tm:'Time',bkgo:'✅ Confirm booking',bok:'📅 Booked! Confirmation text sent — see you soon 💅',e4:'Please pick a date and time.'}
+      };
+      var L='vi';
+      var KIOSK=${kiosk};
+      function g(id){return document.getElementById(id);}
+      function setLang(l){
+        L=l; var t=I18N[l];
+        g('tNm').textContent=t.nm; g('tPh').textContent=t.ph; g('tCs').textContent=t.cs;
+        g('go').textContent=t.go; g('tOk').textContent=t.ok; g('tShow').textContent=t.show;
+        g('nm').placeholder=t.pNm;
+        g('bk').textContent=t.bk; g('tSv').textContent=t.sv; g('tDt').textContent=t.dt;
+        g('tTm').textContent=t.tm; g('bkgo').textContent=t.bkgo; g('bok').textContent=t.bok;
+        g('lvi').className=l==='vi'?'on':''; g('len').className=l==='en'?'on':'';
+      }
+      g('lvi').onclick=function(){setLang('vi');};
+      g('len').onclick=function(){setLang('en');};
+      g('ph').addEventListener('input',function(){
+        var d=this.value.replace(/\\D/g,'').slice(0,10);
+        if(d.length>6) this.value='('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6);
+        else if(d.length>3) this.value='('+d.slice(0,3)+') '+d.slice(3);
+        else this.value=d;
+      });
+      g('go').onclick=function(){
+        var t=I18N[L];
+        var nm=g('nm').value.trim();
+        var d=g('ph').value.replace(/\\D/g,'');
+        if(!nm||!d){alert(t.e1);return;}
+        if(d.length<10){alert(t.e2);return;}
+        if(!g('cs').checked){alert(t.e3);return;}
+        g('frm').style.display='none';
+        g('ok').style.display='block';
+        if(KIOSK){ T=setTimeout(reset,8000); }
+      };
+      var T=null;
+      function reset(){
+        g('ok').style.display='none'; g('frm').style.display='block';
+        g('nm').value=''; g('ph').value=''; g('cs').checked=false;
+        g('bk').style.display=''; g('bkf').style.display='none'; g('bok').style.display='none';
+        g('dt').value=''; g('tm').selectedIndex=0; g('sv').selectedIndex=0;
+      }
+      g('bk').onclick=function(){
+        if(T){clearTimeout(T);T=null;}
+        this.style.display='none';
+        g('bkf').style.display='block';
+      };
+      g('bkgo').onclick=function(){
+        var t=I18N[L];
+        if(!g('dt').value||!g('tm').value){alert(t.e4);return;}
+        g('bkf').style.display='none';
+        g('bok').style.display='block';
+        if(KIOSK){ T=setTimeout(reset,8000); }
+      };
+    </scr` + `ipt>
+    </body></html>`;
+}
+
+function updateQrPreview() {
+  const url = qrUrl();
+  $('qrLinkPreview').textContent = url;
+  $('qrPreviewUrl').textContent = url;
+  $('qrIframe').srcdoc = buildQrPageHtml(false);
+}
+
+function openKiosk() {
+  $('kioskIframe').srcdoc = buildQrPageHtml(true);
+  $('kioskOverlay').classList.add('open');
+}
+
+function printPoster() {
+  const img = $('qrCanvas').querySelector('img') || $('qrCanvas').querySelector('canvas');
+  if (!img) { alert('QR chưa render — kiểm tra kết nối mạng.'); return; }
+  const qrData = img.tagName === 'CANVAS' ? img.toDataURL('image/png') : img.src;
+  const promo = qrState.promo;
+  const posterHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    @page{size:A4;margin:0;}
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter','Helvetica Neue',Arial,sans-serif;}
+    body{width:210mm;min-height:297mm;padding:22mm 18mm;background:white;color:#111;text-align:center;}
+    .brand{font-size:13px;letter-spacing:4px;color:#7c3aed;font-weight:800;margin-bottom:10mm;}
+    h1{font-size:34px;font-weight:900;line-height:1.25;margin-bottom:8mm;}
+    .promo{display:inline-block;border:3px solid #7c3aed;color:#7c3aed;border-radius:16px;padding:14px 26px;font-size:24px;font-weight:800;margin-bottom:10mm;}
+    .qr{margin-bottom:10mm;}
+    .qr img{width:320px;height:320px;border:1px solid #ddd;border-radius:12px;padding:12px;}
+    .steps{display:inline-block;text-align:left;font-size:17px;line-height:2.1;margin-bottom:8mm;}
+    .steps b{display:inline-block;width:26px;height:26px;line-height:26px;text-align:center;background:#7c3aed;color:white;border-radius:50%;margin-right:10px;font-size:14px;}
+    .en{font-size:14px;color:#666;margin-bottom:10mm;}
+    .footer{font-size:13px;color:#888;border-top:1px solid #eee;padding-top:6mm;}
+  </style></head><body>
+    <div class="brand">BITCOIN NAIL BAR</div>
+    <h1>📱 Scan — Nhận Ưu Đãi Ngay!</h1>
+    <div class="promo">${escapeHtml(promo.label)}</div>
+    <div class="qr"><img src="${qrData}" alt="QR"></div>
+    <div class="steps">
+      <div><b>1</b> Mở camera điện thoại, quét mã QR</div>
+      <div><b>2</b> Điền tên + số điện thoại</div>
+      <div><b>3</b> Nhận promotion code qua SMS — đưa nhân viên khi thanh toán</div>
+    </div>
+    <div class="en">Scan the QR code with your phone camera to get your discount code by text.</div>
+    <div class="footer">Bitcoin Nail Bar • 832-786-5576 • ${qrUrl()}</div>
+  </body></html>`;
+  const pf = document.createElement('iframe');
+  pf.style.cssText = 'position:fixed;width:0;height:0;border:none;';
+  document.body.appendChild(pf);
+  pf.onload = () => { pf.contentWindow.focus(); pf.contentWindow.print(); setTimeout(() => pf.remove(), 2000); };
+  pf.srcdoc = posterHtml;
+}
+
+function refreshQr() {
+  updateQrPreview();
+  renderQrCode();
+}
+
+/* ============================================================
+   EVENT WIRING — không dùng inline onclick
+   ============================================================ */
+// Import khách
+$('importBtn').addEventListener('click', () => {
+  importState.step = 1;
+  importState.headers = []; importState.rows = []; importState.preview = [];
+  renderImportStep();
+  $('importModal').classList.add('open');
+});
+$('closeImportBtn').addEventListener('click', () => $('importModal').classList.remove('open'));
+$('importModal').addEventListener('click', e => { if (e.target === $('importModal')) $('importModal').classList.remove('open'); });
+$('importBody').addEventListener('click', e => {
+  if (e.target.closest('#importDrop')) $('importFile').click();
+  if (e.target.closest('#importSampleBtn')) importLoadCsv(IMPORT_SAMPLE);
+});
+$('importBody').addEventListener('change', e => {
+  if (e.target.id === 'importFile' && e.target.files[0]) {
+    const reader = new FileReader();
+    reader.onload = ev => importLoadCsv(ev.target.result);
+    reader.readAsText(e.target.files[0]);
+  }
+  const sel = e.target.closest('select[data-map]');
+  if (sel) importState.map[sel.dataset.map] = sel.value;
+});
+$('importFooter').addEventListener('click', e => {
+  if (e.target.closest('#importBackBtn')) { importState.step--; renderImportStep(); }
+  if (e.target.closest('#importNextBtn')) {
+    if (importState.map.phone === '') { alert('Phải chọn cột Số điện thoại — không có phone thì không gửi SMS được.'); return; }
+    buildImportPreview();
+    importState.step = 3;
+    renderImportStep();
+  }
+  if (e.target.closest('#importDoBtn')) doImport();
+});
+
+// Hướng dẫn QR — ẩn/hiện
+$('qrGuideBtn').addEventListener('click', () => {
+  const g = $('qrGuide');
+  const hidden = g.style.display === 'none';
+  g.style.display = hidden ? '' : 'none';
+  $('qrGuideBtn').textContent = hidden ? '📖 Ẩn hướng dẫn' : '📖 Hướng dẫn';
+});
+
+// Verify code
+$('verifyBtn').addEventListener('click', verifyCode);
+$('verifyInput').addEventListener('keydown', e => { if (e.key === 'Enter') verifyCode(); });
+$('verifyResult').addEventListener('click', e => {
+  const btn = e.target.closest('#markUsedBtn');
+  if (btn) markCodeUsed(btn.dataset.code);
+});
+
+// QR builder
+['qrName', 'qrFormTitle', 'qrQuestion'].forEach(id => $(id).addEventListener('input', updateQrPreview));
+$('qrSlug').addEventListener('input', refreshQr);
+$('qrPromo').addEventListener('change', e => {
+  qrState.promo = QR_PROMOS.find(p => p.id === e.target.value) || QR_PROMOS[0];
+  updateQrPreview();
+});
+$('qrDownloadBtn').addEventListener('click', () => {
+  const img = $('qrCanvas').querySelector('img') || $('qrCanvas').querySelector('canvas');
+  if (!img) { alert('QR chưa render — kiểm tra kết nối mạng.'); return; }
+  const dataUrl = img.tagName === 'CANVAS' ? img.toDataURL('image/png') : img.src;
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = 'qr-' + ($('qrSlug').value.trim() || 'nexora') + '.png';
+  a.click();
+});
+$('qrPrintBtn').addEventListener('click', printPoster);
+$('kioskBtn').addEventListener('click', openKiosk);
+$('kioskExit').addEventListener('click', () => $('kioskOverlay').classList.remove('open'));
+$('publishQrBtn').addEventListener('click', () => {
+  alert('🚀 QR đã publish!\n\n' + $('qrName').value + '\nKhuyến mãi: ' + qrState.promo.label + '\nLink: https://' + qrUrl() + '\n\nTải PNG và in đặt tại quầy. Leads sẽ đổ về tab Customers.');
+});
+
+// Nav
+$('mainNav').addEventListener('click', e => {
+  const btn = e.target.closest('.nav-item[data-view]');
+  if (btn && !btn.disabled) showView(btn.dataset.view);
+});
+
+// Campaign cards (delegation — cards render từ data)
+$('campaignGrid').addEventListener('click', e => {
+  const card = e.target.closest('.campaign-card');
+  if (card) openComposer(card.dataset.segment);
+});
+
+// Composer
+$('newCampaignBtn').addEventListener('click', () => openComposer('new'));
+$('dashNewCampaignBtn').addEventListener('click', () => { showView('sms'); openComposer('new'); });
+$('closeComposerBtn').addEventListener('click', closeComposer);
+$('cancelComposerBtn').addEventListener('click', closeComposer);
+$('composerModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeComposer(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeComposer(); });
+
+// Segments trong modal
+$('segmentGrid').addEventListener('click', e => {
+  const btn = e.target.closest('.segment-btn');
+  if (!btn) return;
+  const seg = SEGMENTS.find(s => s.id === btn.dataset.segment);
+  if (!seg) return;
+  state.segment = seg;
+  document.querySelectorAll('.segment-btn').forEach(b => b.classList.toggle('selected', b === btn));
+  renderTemplates(seg.id);
+  updateCost();
+});
+
+// Templates — dùng index thay vì nhét chuỗi vào onclick
+$('templateList').addEventListener('click', e => {
+  const item = e.target.closest('.template-item');
+  if (!item) return;
+  const tmpl = (TEMPLATES[state.segment.id] || [])[Number(item.dataset.index)];
+  if (!tmpl) return;
+  $('smsText').value = tmpl.text;
+  updateCharCount();
+});
+
+// Tag buttons
+$('tagToolbar').addEventListener('click', e => {
+  const btn = e.target.closest('.tag-btn');
+  if (!btn) return;
+  const ta = $('smsText');
+  const tag = btn.dataset.tag;
+  const s = ta.selectionStart, en = ta.selectionEnd;
+  ta.value = ta.value.slice(0, s) + tag + ta.value.slice(en);
+  ta.selectionStart = ta.selectionEnd = s + tag.length;
+  ta.focus();
+  updateCharCount();
+});
+
+$('smsText').addEventListener('input', updateCharCount);
+
+// Schedule
+$('scheduleOptions').addEventListener('click', e => {
+  const btn = e.target.closest('.schedule-opt');
+  if (!btn) return;
+  state.scheduleMode = btn.dataset.mode;
+  document.querySelectorAll('.schedule-opt').forEach(b => b.classList.toggle('selected', b === btn));
+  $('timeInputRow').style.display = state.scheduleMode === 'schedule' ? 'grid' : 'none';
+});
+
+$('sendCampaignBtn').addEventListener('click', sendCampaign);
+$('createLpBtn').addEventListener('click', () => { showView('landingpage'); closeComposer(); });
+
+// Customers: search + segment filter + gửi SMS từng khách
+$('custSearch').addEventListener('input', e => {
+  custFilter.search = e.target.value.trim();
+  renderCustomers();
+});
+$('custSegFilter').addEventListener('click', e => {
+  const chip = e.target.closest('.chip-filter');
+  if (!chip) return;
+  custFilter.seg = chip.dataset.seg;
+  document.querySelectorAll('#custSegFilter .chip-filter').forEach(c => c.classList.toggle('active', c === chip));
+  renderCustomers();
+});
+$('custTableBody').addEventListener('click', e => {
+  const btn = e.target.closest('.row-action');
+  if (btn) openComposer(btn.dataset.seg);
+});
+
+// Call log: filter trạng thái + follow-up cuộc gọi nhỡ
+// Kết nối POS
+$('view-pos').addEventListener('click', e => {
+  if (e.target.closest('#posImportBtn')) {
+    showView('customers');
+    $('importBtn').click();
+    return;
+  }
+  const cp = e.target.closest('#posCopyBtn');
+  if (cp) {
+    try { navigator.clipboard.writeText('import-btcnailbar@nexora.ai'); } catch (_) {}
+    cp.textContent = '✓ Đã copy';
+    setTimeout(() => { cp.textContent = '📋 Copy'; }, 2000);
+    return;
+  }
+  const cn = e.target.closest('button[data-pos]');
+  if (cn) {
+    cn.textContent = '✅ Đã kết nối (demo)';
+    cn.disabled = true;
+  }
+});
+
+// Booking
+$('bookStatusFilter').addEventListener('click', e => {
+  const chip = e.target.closest('.chip-filter');
+  if (!chip) return;
+  bookFilter = chip.dataset.status;
+  document.querySelectorAll('#bookStatusFilter .chip-filter').forEach(c => c.classList.toggle('active', c === chip));
+  renderBookings();
+});
+$('bookTableBody').addEventListener('click', e => {
+  const btn = e.target.closest('.row-action[data-act]');
+  if (btn) bookAction(btn.dataset.act, btn.dataset.id);
+});
+
+$('callStatusFilter').addEventListener('click', e => {
+  const chip = e.target.closest('.chip-filter');
+  if (!chip) return;
+  callFilter = chip.dataset.status;
+  document.querySelectorAll('#callStatusFilter .chip-filter').forEach(c => c.classList.toggle('active', c === chip));
+  renderCalls();
+});
+$('callTableBody').addEventListener('click', e => {
+  const btn = e.target.closest('.row-action');
+  if (!btn) return;
+  // Follow-up cuộc gọi nhỡ: mở composer nhóm Khách Mới với tin soạn sẵn
+  openComposer('new');
+  $('smsText').value = 'Xin chào! {TenTiem} thấy bạn vừa gọi nhưng tiệm đang bận. Gọi lại cho bạn được không, hoặc đặt lịch nhanh tại: {Link}';
+  updateCharCount();
+});
+
+// Buy credits
+$('buyCreditsBtn').addEventListener('click', () => {
+  alert('💳 Mua SMS Credits\n\n500 SMS — $25\n1,500 SMS — $60\n3,000 SMS — $99\n6,000 SMS — $175\n\n(Tính năng thanh toán sẽ tích hợp Stripe)');
+});
+
+// Landing page builder
+$('lpTplGrid').addEventListener('click', e => {
+  const card = e.target.closest('.lp-tpl-card');
+  if (card) applyLpTemplate(card.dataset.tpl);
+});
+['lpHeadline', 'lpSub', 'lpOffer'].forEach(id => $(id).addEventListener('input', updateLpPreview));
+$('lpSlug').addEventListener('input', updateSlug);
+$('previewLpBtn').addEventListener('click', updateLpPreview);
+$('publishLpBtn').addEventListener('click', publishLpPage);
+$('lpNewBtn').addEventListener('click', newLpPage);
+$('lpPagesList').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+  const id = Number(btn.dataset.id);
+  if (btn.dataset.action === 'edit') loadLpPage(id);
+  if (btn.dataset.action === 'copy') {
+    const src = LP_PAGES.find(p => p.id === id);
+    if (!src) return;
+    const copy = { ...src, features: { ...src.features }, id: lpNextId++, slug: src.slug + '-2', status: 'draft', clicks: 0 };
+    LP_PAGES.push(copy);
+    loadLpPage(copy.id);
+  }
+  if (btn.dataset.action === 'del') {
+    const src = LP_PAGES.find(p => p.id === id);
+    if (!src) return;
+    if (!confirm('Xóa chương trình "' + src.headline + '"?' + (src.status === 'published' ? '\n\n⚠️ Trang đang LIVE — link trong SMS đã gửi sẽ chết!' : ''))) return;
+    LP_PAGES.splice(LP_PAGES.indexOf(src), 1);
+    if (lpEditingId === id) lpEditingId = null;
+    renderLpPages();
+  }
+});
+
+$('colorRow').addEventListener('click', e => {
+  const chip = e.target.closest('.color-chip');
+  if (!chip) return;
+  state.lpColor = chip.dataset.color;
+  document.querySelectorAll('.color-chip').forEach(c => c.classList.toggle('selected', c === chip));
+  updateLpPreview();
+});
+
+$('featureToggles').addEventListener('click', e => {
+  const row = e.target.closest('.offer-toggle');
+  if (!row) return;
+  const key = row.dataset.feature;
+  state.features[key] = !state.features[key];
+  row.querySelector('.toggle').classList.toggle('on', state.features[key]);
+  updateLpPreview();
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+// Ngày hẹn giờ tối thiểu là hôm nay
+$('schedDate').min = new Date().toISOString().slice(0, 10);
+
+renderCampaignCards();
+renderSegmentButtons();
+renderTemplates('new');
+renderDashboard();
+renderCustSegFilter();
+renderCustomers();
+renderCallStats();
+renderCalls();
+renderBookStats();
+renderBookings();
+renderQrPromoOptions();
+renderQrLeads();
+refreshQr();
+updateCost();
+renderLpTemplates();
+renderLpPages();
+updateLpPreview();
+</script>
+</body>
+</html>

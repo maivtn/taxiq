@@ -58,7 +58,9 @@
     }
 
     button,
-    input {
+    input,
+    textarea,
+    select {
       font: inherit;
     }
 
@@ -2129,7 +2131,7 @@
       grid-template-columns: 90px minmax(0, 1fr) auto minmax(0, 1fr);
       gap: 10px;
       background: #fff;
-      padding: 12px;
+      padding: 7px 12px;
     }
 
     .settings-hour-row.is-closed {
@@ -2177,7 +2179,7 @@
 
     .settings-hour-input {
       width: 100%;
-      min-height: 40px;
+      min-height: 34px;
       border: 1px solid var(--nexora-border);
       border-radius: 10px;
       background: #fff;
@@ -2886,6 +2888,37 @@
       font-weight: 500;
       line-height: 1.45;
       margin-top: 8px;
+    }
+
+    .settings-promo-suggest-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .settings-promo-suggest {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px dashed rgba(70, 72, 216, 0.42);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--nexora-brand) 6%, white);
+      padding: 7px 13px;
+      color: var(--nexora-brand);
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .settings-promo-suggest:hover {
+      border-style: solid;
+      background: color-mix(in srgb, var(--nexora-brand) 12%, white);
+    }
+
+    .settings-promo-suggest .bi {
+      font-size: 12px;
     }
 
     .settings-save-bar {
@@ -7152,8 +7185,16 @@
                         <span class="settings-label">Câu chào</span>
                         <textarea class="settings-textarea" data-settings-greeting>Xin chào! Cảm ơn bạn đã gọi Bitcoin Nail Bar. Tôi là trợ lý AI, tôi có thể giúp bạn đặt lịch, xem giá, hoặc trả lời câu hỏi. Bạn cần gì hôm nay ạ?</textarea>
                       </label>
+                      <label class="settings-field" style="grid-column: 1 / -1;">
+                        <span class="settings-label">Thông tin khuyến mãi</span>
+                        <textarea class="settings-textarea" data-settings-promo style="min-height: 220px;" placeholder="VD:&#10;Promotion 1: Reward Yourself&#10;Offer: Free $25 e-gift card.&#10;Eligibility: Book any pedicure service of $55 or more.&#10;Availability: Monday–Saturday, by appointment only.&#10;Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.&#10;General rule: The salon may modify or end any promotion at any time."></textarea>
+                        <div class="settings-language-status">AI Voice sẽ đọc ưu đãi này khi khách hỏi có chương trình khuyến mãi. Chạm chip gợi ý để điền mẫu rồi sửa lại theo tiệm.</div>
+                        <div class="settings-promo-suggest-row">
+                          <button class="settings-promo-suggest" type="button" data-promo-fill="reward-yourself"><i class="bi bi-stars" aria-hidden="true"></i>Gợi ý: Reward Yourself</button>
+                        </div>
+                      </label>
                     </div>
-                    <button class="booking-secondary-button" type="button" data-settings-action="preview" style="margin-top: 10px;">🔊 Nghe Thử</button>
+                    <button class="booking-secondary-button" type="button" data-settings-action="preview" style="margin-top: 10px; display: none;">🔊 Nghe Thử</button>
                   </article>
 
                 </div>
@@ -7200,7 +7241,7 @@
 
               <div class="trial-field">
                 <label class="trial-label" for="trial-owner">Tên chủ tiệm <span>*</span></label>
-                <input class="trial-input" id="trial-owner" data-trial-owner type="text" value="Brian Nguyen" placeholder="Brian Nguyen">
+                <input class="trial-input" id="trial-owner" data-trial-owner type="text" value="Ashley Carter" placeholder="Ashley Carter">
               </div>
 
               <div class="trial-field">
@@ -7213,7 +7254,7 @@
 
               <div class="trial-field trial-span-2">
                 <label class="trial-label" for="trial-email">Email <span>*</span></label>
-                <input class="trial-input" id="trial-email" data-trial-email type="email" value="chi.mai@gmail.com" placeholder="chi.mai@gmail.com">
+                <input class="trial-input" id="trial-email" data-trial-email type="email" value="ashley.carter@gmail.com" placeholder="ashley.carter@gmail.com">
                 <div class="trial-note"><i class="bi bi-envelope" aria-hidden="true"></i> Nhận link kích hoạt + báo cáo hằng tháng qua email này</div>
               </div>
 
@@ -7283,7 +7324,7 @@
 
               <div class="trial-field trial-span-2">
                 <label class="trial-label" for="trial-ref">Mã giới thiệu <span class="trial-optional">(không bắt buộc)</span></label>
-                <input class="trial-input" id="trial-ref" data-trial-ref type="text" placeholder="VD: BRIAN90" style="text-transform: uppercase;">
+                <input class="trial-input" id="trial-ref" data-trial-ref type="text" placeholder="VD: ASHLEY90" style="text-transform: uppercase;">
                 <div class="trial-credit"><i class="bi bi-gift" aria-hidden="true"></i> Có mã = +200 credits khi kích hoạt</div>
               </div>
             </div>
@@ -8214,6 +8255,30 @@
       }
     }
 
+    var PROMO_TEMPLATES = {
+      'reward-yourself': {
+        label: 'Promotion 1: Reward Yourself',
+        text: [
+          'Promotion 1: Reward Yourself',
+          'Offer: Free $25 e-gift card.',
+          'Eligibility: Book any pedicure service of $55 or more.',
+          'Availability: Monday–Saturday, by appointment only.',
+          'Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.',
+          'General rule: The salon may modify or end any promotion at any time.'
+        ].join('\n')
+      }
+    };
+
+    function fillPromoTemplate(key) {
+      var template = PROMO_TEMPLATES[key];
+      var textarea = document.querySelector('[data-settings-promo]');
+      if (!template || !textarea) return;
+
+      textarea.value = template.text;
+      textarea.focus();
+      setSettingsStatus('Đã điền mẫu khuyến mãi: ' + template.label + '. Chị chỉnh lại theo tiệm rồi bấm Lưu.');
+    }
+
     function addSettingsServiceRow(name, price, duration) {
       var list = document.querySelector('.settings-service-list');
       if (!list) return;
@@ -8620,6 +8685,12 @@
       var techModal = document.querySelector('[data-tech-modal]');
       if (techModal && !techModal.hidden && !event.target.closest('[data-tech-combobox]')) {
         setTechSelectOpen(false);
+      }
+
+      var promoFill = event.target.closest('[data-promo-fill]');
+      if (promoFill) {
+        fillPromoTemplate(promoFill.dataset.promoFill);
+        return;
       }
 
       var settingsAction = event.target.closest('[data-settings-action]');
