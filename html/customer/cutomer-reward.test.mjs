@@ -47,3 +47,14 @@ test('provides mobile bottom navigation and desktop sidebar', () => {
   assert.match(source, /const SCREEN_MODULE\s*=/);
   assert.match(source, /function navigateTo\(screenId/);
 });
+
+test('defines shared visual components and completes five root screens', () => {
+  const source = html();
+  for (const className of ['app-card', 'app-button', 'app-input', 'app-chip']) {
+    assert.match(source, new RegExp(`\\.${className}\\s*\\{`));
+  }
+  for (const id of ['home', 'wallet', 'scan', 'explore', 'profile']) {
+    assert.match(source, new RegExp(`<section[^>]+id="${id}"[^>]+data-ready="true"`));
+  }
+  assert.doesNotMatch(source, /class="[^"]*\b(phone|notch|status)\b/);
+});
