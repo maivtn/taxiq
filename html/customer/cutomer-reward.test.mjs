@@ -41,16 +41,23 @@ function createStubElement({ id = '', dataset = {}, textContent = '', placeholde
     textContent,
     placeholder,
     attributes,
+    children: [],
     classList: createClassList(classNames),
     disabled: false,
     hidden: false,
     style: {},
     isConnected: true,
     innerHTML: '',
+    append(...children) { this.children.push(...children); },
+    prepend(...children) { this.children.unshift(...children); },
+    replaceChildren(...children) { this.children = [...children]; },
+    remove() { this.isConnected = false; },
     setAttribute(name, value) { attributes[name] = String(value); },
     getAttribute(name) { return attributes[name] ?? null; },
     removeAttribute(name) { delete attributes[name]; },
     getClientRects() { return this.isConnected && !this.hidden && !this.classList.contains('hidden') ? [{}] : []; },
+    querySelector() { return null; },
+    querySelectorAll() { return []; },
     closest() { return null; },
     focus() { onFocus?.(this); }
   };
@@ -70,6 +77,7 @@ function createDocumentStub({
     body: { classList: createClassList() },
     activeElement: null,
     addEventListener(type, handler) { listeners.push({ type, handler }); },
+    createElement() { return createStubElement(); },
     getElementById(id) {
       if (!elements.has(id)) {
         elements.set(id, createStubElement({ id, onFocus: (element) => { document.activeElement = element; } }));
@@ -525,6 +533,164 @@ test('round-trips marketing preferences for every known business', () => {
   assert.equal(loaded.consents.at(-1).scope, 'business:golden-glow-spa');
 });
 
+test('redeems from the source business only and is idempotent', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const glowBefore = app.balances['golden-glow-spa'].points;
+  const first = api.redeemReward(app, 'credit5', 'redeem-click-1', 1000);
+  const second = api.redeemReward(app, 'credit5', 'redeem-click-1', 2000);
+  assert.equal(first.ok, true);
+  assert.equal(second.redemption.id, first.redemption.id);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, 1950);
+  assert.equal(app.balances['golden-glow-spa'].points, glowBefore);
+  assert.equal(app.ledger.filter((entry) => entry.refId === first.redemption.id).length, 1);
+});
+
+test('rejects a reward when its source balance is insufficient', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  app.balances['bitcoin-nail-bar'].points = 100;
+  const result = api.redeemReward(app, 'credit5', 'redeem-click-2', 1000);
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'insufficient_points');
+  assert.equal(app.balances['bitcoin-nail-bar'].points, 100);
+  assert.equal(app.redemptions.length, 0);
+  app.balances['bitcoin-nail-bar'].points = 1000;
+  app.businesses['moon-coffee'].allianceId = 'other-alliance';
+  assert.equal(api.redeemReward(app, 'moon', 'redeem-click-3', 2000).code, 'not_same_alliance');
+  assert.equal(api.redeemReward(app, '__proto__', 'redeem-click-4', 3000).code, 'unknown_reward');
+});
+
+test('rejects blank and conflicting idempotency keys without mutating rewards', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const beforeBlank = JSON.stringify(app);
+  assert.equal(api.redeemReward(app, 'credit5', '   ', 1000).code, 'invalid_idempotency_key');
+  assert.equal(JSON.stringify(app), beforeBlank);
+
+  const first = api.redeemReward(app, 'credit5', 'redeem-click-conflict', 1000);
+  assert.equal(first.ok, true);
+  const beforeConflict = JSON.stringify(app);
+  const conflict = api.redeemReward(app, 'freepedi', 'redeem-click-conflict', 2000);
+  assert.equal(conflict.ok, false);
+  assert.equal(conflict.code, 'idempotency_conflict');
+  assert.equal(JSON.stringify(app), beforeConflict);
+});
+
+test('keeps ledger writes atomic for invalid input and ID generation failures', () => {
+  const { api } = testApi({}, { randomUUID: () => { throw new Error('uuid unavailable'); } });
+  const app = api.createDefaultState();
+  const before = JSON.stringify(app);
+
+  assert.equal(api.appendLedger(app, {
+    businessId: 'bitcoin-nail-bar', type: 'visit', pointsDelta: Infinity,
+    refType: 'visit', refId: 'visit-invalid', now: 1000
+  }).code, 'invalid_points_delta');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(api.appendLedger(app, {
+    businessId: 'missing-business', type: 'visit', pointsDelta: 10,
+    refType: 'visit', refId: 'visit-missing', now: 1000
+  }).code, 'unknown_business');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(api.appendLedger(app, {
+    businessId: 'bitcoin-nail-bar', type: 'visit', pointsDelta: 10,
+    refType: 'visit', refId: 'visit-null-time', now: null
+  }).code, 'invalid_time');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(api.appendLedger(app, {
+    businessId: 'bitcoin-nail-bar', type: 'visit', pointsDelta: 10,
+    refType: 'visit', refId: 'visit-uuid', now: 1000
+  }).code, 'id_generation_failed');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('precomputes reward and ledger metadata before mutating redemption state', () => {
+  let uuidCall = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCall += 1;
+      if (uuidCall === 2) throw new Error('ledger UUID unavailable');
+      return `00000000-0000-4000-8000-00000000000${uuidCall}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const before = JSON.stringify(app);
+
+  const result = api.redeemReward(app, 'credit5', 'reward-atomic', 1000);
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'id_generation_failed');
+  assert.equal(JSON.stringify(app), before);
+
+  const invalidTime = api.redeemReward(app, 'credit5', 'reward-invalid-time', 9e15);
+  assert.equal(invalidTime.ok, false);
+  assert.equal(invalidTime.code, 'invalid_time');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('returns domain results for rewards with missing businesses or alliance data', () => {
+  const { api } = testApi();
+  const missingBusiness = api.createDefaultState();
+  delete missingBusiness.businesses['golden-glow-spa'];
+  assert.equal(api.redeemReward(missingBusiness, 'glow', 'missing-business', 1000).code, 'unknown_business');
+
+  const missingAlliance = api.createDefaultState();
+  missingAlliance.businesses['golden-glow-spa'].allianceId = '';
+  assert.equal(api.redeemReward(missingAlliance, 'glow', 'missing-alliance', 1000).code, 'invalid_alliance');
+});
+
+test('round-trips valid reward ledger state and drops duplicate-sensitive records', () => {
+  const { api, storage } = testApi();
+  const ledger = {
+    id: 'ledger-reward-1', businessId: 'bitcoin-nail-bar', type: 'redeem', pointsDelta: -500,
+    refType: 'redemption', refId: 'redemption-1', createdAt: '2026-07-14T10:00:00.000Z'
+  };
+  const redemption = {
+    id: 'redemption-1', idempotencyKey: 'reward-round-trip', rewardKey: 'credit5',
+    sourceBusinessId: 'bitcoin-nail-bar', acceptingBusinessId: 'bitcoin-nail-bar', cost: 500,
+    status: 'ready', qrPayload: 'NEXORA:credit5:reward-round-trip', createdAt: '2026-07-14T10:00:00.000Z'
+  };
+  const migrated = api.migrateState({
+    ledger: [ledger, { ...ledger, refId: 'duplicate-ledger' }, { id: '', pointsDelta: 5 }],
+    redemptions: [redemption, { ...redemption, id: 'redemption-duplicate' }, { id: '', cost: 5 }]
+  });
+
+  assert.equal(migrated.ledger.length, 1);
+  assert.equal(migrated.redemptions.length, 1);
+  assert.equal(migrated.redemptions[0].qrPayload, redemption.qrPayload);
+  api.saveState(migrated, storage);
+  const loaded = api.loadState(storage);
+  assert.equal(JSON.stringify(loaded.ledger), JSON.stringify(migrated.ledger));
+  assert.equal(JSON.stringify(loaded.redemptions), JSON.stringify(migrated.redemptions));
+});
+
+test('reuses one persisted idempotency key for repeated confirmation of the same UI attempt', () => {
+  let uuidCall = 0;
+  const randomUUID = () => `00000000-0000-4000-8000-${String(++uuidCall).padStart(12, '0')}`;
+  const { context: openingContext, storage } = testApi({}, { document: createDocumentStub(), randomUUID });
+
+  openingContext.openReward('credit5', false);
+  const attempt = vm.runInContext('structuredClone(state.ui.pendingContext.rewardAttempt)', openingContext);
+  assert.equal(attempt.rewardKey, 'credit5');
+  assert.ok(attempt.idempotencyKey.length > 0);
+  assert.equal(apiState(storage).ui.pendingContext.rewardAttempt.idempotencyKey, attempt.idempotencyKey);
+
+  const { context, storage: reloadedStorage } = testApi(storage.dump(), { document: createDocumentStub(), randomUUID });
+  assert.equal(
+    vm.runInContext('state.ui.pendingContext.rewardAttempt.idempotencyKey', context),
+    attempt.idempotencyKey
+  );
+  const first = context.confirmReward(false);
+  const second = context.confirmReward(false);
+  assert.equal(first.ok, true);
+  assert.equal(second.redemption.id, first.redemption.id);
+  assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", context), 1950);
+  assert.equal(apiState(reloadedStorage).redemptions.length, 1);
+});
+
+function apiState(storage) {
+  return JSON.parse(storage.getItem('nexora.customer.prototype.v1'));
+}
+
 test('accepts only HTTPS avatar URLs and keeps the existing avatar when blank', () => {
   const { api } = testApi();
   const current = 'https://images.example/avatar.png';
@@ -744,69 +910,58 @@ test('renders persisted balances across home wallet and rewards hooks', () => {
   assert.equal(points.textContent, '2.475');
   assert.equal(withUnit.textContent, '2.475 điểm');
   assert.equal(available.textContent, 'Có thể dùng 2.475 điểm');
-  context.openReward('gel', false);
+  context.openReward('credit5', false);
   assert.equal(document.getElementById('reward-balance').textContent, '2.475 điểm');
-  assert.equal(document.getElementById('reward-after').textContent, '1.675 điểm');
+  assert.equal(document.getElementById('reward-after').textContent, '1.975 điểm');
 
   const source = html();
-  assert.ok((source.match(/data-balance-points=/g) || []).length >= 4);
+  assert.ok((source.match(/data-balance-points=/g) || []).length >= 1);
+  assert.match(source, /data-balance-business="bitcoin-nail-bar"/);
   assert.match(source, /data-balance-with-unit="bitcoin-nail-bar"/);
   assert.match(source, /data-balance-available="bitcoin-nail-bar"/);
+  assert.match(source, /id="wallet-business-list"/);
+  assert.match(source, /id="ledger-list"/);
+  assert.match(source, /id="reward-list"/);
   assert.match(source, /function renderBalances\(\)/);
-  assert.match(source, /function renderDomainViews\(\)\s*\{\s*renderProfile\(\);\s*renderBalances\(\);/);
+  assert.match(source, /function renderDomainViews\(\)\s*\{\s*renderProfile\(\);\s*renderBalances\(\);\s*renderLedger\(\);\s*renderRewards\(\);/);
 
   const claimAction = source.match(/registerAction\('claim-welcome',[\s\S]*?registerAction\('accept-consent'/)?.[0];
   assert.ok(claimAction.indexOf('renderBalances()') < claimAction.indexOf("navigateTo('onb2')"));
 });
 
-test('derives honest reward progress while keeping pending redemption non-actionable', () => {
-  function rewardDocument() {
-    const gapValue = createStubElement({ dataset: { rewardGapValue: '' }, textContent: '—' });
-    const gapCopy = createStubElement({ dataset: { rewardGapCopy: '' }, textContent: 'Đang tính…' });
-    const progress = createStubElement({ dataset: { rewardProgress: '' } });
-    const cta = createStubElement({ dataset: { signatureRewardCta: '' }, textContent: 'Đang tính…' });
-    cta.disabled = true;
-    return {
-      gapValue, gapCopy, progress, cta,
-      document: createDocumentStub({
-        rewardGapValueNodes: [gapValue], rewardGapCopyNodes: [gapCopy],
-        rewardProgressNodes: [progress], signatureRewardControls: [cta]
-      })
-    };
-  }
-
-  const below = rewardDocument();
+test('renders seven business-aware rewards without unsafe state HTML', () => {
+  const document = createDocumentStub();
   testApi({
-    'nexora.customer.prototype.v1': JSON.stringify({ balances: { 'bitcoin-nail-bar': { points: 2475 } } })
-  }, { skipInit: false, document: below.document });
-  assert.equal(below.gapValue.textContent, '525');
-  assert.equal(below.gapCopy.textContent, 'Còn 525 điểm để nhận quà tiếp theo');
-  assert.equal(below.progress.style.width, '82.5%');
-  assert.equal(below.cta.textContent, 'Cần thêm 525 điểm');
-  assert.equal(below.cta.disabled, true);
-  assert.equal(below.cta.dataset.action, undefined);
+    'nexora.customer.prototype.v1': JSON.stringify({
+      businesses: { 'bitcoin-nail-bar': { name: '<img src=x onerror=alert(1)>' } }
+    })
+  }, { skipInit: false, document });
 
-  const eligible = rewardDocument();
-  const { api } = testApi({
-    'nexora.customer.prototype.v1': JSON.stringify({ balances: { 'bitcoin-nail-bar': { points: 3250 } } })
-  }, { skipInit: false, document: eligible.document });
-  assert.equal(eligible.progress.style.width, '100%');
-  assert.equal(eligible.gapCopy.textContent, 'Đã đủ điểm — đổi quà ở bước tiếp theo');
-  assert.equal(eligible.cta.disabled, true);
-  assert.equal(eligible.cta.dataset.action, undefined);
-  assert.equal(eligible.cta.dataset.target, undefined);
-  assert.equal(eligible.cta.textContent, 'Đã đủ điểm — đổi quà ở bước tiếp theo');
-  assert.equal(api.translate('en', 'rewardRedemptionPending'), 'Enough points — redemption coming next');
+  const walletCards = document.getElementById('wallet-business-list').children;
+  const rewardCards = document.getElementById('reward-list').children;
+  assert.equal(walletCards.length, 3);
+  assert.equal(walletCards[0].children[0].textContent, '<img src=x onerror=alert(1)>');
+  assert.equal(rewardCards.length, 7);
+  const gelButton = rewardCards.at(-1).children.at(-1).children.at(-1);
+  assert.equal(gelButton.disabled, true);
+  assert.equal(gelButton.textContent, 'Cần thêm 50');
 
   const source = html();
-  assert.match(source, /nextRewardGap:/);
-  assert.match(source, /signatureRewardLocked:/);
-  assert.match(source, /rewardRedemptionPending:/);
-  assert.doesNotMatch(source, /w-\[76%\]/);
-  assert.doesNotMatch(source, /data-signature-reward-cta[^>]*550/);
-  const renderBalances = source.match(/function renderBalances\(\)\s*\{([\s\S]*?)\n\s*\}\n\n\s*function renderDomainViews/)?.[1];
-  assert.ok(renderBalances, 'balance renderer must be available');
-  assert.doesNotMatch(renderBalances, /dataset\.(?:action|target)\s*=/);
+  assert.doesNotMatch(source, /data-signature-reward-cta/);
+  assert.match(source, /<div id="wallet-business-list" class="[^"]*"><\/div>/);
+  assert.match(source, /const REWARDS\s*=\s*\{/);
+  for (const key of ['credit5', 'freepedi', 'voucher25', 'glow', 'moon', 'bistro', 'gel']) {
+    assert.match(source, new RegExp(`${key}: \\{ key: '${key}'`));
+  }
+  for (const [start, end] of [
+    ['renderBalances', 'LEDGER_LABEL_KEYS'],
+    ['renderLedger', 'rewardAvailability'],
+    ['renderRewards', 'renderDomainViews']
+  ]) {
+    const body = source.match(new RegExp(`function ${start}\\(.*?\\) \\{([\\s\\S]*?)\\n\\s*\\}\\n\\n\\s*(?:const |function )${end}`))?.[1];
+    assert.ok(body, `${start} renderer must be available`);
+    assert.doesNotMatch(body, /innerHTML/, `${start} must not interpolate persisted state as HTML`);
+  }
 });
 
 test('covers accessibility, motion and UI edge states', () => {

@@ -86,7 +86,7 @@
 
           <div class="grid gap-4 xl:grid-cols-[1.35fr_.65fr]">
             <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_90%_10%,rgba(34,211,238,.24),transparent_38%),linear-gradient(135deg,#6d2bf0,#4a23d9_48%,#0757cf)] p-5 shadow-2xl shadow-app-purple/20 sm:p-6">
-              <div class="relative z-10 flex items-start justify-between gap-4"><div><p class="text-xs font-extrabold uppercase tracking-[.18em] text-white/70" data-en="Bitcoin Nail Bar balance" data-vi="Điểm tại Bitcoin Nail Bar">Điểm tại Bitcoin Nail Bar</p><div class="mt-2 flex items-end gap-2"><strong data-balance-points="bitcoin-nail-bar" class="text-4xl font-black tracking-tight sm:text-5xl">2,450</strong><span class="pb-1 text-sm font-bold text-white/70" data-en="points" data-vi="điểm">điểm</span></div></div><span class="grid size-11 place-items-center rounded-2xl bg-white/15"><i data-lucide="gem" class="size-5" aria-hidden="true"></i></span></div>
+              <div class="relative z-10 flex items-start justify-between gap-4"><div><p class="text-xs font-extrabold uppercase tracking-[.18em] text-white/70" data-en="Bitcoin Nail Bar balance" data-vi="Điểm tại Bitcoin Nail Bar">Điểm tại Bitcoin Nail Bar</p><div class="mt-2 flex items-end gap-2"><strong data-balance-points="bitcoin-nail-bar" data-balance-business="bitcoin-nail-bar" class="text-4xl font-black tracking-tight sm:text-5xl">2,450</strong><span class="pb-1 text-sm font-bold text-white/70" data-en="points" data-vi="điểm">điểm</span></div></div><span class="grid size-11 place-items-center rounded-2xl bg-white/15"><i data-lucide="gem" class="size-5" aria-hidden="true"></i></span></div>
               <div class="relative z-10 mt-6 grid grid-cols-2 gap-3"><div class="metric-card"><strong class="block text-lg" data-reward-gap-value>—</strong><span class="text-xs text-white/65" data-en="to your next reward" data-vi="để nhận quà tiếp theo">để nhận quà tiếp theo</span></div><div class="metric-card"><strong class="block text-lg">96%</strong><span class="text-xs text-white/65" data-en="tier progress" data-vi="tiến độ hạng">tiến độ hạng</span></div></div>
               <div class="relative z-10 mt-4 h-2 overflow-hidden rounded-full bg-black/20"><span class="block h-full rounded-full bg-gradient-to-r from-app-cyan to-white" data-reward-progress role="progressbar" aria-valuemin="0" aria-valuemax="100"></span></div>
             </div>
@@ -170,18 +170,14 @@
         </section>
         <section class="app-screen hidden" id="wallet" data-ready="true" data-module="wallet" aria-labelledby="wallet-title">
           <div class="mb-5 flex items-end justify-between gap-4"><div><p class="eyebrow" data-en="Your rewards" data-vi="Phần thưởng của bạn">Phần thưởng của bạn</p><h1 id="wallet-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Points wallet" data-vi="Ví điểm">Ví điểm</h1><p class="mt-1 text-sm text-app-muted" data-en="Each business keeps its own point balance." data-vi="Điểm được tách riêng theo từng doanh nghiệp.">Điểm được tách riêng theo từng doanh nghiệp.</p></div><button type="button" class="app-button-secondary hidden sm:inline-flex" data-action="navigate" data-target="history"><i data-lucide="history" class="size-4" aria-hidden="true"></i><span data-en="History" data-vi="Lịch sử">Lịch sử</span></button></div>
-          <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <article class="app-card relative overflow-hidden border-app-purple/40"><div class="absolute -right-12 -top-12 size-36 rounded-full bg-app-purple/20 blur-3xl"></div><div class="relative"><div class="flex items-center gap-3"><span class="grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-app-purple to-app-pink text-sm font-black">BN</span><div><h2 class="font-black">Bitcoin Nail Bar</h2><p class="text-xs text-app-muted" data-en="Primary salon" data-vi="Tiệm chính">Tiệm chính</p></div></div><div class="mt-6 flex items-end justify-between"><div><strong data-balance-points="bitcoin-nail-bar" class="text-3xl font-black">2,450</strong><span class="ml-1 text-xs text-app-muted" data-en="pts" data-vi="điểm">điểm</span></div><span class="text-xs font-bold text-app-green">+120 this week</span></div><div class="mt-4 h-1.5 overflow-hidden rounded-full bg-app-line"><span class="block h-full rounded-full bg-gradient-to-r from-app-purple to-app-pink" data-reward-progress role="progressbar" aria-valuemin="0" aria-valuemax="100"></span></div><p class="mt-3 text-xs text-app-muted" data-reward-gap-copy data-en="Calculating next reward…" data-vi="Đang tính phần thưởng tiếp theo…">Đang tính phần thưởng tiếp theo…</p></div></article>
-            <article class="app-card"><div class="flex items-center gap-3"><span class="grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-app-cyan to-blue-600 text-sm font-black">GG</span><div><h2 class="font-black">Golden Glow Spa</h2><p class="text-xs text-app-muted" data-en="Co-op partner" data-vi="Đối tác liên minh">Đối tác liên minh</p></div></div><div class="mt-6"><strong data-balance-points="golden-glow-spa" class="text-3xl font-black">600</strong><span class="ml-1 text-xs text-app-muted" data-en="pts" data-vi="điểm">điểm</span></div><button type="button" class="app-button-secondary mt-5 w-full" data-action="navigate" data-target="rewards" data-en="View rewards" data-vi="Xem phần thưởng">Xem phần thưởng</button></article>
-            <article class="app-card md:col-span-2 xl:col-span-1"><div class="flex items-center gap-3"><span class="grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-app-gold to-orange-600 text-sm font-black text-black">MC</span><div><h2 class="font-black">Moon Coffee</h2><p class="text-xs text-app-muted" data-en="Coffee & bakery" data-vi="Cà phê & bánh">Cà phê & bánh</p></div></div><div class="mt-6"><strong data-balance-points="moon-coffee" class="text-3xl font-black">120</strong><span class="ml-1 text-xs text-app-muted" data-en="pts" data-vi="điểm">điểm</span></div><p class="mt-5 rounded-xl bg-app-gold/10 p-3 text-xs leading-5 text-app-gold" data-en="80 points expire on Aug 30" data-vi="80 điểm hết hạn ngày 30/8">80 điểm hết hạn ngày 30/8</p></article>
-          </div>
+          <div id="wallet-business-list" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
           <div class="mt-6 grid gap-4 lg:grid-cols-[1fr_320px]"><article class="app-card"><div class="flex items-center justify-between"><h2 class="section-title" data-en="Recent point activity" data-vi="Hoạt động điểm gần đây">Hoạt động điểm gần đây</h2><button type="button" class="text-xs font-bold text-app-cyan" data-action="navigate" data-target="history" data-en="Full history" data-vi="Toàn bộ lịch sử">Toàn bộ lịch sử</button></div><div class="mt-4 divide-y divide-app-line"><div class="flex items-center gap-3 py-3"><i data-lucide="arrow-down-left" class="size-4 text-app-green" aria-hidden="true"></i><div class="flex-1"><strong class="text-sm" data-en="Visit points" data-vi="Điểm ghé tiệm">Điểm ghé tiệm</strong><p class="text-xs text-app-muted">Bitcoin Nail Bar · Today</p></div><strong class="text-sm text-app-green">+120</strong></div><div class="flex items-center gap-3 py-3"><i data-lucide="arrow-up-right" class="size-4 text-app-red" aria-hidden="true"></i><div class="flex-1"><strong class="text-sm" data-en="Gel upgrade" data-vi="Nâng cấp sơn gel">Nâng cấp sơn gel</strong><p class="text-xs text-app-muted">Bitcoin Nail Bar · Jul 11</p></div><strong class="text-sm text-app-red">−800</strong></div></div></article><aside class="app-card border-app-gold/20 bg-app-gold/[.05]"><i data-lucide="clock-3" class="size-5 text-app-gold" aria-hidden="true"></i><h2 class="mt-3 font-black" data-en="Points expiry" data-vi="Điểm sắp hết hạn">Điểm sắp hết hạn</h2><p class="mt-2 text-sm leading-6 text-app-muted" data-en="Use 80 Moon Coffee points before August 30." data-vi="Hãy dùng 80 điểm Moon Coffee trước ngày 30/8.">Hãy dùng 80 điểm Moon Coffee trước ngày 30/8.</p></aside></div>
         </section>
         <section class="app-screen hidden" id="history" data-ready="true" data-module="wallet" aria-labelledby="history-title">
-          <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Every point accounted for" data-vi="Minh bạch từng điểm">Minh bạch từng điểm</p><h1 id="history-title" class="text-2xl font-black" data-en="Points history" data-vi="Lịch sử điểm">Lịch sử điểm</h1></div></div><div class="grid gap-4 lg:grid-cols-[1fr_300px]"><div class="space-y-3"><article class="app-card"><p class="eyebrow" data-en="Today" data-vi="Hôm nay">Hôm nay</p><div class="mt-3 flex items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-green/10 text-app-green"><i data-lucide="arrow-down-left" class="size-5" aria-hidden="true"></i></span><div class="flex-1"><strong data-en="Visit points" data-vi="Điểm ghé tiệm">Điểm ghé tiệm</strong><p class="text-xs text-app-muted">Bitcoin Nail Bar · 10:42</p></div><strong class="text-app-green">+120</strong></div></article><article class="app-card"><p class="eyebrow" data-en="July 11" data-vi="Ngày 11/7">Ngày 11/7</p><div class="mt-3 flex items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-red/10 text-app-red"><i data-lucide="arrow-up-right" class="size-5" aria-hidden="true"></i></span><div class="flex-1"><strong data-en="Gel polish upgrade" data-vi="Nâng cấp sơn gel">Nâng cấp sơn gel</strong><p class="text-xs text-app-muted">Bitcoin Nail Bar · Reward</p></div><strong class="text-app-red">−800</strong></div></article><article class="app-card"><p class="eyebrow" data-en="July 3" data-vi="Ngày 3/7">Ngày 3/7</p><div class="mt-3 flex items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-green/10 text-app-green"><i data-lucide="badge-dollar-sign" class="size-5" aria-hidden="true"></i></span><div class="flex-1"><strong data-en="Service bonus" data-vi="Thưởng dịch vụ">Thưởng dịch vụ</strong><p class="text-xs text-app-muted">Golden Glow Spa</p></div><strong class="text-app-green">+250</strong></div></article></div><aside class="app-card h-fit"><p class="eyebrow" data-en="July summary" data-vi="Tổng kết tháng 7">Tổng kết tháng 7</p><dl class="mt-4 space-y-4"><div class="flex justify-between text-sm"><dt class="text-app-muted" data-en="Points earned" data-vi="Điểm đã nhận">Điểm đã nhận</dt><dd class="font-black text-app-green">+370</dd></div><div class="flex justify-between text-sm"><dt class="text-app-muted" data-en="Points used" data-vi="Điểm đã dùng">Điểm đã dùng</dt><dd class="font-black text-app-red">−800</dd></div><div class="flex justify-between border-t border-app-line pt-4 text-sm"><dt class="font-bold" data-en="Net change" data-vi="Thay đổi ròng">Thay đổi ròng</dt><dd class="font-black">−430</dd></div></dl></aside></div>
+          <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Every point accounted for" data-vi="Minh bạch từng điểm">Minh bạch từng điểm</p><h1 id="history-title" class="text-2xl font-black" data-en="Points history" data-vi="Lịch sử điểm">Lịch sử điểm</h1></div></div><div id="ledger-list" class="space-y-3"></div>
         </section>
         <section class="app-screen hidden" id="rewards" data-ready="true" data-module="wallet" aria-labelledby="rewards-title">
-          <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-balance-available="bitcoin-nail-bar" data-en="2,450 points available" data-vi="Có thể dùng 2.450 điểm">Có thể dùng 2.450 điểm</p><h1 id="rewards-title" class="text-2xl font-black" data-en="Choose a reward" data-vi="Chọn phần thưởng">Chọn phần thưởng</h1></div></div><div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3"><article class="app-card flex flex-col"><span class="grid size-12 place-items-center rounded-2xl bg-app-pink/10 text-app-pink"><i data-lucide="paintbrush" class="size-6" aria-hidden="true"></i></span><h2 class="mt-4 text-lg font-black" data-en="Gel polish upgrade" data-vi="Nâng cấp sơn gel">Nâng cấp sơn gel</h2><p class="mt-2 flex-1 text-sm leading-6 text-app-muted" data-en="Upgrade any classic manicure to premium gel." data-vi="Nâng cấp bất kỳ gói manicure thường lên gel cao cấp.">Nâng cấp bất kỳ gói manicure thường lên gel cao cấp.</p><div class="mt-5 flex items-center justify-between"><strong class="text-app-pink">800 điểm</strong><button class="app-button-secondary" type="button" data-action="open-reward" data-reward-key="gel" data-en="Redeem" data-vi="Đổi quà">Đổi quà</button></div></article><article class="app-card flex flex-col"><span class="grid size-12 place-items-center rounded-2xl bg-app-cyan/10 text-app-cyan"><i data-lucide="sparkles" class="size-6" aria-hidden="true"></i></span><h2 class="mt-4 text-lg font-black" data-en="$10 service credit" data-vi="Giảm $10 dịch vụ">Giảm $10 dịch vụ</h2><p class="mt-2 flex-1 text-sm leading-6 text-app-muted" data-en="Apply to any service over $35." data-vi="Áp dụng cho dịch vụ từ $35.">Áp dụng cho dịch vụ từ $35.</p><div class="mt-5 flex items-center justify-between"><strong class="text-app-cyan">1.200 điểm</strong><button class="app-button-secondary" type="button" data-action="open-reward" data-reward-key="credit" data-en="Redeem" data-vi="Đổi quà">Đổi quà</button></div></article><article class="app-card flex flex-col md:col-span-2 xl:col-span-1"><span class="grid size-12 place-items-center rounded-2xl bg-app-gold/10 text-app-gold"><i data-lucide="crown" class="size-6" aria-hidden="true"></i></span><h2 class="mt-4 text-lg font-black" data-en="Signature pedicure" data-vi="Pedicure đặc biệt">Pedicure đặc biệt</h2><p class="mt-2 flex-1 text-sm leading-6 text-app-muted" data-en="Full signature pedicure, valid Monday–Thursday." data-vi="Gói pedicure đặc biệt, áp dụng Thứ Hai–Thứ Năm.">Gói pedicure đặc biệt, áp dụng Thứ Hai–Thứ Năm.</p><div class="mt-5 flex items-center justify-between"><strong class="text-app-gold">3.000 điểm</strong><button class="app-button-secondary" type="button" disabled data-signature-reward-cta data-en="Calculating…" data-vi="Đang tính…">Đang tính…</button></div></article></div>
+          <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-balance-available="bitcoin-nail-bar" data-en="2,450 points available" data-vi="Có thể dùng 2.450 điểm">Có thể dùng 2.450 điểm</p><h1 id="rewards-title" class="text-2xl font-black" data-en="Choose a reward" data-vi="Chọn phần thưởng">Chọn phần thưởng</h1></div></div><div id="reward-list" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3"></div><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Points apply to services only — never cash out. Each business sets its own reward prices; NEXORA only keeps the ledger." data-vi="Điểm chỉ dùng cho dịch vụ — không đổi tiền mặt. Mỗi doanh nghiệp tự đặt giá thưởng; NEXORA chỉ lưu sổ cái.">Điểm chỉ dùng cho dịch vụ — không đổi tiền mặt. Mỗi doanh nghiệp tự đặt giá thưởng; NEXORA chỉ lưu sổ cái.</p>
         </section>
         <section class="app-screen hidden" id="redeem" data-ready="true" data-module="wallet" aria-labelledby="redeem-title">
           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="rewards" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Confirm redemption" data-vi="Xác nhận đổi điểm">Xác nhận đổi điểm</p><h1 id="redeem-title" class="text-2xl font-black" data-en="Redeem reward" data-vi="Đổi phần thưởng">Đổi phần thưởng</h1></div></div><div class="app-card"><div class="flex items-start gap-4"><span class="grid size-14 place-items-center rounded-2xl bg-app-pink/10 text-app-pink"><i data-lucide="gift" class="size-7" aria-hidden="true"></i></span><div><h2 id="reward-title" class="text-xl font-black">Nâng cấp sơn gel</h2><p id="reward-business" class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar</p></div></div><dl class="mt-6 space-y-4 rounded-2xl bg-app-panel p-4"><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Reward cost" data-vi="Điểm đổi quà">Điểm đổi quà</dt><dd id="reward-cost" class="font-black">800 điểm</dd></div><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Current balance" data-vi="Số dư hiện tại">Số dư hiện tại</dt><dd id="reward-balance" data-balance-with-unit="bitcoin-nail-bar" class="font-black">2.450 điểm</dd></div><div class="flex justify-between gap-4 border-t border-app-line pt-4 text-sm"><dt class="font-bold" data-en="Balance after" data-vi="Số dư còn lại">Số dư còn lại</dt><dd id="reward-after" class="font-black text-app-cyan">1.650 điểm</dd></div></dl><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Show the confirmation code to staff before the service is completed. This action cannot be undone." data-vi="Hãy đưa mã xác nhận cho nhân viên trước khi hoàn tất dịch vụ. Không thể hoàn tác thao tác này.">Hãy đưa mã xác nhận cho nhân viên trước khi hoàn tất dịch vụ. Không thể hoàn tác thao tác này.</p><button class="app-button mt-5 w-full" type="button" data-action="confirm-reward"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Use points now" data-vi="Dùng điểm ngay">Dùng điểm ngay</span></button></div></div>
@@ -267,7 +263,6 @@
     const BUSINESS_ID = 'bitcoin-nail-bar';
     const BUSINESS_CONSENT_SCOPE = `business:${BUSINESS_ID}`;
     const CONSENT_SCOPES = [BUSINESS_CONSENT_SCOPE, 'networkOffers'];
-    const SIGNATURE_REWARD_COST = 3000;
 
     function createDefaultState() {
       return {
@@ -359,7 +354,7 @@
           activeScreen: 'home', activeModule: 'home', selectedBusinessId: BUSINESS_ID,
           selectedTip: 10, selectedTipMethod: 'Venmo', selectedStaffId: 'staff-anna',
           paymentMethod: 'Zelle', rating: 0, currentRewardKey: null,
-          exploreFilter: 'all', offerFilter: 'all', pendingContext: { consentScopes: [] },
+          exploreFilter: 'all', offerFilter: 'all', pendingContext: { consentScopes: [], rewardAttempt: null },
           bookingDraft: { businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM', note: '' },
           overlay: null, pushPromptCount: 0
         }
@@ -408,7 +403,28 @@
         return structuredClone(incomingValue.filter((item) => typeof item === 'string' && item.length > 0));
       }
       const fields = path.length === 1 ? OBJECT_COLLECTION_FIELDS[path[0]] : null;
-      if (fields) return structuredClone(incomingValue.filter((item) => isValidCollectionRecord(item, fields)));
+      if (fields) {
+        const records = incomingValue.filter((item) => isValidCollectionRecord(item, fields));
+        if (path[0] === 'ledger') {
+          const ids = new Set();
+          return structuredClone(records.filter((item) => {
+            if (ids.has(item.id)) return false;
+            ids.add(item.id);
+            return true;
+          }));
+        }
+        if (path[0] === 'redemptions') {
+          const ids = new Set();
+          const idempotencyKeys = new Set();
+          return structuredClone(records.filter((item) => {
+            if (ids.has(item.id) || idempotencyKeys.has(item.idempotencyKey)) return false;
+            ids.add(item.id);
+            idempotencyKeys.add(item.idempotencyKey);
+            return true;
+          }));
+        }
+        return structuredClone(records);
+      }
       return structuredClone(defaultValue);
     }
 
@@ -426,6 +442,20 @@
       }
       if (path.join('.') === 'ui.currentRewardKey') {
         return { handled: true, value: incomingValue === null || typeof incomingValue === 'string' ? incomingValue : structuredClone(defaultValue) };
+      }
+      if (path.join('.') === 'ui.pendingContext.rewardAttempt') {
+        const valid = isRecord(incomingValue)
+          && typeof incomingValue.rewardKey === 'string' && incomingValue.rewardKey.trim().length > 0
+          && typeof incomingValue.idempotencyKey === 'string' && incomingValue.idempotencyKey.trim().length > 0
+          && typeof incomingValue.completed === 'boolean';
+        return {
+          handled: true,
+          value: valid ? {
+            rewardKey: incomingValue.rewardKey.trim(),
+            idempotencyKey: incomingValue.idempotencyKey.trim(),
+            completed: incomingValue.completed
+          } : structuredClone(defaultValue)
+        };
       }
       if (path.join('.') === 'ui.overlay') {
         return { handled: true, value: incomingValue === null || isRecord(incomingValue) ? structuredClone(incomingValue) : structuredClone(defaultValue) };
@@ -715,12 +745,172 @@
       { id:'profile', icon:'user-round', en:'Profile', vi:'Cá nhân' }
     ];
     const REWARDS = {
-      gel: { title: { en:'Gel polish upgrade', vi:'Nâng cấp sơn gel' }, business:'Bitcoin Nail Bar', cost:800 },
-      credit: { title: { en:'$10 service credit', vi:'Giảm $10 dịch vụ' }, business:'Golden Glow Spa', cost:1200 }
+      credit5: { key: 'credit5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'service_credit', cost: 500, title: { vi: 'Tín dụng dịch vụ $5', en: '$5 service credit' } },
+      freepedi: { key: 'freepedi', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 1000, title: { vi: 'Pedicure cơ bản miễn phí', en: 'Free classic pedicure' } },
+      voucher25: { key: 'voucher25', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'percent_code', cost: 800, title: { vi: 'Giảm 25% dịch vụ', en: '25% off any service' } },
+      glow: { key: 'glow', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'service_credit', cost: 800, title: { vi: 'Tín dụng $10 tại Golden Glow', en: '$10 Golden Glow credit' } },
+      moon: { key: 'moon', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'moon-coffee', type: 'free_service', cost: 600, title: { vi: 'Đồ uống miễn phí', en: 'Free drink' } },
+      bistro: { key: 'bistro', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'percent_code', cost: 450, title: { vi: 'Giảm 10% dịch vụ', en: '10% off service' } },
+      gel: { key: 'gel', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 2500, title: { vi: 'Nâng cấp sơn gel', en: 'Gel polish upgrade' } }
     };
+
+    function getRewardDefinition(key) {
+      return Object.prototype.hasOwnProperty.call(REWARDS, key) ? REWARDS[key] : null;
+    }
+
+    function getBusinessBalance(appState, businessId) {
+      const balance = isRecord(appState?.balances) ? appState.balances[businessId] : null;
+      return isRecord(balance) && Number.isFinite(balance.points)
+        ? balance
+        : { points: 0, credits: 0, expiringPoints: null };
+    }
+
+    function domainTimestamp(now) {
+      if (typeof now !== 'number' || !Number.isFinite(now)) return { ok: false, code: 'invalid_time' };
+      const date = new Date(now);
+      if (!Number.isFinite(date.getTime())) return { ok: false, code: 'invalid_time' };
+      try {
+        return { ok: true, value: date.toISOString() };
+      } catch {
+        return { ok: false, code: 'invalid_time' };
+      }
+    }
+
+    function createDomainId(prefix) {
+      try {
+        const value = crypto.randomUUID();
+        return typeof value === 'string' && value.trim().length > 0
+          ? { ok: true, value: `${prefix}-${value.trim()}` }
+          : { ok: false, code: 'id_generation_failed' };
+      } catch {
+        return { ok: false, code: 'id_generation_failed' };
+      }
+    }
+
+    function validateLedgerInput(appState, input) {
+      if (!isRecord(appState) || !isRecord(appState.businesses) || !isRecord(appState.balances) || !Array.isArray(appState.ledger)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      if (!isRecord(input)) return { ok: false, code: 'invalid_ledger_input' };
+      const businessId = typeof input.businessId === 'string' ? input.businessId.trim() : '';
+      const type = typeof input.type === 'string' ? input.type.trim() : '';
+      const refType = typeof input.refType === 'string' ? input.refType.trim() : '';
+      const refId = typeof input.refId === 'string' ? input.refId.trim() : '';
+      if (!businessId || !type || !refType || !refId) return { ok: false, code: 'invalid_ledger_input' };
+      const business = appState.businesses[businessId];
+      if (!isRecord(business) || business.id !== businessId) return { ok: false, code: 'unknown_business' };
+      if (typeof input.pointsDelta !== 'number' || !Number.isFinite(input.pointsDelta)) return { ok: false, code: 'invalid_points_delta' };
+      const storedBalance = appState.balances[businessId];
+      if (storedBalance !== undefined && (!isRecord(storedBalance) || !Number.isFinite(storedBalance.points))) {
+        return { ok: false, code: 'invalid_balance' };
+      }
+      const balance = getBusinessBalance(appState, businessId);
+      const nextPoints = balance.points + input.pointsDelta;
+      if (!Number.isFinite(nextPoints)) return { ok: false, code: 'invalid_points_delta' };
+      if (nextPoints < 0) return { ok: false, code: 'insufficient_points' };
+      return { ok: true, businessId, type, refType, refId, balance, nextPoints };
+    }
+
+    function appendLedger(appState, input) {
+      const validation = validateLedgerInput(appState, input);
+      if (!validation.ok) return validation;
+      const now = Object.prototype.hasOwnProperty.call(input, 'now') ? input.now : Date.now();
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const id = createDomainId('ledger');
+      if (!id.ok) return id;
+      const entry = {
+        id: id.value,
+        businessId: validation.businessId,
+        type: validation.type,
+        pointsDelta: input.pointsDelta,
+        refType: validation.refType,
+        refId: validation.refId,
+        createdAt: timestamp.value
+      };
+      const nextBalance = { ...validation.balance, points: validation.nextPoints };
+      const nextBalances = { ...appState.balances, [validation.businessId]: nextBalance };
+      const nextLedger = [entry, ...appState.ledger];
+      appState.balances = nextBalances;
+      appState.ledger = nextLedger;
+      return entry;
+    }
+
+    function redeemReward(appState, rewardKey, idempotencyKey, now = Date.now()) {
+      if (!isRecord(appState) || !isRecord(appState.businesses) || !isRecord(appState.balances)
+        || !Array.isArray(appState.redemptions) || !Array.isArray(appState.ledger)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const normalizedRewardKey = typeof rewardKey === 'string' ? rewardKey.trim() : '';
+      const normalizedIdempotencyKey = typeof idempotencyKey === 'string' ? idempotencyKey.trim() : '';
+      if (!normalizedIdempotencyKey) return { ok: false, code: 'invalid_idempotency_key' };
+      const existing = appState.redemptions.filter((item) => isRecord(item) && item.idempotencyKey === normalizedIdempotencyKey);
+      if (existing.length) {
+        if (existing.some((item) => item.rewardKey !== normalizedRewardKey)) return { ok: false, code: 'idempotency_conflict' };
+        return { ok: true, redemption: existing[0], idempotent: true };
+      }
+      const reward = getRewardDefinition(normalizedRewardKey);
+      if (!reward) return { ok: false, code: 'unknown_reward' };
+      if (!Number.isFinite(reward.cost) || reward.cost <= 0) return { ok: false, code: 'invalid_reward' };
+      const sourceBusiness = appState.businesses[reward.sourceBusinessId];
+      const acceptingBusiness = appState.businesses[reward.acceptingBusinessId];
+      if (!isRecord(sourceBusiness) || sourceBusiness.id !== reward.sourceBusinessId
+        || !isRecord(acceptingBusiness) || acceptingBusiness.id !== reward.acceptingBusinessId) {
+        return { ok: false, code: 'unknown_business' };
+      }
+      if (reward.sourceBusinessId !== reward.acceptingBusinessId) {
+        if (typeof sourceBusiness.allianceId !== 'string' || !sourceBusiness.allianceId.trim()
+          || typeof acceptingBusiness.allianceId !== 'string' || !acceptingBusiness.allianceId.trim()) {
+          return { ok: false, code: 'invalid_alliance' };
+        }
+        if (sourceBusiness.allianceId !== acceptingBusiness.allianceId) return { ok: false, code: 'not_same_alliance' };
+      }
+      const storedBalance = appState.balances[reward.sourceBusinessId];
+      if (storedBalance !== undefined && (!isRecord(storedBalance) || !Number.isFinite(storedBalance.points))) {
+        return { ok: false, code: 'invalid_balance' };
+      }
+      const balance = getBusinessBalance(appState, reward.sourceBusinessId);
+      if (balance.points < reward.cost) {
+        return { ok: false, code: 'insufficient_points', missing: reward.cost - balance.points };
+      }
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const redemptionId = createDomainId('red');
+      if (!redemptionId.ok) return redemptionId;
+      const ledgerId = createDomainId('ledger');
+      if (!ledgerId.ok) return ledgerId;
+      const redemption = {
+        id: redemptionId.value,
+        idempotencyKey: normalizedIdempotencyKey,
+        rewardKey: reward.key,
+        sourceBusinessId: reward.sourceBusinessId,
+        acceptingBusinessId: reward.acceptingBusinessId,
+        cost: reward.cost,
+        status: 'ready',
+        qrPayload: `NEXORA:${reward.key}:${normalizedIdempotencyKey}`,
+        createdAt: timestamp.value
+      };
+      const ledgerEntry = {
+        id: ledgerId.value,
+        businessId: reward.sourceBusinessId,
+        type: 'redeem',
+        pointsDelta: -reward.cost,
+        refType: 'redemption',
+        refId: redemption.id,
+        createdAt: timestamp.value
+      };
+      const nextBalance = { ...balance, points: balance.points - reward.cost };
+      const nextBalances = { ...appState.balances, [reward.sourceBusinessId]: nextBalance };
+      const nextRedemptions = [...appState.redemptions, redemption];
+      const nextLedger = [ledgerEntry, ...appState.ledger];
+      appState.balances = nextBalances;
+      appState.redemptions = nextRedemptions;
+      appState.ledger = nextLedger;
+      return { ok: true, redemption, idempotent: false };
+    }
     const COPY = {
       vi: {
-        points: 'điểm', availablePoints: 'Có thể dùng {points}', nextRewardGap: 'Còn {points} để nhận quà tiếp theo', signatureRewardLocked: 'Cần thêm {points}', rewardRedemptionPending: 'Đã đủ điểm — đổi quà ở bước tiếp theo', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
+        points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
         paymentSent: 'Đã gửi ${amount} cho tiệm', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu',
         offerSaved: 'Đã lưu ưu đãi', wishRequired: 'Hãy nhập mong muốn', wishShared: 'Đã gửi mong muốn ẩn danh',
         lookServiceRequired: 'Hãy nhập tên dịch vụ', lookSaved: 'Đã lưu kiểu mới', ratingRequired: 'Hãy chọn số sao',
@@ -743,7 +933,7 @@
         logoutTitle: 'Đăng xuất?', logoutDetail: 'Dữ liệu điểm vẫn được giữ trên thiết bị này.'
       },
       en: {
-        points: 'points', availablePoints: '{points} available', nextRewardGap: '{points} to your next reward', signatureRewardLocked: '{points} more', rewardRedemptionPending: 'Enough points — redemption coming next', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
+        points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
         paymentSent: '${amount} sent to the salon', insufficientPoints: 'Not enough points', saved: 'Saved',
         offerSaved: 'Offer saved', wishRequired: 'Enter a wish first', wishShared: 'Anonymous wish shared',
         lookServiceRequired: 'Enter a service name', lookSaved: 'New look saved', ratingRequired: 'Choose a rating',
@@ -784,8 +974,9 @@
       return new Intl.NumberFormat(locale).format(value);
     }
 
-    function formatPoints(value) {
-      return `${formatPointNumber(value)} ${t('points')}`;
+    function formatPoints(value, withUnit = true) {
+      const number = formatPointNumber(value);
+      return withUnit ? `${number} ${t('points')}` : number;
     }
 
     function renderNavigation() {
@@ -1009,25 +1200,77 @@
     }
 
     function openReward(key, navigate = true) {
-      const reward = REWARDS[key] || REWARDS.gel;
-      const balance = state.balances[BUSINESS_ID].points;
-      state.ui.currentRewardKey = key in REWARDS ? key : 'gel';
+      const reward = getRewardDefinition(key);
+      if (!reward) {
+        if (navigate) showToast(t('rewardUnavailable'), 'error');
+        return { ok: false, code: 'unknown_reward' };
+      }
+      const currentAttempt = state.ui.pendingContext.rewardAttempt;
+      let idempotencyKey = isRecord(currentAttempt)
+        && currentAttempt.rewardKey === reward.key
+        && currentAttempt.completed === false
+        ? currentAttempt.idempotencyKey
+        : null;
+      if (!idempotencyKey) {
+        const attemptId = createDomainId('reward-attempt');
+        if (!attemptId.ok) {
+          if (navigate) showToast(t('rewardUnavailable'), 'error');
+          return attemptId;
+        }
+        idempotencyKey = attemptId.value;
+      }
+      commitState((draft) => {
+        draft.ui.currentRewardKey = reward.key;
+        draft.ui.pendingContext.rewardAttempt = {
+          rewardKey: reward.key,
+          idempotencyKey,
+          completed: false
+        };
+      });
+      const balance = getBusinessBalance(state, reward.sourceBusinessId).points;
       document.getElementById('reward-title').textContent = reward.title[state.profile.language];
-      document.getElementById('reward-business').textContent = reward.business;
+      document.getElementById('reward-business').textContent = state.businesses[reward.acceptingBusinessId]?.name ?? t('unknownBusiness');
       document.getElementById('reward-cost').textContent = formatPoints(reward.cost);
       document.getElementById('reward-balance').textContent = formatPoints(balance);
       document.getElementById('reward-after').textContent = formatPoints(balance - reward.cost);
       if (navigate) navigateTo('redeem');
+      return { ok: true, idempotencyKey };
     }
 
-    function confirmReward() {
-      const reward = REWARDS[state.ui.currentRewardKey] || REWARDS.gel;
-      if (reward.cost > state.balances[BUSINESS_ID].points) return showToast(t('insufficientPoints'), 'error');
-      commitState((draft) => { draft.balances[BUSINESS_ID].points -= reward.cost; });
-      renderBalances();
+    function confirmReward(navigate = true) {
+      const attempt = state.ui.pendingContext.rewardAttempt;
+      if (!isRecord(attempt) || typeof attempt.rewardKey !== 'string' || typeof attempt.idempotencyKey !== 'string') {
+        const result = { ok: false, code: 'no_pending_reward' };
+        if (navigate) showToast(t('noPendingReward'), 'error');
+        return result;
+      }
+      const result = commitState((draft) => {
+        const redemption = redeemReward(draft, attempt.rewardKey, attempt.idempotencyKey);
+        if (redemption.ok) draft.ui.pendingContext.rewardAttempt.completed = true;
+        return redemption;
+      });
+      if (!result.ok) {
+        if (navigate) {
+          const errorKeys = {
+            not_same_alliance: 'allianceRequired',
+            invalid_alliance: 'allianceRequired',
+            insufficient_points: 'morePointsNeeded'
+          };
+          const errorKey = errorKeys[result.code] ?? 'rewardRedeemFailed';
+          const variables = result.code === 'insufficient_points' ? { points: formatPoints(result.missing) } : {};
+          showToast(t(errorKey, variables), 'error');
+        }
+        return result;
+      }
+      const reward = getRewardDefinition(result.redemption.rewardKey);
+      if (!reward) return { ok: false, code: 'unknown_reward' };
       document.getElementById('reward-done-title').textContent = reward.title[state.profile.language];
-      document.getElementById('reward-done-cost').textContent = formatPoints(reward.cost);
-      navigateTo('redeemdone');
+      document.getElementById('reward-done-cost').textContent = formatPoints(result.redemption.cost);
+      if (navigate) {
+        renderApp();
+        navigateTo('redeemdone');
+      }
+      return result;
     }
 
     function filterExplore(query = '') {
@@ -1302,8 +1545,25 @@
     registerAction('confirm-tip', () => confirmTip());
     registerAction('send-payment', () => sendPayment());
     registerAction('confirm-payment', () => confirmPayment());
+    registerAction('open-business-history', (control) => {
+      const businessId = control.dataset.businessId;
+      if (!isRecord(state.businesses[businessId])) {
+        showToast(t('unknownBusiness'), 'error');
+        return;
+      }
+      commitState((draft) => { draft.ui.selectedBusinessId = businessId; });
+      renderLedger();
+      navigateTo('history');
+    });
     registerAction('open-reward', (control) => openReward(control.dataset.rewardKey));
-    registerAction('confirm-reward', () => confirmReward());
+    registerAction('confirm-reward', (control) => {
+      control.disabled = true;
+      try {
+        return confirmReward();
+      } finally {
+        control.disabled = false;
+      }
+    });
     registerAction('save-offer', (control) => saveOffer(control));
     registerAction('add-wish', () => addWish());
     registerAction('save-look', () => saveLook());
@@ -1421,49 +1681,137 @@
     }
 
     function renderBalances() {
-      const primaryBalance = state.balances[BUSINESS_ID];
       document.querySelectorAll('[data-balance-points]').forEach((element) => {
-        const balance = state.balances[element.dataset.balancePoints];
-        if (balance) element.textContent = formatPointNumber(balance.points);
+        element.textContent = formatPointNumber(getBusinessBalance(state, element.dataset.balancePoints).points);
+      });
+      document.querySelectorAll('[data-balance-business]').forEach((element) => {
+        element.textContent = formatPointNumber(getBusinessBalance(state, element.dataset.balanceBusiness).points);
       });
       document.querySelectorAll('[data-balance-with-unit]').forEach((element) => {
-        const balance = state.balances[element.dataset.balanceWithUnit];
-        if (balance) element.textContent = formatPoints(balance.points);
+        element.textContent = formatPoints(getBusinessBalance(state, element.dataset.balanceWithUnit).points);
       });
       document.querySelectorAll('[data-balance-available]').forEach((element) => {
-        const balance = state.balances[element.dataset.balanceAvailable];
-        if (balance) element.textContent = t('availablePoints', { points: formatPoints(balance.points) });
+        const points = getBusinessBalance(state, element.dataset.balanceAvailable).points;
+        element.textContent = t('availablePoints', { points: formatPoints(points) });
       });
-      if (!primaryBalance) return;
-      const gap = Math.max(0, SIGNATURE_REWARD_COST - primaryBalance.points);
-      const rewardReady = gap === 0;
-      const progress = Math.min(100, Math.max(0, (primaryBalance.points / SIGNATURE_REWARD_COST) * 100));
-      const progressLabel = Number(progress.toFixed(2));
-      document.querySelectorAll('[data-reward-gap-value]').forEach((element) => {
-        element.textContent = formatPointNumber(gap);
+      const list = document.getElementById('wallet-business-list');
+      if (!list) return;
+      const cards = Object.values(state.businesses).filter(isRecord).map((business) => {
+        const card = document.createElement('article');
+        card.className = 'app-card';
+        const name = document.createElement('h2');
+        name.className = 'font-black';
+        name.textContent = business.name;
+        const points = document.createElement('strong');
+        points.className = 'mt-5 block text-3xl font-black';
+        points.textContent = formatPoints(getBusinessBalance(state, business.id).points);
+        const history = document.createElement('button');
+        history.type = 'button';
+        history.className = 'app-button-secondary mt-5 w-full';
+        history.dataset.action = 'open-business-history';
+        history.dataset.businessId = business.id;
+        history.textContent = t('history');
+        card.append(name, points, history);
+        return card;
       });
-      document.querySelectorAll('[data-reward-gap-copy]').forEach((element) => {
-        element.textContent = rewardReady
-          ? t('rewardRedemptionPending')
-          : t('nextRewardGap', { points: formatPoints(gap) });
+      list.replaceChildren(...cards);
+    }
+
+    const LEDGER_LABEL_KEYS = {
+      visit: 'visitPoints', welcome: 'welcomeGift', redeem: 'rewardRedeemed', feedback: 'privateFeedback',
+      tip_bonus: 'tipBonus', visit_spend: 'paymentPoints', directpay_bonus: 'directPayBonus', booking_bonus: 'bookingBonus'
+    };
+
+    function renderLedger() {
+      const list = document.getElementById('ledger-list');
+      if (!list) return;
+      const businessId = state.ui.selectedBusinessId;
+      const entries = Array.isArray(state.ledger)
+        ? state.ledger.filter((entry) => isRecord(entry) && entry.businessId === businessId)
+        : [];
+      if (!entries.length) {
+        const empty = document.createElement('p');
+        empty.className = 'app-card text-sm text-app-muted';
+        empty.textContent = t('ledgerEmpty');
+        list.replaceChildren(empty);
+        return;
+      }
+      const locale = state.profile.language === 'en' ? 'en-US' : 'vi-VN';
+      const cards = entries.map((entry) => {
+        const card = document.createElement('article');
+        card.className = 'app-card flex items-center gap-3';
+        const detail = document.createElement('div');
+        detail.className = 'flex-1';
+        const title = document.createElement('strong');
+        title.textContent = t(LEDGER_LABEL_KEYS[entry.type] ?? 'pointActivity');
+        const metadata = document.createElement('p');
+        metadata.className = 'text-xs text-app-muted';
+        const businessName = state.businesses[entry.businessId]?.name ?? t('unknownBusiness');
+        const date = new Date(entry.createdAt);
+        const dateLabel = Number.isFinite(date.getTime()) ? date.toLocaleDateString(locale) : t('dateUnavailable');
+        metadata.textContent = `${businessName} · ${dateLabel}`;
+        detail.append(title, metadata);
+        const delta = document.createElement('strong');
+        delta.className = entry.pointsDelta >= 0 ? 'text-app-green' : 'text-app-red';
+        delta.textContent = `${entry.pointsDelta > 0 ? '+' : ''}${formatPoints(entry.pointsDelta)}`;
+        card.append(detail, delta);
+        return card;
       });
-      document.querySelectorAll('[data-reward-progress]').forEach((element) => {
-        element.style.width = `${progressLabel}%`;
-        element.setAttribute('aria-valuenow', String(progressLabel));
+      list.replaceChildren(...cards);
+    }
+
+    function rewardAvailability(reward) {
+      const sourceBusiness = state.businesses[reward.sourceBusinessId];
+      const acceptingBusiness = state.businesses[reward.acceptingBusinessId];
+      if (!isRecord(sourceBusiness) || !isRecord(acceptingBusiness)) return { disabled: true, labelKey: 'rewardUnavailable' };
+      const crossBusiness = reward.sourceBusinessId !== reward.acceptingBusinessId;
+      const sameAlliance = !crossBusiness
+        || (typeof sourceBusiness.allianceId === 'string' && sourceBusiness.allianceId.length > 0
+          && sourceBusiness.allianceId === acceptingBusiness.allianceId);
+      if (!sameAlliance) return { disabled: true, labelKey: 'differentAlliance' };
+      const missing = Math.max(0, reward.cost - getBusinessBalance(state, reward.sourceBusinessId).points);
+      return missing > 0
+        ? { disabled: true, labelKey: 'morePointsNeeded', variables: { points: formatPoints(missing, false) } }
+        : { disabled: false, labelKey: 'redeem', variables: {} };
+    }
+
+    function renderRewards() {
+      const list = document.getElementById('reward-list');
+      if (!list) return;
+      const cards = Object.values(REWARDS).map((reward) => {
+        const availability = rewardAvailability(reward);
+        const card = document.createElement('article');
+        card.className = 'app-card flex flex-col';
+        const title = document.createElement('h2');
+        title.className = 'text-lg font-black';
+        title.textContent = reward.title[state.profile.language] ?? reward.title.vi;
+        const business = document.createElement('p');
+        business.className = 'mt-2 flex-1 text-sm text-app-muted';
+        business.textContent = state.businesses[reward.acceptingBusinessId]?.name ?? t('unknownBusiness');
+        const footer = document.createElement('div');
+        footer.className = 'mt-5 flex items-center justify-between gap-3';
+        const cost = document.createElement('strong');
+        cost.textContent = formatPoints(reward.cost);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'app-button-secondary';
+        button.dataset.action = 'open-reward';
+        button.dataset.rewardKey = reward.key;
+        button.textContent = t(availability.labelKey, availability.variables);
+        button.disabled = availability.disabled;
+        if (availability.disabled) button.setAttribute('aria-disabled', 'true');
+        footer.append(cost, button);
+        card.append(title, business, footer);
+        return card;
       });
-      document.querySelectorAll('[data-signature-reward-cta]').forEach((control) => {
-        control.disabled = true;
-        control.textContent = rewardReady
-          ? t('rewardRedemptionPending')
-          : t('signatureRewardLocked', { points: formatPoints(gap) });
-        delete control.dataset.action;
-        delete control.dataset.target;
-      });
+      list.replaceChildren(...cards);
     }
 
     function renderDomainViews() {
       renderProfile();
       renderBalances();
+      renderLedger();
+      renderRewards();
     }
 
     function renderApp() {
@@ -1490,6 +1838,9 @@
       loadState,
       saveState,
       translate,
+      getBusinessBalance,
+      appendLedger,
+      redeemReward,
       normalizeUsPhone,
       requestOtp,
       verifyOtp,
