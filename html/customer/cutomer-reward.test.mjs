@@ -20,3 +20,30 @@ test('loads the approved frontend stack', () => {
   assert.match(source, /id="app-shell"/);
   assert.match(source, /id="screen-region"/);
 });
+
+const requiredScreens = [
+  'login1', 'login2', 'onb1', 'onb2', 'onb3', 'onb4', 'home', 'allmenu',
+  'activity', 'wallet', 'history', 'rewards', 'redeem', 'redeemdone', 'scan',
+  'tip', 'tipdone', 'pay', 'paydone', 'looks', 'addlook', 'review', 'book1',
+  'book2', 'book3', 'explore', 'business', 'offers', 'referral', 'profile',
+  'msgprefs'
+];
+
+function screenIds(source) {
+  return [...source.matchAll(/<section\b[^>]*class="[^"]*\bapp-screen\b[^"]*"[^>]*>/g)]
+    .map(([tag]) => tag.match(/\bid="([^"]+)"/)?.[1])
+    .filter(Boolean);
+}
+
+test('contains the exact 31-screen inventory', () => {
+  const ids = screenIds(html()).sort();
+  assert.deepEqual(ids, [...requiredScreens].sort());
+});
+
+test('provides mobile bottom navigation and desktop sidebar', () => {
+  const source = html();
+  assert.match(source, /id="mobile-nav"[^>]*class="[^"]*lg:hidden/);
+  assert.match(source, /id="desktop-sidebar"[^>]*class="[^"]*hidden[^"]*lg:flex/);
+  assert.match(source, /const SCREEN_MODULE\s*=/);
+  assert.match(source, /function navigateTo\(screenId/);
+});

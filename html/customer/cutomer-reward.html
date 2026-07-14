@@ -28,13 +28,125 @@
       body { @apply m-0 min-h-dvh bg-app-bg text-app-text antialiased; }
       button, input, select, textarea { font: inherit; }
     }
+
+    @layer components {
+      .nav-item { @apply flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-bold text-app-muted transition hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-app-cyan; }
+      .nav-item[aria-current="page"] { @apply bg-app-purple/15 text-white; }
+      .mobile-nav-item { @apply flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] font-bold text-app-muted focus-visible:outline-2 focus-visible:outline-app-cyan; }
+      .mobile-nav-item[aria-current="page"] { @apply text-app-pink; }
+    }
   </style>
 </head>
 <body>
-  <div id="app-shell" class="min-h-dvh">
-    <main id="screen-region" tabindex="-1"></main>
+  <div id="app-shell" class="min-h-dvh lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
+    <aside id="desktop-sidebar" class="hidden min-h-dvh border-r border-app-line bg-app-panel lg:sticky lg:top-0 lg:flex lg:flex-col">
+      <div class="px-6 py-7">
+        <div class="flex items-center gap-3">
+          <span class="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-app-purple to-app-pink shadow-lg shadow-app-purple/20"><i data-lucide="sparkles" class="size-5" aria-hidden="true"></i></span>
+          <div><strong class="block text-sm tracking-wide">NEXORA</strong><span class="text-xs text-app-muted">Customer Rewards</span></div>
+        </div>
+      </div>
+      <nav id="desktop-nav" aria-label="Điều hướng chính" class="flex flex-1 flex-col gap-1 px-3" data-nav-surface="desktop"></nav>
+      <div class="border-t border-app-line p-4 text-xs leading-5 text-app-muted">Rewards by your favorite local businesses.</div>
+    </aside>
+
+    <div class="min-w-0">
+      <header id="mobile-header" class="sticky top-0 z-40 border-b border-app-line bg-app-bg/90 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur lg:hidden">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5"><span class="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-app-purple to-app-pink"><i data-lucide="sparkles" class="size-4" aria-hidden="true"></i></span><div><strong class="block text-sm">NEXORA</strong><span class="block text-[10px] text-app-muted">Customer Rewards</span></div></div>
+          <button type="button" class="grid size-11 place-items-center rounded-xl border border-app-line bg-app-card text-app-muted" aria-label="Thông báo"><i data-lucide="bell" class="size-5" aria-hidden="true"></i></button>
+        </div>
+      </header>
+
+      <main id="screen-region" class="mx-auto w-full max-w-[1200px] px-4 pb-[calc(6.75rem+env(safe-area-inset-bottom))] pt-5 outline-none sm:px-6 lg:px-8 lg:pb-10 lg:pt-8" tabindex="-1">
+        <section class="app-screen is-active" id="home" data-module="home" aria-labelledby="home-title"></section>
+        <section class="app-screen hidden" id="allmenu" data-module="home" aria-labelledby="allmenu-title"></section>
+        <section class="app-screen hidden" id="activity" data-module="home" aria-labelledby="activity-title"></section>
+        <section class="app-screen hidden" id="tip" data-module="home" aria-labelledby="tip-title"></section>
+        <section class="app-screen hidden" id="tipdone" data-module="home" aria-labelledby="tipdone-title"></section>
+        <section class="app-screen hidden" id="pay" data-module="home" aria-labelledby="pay-title"></section>
+        <section class="app-screen hidden" id="paydone" data-module="home" aria-labelledby="paydone-title"></section>
+        <section class="app-screen hidden" id="looks" data-module="home" aria-labelledby="looks-title"></section>
+        <section class="app-screen hidden" id="addlook" data-module="home" aria-labelledby="addlook-title"></section>
+        <section class="app-screen hidden" id="review" data-module="home" aria-labelledby="review-title"></section>
+        <section class="app-screen hidden" id="offers" data-module="home" aria-labelledby="offers-title"></section>
+        <section class="app-screen hidden" id="book1" data-module="home" aria-labelledby="book1-title"></section>
+        <section class="app-screen hidden" id="book2" data-module="home" aria-labelledby="book2-title"></section>
+        <section class="app-screen hidden" id="book3" data-module="home" aria-labelledby="book3-title"></section>
+        <section class="app-screen hidden" id="login1" data-module="home" aria-labelledby="login1-title"></section>
+        <section class="app-screen hidden" id="login2" data-module="home" aria-labelledby="login2-title"></section>
+        <section class="app-screen hidden" id="wallet" data-module="wallet" aria-labelledby="wallet-title"></section>
+        <section class="app-screen hidden" id="history" data-module="wallet" aria-labelledby="history-title"></section>
+        <section class="app-screen hidden" id="rewards" data-module="wallet" aria-labelledby="rewards-title"></section>
+        <section class="app-screen hidden" id="redeem" data-module="wallet" aria-labelledby="redeem-title"></section>
+        <section class="app-screen hidden" id="redeemdone" data-module="wallet" aria-labelledby="redeemdone-title"></section>
+        <section class="app-screen hidden" id="scan" data-module="scan" aria-labelledby="scan-title"></section>
+        <section class="app-screen hidden" id="onb1" data-module="scan" aria-labelledby="onb1-title"></section>
+        <section class="app-screen hidden" id="onb2" data-module="scan" aria-labelledby="onb2-title"></section>
+        <section class="app-screen hidden" id="onb3" data-module="scan" aria-labelledby="onb3-title"></section>
+        <section class="app-screen hidden" id="onb4" data-module="scan" aria-labelledby="onb4-title"></section>
+        <section class="app-screen hidden" id="explore" data-module="explore" aria-labelledby="explore-title"></section>
+        <section class="app-screen hidden" id="business" data-module="explore" aria-labelledby="business-title"></section>
+        <section class="app-screen hidden" id="profile" data-module="profile" aria-labelledby="profile-title"></section>
+        <section class="app-screen hidden" id="referral" data-module="profile" aria-labelledby="referral-title"></section>
+        <section class="app-screen hidden" id="msgprefs" data-module="profile" aria-labelledby="msgprefs-title"></section>
+      </main>
+    </div>
+
+    <nav id="mobile-nav" class="fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-app-line bg-app-panel/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden" aria-label="Điều hướng chính" data-nav-surface="mobile"></nav>
   </div>
   <script>
+    const state = { activeScreen: 'home', activeModule: 'home' };
+    const SCREEN_MODULE = {
+      home:'home', allmenu:'home', activity:'home', tip:'home', tipdone:'home', pay:'home', paydone:'home', looks:'home', addlook:'home', review:'home', offers:'home', book1:'home', book2:'home', book3:'home', login1:'home', login2:'home',
+      wallet:'wallet', history:'wallet', rewards:'wallet', redeem:'wallet', redeemdone:'wallet',
+      scan:'scan', onb1:'scan', onb2:'scan', onb3:'scan', onb4:'scan',
+      explore:'explore', business:'explore',
+      profile:'profile', referral:'profile', msgprefs:'profile'
+    };
+    const ROOT_SCREENS = ['home', 'wallet', 'scan', 'explore', 'profile'];
+    const NAV_ITEMS = [
+      { id:'home', icon:'house', en:'Home', vi:'Trang chủ' },
+      { id:'wallet', icon:'wallet-cards', en:'Wallet', vi:'Ví điểm' },
+      { id:'scan', icon:'scan-line', en:'Scan', vi:'Quét mã' },
+      { id:'explore', icon:'map-pin', en:'Explore', vi:'Khám phá' },
+      { id:'profile', icon:'user-round', en:'Profile', vi:'Cá nhân' }
+    ];
+
+    function renderNavigation() {
+      document.getElementById('desktop-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="nav-item w-full" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item.vi}</span></button>`).join('');
+      document.getElementById('mobile-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="mobile-nav-item" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item.vi}</span></button>`).join('');
+    }
+
+    function updateNavigation() {
+      document.querySelectorAll('[data-nav-target]').forEach((control) => {
+        const active = control.dataset.navTarget === state.activeModule;
+        if (active) control.setAttribute('aria-current', 'page');
+        else control.removeAttribute('aria-current');
+      });
+    }
+
+    function navigateTo(screenId, options = {}) {
+      const next = document.getElementById(screenId) || document.getElementById('home');
+      document.querySelectorAll('.app-screen').forEach((screen) => {
+        const active = screen === next;
+        screen.classList.toggle('hidden', !active);
+        screen.classList.toggle('is-active', active);
+      });
+      state.activeScreen = next.id;
+      state.activeModule = SCREEN_MODULE[next.id] || 'home';
+      updateNavigation();
+      next.scrollTop = 0;
+      if (options.focus !== false) document.getElementById('screen-region').focus({ preventScroll: true });
+    }
+
+    document.addEventListener('click', (event) => {
+      const nav = event.target.closest('[data-nav-target]');
+      if (nav) navigateTo(nav.dataset.navTarget);
+    });
+
+    renderNavigation();
+    updateNavigation();
     if (window.lucide) window.lucide.createIcons();
   </script>
 </body>
