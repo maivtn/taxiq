@@ -267,6 +267,23 @@ test('sanitizes collection elements and preserves valid nullable unions', () => 
   assert.equal(invalidUnions.ui.overlay, null);
 });
 
+test('fails closed for negative or malformed persisted balances', () => {
+  const { api } = testApi();
+  const defaults = api.createDefaultState();
+  const migrated = api.migrateState({
+    balances: {
+      'bitcoin-nail-bar': { points: -10, credits: -2, expiringPoints: { amount: -1, date: '2026-09-01' } },
+      'golden-glow-spa': { points: Number.NaN, credits: 'bad', expiringPoints: { amount: 10, date: '' } }
+    }
+  });
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, defaults.balances['bitcoin-nail-bar'].points);
+  assert.equal(migrated.balances['bitcoin-nail-bar'].credits, defaults.balances['bitcoin-nail-bar'].credits);
+  assert.equal(migrated.balances['bitcoin-nail-bar'].expiringPoints, null);
+  assert.equal(migrated.balances['golden-glow-spa'].points, defaults.balances['golden-glow-spa'].points);
+  assert.equal(migrated.balances['golden-glow-spa'].credits, defaults.balances['golden-glow-spa'].credits);
+  assert.equal(migrated.balances['golden-glow-spa'].expiringPoints, null);
+});
+
 test('validates US phone and enforces OTP cooldown plus lockout', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
@@ -711,6 +728,30 @@ test('awards tip points only after confirmation and only once', () => {
   assert.equal(retry.idempotent, true);
   assert.equal(app.balances['bitcoin-nail-bar'].points, before + 100);
   assert.equal(app.ledger.filter((entry) => entry.refId === pending.tip.id).length, 1);
+});
+
+test('rejects tip and direct-payment confirmations from negative or malformed balances', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, { randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}` });
+  const tipState = api.createDefaultState();
+  const tip = api.createTip(tipState, {
+    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
+  }, 1000);
+  assert.equal(tip.ok, true);
+  tipState.balances['bitcoin-nail-bar'].points = -1;
+  const tipBefore = JSON.stringify(tipState);
+  assert.equal(api.confirmTipRecord(tipState, tip.tip.id, 2000).code, 'invalid_balance');
+  assert.equal(JSON.stringify(tipState), tipBefore);
+
+  const paymentState = api.createDefaultState();
+  const payment = api.createDirectPayment(paymentState, {
+    businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
+  }, 1000);
+  assert.equal(payment.ok, true);
+  paymentState.balances['bitcoin-nail-bar'] = { points: 'bad', credits: 0, expiringPoints: null };
+  const paymentBefore = JSON.stringify(paymentState);
+  assert.equal(api.confirmDirectPayment(paymentState, payment.payment.id, 2000).code, 'invalid_balance');
+  assert.equal(JSON.stringify(paymentState), paymentBefore);
 });
 
 test('awards spend and direct-pay bonus only after salon confirms', () => {
@@ -1316,6 +1357,31 @@ test('normalizes persisted reward identity before an idempotent retry', () => {
   assert.equal(migrated.balances['bitcoin-nail-bar'].points, balanceBefore);
   assert.equal(migrated.redemptions.length, 1);
   assert.equal(migrated.ledger.length, 1);
+});
+
+test('persists and renders the actual redemption receipt context', () => {
+  let uuidCalls = 0;
+  const document = createDocumentStub();
+  const loaded = testApi({}, {
+    document,
+    skipInit: false,
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  loaded.context.openReward('credit5', false);
+  const redeemed = loaded.api.confirmReward(false);
+  assert.equal(redeemed.ok, true);
+  const redemption = redeemed.redemption;
+  assert.equal(vm.runInContext('state.ui.pendingContext.redemptionId', loaded.context), redemption.id);
+  assert.equal(document.getElementById('reward-done-code').textContent, redemption.qrPayload);
+  assert.equal(document.getElementById('reward-done-title').textContent, 'Tín dụng dịch vụ $5');
+  loaded.context.navigateTo('redeemdone', { focus: false });
+  const persisted = loaded.api.loadState(loaded.storage);
+  assert.equal(persisted.ui.pendingContext.redemptionId, redemption.id);
+
+  const restoredDocument = createDocumentStub();
+  const restored = testApi({ [loaded.api.STORAGE_KEY]: JSON.stringify(persisted) }, { document: restoredDocument, skipInit: false });
+  assert.equal(vm.runInContext('state.ui.activeScreen', restored.context), 'redeemdone');
+  assert.equal(restoredDocument.getElementById('reward-done-code').textContent, redemption.qrPayload);
 });
 
 test('deduplicates whitespace-equivalent persisted idempotency keys deterministically', () => {
@@ -2639,6 +2705,21 @@ test('clears a persisted modal marker after an accepted confirm callback', () =>
   assert.equal(api.loadState(storage).ui.overlay, null);
 });
 
+test('commitState swaps live state only after draft persistence succeeds', () => {
+  const { context, storage } = testApi();
+  const before = vm.runInContext('state.profile.name', context);
+  const originalSetItem = storage.setItem.bind(storage);
+  storage.setItem = () => { throw new Error('quota'); };
+  const failed = context.commitState((draft) => { draft.profile.name = 'Unsaved'; return { ok: true }; });
+  assert.equal(failed.code, 'persist_failed');
+  assert.equal(vm.runInContext('state.profile.name', context), before);
+  storage.setItem = originalSetItem;
+  const saved = context.commitState((draft) => { draft.profile.name = 'Saved'; return { ok: true }; });
+  assert.equal(saved.ok, true);
+  assert.equal(vm.runInContext('state.profile.name', context), 'Saved');
+  assert.equal(storage.getItem('nexora.customer.prototype.v1').includes('Saved'), true);
+});
+
 test('persists looks, saved offers and unique wishes', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
@@ -3049,6 +3130,9 @@ test('completeCheckin rejects a later same-business duplicate before UUID or que
   const before = JSON.stringify(app);
   const result = api.completeCheckin(app, duplicate, 5000);
   assert.equal(result.code, 'duplicate_checkin');
+  assert.equal(JSON.stringify(app), before);
+  const earlierResult = api.completeCheckin(app, first.checkin, 5000);
+  assert.equal(earlierResult.code, 'duplicate_checkin');
   assert.equal(JSON.stringify(app), before);
   assert.equal(uuidCalls, 1);
 });

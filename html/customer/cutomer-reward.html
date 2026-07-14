@@ -106,7 +106,7 @@
           </div></div>
 
           <div class="mt-6 grid gap-4 lg:grid-cols-2">
-            <article class="app-card"><div class="mb-4 flex items-center justify-between"><h2 class="section-title" data-en="Recent activity" data-vi="Hoạt động gần đây">Hoạt động gần đây</h2><button class="text-xs font-bold text-app-cyan" type="button" data-action="navigate" data-target="activity" data-en="See details" data-vi="Xem chi tiết">Xem chi tiết</button></div><div class="space-y-4"><div class="flex gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-app-green/10 text-app-green"><i data-lucide="circle-check" class="size-5" aria-hidden="true"></i></span><div class="min-w-0 flex-1"><div class="flex justify-between gap-3"><strong class="text-sm" data-en="Check-in completed" data-vi="Đã check-in">Đã check-in</strong><strong class="text-sm text-app-green">+120</strong></div><p class="mt-1 text-xs text-app-muted">Bitcoin Nail Bar · 2 hours ago</p></div></div><div class="flex gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-app-purple/10 text-app-pink"><i data-lucide="gift" class="size-5" aria-hidden="true"></i></span><div class="min-w-0 flex-1"><div class="flex justify-between gap-3"><strong class="text-sm" data-en="Reward redeemed" data-vi="Đã đổi phần thưởng">Đã đổi phần thưởng</strong><strong class="text-sm text-app-red">−800</strong></div><p class="mt-1 text-xs text-app-muted">Gel polish upgrade · Jul 11</p></div></div></div></article>
+            <article class="app-card"><div class="mb-4 flex items-center justify-between"><h2 class="section-title" data-en="Recent activity" data-vi="Hoạt động gần đây">Hoạt động gần đây</h2><button class="text-xs font-bold text-app-cyan" type="button" data-action="navigate" data-target="activity" data-en="See details" data-vi="Xem chi tiết">Xem chi tiết</button></div><div id="home-activity-list" class="space-y-4"></div></article>
             <article class="app-card overflow-hidden p-0" data-for-you><div class="grid h-full sm:grid-cols-[160px_1fr]"><img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=900&q=80" alt="Không gian salon Golden Glow" class="h-44 w-full object-cover sm:h-full"><div class="p-4"><span class="rounded-full bg-app-gold/10 px-2.5 py-1 text-[11px] font-bold text-app-gold" data-en="Member offer" data-vi="Ưu đãi thành viên">Ưu đãi thành viên</span><h2 class="mt-3 text-lg font-black" data-en="Glow facial · 20% off" data-vi="Chăm sóc da Glow · giảm 20%">Chăm sóc da Glow · giảm 20%</h2><p class="mt-2 text-sm leading-6 text-app-muted" data-en="Available this week at Golden Glow Spa." data-vi="Áp dụng tuần này tại Golden Glow Spa.">Áp dụng tuần này tại Golden Glow Spa.</p><button type="button" class="mt-4 text-sm font-bold text-app-pink" data-action="navigate" data-target="offers" data-en="Explore offer" data-vi="Xem ưu đãi">Xem ưu đãi</button></div></div></article>
           </div>
         </section>
@@ -173,7 +173,7 @@
         <section class="app-screen hidden" id="wallet" data-ready="true" data-module="wallet" aria-labelledby="wallet-title">
           <div class="mb-5 flex items-end justify-between gap-4"><div><p class="eyebrow" data-en="Your rewards" data-vi="Phần thưởng của bạn">Phần thưởng của bạn</p><h1 id="wallet-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Points wallet" data-vi="Ví điểm">Ví điểm</h1><p class="mt-1 text-sm text-app-muted" data-en="Each business keeps its own point balance." data-vi="Điểm được tách riêng theo từng doanh nghiệp.">Điểm được tách riêng theo từng doanh nghiệp.</p></div><button type="button" class="app-button-secondary hidden sm:inline-flex" data-action="navigate" data-target="history"><i data-lucide="history" class="size-4" aria-hidden="true"></i><span data-en="History" data-vi="Lịch sử">Lịch sử</span></button></div>
           <div id="wallet-business-list" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
-          <div class="mt-6 grid gap-4 lg:grid-cols-[1fr_320px]"><article class="app-card"><div class="flex items-center justify-between"><h2 class="section-title" data-en="Recent point activity" data-vi="Hoạt động điểm gần đây">Hoạt động điểm gần đây</h2><button type="button" class="text-xs font-bold text-app-cyan" data-action="navigate" data-target="history" data-en="Full history" data-vi="Toàn bộ lịch sử">Toàn bộ lịch sử</button></div><div class="mt-4 divide-y divide-app-line"><div class="flex items-center gap-3 py-3"><i data-lucide="arrow-down-left" class="size-4 text-app-green" aria-hidden="true"></i><div class="flex-1"><strong class="text-sm" data-en="Visit points" data-vi="Điểm ghé tiệm">Điểm ghé tiệm</strong><p class="text-xs text-app-muted">Bitcoin Nail Bar · Today</p></div><strong class="text-sm text-app-green">+120</strong></div><div class="flex items-center gap-3 py-3"><i data-lucide="arrow-up-right" class="size-4 text-app-red" aria-hidden="true"></i><div class="flex-1"><strong class="text-sm" data-en="Gel upgrade" data-vi="Nâng cấp sơn gel">Nâng cấp sơn gel</strong><p class="text-xs text-app-muted">Bitcoin Nail Bar · Jul 11</p></div><strong class="text-sm text-app-red">−800</strong></div></div></article><aside class="app-card border-app-gold/20 bg-app-gold/[.05]"><i data-lucide="clock-3" class="size-5 text-app-gold" aria-hidden="true"></i><h2 class="mt-3 font-black" data-en="Points expiry" data-vi="Điểm sắp hết hạn">Điểm sắp hết hạn</h2><p class="mt-2 text-sm leading-6 text-app-muted" data-en="Use 80 Moon Coffee points before August 30." data-vi="Hãy dùng 80 điểm Moon Coffee trước ngày 30/8.">Hãy dùng 80 điểm Moon Coffee trước ngày 30/8.</p></aside></div>
+          <div class="mt-6 grid gap-4 lg:grid-cols-[1fr_320px]"><article class="app-card"><div class="flex items-center justify-between"><h2 class="section-title" data-en="Recent point activity" data-vi="Hoạt động điểm gần đây">Hoạt động điểm gần đây</h2><button type="button" class="text-xs font-bold text-app-cyan" data-action="navigate" data-target="history" data-en="Full history" data-vi="Toàn bộ lịch sử">Toàn bộ lịch sử</button></div><div id="wallet-activity-list" class="mt-4 divide-y divide-app-line"></div></article><aside class="app-card border-app-gold/20 bg-app-gold/[.05]"><i data-lucide="clock-3" class="size-5 text-app-gold" aria-hidden="true"></i><h2 class="mt-3 font-black" data-en="Points expiry" data-vi="Điểm sắp hết hạn">Điểm sắp hết hạn</h2><p id="wallet-expiry-copy" class="mt-2 text-sm leading-6 text-app-muted"></p></aside></div>
         </section>
         <section class="app-screen hidden" id="history" data-ready="true" data-module="wallet" aria-labelledby="history-title">
           <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Every point accounted for" data-vi="Minh bạch từng điểm">Minh bạch từng điểm</p><h1 id="history-title" class="text-2xl font-black" data-en="Points history" data-vi="Lịch sử điểm">Lịch sử điểm</h1></div></div><div id="ledger-list" class="space-y-3"></div>
@@ -185,7 +185,7 @@
           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="rewards" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Confirm redemption" data-vi="Xác nhận đổi điểm">Xác nhận đổi điểm</p><h1 id="redeem-title" class="text-2xl font-black" data-en="Redeem reward" data-vi="Đổi phần thưởng">Đổi phần thưởng</h1></div></div><div class="app-card"><div class="flex items-start gap-4"><span class="grid size-14 place-items-center rounded-2xl bg-app-pink/10 text-app-pink"><i data-lucide="gift" class="size-7" aria-hidden="true"></i></span><div><h2 id="reward-title" class="text-xl font-black">Nâng cấp sơn gel</h2><p id="reward-business" class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar</p></div></div><dl class="mt-6 space-y-4 rounded-2xl bg-app-panel p-4"><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Reward cost" data-vi="Điểm đổi quà">Điểm đổi quà</dt><dd id="reward-cost" class="font-black">800 điểm</dd></div><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Current balance" data-vi="Số dư hiện tại">Số dư hiện tại</dt><dd id="reward-balance" data-balance-with-unit="bitcoin-nail-bar" class="font-black">2.450 điểm</dd></div><div class="flex justify-between gap-4 border-t border-app-line pt-4 text-sm"><dt class="font-bold" data-en="Balance after" data-vi="Số dư còn lại">Số dư còn lại</dt><dd id="reward-after" class="font-black text-app-cyan">1.650 điểm</dd></div></dl><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Show the confirmation code to staff before the service is completed. This action cannot be undone." data-vi="Hãy đưa mã xác nhận cho nhân viên trước khi hoàn tất dịch vụ. Không thể hoàn tác thao tác này.">Hãy đưa mã xác nhận cho nhân viên trước khi hoàn tất dịch vụ. Không thể hoàn tác thao tác này.</p><button class="app-button mt-5 w-full" type="button" data-action="confirm-reward"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Use points now" data-vi="Dùng điểm ngay">Dùng điểm ngay</span></button></div></div>
         </section>
         <section class="app-screen hidden" id="redeemdone" data-ready="true" data-module="wallet" aria-labelledby="redeemdone-title">
-          <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-10" aria-hidden="true"></i></span><h1 id="redeemdone-title" class="mt-6 text-3xl font-black" data-en="Reward ready" data-vi="Phần thưởng đã sẵn sàng">Phần thưởng đã sẵn sàng</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="Show this code to Bitcoin Nail Bar staff." data-vi="Đưa mã này cho nhân viên Bitcoin Nail Bar.">Đưa mã này cho nhân viên Bitcoin Nail Bar.</p><div class="app-card mt-6"><p class="eyebrow" data-en="Redemption code" data-vi="Mã đổi quà">Mã đổi quà</p><strong class="mt-3 block text-3xl tracking-[.22em] text-app-cyan">NX-4821</strong><div class="my-5 border-t border-dashed border-app-line"></div><div class="flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Reward" data-vi="Phần thưởng">Phần thưởng</span><strong id="reward-done-title">Nâng cấp sơn gel</strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Points used" data-vi="Điểm đã dùng">Điểm đã dùng</span><strong id="reward-done-cost">800 điểm</strong></div></div><button class="app-button mt-5 w-full" type="button" data-action="navigate" data-target="wallet" data-en="Back to wallet" data-vi="Về ví điểm">Về ví điểm</button></div></div>
+          <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-10" aria-hidden="true"></i></span><h1 id="redeemdone-title" class="mt-6 text-3xl font-black" data-en="Reward ready" data-vi="Phần thưởng đã sẵn sàng">Phần thưởng đã sẵn sàng</h1><p id="redeemdone-business-copy" class="mt-3 text-sm leading-6 text-app-muted"></p><div class="app-card mt-6"><p class="eyebrow" data-en="Redemption code" data-vi="Mã đổi quà">Mã đổi quà</p><strong id="reward-done-code" class="mt-3 block text-3xl tracking-[.22em] text-app-cyan"></strong><div class="my-5 border-t border-dashed border-app-line"></div><div class="flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Reward" data-vi="Phần thưởng">Phần thưởng</span><strong id="reward-done-title"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Points used" data-vi="Điểm đã dùng">Điểm đã dùng</span><strong id="reward-done-cost"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-muted" data-en="Status" data-vi="Trạng thái">Trạng thái</span><strong id="reward-done-status"></strong></div></div><button class="app-button-secondary mt-4 w-full" type="button" data-action="show-reward-qr" data-en="Show QR code" data-vi="Hiện mã QR">Hiện mã QR</button><button class="app-button mt-3 w-full" type="button" data-action="navigate" data-target="wallet" data-en="Back to wallet" data-vi="Về ví điểm">Về ví điểm</button></div></div>
         </section>
         <section class="app-screen hidden" id="scan" data-ready="true" data-module="scan" aria-labelledby="scan-title">
           <div class="mx-auto max-w-2xl"><div class="text-center"><p class="eyebrow" data-en="Fast check-in" data-vi="Check-in nhanh">Check-in nhanh</p><h1 id="scan-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Scan a business QR" data-vi="Quét QR của doanh nghiệp">Quét QR của doanh nghiệp</h1><p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-app-muted" data-en="Point your camera at the NEXORA code at the counter to check in and earn points." data-vi="Hướng camera vào mã NEXORA tại quầy để check-in và nhận điểm.">Hướng camera vào mã NEXORA tại quầy để check-in và nhận điểm.</p></div>
@@ -427,7 +427,7 @@
           selectedTip: 10, selectedTipMethod: 'Venmo', selectedStaffId: 'staff-anna',
           paymentMethod: 'Zelle', rating: 0, currentRewardKey: null,
           exploreFilter: 'all', offerFilter: 'all', pendingContext: {
-            consentScopes: [], rewardAttempt: null, tipId: null, paymentId: null, bookingId: null
+          consentScopes: [], rewardAttempt: null, redemptionId: null, tipId: null, paymentId: null, bookingId: null
           },
           bookingDraft: { businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM', note: '' },
           overlay: null, pushPromptCount: 0
@@ -702,6 +702,16 @@
       const milliseconds = Date.parse(value);
       const timestamp = domainTimestamp(milliseconds);
       return timestamp.ok && timestamp.value === value;
+    }
+
+    function validExpiryDate(value) {
+      if (typeof value !== 'string' || !value.trim()) return false;
+      const candidate = value.trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(candidate)) {
+        const milliseconds = Date.parse(`${candidate}T00:00:00.000Z`);
+        return Number.isFinite(milliseconds) && new Date(milliseconds).toISOString().slice(0, 10) === candidate;
+      }
+      return validStoredTimestamp(candidate);
     }
 
     function canonicalMoneyAmount(value) {
@@ -1181,10 +1191,15 @@
         const valid = incomingValue === null || (typeof incomingValue === 'number' && Number.isFinite(incomingValue));
         return { handled: true, value: valid ? incomingValue : structuredClone(defaultValue) };
       }
+      if (path.length === 3 && path[0] === 'balances' && (path[2] === 'points' || path[2] === 'credits')) {
+        const valid = typeof incomingValue === 'number' && Number.isFinite(incomingValue) && incomingValue >= 0;
+        return { handled: true, value: valid ? incomingValue : structuredClone(defaultValue) };
+      }
       if (path.length === 3 && path[0] === 'balances' && path[2] === 'expiringPoints') {
         if (incomingValue === null) return { handled: true, value: null };
-        if (isRecord(incomingValue) && typeof incomingValue.amount === 'number' && Number.isFinite(incomingValue.amount) && typeof incomingValue.date === 'string') {
-          return { handled: true, value: { amount: incomingValue.amount, date: incomingValue.date } };
+        if (isRecord(incomingValue) && typeof incomingValue.amount === 'number' && Number.isFinite(incomingValue.amount)
+          && incomingValue.amount >= 0 && validExpiryDate(incomingValue.date)) {
+          return { handled: true, value: { amount: incomingValue.amount, date: incomingValue.date.trim() } };
         }
         return { handled: true, value: structuredClone(defaultValue) };
       }
@@ -1209,6 +1224,10 @@
             completed: incomingValue.completed
           } : structuredClone(defaultValue)
         };
+      }
+      if (path.join('.') === 'ui.pendingContext.redemptionId') {
+        const normalized = typeof incomingValue === 'string' ? incomingValue.trim() : '';
+        return { handled: true, value: normalized || null };
       }
       if (['ui.pendingContext.tipId', 'ui.pendingContext.paymentId', 'ui.pendingContext.bookingId'].includes(path.join('.'))) {
         const normalized = typeof incomingValue === 'string' ? incomingValue.trim() : '';
@@ -1373,8 +1392,20 @@
     let state = loadState();
 
     function commitState(mutator) {
-      const result = mutator(state);
-      saveState(state);
+      const draft = structuredClone(state);
+      let result;
+      try {
+        result = mutator(draft);
+      } catch (error) {
+        return { ok: false, code: 'mutation_failed', error };
+      }
+      if (isRecord(result) && result.ok === false) return result;
+      try {
+        saveState(draft);
+      } catch (error) {
+        return { ok: false, code: 'persist_failed', error };
+      }
+      state = draft;
       return result;
     }
 
@@ -1592,7 +1623,7 @@
     ];
     function getBusinessBalance(appState, businessId) {
       const balance = isRecord(appState?.balances) ? appState.balances[businessId] : null;
-      return isRecord(balance) && Number.isFinite(balance.points)
+      return isRecord(balance) && Number.isFinite(balance.points) && balance.points >= 0
         ? balance
         : { points: 0, credits: 0, expiringPoints: null };
     }
@@ -1606,7 +1637,7 @@
           && Number.isFinite(expiringPoints.amount)
           && expiringPoints.amount >= 0
           && typeof expiringPoints.date === 'string'
-          && expiringPoints.date.trim().length > 0);
+          && validExpiryDate(expiringPoints.date));
       if (!isRecord(balance)
         || typeof balance.points !== 'number'
         || !Number.isFinite(balance.points)
@@ -1918,11 +1949,9 @@
       const business = getValidBusiness(appState, businessId);
       if (!business) return { ok: false, code: 'unknown_business' };
       if (typeof input.pointsDelta !== 'number' || !Number.isFinite(input.pointsDelta)) return { ok: false, code: 'invalid_points_delta' };
-      const storedBalance = appState.balances[businessId];
-      if (storedBalance !== undefined && (!isRecord(storedBalance) || !Number.isFinite(storedBalance.points))) {
-        return { ok: false, code: 'invalid_balance' };
-      }
-      const balance = getBusinessBalance(appState, businessId);
+      const storedBalance = validateStoredBalance(appState, businessId);
+      if (!storedBalance.ok) return storedBalance;
+      const balance = storedBalance.balance;
       const nextPoints = balance.points + input.pointsDelta;
       if (!Number.isFinite(nextPoints)) return { ok: false, code: 'invalid_points_delta' };
       if (nextPoints < 0) return { ok: false, code: 'insufficient_points' };
@@ -2102,14 +2131,10 @@
       if (normalized.id !== checkin.id) return { ok: false, code: 'invalid_checkin' };
       const storedBalance = validateStoredBalance(appState, normalized.businessId);
       if (!storedBalance.ok) return storedBalance;
-      const candidateScan = checkinScanMilliseconds(normalized.scannedAt);
       const duplicateWindow = appState.checkins.some((item) => {
         if (!isRecord(item) || item.id === normalized.id || !['confirmed', 'sending', 'queued'].includes(item.status)) return false;
         const other = normalizeCheckinRecord(appState, item);
-        const otherScan = other && checkinScanMilliseconds(other.scannedAt);
-        const earlier = otherScan !== null && candidateScan !== null
-          && (otherScan < candidateScan || (otherScan === candidateScan && other.id < normalized.id));
-        return Boolean(other && earlier && checkinWindowConflict(normalized, other));
+        return Boolean(other && checkinWindowConflict(normalized, other));
       });
       if (duplicateWindow) return { ok: false, code: 'duplicate_checkin' };
       const matchingCheckins = appState.checkins.filter((item) => isRecord(item) && item.id === normalized.id);
@@ -2224,14 +2249,29 @@
         if (leftTime !== rightTime) return (leftTime ?? Number.MAX_SAFE_INTEGER) - (rightTime ?? Number.MAX_SAFE_INTEGER);
         return left.index - right.index;
       });
-      const confirmedScans = appState.checkins
-        .filter((checkin) => isRecord(checkin) && checkin.status === 'confirmed' && checkinScanMilliseconds(checkin.scannedAt) !== null);
-      let retried = 0;
       const removeCheckin = (id) => {
         appState.checkins = appState.checkins.filter((item) => !(isRecord(item) && item.id === id));
         appState.offlineQueue = appState.offlineQueue.filter((queueId) => queueId !== id);
       };
-      candidates.forEach(({ id, checkin }) => {
+      // completeCheckin rejects every same-business window conflict, regardless
+      // of ordering. Retain the earliest queued candidate so retry can still
+      // award the deterministic winner, and discard later queued duplicates
+      // before invoking the stricter guard.
+      const retainedCandidates = [];
+      candidates.forEach((candidate) => {
+        const queuedConflict = candidate.checkin.status !== 'confirmed'
+          && retainedCandidates.some((retained) => retained.checkin.status !== 'confirmed'
+            && checkinWindowConflict(candidate.checkin, retained.checkin));
+        if (queuedConflict) {
+          removeCheckin(candidate.id);
+          return;
+        }
+        retainedCandidates.push(candidate);
+      });
+      const confirmedScans = appState.checkins
+        .filter((checkin) => isRecord(checkin) && checkin.status === 'confirmed' && checkinScanMilliseconds(checkin.scannedAt) !== null);
+      let retried = 0;
+      retainedCandidates.forEach(({ id, checkin }) => {
         if (!['queued', 'sending', 'confirmed'].includes(checkin.status)) {
           removeCheckin(id);
           return;
@@ -2815,11 +2855,9 @@
       if (!Number.isFinite(reward.cost) || reward.cost <= 0) return { ok: false, code: 'invalid_reward' };
       const businessValidation = validateRewardBusinesses(appState, reward);
       if (!businessValidation.ok) return businessValidation;
-      const storedBalance = appState.balances[reward.sourceBusinessId];
-      if (storedBalance !== undefined && (!isRecord(storedBalance) || !Number.isFinite(storedBalance.points))) {
-        return { ok: false, code: 'invalid_balance' };
-      }
-      const balance = getBusinessBalance(appState, reward.sourceBusinessId);
+      const storedBalance = validateStoredBalance(appState, reward.sourceBusinessId);
+      if (!storedBalance.ok) return storedBalance;
+      const balance = storedBalance.balance;
       if (balance.points < reward.cost) {
         return { ok: false, code: 'insufficient_points', missing: reward.cost - balance.points };
       }
@@ -2860,7 +2898,7 @@
     }
     const COPY = {
       vi: {
-        points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
+        points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', noExpiry: 'Chưa có điểm sắp hết hạn.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
         paymentSent: 'Đã gửi ${amount} cho tiệm', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu', saveOffer: 'Lưu ưu đãi', view: 'Xem', rebook: 'Đặt lại', tip: 'Gửi tip', delete: 'Xóa', followingTech: 'Đang theo dõi thợ', followTech: 'Theo dõi thợ', removeWish: 'Xóa mong muốn', favorite: 'Đã yêu thích', addFavorite: 'Thêm yêu thích', recentVisit: 'Lượt ghé gần đây',
         offerSaved: 'Đã lưu ưu đãi', offerRemoved: 'Đã bỏ lưu ưu đãi', offerSaveFailed: 'Ưu đãi không hợp lệ.', offerDetails: 'Chi tiết ưu đãi', offerDetail: 'Xem điều kiện, thời hạn và doanh nghiệp phát hành trước khi dùng.', wishRequired: 'Hãy nhập mong muốn', wishDuplicate: 'Mong muốn này đã tồn tại.', wishShared: 'Đã gửi mong muốn ẩn danh',
         lookServiceRequired: 'Hãy nhập tên dịch vụ', lookRequired: 'Hãy nhập ảnh, dịch vụ, màu hoặc ghi chú.', lookSaveFailed: 'Không thể lưu kiểu. Vui lòng thử lại.', lookPhotoQuota: 'Bộ nhớ ảnh đã đầy; đã lưu thông tin kiểu không kèm ảnh.', lookSaved: 'Đã lưu kiểu mới', noLookNote: 'Không có ghi chú.', deleteLook: 'Xóa kiểu này?', deleteLookDetail: 'Thao tác chỉ ảnh hưởng dữ liệu mẫu trên thiết bị.', followVisitRequired: 'Chỉ theo dõi thợ đã từng phục vụ bạn.', scanReceipt: 'Quét hóa đơn', scanReceiptDetail: 'Bản mẫu mô phỏng OCR hóa đơn.', ratingRequired: 'Hãy chọn số sao',
@@ -2892,7 +2930,7 @@
         logoutTitle: 'Đăng xuất?', logoutDetail: 'Dữ liệu điểm vẫn được giữ trên thiết bị này.', useOffer: 'Dùng ưu đãi'
       },
       en: {
-        points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
+        points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', noExpiry: 'No points expiring soon.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
         paymentSent: '${amount} sent to the salon', insufficientPoints: 'Not enough points', saved: 'Saved', saveOffer: 'Save offer', view: 'View', rebook: 'Rebook', tip: 'Tip', delete: 'Delete', followingTech: 'Following tech', followTech: 'Follow tech', removeWish: 'Remove wish', favorite: 'Favorite', addFavorite: 'Add favorite', recentVisit: 'Recent visit',
         offerSaved: 'Offer saved', offerRemoved: 'Offer removed', offerSaveFailed: 'Invalid offer.', offerDetails: 'Offer details', offerDetail: 'Review terms, expiry and issuing business before use.', wishRequired: 'Enter a wish first', wishDuplicate: 'This wish already exists.', wishShared: 'Anonymous wish shared',
         lookServiceRequired: 'Enter a service name', lookRequired: 'Add a photo, service, color or note.', lookSaveFailed: 'Could not save this look.', lookPhotoQuota: 'Image storage is full; look details were saved without the photo.', lookSaved: 'New look saved', noLookNote: 'No note.', deleteLook: 'Delete this look?', deleteLookDetail: 'This only changes local demo data.', followVisitRequired: 'You can only follow a tech from a shared visit.', scanReceipt: 'Scan receipt', scanReceiptDetail: 'This prototype simulates receipt OCR.', ratingRequired: 'Choose a rating',
@@ -3234,6 +3272,35 @@
       document.getElementById('reward-after').textContent = formatPoints(balance - reward.cost);
     }
 
+    function getReceiptRedemption(appState = state) {
+      const redemptionId = appState.ui?.pendingContext?.redemptionId;
+      if (typeof redemptionId !== 'string' || !redemptionId.trim()) return null;
+      const redemption = Array.isArray(appState.redemptions)
+        ? appState.redemptions.find((item) => isRecord(item) && item.id === redemptionId.trim())
+        : null;
+      return redemption && isValidPersistedRedemption(appState, redemption) ? redemption : null;
+    }
+
+    function renderRewardReceipt() {
+      const redemption = getReceiptRedemption();
+      if (!redemption) return;
+      const reward = getRewardDefinition(redemption.rewardKey);
+      if (!reward) return;
+      const business = getValidBusiness(state, redemption.acceptingBusinessId);
+      const title = document.getElementById('reward-done-title');
+      const cost = document.getElementById('reward-done-cost');
+      const code = document.getElementById('reward-done-code');
+      const status = document.getElementById('reward-done-status');
+      const copy = document.getElementById('redeemdone-business-copy');
+      if (title) title.textContent = reward.title[state.profile.language] ?? reward.title.vi;
+      if (cost) cost.textContent = formatPoints(redemption.cost);
+      if (code) code.textContent = redemption.qrPayload;
+      if (status) status.textContent = redemption.status;
+      if (copy) copy.textContent = state.profile.language === 'en'
+        ? `Show this code to ${business?.name ?? t('unknownBusiness')} staff.`
+        : `Đưa mã này cho nhân viên ${business?.name ?? t('unknownBusiness')}.`;
+    }
+
     function getPendingRewardPreview(appState) {
       const attempt = appState.ui.pendingContext.rewardAttempt;
       if (!isRecord(attempt)
@@ -3271,6 +3338,7 @@
       }
       commitState((draft) => {
         draft.ui.currentRewardKey = reward.key;
+        draft.ui.pendingContext.redemptionId = null;
         draft.ui.pendingContext.rewardAttempt = {
           rewardKey: reward.key,
           idempotencyKey,
@@ -3291,7 +3359,10 @@
       }
       const result = commitState((draft) => {
         const redemption = redeemReward(draft, attempt.rewardKey, attempt.idempotencyKey);
-        if (redemption.ok) draft.ui.pendingContext.rewardAttempt.completed = true;
+        if (redemption.ok) {
+          draft.ui.pendingContext.rewardAttempt.completed = true;
+          draft.ui.pendingContext.redemptionId = redemption.redemption.id;
+        }
         return redemption;
       });
       if (!result.ok) {
@@ -3309,8 +3380,7 @@
       }
       const reward = getRewardDefinition(result.redemption.rewardKey);
       if (!reward) return { ok: false, code: 'unknown_reward' };
-      document.getElementById('reward-done-title').textContent = reward.title[state.profile.language];
-      document.getElementById('reward-done-cost').textContent = formatPoints(result.redemption.cost);
+      renderRewardReceipt();
       if (navigate) {
         renderApp();
         navigateTo('redeemdone');
@@ -3354,6 +3424,30 @@
       return button;
     }
 
+    function setActionLabel(control, label) {
+      if (!control) return;
+      const text = String(label ?? '');
+      const labelNode = control.querySelector?.('span');
+      if (labelNode) {
+        labelNode.textContent = text;
+        return;
+      }
+      const icon = control.querySelector?.('[data-lucide]');
+      if (icon && control.replaceChildren) {
+        const copy = document.createElement('span');
+        copy.textContent = text;
+        control.replaceChildren(icon, copy);
+        return;
+      }
+      control.textContent = text;
+    }
+
+    function canRenderFollowTech(appState, staffProfileId, businessId = null) {
+      const staff = isRecord(appState?.staffProfiles) ? appState.staffProfiles[staffProfileId] : null;
+      return isRecord(staff) && staff.id === staffProfileId && getValidBusiness(appState, staff.businessId)
+        && (!businessId || staff.businessId === businessId) && canFollowTech(appState, staffProfileId);
+    }
+
     function renderLooks() {
       const grid = document.getElementById('looks-grid');
       if (!grid) return;
@@ -3382,13 +3476,11 @@
         detail.textContent = `${look.service} · ${look.staffName}`;
         const actions = document.createElement('div');
         actions.className = 'mt-3 grid grid-cols-2 gap-2';
-        actions.append(
-          createActionButton('view-look', t('view'), { lookId: look.id }),
-          createActionButton('rebook-look', t('rebook'), { lookId: look.id }),
-          createActionButton('toggle-follow-tech', state.followedTechIds.includes(look.staffProfileId) ? t('followingTech') : t('followTech'), { staffId: look.staffProfileId }),
-          createActionButton('tip-look', t('tip'), { lookId: look.id }),
-          createActionButton('delete-look', t('delete'), { lookId: look.id }, 'app-button-secondary border-app-red/30 text-app-red')
-        );
+        actions.append(createActionButton('view-look', t('view'), { lookId: look.id }), createActionButton('rebook-look', t('rebook'), { lookId: look.id }));
+        if (canRenderFollowTech(state, look.staffProfileId, look.businessId)) {
+          actions.append(createActionButton('toggle-follow-tech', state.followedTechIds.includes(look.staffProfileId) ? t('followingTech') : t('followTech'), { staffId: look.staffProfileId }));
+        }
+        actions.append(createActionButton('tip-look', t('tip'), { lookId: look.id }), createActionButton('delete-look', t('delete'), { lookId: look.id }, 'app-button-secondary border-app-red/30 text-app-red'));
         body.append(title, detail, actions);
         card.append(body);
         return card;
@@ -3417,14 +3509,13 @@
           }
           body.append(actions);
         }
-        if (viewControl) viewControl.textContent = t('view');
-        if (useControl) useControl.textContent = t('useOffer');
+        if (viewControl) setActionLabel(viewControl, t('view'));
+        if (useControl) setActionLabel(useControl, t('useOffer'));
       });
       document.querySelectorAll('[data-action="save-offer"]').forEach((control) => {
         const saved = state.savedOfferIds.includes(control.dataset.offerId);
         control.setAttribute('aria-pressed', String(saved));
-        const label = control.querySelector('span');
-        if (label) label.textContent = saved ? t('saved') : t('saveOffer');
+        setActionLabel(control, saved ? t('saved') : t('saveOffer'));
       });
       document.querySelectorAll('[data-offer-filter]').forEach((control) => {
         control.setAttribute('aria-pressed', String(control.dataset.offerFilter === state.ui.offerFilter));
@@ -3462,8 +3553,7 @@
       document.querySelectorAll('[data-favorite-business]').forEach((control) => {
         const favorite = Boolean(state.businesses[control.dataset.favoriteBusiness]?.favorite);
         control.setAttribute('aria-pressed', String(favorite));
-        const label = control.querySelector('span');
-        if (label) label.textContent = favorite ? t('favorite') : t('addFavorite');
+        setActionLabel(control, favorite ? t('favorite') : t('addFavorite'));
       });
       document.querySelectorAll('[data-explore-filter]').forEach((control) => {
         control.setAttribute('aria-pressed', String(control.dataset.exploreFilter === state.ui.exploreFilter));
@@ -3484,9 +3574,12 @@
         const detail = document.createElement('strong');
         detail.className = 'mt-2 block';
         detail.textContent = `${visit.service} · ${visit.staffName}`;
-        const follow = createActionButton('toggle-follow-tech', state.followedTechIds.includes(visit.staffProfileId) ? t('followingTech') : t('followTech'), { staffId: visit.staffProfileId });
-        follow.classList.add('mt-3');
-        card.append(label, detail, follow);
+        const follow = canRenderFollowTech(state, visit.staffProfileId, visit.businessId)
+          ? createActionButton('toggle-follow-tech', state.followedTechIds.includes(visit.staffProfileId) ? t('followingTech') : t('followTech'), { staffId: visit.staffProfileId })
+          : null;
+        follow?.classList.add('mt-3');
+        card.append(label, detail);
+        if (follow) card.append(follow);
         return card;
       });
       const notifications = (Array.isArray(state.notifications) ? state.notifications : []).filter(isRecord).map((item) => {
@@ -3973,6 +4066,19 @@
         control.disabled = false;
       }
     });
+    registerAction('show-reward-qr', (control) => {
+      const redemption = getReceiptRedemption();
+      if (!redemption) return showToast(t('rewardUnavailable'), 'error');
+      const content = document.createElement('div');
+      const detail = document.createElement('p');
+      detail.className = 'text-sm leading-6 text-app-muted';
+      detail.textContent = redemption.qrPayload;
+      const code = document.createElement('code');
+      code.className = 'mt-4 block break-all rounded-xl bg-app-panel p-4 text-left text-sm text-app-cyan';
+      code.textContent = redemption.id;
+      content.append(detail, code);
+      openOverlay({ title: t('redeem'), content, confirmLabel: t('gotIt'), hideCancel: true }, control);
+    });
     registerAction('save-offer', (control) => {
       const offerId = control.dataset.offerId;
       if (!OFFER_IDS.has(offerId)) return showToast(t('offerSaveFailed'), 'error');
@@ -4094,7 +4200,39 @@
         if (typeof document !== 'undefined') showToast(t('googleReviewFailed'), 'error');
       }
     });
-    registerAction('show-directions', () => showToast(t('openingMaps')));
+    function showDirections(businessId = state.ui.selectedBusinessId, trigger = document.activeElement) {
+      const business = getValidBusiness(state, businessId) ?? getValidBusiness(state, BUSINESS_ID);
+      if (!business) return { ok: false, code: 'unknown_business' };
+      const addresses = {
+        'bitcoin-nail-bar': '1288 Westheimer Rd, Houston, TX',
+        'golden-glow-spa': '2100 Westheimer Rd, Houston, TX',
+        'moon-coffee': '3100 Richmond Ave, Houston, TX'
+      };
+      const destination = addresses[business.id] ?? `${business.name}, Houston, TX`;
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+      let opened = false;
+      try {
+        opened = Boolean(window.open?.(url, '_blank', 'noopener,noreferrer'));
+      } catch {
+        opened = false;
+      }
+      if (!opened) {
+        const content = document.createElement('div');
+        const detail = document.createElement('p');
+        detail.className = 'text-sm leading-6 text-app-muted';
+        detail.textContent = `${destination} · ${t('openingMaps')}`;
+        const link = document.createElement('a');
+        link.className = 'app-button mt-4 w-full';
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = t('openingMaps');
+        content.append(detail, link);
+        openOverlay({ title: business.name, content, confirmLabel: t('gotIt'), hideCancel: true }, trigger);
+      }
+      return { ok: true, url, opened };
+    }
+    registerAction('show-directions', (control) => showDirections(control.dataset.businessId || state.ui.selectedBusinessId, control));
     registerAction('simulate-geo-push', () => {
       const result = commitState((draft) => {
         const timestamp = domainTimestamp(Date.now());
@@ -4309,6 +4447,95 @@
       document.querySelector('[data-for-you]')?.classList.toggle('hidden', !state.preferences.aiSuggestions);
     }
 
+    function renderHome() {
+      const title = document.getElementById('home-title');
+      if (!title) return;
+      const name = typeof state.profile.name === 'string' && state.profile.name.trim() ? state.profile.name.trim() : 'NEXORA';
+      const copy = {
+        en: `Good morning, ${name}`,
+        vi: `Chào buổi sáng, ${name}`
+      };
+      title.dataset.en = copy.en;
+      title.dataset.vi = copy.vi;
+      title.textContent = copy[state.profile.language] ?? copy.vi;
+      renderRecentLedgerList('home-activity-list', 2);
+    }
+
+    function sortedLedgerEntries() {
+      return (Array.isArray(state.ledger) ? state.ledger : [])
+        .filter((entry) => isRecord(entry) && typeof entry.businessId === 'string' && typeof entry.pointsDelta === 'number' && Number.isFinite(entry.pointsDelta))
+        .slice()
+        .sort((left, right) => {
+          const leftTime = Date.parse(left.createdAt);
+          const rightTime = Date.parse(right.createdAt);
+          if (Number.isFinite(leftTime) && Number.isFinite(rightTime) && leftTime !== rightTime) return rightTime - leftTime;
+          return String(right.id ?? '').localeCompare(String(left.id ?? ''));
+        });
+    }
+
+    function renderRecentLedgerList(containerId, limit = 4) {
+      const list = document.getElementById(containerId);
+      if (!list) return;
+      const entries = sortedLedgerEntries().slice(0, limit);
+      if (!entries.length) {
+        const empty = document.createElement('p');
+        empty.className = 'text-sm text-app-muted';
+        empty.textContent = t('ledgerEmpty');
+        list.replaceChildren(empty);
+        return;
+      }
+      const cards = entries.map((entry) => {
+        const business = getValidBusiness(state, entry.businessId);
+        const title = t(LEDGER_LABEL_KEYS[entry.type] ?? 'pointActivity');
+        const date = new Date(entry.createdAt);
+        const dateLabel = Number.isFinite(date.getTime()) ? date.toLocaleDateString(state.profile.language === 'en' ? 'en-US' : 'vi-VN') : t('dateUnavailable');
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flex items-center gap-3 py-3';
+        const icon = document.createElement('i');
+        icon.setAttribute('data-lucide', entry.pointsDelta >= 0 ? 'arrow-down-left' : 'arrow-up-right');
+        icon.className = `size-4 ${entry.pointsDelta >= 0 ? 'text-app-green' : 'text-app-red'}`;
+        icon.setAttribute('aria-hidden', 'true');
+        const detail = document.createElement('div');
+        detail.className = 'min-w-0 flex-1';
+        const heading = document.createElement('strong');
+        heading.className = 'block text-sm';
+        heading.textContent = title;
+        const metadata = document.createElement('p');
+        metadata.className = 'text-xs text-app-muted';
+        metadata.textContent = `${business?.name ?? t('unknownBusiness')} · ${dateLabel}`;
+        detail.append(heading, metadata);
+        const points = document.createElement('strong');
+        points.className = `text-sm ${entry.pointsDelta >= 0 ? 'text-app-green' : 'text-app-red'}`;
+        points.textContent = `${entry.pointsDelta > 0 ? '+' : ''}${formatPoints(entry.pointsDelta)}`;
+        wrapper.append(icon, detail, points);
+        return wrapper;
+      });
+      list.replaceChildren(...cards);
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderWalletExpiry() {
+      const copy = document.getElementById('wallet-expiry-copy');
+      if (!copy) return;
+      const candidates = Object.entries(state.balances ?? {})
+        .map(([businessId, balance]) => ({ businessId, balance }))
+        .filter(({ balance }) => isRecord(balance) && isRecord(balance.expiringPoints)
+          && typeof balance.expiringPoints.amount === 'number' && Number.isFinite(balance.expiringPoints.amount)
+          && balance.expiringPoints.amount > 0 && validExpiryDate(balance.expiringPoints.date));
+      candidates.sort((left, right) => Date.parse(left.balance.expiringPoints.date) - Date.parse(right.balance.expiringPoints.date));
+      const candidate = candidates[0];
+      if (!candidate) {
+        copy.textContent = t('noExpiry');
+        return;
+      }
+      const business = getValidBusiness(state, candidate.businessId);
+      const date = new Date(candidate.balance.expiringPoints.date);
+      const dateLabel = date.toLocaleDateString(state.profile.language === 'en' ? 'en-US' : 'vi-VN', { month: 'long', day: 'numeric' });
+      copy.textContent = state.profile.language === 'en'
+        ? `Use ${formatPoints(candidate.balance.expiringPoints.amount, false)} ${business?.name ?? t('unknownBusiness')} points before ${dateLabel}.`
+        : `Hãy dùng ${formatPoints(candidate.balance.expiringPoints.amount, false)} điểm ${business?.name ?? t('unknownBusiness')} trước ngày ${dateLabel}.`;
+    }
+
     function renderBalances() {
       document.querySelectorAll('[data-balance-points]').forEach((element) => {
         element.textContent = formatPointNumber(getBusinessBalance(state, element.dataset.balancePoints).points);
@@ -4324,8 +4551,8 @@
         element.textContent = t('availablePoints', { points: formatPoints(points) });
       });
       const list = document.getElementById('wallet-business-list');
-      if (!list) return;
-      const cards = Object.entries(state.businesses).filter(([, business]) => isRecord(business)).map(([businessId, business]) => {
+      if (list) {
+        const cards = Object.entries(state.businesses).filter(([, business]) => isRecord(business)).map(([businessId, business]) => {
         const card = document.createElement('article');
         card.className = 'app-card';
         const name = document.createElement('h2');
@@ -4342,8 +4569,11 @@
         history.textContent = t('history');
         card.append(name, points, history);
         return card;
-      });
-      list.replaceChildren(...cards);
+        });
+        list.replaceChildren(...cards);
+      }
+      renderRecentLedgerList('wallet-activity-list');
+      renderWalletExpiry();
     }
 
     const LEDGER_LABEL_KEYS = {
@@ -4585,6 +4815,8 @@
       renderBalances();
       renderLedger();
       renderRewards();
+      renderHome();
+      renderRewardReceipt();
       renderTipMethods();
       renderPaymentMethods();
       renderTipResult();
@@ -4617,6 +4849,12 @@
           state.ui.currentRewardKey = null;
           state.ui.pendingContext.rewardAttempt = null;
         }
+      }
+      if (screenId === 'redeemdone' && !getReceiptRedemption(state)) {
+        screenId = 'rewards';
+        state.ui.activeScreen = screenId;
+        state.ui.activeModule = SCREEN_MODULE[screenId];
+        state.ui.pendingContext.redemptionId = null;
       }
       if (screenId === 'tipdone' && !state.tips.some((tip) => tip.id === state.ui.pendingContext.tipId)) {
         screenId = 'tip';
