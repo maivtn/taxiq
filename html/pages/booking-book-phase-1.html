@@ -924,6 +924,12 @@
       color: var(--nexora-warning);
     }
 
+    .badge-soft {
+      background: var(--nexora-canvas);
+      color: var(--nexora-muted);
+      border: 1px solid var(--nexora-border);
+    }
+
     .progress-stack {
       display: grid;
       gap: 14px;
@@ -4034,6 +4040,19 @@
       color: #fff;
     }
 
+    .cust-count {
+      color: var(--nexora-muted);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .booking-empty-cell {
+      text-align: center;
+      padding: 20px;
+      color: var(--nexora-muted);
+      font-weight: 600;
+    }
+
     .booking-actions {
       display: flex;
       flex-wrap: wrap;
@@ -5906,6 +5925,18 @@
                 </span>
                 <span>Booking Book</span>
               </button>
+              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="customers" aria-controls="panel-customers">
+                <span class="page-tab-icon">
+                  <i class="bi bi-people" aria-hidden="true"></i>
+                </span>
+                <span>Khách hàng</span>
+              </button>
+              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="calllog" aria-controls="panel-calllog">
+                <span class="page-tab-icon">
+                  <i class="bi bi-telephone" aria-hidden="true"></i>
+                </span>
+                <span>Call Log</span>
+              </button>
               <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="plans" aria-controls="panel-plans">
                 <span class="page-tab-icon">
                   <i class="bi bi-tags" aria-hidden="true"></i>
@@ -7267,6 +7298,81 @@
                 </div>
               </div>
             </section>
+
+            <section class="tab-panel" id="panel-customers" data-tab-panel="customers" aria-label="Customer list panel">
+              <div class="booking-grid">
+                <article class="overview-card overview-card-pad">
+                  <div class="booking-daybar">
+                    <div class="booking-date">
+                      <span class="booking-action-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
+                      <span>Danh sách khách hàng</span>
+                    </div>
+                    <span class="cust-count" data-cust-count></span>
+                  </div>
+
+                  <div class="booking-controls" aria-label="Customer filters">
+                    <label class="booking-control-field" style="flex: 1 1 240px;">
+                      <span class="booking-control-label">Tìm kiếm</span>
+                      <input class="booking-input" type="search" placeholder="Tìm tên hoặc số điện thoại..." data-cust-search>
+                    </label>
+                  </div>
+
+                  <div class="booking-status-chips" data-cust-seg-filter role="group" aria-label="Lọc theo nhóm khách"></div>
+
+                  <div class="booking-table-wrap">
+                    <table class="booking-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Khách hàng</th>
+                          <th scope="col">Điện thoại</th>
+                          <th scope="col">Nhóm</th>
+                          <th scope="col">Nguồn</th>
+                          <th scope="col">Số lần ghé</th>
+                          <th scope="col">Lần cuối</th>
+                          <th scope="col">Tổng chi</th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody data-cust-tbody></tbody>
+                    </table>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="tab-panel" id="panel-calllog" data-tab-panel="calllog" aria-label="Call log panel">
+              <div class="overview-kpis" data-call-stats></div>
+              <div class="booking-grid">
+                <article class="overview-card overview-card-pad">
+                  <div class="booking-daybar">
+                    <div class="booking-date">
+                      <span class="booking-action-icon"><i class="bi bi-telephone" aria-hidden="true"></i></span>
+                      <span>Nhật ký cuộc gọi</span>
+                    </div>
+                    <span class="cust-count" data-call-count></span>
+                  </div>
+
+                  <div class="booking-status-chips" data-call-status-filter role="group" aria-label="Lọc theo trạng thái cuộc gọi"></div>
+
+                  <div class="booking-table-wrap">
+                    <table class="booking-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Thời gian</th>
+                          <th scope="col">Người gọi</th>
+                          <th scope="col">Số điện thoại</th>
+                          <th scope="col">Trạng thái</th>
+                          <th scope="col">Thời lượng</th>
+                          <th scope="col">Ghi chú</th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody data-call-tbody></tbody>
+                    </table>
+                  </div>
+                </article>
+              </div>
+            </section>
           </div>
         </section>
       </main>
@@ -7436,6 +7542,14 @@
       service: 'Nhập tên dịch vụ'
     };
 
+    var BOOKING_STATUS_CLASS = {
+      'new': 'is-new',
+      'sms-sent': 'is-sms-sent',
+      'done': 'is-done',
+      'noshow': 'is-noshow'
+    };
+    var bookingStatusFilter = 'all';
+
     function renderLucideIcons() {
       if (window.lucide && typeof window.lucide.createIcons === 'function') {
         window.lucide.createIcons();
@@ -7572,6 +7686,38 @@
 
       var emptyState = panel.querySelector('[data-booking-empty]');
       if (emptyState) emptyState.hidden = items.length > 0;
+
+      updateBookingStatusChips();
+    }
+
+    function updateBookingStatusChips() {
+      var subpanel = document.getElementById('booking-subpanel-today');
+      if (!subpanel) return;
+
+      var allItems = Array.from(subpanel.querySelectorAll('[data-booking-item]'));
+      var counts = { all: allItems.length, 'new': 0, 'sms-sent': 0, 'done': 0, 'noshow': 0 };
+      allItems.forEach(function(item) {
+        Object.keys(BOOKING_STATUS_CLASS).forEach(function(key) {
+          if (item.classList.contains(BOOKING_STATUS_CLASS[key])) counts[key]++;
+        });
+      });
+
+      subpanel.querySelectorAll('[data-booking-status-count]').forEach(function(el) {
+        var key = el.dataset.bookingStatusCount;
+        if (counts[key] !== undefined) el.textContent = counts[key];
+      });
+
+      subpanel.querySelectorAll('[data-booking-status-chip]').forEach(function(chip) {
+        var isActive = chip.dataset.bookingStatusChip === bookingStatusFilter;
+        chip.classList.toggle('is-active', isActive);
+        chip.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+    }
+
+    function setBookingStatusFilter(status) {
+      var isValid = status === 'all' || BOOKING_STATUS_CLASS[status];
+      bookingStatusFilter = isValid ? status : 'all';
+      filterBookingItems();
     }
 
     function setBookingViewMode(mode) {
@@ -7718,8 +7864,7 @@
         actions.innerHTML = renderBookingActionButtons(item);
       }
 
-      updateBookingKpis();
-      renderBookingCards();
+      filterBookingItems();
     }
 
     function sendBookingSms(item) {
@@ -7764,13 +7909,16 @@
       var dateFrom = dateFromInput ? dateFromInput.value : '';
       var dateTo = dateToInput ? dateToInput.value : '';
 
+      var statusClass = BOOKING_STATUS_CLASS[bookingStatusFilter];
+
       Array.from(panel.querySelectorAll('[data-booking-item]')).forEach(function(item) {
         var searchValue = getBookingSearchValue(item, field);
         var itemDate = item.dataset.bookingDate || '';
         var matchesSearch = !query || searchValue.indexOf(query) !== -1;
         var matchesDateFrom = !dateFrom || itemDate >= dateFrom;
         var matchesDateTo = !dateTo || itemDate <= dateTo;
-        item.hidden = !(matchesSearch && matchesDateFrom && matchesDateTo);
+        var matchesStatus = bookingStatusFilter === 'all' || item.classList.contains(statusClass);
+        item.hidden = !(matchesSearch && matchesDateFrom && matchesDateTo && matchesStatus);
       });
 
       updateBookingKpis();
@@ -7790,6 +7938,7 @@
       if (searchInput) searchInput.value = '';
       if (dateFromInput) dateFromInput.value = '';
       if (dateToInput) dateToInput.value = '';
+      bookingStatusFilter = 'all';
 
       updateBookingSearchPlaceholder();
       filterBookingItems();
@@ -8667,6 +8816,12 @@
       bookingClearFilters.addEventListener('click', clearBookingFilters);
     }
 
+    document.querySelectorAll('[data-booking-status-chip]').forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        setBookingStatusFilter(chip.dataset.bookingStatusChip);
+      });
+    });
+
     document.querySelectorAll('[data-tech-day-off]').forEach(function(dayOff) {
       syncTechDayOffRow(dayOff);
       dayOff.addEventListener('change', function() {
@@ -8921,9 +9076,248 @@
       });
     });
 
+    /* ===== Customers (data ported from SMS dashboard) ===== */
+    var CUSTOMERS = [
+      { name: 'Linh Trần',      phone: '(832) 431-8827', seg: 'vip',      visits: 24, last: '05/07/2026', spent: 2140, src: 'qr' },
+      { name: 'Mai Nguyễn',     phone: '(713) 552-0194', seg: 'vip',      visits: 31, last: '03/07/2026', spent: 2890, src: 'receipt' },
+      { name: 'Jessica Kim',    phone: '(832) 906-4471', seg: 'day15',    visits: 8,  last: '22/06/2026', spent: 640,  src: 'call' },
+      { name: 'Hằng Phạm',      phone: '(281) 774-3358', seg: 'new',      visits: 1,  last: '01/07/2026', spent: 55,   src: 'qr' },
+      { name: 'Ashley Brown',   phone: '(832) 118-9902', seg: 'day30',    visits: 5,  last: '06/06/2026', spent: 385,  src: 'receipt' },
+      { name: 'Thảo Lê',        phone: '(713) 662-8815', seg: 'day60',    visits: 12, last: '02/05/2026', spent: 970,  src: 'receipt' },
+      { name: 'Maria Gonzalez', phone: '(832) 340-2276', seg: 'birthday', visits: 9,  last: '18/06/2026', spent: 720,  src: 'qr' },
+      { name: 'Kim Đặng',       phone: '(281) 907-5541', seg: 'day15',    visits: 6,  last: '21/06/2026', spent: 480,  src: 'call' },
+      { name: 'Sarah Johnson',  phone: '(713) 225-7809', seg: 'new',      visits: 1,  last: '04/07/2026', spent: 70,   src: 'qr' },
+      { name: 'Ngọc Vũ',        phone: '(832) 543-1120', seg: 'vip',      visits: 19, last: '30/06/2026', spent: 1650, src: 'receipt' },
+      { name: 'Emily Chen',     phone: '(281) 660-3387', seg: 'day30',    visits: 4,  last: '04/06/2026', spent: 310,  src: 'call' },
+      { name: 'Trang Hoàng',    phone: '(713) 889-4462', seg: 'day60',    visits: 7,  last: '25/04/2026', spent: 560,  src: 'receipt' },
+      { name: 'Amanda Davis',   phone: '(832) 271-6693', seg: 'birthday', visits: 11, last: '15/06/2026', spent: 830,  src: 'qr' },
+      { name: 'Quỳnh Bùi',      phone: '(281) 435-9078', seg: 'new',      visits: 1,  last: '06/07/2026', spent: 45,   src: 'call' },
+      { name: 'Tiffany Võ',     phone: '(713) 508-2214', seg: 'day15',    visits: 14, last: '23/06/2026', spent: 1120, src: 'qr' }
+    ];
+
+    var CUST_SEGMENTS = [
+      { id: 'new',      icon: '🌟', label: 'Khách Mới' },
+      { id: 'day15',    icon: '📅', label: '15 Ngày' },
+      { id: 'day30',    icon: '⏰', label: '30 Ngày' },
+      { id: 'day60',    icon: '🔥', label: '60 Ngày' },
+      { id: 'vip',      icon: '💎', label: 'VIP' },
+      { id: 'birthday', icon: '🎂', label: 'Sinh Nhật' }
+    ];
+    var CUST_SEG_MAP = {};
+    CUST_SEGMENTS.forEach(function(s) { CUST_SEG_MAP[s.id] = s; });
+
+    var CUST_SRC = {
+      qr:      '🔳 QR',
+      receipt: '🧾 Biên lai',
+      call:    '📞 Gọi vào',
+      pos:     '📥 Import'
+    };
+
+    var custFilter = { search: '', seg: 'all' };
+
+    function renderCustSegChips() {
+      var wrap = document.querySelector('[data-cust-seg-filter]');
+      if (!wrap) return;
+
+      var counts = { all: CUSTOMERS.length };
+      CUST_SEGMENTS.forEach(function(s) {
+        counts[s.id] = CUSTOMERS.filter(function(c) { return c.seg === s.id; }).length;
+      });
+
+      var chips = [{ id: 'all', icon: '', label: 'Tất cả' }].concat(CUST_SEGMENTS);
+      wrap.innerHTML = chips.map(function(s) {
+        var isActive = custFilter.seg === s.id;
+        var label = (s.icon ? s.icon + ' ' : '') + s.label;
+        return '<button class="booking-status-chip' + (isActive ? ' is-active' : '') + '" type="button" data-cust-seg="' + s.id + '" aria-pressed="' + (isActive ? 'true' : 'false') + '">' +
+          label + ' <span class="booking-status-chip-count">' + (counts[s.id] || 0) + '</span></button>';
+      }).join('');
+    }
+
+    function renderCustomers() {
+      var tbody = document.querySelector('[data-cust-tbody]');
+      if (!tbody) return;
+
+      var q = (custFilter.search || '').toLowerCase();
+      var qDigits = q.replace(/\D/g, '');
+      var rows = CUSTOMERS.filter(function(c) {
+        var segOk = custFilter.seg === 'all' || c.seg === custFilter.seg;
+        var searchOk = !q || c.name.toLowerCase().indexOf(q) !== -1 ||
+          (qDigits && c.phone.replace(/\D/g, '').indexOf(qDigits) !== -1);
+        return segOk && searchOk;
+      });
+
+      var countEl = document.querySelector('[data-cust-count]');
+      if (countEl) countEl.textContent = rows.length + '/' + CUSTOMERS.length + ' khách';
+
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="booking-empty-cell">Không tìm thấy khách nào</td></tr>';
+        renderCustSegChips();
+        return;
+      }
+
+      tbody.innerHTML = rows.map(function(c) {
+        var seg = CUST_SEG_MAP[c.seg];
+        var segLabel = seg ? seg.icon + ' ' + seg.label : c.seg;
+        var src = CUST_SRC[c.src] || '—';
+        return '<tr class="booking-table-row">' +
+          '<td><div class="booking-customer-name">' + escapeHtml(c.name) + '</div></td>' +
+          '<td>' + escapeHtml(c.phone) + '</td>' +
+          '<td><span class="badge badge-plan">' + escapeHtml(segLabel) + '</span></td>' +
+          '<td><span class="badge badge-soft">' + escapeHtml(src) + '</span></td>' +
+          '<td>' + c.visits + '</td>' +
+          '<td>' + escapeHtml(c.last) + '</td>' +
+          '<td>$' + c.spent.toLocaleString() + '</td>' +
+          '<td><div class="booking-actions"><button class="booking-mini-button icon-only" type="button" title="Gửi SMS" aria-label="Gửi SMS"><i class="bi bi-chat-dots" aria-hidden="true"></i><span class="sr-only">Gửi SMS</span></button></div></td>' +
+        '</tr>';
+      }).join('');
+
+      renderCustSegChips();
+    }
+
+    /* ===== Call Log (data ported from SMS dashboard) ===== */
+    var CALLS = [
+      { time: 'Hôm nay 14:32', name: 'Linh Trần',     phone: '(832) 431-8827', status: 'booked',    dur: 184, note: 'Đặt full set gel — Thứ 6 15:00' },
+      { time: 'Hôm nay 13:05', name: 'Số lạ',          phone: '(346) 220-1187', status: 'missed',    dur: 0,   note: 'Gọi 2 lần liên tiếp' },
+      { time: 'Hôm nay 11:48', name: 'Jessica Kim',    phone: '(832) 906-4471', status: 'answered',  dur: 96,  note: 'Hỏi giá dip powder' },
+      { time: 'Hôm nay 10:22', name: 'Số lạ',          phone: '(713) 990-4453', status: 'voicemail', dur: 31,  note: 'Để lại lời nhắn hỏi giờ mở cửa' },
+      { time: 'Hôm nay 09:15', name: 'Mai Nguyễn',     phone: '(713) 552-0194', status: 'booked',    dur: 142, note: 'Đặt pedicure combo — CN 11:00' },
+      { time: 'Hôm qua 18:47', name: 'Số lạ',          phone: '(832) 605-7731', status: 'missed',    dur: 0,   note: 'Sau giờ đóng cửa' },
+      { time: 'Hôm qua 16:30', name: 'Ashley Brown',   phone: '(832) 118-9902', status: 'answered',  dur: 205, note: 'Hỏi về nail art design' },
+      { time: 'Hôm qua 15:12', name: 'Số lạ',          phone: '(281) 344-2209', status: 'missed',    dur: 0,   note: 'Giờ cao điểm — tiệm full' },
+      { time: 'Hôm qua 12:58', name: 'Ngọc Vũ',        phone: '(832) 543-1120', status: 'booked',    dur: 118, note: 'Đặt 2 slot cùng bạn — Thứ 7' },
+      { time: 'Hôm qua 10:03', name: 'Maria Gonzalez', phone: '(832) 340-2276', status: 'answered',  dur: 87,  note: 'Dời lịch từ Thứ 4 sang Thứ 5' }
+    ];
+
+    var CALL_STATUS_META = {
+      answered:  { cls: 'booking-status-sms',    label: '✅ Đã nghe' },
+      missed:    { cls: 'booking-status-noshow', label: '❌ Nhỡ' },
+      booked:    { cls: 'booking-status-done',   label: '📅 Đặt lịch' },
+      voicemail: { cls: 'booking-status-new',    label: '📩 Voicemail' }
+    };
+
+    var CALL_STATUS_CHIPS = [
+      { id: 'all',       label: 'Tất cả' },
+      { id: 'missed',    label: '❌ Nhỡ' },
+      { id: 'answered',  label: '✅ Đã nghe' },
+      { id: 'booked',    label: '📅 Đặt lịch' },
+      { id: 'voicemail', label: '📩 Voicemail' }
+    ];
+
+    var callFilter = 'all';
+
+    function formatCallDur(sec) {
+      if (!sec) return '—';
+      return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
+    }
+
+    function renderCallStats() {
+      var host = document.querySelector('[data-call-stats]');
+      if (!host) return;
+
+      var today = CALLS.filter(function(c) { return c.time.indexOf('Hôm nay') === 0; });
+      var missed = today.filter(function(c) { return c.status === 'missed'; }).length;
+      var booked = today.filter(function(c) { return c.status === 'booked'; }).length;
+      var answeredRate = today.length ? Math.round((today.length - missed) / today.length * 100) : 0;
+
+      host.innerHTML =
+        '<article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-electric);">' +
+          '<div class="kpi-top"><div class="kpi-icon"><i class="bi bi-telephone-inbound" aria-hidden="true"></i></div></div>' +
+          '<div class="kpi-label">Cuộc gọi hôm nay</div><div class="kpi-value">' + today.length + '</div>' +
+          '<div class="kpi-trend">tính đến hiện tại</div></article>' +
+        '<article class="overview-card kpi-card" style="--kpi-accent: #ef4444;">' +
+          '<div class="kpi-top"><div class="kpi-icon"><i class="bi bi-telephone-x" aria-hidden="true"></i></div><span class="badge booking-status booking-status-noshow">Follow-up</span></div>' +
+          '<div class="kpi-label">Gọi nhỡ</div><div class="kpi-value">' + missed + '</div>' +
+          '<div class="kpi-trend">cần follow-up SMS</div></article>' +
+        '<article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-success);">' +
+          '<div class="kpi-top"><div class="kpi-icon"><i class="bi bi-calendar-check" aria-hidden="true"></i></div><span class="badge booking-status booking-status-done">Booking</span></div>' +
+          '<div class="kpi-label">Đặt lịch qua điện thoại</div><div class="kpi-value">' + booked + '</div>' +
+          '<div class="kpi-trend">↑ booking hôm nay</div></article>' +
+        '<article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-brand);">' +
+          '<div class="kpi-top"><div class="kpi-icon"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i></div></div>' +
+          '<div class="kpi-label">Tỷ lệ trả lời</div><div class="kpi-value">' + answeredRate + '%</div>' +
+          '<div class="kpi-trend">' + (answeredRate >= 80 ? '↑ tốt' : '⚠️ cần cải thiện') + '</div></article>';
+    }
+
+    function renderCallStatusChips() {
+      var wrap = document.querySelector('[data-call-status-filter]');
+      if (!wrap) return;
+
+      var counts = { all: CALLS.length };
+      ['missed', 'answered', 'booked', 'voicemail'].forEach(function(id) {
+        counts[id] = CALLS.filter(function(c) { return c.status === id; }).length;
+      });
+
+      wrap.innerHTML = CALL_STATUS_CHIPS.map(function(s) {
+        var isActive = callFilter === s.id;
+        return '<button class="booking-status-chip' + (isActive ? ' is-active' : '') + '" type="button" data-call-status="' + s.id + '" aria-pressed="' + (isActive ? 'true' : 'false') + '">' +
+          s.label + ' <span class="booking-status-chip-count">' + (counts[s.id] || 0) + '</span></button>';
+      }).join('');
+    }
+
+    function renderCalls() {
+      var tbody = document.querySelector('[data-call-tbody]');
+      if (!tbody) return;
+
+      var rows = CALLS.filter(function(c) { return callFilter === 'all' || c.status === callFilter; });
+
+      var countEl = document.querySelector('[data-call-count]');
+      if (countEl) countEl.textContent = rows.length + '/' + CALLS.length + ' cuộc gọi';
+
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="booking-empty-cell">Không có cuộc gọi nào</td></tr>';
+        renderCallStatusChips();
+        return;
+      }
+
+      tbody.innerHTML = rows.map(function(c) {
+        var meta = CALL_STATUS_META[c.status] || { cls: 'booking-status-new', label: c.status };
+        var action = c.status === 'missed'
+          ? '<button class="booking-mini-button icon-only primary" type="button" title="Follow-up SMS" aria-label="Follow-up SMS"><i class="bi bi-reply" aria-hidden="true"></i><span class="sr-only">Follow-up SMS</span></button>'
+          : '';
+        return '<tr class="booking-table-row">' +
+          '<td>' + escapeHtml(c.time) + '</td>' +
+          '<td><div class="booking-customer-name">' + escapeHtml(c.name) + '</div></td>' +
+          '<td>' + escapeHtml(c.phone) + '</td>' +
+          '<td><span class="badge booking-status ' + meta.cls + '">' + escapeHtml(meta.label) + '</span></td>' +
+          '<td>' + formatCallDur(c.dur) + '</td>' +
+          '<td>' + escapeHtml(c.note) + '</td>' +
+          '<td><div class="booking-actions">' + action + '</div></td>' +
+        '</tr>';
+      }).join('');
+
+      renderCallStatusChips();
+    }
+
+    var custSearchInput = document.querySelector('[data-cust-search]');
+    if (custSearchInput) {
+      custSearchInput.addEventListener('input', function() {
+        custFilter.search = custSearchInput.value;
+        renderCustomers();
+      });
+    }
+
+    document.addEventListener('click', function(event) {
+      var segChip = event.target.closest('[data-cust-seg]');
+      if (segChip) {
+        custFilter.seg = segChip.dataset.custSeg;
+        renderCustomers();
+        return;
+      }
+
+      var callChip = event.target.closest('[data-call-status]');
+      if (callChip) {
+        callFilter = callChip.dataset.callStatus;
+        renderCalls();
+        return;
+      }
+    });
+
     updateBookingSearchPlaceholder();
     initBookingViewMode();
     updateBookingKpis();
+    renderCustomers();
+    renderCallStats();
+    renderCalls();
     activateMainTabFromUrl();
   </script>
 </body>
