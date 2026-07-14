@@ -362,3 +362,24 @@ test('covers accessibility, motion and UI edge states', () => {
   assert.ok(iconButtons.length > 0);
   for (const button of iconButtons) assert.match(button, /aria-label="[^"]+"/);
 });
+
+test('gives every enabled button an action and wires the known global controls', () => {
+  const source = html();
+  const buttons = source.match(/<button\b[\s\S]*?<\/button>/g) || [];
+  for (const button of buttons) {
+    if (/\bdisabled\b/.test(button)) continue;
+    const interactive = /data-action=|data-nav-target=|data-explore-filter=|data-offer-filter=|data-payment-method=|data-book-(?:service|staff|day|time)=/.test(button);
+    assert.ok(interactive, `enabled button needs an action: ${button.slice(0, 160)}`);
+  }
+  for (const action of ['open-notifications', 'edit-profile', 'logout', 'reset-demo']) {
+    assert.match(source, new RegExp(`data-action="${action}"`));
+  }
+});
+
+test('renders a raised mobile Scan control without changing desktop sidebar behavior', () => {
+  const source = html();
+  assert.match(source, /mobile-scan-button/);
+  assert.match(source, /mobile-scan-icon/);
+  assert.match(source, /item\.id === 'scan'/);
+  assert.match(source, /id="desktop-nav"/);
+});
