@@ -1,0 +1,1698 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXORA TOUCH — Customer App Prototype</title>
+<style>
+:root{
+  --bg:#05060f; --panel:#0b0f24; --card:#10142e; --card2:#141a3a;
+  --line:#232c58; --line2:#2e3a72;
+  --txt:#f4f6ff; --muted:#9aa4cc; --muted2:#6f79a8;
+  --p1:#7c3dff; --p2:#d946ef; --cyan:#16d3ff; --green:#34e0a1; --gold:#ffd48a; --red:#fb7185;
+  --grad:linear-gradient(90deg,#7c3dff,#d946ef);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#1b1040 0%,transparent 60%),#05060f;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:var(--txt);display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:26px 12px}
+.pagehead{text-align:center;margin-bottom:18px}
+.pagehead h1{margin:0;font-size:22px;letter-spacing:.5px}
+.pagehead h1 b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pagehead p{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+/* ============ PHONE FRAME ============ */
+.phone{width:393px;max-width:100%;height:812px;border-radius:44px;background:#05060f;border:1px solid #2a3468;box-shadow:0 0 0 8px #0d1130,0 30px 90px #000c,0 0 120px #7c3dff22;position:relative;overflow:hidden}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:118px;height:28px;background:#000;border-radius:20px;z-index:60}
+.status{position:absolute;top:14px;left:26px;right:26px;display:flex;justify-content:space-between;font-size:13px;font-weight:800;z-index:55;pointer-events:none}
+.status .r{letter-spacing:2px}
+.langbtn{position:absolute;top:44px;right:16px;z-index:56;border:1px solid var(--line2);background:#0d1233dd;color:#cdd6ff;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:900;cursor:pointer;backdrop-filter:blur(6px)}
+.langbtn span{opacity:.45}
+.langbtn .cur{opacity:1;color:#fff}
+
+/* ============ SCREENS ============ */
+.screen{position:absolute;inset:0;padding:78px 18px 96px;overflow-y:auto;overflow-x:hidden;display:none;scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
+.screen.active{display:block;animation:in .28s ease}
+@keyframes in{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.screen.center{display:none}
+.screen.center.active{display:flex;flex-direction:column;justify-content:center}
+
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.head h2{font-size:21px;margin:0;letter-spacing:.2px}
+.muted{color:var(--muted);font-size:13px;margin:2px 0 0}
+.tiny{color:var(--muted2);font-size:11px}
+.circle{width:42px;height:42px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;font-size:17px;cursor:pointer;flex:0 0 auto}
+.back{width:42px;height:42px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;font-size:18px;cursor:pointer;margin-right:12px;flex:0 0 auto}
+.headL{display:flex;align-items:center;min-width:0}
+
+/* hero */
+.hero{background:radial-gradient(circle at 85% 15%,#16d3ff55,transparent 40%),radial-gradient(circle at 10% 90%,#d946ef44,transparent 45%),linear-gradient(135deg,#6d2bf0,#4a23d9 45%,#0b4fe0);border-radius:22px;padding:15px 17px;box-shadow:0 14px 34px #4a23d94d,inset 0 1px 0 #ffffff2e;margin-bottom:12px;position:relative;overflow:hidden}
+.hero small{text-transform:uppercase;color:#cfe0ff;font-weight:900;font-size:10px;letter-spacing:1.6px}
+.hero h1{font-size:31px;margin:4px 0 0;letter-spacing:-.5px}
+.hero h2{font-size:21px;line-height:1.25;margin:8px 0 0}
+.hero p{color:#d4e2ff;margin:8px 0 0;font-size:13px;line-height:1.5}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{background:#ffffff17;border:1px solid #ffffff22;border-radius:16px;padding:12px}
+.stat b{font-size:22px;display:block}
+.stat span{font-size:11px;color:#d4e2ff}
+.progress{height:8px;border-radius:999px;background:#0e1a55;overflow:hidden;margin:12px 0}
+.progress i{display:block;height:100%;width:96%;background:linear-gradient(90deg,#00a7ff,#73e2ff);border-radius:999px}
+
+/* buttons */
+.btn{display:block;width:100%;border:0;border-radius:15px;background:var(--grad);color:#fff;padding:14px;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 10px 26px #a13cf744;transition:transform .1s}
+.btn:active{transform:scale(.97)}
+.btn.out{background:transparent;border:1px solid var(--line2);box-shadow:none;color:#d9dcff}
+.btn.white{background:#fff;color:#3b0d96;box-shadow:0 10px 26px #0006}
+.btn.mt{margin-top:10px}
+.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+
+/* sections */
+.sec{display:flex;justify-content:space-between;align-items:center;margin:13px 0 8px}
+.sec h3{margin:0;font-size:16px}
+.sec span{color:#c79bff;font-weight:900;font-size:12px;cursor:pointer}
+.quick{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.quick div{background:var(--card);border:1px solid var(--line);border-radius:16px;min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9.5px;color:#c3ccf5;font-weight:800;cursor:pointer;transition:border-color .15s}
+.quick div:active{border-color:var(--p2)}
+.quick b{font-size:18px;margin-bottom:4px}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:15px;margin-bottom:12px}
+.biz{display:grid;grid-template-columns:60px 1fr;gap:12px;align-items:center}
+.photo{height:60px;width:60px;border-radius:16px;background:linear-gradient(135deg,#2b3568,#7c3dff);display:grid;place-items:center;font-size:27px}
+.card h3{margin:0 0 4px;font-size:16px}
+.badge{display:inline-block;background:#271560;color:#dcc9ff;border-radius:999px;padding:5px 10px;font-size:10.5px;font-weight:900;margin-top:6px}
+.badge.green{background:#0a3d31;color:#7bf0c1}
+.badge.gold{background:#3c2a0b;color:var(--gold)}
+
+.offer,.row{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:10px}
+.icon{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,#7c2cff,#0b7cff);display:grid;place-items:center;font-size:22px;font-weight:900;flex:0 0 auto}
+.offer h3,.row h3{margin:0 0 3px;font-size:14px}
+.offer p,.row p{margin:0;color:var(--muted);font-size:11.5px;line-height:1.45}
+.offer .flex1,.row .flex1{flex:1;min-width:0}
+.chip{border:1px solid #5a3d9e;background:#170c38;color:#ead9ff;border-radius:12px;padding:9px 13px;font-weight:900;font-size:12px;cursor:pointer;flex:0 0 auto}
+
+/* forms */
+.search{width:100%;border:1px solid var(--line2);background:#080c22;color:#fff;border-radius:15px;padding:13px 15px;margin-bottom:11px;font-size:14px;outline:none}
+.filters{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filter{white-space:nowrap;border:1px solid var(--line2);background:var(--card);color:#dbe2ff;border-radius:999px;padding:9px 14px;font-weight:800;font-size:12px;cursor:pointer}
+.filter.on{background:var(--grad);border-color:transparent}
+.amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:12px 0}
+.amounts button{border:1px solid var(--line2);background:#0a0f28;color:#fff;border-radius:15px;padding:16px 4px;font-size:17px;font-weight:900;cursor:pointer}
+.amounts button.hot{background:linear-gradient(135deg,#7c2cff,#0659ff);border-color:transparent;box-shadow:0 8px 22px #3d3bff44}
+.field{margin-bottom:11px}
+.field label{display:block;font-size:9.5px;text-transform:uppercase;color:#8b95bd;font-weight:900;letter-spacing:1.2px;margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line2);background:#080c22;color:#fff;border-radius:14px;padding:12px;font-size:14px;font-family:inherit;outline:none}
+.stars{font-size:37px;letter-spacing:6px;text-align:center;margin:14px 0;cursor:pointer;user-select:none}
+.stars span{color:#3a3f63;transition:color .1s}
+.stars span.on{color:#fbbf24;text-shadow:0 0 18px #fbbf2455}
+.line{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1c2450;padding:12px 0;font-size:13.5px}
+.line:last-of-type{border-bottom:0}
+.line b{font-size:13.5px}
+.plus{color:var(--green);font-weight:900}
+.minus{color:var(--red);font-weight:900}
+.notice{font-size:11.5px;color:#96a0c8;background:#080c22;border:1px solid var(--line);border-radius:15px;padding:12px 14px;line-height:1.6;margin-top:4px}
+
+/* bottom nav */
+.hstrip{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;margin-bottom:6px;scrollbar-width:none}
+.hstrip::-webkit-scrollbar{display:none}
+.hcard{min-width:155px;max-width:155px;background:var(--card);border:1px solid var(--line2);border-radius:14px;padding:10px;cursor:pointer;flex-shrink:0;display:flex;gap:9px;align-items:center}
+.hcard .hic{font-size:18px;margin:0;flex:0 0 auto}
+.hcard h4{font-size:10.8px;margin:0 0 3px;line-height:1.25}
+.hcard .pts{font-size:10.3px;font-weight:800;color:#f5c344}
+.hcard.lock{opacity:.65;border-style:dashed}
+.bottom{position:absolute;left:0;right:0;bottom:0;height:84px;background:#04050fee;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);align-items:center;z-index:50;backdrop-filter:blur(10px);padding-bottom:8px}
+.bottom div{text-align:center;color:#7f88b4;font-size:9.5px;font-weight:800;cursor:pointer;transition:color .15s}
+.bottom b{display:block;font-size:20px;margin-bottom:3px;transition:transform .18s}
+.bottom b svg{width:23px;height:23px;display:inline-block;vertical-align:middle}
+.bottom .scanbtn b svg{width:24px;height:24px;color:#fff}
+.bottom div.on b{transform:translateY(-2px)}
+.bottom div.on b svg{filter:drop-shadow(0 3px 9px #e879f9aa)}
+.bottom div.on span{position:relative}
+.bottom div.on span::after{content:"";position:absolute;left:50%;bottom:-6px;width:4px;height:4px;border-radius:99px;background:#e879f9;transform:translateX(-50%)}
+.bottom .scanbtn b{width:48px;height:48px;margin:-18px auto 3px;border-radius:50%;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:21px;box-shadow:0 10px 24px #a13cf766;border:3px solid #05060f}
+.bottom div.on{color:#e879f9}
+
+/* success screens */
+.bigicon{width:96px;height:96px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:44px;margin:0 auto 18px;box-shadow:0 0 0 14px #d946ef1c,0 0 0 28px #d946ef0d;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.centerbox{text-align:center}
+.centerbox h1{font-size:30px;margin:0 0 6px}
+.bignum{font-size:44px;font-weight:900;background:linear-gradient(90deg,#73e2ff,#d946ef);-webkit-background-clip:text;background-clip:text;color:transparent;margin:10px 0 2px}
+
+/* scan */
+.scanbox{width:210px;height:210px;margin:22px auto;border-radius:30px;position:relative;background:#080c22;border:1px solid var(--line2);overflow:hidden;display:grid;place-items:center;font-size:64px}
+.scanbox .cnr{position:absolute;width:34px;height:34px;border:3px solid var(--cyan)}
+.cnr.tl{top:12px;left:12px;border-right:0;border-bottom:0;border-radius:10px 0 0 0}
+.cnr.tr{top:12px;right:12px;border-left:0;border-bottom:0;border-radius:0 10px 0 0}
+.cnr.bl{bottom:12px;left:12px;border-right:0;border-top:0;border-radius:0 0 0 10px}
+.cnr.br{bottom:12px;right:12px;border-left:0;border-top:0;border-radius:0 0 10px 0}
+.scanline{position:absolute;left:16px;right:16px;height:3px;background:linear-gradient(90deg,transparent,#16d3ff,transparent);border-radius:99px;top:20px;opacity:0;box-shadow:0 0 16px #16d3ff}
+.scanning .scanline{opacity:1;animation:scan 1.2s linear infinite}
+@keyframes scan{0%{top:20px}50%{top:calc(100% - 24px)}100%{top:20px}}
+
+/* toast + modal */
+.push{position:absolute;top:44px;left:10px;right:10px;background:#151b3fee;border:1px solid var(--line2);border-radius:16px;padding:12px 14px;display:flex;gap:10px;align-items:center;z-index:70;box-shadow:0 12px 30px #000a;transform:translateY(-130px);transition:transform .45s;cursor:pointer}
+.push.show{transform:translateY(0)}
+.onb{position:absolute;inset:0;background:#080c22f5;z-index:40;display:none;align-items:center;justify-content:center;padding:26px;border-radius:inherit}
+.onb.show{display:flex}
+.onb .box{text-align:center;width:100%}
+.onb .big{font-size:52px;margin-bottom:14px}
+.onb h3{font-size:19px;margin-bottom:9px}
+.onb p{color:#9aa3cf;font-size:13.5px;line-height:1.65;min-height:88px}
+.onb .dots{margin:14px 0 18px}
+.onb .dots i{display:inline-block;width:7px;height:7px;border-radius:99px;background:#2a3163;margin:0 4px}
+.onb .dots i.on{background:#f5c344;width:20px}
+.onb .skip{display:block;margin-top:14px;color:#9aa3cf;font-size:12.5px;cursor:pointer;text-decoration:underline}
+.push .pic{font-size:22px}
+.push h4{font-size:13px;margin:0 0 2px;color:#fff}
+.push p{font-size:11px;color:#9aa3c7;margin:0}
+.push .tiny2{font-size:9px;color:#6c76a3;letter-spacing:.5px}
+.toast{position:absolute;left:50%;bottom:104px;transform:translateX(-50%) translateY(20px);background:#171d44f2;border:1px solid var(--line2);color:#fff;padding:12px 18px;border-radius:14px;font-size:13px;font-weight:700;z-index:80;opacity:0;pointer-events:none;transition:.25s;white-space:nowrap;max-width:90%;text-overflow:ellipsis;overflow:hidden;box-shadow:0 14px 40px #000a}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.modal{position:absolute;inset:0;background:#02030bd9;z-index:90;display:none;place-items:center;backdrop-filter:blur(6px)}
+.modal.show{display:grid}
+.modal .inner{background:#fff;border-radius:26px;padding:24px;text-align:center;color:#1a1040;width:280px;animation:pop .35s cubic-bezier(.2,1.6,.4,1)}
+.modal .inner h3{margin:0 0 4px;font-size:17px}
+.modal .inner p{margin:0 0 14px;color:#6b6690;font-size:12px}
+.qr{width:180px;height:180px;margin:0 auto 14px;image-rendering:pixelated}
+.modal .close{border:0;background:#1a1040;color:#fff;border-radius:12px;padding:11px 22px;font-weight:900;cursor:pointer;width:100%}
+
+@media(max-width:430px){body{padding:8px 0}.phone{height:100vh;max-height:812px;border-radius:0;box-shadow:none;border:0}.pagehead{display:none}}
+</style>
+</head>
+<body>
+
+<div class="pagehead">
+  <h1><b>NEXORA TOUCH</b> — Customer App Prototype</h1>
+  <p data-en="Clickable demo · Tap tabs and buttons to walk through every flow" data-vi="Bản demo bấm được · Chạm tab và nút để đi qua từng luồng">Clickable demo · Tap tabs and buttons to walk through every flow</p>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="status"><span>9:41</span><span class="r">▮▮▮ ᯤ ▐▙</span></div>
+  <button class="langbtn" onclick="toggleLang()"><span id="lEN" class="cur">EN</span> | <span id="lVI">VI</span></button>
+
+  <!-- ============ 01 HOME ============ -->
+  <div class="screen active" id="home">
+    <div class="head">
+      <div><h2 data-en="Hi Jessica 👋" data-vi="Chào Jessica 👋">Hi Jessica 👋</h2><p class="muted" data-en="Welcome back!" data-vi="Mừng bạn quay lại!">Welcome back!</p></div>
+      <div class="circle" onclick="go('activity')">🔔</div>
+    </div>
+    <div class="hero">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <small data-en="Bitcoin Nail Bar · Your Points" data-vi="Bitcoin Nail Bar · Điểm của bạn">Bitcoin Nail Bar · Your Points</small>
+        <button class="btn white" style="width:auto;padding:7px 13px;font-size:12px;margin:0;border-radius:11px" onclick="go('rewards')" data-en="Redeem →" data-vi="Đổi ngay →">Redeem →</button>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:7px;margin-top:5px">
+        <h1 class="balBnb" style="margin:0">2,450</h1>
+        <span style="color:#d4e2ff;font-size:11.5px;font-weight:800" data-en="points" data-vi="điểm">points</span>
+        <span style="color:#cfe0ff44;font-size:18px;margin:0 3px">·</span>
+        <h1 style="margin:0;font-size:22px">$15</h1>
+        <span style="color:#d4e2ff;font-size:11.5px;font-weight:800" data-en="credits" data-vi="credit">credits</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:7px">
+        <p style="margin:0;font-size:11.5px" data-en="50 points away from Free Gel Upgrade" data-vi="Còn 50 điểm nữa được Nâng cấp Gel miễn phí">50 points away from Free Gel Upgrade</p>
+      </div>
+      <div class="progress" style="height:6px;margin:7px 0 0"><i></i></div>
+      <span class="badge gold" style="margin-top:9px;display:inline-block" data-en="120 pts expire Aug 31 — use them before they're gone" data-vi="120 điểm hết hạn 31/8 — dùng trước khi mất nhé">120 pts expire Aug 31 — use them before they're gone</span>
+    </div>
+    <div class="sec"><h3 data-en="🎁 Redeem now with your points" data-vi="🎁 Đổi được ngay với điểm của bạn">🎁 Redeem now with your points</h3><span onclick="go('rewards')" data-en="All" data-vi="Tất cả">All</span></div>
+    <div class="hstrip">
+      <div class="hcard" onclick="openRedeem('bistro')"><div class="hic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a99df5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16a8 8 0 0 1-16 0z"/><path d="M9 8V5M13 8V4M17 8V6"/></svg></div><div><h4 data-en="10% OFF lunch · Saigon Bistro" data-vi="Giảm 10% combo trưa · Saigon Bistro">10% OFF lunch · Saigon Bistro</h4><div class="pts" data-en="450 pts" data-vi="450 điểm">450 pts</div></div></div>
+      <div class="hcard" onclick="openRedeem('facial')"><div class="hic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a99df5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg></div><div><h4 data-en="Facial 15% OFF · Golden Glow" data-vi="Facial giảm 15% · Golden Glow">Facial 15% OFF · Golden Glow</h4><div class="pts" data-en="500 pts" data-vi="500 điểm">500 pts</div></div></div>
+      <div class="hcard" onclick="openRedeem('moon')"><div class="hic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a99df5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h12v6a5 5 0 0 1-10 0V8h-2z"/><path d="M16 9h2a3 3 0 0 1 0 6h-2M7 4v2M11 3v3"/></svg></div><div><h4 data-en="Free drink · Moon Coffee" data-vi="Đồ uống miễn phí · Moon Coffee">Free drink · Moon Coffee</h4><div class="pts" data-en="600 pts" data-vi="600 điểm">600 pts</div></div></div>
+      <div class="hcard" onclick="openRedeem('glow')"><div class="hic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a99df5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6.5v11M15 9c-.6-1-4.8-1.6-4.8.9s5 1 4.7 3.4c-.3 1.9-4 1.7-5 .5"/></svg></div><div><h4 data-en="$10 Credit · Golden Glow" data-vi="Tín dụng $10 · Golden Glow">$10 Credit · Golden Glow</h4><div class="pts" data-en="800 pts" data-vi="800 điểm">800 pts</div></div></div>
+      <div class="hcard lock" onclick="go('rewards')"><div class="hic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a99df5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><div><h4 data-en="Free Gel Upgrade · Bitcoin Nail Bar" data-vi="Nâng cấp Gel miễn phí · Bitcoin Nail Bar">Free Gel Upgrade · Bitcoin Nail Bar</h4><div class="pts" data-en="2,500 pts · 50 to go" data-vi="2.500 điểm · còn thiếu 50">2,500 pts · 50 to go</div></div></div>
+    </div>
+    <div class="card" id="upcoming" style="display:none;border-color:#1d5c4a">
+      <h3 data-en="📅 Upcoming appointment" data-vi="📅 Lịch hẹn sắp tới">📅 Upcoming appointment</h3>
+      <p class="muted" id="upcomingInfo">Thu · 2:00 PM · Anna · Pedicure</p>
+      <span class="badge green" data-en="Confirmed ✓" data-vi="Đã xác nhận ✓">Confirmed ✓</span>
+    </div>
+    <div class="sec"><h3 data-en="Quick Actions" data-vi="Thao tác nhanh">Quick Actions</h3><span onclick="go('allmenu')" data-en="See All" data-vi="Xem tất cả">See All</span></div>
+    <div class="quick">
+      <div onclick="go('rewards')"><b><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a99df5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg></b><span data-en="Rewards" data-vi="Thưởng">Rewards</span></div>
+      <div onclick="go('looks')"><b><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a99df5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="4"/><path d="M9 7l1.5-3h3L15 7"/></svg></b><span data-en="My Looks" data-vi="Mẫu của tôi">My Looks</span></div>
+      <div onclick="go('tip')"><b><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a99df5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21C7 16.5 3 13 3 8.8A4.8 4.8 0 0 1 12 6a4.8 4.8 0 0 1 9 2.8C21 13 17 16.5 12 21z"/></svg></b><span data-en="Tips" data-vi="Tip">Tips</span></div>
+      <div onclick="go('offers')"><b><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a99df5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4L11 3H4v7l9.6 10.4a2 2 0 0 0 2.8 0l4.2-4.2a2 2 0 0 0 0-2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg></b><span data-en="Offers" data-vi="Ưu đãi">Offers</span></div>
+      <div onclick="go('activity')"><b><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a99df5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8 8 0 0 1-8 8H4l1.8-2.7A8 8 0 1 1 21 11.5z"/></svg></b><span data-en="Messages" data-vi="Tin nhắn">Messages</span></div>
+    </div>
+    <div class="sec"><h3 data-en="✨ For You" data-vi="✨ Dành cho bạn">✨ For You</h3><span class="badge">AI</span></div>
+    <div class="row" onclick="openRedeem('facial')" style="cursor:pointer">
+      <div class="icon">💆</div>
+      <div class="flex1"><h3 data-en="Facial 15% OFF at Golden Glow" data-vi="Facial giảm 15% tại Golden Glow">Facial 15% OFF at Golden Glow</h3><p data-en="You get gel every 3 weeks — pair it with a facial · 500 pts" data-vi="Bạn làm gel mỗi 3 tuần — kết hợp facial nhé · 500 điểm">You get gel every 3 weeks — pair it with a facial · 500 pts</p></div>
+    </div>
+    <div class="row" onclick="openRedeem('moon')" style="cursor:pointer">
+      <div class="icon">☕</div>
+      <div class="flex1"><h3 data-en="Free drink at Moon Coffee" data-vi="Đồ uống miễn phí tại Moon Coffee">Free drink at Moon Coffee</h3><p data-en="You usually visit Saturday mornings — it's 2 min from your salon · 600 pts" data-vi="Bạn hay ghé sáng thứ 7 — cách salon của bạn 2 phút · 600 điểm">You usually visit Saturday mornings — it's 2 min from your salon · 600 pts</p></div>
+    </div>
+    <p class="tiny" style="margin:-4px 0 6px 4px" data-en="Suggested from your visit & redeem history — manage in Profile → Messages & Privacy" data-vi="Gợi ý từ lịch sử ghé & đổi điểm của bạn — quản lý trong Hồ sơ → Tin nhắn & Quyền riêng tư">Suggested from your visit & redeem history — manage in Profile → Messages & Privacy</p>
+    <div class="sec"><h3 data-en="Favorite Salon" data-vi="Salon yêu thích">Favorite Salon</h3><span onclick="go('explore')" data-en="View" data-vi="Xem">View</span></div>
+    <div class="card">
+      <div class="biz">
+        <div class="photo">💅</div>
+        <div><h3>Bitcoin Nail Bar ✅</h3><p class="muted" data-en="Last visit May 20 · Anna · 15 visits" data-vi="Ghé lần cuối 20/5 · Anna · 15 lượt">Last visit May 20 · Anna · 15 visits</p></div>
+      </div>
+      <div class="btnrow">
+        <button class="btn" onclick="go('book1')" data-en="Book Again" data-vi="Đặt lại lịch">Book Again</button>
+        <button class="btn out" onclick="go('tip')" data-en="Tip Staff" data-vi="Tip nhân viên">Tip Staff</button>
+      </div>
+      <button class="btn out mt" onclick="goPay()" data-en="💳 Pay Salon Direct — 0% fees · +20% bonus points" data-vi="💳 Thanh toán trực tiếp — 0% phí · +20% điểm thưởng">💳 Pay Salon Direct — 0% fees · +20% bonus points</button>
+    </div>
+    <div class="row" onclick="go('referral')" style="cursor:pointer">
+      <div class="icon">🤝</div>
+      <div class="flex1"><h3 data-en="Invite friends — you +50, they +100" data-vi="Mời bạn bè — bạn +50, bạn bè +100">Invite friends — you +50, they +100</h3><p data-en="Share your code REF-JESS" data-vi="Chia sẻ mã REF-JESS của bạn">Share your code REF-JESS</p></div>
+    </div>
+  </div>
+
+  <!-- ============ 02 EXPLORE ============ -->
+  <div class="screen" id="explore">
+    <div class="head">
+      <div><h2 data-en="Explore" data-vi="Khám phá">Explore</h2><p class="muted" data-en="Find Nexora businesses" data-vi="Tìm doanh nghiệp Nexora">Find Nexora businesses</p></div>
+      <div class="circle">📍</div>
+    </div>
+    <div class="hero">
+      <small data-en="Nearby Rewards" data-vi="Ưu đãi gần bạn">Nearby Rewards</small>
+      <h2 data-en="Find businesses on Nexora Touch" data-vi="Tìm doanh nghiệp dùng Nexora Touch">Find businesses on Nexora Touch</h2>
+      <p data-en="Search by the service you need — results backed by real check-in data, real prices, real photos." data-vi="Tìm theo dịch vụ bạn cần — kết quả kèm dữ liệu thật: check-in thật, giá thật, ảnh mẫu thật.">Salon, spa, coffee, restaurant and local services.</p>
+    </div>
+    <input class="search" id="expSearch" oninput="expFilter()" data-en-ph="Search a service: dip powder, facial, nail repair…" data-vi-ph="Tìm dịch vụ: dip powder, facial, sửa móng…" placeholder="Search a service: dip powder, facial, nail repair…">
+    <div class="filters">
+      <span class="filter on" onclick="pickFilter(this,'all')" data-en="All" data-vi="Tất cả">All</span>
+      <span class="filter" onclick="pickFilter(this,'new')" data-en="🎉 Just opened" data-vi="🎉 Khai trương">🎉 Just opened</span>
+      <span class="filter" onclick="pickFilter(this,'nail')">Nail</span>
+      <span class="filter" onclick="pickFilter(this,'hair')" data-en="Hair" data-vi="Tóc">Hair</span>
+      <span class="filter" onclick="pickFilter(this,'barber')">Barber</span>
+      <span class="filter" onclick="pickFilter(this,'spa')">Spa</span>
+      <span class="filter" onclick="pickFilter(this,'lash')" data-en="Lash & Brow" data-vi="Mi & Mày">Lash & Brow</span>
+      <span class="filter" onclick="pickFilter(this,'massage')">Massage</span>
+      <span class="filter" onclick="pickFilter(this,'coffee')" data-en="Coffee" data-vi="Cà phê">Coffee</span>
+      <span class="filter" onclick="pickFilter(this,'food')" data-en="Food" data-vi="Ăn uống">Food</span>
+      <span class="filter" onclick="pickFilter(this,'fitness')" data-en="Fitness" data-vi="Gym">Fitness</span>
+      <span class="filter" onclick="pickFilter(this,'auto')" data-en="Auto" data-vi="Xe">Auto</span>
+      <span class="filter" onclick="pickFilter(this,'other')" data-en="Other" data-vi="Khác">Other</span>
+    </div>
+    <div class="card expCard" data-name="rose nails spa grand opening khai trương mới" data-cat="nail" data-new="1" data-tags="nail spa pedicure gel free 30% khai trương grand opening" style="border:1px solid #f5c344">
+      <div class="biz">
+        <div class="photo">🎉</div>
+        <div><h3>Rose Nails & Spa <span class="badge" style="font-size:9px;vertical-align:2px;color:#f5c344" data-en="Just opened" data-vi="Mới khai trương">Just opened</span></h3><p class="muted" data-en="1.2 mi · Opened this week" data-vi="1.2 mi · Khai trương tuần này">1.2 mi · Opened this week</p><span class="badge green" data-en="30% OFF everything + free nail art add-on + double points" data-vi="Giảm 30% mọi dịch vụ + tặng vẽ móng + nhân đôi điểm">30% OFF everything + free nail art add-on + double points</span></div>
+      </div>
+      <div class="btnrow">
+        <button class="btn out" onclick="toast('demo')" data-en="View" data-vi="Xem">View</button>
+        <button class="btn" onclick="go('offers')" data-en="See opening deal" data-vi="Xem ưu đãi khai trương">See opening deal</button>
+      </div>
+    </div>
+    <div class="card expCard" data-name="sponsored queen nails dip powder nail" data-cat="nail" data-tags="dip powder pedicure design sửa móng" style="border:1px solid #8a5cf6">
+      <div class="biz">
+        <div class="photo">👑</div>
+        <div><h3>Queen Nails <span class="badge" style="font-size:9px;vertical-align:2px" data-en="Sponsored" data-vi="Được tài trợ">Sponsored</span></h3><p class="muted" data-en="4.2 mi · Dip powder specialist" data-vi="4.2 mi · Chuyên dip powder">4.2 mi · Dip powder specialist</p><p class="tiny2" style="color:#7fe0a8;margin-top:4px" data-en="✓ 89 real check-ins this month · dip powder $42 (real receipts)" data-vi="✓ 89 check-in thật tháng này · dip powder $42 (hóa đơn thật)">✓ 89 real check-ins this month · dip powder $42 (real receipts)</p></div>
+      </div>
+    </div>
+    <div class="card expCard" data-name="bitcoin nail bar" data-cat="nail" data-tags="nail salon manicure móng gel dip powder gel-x pedicure design sửa móng repair">
+      <div class="biz">
+        <div class="photo">💅</div>
+        <div><h3>Bitcoin Nail Bar</h3><p class="muted">2.1 mi · 4.9 ⭐</p><span class="badge green" data-en="2,450 pts · Your favorite" data-vi="2.450 điểm · Yêu thích của bạn">2,450 pts · Your favorite</span><p class="tiny2" style="color:#7fe0a8;margin-top:5px" data-en="✓ 128 real check-ins this month · dip powder $45 (real receipts) · 24 real looks" data-vi="✓ 128 check-in thật tháng này · dip powder $45 (hóa đơn thật) · 24 ảnh mẫu thật">✓ 128 real check-ins this month · dip powder $45 (real receipts) · 24 real looks</p></div>
+      </div>
+      <div class="btnrow">
+        <button class="btn out" onclick="toast('demo')" data-en="View" data-vi="Xem">View</button>
+        <button class="btn" onclick="go('book1')" data-en="Book" data-vi="Đặt lịch">Book</button>
+      </div>
+    </div>
+    <div class="card expCard" data-name="golden glow spa" data-cat="spa" data-tags="spa facial massage da nhạy cảm sensitive skin peel skincare" onclick="go('business')" style="cursor:pointer">
+      <div class="biz">
+        <div class="photo">✨</div>
+        <div><h3>Golden Glow Spa</h3><p class="muted" data-en="3.4 mi · Co-op alliance partner" data-vi="3.4 mi · Đối tác liên minh co-op">3.4 mi · Co-op alliance partner</p><span class="badge" data-en="$10 Credit · 800 pts via co-op" data-vi="Tín dụng $10 · 800 điểm qua liên minh">$10 Credit · 800 pts via co-op</span><p class="tiny2" style="color:#7fe0a8;margin-top:5px" data-en="✓ 41 facials done this month · sensitive-skin peel $65 (real receipts)" data-vi="✓ 41 lượt facial tháng này · peel cho da nhạy cảm $65 (hóa đơn thật)">✓ 41 facials done this month · sensitive-skin peel $65 (real receipts)</p></div>
+      </div>
+    </div>
+    <div class="card expCard" data-name="moon coffee" data-cat="coffee" data-tags="coffee cafe cà phê drink">
+      <div class="biz">
+        <div class="photo">☕</div>
+        <div><h3>Moon Coffee</h3><p class="muted" data-en="0.8 mi · Co-op alliance partner" data-vi="0.8 mi · Đối tác liên minh co-op">0.8 mi · Co-op alliance partner</p><span class="badge" data-en="Free Drink · 600 pts via co-op" data-vi="Đồ uống miễn phí · 600 điểm qua liên minh">Free Drink · 600 pts via co-op</span></div>
+      </div>
+    </div>
+    <div class="card expCard" data-name="saigon bistro" data-cat="food" data-tags="food restaurant nhà hàng ăn uống pho">
+      <div class="biz">
+        <div class="photo">🍜</div>
+        <div><h3>Saigon Bistro</h3><p class="muted" data-en="1.5 mi · Co-op alliance partner" data-vi="1.5 mi · Đối tác liên minh co-op">1.5 mi · Co-op alliance partner</p><span class="badge" data-en="10% OFF · 450 pts via co-op" data-vi="Giảm 10% · 450 điểm qua liên minh">10% OFF · 450 pts via co-op</span></div>
+      </div>
+    </div>
+    <div class="card expCard" data-name="queen nails" data-cat="nail" data-tags="nail salon pedicure móng dip powder design kids sửa móng repair">
+      <div class="biz">
+        <div class="photo">👑</div>
+        <div><h3>Queen Nails</h3><p class="muted" data-en="4.2 mi · On Nexora Touch" data-vi="4.2 mi · Dùng Nexora Touch">4.2 mi · On Nexora Touch</p><span class="badge" data-en="Earn points on your first visit" data-vi="Tích điểm ngay lần đầu ghé">Earn points on your first visit</span><p class="tiny2" style="color:#7fe0a8;margin-top:5px" data-en="✓ 89 real check-ins this month · kids pedicure $25 (real receipts) · 17 real looks" data-vi="✓ 89 check-in thật tháng này · pedicure trẻ em $25 (hóa đơn thật) · 17 ảnh mẫu thật">✓ 89 real check-ins this month · kids pedicure $25 (real receipts) · 17 real looks</p></div>
+      </div>
+    </div>
+    <div class="card expCard" data-name="lux hair studio" data-cat="hair" data-tags="hair salon tóc cắt nhuộm balayage uốn duỗi keratin">
+      <div class="biz">
+        <div class="photo">💇</div>
+        <div><h3>Lux Hair Studio</h3><p class="muted" data-en="2.7 mi · On Nexora Touch" data-vi="2.7 mi · Dùng Nexora Touch">2.7 mi · On Nexora Touch</p><span class="badge" data-en="Earn points on your first visit" data-vi="Tích điểm ngay lần đầu ghé">Earn points on your first visit</span></div>
+      </div>
+    </div>
+    <div class="card expCard" data-name="zen massage" data-cat="massage" data-tags="massage mát xa foot body deep tissue thai đau lưng">
+      <div class="biz">
+        <div class="photo">💆</div>
+        <div><h3>Zen Massage</h3><p class="muted" data-en="3.1 mi · On Nexora Touch" data-vi="3.1 mi · Dùng Nexora Touch">3.1 mi · On Nexora Touch</p><span class="badge" data-en="Earn points on your first visit" data-vi="Tích điểm ngay lần đầu ghé">Earn points on your first visit</span></div>
+      </div>
+    </div>
+    <div class="card expCard" data-name="fade kings barbershop" data-cat="barber" data-tags="barber fade cắt tóc nam taper beard hớt tóc">
+      <div class="biz">
+        <div class="photo">💈</div>
+        <div><h3>Fade Kings Barbershop</h3><p class="muted" data-en="1.9 mi · On Nexora Touch" data-vi="1.9 mi · Dùng Nexora Touch">1.9 mi · On Nexora Touch</p><span class="badge" data-en="Earn points on your first visit" data-vi="Tích điểm ngay lần đầu ghé">Earn points on your first visit</span></div>
+      </div>
+    </div>
+    <div class="card expCard" data-name="doll lash and brow" data-cat="lash" data-tags="lash mi brow chân mày extension lift tint">
+      <div class="biz">
+        <div class="photo">👁️</div>
+        <div><h3>Doll Lash &amp; Brow</h3><p class="muted" data-en="2.2 mi · On Nexora Touch" data-vi="2.2 mi · Dùng Nexora Touch">2.2 mi · On Nexora Touch</p><span class="badge" data-en="Earn points on your first visit" data-vi="Tích điểm ngay lần đầu ghé">Earn points on your first visit</span></div>
+      </div>
+    </div>
+    <div class="card expCard" data-name="iron house fitness" data-cat="fitness" data-tags="gym fitness tập gym pt yoga hlv thể hình">
+      <div class="biz">
+        <div class="photo">🏋️</div>
+        <div><h3>Iron House Fitness</h3><p class="muted" data-en="3.6 mi · On Nexora Touch" data-vi="3.6 mi · Dùng Nexora Touch">3.6 mi · On Nexora Touch</p><span class="badge" data-en="Earn points on your first visit" data-vi="Tích điểm ngay lần đầu ghé">Earn points on your first visit</span></div>
+      </div>
+    </div>
+    <div class="card expCard" data-name="sunrise auto spa" data-cat="auto" data-tags="auto rửa xe detailing ceramic wash oil xe hơi">
+      <div class="biz">
+        <div class="photo">🚗</div>
+        <div><h3>Sunrise Auto Spa</h3><p class="muted" data-en="4.8 mi · On Nexora Touch" data-vi="4.8 mi · Dùng Nexora Touch">4.8 mi · On Nexora Touch</p><span class="badge" data-en="Earn points on your first visit" data-vi="Tích điểm ngay lần đầu ghé">Earn points on your first visit</span></div>
+      </div>
+    </div>
+    <div class="card" id="expEmpty" style="display:none;text-align:center">
+      <h3 data-en="😕 No businesses found" data-vi="😕 Không tìm thấy doanh nghiệp">😕 No businesses found</h3>
+      <p class="muted" data-en="Try another name or category." data-vi="Thử tên hoặc loại hình khác.">Try another name or category.</p>
+      <button class="btn out mt" onclick="toast('invited')" data-en="📨 Invite a business you visit — they'll give you welcome points when they join" data-vi="📨 Mời tiệm bạn hay ghé — khi tham gia, tiệm sẽ tặng bạn điểm chào mừng">📨 Invite a business you visit — they'll give you welcome points when they join</button>
+    </div>
+    <div class="notice" data-en="📍 Nearby deals: with notifications on, Nexora alerts you when you're close to a partner offer — push notification, not SMS." data-vi="📍 Ưu đãi gần bạn: khi bật thông báo, Nexora sẽ báo khi bạn ở gần một ưu đãi của đối tác — thông báo đẩy, không phải SMS.">📍 Nearby deals: with notifications on, Nexora alerts you when you're close to a partner offer — push notification, not SMS.</div>
+    <button class="btn out" onclick="simulateGeoPush()" data-en="▶ Simulate: walking near Golden Glow (demo)" data-vi="▶ Giả lập: đi ngang Golden Glow (demo)">▶ Simulate: walking near Golden Glow (demo)</button>
+  </div>
+
+  <!-- ============ 03 NETWORK WALLET ============ -->
+  <div class="screen" id="wallet">
+    <div class="head">
+      <div><h2 data-en="My Wallet" data-vi="Ví của tôi">My Wallet</h2><p class="muted" data-en="Your points at each business" data-vi="Điểm của bạn tại từng tiệm">Your points at each business</p></div>
+      <div class="circle">🌐</div>
+    </div>
+    <div class="hero">
+      <small data-en="Nexora Account" data-vi="Tài khoản Nexora">Nexora Account</small>
+      <h2 data-en="Your points live in your Nexora account — not in any salon's POS" data-vi="Điểm của bạn nằm trong tài khoản Nexora — không phụ thuộc máy POS của tiệm">Your points live in your Nexora account — not in any salon's POS</h2>
+      <p data-en="Each business runs its own rewards program. Nexora keeps the ledger for all of them." data-vi="Mỗi tiệm tự chạy chương trình điểm riêng. Nexora giữ sổ cái cho tất cả.">Each business runs its own rewards program. Nexora keeps the ledger for all of them.</p>
+      <span class="badge" data-en="3 businesses linked" data-vi="3 tiệm liên kết">3 businesses linked</span>
+    </div>
+    <div class="card" onclick="go('history')" style="cursor:pointer">
+      <h3>Bitcoin Nail Bar <span class="tiny" style="float:right" data-en="History ›" data-vi="Lịch sử ›">History ›</span></h3>
+      <p class="muted" data-en="Salon's own rules: $100 = 100 pts ($5) · redeem from 500 pts" data-vi="Quy định của tiệm: $100 = 100 điểm ($5) · đổi từ 500 điểm">Salon's own rules: $100 = 100 pts ($5) · redeem from 500 pts</p>
+      <p class="tiny muted" data-en="Points expire 12 months after earning (salon's policy) · next to expire: 120 pts on Aug 31" data-vi="Điểm hết hạn sau 12 tháng kể từ khi nhận (quy định tiệm) · sắp hết hạn: 120 điểm ngày 31/8">Points expire 12 months after earning (salon's policy) · next to expire: 120 pts on Aug 31</p>
+      <div class="grid2" style="margin-top:10px">
+        <div class="stat" style="background:#0a0f28;border-color:var(--line)"><b class="balBnb">2,450</b><span data-en="Points" data-vi="Điểm">Points</span></div>
+        <div class="stat" style="background:#0a0f28;border-color:var(--line)"><b>$15</b><span data-en="Credits" data-vi="Tín dụng">Credits</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Golden Glow Spa</h3>
+      <p class="muted" data-en="Runs its own program · co-op partner" data-vi="Tự quản lý chương trình · đối tác liên minh">Runs its own program · co-op partner</p>
+      <span class="badge" data-en="600 pts earned here" data-vi="600 điểm tích tại đây">600 pts earned here</span>
+    </div>
+    <div class="card">
+      <h3>Moon Coffee</h3>
+      <p class="muted" data-en="Runs its own program · co-op partner" data-vi="Tự quản lý chương trình · đối tác liên minh">Runs its own program · co-op partner</p>
+      <span class="badge" data-en="120 pts earned here" data-vi="120 điểm tích tại đây">120 pts earned here</span>
+    </div>
+    <button class="btn" onclick="go('rewards')" data-en="Browse Alliance Offers →" data-vi="Xem ưu đãi liên minh →">Browse Alliance Offers →</button>
+  </div>
+
+  <!-- ============ 04 NETWORK REWARDS ============ -->
+  <div class="screen" id="rewards">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('home')">‹</div>
+      <div><h2 data-en="Redeem" data-vi="Đổi thưởng">Redeem</h2><p class="muted" data-en="Your salon & co-op partners" data-vi="Tiệm của bạn & đối tác liên minh">Your salon & co-op partners</p></div></div>
+      <div class="circle">🎁</div>
+    </div>
+    <div class="hero">
+      <small data-en="You can spend" data-vi="Bạn có thể dùng">You can spend</small>
+      <h1 class="balBnb">2,450</h1>
+      <p data-en="Bitcoin Nail Bar points — accepted by co-op partners below" data-vi="Điểm Bitcoin Nail Bar — dùng được tại các đối tác liên minh bên dưới">Bitcoin Nail Bar points — accepted by co-op partners below</p>
+    </div>
+    <div class="card" style="border-color:#4a3a12;background:linear-gradient(135deg,#1d1608,#10142e)">
+      <h3 style="color:var(--gold)" data-en="🎯 Your first reward is close!" data-vi="🎯 Sắp đạt phần thưởng đầu tiên!">🎯 Your first reward is close!</h3>
+      <p class="muted" data-en="50 points to Free Gel Upgrade at Bitcoin Nail Bar" data-vi="Còn 50 điểm tới Nâng cấp Gel miễn phí tại Bitcoin Nail Bar">50 points to Free Gel Upgrade at Bitcoin Nail Bar</p>
+      <div class="progress" style="margin-bottom:0"><i></i></div>
+    </div>
+    <div class="sec"><h3 data-en="At your salon — Bitcoin Nail Bar" data-vi="Tại tiệm của bạn — Bitcoin Nail Bar">At your salon — Bitcoin Nail Bar</h3></div>
+    <div class="offer">
+      <div class="icon">💵</div>
+      <div class="flex1"><h3 data-en="$5 Service Credit" data-vi="Credit dịch vụ $5">$5 Service Credit</h3><p data-en="500 pts · applied to your bill — services only, not cash" data-vi="500 điểm · trừ vào hóa đơn — chỉ dùng cho dịch vụ, không phải tiền mặt">500 pts · applied to your bill — services only, not cash</p></div>
+      <button class="chip" onclick="openRedeem('credit5')" data-en="Redeem" data-vi="Đổi">Redeem</button>
+    </div>
+    <div class="offer">
+      <div class="icon">💅</div>
+      <div class="flex1"><h3 data-en="Free Classic Pedicure" data-vi="Pedicure cơ bản miễn phí">Free Classic Pedicure</h3><p data-en="1,000 pts · reward set by the salon" data-vi="1.000 điểm · phần thưởng do tiệm đặt">1,000 pts · reward set by the salon</p></div>
+      <button class="chip" onclick="openRedeem('freepedi')" data-en="Redeem" data-vi="Đổi">Redeem</button>
+    </div>
+    <div class="offer">
+      <div class="icon">🎟️</div>
+      <div class="flex1"><h3 data-en="25% OFF any service" data-vi="Mã giảm 25% mọi dịch vụ">25% OFF any service</h3><p data-en="800 pts · one-time code, valid 30 days (set by salon)" data-vi="800 điểm · mã dùng 1 lần, hạn 30 ngày (tiệm đặt)">800 pts · one-time code, valid 30 days (set by salon)</p></div>
+      <button class="chip" onclick="openRedeem('voucher25')" data-en="Redeem" data-vi="Đổi">Redeem</button>
+    </div>
+    <div class="notice" data-en="One point balance, three ways to redeem — service credit, free service, or a % code. The salon builds this menu and sets every price in its dashboard. Credit applies to services only — never cash out." data-vi="Một số dư điểm, ba cách đổi — credit dịch vụ, dịch vụ miễn phí, hoặc mã giảm %. Tiệm tự dựng menu này và tự đặt giá trong dashboard. Credit chỉ trừ vào dịch vụ — không bao giờ rút ra tiền.">One point balance, three ways to redeem — service credit, free service, or a % code. The salon builds this menu and sets every price in its dashboard. Credit applies to services only — never cash out.</div>
+    <div class="sec"><h3 data-en="Alliance partners" data-vi="Đối tác liên minh">Alliance partners</h3></div>
+    <div class="offer">
+      <div class="icon">$10</div>
+      <div class="flex1"><h3 data-en="$10 Credit at Golden Glow" data-vi="Tín dụng $10 tại Golden Glow">$10 Credit at Golden Glow</h3><p data-en="800 Bitcoin Nail Bar pts · price set by Golden Glow" data-vi="800 điểm Bitcoin Nail Bar · giá do Golden Glow đặt">800 Bitcoin Nail Bar pts · price set by Golden Glow</p></div>
+      <button class="chip" onclick="openRedeem('glow')" data-en="Redeem" data-vi="Đổi">Redeem</button>
+    </div>
+    <div class="offer">
+      <div class="icon">☕</div>
+      <div class="flex1"><h3 data-en="Free Drink at Moon Coffee" data-vi="Đồ uống miễn phí tại Moon Coffee">Free Drink at Moon Coffee</h3><p data-en="600 pts · pay with Bitcoin Nail Bar points" data-vi="600 điểm · trả bằng điểm Bitcoin Nail Bar">600 pts · pay with Bitcoin Nail Bar points</p></div>
+      <button class="chip" onclick="openRedeem('moon')" data-en="Redeem" data-vi="Đổi">Redeem</button>
+    </div>
+    <div class="offer">
+      <div class="icon">🍜</div>
+      <div class="flex1"><h3 data-en="10% OFF Saigon Bistro" data-vi="Giảm 10% Saigon Bistro">10% OFF Saigon Bistro</h3><p data-en="450 pts · pay with Bitcoin Nail Bar points" data-vi="450 điểm · trả bằng điểm Bitcoin Nail Bar">450 pts · pay with Bitcoin Nail Bar points</p></div>
+      <button class="chip" onclick="openRedeem('bistro')" data-en="Redeem" data-vi="Đổi">Redeem</button>
+    </div>
+    <div class="notice" data-en="Each business sets its own point rules, and each alliance offer's price is set by the accepting business itself. Nexora doesn't set any rates — it only stores the rules, enforces them automatically and keeps the ledger." data-vi="Mỗi tiệm tự quy định điểm của mình, và giá mỗi ưu đãi liên minh do chính tiệm nhận khách tự đặt. Nexora không áp tỷ giá — chỉ lưu quy tắc, thực thi tự động và ghi sổ.">Each business sets its own point rules, and each alliance offer's price is set by the accepting business itself. Nexora doesn't set any rates — it only stores the rules, enforces them automatically and keeps the ledger.</div>
+  </div>
+
+  <!-- ============ 05 BUSINESS PROFILE ============ -->
+  <div class="screen" id="business">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('explore')">‹</div>
+      <div><h2 data-en="Business" data-vi="Doanh nghiệp">Business</h2><p class="muted" data-en="Partner profile" data-vi="Hồ sơ đối tác">Partner profile</p></div></div>
+      <div class="circle" onclick="toast('fav')">♡</div>
+    </div>
+    <div class="card">
+      <div class="biz">
+        <div class="photo">✨</div>
+        <div><h3>Golden Glow Spa</h3><p class="muted">Spa · Facial · Nails · Richmond, TX</p><span class="badge green" data-en="Co-op alliance partner" data-vi="Đối tác liên minh co-op">Co-op alliance partner</span></div>
+      </div>
+      <div class="btnrow">
+        <button class="btn" onclick="toast('book')" data-en="Book" data-vi="Đặt lịch">Book</button>
+        <button class="btn out" onclick="toast('map')" data-en="Directions" data-vi="Chỉ đường">Directions</button>
+      </div>
+    </div>
+    <div class="sec"><h3 data-en="Available Offers" data-vi="Ưu đãi hiện có">Available Offers</h3></div>
+    <div class="offer">
+      <div class="icon">$10</div>
+      <div class="flex1"><h3 data-en="$10 Credit" data-vi="Tín dụng $10">$10 Credit</h3><p data-en="Cost: 800 pts via co-op" data-vi="Giá: 800 điểm qua liên minh">Cost: 800 pts via co-op</p></div>
+      <button class="chip" onclick="openRedeem('glow')" data-en="Redeem" data-vi="Đổi">Redeem</button>
+    </div>
+    <div class="offer">
+      <div class="icon">✨</div>
+      <div class="flex1"><h3 data-en="New Customer Facial" data-vi="Facial khách mới">New Customer Facial</h3><p data-en="15% OFF · 500 pts via co-op" data-vi="Giảm 15% · 500 điểm qua liên minh">15% OFF · 500 pts via co-op</p></div>
+      <button class="chip" onclick="openRedeem('facial')" data-en="Claim" data-vi="Nhận">Claim</button>
+    </div>
+    <div class="notice" data-en="⭐ 4.8 (214 reviews) · Open 9:30 AM – 7:30 PM · Points you earn here are managed by Golden Glow and stored in your Nexora account." data-vi="⭐ 4.8 (214 đánh giá) · Mở cửa 9:30 – 19:30 · Điểm tích tại đây do Golden Glow tự quản lý, lưu trong tài khoản Nexora của bạn.">⭐ 4.8 (214 reviews) · Open 9:30 AM – 7:30 PM · Points you earn here are managed by Golden Glow and stored in your Nexora account.</div>
+  </div>
+
+  <!-- ============ 06 QR SCANNER ============ -->
+  <div class="screen" id="scan">
+    <div class="head">
+      <div><h2 data-en="Scan QR" data-vi="Quét QR">Scan QR</h2><p class="muted" data-en="Business / Staff / Reward" data-vi="Doanh nghiệp / Nhân viên / Thưởng">Business / Staff / Reward</p></div>
+      <div class="circle">📷</div>
+    </div>
+    <div class="hero" style="text-align:center">
+      <small>Nexora QR</small>
+      <h2 data-en="Scan to tip, review, earn or redeem" data-vi="Quét để tip, đánh giá, tích điểm hoặc đổi thưởng">Scan to tip, review, earn or redeem</h2>
+      <div class="scanbox" id="scanbox">
+        <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+        <div class="scanline"></div>
+        <span id="scanEmoji">📷</span>
+      </div>
+      <button class="btn white" id="scanGo" onclick="startScan()" data-en="Open Camera" data-vi="Mở máy ảnh">Open Camera</button>
+      <button class="btn out mt" onclick="toast('code')" data-en="Enter Code" data-vi="Nhập mã">Enter Code</button>
+      <button class="btn out mt" onclick="go('onb1')" data-en="🆕 New customer? Claim welcome gift" data-vi="🆕 Khách mới? Nhận quà chào mừng">🆕 New customer? Claim welcome gift</button>
+    </div>
+    <div class="notice" data-en="Reads the real Nexora QR: nexoratouch.com/touch/[salon]/[station]?staffProfileId=… — business, station and staff come from this URL." data-vi="Đọc QR thật của Nexora: nexoratouch.com/touch/[tiệm]/[quầy]?staffProfileId=… — app nhận diện tiệm, quầy và thợ từ URL này.">Reads the real Nexora QR: nexoratouch.com/touch/[salon]/[station]?staffProfileId=… — business, station and staff come from this URL.</div>
+  </div>
+
+  <!-- ============ 07 TIP FLOW ============ -->
+  <div class="screen" id="tip">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('home')">‹</div>
+      <div><h2 data-en="Tip Anna" data-vi="Tip cho Anna">Tip Anna</h2><p class="muted">Bitcoin Nail Bar</p></div></div>
+      <div class="circle">💜</div>
+    </div>
+    <div class="card">
+      <div class="biz">
+        <div class="photo">A</div>
+        <div><h3>Anna</h3><p class="muted" data-en="Gel, pedicure · 4.9 ⭐ · 15 visits with you" data-vi="Gel, pedicure · 4.9 ⭐ · 15 lượt phục vụ bạn">Gel, pedicure · 4.9 ⭐ · 15 visits with you</p></div>
+      </div>
+      <div class="sec" style="margin:14px 0 2px"><h3 data-en="Select Tip Amount" data-vi="Chọn số tiền tip">Select Tip Amount</h3></div>
+      <div class="amounts">
+        <button onclick="pickTip(this,5)">$5</button>
+        <button class="hot" onclick="pickTip(this,10)">$10</button>
+        <button onclick="pickTip(this,20)">$20</button>
+      </div>
+      <div class="field">
+        <label data-en="Payment Method" data-vi="Phương thức thanh toán">Payment Method</label>
+        <select><option>Zelle</option><option disabled data-en="Cash App (staff hasn't enabled)" data-vi="Cash App (thợ chưa bật)">Cash App (staff hasn't enabled)</option><option disabled data-en="Venmo (staff hasn't enabled)" data-vi="Venmo (thợ chưa bật)">Venmo (staff hasn't enabled)</option><option disabled data-en="Apple Cash (staff hasn't enabled)" data-vi="Apple Cash (thợ chưa bật)">Apple Cash (staff hasn't enabled)</option><option disabled data-en="PayPal (staff hasn't enabled)" data-vi="PayPal (thợ chưa bật)">PayPal (staff hasn't enabled)</option></select>
+      </div>
+      <button class="btn" onclick="sendTip()" data-en="Send Tip" data-vi="Gửi tip">Send Tip</button>
+    </div>
+    <div class="notice" data-en="Tip reward: 10× points — a $10 tip earns +100 points at Bitcoin Nail Bar. Only payout methods Anna turned on can be selected." data-vi="Thưởng tip: nhân 10 điểm — tip $10 được +100 điểm tại Bitcoin Nail Bar. Chỉ chọn được phương thức Anna đã bật.">Tip reward: 10× points — a $10 tip earns +100 points at Bitcoin Nail Bar. Only payout methods Anna turned on can be selected.</div>
+  </div>
+
+  <!-- ============ 08 TIP SUCCESS ============ -->
+  <div class="screen center" id="tipdone">
+    <div class="centerbox" id="tipPend">
+      <div class="bigicon">⏳</div>
+      <h1 data-en="Tip Sent!" data-vi="Đã gửi tip!">Tip Sent!</h1>
+      <p class="muted"><span data-en="Your" data-vi="Tip">Your</span> <b id="tipAmt">$10</b> <span data-en="tip to Anna is awaiting the salon's confirmation." data-vi="cho Anna đang chờ tiệm xác nhận.">tip to Anna is awaiting the salon's confirmation.</span></p>
+      <span class="badge gold" data-en="⏳ Awaiting payment confirmation" data-vi="⏳ Chờ xác nhận thanh toán">⏳ Awaiting payment confirmation</span>
+      <p class="tiny muted" style="margin-top:9px" data-en="Bitcoin Nail Bar usually confirms within 10 minutes — we&#39;ll notify you the moment it does." data-vi="Bitcoin Nail Bar thường xác nhận trong 10 phút — có kết quả là bạn được báo ngay.">Bitcoin Nail Bar usually confirms within 10 minutes — we&#39;ll notify you the moment it does.</p>
+      <div style="margin-top:20px">
+        <button class="btn white" onclick="tipConfirm()" data-en="▶ Salon confirms (demo)" data-vi="▶ Tiệm xác nhận (demo)">▶ Salon confirms (demo)</button>
+        <button class="btn out mt" onclick="go('home')" data-en="Back to Home" data-vi="Về Trang chủ">Back to Home</button>
+      </div>
+    </div>
+    <div class="centerbox" id="tipConf" style="display:none">
+      <div class="bigicon">💜</div>
+      <h1 data-en="Thank You!" data-vi="Cảm ơn bạn!">Thank You!</h1>
+      <p class="muted" data-en="Tip confirmed by Bitcoin Nail Bar." data-vi="Tiệm Bitcoin Nail Bar đã xác nhận tip.">Tip confirmed by Bitcoin Nail Bar.</p>
+      <div class="bignum" id="tipPts">+100</div>
+      <p class="muted" data-en="points at Bitcoin Nail Bar (10× your tip)" data-vi="điểm tại Bitcoin Nail Bar (gấp 10 lần tip)">points at Bitcoin Nail Bar (10× your tip)</p>
+      <div style="margin-top:20px">
+        <button class="btn white" onclick="go('review')" data-en="Send Feedback For +15" data-vi="Gửi góp ý để nhận +15">Send Feedback For +15</button>
+        <button class="btn out mt" onclick="go('login1')" data-en="Keep my points — enter phone" data-vi="Giữ điểm — nhập số phone">Keep my points — enter phone</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 08B PAY AT SALON ============ -->
+  <div class="screen" id="pay">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('home')">‹</div>
+      <div><h2 data-en="Pay Salon Direct" data-vi="Thanh toán trực tiếp">Pay Salon Direct</h2><p class="muted" data-en="Bitcoin Nail Bar · no card fees" data-vi="Bitcoin Nail Bar · không phí thẻ">Bitcoin Nail Bar · no card fees</p></div></div>
+      <div class="circle">💳</div>
+    </div>
+    <div class="card">
+      <div class="line"><span data-en="Service" data-vi="Dịch vụ">Service</span><b>Gel Manicure · Anna</b></div>
+      <div class="line"><span data-en="Amount" data-vi="Số tiền">Amount</span><b>$55.00</b></div>
+      <div class="field">
+        <label data-en="Payment Method" data-vi="Phương thức thanh toán">Payment Method</label>
+        <select><option data-en="Zelle (0% — salon keeps 100%)" data-vi="Zelle (0% — tiệm nhận đủ 100%)">Zelle (0% — salon keeps 100%)</option><option disabled data-en="Venmo (salon hasn't enabled)" data-vi="Venmo (tiệm chưa bật)">Venmo (salon hasn't enabled)</option><option disabled data-en="Cash App (salon hasn't enabled)" data-vi="Cash App (tiệm chưa bật)">Cash App (salon hasn't enabled)</option></select>
+      </div>
+      <span class="badge gold" data-en="🎁 Direct-pay reward: +20% bonus points — set by Bitcoin Nail Bar" data-vi="🎁 Thưởng trả trực tiếp: +20% điểm — quy định của Bitcoin Nail Bar">🎁 Direct-pay reward: +20% bonus points — set by Bitcoin Nail Bar</span>
+      <svg class="qr" style="display:block;margin:14px auto 6px" viewBox="0 0 29 29" xmlns="http://www.w3.org/2000/svg"><rect width="29" height="29" fill="#fff"/><g fill="#1a1040" id="payqrg"></g></svg>
+      <p class="tiny" style="text-align:center" data-en="Salon's Zelle QR — scan with your banking app" data-vi="QR Zelle của tiệm — quét bằng app ngân hàng của bạn">Salon's Zelle QR — scan with your banking app</p>
+      <button class="btn" onclick="sendPay()" data-en="I've paid $55 — notify salon" data-vi="Đã trả $55 — báo tiệm">I've paid $55 — notify salon</button>
+    </div>
+    <div class="notice" data-en="Money goes straight from your bank to the salon's — Nexora never holds it. Points are released once the salon confirms the payment arrived." data-vi="Tiền đi thẳng từ ngân hàng của bạn sang tiệm — Nexora không bao giờ giữ tiền. Điểm được nhả khi tiệm xác nhận đã nhận tiền.">Money goes straight from your bank to the salon's — Nexora never holds it. Points are released once the salon confirms the payment arrived.</div>
+  </div>
+
+  <!-- ============ 08C PAY SUCCESS ============ -->
+  <div class="screen center" id="paydone">
+    <div class="centerbox" id="payPend">
+      <div class="bigicon">⏳</div>
+      <h1 data-en="Payment Sent!" data-vi="Đã thanh toán!">Payment Sent!</h1>
+      <p class="muted"><span data-en="Your" data-vi="Khoản">Your</span> <b>$55.00</b> <span data-en="payment is awaiting the salon's confirmation." data-vi="của bạn đang chờ tiệm xác nhận.">payment is awaiting the salon's confirmation.</span></p>
+      <span class="badge gold" data-en="⏳ Awaiting payment confirmation" data-vi="⏳ Chờ xác nhận thanh toán">⏳ Awaiting payment confirmation</span>
+      <p class="tiny muted" style="margin-top:9px" data-en="Bitcoin Nail Bar usually confirms within 10 minutes — we&#39;ll notify you the moment it does." data-vi="Bitcoin Nail Bar thường xác nhận trong 10 phút — có kết quả là bạn được báo ngay.">Bitcoin Nail Bar usually confirms within 10 minutes — we&#39;ll notify you the moment it does.</p>
+      <div style="margin-top:20px">
+        <button class="btn white" onclick="payConfirm()" data-en="▶ Salon confirms (demo)" data-vi="▶ Tiệm xác nhận (demo)">▶ Salon confirms (demo)</button>
+        <button class="btn out mt" onclick="go('home')" data-en="Back to Home" data-vi="Về Trang chủ">Back to Home</button>
+      </div>
+    </div>
+    <div class="centerbox" id="payConf" style="display:none">
+      <div class="bigicon">✅</div>
+      <h1 data-en="Payment Confirmed!" data-vi="Đã xác nhận!">Payment Confirmed!</h1>
+      <p class="muted" data-en="Bitcoin Nail Bar received your $55.00 — receipt saved to History." data-vi="Bitcoin Nail Bar đã nhận $55.00 — biên lai lưu vào Lịch sử.">Bitcoin Nail Bar received your $55.00 — receipt saved to History.</p>
+      <div class="bignum">+66</div>
+      <p class="muted" data-en="+55 points ($55 spend) · +11 bonus for paying direct (set by salon)" data-vi="+55 điểm (chi $55) · +11 thưởng trả trực tiếp (tiệm quy định)">+55 points ($55 spend) · +11 bonus for paying direct (set by salon)</p>
+      <div style="margin-top:20px">
+        <button class="btn white" onclick="go('review')" data-en="Send Feedback For +15" data-vi="Gửi góp ý để nhận +15">Send Feedback For +15</button>
+        <button class="btn out mt" onclick="go('tip')" data-en="Tip Anna 💜" data-vi="Tip cho Anna 💜">Tip Anna 💜</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 08D MY LOOKS (visit book) ============ -->
+  <div class="screen" id="looks">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('home')">‹</div>
+      <div><h2 data-en="My Looks" data-vi="Sổ tay làm đẹp">My Looks</h2><p class="muted" data-en="Every visit, remembered for you" data-vi="Mỗi lượt ghé đều được nhớ giùm bạn">Every visit, remembered for you</p></div></div>
+      <div class="circle">💅</div>
+    </div>
+    <div class="btnrow" style="margin-bottom:12px">
+      <button class="btn" onclick="go('addlook')" data-en="＋ Save a look (photo + color)" data-vi="＋ Lưu mẫu (ảnh + màu)">＋ Save a look (photo + color)</button>
+      <button class="btn out" onclick="toast('ocr')" data-en="📷 Scan receipt" data-vi="📷 Chụp biên lai">📷 Scan receipt</button>
+    </div>
+    <div class="card">
+      <div style="height:110px;border-radius:14px;background:linear-gradient(135deg,#3d2b7d,#8a5cf6);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:10px">💅</div>
+      <h3>Gel Manicure <span class="tiny" style="float:right">May 20, 2026</span></h3>
+      <p class="muted">Bitcoin Nail Bar · Anna</p>
+      <span class="badge" data-en="Color: OPI Bubble Bath #S86" data-vi="Màu: OPI Bubble Bath #S86">Color: OPI Bubble Bath #S86</span>
+      <div class="btnrow" style="margin-top:10px">
+        <button class="btn" onclick="go('book1')" data-en="Rebook this look" data-vi="Làm lại mẫu này">Rebook this look</button>
+        <button class="btn out" onclick="go('tip')" data-en="Tip Anna" data-vi="Tip cho Anna">Tip Anna</button>
+      </div>
+    </div>
+    <div class="card">
+      <div style="height:110px;border-radius:14px;background:linear-gradient(135deg,#0e4a5c,#3db8d6);display:flex;align-items:center;justify-content:center;margin-bottom:10px">
+        <svg width="92" height="92" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="55" cy="62" rx="21" ry="28" fill="#f8e9e1" transform="rotate(-8 55 62)"/>
+          <circle cx="34" cy="30" r="9.5" fill="#f8e9e1"/>
+          <circle cx="49" cy="23" r="6.2" fill="#f8e9e1"/>
+          <circle cx="60" cy="22.5" r="5.6" fill="#f8e9e1"/>
+          <circle cx="70" cy="25" r="5.1" fill="#f8e9e1"/>
+          <circle cx="78" cy="29.5" r="4.6" fill="#f8e9e1"/>
+          <ellipse cx="34" cy="27.5" rx="5.4" ry="4.6" fill="#ff5f9e"/>
+          <ellipse cx="49" cy="21" rx="3.5" ry="3" fill="#ff5f9e"/>
+          <ellipse cx="60" cy="20.6" rx="3.2" ry="2.7" fill="#ff5f9e"/>
+          <ellipse cx="70" cy="23.2" rx="2.9" ry="2.5" fill="#ff5f9e"/>
+          <ellipse cx="78" cy="27.8" rx="2.6" ry="2.2" fill="#ff5f9e"/>
+          <circle cx="32.2" cy="26" r="1.5" fill="#ffc4dd"/>
+          <circle cx="47.8" cy="20" r="1" fill="#ffc4dd"/>
+          <path d="M86 48 l1.6 4 4 1.6 -4 1.6 -1.6 4 -1.6 -4 -4 -1.6 4 -1.6 z" fill="#fff" opacity=".9"/>
+          <path d="M18 52 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2 z" fill="#fff" opacity=".7"/>
+          <path d="M80 74 l1 2.6 2.6 1 -2.6 1 -1 2.6 -1 -2.6 -2.6 -1 2.6 -1 z" fill="#fff" opacity=".6"/>
+        </svg>
+      </div>
+      <h3>Pedicure + Design <span class="tiny" style="float:right">Apr 29, 2026</span></h3>
+      <p class="muted">Bitcoin Nail Bar · Anna</p>
+      <span class="badge" data-en="Color: DND #710 Sea Glass" data-vi="Màu: DND #710 Sea Glass">Color: DND #710 Sea Glass</span>
+      <div class="btnrow" style="margin-top:10px">
+        <button class="btn" onclick="go('book1')" data-en="Rebook this look" data-vi="Làm lại mẫu này">Rebook this look</button>
+        <button class="btn out" onclick="go('tip')" data-en="Tip Anna" data-vi="Tip cho Anna">Tip Anna</button>
+      </div>
+    </div>
+    <div class="card">
+      <div style="height:110px;border-radius:14px;background:linear-gradient(135deg,#5c3a0e,#d6a53d);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:10px">✨</div>
+      <h3>Signature Facial <span class="tiny" style="float:right">Apr 8, 2026</span></h3>
+      <p class="muted">Golden Glow Spa · Kim</p>
+      <span class="badge" data-en="Note: sensitive skin — gentle peel" data-vi="Ghi chú: da nhạy cảm — peel nhẹ">Note: sensitive skin — gentle peel</span>
+      <div class="btnrow" style="margin-top:10px">
+        <button class="btn" onclick="go('book1')" data-en="Rebook this look" data-vi="Làm lại mẫu này">Rebook this look</button>
+      </div>
+    </div>
+    <div class="notice" data-en="📷 A photo is saved at check-out when you or your tech snaps one. Only you and the business you visited can see this book." data-vi="📷 Ảnh được lưu lúc check-out khi bạn hoặc thợ chụp. Chỉ bạn và tiệm bạn ghé thấy được sổ tay này.">📷 A photo is saved at check-out when you or your tech snaps one. Only you and the business you visited can see this book.</div>
+  </div>
+
+  <!-- ============ 08E ADD LOOK ============ -->
+  <div class="screen" id="addlook">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('looks')">‹</div>
+      <div><h2 data-en="Save a Look" data-vi="Lưu mẫu">Save a Look</h2><p class="muted" data-en="Photo, color & notes" data-vi="Ảnh, màu & ghi chú">Photo, color & notes</p></div></div>
+      <div class="circle">📷</div>
+    </div>
+    <div class="card">
+      <div id="alPhoto" onclick="alSnap()" style="height:130px;border-radius:14px;border:2px dashed var(--line2);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin-bottom:12px">
+        <b style="font-size:34px">📷</b>
+        <span class="tiny" data-en="Tap to take a photo" data-vi="Bấm để chụp ảnh">Tap to take a photo</span>
+      </div>
+      <div class="field">
+        <label data-en="Service" data-vi="Dịch vụ">Service</label>
+        <select id="alSvc"><option>Gel Manicure</option><option>Pedicure</option><option>Design</option><option>Fill</option><option>Dip Powder</option><option data-en="Other" data-vi="Khác">Other</option></select>
+      </div>
+      <div class="field">
+        <label data-en="Color code" data-vi="Mã màu">Color code</label>
+        <input id="alColor" placeholder="OPI #S86, DND #710…">
+      </div>
+      <div class="field">
+        <label data-en="Note (optional)" data-vi="Ghi chú (tùy chọn)">Note (optional)</label>
+        <input id="alNote" data-en-ph="e.g. shorter almond shape next time" data-vi-ph="vd: lần sau làm dáng almond ngắn hơn" placeholder="e.g. shorter almond shape next time">
+      </div>
+      <button class="btn" onclick="saveLook()" data-en="Save to My Looks" data-vi="Lưu vào sổ tay">Save to My Looks</button>
+    </div>
+    <div class="notice" data-en="Saved to your visit at Bitcoin Nail Bar (May 20). In the real app the photo attaches to today's check-in automatically." data-vi="Lưu vào lượt ghé Bitcoin Nail Bar (20/5) của bạn. Trong app thật, ảnh tự gắn vào lần check-in hôm nay.">Saved to your visit at Bitcoin Nail Bar (May 20). In the real app the photo attaches to today's check-in automatically.</div>
+  </div>
+
+  <!-- ============ 09 REVIEW ============ -->
+  <div class="screen" id="review">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('home')">‹</div>
+      <div><h2 data-en="Feedback" data-vi="Góp ý">Feedback</h2><p class="muted" data-en="Earn points for your feedback" data-vi="Nhận điểm khi gửi góp ý">Earn points for your feedback</p></div></div>
+      <div class="circle">⭐</div>
+    </div>
+    <div class="card">
+      <h3 data-en="How was your visit?" data-vi="Trải nghiệm của bạn thế nào?">How was your visit?</h3>
+      <div class="stars" id="stars">
+        <span class="on" onclick="setStars(1)">★</span><span class="on" onclick="setStars(2)">★</span><span class="on" onclick="setStars(3)">★</span><span class="on" onclick="setStars(4)">★</span><span class="on" onclick="setStars(5)">★</span>
+      </div>
+      <div class="field">
+        <textarea rows="5" data-en-ph="Share your experience…" data-vi-ph="Chia sẻ trải nghiệm của bạn…">Anna did an amazing job. I love my nails!</textarea>
+      </div>
+      <button class="btn" onclick="submitReview()" data-en="Send Feedback + Earn 15 Points" data-vi="Gửi góp ý + Nhận 15 điểm">Send Feedback + Earn 15 Points</button>
+      <button class="btn out mt" onclick="toast('google')" data-en="Share on Google (optional · no points)" data-vi="Chia sẻ lên Google (tùy chọn · không tính điểm)">Share on Google (optional · no points)</button>
+    </div>
+    <div class="notice" data-en="+15 points for your feedback — any rating, sent privately to the salon. Sharing on Google is optional and never rewarded, keeping the salon compliant with Google & FTC review rules." data-vi="+15 điểm cho góp ý của bạn — mọi số sao, gửi riêng cho tiệm. Chia sẻ lên Google là tùy chọn và không bao giờ được thưởng điểm — giúp tiệm tuân thủ quy định review của Google & FTC.">+15 points for your feedback — any rating, sent privately to the salon. Sharing on Google is optional and never rewarded, keeping the salon compliant with Google & FTC review rules.</div>
+  </div>
+
+  <!-- ============ 10 CROSS REDEEM ============ -->
+  <div class="screen" id="redeem">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('rewards')">‹</div>
+      <div><h2 data-en="Cross Redeem" data-vi="Đổi chéo">Cross Redeem</h2><p class="muted" data-en="Via co-op alliance" data-vi="Qua liên minh co-op">Via co-op alliance</p></div></div>
+      <div class="circle">🌐</div>
+    </div>
+    <div class="hero">
+      <small id="rdBiz">Golden Glow Spa</small>
+      <h2 id="rdName">$10 Credit</h2>
+      <p><span data-en="Use" data-vi="Dùng">Use</span> <b id="rdCost">800</b> <span data-en="Bitcoin Nail Bar points via the co-op alliance." data-vi="điểm Bitcoin Nail Bar qua liên minh co-op.">Bitcoin Nail Bar points via the co-op alliance.</span></p>
+    </div>
+    <div class="card">
+      <div class="line"><span data-en="Your Bitcoin Nail Bar balance" data-vi="Số dư Bitcoin Nail Bar của bạn">Your Bitcoin Nail Bar balance</span><b class="balBnb">2,450</b></div>
+      <div class="line"><span data-en="Offer Cost" data-vi="Chi phí ưu đãi">Offer Cost</span><b class="minus" id="rdCost2">-800</b></div>
+      <div class="line"><span data-en="Remaining Balance" data-vi="Số dư còn lại">Remaining Balance</span><b class="plus" id="rdLeft">100</b></div>
+      <button class="btn" style="margin-top:14px" onclick="confirmRedeem()" data-en="Confirm Redeem" data-vi="Xác nhận đổi">Confirm Redeem</button>
+      <button class="btn out mt" onclick="go('rewards')" data-en="Cancel" data-vi="Hủy">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ============ 11 REDEEM SUCCESS ============ -->
+  <div class="screen center" id="redeemdone">
+    <div class="centerbox">
+      <div class="bigicon">🎉</div>
+      <span class="badge gold" id="firstBadge" style="display:none;margin-bottom:8px" data-en="🏅 First reward unlocked — milestone reached!" data-vi="🏅 Đổi thưởng lần đầu — đạt cột mốc!">🏅 First reward unlocked — milestone reached!</span>
+      <h1 data-en="Reward Claimed!" data-vi="Đã nhận thưởng!">Reward Claimed!</h1>
+      <div class="bignum" id="rdDoneName">$10</div>
+      <p class="muted"><span data-en="ready at" data-vi="sẵn sàng tại">ready at</span> <b id="rdDoneBiz">Golden Glow Spa</b></p>
+      <div class="card" style="text-align:left;margin-top:20px">
+        <div class="line"><span data-en="Redemption ID" data-vi="Mã đổi thưởng">Redemption ID</span><b id="rdDoneId">red_90018</b></div>
+        <div class="line"><span data-en="Business" data-vi="Doanh nghiệp">Business</span><b id="rdDoneBiz2">Golden Glow</b></div>
+        <div class="line"><span data-en="Paid with" data-vi="Trả bằng">Paid with</span><b data-en="Bitcoin Nail Bar points" data-vi="Điểm Bitcoin Nail Bar">Bitcoin Nail Bar points</b></div>
+        <div class="line"><span data-en="Status" data-vi="Trạng thái">Status</span><b class="plus" data-en="Ready" data-vi="Sẵn sàng">Ready</b></div>
+        <button class="btn" style="margin-top:14px" onclick="showQR()" data-en="Show QR Code" data-vi="Hiện mã QR">Show QR Code</button>
+        <button class="btn out mt" onclick="go('home')" data-en="Done" data-vi="Xong">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 12 ACTIVITY ============ -->
+  <div class="screen" id="activity">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('home')">‹</div>
+      <div><h2 data-en="Activity" data-vi="Hoạt động">Activity</h2><p class="muted" data-en="Visits and messages" data-vi="Lượt ghé và tin nhắn">Visits and messages</p></div></div>
+      <div class="circle">💬</div>
+    </div>
+    <div class="sec"><h3 data-en="Recent Visit" data-vi="Lượt ghé gần đây">Recent Visit</h3></div>
+    <div class="card">
+      <h3>Bitcoin Nail Bar</h3>
+      <p class="muted">May 20, 2026 · Anna · Pedicure</p>
+      <div class="line" style="margin-top:6px"><span>Tip</span><b>$10</b></div>
+      <div class="line"><span data-en="Points" data-vi="Điểm">Points</span><b class="plus">+30</b></div>
+      <span class="badge green" data-en="Reviewed ⭐ 5.0" data-vi="Đã đánh giá ⭐ 5.0">Reviewed ⭐ 5.0</span>
+    </div>
+    <div class="sec"><h3 data-en="Messages" data-vi="Tin nhắn">Messages</h3></div>
+    <div class="row">
+      <div class="icon">💅</div>
+      <div class="flex1"><h3>Bitcoin Nail Bar</h3><p data-en="You are 50 points away from Free Gel Upgrade." data-vi="Bạn còn 50 điểm nữa là được Nâng cấp Gel miễn phí.">You are 50 points away from Free Gel Upgrade.</p></div>
+    </div>
+    <div class="row" onclick="go('business')" style="cursor:pointer">
+      <div class="icon">✨</div>
+      <div class="flex1"><h3>Golden Glow Spa</h3><p data-en="$10 credit available via co-op alliance." data-vi="Tín dụng $10 khả dụng qua liên minh co-op.">$10 credit available via co-op alliance.</p></div>
+    </div>
+    <div class="row">
+      <div class="icon">☕</div>
+      <div class="flex1"><h3>Moon Coffee</h3><p data-en="New partner near you — earn points here." data-vi="Đối tác mới gần bạn — tích điểm tại đây.">New partner near you — earn points here.</p></div>
+    </div>
+  </div>
+
+  <!-- ============ 13 PROFILE ============ -->
+  <div class="screen" id="profile">
+    <div class="head">
+      <div><h2 data-en="Profile" data-vi="Hồ sơ">Profile</h2><p class="muted">Nexora ID: NX-JESS-2048</p></div>
+      <div class="circle">👩</div>
+    </div>
+    <div class="card">
+      <div class="biz">
+        <div class="photo">J</div>
+        <div><h3>Jessica</h3><p class="muted">jessica@email.com<br>832-xxx-xxxx</p></div>
+      </div>
+      <button class="btn" style="margin-top:14px" onclick="toast('demo')" data-en="Edit Profile" data-vi="Sửa hồ sơ">Edit Profile</button>
+    </div>
+    <div class="card">
+      <h3 data-en="Settings" data-vi="Cài đặt">Settings</h3>
+      <div class="line" onclick="toggleLang()" style="cursor:pointer"><span data-en="Language" data-vi="Ngôn ngữ">Language</span><b id="langLabel">English</b></div>
+      <div class="line" onclick="toast('demo')" style="cursor:pointer"><span data-en="Payment Methods" data-vi="Phương thức thanh toán">Payment Methods</span><b data-en="Manage" data-vi="Quản lý">Manage</b></div>
+      <div class="line" onclick="go('msgprefs')" style="cursor:pointer"><span data-en="Messages & Privacy" data-vi="Tin nhắn & Quyền riêng tư">Messages & Privacy</span><b data-en="Manage" data-vi="Quản lý">Manage</b></div>
+      <div class="line" onclick="toast('demo')" style="cursor:pointer"><span data-en="Privacy" data-vi="Quyền riêng tư">Privacy</span><b data-en="View" data-vi="Xem">View</b></div>
+      <div class="line" onclick="go('referral')" style="cursor:pointer"><span data-en="Invite Friends" data-vi="Mời bạn bè">Invite Friends</span><b class="plus">+50</b></div>
+      <div class="line" onclick="onbShow()" style="cursor:pointer"><span data-en="How the app works" data-vi="Hướng dẫn sử dụng">How the app works</span><b data-en="Replay" data-vi="Xem lại">Replay</b></div>
+    </div>
+    <button class="btn out" onclick="go('login1')" data-en="Log Out" data-vi="Đăng xuất">Log Out</button>
+  </div>
+
+  <!-- ============ 14 ONBOARDING: WELCOME ============ -->
+  <div class="screen" id="onb1">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('scan')">‹</div>
+      <div><h2 data-en="Welcome Gift" data-vi="Quà chào mừng">Welcome Gift</h2><p class="muted" data-en="Scanned at counter" data-vi="Quét tại quầy">Scanned at counter</p></div></div>
+      <div class="circle">🎁</div>
+    </div>
+    <div class="hero" style="text-align:center">
+      <div class="photo" style="margin:0 auto 10px">💅</div>
+      <small>Bitcoin Nail Bar</small>
+      <h2 data-en="You've been gifted 25 welcome points!" data-vi="Bạn được tặng 25 điểm chào mừng!">You've been gifted 25 welcome points!</h2>
+      <p data-en="Enter your phone number to claim. No app download required." data-vi="Nhập số điện thoại để nhận. Không cần tải app ngay.">Enter your phone number to claim. No app download required.</p>
+    </div>
+    <div class="card">
+      <div class="field">
+        <label data-en="Mobile Number" data-vi="Số di động">Mobile Number</label>
+        <input type="tel" value="(832) 555-0148">
+      </div>
+      <button class="btn" onclick="go('onb2')" data-en="Claim 25 Points →" data-vi="Nhận 25 điểm →">Claim 25 Points →</button>
+    </div>
+    <div class="notice" data-en="Your number is only used for your rewards account and messages you approve on the next screen." data-vi="Số của bạn chỉ dùng cho tài khoản tích điểm và các tin nhắn bạn chấp thuận ở màn sau.">Your number is only used for your rewards account and messages you approve on the next screen.</div>
+  </div>
+
+  <!-- ============ 15 ONBOARDING: TCPA CONSENT ============ -->
+  <div class="screen" id="onb2">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('onb1')">‹</div>
+      <div><h2 data-en="Message Consent" data-vi="Đồng ý nhận tin">Message Consent</h2><p class="muted" data-en="Choose what you receive" data-vi="Chọn tin bạn muốn nhận">Choose what you receive</p></div></div>
+      <div class="circle">🔒</div>
+    </div>
+    <div class="card">
+      <div class="line" onclick="toggleConsent(1,this)" style="cursor:pointer;align-items:flex-start;gap:10px">
+        <span style="flex:1" data-en="Rewards & offers texts from Bitcoin Nail Bar (via Nexora), up to 4 msgs/month" data-vi="Tin thưởng & ưu đãi từ Bitcoin Nail Bar (qua Nexora), tối đa 4 tin/tháng">Rewards & offers texts from Bitcoin Nail Bar (via Nexora), up to 4 msgs/month</span><b class="ck">⬜</b>
+      </div>
+      <div class="line" onclick="toggleConsent(2,this)" style="cursor:pointer;align-items:flex-start;gap:10px">
+        <span style="flex:1" data-en="Optional: offers from nearby Nexora partner businesses" data-vi="Tùy chọn: ưu đãi từ các đối tác Nexora gần bạn">Optional: offers from nearby Nexora partner businesses</span><b class="ck">⬜</b>
+      </div>
+      <button class="btn" style="margin-top:14px" onclick="agreeConsent()" data-en="Agree & Continue" data-vi="Đồng ý & Tiếp tục">Agree & Continue</button>
+      <button class="btn out mt" onclick="toast('skipc')" data-en="Skip — points only, no texts" data-vi="Bỏ qua — chỉ nhận điểm, không nhận tin">Skip — points only, no texts</button>
+    </div>
+    <div class="notice" data-en="By tapping Agree you consent to automated marketing/loyalty texts from the selected sender(s). Consent is NOT a condition of purchase or of receiving points. Msg & data rates may apply. Reply STOP to unsubscribe, HELP for help. Consent is stored with a timestamp for compliance." data-vi="Khi bấm Đồng ý, bạn chấp thuận nhận tin nhắn tự động về ưu đãi/tích điểm từ bên gửi đã chọn. Việc đồng ý KHÔNG phải điều kiện để mua dịch vụ hay nhận điểm. Có thể phát sinh phí tin nhắn. Nhắn STOP để hủy, HELP để được hỗ trợ. Nội dung đồng ý được lưu kèm thời gian để tuân thủ pháp lý.">By tapping Agree you consent to automated marketing/loyalty texts from the selected sender(s). Consent is NOT a condition of purchase or of receiving points. Msg & data rates may apply. Reply STOP to unsubscribe, HELP for help. Consent is stored with a timestamp for compliance.</div>
+  </div>
+
+  <!-- ============ 16 ONBOARDING: SMS DOUBLE OPT-IN ============ -->
+  <div class="screen" id="onb3">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('onb2')">‹</div>
+      <div><h2 data-en="Confirm Number" data-vi="Xác nhận số">Confirm Number</h2><p class="muted" data-en="Double opt-in" data-vi="Xác nhận 2 bước">Double opt-in</p></div></div>
+      <div class="circle">💬</div>
+    </div>
+    <div class="card" style="background:#080c22">
+      <p class="tiny" style="text-align:center;margin:0 0 10px">SMS · Nexora Voice · (832) 555-0148</p>
+      <div class="row" style="background:#141a3a;border-color:var(--line2)">
+        <div class="icon" style="font-size:15px">NX</div>
+        <div class="flex1"><p style="color:#e8ecff;font-size:12.5px" data-en="Nexora: Bitcoin Nail Bar added 25 pts to your rewards. Reply Y to confirm your number & activate texts. STOP=cancel HELP=help" data-vi="Nexora: Bitcoin Nail Bar đã cộng 25 điểm cho bạn. Trả lời Y để xác nhận số & kích hoạt tin nhắn. STOP=hủy HELP=hỗ trợ">Nexora: Bitcoin Nail Bar added 25 pts to your rewards. Reply Y to confirm your number & activate texts. STOP=cancel HELP=help</p></div>
+      </div>
+      <button class="btn" onclick="go('onb4')" data-en="Reply “Y” (demo)" data-vi="Trả lời “Y” (demo)">Reply “Y” (demo)</button>
+    </div>
+    <div class="notice" data-en="Why this step: it proves the number belongs to the customer and creates a legal record of consent. Numbers that never reply Y receive no marketing texts." data-vi="Vì sao cần bước này: chứng minh số thuộc về khách và tạo bằng chứng pháp lý về sự đồng ý. Số không trả lời Y sẽ không nhận tin marketing.">Why this step: it proves the number belongs to the customer and creates a legal record of consent. Numbers that never reply Y receive no marketing texts.</div>
+  </div>
+
+  <!-- ============ 17 ONBOARDING: DONE ============ -->
+  <div class="screen center" id="onb4">
+    <div class="centerbox">
+      <div class="bigicon">🎁</div>
+      <h1 data-en="25 points are waiting!" data-vi="25 điểm đang chờ bạn!">25 points are waiting!</h1>
+      <p class="muted" data-en="Your Nexora account is active — your points are stored in your account, independent of the salon's POS." data-vi="Tài khoản Nexora của bạn đã kích hoạt — điểm lưu trong tài khoản của bạn, không phụ thuộc POS của tiệm.">Your Nexora account is active — your points are stored in your account, independent of the salon's POS.</p>
+      <div class="bignum">+25</div>
+      <p class="muted" data-en="Welcome Points" data-vi="Điểm chào mừng">Welcome Points</p>
+      <div style="margin-top:20px">
+        <button class="btn white" onclick="askPush()" data-en="Enter App →" data-vi="Vào app →">Enter App →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 18 OFFERS INBOX ============ -->
+  <div class="screen" id="offers">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('home')">‹</div>
+      <div><h2 data-en="Offers" data-vi="Ưu đãi">Offers</h2><p class="muted" data-en="Sent to you by businesses" data-vi="Các tiệm gửi tới bạn">Sent to you by businesses</p></div></div>
+      <div class="circle">🏷️</div>
+    </div>
+    <input class="search" id="offSearch" oninput="offFilter()" data-en-ph="Search offers: gel, pedicure, facial…" data-vi-ph="Tìm ưu đãi: gel, pedicure, facial…" placeholder="Search offers: gel, pedicure, facial…">
+    <div class="filters">
+      <span class="filter on" onclick="pickOffFilter(this,'all')" data-en="All" data-vi="Tất cả">All</span>
+      <span class="filter" onclick="pickOffFilter(this,'near')" data-en="Near me" data-vi="Gần tôi">Near me</span>
+      <span class="filter" onclick="pickOffFilter(this,'ending')" data-en="Ending soon" data-vi="Sắp hết hạn">Ending soon</span>
+      <span class="filter" onclick="pickOffFilter(this,'saved')" data-en="Saved" data-vi="Đã lưu">Saved</span>
+    </div>
+    <div class="filters">
+      <span class="filter on" onclick="pickOffCat(this,'all')" data-en="All types" data-vi="Mọi loại">All types</span>
+      <span class="filter" onclick="pickOffCat(this,'nail')">💅 Nail</span>
+      <span class="filter" onclick="pickOffCat(this,'spa')">✨ Spa</span>
+      <span class="filter" onclick="pickOffCat(this,'hair')" data-en="💇 Hair" data-vi="💇 Tóc">💇 Hair</span>
+      <span class="filter" onclick="pickOffCat(this,'coffee')" data-en="☕ Coffee" data-vi="☕ Cà phê">☕ Coffee</span>
+      <span class="filter" onclick="pickOffCat(this,'food')" data-en="🍜 Food" data-vi="🍜 Ăn uống">🍜 Food</span>
+    </div>
+    <div class="tiny2" id="offCount" style="display:none;color:#7fe0a8;font-weight:800;margin:2px 2px 9px"></div>
+    <div class="offer offCard" data-name="grand opening khai trương rose nails spa nail 30% giảm double points" data-cat="nail" data-flags="near ending" style="border:1px solid #f5c344">
+      <div class="icon">🎉</div>
+      <div class="flex1">
+        <h3 data-en="Grand Opening: 30% OFF all services" data-vi="Khai trương: Giảm 30% mọi dịch vụ">Grand Opening: 30% OFF all services</h3>
+        <p>Rose Nails & Spa · 1.2 mi · <span class="minus" data-en="This week only · double points" data-vi="Chỉ tuần này · nhân đôi điểm">This week only · double points</span></p>
+        <p class="tiny2" style="margin-top:4px" data-en="🎉 New business near you — shown because you enabled Nearby deals · max 1 opening promo/week" data-vi="🎉 Tiệm mới gần bạn — hiện vì bạn bật Ưu đãi gần tôi · tối đa 1 tin khai trương/tuần">🎉 New business near you — shown because you enabled Nearby deals · max 1 opening promo/week</p>
+      </div>
+      <button class="chip" onclick="saveOffer(this)" data-en="Save" data-vi="Lưu">Save</button>
+    </div>
+    <div class="offer offCard" data-name="gel set nail bitcoin nail bar manicure 20% giảm" data-cat="nail" data-flags="near ending">
+      <div class="icon">💅</div>
+      <div class="flex1"><h3 data-en="20% OFF Gel Set — Tue & Wed" data-vi="Giảm 20% bộ Gel — Thứ 3 & 4">20% OFF Gel Set — Tue & Wed</h3><p>Bitcoin Nail Bar · <span class="minus" data-en="Ends in 2 days" data-vi="Còn 2 ngày">Ends in 2 days</span></p></div>
+      <button class="chip" onclick="saveOffer(this)" data-en="Save" data-vi="Lưu">Save</button>
+    </div>
+    <div class="offer offCard" data-name="credit network golden glow spa facial" data-cat="spa" data-flags="near">
+      <div class="icon">✨</div>
+      <div class="flex1"><h3 data-en="$10 Credit for Network members" data-vi="Tín dụng $10 cho thành viên Mạng lưới">$10 Credit for Network members</h3><p>Golden Glow Spa · <span data-en="Ends in 6 days" data-vi="Còn 6 ngày">Ends in 6 days</span></p></div>
+      <button class="chip" onclick="openRedeem('glow')" data-en="Use" data-vi="Dùng">Use</button>
+    </div>
+    <div class="offer offCard" data-name="happy hour double points coffee moon" data-cat="coffee" data-flags="">
+      <div class="icon">☕</div>
+      <div class="flex1"><h3 data-en="Happy Hour: double points 2–5 PM" data-vi="Giờ vàng: nhân đôi điểm 14–17h">Happy Hour: double points 2–5 PM</h3><p>Moon Coffee · <span data-en="Every weekday" data-vi="Mỗi ngày trong tuần">Every weekday</span></p></div>
+      <button class="chip" onclick="saveOffer(this)" data-en="Save" data-vi="Lưu">Save</button>
+    </div>
+    <div class="offer offCard" data-name="lunch combo food saigon bistro 10% giảm" data-cat="food" data-flags="ending">
+      <div class="icon">🍜</div>
+      <div class="flex1"><h3 data-en="10% OFF lunch combo" data-vi="Giảm 10% combo trưa">10% OFF lunch combo</h3><p>Saigon Bistro · <span class="minus" data-en="Ends today" data-vi="Hết hạn hôm nay">Ends today</span></p></div>
+      <button class="chip" onclick="openRedeem('bistro')" data-en="Use" data-vi="Dùng">Use</button>
+    </div>
+    <div class="offer offCard" data-name="pedicure nail queen nails 20% giảm first visit" data-cat="nail" data-flags="" data-pub="1" style="display:none">
+      <div class="icon">👑</div>
+      <div class="flex1"><h3 data-en="20% OFF Pedicure — first visit" data-vi="Giảm 20% Pedicure — lần đầu ghé">20% OFF Pedicure — first visit</h3><p>Queen Nails · 4.2 mi · <span class="plus" data-en="Public offer · new to you" data-vi="Ưu đãi công khai · tiệm mới với bạn">Public offer · new to you</span></p></div>
+      <button class="chip" onclick="saveOffer(this)" data-en="Save" data-vi="Lưu">Save</button>
+    </div>
+    <div class="offer offCard" data-name="balayage hair lux hair studio tóc 15% giảm" data-cat="hair" data-flags="" data-pub="1" style="display:none">
+      <div class="icon">💇</div>
+      <div class="flex1"><h3 data-en="15% OFF Balayage — weekdays" data-vi="Giảm 15% Balayage — ngày thường">15% OFF Balayage — weekdays</h3><p>Lux Hair Studio · 2.7 mi · <span class="plus" data-en="Public offer · new to you" data-vi="Ưu đãi công khai · tiệm mới với bạn">Public offer · new to you</span></p></div>
+      <button class="chip" onclick="saveOffer(this)" data-en="Save" data-vi="Lưu">Save</button>
+    </div>
+    <div class="card" id="offEmpty" style="display:none;text-align:center">
+      <p class="muted" data-en="No offers match — set an alert below and we'll notify you when one appears." data-vi="Chưa có ưu đãi phù hợp — đặt thông báo bên dưới, có là báo ngay.">No offers match — set an alert below and we'll notify you when one appears.</p>
+      <button class="btn out mt" onclick="toast('invited')" data-en="📨 Invite a business you visit" data-vi="📨 Mời tiệm bạn hay ghé">📨 Invite a business you visit</button>
+    </div>
+    <div class="sec" style="margin-top:14px"><h3 data-en="🔔 Waiting for a deal?" data-vi="🔔 Đang chờ ưu đãi nào?">🔔 Waiting for a deal?</h3></div>
+    <div class="card">
+      <p class="muted" style="font-size:12px" data-en="Tell us what you're hoping for — the moment a business posts a matching offer, you get a notification." data-vi="Cho biết bạn đang mong ưu đãi gì — ngay khi có tiệm đăng ưu đãi trùng khớp, bạn nhận thông báo liền.">Tell us what you're hoping for — the moment a business posts a matching offer, you get a notification.</p>
+      <div style="display:flex;gap:8px;margin:10px 0">
+        <input class="search" id="wishInput" style="margin-bottom:0;flex:1" data-en-ph="e.g. pedicure 20% off" data-vi-ph="vd. pedicure giảm 20%" placeholder="e.g. pedicure 20% off">
+        <button class="chip" onclick="addWish()" data-en="＋ Add" data-vi="＋ Thêm">＋ Add</button>
+      </div>
+      <div id="wishList">
+        <span class="filter on" style="display:inline-block;margin:0 6px 6px 0">💅 <span data-en="Pedicure deal" data-vi="Ưu đãi pedicure">Pedicure deal</span> <b style="cursor:pointer;opacity:.7" onclick="this.parentNode.remove()">✕</b></span>
+        <span class="filter on" style="display:inline-block;margin:0 6px 6px 0">✨ <span data-en="Facial under $50" data-vi="Facial dưới $50">Facial under $50</span> <b style="cursor:pointer;opacity:.7" onclick="this.parentNode.remove()">✕</b></span>
+      </div>
+      <button class="btn out mt" onclick="simulateWishPush()" data-en="▶ Simulate: a matching offer arrives (demo)" data-vi="▶ Mô phỏng: có ưu đãi trùng mong đợi (demo)">▶ Simulate: a matching offer arrives (demo)</button>
+    </div>
+    <div class="notice" data-en="Businesses never see who you are — only anonymous demand, e.g. “12 customers nearby are waiting for a pedicure deal.” That signal helps them create the offers you actually want." data-vi="Doanh nghiệp không thấy danh tính của bạn — chỉ thấy nhu cầu ẩn danh, vd. “12 khách gần bạn đang chờ ưu đãi pedicure”. Tín hiệu này giúp họ tạo đúng ưu đãi bạn cần.">Businesses never see who you are — only anonymous demand, e.g. “12 customers nearby are waiting for a pedicure deal.” That signal helps them create the offers you actually want.</div>
+    <div class="notice" data-en="Your feed shows offers from businesses you visited or opted in to. When you search, Nexora also checks public offers from every business near you — that's how new places reach you without spamming you. Manage in Profile → Notifications." data-vi="Danh sách mặc định là ưu đãi từ tiệm bạn đã ghé hoặc đã đồng ý nhận tin. Khi bạn tìm kiếm, Nexora tìm thêm ưu đãi công khai của mọi tiệm gần bạn — tiệm mới đến được với bạn mà không spam bạn. Quản lý tại Hồ sơ → Thông báo.">You only see offers from businesses you visited or partners you opted in to. Manage in Profile → Notifications.</div>
+  </div>
+
+  <!-- ============ 19 REFERRAL ============ -->
+  <div class="screen" id="referral">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('profile')">‹</div>
+      <div><h2 data-en="Invite Friends" data-vi="Mời bạn bè">Invite Friends</h2><p class="muted" data-en="You both earn points" data-vi="Cả hai cùng nhận điểm">You both earn points</p></div></div>
+      <div class="circle">🤝</div>
+    </div>
+    <div class="hero" style="text-align:center">
+      <small data-en="Referral Reward" data-vi="Thưởng giới thiệu">Referral Reward</small>
+      <h1 data-en="You +50 · Friend +100" data-vi="Bạn +50 · Bạn bè +100" style="font-size:26px">You +50 · Friend +100</h1>
+      <p data-en="Your friend gets +100 from the first business they check in at. You get +50 when they earn their first points." data-vi="Bạn của bạn nhận +100 từ tiệm đầu tiên họ check-in. Bạn nhận +50 khi họ tích điểm lần đầu.">Your friend gets +100 from the first business they check in at. You get +50 when they earn their first points.</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <p class="tiny" data-en="Your invite code" data-vi="Mã mời của bạn">Your invite code</p>
+      <h1 style="letter-spacing:3px;margin:6px 0 12px;font-size:26px">REF-JESS</h1>
+      <div class="btnrow">
+        <button class="btn" onclick="toast('copied')" data-en="Copy Code" data-vi="Sao chép mã">Copy Code</button>
+        <button class="btn out" onclick="toast('share')" data-en="Share Link" data-vi="Chia sẻ link">Share Link</button>
+      </div>
+    </div>
+    <div class="sec"><h3 data-en="Your Invites" data-vi="Lời mời của bạn">Your Invites</h3></div>
+    <div class="row">
+      <div class="icon">M</div>
+      <div class="flex1"><h3>Mai T.</h3><p data-en="Joined · earned first points" data-vi="Đã tham gia · đã tích điểm đầu">Joined · earned first points</p></div>
+      <span class="badge green">+50</span>
+    </div>
+    <div class="row">
+      <div class="icon">T</div>
+      <div class="flex1"><h3>Tom L.</h3><p data-en="Invited · not joined yet" data-vi="Đã mời · chưa tham gia">Invited · not joined yet</p></div>
+      <span class="badge gold" data-en="Pending" data-vi="Đang chờ">Pending</span>
+    </div>
+    <div class="notice" data-en="Referral rewards are issued and funded by each business — amounts are set by the business your friend checks in at (here: Bitcoin Nail Bar's 50/100). Points release after your friend's first paid visit." data-vi="Thưởng giới thiệu do từng tiệm phát và tự chi trả — mức thưởng do tiệm mà bạn của bạn check-in quy định (ở đây: 50/100 của Bitcoin Nail Bar). Điểm được nhả sau lượt ghé có thanh toán đầu tiên của bạn ấy.">Referral rewards are issued and funded by each business — amounts are set by the business your friend checks in at (here: Bitcoin Nail Bar's 50/100). Points release after your friend's first paid visit.</div>
+  </div>
+
+  <!-- ============ 20 BOOKING: CHOOSE ============ -->
+  <div class="screen" id="book1">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('home')">‹</div>
+      <div><h2 data-en="Book Again" data-vi="Đặt lại lịch">Book Again</h2><p class="muted">Bitcoin Nail Bar</p></div></div>
+      <div class="circle">📅</div>
+    </div>
+    <div class="notice" style="margin-bottom:12px" data-en="Pre-filled from your last visit — change anything you like." data-vi="Đã điền sẵn theo lần ghé trước — bạn có thể đổi bất kỳ mục nào.">Pre-filled from your last visit — change anything you like.</div>
+    <div class="sec" style="margin-top:6px"><h3 data-en="Service" data-vi="Dịch vụ">Service</h3></div>
+    <div class="filters" id="svcRow" style="flex-wrap:wrap">
+      <span class="filter on" onclick="pickSel(this,'on')">Pedicure · $45</span>
+      <span class="filter" onclick="pickSel(this,'on')">Gel Manicure · $35</span>
+      <span class="filter" onclick="pickSel(this,'on')" data-en="Full Set · $55" data-vi="Bộ móng đầy đủ · $55">Full Set · $55</span>
+    </div>
+    <div class="sec"><h3 data-en="Technician" data-vi="Thợ">Technician</h3></div>
+    <div class="filters" id="stfRow">
+      <span class="filter on" onclick="pickSel(this,'on')">Anna ⭐4.9</span>
+      <span class="filter" onclick="pickSel(this,'on')">Kim ⭐4.8</span>
+      <span class="filter" onclick="pickSel(this,'on')" data-en="Anyone" data-vi="Ai cũng được">Anyone</span>
+    </div>
+    <div class="sec"><h3 data-en="Preferred Day" data-vi="Ngày mong muốn">Preferred Day</h3></div>
+    <div class="filters" id="dayRow">
+      <span class="filter on" onclick="pickSel(this,'on')" data-en="Thu, Jul 10" data-vi="Th 5, 10/7">Thu, Jul 10</span>
+      <span class="filter" onclick="pickSel(this,'on')" data-en="Fri, Jul 11" data-vi="Th 6, 11/7">Fri, Jul 11</span>
+      <span class="filter" onclick="pickSel(this,'on')" data-en="Sat, Jul 12" data-vi="Th 7, 12/7">Sat, Jul 12</span>
+    </div>
+    <div class="sec"><h3 data-en="Preferred Time" data-vi="Giờ mong muốn">Preferred Time</h3></div>
+    <div class="amounts" id="tmRow">
+      <button onclick="pickSel(this,'hot')">10:00 AM</button>
+      <button class="hot" onclick="pickSel(this,'hot')">2:00 PM</button>
+      <button onclick="pickSel(this,'hot')">5:30 PM</button>
+    </div>
+    <button class="btn" onclick="toBook2()" data-en="Continue →" data-vi="Tiếp tục →">Continue →</button>
+  </div>
+
+  <!-- ============ 21 BOOKING: REVIEW REQUEST ============ -->
+  <div class="screen" id="book2">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('book1')">‹</div>
+      <div><h2 data-en="Review Request" data-vi="Xem lại yêu cầu">Review Request</h2><p class="muted" data-en="Booking request" data-vi="Yêu cầu đặt lịch">Booking request</p></div></div>
+      <div class="circle">📝</div>
+    </div>
+    <div class="card">
+      <div class="line"><span data-en="Salon" data-vi="Tiệm">Salon</span><b>Bitcoin Nail Bar</b></div>
+      <div class="line"><span data-en="Service" data-vi="Dịch vụ">Service</span><b id="sumSvc">Pedicure · $45</b></div>
+      <div class="line"><span data-en="Technician" data-vi="Thợ">Technician</span><b id="sumStf">Anna</b></div>
+      <div class="line"><span data-en="Requested time" data-vi="Giờ yêu cầu">Requested time</span><b id="sumTime">Thu · 2:00 PM</b></div>
+      <div class="line"><span data-en="Booking reward" data-vi="Thưởng đặt lịch">Booking reward</span><b class="plus">+15 pts</b></div>
+      <div class="field" style="margin-top:10px">
+        <label data-en="Note for salon (optional)" data-vi="Ghi chú cho tiệm (không bắt buộc)">Note for salon (optional)</label>
+        <textarea rows="2" data-en-ph="e.g. I'd like the same gel color as last time" data-vi-ph="VD: cho em màu gel giống lần trước" placeholder="e.g. I'd like the same gel color as last time"></textarea>
+      </div>
+      <button class="btn" onclick="go('book3')" data-en="Send Booking Request" data-vi="Gửi yêu cầu đặt lịch">Send Booking Request</button>
+    </div>
+    <div class="notice" data-en="This is a request, not an instant booking. The salon will confirm within minutes by app/SMS, or suggest another time. No charge until you arrive." data-vi="Đây là yêu cầu, chưa phải lịch chốt. Tiệm sẽ xác nhận trong ít phút qua app/SMS, hoặc đề xuất giờ khác. Không thu phí trước.">This is a request, not an instant booking. The salon will confirm within minutes by app/SMS, or suggest another time. No charge until you arrive.</div>
+  </div>
+
+  <!-- ============ 22 BOOKING: STATUS ============ -->
+  <div class="screen center" id="book3">
+    <div class="centerbox" id="pendBox">
+      <div class="bigicon">⏳</div>
+      <h1 data-en="Request Sent!" data-vi="Đã gửi yêu cầu!">Request Sent!</h1>
+      <p class="muted" data-en="Bitcoin Nail Bar usually confirms within 10 minutes. We'll text and notify you." data-vi="Bitcoin Nail Bar thường xác nhận trong 10 phút. Bạn sẽ nhận SMS và thông báo.">Bitcoin Nail Bar usually confirms within 10 minutes. We'll text and notify you.</p>
+      <div style="margin-top:20px">
+        <button class="btn white" onclick="salonConfirm()" data-en="▶ Salon confirms (demo)" data-vi="▶ Tiệm xác nhận (demo)">▶ Salon confirms (demo)</button>
+        <button class="btn out mt" onclick="go('home')" data-en="Back to Home" data-vi="Về Trang chủ">Back to Home</button>
+      </div>
+    </div>
+    <div class="centerbox" id="confBox" style="display:none">
+      <div class="bigicon">✅</div>
+      <h1 data-en="Booking Confirmed!" data-vi="Lịch đã chốt!">Booking Confirmed!</h1>
+      <p class="muted" id="confInfo">Thu · 2:00 PM · Anna</p>
+      <div class="bignum" style="font-size:30px">+15</div>
+      <p class="muted" data-en="Points added for booking in-app" data-vi="Điểm thưởng vì đặt lịch trong app">Points added for booking in-app</p>
+      <div style="margin-top:20px">
+        <button class="btn white" onclick="toast('cal')" data-en="Add to Calendar" data-vi="Thêm vào Lịch">Add to Calendar</button>
+        <button class="btn out mt" onclick="bookDone()" data-en="Done" data-vi="Xong">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 23 LOGIN: PHONE ============ -->
+  <div class="screen center" id="login1">
+    <div class="centerbox">
+      <div class="bigicon" style="font-size:34px;font-weight:900">NX</div>
+      <h1>NEXORA <span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">TOUCH</span></h1>
+      <p class="muted" data-en="Your rewards, everywhere you go" data-vi="Điểm thưởng của bạn, mọi nơi bạn đến">Your rewards, everywhere you go</p>
+      <div class="card" style="text-align:left;margin-top:22px">
+        <div class="field">
+          <label data-en="Mobile Number" data-vi="Số di động">Mobile Number</label>
+          <input type="tel" value="(832) 555-0148">
+        </div>
+        <button class="btn" onclick="go('login2')" data-en="Continue" data-vi="Tiếp tục">Continue</button>
+      </div>
+      <p class="tiny" data-en="No password. We text you a one-time code." data-vi="Không cần mật khẩu. Mã dùng một lần sẽ được gửi qua SMS.">No password. We text you a one-time code.</p>
+    </div>
+  </div>
+
+  <!-- ============ 24 LOGIN: OTP ============ -->
+  <div class="screen center" id="login2">
+    <div class="centerbox">
+      <div class="bigicon">💬</div>
+      <h1 data-en="Enter Code" data-vi="Nhập mã">Enter Code</h1>
+      <p class="muted" data-en="Sent to (832) 555-0148" data-vi="Đã gửi tới (832) 555-0148">Sent to (832) 555-0148</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin:18px 0">
+        <div class="stat" style="width:52px;text-align:center;background:var(--card);border-color:var(--line2)"><b>8</b></div>
+        <div class="stat" style="width:52px;text-align:center;background:var(--card);border-color:var(--line2)"><b>3</b></div>
+        <div class="stat" style="width:52px;text-align:center;background:var(--card);border-color:var(--line2)"><b>2</b></div>
+        <div class="stat" style="width:52px;text-align:center;background:var(--card);border-color:var(--line2)"><b>5</b></div>
+      </div>
+      <button class="btn white" onclick="go('home')" data-en="Verify (demo)" data-vi="Xác thực (demo)">Verify (demo)</button>
+      <button class="btn out mt" onclick="toast('resend')" data-en="Resend code" data-vi="Gửi lại mã">Resend code</button>
+    </div>
+  </div>
+
+  <!-- ============ 25 POINTS HISTORY ============ -->
+  <div class="screen" id="history">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('wallet')">‹</div>
+      <div><h2 data-en="Points History" data-vi="Lịch sử điểm">Points History</h2><p class="muted">Bitcoin Nail Bar</p></div></div>
+      <div class="circle">🧾</div>
+    </div>
+    <div class="card">
+      <div class="grid2">
+        <div class="stat" style="background:#0a0f28;border-color:var(--line)"><b class="balBnb">2,450</b><span data-en="Current balance" data-vi="Số dư hiện tại">Current balance</span></div>
+        <div class="stat" style="background:#0a0f28;border-color:var(--line)"><b>3,560</b><span data-en="Lifetime earned" data-vi="Tổng đã tích">Lifetime earned</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="line"><div><b data-en="Visit + Pedicure" data-vi="Ghé tiệm + Pedicure">Visit + Pedicure</b><p class="tiny">May 20, 2026</p></div><b class="plus">+30</b></div>
+      <div class="line"><div><b data-en="Feedback sent" data-vi="Gửi góp ý">Feedback sent</b><p class="tiny">May 20, 2026</p></div><b class="plus">+15</b></div>
+      <div class="line"><div><b data-en="Tip to Anna ($10 × 10)" data-vi="Tip cho Anna ($10 × 10)">Tip to Anna ($10 × 10)</b><p class="tiny">May 20, 2026</p></div><b class="plus">+100</b></div>
+      <div class="line"><div><b data-en="Redeemed: Free Pedicure" data-vi="Đã đổi: Pedicure miễn phí">Redeemed: Free Pedicure</b><p class="tiny">Apr 2, 2026</p></div><b class="minus">-1,000</b></div>
+      <div class="line"><div><b data-en="Visit + Gel Manicure" data-vi="Ghé tiệm + Gel Manicure">Visit + Gel Manicure</b><p class="tiny">Apr 2, 2026</p></div><b class="plus">+35</b></div>
+      <div class="line"><div><b data-en="Welcome bonus" data-vi="Thưởng chào mừng">Welcome bonus</b><p class="tiny">Jan 15, 2026</p></div><b class="plus">+25</b></div>
+    </div>
+    <div class="notice" data-en="Every entry links to a ledger record — points can always be traced to the visit, tip or review that earned them." data-vi="Mỗi dòng gắn với một bản ghi sổ cái — điểm luôn truy được về lượt ghé, tip hoặc đánh giá đã tạo ra nó.">Every entry links to a ledger record — points can always be traced to the visit, tip or review that earned them.</div>
+  </div>
+
+  <!-- ============ 26 MESSAGE PREFERENCES ============ -->
+  <div class="screen" id="msgprefs">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('profile')">‹</div>
+      <div><h2 data-en="Messages & Privacy" data-vi="Tin nhắn & Quyền riêng tư">Messages & Privacy</h2><p class="muted" data-en="Control who can text you" data-vi="Kiểm soát ai được nhắn cho bạn">Control who can text you</p></div></div>
+      <div class="circle">🔒</div>
+    </div>
+    <div class="sec"><h3 data-en="Businesses you visited" data-vi="Tiệm bạn đã ghé">Businesses you visited</h3></div>
+    <div class="card">
+      <div class="line" onclick="togglePref(this)" style="cursor:pointer"><span>Bitcoin Nail Bar</span><b class="ck">✅</b></div>
+      <div class="line" onclick="togglePref(this)" style="cursor:pointer"><span>Golden Glow Spa</span><b class="ck">✅</b></div>
+      <div class="line" onclick="togglePref(this)" style="cursor:pointer"><span>Moon Coffee</span><b class="ck">⬜</b></div>
+    </div>
+    <div class="sec"><h3 data-en="Network" data-vi="Mạng lưới">Network</h3></div>
+    <div class="card">
+      <div class="line" onclick="togglePref(this)" style="cursor:pointer"><span data-en="Offers from nearby Nexora partners" data-vi="Ưu đãi từ đối tác Nexora gần bạn">Offers from nearby Nexora partners</span><b class="ck">⬜</b></div>
+      <div class="line" onclick="togglePref(this)" style="cursor:pointer"><span data-en="Booking reminders (recommended)" data-vi="Nhắc lịch hẹn (nên bật)">Booking reminders (recommended)</span><b class="ck">✅</b></div>
+    </div>
+    <div class="sec"><h3 data-en="Notifications" data-vi="Thông báo">Notifications</h3></div>
+    <div class="card">
+      <div class="line" onclick="togglePref(this)" style="cursor:pointer"><span data-en="📍 Nearby deals (uses location)" data-vi="📍 Khuyến mãi gần bạn (dùng vị trí)">📍 Nearby deals (uses location)</span><b class="ck">✅</b></div>
+      <div class="line" onclick="togglePref(this)" style="cursor:pointer"><span data-en="✨ AI suggestions from your history" data-vi="✨ Gợi ý AI từ lịch sử của bạn">✨ AI suggestions from your history</span><b class="ck">✅</b></div>
+    </div>
+    <div class="notice" data-en="Nearby deals are push notifications — not SMS. Your location is used only to trigger the alert and is never shared with businesses. Turn off anytime." data-vi="Khuyến mãi gần bạn là thông báo đẩy — không phải SMS. Vị trí chỉ dùng để kích hoạt thông báo, không bao giờ chia sẻ cho tiệm. Tắt được bất cứ lúc nào.">Nearby deals are push notifications — not SMS. Your location is used only to trigger the alert and is never shared with businesses. Turn off anytime.</div>
+    <div class="notice" data-en="Turning a business off stops its marketing texts immediately — same effect as replying STOP. Booking confirmations for appointments you request are always sent." data-vi="Tắt một tiệm sẽ dừng tin marketing của tiệm đó ngay — tương đương nhắn STOP. Tin xác nhận cho lịch hẹn bạn tự đặt vẫn luôn được gửi.">Turning a business off stops its marketing texts immediately — same effect as replying STOP. Booking confirmations for appointments you request are always sent.</div>
+  </div>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <div class="bottom">
+    <div data-tab="home" class="on" onclick="go('home')"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.2 12 4l8 7.2"/><path d="M6.2 9.9V19a1.6 1.6 0 0 0 1.6 1.6h8.4A1.6 1.6 0 0 0 17.8 19V9.9"/><path d="M9.7 20.4v-4.8a2.3 2.3 0 0 1 4.6 0v4.8"/></svg></b><span data-en="Home" data-vi="Trang chủ">Home</span></div>
+    <div data-tab="wallet" onclick="go('wallet')"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h9.8a2 2 0 0 1 2 2v1"/><path d="M4 7.5V17a2.5 2.5 0 0 0 2.5 2.5h11A2.5 2.5 0 0 0 20 17v-6.5A2.5 2.5 0 0 0 17.5 8h-11A2.5 2.5 0 0 1 4 7.5Z"/><circle cx="16.4" cy="13.8" r="1.25" fill="currentColor" stroke="none"/></svg></b><span data-en="Wallet" data-vi="Ví">Wallet</span></div>
+    <div data-tab="scan" class="scanbtn" onclick="go('scan')"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6.2A2.2 2.2 0 0 1 6.2 4H8"/><path d="M16 4h1.8A2.2 2.2 0 0 1 20 6.2V8"/><path d="M20 16v1.8a2.2 2.2 0 0 1-2.2 2.2H16"/><path d="M8 20H6.2A2.2 2.2 0 0 1 4 17.8V16"/><path d="M4.8 12h14.4"/></svg></b><span data-en="Scan" data-vi="Quét">Scan</span></div>
+    <div data-tab="explore" onclick="go('explore')"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="m15.2 8.8-1.7 4.4a1 1 0 0 1-.6.6l-4.4 1.7 1.7-4.4a1 1 0 0 1 .6-.6z" fill="currentColor" stroke="none"/></svg></b><span data-en="Explore" data-vi="Khám phá">Explore</span></div>
+    <div data-tab="profile" onclick="go('profile')"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.1" r="3.5"/><path d="M4.8 20c.9-3.7 3.9-5.5 7.2-5.5s6.3 1.8 7.2 5.5"/></svg></b><span data-en="Profile" data-vi="Hồ sơ">Profile</span></div>
+  </div>
+
+  <!-- GEO PUSH NOTIFICATION (demo) -->
+  <div class="screen" id="allmenu">
+    <div class="head">
+      <div class="headL"><div class="back" onclick="go('home')">‹</div>
+      <div><h2 data-en="All features" data-vi="Tất cả tính năng">All features</h2><p class="muted" data-en="Everything in one place" data-vi="Mọi thứ ở một chỗ">Everything in one place</p></div></div>
+      <div class="circle">☰</div>
+    </div>
+    <div class="quick" style="grid-template-columns:repeat(3,1fr);gap:10px">
+      <div onclick="go('rewards')"><b>🏆</b><span data-en="Rewards" data-vi="Đổi thưởng">Rewards</span></div>
+      <div onclick="go('wallet')"><b>👛</b><span data-en="Wallet" data-vi="Ví điểm">Wallet</span></div>
+      <div onclick="go('scan')"><b>📷</b><span data-en="Scan / Check-in" data-vi="Quét / Check-in">Scan / Check-in</span></div>
+      <div onclick="go('looks')"><b>💅</b><span data-en="My Looks" data-vi="Mẫu của tôi">My Looks</span></div>
+      <div onclick="go('book1')"><b>📅</b><span data-en="Book Again" data-vi="Đặt lịch">Book Again</span></div>
+      <div onclick="go('tip')"><b>💜</b><span data-en="Tip Staff" data-vi="Tip nhân viên">Tip Staff</span></div>
+      <div onclick="goPay()"><b>💳</b><span data-en="Pay Salon Direct" data-vi="Thanh toán trực tiếp">Pay Salon Direct</span></div>
+      <div onclick="go('offers')"><b>🏷️</b><span data-en="Offers & Alerts" data-vi="Ưu đãi & Thông báo">Offers & Alerts</span></div>
+      <div onclick="go('explore')"><b>🧭</b><span data-en="Explore" data-vi="Khám phá">Explore</span></div>
+      <div onclick="go('review')"><b>💬</b><span data-en="Feedback +15" data-vi="Góp ý +15">Feedback +15</span></div>
+      <div onclick="go('referral')"><b>🤝</b><span data-en="Invite Friends" data-vi="Mời bạn bè">Invite Friends</span></div>
+      <div onclick="go('activity')"><b>🔔</b><span data-en="Activity & Messages" data-vi="Hoạt động & Tin nhắn">Activity & Messages</span></div>
+      <div onclick="go('msgprefs')"><b>⚙️</b><span data-en="Notifications & Privacy" data-vi="Thông báo & Riêng tư">Notifications & Privacy</span></div>
+      <div onclick="onbShow()"><b>❓</b><span data-en="How the app works" data-vi="Hướng dẫn dùng">How the app works</span></div>
+      <div onclick="go('profile')"><b>👤</b><span data-en="Profile" data-vi="Hồ sơ">Profile</span></div>
+    </div>
+  </div>
+
+  <div class="push" id="geoPush" onclick="openGeoPush()">
+    <div class="pic">✨</div>
+    <div class="flex1">
+      <div class="tiny2">NEXORA TOUCH · <span data-en="now" data-vi="bây giờ">now</span></div>
+      <h4 data-en="Golden Glow Spa · 400 ft away" data-vi="Golden Glow Spa · cách 120 m">Golden Glow Spa · 400 ft away</h4>
+      <p data-en="New Customer Facial 15% OFF — today only. Tap to view." data-vi="Facial khách mới giảm 15% — chỉ hôm nay. Bấm để xem.">New Customer Facial 15% OFF — today only. Tap to view.</p>
+    </div>
+  </div>
+
+  <div class="push" id="wishPush" onclick="openWishPush()">
+    <div class="pic">🔔</div>
+    <div class="flex1">
+      <div class="tiny2">NEXORA TOUCH · <span data-en="now" data-vi="bây giờ">now</span></div>
+      <h4 data-en="A deal you were waiting for!" data-vi="Ưu đãi bạn đang chờ đã có!">A deal you were waiting for!</h4>
+      <p data-en="Bitcoin Nail Bar just posted: Pedicure 20% OFF this week. Tap to view." data-vi="Bitcoin Nail Bar vừa đăng: Pedicure giảm 20% tuần này. Bấm để xem.">Bitcoin Nail Bar just posted: Pedicure 20% OFF this week. Tap to view.</p>
+    </div>
+  </div>
+
+  <div class="onb show" id="onb">
+    <div class="box">
+      <div class="onbs">
+        <div class="big">🪙</div>
+        <h3 data-en="One app — points everywhere" data-vi="Một app — điểm ở mọi tiệm">One app — points everywhere</h3>
+        <p data-en="No more paper punch cards. Scan the QR at check-in and your points are saved — at your nail salon, spa, coffee shop and every Nexora business." data-vi="Không còn thẻ giấy bấm lỗ. Quét QR khi check-in là điểm tự lưu — ở tiệm nail, spa, quán cà phê và mọi doanh nghiệp dùng Nexora.">No more paper punch cards. Scan the QR at check-in and your points are saved — at your nail salon, spa, coffee shop and every Nexora business.</p>
+      </div>
+      <div class="onbs" style="display:none">
+        <div class="big">🔍</div>
+        <h3 data-en="Search by what you need" data-vi="Tìm theo dịch vụ bạn cần">Search by what you need</h3>
+        <p data-en="Type “dip powder” or “facial” in Explore — results show real check-ins, real prices and real photos. Waiting for a deal? Set an alert in Offers and we notify you the moment it appears." data-vi="Gõ “dip powder” hay “facial” trong Khám phá — kết quả kèm check-in thật, giá thật, ảnh thật. Đang chờ ưu đãi? Đặt thông báo trong Ưu đãi, có là báo ngay.">Type “dip powder” or “facial” in Explore — results show real check-ins, real prices and real photos. Waiting for a deal? Set an alert in Offers and we notify you the moment it appears.</p>
+      </div>
+      <div class="onbs" style="display:none">
+        <div class="big">💅</div>
+        <h3 data-en="Your looks, saved forever" data-vi="Mẫu của bạn, lưu mãi mãi">Your looks, saved forever</h3>
+        <p data-en="Every visit saves your photo, color code and tech to My Looks — perfect for rebooking or repairs. Tip in-app and pay the salon direct for bonus points." data-vi="Mỗi lần ghé, ảnh + mã màu + tên thợ được lưu vào Mẫu của tôi — tiện đặt lại hay sửa móng. Tip trong app và thanh toán trực tiếp để nhận điểm bonus.">Every visit saves your photo, color code and tech to My Looks — perfect for rebooking or repairs. Tip in-app and pay the salon direct for bonus points.</p>
+      </div>
+      <div class="dots"><i class="on"></i><i></i><i></i></div>
+      <button class="btn" id="onbNext" onclick="onbNext()" data-en="Next →" data-vi="Tiếp →">Next →</button>
+      <span class="skip" onclick="onbHide()" data-en="Skip" data-vi="Bỏ qua">Skip</span>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <!-- QR MODAL -->
+  <div class="modal" id="qrmodal" onclick="this.classList.remove('show')">
+    <div class="inner" onclick="event.stopPropagation()">
+      <h3 data-en="Show at counter" data-vi="Đưa mã này tại quầy">Show at counter</h3>
+      <p id="qrsub">red_90018 · Golden Glow Spa</p>
+      <svg class="qr" viewBox="0 0 29 29" xmlns="http://www.w3.org/2000/svg"><rect width="29" height="29" fill="#fff"/><g fill="#1a1040" id="qrg"></g></svg>
+      <button class="close" onclick="document.getElementById('qrmodal').classList.remove('show')" data-en="Close" data-vi="Đóng">Close</button>
+    </div>
+  </div>
+
+  <!-- PUSH PRE-PERMISSION MODAL -->
+  <div class="modal" id="pushmodal">
+    <div class="inner" onclick="event.stopPropagation()">
+      <h3 data-en="🔔 Don&#39;t miss your rewards" data-vi="🔔 Đừng bỏ lỡ quyền lợi của bạn">🔔 Don&#39;t miss your rewards</h3>
+      <p class="muted" style="font-size:12px;line-height:1.5" data-en="We&#39;ll notify you when the salon confirms your booking or payment, when points are about to expire, and when a deal you wished for appears. No spam — you control every source in Messages &amp; Privacy." data-vi="Bạn sẽ được báo khi tiệm xác nhận lịch hẹn/thanh toán, khi điểm sắp hết hạn, và khi có deal bạn đang chờ. Không spam — bạn kiểm soát từng nguồn trong Tin nhắn &amp; Riêng tư.">We&#39;ll notify you when the salon confirms your booking or payment, when points are about to expire, and when a deal you wished for appears. No spam — you control every source in Messages &amp; Privacy.</p>
+      <button class="btn" style="margin-top:12px" onclick="allowPush()" data-en="Turn on notifications" data-vi="Bật thông báo">Turn on notifications</button>
+      <button class="close" onclick="skipPush()" data-en="Maybe later" data-vi="Để sau">Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ STATE ============ */
+var state = { lang:'en', bal:{ bnb:2450, glow:600, moon:120 }, tip:10, stars:5, firstRedeem:true };
+var offers = {
+  glow:  { biz:'Golden Glow Spa', en:'$10 Credit',           vi:'Tín dụng $10',       cost:800, id:'red_90018', pay:'bnb' },
+  moon:  { biz:'Moon Coffee',     en:'Free Drink',            vi:'Đồ uống miễn phí',   cost:600, id:'red_90019', pay:'bnb' },
+  bistro:{ biz:'Saigon Bistro',   en:'10% OFF',               vi:'Giảm 10%',           cost:450, id:'red_90020', pay:'bnb' },
+  facial:{ biz:'Golden Glow Spa', en:'New Customer Facial 15% OFF', vi:'Facial khách mới giảm 15%', cost:500, id:'red_90021', pay:'bnb' },
+  credit5:  { biz:'Bitcoin Nail Bar', en:'$5 Service Credit (applied to your bill)', vi:'Credit dịch vụ $5 (trừ vào hóa đơn)', cost:500,  id:'red_90022', pay:'bnb' },
+  freepedi: { biz:'Bitcoin Nail Bar', en:'Free Classic Pedicure',                    vi:'Pedicure cơ bản miễn phí',            cost:1000, id:'red_90023', pay:'bnb' },
+  voucher25:{ biz:'Bitcoin Nail Bar', en:'25% OFF any service — 30-day code',        vi:'Mã giảm 25% mọi dịch vụ — hạn 30 ngày', cost:800, id:'red_90024', pay:'bnb' }
+};
+var currentOffer = 'glow';
+var tabMap = { home:'home', allmenu:'home', wallet:'wallet', rewards:'wallet', scan:'scan', explore:'explore', business:'explore', profile:'profile', tip:'home', tipdone:'home', pay:'home', paydone:'home', looks:'home', addlook:'home', review:'home', redeem:'wallet', redeemdone:'wallet', activity:'home', offers:'home', referral:'profile', onb1:'scan', onb2:'scan', onb3:'scan', onb4:'scan', book1:'home', book2:'home', book3:'home', login1:'home', login2:'home', history:'wallet', msgprefs:'profile' };
+
+/* ============ NAVIGATION ============ */
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.scrollTop = 0;
+  document.querySelectorAll('.bottom div').forEach(function(t){
+    t.classList.toggle('on', t.getAttribute('data-tab') === tabMap[id]);
+  });
+  document.querySelector('.bottom').style.display = (id.indexOf('onb') === 0 || id.indexOf('login') === 0) ? 'none' : 'grid';
+}
+
+/* ============ LANGUAGE ============ */
+function toggleLang(){
+  state.lang = state.lang === 'en' ? 'vi' : 'en';
+  applyLang();
+}
+function applyLang(){
+  var L = state.lang;
+  document.querySelectorAll('[data-en]').forEach(function(el){
+    var t = el.getAttribute('data-' + L);
+    if(t) el.textContent = t;
+  });
+  document.querySelectorAll('[data-en-ph]').forEach(function(el){
+    el.placeholder = el.getAttribute('data-' + L + '-ph');
+  });
+  document.getElementById('lEN').className = L === 'en' ? 'cur' : '';
+  document.getElementById('lVI').className = L === 'vi' ? 'cur' : '';
+  document.getElementById('langLabel').textContent = L === 'en' ? 'English' : 'Tiếng Việt';
+}
+var MSG = {
+  pushok:{ en:'Notifications on — manage sources in Messages & Privacy', vi:'Đã bật thông báo — quản lý nguồn trong Tin nhắn & Riêng tư' },
+  demo:  { en:'Demo — screen not included in this prototype', vi:'Demo — màn hình này chưa có trong bản mẫu' },
+  book:  { en:'Booking flow coming in next version 📅', vi:'Luồng đặt lịch sẽ có ở bản sau 📅' },
+  map:   { en:'Opening Maps… (demo)', vi:'Đang mở Bản đồ… (demo)' },
+  fav:   { en:'Added to favorites 💜', vi:'Đã thêm vào yêu thích 💜' },
+  code:  { en:'Manual code entry (demo)', vi:'Nhập mã thủ công (demo)' },
+  google:{ en:'Opening Google Review… (demo)', vi:'Đang mở Google Review… (demo)' },
+  review:{ en:'💬 Feedback sent! +15 points at Bitcoin Nail Bar', vi:'💬 Đã gửi góp ý! +15 điểm tại Bitcoin Nail Bar' },
+  privfb:{ en:'Sent privately to the salon. +15 points', vi:'Đã gửi góp ý riêng cho tiệm. +15 điểm' },
+  savelook:{ en:'📷 Camera opens — photo + color code saved to this visit (demo)', vi:'📷 Mở camera — ảnh + mã màu lưu vào lượt ghé này (demo)' },
+  ocr:{ en:'📄 Receipt scanned — services & amount auto-filled (demo)', vi:'📄 Đã đọc biên lai — dịch vụ & số tiền tự điền (demo)' },
+  wishadded:{ en:'🔔 Alert set — we\'ll notify you when a matching offer appears', vi:'🔔 Đã đặt thông báo — có ưu đãi trùng là báo bạn ngay' },
+  invited:{ en:'📨 Invite sent! We\'ll tell you when they join — welcome points come from the business', vi:'📨 Đã gửi lời mời! Tiệm tham gia là báo bạn — điểm chào mừng do tiệm tặng' },
+  nopts: { en:'Not enough Bitcoin Nail Bar points', vi:'Không đủ điểm Bitcoin Nail Bar' },
+  needc: { en:'Please check the first box to continue', vi:'Vui lòng tích ô đầu tiên để tiếp tục' },
+  skipc: { en:'Points saved. You can enable texts later in Profile.', vi:'Đã lưu điểm. Bạn có thể bật tin nhắn sau trong Hồ sơ.' },
+  copied:{ en:'Code copied 📋', vi:'Đã sao chép mã 📋' },
+  share: { en:'Opening share sheet… (demo)', vi:'Đang mở chia sẻ… (demo)' },
+  saved: { en:'Offer saved 🏷️', vi:'Đã lưu ưu đãi 🏷️' },
+  cal:   { en:'Added to your calendar 📅', vi:'Đã thêm vào lịch của bạn 📅' },
+  resend:{ en:'New code sent 💬', vi:'Đã gửi mã mới 💬' },
+  pref:  { en:'Preference saved', vi:'Đã lưu tùy chọn' }
+};
+function togglePref(lineEl){
+  var ck = lineEl.querySelector('.ck');
+  ck.textContent = ck.textContent === '✅' ? '⬜' : '✅';
+  toast('pref');
+}
+function toast(key){
+  var t = document.getElementById('toast');
+  t.textContent = MSG[key] ? MSG[key][state.lang] : key;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+/* ============ ONBOARDING CONSENT ============ */
+var consent = { c1:false, c2:false };
+function toggleConsent(n, lineEl){
+  consent['c'+n] = !consent['c'+n];
+  lineEl.querySelector('.ck').textContent = consent['c'+n] ? '✅' : '⬜';
+}
+function agreeConsent(){
+  if(!consent.c1){ toast('needc'); return; }
+  go('onb3');
+}
+
+/* ============ EXPLORE ============ */
+function pickFilter(el, cat){
+  el.parentNode.querySelectorAll('.filter').forEach(function(f){ f.classList.remove('on'); });
+  el.classList.add('on');
+  state.expCat = cat || 'all';
+  expFilter();
+}
+function simulateGeoPush(){
+  var p = document.getElementById('geoPush');
+  p.classList.add('show');
+  clearTimeout(p._t);
+  p._t = setTimeout(function(){ p.classList.remove('show'); }, 6000);
+}
+function openGeoPush(){
+  document.getElementById('geoPush').classList.remove('show');
+  go('business');
+}
+function pickOffFilter(el, flag){
+  el.parentNode.querySelectorAll('.filter').forEach(function(f){ f.classList.remove('on'); });
+  el.classList.add('on');
+  state.offFlag = flag || 'all';
+  offFilter();
+}
+function pickOffCat(el, cat){
+  el.parentNode.querySelectorAll('.filter').forEach(function(f){ f.classList.remove('on'); });
+  el.classList.add('on');
+  state.offCat = cat || 'all';
+  offFilter();
+}
+function offFilter(){
+  var q = document.getElementById('offSearch').value.trim().toLowerCase();
+  var toks = q ? q.split(/\s+/) : [];
+  var flag = state.offFlag || 'all';
+  var cat = state.offCat || 'all';
+  var shown = 0, bizes = {};
+  document.querySelectorAll('#offers .offCard').forEach(function(c){
+    var hay = (c.getAttribute('data-name') + ' ' + c.textContent).toLowerCase();
+    var flags = c.getAttribute('data-flags') || '';
+    var pub = c.getAttribute('data-pub') === '1';
+    var ok = (flag === 'all' || flags.indexOf(flag) !== -1)
+      && (cat === 'all' || c.getAttribute('data-cat') === cat)
+      && toks.every(function(t){ return hay.indexOf(t) !== -1; })
+      && (!pub || toks.length || cat !== 'all');
+    c.style.display = ok ? '' : 'none';
+    if(ok){ shown++; bizes[c.querySelector('p').textContent.split('·')[0]] = 1; }
+  });
+  document.getElementById('offEmpty').style.display = shown ? 'none' : '';
+  var cnt = document.getElementById('offCount');
+  if(toks.length && shown){
+    var n = Object.keys(bizes).length;
+    cnt.textContent = state.lang === 'vi'
+      ? '🔎 ' + n + ' tiệm đang có ưu đãi khớp tìm kiếm của bạn'
+      : '🔎 ' + n + ' businesses have a matching offer right now';
+    cnt.style.display = '';
+  } else {
+    cnt.style.display = 'none';
+  }
+}
+function saveOffer(btn){
+  var c = btn.closest('.offCard');
+  c.setAttribute('data-flags', (c.getAttribute('data-flags') || '') + ' saved');
+  btn.textContent = state.lang === 'vi' ? 'Đã lưu ✓' : 'Saved ✓';
+  btn.onclick = null;
+  toast('saved');
+}
+function addWish(){
+  var inp = document.getElementById('wishInput');
+  var v = inp.value.trim();
+  if(!v) return;
+  var s = document.createElement('span');
+  s.className = 'filter on';
+  s.style.cssText = 'display:inline-block;margin:0 6px 6px 0';
+  s.appendChild(document.createTextNode('🔔 ' + v + ' '));
+  var b = document.createElement('b');
+  b.textContent = '✕';
+  b.style.cssText = 'cursor:pointer;opacity:.7';
+  b.onclick = function(){ s.parentNode.removeChild(s); };
+  s.appendChild(b);
+  document.getElementById('wishList').appendChild(s);
+  inp.value = '';
+  toast('wishadded');
+}
+function simulateWishPush(){
+  var p = document.getElementById('wishPush');
+  p.classList.add('show');
+  clearTimeout(p._t);
+  p._t = setTimeout(function(){ p.classList.remove('show'); }, 6000);
+}
+var onbi = 0;
+function onbShow(){
+  onbi = 0;
+  onbRender();
+  document.getElementById('onb').classList.add('show');
+}
+function onbHide(){ document.getElementById('onb').classList.remove('show'); }
+function onbNext(){
+  if(onbi >= 2){ onbHide(); return; }
+  onbi++;
+  onbRender();
+}
+function onbRender(){
+  document.querySelectorAll('#onb .onbs').forEach(function(s, j){ s.style.display = j === onbi ? '' : 'none'; });
+  document.querySelectorAll('#onb .dots i').forEach(function(d, j){ d.className = j === onbi ? 'on' : ''; });
+  var b = document.getElementById('onbNext');
+  b.textContent = onbi === 2 ? (state.lang === 'vi' ? 'Bắt đầu ✨' : 'Get Started ✨') : (state.lang === 'vi' ? 'Tiếp →' : 'Next →');
+}
+function openWishPush(){
+  document.getElementById('wishPush').classList.remove('show');
+  go('business');
+}
+function expFilter(){
+  var q = document.getElementById('expSearch').value.trim().toLowerCase();
+  var cat = state.expCat || 'all';
+  var shown = 0;
+  document.querySelectorAll('#explore .expCard').forEach(function(c){
+    var hay = c.getAttribute('data-name') + ' ' + c.getAttribute('data-tags') + ' ' + c.getAttribute('data-cat');
+    var catOk = cat === 'all' || c.getAttribute('data-cat') === cat || (cat === 'new' && c.getAttribute('data-new') === '1');
+    var ok = catOk && (!q || hay.indexOf(q) !== -1);
+    c.style.display = ok ? '' : 'none';
+    if(ok) shown++;
+  });
+  document.getElementById('expEmpty').style.display = shown ? 'none' : '';
+}
+
+function askPush(){ document.getElementById('pushmodal').classList.add('show'); }
+function allowPush(){ document.getElementById('pushmodal').classList.remove('show'); toast('pushok'); go('home'); }
+function skipPush(){ document.getElementById('pushmodal').classList.remove('show'); go('home'); }
+
+/* ============ TIP FLOW ============ */
+function pickTip(el, amt){
+  state.tip = amt;
+  el.parentNode.querySelectorAll('button').forEach(function(b){ b.classList.remove('hot'); });
+  el.classList.add('hot');
+}
+function sendTip(){
+  document.getElementById('tipAmt').textContent = '$' + state.tip;
+  document.getElementById('tipPend').style.display = 'block';
+  document.getElementById('tipConf').style.display = 'none';
+  go('tipdone');
+}
+/* ============ MY LOOKS ============ */
+var alShot = false;
+function alSnap(){
+  alShot = true;
+  var p = document.getElementById('alPhoto');
+  p.style.border = 'none';
+  p.style.background = 'linear-gradient(135deg,#3d2b7d,#8a5cf6)';
+  p.innerHTML = '<b style="font-size:34px">💅</b><span class="tiny" style="color:#fff">' + (state.lang === 'vi' ? 'Ảnh đã chụp ✓' : 'Photo taken ✓') + '</span>';
+}
+function saveLook(){
+  var svc = document.getElementById('alSvc').value;
+  var col = document.getElementById('alColor').value || (state.lang === 'vi' ? 'chưa ghi màu' : 'no color noted');
+  var note = document.getElementById('alNote').value;
+  var vi = state.lang === 'vi';
+  var card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML =
+    '<div style="height:110px;border-radius:14px;background:linear-gradient(135deg,#3d2b7d,#8a5cf6);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:10px">' + (alShot ? '💅' : '🖼️') + '</div>' +
+    '<h3>' + svc + ' <span class="tiny" style="float:right">' + (vi ? 'Hôm nay' : 'Today') + '</span></h3>' +
+    '<p class="muted">Bitcoin Nail Bar · Anna</p>' +
+    '<span class="badge">' + (vi ? 'Màu: ' : 'Color: ') + col + '</span>' +
+    (note ? '<p class="muted" style="margin-top:6px">📝 ' + note + '</p>' : '');
+  var looks = document.getElementById('looks');
+  looks.insertBefore(card, looks.querySelectorAll('.card')[0]);
+  toast('saved');
+  go('looks');
+}
+
+/* ============ PAY AT SALON ============ */
+function goPay(){
+  fillQR('payqrg', 77);
+  go('pay');
+}
+function fillQR(gid, seedv){
+  var g = document.getElementById(gid);
+  if(g.childNodes.length) return;
+  var s = seedv, html = '';
+  function rnd(){ s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; }
+  for(var y = 0; y < 29; y++) for(var x = 0; x < 29; x++){
+    var finder = (x < 8 && y < 8) || (x > 20 && y < 8) || (x < 8 && y > 20);
+    var on = finder
+      ? ((x % 28 < 7 && y % 28 < 7) && !((x % 28 > 0 && x % 28 < 6 && (y % 28 === 1 || y % 28 === 5)) || (y % 28 > 0 && y % 28 < 6 && (x % 28 === 1 || x % 28 === 5))))
+      : rnd() > 0.52;
+    if(on) html += '<rect x="' + x + '" y="' + y + '" width="1" height="1"/>';
+  }
+  g.innerHTML = html;
+}
+function sendPay(){
+  document.getElementById('payPend').style.display = 'block';
+  document.getElementById('payConf').style.display = 'none';
+  go('paydone');
+}
+function payConfirm(){
+  state.bal.bnb += 66;
+  refreshPts();
+  document.getElementById('payPend').style.display = 'none';
+  document.getElementById('payConf').style.display = 'block';
+}
+
+function tipConfirm(){
+  state.bal.bnb += state.tip * 10;
+  document.getElementById('tipPts').textContent = '+' + (state.tip * 10);
+  refreshPts();
+  document.getElementById('tipPend').style.display = 'none';
+  document.getElementById('tipConf').style.display = 'block';
+}
+
+/* ============ REVIEW ============ */
+function setStars(n){
+  state.stars = n;
+  var s = document.querySelectorAll('#stars span');
+  s.forEach(function(el, i){ el.classList.toggle('on', i < n); });
+}
+function submitReview(){
+  state.bal.bnb += 15;
+  refreshPts();
+  toast(state.stars >= 4 ? 'review' : 'privfb');
+  setTimeout(function(){ go('home'); }, 900);
+}
+
+/* ============ CROSS REDEEM ============ */
+function openRedeem(key){
+  var o = offers[key];
+  if(state.bal[o.pay] < o.cost){ toast('nopts'); return; }
+  currentOffer = key;
+  document.getElementById('rdBiz').textContent = o.biz;
+  document.getElementById('rdName').textContent = o[state.lang] || o.en;
+  document.getElementById('rdCost').textContent = o.cost;
+  document.getElementById('rdCost2').textContent = '-' + o.cost;
+  document.getElementById('rdLeft').textContent = (state.bal[o.pay] - o.cost).toLocaleString();
+  refreshPts();
+  go('redeem');
+}
+function confirmRedeem(){
+  var o = offers[currentOffer];
+  state.bal[o.pay] -= o.cost;
+  refreshPts();
+  document.getElementById('firstBadge').style.display = state.firstRedeem ? 'inline-block' : 'none';
+  state.firstRedeem = false;
+  document.getElementById('rdDoneName').textContent = o[state.lang] || o.en;
+  document.getElementById('rdDoneBiz').textContent = o.biz;
+  document.getElementById('rdDoneBiz2').textContent = o.biz;
+  document.getElementById('rdDoneId').textContent = o.id;
+  document.getElementById('qrsub').textContent = o.id + ' · ' + o.biz;
+  go('redeemdone');
+}
+function refreshPts(){
+  document.querySelectorAll('.balBnb').forEach(function(el){ el.textContent = state.bal.bnb.toLocaleString(); });
+}
+
+/* ============ BOOKING ============ */
+function pickSel(el, cls){
+  Array.prototype.forEach.call(el.parentNode.children, function(c){ c.classList.remove(cls); });
+  el.classList.add(cls);
+}
+function toBook2(){
+  var svc = document.querySelector('#svcRow .on').textContent;
+  var stf = document.querySelector('#stfRow .on').textContent.split(' ⭐')[0];
+  var day = document.querySelector('#dayRow .on').textContent;
+  var tm  = document.querySelector('#tmRow .hot').textContent;
+  document.getElementById('sumSvc').textContent = svc;
+  document.getElementById('sumStf').textContent = stf;
+  document.getElementById('sumTime').textContent = day + ' · ' + tm;
+  state.bookingInfo = day + ' · ' + tm + ' · ' + stf + ' · ' + svc.split(' ·')[0];
+  go('book2');
+}
+function salonConfirm(){
+  document.getElementById('pendBox').style.display = 'none';
+  document.getElementById('confBox').style.display = 'block';
+  document.getElementById('confInfo').textContent = state.bookingInfo || 'Thu · 2:00 PM · Anna';
+}
+function bookDone(){
+  document.getElementById('upcoming').style.display = 'block';
+  document.getElementById('upcomingInfo').textContent = state.bookingInfo || 'Thu · 2:00 PM · Anna';
+  document.getElementById('pendBox').style.display = 'block';
+  document.getElementById('confBox').style.display = 'none';
+  go('home');
+}
+
+/* ============ SCAN ============ */
+function startScan(){
+  var box = document.getElementById('scanbox');
+  box.classList.add('scanning');
+  document.getElementById('scanEmoji').textContent = '';
+  setTimeout(function(){
+    box.classList.remove('scanning');
+    document.getElementById('scanEmoji').textContent = '📷';
+    go('tip');
+  }, 1800);
+}
+
+/* ============ QR MODAL (fake deterministic pattern) ============ */
+function showQR(){
+  var g = document.getElementById('qrg');
+  if(!g.childNodes.length){
+    var s = 42, html = '';
+    function rnd(){ s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; }
+    for(var y = 0; y < 29; y++) for(var x = 0; x < 29; x++){
+      var finder = (x < 8 && y < 8) || (x > 20 && y < 8) || (x < 8 && y > 20);
+      var on = finder
+        ? ((x % 28 < 7 && y % 28 < 7) && !((x % 28 > 0 && x % 28 < 6 && (y % 28 === 1 || y % 28 === 5)) || (y % 28 > 0 && y % 28 < 6 && (x % 28 === 1 || x % 28 === 5))))
+        : rnd() > 0.52;
+      if(on) html += '<rect x="' + x + '" y="' + y + '" width="1" height="1"/>';
+    }
+    g.innerHTML = html;
+  }
+  document.getElementById('qrmodal').classList.add('show');
+}
+
+applyLang();
+</script>
+</body>
+</html>

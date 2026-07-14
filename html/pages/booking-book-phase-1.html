@@ -756,6 +756,17 @@
       margin-bottom: 18px;
     }
 
+    /* Call Log stats: 2 columns on mobile, 4 in one row on larger screens */
+    .overview-kpis[data-call-stats] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (min-width: 768px) {
+      .overview-kpis[data-call-stats] {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
     .kpi-card {
       position: relative;
       overflow: hidden;
@@ -928,6 +939,11 @@
       background: var(--nexora-canvas);
       color: var(--nexora-muted);
       border: 1px solid var(--nexora-border);
+    }
+
+    .seg-badge {
+      background: color-mix(in srgb, var(--seg, var(--nexora-brand)) 14%, white);
+      color: var(--seg, var(--nexora-brand));
     }
 
     .progress-stack {
@@ -2894,6 +2910,18 @@
       font-weight: 500;
       line-height: 1.45;
       margin-top: 8px;
+    }
+
+    .settings-promo-count {
+      margin-top: 6px;
+      text-align: right;
+      color: var(--nexora-muted);
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+
+    .settings-promo-count.is-max {
+      color: var(--nexora-warning);
     }
 
     .settings-promo-suggest-row {
@@ -5297,19 +5325,19 @@
       }
 
       .booking-table td:nth-child(1)::before {
-        content: "Khách hàng";
+        content: "Customer";
       }
 
       .booking-table td:nth-child(2)::before {
-        content: "Dịch vụ";
+        content: "Service";
       }
 
       .booking-table td:nth-child(3)::before {
-        content: "Thợ";
+        content: "Technician";
       }
 
       .booking-table td:nth-child(4)::before {
-        content: "Thời gian";
+        content: "Time";
       }
 
       .booking-table td:nth-child(5)::before {
@@ -5318,6 +5346,37 @@
 
       .booking-table td:nth-child(6)::before {
         content: "Action";
+      }
+
+      /* Customer table — mobile card labels (override booking labels) */
+      .cust-table td:nth-child(1)::before { content: "Khách hàng"; }
+      .cust-table td:nth-child(2)::before { content: "Điện thoại"; }
+      .cust-table td:nth-child(3)::before { content: "Nhóm"; }
+      .cust-table td:nth-child(4)::before { content: "Nguồn"; }
+      .cust-table td:nth-child(5)::before { content: "Số lần ghé"; }
+      .cust-table td:nth-child(6)::before { content: "Lần cuối"; }
+      .cust-table td:nth-child(7)::before { content: "Tổng chi"; }
+      .cust-table td:nth-child(8)::before { content: "Action"; }
+
+      /* Call Log table — mobile card labels */
+      .call-table td:nth-child(1)::before { content: "Thời gian"; }
+      .call-table td:nth-child(2)::before { content: "Người gọi"; }
+      .call-table td:nth-child(3)::before { content: "Số điện thoại"; }
+      .call-table td:nth-child(4)::before { content: "Trạng thái"; }
+      .call-table td:nth-child(5)::before { content: "Thời lượng"; }
+      .call-table td:nth-child(6)::before { content: "Ghi chú"; }
+      .call-table td:nth-child(7)::before { content: "Action"; }
+
+      /* Chips stay auto-width (never stretch full-width) on mobile */
+      .booking-status-chips {
+        gap: 6px;
+      }
+
+      .booking-status-chip {
+        flex: 0 0 auto;
+        width: auto;
+        padding: 6px 11px;
+        font-size: 11px;
       }
 
       .booking-status-cell {
@@ -6097,7 +6156,7 @@
                         <path d="M16 14h.01"></path>
                       </svg>
                     </span>
-                    <span>Lịch Hẹn</span>
+                    <span>Appointments</span>
                   </button>
                   <button class="booking-subtab" type="button" role="tab" aria-selected="false" data-booking-subtab-target="team" aria-controls="booking-subpanel-team">
                     <span class="booking-subtab-icon">
@@ -6108,7 +6167,7 @@
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                       </svg>
                     </span>
-                    <span>Đội thợ</span>
+                    <span>Team</span>
                   </button>
                 </div>
                 <div class="sync-note">Every channel lands in one book</div>
@@ -6128,9 +6187,9 @@
                       </div>
                       <span class="badge booking-status booking-status-new">New</span>
                     </div>
-                    <div class="kpi-label">Hẹn Hôm Nay</div>
+                    <div class="kpi-label">Today's Appointments</div>
                     <div class="kpi-value" data-booking-kpi="today">4</div>
-                    <div class="kpi-trend">Tổng lịch hẹn hôm nay</div>
+                    <div class="kpi-trend">All appointments today</div>
                   </article>
 
                   <article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-success);">
@@ -6140,11 +6199,11 @@
                           <path d="M20 6 9 17l-5-5"></path>
                         </svg>
                       </div>
-                      <span class="badge booking-status booking-status-done">SMS đã kích hoạt</span>
+                      <span class="badge booking-status booking-status-done">SMS activated</span>
                     </div>
-                    <div class="kpi-label">Đã Xong</div>
+                    <div class="kpi-label">Completed</div>
                     <div class="kpi-value" data-booking-kpi="done">1</div>
-                    <div class="kpi-trend">SMS review đã sẵn sàng</div>
+                    <div class="kpi-trend">Review SMS ready</div>
                   </article>
 
                   <article class="overview-card kpi-card" style="--kpi-accent: #ef4444;">
@@ -6157,9 +6216,9 @@
                       </div>
                       <span class="badge booking-status booking-status-noshow">No-show</span>
                     </div>
-                    <div class="kpi-label">Không gửi review</div>
+                    <div class="kpi-label">No review sent</div>
                     <div class="kpi-value" data-booking-kpi="noshow">0</div>
-                    <div class="kpi-trend">No-show sẽ không gửi review</div>
+                    <div class="kpi-trend">No-show won't get a review</div>
                   </article>
 
                 </div>
@@ -6176,7 +6235,7 @@
                             <path d="M3 10h18"></path>
                           </svg>
                         </span>
-                        <span>Tổng quan lịch hẹn</span>
+                        <span>Appointments Overview</span>
                       </div>
                       <div class="booking-view-switch" role="group" aria-label="Booking view mode">
                         <button class="booking-view-button" type="button" data-booking-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
@@ -6184,11 +6243,11 @@
                       </div>
                     </div>
 
-                    <div class="booking-status-chips" data-booking-status-chips role="group" aria-label="Lọc theo trạng thái">
+                    <div class="booking-status-chips" data-booking-status-chips role="group" aria-label="Filter by status">
                       <button class="booking-status-chip is-active" type="button" data-booking-status-chip="all" aria-pressed="true">All <span class="booking-status-chip-count" data-booking-status-count="all">0</span></button>
                       <button class="booking-status-chip" type="button" data-booking-status-chip="new" aria-pressed="false">New <span class="booking-status-chip-count" data-booking-status-count="new">0</span></button>
-                      <button class="booking-status-chip" type="button" data-booking-status-chip="sms-sent" aria-pressed="false">Đã gửi SMS <span class="booking-status-chip-count" data-booking-status-count="sms-sent">0</span></button>
-                      <button class="booking-status-chip" type="button" data-booking-status-chip="done" aria-pressed="false">Hoàn tất <span class="booking-status-chip-count" data-booking-status-count="done">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="sms-sent" aria-pressed="false">SMS Sent <span class="booking-status-chip-count" data-booking-status-count="sms-sent">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="done" aria-pressed="false">Completed <span class="booking-status-chip-count" data-booking-status-count="done">0</span></button>
                       <button class="booking-status-chip" type="button" data-booking-status-chip="noshow" aria-pressed="false">No-show <span class="booking-status-chip-count" data-booking-status-count="noshow">0</span></button>
                     </div>
 
@@ -6204,7 +6263,7 @@
                       </label>
                       <label class="booking-control-field">
                         <span class="booking-control-label">Keyword</span>
-                        <input class="booking-input" type="search" placeholder="Nhập tên khách hàng" data-booking-search-input>
+                        <input class="booking-input" type="search" placeholder="Enter customer name" data-booking-search-input>
                       </label>
                       <label class="booking-control-field">
                         <span class="booking-control-label">Date from</span>
@@ -6221,10 +6280,10 @@
                       <table class="booking-table" data-booking-table>
                         <thead>
                           <tr>
-                            <th scope="col">Khách hàng</th>
-                            <th scope="col">Dịch vụ</th>
-                            <th scope="col">Thợ</th>
-                            <th scope="col">Thời gian</th>
+                            <th scope="col">Customer</th>
+                            <th scope="col">Service</th>
+                            <th scope="col">Technician</th>
+                            <th scope="col">Time</th>
                             <th scope="col">Status</th>
                             <th scope="col">Action</th>
                           </tr>
@@ -6234,7 +6293,7 @@
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Kim Phan <span class="badge booking-source-voice">Voice</span></div>
-                                <div class="booking-customer-meta">(713) 555-0148 · kim.phan@example.com</div>
+                                <div class="booking-customer-meta">+1 (713) 555-0148 · kim.phan@example.com</div>
                               </div>
                             </td>
                             <td>
@@ -6252,7 +6311,7 @@
                                 <div class="booking-time-date">July 9, 2026</div>
                               </div>
                             </td>
-                            <td class="booking-status-cell"><span class="badge booking-status booking-status-done">Hoàn tất</span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-done">Completed</span></td>
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
@@ -6264,7 +6323,7 @@
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Sophie Tran <span class="badge booking-source-lp">Landing Page</span></div>
-                                <div class="booking-customer-meta">(281) 555-0196 · sophie.tran@example.com</div>
+                                <div class="booking-customer-meta">+1 (281) 555-0196 · sophie.tran@example.com</div>
                               </div>
                             </td>
                             <td>
@@ -6282,7 +6341,7 @@
                                 <div class="booking-time-date">July 9, 2026</div>
                               </div>
                             </td>
-                            <td class="booking-status-cell"><span class="badge booking-status booking-status-sms">Đã gửi SMS</span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-sms">SMS Sent</span></td>
                             <td>
                               <div class="booking-actions">
                                 <button class="booking-mini-button icon-only primary booking-done-action" type="button" data-booking-action="done" aria-label="Done" title="Done"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Done</span></button>
@@ -6296,7 +6355,7 @@
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Mai Nguyen <span class="badge booking-source-voice">Voice</span> <span class="badge badge-warning">Request</span></div>
-                                <div class="booking-customer-meta">(832) 555-0164 · mai.nguyen@example.com</div>
+                                <div class="booking-customer-meta">+1 (832) 555-0164 · mai.nguyen@example.com</div>
                               </div>
                             </td>
                             <td>
@@ -6328,7 +6387,7 @@
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Jennifer S. <span class="badge booking-source-sms">SMS</span></div>
-                                <div class="booking-customer-meta">(713) 555-0127 · jennifer.s@example.com</div>
+                                <div class="booking-customer-meta">+1 (713) 555-0127 · jennifer.s@example.com</div>
                               </div>
                             </td>
                             <td>
@@ -6360,7 +6419,7 @@
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Tina Vo <span class="badge booking-source-lp">Landing Page</span></div>
-                                <div class="booking-customer-meta">(346) 555-0188 · tina.vo@example.com</div>
+                                <div class="booking-customer-meta">+1 (346) 555-0188 · tina.vo@example.com</div>
                               </div>
                             </td>
                             <td>
@@ -6392,7 +6451,7 @@
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Anna Le <span class="badge booking-source-qr">QR</span> <span class="badge badge-warning">Request</span></div>
-                                <div class="booking-customer-meta">(281) 555-0119 · anna.le@example.com</div>
+                                <div class="booking-customer-meta">+1 (281) 555-0119 · anna.le@example.com</div>
                               </div>
                             </td>
                             <td>
@@ -6425,7 +6484,7 @@
                     <div class="booking-card-panel" data-booking-view-panel="card" hidden>
                       <div class="booking-card-list" data-booking-card-list></div>
                     </div>
-                    <div class="booking-empty" data-booking-empty hidden>Không tìm thấy booking phù hợp.</div>
+                    <div class="booking-empty" data-booking-empty hidden>No matching bookings found.</div>
                   </article>
                 </div>
 
@@ -6433,10 +6492,10 @@
                   <div class="booking-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="booking-detail-title">
                     <div class="booking-detail-head">
                       <div>
-                        <div class="booking-detail-title" id="booking-detail-title">Chi tiết lịch hẹn</div>
-                        <div class="booking-detail-sub" data-booking-detail-sub>Thông tin khách, dịch vụ, thợ, trạng thái và ghi chú nội bộ.</div>
+                        <div class="booking-detail-title" id="booking-detail-title">Appointment details</div>
+                        <div class="booking-detail-sub" data-booking-detail-sub>Customer, service, technician, status and internal notes.</div>
                       </div>
-                      <button class="booking-detail-close" type="button" data-booking-detail-close aria-label="Đóng chi tiết lịch hẹn"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+                      <button class="booking-detail-close" type="button" data-booking-detail-close aria-label="Close appointment details"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
                     </div>
                     <div class="booking-detail-body">
                       <div class="booking-detail-hero">
@@ -6452,7 +6511,7 @@
                       </div>
 
                       <div class="booking-detail-section">
-                        <div class="booking-detail-section-title"><i class="bi bi-stars" aria-hidden="true"></i>Dịch vụ đã book</div>
+                        <div class="booking-detail-section-title"><i class="bi bi-stars" aria-hidden="true"></i>Booked services</div>
                         <div class="booking-detail-service-chips" data-booking-detail-services></div>
                       </div>
 
@@ -6460,21 +6519,21 @@
                         <div class="booking-detail-info-item">
                           <span class="booking-detail-info-icon"><i class="bi bi-person-workspace" aria-hidden="true"></i></span>
                           <div>
-                            <div class="booking-detail-label">Thợ</div>
+                            <div class="booking-detail-label">Technician</div>
                             <div class="booking-detail-value" data-booking-detail-tech></div>
                           </div>
                         </div>
                         <div class="booking-detail-info-item">
                           <span class="booking-detail-info-icon"><i class="bi bi-clock" aria-hidden="true"></i></span>
                           <div>
-                            <div class="booking-detail-label">Thời gian</div>
+                            <div class="booking-detail-label">Time</div>
                             <div class="booking-detail-value" data-booking-detail-time></div>
                           </div>
                         </div>
                         <div class="booking-detail-info-item">
                           <span class="booking-detail-info-icon"><i class="bi bi-broadcast" aria-hidden="true"></i></span>
                           <div>
-                            <div class="booking-detail-label">Nguồn</div>
+                            <div class="booking-detail-label">Source</div>
                             <div class="booking-detail-value booking-source-list" data-booking-detail-source></div>
                           </div>
                         </div>
@@ -6486,7 +6545,7 @@
                       </div>
                     </div>
                     <div class="booking-detail-actions">
-                      <button class="booking-secondary-button" type="button" data-booking-detail-close>Đóng</button>
+                      <button class="booking-secondary-button" type="button" data-booking-detail-close>Close</button>
                     </div>
                   </div>
                 </div>
@@ -6494,8 +6553,8 @@
 
               <div class="booking-sub-panel" id="booking-subpanel-team" data-booking-sub-panel="team">
                 <div class="tech-intro">
-                  <div class="tech-intro-text">Profile thợ dùng chung cho SMS báo khách, QR tip, Review và Reward.</div>
-                  <button class="booking-primary-button" type="button" data-tech-modal-open><i class="bi bi-plus-lg" aria-hidden="true"></i>Thêm Thợ</button>
+                  <div class="tech-intro-text">A shared technician profile powers customer SMS, QR tips, Reviews and Rewards.</div>
+                  <button class="booking-primary-button" type="button" data-tech-modal-open><i class="bi bi-plus-lg" aria-hidden="true"></i>Add Technician</button>
                 </div>
 
                 <div class="tech-grid">
@@ -6503,7 +6562,7 @@
                     <div class="tech-top">
                       <div class="tech-avatar">K</div>
                       <div class="tech-profile">
-                        <div class="tech-name">Kim Nguyễn</div>
+                        <div class="tech-name">Kim Nguyen</div>
                         <div class="tech-phone">832-555-0161</div>
                       </div>
                       <button class="toggle-pill is-on" type="button" aria-label="Toggle Kim SMS notify"></button>
@@ -6515,7 +6574,7 @@
                     </div>
                     <div class="tech-card-footer">
                       <div class="tech-stats">
-                        <div class="tech-stat"><strong>3</strong><span>Khách hôm nay</span></div>
+                        <div class="tech-stat"><strong>3</strong><span>Clients today</span></div>
                       </div>
                       <div class="tech-card-actions">
                         <button class="booking-secondary-button icon-only" type="button" data-tech-detail-open="kim" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View Details</span></button>
@@ -6527,7 +6586,7 @@
                     <div class="tech-top">
                       <div class="tech-avatar" style="background: linear-gradient(135deg, var(--brand-cyan), var(--nexora-electric));">L</div>
                       <div class="tech-profile">
-                        <div class="tech-name">Lan Trần</div>
+                        <div class="tech-name">Lan Tran</div>
                         <div class="tech-phone">713-555-0192</div>
                       </div>
                       <button class="toggle-pill is-on" type="button" aria-label="Toggle Lan SMS notify"></button>
@@ -6539,7 +6598,7 @@
                     </div>
                     <div class="tech-card-footer">
                       <div class="tech-stats">
-                        <div class="tech-stat"><strong>2</strong><span>Khách hôm nay</span></div>
+                        <div class="tech-stat"><strong>2</strong><span>Clients today</span></div>
                       </div>
                       <div class="tech-card-actions">
                         <button class="booking-secondary-button icon-only" type="button" data-tech-detail-open="lan" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View Details</span></button>
@@ -6551,7 +6610,7 @@
                     <div class="tech-top">
                       <div class="tech-avatar" style="background: linear-gradient(135deg, #f472b6, var(--nexora-violet));">M</div>
                       <div class="tech-profile">
-                        <div class="tech-name">Mai Phạm</div>
+                        <div class="tech-name">Mai Pham</div>
                         <div class="tech-phone">281-555-0138</div>
                       </div>
                       <button class="toggle-pill is-on" type="button" aria-label="Toggle Mai SMS notify"></button>
@@ -6563,7 +6622,7 @@
                     </div>
                     <div class="tech-card-footer">
                       <div class="tech-stats">
-                        <div class="tech-stat"><strong>2</strong><span>Khách hôm nay</span></div>
+                        <div class="tech-stat"><strong>2</strong><span>Clients today</span></div>
                       </div>
                       <div class="tech-card-actions">
                         <button class="booking-secondary-button icon-only" type="button" data-tech-detail-open="mai" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View Details</span></button>
@@ -6578,38 +6637,38 @@
                       <div class="tech-modal-heading">
                         <span class="tech-title-mark"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
                         <div>
-                          <div class="tech-modal-title" id="tech-modal-title" data-tech-modal-title>Thông Tin Thợ</div>
-                          <div class="tech-modal-sub" data-tech-modal-sub>Tự nhập thông tin thợ mới, dịch vụ và lịch làm việc hằng tuần.</div>
+                          <div class="tech-modal-title" id="tech-modal-title" data-tech-modal-title>Technician Info</div>
+                          <div class="tech-modal-sub" data-tech-modal-sub>Enter new technician info, services and weekly schedule.</div>
                         </div>
                       </div>
                       <button class="tech-modal-close" type="button" data-tech-modal-close aria-label="Close tech modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
                     </div>
                     <div class="tech-modal-body">
                       <div class="tech-modal-section" data-tech-picker-section>
-                        <div class="tech-modal-section-title"><i class="bi bi-people" aria-hidden="true"></i>Chọn từ danh sách</div>
+                        <div class="tech-modal-section-title"><i class="bi bi-people" aria-hidden="true"></i>Choose from list</div>
                         <div class="tech-select-row">
                           <div class="tech-combobox" data-tech-combobox>
                             <label class="tech-search">
                               <i class="bi bi-search" aria-hidden="true"></i>
-                              <input type="search" data-tech-search data-tech-select-input role="combobox" aria-controls="tech-select-menu" aria-expanded="false" placeholder="Tìm hoặc chọn thợ..." autocomplete="off">
+                              <input type="search" data-tech-search data-tech-select-input role="combobox" aria-controls="tech-select-menu" aria-expanded="false" placeholder="Search or pick a technician..." autocomplete="off">
                               <i class="bi bi-chevron-down tech-select-chevron" aria-hidden="true"></i>
                             </label>
                             <div class="tech-select-menu" id="tech-select-menu" data-tech-select-menu hidden>
-                              <div class="tech-choice-grid" role="listbox" aria-label="Danh sách thợ">
-                                <button class="tech-choice-card is-active" type="button" role="option" data-tech-choice="kim" data-name="Kim Nguyễn" data-phone="832-555-0161" data-email="kim@nexoratouch.com" data-services="Gel, Full Set, Dip" data-schedule="mon=09:00-18:00;tue=09:00-18:00;wed=09:00-18:00;thu=10:00-19:00;fri=09:00-18:00">
+                              <div class="tech-choice-grid" role="listbox" aria-label="Technician list">
+                                <button class="tech-choice-card is-active" type="button" role="option" data-tech-choice="kim" data-name="Kim Nguyen" data-phone="832-555-0161" data-email="kim@nexoratouch.com" data-services="Gel, Full Set, Dip" data-schedule="mon=09:00-18:00;tue=09:00-18:00;wed=09:00-18:00;thu=10:00-19:00;fri=09:00-18:00">
                                   <span class="tech-avatar">K</span>
-                                  <span><span class="tech-choice-name">Kim Nguyễn</span><span class="tech-choice-meta">kim@nexoratouch.com · 832-555-0161</span></span>
+                                  <span><span class="tech-choice-name">Kim Nguyen</span><span class="tech-choice-meta">kim@nexoratouch.com · 832-555-0161</span></span>
                                 </button>
-                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="lan" data-name="Lan Trần" data-phone="713-555-0192" data-email="lan.tran@nexoratouch.com" data-services="Pedicure, Gel, Nail Art" data-schedule="tue=10:00-19:00;wed=10:00-19:00;thu=10:00-19:00;fri=10:00-19:00;sat=09:00-16:00">
+                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="lan" data-name="Lan Tran" data-phone="713-555-0192" data-email="lan.tran@nexoratouch.com" data-services="Pedicure, Gel, Nail Art" data-schedule="tue=10:00-19:00;wed=10:00-19:00;thu=10:00-19:00;fri=10:00-19:00;sat=09:00-16:00">
                                   <span class="tech-avatar" style="background: linear-gradient(135deg, var(--brand-cyan), var(--nexora-electric));">L</span>
-                                  <span><span class="tech-choice-name">Lan Trần</span><span class="tech-choice-meta">lan.tran@nexoratouch.com · 713-555-0192</span></span>
+                                  <span><span class="tech-choice-name">Lan Tran</span><span class="tech-choice-meta">lan.tran@nexoratouch.com · 713-555-0192</span></span>
                                 </button>
-                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="mai" data-name="Mai Phạm" data-phone="281-555-0138" data-email="mai.pham@nexoratouch.com" data-services="Acrylic, Dip, Pedicure" data-schedule="mon=11:00-20:00;wed=11:00-20:00;fri=11:00-20:00;sat=10:00-17:00;sun=10:00-15:00">
+                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="mai" data-name="Mai Pham" data-phone="281-555-0138" data-email="mai.pham@nexoratouch.com" data-services="Acrylic, Dip, Pedicure" data-schedule="mon=11:00-20:00;wed=11:00-20:00;fri=11:00-20:00;sat=10:00-17:00;sun=10:00-15:00">
                                   <span class="tech-avatar" style="background: linear-gradient(135deg, #f472b6, var(--nexora-violet));">M</span>
-                                  <span><span class="tech-choice-name">Mai Phạm</span><span class="tech-choice-meta">mai.pham@nexoratouch.com · 281-555-0138</span></span>
+                                  <span><span class="tech-choice-name">Mai Pham</span><span class="tech-choice-meta">mai.pham@nexoratouch.com · 281-555-0138</span></span>
                                 </button>
                               </div>
-                              <div class="tech-empty" data-tech-empty>Không tìm thấy thợ phù hợp.</div>
+                              <div class="tech-empty" data-tech-empty>No matching technician found.</div>
                             </div>
                           </div>
                           <button class="booking-secondary-button tech-create-button" type="button" data-tech-create><i class="bi bi-plus-lg" aria-hidden="true"></i>Tự nhập</button>
@@ -6617,11 +6676,11 @@
                       </div>
 
                       <div class="tech-modal-section">
-                        <div class="tech-modal-section-title"><i class="bi bi-person-vcard" aria-hidden="true"></i>Thông tin profile</div>
+                        <div class="tech-modal-section-title"><i class="bi bi-person-vcard" aria-hidden="true"></i>Profile info</div>
                         <div class="tech-modal-grid">
-                          <label class="settings-field"><span class="settings-label">Tên thợ</span><input class="settings-input" type="text" data-tech-field="name" value=""></label>
+                          <label class="settings-field"><span class="settings-label">Technician name</span><input class="settings-input" type="text" data-tech-field="name" value=""></label>
                           <label class="settings-field">
-                            <span class="settings-label">Số điện thoại</span>
+                            <span class="settings-label">Phone number</span>
                             <span class="phone-input-shell">
                               <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
                               <input class="settings-input phone-mask-input" type="tel" data-tech-field="phone" value="" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
@@ -6629,7 +6688,7 @@
                           </label>
                           <label class="settings-field"><span class="settings-label">Email</span><input class="settings-input" type="email" data-tech-field="email" value=""></label>
                           <div class="settings-field">
-                            <span class="settings-label">Dịch vụ</span>
+                            <span class="settings-label">Services</span>
                             <div class="tech-service-checks" data-tech-field="services">
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Gel" value="Gel">Gel</label>
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Full Set" value="Full Set">Full Set</label>
@@ -6645,7 +6704,7 @@
                       </div>
 
                       <div class="tech-modal-section" data-tech-schedule-section>
-                        <div class="tech-modal-section-title"><i class="bi bi-calendar-week" aria-hidden="true"></i>Lịch làm việc hằng tuần</div>
+                        <div class="tech-modal-section-title"><i class="bi bi-calendar-week" aria-hidden="true"></i>Weekly schedule</div>
                         <div class="tech-schedule" data-tech-field="schedule">
                           <div class="tech-schedule-row">
                             <span class="tech-schedule-day">Monday</span>
@@ -6714,8 +6773,8 @@
                       </div>
                     </div>
                     <div class="tech-modal-actions">
-                      <button class="booking-secondary-button" type="button" data-tech-modal-close>Đóng</button>
-                      <button class="booking-primary-button" type="button" data-tech-modal-save><i class="bi bi-check2" aria-hidden="true"></i>Lưu thợ</button>
+                      <button class="booking-secondary-button" type="button" data-tech-modal-close>Close</button>
+                      <button class="booking-primary-button" type="button" data-tech-modal-save><i class="bi bi-check2" aria-hidden="true"></i>Save technician</button>
                     </div>
                   </div>
                 </div>
@@ -7277,7 +7336,8 @@
                       </label>
                       <label class="settings-field" style="grid-column: 1 / -1;">
                         <span class="settings-label">Thông tin khuyến mãi</span>
-                        <textarea class="settings-textarea" data-settings-promo style="min-height: 220px;" placeholder="VD:&#10;Promotion 1: Reward Yourself&#10;Offer: Free $25 e-gift card.&#10;Eligibility: Book any pedicure service of $55 or more.&#10;Availability: Monday–Saturday, by appointment only.&#10;Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.&#10;General rule: The salon may modify or end any promotion at any time."></textarea>
+                        <textarea class="settings-textarea" data-settings-promo maxlength="1000" style="min-height: 220px;" placeholder="VD:&#10;Promotion 1: Reward Yourself&#10;Offer: Free $25 e-gift card.&#10;Eligibility: Book any pedicure service of $55 or more.&#10;Availability: Monday–Saturday, by appointment only.&#10;Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.&#10;General rule: The salon may modify or end any promotion at any time."></textarea>
+                        <div class="settings-promo-count"><span data-promo-count>0</span>/1000</div>
                         <div class="settings-language-status">AI Voice sẽ đọc ưu đãi này khi khách hỏi có chương trình khuyến mãi. Chạm chip gợi ý để điền mẫu rồi sửa lại theo tiệm.</div>
                         <div class="settings-promo-suggest-row">
                           <button class="settings-promo-suggest" type="button" data-promo-fill="reward-yourself"><i class="bi bi-stars" aria-hidden="true"></i>Gợi ý: Reward Yourself</button>
@@ -7320,7 +7380,7 @@
                   <div class="booking-status-chips" data-cust-seg-filter role="group" aria-label="Lọc theo nhóm khách"></div>
 
                   <div class="booking-table-wrap">
-                    <table class="booking-table">
+                    <table class="booking-table cust-table">
                       <thead>
                         <tr>
                           <th scope="col">Khách hàng</th>
@@ -7355,7 +7415,7 @@
                   <div class="booking-status-chips" data-call-status-filter role="group" aria-label="Lọc theo trạng thái cuộc gọi"></div>
 
                   <div class="booking-table-wrap">
-                    <table class="booking-table">
+                    <table class="booking-table call-table">
                       <thead>
                         <tr>
                           <th scope="col">Thời gian</th>
@@ -7536,10 +7596,10 @@
     var DEFAULT_MAIN_TAB = 'booking';
     var BOOKING_TODAY_DATE = '2026-07-09';
     var BOOKING_SEARCH_PLACEHOLDERS = {
-      name: 'Nhập tên khách hàng',
-      phone: 'Nhập số phone',
-      email: 'Nhập email',
-      service: 'Nhập tên dịch vụ'
+      name: 'Enter customer name',
+      phone: 'Enter phone number',
+      email: 'Enter email',
+      service: 'Enter service name'
     };
 
     var BOOKING_STATUS_CLASS = {
@@ -7816,9 +7876,9 @@
           '</div>' +
           '<div class="booking-service-list">' + services + '</div>' +
           '<div class="booking-card-info-list">' +
-            '<div class="booking-card-info-row"><span class="booking-card-label">Thợ</span><span class="booking-card-value">' + escapeHtml(item.dataset.bookingTech || '-') + '</span></div>' +
-            '<div class="booking-card-info-row"><span class="booking-card-label">Thời gian</span><span class="booking-card-value">' + escapeHtml(getBookingCardTimeText(item)) + '</span></div>' +
-            '<div class="booking-card-info-row"><span class="booking-card-label">Nguồn</span><span class="booking-card-value booking-source-list">' + renderBookingSourceBadges(item) + '</span></div>' +
+            '<div class="booking-card-info-row"><span class="booking-card-label">Technician</span><span class="booking-card-value">' + escapeHtml(item.dataset.bookingTech || '-') + '</span></div>' +
+            '<div class="booking-card-info-row"><span class="booking-card-label">Time</span><span class="booking-card-value">' + escapeHtml(getBookingCardTimeText(item)) + '</span></div>' +
+            '<div class="booking-card-info-row"><span class="booking-card-label">Source</span><span class="booking-card-value booking-source-list">' + renderBookingSourceBadges(item) + '</span></div>' +
           '</div>' +
           '<div class="booking-card-actions">' + renderBookingActionButtons(item) + '</div>' +
         '</article>';
@@ -7841,12 +7901,12 @@
       if (status === 'sms-sent') {
         item.classList.add('is-sms-sent');
         if (statusCell) {
-          statusCell.innerHTML = '<span class="badge booking-status booking-status-sms">Đã gửi SMS</span>';
+          statusCell.innerHTML = '<span class="badge booking-status booking-status-sms">SMS Sent</span>';
         }
       } else if (status === 'done') {
         item.classList.add('is-done');
         if (statusCell) {
-          statusCell.innerHTML = '<span class="badge booking-status booking-status-done">Hoàn tất</span>';
+          statusCell.innerHTML = '<span class="badge booking-status booking-status-done">Completed</span>';
         }
       } else if (status === 'noshow') {
         item.classList.add('is-noshow');
@@ -7952,7 +8012,7 @@
     function formatBookingPhone(phone) {
       var digits = (phone || '').replace(/\D/g, '');
       if (digits.length === 10) {
-        return '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+        return '+1 (' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
       }
       if (digits.length === 11) {
         return '+' + digits.slice(0, 1) + ' (' + digits.slice(1, 4) + ') ' + digits.slice(4, 7) + '-' + digits.slice(7);
@@ -8198,10 +8258,10 @@
       var title = document.querySelector('[data-tech-modal-title]');
       var sub = document.querySelector('[data-tech-modal-sub]');
       var isCreate = mode === 'create';
-      var techName = choice && choice.dataset.name ? choice.dataset.name : 'thợ đang chọn';
+      var techName = choice && choice.dataset.name ? choice.dataset.name : 'the selected technician';
 
-      if (title) title.textContent = isCreate ? 'Thông Tin Thợ' : 'Chỉnh Thông Tin Thợ';
-      if (sub) sub.textContent = isCreate ? 'Tự nhập thông tin thợ mới, dịch vụ và lịch làm việc hằng tuần.' : ('Cập nhật profile, dịch vụ và lịch làm việc cho ' + techName + '.');
+      if (title) title.textContent = isCreate ? 'Technician Info' : 'Edit Technician Info';
+      if (sub) sub.textContent = isCreate ? 'Enter new technician info, services and weekly schedule.' : ('Update profile, services and schedule for ' + techName + '.');
     }
 
     function fillTechModalFromChoice(choice) {
@@ -8289,8 +8349,8 @@
       var services = card.querySelector('.tech-services');
 
       if (avatar) avatar.textContent = initial;
-      if (name) name.textContent = data.name || 'Thợ mới';
-      if (phone) phone.textContent = data.phone || 'Chưa có số';
+      if (name) name.textContent = data.name || 'New technician';
+      if (phone) phone.textContent = data.phone || 'No phone yet';
       if (services) services.innerHTML = renderTechBadges(data.services);
     }
 
@@ -8305,15 +8365,15 @@
         '<div class="tech-top">' +
           '<div class="tech-avatar">' + escapeHtml(initial) + '</div>' +
           '<div class="tech-profile">' +
-            '<div class="tech-name">' + escapeHtml(data.name || 'Thợ mới') + '</div>' +
-            '<div class="tech-phone">' + escapeHtml(data.phone || 'Chưa có số') + '</div>' +
+            '<div class="tech-name">' + escapeHtml(data.name || 'New technician') + '</div>' +
+            '<div class="tech-phone">' + escapeHtml(data.phone || 'No phone yet') + '</div>' +
           '</div>' +
           '<button class="toggle-pill is-on" type="button" aria-label="Toggle tech SMS notify"></button>' +
         '</div>' +
         '<div class="tech-services">' + renderTechBadges(data.services) + '</div>' +
         '<div class="tech-card-footer">' +
           '<div class="tech-stats">' +
-            '<div class="tech-stat"><strong>0</strong><span>Khách hôm nay</span></div>' +
+            '<div class="tech-stat"><strong>0</strong><span>Clients today</span></div>' +
           '</div>' +
         '</div>';
       return card;
@@ -8324,8 +8384,8 @@
       var grid = document.querySelector('.tech-grid');
       var active = document.querySelector('.tech-choice-card.is-active');
       var data = {
-        name: getTechField('name') || 'Thợ mới',
-        phone: getTechField('phone') || 'Chưa có số',
+        name: getTechField('name') || 'New technician',
+        phone: getTechField('phone') || 'No phone yet',
         email: getTechField('email'),
         services: getTechField('services') || 'Gel',
         schedule: getTechField('schedule')
@@ -8346,7 +8406,7 @@
         updateTechCard(document.querySelector('[data-tech-id="' + active.dataset.techChoice + '"]'), data);
       }
 
-      setSettingsStatus('Đã lưu thông tin thợ: ' + data.name + '.');
+      setSettingsStatus('Saved technician info: ' + data.name + '.');
       closeTechModal();
     }
 
@@ -8477,13 +8537,27 @@
       }
     };
 
+    function updatePromoCount() {
+      var textarea = document.querySelector('[data-settings-promo]');
+      var counter = document.querySelector('[data-promo-count]');
+      if (!textarea || !counter) return;
+
+      var max = parseInt(textarea.getAttribute('maxlength'), 10) || 1000;
+      var len = textarea.value.length;
+      counter.textContent = len;
+      var wrap = counter.closest('.settings-promo-count');
+      if (wrap) wrap.classList.toggle('is-max', len >= max);
+    }
+
     function fillPromoTemplate(key) {
       var template = PROMO_TEMPLATES[key];
       var textarea = document.querySelector('[data-settings-promo]');
       if (!template || !textarea) return;
 
-      textarea.value = template.text;
+      var max = parseInt(textarea.getAttribute('maxlength'), 10) || 1000;
+      textarea.value = template.text.slice(0, max);
       textarea.focus();
+      updatePromoCount();
       setSettingsStatus('Đã điền mẫu khuyến mãi: ' + template.label + '. Chị chỉnh lại theo tiệm rồi bấm Lưu.');
     }
 
@@ -9096,21 +9170,21 @@
     ];
 
     var CUST_SEGMENTS = [
-      { id: 'new',      icon: '🌟', label: 'Khách Mới' },
-      { id: 'day15',    icon: '📅', label: '15 Ngày' },
-      { id: 'day30',    icon: '⏰', label: '30 Ngày' },
-      { id: 'day60',    icon: '🔥', label: '60 Ngày' },
-      { id: 'vip',      icon: '💎', label: 'VIP' },
-      { id: 'birthday', icon: '🎂', label: 'Sinh Nhật' }
+      { id: 'new',      icon: 'bi-stars',          label: 'Khách Mới', color: '#2b59ff' },
+      { id: 'day15',    icon: 'bi-calendar-event', label: '15 Ngày',   color: '#00b873' },
+      { id: 'day30',    icon: 'bi-clock-history',  label: '30 Ngày',   color: '#7c3aed' },
+      { id: 'day60',    icon: 'bi-fire',           label: '60 Ngày',   color: '#f59e0b' },
+      { id: 'vip',      icon: 'bi-gem',            label: 'VIP',       color: '#db2777' },
+      { id: 'birthday', icon: 'bi-cake2',          label: 'Sinh Nhật', color: '#e11d48' }
     ];
     var CUST_SEG_MAP = {};
     CUST_SEGMENTS.forEach(function(s) { CUST_SEG_MAP[s.id] = s; });
 
     var CUST_SRC = {
-      qr:      '🔳 QR',
-      receipt: '🧾 Biên lai',
-      call:    '📞 Gọi vào',
-      pos:     '📥 Import'
+      qr:      { icon: 'bi-qr-code',           label: 'QR' },
+      receipt: { icon: 'bi-receipt',           label: 'Biên lai' },
+      call:    { icon: 'bi-telephone',         label: 'Gọi vào' },
+      pos:     { icon: 'bi-box-arrow-in-down', label: 'Import' }
     };
 
     var custFilter = { search: '', seg: 'all' };
@@ -9127,9 +9201,9 @@
       var chips = [{ id: 'all', icon: '', label: 'Tất cả' }].concat(CUST_SEGMENTS);
       wrap.innerHTML = chips.map(function(s) {
         var isActive = custFilter.seg === s.id;
-        var label = (s.icon ? s.icon + ' ' : '') + s.label;
+        var iconHtml = s.icon ? '<i class="bi ' + s.icon + '" aria-hidden="true" style="color:' + s.color + '"></i> ' : '';
         return '<button class="booking-status-chip' + (isActive ? ' is-active' : '') + '" type="button" data-cust-seg="' + s.id + '" aria-pressed="' + (isActive ? 'true' : 'false') + '">' +
-          label + ' <span class="booking-status-chip-count">' + (counts[s.id] || 0) + '</span></button>';
+          iconHtml + escapeHtml(s.label) + ' <span class="booking-status-chip-count">' + (counts[s.id] || 0) + '</span></button>';
       }).join('');
     }
 
@@ -9157,13 +9231,15 @@
 
       tbody.innerHTML = rows.map(function(c) {
         var seg = CUST_SEG_MAP[c.seg];
-        var segLabel = seg ? seg.icon + ' ' + seg.label : c.seg;
-        var src = CUST_SRC[c.src] || '—';
+        var segHtml = seg ? '<i class="bi ' + seg.icon + '" aria-hidden="true"></i> ' + escapeHtml(seg.label) : escapeHtml(c.seg);
+        var segStyle = seg ? ' style="--seg:' + seg.color + '"' : '';
+        var src = CUST_SRC[c.src];
+        var srcHtml = src ? '<i class="bi ' + src.icon + '" aria-hidden="true"></i> ' + escapeHtml(src.label) : '—';
         return '<tr class="booking-table-row">' +
           '<td><div class="booking-customer-name">' + escapeHtml(c.name) + '</div></td>' +
-          '<td>' + escapeHtml(c.phone) + '</td>' +
-          '<td><span class="badge badge-plan">' + escapeHtml(segLabel) + '</span></td>' +
-          '<td><span class="badge badge-soft">' + escapeHtml(src) + '</span></td>' +
+          '<td>+1 ' + escapeHtml(c.phone) + '</td>' +
+          '<td><span class="badge seg-badge"' + segStyle + '>' + segHtml + '</span></td>' +
+          '<td><span class="badge badge-soft">' + srcHtml + '</span></td>' +
           '<td>' + c.visits + '</td>' +
           '<td>' + escapeHtml(c.last) + '</td>' +
           '<td>$' + c.spent.toLocaleString() + '</td>' +
@@ -9189,18 +9265,18 @@
     ];
 
     var CALL_STATUS_META = {
-      answered:  { cls: 'booking-status-sms',    label: '✅ Đã nghe' },
-      missed:    { cls: 'booking-status-noshow', label: '❌ Nhỡ' },
-      booked:    { cls: 'booking-status-done',   label: '📅 Đặt lịch' },
-      voicemail: { cls: 'booking-status-new',    label: '📩 Voicemail' }
+      answered:  { cls: 'booking-status-sms',    icon: 'bi-telephone-inbound', label: 'Đã nghe' },
+      missed:    { cls: 'booking-status-noshow', icon: 'bi-telephone-x',       label: 'Nhỡ' },
+      booked:    { cls: 'booking-status-done',   icon: 'bi-calendar-check',    label: 'Đặt lịch' },
+      voicemail: { cls: 'booking-status-new',    icon: 'bi-voicemail',         label: 'Voicemail' }
     };
 
     var CALL_STATUS_CHIPS = [
-      { id: 'all',       label: 'Tất cả' },
-      { id: 'missed',    label: '❌ Nhỡ' },
-      { id: 'answered',  label: '✅ Đã nghe' },
-      { id: 'booked',    label: '📅 Đặt lịch' },
-      { id: 'voicemail', label: '📩 Voicemail' }
+      { id: 'all',       icon: '',                     label: 'Tất cả' },
+      { id: 'missed',    icon: 'bi-telephone-x',       label: 'Nhỡ' },
+      { id: 'answered',  icon: 'bi-telephone-inbound', label: 'Đã nghe' },
+      { id: 'booked',    icon: 'bi-calendar-check',    label: 'Đặt lịch' },
+      { id: 'voicemail', icon: 'bi-voicemail',         label: 'Voicemail' }
     ];
 
     var callFilter = 'all';
@@ -9249,8 +9325,9 @@
 
       wrap.innerHTML = CALL_STATUS_CHIPS.map(function(s) {
         var isActive = callFilter === s.id;
+        var iconHtml = s.icon ? '<i class="bi ' + s.icon + '" aria-hidden="true"></i> ' : '';
         return '<button class="booking-status-chip' + (isActive ? ' is-active' : '') + '" type="button" data-call-status="' + s.id + '" aria-pressed="' + (isActive ? 'true' : 'false') + '">' +
-          s.label + ' <span class="booking-status-chip-count">' + (counts[s.id] || 0) + '</span></button>';
+          iconHtml + escapeHtml(s.label) + ' <span class="booking-status-chip-count">' + (counts[s.id] || 0) + '</span></button>';
       }).join('');
     }
 
@@ -9270,15 +9347,16 @@
       }
 
       tbody.innerHTML = rows.map(function(c) {
-        var meta = CALL_STATUS_META[c.status] || { cls: 'booking-status-new', label: c.status };
+        var meta = CALL_STATUS_META[c.status] || { cls: 'booking-status-new', icon: '', label: c.status };
+        var metaIcon = meta.icon ? '<i class="bi ' + meta.icon + '" aria-hidden="true"></i> ' : '';
         var action = c.status === 'missed'
           ? '<button class="booking-mini-button icon-only primary" type="button" title="Follow-up SMS" aria-label="Follow-up SMS"><i class="bi bi-reply" aria-hidden="true"></i><span class="sr-only">Follow-up SMS</span></button>'
           : '';
         return '<tr class="booking-table-row">' +
           '<td>' + escapeHtml(c.time) + '</td>' +
           '<td><div class="booking-customer-name">' + escapeHtml(c.name) + '</div></td>' +
-          '<td>' + escapeHtml(c.phone) + '</td>' +
-          '<td><span class="badge booking-status ' + meta.cls + '">' + escapeHtml(meta.label) + '</span></td>' +
+          '<td>+1 ' + escapeHtml(c.phone) + '</td>' +
+          '<td><span class="badge booking-status ' + meta.cls + '">' + metaIcon + escapeHtml(meta.label) + '</span></td>' +
           '<td>' + formatCallDur(c.dur) + '</td>' +
           '<td>' + escapeHtml(c.note) + '</td>' +
           '<td><div class="booking-actions">' + action + '</div></td>' +
