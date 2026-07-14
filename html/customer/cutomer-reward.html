@@ -1961,6 +1961,20 @@
       return timestamp.ok && timestamp.value === value ? timestamp.value : null;
     }
 
+    const CHECKIN_WINDOW_MS = 120 * 60 * 1000;
+
+    function checkinScanMilliseconds(value) {
+      const milliseconds = Date.parse(value);
+      return Number.isFinite(milliseconds) ? milliseconds : null;
+    }
+
+    function checkinWindowConflict(left, right) {
+      if (!isRecord(left) || !isRecord(right) || left.businessId !== right.businessId) return false;
+      const leftTime = checkinScanMilliseconds(left.scannedAt);
+      const rightTime = checkinScanMilliseconds(right.scannedAt);
+      return leftTime !== null && rightTime !== null && Math.abs(leftTime - rightTime) < CHECKIN_WINDOW_MS;
+    }
+
     function normalizeCheckinRecord(appState, raw) {
       if (!isRecord(raw) || typeof raw.id !== 'string' || !CHECKIN_ID_PATTERN.test(raw.id.trim())) return null;
       const id = raw.id.trim();
@@ -2018,7 +2032,17 @@
       const seenIds = new Set();
       const selectedLedger = new Set();
       const selected = [];
-      appState.checkins.map((item) => normalizeCheckinRecord(appState, item)).filter(Boolean).forEach((checkin) => {
+      const selectedScans = [];
+      const candidates = appState.checkins
+        .map((item, index) => ({ checkin: normalizeCheckinRecord(appState, item), index }))
+        .filter((candidate) => candidate.checkin)
+        .sort((left, right) => {
+          const leftTime = checkinScanMilliseconds(left.checkin.scannedAt);
+          const rightTime = checkinScanMilliseconds(right.checkin.scannedAt);
+          if (leftTime !== rightTime) return (leftTime ?? Number.MAX_SAFE_INTEGER) - (rightTime ?? Number.MAX_SAFE_INTEGER);
+          return left.index - right.index;
+        });
+      candidates.forEach(({ checkin }) => {
         if (seenIds.has(checkin.id)) return;
         const entries = appState.ledger.filter((entry) => isRecord(entry)
           && entry.type === 'visit' && entry.refType === 'checkin' && entry.refId === checkin.id
@@ -2029,9 +2053,11 @@
         const validConfirmed = checkin.status === 'confirmed' && entries.length === 1 && allClaims.length === 1;
         const validQueued = checkin.status === 'queued' && entries.length === 0 && allClaims.length === 0 && !rawClaimedIds.has(checkin.id);
         if (!validConfirmed && !validQueued) return;
+        if (selectedScans.some((selectedCheckin) => checkinWindowConflict(checkin, selectedCheckin))) return;
         seenIds.add(checkin.id);
         if (validConfirmed) selectedLedger.add(entries[0]);
         selected.push(checkin);
+        selectedScans.push(checkin);
       });
       appState.checkins = selected;
       appState.ledger = appState.ledger.filter((entry) => {
@@ -2140,7 +2166,7 @@
         if (!isRecord(item) || item.businessId !== parsed.businessId) return false;
         const scanned = Date.parse(item.scannedAt);
         const delta = now - scanned;
-        return Number.isFinite(scanned) && delta >= 0 && delta < 120 * 60 * 1000;
+        return Number.isFinite(scanned) && delta >= 0 && delta < CHECKIN_WINDOW_MS;
       });
       if (duplicate) return { ok: false, code: 'duplicate_checkin' };
       const id = createDomainId('checkin');
@@ -2172,28 +2198,48 @@
       if (!timestamp.ok) return { ...timestamp, retried: 0 };
       if (!isRecord(appState) || !Array.isArray(appState.offlineQueue) || !Array.isArray(appState.checkins)) return { ok: false, code: 'invalid_state', retried: 0 };
       const ids = [...new Set(appState.offlineQueue)];
-      let retried = 0;
-      ids.forEach((id) => {
+      const candidates = [];
+      ids.forEach((id, index) => {
         const checkin = appState.checkins.find((item) => isRecord(item) && item.id === id);
-        const removeQueuedId = () => {
-          appState.offlineQueue = appState.offlineQueue.filter((queueId) => queueId !== id);
-        };
         if (!checkin) {
-          removeQueuedId();
+          appState.offlineQueue = appState.offlineQueue.filter((queueId) => queueId !== id);
           return;
         }
+        candidates.push({ id, checkin, index });
+      });
+      candidates.sort((left, right) => {
+        const leftTime = checkinScanMilliseconds(left.checkin.scannedAt);
+        const rightTime = checkinScanMilliseconds(right.checkin.scannedAt);
+        if (leftTime !== rightTime) return (leftTime ?? Number.MAX_SAFE_INTEGER) - (rightTime ?? Number.MAX_SAFE_INTEGER);
+        return left.index - right.index;
+      });
+      const confirmedScans = appState.checkins
+        .filter((checkin) => isRecord(checkin) && checkin.status === 'confirmed' && checkinScanMilliseconds(checkin.scannedAt) !== null);
+      let retried = 0;
+      const removeCheckin = (id) => {
+        appState.checkins = appState.checkins.filter((item) => !(isRecord(item) && item.id === id));
+        appState.offlineQueue = appState.offlineQueue.filter((queueId) => queueId !== id);
+      };
+      candidates.forEach(({ id, checkin }) => {
         if (!['queued', 'sending', 'confirmed'].includes(checkin.status)) {
-          removeQueuedId();
+          removeCheckin(id);
           return;
         }
-        const result = checkin.status === 'confirmed'
-          ? completeCheckin(appState, checkin, now)
-          : completeCheckin(appState, checkin, now);
+        if (checkin.status === 'confirmed') {
+          appState.offlineQueue = appState.offlineQueue.filter((queueId) => queueId !== id);
+          return;
+        }
+        if (confirmedScans.some((confirmed) => checkinWindowConflict(checkin, confirmed))) {
+          removeCheckin(id);
+          return;
+        }
+        const result = completeCheckin(appState, checkin, now);
         if (result.ok) {
-          if (result.idempotent || checkin.status === 'confirmed') removeQueuedId();
+          if (!result.idempotent) confirmedScans.push(result.checkin);
+          if (result.idempotent) appState.offlineQueue = appState.offlineQueue.filter((queueId) => queueId !== id);
           retried += result.idempotent ? 0 : 1;
         } else if (checkin.status === 'confirmed' || ['invalid_checkin', 'ledger_conflict', 'ledger_missing'].includes(result.code)) {
-          removeQueuedId();
+          removeCheckin(id);
         }
       });
       return { ok: true, retried };

@@ -2976,6 +2976,94 @@ test('prunes stale offline queue IDs while retrying valid queued check-ins', () 
   assert.equal(queued.checkin.status, 'confirmed');
 });
 
+test('migration keeps the earliest check-in in a business window and quarantines later claims', () => {
+  const { api } = testApi();
+  const firstId = 'checkin-00000000-0000-4000-8000-000000000101';
+  const laterId = 'checkin-00000000-0000-4000-8000-000000000102';
+  const payload = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+  const firstScannedAt = new Date(1000).toISOString();
+  const laterScannedAt = new Date(1801).toISOString();
+  const first = { id: firstId, businessId: 'bitcoin-nail-bar', station: 'front', staffProfileId: 'staff-anna', sourceQr: payload, scannedAt: firstScannedAt, status: 'queued', confirmedAt: null };
+  const later = { id: laterId, businessId: 'bitcoin-nail-bar', station: 'front', staffProfileId: 'staff-anna', sourceQr: payload, scannedAt: laterScannedAt, status: 'confirmed', confirmedAt: new Date(2000).toISOString() };
+  const migrated = api.migrateState({
+    checkins: [later, first],
+    offlineQueue: [laterId, firstId],
+    ledger: [{ id: 'ledger-duplicate-checkin', businessId: 'bitcoin-nail-bar', type: 'visit', pointsDelta: 120, refType: 'checkin', refId: laterId, createdAt: laterScannedAt }]
+  });
+  assert.equal(migrated.checkins.length, 1);
+  assert.equal(migrated.checkins[0].id, firstId);
+  assert.equal(migrated.offlineQueue.length, 1);
+  assert.equal(migrated.offlineQueue[0], firstId);
+  assert.equal(migrated.ledger.some((entry) => entry.refId === laterId), false);
+});
+
+test('retry drops same-business queued duplicates without awarding twice', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, { randomUUID: () => {
+    uuidCalls += 1;
+    return '00000000-0000-4000-8000-000000000101';
+  } });
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+  const first = api.submitCheckin(app, payload, false, 1000);
+  assert.equal(first.ok, true);
+  const duplicate = {
+    ...first.checkin,
+    id: 'checkin-00000000-0000-4000-8000-000000000102',
+    scannedAt: new Date(1801).toISOString(),
+    status: 'queued',
+    confirmedAt: null
+  };
+  app.checkins = [duplicate, first.checkin];
+  app.offlineQueue = [first.checkin.id, duplicate.id];
+  const before = app.balances['bitcoin-nail-bar'].points;
+  const result = api.retryQueuedCheckins(app, true, 5000);
+  assert.equal(result.ok, true);
+  assert.equal(result.retried, 1);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 120);
+  assert.equal(app.ledger.filter((entry) => entry.refType === 'checkin').length, 1);
+  assert.equal(app.checkins.some((checkin) => checkin.id === duplicate.id), false);
+  assert.equal(app.offlineQueue.length, 0);
+  assert.equal(uuidCalls, 2);
+});
+
+test('retry preserves different businesses and scans at or beyond 120 minutes', () => {
+  let uuidCounter = 0;
+  const { api } = testApi({}, { randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCounter).padStart(12, '0')}` });
+  const app = api.createDefaultState();
+  const first = api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', false, 1000);
+  assert.equal(first.ok, true);
+  const laterSameBusiness = {
+    ...first.checkin,
+    id: 'checkin-00000000-0000-4000-8000-000000000112',
+    scannedAt: new Date(1000 + (120 * 60 * 1000)).toISOString(),
+    status: 'queued',
+    confirmedAt: null
+  };
+  const otherBusiness = {
+    ...first.checkin,
+    id: 'checkin-00000000-0000-4000-8000-000000000113',
+    businessId: 'golden-glow-spa',
+    station: 'front',
+    staffProfileId: null,
+    sourceQr: 'https://nexoratouch.com/touch/golden-glow-spa/front',
+    scannedAt: new Date(1801).toISOString(),
+    status: 'queued',
+    confirmedAt: null
+  };
+  app.checkins = [laterSameBusiness, otherBusiness, first.checkin];
+  app.offlineQueue = [laterSameBusiness.id, otherBusiness.id, first.checkin.id];
+  const bitcoinBefore = app.balances['bitcoin-nail-bar'].points;
+  const goldenBefore = app.balances['golden-glow-spa'].points;
+  const result = api.retryQueuedCheckins(app, true, 8000);
+  assert.equal(result.ok, true);
+  assert.equal(result.retried, 3);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, bitcoinBefore + 240);
+  assert.equal(app.balances['golden-glow-spa'].points, goldenBefore + 80);
+  assert.equal(app.ledger.filter((entry) => entry.refType === 'checkin').length, 3);
+  assert.equal(app.offlineQueue.length, 0);
+});
+
 test('completeCheckin rejects malformed domain collections before mutation', () => {
   const { api } = testApi();
   for (const field of ['businesses', 'balances', 'staffProfiles', 'checkins', 'ledger', 'offlineQueue']) {
