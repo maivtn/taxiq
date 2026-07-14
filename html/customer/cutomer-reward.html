@@ -91,8 +91,8 @@
               <div class="relative z-10 mt-4 h-2 overflow-hidden rounded-full bg-black/20"><span class="block h-full rounded-full bg-gradient-to-r from-app-cyan to-white" data-reward-progress role="progressbar" aria-valuemin="0" aria-valuemax="100"></span></div>
             </div>
 
-            <div class="app-card flex flex-col justify-between">
-              <div><div class="flex items-center justify-between"><p class="eyebrow" data-en="Next appointment" data-vi="Lịch hẹn sắp tới">Lịch hẹn sắp tới</p><span class="rounded-full bg-app-green/10 px-2.5 py-1 text-[11px] font-bold text-app-green" data-en="Confirmed" data-vi="Đã xác nhận">Đã xác nhận</span></div><h2 class="mt-3 text-xl font-black">Gel manicure</h2><p class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar · Anna</p><div class="mt-4 flex items-center gap-2 text-sm"><i data-lucide="calendar-days" class="size-4 text-app-cyan" aria-hidden="true"></i><span data-en="Thursday · 2:00 PM" data-vi="Thứ Năm · 2:00 CH">Thứ Năm · 2:00 CH</span></div></div>
+            <div id="home-appointment" class="app-card hidden flex-col justify-between">
+              <div><div class="flex items-center justify-between"><p class="eyebrow" data-en="Next appointment" data-vi="Lịch hẹn sắp tới">Lịch hẹn sắp tới</p><span class="rounded-full bg-app-green/10 px-2.5 py-1 text-[11px] font-bold text-app-green" data-en="Confirmed" data-vi="Đã xác nhận">Đã xác nhận</span></div><strong class="mt-3 block text-lg" data-appointment-copy></strong></div>
               <button type="button" class="app-button-secondary mt-5 w-full" data-action="navigate" data-target="book1"><i data-lucide="calendar-plus" class="size-4" aria-hidden="true"></i><span data-en="Book again" data-vi="Đặt lại lịch">Đặt lại lịch</span></button>
             </div>
           </div>
@@ -147,7 +147,7 @@
         </section>
         <section class="app-screen hidden" id="review" data-ready="true" data-module="home" aria-labelledby="review-title">
           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Private to the business" data-vi="Chỉ doanh nghiệp nhìn thấy">Chỉ doanh nghiệp nhìn thấy</p><h1 id="review-title" class="text-2xl font-black" data-en="How was your visit?" data-vi="Trải nghiệm của bạn thế nào?">Trải nghiệm của bạn thế nào?</h1></div></div>
-          <div class="app-card"><div class="flex items-center gap-3"><span class="grid size-12 place-items-center rounded-2xl bg-app-purple/10 text-app-pink"><i data-lucide="sparkles" class="size-6" aria-hidden="true"></i></span><div><strong>Bitcoin Nail Bar</strong><p class="text-xs text-app-muted">Gel manicure · Anna · 12/07</p></div></div><p class="mt-6 text-sm font-bold" data-en="Your rating" data-vi="Đánh giá của bạn">Đánh giá của bạn</p><div class="mt-2 flex gap-2" aria-label="Chọn số sao"><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="1" aria-label="1 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="2" aria-label="2 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="3" aria-label="3 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="4" aria-label="4 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="5" aria-label="5 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button></div><label class="mt-5 block text-sm font-bold"><span data-en="What could be better?" data-vi="Điều gì có thể tốt hơn?">Điều gì có thể tốt hơn?</span><textarea id="review-notes" class="app-input mt-2 min-h-32 resize-y" data-en-ph="Share details privately…" data-vi-ph="Chia sẻ riêng với doanh nghiệp…" placeholder="Chia sẻ riêng với doanh nghiệp…"></textarea></label><button type="button" class="app-button mt-5 w-full" data-action="submit-review"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Send feedback" data-vi="Gửi phản hồi">Gửi phản hồi</span></button></div></div>
+          <div class="app-card"><div class="flex items-center gap-3"><span class="grid size-12 place-items-center rounded-2xl bg-app-purple/10 text-app-pink"><i data-lucide="sparkles" class="size-6" aria-hidden="true"></i></span><div><strong>Bitcoin Nail Bar</strong><p class="text-xs text-app-muted">Gel manicure · Anna · 12/07</p></div></div><p class="mt-6 text-sm font-bold" data-en="Your rating" data-vi="Đánh giá của bạn">Đánh giá của bạn</p><div class="mt-2 flex gap-2" aria-label="Chọn số sao"><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="1" aria-label="1 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="2" aria-label="2 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="3" aria-label="3 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="4" aria-label="4 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="5" aria-label="5 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button></div><label class="mt-5 block text-sm font-bold"><span data-en="What could be better?" data-vi="Điều gì có thể tốt hơn?">Điều gì có thể tốt hơn?</span><textarea id="review-notes" class="app-input mt-2 min-h-32 resize-y" data-en-ph="Share details privately…" data-vi-ph="Chia sẻ riêng với doanh nghiệp…" placeholder="Chia sẻ riêng với doanh nghiệp…"></textarea></label><p class="mt-4 rounded-xl bg-app-green/5 p-3 text-xs leading-5 text-app-muted" data-en="Earn 15 points for private feedback at any rating. Google sharing is optional and never rewarded." data-vi="Nhận 15 điểm cho phản hồi riêng ở mọi mức sao. Chia sẻ Google là tùy chọn và không được thưởng.">Nhận 15 điểm cho phản hồi riêng ở mọi mức sao. Chia sẻ Google là tùy chọn và không được thưởng.</p><button type="button" class="app-button mt-5 w-full" data-action="submit-review"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Send feedback + earn 15 points" data-vi="Gửi phản hồi + nhận 15 điểm">Gửi phản hồi + nhận 15 điểm</span></button><button type="button" class="app-button-secondary mt-3 w-full" data-action="open-google-review" data-en="Share on Google (optional · no points)" data-vi="Chia sẻ lên Google (tùy chọn · không điểm)">Chia sẻ lên Google (tùy chọn · không điểm)</button></div></div>
         </section>
         <section class="app-screen hidden" id="offers" data-ready="true" data-module="home" aria-labelledby="offers-title">
           <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Picked for you" data-vi="Dành riêng cho bạn">Dành riêng cho bạn</p><h1 id="offers-title" class="text-2xl font-black" data-en="Offers & wishlist" data-vi="Ưu đãi & mong muốn">Ưu đãi & mong muốn</h1></div></div>
@@ -160,7 +160,7 @@
           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="book1" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Step 2 of 3" data-vi="Bước 2/3">Bước 2/3</p><h1 id="book2-title" class="text-2xl font-black" data-en="Review your request" data-vi="Kiểm tra yêu cầu">Kiểm tra yêu cầu</h1></div></div><div class="app-card"><div class="flex items-center gap-3 border-b border-app-line pb-4"><span class="grid size-12 place-items-center rounded-2xl bg-app-purple/10 text-app-pink"><i data-lucide="store" class="size-6" aria-hidden="true"></i></span><div><strong>Bitcoin Nail Bar</strong><p class="text-xs text-app-muted">1288 Westheimer Rd · 0.2 mi</p></div></div><dl class="mt-4 space-y-4 text-sm"><div class="flex justify-between gap-4"><dt class="text-app-muted" data-en="Service" data-vi="Dịch vụ">Dịch vụ</dt><dd id="booking-service-summary" class="font-bold">Sơn gel · $45</dd></div><div class="flex justify-between gap-4"><dt class="text-app-muted" data-en="Technician" data-vi="Kỹ thuật viên">Kỹ thuật viên</dt><dd id="booking-staff-summary" class="font-bold">Anna</dd></div><div class="flex justify-between gap-4"><dt class="text-app-muted" data-en="Time" data-vi="Thời gian">Thời gian</dt><dd id="booking-time-summary" class="font-bold">T5 16/7 · 14:00</dd></div></dl><label class="mt-5 block text-sm font-bold"><span data-en="Note for the business (optional)" data-vi="Ghi chú cho tiệm (không bắt buộc)">Ghi chú cho tiệm (không bắt buộc)</span><textarea id="booking-note" class="app-input mt-2 min-h-24" data-en-ph="Anything the team should know…" data-vi-ph="Điều tiệm cần biết…" placeholder="Điều tiệm cần biết…"></textarea></label><p class="mt-4 rounded-xl bg-app-cyan/5 p-3 text-xs leading-5 text-app-muted" data-en="This is a request. The business will confirm your appointment shortly." data-vi="Đây là yêu cầu đặt lịch. Doanh nghiệp sẽ xác nhận trong ít phút.">Đây là yêu cầu đặt lịch. Doanh nghiệp sẽ xác nhận trong ít phút.</p><button class="app-button mt-5 w-full" type="button" data-action="confirm-booking"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Send booking request" data-vi="Gửi yêu cầu đặt lịch">Gửi yêu cầu đặt lịch</span></button></div></div>
         </section>
         <section class="app-screen hidden" id="book3" data-ready="true" data-module="home" aria-labelledby="book3-title">
-          <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="calendar-check-2" class="size-10" aria-hidden="true"></i></span><p class="eyebrow mt-6" data-en="Step 3 of 3" data-vi="Bước 3/3">Bước 3/3</p><h1 id="book3-title" class="mt-2 text-3xl font-black" data-en="Request sent" data-vi="Đã gửi yêu cầu">Đã gửi yêu cầu</h1><p class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted" data-en="Bitcoin Nail Bar usually responds within 10 minutes. We will notify you as soon as they confirm." data-vi="Bitcoin Nail Bar thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.">Bitcoin Nail Bar thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.</p><div class="app-card mt-6 text-left"><div id="booking-pending" class="flex items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-5" aria-hidden="true"></i></span><div><strong data-en="Awaiting confirmation" data-vi="Đang chờ xác nhận">Đang chờ xác nhận</strong><p class="text-xs text-app-muted">Gel manicure · Anna · Thu 2:00 PM</p></div></div><div id="booking-confirmed" class="hidden items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-green/10 text-app-green"><i data-lucide="circle-check" class="size-5" aria-hidden="true"></i></span><strong data-en="Appointment confirmed" data-vi="Lịch hẹn đã xác nhận">Lịch hẹn đã xác nhận</strong></div></div><button class="app-button mt-5 w-full" type="button" data-action="navigate" data-target="home" data-en="Back to home" data-vi="Về trang chủ">Về trang chủ</button></div></div>
+          <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="calendar-check-2" class="size-10" aria-hidden="true"></i></span><p class="eyebrow mt-6" data-en="Step 3 of 3" data-vi="Bước 3/3">Bước 3/3</p><h1 id="book3-title" class="mt-2 text-3xl font-black" data-en="Request sent" data-vi="Đã gửi yêu cầu">Đã gửi yêu cầu</h1><p id="booking-status-copy" class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted" data-en="Bitcoin Nail Bar usually responds within 10 minutes. We will notify you as soon as they confirm." data-vi="Bitcoin Nail Bar thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.">Bitcoin Nail Bar thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.</p><div class="app-card mt-6 text-left"><div id="booking-pending" class="flex items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-5" aria-hidden="true"></i></span><div><strong data-en="Awaiting confirmation" data-vi="Đang chờ xác nhận">Đang chờ xác nhận</strong><p class="text-xs text-app-muted" data-booking-copy></p></div></div><div id="booking-confirmed" class="hidden items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-green/10 text-app-green"><i data-lucide="circle-check" class="size-5" aria-hidden="true"></i></span><div><strong data-en="Appointment confirmed" data-vi="Lịch hẹn đã xác nhận">Lịch hẹn đã xác nhận</strong><p class="text-xs text-app-muted" data-booking-copy></p></div></div></div><button id="booking-demo-confirm" class="app-button mt-5 w-full" type="button" data-action="confirm-booking-demo" data-en="Simulate salon confirmation" data-vi="Mô phỏng tiệm xác nhận">Mô phỏng tiệm xác nhận</button><button id="booking-calendar" class="app-button-secondary mt-3 hidden w-full" type="button" data-action="add-calendar" data-en="Add to calendar" data-vi="Thêm vào lịch">Thêm vào lịch</button><button class="app-button-secondary mt-3 w-full" type="button" data-action="navigate" data-target="home" data-en="Back to home" data-vi="Về trang chủ">Về trang chủ</button></div></div>
         </section>
         <section class="app-screen hidden" id="login1" data-ready="true" data-module="home" aria-labelledby="login1-title">
           <div class="mx-auto grid min-h-[70vh] max-w-md place-items-center"><div class="w-full"><span class="grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-app-purple to-app-pink"><i data-lucide="sparkles" class="size-6" aria-hidden="true"></i></span><p class="eyebrow mt-7" data-en="Welcome to NEXORA" data-vi="Chào mừng đến NEXORA">Chào mừng đến NEXORA</p><h1 id="login1-title" class="mt-2 text-3xl font-black" data-en="Your rewards, one tap away" data-vi="Mọi phần thưởng trong một chạm">Mọi phần thưởng trong một chạm</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="Enter your mobile number to sign in or create an account." data-vi="Nhập số điện thoại để đăng nhập hoặc tạo tài khoản.">Nhập số điện thoại để đăng nhập hoặc tạo tài khoản.</p><label class="mt-7 block text-sm font-bold"><span data-en="Mobile number" data-vi="Số điện thoại">Số điện thoại</span><div class="mt-2 flex gap-2"><span class="grid min-h-11 place-items-center rounded-xl border border-app-line bg-app-panel px-3 text-sm font-bold">+1</span><input id="login-phone" class="app-input" type="tel" inputmode="tel" autocomplete="tel" data-en-ph="(832) 555-0148" data-vi-ph="(832) 555-0148" placeholder="(832) 555-0148"></div></label><p id="login-phone-error" class="field-error hidden" role="alert"></p><button class="app-button mt-5 w-full" type="button" data-action="request-otp"><span data-en="Continue" data-vi="Tiếp tục">Tiếp tục</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button><p class="mt-5 text-center text-xs leading-5 text-app-muted" data-en="By continuing, you agree to the Terms and Privacy Policy." data-vi="Khi tiếp tục, bạn đồng ý với Điều khoản và Chính sách riêng tư.">Khi tiếp tục, bạn đồng ý với Điều khoản và Chính sách riêng tư.</p></div></div>
@@ -363,6 +363,7 @@
           { id: 'look-galaxy', businessId: BUSINESS_ID, visitId: 'visit-1001', staffProfileId: 'staff-anna', staffName: 'Anna', service: 'Gel manicure', color: 'OPI Bubble Bath #S86', note: 'Galaxy chrome', photoDataUrl: '', createdAt: '2026-07-12T16:20:00.000Z' }
         ],
         feedback: [],
+        feedbackClaims: [],
         savedOfferIds: [],
         wishes: ['Gói spa đôi cuối tuần'],
         followedTechIds: [],
@@ -375,7 +376,7 @@
           selectedTip: 10, selectedTipMethod: 'Venmo', selectedStaffId: 'staff-anna',
           paymentMethod: 'Zelle', rating: 0, currentRewardKey: null,
           exploreFilter: 'all', offerFilter: 'all', pendingContext: {
-            consentScopes: [], rewardAttempt: null, tipId: null, paymentId: null
+            consentScopes: [], rewardAttempt: null, tipId: null, paymentId: null, bookingId: null
           },
           bookingDraft: { businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM', note: '' },
           overlay: null, pushPromptCount: 0
@@ -395,8 +396,8 @@
       redemptions: { id: 'string', idempotencyKey: 'string', rewardKey: 'string', sourceBusinessId: 'string', acceptingBusinessId: 'string', cost: 'number', status: 'string', createdAt: 'string' },
       tips: { id: 'string', businessId: 'string', staffProfileId: 'string', amount: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
       directPayments: { id: 'string', businessId: 'string', amount: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
-      bookingRequests: { id: 'string', businessId: 'string', status: 'string', createdAt: 'string' },
-      appointments: { id: 'string', bookingId: 'string', businessId: 'string', status: 'string' },
+      bookingRequests: { id: 'string', businessId: 'string', service: 'string', staff: 'string', day: 'string', time: 'string', bookingBonus: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
+      appointments: { id: 'string', bookingId: 'string', businessId: 'string', service: 'string', staff: 'string', day: 'string', time: 'string', status: 'string', createdAt: 'string' },
       looks: { id: 'string', businessId: 'string', visitId: 'nullableString', staffProfileId: 'nullableString', createdAt: 'string' },
       feedback: { id: 'string', visitId: 'string', businessId: 'string', stars: 'number', createdAt: 'string' },
       notifications: { id: 'string', type: 'string', target: 'string', createdAt: 'string' }
@@ -404,7 +405,7 @@
 
     function isStringArrayPath(path) {
       const key = path.join('.');
-      return ['profile.paymentMethods', 'welcomeClaims', 'savedOfferIds', 'wishes', 'followedTechIds', 'offlineQueue', 'ui.pendingContext.consentScopes'].includes(key)
+      return ['profile.paymentMethods', 'welcomeClaims', 'savedOfferIds', 'wishes', 'followedTechIds', 'offlineQueue', 'feedbackClaims', 'ui.pendingContext.consentScopes'].includes(key)
         || (path.length === 3 && path[2] === 'methods' && ['businesses', 'staffProfiles'].includes(path[0]));
     }
 
@@ -499,6 +500,57 @@
         }
         return claims;
       });
+    }
+
+    function collectRawBookingLedgerClaims(ledger) {
+      if (!Array.isArray(ledger)) return [];
+      return ledger.flatMap((entry) => {
+        if (!isRecord(entry)) return [];
+        const type = typeof entry.type === 'string' ? entry.type.trim() : '';
+        const refType = typeof entry.refType === 'string' ? entry.refType.trim() : '';
+        const refId = typeof entry.refId === 'string' ? entry.refId.trim() : '';
+        return refId && (type === 'booking_bonus' || refType === 'booking') ? [refId] : [];
+      });
+    }
+
+    function collectRawAppointmentClaims(appointments) {
+      if (!Array.isArray(appointments)) return [];
+      return appointments.flatMap((appointment) => {
+        const bookingId = isRecord(appointment) && typeof appointment.bookingId === 'string'
+          ? appointment.bookingId.trim()
+          : '';
+        return bookingId ? [bookingId] : [];
+      });
+    }
+
+    function collectRawFeedbackLedgerClaims(ledger) {
+      if (!Array.isArray(ledger)) return [];
+      return ledger.flatMap((entry) => {
+        if (!isRecord(entry)) return [];
+        const type = typeof entry.type === 'string' ? entry.type.trim() : '';
+        const refType = typeof entry.refType === 'string' ? entry.refType.trim() : '';
+        const refId = typeof entry.refId === 'string' ? entry.refId.trim() : '';
+        const visitId = typeof entry.visitId === 'string' ? entry.visitId.trim() : '';
+        const businessId = typeof entry.businessId === 'string' ? entry.businessId.trim() : '';
+        return refId && (type === 'feedback' || refType === 'feedback')
+          ? [{ id: refId, visitId, businessId }]
+          : [];
+      });
+    }
+
+    function collectRawFeedbackClaims(feedback, feedbackClaims) {
+      const claims = Array.isArray(feedbackClaims)
+        ? feedbackClaims.flatMap((visitId) => typeof visitId === 'string' && visitId.trim() ? [{ visitId: visitId.trim() }] : [])
+        : [];
+      if (!Array.isArray(feedback)) return claims;
+      feedback.forEach((item) => {
+        if (!isRecord(item)) return;
+        const id = typeof item.id === 'string' ? item.id.trim() : '';
+        const visitId = typeof item.visitId === 'string' ? item.visitId.trim() : '';
+        const businessId = typeof item.businessId === 'string' ? item.businessId.trim() : '';
+        if (visitId) claims.push({ id, visitId, businessId });
+      });
+      return claims;
     }
 
     function normalizePersistedRedemptions(appState) {
@@ -821,9 +873,233 @@
       appState.ledger = appState.ledger.filter((entry) => !isTransactionLedgerEntry(entry) || selectedEntries.has(entry));
     }
 
+    function normalizedRequiredText(value) {
+      const normalized = typeof value === 'string' ? value.trim() : '';
+      return normalized || null;
+    }
+
+    function normalizePersistedBooking(appState, booking) {
+      if (!isRecord(booking)) return null;
+      const id = normalizedRequiredText(booking.id);
+      const businessId = normalizedRequiredText(booking.businessId);
+      const business = businessId ? getValidBusiness(appState, businessId) : null;
+      const service = normalizedRequiredText(booking.service);
+      const staff = normalizedRequiredText(booking.staff);
+      const day = normalizedRequiredText(booking.day);
+      const time = normalizedRequiredText(booking.time);
+      const status = ['requested', 'confirmed'].includes(booking.status) ? booking.status : null;
+      const createdAt = validStoredTimestamp(booking.createdAt) ? booking.createdAt : null;
+      const confirmedAt = booking.confirmedAt === null
+        ? null
+        : validStoredTimestamp(booking.confirmedAt) ? booking.confirmedAt : undefined;
+      const bookingBonus = canonicalRuleSnapshot(booking.bookingBonus, business?.bookingBonus);
+      if (!id || !business || !service || !staff || !day || !time || !status || !createdAt
+        || !Number.isSafeInteger(bookingBonus)) return null;
+      if ((status === 'requested' && confirmedAt !== null)
+        || (status === 'confirmed' && typeof confirmedAt !== 'string')) return null;
+      return {
+        ...booking,
+        id,
+        businessId,
+        service,
+        staff,
+        day,
+        time,
+        note: typeof booking.note === 'string' ? booking.note.trim() : '',
+        bookingBonus,
+        status,
+        createdAt,
+        confirmedAt
+      };
+    }
+
+    function normalizePersistedAppointment(appState, appointment) {
+      if (!isRecord(appointment)) return null;
+      const id = normalizedRequiredText(appointment.id);
+      const bookingId = normalizedRequiredText(appointment.bookingId);
+      const businessId = normalizedRequiredText(appointment.businessId);
+      const service = normalizedRequiredText(appointment.service);
+      const staff = normalizedRequiredText(appointment.staff);
+      const day = normalizedRequiredText(appointment.day);
+      const time = normalizedRequiredText(appointment.time);
+      const createdAt = validStoredTimestamp(appointment.createdAt) ? appointment.createdAt : null;
+      if (!id || !bookingId || !getValidBusiness(appState, businessId) || !service || !staff || !day || !time
+        || appointment.status !== 'confirmed' || !createdAt) return null;
+      return { ...appointment, id, bookingId, businessId, service, staff, day, time, status: 'confirmed', createdAt };
+    }
+
+    function isBookingLedgerEntry(entry) {
+      return entry.type === 'booking_bonus' || entry.refType === 'booking';
+    }
+
+    function isBookingLedgerPair(booking, entry) {
+      return entry.type === 'booking_bonus'
+        && entry.refType === 'booking'
+        && entry.refId === booking.id
+        && entry.businessId === booking.businessId
+        && entry.pointsDelta === booking.bookingBonus;
+    }
+
+    function isBookingAppointmentPair(booking, appointment) {
+      return appointment.bookingId === booking.id
+        && appointment.businessId === booking.businessId
+        && appointment.service === booking.service
+        && appointment.staff === booking.staff
+        && appointment.day === booking.day
+        && appointment.time === booking.time
+        && appointment.status === 'confirmed'
+        && appointment.createdAt === booking.confirmedAt;
+    }
+
+    function reconcileBookingPairs(appState, rawLedgerClaims = [], rawAppointmentClaims = []) {
+      const selectedEntries = new Set();
+      const selectedLedgerIds = new Set();
+      const selectedAppointments = new Set();
+      const selectedAppointmentIds = new Set();
+      const selectedBookingIds = new Set();
+      const selectedBookings = [];
+      const bookingLedger = appState.ledger.filter(isBookingLedgerEntry);
+      const candidates = [];
+
+      appState.bookingRequests.filter((booking) => booking.status === 'confirmed').forEach((booking) => {
+        const appointments = appState.appointments.filter((appointment) => isBookingAppointmentPair(booking, appointment));
+        const ledgerEntries = booking.bookingBonus > 0
+          ? bookingLedger.filter((entry) => isBookingLedgerPair(booking, entry))
+          : [null];
+        appointments.forEach((appointment) => ledgerEntries.forEach((entry) => {
+          candidates.push({
+            booking,
+            appointment,
+            entry,
+            sortKey: `${transactionSortKey(booking)}:${transactionSortKey(appointment)}:${entry ? ledgerSortKey(entry) : ''}`
+          });
+        }));
+      });
+      candidates.sort((left, right) => left.sortKey.localeCompare(right.sortKey));
+      candidates.forEach((candidate) => {
+        if (selectedBookingIds.has(candidate.booking.id)
+          || selectedAppointments.has(candidate.appointment)
+          || selectedAppointmentIds.has(candidate.appointment.id)
+          || (candidate.entry && (selectedEntries.has(candidate.entry) || selectedLedgerIds.has(candidate.entry.id)))) return;
+        const allLinkedLedger = bookingLedger.filter((entry) => entry.refId === candidate.booking.id);
+        if ((candidate.booking.bookingBonus === 0 && allLinkedLedger.length)
+          || (candidate.booking.bookingBonus > 0 && allLinkedLedger.length !== 1)) return;
+        selectedBookingIds.add(candidate.booking.id);
+        selectedAppointments.add(candidate.appointment);
+        selectedAppointmentIds.add(candidate.appointment.id);
+        if (candidate.entry) {
+          selectedEntries.add(candidate.entry);
+          selectedLedgerIds.add(candidate.entry.id);
+        }
+        selectedBookings.push(candidate.booking);
+      });
+
+      const replayedIds = new Set([...rawLedgerClaims, ...rawAppointmentClaims]);
+      appState.bookingRequests
+        .filter((booking) => booking.status === 'requested')
+        .sort((left, right) => transactionSortKey(left).localeCompare(transactionSortKey(right)))
+        .forEach((booking) => {
+          if (!selectedBookingIds.has(booking.id) && !replayedIds.has(booking.id)) {
+            selectedBookingIds.add(booking.id);
+            selectedBookings.push(booking);
+          }
+        });
+      appState.bookingRequests = selectedBookings;
+      appState.appointments = appState.appointments.filter((appointment) => selectedAppointments.has(appointment));
+      appState.ledger = appState.ledger.filter((entry) => !isBookingLedgerEntry(entry) || selectedEntries.has(entry));
+    }
+
+    function normalizePersistedFeedback(appState, feedback) {
+      if (!isRecord(feedback)) return null;
+      const id = normalizedRequiredText(feedback.id);
+      const visitId = normalizedRequiredText(feedback.visitId);
+      const businessId = normalizedRequiredText(feedback.businessId);
+      const visits = visitId && Array.isArray(appState.visits)
+        ? appState.visits.filter((visit) => isRecord(visit) && visit.id === visitId)
+        : [];
+      const visit = visits.length === 1 ? visits[0] : null;
+      const createdAt = validStoredTimestamp(feedback.createdAt) ? feedback.createdAt : null;
+      if (!id || !visit || !getValidBusiness(appState, businessId) || visit.businessId !== businessId
+        || !Number.isInteger(feedback.stars) || feedback.stars < 1 || feedback.stars > 5 || !createdAt) return null;
+      return {
+        ...feedback,
+        id,
+        visitId,
+        businessId,
+        stars: feedback.stars,
+        text: typeof feedback.text === 'string' ? feedback.text.trim() : '',
+        createdAt
+      };
+    }
+
+    function isFeedbackLedgerEntry(entry) {
+      return entry.type === 'feedback' || entry.refType === 'feedback';
+    }
+
+    function isFeedbackLedgerPair(feedback, entry) {
+      return entry.type === 'feedback'
+        && entry.refType === 'feedback'
+        && entry.refId === feedback.id
+        && entry.visitId === feedback.visitId
+        && entry.businessId === feedback.businessId
+        && entry.pointsDelta === 15;
+    }
+
+    function reconcileFeedbackPairs(appState, rawFeedbackClaims = [], rawLedgerClaims = []) {
+      const feedbackLedger = appState.ledger.filter(isFeedbackLedgerEntry);
+      const candidates = [];
+      appState.feedback.forEach((feedback) => {
+        feedbackLedger.filter((entry) => isFeedbackLedgerPair(feedback, entry)).forEach((entry) => {
+          candidates.push({
+            feedback,
+            entry,
+            sortKey: `${transactionSortKey(feedback)}:${ledgerSortKey(entry)}`
+          });
+        });
+      });
+      candidates.sort((left, right) => left.sortKey.localeCompare(right.sortKey));
+      const feedbackIds = new Set();
+      const visitIds = new Set();
+      const selectedEntries = new Set();
+      const selectedLedgerIds = new Set();
+      const selectedFeedback = [];
+      candidates.forEach((candidate) => {
+        const linked = feedbackLedger.filter((entry) => entry.refId === candidate.feedback.id);
+        if (linked.length !== 1
+          || feedbackIds.has(candidate.feedback.id)
+          || visitIds.has(candidate.feedback.visitId)
+          || selectedEntries.has(candidate.entry)
+          || selectedLedgerIds.has(candidate.entry.id)) return;
+        feedbackIds.add(candidate.feedback.id);
+        visitIds.add(candidate.feedback.visitId);
+        selectedEntries.add(candidate.entry);
+        selectedLedgerIds.add(candidate.entry.id);
+        selectedFeedback.push(candidate.feedback);
+      });
+      const claimedVisits = new Set(appState.feedbackClaims);
+      [...rawFeedbackClaims, ...rawLedgerClaims].forEach((claim) => {
+        const visits = appState.visits.filter((visit) => visit.id === claim.visitId);
+        if (visits.length !== 1) return;
+        if (claim.businessId && claim.businessId !== visits[0].businessId) return;
+        claimedVisits.add(claim.visitId);
+      });
+      selectedFeedback.forEach((feedback) => claimedVisits.add(feedback.visitId));
+      appState.feedback = selectedFeedback;
+      appState.feedbackClaims = [...claimedVisits]
+        .filter((visitId) => appState.visits.some((visit) => visit.id === visitId))
+        .sort();
+      appState.ledger = appState.ledger.filter((entry) => !isFeedbackLedgerEntry(entry) || selectedEntries.has(entry));
+    }
+
     function deduplicateLedgerIds(appState) {
       const selectedById = new Map();
-      const priority = (entry) => isRewardLedgerEntry(entry) ? 0 : isTransactionLedgerEntry(entry) ? 1 : 2;
+      const priority = (entry) => isRewardLedgerEntry(entry)
+        ? 0
+        : isTransactionLedgerEntry(entry)
+          ? 1
+          : isBookingLedgerEntry(entry)
+            ? 2
+            : isFeedbackLedgerEntry(entry) ? 3 : 4;
       appState.ledger.forEach((entry) => {
         const selected = selectedById.get(entry.id);
         if (!selected
@@ -841,6 +1117,10 @@
       if (tipId !== null && !appState.tips.some((tip) => tip.id === tipId)) appState.ui.pendingContext.tipId = null;
       if (paymentId !== null && !appState.directPayments.some((payment) => payment.id === paymentId)) {
         appState.ui.pendingContext.paymentId = null;
+      }
+      const bookingId = appState.ui.pendingContext.bookingId;
+      if (bookingId !== null && !appState.bookingRequests.some((booking) => booking.id === bookingId)) {
+        appState.ui.pendingContext.bookingId = null;
       }
     }
 
@@ -878,7 +1158,7 @@
           } : structuredClone(defaultValue)
         };
       }
-      if (['ui.pendingContext.tipId', 'ui.pendingContext.paymentId'].includes(path.join('.'))) {
+      if (['ui.pendingContext.tipId', 'ui.pendingContext.paymentId', 'ui.pendingContext.bookingId'].includes(path.join('.'))) {
         const normalized = typeof incomingValue === 'string' ? incomingValue.trim() : '';
         return { handled: true, value: normalized || null };
       }
@@ -916,6 +1196,10 @@
       if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
       const rawRedemptionClaims = collectRawRedemptionClaims(value.redemptions);
       const rawTransactionLedgerClaims = collectRawTransactionLedgerClaims(value.ledger);
+      const rawBookingLedgerClaims = collectRawBookingLedgerClaims(value.ledger);
+      const rawAppointmentClaims = collectRawAppointmentClaims(value.appointments);
+      const rawFeedbackLedgerClaims = collectRawFeedbackLedgerClaims(value.ledger);
+      const rawFeedbackClaims = collectRawFeedbackClaims(value.feedback, value.feedbackClaims);
       const migrated = mergeRecord(defaults, value);
       migrated.schemaVersion = SCHEMA_VERSION;
       migrated.updatedAt = new Date().toISOString();
@@ -957,16 +1241,40 @@
       migrated.directPayments = migrated.directPayments
         .map((payment) => normalizePersistedDirectPayment(migrated, payment))
         .filter(Boolean);
+      migrated.bookingRequests = migrated.bookingRequests
+        .map((booking) => normalizePersistedBooking(migrated, booking))
+        .filter(Boolean);
+      migrated.appointments = migrated.appointments
+        .map((appointment) => normalizePersistedAppointment(migrated, appointment))
+        .filter(Boolean);
+      migrated.feedback = migrated.feedback
+        .map((item) => normalizePersistedFeedback(migrated, item))
+        .filter(Boolean);
       const pendingAttempt = migrated.ui.pendingContext.rewardAttempt;
       const rawPendingClaims = isRecord(pendingAttempt) && Array.isArray(value.redemptions)
         ? rawRedemptionClaims.filter((claim) => claim.idempotencyKey === pendingAttempt.idempotencyKey)
         : [];
       reconcileRewardPairs(migrated);
       reconcileTransactionPairs(migrated, rawTransactionLedgerClaims);
+      reconcileBookingPairs(migrated, rawBookingLedgerClaims, rawAppointmentClaims);
+      reconcileFeedbackPairs(migrated, rawFeedbackClaims, rawFeedbackLedgerClaims);
       deduplicateLedgerIds(migrated);
       reconcilePendingRewardAttempt(migrated, rawPendingClaims);
       reconcilePendingTransactions(migrated);
       migrated.ui.pendingContext.consentScopes = migrated.ui.pendingContext.consentScopes.filter((scope) => CONSENT_SCOPES.includes(scope));
+      const bookingDraftBusinessId = normalizedRequiredText(migrated.ui.bookingDraft.businessId);
+      migrated.ui.bookingDraft.businessId = getValidBusiness(migrated, bookingDraftBusinessId)
+        ? bookingDraftBusinessId
+        : BUSINESS_ID;
+      for (const field of ['service', 'staff', 'day', 'time']) {
+        migrated.ui.bookingDraft[field] = normalizedRequiredText(migrated.ui.bookingDraft[field]) ?? '';
+      }
+      migrated.ui.bookingDraft.note = typeof migrated.ui.bookingDraft.note === 'string'
+        ? migrated.ui.bookingDraft.note.trim()
+        : '';
+      if (!Number.isInteger(migrated.ui.rating) || migrated.ui.rating < 0 || migrated.ui.rating > 5) {
+        migrated.ui.rating = defaults.ui.rating;
+      }
       delete migrated.pointBalance;
       delete migrated.savedOffers;
       return migrated;
@@ -1604,6 +1912,246 @@
       };
     }
 
+    function hasBookingState(appState) {
+      return hasTransactionState(appState, 'bookingRequests') && Array.isArray(appState.appointments);
+    }
+
+    function createBookingRequest(appState, input, now = Date.now()) {
+      if (!hasBookingState(appState) || !isRecord(input)) return { ok: false, code: 'invalid_state' };
+      const businessId = normalizedRequiredText(input.businessId);
+      const business = businessId ? getValidBusiness(appState, businessId) : null;
+      if (!business) return { ok: false, code: 'unknown_business' };
+      const service = normalizedRequiredText(input.service);
+      const staff = normalizedRequiredText(input.staff);
+      const day = normalizedRequiredText(input.day);
+      const time = normalizedRequiredText(input.time);
+      if (!service || !staff || !day || !time) return { ok: false, code: 'missing_selection' };
+      const bookingBonus = canonicalRuleSnapshot(business.bookingBonus, null);
+      if (!Number.isSafeInteger(bookingBonus)) return { ok: false, code: 'invalid_rule' };
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const id = createDomainId('book');
+      if (!id.ok) return id;
+      if (appState.bookingRequests.some((booking) => isRecord(booking) && booking.id === id.value)) {
+        return { ok: false, code: 'id_generation_failed' };
+      }
+      const booking = {
+        id: id.value,
+        businessId,
+        service,
+        staff,
+        day,
+        time,
+        note: typeof input.note === 'string' ? input.note.trim() : '',
+        bookingBonus,
+        status: 'requested',
+        createdAt: timestamp.value,
+        confirmedAt: null
+      };
+      const nextBookings = [...appState.bookingRequests, booking];
+      const nextUi = {
+        ...appState.ui,
+        pendingContext: { ...appState.ui.pendingContext, bookingId: booking.id }
+      };
+      appState.bookingRequests = nextBookings;
+      appState.ui = nextUi;
+      return { ok: true, booking, points: bookingBonus };
+    }
+
+    function isCanonicalRuntimeBooking(appState, booking) {
+      const normalized = normalizePersistedBooking(appState, booking);
+      return Boolean(normalized)
+        && booking.id === normalized.id
+        && booking.businessId === normalized.businessId
+        && booking.service === normalized.service
+        && booking.staff === normalized.staff
+        && booking.day === normalized.day
+        && booking.time === normalized.time
+        && typeof booking.note === 'string'
+        && booking.bookingBonus === normalized.bookingBonus
+        && booking.status === normalized.status
+        && booking.createdAt === normalized.createdAt
+        && booking.confirmedAt === normalized.confirmedAt;
+    }
+
+    function confirmBookingRequest(appState, bookingId, now = Date.now()) {
+      if (!hasBookingState(appState)) return { ok: false, code: 'invalid_state' };
+      const normalizedId = normalizedRequiredText(bookingId);
+      const matches = appState.bookingRequests.filter((booking) => isRecord(booking) && booking.id === normalizedId);
+      if (!matches.length) return { ok: false, code: 'not_found' };
+      if (matches.length !== 1 || !isCanonicalRuntimeBooking(appState, matches[0])) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const booking = matches[0];
+      const linkedAppointments = appState.appointments.filter((appointment) => isRecord(appointment)
+        && appointment.bookingId === booking.id);
+      const linkedLedger = appState.ledger.filter((entry) => isRecord(entry) && entry.refId === booking.id);
+      if (booking.status === 'confirmed') {
+        const validAppointment = linkedAppointments.length === 1
+          && isBookingAppointmentPair(booking, linkedAppointments[0]);
+        const validLedger = booking.bookingBonus > 0
+          ? linkedLedger.length === 1 && isBookingLedgerPair(booking, linkedLedger[0])
+          : linkedLedger.length === 0;
+        if (!validAppointment || !validLedger) return { ok: false, code: 'invalid_state' };
+        return { ok: true, booking, appointment: linkedAppointments[0], points: booking.bookingBonus, idempotent: true };
+      }
+      if (linkedAppointments.length || linkedLedger.length) return { ok: false, code: 'invalid_state' };
+      const ledgerValidation = booking.bookingBonus > 0
+        ? validateLedgerInput(appState, {
+            businessId: booking.businessId,
+            type: 'booking_bonus',
+            pointsDelta: booking.bookingBonus,
+            refType: 'booking',
+            refId: booking.id
+          })
+        : { ok: true, balance: getBusinessBalance(appState, booking.businessId) };
+      if (!ledgerValidation.ok) return ledgerValidation;
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const appointmentId = createDomainId('appt');
+      if (!appointmentId.ok) return appointmentId;
+      const ledgerId = booking.bookingBonus > 0 ? createDomainId('ledger-booking') : null;
+      if (ledgerId && !ledgerId.ok) return ledgerId;
+      const existingAppointmentIds = new Set(appState.appointments.map((appointment) => isRecord(appointment) ? appointment.id : null));
+      const existingLedgerIds = new Set(appState.ledger.map((entry) => isRecord(entry) ? entry.id : null));
+      if (existingAppointmentIds.has(appointmentId.value)
+        || (ledgerId && (existingLedgerIds.has(ledgerId.value) || ledgerId.value === appointmentId.value))) {
+        return { ok: false, code: 'id_generation_failed' };
+      }
+      const confirmedBooking = { ...booking, status: 'confirmed', confirmedAt: timestamp.value };
+      const appointment = {
+        id: appointmentId.value,
+        bookingId: booking.id,
+        businessId: booking.businessId,
+        service: booking.service,
+        staff: booking.staff,
+        day: booking.day,
+        time: booking.time,
+        status: 'confirmed',
+        createdAt: timestamp.value
+      };
+      const ledgerEntry = ledgerId ? {
+        id: ledgerId.value,
+        businessId: booking.businessId,
+        type: 'booking_bonus',
+        pointsDelta: booking.bookingBonus,
+        refType: 'booking',
+        refId: booking.id,
+        createdAt: timestamp.value
+      } : null;
+      const nextBookings = appState.bookingRequests.map((item) => item === booking ? confirmedBooking : item);
+      const nextAppointments = [...appState.appointments, appointment];
+      const nextLedger = ledgerEntry ? [ledgerEntry, ...appState.ledger] : [...appState.ledger];
+      const nextBalances = ledgerEntry
+        ? {
+            ...appState.balances,
+            [booking.businessId]: { ...ledgerValidation.balance, points: ledgerValidation.nextPoints }
+          }
+        : { ...appState.balances };
+      appState.balances = nextBalances;
+      appState.bookingRequests = nextBookings;
+      appState.appointments = nextAppointments;
+      appState.ledger = nextLedger;
+      return {
+        ok: true,
+        booking: confirmedBooking,
+        appointment,
+        points: booking.bookingBonus,
+        idempotent: false
+      };
+    }
+
+    function hasFeedbackState(appState) {
+      return hasTransactionState(appState, 'feedback')
+        && Array.isArray(appState.visits)
+        && Array.isArray(appState.feedbackClaims);
+    }
+
+    function isCanonicalRuntimeFeedback(appState, feedback) {
+      const normalized = normalizePersistedFeedback(appState, feedback);
+      return Boolean(normalized)
+        && feedback.id === normalized.id
+        && feedback.visitId === normalized.visitId
+        && feedback.businessId === normalized.businessId
+        && feedback.stars === normalized.stars
+        && typeof feedback.text === 'string'
+        && feedback.createdAt === normalized.createdAt;
+    }
+
+    function submitFeedback(appState, input, now = Date.now()) {
+      if (!hasFeedbackState(appState) || !isRecord(input)) return { ok: false, code: 'invalid_state' };
+      const visitId = normalizedRequiredText(input.visitId);
+      const businessId = normalizedRequiredText(input.businessId);
+      const business = businessId ? getValidBusiness(appState, businessId) : null;
+      if (!business) return { ok: false, code: 'unknown_business' };
+      const visits = appState.visits.filter((visit) => isRecord(visit) && visit.id === visitId);
+      if (!visits.length) return { ok: false, code: 'visit_not_found' };
+      if (visits.length !== 1) return { ok: false, code: 'invalid_state' };
+      if (visits[0].businessId !== businessId) return { ok: false, code: 'visit_business_mismatch' };
+      if (!Number.isInteger(input.stars) || input.stars < 1 || input.stars > 5) {
+        return { ok: false, code: 'invalid_rating' };
+      }
+      const existing = appState.feedback.filter((item) => isRecord(item) && item.visitId === visitId);
+      const claimed = appState.feedbackClaims.includes(visitId);
+      if (existing.length) {
+        if (existing.length !== 1 || !claimed || !isCanonicalRuntimeFeedback(appState, existing[0])) {
+          return { ok: false, code: 'invalid_state' };
+        }
+        const linkedLedger = appState.ledger.filter((entry) => isRecord(entry) && entry.refId === existing[0].id);
+        if (linkedLedger.length !== 1 || !isFeedbackLedgerPair(existing[0], linkedLedger[0])) {
+          return { ok: false, code: 'invalid_state' };
+        }
+        return { ok: false, code: 'already_submitted', feedback: existing[0], points: 0 };
+      }
+      if (claimed) return { ok: false, code: 'already_submitted', points: 0 };
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const feedbackId = createDomainId('feedback');
+      if (!feedbackId.ok) return feedbackId;
+      const ledgerValidation = validateLedgerInput(appState, {
+        businessId,
+        type: 'feedback',
+        pointsDelta: 15,
+        refType: 'feedback',
+        refId: feedbackId.value
+      });
+      if (!ledgerValidation.ok) return ledgerValidation;
+      const ledgerId = createDomainId('ledger-feedback');
+      if (!ledgerId.ok) return ledgerId;
+      if (appState.feedback.some((item) => isRecord(item) && item.id === feedbackId.value)
+        || appState.ledger.some((entry) => isRecord(entry) && entry.id === ledgerId.value)) {
+        return { ok: false, code: 'id_generation_failed' };
+      }
+      const feedback = {
+        id: feedbackId.value,
+        visitId,
+        businessId,
+        stars: input.stars,
+        text: typeof input.text === 'string' ? input.text.trim() : '',
+        createdAt: timestamp.value
+      };
+      const ledgerEntry = {
+        id: ledgerId.value,
+        businessId,
+        type: 'feedback',
+        pointsDelta: 15,
+        refType: 'feedback',
+        refId: feedback.id,
+        visitId,
+        createdAt: timestamp.value
+      };
+      const nextBalance = { ...ledgerValidation.balance, points: ledgerValidation.nextPoints };
+      const nextBalances = { ...appState.balances, [businessId]: nextBalance };
+      const nextFeedback = [...appState.feedback, feedback];
+      const nextClaims = [...appState.feedbackClaims, visitId];
+      const nextLedger = [ledgerEntry, ...appState.ledger];
+      appState.balances = nextBalances;
+      appState.feedback = nextFeedback;
+      appState.feedbackClaims = nextClaims;
+      appState.ledger = nextLedger;
+      return { ok: true, feedback, points: 15 };
+    }
+
     function redeemReward(appState, rewardKey, idempotencyKey, now = Date.now()) {
       if (!isRecord(appState) || !isRecord(appState.businesses) || !isRecord(appState.balances)
         || !Array.isArray(appState.redemptions) || !Array.isArray(appState.ledger)) {
@@ -1684,7 +2232,9 @@
         paymentSent: 'Đã gửi ${amount} cho tiệm', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu',
         offerSaved: 'Đã lưu ưu đãi', wishRequired: 'Hãy nhập mong muốn', wishShared: 'Đã gửi mong muốn ẩn danh',
         lookServiceRequired: 'Hãy nhập tên dịch vụ', lookSaved: 'Đã lưu kiểu mới', ratingRequired: 'Hãy chọn số sao',
-        reviewThanks: 'Cảm ơn phản hồi của bạn', openPayment: 'Mở {method} để thanh toán', addPhoto: 'Thêm ảnh',
+        reviewThanks: 'Đã gửi phản hồi riêng và cộng 15 điểm.', feedbackSent: 'Đã gửi phản hồi', feedbackSubmit: 'Gửi phản hồi + nhận 15 điểm', feedbackAlreadySent: 'Lượt ghé này đã gửi phản hồi.', feedbackFailed: 'Không thể gửi phản hồi. Vui lòng thử lại.',
+        bookingMissingSelection: 'Chọn đủ dịch vụ, thợ, ngày và giờ.', bookingFailed: 'Không thể lưu yêu cầu đặt lịch. Vui lòng thử lại.', bookingConfirmFailed: 'Không thể xác nhận lịch hẹn. Vui lòng thử lại.', bookingRequestedTitle: 'Đã gửi yêu cầu', bookingConfirmedTitle: 'Lịch hẹn đã xác nhận', bookingPendingSla: '{business} thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.', bookingConfirmedCopy: '{business} đã xác nhận lịch hẹn và cộng {points} điểm.',
+        openPayment: 'Mở {method} để thanh toán', addPhoto: 'Thêm ảnh',
         methodNotEnabledStaff: '{method} · thợ chưa bật', methodNotEnabledBusiness: '{method} · tiệm chưa bật',
         tipSentTo: 'Đã gửi tip cho {recipient}', tipReceived: '{recipient} đã nhận tip của bạn',
         tipPendingSla: '{business} thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.',
@@ -1714,7 +2264,9 @@
         paymentSent: '${amount} sent to the salon', insufficientPoints: 'Not enough points', saved: 'Saved',
         offerSaved: 'Offer saved', wishRequired: 'Enter a wish first', wishShared: 'Anonymous wish shared',
         lookServiceRequired: 'Enter a service name', lookSaved: 'New look saved', ratingRequired: 'Choose a rating',
-        reviewThanks: 'Thanks for your feedback', openPayment: 'Open {method} to pay', addPhoto: 'Add a photo',
+        reviewThanks: 'Private feedback sent and 15 points added.', feedbackSent: 'Feedback sent', feedbackSubmit: 'Send feedback + earn 15 points', feedbackAlreadySent: 'Feedback was already sent for this visit.', feedbackFailed: 'Could not send feedback. Please try again.',
+        bookingMissingSelection: 'Choose service, technician, day and time.', bookingFailed: 'Could not save the booking request. Please try again.', bookingConfirmFailed: 'Could not confirm the appointment. Please try again.', bookingRequestedTitle: 'Request sent', bookingConfirmedTitle: 'Appointment confirmed', bookingPendingSla: '{business} usually responds within 10 minutes. We will notify you as soon as they confirm.', bookingConfirmedCopy: '{business} confirmed the appointment and added {points} points.',
+        openPayment: 'Open {method} to pay', addPhoto: 'Add a photo',
         methodNotEnabledStaff: '{method} · not enabled by staff', methodNotEnabledBusiness: '{method} · not enabled by business',
         tipSentTo: 'Tip sent to {recipient}', tipReceived: '{recipient} received your tip',
         tipPendingSla: '{business} usually confirms within 10 minutes. NEXORA never holds your money.',
@@ -2202,38 +2754,166 @@
       showToast(t('lookSaved'));
     }
 
-    function setRating(rating) {
-      state.rating = Number(rating);
+    function applyRating(rating) {
       document.querySelectorAll('[data-action="set-rating"]').forEach((button) => {
-        const active = Number(button.dataset.rating) <= state.rating;
+        const active = Number(button.dataset.rating) <= rating;
         button.setAttribute('aria-pressed', String(active));
         button.querySelector('svg, i')?.classList.toggle('fill-current', active);
       });
     }
 
+    function setRating(rating) {
+      const normalized = Number(rating);
+      if (!Number.isInteger(normalized) || normalized < 1 || normalized > 5) {
+        return { ok: false, code: 'invalid_rating' };
+      }
+      commitState((draft) => { draft.ui.rating = normalized; });
+      applyRating(normalized);
+      return { ok: true, rating: normalized };
+    }
+
     function submitReview() {
-      if (!state.rating) return showToast(t('ratingRequired'), 'error');
+      const result = commitState((draft) => submitFeedback(draft, {
+        visitId: 'visit-1001',
+        businessId: BUSINESS_ID,
+        stars: draft.ui.rating,
+        text: document.getElementById('review-notes').value
+      }));
+      if (!result.ok) {
+        const errorKeys = {
+          invalid_rating: 'ratingRequired',
+          already_submitted: 'feedbackAlreadySent'
+        };
+        const errorKey = errorKeys[result.code] ?? 'feedbackFailed';
+        showToast(t(errorKey), 'error');
+        renderFeedback();
+        return result;
+      }
       document.getElementById('review-notes').value = '';
+      renderApp();
       navigateTo('home');
       showToast(t('reviewThanks'));
+      return result;
     }
 
     function reviewBooking() {
-      document.getElementById('booking-service-summary').textContent = state.booking.service;
-      document.getElementById('booking-staff-summary').textContent = state.booking.staff;
-      document.getElementById('booking-time-summary').textContent = `${state.booking.day} · ${state.booking.time}`;
+      renderBooking();
       navigateTo('book2');
     }
 
     function confirmBooking() {
-      document.getElementById('booking-pending').classList.remove('hidden');
-      document.getElementById('booking-confirmed').classList.add('hidden');
+      const note = document.getElementById('booking-note').value;
+      const result = commitState((draft) => {
+        draft.ui.bookingDraft.note = typeof note === 'string' ? note.trim() : '';
+        return createBookingRequest(draft, draft.ui.bookingDraft);
+      });
+      if (!result.ok) {
+        const errorKeys = { missing_selection: 'bookingMissingSelection' };
+        showToast(t(errorKeys[result.code] ?? 'bookingFailed'), 'error');
+        return result;
+      }
+      renderBooking();
       navigateTo('book3');
+      return result;
     }
 
-    function selectExclusive(control, selector, stateKey, value) {
+    function confirmBookingDemo() {
+      const result = commitState((draft) => confirmBookingRequest(draft, draft.ui.pendingContext.bookingId));
+      if (!result.ok) {
+        showToast(t('bookingConfirmFailed'), 'error');
+        return result;
+      }
+      renderApp();
+      return result;
+    }
+
+    function formatIcsUtc(date) {
+      const pad = (value) => String(value).padStart(2, '0');
+      return `${date.getUTCFullYear()}${pad(date.getUTCMonth() + 1)}${pad(date.getUTCDate())}T${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}${pad(date.getUTCSeconds())}Z`;
+    }
+
+    function escapeIcsText(value) {
+      return String(value ?? '')
+        .replaceAll('\\', '\\\\')
+        .replaceAll(';', '\\;')
+        .replaceAll(',', '\\,')
+        .replace(/\r\n|\r|\n/g, '\\n');
+    }
+
+    function parseBookingStart(booking) {
+      const dayMatch = normalizedRequiredText(booking.day)?.match(/^(?:[A-Za-z]{3}\s+)?(\d{1,2})\s+([A-Za-z]{3})$/);
+      const timeMatch = normalizedRequiredText(booking.time)?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+      const created = new Date(booking.createdAt);
+      const month = dayMatch ? ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].indexOf(dayMatch[2].toLowerCase()) : -1;
+      if (!dayMatch || !timeMatch || month < 0 || !Number.isFinite(created.getTime())) return null;
+      const day = Number(dayMatch[1]);
+      const rawHour = Number(timeMatch[1]);
+      const minute = Number(timeMatch[2]);
+      if (rawHour < 1 || rawHour > 12 || minute < 0 || minute > 59) return null;
+      const hour = rawHour % 12 + (timeMatch[3].toUpperCase() === 'PM' ? 12 : 0);
+      const start = new Date(Date.UTC(created.getUTCFullYear(), month, day, hour, minute));
+      if (start.getUTCMonth() !== month || start.getUTCDate() !== day) return null;
+      return start;
+    }
+
+    function buildBookingCalendar(appState, bookingId) {
+      const relation = confirmBookingRequest(appState, bookingId);
+      if (!relation.ok || !relation.idempotent) return { ok: false, code: 'booking_not_confirmed' };
+      const start = parseBookingStart(relation.booking);
+      const stamp = new Date(relation.booking.confirmedAt);
+      if (!start || !Number.isFinite(stamp.getTime())) return { ok: false, code: 'invalid_calendar_time' };
+      const end = new Date(start.getTime() + 60 * 60 * 1000);
+      const business = getValidBusiness(appState, relation.booking.businessId);
+      if (!business || typeof business.name !== 'string' || !business.name.trim()) {
+        return { ok: false, code: 'unknown_business' };
+      }
+      const lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//NEXORA//Customer Booking//EN',
+        'CALSCALE:GREGORIAN',
+        'BEGIN:VEVENT',
+        `UID:${escapeIcsText(`${relation.appointment.id}@nexora.local`)}`,
+        `DTSTAMP:${formatIcsUtc(stamp)}`,
+        `DTSTART:${formatIcsUtc(start)}`,
+        `DTEND:${formatIcsUtc(end)}`,
+        `SUMMARY:${escapeIcsText(`${relation.booking.service} at ${business.name.trim()}`)}`,
+        `DESCRIPTION:${escapeIcsText(relation.booking.note)}`,
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ];
+      return { ok: true, content: `${lines.join('\r\n')}\r\n` };
+    }
+
+    function downloadBookingCalendar(appState, bookingId) {
+      const calendar = buildBookingCalendar(appState, bookingId);
+      if (!calendar.ok
+        || typeof URL?.createObjectURL !== 'function'
+        || typeof URL?.revokeObjectURL !== 'function'
+        || typeof Blob !== 'function') return calendar;
+      let objectUrl = null;
+      try {
+        const link = document.createElement('a');
+        objectUrl = URL.createObjectURL(new Blob([calendar.content], { type: 'text/calendar;charset=utf-8' }));
+        link.href = objectUrl;
+        link.download = 'nexora-booking.ics';
+        link.click();
+        return { ok: true };
+      } catch {
+        return { ok: false, code: 'calendar_failed' };
+      } finally {
+        if (objectUrl) {
+          try {
+            URL.revokeObjectURL(objectUrl);
+          } catch {
+            // Calendar download already completed; cleanup failures stay non-fatal.
+          }
+        }
+      }
+    }
+
+    function selectExclusive(control, selector) {
       document.querySelectorAll(selector).forEach((button) => button.setAttribute('aria-pressed', String(button === control)));
-      if (stateKey) state.booking[stateKey] = value;
     }
 
     const ACTIONS = new Map();
@@ -2438,6 +3118,9 @@
     registerAction('submit-review', () => submitReview());
     registerAction('review-booking', () => reviewBooking());
     registerAction('confirm-booking', () => confirmBooking());
+    registerAction('confirm-booking-demo', () => confirmBookingDemo());
+    registerAction('add-calendar', () => downloadBookingCalendar(state, state.ui.pendingContext.bookingId));
+    registerAction('open-google-review', () => window.open?.('https://www.google.com/search?q=Bitcoin+Nail+Bar+reviews', '_blank', 'noopener,noreferrer'));
     registerAction('upload-look', (control) => openOverlay({
       title: t('addPhoto'),
       html: t('addPhotoDetail'),
@@ -2473,7 +3156,15 @@
         if (label) label.textContent = t('openPayment', { method: state.ui.paymentMethod });
         return;
       }
-      for (const key of ['service', 'staff', 'day', 'time']) { const control = event.target.closest(`[data-book-${key}]`); if (control) return selectExclusive(control, `[data-book-${key}]`, key, control.dataset[`book${key[0].toUpperCase()}${key.slice(1)}`]); }
+      for (const field of ['service', 'staff', 'day', 'time']) {
+        const bookingControl = event.target.closest(`[data-book-${field}]`);
+        if (bookingControl) {
+          const datasetKey = `book${field[0].toUpperCase()}${field.slice(1)}`;
+          commitState((draft) => { draft.ui.bookingDraft[field] = bookingControl.dataset[datasetKey]; });
+          selectExclusive(bookingControl, `[data-book-${field}]`);
+          return;
+        }
+      }
       const control = event.target.closest('[data-action]');
       if (!control || control.disabled) return;
       const handler = ACTIONS.get(control.dataset.action);
@@ -2791,6 +3482,71 @@
       document.getElementById('payment-confirmed').classList.toggle('hidden', payment.status !== 'confirmed');
     }
 
+    function bookingDetail(booking) {
+      return `${booking.service} · ${booking.staff} · ${booking.day} ${booking.time}`;
+    }
+
+    function renderBooking() {
+      const draft = state.ui.bookingDraft;
+      document.getElementById('booking-service-summary').textContent = draft.service;
+      document.getElementById('booking-staff-summary').textContent = draft.staff;
+      document.getElementById('booking-time-summary').textContent = `${draft.day} · ${draft.time}`;
+      for (const field of ['service', 'staff', 'day', 'time']) {
+        const datasetKey = `book${field[0].toUpperCase()}${field.slice(1)}`;
+        document.querySelectorAll(`[data-book-${field}]`).forEach((control) => {
+          control.setAttribute('aria-pressed', String(control.dataset[datasetKey] === draft[field]));
+        });
+      }
+      const booking = state.bookingRequests.find((item) => item.id === state.ui.pendingContext.bookingId);
+      if (!booking) return;
+      const confirmed = booking.status === 'confirmed';
+      document.getElementById('booking-pending').classList.toggle('hidden', confirmed);
+      document.getElementById('booking-pending').classList.toggle('flex', !confirmed);
+      document.getElementById('booking-confirmed').classList.toggle('hidden', !confirmed);
+      document.getElementById('booking-confirmed').classList.toggle('flex', confirmed);
+      document.getElementById('booking-demo-confirm').classList.toggle('hidden', confirmed);
+      document.getElementById('booking-calendar').classList.toggle('hidden', !confirmed);
+      let statusKey = 'requested';
+      if (confirmed) statusKey = 'confirmed';
+      const statusCopy = {
+        requested: { title: 'bookingRequestedTitle', detail: 'bookingPendingSla' },
+        confirmed: { title: 'bookingConfirmedTitle', detail: 'bookingConfirmedCopy' }
+      }[statusKey];
+      document.getElementById('book3-title').textContent = t(statusCopy.title);
+      const business = getValidBusiness(state, booking.businessId);
+      document.getElementById('booking-status-copy').textContent = t(statusCopy.detail, {
+        business: business?.name ?? t('unknownBusiness'),
+        points: formatPoints(booking.bookingBonus, false)
+      });
+      document.querySelectorAll('[data-booking-copy]').forEach((element) => {
+        element.textContent = bookingDetail(booking);
+      });
+    }
+
+    function renderAppointment() {
+      const container = document.getElementById('home-appointment');
+      if (!container) return;
+      const appointment = state.appointments.at(-1);
+      container.classList.toggle('hidden', !appointment);
+      container.classList.toggle('flex', Boolean(appointment));
+      const copy = container.querySelector('[data-appointment-copy]');
+      if (appointment && copy) copy.textContent = bookingDetail(appointment);
+    }
+
+    function renderFeedback() {
+      const alreadySubmitted = state.feedbackClaims.includes('visit-1001');
+      const submit = document.querySelector('[data-action="submit-review"]');
+      if (submit) {
+        submit.disabled = alreadySubmitted;
+        submit.setAttribute('aria-disabled', String(alreadySubmitted));
+        const label = submit.querySelector('span');
+        let labelKey = 'feedbackSubmit';
+        if (alreadySubmitted) labelKey = 'feedbackSent';
+        if (label) label.textContent = t(labelKey);
+      }
+      applyRating(state.ui.rating);
+    }
+
     function renderDomainViews() {
       renderProfile();
       renderBalances();
@@ -2800,6 +3556,9 @@
       renderPaymentMethods();
       renderTipResult();
       renderPaymentResult();
+      renderBooking();
+      renderAppointment();
+      renderFeedback();
     }
 
     function restorePersistedUi() {
@@ -2832,6 +3591,12 @@
         state.ui.activeScreen = screenId;
         state.ui.activeModule = SCREEN_MODULE[screenId];
         state.ui.pendingContext.paymentId = null;
+      }
+      if (screenId === 'book3' && !state.bookingRequests.some((booking) => booking.id === state.ui.pendingContext.bookingId)) {
+        screenId = 'book1';
+        state.ui.activeScreen = screenId;
+        state.ui.activeModule = SCREEN_MODULE[screenId];
+        state.ui.pendingContext.bookingId = null;
       }
       showScreen(screenId);
       updateNavigation();
@@ -2868,6 +3633,9 @@
       confirmTipRecord,
       createDirectPayment,
       confirmDirectPayment,
+      createBookingRequest,
+      confirmBookingRequest,
+      submitFeedback,
       redeemReward,
       normalizeUsPhone,
       requestOtp,

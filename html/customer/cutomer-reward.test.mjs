@@ -33,7 +33,7 @@ function createClassList(initial = []) {
   };
 }
 
-function createStubElement({ id = '', dataset = {}, textContent = '', placeholder = '', classNames = [], onFocus = null } = {}) {
+function createStubElement({ id = '', dataset = {}, textContent = '', placeholder = '', classNames = [], onFocus = null, querySelectors = {} } = {}) {
   const attributes = {};
   return {
     id,
@@ -46,6 +46,7 @@ function createStubElement({ id = '', dataset = {}, textContent = '', placeholde
     disabled: false,
     hidden: false,
     style: {},
+    clicked: false,
     isConnected: true,
     innerHTML: '',
     append(...children) { this.children.push(...children); },
@@ -56,9 +57,13 @@ function createStubElement({ id = '', dataset = {}, textContent = '', placeholde
     getAttribute(name) { return attributes[name] ?? null; },
     removeAttribute(name) { delete attributes[name]; },
     getClientRects() { return this.isConnected && !this.hidden && !this.classList.contains('hidden') ? [{}] : []; },
-    querySelector() { return null; },
-    querySelectorAll() { return []; },
+    querySelector(selector) { return querySelectors[selector] ?? null; },
+    querySelectorAll(selector) {
+      const result = querySelectors[selector];
+      return Array.isArray(result) ? result : result ? [result] : [];
+    },
     closest() { return null; },
+    click() { this.clicked = true; },
     focus() { onFocus?.(this); }
   };
 }
@@ -68,10 +73,10 @@ function createDocumentStub({
   notificationControls = [], overlayCloseControls = [], balancePointNodes = [],
   balanceWithUnitNodes = [], balanceAvailableNodes = [], rewardGapValueNodes = [],
   rewardGapCopyNodes = [], rewardProgressNodes = [], signatureRewardControls = [],
-  screenNodes = []
+  screenNodes = [], extraElements = [], selectorNodes = {}
 } = {}) {
   const listeners = [];
-  const elements = new Map(screenNodes.map((element) => [element.id, element]));
+  const elements = new Map([...screenNodes, ...extraElements].map((element) => [element.id, element]));
   const document = {
     listeners,
     documentElement: { lang: 'vi' },
@@ -85,8 +90,15 @@ function createDocumentStub({
       }
       return elements.get(id);
     },
-    querySelector() { return null; },
+    querySelector(selector) {
+      const result = selectorNodes[selector];
+      return Array.isArray(result) ? result[0] ?? null : result ?? null;
+    },
     querySelectorAll(selector) {
+      if (Object.prototype.hasOwnProperty.call(selectorNodes, selector)) {
+        const result = selectorNodes[selector];
+        return Array.isArray(result) ? result : result ? [result] : [];
+      }
       if (selector === '[data-en][data-vi]') return localizedNodes;
       if (selector === '[data-en-ph][data-vi-ph]') return placeholderNodes;
       if (selector === '[data-language]') return languageControls;
@@ -110,7 +122,9 @@ function testApi(seed = {}, {
   skipInit = true,
   document,
   randomUUID = () => '00000000-0000-4000-8000-000000000001',
-  open = () => null
+  open = () => null,
+  url = URL,
+  blob = Blob
 } = {}) {
   const source = html();
   const script = source.match(/<script>\s*([\s\S]*?)<\/script>\s*<\/body>/)?.[1];
@@ -133,7 +147,8 @@ function testApi(seed = {}, {
     Date,
     Math,
     JSON,
-    URL,
+    URL: url,
+    Blob: blob,
     crypto: { randomUUID },
     console
   };
@@ -1665,6 +1680,365 @@ test('reuses one persisted idempotency key for repeated confirmation of the same
     apiState(reloadedStorage).redemptions.filter((item) => item.idempotencyKey === attempt.idempotencyKey).length,
     1
   );
+});
+
+const validBookingInput = {
+  businessId: 'bitcoin-nail-bar',
+  service: ' Gel manicure ',
+  staff: ' Anna ',
+  day: ' Thu 16 Jul ',
+  time: ' 2:00 PM ',
+  note: ' Màu hồng sữa '
+};
+
+test('keeps booking points pending, snapshots the rule and confirms exactly once', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const before = app.balances['bitcoin-nail-bar'].points;
+  const requested = api.createBookingRequest(app, validBookingInput, 1000);
+
+  assert.equal(requested.ok, true);
+  assert.equal(requested.booking.status, 'requested');
+  assert.equal(requested.booking.service, 'Gel manicure');
+  assert.equal(requested.booking.bookingBonus, 25);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
+  assert.equal(app.appointments.length, 0);
+  assert.equal(app.ledger.some((entry) => entry.refId === requested.booking.id), false);
+
+  app.businesses['bitcoin-nail-bar'].bookingBonus = 999;
+  const first = api.confirmBookingRequest(app, requested.booking.id, 2000);
+  const second = api.confirmBookingRequest(app, requested.booking.id, 3000);
+
+  assert.equal(first.ok, true);
+  assert.equal(first.idempotent, false);
+  assert.equal(second.idempotent, true);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 25);
+  assert.equal(app.appointments.length, 1);
+  assert.equal(app.appointments[0].bookingId, requested.booking.id);
+  assert.equal(app.ledger.filter((entry) => entry.refId === requested.booking.id).length, 1);
+  assert.equal(uuidCalls, 3);
+});
+
+test('rejects noncanonical booking inputs and keeps create and confirm failures atomic', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const invalidCalls = [
+    () => api.createBookingRequest(app, { ...validBookingInput, businessId: 'missing' }, 1000),
+    () => api.createBookingRequest(app, { ...validBookingInput, service: '   ' }, 1000),
+    () => api.createBookingRequest(app, { ...validBookingInput, staff: null }, 1000),
+    () => api.createBookingRequest(app, { ...validBookingInput, day: '' }, 1000),
+    () => api.createBookingRequest(app, { ...validBookingInput, time: ' ' }, 1000),
+    () => api.createBookingRequest(app, validBookingInput, Infinity)
+  ];
+  invalidCalls.forEach((invoke) => {
+    const before = JSON.stringify(app);
+    assert.equal(invoke().ok, false);
+    assert.equal(JSON.stringify(app), before);
+  });
+
+  const malformedUuid = testApi({}, { randomUUID: () => 'not-a-uuid' }).api;
+  const malformedState = malformedUuid.createDefaultState();
+  const malformedBefore = JSON.stringify(malformedState);
+  assert.equal(malformedUuid.createBookingRequest(malformedState, validBookingInput, 1000).code, 'id_generation_failed');
+  assert.equal(JSON.stringify(malformedState), malformedBefore);
+
+  let uuidCalls = 0;
+  const confirmApi = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      if (uuidCalls === 3) throw new Error('booking ledger UUID unavailable');
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  }).api;
+  const confirmState = confirmApi.createDefaultState();
+  const booking = confirmApi.createBookingRequest(confirmState, validBookingInput, 1000).booking;
+  const beforeConfirm = JSON.stringify(confirmState);
+  assert.equal(confirmApi.confirmBookingRequest(confirmState, booking.id, 2000).code, 'id_generation_failed');
+  assert.equal(JSON.stringify(confirmState), beforeConfirm);
+});
+
+test('rejects broken confirmed booking relationships and supports a zero-point business', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const booking = api.createBookingRequest(app, validBookingInput, 1000).booking;
+  api.confirmBookingRequest(app, booking.id, 2000);
+  app.appointments[0].businessId = 'golden-glow-spa';
+  const beforeRetry = JSON.stringify(app);
+  assert.equal(api.confirmBookingRequest(app, booking.id, 3000).code, 'invalid_state');
+  assert.equal(JSON.stringify(app), beforeRetry);
+
+  const moonState = api.createDefaultState();
+  const moonBefore = moonState.balances['moon-coffee'].points;
+  const moon = api.createBookingRequest(moonState, {
+    ...validBookingInput,
+    businessId: 'moon-coffee',
+    service: 'Latte tasting'
+  }, 4000).booking;
+  const confirmed = api.confirmBookingRequest(moonState, moon.id, 5000);
+  assert.equal(confirmed.ok, true);
+  assert.equal(confirmed.points, 0);
+  assert.equal(moonState.appointments.length, 1);
+  assert.equal(moonState.ledger.some((entry) => entry.refId === moon.id), false);
+  assert.equal(moonState.balances['moon-coffee'].points, moonBefore);
+});
+
+test('quarantines downgraded booking claims during migration so confirmation cannot replay', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const booking = api.createBookingRequest(app, validBookingInput, 1000).booking;
+  api.confirmBookingRequest(app, booking.id, 2000);
+  app.bookingRequests = [{ ...app.bookingRequests[0], status: 'requested', confirmedAt: null }];
+  const linked = app.ledger.find((entry) => entry.refId === booking.id);
+  linked.refType = 'tampered';
+  const balanceAfterAward = app.balances['bitcoin-nail-bar'].points;
+  uuidCalls = 0;
+
+  const migrated = api.migrateState(app);
+  assert.equal(migrated.bookingRequests.some((item) => item.id === booking.id), false);
+  assert.equal(migrated.appointments.some((item) => item.bookingId === booking.id), false);
+  assert.equal(migrated.ledger.some((entry) => entry.refId === booking.id), false);
+  assert.equal(migrated.ui.pendingContext.bookingId, null);
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, balanceAfterAward);
+  assert.equal(api.confirmBookingRequest(migrated, booking.id, 3000).code, 'not_found');
+  assert.equal(uuidCalls, 0);
+});
+
+test('awards 15 points for one-star private feedback and blocks another award by visit', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const before = app.balances['bitcoin-nail-bar'].points;
+  const first = api.submitFeedback(app, {
+    visitId: ' visit-1001 ', businessId: ' bitcoin-nail-bar ', stars: 1, text: ' Cần cải thiện '
+  }, 1000);
+  const second = api.submitFeedback(app, {
+    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 5, text: 'Lặp'
+  }, 2000);
+
+  assert.equal(first.ok, true);
+  assert.equal(first.feedback.stars, 1);
+  assert.equal(first.feedback.text, 'Cần cải thiện');
+  assert.equal(second.code, 'already_submitted');
+  assert.equal(app.feedback.length, 1);
+  assert.equal(app.ledger.filter((entry) => entry.refId === first.feedback.id).length, 1);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 15);
+  assert.equal(uuidCalls, 2);
+});
+
+test('validates feedback visit ownership and precomputes IDs before any mutation', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  for (const input of [
+    { visitId: 'missing', businessId: 'bitcoin-nail-bar', stars: 5 },
+    { visitId: 'visit-1001', businessId: 'golden-glow-spa', stars: 5 },
+    { visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 0 },
+    { visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 1.5 }
+  ]) {
+    const before = JSON.stringify(app);
+    assert.equal(api.submitFeedback(app, input, 1000).ok, false);
+    assert.equal(JSON.stringify(app), before);
+  }
+
+  let uuidCalls = 0;
+  const atomicApi = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      if (uuidCalls === 2) throw new Error('feedback ledger UUID unavailable');
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  }).api;
+  const atomicState = atomicApi.createDefaultState();
+  const atomicBefore = JSON.stringify(atomicState);
+  assert.equal(atomicApi.submitFeedback(atomicState, {
+    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 5, text: 'Tốt'
+  }, 1000).code, 'id_generation_failed');
+  assert.equal(JSON.stringify(atomicState), atomicBefore);
+});
+
+test('rejects a broken runtime feedback relation and migration blocks replay of a raw claim', () => {
+  let uuidCalls = 0;
+  const { api, storage } = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const feedback = api.submitFeedback(app, {
+    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 2, text: 'Riêng tư'
+  }, 1000).feedback;
+  app.ledger.find((entry) => entry.refId === feedback.id).pointsDelta = 999;
+  const runtimeBefore = JSON.stringify(app);
+  assert.equal(api.submitFeedback(app, {
+    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 5
+  }, 2000).code, 'invalid_state');
+  assert.equal(JSON.stringify(app), runtimeBefore);
+
+  app.feedback = [];
+  app.feedbackClaims = [];
+  const balanceAfterAward = app.balances['bitcoin-nail-bar'].points;
+  const migrated = api.migrateState(app);
+  api.saveState(migrated, storage);
+  const loaded = api.loadState(storage);
+  uuidCalls = 0;
+  const ledgerBefore = JSON.stringify(loaded.ledger);
+  const replay = api.submitFeedback(loaded, {
+    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 5
+  }, 3000);
+  assert.equal(replay.code, 'already_submitted');
+  assert.equal(loaded.balances['bitcoin-nail-bar'].points, balanceAfterAward);
+  assert.equal(JSON.stringify(loaded.ledger), ledgerBefore);
+  assert.equal(uuidCalls, 0);
+});
+
+test('restores book3, appointment and rating without writing storage during bootstrap', () => {
+  let uuidCalls = 0;
+  const setup = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  });
+  const persistedState = setup.api.createDefaultState();
+  const booking = setup.api.createBookingRequest(persistedState, validBookingInput, Date.UTC(2026, 6, 14)).booking;
+  setup.api.confirmBookingRequest(persistedState, booking.id, Date.UTC(2026, 6, 14, 1));
+  persistedState.ui.activeScreen = 'book3';
+  persistedState.ui.activeModule = 'home';
+  persistedState.ui.rating = 4;
+  const raw = JSON.stringify(persistedState);
+
+  const home = createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] });
+  const book1 = createStubElement({ id: 'book1', classNames: ['app-screen', 'hidden'] });
+  const book3 = createStubElement({ id: 'book3', classNames: ['app-screen', 'hidden'] });
+  const appointmentCopy = createStubElement();
+  const homeAppointment = createStubElement({
+    id: 'home-appointment', classNames: ['hidden'], querySelectors: { '[data-appointment-copy]': appointmentCopy }
+  });
+  const ratingControls = [1, 2, 3, 4, 5].map((rating) => createStubElement({
+    dataset: { action: 'set-rating', rating: String(rating) }
+  }));
+  const submitLabel = createStubElement();
+  const submit = createStubElement({
+    dataset: { action: 'submit-review' }, querySelectors: { span: submitLabel }
+  });
+  const document = createDocumentStub({
+    screenNodes: [home, book1, book3],
+    extraElements: [homeAppointment],
+    selectorNodes: {
+      '[data-action="set-rating"]': ratingControls,
+      '[data-action="submit-review"]': submit
+    }
+  });
+  const { storage } = testApi({ [setup.api.STORAGE_KEY]: raw }, {
+    skipInit: false,
+    document,
+    randomUUID: () => { throw new Error('bootstrap must not create IDs'); }
+  });
+
+  assert.equal(book3.classList.contains('hidden'), false);
+  assert.equal(document.getElementById('booking-pending').classList.contains('hidden'), true);
+  assert.equal(document.getElementById('booking-confirmed').classList.contains('hidden'), false);
+  assert.equal(homeAppointment.classList.contains('hidden'), false);
+  assert.match(appointmentCopy.textContent, /Gel manicure.*Anna.*Thu 16 Jul.*2:00 PM/);
+  assert.deepEqual(ratingControls.map((control) => control.attributes['aria-pressed']), ['true', 'true', 'true', 'true', 'false']);
+  assert.equal(storage.getItem(setup.api.STORAGE_KEY), raw);
+});
+
+test('keeps Google sharing optional and unrewarded regardless of rating or private feedback', () => {
+  const opened = [];
+  const { context } = testApi({}, {
+    open: (...args) => { opened.push(args); }
+  });
+  vm.runInContext(`submitFeedback(state, {
+    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 1, text: 'Cần cải thiện'
+  }, 1000)`, context);
+  const before = vm.runInContext('JSON.stringify(state)', context);
+
+  assert.doesNotThrow(() => vm.runInContext("ACTIONS.get('open-google-review')()", context));
+  assert.equal(opened.length, 1);
+  assert.equal(vm.runInContext('JSON.stringify(state)', context), before);
+
+  const source = html();
+  assert.match(source, /data-action="open-google-review"/);
+  const action = source.match(/registerAction\('open-google-review',[\s\S]*?\);/)?.[0];
+  assert.ok(action);
+  assert.doesNotMatch(action, /submitFeedback|appendLedger|commitState|rating/);
+  assert.match(source, /optional[^<]*no points|tùy chọn[^<]*không điểm/i);
+});
+
+test('guards missing calendar bookings and downloads an escaped valid ICS for a confirmed fixture', () => {
+  const captured = { blobs: [], revoked: [] };
+  class CapturedBlob {
+    constructor(parts, options) {
+      this.parts = parts;
+      this.options = options;
+    }
+  }
+  const url = {
+    createObjectURL(blob) {
+      captured.blobs.push(blob);
+      return `blob:calendar-${captured.blobs.length}`;
+    },
+    revokeObjectURL(value) { captured.revoked.push(value); }
+  };
+  let uuidCalls = 0;
+  const document = createDocumentStub();
+  const { context } = testApi({}, {
+    document,
+    url,
+    blob: CapturedBlob,
+    randomUUID: () => {
+      uuidCalls += 1;
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  });
+
+  assert.doesNotThrow(() => vm.runInContext("ACTIONS.get('add-calendar')()", context));
+  assert.equal(captured.blobs.length, 0);
+
+  vm.runInContext(`
+    const calendarBooking = createBookingRequest(state, {
+      businessId: 'bitcoin-nail-bar', service: 'Gel, manicure', staff: 'Anna',
+      day: 'Thu 16 Jul', time: '2:00 PM', note: 'Pink; shine\\nNo fragrance'
+    }, Date.UTC(2026, 6, 14));
+    confirmBookingRequest(state, calendarBooking.booking.id, Date.UTC(2026, 6, 14, 1));
+    ACTIONS.get('add-calendar')();
+  `, context);
+
+  assert.equal(captured.blobs.length, 1);
+  const ics = captured.blobs[0].parts.join('');
+  assert.match(ics, /^BEGIN:VCALENDAR\r\nVERSION:2\.0\r\nPRODID:/);
+  assert.match(ics, /\r\nUID:[^\r\n]+\r\n/);
+  assert.match(ics, /\r\nDTSTAMP:\d{8}T\d{6}Z\r\n/);
+  assert.match(ics, /\r\nDTSTART:\d{8}T\d{6}Z\r\n/);
+  assert.match(ics, /\r\nDTEND:\d{8}T\d{6}Z\r\n/);
+  assert.match(ics, /SUMMARY:Gel\\, manicure at Bitcoin Nail Bar/);
+  assert.match(ics, /DESCRIPTION:Pink\\; shine\\nNo fragrance/);
+  assert.match(ics, /END:VEVENT\r\nEND:VCALENDAR\r\n$/);
+  assert.deepEqual(captured.revoked, ['blob:calendar-1']);
 });
 
 function apiState(storage) {
