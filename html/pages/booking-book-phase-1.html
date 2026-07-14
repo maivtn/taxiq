@@ -3570,6 +3570,19 @@
       padding: 12px;
     }
 
+    /* Customer & Call Log search: compact on desktop, full-width only on mobile */
+    #panel-customers .booking-controls,
+    #panel-calllog .booking-controls {
+      grid-template-columns: minmax(0, 360px);
+    }
+
+    @media (max-width: 767px) {
+      #panel-customers .booking-controls,
+      #panel-calllog .booking-controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .booking-control-field {
       display: grid;
       gap: 6px;
