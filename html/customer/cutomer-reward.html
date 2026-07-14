@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070816">
+  <title>NEXORA TOUCH — Customer Rewards</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-app-bg: #070816;
+      --color-app-panel: #0d1024;
+      --color-app-card: #12162f;
+      --color-app-line: #252c51;
+      --color-app-text: #f7f7ff;
+      --color-app-muted: #9da6c9;
+      --color-app-purple: #7c3dff;
+      --color-app-pink: #d946ef;
+      --color-app-cyan: #22d3ee;
+      --color-app-green: #34d399;
+      --color-app-gold: #fbbf24;
+      --color-app-red: #fb7185;
+    }
+
+    @layer base {
+      html { color-scheme: dark; }
+      body { @apply m-0 min-h-dvh bg-app-bg text-app-text antialiased; }
+      button, input, select, textarea { font: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app-shell" class="min-h-dvh">
+    <main id="screen-region" tabindex="-1"></main>
+  </div>
+  <script>
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>
