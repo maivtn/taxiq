@@ -91,3 +91,27 @@ test('implements delegated interactions for the complete prototype', () => {
   assert.match(source, /document\.addEventListener\('click', handleAction\)/);
   assert.doesNotMatch(source, /\sonclick=/i);
 });
+
+test('keeps Vietnamese and English content in sync', () => {
+  const source = html();
+  const tags = source.match(/<[^!/][^>]*>/g) || [];
+  for (const tag of tags) {
+    if (/\bdata-en=/.test(tag)) assert.match(tag, /\bdata-vi=/, `missing data-vi: ${tag}`);
+    if (/\bdata-vi=/.test(tag)) assert.match(tag, /\bdata-en=/, `missing data-en: ${tag}`);
+    if (/\bdata-en-ph=/.test(tag)) assert.match(tag, /\bdata-vi-ph=/, `missing data-vi-ph: ${tag}`);
+    if (/\bdata-vi-ph=/.test(tag)) assert.match(tag, /\bdata-en-ph=/, `missing data-en-ph: ${tag}`);
+  }
+  assert.match(source, /function setLanguage\(language\)/);
+});
+
+test('covers accessibility, motion and UI edge states', () => {
+  const source = html();
+  assert.match(source, /aria-live="polite"/);
+  assert.match(source, /@media \(prefers-reduced-motion: reduce\)/);
+  for (const state of ['loading', 'empty', 'error']) {
+    assert.match(source, new RegExp(`data-state="${state}"`));
+  }
+  const iconButtons = (source.match(/<button\b[^>]*class="[^"]*\bicon-button\b[^"]*"[^>]*>/g) || []);
+  assert.ok(iconButtons.length > 0);
+  for (const button of iconButtons) assert.match(button, /aria-label="[^"]+"/);
+});
