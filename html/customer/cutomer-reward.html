@@ -106,7 +106,7 @@
 
           <div class="mt-6 grid gap-4 lg:grid-cols-2">
             <article class="app-card"><div class="mb-4 flex items-center justify-between"><h2 class="section-title" data-en="Recent activity" data-vi="Hoạt động gần đây">Hoạt động gần đây</h2><button class="text-xs font-bold text-app-cyan" type="button" data-action="navigate" data-target="activity" data-en="See details" data-vi="Xem chi tiết">Xem chi tiết</button></div><div class="space-y-4"><div class="flex gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-app-green/10 text-app-green"><i data-lucide="circle-check" class="size-5" aria-hidden="true"></i></span><div class="min-w-0 flex-1"><div class="flex justify-between gap-3"><strong class="text-sm" data-en="Check-in completed" data-vi="Đã check-in">Đã check-in</strong><strong class="text-sm text-app-green">+120</strong></div><p class="mt-1 text-xs text-app-muted">Bitcoin Nail Bar · 2 hours ago</p></div></div><div class="flex gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-app-purple/10 text-app-pink"><i data-lucide="gift" class="size-5" aria-hidden="true"></i></span><div class="min-w-0 flex-1"><div class="flex justify-between gap-3"><strong class="text-sm" data-en="Reward redeemed" data-vi="Đã đổi phần thưởng">Đã đổi phần thưởng</strong><strong class="text-sm text-app-red">−800</strong></div><p class="mt-1 text-xs text-app-muted">Gel polish upgrade · Jul 11</p></div></div></div></article>
-            <article class="app-card overflow-hidden p-0"><div class="grid h-full sm:grid-cols-[160px_1fr]"><img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=900&q=80" alt="Không gian salon Golden Glow" class="h-44 w-full object-cover sm:h-full"><div class="p-4"><span class="rounded-full bg-app-gold/10 px-2.5 py-1 text-[11px] font-bold text-app-gold" data-en="Member offer" data-vi="Ưu đãi thành viên">Ưu đãi thành viên</span><h2 class="mt-3 text-lg font-black" data-en="Glow facial · 20% off" data-vi="Chăm sóc da Glow · giảm 20%">Chăm sóc da Glow · giảm 20%</h2><p class="mt-2 text-sm leading-6 text-app-muted" data-en="Available this week at Golden Glow Spa." data-vi="Áp dụng tuần này tại Golden Glow Spa.">Áp dụng tuần này tại Golden Glow Spa.</p><button type="button" class="mt-4 text-sm font-bold text-app-pink" data-action="navigate" data-target="offers" data-en="Explore offer" data-vi="Xem ưu đãi">Xem ưu đãi</button></div></div></article>
+            <article class="app-card overflow-hidden p-0" data-for-you><div class="grid h-full sm:grid-cols-[160px_1fr]"><img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=900&q=80" alt="Không gian salon Golden Glow" class="h-44 w-full object-cover sm:h-full"><div class="p-4"><span class="rounded-full bg-app-gold/10 px-2.5 py-1 text-[11px] font-bold text-app-gold" data-en="Member offer" data-vi="Ưu đãi thành viên">Ưu đãi thành viên</span><h2 class="mt-3 text-lg font-black" data-en="Glow facial · 20% off" data-vi="Chăm sóc da Glow · giảm 20%">Chăm sóc da Glow · giảm 20%</h2><p class="mt-2 text-sm leading-6 text-app-muted" data-en="Available this week at Golden Glow Spa." data-vi="Áp dụng tuần này tại Golden Glow Spa.">Áp dụng tuần này tại Golden Glow Spa.</p><button type="button" class="mt-4 text-sm font-bold text-app-pink" data-action="navigate" data-target="offers" data-en="Explore offer" data-vi="Xem ưu đãi">Xem ưu đãi</button></div></div></article>
           </div>
         </section>
         <section class="app-screen hidden" id="allmenu" data-ready="true" data-module="home" aria-labelledby="allmenu-title">
@@ -163,10 +163,10 @@
           <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="calendar-check-2" class="size-10" aria-hidden="true"></i></span><p class="eyebrow mt-6" data-en="Step 3 of 3" data-vi="Bước 3/3">Bước 3/3</p><h1 id="book3-title" class="mt-2 text-3xl font-black" data-en="Request sent" data-vi="Đã gửi yêu cầu">Đã gửi yêu cầu</h1><p class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted" data-en="Bitcoin Nail Bar usually responds within 10 minutes. We will notify you as soon as they confirm." data-vi="Bitcoin Nail Bar thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.">Bitcoin Nail Bar thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.</p><div class="app-card mt-6 text-left"><div id="booking-pending" class="flex items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-5" aria-hidden="true"></i></span><div><strong data-en="Awaiting confirmation" data-vi="Đang chờ xác nhận">Đang chờ xác nhận</strong><p class="text-xs text-app-muted">Gel manicure · Anna · Thu 2:00 PM</p></div></div><div id="booking-confirmed" class="hidden items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-green/10 text-app-green"><i data-lucide="circle-check" class="size-5" aria-hidden="true"></i></span><strong data-en="Appointment confirmed" data-vi="Lịch hẹn đã xác nhận">Lịch hẹn đã xác nhận</strong></div></div><button class="app-button mt-5 w-full" type="button" data-action="navigate" data-target="home" data-en="Back to home" data-vi="Về trang chủ">Về trang chủ</button></div></div>
         </section>
         <section class="app-screen hidden" id="login1" data-ready="true" data-module="home" aria-labelledby="login1-title">
-          <div class="mx-auto grid min-h-[70vh] max-w-md place-items-center"><div class="w-full"><span class="grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-app-purple to-app-pink"><i data-lucide="sparkles" class="size-6" aria-hidden="true"></i></span><p class="eyebrow mt-7" data-en="Welcome to NEXORA" data-vi="Chào mừng đến NEXORA">Chào mừng đến NEXORA</p><h1 id="login1-title" class="mt-2 text-3xl font-black" data-en="Your rewards, one tap away" data-vi="Mọi phần thưởng trong một chạm">Mọi phần thưởng trong một chạm</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="Enter your mobile number to sign in or create an account." data-vi="Nhập số điện thoại để đăng nhập hoặc tạo tài khoản.">Nhập số điện thoại để đăng nhập hoặc tạo tài khoản.</p><label class="mt-7 block text-sm font-bold"><span data-en="Mobile number" data-vi="Số điện thoại">Số điện thoại</span><div class="mt-2 flex gap-2"><span class="grid min-h-11 place-items-center rounded-xl border border-app-line bg-app-panel px-3 text-sm font-bold">+84</span><input id="login-phone" class="app-input" type="tel" inputmode="tel" autocomplete="tel" data-en-ph="090 123 4567" data-vi-ph="090 123 4567" placeholder="090 123 4567"></div></label><button class="app-button mt-5 w-full" type="button" data-action="navigate" data-target="login2"><span data-en="Continue" data-vi="Tiếp tục">Tiếp tục</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button><p class="mt-5 text-center text-xs leading-5 text-app-muted" data-en="By continuing, you agree to the Terms and Privacy Policy." data-vi="Khi tiếp tục, bạn đồng ý với Điều khoản và Chính sách riêng tư.">Khi tiếp tục, bạn đồng ý với Điều khoản và Chính sách riêng tư.</p></div></div>
+          <div class="mx-auto grid min-h-[70vh] max-w-md place-items-center"><div class="w-full"><span class="grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-app-purple to-app-pink"><i data-lucide="sparkles" class="size-6" aria-hidden="true"></i></span><p class="eyebrow mt-7" data-en="Welcome to NEXORA" data-vi="Chào mừng đến NEXORA">Chào mừng đến NEXORA</p><h1 id="login1-title" class="mt-2 text-3xl font-black" data-en="Your rewards, one tap away" data-vi="Mọi phần thưởng trong một chạm">Mọi phần thưởng trong một chạm</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="Enter your mobile number to sign in or create an account." data-vi="Nhập số điện thoại để đăng nhập hoặc tạo tài khoản.">Nhập số điện thoại để đăng nhập hoặc tạo tài khoản.</p><label class="mt-7 block text-sm font-bold"><span data-en="Mobile number" data-vi="Số điện thoại">Số điện thoại</span><div class="mt-2 flex gap-2"><span class="grid min-h-11 place-items-center rounded-xl border border-app-line bg-app-panel px-3 text-sm font-bold">+1</span><input id="login-phone" class="app-input" type="tel" inputmode="tel" autocomplete="tel" data-en-ph="(832) 555-0148" data-vi-ph="(832) 555-0148" placeholder="(832) 555-0148"></div></label><p id="login-phone-error" class="field-error hidden" role="alert"></p><button class="app-button mt-5 w-full" type="button" data-action="request-otp"><span data-en="Continue" data-vi="Tiếp tục">Tiếp tục</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button><p class="mt-5 text-center text-xs leading-5 text-app-muted" data-en="By continuing, you agree to the Terms and Privacy Policy." data-vi="Khi tiếp tục, bạn đồng ý với Điều khoản và Chính sách riêng tư.">Khi tiếp tục, bạn đồng ý với Điều khoản và Chính sách riêng tư.</p></div></div>
         </section>
         <section class="app-screen hidden" id="login2" data-ready="true" data-module="home" aria-labelledby="login2-title">
-          <div class="mx-auto grid min-h-[70vh] max-w-md place-items-center"><div class="w-full"><button class="icon-button" type="button" data-action="back" data-back-target="login1" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><p class="eyebrow mt-7" data-en="Secure sign in" data-vi="Đăng nhập an toàn">Đăng nhập an toàn</p><h1 id="login2-title" class="mt-2 text-3xl font-black" data-en="Check your messages" data-vi="Kiểm tra tin nhắn">Kiểm tra tin nhắn</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="We sent a 6-digit code to +84 90•• ••567." data-vi="Mã 6 chữ số đã được gửi đến +84 90•• ••567.">Mã 6 chữ số đã được gửi đến +84 90•• ••567.</p><label class="mt-7 block text-sm font-bold"><span data-en="Verification code" data-vi="Mã xác thực">Mã xác thực</span><input id="otp-code" class="app-input mt-2 text-center text-xl font-black tracking-[.4em]" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" data-en-ph="000000" data-vi-ph="000000" placeholder="000000"></label><button class="app-button mt-5 w-full" type="button" data-action="navigate" data-target="home"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Verify & sign in" data-vi="Xác thực & đăng nhập">Xác thực & đăng nhập</span></button><button class="mt-4 min-h-11 w-full text-sm font-bold text-app-cyan" type="button" data-action="resend-code" data-en="Resend code" data-vi="Gửi lại mã">Gửi lại mã</button></div></div>
+          <div class="mx-auto grid min-h-[70vh] max-w-md place-items-center"><div class="w-full"><button class="icon-button" type="button" data-action="back" data-back-target="login1" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><p class="eyebrow mt-7" data-en="Secure sign in" data-vi="Đăng nhập an toàn">Đăng nhập an toàn</p><h1 id="login2-title" class="mt-2 text-3xl font-black" data-en="Check your messages" data-vi="Kiểm tra tin nhắn">Kiểm tra tin nhắn</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="We sent a 6-digit code to your US number." data-vi="Mã 6 chữ số đã được gửi đến số điện thoại US của bạn.">Mã 6 chữ số đã được gửi đến số điện thoại US của bạn.</p><label class="mt-7 block text-sm font-bold"><span data-en="Verification code" data-vi="Mã xác thực">Mã xác thực</span><input id="otp-code" class="app-input mt-2 text-center text-xl font-black tracking-[.4em]" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" data-en-ph="000000" data-vi-ph="000000" placeholder="000000"></label><p class="mt-2 rounded-xl bg-app-cyan/5 p-3 text-xs text-app-cyan" data-en="Prototype code: 246810" data-vi="Mã dùng thử: 246810">Mã dùng thử: 246810</p><p id="otp-error" class="field-error hidden" role="alert"></p><button class="app-button mt-5 w-full" type="button" data-action="verify-otp"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Verify & sign in" data-vi="Xác thực & đăng nhập">Xác thực & đăng nhập</span></button><button id="otp-resend" class="mt-4 min-h-11 w-full text-sm font-bold text-app-cyan" type="button" data-action="resend-code" data-en="Resend code" data-vi="Gửi lại mã">Gửi lại mã</button></div></div>
         </section>
         <section class="app-screen hidden" id="wallet" data-ready="true" data-module="wallet" aria-labelledby="wallet-title">
           <div class="mb-5 flex items-end justify-between gap-4"><div><p class="eyebrow" data-en="Your rewards" data-vi="Phần thưởng của bạn">Phần thưởng của bạn</p><h1 id="wallet-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Points wallet" data-vi="Ví điểm">Ví điểm</h1><p class="mt-1 text-sm text-app-muted" data-en="Each business keeps its own point balance." data-vi="Điểm được tách riêng theo từng doanh nghiệp.">Điểm được tách riêng theo từng doanh nghiệp.</p></div><button type="button" class="app-button-secondary hidden sm:inline-flex" data-action="navigate" data-target="history"><i data-lucide="history" class="size-4" aria-hidden="true"></i><span data-en="History" data-vi="Lịch sử">Lịch sử</span></button></div>
@@ -196,16 +196,16 @@
           <div class="app-card mt-7"><div class="flex items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-purple/10 text-app-pink"><i data-lucide="map-pin" class="size-5" aria-hidden="true"></i></span><div class="flex-1"><p class="eyebrow" data-en="Nearby" data-vi="Gần bạn">Gần bạn</p><h2 class="font-black">Bitcoin Nail Bar</h2><p class="text-xs text-app-muted">0.2 mi · Open until 7:00 PM</p></div><span class="rounded-full bg-app-green/10 px-2 py-1 text-xs font-bold text-app-green" data-en="Open" data-vi="Đang mở">Đang mở</span></div></div></div>
         </section>
         <section class="app-screen hidden" id="onb1" data-ready="true" data-module="scan" aria-labelledby="onb1-title">
-          <div class="mx-auto max-w-xl"><div class="mb-8 flex items-center justify-between"><button class="icon-button" type="button" data-action="back" data-back-target="scan" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><span class="text-xs font-bold text-app-muted" data-en="1 of 4" data-vi="1/4">1/4</span></div><span class="grid size-16 place-items-center rounded-3xl bg-app-cyan/10 text-app-cyan"><i data-lucide="scan-qr-code" class="size-8" aria-hidden="true"></i></span><p class="eyebrow mt-6" data-en="First check-in" data-vi="Check-in lần đầu">Check-in lần đầu</p><h1 id="onb1-title" class="mt-2 text-3xl font-black" data-en="Enter the business code" data-vi="Nhập mã doanh nghiệp">Nhập mã doanh nghiệp</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="Find the six-character NEXORA code near the register." data-vi="Tìm mã NEXORA 6 ký tự tại khu vực thanh toán.">Tìm mã NEXORA 6 ký tự tại khu vực thanh toán.</p><label class="mt-7 block text-sm font-bold"><span data-en="Business code" data-vi="Mã doanh nghiệp">Mã doanh nghiệp</span><input id="business-code" class="app-input mt-2 text-center text-lg font-black uppercase tracking-[.25em]" maxlength="6" data-en-ph="NX2026" data-vi-ph="NX2026" placeholder="NX2026"></label><button class="app-button mt-5 w-full" type="button" data-action="navigate" data-target="onb2"><span data-en="Find business" data-vi="Tìm doanh nghiệp">Tìm doanh nghiệp</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button></div>
+          <div class="mx-auto max-w-xl"><p class="eyebrow" data-en="Welcome gift" data-vi="Quà chào mừng">Quà chào mừng</p><h1 id="onb1-title" class="mt-2 text-3xl font-black" data-en="25 points are waiting" data-vi="25 điểm đang chờ bạn">25 điểm đang chờ bạn</h1><p class="mt-3 text-sm text-app-muted" data-en="Gifted by Bitcoin Nail Bar. Enter your phone to claim it." data-vi="Bitcoin Nail Bar tặng bạn. Nhập số điện thoại để nhận.">Bitcoin Nail Bar tặng bạn. Nhập số điện thoại để nhận.</p><input id="onb-phone" class="app-input mt-6" type="tel" inputmode="tel" autocomplete="tel" data-en-ph="(832) 555-0148" data-vi-ph="(832) 555-0148" placeholder="(832) 555-0148"><p id="onb-phone-error" class="field-error hidden" role="alert"></p><button class="app-button mt-5 w-full" type="button" data-action="claim-welcome" data-en="Claim 25 points" data-vi="Nhận 25 điểm">Nhận 25 điểm</button></div>
         </section>
         <section class="app-screen hidden" id="onb2" data-ready="true" data-module="scan" aria-labelledby="onb2-title">
-          <div class="mx-auto max-w-xl"><div class="mb-8 flex items-center justify-between"><button class="icon-button" type="button" data-action="back" data-back-target="onb1" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><span class="text-xs font-bold text-app-muted" data-en="2 of 4" data-vi="2/4">2/4</span></div><p class="eyebrow" data-en="Business found" data-vi="Đã tìm thấy doanh nghiệp">Đã tìm thấy doanh nghiệp</p><h1 id="onb2-title" class="mt-2 text-3xl font-black" data-en="Is this the right place?" data-vi="Đúng doanh nghiệp này?">Đúng doanh nghiệp này?</h1><article class="app-card mt-6 overflow-hidden p-0"><img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1000&q=80" alt="Bitcoin Nail Bar" class="h-48 w-full object-cover"><div class="p-5"><div class="flex items-start justify-between gap-3"><div><h2 class="text-xl font-black">Bitcoin Nail Bar</h2><p class="mt-1 text-sm text-app-muted">1288 Westheimer Rd · Houston</p></div><span class="flex items-center gap-1 text-sm font-black text-app-gold"><i data-lucide="star" class="size-4 fill-current" aria-hidden="true"></i>4.9</span></div><div class="mt-4 flex items-center gap-2 text-xs font-bold text-app-green"><i data-lucide="badge-check" class="size-4" aria-hidden="true"></i><span data-en="NEXORA verified" data-vi="Đã được NEXORA xác minh">Đã được NEXORA xác minh</span></div></div></article><button class="app-button mt-5 w-full" type="button" data-action="navigate" data-target="onb3"><span data-en="Yes, continue" data-vi="Đúng, tiếp tục">Đúng, tiếp tục</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button><button class="mt-3 min-h-11 w-full text-sm font-bold text-app-muted" type="button" data-action="navigate" data-target="onb1" data-en="Try another code" data-vi="Thử mã khác">Thử mã khác</button></div>
+          <div class="mx-auto max-w-xl"><p class="eyebrow" data-en="Optional messages" data-vi="Tin nhắn tùy chọn">Tin nhắn tùy chọn</p><h1 id="onb2-title" class="mt-2 text-3xl font-black" data-en="Choose what to receive" data-vi="Chọn nội dung muốn nhận">Chọn nội dung muốn nhận</h1><label class="app-card mt-6 flex items-start gap-3"><input class="mt-1 size-5 accent-app-purple" type="checkbox" data-consent-choice="business"><span><strong data-en="Rewards & offers from Bitcoin Nail Bar" data-vi="Điểm và ưu đãi từ Bitcoin Nail Bar">Điểm và ưu đãi từ Bitcoin Nail Bar</strong><small class="block text-app-muted" data-en="Up to 4 marketing messages per month." data-vi="Tối đa 4 tin tiếp thị mỗi tháng.">Tối đa 4 tin tiếp thị mỗi tháng.</small></span></label><label class="app-card mt-3 flex items-start gap-3"><input class="mt-1 size-5 accent-app-purple" type="checkbox" data-consent-choice="network"><span><strong data-en="Nearby partner offers" data-vi="Ưu đãi từ đối tác gần bạn">Ưu đãi từ đối tác gần bạn</strong></span></label><p id="consent-error" class="field-error hidden" role="alert"></p><button class="app-button mt-5 w-full" type="button" data-action="accept-consent" data-en="Agree & continue" data-vi="Đồng ý & tiếp tục">Đồng ý & tiếp tục</button><button class="app-button-secondary mt-3 w-full" type="button" data-action="skip-consent" data-en="Skip — points only" data-vi="Bỏ qua — chỉ nhận điểm">Bỏ qua — chỉ nhận điểm</button><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Consent is not required to receive points. STOP/HELP supported." data-vi="Không bắt buộc đồng ý để nhận điểm. Hỗ trợ STOP/HELP.">Không bắt buộc đồng ý để nhận điểm. Hỗ trợ STOP/HELP.</p></div>
         </section>
         <section class="app-screen hidden" id="onb3" data-ready="true" data-module="scan" aria-labelledby="onb3-title">
-          <div class="mx-auto max-w-xl"><div class="mb-8 flex items-center justify-between"><button class="icon-button" type="button" data-action="back" data-back-target="onb2" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><span class="text-xs font-bold text-app-muted" data-en="3 of 4" data-vi="3/4">3/4</span></div><p class="eyebrow" data-en="Your choices" data-vi="Quyền lựa chọn của bạn">Quyền lựa chọn của bạn</p><h1 id="onb3-title" class="mt-2 text-3xl font-black" data-en="Choose what you share" data-vi="Chọn thông tin muốn chia sẻ">Chọn thông tin muốn chia sẻ</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="You can change these preferences at any time." data-vi="Bạn có thể thay đổi các tùy chọn này bất cứ lúc nào.">Bạn có thể thay đổi các tùy chọn này bất cứ lúc nào.</p><div class="mt-6 space-y-3"><label class="app-card flex cursor-pointer items-start gap-3"><input class="mt-1 size-5 accent-app-purple" type="checkbox" data-consent="rewards" checked><span><strong class="block" data-en="Rewards & visit history" data-vi="Phần thưởng & lịch sử ghé">Phần thưởng & lịch sử ghé</strong><small class="mt-1 block leading-5 text-app-muted" data-en="Track visits and calculate points." data-vi="Theo dõi lượt ghé và tính điểm.">Theo dõi lượt ghé và tính điểm.</small></span></label><label class="app-card flex cursor-pointer items-start gap-3"><input class="mt-1 size-5 accent-app-purple" type="checkbox" data-consent="offers"><span><strong class="block" data-en="Personalized offers" data-vi="Ưu đãi cá nhân hóa">Ưu đãi cá nhân hóa</strong><small class="mt-1 block leading-5 text-app-muted" data-en="Use your service preferences for better offers." data-vi="Dùng sở thích dịch vụ để gợi ý phù hợp hơn.">Dùng sở thích dịch vụ để gợi ý phù hợp hơn.</small></span></label><label class="app-card flex cursor-pointer items-start gap-3"><input class="mt-1 size-5 accent-app-purple" type="checkbox" data-consent="messages" checked><span><strong class="block" data-en="Service messages" data-vi="Tin nhắn dịch vụ">Tin nhắn dịch vụ</strong><small class="mt-1 block leading-5 text-app-muted" data-en="Receive receipts, bookings and point updates." data-vi="Nhận biên nhận, lịch hẹn và cập nhật điểm.">Nhận biên nhận, lịch hẹn và cập nhật điểm.</small></span></label></div><button class="app-button mt-5 w-full" type="button" data-action="navigate" data-target="onb4"><span data-en="Save & continue" data-vi="Lưu & tiếp tục">Lưu & tiếp tục</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button></div>
+          <div class="mx-auto max-w-xl"><p class="eyebrow" data-en="Double opt-in" data-vi="Xác nhận hai bước">Xác nhận hai bước</p><h1 id="onb3-title" class="mt-2 text-3xl font-black" data-en="Confirm your number" data-vi="Xác nhận số điện thoại">Xác nhận số điện thoại</h1><div class="app-card mt-6 text-sm leading-6 text-app-muted">Nexora: Bitcoin Nail Bar added 25 pts. Reply Y to confirm messages. STOP=cancel HELP=help.</div><button class="app-button mt-5 w-full" type="button" data-action="confirm-double-opt-in" data-en="Reply Y (demo)" data-vi="Trả lời Y (mô phỏng)">Trả lời Y (mô phỏng)</button></div>
         </section>
         <section class="app-screen hidden" id="onb4" data-ready="true" data-module="scan" aria-labelledby="onb4-title">
-          <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="party-popper" class="size-10" aria-hidden="true"></i></span><p class="eyebrow mt-6" data-en="4 of 4" data-vi="4/4">4/4</p><h1 id="onb4-title" class="mt-2 text-3xl font-black" data-en="You're checked in" data-vi="Bạn đã check-in">Bạn đã check-in</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="Welcome to Bitcoin Nail Bar. Your first 120 points are already in your wallet." data-vi="Chào mừng đến Bitcoin Nail Bar. 120 điểm đầu tiên đã vào ví.">Chào mừng đến Bitcoin Nail Bar. 120 điểm đầu tiên đã vào ví.</p><div class="mt-6 rounded-3xl bg-gradient-to-br from-app-purple to-[#0757cf] p-6 text-left"><p class="text-xs font-extrabold uppercase tracking-[.18em] text-white/70" data-en="New balance" data-vi="Số dư mới">Số dư mới</p><strong class="mt-2 block text-4xl font-black">2.450 <span class="text-base text-white/70" data-en="points" data-vi="điểm">điểm</span></strong></div><button class="app-button mt-5 w-full" type="button" data-action="navigate" data-target="home" data-en="Go to home" data-vi="Về trang chủ">Về trang chủ</button></div></div>
+          <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="party-popper" class="size-10" aria-hidden="true"></i></span><h1 id="onb4-title" class="mt-6 text-3xl font-black" data-en="25 points are waiting" data-vi="25 điểm đã sẵn sàng">25 điểm đã sẵn sàng</h1><p class="mt-3 text-sm text-app-muted" data-en="Stored in your Bitcoin Nail Bar balance." data-vi="Đã lưu trong số dư Bitcoin Nail Bar của bạn.">Đã lưu trong số dư Bitcoin Nail Bar của bạn.</p><button class="app-button mt-5 w-full" type="button" data-action="finish-onboarding" data-en="Enter app" data-vi="Vào ứng dụng">Vào ứng dụng</button></div></div>
         </section>
         <section class="app-screen hidden" id="explore" data-ready="true" data-module="explore" aria-labelledby="explore-title">
           <div class="mb-5"><p class="eyebrow" data-en="Verified local businesses" data-vi="Doanh nghiệp địa phương đã xác minh">Doanh nghiệp địa phương đã xác minh</p><h1 id="explore-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Explore nearby" data-vi="Khám phá gần bạn">Khám phá gần bạn</h1><p class="mt-1 text-sm text-app-muted" data-en="Find trusted places with real visit and service data." data-vi="Tìm địa điểm uy tín với dữ liệu lượt ghé và dịch vụ thực.">Tìm địa điểm uy tín với dữ liệu lượt ghé và dịch vụ thực.</p></div>
@@ -224,7 +224,7 @@
         <section class="app-screen hidden" id="profile" data-ready="true" data-module="profile" aria-labelledby="profile-title">
           <div class="mb-5"><p class="eyebrow" data-en="Your account" data-vi="Tài khoản của bạn">Tài khoản của bạn</p><h1 id="profile-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Profile & settings" data-vi="Hồ sơ & cài đặt">Hồ sơ & cài đặt</h1></div>
           <div class="grid gap-4 lg:grid-cols-[340px_1fr]">
-            <aside class="app-card text-center"><div class="relative mx-auto size-24"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80" alt="Ảnh hồ sơ Jessica" class="size-24 rounded-3xl object-cover"><span class="absolute -bottom-1 -right-1 grid size-8 place-items-center rounded-full border-4 border-app-card bg-app-green text-app-bg"><i data-lucide="check" class="size-4" aria-hidden="true"></i></span></div><h2 class="mt-4 text-xl font-black">Jessica Nguyen</h2><p class="mt-1 text-sm text-app-muted">(832) 555-0148</p><span class="mt-4 inline-flex rounded-full bg-app-purple/10 px-3 py-1.5 text-xs font-bold text-app-pink" data-en="Member since 2024" data-vi="Thành viên từ 2024">Thành viên từ 2024</span><button type="button" class="app-button-secondary mt-5 w-full" data-action="edit-profile" data-en="Edit profile" data-vi="Chỉnh sửa hồ sơ">Chỉnh sửa hồ sơ</button></aside>
+            <aside class="app-card text-center"><div class="relative mx-auto size-24"><img data-profile-avatar src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80" alt="Ảnh hồ sơ Jessica" class="size-24 rounded-3xl object-cover"><span class="absolute -bottom-1 -right-1 grid size-8 place-items-center rounded-full border-4 border-app-card bg-app-green text-app-bg"><i data-lucide="check" class="size-4" aria-hidden="true"></i></span></div><h2 data-profile-name class="mt-4 text-xl font-black">Jessica Nguyen</h2><p data-profile-phone class="mt-1 text-sm text-app-muted">(832) 555-0148</p><span class="mt-4 inline-flex rounded-full bg-app-purple/10 px-3 py-1.5 text-xs font-bold text-app-pink" data-en="Member since 2024" data-vi="Thành viên từ 2024">Thành viên từ 2024</span><button type="button" class="app-button-secondary mt-5 w-full" data-action="edit-profile" data-en="Edit profile" data-vi="Chỉnh sửa hồ sơ">Chỉnh sửa hồ sơ</button></aside>
             <div class="space-y-4"><section class="app-card"><div class="mb-4 flex items-center justify-between"><div><p class="eyebrow" data-en="Language" data-vi="Ngôn ngữ">Ngôn ngữ</p><h2 class="section-title" data-en="Display language" data-vi="Ngôn ngữ hiển thị">Ngôn ngữ hiển thị</h2></div><i data-lucide="languages" class="size-5 text-app-cyan" aria-hidden="true"></i></div><div class="grid grid-cols-2 gap-2"><button class="app-chip justify-center" type="button" data-action="language" data-language="vi" aria-pressed="true">Tiếng Việt</button><button class="app-chip justify-center" type="button" data-action="language" data-language="en" aria-pressed="false">English</button></div></section>
             <section class="app-card p-2"><button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-xl px-3 text-left hover:bg-white/5" data-action="navigate" data-target="msgprefs"><span class="grid size-10 place-items-center rounded-xl bg-app-cyan/10 text-app-cyan"><i data-lucide="message-square-more" class="size-5" aria-hidden="true"></i></span><span class="flex-1"><strong class="block text-sm" data-en="Messages & privacy" data-vi="Tin nhắn & riêng tư">Tin nhắn & riêng tư</strong><span class="text-xs text-app-muted" data-en="Consent and notification preferences" data-vi="Đồng ý và tùy chọn thông báo">Đồng ý và tùy chọn thông báo</span></span><i data-lucide="chevron-right" class="size-4 text-app-muted" aria-hidden="true"></i></button><button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-xl px-3 text-left hover:bg-white/5" data-action="navigate" data-target="referral"><span class="grid size-10 place-items-center rounded-xl bg-app-pink/10 text-app-pink"><i data-lucide="user-round-plus" class="size-5" aria-hidden="true"></i></span><span class="flex-1"><strong class="block text-sm" data-en="Invite friends" data-vi="Mời bạn bè">Mời bạn bè</strong><span class="text-xs text-app-muted" data-en="Give 100 points, earn 50" data-vi="Tặng 100 điểm, nhận 50">Tặng 100 điểm, nhận 50</span></span><i data-lucide="chevron-right" class="size-4 text-app-muted" aria-hidden="true"></i></button><button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-xl px-3 text-left hover:bg-white/5" data-action="navigate" data-target="activity"><span class="grid size-10 place-items-center rounded-xl bg-app-purple/10 text-app-pink"><i data-lucide="bell-ring" class="size-5" aria-hidden="true"></i></span><span class="flex-1"><strong class="block text-sm" data-en="Activity & messages" data-vi="Hoạt động & tin nhắn">Hoạt động & tin nhắn</strong><span class="text-xs text-app-muted" data-en="Receipts, confirmations and alerts" data-vi="Biên nhận, xác nhận và cảnh báo">Biên nhận, xác nhận và cảnh báo</span></span><i data-lucide="chevron-right" class="size-4 text-app-muted" aria-hidden="true"></i></button></section>
             <div class="grid gap-2">
@@ -239,7 +239,7 @@
           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="profile" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Share the good stuff" data-vi="Chia sẻ điều hay">Chia sẻ điều hay</p><h1 id="referral-title" class="text-2xl font-black" data-en="Invite friends" data-vi="Mời bạn bè">Mời bạn bè</h1></div></div><div class="overflow-hidden rounded-3xl bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,.3),transparent_40%),linear-gradient(135deg,#6d2bf0,#4a23d9_55%,#0757cf)] p-6 text-center sm:p-8"><span class="mx-auto grid size-16 place-items-center rounded-3xl bg-white/15"><i data-lucide="gift" class="size-8" aria-hidden="true"></i></span><h2 class="mt-5 text-2xl font-black" data-en="Give 100, get 50" data-vi="Tặng 100, nhận 50">Tặng 100, nhận 50</h2><p class="mx-auto mt-2 max-w-md text-sm leading-6 text-white/75" data-en="Your friend receives 100 welcome points. You earn 50 after their first verified visit." data-vi="Bạn bè nhận 100 điểm chào mừng. Bạn nhận 50 điểm sau lượt ghé xác thực đầu tiên của họ.">Bạn bè nhận 100 điểm chào mừng. Bạn nhận 50 điểm sau lượt ghé xác thực đầu tiên của họ.</p><div class="mx-auto mt-6 max-w-sm rounded-2xl bg-black/20 p-4"><span class="text-xs font-bold text-white/60" data-en="Your invite code" data-vi="Mã giới thiệu của bạn">Mã giới thiệu của bạn</span><strong id="referral-code" class="mt-1 block text-2xl tracking-[.2em]">JESSICA50</strong></div><button class="mt-4 min-h-11 rounded-xl bg-white px-5 py-3 text-sm font-black text-app-purple" type="button" data-action="copy-referral"><i data-lucide="copy" class="mr-2 inline size-4" aria-hidden="true"></i><span data-en="Copy invite link" data-vi="Sao chép liên kết mời">Sao chép liên kết mời</span></button></div><div class="app-card mt-4"><h2 class="section-title" data-en="Your impact" data-vi="Kết quả của bạn">Kết quả của bạn</h2><div class="mt-4 grid grid-cols-3 gap-3 text-center"><div class="rounded-xl bg-app-panel p-3"><strong class="block text-xl">6</strong><span class="text-[11px] text-app-muted" data-en="Invited" data-vi="Đã mời">Đã mời</span></div><div class="rounded-xl bg-app-panel p-3"><strong class="block text-xl">4</strong><span class="text-[11px] text-app-muted" data-en="Joined" data-vi="Đã tham gia">Đã tham gia</span></div><div class="rounded-xl bg-app-panel p-3"><strong class="block text-xl text-app-green">200</strong><span class="text-[11px] text-app-muted" data-en="Points earned" data-vi="Điểm đã nhận">Điểm đã nhận</span></div></div></div></div>
         </section>
         <section class="app-screen hidden" id="msgprefs" data-ready="true" data-module="profile" aria-labelledby="msgprefs-title">
-          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="profile" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="You stay in control" data-vi="Bạn luôn kiểm soát">Bạn luôn kiểm soát</p><h1 id="msgprefs-title" class="text-2xl font-black" data-en="Messages & privacy" data-vi="Tin nhắn & riêng tư">Tin nhắn & riêng tư</h1></div></div><div class="space-y-4"><section class="app-card"><h2 class="section-title" data-en="Essential messages" data-vi="Tin nhắn thiết yếu">Tin nhắn thiết yếu</h2><p class="mt-1 text-sm text-app-muted" data-en="Receipts, security and booking updates." data-vi="Biên nhận, bảo mật và cập nhật lịch hẹn.">Biên nhận, bảo mật và cập nhật lịch hẹn.</p><label class="mt-4 flex min-h-14 items-center justify-between gap-4 border-t border-app-line pt-4"><span><strong class="block text-sm" data-en="SMS service updates" data-vi="Cập nhật dịch vụ qua SMS">Cập nhật dịch vụ qua SMS</strong><small class="text-app-muted" data-en="Bookings and payment receipts" data-vi="Lịch hẹn và biên nhận thanh toán">Lịch hẹn và biên nhận thanh toán</small></span><input class="size-5 accent-app-purple" type="checkbox" checked data-pref="service-sms"></label></section><section class="app-card"><h2 class="section-title" data-en="Marketing preferences" data-vi="Tùy chọn tiếp thị">Tùy chọn tiếp thị</h2><div class="mt-2 divide-y divide-app-line"><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="Offers by SMS" data-vi="Ưu đãi qua SMS">Ưu đãi qua SMS</strong><small class="text-app-muted" data-en="Up to four messages per month" data-vi="Tối đa 4 tin mỗi tháng">Tối đa 4 tin mỗi tháng</small></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="offers-sms"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="Push notifications" data-vi="Thông báo đẩy">Thông báo đẩy</strong><small class="text-app-muted" data-en="Points, rewards and nearby offers" data-vi="Điểm, phần thưởng và ưu đãi gần bạn">Điểm, phần thưởng và ưu đãi gần bạn</small></span><input class="size-5 accent-app-purple" type="checkbox" checked data-pref="push"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="Personalized recommendations" data-vi="Gợi ý cá nhân hóa">Gợi ý cá nhân hóa</strong><small class="text-app-muted" data-en="Based on services you save and redeem" data-vi="Dựa trên dịch vụ đã lưu và đổi">Dựa trên dịch vụ đã lưu và đổi</small></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="personalized"></label></div></section><section class="app-card border-app-cyan/20 bg-app-cyan/[.04]"><div class="flex gap-3"><i data-lucide="shield-check" class="size-5 shrink-0 text-app-cyan" aria-hidden="true"></i><p class="text-sm leading-6 text-app-muted" data-en="NEXORA never sells your personal data. Changes are saved on this device for the prototype." data-vi="NEXORA không bán dữ liệu cá nhân. Trong bản mẫu, thay đổi được lưu trên thiết bị này.">NEXORA không bán dữ liệu cá nhân. Trong bản mẫu, thay đổi được lưu trên thiết bị này.</p></div></section><button class="app-button w-full" type="button" data-action="save-preferences"><i data-lucide="save" class="size-4" aria-hidden="true"></i><span data-en="Save preferences" data-vi="Lưu tùy chọn">Lưu tùy chọn</span></button></div></div>
+          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="profile" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="You stay in control" data-vi="Bạn luôn kiểm soát">Bạn luôn kiểm soát</p><h1 id="msgprefs-title" class="text-2xl font-black" data-en="Messages & privacy" data-vi="Tin nhắn & riêng tư">Tin nhắn & riêng tư</h1></div></div><div class="space-y-4"><section class="app-card"><h2 class="section-title" data-en="Essential messages" data-vi="Tin nhắn thiết yếu">Tin nhắn thiết yếu</h2><label class="mt-4 flex min-h-14 items-center justify-between gap-4 border-t border-app-line pt-4"><span><strong class="block text-sm" data-en="Booking and receipt messages" data-vi="Tin lịch hẹn và biên nhận">Tin lịch hẹn và biên nhận</strong><small class="text-app-muted" data-en="Transactional messages are always delivered" data-vi="Tin giao dịch luôn được gửi">Tin giao dịch luôn được gửi</small></span><input class="size-5 accent-app-purple" type="checkbox" checked disabled aria-disabled="true"></label></section><section class="app-card"><h2 class="section-title" data-en="Marketing preferences" data-vi="Tùy chọn tiếp thị">Tùy chọn tiếp thị</h2><div class="mt-2 divide-y divide-app-line"><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm">Bitcoin Nail Bar</strong><small class="text-app-muted" data-en="Marketing offers from this business" data-vi="Ưu đãi tiếp thị từ doanh nghiệp này">Ưu đãi tiếp thị từ doanh nghiệp này</small></span><input class="size-5 accent-app-purple" type="checkbox" data-business-pref="bitcoin-nail-bar"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="Nearby partner offers" data-vi="Ưu đãi đối tác gần bạn">Ưu đãi đối tác gần bạn</strong></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="networkOffers"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="Booking reminders" data-vi="Nhắc lịch hẹn">Nhắc lịch hẹn</strong></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="bookingReminders"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="Nearby deal notifications" data-vi="Thông báo ưu đãi gần bạn">Thông báo ưu đãi gần bạn</strong></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="nearbyDeals"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="AI suggestions from history" data-vi="Gợi ý AI từ lịch sử">Gợi ý AI từ lịch sử</strong></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="aiSuggestions"></label></div></section><section class="app-card border-app-cyan/20 bg-app-cyan/[.04]"><div class="flex gap-3"><i data-lucide="shield-check" class="size-5 shrink-0 text-app-cyan" aria-hidden="true"></i><p class="text-sm leading-6 text-app-muted" data-en="NEXORA never sells your personal data. Changes are saved on this device for the prototype." data-vi="NEXORA không bán dữ liệu cá nhân. Trong bản mẫu, thay đổi được lưu trên thiết bị này.">NEXORA không bán dữ liệu cá nhân. Trong bản mẫu, thay đổi được lưu trên thiết bị này.</p></div></section><p class="text-center text-xs text-app-muted" data-en="Each change is saved immediately on this device." data-vi="Mỗi thay đổi được lưu ngay trên thiết bị này.">Mỗi thay đổi được lưu ngay trên thiết bị này.</p></div></div>
         </section>
       </main>
     </div>
@@ -321,7 +321,11 @@
         consents: [],
         welcomeClaims: [],
         preferences: {
-          businessMarketing: { [BUSINESS_ID]: false },
+          businessMarketing: {
+            [BUSINESS_ID]: false,
+            'golden-glow-spa': false,
+            'moon-coffee': false
+          },
           networkOffers: false,
           bookingReminders: true,
           nearbyDeals: true,
@@ -486,6 +490,93 @@
       saveState(state);
       return result;
     }
+
+    function normalizeUsPhone(value) {
+      const digits = String(value ?? '').replace(/\D/g, '');
+      return digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits;
+    }
+
+    function requestOtp(appState, rawPhone, now = Date.now()) {
+      const phone = normalizeUsPhone(rawPhone);
+      if (phone.length !== 10) return { ok: false, code: 'invalid_phone' };
+      if (appState.session.otpRequestedAt && now - appState.session.otpRequestedAt < 30000) {
+        return { ok: false, code: 'cooldown', retryAt: appState.session.otpRequestedAt + 30000 };
+      }
+      appState.session.phone = phone;
+      appState.session.otpCode = '246810';
+      appState.session.otpRequestedAt = now;
+      appState.session.otpAttempts = 0;
+      return { ok: true, code: 'sent', demoCode: '246810' };
+    }
+
+    function verifyOtp(appState, code, now = Date.now()) {
+      if (appState.session.lockedUntil > now) {
+        return { ok: false, code: 'locked', retryAt: appState.session.lockedUntil };
+      }
+      if (!/^\d{6}$/.test(String(code)) || String(code) !== appState.session.otpCode) {
+        appState.session.otpAttempts += 1;
+        if (appState.session.otpAttempts >= 5) appState.session.lockedUntil = now + 15 * 60 * 1000;
+        return { ok: false, code: appState.session.lockedUntil > now ? 'locked' : 'invalid_code' };
+      }
+      appState.session.authenticated = true;
+      appState.session.otpAttempts = 0;
+      appState.session.lockedUntil = 0;
+      return { ok: true, code: 'verified' };
+    }
+
+    function recordConsent(appState, scope, action, method, now = Date.now()) {
+      const timestamp = new Date(now).toISOString();
+      const record = {
+        id: `consent-${crypto.randomUUID()}`,
+        scope,
+        action,
+        method,
+        createdAt: timestamp,
+        confirmedAt: action === 'grant' ? timestamp : null
+      };
+      appState.consents.push(record);
+      return record;
+    }
+
+    function setPreference(appState, key, value, now = Date.now()) {
+      if (!Object.prototype.hasOwnProperty.call(appState.preferences, key) || typeof appState.preferences[key] !== 'boolean') {
+        return { ok: false, code: 'unknown_preference' };
+      }
+      appState.preferences[key] = Boolean(value);
+      recordConsent(appState, key, value ? 'grant' : 'revoke', 'preferences', now);
+      return { ok: true };
+    }
+
+    function setBusinessMarketing(appState, businessId, value, now = Date.now()) {
+      if (!Object.prototype.hasOwnProperty.call(appState.businesses, businessId)) {
+        return { ok: false, code: 'unknown_business' };
+      }
+      appState.preferences.businessMarketing[businessId] = Boolean(value);
+      recordConsent(appState, `business:${businessId}`, value ? 'grant' : 'revoke', 'preferences', now);
+      return { ok: true };
+    }
+
+    function claimWelcomeGift(appState, rawPhone, now = Date.now()) {
+      const phone = normalizeUsPhone(rawPhone);
+      if (phone.length !== 10) return { ok: false, code: 'invalid_phone' };
+      if (phone === appState.profile.phone) return { ok: false, code: 'existing_account' };
+      if (appState.welcomeClaims.includes(phone)) return { ok: false, code: 'already_claimed' };
+      const otp = requestOtp(appState, phone, now);
+      if (!otp.ok) return otp;
+      appState.welcomeClaims.push(phone);
+      appState.balances[BUSINESS_ID].points += 25;
+      appState.ledger.unshift({
+        id: `ledger-${crypto.randomUUID()}`,
+        businessId: BUSINESS_ID,
+        type: 'welcome',
+        pointsDelta: 25,
+        refType: 'onboarding',
+        refId: `welcome-${phone}`,
+        createdAt: new Date(now).toISOString()
+      });
+      return { ok: true, code: 'claimed', points: 25 };
+    }
+
     const SCREEN_MODULE = {
       home:'home', allmenu:'home', activity:'home', tip:'home', tipdone:'home', pay:'home', paydone:'home', looks:'home', addlook:'home', review:'home', offers:'home', book1:'home', book2:'home', book3:'home', login1:'home', login2:'home',
       wallet:'wallet', history:'wallet', rewards:'wallet', redeem:'wallet', redeemdone:'wallet',
@@ -513,12 +604,18 @@
         lookServiceRequired: 'Hãy nhập tên dịch vụ', lookSaved: 'Đã lưu kiểu mới', ratingRequired: 'Hãy chọn số sao',
         reviewThanks: 'Cảm ơn phản hồi của bạn', openPayment: 'Mở {method} để thanh toán', addPhoto: 'Thêm ảnh',
         addPhotoDetail: 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.',
-        verificationResent: 'Đã gửi lại mã xác thực', openingMaps: 'Đang mở ứng dụng bản đồ',
-        inviteCopied: 'Đã sao chép liên kết', preferencesSaved: 'Đã lưu tùy chọn',
+        verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
+        inviteCopied: 'Đã sao chép liên kết', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.',
         cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
-        editProfileTitle: 'Chỉnh sửa hồ sơ', editProfileDetail: 'Tính năng chỉnh sửa hồ sơ sẽ có trong phiên bản tiếp theo.',
-        paymentMethodsTitle: 'Phương thức thanh toán', paymentMethodsDetail: 'Bạn đã liên kết Zelle và Venmo trên thiết bị này.',
+        invalidPhone: 'Nhập số điện thoại US gồm 10 số.', cooldown: 'Vui lòng chờ đủ 30 giây.',
+        invalidOtp: 'Mã phải đúng 6 số.', otpLocked: 'Đã khóa 15 phút do nhập sai nhiều lần.',
+        existingAccount: 'Số này đã có tài khoản; hãy xác thực để đăng nhập.', alreadyClaimed: 'Số này đã nhận quà chào mừng.',
+        consentChoiceRequired: 'Chọn ít nhất một mục hoặc dùng Bỏ qua.',
+        pushTitle: 'Bật thông báo?', pushDetail: 'Nhận xác nhận lịch, thanh toán và cảnh báo điểm sắp hết hạn.',
+        pushConfirm: 'Bật thông báo', pushLater: 'Để sau',
+        editProfileTitle: 'Chỉnh sửa hồ sơ', profileName: 'Họ tên', profilePhone: 'Điện thoại', profileAvatar: 'URL ảnh đại diện', invalidProfile: 'Tên và số điện thoại chưa hợp lệ.', profileSaved: 'Đã lưu hồ sơ.',
+        paymentMethodsTitle: 'Phương thức thanh toán', paymentMethodsSaved: 'Đã lưu phương thức.',
         privacyTitle: 'Thông tin riêng tư', privacyDetail: 'NEXORA không bán dữ liệu cá nhân. Tùy chọn của bản mẫu chỉ được lưu trên thiết bị này.',
         resetTitle: 'Đặt lại dữ liệu mẫu?', resetDetail: 'Điểm, lịch sử và tùy chọn sẽ trở về dữ liệu ban đầu.',
         logoutTitle: 'Đăng xuất?', logoutDetail: 'Dữ liệu điểm vẫn được giữ trên thiết bị này.'
@@ -530,12 +627,18 @@
         lookServiceRequired: 'Enter a service name', lookSaved: 'New look saved', ratingRequired: 'Choose a rating',
         reviewThanks: 'Thanks for your feedback', openPayment: 'Open {method} to pay', addPhoto: 'Add a photo',
         addPhotoDetail: 'The production app will open your device photo picker.',
-        verificationResent: 'Verification code resent', openingMaps: 'Opening maps',
-        inviteCopied: 'Invite link copied', preferencesSaved: 'Preferences saved',
+        verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
+        inviteCopied: 'Invite link copied', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.',
         cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
-        editProfileTitle: 'Edit profile', editProfileDetail: 'Profile editing will be available in the next version.',
-        paymentMethodsTitle: 'Payment methods', paymentMethodsDetail: 'Zelle and Venmo are linked on this device.',
+        invalidPhone: 'Enter a 10-digit US phone number.', cooldown: 'Please wait for the 30-second cooldown.',
+        invalidOtp: 'Enter the valid 6-digit code.', otpLocked: 'Locked for 15 minutes after too many attempts.',
+        existingAccount: 'This number already has an account; verify to sign in.', alreadyClaimed: 'This number already claimed the welcome gift.',
+        consentChoiceRequired: 'Choose at least one option or Skip.',
+        pushTitle: 'Turn on notifications?', pushDetail: 'Get booking, payment and point-expiry updates.',
+        pushConfirm: 'Turn on', pushLater: 'Maybe later',
+        editProfileTitle: 'Edit profile', profileName: 'Name', profilePhone: 'Phone', profileAvatar: 'Avatar URL', invalidProfile: 'Name and phone are invalid.', profileSaved: 'Profile saved.',
+        paymentMethodsTitle: 'Payment methods', paymentMethodsSaved: 'Payment methods saved.',
         privacyTitle: 'Privacy details', privacyDetail: 'NEXORA never sells your personal data. Prototype preferences stay on this device.',
         resetTitle: 'Reset demo data?', resetDetail: 'Points, history and preferences return to their defaults.',
         logoutTitle: 'Sign out?', logoutDetail: 'Your reward data stays on this device.'
@@ -636,6 +739,27 @@
       }
     }
 
+    function setFieldError(id, message = '') {
+      const element = document.getElementById(id);
+      if (!element) return;
+      element.textContent = message;
+      element.classList.toggle('hidden', !message);
+    }
+
+    function profileEditorMarkup() {
+      return `<label class="block font-bold">${t('profileName')}<input id="profile-name-input" class="app-input mt-2"></label>
+        <label class="mt-4 block font-bold">${t('profilePhone')}<input id="profile-phone-input" class="app-input mt-2" type="tel" inputmode="tel"></label>
+        <label class="mt-4 block font-bold">${t('profileAvatar')}<input id="profile-avatar-input" class="app-input mt-2" type="url"></label>
+        <p id="profile-edit-error" class="field-error hidden" role="alert"></p>`;
+    }
+
+    function paymentMethodsMarkup() {
+      return ['Zelle', 'Venmo', 'Cash App'].map((method) => `
+        <label class="flex items-center justify-between rounded-xl bg-app-panel p-3">
+          <span>${method}</span><input type="checkbox" data-customer-method="${method}" ${state.profile.paymentMethods.includes(method) ? 'checked' : ''}>
+        </label>`).join('');
+    }
+
     let overlayRuntime = null;
     let overlayReturnFocus = null;
 
@@ -699,20 +823,22 @@
     function closeOverlay(result = null) {
       const callbacks = overlayRuntime;
       const returnFocus = overlayReturnFocus;
+      const callback = result === true ? callbacks?.onConfirm : result === false ? callbacks?.onCancel : null;
+      if (callback && callback() === false) {
+        document.getElementById('overlay-confirm').focus();
+        return false;
+      }
+      if (overlayRuntime !== callbacks) return true;
       overlayRuntime = null;
       overlayReturnFocus = null;
-      state.ui.overlay = null;
+      commitState((draft) => { draft.ui.overlay = null; });
       const overlay = document.getElementById('app-overlay');
       overlay.classList.add('hidden');
       overlay.classList.remove('flex');
       overlay.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('overflow-hidden');
-      try {
-        if (result === true && callbacks?.onConfirm) callbacks.onConfirm();
-        if (result === false && callbacks?.onCancel) callbacks.onCancel();
-      } finally {
-        if (!overlayRuntime) restoreOverlayFocus(returnFocus);
-      }
+      restoreOverlayFocus(returnFocus);
+      return true;
     }
 
     function startScan() {
@@ -889,17 +1015,124 @@
       renderGlobalState();
       navigateTo('activity');
     });
-    registerAction('edit-profile', (control) => openOverlay({
-      title: t('editProfileTitle'),
-      html: t('editProfileDetail'),
-      confirmLabel: t('gotIt'),
-      hideCancel: true
+    registerAction('request-otp', () => {
+      const result = commitState((draft) => requestOtp(draft, document.getElementById('login-phone').value));
+      if (!result.ok) {
+        setFieldError('login-phone-error', t(result.code === 'cooldown' ? 'cooldown' : 'invalidPhone'));
+        return;
+      }
+      setFieldError('login-phone-error');
+      navigateTo('login2');
+    });
+    registerAction('verify-otp', () => {
+      const result = commitState((draft) => verifyOtp(draft, document.getElementById('otp-code').value));
+      if (!result.ok) {
+        setFieldError('otp-error', t(result.code === 'locked' ? 'otpLocked' : 'invalidOtp'));
+        return;
+      }
+      setFieldError('otp-error');
+      navigateTo('home');
+    });
+    registerAction('resend-code', () => {
+      const result = commitState((draft) => requestOtp(draft, draft.session.phone));
+      showToast(t(result.ok ? 'verificationResent' : 'cooldown'), result.ok ? 'success' : 'error');
+    });
+    registerAction('claim-welcome', () => {
+      const result = commitState((draft) => claimWelcomeGift(draft, document.getElementById('onb-phone').value));
+      if (result.code === 'existing_account') {
+        showToast(t('existingAccount'));
+        navigateTo('login2');
+        return;
+      }
+      if (!result.ok) {
+        setFieldError('onb-phone-error', t(result.code === 'already_claimed' ? 'alreadyClaimed' : result.code === 'cooldown' ? 'cooldown' : 'invalidPhone'));
+        return;
+      }
+      setFieldError('onb-phone-error');
+      navigateTo('onb2');
+    });
+    registerAction('accept-consent', () => {
+      const choices = [...document.querySelectorAll('[data-consent-choice]:checked')].map((input) => input.dataset.consentChoice);
+      if (!choices.length) {
+        setFieldError('consent-error', t('consentChoiceRequired'));
+        return;
+      }
+      setFieldError('consent-error');
+      commitState((draft) => choices.forEach((choice) => {
+        if (choice === 'business') {
+          draft.preferences.businessMarketing[BUSINESS_ID] = true;
+          recordConsent(draft, `business:${BUSINESS_ID}`, 'grant', 'onboarding');
+        } else {
+          draft.preferences.networkOffers = true;
+          recordConsent(draft, 'network', 'grant', 'onboarding');
+        }
+      }));
+      navigateTo('onb3');
+    });
+    registerAction('skip-consent', () => {
+      commitState((draft) => {
+        draft.preferences.businessMarketing[BUSINESS_ID] = false;
+        draft.preferences.networkOffers = false;
+        recordConsent(draft, `business:${BUSINESS_ID}`, 'revoke', 'onboarding_skip');
+        recordConsent(draft, 'network', 'revoke', 'onboarding_skip');
+      });
+      navigateTo('onb4');
+    });
+    registerAction('confirm-double-opt-in', () => {
+      commitState((draft) => recordConsent(draft, `business:${BUSINESS_ID}`, 'grant', 'sms_y'));
+      navigateTo('onb4');
+    });
+    registerAction('finish-onboarding', (control) => openOverlay({
+      title: t('pushTitle'),
+      html: t('pushDetail'),
+      confirmLabel: t('pushConfirm'),
+      cancelLabel: t('pushLater'),
+      onConfirm: () => {
+        commitState((draft) => { draft.preferences.pushPermission = 'granted'; });
+        navigateTo('home');
+      },
+      onCancel: () => {
+        commitState((draft) => {
+          draft.preferences.pushPermission = 'later';
+          draft.ui.pushPromptCount += 1;
+        });
+        navigateTo('home');
+      }
     }, control));
+    registerAction('edit-profile', (control) => {
+      openOverlay({
+        title: t('editProfileTitle'),
+        html: profileEditorMarkup(),
+        onConfirm: () => {
+          const phone = normalizeUsPhone(document.getElementById('profile-phone-input').value);
+          const name = document.getElementById('profile-name-input').value.trim();
+          if (!name || phone.length !== 10) {
+            setFieldError('profile-edit-error', t('invalidProfile'));
+            return false;
+          }
+          const avatar = document.getElementById('profile-avatar-input').value.trim();
+          commitState((draft) => {
+            draft.profile.name = name;
+            draft.profile.phone = phone;
+            draft.profile.avatar = avatar || draft.profile.avatar;
+          });
+          renderApp();
+          showToast(t('profileSaved'));
+          return true;
+        }
+      }, control);
+      document.getElementById('profile-name-input').value = state.profile.name;
+      document.getElementById('profile-phone-input').value = state.profile.phone;
+      document.getElementById('profile-avatar-input').value = state.profile.avatar;
+    });
     registerAction('payment-methods', (control) => openOverlay({
       title: t('paymentMethodsTitle'),
-      html: t('paymentMethodsDetail'),
-      confirmLabel: t('gotIt'),
-      hideCancel: true
+      html: paymentMethodsMarkup(),
+      onConfirm: () => {
+        const methods = [...document.querySelectorAll('[data-customer-method]:checked')].map((input) => input.dataset.customerMethod);
+        commitState((draft) => { draft.profile.paymentMethods = methods; });
+        showToast(t('paymentMethodsSaved'));
+      }
     }, control));
     registerAction('privacy-details', (control) => openOverlay({
       title: t('privacyTitle'),
@@ -948,13 +1181,11 @@
       confirmLabel: t('gotIt'),
       hideCancel: true
     }, control));
-    registerAction('resend-code', () => showToast(t('verificationResent')));
     registerAction('show-directions', () => showToast(t('openingMaps')));
     registerAction('copy-referral', () => {
       navigator.clipboard?.writeText('https://nexora.example/invite/JESSICA50');
       showToast(t('inviteCopied'));
     });
-    registerAction('save-preferences', () => showToast(t('preferencesSaved')));
 
     function handleAction(event) {
       const nav = event.target.closest('[data-nav-target]');
@@ -975,6 +1206,21 @@
     function handleInput(event) {
       if (event.target.id === 'explore-search') filterExplore(event.target.value);
       if (event.target.id === 'offer-search') filterOffers(event.target.value);
+    }
+
+    function handleChange(event) {
+      const businessPref = event.target.closest('[data-business-pref]');
+      if (businessPref) {
+        commitState((draft) => setBusinessMarketing(draft, businessPref.dataset.businessPref, businessPref.checked));
+        renderPreferences();
+        showToast(t('businessPreferenceSaved'));
+        return;
+      }
+      const pref = event.target.closest('[data-pref]');
+      if (!pref) return;
+      commitState((draft) => setPreference(draft, pref.dataset.pref, pref.checked));
+      renderPreferences();
+      showToast(t('preferencesSaved'));
     }
 
     function handleKeydown(event) {
@@ -1000,7 +1246,36 @@
       });
     }
 
+    function renderProfile() {
+      document.querySelectorAll('[data-profile-name]').forEach((element) => {
+        element.textContent = state.profile.name;
+      });
+      const phone = normalizeUsPhone(state.profile.phone);
+      const formattedPhone = phone.length === 10
+        ? `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6)}`
+        : state.profile.phone;
+      document.querySelectorAll('[data-profile-phone]').forEach((element) => {
+        element.textContent = formattedPhone;
+      });
+      document.querySelectorAll('[data-profile-avatar]').forEach((element) => {
+        element.src = state.profile.avatar;
+        element.alt = `${state.profile.name} profile`;
+      });
+      renderPreferences();
+    }
+
+    function renderPreferences() {
+      document.querySelectorAll('[data-pref]').forEach((input) => {
+        input.checked = Boolean(state.preferences[input.dataset.pref]);
+      });
+      document.querySelectorAll('[data-business-pref]').forEach((input) => {
+        input.checked = Boolean(state.preferences.businessMarketing[input.dataset.businessPref]);
+      });
+      document.querySelector('[data-for-you]')?.classList.toggle('hidden', !state.preferences.aiSuggestions);
+    }
+
     function renderDomainViews() {
+      renderProfile();
     }
 
     function renderApp() {
@@ -1015,6 +1290,7 @@
     function initializeApp() {
       document.addEventListener('click', handleAction);
       document.addEventListener('input', handleInput);
+      document.addEventListener('change', handleChange);
       document.addEventListener('keydown', handleKeydown);
       renderApp();
     }
@@ -1025,7 +1301,14 @@
       migrateState,
       loadState,
       saveState,
-      translate
+      translate,
+      normalizeUsPhone,
+      requestOtp,
+      verifyOtp,
+      recordConsent,
+      setPreference,
+      setBusinessMarketing,
+      claimWelcomeGift
     };
 
     if (!window.NEXORA_SKIP_INIT) initializeApp();

@@ -226,6 +226,77 @@ test('sanitizes collection elements and preserves valid nullable unions', () => 
   assert.equal(invalidUnions.ui.overlay, null);
 });
 
+test('validates US phone and enforces OTP cooldown plus lockout', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  assert.equal(api.normalizeUsPhone('(832) 555-0148'), '8325550148');
+  assert.equal(api.requestOtp(app, '123', 1000).ok, false);
+  assert.equal(api.requestOtp(app, '(832) 555-0148', 1000).ok, true);
+  assert.equal(api.requestOtp(app, '(832) 555-0148', 2000).code, 'cooldown');
+  for (let attempt = 0; attempt < 5; attempt += 1) api.verifyOtp(app, '111111', 31000 + attempt);
+  assert.ok(app.session.lockedUntil > 31004);
+  assert.equal(api.verifyOtp(app, '246810', 32000).code, 'locked');
+});
+
+test('records consent decisions without making marketing a condition of points', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const before = app.balances['bitcoin-nail-bar'].points;
+  api.recordConsent(app, 'business:bitcoin-nail-bar', 'revoke', 'onboarding_skip', 1000);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
+  assert.equal(app.consents.at(-1).action, 'revoke');
+  assert.equal(app.consents.at(-1).confirmedAt, null);
+  api.setBusinessMarketing(app, 'bitcoin-nail-bar', true, 1500);
+  assert.equal(app.preferences.businessMarketing['bitcoin-nail-bar'], true);
+  api.setPreference(app, 'aiSuggestions', false, 2000);
+  assert.equal(app.preferences.aiSuggestions, false);
+  assert.equal(app.consents.at(-1).scope, 'aiSuggestions');
+
+  assert.equal(api.setPreference(app, 'businessMarketing', false, 2500).code, 'unknown_preference');
+  assert.equal(typeof app.preferences.businessMarketing, 'object');
+});
+
+test('prevents a welcome gift from being claimed twice or by an existing account', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const before = app.balances['bitcoin-nail-bar'].points;
+  assert.equal(api.claimWelcomeGift(app, '(832) 555-0148', 40000).code, 'existing_account');
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
+  assert.equal(api.claimWelcomeGift(app, '(713) 555-0199', 80000).ok, true);
+  assert.equal(api.claimWelcomeGift(app, '(713) 555-0199', 120000).code, 'already_claimed');
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 25);
+  assert.equal(app.ledger.filter((entry) => entry.refId === 'welcome-7135550199').length, 1);
+});
+
+test('round-trips valid consent preferences and welcome claims through migration', () => {
+  const { api, storage } = testApi();
+  const app = api.createDefaultState();
+  api.setBusinessMarketing(app, 'bitcoin-nail-bar', true, 1000);
+  api.setPreference(app, 'aiSuggestions', false, 2000);
+  api.claimWelcomeGift(app, '(713) 555-0199', 40000);
+  app.consents.push({ id: '', scope: 7, action: 'grant' });
+  api.saveState(app, storage);
+
+  const loaded = api.loadState(storage);
+  assert.equal(loaded.preferences.businessMarketing['bitcoin-nail-bar'], true);
+  assert.equal(loaded.preferences.aiSuggestions, false);
+  assert.equal(JSON.stringify(loaded.welcomeClaims), JSON.stringify(['7135550199']));
+  assert.equal(loaded.consents.length, 2);
+  assert.equal(loaded.consents[0].createdAt, '1970-01-01T00:00:01.000Z');
+  assert.equal(loaded.ledger.filter((entry) => entry.refId === 'welcome-7135550199').length, 1);
+});
+
+test('round-trips marketing preferences for every known business', () => {
+  const { api, storage } = testApi();
+  const app = api.createDefaultState();
+  assert.equal(api.setBusinessMarketing(app, 'golden-glow-spa', true, 1000).ok, true);
+  api.saveState(app, storage);
+
+  const loaded = api.loadState(storage);
+  assert.equal(loaded.preferences.businessMarketing['golden-glow-spa'], true);
+  assert.equal(loaded.consents.at(-1).scope, 'business:golden-glow-spa');
+});
+
 test('uses nested profile language with the shared translation dictionary', () => {
   const source = html();
   assert.doesNotMatch(source, /\bstate\.language\b/);
@@ -243,7 +314,7 @@ test('uses nested profile language with the shared translation dictionary', () =
 test('initializes the browser with defined entry-point dependencies', () => {
   const document = createDocumentStub();
   assert.doesNotThrow(() => testApi({}, { skipInit: false, document }));
-  assert.deepEqual(document.listeners.map(({ type }) => type), ['click', 'input', 'keydown']);
+  assert.deepEqual(document.listeners.map(({ type }) => type), ['click', 'input', 'change', 'keydown']);
 
   const source = html();
   for (const name of ['handleAction', 'handleInput', 'handleKeydown', 'renderApp']) {
@@ -398,6 +469,20 @@ test('keeps Vietnamese and English content in sync', () => {
   assert.match(source, /function setLanguage\(language\)/);
 });
 
+test('renders persisted profile and immediate per-business preferences', () => {
+  const source = html();
+  for (const hook of ['data-profile-name', 'data-profile-phone', 'data-profile-avatar', 'data-business-pref']) {
+    assert.match(source, new RegExp(hook));
+  }
+  assert.match(source, /<[^>]+data-for-you(?:[\s=>])/);
+  assert.match(source, /type="checkbox" checked disabled aria-disabled="true"/);
+  assert.match(source, /function renderProfile\(\)/);
+  assert.match(source, /function renderPreferences\(\)/);
+  assert.match(source, /function handleChange\(event\)/);
+  assert.match(source, /addEventListener\('change', handleChange\)/);
+  assert.doesNotMatch(source, /data-action="save-preferences"/);
+});
+
 test('covers accessibility, motion and UI edge states', () => {
   const source = html();
   assert.match(source, /aria-live="polite"/);
@@ -512,4 +597,38 @@ test('cancel and confirm modal actions close the dialog and run the matching cal
   context.handleAction(eventFor(confirm));
   assert.equal(overlay.attributes['aria-hidden'], 'true');
   assert.deepEqual(results, ['cancel', 'confirm']);
+});
+
+test('keeps a modal form open when its confirm callback rejects validation', () => {
+  const document = createDocumentStub();
+  const { context } = testApi({}, { document });
+  const overlay = document.getElementById('app-overlay');
+  const trigger = document.getElementById('modal-trigger');
+  let attempts = 0;
+
+  context.openOverlay({
+    title: 'Edit profile',
+    html: '<input>',
+    onConfirm: () => { attempts += 1; return false; }
+  }, trigger);
+  context.closeOverlay(true);
+
+  assert.equal(attempts, 1);
+  assert.equal(overlay.attributes['aria-hidden'], 'false');
+  assert.equal(vm.runInContext('state.ui.overlay.kind', context), 'dialog');
+});
+
+test('clears a persisted modal marker after an accepted confirm callback', () => {
+  const document = createDocumentStub();
+  const { api, context, storage } = testApi({}, { document });
+  context.openOverlay({
+    title: 'Edit profile',
+    html: '<input>',
+    onConfirm: () => context.commitState((draft) => { draft.profile.name = 'Lan Nguyen'; })
+  });
+
+  context.closeOverlay(true);
+
+  assert.equal(api.loadState(storage).profile.name, 'Lan Nguyen');
+  assert.equal(api.loadState(storage).ui.overlay, null);
 });
