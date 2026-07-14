@@ -5349,22 +5349,22 @@
       }
 
       /* Customer table — mobile card labels (override booking labels) */
-      .cust-table td:nth-child(1)::before { content: "Khách hàng"; }
-      .cust-table td:nth-child(2)::before { content: "Điện thoại"; }
-      .cust-table td:nth-child(3)::before { content: "Nhóm"; }
-      .cust-table td:nth-child(4)::before { content: "Nguồn"; }
-      .cust-table td:nth-child(5)::before { content: "Số lần ghé"; }
-      .cust-table td:nth-child(6)::before { content: "Lần cuối"; }
-      .cust-table td:nth-child(7)::before { content: "Tổng chi"; }
+      .cust-table td:nth-child(1)::before { content: "Customer"; }
+      .cust-table td:nth-child(2)::before { content: "Phone"; }
+      .cust-table td:nth-child(3)::before { content: "Group"; }
+      .cust-table td:nth-child(4)::before { content: "Source"; }
+      .cust-table td:nth-child(5)::before { content: "Visits"; }
+      .cust-table td:nth-child(6)::before { content: "Last Visit"; }
+      .cust-table td:nth-child(7)::before { content: "Total Spent"; }
       .cust-table td:nth-child(8)::before { content: "Action"; }
 
       /* Call Log table — mobile card labels */
-      .call-table td:nth-child(1)::before { content: "Thời gian"; }
-      .call-table td:nth-child(2)::before { content: "Người gọi"; }
-      .call-table td:nth-child(3)::before { content: "Số điện thoại"; }
-      .call-table td:nth-child(4)::before { content: "Trạng thái"; }
-      .call-table td:nth-child(5)::before { content: "Thời lượng"; }
-      .call-table td:nth-child(6)::before { content: "Ghi chú"; }
+      .call-table td:nth-child(1)::before { content: "Time"; }
+      .call-table td:nth-child(2)::before { content: "Caller"; }
+      .call-table td:nth-child(3)::before { content: "Phone"; }
+      .call-table td:nth-child(4)::before { content: "Status"; }
+      .call-table td:nth-child(5)::before { content: "Duration"; }
+      .call-table td:nth-child(6)::before { content: "Notes"; }
       .call-table td:nth-child(7)::before { content: "Action"; }
 
       /* Chips stay auto-width (never stretch full-width) on mobile */
@@ -5988,7 +5988,7 @@
                 <span class="page-tab-icon">
                   <i class="bi bi-people" aria-hidden="true"></i>
                 </span>
-                <span>Khách hàng</span>
+                <span>Customers</span>
               </button>
               <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="calllog" aria-controls="panel-calllog">
                 <span class="page-tab-icon">
@@ -6000,13 +6000,13 @@
                 <span class="page-tab-icon">
                   <i class="bi bi-tags" aria-hidden="true"></i>
                 </span>
-                <span>Gói dịch vụ</span>
+                <span>Plans</span>
               </button>
               <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="settings" aria-controls="panel-settings">
                 <span class="page-tab-icon">
                   <i class="bi bi-sliders2-vertical" aria-hidden="true"></i>
                 </span>
-                <span>Cấu hình tiệm</span>
+                <span>Salon Settings</span>
               </button>
             </div>
           </div>
@@ -6029,7 +6029,7 @@
 
               <div class="owner-section-label">
                 <span class="owner-pulse"></span>
-                <span>Cần Làm Ngay</span>
+                <span>Needs Attention</span>
                 <span class="badge badge-warning">3</span>
               </div>
 
@@ -6037,82 +6037,82 @@
                 <article class="owner-action-card hot">
                   <span class="owner-action-icon warning">🔥</span>
                   <div>
-                    <div class="owner-action-title">312 khách 30+ ngày chưa về - AI đã soạn sẵn campaign</div>
+                    <div class="owner-action-title">312 clients haven't returned in 30+ days - AI has a campaign ready to go</div>
                   </div>
-                  <button class="action-button" type="button">Chạy Ngay</button>
+                  <button class="action-button" type="button">Run Now</button>
                 </article>
                 <article class="owner-action-card">
                   <span class="owner-action-icon">💬</span>
                   <div>
-                    <div class="owner-action-title">2 khách nhắn tin chưa trả lời (Kim P., Sophie T.)</div>
+                    <div class="owner-action-title">2 clients texted and haven't gotten a reply (Kim P., Sophie T.)</div>
                   </div>
-                  <button class="booking-secondary-button" type="button">Trả Lời</button>
+                  <button class="booking-secondary-button" type="button">Reply</button>
                 </article>
                 <article class="owner-action-card">
                   <span class="owner-action-icon success">★</span>
                   <div>
-                    <div class="owner-action-title">5 khách xong dịch vụ hôm qua chưa được xin review</div>
+                    <div class="owner-action-title">5 clients finished service yesterday and haven't been asked for a review</div>
                   </div>
-                  <button class="booking-secondary-button" type="button">Gửi SMS Review</button>
+                  <button class="booking-secondary-button" type="button">Send Review SMS</button>
                 </article>
               </div>
 
-              <div class="owner-section-label">Hôm Nay - bấm để xem chi tiết</div>
+              <div class="owner-section-label">Today - tap to view details</div>
 
               <div class="overview-kpis">
                 <article class="overview-card kpi-card" style="--kpi-accent: var(--brand-cyan);">
                   <div class="kpi-top"><div class="kpi-icon"><i class="bi bi-telephone" aria-hidden="true"></i></div><span class="badge booking-source-voice">Calls</span></div>
                   <div class="kpi-label">Calls</div>
                   <div class="kpi-value">23</div>
-                  <div class="kpi-trend">93.5% trả lời</div>
+                  <div class="kpi-trend">93.5% answered</div>
                 </article>
                 <article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-success);">
                   <div class="kpi-top"><div class="kpi-icon"><i class="bi bi-calendar-check" aria-hidden="true"></i></div><span class="badge badge-success">AI Voice</span></div>
                   <div class="kpi-label">Bookings</div>
                   <div class="kpi-value">7</div>
-                  <div class="kpi-trend">3 từ AI Voice</div>
+                  <div class="kpi-trend">3 from AI Voice</div>
                 </article>
                 <article class="overview-card kpi-card" style="--kpi-accent: #f472b6;">
                   <div class="kpi-top"><div class="kpi-icon"><i class="bi bi-currency-dollar" aria-hidden="true"></i></div><span class="badge badge-success">8 returns</span></div>
                   <div class="kpi-label">Revenue SMS</div>
                   <div class="kpi-value">$460</div>
-                  <div class="kpi-trend">8 khách về hôm nay</div>
+                  <div class="kpi-trend">8 clients returned today</div>
                 </article>
                 <article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-violet);">
                   <div class="kpi-top"><div class="kpi-icon"><i class="bi bi-stars" aria-hidden="true"></i></div><span class="badge badge-plan">SEO AI</span></div>
                   <div class="kpi-label">AI Visibility</div>
                   <div class="kpi-value">23/100</div>
-                  <div class="kpi-trend">→ 78 sau 90 ngày</div>
+                  <div class="kpi-trend">→ 78 in 90 days</div>
                 </article>
               </div>
 
               <div class="owner-dashboard-grid">
                 <article class="overview-card overview-card-pad" data-owner-section="live-feed">
                   <div class="card-heading">
-                    <h2 class="card-title">Đang Diễn Ra</h2>
+                    <h2 class="card-title">Live Now</h2>
                     <span class="card-meta">/v1/events/stream</span>
                   </div>
                   <div class="owner-feed">
-                    <div class="owner-feed-row"><span class="owner-feed-icon">📞</span><div class="owner-feed-copy">Mai Nguyen gọi - AI đặt lịch Gel Thứ 5 2pm</div><span class="owner-feed-time">8:01 AM</span></div>
-                    <div class="owner-feed-row"><span class="owner-feed-icon" style="color: #ef4444;">⊘</span><div class="owner-feed-copy">Miss call 713-881-xxxx → auto SMS đã gửi</div><span class="owner-feed-time" style="color: #ef4444;">7:48 AM</span></div>
-                    <div class="owner-feed-row"><span class="owner-feed-icon">💬</span><div class="owner-feed-copy">Linh T. reply SMS: "OK chị đặt thứ 5"</div><span class="owner-feed-time">7:32 AM</span></div>
-                    <div class="owner-feed-row"><span class="owner-feed-icon" style="color: var(--nexora-warning);">★</span><div class="owner-feed-copy">Jennifer S. để lại 5★ Google review</div><span class="owner-feed-time" style="color: var(--nexora-warning);">7:15 AM</span></div>
-                    <div class="owner-feed-row"><span class="owner-feed-icon" style="color: var(--nexora-success);">$</span><div class="owner-feed-copy">Tina V. giữ chỗ qua Landing Page - $40</div><span class="owner-feed-time" style="color: var(--nexora-success);">6:58 AM</span></div>
+                    <div class="owner-feed-row"><span class="owner-feed-icon">📞</span><div class="owner-feed-copy">Mai Nguyen called - AI booked Gel for Thursday 2pm</div><span class="owner-feed-time">8:01 AM</span></div>
+                    <div class="owner-feed-row"><span class="owner-feed-icon" style="color: #ef4444;">⊘</span><div class="owner-feed-copy">Missed call 713-881-xxxx → auto SMS sent</div><span class="owner-feed-time" style="color: #ef4444;">7:48 AM</span></div>
+                    <div class="owner-feed-row"><span class="owner-feed-icon">💬</span><div class="owner-feed-copy">Linh T. replied by SMS: "OK, book me for Thursday"</div><span class="owner-feed-time">7:32 AM</span></div>
+                    <div class="owner-feed-row"><span class="owner-feed-icon" style="color: var(--nexora-warning);">★</span><div class="owner-feed-copy">Jennifer S. left a 5★ Google review</div><span class="owner-feed-time" style="color: var(--nexora-warning);">7:15 AM</span></div>
+                    <div class="owner-feed-row"><span class="owner-feed-icon" style="color: var(--nexora-success);">$</span><div class="owner-feed-copy">Tina V. booked through the Landing Page - $40</div><span class="owner-feed-time" style="color: var(--nexora-success);">6:58 AM</span></div>
                   </div>
                 </article>
 
                 <div class="owner-side-stack">
                   <article class="overview-card overview-card-pad">
                     <div class="card-heading">
-                      <h2 class="card-title">Thao Tác Nhanh</h2>
+                      <h2 class="card-title">Quick Actions</h2>
                       <span class="card-meta">One tap</span>
                     </div>
                     <div class="owner-quick-grid">
-                      <button class="owner-quick-button is-primary" type="button"><span class="owner-quick-icon"><i class="bi bi-lightning-charge" aria-hidden="true"></i></span><span>Chạy Camp</span></button>
+                      <button class="owner-quick-button is-primary" type="button"><span class="owner-quick-icon"><i class="bi bi-lightning-charge" aria-hidden="true"></i></span><span>Run Camp</span></button>
                       <button class="owner-quick-button" type="button"><span class="owner-quick-icon"><i class="bi bi-chat-dots" aria-hidden="true"></i></span><span>SMS</span></button>
                       <button class="owner-quick-button" type="button"><span class="owner-quick-icon"><i class="bi bi-palette" aria-hidden="true"></i></span><span>Design</span></button>
-                      <button class="owner-quick-button" type="button"><span class="owner-quick-icon"><i class="bi bi-circle-half" aria-hidden="true"></i></span><span>Soi Gương</span></button>
-                      <button class="owner-quick-button" type="button"><span class="owner-quick-icon"><i class="bi bi-people" aria-hidden="true"></i></span><span>Khách</span></button>
+                      <button class="owner-quick-button" type="button"><span class="owner-quick-icon"><i class="bi bi-circle-half" aria-hidden="true"></i></span><span>Mirror</span></button>
+                      <button class="owner-quick-button" type="button"><span class="owner-quick-icon"><i class="bi bi-people" aria-hidden="true"></i></span><span>Clients</span></button>
                       <button class="owner-quick-button" type="button"><span class="owner-quick-icon"><i class="bi bi-receipt" aria-hidden="true"></i></span><span>TAX IQ</span></button>
                       <button class="owner-quick-button" type="button"><span class="owner-quick-icon"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i></span><span>Analytics</span></button>
                       <button class="owner-quick-button" type="button"><span class="owner-quick-icon"><i class="bi bi-calendar2-check" aria-hidden="true"></i></span><span>Booking</span></button>
@@ -6133,7 +6133,7 @@
                         <div class="progress-top"><span>SMS</span><span class="progress-value">653 / 1000</span></div>
                         <div class="progress-track"><div class="progress-fill" style="width: 65.3%; background: var(--brand-cyan);"></div></div>
                       </div>
-                      <div class="business-sub">Hóa đơn tiếp: <strong style="color: var(--nexora-text);">Aug 1 - $199</strong></div>
+                      <div class="business-sub">Next invoice: <strong style="color: var(--nexora-text);">Aug 1 - $199</strong></div>
                     </div>
                   </article>
                 </div>
@@ -6671,7 +6671,7 @@
                               <div class="tech-empty" data-tech-empty>No matching technician found.</div>
                             </div>
                           </div>
-                          <button class="booking-secondary-button tech-create-button" type="button" data-tech-create><i class="bi bi-plus-lg" aria-hidden="true"></i>Tự nhập</button>
+                          <button class="booking-secondary-button tech-create-button" type="button" data-tech-create><i class="bi bi-plus-lg" aria-hidden="true"></i>Enter manually</button>
                         </div>
                       </div>
 
@@ -6794,7 +6794,7 @@
                       </div>
                       <span class="badge booking-source-voice">93.5%</span>
                     </div>
-                    <div class="kpi-label">Calls Tháng Này</div>
+                    <div class="kpi-label">Calls This Month</div>
                     <div class="kpi-value">487</div>
                     <div class="kpi-trend">AI answered automatically</div>
                   </article>
@@ -6825,35 +6825,35 @@
                     <div class="voice-phone" aria-label="AI call demo phone">
                       <div class="voice-phone-screen">
                         <div class="voice-phone-head">
-                          <div style="color: var(--nexora-subtle); font-size: 11px; font-weight: 800;">Đang gọi đến</div>
+                          <div style="color: var(--nexora-subtle); font-size: 11px; font-weight: 800;">Incoming call</div>
                           <div style="margin-top: 5px; color: var(--nexora-text); font-size: 15px; font-weight: 700;">Bitcoin Nail Bar</div>
                           <div style="margin-top: 3px; color: var(--nexora-muted); font-size: 12px; font-weight: 700;">832-786-5576</div>
                           <div style="margin-top: 12px;"><span class="voice-avatar">AI</span></div>
                         </div>
                         <div class="voice-bubbles" data-voice-bubbles>
-                          <div class="voice-bubble">Xin chào! Đây là Bitcoin Nail Bar, tôi là AI Assistant. Bạn muốn đặt lịch không?</div>
+                          <div class="voice-bubble">Hi! This is Bitcoin Nail Bar, I'm the AI assistant. Would you like to book an appointment?</div>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div class="voice-scenario-grid">
-                    <button class="voice-scenario-button is-active" type="button" data-voice-scenario="book">📅 Đặt Lịch</button>
-                    <button class="voice-scenario-button" type="button" data-voice-scenario="price">💰 Hỏi Giá</button>
-                    <button class="voice-scenario-button" type="button" data-voice-scenario="hours">🕐 Giờ Mở Cửa</button>
+                    <button class="voice-scenario-button is-active" type="button" data-voice-scenario="book">📅 Book</button>
+                    <button class="voice-scenario-button" type="button" data-voice-scenario="price">💰 Ask Price</button>
+                    <button class="voice-scenario-button" type="button" data-voice-scenario="hours">🕐 Hours</button>
                     <button class="voice-scenario-button" type="button" data-voice-scenario="miss">📵 Miss Call</button>
-                    <button class="voice-scenario-button" type="button" data-voice-scenario="human">👤 Gặp Người Thật</button>
+                    <button class="voice-scenario-button" type="button" data-voice-scenario="human">👤 Talk to a Person</button>
                   </div>
                   <div class="voice-bridge">
                     <strong style="color: var(--nexora-brand);">Booking sync</strong>
-                    <span style="flex: 1;">Bấm "Đặt Lịch" thì booking tự nhảy vào Booking Book.</span>
-                    <button class="booking-secondary-button" type="button" data-tab-jump="booking">Xem</button>
+                    <span style="flex: 1;">Tap "Book" and the appointment drops right into the Booking Book.</span>
+                    <button class="booking-secondary-button" type="button" data-tab-jump="booking">View</button>
                   </div>
                 </article>
 
                 <div style="display: grid; gap: 14px;">
                   <article class="overview-card overview-card-pad" data-voice-card="log">
                     <div class="card-heading">
-                      <h2 class="card-title">Call Log Gần Đây</h2>
+                      <h2 class="card-title">Recent Call Log</h2>
                       <span class="card-meta">Live</span>
                     </div>
                     <div class="voice-log">
@@ -6864,9 +6864,9 @@
                   </article>
 
                   <article class="voice-number-card" data-voice-card="number">
-                    <div class="card-meta">Số điện thoại AI của bạn</div>
+                    <div class="card-meta">Your AI phone number</div>
                     <div class="voice-number">832-786-5576</div>
-                    <div class="business-sub">Forward calls về số này - AI trả lời 24/7, capture booking, báo giá, nhận request thợ.</div>
+                    <div class="business-sub">Forward calls to this number - AI answers 24/7, captures bookings, quotes prices, and takes technician requests.</div>
                   </article>
                 </div>
               </div>
@@ -6875,7 +6875,7 @@
             <section class="tab-panel" id="panel-plans" data-tab-panel="plans" aria-label="Service plans panel">
               <div style="display: grid; gap: 16px;">
                 <div class="plans-hero">
-                  Founding Salon Offer - chỉ còn 7 suất Founding · Price lock 12 tháng
+                  Founding Salon Offer - only 7 Founding spots left · Price locked for 12 months
                 </div>
 
                 <div class="plans-grid">
@@ -6888,14 +6888,14 @@
                       <div class="plan-feature"><span class="plan-check">✓</span><span>AI Voice 24/7</span></div>
                       <div class="plan-feature"><span class="plan-check">✓</span><span>Missed-call SMS</span></div>
                       <div class="plan-feature"><span class="plan-check">✓</span><span>500 min · 500 SMS</span></div>
-                      <div class="plan-feature"><span class="plan-check muted">—</span><span>Dashboard trong Pro</span></div>
-                      <div class="plan-feature"><span class="plan-check muted">—</span><span>Google Review trong Pro</span></div>
+                      <div class="plan-feature"><span class="plan-check muted">—</span><span>Dashboard in Pro</span></div>
+                      <div class="plan-feature"><span class="plan-check muted">—</span><span>Google Review in Pro</span></div>
                     </div>
-                    <button class="plan-select-button" type="button" data-plan-select="Starter">Chọn Starter</button>
+                    <button class="plan-select-button" type="button" data-plan-select="Starter">Choose Starter</button>
                   </article>
 
                   <article class="service-plan-card is-recommended" data-plan-card="pro">
-                    <div class="plan-rec">Khuyên dùng</div>
+                    <div class="plan-rec">Recommended</div>
                     <div class="service-plan-name">Pro</div>
                     <div class="service-plan-price">$199<span>/mo</span></div>
                     <div class="service-plan-cross">$299/mo</div>
@@ -6907,7 +6907,7 @@
                       <div class="plan-feature"><span class="plan-check">✓</span><span>1,000 min · 1,000 SMS</span></div>
                       <div class="plan-aio">AIO ENGINE - Review Velocity + 30 FAQ + Schema + AI Visibility</div>
                     </div>
-                    <button class="plan-select-button is-primary" type="button" data-plan-select="Pro" data-trial-open>Bắt Đầu Free 14 Ngày</button>
+                    <button class="plan-select-button is-primary" type="button" data-plan-select="Pro" data-trial-open>Start 14-Day Free Trial</button>
                   </article>
 
                   <article class="service-plan-card" data-plan-card="elite">
@@ -6916,13 +6916,13 @@
                     <div class="service-plan-price">$349<span>/mo</span></div>
                     <div class="service-plan-cross">$499/mo</div>
                     <div class="plan-features">
-                      <div class="plan-feature"><span class="plan-check">✓</span><span>Tất cả trong Pro</span></div>
+                      <div class="plan-feature"><span class="plan-check">✓</span><span>Everything in Pro</span></div>
                       <div class="plan-aio">AIO MAX - 100 FAQ + local pages + competitor tracking + attribution</div>
                       <div class="plan-feature"><span class="plan-check">✓</span><span>Staff Dashboard + TAX IQ</span></div>
-                      <div class="plan-feature"><span class="plan-check">✓</span><span>2,000 min · 2,000 SMS · 3 số</span></div>
+                      <div class="plan-feature"><span class="plan-check">✓</span><span>2,000 min · 2,000 SMS · 3 numbers</span></div>
                       <div class="plan-feature"><span class="plan-check">✓</span><span>Email marketing + Win-back</span></div>
                     </div>
-                    <button class="plan-select-button" type="button" data-plan-select="Elite">Chọn Elite</button>
+                    <button class="plan-select-button" type="button" data-plan-select="Elite">Choose Elite</button>
                   </article>
                 </div>
 
@@ -6932,23 +6932,23 @@
                     <span class="card-meta">Plan value</span>
                   </div>
                   <div class="roi-grid">
-                    <div class="roi-metric is-loss"><div class="roi-value">$3,200</div><div class="roi-label">Đang mất/tháng</div></div>
-                    <div class="roi-metric is-cost"><div class="roi-value">$199</div><div class="roi-label">Chi phí NEXORA</div></div>
-                    <div class="roi-metric is-gain"><div class="roi-value">+$2,200</div><div class="roi-label">Revenue thêm/tháng</div></div>
+                    <div class="roi-metric is-loss"><div class="roi-value">$3,200</div><div class="roi-label">Losing/month</div></div>
+                    <div class="roi-metric is-cost"><div class="roi-value">$199</div><div class="roi-label">NEXORA cost</div></div>
+                    <div class="roi-metric is-gain"><div class="roi-value">+$2,200</div><div class="roi-label">Added revenue/month</div></div>
                   </div>
-                  <div class="business-sub roi-summary">ROI: <strong style="color: var(--nexora-success);">16x</strong> · Hoàn vốn trong <strong style="color: var(--brand-cyan);">3 ngày</strong></div>
+                  <div class="business-sub roi-summary">ROI: <strong style="color: var(--nexora-success);">16x</strong> · Pays for itself in <strong style="color: var(--brand-cyan);">3 days</strong></div>
                 </article>
 
                 <article class="guarantee-panel">
                   <div class="card-heading">
-                    <h2 class="card-title">Không rủi ro với bạn</h2>
+                    <h2 class="card-title">No risk to you</h2>
                     <span class="card-meta">Pilot terms</span>
                   </div>
                   <div class="guarantee-grid">
-                    <div>✓ 14 ngày pilot miễn phí</div>
-                    <div>✓ Không cần thẻ tín dụng</div>
-                    <div>✓ Setup trong 24 giờ</div>
-                    <div>✓ Cancel bất cứ lúc nào</div>
+                    <div>✓ 14-day free pilot</div>
+                    <div>✓ No credit card required</div>
+                    <div>✓ Set up within 24 hours</div>
+                    <div>✓ Cancel anytime</div>
                   </div>
                 </article>
               </div>
@@ -6957,15 +6957,15 @@
             <section class="tab-panel" id="panel-settings" data-tab-panel="settings" aria-label="Salon settings panel">
               <div class="settings-shell">
                 <div class="settings-hero is-compact">
-                  <div class="settings-eyebrow">⚙️ Cấu Hình Tiệm</div>
-                  <h2 class="settings-title">Một Nguồn Dữ Liệu</h2>
-                  <p class="settings-desc">Nhập một lần: AI Voice đọc giá, SMS lấy tên tiệm, landing page tự điền dịch vụ, Schema tự sinh, Booking Book tự đồng bộ.</p>
+                  <div class="settings-eyebrow">⚙️ Salon Settings</div>
+                  <h2 class="settings-title">One Source of Truth</h2>
+                  <p class="settings-desc">Enter it once: AI Voice reads prices, SMS pulls the salon name, the landing page auto-fills services, Schema is generated automatically, and the Booking Book stays in sync.</p>
                   <div class="settings-sync-grid">
-                    <div class="settings-sync-pill"><strong>AI Voice</strong>Báo giá & giờ mở cửa</div>
-                    <div class="settings-sync-pill"><strong>SMS</strong>Tên tiệm & offer</div>
-                    <div class="settings-sync-pill"><strong>Landing Page</strong>Dịch vụ & voucher</div>
+                    <div class="settings-sync-pill"><strong>AI Voice</strong>Pricing & hours</div>
+                    <div class="settings-sync-pill"><strong>SMS</strong>Salon name & offer</div>
+                    <div class="settings-sync-pill"><strong>Landing Page</strong>Services & vouchers</div>
                     <div class="settings-sync-pill"><strong>Schema</strong>FAQ & local data</div>
-                    <div class="settings-sync-pill"><strong>Booking</strong>Thời lượng & thợ</div>
+                    <div class="settings-sync-pill"><strong>Booking</strong>Duration & technicians</div>
                   </div>
                 </div>
 
@@ -6973,42 +6973,42 @@
                   <article class="settings-card">
                     <div class="settings-card-head">
                       <div>
-                        <div class="settings-card-title"><i class="bi bi-shop" aria-hidden="true"></i>Thông Tin Tiệm</div>
-                        <div class="settings-card-sub">Dữ liệu nền cho AI Voice, SMS, landing page và review request.</div>
+                        <div class="settings-card-title"><i class="bi bi-shop" aria-hidden="true"></i>Salon Info</div>
+                        <div class="settings-card-sub">Core data for AI Voice, SMS, landing page, and review requests.</div>
                       </div>
-                      <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Thu gọn thông tin tiệm"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
+                      <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Collapse salon info"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
                     </div>
                     <div class="settings-field-grid settings-business-grid">
                       <label class="settings-field">
-                        <span class="settings-label">Tên tiệm</span>
+                        <span class="settings-label">Salon name</span>
                         <input class="settings-input" type="text" value="Bitcoin Nail Bar">
                       </label>
                       <label class="settings-field">
-                        <span class="settings-label">Số điện thoại tiệm</span>
+                        <span class="settings-label">Salon phone number</span>
                         <span class="phone-input-shell">
                           <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
                           <input class="settings-input phone-mask-input" type="tel" value="(346) 802-4906" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
                         </span>
-                        <span class="settings-help">Số khách đang gọi hiện tại, sẽ forward về số AI.</span>
+                        <span class="settings-help">The number customers currently call; it will be forwarded to the AI number.</span>
                       </label>
                       <label class="settings-field">
-                        <span class="settings-label">Số AI trả lời</span>
+                        <span class="settings-label">AI answering number</span>
                         <span class="phone-input-shell">
                           <select class="phone-country-select" aria-label="Country code" disabled><option value="+1" selected>+1</option></select>
                           <input class="settings-input phone-mask-input" type="tel" value="(832) 786-5576" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask readonly>
                         </span>
-                        <span class="settings-help">NEXORA cấp, AI bắt máy 24/7 trên số này.</span>
+                        <span class="settings-help">Provided by NEXORA; AI answers 24/7 on this number.</span>
                       </label>
                       <label class="settings-field">
-                        <span class="settings-label">Số nhận thông báo booking</span>
+                        <span class="settings-label">Booking notification number</span>
                         <span class="phone-input-shell">
                           <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
                           <input class="settings-input phone-mask-input" type="tel" value="" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
                         </span>
-                        <span class="settings-help">SMS báo khi có khách book hoặc khách nhắn - có thể là số chủ hoặc quản lý.</span>
+                        <span class="settings-help">Gets an SMS when a customer books or texts - can be the owner's or manager's number.</span>
                       </label>
                       <label class="settings-field settings-span-full" style="grid-column: 1 / -1;">
-                        <span class="settings-label">Địa chỉ</span>
+                        <span class="settings-label">Address</span>
                         <input class="settings-input" type="text" value="9793 Westheimer Rd, Suite A, Houston, TX 77042">
                       </label>
                       <label class="settings-field settings-span-full" style="grid-column: 1 / -1;">
@@ -7024,7 +7024,7 @@
                         <div class="settings-card-title"><i class="bi bi-clock-history" aria-hidden="true"></i>Operating Hours</div>
                         <div class="settings-card-sub">Set working hours for each day. The summary on the card updates after you save.</div>
                       </div>
-                      <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Thu gọn giờ mở cửa"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
+                      <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Collapse operating hours"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
                     </div>
                     <div class="settings-hours">
                       <div class="settings-hour-row">
@@ -7119,24 +7119,24 @@
                   <article class="settings-card">
                     <div class="settings-card-head">
                       <div>
-                        <div class="settings-card-title"><i class="bi bi-currency-dollar" aria-hidden="true"></i>Dịch Vụ & Giá</div>
-                      <div class="settings-card-sub">Thời lượng quyết định giờ gửi SMS review và chu kỳ promo touch-up.</div>
+                        <div class="settings-card-title"><i class="bi bi-currency-dollar" aria-hidden="true"></i>Services & Pricing</div>
+                      <div class="settings-card-sub">Duration determines when the review SMS is sent and the touch-up promo cycle.</div>
                     </div>
-                    <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Thu gọn dịch vụ và giá"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
+                    <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Collapse services and pricing"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
                   </div>
                   <div class="settings-actions" style="margin-bottom: 12px;">
-                    <button class="booking-secondary-button" type="button" data-settings-action="photo"><i class="bi bi-camera" aria-hidden="true"></i>Chụp Menu</button>
-                    <button class="booking-secondary-button" type="button" data-settings-action="suggest"><i class="bi bi-lightning-charge" aria-hidden="true"></i>Gợi Ý Ngành</button>
-                    <button class="booking-primary-button" type="button" data-settings-action="add-service"><i class="bi bi-plus-lg" aria-hidden="true"></i>Tự Nhập</button>
+                    <button class="booking-secondary-button" type="button" data-settings-action="photo"><i class="bi bi-camera" aria-hidden="true"></i>Scan Menu</button>
+                    <button class="booking-secondary-button" type="button" data-settings-action="suggest"><i class="bi bi-lightning-charge" aria-hidden="true"></i>Industry Suggestions</button>
+                    <button class="booking-primary-button" type="button" data-settings-action="add-service"><i class="bi bi-plus-lg" aria-hidden="true"></i>Enter Manually</button>
                   </div>
 
                   <div class="settings-service-panel" data-service-scan hidden>
-                    <div class="settings-service-panel-title">Photo menu scan - AI đọc bảng giá rồi thêm dịch vụ mới vào danh sách bên dưới.</div>
-                    <div class="settings-service-progress" data-service-scan-progress>✓ Camera ready<br>✓ Upload ảnh menu<br>✓ Claude Vision đọc tên dịch vụ, giá và thời lượng</div>
+                    <div class="settings-service-panel-title">Photo menu scan - AI reads your price list and adds new services to the list below.</div>
+                    <div class="settings-service-progress" data-service-scan-progress>✓ Camera ready<br>✓ Upload menu photo<br>✓ Claude Vision reads service names, prices, and durations</div>
                   </div>
 
                   <div class="settings-service-panel" data-service-suggest hidden>
-                    <div class="settings-service-panel-title">Bấm để thêm - giá thị trường điền sẵn, sửa được:</div>
+                    <div class="settings-service-panel-title">Tap to add - market prices are pre-filled and editable:</div>
                     <div class="settings-service-suggest-grid">
                       <button class="settings-service-suggest" type="button" data-service-suggest-add data-name="Gel-X Extension" data-price="55" data-duration="90">+ Gel-X Extension <span>$55</span></button>
                       <button class="settings-service-suggest" type="button" data-service-suggest-add data-name="Polish Change" data-price="15" data-duration="20">+ Polish Change <span>$15</span></button>
@@ -7149,164 +7149,164 @@
                     </div>
                   </div>
 
-                  <div class="settings-service-note-bar">Thời lượng quyết định giờ gửi SMS review (xong + 2h) và chu kỳ promo touch-up.</div>
+                  <div class="settings-service-note-bar">Duration determines when the review SMS is sent (finished + 2h) and the touch-up promo cycle.</div>
 
                   <div class="settings-service-list settings-service-body">
                     <div class="settings-service-header" aria-hidden="true">
                       <span></span>
-                      <span>Dịch vụ</span>
-                      <span>Giá</span>
-                      <span>Thời lượng</span>
+                      <span>Service</span>
+                      <span>Price</span>
+                      <span>Duration</span>
                       <span></span>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
                         <span class="settings-service-visual tone-violet" aria-hidden="true">💅</span>
-                        <input class="settings-service-input" type="text" value="Gel Manicure" aria-label="Tên dịch vụ">
+                        <input class="settings-service-input" type="text" value="Gel Manicure" aria-label="Service name">
                         <div class="settings-service-input-wrap">
                           <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="35" aria-label="Giá dịch vụ">
+                          <input class="settings-service-input price" type="number" value="35" aria-label="Service price">
                         </div>
                         <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="60" aria-label="Thời lượng dịch vụ">
+                          <input class="settings-service-input duration" type="number" value="60" aria-label="Service duration">
                           <span class="settings-service-suffix">min</span>
                         </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
+                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
                       </div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
                         <span class="settings-service-visual tone-cyan" aria-hidden="true">🖐️</span>
-                        <input class="settings-service-input" type="text" value="Classic Manicure" aria-label="Tên dịch vụ">
+                        <input class="settings-service-input" type="text" value="Classic Manicure" aria-label="Service name">
                         <div class="settings-service-input-wrap">
                           <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="22" aria-label="Giá dịch vụ">
+                          <input class="settings-service-input price" type="number" value="22" aria-label="Service price">
                         </div>
                         <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="45" aria-label="Thời lượng dịch vụ">
+                          <input class="settings-service-input duration" type="number" value="45" aria-label="Service duration">
                           <span class="settings-service-suffix">min</span>
                         </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
+                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
                       </div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
                         <span class="settings-service-visual tone-rose" aria-hidden="true">💎</span>
-                        <input class="settings-service-input" type="text" value="Full Set Acrylic" aria-label="Tên dịch vụ">
+                        <input class="settings-service-input" type="text" value="Full Set Acrylic" aria-label="Service name">
                         <div class="settings-service-input-wrap">
                           <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="45" aria-label="Giá dịch vụ">
+                          <input class="settings-service-input price" type="number" value="45" aria-label="Service price">
                         </div>
                         <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="90" aria-label="Thời lượng dịch vụ">
+                          <input class="settings-service-input duration" type="number" value="90" aria-label="Service duration">
                           <span class="settings-service-suffix">min</span>
                         </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
+                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
                       </div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
                         <span class="settings-service-visual tone-sky" aria-hidden="true">✨</span>
-                        <input class="settings-service-input" type="text" value="Dip Powder" aria-label="Tên dịch vụ">
+                        <input class="settings-service-input" type="text" value="Dip Powder" aria-label="Service name">
                         <div class="settings-service-input-wrap">
                           <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="40" aria-label="Giá dịch vụ">
+                          <input class="settings-service-input price" type="number" value="40" aria-label="Service price">
                         </div>
                         <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="75" aria-label="Thời lượng dịch vụ">
+                          <input class="settings-service-input duration" type="number" value="75" aria-label="Service duration">
                           <span class="settings-service-suffix">min</span>
                         </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
+                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
                       </div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
                         <span class="settings-service-visual tone-amber" aria-hidden="true">🔁</span>
-                        <input class="settings-service-input" type="text" value="Fill-In" aria-label="Tên dịch vụ">
+                        <input class="settings-service-input" type="text" value="Fill-In" aria-label="Service name">
                         <div class="settings-service-input-wrap">
                           <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="32" aria-label="Giá dịch vụ">
+                          <input class="settings-service-input price" type="number" value="32" aria-label="Service price">
                         </div>
                         <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="60" aria-label="Thời lượng dịch vụ">
+                          <input class="settings-service-input duration" type="number" value="60" aria-label="Service duration">
                           <span class="settings-service-suffix">min</span>
                         </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
+                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
                       </div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
                         <span class="settings-service-visual tone-emerald" aria-hidden="true">🦶</span>
-                        <input class="settings-service-input" type="text" value="Classic Pedicure" aria-label="Tên dịch vụ">
+                        <input class="settings-service-input" type="text" value="Classic Pedicure" aria-label="Service name">
                         <div class="settings-service-input-wrap">
                           <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="30" aria-label="Giá dịch vụ">
+                          <input class="settings-service-input price" type="number" value="30" aria-label="Service price">
                         </div>
                         <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="50" aria-label="Thời lượng dịch vụ">
+                          <input class="settings-service-input duration" type="number" value="50" aria-label="Service duration">
                           <span class="settings-service-suffix">min</span>
                         </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
+                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
                       </div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
                         <span class="settings-service-visual tone-violet" aria-hidden="true">👑</span>
-                        <input class="settings-service-input" type="text" value="Deluxe Pedicure" aria-label="Tên dịch vụ">
+                        <input class="settings-service-input" type="text" value="Deluxe Pedicure" aria-label="Service name">
                         <div class="settings-service-input-wrap">
                           <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="50" aria-label="Giá dịch vụ">
+                          <input class="settings-service-input price" type="number" value="50" aria-label="Service price">
                         </div>
                         <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="70" aria-label="Thời lượng dịch vụ">
+                          <input class="settings-service-input duration" type="number" value="70" aria-label="Service duration">
                           <span class="settings-service-suffix">min</span>
                         </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
+                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
                       </div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
                         <span class="settings-service-visual tone-cyan" aria-hidden="true">🧴</span>
-                        <input class="settings-service-input" type="text" value="Pedicure + Gel Combo" aria-label="Tên dịch vụ">
+                        <input class="settings-service-input" type="text" value="Pedicure + Gel Combo" aria-label="Service name">
                         <div class="settings-service-input-wrap">
                           <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="65" aria-label="Giá dịch vụ">
+                          <input class="settings-service-input price" type="number" value="65" aria-label="Service price">
                         </div>
                         <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="105" aria-label="Thời lượng dịch vụ">
+                          <input class="settings-service-input duration" type="number" value="105" aria-label="Service duration">
                           <span class="settings-service-suffix">min</span>
                         </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
+                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
                       </div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
                         <span class="settings-service-visual tone-amber" aria-hidden="true">🧸</span>
-                        <input class="settings-service-input" type="text" value="Kid Mani-Pedi" aria-label="Tên dịch vụ">
+                        <input class="settings-service-input" type="text" value="Kid Mani-Pedi" aria-label="Service name">
                         <div class="settings-service-input-wrap">
                           <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="25" aria-label="Giá dịch vụ">
+                          <input class="settings-service-input price" type="number" value="25" aria-label="Service price">
                         </div>
                         <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="40" aria-label="Thời lượng dịch vụ">
+                          <input class="settings-service-input duration" type="number" value="40" aria-label="Service duration">
                           <span class="settings-service-suffix">min</span>
                         </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
+                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
                       </div>
                     </div>
                     <div class="settings-service-row" data-service-row>
                       <div class="settings-service-edit-grid">
                         <span class="settings-service-visual tone-rose" aria-hidden="true">🎨</span>
-                        <input class="settings-service-input" type="text" value="Nail Art (per nail)" aria-label="Tên dịch vụ">
+                        <input class="settings-service-input" type="text" value="Nail Art (per nail)" aria-label="Service name">
                         <div class="settings-service-input-wrap">
                           <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="5" aria-label="Giá dịch vụ">
+                          <input class="settings-service-input price" type="number" value="5" aria-label="Service price">
                         </div>
                         <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="10" aria-label="Thời lượng dịch vụ">
+                          <input class="settings-service-input duration" type="number" value="10" aria-label="Service duration">
                           <span class="settings-service-suffix">min</span>
                         </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>
+                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
                       </div>
                     </div>
                   </div>
@@ -7316,45 +7316,45 @@
                     <div class="settings-card-head">
                       <div>
                         <div class="settings-card-title"><span class="settings-ai-title-icon" aria-hidden="true">AI<i class="bi bi-stars"></i></span>AI Voice</div>
-                        <div class="settings-card-sub">Cấu hình ngôn ngữ và câu chào AI đọc khi bắt máy.</div>
+                        <div class="settings-card-sub">Set the language and greeting the AI reads when it picks up.</div>
                       </div>
-                      <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Thu gọn AI Voice"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
+                      <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Collapse AI Voice"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
                     </div>
                     <div class="settings-field-grid">
                       <div class="settings-field" style="grid-column: 1 / -1;">
-                        <span class="settings-label">NGÔN NGỮ AI</span>
-                        <div class="settings-language-grid" role="group" aria-label="Chọn ngôn ngữ AI">
+                        <span class="settings-label">AI LANGUAGE</span>
+                        <div class="settings-language-grid" role="group" aria-label="Select AI language">
                           <button class="settings-language-card is-active" type="button" data-settings-language="auto" aria-pressed="true">🇻🇳 + 🇺🇸 Auto</button>
                           <button class="settings-language-card" type="button" data-settings-language="vi" aria-pressed="false">🇻🇳 VI</button>
                           <button class="settings-language-card" type="button" data-settings-language="en" aria-pressed="false">🇺🇸 EN</button>
                         </div>
-                        <div class="settings-language-status" data-settings-language-status>Auto đang bật: AI tự nhận diện tiếng Việt hoặc tiếng Anh khi khách gọi.</div>
+                        <div class="settings-language-status" data-settings-language-status>Auto is on: the AI automatically detects Vietnamese or English when a customer calls.</div>
                       </div>
                       <label class="settings-field" style="grid-column: 1 / -1;">
-                        <span class="settings-label">Câu chào</span>
-                        <textarea class="settings-textarea" data-settings-greeting>Xin chào! Cảm ơn bạn đã gọi Bitcoin Nail Bar. Tôi là trợ lý AI, tôi có thể giúp bạn đặt lịch, xem giá, hoặc trả lời câu hỏi. Bạn cần gì hôm nay ạ?</textarea>
+                        <span class="settings-label">Greeting</span>
+                        <textarea class="settings-textarea" data-settings-greeting>Hi! Thanks for calling Bitcoin Nail Bar. I'm your AI assistant — I can help you book an appointment, check pricing, or answer questions. How can I help today?</textarea>
                       </label>
                       <label class="settings-field" style="grid-column: 1 / -1;">
-                        <span class="settings-label">Thông tin khuyến mãi</span>
-                        <textarea class="settings-textarea" data-settings-promo maxlength="1000" style="min-height: 220px;" placeholder="VD:&#10;Promotion 1: Reward Yourself&#10;Offer: Free $25 e-gift card.&#10;Eligibility: Book any pedicure service of $55 or more.&#10;Availability: Monday–Saturday, by appointment only.&#10;Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.&#10;General rule: The salon may modify or end any promotion at any time."></textarea>
+                        <span class="settings-label">Promotion details</span>
+                        <textarea class="settings-textarea" data-settings-promo maxlength="1000" style="min-height: 220px;" placeholder="e.g.:&#10;Promotion 1: Reward Yourself&#10;Offer: Free $25 e-gift card.&#10;Eligibility: Book any pedicure service of $55 or more.&#10;Availability: Monday–Saturday, by appointment only.&#10;Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.&#10;General rule: The salon may modify or end any promotion at any time."></textarea>
                         <div class="settings-promo-count"><span data-promo-count>0</span>/1000</div>
-                        <div class="settings-language-status">AI Voice sẽ đọc ưu đãi này khi khách hỏi có chương trình khuyến mãi. Chạm chip gợi ý để điền mẫu rồi sửa lại theo tiệm.</div>
+                        <div class="settings-language-status">AI Voice reads this offer when a customer asks about promotions. Tap a suggestion chip to fill in a template, then edit it for your salon.</div>
                         <div class="settings-promo-suggest-row">
-                          <button class="settings-promo-suggest" type="button" data-promo-fill="reward-yourself"><i class="bi bi-stars" aria-hidden="true"></i>Gợi ý: Reward Yourself</button>
+                          <button class="settings-promo-suggest" type="button" data-promo-fill="reward-yourself"><i class="bi bi-stars" aria-hidden="true"></i>Suggestion: Reward Yourself</button>
                         </div>
                       </label>
                     </div>
-                    <button class="booking-secondary-button" type="button" data-settings-action="preview" style="margin-top: 10px; display: none;">🔊 Nghe Thử</button>
+                    <button class="booking-secondary-button" type="button" data-settings-action="preview" style="margin-top: 10px; display: none;">🔊 Preview</button>
                   </article>
 
                 </div>
 
                 <div class="settings-save-bar">
                   <div>
-                    <div class="settings-save-copy">💾 Lưu một lần, mọi module cập nhật ngay: AI Voice, SMS, landing page, Schema và Booking Book.</div>
+                    <div class="settings-save-copy">💾 Save once and every module updates instantly: AI Voice, SMS, landing page, Schema, and Booking Book.</div>
                     <div class="settings-status" data-settings-status></div>
                   </div>
-                  <button class="booking-primary-button" type="button" data-settings-action="save">Lưu Cấu Hình</button>
+                  <button class="booking-primary-button" type="button" data-settings-action="save">Save Settings</button>
                 </div>
               </div>
             </section>
@@ -7365,31 +7365,31 @@
                   <div class="booking-daybar">
                     <div class="booking-date">
                       <span class="booking-action-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
-                      <span>Danh sách khách hàng</span>
+                      <span>Customer list</span>
                     </div>
                     <span class="cust-count" data-cust-count></span>
                   </div>
 
                   <div class="booking-controls" aria-label="Customer filters">
                     <label class="booking-control-field" style="flex: 1 1 240px;">
-                      <span class="booking-control-label">Tìm kiếm</span>
-                      <input class="booking-input" type="search" placeholder="Tìm tên hoặc số điện thoại..." data-cust-search>
+                      <span class="booking-control-label">Search</span>
+                      <input class="booking-input" type="search" placeholder="Search by name or phone number..." data-cust-search>
                     </label>
                   </div>
 
-                  <div class="booking-status-chips" data-cust-seg-filter role="group" aria-label="Lọc theo nhóm khách"></div>
+                  <div class="booking-status-chips" data-cust-seg-filter role="group" aria-label="Filter by customer group"></div>
 
                   <div class="booking-table-wrap">
                     <table class="booking-table cust-table">
                       <thead>
                         <tr>
-                          <th scope="col">Khách hàng</th>
-                          <th scope="col">Điện thoại</th>
-                          <th scope="col">Nhóm</th>
-                          <th scope="col">Nguồn</th>
-                          <th scope="col">Số lần ghé</th>
-                          <th scope="col">Lần cuối</th>
-                          <th scope="col">Tổng chi</th>
+                          <th scope="col">Customer</th>
+                          <th scope="col">Phone</th>
+                          <th scope="col">Group</th>
+                          <th scope="col">Source</th>
+                          <th scope="col">Visits</th>
+                          <th scope="col">Last Visit</th>
+                          <th scope="col">Total Spent</th>
                           <th scope="col">Action</th>
                         </tr>
                       </thead>
@@ -7407,23 +7407,23 @@
                   <div class="booking-daybar">
                     <div class="booking-date">
                       <span class="booking-action-icon"><i class="bi bi-telephone" aria-hidden="true"></i></span>
-                      <span>Nhật ký cuộc gọi</span>
+                      <span>Call log</span>
                     </div>
                     <span class="cust-count" data-call-count></span>
                   </div>
 
-                  <div class="booking-status-chips" data-call-status-filter role="group" aria-label="Lọc theo trạng thái cuộc gọi"></div>
+                  <div class="booking-status-chips" data-call-status-filter role="group" aria-label="Filter by call status"></div>
 
                   <div class="booking-table-wrap">
                     <table class="booking-table call-table">
                       <thead>
                         <tr>
-                          <th scope="col">Thời gian</th>
-                          <th scope="col">Người gọi</th>
-                          <th scope="col">Số điện thoại</th>
-                          <th scope="col">Trạng thái</th>
-                          <th scope="col">Thời lượng</th>
-                          <th scope="col">Ghi chú</th>
+                          <th scope="col">Time</th>
+                          <th scope="col">Caller</th>
+                          <th scope="col">Phone</th>
+                          <th scope="col">Status</th>
+                          <th scope="col">Duration</th>
+                          <th scope="col">Notes</th>
                           <th scope="col">Action</th>
                         </tr>
                       </thead>
@@ -7442,35 +7442,35 @@
 
     <div class="trial-modal" data-trial-modal hidden role="dialog" aria-modal="true" aria-labelledby="trial-modal-title">
       <div class="trial-dialog">
-        <button class="trial-close" type="button" data-trial-close aria-label="Đóng modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+        <button class="trial-close" type="button" data-trial-close aria-label="Close modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
 
         <div class="trial-step" data-trial-step="form">
           <div class="trial-head">
-            <div class="trial-brand"><i class="bi bi-gift" aria-hidden="true"></i>14 ngày free - không cần thẻ</div>
-            <h2 class="trial-title" id="trial-modal-title">Để AI Trả Lời Điện Thoại, <strong>Tiệm Không Mất Khách Nữa</strong></h2>
-            <p class="trial-subtitle">Điền 60 giây - đội NEXORA setup toàn bộ giùm chị trong 24 giờ. Không cần rành công nghệ.</p>
+            <div class="trial-brand"><i class="bi bi-gift" aria-hidden="true"></i>14 days free - no card required</div>
+            <h2 class="trial-title" id="trial-modal-title">Let AI Answer the Phone So <strong>You Never Lose a Customer Again</strong></h2>
+            <p class="trial-subtitle">Fill it out in 60 seconds - the NEXORA team sets everything up for you within 24 hours. No tech skills needed.</p>
           </div>
 
           <div class="trial-benefits">
-            <div class="trial-benefit"><i class="bi bi-check2" aria-hidden="true"></i> Setup giùm 100%</div>
-            <div class="trial-benefit"><i class="bi bi-check2" aria-hidden="true"></i> Hủy lúc nào cũng được</div>
-            <div class="trial-benefit"><i class="bi bi-check2" aria-hidden="true"></i> Nói tiếng Việt</div>
+            <div class="trial-benefit"><i class="bi bi-check2" aria-hidden="true"></i> 100% done-for-you setup</div>
+            <div class="trial-benefit"><i class="bi bi-check2" aria-hidden="true"></i> Cancel anytime</div>
+            <div class="trial-benefit"><i class="bi bi-check2" aria-hidden="true"></i> Vietnamese-speaking support</div>
           </div>
 
           <div class="trial-body">
             <div class="trial-grid">
               <div class="trial-field trial-span-2">
-                <label class="trial-label" for="trial-salon">Tên tiệm <span>*</span></label>
+                <label class="trial-label" for="trial-salon">Salon name <span>*</span></label>
                 <input class="trial-input" id="trial-salon" data-trial-salon type="text" value="Bitcoin Nail Bar" placeholder="Bitcoin Nail Bar">
               </div>
 
               <div class="trial-field">
-                <label class="trial-label" for="trial-owner">Tên chủ tiệm <span>*</span></label>
+                <label class="trial-label" for="trial-owner">Owner name <span>*</span></label>
                 <input class="trial-input" id="trial-owner" data-trial-owner type="text" value="Ashley Carter" placeholder="Ashley Carter">
               </div>
 
               <div class="trial-field">
-                <label class="trial-label" for="trial-phone">Số phone <span>*</span></label>
+                <label class="trial-label" for="trial-phone">Phone number <span>*</span></label>
                 <div class="phone-input-shell">
                   <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
                   <input class="trial-input phone-mask-input" id="trial-phone" data-trial-phone type="tel" value="(346) 802-4906" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
@@ -7480,16 +7480,16 @@
               <div class="trial-field trial-span-2">
                 <label class="trial-label" for="trial-email">Email <span>*</span></label>
                 <input class="trial-input" id="trial-email" data-trial-email type="email" value="ashley.carter@gmail.com" placeholder="ashley.carter@gmail.com">
-                <div class="trial-note"><i class="bi bi-envelope" aria-hidden="true"></i> Nhận link kích hoạt + báo cáo hằng tháng qua email này</div>
+                <div class="trial-note"><i class="bi bi-envelope" aria-hidden="true"></i> Get your activation link + monthly reports at this email</div>
               </div>
 
               <div class="trial-field trial-span-2">
-                <label class="trial-label" for="trial-city">Thành phố / khu vực <span class="trial-optional">(không bắt buộc)</span></label>
+                <label class="trial-label" for="trial-city">City / area <span class="trial-optional">(optional)</span></label>
                 <input class="trial-input" id="trial-city" data-trial-city type="text" value="Houston, TX" placeholder="Houston, TX">
               </div>
 
               <div class="trial-field trial-span-2">
-                <div class="trial-label">Dịch vụ tiệm đang làm <span>*</span> <span class="trial-optional">(chạm để chọn)</span></div>
+                <div class="trial-label">Services your salon offers <span>*</span> <span class="trial-optional">(tap to select)</span></div>
                 <div class="trial-chip-list">
                   <button class="trial-chip is-active" type="button" data-trial-chip>Gel Manicure</button>
                   <button class="trial-chip is-active" type="button" data-trial-chip>Acrylic Full Set</button>
@@ -7504,29 +7504,29 @@
               </div>
 
               <div class="trial-field trial-span-2">
-                <div class="trial-label">Ngày mở cửa</div>
+                <div class="trial-label">Open days</div>
                 <div class="trial-day-list">
-                  <button class="trial-day" type="button" data-trial-day>CN</button>
-                  <button class="trial-day is-active" type="button" data-trial-day>T2</button>
-                  <button class="trial-day is-active" type="button" data-trial-day>T3</button>
-                  <button class="trial-day is-active" type="button" data-trial-day>T4</button>
-                  <button class="trial-day is-active" type="button" data-trial-day>T5</button>
-                  <button class="trial-day is-active" type="button" data-trial-day>T6</button>
-                  <button class="trial-day is-active" type="button" data-trial-day>T7</button>
+                  <button class="trial-day" type="button" data-trial-day>Sun</button>
+                  <button class="trial-day is-active" type="button" data-trial-day>Mon</button>
+                  <button class="trial-day is-active" type="button" data-trial-day>Tue</button>
+                  <button class="trial-day is-active" type="button" data-trial-day>Wed</button>
+                  <button class="trial-day is-active" type="button" data-trial-day>Thu</button>
+                  <button class="trial-day is-active" type="button" data-trial-day>Fri</button>
+                  <button class="trial-day is-active" type="button" data-trial-day>Sat</button>
                 </div>
               </div>
 
               <div class="trial-field trial-span-2">
-                <div class="trial-label">Giờ phục vụ</div>
+                <div class="trial-label">Service hours</div>
                 <div class="trial-time-row">
-                  <select class="trial-select" aria-label="Giờ mở cửa">
+                  <select class="trial-select" aria-label="Opening time">
                     <option>8:00 AM</option>
                     <option>9:00 AM</option>
                     <option selected>9:30 AM</option>
                     <option>10:00 AM</option>
                   </select>
                   <span class="trial-time-separator">→</span>
-                  <select class="trial-select" aria-label="Giờ đóng cửa">
+                  <select class="trial-select" aria-label="Closing time">
                     <option>6:00 PM</option>
                     <option selected>7:00 PM</option>
                     <option>8:00 PM</option>
@@ -7536,38 +7536,38 @@
               </div>
 
               <div class="trial-field trial-span-2">
-                <label class="trial-label" for="trial-pain">Vấn đề lớn nhất của tiệm hiện nay? <span class="trial-optional">(giúp tụi em setup đúng thứ chị cần trước)</span></label>
+                <label class="trial-label" for="trial-pain">What's your salon's biggest challenge right now? <span class="trial-optional">(helps us set up what you need first)</span></label>
                 <select class="trial-select" id="trial-pain" data-trial-pain>
-                  <option selected>- Chọn -</option>
-                  <option>Miss call, khách gọi không ai bắt máy</option>
-                  <option>Khách không quay lại sau 30 ngày</option>
-                  <option>Ít Google review / khó lên top</option>
-                  <option>Booking thủ công, dễ sót lịch</option>
-                  <option>Muốn chạy SMS campaign nhưng không có thời gian</option>
+                  <option selected>- Select -</option>
+                  <option>Missed calls - customers call and no one picks up</option>
+                  <option>Customers don't come back after 30 days</option>
+                  <option>Too few Google reviews / hard to rank</option>
+                  <option>Manual booking - easy to miss appointments</option>
+                  <option>Want to run SMS campaigns but have no time</option>
                 </select>
               </div>
 
               <div class="trial-field trial-span-2">
-                <label class="trial-label" for="trial-ref">Mã giới thiệu <span class="trial-optional">(không bắt buộc)</span></label>
-                <input class="trial-input" id="trial-ref" data-trial-ref type="text" placeholder="VD: ASHLEY90" style="text-transform: uppercase;">
-                <div class="trial-credit"><i class="bi bi-gift" aria-hidden="true"></i> Có mã = +200 credits khi kích hoạt</div>
+                <label class="trial-label" for="trial-ref">Referral code <span class="trial-optional">(optional)</span></label>
+                <input class="trial-input" id="trial-ref" data-trial-ref type="text" placeholder="e.g. ASHLEY90" style="text-transform: uppercase;">
+                <div class="trial-credit"><i class="bi bi-gift" aria-hidden="true"></i> With a code = +200 credits on activation</div>
               </div>
             </div>
 
-            <button class="trial-submit" type="button" data-trial-submit><i class="bi bi-rocket-takeoff" aria-hidden="true"></i> Bắt đầu 14 Ngày Free</button>
-            <div class="trial-footer">Không cần thẻ tín dụng · Không tự động tính phí · Bấm gửi là chị đồng ý cho NEXORA liên hệ qua SMS/email</div>
+            <button class="trial-submit" type="button" data-trial-submit><i class="bi bi-rocket-takeoff" aria-hidden="true"></i> Start Your 14-Day Free Trial</button>
+            <div class="trial-footer">No credit card required · No automatic charges · By submitting, you agree to let NEXORA contact you by SMS/email</div>
           </div>
           <div class="trial-contact">
-            NEXORA TOUCH · AI Nhân Viên cho tiệm nail<br>
-            <strong>832-979-5559</strong> (gọi thử - AI bắt máy đó!) · <a href="https://nexoratouch.com">nexoratouch.com</a>
+            NEXORA TOUCH · AI Staff for nail salons<br>
+            <strong>832-979-5559</strong> (give it a call - the AI will answer!) · <a href="https://nexoratouch.com">nexoratouch.com</a>
           </div>
         </div>
 
         <div class="trial-step" data-trial-step="email" hidden>
           <div class="trial-head">
             <div class="trial-brand">NEXORA TOUCH</div>
-            <h2 class="trial-title">Kiểm tra email của bạn</h2>
-            <p class="trial-subtitle">Email kích hoạt đã gửi tới <strong style="color: var(--nexora-brand);" data-trial-email-show></strong>. Bấm kích hoạt để bắt đầu 14 ngày dùng thử.</p>
+            <h2 class="trial-title">Check your email</h2>
+            <p class="trial-subtitle">We've sent an activation email to <strong style="color: var(--nexora-brand);" data-trial-email-show></strong>. Click activate to start your 14-day trial.</p>
           </div>
 
           <div class="trial-body">
@@ -7576,15 +7576,15 @@
                 <span class="avatar" style="width: 32px; height: 32px;">N</span>
                 <div>
                   <div style="color: var(--nexora-text); font-weight: 700;">NEXORA TOUCH</div>
-                  <div style="font-size: 10px;">no-reply@nexoratouch.com · bây giờ</div>
+                  <div style="font-size: 10px;">no-reply@nexoratouch.com · just now</div>
                 </div>
               </div>
-              <div style="color: var(--nexora-text); font-weight: 700;">Kích hoạt tài khoản NEXORA của bạn</div>
-              <div style="margin-top: 5px;">Chào bạn! Bấm nút bên dưới để kích hoạt tài khoản và bắt đầu 14 ngày dùng thử.</div>
+              <div style="color: var(--nexora-text); font-weight: 700;">Activate your NEXORA account</div>
+              <div style="margin-top: 5px;">Hi there! Click the button below to activate your account and start your 14-day trial.</div>
             </div>
 
-            <button class="trial-submit" type="button" data-trial-activate style="margin-top: 12px;">Kích Hoạt Tài Khoản</button>
-            <div class="trial-footer" data-trial-status>Không thấy email? Kiểm tra Spam hoặc gửi lại.</div>
+            <button class="trial-submit" type="button" data-trial-activate style="margin-top: 12px;">Activate Account</button>
+            <div class="trial-footer" data-trial-status>Don't see the email? Check Spam or resend.</div>
           </div>
         </div>
       </div>
@@ -8416,27 +8416,27 @@
 
       var scenarios = {
         book: [
-          ['Xin chào! Đây là Bitcoin Nail Bar, tôi là AI Assistant. Bạn muốn đặt lịch không?', false],
-          ['Chị muốn làm gel thứ 5 lúc 2pm.', true],
-          ['Dạ được ạ. Em đã giữ chỗ Gel Manicure thứ 5 lúc 2pm với Kim. SMS xác nhận sẽ gửi ngay.', false]
+          ['Hi! This is Bitcoin Nail Bar, I\'m the AI assistant. Would you like to book an appointment?', false],
+          ['I\'d like a gel manicure Thursday at 2pm.', true],
+          ['Got it! I\'ve reserved a Gel Manicure Thursday at 2pm with Kim. A confirmation text is on its way.', false]
         ],
         price: [
-          ['Xin chào! Đây là Bitcoin Nail Bar, tôi có thể báo giá giúp chị.', false],
-          ['Gel manicure bao nhiêu vậy em?', true],
-          ['Gel Manicure là $35, khoảng 60 phút. Nếu chị muốn thêm nail art, thợ sẽ báo trước khi làm.', false]
+          ['Hi! This is Bitcoin Nail Bar, I can help with pricing.', false],
+          ['How much is a gel manicure?', true],
+          ['A Gel Manicure is $35 and takes about 60 minutes. If you\'d like to add nail art, your tech will quote it before starting.', false]
         ],
         hours: [
-          ['Bitcoin Nail Bar xin nghe, em hỗ trợ được gì ạ?', false],
-          ['Hôm nay tiệm mở tới mấy giờ?', true],
-          ['Hôm nay tiệm mở 9:30 AM đến 7:00 PM. Em có thể giữ chỗ cho chị ngay bây giờ.', false]
+          ['Bitcoin Nail Bar, how can I help you today?', false],
+          ['What time are you open until today?', true],
+          ['We\'re open today from 9:30 AM to 7:00 PM. I can book you right now if you\'d like.', false]
         ],
         miss: [
-          ['Khách gọi lúc tiệm đang bận.', true],
-          ['AI ghi nhận missed call và tự gửi SMS: "Tiệm vừa lỡ cuộc gọi của chị, bấm đây để đặt lịch nhanh."', false]
+          ['A customer calls while the salon is busy.', true],
+          ['The AI logs the missed call and automatically sends a text: "Sorry we missed your call! Tap here to book in seconds."', false]
         ],
         human: [
-          ['Em muốn nói chuyện với chủ tiệm về party 6 người.', true],
-          ['Dạ được ạ. Em sẽ whisper nội dung cho chủ trước khi nối máy để chị không phải kể lại từ đầu.', false]
+          ['I\'d like to talk to the owner about a party for 6.', true],
+          ['Of course! I\'ll brief the owner before connecting you, so you won\'t have to explain it all over again.', false]
         ]
       };
 
@@ -8451,9 +8451,9 @@
 
     function selectServicePlan(plan) {
       var labels = {
-        Starter: 'Chọn Starter',
-        Pro: 'Bắt Đầu Free 14 Ngày',
-        Elite: 'Chọn Elite'
+        Starter: 'Choose Starter',
+        Pro: 'Start 14-Day Free Trial',
+        Elite: 'Choose Elite'
       };
 
       document.querySelectorAll('[data-plan-card]').forEach(function(card) {
@@ -8463,7 +8463,7 @@
       document.querySelectorAll('[data-plan-select]').forEach(function(button) {
         var selected = button.dataset.planSelect === plan;
         button.classList.toggle('is-primary', selected);
-        button.textContent = selected ? plan + ' đã chọn' : labels[button.dataset.planSelect];
+        button.textContent = selected ? plan + ' selected' : labels[button.dataset.planSelect];
       });
     }
 
@@ -8512,7 +8512,7 @@
     function activateTrialAccount() {
       var status = document.querySelector('[data-trial-status]');
       if (status) {
-        status.innerHTML = '<span style="color: var(--nexora-success); font-weight: 700;">Tài khoản đã kích hoạt. Trial 14 ngày bắt đầu.</span>';
+        status.innerHTML = '<span style="color: var(--nexora-success); font-weight: 700;">Account activated. Your 14-day trial has started.</span>';
       }
     }
 
@@ -8558,7 +8558,7 @@
       textarea.value = template.text.slice(0, max);
       textarea.focus();
       updatePromoCount();
-      setSettingsStatus('Đã điền mẫu khuyến mãi: ' + template.label + '. Chị chỉnh lại theo tiệm rồi bấm Lưu.');
+      setSettingsStatus('Promotion template filled in: ' + template.label + '. Edit it for your salon, then click Save.');
     }
 
     function addSettingsServiceRow(name, price, duration) {
@@ -8571,19 +8571,19 @@
       row.innerHTML = '' +
         '<div class="settings-service-edit-grid">' +
           '<span class="settings-service-visual tone-violet" aria-hidden="true">✨</span>' +
-          '<input class="settings-service-input" type="text" value="' + name + '" aria-label="Tên dịch vụ">' +
+          '<input class="settings-service-input" type="text" value="' + name + '" aria-label="Service name">' +
           '<div class="settings-service-input-wrap">' +
             '<span class="settings-service-prefix">$</span>' +
-            '<input class="settings-service-input price" type="number" value="' + price + '" aria-label="Giá dịch vụ">' +
+            '<input class="settings-service-input price" type="number" value="' + price + '" aria-label="Service price">' +
           '</div>' +
           '<div class="settings-service-input-wrap">' +
-            '<input class="settings-service-input duration" type="number" value="' + duration + '" aria-label="Thời lượng dịch vụ">' +
+            '<input class="settings-service-input duration" type="number" value="' + duration + '" aria-label="Service duration">' +
             '<span class="settings-service-suffix">min</span>' +
           '</div>' +
-          '<button class="settings-service-remove" type="button" data-service-remove aria-label="Xoá dịch vụ">×</button>' +
+          '<button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>' +
         '</div>';
       list.appendChild(row);
-      setSettingsStatus('Đã thêm dịch vụ: ' + name + '.');
+      setSettingsStatus('Service added: ' + name + '.');
     }
 
     function showServiceScanPanel() {
@@ -8592,8 +8592,8 @@
       if (!panel || !progress) return;
 
       panel.hidden = false;
-      progress.innerHTML = '✓ Mở camera / upload ảnh menu<br>✓ AI đọc ảnh menu<br>✓ Nhận diện tên dịch vụ, giá và thời lượng<br>✓ Thêm dịch vụ mới vào danh sách bên dưới';
-      setSettingsStatus('Đã chuẩn bị luồng scan menu.');
+      progress.innerHTML = '✓ Open camera / upload menu photo<br>✓ AI reads the menu photo<br>✓ Detects service names, prices, and durations<br>✓ Adds new services to the list below';
+      setSettingsStatus('Menu scan flow ready.');
     }
 
     function toggleServiceSuggestPanel() {
@@ -8601,7 +8601,7 @@
       if (!panel) return;
 
       panel.hidden = !panel.hidden;
-      setSettingsStatus(panel.hidden ? 'Đã ẩn gợi ý ngành.' : 'Đã mở gợi ý ngành.');
+      setSettingsStatus(panel.hidden ? 'Industry suggestions hidden.' : 'Industry suggestions opened.');
     }
 
     function runSettingsAction(action) {
@@ -8616,17 +8616,17 @@
       }
 
       if (action === 'add-service') {
-        addSettingsServiceRow('Dịch vụ mới', 30, 45);
+        addSettingsServiceRow('New service', 30, 45);
         return;
       }
 
       if (action === 'preview') {
-        setSettingsStatus('Đang phát thử câu chào AI Voice.');
+        setSettingsStatus('Playing an AI Voice greeting preview.');
         return;
       }
 
       if (action === 'save') {
-        setSettingsStatus('Đã lưu cấu hình. AI Voice, SMS, LP, Schema và Booking Book đã đồng bộ.');
+        setSettingsStatus('Settings saved. AI Voice, SMS, LP, Schema, and Booking Book are all in sync.');
       }
     }
 
@@ -8639,7 +8639,7 @@
         card.hidden = filter !== 'all' && card.dataset.templateCat !== filter;
       });
 
-      setSettingsStatus(filter === 'all' ? 'Đang hiển thị tất cả mẫu khuyến mãi.' : 'Đã lọc mẫu: ' + activeButton.textContent.trim() + '.');
+      setSettingsStatus(filter === 'all' ? 'Showing all promotion templates.' : 'Filtered templates: ' + activeButton.textContent.trim() + '.');
     }
 
     function toggleSettingsCollapse(button) {
@@ -8650,18 +8650,18 @@
 
       var isCollapsed = section.classList.toggle('is-collapsed');
       button.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
-      button.setAttribute('aria-label', isCollapsed ? 'Mở rộng mục này' : 'Thu gọn mục này');
+      button.setAttribute('aria-label', isCollapsed ? 'Expand this section' : 'Collapse this section');
     }
 
     var settingsLanguageGreetings = {
-      auto: 'Xin chào! Cảm ơn bạn đã gọi Bitcoin Nail Bar. Tôi là trợ lý AI song ngữ, tôi có thể giúp bạn đặt lịch, xem giá, hoặc trả lời câu hỏi bằng tiếng Việt hoặc tiếng Anh. Bạn cần gì hôm nay ạ?',
-      vi: 'Xin chào! Cảm ơn bạn đã gọi Bitcoin Nail Bar. Tôi là trợ lý AI, tôi có thể giúp bạn đặt lịch, xem giá, hoặc trả lời câu hỏi. Bạn cần gì hôm nay ạ?',
+      auto: 'Hi! Thanks for calling Bitcoin Nail Bar. I\'m your bilingual AI assistant — I can help you book an appointment, check pricing, or answer questions in English or Vietnamese. How can I help today?',
+      vi: 'Hi! Thanks for calling Bitcoin Nail Bar. I\'m your AI assistant — I can help you book an appointment, check pricing, or answer questions. How can I help today?',
       en: 'Hello! Thank you for calling Bitcoin Nail Bar. This is the AI assistant. I can help you book an appointment, check prices, or answer questions. How can I help today?'
     };
 
     var settingsLanguageStatusText = {
-      auto: 'Auto đang bật: AI tự nhận diện tiếng Việt hoặc tiếng Anh khi khách gọi.',
-      vi: 'Đang dùng tiếng Việt: AI ưu tiên chào hỏi và trả lời khách bằng tiếng Việt.',
+      auto: 'Auto is on: the AI automatically detects Vietnamese or English when a customer calls.',
+      vi: 'Vietnamese is active: the AI greets and answers customers in Vietnamese first.',
       en: 'English is active: AI greets and answers customers in English.'
     };
 
@@ -8691,7 +8691,7 @@
         status.textContent = settingsLanguageStatusText[language];
       }
 
-      setSettingsStatus('Đã chọn ngôn ngữ AI: ' + (settingsLanguageLabels[language] || button.textContent.trim()) + '.');
+      setSettingsStatus('AI language set to: ' + (settingsLanguageLabels[language] || button.textContent.trim()) + '.');
     }
 
     function textFrom(root, selector) {
@@ -8711,10 +8711,10 @@
 
     function categoryLabel(category) {
       var labels = {
-        holiday: 'Dịp lễ',
-        fill: 'Lấp slot',
-        growth: 'Kéo khách',
-        group: 'Nhóm'
+        holiday: 'Holiday',
+        fill: 'Fill Slots',
+        growth: 'Grow Traffic',
+        group: 'Group'
       };
       return labels[category] || category || 'Custom';
     }
@@ -8734,7 +8734,7 @@
         channel: category === 'fill' ? 'SMS Campaign' : 'QR, SMS Journey, Campaign',
         status: 'Template',
         used: '-',
-        expiry: 'Set khi lưu',
+        expiry: 'Set on save',
         description: textFrom(card, '.settings-template-desc'),
         result: textFrom(card, '.settings-template-effect').replace(/^🎯\s*/, '')
       };
@@ -8745,8 +8745,8 @@
       var value = textFrom(nameEl, 'span');
       var name = '';
       var desc = textFrom(card, '.settings-offer-desc');
-      var usedMatch = desc.match(/Đã dùng:\s*([^·]+)/);
-      var expiryMatch = desc.match(/Hạn:\s*(.+)$/);
+      var usedMatch = desc.match(/Used:\s*([^·]+)/);
+      var expiryMatch = desc.match(/Expires:\s*(.+)$/);
       var channels = Array.from(card ? card.querySelectorAll('.settings-offer-tags .badge') : []).map(function(tag) {
         return tag.textContent.trim();
       }).filter(Boolean).join(', ');
@@ -8767,8 +8767,8 @@
         status: toggle && toggle.classList.contains('is-on') ? 'Active' : 'Paused',
         used: usedMatch ? usedMatch[1].trim() : '',
         expiry: expiryMatch ? expiryMatch[1].trim() : '',
-        description: desc.replace(/\s*·\s*Đã dùng:.*/, ''),
-        result: card && card.classList.contains('is-muted') ? 'Đang tạm dừng' : 'Đang chạy trên kênh đã chọn'
+        description: desc.replace(/\s*·\s*Used:.*/, ''),
+        result: card && card.classList.contains('is-muted') ? 'Paused' : 'Running on the selected channels'
       };
     }
 
@@ -8788,13 +8788,13 @@
 
       if (title) {
         title.textContent = mode === 'edit'
-          ? 'Edit ưu đãi đang chạy'
-          : (mode === 'create' ? 'Tạo ưu đãi mới' : 'Auto-fill từ mẫu khuyến mãi');
+          ? 'Edit running offer'
+          : (mode === 'create' ? 'Create new offer' : 'Auto-fill from promotion template');
       }
       if (sub) {
         sub.textContent = mode === 'edit'
-          ? 'Thông tin offer đã được fill từ item đang chạy.'
-          : (mode === 'create' ? 'Điền thông tin ưu đãi mới rồi Save.' : 'Thông tin mẫu đã được fill sẵn. Sửa nhanh rồi Save.');
+          ? 'Offer details filled from the running item.'
+          : (mode === 'create' ? 'Enter the new offer details, then Save.' : 'Template details are pre-filled. Make quick edits, then Save.');
       }
       if (saveButton) saveButton.textContent = mode === 'edit' ? 'Save Changes' : 'Save';
 
@@ -8821,8 +8821,8 @@
     function saveSettingsOfferModal() {
       var modal = document.querySelector('[data-offer-modal]');
       var mode = modal ? modal.dataset.offerMode : 'template';
-      var name = getOfferField('name') || 'Ưu đãi';
-      setSettingsStatus(mode === 'edit' ? 'Đã lưu thay đổi: ' + name + '.' : 'Đã lưu ưu đãi từ mẫu: ' + name + '.');
+      var name = getOfferField('name') || 'Offer';
+      setSettingsStatus(mode === 'edit' ? 'Changes saved: ' + name + '.' : 'Offer saved from template: ' + name + '.');
       closeSettingsOfferModal();
     }
 
@@ -8836,7 +8836,7 @@
         input.disabled = !isOpen;
       });
 
-      setSettingsStatus('Đã cập nhật giờ mở cửa cho ' + row.querySelector('.settings-hour-toggle span').textContent + '.');
+      setSettingsStatus('Updated hours for ' + row.querySelector('.settings-hour-toggle span').textContent + '.');
     }
 
     document.querySelectorAll('[data-tab-target]').forEach(function(tab) {
@@ -9036,7 +9036,7 @@
       if (serviceRemove) {
         var serviceRow = serviceRemove.closest('[data-service-row]');
         if (serviceRow) serviceRow.remove();
-        setSettingsStatus('Đã xoá dịch vụ khỏi danh sách.');
+        setSettingsStatus('Removed the service from the list.');
       }
 
       var trialChip = event.target.closest('[data-trial-chip], [data-trial-day]');
@@ -9152,38 +9152,38 @@
 
     /* ===== Customers (data ported from SMS dashboard) ===== */
     var CUSTOMERS = [
-      { name: 'Linh Trần',      phone: '(832) 431-8827', seg: 'vip',      visits: 24, last: '05/07/2026', spent: 2140, src: 'qr' },
-      { name: 'Mai Nguyễn',     phone: '(713) 552-0194', seg: 'vip',      visits: 31, last: '03/07/2026', spent: 2890, src: 'receipt' },
+      { name: 'Linh Tran',      phone: '(832) 431-8827', seg: 'vip',      visits: 24, last: '05/07/2026', spent: 2140, src: 'qr' },
+      { name: 'Mai Nguyen',     phone: '(713) 552-0194', seg: 'vip',      visits: 31, last: '03/07/2026', spent: 2890, src: 'receipt' },
       { name: 'Jessica Kim',    phone: '(832) 906-4471', seg: 'day15',    visits: 8,  last: '22/06/2026', spent: 640,  src: 'call' },
-      { name: 'Hằng Phạm',      phone: '(281) 774-3358', seg: 'new',      visits: 1,  last: '01/07/2026', spent: 55,   src: 'qr' },
+      { name: 'Hang Pham',      phone: '(281) 774-3358', seg: 'new',      visits: 1,  last: '01/07/2026', spent: 55,   src: 'qr' },
       { name: 'Ashley Brown',   phone: '(832) 118-9902', seg: 'day30',    visits: 5,  last: '06/06/2026', spent: 385,  src: 'receipt' },
-      { name: 'Thảo Lê',        phone: '(713) 662-8815', seg: 'day60',    visits: 12, last: '02/05/2026', spent: 970,  src: 'receipt' },
+      { name: 'Thao Le',        phone: '(713) 662-8815', seg: 'day60',    visits: 12, last: '02/05/2026', spent: 970,  src: 'receipt' },
       { name: 'Maria Gonzalez', phone: '(832) 340-2276', seg: 'birthday', visits: 9,  last: '18/06/2026', spent: 720,  src: 'qr' },
-      { name: 'Kim Đặng',       phone: '(281) 907-5541', seg: 'day15',    visits: 6,  last: '21/06/2026', spent: 480,  src: 'call' },
+      { name: 'Kim Dang',       phone: '(281) 907-5541', seg: 'day15',    visits: 6,  last: '21/06/2026', spent: 480,  src: 'call' },
       { name: 'Sarah Johnson',  phone: '(713) 225-7809', seg: 'new',      visits: 1,  last: '04/07/2026', spent: 70,   src: 'qr' },
-      { name: 'Ngọc Vũ',        phone: '(832) 543-1120', seg: 'vip',      visits: 19, last: '30/06/2026', spent: 1650, src: 'receipt' },
+      { name: 'Ngoc Vu',        phone: '(832) 543-1120', seg: 'vip',      visits: 19, last: '30/06/2026', spent: 1650, src: 'receipt' },
       { name: 'Emily Chen',     phone: '(281) 660-3387', seg: 'day30',    visits: 4,  last: '04/06/2026', spent: 310,  src: 'call' },
-      { name: 'Trang Hoàng',    phone: '(713) 889-4462', seg: 'day60',    visits: 7,  last: '25/04/2026', spent: 560,  src: 'receipt' },
+      { name: 'Trang Hoang',    phone: '(713) 889-4462', seg: 'day60',    visits: 7,  last: '25/04/2026', spent: 560,  src: 'receipt' },
       { name: 'Amanda Davis',   phone: '(832) 271-6693', seg: 'birthday', visits: 11, last: '15/06/2026', spent: 830,  src: 'qr' },
-      { name: 'Quỳnh Bùi',      phone: '(281) 435-9078', seg: 'new',      visits: 1,  last: '06/07/2026', spent: 45,   src: 'call' },
-      { name: 'Tiffany Võ',     phone: '(713) 508-2214', seg: 'day15',    visits: 14, last: '23/06/2026', spent: 1120, src: 'qr' }
+      { name: 'Quynh Bui',      phone: '(281) 435-9078', seg: 'new',      visits: 1,  last: '06/07/2026', spent: 45,   src: 'call' },
+      { name: 'Tiffany Vo',     phone: '(713) 508-2214', seg: 'day15',    visits: 14, last: '23/06/2026', spent: 1120, src: 'qr' }
     ];
 
     var CUST_SEGMENTS = [
-      { id: 'new',      icon: 'bi-stars',          label: 'Khách Mới', color: '#2b59ff' },
-      { id: 'day15',    icon: 'bi-calendar-event', label: '15 Ngày',   color: '#00b873' },
-      { id: 'day30',    icon: 'bi-clock-history',  label: '30 Ngày',   color: '#7c3aed' },
-      { id: 'day60',    icon: 'bi-fire',           label: '60 Ngày',   color: '#f59e0b' },
-      { id: 'vip',      icon: 'bi-gem',            label: 'VIP',       color: '#db2777' },
-      { id: 'birthday', icon: 'bi-cake2',          label: 'Sinh Nhật', color: '#e11d48' }
+      { id: 'new',      icon: 'bi-stars',          label: 'New',      color: '#2b59ff' },
+      { id: 'day15',    icon: 'bi-calendar-event', label: '15 Days',  color: '#00b873' },
+      { id: 'day30',    icon: 'bi-clock-history',  label: '30 Days',  color: '#7c3aed' },
+      { id: 'day60',    icon: 'bi-fire',           label: '60 Days',  color: '#f59e0b' },
+      { id: 'vip',      icon: 'bi-gem',            label: 'VIP',      color: '#db2777' },
+      { id: 'birthday', icon: 'bi-cake2',          label: 'Birthday', color: '#e11d48' }
     ];
     var CUST_SEG_MAP = {};
     CUST_SEGMENTS.forEach(function(s) { CUST_SEG_MAP[s.id] = s; });
 
     var CUST_SRC = {
       qr:      { icon: 'bi-qr-code',           label: 'QR' },
-      receipt: { icon: 'bi-receipt',           label: 'Biên lai' },
-      call:    { icon: 'bi-telephone',         label: 'Gọi vào' },
+      receipt: { icon: 'bi-receipt',           label: 'Receipt' },
+      call:    { icon: 'bi-telephone',         label: 'Incoming' },
       pos:     { icon: 'bi-box-arrow-in-down', label: 'Import' }
     };
 
@@ -9198,7 +9198,7 @@
         counts[s.id] = CUSTOMERS.filter(function(c) { return c.seg === s.id; }).length;
       });
 
-      var chips = [{ id: 'all', icon: '', label: 'Tất cả' }].concat(CUST_SEGMENTS);
+      var chips = [{ id: 'all', icon: '', label: 'All' }].concat(CUST_SEGMENTS);
       wrap.innerHTML = chips.map(function(s) {
         var isActive = custFilter.seg === s.id;
         var iconHtml = s.icon ? '<i class="bi ' + s.icon + '" aria-hidden="true" style="color:' + s.color + '"></i> ' : '';
@@ -9221,10 +9221,10 @@
       });
 
       var countEl = document.querySelector('[data-cust-count]');
-      if (countEl) countEl.textContent = rows.length + '/' + CUSTOMERS.length + ' khách';
+      if (countEl) countEl.textContent = rows.length + '/' + CUSTOMERS.length + ' customers';
 
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="8" class="booking-empty-cell">Không tìm thấy khách nào</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="booking-empty-cell">No customers found</td></tr>';
         renderCustSegChips();
         return;
       }
@@ -9243,7 +9243,7 @@
           '<td>' + c.visits + '</td>' +
           '<td>' + escapeHtml(c.last) + '</td>' +
           '<td>$' + c.spent.toLocaleString() + '</td>' +
-          '<td><div class="booking-actions"><button class="booking-mini-button icon-only" type="button" title="Gửi SMS" aria-label="Gửi SMS"><i class="bi bi-chat-dots" aria-hidden="true"></i><span class="sr-only">Gửi SMS</span></button></div></td>' +
+          '<td><div class="booking-actions"><button class="booking-mini-button icon-only" type="button" title="Send SMS" aria-label="Send SMS"><i class="bi bi-chat-dots" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button></div></td>' +
         '</tr>';
       }).join('');
 
@@ -9252,30 +9252,30 @@
 
     /* ===== Call Log (data ported from SMS dashboard) ===== */
     var CALLS = [
-      { time: 'Hôm nay 14:32', name: 'Linh Trần',     phone: '(832) 431-8827', status: 'booked',    dur: 184, note: 'Đặt full set gel — Thứ 6 15:00' },
-      { time: 'Hôm nay 13:05', name: 'Số lạ',          phone: '(346) 220-1187', status: 'missed',    dur: 0,   note: 'Gọi 2 lần liên tiếp' },
-      { time: 'Hôm nay 11:48', name: 'Jessica Kim',    phone: '(832) 906-4471', status: 'answered',  dur: 96,  note: 'Hỏi giá dip powder' },
-      { time: 'Hôm nay 10:22', name: 'Số lạ',          phone: '(713) 990-4453', status: 'voicemail', dur: 31,  note: 'Để lại lời nhắn hỏi giờ mở cửa' },
-      { time: 'Hôm nay 09:15', name: 'Mai Nguyễn',     phone: '(713) 552-0194', status: 'booked',    dur: 142, note: 'Đặt pedicure combo — CN 11:00' },
-      { time: 'Hôm qua 18:47', name: 'Số lạ',          phone: '(832) 605-7731', status: 'missed',    dur: 0,   note: 'Sau giờ đóng cửa' },
-      { time: 'Hôm qua 16:30', name: 'Ashley Brown',   phone: '(832) 118-9902', status: 'answered',  dur: 205, note: 'Hỏi về nail art design' },
-      { time: 'Hôm qua 15:12', name: 'Số lạ',          phone: '(281) 344-2209', status: 'missed',    dur: 0,   note: 'Giờ cao điểm — tiệm full' },
-      { time: 'Hôm qua 12:58', name: 'Ngọc Vũ',        phone: '(832) 543-1120', status: 'booked',    dur: 118, note: 'Đặt 2 slot cùng bạn — Thứ 7' },
-      { time: 'Hôm qua 10:03', name: 'Maria Gonzalez', phone: '(832) 340-2276', status: 'answered',  dur: 87,  note: 'Dời lịch từ Thứ 4 sang Thứ 5' }
+      { time: 'Today 14:32', name: 'Linh Tran',     phone: '(832) 431-8827', status: 'booked',    dur: 184, note: 'Booked full set gel — Fri 15:00' },
+      { time: 'Today 13:05', name: 'Unknown',        phone: '(346) 220-1187', status: 'missed',    dur: 0,   note: 'Called twice in a row' },
+      { time: 'Today 11:48', name: 'Jessica Kim',    phone: '(832) 906-4471', status: 'answered',  dur: 96,  note: 'Asked about dip powder pricing' },
+      { time: 'Today 10:22', name: 'Unknown',        phone: '(713) 990-4453', status: 'voicemail', dur: 31,  note: 'Left a voicemail asking about hours' },
+      { time: 'Today 09:15', name: 'Mai Nguyen',     phone: '(713) 552-0194', status: 'booked',    dur: 142, note: 'Booked pedicure combo — Sun 11:00' },
+      { time: 'Yesterday 18:47', name: 'Unknown',    phone: '(832) 605-7731', status: 'missed',    dur: 0,   note: 'After closing time' },
+      { time: 'Yesterday 16:30', name: 'Ashley Brown',   phone: '(832) 118-9902', status: 'answered',  dur: 205, note: 'Asked about nail art design' },
+      { time: 'Yesterday 15:12', name: 'Unknown',    phone: '(281) 344-2209', status: 'missed',    dur: 0,   note: 'Peak hours — salon full' },
+      { time: 'Yesterday 12:58', name: 'Ngoc Vu',        phone: '(832) 543-1120', status: 'booked',    dur: 118, note: 'Booked 2 slots with a friend — Sat' },
+      { time: 'Yesterday 10:03', name: 'Maria Gonzalez', phone: '(832) 340-2276', status: 'answered',  dur: 87,  note: 'Rescheduled from Wed to Thu' }
     ];
 
     var CALL_STATUS_META = {
-      answered:  { cls: 'booking-status-sms',    icon: 'bi-telephone-inbound', label: 'Đã nghe' },
-      missed:    { cls: 'booking-status-noshow', icon: 'bi-telephone-x',       label: 'Nhỡ' },
-      booked:    { cls: 'booking-status-done',   icon: 'bi-calendar-check',    label: 'Đặt lịch' },
+      answered:  { cls: 'booking-status-sms',    icon: 'bi-telephone-inbound', label: 'Answered' },
+      missed:    { cls: 'booking-status-noshow', icon: 'bi-telephone-x',       label: 'Missed' },
+      booked:    { cls: 'booking-status-done',   icon: 'bi-calendar-check',    label: 'Booked' },
       voicemail: { cls: 'booking-status-new',    icon: 'bi-voicemail',         label: 'Voicemail' }
     };
 
     var CALL_STATUS_CHIPS = [
-      { id: 'all',       icon: '',                     label: 'Tất cả' },
-      { id: 'missed',    icon: 'bi-telephone-x',       label: 'Nhỡ' },
-      { id: 'answered',  icon: 'bi-telephone-inbound', label: 'Đã nghe' },
-      { id: 'booked',    icon: 'bi-calendar-check',    label: 'Đặt lịch' },
+      { id: 'all',       icon: '',                     label: 'All' },
+      { id: 'missed',    icon: 'bi-telephone-x',       label: 'Missed' },
+      { id: 'answered',  icon: 'bi-telephone-inbound', label: 'Answered' },
+      { id: 'booked',    icon: 'bi-calendar-check',    label: 'Booked' },
       { id: 'voicemail', icon: 'bi-voicemail',         label: 'Voicemail' }
     ];
 
@@ -9290,7 +9290,7 @@
       var host = document.querySelector('[data-call-stats]');
       if (!host) return;
 
-      var today = CALLS.filter(function(c) { return c.time.indexOf('Hôm nay') === 0; });
+      var today = CALLS.filter(function(c) { return c.time.indexOf('Today') === 0; });
       var missed = today.filter(function(c) { return c.status === 'missed'; }).length;
       var booked = today.filter(function(c) { return c.status === 'booked'; }).length;
       var answeredRate = today.length ? Math.round((today.length - missed) / today.length * 100) : 0;
@@ -9298,20 +9298,20 @@
       host.innerHTML =
         '<article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-electric);">' +
           '<div class="kpi-top"><div class="kpi-icon"><i class="bi bi-telephone-inbound" aria-hidden="true"></i></div></div>' +
-          '<div class="kpi-label">Cuộc gọi hôm nay</div><div class="kpi-value">' + today.length + '</div>' +
-          '<div class="kpi-trend">tính đến hiện tại</div></article>' +
+          '<div class="kpi-label">Calls today</div><div class="kpi-value">' + today.length + '</div>' +
+          '<div class="kpi-trend">so far today</div></article>' +
         '<article class="overview-card kpi-card" style="--kpi-accent: #ef4444;">' +
           '<div class="kpi-top"><div class="kpi-icon"><i class="bi bi-telephone-x" aria-hidden="true"></i></div><span class="badge booking-status booking-status-noshow">Follow-up</span></div>' +
-          '<div class="kpi-label">Gọi nhỡ</div><div class="kpi-value">' + missed + '</div>' +
-          '<div class="kpi-trend">cần follow-up SMS</div></article>' +
+          '<div class="kpi-label">Missed calls</div><div class="kpi-value">' + missed + '</div>' +
+          '<div class="kpi-trend">need follow-up SMS</div></article>' +
         '<article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-success);">' +
           '<div class="kpi-top"><div class="kpi-icon"><i class="bi bi-calendar-check" aria-hidden="true"></i></div><span class="badge booking-status booking-status-done">Booking</span></div>' +
-          '<div class="kpi-label">Đặt lịch qua điện thoại</div><div class="kpi-value">' + booked + '</div>' +
-          '<div class="kpi-trend">↑ booking hôm nay</div></article>' +
+          '<div class="kpi-label">Booked by phone</div><div class="kpi-value">' + booked + '</div>' +
+          '<div class="kpi-trend">↑ bookings today</div></article>' +
         '<article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-brand);">' +
           '<div class="kpi-top"><div class="kpi-icon"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i></div></div>' +
-          '<div class="kpi-label">Tỷ lệ trả lời</div><div class="kpi-value">' + answeredRate + '%</div>' +
-          '<div class="kpi-trend">' + (answeredRate >= 80 ? '↑ tốt' : '⚠️ cần cải thiện') + '</div></article>';
+          '<div class="kpi-label">Answer rate</div><div class="kpi-value">' + answeredRate + '%</div>' +
+          '<div class="kpi-trend">' + (answeredRate >= 80 ? '↑ good' : '⚠️ needs improvement') + '</div></article>';
     }
 
     function renderCallStatusChips() {
@@ -9338,10 +9338,10 @@
       var rows = CALLS.filter(function(c) { return callFilter === 'all' || c.status === callFilter; });
 
       var countEl = document.querySelector('[data-call-count]');
-      if (countEl) countEl.textContent = rows.length + '/' + CALLS.length + ' cuộc gọi';
+      if (countEl) countEl.textContent = rows.length + '/' + CALLS.length + ' calls';
 
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="7" class="booking-empty-cell">Không có cuộc gọi nào</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="booking-empty-cell">No calls found</td></tr>';
         renderCallStatusChips();
         return;
       }
