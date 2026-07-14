@@ -106,7 +106,12 @@ function createDocumentStub({
   return document;
 }
 
-function testApi(seed = {}, { skipInit = true, document, randomUUID = () => '00000000-0000-4000-8000-000000000001' } = {}) {
+function testApi(seed = {}, {
+  skipInit = true,
+  document,
+  randomUUID = () => '00000000-0000-4000-8000-000000000001',
+  open = () => null
+} = {}) {
   const source = html();
   const script = source.match(/<script>\s*([\s\S]*?)<\/script>\s*<\/body>/)?.[1];
   assert.ok(script, 'inline application script must exist');
@@ -116,6 +121,7 @@ function testApi(seed = {}, { skipInit = true, document, randomUUID = () => '000
     NEXORA_SKIP_INIT: skipInit,
     setTimeout() { return 1; },
     clearTimeout() {},
+    open,
     lucide: null
   };
   if (document) window.document = document;
@@ -663,6 +669,360 @@ test('returns domain results for rewards with missing businesses or alliance dat
   const missingAlliance = api.createDefaultState();
   missingAlliance.businesses['golden-glow-spa'].allianceId = '';
   assert.equal(api.redeemReward(missingAlliance, 'glow', 'missing-alliance', 1000).code, 'invalid_alliance');
+});
+
+test('awards tip points only after confirmation and only once', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const before = app.balances['bitcoin-nail-bar'].points;
+  assert.equal(api.createTip(app, {
+    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', staffName: 'Forged',
+    amount: 10, method: 'Cash App', note: ''
+  }, 500).code, 'method_disabled');
+  const pending = api.createTip(app, {
+    businessId: ' bitcoin-nail-bar ', staffProfileId: ' staff-anna ', staffName: 'Forged',
+    amount: '10.00', method: ' Venmo ', note: 'Cảm ơn'
+  }, 1000);
+
+  assert.equal(pending.ok, true);
+  assert.equal(pending.tip.staffName, 'Anna');
+  assert.equal(pending.tip.tipMultiplier, 10);
+  assert.equal(pending.tip.status, 'pending');
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
+  app.businesses['bitcoin-nail-bar'].tipMultiplier = 99;
+
+  const confirmed = api.confirmTipRecord(app, pending.tip.id, 2000);
+  const retry = api.confirmTipRecord(app, pending.tip.id, 3000);
+  assert.equal(confirmed.points, 100);
+  assert.equal(retry.idempotent, true);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 100);
+  assert.equal(app.ledger.filter((entry) => entry.refId === pending.tip.id).length, 1);
+});
+
+test('awards spend and direct-pay bonus only after salon confirms', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const before = app.balances['bitcoin-nail-bar'].points;
+  assert.equal(api.createDirectPayment(app, {
+    businessId: 'bitcoin-nail-bar', amount: 55, method: 'PayPal'
+  }, 500).code, 'method_disabled');
+  const pending = api.createDirectPayment(app, {
+    businessId: ' bitcoin-nail-bar ', amount: '55.00', method: ' Zelle '
+  }, 1000);
+
+  assert.equal(pending.ok, true);
+  assert.equal(pending.payment.directPayBonusPct, 20);
+  assert.equal(pending.payment.status, 'pending');
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
+  app.businesses['bitcoin-nail-bar'].directPayBonusPct = 90;
+
+  const confirmed = api.confirmDirectPayment(app, pending.payment.id, 2000);
+  const retry = api.confirmDirectPayment(app, pending.payment.id, 3000);
+  assert.deepEqual([confirmed.spendPoints, confirmed.bonusPoints], [55, 11]);
+  assert.equal(retry.idempotent, true);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 66);
+  assert.equal(app.ledger.filter((entry) => entry.refId === pending.payment.id).length, 2);
+});
+
+test('rejects noncanonical transaction inputs before mutating state', () => {
+  const { api } = testApi();
+  const invalidInputs = [
+    () => api.createTip(app, { businessId: 'missing', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo' }, 1000),
+    () => api.createTip(app, { businessId: 'golden-glow-spa', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo' }, 1000),
+    () => api.createTip(app, { businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 1.001, method: 'Venmo' }, 1000),
+    () => api.createTip(app, { businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo' }, 9e15),
+    () => api.createDirectPayment(app, { businessId: 'missing', amount: 55, method: 'Zelle' }, 1000),
+    () => api.createDirectPayment(app, { businessId: 'bitcoin-nail-bar', amount: Infinity, method: 'Zelle' }, 1000),
+    () => api.createDirectPayment(app, { businessId: 'bitcoin-nail-bar', amount: 55, method: 'PayPal' }, 1000),
+    () => api.createDirectPayment(app, { businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle' }, null)
+  ];
+  const app = api.createDefaultState();
+  invalidInputs.forEach((invoke) => {
+    const before = JSON.stringify(app);
+    assert.equal(invoke().ok, false);
+    assert.equal(JSON.stringify(app), before);
+  });
+
+  const malformedUuid = testApi({}, { randomUUID: () => 'not-a-uuid' });
+  const malformedState = malformedUuid.api.createDefaultState();
+  const beforeUuid = JSON.stringify(malformedState);
+  assert.equal(malformedUuid.api.createTip(malformedState, {
+    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
+  }, 1000).code, 'id_generation_failed');
+  assert.equal(JSON.stringify(malformedState), beforeUuid);
+});
+
+test('canonicalizes persisted staff identity before creating a tip', () => {
+  const { api } = testApi();
+  const migrated = api.migrateState({
+    staffProfiles: {
+      'staff-anna': { id: 'forged-staff-id', name: 'Canonical Anna' }
+    }
+  });
+
+  assert.equal(migrated.staffProfiles['staff-anna'].id, 'staff-anna');
+  const result = api.createTip(migrated, {
+    businessId: 'bitcoin-nail-bar',
+    staffProfileId: 'staff-anna',
+    staffName: '<img src=x onerror=alert(1)>',
+    amount: 10,
+    method: 'Venmo'
+  }, 1000);
+  assert.equal(result.ok, true);
+  assert.equal(result.tip.staffName, 'Canonical Anna');
+});
+
+test('keeps tip and direct-payment confirmations atomic when ledger IDs fail', () => {
+  let tipUuidCall = 0;
+  const tipApi = testApi({}, {
+    randomUUID: () => {
+      tipUuidCall += 1;
+      if (tipUuidCall === 2) throw new Error('tip ledger UUID unavailable');
+      return `00000000-0000-4000-8000-00000000000${tipUuidCall}`;
+    }
+  }).api;
+  const tipState = tipApi.createDefaultState();
+  const pendingTip = tipApi.createTip(tipState, {
+    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
+  }, 1000);
+  const tipBefore = JSON.stringify(tipState);
+  assert.equal(tipApi.confirmTipRecord(tipState, pendingTip.tip.id, 2000).code, 'id_generation_failed');
+  assert.equal(JSON.stringify(tipState), tipBefore);
+
+  let paymentUuidCall = 0;
+  const paymentApi = testApi({}, {
+    randomUUID: () => {
+      paymentUuidCall += 1;
+      if (paymentUuidCall === 3) throw new Error('bonus ledger UUID unavailable');
+      return `00000000-0000-4000-8000-00000000000${paymentUuidCall}`;
+    }
+  }).api;
+  const paymentState = paymentApi.createDefaultState();
+  const pendingPayment = paymentApi.createDirectPayment(paymentState, {
+    businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
+  }, 1000);
+  const paymentBefore = JSON.stringify(paymentState);
+  assert.equal(paymentApi.confirmDirectPayment(paymentState, pendingPayment.payment.id, 2000).code, 'id_generation_failed');
+  assert.equal(JSON.stringify(paymentState), paymentBefore);
+});
+
+test('rejects broken confirmed transaction relationships on idempotent retries', () => {
+  let uuidCall = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCall += 1;
+      return `00000000-0000-4000-8000-${String(uuidCall).padStart(12, '0')}`;
+    }
+  });
+
+  const tipState = api.createDefaultState();
+  const tip = api.createTip(tipState, {
+    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
+  }, 1000).tip;
+  api.confirmTipRecord(tipState, tip.id, 2000);
+  tipState.ledger.find((entry) => entry.refId === tip.id).pointsDelta = 101;
+  const tipBefore = JSON.stringify(tipState);
+  assert.equal(api.confirmTipRecord(tipState, tip.id, 3000).code, 'invalid_state');
+  assert.equal(JSON.stringify(tipState), tipBefore);
+
+  const paymentState = api.createDefaultState();
+  const payment = api.createDirectPayment(paymentState, {
+    businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
+  }, 1000).payment;
+  api.confirmDirectPayment(paymentState, payment.id, 2000);
+  paymentState.ledger.find((entry) => entry.refId === payment.id && entry.type === 'directpay_bonus').refType = 'tip';
+  const paymentBefore = JSON.stringify(paymentState);
+  assert.equal(api.confirmDirectPayment(paymentState, payment.id, 3000).code, 'invalid_state');
+  assert.equal(JSON.stringify(paymentState), paymentBefore);
+});
+
+test('round-trips rule snapshots and reconciles transaction ledger pairs without touching rewards', () => {
+  let uuidCall = 0;
+  const { api, storage } = testApi({}, {
+    randomUUID: () => {
+      uuidCall += 1;
+      return `00000000-0000-4000-8000-${String(uuidCall).padStart(12, '0')}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const tip = api.createTip(app, {
+    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
+  }, 1000).tip;
+  const payment = api.createDirectPayment(app, {
+    businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
+  }, 1100).payment;
+  api.confirmTipRecord(app, tip.id, 2000);
+  api.confirmDirectPayment(app, payment.id, 2100);
+  const reward = rewardPair({
+    redemption: { id: 'task5-reward', idempotencyKey: 'task5-reward' },
+    ledger: { id: 'task5-reward-ledger' }
+  });
+  app.redemptions = [reward.redemption];
+  app.ledger.push(
+    reward.ledger,
+    { ...app.ledger.find((entry) => entry.refId === tip.id), id: 'duplicate-tip-ledger' },
+    {
+      id: 'orphan-direct-ledger', businessId: 'bitcoin-nail-bar', type: 'directpay_bonus',
+      pointsDelta: 999, refType: 'direct_payment', refId: 'missing-payment',
+      createdAt: '2026-07-14T10:00:00.000Z'
+    }
+  );
+  app.tips.push({ ...tip });
+
+  const migrated = api.migrateState(app);
+  assert.equal(migrated.tips.length, 1);
+  assert.equal(migrated.directPayments.length, 1);
+  assert.equal(migrated.tips[0].tipMultiplier, 10);
+  assert.equal(migrated.directPayments[0].directPayBonusPct, 20);
+  assert.equal(migrated.ledger.filter((entry) => entry.refId === tip.id).length, 1);
+  assert.equal(migrated.ledger.filter((entry) => entry.refId === payment.id).length, 2);
+  assert.equal(migrated.redemptions.length, 1);
+  assert.equal(migrated.ledger.some((entry) => entry.id === reward.ledger.id), true);
+  assert.equal(migrated.ledger.some((entry) => entry.id === 'orphan-direct-ledger'), false);
+
+  api.saveState(migrated, storage);
+  const loaded = api.loadState(storage);
+  loaded.businesses['bitcoin-nail-bar'].tipMultiplier = 70;
+  loaded.businesses['bitcoin-nail-bar'].directPayBonusPct = 70;
+  assert.equal(api.confirmTipRecord(loaded, tip.id, 3000).points, 100);
+  assert.deepEqual(
+    [api.confirmDirectPayment(loaded, payment.id, 3000).spendPoints, api.confirmDirectPayment(loaded, payment.id, 3000).bonusPoints],
+    [55, 11]
+  );
+});
+
+test('prefers a valid transaction relation over a malformed duplicate ledger ID regardless of input order', () => {
+  let uuidCall = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCall += 1;
+      return `00000000-0000-4000-8000-${String(uuidCall).padStart(12, '0')}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const tip = api.createTip(app, {
+    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
+  }, 1000).tip;
+  const confirmedTip = api.confirmTipRecord(app, tip.id, 2000).tip;
+  const validLedger = app.ledger.find((entry) => entry.refId === tip.id);
+  const unrelatedLedger = app.ledger.filter((entry) => entry !== validLedger);
+  const malformedDuplicate = {
+    ...validLedger,
+    businessId: 'golden-glow-spa',
+    pointsDelta: 999
+  };
+
+  for (const relations of [
+    [malformedDuplicate, validLedger],
+    [validLedger, malformedDuplicate]
+  ]) {
+    const migrated = api.migrateState({
+      ...app,
+      tips: [confirmedTip],
+      ledger: [...relations, ...unrelatedLedger]
+    });
+    assert.equal(migrated.tips.length, 1);
+    assert.equal(migrated.ledger.filter((entry) => entry.refId === tip.id).length, 1);
+    assert.equal(migrated.ledger.find((entry) => entry.refId === tip.id).businessId, 'bitcoin-nail-bar');
+    assert.equal(migrated.redemptions.length, 1);
+    assert.equal(migrated.ledger.some((entry) => entry.refId === 'red-demo'), true);
+  }
+});
+
+test('restores pending tip and payment receipts without creating replacement records', () => {
+  const buildPending = (kind) => {
+    const { api } = testApi();
+    const app = api.createDefaultState();
+    if (kind === 'tip') {
+      const result = api.createTip(app, {
+        businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
+      }, 1000);
+      app.ui.activeScreen = 'tipdone';
+      return { api, app, id: result.tip.id };
+    }
+    const result = api.createDirectPayment(app, {
+      businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
+    }, 1000);
+    app.ui.activeScreen = 'paydone';
+    return { api, app, id: result.payment.id };
+  };
+
+  for (const kind of ['tip', 'payment']) {
+    const { api, app, id } = buildPending(kind);
+    const screenId = kind === 'tip' ? 'tipdone' : 'paydone';
+    const home = createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] });
+    const receipt = createStubElement({ id: screenId, classNames: ['app-screen', 'hidden'] });
+    const document = createDocumentStub({ screenNodes: [home, receipt] });
+    const raw = JSON.stringify(app);
+    const loaded = testApi({ [api.STORAGE_KEY]: raw }, {
+      skipInit: false,
+      document,
+      randomUUID: () => { throw new Error('reload must not create a transaction'); }
+    });
+
+    assert.equal(receipt.classList.contains('hidden'), false, kind);
+    assert.equal(loaded.storage.getItem(api.STORAGE_KEY), raw, kind);
+    assert.equal(vm.runInContext(`state.${kind === 'tip' ? 'tips' : 'directPayments'}.length`, loaded.context), 1, kind);
+    assert.equal(vm.runInContext(`state.ui.pendingContext.${kind === 'tip' ? 'tipId' : 'paymentId'}`, loaded.context), id, kind);
+    assert.equal(document.getElementById(kind === 'tip' ? 'tipdone-amount' : 'payment-confirmed-amount').textContent, kind === 'tip' ? '$10.00' : '$55.00');
+  }
+});
+
+test('persists recipient method fallback and renders disabled reasons bilingually without unsafe receipt HTML', () => {
+  const document = createDocumentStub();
+  const { api, context, storage } = testApi({}, { skipInit: false, document });
+  const recipient = document.getElementById('tip-recipient');
+  recipient.value = 'staff-maria';
+  context.handleChange({ target: recipient });
+
+  const persisted = api.loadState(storage);
+  assert.equal(persisted.ui.selectedStaffId, 'staff-maria');
+  assert.equal(persisted.ui.selectedTipMethod, 'Zelle');
+  const tipButtons = document.getElementById('tip-method-list').children;
+  assert.equal(tipButtons.find((button) => button.textContent.includes('Venmo')).disabled, true);
+  assert.match(tipButtons.find((button) => button.textContent.includes('Venmo')).textContent, /chưa bật/);
+
+  context.setLanguage('en');
+  const englishButtons = document.getElementById('tip-method-list').children;
+  assert.match(englishButtons.find((button) => button.textContent.includes('Venmo')).textContent, /not enabled/);
+
+  const source = html();
+  for (const [start, end] of [
+    ['renderTipResult', 'renderPaymentResult'],
+    ['renderPaymentResult', 'renderDomainViews']
+  ]) {
+    const body = source.match(new RegExp(`function ${start}\\(\\) \\{([\\s\\S]*?)\\n\\s*\\}\\n\\n\\s*function ${end}`))?.[1];
+    assert.ok(body, `${start} must be available`);
+    assert.doesNotMatch(body, /innerHTML/);
+    assert.match(body, /textContent/);
+  }
+  assert.match(source, /NEXORA[^<]*(?:không giữ tiền|never holds)/i);
+  assert.match(source, /(?:10|15) (?:phút|minutes)/i);
+});
+
+test('opens an external payment only after the pending record is persisted by a user action', () => {
+  let opened = 0;
+  let persistedAtOpen = false;
+  const document = createDocumentStub();
+  document.getElementById('tip-recipient').value = 'staff-anna';
+  document.getElementById('tip-custom-amount').value = '';
+  document.getElementById('tip-note').value = 'Thanks';
+  const action = createStubElement({ dataset: { action: 'send-tip' } });
+  const { api, context, storage } = testApi({}, {
+    skipInit: false,
+    document,
+    open() {
+      opened += 1;
+      persistedAtOpen = api.loadState(storage).tips.length === 1;
+    }
+  });
+  const event = { target: { closest(selector) { return selector === '[data-action]' ? action : null; } } };
+
+  context.handleAction(event);
+
+  assert.equal(opened, 1);
+  assert.equal(persistedAtOpen, true);
+  assert.equal(api.loadState(storage).tips[0].status, 'pending');
 });
 
 test('round-trips valid reward ledger state and drops duplicate-sensitive records', () => {
