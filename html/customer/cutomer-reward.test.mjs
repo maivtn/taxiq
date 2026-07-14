@@ -2960,6 +2960,22 @@ test('rejects a missing offline queue before completeCheckin can partially mutat
   assert.equal(JSON.stringify(app), before);
 });
 
+test('prunes stale offline queue IDs while retrying valid queued check-ins', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const queued = api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', false, 1000);
+  assert.equal(queued.ok, true);
+  app.offlineQueue.push('missing-checkin');
+  const beforePoints = app.balances['bitcoin-nail-bar'].points;
+  const result = api.retryQueuedCheckins(app, true, 5000);
+  assert.equal(result.ok, true);
+  assert.equal(result.retried, 1);
+  assert.equal(app.offlineQueue.length, 0);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforePoints + 120);
+  assert.equal(app.ledger.filter((entry) => entry.refType === 'checkin').length, 1);
+  assert.equal(queued.checkin.status, 'confirmed');
+});
+
 test('completeCheckin rejects malformed domain collections before mutation', () => {
   const { api } = testApi();
   for (const field of ['businesses', 'balances', 'staffProfiles', 'checkins', 'ledger', 'offlineQueue']) {

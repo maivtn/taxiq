@@ -2175,13 +2175,25 @@
       let retried = 0;
       ids.forEach((id) => {
         const checkin = appState.checkins.find((item) => isRecord(item) && item.id === id);
-        if (!checkin) return;
+        const removeQueuedId = () => {
+          appState.offlineQueue = appState.offlineQueue.filter((queueId) => queueId !== id);
+        };
+        if (!checkin) {
+          removeQueuedId();
+          return;
+        }
+        if (!['queued', 'sending', 'confirmed'].includes(checkin.status)) {
+          removeQueuedId();
+          return;
+        }
         const result = checkin.status === 'confirmed'
           ? completeCheckin(appState, checkin, now)
-          : checkin.status === 'queued' ? completeCheckin(appState, checkin, now) : { ok: false };
+          : completeCheckin(appState, checkin, now);
         if (result.ok) {
-          if (result.idempotent) appState.offlineQueue = appState.offlineQueue.filter((queueId) => queueId !== checkin.id);
+          if (result.idempotent || checkin.status === 'confirmed') removeQueuedId();
           retried += result.idempotent ? 0 : 1;
+        } else if (checkin.status === 'confirmed' || ['invalid_checkin', 'ledger_conflict', 'ledger_missing'].includes(result.code)) {
+          removeQueuedId();
         }
       });
       return { ok: true, retried };
