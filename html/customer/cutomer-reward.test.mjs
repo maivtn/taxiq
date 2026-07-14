@@ -2041,6 +2041,176 @@ test('guards missing calendar bookings and downloads an escaped valid ICS for a 
   assert.deepEqual(captured.revoked, ['blob:calendar-1']);
 });
 
+test('derives feedback claim authority from the canonical visit for type-only and refType-only raw evidence', () => {
+  for (const claimVariant of [
+    { classifier: 'type_only', business: 'changed' },
+    { classifier: 'type_only', business: 'missing' },
+    { classifier: 'ref_type_only', business: 'changed' },
+    { classifier: 'ref_type_only', business: 'missing' }
+  ]) {
+    const variantName = `${claimVariant.classifier}_${claimVariant.business}`;
+    let uuidCalls = 0;
+    const { api, storage } = testApi({}, {
+      randomUUID: () => {
+        uuidCalls += 1;
+        return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+      }
+    });
+    const app = api.createDefaultState();
+    const feedback = api.submitFeedback(app, {
+      visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 3, text: 'Private'
+    }, 1000).feedback;
+    const feedbackLedger = app.ledger.find((entry) => entry.refId === feedback.id);
+    const rawClaim = {
+      ...feedbackLedger,
+      businessId: 'golden-glow-spa',
+      pointsDelta: 999
+    };
+    if (claimVariant.business === 'missing') delete rawClaim.businessId;
+    if (claimVariant.classifier === 'type_only') delete rawClaim.refType;
+    else delete rawClaim.type;
+    app.feedback = [];
+    app.feedbackClaims = [];
+    app.ledger = [rawClaim, ...app.ledger.filter((entry) => entry !== feedbackLedger)];
+    const balanceAfterAward = app.balances['bitcoin-nail-bar'].points;
+
+    const migrated = api.migrateState(app);
+    api.saveState(migrated, storage);
+    const loaded = api.loadState(storage);
+    uuidCalls = 0;
+    const ledgerBefore = JSON.stringify(loaded.ledger);
+    const retry = api.submitFeedback(loaded, {
+      visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 5
+    }, 2000);
+
+    assert.equal(loaded.feedback.length, 0, variantName);
+    assert.equal(loaded.feedbackClaims.includes('visit-1001'), true, variantName);
+    assert.equal(retry.code, 'already_submitted', variantName);
+    assert.equal(loaded.balances['bitcoin-nail-bar'].points, balanceAfterAward, variantName);
+    assert.equal(JSON.stringify(loaded.ledger), ledgerBefore, variantName);
+    assert.equal(uuidCalls, 0, variantName);
+  }
+});
+
+test('reconciles booking and feedback again after a cross-domain ledger ID collision', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const booking = api.createBookingRequest(app, validBookingInput, 1000).booking;
+  api.confirmBookingRequest(app, booking.id, 2000);
+  const feedback = api.submitFeedback(app, {
+    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 4, text: 'Private'
+  }, 3000).feedback;
+  const bookingLedger = app.ledger.find((entry) => entry.refId === booking.id);
+  const feedbackLedger = app.ledger.find((entry) => entry.refId === feedback.id);
+  feedbackLedger.id = bookingLedger.id;
+  const balanceAfterAwards = app.balances['bitcoin-nail-bar'].points;
+
+  const migrated = api.migrateState(app);
+  assert.equal(migrated.bookingRequests.some((item) => item.id === booking.id), true);
+  assert.equal(migrated.appointments.some((item) => item.bookingId === booking.id), true);
+  assert.equal(migrated.ledger.filter((entry) => entry.id === bookingLedger.id).length, 1);
+  assert.equal(migrated.ledger.find((entry) => entry.id === bookingLedger.id).type, 'booking_bonus');
+  assert.equal(migrated.feedback.some((item) => item.id === feedback.id), false);
+  assert.equal(migrated.feedbackClaims.includes('visit-1001'), true);
+
+  uuidCalls = 0;
+  const ledgerBefore = JSON.stringify(migrated.ledger);
+  const retry = api.submitFeedback(migrated, {
+    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 5
+  }, 4000);
+  assert.equal(retry.code, 'already_submitted');
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, balanceAfterAwards);
+  assert.equal(JSON.stringify(migrated.ledger), ledgerBefore);
+  assert.equal(uuidCalls, 0);
+});
+
+test('quarantines booking relation and context when a transaction wins a duplicate ledger ID', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const booking = api.createBookingRequest(app, validBookingInput, 1000).booking;
+  api.confirmBookingRequest(app, booking.id, 2000);
+  const tip = api.createTip(app, {
+    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
+  }, 3000).tip;
+  api.confirmTipRecord(app, tip.id, 4000);
+  const bookingLedger = app.ledger.find((entry) => entry.refId === booking.id);
+  const tipLedger = app.ledger.find((entry) => entry.refId === tip.id);
+  bookingLedger.id = tipLedger.id;
+  const balanceAfterAwards = app.balances['bitcoin-nail-bar'].points;
+
+  const migrated = api.migrateState(app);
+  assert.equal(migrated.tips.some((item) => item.id === tip.id), true);
+  assert.equal(migrated.ledger.filter((entry) => entry.id === tipLedger.id).length, 1);
+  assert.equal(migrated.ledger.find((entry) => entry.id === tipLedger.id).type, 'tip_bonus');
+  assert.equal(migrated.bookingRequests.some((item) => item.id === booking.id), false);
+  assert.equal(migrated.appointments.some((item) => item.bookingId === booking.id), false);
+  assert.equal(migrated.ui.pendingContext.bookingId, null);
+
+  uuidCalls = 0;
+  const ledgerBefore = JSON.stringify(migrated.ledger);
+  const retry = api.confirmBookingRequest(migrated, booking.id, 5000);
+  assert.equal(retry.code, 'not_found');
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, balanceAfterAwards);
+  assert.equal(JSON.stringify(migrated.ledger), ledgerBefore);
+  assert.equal(uuidCalls, 0);
+});
+
+test('quarantines booking and feedback records with extra unrelated same-ref ledger entries', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const booking = api.createBookingRequest(app, validBookingInput, 1000).booking;
+  api.confirmBookingRequest(app, booking.id, 2000);
+  const feedback = api.submitFeedback(app, {
+    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 5, text: 'Private'
+  }, 3000).feedback;
+  app.ledger.push(
+    {
+      id: 'extra-booking-ref', businessId: 'bitcoin-nail-bar', type: 'visit', pointsDelta: 0,
+      refType: 'visit', refId: booking.id, createdAt: '2026-07-14T10:00:00.000Z'
+    },
+    {
+      id: 'extra-feedback-ref', businessId: 'bitcoin-nail-bar', type: 'visit', pointsDelta: 0,
+      refType: 'visit', refId: feedback.id, createdAt: '2026-07-14T10:00:00.000Z'
+    }
+  );
+  const balanceAfterAwards = app.balances['bitcoin-nail-bar'].points;
+
+  const migrated = api.migrateState(app);
+  assert.equal(migrated.bookingRequests.some((item) => item.id === booking.id), false);
+  assert.equal(migrated.appointments.some((item) => item.bookingId === booking.id), false);
+  assert.equal(migrated.ui.pendingContext.bookingId, null);
+  assert.equal(migrated.feedback.some((item) => item.id === feedback.id), false);
+  assert.equal(migrated.feedbackClaims.includes('visit-1001'), true);
+
+  uuidCalls = 0;
+  const ledgerBefore = JSON.stringify(migrated.ledger);
+  assert.equal(api.confirmBookingRequest(migrated, booking.id, 4000).code, 'not_found');
+  assert.equal(api.submitFeedback(migrated, {
+    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 1
+  }, 5000).code, 'already_submitted');
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, balanceAfterAwards);
+  assert.equal(JSON.stringify(migrated.ledger), ledgerBefore);
+  assert.equal(uuidCalls, 0);
+});
+
 function apiState(storage) {
   return JSON.parse(storage.getItem('nexora.customer.prototype.v1'));
 }

@@ -981,7 +981,8 @@
           || selectedAppointments.has(candidate.appointment)
           || selectedAppointmentIds.has(candidate.appointment.id)
           || (candidate.entry && (selectedEntries.has(candidate.entry) || selectedLedgerIds.has(candidate.entry.id)))) return;
-        const allLinkedLedger = bookingLedger.filter((entry) => entry.refId === candidate.booking.id);
+        const allLinkedLedger = appState.ledger.filter((entry) => isRecord(entry)
+          && entry.refId === candidate.booking.id);
         if ((candidate.booking.bookingBonus === 0 && allLinkedLedger.length)
           || (candidate.booking.bookingBonus > 0 && allLinkedLedger.length !== 1)) return;
         selectedBookingIds.add(candidate.booking.id);
@@ -1064,7 +1065,8 @@
       const selectedLedgerIds = new Set();
       const selectedFeedback = [];
       candidates.forEach((candidate) => {
-        const linked = feedbackLedger.filter((entry) => entry.refId === candidate.feedback.id);
+        const linked = appState.ledger.filter((entry) => isRecord(entry)
+          && entry.refId === candidate.feedback.id);
         if (linked.length !== 1
           || feedbackIds.has(candidate.feedback.id)
           || visitIds.has(candidate.feedback.visitId)
@@ -1080,7 +1082,6 @@
       [...rawFeedbackClaims, ...rawLedgerClaims].forEach((claim) => {
         const visits = appState.visits.filter((visit) => visit.id === claim.visitId);
         if (visits.length !== 1) return;
-        if (claim.businessId && claim.businessId !== visits[0].businessId) return;
         claimedVisits.add(claim.visitId);
       });
       selectedFeedback.forEach((feedback) => claimedVisits.add(feedback.visitId));
@@ -1259,6 +1260,10 @@
       reconcileBookingPairs(migrated, rawBookingLedgerClaims, rawAppointmentClaims);
       reconcileFeedbackPairs(migrated, rawFeedbackClaims, rawFeedbackLedgerClaims);
       deduplicateLedgerIds(migrated);
+      reconcileRewardPairs(migrated);
+      reconcileTransactionPairs(migrated, rawTransactionLedgerClaims);
+      reconcileBookingPairs(migrated, rawBookingLedgerClaims, rawAppointmentClaims);
+      reconcileFeedbackPairs(migrated, rawFeedbackClaims, rawFeedbackLedgerClaims);
       reconcilePendingRewardAttempt(migrated, rawPendingClaims);
       reconcilePendingTransactions(migrated);
       migrated.ui.pendingContext.consentScopes = migrated.ui.pendingContext.consentScopes.filter((scope) => CONSENT_SCOPES.includes(scope));
