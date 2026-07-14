@@ -143,7 +143,7 @@
         </section>
         <section class="app-screen hidden" id="addlook" data-ready="true" data-module="home" aria-labelledby="addlook-title">
           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="looks" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Save the details" data-vi="Lưu lại chi tiết">Lưu lại chi tiết</p><h1 id="addlook-title" class="text-2xl font-black" data-en="Add a new look" data-vi="Thêm kiểu mới">Thêm kiểu mới</h1></div></div>
-          <div class="app-card"><button type="button" class="grid min-h-44 w-full place-items-center rounded-2xl border border-dashed border-app-line bg-app-panel text-center" data-action="upload-look"><span><i data-lucide="image-plus" class="mx-auto size-8 text-app-pink" aria-hidden="true"></i><strong class="mt-3 block" data-en="Add a photo" data-vi="Thêm ảnh">Thêm ảnh</strong><small class="mt-1 block text-app-muted" data-en="JPG or PNG, up to 10 MB" data-vi="JPG hoặc PNG, tối đa 10 MB">JPG hoặc PNG, tối đa 10 MB</small></span></button><div class="mt-5 grid gap-4 sm:grid-cols-2"><label class="text-sm font-bold"><span data-en="Service" data-vi="Dịch vụ">Dịch vụ</span><input id="look-service" class="app-input mt-2" data-en-ph="e.g. Gel manicure" data-vi-ph="VD: Sơn gel" placeholder="VD: Sơn gel"></label><label class="text-sm font-bold"><span data-en="Color / formula" data-vi="Màu / công thức">Màu / công thức</span><input id="look-color" class="app-input mt-2" data-en-ph="e.g. Lilac #142" data-vi-ph="VD: Lilac #142" placeholder="VD: Lilac #142"></label></div><label class="mt-4 block text-sm font-bold"><span data-en="Notes" data-vi="Ghi chú">Ghi chú</span><textarea id="look-notes" class="app-input mt-2 min-h-28 resize-y" data-en-ph="Shape, technician and anything to remember…" data-vi-ph="Dáng, kỹ thuật viên và điều cần nhớ…" placeholder="Dáng, kỹ thuật viên và điều cần nhớ…"></textarea></label><button type="button" class="app-button mt-5 w-full" data-action="save-look"><i data-lucide="save" class="size-4" aria-hidden="true"></i><span data-en="Save look" data-vi="Lưu kiểu">Lưu kiểu</span></button></div></div>
+          <div class="app-card"><input id="look-photo-input" class="sr-only" type="file" accept="image/jpeg,image/png" data-look-photo><img id="look-photo-preview" class="hidden max-h-48 w-full rounded-2xl object-cover" alt="Ảnh kiểu đã chọn"><button type="button" class="grid min-h-44 w-full place-items-center rounded-2xl border border-dashed border-app-line bg-app-panel text-center" data-action="upload-look"><span><i data-lucide="image-plus" class="mx-auto size-8 text-app-pink" aria-hidden="true"></i><strong class="mt-3 block" data-en="Add a photo" data-vi="Thêm ảnh">Thêm ảnh</strong><small class="mt-1 block text-app-muted" data-en="JPG or PNG, up to 10 MB" data-vi="JPG hoặc PNG, tối đa 10 MB">JPG hoặc PNG, tối đa 10 MB</small></span></button><div class="mt-5 grid gap-4 sm:grid-cols-2"><label class="text-sm font-bold"><span data-en="Service" data-vi="Dịch vụ">Dịch vụ</span><input id="look-service" class="app-input mt-2" data-en-ph="e.g. Gel manicure" data-vi-ph="VD: Sơn gel" placeholder="VD: Sơn gel"></label><label class="text-sm font-bold"><span data-en="Color / formula" data-vi="Màu / công thức">Màu / công thức</span><input id="look-color" class="app-input mt-2" data-en-ph="e.g. Lilac #142" data-vi-ph="VD: Lilac #142" placeholder="VD: Lilac #142"></label></div><label class="mt-4 block text-sm font-bold"><span data-en="Notes" data-vi="Ghi chú">Ghi chú</span><textarea id="look-notes" class="app-input mt-2 min-h-28 resize-y" data-en-ph="Shape, technician and anything to remember…" data-vi-ph="Dáng, kỹ thuật viên và điều cần nhớ…" placeholder="Dáng, kỹ thuật viên và điều cần nhớ…"></textarea></label><button type="button" class="app-button mt-5 w-full" data-action="save-look"><i data-lucide="save" class="size-4" aria-hidden="true"></i><span data-en="Save look" data-vi="Lưu kiểu">Lưu kiểu</span></button></div></div>
         </section>
         <section class="app-screen hidden" id="review" data-ready="true" data-module="home" aria-labelledby="review-title">
           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Private to the business" data-vi="Chỉ doanh nghiệp nhìn thấy">Chỉ doanh nghiệp nhìn thấy</p><h1 id="review-title" class="text-2xl font-black" data-en="How was your visit?" data-vi="Trải nghiệm của bạn thế nào?">Trải nghiệm của bạn thế nào?</h1></div></div>
@@ -244,8 +244,6 @@
     </div>
 
     <div id="form-error-state" class="pointer-events-none fixed inset-x-4 top-24 z-[65] hidden justify-center" data-state="error" role="alert"><div class="rounded-xl border border-app-red/30 bg-app-card px-4 py-3 text-sm font-bold text-app-red" data-en="Please check the highlighted fields." data-vi="Vui lòng kiểm tra các trường được đánh dấu.">Vui lòng kiểm tra các trường được đánh dấu.</div></div>
-    <input id="look-photo-input" class="sr-only" type="file" accept="image/jpeg,image/png" data-look-photo>
-    <img id="look-photo-preview" class="hidden max-h-48 w-full rounded-2xl object-cover" alt="Ảnh kiểu đã chọn">
     <div id="toast-region" class="pointer-events-none fixed inset-x-4 bottom-24 z-[70] flex justify-center lg:bottom-8 lg:left-auto lg:right-8" aria-live="polite" aria-atomic="true"></div>
     <div id="app-overlay" class="fixed inset-0 z-[80] hidden items-end justify-center bg-black/70 p-4 backdrop-blur-sm sm:items-center" data-overlay aria-hidden="true">
       <div class="app-card max-h-[min(88dvh,720px)] w-full max-w-md overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="overlay-title" tabindex="-1">
@@ -1637,7 +1635,8 @@
       return values.filter((value) => {
         if (typeof value !== 'string' || seen.has(value)) return false;
         const staff = appState.staffProfiles[value];
-        if (!isRecord(staff) || staff.id !== value || !getValidBusiness(appState, staff.businessId)) return false;
+        if (!isRecord(staff) || staff.id !== value || !getValidBusiness(appState, staff.businessId)
+          || !canFollowTech(appState, value)) return false;
         seen.add(value);
         return true;
       });
@@ -1650,7 +1649,8 @@
       const visitId = value.visitId === null || value.visitId === undefined
         ? null
         : typeof value.visitId === 'string' && value.visitId.trim() ? value.visitId.trim() : '';
-      const staffProfileId = value.staffProfileId === null || value.staffProfileId === undefined
+      const hasStaffProfileId = Object.prototype.hasOwnProperty.call(value, 'staffProfileId');
+      let staffProfileId = value.staffProfileId === null || value.staffProfileId === undefined
         ? null
         : typeof value.staffProfileId === 'string' && value.staffProfileId.trim() ? value.staffProfileId.trim() : '';
       const business = getValidBusiness(appState, businessId);
@@ -1659,6 +1659,17 @@
         ? appState.visits.filter((item) => isRecord(item) && item.id === visitId)
         : [];
       if (visitId && (visit.length !== 1 || visit[0].businessId !== businessId)) return null;
+      if (visitId) {
+        const visitStaffId = normalizedRequiredText(visit[0].staffProfileId);
+        const visitStaff = visitStaffId ? appState.staffProfiles[visitStaffId] : null;
+        if (!visitStaffId || !isRecord(visitStaff) || visitStaff.id !== visitStaffId
+          || visitStaff.businessId !== visit[0].businessId) return null;
+        if (hasStaffProfileId) {
+          if (!staffProfileId || staffProfileId !== visitStaffId) return null;
+        } else {
+          staffProfileId = visitStaffId;
+        }
+      }
       const staff = staffProfileId
         ? appState.staffProfiles[staffProfileId]
         : null;
@@ -1735,7 +1746,7 @@
         photoDataUrl,
         createdAt: timestamp.value
       };
-      appState.looks = [...appState.looks, look];
+      appState.looks = [look, ...appState.looks];
       return { ok: true, look };
     }
 
@@ -1794,10 +1805,11 @@
         || !Array.isArray(appState.notifications) || !isRecord(appState.businesses)) return { ok: false, code: 'invalid_state' };
       const staff = appState.staffProfiles[staffProfileId];
       if (!isRecord(staff) || staff.id !== staffProfileId || !getValidBusiness(appState, staff.businessId)) return { ok: false, code: 'unknown_staff' };
+      if (!canFollowTech(appState, staffProfileId)) return { ok: false, code: 'no_shared_visit' };
       const business = getValidBusiness(appState, newBusinessId);
       if (!business) return { ok: false, code: 'unknown_business' };
       if (!appState.followedTechIds.includes(staffProfileId)) return { ok: false, code: 'not_following' };
-      if (!staff.followNotifyOptIn) return { ok: false, code: 'tech_opted_out' };
+      if (staff.followNotifyOptIn !== true) return { ok: false, code: 'tech_opted_out' };
       const dedupeKey = `tech-move:${staffProfileId}:${newBusinessId}`;
       if (appState.notifications.some((item) => isRecord(item) && item.dedupeKey === dedupeKey)) return { ok: false, code: 'already_notified' };
       const timestamp = domainTimestamp(now);
@@ -3026,15 +3038,23 @@
         const saveControl = card.querySelector('[data-action="save-offer"]');
         if (saveControl) saveControl.dataset.offerId = card.dataset.offerId;
         const body = card.querySelector('.p-4') ?? card;
-        if (!body.querySelector?.('[data-action="view-offer"]')) {
+        let viewControl = body.querySelector?.('[data-action="view-offer"]');
+        let useControl = body.querySelector?.('[data-action="use-offer"]');
+        if (!viewControl || !useControl) {
           const actions = document.createElement('div');
           actions.className = 'mt-2 grid grid-cols-2 gap-2';
-          actions.append(
-            createActionButton('view-offer', t('view'), { offerId: card.dataset.offerId }),
-            createActionButton('use-offer', t('useOffer'), { rewardKey: card.dataset.offerId === 'offer-glow' ? 'glow' : 'moon' }, 'app-button')
-          );
+          if (!viewControl) {
+            viewControl = createActionButton('view-offer', t('view'), { offerId: card.dataset.offerId });
+            actions.append(viewControl);
+          }
+          if (!useControl) {
+            useControl = createActionButton('use-offer', t('useOffer'), { rewardKey: card.dataset.offerId === 'offer-glow' ? 'glow' : 'moon' }, 'app-button');
+            actions.append(useControl);
+          }
           body.append(actions);
         }
+        if (viewControl) viewControl.textContent = t('view');
+        if (useControl) useControl.textContent = t('useOffer');
       });
       document.querySelectorAll('[data-action="save-offer"]').forEach((control) => {
         const saved = state.savedOfferIds.includes(control.dataset.offerId);
@@ -3617,7 +3637,9 @@
           state = before;
           throw error;
         }
-        const savedLook = state.looks.at(-1);
+        const savedLook = result?.look?.id
+          ? state.looks.find((look) => look.id === result.look.id)
+          : null;
         if (savedLook) savedLook.photoDataUrl = '';
         try {
           saveState(state);
@@ -3681,12 +3703,6 @@
     registerAction('confirm-booking-demo', () => confirmBookingDemo());
     registerAction('add-calendar', () => downloadBookingCalendar(state, state.ui.pendingContext.bookingId));
     registerAction('open-google-review', () => window.open?.('https://www.google.com/search?q=Bitcoin+Nail+Bar+reviews', '_blank', 'noopener,noreferrer'));
-    registerAction('upload-look', (control) => openOverlay({
-      title: t('addPhoto'),
-      html: t('addPhotoDetail'),
-      confirmLabel: t('gotIt'),
-      hideCancel: true
-    }, control));
     registerAction('show-directions', () => showToast(t('openingMaps')));
     registerAction('copy-referral', () => {
       navigator.clipboard?.writeText('https://nexora.example/invite/JESSICA50');

@@ -2646,7 +2646,7 @@ test('persists looks, saved offers and unique wishes', () => {
   assert.equal(api.toggleSavedOffer(app, 'offer-glow'), false);
   assert.equal(api.addWishRecord(app, 'Pedicure deal').ok, true);
   assert.equal(api.addWishRecord(app, 'pedicure deal').code, 'duplicate');
-  assert.equal(app.looks.at(-1).note, 'Da nhạy cảm');
+  assert.equal(app.looks.at(0).note, 'Da nhạy cảm');
 });
 
 test('allows follow-tech only after a shared visit and never stores follower counts', () => {
@@ -2680,7 +2680,7 @@ test('keeps look writes atomic across ownership, timestamp, UUID and photo migra
   const saved = api.saveLookRecord(app, { businessId: 'bitcoin-nail-bar', visitId: 'visit-1001', staffProfileId: 'staff-anna', service: 'Gel', photoDataUrl: photo }, 1000);
   assert.equal(saved.ok, true);
   assert.equal(saved.look.photoDataUrl, photo);
-  assert.equal(api.migrateState(app).looks.at(-1).photoDataUrl, photo);
+  assert.equal(api.migrateState(app).looks.at(0).photoDataUrl, photo);
 });
 
 test('does not mutate follows or notifications when notification inputs are invalid', () => {
@@ -2720,7 +2720,100 @@ test('saves look metadata without a photo when localStorage quota is exhausted',
   };
   const control = createStubElement({ dataset: { action: 'save-look' } });
   context.handleAction({ target: { closest: (selector) => selector === '[data-action]' ? control : null } });
-  const saved = vm.runInContext('state.looks.at(-1)', context);
+  const saved = vm.runInContext('state.looks.find((look) => look.note === "Sensitive skin")', context);
   assert.equal(saved.note, 'Sensitive skin');
   assert.equal(saved.photoDataUrl, '');
+});
+
+test('upload-look opens the picker and file changes update the preview', async () => {
+  const input = createStubElement({ id: 'look-photo-input' });
+  const preview = createStubElement({ id: 'look-photo-preview' });
+  input.matches = (selector) => selector === '[data-look-photo]';
+  input.files = [{}];
+  const document = createDocumentStub({ extraElements: [input, preview] });
+  const { context } = testApi({}, { document });
+  const photo = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ==';
+  context.compressImage = async () => photo;
+  const control = createStubElement({ dataset: { action: 'upload-look' } });
+  context.handleAction({ target: { closest: (selector) => selector === '[data-action]' ? control : null } });
+  assert.equal(input.clicked, true);
+
+  await context.handleChange({ target: input });
+  assert.equal(preview.dataset.photo, photo);
+  assert.equal(preview.src, photo);
+  assert.equal(preview.classList.contains('hidden'), false);
+});
+
+test('migrates followed technicians and looks only when visit ownership is canonical', () => {
+  const { api } = testApi();
+  const migrated = api.migrateState({
+    followedTechIds: ['staff-maria', 'staff-anna', 'staff-maria'],
+    looks: [
+      { id: 'look-valid', businessId: 'bitcoin-nail-bar', visitId: 'visit-1001', staffProfileId: 'staff-anna', createdAt: '2026-07-14T12:00:00.000Z', service: 'Gel' },
+      { id: 'look-null-staff', businessId: 'bitcoin-nail-bar', visitId: 'visit-1001', staffProfileId: null, createdAt: '2026-07-14T12:01:00.000Z', service: 'Gel' },
+      { id: 'look-wrong-staff', businessId: 'bitcoin-nail-bar', visitId: 'visit-1001', staffProfileId: 'staff-maria', createdAt: '2026-07-14T12:02:00.000Z', service: 'Gel' },
+      { id: 'look-wrong-business', businessId: 'golden-glow-spa', visitId: 'visit-1001', staffProfileId: 'staff-anna', createdAt: '2026-07-14T12:03:00.000Z', service: 'Gel' }
+    ]
+  });
+
+  assert.deepEqual(migrated.followedTechIds, ['staff-anna']);
+  assert.deepEqual(migrated.looks.map((look) => look.id), ['look-valid']);
+  assert.equal(migrated.looks[0].staffProfileId, 'staff-anna');
+  assert.equal(migrated.looks[0].businessId, 'bitcoin-nail-bar');
+});
+
+test('rejects tampered followed technicians and malformed opt-in values before UUID creation', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, { randomUUID: () => {
+    uuidCalls += 1;
+    return '00000000-0000-4000-8000-000000000099';
+  } });
+  const app = api.createDefaultState();
+  app.followedTechIds = ['staff-maria'];
+  app.staffProfiles['staff-maria'].followNotifyOptIn = true;
+  const before = JSON.stringify(app);
+  assert.equal(api.createTechMoveNotification(app, 'staff-maria', 'golden-glow-spa', 1000).code, 'no_shared_visit');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(uuidCalls, 0);
+
+  app.followedTechIds = ['staff-anna'];
+  for (const malformedOptIn of ['true', 1, 'false']) {
+    app.staffProfiles['staff-anna'].followNotifyOptIn = malformedOptIn;
+    const snapshot = JSON.stringify(app);
+    assert.equal(api.createTechMoveNotification(app, 'staff-anna', 'golden-glow-spa', 1000).code, 'tech_opted_out');
+    assert.equal(JSON.stringify(app), snapshot);
+  }
+});
+
+test('refreshes dynamic offer view and use labels after switching to English', () => {
+  const saveLabel = createStubElement({ textContent: 'Lưu ưu đãi' });
+  const saveControl = createStubElement({
+    dataset: { action: 'save-offer', offerId: 'offer-glow' },
+    querySelectors: { span: saveLabel }
+  });
+  const viewControl = createStubElement({ dataset: { action: 'view-offer', offerId: 'offer-glow' }, textContent: 'Xem' });
+  const useControl = createStubElement({ dataset: { action: 'use-offer', rewardKey: 'glow' }, textContent: 'Dùng ưu đãi' });
+  const body = createStubElement({ querySelectors: {
+    '[data-action="view-offer"]': viewControl,
+    '[data-action="use-offer"]': useControl
+  } });
+  const card = createStubElement({
+    dataset: { offerId: 'offer-glow', category: 'beauty', search: 'glow' },
+    querySelectors: {
+      '[data-action="save-offer"]': saveControl,
+      '.p-4': body
+    }
+  });
+  const document = createDocumentStub({ selectorNodes: {
+    '[data-offer-card]': [card],
+    '[data-action="save-offer"]': [saveControl],
+    '[data-offer-filter]': []
+  } });
+  const { context } = testApi({}, { document });
+  context.renderOffers();
+  assert.equal(viewControl.textContent, 'Xem');
+  assert.equal(useControl.textContent, 'Dùng ưu đãi');
+  context.setLanguage('en');
+  assert.equal(viewControl.textContent, 'View');
+  assert.equal(useControl.textContent, 'Use offer');
 });
