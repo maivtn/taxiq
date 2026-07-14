@@ -2991,6 +2991,18 @@ test('queues offline QR check-in and awards points after retry with scan timesta
   assert.equal(api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', true, 6000).code, 'duplicate_checkin');
 });
 
+test('rejects a future persisted scan within the same duplicate window', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+  const queued = api.submitCheckin(app, payload, false, 1000);
+  assert.equal(queued.ok, true);
+  queued.checkin.scannedAt = new Date(1000 + 60 * 1000).toISOString();
+  const before = JSON.stringify(app);
+  assert.equal(api.submitCheckin(app, payload, true, 1000).code, 'duplicate_checkin');
+  assert.equal(JSON.stringify(app), before);
+});
+
 test('strictly validates Nexora QR origin, route and staff ownership', () => {
   const { api } = testApi();
   assert.equal(api.parseNexoraQr('https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna').ok, true);

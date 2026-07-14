@@ -2218,8 +2218,7 @@
       const duplicate = appState.checkins.some((item) => {
         if (!isRecord(item) || item.businessId !== parsed.businessId) return false;
         const scanned = Date.parse(item.scannedAt);
-        const delta = now - scanned;
-        return Number.isFinite(scanned) && delta >= 0 && delta < CHECKIN_WINDOW_MS;
+        return Number.isFinite(scanned) && Math.abs(now - scanned) < CHECKIN_WINDOW_MS;
       });
       if (duplicate) return { ok: false, code: 'duplicate_checkin' };
       const id = createDomainId('checkin');
