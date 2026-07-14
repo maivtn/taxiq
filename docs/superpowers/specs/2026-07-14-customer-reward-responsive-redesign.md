@@ -1,195 +1,195 @@
-# Customer Reward Responsive Redesign
+# Thiết Kế Lại Customer Reward Responsive
 
-## Context
+## Bối cảnh
 
-`html/customer/customer-app-prototype.html` is a standalone customer rewards prototype with 31 screens, five navigation modules, bilingual EN/VI copy, and client-side demo flows for onboarding, rewards, scanning, tipping, direct payment, booking, offers, referrals, and settings. Its fixed phone frame, simulated notch/status bar, emoji-heavy visuals, and single-width layout make it feel like a prototype rather than a responsive web application.
+`html/customer/customer-app-prototype.html` là prototype độc lập của ứng dụng tích điểm khách hàng, gồm 31 màn hình, 5 nhóm điều hướng, nội dung song ngữ EN/VI và các luồng demo phía client cho onboarding, phần thưởng, quét mã, tip, thanh toán trực tiếp, đặt lịch, ưu đãi, giới thiệu bạn bè và cài đặt. Khung điện thoại cố định, notch/status bar giả, icon emoji và bố cục một kích thước khiến sản phẩm hiện giống prototype hơn là một ứng dụng web responsive thực tế.
 
-The screen behavior and business rules remain governed by `html/customer/customer-app-developer-spec.md`. The existing prototype remains unchanged as a reference implementation.
+Hành vi của màn hình và quy tắc nghiệp vụ tiếp tục tuân theo `html/customer/customer-app-developer-spec.md`. Prototype hiện tại được giữ nguyên để làm bản tham chiếu.
 
-## Goal
+## Mục tiêu
 
-Create `html/customer/cutomer-reward.html` as a realistic, mobile-first responsive web application that:
+Tạo `html/customer/cutomer-reward.html` thành ứng dụng web mobile-first có cảm giác như sản phẩm thật, với các yêu cầu:
 
-- preserves all 31 screens and their existing interactive demo flows;
-- preserves runtime EN/VI switching;
-- keeps the existing dark purple, pink, cyan, green, and gold visual identity;
-- fills the mobile viewport without a simulated device frame;
-- uses bottom navigation on mobile and tablet;
-- switches to a persistent sidebar on desktop;
-- remains usable and visually balanced from small phones through wide desktop screens.
+- giữ đầy đủ 31 màn hình và các luồng demo tương tác hiện có;
+- giữ chức năng chuyển đổi EN/VI ngay khi ứng dụng đang chạy;
+- giữ nhận diện màu tối với tím, hồng, cyan, xanh lá và vàng;
+- hiển thị toàn màn hình trên mobile, không có khung thiết bị giả;
+- dùng bottom navigation trên mobile và tablet;
+- chuyển sang sidebar cố định trên desktop;
+- bảo đảm dễ sử dụng và cân đối từ điện thoại nhỏ tới màn hình desktop rộng.
 
-## Scope
+## Phạm vi
 
-### Included
+### Bao gồm
 
-- All screen IDs listed in the customer app developer specification.
-- All five modules: Home, Wallet, Scan, Explore, and Profile.
-- Existing navigation mappings between root and detail screens.
-- Existing demo interactions and local state mutations.
-- Shared loading, empty, pending, success, and error presentation patterns.
-- Responsive layout, accessibility, and reduced-motion behavior.
+- Toàn bộ screen ID trong tài liệu đặc tả Customer App.
+- Năm nhóm: Home, Wallet, Scan, Explore và Profile.
+- Mapping điều hướng hiện có giữa màn gốc và màn chi tiết.
+- Các tương tác demo và thay đổi state cục bộ hiện có.
+- Trạng thái dùng chung: loading, empty, pending, success và error.
+- Responsive, accessibility và chế độ giảm chuyển động.
 
-### Excluded
+### Không bao gồm
 
-- Backend APIs, authentication services, persistence, or production payment integration.
-- Changes to business rules in `customer-app-developer-spec.md`.
-- Changes to `customer-app-prototype.html`.
-- Desktop-only features that do not exist in the 31-screen customer app.
+- Backend API, dịch vụ xác thực, lưu trữ lâu dài hoặc tích hợp thanh toán production.
+- Thay đổi quy tắc nghiệp vụ trong `customer-app-developer-spec.md`.
+- Thay đổi file `customer-app-prototype.html`.
+- Tính năng riêng cho desktop không có trong phạm vi 31 màn của Customer App.
 
-## Technical Direction
+## Hướng kỹ thuật
 
-The deliverable is one standalone HTML file using:
+Sản phẩm đầu ra là một file HTML độc lập, sử dụng:
 
-- Tailwind CSS v4 Browser CDN for layout, responsive utilities, and component styling;
-- Lucide Browser CDN for a single consistent SVG icon system;
-- plain JavaScript for navigation, local demo state, language switching, and interactions;
-- CSS theme tokens and reusable Tailwind component classes inside the document.
+- Tailwind CSS v4 Browser CDN cho layout, responsive utility và style component;
+- Lucide Browser CDN làm hệ icon SVG duy nhất;
+- JavaScript thuần cho điều hướng, state demo cục bộ, chuyển ngôn ngữ và tương tác;
+- theme token CSS và các component class Tailwind tái sử dụng ngay trong tài liệu.
 
-Bootstrap and Bootstrap Icons will not be loaded. Tailwind Browser CDN is acceptable for this static prototype. A production release should compile Tailwind into a static CSS asset rather than use the browser CDN.
+Không tải Bootstrap hoặc Bootstrap Icons. Tailwind Browser CDN phù hợp với prototype tĩnh này. Khi đưa lên production, cần compile Tailwind thành CSS tĩnh thay vì tiếp tục dùng Browser CDN.
 
-## Responsive Architecture
+## Kiến trúc responsive
 
-### Mobile: below 768px
+### Mobile: dưới 768px
 
-- The application occupies the full viewport and respects `env(safe-area-inset-*)`.
-- Content uses a single column with touch-friendly spacing.
-- Five-tab bottom navigation remains fixed and reachable with one hand.
-- Screen content has enough bottom padding to remain clear of navigation.
-- Dialog-like actions use bottom sheets when appropriate.
+- Ứng dụng chiếm toàn bộ viewport và hỗ trợ `env(safe-area-inset-*)`.
+- Nội dung dùng một cột với khoảng cách phù hợp thao tác cảm ứng.
+- Bottom navigation gồm 5 tab được cố định để dễ thao tác bằng một tay.
+- Nội dung màn hình có khoảng đệm cuối trang đủ để không bị navigation che.
+- Các thao tác dạng dialog ưu tiên bottom sheet khi phù hợp.
 
-### Tablet: 768px through 1023px
+### Tablet: từ 768px đến 1023px
 
-- Bottom navigation remains active.
-- The content container grows while preserving readable line lengths.
-- Compatible card collections and summary blocks may use two columns.
-- Detail and form flows remain focused rather than stretching edge to edge.
+- Tiếp tục dùng bottom navigation.
+- Khung nội dung rộng hơn nhưng vẫn giữ độ dài dòng dễ đọc.
+- Nhóm card và khối tóm tắt phù hợp có thể chuyển sang 2 cột.
+- Luồng chi tiết và form giữ độ rộng tập trung, không kéo sát hai mép màn hình.
 
-### Desktop: 1024px and above
+### Desktop: từ 1024px trở lên
 
-- Bottom navigation is replaced by a persistent sidebar approximately 248px wide.
-- The sidebar contains the same five modules and active-state mapping as mobile navigation.
-- Detail screens keep a Back action while the sidebar continues to highlight the parent module.
-- Main content uses a centered maximum width of approximately 1200px.
-- Dashboards and list screens use two or three columns where the information supports it.
-- Forms, confirmations, and task-focused screens retain a narrower reading width.
+- Thay bottom navigation bằng sidebar cố định rộng khoảng 248px.
+- Sidebar chứa đúng 5 nhóm và dùng cùng mapping trạng thái active như mobile.
+- Màn chi tiết vẫn có nút Back, đồng thời sidebar tiếp tục highlight nhóm cha.
+- Nội dung chính căn giữa, rộng tối đa khoảng 1200px.
+- Dashboard và màn danh sách dùng 2 hoặc 3 cột khi cấu trúc thông tin phù hợp.
+- Form, màn xác nhận và luồng tác vụ giữ chiều rộng hẹp hơn để dễ đọc.
 
-## Visual System
+## Hệ thống giao diện
 
-- Preserve the current near-black background and purple-to-pink primary accent.
-- Retain cyan for informational highlights, green for success, gold for points/rewards, and red for destructive or error states.
-- Reduce large neon glows and heavy gradients so hierarchy comes from spacing, typography, and restrained borders.
-- Use realistic business and staff imagery in discovery, merchant, booking, and look-history surfaces.
-- Replace functional emoji with Lucide icons. Decorative emoji may remain only when it is meaningful product content.
-- Use compact cards, clear section headings, and consistent radius, border, shadow, and spacing tokens.
-- Keep body text readable and avoid oversized marketing-style headings inside the app shell.
+- Giữ nền gần đen và màu nhấn chính dạng gradient tím sang hồng.
+- Giữ cyan cho thông tin, xanh lá cho thành công, vàng cho điểm/phần thưởng và đỏ cho lỗi hoặc thao tác nguy hiểm.
+- Giảm glow lớn và gradient dày; tạo phân cấp chủ yếu bằng khoảng cách, typography và border tiết chế.
+- Dùng ảnh thực tế cho doanh nghiệp và nhân viên tại các màn khám phá, hồ sơ tiệm, đặt lịch và lịch sử kiểu mẫu.
+- Thay emoji chức năng bằng Lucide icon. Chỉ giữ emoji trang trí khi nó thực sự là nội dung sản phẩm.
+- Dùng card gọn, tiêu đề section rõ ràng và token nhất quán cho radius, border, shadow, spacing.
+- Cỡ chữ nội dung dễ đọc; tránh heading kiểu landing page quá lớn bên trong app shell.
 
-## Shared Components
+## Component dùng chung
 
-The file will define reusable component classes and consistent markup patterns for:
+File mới định nghĩa component class và pattern markup nhất quán cho:
 
-- mobile top bar and desktop sidebar;
+- top bar mobile và sidebar desktop;
 - bottom navigation;
-- page header and Back action;
-- balance, business, offer, reward, appointment, activity, and look cards;
-- search fields, form controls, segmented filters, chips, toggles, and amount selectors;
-- primary, secondary, icon-only, and destructive buttons;
-- toast, modal, confirmation dialog, and bottom sheet;
-- loading skeleton, empty state, inline error, pending state, and success state;
-- QR and scan surfaces;
-- language switcher.
+- page header và nút Back;
+- balance card, business card, offer card, reward card, appointment card, activity row và look card;
+- search field, form control, segmented filter, chip, toggle và bộ chọn số tiền;
+- nút primary, secondary, icon-only và destructive;
+- toast, modal, confirmation dialog và bottom sheet;
+- loading skeleton, empty state, inline error, pending state và success state;
+- giao diện QR và scan;
+- bộ chuyển ngôn ngữ.
 
-Tailwind theme values will centralize brand colors. Repeated visual patterns will use semantic component classes with `@apply` so the 31 screens do not duplicate long utility sequences.
+Màu thương hiệu được khai báo tập trung bằng Tailwind theme. Các pattern lặp lại dùng component class có ý nghĩa với `@apply`, tránh lặp chuỗi utility dài trên 31 màn hình.
 
-## Screen And Navigation Model
+## Mô hình màn hình và điều hướng
 
-- Preserve the existing 31 screen IDs to keep the documented screen inventory and demo flows aligned.
-- Only one screen is active at a time.
-- A single screen-to-module map controls both mobile bottom-nav and desktop sidebar highlighting.
-- Root module navigation returns to Home, Wallet, Scan, Explore, or Profile.
-- Detail navigation uses explicit Back targets instead of relying solely on browser history.
-- Navigation resets the active screen scroll position and updates accessibility state.
+- Giữ nguyên 31 screen ID để khớp screen inventory và các luồng demo đã được mô tả.
+- Chỉ một màn hình ở trạng thái active tại mỗi thời điểm.
+- Một map duy nhất từ screen sang module điều khiển active state cho cả bottom navigation và sidebar.
+- Điều hướng module gốc đưa người dùng về Home, Wallet, Scan, Explore hoặc Profile.
+- Màn chi tiết dùng Back target rõ ràng, không phụ thuộc hoàn toàn vào browser history.
+- Khi chuyển màn, ứng dụng reset vị trí scroll của màn mới và cập nhật trạng thái accessibility.
 
-## Client-Side State And Data Flow
+## State phía client và luồng dữ liệu
 
-One local application state object holds:
+Một application state cục bộ lưu:
 
-- active screen and active module;
-- current language;
-- per-business point balances;
-- selected tip, payment, reward, booking, and filter values;
-- onboarding, consent, notification, and confirmation states;
-- demo-created looks, wishes, saved offers, and history entries.
+- màn hình và module đang active;
+- ngôn ngữ hiện tại;
+- số dư điểm tách theo từng doanh nghiệp;
+- lựa chọn tip, thanh toán, phần thưởng, đặt lịch và bộ lọc;
+- trạng thái onboarding, consent, notification và confirmation;
+- look, wish, offer đã lưu và history item được tạo trong demo.
 
-JavaScript responsibilities are grouped by purpose within the file:
+JavaScript trong cùng file được tổ chức theo trách nhiệm:
 
-- navigation and responsive shell;
-- translation and placeholder updates;
-- onboarding and login;
-- rewards, wallet, and redemption;
-- scan and check-in;
-- tip and direct payment;
+- navigation và responsive shell;
+- translation và cập nhật placeholder;
+- onboarding và login;
+- rewards, wallet và redemption;
+- scan và check-in;
+- tip và thanh toán trực tiếp;
 - booking;
-- explore, offers, and wish alerts;
-- looks, reviews, referral, notifications, and preferences;
-- shared overlays and feedback messages.
+- explore, offers và wish alert;
+- looks, review, referral, notification và preferences;
+- overlay và feedback message dùng chung.
 
-Event handlers update the state first and then render the affected UI. Reusable helpers handle screen changes, active navigation, translations, overlays, and formatted balances.
+Event handler cập nhật state trước rồi render phần UI bị ảnh hưởng. Helper dùng chung xử lý chuyển màn, active navigation, bản dịch, overlay và format số dư.
 
-## Interaction And Accessibility
+## Tương tác và accessibility
 
-- Interactive controls have a minimum 44px target where practical.
-- Icon-only controls include accessible labels and tooltips where their meaning is not obvious.
-- Keyboard focus is clearly visible.
-- Modals and sheets support Escape and restore focus when closed.
-- Navigation exposes current state through appropriate ARIA attributes.
-- Color is not the only signal for status.
-- Motion is limited to screen transitions, sheets, scan feedback, and confirmations.
-- `prefers-reduced-motion` disables nonessential animation.
+- Control tương tác có vùng chạm tối thiểu 44px khi thực tế cho phép.
+- Nút chỉ có icon phải có accessible label; thêm tooltip nếu ý nghĩa chưa rõ.
+- Keyboard focus hiển thị rõ.
+- Modal và sheet hỗ trợ phím Escape, đồng thời trả focus về control đã mở chúng.
+- Navigation công bố trạng thái hiện tại bằng thuộc tính ARIA phù hợp.
+- Không dùng màu sắc làm tín hiệu trạng thái duy nhất.
+- Chuyển động chỉ dùng cho chuyển màn, sheet, phản hồi scan và xác nhận.
+- `prefers-reduced-motion` tắt animation không thiết yếu.
 
-## Empty, Loading, Pending, And Error Handling
+## Xử lý empty, loading, pending và error
 
-- Lists provide purposeful empty states with a relevant next action.
-- Search and filters show a no-results state without collapsing the page.
-- Actions that simulate asynchronous work disable repeat submission while pending.
-- Tip, payment, booking, and redemption preserve their documented pending-to-confirmed behavior.
-- Invalid or incomplete form input displays an inline message and focuses the relevant field.
-- CDN loading failure must not hide core content; meaningful text and native controls remain usable even if enhanced styling or icons are unavailable.
-- Unknown screen targets fail safely by returning to Home.
+- Danh sách rỗng hiển thị empty state có hành động tiếp theo phù hợp.
+- Search và filter có no-results state mà không làm sụp bố cục trang.
+- Thao tác mô phỏng bất đồng bộ phải khóa gửi lặp khi đang pending.
+- Tip, thanh toán, đặt lịch và redemption giữ đúng luồng pending sang confirmed trong đặc tả.
+- Form thiếu hoặc sai dữ liệu hiển thị lỗi inline và focus vào trường liên quan.
+- Khi CDN tải lỗi, nội dung cốt lõi vẫn hiển thị; text có nghĩa và control native vẫn sử dụng được dù style hoặc icon nâng cao không có.
+- Screen target không tồn tại phải fallback an toàn về Home.
 
-## Validation
+## Kiểm thử
 
-Run the static site from the existing `html/` local-server workflow and validate the new page at:
+Chạy site tĩnh bằng luồng local server hiện có của thư mục `html/`, sau đó kiểm tra trang mới tại các viewport:
 
-- 375 x 812 phone;
-- 768 x 1024 tablet;
-- 1024 x 768 small desktop;
-- 1440 x 900 desktop.
+- điện thoại 375 x 812;
+- tablet 768 x 1024;
+- desktop nhỏ 1024 x 768;
+- desktop 1440 x 900.
 
-At each relevant viewport, check for clipped text, horizontal overflow, obscured content, unusable fixed navigation, and incorrect column changes.
+Tại từng viewport liên quan, kiểm tra text bị cắt, horizontal overflow, nội dung bị che, fixed navigation không thao tác được và chuyển cột sai breakpoint.
 
-Exercise these flows end to end:
+Chạy end-to-end các luồng demo sau:
 
-- login and OTP;
-- onboarding and consent;
-- scan and check-in;
-- tip pending and confirmed;
-- direct payment pending and confirmed;
-- wallet, rewards, cross-redeem, and claimed reward;
-- booking request and confirmation;
-- Explore search and business details;
-- offers filtering, saving, and wish alerts;
-- Looks creation, private feedback, referral, message preferences, and profile;
-- runtime EN/VI switching across representative root, detail, modal, toast, and form states.
+- login và OTP;
+- onboarding và consent;
+- scan và check-in;
+- tip từ pending đến confirmed;
+- thanh toán trực tiếp từ pending đến confirmed;
+- wallet, rewards, cross-redeem và claimed reward;
+- booking request và confirmation;
+- tìm kiếm Explore và xem chi tiết doanh nghiệp;
+- lọc offer, lưu offer và wish alert;
+- tạo Look, private feedback, referral, message preferences và profile;
+- chuyển EN/VI ngay khi chạy trên các màn gốc, màn chi tiết, modal, toast và form đại diện.
 
-## Acceptance Criteria
+## Tiêu chí nghiệm thu
 
-- `cutomer-reward.html` opens through the existing local static server with no build step.
-- All 31 documented screens are present and reachable.
-- Existing primary demo flows remain functional.
-- Mobile and tablet show bottom navigation; desktop shows the sidebar at 1024px and above.
-- No simulated phone frame, notch, or status bar remains.
-- The approved color identity is recognizable without overwhelming glow effects.
-- Functional icons use Lucide consistently.
-- EN/VI switching works without reload.
-- No tested viewport has horizontal page overflow, clipped controls, or content hidden behind fixed navigation.
-- Keyboard focus, accessible labels, and reduced-motion behavior are present for shared controls.
+- `cutomer-reward.html` mở được qua local static server hiện có mà không cần build.
+- Có đủ và truy cập được toàn bộ 31 màn hình đã mô tả.
+- Các luồng demo chính hiện có tiếp tục hoạt động.
+- Mobile và tablet hiển thị bottom navigation; desktop hiển thị sidebar từ 1024px trở lên.
+- Không còn khung điện thoại, notch hoặc status bar giả.
+- Nhận diện màu đã duyệt vẫn rõ nhưng không bị lạm dụng hiệu ứng glow.
+- Icon chức năng dùng Lucide nhất quán.
+- Chuyển đổi EN/VI hoạt động mà không reload trang.
+- Không viewport nào đã kiểm thử bị horizontal overflow, control bị cắt hoặc nội dung bị fixed navigation che.
+- Shared control có keyboard focus, accessible label và reduced-motion behavior.
