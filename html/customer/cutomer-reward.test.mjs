@@ -67,10 +67,11 @@ function createDocumentStub({
   localizedNodes = [], placeholderNodes = [], languageControls = [],
   notificationControls = [], overlayCloseControls = [], balancePointNodes = [],
   balanceWithUnitNodes = [], balanceAvailableNodes = [], rewardGapValueNodes = [],
-  rewardGapCopyNodes = [], rewardProgressNodes = [], signatureRewardControls = []
+  rewardGapCopyNodes = [], rewardProgressNodes = [], signatureRewardControls = [],
+  screenNodes = []
 } = {}) {
   const listeners = [];
-  const elements = new Map();
+  const elements = new Map(screenNodes.map((element) => [element.id, element]));
   const document = {
     listeners,
     documentElement: { lang: 'vi' },
@@ -98,6 +99,7 @@ function createDocumentStub({
       if (selector === '[data-reward-gap-copy]') return rewardGapCopyNodes;
       if (selector === '[data-reward-progress]') return rewardProgressNodes;
       if (selector === '[data-signature-reward-cta]') return signatureRewardControls;
+      if (selector === '.app-screen') return screenNodes;
       return [];
     }
   };
@@ -549,12 +551,13 @@ test('redeems from the source business only and is idempotent', () => {
 test('rejects a reward when its source balance is insufficient', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
+  const redemptionsBefore = app.redemptions.length;
   app.balances['bitcoin-nail-bar'].points = 100;
   const result = api.redeemReward(app, 'credit5', 'redeem-click-2', 1000);
   assert.equal(result.ok, false);
   assert.equal(result.code, 'insufficient_points');
   assert.equal(app.balances['bitcoin-nail-bar'].points, 100);
-  assert.equal(app.redemptions.length, 0);
+  assert.equal(app.redemptions.length, redemptionsBefore);
   app.balances['bitcoin-nail-bar'].points = 1000;
   app.businesses['moon-coffee'].allianceId = 'other-alliance';
   assert.equal(api.redeemReward(app, 'moon', 'redeem-click-3', 2000).code, 'not_same_alliance');
@@ -663,6 +666,166 @@ test('round-trips valid reward ledger state and drops duplicate-sensitive record
   assert.equal(JSON.stringify(loaded.redemptions), JSON.stringify(migrated.redemptions));
 });
 
+function rewardPair(overrides = {}) {
+  const redemption = {
+    id: 'redemption-integrity', idempotencyKey: 'reward-integrity', rewardKey: 'credit5',
+    sourceBusinessId: 'bitcoin-nail-bar', acceptingBusinessId: 'bitcoin-nail-bar', cost: 500,
+    status: 'ready', qrPayload: 'NEXORA:credit5:reward-integrity', createdAt: '2026-07-14T10:00:00.000Z',
+    ...overrides.redemption
+  };
+  const ledger = {
+    id: 'ledger-integrity', businessId: 'bitcoin-nail-bar', type: 'redeem', pointsDelta: -500,
+    refType: 'redemption', refId: redemption.id, createdAt: redemption.createdAt,
+    ...overrides.ledger
+  };
+  return { redemption, ledger };
+}
+
+test('keeps only one-to-one persisted redemption and redeem-ledger pairs', () => {
+  const { api, storage } = testApi();
+  const { redemption, ledger } = rewardPair();
+  const visit = {
+    id: 'ledger-visit-integrity', businessId: 'bitcoin-nail-bar', type: 'visit', pointsDelta: 25,
+    refType: 'visit', refId: 'visit-integrity', createdAt: '2026-07-14T09:00:00.000Z'
+  };
+  const unknownBusinessPair = rewardPair({
+    redemption: { sourceBusinessId: 'missing-business', acceptingBusinessId: 'missing-business' },
+    ledger: { businessId: 'missing-business' }
+  });
+
+  for (const malformed of [
+    { redemptions: [redemption], ledger: [visit] },
+    { redemptions: [], ledger: [ledger, visit] },
+    { redemptions: [unknownBusinessPair.redemption], ledger: [unknownBusinessPair.ledger, visit] },
+    { redemptions: [redemption], ledger: [{ ...ledger, pointsDelta: -499 }, visit] },
+    { redemptions: [redemption], ledger: [{ ...ledger, businessId: 'golden-glow-spa' }, visit] }
+  ]) {
+    const migrated = api.migrateState(malformed);
+    assert.equal(migrated.redemptions.length, 0);
+    assert.deepEqual(migrated.ledger.map(({ id }) => id), [visit.id]);
+  }
+
+  const wrongRedemption = { ...redemption, cost: 700 };
+  const wrongLedger = { ...ledger, businessId: 'golden-glow-spa', pointsDelta: -700 };
+  for (const reverse of [false, true]) {
+    const redemptions = reverse ? [redemption, wrongRedemption] : [wrongRedemption, redemption];
+    const ledgerEntries = reverse ? [ledger, wrongLedger, visit] : [wrongLedger, ledger, visit];
+    const migrated = api.migrateState({ redemptions, ledger: ledgerEntries });
+    assert.equal(migrated.redemptions.length, 1);
+    assert.equal(migrated.redemptions[0].cost, 500);
+    assert.equal(migrated.ledger.filter((entry) => entry.type === 'redeem').length, 1);
+    assert.equal(migrated.ledger.find((entry) => entry.type === 'redeem').pointsDelta, -500);
+    assert.equal(migrated.ledger.some((entry) => entry.id === visit.id), true);
+
+    api.saveState(migrated, storage);
+    const loaded = api.loadState(storage);
+    assert.equal(JSON.stringify(loaded.redemptions), JSON.stringify(migrated.redemptions));
+    assert.equal(JSON.stringify(loaded.ledger), JSON.stringify(migrated.ledger));
+  }
+});
+
+test('ships a consistent default redemption pair and rejects broken idempotent state', () => {
+  const { api } = testApi();
+  const defaults = api.createDefaultState();
+  const demo = defaults.redemptions.find((item) => item.id === 'red-demo');
+  assert.ok(demo);
+  assert.equal(defaults.ledger.filter((entry) => entry.refId === demo.id).length, 1);
+
+  const app = api.createDefaultState();
+  const first = api.redeemReward(app, 'credit5', 'broken-idempotent-pair', 1000);
+  assert.equal(first.ok, true);
+  app.ledger = app.ledger.filter((entry) => entry.refId !== first.redemption.id);
+  const before = JSON.stringify(app);
+  const retry = api.redeemReward(app, 'credit5', 'broken-idempotent-pair', 2000);
+  assert.equal(retry.ok, false);
+  assert.equal(retry.code, 'invalid_state');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('restores a persisted redeem screen and preview without writing storage or replacing its key', () => {
+  const { api } = testApi();
+  const persistedState = api.createDefaultState();
+  persistedState.ui.activeScreen = 'redeem';
+  persistedState.ui.activeModule = 'wallet';
+  persistedState.ui.currentRewardKey = 'credit5';
+  persistedState.ui.pendingContext.rewardAttempt = {
+    rewardKey: 'credit5', idempotencyKey: 'persisted-reward-attempt', completed: false
+  };
+  const raw = JSON.stringify(persistedState);
+  const home = createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] });
+  const rewards = createStubElement({ id: 'rewards', classNames: ['app-screen', 'hidden'] });
+  const redeem = createStubElement({ id: 'redeem', classNames: ['app-screen', 'hidden'] });
+  const document = createDocumentStub({ screenNodes: [home, rewards, redeem] });
+
+  const { context, storage } = testApi({ [api.STORAGE_KEY]: raw }, {
+    skipInit: false,
+    document,
+    randomUUID: () => { throw new Error('bootstrap must not create an idempotency key'); }
+  });
+
+  assert.equal(home.classList.contains('hidden'), true);
+  assert.equal(redeem.classList.contains('hidden'), false);
+  assert.equal(redeem.classList.contains('is-active'), true);
+  assert.equal(document.getElementById('reward-title').textContent, 'Tín dụng dịch vụ $5');
+  assert.equal(document.getElementById('reward-cost').textContent, '500 điểm');
+  assert.equal(document.getElementById('reward-after').textContent, '1.950 điểm');
+  assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt.idempotencyKey', context), 'persisted-reward-attempt');
+  assert.equal(storage.getItem(api.STORAGE_KEY), raw);
+});
+
+test('falls back from a persisted redeem screen when its attempt is invalid', () => {
+  const { api } = testApi();
+  const persistedState = api.createDefaultState();
+  persistedState.ui.activeScreen = 'redeem';
+  persistedState.ui.activeModule = 'wallet';
+  persistedState.ui.currentRewardKey = 'missing-reward';
+  persistedState.ui.pendingContext.rewardAttempt = {
+    rewardKey: 'missing-reward', idempotencyKey: 'invalid-reward-attempt', completed: false
+  };
+  const raw = JSON.stringify(persistedState);
+  const home = createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] });
+  const rewards = createStubElement({ id: 'rewards', classNames: ['app-screen', 'hidden'] });
+  const redeem = createStubElement({ id: 'redeem', classNames: ['app-screen', 'hidden'] });
+  const document = createDocumentStub({ screenNodes: [home, rewards, redeem] });
+
+  const { context, storage } = testApi({ [api.STORAGE_KEY]: raw }, { skipInit: false, document });
+  assert.equal(rewards.classList.contains('hidden'), false);
+  assert.equal(redeem.classList.contains('hidden'), true);
+  assert.equal(vm.runInContext('state.ui.activeScreen', context), 'rewards');
+  assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt', context), null);
+  assert.equal(vm.runInContext('state.ui.currentRewardKey', context), null);
+  assert.equal(storage.getItem(api.STORAGE_KEY), raw);
+});
+
+test('canonicalizes persisted business identity and keeps wallet and reward validation aligned', () => {
+  const { api } = testApi();
+  const migrated = api.migrateState({
+    businesses: {
+      'bitcoin-nail-bar': { id: 'spoofed-primary' },
+      'golden-glow-spa': { id: 'spoofed-partner' }
+    },
+    ui: { selectedBusinessId: 'spoofed-primary' }
+  });
+  assert.equal(migrated.businesses['bitcoin-nail-bar'].id, 'bitcoin-nail-bar');
+  assert.equal(migrated.businesses['golden-glow-spa'].id, 'golden-glow-spa');
+  assert.equal(migrated.ui.selectedBusinessId, 'bitcoin-nail-bar');
+
+  const document = createDocumentStub();
+  const raw = JSON.stringify({
+    businesses: { 'bitcoin-nail-bar': { id: 'spoofed-primary' } },
+    balances: { 'bitcoin-nail-bar': { points: 1777 } }
+  });
+  const { context } = testApi({ [api.STORAGE_KEY]: raw }, { skipInit: false, document });
+  assert.equal(document.getElementById('wallet-business-list').children[0].children[1].textContent, '1.777 điểm');
+  const firstHistoryButton = document.getElementById('wallet-business-list').children[0].children.at(-1);
+  assert.equal(firstHistoryButton.dataset.businessId, 'bitcoin-nail-bar');
+
+  vm.runInContext("state.businesses['golden-glow-spa'].id = 'spoofed-runtime'; renderRewards()", context);
+  const glowButton = document.getElementById('reward-list').children[3].children.at(-1).children.at(-1);
+  assert.equal(glowButton.disabled, true);
+  assert.equal(vm.runInContext("redeemReward(state, 'glow', 'spoofed-runtime-attempt', 1000).code", context), 'unknown_business');
+});
+
 test('reuses one persisted idempotency key for repeated confirmation of the same UI attempt', () => {
   let uuidCall = 0;
   const randomUUID = () => `00000000-0000-4000-8000-${String(++uuidCall).padStart(12, '0')}`;
@@ -684,7 +847,10 @@ test('reuses one persisted idempotency key for repeated confirmation of the same
   assert.equal(first.ok, true);
   assert.equal(second.redemption.id, first.redemption.id);
   assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", context), 1950);
-  assert.equal(apiState(reloadedStorage).redemptions.length, 1);
+  assert.equal(
+    apiState(reloadedStorage).redemptions.filter((item) => item.idempotencyKey === attempt.idempotencyKey).length,
+    1
+  );
 });
 
 function apiState(storage) {

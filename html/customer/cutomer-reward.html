@@ -334,7 +334,13 @@
           { id: 'visit-1001', businessId: BUSINESS_ID, staffProfileId: 'staff-anna', staffName: 'Anna', service: 'Gel manicure', occurredAt: '2026-07-12T16:00:00.000Z' }
         ],
         checkins: [],
-        redemptions: [],
+        redemptions: [
+          {
+            id: 'red-demo', idempotencyKey: 'demo-voucher25', rewardKey: 'voucher25',
+            sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, cost: 800,
+            status: 'ready', qrPayload: 'NEXORA:voucher25:demo-voucher25', createdAt: '2026-07-11T15:00:00.000Z'
+          }
+        ],
         tips: [],
         directPayments: [],
         bookingRequests: [],
@@ -405,27 +411,86 @@
       const fields = path.length === 1 ? OBJECT_COLLECTION_FIELDS[path[0]] : null;
       if (fields) {
         const records = incomingValue.filter((item) => isValidCollectionRecord(item, fields));
-        if (path[0] === 'ledger') {
-          const ids = new Set();
-          return structuredClone(records.filter((item) => {
-            if (ids.has(item.id)) return false;
-            ids.add(item.id);
-            return true;
-          }));
-        }
-        if (path[0] === 'redemptions') {
-          const ids = new Set();
-          const idempotencyKeys = new Set();
-          return structuredClone(records.filter((item) => {
-            if (ids.has(item.id) || idempotencyKeys.has(item.idempotencyKey)) return false;
-            ids.add(item.id);
-            idempotencyKeys.add(item.idempotencyKey);
-            return true;
-          }));
-        }
         return structuredClone(records);
       }
       return structuredClone(defaultValue);
+    }
+
+    function isRewardLedgerEntry(entry) {
+      return entry.type === 'redeem' || entry.refType === 'redemption';
+    }
+
+    function isRedemptionLedgerPair(redemption, entry) {
+      return entry.type === 'redeem'
+        && entry.refType === 'redemption'
+        && entry.refId === redemption.id
+        && entry.businessId === redemption.sourceBusinessId
+        && entry.pointsDelta === -redemption.cost;
+    }
+
+    function redemptionSortKey(redemption) {
+      return JSON.stringify([
+        redemption.id, redemption.idempotencyKey, redemption.rewardKey, redemption.sourceBusinessId,
+        redemption.acceptingBusinessId, redemption.cost, redemption.status, redemption.createdAt,
+        typeof redemption.qrPayload === 'string' ? redemption.qrPayload : ''
+      ]);
+    }
+
+    function ledgerSortKey(entry) {
+      return JSON.stringify([
+        entry.id, entry.businessId, entry.type, entry.pointsDelta, entry.refType, entry.refId, entry.createdAt
+      ]);
+    }
+
+    function isValidPersistedRedemption(appState, redemption) {
+      return Number.isFinite(redemption.cost)
+        && redemption.cost > 0
+        && redemption.idempotencyKey.trim().length > 0
+        && redemption.rewardKey.trim().length > 0
+        && validateRewardBusinesses(appState, redemption).ok;
+    }
+
+    function reconcileRewardPairs(appState) {
+      const rewardLedger = appState.ledger.filter(isRewardLedgerEntry);
+      const candidates = [];
+      appState.redemptions.filter((redemption) => isValidPersistedRedemption(appState, redemption)).forEach((redemption) => {
+        rewardLedger.forEach((entry) => {
+          if (isRedemptionLedgerPair(redemption, entry)) {
+            candidates.push({
+              redemption,
+              entry,
+              sortKey: `${redemptionSortKey(redemption)}:${ledgerSortKey(entry)}`
+            });
+          }
+        });
+      });
+      candidates.sort((left, right) => left.sortKey.localeCompare(right.sortKey));
+
+      const redemptionIds = new Set();
+      const idempotencyKeys = new Set();
+      const ledgerIds = new Set();
+      const selected = [];
+      candidates.forEach((candidate) => {
+        if (redemptionIds.has(candidate.redemption.id)
+          || idempotencyKeys.has(candidate.redemption.idempotencyKey)
+          || ledgerIds.has(candidate.entry.id)) return;
+        redemptionIds.add(candidate.redemption.id);
+        idempotencyKeys.add(candidate.redemption.idempotencyKey);
+        ledgerIds.add(candidate.entry.id);
+        selected.push(candidate);
+      });
+
+      const selectedEntries = new Set(selected.map(({ entry }) => entry));
+      const keptLedgerIds = new Set();
+      appState.redemptions = selected.map(({ redemption }) => redemption);
+      appState.ledger = appState.ledger.filter((entry) => {
+        const rewardEntry = isRewardLedgerEntry(entry);
+        if (rewardEntry && !selectedEntries.has(entry)) return false;
+        if (!rewardEntry && ledgerIds.has(entry.id)) return false;
+        if (keptLedgerIds.has(entry.id)) return false;
+        keptLedgerIds.add(entry.id);
+        return true;
+      });
     }
 
     function mergeKnownUnion(defaultValue, incomingValue, path) {
@@ -496,6 +561,13 @@
       migrated.consents = migrated.consents.map((consent) => consent.scope === 'network'
         ? { ...consent, scope: 'networkOffers' }
         : consent);
+      Object.entries(migrated.businesses).forEach(([businessId, business]) => {
+        business.id = businessId;
+      });
+      if (!Object.prototype.hasOwnProperty.call(migrated.businesses, migrated.ui.selectedBusinessId)) {
+        migrated.ui.selectedBusinessId = BUSINESS_ID;
+      }
+      reconcileRewardPairs(migrated);
       migrated.ui.pendingContext.consentScopes = migrated.ui.pendingContext.consentScopes.filter((scope) => CONSENT_SCOPES.includes(scope));
       delete migrated.pointBalance;
       delete migrated.savedOffers;
@@ -765,6 +837,28 @@
         : { points: 0, credits: 0, expiringPoints: null };
     }
 
+    function getValidBusiness(appState, businessId) {
+      if (typeof businessId !== 'string' || !businessId) return null;
+      const business = isRecord(appState?.businesses) ? appState.businesses[businessId] : null;
+      return isRecord(business) && business.id === businessId ? business : null;
+    }
+
+    function validateRewardBusinesses(appState, reward) {
+      const sourceBusiness = getValidBusiness(appState, reward.sourceBusinessId);
+      const acceptingBusiness = getValidBusiness(appState, reward.acceptingBusinessId);
+      if (!sourceBusiness || !acceptingBusiness) return { ok: false, code: 'unknown_business' };
+      if (reward.sourceBusinessId !== reward.acceptingBusinessId) {
+        if (typeof sourceBusiness.allianceId !== 'string' || !sourceBusiness.allianceId.trim()
+          || typeof acceptingBusiness.allianceId !== 'string' || !acceptingBusiness.allianceId.trim()) {
+          return { ok: false, code: 'invalid_alliance' };
+        }
+        if (sourceBusiness.allianceId !== acceptingBusiness.allianceId) {
+          return { ok: false, code: 'not_same_alliance' };
+        }
+      }
+      return { ok: true, sourceBusiness, acceptingBusiness };
+    }
+
     function domainTimestamp(now) {
       if (typeof now !== 'number' || !Number.isFinite(now)) return { ok: false, code: 'invalid_time' };
       const date = new Date(now);
@@ -797,8 +891,8 @@
       const refType = typeof input.refType === 'string' ? input.refType.trim() : '';
       const refId = typeof input.refId === 'string' ? input.refId.trim() : '';
       if (!businessId || !type || !refType || !refId) return { ok: false, code: 'invalid_ledger_input' };
-      const business = appState.businesses[businessId];
-      if (!isRecord(business) || business.id !== businessId) return { ok: false, code: 'unknown_business' };
+      const business = getValidBusiness(appState, businessId);
+      if (!business) return { ok: false, code: 'unknown_business' };
       if (typeof input.pointsDelta !== 'number' || !Number.isFinite(input.pointsDelta)) return { ok: false, code: 'invalid_points_delta' };
       const storedBalance = appState.balances[businessId];
       if (storedBalance !== undefined && (!isRecord(storedBalance) || !Number.isFinite(storedBalance.points))) {
@@ -847,24 +941,20 @@
       const existing = appState.redemptions.filter((item) => isRecord(item) && item.idempotencyKey === normalizedIdempotencyKey);
       if (existing.length) {
         if (existing.some((item) => item.rewardKey !== normalizedRewardKey)) return { ok: false, code: 'idempotency_conflict' };
+        if (existing.length !== 1) return { ok: false, code: 'invalid_state' };
+        const linkedLedger = appState.ledger.filter((entry) => isRecord(entry)
+          && isRewardLedgerEntry(entry)
+          && entry.refId === existing[0].id);
+        if (linkedLedger.length !== 1 || !isRedemptionLedgerPair(existing[0], linkedLedger[0])) {
+          return { ok: false, code: 'invalid_state' };
+        }
         return { ok: true, redemption: existing[0], idempotent: true };
       }
       const reward = getRewardDefinition(normalizedRewardKey);
       if (!reward) return { ok: false, code: 'unknown_reward' };
       if (!Number.isFinite(reward.cost) || reward.cost <= 0) return { ok: false, code: 'invalid_reward' };
-      const sourceBusiness = appState.businesses[reward.sourceBusinessId];
-      const acceptingBusiness = appState.businesses[reward.acceptingBusinessId];
-      if (!isRecord(sourceBusiness) || sourceBusiness.id !== reward.sourceBusinessId
-        || !isRecord(acceptingBusiness) || acceptingBusiness.id !== reward.acceptingBusinessId) {
-        return { ok: false, code: 'unknown_business' };
-      }
-      if (reward.sourceBusinessId !== reward.acceptingBusinessId) {
-        if (typeof sourceBusiness.allianceId !== 'string' || !sourceBusiness.allianceId.trim()
-          || typeof acceptingBusiness.allianceId !== 'string' || !acceptingBusiness.allianceId.trim()) {
-          return { ok: false, code: 'invalid_alliance' };
-        }
-        if (sourceBusiness.allianceId !== acceptingBusiness.allianceId) return { ok: false, code: 'not_same_alliance' };
-      }
+      const businessValidation = validateRewardBusinesses(appState, reward);
+      if (!businessValidation.ok) return businessValidation;
       const storedBalance = appState.balances[reward.sourceBusinessId];
       if (storedBalance !== undefined && (!isRecord(storedBalance) || !Number.isFinite(storedBalance.points))) {
         return { ok: false, code: 'invalid_balance' };
@@ -1002,13 +1092,18 @@
       });
     }
 
-    function navigateTo(screenId, options = {}) {
+    function showScreen(screenId) {
       const next = document.getElementById(screenId) || document.getElementById('home');
       document.querySelectorAll('.app-screen').forEach((screen) => {
         const active = screen === next;
         screen.classList.toggle('hidden', !active);
         screen.classList.toggle('is-active', active);
       });
+      return next;
+    }
+
+    function navigateTo(screenId, options = {}) {
+      const next = showScreen(screenId);
       state.ui.activeScreen = next.id;
       state.ui.activeModule = SCREEN_MODULE[next.id] || 'home';
       saveState(state);
@@ -1199,11 +1294,35 @@
       document.getElementById('payment-confirmed').classList.remove('hidden');
     }
 
+    function renderRewardPreview(reward) {
+      const balance = getBusinessBalance(state, reward.sourceBusinessId).points;
+      document.getElementById('reward-title').textContent = reward.title[state.profile.language] ?? reward.title.vi;
+      document.getElementById('reward-business').textContent = getValidBusiness(state, reward.acceptingBusinessId)?.name ?? t('unknownBusiness');
+      document.getElementById('reward-cost').textContent = formatPoints(reward.cost);
+      document.getElementById('reward-balance').textContent = formatPoints(balance);
+      document.getElementById('reward-after').textContent = formatPoints(balance - reward.cost);
+    }
+
+    function getPendingRewardPreview(appState) {
+      const attempt = appState.ui.pendingContext.rewardAttempt;
+      if (!isRecord(attempt)
+        || attempt.completed !== false
+        || typeof attempt.rewardKey !== 'string'
+        || typeof attempt.idempotencyKey !== 'string'
+        || !attempt.idempotencyKey.trim()
+        || appState.ui.currentRewardKey !== attempt.rewardKey) return { ok: false, code: 'invalid_reward_attempt' };
+      const reward = getRewardDefinition(attempt.rewardKey);
+      if (!reward) return { ok: false, code: 'unknown_reward' };
+      const businesses = validateRewardBusinesses(appState, reward);
+      return businesses.ok ? { ok: true, attempt, reward } : businesses;
+    }
+
     function openReward(key, navigate = true) {
       const reward = getRewardDefinition(key);
-      if (!reward) {
+      const businesses = reward ? validateRewardBusinesses(state, reward) : { ok: false, code: 'unknown_reward' };
+      if (!reward || !businesses.ok) {
         if (navigate) showToast(t('rewardUnavailable'), 'error');
-        return { ok: false, code: 'unknown_reward' };
+        return businesses;
       }
       const currentAttempt = state.ui.pendingContext.rewardAttempt;
       let idempotencyKey = isRecord(currentAttempt)
@@ -1227,12 +1346,7 @@
           completed: false
         };
       });
-      const balance = getBusinessBalance(state, reward.sourceBusinessId).points;
-      document.getElementById('reward-title').textContent = reward.title[state.profile.language];
-      document.getElementById('reward-business').textContent = state.businesses[reward.acceptingBusinessId]?.name ?? t('unknownBusiness');
-      document.getElementById('reward-cost').textContent = formatPoints(reward.cost);
-      document.getElementById('reward-balance').textContent = formatPoints(balance);
-      document.getElementById('reward-after').textContent = formatPoints(balance - reward.cost);
+      renderRewardPreview(reward);
       if (navigate) navigateTo('redeem');
       return { ok: true, idempotencyKey };
     }
@@ -1696,7 +1810,7 @@
       });
       const list = document.getElementById('wallet-business-list');
       if (!list) return;
-      const cards = Object.values(state.businesses).filter(isRecord).map((business) => {
+      const cards = Object.entries(state.businesses).filter(([, business]) => isRecord(business)).map(([businessId, business]) => {
         const card = document.createElement('article');
         card.className = 'app-card';
         const name = document.createElement('h2');
@@ -1704,12 +1818,12 @@
         name.textContent = business.name;
         const points = document.createElement('strong');
         points.className = 'mt-5 block text-3xl font-black';
-        points.textContent = formatPoints(getBusinessBalance(state, business.id).points);
+        points.textContent = formatPoints(getBusinessBalance(state, businessId).points);
         const history = document.createElement('button');
         history.type = 'button';
         history.className = 'app-button-secondary mt-5 w-full';
         history.dataset.action = 'open-business-history';
-        history.dataset.businessId = business.id;
+        history.dataset.businessId = businessId;
         history.textContent = t('history');
         card.append(name, points, history);
         return card;
@@ -1761,14 +1875,11 @@
     }
 
     function rewardAvailability(reward) {
-      const sourceBusiness = state.businesses[reward.sourceBusinessId];
-      const acceptingBusiness = state.businesses[reward.acceptingBusinessId];
-      if (!isRecord(sourceBusiness) || !isRecord(acceptingBusiness)) return { disabled: true, labelKey: 'rewardUnavailable' };
-      const crossBusiness = reward.sourceBusinessId !== reward.acceptingBusinessId;
-      const sameAlliance = !crossBusiness
-        || (typeof sourceBusiness.allianceId === 'string' && sourceBusiness.allianceId.length > 0
-          && sourceBusiness.allianceId === acceptingBusiness.allianceId);
-      if (!sameAlliance) return { disabled: true, labelKey: 'differentAlliance' };
+      const businesses = validateRewardBusinesses(state, reward);
+      if (!businesses.ok) {
+        const labelKey = businesses.code === 'unknown_business' ? 'rewardUnavailable' : 'differentAlliance';
+        return { disabled: true, labelKey };
+      }
       const missing = Math.max(0, reward.cost - getBusinessBalance(state, reward.sourceBusinessId).points);
       return missing > 0
         ? { disabled: true, labelKey: 'morePointsNeeded', variables: { points: formatPoints(missing, false) } }
@@ -1787,7 +1898,7 @@
         title.textContent = reward.title[state.profile.language] ?? reward.title.vi;
         const business = document.createElement('p');
         business.className = 'mt-2 flex-1 text-sm text-app-muted';
-        business.textContent = state.businesses[reward.acceptingBusinessId]?.name ?? t('unknownBusiness');
+        business.textContent = getValidBusiness(state, reward.acceptingBusinessId)?.name ?? t('unknownBusiness');
         const footer = document.createElement('div');
         footer.className = 'mt-5 flex items-center justify-between gap-3';
         const cost = document.createElement('strong');
@@ -1814,6 +1925,29 @@
       renderRewards();
     }
 
+    function restorePersistedUi() {
+      let screenId = state.ui.activeScreen;
+      if (!Object.prototype.hasOwnProperty.call(SCREEN_MODULE, screenId)) {
+        screenId = 'home';
+        state.ui.activeScreen = screenId;
+        state.ui.activeModule = SCREEN_MODULE[screenId];
+      }
+      if (screenId === 'redeem') {
+        const preview = getPendingRewardPreview(state);
+        if (preview.ok) {
+          renderRewardPreview(preview.reward);
+        } else {
+          screenId = 'rewards';
+          state.ui.activeScreen = screenId;
+          state.ui.activeModule = SCREEN_MODULE[screenId];
+          state.ui.currentRewardKey = null;
+          state.ui.pendingContext.rewardAttempt = null;
+        }
+      }
+      showScreen(screenId);
+      updateNavigation();
+    }
+
     function renderApp() {
       applyLanguage(state.profile.language);
       renderNavigation();
@@ -1829,6 +1963,7 @@
       document.addEventListener('change', handleChange);
       document.addEventListener('keydown', handleKeydown);
       renderApp();
+      restorePersistedUi();
     }
 
     window.NEXORA_TEST_API = {
