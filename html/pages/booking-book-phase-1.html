@@ -5388,6 +5388,12 @@
         width: auto;
       }
 
+      /* Badges in card cells size to content, not full-width */
+      .booking-table td > .badge {
+        justify-self: start;
+        width: auto;
+      }
+
       .booking-actions {
         min-width: 0;
         justify-content: flex-start;
@@ -7371,7 +7377,7 @@
                   </div>
 
                   <div class="booking-controls" aria-label="Customer filters">
-                    <label class="booking-control-field" style="flex: 1 1 240px;">
+                    <label class="booking-control-field" style="grid-column: 1 / -1;">
                       <span class="booking-control-label">Search</span>
                       <input class="booking-input" type="search" placeholder="Search by name or phone number..." data-cust-search>
                     </label>
@@ -7410,6 +7416,13 @@
                       <span>Call log</span>
                     </div>
                     <span class="cust-count" data-call-count></span>
+                  </div>
+
+                  <div class="booking-controls" aria-label="Call log filters">
+                    <label class="booking-control-field" style="grid-column: 1 / -1;">
+                      <span class="booking-control-label">Search</span>
+                      <input class="booking-input" type="search" placeholder="Search by caller or phone number..." data-call-search>
+                    </label>
                   </div>
 
                   <div class="booking-status-chips" data-call-status-filter role="group" aria-label="Filter by call status"></div>
@@ -9280,6 +9293,7 @@
     ];
 
     var callFilter = 'all';
+    var callSearch = '';
 
     function formatCallDur(sec) {
       if (!sec) return '—';
