@@ -759,7 +759,7 @@ test('renders persisted balances across home wallet and rewards hooks', () => {
   assert.ok(claimAction.indexOf('renderBalances()') < claimAction.indexOf("navigateTo('onb2')"));
 });
 
-test('derives reward gap progress and CTA state from the current balance', () => {
+test('derives honest reward progress while keeping pending redemption non-actionable', () => {
   function rewardDocument() {
     const gapValue = createStubElement({ dataset: { rewardGapValue: '' }, textContent: '—' });
     const gapCopy = createStubElement({ dataset: { rewardGapCopy: '' }, textContent: 'Đang tính…' });
@@ -787,21 +787,26 @@ test('derives reward gap progress and CTA state from the current balance', () =>
   assert.equal(below.cta.dataset.action, undefined);
 
   const eligible = rewardDocument();
-  testApi({
+  const { api } = testApi({
     'nexora.customer.prototype.v1': JSON.stringify({ balances: { 'bitcoin-nail-bar': { points: 3250 } } })
   }, { skipInit: false, document: eligible.document });
   assert.equal(eligible.progress.style.width, '100%');
-  assert.equal(eligible.cta.disabled, false);
-  assert.equal(eligible.cta.dataset.action, 'navigate');
-  assert.equal(eligible.cta.dataset.target, 'rewards');
-  assert.equal(eligible.cta.textContent, 'Xem phần thưởng');
+  assert.equal(eligible.gapCopy.textContent, 'Đã đủ điểm — đổi quà ở bước tiếp theo');
+  assert.equal(eligible.cta.disabled, true);
+  assert.equal(eligible.cta.dataset.action, undefined);
+  assert.equal(eligible.cta.dataset.target, undefined);
+  assert.equal(eligible.cta.textContent, 'Đã đủ điểm — đổi quà ở bước tiếp theo');
+  assert.equal(api.translate('en', 'rewardRedemptionPending'), 'Enough points — redemption coming next');
 
   const source = html();
   assert.match(source, /nextRewardGap:/);
   assert.match(source, /signatureRewardLocked:/);
-  assert.match(source, /signatureRewardReady:/);
+  assert.match(source, /rewardRedemptionPending:/);
   assert.doesNotMatch(source, /w-\[76%\]/);
   assert.doesNotMatch(source, /data-signature-reward-cta[^>]*550/);
+  const renderBalances = source.match(/function renderBalances\(\)\s*\{([\s\S]*?)\n\s*\}\n\n\s*function renderDomainViews/)?.[1];
+  assert.ok(renderBalances, 'balance renderer must be available');
+  assert.doesNotMatch(renderBalances, /dataset\.(?:action|target)\s*=/);
 });
 
 test('covers accessibility, motion and UI edge states', () => {

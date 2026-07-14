@@ -720,7 +720,7 @@
     };
     const COPY = {
       vi: {
-        points: 'điểm', availablePoints: 'Có thể dùng {points}', nextRewardGap: 'Còn {points} để nhận quà tiếp theo', signatureRewardLocked: 'Cần thêm {points}', signatureRewardReady: 'Xem phần thưởng', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
+        points: 'điểm', availablePoints: 'Có thể dùng {points}', nextRewardGap: 'Còn {points} để nhận quà tiếp theo', signatureRewardLocked: 'Cần thêm {points}', rewardRedemptionPending: 'Đã đủ điểm — đổi quà ở bước tiếp theo', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
         paymentSent: 'Đã gửi ${amount} cho tiệm', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu',
         offerSaved: 'Đã lưu ưu đãi', wishRequired: 'Hãy nhập mong muốn', wishShared: 'Đã gửi mong muốn ẩn danh',
         lookServiceRequired: 'Hãy nhập tên dịch vụ', lookSaved: 'Đã lưu kiểu mới', ratingRequired: 'Hãy chọn số sao',
@@ -743,7 +743,7 @@
         logoutTitle: 'Đăng xuất?', logoutDetail: 'Dữ liệu điểm vẫn được giữ trên thiết bị này.'
       },
       en: {
-        points: 'points', availablePoints: '{points} available', nextRewardGap: '{points} to your next reward', signatureRewardLocked: '{points} more', signatureRewardReady: 'View rewards', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
+        points: 'points', availablePoints: '{points} available', nextRewardGap: '{points} to your next reward', signatureRewardLocked: '{points} more', rewardRedemptionPending: 'Enough points — redemption coming next', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
         paymentSent: '${amount} sent to the salon', insufficientPoints: 'Not enough points', saved: 'Saved',
         offerSaved: 'Offer saved', wishRequired: 'Enter a wish first', wishShared: 'Anonymous wish shared',
         lookServiceRequired: 'Enter a service name', lookSaved: 'New look saved', ratingRequired: 'Choose a rating',
@@ -1436,31 +1436,28 @@
       });
       if (!primaryBalance) return;
       const gap = Math.max(0, SIGNATURE_REWARD_COST - primaryBalance.points);
+      const rewardReady = gap === 0;
       const progress = Math.min(100, Math.max(0, (primaryBalance.points / SIGNATURE_REWARD_COST) * 100));
       const progressLabel = Number(progress.toFixed(2));
       document.querySelectorAll('[data-reward-gap-value]').forEach((element) => {
         element.textContent = formatPointNumber(gap);
       });
       document.querySelectorAll('[data-reward-gap-copy]').forEach((element) => {
-        element.textContent = t('nextRewardGap', { points: formatPoints(gap) });
+        element.textContent = rewardReady
+          ? t('rewardRedemptionPending')
+          : t('nextRewardGap', { points: formatPoints(gap) });
       });
       document.querySelectorAll('[data-reward-progress]').forEach((element) => {
         element.style.width = `${progressLabel}%`;
         element.setAttribute('aria-valuenow', String(progressLabel));
       });
       document.querySelectorAll('[data-signature-reward-cta]').forEach((control) => {
-        const eligible = gap === 0;
-        control.disabled = !eligible;
-        control.textContent = eligible
-          ? t('signatureRewardReady')
+        control.disabled = true;
+        control.textContent = rewardReady
+          ? t('rewardRedemptionPending')
           : t('signatureRewardLocked', { points: formatPoints(gap) });
-        if (eligible) {
-          control.dataset.action = 'navigate';
-          control.dataset.target = 'rewards';
-        } else {
-          delete control.dataset.action;
-          delete control.dataset.target;
-        }
+        delete control.dataset.action;
+        delete control.dataset.target;
       });
     }
 
