@@ -487,10 +487,17 @@
       return ledger.flatMap((entry) => {
         if (!isRecord(entry)) return [];
         const refType = typeof entry.refType === 'string' ? entry.refType.trim() : '';
+        const type = typeof entry.type === 'string' ? entry.type.trim() : '';
         const refId = typeof entry.refId === 'string' ? entry.refId.trim() : '';
-        return ['tip', 'direct_payment'].includes(refType) && refId
-          ? [{ refType, refId, entry }]
-          : [];
+        if (!refId) return [];
+        const claims = [];
+        if (refType === 'tip' || type === 'tip_bonus') {
+          claims.push({ refType: 'tip', refId, entry });
+        }
+        if (refType === 'direct_payment' || ['visit_spend', 'directpay_bonus'].includes(type)) {
+          claims.push({ refType: 'direct_payment', refId, entry });
+        }
+        return claims;
       });
     }
 

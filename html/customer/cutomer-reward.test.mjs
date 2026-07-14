@@ -963,6 +963,18 @@ function replayedPendingTransactionFixture(kind, claimVariant) {
       { refType, refId: created.id },
       ...unrelated
     ];
+  } else if (typeof claimVariant === 'object' && claimVariant !== null) {
+    app.ledger = [
+      {
+        id: `raw-${kind}-type-claim`,
+        businessId: 'golden-glow-spa',
+        pointsDelta: 999,
+        refId: ` ${created.id} `,
+        createdAt: '2026-07-14T10:50:00.000Z',
+        ...claimVariant
+      },
+      ...app.ledger
+    ];
   } else {
     app.ledger = [
       { refType, refId: created.id },
@@ -1018,6 +1030,78 @@ test('quarantines replayed pending direct payments from valid or malformed raw p
   for (const variant of ['valid_reordered_duplicate', 'malformed']) {
     assertReplayedPendingTransactionIsQuarantined('payment', variant);
   }
+});
+
+test('classifies canonical tip types as raw tip claims when refType is missing or tampered', () => {
+  for (const claim of [
+    { type: 'tip_bonus' },
+    { type: 'tip_bonus', refType: 'tampered' }
+  ]) {
+    assertReplayedPendingTransactionIsQuarantined('tip', claim);
+  }
+});
+
+test('classifies both canonical direct payment types when refType is missing or tampered', () => {
+  for (const type of ['visit_spend', 'directpay_bonus']) {
+    for (const refType of [undefined, 'tampered']) {
+      assertReplayedPendingTransactionIsQuarantined('payment', {
+        type,
+        ...(refType ? { refType } : {})
+      });
+    }
+  }
+});
+
+test('claims both transaction namespaces from one cross-classified raw entry', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const tip = api.createTip(app, {
+    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
+  }, 1000).tip;
+  const payment = api.createDirectPayment(app, {
+    businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
+  }, 1000).payment;
+  const sharedId = tip.id;
+  payment.id = sharedId;
+  app.ui.pendingContext.paymentId = sharedId;
+  app.ledger = [
+    {
+      id: 'cross-classified-claim',
+      businessId: 'bitcoin-nail-bar',
+      type: 'visit_spend',
+      pointsDelta: -55,
+      refType: 'tip',
+      refId: ` ${sharedId} `,
+      createdAt: '2026-07-14T10:50:00.000Z'
+    },
+    ...app.ledger
+  ];
+  const balanceBefore = app.balances['bitcoin-nail-bar'].points;
+  uuidCalls = 0;
+
+  const migrated = api.migrateState(app);
+
+  assert.equal(migrated.tips.some((record) => record.id === sharedId), false);
+  assert.equal(migrated.directPayments.some((record) => record.id === sharedId), false);
+  assert.equal(migrated.ui.pendingContext.tipId, null);
+  assert.equal(migrated.ui.pendingContext.paymentId, null);
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, balanceBefore);
+  assert.equal(migrated.ledger.some((entry) => entry.refId?.trim?.() === sharedId), false);
+  assert.equal(migrated.redemptions.some((redemption) => redemption.id === 'red-demo'), true);
+  assert.equal(migrated.ledger.some((entry) => entry.refId === 'red-demo'), true);
+
+  const ledgerBeforeRetry = JSON.stringify(migrated.ledger);
+  assert.equal(api.confirmTipRecord(migrated, sharedId, 3000).code, 'not_found');
+  assert.equal(api.confirmDirectPayment(migrated, sharedId, 3000).code, 'not_found');
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, balanceBefore);
+  assert.equal(JSON.stringify(migrated.ledger), ledgerBeforeRetry);
+  assert.equal(uuidCalls, 0);
 });
 
 test('restores pending tip and payment receipts without creating replacement records', () => {
