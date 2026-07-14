@@ -57,7 +57,8 @@ function createStubElement({ id = '', dataset = {}, textContent = '', placeholde
 
 function createDocumentStub({
   localizedNodes = [], placeholderNodes = [], languageControls = [],
-  notificationControls = [], overlayCloseControls = []
+  notificationControls = [], overlayCloseControls = [], balancePointNodes = [],
+  balanceWithUnitNodes = [], balanceAvailableNodes = []
 } = {}) {
   const listeners = [];
   const elements = new Map();
@@ -80,13 +81,16 @@ function createDocumentStub({
       if (selector === '[data-language]') return languageControls;
       if (selector === '[data-action="open-notifications"]') return notificationControls;
       if (selector === '[data-action="close-overlay"]') return overlayCloseControls;
+      if (selector === '[data-balance-points]') return balancePointNodes;
+      if (selector === '[data-balance-with-unit]') return balanceWithUnitNodes;
+      if (selector === '[data-balance-available]') return balanceAvailableNodes;
       return [];
     }
   };
   return document;
 }
 
-function testApi(seed = {}, { skipInit = true, document } = {}) {
+function testApi(seed = {}, { skipInit = true, document, randomUUID = () => '00000000-0000-4000-8000-000000000001' } = {}) {
   const source = html();
   const script = source.match(/<script>\s*([\s\S]*?)<\/script>\s*<\/body>/)?.[1];
   assert.ok(script, 'inline application script must exist');
@@ -108,7 +112,7 @@ function testApi(seed = {}, { skipInit = true, document } = {}) {
     Math,
     JSON,
     URL,
-    crypto: { randomUUID: () => '00000000-0000-4000-8000-000000000001' },
+    crypto: { randomUUID },
     console
   };
   if (document) globals.document = document;
@@ -238,6 +242,31 @@ test('validates US phone and enforces OTP cooldown plus lockout', () => {
   assert.equal(api.verifyOtp(app, '246810', 32000).code, 'locked');
 });
 
+test('treats an OTP requested at epoch zero as active cooldown and persists it', () => {
+  const { api, storage } = testApi();
+  const app = api.createDefaultState();
+  assert.equal(app.session.otpRequestedAt, null);
+  assert.equal(api.requestOtp(app, '(832) 555-0148', 0).ok, true);
+  assert.equal(api.requestOtp(app, '(832) 555-0148', 1).code, 'cooldown');
+
+  api.saveState(app, storage);
+  assert.equal(api.loadState(storage).session.otpRequestedAt, 0);
+  assert.equal(api.migrateState({ session: { otpRequestedAt: '0' } }).session.otpRequestedAt, null);
+});
+
+test('resets expired OTP lockout before counting a new failed attempt', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  api.requestOtp(app, '(832) 555-0148', 1000);
+  for (let attempt = 0; attempt < 5; attempt += 1) api.verifyOtp(app, '111111', 31000 + attempt);
+  const afterLock = app.session.lockedUntil + 1;
+
+  const result = api.verifyOtp(app, '111111', afterLock);
+  assert.equal(result.code, 'invalid_code');
+  assert.equal(app.session.otpAttempts, 1);
+  assert.equal(app.session.lockedUntil, 0);
+});
+
 test('records consent decisions without making marketing a condition of points', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
@@ -256,6 +285,39 @@ test('records consent decisions without making marketing a condition of points',
   assert.equal(typeof app.preferences.businessMarketing, 'object');
 });
 
+test('stages canonical consent scopes and grants only pending scopes after SMS confirmation', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+
+  assert.equal(api.stageConsentScopes(app, ['networkOffers']).ok, true);
+  assert.equal(app.preferences.networkOffers, false);
+  assert.equal(app.preferences.businessMarketing['bitcoin-nail-bar'], false);
+  assert.equal(app.consents.length, 0);
+  assert.equal(JSON.stringify(app.ui.pendingContext.consentScopes), JSON.stringify(['networkOffers']));
+
+  const confirmed = api.confirmPendingConsent(app, 2000);
+  assert.equal(confirmed.ok, true);
+  assert.equal(app.preferences.networkOffers, true);
+  assert.equal(app.preferences.businessMarketing['bitcoin-nail-bar'], false);
+  assert.equal(app.consents.length, 1);
+  assert.equal(app.consents[0].scope, 'networkOffers');
+  assert.equal(app.consents[0].method, 'sms_y');
+  assert.equal(app.consents[0].confirmedAt, '1970-01-01T00:00:02.000Z');
+  assert.equal('consentScopes' in app.ui.pendingContext, false);
+});
+
+test('round-trips only canonical pending consent scopes through migration', () => {
+  const { api } = testApi();
+  const migrated = api.migrateState({
+    ui: { pendingContext: { consentScopes: ['networkOffers', 'legacyNetwork', 'business:bitcoin-nail-bar', 7] } }
+  });
+
+  assert.equal(
+    JSON.stringify(migrated.ui.pendingContext.consentScopes),
+    JSON.stringify(['networkOffers', 'business:bitcoin-nail-bar'])
+  );
+});
+
 test('prevents a welcome gift from being claimed twice or by an existing account', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
@@ -266,6 +328,54 @@ test('prevents a welcome gift from being claimed twice or by an existing account
   assert.equal(api.claimWelcomeGift(app, '(713) 555-0199', 120000).code, 'already_claimed');
   assert.equal(app.balances['bitcoin-nail-bar'].points, before + 25);
   assert.equal(app.ledger.filter((entry) => entry.refId === 'welcome-7135550199').length, 1);
+});
+
+test('rejects invalid welcome timestamps without partially mutating state', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const before = JSON.stringify(app);
+
+  const result = api.claimWelcomeGift(app, '(713) 555-0199', Infinity);
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'invalid_time');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('keeps welcome state atomic when UUID generation throws', () => {
+  const { api } = testApi({}, { randomUUID: () => { throw new Error('uuid unavailable'); } });
+  const app = api.createDefaultState();
+  const before = JSON.stringify(app);
+
+  const result = api.claimWelcomeGift(app, '(713) 555-0199', 40000);
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'id_generation_failed');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('requests a fresh OTP before routing an existing account to verification', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  app.session.otpRequestedAt = null;
+
+  const result = api.requestExistingAccountOtp(app, '(832) 555-0148', 5000);
+  assert.equal(result.ok, true);
+  assert.equal(result.code, 'existing_account');
+  assert.equal(app.session.phone, '8325550148');
+  assert.equal(app.session.otpRequestedAt, 5000);
+  assert.equal(api.requestExistingAccountOtp(app, '(832) 555-0148', 5001).code, 'cooldown');
+});
+
+test('routes scanning through welcome claim and wires existing-account OTP before login2', () => {
+  const source = html();
+  const scanBody = source.match(/function startScan\(\)\s*\{([\s\S]*?)\n\s*\}\n\n\s*function selectTip/)?.[1];
+  assert.ok(scanBody, 'startScan body must be available');
+  assert.match(scanBody, /navigateTo\('onb1'\)/);
+  assert.doesNotMatch(scanBody, /navigateTo\('onb2'\)/);
+
+  const claimAction = source.match(/registerAction\('claim-welcome',[\s\S]*?registerAction\('accept-consent'/)?.[0];
+  assert.ok(claimAction, 'claim welcome action must be registered');
+  assert.match(claimAction, /requestExistingAccountOtp/);
+  assert.ok(claimAction.indexOf('requestExistingAccountOtp') < claimAction.indexOf("navigateTo('login2')"));
 });
 
 test('round-trips valid consent preferences and welcome claims through migration', () => {
@@ -295,6 +405,22 @@ test('round-trips marketing preferences for every known business', () => {
   const loaded = api.loadState(storage);
   assert.equal(loaded.preferences.businessMarketing['golden-glow-spa'], true);
   assert.equal(loaded.consents.at(-1).scope, 'business:golden-glow-spa');
+});
+
+test('accepts only HTTPS avatar URLs and keeps the existing avatar when blank', () => {
+  const { api } = testApi();
+  const current = 'https://images.example/avatar.png';
+  assert.equal(api.validateAvatarUrl('', current).value, current);
+  assert.equal(api.validateAvatarUrl('not a url', current).ok, false);
+  assert.equal(api.validateAvatarUrl('http://images.example/avatar.png', current).ok, false);
+  assert.equal(api.validateAvatarUrl('https://images.example/new.png', current).value, 'https://images.example/new.png');
+
+  const source = html();
+  const editAction = source.match(/registerAction\('edit-profile',[\s\S]*?registerAction\('payment-methods'/)?.[0];
+  assert.ok(editAction, 'edit profile action must be registered');
+  assert.match(editAction, /validateAvatarUrl/);
+  assert.match(editAction, /setFieldError\('profile-edit-error', t\('invalidAvatar'\)\)[\s\S]*?return false/);
+  assert.ok(editAction.indexOf('validateAvatarUrl') < editAction.indexOf('commitState'));
 });
 
 test('uses nested profile language with the shared translation dictionary', () => {
@@ -481,6 +607,38 @@ test('renders persisted profile and immediate per-business preferences', () => {
   assert.match(source, /function handleChange\(event\)/);
   assert.match(source, /addEventListener\('change', handleChange\)/);
   assert.doesNotMatch(source, /data-action="save-preferences"/);
+});
+
+test('renders persisted balances across home wallet and rewards hooks', () => {
+  const points = createStubElement({ dataset: { balancePoints: 'bitcoin-nail-bar' }, textContent: '2,450' });
+  const withUnit = createStubElement({ dataset: { balanceWithUnit: 'bitcoin-nail-bar' }, textContent: '2.450 điểm' });
+  const available = createStubElement({ dataset: { balanceAvailable: 'bitcoin-nail-bar' }, textContent: 'Có thể dùng 2.450 điểm' });
+  const document = createDocumentStub({
+    balancePointNodes: [points],
+    balanceWithUnitNodes: [withUnit],
+    balanceAvailableNodes: [available]
+  });
+  const storageKey = 'nexora.customer.prototype.v1';
+  const { context } = testApi({
+    [storageKey]: JSON.stringify({ balances: { 'bitcoin-nail-bar': { points: 2475 } } })
+  }, { skipInit: false, document });
+
+  assert.equal(points.textContent, '2.475');
+  assert.equal(withUnit.textContent, '2.475 điểm');
+  assert.equal(available.textContent, 'Có thể dùng 2.475 điểm');
+  context.openReward('gel', false);
+  assert.equal(document.getElementById('reward-balance').textContent, '2.475 điểm');
+  assert.equal(document.getElementById('reward-after').textContent, '1.675 điểm');
+
+  const source = html();
+  assert.ok((source.match(/data-balance-points=/g) || []).length >= 4);
+  assert.match(source, /data-balance-with-unit="bitcoin-nail-bar"/);
+  assert.match(source, /data-balance-available="bitcoin-nail-bar"/);
+  assert.match(source, /function renderBalances\(\)/);
+  assert.match(source, /function renderDomainViews\(\)\s*\{\s*renderProfile\(\);\s*renderBalances\(\);/);
+
+  const claimAction = source.match(/registerAction\('claim-welcome',[\s\S]*?registerAction\('accept-consent'/)?.[0];
+  assert.ok(claimAction.indexOf('renderBalances()') < claimAction.indexOf("navigateTo('onb2')"));
 });
 
 test('covers accessibility, motion and UI edge states', () => {
