@@ -9374,6 +9374,12 @@
       });
     }
 
+    var promoTextarea = document.querySelector('[data-settings-promo]');
+    if (promoTextarea) {
+      promoTextarea.addEventListener('input', updatePromoCount);
+      updatePromoCount();
+    }
+
     document.addEventListener('click', function(event) {
       var segChip = event.target.closest('[data-cust-seg]');
       if (segChip) {
