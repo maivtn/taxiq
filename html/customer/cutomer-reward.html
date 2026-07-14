@@ -32,7 +32,7 @@
     @layer components {
       .app-card { @apply rounded-2xl border border-app-line bg-app-card p-4 shadow-[0_16px_40px_rgba(0,0,0,.18)]; }
       .app-button { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-app-purple to-app-pink px-4 py-3 text-sm font-extrabold text-white transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-app-cyan disabled:cursor-not-allowed disabled:opacity-50; }
-      .app-button-secondary { @apply app-button border border-app-line bg-none bg-app-panel text-app-text shadow-none; }
+      .app-button-secondary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-app-line bg-none bg-app-panel px-4 py-3 text-sm font-extrabold text-app-text shadow-none transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-app-cyan disabled:cursor-not-allowed disabled:opacity-50; }
       .app-input { @apply min-h-11 w-full rounded-xl border border-app-line bg-app-panel px-3.5 py-3 text-sm text-app-text outline-none placeholder:text-app-muted focus:border-app-cyan focus:ring-2 focus:ring-app-cyan/20; }
       .app-chip { @apply inline-flex min-h-11 items-center whitespace-nowrap rounded-full border border-app-line bg-app-card px-4 text-xs font-bold text-app-muted transition hover:border-app-purple hover:text-white aria-pressed:border-transparent aria-pressed:bg-app-purple aria-pressed:text-white; }
       .icon-button { @apply inline-grid size-11 shrink-0 place-items-center rounded-xl border border-app-line bg-app-card text-app-muted hover:text-white focus-visible:outline-2 focus-visible:outline-app-cyan; }

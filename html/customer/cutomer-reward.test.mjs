@@ -21,6 +21,15 @@ test('loads the approved frontend stack', () => {
   assert.match(source, /id="screen-region"/);
 });
 
+test('keeps Tailwind v4 stylesheet compilable', () => {
+  const source = html();
+  assert.doesNotMatch(
+    source,
+    /@apply\s+(?:[^;\n]*\s)?app-[\w-]+/,
+    'Tailwind v4 cannot @apply a custom app-* component class'
+  );
+});
+
 const requiredScreens = [
   'login1', 'login2', 'onb1', 'onb2', 'onb3', 'onb4', 'home', 'allmenu',
   'activity', 'wallet', 'history', 'rewards', 'redeem', 'redeemdone', 'scan',
