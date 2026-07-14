@@ -338,17 +338,31 @@
       };
     }
 
+    function isRecord(value) {
+      return value !== null && typeof value === 'object' && !Array.isArray(value);
+    }
+
     function mergeRecord(defaultValue, incomingValue) {
-      if (!incomingValue || typeof incomingValue !== 'object' || Array.isArray(incomingValue)) return structuredClone(defaultValue);
-      const result = structuredClone(defaultValue);
-      for (const [key, value] of Object.entries(incomingValue)) {
-        if (value && typeof value === 'object' && !Array.isArray(value) && result[key] && typeof result[key] === 'object' && !Array.isArray(result[key])) {
-          result[key] = mergeRecord(result[key], value);
-        } else {
-          result[key] = value;
-        }
+      if (Array.isArray(defaultValue)) {
+        return Array.isArray(incomingValue) ? structuredClone(incomingValue) : structuredClone(defaultValue);
       }
-      return result;
+      if (isRecord(defaultValue)) {
+        if (!isRecord(incomingValue)) return structuredClone(defaultValue);
+        const result = {};
+        for (const [key, fallback] of Object.entries(defaultValue)) {
+          result[key] = Object.prototype.hasOwnProperty.call(incomingValue, key)
+            ? mergeRecord(fallback, incomingValue[key])
+            : structuredClone(fallback);
+        }
+        return result;
+      }
+      if (defaultValue === null) {
+        return null;
+      }
+      if (typeof defaultValue === 'number') {
+        return typeof incomingValue === 'number' && Number.isFinite(incomingValue) ? incomingValue : defaultValue;
+      }
+      return typeof incomingValue === typeof defaultValue ? incomingValue : structuredClone(defaultValue);
     }
 
     function migrateState(value) {
@@ -357,6 +371,7 @@
       const migrated = mergeRecord(defaults, value);
       migrated.schemaVersion = SCHEMA_VERSION;
       migrated.updatedAt = new Date().toISOString();
+      if (!['vi', 'en'].includes(migrated.profile.language)) migrated.profile.language = defaults.profile.language;
       delete migrated.pointBalance;
       delete migrated.savedOffers;
       return migrated;
@@ -410,14 +425,50 @@
       gel: { title: { en:'Gel polish upgrade', vi:'Nâng cấp sơn gel' }, business:'Bitcoin Nail Bar', cost:800 },
       credit: { title: { en:'$10 service credit', vi:'Giảm $10 dịch vụ' }, business:'Golden Glow Spa', cost:1200 }
     };
+    const COPY = {
+      vi: {
+        points: 'điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
+        paymentSent: 'Đã gửi ${amount} cho tiệm', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu',
+        offerSaved: 'Đã lưu ưu đãi', wishRequired: 'Hãy nhập mong muốn', wishShared: 'Đã gửi mong muốn ẩn danh',
+        lookServiceRequired: 'Hãy nhập tên dịch vụ', lookSaved: 'Đã lưu kiểu mới', ratingRequired: 'Hãy chọn số sao',
+        reviewThanks: 'Cảm ơn phản hồi của bạn', openPayment: 'Mở {method} để thanh toán', addPhoto: 'Thêm ảnh',
+        addPhotoDetail: 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.',
+        verificationResent: 'Đã gửi lại mã xác thực', openingMaps: 'Đang mở ứng dụng bản đồ',
+        inviteCopied: 'Đã sao chép liên kết', preferencesSaved: 'Đã lưu tùy chọn'
+      },
+      en: {
+        points: 'points', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
+        paymentSent: '${amount} sent to the salon', insufficientPoints: 'Not enough points', saved: 'Saved',
+        offerSaved: 'Offer saved', wishRequired: 'Enter a wish first', wishShared: 'Anonymous wish shared',
+        lookServiceRequired: 'Enter a service name', lookSaved: 'New look saved', ratingRequired: 'Choose a rating',
+        reviewThanks: 'Thanks for your feedback', openPayment: 'Open {method} to pay', addPhoto: 'Add a photo',
+        addPhotoDetail: 'The production app will open your device photo picker.',
+        verificationResent: 'Verification code resent', openingMaps: 'Opening maps',
+        inviteCopied: 'Invite link copied', preferencesSaved: 'Preferences saved'
+      }
+    };
+
+    function translate(language, key, variables = {}) {
+      const template = COPY[language]?.[key] ?? COPY.vi[key] ?? key;
+      return Object.entries(variables).reduce(
+        (message, [name, value]) => message.replaceAll(`{${name}}`, String(value)),
+        template
+      );
+    }
+
+    function t(key, variables = {}) {
+      return translate(state.profile.language, key, variables);
+    }
 
     function formatPoints(value) {
-      return `${new Intl.NumberFormat(state.language === 'vi' ? 'vi-VN' : 'en-US').format(value)} ${state.language === 'vi' ? 'điểm' : 'points'}`;
+      const locale = { vi: 'vi-VN', en: 'en-US' }[state.profile.language] ?? 'vi-VN';
+      return `${new Intl.NumberFormat(locale).format(value)} ${t('points')}`;
     }
 
     function renderNavigation() {
-      document.getElementById('desktop-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="nav-item w-full" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item[state.language]}</span></button>`).join('');
-      document.getElementById('mobile-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="mobile-nav-item" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item[state.language]}</span></button>`).join('');
+      const language = state.profile.language;
+      document.getElementById('desktop-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="nav-item w-full" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item[language]}</span></button>`).join('');
+      document.getElementById('mobile-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="mobile-nav-item" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item[language]}</span></button>`).join('');
     }
 
     function updateNavigation() {
@@ -443,15 +494,16 @@
     }
 
     function setLanguage(language) {
-      state.language = language === 'en' ? 'en' : 'vi';
-      document.documentElement.lang = state.language;
+      commitState((draft) => { draft.profile.language = language === 'en' ? 'en' : 'vi'; });
+      const activeLanguage = state.profile.language;
+      document.documentElement.lang = activeLanguage;
       document.querySelectorAll('[data-en][data-vi]').forEach((element) => {
-        element.textContent = element.dataset[state.language];
+        element.textContent = element.dataset[activeLanguage];
       });
       document.querySelectorAll('[data-en-ph][data-vi-ph]').forEach((element) => {
-        element.placeholder = element.dataset[`${state.language}Ph`];
+        element.placeholder = element.dataset[`${activeLanguage}Ph`];
       });
-      document.querySelectorAll('[data-language]').forEach((control) => control.setAttribute('aria-pressed', String(control.dataset.language === state.language)));
+      document.querySelectorAll('[data-language]').forEach((control) => control.setAttribute('aria-pressed', String(control.dataset.language === activeLanguage)));
       renderNavigation();
       updateNavigation();
       if (state.currentReward) openReward(state.currentReward, false);
@@ -504,7 +556,7 @@
       const loading = document.getElementById('scan-loading-state');
       line.classList.remove('hidden');
       loading.classList.remove('hidden');
-      showToast(state.language === 'vi' ? 'Đã nhận diện mã NEXORA' : 'NEXORA code detected');
+      showToast(t('scanRecognized'));
       window.setTimeout(() => { line.classList.add('hidden'); loading.classList.add('hidden'); navigateTo('onb2'); }, 900);
     }
 
@@ -512,7 +564,7 @@
       state.selectedTip = Number(amount) || 10;
       document.querySelectorAll('[data-action="select-tip"]').forEach((button) => button.setAttribute('aria-pressed', String(button === control)));
       const copy = document.querySelector('[data-action="send-tip"] span');
-      copy.textContent = state.language === 'vi' ? `Tiếp tục với $${state.selectedTip}` : `Continue with $${state.selectedTip}`;
+      copy.textContent = t('continueTip', { amount: state.selectedTip });
     }
 
     function sendTip() {
@@ -529,7 +581,7 @@
 
     function sendPayment() {
       const amount = Math.max(1, Number(document.getElementById('payment-amount').value) || 0);
-      document.getElementById('paydone-title').textContent = state.language === 'vi' ? `Đã gửi $${amount.toFixed(2)} cho tiệm` : `$${amount.toFixed(2)} sent to the salon`;
+      document.getElementById('paydone-title').textContent = t('paymentSent', { amount: amount.toFixed(2) });
       document.getElementById('payment-pending').classList.remove('hidden');
       document.getElementById('payment-confirmed').classList.add('hidden');
       navigateTo('paydone');
@@ -543,7 +595,7 @@
     function openReward(key, navigate = true) {
       const reward = REWARDS[key] || REWARDS.gel;
       state.currentReward = key in REWARDS ? key : 'gel';
-      document.getElementById('reward-title').textContent = reward.title[state.language];
+      document.getElementById('reward-title').textContent = reward.title[state.profile.language];
       document.getElementById('reward-business').textContent = reward.business;
       document.getElementById('reward-cost').textContent = formatPoints(reward.cost);
       document.getElementById('reward-balance').textContent = formatPoints(state.pointBalance);
@@ -553,9 +605,9 @@
 
     function confirmReward() {
       const reward = REWARDS[state.currentReward] || REWARDS.gel;
-      if (reward.cost > state.pointBalance) return showToast(state.language === 'vi' ? 'Bạn chưa đủ điểm' : 'Not enough points', 'error');
+      if (reward.cost > state.pointBalance) return showToast(t('insufficientPoints'), 'error');
       state.pointBalance -= reward.cost;
-      document.getElementById('reward-done-title').textContent = reward.title[state.language];
+      document.getElementById('reward-done-title').textContent = reward.title[state.profile.language];
       document.getElementById('reward-done-cost').textContent = formatPoints(reward.cost);
       navigateTo('redeemdone');
     }
@@ -586,27 +638,27 @@
       state.savedOffers.add(key);
       control.disabled = true;
       const label = control.querySelector('span');
-      label.textContent = state.language === 'vi' ? 'Đã lưu' : 'Saved';
-      showToast(state.language === 'vi' ? 'Đã lưu ưu đãi' : 'Offer saved');
+      label.textContent = t('saved');
+      showToast(t('offerSaved'));
     }
 
     function addWish() {
       const input = document.getElementById('wish-input');
       const value = input.value.trim();
-      if (!value) return showToast(state.language === 'vi' ? 'Hãy nhập mong muốn' : 'Enter a wish first', 'error');
+      if (!value) return showToast(t('wishRequired'), 'error');
       state.wishes.push(value);
       const item = document.createElement('li');
       item.className = 'rounded-xl bg-app-panel p-3';
       item.textContent = value;
       document.getElementById('wish-list').append(item);
       input.value = '';
-      showToast(state.language === 'vi' ? 'Đã gửi mong muốn ẩn danh' : 'Anonymous wish shared');
+      showToast(t('wishShared'));
     }
 
     function saveLook() {
       const service = document.getElementById('look-service').value.trim();
       const color = document.getElementById('look-color').value.trim();
-      if (!service) return showToast(state.language === 'vi' ? 'Hãy nhập tên dịch vụ' : 'Enter a service name', 'error');
+      if (!service) return showToast(t('lookServiceRequired'), 'error');
       state.looks.push({ service, color });
       const card = document.createElement('article');
       card.className = 'app-card flex aspect-square flex-col justify-end bg-gradient-to-br from-app-purple/30 to-app-cyan/10';
@@ -619,7 +671,7 @@
       card.append(title, detail);
       document.getElementById('looks-grid').prepend(card);
       navigateTo('looks');
-      showToast(state.language === 'vi' ? 'Đã lưu kiểu mới' : 'New look saved');
+      showToast(t('lookSaved'));
     }
 
     function setRating(rating) {
@@ -632,10 +684,10 @@
     }
 
     function submitReview() {
-      if (!state.rating) return showToast(state.language === 'vi' ? 'Hãy chọn số sao' : 'Choose a rating', 'error');
+      if (!state.rating) return showToast(t('ratingRequired'), 'error');
       document.getElementById('review-notes').value = '';
       navigateTo('home');
-      showToast(state.language === 'vi' ? 'Cảm ơn phản hồi của bạn' : 'Thanks for your feedback');
+      showToast(t('reviewThanks'));
     }
 
     function reviewBooking() {
@@ -664,7 +716,7 @@
       const offerFilter = event.target.closest('[data-offer-filter]');
       if (offerFilter) { state.offerFilter = offerFilter.dataset.offerFilter; selectExclusive(offerFilter, '[data-offer-filter]'); return filterOffers(document.getElementById('offer-search').value); }
       const payment = event.target.closest('[data-payment-method]');
-      if (payment) { state.paymentMethod = payment.dataset.paymentMethod; selectExclusive(payment, '[data-payment-method]'); const label = document.querySelector('[data-action="send-payment"] span'); label.textContent = state.language === 'vi' ? `Mở ${state.paymentMethod} để thanh toán` : `Open ${state.paymentMethod} to pay`; return; }
+      if (payment) { state.paymentMethod = payment.dataset.paymentMethod; selectExclusive(payment, '[data-payment-method]'); const label = document.querySelector('[data-action="send-payment"] span'); label.textContent = t('openPayment', { method: state.paymentMethod }); return; }
       for (const key of ['service', 'staff', 'day', 'time']) { const control = event.target.closest(`[data-book-${key}]`); if (control) return selectExclusive(control, `[data-book-${key}]`, key, control.dataset[`book${key[0].toUpperCase()}${key.slice(1)}`]); }
       const control = event.target.closest('[data-action]');
       if (!control) return;
@@ -674,11 +726,11 @@
         'confirm-tip': confirmTip, 'send-payment': sendPayment, 'confirm-payment': confirmPayment, 'open-reward': () => openReward(control.dataset.rewardKey),
         'confirm-reward': confirmReward, 'save-offer': () => saveOffer(control), 'add-wish': addWish, 'save-look': saveLook,
         'set-rating': () => setRating(control.dataset.rating), 'submit-review': submitReview, 'review-booking': reviewBooking, 'confirm-booking': confirmBooking,
-        'upload-look': () => openOverlay(state.language === 'vi' ? 'Thêm ảnh' : 'Add a photo', state.language === 'vi' ? 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.' : 'The production app will open your device photo picker.'),
-        'resend-code': () => showToast(state.language === 'vi' ? 'Đã gửi lại mã xác thực' : 'Verification code resent'),
-        'show-directions': () => showToast(state.language === 'vi' ? 'Đang mở ứng dụng bản đồ' : 'Opening maps'),
-        'copy-referral': () => { navigator.clipboard?.writeText('https://nexora.example/invite/JESSICA50'); showToast(state.language === 'vi' ? 'Đã sao chép liên kết' : 'Invite link copied'); },
-        'save-preferences': () => showToast(state.language === 'vi' ? 'Đã lưu tùy chọn' : 'Preferences saved')
+        'upload-look': () => openOverlay(t('addPhoto'), t('addPhotoDetail')),
+        'resend-code': () => showToast(t('verificationResent')),
+        'show-directions': () => showToast(t('openingMaps')),
+        'copy-referral': () => { navigator.clipboard?.writeText('https://nexora.example/invite/JESSICA50'); showToast(t('inviteCopied')); },
+        'save-preferences': () => showToast(t('preferencesSaved'))
       };
       actions[control.dataset.action]?.();
     }
@@ -688,10 +740,19 @@
       if (event.target.id === 'offer-search') filterOffers(event.target.value);
     }
 
+    function handleKeydown(event) {
+      if (event.key === 'Escape') closeOverlay();
+    }
+
+    function renderApp() {
+      renderNavigation();
+      updateNavigation();
+      if (window.lucide) window.lucide.createIcons();
+    }
+
     function initializeApp() {
       document.addEventListener('click', handleAction);
       document.addEventListener('input', handleInput);
-      document.addEventListener('change', handleChange);
       document.addEventListener('keydown', handleKeydown);
       renderApp();
     }
@@ -701,7 +762,8 @@
       createDefaultState,
       migrateState,
       loadState,
-      saveState
+      saveState,
+      translate
     };
 
     if (!window.NEXORA_SKIP_INIT) initializeApp();

@@ -18,19 +18,34 @@ function createMemoryStorage(seed = {}) {
   };
 }
 
-function testApi(seed = {}) {
+function createDocumentStub() {
+  const listeners = [];
+  const elements = new Map();
+  return {
+    listeners,
+    addEventListener(type, handler) { listeners.push({ type, handler }); },
+    getElementById(id) {
+      if (!elements.has(id)) elements.set(id, { innerHTML: '' });
+      return elements.get(id);
+    },
+    querySelectorAll() { return []; }
+  };
+}
+
+function testApi(seed = {}, { skipInit = true, document } = {}) {
   const source = html();
   const script = source.match(/<script>\s*([\s\S]*?)<\/script>\s*<\/body>/)?.[1];
   assert.ok(script, 'inline application script must exist');
   const storage = createMemoryStorage(seed);
   const window = {
     localStorage: storage,
-    NEXORA_SKIP_INIT: true,
+    NEXORA_SKIP_INIT: skipInit,
     setTimeout() { return 1; },
     clearTimeout() {},
     lucide: null
   };
-  const context = vm.createContext({
+  if (document) window.document = document;
+  const globals = {
     window,
     localStorage: storage,
     structuredClone,
@@ -41,7 +56,9 @@ function testApi(seed = {}) {
     URL,
     crypto: { randomUUID: () => '00000000-0000-4000-8000-000000000001' },
     console
-  });
+  };
+  if (document) globals.document = document;
+  const context = vm.createContext(globals);
   vm.runInContext(script, context);
   return { api: window.NEXORA_TEST_API, storage };
 }
@@ -68,6 +85,61 @@ test('persists state and recovers corrupt JSON into a timestamped backup', () =>
   const recovered = api.loadState(storage, () => 1720936800000);
   assert.equal(recovered.profile.language, 'vi');
   assert.equal(storage.getItem(`${api.STORAGE_KEY}.corrupt.1720936800000`), '{broken');
+});
+
+test('migrates valid JSON with malformed fields into the known state schema', () => {
+  const { api, storage } = testApi();
+  const defaults = api.createDefaultState();
+  storage.setItem(api.STORAGE_KEY, JSON.stringify({
+    profile: null,
+    balances: [],
+    session: 'invalid',
+    wishes: {},
+    preferences: { nearbyDeals: 'yes', unknownPreference: true },
+    ui: { overlay: { unknownOverlayKey: true } },
+    unknownRoot: true
+  }));
+
+  const migrated = api.loadState(storage);
+  assert.equal(JSON.stringify(migrated.profile), JSON.stringify(defaults.profile));
+  assert.equal(JSON.stringify(migrated.balances), JSON.stringify(defaults.balances));
+  assert.equal(JSON.stringify(migrated.session), JSON.stringify(defaults.session));
+  assert.equal(JSON.stringify(migrated.wishes), JSON.stringify(defaults.wishes));
+  assert.equal(migrated.preferences.nearbyDeals, defaults.preferences.nearbyDeals);
+  assert.equal(migrated.ui.overlay, null);
+  assert.equal('unknownPreference' in migrated.preferences, false);
+  assert.equal('unknownRoot' in migrated, false);
+  assert.equal(Object.keys(storage.dump()).some((key) => key.includes('.corrupt.')), false);
+
+  const knownUpdate = api.migrateState({ profile: { name: 'Lan Nguyen', language: 'fr', unknownProfile: true } });
+  assert.equal(knownUpdate.profile.name, 'Lan Nguyen');
+  assert.equal(knownUpdate.profile.language, 'vi');
+  assert.equal('unknownProfile' in knownUpdate.profile, false);
+});
+
+test('uses nested profile language with the shared translation dictionary', () => {
+  const source = html();
+  assert.doesNotMatch(source, /\bstate\.language\b/);
+  assert.doesNotMatch(source, /state\.profile\.language\s*===\s*['"]vi['"]\s*\?/);
+  assert.match(source, /const COPY\s*=/);
+  assert.match(source, /function translate\(language, key, variables/);
+  assert.match(source, /function t\(key, variables/);
+
+  const { api } = testApi();
+  assert.equal(api.translate('vi', 'continueTip', { amount: 15 }), 'Tiếp tục với $15');
+  assert.equal(api.translate('en', 'continueTip', { amount: 15 }), 'Continue with $15');
+  assert.equal(api.translate('unknown', 'offerSaved'), 'Đã lưu ưu đãi');
+});
+
+test('initializes the browser with defined entry-point dependencies', () => {
+  const document = createDocumentStub();
+  assert.doesNotThrow(() => testApi({}, { skipInit: false, document }));
+  assert.deepEqual(document.listeners.map(({ type }) => type), ['click', 'input', 'keydown']);
+
+  const source = html();
+  for (const name of ['handleAction', 'handleInput', 'handleKeydown', 'renderApp']) {
+    assert.match(source, new RegExp(`function ${name}\\(`), `${name} must be defined`);
+  }
 });
 
 const here = dirname(fileURLToPath(import.meta.url));
