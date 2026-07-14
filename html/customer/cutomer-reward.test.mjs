@@ -705,6 +705,42 @@ function rewardPair(overrides = {}) {
   return { redemption, ledger };
 }
 
+function reloadPendingRewardClaims(redemptions, ledger) {
+  const { api } = testApi();
+  const persistedState = api.createDefaultState();
+  persistedState.redemptions = redemptions;
+  persistedState.ledger = ledger;
+  persistedState.ui.activeScreen = 'redeem';
+  persistedState.ui.activeModule = 'wallet';
+  persistedState.ui.currentRewardKey = 'credit5';
+  persistedState.ui.pendingContext.rewardAttempt = {
+    rewardKey: ' credit5 ', idempotencyKey: ' pending-raw-claim ', completed: false
+  };
+  const raw = JSON.stringify(persistedState);
+  const document = createDocumentStub({
+    screenNodes: [
+      createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] }),
+      createStubElement({ id: 'rewards', classNames: ['app-screen', 'hidden'] }),
+      createStubElement({ id: 'redeem', classNames: ['app-screen', 'hidden'] })
+    ]
+  });
+  let idCalls = 0;
+  const loaded = testApi({ [api.STORAGE_KEY]: raw }, {
+    skipInit: false,
+    document,
+    randomUUID: () => {
+      idCalls += 1;
+      throw new Error('invalid pending claim must not create an ID');
+    }
+  });
+  return {
+    ...loaded,
+    document,
+    pointsBefore: persistedState.balances['bitcoin-nail-bar'].points,
+    idCalls: () => idCalls
+  };
+}
+
 test('normalizes persisted reward identity before an idempotent retry', () => {
   const { api } = testApi();
   const { redemption, ledger } = rewardPair({
@@ -870,6 +906,58 @@ test('binds restored pending attempts to normalized valid persisted reward state
     assert.equal(loaded.context.confirmReward(false).code, 'no_pending_reward');
     assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", loaded.context), pointsBefore);
   });
+});
+
+test('retains malformed raw reward claims when rejecting a pending attempt', () => {
+  const variants = [
+    { name: 'non-string reward key', redemption: { rewardKey: 17 } },
+    { name: 'blank reward key', redemption: { rewardKey: '   ' } },
+    { name: 'missing reward key', redemption: { rewardKey: undefined } },
+    { name: 'missing required field', redemption: { sourceBusinessId: undefined } },
+    { name: 'wrong catalog metadata', redemption: { cost: 501 }, ledger: { pointsDelta: -501 } }
+  ];
+
+  variants.forEach((variant) => {
+    const pair = rewardPair({
+      redemption: { idempotencyKey: ' pending-raw-claim ', ...variant.redemption },
+      ledger: variant.ledger
+    });
+    const loaded = reloadPendingRewardClaims([pair.redemption], [pair.ledger]);
+
+    assert.equal(loaded.document.getElementById('rewards').classList.contains('hidden'), false, variant.name);
+    assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt', loaded.context), null, variant.name);
+    assert.equal(loaded.context.confirmReward(false).code, 'no_pending_reward', variant.name);
+    assert.equal(
+      vm.runInContext("state.balances['bitcoin-nail-bar'].points", loaded.context),
+      loaded.pointsBefore,
+      variant.name
+    );
+    assert.equal(loaded.idCalls(), 0, variant.name);
+  });
+});
+
+test('clears a pending attempt when duplicate raw claims share its logical key', () => {
+  const first = rewardPair({
+    redemption: { id: 'raw-duplicate-a', idempotencyKey: ' pending-raw-claim ' },
+    ledger: { id: 'raw-duplicate-ledger-a' }
+  });
+  const second = rewardPair({
+    redemption: { id: 'raw-duplicate-b', idempotencyKey: 'pending-raw-claim' },
+    ledger: { id: 'raw-duplicate-ledger-b' }
+  });
+  const loaded = reloadPendingRewardClaims(
+    [first.redemption, second.redemption],
+    [first.ledger, second.ledger]
+  );
+
+  assert.equal(loaded.document.getElementById('rewards').classList.contains('hidden'), false);
+  assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt', loaded.context), null);
+  assert.equal(loaded.context.confirmReward(false).code, 'no_pending_reward');
+  assert.equal(
+    vm.runInContext("state.balances['bitcoin-nail-bar'].points", loaded.context),
+    loaded.pointsBefore
+  );
+  assert.equal(loaded.idCalls(), 0);
 });
 
 test('keeps only one-to-one persisted redemption and redeem-ledger pairs', () => {

@@ -470,6 +470,15 @@
       };
     }
 
+    function collectRawRedemptionClaims(redemptions) {
+      if (!Array.isArray(redemptions)) return [];
+      return redemptions.flatMap((redemption) => {
+        if (!isRecord(redemption) || typeof redemption.idempotencyKey !== 'string') return [];
+        const idempotencyKey = redemption.idempotencyKey.trim();
+        return idempotencyKey ? [{ idempotencyKey, redemption }] : [];
+      });
+    }
+
     function normalizePersistedRedemptions(appState) {
       appState.redemptions = appState.redemptions
         .map(normalizePersistedRedemption)
@@ -538,7 +547,7 @@
       });
     }
 
-    function reconcilePendingRewardAttempt(appState, originalClaims) {
+    function reconcilePendingRewardAttempt(appState, rawClaims) {
       const attempt = appState.ui.pendingContext.rewardAttempt;
       if (!isRecord(attempt)) return;
       const reward = getRewardDefinition(attempt.rewardKey);
@@ -546,15 +555,17 @@
       const surviving = appState.redemptions.filter((redemption) => (
         redemption.idempotencyKey === attempt.idempotencyKey
       ));
-      const claimsMatchAttempt = originalClaims.every((redemption) => (
-        redemption.rewardKey === attempt.rewardKey
-        && isValidPersistedRedemption(appState, redemption)
-      ));
-      const validBinding = originalClaims.length === 0
+      const normalizedClaim = rawClaims.length === 1
+        ? normalizePersistedRedemption(rawClaims[0].redemption)
+        : null;
+      const validBinding = rawClaims.length === 0
         ? surviving.length === 0
-        : claimsMatchAttempt
+        : rawClaims.length === 1
+          && normalizedClaim
+          && normalizedClaim.rewardKey === attempt.rewardKey
+          && isValidPersistedRedemption(appState, normalizedClaim)
           && surviving.length === 1
-          && surviving[0].rewardKey === attempt.rewardKey;
+          && redemptionSortKey(surviving[0]) === redemptionSortKey(normalizedClaim);
       if (!reward
         || !businesses.ok
         || appState.ui.currentRewardKey !== attempt.rewardKey
@@ -630,6 +641,7 @@
     function migrateState(value) {
       const defaults = createDefaultState();
       if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
+      const rawRedemptionClaims = collectRawRedemptionClaims(value.redemptions);
       const migrated = mergeRecord(defaults, value);
       migrated.schemaVersion = SCHEMA_VERSION;
       migrated.updatedAt = new Date().toISOString();
@@ -645,16 +657,11 @@
       }
       normalizePersistedRedemptions(migrated);
       const pendingAttempt = migrated.ui.pendingContext.rewardAttempt;
-      const mergedPendingClaims = isRecord(pendingAttempt)
-        ? migrated.redemptions.filter((redemption) => redemption.idempotencyKey === pendingAttempt.idempotencyKey)
-        : [];
       const rawPendingClaims = isRecord(pendingAttempt) && Array.isArray(value.redemptions)
-        ? value.redemptions
-          .map(normalizePersistedRedemption)
-          .filter((redemption) => redemption?.idempotencyKey === pendingAttempt.idempotencyKey)
+        ? rawRedemptionClaims.filter((claim) => claim.idempotencyKey === pendingAttempt.idempotencyKey)
         : [];
       reconcileRewardPairs(migrated);
-      reconcilePendingRewardAttempt(migrated, [...mergedPendingClaims, ...rawPendingClaims]);
+      reconcilePendingRewardAttempt(migrated, rawPendingClaims);
       migrated.ui.pendingContext.consentScopes = migrated.ui.pendingContext.consentScopes.filter((scope) => CONSENT_SCOPES.includes(scope));
       delete migrated.pointBalance;
       delete migrated.savedOffers;
