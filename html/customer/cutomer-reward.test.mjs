@@ -58,3 +58,19 @@ test('defines shared visual components and completes five root screens', () => {
   }
   assert.doesNotMatch(source, /class="[^"]*\b(phone|notch|status)\b/);
 });
+
+const detailScreens = [
+  'login1', 'login2', 'onb1', 'onb2', 'onb3', 'onb4', 'allmenu', 'activity',
+  'history', 'rewards', 'redeem', 'redeemdone', 'tip', 'tipdone', 'pay', 'paydone',
+  'looks', 'addlook', 'review', 'book1', 'book2', 'book3', 'business', 'offers',
+  'referral', 'msgprefs'
+];
+
+test('completes every detail screen', () => {
+  const source = html();
+  for (const id of detailScreens) {
+    assert.match(source, new RegExp(`<section[^>]+id="${id}"[^>]+data-ready="true"`));
+    assert.match(source, new RegExp(`id="${id}-title"`));
+  }
+  assert.equal((source.match(/data-ready="true"/g) || []).length, 31);
+});
