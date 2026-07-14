@@ -3,6 +3,72 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
+
+function createMemoryStorage(seed = {}) {
+  const values = new Map(Object.entries(seed));
+  return {
+    getItem(key) { return values.has(key) ? values.get(key) : null; },
+    setItem(key, value) { values.set(key, String(value)); },
+    removeItem(key) { values.delete(key); },
+    clear() { values.clear(); },
+    key(index) { return [...values.keys()][index] ?? null; },
+    get length() { return values.size; },
+    dump() { return Object.fromEntries(values); }
+  };
+}
+
+function testApi(seed = {}) {
+  const source = html();
+  const script = source.match(/<script>\s*([\s\S]*?)<\/script>\s*<\/body>/)?.[1];
+  assert.ok(script, 'inline application script must exist');
+  const storage = createMemoryStorage(seed);
+  const window = {
+    localStorage: storage,
+    NEXORA_SKIP_INIT: true,
+    setTimeout() { return 1; },
+    clearTimeout() {},
+    lucide: null
+  };
+  const context = vm.createContext({
+    window,
+    localStorage: storage,
+    structuredClone,
+    Intl,
+    Date,
+    Math,
+    JSON,
+    URL,
+    crypto: { randomUUID: () => '00000000-0000-4000-8000-000000000001' },
+    console
+  });
+  vm.runInContext(script, context);
+  return { api: window.NEXORA_TEST_API, storage };
+}
+
+test('creates versioned Vietnamese demo state with per-business balances', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  assert.equal(state.schemaVersion, 1);
+  assert.equal(state.profile.language, 'vi');
+  assert.equal(state.balances['bitcoin-nail-bar'].points, 2450);
+  assert.equal(state.balances['golden-glow-spa'].points, 600);
+  assert.equal(state.balances['moon-coffee'].points, 120);
+  assert.equal('pointBalance' in state, false);
+});
+
+test('persists state and recovers corrupt JSON into a timestamped backup', () => {
+  const { api, storage } = testApi();
+  const state = api.createDefaultState();
+  state.profile.name = 'Lan Nguyen';
+  api.saveState(state, storage);
+  assert.equal(api.loadState(storage).profile.name, 'Lan Nguyen');
+
+  storage.setItem(api.STORAGE_KEY, '{broken');
+  const recovered = api.loadState(storage, () => 1720936800000);
+  assert.equal(recovered.profile.language, 'vi');
+  assert.equal(storage.getItem(`${api.STORAGE_KEY}.corrupt.1720936800000`), '{broken');
+});
 
 const here = dirname(fileURLToPath(import.meta.url));
 const target = join(here, 'cutomer-reward.html');
