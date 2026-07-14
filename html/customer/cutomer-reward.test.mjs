@@ -18,17 +18,34 @@ function createMemoryStorage(seed = {}) {
   };
 }
 
-function createDocumentStub() {
+function createStubElement({ dataset = {}, textContent = '', placeholder = '' } = {}) {
+  const attributes = {};
+  return {
+    dataset,
+    textContent,
+    placeholder,
+    attributes,
+    setAttribute(name, value) { attributes[name] = String(value); }
+  };
+}
+
+function createDocumentStub({ localizedNodes = [], placeholderNodes = [], languageControls = [] } = {}) {
   const listeners = [];
   const elements = new Map();
   return {
     listeners,
+    documentElement: { lang: 'vi' },
     addEventListener(type, handler) { listeners.push({ type, handler }); },
     getElementById(id) {
       if (!elements.has(id)) elements.set(id, { innerHTML: '' });
       return elements.get(id);
     },
-    querySelectorAll() { return []; }
+    querySelectorAll(selector) {
+      if (selector === '[data-en][data-vi]') return localizedNodes;
+      if (selector === '[data-en-ph][data-vi-ph]') return placeholderNodes;
+      if (selector === '[data-language]') return languageControls;
+      return [];
+    }
   };
 }
 
@@ -96,7 +113,7 @@ test('migrates valid JSON with malformed fields into the known state schema', ()
     session: 'invalid',
     wishes: {},
     preferences: { nearbyDeals: 'yes', unknownPreference: true },
-    ui: { overlay: { unknownOverlayKey: true } },
+    ui: { overlay: [] },
     unknownRoot: true
   }));
 
@@ -115,6 +132,61 @@ test('migrates valid JSON with malformed fields into the known state schema', ()
   assert.equal(knownUpdate.profile.name, 'Lan Nguyen');
   assert.equal(knownUpdate.profile.language, 'vi');
   assert.equal('unknownProfile' in knownUpdate.profile, false);
+});
+
+test('sanitizes collection elements and preserves valid nullable unions', () => {
+  const { api } = testApi();
+  const validLedger = {
+    id: 'led-valid', businessId: 'golden-glow-spa', type: 'visit', pointsDelta: 80,
+    refType: 'visit', refId: 'visit-2002', createdAt: '2026-07-15T10:00:00.000Z', futureField: 'kept'
+  };
+  const validVisit = {
+    id: 'visit-2002', businessId: 'golden-glow-spa', staffProfileId: 'staff-maria',
+    occurredAt: '2026-07-15T09:00:00.000Z', futureField: 'kept'
+  };
+  const validTip = {
+    id: 'tip-2002', businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna',
+    amount: 10, status: 'pending', createdAt: '2026-07-15T09:30:00.000Z', confirmedAt: null
+  };
+  const migrated = api.migrateState({
+    ledger: [{}, { ...validLedger, businessId: 42 }, validLedger],
+    visits: [null, validVisit],
+    tips: [{}, validTip],
+    wishes: [null, 'Pedicure deal', 42],
+    savedOfferIds: ['offer-glow', null],
+    welcomeClaims: ['7135550199', {}],
+    offlineQueue: ['checkin-1', false],
+    balances: {
+      'bitcoin-nail-bar': { expiringPoints: { amount: 50, date: '2026-09-01', unknown: true } },
+      'golden-glow-spa': { expiringPoints: { amount: '50', date: '2026-09-01' } },
+      'moon-coffee': { expiringPoints: null }
+    },
+    ui: { currentRewardKey: 'gel', overlay: { kind: 'notice' } }
+  });
+
+  assert.equal(migrated.ledger.length, 1);
+  assert.equal(migrated.ledger[0].businessId, 'golden-glow-spa');
+  assert.equal(migrated.ledger[0].futureField, 'kept');
+  assert.equal(migrated.visits.length, 1);
+  assert.equal(migrated.visits[0].futureField, 'kept');
+  assert.equal(migrated.tips.length, 1);
+  assert.equal(JSON.stringify(migrated.wishes), JSON.stringify(['Pedicure deal']));
+  assert.equal(JSON.stringify(migrated.savedOfferIds), JSON.stringify(['offer-glow']));
+  assert.equal(JSON.stringify(migrated.welcomeClaims), JSON.stringify(['7135550199']));
+  assert.equal(JSON.stringify(migrated.offlineQueue), JSON.stringify(['checkin-1']));
+  assert.equal(JSON.stringify(migrated.balances['bitcoin-nail-bar'].expiringPoints), JSON.stringify({ amount: 50, date: '2026-09-01' }));
+  assert.equal(migrated.balances['golden-glow-spa'].expiringPoints, null);
+  assert.equal(migrated.balances['moon-coffee'].expiringPoints, null);
+  assert.equal(migrated.ui.currentRewardKey, 'gel');
+  assert.equal(JSON.stringify(migrated.ui.overlay), JSON.stringify({ kind: 'notice' }));
+
+  const invalidUnions = api.migrateState({
+    balances: { 'bitcoin-nail-bar': { expiringPoints: { amount: Infinity, date: 7 } } },
+    ui: { currentRewardKey: 7, overlay: [] }
+  });
+  assert.equal(invalidUnions.balances['bitcoin-nail-bar'].expiringPoints, null);
+  assert.equal(invalidUnions.ui.currentRewardKey, null);
+  assert.equal(invalidUnions.ui.overlay, null);
 });
 
 test('uses nested profile language with the shared translation dictionary', () => {
@@ -140,6 +212,34 @@ test('initializes the browser with defined entry-point dependencies', () => {
   for (const name of ['handleAction', 'handleInput', 'handleKeydown', 'renderApp']) {
     assert.match(source, new RegExp(`function ${name}\\(`), `${name} must be defined`);
   }
+});
+
+test('applies persisted English during bootstrap without saving state again', () => {
+  const localized = createStubElement({ dataset: { vi: 'Xin chào', en: 'Hello' }, textContent: 'Xin chào' });
+  const placeholder = createStubElement({ dataset: { viPh: 'Tìm kiếm', enPh: 'Search' }, placeholder: 'Tìm kiếm' });
+  const viControl = createStubElement({ dataset: { language: 'vi' } });
+  const enControl = createStubElement({ dataset: { language: 'en' } });
+  const document = createDocumentStub({
+    localizedNodes: [localized],
+    placeholderNodes: [placeholder],
+    languageControls: [viControl, enControl]
+  });
+  const storageKey = 'nexora.customer.prototype.v1';
+  const persisted = JSON.stringify({ profile: { language: 'en' } });
+
+  const { storage } = testApi({ [storageKey]: persisted }, { skipInit: false, document });
+
+  assert.equal(document.documentElement.lang, 'en');
+  assert.equal(localized.textContent, 'Hello');
+  assert.equal(placeholder.placeholder, 'Search');
+  assert.equal(viControl.attributes['aria-pressed'], 'false');
+  assert.equal(enControl.attributes['aria-pressed'], 'true');
+  assert.equal(storage.getItem(storageKey), persisted);
+
+  const source = html();
+  const applyLanguage = source.match(/function applyLanguage\(language\)\s*\{([\s\S]*?)\n\s*\}\n\n\s*function setLanguage/)?.[1];
+  assert.ok(applyLanguage, 'applyLanguage must be defined before setLanguage');
+  assert.doesNotMatch(applyLanguage, /commitState|saveState/);
 });
 
 const here = dirname(fileURLToPath(import.meta.url));

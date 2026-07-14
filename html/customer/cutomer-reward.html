@@ -339,19 +339,78 @@
     }
 
     function isRecord(value) {
-      return value !== null && typeof value === 'object' && !Array.isArray(value);
+      return Object.prototype.toString.call(value) === '[object Object]';
     }
 
-    function mergeRecord(defaultValue, incomingValue) {
-      if (Array.isArray(defaultValue)) {
-        return Array.isArray(incomingValue) ? structuredClone(incomingValue) : structuredClone(defaultValue);
+    const OBJECT_COLLECTION_FIELDS = {
+      ledger: { id: 'string', businessId: 'string', type: 'string', pointsDelta: 'number', refType: 'string', refId: 'string', createdAt: 'string' },
+      consents: { id: 'string', scope: 'string', action: 'string', method: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
+      visits: { id: 'string', businessId: 'string', staffProfileId: 'string', occurredAt: 'string' },
+      checkins: { id: 'string', businessId: 'string', staffProfileId: 'nullableString', scannedAt: 'string', status: 'string' },
+      redemptions: { id: 'string', idempotencyKey: 'string', rewardKey: 'string', sourceBusinessId: 'string', acceptingBusinessId: 'string', cost: 'number', status: 'string', createdAt: 'string' },
+      tips: { id: 'string', businessId: 'string', staffProfileId: 'string', amount: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
+      directPayments: { id: 'string', businessId: 'string', amount: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
+      bookingRequests: { id: 'string', businessId: 'string', status: 'string', createdAt: 'string' },
+      appointments: { id: 'string', bookingId: 'string', businessId: 'string', status: 'string' },
+      looks: { id: 'string', businessId: 'string', visitId: 'nullableString', staffProfileId: 'nullableString', createdAt: 'string' },
+      feedback: { id: 'string', visitId: 'string', businessId: 'string', stars: 'number', createdAt: 'string' },
+      notifications: { id: 'string', type: 'string', target: 'string', createdAt: 'string' }
+    };
+
+    function isStringArrayPath(path) {
+      const key = path.join('.');
+      return ['profile.paymentMethods', 'welcomeClaims', 'savedOfferIds', 'wishes', 'followedTechIds', 'offlineQueue'].includes(key)
+        || (path.length === 3 && path[2] === 'methods' && ['businesses', 'staffProfiles'].includes(path[0]));
+    }
+
+    function matchesFieldType(value, type) {
+      if (type === 'string') return typeof value === 'string' && value.length > 0;
+      if (type === 'number') return typeof value === 'number' && Number.isFinite(value);
+      if (type === 'nullableString') return value === null || typeof value === 'string';
+      return false;
+    }
+
+    function isValidCollectionRecord(value, fields) {
+      return isRecord(value) && Object.entries(fields).every(([key, type]) => matchesFieldType(value[key], type));
+    }
+
+    function mergeArray(defaultValue, incomingValue, path) {
+      if (!Array.isArray(incomingValue)) return structuredClone(defaultValue);
+      if (isStringArrayPath(path)) {
+        return structuredClone(incomingValue.filter((item) => typeof item === 'string' && item.length > 0));
       }
+      const fields = path.length === 1 ? OBJECT_COLLECTION_FIELDS[path[0]] : null;
+      if (fields) return structuredClone(incomingValue.filter((item) => isValidCollectionRecord(item, fields)));
+      return structuredClone(defaultValue);
+    }
+
+    function mergeKnownUnion(defaultValue, incomingValue, path) {
+      if (path.length === 3 && path[0] === 'balances' && path[2] === 'expiringPoints') {
+        if (incomingValue === null) return { handled: true, value: null };
+        if (isRecord(incomingValue) && typeof incomingValue.amount === 'number' && Number.isFinite(incomingValue.amount) && typeof incomingValue.date === 'string') {
+          return { handled: true, value: { amount: incomingValue.amount, date: incomingValue.date } };
+        }
+        return { handled: true, value: structuredClone(defaultValue) };
+      }
+      if (path.join('.') === 'ui.currentRewardKey') {
+        return { handled: true, value: incomingValue === null || typeof incomingValue === 'string' ? incomingValue : structuredClone(defaultValue) };
+      }
+      if (path.join('.') === 'ui.overlay') {
+        return { handled: true, value: incomingValue === null || isRecord(incomingValue) ? structuredClone(incomingValue) : structuredClone(defaultValue) };
+      }
+      return { handled: false };
+    }
+
+    function mergeRecord(defaultValue, incomingValue, path = []) {
+      const union = mergeKnownUnion(defaultValue, incomingValue, path);
+      if (union.handled) return union.value;
+      if (Array.isArray(defaultValue)) return mergeArray(defaultValue, incomingValue, path);
       if (isRecord(defaultValue)) {
         if (!isRecord(incomingValue)) return structuredClone(defaultValue);
         const result = {};
         for (const [key, fallback] of Object.entries(defaultValue)) {
           result[key] = Object.prototype.hasOwnProperty.call(incomingValue, key)
-            ? mergeRecord(fallback, incomingValue[key])
+            ? mergeRecord(fallback, incomingValue[key], [...path, key])
             : structuredClone(fallback);
         }
         return result;
@@ -493,9 +552,8 @@
       if (options.focus !== false) document.getElementById('screen-region').focus({ preventScroll: true });
     }
 
-    function setLanguage(language) {
-      commitState((draft) => { draft.profile.language = language === 'en' ? 'en' : 'vi'; });
-      const activeLanguage = state.profile.language;
+    function applyLanguage(language) {
+      const activeLanguage = language === 'en' ? 'en' : 'vi';
       document.documentElement.lang = activeLanguage;
       document.querySelectorAll('[data-en][data-vi]').forEach((element) => {
         element.textContent = element.dataset[activeLanguage];
@@ -506,8 +564,14 @@
       document.querySelectorAll('[data-language]').forEach((control) => control.setAttribute('aria-pressed', String(control.dataset.language === activeLanguage)));
       renderNavigation();
       updateNavigation();
-      if (state.currentReward) openReward(state.currentReward, false);
+      const rewardKey = state.ui.currentRewardKey ?? state.currentReward;
+      if (rewardKey) openReward(rewardKey, false);
       if (window.lucide) window.lucide.createIcons();
+    }
+
+    function setLanguage(language) {
+      commitState((draft) => { draft.profile.language = language === 'en' ? 'en' : 'vi'; });
+      applyLanguage(state.profile.language);
     }
 
     function showToast(message, tone = 'success') {
@@ -745,9 +809,7 @@
     }
 
     function renderApp() {
-      renderNavigation();
-      updateNavigation();
-      if (window.lucide) window.lucide.createIcons();
+      applyLanguage(state.profile.language);
     }
 
     function initializeApp() {
