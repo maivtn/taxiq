@@ -251,7 +251,7 @@ test('sanitizes collection elements and preserves valid nullable unions', () => 
   assert.equal(JSON.stringify(migrated.wishes), JSON.stringify(['Pedicure deal']));
   assert.equal(JSON.stringify(migrated.savedOfferIds), JSON.stringify(['offer-glow']));
   assert.equal(JSON.stringify(migrated.welcomeClaims), JSON.stringify(['7135550199']));
-  assert.equal(JSON.stringify(migrated.offlineQueue), JSON.stringify(['checkin-1']));
+  assert.equal(JSON.stringify(migrated.offlineQueue), JSON.stringify([]));
   assert.equal(JSON.stringify(migrated.balances['bitcoin-nail-bar'].expiringPoints), JSON.stringify({ amount: 50, date: '2026-09-01' }));
   assert.equal(migrated.balances['golden-glow-spa'].expiringPoints, null);
   assert.equal(migrated.balances['moon-coffee'].expiringPoints, null);
@@ -516,10 +516,9 @@ test('requests a fresh OTP before routing an existing account to verification', 
 
 test('routes scanning through welcome claim and wires existing-account OTP before login2', () => {
   const source = html();
-  const scanBody = source.match(/function startScan\(\)\s*\{([\s\S]*?)\n\s*\}\n\n\s*function selectTip/)?.[1];
-  assert.ok(scanBody, 'startScan body must be available');
-  assert.match(scanBody, /navigateTo\('onb1'\)/);
-  assert.doesNotMatch(scanBody, /navigateTo\('onb2'\)/);
+  const scanAction = source.match(/registerAction\('start-scan',[\s\S]*?registerAction\('enter-code'/)?.[0];
+  assert.ok(scanAction, 'start-scan action must be available');
+  assert.match(scanAction, /submitCheckin/);
 
   const claimAction = source.match(/registerAction\('claim-welcome',[\s\S]*?registerAction\('accept-consent'/)?.[0];
   assert.ok(claimAction, 'claim welcome action must be registered');
@@ -1411,7 +1410,7 @@ test('binds restored pending attempts to normalized valid persisted reward state
   assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt.idempotencyKey', valid.context), 'restored-attempt');
   assert.equal(valid.storage.getItem(valid.api.STORAGE_KEY), validRaw);
   const balanceBefore = vm.runInContext("state.balances['bitcoin-nail-bar'].points", valid.context);
-  const retry = valid.context.confirmReward(false);
+  const retry = valid.api.confirmReward(false);
   assert.equal(retry.ok, true);
   assert.equal(retry.idempotent, true);
   assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", valid.context), balanceBefore);
@@ -1453,7 +1452,7 @@ test('binds restored pending attempts to normalized valid persisted reward state
 
     assert.equal(document.getElementById('rewards').classList.contains('hidden'), false);
     assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt', loaded.context), null);
-    assert.equal(loaded.context.confirmReward(false).code, 'no_pending_reward');
+    assert.equal(loaded.api.confirmReward(false).code, 'no_pending_reward');
     assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", loaded.context), pointsBefore);
   });
 });
@@ -1476,7 +1475,7 @@ test('retains malformed raw reward claims when rejecting a pending attempt', () 
 
     assert.equal(loaded.document.getElementById('rewards').classList.contains('hidden'), false, variant.name);
     assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt', loaded.context), null, variant.name);
-    assert.equal(loaded.context.confirmReward(false).code, 'no_pending_reward', variant.name);
+    assert.equal(loaded.api.confirmReward(false).code, 'no_pending_reward', variant.name);
     assert.equal(
       vm.runInContext("state.balances['bitcoin-nail-bar'].points", loaded.context),
       loaded.pointsBefore,
@@ -1502,7 +1501,7 @@ test('clears a pending attempt when duplicate raw claims share its logical key',
 
   assert.equal(loaded.document.getElementById('rewards').classList.contains('hidden'), false);
   assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt', loaded.context), null);
-  assert.equal(loaded.context.confirmReward(false).code, 'no_pending_reward');
+  assert.equal(loaded.api.confirmReward(false).code, 'no_pending_reward');
   assert.equal(
     vm.runInContext("state.balances['bitcoin-nail-bar'].points", loaded.context),
     loaded.pointsBefore
@@ -1666,13 +1665,13 @@ test('reuses one persisted idempotency key for repeated confirmation of the same
   assert.ok(attempt.idempotencyKey.length > 0);
   assert.equal(apiState(storage).ui.pendingContext.rewardAttempt.idempotencyKey, attempt.idempotencyKey);
 
-  const { context, storage: reloadedStorage } = testApi(storage.dump(), { document: createDocumentStub(), randomUUID });
+  const { context, api: contextApi, storage: reloadedStorage } = testApi(storage.dump(), { document: createDocumentStub(), randomUUID });
   assert.equal(
     vm.runInContext('state.ui.pendingContext.rewardAttempt.idempotencyKey', context),
     attempt.idempotencyKey
   );
-  const first = context.confirmReward(false);
-  const second = context.confirmReward(false);
+  const first = contextApi.confirmReward(false);
+  const second = contextApi.confirmReward(false);
   assert.equal(first.ok, true);
   assert.equal(second.redemption.id, first.redemption.id);
   assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", context), 1950);
@@ -2377,11 +2376,13 @@ test('completes every detail screen', () => {
 test('implements delegated interactions for the complete prototype', () => {
   const source = html();
   const functions = [
+    'createDefaultState', 'migrateState', 'loadState', 'saveState',
     'navigateTo', 'setLanguage', 'showToast', 'openOverlay', 'closeOverlay',
-    'startScan', 'selectTip', 'sendTip', 'confirmTip', 'sendPayment',
-    'confirmPayment', 'openReward', 'confirmReward', 'filterExplore',
-    'filterOffers', 'saveOffer', 'addWish', 'saveLook', 'setRating',
-    'submitReview', 'reviewBooking', 'confirmBooking'
+    'renderApp', 'requestOtp', 'verifyOtp', 'recordConsent',
+    'appendLedger', 'redeemReward', 'createTip', 'confirmTipRecord',
+    'createDirectPayment', 'confirmDirectPayment', 'createBookingRequest',
+    'confirmBookingRequest', 'submitFeedback', 'saveLookRecord',
+    'toggleSavedOffer', 'addWishRecord', 'toggleFollowTech', 'submitCheckin'
   ];
   for (const name of functions) {
     assert.match(source, new RegExp(`function ${name}\\(`), `${name} must be implemented`);
@@ -2816,4 +2817,98 @@ test('refreshes dynamic offer view and use labels after switching to English', (
   context.setLanguage('en');
   assert.equal(viewControl.textContent, 'View');
   assert.equal(useControl.textContent, 'Use offer');
+});
+
+test('maps every declared data-action to a registered handler', () => {
+  const source = html();
+  const declared = new Set([...source.matchAll(/data-action="([^"]+)"/g)].map((match) => match[1]));
+  const registered = new Set([...source.matchAll(/registerAction\('([^']+)'/g)].map((match) => match[1]));
+  const missing = [...declared].filter((name) => !registered.has(name));
+  assert.deepEqual(missing, []);
+});
+
+test('keeps all screen and back targets valid', () => {
+  const source = html();
+  const ids = new Set([...source.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
+  for (const [, target] of source.matchAll(/data-(?:target|back-target)="([^"]+)"/g)) {
+    assert.ok(ids.has(target), `missing target #${target}`);
+  }
+});
+
+test('contains persistence, transaction and customer marketplace contracts', () => {
+  const source = html();
+  for (const token of ['nexora.customer.prototype.v1', 'confirmTipRecord', 'confirmDirectPayment', 'confirmBookingRequest', 'submitFeedback', 'toggleFollowTech']) assert.match(source, new RegExp(token));
+  assert.doesNotMatch(source, /followerCount|followerList|Interview Invite|Find Work/);
+  assert.doesNotMatch(source, /const state = \{\s*activeScreen/);
+  assert.doesNotMatch(source, /state\.(?:language|activeScreen|activeModule|pointBalance|savedOffers|booking|rating)\b/);
+});
+
+test('removes obsolete pre-localStorage action functions', () => {
+  const source = html();
+  for (const name of ['startScan', 'selectTip', 'sendTip', 'confirmTip', 'sendPayment', 'confirmPayment', 'confirmReward', 'saveOffer', 'addWish', 'saveLook', 'submitReview', 'reviewBooking', 'confirmBooking']) {
+    assert.doesNotMatch(source, new RegExp(`function ${name}\\(`));
+  }
+});
+
+test('keeps platform stubs responsive instead of silently succeeding', () => {
+  const source = html();
+  for (const action of ['start-scan', 'enter-code', 'scan-receipt', 'show-directions', 'open-google-review', 'payment-methods', 'privacy-details']) {
+    assert.match(source, new RegExp(`registerAction\\('${action}'`));
+  }
+  assert.match(source, /catch\s*\{/);
+});
+
+test('queues offline QR check-in and awards points after retry with scan timestamp', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const before = app.balances['bitcoin-nail-bar'].points;
+  const queued = api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', false, 1000);
+  assert.equal(queued.checkin.status, 'queued');
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
+  api.retryQueuedCheckins(app, true, 5000);
+  assert.equal(queued.checkin.status, 'confirmed');
+  assert.equal(queued.checkin.scannedAt, new Date(1000).toISOString());
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 120);
+  assert.equal(api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', true, 6000).code, 'duplicate_checkin');
+});
+
+test('strictly validates Nexora QR origin, route and staff ownership', () => {
+  const { api } = testApi();
+  assert.equal(api.parseNexoraQr('https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna').ok, true);
+  for (const payload of [
+    'http://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna',
+    'https://evil.example/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna',
+    'https://nexoratouch.com/touch/unknown/front?staffProfileId=staff-anna',
+    'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-missing',
+    'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=',
+    'https://nexoratouch.com/touch/bitcoin-nail-bar/front?x=1'
+  ]) assert.equal(api.parseNexoraQr(payload).code, 'invalid_qr', payload);
+});
+
+test('does not partially mutate online check-in when ledger ID generation fails', () => {
+  let calls = 0;
+  const { api } = testApi({}, { randomUUID: () => {
+    calls += 1;
+    if (calls === 2) throw new Error('ledger id unavailable');
+    return '00000000-0000-4000-8000-000000000002';
+  } });
+  const app = api.createDefaultState();
+  const before = JSON.stringify(app);
+  assert.equal(api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', true, 1000).code, 'id_generation_failed');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('quarantines tampered persisted check-in claims and queue references', () => {
+  const { api } = testApi();
+  const id = 'checkin-00000000-0000-4000-8000-000000000003';
+  const scannedAt = '1970-01-01T00:00:01.000Z';
+  const payload = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+  const migrated = api.migrateState({
+    checkins: [{ id, businessId: 'bitcoin-nail-bar', station: 'front', staffProfileId: 'staff-anna', sourceQr: payload, scannedAt, status: 'queued', confirmedAt: null }],
+    offlineQueue: [id, 'missing'],
+    ledger: [{ id: 'raw-checkin-claim', businessId: 'bitcoin-nail-bar', type: 'visit', pointsDelta: 120, refType: 'checkin', refId: id, createdAt: scannedAt }]
+  });
+  assert.equal(JSON.stringify(migrated.checkins), '[]');
+  assert.equal(JSON.stringify(migrated.offlineQueue), '[]');
+  assert.equal(migrated.ledger.some((entry) => entry.refId === id), false);
 });
