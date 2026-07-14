@@ -74,3 +74,20 @@ test('completes every detail screen', () => {
   }
   assert.equal((source.match(/data-ready="true"/g) || []).length, 31);
 });
+
+test('implements delegated interactions for the complete prototype', () => {
+  const source = html();
+  const functions = [
+    'navigateTo', 'setLanguage', 'showToast', 'openOverlay', 'closeOverlay',
+    'startScan', 'selectTip', 'sendTip', 'confirmTip', 'sendPayment',
+    'confirmPayment', 'openReward', 'confirmReward', 'filterExplore',
+    'filterOffers', 'saveOffer', 'addWish', 'saveLook', 'setRating',
+    'submitReview', 'reviewBooking', 'confirmBooking'
+  ];
+  for (const name of functions) {
+    assert.match(source, new RegExp(`function ${name}\\(`), `${name} must be implemented`);
+  }
+  assert.match(source, /function handleAction\(event\)/);
+  assert.match(source, /document\.addEventListener\('click', handleAction\)/);
+  assert.doesNotMatch(source, /\sonclick=/i);
+});

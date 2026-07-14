@@ -228,10 +228,17 @@
       </main>
     </div>
 
+    <div id="toast-region" class="pointer-events-none fixed inset-x-4 bottom-24 z-[70] flex justify-center lg:bottom-8 lg:left-auto lg:right-8" aria-live="polite" aria-atomic="true"></div>
+    <div id="app-overlay" class="fixed inset-0 z-[80] hidden items-end justify-center bg-black/70 p-4 backdrop-blur-sm sm:items-center" data-overlay aria-hidden="true"><div class="app-card w-full max-w-md" role="dialog" aria-modal="true" aria-labelledby="overlay-title"><div class="flex items-start justify-between gap-4"><div><p class="eyebrow" data-en="NEXORA notice" data-vi="Thông báo NEXORA">Thông báo NEXORA</p><h2 id="overlay-title" class="mt-1 text-xl font-black" data-en="Please confirm" data-vi="Vui lòng xác nhận">Vui lòng xác nhận</h2></div><button type="button" class="icon-button" data-action="close-overlay" aria-label="Đóng"><i data-lucide="x" class="size-5" aria-hidden="true"></i></button></div><p id="overlay-message" class="mt-4 text-sm leading-6 text-app-muted"></p><button id="overlay-confirm" type="button" class="app-button mt-5 w-full" data-action="close-overlay" data-en="Got it" data-vi="Đã hiểu">Đã hiểu</button></div></div>
     <nav id="mobile-nav" class="fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-app-line bg-app-panel/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden" aria-label="Điều hướng chính" data-nav-surface="mobile"></nav>
   </div>
   <script>
-    const state = { activeScreen: 'home', activeModule: 'home' };
+    const state = {
+      activeScreen: 'home', activeModule: 'home', language: 'vi', selectedTip: 10,
+      paymentMethod: 'Zelle', rating: 0, currentReward: null, pointBalance: 2450,
+      exploreFilter: 'all', offerFilter: 'all', savedOffers: new Set(), wishes: [], looks: [],
+      booking: { service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM' }
+    };
     const SCREEN_MODULE = {
       home:'home', allmenu:'home', activity:'home', tip:'home', tipdone:'home', pay:'home', paydone:'home', looks:'home', addlook:'home', review:'home', offers:'home', book1:'home', book2:'home', book3:'home', login1:'home', login2:'home',
       wallet:'wallet', history:'wallet', rewards:'wallet', redeem:'wallet', redeemdone:'wallet',
@@ -247,10 +254,18 @@
       { id:'explore', icon:'map-pin', en:'Explore', vi:'Khám phá' },
       { id:'profile', icon:'user-round', en:'Profile', vi:'Cá nhân' }
     ];
+    const REWARDS = {
+      gel: { title: { en:'Gel polish upgrade', vi:'Nâng cấp sơn gel' }, business:'Bitcoin Nail Bar', cost:800 },
+      credit: { title: { en:'$10 service credit', vi:'Giảm $10 dịch vụ' }, business:'Golden Glow Spa', cost:1200 }
+    };
+
+    function formatPoints(value) {
+      return `${new Intl.NumberFormat(state.language === 'vi' ? 'vi-VN' : 'en-US').format(value)} ${state.language === 'vi' ? 'điểm' : 'points'}`;
+    }
 
     function renderNavigation() {
-      document.getElementById('desktop-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="nav-item w-full" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item.vi}</span></button>`).join('');
-      document.getElementById('mobile-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="mobile-nav-item" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item.vi}</span></button>`).join('');
+      document.getElementById('desktop-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="nav-item w-full" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item[state.language]}</span></button>`).join('');
+      document.getElementById('mobile-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="mobile-nav-item" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item[state.language]}</span></button>`).join('');
     }
 
     function updateNavigation() {
@@ -275,10 +290,243 @@
       if (options.focus !== false) document.getElementById('screen-region').focus({ preventScroll: true });
     }
 
-    document.addEventListener('click', (event) => {
+    function setLanguage(language) {
+      state.language = language === 'en' ? 'en' : 'vi';
+      document.documentElement.lang = state.language;
+      document.querySelectorAll('[data-en][data-vi]').forEach((element) => {
+        element.textContent = element.dataset[state.language];
+      });
+      document.querySelectorAll('[data-en-ph][data-vi-ph]').forEach((element) => {
+        element.placeholder = element.dataset[`${state.language}Ph`];
+      });
+      document.querySelectorAll('[data-language]').forEach((control) => control.setAttribute('aria-pressed', String(control.dataset.language === state.language)));
+      renderNavigation();
+      updateNavigation();
+      if (state.currentReward) openReward(state.currentReward, false);
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function showToast(message, tone = 'success') {
+      const region = document.getElementById('toast-region');
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto flex max-w-sm items-center gap-3 rounded-2xl border border-app-line bg-app-card px-4 py-3 text-sm font-bold shadow-2xl ${tone === 'error' ? 'text-app-red' : 'text-app-text'}`;
+      const icon = document.createElement('i');
+      icon.setAttribute('data-lucide', tone === 'error' ? 'circle-alert' : 'circle-check');
+      icon.className = `size-5 shrink-0 ${tone === 'error' ? 'text-app-red' : 'text-app-green'}`;
+      const copy = document.createElement('span');
+      copy.textContent = message;
+      toast.append(icon, copy);
+      region.replaceChildren(toast);
+      if (window.lucide) window.lucide.createIcons();
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.remove(), 3200);
+    }
+
+    function openOverlay(title, message) {
+      const overlay = document.getElementById('app-overlay');
+      document.getElementById('overlay-title').textContent = title;
+      document.getElementById('overlay-message').textContent = message;
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('overflow-hidden');
+      overlay.querySelector('button').focus();
+    }
+
+    function closeOverlay() {
+      const overlay = document.getElementById('app-overlay');
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    function startScan() {
+      const line = document.getElementById('scan-line');
+      line.classList.remove('hidden');
+      showToast(state.language === 'vi' ? 'Đã nhận diện mã NEXORA' : 'NEXORA code detected');
+      window.setTimeout(() => { line.classList.add('hidden'); navigateTo('onb2'); }, 900);
+    }
+
+    function selectTip(amount, control) {
+      state.selectedTip = Number(amount) || 10;
+      document.querySelectorAll('[data-action="select-tip"]').forEach((button) => button.setAttribute('aria-pressed', String(button === control)));
+      const copy = document.querySelector('[data-action="send-tip"] span');
+      copy.textContent = state.language === 'vi' ? `Tiếp tục với $${state.selectedTip}` : `Continue with $${state.selectedTip}`;
+    }
+
+    function sendTip() {
+      document.getElementById('tipdone-amount').textContent = `$${state.selectedTip.toFixed(2)}`;
+      document.getElementById('tip-pending').classList.remove('hidden');
+      document.getElementById('tip-confirmed').classList.add('hidden');
+      navigateTo('tipdone');
+    }
+
+    function confirmTip() {
+      document.getElementById('tip-pending').classList.add('hidden');
+      document.getElementById('tip-confirmed').classList.remove('hidden');
+    }
+
+    function sendPayment() {
+      const amount = Math.max(1, Number(document.getElementById('payment-amount').value) || 0);
+      document.getElementById('paydone-title').textContent = state.language === 'vi' ? `Đã gửi $${amount.toFixed(2)} cho tiệm` : `$${amount.toFixed(2)} sent to the salon`;
+      document.getElementById('payment-pending').classList.remove('hidden');
+      document.getElementById('payment-confirmed').classList.add('hidden');
+      navigateTo('paydone');
+    }
+
+    function confirmPayment() {
+      document.getElementById('payment-pending').classList.add('hidden');
+      document.getElementById('payment-confirmed').classList.remove('hidden');
+    }
+
+    function openReward(key, navigate = true) {
+      const reward = REWARDS[key] || REWARDS.gel;
+      state.currentReward = key in REWARDS ? key : 'gel';
+      document.getElementById('reward-title').textContent = reward.title[state.language];
+      document.getElementById('reward-business').textContent = reward.business;
+      document.getElementById('reward-cost').textContent = formatPoints(reward.cost);
+      document.getElementById('reward-balance').textContent = formatPoints(state.pointBalance);
+      document.getElementById('reward-after').textContent = formatPoints(state.pointBalance - reward.cost);
+      if (navigate) navigateTo('redeem');
+    }
+
+    function confirmReward() {
+      const reward = REWARDS[state.currentReward] || REWARDS.gel;
+      if (reward.cost > state.pointBalance) return showToast(state.language === 'vi' ? 'Bạn chưa đủ điểm' : 'Not enough points', 'error');
+      state.pointBalance -= reward.cost;
+      document.getElementById('reward-done-title').textContent = reward.title[state.language];
+      document.getElementById('reward-done-cost').textContent = formatPoints(reward.cost);
+      navigateTo('redeemdone');
+    }
+
+    function filterExplore(query = '') {
+      const term = query.trim().toLowerCase();
+      document.querySelectorAll('[data-business-card]').forEach((card) => {
+        const categoryMatch = state.exploreFilter === 'all' || card.dataset.category.split(' ').includes(state.exploreFilter);
+        card.classList.toggle('hidden', !(categoryMatch && card.dataset.search.includes(term)));
+      });
+    }
+
+    function filterOffers(query = '') {
+      const term = query.trim().toLowerCase();
+      document.querySelectorAll('[data-offer-card]').forEach((card) => {
+        const categoryMatch = state.offerFilter === 'all' || card.dataset.category === state.offerFilter;
+        card.classList.toggle('hidden', !(categoryMatch && card.dataset.search.includes(term)));
+      });
+    }
+
+    function saveOffer(control) {
+      const card = control.closest('[data-offer-card]');
+      const key = card.dataset.search;
+      state.savedOffers.add(key);
+      control.disabled = true;
+      const label = control.querySelector('span');
+      label.textContent = state.language === 'vi' ? 'Đã lưu' : 'Saved';
+      showToast(state.language === 'vi' ? 'Đã lưu ưu đãi' : 'Offer saved');
+    }
+
+    function addWish() {
+      const input = document.getElementById('wish-input');
+      const value = input.value.trim();
+      if (!value) return showToast(state.language === 'vi' ? 'Hãy nhập mong muốn' : 'Enter a wish first', 'error');
+      state.wishes.push(value);
+      const item = document.createElement('li');
+      item.className = 'rounded-xl bg-app-panel p-3';
+      item.textContent = value;
+      document.getElementById('wish-list').append(item);
+      input.value = '';
+      showToast(state.language === 'vi' ? 'Đã gửi mong muốn ẩn danh' : 'Anonymous wish shared');
+    }
+
+    function saveLook() {
+      const service = document.getElementById('look-service').value.trim();
+      const color = document.getElementById('look-color').value.trim();
+      if (!service) return showToast(state.language === 'vi' ? 'Hãy nhập tên dịch vụ' : 'Enter a service name', 'error');
+      state.looks.push({ service, color });
+      const card = document.createElement('article');
+      card.className = 'app-card flex aspect-square flex-col justify-end bg-gradient-to-br from-app-purple/30 to-app-cyan/10';
+      const title = document.createElement('strong');
+      title.className = 'text-sm';
+      title.textContent = color || service;
+      const detail = document.createElement('span');
+      detail.className = 'mt-1 text-xs text-app-muted';
+      detail.textContent = service;
+      card.append(title, detail);
+      document.getElementById('looks-grid').prepend(card);
+      navigateTo('looks');
+      showToast(state.language === 'vi' ? 'Đã lưu kiểu mới' : 'New look saved');
+    }
+
+    function setRating(rating) {
+      state.rating = Number(rating);
+      document.querySelectorAll('[data-action="set-rating"]').forEach((button) => {
+        const active = Number(button.dataset.rating) <= state.rating;
+        button.setAttribute('aria-pressed', String(active));
+        button.querySelector('svg, i')?.classList.toggle('fill-current', active);
+      });
+    }
+
+    function submitReview() {
+      if (!state.rating) return showToast(state.language === 'vi' ? 'Hãy chọn số sao' : 'Choose a rating', 'error');
+      document.getElementById('review-notes').value = '';
+      navigateTo('home');
+      showToast(state.language === 'vi' ? 'Cảm ơn phản hồi của bạn' : 'Thanks for your feedback');
+    }
+
+    function reviewBooking() {
+      document.getElementById('booking-service-summary').textContent = state.booking.service;
+      document.getElementById('booking-staff-summary').textContent = state.booking.staff;
+      document.getElementById('booking-time-summary').textContent = `${state.booking.day} · ${state.booking.time}`;
+      navigateTo('book2');
+    }
+
+    function confirmBooking() {
+      document.getElementById('booking-pending').classList.remove('hidden');
+      document.getElementById('booking-confirmed').classList.add('hidden');
+      navigateTo('book3');
+    }
+
+    function selectExclusive(control, selector, stateKey, value) {
+      document.querySelectorAll(selector).forEach((button) => button.setAttribute('aria-pressed', String(button === control)));
+      if (stateKey) state.booking[stateKey] = value;
+    }
+
+    function handleAction(event) {
       const nav = event.target.closest('[data-nav-target]');
-      if (nav) navigateTo(nav.dataset.navTarget);
-    });
+      if (nav) return navigateTo(nav.dataset.navTarget);
+      const explore = event.target.closest('[data-explore-filter]');
+      if (explore) { state.exploreFilter = explore.dataset.exploreFilter; selectExclusive(explore, '[data-explore-filter]'); return filterExplore(document.getElementById('explore-search').value); }
+      const offerFilter = event.target.closest('[data-offer-filter]');
+      if (offerFilter) { state.offerFilter = offerFilter.dataset.offerFilter; selectExclusive(offerFilter, '[data-offer-filter]'); return filterOffers(document.getElementById('offer-search').value); }
+      const payment = event.target.closest('[data-payment-method]');
+      if (payment) { state.paymentMethod = payment.dataset.paymentMethod; selectExclusive(payment, '[data-payment-method]'); const label = document.querySelector('[data-action="send-payment"] span'); label.textContent = state.language === 'vi' ? `Mở ${state.paymentMethod} để thanh toán` : `Open ${state.paymentMethod} to pay`; return; }
+      for (const key of ['service', 'staff', 'day', 'time']) { const control = event.target.closest(`[data-book-${key}]`); if (control) return selectExclusive(control, `[data-book-${key}]`, key, control.dataset[`book${key[0].toUpperCase()}${key.slice(1)}`]); }
+      const control = event.target.closest('[data-action]');
+      if (!control) return;
+      const actions = {
+        navigate: () => navigateTo(control.dataset.target), back: () => navigateTo(control.dataset.backTarget), language: () => setLanguage(control.dataset.language),
+        'close-overlay': closeOverlay, 'start-scan': startScan, 'select-tip': () => selectTip(control.dataset.amount, control), 'send-tip': sendTip,
+        'confirm-tip': confirmTip, 'send-payment': sendPayment, 'confirm-payment': confirmPayment, 'open-reward': () => openReward(control.dataset.rewardKey),
+        'confirm-reward': confirmReward, 'save-offer': () => saveOffer(control), 'add-wish': addWish, 'save-look': saveLook,
+        'set-rating': () => setRating(control.dataset.rating), 'submit-review': submitReview, 'review-booking': reviewBooking, 'confirm-booking': confirmBooking,
+        'upload-look': () => openOverlay(state.language === 'vi' ? 'Thêm ảnh' : 'Add a photo', state.language === 'vi' ? 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.' : 'The production app will open your device photo picker.'),
+        'resend-code': () => showToast(state.language === 'vi' ? 'Đã gửi lại mã xác thực' : 'Verification code resent'),
+        'show-directions': () => showToast(state.language === 'vi' ? 'Đang mở ứng dụng bản đồ' : 'Opening maps'),
+        'copy-referral': () => { navigator.clipboard?.writeText('https://nexora.example/invite/JESSICA50'); showToast(state.language === 'vi' ? 'Đã sao chép liên kết' : 'Invite link copied'); },
+        'save-preferences': () => showToast(state.language === 'vi' ? 'Đã lưu tùy chọn' : 'Preferences saved')
+      };
+      actions[control.dataset.action]?.();
+    }
+
+    function handleInput(event) {
+      if (event.target.id === 'explore-search') filterExplore(event.target.value);
+      if (event.target.id === 'offer-search') filterOffers(event.target.value);
+    }
+
+    document.addEventListener('click', handleAction);
+    document.addEventListener('input', handleInput);
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeOverlay(); });
 
     renderNavigation();
     updateNavigation();
