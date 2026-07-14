@@ -9349,7 +9349,14 @@
       var tbody = document.querySelector('[data-call-tbody]');
       if (!tbody) return;
 
-      var rows = CALLS.filter(function(c) { return callFilter === 'all' || c.status === callFilter; });
+      var q = (callSearch || '').toLowerCase();
+      var qDigits = q.replace(/\D/g, '');
+      var rows = CALLS.filter(function(c) {
+        var statusOk = callFilter === 'all' || c.status === callFilter;
+        var searchOk = !q || c.name.toLowerCase().indexOf(q) !== -1 ||
+          (qDigits && c.phone.replace(/\D/g, '').indexOf(qDigits) !== -1);
+        return statusOk && searchOk;
+      });
 
       var countEl = document.querySelector('[data-call-count]');
       if (countEl) countEl.textContent = rows.length + '/' + CALLS.length + ' calls';
@@ -9385,6 +9392,14 @@
       custSearchInput.addEventListener('input', function() {
         custFilter.search = custSearchInput.value;
         renderCustomers();
+      });
+    }
+
+    var callSearchInput = document.querySelector('[data-call-search]');
+    if (callSearchInput) {
+      callSearchInput.addEventListener('input', function() {
+        callSearch = callSearchInput.value;
+        renderCalls();
       });
     }
 
