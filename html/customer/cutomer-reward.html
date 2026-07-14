@@ -263,6 +263,19 @@
     const BUSINESS_ID = 'bitcoin-nail-bar';
     const BUSINESS_CONSENT_SCOPE = `business:${BUSINESS_ID}`;
     const CONSENT_SCOPES = [BUSINESS_CONSENT_SCOPE, 'networkOffers'];
+    const REWARDS = {
+      credit5: { key: 'credit5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'service_credit', cost: 500, title: { vi: 'Tín dụng dịch vụ $5', en: '$5 service credit' } },
+      freepedi: { key: 'freepedi', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 1000, title: { vi: 'Pedicure cơ bản miễn phí', en: 'Free classic pedicure' } },
+      voucher25: { key: 'voucher25', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'percent_code', cost: 800, title: { vi: 'Giảm 25% dịch vụ', en: '25% off any service' } },
+      glow: { key: 'glow', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'service_credit', cost: 800, title: { vi: 'Tín dụng $10 tại Golden Glow', en: '$10 Golden Glow credit' } },
+      moon: { key: 'moon', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'moon-coffee', type: 'free_service', cost: 600, title: { vi: 'Đồ uống miễn phí', en: 'Free drink' } },
+      bistro: { key: 'bistro', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'percent_code', cost: 450, title: { vi: 'Giảm 10% dịch vụ', en: '10% off service' } },
+      gel: { key: 'gel', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 2500, title: { vi: 'Nâng cấp sơn gel', en: 'Gel polish upgrade' } }
+    };
+
+    function getRewardDefinition(key) {
+      return Object.prototype.hasOwnProperty.call(REWARDS, key) ? REWARDS[key] : null;
+    }
 
     function createDefaultState() {
       return {
@@ -442,11 +455,43 @@
       ]);
     }
 
+    function normalizePersistedRedemption(redemption) {
+      if (!isRecord(redemption)
+        || typeof redemption.idempotencyKey !== 'string'
+        || typeof redemption.rewardKey !== 'string') return null;
+      const idempotencyKey = redemption.idempotencyKey.trim();
+      const rewardKey = redemption.rewardKey.trim();
+      if (!idempotencyKey || !rewardKey) return null;
+      return {
+        ...redemption,
+        idempotencyKey,
+        rewardKey,
+        qrPayload: `NEXORA:${rewardKey}:${idempotencyKey}`
+      };
+    }
+
+    function normalizePersistedRedemptions(appState) {
+      appState.redemptions = appState.redemptions
+        .map(normalizePersistedRedemption)
+        .filter(Boolean);
+    }
+
+    function hasCurrentRewardMetadata(redemption) {
+      const reward = getRewardDefinition(redemption.rewardKey);
+      return Boolean(reward)
+        && redemption.rewardKey === reward.key
+        && redemption.sourceBusinessId === reward.sourceBusinessId
+        && redemption.acceptingBusinessId === reward.acceptingBusinessId
+        && redemption.cost === reward.cost
+        && redemption.qrPayload === `NEXORA:${reward.key}:${redemption.idempotencyKey}`;
+    }
+
     function isValidPersistedRedemption(appState, redemption) {
-      return Number.isFinite(redemption.cost)
-        && redemption.cost > 0
-        && redemption.idempotencyKey.trim().length > 0
-        && redemption.rewardKey.trim().length > 0
+      return redemption.idempotencyKey === redemption.idempotencyKey.trim()
+        && redemption.idempotencyKey.length > 0
+        && redemption.rewardKey === redemption.rewardKey.trim()
+        && redemption.rewardKey.length > 0
+        && hasCurrentRewardMetadata(redemption)
         && validateRewardBusinesses(appState, redemption).ok;
     }
 
@@ -493,6 +538,32 @@
       });
     }
 
+    function reconcilePendingRewardAttempt(appState, originalClaims) {
+      const attempt = appState.ui.pendingContext.rewardAttempt;
+      if (!isRecord(attempt)) return;
+      const reward = getRewardDefinition(attempt.rewardKey);
+      const businesses = reward ? validateRewardBusinesses(appState, reward) : { ok: false };
+      const surviving = appState.redemptions.filter((redemption) => (
+        redemption.idempotencyKey === attempt.idempotencyKey
+      ));
+      const claimsMatchAttempt = originalClaims.every((redemption) => (
+        redemption.rewardKey === attempt.rewardKey
+        && isValidPersistedRedemption(appState, redemption)
+      ));
+      const validBinding = originalClaims.length === 0
+        ? surviving.length === 0
+        : claimsMatchAttempt
+          && surviving.length === 1
+          && surviving[0].rewardKey === attempt.rewardKey;
+      if (!reward
+        || !businesses.ok
+        || appState.ui.currentRewardKey !== attempt.rewardKey
+        || !validBinding) {
+        appState.ui.currentRewardKey = null;
+        appState.ui.pendingContext.rewardAttempt = null;
+      }
+    }
+
     function mergeKnownUnion(defaultValue, incomingValue, path) {
       if (path.join('.') === 'session.otpRequestedAt') {
         const valid = incomingValue === null || (typeof incomingValue === 'number' && Number.isFinite(incomingValue));
@@ -506,7 +577,12 @@
         return { handled: true, value: structuredClone(defaultValue) };
       }
       if (path.join('.') === 'ui.currentRewardKey') {
-        return { handled: true, value: incomingValue === null || typeof incomingValue === 'string' ? incomingValue : structuredClone(defaultValue) };
+        if (incomingValue === null) return { handled: true, value: null };
+        if (typeof incomingValue === 'string') {
+          const normalized = incomingValue.trim();
+          return { handled: true, value: normalized || null };
+        }
+        return { handled: true, value: structuredClone(defaultValue) };
       }
       if (path.join('.') === 'ui.pendingContext.rewardAttempt') {
         const valid = isRecord(incomingValue)
@@ -567,7 +643,18 @@
       if (!Object.prototype.hasOwnProperty.call(migrated.businesses, migrated.ui.selectedBusinessId)) {
         migrated.ui.selectedBusinessId = BUSINESS_ID;
       }
+      normalizePersistedRedemptions(migrated);
+      const pendingAttempt = migrated.ui.pendingContext.rewardAttempt;
+      const mergedPendingClaims = isRecord(pendingAttempt)
+        ? migrated.redemptions.filter((redemption) => redemption.idempotencyKey === pendingAttempt.idempotencyKey)
+        : [];
+      const rawPendingClaims = isRecord(pendingAttempt) && Array.isArray(value.redemptions)
+        ? value.redemptions
+          .map(normalizePersistedRedemption)
+          .filter((redemption) => redemption?.idempotencyKey === pendingAttempt.idempotencyKey)
+        : [];
       reconcileRewardPairs(migrated);
+      reconcilePendingRewardAttempt(migrated, [...mergedPendingClaims, ...rawPendingClaims]);
       migrated.ui.pendingContext.consentScopes = migrated.ui.pendingContext.consentScopes.filter((scope) => CONSENT_SCOPES.includes(scope));
       delete migrated.pointBalance;
       delete migrated.savedOffers;
@@ -816,20 +903,6 @@
       { id:'explore', icon:'map-pin', en:'Explore', vi:'Khám phá' },
       { id:'profile', icon:'user-round', en:'Profile', vi:'Cá nhân' }
     ];
-    const REWARDS = {
-      credit5: { key: 'credit5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'service_credit', cost: 500, title: { vi: 'Tín dụng dịch vụ $5', en: '$5 service credit' } },
-      freepedi: { key: 'freepedi', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 1000, title: { vi: 'Pedicure cơ bản miễn phí', en: 'Free classic pedicure' } },
-      voucher25: { key: 'voucher25', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'percent_code', cost: 800, title: { vi: 'Giảm 25% dịch vụ', en: '25% off any service' } },
-      glow: { key: 'glow', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'service_credit', cost: 800, title: { vi: 'Tín dụng $10 tại Golden Glow', en: '$10 Golden Glow credit' } },
-      moon: { key: 'moon', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'moon-coffee', type: 'free_service', cost: 600, title: { vi: 'Đồ uống miễn phí', en: 'Free drink' } },
-      bistro: { key: 'bistro', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'percent_code', cost: 450, title: { vi: 'Giảm 10% dịch vụ', en: '10% off service' } },
-      gel: { key: 'gel', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 2500, title: { vi: 'Nâng cấp sơn gel', en: 'Gel polish upgrade' } }
-    };
-
-    function getRewardDefinition(key) {
-      return Object.prototype.hasOwnProperty.call(REWARDS, key) ? REWARDS[key] : null;
-    }
-
     function getBusinessBalance(appState, businessId) {
       const balance = isRecord(appState?.balances) ? appState.balances[businessId] : null;
       return isRecord(balance) && Number.isFinite(balance.points)
@@ -938,10 +1011,16 @@
       const normalizedRewardKey = typeof rewardKey === 'string' ? rewardKey.trim() : '';
       const normalizedIdempotencyKey = typeof idempotencyKey === 'string' ? idempotencyKey.trim() : '';
       if (!normalizedIdempotencyKey) return { ok: false, code: 'invalid_idempotency_key' };
-      const existing = appState.redemptions.filter((item) => isRecord(item) && item.idempotencyKey === normalizedIdempotencyKey);
+      const existing = appState.redemptions.filter((item) => isRecord(item)
+        && typeof item.idempotencyKey === 'string'
+        && item.idempotencyKey.trim() === normalizedIdempotencyKey);
       if (existing.length) {
-        if (existing.some((item) => item.rewardKey !== normalizedRewardKey)) return { ok: false, code: 'idempotency_conflict' };
-        if (existing.length !== 1) return { ok: false, code: 'invalid_state' };
+        if (existing.some((item) => typeof item.rewardKey !== 'string' || item.rewardKey.trim() !== normalizedRewardKey)) {
+          return { ok: false, code: 'idempotency_conflict' };
+        }
+        if (existing.length !== 1 || !isValidPersistedRedemption(appState, existing[0])) {
+          return { ok: false, code: 'invalid_state' };
+        }
         const linkedLedger = appState.ledger.filter((entry) => isRecord(entry)
           && isRewardLedgerEntry(entry)
           && entry.refId === existing[0].id);

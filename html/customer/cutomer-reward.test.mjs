@@ -580,6 +580,30 @@ test('rejects blank and conflicting idempotency keys without mutating rewards', 
   assert.equal(JSON.stringify(app), beforeConflict);
 });
 
+test('rejects noncanonical idempotent runtime state without another debit', () => {
+  const { api } = testApi();
+  const logicalConflict = api.createDefaultState();
+  const voucher = api.redeemReward(logicalConflict, 'voucher25', 'logical-runtime-key', 1000);
+  assert.equal(voucher.ok, true);
+  voucher.redemption.idempotencyKey = ' logical-runtime-key ';
+  const beforeConflict = JSON.stringify(logicalConflict);
+  const conflict = api.redeemReward(logicalConflict, 'credit5', 'logical-runtime-key', 2000);
+  assert.equal(conflict.ok, false);
+  assert.equal(conflict.code, 'idempotency_conflict');
+  assert.equal(JSON.stringify(logicalConflict), beforeConflict);
+
+  const catalogMismatch = api.createDefaultState();
+  const credit = api.redeemReward(catalogMismatch, 'credit5', 'catalog-runtime-key', 1000);
+  assert.equal(credit.ok, true);
+  credit.redemption.cost = 501;
+  catalogMismatch.ledger.find((entry) => entry.refId === credit.redemption.id).pointsDelta = -501;
+  const beforeMismatch = JSON.stringify(catalogMismatch);
+  const retry = api.redeemReward(catalogMismatch, 'credit5', 'catalog-runtime-key', 2000);
+  assert.equal(retry.ok, false);
+  assert.equal(retry.code, 'invalid_state');
+  assert.equal(JSON.stringify(catalogMismatch), beforeMismatch);
+});
+
 test('keeps ledger writes atomic for invalid input and ID generation failures', () => {
   const { api } = testApi({}, { randomUUID: () => { throw new Error('uuid unavailable'); } });
   const app = api.createDefaultState();
@@ -680,6 +704,173 @@ function rewardPair(overrides = {}) {
   };
   return { redemption, ledger };
 }
+
+test('normalizes persisted reward identity before an idempotent retry', () => {
+  const { api } = testApi();
+  const { redemption, ledger } = rewardPair({
+    redemption: {
+      idempotencyKey: '  normalized-retry  ',
+      rewardKey: '  credit5  ',
+      qrPayload: 'NEXORA:forged:payload'
+    }
+  });
+  const migrated = api.migrateState({
+    balances: { 'bitcoin-nail-bar': { points: 1337 } },
+    redemptions: [redemption],
+    ledger: [ledger]
+  });
+
+  assert.equal(migrated.redemptions[0].idempotencyKey, 'normalized-retry');
+  assert.equal(migrated.redemptions[0].rewardKey, 'credit5');
+  assert.equal(migrated.redemptions[0].qrPayload, 'NEXORA:credit5:normalized-retry');
+  const balanceBefore = migrated.balances['bitcoin-nail-bar'].points;
+  const retry = api.redeemReward(migrated, ' credit5 ', ' normalized-retry ', 1000);
+  assert.equal(retry.ok, true);
+  assert.equal(retry.idempotent, true);
+  assert.equal(retry.redemption.id, redemption.id);
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, balanceBefore);
+  assert.equal(migrated.redemptions.length, 1);
+  assert.equal(migrated.ledger.length, 1);
+});
+
+test('deduplicates whitespace-equivalent persisted idempotency keys deterministically', () => {
+  const { api } = testApi();
+  const first = rewardPair({
+    redemption: { id: 'redemption-a', idempotencyKey: ' duplicate-key ' },
+    ledger: { id: 'ledger-a' }
+  });
+  const second = rewardPair({
+    redemption: { id: 'redemption-b', idempotencyKey: 'duplicate-key' },
+    ledger: { id: 'ledger-b' }
+  });
+
+  const migrate = (reverse) => api.migrateState({
+    redemptions: reverse
+      ? [second.redemption, first.redemption]
+      : [first.redemption, second.redemption],
+    ledger: reverse
+      ? [second.ledger, first.ledger]
+      : [first.ledger, second.ledger]
+  });
+  const forward = migrate(false);
+  const reverse = migrate(true);
+
+  assert.equal(forward.redemptions.length, 1);
+  assert.equal(forward.redemptions[0].idempotencyKey, 'duplicate-key');
+  assert.equal(forward.redemptions[0].id, 'redemption-a');
+  assert.equal(forward.ledger.filter((entry) => entry.type === 'redeem').length, 1);
+  assert.equal(reverse.redemptions[0].id, forward.redemptions[0].id);
+  assert.equal(reverse.ledger.find((entry) => entry.type === 'redeem').id, 'ledger-a');
+});
+
+test('drops persisted catalog mismatches and canonicalizes reward QR payloads', () => {
+  const { api } = testApi();
+  const mismatches = [
+    rewardPair({ redemption: { cost: 501 }, ledger: { pointsDelta: -501 } }),
+    rewardPair({
+      redemption: {
+        sourceBusinessId: 'golden-glow-spa',
+        acceptingBusinessId: 'golden-glow-spa'
+      },
+      ledger: { businessId: 'golden-glow-spa' }
+    }),
+    rewardPair({ redemption: { acceptingBusinessId: 'golden-glow-spa' } }),
+    rewardPair({ redemption: { rewardKey: 'retired-reward' } })
+  ];
+
+  mismatches.forEach(({ redemption, ledger }) => {
+    const migrated = api.migrateState({ redemptions: [redemption], ledger: [ledger] });
+    assert.equal(migrated.redemptions.length, 0);
+    assert.equal(migrated.ledger.filter((entry) => entry.type === 'redeem').length, 0);
+  });
+
+  const canonical = rewardPair({ redemption: { qrPayload: 'NEXORA:forged:payload' } });
+  const migrated = api.migrateState({
+    redemptions: [canonical.redemption],
+    ledger: [canonical.ledger]
+  });
+  assert.equal(migrated.redemptions.length, 1);
+  assert.equal(migrated.redemptions[0].qrPayload, 'NEXORA:credit5:reward-integrity');
+});
+
+test('binds restored pending attempts to normalized valid persisted reward state', () => {
+  const validState = testApi().api.createDefaultState();
+  const validPair = rewardPair({
+    redemption: { idempotencyKey: ' restored-attempt ', rewardKey: ' credit5 ' }
+  });
+  validState.redemptions = [validPair.redemption];
+  validState.ledger = [validPair.ledger];
+  validState.ui.activeScreen = 'redeem';
+  validState.ui.activeModule = 'wallet';
+  validState.ui.currentRewardKey = 'credit5';
+  validState.ui.pendingContext.rewardAttempt = {
+    rewardKey: ' credit5 ', idempotencyKey: ' restored-attempt ', completed: false
+  };
+  const validRaw = JSON.stringify(validState);
+  const validDocument = createDocumentStub({
+    screenNodes: [
+      createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] }),
+      createStubElement({ id: 'rewards', classNames: ['app-screen', 'hidden'] }),
+      createStubElement({ id: 'redeem', classNames: ['app-screen', 'hidden'] })
+    ]
+  });
+  const valid = testApi({ 'nexora.customer.prototype.v1': validRaw }, {
+    skipInit: false,
+    document: validDocument,
+    randomUUID: () => { throw new Error('valid retry must not create a new ID'); }
+  });
+
+  assert.equal(validDocument.getElementById('redeem').classList.contains('hidden'), false);
+  assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt.rewardKey', valid.context), 'credit5');
+  assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt.idempotencyKey', valid.context), 'restored-attempt');
+  assert.equal(valid.storage.getItem(valid.api.STORAGE_KEY), validRaw);
+  const balanceBefore = vm.runInContext("state.balances['bitcoin-nail-bar'].points", valid.context);
+  const retry = valid.context.confirmReward(false);
+  assert.equal(retry.ok, true);
+  assert.equal(retry.idempotent, true);
+  assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", valid.context), balanceBefore);
+
+  const invalidCases = [
+    rewardPair({
+      redemption: { idempotencyKey: ' pending-conflict ', rewardKey: 'voucher25', cost: 800 },
+      ledger: { pointsDelta: -800 }
+    }),
+    rewardPair({
+      redemption: { idempotencyKey: ' pending-conflict ', cost: 501 },
+      ledger: { pointsDelta: -501 }
+    }),
+    rewardPair({
+      redemption: { idempotencyKey: ' pending-conflict ', cost: '500' }
+    })
+  ];
+  invalidCases.forEach((invalidPair) => {
+    const invalidState = testApi().api.createDefaultState();
+    invalidState.redemptions = [invalidPair.redemption];
+    invalidState.ledger = [invalidPair.ledger];
+    invalidState.ui.activeScreen = 'redeem';
+    invalidState.ui.activeModule = 'wallet';
+    invalidState.ui.currentRewardKey = 'credit5';
+    invalidState.ui.pendingContext.rewardAttempt = {
+      rewardKey: ' credit5 ', idempotencyKey: ' pending-conflict ', completed: false
+    };
+    const document = createDocumentStub({
+      screenNodes: [
+        createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] }),
+        createStubElement({ id: 'rewards', classNames: ['app-screen', 'hidden'] }),
+        createStubElement({ id: 'redeem', classNames: ['app-screen', 'hidden'] })
+      ]
+    });
+    const loaded = testApi({
+      'nexora.customer.prototype.v1': JSON.stringify(invalidState)
+    }, { skipInit: false, document });
+    const pointsBefore = invalidState.balances['bitcoin-nail-bar'].points;
+
+    assert.equal(document.getElementById('rewards').classList.contains('hidden'), false);
+    assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt', loaded.context), null);
+    assert.equal(loaded.context.confirmReward(false).code, 'no_pending_reward');
+    assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", loaded.context), pointsBefore);
+  });
+});
 
 test('keeps only one-to-one persisted redemption and redeem-ledger pairs', () => {
   const { api, storage } = testApi();
