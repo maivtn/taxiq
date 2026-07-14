@@ -482,6 +482,18 @@
       });
     }
 
+    function collectRawTransactionLedgerClaims(ledger) {
+      if (!Array.isArray(ledger)) return [];
+      return ledger.flatMap((entry) => {
+        if (!isRecord(entry)) return [];
+        const refType = typeof entry.refType === 'string' ? entry.refType.trim() : '';
+        const refId = typeof entry.refId === 'string' ? entry.refId.trim() : '';
+        return ['tip', 'direct_payment'].includes(refType) && refId
+          ? [{ refType, refId, entry }]
+          : [];
+      });
+    }
+
     function normalizePersistedRedemptions(appState) {
       appState.redemptions = appState.redemptions
         .map(normalizePersistedRedemption)
@@ -727,12 +739,16 @@
       return JSON.stringify(Object.keys(record).sort().map((key) => [key, record[key]]));
     }
 
-    function reconcileTransactionPairs(appState) {
+    function reconcileTransactionPairs(appState, rawClaims = []) {
       const transactionLedger = appState.ledger.filter(isTransactionLedgerEntry);
       const selectedEntries = new Set();
       const selectedLedgerIds = new Set();
+      const rawClaimedIds = {
+        tip: new Set(rawClaims.filter((claim) => claim.refType === 'tip').map((claim) => claim.refId)),
+        direct_payment: new Set(rawClaims.filter((claim) => claim.refType === 'direct_payment').map((claim) => claim.refId))
+      };
 
-      const selectRecords = (confirmedCandidates, pendingRecords) => {
+      const selectRecords = (confirmedCandidates, pendingRecords, refType) => {
         const selected = [];
         const selectedIds = new Set();
         confirmedCandidates.sort((left, right) => left.sortKey.localeCompare(right.sortKey));
@@ -748,7 +764,7 @@
         });
         pendingRecords.sort((left, right) => transactionSortKey(left).localeCompare(transactionSortKey(right)));
         pendingRecords.forEach((record) => {
-          if (!selectedIds.has(record.id)) {
+          if (!selectedIds.has(record.id) && !rawClaimedIds[refType].has(record.id)) {
             selectedIds.add(record.id);
             selected.push(record);
           }
@@ -766,7 +782,11 @@
           });
         });
       });
-      appState.tips = selectRecords(tipCandidates, appState.tips.filter((tip) => tip.status === 'pending'));
+      appState.tips = selectRecords(
+        tipCandidates,
+        appState.tips.filter((tip) => tip.status === 'pending'),
+        'tip'
+      );
 
       const paymentCandidates = [];
       appState.directPayments.filter((payment) => payment.status === 'confirmed').forEach((payment) => {
@@ -788,7 +808,8 @@
       });
       appState.directPayments = selectRecords(
         paymentCandidates,
-        appState.directPayments.filter((payment) => payment.status === 'pending')
+        appState.directPayments.filter((payment) => payment.status === 'pending'),
+        'direct_payment'
       );
       appState.ledger = appState.ledger.filter((entry) => !isTransactionLedgerEntry(entry) || selectedEntries.has(entry));
     }
@@ -887,6 +908,7 @@
       const defaults = createDefaultState();
       if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
       const rawRedemptionClaims = collectRawRedemptionClaims(value.redemptions);
+      const rawTransactionLedgerClaims = collectRawTransactionLedgerClaims(value.ledger);
       const migrated = mergeRecord(defaults, value);
       migrated.schemaVersion = SCHEMA_VERSION;
       migrated.updatedAt = new Date().toISOString();
@@ -933,7 +955,7 @@
         ? rawRedemptionClaims.filter((claim) => claim.idempotencyKey === pendingAttempt.idempotencyKey)
         : [];
       reconcileRewardPairs(migrated);
-      reconcileTransactionPairs(migrated);
+      reconcileTransactionPairs(migrated, rawTransactionLedgerClaims);
       deduplicateLedgerIds(migrated);
       reconcilePendingRewardAttempt(migrated, rawPendingClaims);
       reconcilePendingTransactions(migrated);

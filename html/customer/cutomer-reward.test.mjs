@@ -929,6 +929,97 @@ test('prefers a valid transaction relation over a malformed duplicate ledger ID 
   }
 });
 
+function replayedPendingTransactionFixture(kind, claimVariant) {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCalls += 1;
+      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
+    }
+  });
+  const app = api.createDefaultState();
+  const isTip = kind === 'tip';
+  const created = isTip
+    ? api.createTip(app, {
+        businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
+      }, 1000).tip
+    : api.createDirectPayment(app, {
+        businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
+      }, 1000).payment;
+  const collection = isTip ? 'tips' : 'directPayments';
+  const contextKey = isTip ? 'tipId' : 'paymentId';
+  const refType = isTip ? 'tip' : 'direct_payment';
+
+  if (claimVariant === 'valid_reordered_duplicate') {
+    const confirmed = isTip
+      ? api.confirmTipRecord(app, created.id, 2000).tip
+      : api.confirmDirectPayment(app, created.id, 2000).payment;
+    app[collection] = [{ ...confirmed, status: 'pending', confirmedAt: null }];
+    const linked = app.ledger.filter((entry) => entry.refId === created.id).reverse();
+    const unrelated = app.ledger.filter((entry) => entry.refId !== created.id);
+    app.ledger = [
+      { refType, refId: ` ${created.id} ` },
+      ...linked,
+      { refType, refId: created.id },
+      ...unrelated
+    ];
+  } else {
+    app.ledger = [
+      { refType, refId: created.id },
+      {
+        id: `malformed-${kind}-claim`, businessId: 'golden-glow-spa', type: 'wrong_type',
+        pointsDelta: 999, refType, refId: ` ${created.id} `, createdAt: 'not-a-time'
+      },
+      ...app.ledger
+    ];
+  }
+
+  const balanceBefore = app.balances['bitcoin-nail-bar'].points;
+  uuidCalls = 0;
+  return {
+    api,
+    app,
+    created,
+    collection,
+    contextKey,
+    balanceBefore,
+    uuidCallCount: () => uuidCalls
+  };
+}
+
+function assertReplayedPendingTransactionIsQuarantined(kind, claimVariant) {
+  const fixture = replayedPendingTransactionFixture(kind, claimVariant);
+  const migrated = fixture.api.migrateState(fixture.app);
+  const confirm = kind === 'tip' ? fixture.api.confirmTipRecord : fixture.api.confirmDirectPayment;
+
+  assert.equal(migrated[fixture.collection].some((record) => record.id === fixture.created.id), false);
+  assert.equal(migrated.ui.pendingContext[fixture.contextKey], null);
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, fixture.balanceBefore);
+  assert.equal(migrated.ledger.some((entry) => entry.refId?.trim?.() === fixture.created.id), false);
+  assert.equal(migrated.redemptions.some((redemption) => redemption.id === 'red-demo'), true);
+  assert.equal(migrated.ledger.some((entry) => entry.refId === 'red-demo'), true);
+
+  const ledgerBeforeRetry = JSON.stringify(migrated.ledger);
+  const retry = confirm(migrated, fixture.created.id, 3000);
+  assert.equal(retry.ok, false);
+  assert.equal(retry.code, 'not_found');
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, fixture.balanceBefore);
+  assert.equal(JSON.stringify(migrated.ledger), ledgerBeforeRetry);
+  assert.equal(fixture.uuidCallCount(), 0);
+}
+
+test('quarantines replayed pending tips from valid or malformed raw tip ledger claims', () => {
+  for (const variant of ['valid_reordered_duplicate', 'malformed']) {
+    assertReplayedPendingTransactionIsQuarantined('tip', variant);
+  }
+});
+
+test('quarantines replayed pending direct payments from valid or malformed raw payment ledger claims', () => {
+  for (const variant of ['valid_reordered_duplicate', 'malformed']) {
+    assertReplayedPendingTransactionIsQuarantined('payment', variant);
+  }
+});
+
 test('restores pending tip and payment receipts without creating replacement records', () => {
   const buildPending = (kind) => {
     const { api } = testApi();
