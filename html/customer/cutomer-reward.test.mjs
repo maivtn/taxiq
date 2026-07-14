@@ -44,6 +44,7 @@ function createStubElement({ id = '', dataset = {}, textContent = '', placeholde
     classList: createClassList(classNames),
     disabled: false,
     hidden: false,
+    style: {},
     isConnected: true,
     innerHTML: '',
     setAttribute(name, value) { attributes[name] = String(value); },
@@ -58,7 +59,8 @@ function createStubElement({ id = '', dataset = {}, textContent = '', placeholde
 function createDocumentStub({
   localizedNodes = [], placeholderNodes = [], languageControls = [],
   notificationControls = [], overlayCloseControls = [], balancePointNodes = [],
-  balanceWithUnitNodes = [], balanceAvailableNodes = []
+  balanceWithUnitNodes = [], balanceAvailableNodes = [], rewardGapValueNodes = [],
+  rewardGapCopyNodes = [], rewardProgressNodes = [], signatureRewardControls = []
 } = {}) {
   const listeners = [];
   const elements = new Map();
@@ -84,6 +86,10 @@ function createDocumentStub({
       if (selector === '[data-balance-points]') return balancePointNodes;
       if (selector === '[data-balance-with-unit]') return balanceWithUnitNodes;
       if (selector === '[data-balance-available]') return balanceAvailableNodes;
+      if (selector === '[data-reward-gap-value]') return rewardGapValueNodes;
+      if (selector === '[data-reward-gap-copy]') return rewardGapCopyNodes;
+      if (selector === '[data-reward-progress]') return rewardProgressNodes;
+      if (selector === '[data-signature-reward-cta]') return signatureRewardControls;
       return [];
     }
   };
@@ -285,6 +291,34 @@ test('records consent decisions without making marketing a condition of points',
   assert.equal(typeof app.preferences.businessMarketing, 'object');
 });
 
+test('rejects invalid consent timestamps without mutating consent history', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const before = JSON.stringify(app);
+
+  const result = api.recordConsent(app, 'networkOffers', 'grant', 'preferences', Infinity);
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'invalid_time');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('keeps single preference toggles atomic when consent ID generation fails', () => {
+  const { api } = testApi({}, { randomUUID: () => { throw new Error('uuid unavailable'); } });
+  const app = api.createDefaultState();
+  const beforePreference = JSON.stringify(app);
+
+  const preferenceResult = api.setPreference(app, 'aiSuggestions', false, 2000);
+  assert.equal(preferenceResult.ok, false);
+  assert.equal(preferenceResult.code, 'id_generation_failed');
+  assert.equal(JSON.stringify(app), beforePreference);
+
+  const beforeBusiness = JSON.stringify(app);
+  const businessResult = api.setBusinessMarketing(app, 'bitcoin-nail-bar', true, 2000);
+  assert.equal(businessResult.ok, false);
+  assert.equal(businessResult.code, 'id_generation_failed');
+  assert.equal(JSON.stringify(app), beforeBusiness);
+});
+
 test('stages canonical consent scopes and grants only pending scopes after SMS confirmation', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
@@ -306,6 +340,59 @@ test('stages canonical consent scopes and grants only pending scopes after SMS c
   assert.equal('consentScopes' in app.ui.pendingContext, false);
 });
 
+test('keeps multi-scope confirmation atomic when the second consent ID fails', () => {
+  let uuidCall = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCall += 1;
+      if (uuidCall === 2) throw new Error('second UUID unavailable');
+      return '00000000-0000-4000-8000-000000000001';
+    }
+  });
+  const app = api.createDefaultState();
+  api.stageConsentScopes(app, ['business:bitcoin-nail-bar', 'networkOffers']);
+  const before = JSON.stringify(app);
+
+  const result = api.confirmPendingConsent(app, 2000);
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'id_generation_failed');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('keeps onboarding skip atomic when the second consent ID fails', () => {
+  let uuidCall = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => {
+      uuidCall += 1;
+      if (uuidCall === 2) throw new Error('second UUID unavailable');
+      return '00000000-0000-4000-8000-000000000001';
+    }
+  });
+  const app = api.createDefaultState();
+  app.preferences.businessMarketing['bitcoin-nail-bar'] = true;
+  app.preferences.networkOffers = true;
+  app.ui.pendingContext.consentScopes = ['networkOffers'];
+  const before = JSON.stringify(app);
+
+  const result = api.skipPendingConsent(app, 2000);
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'id_generation_failed');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('handles failed preference and skip results in the UI without navigating or showing success', () => {
+  const source = html();
+  const skipAction = source.match(/registerAction\('skip-consent',[\s\S]*?registerAction\('confirm-double-opt-in'/)?.[0];
+  const changeHandler = source.match(/function handleChange\(event\)\s*\{([\s\S]*?)\n\s*\}\n\n\s*function handleKeydown/)?.[1];
+  assert.ok(skipAction, 'skip action must be registered');
+  assert.ok(changeHandler, 'change handler must be available');
+  assert.match(skipAction, /const result = commitState/);
+  assert.match(skipAction, /if \(!result\.ok\)[\s\S]*?showToast\([\s\S]*?['"]error['"][\s\S]*?return/);
+  assert.ok(skipAction.indexOf('if (!result.ok)') < skipAction.indexOf("navigateTo('onb4')"));
+  assert.ok((changeHandler.match(/if \(!result\.ok\)/g) || []).length >= 2);
+  assert.match(changeHandler, /preferenceSaveFailed/);
+});
+
 test('round-trips only canonical pending consent scopes through migration', () => {
   const { api } = testApi();
   const migrated = api.migrateState({
@@ -316,6 +403,37 @@ test('round-trips only canonical pending consent scopes through migration', () =
     JSON.stringify(migrated.ui.pendingContext.consentScopes),
     JSON.stringify(['networkOffers', 'business:bitcoin-nail-bar'])
   );
+});
+
+test('canonicalizes legacy network consent records without losing history or duplicating entries', () => {
+  const legacyConsents = [
+    {
+      id: 'consent-legacy-grant', scope: 'network', action: 'grant', method: 'sms_y',
+      createdAt: '2026-07-01T08:00:00.000Z', confirmedAt: '2026-07-01T08:00:00.000Z', auditSource: 'legacy-v0'
+    },
+    {
+      id: 'consent-legacy-revoke', scope: 'network', action: 'revoke', method: 'preferences',
+      createdAt: '2026-07-02T09:30:00.000Z', confirmedAt: null, auditSource: 'legacy-v0'
+    }
+  ];
+  const { api, storage } = testApi({
+    'nexora.customer.prototype.v1': JSON.stringify({ consents: legacyConsents })
+  });
+
+  const loaded = api.loadState(storage);
+  assert.equal(loaded.consents.length, 2);
+  assert.deepEqual(loaded.consents.map(({ scope }) => scope), ['networkOffers', 'networkOffers']);
+  assert.equal(loaded.consents[0].confirmedAt, legacyConsents[0].confirmedAt);
+  assert.equal(loaded.consents[1].createdAt, legacyConsents[1].createdAt);
+  assert.equal(loaded.consents[1].auditSource, 'legacy-v0');
+
+  api.saveState(loaded, storage);
+  const reloaded = api.loadState(storage);
+  const remigrated = api.migrateState(reloaded);
+  assert.equal(remigrated.consents.length, 2);
+  assert.deepEqual(remigrated.consents.map(({ id }) => id), legacyConsents.map(({ id }) => id));
+  assert.deepEqual(remigrated.consents.map(({ action }) => action), ['grant', 'revoke']);
+  assert.deepEqual(remigrated.consents.map(({ scope }) => scope), ['networkOffers', 'networkOffers']);
 });
 
 test('prevents a welcome gift from being claimed twice or by an existing account', () => {
@@ -639,6 +757,51 @@ test('renders persisted balances across home wallet and rewards hooks', () => {
 
   const claimAction = source.match(/registerAction\('claim-welcome',[\s\S]*?registerAction\('accept-consent'/)?.[0];
   assert.ok(claimAction.indexOf('renderBalances()') < claimAction.indexOf("navigateTo('onb2')"));
+});
+
+test('derives reward gap progress and CTA state from the current balance', () => {
+  function rewardDocument() {
+    const gapValue = createStubElement({ dataset: { rewardGapValue: '' }, textContent: '—' });
+    const gapCopy = createStubElement({ dataset: { rewardGapCopy: '' }, textContent: 'Đang tính…' });
+    const progress = createStubElement({ dataset: { rewardProgress: '' } });
+    const cta = createStubElement({ dataset: { signatureRewardCta: '' }, textContent: 'Đang tính…' });
+    cta.disabled = true;
+    return {
+      gapValue, gapCopy, progress, cta,
+      document: createDocumentStub({
+        rewardGapValueNodes: [gapValue], rewardGapCopyNodes: [gapCopy],
+        rewardProgressNodes: [progress], signatureRewardControls: [cta]
+      })
+    };
+  }
+
+  const below = rewardDocument();
+  testApi({
+    'nexora.customer.prototype.v1': JSON.stringify({ balances: { 'bitcoin-nail-bar': { points: 2475 } } })
+  }, { skipInit: false, document: below.document });
+  assert.equal(below.gapValue.textContent, '525');
+  assert.equal(below.gapCopy.textContent, 'Còn 525 điểm để nhận quà tiếp theo');
+  assert.equal(below.progress.style.width, '82.5%');
+  assert.equal(below.cta.textContent, 'Cần thêm 525 điểm');
+  assert.equal(below.cta.disabled, true);
+  assert.equal(below.cta.dataset.action, undefined);
+
+  const eligible = rewardDocument();
+  testApi({
+    'nexora.customer.prototype.v1': JSON.stringify({ balances: { 'bitcoin-nail-bar': { points: 3250 } } })
+  }, { skipInit: false, document: eligible.document });
+  assert.equal(eligible.progress.style.width, '100%');
+  assert.equal(eligible.cta.disabled, false);
+  assert.equal(eligible.cta.dataset.action, 'navigate');
+  assert.equal(eligible.cta.dataset.target, 'rewards');
+  assert.equal(eligible.cta.textContent, 'Xem phần thưởng');
+
+  const source = html();
+  assert.match(source, /nextRewardGap:/);
+  assert.match(source, /signatureRewardLocked:/);
+  assert.match(source, /signatureRewardReady:/);
+  assert.doesNotMatch(source, /w-\[76%\]/);
+  assert.doesNotMatch(source, /data-signature-reward-cta[^>]*550/);
 });
 
 test('covers accessibility, motion and UI edge states', () => {
