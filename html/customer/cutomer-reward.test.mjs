@@ -2637,3 +2637,90 @@ test('clears a persisted modal marker after an accepted confirm callback', () =>
   assert.equal(api.loadState(storage).profile.name, 'Lan Nguyen');
   assert.equal(api.loadState(storage).ui.overlay, null);
 });
+
+test('persists looks, saved offers and unique wishes', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  assert.equal(api.saveLookRecord(app, { businessId: 'bitcoin-nail-bar', visitId: 'visit-1001', staffProfileId: 'staff-anna', staffName: 'Anna', service: 'Pedicure', color: '#710 Sea Glass', note: 'Da nhạy cảm', photoDataUrl: '' }, 1000).ok, true);
+  assert.equal(api.toggleSavedOffer(app, 'offer-glow'), true);
+  assert.equal(api.toggleSavedOffer(app, 'offer-glow'), false);
+  assert.equal(api.addWishRecord(app, 'Pedicure deal').ok, true);
+  assert.equal(api.addWishRecord(app, 'pedicure deal').code, 'duplicate');
+  assert.equal(app.looks.at(-1).note, 'Da nhạy cảm');
+});
+
+test('allows follow-tech only after a shared visit and never stores follower counts', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  assert.equal(api.canFollowTech(app, 'staff-anna'), true);
+  assert.equal(api.canFollowTech(app, 'staff-stranger'), false);
+  assert.equal(api.toggleFollowTech(app, 'staff-stranger').code, 'no_shared_visit');
+  assert.equal(api.toggleFollowTech(app, 'staff-anna').following, true);
+  const before = app.notifications.length;
+  assert.equal(api.createTechMoveNotification(app, 'staff-anna', 'golden-glow-spa', 1000).code, 'tech_opted_out');
+  app.staffProfiles['staff-anna'].followNotifyOptIn = true;
+  assert.equal(api.createTechMoveNotification(app, 'staff-anna', 'golden-glow-spa', 2000).ok, true);
+  assert.equal(api.createTechMoveNotification(app, 'staff-anna', 'golden-glow-spa', 3000).code, 'already_notified');
+  assert.equal(app.notifications.length, before + 1);
+  assert.equal('followerCount' in app, false);
+});
+
+test('keeps look writes atomic across ownership, timestamp, UUID and photo migration checks', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const before = JSON.stringify(app);
+  assert.equal(api.saveLookRecord(app, { businessId: 'golden-glow-spa', visitId: 'visit-1001', staffProfileId: 'staff-anna', service: 'Gel' }, 1000).code, 'visit_business_mismatch');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(api.saveLookRecord(app, { businessId: 'bitcoin-nail-bar', visitId: 'visit-1001', staffProfileId: 'staff-maria', service: 'Gel' }, 1000).code, 'staff_visit_mismatch');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(api.saveLookRecord(app, { businessId: 'bitcoin-nail-bar', visitId: 'visit-1001', staffProfileId: 'staff-anna', service: 'Gel' }, Number.NaN).code, 'invalid_time');
+  assert.equal(JSON.stringify(app), before);
+
+  const photo = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ==';
+  const saved = api.saveLookRecord(app, { businessId: 'bitcoin-nail-bar', visitId: 'visit-1001', staffProfileId: 'staff-anna', service: 'Gel', photoDataUrl: photo }, 1000);
+  assert.equal(saved.ok, true);
+  assert.equal(saved.look.photoDataUrl, photo);
+  assert.equal(api.migrateState(app).looks.at(-1).photoDataUrl, photo);
+});
+
+test('does not mutate follows or notifications when notification inputs are invalid', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  api.toggleFollowTech(app, 'staff-anna');
+  app.staffProfiles['staff-anna'].followNotifyOptIn = true;
+  const before = JSON.stringify(app);
+  assert.equal(api.createTechMoveNotification(app, 'staff-anna', 'golden-glow-spa', Infinity).code, 'invalid_time');
+  assert.equal(JSON.stringify(app), before);
+  const invalidUuidApi = testApi({}, { randomUUID: () => 'not-a-uuid' }).api;
+  const invalidUuidApp = invalidUuidApi.createDefaultState();
+  invalidUuidApi.toggleFollowTech(invalidUuidApp, 'staff-anna');
+  invalidUuidApp.staffProfiles['staff-anna'].followNotifyOptIn = true;
+  const invalidBefore = JSON.stringify(invalidUuidApp);
+  assert.equal(invalidUuidApi.createTechMoveNotification(invalidUuidApp, 'staff-anna', 'golden-glow-spa', 1000).code, 'id_generation_failed');
+  assert.equal(JSON.stringify(invalidUuidApp), invalidBefore);
+});
+
+test('saves look metadata without a photo when localStorage quota is exhausted', () => {
+  const document = createDocumentStub();
+  const { context, storage } = testApi({}, { document });
+  document.getElementById('look-service').value = 'Gel';
+  document.getElementById('look-color').value = 'Sea Glass';
+  document.getElementById('look-notes').value = 'Sensitive skin';
+  document.getElementById('look-photo-preview').dataset.photo = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ==';
+  const originalSetItem = storage.setItem.bind(storage);
+  let writes = 0;
+  storage.setItem = (key, value) => {
+    writes += 1;
+    if (writes === 1) {
+      const error = new Error('quota');
+      error.name = 'QuotaExceededError';
+      throw error;
+    }
+    return originalSetItem(key, value);
+  };
+  const control = createStubElement({ dataset: { action: 'save-look' } });
+  context.handleAction({ target: { closest: (selector) => selector === '[data-action]' ? control : null } });
+  const saved = vm.runInContext('state.looks.at(-1)', context);
+  assert.equal(saved.note, 'Sensitive skin');
+  assert.equal(saved.photoDataUrl, '');
+});
