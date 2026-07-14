@@ -3027,6 +3027,32 @@ test('retry drops same-business queued duplicates without awarding twice', () =>
   assert.equal(uuidCalls, 2);
 });
 
+test('completeCheckin rejects a later same-business duplicate before UUID or queue mutation', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, { randomUUID: () => {
+    uuidCalls += 1;
+    return '00000000-0000-4000-8000-000000000121';
+  } });
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+  const first = api.submitCheckin(app, payload, false, 1000);
+  assert.equal(first.ok, true);
+  const duplicate = {
+    ...first.checkin,
+    id: 'checkin-00000000-0000-4000-8000-000000000122',
+    scannedAt: new Date(1801).toISOString(),
+    status: 'queued',
+    confirmedAt: null
+  };
+  app.checkins = [first.checkin, duplicate];
+  app.offlineQueue = [first.checkin.id, duplicate.id];
+  const before = JSON.stringify(app);
+  const result = api.completeCheckin(app, duplicate, 5000);
+  assert.equal(result.code, 'duplicate_checkin');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(uuidCalls, 1);
+});
+
 test('retry preserves different businesses and scans at or beyond 120 minutes', () => {
   let uuidCounter = 0;
   const { api } = testApi({}, { randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCounter).padStart(12, '0')}` });
@@ -3062,6 +3088,31 @@ test('retry preserves different businesses and scans at or beyond 120 minutes', 
   assert.equal(app.balances['golden-glow-spa'].points, goldenBefore + 80);
   assert.equal(app.ledger.filter((entry) => entry.refType === 'checkin').length, 3);
   assert.equal(app.offlineQueue.length, 0);
+});
+
+test('retry quarantines malformed queued check-ins without throwing or awarding', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const malformed = {
+    id: 'checkin-00000000-0000-4000-8000-000000000114',
+    businessId: 'bitcoin-nail-bar',
+    station: 'front',
+    staffProfileId: null,
+    sourceQr: 'https://nexoratouch.com/touch/bitcoin-nail-bar/front',
+    scannedAt: Symbol('malformed-time'),
+    status: 'queued',
+    confirmedAt: null
+  };
+  app.checkins = [malformed];
+  app.offlineQueue = [malformed.id];
+  const beforePoints = app.balances['bitcoin-nail-bar'].points;
+  const beforeLedger = JSON.stringify(app.ledger);
+  assert.doesNotThrow(() => api.completeCheckin(app, malformed, 5000));
+  assert.doesNotThrow(() => api.retryQueuedCheckins(app, true, 5000));
+  assert.equal(app.offlineQueue.length, 0);
+  assert.equal(app.checkins.length, 0);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforePoints);
+  assert.equal(JSON.stringify(app.ledger), beforeLedger);
 });
 
 test('completeCheckin rejects malformed domain collections before mutation', () => {

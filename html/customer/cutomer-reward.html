@@ -1964,6 +1964,7 @@
     const CHECKIN_WINDOW_MS = 120 * 60 * 1000;
 
     function checkinScanMilliseconds(value) {
+      if (typeof value !== 'string') return null;
       const milliseconds = Date.parse(value);
       return Number.isFinite(milliseconds) ? milliseconds : null;
     }
@@ -2101,6 +2102,16 @@
       if (normalized.id !== checkin.id) return { ok: false, code: 'invalid_checkin' };
       const storedBalance = validateStoredBalance(appState, normalized.businessId);
       if (!storedBalance.ok) return storedBalance;
+      const candidateScan = checkinScanMilliseconds(normalized.scannedAt);
+      const duplicateWindow = appState.checkins.some((item) => {
+        if (!isRecord(item) || item.id === normalized.id || !['confirmed', 'sending', 'queued'].includes(item.status)) return false;
+        const other = normalizeCheckinRecord(appState, item);
+        const otherScan = other && checkinScanMilliseconds(other.scannedAt);
+        const earlier = otherScan !== null && candidateScan !== null
+          && (otherScan < candidateScan || (otherScan === candidateScan && other.id < normalized.id));
+        return Boolean(other && earlier && checkinWindowConflict(normalized, other));
+      });
+      if (duplicateWindow) return { ok: false, code: 'duplicate_checkin' };
       const matchingCheckins = appState.checkins.filter((item) => isRecord(item) && item.id === normalized.id);
       if (matchingCheckins.length > 1) return { ok: false, code: 'invalid_checkin' };
       const canonicalCheckin = matchingCheckins[0];
