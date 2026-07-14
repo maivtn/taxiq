@@ -18,35 +18,72 @@ function createMemoryStorage(seed = {}) {
   };
 }
 
-function createStubElement({ dataset = {}, textContent = '', placeholder = '' } = {}) {
+function createClassList(initial = []) {
+  const values = new Set(initial);
+  return {
+    add(...names) { names.forEach((name) => values.add(name)); },
+    remove(...names) { names.forEach((name) => values.delete(name)); },
+    contains(name) { return values.has(name); },
+    toggle(name, force) {
+      const active = force === undefined ? !values.has(name) : Boolean(force);
+      if (active) values.add(name);
+      else values.delete(name);
+      return active;
+    }
+  };
+}
+
+function createStubElement({ id = '', dataset = {}, textContent = '', placeholder = '', classNames = [], onFocus = null } = {}) {
   const attributes = {};
   return {
+    id,
     dataset,
     textContent,
     placeholder,
     attributes,
-    setAttribute(name, value) { attributes[name] = String(value); }
+    classList: createClassList(classNames),
+    disabled: false,
+    hidden: false,
+    isConnected: true,
+    innerHTML: '',
+    setAttribute(name, value) { attributes[name] = String(value); },
+    getAttribute(name) { return attributes[name] ?? null; },
+    removeAttribute(name) { delete attributes[name]; },
+    getClientRects() { return this.isConnected && !this.hidden && !this.classList.contains('hidden') ? [{}] : []; },
+    closest() { return null; },
+    focus() { onFocus?.(this); }
   };
 }
 
-function createDocumentStub({ localizedNodes = [], placeholderNodes = [], languageControls = [] } = {}) {
+function createDocumentStub({
+  localizedNodes = [], placeholderNodes = [], languageControls = [],
+  notificationControls = [], overlayCloseControls = []
+} = {}) {
   const listeners = [];
   const elements = new Map();
-  return {
+  const document = {
     listeners,
     documentElement: { lang: 'vi' },
+    body: { classList: createClassList() },
+    activeElement: null,
     addEventListener(type, handler) { listeners.push({ type, handler }); },
     getElementById(id) {
-      if (!elements.has(id)) elements.set(id, { innerHTML: '' });
+      if (!elements.has(id)) {
+        elements.set(id, createStubElement({ id, onFocus: (element) => { document.activeElement = element; } }));
+      }
       return elements.get(id);
     },
+    querySelector() { return null; },
     querySelectorAll(selector) {
       if (selector === '[data-en][data-vi]') return localizedNodes;
       if (selector === '[data-en-ph][data-vi-ph]') return placeholderNodes;
       if (selector === '[data-language]') return languageControls;
+      if (selector === '[data-action="open-notifications"]') return notificationControls;
+      if (selector === '[data-action="close-overlay"]') return overlayCloseControls;
       return [];
     }
   };
+  return document;
 }
 
 function testApi(seed = {}, { skipInit = true, document } = {}) {
@@ -77,7 +114,7 @@ function testApi(seed = {}, { skipInit = true, document } = {}) {
   if (document) globals.document = document;
   const context = vm.createContext(globals);
   vm.runInContext(script, context);
-  return { api: window.NEXORA_TEST_API, storage };
+  return { api: window.NEXORA_TEST_API, storage, context };
 }
 
 test('creates versioned Vietnamese demo state with per-business balances', () => {
@@ -242,6 +279,16 @@ test('applies persisted English during bootstrap without saving state again', ()
   assert.doesNotMatch(applyLanguage, /commitState|saveState/);
 });
 
+test('localizes the modal close control from persisted English', () => {
+  const closeControl = createStubElement();
+  const document = createDocumentStub({ overlayCloseControls: [closeControl] });
+  const storageKey = 'nexora.customer.prototype.v1';
+
+  testApi({ [storageKey]: JSON.stringify({ profile: { language: 'en' } }) }, { skipInit: false, document });
+
+  assert.equal(closeControl.attributes['aria-label'], 'Close dialog');
+});
+
 const here = dirname(fileURLToPath(import.meta.url));
 const target = join(here, 'cutomer-reward.html');
 
@@ -366,13 +413,18 @@ test('covers accessibility, motion and UI edge states', () => {
 test('gives every enabled button an action and wires the known global controls', () => {
   const source = html();
   const buttons = source.match(/<button\b[\s\S]*?<\/button>/g) || [];
+  const registeredActions = new Set([...source.matchAll(/registerAction\('([^']+)'/g)].map(([, action]) => action));
   for (const button of buttons) {
-    if (/\bdisabled\b/.test(button)) continue;
-    const interactive = /data-action=|data-nav-target=|data-explore-filter=|data-offer-filter=|data-payment-method=|data-book-(?:service|staff|day|time)=/.test(button);
+    const openingTag = button.match(/<button\b[^>]*>/)?.[0] ?? '';
+    if (/\sdisabled(?:\s|=|>)/.test(openingTag)) continue;
+    const interactive = /data-action=|data-nav-target=|data-explore-filter=|data-offer-filter=|data-payment-method=|data-book-(?:service|staff|day|time)=/.test(openingTag);
     assert.ok(interactive, `enabled button needs an action: ${button.slice(0, 160)}`);
+    const action = openingTag.match(/data-action="([^"]+)"/)?.[1];
+    if (action) assert.ok(registeredActions.has(action), `button action must be registered: ${action}`);
   }
-  for (const action of ['open-notifications', 'edit-profile', 'logout', 'reset-demo']) {
+  for (const action of ['open-notifications', 'edit-profile', 'payment-methods', 'privacy-details', 'logout', 'reset-demo']) {
     assert.match(source, new RegExp(`data-action="${action}"`));
+    assert.ok(registeredActions.has(action), `global action must be registered: ${action}`);
   }
 });
 
@@ -382,4 +434,82 @@ test('renders a raised mobile Scan control without changing desktop sidebar beha
   assert.match(source, /mobile-scan-icon/);
   assert.match(source, /item\.id === 'scan'/);
   assert.match(source, /id="desktop-nav"/);
+  const desktopTemplate = source.match(/getElementById\('desktop-nav'\)\.innerHTML = ([\s\S]*?);\n\s*document\.getElementById\('mobile-nav'\)/)?.[1];
+  assert.ok(desktopTemplate, 'desktop navigation template must be isolated');
+  assert.match(desktopTemplate, /class="nav-item w-full"/);
+  assert.doesNotMatch(desktopTemplate, /mobile-scan-(?:button|icon)/);
+});
+
+test('refreshes the unread notification label immediately after opening notifications', () => {
+  const notification = createStubElement({ dataset: { action: 'open-notifications' } });
+  const document = createDocumentStub({ notificationControls: [notification] });
+  const { context } = testApi({}, { skipInit: false, document });
+  const event = {
+    target: {
+      closest(selector) { return selector === '[data-action]' ? notification : null; }
+    }
+  };
+
+  assert.equal(notification.attributes['aria-label'], 'Thông báo, 1 chưa đọc');
+  context.handleAction(event);
+  assert.equal(notification.attributes['aria-label'], 'Thông báo, 0 chưa đọc');
+});
+
+test('traps modal focus, closes with Escape and restores a safe focus target', () => {
+  const document = createDocumentStub();
+  const { context } = testApi({}, { document });
+  const overlay = document.getElementById('app-overlay');
+  const close = createStubElement({ dataset: { action: 'close-overlay' }, onFocus: (element) => { document.activeElement = element; } });
+  const cancel = document.getElementById('overlay-cancel');
+  const confirm = document.getElementById('overlay-confirm');
+  overlay.querySelectorAll = () => [close, cancel, confirm];
+  const trigger = document.getElementById('modal-trigger');
+  const screenRegion = document.getElementById('screen-region');
+  trigger.focus();
+
+  context.openOverlay({ title: 'Kiểm tra', html: 'Nội dung', hideCancel: true }, trigger);
+  const persistedOverlay = vm.runInContext('state.ui.overlay', context);
+  assert.equal(JSON.stringify(persistedOverlay), '{"kind":"dialog"}');
+  assert.equal(Object.values(persistedOverlay).some((value) => typeof value === 'function' || value === trigger), false);
+  assert.equal(document.activeElement, confirm);
+
+  let prevented = false;
+  context.handleKeydown({ key: 'Tab', shiftKey: false, preventDefault() { prevented = true; } });
+  assert.equal(prevented, true);
+  assert.equal(document.activeElement, close);
+
+  context.handleKeydown({ key: 'Tab', shiftKey: true, preventDefault() {} });
+  assert.equal(document.activeElement, confirm);
+  context.handleKeydown({ key: 'Escape', preventDefault() {} });
+  assert.equal(overlay.attributes['aria-hidden'], 'true');
+  assert.equal(document.activeElement, trigger);
+
+  trigger.isConnected = false;
+  context.openOverlay({ title: 'Kiểm tra', html: 'Nội dung' }, trigger);
+  context.closeOverlay(null);
+  assert.equal(document.activeElement, screenRegion);
+});
+
+test('cancel and confirm modal actions close the dialog and run the matching callback', () => {
+  const document = createDocumentStub();
+  const { context } = testApi({}, { document });
+  const overlay = document.getElementById('app-overlay');
+  const trigger = document.getElementById('modal-trigger');
+  const cancel = document.getElementById('overlay-cancel');
+  const confirm = document.getElementById('overlay-confirm');
+  const results = [];
+  const eventFor = (control) => ({
+    target: { closest(selector) { return selector === '[data-action]' ? control : null; } }
+  });
+
+  cancel.dataset.action = 'cancel-overlay';
+  confirm.dataset.action = 'confirm-overlay';
+  context.openOverlay({ title: 'Cancel', html: 'Body', onCancel: () => results.push('cancel') }, trigger);
+  context.handleAction(eventFor(cancel));
+  assert.equal(overlay.attributes['aria-hidden'], 'true');
+
+  context.openOverlay({ title: 'Confirm', html: 'Body', onConfirm: () => results.push('confirm') }, trigger);
+  context.handleAction(eventFor(confirm));
+  assert.equal(overlay.attributes['aria-hidden'], 'true');
+  assert.deepEqual(results, ['cancel', 'confirm']);
 });

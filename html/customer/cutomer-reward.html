@@ -247,10 +247,10 @@
     <div id="form-error-state" class="pointer-events-none fixed inset-x-4 top-24 z-[65] hidden justify-center" data-state="error" role="alert"><div class="rounded-xl border border-app-red/30 bg-app-card px-4 py-3 text-sm font-bold text-app-red" data-en="Please check the highlighted fields." data-vi="Vui lòng kiểm tra các trường được đánh dấu.">Vui lòng kiểm tra các trường được đánh dấu.</div></div>
     <div id="toast-region" class="pointer-events-none fixed inset-x-4 bottom-24 z-[70] flex justify-center lg:bottom-8 lg:left-auto lg:right-8" aria-live="polite" aria-atomic="true"></div>
     <div id="app-overlay" class="fixed inset-0 z-[80] hidden items-end justify-center bg-black/70 p-4 backdrop-blur-sm sm:items-center" data-overlay aria-hidden="true">
-      <div class="app-card max-h-[min(88dvh,720px)] w-full max-w-md overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="overlay-title">
+      <div class="app-card max-h-[min(88dvh,720px)] w-full max-w-md overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="overlay-title" tabindex="-1">
         <div class="flex items-start justify-between gap-4">
           <div><p class="eyebrow" data-en="NEXORA notice" data-vi="Thông báo NEXORA">Thông báo NEXORA</p><h2 id="overlay-title" class="mt-1 text-xl font-black"></h2></div>
-          <button type="button" class="icon-button" data-action="close-overlay" aria-label="Đóng"><i data-lucide="x" class="size-5" aria-hidden="true"></i></button>
+          <button type="button" class="icon-button" data-action="close-overlay" aria-label="Đóng hộp thoại"><i data-lucide="x" class="size-5" aria-hidden="true"></i></button>
         </div>
         <div id="overlay-content" class="mt-4 text-sm leading-6 text-app-muted"></div>
         <div id="overlay-actions" class="mt-5 grid gap-2 sm:grid-cols-2">
@@ -515,7 +515,7 @@
         addPhotoDetail: 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.',
         verificationResent: 'Đã gửi lại mã xác thực', openingMaps: 'Đang mở ứng dụng bản đồ',
         inviteCopied: 'Đã sao chép liên kết', preferencesSaved: 'Đã lưu tùy chọn',
-        cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', dataReset: 'Dữ liệu mẫu đã được đặt lại',
+        cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
         editProfileTitle: 'Chỉnh sửa hồ sơ', editProfileDetail: 'Tính năng chỉnh sửa hồ sơ sẽ có trong phiên bản tiếp theo.',
         paymentMethodsTitle: 'Phương thức thanh toán', paymentMethodsDetail: 'Bạn đã liên kết Zelle và Venmo trên thiết bị này.',
@@ -532,7 +532,7 @@
         addPhotoDetail: 'The production app will open your device photo picker.',
         verificationResent: 'Verification code resent', openingMaps: 'Opening maps',
         inviteCopied: 'Invite link copied', preferencesSaved: 'Preferences saved',
-        cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', dataReset: 'Demo data was reset',
+        cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
         editProfileTitle: 'Edit profile', editProfileDetail: 'Profile editing will be available in the next version.',
         paymentMethodsTitle: 'Payment methods', paymentMethodsDetail: 'Zelle and Venmo are linked on this device.',
@@ -636,8 +636,50 @@
       }
     }
 
-    function openOverlay({ title, html, confirmLabel = t('confirm'), cancelLabel = t('cancel'), onConfirm = null, onCancel = null, hideCancel = false }) {
-      state.ui.overlay = { onConfirm, onCancel };
+    let overlayRuntime = null;
+    let overlayReturnFocus = null;
+
+    function isVisibleElement(element) {
+      if (!element?.isConnected || element.hidden || element.disabled || element.classList?.contains('hidden')) return false;
+      if (element.closest?.('[aria-hidden="true"]')) return false;
+      const style = window.getComputedStyle?.(element);
+      if (style?.display === 'none' || style?.visibility === 'hidden') return false;
+      return typeof element.getClientRects !== 'function' || element.getClientRects().length > 0;
+    }
+
+    function getFocusableOverlayControls() {
+      const selector = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+      return [...document.getElementById('app-overlay').querySelectorAll(selector)].filter(isVisibleElement);
+    }
+
+    function trapOverlayFocus(event) {
+      const controls = getFocusableOverlayControls();
+      if (!controls.length) {
+        event.preventDefault();
+        document.getElementById('app-overlay').querySelector('[role="dialog"]')?.focus();
+        return;
+      }
+      const first = controls[0];
+      const last = controls.at(-1);
+      const activeIndex = controls.indexOf(document.activeElement);
+      if (event.shiftKey && (activeIndex <= 0)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (activeIndex === -1 || document.activeElement === last)) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    function restoreOverlayFocus(target) {
+      const fallback = document.getElementById('screen-region');
+      (isVisibleElement(target) ? target : fallback).focus?.({ preventScroll: true });
+    }
+
+    function openOverlay({ title, html, confirmLabel = t('confirm'), cancelLabel = t('cancel'), onConfirm = null, onCancel = null, hideCancel = false }, trigger = document.activeElement) {
+      overlayRuntime = { onConfirm, onCancel };
+      overlayReturnFocus = trigger;
+      state.ui.overlay = { kind: 'dialog' };
       document.getElementById('overlay-title').textContent = title;
       document.getElementById('overlay-content').innerHTML = html;
       document.getElementById('overlay-confirm').textContent = confirmLabel;
@@ -649,20 +691,28 @@
       overlay.classList.add('flex');
       overlay.setAttribute('aria-hidden', 'false');
       document.body.classList.add('overflow-hidden');
+      renderGlobalState();
       document.getElementById('overlay-confirm').focus();
       if (window.lucide) window.lucide.createIcons();
     }
 
     function closeOverlay(result = null) {
-      const callbacks = state.ui.overlay;
+      const callbacks = overlayRuntime;
+      const returnFocus = overlayReturnFocus;
+      overlayRuntime = null;
+      overlayReturnFocus = null;
       state.ui.overlay = null;
       const overlay = document.getElementById('app-overlay');
       overlay.classList.add('hidden');
       overlay.classList.remove('flex');
       overlay.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('overflow-hidden');
-      if (result === true && callbacks?.onConfirm) callbacks.onConfirm();
-      if (result === false && callbacks?.onCancel) callbacks.onCancel();
+      try {
+        if (result === true && callbacks?.onConfirm) callbacks.onConfirm();
+        if (result === false && callbacks?.onCancel) callbacks.onCancel();
+      } finally {
+        if (!overlayRuntime) restoreOverlayFocus(returnFocus);
+      }
     }
 
     function startScan() {
@@ -836,27 +886,28 @@
     registerAction('confirm-overlay', () => closeOverlay(true));
     registerAction('open-notifications', () => {
       commitState((draft) => draft.notifications.forEach((item) => { item.read = true; }));
+      renderGlobalState();
       navigateTo('activity');
     });
-    registerAction('edit-profile', () => openOverlay({
+    registerAction('edit-profile', (control) => openOverlay({
       title: t('editProfileTitle'),
       html: t('editProfileDetail'),
       confirmLabel: t('gotIt'),
       hideCancel: true
-    }));
-    registerAction('payment-methods', () => openOverlay({
+    }, control));
+    registerAction('payment-methods', (control) => openOverlay({
       title: t('paymentMethodsTitle'),
       html: t('paymentMethodsDetail'),
       confirmLabel: t('gotIt'),
       hideCancel: true
-    }));
-    registerAction('privacy-details', () => openOverlay({
+    }, control));
+    registerAction('privacy-details', (control) => openOverlay({
       title: t('privacyTitle'),
       html: t('privacyDetail'),
       confirmLabel: t('gotIt'),
       hideCancel: true
-    }));
-    registerAction('logout', () => openOverlay({
+    }, control));
+    registerAction('logout', (control) => openOverlay({
       title: t('logoutTitle'),
       html: t('logoutDetail'),
       onConfirm: () => {
@@ -864,8 +915,8 @@
         navigateTo('login1');
         showToast(t('loggedOut'));
       }
-    }));
-    registerAction('reset-demo', () => openOverlay({
+    }, control));
+    registerAction('reset-demo', (control) => openOverlay({
       title: t('resetTitle'),
       html: t('resetDetail'),
       onConfirm: () => {
@@ -875,7 +926,7 @@
         navigateTo('home');
         showToast(t('dataReset'));
       }
-    }));
+    }, control));
     registerAction('start-scan', () => startScan());
     registerAction('select-tip', (control) => selectTip(control.dataset.amount, control));
     registerAction('send-tip', () => sendTip());
@@ -891,12 +942,12 @@
     registerAction('submit-review', () => submitReview());
     registerAction('review-booking', () => reviewBooking());
     registerAction('confirm-booking', () => confirmBooking());
-    registerAction('upload-look', () => openOverlay({
+    registerAction('upload-look', (control) => openOverlay({
       title: t('addPhoto'),
       html: t('addPhotoDetail'),
       confirmLabel: t('gotIt'),
       hideCancel: true
-    }));
+    }, control));
     registerAction('resend-code', () => showToast(t('verificationResent')));
     registerAction('show-directions', () => showToast(t('openingMaps')));
     registerAction('copy-referral', () => {
@@ -927,7 +978,12 @@
     }
 
     function handleKeydown(event) {
-      if (event.key === 'Escape' && state.ui.overlay) closeOverlay(null);
+      if (event.key === 'Escape' && overlayRuntime) {
+        event.preventDefault();
+        closeOverlay(null);
+      } else if (event.key === 'Tab' && overlayRuntime) {
+        trapOverlayFocus(event);
+      }
     }
 
     function renderGlobalState() {
@@ -938,6 +994,9 @@
       const unread = state.notifications.filter((item) => !item.read).length;
       document.querySelectorAll('[data-action="open-notifications"]').forEach((button) => {
         button.setAttribute('aria-label', t('notificationLabel', { count: unread }));
+      });
+      document.querySelectorAll('[data-action="close-overlay"]').forEach((button) => {
+        button.setAttribute('aria-label', t('closeDialog'));
       });
     }
 
