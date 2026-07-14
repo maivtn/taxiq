@@ -507,6 +507,30 @@ test('rejects invalid welcome timestamps without partially mutating state', () =
   assert.equal(JSON.stringify(app), before);
 });
 
+test('fails closed on malformed welcome-gift balances before UUID, OTP or claim mutation', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, { randomUUID: () => {
+    uuidCalls += 1;
+    return '00000000-0000-4000-8000-000000000077';
+  } });
+  const malformedBalances = [
+    { points: -1, credits: 0, expiringPoints: null },
+    { points: '2450', credits: 0, expiringPoints: null },
+    { points: 2450, credits: 'bad', expiringPoints: null },
+    { points: 2450, credits: 0, expiringPoints: { amount: 25, date: 'not-a-date' } },
+    null
+  ];
+  malformedBalances.forEach((balance) => {
+    const app = api.createDefaultState();
+    app.balances['bitcoin-nail-bar'] = balance;
+    const before = JSON.stringify(app);
+    const result = api.claimWelcomeGift(app, '(713) 555-0199', 40000);
+    assert.equal(result.code, 'invalid_balance');
+    assert.equal(JSON.stringify(app), before);
+  });
+  assert.equal(uuidCalls, 0);
+});
+
 test('keeps welcome state atomic when UUID generation throws', () => {
   const { api } = testApi({}, { randomUUID: () => { throw new Error('uuid unavailable'); } });
   const app = api.createDefaultState();
@@ -1374,6 +1398,7 @@ test('persists and renders the actual redemption receipt context', () => {
   assert.equal(vm.runInContext('state.ui.pendingContext.redemptionId', loaded.context), redemption.id);
   assert.equal(document.getElementById('reward-done-code').textContent, redemption.qrPayload);
   assert.equal(document.getElementById('reward-done-title').textContent, 'Tín dụng dịch vụ $5');
+  assert.equal(document.getElementById('reward-done-status').textContent, 'Sẵn sàng');
   loaded.context.navigateTo('redeemdone', { focus: false });
   const persisted = loaded.api.loadState(loaded.storage);
   assert.equal(persisted.ui.pendingContext.redemptionId, redemption.id);
@@ -1382,6 +1407,19 @@ test('persists and renders the actual redemption receipt context', () => {
   const restored = testApi({ [loaded.api.STORAGE_KEY]: JSON.stringify(persisted) }, { document: restoredDocument, skipInit: false });
   assert.equal(vm.runInContext('state.ui.activeScreen', restored.context), 'redeemdone');
   assert.equal(restoredDocument.getElementById('reward-done-code').textContent, redemption.qrPayload);
+});
+
+test('rejects persisted receipts with invalid status and restores rewards safely', () => {
+  const { api } = testApi();
+  const persisted = api.createDefaultState();
+  persisted.ui.activeScreen = 'redeemdone';
+  persisted.ui.activeModule = 'wallet';
+  persisted.ui.pendingContext.redemptionId = 'red-demo';
+  persisted.redemptions[0].status = 'redeemed';
+  const document = createDocumentStub();
+  const loaded = testApi({ [api.STORAGE_KEY]: JSON.stringify(persisted) }, { document, skipInit: false });
+  assert.equal(vm.runInContext('state.ui.activeScreen', loaded.context), 'rewards');
+  assert.equal(vm.runInContext('state.ui.pendingContext.redemptionId', loaded.context), null);
 });
 
 test('deduplicates whitespace-equivalent persisted idempotency keys deterministically', () => {
