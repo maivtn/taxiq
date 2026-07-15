@@ -712,8 +712,8 @@
       });
     }
 
-    function collectRawGuestClaimLedgerCollisionIds(ledger) {
-      if (!Array.isArray(ledger)) return new Set();
+    function collectRawGuestClaimLedgerCollisionEvidence(ledger) {
+      if (!Array.isArray(ledger)) return { ledgerIds: new Set(), claimIds: new Set() };
       const entriesById = new Map();
       ledger.forEach((entry) => {
         if (!isRecord(entry)) return;
@@ -722,18 +722,38 @@
         if (!entriesById.has(id)) entriesById.set(id, []);
         entriesById.get(id).push(entry);
       });
-      return new Set([...entriesById]
-        .filter(([, entries]) => entries.length > 1
-          && entries.some((entry) => normalizedRequiredText(entry.refType) === 'guest_claim'))
-        .map(([id]) => id));
+      const collisions = [...entriesById].filter(([, entries]) => entries.length > 1
+        && entries.some((entry) => normalizedRequiredText(entry.refType) === 'guest_claim'));
+      return {
+        ledgerIds: new Set(collisions.map(([id]) => id)),
+        claimIds: new Set(collisions.flatMap(([, entries]) => entries.flatMap((entry) => {
+          const claimId = normalizedRequiredText(entry.refId);
+          return normalizedRequiredText(entry.refType) === 'guest_claim' && claimId ? [claimId] : [];
+        })))
+      };
     }
 
-    function quarantineRawGuestClaimLedgerCollisions(appState, collisionIds) {
-      if (!(collisionIds instanceof Set) || collisionIds.size === 0) return;
-      appState.ledger = appState.ledger.filter((entry) => !(
-        collisionIds.has(normalizedRequiredText(entry.id))
-        && normalizedRequiredText(entry.refType) === 'guest_claim'
-      ));
+    function quarantineRawGuestClaimLedgerCollisions(appState, evidence) {
+      if (!isRecord(evidence) || !(evidence.ledgerIds instanceof Set)
+        || !(evidence.claimIds instanceof Set) || evidence.ledgerIds.size === 0) return;
+      const proofIds = new Set(appState.guestRewardClaims
+        .filter((claim) => evidence.claimIds.has(claim.id))
+        .map((claim) => claim.sourceId));
+      const checkoutIds = new Set(appState.paymentProofs
+        .filter((proof) => proofIds.has(proof.id))
+        .map((proof) => proof.checkoutDraftId));
+      const aggregateClaimIds = new Set(appState.guestRewardClaims
+        .filter((claim) => proofIds.has(claim.sourceId))
+        .map((claim) => claim.id));
+      appState.checkoutDrafts = appState.checkoutDrafts.filter((checkout) => !checkoutIds.has(checkout.id));
+      appState.paymentProofs = appState.paymentProofs.filter((proof) => !proofIds.has(proof.id));
+      appState.receipts = appState.receipts.filter((receipt) => !checkoutIds.has(receipt.checkoutDraftId));
+      appState.guestRewardClaims = appState.guestRewardClaims.filter((claim) => !proofIds.has(claim.sourceId));
+      appState.ledger = appState.ledger.filter((entry) => {
+        if (normalizedRequiredText(entry.refType) !== 'guest_claim') return true;
+        return !evidence.ledgerIds.has(normalizedRequiredText(entry.id))
+          && !aggregateClaimIds.has(normalizedRequiredText(entry.refId));
+      });
     }
 
     function collectRawBookingLedgerClaims(ledger) {
@@ -1555,11 +1575,19 @@
       }
 
       const proofCheckoutIds = new Set();
+      const verifiedGuestCheckinIds = new Set();
       for (const proof of appState.paymentProofs) {
         const checkout = appState.checkoutDrafts.find((row) => row.id === proof.checkoutDraftId);
         if (!checkout || proofCheckoutIds.has(proof.checkoutDraftId)
           || !isCanonicalProofForCheckout(appState, proof, checkout)) return false;
         proofCheckoutIds.add(proof.checkoutDraftId);
+        const rewards = proof.status === 'verified' && checkout.status === 'confirmed'
+          ? calculatePaymentProofRewards(checkout)
+          : null;
+        if (Array.isArray(rewards) && rewards.length > 0) {
+          if (verifiedGuestCheckinIds.has(checkout.guestCheckinId)) return false;
+          verifiedGuestCheckinIds.add(checkout.guestCheckinId);
+        }
       }
 
       const receiptCheckoutIds = new Set();
@@ -1582,9 +1610,12 @@
       return appState.ledger.every((entry) => (
         normalizedRequiredText(entry.businessId) === entry.businessId
         && Boolean(getValidBusiness(appState, entry.businessId))
+        && Boolean(normalizedRequiredText(entry.type))
         && normalizedRequiredText(entry.type) === entry.type
-        && typeof entry.pointsDelta === 'number' && Number.isFinite(entry.pointsDelta)
+        && Number.isSafeInteger(entry.pointsDelta)
+        && Boolean(normalizedRequiredText(entry.refType))
         && normalizedRequiredText(entry.refType) === entry.refType
+        && Boolean(normalizedRequiredText(entry.refId))
         && normalizedRequiredText(entry.refId) === entry.refId
         && validStoredTimestamp(entry.createdAt)
       ));
@@ -1664,9 +1695,14 @@
       const ledgerValidation = validateGuestClaimLedgerLifecycle(appState, authoritativeClaims);
       if (!ledgerValidation.ok) return ledgerValidation;
 
-      const eligibleClaims = authoritativeClaims.filter((claim) => eligibleIds.has(claim.guestCheckinId));
-      for (const checkin of matchingCheckins) {
-        const claims = eligibleClaims.filter((claim) => claim.guestCheckinId === checkin.id);
+      for (const checkin of appState.guestCheckins) {
+        const claims = authoritativeClaims.filter((claim) => claim.guestCheckinId === checkin.id);
+        if (claims.length === 0) {
+          if (checkin.claimedAt !== null) {
+            return { ok: false, code: 'invalid_claim_lifecycle' };
+          }
+          continue;
+        }
         const pending = claims.some((claim) => claim.status === 'pending');
         const claimed = claims.some((claim) => claim.status === 'claimed');
         if (pending && claimed) {
@@ -1684,6 +1720,7 @@
           }
         }
       }
+      const eligibleClaims = authoritativeClaims.filter((claim) => eligibleIds.has(claim.guestCheckinId));
       const targets = eligibleClaims.filter((claim) => claim.status === 'pending');
       if (targets.length === 0) return { ok: true, claimedPoints: 0, claimedCount: 0 };
 
@@ -2744,7 +2781,7 @@
       if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
       const rawRedemptionClaims = collectRawRedemptionClaims(value.redemptions);
       const rawTransactionLedgerClaims = collectRawTransactionLedgerClaims(value.ledger);
-      const rawGuestClaimLedgerCollisionIds = collectRawGuestClaimLedgerCollisionIds(value.ledger);
+      const rawGuestClaimLedgerCollisionEvidence = collectRawGuestClaimLedgerCollisionEvidence(value.ledger);
       const rawBookingLedgerClaims = collectRawBookingLedgerClaims(value.ledger);
       const rawAppointmentClaims = collectRawAppointmentClaims(value.appointments);
       const rawFeedbackLedgerClaims = collectRawFeedbackLedgerClaims(value.ledger);
@@ -2774,7 +2811,7 @@
       migrated.receipts = normalizeList(value.receipts, normalizeReceipt);
       migrated.guestRewardClaims = normalizeList(value.guestRewardClaims, normalizeGuestRewardClaim);
       reconcileVerifiedPaymentAggregates(migrated, value);
-      quarantineRawGuestClaimLedgerCollisions(migrated, rawGuestClaimLedgerCollisionIds);
+      quarantineRawGuestClaimLedgerCollisions(migrated, rawGuestClaimLedgerCollisionEvidence);
       const claimCounts = new Map();
       migrated.guestRewardClaims.forEach((claim) => {
         const key = JSON.stringify([claim.guestCheckinId, claim.sourceType, claim.sourceId]);

@@ -4427,6 +4427,59 @@ function bindMergePhone(app, phone = '8325550198') {
   app.profile.phone = phone;
 }
 
+function cloneVerifiedAggregateForSameGuest(app, fixture) {
+  const checkout = {
+    ...structuredClone(fixture.checkout),
+    id: 'checkout-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'
+  };
+  const proof = {
+    ...structuredClone(fixture.proof),
+    id: 'proof-cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+    checkoutDraftId: checkout.id
+  };
+  const receipt = {
+    ...structuredClone(fixture.receipt),
+    id: 'receipt-dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+    checkoutDraftId: checkout.id
+  };
+  const claimUuids = [
+    'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',
+    'ffffffff-ffff-4fff-8fff-ffffffffffff',
+    'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+  ];
+  const claims = fixture.claims.map((claim, index) => ({
+    ...structuredClone(claim),
+    id: `guest-claim-${claim.sourceType}-${claimUuids[index]}`,
+    sourceId: proof.id
+  }));
+  app.checkoutDrafts.push(checkout);
+  app.paymentProofs.push(proof);
+  app.receipts.push(receipt);
+  app.guestRewardClaims.push(...claims);
+  return { checkout, proof, receipt, claims };
+}
+
+function addCrossTypeGuestLedgerCollision(app, claim, id = 'ledger-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb') {
+  const createdAt = claim.claimedAt ?? claim.createdAt;
+  app.ledger.push({
+    id,
+    businessId: claim.businessId,
+    type: claim.sourceType,
+    pointsDelta: claim.points,
+    refType: 'guest_claim',
+    refId: claim.id,
+    createdAt
+  }, {
+    id,
+    businessId: claim.businessId,
+    type: 'tip_bonus',
+    pointsDelta: claim.points,
+    refType: 'tip',
+    refId: 'tip-malformed-unrelated',
+    createdAt
+  });
+}
+
 test('Task 5 merges an authoritative verified guest aggregate once without generating IDs on replay', () => {
   const ids = createUuidSequence();
   const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
@@ -4465,6 +4518,83 @@ test('Task 5 merges an authoritative verified guest aggregate once without gener
   }));
   assert.equal(JSON.stringify(app), snapshot);
   assert.equal(ids.calls(), calls);
+});
+
+test('Task 5 rejects a second canonical verified reward chain for the same guest check-in', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  const first = seedVerifiedGuestReceipt(api, app);
+  const duplicate = cloneVerifiedAggregateForSameGuest(app, first);
+  bindMergePhone(app);
+  assert.equal(api.validateVerifiedPaymentAggregate(app, first.proof.id).ok, true);
+  assert.equal(api.validateVerifiedPaymentAggregate(app, duplicate.proof.id).ok, true);
+  const beforeBytes = JSON.stringify(app);
+  const before = JSON.parse(beforeBytes);
+  const calls = ids.calls();
+
+  const result = api.mergeGuestJourney(app, '8325550198', 3000);
+
+  assert.equal(result.ok, false);
+  assert.deepEqual(JSON.parse(JSON.stringify(app)), before);
+  assert.equal(JSON.stringify(app), beforeBytes);
+  assert.equal(ids.calls(), calls);
+  assert.equal(app.ledger.some((entry) => entry.refType === 'guest_claim'), false);
+});
+
+test('Task 5 preserves rejected retry history while claiming the one verified retry chain', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  assert.equal(api.stageSalonScan(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front').ok, true);
+  const guest = api.createGuestCheckin(app, {
+    name: 'Amy Nguyen', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null
+  }, 1000).guestCheckin;
+  const firstCheckout = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1100).checkoutDraft;
+  assert.equal(api.setCheckoutTip(app, firstCheckout.id, 1800).ok, true);
+  assert.equal(api.setCheckoutMethod(app, firstCheckout.id, 'Zelle').ok, true);
+  const rejectedProof = api.submitPaymentProof(app, {
+    checkoutDraftId: firstCheckout.id, note: '', imageDataUrl: ''
+  }, 1200).proof;
+  assert.equal(api.rejectPaymentProof(app, rejectedProof.id, 'No match', 1300).ok, true);
+  const rejectedCheckoutBytes = JSON.stringify(firstCheckout);
+  const rejectedProofBytes = JSON.stringify(rejectedProof);
+  const retry = api.retryRejectedCheckout(app, rejectedProof.id, 'Zelle', 1400).checkoutDraft;
+  const retryProof = api.submitPaymentProof(app, {
+    checkoutDraftId: retry.id, note: '', imageDataUrl: ''
+  }, 1500).proof;
+  const verified = api.verifyPaymentProof(app, retryProof.id, 1600);
+  assert.equal(verified.ok, true);
+  bindMergePhone(app);
+  const expected = verified.claims.reduce((sum, claim) => sum + claim.points, 0);
+  const beforePoints = app.balances['bitcoin-nail-bar'].points;
+
+  const result = api.mergeGuestJourney(app, '8325550198', 2000);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.claimedPoints, expected);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforePoints + expected);
+  assert.equal(JSON.stringify(app.checkoutDrafts.find((row) => row.id === firstCheckout.id)), rejectedCheckoutBytes);
+  assert.equal(JSON.stringify(app.paymentProofs.find((row) => row.id === rejectedProof.id)), rejectedProofBytes);
+});
+
+test('Task 5 claims distinct same-salon guest check-ins that share one canonical phone', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  const first = seedVerifiedGuestReceipt(api, app, { baseTime: 1000 });
+  const second = seedVerifiedGuestReceipt(api, app, { baseTime: 2000 });
+  bindMergePhone(app);
+  assert.notEqual(first.guest.id, second.guest.id);
+  const expected = [...first.claims, ...second.claims].reduce((sum, claim) => sum + claim.points, 0);
+  const beforePoints = app.balances['bitcoin-nail-bar'].points;
+
+  const result = api.mergeGuestJourney(app, '8325550198', 3000);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.claimedCount, first.claims.length + second.claims.length);
+  assert.equal(result.claimedPoints, expected);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforePoints + expected);
 });
 
 test('Task 5 rejects a canonical mixed pending and claimed batch before UUID or mutation', () => {
@@ -4735,6 +4865,75 @@ test('Task 5 preflights malformed canonical-ID records across every relevant col
   }
 });
 
+test('Task 5 rejects noncanonical ledger text and non-safe point deltas before UUID or mutation', () => {
+  const variants = [
+    ['null type', 'type', null],
+    ['empty type', 'type', ''],
+    ['whitespace type', 'type', '   '],
+    ['null refType', 'refType', null],
+    ['empty refType', 'refType', ''],
+    ['whitespace refType', 'refType', '   '],
+    ['null refId', 'refId', null],
+    ['empty refId', 'refId', ''],
+    ['whitespace refId', 'refId', '   '],
+    ['fractional points', 'pointsDelta', 1.5],
+    ['unsafe points', 'pointsDelta', Number.MAX_SAFE_INTEGER + 1]
+  ];
+  for (const [label, field, value] of variants) {
+    const ids = createUuidSequence();
+    const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+    const app = api.createDefaultState();
+    seedVerifiedGuestReceipt(api, app);
+    bindMergePhone(app);
+    app.ledger.push({
+      id: 'legacy-ledger-integrity-probe',
+      businessId: 'bitcoin-nail-bar',
+      type: 'welcome',
+      pointsDelta: 25,
+      refType: 'onboarding',
+      refId: 'welcome-integrity-probe',
+      createdAt: new Date(2000).toISOString(),
+      [field]: value
+    });
+    const beforeBytes = JSON.stringify(app);
+    const before = JSON.parse(beforeBytes);
+    const calls = ids.calls();
+
+    const result = api.mergeGuestJourney(app, '8325550198', 3000);
+
+    assert.equal(result.ok, false, label);
+    assert.deepEqual(JSON.parse(JSON.stringify(app)), before, label);
+    assert.equal(JSON.stringify(app), beforeBytes, label);
+    assert.equal(ids.calls(), calls, label);
+  }
+});
+
+test('Task 5 accepts a canonical unrelated legacy transaction ledger row', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  const fixture = seedVerifiedGuestReceipt(api, app);
+  bindMergePhone(app);
+  app.ledger.push({
+    id: 'legacy-tip-ledger-row',
+    businessId: 'bitcoin-nail-bar',
+    type: 'tip_bonus',
+    pointsDelta: 7,
+    refType: 'tip',
+    refId: 'legacy-tip-row',
+    createdAt: new Date(2000).toISOString()
+  });
+  const beforePoints = app.balances['bitcoin-nail-bar'].points;
+  const expected = fixture.claims.reduce((sum, claim) => sum + claim.points, 0);
+
+  const result = api.mergeGuestJourney(app, '8325550198', 3000);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.claimedPoints, expected);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforePoints + expected);
+  assert.equal(app.ledger.some((entry) => entry.id === 'legacy-tip-ledger-row'), true);
+});
+
 test('Task 5 enforces the pending and claimed guest-claim ledger lifecycle', () => {
   {
     const ids = createUuidSequence();
@@ -4813,25 +5012,35 @@ test('Task 5 migration never heals an ambiguous claimed guest ledger ID into a r
   const ids = createUuidSequence();
   const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
   const app = api.createDefaultState();
-  seedVerifiedGuestReceipt(api, app);
+  const fixture = seedVerifiedGuestReceipt(api, app);
   bindMergePhone(app);
   assert.equal(api.mergeGuestJourney(app, '8325550198', 3000).ok, true);
   const guestLedger = app.ledger.find((entry) => entry.refType === 'guest_claim');
   app.ledger.push(structuredClone(guestLedger));
 
   const migrated = api.migrateState(structuredClone(app));
+  assert.equal(migrated.checkoutDrafts.some((row) => row.id === fixture.checkout.id), false);
+  assert.equal(migrated.paymentProofs.some((row) => row.id === fixture.proof.id), false);
+  assert.equal(migrated.receipts.some((row) => row.id === fixture.receipt.id), false);
+  assert.equal(migrated.guestRewardClaims.some((claim) => claim.sourceId === fixture.proof.id), false);
+  assert.equal(migrated.ledger.some((entry) => entry.refType === 'guest_claim'
+    && fixture.claims.some((claim) => claim.id === entry.refId)), false);
   const before = JSON.stringify(migrated);
+  const beforePoints = migrated.balances['bitcoin-nail-bar'].points;
+  const calls = ids.calls();
   const result = api.mergeGuestJourney(migrated, '8325550198', 4000);
 
   assert.equal(result.ok, false);
   assert.equal(JSON.stringify(migrated), before);
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, beforePoints);
+  assert.equal(ids.calls(), calls);
 });
 
 test('Task 5 migration quarantines a raw cross-type duplicate before legacy ledger reconciliation', () => {
   const ids = createUuidSequence();
   const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
   const app = api.createDefaultState();
-  seedVerifiedGuestReceipt(api, app);
+  const fixture = seedVerifiedGuestReceipt(api, app);
   bindMergePhone(app);
   assert.equal(api.mergeGuestJourney(app, '8325550198', 3000).ok, true);
   const guestLedger = app.ledger.find((entry) => entry.refType === 'guest_claim');
@@ -4844,9 +5053,10 @@ test('Task 5 migration quarantines a raw cross-type duplicate before legacy ledg
 
   const migrated = api.migrateState(structuredClone(app));
 
-  assert.equal(migrated.guestRewardClaims.some((claim) => (
-    claim.id === guestLedger.refId && claim.status === 'claimed'
-  )), true);
+  assert.equal(migrated.checkoutDrafts.some((row) => row.id === fixture.checkout.id), false);
+  assert.equal(migrated.paymentProofs.some((row) => row.id === fixture.proof.id), false);
+  assert.equal(migrated.receipts.some((row) => row.id === fixture.receipt.id), false);
+  assert.equal(migrated.guestRewardClaims.some((claim) => claim.sourceId === fixture.proof.id), false);
   assert.equal(migrated.ledger.some((entry) => (
     entry.id === guestLedger.id && entry.refType === 'guest_claim'
   )), false);
@@ -4857,6 +5067,77 @@ test('Task 5 migration quarantines a raw cross-type duplicate before legacy ledg
   assert.equal(replay.ok, false);
   assert.deepEqual(JSON.parse(JSON.stringify(migrated)), before);
   assert.equal(JSON.stringify(migrated), beforeBytes);
+  assert.equal(ids.calls(), calls);
+});
+
+test('Task 5 migration removes a pending aggregate tainted by a raw cross-type guest ledger collision', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  const fixture = seedVerifiedGuestReceipt(api, app);
+  bindMergePhone(app);
+  addCrossTypeGuestLedgerCollision(app, fixture.claims[0]);
+
+  const migrated = api.migrateState(structuredClone(app));
+
+  assert.equal(migrated.checkoutDrafts.some((row) => row.id === fixture.checkout.id), false);
+  assert.equal(migrated.paymentProofs.some((row) => row.id === fixture.proof.id), false);
+  assert.equal(migrated.receipts.some((row) => row.id === fixture.receipt.id), false);
+  assert.equal(migrated.guestRewardClaims.some((claim) => claim.sourceId === fixture.proof.id), false);
+  assert.equal(migrated.ledger.some((entry) => entry.refType === 'guest_claim'
+    && fixture.claims.some((claim) => claim.id === entry.refId)), false);
+  assert.equal(migrated.ui.pendingContext.checkoutDraftId, null);
+  assert.equal(migrated.ui.pendingContext.paymentProofId, null);
+  assert.equal(migrated.ui.pendingContext.paydoneKind, null);
+  const beforeBytes = JSON.stringify(migrated);
+  const beforePoints = migrated.balances['bitcoin-nail-bar'].points;
+  const calls = ids.calls();
+
+  const result = api.mergeGuestJourney(migrated, '8325550198', 4000);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.claimedPoints, 0);
+  assert.equal(result.claimedCount, 0);
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, beforePoints);
+  assert.equal(JSON.stringify(migrated), beforeBytes);
+  assert.equal(ids.calls(), calls);
+});
+
+test('Task 5 OTP cannot authenticate or credit a claimed aggregate tainted by a raw collision', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  const now = Date.now();
+  const fixture = seedVerifiedGuestReceipt(api, app, { baseTime: now - 6000 });
+  bindMergePhone(app);
+  assert.equal(api.mergeGuestJourney(app, '8325550198', now - 2000).ok, true);
+  const guestLedger = app.ledger.find((entry) => entry.refId === fixture.claims[0].id);
+  app.ledger.push({
+    ...structuredClone(guestLedger),
+    type: 'tip_bonus',
+    refType: 'tip',
+    refId: 'tip-malformed-unrelated'
+  });
+  app.session.authenticated = false;
+  assert.equal(api.requestOtp(app, '8325550198', now - 1000).ok, true);
+  const beforePoints = app.balances['bitcoin-nail-bar'].points;
+  const loaded = testApi({
+    [api.STORAGE_KEY]: JSON.stringify(app)
+  }, { document: otpDocument(), randomUUID: () => ids.randomUUID() });
+  assert.equal(vm.runInContext(`state.checkoutDrafts.some((row) => row.id === '${fixture.checkout.id}')`, loaded.context), false);
+  assert.equal(vm.runInContext(`state.paymentProofs.some((row) => row.id === '${fixture.proof.id}')`, loaded.context), false);
+  assert.equal(vm.runInContext(`state.guestRewardClaims.some((claim) => claim.sourceId === '${fixture.proof.id}')`, loaded.context), false);
+  assert.equal(vm.runInContext('state.ui.pendingContext.checkoutDraftId', loaded.context), null);
+  assert.equal(vm.runInContext('state.ui.pendingContext.paymentProofId', loaded.context), null);
+  assert.equal(vm.runInContext('state.ui.pendingContext.paydoneKind', loaded.context), null);
+  const beforeAction = vm.runInContext('JSON.stringify(state)', loaded.context);
+  const calls = ids.calls();
+
+  vm.runInContext("ACTIONS.get('verify-otp')()", loaded.context);
+
+  assert.equal(vm.runInContext('JSON.stringify(state)', loaded.context), beforeAction);
+  assert.equal(vm.runInContext('state.session.authenticated', loaded.context), false);
+  assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", loaded.context), beforePoints);
   assert.equal(ids.calls(), calls);
 });
 
