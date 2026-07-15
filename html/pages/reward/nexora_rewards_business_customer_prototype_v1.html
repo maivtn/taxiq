@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nexora Rewards Prototype</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#101828;--muted:#667085;--line:#e6eaf2;--p:#7048f4;--p2:#c42de5;--blue:#2789ff;--green:#18a66f}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui;background:#0b1022;color:#fff}
+.app{display:grid;grid-template-columns:270px 1fr;min-height:100vh}.side{padding:18px;background:#0b1022}.brand{font-weight:950;font-size:18px;margin-bottom:18px}.brand small{display:block;color:#8f9ab5;font-size:11px;margin-top:4px}
+.sec{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#68738e;margin:16px 8px 7px}.nav{width:100%;border:0;background:transparent;color:#c6ccda;text-align:left;padding:10px 12px;border-radius:12px;font-weight:850;margin:2px 0}.nav.active{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff}
+.main{background:var(--bg);color:var(--ink);padding:18px}.top{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.top h1{margin:0;font-size:21px}.top p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.btn{border:0;border-radius:13px;padding:11px 14px;font-weight:900;background:#edf1f7;color:#20283a;cursor:pointer}.btn.p{background:linear-gradient(135deg,var(--p2),var(--blue));color:#fff}.btn.g{background:var(--green);color:#fff}.btn.o{background:#fff;border:1px solid var(--line)}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px}.soft{background:#f9fafc}.title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}.title h3{margin:0;font-size:15px}.chip{display:inline-flex;padding:6px 9px;border-radius:999px;background:#f0ebff;color:var(--p);font-size:10px;font-weight:900}.chip.g{background:#eaf8f2;color:var(--green)}
+.kpi b{display:block;font-size:28px;margin-top:3px}.muted{color:var(--muted);font-size:12px;line-height:1.45}.line{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line)}.line:last-child{border-bottom:0}.total{font-size:19px;font-weight:950}
+.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:11px;font-weight:900;color:#4b5568}.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:13px;padding:11px 12px;background:#fff}.form2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.rewardType{border:1px solid var(--line);border-radius:16px;padding:13px}.rewardType.active{border-color:var(--p);box-shadow:0 0 0 3px #7048f414}.program{border:1px solid var(--line);border-radius:15px;padding:12px;margin-bottom:9px}
+.phone{max-width:410px;margin:auto;background:#f7f8fc;border:10px solid #05070e;border-radius:42px;overflow:hidden;min-height:720px}.phoneHead{background:#101426;color:#fff;text-align:center;padding:16px;font-weight:950}.phoneBody{padding:14px}.reward{background:linear-gradient(135deg,#fff,#f8f3ff);border:1px solid #d9cdfc;border-radius:22px;padding:16px;margin-bottom:11px}.value{font-size:34px;font-weight:950;color:var(--p)}.tabs{display:flex;gap:8px;margin-bottom:12px}.tab{flex:1;border:0;border-radius:12px;padding:10px;font-weight:900;background:#e9edf5;color:#667085}.tab.active{background:linear-gradient(135deg,var(--p2),var(--blue));color:#fff}
+@media(max-width:800px){.app{grid-template-columns:1fr}.side{display:none}.g2,.g3,.form2{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="app">
+<aside class="side">
+<div class="brand">NEXORA REWARDS<small>Business + Customer Flow</small></div>
+<div class="sec">Business</div>
+<button class="nav active" data-v="dash">Reward Dashboard</button>
+<button class="nav" data-v="create">Create Reward</button>
+<button class="nav" data-v="rules">Reward Rules</button>
+<button class="nav" data-v="delivery">Audience & Delivery</button>
+<button class="nav" data-v="analytics">Reward Analytics</button>
+<div class="sec">Customer</div>
+<button class="nav" data-v="inbox">Reward Inbox</button>
+<button class="nav" data-v="detail">Reward Detail</button>
+<button class="nav" data-v="use">Use at Checkout</button>
+</aside>
+<main class="main">
+<div class="top"><div><h1 id="pt">Reward Dashboard</h1><p id="ps">Create, deliver and track customer rewards</p></div><button class="btn p" onclick="go('create')">+ Create Reward</button></div>
+<div id="root"></div>
+</main></div>
+<script>
+const line=(a,b,c='')=>`<div class="line ${c}"><span>${a}</span><b>${b}</b></div>`;
+const title=(a,b)=>`<div class="title"><h3>${a}</h3><span class="chip">${b}</span></div>`;
+const kpi=(a,b,c)=>`<div class="card kpi"><span class="muted">${a}</span><b>${b}</b><span class="chip g">${c}</span></div>`;
+const field=(a,b)=>`<div class="field"><label>${a}</label><input value="${b}"></div>`;
+const sel=(a,ops)=>`<div class="field"><label>${a}</label><select>${ops.map(x=>`<option>${x}</option>`).join('')}</select></div>`;
+const phone=(t,b)=>`<div class="phone"><div class="phoneHead">${t}</div><div class="phoneBody">${b}</div></div>`;
+const prog=(a,b,c)=>`<div class="program">${title(a,c)}<p class="muted">${b}</p></div>`;
+const V={
+dash:()=>`<div class="grid g3">${kpi('Active Rewards','8','Live')}${kpi('Issued','1,284','This month')}${kpi('Redeemed','542','42.2%')}</div><div style="height:14px"></div><div class="grid g2"><div class="card">${title('Active Programs','8')}${prog('Review & Earn','$5 after verified review','542 issued')}${prog('Tip & Earn','50 points after tipping','286 issued')}${prog('Welcome Reward','15% off first visit','221 issued')}</div><div class="card soft">${title('AI Suggestions','3')}<p class="muted"><b>Increase review conversion:</b> offer $5 after a verified review.</p><p class="muted"><b>Improve rebooking:</b> send a 14-day return reward.</p><p class="muted"><b>Promote mobile service:</b> waive travel fee within 5 miles.</p></div></div>`,
+create:()=>`<div class="grid g2"><div class="card">${title('Create Reward','Step 1')}<div class="grid g2"><div class="rewardType active"><b>Dollar Credit</b><p class="muted">$5, $10 or custom</p></div><div class="rewardType"><b>Percent Off</b><p class="muted">10%, 15%, 20%</p></div><div class="rewardType"><b>Free Add-on</b><p class="muted">Gel, French, design</p></div><div class="rewardType"><b>Bonus Points</b><p class="muted">Reward points</p></div></div><div style="height:12px"></div><div class="form2">${field('Reward Name','Review & Earn $5')}${field('Reward Value','$5')}${sel('Trigger',['After Verified Review','After Tip','After Visit','After Referral'])}${sel('Applies To',['All Services','Selected Services','Minimum Spend'])}${field('Expiration','30 days')}${field('Usage Limit','1 per customer')}</div><button class="btn p" style="margin-top:12px" onclick="go('rules')">Continue</button></div><div class="card" style="background:linear-gradient(135deg,#10172e,#573b9c);color:#fff"><span class="chip g">Bitcoin Nail Bar</span><h2 style="font-size:30px">Earn $5 Reward</h2><p style="color:#ccd3e5">Leave a verified review and receive $5 Nexora Reward Credit.</p>${line('Expires','30 days')}${line('Minimum spend','$25')}${line('Use','Next visit')}</div></div>`,
+rules:()=>`<div class="grid g2"><div class="card">${title('Qualification Rules','Step 2')}${line('Trigger','Verified review')}${line('Ticket','Paid & Closed')}${line('Minimum Spend','$25')}${line('Review Window','7 days')}${line('Exclusions','Refunded / disputed')}<button class="btn o" style="margin-top:10px">+ Add Rule</button></div><div class="card soft">${title('Usage Rules','Redemption')}${line('Combine promotions','No')}${line('Use with membership','Yes')}${line('Minimum purchase','$25')}${line('Valid locations','Bitcoin Nail Bar')}${line('Auto apply','Ask customer')}<button class="btn p" style="margin-top:12px" onclick="go('delivery')">Continue</button></div></div>`,
+delivery:()=>`<div class="grid g2"><div class="card">${title('Audience','Step 3')}<div class="form2">${sel('Segment',['All Customers','New Customers','VIP','Inactive 30+ Days','Customers Who Reviewed'])}${sel('Location',['Bitcoin Nail Bar','All Locations'])}${sel('Delivery',['Immediately','Next Morning','Custom'])}${sel('Language',['Auto','English','Vietnamese'])}</div><p class="muted">App users receive in-app reward. Guests receive SMS reward link.</p></div><div class="card soft">${title('Channels','Step 4')}${line('Nexora App','Primary')}${line('Push Notification','Enabled')}${line('SMS Guest Fallback','Enabled')}${line('Email','Optional')}<button class="btn g" style="margin-top:12px" onclick="go('inbox')">Publish Reward</button></div></div>`,
+analytics:()=>`<div class="grid g3">${kpi('Issued','1,284','')}${kpi('Opened','986','76.8%')}${kpi('Redeemed','542','42.2%')}</div><div style="height:14px"></div><div class="card">${title('Reward Performance','Review & Earn $5')}${line('Revenue influenced','$18,420')}${line('Average ticket','$68.40')}${line('Repeat visit rate','61%')}${line('Reward cost','$2,710')}${line('Estimated ROI','6.8×')}</div>`,
+inbox:()=>phone('Rewards',`<div class="tabs"><button class="tab active">Available</button><button class="tab">Used</button><button class="tab">Expired</button></div><div class="reward"><span class="chip">Bitcoin Nail Bar</span><div class="value">$5</div><b>Review Reward</b><p class="muted">Use on your next qualifying service.</p>${line('Expires','Aug 13')}<button class="btn p" onclick="go('detail')">View Reward</button></div><div class="reward"><span class="chip g">Nexora Reward</span><div class="value">50 pts</div><b>Tip & Earn</b><p class="muted">Earned after tipping your technician.</p></div>`),
+detail:()=>phone('Reward Detail',`<div class="reward"><span class="chip">Bitcoin Nail Bar</span><div class="value">$5 OFF</div><h3>Review & Earn Reward</h3><p class="muted">Use toward your next qualifying service.</p>${line('Minimum purchase','$25')}${line('Valid for','All services')}${line('Expires','Aug 13, 2026')}${line('Can combine','No')}<button class="btn p" onclick="go('use')">Use Reward</button><button class="btn o">Save for Later</button></div><p class="muted">The reward appears automatically at checkout when eligible.</p>`),
+use:()=>phone('Use Reward',`<div class="card">${title('Checkout','Ticket #205')}${line('Deluxe Pedicure','$55')}${line('Gel Polish','$15')}${line('Reward Credit','-$5')}${line('Subtotal','$65','total')}</div><div class="card soft">${title('Reward Applied','Saved $5')}<p class="muted">Review & Earn Reward applied successfully.</p><button class="btn o">Remove Reward</button></div><button class="btn g">Continue to Tip & Payment</button>`)
+};
+const M={dash:['Reward Dashboard','Create, deliver and track customer rewards'],create:['Create Reward','Choose type, value and trigger'],rules:['Reward Rules','Qualification and redemption rules'],delivery:['Audience & Delivery','Who receives it and how'],analytics:['Reward Analytics','Redemption, revenue and ROI'],inbox:['Customer Reward Inbox','Available, used and expired'],detail:['Reward Detail','Terms and redemption action'],use:['Use Reward at Checkout','Apply to qualifying ticket']};
+function go(id){document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.v===id));pt.textContent=M[id][0];ps.textContent=M[id][1];root.innerHTML=V[id]();scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('.nav').forEach(x=>x.onclick=()=>go(x.dataset.v));go('dash');
+</script></body></html>

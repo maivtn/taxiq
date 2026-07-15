@@ -1,0 +1,200 @@
+
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nexora Customer ↔ Owner Connected UI</title>
+<style>
+:root{
+ --bg:#f4f6fb;--card:#fff;--soft:#f8f9fc;--ink:#101828;--muted:#667085;--line:#e5e9f2;
+ --p:#7048f4;--p2:#c42de5;--blue:#2789ff;--green:#18a66f;--amber:#f5a524;--red:#df3f4a;
+}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#081020;color:#fff}
+button,select,input,textarea{font:inherit} button{cursor:pointer}
+.shell{display:grid;grid-template-columns:260px minmax(360px,420px) minmax(640px,1fr);gap:18px;padding:18px;min-height:100vh}
+.sidebar{background:#0d1428;border:1px solid rgba(255,255,255,.1);border-radius:26px;padding:16px;height:calc(100vh - 36px);overflow:auto;position:sticky;top:18px}
+.brand{font-size:18px;font-weight:950;margin-bottom:16px}.brand small{display:block;color:#8d98b0;font-size:11px;margin-top:4px}
+.sec{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#65718b;margin:17px 6px 7px;font-weight:900}
+.nav{width:100%;border:0;background:transparent;color:#c7cedc;padding:10px 11px;border-radius:12px;text-align:left;font-weight:850;margin:2px 0;display:flex;justify-content:space-between}
+.nav.active{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff}.nav:hover{background:rgba(255,255,255,.07)}
+.phone{background:#f7f8fc;border:10px solid #05070e;border-radius:44px;overflow:hidden;color:var(--ink);height:calc(100vh - 36px);min-height:820px;position:sticky;top:18px}
+.status{height:28px;background:#101426;color:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 16px;font-size:11px}
+.phoneHead{background:#101426;color:#fff;padding:15px 16px}.phoneHead h2{margin:0;font-size:18px}.phoneHead p{margin:3px 0 0;color:#aeb8cc;font-size:11px}
+.phoneBody{height:calc(100% - 128px);overflow:auto;padding:14px 14px 92px;background:var(--bg)}
+.bottom{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:9px 7px 12px}
+.bottom button{border:0;background:transparent;color:#7d8799;font-size:10px;font-weight:900;padding:7px 2px}.bottom button.active{color:var(--p)}
+.owner{background:var(--bg);color:var(--ink);border-radius:26px;overflow:hidden;height:calc(100vh - 36px);position:sticky;top:18px}
+.ownerTop{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px}
+.ownerTop h1{font-size:20px;margin:0}.ownerTop p{font-size:12px;color:var(--muted);margin:3px 0 0}
+.ownerBody{height:calc(100% - 72px);overflow:auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:15px;margin-bottom:11px;box-shadow:0 7px 22px rgba(16,24,40,.045)}
+.soft{background:var(--soft)}.hero{background:linear-gradient(135deg,#111831,#263361 60%,#593d9d);color:#fff}.hero p{color:#cad3e3}
+.title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.title h3{margin:0;font-size:14px}
+.chip{display:inline-flex;padding:5px 8px;border-radius:999px;background:#eeebff;color:var(--p);font-size:10px;font-weight:900}.chip.g{background:#e9f8f1;color:var(--green)}.chip.a{background:#fff4db;color:#875900}.chip.b{background:#e9f3ff;color:var(--blue)}
+.line{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line)}.line:last-child{border-bottom:0}.total{font-size:19px;font-weight:950}
+.muted{color:var(--muted);font-size:12px;line-height:1.45}.btn{width:100%;border:0;border-radius:14px;padding:12px 14px;font-weight:900;background:#edf1f7;color:#20283a;margin-top:8px}.btn.p{background:linear-gradient(135deg,var(--p2),var(--blue));color:#fff}.btn.g{background:var(--green);color:#fff}.btn.o{background:#fff;border:1px solid var(--line)}.btn.r{background:var(--red);color:#fff}
+.row{display:flex;gap:8px}.row .btn{flex:1}.grid{display:grid;gap:12px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.kpi{min-height:92px;display:flex;flex-direction:column;justify-content:center}.kpi span{font-size:11px;color:var(--muted);font-weight:800}.kpi b{font-size:25px;margin-top:4px}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:11px}.step{padding:8px 4px;background:#e9edf5;border-radius:11px;text-align:center;font-size:9px;font-weight:900;color:#7a8498}.step.active{background:linear-gradient(135deg,var(--p),var(--blue));color:#fff}
+.map{height:170px;border-radius:18px;background:linear-gradient(135deg,#dce9ff,#edf1ff);display:grid;place-items:center;color:#6f7d96;font-size:12px;margin:10px 0}
+.alert{padding:11px;border-radius:14px;font-size:11.5px;line-height:1.45;margin-top:9px}.info{background:#eaf4ff;border:1px solid #cfe4ff;color:#145494}.success{background:#e9f8f1;border:1px solid #bee8d5;color:#116840}.warn{background:#fff4dc;border:1px solid #f6dca1;color:#744b00}
+.board{display:grid;grid-template-columns:repeat(5,minmax(145px,1fr));gap:10px}.lane{background:#f8f9fc;border:1px solid var(--line);border-radius:17px;padding:10px;min-height:330px}.lane h4{margin:0 0 9px;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#788397}.tile{background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px;margin-bottom:8px}.tile p{margin:4px 0 0;color:var(--muted);font-size:11px;line-height:1.4}
+.timeline{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:12px}.node{background:#e9edf5;border-radius:11px;padding:9px 5px;text-align:center;font-size:9.5px;font-weight:900;color:#7a8498}.node.on{background:linear-gradient(135deg,var(--p),var(--blue));color:#fff}
+@media(max-width:1200px){.shell{grid-template-columns:240px 400px}.owner{display:none}}
+@media(max-width:760px){.shell{display:block;padding:0}.sidebar{display:none}.phone{border:0;border-radius:0;top:0;height:100vh;min-height:100vh}.g2,.g3,.g4,.board{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+ <div class="brand">NEXORA CONNECTED UI<small>Customer App ↔ Owner Salon App</small></div>
+ <div class="sec">Customer App</div>
+ <button class="nav active" data-v="cHome">Customer Home <span>›</span></button>
+ <button class="nav" data-v="cBook">Book Appointment <span>›</span></button>
+ <button class="nav" data-v="cConfirmed">Booking Confirmed <span>›</span></button>
+ <button class="nav" data-v="cOnWay">On My Way <span>›</span></button>
+ <button class="nav" data-v="cArrived">Arrived & Check-in <span>›</span></button>
+ <button class="nav" data-v="cChoice">Wait / Next Technician <span>›</span></button>
+ <button class="nav" data-v="cTicket">Live Ticket <span>›</span></button>
+ <button class="nav" data-v="cReward">Reward & Checkout <span>›</span></button>
+ <div class="sec">Owner / Salon App</div>
+ <button class="nav" data-v="oHome">Owner Home <span>›</span></button>
+ <button class="nav" data-v="oBoard">Booking & ETA Board <span>›</span></button>
+ <button class="nav" data-v="oDetail">Customer Arrival Detail <span>›</span></button>
+ <button class="nav" data-v="oAssign">Assign Technician <span>›</span></button>
+ <button class="nav" data-v="oTicket">Create Live Ticket <span>›</span></button>
+</aside>
+
+<section class="phone">
+ <div class="status"><span>9:41</span><span>5G • 100%</span></div>
+ <div class="phoneHead"><h2 id="ct">Customer Home</h2><p>Nexora Customer App</p></div>
+ <div class="phoneBody" id="cr"></div>
+ <div class="bottom"><button class="active">Home</button><button>Discover</button><button>Scan</button><button>Bookings</button><button>Profile</button></div>
+</section>
+
+<section class="owner">
+ <div class="ownerTop"><div><h1 id="ot">Owner Home</h1><p>Bitcoin Nail Bar • Salon Operations</p></div><span class="chip g">Live Sync</span></div>
+ <div class="ownerBody" id="or"></div>
+</section>
+</div>
+
+<script>
+const line=(a,b,c='')=>`<div class="line ${c}"><span>${a}</span><b>${b}</b></div>`;
+const card=(a,b,c)=>`<div class="card"><div class="title"><h3>${a}</h3><span class="chip">${b}</span></div>${c}</div>`;
+const hero=(a,b)=>`<div class="card hero"><h2 style="margin:0 0 6px">${a}</h2><p class="muted">${b}</p></div>`;
+const btn=(t,c='')=>`<button class="btn ${c}">${t}</button>`;
+const kpi=(a,b)=>`<div class="card kpi"><span>${a}</span><b>${b}</b></div>`;
+const steps=n=>`<div class="steps">${['Book','On Way','Arrive','Check-in','Ticket'].map((x,i)=>`<div class="step ${i<=n?'active':''}">${x}</div>`).join('')}</div>`;
+const timeline=n=>`<div class="timeline">${['Booked','On Way','Soon','Arrived','Checked In','Ticket'].map((x,i)=>`<div class="node ${i<=n?'on':''}">${x}</div>`).join('')}</div>`;
+
+const C={
+cHome:()=>`${hero('Hello Amy','Book, check in and follow your salon visit from one app.')}
+<div class="grid g2">${kpi('Rewards','$35')}${kpi('Upcoming','1')}</div>
+${card('Upcoming Booking','Today 2:30 PM',line('Salon','Bitcoin Nail Bar')+line('Service','Deluxe Pedicure')+line('Technician','Jenny'))}
+${btn('Open Booking','p')}
+${card('Nearby Offer','Bitcoin Nail Bar','<p class="muted">Free Gel Upgrade with qualifying service.</p>')}`,
+
+cBook:()=>`${steps(0)}
+${card('Select Service','Step 1',line('Deluxe Pedicure','$55')+line('Duration','50 minutes'))}
+${card('Select Technician','Step 2',line('Jenny','Available • 4.9 rating')+line('No Preference','Best eligible technician'))}
+${card('Date & Time','Step 3',line('Date','Today')+line('Time','2:30 PM'))}
+${btn('Confirm Booking','p')}`,
+
+cConfirmed:()=>`${steps(0)}
+${hero('Booking Confirmed','Bitcoin Nail Bar is expecting you today.')}
+${card('Today • 2:30 PM','Confirmed',line('Service','Deluxe Pedicure')+line('Technician','Jenny')+line('Reward Available','$5'))}
+${btn('I’m On My Way','p')}
+<div class="row">${btn('Change','o')}${btn('Cancel','o')}</div>`,
+
+cOnWay:()=>`${steps(1)}
+${hero('You’re On The Way','Your ETA has been shared with the salon.')}
+<div class="map">ETA Map • 18 minutes</div>
+${card('Arrival','2:24 PM',line('Booking','2:30 PM')+line('Requested Tech','Jenny')+line('Salon Status','Preparing chair'))}
+<div class="row">${btn('Running Late','o')}${btn('Message Salon','o')}</div>
+<div class="alert info">Only ETA is shared unless you enable precise trip sharing.</div>`,
+
+cArrived:()=>`${steps(3)}
+${hero('You’ve Arrived','Your booking details are already loaded.')}
+${card('Bitcoin Nail Bar','Arrival Detected',line('Service','Deluxe Pedicure')+line('Technician','Jenny')+line('Reward','$5 eligible'))}
+${btn('Check In Now','g')}
+<div class="row">${btn('Scan Salon QR','o')}${btn('Ask Front Desk','o')}</div>
+<div class="alert success">No form is required for signed-in Nexora customers.</div>`,
+
+cChoice:()=>`${steps(3)}
+${card('Jenny is finishing a service','Choose',line('Estimated Wait','18 minutes')+line('Next Available','Tina • available now'))}
+${btn('Wait for Jenny','p')}
+${btn('Take Next Available','o')}
+<div class="alert info">Your decision updates the salon Turn Board immediately.</div>`,
+
+cTicket:()=>`${steps(4)}
+${hero('Live Ticket #205','Your service and total update in real time.')}
+${card('Current Service','In Service',line('Technician','Jenny')+line('Deluxe Pedicure','$55')+line('Gel Upgrade','$0 Promotion')+line('Current Total','$55','total'))}
+${card('Visit Timeline','Live',line('Checked In','2:25 PM')+line('Assigned','2:28 PM')+line('Service Started','2:34 PM')+line('Estimated Finish','3:24 PM'))}
+${btn('Message Salon','o')}`,
+
+cReward:()=>`${card('Reward Available','$5',line('Review Reward','$5 Credit')+line('Eligible Ticket','Yes')+line('Expires','Aug 13'))}
+${card('Checkout Preview','Ticket #205',line('Services','$55')+line('Reward','-$5')+line('Subtotal','$50','total'))}
+${btn('Apply Reward','p')}
+${btn('Continue to Tip & Payment','g')}`
+};
+
+const O={
+oHome:()=>`<div class="grid g4">${kpi('Upcoming','8')}${kpi('On Way','3')}${kpi('Arrived','2')}${kpi('Waiting','4')}</div>
+<div class="grid g2">
+${card('Needs Attention','3',line('Amy ETA','18 min')+line('Lisa late','12 min')+line('VIP arriving','4 min'))}
+${card('AI Preparation','Live',line('Prepare Pedi Chair','Chair 3')+line('Hold Jenny','Until 2:45 PM')+line('Reward Check','Amy has $5'))}
+</div>`,
+
+oBoard:()=>`${timeline(2)}
+<div class="board">
+<div class="lane"><h4>Upcoming</h4><div class="tile"><b>Jessica • 2:30</b><p>Deluxe Pedi • Jenny</p></div></div>
+<div class="lane"><h4>On The Way</h4><div class="tile"><b>Amy • ETA 18 min</b><p>Deluxe Pedi • Jenny requested</p></div></div>
+<div class="lane"><h4>Arriving Soon</h4><div class="tile"><b>Lisa • ETA 4 min</b><p>Gel Mani • No preference</p></div></div>
+<div class="lane"><h4>Arrived</h4><div class="tile"><b>Nancy</b><p>Waiting check-in confirmation</p></div></div>
+<div class="lane"><h4>Checked In</h4><div class="tile"><b>Mary</b><p>Ready for assignment</p></div></div>
+</div>`,
+
+oDetail:()=>`${timeline(2)}
+<div class="grid g2">
+${card('Amy Nguyen','On The Way',line('Booking','2:30 PM')+line('ETA','18 minutes')+line('Service','Deluxe Pedicure')+line('Requested Tech','Jenny')+line('Reward','$5')+line('Customer Note','Needs extra care'))}
+${card('Salon Preparation','AI',line('Hold Jenny','Until 2:45 PM')+line('Prepare Chair','Pedi 3')+line('Expected Arrival','2:24 PM')+line('Open Ticket','After check-in'))}
+</div>
+<div class="row">${btn('Message Customer','o')}${btn('Mark Arrived','p')}</div>`,
+
+oAssign:()=>`${timeline(4)}
+<div class="grid g2">
+${card('Checked-in Customer','Amy',line('Service','Deluxe Pedicure')+line('Requested','Jenny')+line('Customer Choice','Wait for Jenny'))}
+${card('Technician Match','95%',line('Jenny','Skill ✓')+line('Customer Preference','Match ✓')+line('Turn Fairness','Within policy')+line('Available In','12 minutes'))}
+</div>
+<div class="row">${btn('Assign Jenny','g')}${btn('Choose Another','o')}</div>`,
+
+oTicket:()=>`${timeline(5)}
+<div class="grid g2">
+${card('Create Live Ticket','Ready',line('Booking ID','BK-2048')+line('Check-in ID','CI-8804')+line('Customer','Amy Nguyen')+line('Assigned Staff','Jenny')+line('Service','Deluxe Pedicure'))}
+${card('Validation','Passed',line('Customer Identity','Matched')+line('Staff Skill','Eligible')+line('Reward','$5 eligible')+line('Duplicate Ticket','None'))}
+</div>
+${btn('Create Live Ticket #205','g')}
+<div class="alert info">Booking, Check-in, Staff Assignment and Live Ticket remain connected by ID.</div>`
+};
+
+const map={
+cHome:['Customer Home','oHome'],cBook:['Book Appointment','oHome'],cConfirmed:['Booking Confirmed','oHome'],cOnWay:['On My Way','oBoard'],cArrived:['Arrived & Check-in','oDetail'],cChoice:['Wait / Next Technician','oAssign'],cTicket:['Live Ticket','oTicket'],cReward:['Reward & Checkout','oTicket'],
+oHome:['Owner Home','cHome'],oBoard:['Booking & ETA Board','cOnWay'],oDetail:['Customer Arrival Detail','cArrived'],oAssign:['Assign Technician','cChoice'],oTicket:['Create Live Ticket','cTicket']
+};
+function go(id){
+ document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.v===id));
+ const isCustomer=id.startsWith('c');
+ const customerId=isCustomer?id:map[id][1];
+ const ownerId=isCustomer?map[id][1]:id;
+ ct.textContent=map[customerId][0];
+ cr.innerHTML=C[customerId]();
+ ot.textContent=map[ownerId][0];
+ or.innerHTML=O[ownerId]();
+ cr.scrollTop=0;or.scrollTop=0;
+}
+document.querySelectorAll('.nav').forEach(x=>x.onclick=()=>go(x.dataset.v));
+go('cHome');
+</script>
+</body>
+</html>
