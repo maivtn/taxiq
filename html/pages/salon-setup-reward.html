@@ -147,47 +147,56 @@
       white-space: nowrap;
     }
 
-    .plan-panel {
-      margin-top: 12px;
+    .sidebar-plan {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 9px 11px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
     }
 
-    .panel-kicker {
+    .sidebar-plan-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    .sidebar-plan-kicker {
       color: rgba(255, 255, 255, 0.45);
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
-    .panel-title {
-      margin-top: 4px;
+    .sidebar-plan-name {
       color: #fff;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 900;
+      line-height: 1.2;
     }
 
-    .panel-subtitle {
-      margin-top: 4px;
-      color: rgba(255, 255, 255, 0.55);
-      font-size: 12px;
-    }
-
-    .plan-button {
-      width: 100%;
-      margin-top: 14px;
+    .sidebar-plan-btn {
+      flex-shrink: 0;
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 8px;
       background: transparent;
-      padding: 7px 10px;
+      padding: 6px 10px;
       color: var(--luxury-gold);
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
       transition: background 0.2s, border-color 0.2s;
     }
 
-    .plan-button:hover {
+    .sidebar-plan-btn:hover {
       border-color: rgba(255, 255, 255, 0.25);
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.06);
     }
 
     .sidebar-nav {
@@ -747,7 +756,7 @@
       --blue: #2789ff;
       --green: #18a66f;
       color: var(--ink);
-      font-size: 14px;
+      font-size: 15px;
     }
     .reward-proto h2 { margin: 0 0 8px; }
     .reward-proto h3 { margin: 0; }
@@ -762,27 +771,62 @@
     .reward-proto .card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 16px; }
     .reward-proto .soft { background: #f9fafc; }
     .reward-proto .title { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 12px; }
-    .reward-proto .title h3 { margin: 0; font-size: 15px; }
-    .reward-proto .chip { display: inline-flex; padding: 6px 9px; border-radius: 999px; background: #f0ebff; color: var(--p); font-size: 10px; font-weight: 900; }
+    .reward-proto .title h3 { margin: 0; font-size: 16px; }
+    .reward-proto .chip { display: inline-flex; padding: 6px 10px; border-radius: 999px; background: #f0ebff; color: var(--p); font-size: 12px; font-weight: 900; }
     .reward-proto .chip.g { background: #eaf8f2; color: var(--green); }
     .reward-proto .kpi b { display: block; font-size: 28px; margin-top: 3px; }
-    .reward-proto .muted { color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .reward-proto .muted { color: var(--muted); font-size: 13px; line-height: 1.5; }
     .reward-proto .line { display: flex; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--line); }
     .reward-proto .line:last-child { border-bottom: 0; }
     .reward-proto .total { font-size: 19px; font-weight: 950; }
     .reward-proto .field { display: flex; flex-direction: column; gap: 6px; }
-    .reward-proto .field label { font-size: 11px; font-weight: 900; color: #4b5568; }
+    .reward-proto .field label { font-size: 12px; font-weight: 900; color: #4b5568; }
     .reward-proto .field input,
     .reward-proto .field select,
     .reward-proto .field textarea { border: 1px solid var(--line); border-radius: 13px; padding: 11px 12px; background: #fff; font: inherit; color: var(--ink); }
     .reward-proto .form2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
-    .reward-proto .rewardType { border: 1px solid var(--line); border-radius: 16px; padding: 13px; }
+    .reward-proto .rewardType { border: 1px solid var(--line); border-radius: 16px; padding: 13px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s; }
+    .reward-proto .rewardType:hover { border-color: var(--p); transform: translateY(-1px); }
+    .reward-proto .rewardType:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; }
     .reward-proto .rewardType.active { border-color: var(--p); box-shadow: 0 0 0 3px #7048f414; }
-    .reward-proto .program { border: 1px solid var(--line); border-radius: 15px; padding: 12px; margin-bottom: 9px; }
+    .reward-proto .program { border: 1px solid var(--line); border-radius: 15px; padding: 12px; margin-bottom: 9px; transition: opacity 0.2s; }
+    .reward-proto .program-actions { display: inline-flex; align-items: center; gap: 8px; }
+    .reward-proto .program-edit { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex-shrink: 0; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--muted); cursor: pointer; font-size: 14px; transition: color 0.15s, border-color 0.15s; }
+    .reward-proto .program-edit:hover { color: var(--p); border-color: var(--p); }
+    .reward-proto .program.is-editing { border-color: var(--p); box-shadow: 0 0 0 3px #7048f414; }
+    .reward-proto .program.is-editing h3,
+    .reward-proto .program.is-editing p { outline: 1px dashed var(--p); outline-offset: 3px; border-radius: 4px; }
+    .reward-proto .program.is-off { opacity: 0.6; }
+    .reward-proto .chip.paused { background: #eef1f6; color: #667085; }
+    .reward-proto .reward-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .reward-proto .filter-chip { border: 1px solid var(--line); border-radius: 999px; background: #fff; padding: 6px 14px; font-size: 13px; font-weight: 800; color: var(--muted); cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s; }
+    .reward-proto .filter-chip:hover { border-color: var(--p); color: var(--p); }
+    .reward-proto .filter-chip.is-active { background: linear-gradient(135deg, var(--p), var(--p2)); border-color: transparent; color: #fff; }
+    .reward-proto .line { align-items: center; }
+    .reward-proto .line select,
+    .reward-proto .line input:not([type="checkbox"]) { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: #fff; font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); }
+    .reward-proto .line select { max-width: 210px; }
+    .reward-proto .line input:not([type="checkbox"]) { width: 170px; text-align: right; }
+    .reward-proto .switch { position: relative; display: inline-flex; width: 44px; height: 26px; flex-shrink: 0; }
+    .reward-proto .switch input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; margin: 0; cursor: pointer; }
+    .reward-proto .switch-track { position: absolute; inset: 0; border-radius: 999px; background: #d3d9e6; transition: background 0.2s; }
+    .reward-proto .switch-track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); transition: transform 0.2s; }
+    .reward-proto .switch input:checked + .switch-track { background: var(--p); }
+    .reward-proto .switch input:checked + .switch-track::after { transform: translateX(18px); }
+    .reward-proto .field input.invalid { border-color: #e5484d; box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.12); }
     @media (max-width: 800px) {
-      .reward-proto .g2,
-      .reward-proto .g3,
-      .reward-proto .form2 { grid-template-columns: 1fr; }
+      .reward-proto .g2 { grid-template-columns: 1fr; }
+      .reward-proto .reward-types,
+      .reward-proto .form2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .reward-proto .g3 { gap: 8px; }
+      .reward-proto .g3 .card { padding: 12px; }
+      .reward-proto .kpi b { font-size: 20px; }
+      .reward-proto .g3 .muted { font-size: 11px; }
+    }
+    @media (max-width: 520px) {
+      .reward-proto .g3 .card { padding: 9px; }
+      .reward-proto .kpi b { font-size: 16px; }
+      .reward-proto .g3 .chip { font-size: 10px; padding: 3px 6px; }
     }
 
     .placeholder-panel {
@@ -5969,13 +6013,6 @@
         </div>
       </div>
 
-      <div class="sidebar-panel plan-panel">
-        <div class="panel-kicker">Current Plan</div>
-        <div class="panel-title">Pro Plan</div>
-        <div class="panel-subtitle">Nexora merchant workspace</div>
-        <button class="plan-button" type="button">Manage Plan</button>
-      </div>
-
       <nav class="sidebar-nav" aria-label="Main menu">
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
@@ -6066,6 +6103,14 @@
         </button>
       </nav>
 
+      <div class="sidebar-plan">
+        <div class="sidebar-plan-info">
+          <span class="sidebar-plan-kicker">Current Plan</span>
+          <span class="sidebar-plan-name">Pro Plan</span>
+        </div>
+        <button class="sidebar-plan-btn" type="button">Manage</button>
+      </div>
+
       <div class="sidebar-footer">
         <button class="logout-button" type="button">Sign out</button>
       </div>
@@ -6089,27 +6134,6 @@
           <input type="search" placeholder="Search tech, station, review...">
         </label>
 
-        <div class="header-actions">
-          <div class="language-switcher" aria-label="Language switcher">
-            <button class="is-active" type="button">EN</button>
-            <button type="button">VI</button>
-          </div>
-
-          <button class="icon-button notification-button" type="button" aria-label="Notifications">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 7-3 9h18c0-2-3-2-3-9ZM13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
-            </svg>
-            <span class="notification-dot"></span>
-          </button>
-
-          <button class="profile-button" type="button">
-            <span class="avatar">NT</span>
-            <span class="profile-copy">
-              <strong>Nexora Touch</strong>
-              <span>Merchant</span>
-            </span>
-          </button>
-        </div>
       </header>
 
       <main class="content" aria-label="Rewards content">
@@ -6155,17 +6179,17 @@
             <section class="tab-panel is-active" id="panel-reward-dashboard" data-tab-panel="reward-dashboard" aria-label="Reward Dashboard panel">
               <div class="reward-proto">
                 <div class="grid g3">
-                  <div class="card kpi"><span class="muted">Active Rewards</span><b>8</b><span class="chip g">Live</span></div>
+                  <div class="card kpi"><span class="muted">Active Rewards</span><b data-active-rewards-count>8</b><span class="chip g">Live</span></div>
                   <div class="card kpi"><span class="muted">Issued</span><b>1,284</b><span class="chip g">This month</span></div>
                   <div class="card kpi"><span class="muted">Redeemed</span><b>542</b><span class="chip g">42.2%</span></div>
                 </div>
                 <div style="height:14px"></div>
                 <div class="grid g2">
-                  <div class="card">
-                    <div class="title"><h3>Active Programs</h3><span class="chip">8</span></div>
-                    <div class="program"><div class="title"><h3>Review &amp; Earn</h3><span class="chip">542 issued</span></div><p class="muted">$5 after verified review</p></div>
-                    <div class="program"><div class="title"><h3>Tip &amp; Earn</h3><span class="chip">286 issued</span></div><p class="muted">50 points after tipping</p></div>
-                    <div class="program"><div class="title"><h3>Welcome Reward</h3><span class="chip">221 issued</span></div><p class="muted">15% off first visit</p></div>
+                  <div class="card" data-programs-list>
+                    <div class="title"><h3>Active Programs</h3><span class="chip" data-programs-count>8</span></div>
+                    <div class="program"><div class="title"><h3>Review &amp; Earn</h3><div class="program-actions"><span class="chip">542 issued</span><button class="program-edit" type="button" data-program-edit aria-label="Edit reward" title="Edit"><i class="bi bi-pencil"></i></button><label class="switch" title="Turn on/off"><input type="checkbox" checked data-program-toggle><span class="switch-track"></span></label></div></div><p class="muted">$5 after verified review</p></div>
+                    <div class="program"><div class="title"><h3>Tip &amp; Earn</h3><div class="program-actions"><span class="chip">286 issued</span><button class="program-edit" type="button" data-program-edit aria-label="Edit reward" title="Edit"><i class="bi bi-pencil"></i></button><label class="switch" title="Turn on/off"><input type="checkbox" checked data-program-toggle><span class="switch-track"></span></label></div></div><p class="muted">50 points after tipping</p></div>
+                    <div class="program"><div class="title"><h3>Welcome Reward</h3><div class="program-actions"><span class="chip">221 issued</span><button class="program-edit" type="button" data-program-edit aria-label="Edit reward" title="Edit"><i class="bi bi-pencil"></i></button><label class="switch" title="Turn on/off"><input type="checkbox" checked data-program-toggle><span class="switch-track"></span></label></div></div><p class="muted">15% off first visit</p></div>
                   </div>
                   <div class="card soft">
                     <div class="title"><h3>AI Suggestions</h3><span class="chip">3</span></div>
@@ -6181,28 +6205,28 @@
                 <div class="grid g2">
                   <div class="card">
                     <div class="title"><h3>Create Reward</h3><span class="chip">Step 1</span></div>
-                    <div class="grid g2">
-                      <div class="rewardType active"><b>Dollar Credit</b><p class="muted">$5, $10 or custom</p></div>
-                      <div class="rewardType"><b>Percent Off</b><p class="muted">10%, 15%, 20%</p></div>
-                      <div class="rewardType"><b>Free Add-on</b><p class="muted">Gel, French, design</p></div>
-                      <div class="rewardType"><b>Bonus Points</b><p class="muted">Reward points</p></div>
+                    <div class="grid g2 reward-types">
+                      <div class="rewardType active" role="button" tabindex="0" data-reward-type data-reward-value="$5" data-reward-title="Earn $5 Reward"><b>Dollar Credit</b><p class="muted">$5, $10 or custom</p></div>
+                      <div class="rewardType" role="button" tabindex="0" data-reward-type data-reward-value="15%" data-reward-title="15% Off Reward"><b>Percent Off</b><p class="muted">10%, 15%, 20%</p></div>
+                      <div class="rewardType" role="button" tabindex="0" data-reward-type data-reward-value="Free add-on" data-reward-title="Free Add-on Reward"><b>Free Add-on</b><p class="muted">Gel, French, design</p></div>
+                      <div class="rewardType" role="button" tabindex="0" data-reward-type data-reward-value="50 pts" data-reward-title="Earn Bonus Points"><b>Bonus Points</b><p class="muted">Reward points</p></div>
                     </div>
                     <div style="height:12px"></div>
                     <div class="form2">
-                      <div class="field"><label>Reward Name</label><input value="Review &amp; Earn $5"></div>
-                      <div class="field"><label>Reward Value</label><input value="$5"></div>
-                      <div class="field"><label>Trigger</label><select><option>After Verified Review</option><option>After Tip</option><option>After Visit</option><option>After Referral</option></select></div>
+                      <div class="field"><label>Reward Name</label><input value="Review &amp; Earn $5" data-reward-name-input></div>
+                      <div class="field"><label>Reward Value</label><input value="$5" data-reward-value-input></div>
+                      <div class="field"><label>Trigger</label><select data-reward-trigger-select><option>After Verified Review</option><option>After Tip</option><option>After Visit</option><option>After Referral</option></select></div>
                       <div class="field"><label>Applies To</label><select><option>All Services</option><option>Selected Services</option><option>Minimum Spend</option></select></div>
-                      <div class="field"><label>Expiration</label><input value="30 days"></div>
+                      <div class="field"><label>Expiration</label><input value="30 days" data-reward-expiry-input></div>
                       <div class="field"><label>Usage Limit</label><input value="1 per customer"></div>
                     </div>
-                    <button class="btn p" style="margin-top:12px" type="button" data-tab-jump="reward-rules">Continue</button>
+                    <button class="btn p" style="margin-top:12px" type="button" data-create-continue>Continue</button>
                   </div>
                   <div class="card" style="background:linear-gradient(135deg,#10172e,#573b9c);color:#fff">
                     <span class="chip g">Bitcoin Nail Bar</span>
-                    <h2 style="font-size:30px">Earn $5 Reward</h2>
-                    <p style="color:#ccd3e5">Leave a verified review and receive $5 Nexora Reward Credit.</p>
-                    <div class="line"><span>Expires</span><b>30 days</b></div>
+                    <h2 style="font-size:30px" data-preview-title>Review &amp; Earn $5</h2>
+                    <p style="color:#ccd3e5">Reward customers with <b data-preview-value>$5</b> — applied on their next visit.</p>
+                    <div class="line"><span>Expires</span><b data-preview-expiry>30 days</b></div>
                     <div class="line"><span>Minimum spend</span><b>$25</b></div>
                     <div class="line"><span>Use</span><b>Next visit</b></div>
                   </div>
@@ -6214,20 +6238,20 @@
                 <div class="grid g2">
                   <div class="card">
                     <div class="title"><h3>Qualification Rules</h3><span class="chip">Step 2</span></div>
-                    <div class="line"><span>Trigger</span><b>Verified review</b></div>
-                    <div class="line"><span>Ticket</span><b>Paid &amp; Closed</b></div>
-                    <div class="line"><span>Minimum Spend</span><b>$25</b></div>
-                    <div class="line"><span>Review Window</span><b>7 days</b></div>
-                    <div class="line"><span>Exclusions</span><b>Refunded / disputed</b></div>
-                    <button class="btn o" style="margin-top:10px" type="button">+ Add Rule</button>
+                    <div class="line"><span>Trigger</span><select><option>Verified review</option><option>Tip received</option><option>Visit completed</option><option>Referral</option></select></div>
+                    <div class="line"><span>Ticket status</span><select><option>Paid &amp; Closed</option><option>Any status</option></select></div>
+                    <div class="line"><span>Minimum Spend</span><input value="$25"></div>
+                    <div class="line"><span>Review Window</span><input value="7 days"></div>
+                    <div class="line"><span>Exclusions</span><input value="Refunded / disputed"></div>
+                    <button class="btn o" style="margin-top:12px" type="button" data-add-rule>+ Add Rule</button>
                   </div>
                   <div class="card soft">
                     <div class="title"><h3>Usage Rules</h3><span class="chip">Redemption</span></div>
-                    <div class="line"><span>Combine promotions</span><b>No</b></div>
-                    <div class="line"><span>Use with membership</span><b>Yes</b></div>
-                    <div class="line"><span>Minimum purchase</span><b>$25</b></div>
-                    <div class="line"><span>Valid locations</span><b>Bitcoin Nail Bar</b></div>
-                    <div class="line"><span>Auto apply</span><b>Ask customer</b></div>
+                    <div class="line"><span>Combine promotions</span><label class="switch"><input type="checkbox"><span class="switch-track"></span></label></div>
+                    <div class="line"><span>Use with membership</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
+                    <div class="line"><span>Minimum purchase</span><input value="$25"></div>
+                    <div class="line"><span>Valid locations</span><select><option>Bitcoin Nail Bar</option><option>All Locations</option></select></div>
+                    <div class="line"><span>Auto apply</span><select><option>Ask customer</option><option>Apply automatically</option><option>Manual</option></select></div>
                     <button class="btn p" style="margin-top:12px" type="button" data-tab-jump="audience-delivery">Continue</button>
                   </div>
                 </div>
@@ -6248,11 +6272,11 @@
                   </div>
                   <div class="card soft">
                     <div class="title"><h3>Channels</h3><span class="chip">Step 4</span></div>
-                    <div class="line"><span>Nexora App</span><b>Primary</b></div>
-                    <div class="line"><span>Push Notification</span><b>Enabled</b></div>
-                    <div class="line"><span>SMS Guest Fallback</span><b>Enabled</b></div>
-                    <div class="line"><span>Email</span><b>Optional</b></div>
-                    <button class="btn g" style="margin-top:12px" type="button">Publish Reward</button>
+                    <div class="line"><span>Nexora App</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
+                    <div class="line"><span>Push Notification</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
+                    <div class="line"><span>SMS Guest Fallback</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
+                    <div class="line"><span>Email</span><label class="switch"><input type="checkbox"><span class="switch-track"></span></label></div>
+                    <button class="btn g" style="margin-top:12px" type="button" data-publish-reward>Publish Reward</button>
                   </div>
                 </div>
               </div>
@@ -8268,6 +8292,185 @@
         return;
       }
     });
+
+    function showRewardToast(msg) {
+      var toast = document.querySelector('[data-reward-toast]');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.setAttribute('data-reward-toast', '');
+        toast.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(10px);background:#101426;color:#fff;padding:13px 18px;border-radius:14px;font-size:13px;font-weight:800;box-shadow:0 18px 40px rgba(8,16,34,0.35);z-index:9999;opacity:0;transition:opacity 0.25s,transform 0.25s;max-width:90vw;text-align:center;';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      requestAnimationFrame(function() {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+      });
+      clearTimeout(showRewardToast.timer);
+      showRewardToast.timer = setTimeout(function() {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(10px)';
+      }, 2600);
+    }
+
+    // Reward tab interactions
+    var rewardTypeCards = document.querySelectorAll('[data-reward-type]');
+    var rewardNameInput = document.querySelector('[data-reward-name-input]');
+    var rewardValueInput = document.querySelector('[data-reward-value-input]');
+    var rewardExpiryInput = document.querySelector('[data-reward-expiry-input]');
+    var previewTitle = document.querySelector('[data-preview-title]');
+    var previewValue = document.querySelector('[data-preview-value]');
+    var previewExpiry = document.querySelector('[data-preview-expiry]');
+
+    function updateRewardPreview() {
+      if (previewTitle && rewardNameInput) previewTitle.textContent = rewardNameInput.value.trim() || 'New Reward';
+      if (previewValue && rewardValueInput) previewValue.textContent = rewardValueInput.value.trim() || '—';
+      if (previewExpiry && rewardExpiryInput) previewExpiry.textContent = rewardExpiryInput.value.trim() || '—';
+    }
+
+    function selectRewardType(card) {
+      rewardTypeCards.forEach(function(c) {
+        c.classList.toggle('active', c === card);
+        c.setAttribute('aria-pressed', c === card ? 'true' : 'false');
+      });
+      if (rewardValueInput && card.dataset.rewardValue) rewardValueInput.value = card.dataset.rewardValue;
+      if (rewardNameInput && card.dataset.rewardTitle) rewardNameInput.value = card.dataset.rewardTitle;
+      updateRewardPreview();
+    }
+
+    rewardTypeCards.forEach(function(card) {
+      card.addEventListener('click', function() { selectRewardType(card); });
+      card.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          selectRewardType(card);
+        }
+      });
+    });
+
+    [rewardNameInput, rewardValueInput, rewardExpiryInput].forEach(function(el) {
+      if (!el) return;
+      el.addEventListener('input', function() {
+        el.classList.remove('invalid');
+        updateRewardPreview();
+      });
+    });
+
+    var createContinue = document.querySelector('[data-create-continue]');
+    if (createContinue) {
+      createContinue.addEventListener('click', function() {
+        var valid = true;
+        [rewardNameInput, rewardValueInput].forEach(function(inp) {
+          if (!inp) return;
+          if (!inp.value.trim()) { inp.classList.add('invalid'); valid = false; }
+          else inp.classList.remove('invalid');
+        });
+        if (!valid) {
+          showRewardToast('Please enter a reward name and value before continuing.');
+          return;
+        }
+        activateMainTab('reward-rules');
+      });
+    }
+
+    var addRuleButton = document.querySelector('[data-add-rule]');
+    if (addRuleButton) {
+      addRuleButton.addEventListener('click', function() {
+        var line = document.createElement('div');
+        line.className = 'line';
+        line.innerHTML = '<input placeholder="Rule name" style="flex:1;min-width:0;text-align:left"><input placeholder="Value">';
+        addRuleButton.parentNode.insertBefore(line, addRuleButton);
+        var first = line.querySelector('input');
+        if (first) first.focus();
+      });
+    }
+
+    function getRewardDraft() {
+      var nameInput = document.querySelector('[data-reward-name-input]');
+      var valueInput = document.querySelector('[data-reward-value-input]');
+      var triggerSelect = document.querySelector('[data-reward-trigger-select]');
+      var activeType = document.querySelector('[data-reward-type].active');
+      var typeLabel = activeType && activeType.querySelector('b') ? activeType.querySelector('b').textContent : '';
+      return {
+        name: (nameInput && nameInput.value.trim()) || 'Untitled Reward',
+        value: (valueInput && valueInput.value.trim()) || '',
+        trigger: (triggerSelect && triggerSelect.value) || '',
+        type: typeLabel
+      };
+    }
+
+    function bumpCount(selector, delta) {
+      var node = document.querySelector(selector);
+      if (!node) return;
+      var current = parseInt((node.textContent || '').replace(/[^0-9]/g, ''), 10);
+      if (!isNaN(current)) node.textContent = String(Math.max(0, current + (delta || 1)));
+    }
+
+    var PROGRAM_ACTIONS = '<div class="program-actions"><span class="chip g">New</span>' +
+      '<button class="program-edit" type="button" data-program-edit aria-label="Edit reward" title="Edit"><i class="bi bi-pencil"></i></button>' +
+      '<label class="switch" title="Turn on/off"><input type="checkbox" checked data-program-toggle><span class="switch-track"></span></label></div>';
+
+    function addProgramToDashboard(draft) {
+      var list = document.querySelector('[data-programs-list]');
+      if (!list) return;
+      var subtitleParts = [];
+      if (draft.value) subtitleParts.push(draft.value);
+      if (draft.trigger) subtitleParts.push(draft.trigger);
+      var program = document.createElement('div');
+      program.className = 'program';
+      program.innerHTML = '<div class="title"><h3></h3>' + PROGRAM_ACTIONS + '</div><p class="muted"></p>';
+      program.querySelector('h3').textContent = draft.name;
+      program.querySelector('p').textContent = subtitleParts.join(' · ') || 'Just published';
+      list.appendChild(program);
+      bumpCount('[data-programs-count]');
+      bumpCount('[data-active-rewards-count]');
+    }
+
+    var programsList = document.querySelector('[data-programs-list]');
+    if (programsList) {
+      programsList.addEventListener('click', function(event) {
+        var editBtn = event.target.closest('[data-program-edit]');
+        if (!editBtn) return;
+        var program = editBtn.closest('.program');
+        if (!program) return;
+        var editing = program.classList.toggle('is-editing');
+        var heading = program.querySelector('h3');
+        var subtitle = program.querySelector('p');
+        [heading, subtitle].forEach(function(el) {
+          if (el) el.contentEditable = editing ? 'true' : 'false';
+        });
+        editBtn.setAttribute('aria-pressed', editing ? 'true' : 'false');
+        editBtn.title = editing ? 'Done' : 'Edit';
+        if (editing && heading) heading.focus();
+      });
+      programsList.addEventListener('change', function(event) {
+        var toggle = event.target.closest('[data-program-toggle]');
+        if (!toggle) return;
+        var program = toggle.closest('.program');
+        if (!program) return;
+        var off = !toggle.checked;
+        program.classList.toggle('is-off', off);
+        bumpCount('[data-active-rewards-count]', off ? -1 : 1);
+      });
+    }
+
+    var publishButton = document.querySelector('[data-publish-reward]');
+    if (publishButton) {
+      publishButton.addEventListener('click', function() {
+        if (publishButton.disabled) return;
+        var draft = getRewardDraft();
+        addProgramToDashboard(draft);
+        showRewardToast('Reward "' + draft.name + '" published — added to Active Programs.');
+        var originalText = publishButton.textContent;
+        publishButton.textContent = 'Published ✓';
+        publishButton.disabled = true;
+        setTimeout(function() {
+          activateMainTab('reward-dashboard');
+          publishButton.textContent = originalText;
+          publishButton.disabled = false;
+        }, 1400);
+      });
+    }
 
     activateMainTabFromUrl();
   </script>
