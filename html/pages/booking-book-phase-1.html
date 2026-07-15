@@ -148,7 +148,17 @@
     }
 
     .plan-panel {
-      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 16px;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+    }
+
+    .plan-info {
+      min-width: 0;
     }
 
     .panel-kicker {
@@ -160,28 +170,22 @@
     }
 
     .panel-title {
-      margin-top: 4px;
+      margin-top: 2px;
       color: #fff;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 900;
     }
 
-    .panel-subtitle {
-      margin-top: 4px;
-      color: rgba(255, 255, 255, 0.55);
-      font-size: 12px;
-    }
-
     .plan-button {
-      width: 100%;
-      margin-top: 14px;
+      flex-shrink: 0;
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 8px;
       background: transparent;
-      padding: 7px 10px;
+      padding: 6px 12px;
       color: var(--luxury-gold);
       font-size: 12px;
       font-weight: 700;
+      white-space: nowrap;
       transition: background 0.2s, border-color 0.2s;
     }
 
@@ -3559,6 +3563,10 @@
       font-size: 13px;
     }
 
+    .booking-mini-label {
+      white-space: nowrap;
+    }
+
     .booking-controls {
       display: grid;
       grid-template-columns: 1fr;
@@ -5854,13 +5862,6 @@
         </div>
       </div>
 
-      <div class="sidebar-panel plan-panel">
-        <div class="panel-kicker">Current Plan</div>
-        <div class="panel-title">Pro Plan</div>
-        <div class="panel-subtitle">Nexora merchant workspace</div>
-        <button class="plan-button" type="button">Manage Plan</button>
-      </div>
-
       <nav class="sidebar-nav" aria-label="Main menu">
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
@@ -5932,6 +5933,14 @@
           <span>Support</span>
         </button>
       </nav>
+
+      <div class="sidebar-panel plan-panel">
+        <div class="plan-info">
+          <div class="panel-kicker">Current Plan</div>
+          <div class="panel-title">Pro Plan</div>
+        </div>
+        <button class="plan-button" type="button">Manage</button>
+      </div>
 
       <div class="sidebar-footer">
         <button class="logout-button" type="button">Sign out</button>
@@ -6332,7 +6341,7 @@
                             <td class="booking-status-cell"><span class="badge booking-status booking-status-done">Completed</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>
                               </div>
                             </td>
                           </tr>
@@ -6362,9 +6371,9 @@
                             <td class="booking-status-cell"><span class="badge booking-status booking-status-sms">SMS Sent</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button icon-only primary booking-done-action" type="button" data-booking-action="done" aria-label="Done" title="Done"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Done</span></button>
-                                <button class="booking-mini-button icon-only booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="sr-only">No-show</span></button>
-                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
+                                <button class="booking-mini-button primary booking-done-action" type="button" data-booking-action="done" aria-label="Done" title="Done"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="booking-mini-label">Done</span></button>
+                                <button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>
                               </div>
                             </td>
                           </tr>
@@ -6394,9 +6403,9 @@
                             <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
-                                <button class="booking-mini-button icon-only booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="sr-only">No-show</span></button>
-                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
+                                <button class="booking-mini-button primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>
+                                <button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>
                               </div>
                             </td>
                           </tr>
@@ -6426,9 +6435,9 @@
                             <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
-                                <button class="booking-mini-button icon-only booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="sr-only">No-show</span></button>
-                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
+                                <button class="booking-mini-button primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>
+                                <button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>
                               </div>
                             </td>
                           </tr>
@@ -6458,9 +6467,9 @@
                             <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
-                                <button class="booking-mini-button icon-only booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="sr-only">No-show</span></button>
-                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
+                                <button class="booking-mini-button primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>
+                                <button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>
                               </div>
                             </td>
                           </tr>
@@ -6490,9 +6499,9 @@
                             <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
                             <td>
                               <div class="booking-actions">
-                                <button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>
-                                <button class="booking-mini-button icon-only booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="sr-only">No-show</span></button>
-                                <button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>
+                                <button class="booking-mini-button primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>
+                                <button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>
                               </div>
                             </td>
                           </tr>
@@ -6595,7 +6604,7 @@
                         <div class="tech-stat"><strong>3</strong><span>Clients today</span></div>
                       </div>
                       <div class="tech-card-actions">
-                        <button class="booking-secondary-button icon-only" type="button" data-tech-detail-open="kim" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View Details</span></button>
+                        <button class="booking-secondary-button" type="button" data-tech-detail-open="kim" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View Details</span></button>
                       </div>
                     </div>
                   </article>
@@ -6619,7 +6628,7 @@
                         <div class="tech-stat"><strong>2</strong><span>Clients today</span></div>
                       </div>
                       <div class="tech-card-actions">
-                        <button class="booking-secondary-button icon-only" type="button" data-tech-detail-open="lan" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View Details</span></button>
+                        <button class="booking-secondary-button" type="button" data-tech-detail-open="lan" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View Details</span></button>
                       </div>
                     </div>
                   </article>
@@ -6643,7 +6652,7 @@
                         <div class="tech-stat"><strong>2</strong><span>Clients today</span></div>
                       </div>
                       <div class="tech-card-actions">
-                        <button class="booking-secondary-button icon-only" type="button" data-tech-detail-open="mai" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View Details</span></button>
+                        <button class="booking-secondary-button" type="button" data-tech-detail-open="mai" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View Details</span></button>
                       </div>
                     </div>
                   </article>
@@ -7863,14 +7872,14 @@
     function renderBookingActionButtons(item) {
       var actions = '';
       if (item && item.classList.contains('is-new')) {
-        actions += '<button class="booking-mini-button icon-only primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button>';
+        actions += '<button class="booking-mini-button primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>';
       } else if (item && item.classList.contains('is-sms-sent')) {
-        actions += '<button class="booking-mini-button icon-only primary booking-done-action" type="button" data-booking-action="done" aria-label="Done" title="Done"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="sr-only">Done</span></button>';
+        actions += '<button class="booking-mini-button primary booking-done-action" type="button" data-booking-action="done" aria-label="Done" title="Done"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="booking-mini-label">Done</span></button>';
       }
       if (item && (item.classList.contains('is-new') || item.classList.contains('is-sms-sent'))) {
-        actions += '<button class="booking-mini-button icon-only booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="sr-only">No-show</span></button>';
+        actions += '<button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>';
       }
-      actions += '<button class="booking-mini-button icon-only" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>';
+      actions += '<button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>';
       return actions;
     }
 
@@ -9266,7 +9275,7 @@
           '<td><span class="badge badge-soft">' + srcHtml + '</span></td>' +
           '<td>' + c.visits + '</td>' +
           '<td>' + escapeHtml(c.last) + '</td>' +
-          '<td><div class="booking-actions"><button class="booking-mini-button icon-only" type="button" title="Send SMS" aria-label="Send SMS"><i class="bi bi-chat-dots" aria-hidden="true"></i><span class="sr-only">Send SMS</span></button></div></td>' +
+          '<td><div class="booking-actions"><button class="booking-mini-button" type="button" title="Send SMS" aria-label="Send SMS"><i class="bi bi-chat-dots" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button></div></td>' +
         '</tr>';
       }).join('');
 
@@ -9378,7 +9387,7 @@
         var meta = CALL_STATUS_META[c.status] || { cls: 'booking-status-new', icon: '', label: c.status };
         var metaIcon = meta.icon ? '<i class="bi ' + meta.icon + '" aria-hidden="true"></i> ' : '';
         var action = c.status === 'missed'
-          ? '<button class="booking-mini-button icon-only primary" type="button" title="Follow-up SMS" aria-label="Follow-up SMS"><i class="bi bi-reply" aria-hidden="true"></i><span class="sr-only">Follow-up SMS</span></button>'
+          ? '<button class="booking-mini-button primary" type="button" title="Follow-up SMS" aria-label="Follow-up SMS"><i class="bi bi-reply" aria-hidden="true"></i><span class="booking-mini-label">Follow-up SMS</span></button>'
           : '';
         return '<tr class="booking-table-row">' +
           '<td>' + escapeHtml(c.time) + '</td>' +
