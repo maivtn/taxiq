@@ -236,6 +236,7 @@ function uiApi({
   const documentListeners = new Map();
   const document = {
     activeElement: null,
+    documentElement: { lang: 'vi' },
     getElementById(id) { return byId.get(id) || null; },
     createElement() { return createStubNode(); },
     querySelectorAll(selector) {
@@ -1203,10 +1204,10 @@ test('staff warning is conditional and recommendation CTA, availability, and ARI
   const tina = cards.find((card) => card.dataset.staffId === 'staff-tina');
   const kevin = cards.find((card) => card.dataset.staffId === 'staff-kevin');
   assert.equal(tina.disabled, true);
-  assert.match(tina.textContent, /Unavailable|Không sẵn sàng/);
+  assert.equal(tina.textContent, 'Tina · Chưa sẵn sàng');
   assert.equal(kevin.getAttribute('aria-pressed'), 'true');
   assert.equal(kevin.getAttribute('aria-selected'), null);
-  assert.equal(harness.actionButtons.choose.textContent, 'Choose Kevin / Chọn Kevin');
+  assert.equal(harness.actionButtons.choose.textContent, 'Chọn Kevin');
 
   harness.document.dispatchClick(harness.actionButtons.choose);
   assert.equal(harness.api.getOperationsState().serviceTickets[0].staffProfileId, 'staff-kevin');
@@ -1237,7 +1238,7 @@ test('live ticket and customer business labels render as inert text with exact t
     href: 'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-xss'
   });
   assert.equal(harness.byId.get('ops-ticket-number').textContent, '#104');
-  assert.equal(harness.byId.get('ops-ticket-status').textContent, 'In Service / Đang làm');
+  assert.equal(harness.byId.get('ops-ticket-status').textContent, 'Đang làm');
   assert.equal(harness.byId.get('ops-ticket-business').textContent, '<svg onload=alert(1)>');
   assert.equal(harness.byId.get('ops-ticket-total').textContent, '$49.50');
   assert.deepEqual(
@@ -1274,7 +1275,7 @@ test('every enabled static and dynamic Task 8 action dispatches its state, UI, o
   assert.equal(maria.disabled, false);
   harness.document.dispatchClick(maria);
   assert.equal(harness.api.getOperationsState().ui.selectedStaffId, 'staff-maria');
-  assert.equal(harness.actionButtons.choose.textContent, 'Choose Maria / Chọn Maria');
+  assert.equal(harness.actionButtons.choose.textContent, 'Chọn Maria');
   assert.equal(harness.byId.get('ops-recommended-staff').children
     .find((card) => card.dataset.staffId === 'staff-maria').getAttribute('aria-pressed'), 'true');
 
@@ -1297,6 +1298,60 @@ test('all delegated controls are registered and companion keeps exactly three op
   assert.doesNotMatch(SOURCE, /location\.(?:href|assign)\s*=.*pay|navigate.*pay/i);
 });
 
+test('companion screens actions labels and storage live-region are complete', () => {
+  for (const id of ['ops-liveticket', 'ops-staffnoteligible', 'ops-addonapproval']) {
+    assert.match(SOURCE, new RegExp(`id="${id}"[^>]*data-ops-screen=`));
+  }
+  const registered = new Set([...SOURCE.matchAll(/registerOpsAction\('([^']+)'/g)].map((match) => match[1]));
+  const controls = [...SOURCE.matchAll(/<button\b([^>]*)>/g)].map((match) => match[1]);
+  for (const attributes of controls) {
+    const action = attributes.match(/data-ops-action="([^"]+)"/)?.[1];
+    assert.ok(action, `button missing data-ops-action: ${attributes}`);
+    assert.ok(registered.has(action), `unregistered operations action: ${action}`);
+  }
+  for (const inputId of [...SOURCE.matchAll(/<input\b[^>]*id="([^"]+)"/g)].map((match) => match[1])) {
+    assert.match(SOURCE, new RegExp(`<label[^>]*for="${inputId}"`));
+  }
+  assert.match(SOURCE, /id="ops-toast"[^>]*role="status"[^>]*aria-live="polite"/);
+  assert.doesNotMatch(SOURCE, /@apply[^;]*(?:app-|ops-)/);
+});
+
+test('companion defaults to Vietnamese and localizes dynamic status with accessible disabled reasons', () => {
+  assert.match(SOURCE, /const OPS_COPY = Object\.freeze\(\{/);
+  assert.match(SOURCE, /const opsLanguage = \(\) => document\.documentElement\.lang === 'en' \? 'en' : 'vi';/);
+  assert.match(SOURCE, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(SOURCE, /<h1 class="font-black">Vận hành Salon<\/h1>/);
+  assert.match(SOURCE, /<span id="ops-ticket-status"><\/span>/);
+  assert.match(SOURCE, /data-lucide="sparkles"[^>]*aria-hidden="true"/);
+  assert.match(SOURCE, /function setDisabledReason\(control, disabled, reason\)/);
+
+  const customerKey = 'nexora.customer.prototype.v1';
+  const guest = guestCheckin({
+    id: 'guest-checkin-final-copy', serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny'
+  });
+  const harness = uiApi({
+    storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }),
+    href: 'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-final-copy'
+  });
+  assert.equal(harness.byId.get('ops-ticket-status').textContent, 'Đang làm');
+  assert.equal(harness.actionButtons.choose.getAttribute('title'), 'Chọn một nhân viên được đề xuất trước.');
+
+  harness.document.dispatchClick(harness.actionButtons.review);
+  assert.equal(
+    harness.byId.get('ops-eligibility-warning').textContent,
+    'Jenny chưa đủ điều kiện cho Acrylic Full Set.'
+  );
+  const cards = harness.byId.get('ops-recommended-staff').children;
+  assert.equal(cards.find((card) => card.dataset.staffId === 'staff-tina').textContent, 'Tina · Chưa sẵn sàng');
+  assert.equal(cards.find((card) => card.dataset.staffId === 'staff-kevin').textContent, 'Kevin · Sẵn sàng');
+  assert.equal(harness.actionButtons.choose.textContent, 'Chọn Kevin');
+  assert.equal(harness.actionButtons.choose.getAttribute('aria-disabled'), 'false');
+  assert.equal(harness.actionButtons.choose.getAttribute('title'), null);
+
+  harness.document.dispatchClick(harness.actionButtons.frontDesk);
+  assert.equal(harness.status.textContent, 'Đã báo lễ tân');
+});
+
 test('standalone shell uses mobile viewport, browser CDNs, and no build dependency', () => {
   assert.match(SOURCE, /<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">/);
   assert.match(SOURCE, /https:\/\/cdn\.jsdelivr\.net\/npm\/@tailwindcss\/browser@4/);
@@ -1313,7 +1368,7 @@ test('shell renders useful cards for all three screens with accessible controls'
     assert.match(section, /ops-card/);
     assert.match(section, /<h2/);
   }
-  assert.match(SOURCE, /Vai trò \/ Role/);
+  assert.match(SOURCE, /<label class="text-xs font-bold">Vai trò<select/);
   assert.match(SOURCE, /aria-label="Chọn vai trò vận hành \/ Select operations role"/);
   assert.match(SOURCE, /role="tablist"/);
   assert.equal((SOURCE.match(/data-ops-screen-target=/g) || []).length, 3);

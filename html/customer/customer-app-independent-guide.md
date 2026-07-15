@@ -228,3 +228,14 @@ Khi thêm domain rule mới, cập nhật cả action registry, state normalizer
 - [Implementation plan](2026-07-14-customer-reward-localstorage-implementation-plan.md) — lịch sử triển khai theo task.
 
 Tài liệu này là bản handoff độc lập cho `html/customer`; mã chạy thực tế và các spec nguồn vẫn là nơi cập nhật chi tiết khi contract thay đổi.
+
+## Handoff Customer Salon Cross-surface
+
+- Entry files: `cutomer-reward.html` và `customer-salon-operations.html`.
+- Storage: Customer schema v2 tại `nexora.customer.prototype.v1`; Operations schema v1 tại `nexora.customer.crosssurface.v1`.
+- Customer domain actions: `stageSalonScan`, `createGuestCheckin`, `createCheckoutDraft`, `submitPaymentProof`, `verifyPaymentProof`, `mergeGuestJourney`, `createReferralInvite`, `releaseReferralReward`, `importAcceptedAddOns`.
+- Operations domain actions: `createServiceTicket`, `evaluateStaffEligibility`, `chooseRecommendedStaff`, `proposeAddOn`, `resolveAddOn`.
+- Luồng bắt buộc: guest check-in thành công mở Customer Live Ticket trước; Staff Not Eligible và Approve Add-on chỉ hiện theo điều kiện; chỉ nút Pay rõ ràng trên Live Ticket handoff sang Guest Checkout.
+- Frontend simulation: QR camera, file upload, Call/Message, Front Desk verification, payment handoff và paid-visit referral event.
+- External production dependencies: API/auth, OTP/SMS, camera permission, object storage, malware scan, payment/deep links, webhook verification, server ledger và audit log.
+- Verification: `node --test html/customer/cutomer-reward.test.mjs` và `node --test html/customer/customer-salon-operations.test.mjs`.

@@ -628,3 +628,45 @@ referral_invites     (id, referrer_id, friend_phone_hash, status[invited|joined|
 ---
 
 *— End of spec. Marketplace 3 phía: see `three-sided-marketplace-spec.md`. Business rationale: see `NEXORA_Bo_Spec_Chot_App_Khach.docx`.*
+
+## Customer Salon Scan, Guest Checkout và Payment Proof
+
+### Mục đích và điểm vào
+
+Customer mở screen `scan`, quét QR `https://nexoratouch.com/touch/{businessId}/{station}` và xác nhận đúng salon trước khi check-in. Người chưa đăng nhập dùng `guest-checkin-view`; thành viên tiếp tục dùng member check-in hiện có. Guest Checkout bắt đầu từ một `guestCheckinId`, không bắt đầu từ tên hoặc số điện thoại tự do.
+
+### UI và dữ liệu
+
+- `scan`: `scan-camera-view` → `scan-context-view` → `guest-checkin-view`.
+- Guest check-in thành công luôn mở Customer Live Ticket trong `customer-salon-operations.html`; không tự mở thanh toán.
+- Chỉ action Pay rõ ràng trên Live Ticket mới handoff sang `pay`: `guest-checkout-view` → `payment-proof-view` cho Zelle/Venmo.
+- `paydone`: `payment-pending-view` → `payment-confirmed-view` hoặc `payment-rejected-view`.
+- Số tiền lưu bằng integer cents; tip lưu bằng basis points `0 | 1500 | 1800 | 2000`.
+- Customer key sở hữu `guestCheckins`, `checkoutDrafts`, `paymentProofs`, `receipts`, `guestRewardClaims`, `referrals`.
+
+### Hành vi và trạng thái
+
+`checkoutDraft.status` đi `draft → pending_verification → confirmed | rejected`. `paymentProof.status` đi `draft → pending_verification → verified | rejected`. Pending hoặc rejected không tạo receipt, không cộng balance và không ghi ledger. Verified tạo receipt bất biến và các `guestRewardClaims.status = pending`; claim chỉ merge sau OTP với đúng số điện thoại, vào đúng `businessId`, đúng một lần.
+
+### Ranh giới backend
+
+Prototype chỉ mô phỏng camera, upload, Front Desk verification và thanh toán bằng localStorage. Card, Zelle, Venmo và Pay at Counter chuyển tiền bên ngoài NEXORA; Payment Proof không chuyển tiền và không chứng minh giao dịch đã hoàn tất cho tới khi Front Desk xác minh. Production cần API idempotency, object storage có scan malware, payment/deep-link integration, OTP/SMS và audit log phía server.
+
+### Edge cases
+
+- QR sai origin/path/business/station bị từ chối mà không đổi state.
+- Hai lần mở checkout cho cùng guest trả draft hiện có.
+- Proof verify/reject lặp lại không tạo receipt, claim hoặc ledger trùng.
+- localStorage quota đầy: thử lưu metadata proof không ảnh và báo rõ cho khách.
+- Add-on khác business, sai ticket, sai 4 số cuối hoặc đã resolve bị từ chối atomic.
+- Referral tự giới thiệu, chưa joined hoặc chưa có paid visit không được cộng điểm.
+
+### Acceptance tests
+
+1. Quét hai QR salon khác nhau hiển thị đúng business và balance riêng.
+2. Guest check-in không thay đổi balance của member đang đăng nhập và mở Live Ticket trước.
+3. Không action nào ngoài nút Pay rõ ràng trên Live Ticket được handoff sang checkout.
+4. `$55.00 - $5.50 + $15.00 + 18%` cho total `$76.11` bằng integer cents.
+5. Proof pending/rejected tạo `0` điểm; verified tạo đúng một receipt và pending claims.
+6. OTP khác số guest không merge; OTP cùng số merge đúng business một lần.
+7. Referral chỉ release `50` điểm business-funded sau sự kiện paid visit.

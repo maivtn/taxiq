@@ -2793,6 +2793,53 @@ test('contains the exact 31-screen inventory', () => {
   assert.deepEqual(ids, [...requiredScreens].sort());
 });
 
+test('keeps 31 app screens and exposes every salon nested view accessibly', () => {
+  const source = html();
+  assert.equal(screenIds(source).length, 31);
+  for (const id of ['scan-camera-view', 'scan-context-view', 'guest-checkin-view', 'guest-checkout-view',
+    'payment-proof-view', 'payment-pending-view', 'payment-confirmed-view', 'payment-rejected-view',
+    'referral-summary', 'referral-qr', 'referral-invite-list']) {
+    assert.match(source, new RegExp(`id="${id}"`));
+  }
+  assert.match(source, /<label[^>]*for="payment-proof-file"/);
+  assert.match(source, /id="payment-proof-error"[^>]*role="alert"/);
+  assert.doesNotMatch(source, /@apply[^;]*(?:app-|ops-)/);
+});
+
+test('keeps final salon messages exact in both languages and pairs Paid with an icon', () => {
+  const { api } = testApi();
+  const messages = {
+    vi: {
+      points: 'điểm', invalidGuest: 'Vui lòng kiểm tra tên, số điện thoại và dịch vụ.',
+      noPreference: 'Không ưu tiên', notAvailable: 'Chưa có', guestCheckinSuccess: 'Đã check-in khách.',
+      guestNotFound: 'Không tìm thấy lượt check-in khách.', serviceNotFound: 'Không tìm thấy dịch vụ.',
+      checkoutFailed: 'Không thể tạo thanh toán.', selectPaymentMethod: 'Vui lòng chọn phương thức thanh toán.',
+      invalidImage: 'Ảnh không hợp lệ.', proofSavedWithoutImage: 'Đã lưu bằng chứng không kèm ảnh do giới hạn bộ nhớ.',
+      proofSubmitFailed: 'Không thể gửi bằng chứng.', verificationFailed: 'Không thể cập nhật xác minh.',
+      proofRejected: 'Lễ tân đã từ chối bằng chứng.', askFrontDesk: 'Vui lòng trao đổi với lễ tân.',
+      selfReferral: 'Không thể tự giới thiệu chính mình.', referralShared: 'Đã chia sẻ link giới thiệu.',
+      shareFailed: 'Không thể chia sẻ link.', referralUpdateFailed: 'Không thể cập nhật giới thiệu.',
+      addonImportFailed: 'Không thể nhập add-on đã duyệt.'
+    },
+    en: {
+      points: 'points', invalidGuest: 'Check the name, phone, and service.',
+      noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in.',
+      guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'Service was not found.',
+      checkoutFailed: 'Checkout could not be created.', selectPaymentMethod: 'Select a payment method.',
+      invalidImage: 'The image is invalid.', proofSavedWithoutImage: 'Proof was saved without the image because storage is full.',
+      proofSubmitFailed: 'Proof could not be submitted.', verificationFailed: 'Verification could not be updated.',
+      proofRejected: 'Front Desk rejected the proof.', askFrontDesk: 'Please ask Front Desk.',
+      selfReferral: 'You cannot refer yourself.', referralShared: 'Referral link shared.',
+      shareFailed: 'Referral link could not be shared.', referralUpdateFailed: 'Referral could not be updated.',
+      addonImportFailed: 'The approved add-on could not be imported.'
+    }
+  };
+  for (const [language, copy] of Object.entries(messages)) {
+    for (const [key, value] of Object.entries(copy)) assert.equal(api.translate(language, key), value, `${language}.${key}`);
+  }
+  assert.match(html(), /class="status-badge inline-flex items-center gap-1 text-emerald-700"><i data-lucide="circle-check" class="h-3 w-3" aria-hidden="true"><\/i><span>Paid<\/span><\/span>/);
+});
+
 test('provides mobile bottom navigation and desktop sidebar', () => {
   const source = html();
   assert.match(source, /id="mobile-nav"[^>]*class="[^"]*lg:hidden/);
@@ -2809,7 +2856,7 @@ test('defines shared visual components and completes five root screens', () => {
   for (const id of ['home', 'wallet', 'scan', 'explore', 'profile']) {
     assert.match(source, new RegExp(`<section[^>]+id="${id}"[^>]+data-ready="true"`));
   }
-  assert.doesNotMatch(source, /class="[^"]*\b(phone|notch|status)\b/);
+  assert.doesNotMatch(source, /class="[^"]*\b(phone|notch)\b/);
 });
 
 const detailScreens = [
@@ -5712,7 +5759,7 @@ test('renders localized guest options only for the staged business and refreshes
   assert.deepEqual(service.children.map((option) => option.value), ['signature-facial']);
   assert.match(service.children[0].textContent, /^Chăm sóc da đặc trưng/);
   assert.deepEqual(staff.children.map((option) => option.value), ['']);
-  assert.equal(staff.children[0].textContent, 'Không yêu cầu');
+  assert.equal(staff.children[0].textContent, 'Không ưu tiên');
 
   context.setLanguage('en');
   assert.match(service.children[0].textContent, /^Signature Facial/);

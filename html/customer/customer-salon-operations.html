@@ -15,6 +15,9 @@
     .ops-button { @apply min-h-12 rounded-2xl bg-gradient-to-r from-fuchsia-600 to-blue-500 px-4 font-black text-white shadow-md outline-none focus:ring-2 focus:ring-fuchsia-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50; }
     .ops-button-secondary { @apply min-h-12 rounded-2xl border border-slate-200 bg-white px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50; }
     .ops-input { @apply min-h-12 w-full rounded-2xl border border-slate-300 bg-white px-4 text-base font-bold tracking-[0.2em] outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
   </style>
 </head>
 <body>
@@ -23,29 +26,22 @@
     <div class="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p class="text-xs font-bold tracking-[0.2em] text-white/60">NEXORA TOUCH</p>
-        <h1 class="text-lg font-black">Salon Operations Companion</h1>
+        <h1 class="font-black">Vận hành Salon</h1>
       </div>
-      <label class="flex items-center justify-between gap-3 text-sm font-bold sm:justify-start">
-        <span>Vai trò / Role</span>
-        <select id="ops-role" aria-label="Chọn vai trò vận hành / Select operations role" class="min-h-11 rounded-xl bg-white px-3 text-slate-950 outline-none ring-fuchsia-400 focus:ring-2">
-          <option value="Customer">Customer / Khách hàng</option>
-          <option value="Front Desk">Front Desk / Lễ tân</option>
-          <option value="Staff">Staff / Nhân viên</option>
-        </select>
-      </label>
+      <label class="text-xs font-bold">Vai trò<select id="ops-role" aria-label="Chọn vai trò vận hành / Select operations role" class="ml-2 rounded-lg bg-white px-2 py-1 text-slate-950"><option value="Customer">Khách hàng</option><option value="Front Desk">Lễ tân</option><option value="Staff">Nhân viên</option></select></label>
     </div>
     <p id="ops-role-copy" class="mx-auto mt-2 max-w-5xl text-xs text-white/70"></p>
   </header>
 
   <div class="mx-auto max-w-5xl p-4 sm:p-6">
     <nav class="grid grid-cols-1 gap-2 sm:grid-cols-3" role="tablist" aria-label="Màn hình vận hành / Operations screens">
-      <button id="ops-tab-liveticket" type="button" class="ops-nav-button" role="tab" aria-controls="ops-liveticket" data-ops-screen-target="liveticket">
+      <button id="ops-tab-liveticket" type="button" class="ops-nav-button" role="tab" aria-controls="ops-liveticket" data-ops-action="activate-screen" data-ops-screen-target="liveticket">
         Live Ticket
       </button>
-      <button id="ops-tab-staffnoteligible" type="button" class="ops-nav-button" role="tab" aria-controls="ops-staffnoteligible" data-ops-screen-target="staffnoteligible">
+      <button id="ops-tab-staffnoteligible" type="button" class="ops-nav-button" role="tab" aria-controls="ops-staffnoteligible" data-ops-action="activate-screen" data-ops-screen-target="staffnoteligible">
         Staff Eligibility
       </button>
-      <button id="ops-tab-addonapproval" type="button" class="ops-nav-button" role="tab" aria-controls="ops-addonapproval" data-ops-screen-target="addonapproval">
+      <button id="ops-tab-addonapproval" type="button" class="ops-nav-button" role="tab" aria-controls="ops-addonapproval" data-ops-action="activate-screen" data-ops-screen-target="addonapproval">
         Add-on Approval
       </button>
     </nav>
@@ -65,14 +61,14 @@
                 <p class="text-xs font-black uppercase tracking-[0.16em] text-white/70">Customer Live Ticket</p>
                 <h2 id="ops-ticket-number" class="mt-1 text-3xl font-black"></h2>
               </div>
-              <span id="ops-ticket-status" class="rounded-full bg-white/20 px-3 py-1 text-xs font-black"></span>
+              <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600"><i data-lucide="sparkles" class="h-3 w-3" aria-hidden="true"></i><span id="ops-ticket-status"></span></span>
             </div>
             <p id="ops-ticket-business" class="mt-4 text-sm font-bold text-white/80"></p>
           </div>
           <div class="p-5">
             <div id="ops-ticket-items" class="divide-y divide-dashed divide-slate-200"></div>
             <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4 text-xl font-black">
-              <span>Current Total / Hiện tại</span><strong id="ops-ticket-total"></strong>
+              <span>Thành tiền hiện tại</span><strong id="ops-ticket-total"></strong>
             </div>
           </div>
         </article>
@@ -85,7 +81,7 @@
               <button type="button" class="ops-button-secondary" data-ops-action="message-tech">Msg / Nhắn</button>
             </div>
           </div>
-          <button type="button" class="ops-button-secondary mt-4 w-full" data-ops-action="review-staff-eligibility">Review staff eligibility / Kiểm tra nhân viên</button>
+          <button type="button" class="ops-button-secondary mt-4 w-full" data-ops-action="review-staff-eligibility">Kiểm tra điều kiện nhân viên</button>
           <button type="button" class="ops-button-secondary mt-3 w-full" data-ops-action="open-addon">Review suggested add-on / Xem dịch vụ thêm</button>
         </article>
         <nav class="mt-4 grid grid-cols-4 gap-2" aria-label="Ticket actions / Tác vụ phiếu">
@@ -102,7 +98,7 @@
         <div class="flex items-start justify-between gap-4">
           <div>
             <p class="text-xs font-black uppercase tracking-[0.16em] text-rose-600">Eligibility review</p>
-            <h2 class="mt-1 text-2xl font-black">Kỹ thuật viên chưa phù hợp</h2>
+            <h2 class="font-black">Cảnh báo nhân viên được yêu cầu</h2>
           </div>
           <i data-lucide="user-round-x" aria-hidden="true" class="size-7 text-rose-500"></i>
         </div>
@@ -113,11 +109,11 @@
         </dl>
       </article>
       <article class="ops-card mt-4">
-        <h3 class="text-lg font-black">Recommended / Đề xuất</h3>
+        <h3 class="font-black">Đề xuất</h3>
         <div id="ops-recommended-staff" class="mt-3 grid gap-3"></div>
       </article>
       <button id="ops-choose-staff" type="button" class="ops-button mt-4 w-full" data-ops-action="choose-recommended-staff" disabled>Choose staff / Chọn nhân viên</button>
-      <button type="button" class="ops-button-secondary mt-3 w-full" data-ops-action="ask-front-desk">Ask Front Desk / Hỏi lễ tân</button>
+      <button type="button" class="ops-button-secondary mt-3 w-full" data-ops-action="ask-front-desk">Nhờ lễ tân hỗ trợ</button>
     </section>
 
     <section id="ops-addonapproval" class="mt-4 hidden" role="tabpanel" aria-labelledby="ops-tab-addonapproval" tabindex="-1" data-ops-screen="addonapproval">
@@ -140,11 +136,11 @@
         </dl>
       </article>
       <div class="mt-4 grid grid-cols-2 gap-3">
-        <button type="button" class="ops-button-secondary" data-ops-action="decline-addon">Decline / Từ chối</button>
-        <button type="button" class="ops-button" data-ops-action="accept-addon">Accept / Chấp nhận</button>
+        <button type="button" class="ops-button-secondary" data-ops-action="decline-addon">Từ chối</button>
+        <button type="button" class="ops-button" data-ops-action="accept-addon">Chấp nhận</button>
       </div>
       <article class="ops-card mt-4">
-        <label class="text-sm font-bold" for="ops-addon-phone">Confirm last 4 phone digits / Xác nhận 4 số cuối</label>
+        <label class="text-sm font-bold" for="ops-addon-phone">Khách xác nhận 4 số cuối điện thoại</label>
         <input id="ops-addon-phone" class="ops-input mt-2" inputmode="numeric" autocomplete="tel-national" maxlength="4" aria-describedby="ops-addon-error">
         <p id="ops-addon-error" class="mt-2 hidden text-sm font-bold text-rose-600" role="alert" tabindex="-1"></p>
         <button id="ops-addon-confirm" type="button" class="ops-button mt-3 w-full" data-ops-action="confirm-addon-phone" disabled aria-disabled="true">Confirm / Xác nhận</button>
@@ -169,6 +165,21 @@ const OPS_ROLE_COPY = Object.freeze({
   'Front Desk': 'Front Desk / Lễ tân — hỗ trợ điều phối ticket và yêu cầu của khách.',
   Staff: 'Staff / Nhân viên — theo dõi dịch vụ và gửi sự kiện vận hành.'
 });
+const OPS_COPY = Object.freeze({
+  vi: { in_service: 'Đang làm', waiting: 'Đang chờ', completed: 'Hoàn tất', accepted: 'Đã chấp nhận',
+    declined: 'Đã từ chối', available: 'Sẵn sàng', unavailable: 'Chưa sẵn sàng', choose: 'Chọn',
+    frontDeskSent: 'Đã báo lễ tân', requestFailed: 'Không thể gửi yêu cầu',
+    notEligible: (staff, service) => `${staff} chưa đủ điều kiện cho ${service}.` },
+  en: { in_service: 'In service', waiting: 'Waiting', completed: 'Completed', accepted: 'Accepted',
+    declined: 'Declined', available: 'Available', unavailable: 'Unavailable', choose: 'Choose',
+    frontDeskSent: 'Front Desk has been notified', requestFailed: 'Request failed',
+    notEligible: (staff, service) => `${staff} is not eligible for ${service}.` }
+});
+const opsLanguage = () => document.documentElement.lang === 'en' ? 'en' : 'vi';
+const opsT = (key, ...args) => {
+  const value = OPS_COPY[opsLanguage()][key];
+  return typeof value === 'function' ? value(...args) : value;
+};
 const OPS_BUSINESSES = Object.freeze({
   'bitcoin-nail-bar': Object.freeze({ id: 'bitcoin-nail-bar', name: 'Bitcoin Nail Bar' }),
   'golden-glow-spa': Object.freeze({ id: 'golden-glow-spa', name: 'Golden Glow Spa' }),
@@ -1216,6 +1227,17 @@ function setOperationsStatus(message) {
   if (status) status.textContent = message;
 }
 
+function opsToast(message) {
+  setOperationsStatus(message);
+}
+
+function setDisabledReason(control, disabled, reason) {
+  if (!control) return;
+  control.disabled = disabled;
+  control.setAttribute('aria-disabled', String(disabled));
+  if (disabled) control.setAttribute('title', reason); else control.removeAttribute('title');
+}
+
 function opsMoney(cents) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
 }
@@ -1333,10 +1355,7 @@ function clearAddOnInteraction({ clearError = true } = {}) {
   const phone = document.getElementById('ops-addon-phone');
   if (phone) phone.value = '';
   const confirm = document.getElementById('ops-addon-confirm');
-  if (confirm) {
-    confirm.disabled = true;
-    confirm.setAttribute('aria-disabled', 'true');
-  }
+  setDisabledReason(confirm, true, 'Chọn Chấp nhận/Từ chối và nhập đủ 4 số cuối.');
   const error = document.getElementById('ops-addon-error');
   if (error && clearError) {
     error.textContent = '';
@@ -1348,10 +1367,11 @@ function updateAddOnConfirm() {
   const phone = document.getElementById('ops-addon-phone');
   const confirm = document.getElementById('ops-addon-confirm');
   if (!phone || !confirm) return;
-  const enabled = currentAddOnUiState().canReview
-    && ['accepted', 'declined'].includes(pendingAddOnDecision) && /^\d{4}$/.test(phone.value);
-  confirm.disabled = !enabled;
-  confirm.setAttribute('aria-disabled', String(!enabled));
+  const digits = phone.value;
+  const disabled = !currentAddOnUiState().canReview
+    || !['accepted', 'declined'].includes(pendingAddOnDecision) || !/^\d{4}$/.test(digits);
+  setDisabledReason(document.getElementById('ops-addon-confirm'), disabled,
+    'Chọn Chấp nhận/Từ chối và nhập đủ 4 số cuối.');
 }
 
 function syncAddOnControls() {
@@ -1413,12 +1433,11 @@ function renderLiveTicket() {
     ? operationsCustomerSnapshot.businesses[ticket.businessId]
     : OPS_BUSINESSES[ticket.businessId];
   const number = document.getElementById('ops-ticket-number');
-  const status = document.getElementById('ops-ticket-status');
   const businessName = document.getElementById('ops-ticket-business');
   const total = document.getElementById('ops-ticket-total');
   const staffName = document.getElementById('ops-ticket-staff');
   if (number) number.textContent = `#${ticket.number}`;
-  if (status) status.textContent = ticket.status === 'in_service' ? 'In Service / Đang làm' : ticket.status.replace('_', ' ');
+  document.getElementById('ops-ticket-status').textContent = opsT(ticket.status);
   if (businessName) businessName.textContent = business?.name || ticket.businessId;
   if (total) total.textContent = opsMoney(ticket.currentTotalCents);
   if (staffName) staffName.textContent = opsStaff(ticket.staffProfileId)?.name || 'Unassigned / Chưa chỉ định';
@@ -1448,11 +1467,9 @@ function renderEligibility() {
   const warning = document.getElementById('ops-eligibility-warning');
   const requestedStaff = document.getElementById('ops-requested-staff');
   const requestedService = document.getElementById('ops-requested-service');
-  if (warning) warning.textContent = operationsEntryBlocked
+  if (warning) warning.textContent = operationsEntryBlocked || !requested || !service
     ? ''
-    : requested && service
-    ? `${requested.name} is not eligible for ${service.label}. Salon staff will not be changed until you choose. / Nhân viên sẽ không tự động bị đổi.`
-    : 'No staff eligibility warning / Không có cảnh báo nhân viên.';
+    : opsT('notEligible', requested.name, service.label);
   if (requestedStaff) requestedStaff.textContent = operationsEntryBlocked ? '' : requested?.name || '—';
   if (requestedService) requestedService.textContent = operationsEntryBlocked ? '' : service?.label || '—';
   const host = document.getElementById('ops-recommended-staff');
@@ -1467,22 +1484,20 @@ function renderEligibility() {
       button.disabled = !staff.available;
       button.setAttribute('aria-disabled', String(!staff.available));
       button.setAttribute('aria-pressed', String(staff.available && operationsState.ui.selectedStaffId === staff.id));
-      button.textContent = `${staff.name} · ${staff.available ? 'Available / Sẵn sàng' : 'Unavailable / Không sẵn sàng'}`;
+      button.textContent = `${staff.name} · ${opsT(staff.available ? 'available' : 'unavailable')}`;
       return button;
     });
     host.replaceChildren(...cards);
   }
   const choose = document.getElementById('ops-choose-staff');
   if (choose) {
-    const selected = event?.recommendedStaffIds.includes(operationsState.ui.selectedStaffId)
+    const candidate = event?.recommendedStaffIds.includes(operationsState.ui.selectedStaffId)
       ? opsStaff(operationsState.ui.selectedStaffId)
       : null;
-    const selectable = selected?.available ? selected : null;
-    choose.disabled = !selectable;
-    choose.setAttribute('aria-disabled', String(!selectable));
-    choose.textContent = selectable
-      ? `Choose ${selectable.name} / Chọn ${selectable.name}`
-      : 'Choose staff / Chọn nhân viên';
+    const selected = candidate?.available ? candidate : null;
+    setDisabledReason(document.getElementById('ops-choose-staff'), !selected,
+      'Chọn một nhân viên được đề xuất trước.');
+    choose.textContent = selected ? `${opsT('choose')} ${selected.name}` : opsT('choose');
   }
 }
 
@@ -1620,6 +1635,8 @@ function discardDemoTicketArtifacts(state) {
   state.ui.activeScreen = 'liveticket';
 }
 
+registerOpsAction('activate-screen', (control) => activateOperationsScreen(control));
+
 registerOpsAction('review-staff-eligibility', () => {
   const ticket = operationsState.serviceTickets.find((row) => row.id === operationsState.ui.selectedTicketId);
   if (!ticket || !ticket.staffProfileId) {
@@ -1671,9 +1688,7 @@ registerOpsAction('choose-recommended-staff', () => {
 
 registerOpsAction('ask-front-desk', () => {
   const result = commitOperations((draft) => askFrontDesk(draft, draft.ui.selectedTicketId));
-  setOperationsStatus(result.ok
-    ? 'Front Desk has been notified / Lễ tân đã được thông báo.'
-    : 'Front Desk request failed / Không thể báo lễ tân.');
+  opsToast(result.ok ? opsT('frontDeskSent') : opsT('requestFailed'));
 });
 
 registerOpsAction('open-addon', () => {

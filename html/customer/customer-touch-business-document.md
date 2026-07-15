@@ -423,3 +423,18 @@ A: Không. Bạn chỉ follow technician đã từng phục vụ mình trong m�
 ---
 
 **Ghi chú phát hành:** Đây là tài liệu business-facing độc lập cho phạm vi Customer App. Khi thay đổi earn/redeem rule, payment callback, consent policy hoặc marketplace eligibility, Product Owner cần cập nhật bản tài liệu này cùng spec và test case liên quan.
+
+## Quy trình Salon Scan đa điểm
+
+```text
+Salon QR → nhận diện business/station
+  ├─ Thành viên → member check-in hiện có
+  └─ Guest → guest check-in → live ticket
+       → khách chủ động chọn Pay → checkout
+       → Card/Pay at Counter hoặc Zelle/Venmo proof
+       → Front Desk xác minh
+          ├─ verified → receipt + pending guest reward claims
+          └─ rejected → thay proof hoặc trả tại quầy
+```
+
+Staff Not Eligible chỉ hiện sau kết quả kiểm tra không đủ điều kiện; Approve Add-on chỉ hiện khi ticket có add-on đang chờ khách quyết định. NEXORA không giữ tiền. Mọi payment method là đường thanh toán ngoài NEXORA; companion chỉ mô phỏng tác vụ vận hành. Customer App sở hữu dữ liệu guest/payment/referral trong `nexora.customer.prototype.v1`; companion sở hữu ticket/staff/add-on trong `nexora.customer.crosssurface.v1`. Hai artifact chỉ đọc snapshot đã sanitize của nhau, join bằng `guestCheckinId`/`ticketId`, và không ghi vào key của artifact còn lại.

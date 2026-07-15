@@ -62,23 +62,14 @@ Các flow companion không được thêm vào danh sách 31 `app-screen` của 
 - QR/code và native share chỉ tạo attribution; reward chỉ release sau first paid visit theo rule business.
 - Không hiển thị affiliate cash trong customer flow.
 
-## 4. Persistence boundary
+## Quyền sở hữu state đã chốt
 
-Customer App giữ schema hiện tại `nexora.customer.prototype.v1` và thêm các field đã normalize:
+| State | Owner duy nhất | Artifact còn lại |
+|---|---|---|
+| Guest check-in, checkout, proof, receipt, guest claim, referral | `nexora.customer.prototype.v1` | Companion chỉ đọc snapshot đã sanitize |
+| Service ticket, staff eligibility, add-on request | `nexora.customer.crosssurface.v1` | Customer chỉ đọc accepted add-on đã sanitize |
 
-```text
-guestCheckins, checkoutDrafts, paymentProofs,
-serviceTickets, addOnRequests, staffEligibility, referrals
-```
-
-Companion prototype dùng key riêng `nexora.customer.crosssurface.v1` để tránh làm hỏng migration và test contract của app chính. Companion chỉ đọc business/profile/visit context cần thiết và ghi trạng thái vận hành demo riêng.
-
-Mọi ghi state phải:
-
-- validate business/visit ownership;
-- có idempotency cho confirm payment, add-on và reward;
-- không cộng điểm khi proof/payment còn pending;
-- không coi guest checkout là account đã đăng ký cho đến khi khách claim account bằng phone/OTP.
+Cross-surface join chỉ dùng `guestCheckinId` và `ticketId`; không join theo tên hoặc số điện thoại hiển thị. Guest check-in thành công mở Customer Live Ticket trước; chỉ nút Pay rõ ràng tại đây mới handoff sang Guest Checkout. Staff Not Eligible chỉ hiện khi kết quả eligibility không đạt; Approve Add-on chỉ hiện khi có add-on đang chờ quyết định. `cutomer-reward.html` vẫn đúng 31 `.app-screen`; các flow mới là nested views. `customer-salon-operations.html` chứa ba screen độc lập `ops-liveticket`, `ops-staffnoteligible`, `ops-addonapproval`. Trạng thái tài liệu vẫn là **Chờ review** cho tới khi Product Owner phê duyệt.
 
 ## 5. UI và accessibility
 
