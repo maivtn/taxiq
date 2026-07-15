@@ -4467,6 +4467,41 @@ test('Task 5 merges an authoritative verified guest aggregate once without gener
   assert.equal(ids.calls(), calls);
 });
 
+test('Task 5 rejects a canonical mixed pending and claimed batch before UUID or mutation', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  const fixture = seedVerifiedGuestReceipt(api, app);
+  bindMergePhone(app);
+  const claimed = fixture.claims[0];
+  const claimedAt = new Date(2500).toISOString();
+  claimed.status = 'claimed';
+  claimed.claimedAt = claimedAt;
+  app.balances[claimed.businessId].points += claimed.points;
+  app.ledger.unshift({
+    id: 'ledger-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    businessId: claimed.businessId,
+    type: claimed.sourceType,
+    pointsDelta: claimed.points,
+    refType: 'guest_claim',
+    refId: claimed.id,
+    createdAt: claimedAt
+  });
+  assert.equal(api.validateVerifiedPaymentAggregate(app, fixture.proof.id).ok, true);
+  assert.equal(app.guestCheckins[0].claimedAt, null);
+  assert.equal(app.guestRewardClaims.some((claim) => claim.status === 'pending'), true);
+  const beforeBytes = JSON.stringify(app);
+  const before = JSON.parse(beforeBytes);
+  const calls = ids.calls();
+
+  const result = api.mergeGuestJourney(app, '8325550198', 3000);
+
+  assert.equal(result.ok, false);
+  assert.deepEqual(JSON.parse(JSON.stringify(app)), before);
+  assert.equal(JSON.stringify(app), beforeBytes);
+  assert.equal(ids.calls(), calls);
+});
+
 test('Task 5 rejects invalid, different, or session/profile-mismatched phones byte-for-byte', () => {
   for (const [label, sessionPhone, profilePhone, input] of [
     ['different phone', '8325550198', '8325550198', '8325550100'],
@@ -4486,6 +4521,34 @@ test('Task 5 rejects invalid, different, or session/profile-mismatched phones by
     assert.equal(result.ok, false, label);
     assert.equal(result.code, 'phone_mismatch', label);
     assert.equal(JSON.stringify(app), before, label);
+    assert.equal(ids.calls(), calls, label);
+  }
+});
+
+test('Task 5 normalizes phone input but rejects every noncanonical stored account phone', () => {
+  for (const [label, sessionPhone, profilePhone] of [
+    ['formatted session', '(832) 555-0198', '8325550198'],
+    ['plus-one session', '+1 832-555-0198', '8325550198'],
+    ['numeric session', 8325550198, '8325550198'],
+    ['whitespace profile', '8325550198', ' 8325550198 '],
+    ['plus-one profile', '8325550198', '18325550198']
+  ]) {
+    const ids = createUuidSequence();
+    const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+    const app = api.createDefaultState();
+    seedVerifiedGuestReceipt(api, app);
+    app.session.phone = sessionPhone;
+    app.profile.phone = profilePhone;
+    const beforeBytes = JSON.stringify(app);
+    const before = JSON.parse(beforeBytes);
+    const calls = ids.calls();
+
+    const result = api.mergeGuestJourney(app, '(832) 555-0198', 3000);
+
+    assert.equal(result.ok, false, label);
+    assert.equal(result.code, 'phone_mismatch', label);
+    assert.deepEqual(JSON.parse(JSON.stringify(app)), before, label);
+    assert.equal(JSON.stringify(app), beforeBytes, label);
     assert.equal(ids.calls(), calls, label);
   }
 });
@@ -4599,6 +4662,79 @@ test('Task 5 fails closed on duplicate or tampered owner, artifact, formula and 
   assert.equal(ids.calls(), 7);
 });
 
+test('Task 5 preflights malformed canonical-ID records across every relevant collection', () => {
+  const variants = [
+    ['guest check-in', (app) => {
+      app.guestCheckins.push({
+        ...structuredClone(app.guestCheckins[0]),
+        id: 'guest-checkin-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+        phone: '8325550100',
+        serviceKey: 'missing-service'
+      });
+    }],
+    ['checkout chronology', (app) => {
+      app.checkoutDrafts.push({
+        ...structuredClone(app.checkoutDrafts[0]),
+        id: 'checkout-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+        createdAt: new Date(999).toISOString()
+      });
+    }],
+    ['payment proof owner', (app) => {
+      app.paymentProofs.push({
+        ...structuredClone(app.paymentProofs[0]),
+        id: 'proof-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+        checkoutDraftId: 'checkout-cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+        status: 'pending_verification',
+        verifiedAt: null
+      });
+    }],
+    ['receipt parent', (app) => {
+      app.receipts.push({
+        ...structuredClone(app.receipts[0]),
+        id: 'receipt-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+        checkoutDraftId: 'checkout-cccccccc-cccc-4ccc-8ccc-cccccccccccc'
+      });
+    }],
+    ['claim source', (app) => {
+      app.guestRewardClaims.push({
+        ...structuredClone(app.guestRewardClaims[0]),
+        id: 'guest-claim-visit_spend-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+        guestCheckinId: 'guest-checkin-cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+        sourceId: 'proof-cccccccc-cccc-4ccc-8ccc-cccccccccccc'
+      });
+    }],
+    ['ledger owner and chronology', (app) => {
+      app.ledger.push({
+        id: 'ledger-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+        businessId: 'missing-business',
+        type: 'welcome',
+        pointsDelta: 25,
+        refType: 'onboarding',
+        refId: 'welcome-unrelated',
+        createdAt: 'not-a-timestamp'
+      });
+    }]
+  ];
+  for (const [label, mutate] of variants) {
+    const ids = createUuidSequence();
+    const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+    const app = api.createDefaultState();
+    seedVerifiedGuestReceipt(api, app);
+    bindMergePhone(app);
+    mutate(app);
+    const beforeBytes = JSON.stringify(app);
+    const before = JSON.parse(beforeBytes);
+    const calls = ids.calls();
+
+    const result = api.mergeGuestJourney(app, '8325550198', 6000);
+
+    assert.equal(result.ok, false, label);
+    assert.deepEqual(JSON.parse(JSON.stringify(app)), before, label);
+    assert.equal(JSON.stringify(app), beforeBytes, label);
+    assert.equal(ids.calls(), calls, label);
+  }
+});
+
 test('Task 5 enforces the pending and claimed guest-claim ledger lifecycle', () => {
   {
     const ids = createUuidSequence();
@@ -4689,6 +4825,39 @@ test('Task 5 migration never heals an ambiguous claimed guest ledger ID into a r
 
   assert.equal(result.ok, false);
   assert.equal(JSON.stringify(migrated), before);
+});
+
+test('Task 5 migration quarantines a raw cross-type duplicate before legacy ledger reconciliation', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  seedVerifiedGuestReceipt(api, app);
+  bindMergePhone(app);
+  assert.equal(api.mergeGuestJourney(app, '8325550198', 3000).ok, true);
+  const guestLedger = app.ledger.find((entry) => entry.refType === 'guest_claim');
+  app.ledger.push({
+    ...structuredClone(guestLedger),
+    type: 'tip_bonus',
+    refType: 'tip',
+    refId: 'tip-malformed-unrelated'
+  });
+
+  const migrated = api.migrateState(structuredClone(app));
+
+  assert.equal(migrated.guestRewardClaims.some((claim) => (
+    claim.id === guestLedger.refId && claim.status === 'claimed'
+  )), true);
+  assert.equal(migrated.ledger.some((entry) => (
+    entry.id === guestLedger.id && entry.refType === 'guest_claim'
+  )), false);
+  const beforeBytes = JSON.stringify(migrated);
+  const before = JSON.parse(beforeBytes);
+  const calls = ids.calls();
+  const replay = api.mergeGuestJourney(migrated, '8325550198', 4000);
+  assert.equal(replay.ok, false);
+  assert.deepEqual(JSON.parse(JSON.stringify(migrated)), before);
+  assert.equal(JSON.stringify(migrated), beforeBytes);
+  assert.equal(ids.calls(), calls);
 });
 
 test('Task 5 receipt CTAs prefill login or return to the scan camera without consuming claims', () => {

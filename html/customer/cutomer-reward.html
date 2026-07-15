@@ -712,6 +712,30 @@
       });
     }
 
+    function collectRawGuestClaimLedgerCollisionIds(ledger) {
+      if (!Array.isArray(ledger)) return new Set();
+      const entriesById = new Map();
+      ledger.forEach((entry) => {
+        if (!isRecord(entry)) return;
+        const id = normalizedRequiredText(entry.id);
+        if (!id) return;
+        if (!entriesById.has(id)) entriesById.set(id, []);
+        entriesById.get(id).push(entry);
+      });
+      return new Set([...entriesById]
+        .filter(([, entries]) => entries.length > 1
+          && entries.some((entry) => normalizedRequiredText(entry.refType) === 'guest_claim'))
+        .map(([id]) => id));
+    }
+
+    function quarantineRawGuestClaimLedgerCollisions(appState, collisionIds) {
+      if (!(collisionIds instanceof Set) || collisionIds.size === 0) return;
+      appState.ledger = appState.ledger.filter((entry) => !(
+        collisionIds.has(normalizedRequiredText(entry.id))
+        && normalizedRequiredText(entry.refType) === 'guest_claim'
+      ));
+    }
+
     function collectRawBookingLedgerClaims(ledger) {
       if (!Array.isArray(ledger)) return [];
       return ledger.flatMap((entry) => {
@@ -1511,6 +1535,61 @@
       });
     }
 
+    function guestMergeCollectionsPassPreflight(appState) {
+      if (!collectionHasUniqueCanonicalIds(appState.guestCheckins, GUEST_CHECKIN_ID_PATTERN)
+        || !collectionHasUniqueCanonicalIds(appState.checkoutDrafts, CHECKOUT_ID_PATTERN)
+        || !collectionHasUniqueCanonicalIds(appState.paymentProofs, PAYMENT_PROOF_ID_PATTERN)
+        || !collectionHasUniqueCanonicalIds(appState.receipts, RECEIPT_ID_PATTERN)
+        || !collectionHasUniqueCanonicalIds(appState.guestRewardClaims, GUEST_REWARD_CLAIM_ID_PATTERN)
+        || !collectionHasUniqueExactIds(appState.ledger)) return false;
+
+      for (const checkin of appState.guestCheckins) {
+        const normalized = normalizeGuestCheckin(appState, checkin);
+        if (!normalized || !recordMatchesCanonicalFields(checkin, normalized)) return false;
+      }
+      for (const checkout of appState.checkoutDrafts) {
+        const owner = canonicalGuestOwnerForCheckout(appState, checkout);
+        const normalized = normalizeCheckoutDraft(appState, checkout);
+        if (!owner || !normalized || !recordMatchesCanonicalFields(checkout, normalized)
+          || !isCanonicalCheckoutForGuest(appState, checkout, owner)) return false;
+      }
+
+      const proofCheckoutIds = new Set();
+      for (const proof of appState.paymentProofs) {
+        const checkout = appState.checkoutDrafts.find((row) => row.id === proof.checkoutDraftId);
+        if (!checkout || proofCheckoutIds.has(proof.checkoutDraftId)
+          || !isCanonicalProofForCheckout(appState, proof, checkout)) return false;
+        proofCheckoutIds.add(proof.checkoutDraftId);
+      }
+
+      const receiptCheckoutIds = new Set();
+      for (const receipt of appState.receipts) {
+        const normalized = normalizeReceipt(appState, receipt);
+        if (!normalized || receiptCheckoutIds.has(receipt.checkoutDraftId)
+          || !recordMatchesCanonicalFields(receipt, normalized)) return false;
+        receiptCheckoutIds.add(receipt.checkoutDraftId);
+      }
+
+      const claimKeys = new Set();
+      for (const claim of appState.guestRewardClaims) {
+        const normalized = normalizeGuestRewardClaim(appState, claim);
+        const key = JSON.stringify([claim.guestCheckinId, claim.sourceType, claim.sourceId]);
+        if (!normalized || claimKeys.has(key)
+          || !recordMatchesCanonicalFields(claim, normalized)) return false;
+        claimKeys.add(key);
+      }
+
+      return appState.ledger.every((entry) => (
+        normalizedRequiredText(entry.businessId) === entry.businessId
+        && Boolean(getValidBusiness(appState, entry.businessId))
+        && normalizedRequiredText(entry.type) === entry.type
+        && typeof entry.pointsDelta === 'number' && Number.isFinite(entry.pointsDelta)
+        && normalizedRequiredText(entry.refType) === entry.refType
+        && normalizedRequiredText(entry.refId) === entry.refId
+        && validStoredTimestamp(entry.createdAt)
+      ));
+    }
+
     function isExactGuestClaimLedgerEntry(entry, claim) {
       return isRecord(entry) && LEDGER_ID_PATTERN.test(entry.id)
         && entry.businessId === claim.businessId && entry.type === claim.sourceType
@@ -1552,31 +1631,23 @@
 
     function mergeGuestJourney(appState, phoneInput, now = Date.now()) {
       const phone = normalizeUsPhone(phoneInput);
-      if (phone.length !== 10 || normalizeUsPhone(appState?.session?.phone) !== phone
-        || normalizeUsPhone(appState?.profile?.phone) !== phone) {
+      const sessionPhone = appState?.session?.phone;
+      const profilePhone = appState?.profile?.phone;
+      if (phone.length !== 10 || typeof sessionPhone !== 'string' || !/^\d{10}$/.test(sessionPhone)
+        || sessionPhone !== phone || typeof profilePhone !== 'string'
+        || !/^\d{10}$/.test(profilePhone) || profilePhone !== phone) {
         return { ok: false, code: 'phone_mismatch' };
       }
       if (!Array.isArray(appState?.guestCheckins) || !Array.isArray(appState?.guestRewardClaims)
-        || !Array.isArray(appState?.paymentProofs) || !Array.isArray(appState?.receipts)
+        || !Array.isArray(appState?.checkoutDrafts) || !Array.isArray(appState?.paymentProofs)
+        || !Array.isArray(appState?.receipts)
         || !Array.isArray(appState?.ledger)
         || !isRecord(appState?.balances)) return { ok: false, code: 'invalid_state' };
-      if (!collectionHasUniqueCanonicalIds(appState.guestRewardClaims, GUEST_REWARD_CLAIM_ID_PATTERN)
-        || !collectionHasUniqueCanonicalIds(appState.paymentProofs, PAYMENT_PROOF_ID_PATTERN)
-        || !collectionHasUniqueCanonicalIds(appState.receipts, RECEIPT_ID_PATTERN)) {
+      if (!guestMergeCollectionsPassPreflight(appState)) {
         return { ok: false, code: 'invalid_verified_artifacts' };
-      }
-      if (!collectionHasUniqueExactIds(appState.guestCheckins)) {
-        return { ok: false, code: 'invalid_claim_owner' };
       }
       const matchingCheckins = appState.guestCheckins.filter((row) => isRecord(row) && row.phone === phone);
       if (matchingCheckins.length === 0) return { ok: false, code: 'phone_mismatch' };
-      for (const checkin of appState.guestCheckins) {
-        const normalized = normalizeGuestCheckin(appState, checkin);
-        if (!GUEST_CHECKIN_ID_PATTERN.test(checkin.id)
-          || !normalized || !recordMatchesCanonicalFields(checkin, normalized)) {
-          return { ok: false, code: 'invalid_claim_owner' };
-        }
-      }
 
       const authoritativeClaims = [];
       for (const proof of appState.paymentProofs.filter((row) => isRecord(row) && row.status === 'verified')) {
@@ -1597,6 +1668,10 @@
       for (const checkin of matchingCheckins) {
         const claims = eligibleClaims.filter((claim) => claim.guestCheckinId === checkin.id);
         const pending = claims.some((claim) => claim.status === 'pending');
+        const claimed = claims.some((claim) => claim.status === 'claimed');
+        if (pending && claimed) {
+          return { ok: false, code: 'invalid_claim_lifecycle' };
+        }
         if (pending && checkin.claimedAt !== null) {
           return { ok: false, code: 'invalid_claim_lifecycle' };
         }
@@ -2669,6 +2744,7 @@
       if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
       const rawRedemptionClaims = collectRawRedemptionClaims(value.redemptions);
       const rawTransactionLedgerClaims = collectRawTransactionLedgerClaims(value.ledger);
+      const rawGuestClaimLedgerCollisionIds = collectRawGuestClaimLedgerCollisionIds(value.ledger);
       const rawBookingLedgerClaims = collectRawBookingLedgerClaims(value.ledger);
       const rawAppointmentClaims = collectRawAppointmentClaims(value.appointments);
       const rawFeedbackLedgerClaims = collectRawFeedbackLedgerClaims(value.ledger);
@@ -2698,6 +2774,7 @@
       migrated.receipts = normalizeList(value.receipts, normalizeReceipt);
       migrated.guestRewardClaims = normalizeList(value.guestRewardClaims, normalizeGuestRewardClaim);
       reconcileVerifiedPaymentAggregates(migrated, value);
+      quarantineRawGuestClaimLedgerCollisions(migrated, rawGuestClaimLedgerCollisionIds);
       const claimCounts = new Map();
       migrated.guestRewardClaims.forEach((claim) => {
         const key = JSON.stringify([claim.guestCheckinId, claim.sourceType, claim.sourceId]);
