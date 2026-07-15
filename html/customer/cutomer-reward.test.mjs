@@ -3284,6 +3284,328 @@ test('stages a salon scan without awarding points and supports a different salon
   assert.equal(JSON.stringify(app.balances), before);
 });
 
+function seedGuestCheckin(api, app, {
+  payload = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front',
+  serviceKey = 'deluxe-pedicure',
+  staffProfileId = null,
+  now = 1000
+} = {}) {
+  assert.equal(api.stageSalonScan(app, payload).ok, true);
+  const created = api.createGuestCheckin(app, {
+    name: 'Amy Nguyen', phone: '8325550198', serviceKey, staffProfileId
+  }, now);
+  assert.equal(created.ok, true);
+  return created.guestCheckin;
+}
+
+test('calculates checkout promo tip and total in integer cents', () => {
+  const { api } = testApi();
+  const totals = api.calculateCheckoutTotals([
+    { id: 'service', type: 'service', label: 'Deluxe Pedicure', amountCents: 5500 },
+    { id: 'promo', type: 'discount', label: 'Promo NEW10', amountCents: -550 },
+    { id: 'addon', type: 'addon', label: 'Gel Polish', amountCents: 1500 }
+  ], 1800);
+  assert.equal(JSON.stringify(totals), JSON.stringify({
+    subtotalCents: 7000, discountCents: 550, beforeTipCents: 6450,
+    tipCents: 1161, totalCents: 7611
+  }));
+});
+
+test('rejects invalid checkout line-item signs and every unsafe integer total', () => {
+  const { api } = testApi();
+  for (const lineItems of [
+    [{ id: 'service', type: 'service', label: 'Service', amountCents: -1 }],
+    [{ id: 'discount', type: 'discount', label: 'Discount', amountCents: 1 }],
+    [{ id: 'service', type: 'service', label: 'Service', amountCents: Number.MAX_SAFE_INTEGER + 1 }]
+  ]) assert.equal(api.calculateCheckoutTotals(lineItems, 0).code, 'invalid_line_item');
+
+  const sumOverflow = api.calculateCheckoutTotals([
+    { id: 'service', type: 'service', label: 'Service', amountCents: Number.MAX_SAFE_INTEGER },
+    { id: 'addon', type: 'addon', label: 'Add-on', amountCents: 1 }
+  ], 0);
+  assert.equal(sumOverflow.code, 'invalid_total');
+  const tipOverflow = api.calculateCheckoutTotals([
+    { id: 'service', type: 'service', label: 'Service', amountCents: 10_000_000_000_000 }
+  ], 2000);
+  assert.equal(tipOverflow.code, 'invalid_total');
+});
+
+test('builds checkout service prices from the business catalog and rejects caller tampering', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app);
+  const before = JSON.stringify(app);
+  const tampered = api.createCheckoutDraft(app, {
+    guestCheckinId: guest.id,
+    lineItems: [{ id: `service-${guest.id}`, type: 'service', label: 'Cheap Pedicure', amountCents: 1 }]
+  }, 1000);
+  assert.equal(tampered.code, 'invalid_line_items');
+  assert.equal(JSON.stringify(app), before);
+
+  const created = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000);
+  assert.equal(created.ok, true);
+  assert.equal(created.checkoutDraft.lineItems[0].amountCents, 5500);
+  assert.equal(created.checkoutDraft.lineItems[0].label, 'Pedicure cao cấp');
+  assert.equal(created.checkoutDraft.lineItems[1].amountCents, -550);
+  assert.equal(created.checkoutDraft.beforeTipCents, 4950);
+});
+
+test('creates authoritative localized checkout drafts for all guest businesses', () => {
+  for (const [payload, serviceKey, language, label, amountCents] of [
+    ['https://nexoratouch.com/touch/bitcoin-nail-bar/front', 'acrylic-full-set', 'en', 'Acrylic Full Set', 6500],
+    ['https://nexoratouch.com/touch/golden-glow-spa/lobby', 'signature-facial', 'vi', 'Chăm sóc da đặc trưng', 7500],
+    ['https://nexoratouch.com/touch/moon-coffee/counter', 'signature-drink', 'en', 'Signature Drink', 800]
+  ]) {
+    const { api } = testApi();
+    const app = api.createDefaultState();
+    app.profile.language = language;
+    const guest = seedGuestCheckin(api, app, { payload, serviceKey });
+    const result = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000);
+    assert.equal(result.ok, true);
+    assert.equal(result.checkoutDraft.businessId, guest.businessId);
+    assert.equal(result.checkoutDraft.lineItems.length, 1);
+    assert.equal(result.checkoutDraft.lineItems[0].label, label);
+    assert.equal(result.checkoutDraft.lineItems[0].amountCents, amountCents);
+  }
+});
+
+test('fails closed when checkout or proof time precedes its parent event', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app, { now: 1000 });
+  const beforeCheckout = JSON.stringify(app);
+  assert.equal(api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 999).code, 'invalid_time_order');
+  assert.equal(JSON.stringify(app), beforeCheckout);
+
+  const created = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000);
+  assert.equal(api.setCheckoutMethod(app, created.checkoutDraft.id, 'Card').ok, true);
+  const beforeProof = JSON.stringify(app);
+  assert.equal(api.submitCheckoutWithoutUpload(app, created.checkoutDraft.id, 999).code, 'invalid_time_order');
+  assert.equal(JSON.stringify(app), beforeProof);
+  assert.equal(api.submitCheckoutWithoutUpload(app, created.checkoutDraft.id, 1000).ok, true);
+});
+
+test('returns canonical checkout and pending proof idempotently without duplicates', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app);
+  const first = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000);
+  const again = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 2000);
+  assert.equal(again.ok, true);
+  assert.equal(again.idempotent, true);
+  assert.equal(again.checkoutDraft.id, first.checkoutDraft.id);
+  assert.equal(app.checkoutDrafts.length, 1);
+  assert.equal(app.ui.pendingContext.checkoutDraftId, first.checkoutDraft.id);
+
+  assert.equal(api.setCheckoutMethod(app, first.checkoutDraft.id, 'Pay at Counter').ok, true);
+  const submitted = api.submitCheckoutWithoutUpload(app, first.checkoutDraft.id, 2000);
+  const repeated = api.submitCheckoutWithoutUpload(app, first.checkoutDraft.id, 3000);
+  assert.equal(repeated.ok, true);
+  assert.equal(repeated.idempotent, true);
+  assert.equal(repeated.proof.id, submitted.proof.id);
+  assert.equal(app.paymentProofs.length, 1);
+  assert.equal(app.ui.pendingContext.paymentProofId, submitted.proof.id);
+});
+
+test('rejects repeated checkout creation when the existing draft is mismatched', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app);
+  const created = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000);
+  created.checkoutDraft.lineItems[0].amountCents = 1;
+  const before = JSON.stringify(app);
+  assert.equal(api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 2000).code, 'invalid_existing_checkout');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('rejects normalized-looking raw checkout and no-upload proof tampering on retries', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app);
+  const created = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000);
+  created.checkoutDraft.id = ` ${created.checkoutDraft.id} `;
+  const beforeDraftRetry = JSON.stringify(app);
+  assert.equal(api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 2000).code, 'invalid_existing_checkout');
+  assert.equal(JSON.stringify(app), beforeDraftRetry);
+
+  const second = api.createDefaultState();
+  const secondGuest = seedGuestCheckin(api, second);
+  const secondDraft = api.createCheckoutDraft(second, { guestCheckinId: secondGuest.id }, 1000).checkoutDraft;
+  api.setCheckoutMethod(second, secondDraft.id, 'Card');
+  const proof = api.submitCheckoutWithoutUpload(second, secondDraft.id, 1000).proof;
+  proof.id = ` ${proof.id} `;
+  proof.note = 'tampered retry note';
+  second.ui.pendingContext.paymentProofId = null;
+  const beforeProofRetry = JSON.stringify(second);
+  assert.equal(api.submitCheckoutWithoutUpload(second, secondDraft.id, 2000).code, 'invalid_existing_proof');
+  assert.equal(JSON.stringify(second), beforeProofRetry);
+});
+
+test('keeps guest checkout pending with zero points and no receipt or claim', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app);
+  const before = JSON.stringify({ balances: app.balances, ledger: app.ledger });
+  const created = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000);
+  api.setCheckoutMethod(app, created.checkoutDraft.id, 'Card');
+  const result = api.submitCheckoutWithoutUpload(app, created.checkoutDraft.id, 1000);
+  assert.equal(result.ok, true);
+  assert.equal(created.checkoutDraft.status, 'pending_verification');
+  assert.equal(result.proof.status, 'pending_verification');
+  assert.equal(JSON.stringify({ balances: app.balances, ledger: app.ledger }), before);
+  assert.equal(app.guestRewardClaims.length, 0);
+  assert.equal(app.receipts.length, 0);
+});
+
+test('provides accessible nested checkout payment views and complete localized actions', () => {
+  const source = html();
+  assert.equal((source.match(/data-pay-view="(?:direct|checkout|payment-proof)"/g) || []).length, 3);
+  assert.doesNotMatch(source, /\bconst SERVICE_CATALOG\b/);
+  for (const action of ['open-guest-checkout', 'select-checkout-tip', 'select-checkout-method', 'continue-checkout']) {
+    assert.match(source, new RegExp(`registerAction\\('${action}'`));
+  }
+  for (const key of ['guestNotFound', 'serviceNotFound', 'checkoutFailed', 'selectPaymentMethod']) {
+    assert.match(source, new RegExp(`vi:[\\s\\S]*?${key}:`), `missing Vietnamese ${key}`);
+    assert.match(source, new RegExp(`en:[\\s\\S]*?${key}:`), `missing English ${key}`);
+  }
+  assert.match(source, /data-action="select-checkout-tip"[^>]*data-basis-points="0"[^>]*data-en="No Tip"[^>]*data-vi=/);
+});
+
+test('routes all four checkout methods without creating the wrong proof state', () => {
+  for (const [method, expectedStatus, expectedProofs, expectedViLabel] of [
+    ['Zelle', 'draft', 0, 'Zelle'],
+    ['Venmo', 'draft', 0, 'Venmo'],
+    ['Card', 'pending_verification', 1, 'Thẻ'],
+    ['Pay at Counter', 'pending_verification', 1, 'Thanh toán tại quầy']
+  ]) {
+    const direct = createStubElement({ id: 'direct-payment-view', dataset: { payView: 'direct' } });
+    const checkout = createStubElement({ id: 'guest-checkout-view', dataset: { payView: 'checkout' } });
+    const proofView = createStubElement({ id: 'payment-proof-view', dataset: { payView: 'payment-proof' }, classNames: ['hidden'] });
+    const proofTitle = createStubElement({ id: 'payment-proof-title' });
+    const proofMethod = createStubElement({ id: 'payment-proof-method' });
+    const proofAmount = createStubElement({ id: 'payment-proof-amount' });
+    const proofStatus = createStubElement({ id: 'payment-proof-status' });
+    const document = createDocumentStub({
+      extraElements: [direct, checkout, proofView, proofTitle, proofMethod, proofAmount, proofStatus],
+      selectorNodes: { '[data-pay-view]': [direct, checkout, proofView] }
+    });
+    const { context } = testApi({}, { document });
+    vm.runInContext(`
+      stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
+      createGuestCheckin(state, { name: 'Amy Nguyen', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }, 1000);
+      createCheckoutDraft(state, { guestCheckinId: state.guestCheckins[0].id }, 1000);
+      setCheckoutMethod(state, state.ui.pendingContext.checkoutDraftId, ${JSON.stringify(method)});
+      ACTIONS.get('continue-checkout')();
+    `, context);
+    const first = JSON.parse(vm.runInContext(`JSON.stringify({
+      status: state.checkoutDrafts[0].status,
+      proofCount: state.paymentProofs.length,
+      proofStatus: state.paymentProofs[0]?.status ?? null,
+      pendingProofId: state.ui.pendingContext.paymentProofId
+    })`, context));
+    assert.equal(first.status, expectedStatus, method);
+    assert.equal(first.proofCount, expectedProofs, method);
+    assert.equal(first.proofStatus, expectedProofs ? 'pending_verification' : null, method);
+    assert.equal(Boolean(first.pendingProofId), expectedProofs === 1, method);
+    assert.equal(proofView.attributes['aria-hidden'], 'false', method);
+    assert.equal(proofMethod.textContent, expectedViLabel, method);
+
+    vm.runInContext("ACTIONS.get('continue-checkout')()", context);
+    assert.equal(vm.runInContext('state.paymentProofs.length', context), expectedProofs, `${method}: repeat`);
+    vm.runInContext("state.profile.language = 'en'; renderPaymentProof()", context);
+    assert.equal(proofMethod.textContent, method, `${method}: English label`);
+  }
+});
+
+test('moves focus and synchronizes checkout selections and disabled reason', () => {
+  const direct = createStubElement({ id: 'direct-payment-view', dataset: { payView: 'direct' } });
+  const checkout = createStubElement({ id: 'guest-checkout-view', dataset: { payView: 'checkout' }, classNames: ['hidden'] });
+  const proof = createStubElement({ id: 'payment-proof-view', dataset: { payView: 'payment-proof' }, classNames: ['hidden'] });
+  const paymentAmount = createStubElement({ id: 'payment-amount' });
+  const checkoutTitle = createStubElement({ id: 'guest-checkout-title' });
+  const proofTitle = createStubElement({ id: 'payment-proof-title' });
+  const itemList = createStubElement({ id: 'guest-checkout-items' });
+  const beforeTip = createStubElement({ id: 'checkout-before-tip' });
+  const total = createStubElement({ id: 'checkout-total' });
+  const continueButton = createStubElement({ id: 'continue-checkout' });
+  const disabledReason = createStubElement({ id: 'checkout-continue-reason', classNames: ['hidden'] });
+  const tipButtons = [0, 1500, 1800, 2000].map((basisPoints) => createStubElement({
+    dataset: { action: 'select-checkout-tip', basisPoints: String(basisPoints) }
+  }));
+  const methodButtons = ['Card', 'Zelle', 'Venmo', 'Pay at Counter'].map((method) => createStubElement({
+    dataset: { action: 'select-checkout-method', method }
+  }));
+  const document = createDocumentStub({
+    extraElements: [direct, checkout, proof, paymentAmount, checkoutTitle, proofTitle, itemList,
+      beforeTip, total, continueButton, disabledReason],
+    selectorNodes: {
+      '[data-pay-view]': [direct, checkout, proof],
+      '[data-action="select-checkout-tip"]': tipButtons,
+      '[data-action="select-checkout-method"]': methodButtons
+    }
+  });
+  const { api, context } = testApi({}, { document });
+  vm.runInContext(`
+    stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
+    createGuestCheckin(state, { name: 'Amy Nguyen', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }, 1000);
+    createCheckoutDraft(state, { guestCheckinId: state.guestCheckins[0].id }, 1000);
+  `, context);
+
+  context.renderGuestCheckout();
+  assert.equal(itemList.children[0].children[0].textContent, 'Pedicure cao cấp');
+  assert.equal(tipButtons[0].attributes['aria-pressed'], 'true');
+  assert.equal(methodButtons.every((button) => button.attributes['aria-pressed'] === 'false'), true);
+  assert.equal(continueButton.disabled, true);
+  assert.equal(continueButton.attributes['aria-disabled'], 'true');
+  assert.equal(disabledReason.classList.contains('hidden'), false);
+  assert.equal(disabledReason.textContent, api.translate('vi', 'selectPaymentMethod'));
+
+  vm.runInContext("setCheckoutMethod(state, state.ui.pendingContext.checkoutDraftId, 'Card')", context);
+  context.renderGuestCheckout();
+  assert.equal(methodButtons[0].attributes['aria-pressed'], 'true');
+  assert.equal(continueButton.disabled, false);
+  assert.equal(continueButton.attributes['aria-disabled'], 'false');
+  assert.equal(disabledReason.classList.contains('hidden'), true);
+
+  vm.runInContext("state.profile.language = 'en'", context);
+  context.renderGuestCheckout();
+  assert.equal(itemList.children[0].children[0].textContent, 'Deluxe Pedicure');
+
+  for (const [viewName, focusTarget, activeView] of [
+    ['checkout', checkoutTitle, checkout], ['payment-proof', proofTitle, proof], ['direct', paymentAmount, direct]
+  ]) {
+    context.showPayView(viewName);
+    assert.equal(document.activeElement, focusTarget);
+    assert.equal(activeView.attributes['aria-hidden'], 'false');
+    for (const hiddenView of [direct, checkout, proof].filter((view) => view !== activeView)) {
+      assert.equal(hiddenView.attributes['aria-hidden'], 'true');
+      assert.equal(hiddenView.classList.contains('hidden'), true);
+    }
+  }
+});
+
+test('resets the nested pay view when the existing direct-payment route is reopened', () => {
+  const home = createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] });
+  const pay = createStubElement({ id: 'pay', classNames: ['app-screen', 'hidden'] });
+  const direct = createStubElement({ id: 'direct-payment-view', dataset: { payView: 'direct' } });
+  const checkout = createStubElement({ id: 'guest-checkout-view', dataset: { payView: 'checkout' }, classNames: ['hidden'] });
+  const proof = createStubElement({ id: 'payment-proof-view', dataset: { payView: 'payment-proof' }, classNames: ['hidden'] });
+  const paymentAmount = createStubElement({ id: 'payment-amount' });
+  const document = createDocumentStub({
+    screenNodes: [home, pay],
+    extraElements: [direct, checkout, proof, paymentAmount],
+    selectorNodes: { '[data-pay-view]': [direct, checkout, proof] }
+  });
+  const { context } = testApi({}, { document });
+
+  context.showPayView('checkout');
+  assert.equal(checkout.attributes['aria-hidden'], 'false');
+  context.navigateTo('pay', { focus: false });
+  assert.equal(direct.attributes['aria-hidden'], 'false');
+  assert.equal(direct.classList.contains('hidden'), false);
+  assert.equal(checkout.attributes['aria-hidden'], 'true');
+});
+
 test('creates a guest check-in claim without crediting the signed-in profile', () => {
   const { api } = testApi();
   const app = api.createDefaultState();

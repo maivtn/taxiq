@@ -133,7 +133,7 @@
           <div class="mx-auto max-w-xl text-center"><div id="tip-pending"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Awaiting confirmation" data-vi="Đang chờ xác nhận">Đang chờ xác nhận</p><h1 id="tipdone-title" class="mt-2 text-3xl font-black">Đã gửi tip cho Anna</h1><p id="tip-pending-copy" class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted">Bitcoin Nail Bar thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.</p><div class="app-card mt-6 text-left"><div class="flex justify-between"><span data-en="Tip amount" data-vi="Số tiền tip">Số tiền tip</span><strong id="tipdone-amount">$10.00</strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3"><span data-en="Recipient" data-vi="Người nhận">Người nhận</span><strong id="tipdone-recipient">Anna</strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3"><span data-en="Payment method" data-vi="Phương thức">Phương thức</span><strong id="tipdone-method">Venmo</strong></div></div><button type="button" class="app-button mt-5 w-full" data-action="confirm-tip" data-en="Simulate business confirmation" data-vi="Mô phỏng doanh nghiệp xác nhận">Mô phỏng doanh nghiệp xác nhận</button></div><div id="tip-confirmed" class="hidden"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="circle-check" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Confirmed" data-vi="Đã xác nhận">Đã xác nhận</p><h2 id="tip-confirmed-title" class="mt-2 text-3xl font-black">Anna đã nhận tip của bạn</h2><p id="tip-confirmed-points-copy" class="mt-3 text-app-green">Đã cộng 100 điểm cảm ơn</p><strong id="tipdone-points" class="sr-only">+100 điểm</strong><button type="button" class="app-button mt-6 w-full" data-action="navigate" data-target="home" data-en="Back to home" data-vi="Về trang chủ">Về trang chủ</button></div></div>
         </section>
         <section class="app-screen hidden" id="pay" data-ready="true" data-module="home" aria-labelledby="pay-title">
-          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Zero platform fee" data-vi="Phí nền tảng 0%">Phí nền tảng 0%</p><h1 id="pay-title" class="text-2xl font-black" data-en="Pay salon directly" data-vi="Thanh toán trực tiếp cho tiệm">Thanh toán trực tiếp cho tiệm</h1></div></div><div class="app-card"><label class="text-sm font-bold" for="payment-amount" data-en="Amount" data-vi="Số tiền">Số tiền</label><div class="relative mt-2"><span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black">$</span><input id="payment-amount" class="app-input pl-10 text-2xl font-black" type="number" min="1" step="0.01" value="55.00"></div><p class="mt-5 text-sm font-bold" data-en="Send with" data-vi="Gửi bằng">Gửi bằng</p><div id="payment-method-list" class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3"></div><div class="mt-5 rounded-xl border border-app-line bg-app-panel p-4"><div class="flex justify-between"><span class="text-sm text-app-muted" data-en="Business receives" data-vi="Tiệm nhận">Tiệm nhận</span><strong id="payment-business-receives">$55.00</strong></div><div class="mt-2 flex justify-between"><span class="text-sm text-app-muted" data-en="NEXORA fee" data-vi="Phí NEXORA">Phí NEXORA</span><strong class="text-app-green">$0.00</strong></div></div><p class="mt-4 text-xs leading-5 text-app-muted" data-en="NEXORA never holds your money; the business confirms the external payment." data-vi="NEXORA không giữ tiền; doanh nghiệp sẽ xác nhận khoản thanh toán bên ngoài.">NEXORA không giữ tiền; doanh nghiệp sẽ xác nhận khoản thanh toán bên ngoài.</p><button type="button" class="app-button mt-5 w-full" data-action="send-payment"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Open Zelle to pay" data-vi="Mở Zelle để thanh toán">Mở Zelle để thanh toán</span></button></div></div>
+          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Zero platform fee" data-vi="Phí nền tảng 0%">Phí nền tảng 0%</p><h1 id="pay-title" class="text-2xl font-black" data-en="Pay salon directly" data-vi="Thanh toán trực tiếp cho tiệm">Thanh toán trực tiếp cho tiệm</h1></div></div><div id="direct-payment-view" data-pay-view="direct" aria-hidden="false"><div class="app-card"><label class="text-sm font-bold" for="payment-amount" data-en="Amount" data-vi="Số tiền">Số tiền</label><div class="relative mt-2"><span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black">$</span><input id="payment-amount" class="app-input pl-10 text-2xl font-black" type="number" min="1" step="0.01" value="55.00"></div><p class="mt-5 text-sm font-bold" data-en="Send with" data-vi="Gửi bằng">Gửi bằng</p><div id="payment-method-list" class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3"></div><div class="mt-5 rounded-xl border border-app-line bg-app-panel p-4"><div class="flex justify-between"><span class="text-sm text-app-muted" data-en="Business receives" data-vi="Tiệm nhận">Tiệm nhận</span><strong id="payment-business-receives">$55.00</strong></div><div class="mt-2 flex justify-between"><span class="text-sm text-app-muted" data-en="NEXORA fee" data-vi="Phí NEXORA">Phí NEXORA</span><strong class="text-app-green">$0.00</strong></div></div><p class="mt-4 text-xs leading-5 text-app-muted" data-en="NEXORA never holds your money; the business confirms the external payment." data-vi="NEXORA không giữ tiền; doanh nghiệp sẽ xác nhận khoản thanh toán bên ngoài.">NEXORA không giữ tiền; doanh nghiệp sẽ xác nhận khoản thanh toán bên ngoài.</p><button type="button" class="app-button mt-5 w-full" data-action="send-payment"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Open Zelle to pay" data-vi="Mở Zelle để thanh toán">Mở Zelle để thanh toán</span></button></div><button type="button" class="app-button-secondary mt-3 w-full" data-action="open-guest-checkout" data-en="Guest checkout" data-vi="Thanh toán khách">Thanh toán khách</button></div><section id="guest-checkout-view" class="hidden" data-pay-view="checkout" aria-hidden="true" aria-labelledby="guest-checkout-title"><div class="app-card"><h2 id="guest-checkout-title" class="text-xl font-black" tabindex="-1" data-en="Guest Checkout" data-vi="Thanh toán khách">Thanh toán khách</h2><div id="guest-checkout-items" class="mt-4 divide-y divide-dashed"></div><div class="mt-4 flex justify-between text-lg font-black"><span data-en="Before Tip" data-vi="Trước tip">Trước tip</span><strong id="checkout-before-tip"></strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3 text-xl font-black"><span data-en="Total" data-vi="Tổng cộng">Tổng cộng</span><strong id="checkout-total"></strong></div></div><fieldset class="app-card mt-4"><legend class="font-black" data-en="Tip technician" data-vi="Tip cho thợ">Tip cho thợ</legend><div class="mt-3 grid grid-cols-2 gap-3"><button type="button" class="app-chip" data-action="select-checkout-tip" data-basis-points="0" data-en="No Tip" data-vi="Không tip" aria-pressed="true">Không tip</button><button type="button" class="app-chip" data-action="select-checkout-tip" data-basis-points="1500" aria-pressed="false">15%</button><button type="button" class="app-chip" data-action="select-checkout-tip" data-basis-points="1800" aria-pressed="false">18%</button><button type="button" class="app-chip" data-action="select-checkout-tip" data-basis-points="2000" aria-pressed="false">20%</button></div></fieldset><fieldset class="app-card mt-4"><legend class="font-black" data-en="Payment method" data-vi="Phương thức thanh toán">Phương thức thanh toán</legend><div class="mt-3 grid gap-3"><button type="button" class="app-button-secondary" data-action="select-checkout-method" data-method="Card" aria-pressed="false" data-en="Card" data-vi="Thẻ">Thẻ</button><button type="button" class="app-button-secondary" data-action="select-checkout-method" data-method="Zelle" aria-pressed="false">Zelle</button><button type="button" class="app-button-secondary" data-action="select-checkout-method" data-method="Venmo" aria-pressed="false">Venmo</button><button type="button" class="app-button-secondary" data-action="select-checkout-method" data-method="Pay at Counter" aria-pressed="false" data-en="Pay at Counter" data-vi="Thanh toán tại quầy">Thanh toán tại quầy</button></div></fieldset><p id="checkout-error" class="field-error hidden" role="alert"></p><p id="checkout-continue-reason" class="mt-3 text-sm text-app-muted" data-en="Select a payment method to continue." data-vi="Chọn phương thức thanh toán để tiếp tục.">Chọn phương thức thanh toán để tiếp tục.</p><button id="continue-checkout" type="button" class="app-button mt-4 w-full" data-action="continue-checkout" disabled aria-disabled="true" aria-describedby="checkout-continue-reason" data-en="Continue" data-vi="Tiếp tục">Tiếp tục</button></section><section id="payment-proof-view" class="hidden" data-pay-view="payment-proof" aria-hidden="true" aria-labelledby="payment-proof-title"><div class="app-card"><h2 id="payment-proof-title" class="text-xl font-black" tabindex="-1" data-en="Payment Proof" data-vi="Bằng chứng thanh toán">Bằng chứng thanh toán</h2><p id="payment-proof-status" class="mt-2 text-sm font-bold text-app-gold" data-en="Payment proof required" data-vi="Cần bằng chứng thanh toán">Cần bằng chứng thanh toán</p><div class="mt-4 flex justify-between"><span id="payment-proof-method"></span><strong id="payment-proof-amount"></strong></div></div></section></div>
         </section>
         <section class="app-screen hidden" id="paydone" data-ready="true" data-module="home" aria-labelledby="paydone-title">
           <div class="mx-auto max-w-xl text-center"><div id="payment-pending"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-cyan/10 text-app-cyan"><i data-lucide="send" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment reported" data-vi="Đã báo thanh toán">Đã báo thanh toán</p><h1 id="paydone-title" class="mt-2 text-3xl font-black">Đã gửi $55.00 cho tiệm</h1><p id="payment-pending-copy" class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted">Bitcoin Nail Bar thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.</p><div class="app-card mt-6 text-left"><div class="flex justify-between"><span data-en="Business receives" data-vi="Tiệm nhận">Tiệm nhận</span><strong id="payment-confirmed-amount">$55.00</strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3"><span data-en="Payment method" data-vi="Phương thức">Phương thức</span><strong id="payment-result-method">Zelle</strong></div></div><button type="button" class="app-button mt-6 w-full" data-action="confirm-payment" data-en="Simulate business confirmation" data-vi="Mô phỏng doanh nghiệp xác nhận">Mô phỏng doanh nghiệp xác nhận</button></div><div id="payment-confirmed" class="hidden"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment confirmed" data-vi="Đã xác nhận thanh toán">Đã xác nhận thanh toán</p><h2 class="mt-2 text-3xl font-black" data-en="You're all set" data-vi="Thanh toán hoàn tất">Thanh toán hoàn tất</h2><p id="payment-confirmed-points-copy" class="mt-3 text-app-green">Đã cộng 66 điểm thanh toán trực tiếp</p><strong id="payment-confirmed-points" class="sr-only">+66 điểm</strong><button type="button" class="app-button mt-6 w-full" data-action="navigate" data-target="home" data-en="Done" data-vi="Hoàn tất">Hoàn tất</button></div></div>
@@ -876,9 +876,17 @@
     const REFERRAL_STATUSES = new Set(['invited', 'joined', 'rewarded']);
     const REFERRAL_REWARD_POINTS = 50;
     const CHECKOUT_METHODS = new Set(['Card', 'Zelle', 'Venmo', 'Pay at Counter']);
+    const CHECKOUT_METHOD_LABELS = Object.freeze({
+      Card: Object.freeze({ vi: 'Thẻ', en: 'Card' }),
+      Zelle: Object.freeze({ vi: 'Zelle', en: 'Zelle' }),
+      Venmo: Object.freeze({ vi: 'Venmo', en: 'Venmo' }),
+      'Pay at Counter': Object.freeze({ vi: 'Thanh toán tại quầy', en: 'Pay at Counter' })
+    });
     const TIP_BASIS_POINTS = new Set([0, 1500, 1800, 2000]);
     const LINE_ITEM_TYPES = new Set(['service', 'addon', 'discount']);
     const CLAIM_SOURCE_TYPES = new Set(['visit_spend', 'directpay_bonus', 'tip_bonus']);
+    const CHECKOUT_ID_PATTERN = /^checkout-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const PAYMENT_PROOF_ID_PATTERN = /^proof-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     function nonNegativeCents(value) {
       return Number.isSafeInteger(value) && value >= 0 ? value : null;
@@ -947,6 +955,251 @@
       return lineItems.some((item) => item === null) ? null : lineItems;
     }
 
+    function calculateCheckoutTotals(lineItems, tipBasisPoints = 0) {
+      if (!TIP_BASIS_POINTS.has(tipBasisPoints)) return { ok: false, code: 'invalid_checkout' };
+      const canonical = normalizeLineItems(lineItems);
+      if (!canonical) return { ok: false, code: 'invalid_line_item' };
+      let subtotalCents = 0;
+      let discountCents = 0;
+      for (const item of canonical) {
+        const amount = item.type === 'discount' ? -item.amountCents : item.amountCents;
+        const nextAmount = item.type === 'discount' ? discountCents + amount : subtotalCents + amount;
+        if (!Number.isSafeInteger(amount) || !Number.isSafeInteger(nextAmount)) {
+          return { ok: false, code: 'invalid_total' };
+        }
+        if (item.type === 'discount') discountCents = nextAmount;
+        else subtotalCents = nextAmount;
+      }
+      const beforeTipCents = subtotalCents - discountCents;
+      const weightedTip = beforeTipCents * tipBasisPoints;
+      if (!Number.isSafeInteger(beforeTipCents) || beforeTipCents < 0 || !Number.isSafeInteger(weightedTip)) {
+        return { ok: false, code: 'invalid_total' };
+      }
+      const tipCents = Math.round(beforeTipCents * tipBasisPoints / 10000);
+      const totalCents = beforeTipCents + tipCents;
+      if (!Number.isSafeInteger(tipCents) || tipCents < 0
+        || !Number.isSafeInteger(totalCents) || totalCents < 0) {
+        return { ok: false, code: 'invalid_total' };
+      }
+      return { subtotalCents, discountCents, beforeTipCents, tipCents, totalCents };
+    }
+
+    function checkoutLanguage(appState) {
+      return appState?.profile?.language === 'en' ? 'en' : 'vi';
+    }
+
+    function localizedCheckoutMethod(appState, method) {
+      return CHECKOUT_METHOD_LABELS[method]?.[checkoutLanguage(appState)] ?? method ?? '';
+    }
+
+    function initialCheckoutLineItems(appState, guestCheckin, service) {
+      const lineItems = [{
+        id: `service-${guestCheckin.id}`,
+        type: 'service',
+        label: service.label[checkoutLanguage(appState)],
+        amountCents: service.amountCents,
+        sourceAddOnId: null
+      }];
+      if (guestCheckin.serviceKey === 'deluxe-pedicure') {
+        lineItems.push({
+          id: `promo-${guestCheckin.id}`,
+          type: 'discount',
+          label: 'Promo NEW10',
+          amountCents: -550,
+          sourceAddOnId: null
+        });
+      }
+      return lineItems;
+    }
+
+    function inputMatchesCatalogLineItems(value, guestCheckin, service) {
+      if (value === undefined) return true;
+      const lineItems = normalizeLineItems(value);
+      if (!lineItems || lineItems.some((item) => item.type === 'addon')) return false;
+      const services = lineItems.filter((item) => item.type === 'service');
+      const discounts = lineItems.filter((item) => item.type === 'discount');
+      const validServiceLabels = new Set([service.label.vi, service.label.en]);
+      if (services.length !== 1 || services[0].amountCents !== service.amountCents
+        || !validServiceLabels.has(services[0].label)) return false;
+      if (guestCheckin.serviceKey !== 'deluxe-pedicure') return discounts.length === 0;
+      return discounts.length === 0 || (discounts.length === 1
+        && discounts[0].label === 'Promo NEW10' && discounts[0].amountCents === -550);
+    }
+
+    function isCanonicalCheckoutForGuest(appState, checkout, guestCheckin) {
+      const service = getGuestServiceDefinition(guestCheckin.businessId, guestCheckin.serviceKey);
+      const normalized = normalizeCheckoutDraft(appState, checkout);
+      if (!service || !normalized || !CHECKOUT_ID_PATTERN.test(checkout.id)
+        || normalized.id !== checkout.id || checkout.guestCheckinId !== guestCheckin.id
+        || checkout.businessId !== guestCheckin.businessId
+        || appState.checkoutDrafts.filter((row) => isRecord(row) && row.id === checkout.id).length !== 1) return false;
+      const expected = initialCheckoutLineItems(appState, guestCheckin, service);
+      if (!Array.isArray(checkout.lineItems) || checkout.lineItems.length !== expected.length) return false;
+      return checkout.lineItems.every((item, index) => {
+        const canonical = expected[index];
+        const validLabel = isRecord(item) && item.type === 'service'
+          ? item.label === service.label.vi || item.label === service.label.en
+          : isRecord(item) && item.label === canonical.label;
+        return isRecord(item) && item.id === canonical.id && item.type === canonical.type && validLabel
+          && item.amountCents === canonical.amountCents && item.sourceAddOnId === null;
+      });
+    }
+
+    function isCanonicalPendingNoUploadProof(appState, checkout, proof) {
+      const normalized = normalizePaymentProof(appState, proof);
+      return Boolean(normalized) && PAYMENT_PROOF_ID_PATTERN.test(proof.id)
+        && normalized.id === proof.id && proof.checkoutDraftId === checkout.id
+        && proof.businessId === checkout.businessId && proof.method === checkout.method
+        && proof.amountCents === checkout.totalCents && proof.status === 'pending_verification'
+        && proof.note === '' && proof.imageDataUrl === '' && proof.rejectReason === null
+        && proof.createdAt === normalized.createdAt && proof.verifiedAt === null
+        && appState.paymentProofs.filter((row) => isRecord(row) && row.id === proof.id).length === 1;
+    }
+
+    function createCheckoutDraft(appState, input, now = Date.now()) {
+      if (!isRecord(input) || !Array.isArray(appState?.guestCheckins)
+        || !Array.isArray(appState?.checkoutDrafts) || !isRecord(appState?.ui?.pendingContext)) {
+        return { ok: false, code: 'invalid_checkout' };
+      }
+      const guestCheckinId = normalizedRequiredText(input.guestCheckinId);
+      const guestCheckin = appState.guestCheckins.find((row) => row.id === guestCheckinId);
+      if (!guestCheckin || !normalizeGuestCheckin(appState, guestCheckin)) {
+        return { ok: false, code: 'guest_not_found' };
+      }
+      const business = getValidBusiness(appState, guestCheckin.businessId);
+      const service = getGuestServiceDefinition(guestCheckin.businessId, guestCheckin.serviceKey);
+      if (!business || !service) return { ok: false, code: 'service_not_found' };
+      const existing = appState.checkoutDrafts.filter((row) => (
+        isRecord(row) && row.guestCheckinId === guestCheckin.id && row.status !== 'rejected'
+      ));
+      if (existing.length > 0) {
+        if (existing.length !== 1 || !isCanonicalCheckoutForGuest(appState, existing[0], guestCheckin)) {
+          return { ok: false, code: 'invalid_existing_checkout' };
+        }
+        appState.ui.pendingContext.checkoutDraftId = existing[0].id;
+        return { ok: true, checkoutDraft: existing[0], idempotent: true };
+      }
+      if (!inputMatchesCatalogLineItems(input.lineItems, guestCheckin, service)) {
+        return { ok: false, code: 'invalid_line_items' };
+      }
+      const lineItems = initialCheckoutLineItems(appState, guestCheckin, service);
+      const totals = calculateCheckoutTotals(lineItems, 0);
+      if (totals.ok === false) return totals;
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      if (!timestampAtOrAfter(timestamp.value, guestCheckin.scannedAt)) {
+        return { ok: false, code: 'invalid_time_order' };
+      }
+      const id = createDomainId('checkout');
+      if (!id.ok) return id;
+      if (appState.checkoutDrafts.some((row) => isRecord(row) && row.id === id.value)) {
+        return { ok: false, code: 'id_generation_failed' };
+      }
+      const checkoutDraft = {
+        id: id.value,
+        guestCheckinId: guestCheckin.id,
+        businessId: business.id,
+        lineItems: structuredClone(lineItems),
+        status: 'draft',
+        ...totals,
+        tipBasisPoints: 0,
+        method: null,
+        createdAt: timestamp.value
+      };
+      appState.checkoutDrafts.push(checkoutDraft);
+      appState.ui.pendingContext.checkoutDraftId = checkoutDraft.id;
+      return { ok: true, checkoutDraft };
+    }
+
+    function setCheckoutTip(appState, checkoutDraftId, basisPoints) {
+      const checkout = Array.isArray(appState?.checkoutDrafts)
+        ? appState.checkoutDrafts.find((row) => row.id === checkoutDraftId)
+        : null;
+      const guestCheckin = checkout && Array.isArray(appState?.guestCheckins)
+        ? appState.guestCheckins.find((row) => row.id === checkout.guestCheckinId)
+        : null;
+      if (!checkout || !guestCheckin || checkout.status !== 'draft'
+        || !TIP_BASIS_POINTS.has(basisPoints)
+        || !isCanonicalCheckoutForGuest(appState, checkout, guestCheckin)) {
+        return { ok: false, code: 'invalid_tip' };
+      }
+      const totals = calculateCheckoutTotals(checkout.lineItems, basisPoints);
+      if (totals.ok === false) return totals;
+      Object.assign(checkout, totals, { tipBasisPoints: basisPoints });
+      return { ok: true, checkoutDraft: checkout };
+    }
+
+    function setCheckoutMethod(appState, checkoutDraftId, method) {
+      const checkout = Array.isArray(appState?.checkoutDrafts)
+        ? appState.checkoutDrafts.find((row) => row.id === checkoutDraftId)
+        : null;
+      const guestCheckin = checkout && Array.isArray(appState?.guestCheckins)
+        ? appState.guestCheckins.find((row) => row.id === checkout.guestCheckinId)
+        : null;
+      if (!checkout || !guestCheckin || checkout.status !== 'draft' || !CHECKOUT_METHODS.has(method)
+        || !isCanonicalCheckoutForGuest(appState, checkout, guestCheckin)) {
+        return { ok: false, code: 'invalid_method' };
+      }
+      checkout.method = method;
+      return { ok: true, checkoutDraft: checkout };
+    }
+
+    function submitCheckoutWithoutUpload(appState, checkoutDraftId, now = Date.now()) {
+      if (!Array.isArray(appState?.checkoutDrafts) || !Array.isArray(appState?.guestCheckins)
+        || !Array.isArray(appState?.paymentProofs) || !isRecord(appState?.ui?.pendingContext)) {
+        return { ok: false, code: 'invalid_checkout_state' };
+      }
+      const checkout = appState.checkoutDrafts.find((row) => row.id === checkoutDraftId);
+      const guestCheckin = checkout
+        ? appState.guestCheckins.find((row) => row.id === checkout.guestCheckinId)
+        : null;
+      if (!checkout || !guestCheckin || !isCanonicalCheckoutForGuest(appState, checkout, guestCheckin)
+        || !['Card', 'Pay at Counter'].includes(checkout.method)) {
+        return { ok: false, code: 'invalid_checkout_state' };
+      }
+      const existing = appState.paymentProofs.filter((proof) => (
+        isRecord(proof) && proof.checkoutDraftId === checkout.id
+      ));
+      if (checkout.status === 'pending_verification') {
+        const proof = existing.length === 1 ? existing[0] : null;
+        if (!proof || !isCanonicalPendingNoUploadProof(appState, checkout, proof)) {
+          return { ok: false, code: 'invalid_existing_proof' };
+        }
+        appState.ui.pendingContext.paymentProofId = proof.id;
+        return { ok: true, proof, idempotent: true };
+      }
+      if (checkout.status !== 'draft' || existing.length !== 0) {
+        return { ok: false, code: 'invalid_checkout_state' };
+      }
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      if (!timestampAtOrAfter(timestamp.value, checkout.createdAt)) {
+        return { ok: false, code: 'invalid_time_order' };
+      }
+      const id = createDomainId('proof');
+      if (!id.ok) return id;
+      if (appState.paymentProofs.some((proof) => isRecord(proof) && proof.id === id.value)) {
+        return { ok: false, code: 'id_generation_failed' };
+      }
+      const proof = {
+        id: id.value,
+        checkoutDraftId: checkout.id,
+        businessId: checkout.businessId,
+        method: checkout.method,
+        amountCents: checkout.totalCents,
+        status: 'pending_verification',
+        note: '',
+        imageDataUrl: '',
+        rejectReason: null,
+        createdAt: timestamp.value,
+        verifiedAt: null
+      };
+      appState.paymentProofs.push(proof);
+      checkout.status = 'pending_verification';
+      appState.ui.pendingContext.paymentProofId = proof.id;
+      return { ok: true, proof };
+    }
+
     function normalizeCheckoutDraft(appState, value) {
       if (!isRecord(value)) return null;
       const id = normalizedRequiredText(value.id);
@@ -966,20 +1219,10 @@
         || !TIP_BASIS_POINTS.has(value.tipBasisPoints) || cents.includes(null) || !createdAt
         || !timestampAtOrAfter(createdAt, guestCheckin.scannedAt)) return null;
       const [subtotalCents, discountCents, beforeTipCents, tipCents, totalCents] = cents;
-      const calculatedSubtotal = lineItems
-        .filter((item) => item.type !== 'discount')
-        .reduce((total, item) => total + item.amountCents, 0);
-      const calculatedDiscount = -lineItems
-        .filter((item) => item.type === 'discount')
-        .reduce((total, item) => total + item.amountCents, 0);
-      const calculatedBeforeTip = calculatedSubtotal - calculatedDiscount;
-      const calculatedTip = Math.round(calculatedBeforeTip * value.tipBasisPoints / 10000);
-      const calculatedTotal = calculatedBeforeTip + calculatedTip;
-      if (![calculatedSubtotal, calculatedDiscount, calculatedBeforeTip, calculatedTip, calculatedTotal]
-        .every((amount) => Number.isSafeInteger(amount) && amount >= 0)
-        || subtotalCents !== calculatedSubtotal || discountCents !== calculatedDiscount
-        || beforeTipCents !== calculatedBeforeTip || tipCents !== calculatedTip
-        || totalCents !== calculatedTotal) return null;
+      const calculated = calculateCheckoutTotals(lineItems, value.tipBasisPoints);
+      if (calculated.ok === false || subtotalCents !== calculated.subtotalCents
+        || discountCents !== calculated.discountCents || beforeTipCents !== calculated.beforeTipCents
+        || tipCents !== calculated.tipCents || totalCents !== calculated.totalCents) return null;
       return { id, guestCheckinId, businessId, lineItems, status, subtotalCents, discountCents,
         beforeTipCents, tipBasisPoints: value.tipBasisPoints, tipCents, totalCents, method, createdAt };
     }
@@ -3333,7 +3576,7 @@
         businessMethodDisabled: 'Tiệm chưa bật phương thức này.', transactionFailed: 'Không thể lưu giao dịch. Vui lòng thử lại.',
         addPhotoDetail: 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.', imageReadFailed: 'Không thể đọc ảnh này.',
         verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
-        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Nhập họ tên, số điện thoại US 10 số và lựa chọn hợp lệ.', noPreference: 'Không yêu cầu', notAvailable: 'Chưa có thông tin', guestCheckinSuccess: 'Đã check-in cho khách. Điểm đang chờ xác nhận.', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
+        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Nhập họ tên, số điện thoại US 10 số và lựa chọn hợp lệ.', noPreference: 'Không yêu cầu', notAvailable: 'Chưa có thông tin', guestCheckinSuccess: 'Đã check-in cho khách. Điểm đang chờ xác nhận.', guestNotFound: 'Không tìm thấy lượt check-in của khách.', serviceNotFound: 'Không tìm thấy dịch vụ đã chọn.', checkoutFailed: 'Không thể chuẩn bị thanh toán. Vui lòng thử lại.', selectPaymentMethod: 'Chọn phương thức thanh toán để tiếp tục.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
         cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
         invalidPhone: 'Nhập số điện thoại US gồm 10 số.', cooldown: 'Vui lòng chờ đủ 30 giây.',
@@ -3365,7 +3608,7 @@
         businessMethodDisabled: 'The business has not enabled this method.', transactionFailed: 'Could not save the transaction. Please try again.',
         addPhotoDetail: 'The production app will open your device photo picker.', imageReadFailed: 'Could not read this image.',
         verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
-        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Enter a name, a 10-digit US phone number and valid selections.', noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in. Points are pending confirmation.', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
+        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Enter a name, a 10-digit US phone number and valid selections.', noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in. Points are pending confirmation.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'The selected service was not found.', checkoutFailed: 'Could not prepare checkout. Please try again.', selectPaymentMethod: 'Select a payment method to continue.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
         cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
         invalidPhone: 'Enter a 10-digit US phone number.', cooldown: 'Please wait for the 30-second cooldown.',
@@ -3439,6 +3682,9 @@
 
     function navigateTo(screenId, options = {}) {
       const next = showScreen(screenId);
+      if (next.id === 'pay' && options.resetPayView !== false) {
+        showPayView('direct', { focus: false });
+      }
       state.ui.activeScreen = next.id;
       state.ui.activeModule = SCREEN_MODULE[next.id] || 'home';
       saveState(state);
@@ -3461,7 +3707,7 @@
     function setLanguage(language) {
       commitState((draft) => { draft.profile.language = language === 'en' ? 'en' : 'vi'; });
       renderApp();
-      navigateTo(state.ui.activeScreen, { focus: false });
+      navigateTo(state.ui.activeScreen, { focus: false, resetPayView: false });
     }
 
     function showToast(message, tone = 'success') {
@@ -3565,6 +3811,82 @@
         ? (state.staffProfiles[context.staffProfileId]?.name || t('noPreference'))
         : t('noPreference');
       document.querySelector('[data-scan-service]').textContent = t('notAvailable');
+    }
+
+    function formatCents(cents) {
+      const locale = state.profile.language === 'en' ? 'en-US' : 'vi-VN';
+      return new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(cents / 100);
+    }
+
+    function showPayView(name, options = {}) {
+      let activeView = null;
+      document.querySelectorAll('[data-pay-view]').forEach((view) => {
+        const active = view.dataset.payView === name;
+        view.classList.toggle('hidden', !active);
+        view.setAttribute('aria-hidden', String(!active));
+        if (active) activeView = view;
+      });
+      if (!activeView || options.focus === false) return;
+      const focusTargetId = {
+        direct: 'payment-amount',
+        checkout: 'guest-checkout-title',
+        'payment-proof': 'payment-proof-title'
+      }[name];
+      document.getElementById(focusTargetId)?.focus({ preventScroll: true });
+    }
+
+    function localizedCheckoutItemLabel(draft, item) {
+      if (item.type !== 'service') return item.label;
+      const guestCheckin = state.guestCheckins.find((row) => row.id === draft.guestCheckinId);
+      const service = guestCheckin
+        ? getGuestServiceDefinition(guestCheckin.businessId, guestCheckin.serviceKey)
+        : null;
+      return service?.label[checkoutLanguage(state)] ?? item.label;
+    }
+
+    function renderGuestCheckout() {
+      const draft = state.checkoutDrafts.find((row) => row.id === state.ui.pendingContext.checkoutDraftId);
+      if (!draft) return;
+      const list = document.getElementById('guest-checkout-items');
+      const rows = draft.lineItems.map((item) => {
+        const row = document.createElement('div');
+        row.className = 'flex justify-between gap-3 py-2';
+        const label = document.createElement('span');
+        const amount = document.createElement('strong');
+        label.textContent = localizedCheckoutItemLabel(draft, item);
+        amount.textContent = formatCents(item.amountCents);
+        row.append(label, amount);
+        return row;
+      });
+      list.replaceChildren(...rows);
+      document.getElementById('checkout-before-tip').textContent = formatCents(draft.beforeTipCents);
+      document.getElementById('checkout-total').textContent = formatCents(draft.totalCents);
+      document.querySelectorAll('[data-action="select-checkout-tip"]').forEach((button) => {
+        button.setAttribute('aria-pressed', String(Number(button.dataset.basisPoints) === draft.tipBasisPoints));
+      });
+      document.querySelectorAll('[data-action="select-checkout-method"]').forEach((button) => {
+        button.setAttribute('aria-pressed', String(button.dataset.method === draft.method));
+      });
+      const continueButton = document.getElementById('continue-checkout');
+      const reason = document.getElementById('checkout-continue-reason');
+      const disabledReason = draft.status !== 'draft'
+        ? t('pendingVerification')
+        : draft.method ? '' : t('selectPaymentMethod');
+      continueButton.disabled = Boolean(disabledReason);
+      continueButton.setAttribute('aria-disabled', String(Boolean(disabledReason)));
+      reason.textContent = disabledReason;
+      reason.classList.toggle('hidden', !disabledReason);
+    }
+
+    function renderPaymentProof() {
+      const draft = state.checkoutDrafts.find((row) => row.id === state.ui.pendingContext.checkoutDraftId);
+      if (!draft) return;
+      const proof = state.paymentProofs.find((row) => row.checkoutDraftId === draft.id);
+      document.getElementById('payment-proof-method').textContent = localizedCheckoutMethod(state, draft.method);
+      document.getElementById('payment-proof-amount').textContent = formatCents(draft.totalCents);
+      document.getElementById('payment-proof-status').textContent = proof?.status === 'pending_verification'
+        ? t('pendingVerification')
+        : t('paymentProofRequired');
     }
 
     function openManualSalonCode(trigger) {
@@ -4601,6 +4923,63 @@
       showToast(t('guestCheckinSuccess'));
       navigateTo('pay');
     });
+    registerAction('open-guest-checkout', () => {
+      const guestCheckin = state.guestCheckins.find((row) => (
+        row.id === state.ui.pendingContext.guestCheckinId
+      ));
+      if (!guestCheckin) return showToast(t('guestNotFound'), 'error');
+      if (!getGuestServiceDefinition(guestCheckin.businessId, guestCheckin.serviceKey)) {
+        return showToast(t('serviceNotFound'), 'error');
+      }
+      const result = commitState((draft) => createCheckoutDraft(draft, {
+        guestCheckinId: guestCheckin.id
+      }));
+      if (!result.ok) return showToast(t('checkoutFailed'), 'error');
+      setFieldError('checkout-error');
+      if (result.checkoutDraft.status === 'pending_verification') {
+        renderPaymentProof();
+        showPayView('payment-proof');
+        return;
+      }
+      renderGuestCheckout();
+      showPayView('checkout');
+    });
+    registerAction('select-checkout-tip', (control) => {
+      const result = commitState((draft) => setCheckoutTip(
+        draft,
+        draft.ui.pendingContext.checkoutDraftId,
+        Number(control.dataset.basisPoints)
+      ));
+      if (!result.ok) return showToast(t('checkoutFailed'), 'error');
+      setFieldError('checkout-error');
+      renderGuestCheckout();
+    });
+    registerAction('select-checkout-method', (control) => {
+      const result = commitState((draft) => setCheckoutMethod(
+        draft,
+        draft.ui.pendingContext.checkoutDraftId,
+        control.dataset.method
+      ));
+      if (!result.ok) return showToast(t('checkoutFailed'), 'error');
+      setFieldError('checkout-error');
+      renderGuestCheckout();
+    });
+    registerAction('continue-checkout', () => {
+      const checkout = state.checkoutDrafts.find((row) => (
+        row.id === state.ui.pendingContext.checkoutDraftId
+      ));
+      if (!checkout?.method) return setFieldError('checkout-error', t('selectPaymentMethod'));
+      setFieldError('checkout-error');
+      if (['Zelle', 'Venmo'].includes(checkout.method)) {
+        renderPaymentProof();
+        showPayView('payment-proof');
+        return;
+      }
+      const result = commitState((draft) => submitCheckoutWithoutUpload(draft, checkout.id));
+      if (!result.ok) return setFieldError('checkout-error', t('checkoutFailed'));
+      renderPaymentProof();
+      showPayView('payment-proof');
+    });
     registerAction('select-tip', (control) => selectTip(control.dataset.amount, control));
     registerAction('send-tip', () => sendTip());
     registerAction('confirm-tip', () => confirmTip());
@@ -5378,6 +5757,8 @@
       renderRewardReceipt();
       renderTipMethods();
       renderPaymentMethods();
+      renderGuestCheckout();
+      renderPaymentProof();
       renderTipResult();
       renderPaymentResult();
       renderBooking();
@@ -5517,6 +5898,11 @@
       parseNexoraQr,
       stageSalonScan,
       createGuestCheckin,
+      calculateCheckoutTotals,
+      createCheckoutDraft,
+      setCheckoutTip,
+      setCheckoutMethod,
+      submitCheckoutWithoutUpload,
       completeCheckin,
       submitCheckin,
       completeMemberSalonCheckin,
