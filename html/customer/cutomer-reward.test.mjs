@@ -3441,6 +3441,92 @@ test('rejects normalized-looking raw checkout and no-upload proof tampering on r
   assert.equal(JSON.stringify(second), beforeProofRetry);
 });
 
+function createUuidSequence() {
+  let calls = 0;
+  return {
+    randomUUID() {
+      calls += 1;
+      return `00000000-0000-4000-8000-${String(calls).padStart(12, '0')}`;
+    },
+    calls() { return calls; }
+  };
+}
+
+test('rejects a semantic checkout duplicate with a whitespace guest parent before UUID or mutation', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app);
+  const checkout = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000).checkoutDraft;
+  checkout.guestCheckinId = ` ${guest.id} `;
+  app.ui.pendingContext.checkoutDraftId = 'sentinel-checkout';
+  const before = JSON.stringify(app);
+  const uuidCalls = ids.calls();
+
+  assert.equal(api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 2000).code, 'invalid_existing_checkout');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(ids.calls(), uuidCalls);
+});
+
+test('rejects a semantic proof duplicate with a whitespace checkout parent before UUID or mutation', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app);
+  const checkout = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000).checkoutDraft;
+  api.setCheckoutMethod(app, checkout.id, 'Card');
+  const proof = api.submitCheckoutWithoutUpload(app, checkout.id, 1000).proof;
+  checkout.status = 'draft';
+  proof.checkoutDraftId = ` ${checkout.id} `;
+  app.ui.pendingContext.paymentProofId = 'sentinel-proof';
+  const before = JSON.stringify(app);
+  const uuidCalls = ids.calls();
+
+  assert.equal(api.submitCheckoutWithoutUpload(app, checkout.id, 2000).code, 'invalid_existing_proof');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(ids.calls(), uuidCalls);
+});
+
+test('rejects multiple semantic checkout candidates without choosing one or mutating context', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app);
+  const checkout = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000).checkoutDraft;
+  const duplicate = structuredClone(checkout);
+  duplicate.id = 'checkout-00000000-0000-4000-8000-000000000099';
+  duplicate.guestCheckinId = ` ${guest.id} `;
+  app.checkoutDrafts.push(duplicate);
+  app.ui.pendingContext.checkoutDraftId = 'sentinel-checkout';
+  const before = JSON.stringify(app);
+  const uuidCalls = ids.calls();
+
+  assert.equal(api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 2000).code, 'invalid_existing_checkout');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(ids.calls(), uuidCalls);
+});
+
+test('rejects multiple semantic proof candidates without choosing one or mutating context', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app);
+  const checkout = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000).checkoutDraft;
+  api.setCheckoutMethod(app, checkout.id, 'Pay at Counter');
+  const proof = api.submitCheckoutWithoutUpload(app, checkout.id, 1000).proof;
+  const duplicate = structuredClone(proof);
+  duplicate.id = 'proof-00000000-0000-4000-8000-000000000099';
+  duplicate.checkoutDraftId = ` ${checkout.id} `;
+  app.paymentProofs.push(duplicate);
+  app.ui.pendingContext.paymentProofId = 'sentinel-proof';
+  const before = JSON.stringify(app);
+  const uuidCalls = ids.calls();
+
+  assert.equal(api.submitCheckoutWithoutUpload(app, checkout.id, 2000).code, 'invalid_existing_proof');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(ids.calls(), uuidCalls);
+});
+
 test('keeps guest checkout pending with zero points and no receipt or claim', () => {
   const { api } = testApi();
   const app = api.createDefaultState();

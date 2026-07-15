@@ -1070,7 +1070,8 @@
       const service = getGuestServiceDefinition(guestCheckin.businessId, guestCheckin.serviceKey);
       if (!business || !service) return { ok: false, code: 'service_not_found' };
       const existing = appState.checkoutDrafts.filter((row) => (
-        isRecord(row) && row.guestCheckinId === guestCheckin.id && row.status !== 'rejected'
+        isRecord(row) && normalizedRequiredText(row.guestCheckinId) === guestCheckin.id
+          && row.status !== 'rejected'
       ));
       if (existing.length > 0) {
         if (existing.length !== 1 || !isCanonicalCheckoutForGuest(appState, existing[0], guestCheckin)) {
@@ -1158,17 +1159,21 @@
         return { ok: false, code: 'invalid_checkout_state' };
       }
       const existing = appState.paymentProofs.filter((proof) => (
-        isRecord(proof) && proof.checkoutDraftId === checkout.id
+        isRecord(proof) && normalizedRequiredText(proof.checkoutDraftId) === checkout.id
       ));
-      if (checkout.status === 'pending_verification') {
+      if (existing.length > 0) {
         const proof = existing.length === 1 ? existing[0] : null;
-        if (!proof || !isCanonicalPendingNoUploadProof(appState, checkout, proof)) {
+        if (checkout.status !== 'pending_verification'
+          || !proof || !isCanonicalPendingNoUploadProof(appState, checkout, proof)) {
           return { ok: false, code: 'invalid_existing_proof' };
         }
         appState.ui.pendingContext.paymentProofId = proof.id;
         return { ok: true, proof, idempotent: true };
       }
-      if (checkout.status !== 'draft' || existing.length !== 0) {
+      if (checkout.status === 'pending_verification') {
+        return { ok: false, code: 'invalid_existing_proof' };
+      }
+      if (checkout.status !== 'draft') {
         return { ok: false, code: 'invalid_checkout_state' };
       }
       const timestamp = domainTimestamp(now);
