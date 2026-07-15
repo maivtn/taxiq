@@ -4542,6 +4542,57 @@ test('Task 5 rejects a second canonical verified reward chain for the same guest
   assert.equal(app.ledger.some((entry) => entry.refType === 'guest_claim'), false);
 });
 
+for (const status of ['confirmed', 'pending_verification', 'rejected']) {
+  test(`Task 5 rejects a canonical orphan ${status} checkout before UUID or mutation`, () => {
+    const ids = createUuidSequence();
+    const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+    const app = api.createDefaultState();
+    const fixture = seedVerifiedGuestReceipt(api, app);
+    bindMergePhone(app);
+    app.checkoutDrafts.push({
+      ...structuredClone(fixture.checkout),
+      id: 'checkout-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+      status
+    });
+    const beforeBytes = JSON.stringify(app);
+    const before = JSON.parse(beforeBytes);
+    const calls = ids.calls();
+
+    const result = api.mergeGuestJourney(app, '8325550198', 3000);
+
+    assert.equal(result.ok, false);
+    assert.deepEqual(JSON.parse(JSON.stringify(app)), before);
+    assert.equal(JSON.stringify(app), beforeBytes);
+    assert.equal(ids.calls(), calls);
+  });
+}
+
+test('Task 5 accepts a canonical draft checkout without a proof', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  const fixture = seedVerifiedGuestReceipt(api, app, { baseTime: 1000 });
+  assert.equal(api.stageSalonScan(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front').ok, true);
+  const draftGuest = api.createGuestCheckin(app, {
+    name: 'Draft Guest', phone: '8325550100', serviceKey: 'deluxe-pedicure', staffProfileId: null
+  }, 2000).guestCheckin;
+  const draft = api.createCheckoutDraft(app, { guestCheckinId: draftGuest.id }, 2100).checkoutDraft;
+  assert.equal(draft.status, 'draft');
+  assert.equal(app.paymentProofs.some((proof) => proof.checkoutDraftId === draft.id), false);
+  bindMergePhone(app);
+  const expected = fixture.claims.reduce((sum, claim) => sum + claim.points, 0);
+  const beforePoints = app.balances['bitcoin-nail-bar'].points;
+
+  const result = api.mergeGuestJourney(app, '8325550198', 3000);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.claimedPoints, expected);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforePoints + expected);
+  const storedDraft = app.checkoutDrafts.find((row) => row.id === draft.id);
+  assert.equal(storedDraft.status, 'draft');
+  assert.equal(app.paymentProofs.some((proof) => proof.checkoutDraftId === storedDraft.id), false);
+});
+
 test('Task 5 preserves rejected retry history while claiming the one verified retry chain', () => {
   const ids = createUuidSequence();
   const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);

@@ -1567,11 +1567,29 @@
         const normalized = normalizeGuestCheckin(appState, checkin);
         if (!normalized || !recordMatchesCanonicalFields(checkin, normalized)) return false;
       }
+      const proofsByCheckoutId = new Map();
+      for (const proof of appState.paymentProofs) {
+        if (!proofsByCheckoutId.has(proof.checkoutDraftId)) {
+          proofsByCheckoutId.set(proof.checkoutDraftId, []);
+        }
+        proofsByCheckoutId.get(proof.checkoutDraftId).push(proof);
+      }
       for (const checkout of appState.checkoutDrafts) {
         const owner = canonicalGuestOwnerForCheckout(appState, checkout);
         const normalized = normalizeCheckoutDraft(appState, checkout);
         if (!owner || !normalized || !recordMatchesCanonicalFields(checkout, normalized)
           || !isCanonicalCheckoutForGuest(appState, checkout, owner)) return false;
+        const linkedProofs = proofsByCheckoutId.get(checkout.id) ?? [];
+        const expectedProofStatus = {
+          pending_verification: 'pending_verification',
+          confirmed: 'verified',
+          rejected: 'rejected'
+        }[checkout.status];
+        if (checkout.status === 'draft') {
+          if (linkedProofs.length > 1
+            || (linkedProofs.length === 1 && linkedProofs[0].status !== 'draft')) return false;
+        } else if (!expectedProofStatus || linkedProofs.length !== 1
+          || linkedProofs[0].status !== expectedProofStatus) return false;
       }
 
       const proofCheckoutIds = new Set();
