@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
   <style>
     :root {
       --luxury-gold: #d4af37;
@@ -3627,6 +3628,18 @@
       box-shadow: 0 0 0 2px rgba(70, 72, 216, 0.16);
     }
 
+    .flatpickr-day.selected,
+    .flatpickr-day.selected:hover,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange {
+      border-color: var(--nexora-brand);
+      background: var(--nexora-brand);
+    }
+
+    .flatpickr-day.today {
+      border-color: var(--nexora-brand);
+    }
+
     .booking-clear-button {
       align-self: end;
       height: 40px;
@@ -6294,11 +6307,11 @@
                       </label>
                       <label class="booking-control-field">
                         <span class="booking-control-label">Date from</span>
-                        <input class="booking-input" type="date" data-booking-date-from>
+                        <input class="booking-input" type="text" placeholder="Select date" data-booking-date-from>
                       </label>
                       <label class="booking-control-field">
                         <span class="booking-control-label">Date to</span>
-                        <input class="booking-input" type="date" data-booking-date-to>
+                        <input class="booking-input" type="text" placeholder="Select date" data-booking-date-to>
                       </label>
                       <button class="booking-mini-button booking-clear-button" type="button" data-booking-clear-filters>Clear</button>
                     </div>
@@ -7625,6 +7638,7 @@
   </div>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
   <script>
     var DEFAULT_MAIN_TAB = 'booking';
     var BOOKING_TODAY_DATE = '2026-07-09';
@@ -7642,6 +7656,8 @@
       'noshow': 'is-noshow'
     };
     var bookingStatusFilter = 'all';
+    var bookingDateFromPicker = null;
+    var bookingDateToPicker = null;
 
     function renderLucideIcons() {
       if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -8029,8 +8045,16 @@
 
       if (fieldControl) fieldControl.value = 'name';
       if (searchInput) searchInput.value = '';
-      if (dateFromInput) dateFromInput.value = '';
-      if (dateToInput) dateToInput.value = '';
+      if (bookingDateFromPicker) {
+        bookingDateFromPicker.clear();
+      } else if (dateFromInput) {
+        dateFromInput.value = '';
+      }
+      if (bookingDateToPicker) {
+        bookingDateToPicker.clear();
+      } else if (dateToInput) {
+        dateToInput.value = '';
+      }
       bookingStatusFilter = 'all';
 
       updateBookingSearchPlaceholder();
@@ -8908,14 +8932,31 @@
       bookingSearchInput.addEventListener('input', filterBookingItems);
     }
 
+    var bookingDatePickerConfig = {
+      altInput: true,
+      altFormat: 'M j, Y',
+      dateFormat: 'Y-m-d',
+      altInputClass: 'booking-input',
+      disableMobile: true,
+      onChange: filterBookingItems
+    };
+
     var bookingDateFrom = document.querySelector('[data-booking-date-from]');
     if (bookingDateFrom) {
-      bookingDateFrom.addEventListener('change', filterBookingItems);
+      if (window.flatpickr) {
+        bookingDateFromPicker = flatpickr(bookingDateFrom, bookingDatePickerConfig);
+      } else {
+        bookingDateFrom.addEventListener('change', filterBookingItems);
+      }
     }
 
     var bookingDateTo = document.querySelector('[data-booking-date-to]');
     if (bookingDateTo) {
-      bookingDateTo.addEventListener('change', filterBookingItems);
+      if (window.flatpickr) {
+        bookingDateToPicker = flatpickr(bookingDateTo, bookingDatePickerConfig);
+      } else {
+        bookingDateTo.addEventListener('change', filterBookingItems);
+      }
     }
 
     var bookingClearFilters = document.querySelector('[data-booking-clear-filters]');
