@@ -57,6 +57,24 @@ function createAuditStorage(initial = {}, { failSet = false, failGet = false } =
   };
 }
 
+function createWriteThenThrowOnceStorage(initial = {}) {
+  const values = new Map(Object.entries(initial));
+  let shouldThrow = true;
+  return {
+    peek(key) { return values.has(key) ? values.get(key) : null; },
+    getItem(key) { return values.has(key) ? values.get(key) : null; },
+    setItem(key, value) {
+      values.set(key, String(value));
+      if (shouldThrow) {
+        shouldThrow = false;
+        throw new Error('write completed before failure');
+      }
+    },
+    removeItem(key) { values.delete(key); },
+    clear() { values.clear(); }
+  };
+}
+
 function plain(value) {
   return JSON.parse(JSON.stringify(value));
 }
@@ -87,12 +105,23 @@ function createStubNode({ id = '', screen = '', target = '' } = {}) {
       values.push(handler);
       listeners.set(type, values);
     },
-    dispatch(type) {
-      for (const handler of listeners.get(type) || []) handler({ type, target: node });
+    dispatch(type, init = {}) {
+      const event = {
+        type,
+        target: node,
+        defaultPrevented: false,
+        preventDefault() { event.defaultPrevented = true; },
+        ...init
+      };
+      for (const handler of listeners.get(type) || []) handler(event);
+      return event;
     },
     setAttribute(name, value) { attributes.set(name, String(value)); },
     getAttribute(name) { return attributes.has(name) ? attributes.get(name) : null; },
-    focus() { node.focusCount += 1; },
+    focus() {
+      node.focusCount += 1;
+      node.onFocus?.();
+    },
     closest(selector) {
       if (selector === '[data-ops-screen-target]' && node.dataset.opsScreenTarget) return node;
       return null;
@@ -116,6 +145,7 @@ function uiApi({ storage = createAuditStorage(), lucide } = {}) {
   const byId = new Map([[role.id, role], [status.id, status], [copy.id, copy], ...screens.map((node) => [node.id, node])]);
   const documentListeners = new Map();
   const document = {
+    activeElement: null,
     getElementById(id) { return byId.get(id) || null; },
     querySelectorAll(selector) {
       if (selector === '[data-ops-screen]') return screens;
@@ -129,8 +159,21 @@ function uiApi({ storage = createAuditStorage(), lucide } = {}) {
     },
     dispatchClick(target) {
       for (const handler of documentListeners.get('click') || []) handler({ target });
+    },
+    dispatchKeydown(target, key) {
+      const event = {
+        target,
+        key,
+        defaultPrevented: false,
+        preventDefault() { event.defaultPrevented = true; }
+      };
+      for (const handler of documentListeners.get('keydown') || []) handler(event);
+      return event;
     }
   };
+  for (const node of [...screens, ...screenButtons, role]) {
+    node.onFocus = () => { document.activeElement = node; };
+  }
   const window = { localStorage: storage };
   if (lucide !== undefined) window.lucide = lucide;
   const context = vm.createContext({
@@ -140,6 +183,23 @@ function uiApi({ storage = createAuditStorage(), lucide } = {}) {
   window.window = window;
   vm.runInContext(script, context);
   return { api: window.NEXORA_OPERATIONS_TEST_API, storage, document, role, status, copy, screens, screenButtons };
+}
+
+function throwingLocalStorageApi() {
+  const script = SOURCE.match(/<script id="operations-app-script">([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(script, 'operations script must exist');
+  const window = { NEXORA_OPS_SKIP_INIT: true };
+  Object.defineProperty(window, 'localStorage', {
+    configurable: true,
+    get() { throw new Error('localStorage blocked'); }
+  });
+  const context = vm.createContext({
+    window, structuredClone, console, URL, Date,
+    crypto: { randomUUID: () => '00000000-0000-4000-8000-000000000001' }
+  });
+  window.window = window;
+  vm.runInContext(script, context);
+  return { api: window.NEXORA_OPERATIONS_TEST_API, context };
 }
 
 test('uses a separate operations key and never rewrites customer storage', () => {
@@ -351,6 +411,35 @@ test('customer bridge rejects malformed IDs, relationships, fields, dangerous ke
   assert.equal({}.polluted, undefined);
 });
 
+test('customer bridge never satisfies guest ownership through inherited or reserved business keys', () => {
+  const { api } = testApi();
+  const customerJson = `{
+    "schemaVersion": 2,
+    "businesses": {
+      "bitcoin-nail-bar": { "id": "bitcoin-nail-bar", "name": "Bitcoin Nail Bar" },
+      "constructor": { "id": "constructor", "name": "Reserved" },
+      "toString": { "id": "toString", "name": "Inherited" },
+      "__proto__": { "id": "__proto__", "name": "Prototype" }
+    },
+    "guestCheckins": [
+      { "id": "guest-checkin-constructor", "businessId": "constructor", "serviceKey": "deluxe-pedicure", "staffProfileId": null },
+      { "id": "guest-checkin-tostring", "businessId": "toString", "serviceKey": "deluxe-pedicure", "staffProfileId": null },
+      { "id": "guest-checkin-prototype", "businessId": "__proto__", "serviceKey": "deluxe-pedicure", "staffProfileId": null },
+      { "id": "guest-checkin-orphan", "businessId": "valueOf", "serviceKey": "deluxe-pedicure", "staffProfileId": null }
+    ]
+  }`;
+  const storage = createAuditStorage({ [api.CUSTOMER_STORAGE_KEY]: customerJson });
+
+  const snapshot = api.readCustomerSnapshot(storage);
+
+  assert.deepEqual(plain(snapshot.businesses), {
+    'bitcoin-nail-bar': { id: 'bitcoin-nail-bar', name: 'Bitcoin Nail Bar' }
+  });
+  assert.deepEqual(plain(snapshot.guestCheckins), []);
+  assert.deepEqual(storage.calls.filter((call) => call.method !== 'getItem'), []);
+  assert.equal(storage.peek(api.CUSTOMER_STORAGE_KEY), customerJson);
+});
+
 test('commit applies and persists a successful mutation atomically', () => {
   const { api, storage } = testApi();
   const result = api.commitOperations((draft) => {
@@ -412,6 +501,32 @@ test('commit rolls back memory and leaves storage unchanged on quota failure', (
   assert.deepEqual(plain(api.getOperationsState()), beforeState);
   assert.equal(storage.peek(api.OPS_STORAGE_KEY), existing);
   assert.equal(storage.calls.some((call) => call.key === api.CUSTOMER_STORAGE_KEY && call.method !== 'getItem'), false);
+});
+
+test('write-then-throw storage restores exact existing bytes and removes newly-created keys', () => {
+  const { api } = testApi();
+  const existingBytes = ' { "schemaVersion": 1, "sentinel": true }\n';
+
+  for (const initialBytes of [existingBytes, null]) {
+    const initial = initialBytes === null ? {} : { [api.OPS_STORAGE_KEY]: initialBytes };
+    const saveStorage = createWriteThenThrowOnceStorage(initial);
+    assert.throws(
+      () => api.saveOperationsState(api.createOperationsState(), saveStorage),
+      (error) => error?.code === 'persist_failed'
+    );
+    assert.equal(saveStorage.peek(api.OPS_STORAGE_KEY), initialBytes);
+
+    const commitStorage = createWriteThenThrowOnceStorage(initial);
+    const beforeState = plain(api.getOperationsState());
+    const result = api.commitOperations((draft) => {
+      draft.ui.role = 'Staff';
+      return { ok: true };
+    }, commitStorage);
+    assert.equal(result.ok, false);
+    assert.equal(result.code, 'persist_failed');
+    assert.equal(commitStorage.peek(api.OPS_STORAGE_KEY), initialBytes);
+    assert.deepEqual(plain(api.getOperationsState()), beforeState);
+  }
 });
 
 test('separate operations instances keep independent state and isolated keys', () => {
@@ -495,10 +610,80 @@ test('role persistence failure restores the select and state with an accessible 
   assert.equal(storage.calls.some((call) => call.key === harness.api.CUSTOMER_STORAGE_KEY && call.method !== 'getItem'), false);
 });
 
+test('ARIA tabs support ArrowLeft, ArrowRight, Home, and End with persisted activation', () => {
+  const harness = uiApi();
+  const [live, eligibility, addon] = harness.screenButtons;
+
+  const right = harness.document.dispatchKeydown(live, 'ArrowRight');
+  assert.equal(right.defaultPrevented, true);
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'staffnoteligible');
+  assert.equal(harness.document.activeElement, eligibility);
+  assert.equal(eligibility.getAttribute('aria-selected'), 'true');
+
+  harness.document.dispatchKeydown(eligibility, 'End');
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'addonapproval');
+  assert.equal(harness.document.activeElement, addon);
+
+  harness.document.dispatchKeydown(addon, 'Home');
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
+  assert.equal(harness.document.activeElement, live);
+
+  harness.document.dispatchKeydown(live, 'ArrowLeft');
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'addonapproval');
+  assert.equal(harness.document.activeElement, addon);
+
+  harness.document.dispatchKeydown(addon, 'ArrowRight');
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
+  assert.equal(harness.document.activeElement, live);
+  assert.equal(JSON.parse(harness.storage.peek(harness.api.OPS_STORAGE_KEY)).ui.activeScreen, 'liveticket');
+});
+
+test('failed keyboard tab persistence restores previous state, ARIA, panel, and focus', () => {
+  const storage = createAuditStorage({}, { failSet: true });
+  const harness = uiApi({ storage });
+  const [live, eligibility] = harness.screenButtons;
+
+  const event = harness.document.dispatchKeydown(live, 'ArrowRight');
+
+  assert.equal(event.defaultPrevented, true);
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
+  assert.equal(live.getAttribute('aria-selected'), 'true');
+  assert.equal(live.getAttribute('tabindex'), '0');
+  assert.equal(eligibility.getAttribute('aria-selected'), 'false');
+  assert.equal(eligibility.getAttribute('tabindex'), '-1');
+  assert.equal(harness.screens[0].classList.contains('hidden'), false);
+  assert.equal(harness.screens[1].classList.contains('hidden'), true);
+  assert.equal(harness.document.activeElement, live);
+  assert.equal(storage.peek(harness.api.OPS_STORAGE_KEY), null);
+  assert.match(harness.status.textContent, /not saved|không thể lưu/i);
+});
+
 test('initialization tolerates missing Lucide and unavailable storage', () => {
   const storage = createAuditStorage({}, { failGet: true });
   const harness = uiApi({ storage });
   assert.equal(harness.role.value, 'Customer');
   assert.equal(harness.screens[0].classList.contains('hidden'), false);
   assert.equal(harness.screens[1].classList.contains('hidden'), true);
+});
+
+test('throwing localStorage accessor still exports a safe API and preserves in-memory state', () => {
+  const { api } = throwingLocalStorageApi();
+  assert.ok(api);
+  const loaded = api.loadOperationsState();
+  const snapshot = api.readCustomerSnapshot();
+  const before = plain(api.getOperationsState());
+
+  assert.equal(loaded.schemaVersion, 1);
+  assert.deepEqual(plain(snapshot), { profile: null, businesses: {}, guestCheckins: [] });
+  assert.throws(
+    () => api.saveOperationsState(api.createOperationsState()),
+    (error) => error?.code === 'persist_failed' && /storage/i.test(error.message)
+  );
+  const committed = api.commitOperations((draft) => {
+    draft.ui.role = 'Staff';
+    return { ok: true };
+  });
+  assert.equal(committed.ok, false);
+  assert.equal(committed.code, 'persist_failed');
+  assert.deepEqual(plain(api.getOperationsState()), before);
 });

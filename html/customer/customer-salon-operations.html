@@ -108,6 +108,7 @@ const OPS_SCHEMA_VERSION = 1;
 const OPS_SCREENS = Object.freeze(['liveticket', 'staffnoteligible', 'addonapproval']);
 const OPS_ROLES = Object.freeze(['Customer', 'Front Desk', 'Staff']);
 const OPS_UNSAFE_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
+const OPS_RESERVED_OBJECT_KEYS = new Set([...OPS_UNSAFE_KEYS, ...Object.getOwnPropertyNames(Object.prototype)]);
 const OPS_INVALID_CLONE = Symbol('invalid-clone');
 const OPS_ROLE_COPY = Object.freeze({
   Customer: 'Customer / Khách hàng — theo dõi ticket và quyết định các yêu cầu cần phê duyệt.',
@@ -282,19 +283,53 @@ function normalizeOperationsState(value) {
   }
 }
 
-function loadOperationsState(storage = window.localStorage) {
+function opsResolveStorage(storage) {
+  if (storage !== undefined) return { ok: true, value: storage };
   try {
-    const raw = storage.getItem(OPS_STORAGE_KEY);
+    return { ok: true, value: window.localStorage };
+  } catch (error) {
+    return { ok: false, error };
+  }
+}
+
+function opsPersistenceError(cause) {
+  const error = new Error('Operations storage persistence failed.');
+  error.name = 'OperationsPersistenceError';
+  error.code = 'persist_failed';
+  error.cause = cause;
+  return error;
+}
+
+function loadOperationsState(storage) {
+  try {
+    const resolved = opsResolveStorage(storage);
+    if (!resolved.ok) return createOperationsState();
+    const raw = resolved.value.getItem(OPS_STORAGE_KEY);
     return normalizeOperationsState(JSON.parse(raw || 'null'));
   } catch {
     return createOperationsState();
   }
 }
 
-function saveOperationsState(value, storage = window.localStorage) {
+function saveOperationsState(value, storage) {
   const normalized = normalizeOperationsState(value);
   normalized.updatedAt = opsCurrentTimestamp();
-  storage.setItem(OPS_STORAGE_KEY, JSON.stringify(normalized));
+  const resolved = opsResolveStorage(storage);
+  if (!resolved.ok) throw opsPersistenceError(resolved.error);
+  const targetStorage = resolved.value;
+  let previousRaw;
+  try {
+    previousRaw = targetStorage.getItem(OPS_STORAGE_KEY);
+    targetStorage.setItem(OPS_STORAGE_KEY, JSON.stringify(normalized));
+  } catch (cause) {
+    try {
+      if (previousRaw === null) targetStorage.removeItem(OPS_STORAGE_KEY);
+      else if (typeof previousRaw === 'string') targetStorage.setItem(OPS_STORAGE_KEY, previousRaw);
+    } catch {
+      // Best-effort rollback for storage implementations that mutate before throwing.
+    }
+    throw opsPersistenceError(cause);
+  }
   return normalized;
 }
 
@@ -321,12 +356,14 @@ function opsHasUnsafeOwnKeys(value) {
 }
 
 function emptyCustomerSnapshot() {
-  return { profile: null, businesses: {}, guestCheckins: [] };
+  return { profile: null, businesses: Object.create(null), guestCheckins: [] };
 }
 
-function readCustomerSnapshot(storage = window.localStorage) {
+function readCustomerSnapshot(storage) {
   try {
-    const raw = JSON.parse(storage.getItem(CUSTOMER_STORAGE_KEY) || 'null');
+    const resolved = opsResolveStorage(storage);
+    if (!resolved.ok) return emptyCustomerSnapshot();
+    const raw = JSON.parse(resolved.value.getItem(CUSTOMER_STORAGE_KEY) || 'null');
     if (!opsRecord(raw) || opsOwn(raw, 'schemaVersion') !== 2) return emptyCustomerSnapshot();
 
     const rawProfile = opsOwn(raw, 'profile');
@@ -339,14 +376,15 @@ function readCustomerSnapshot(storage = window.localStorage) {
         }
       : null;
 
-    const businesses = {};
+    const businesses = Object.create(null);
     const rawBusinesses = opsOwn(raw, 'businesses');
     if (opsRecord(rawBusinesses)) {
       for (const [key, business] of Object.entries(rawBusinesses)) {
         const id = opsCanonicalId(key);
         const storedId = opsOwn(business, 'id');
         const name = opsCustomerText(opsOwn(business, 'name'));
-        if (!id || !opsRecord(business) || opsHasUnsafeOwnKeys(business) || storedId !== id || !name) continue;
+        if (!id || OPS_RESERVED_OBJECT_KEYS.has(key) || !opsRecord(business)
+          || opsHasUnsafeOwnKeys(business) || storedId !== id || !name) continue;
         businesses[id] = { id, name };
       }
     }
@@ -368,7 +406,8 @@ function readCustomerSnapshot(storage = window.localStorage) {
       const staffProfileId = rawStaffId === null || rawStaffId === undefined
         ? null
         : opsCanonicalId(rawStaffId, 'staff');
-      if (!id || idCounts.get(id) !== 1 || !businessId || !businesses[businessId] || !serviceKey
+      if (!id || idCounts.get(id) !== 1 || !businessId
+        || !Object.prototype.hasOwnProperty.call(businesses, businessId) || !serviceKey
         || (rawStaffId !== null && rawStaffId !== undefined && !staffProfileId)) continue;
       guestCheckins.push({
         id,
@@ -399,7 +438,7 @@ function getOperationsState() {
   return cloneOperationsState(operationsState);
 }
 
-function commitOperations(mutator, storage = window.localStorage) {
+function commitOperations(mutator, storage) {
   if (typeof mutator !== 'function') return { ok: false, code: 'mutation_failed' };
   const draft = cloneOperationsState(operationsState);
   let result;
@@ -410,19 +449,24 @@ function commitOperations(mutator, storage = window.localStorage) {
   }
   if (opsRecord(result) && opsOwn(result, 'ok') === false) return result;
 
+  const resolved = opsResolveStorage(storage);
+  if (!resolved.ok) {
+    return { ok: false, code: 'persist_failed', error: opsPersistenceError(resolved.error) };
+  }
+  const targetStorage = resolved.value;
   let previousRaw;
   try {
-    previousRaw = storage.getItem(OPS_STORAGE_KEY);
+    previousRaw = targetStorage.getItem(OPS_STORAGE_KEY);
   } catch (error) {
-    return { ok: false, code: 'persist_failed', error };
+    return { ok: false, code: 'persist_failed', error: opsPersistenceError(error) };
   }
   let saved;
   try {
-    saved = saveOperationsState(draft, storage);
+    saved = saveOperationsState(draft, targetStorage);
   } catch (error) {
     try {
-      if (previousRaw === null) storage.removeItem(OPS_STORAGE_KEY);
-      else storage.setItem(OPS_STORAGE_KEY, previousRaw);
+      if (previousRaw === null) targetStorage.removeItem(OPS_STORAGE_KEY);
+      else targetStorage.setItem(OPS_STORAGE_KEY, previousRaw);
     } catch {
       // Best-effort rollback for storage implementations that mutate before throwing.
     }
@@ -457,22 +501,46 @@ function renderOperationsScreen({ focus = false } = {}) {
   });
 }
 
-function handleOperationsClick(event) {
-  const control = event.target?.closest?.('[data-ops-screen-target]');
-  if (!control || control.disabled || control.getAttribute('aria-disabled') === 'true') return;
+function activateOperationsScreen(control, focusTarget = 'panel') {
   const target = control.dataset.opsScreenTarget;
-  if (!OPS_SCREENS.includes(target)) return;
+  if (!OPS_SCREENS.includes(target)) return false;
+  const controls = Array.from(document.querySelectorAll('[data-ops-screen-target]'));
+  const previousControl = controls.find((item) => item.dataset.opsScreenTarget === operationsState.ui.activeScreen);
   const result = commitOperations((draft) => {
     draft.ui.activeScreen = target;
     return { ok: true };
   });
   if (!result.ok) {
     renderOperationsScreen();
+    if (focusTarget === 'tab') previousControl?.focus();
     setOperationsStatus('Không thể lưu màn hình / Screen change was not saved.');
-    return;
+    return false;
   }
-  renderOperationsScreen({ focus: true });
+  renderOperationsScreen({ focus: focusTarget === 'panel' });
+  if (focusTarget === 'tab') control.focus();
   setOperationsStatus(`Đã mở ${control.textContent.trim()}.`);
+  return true;
+}
+
+function handleOperationsClick(event) {
+  const control = event.target?.closest?.('[data-ops-screen-target]');
+  if (!control || control.disabled || control.getAttribute('aria-disabled') === 'true') return;
+  activateOperationsScreen(control);
+}
+
+function handleOperationsKeydown(event) {
+  const control = event.target?.closest?.('[data-ops-screen-target]');
+  if (!control || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  const controls = Array.from(document.querySelectorAll('[data-ops-screen-target]'));
+  const currentIndex = controls.indexOf(control);
+  if (currentIndex < 0 || controls.length === 0) return;
+  let nextIndex = currentIndex;
+  if (event.key === 'Home') nextIndex = 0;
+  else if (event.key === 'End') nextIndex = controls.length - 1;
+  else if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + controls.length) % controls.length;
+  else if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % controls.length;
+  event.preventDefault();
+  activateOperationsScreen(controls[nextIndex], 'tab');
 }
 
 function initializeOperations() {
@@ -501,6 +569,7 @@ function initializeOperations() {
     });
   }
   document.addEventListener('click', handleOperationsClick);
+  document.addEventListener('keydown', handleOperationsKeydown);
   renderRoleCopy();
   renderOperationsScreen();
   try {
