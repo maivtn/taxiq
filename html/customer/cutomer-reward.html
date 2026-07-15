@@ -263,7 +263,8 @@
   </div>
   <script>
     const STORAGE_KEY = 'nexora.customer.prototype.v1';
-    const SCHEMA_VERSION = 1;
+    const OPERATIONS_STORAGE_KEY = 'nexora.customer.crosssurface.v1';
+    const SCHEMA_VERSION = 2;
     const BUSINESS_ID = 'bitcoin-nail-bar';
     const PAYMENT_METHODS = ['Venmo', 'Zelle', 'Cash App'];
     const CHECKIN_BUSINESSES = new Set(['bitcoin-nail-bar', 'golden-glow-spa', 'moon-coffee']);
@@ -399,6 +400,12 @@
           { id: 'visit-1001', businessId: BUSINESS_ID, staffProfileId: 'staff-anna', staffName: 'Anna', service: 'Gel manicure', occurredAt: '2026-07-12T16:00:00.000Z' }
         ],
         checkins: [],
+        guestCheckins: [],
+        checkoutDrafts: [],
+        paymentProofs: [],
+        receipts: [],
+        guestRewardClaims: [],
+        referrals: [],
         redemptions: [
           {
             id: 'red-demo', idempotencyKey: 'demo-voucher25', rewardKey: 'voucher25',
@@ -427,7 +434,8 @@
           selectedTip: 10, selectedTipMethod: 'Venmo', selectedStaffId: 'staff-anna',
           paymentMethod: 'Zelle', rating: 0, currentRewardKey: null,
           exploreFilter: 'all', offerFilter: 'all', pendingContext: {
-          consentScopes: [], rewardAttempt: null, redemptionId: null, tipId: null, paymentId: null, bookingId: null
+            consentScopes: [], rewardAttempt: null, redemptionId: null, tipId: null, paymentId: null, bookingId: null,
+            scanContext: null, guestCheckinId: null, checkoutDraftId: null, paymentProofId: null
           },
           bookingDraft: { businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM', note: '' },
           overlay: null, pushPromptCount: 0
@@ -444,6 +452,33 @@
       consents: { id: 'string', scope: 'string', action: 'string', method: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
       visits: { id: 'string', businessId: 'string', staffProfileId: 'string', occurredAt: 'string' },
       checkins: { id: 'string', businessId: 'string', staffProfileId: 'nullableString', scannedAt: 'string', status: 'string' },
+      guestCheckins: {
+        id: 'string', businessId: 'string', name: 'string', phone: 'string', serviceKey: 'string',
+        staffProfileId: 'nullableString', station: 'string', sourceQr: 'string', status: 'string',
+        pointsPending: 'number', scannedAt: 'string', claimedAt: 'nullableString'
+      },
+      checkoutDrafts: {
+        id: 'string', guestCheckinId: 'string', businessId: 'string', status: 'string',
+        subtotalCents: 'number', discountCents: 'number', tipCents: 'number', totalCents: 'number',
+        method: 'nullableString', createdAt: 'string'
+      },
+      paymentProofs: {
+        id: 'string', checkoutDraftId: 'string', businessId: 'string', method: 'string',
+        amountCents: 'number', status: 'string', createdAt: 'string', verifiedAt: 'nullableString'
+      },
+      receipts: {
+        id: 'string', checkoutDraftId: 'string', businessId: 'string', method: 'string',
+        tipCents: 'number', totalCents: 'number', createdAt: 'string'
+      },
+      guestRewardClaims: {
+        id: 'string', guestCheckinId: 'string', businessId: 'string', sourceType: 'string',
+        sourceId: 'string', points: 'number', status: 'string', createdAt: 'string', claimedAt: 'nullableString'
+      },
+      referrals: {
+        id: 'string', referrerId: 'string', code: 'string', friendPhone: 'string', status: 'string',
+        rewardPoints: 'number', businessId: 'nullableString', createdAt: 'string',
+        joinedAt: 'nullableString', rewardedAt: 'nullableString'
+      },
       redemptions: { id: 'string', idempotencyKey: 'string', rewardKey: 'string', sourceBusinessId: 'string', acceptingBusinessId: 'string', cost: 'number', status: 'string', createdAt: 'string' },
       tips: { id: 'string', businessId: 'string', staffProfileId: 'string', amount: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
       directPayments: { id: 'string', businessId: 'string', amount: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
@@ -710,6 +745,164 @@
       const milliseconds = Date.parse(value);
       const timestamp = domainTimestamp(milliseconds);
       return timestamp.ok && timestamp.value === value;
+    }
+
+    const CHECKOUT_STATUSES = new Set(['draft', 'pending_verification', 'confirmed', 'rejected']);
+    const PROOF_STATUSES = new Set(['draft', 'pending_verification', 'verified', 'rejected']);
+    const REFERRAL_STATUSES = new Set(['invited', 'joined', 'rewarded']);
+    const REFERRAL_REWARD_POINTS = 50;
+    const CHECKOUT_METHODS = new Set(['Card', 'Zelle', 'Venmo', 'Pay at Counter']);
+    const TIP_BASIS_POINTS = new Set([0, 1500, 1800, 2000]);
+
+    function nonNegativeCents(value) {
+      return Number.isSafeInteger(value) && value >= 0 ? value : null;
+    }
+
+    function replaceState(target, source) {
+      for (const key of Object.keys(target)) delete target[key];
+      Object.assign(target, source);
+    }
+
+    function readOperationsSnapshot(storage = window.localStorage) {
+      try {
+        const raw = JSON.parse(storage.getItem(OPERATIONS_STORAGE_KEY) || 'null');
+        if (!isRecord(raw) || raw.schemaVersion !== 1) return { serviceTickets: [], addOnRequests: [], staffEligibility: [] };
+        return {
+          serviceTickets: Array.isArray(raw.serviceTickets) ? structuredClone(raw.serviceTickets) : [],
+          addOnRequests: Array.isArray(raw.addOnRequests) ? structuredClone(raw.addOnRequests) : [],
+          staffEligibility: Array.isArray(raw.staffEligibility) ? structuredClone(raw.staffEligibility) : []
+        };
+      } catch {
+        return { serviceTickets: [], addOnRequests: [], staffEligibility: [] };
+      }
+    }
+
+    function normalizeGuestCheckin(appState, value) {
+      if (!isRecord(value)) return null;
+      const id = normalizedRequiredText(value.id);
+      const businessId = normalizedRequiredText(value.businessId);
+      const name = normalizedRequiredText(value.name);
+      const phone = normalizeUsPhone(value.phone);
+      const serviceKey = normalizedRequiredText(value.serviceKey);
+      const station = normalizedRequiredText(value.station);
+      const sourceQr = normalizedRequiredText(value.sourceQr);
+      const staffProfileId = value.staffProfileId === null ? null : normalizedRequiredText(value.staffProfileId);
+      const scannedAt = validStoredTimestamp(value.scannedAt) ? value.scannedAt : null;
+      const claimedAt = value.claimedAt === null || validStoredTimestamp(value.claimedAt) ? value.claimedAt : undefined;
+      if (!id || !getValidBusiness(appState, businessId) || !name || phone.length !== 10 || !serviceKey
+        || !station || !sourceQr || value.status !== 'checked_in' || !Number.isSafeInteger(value.pointsPending)
+        || value.pointsPending < 0 || !scannedAt || claimedAt === undefined) return null;
+      return { id, businessId, name, phone, serviceKey, staffProfileId, station, sourceQr,
+        status: 'checked_in', pointsPending: value.pointsPending, scannedAt, claimedAt };
+    }
+
+    function normalizeLineItems(value) {
+      if (!Array.isArray(value) || value.length === 0) return null;
+      const lineItems = value.map((item) => ({
+        id: normalizedRequiredText(item?.id),
+        type: normalizedRequiredText(item?.type),
+        label: normalizedRequiredText(item?.label),
+        amountCents: Number.isSafeInteger(item?.amountCents) ? item.amountCents : null,
+        sourceAddOnId: item?.sourceAddOnId === null || item?.sourceAddOnId === undefined
+          ? null : normalizedRequiredText(item.sourceAddOnId)
+      }));
+      return lineItems.some((item) => !item.id || !item.type || !item.label || item.amountCents === null) ? null : lineItems;
+    }
+
+    function normalizeCheckoutDraft(appState, value) {
+      if (!isRecord(value)) return null;
+      const id = normalizedRequiredText(value.id);
+      const guestCheckinId = normalizedRequiredText(value.guestCheckinId);
+      const businessId = normalizedRequiredText(value.businessId);
+      const lineItems = normalizeLineItems(value.lineItems);
+      const status = CHECKOUT_STATUSES.has(value.status) ? value.status : null;
+      const method = value.method === null || CHECKOUT_METHODS.has(value.method) ? value.method : undefined;
+      const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
+      const cents = ['subtotalCents', 'discountCents', 'beforeTipCents', 'tipCents', 'totalCents']
+        .map((key) => nonNegativeCents(value[key]));
+      if (!id || !appState.guestCheckins.some((row) => row.id === guestCheckinId && row.businessId === businessId)
+        || !getValidBusiness(appState, businessId) || !lineItems || !status || method === undefined
+        || !TIP_BASIS_POINTS.has(value.tipBasisPoints) || cents.includes(null) || !createdAt) return null;
+      const [subtotalCents, discountCents, beforeTipCents, tipCents, totalCents] = cents;
+      if (beforeTipCents !== subtotalCents - discountCents || totalCents !== beforeTipCents + tipCents) return null;
+      return { id, guestCheckinId, businessId, lineItems, status, subtotalCents, discountCents,
+        beforeTipCents, tipBasisPoints: value.tipBasisPoints, tipCents, totalCents, method, createdAt };
+    }
+
+    function normalizePaymentProof(appState, value) {
+      if (!isRecord(value)) return null;
+      const id = normalizedRequiredText(value.id);
+      const checkoutDraftId = normalizedRequiredText(value.checkoutDraftId);
+      const checkout = appState.checkoutDrafts.find((row) => row.id === checkoutDraftId);
+      const businessId = normalizedRequiredText(value.businessId);
+      const method = CHECKOUT_METHODS.has(value.method) ? value.method : null;
+      const status = PROOF_STATUSES.has(value.status) ? value.status : null;
+      const amountCents = nonNegativeCents(value.amountCents);
+      const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
+      const verifiedAt = value.verifiedAt === null || validStoredTimestamp(value.verifiedAt) ? value.verifiedAt : undefined;
+      if (!id || !checkout || checkout.businessId !== businessId || !method || !status || amountCents === null
+        || amountCents !== checkout.totalCents || !createdAt || verifiedAt === undefined) return null;
+      const aligned = (status === 'verified' && checkout.status === 'confirmed' && verifiedAt)
+        || (status === 'rejected' && checkout.status === 'rejected' && verifiedAt)
+        || (['draft', 'pending_verification'].includes(status)
+          && ['draft', 'pending_verification'].includes(checkout.status) && verifiedAt === null);
+      if (!aligned) return null;
+      return { id, checkoutDraftId, businessId, method, amountCents, status,
+        note: typeof value.note === 'string' ? value.note.slice(0, 280) : '',
+        imageDataUrl: sanitizeLookPhoto(value.imageDataUrl), rejectReason: normalizedRequiredText(value.rejectReason),
+        createdAt, verifiedAt };
+    }
+
+    function normalizeReceipt(appState, value) {
+      if (!isRecord(value)) return null;
+      const checkout = appState.checkoutDrafts.find((row) => row.id === normalizedRequiredText(value.checkoutDraftId));
+      const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
+      return normalizedRequiredText(value.id) && checkout?.status === 'confirmed'
+        && value.businessId === checkout.businessId && value.totalCents === checkout.totalCents && createdAt
+        ? { id: value.id.trim(), checkoutDraftId: checkout.id, businessId: checkout.businessId,
+          method: checkout.method, tipCents: checkout.tipCents, totalCents: checkout.totalCents,
+          lineItems: structuredClone(checkout.lineItems), createdAt }
+        : null;
+    }
+
+    function normalizeGuestRewardClaim(appState, value) {
+      if (!isRecord(value)) return null;
+      const checkin = appState.guestCheckins.find((row) => row.id === normalizedRequiredText(value.guestCheckinId));
+      const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
+      const claimedAt = value.claimedAt === null || validStoredTimestamp(value.claimedAt) ? value.claimedAt : undefined;
+      const status = ['pending', 'claimed'].includes(value.status) ? value.status : null;
+      return normalizedRequiredText(value.id) && checkin && value.businessId === checkin.businessId
+        && normalizedRequiredText(value.sourceType) && normalizedRequiredText(value.sourceId)
+        && Number.isSafeInteger(value.points) && value.points > 0 && status && createdAt && claimedAt !== undefined
+        && ((status === 'pending' && claimedAt === null) || (status === 'claimed' && claimedAt))
+        ? { id: value.id.trim(), guestCheckinId: checkin.id, businessId: checkin.businessId,
+          sourceType: value.sourceType.trim(), sourceId: value.sourceId.trim(), points: value.points,
+          status, createdAt, claimedAt }
+        : null;
+    }
+
+    function normalizeReferral(appState, value) {
+      if (!isRecord(value)) return null;
+      const id = normalizedRequiredText(value.id);
+      const referrerId = normalizedRequiredText(value.referrerId);
+      const code = normalizedRequiredText(value.code);
+      const friendPhone = normalizeUsPhone(value.friendPhone);
+      const status = REFERRAL_STATUSES.has(value.status) ? value.status : null;
+      const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
+      const rewardedAt = value.rewardedAt === null || validStoredTimestamp(value.rewardedAt) ? value.rewardedAt : undefined;
+      const joinedAt = value.joinedAt === null || validStoredTimestamp(value.joinedAt) ? value.joinedAt : undefined;
+      const businessId = value.businessId === null ? null : normalizedRequiredText(value.businessId);
+      if (!id || referrerId !== appState.profile.id || !code || friendPhone.length !== 10 || !status
+        || !Number.isSafeInteger(value.rewardPoints) || value.rewardPoints < 0 || !createdAt
+        || joinedAt === undefined || rewardedAt === undefined) return null;
+      const aligned = status === 'invited'
+        ? joinedAt === null && rewardedAt === null && businessId === null && value.rewardPoints === 0
+        : status === 'joined'
+          ? joinedAt && rewardedAt === null && businessId === null && value.rewardPoints === 0
+          : joinedAt && rewardedAt && getValidBusiness(appState, businessId) && value.rewardPoints === REFERRAL_REWARD_POINTS;
+      if (!aligned) return null;
+      return { id, referrerId, code, friendPhone, status, rewardPoints: value.rewardPoints,
+        businessId, createdAt, joinedAt, rewardedAt };
     }
 
     function validExpiryDate(value) {
@@ -1237,7 +1430,9 @@
         const normalized = typeof incomingValue === 'string' ? incomingValue.trim() : '';
         return { handled: true, value: normalized || null };
       }
-      if (['ui.pendingContext.tipId', 'ui.pendingContext.paymentId', 'ui.pendingContext.bookingId'].includes(path.join('.'))) {
+      if (['ui.pendingContext.tipId', 'ui.pendingContext.paymentId', 'ui.pendingContext.bookingId',
+        'ui.pendingContext.guestCheckinId', 'ui.pendingContext.checkoutDraftId',
+        'ui.pendingContext.paymentProofId'].includes(path.join('.'))) {
         const normalized = typeof incomingValue === 'string' ? incomingValue.trim() : '';
         return { handled: true, value: normalized || null };
       }
@@ -1295,6 +1490,22 @@
       Object.entries(migrated.staffProfiles).forEach(([staffProfileId, staff]) => {
         staff.id = staffProfileId;
       });
+      const normalizeList = (values, normalizer) => Array.isArray(values)
+        ? values.map((item) => normalizer(migrated, item)).filter(Boolean)
+        : structuredClone([]);
+      migrated.guestCheckins = normalizeList(value.guestCheckins, normalizeGuestCheckin);
+      migrated.checkoutDrafts = normalizeList(value.checkoutDrafts, normalizeCheckoutDraft);
+      migrated.paymentProofs = normalizeList(value.paymentProofs, normalizePaymentProof);
+      migrated.receipts = normalizeList(value.receipts, normalizeReceipt);
+      migrated.guestRewardClaims = normalizeList(value.guestRewardClaims, normalizeGuestRewardClaim);
+      migrated.referrals = normalizeList(value.referrals, normalizeReferral);
+      for (const [field, collection] of [
+        ['guestCheckinId', migrated.guestCheckins], ['checkoutDraftId', migrated.checkoutDrafts],
+        ['paymentProofId', migrated.paymentProofs]
+      ]) {
+        if (migrated.ui.pendingContext[field] !== null
+          && !collection.some((row) => row.id === migrated.ui.pendingContext[field])) migrated.ui.pendingContext[field] = null;
+      }
       migrated.looks = migrated.looks
         .map((look) => normalizePersistedLook(migrated, look))
         .filter(Boolean);
@@ -4927,10 +5138,18 @@
 
     window.NEXORA_TEST_API = {
       STORAGE_KEY,
+      OPERATIONS_STORAGE_KEY,
       createDefaultState,
       migrateState,
       loadState,
       saveState,
+      readOperationsSnapshot,
+      normalizeGuestCheckin,
+      normalizeCheckoutDraft,
+      normalizePaymentProof,
+      normalizeReceipt,
+      normalizeGuestRewardClaim,
+      normalizeReferral,
       translate,
       getBusinessBalance,
       appendLedger,

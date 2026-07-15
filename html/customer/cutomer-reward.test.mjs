@@ -161,12 +161,50 @@ function testApi(seed = {}, {
 test('creates versioned Vietnamese demo state with per-business balances', () => {
   const { api } = testApi();
   const state = api.createDefaultState();
-  assert.equal(state.schemaVersion, 1);
+  assert.equal(state.schemaVersion, 2);
   assert.equal(state.profile.language, 'vi');
   assert.equal(state.balances['bitcoin-nail-bar'].points, 2450);
   assert.equal(state.balances['golden-glow-spa'].points, 600);
   assert.equal(state.balances['moon-coffee'].points, 120);
   assert.equal('pointBalance' in state, false);
+});
+
+test('migrates customer journey collections into schema v2 without changing the storage key', () => {
+  const { api } = testApi();
+  const migrated = api.migrateState({
+    schemaVersion: 1,
+    profile: { language: 'vi' },
+    guestCheckins: [{
+      id: 'guest-checkin-1', businessId: 'bitcoin-nail-bar', name: 'Amy Nguyen',
+      phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-jenny',
+      station: 'front', sourceQr: 'https://nexoratouch.com/touch/bitcoin-nail-bar/front',
+      status: 'checked_in', pointsPending: 120, scannedAt: '2026-07-15T03:04:42.000Z',
+      claimedAt: null
+    }]
+  });
+
+  assert.equal(api.STORAGE_KEY, 'nexora.customer.prototype.v1');
+  assert.equal(migrated.schemaVersion, 2);
+  assert.equal(migrated.guestCheckins.length, 1);
+  assert.deepEqual(migrated.checkoutDrafts, []);
+  assert.deepEqual(migrated.paymentProofs, []);
+  assert.deepEqual(migrated.receipts, []);
+  assert.deepEqual(migrated.guestRewardClaims, []);
+  assert.deepEqual(migrated.referrals, []);
+});
+
+test('drops malformed cross-surface customer records during migration', () => {
+  const { api } = testApi();
+  const migrated = api.migrateState({
+    guestCheckins: [{ id: 'bad', businessId: 'unknown' }],
+    checkoutDrafts: [{ id: 'bad', totalCents: -1 }],
+    paymentProofs: [{ id: 'bad', status: 'verified' }],
+    referrals: [{ id: 'bad', status: 'cash_paid' }]
+  });
+  assert.deepEqual(migrated.guestCheckins, []);
+  assert.deepEqual(migrated.checkoutDrafts, []);
+  assert.deepEqual(migrated.paymentProofs, []);
+  assert.deepEqual(migrated.referrals, []);
 });
 
 test('persists state and recovers corrupt JSON into a timestamped backup', () => {
