@@ -183,7 +183,8 @@ function uiApi({
   storage = createAuditStorage(),
   lucide,
   href = 'https://example.test/customer/customer-salon-operations.html',
-  prefillStale = false
+  prefillStale = false,
+  throwLocationAccessor = false
 } = {}) {
   const script = SOURCE.match(/<script id="operations-app-script">([\s\S]*?)<\/script>/)?.[1];
   assert.ok(script, 'operations script must exist');
@@ -270,7 +271,15 @@ function uiApi({
   for (const node of [...screens, ...screenButtons, role]) {
     node.onFocus = () => { document.activeElement = node; };
   }
-  const window = { localStorage: storage, location: { href } };
+  const window = { localStorage: storage };
+  if (throwLocationAccessor) {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      get() { throw new Error('location blocked'); }
+    });
+  } else {
+    window.location = { href };
+  }
   if (lucide !== undefined) window.lucide = lucide;
   const context = vm.createContext({
     window, localStorage: storage, structuredClone, console, URL, Date, document,
@@ -562,11 +571,10 @@ test('customer bridge never satisfies guest ownership through inherited or reser
   assert.equal(storage.peek(api.CUSTOMER_STORAGE_KEY), customerJson);
 });
 
-test('commit applies and persists a successful mutation atomically', () => {
+test('commit applies and persists a successful canonical mutation atomically', () => {
   const { api, storage } = testApi();
   const result = api.commitOperations((draft) => {
     draft.ui.role = 'Staff';
-    draft.serviceTickets.push({ id: 'ticket-1', label: 'Safe' });
     return { ok: true, code: 'changed' };
   });
 
@@ -1322,6 +1330,13 @@ test('role and screen controls persist operations state with hidden, aria, and f
   assert.match(harness.status.textContent, /Staff/);
 
   harness.document.dispatchClick(harness.actionButtons.openAddon);
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
+  assert.equal(harness.actionButtons.openAddon.disabled, true);
+
+  harness.role.value = 'Customer';
+  harness.role.dispatch('change');
+
+  harness.document.dispatchClick(harness.actionButtons.openAddon);
   assert.equal(harness.api.getOperationsState().ui.activeScreen, 'addonapproval');
   assert.equal(harness.screens[0].classList.contains('hidden'), true);
   assert.equal(harness.screens[0].getAttribute('aria-hidden'), 'true');
@@ -1682,4 +1697,194 @@ test('add-on UI executes open decision sanitized phone and confirm with accessib
   assert.equal(confirm.disabled, true);
   assert.equal(harness.screenButtons[2].disabled, true);
   assert.equal(harness.screens[0].focusCount > 0, true);
+});
+
+test('pending add-on blocks the registered staff switch without state or storage loss', () => {
+  const setup = testApi();
+  const guest = guestCheckin({
+    id: 'guest-checkin-pending-switch', serviceKey: 'acrylic-full-set', staffProfileId: 'staff-tina'
+  });
+  const { state, ticket } = seedServiceTicket(setup.api, {
+    id: guest.id, serviceKey: guest.serviceKey, staffProfileId: guest.staffProfileId
+  });
+  const eligibility = setup.api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKey, ticket.staffProfileId);
+  assert.equal(eligibility.ok, true);
+  assert.equal(setup.api.proposeAddOn(state, {
+    ticketId: ticket.id,
+    businessId: ticket.businessId,
+    staffProfileId: ticket.staffProfileId,
+    label: 'Gel Polish',
+    amountCents: 1500
+  }, 2000).ok, true);
+  state.ui.activeScreen = 'staffnoteligible';
+  const storage = createAuditStorage({
+    [setup.api.OPS_STORAGE_KEY]: JSON.stringify(state),
+    [setup.api.CUSTOMER_STORAGE_KEY]: customerStorageJson([guest])
+  });
+  const harness = uiApi({
+    storage,
+    href: `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${guest.id}`
+  });
+  const beforeState = JSON.stringify(harness.api.getOperationsState());
+  const beforeStorage = storage.peek(setup.api.OPS_STORAGE_KEY);
+  const writesBefore = storage.calls.filter((call) => call.method === 'setItem').length;
+
+  harness.document.dispatchClick(harness.actionButtons.choose);
+
+  assert.equal(JSON.stringify(harness.api.getOperationsState()), beforeState);
+  assert.equal(storage.peek(setup.api.OPS_STORAGE_KEY), beforeStorage);
+  assert.equal(storage.calls.filter((call) => call.method === 'setItem').length, writesBefore);
+  assert.match(harness.status.textContent, /cannot choose|không thể chọn/i);
+});
+
+test('commit rejects any lossy post-mutation normalization before touching storage', () => {
+  const setup = testApi();
+  const { state, ticket } = seedServiceTicket(setup.api);
+  assert.equal(setup.api.proposeAddOn(state, {
+    ticketId: ticket.id,
+    businessId: ticket.businessId,
+    staffProfileId: ticket.staffProfileId,
+    label: 'Gel Polish',
+    amountCents: 1500
+  }, 2000).ok, true);
+  const raw = JSON.stringify(state);
+  const storage = createAuditStorage({ [setup.api.OPS_STORAGE_KEY]: raw });
+  const loaded = testApi({ [setup.api.OPS_STORAGE_KEY]: raw });
+  const before = JSON.stringify(loaded.api.getOperationsState());
+
+  const result = loaded.api.commitOperations((draft) => {
+    draft.serviceTickets[0].staffProfileId = 'staff-kevin';
+    return { ok: true };
+  }, storage);
+
+  assert.deepEqual(plain(result), { ok: false, code: 'invalid_state' });
+  assert.equal(JSON.stringify(loaded.api.getOperationsState()), before);
+  assert.equal(storage.peek(setup.api.OPS_STORAGE_KEY), raw);
+  assert.equal(storage.calls.some((call) => ['setItem', 'removeItem'].includes(call.method)), false);
+});
+
+test('operations entry and checkout routing require HTTP(S), exact filenames, and exact queries', () => {
+  const { api } = testApi();
+  const guest = guestCheckin({ id: 'guest-checkin-strict-route' });
+  const snapshot = {
+    profile: null,
+    businesses: { 'bitcoin-nail-bar': { id: 'bitcoin-nail-bar', name: 'Bitcoin Nail Bar' } },
+    guestCheckins: [guest]
+  };
+  for (const valid of [
+    'https://example.test/customer/customer-salon-operations.html',
+    'http://example.test/customer/customer-salon-operations.html',
+    `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${guest.id}`
+  ]) assert.equal(api.resolveOperationsEntry(snapshot, valid).ok, true, valid);
+  for (const invalid of [
+    'file:///tmp/customer-salon-operations.html',
+    'ftp://example.test/customer/customer-salon-operations.html',
+    'https://example.test/customer/cutomer-reward.html',
+    'https://example.test/customer/customer-salon-operations.html?unknown=1',
+    `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${guest.id}&unknown=1`,
+    `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${guest.id}&guestCheckinId=${guest.id}`
+  ]) assert.equal(api.resolveOperationsEntry(snapshot, invalid).ok, false, invalid);
+
+  assert.deepEqual(plain(api.buildOperationsCheckoutUrl(
+    `http://example.test/customer/customer-salon-operations.html?guestCheckinId=${guest.id}`,
+    guest.id
+  )), {
+    ok: true,
+    href: `http://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${guest.id}`
+  });
+  for (const invalid of [
+    'file:///tmp/customer-salon-operations.html',
+    'https://example.test/customer/cutomer-reward.html',
+    'https://example.test/customer/customer-salon-operations.html?unknown=1',
+    'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-other'
+  ]) assert.equal(api.buildOperationsCheckoutUrl(invalid, guest.id).ok, false, invalid);
+});
+
+test('operations initialization guards a throwing location getter and focuses route errors', () => {
+  assert.doesNotThrow(() => uiApi({ throwLocationAccessor: true }));
+  const blocked = uiApi({
+    href: 'https://example.test/customer/customer-salon-operations.html?unknown=1'
+  });
+  const error = blocked.byId.get('ops-entry-error');
+  assert.equal(error.focusCount > 0, true);
+});
+
+test('add-on controls follow Customer role, ticket support, staff assignment, and lifecycle', () => {
+  const customerKey = 'nexora.customer.prototype.v1';
+  const guest = guestCheckin({ id: 'guest-checkin-addon-controls' });
+  const harness = uiApi({
+    storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }),
+    href: `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${guest.id}`
+  });
+  const phone = harness.byId.get('ops-addon-phone');
+  assert.equal(harness.actionButtons.openAddon.disabled, false);
+  harness.document.dispatchClick(harness.actionButtons.openAddon);
+  assert.equal(harness.screenButtons[2].disabled, false);
+  assert.equal(harness.actionButtons.acceptAddon.disabled, false);
+  harness.document.dispatchClick(harness.actionButtons.acceptAddon);
+  phone.value = '0198';
+  phone.dispatch('input');
+
+  harness.role.value = 'Staff';
+  harness.role.dispatch('change');
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
+  assert.equal(harness.actionButtons.openAddon.disabled, true);
+  assert.equal(harness.actionButtons.acceptAddon.disabled, true);
+  assert.equal(harness.actionButtons.declineAddon.disabled, true);
+  assert.equal(phone.disabled, true);
+  assert.equal(phone.value, '');
+  assert.equal(harness.actionButtons.confirmAddon.disabled, true);
+
+  harness.role.value = 'Customer';
+  harness.role.dispatch('change');
+  assert.equal(harness.screenButtons[2].disabled, false);
+  harness.document.dispatchClick(harness.screenButtons[2]);
+  harness.document.dispatchClick(harness.actionButtons.declineAddon);
+  phone.value = '0198';
+  phone.dispatch('input');
+  harness.document.dispatchClick(harness.actionButtons.confirmAddon);
+  assert.equal(harness.api.getOperationsState().addOnRequests[0].status, 'declined');
+  assert.equal(harness.actionButtons.openAddon.disabled, true);
+  assert.equal(harness.screenButtons[2].disabled, true);
+
+  const unsupportedGuest = guestCheckin({
+    id: 'guest-checkin-unsupported-addon', businessId: 'golden-glow-spa',
+    serviceKey: 'signature-facial', staffProfileId: 'staff-spa-linh'
+  });
+  const unsupported = uiApi({
+    storage: createAuditStorage({ [customerKey]: customerStorageJson([unsupportedGuest]) }),
+    href: `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${unsupportedGuest.id}`
+  });
+  assert.equal(unsupported.actionButtons.openAddon.disabled, true);
+
+  const unassignedGuest = guestCheckin({ id: 'guest-checkin-unassigned-addon', staffProfileId: null });
+  const unassigned = uiApi({
+    storage: createAuditStorage({ [customerKey]: customerStorageJson([unassignedGuest]) }),
+    href: `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${unassignedGuest.id}`
+  });
+  assert.equal(unassigned.actionButtons.openAddon.disabled, true);
+
+  assert.match(SOURCE, /id="ops-addon-error"[^>]+tabindex="-1"/);
+  assert.match(SOURCE, /id="ops-entry-error"[^>]+tabindex="-1"/);
+});
+
+test('operations UUID-backed ticket and add-on IDs are lowercase canonical values', () => {
+  const { api } = testApi();
+  const { state, ticket } = seedServiceTicket(api);
+  const upperTicket = structuredClone(state);
+  upperTicket.serviceTickets[0].id = ticket.id.toUpperCase();
+  upperTicket.serviceTickets[0].lineItems.forEach((item) => {
+    item.id = item.id.replace(ticket.id, ticket.id.toUpperCase());
+  });
+  upperTicket.ui.selectedTicketId = ticket.id.toUpperCase();
+  assert.equal(api.normalizeOperationsState(upperTicket).serviceTickets.length, 0);
+
+  const proposed = api.proposeAddOn(state, {
+    ticketId: ticket.id, businessId: ticket.businessId, staffProfileId: ticket.staffProfileId,
+    label: 'Gel Polish', amountCents: 1500
+  }, 2000);
+  assert.equal(proposed.ok, true);
+  const upperAddOn = structuredClone(state);
+  upperAddOn.addOnRequests[0].id = proposed.addOn.id.toUpperCase();
+  assert.equal(api.normalizeOperationsState(upperAddOn).serviceTickets.length, 0);
 });

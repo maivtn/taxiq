@@ -50,7 +50,7 @@
       </button>
     </nav>
 
-    <p id="ops-entry-error" class="mt-4 hidden rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-800" role="alert"></p>
+    <p id="ops-entry-error" class="mt-4 hidden rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-800" role="alert" tabindex="-1"></p>
 
     <section id="ops-liveticket" class="mt-4" role="tabpanel" aria-labelledby="ops-tab-liveticket" tabindex="-1" data-ops-screen="liveticket">
       <article id="ops-ticket-empty" class="ops-card">
@@ -146,7 +146,7 @@
       <article class="ops-card mt-4">
         <label class="text-sm font-bold" for="ops-addon-phone">Confirm last 4 phone digits / Xác nhận 4 số cuối</label>
         <input id="ops-addon-phone" class="ops-input mt-2" inputmode="numeric" autocomplete="tel-national" maxlength="4" aria-describedby="ops-addon-error">
-        <p id="ops-addon-error" class="mt-2 hidden text-sm font-bold text-rose-600" role="alert"></p>
+        <p id="ops-addon-error" class="mt-2 hidden text-sm font-bold text-rose-600" role="alert" tabindex="-1"></p>
         <button id="ops-addon-confirm" type="button" class="ops-button mt-3 w-full" data-ops-action="confirm-addon-phone" disabled aria-disabled="true">Confirm / Xác nhận</button>
       </article>
     </section>
@@ -194,8 +194,8 @@ const OPS_STAFF = Object.freeze({
   'staff-maria': Object.freeze({ id: 'staff-maria', name: 'Maria', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['acrylic-full-set']), available: true }),
   'staff-spa-linh': Object.freeze({ id: 'staff-spa-linh', name: 'Linh', businessId: 'golden-glow-spa', serviceSkills: Object.freeze(['signature-facial']), available: true })
 });
-const OPS_TICKET_ID_PATTERN = /^ticket-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const OPS_ADDON_ID_PATTERN = /^addon-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const OPS_TICKET_ID_PATTERN = /^ticket-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+const OPS_ADDON_ID_PATTERN = /^addon-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const OPS_ADDON_CATALOG = Object.freeze({
   'bitcoin-nail-bar': Object.freeze({ label: 'Gel Polish', amountCents: 1500 })
 });
@@ -359,6 +359,15 @@ function opsAddOnCatalogEntry(businessId, label, amountCents) {
     ? OPS_ADDON_CATALOG[businessId]
     : null;
   return entry && label === entry.label && amountCents === entry.amountCents ? entry : null;
+}
+
+function opsTicketSupportsAddOn(ticket) {
+  if (!opsRecord(ticket) || ticket.status !== 'in_service') return false;
+  const staff = opsStaff(ticket.staffProfileId);
+  const catalog = Object.prototype.hasOwnProperty.call(OPS_ADDON_CATALOG, ticket.businessId)
+    ? OPS_ADDON_CATALOG[ticket.businessId]
+    : null;
+  return Boolean(staff && staff.businessId === ticket.businessId && catalog);
 }
 
 function normalizeOpsLineItems(value, ticketId, businessId, service) {
@@ -649,7 +658,10 @@ function normalizeOperationsState(value) {
     const proposedAddOn = selectedTicket
       ? addOnRequests.find((addOn) => addOn.ticketId === selectedTicket.id && addOn.status === 'proposed')
       : null;
-    if (reconciledScreen === 'addonapproval' && !proposedAddOn) reconciledScreen = 'liveticket';
+    if (reconciledScreen === 'addonapproval'
+      && (role !== 'Customer' || !proposedAddOn || !opsTicketSupportsAddOn(selectedTicket))) {
+      reconciledScreen = 'liveticket';
+    }
     return {
       schemaVersion: OPS_SCHEMA_VERSION,
       updatedAt: opsStoredTimestamp(updatedAt) ? updatedAt : fallback.updatedAt,
@@ -858,7 +870,7 @@ function operationsStateIntegrity(state) {
     const proposed = selectedTicket
       ? addOns.value.filter((addOn) => addOn.ticketId === selectedTicket.id && addOn.status === 'proposed')
       : [];
-    if (proposed.length !== 1) return false;
+    if (ui.role !== 'Customer' || proposed.length !== 1 || !opsTicketSupportsAddOn(selectedTicket)) return false;
   }
   return true;
 }
@@ -960,6 +972,9 @@ function chooseRecommendedStaff(state, ticketId, staffId, now = Date.now()) {
   if (!operationsStateIntegrity(state)) return { ok: false, code: 'invalid_state' };
   const ticket = state.serviceTickets.find((row) => row.id === ticketId);
   if (ticket?.status === 'completed') return { ok: false, code: 'ticket_completed' };
+  if (ticket && state.addOnRequests.some((row) => row.ticketId === ticket.id && row.status === 'proposed')) {
+    return { ok: false, code: 'addon_pending' };
+  }
   const event = ticket
     ? state.staffEligibility.filter((row) => row.ticketId === ticket.id).at(-1) || null
     : null;
@@ -1145,6 +1160,15 @@ function getOperationsState() {
   return cloneOperationsState(operationsState);
 }
 
+function operationsDraftIsCanonical(draft) {
+  if (!operationsStateIntegrity(draft)) return false;
+  const normalized = normalizeOperationsState(draft);
+  return JSON.stringify(normalized.serviceTickets) === JSON.stringify(draft.serviceTickets)
+    && JSON.stringify(normalized.addOnRequests) === JSON.stringify(draft.addOnRequests)
+    && JSON.stringify(normalized.staffEligibility) === JSON.stringify(draft.staffEligibility)
+    && JSON.stringify(normalized.ui) === JSON.stringify(draft.ui);
+}
+
 function commitOperations(mutator, storage) {
   if (typeof mutator !== 'function') return { ok: false, code: 'mutation_failed' };
   const draft = cloneOperationsState(operationsState);
@@ -1155,6 +1179,7 @@ function commitOperations(mutator, storage) {
     return { ok: false, code: 'mutation_failed', error };
   }
   if (opsRecord(result) && opsOwn(result, 'ok') === false) return result;
+  if (!operationsDraftIsCanonical(draft)) return { ok: false, code: 'invalid_state' };
 
   const resolved = opsResolveStorage(storage);
   if (!resolved.ok) {
@@ -1204,20 +1229,42 @@ function getPayHandoff() {
   return operationsPayHandoff ? cloneOperationsState(operationsPayHandoff) : null;
 }
 
+function parseOperationsHttpUrl(href, expectedFileName) {
+  try {
+    const url = new URL(href);
+    const fileName = url.pathname.split('/').at(-1);
+    if (!['http:', 'https:'].includes(url.protocol) || url.origin === 'null'
+      || url.username || url.password || url.hash || fileName !== expectedFileName) return null;
+    return url;
+  } catch {
+    return null;
+  }
+}
+
+function hasExactOperationsEntryQuery(url, guestCheckinId, { allowEmpty = true } = {}) {
+  const keys = [...url.searchParams.keys()];
+  if (keys.length === 0) return allowEmpty;
+  const values = url.searchParams.getAll('guestCheckinId');
+  return keys.length === 1 && keys[0] === 'guestCheckinId' && values.length === 1
+    && opsCanonicalId(values[0], 'guest-checkin') === values[0]
+    && (guestCheckinId === undefined || values[0] === guestCheckinId);
+}
+
 function buildOperationsCheckoutUrl(href, guestCheckinId) {
   if (!opsCanonicalId(guestCheckinId, 'guest-checkin')) return { ok: false, code: 'invalid_guest_id' };
-  try {
-    const current = new URL(href);
-    const target = new URL('cutomer-reward.html', current);
-    if (target.origin !== current.origin) return { ok: false, code: 'cross_origin_route' };
-    target.search = '';
-    target.hash = '';
-    target.searchParams.set('handoff', 'guest-checkout');
-    target.searchParams.set('guestCheckinId', guestCheckinId);
-    return { ok: true, href: target.href };
-  } catch {
+  const current = parseOperationsHttpUrl(href, 'customer-salon-operations.html');
+  if (!current || !hasExactOperationsEntryQuery(current, guestCheckinId)) {
     return { ok: false, code: 'navigation_failed' };
   }
+  const target = new URL('cutomer-reward.html', current);
+  if (target.origin !== current.origin || target.pathname.split('/').at(-1) !== 'cutomer-reward.html') {
+    return { ok: false, code: 'cross_origin_route' };
+  }
+  target.search = '';
+  target.hash = '';
+  target.searchParams.set('handoff', 'guest-checkout');
+  target.searchParams.set('guestCheckinId', guestCheckinId);
+  return { ok: true, href: target.href };
 }
 
 function assignOperationsCheckout(guestCheckinId) {
@@ -1255,6 +1302,29 @@ function selectedProposedAddOn() {
   )) || null;
 }
 
+function currentAddOnUiState() {
+  const ticket = operationsEntryBlocked
+    ? null
+    : operationsState.serviceTickets.find((row) => row.id === operationsState.ui.selectedTicketId) || null;
+  const catalog = ticket && Object.prototype.hasOwnProperty.call(OPS_ADDON_CATALOG, ticket.businessId)
+    ? OPS_ADDON_CATALOG[ticket.businessId]
+    : null;
+  const requests = ticket && catalog
+    ? operationsState.addOnRequests.filter((row) => row.ticketId === ticket.id && row.label === catalog.label)
+    : [];
+  const proposed = requests.length === 1 && requests[0].status === 'proposed' ? requests[0] : null;
+  const customerEligible = operationsState.ui.role === 'Customer' && opsTicketSupportsAddOn(ticket);
+  const proposalEligible = customerEligible && proposed
+    && proposed.businessId === ticket.businessId && proposed.staffProfileId === ticket.staffProfileId
+    && proposed.amountCents === catalog.amountCents;
+  return {
+    ticket,
+    proposed: proposalEligible ? proposed : null,
+    canPropose: customerEligible && requests.length === 0,
+    canReview: Boolean(proposalEligible)
+  };
+}
+
 function clearAddOnInteraction({ clearError = true } = {}) {
   pendingAddOnDecision = null;
   const phone = document.getElementById('ops-addon-phone');
@@ -1275,9 +1345,31 @@ function updateAddOnConfirm() {
   const phone = document.getElementById('ops-addon-phone');
   const confirm = document.getElementById('ops-addon-confirm');
   if (!phone || !confirm) return;
-  const enabled = ['accepted', 'declined'].includes(pendingAddOnDecision) && /^\d{4}$/.test(phone.value);
+  const enabled = currentAddOnUiState().canReview
+    && ['accepted', 'declined'].includes(pendingAddOnDecision) && /^\d{4}$/.test(phone.value);
   confirm.disabled = !enabled;
   confirm.setAttribute('aria-disabled', String(!enabled));
+}
+
+function syncAddOnControls() {
+  const availability = currentAddOnUiState();
+  if (!availability.canReview) clearAddOnInteraction();
+  document.querySelectorAll('[data-ops-action]').forEach((control) => {
+    const action = control.dataset.opsAction;
+    let disabled = null;
+    if (action === 'open-addon') disabled = !(availability.canPropose || availability.canReview);
+    if (['accept-addon', 'decline-addon'].includes(action)) disabled = !availability.canReview;
+    if (disabled !== null) {
+      control.disabled = disabled;
+      control.setAttribute('aria-disabled', String(disabled));
+    }
+  });
+  const phone = document.getElementById('ops-addon-phone');
+  if (phone) {
+    phone.disabled = !availability.canReview;
+    phone.setAttribute('aria-disabled', String(!availability.canReview));
+  }
+  updateAddOnConfirm();
 }
 
 function renderAddOn() {
@@ -1395,6 +1487,7 @@ function renderOperationsContent() {
   renderLiveTicket();
   renderEligibility();
   renderAddOn();
+  syncAddOnControls();
 }
 
 function renderRoleCopy() {
@@ -1404,6 +1497,7 @@ function renderRoleCopy() {
 
 function renderOperationsScreen({ focus = false } = {}) {
   const activeScreen = operationsEntryBlocked ? 'liveticket' : operationsState.ui.activeScreen;
+  const addOnAvailability = currentAddOnUiState();
   document.querySelectorAll('[data-ops-screen]').forEach((screen) => {
     const active = screen.dataset.opsScreen === activeScreen;
     screen.classList.toggle('hidden', !active);
@@ -1416,7 +1510,7 @@ function renderOperationsScreen({ focus = false } = {}) {
       ? control.dataset.opsScreenTarget !== 'liveticket'
       : control.dataset.opsScreenTarget === 'staffnoteligible'
         && !latestIneligibleEvent(operationsState.ui.selectedTicketId);
-    const addOnUnavailable = control.dataset.opsScreenTarget === 'addonapproval' && !selectedProposedAddOn();
+    const addOnUnavailable = control.dataset.opsScreenTarget === 'addonapproval' && !addOnAvailability.canReview;
     control.disabled = unavailable || addOnUnavailable;
     control.setAttribute('aria-disabled', String(unavailable || addOnUnavailable));
     control.setAttribute('aria-selected', String(active));
@@ -1483,18 +1577,13 @@ function handleOperationsKeydown(event) {
 }
 
 function resolveOperationsEntry(snapshot, href) {
-  let url;
-  try {
-    url = new URL(href);
-  } catch {
-    return { ok: false, code: 'invalid_entry' };
-  }
-  if (url.searchParams.has('guestCheckinId')) {
-    const ids = url.searchParams.getAll('guestCheckinId');
-    if (ids.length !== 1 || !opsCanonicalId(ids[0], 'guest-checkin')) {
-      return { ok: false, code: 'invalid_guest_query' };
-    }
-    const matches = snapshot.guestCheckins.filter((guest) => guest.id === ids[0]);
+  const url = parseOperationsHttpUrl(href, 'customer-salon-operations.html');
+  if (!url) return { ok: false, code: 'invalid_entry' };
+  const keys = [...url.searchParams.keys()];
+  if (!hasExactOperationsEntryQuery(url)) return { ok: false, code: 'invalid_guest_query' };
+  if (keys.length === 1) {
+    const guestCheckinId = url.searchParams.get('guestCheckinId');
+    const matches = snapshot.guestCheckins.filter((guest) => guest.id === guestCheckinId);
     return matches.length === 1
       ? { ok: true, guest: matches[0], explicit: true }
       : { ok: false, code: 'guest_not_found' };
@@ -1586,6 +1675,11 @@ registerOpsAction('ask-front-desk', () => {
 
 registerOpsAction('open-addon', () => {
   clearAddOnInteraction();
+  const availability = currentAddOnUiState();
+  if (!availability.canPropose && !availability.canReview) {
+    setOperationsStatus('Cannot open add-on / Không thể mở dịch vụ thêm.');
+    return { ok: false, code: 'addon_unavailable' };
+  }
   const result = commitOperations((draft) => {
     const ticket = draft.serviceTickets.find((row) => row.id === draft.ui.selectedTicketId);
     if (!ticket) return { ok: false, code: 'ticket_not_found' };
@@ -1610,21 +1704,21 @@ registerOpsAction('open-addon', () => {
 });
 
 registerOpsAction('accept-addon', () => {
-  if (!selectedProposedAddOn()) return;
+  if (!currentAddOnUiState().canReview) return;
   pendingAddOnDecision = 'accepted';
   updateAddOnConfirm();
   setOperationsStatus('Accept selected; confirm phone / Đã chọn chấp nhận, vui lòng xác nhận số điện thoại.');
 });
 
 registerOpsAction('decline-addon', () => {
-  if (!selectedProposedAddOn()) return;
+  if (!currentAddOnUiState().canReview) return;
   pendingAddOnDecision = 'declined';
   updateAddOnConfirm();
   setOperationsStatus('Decline selected; confirm phone / Đã chọn từ chối, vui lòng xác nhận số điện thoại.');
 });
 
 registerOpsAction('confirm-addon-phone', () => {
-  const addOn = selectedProposedAddOn();
+  const addOn = currentAddOnUiState().proposed;
   const phone = document.getElementById('ops-addon-phone');
   if (!addOn || !phone || !['accepted', 'declined'].includes(pendingAddOnDecision)
     || !/^\d{4}$/.test(phone.value)) return { ok: false, code: 'decision_required' };
@@ -1677,9 +1771,13 @@ registerOpsAction('open-ticket-tab', (control) => {
 function initializeOperations() {
   clearAddOnInteraction();
   operationsCustomerSnapshot = readCustomerSnapshot();
-  const href = typeof window.location?.href === 'string'
-    ? window.location.href
-    : 'https://example.invalid/customer-salon-operations.html';
+  let href = '';
+  try {
+    const location = window.location;
+    href = typeof location?.href === 'string' ? location.href : '';
+  } catch {
+    href = '';
+  }
   const entry = resolveOperationsEntry(operationsCustomerSnapshot, href);
   const entryError = document.getElementById('ops-entry-error');
   operationsEntryBlocked = !entry.ok;
@@ -1689,6 +1787,7 @@ function initializeOperations() {
     if (entryError) {
       entryError.textContent = message;
       entryError.classList.remove('hidden');
+      entryError.focus?.({ preventScroll: true });
     }
     setOperationsStatus(message);
   } else {
@@ -1730,6 +1829,9 @@ function initializeOperations() {
       }
       const result = commitOperations((draft) => {
         draft.ui.role = requestedRole;
+        if (requestedRole !== 'Customer' && draft.ui.activeScreen === 'addonapproval') {
+          draft.ui.activeScreen = 'liveticket';
+        }
         return { ok: true };
       });
       if (!result.ok) {
@@ -1740,6 +1842,8 @@ function initializeOperations() {
       }
       clearAddOnInteraction();
       renderRoleCopy();
+      renderOperationsContent();
+      renderOperationsScreen();
       setOperationsStatus(`Đã lưu vai trò ${operationsState.ui.role}.`);
     });
   }

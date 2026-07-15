@@ -223,7 +223,7 @@
               <label class="block text-sm font-bold"><span data-en="Phone" data-vi="Điện thoại">Điện thoại</span><input id="guest-phone" class="app-input mt-2" type="tel" inputmode="tel" autocomplete="tel"></label>
               <label class="block text-sm font-bold"><span data-en="Service" data-vi="Dịch vụ">Dịch vụ</span><select id="guest-service" class="app-input mt-2"></select></label>
               <label class="block text-sm font-bold"><span data-en="Technician" data-vi="Kỹ thuật viên">Kỹ thuật viên</span><select id="guest-staff" class="app-input mt-2"></select></label>
-              <p id="guest-checkin-error" class="field-error hidden" role="alert"></p>
+              <p id="guest-checkin-error" class="field-error hidden" role="alert" tabindex="-1"></p>
               <button type="button" class="app-button w-full" data-action="submit-guest-checkin" data-en="Check in now" data-vi="Check-in ngay">Check-in ngay</button>
             </div>
           </form></div>
@@ -961,7 +961,17 @@
     const OPS_TICKET_ID_PATTERN = /^ticket-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const OPS_ADDON_ID_PATTERN = /^addon-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const IMPORTED_ADDON_CATALOG = Object.freeze({
-      'bitcoin-nail-bar': Object.freeze({ label: 'Gel Polish', amountCents: 1500 })
+      'bitcoin-nail-bar': Object.freeze({
+        'gel-polish': Object.freeze({ key: 'gel-polish', label: 'Gel Polish', amountCents: 1500, maxPerCheckout: 1 })
+      })
+    });
+    const IMPORTED_OPS_STAFF = Object.freeze({
+      'staff-jenny': Object.freeze({ id: 'staff-jenny', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['deluxe-pedicure']), available: true }),
+      'staff-tina': Object.freeze({ id: 'staff-tina', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['acrylic-full-set']), available: false }),
+      'staff-kevin': Object.freeze({ id: 'staff-kevin', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['deluxe-pedicure', 'acrylic-full-set']), available: true }),
+      'staff-anna': Object.freeze({ id: 'staff-anna', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['deluxe-pedicure']), available: true }),
+      'staff-maria': Object.freeze({ id: 'staff-maria', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['acrylic-full-set']), available: true }),
+      'staff-spa-linh': Object.freeze({ id: 'staff-spa-linh', businessId: 'golden-glow-spa', serviceSkills: Object.freeze(['signature-facial']), available: true })
     });
     const LEDGER_ID_PATTERN = /^ledger-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const REFERRAL_ID_PATTERN = /^referral-[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -985,7 +995,13 @@
       try {
         const targetStorage = storage === undefined ? window.localStorage : storage;
         const raw = JSON.parse(targetStorage.getItem(OPERATIONS_STORAGE_KEY) || 'null');
-        if (!isRecord(raw) || raw.schemaVersion !== 1) return { serviceTickets: [], addOnRequests: [], staffEligibility: [] };
+        const allowedKeys = new Set([
+          'schemaVersion', 'updatedAt', 'serviceTickets', 'addOnRequests', 'staffEligibility', 'ui'
+        ]);
+        if (!isRecord(raw) || raw.schemaVersion !== 1
+          || Object.keys(raw).some((key) => !allowedKeys.has(key))) {
+          return { serviceTickets: [], addOnRequests: [], staffEligibility: [] };
+        }
         return {
           serviceTickets: Array.isArray(raw.serviceTickets) ? structuredClone(raw.serviceTickets) : [],
           addOnRequests: Array.isArray(raw.addOnRequests) ? structuredClone(raw.addOnRequests) : [],
@@ -997,10 +1013,29 @@
     }
 
     function importedAddOnCatalogEntry(businessId, label, amountCents) {
-      const entry = Object.prototype.hasOwnProperty.call(IMPORTED_ADDON_CATALOG, businessId)
+      const catalog = Object.prototype.hasOwnProperty.call(IMPORTED_ADDON_CATALOG, businessId)
         ? IMPORTED_ADDON_CATALOG[businessId]
         : null;
-      return entry && label === entry.label && amountCents === entry.amountCents ? entry : null;
+      return catalog
+        ? Object.values(catalog).find((entry) => label === entry.label && amountCents === entry.amountCents) ?? null
+        : null;
+    }
+
+    function importedOpsStaff(staffId) {
+      return typeof staffId === 'string' && Object.prototype.hasOwnProperty.call(IMPORTED_OPS_STAFF, staffId)
+        ? IMPORTED_OPS_STAFF[staffId]
+        : null;
+    }
+
+    function importedRecommendedStaffIds(businessId, serviceKey, requestedStaffId) {
+      return Object.values(IMPORTED_OPS_STAFF)
+        .filter((staff) => staff.id !== requestedStaffId && staff.businessId === businessId
+          && staff.serviceSkills.includes(serviceKey))
+        .map((staff) => staff.id);
+    }
+
+    function importedEligibilityId(ticketId, serviceKey, staffId) {
+      return `eligibility-${ticketId.slice('ticket-'.length)}-${serviceKey}-${staffId.slice('staff-'.length)}`;
     }
 
     function normalizeGuestCheckin(appState, value) {
@@ -1117,15 +1152,21 @@
           || item.amountCents !== canonical.amountCents || item.sourceAddOnId !== null) return null;
       }
       const sourceIds = new Set();
+      const catalogCounts = new Map();
       for (let index = expected.length; index < lineItems.length; index += 1) {
         const raw = value[index];
         const item = lineItems[index];
+        const catalogEntry = importedAddOnCatalogEntry(
+          guestCheckin.businessId, item.label, item.amountCents
+        );
+        const nextCount = catalogEntry ? (catalogCounts.get(catalogEntry.key) ?? 0) + 1 : 0;
         if (!hasExactOwnKeys(raw, ['id', 'type', 'label', 'amountCents', 'sourceAddOnId'])
           || item.type !== 'addon' || !OPS_ADDON_ID_PATTERN.test(item.sourceAddOnId)
           || item.id !== `addon-${item.sourceAddOnId}`
-          || !importedAddOnCatalogEntry(guestCheckin.businessId, item.label, item.amountCents)
+          || !catalogEntry || nextCount > catalogEntry.maxPerCheckout
           || sourceIds.has(item.sourceAddOnId)) return null;
         sourceIds.add(item.sourceAddOnId);
+        catalogCounts.set(catalogEntry.key, nextCount);
       }
       return lineItems;
     }
@@ -1239,6 +1280,7 @@
       const serviceKey = normalizedRequiredText(value.serviceKey);
       const service = getGuestServiceDefinition(businessId, serviceKey);
       const staffProfileId = value.staffProfileId === null ? null : normalizedRequiredText(value.staffProfileId);
+      const staff = staffProfileId === null ? null : importedOpsStaff(staffProfileId);
       const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
       const completedAt = value.completedAt === null || validStoredTimestamp(value.completedAt)
         ? value.completedAt
@@ -1248,7 +1290,7 @@
       if (!id || id !== id.toLowerCase() || !OPS_TICKET_ID_PATTERN.test(id)
         || !guestCheckinId || guestCheckinId !== guestCheckinId.toLowerCase()
         || !GUEST_CHECKIN_ID_PATTERN.test(guestCheckinId) || !service
-        || (staffProfileId !== null && !/^staff-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(staffProfileId))
+        || (staffProfileId !== null && (!staff || staff.businessId !== businessId))
         || !Number.isSafeInteger(value.number) || value.number < 104
         || !['waiting', 'in_service', 'completed'].includes(value.status) || !createdAt
         || completedAt === undefined || frontDeskRequestedAt === undefined
@@ -1275,16 +1317,20 @@
         lineItems.push(canonical);
       }
       const sourceIds = new Set();
+      const catalogCounts = new Map();
       for (let index = expected.length; index < value.lineItems.length; index += 1) {
         const item = value.lineItems[index];
         const sourceAddOnId = normalizedRequiredText(item?.sourceAddOnId);
+        const catalogEntry = importedAddOnCatalogEntry(businessId, item?.label, item?.amountCents);
+        const nextCount = catalogEntry ? (catalogCounts.get(catalogEntry.key) ?? 0) + 1 : 0;
         if (!hasExactOwnKeys(item, ['id', 'type', 'label', 'amountCents', 'sourceAddOnId'])
           || !sourceAddOnId || sourceAddOnId !== sourceAddOnId.toLowerCase()
           || !OPS_ADDON_ID_PATTERN.test(sourceAddOnId)
           || item.id !== `${id}-addon-${sourceAddOnId}` || item.type !== 'addon'
-          || !importedAddOnCatalogEntry(businessId, item.label, item.amountCents)
+          || !catalogEntry || nextCount > catalogEntry.maxPerCheckout
           || sourceIds.has(sourceAddOnId)) return null;
         sourceIds.add(sourceAddOnId);
+        catalogCounts.set(catalogEntry.key, nextCount);
         lineItems.push({
           id: item.id, type: 'addon', label: item.label,
           amountCents: item.amountCents, sourceAddOnId
@@ -1332,8 +1378,53 @@
       };
     }
 
+    function normalizeImportEligibility(value, tickets) {
+      if (!hasExactOwnKeys(value, [
+        'id', 'ticketId', 'serviceKey', 'requestedStaffId', 'eligible',
+        'recommendedStaffIds', 'selectedStaffId', 'selectedAt'
+      ])) return null;
+      const ticketId = normalizedRequiredText(value.ticketId);
+      const ticket = tickets.find((row) => row.id === ticketId);
+      const serviceKey = normalizedRequiredText(value.serviceKey);
+      const requestedStaffId = normalizedRequiredText(value.requestedStaffId);
+      const requested = importedOpsStaff(requestedStaffId);
+      if (!ticket || serviceKey !== ticket.serviceKey || !requested
+        || requested.businessId !== ticket.businessId) return null;
+      const eligible = requested.available && requested.serviceSkills.includes(serviceKey);
+      const expectedRecommendations = eligible
+        ? []
+        : importedRecommendedStaffIds(ticket.businessId, serviceKey, requestedStaffId);
+      const selectedStaffId = value.selectedStaffId === null
+        ? null
+        : normalizedRequiredText(value.selectedStaffId);
+      const selectedAt = value.selectedAt === null || validStoredTimestamp(value.selectedAt)
+        ? value.selectedAt
+        : undefined;
+      if (value.id !== importedEligibilityId(ticket.id, serviceKey, requestedStaffId)
+        || value.eligible !== eligible || !Array.isArray(value.recommendedStaffIds)
+        || JSON.stringify(value.recommendedStaffIds) !== JSON.stringify(expectedRecommendations)
+        || (selectedStaffId !== null && (!expectedRecommendations.includes(selectedStaffId)
+          || !importedOpsStaff(selectedStaffId)?.available || ticket.staffProfileId !== selectedStaffId))
+        || (selectedStaffId === null) !== (selectedAt === null) || selectedAt === undefined
+        || (selectedAt !== null && (!timestampAtOrAfter(selectedAt, ticket.createdAt)
+          || (ticket.completedAt !== null && Date.parse(selectedAt) > Date.parse(ticket.completedAt))))) {
+        return null;
+      }
+      return {
+        id: value.id,
+        ticketId,
+        serviceKey,
+        requestedStaffId,
+        eligible,
+        recommendedStaffIds: [...value.recommendedStaffIds],
+        selectedStaffId,
+        selectedAt
+      };
+    }
+
     function normalizeOperationsSnapshotForImport(value) {
-      if (!isRecord(value) || !Array.isArray(value.serviceTickets)
+      if (!hasExactOwnKeys(value, ['serviceTickets', 'addOnRequests', 'staffEligibility'])
+        || !Array.isArray(value.serviceTickets)
         || !Array.isArray(value.addOnRequests) || !Array.isArray(value.staffEligibility)) {
         return { ok: false, code: 'invalid_operations_snapshot' };
       }
@@ -1383,20 +1474,46 @@
           return { ok: false, code: 'invalid_operations_snapshot' };
         }
       }
+      const staffEligibility = [];
       const eligibilityIds = new Set();
-      for (const event of value.staffEligibility) {
-        const id = normalizedRequiredText(event?.id);
-        const ticket = tickets.find((row) => row.id === normalizedRequiredText(event?.ticketId));
-        if (!isRecord(event) || !id || !id.startsWith('eligibility-') || eligibilityIds.has(id)
-          || !ticket || event.serviceKey !== ticket.serviceKey
-          || !/^staff-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalizedRequiredText(event.requestedStaffId))
-          || typeof event.eligible !== 'boolean' || !Array.isArray(event.recommendedStaffIds)
-          || event.recommendedStaffIds.some((staffId) => !/^staff-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(staffId))) {
+      const eligibilitySemantics = new Set();
+      for (const raw of value.staffEligibility) {
+        const event = normalizeImportEligibility(raw, tickets);
+        const semantic = event
+          ? `${event.ticketId}\u0000${event.serviceKey}\u0000${event.requestedStaffId}`
+          : '';
+        if (!event || eligibilityIds.has(event.id) || eligibilitySemantics.has(semantic)) {
           return { ok: false, code: 'invalid_operations_snapshot' };
         }
-        eligibilityIds.add(id);
+        eligibilityIds.add(event.id);
+        eligibilitySemantics.add(semantic);
+        staffEligibility.push(event);
       }
-      return { ok: true, serviceTickets: tickets, addOnRequests: addOns };
+      for (const ticket of tickets) {
+        let currentStaffId = ticket.staffProfileId;
+        const events = staffEligibility.filter((event) => event.ticketId === ticket.id);
+        for (let index = events.length - 1; index >= 0; index -= 1) {
+          const event = events[index];
+          if (event.selectedStaffId !== null) {
+            if (event.selectedStaffId !== currentStaffId) {
+              return { ok: false, code: 'invalid_operations_snapshot' };
+            }
+            currentStaffId = event.requestedStaffId;
+          } else if (event.requestedStaffId !== currentStaffId) {
+            return { ok: false, code: 'invalid_operations_snapshot' };
+          }
+        }
+      }
+      for (const addOn of addOns) {
+        const latestSelection = staffEligibility.filter((event) => (
+          event.ticketId === addOn.ticketId && event.selectedStaffId === addOn.staffProfileId
+        )).at(-1) || null;
+        if (latestSelection?.selectedAt
+          && Date.parse(latestSelection.selectedAt) > Date.parse(addOn.createdAt)) {
+          return { ok: false, code: 'invalid_operations_snapshot' };
+        }
+      }
+      return { ok: true, serviceTickets: tickets, addOnRequests: addOns, staffEligibility };
     }
 
     function importAcceptedAddOns(appState, checkoutDraftId, operationsSnapshot) {
@@ -1443,6 +1560,10 @@
       }));
       if (additions.length === 0) return { ok: true, importedCount: 0, checkoutDraft: checkout, idempotent: true };
       const lineItems = [...checkout.lineItems, ...additions];
+      const canonicalLineItems = normalizeCanonicalCheckoutLineItems(appState, guestCheckin, lineItems);
+      if (!canonicalLineItems || JSON.stringify(canonicalLineItems) !== JSON.stringify(lineItems)) {
+        return { ok: false, code: 'invalid_operations_snapshot' };
+      }
       const totals = calculateCheckoutTotals(lineItems, checkout.tipBasisPoints);
       if (totals.ok === false) return totals;
       checkout.lineItems = lineItems;
@@ -1450,18 +1571,31 @@
       return { ok: true, importedCount: additions.length, checkoutDraft: checkout };
     }
 
-    function buildCustomerSurfaceUrl(href, fileName, parameters) {
+    function parseCustomerHttpUrl(href, expectedFileName) {
       try {
-        const current = new URL(href);
-        const target = new URL(fileName, current);
-        if (target.origin !== current.origin) return { ok: false, code: 'cross_origin_route' };
-        target.search = '';
-        target.hash = '';
-        Object.entries(parameters).forEach(([key, value]) => target.searchParams.set(key, value));
-        return { ok: true, href: target.href };
+        const url = new URL(href);
+        const fileName = url.pathname.split('/').at(-1);
+        if (!['http:', 'https:'].includes(url.protocol) || url.origin === 'null'
+          || url.username || url.password || url.hash || fileName !== expectedFileName) return null;
+        return url;
       } catch {
+        return null;
+      }
+    }
+
+    function buildCustomerSurfaceUrl(href, fileName, parameters) {
+      const current = parseCustomerHttpUrl(href, 'cutomer-reward.html');
+      if (!current || [...current.searchParams.keys()].length !== 0) {
         return { ok: false, code: 'navigation_failed' };
       }
+      const target = new URL(fileName, current);
+      if (target.origin !== current.origin || target.pathname.split('/').at(-1) !== fileName) {
+        return { ok: false, code: 'cross_origin_route' };
+      }
+      target.search = '';
+      target.hash = '';
+      Object.entries(parameters).forEach(([key, value]) => target.searchParams.set(key, value));
+      return { ok: true, href: target.href };
     }
 
     function buildOperationsLiveTicketUrl(href, guestCheckinId) {
@@ -1491,12 +1625,8 @@
     }
 
     function parseGuestCheckoutHandoff(href) {
-      let url;
-      try {
-        url = new URL(href);
-      } catch {
-        return { ok: false, present: true, code: 'invalid_handoff' };
-      }
+      const url = parseCustomerHttpUrl(href, 'cutomer-reward.html');
+      if (!url) return { ok: false, present: true, code: 'invalid_handoff' };
       const keys = [...url.searchParams.keys()];
       if (keys.length === 0) return { ok: true, present: false };
       const allowed = new Set(['handoff', 'guestCheckinId']);
@@ -1545,6 +1675,8 @@
 
     function cleanConsumedHandoffUrl(href, history) {
       try {
+        const handoff = parseGuestCheckoutHandoff(href);
+        if (!handoff.ok || !handoff.present) return { ok: false, code: 'invalid_handoff' };
         const targetHistory = history === undefined ? window.history : history;
         const url = new URL(href);
         url.search = '';
@@ -2449,13 +2581,17 @@
       const id = normalizedRequiredText(value.id);
       const checkoutDraftId = normalizedRequiredText(value.checkoutDraftId);
       const checkout = appState.checkoutDrafts.find((row) => row.id === checkoutDraftId);
+      const guestCheckin = checkout
+        ? appState.guestCheckins.find((row) => row.id === checkout.guestCheckinId)
+        : null;
       const businessId = normalizedRequiredText(value.businessId);
       const method = CHECKOUT_METHODS.has(value.method) ? value.method : null;
       const status = PROOF_STATUSES.has(value.status) ? value.status : null;
       const amountCents = nonNegativeCents(value.amountCents);
       const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
       const verifiedAt = value.verifiedAt === null || validStoredTimestamp(value.verifiedAt) ? value.verifiedAt : undefined;
-      if (!id || !checkout || checkout.businessId !== businessId || !method || method !== checkout.method
+      if (!id || !checkout || !guestCheckin || !isCanonicalCheckoutForGuest(appState, checkout, guestCheckin)
+        || checkout.businessId !== businessId || !method || method !== checkout.method
         || !status || amountCents === null || amountCents !== checkout.totalCents || !createdAt
         || !timestampAtOrAfter(createdAt, checkout.createdAt) || verifiedAt === undefined) return null;
       const aligned = (status === 'verified' && checkout.status === 'confirmed' && verifiedAt)
@@ -2476,12 +2612,16 @@
       const checkoutDraftId = typeof value.checkoutDraftId === 'string'
         && value.checkoutDraftId === value.checkoutDraftId.trim() ? value.checkoutDraftId : null;
       const checkout = appState.checkoutDrafts.find((row) => row.id === checkoutDraftId);
+      const guestCheckin = checkout
+        ? appState.guestCheckins.find((row) => row.id === checkout.guestCheckinId)
+        : null;
       const proofs = checkout ? appState.paymentProofs.filter((proof) => (
         proof.checkoutDraftId === checkout.id && proof.status === 'verified'
       )) : [];
       const proof = proofs.length === 1 ? proofs[0] : null;
       const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
-      return id && checkout?.status === 'confirmed' && checkout.method !== null
+      return id && checkout?.status === 'confirmed' && guestCheckin
+        && isCanonicalCheckoutForGuest(appState, checkout, guestCheckin) && checkout.method !== null
         && proof && value.businessId === checkout.businessId && value.method === checkout.method
         && value.tipCents === checkout.tipCents && value.totalCents === checkout.totalCents && createdAt
         && createdAt === proof.verifiedAt
@@ -6771,6 +6911,7 @@
       const routed = assignOperationsLiveTicket(result.guestCheckin.id);
       if (!routed.ok) {
         setFieldError('guest-checkin-error', t('guestRouteFailed'));
+        document.getElementById('guest-checkin-error')?.focus?.({ preventScroll: true });
         showToast(t('guestRouteFailed'), 'error');
       }
       return routed.ok ? result : { ...routed, guestCheckin: result.guestCheckin, persisted: true };

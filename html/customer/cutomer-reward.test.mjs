@@ -145,7 +145,9 @@ function testApi(seed = {}, {
     href: 'https://example.test/customer/cutomer-reward.html',
     assign(value) { this.href = String(value); }
   },
-  history
+  history,
+  throwLocationAccessor = false,
+  throwHistoryAccessor = false
 } = {}) {
   const source = html();
   const script = source.match(/<script>\s*([\s\S]*?)<\/script>\s*<\/body>/)?.[1];
@@ -157,10 +159,22 @@ function testApi(seed = {}, {
     setTimeout() { return 1; },
     clearTimeout() {},
     open,
-    lucide: null,
-    location
+    lucide: null
   };
-  if (history) window.history = history;
+  if (throwLocationAccessor) {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      get() { throw new Error('location blocked'); }
+    });
+  } else {
+    window.location = location;
+  }
+  if (throwHistoryAccessor) {
+    Object.defineProperty(window, 'history', {
+      configurable: true,
+      get() { throw new Error('history blocked'); }
+    });
+  } else if (history) window.history = history;
   if (navigator) window.navigator = navigator;
   if (document) window.document = document;
   const globals = {
@@ -6747,7 +6761,10 @@ test('navigation failure leaves saved check-in, reports retry, and does not expo
   `, context);
   assert.equal(api.loadState(storage).guestCheckins.length, 1);
   assert.equal(vm.runInContext('navigationCalls.length', context), 0);
-  assert.match(document.getElementById('guest-checkin-error').textContent, /retry|thử lại/i);
+  const error = document.getElementById('guest-checkin-error');
+  assert.match(error.textContent, /retry|thử lại/i);
+  assert.equal(document.activeElement, error);
+  assert.match(html(), /id="guest-checkin-error"[^>]+tabindex="-1"/);
 });
 
 test('throwing location accessor still leaves the successful check-in persisted and retryable', () => {
@@ -6854,5 +6871,227 @@ test('invalid initialization handoff hides stale checkout context and does not p
   assert.equal(home.classList.contains('hidden'), false);
   assert.equal(pay.classList.contains('hidden'), true);
   assert.equal(document.getElementById('form-error-state').classList.contains('hidden'), false);
+  assert.notEqual(document.activeElement, document.getElementById('guest-checkout-title'));
   assert.equal(loaded.storage.getItem(setup.api.STORAGE_KEY), raw);
+});
+
+function appendDuplicateImportedAddOn(api, checkout) {
+  checkout.lineItems.push({
+    id: 'addon-addon-00000000-0000-4000-8000-000000000092',
+    type: 'addon',
+    label: 'Gel Polish',
+    amountCents: 1500,
+    sourceAddOnId: 'addon-00000000-0000-4000-8000-000000000092'
+  });
+  const totals = api.calculateCheckoutTotals(checkout.lineItems, checkout.tipBasisPoints);
+  assert.notEqual(totals.ok, false);
+  Object.assign(checkout, totals);
+}
+
+function acceptedSwitchedStaffSnapshot(checkout) {
+  const snapshot = acceptedOperationsSnapshot(checkout);
+  const ticket = snapshot.serviceTickets[0];
+  const addOn = snapshot.addOnRequests[0];
+  ticket.staffProfileId = 'staff-anna';
+  addOn.staffProfileId = 'staff-anna';
+  addOn.createdAt = '1970-01-01T00:00:02.000Z';
+  addOn.resolvedAt = '1970-01-01T00:00:03.000Z';
+  const uuid = ticket.id.slice('ticket-'.length);
+  snapshot.staffEligibility = [{
+    id: `eligibility-${uuid}-deluxe-pedicure-tina`,
+    ticketId: ticket.id,
+    serviceKey: ticket.serviceKey,
+    requestedStaffId: 'staff-tina',
+    eligible: false,
+    recommendedStaffIds: ['staff-jenny', 'staff-kevin', 'staff-anna'],
+    selectedStaffId: 'staff-anna',
+    selectedAt: '1970-01-01T00:00:01.500Z'
+  }];
+  return snapshot;
+}
+
+test('semantic catalog multiplicity rejects different add-on UUIDs in migration and proof creation', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  const app = api.createDefaultState();
+  const checkout = seedCheckoutDraft(api, app, { method: 'Zelle', tipBasisPoints: 0, staffProfileId: null });
+  const operations = acceptedOperationsSnapshot(checkout);
+  assert.equal(api.importAcceptedAddOns(app, checkout.id, operations).ok, true);
+  appendDuplicateImportedAddOn(api, checkout);
+
+  assert.equal(api.normalizeCheckoutDraft(app, checkout), null);
+  assert.equal(api.migrateState(app).checkoutDrafts.length, 0);
+
+  const proofApp = api.createDefaultState();
+  const proofCheckout = seedCheckoutDraft(api, proofApp, {
+    method: 'Zelle', tipBasisPoints: 0, staffProfileId: null
+  });
+  assert.equal(api.importAcceptedAddOns(
+    proofApp, proofCheckout.id, acceptedOperationsSnapshot(proofCheckout)
+  ).ok, true);
+  const submitted = api.submitPaymentProof(proofApp, {
+    checkoutDraftId: proofCheckout.id,
+    note: '',
+    imageDataUrl: 'data:image/jpeg;base64,AA=='
+  }, 2000);
+  assert.equal(submitted.ok, true);
+  appendDuplicateImportedAddOn(api, proofCheckout);
+  submitted.proof.amountCents = proofCheckout.totalCents;
+  const before = JSON.stringify(proofApp);
+  const callsBefore = uuidCalls;
+
+  assert.equal(api.verifyPaymentProof(proofApp, submitted.proof.id, 3000).ok, false);
+  assert.equal(JSON.stringify(proofApp), before);
+  assert.equal(uuidCalls, callsBefore);
+});
+
+test('receipt validation and Task 5 replay reject an internally consistent duplicate semantic add-on', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  const app = api.createDefaultState();
+  const checkout = seedCheckoutDraft(api, app, { method: 'Zelle', tipBasisPoints: 0, staffProfileId: null });
+  assert.equal(api.importAcceptedAddOns(app, checkout.id, acceptedOperationsSnapshot(checkout)).ok, true);
+  const submitted = api.submitPaymentProof(app, {
+    checkoutDraftId: checkout.id,
+    note: '',
+    imageDataUrl: 'data:image/jpeg;base64,AA=='
+  }, 2000);
+  assert.equal(submitted.ok, true);
+  const verified = api.verifyPaymentProof(app, submitted.proof.id, 3000);
+  assert.equal(verified.ok, true);
+
+  appendDuplicateImportedAddOn(api, checkout);
+  submitted.proof.amountCents = checkout.totalCents;
+  verified.receipt.totalCents = checkout.totalCents;
+  verified.receipt.lineItems = structuredClone(checkout.lineItems);
+  const rewards = new Map(api.calculatePaymentProofRewards(checkout));
+  for (const claim of verified.claims) claim.points = rewards.get(claim.sourceType);
+  const guest = app.guestCheckins.find((row) => row.id === checkout.guestCheckinId);
+  app.session.phone = guest.phone;
+  app.profile.phone = guest.phone;
+
+  assert.equal(api.normalizeReceipt(app, verified.receipt), null);
+  assert.equal(api.validateVerifiedPaymentAggregate(app, submitted.proof.id).ok, false);
+  const before = JSON.stringify(app);
+  const callsBefore = uuidCalls;
+  assert.equal(api.mergeGuestJourney(app, guest.phone, 4000).ok, false);
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(uuidCalls, callsBefore);
+});
+
+test('operations import mirrors exact staff catalog, eligibility fields, chronology, and switch chain', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  const makeTarget = () => {
+    const app = api.createDefaultState();
+    const checkout = seedCheckoutDraft(api, app, { method: 'Card', tipBasisPoints: 0, staffProfileId: null });
+    return { app, checkout, snapshot: acceptedSwitchedStaffSnapshot(checkout) };
+  };
+  const canonical = makeTarget();
+  assert.equal(api.importAcceptedAddOns(canonical.app, canonical.checkout.id, canonical.snapshot).ok, true);
+
+  const variants = [
+    (snapshot) => {
+      snapshot.serviceTickets[0].staffProfileId = 'staff-forged';
+      snapshot.addOnRequests[0].staffProfileId = 'staff-forged';
+    },
+    (snapshot) => { snapshot.staffEligibility[0].extra = true; },
+    (snapshot) => { snapshot.staffEligibility[0].id = 'eligibility-forged'; },
+    (snapshot) => { snapshot.staffEligibility[0].eligible = true; },
+    (snapshot) => { snapshot.staffEligibility[0].recommendedStaffIds = ['staff-forged']; },
+    (snapshot) => { delete snapshot.staffEligibility[0].selectedStaffId; },
+    (snapshot) => { snapshot.staffEligibility[0].selectedAt = '1970-01-01T00:00:00.500Z'; },
+    (snapshot) => { snapshot.staffEligibility[0].selectedAt = '1970-01-01T00:00:02.500Z'; },
+    (snapshot) => { snapshot.staffEligibility[0].selectedStaffId = 'staff-kevin'; },
+    (snapshot) => { snapshot.unrelated = true; },
+    (snapshot) => {
+      const unrelated = structuredClone(snapshot.serviceTickets[0]);
+      unrelated.id = 'ticket-00000000-0000-4000-8000-000000000093';
+      unrelated.number = 105;
+      unrelated.guestCheckinId = 'guest-checkin-00000000-0000-4000-8000-000000000093';
+      unrelated.staffProfileId = 'staff-forged';
+      unrelated.lineItems = unrelated.lineItems.slice(0, 2).map((item) => ({
+        ...item,
+        id: item.id.replace(snapshot.serviceTickets[0].id, unrelated.id)
+      }));
+      unrelated.currentTotalCents = 4950;
+      snapshot.serviceTickets.push(unrelated);
+    }
+  ];
+  for (const mutate of variants) {
+    const target = makeTarget();
+    mutate(target.snapshot);
+    const before = JSON.stringify(target.app);
+    const callsBefore = uuidCalls;
+    assert.equal(api.importAcceptedAddOns(target.app, target.checkout.id, target.snapshot).ok, false);
+    assert.equal(JSON.stringify(target.app), before);
+    assert.equal(uuidCalls, callsBefore);
+  }
+});
+
+test('customer routes require HTTP(S), exact filenames, and exact query shapes', () => {
+  const { api } = testApi();
+  const id = 'guest-checkin-00000000-0000-4000-8000-000000000001';
+  assert.deepEqual(JSON.parse(JSON.stringify(api.buildOperationsLiveTicketUrl(
+    'http://example.test/customer/cutomer-reward.html', id
+  ))), {
+    ok: true,
+    href: `http://example.test/customer/customer-salon-operations.html?guestCheckinId=${id}`
+  });
+  for (const invalid of [
+    'file:///tmp/cutomer-reward.html',
+    'ftp://example.test/customer/cutomer-reward.html',
+    'https://example.test/customer/customer-salon-operations.html',
+    'https://example.test/customer/cutomer-reward.html?unknown=1',
+    'https://user@example.test/customer/cutomer-reward.html'
+  ]) assert.equal(api.buildOperationsLiveTicketUrl(invalid, id).ok, false, invalid);
+
+  for (const invalid of [
+    `file:///tmp/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${id}`,
+    `ftp://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${id}`,
+    `https://example.test/customer/customer-salon-operations.html?handoff=guest-checkout&guestCheckinId=${id}`,
+    `https://user@example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${id}`,
+    `https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${id}#fragment`
+  ]) assert.equal(api.parseGuestCheckoutHandoff(invalid).ok, false, invalid);
+  assert.equal(api.parseGuestCheckoutHandoff(
+    `http://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${id}`
+  ).ok, true);
+  assert.equal(api.cleanConsumedHandoffUrl(
+    `file:///tmp/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${id}`,
+    { replaceState() { throw new Error('must not run'); } }
+  ).ok, false);
+});
+
+test('customer initialization guards throwing location and history getters', () => {
+  assert.doesNotThrow(() => testApi({}, {
+    skipInit: false,
+    document: createDocumentStub(),
+    throwLocationAccessor: true
+  }));
+
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  const guest = seedGuestCheckin(setup.api, app, { staffProfileId: null });
+  const operations = acceptedOperationsSnapshot({ guestCheckinId: guest.id, businessId: guest.businessId });
+  const href = `https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${guest.id}`;
+  let loaded;
+  assert.doesNotThrow(() => {
+    loaded = testApi({
+      [setup.api.STORAGE_KEY]: JSON.stringify(app),
+      [setup.api.OPERATIONS_STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, ...operations })
+    }, {
+      skipInit: false,
+      document: createDocumentStub(),
+      location: { href },
+      throwHistoryAccessor: true,
+      randomUUID: () => '00000000-0000-4000-8000-000000000088'
+    });
+  });
+  assert.equal(loaded.api.loadState(loaded.storage).checkoutDrafts.length, 1);
 });
