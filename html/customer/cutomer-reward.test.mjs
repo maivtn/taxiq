@@ -6605,7 +6605,7 @@ function acceptedOperationsSnapshot(checkout, {
     serviceTickets: [{
       id: ticketId, number: 104, guestCheckinId: checkout.guestCheckinId,
       businessId: checkout.businessId, serviceKey: 'deluxe-pedicure', status: 'in_service',
-      staffProfileId: 'staff-jenny',
+      staffProfileId: 'staff-anna',
       lineItems: [
         { id: `${ticketId}-service`, type: 'service', label: 'Deluxe Pedicure', amountCents: 5500 },
         { id: `${ticketId}-promo`, type: 'discount', label: 'Promo NEW10', amountCents: -550 },
@@ -6616,7 +6616,7 @@ function acceptedOperationsSnapshot(checkout, {
     }],
     addOnRequests: [{
       id: addOnId, ticketId, guestCheckinId: checkout.guestCheckinId,
-      businessId: checkout.businessId, staffProfileId: 'staff-jenny',
+      businessId: checkout.businessId, staffProfileId: 'staff-anna',
       label: 'Gel Polish', amountCents: 1500, status: 'accepted',
       createdAt: guestCreatedAt, resolvedAt
     }],
@@ -6627,7 +6627,7 @@ function acceptedOperationsSnapshot(checkout, {
 test('imports an accepted operations add-on once and recomputes the 18 percent total in cents', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
-  const checkout = seedCheckoutDraft(api, app, { method: 'Card', tipBasisPoints: 1800, staffProfileId: null });
+  const checkout = seedCheckoutDraft(api, app, { method: 'Card', tipBasisPoints: 1800, staffProfileId: 'staff-anna' });
   const operations = acceptedOperationsSnapshot(checkout);
 
   const first = api.importAcceptedAddOns(app, checkout.id, operations);
@@ -6647,7 +6647,7 @@ test('imports an accepted operations add-on once and recomputes the 18 percent t
 test('accepted add-on import preflights unrelated artifacts and existing addon authority atomically', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
-  const checkout = seedCheckoutDraft(api, app, { method: 'Zelle', tipBasisPoints: 0, staffProfileId: null });
+  const checkout = seedCheckoutDraft(api, app, { method: 'Zelle', tipBasisPoints: 0, staffProfileId: 'staff-anna' });
   const operations = acceptedOperationsSnapshot(checkout);
   const variants = [
     (snapshot) => snapshot.serviceTickets.push({ id: 'ticket-bad' }),
@@ -6674,7 +6674,7 @@ test('accepted add-on import preflights unrelated artifacts and existing addon a
 test('checkout migration permits only deterministic authoritative addon suffix shapes', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
-  const checkout = seedCheckoutDraft(api, app, { method: 'Card', tipBasisPoints: 0, staffProfileId: null });
+  const checkout = seedCheckoutDraft(api, app, { method: 'Card', tipBasisPoints: 0, staffProfileId: 'staff-anna' });
   const operations = acceptedOperationsSnapshot(checkout);
   assert.equal(api.importAcceptedAddOns(app, checkout.id, operations).ok, true);
   assert.equal(api.migrateState(app).checkoutDrafts.length, 1);
@@ -6789,7 +6789,7 @@ test('throwing location accessor still leaves the successful check-in persisted 
 test('initialization consumes a valid handoff atomically, opens checkout, and cleans the URL', () => {
   const setup = testApi();
   const app = setup.api.createDefaultState();
-  const guest = seedGuestCheckin(setup.api, app, { staffProfileId: null });
+  const guest = seedGuestCheckin(setup.api, app, { staffProfileId: 'staff-anna' });
   const checkoutShape = { guestCheckinId: guest.id, businessId: guest.businessId };
   const operations = acceptedOperationsSnapshot(checkoutShape);
   const customerKey = setup.api.STORAGE_KEY;
@@ -6898,10 +6898,10 @@ function acceptedSwitchedStaffSnapshot(checkout) {
   addOn.resolvedAt = '1970-01-01T00:00:03.000Z';
   const uuid = ticket.id.slice('ticket-'.length);
   snapshot.staffEligibility = [{
-    id: `eligibility-${uuid}-deluxe-pedicure-tina`,
+    id: `eligibility-${uuid}-deluxe-pedicure-maria`,
     ticketId: ticket.id,
     serviceKey: ticket.serviceKey,
-    requestedStaffId: 'staff-tina',
+    requestedStaffId: 'staff-maria',
     eligible: false,
     recommendedStaffIds: ['staff-jenny', 'staff-kevin', 'staff-anna'],
     selectedStaffId: 'staff-anna',
@@ -6916,7 +6916,7 @@ test('semantic catalog multiplicity rejects different add-on UUIDs in migration 
     randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
   });
   const app = api.createDefaultState();
-  const checkout = seedCheckoutDraft(api, app, { method: 'Zelle', tipBasisPoints: 0, staffProfileId: null });
+  const checkout = seedCheckoutDraft(api, app, { method: 'Zelle', tipBasisPoints: 0, staffProfileId: 'staff-anna' });
   const operations = acceptedOperationsSnapshot(checkout);
   assert.equal(api.importAcceptedAddOns(app, checkout.id, operations).ok, true);
   appendDuplicateImportedAddOn(api, checkout);
@@ -6926,7 +6926,7 @@ test('semantic catalog multiplicity rejects different add-on UUIDs in migration 
 
   const proofApp = api.createDefaultState();
   const proofCheckout = seedCheckoutDraft(api, proofApp, {
-    method: 'Zelle', tipBasisPoints: 0, staffProfileId: null
+    method: 'Zelle', tipBasisPoints: 0, staffProfileId: 'staff-anna'
   });
   assert.equal(api.importAcceptedAddOns(
     proofApp, proofCheckout.id, acceptedOperationsSnapshot(proofCheckout)
@@ -6953,7 +6953,7 @@ test('receipt validation and Task 5 replay reject an internally consistent dupli
     randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
   });
   const app = api.createDefaultState();
-  const checkout = seedCheckoutDraft(api, app, { method: 'Zelle', tipBasisPoints: 0, staffProfileId: null });
+  const checkout = seedCheckoutDraft(api, app, { method: 'Zelle', tipBasisPoints: 0, staffProfileId: 'staff-anna' });
   assert.equal(api.importAcceptedAddOns(app, checkout.id, acceptedOperationsSnapshot(checkout)).ok, true);
   const submitted = api.submitPaymentProof(app, {
     checkoutDraftId: checkout.id,
@@ -6990,7 +6990,7 @@ test('operations import mirrors exact staff catalog, eligibility fields, chronol
   });
   const makeTarget = () => {
     const app = api.createDefaultState();
-    const checkout = seedCheckoutDraft(api, app, { method: 'Card', tipBasisPoints: 0, staffProfileId: null });
+    const checkout = seedCheckoutDraft(api, app, { method: 'Card', tipBasisPoints: 0, staffProfileId: 'staff-maria' });
     return { app, checkout, snapshot: acceptedSwitchedStaffSnapshot(checkout) };
   };
   const canonical = makeTarget();
@@ -7077,7 +7077,7 @@ test('customer initialization guards throwing location and history getters', () 
 
   const setup = testApi();
   const app = setup.api.createDefaultState();
-  const guest = seedGuestCheckin(setup.api, app, { staffProfileId: null });
+  const guest = seedGuestCheckin(setup.api, app, { staffProfileId: 'staff-anna' });
   const operations = acceptedOperationsSnapshot({ guestCheckinId: guest.id, businessId: guest.businessId });
   const href = `https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${guest.id}`;
   let loaded;
@@ -7094,4 +7094,173 @@ test('customer initialization guards throwing location and history getters', () 
     });
   });
   assert.equal(loaded.api.loadState(loaded.storage).checkoutDrafts.length, 1);
+});
+
+test('malformed required operations collections stay explicitly invalid and block import and handoff atomically', () => {
+  for (const [collection, malformed] of [
+    ['serviceTickets', { 0: 'otherwise-valid-ticket', length: 1 }],
+    ['addOnRequests', { 0: 'otherwise-valid-addon', length: 1 }],
+    ['staffEligibility', { 0: 'otherwise-valid-eligibility', length: 1 }]
+  ]) {
+    const setup = testApi();
+    const app = setup.api.createDefaultState();
+    const guest = seedGuestCheckin(setup.api, app, { staffProfileId: 'staff-anna' });
+    const operations = acceptedOperationsSnapshot({
+      guestCheckinId: guest.id,
+      businessId: guest.businessId
+    });
+    const raw = {
+      schemaVersion: 1,
+      updatedAt: '1970-01-01T00:00:03.000Z',
+      ...operations,
+      ui: { activeScreen: 'liveticket', role: 'Customer', selectedTicketId: null, selectedStaffId: null }
+    };
+    raw[collection] = malformed;
+    const snapshot = setup.api.readOperationsSnapshot({
+      getItem(key) {
+        assert.equal(key, setup.api.OPERATIONS_STORAGE_KEY);
+        return JSON.stringify(raw);
+      },
+      setItem() { throw new Error('read-only snapshot must never write'); }
+    });
+    assert.equal(snapshot.invalid, true, collection);
+
+    const handoffBefore = JSON.stringify(app);
+    const handoff = setup.api.consumeGuestCheckoutHandoff(app, {
+      ok: true,
+      present: true,
+      guestCheckinId: guest.id
+    }, snapshot, 2000);
+    assert.equal(handoff.ok, false, collection);
+    assert.equal(JSON.stringify(app), handoffBefore, collection);
+
+    const created = setup.api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 2000);
+    assert.equal(created.ok, true, collection);
+    const importBefore = JSON.stringify(app);
+    const imported = setup.api.importAcceptedAddOns(app, created.checkoutDraft.id, snapshot);
+    assert.equal(imported.ok, false, collection);
+    assert.equal(JSON.stringify(app), importBefore, collection);
+  }
+});
+
+test('operations staff history terminates at the guest original staff assignment', () => {
+  const { api } = testApi();
+  const makeTarget = (staffProfileId, switched = false) => {
+    const app = api.createDefaultState();
+    const checkout = seedCheckoutDraft(api, app, {
+      method: 'Card', tipBasisPoints: 0, staffProfileId
+    });
+    return {
+      app,
+      checkout,
+      snapshot: switched ? acceptedSwitchedStaffSnapshot(checkout) : acceptedOperationsSnapshot(checkout)
+    };
+  };
+
+  const unchanged = makeTarget('staff-anna');
+  assert.equal(api.importAcceptedAddOns(unchanged.app, unchanged.checkout.id, unchanged.snapshot).ok, true);
+  const switched = makeTarget('staff-maria', true);
+  assert.equal(api.importAcceptedAddOns(switched.app, switched.checkout.id, switched.snapshot).ok, true);
+
+  for (const target of [
+    makeTarget('staff-maria'),
+    makeTarget(null),
+    makeTarget('staff-anna', true)
+  ]) {
+    const before = JSON.stringify(target.app);
+    assert.equal(api.importAcceptedAddOns(target.app, target.checkout.id, target.snapshot).ok, false);
+    assert.equal(JSON.stringify(target.app), before);
+  }
+});
+
+function setImportedAddOnLifecycle(snapshot, status, ticketStatus) {
+  const ticket = snapshot.serviceTickets[0];
+  const addOn = snapshot.addOnRequests[0];
+  ticket.status = ticketStatus;
+  ticket.completedAt = ticketStatus === 'completed' ? '1970-01-01T00:00:04.000Z' : null;
+  addOn.status = status;
+  addOn.resolvedAt = status === 'proposed' ? null : '1970-01-01T00:00:02.000Z';
+  if (status !== 'accepted') {
+    ticket.lineItems.pop();
+    ticket.currentTotalCents = 4950;
+  }
+  return snapshot;
+}
+
+test('imported add-ons are coupled to the authoritative ticket lifecycle', () => {
+  const { api } = testApi();
+  const attempt = (status, ticketStatus, mutate = () => {}) => {
+    const app = api.createDefaultState();
+    const checkout = seedCheckoutDraft(api, app, {
+      method: 'Card', tipBasisPoints: 0, staffProfileId: 'staff-anna'
+    });
+    const snapshot = setImportedAddOnLifecycle(
+      acceptedOperationsSnapshot(checkout), status, ticketStatus
+    );
+    mutate(snapshot);
+    const before = JSON.stringify(app);
+    const result = api.importAcceptedAddOns(app, checkout.id, snapshot);
+    return { result, app, before };
+  };
+
+  for (const [status, ticketStatus] of [
+    ['proposed', 'in_service'],
+    ['accepted', 'in_service'],
+    ['declined', 'in_service'],
+    ['accepted', 'completed'],
+    ['declined', 'completed']
+  ]) assert.equal(attempt(status, ticketStatus).result.ok, true, `${status}/${ticketStatus}`);
+
+  for (const [status, ticketStatus, mutate] of [
+    ['proposed', 'waiting', () => {}],
+    ['accepted', 'waiting', () => {}],
+    ['declined', 'waiting', () => {}],
+    ['proposed', 'completed', () => {}],
+    ['accepted', 'completed', (snapshot) => {
+      snapshot.addOnRequests[0].resolvedAt = '1970-01-01T00:00:05.000Z';
+    }]
+  ]) {
+    const attempted = attempt(status, ticketStatus, mutate);
+    assert.equal(attempted.result.ok, false, `${status}/${ticketStatus}`);
+    assert.equal(JSON.stringify(attempted.app), attempted.before, `${status}/${ticketStatus}`);
+  }
+});
+
+test('uppercase paired add-on IDs fail migration, proof, receipt, aggregate, and Task 5 replay', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  const app = api.createDefaultState();
+  const checkout = seedCheckoutDraft(api, app, {
+    method: 'Zelle', tipBasisPoints: 0, staffProfileId: 'staff-anna'
+  });
+  assert.equal(api.importAcceptedAddOns(app, checkout.id, acceptedOperationsSnapshot(checkout)).ok, true);
+  const submitted = api.submitPaymentProof(app, {
+    checkoutDraftId: checkout.id,
+    note: '',
+    imageDataUrl: 'data:image/jpeg;base64,AA=='
+  }, 2000);
+  assert.equal(submitted.ok, true);
+  const verified = api.verifyPaymentProof(app, submitted.proof.id, 3000);
+  assert.equal(verified.ok, true);
+
+  const addOnLine = checkout.lineItems.at(-1);
+  addOnLine.sourceAddOnId = addOnLine.sourceAddOnId.toUpperCase();
+  addOnLine.id = `addon-${addOnLine.sourceAddOnId}`;
+  verified.receipt.lineItems = structuredClone(checkout.lineItems);
+  const guest = app.guestCheckins.find((row) => row.id === checkout.guestCheckinId);
+  app.session.phone = guest.phone;
+  app.profile.phone = guest.phone;
+
+  assert.equal(api.normalizeCheckoutDraft(app, checkout), null);
+  assert.equal(api.normalizePaymentProof(app, submitted.proof), null);
+  assert.equal(api.normalizeReceipt(app, verified.receipt), null);
+  assert.equal(api.migrateState(app).checkoutDrafts.length, 0);
+  assert.equal(api.validateVerifiedPaymentAggregate(app, submitted.proof.id).ok, false);
+  const before = JSON.stringify(app);
+  const callsBefore = uuidCalls;
+  assert.equal(api.mergeGuestJourney(app, guest.phone, 4000).ok, false);
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(uuidCalls, callsBefore);
 });

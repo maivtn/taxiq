@@ -1763,6 +1763,35 @@ test('commit rejects any lossy post-mutation normalization before touching stora
   assert.equal(storage.calls.some((call) => ['setItem', 'removeItem'].includes(call.method)), false);
 });
 
+test('commit rejects every noncanonical root envelope before any storage access', () => {
+  const variants = [
+    ['unexpected root key', (draft) => { draft.unexpected = true; }],
+    ['missing schema version', (draft) => { delete draft.schemaVersion; }],
+    ['wrong schema version', (draft) => { draft.schemaVersion = 2; }],
+    ['missing updated timestamp', (draft) => { delete draft.updatedAt; }],
+    ['noncanonical updated timestamp', (draft) => { draft.updatedAt = '1970-01-01T00:00:00Z'; }],
+    ['missing tickets', (draft) => { delete draft.serviceTickets; }],
+    ['missing add-ons', (draft) => { delete draft.addOnRequests; }],
+    ['missing eligibility', (draft) => { delete draft.staffEligibility; }],
+    ['missing UI', (draft) => { delete draft.ui; }]
+  ];
+
+  for (const [label, mutate] of variants) {
+    const loaded = testApi();
+    const storage = createAuditStorage({ sentinel: 'unchanged' });
+    const before = JSON.stringify(loaded.api.getOperationsState());
+    const result = loaded.api.commitOperations((draft) => {
+      mutate(draft);
+      return { ok: true };
+    }, storage);
+
+    assert.deepEqual(plain(result), { ok: false, code: 'invalid_state' }, label);
+    assert.equal(JSON.stringify(loaded.api.getOperationsState()), before, label);
+    assert.equal(storage.peek('sentinel'), 'unchanged', label);
+    assert.equal(storage.calls.length, 0, label);
+  }
+});
+
 test('operations entry and checkout routing require HTTP(S), exact filenames, and exact queries', () => {
   const { api } = testApi();
   const guest = guestCheckin({ id: 'guest-checkin-strict-route' });

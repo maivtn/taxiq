@@ -959,7 +959,7 @@
     const GUEST_REWARD_CLAIM_ID_PATTERN = /^guest-claim-(visit_spend|directpay_bonus|tip_bonus)-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const GUEST_CHECKIN_ID_PATTERN = /^guest-checkin-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const OPS_TICKET_ID_PATTERN = /^ticket-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    const OPS_ADDON_ID_PATTERN = /^addon-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const OPS_ADDON_ID_PATTERN = /^addon-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
     const IMPORTED_ADDON_CATALOG = Object.freeze({
       'bitcoin-nail-bar': Object.freeze({
         'gel-polish': Object.freeze({ key: 'gel-polish', label: 'Gel Polish', amountCents: 1500, maxPerCheckout: 1 })
@@ -1002,10 +1002,14 @@
           || Object.keys(raw).some((key) => !allowedKeys.has(key))) {
           return { serviceTickets: [], addOnRequests: [], staffEligibility: [] };
         }
+        if (!Array.isArray(raw.serviceTickets) || !Array.isArray(raw.addOnRequests)
+          || !Array.isArray(raw.staffEligibility)) {
+          return { invalid: true, serviceTickets: [], addOnRequests: [], staffEligibility: [] };
+        }
         return {
-          serviceTickets: Array.isArray(raw.serviceTickets) ? structuredClone(raw.serviceTickets) : [],
-          addOnRequests: Array.isArray(raw.addOnRequests) ? structuredClone(raw.addOnRequests) : [],
-          staffEligibility: Array.isArray(raw.staffEligibility) ? structuredClone(raw.staffEligibility) : []
+          serviceTickets: structuredClone(raw.serviceTickets),
+          addOnRequests: structuredClone(raw.addOnRequests),
+          staffEligibility: structuredClone(raw.staffEligibility)
         };
       } catch {
         return { serviceTickets: [], addOnRequests: [], staffEligibility: [] };
@@ -1365,6 +1369,8 @@
         || staffProfileId !== ticket.staffProfileId
         || !importedAddOnCatalogEntry(businessId, value.label, value.amountCents)
         || !['proposed', 'accepted', 'declined'].includes(value.status) || !createdAt
+        || (value.status === 'proposed' ? ticket.status !== 'in_service'
+          : !['in_service', 'completed'].includes(ticket.status))
         || !timestampAtOrAfter(createdAt, ticket.createdAt) || resolvedAt === undefined
         || (ticket.completedAt !== null && Date.parse(createdAt) > Date.parse(ticket.completedAt))
         || (value.status === 'proposed' && resolvedAt !== null)
@@ -1540,6 +1546,14 @@
         return { ok: false, code: tickets.length === 1 ? 'cross_business_ticket' : 'ticket_not_found' };
       }
       const ticket = tickets[0];
+      let originalStaffProfileId = ticket.staffProfileId;
+      const ticketEligibility = operations.staffEligibility.filter((event) => event.ticketId === ticket.id);
+      for (let index = ticketEligibility.length - 1; index >= 0; index -= 1) {
+        originalStaffProfileId = ticketEligibility[index].requestedStaffId;
+      }
+      if (originalStaffProfileId !== guestCheckin.staffProfileId) {
+        return { ok: false, code: 'invalid_operations_snapshot' };
+      }
       const accepted = operations.addOnRequests.filter((addOn) => (
         addOn.ticketId === ticket.id && addOn.status === 'accepted'
       ));

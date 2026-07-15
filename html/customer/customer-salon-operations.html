@@ -1161,7 +1161,10 @@ function getOperationsState() {
 }
 
 function operationsDraftIsCanonical(draft) {
-  if (!operationsStateIntegrity(draft)) return false;
+  if (!opsHasExactKeys(draft, [
+    'schemaVersion', 'updatedAt', 'serviceTickets', 'addOnRequests', 'staffEligibility', 'ui'
+  ]) || draft.schemaVersion !== OPS_SCHEMA_VERSION || !opsStoredTimestamp(draft.updatedAt)
+    || !operationsStateIntegrity(draft)) return false;
   const normalized = normalizeOperationsState(draft);
   return JSON.stringify(normalized.serviceTickets) === JSON.stringify(draft.serviceTickets)
     && JSON.stringify(normalized.addOnRequests) === JSON.stringify(draft.addOnRequests)
