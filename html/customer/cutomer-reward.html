@@ -283,8 +283,8 @@
               <div id="referral-qr-panel" class="hidden" aria-hidden="true"><div id="referral-qr" class="mx-auto mt-5 grid w-44 grid-cols-9 rounded-2xl bg-white p-3 shadow" role="img" aria-label="Referral QR"></div><p class="mt-2 text-center text-xs text-app-muted" data-en="Prototype QR — share the link for a usable invite." data-vi="QR bản mẫu — hãy chia sẻ liên kết để gửi lời mời có thể dùng.">QR bản mẫu — hãy chia sẻ liên kết để gửi lời mời có thể dùng.</p></div>
               <div id="referral-manual-share" class="mt-4 hidden"><label class="block text-xs font-bold text-app-muted" for="referral-manual-link" data-en="Copy this link manually" data-vi="Tự sao chép liên kết này">Tự sao chép liên kết này</label><input id="referral-manual-link" class="app-input mt-2" type="text" readonly></div>
             </section>
-            <section class="mt-4 grid grid-cols-3 gap-3 text-center" aria-label="Referral totals"><div class="app-card p-3"><span class="text-xs text-app-muted" data-en="Invited" data-vi="Đã mời">Đã mời</span><strong id="referral-invited-count" class="mt-1 block text-2xl">0</strong></div><div class="app-card p-3"><span class="text-xs text-app-muted" data-en="Joined" data-vi="Đã tham gia">Đã tham gia</span><strong id="referral-joined-count" class="mt-1 block text-2xl">0</strong></div><div class="app-card p-3"><span class="text-xs text-app-muted" data-en="Rewarded" data-vi="Đã thưởng">Đã thưởng</span><strong id="referral-rewarded-count" class="mt-1 block text-2xl text-app-green">0</strong></div></section>
-            <section class="app-card mt-4"><div class="flex items-center justify-between gap-3"><h2 class="section-title" data-en="Referral history" data-vi="Lịch sử giới thiệu">Lịch sử giới thiệu</h2><i data-lucide="shield-check" class="size-5 text-app-cyan" aria-hidden="true"></i></div><p class="mt-1 text-xs text-app-muted" data-en="Only the final four phone digits are shown on this device." data-vi="Chỉ bốn số điện thoại cuối được hiển thị trên thiết bị này.">Chỉ bốn số điện thoại cuối được hiển thị trên thiết bị này.</p><div id="referral-invite-list" class="mt-3 divide-y divide-app-line" aria-label="Referral history"></div></section>
+            <section id="referral-totals" class="mt-4 grid grid-cols-3 gap-3 text-center" data-en-aria-label="Referral totals" data-vi-aria-label="Tổng lượt giới thiệu" aria-label="Tổng lượt giới thiệu"><div class="app-card p-3"><span class="text-xs text-app-muted" data-en="Invited" data-vi="Đã mời">Đã mời</span><strong id="referral-invited-count" class="mt-1 block text-2xl">0</strong></div><div class="app-card p-3"><span class="text-xs text-app-muted" data-en="Joined" data-vi="Đã tham gia">Đã tham gia</span><strong id="referral-joined-count" class="mt-1 block text-2xl">0</strong></div><div class="app-card p-3"><span class="text-xs text-app-muted" data-en="Rewarded" data-vi="Đã thưởng">Đã thưởng</span><strong id="referral-rewarded-count" class="mt-1 block text-2xl text-app-green">0</strong></div></section>
+            <section class="app-card mt-4"><div class="flex items-center justify-between gap-3"><h2 class="section-title" data-en="Referral history" data-vi="Lịch sử giới thiệu">Lịch sử giới thiệu</h2><i data-lucide="shield-check" class="size-5 text-app-cyan" aria-hidden="true"></i></div><p class="mt-1 text-xs text-app-muted" data-en="Only the final four phone digits are shown on this device." data-vi="Chỉ bốn số điện thoại cuối được hiển thị trên thiết bị này.">Chỉ bốn số điện thoại cuối được hiển thị trên thiết bị này.</p><div id="referral-invite-list" class="mt-3 divide-y divide-app-line" data-en-aria-label="Referral history" data-vi-aria-label="Lịch sử giới thiệu" aria-label="Lịch sử giới thiệu"></div></section>
           </div>
         </section>
         <section class="app-screen hidden" id="msgprefs" data-ready="true" data-module="profile" aria-labelledby="msgprefs-title">
@@ -949,7 +949,7 @@
     const GUEST_REWARD_CLAIM_ID_PATTERN = /^guest-claim-(visit_spend|directpay_bonus|tip_bonus)-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const GUEST_CHECKIN_ID_PATTERN = /^guest-checkin-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const LEDGER_ID_PATTERN = /^ledger-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    const REFERRAL_ID_PATTERN = /^referral-[a-z0-9]+(?:-[a-z0-9]+)*$/i;
+    const REFERRAL_ID_PATTERN = /^referral-[a-z0-9]+(?:-[a-z0-9]+)*$/;
     const LEGACY_REFERRAL_LEDGER_ID_PATTERN = /^led-referral-[a-z0-9]+(?:-[a-z0-9]+)*$/i;
 
     function nonNegativeCents(value) {
@@ -2217,9 +2217,10 @@
     }
 
     function isReferralLedgerArtifact(entry, referralIds = new Set()) {
+      const semanticRefId = typeof entry?.refId === 'string' ? entry.refId.trim().toLowerCase() : '';
       return isRecord(entry) && (entry.type === 'referral' || entry.refType === 'referral'
         || referralIds.has(entry.refId)
-        || (typeof entry.refId === 'string' && referralIds.has(entry.refId.trim())));
+        || referralIds.has(semanticRefId));
     }
 
     function isExactReferralLedgerPair(appState, referral, entry) {
@@ -2285,7 +2286,7 @@
     function collectRawReferralClaims(values) {
       if (!Array.isArray(values)) return [];
       return values.filter(isRecord).map((value) => ({
-        id: typeof value.id === 'string' && value.id.trim() ? value.id.trim() : null,
+        id: typeof value.id === 'string' && value.id.trim() ? value.id.trim().toLowerCase() : null,
         friendPhone: normalizeUsPhone(value.friendPhone).length === 10 ? normalizeUsPhone(value.friendPhone) : null
       }));
     }
@@ -2319,7 +2320,7 @@
       const artifacts = appState.ledger.filter((entry) => isReferralLedgerArtifact(entry, knownIds));
       const surviving = normalized.filter((referral) => {
         const pairs = artifacts.filter((entry) => typeof entry.refId === 'string'
-          && entry.refId.trim() === referral.id);
+          && entry.refId.trim().toLowerCase() === referral.id);
         return referral.status === 'rewarded'
           ? pairs.length === 1 && isExactReferralLedgerPair(appState, referral, pairs[0])
           : pairs.length === 0;
@@ -2349,11 +2350,12 @@
       if (!timestamp.ok) return timestamp;
       const id = createDomainId('referral');
       if (!id.ok) return id;
-      if (appState.referrals.some((referral) => referral.id === id.value)) {
+      const referralId = id.value.toLowerCase();
+      if (appState.referrals.some((referral) => referral.id === referralId)) {
         return { ok: false, code: 'id_generation_failed' };
       }
       const referral = {
-        id: id.value,
+        id: referralId,
         referrerId: integrity.owner.id,
         code: integrity.owner.code,
         friendPhone,
@@ -4907,6 +4909,9 @@
       });
       document.querySelectorAll('[data-en-ph][data-vi-ph]').forEach((element) => {
         element.placeholder = element.dataset[`${activeLanguage}Ph`];
+      });
+      document.querySelectorAll('[data-en-aria-label][data-vi-aria-label]').forEach((element) => {
+        element.setAttribute('aria-label', element.dataset[`${activeLanguage}AriaLabel`]);
       });
     }
 

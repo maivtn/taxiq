@@ -6253,6 +6253,37 @@ test('rewarded referral replay rejects malformed IDs and business balances byte-
   }
 });
 
+test('runtime referral preflight rejects case-folded duplicate IDs with valid paired ledgers before UUID', () => {
+  let uuidCalls = 0;
+  const uuids = [
+    'abcdefab-cdef-4abc-8abc-abcdefabcdef',
+    'abcdefab-cdef-4abc-8abc-abcdefabcdea'
+  ];
+  const { api } = testApi({}, { randomUUID: () => {
+    uuidCalls += 1;
+    return uuids.shift();
+  } });
+  const app = api.createDefaultState();
+  const created = api.createReferralInvite(app, { friendPhone: '8325550134' }, 1000);
+  assert.equal(created.referral.id, created.referral.id.toLowerCase());
+  api.advanceReferral(app, created.referral.id, 'joined', 2000);
+  api.releaseReferralReward(app, created.referral.id, 'bitcoin-nail-bar', 3000);
+  const duplicate = { ...app.referrals[0], id: app.referrals[0].id.toUpperCase(), friendPhone: '8325550135' };
+  const duplicateLedger = {
+    ...app.ledger.find((entry) => entry.refType === 'referral'),
+    id: 'led-referral-case-runtime',
+    refId: duplicate.id
+  };
+  app.referrals.push(duplicate);
+  app.ledger.unshift(duplicateLedger);
+  const before = JSON.stringify(app);
+  assert.equal(api.createReferralInvite(app, { friendPhone: '8325550136' }, 4000).code, 'invalid_referral_state');
+  assert.equal(api.advanceReferral(app, duplicate.id, 'joined', 4000).code, 'invalid_referral_state');
+  assert.equal(api.releaseReferralReward(app, duplicate.id, 'bitcoin-nail-bar', 4000).code, 'invalid_referral_state');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(uuidCalls, 2);
+});
+
 test('referral migration preserves canonical history and quarantines ambiguous or unpaired artifacts', () => {
   const { api } = testApi();
   const referral = {
@@ -6300,6 +6331,18 @@ test('referral migration preserves canonical history and quarantines ambiguous o
   const orphanMigrated = api.migrateState({ referrals: [], ledger: [orphanArtifact, unrelated] });
   assert.equal(orphanMigrated.ledger.some((entry) => entry.id === orphanArtifact.id), false);
   assert.equal(orphanMigrated.ledger.some((entry) => entry.id === unrelated.id), true);
+
+  const lowercaseReferral = { ...referral, id: 'referral-case', friendPhone: '8325550138' };
+  const uppercaseReferral = { ...referral, id: 'referral-CASE', friendPhone: '8325550139' };
+  const lowercaseLedger = { ...referralLedger, id: 'led-referral-case-lower', refId: lowercaseReferral.id };
+  const uppercaseLedger = { ...referralLedger, id: 'led-referral-case-upper', refId: uppercaseReferral.id };
+  const caseCollision = api.migrateState({
+    referrals: [lowercaseReferral, uppercaseReferral],
+    ledger: [lowercaseLedger, uppercaseLedger, unrelated]
+  });
+  assert.deepEqual(caseCollision.referrals, []);
+  assert.equal(caseCollision.ledger.some((entry) => entry.type === 'referral'), false);
+  assert.equal(caseCollision.ledger.some((entry) => entry.id === unrelated.id), true);
 });
 
 test('referral state survives save and reload with its exact paired ledger', () => {
@@ -6375,6 +6418,98 @@ test('referral sharing uses native share, clipboard fallback, manual fallback, a
   assert.equal(cancelled.code, 'share_cancelled');
 });
 
+test('share-referral action exposes a focused manual link and reuses one invite after native cancellation', async () => {
+  const ids = ['referral-code', 'referral-qr', 'referral-invited-count', 'referral-joined-count',
+    'referral-rewarded-count', 'referral-invite-list', 'referral-error', 'referral-manual-share',
+    'referral-manual-link', 'referral-friend-phone'];
+  const elements = ids.map((id) => createStubElement({
+    id,
+    value: id === 'referral-friend-phone' ? '(832) 555-0137' : '',
+    classNames: id === 'referral-manual-share' ? ['hidden'] : []
+  }));
+  const document = createDocumentStub({ extraElements: elements });
+  const abort = new Error('cancelled');
+  abort.name = 'AbortError';
+  const { context } = testApi({}, {
+    document,
+    navigator: { share: async () => { throw abort; } },
+    randomUUID: () => '00000000-0000-4000-8000-000000000280'
+  });
+  const action = vm.runInContext("ACTIONS.get('share-referral')", context);
+  const first = await action();
+  const second = await action();
+  const manual = document.getElementById('referral-manual-share');
+  const link = document.getElementById('referral-manual-link');
+  assert.equal(first.code, 'share_cancelled');
+  assert.equal(second.idempotent, true);
+  assert.equal(vm.runInContext('state.referrals.length', context), 1);
+  assert.equal(manual.classList.contains('hidden'), false);
+  assert.equal(link.value, first.url);
+  assert.equal(link.selected, true);
+  assert.equal(document.activeElement, link);
+  assert.equal(document.getElementById('referral-error').textContent.includes('sao chép'), true);
+});
+
+test('share-referral action handles clipboard, missing API, and persistence failures without duplicate invites', async () => {
+  const setup = (navigator) => {
+    const ids = ['referral-code', 'referral-qr', 'referral-invited-count', 'referral-joined-count',
+      'referral-rewarded-count', 'referral-invite-list', 'referral-error', 'referral-manual-share',
+      'referral-manual-link', 'referral-friend-phone'];
+    const elements = ids.map((id) => createStubElement({
+      id,
+      value: id === 'referral-friend-phone' ? '8325550133' : '',
+      classNames: id === 'referral-manual-share' ? ['hidden'] : []
+    }));
+    const document = createDocumentStub({ extraElements: elements });
+    return { document, ...testApi({}, {
+      document,
+      navigator,
+      randomUUID: () => '00000000-0000-4000-8000-000000000281'
+    }) };
+  };
+
+  for (const navigator of [
+    { clipboard: { writeText: async () => { throw new Error('denied'); } } },
+    {}
+  ]) {
+    const current = setup(navigator);
+    vm.runInContext("state.profile.language = 'en'", current.context);
+    const action = vm.runInContext("ACTIONS.get('share-referral')", current.context);
+    const first = await action();
+    const second = await action();
+    assert.equal(first.code, 'manual_share_required');
+    assert.equal(second.idempotent, true);
+    assert.equal(vm.runInContext('state.referrals.length', current.context), 1);
+    assert.equal(current.document.getElementById('referral-manual-share').classList.contains('hidden'), false);
+    assert.equal(current.document.getElementById('referral-manual-link').selected, true);
+    assert.equal(current.document.getElementById('referral-error').textContent.includes('Copy the link'), true);
+  }
+
+  const persistence = setup({});
+  persistence.storage.setItem = () => { throw new Error('quota'); };
+  const persistAction = vm.runInContext("ACTIONS.get('share-referral')", persistence.context);
+  const failed = await persistAction();
+  assert.equal(failed.code, 'persist_failed');
+  assert.equal(vm.runInContext('state.referrals.length', persistence.context), 0);
+  assert.equal(persistence.document.getElementById('referral-manual-share').classList.contains('hidden'), true);
+  assert.equal(persistence.document.getElementById('referral-error').textContent.length > 0, true);
+});
+
+test('referral accessible names switch between Vietnamese and English', () => {
+  const totals = createStubElement({ dataset: { enAriaLabel: 'Referral totals', viAriaLabel: 'Tổng lượt giới thiệu' } });
+  const history = createStubElement({ dataset: { enAriaLabel: 'Referral history', viAriaLabel: 'Lịch sử giới thiệu' } });
+  const document = createDocumentStub({ selectorNodes: {
+    '[data-en-aria-label][data-vi-aria-label]': [totals, history]
+  } });
+  const { context } = testApi({}, { document });
+  context.applyLanguage('en');
+  assert.equal(totals.getAttribute('aria-label'), 'Referral totals');
+  assert.equal(history.getAttribute('aria-label'), 'Referral history');
+  context.applyLanguage('vi');
+  assert.equal(totals.getAttribute('aria-label'), 'Tổng lượt giới thiệu');
+  assert.equal(history.getAttribute('aria-label'), 'Lịch sử giới thiệu');
+});
+
 test('show-referral-qr reveals and focuses the QR with correct ARIA state', () => {
   const panel = createStubElement({ id: 'referral-qr-panel', classNames: ['hidden'] });
   panel.setAttribute('aria-hidden', 'true');
@@ -6419,6 +6554,9 @@ test('referral UI is localized, action-complete, standalone, and keeps exactly 3
   }
   assert.match(source, /data-en="Invited"[^>]+data-vi="Đã mời"/);
   assert.match(source, /data-en="Rewarded"[^>]+data-vi="Đã thưởng"/);
+  assert.match(source, /id="referral-totals"[^>]+data-en-aria-label="Referral totals"[^>]+data-vi-aria-label="Tổng lượt giới thiệu"/);
+  assert.match(source, /id="referral-invite-list"[^>]+data-en-aria-label="Referral history"[^>]+data-vi-aria-label="Lịch sử giới thiệu"/);
+  assert.match(source, /\[data-en-aria-label\]\[data-vi-aria-label\]/);
   assert.equal(screenIds(source).length, 31);
   assert.match(source, /@tailwindcss\/browser/);
   assert.match(source, /unpkg\.com\/lucide/);
