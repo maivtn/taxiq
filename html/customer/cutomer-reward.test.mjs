@@ -837,11 +837,12 @@ test('requests a fresh OTP before routing an existing account to verification', 
   assert.equal(api.requestExistingAccountOtp(app, '(832) 555-0148', 5001).code, 'cooldown');
 });
 
-test('routes scanning through welcome claim and wires existing-account OTP before login2', () => {
+test('stages scanning before confirmation and wires existing-account OTP before login2', () => {
   const source = html();
   const scanAction = source.match(/registerAction\('start-scan',[\s\S]*?registerAction\('enter-code'/)?.[0];
   assert.ok(scanAction, 'start-scan action must be available');
-  assert.match(scanAction, /submitCheckin/);
+  assert.match(scanAction, /stageSalonScan/);
+  assert.doesNotMatch(scanAction, /submitCheckin/);
 
   const claimAction = source.match(/registerAction\('claim-welcome',[\s\S]*?registerAction\('accept-consent'/)?.[0];
   assert.ok(claimAction, 'claim welcome action must be registered');
@@ -3257,6 +3258,95 @@ test('keeps platform stubs responsive instead of silently succeeding', () => {
     assert.match(source, new RegExp(`registerAction\\('${action}'`));
   }
   assert.match(source, /catch\s*\{/);
+});
+
+test('stages a salon scan without awarding points and supports a different salon next', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const before = JSON.stringify(app.balances);
+  const first = api.stageSalonScan(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna');
+  assert.equal(first.context.businessId, 'bitcoin-nail-bar');
+  assert.equal(JSON.stringify(app.balances), before);
+  const second = api.stageSalonScan(app, 'https://nexoratouch.com/touch/golden-glow-spa/lobby');
+  assert.equal(second.context.businessId, 'golden-glow-spa');
+  assert.equal(app.ui.selectedBusinessId, 'golden-glow-spa');
+  assert.equal(JSON.stringify(app.balances), before);
+});
+
+test('creates a guest check-in claim without crediting the signed-in profile', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  api.stageSalonScan(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
+  const before = app.balances['bitcoin-nail-bar'].points;
+  const result = api.createGuestCheckin(app, {
+    name: 'Amy Nguyen', phone: '832-555-0198', serviceKey: 'deluxe-pedicure', staffProfileId: null
+  }, Date.parse('2026-07-15T03:04:42.000Z'));
+  assert.equal(result.ok, true);
+  assert.equal(result.guestCheckin.businessId, 'bitcoin-nail-bar');
+  assert.equal(result.guestCheckin.pointsPending, 120);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
+  assert.equal(app.ledger.some((entry) => entry.refId === result.guestCheckin.id), false);
+  assert.equal(app.profile.points, undefined);
+});
+
+test('completes a staged member salon check-in through the existing offline and duplicate rules', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+  api.stageSalonScan(app, payload);
+  const before = app.balances['bitcoin-nail-bar'].points;
+  const queued = api.completeMemberSalonCheckin(app, false, 1000);
+  assert.equal(queued.ok, true);
+  assert.equal(queued.queued, true);
+  assert.equal(queued.checkin.sourceQr, payload);
+  assert.equal(queued.checkin.scannedAt, new Date(1000).toISOString());
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
+  assert.equal(api.completeMemberSalonCheckin(app, true, 6000).code, 'duplicate_checkin');
+});
+
+test('rejects missing or tampered staged member context and cross-business guest staff', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const before = JSON.stringify(app);
+  assert.equal(api.completeMemberSalonCheckin(app, true, 1000).code, 'missing_scan_context');
+  assert.equal(JSON.stringify(app), before);
+
+  api.stageSalonScan(app, 'https://nexoratouch.com/touch/golden-glow-spa/lobby');
+  const staged = JSON.stringify(app);
+  const guest = api.createGuestCheckin(app, {
+    name: 'Amy Nguyen', phone: '832-555-0198', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-anna'
+  }, 1000);
+  assert.equal(guest.code, 'invalid_guest');
+  assert.equal(JSON.stringify(app), staged);
+
+  app.ui.pendingContext.scanContext.businessId = 'moon-coffee';
+  const tampered = JSON.stringify(app);
+  assert.equal(api.completeMemberSalonCheckin(app, true, 1000).code, 'invalid_scan_context');
+  assert.equal(JSON.stringify(app), tampered);
+});
+
+test('provides nested multi-salon and guest scan views with localized copy and safe actions', () => {
+  const source = html();
+  assert.equal((source.match(/data-scan-view="(?:camera|context|guest)"/g) || []).length, 3);
+  assert.match(source, /id="scan-demo-business"/);
+  assert.match(source, /id="guest-checkin-view"/);
+  for (const key of ['invalidGuest', 'noPreference', 'notAvailable', 'guestCheckinSuccess']) {
+    assert.match(source, new RegExp(`vi:[\\s\\S]*?${key}:`), `missing Vietnamese ${key}`);
+    assert.match(source, new RegExp(`en:[\\s\\S]*?${key}:`), `missing English ${key}`);
+  }
+
+  const startAction = source.match(/registerAction\('start-scan',[\s\S]*?registerAction\('enter-code'/)?.[0];
+  assert.ok(startAction);
+  assert.match(startAction, /scan-demo-business/);
+  assert.doesNotMatch(startAction, /https:\/\/nexoratouch\.com\/touch/);
+  const enterAction = source.match(/registerAction\('enter-code',[\s\S]*?registerAction\('member-salon-checkin'/)?.[0];
+  assert.ok(enterAction);
+  assert.match(enterAction, /openManualSalonCode/);
+  assert.doesNotMatch(enterAction, /navigateTo\('onb1'\)/);
+  const memberAction = source.match(/registerAction\('member-salon-checkin',[\s\S]*?registerAction\('open-guest-checkin'/)?.[0];
+  assert.ok(memberAction);
+  assert.match(memberAction, /completeMemberSalonCheckin/);
+  assert.match(source, /function renderScanContext\(\)[\s\S]*?\.textContent/);
 });
 
 test('queues offline QR check-in and awards points after retry with scan timestamp', () => {
