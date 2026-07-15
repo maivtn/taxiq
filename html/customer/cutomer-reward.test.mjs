@@ -3692,6 +3692,364 @@ test('resets the nested pay view when the existing direct-payment route is reope
   assert.equal(checkout.attributes['aria-hidden'], 'true');
 });
 
+function task4Api(api) {
+  for (const name of ['submitPaymentProof', 'verifyPaymentProof', 'rejectPaymentProof',
+    'removePaymentProofImage', 'retryRejectedCheckout']) {
+    assert.equal(typeof api[name], 'function', `${name} must be exposed`);
+  }
+  return api;
+}
+
+function seedCheckoutDraft(api, app, {
+  method = 'Zelle', tipBasisPoints = 1800, staffProfileId = 'staff-anna'
+} = {}) {
+  const guest = seedGuestCheckin(api, app, { staffProfileId });
+  const created = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000);
+  assert.equal(created.ok, true);
+  assert.equal(api.setCheckoutTip(app, created.checkoutDraft.id, tipBasisPoints).ok, true);
+  assert.equal(api.setCheckoutMethod(app, created.checkoutDraft.id, method).ok, true);
+  return created.checkoutDraft;
+}
+
+function seedPendingProof(api, app, options = {}) {
+  const checkout = seedCheckoutDraft(api, app, options);
+  const result = ['Zelle', 'Venmo'].includes(checkout.method)
+    ? api.submitPaymentProof(app, {
+        checkoutDraftId: checkout.id,
+        note: 'Zelle sent from Amy',
+        imageDataUrl: 'data:image/jpeg;base64,AA=='
+      }, 2000)
+    : api.submitCheckoutWithoutUpload(app, checkout.id, 2000);
+  assert.equal(result.ok, true);
+  return { checkout, proof: result.proof };
+}
+
+test('Task 4 keeps uploaded proof pending then verifies formulas exactly once', () => {
+  const loaded = testApi({}, { randomUUID: () => createUuidSequence().randomUUID() });
+  const api = task4Api(loaded.api);
+  const app = api.createDefaultState();
+  const checkout = seedCheckoutDraft(api, app, { method: 'Zelle' });
+  const memberSnapshot = JSON.stringify({ balances: app.balances, ledger: app.ledger });
+  const submitted = api.submitPaymentProof(app, {
+    checkoutDraftId: checkout.id,
+    note: '  Zelle sent from Amy  ',
+    imageDataUrl: 'data:image/jpeg;base64,AA=='
+  }, 2000);
+  assert.equal(submitted.ok, true);
+  assert.equal(submitted.proof.status, 'pending_verification');
+  assert.equal(submitted.proof.note, 'Zelle sent from Amy');
+  assert.equal(app.receipts.length, 0);
+  assert.equal(app.guestRewardClaims.length, 0);
+  assert.equal(JSON.stringify({ balances: app.balances, ledger: app.ledger }), memberSnapshot);
+
+  const verified = api.verifyPaymentProof(app, submitted.proof.id, 3000);
+  assert.equal(verified.ok, true);
+  assert.equal(verified.proof.status, 'verified');
+  assert.equal(verified.receipt.method, 'Zelle');
+  assert.equal(verified.receipt.tipCents, 891);
+  assert.equal(verified.receipt.totalCents, 5841);
+  assert.deepEqual(
+    Object.fromEntries(verified.claims.map((claim) => [claim.sourceType, claim.points])),
+    { visit_spend: 50, directpay_bonus: 10, tip_bonus: 89 }
+  );
+  assert.equal(verified.claims.every((claim) => claim.status === 'pending'
+    && claim.sourceId === submitted.proof.id
+    && claim.businessId === checkout.businessId), true);
+  assert.equal(JSON.stringify({ balances: app.balances, ledger: app.ledger }), memberSnapshot);
+  const snapshot = JSON.stringify(app);
+  const repeated = api.verifyPaymentProof(app, submitted.proof.id, 4000);
+  assert.equal(repeated.ok, true);
+  assert.equal(repeated.idempotent, true);
+  assert.equal(JSON.stringify(app), snapshot);
+});
+
+test('Task 4 rejects proof with canonical reason and never creates rewards or receipt', () => {
+  const api = task4Api(testApi().api);
+  const app = api.createDefaultState();
+  const { proof } = seedPendingProof(api, app, { method: 'Venmo' });
+  const memberSnapshot = JSON.stringify({ balances: app.balances, ledger: app.ledger });
+  const rejected = api.rejectPaymentProof(app, proof.id, '  Amount does not match  ', 3000);
+  assert.equal(rejected.ok, true);
+  assert.equal(rejected.proof.status, 'rejected');
+  assert.equal(rejected.proof.rejectReason, 'Amount does not match');
+  assert.equal(app.receipts.length, 0);
+  assert.equal(app.guestRewardClaims.length, 0);
+  assert.equal(JSON.stringify({ balances: app.balances, ledger: app.ledger }), memberSnapshot);
+  const snapshot = JSON.stringify(app);
+  assert.equal(api.rejectPaymentProof(app, proof.id, 'different reason', 4000).idempotent, true);
+  assert.equal(JSON.stringify(app), snapshot);
+  assert.equal(api.verifyPaymentProof(app, proof.id, 4000).code, 'proof_not_pending');
+});
+
+test('Task 4 verifies Card and Pay at Counter through the same proof domain path', () => {
+  for (const method of ['Card', 'Pay at Counter']) {
+    const api = task4Api(testApi().api);
+    const app = api.createDefaultState();
+    const { proof } = seedPendingProof(api, app, { method, tipBasisPoints: 0, staffProfileId: null });
+    const result = api.verifyPaymentProof(app, proof.id, 3000);
+    assert.equal(result.ok, true, method);
+    assert.equal(result.receipt.method, method);
+    assert.equal(JSON.stringify(result.claims.map((claim) => claim.sourceType)), JSON.stringify(['visit_spend']));
+    assert.equal(result.claims[0].points, 50);
+  }
+});
+
+test('Task 4 keeps verification atomic across ID and chronology failures', () => {
+  for (const failAt of [4, 5, 6]) {
+    let calls = 0;
+    const { api: rawApi } = testApi({}, { randomUUID: () => {
+      calls += 1;
+      return calls === failAt
+        ? 'invalid-id'
+        : `00000000-0000-4000-8000-${String(calls).padStart(12, '0')}`;
+    } });
+    const api = task4Api(rawApi);
+    const app = api.createDefaultState();
+    const { proof } = seedPendingProof(api, app, { method: 'Zelle', staffProfileId: null });
+    const before = JSON.stringify(app);
+    assert.equal(api.verifyPaymentProof(app, proof.id, 3000).code, 'id_generation_failed');
+    assert.equal(JSON.stringify(app), before, `ID call ${failAt}`);
+  }
+
+  const api = task4Api(testApi().api);
+  const app = api.createDefaultState();
+  const { proof } = seedPendingProof(api, app, { method: 'Zelle' });
+  const before = JSON.stringify(app);
+  assert.equal(api.verifyPaymentProof(app, proof.id, 1999).code, 'invalid_time_order');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('Task 4 fails closed on checkout, proof, business, method, amount and semantic tampering', () => {
+  const variants = [
+    ['proof business', ({ proof }) => { proof.businessId = 'golden-glow-spa'; }],
+    ['proof method', ({ proof }) => { proof.method = 'Venmo'; }],
+    ['proof amount', ({ proof }) => { proof.amountCents += 1; }],
+    ['proof parent whitespace', ({ proof }) => { proof.checkoutDraftId = ` ${proof.checkoutDraftId} `; }],
+    ['checkout business', ({ checkout }) => { checkout.businessId = 'golden-glow-spa'; }],
+    ['checkout method', ({ checkout }) => { checkout.method = 'Venmo'; }]
+  ];
+  for (const [label, tamper] of variants) {
+    const api = task4Api(testApi().api);
+    const app = api.createDefaultState();
+    const seeded = seedPendingProof(api, app, { method: 'Zelle' });
+    tamper(seeded);
+    const before = JSON.stringify(app);
+    assert.equal(api.verifyPaymentProof(app, seeded.proof.id, 3000).ok, false, label);
+    assert.equal(JSON.stringify(app), before, label);
+  }
+});
+
+test('Task 4 rejects semantic receipt or claim duplicates and malformed verified replay', () => {
+  for (const artifact of ['receipt', 'claim']) {
+    const api = task4Api(testApi().api);
+    const app = api.createDefaultState();
+    const { checkout, proof } = seedPendingProof(api, app, { method: 'Zelle' });
+    if (artifact === 'receipt') app.receipts.push({ checkoutDraftId: ` ${checkout.id} ` });
+    else app.guestRewardClaims.push({ sourceId: ` ${proof.id} ` });
+    const before = JSON.stringify(app);
+    assert.equal(api.verifyPaymentProof(app, proof.id, 3000).ok, false, artifact);
+    assert.equal(JSON.stringify(app), before, artifact);
+  }
+
+  const api = task4Api(testApi().api);
+  const app = api.createDefaultState();
+  const { checkout, proof } = seedPendingProof(api, app, { method: 'Zelle' });
+  assert.equal(api.verifyPaymentProof(app, proof.id, 3000).ok, true);
+  app.receipts.push({ ...app.receipts[0], id: 'receipt-duplicate', checkoutDraftId: ` ${checkout.id} ` });
+  const before = JSON.stringify(app);
+  assert.equal(api.verifyPaymentProof(app, proof.id, 4000).ok, false);
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('Task 4 accepts only sanitized JPEG proof images and locks verified proof images', () => {
+  const api = task4Api(testApi().api);
+  for (const imageDataUrl of ['data:image/png;base64,AA==', `data:image/jpeg;base64,${'A'.repeat(1_500_001)}`]) {
+    const app = api.createDefaultState();
+    const checkout = seedCheckoutDraft(api, app, { method: 'Zelle' });
+    const before = JSON.stringify(app);
+    assert.equal(api.submitPaymentProof(app, { checkoutDraftId: checkout.id, imageDataUrl }, 2000).code, 'invalid_image');
+    assert.equal(JSON.stringify(app), before);
+  }
+  const app = api.createDefaultState();
+  const { proof } = seedPendingProof(api, app, { method: 'Zelle' });
+  assert.equal(api.verifyPaymentProof(app, proof.id, 3000).ok, true);
+  const image = proof.imageDataUrl;
+  assert.equal(api.removePaymentProofImage(app, proof.id).code, 'proof_locked');
+  assert.equal(proof.imageDataUrl, image);
+});
+
+test('Task 4 retries rejected upload and counter checkouts without mutating history', () => {
+  const uploadIds = createUuidSequence();
+  const uploadApi = task4Api(testApi({}, { randomUUID: () => uploadIds.randomUUID() }).api);
+  const uploadApp = uploadApi.createDefaultState();
+  const upload = seedPendingProof(uploadApi, uploadApp, { method: 'Zelle' });
+  uploadApi.rejectPaymentProof(uploadApp, upload.proof.id, 'No match', 3000);
+  const oldUpload = JSON.stringify({ checkout: upload.checkout, proof: upload.proof });
+  const retry = uploadApi.retryRejectedCheckout(uploadApp, upload.proof.id, 'Zelle', 4000);
+  assert.equal(retry.ok, true, JSON.stringify(retry));
+  assert.notEqual(retry.checkoutDraft.id, upload.checkout.id);
+  assert.equal(retry.checkoutDraft.status, 'draft');
+  assert.equal(retry.proof, null);
+  assert.equal(JSON.stringify({ checkout: upload.checkout, proof: upload.proof }), oldUpload);
+  const repeated = uploadApi.retryRejectedCheckout(uploadApp, upload.proof.id, 'Zelle', 5000);
+  assert.equal(repeated.idempotent, true);
+  assert.equal(repeated.checkoutDraft.id, retry.checkoutDraft.id);
+  assert.equal(uploadApp.checkoutDrafts.length, 2);
+  assert.equal(uploadApi.submitPaymentProof(uploadApp, {
+    checkoutDraftId: retry.checkoutDraft.id, note: '', imageDataUrl: ''
+  }, 5000).ok, true);
+
+  const counterIds = createUuidSequence();
+  const counterApi = task4Api(testApi({}, { randomUUID: () => counterIds.randomUUID() }).api);
+  const counterApp = counterApi.createDefaultState();
+  const counter = seedPendingProof(counterApi, counterApp, { method: 'Venmo' });
+  counterApi.rejectPaymentProof(counterApp, counter.proof.id, 'No match', 3000);
+  const counterRetry = counterApi.retryRejectedCheckout(counterApp, counter.proof.id, 'Pay at Counter', 4000);
+  assert.equal(counterRetry.ok, true);
+  assert.equal(counterRetry.checkoutDraft.status, 'pending_verification');
+  assert.equal(counterRetry.proof.status, 'pending_verification');
+  assert.equal(counterRetry.proof.method, 'Pay at Counter');
+  assert.equal(counterApi.retryRejectedCheckout(counterApp, counter.proof.id, 'Pay at Counter', 5000).idempotent, true);
+  assert.equal(counterApp.checkoutDrafts.length, 2);
+  assert.equal(counterApp.paymentProofs.length, 2);
+});
+
+test('Task 4 payment proof and receipt controls are localized, safe and fully registered', () => {
+  const source = html();
+  assert.match(source, /label\.textContent = item\.label/);
+  assert.match(source, /amount\.textContent = formatCents\(item\.amountCents\)/);
+  const rejectedTag = source.match(/<section id="payment-rejected-view"[^>]*>/)?.[0] || '';
+  assert.doesNotMatch(rejectedTag, /emerald|success/);
+  for (const action of ['upload-payment-proof', 'remove-payment-proof', 'submit-payment-proof',
+    'verify-payment-proof-demo', 'reject-payment-proof-demo', 'replace-payment-proof', 'pay-at-counter',
+    'create-account-from-receipt', 'continue-as-guest']) {
+    assert.match(source, new RegExp(`registerAction\\('${action}'`));
+  }
+  for (const stateName of ['pending', 'confirmed', 'rejected']) {
+    assert.match(source, new RegExp(`data-paydone-view="${stateName}"`));
+  }
+  for (const key of ['proofSavedWithoutImage', 'proofSubmitFailed', 'verificationFailed',
+    'proofRejected', 'createAccount', 'continueGuest']) {
+    assert.match(source, new RegExp(`vi:[\\s\\S]*?${key}:`), `missing Vietnamese ${key}`);
+    assert.match(source, new RegExp(`en:[\\s\\S]*?${key}:`), `missing English ${key}`);
+  }
+});
+
+test('Task 4 paydone states synchronize focus and aria while rendering receipt labels as text', () => {
+  const pending = createStubElement({ id: 'payment-pending-view', dataset: { paydoneView: 'pending' } });
+  const confirmed = createStubElement({ id: 'payment-confirmed-view', dataset: { paydoneView: 'confirmed' }, classNames: ['hidden'] });
+  const rejected = createStubElement({ id: 'payment-rejected-view', dataset: { paydoneView: 'rejected' }, classNames: ['hidden'] });
+  const pendingTitle = createStubElement({ id: 'payment-pending-title' });
+  const confirmedTitle = createStubElement({ id: 'payment-confirmed-title' });
+  const rejectedTitle = createStubElement({ id: 'payment-rejected-title' });
+  const receiptItems = createStubElement({ id: 'confirmed-receipt-items' });
+  const receiptTotal = createStubElement({ id: 'confirmed-receipt-total' });
+  const document = createDocumentStub({
+    extraElements: [pending, confirmed, rejected, pendingTitle, confirmedTitle, rejectedTitle,
+      receiptItems, receiptTotal, createStubElement({ id: 'payment-reject-reason' }),
+      createStubElement({ id: 'direct-payment-result-view' })],
+    selectorNodes: { '[data-paydone-view]': [pending, confirmed, rejected] }
+  });
+  const { api, context } = testApi({}, { document });
+  task4Api(api);
+  vm.runInContext(`
+    const checkout = createCheckoutDraft(state, {
+      guestCheckinId: createGuestCheckin(state,
+        (stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'),
+        { name: 'Amy', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }), 1000).guestCheckin.id
+    }, 1000).checkoutDraft;
+    setCheckoutMethod(state, checkout.id, 'Zelle');
+    const proof = submitPaymentProof(state, { checkoutDraftId: checkout.id, note: '', imageDataUrl: '' }, 2000).proof;
+    verifyPaymentProof(state, proof.id, 3000);
+    state.receipts[0].lineItems[0].label = '<img src=x onerror=alert(1)>';
+    state.ui.activeScreen = 'paydone';
+  `, context);
+  context.renderPaydone();
+  assert.equal(document.activeElement, confirmedTitle);
+  assert.equal(confirmed.attributes['aria-hidden'], 'false');
+  assert.equal(pending.attributes['aria-hidden'], 'true');
+  assert.equal(rejected.attributes['aria-hidden'], 'true');
+  assert.equal(receiptItems.children[0].children[0].textContent, '<img src=x onerror=alert(1)>');
+  assert.equal(receiptTotal.textContent.length > 0, true);
+});
+
+test('Task 4 quota fallback persists proof metadata without image and reports an error', () => {
+  const document = createDocumentStub({ extraElements: [
+    createStubElement({ id: 'payment-proof-note' }), createStubElement({ id: 'payment-proof-error' }),
+    createStubElement({ id: 'toast-region' }), createStubElement({ id: 'form-error-state', classNames: ['hidden'] }),
+    createStubElement({ id: 'payment-pending-view', dataset: { paydoneView: 'pending' } }),
+    createStubElement({ id: 'payment-confirmed-view', dataset: { paydoneView: 'confirmed' }, classNames: ['hidden'] }),
+    createStubElement({ id: 'payment-rejected-view', dataset: { paydoneView: 'rejected' }, classNames: ['hidden'] }),
+    createStubElement({ id: 'direct-payment-result-view' })
+  ], selectorNodes: {
+    '[data-paydone-view]': [],
+    '[data-scan-customer]': createStubElement(),
+    '[data-scan-balance]': createStubElement(),
+    '[data-scan-staff]': createStubElement(),
+    '[data-scan-service]': createStubElement()
+  } });
+  const { api, context, storage } = testApi({}, { document });
+  task4Api(api);
+  vm.runInContext(`
+    stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
+    createGuestCheckin(state, { name: 'Amy', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }, 1000);
+    createCheckoutDraft(state, { guestCheckinId: state.guestCheckins[0].id }, 1000);
+    setCheckoutMethod(state, state.checkoutDrafts[0].id, 'Zelle');
+    pendingProofImageDataUrl = 'data:image/jpeg;base64,AA==';
+  `, context);
+  let writes = 0;
+  const originalSetItem = storage.setItem.bind(storage);
+  storage.setItem = (key, value) => {
+    writes += 1;
+    if (writes === 1) {
+      const error = new Error('quota');
+      error.name = 'QuotaExceededError';
+      throw error;
+    }
+    return originalSetItem(key, value);
+  };
+  vm.runInContext("ACTIONS.get('submit-payment-proof')()", context);
+  assert.equal(vm.runInContext('state.paymentProofs.length', context), 1);
+  assert.equal(vm.runInContext('state.paymentProofs[0].imageDataUrl', context), '');
+  assert.equal(document.getElementById('toast-region').children[0].className.includes('text-app-red'), true);
+});
+
+test('Task 4 refuses tampered artifacts in pending and rejected idempotent paths', () => {
+  const uploadApi = task4Api(testApi().api);
+  const uploadApp = uploadApi.createDefaultState();
+  const upload = seedPendingProof(uploadApi, uploadApp, { method: 'Zelle' });
+  uploadApp.receipts.push({ checkoutDraftId: upload.checkout.id });
+  const uploadBefore = JSON.stringify(uploadApp);
+  assert.equal(uploadApi.submitPaymentProof(uploadApp, {
+    checkoutDraftId: upload.checkout.id, note: '', imageDataUrl: ''
+  }, 3000).ok, false);
+  assert.equal(JSON.stringify(uploadApp), uploadBefore);
+
+  const counterApi = task4Api(testApi().api);
+  const counterApp = counterApi.createDefaultState();
+  const counter = seedPendingProof(counterApi, counterApp, { method: 'Pay at Counter' });
+  counterApp.guestRewardClaims.push({ sourceId: counter.proof.id });
+  const counterBefore = JSON.stringify(counterApp);
+  assert.equal(counterApi.submitCheckoutWithoutUpload(counterApp, counter.checkout.id, 3000).ok, false);
+  assert.equal(JSON.stringify(counterApp), counterBefore);
+
+  const rejectedApi = task4Api(testApi().api);
+  const rejectedApp = rejectedApi.createDefaultState();
+  const rejected = seedPendingProof(rejectedApi, rejectedApp, { method: 'Venmo' });
+  rejectedApi.rejectPaymentProof(rejectedApp, rejected.proof.id, 'No match', 3000);
+  rejectedApp.receipts.push({ checkoutDraftId: rejected.checkout.id });
+  const rejectedBefore = JSON.stringify(rejectedApp);
+  assert.equal(rejectedApi.rejectPaymentProof(rejectedApp, rejected.proof.id, 'No match', 4000).ok, false);
+  assert.equal(JSON.stringify(rejectedApp), rejectedBefore);
+});
+
+test('Task 4 Replace Proof routes no-upload retries to pending paydone', () => {
+  const source = html();
+  const handler = source.match(/registerAction\('replace-payment-proof',[\s\S]*?registerAction\('pay-at-counter'/)?.[0] || '';
+  assert.match(handler, /if \(result\.proof\)[\s\S]*?navigateTo\('paydone'\)/);
+  assert.match(handler, /showPayView\('payment-proof'\)/);
+});
+
 test('creates a guest check-in claim without crediting the signed-in profile', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
