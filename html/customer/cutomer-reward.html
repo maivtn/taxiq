@@ -585,6 +585,16 @@
       return Object.prototype.toString.call(value) === '[object Object]';
     }
 
+    function hasExactOwnKeys(value, expected) {
+      if (!isRecord(value)) return false;
+      try {
+        const keys = Object.keys(value);
+        return keys.length === expected.length && expected.every((key) => keys.includes(key));
+      } catch {
+        return false;
+      }
+    }
+
     const OBJECT_COLLECTION_FIELDS = {
       ledger: { id: 'string', businessId: 'string', type: 'string', pointsDelta: 'number', refType: 'string', refId: 'string', createdAt: 'string' },
       consents: { id: 'string', scope: 'string', action: 'string', method: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
@@ -948,6 +958,11 @@
     const RECEIPT_ID_PATTERN = /^receipt-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const GUEST_REWARD_CLAIM_ID_PATTERN = /^guest-claim-(visit_spend|directpay_bonus|tip_bonus)-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const GUEST_CHECKIN_ID_PATTERN = /^guest-checkin-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const OPS_TICKET_ID_PATTERN = /^ticket-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const OPS_ADDON_ID_PATTERN = /^addon-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const IMPORTED_ADDON_CATALOG = Object.freeze({
+      'bitcoin-nail-bar': Object.freeze({ label: 'Gel Polish', amountCents: 1500 })
+    });
     const LEDGER_ID_PATTERN = /^ledger-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const REFERRAL_ID_PATTERN = /^referral-[a-z0-9]+(?:-[a-z0-9]+)*$/;
     const LEGACY_REFERRAL_LEDGER_ID_PATTERN = /^led-referral-[a-z0-9]+(?:-[a-z0-9]+)*$/i;
@@ -966,9 +981,10 @@
       Object.assign(target, source);
     }
 
-    function readOperationsSnapshot(storage = window.localStorage) {
+    function readOperationsSnapshot(storage) {
       try {
-        const raw = JSON.parse(storage.getItem(OPERATIONS_STORAGE_KEY) || 'null');
+        const targetStorage = storage === undefined ? window.localStorage : storage;
+        const raw = JSON.parse(targetStorage.getItem(OPERATIONS_STORAGE_KEY) || 'null');
         if (!isRecord(raw) || raw.schemaVersion !== 1) return { serviceTickets: [], addOnRequests: [], staffEligibility: [] };
         return {
           serviceTickets: Array.isArray(raw.serviceTickets) ? structuredClone(raw.serviceTickets) : [],
@@ -978,6 +994,13 @@
       } catch {
         return { serviceTickets: [], addOnRequests: [], staffEligibility: [] };
       }
+    }
+
+    function importedAddOnCatalogEntry(businessId, label, amountCents) {
+      const entry = Object.prototype.hasOwnProperty.call(IMPORTED_ADDON_CATALOG, businessId)
+        ? IMPORTED_ADDON_CATALOG[businessId]
+        : null;
+      return entry && label === entry.label && amountCents === entry.amountCents ? entry : null;
     }
 
     function normalizeGuestCheckin(appState, value) {
@@ -1076,6 +1099,37 @@
       return lineItems;
     }
 
+    function normalizeCanonicalCheckoutLineItems(appState, guestCheckin, value) {
+      const service = getGuestServiceDefinition(guestCheckin?.businessId, guestCheckin?.serviceKey);
+      const lineItems = normalizeLineItems(value);
+      if (!service || !lineItems) return null;
+      const expected = initialCheckoutLineItems(appState, guestCheckin, service);
+      if (lineItems.length < expected.length) return null;
+      for (let index = 0; index < expected.length; index += 1) {
+        const raw = value[index];
+        const item = lineItems[index];
+        const canonical = expected[index];
+        const labelMatches = canonical.type === 'service'
+          ? item.label === service.label.vi || item.label === service.label.en
+          : item.label === canonical.label;
+        if (!hasExactOwnKeys(raw, ['id', 'type', 'label', 'amountCents', 'sourceAddOnId'])
+          || item.id !== canonical.id || item.type !== canonical.type || !labelMatches
+          || item.amountCents !== canonical.amountCents || item.sourceAddOnId !== null) return null;
+      }
+      const sourceIds = new Set();
+      for (let index = expected.length; index < lineItems.length; index += 1) {
+        const raw = value[index];
+        const item = lineItems[index];
+        if (!hasExactOwnKeys(raw, ['id', 'type', 'label', 'amountCents', 'sourceAddOnId'])
+          || item.type !== 'addon' || !OPS_ADDON_ID_PATTERN.test(item.sourceAddOnId)
+          || item.id !== `addon-${item.sourceAddOnId}`
+          || !importedAddOnCatalogEntry(guestCheckin.businessId, item.label, item.amountCents)
+          || sourceIds.has(item.sourceAddOnId)) return null;
+        sourceIds.add(item.sourceAddOnId);
+      }
+      return lineItems;
+    }
+
     function inputMatchesCatalogLineItems(value, guestCheckin, service) {
       if (value === undefined) return true;
       const lineItems = normalizeLineItems(value);
@@ -1097,16 +1151,8 @@
         || normalized.id !== checkout.id || checkout.guestCheckinId !== guestCheckin.id
         || checkout.businessId !== guestCheckin.businessId
         || appState.checkoutDrafts.filter((row) => isRecord(row) && row.id === checkout.id).length !== 1) return false;
-      const expected = initialCheckoutLineItems(appState, guestCheckin, service);
-      if (!Array.isArray(checkout.lineItems) || checkout.lineItems.length !== expected.length) return false;
-      return checkout.lineItems.every((item, index) => {
-        const canonical = expected[index];
-        const validLabel = isRecord(item) && item.type === 'service'
-          ? item.label === service.label.vi || item.label === service.label.en
-          : isRecord(item) && item.label === canonical.label;
-        return isRecord(item) && item.id === canonical.id && item.type === canonical.type && validLabel
-          && item.amountCents === canonical.amountCents && item.sourceAddOnId === null;
-      });
+      const lineItems = normalizeCanonicalCheckoutLineItems(appState, guestCheckin, checkout.lineItems);
+      return Boolean(lineItems) && JSON.stringify(lineItems) === JSON.stringify(checkout.lineItems);
     }
 
     function isCanonicalPendingNoUploadProof(appState, checkout, proof) {
@@ -1180,6 +1226,333 @@
       appState.checkoutDrafts.push(checkoutDraft);
       appState.ui.pendingContext.checkoutDraftId = checkoutDraft.id;
       return { ok: true, checkoutDraft };
+    }
+
+    function normalizeImportTicket(value) {
+      if (!hasExactOwnKeys(value, [
+        'id', 'number', 'guestCheckinId', 'businessId', 'serviceKey', 'status', 'staffProfileId',
+        'lineItems', 'currentTotalCents', 'frontDeskRequestedAt', 'createdAt', 'completedAt'
+      ])) return null;
+      const id = normalizedRequiredText(value.id);
+      const guestCheckinId = normalizedRequiredText(value.guestCheckinId);
+      const businessId = normalizedRequiredText(value.businessId);
+      const serviceKey = normalizedRequiredText(value.serviceKey);
+      const service = getGuestServiceDefinition(businessId, serviceKey);
+      const staffProfileId = value.staffProfileId === null ? null : normalizedRequiredText(value.staffProfileId);
+      const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
+      const completedAt = value.completedAt === null || validStoredTimestamp(value.completedAt)
+        ? value.completedAt
+        : undefined;
+      const frontDeskRequestedAt = value.frontDeskRequestedAt === null
+        || validStoredTimestamp(value.frontDeskRequestedAt) ? value.frontDeskRequestedAt : undefined;
+      if (!id || id !== id.toLowerCase() || !OPS_TICKET_ID_PATTERN.test(id)
+        || !guestCheckinId || guestCheckinId !== guestCheckinId.toLowerCase()
+        || !GUEST_CHECKIN_ID_PATTERN.test(guestCheckinId) || !service
+        || (staffProfileId !== null && !/^staff-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(staffProfileId))
+        || !Number.isSafeInteger(value.number) || value.number < 104
+        || !['waiting', 'in_service', 'completed'].includes(value.status) || !createdAt
+        || completedAt === undefined || frontDeskRequestedAt === undefined
+        || (value.status === 'completed') !== (completedAt !== null)
+        || (completedAt !== null && !timestampAtOrAfter(completedAt, createdAt))
+        || (frontDeskRequestedAt !== null && (!timestampAtOrAfter(frontDeskRequestedAt, createdAt)
+          || (completedAt !== null && Date.parse(frontDeskRequestedAt) > Date.parse(completedAt))))) return null;
+      if (!Array.isArray(value.lineItems)) return null;
+      const expected = [{
+        id: `${id}-service`, type: 'service', label: service.label.en, amountCents: service.amountCents
+      }];
+      if (serviceKey === 'deluxe-pedicure') {
+        expected.push({ id: `${id}-promo`, type: 'discount', label: 'Promo NEW10', amountCents: -550 });
+      }
+      if (value.lineItems.length < expected.length) return null;
+      const lineItems = [];
+      for (let index = 0; index < expected.length; index += 1) {
+        const item = value.lineItems[index];
+        const canonical = expected[index];
+        if (!hasExactOwnKeys(item, ['id', 'type', 'label', 'amountCents'])
+          || item.id !== canonical.id || item.type !== canonical.type
+          || item.label !== canonical.label || item.amountCents !== canonical.amountCents
+          || item.sourceAddOnId !== undefined) return null;
+        lineItems.push(canonical);
+      }
+      const sourceIds = new Set();
+      for (let index = expected.length; index < value.lineItems.length; index += 1) {
+        const item = value.lineItems[index];
+        const sourceAddOnId = normalizedRequiredText(item?.sourceAddOnId);
+        if (!hasExactOwnKeys(item, ['id', 'type', 'label', 'amountCents', 'sourceAddOnId'])
+          || !sourceAddOnId || sourceAddOnId !== sourceAddOnId.toLowerCase()
+          || !OPS_ADDON_ID_PATTERN.test(sourceAddOnId)
+          || item.id !== `${id}-addon-${sourceAddOnId}` || item.type !== 'addon'
+          || !importedAddOnCatalogEntry(businessId, item.label, item.amountCents)
+          || sourceIds.has(sourceAddOnId)) return null;
+        sourceIds.add(sourceAddOnId);
+        lineItems.push({
+          id: item.id, type: 'addon', label: item.label,
+          amountCents: item.amountCents, sourceAddOnId
+        });
+      }
+      const total = lineItems.reduce((sum, item) => sum + item.amountCents, 0);
+      if (!Number.isSafeInteger(total) || value.currentTotalCents !== total) return null;
+      return {
+        id, number: value.number, guestCheckinId, businessId, serviceKey,
+        status: value.status, staffProfileId, lineItems, currentTotalCents: total,
+        frontDeskRequestedAt, createdAt, completedAt
+      };
+    }
+
+    function normalizeImportAddOn(value, tickets) {
+      if (!hasExactOwnKeys(value, [
+        'id', 'ticketId', 'guestCheckinId', 'businessId', 'staffProfileId', 'label',
+        'amountCents', 'status', 'createdAt', 'resolvedAt'
+      ])) return null;
+      const id = normalizedRequiredText(value.id);
+      const ticketId = normalizedRequiredText(value.ticketId);
+      const ticket = tickets.find((row) => row.id === ticketId);
+      const guestCheckinId = normalizedRequiredText(value.guestCheckinId);
+      const businessId = normalizedRequiredText(value.businessId);
+      const staffProfileId = normalizedRequiredText(value.staffProfileId);
+      const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
+      const resolvedAt = value.resolvedAt === null || validStoredTimestamp(value.resolvedAt)
+        ? value.resolvedAt
+        : undefined;
+      if (!id || id !== id.toLowerCase() || !OPS_ADDON_ID_PATTERN.test(id) || !ticket
+        || guestCheckinId !== ticket.guestCheckinId || businessId !== ticket.businessId
+        || staffProfileId !== ticket.staffProfileId
+        || !importedAddOnCatalogEntry(businessId, value.label, value.amountCents)
+        || !['proposed', 'accepted', 'declined'].includes(value.status) || !createdAt
+        || !timestampAtOrAfter(createdAt, ticket.createdAt) || resolvedAt === undefined
+        || (ticket.completedAt !== null && Date.parse(createdAt) > Date.parse(ticket.completedAt))
+        || (value.status === 'proposed' && resolvedAt !== null)
+        || (value.status !== 'proposed' && (resolvedAt === null
+          || !timestampAtOrAfter(resolvedAt, createdAt)
+          || (ticket.completedAt !== null && Date.parse(resolvedAt) > Date.parse(ticket.completedAt))))) return null;
+      return {
+        id, ticketId, guestCheckinId, businessId, staffProfileId,
+        label: value.label, amountCents: value.amountCents,
+        status: value.status, createdAt, resolvedAt
+      };
+    }
+
+    function normalizeOperationsSnapshotForImport(value) {
+      if (!isRecord(value) || !Array.isArray(value.serviceTickets)
+        || !Array.isArray(value.addOnRequests) || !Array.isArray(value.staffEligibility)) {
+        return { ok: false, code: 'invalid_operations_snapshot' };
+      }
+      const tickets = [];
+      const ticketIds = new Set();
+      const guestIds = new Set();
+      const numbers = new Set();
+      for (const raw of value.serviceTickets) {
+        const ticket = normalizeImportTicket(raw);
+        if (!ticket || ticketIds.has(ticket.id) || guestIds.has(ticket.guestCheckinId)
+          || numbers.has(ticket.number)) return { ok: false, code: 'invalid_operations_snapshot' };
+        ticketIds.add(ticket.id);
+        guestIds.add(ticket.guestCheckinId);
+        numbers.add(ticket.number);
+        tickets.push(ticket);
+      }
+      const addOns = [];
+      const addOnIds = new Set();
+      const semanticKeys = new Set();
+      for (const raw of value.addOnRequests) {
+        const addOn = normalizeImportAddOn(raw, tickets);
+        const semanticKey = addOn ? `${addOn.ticketId}\u0000${addOn.label}` : '';
+        if (!addOn || addOnIds.has(addOn.id) || semanticKeys.has(semanticKey)) {
+          return { ok: false, code: 'invalid_operations_snapshot' };
+        }
+        addOnIds.add(addOn.id);
+        semanticKeys.add(semanticKey);
+        addOns.push(addOn);
+      }
+      const ticketAddOnLines = tickets.flatMap((ticket) => ticket.lineItems
+        .filter((item) => item.type === 'addon').map((item) => ({ ticket, item })));
+      const lineSources = new Set();
+      for (const pair of ticketAddOnLines) {
+        if (lineSources.has(pair.item.sourceAddOnId)) return { ok: false, code: 'invalid_operations_snapshot' };
+        lineSources.add(pair.item.sourceAddOnId);
+        const matches = addOns.filter((addOn) => addOn.id === pair.item.sourceAddOnId
+          && addOn.ticketId === pair.ticket.id && addOn.status === 'accepted'
+          && addOn.label === pair.item.label && addOn.amountCents === pair.item.amountCents);
+        if (matches.length !== 1) return { ok: false, code: 'invalid_operations_snapshot' };
+      }
+      for (const addOn of addOns) {
+        const matches = ticketAddOnLines.filter(({ ticket, item }) => ticket.id === addOn.ticketId
+          && item.sourceAddOnId === addOn.id && item.label === addOn.label
+          && item.amountCents === addOn.amountCents);
+        if ((addOn.status === 'accepted' && matches.length !== 1)
+          || (addOn.status !== 'accepted' && matches.length !== 0)) {
+          return { ok: false, code: 'invalid_operations_snapshot' };
+        }
+      }
+      const eligibilityIds = new Set();
+      for (const event of value.staffEligibility) {
+        const id = normalizedRequiredText(event?.id);
+        const ticket = tickets.find((row) => row.id === normalizedRequiredText(event?.ticketId));
+        if (!isRecord(event) || !id || !id.startsWith('eligibility-') || eligibilityIds.has(id)
+          || !ticket || event.serviceKey !== ticket.serviceKey
+          || !/^staff-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalizedRequiredText(event.requestedStaffId))
+          || typeof event.eligible !== 'boolean' || !Array.isArray(event.recommendedStaffIds)
+          || event.recommendedStaffIds.some((staffId) => !/^staff-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(staffId))) {
+          return { ok: false, code: 'invalid_operations_snapshot' };
+        }
+        eligibilityIds.add(id);
+      }
+      return { ok: true, serviceTickets: tickets, addOnRequests: addOns };
+    }
+
+    function importAcceptedAddOns(appState, checkoutDraftId, operationsSnapshot) {
+      if (!Array.isArray(appState?.checkoutDrafts) || !Array.isArray(appState?.guestCheckins)) {
+        return { ok: false, code: 'invalid_checkout_state' };
+      }
+      const checkoutMatches = appState.checkoutDrafts.filter((row) => row.id === checkoutDraftId);
+      const checkout = checkoutMatches.length === 1 ? checkoutMatches[0] : null;
+      const guestMatches = checkout
+        ? appState.guestCheckins.filter((row) => row.id === checkout.guestCheckinId
+          && row.businessId === checkout.businessId)
+        : [];
+      const guestCheckin = guestMatches.length === 1 ? guestMatches[0] : null;
+      if (!checkout || !guestCheckin || checkout.status !== 'draft'
+        || !GUEST_CHECKIN_ID_PATTERN.test(guestCheckin.id)
+        || !normalizeGuestCheckin(appState, guestCheckin)
+        || !isCanonicalCheckoutForGuest(appState, checkout, guestCheckin)) {
+        return { ok: false, code: 'invalid_checkout_state' };
+      }
+      const operations = normalizeOperationsSnapshotForImport(operationsSnapshot);
+      if (!operations.ok) return operations;
+      const tickets = operations.serviceTickets.filter((ticket) => ticket.guestCheckinId === guestCheckin.id);
+      if (tickets.length !== 1 || tickets[0].businessId !== checkout.businessId) {
+        return { ok: false, code: tickets.length === 1 ? 'cross_business_ticket' : 'ticket_not_found' };
+      }
+      const ticket = tickets[0];
+      const accepted = operations.addOnRequests.filter((addOn) => (
+        addOn.ticketId === ticket.id && addOn.status === 'accepted'
+      ));
+      const acceptedById = new Map(accepted.map((addOn) => [addOn.id, addOn]));
+      const existingAddOns = checkout.lineItems.filter((item) => item.type === 'addon');
+      for (const item of existingAddOns) {
+        const authority = acceptedById.get(item.sourceAddOnId);
+        if (!authority || item.id !== `addon-${authority.id}` || item.label !== authority.label
+          || item.amountCents !== authority.amountCents) return { ok: false, code: 'invalid_existing_addon' };
+      }
+      const existingSources = new Set(existingAddOns.map((item) => item.sourceAddOnId));
+      const additions = accepted.filter((addOn) => !existingSources.has(addOn.id)).map((addOn) => ({
+        id: `addon-${addOn.id}`,
+        type: 'addon',
+        label: addOn.label,
+        amountCents: addOn.amountCents,
+        sourceAddOnId: addOn.id
+      }));
+      if (additions.length === 0) return { ok: true, importedCount: 0, checkoutDraft: checkout, idempotent: true };
+      const lineItems = [...checkout.lineItems, ...additions];
+      const totals = calculateCheckoutTotals(lineItems, checkout.tipBasisPoints);
+      if (totals.ok === false) return totals;
+      checkout.lineItems = lineItems;
+      Object.assign(checkout, totals);
+      return { ok: true, importedCount: additions.length, checkoutDraft: checkout };
+    }
+
+    function buildCustomerSurfaceUrl(href, fileName, parameters) {
+      try {
+        const current = new URL(href);
+        const target = new URL(fileName, current);
+        if (target.origin !== current.origin) return { ok: false, code: 'cross_origin_route' };
+        target.search = '';
+        target.hash = '';
+        Object.entries(parameters).forEach(([key, value]) => target.searchParams.set(key, value));
+        return { ok: true, href: target.href };
+      } catch {
+        return { ok: false, code: 'navigation_failed' };
+      }
+    }
+
+    function buildOperationsLiveTicketUrl(href, guestCheckinId) {
+      if (typeof guestCheckinId !== 'string' || guestCheckinId !== guestCheckinId.toLowerCase()
+        || !GUEST_CHECKIN_ID_PATTERN.test(guestCheckinId)) return { ok: false, code: 'invalid_guest_id' };
+      return buildCustomerSurfaceUrl(href, 'customer-salon-operations.html', { guestCheckinId });
+    }
+
+    function assignOperationsLiveTicket(guestCheckinId) {
+      let location;
+      let href;
+      try {
+        location = window.location;
+        href = location?.href;
+      } catch (error) {
+        return { ok: false, code: 'navigation_failed', error };
+      }
+      const route = buildOperationsLiveTicketUrl(href, guestCheckinId);
+      if (!route.ok) return route;
+      try {
+        if (typeof location?.assign === 'function') location.assign(route.href);
+        else location.href = route.href;
+        return route;
+      } catch (error) {
+        return { ok: false, code: 'navigation_failed', error, href: route.href };
+      }
+    }
+
+    function parseGuestCheckoutHandoff(href) {
+      let url;
+      try {
+        url = new URL(href);
+      } catch {
+        return { ok: false, present: true, code: 'invalid_handoff' };
+      }
+      const keys = [...url.searchParams.keys()];
+      if (keys.length === 0) return { ok: true, present: false };
+      const allowed = new Set(['handoff', 'guestCheckinId']);
+      const handoffValues = url.searchParams.getAll('handoff');
+      const guestValues = url.searchParams.getAll('guestCheckinId');
+      const guestCheckinId = guestValues[0];
+      if (keys.some((key) => !allowed.has(key)) || handoffValues.length !== 1
+        || handoffValues[0] !== 'guest-checkout' || guestValues.length !== 1
+        || typeof guestCheckinId !== 'string' || guestCheckinId !== guestCheckinId.toLowerCase()
+        || !GUEST_CHECKIN_ID_PATTERN.test(guestCheckinId)) {
+        return { ok: false, present: true, code: 'invalid_handoff' };
+      }
+      return { ok: true, present: true, guestCheckinId };
+    }
+
+    function consumeGuestCheckoutHandoff(appState, handoff, operationsSnapshot, now = Date.now()) {
+      if (!isRecord(handoff) || handoff.ok !== true || handoff.present !== true
+        || !GUEST_CHECKIN_ID_PATTERN.test(handoff.guestCheckinId)
+        || !Array.isArray(appState?.guestCheckins)) return { ok: false, code: 'invalid_handoff' };
+      const draft = structuredClone(appState);
+      const guestMatches = draft.guestCheckins.filter((row) => row.id === handoff.guestCheckinId);
+      const guest = guestMatches.length === 1 ? guestMatches[0] : null;
+      if (!guest || !normalizeGuestCheckin(draft, guest)) return { ok: false, code: 'guest_not_found' };
+      const created = createCheckoutDraft(draft, { guestCheckinId: guest.id }, now);
+      if (!created.ok || created.checkoutDraft.status !== 'draft') {
+        return created.ok ? { ok: false, code: 'checkout_not_draft' } : created;
+      }
+      const imported = importAcceptedAddOns(draft, created.checkoutDraft.id, operationsSnapshot);
+      if (!imported.ok) return imported;
+      draft.ui.pendingContext.guestCheckinId = guest.id;
+      draft.ui.pendingContext.checkoutDraftId = created.checkoutDraft.id;
+      draft.ui.pendingContext.paymentId = null;
+      draft.ui.pendingContext.paymentProofId = null;
+      draft.ui.pendingContext.paydoneKind = null;
+      draft.ui.activeScreen = 'pay';
+      draft.ui.activeModule = SCREEN_MODULE.pay;
+      replaceState(appState, draft);
+      return {
+        ok: true,
+        guestCheckin: guest,
+        checkoutDraft: appState.checkoutDrafts.find((row) => row.id === created.checkoutDraft.id),
+        importedCount: imported.importedCount,
+        idempotent: created.idempotent === true && imported.idempotent === true
+      };
+    }
+
+    function cleanConsumedHandoffUrl(href, history) {
+      try {
+        const targetHistory = history === undefined ? window.history : history;
+        const url = new URL(href);
+        url.search = '';
+        if (typeof targetHistory?.replaceState === 'function') targetHistory.replaceState(null, '', url.href);
+        return { ok: true, href: url.href };
+      } catch (error) {
+        return { ok: false, code: 'history_failed', error };
+      }
     }
 
     function setCheckoutTip(appState, checkoutDraftId, basisPoints) {
@@ -2050,7 +2423,9 @@
       const guestCheckin = appState.guestCheckins.find((row) => (
         row.id === guestCheckinId && row.businessId === businessId
       ));
-      const lineItems = normalizeLineItems(value.lineItems);
+      const lineItems = guestCheckin
+        ? normalizeCanonicalCheckoutLineItems(appState, guestCheckin, value.lineItems)
+        : null;
       const status = CHECKOUT_STATUSES.has(value.status) ? value.status : null;
       const method = value.method === null || CHECKOUT_METHODS.has(value.method) ? value.method : undefined;
       const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
@@ -4782,7 +5157,7 @@
         verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
         paymentIntegrityTitle: 'Không thể xác minh biên nhận', paymentIntegrityDetail: 'Dữ liệu xác minh không nhất quán. Không thể thử lại thanh toán này một cách an toàn.', returnHome: 'Về trang chủ',
         guestRewardsPending: 'Điểm đang chờ; dùng cùng số điện thoại để nhận sau.',
-        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', selfReferral: 'Bạn không thể tự giới thiệu chính mình.', referralShared: 'Đã chia sẻ liên kết giới thiệu.', shareCancelled: 'Bạn đã hủy chia sẻ. Có thể tự sao chép liên kết bên dưới.', shareManual: 'Không thể chia sẻ tự động. Hãy sao chép liên kết bên dưới.', referralUpdateFailed: 'Không thể cập nhật lời mời một cách an toàn.', referralInvited: 'Đã mời', referralJoined: 'Đã tham gia', referralRewarded: 'Đã thưởng', simulateJoined: 'Mô phỏng đã tham gia', simulatePaidVisit: 'Mô phỏng lượt ghé trả phí', referralEmpty: 'Chưa có lời mời nào.', referralShareTitle: 'Lời mời NEXORA', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Nhập họ tên, số điện thoại US 10 số và lựa chọn hợp lệ.', noPreference: 'Không yêu cầu', notAvailable: 'Chưa có thông tin', guestCheckinSuccess: 'Đã check-in cho khách. Điểm đang chờ xác nhận.', guestNotFound: 'Không tìm thấy lượt check-in của khách.', serviceNotFound: 'Không tìm thấy dịch vụ đã chọn.', checkoutFailed: 'Không thể chuẩn bị thanh toán. Vui lòng thử lại.', selectPaymentMethod: 'Chọn phương thức thanh toán để tiếp tục.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', invalidImage: 'Chỉ dùng ảnh JPEG hoặc PNG hợp lệ.', proofSavedWithoutImage: 'Bộ nhớ ảnh đã đầy; đã lưu bằng chứng không kèm ảnh.', proofSubmitFailed: 'Không thể gửi bằng chứng thanh toán.', verificationFailed: 'Không thể cập nhật xác minh thanh toán.', proofRejected: 'Bằng chứng thanh toán đã bị từ chối.', createAccount: 'Tạo tài khoản NEXORA', continueGuest: 'Tiếp tục với tư cách khách', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
+        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', selfReferral: 'Bạn không thể tự giới thiệu chính mình.', referralShared: 'Đã chia sẻ liên kết giới thiệu.', shareCancelled: 'Bạn đã hủy chia sẻ. Có thể tự sao chép liên kết bên dưới.', shareManual: 'Không thể chia sẻ tự động. Hãy sao chép liên kết bên dưới.', referralUpdateFailed: 'Không thể cập nhật lời mời một cách an toàn.', referralInvited: 'Đã mời', referralJoined: 'Đã tham gia', referralRewarded: 'Đã thưởng', simulateJoined: 'Mô phỏng đã tham gia', simulatePaidVisit: 'Mô phỏng lượt ghé trả phí', referralEmpty: 'Chưa có lời mời nào.', referralShareTitle: 'Lời mời NEXORA', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Nhập họ tên, số điện thoại US 10 số và lựa chọn hợp lệ.', noPreference: 'Không yêu cầu', notAvailable: 'Chưa có thông tin', guestCheckinSuccess: 'Đã check-in cho khách. Điểm đang chờ xác nhận.', guestRouteFailed: 'Đã lưu check-in nhưng chưa thể mở phiếu. Vui lòng thử lại.', guestNotFound: 'Không tìm thấy lượt check-in của khách.', serviceNotFound: 'Không tìm thấy dịch vụ đã chọn.', checkoutFailed: 'Không thể chuẩn bị thanh toán. Vui lòng thử lại.', addonImportFailed: 'Không thể xác minh dịch vụ thêm. Thanh toán chưa được mở.', handoffInvalid: 'Liên kết thanh toán không hợp lệ hoặc đã hết hiệu lực.', selectPaymentMethod: 'Chọn phương thức thanh toán để tiếp tục.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', invalidImage: 'Chỉ dùng ảnh JPEG hoặc PNG hợp lệ.', proofSavedWithoutImage: 'Bộ nhớ ảnh đã đầy; đã lưu bằng chứng không kèm ảnh.', proofSubmitFailed: 'Không thể gửi bằng chứng thanh toán.', verificationFailed: 'Không thể cập nhật xác minh thanh toán.', proofRejected: 'Bằng chứng thanh toán đã bị từ chối.', createAccount: 'Tạo tài khoản NEXORA', continueGuest: 'Tiếp tục với tư cách khách', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
         cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
         invalidPhone: 'Nhập số điện thoại US gồm 10 số.', cooldown: 'Vui lòng chờ đủ 30 giây.',
@@ -4816,7 +5191,7 @@
         verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
         paymentIntegrityTitle: 'Receipt could not be verified', paymentIntegrityDetail: 'Verification data is inconsistent. This payment cannot be retried safely.', returnHome: 'Return Home',
         guestRewardsPending: 'Rewards are pending; use the same phone to claim later.',
-        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', selfReferral: 'You cannot refer yourself.', referralShared: 'Referral link shared.', shareCancelled: 'Sharing was cancelled. You can copy the link below.', shareManual: 'Automatic sharing is unavailable. Copy the link below.', referralUpdateFailed: 'Could not safely update this invite.', referralInvited: 'Invited', referralJoined: 'Joined', referralRewarded: 'Rewarded', simulateJoined: 'Simulate joined', simulatePaidVisit: 'Simulate paid visit', referralEmpty: 'No invites yet.', referralShareTitle: 'NEXORA invitation', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Enter a name, a 10-digit US phone number and valid selections.', noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in. Points are pending confirmation.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'The selected service was not found.', checkoutFailed: 'Could not prepare checkout. Please try again.', selectPaymentMethod: 'Select a payment method to continue.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', invalidImage: 'Use a valid JPEG or PNG image.', proofSavedWithoutImage: 'Image storage is full; proof details were saved without the image.', proofSubmitFailed: 'Could not submit payment proof.', verificationFailed: 'Could not update payment verification.', proofRejected: 'The payment proof was rejected.', createAccount: 'Create NEXORA Account', continueGuest: 'Continue as Guest', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
+        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', selfReferral: 'You cannot refer yourself.', referralShared: 'Referral link shared.', shareCancelled: 'Sharing was cancelled. You can copy the link below.', shareManual: 'Automatic sharing is unavailable. Copy the link below.', referralUpdateFailed: 'Could not safely update this invite.', referralInvited: 'Invited', referralJoined: 'Joined', referralRewarded: 'Rewarded', simulateJoined: 'Simulate joined', simulatePaidVisit: 'Simulate paid visit', referralEmpty: 'No invites yet.', referralShareTitle: 'NEXORA invitation', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Enter a name, a 10-digit US phone number and valid selections.', noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in. Points are pending confirmation.', guestRouteFailed: 'Check-in was saved, but the ticket could not open. Please retry.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'The selected service was not found.', checkoutFailed: 'Could not prepare checkout. Please try again.', addonImportFailed: 'Add-ons could not be verified. Checkout was not opened.', handoffInvalid: 'This checkout link is invalid or expired.', selectPaymentMethod: 'Select a payment method to continue.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', invalidImage: 'Use a valid JPEG or PNG image.', proofSavedWithoutImage: 'Image storage is full; proof details were saved without the image.', proofSubmitFailed: 'Could not submit payment proof.', verificationFailed: 'Could not update payment verification.', proofRejected: 'The payment proof was rejected.', createAccount: 'Create NEXORA Account', continueGuest: 'Continue as Guest', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
         cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
         invalidPhone: 'Enter a 10-digit US phone number.', cooldown: 'Please wait for the 30-second cooldown.',
@@ -6393,7 +6768,12 @@
       setFieldError('guest-checkin-error');
       renderApp();
       showToast(t('guestCheckinSuccess'));
-      navigateTo('pay');
+      const routed = assignOperationsLiveTicket(result.guestCheckin.id);
+      if (!routed.ok) {
+        setFieldError('guest-checkin-error', t('guestRouteFailed'));
+        showToast(t('guestRouteFailed'), 'error');
+      }
+      return routed.ok ? result : { ...routed, guestCheckin: result.guestCheckin, persisted: true };
     });
     registerAction('open-guest-checkout', () => {
       const guestCheckin = state.guestCheckins.find((row) => (
@@ -6403,10 +6783,18 @@
       if (!getGuestServiceDefinition(guestCheckin.businessId, guestCheckin.serviceKey)) {
         return showToast(t('serviceNotFound'), 'error');
       }
-      const result = commitState((draft) => createCheckoutDraft(draft, {
-        guestCheckinId: guestCheckin.id
-      }));
-      if (!result.ok) return showToast(t('checkoutFailed'), 'error');
+      const operationsSnapshot = readOperationsSnapshot();
+      const result = commitState((draft) => {
+        const created = createCheckoutDraft(draft, { guestCheckinId: guestCheckin.id });
+        if (!created.ok || created.checkoutDraft.status !== 'draft') return created;
+        const imported = importAcceptedAddOns(draft, created.checkoutDraft.id, operationsSnapshot);
+        return imported.ok ? { ...created, importedCount: imported.importedCount } : imported;
+      });
+      if (!result.ok) return showToast(
+        result.code === 'invalid_operations_snapshot' || result.code === 'invalid_existing_addon'
+          ? t('addonImportFailed') : t('checkoutFailed'),
+        'error'
+      );
       setFieldError('checkout-error');
       if (result.checkoutDraft.status === 'pending_verification') {
         renderPaymentProof();
@@ -7486,6 +7874,39 @@
           showToast(state.profile.language === 'en' ? `${result.retried} queued check-in(s) sent.` : `Đã gửi lại ${result.retried} check-in.`);
         }
       });
+      let currentHref;
+      try {
+        currentHref = window.location?.href;
+      } catch {
+        currentHref = undefined;
+      }
+      const handoff = parseGuestCheckoutHandoff(currentHref);
+      if (handoff.present) {
+        const consumed = handoff.ok
+          ? commitState((draft) => consumeGuestCheckoutHandoff(
+              draft, handoff, readOperationsSnapshot(), Date.now()
+            ))
+          : handoff;
+        if (consumed.ok) {
+          renderApp();
+          showScreen('pay');
+          renderGuestCheckout();
+          showPayView('checkout');
+          cleanConsumedHandoffUrl(currentHref);
+          return;
+        }
+        state.ui.activeScreen = 'home';
+        state.ui.activeModule = 'home';
+        state.ui.pendingContext.checkoutDraftId = null;
+        state.ui.pendingContext.paymentId = null;
+        state.ui.pendingContext.paymentProofId = null;
+        state.ui.pendingContext.paydoneKind = null;
+        renderApp();
+        showScreen('home');
+        showPayView('direct', { focus: false });
+        showToast(handoff.ok ? t('addonImportFailed') : t('handoffInvalid'), 'error');
+        return;
+      }
       renderApp();
       restorePersistedUi();
     }
@@ -7498,6 +7919,12 @@
       loadState,
       saveState,
       readOperationsSnapshot,
+      normalizeOperationsSnapshotForImport,
+      importAcceptedAddOns,
+      buildOperationsLiveTicketUrl,
+      parseGuestCheckoutHandoff,
+      consumeGuestCheckoutHandoff,
+      cleanConsumedHandoffUrl,
       normalizeGuestCheckin,
       normalizeCheckoutDraft,
       normalizePaymentProof,

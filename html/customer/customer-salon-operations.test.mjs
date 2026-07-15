@@ -15,15 +15,19 @@ function createMemoryStorage(initial = {}) {
   };
 }
 
-function testApi(initial = {}) {
+function testApi(initial = {}, {
+  randomUUID = (() => {
+    let uuid = 0;
+    return () => `00000000-0000-4000-8000-${String(++uuid).padStart(12, '0')}`;
+  })()
+} = {}) {
   const script = SOURCE.match(/<script id="operations-app-script">([\s\S]*?)<\/script>/)?.[1];
   assert.ok(script, 'operations script must exist');
   const storage = createMemoryStorage(initial);
-  let uuid = 0;
   const window = { localStorage: storage, NEXORA_OPS_SKIP_INIT: true };
   const context = vm.createContext({
     window, localStorage: storage, structuredClone, console, URL, Date,
-    crypto: { randomUUID: () => `00000000-0000-4000-8000-${String(++uuid).padStart(12, '0')}` }
+    crypto: { randomUUID }
   });
   window.window = window;
   vm.runInContext(script, context);
@@ -96,6 +100,22 @@ function seedServiceTicket(api, overrides = {}, now = 1000) {
   const created = api.createServiceTicket(state, guestCheckin(overrides), now);
   assert.equal(created.ok, true);
   return { state, ticket: created.ticket };
+}
+
+function seedTicketWithCustomer(api, { phone = '8325550198' } = {}) {
+  const { state, ticket } = seedServiceTicket(api);
+  return {
+    state,
+    ticket,
+    customerSnapshot: {
+      profile: { id: 'cust-amy', name: 'Amy Nguyen', phone },
+      businesses: { 'bitcoin-nail-bar': { id: 'bitcoin-nail-bar', name: 'Bitcoin Nail Bar' } },
+      guestCheckins: [{
+        id: ticket.guestCheckinId, businessId: ticket.businessId, name: 'Amy Nguyen', phone,
+        serviceKey: ticket.serviceKey, staffProfileId: ticket.staffProfileId
+      }]
+    }
+  };
 }
 
 function createStubNode({ id = '', screen = '', target = '', action = '', actionTarget = '' } = {}) {
@@ -178,7 +198,9 @@ function uiApi({
     'ops-entry-error', 'ops-ticket-empty', 'ops-ticket-content', 'ops-ticket-number',
     'ops-ticket-status', 'ops-ticket-business', 'ops-ticket-items', 'ops-ticket-total',
     'ops-ticket-staff', 'ops-eligibility-warning', 'ops-requested-staff',
-    'ops-requested-service', 'ops-recommended-staff', 'ops-choose-staff'
+    'ops-requested-service', 'ops-recommended-staff', 'ops-choose-staff',
+    'ops-addon-staff', 'ops-addon-label', 'ops-addon-amount', 'ops-addon-current',
+    'ops-addon-new', 'ops-addon-phone', 'ops-addon-error', 'ops-addon-confirm'
   ];
   const dynamicNodes = dynamicIds.map((id) => createStubNode({ id }));
   const actionButtons = {
@@ -190,9 +212,14 @@ function uiApi({
     call: createStubNode({ action: 'call-tech' }),
     message: createStubNode({ action: 'message-tech' }),
     choose: dynamicNodes.find((node) => node.id === 'ops-choose-staff'),
-    frontDesk: createStubNode({ action: 'ask-front-desk' })
+    frontDesk: createStubNode({ action: 'ask-front-desk' }),
+    openAddon: createStubNode({ action: 'open-addon' }),
+    acceptAddon: createStubNode({ action: 'accept-addon' }),
+    declineAddon: createStubNode({ action: 'decline-addon' }),
+    confirmAddon: dynamicNodes.find((node) => node.id === 'ops-addon-confirm')
   };
   actionButtons.choose.dataset.opsAction = 'choose-recommended-staff';
+  actionButtons.confirmAddon.dataset.opsAction = 'confirm-addon-phone';
   const byId = new Map([
     [role.id, role], [status.id, status], [copy.id, copy],
     ...screens.map((node) => [node.id, node]), ...dynamicNodes.map((node) => [node.id, node])
@@ -1125,7 +1152,7 @@ test('a first-load demo never outranks or renumbers a later real sanitized guest
   assert.equal(state.ui.activeScreen, 'liveticket');
 });
 
-test('explicit Pay action alone prepares an exact guest handoff without navigation', () => {
+test('explicit Pay action alone prepares and navigates the exact guest handoff', () => {
   const customerKey = 'nexora.customer.prototype.v1';
   const guest = guestCheckin({ id: 'guest-checkin-pay' });
   const href = 'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-pay';
@@ -1141,7 +1168,10 @@ test('explicit Pay action alone prepares an exact guest handoff without navigati
   harness.document.dispatchClick(harness.actionButtons.pay);
   assert.deepEqual(plain(harness.api.getPayHandoff()), { guestCheckinId: guest.id });
   assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
-  assert.equal(harness.window.location.href, href);
+  assert.equal(
+    harness.window.location.href,
+    'https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=guest-checkin-pay'
+  );
 });
 
 test('staff warning is conditional and recommendation CTA, availability, and ARIA stay aligned', () => {
@@ -1291,7 +1321,7 @@ test('role and screen controls persist operations state with hidden, aria, and f
   assert.match(harness.copy.textContent, /Staff/);
   assert.match(harness.status.textContent, /Staff/);
 
-  harness.document.dispatchClick(harness.screenButtons[2]);
+  harness.document.dispatchClick(harness.actionButtons.openAddon);
   assert.equal(harness.api.getOperationsState().ui.activeScreen, 'addonapproval');
   assert.equal(harness.screens[0].classList.contains('hidden'), true);
   assert.equal(harness.screens[0].getAttribute('aria-hidden'), 'true');
@@ -1321,6 +1351,10 @@ test('ARIA tabs support ArrowLeft, ArrowRight, Home, and End with persisted acti
   const [live, eligibility, addon] = harness.screenButtons;
   assert.equal(eligibility.disabled, true);
   assert.equal(eligibility.getAttribute('aria-disabled'), 'true');
+  assert.equal(addon.disabled, true);
+  harness.document.dispatchClick(harness.actionButtons.openAddon);
+  harness.document.dispatchClick(live);
+  assert.equal(addon.disabled, false);
 
   const right = harness.document.dispatchKeydown(live, 'ArrowRight');
   assert.equal(right.defaultPrevented, true);
@@ -1394,4 +1428,258 @@ test('throwing localStorage accessor still exports a safe API and preserves in-m
   assert.equal(committed.ok, false);
   assert.equal(committed.code, 'persist_failed');
   assert.deepEqual(plain(api.getOperationsState()), before);
+});
+
+test('accepts an authoritative add-on once after exact guest phone confirmation', () => {
+  const { api } = testApi();
+  const fixture = seedTicketWithCustomer(api);
+  const proposed = api.proposeAddOn(fixture.state, {
+    ticketId: fixture.ticket.id,
+    staffProfileId: fixture.ticket.staffProfileId,
+    label: 'Gel Polish',
+    amountCents: 1500
+  }, 1000);
+  assert.equal(proposed.ok, true);
+  assert.equal(fixture.ticket.currentTotalCents, 4950);
+
+  const accepted = api.resolveAddOn(
+    fixture.state, proposed.addOn.id, 'accepted', '0198', fixture.customerSnapshot, 2000
+  );
+  assert.equal(accepted.ok, true);
+  assert.equal(accepted.addOn.status, 'accepted');
+  assert.equal(fixture.ticket.currentTotalCents, 6450);
+  assert.equal(fixture.ticket.lineItems.filter((item) => item.sourceAddOnId === proposed.addOn.id).length, 1);
+
+  const snapshot = JSON.stringify(fixture.state);
+  const replay = api.resolveAddOn(
+    fixture.state, proposed.addOn.id, 'accepted', '0198', fixture.customerSnapshot, 3000
+  );
+  assert.equal(replay.idempotent, true);
+  assert.equal(JSON.stringify(fixture.state), snapshot);
+});
+
+test('wrong phone, changed decision, duplicate owners, and decline are atomic', () => {
+  const { api } = testApi();
+  const fixture = seedTicketWithCustomer(api);
+  const proposed = api.proposeAddOn(fixture.state, {
+    ticketId: fixture.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    label: 'Gel Polish', amountCents: 1500
+  }, 1000);
+  for (const [last4, snapshot] of [
+    ['0000', fixture.customerSnapshot],
+    ['(0198)', fixture.customerSnapshot],
+    ['0198', { ...fixture.customerSnapshot, guestCheckins: [
+      ...fixture.customerSnapshot.guestCheckins, structuredClone(fixture.customerSnapshot.guestCheckins[0])
+    ] }]
+  ]) {
+    const before = JSON.stringify(fixture.state);
+    assert.equal(api.resolveAddOn(fixture.state, proposed.addOn.id, 'accepted', last4, snapshot, 2000).ok, false);
+    assert.equal(JSON.stringify(fixture.state), before);
+  }
+  assert.equal(api.resolveAddOn(
+    fixture.state, proposed.addOn.id, 'declined', '0198', fixture.customerSnapshot, 2000
+  ).ok, true);
+  assert.equal(fixture.ticket.currentTotalCents, 4950);
+  const beforeReplay = JSON.stringify(fixture.state);
+  assert.equal(api.resolveAddOn(
+    fixture.state, proposed.addOn.id, 'accepted', '0198', fixture.customerSnapshot, 3000
+  ).code, 'addon_already_resolved');
+  assert.equal(JSON.stringify(fixture.state), beforeReplay);
+});
+
+test('proposal binds to catalog, active ticket, current staff, chronology, uniqueness, and UUID collision', () => {
+  const cases = [
+    ['arbitrary label', { label: 'Mystery', amountCents: 1500 }],
+    ['arbitrary amount', { label: 'Gel Polish', amountCents: 1 }],
+    ['wrong staff', { label: 'Gel Polish', amountCents: 1500, staffProfileId: 'staff-kevin' }],
+    ['wrong business', { label: 'Gel Polish', amountCents: 1500, businessId: 'golden-glow-spa' }]
+  ];
+  for (const [, overrides] of cases) {
+    const { api } = testApi();
+    const fixture = seedTicketWithCustomer(api);
+    const before = JSON.stringify(fixture.state);
+    const result = api.proposeAddOn(fixture.state, {
+      ticketId: fixture.ticket.id, staffProfileId: fixture.ticket.staffProfileId,
+      businessId: fixture.ticket.businessId, label: 'Gel Polish', amountCents: 1500, ...overrides
+    }, 1000);
+    assert.equal(result.ok, false);
+    assert.equal(JSON.stringify(fixture.state), before);
+  }
+
+  const { api } = testApi();
+  const completed = seedTicketWithCustomer(api);
+  completed.ticket.status = 'completed';
+  completed.ticket.completedAt = new Date(2000).toISOString();
+  const completedBefore = JSON.stringify(completed.state);
+  assert.equal(api.proposeAddOn(completed.state, {
+    ticketId: completed.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    label: 'Gel Polish', amountCents: 1500
+  }, 1500).code, 'ticket_completed');
+  assert.equal(JSON.stringify(completed.state), completedBefore);
+
+  const first = seedTicketWithCustomer(api);
+  const created = api.proposeAddOn(first.state, {
+    ticketId: first.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    label: 'Gel Polish', amountCents: 1500
+  }, 999);
+  assert.equal(created.code, 'invalid_time_order');
+  assert.equal(first.state.addOnRequests.length, 0);
+});
+
+test('add-on UUID failures, collisions, roles, completed tickets, and resolution time are atomic', () => {
+  let uuidCall = 0;
+  const values = [
+    '00000000-0000-4000-8000-000000000001',
+    '00000000-0000-4000-8000-000000000002',
+    '00000000-0000-4000-8000-000000000003',
+    '00000000-0000-4000-8000-000000000002'
+  ];
+  const { api } = testApi({}, { randomUUID: () => values[uuidCall++] });
+  const first = seedTicketWithCustomer(api);
+  const proposal = api.proposeAddOn(first.state, {
+    ticketId: first.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    label: 'Gel Polish', amountCents: 1500
+  }, 1000);
+  assert.equal(proposal.ok, true);
+  const secondGuest = guestCheckin({ id: 'guest-checkin-2' });
+  const second = api.createServiceTicket(first.state, secondGuest, 1000);
+  assert.equal(second.ok, true);
+  const beforeCollision = JSON.stringify(first.state);
+  assert.equal(api.proposeAddOn(first.state, {
+    ticketId: second.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    label: 'Gel Polish', amountCents: 1500
+  }, 1000).code, 'id_collision');
+  assert.equal(JSON.stringify(first.state), beforeCollision);
+
+  first.state.ui.selectedTicketId = first.ticket.id;
+  first.state.ui.role = 'Staff';
+  const roleBefore = JSON.stringify(first.state);
+  assert.equal(api.resolveAddOn(
+    first.state, proposal.addOn.id, 'accepted', '0198', first.customerSnapshot, 2000
+  ).code, 'customer_approval_required');
+  assert.equal(JSON.stringify(first.state), roleBefore);
+  first.state.ui.role = 'Customer';
+  const timeBefore = JSON.stringify(first.state);
+  assert.equal(api.resolveAddOn(
+    first.state, proposal.addOn.id, 'accepted', '0198', first.customerSnapshot, 999
+  ).code, 'invalid_time_order');
+  assert.equal(JSON.stringify(first.state), timeBefore);
+  first.ticket.status = 'completed';
+  first.ticket.completedAt = new Date(1500).toISOString();
+  const completedBefore = JSON.stringify(first.state);
+  assert.equal(api.resolveAddOn(
+    first.state, proposal.addOn.id, 'accepted', '0198', first.customerSnapshot, 1400
+  ).code, 'ticket_completed');
+  assert.equal(JSON.stringify(first.state), completedBefore);
+
+  let invalidUuidCalls = 0;
+  const invalid = testApi({}, { randomUUID: () => (
+    invalidUuidCalls++ === 0 ? '00000000-0000-4000-8000-000000000011' : 'not-a-uuid'
+  ) });
+  const invalidFixture = seedTicketWithCustomer(invalid.api);
+  const invalidBefore = JSON.stringify(invalidFixture.state);
+  assert.equal(invalid.api.proposeAddOn(invalidFixture.state, {
+    ticketId: invalidFixture.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    label: 'Gel Polish', amountCents: 1500
+  }, 1000).code, 'id_failed');
+  assert.equal(JSON.stringify(invalidFixture.state), invalidBefore);
+});
+
+test('strict add-on reconciliation rejects duplicate semantics and mismatched accepted line items all-or-none', () => {
+  const { api } = testApi();
+  const fixture = seedTicketWithCustomer(api);
+  const proposed = api.proposeAddOn(fixture.state, {
+    ticketId: fixture.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    label: 'Gel Polish', amountCents: 1500
+  }, 1000);
+  api.resolveAddOn(fixture.state, proposed.addOn.id, 'accepted', '0198', fixture.customerSnapshot, 2000);
+  const canonical = api.normalizeOperationsState(fixture.state);
+  assert.equal(canonical.addOnRequests.length, 1);
+  assert.equal(canonical.serviceTickets[0].lineItems.length, 3);
+
+  for (const mutate of [
+    (state) => state.addOnRequests.push(structuredClone(state.addOnRequests[0])),
+    (state) => { state.serviceTickets[0].lineItems[2].amountCents = 1499; },
+    (state) => { state.addOnRequests[0].businessId = 'golden-glow-spa'; },
+    (state) => { state.addOnRequests[0].resolvedAt = new Date(500).toISOString(); }
+  ]) {
+    const tampered = structuredClone(fixture.state);
+    mutate(tampered);
+    const normalized = api.normalizeOperationsState(tampered);
+    assert.deepEqual(plain(normalized.addOnRequests), []);
+    assert.deepEqual(plain(normalized.serviceTickets), []);
+    assert.equal(normalized.ui.activeScreen, 'liveticket');
+  }
+});
+
+test('only explicit Pay action performs the exact same-origin checkout handoff and keeps retry state on failure', () => {
+  const customerKey = 'nexora.customer.prototype.v1';
+  const guest = guestCheckin({ id: 'guest-checkin-route' });
+  const href = 'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-route';
+  const harness = uiApi({ storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }), href });
+  harness.document.dispatchClick(harness.actionButtons.call);
+  assert.equal(harness.window.location.href, href);
+  harness.document.dispatchClick(harness.actionButtons.pay);
+  assert.equal(
+    harness.window.location.href,
+    'https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=guest-checkin-route'
+  );
+  assert.deepEqual(plain(harness.api.getPayHandoff()), { guestCheckinId: guest.id });
+
+  const failed = uiApi({ storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }), href });
+  Object.defineProperty(failed.window, 'location', {
+    value: { href, assign() { throw new Error('blocked'); } }, configurable: true
+  });
+  failed.document.dispatchClick(failed.actionButtons.pay);
+  assert.deepEqual(plain(failed.api.getPayHandoff()), { guestCheckinId: guest.id });
+  assert.equal(failed.window.location.href, href);
+  assert.match(failed.status.textContent, /retry|thử lại/i);
+
+  const blockedAccessor = uiApi({ storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }), href });
+  Object.defineProperty(blockedAccessor.window, 'location', {
+    configurable: true,
+    get() { throw new Error('location blocked'); }
+  });
+  assert.doesNotThrow(() => blockedAccessor.document.dispatchClick(blockedAccessor.actionButtons.pay));
+  assert.deepEqual(plain(blockedAccessor.api.getPayHandoff()), { guestCheckinId: guest.id });
+  assert.match(blockedAccessor.status.textContent, /retry|thử lại/i);
+});
+
+test('add-on UI executes open decision sanitized phone and confirm with accessible reset', () => {
+  const customerKey = 'nexora.customer.prototype.v1';
+  const guest = guestCheckin({ id: 'guest-checkin-addon-ui' });
+  const harness = uiApi({
+    storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }),
+    href: 'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-addon-ui'
+  });
+  const phone = harness.byId.get('ops-addon-phone');
+  const confirm = harness.actionButtons.confirmAddon;
+  assert.equal(harness.screenButtons[2].disabled, true);
+
+  harness.document.dispatchClick(harness.actionButtons.openAddon);
+  assert.equal(harness.api.getOperationsState().addOnRequests[0].status, 'proposed');
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'addonapproval');
+  assert.equal(harness.byId.get('ops-addon-staff').textContent, 'Jenny suggested / đề xuất');
+  assert.equal(harness.byId.get('ops-addon-label').textContent, 'Gel Polish');
+  assert.equal(harness.byId.get('ops-addon-amount').textContent, '+ $15.00');
+  assert.equal(harness.byId.get('ops-addon-current').textContent, '$49.50');
+  assert.equal(harness.byId.get('ops-addon-new').textContent, '$64.50');
+  assert.equal(confirm.disabled, true);
+
+  harness.document.dispatchClick(harness.actionButtons.acceptAddon);
+  phone.value = '(01)98';
+  phone.dispatch('input');
+  assert.equal(phone.value, '0198');
+  assert.equal(confirm.disabled, false);
+  assert.equal(confirm.getAttribute('aria-disabled'), 'false');
+  harness.document.dispatchClick(confirm);
+
+  const accepted = harness.api.getOperationsState();
+  assert.equal(accepted.addOnRequests[0].status, 'accepted');
+  assert.equal(accepted.serviceTickets[0].currentTotalCents, 6450);
+  assert.equal(accepted.ui.activeScreen, 'liveticket');
+  assert.equal(phone.value, '');
+  assert.equal(confirm.disabled, true);
+  assert.equal(harness.screenButtons[2].disabled, true);
+  assert.equal(harness.screens[0].focusCount > 0, true);
 });

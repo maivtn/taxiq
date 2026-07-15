@@ -140,7 +140,12 @@ function testApi(seed = {}, {
   url = URL,
   blob = Blob,
   fileReader,
-  image
+  image,
+  location = {
+    href: 'https://example.test/customer/cutomer-reward.html',
+    assign(value) { this.href = String(value); }
+  },
+  history
 } = {}) {
   const source = html();
   const script = source.match(/<script>\s*([\s\S]*?)<\/script>\s*<\/body>/)?.[1];
@@ -152,8 +157,10 @@ function testApi(seed = {}, {
     setTimeout() { return 1; },
     clearTimeout() {},
     open,
-    lucide: null
+    lucide: null,
+    location
   };
+  if (history) window.history = history;
   if (navigator) window.navigator = navigator;
   if (document) window.document = document;
   const globals = {
@@ -335,6 +342,18 @@ test('operations snapshot invariant defaults corrupt data, clones valid arrays a
   assert.equal(second.addOnRequests[0].id, 'addon-request-1');
   assert.equal(second.staffEligibility[0].staffProfileId, 'staff-anna');
   assert.equal(setCalls, 0);
+});
+
+test('operations snapshot guards a throwing localStorage accessor without writing', () => {
+  const { api, context } = testApi();
+  vm.runInContext(`Object.defineProperty(window, 'localStorage', {
+    configurable: true,
+    get() { throw new Error('storage blocked'); }
+  })`, context);
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(api.readOperationsSnapshot())),
+    { serviceTickets: [], addOnRequests: [], staffEligibility: [] }
+  );
 });
 
 test('customer journey invariant never changes balances or ledger during migration', () => {
@@ -6560,4 +6579,280 @@ test('referral UI is localized, action-complete, standalone, and keeps exactly 3
   assert.equal(screenIds(source).length, 31);
   assert.match(source, /@tailwindcss\/browser/);
   assert.match(source, /unpkg\.com\/lucide/);
+});
+
+function acceptedOperationsSnapshot(checkout, {
+  addOnId = 'addon-00000000-0000-4000-8000-000000000091',
+  ticketId = 'ticket-00000000-0000-4000-8000-000000000090'
+} = {}) {
+  const guestCreatedAt = '1970-01-01T00:00:01.000Z';
+  const resolvedAt = '1970-01-01T00:00:02.000Z';
+  return {
+    serviceTickets: [{
+      id: ticketId, number: 104, guestCheckinId: checkout.guestCheckinId,
+      businessId: checkout.businessId, serviceKey: 'deluxe-pedicure', status: 'in_service',
+      staffProfileId: 'staff-jenny',
+      lineItems: [
+        { id: `${ticketId}-service`, type: 'service', label: 'Deluxe Pedicure', amountCents: 5500 },
+        { id: `${ticketId}-promo`, type: 'discount', label: 'Promo NEW10', amountCents: -550 },
+        { id: `${ticketId}-addon-${addOnId}`, type: 'addon', label: 'Gel Polish', amountCents: 1500, sourceAddOnId: addOnId }
+      ],
+      currentTotalCents: 6450, frontDeskRequestedAt: null,
+      createdAt: guestCreatedAt, completedAt: null
+    }],
+    addOnRequests: [{
+      id: addOnId, ticketId, guestCheckinId: checkout.guestCheckinId,
+      businessId: checkout.businessId, staffProfileId: 'staff-jenny',
+      label: 'Gel Polish', amountCents: 1500, status: 'accepted',
+      createdAt: guestCreatedAt, resolvedAt
+    }],
+    staffEligibility: []
+  };
+}
+
+test('imports an accepted operations add-on once and recomputes the 18 percent total in cents', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const checkout = seedCheckoutDraft(api, app, { method: 'Card', tipBasisPoints: 1800, staffProfileId: null });
+  const operations = acceptedOperationsSnapshot(checkout);
+
+  const first = api.importAcceptedAddOns(app, checkout.id, operations);
+  assert.equal(first.ok, true);
+  assert.equal(first.importedCount, 1);
+  assert.equal(checkout.totalCents, 7611);
+  assert.equal(checkout.lineItems.at(-1).id, `addon-${operations.addOnRequests[0].id}`);
+  assert.equal(checkout.lineItems.at(-1).sourceAddOnId, operations.addOnRequests[0].id);
+
+  const snapshot = JSON.stringify(app);
+  const second = api.importAcceptedAddOns(app, checkout.id, operations);
+  assert.equal(second.importedCount, 0);
+  assert.equal(second.idempotent, true);
+  assert.equal(JSON.stringify(app), snapshot);
+});
+
+test('accepted add-on import preflights unrelated artifacts and existing addon authority atomically', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const checkout = seedCheckoutDraft(api, app, { method: 'Zelle', tipBasisPoints: 0, staffProfileId: null });
+  const operations = acceptedOperationsSnapshot(checkout);
+  const variants = [
+    (snapshot) => snapshot.serviceTickets.push({ id: 'ticket-bad' }),
+    (snapshot) => snapshot.addOnRequests.push(structuredClone(snapshot.addOnRequests[0])),
+    (snapshot) => { snapshot.addOnRequests[0].businessId = 'golden-glow-spa'; },
+    (snapshot) => { snapshot.serviceTickets[0].lineItems[2].sourceAddOnId = 'addon-00000000-0000-4000-8000-000000000099'; },
+    (snapshot) => { snapshot.addOnRequests[0].resolvedAt = '1970-01-01T00:00:00.000Z'; }
+  ];
+  for (const mutate of variants) {
+    const candidate = structuredClone(operations);
+    mutate(candidate);
+    const before = JSON.stringify(app);
+    assert.equal(api.importAcceptedAddOns(app, checkout.id, candidate).ok, false);
+    assert.equal(JSON.stringify(app), before);
+  }
+
+  assert.equal(api.importAcceptedAddOns(app, checkout.id, operations).ok, true);
+  checkout.lineItems.at(-1).amountCents = 1499;
+  const beforeTampered = JSON.stringify(app);
+  assert.equal(api.importAcceptedAddOns(app, checkout.id, operations).ok, false);
+  assert.equal(JSON.stringify(app), beforeTampered);
+});
+
+test('checkout migration permits only deterministic authoritative addon suffix shapes', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const checkout = seedCheckoutDraft(api, app, { method: 'Card', tipBasisPoints: 0, staffProfileId: null });
+  const operations = acceptedOperationsSnapshot(checkout);
+  assert.equal(api.importAcceptedAddOns(app, checkout.id, operations).ok, true);
+  assert.equal(api.migrateState(app).checkoutDrafts.length, 1);
+
+  for (const mutate of [
+    (item) => { item.id = 'addon-arbitrary'; },
+    (item) => { item.label = 'Arbitrary upgrade'; },
+    (item) => { item.amountCents = 1; },
+    (item) => { item.sourceAddOnId = 'addon-not-a-uuid'; }
+  ]) {
+    const tampered = structuredClone(app);
+    mutate(tampered.checkoutDrafts[0].lineItems.at(-1));
+    assert.equal(api.migrateState(tampered).checkoutDrafts.length, 0);
+  }
+});
+
+test('strict guest checkout handoff parser rejects missing repeated unknown malformed and noncanonical queries', () => {
+  const { api } = testApi();
+  const id = 'guest-checkin-00000000-0000-4000-8000-000000000001';
+  const valid = api.parseGuestCheckoutHandoff(
+    `https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${id}`
+  );
+  assert.deepEqual(JSON.parse(JSON.stringify(valid)), { ok: true, present: true, guestCheckinId: id });
+  for (const query of [
+    'handoff=guest-checkout',
+    `handoff=guest-checkout&handoff=guest-checkout&guestCheckinId=${id}`,
+    `handoff=unknown&guestCheckinId=${id}`,
+    `handoff=guest-checkout&guestCheckinId=${id}&extra=1`,
+    'handoff=guest-checkout&guestCheckinId=guest-checkin-1',
+    'handoff=guest-checkout&guestCheckinId=%E0%A4%A'
+  ]) assert.equal(api.parseGuestCheckoutHandoff(`https://example.test/customer/cutomer-reward.html?${query}`).ok, false, query);
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(api.parseGuestCheckoutHandoff('https://example.test/customer/cutomer-reward.html'))),
+    { ok: true, present: false }
+  );
+});
+
+test('successful guest check-in action persists then routes to Live Ticket and never calls navigateTo pay', () => {
+  const document = createDocumentStub();
+  document.getElementById('guest-name').value = 'Amy Nguyen';
+  document.getElementById('guest-phone').value = '8325550198';
+  document.getElementById('guest-service').value = 'deluxe-pedicure';
+  document.getElementById('guest-staff').value = '';
+  const assigned = [];
+  const location = {
+    href: 'https://example.test/customer/cutomer-reward.html',
+    assign(value) { assigned.push(String(value)); this.href = String(value); }
+  };
+  const { api, context, storage } = testApi({}, { document, location });
+  vm.runInContext(`
+    stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
+    globalThis.navigationCalls = [];
+    navigateTo = (...args) => navigationCalls.push(args);
+    renderApp = () => {};
+    showToast = () => {};
+    ACTIONS.get('submit-guest-checkin')();
+  `, context);
+  const persisted = api.loadState(storage);
+  assert.equal(persisted.guestCheckins.length, 1);
+  assert.equal(vm.runInContext('navigationCalls.length', context), 0);
+  assert.deepEqual(assigned, [
+    `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${encodeURIComponent(persisted.guestCheckins[0].id)}`
+  ]);
+});
+
+test('navigation failure leaves saved check-in, reports retry, and does not expose Pay', () => {
+  const document = createDocumentStub();
+  document.getElementById('guest-name').value = 'Amy Nguyen';
+  document.getElementById('guest-phone').value = '8325550198';
+  document.getElementById('guest-service').value = 'deluxe-pedicure';
+  document.getElementById('guest-staff').value = '';
+  const location = {
+    href: 'https://example.test/customer/cutomer-reward.html',
+    assign() { throw new Error('blocked'); }
+  };
+  const { api, context, storage } = testApi({}, { document, location });
+  vm.runInContext(`
+    stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
+    globalThis.navigationCalls = [];
+    navigateTo = (...args) => navigationCalls.push(args);
+    renderApp = () => {};
+    showToast = () => {};
+    ACTIONS.get('submit-guest-checkin')();
+  `, context);
+  assert.equal(api.loadState(storage).guestCheckins.length, 1);
+  assert.equal(vm.runInContext('navigationCalls.length', context), 0);
+  assert.match(document.getElementById('guest-checkin-error').textContent, /retry|thử lại/i);
+});
+
+test('throwing location accessor still leaves the successful check-in persisted and retryable', () => {
+  const document = createDocumentStub();
+  document.getElementById('guest-name').value = 'Amy Nguyen';
+  document.getElementById('guest-phone').value = '8325550198';
+  document.getElementById('guest-service').value = 'deluxe-pedicure';
+  document.getElementById('guest-staff').value = '';
+  const { api, context, storage } = testApi({}, { document });
+  vm.runInContext(`
+    stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
+    renderApp = () => {};
+    showToast = () => {};
+    Object.defineProperty(window, 'location', { configurable: true,
+      get() { throw new Error('location blocked'); } });
+  `, context);
+  assert.doesNotThrow(() => vm.runInContext("ACTIONS.get('submit-guest-checkin')()", context));
+  assert.equal(api.loadState(storage).guestCheckins.length, 1);
+  assert.match(document.getElementById('guest-checkin-error').textContent, /retry|thử lại/i);
+});
+
+test('initialization consumes a valid handoff atomically, opens checkout, and cleans the URL', () => {
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  const guest = seedGuestCheckin(setup.api, app, { staffProfileId: null });
+  const checkoutShape = { guestCheckinId: guest.id, businessId: guest.businessId };
+  const operations = acceptedOperationsSnapshot(checkoutShape);
+  const customerKey = setup.api.STORAGE_KEY;
+  const opsKey = setup.api.OPERATIONS_STORAGE_KEY;
+  const pay = createStubElement({ id: 'pay', classNames: ['app-screen', 'hidden'] });
+  const home = createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] });
+  const direct = createStubElement({ id: 'direct-payment-view', dataset: { payView: 'direct' } });
+  const checkoutView = createStubElement({ id: 'guest-checkout-view', dataset: { payView: 'checkout' }, classNames: ['hidden'] });
+  const proof = createStubElement({ id: 'payment-proof-view', dataset: { payView: 'payment-proof' }, classNames: ['hidden'] });
+  const document = createDocumentStub({
+    screenNodes: [home, pay], extraElements: [direct, checkoutView, proof],
+    selectorNodes: { '[data-pay-view]': [direct, checkoutView, proof] }
+  });
+  const href = `https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${guest.id}`;
+  const replacements = [];
+  const loaded = testApi({
+    [customerKey]: JSON.stringify(app),
+    [opsKey]: JSON.stringify({ schemaVersion: 1, ...operations })
+  }, {
+    skipInit: false, document,
+    location: { href, assign(value) { this.href = String(value); } },
+    history: { replaceState(state, title, url) { replacements.push(String(url)); } },
+    randomUUID: () => '00000000-0000-4000-8000-000000000088'
+  });
+  const persisted = loaded.api.loadState(loaded.storage);
+  assert.equal(persisted.checkoutDrafts.length, 1);
+  assert.equal(persisted.checkoutDrafts[0].lineItems.at(-1).sourceAddOnId, operations.addOnRequests[0].id);
+  assert.equal(persisted.ui.activeScreen, 'pay');
+  assert.equal(checkoutView.getAttribute('aria-hidden'), 'false');
+  assert.equal(document.activeElement, document.getElementById('guest-checkout-title'));
+  assert.deepEqual(replacements, ['https://example.test/customer/cutomer-reward.html']);
+});
+
+test('imports a canonical no-preference ticket with no add-ons without inventing a line item', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const checkout = seedCheckoutDraft(api, app, { method: 'Card', tipBasisPoints: 0, staffProfileId: null });
+  const operations = acceptedOperationsSnapshot(checkout);
+  operations.serviceTickets[0].staffProfileId = null;
+  operations.serviceTickets[0].lineItems.pop();
+  operations.serviceTickets[0].currentTotalCents = 4950;
+  operations.addOnRequests = [];
+  const before = JSON.stringify(checkout.lineItems);
+
+  const result = api.importAcceptedAddOns(app, checkout.id, operations);
+  assert.equal(result.ok, true);
+  assert.equal(result.importedCount, 0);
+  assert.equal(JSON.stringify(checkout.lineItems), before);
+});
+
+test('invalid initialization handoff hides stale checkout context and does not persist fallback state', () => {
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  const checkout = seedCheckoutDraft(setup.api, app, { method: 'Card', tipBasisPoints: 0, staffProfileId: null });
+  app.ui.activeScreen = 'pay';
+  app.ui.activeModule = 'home';
+  app.ui.pendingContext.checkoutDraftId = checkout.id;
+  const raw = JSON.stringify(app);
+  const home = createStubElement({ id: 'home', classNames: ['app-screen', 'hidden'] });
+  const pay = createStubElement({ id: 'pay', classNames: ['app-screen'] });
+  const direct = createStubElement({ id: 'direct-payment-view', dataset: { payView: 'direct' } });
+  const checkoutView = createStubElement({ id: 'guest-checkout-view', dataset: { payView: 'checkout' }, classNames: ['hidden'] });
+  const proof = createStubElement({ id: 'payment-proof-view', dataset: { payView: 'payment-proof' }, classNames: ['hidden'] });
+  const document = createDocumentStub({
+    screenNodes: [home, pay], extraElements: [direct, checkoutView, proof],
+    selectorNodes: { '[data-pay-view]': [direct, checkoutView, proof] }
+  });
+  const id = checkout.guestCheckinId;
+  const loaded = testApi({ [setup.api.STORAGE_KEY]: raw }, {
+    skipInit: false,
+    document,
+    location: {
+      href: `https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&handoff=guest-checkout&guestCheckinId=${id}`
+    }
+  });
+
+  assert.equal(vm.runInContext('state.ui.activeScreen', loaded.context), 'home');
+  assert.equal(vm.runInContext('state.ui.pendingContext.checkoutDraftId', loaded.context), null);
+  assert.equal(home.classList.contains('hidden'), false);
+  assert.equal(pay.classList.contains('hidden'), true);
+  assert.equal(document.getElementById('form-error-state').classList.contains('hidden'), false);
+  assert.equal(loaded.storage.getItem(setup.api.STORAGE_KEY), raw);
 });
