@@ -1,0 +1,874 @@
+# Review package: eb22b72546e0459aee97dc598372cf57886315e9..c05b1eef8c65e82ad1495d545087693c470bbf58
+
+## Commits
+c05b1ee fix: validate persisted customer state
+785ae6e fix: harden customer state foundation
+a90f575 feat: add customer prototype local storage state
+
+## Files changed
+ html/customer/cutomer-reward.html     | 360 ++++++++++++++++++++++++++++++----
+ html/customer/cutomer-reward.test.mjs | 238 ++++++++++++++++++++++
+ 2 files changed, 557 insertions(+), 41 deletions(-)
+
+## Diff
+diff --git a/html/customer/cutomer-reward.html b/html/customer/cutomer-reward.html
+index fe09795..8163bbb 100644
+--- a/html/customer/cutomer-reward.html
++++ b/html/customer/cutomer-reward.html
+@@ -234,53 +234,307 @@
+         </section>
+       </main>
+     </div>
+ 
+     <div id="form-error-state" class="pointer-events-none fixed inset-x-4 top-24 z-[65] hidden justify-center" data-state="error" role="alert"><div class="rounded-xl border border-app-red/30 bg-app-card px-4 py-3 text-sm font-bold text-app-red" data-en="Please check the highlighted fields." data-vi="Vui lòng kiểm tra các trường được đánh dấu.">Vui lòng kiểm tra các trường được đánh dấu.</div></div>
+     <div id="toast-region" class="pointer-events-none fixed inset-x-4 bottom-24 z-[70] flex justify-center lg:bottom-8 lg:left-auto lg:right-8" aria-live="polite" aria-atomic="true"></div>
+     <div id="app-overlay" class="fixed inset-0 z-[80] hidden items-end justify-center bg-black/70 p-4 backdrop-blur-sm sm:items-center" data-overlay aria-hidden="true"><div class="app-card w-full max-w-md" role="dialog" aria-modal="true" aria-labelledby="overlay-title"><div class="flex items-start justify-between gap-4"><div><p class="eyebrow" data-en="NEXORA notice" data-vi="Thông báo NEXORA">Thông báo NEXORA</p><h2 id="overlay-title" class="mt-1 text-xl font-black" data-en="Please confirm" data-vi="Vui lòng xác nhận">Vui lòng xác nhận</h2></div><button type="button" class="icon-button" data-action="close-overlay" aria-label="Đóng"><i data-lucide="x" class="size-5" aria-hidden="true"></i></button></div><p id="overlay-message" class="mt-4 text-sm leading-6 text-app-muted"></p><button id="overlay-confirm" type="button" class="app-button mt-5 w-full" data-action="close-overlay" data-en="Got it" data-vi="Đã hiểu">Đã hiểu</button></div></div>
+     <nav id="mobile-nav" class="fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-app-line bg-app-panel/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden" aria-label="Điều hướng chính" data-nav-surface="mobile"></nav>
+   </div>
+   <script>
+-    const state = {
+-      activeScreen: 'home', activeModule: 'home', language: 'vi', selectedTip: 10,
+-      paymentMethod: 'Zelle', rating: 0, currentReward: null, pointBalance: 2450,
+-      exploreFilter: 'all', offerFilter: 'all', savedOffers: new Set(), wishes: [], looks: [],
+-      booking: { service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM' }
++    const STORAGE_KEY = 'nexora.customer.prototype.v1';
++    const SCHEMA_VERSION = 1;
++    const BUSINESS_ID = 'bitcoin-nail-bar';
++
++    function createDefaultState() {
++      return {
++        schemaVersion: SCHEMA_VERSION,
++        updatedAt: new Date().toISOString(),
++        session: {
++          authenticated: true,
++          phone: '8325550148',
++          otpCode: '246810',
++          otpRequestedAt: 0,
++          otpAttempts: 0,
++          lockedUntil: 0
++        },
++        profile: {
++          id: 'cust-jessica',
++          name: 'Jessica Nguyen',
++          phone: '8325550148',
++          avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80',
++          language: 'vi',
++          referralCode: 'JESSICA50',
++          paymentMethods: ['Zelle', 'Venmo']
++        },
++        businesses: {
++          'bitcoin-nail-bar': {
++            id: 'bitcoin-nail-bar', name: 'Bitcoin Nail Bar', allianceId: 'houston-beauty',
++            tipMultiplier: 10, directPayBonusPct: 20, bookingBonus: 25, checkinPoints: 120,
++            methods: ['Zelle', 'Venmo', 'Cash App'], favorite: true
++          },
++          'golden-glow-spa': {
++            id: 'golden-glow-spa', name: 'Golden Glow Spa', allianceId: 'houston-beauty',
++            tipMultiplier: 5, directPayBonusPct: 10, bookingBonus: 20, checkinPoints: 80,
++            methods: ['Zelle', 'Venmo'], favorite: false
++          },
++          'moon-coffee': {
++            id: 'moon-coffee', name: 'Moon Coffee', allianceId: 'houston-beauty',
++            tipMultiplier: 2, directPayBonusPct: 5, bookingBonus: 0, checkinPoints: 10,
++            methods: ['Cash App'], favorite: false
++          }
++        },
++        staffProfiles: {
++          'staff-anna': { id: 'staff-anna', name: 'Anna', businessId: BUSINESS_ID, methods: ['Venmo', 'Zelle'], followNotifyOptIn: false },
++          'staff-maria': { id: 'staff-maria', name: 'Maria', businessId: BUSINESS_ID, methods: ['Zelle', 'Cash App'], followNotifyOptIn: true }
++        },
++        balances: {
++          'bitcoin-nail-bar': { points: 2450, credits: 0, expiringPoints: null },
++          'golden-glow-spa': { points: 600, credits: 0, expiringPoints: null },
++          'moon-coffee': { points: 120, credits: 0, expiringPoints: { amount: 80, date: '2026-08-30' } }
++        },
++        ledger: [
++          { id: 'led-visit-1', businessId: BUSINESS_ID, type: 'visit', pointsDelta: 120, refType: 'visit', refId: 'visit-1001', createdAt: '2026-07-14T10:42:00.000Z' },
++          { id: 'led-redeem-1', businessId: BUSINESS_ID, type: 'redeem', pointsDelta: -800, refType: 'redemption', refId: 'red-demo', createdAt: '2026-07-11T15:00:00.000Z' },
++          { id: 'led-welcome-1', businessId: BUSINESS_ID, type: 'welcome', pointsDelta: 25, refType: 'onboarding', refId: 'welcome-demo', createdAt: '2026-06-01T12:00:00.000Z' }
++        ],
++        consents: [],
++        welcomeClaims: [],
++        preferences: {
++          businessMarketing: { [BUSINESS_ID]: false },
++          networkOffers: false,
++          bookingReminders: true,
++          nearbyDeals: true,
++          aiSuggestions: true,
++          pushPermission: 'prompt'
++        },
++        visits: [
++          { id: 'visit-1001', businessId: BUSINESS_ID, staffProfileId: 'staff-anna', staffName: 'Anna', service: 'Gel manicure', occurredAt: '2026-07-12T16:00:00.000Z' }
++        ],
++        checkins: [],
++        redemptions: [],
++        tips: [],
++        directPayments: [],
++        bookingRequests: [],
++        appointments: [],
++        looks: [
++          { id: 'look-galaxy', businessId: BUSINESS_ID, visitId: 'visit-1001', staffProfileId: 'staff-anna', staffName: 'Anna', service: 'Gel manicure', color: 'OPI Bubble Bath #S86', note: 'Galaxy chrome', photoDataUrl: '', createdAt: '2026-07-12T16:20:00.000Z' }
++        ],
++        feedback: [],
++        savedOfferIds: [],
++        wishes: ['Gói spa đôi cuối tuần'],
++        followedTechIds: [],
++        notifications: [
++          { id: 'note-welcome', type: 'system', title: { vi: 'Điểm mới đã được cộng', en: 'New points were added' }, target: 'history', read: false, createdAt: '2026-07-14T10:43:00.000Z' }
++        ],
++        offlineQueue: [],
++        ui: {
++          activeScreen: 'home', activeModule: 'home', selectedBusinessId: BUSINESS_ID,
++          selectedTip: 10, selectedTipMethod: 'Venmo', selectedStaffId: 'staff-anna',
++          paymentMethod: 'Zelle', rating: 0, currentRewardKey: null,
++          exploreFilter: 'all', offerFilter: 'all', pendingContext: {},
++          bookingDraft: { businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM', note: '' },
++          overlay: null, pushPromptCount: 0
++        }
++      };
++    }
++
++    function isRecord(value) {
++      return Object.prototype.toString.call(value) === '[object Object]';
++    }
++
++    const OBJECT_COLLECTION_FIELDS = {
++      ledger: { id: 'string', businessId: 'string', type: 'string', pointsDelta: 'number', refType: 'string', refId: 'string', createdAt: 'string' },
++      consents: { id: 'string', scope: 'string', action: 'string', method: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
++      visits: { id: 'string', businessId: 'string', staffProfileId: 'string', occurredAt: 'string' },
++      checkins: { id: 'string', businessId: 'string', staffProfileId: 'nullableString', scannedAt: 'string', status: 'string' },
++      redemptions: { id: 'string', idempotencyKey: 'string', rewardKey: 'string', sourceBusinessId: 'string', acceptingBusinessId: 'string', cost: 'number', status: 'string', createdAt: 'string' },
++      tips: { id: 'string', businessId: 'string', staffProfileId: 'string', amount: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
++      directPayments: { id: 'string', businessId: 'string', amount: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
++      bookingRequests: { id: 'string', businessId: 'string', status: 'string', createdAt: 'string' },
++      appointments: { id: 'string', bookingId: 'string', businessId: 'string', status: 'string' },
++      looks: { id: 'string', businessId: 'string', visitId: 'nullableString', staffProfileId: 'nullableString', createdAt: 'string' },
++      feedback: { id: 'string', visitId: 'string', businessId: 'string', stars: 'number', createdAt: 'string' },
++      notifications: { id: 'string', type: 'string', target: 'string', createdAt: 'string' }
+     };
++
++    function isStringArrayPath(path) {
++      const key = path.join('.');
++      return ['profile.paymentMethods', 'welcomeClaims', 'savedOfferIds', 'wishes', 'followedTechIds', 'offlineQueue'].includes(key)
++        || (path.length === 3 && path[2] === 'methods' && ['businesses', 'staffProfiles'].includes(path[0]));
++    }
++
++    function matchesFieldType(value, type) {
++      if (type === 'string') return typeof value === 'string' && value.length > 0;
++      if (type === 'number') return typeof value === 'number' && Number.isFinite(value);
++      if (type === 'nullableString') return value === null || typeof value === 'string';
++      return false;
++    }
++
++    function isValidCollectionRecord(value, fields) {
++      return isRecord(value) && Object.entries(fields).every(([key, type]) => matchesFieldType(value[key], type));
++    }
++
++    function mergeArray(defaultValue, incomingValue, path) {
++      if (!Array.isArray(incomingValue)) return structuredClone(defaultValue);
++      if (isStringArrayPath(path)) {
++        return structuredClone(incomingValue.filter((item) => typeof item === 'string' && item.length > 0));
++      }
++      const fields = path.length === 1 ? OBJECT_COLLECTION_FIELDS[path[0]] : null;
++      if (fields) return structuredClone(incomingValue.filter((item) => isValidCollectionRecord(item, fields)));
++      return structuredClone(defaultValue);
++    }
++
++    function mergeKnownUnion(defaultValue, incomingValue, path) {
++      if (path.length === 3 && path[0] === 'balances' && path[2] === 'expiringPoints') {
++        if (incomingValue === null) return { handled: true, value: null };
++        if (isRecord(incomingValue) && typeof incomingValue.amount === 'number' && Number.isFinite(incomingValue.amount) && typeof incomingValue.date === 'string') {
++          return { handled: true, value: { amount: incomingValue.amount, date: incomingValue.date } };
++        }
++        return { handled: true, value: structuredClone(defaultValue) };
++      }
++      if (path.join('.') === 'ui.currentRewardKey') {
++        return { handled: true, value: incomingValue === null || typeof incomingValue === 'string' ? incomingValue : structuredClone(defaultValue) };
++      }
++      if (path.join('.') === 'ui.overlay') {
++        return { handled: true, value: incomingValue === null || isRecord(incomingValue) ? structuredClone(incomingValue) : structuredClone(defaultValue) };
++      }
++      return { handled: false };
++    }
++
++    function mergeRecord(defaultValue, incomingValue, path = []) {
++      const union = mergeKnownUnion(defaultValue, incomingValue, path);
++      if (union.handled) return union.value;
++      if (Array.isArray(defaultValue)) return mergeArray(defaultValue, incomingValue, path);
++      if (isRecord(defaultValue)) {
++        if (!isRecord(incomingValue)) return structuredClone(defaultValue);
++        const result = {};
++        for (const [key, fallback] of Object.entries(defaultValue)) {
++          result[key] = Object.prototype.hasOwnProperty.call(incomingValue, key)
++            ? mergeRecord(fallback, incomingValue[key], [...path, key])
++            : structuredClone(fallback);
++        }
++        return result;
++      }
++      if (defaultValue === null) {
++        return null;
++      }
++      if (typeof defaultValue === 'number') {
++        return typeof incomingValue === 'number' && Number.isFinite(incomingValue) ? incomingValue : defaultValue;
++      }
++      return typeof incomingValue === typeof defaultValue ? incomingValue : structuredClone(defaultValue);
++    }
++
++    function migrateState(value) {
++      const defaults = createDefaultState();
++      if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
++      const migrated = mergeRecord(defaults, value);
++      migrated.schemaVersion = SCHEMA_VERSION;
++      migrated.updatedAt = new Date().toISOString();
++      if (!['vi', 'en'].includes(migrated.profile.language)) migrated.profile.language = defaults.profile.language;
++      delete migrated.pointBalance;
++      delete migrated.savedOffers;
++      return migrated;
++    }
++
++    function loadState(storage = window.localStorage, now = () => Date.now()) {
++      const raw = storage.getItem(STORAGE_KEY);
++      if (!raw) {
++        const fresh = createDefaultState();
++        storage.setItem(STORAGE_KEY, JSON.stringify(fresh));
++        return fresh;
++      }
++      try {
++        return migrateState(JSON.parse(raw));
++      } catch {
++        storage.setItem(`${STORAGE_KEY}.corrupt.${now()}`, raw);
++        const fresh = createDefaultState();
++        storage.setItem(STORAGE_KEY, JSON.stringify(fresh));
++        return fresh;
++      }
++    }
++
++    function saveState(appState, storage = window.localStorage) {
++      appState.updatedAt = new Date().toISOString();
++      storage.setItem(STORAGE_KEY, JSON.stringify(appState));
++    }
++
++    let state = loadState();
++
++    function commitState(mutator) {
++      const result = mutator(state);
++      saveState(state);
++      return result;
++    }
+     const SCREEN_MODULE = {
+       home:'home', allmenu:'home', activity:'home', tip:'home', tipdone:'home', pay:'home', paydone:'home', looks:'home', addlook:'home', review:'home', offers:'home', book1:'home', book2:'home', book3:'home', login1:'home', login2:'home',
+       wallet:'wallet', history:'wallet', rewards:'wallet', redeem:'wallet', redeemdone:'wallet',
+       scan:'scan', onb1:'scan', onb2:'scan', onb3:'scan', onb4:'scan',
+       explore:'explore', business:'explore',
+       profile:'profile', referral:'profile', msgprefs:'profile'
+     };
+     const ROOT_SCREENS = ['home', 'wallet', 'scan', 'explore', 'profile'];
+     const NAV_ITEMS = [
+       { id:'home', icon:'house', en:'Home', vi:'Trang chủ' },
+       { id:'wallet', icon:'wallet-cards', en:'Wallet', vi:'Ví điểm' },
+       { id:'scan', icon:'scan-line', en:'Scan', vi:'Quét mã' },
+       { id:'explore', icon:'map-pin', en:'Explore', vi:'Khám phá' },
+       { id:'profile', icon:'user-round', en:'Profile', vi:'Cá nhân' }
+     ];
+     const REWARDS = {
+       gel: { title: { en:'Gel polish upgrade', vi:'Nâng cấp sơn gel' }, business:'Bitcoin Nail Bar', cost:800 },
+       credit: { title: { en:'$10 service credit', vi:'Giảm $10 dịch vụ' }, business:'Golden Glow Spa', cost:1200 }
+     };
++    const COPY = {
++      vi: {
++        points: 'điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
++        paymentSent: 'Đã gửi ${amount} cho tiệm', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu',
++        offerSaved: 'Đã lưu ưu đãi', wishRequired: 'Hãy nhập mong muốn', wishShared: 'Đã gửi mong muốn ẩn danh',
++        lookServiceRequired: 'Hãy nhập tên dịch vụ', lookSaved: 'Đã lưu kiểu mới', ratingRequired: 'Hãy chọn số sao',
++        reviewThanks: 'Cảm ơn phản hồi của bạn', openPayment: 'Mở {method} để thanh toán', addPhoto: 'Thêm ảnh',
++        addPhotoDetail: 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.',
++        verificationResent: 'Đã gửi lại mã xác thực', openingMaps: 'Đang mở ứng dụng bản đồ',
++        inviteCopied: 'Đã sao chép liên kết', preferencesSaved: 'Đã lưu tùy chọn'
++      },
++      en: {
++        points: 'points', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
++        paymentSent: '${amount} sent to the salon', insufficientPoints: 'Not enough points', saved: 'Saved',
++        offerSaved: 'Offer saved', wishRequired: 'Enter a wish first', wishShared: 'Anonymous wish shared',
++        lookServiceRequired: 'Enter a service name', lookSaved: 'New look saved', ratingRequired: 'Choose a rating',
++        reviewThanks: 'Thanks for your feedback', openPayment: 'Open {method} to pay', addPhoto: 'Add a photo',
++        addPhotoDetail: 'The production app will open your device photo picker.',
++        verificationResent: 'Verification code resent', openingMaps: 'Opening maps',
++        inviteCopied: 'Invite link copied', preferencesSaved: 'Preferences saved'
++      }
++    };
++
++    function translate(language, key, variables = {}) {
++      const template = COPY[language]?.[key] ?? COPY.vi[key] ?? key;
++      return Object.entries(variables).reduce(
++        (message, [name, value]) => message.replaceAll(`{${name}}`, String(value)),
++        template
++      );
++    }
++
++    function t(key, variables = {}) {
++      return translate(state.profile.language, key, variables);
++    }
+ 
+     function formatPoints(value) {
+-      return `${new Intl.NumberFormat(state.language === 'vi' ? 'vi-VN' : 'en-US').format(value)} ${state.language === 'vi' ? 'điểm' : 'points'}`;
++      const locale = { vi: 'vi-VN', en: 'en-US' }[state.profile.language] ?? 'vi-VN';
++      return `${new Intl.NumberFormat(locale).format(value)} ${t('points')}`;
+     }
+ 
+     function renderNavigation() {
+-      document.getElementById('desktop-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="nav-item w-full" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item[state.language]}</span></button>`).join('');
+-      document.getElementById('mobile-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="mobile-nav-item" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item[state.language]}</span></button>`).join('');
++      const language = state.profile.language;
++      document.getElementById('desktop-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="nav-item w-full" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item[language]}</span></button>`).join('');
++      document.getElementById('mobile-nav').innerHTML = NAV_ITEMS.map((item) => `<button type="button" class="mobile-nav-item" data-nav-target="${item.id}"><i data-lucide="${item.icon}" class="size-5" aria-hidden="true"></i><span>${item[language]}</span></button>`).join('');
+     }
+ 
+     function updateNavigation() {
+       document.querySelectorAll('[data-nav-target]').forEach((control) => {
+         const active = control.dataset.navTarget === state.activeModule;
+         if (active) control.setAttribute('aria-current', 'page');
+         else control.removeAttribute('aria-current');
+       });
+     }
+ 
+@@ -291,36 +545,42 @@
+         screen.classList.toggle('hidden', !active);
+         screen.classList.toggle('is-active', active);
+       });
+       state.activeScreen = next.id;
+       state.activeModule = SCREEN_MODULE[next.id] || 'home';
+       updateNavigation();
+       next.scrollTop = 0;
+       if (options.focus !== false) document.getElementById('screen-region').focus({ preventScroll: true });
+     }
+ 
+-    function setLanguage(language) {
+-      state.language = language === 'en' ? 'en' : 'vi';
+-      document.documentElement.lang = state.language;
++    function applyLanguage(language) {
++      const activeLanguage = language === 'en' ? 'en' : 'vi';
++      document.documentElement.lang = activeLanguage;
+       document.querySelectorAll('[data-en][data-vi]').forEach((element) => {
+-        element.textContent = element.dataset[state.language];
++        element.textContent = element.dataset[activeLanguage];
+       });
+       document.querySelectorAll('[data-en-ph][data-vi-ph]').forEach((element) => {
+-        element.placeholder = element.dataset[`${state.language}Ph`];
++        element.placeholder = element.dataset[`${activeLanguage}Ph`];
+       });
+-      document.querySelectorAll('[data-language]').forEach((control) => control.setAttribute('aria-pressed', String(control.dataset.language === state.language)));
++      document.querySelectorAll('[data-language]').forEach((control) => control.setAttribute('aria-pressed', String(control.dataset.language === activeLanguage)));
+       renderNavigation();
+       updateNavigation();
+-      if (state.currentReward) openReward(state.currentReward, false);
++      const rewardKey = state.ui.currentRewardKey ?? state.currentReward;
++      if (rewardKey) openReward(rewardKey, false);
+       if (window.lucide) window.lucide.createIcons();
+     }
+ 
++    function setLanguage(language) {
++      commitState((draft) => { draft.profile.language = language === 'en' ? 'en' : 'vi'; });
++      applyLanguage(state.profile.language);
++    }
++
+     function showToast(message, tone = 'success') {
+       const region = document.getElementById('toast-region');
+       const errorState = document.getElementById('form-error-state');
+       const toast = document.createElement('div');
+       toast.className = `pointer-events-auto flex max-w-sm items-center gap-3 rounded-2xl border border-app-line bg-app-card px-4 py-3 text-sm font-bold shadow-2xl ${tone === 'error' ? 'text-app-red' : 'text-app-text'}`;
+       const icon = document.createElement('i');
+       icon.setAttribute('data-lucide', tone === 'error' ? 'circle-alert' : 'circle-check');
+       icon.className = `size-5 shrink-0 ${tone === 'error' ? 'text-app-red' : 'text-app-green'}`;
+       const copy = document.createElement('span');
+       copy.textContent = message;
+@@ -353,72 +613,72 @@
+       overlay.classList.remove('flex');
+       overlay.setAttribute('aria-hidden', 'true');
+       document.body.classList.remove('overflow-hidden');
+     }
+ 
+     function startScan() {
+       const line = document.getElementById('scan-line');
+       const loading = document.getElementById('scan-loading-state');
+       line.classList.remove('hidden');
+       loading.classList.remove('hidden');
+-      showToast(state.language === 'vi' ? 'Đã nhận diện mã NEXORA' : 'NEXORA code detected');
++      showToast(t('scanRecognized'));
+       window.setTimeout(() => { line.classList.add('hidden'); loading.classList.add('hidden'); navigateTo('onb2'); }, 900);
+     }
+ 
+     function selectTip(amount, control) {
+       state.selectedTip = Number(amount) || 10;
+       document.querySelectorAll('[data-action="select-tip"]').forEach((button) => button.setAttribute('aria-pressed', String(button === control)));
+       const copy = document.querySelector('[data-action="send-tip"] span');
+-      copy.textContent = state.language === 'vi' ? `Tiếp tục với $${state.selectedTip}` : `Continue with $${state.selectedTip}`;
++      copy.textContent = t('continueTip', { amount: state.selectedTip });
+     }
+ 
+     function sendTip() {
+       document.getElementById('tipdone-amount').textContent = `$${state.selectedTip.toFixed(2)}`;
+       document.getElementById('tip-pending').classList.remove('hidden');
+       document.getElementById('tip-confirmed').classList.add('hidden');
+       navigateTo('tipdone');
+     }
+ 
+     function confirmTip() {
+       document.getElementById('tip-pending').classList.add('hidden');
+       document.getElementById('tip-confirmed').classList.remove('hidden');
+     }
+ 
+     function sendPayment() {
+       const amount = Math.max(1, Number(document.getElementById('payment-amount').value) || 0);
+-      document.getElementById('paydone-title').textContent = state.language === 'vi' ? `Đã gửi $${amount.toFixed(2)} cho tiệm` : `$${amount.toFixed(2)} sent to the salon`;
++      document.getElementById('paydone-title').textContent = t('paymentSent', { amount: amount.toFixed(2) });
+       document.getElementById('payment-pending').classList.remove('hidden');
+       document.getElementById('payment-confirmed').classList.add('hidden');
+       navigateTo('paydone');
+     }
+ 
+     function confirmPayment() {
+       document.getElementById('payment-pending').classList.add('hidden');
+       document.getElementById('payment-confirmed').classList.remove('hidden');
+     }
+ 
+     function openReward(key, navigate = true) {
+       const reward = REWARDS[key] || REWARDS.gel;
+       state.currentReward = key in REWARDS ? key : 'gel';
+-      document.getElementById('reward-title').textContent = reward.title[state.language];
++      document.getElementById('reward-title').textContent = reward.title[state.profile.language];
+       document.getElementById('reward-business').textContent = reward.business;
+       document.getElementById('reward-cost').textContent = formatPoints(reward.cost);
+       document.getElementById('reward-balance').textContent = formatPoints(state.pointBalance);
+       document.getElementById('reward-after').textContent = formatPoints(state.pointBalance - reward.cost);
+       if (navigate) navigateTo('redeem');
+     }
+ 
+     function confirmReward() {
+       const reward = REWARDS[state.currentReward] || REWARDS.gel;
+-      if (reward.cost > state.pointBalance) return showToast(state.language === 'vi' ? 'Bạn chưa đủ điểm' : 'Not enough points', 'error');
++      if (reward.cost > state.pointBalance) return showToast(t('insufficientPoints'), 'error');
+       state.pointBalance -= reward.cost;
+-      document.getElementById('reward-done-title').textContent = reward.title[state.language];
++      document.getElementById('reward-done-title').textContent = reward.title[state.profile.language];
+       document.getElementById('reward-done-cost').textContent = formatPoints(reward.cost);
+       navigateTo('redeemdone');
+     }
+ 
+     function filterExplore(query = '') {
+       const term = query.trim().toLowerCase();
+       let visible = 0;
+       document.querySelectorAll('[data-business-card]').forEach((card) => {
+         const categoryMatch = state.exploreFilter === 'all' || card.dataset.category.split(' ').includes(state.exploreFilter);
+         const show = categoryMatch && card.dataset.search.includes(term);
+@@ -435,70 +695,70 @@
+         card.classList.toggle('hidden', !(categoryMatch && card.dataset.search.includes(term)));
+       });
+     }
+ 
+     function saveOffer(control) {
+       const card = control.closest('[data-offer-card]');
+       const key = card.dataset.search;
+       state.savedOffers.add(key);
+       control.disabled = true;
+       const label = control.querySelector('span');
+-      label.textContent = state.language === 'vi' ? 'Đã lưu' : 'Saved';
+-      showToast(state.language === 'vi' ? 'Đã lưu ưu đãi' : 'Offer saved');
++      label.textContent = t('saved');
++      showToast(t('offerSaved'));
+     }
+ 
+     function addWish() {
+       const input = document.getElementById('wish-input');
+       const value = input.value.trim();
+-      if (!value) return showToast(state.language === 'vi' ? 'Hãy nhập mong muốn' : 'Enter a wish first', 'error');
++      if (!value) return showToast(t('wishRequired'), 'error');
+       state.wishes.push(value);
+       const item = document.createElement('li');
+       item.className = 'rounded-xl bg-app-panel p-3';
+       item.textContent = value;
+       document.getElementById('wish-list').append(item);
+       input.value = '';
+-      showToast(state.language === 'vi' ? 'Đã gửi mong muốn ẩn danh' : 'Anonymous wish shared');
++      showToast(t('wishShared'));
+     }
+ 
+     function saveLook() {
+       const service = document.getElementById('look-service').value.trim();
+       const color = document.getElementById('look-color').value.trim();
+-      if (!service) return showToast(state.language === 'vi' ? 'Hãy nhập tên dịch vụ' : 'Enter a service name', 'error');
++      if (!service) return showToast(t('lookServiceRequired'), 'error');
+       state.looks.push({ service, color });
+       const card = document.createElement('article');
+       card.className = 'app-card flex aspect-square flex-col justify-end bg-gradient-to-br from-app-purple/30 to-app-cyan/10';
+       const title = document.createElement('strong');
+       title.className = 'text-sm';
+       title.textContent = color || service;
+       const detail = document.createElement('span');
+       detail.className = 'mt-1 text-xs text-app-muted';
+       detail.textContent = service;
+       card.append(title, detail);
+       document.getElementById('looks-grid').prepend(card);
+       navigateTo('looks');
+-      showToast(state.language === 'vi' ? 'Đã lưu kiểu mới' : 'New look saved');
++      showToast(t('lookSaved'));
+     }
+ 
+     function setRating(rating) {
+       state.rating = Number(rating);
+       document.querySelectorAll('[data-action="set-rating"]').forEach((button) => {
+         const active = Number(button.dataset.rating) <= state.rating;
+         button.setAttribute('aria-pressed', String(active));
+         button.querySelector('svg, i')?.classList.toggle('fill-current', active);
+       });
+     }
+ 
+     function submitReview() {
+-      if (!state.rating) return showToast(state.language === 'vi' ? 'Hãy chọn số sao' : 'Choose a rating', 'error');
++      if (!state.rating) return showToast(t('ratingRequired'), 'error');
+       document.getElementById('review-notes').value = '';
+       navigateTo('home');
+-      showToast(state.language === 'vi' ? 'Cảm ơn phản hồi của bạn' : 'Thanks for your feedback');
++      showToast(t('reviewThanks'));
+     }
+ 
+     function reviewBooking() {
+       document.getElementById('booking-service-summary').textContent = state.booking.service;
+       document.getElementById('booking-staff-summary').textContent = state.booking.staff;
+       document.getElementById('booking-time-summary').textContent = `${state.booking.day} · ${state.booking.time}`;
+       navigateTo('book2');
+     }
+ 
+     function confirmBooking() {
+@@ -513,44 +773,62 @@
+     }
+ 
+     function handleAction(event) {
+       const nav = event.target.closest('[data-nav-target]');
+       if (nav) return navigateTo(nav.dataset.navTarget);
+       const explore = event.target.closest('[data-explore-filter]');
+       if (explore) { state.exploreFilter = explore.dataset.exploreFilter; selectExclusive(explore, '[data-explore-filter]'); return filterExplore(document.getElementById('explore-search').value); }
+       const offerFilter = event.target.closest('[data-offer-filter]');
+       if (offerFilter) { state.offerFilter = offerFilter.dataset.offerFilter; selectExclusive(offerFilter, '[data-offer-filter]'); return filterOffers(document.getElementById('offer-search').value); }
+       const payment = event.target.closest('[data-payment-method]');
+-      if (payment) { state.paymentMethod = payment.dataset.paymentMethod; selectExclusive(payment, '[data-payment-method]'); const label = document.querySelector('[data-action="send-payment"] span'); label.textContent = state.language === 'vi' ? `Mở ${state.paymentMethod} để thanh toán` : `Open ${state.paymentMethod} to pay`; return; }
++      if (payment) { state.paymentMethod = payment.dataset.paymentMethod; selectExclusive(payment, '[data-payment-method]'); const label = document.querySelector('[data-action="send-payment"] span'); label.textContent = t('openPayment', { method: state.paymentMethod }); return; }
+       for (const key of ['service', 'staff', 'day', 'time']) { const control = event.target.closest(`[data-book-${key}]`); if (control) return selectExclusive(control, `[data-book-${key}]`, key, control.dataset[`book${key[0].toUpperCase()}${key.slice(1)}`]); }
+       const control = event.target.closest('[data-action]');
+       if (!control) return;
+       const actions = {
+         navigate: () => navigateTo(control.dataset.target), back: () => navigateTo(control.dataset.backTarget), language: () => setLanguage(control.dataset.language),
+         'close-overlay': closeOverlay, 'start-scan': startScan, 'select-tip': () => selectTip(control.dataset.amount, control), 'send-tip': sendTip,
+         'confirm-tip': confirmTip, 'send-payment': sendPayment, 'confirm-payment': confirmPayment, 'open-reward': () => openReward(control.dataset.rewardKey),
+         'confirm-reward': confirmReward, 'save-offer': () => saveOffer(control), 'add-wish': addWish, 'save-look': saveLook,
+         'set-rating': () => setRating(control.dataset.rating), 'submit-review': submitReview, 'review-booking': reviewBooking, 'confirm-booking': confirmBooking,
+-        'upload-look': () => openOverlay(state.language === 'vi' ? 'Thêm ảnh' : 'Add a photo', state.language === 'vi' ? 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.' : 'The production app will open your device photo picker.'),
+-        'resend-code': () => showToast(state.language === 'vi' ? 'Đã gửi lại mã xác thực' : 'Verification code resent'),
+-        'show-directions': () => showToast(state.language === 'vi' ? 'Đang mở ứng dụng bản đồ' : 'Opening maps'),
+-        'copy-referral': () => { navigator.clipboard?.writeText('https://nexora.example/invite/JESSICA50'); showToast(state.language === 'vi' ? 'Đã sao chép liên kết' : 'Invite link copied'); },
+-        'save-preferences': () => showToast(state.language === 'vi' ? 'Đã lưu tùy chọn' : 'Preferences saved')
++        'upload-look': () => openOverlay(t('addPhoto'), t('addPhotoDetail')),
++        'resend-code': () => showToast(t('verificationResent')),
++        'show-directions': () => showToast(t('openingMaps')),
++        'copy-referral': () => { navigator.clipboard?.writeText('https://nexora.example/invite/JESSICA50'); showToast(t('inviteCopied')); },
++        'save-preferences': () => showToast(t('preferencesSaved'))
+       };
+       actions[control.dataset.action]?.();
+     }
+ 
+     function handleInput(event) {
+       if (event.target.id === 'explore-search') filterExplore(event.target.value);
+       if (event.target.id === 'offer-search') filterOffers(event.target.value);
+     }
+ 
+-    document.addEventListener('click', handleAction);
+-    document.addEventListener('input', handleInput);
+-    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeOverlay(); });
++    function handleKeydown(event) {
++      if (event.key === 'Escape') closeOverlay();
++    }
++
++    function renderApp() {
++      applyLanguage(state.profile.language);
++    }
++
++    function initializeApp() {
++      document.addEventListener('click', handleAction);
++      document.addEventListener('input', handleInput);
++      document.addEventListener('keydown', handleKeydown);
++      renderApp();
++    }
++
++    window.NEXORA_TEST_API = {
++      STORAGE_KEY,
++      createDefaultState,
++      migrateState,
++      loadState,
++      saveState,
++      translate
++    };
+ 
+-    renderNavigation();
+-    updateNavigation();
+-    if (window.lucide) window.lucide.createIcons();
++    if (!window.NEXORA_SKIP_INIT) initializeApp();
+   </script>
+ </body>
+ </html>
+diff --git a/html/customer/cutomer-reward.test.mjs b/html/customer/cutomer-reward.test.mjs
+index 9001fe2..fe0ccfa 100644
+--- a/html/customer/cutomer-reward.test.mjs
++++ b/html/customer/cutomer-reward.test.mjs
+@@ -1,15 +1,253 @@
+ import test from 'node:test';
+ import assert from 'node:assert/strict';
+ import { existsSync, readFileSync } from 'node:fs';
+ import { dirname, join } from 'node:path';
+ import { fileURLToPath } from 'node:url';
++import vm from 'node:vm';
++
++function createMemoryStorage(seed = {}) {
++  const values = new Map(Object.entries(seed));
++  return {
++    getItem(key) { return values.has(key) ? values.get(key) : null; },
++    setItem(key, value) { values.set(key, String(value)); },
++    removeItem(key) { values.delete(key); },
++    clear() { values.clear(); },
++    key(index) { return [...values.keys()][index] ?? null; },
++    get length() { return values.size; },
++    dump() { return Object.fromEntries(values); }
++  };
++}
++
++function createStubElement({ dataset = {}, textContent = '', placeholder = '' } = {}) {
++  const attributes = {};
++  return {
++    dataset,
++    textContent,
++    placeholder,
++    attributes,
++    setAttribute(name, value) { attributes[name] = String(value); }
++  };
++}
++
++function createDocumentStub({ localizedNodes = [], placeholderNodes = [], languageControls = [] } = {}) {
++  const listeners = [];
++  const elements = new Map();
++  return {
++    listeners,
++    documentElement: { lang: 'vi' },
++    addEventListener(type, handler) { listeners.push({ type, handler }); },
++    getElementById(id) {
++      if (!elements.has(id)) elements.set(id, { innerHTML: '' });
++      return elements.get(id);
++    },
++    querySelectorAll(selector) {
++      if (selector === '[data-en][data-vi]') return localizedNodes;
++      if (selector === '[data-en-ph][data-vi-ph]') return placeholderNodes;
++      if (selector === '[data-language]') return languageControls;
++      return [];
++    }
++  };
++}
++
++function testApi(seed = {}, { skipInit = true, document } = {}) {
++  const source = html();
++  const script = source.match(/<script>\s*([\s\S]*?)<\/script>\s*<\/body>/)?.[1];
++  assert.ok(script, 'inline application script must exist');
++  const storage = createMemoryStorage(seed);
++  const window = {
++    localStorage: storage,
++    NEXORA_SKIP_INIT: skipInit,
++    setTimeout() { return 1; },
++    clearTimeout() {},
++    lucide: null
++  };
++  if (document) window.document = document;
++  const globals = {
++    window,
++    localStorage: storage,
++    structuredClone,
++    Intl,
++    Date,
++    Math,
++    JSON,
++    URL,
++    crypto: { randomUUID: () => '00000000-0000-4000-8000-000000000001' },
++    console
++  };
++  if (document) globals.document = document;
++  const context = vm.createContext(globals);
++  vm.runInContext(script, context);
++  return { api: window.NEXORA_TEST_API, storage };
++}
++
++test('creates versioned Vietnamese demo state with per-business balances', () => {
++  const { api } = testApi();
++  const state = api.createDefaultState();
++  assert.equal(state.schemaVersion, 1);
++  assert.equal(state.profile.language, 'vi');
++  assert.equal(state.balances['bitcoin-nail-bar'].points, 2450);
++  assert.equal(state.balances['golden-glow-spa'].points, 600);
++  assert.equal(state.balances['moon-coffee'].points, 120);
++  assert.equal('pointBalance' in state, false);
++});
++
++test('persists state and recovers corrupt JSON into a timestamped backup', () => {
++  const { api, storage } = testApi();
++  const state = api.createDefaultState();
++  state.profile.name = 'Lan Nguyen';
++  api.saveState(state, storage);
++  assert.equal(api.loadState(storage).profile.name, 'Lan Nguyen');
++
++  storage.setItem(api.STORAGE_KEY, '{broken');
++  const recovered = api.loadState(storage, () => 1720936800000);
++  assert.equal(recovered.profile.language, 'vi');
++  assert.equal(storage.getItem(`${api.STORAGE_KEY}.corrupt.1720936800000`), '{broken');
++});
++
++test('migrates valid JSON with malformed fields into the known state schema', () => {
++  const { api, storage } = testApi();
++  const defaults = api.createDefaultState();
++  storage.setItem(api.STORAGE_KEY, JSON.stringify({
++    profile: null,
++    balances: [],
++    session: 'invalid',
++    wishes: {},
++    preferences: { nearbyDeals: 'yes', unknownPreference: true },
++    ui: { overlay: [] },
++    unknownRoot: true
++  }));
++
++  const migrated = api.loadState(storage);
++  assert.equal(JSON.stringify(migrated.profile), JSON.stringify(defaults.profile));
++  assert.equal(JSON.stringify(migrated.balances), JSON.stringify(defaults.balances));
++  assert.equal(JSON.stringify(migrated.session), JSON.stringify(defaults.session));
++  assert.equal(JSON.stringify(migrated.wishes), JSON.stringify(defaults.wishes));
++  assert.equal(migrated.preferences.nearbyDeals, defaults.preferences.nearbyDeals);
++  assert.equal(migrated.ui.overlay, null);
++  assert.equal('unknownPreference' in migrated.preferences, false);
++  assert.equal('unknownRoot' in migrated, false);
++  assert.equal(Object.keys(storage.dump()).some((key) => key.includes('.corrupt.')), false);
++
++  const knownUpdate = api.migrateState({ profile: { name: 'Lan Nguyen', language: 'fr', unknownProfile: true } });
++  assert.equal(knownUpdate.profile.name, 'Lan Nguyen');
++  assert.equal(knownUpdate.profile.language, 'vi');
++  assert.equal('unknownProfile' in knownUpdate.profile, false);
++});
++
++test('sanitizes collection elements and preserves valid nullable unions', () => {
++  const { api } = testApi();
++  const validLedger = {
++    id: 'led-valid', businessId: 'golden-glow-spa', type: 'visit', pointsDelta: 80,
++    refType: 'visit', refId: 'visit-2002', createdAt: '2026-07-15T10:00:00.000Z', futureField: 'kept'
++  };
++  const validVisit = {
++    id: 'visit-2002', businessId: 'golden-glow-spa', staffProfileId: 'staff-maria',
++    occurredAt: '2026-07-15T09:00:00.000Z', futureField: 'kept'
++  };
++  const validTip = {
++    id: 'tip-2002', businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna',
++    amount: 10, status: 'pending', createdAt: '2026-07-15T09:30:00.000Z', confirmedAt: null
++  };
++  const migrated = api.migrateState({
++    ledger: [{}, { ...validLedger, businessId: 42 }, validLedger],
++    visits: [null, validVisit],
++    tips: [{}, validTip],
++    wishes: [null, 'Pedicure deal', 42],
++    savedOfferIds: ['offer-glow', null],
++    welcomeClaims: ['7135550199', {}],
++    offlineQueue: ['checkin-1', false],
++    balances: {
++      'bitcoin-nail-bar': { expiringPoints: { amount: 50, date: '2026-09-01', unknown: true } },
++      'golden-glow-spa': { expiringPoints: { amount: '50', date: '2026-09-01' } },
++      'moon-coffee': { expiringPoints: null }
++    },
++    ui: { currentRewardKey: 'gel', overlay: { kind: 'notice' } }
++  });
++
++  assert.equal(migrated.ledger.length, 1);
++  assert.equal(migrated.ledger[0].businessId, 'golden-glow-spa');
++  assert.equal(migrated.ledger[0].futureField, 'kept');
++  assert.equal(migrated.visits.length, 1);
++  assert.equal(migrated.visits[0].futureField, 'kept');
++  assert.equal(migrated.tips.length, 1);
++  assert.equal(JSON.stringify(migrated.wishes), JSON.stringify(['Pedicure deal']));
++  assert.equal(JSON.stringify(migrated.savedOfferIds), JSON.stringify(['offer-glow']));
++  assert.equal(JSON.stringify(migrated.welcomeClaims), JSON.stringify(['7135550199']));
++  assert.equal(JSON.stringify(migrated.offlineQueue), JSON.stringify(['checkin-1']));
++  assert.equal(JSON.stringify(migrated.balances['bitcoin-nail-bar'].expiringPoints), JSON.stringify({ amount: 50, date: '2026-09-01' }));
++  assert.equal(migrated.balances['golden-glow-spa'].expiringPoints, null);
++  assert.equal(migrated.balances['moon-coffee'].expiringPoints, null);
++  assert.equal(migrated.ui.currentRewardKey, 'gel');
++  assert.equal(JSON.stringify(migrated.ui.overlay), JSON.stringify({ kind: 'notice' }));
++
++  const invalidUnions = api.migrateState({
++    balances: { 'bitcoin-nail-bar': { expiringPoints: { amount: Infinity, date: 7 } } },
++    ui: { currentRewardKey: 7, overlay: [] }
++  });
++  assert.equal(invalidUnions.balances['bitcoin-nail-bar'].expiringPoints, null);
++  assert.equal(invalidUnions.ui.currentRewardKey, null);
++  assert.equal(invalidUnions.ui.overlay, null);
++});
++
++test('uses nested profile language with the shared translation dictionary', () => {
++  const source = html();
++  assert.doesNotMatch(source, /\bstate\.language\b/);
++  assert.doesNotMatch(source, /state\.profile\.language\s*===\s*['"]vi['"]\s*\?/);
++  assert.match(source, /const COPY\s*=/);
++  assert.match(source, /function translate\(language, key, variables/);
++  assert.match(source, /function t\(key, variables/);
++
++  const { api } = testApi();
++  assert.equal(api.translate('vi', 'continueTip', { amount: 15 }), 'Tiếp tục với $15');
++  assert.equal(api.translate('en', 'continueTip', { amount: 15 }), 'Continue with $15');
++  assert.equal(api.translate('unknown', 'offerSaved'), 'Đã lưu ưu đãi');
++});
++
++test('initializes the browser with defined entry-point dependencies', () => {
++  const document = createDocumentStub();
++  assert.doesNotThrow(() => testApi({}, { skipInit: false, document }));
++  assert.deepEqual(document.listeners.map(({ type }) => type), ['click', 'input', 'keydown']);
++
++  const source = html();
++  for (const name of ['handleAction', 'handleInput', 'handleKeydown', 'renderApp']) {
++    assert.match(source, new RegExp(`function ${name}\\(`), `${name} must be defined`);
++  }
++});
++
++test('applies persisted English during bootstrap without saving state again', () => {
++  const localized = createStubElement({ dataset: { vi: 'Xin chào', en: 'Hello' }, textContent: 'Xin chào' });
++  const placeholder = createStubElement({ dataset: { viPh: 'Tìm kiếm', enPh: 'Search' }, placeholder: 'Tìm kiếm' });
++  const viControl = createStubElement({ dataset: { language: 'vi' } });
++  const enControl = createStubElement({ dataset: { language: 'en' } });
++  const document = createDocumentStub({
++    localizedNodes: [localized],
++    placeholderNodes: [placeholder],
++    languageControls: [viControl, enControl]
++  });
++  const storageKey = 'nexora.customer.prototype.v1';
++  const persisted = JSON.stringify({ profile: { language: 'en' } });
++
++  const { storage } = testApi({ [storageKey]: persisted }, { skipInit: false, document });
++
++  assert.equal(document.documentElement.lang, 'en');
++  assert.equal(localized.textContent, 'Hello');
++  assert.equal(placeholder.placeholder, 'Search');
++  assert.equal(viControl.attributes['aria-pressed'], 'false');
++  assert.equal(enControl.attributes['aria-pressed'], 'true');
++  assert.equal(storage.getItem(storageKey), persisted);
++
++  const source = html();
++  const applyLanguage = source.match(/function applyLanguage\(language\)\s*\{([\s\S]*?)\n\s*\}\n\n\s*function setLanguage/)?.[1];
++  assert.ok(applyLanguage, 'applyLanguage must be defined before setLanguage');
++  assert.doesNotMatch(applyLanguage, /commitState|saveState/);
++});
+ 
+ const here = dirname(fileURLToPath(import.meta.url));
+ const target = join(here, 'cutomer-reward.html');
+ 
+ function html() {
+   assert.ok(existsSync(target), 'cutomer-reward.html must exist');
+   return readFileSync(target, 'utf8');
+ }
+ 
+ test('loads the approved frontend stack', () => {

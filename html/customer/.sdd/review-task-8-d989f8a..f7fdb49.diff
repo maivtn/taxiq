@@ -1,0 +1,1491 @@
+# Review package: d989f8ab60b8ee2acae42857dd2aba0e7eea3065..f7fdb49
+
+## Commits
+f7fdb49 fix: fail closed on malformed checkin balances
+5588618 test: verify complete customer reward prototype
+
+## Files changed
+ html/customer/cutomer-reward.html     | 474 ++++++++++++++++++++++++++++++----
+ html/customer/cutomer-reward.test.mjs | 187 ++++++++++++--
+ 2 files changed, 600 insertions(+), 61 deletions(-)
+
+## Diff
+diff --git a/html/customer/cutomer-reward.html b/html/customer/cutomer-reward.html
+index c1d5b67..e0ee3fe 100644
+--- a/html/customer/cutomer-reward.html
++++ b/html/customer/cutomer-reward.html
+@@ -50,20 +50,21 @@
+     }
+ 
+     @keyframes scan-pass { from { transform: translateY(0); } to { transform: translateY(250px); } }
+     #scan-line:not(.hidden) { animation: scan-pass 1.1s ease-in-out infinite alternate; }
+     @media (prefers-reduced-motion: reduce) {
+       *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+     }
+   </style>
+ </head>
+ <body>
++  <template id="referral-copy-contract"><p data-en="Your friend receives points from the first business they check in at. Your reward is released after their first paid visit." data-vi="Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Điểm của bạn chỉ được cộng sau lượt ghé có thanh toán đầu tiên của họ.">Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Điểm của bạn chỉ được cộng sau lượt ghé có thanh toán đầu tiên của họ.</p></template>
+   <div id="app-shell" class="min-h-dvh lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
+     <aside id="desktop-sidebar" class="hidden min-h-dvh border-r border-app-line bg-app-panel lg:sticky lg:top-0 lg:flex lg:flex-col">
+       <div class="px-6 py-7">
+         <div class="flex items-center gap-3">
+           <span class="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-app-purple to-app-pink shadow-lg shadow-app-purple/20"><i data-lucide="sparkles" class="size-5" aria-hidden="true"></i></span>
+           <div><strong class="block text-sm tracking-wide">NEXORA</strong><span class="text-xs text-app-muted">Customer Rewards</span></div>
+         </div>
+       </div>
+       <nav id="desktop-nav" aria-label="Điều hướng chính" class="flex flex-1 flex-col gap-1 px-3" data-nav-surface="desktop"></nav>
+       <div class="border-t border-app-line p-4 text-xs leading-5 text-app-muted">Rewards by your favorite local businesses.</div>
+@@ -143,21 +144,21 @@
+         </section>
+         <section class="app-screen hidden" id="addlook" data-ready="true" data-module="home" aria-labelledby="addlook-title">
+           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="looks" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Save the details" data-vi="Lưu lại chi tiết">Lưu lại chi tiết</p><h1 id="addlook-title" class="text-2xl font-black" data-en="Add a new look" data-vi="Thêm kiểu mới">Thêm kiểu mới</h1></div></div>
+           <div class="app-card"><input id="look-photo-input" class="sr-only" type="file" accept="image/jpeg,image/png" data-look-photo><img id="look-photo-preview" class="hidden max-h-48 w-full rounded-2xl object-cover" alt="Ảnh kiểu đã chọn"><button type="button" class="grid min-h-44 w-full place-items-center rounded-2xl border border-dashed border-app-line bg-app-panel text-center" data-action="upload-look"><span><i data-lucide="image-plus" class="mx-auto size-8 text-app-pink" aria-hidden="true"></i><strong class="mt-3 block" data-en="Add a photo" data-vi="Thêm ảnh">Thêm ảnh</strong><small class="mt-1 block text-app-muted" data-en="JPG or PNG, up to 10 MB" data-vi="JPG hoặc PNG, tối đa 10 MB">JPG hoặc PNG, tối đa 10 MB</small></span></button><div class="mt-5 grid gap-4 sm:grid-cols-2"><label class="text-sm font-bold"><span data-en="Service" data-vi="Dịch vụ">Dịch vụ</span><input id="look-service" class="app-input mt-2" data-en-ph="e.g. Gel manicure" data-vi-ph="VD: Sơn gel" placeholder="VD: Sơn gel"></label><label class="text-sm font-bold"><span data-en="Color / formula" data-vi="Màu / công thức">Màu / công thức</span><input id="look-color" class="app-input mt-2" data-en-ph="e.g. Lilac #142" data-vi-ph="VD: Lilac #142" placeholder="VD: Lilac #142"></label></div><label class="mt-4 block text-sm font-bold"><span data-en="Notes" data-vi="Ghi chú">Ghi chú</span><textarea id="look-notes" class="app-input mt-2 min-h-28 resize-y" data-en-ph="Shape, technician and anything to remember…" data-vi-ph="Dáng, kỹ thuật viên và điều cần nhớ…" placeholder="Dáng, kỹ thuật viên và điều cần nhớ…"></textarea></label><button type="button" class="app-button mt-5 w-full" data-action="save-look"><i data-lucide="save" class="size-4" aria-hidden="true"></i><span data-en="Save look" data-vi="Lưu kiểu">Lưu kiểu</span></button></div></div>
+         </section>
+         <section class="app-screen hidden" id="review" data-ready="true" data-module="home" aria-labelledby="review-title">
+           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Private to the business" data-vi="Chỉ doanh nghiệp nhìn thấy">Chỉ doanh nghiệp nhìn thấy</p><h1 id="review-title" class="text-2xl font-black" data-en="How was your visit?" data-vi="Trải nghiệm của bạn thế nào?">Trải nghiệm của bạn thế nào?</h1></div></div>
+           <div class="app-card"><div class="flex items-center gap-3"><span class="grid size-12 place-items-center rounded-2xl bg-app-purple/10 text-app-pink"><i data-lucide="sparkles" class="size-6" aria-hidden="true"></i></span><div><strong>Bitcoin Nail Bar</strong><p class="text-xs text-app-muted">Gel manicure · Anna · 12/07</p></div></div><p class="mt-6 text-sm font-bold" data-en="Your rating" data-vi="Đánh giá của bạn">Đánh giá của bạn</p><div class="mt-2 flex gap-2" aria-label="Chọn số sao"><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="1" aria-label="1 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="2" aria-label="2 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="3" aria-label="3 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="4" aria-label="4 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="5" aria-label="5 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button></div><label class="mt-5 block text-sm font-bold"><span data-en="What could be better?" data-vi="Điều gì có thể tốt hơn?">Điều gì có thể tốt hơn?</span><textarea id="review-notes" class="app-input mt-2 min-h-32 resize-y" data-en-ph="Share details privately…" data-vi-ph="Chia sẻ riêng với doanh nghiệp…" placeholder="Chia sẻ riêng với doanh nghiệp…"></textarea></label><p class="mt-4 rounded-xl bg-app-green/5 p-3 text-xs leading-5 text-app-muted" data-en="Earn 15 points for private feedback at any rating. Google sharing is optional and never rewarded." data-vi="Nhận 15 điểm cho phản hồi riêng ở mọi mức sao. Chia sẻ Google là tùy chọn và không được thưởng.">Nhận 15 điểm cho phản hồi riêng ở mọi mức sao. Chia sẻ Google là tùy chọn và không được thưởng.</p><button type="button" class="app-button mt-5 w-full" data-action="submit-review"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Send feedback + earn 15 points" data-vi="Gửi phản hồi + nhận 15 điểm">Gửi phản hồi + nhận 15 điểm</span></button><button type="button" class="app-button-secondary mt-3 w-full" data-action="open-google-review" data-en="Share on Google (optional · no points)" data-vi="Chia sẻ lên Google (tùy chọn · không điểm)">Chia sẻ lên Google (tùy chọn · không điểm)</button></div></div>
+         </section>
+         <section class="app-screen hidden" id="offers" data-ready="true" data-module="home" aria-labelledby="offers-title">
+-          <div class="mt-3 flex gap-2"><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="saved" data-en="Saved" data-vi="Đã lưu">Đã lưu</button><button class="sr-only" type="button" data-action="view-offer" data-offer-id="offer-glow">Xem</button><button class="sr-only" type="button" data-action="use-offer" data-reward-key="glow">Dùng ưu đãi</button></div><div id="offers-empty-state" class="hidden" data-state="empty"></div>
++          <div class="mt-3 flex gap-2"><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="saved" data-en="Saved" data-vi="Đã lưu">Đã lưu</button><button class="app-button-secondary" type="button" data-action="simulate-wish-push" data-en="Simulate wish match" data-vi="Mô phỏng ưu đãi phù hợp">Mô phỏng ưu đãi phù hợp</button><button class="sr-only" type="button" data-action="view-offer" data-offer-id="offer-glow">Xem</button><button class="sr-only" type="button" data-action="use-offer" data-reward-key="glow">Dùng ưu đãi</button></div><div id="offers-empty-state" class="hidden" data-state="empty"></div>
+           <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Picked for you" data-vi="Dành riêng cho bạn">Dành riêng cho bạn</p><h1 id="offers-title" class="text-2xl font-black" data-en="Offers & wishlist" data-vi="Ưu đãi & mong muốn">Ưu đãi & mong muốn</h1></div></div>
+           <div class="grid gap-4 xl:grid-cols-[1fr_340px]"><div><div class="relative"><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-app-muted" aria-hidden="true"></i><input id="offer-search" class="app-input pl-11" type="search" data-en-ph="Search offers…" data-vi-ph="Tìm ưu đãi…" placeholder="Tìm ưu đãi…"></div><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" aria-pressed="true" data-offer-filter="all" data-en="All" data-vi="Tất cả">Tất cả</button><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="beauty" data-en="Beauty" data-vi="Làm đẹp">Làm đẹp</button><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="food" data-en="Food" data-vi="Ẩm thực">Ẩm thực</button></div><div class="mt-4 grid gap-4 md:grid-cols-2"><article class="app-card overflow-hidden p-0" data-offer-card data-offer-id="offer-glow" data-category="beauty" data-search="golden glow facial spa"><img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80" alt="Ưu đãi chăm sóc da" class="h-40 w-full object-cover"><div class="p-4"><span class="text-xs font-bold text-app-gold" data-en="20% OFF" data-vi="GIẢM 20%">GIẢM 20%</span><h2 class="mt-2 font-black" data-en="Glow facial" data-vi="Chăm sóc da Glow">Chăm sóc da Glow</h2><p class="mt-1 text-xs text-app-muted">Golden Glow Spa · Hết hạn 21/07</p><button class="app-button-secondary mt-4 w-full" type="button" data-action="save-offer" data-offer-id="offer-glow"><i data-lucide="bookmark" class="size-4" aria-hidden="true"></i><span data-en="Save offer" data-vi="Lưu ưu đãi">Lưu ưu đãi</span></button></div></article><article class="app-card overflow-hidden p-0" data-offer-card data-offer-id="offer-moon" data-category="food" data-search="moon coffee latte pastry"><img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80" alt="Ưu đãi cà phê" class="h-40 w-full object-cover"><div class="p-4"><span class="text-xs font-bold text-app-green" data-en="BUY 1 GET 1" data-vi="MUA 1 TẶNG 1">MUA 1 TẶNG 1</span><h2 class="mt-2 font-black" data-en="Member latte" data-vi="Latte thành viên">Latte thành viên</h2><p class="mt-1 text-xs text-app-muted">Moon Coffee · Hết hạn 31/07</p><button class="app-button-secondary mt-4 w-full" type="button" data-action="save-offer" data-offer-id="offer-moon"><i data-lucide="bookmark" class="size-4" aria-hidden="true"></i><span data-en="Save offer" data-vi="Lưu ưu đãi">Lưu ưu đãi</span></button></div></article></div></div><aside class="app-card h-fit"><p class="eyebrow" data-en="Tell businesses" data-vi="Gửi mong muốn">Gửi mong muốn</p><h2 class="mt-1 section-title" data-en="What would you love?" data-vi="Bạn mong muốn ưu đãi gì?">Bạn mong muốn ưu đãi gì?</h2><p class="mt-2 text-sm leading-6 text-app-muted" data-en="Your idea is shared anonymously." data-vi="Ý tưởng được gửi ẩn danh.">Ý tưởng được gửi ẩn danh.</p><div class="mt-4 flex gap-2"><input id="wish-input" class="app-input" data-en-ph="e.g. Birthday nail package" data-vi-ph="VD: Gói nail sinh nhật" placeholder="VD: Gói nail sinh nhật"><button class="icon-button" type="button" data-action="add-wish" aria-label="Thêm mong muốn"><i data-lucide="plus" class="size-5" aria-hidden="true"></i></button></div><ul id="wish-list" class="mt-4 space-y-2 text-sm"><li class="rounded-xl bg-app-panel p-3" data-en="Weekend couple spa package" data-vi="Gói spa đôi cuối tuần">Gói spa đôi cuối tuần</li></ul></aside></div>
+         </section>
+         <section class="app-screen hidden" id="book1" data-ready="true" data-module="home" aria-labelledby="book1-title">
+           <div class="mx-auto max-w-3xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Step 1 of 3" data-vi="Bước 1/3">Bước 1/3</p><h1 id="book1-title" class="text-2xl font-black" data-en="Choose your appointment" data-vi="Chọn lịch hẹn">Chọn lịch hẹn</h1></div></div><div class="app-card"><h2 class="section-title" data-en="Service" data-vi="Dịch vụ">Dịch vụ</h2><div class="mt-3 grid gap-2 sm:grid-cols-2"><button class="app-chip justify-between rounded-xl" type="button" data-book-service="Gel manicure" aria-pressed="true"><span data-en="Gel manicure" data-vi="Sơn gel">Sơn gel</span><strong>$45</strong></button><button class="app-chip justify-between rounded-xl" type="button" data-book-service="Pedicure" aria-pressed="false"><span data-en="Signature pedicure" data-vi="Pedicure đặc biệt">Pedicure đặc biệt</span><strong>$55</strong></button></div><h2 class="mt-6 section-title" data-en="Technician" data-vi="Kỹ thuật viên">Kỹ thuật viên</h2><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" data-book-staff="Anna" aria-pressed="true">Anna</button><button class="app-chip" type="button" data-book-staff="Mia" aria-pressed="false">Mia</button><button class="app-chip" type="button" data-book-staff="No preference" aria-pressed="false" data-en="No preference" data-vi="Không yêu cầu">Không yêu cầu</button></div><h2 class="mt-6 section-title" data-en="Date & time" data-vi="Ngày & giờ">Ngày & giờ</h2><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" data-book-day="Thu 16 Jul" aria-pressed="true" data-en="Thu 16" data-vi="T5 16/7">T5 16/7</button><button class="app-chip" type="button" data-book-day="Fri 17 Jul" aria-pressed="false" data-en="Fri 17" data-vi="T6 17/7">T6 17/7</button><button class="app-chip" type="button" data-book-day="Sat 18 Jul" aria-pressed="false" data-en="Sat 18" data-vi="T7 18/7">T7 18/7</button></div><div class="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5"><button class="app-chip justify-center" type="button" data-book-time="10:00 AM" aria-pressed="false">10:00</button><button class="app-chip justify-center" type="button" data-book-time="11:30 AM" aria-pressed="false">11:30</button><button class="app-chip justify-center" type="button" data-book-time="2:00 PM" aria-pressed="true">14:00</button><button class="app-chip justify-center" type="button" data-book-time="3:30 PM" aria-pressed="false">15:30</button><button class="app-chip justify-center" type="button" data-book-time="5:00 PM" aria-pressed="false">17:00</button></div><button class="app-button mt-6 w-full" type="button" data-action="review-booking"><span data-en="Review booking" data-vi="Xem lại lịch hẹn">Xem lại lịch hẹn</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button></div></div>
+         </section>
+         <section class="app-screen hidden" id="book2" data-ready="true" data-module="home" aria-labelledby="book2-title">
+           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="book1" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Step 2 of 3" data-vi="Bước 2/3">Bước 2/3</p><h1 id="book2-title" class="text-2xl font-black" data-en="Review your request" data-vi="Kiểm tra yêu cầu">Kiểm tra yêu cầu</h1></div></div><div class="app-card"><div class="flex items-center gap-3 border-b border-app-line pb-4"><span class="grid size-12 place-items-center rounded-2xl bg-app-purple/10 text-app-pink"><i data-lucide="store" class="size-6" aria-hidden="true"></i></span><div><strong>Bitcoin Nail Bar</strong><p class="text-xs text-app-muted">1288 Westheimer Rd · 0.2 mi</p></div></div><dl class="mt-4 space-y-4 text-sm"><div class="flex justify-between gap-4"><dt class="text-app-muted" data-en="Service" data-vi="Dịch vụ">Dịch vụ</dt><dd id="booking-service-summary" class="font-bold">Sơn gel · $45</dd></div><div class="flex justify-between gap-4"><dt class="text-app-muted" data-en="Technician" data-vi="Kỹ thuật viên">Kỹ thuật viên</dt><dd id="booking-staff-summary" class="font-bold">Anna</dd></div><div class="flex justify-between gap-4"><dt class="text-app-muted" data-en="Time" data-vi="Thời gian">Thời gian</dt><dd id="booking-time-summary" class="font-bold">T5 16/7 · 14:00</dd></div></dl><label class="mt-5 block text-sm font-bold"><span data-en="Note for the business (optional)" data-vi="Ghi chú cho tiệm (không bắt buộc)">Ghi chú cho tiệm (không bắt buộc)</span><textarea id="booking-note" class="app-input mt-2 min-h-24" data-en-ph="Anything the team should know…" data-vi-ph="Điều tiệm cần biết…" placeholder="Điều tiệm cần biết…"></textarea></label><p class="mt-4 rounded-xl bg-app-cyan/5 p-3 text-xs leading-5 text-app-muted" data-en="This is a request. The business will confirm your appointment shortly." data-vi="Đây là yêu cầu đặt lịch. Doanh nghiệp sẽ xác nhận trong ít phút.">Đây là yêu cầu đặt lịch. Doanh nghiệp sẽ xác nhận trong ít phút.</p><button class="app-button mt-5 w-full" type="button" data-action="confirm-booking"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Send booking request" data-vi="Gửi yêu cầu đặt lịch">Gửi yêu cầu đặt lịch</span></button></div></div>
+         </section>
+         <section class="app-screen hidden" id="book3" data-ready="true" data-module="home" aria-labelledby="book3-title">
+@@ -182,21 +183,21 @@
+         </section>
+         <section class="app-screen hidden" id="redeem" data-ready="true" data-module="wallet" aria-labelledby="redeem-title">
+           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="rewards" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Confirm redemption" data-vi="Xác nhận đổi điểm">Xác nhận đổi điểm</p><h1 id="redeem-title" class="text-2xl font-black" data-en="Redeem reward" data-vi="Đổi phần thưởng">Đổi phần thưởng</h1></div></div><div class="app-card"><div class="flex items-start gap-4"><span class="grid size-14 place-items-center rounded-2xl bg-app-pink/10 text-app-pink"><i data-lucide="gift" class="size-7" aria-hidden="true"></i></span><div><h2 id="reward-title" class="text-xl font-black">Nâng cấp sơn gel</h2><p id="reward-business" class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar</p></div></div><dl class="mt-6 space-y-4 rounded-2xl bg-app-panel p-4"><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Reward cost" data-vi="Điểm đổi quà">Điểm đổi quà</dt><dd id="reward-cost" class="font-black">800 điểm</dd></div><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Current balance" data-vi="Số dư hiện tại">Số dư hiện tại</dt><dd id="reward-balance" data-balance-with-unit="bitcoin-nail-bar" class="font-black">2.450 điểm</dd></div><div class="flex justify-between gap-4 border-t border-app-line pt-4 text-sm"><dt class="font-bold" data-en="Balance after" data-vi="Số dư còn lại">Số dư còn lại</dt><dd id="reward-after" class="font-black text-app-cyan">1.650 điểm</dd></div></dl><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Show the confirmation code to staff before the service is completed. This action cannot be undone." data-vi="Hãy đưa mã xác nhận cho nhân viên trước khi hoàn tất dịch vụ. Không thể hoàn tác thao tác này.">Hãy đưa mã xác nhận cho nhân viên trước khi hoàn tất dịch vụ. Không thể hoàn tác thao tác này.</p><button class="app-button mt-5 w-full" type="button" data-action="confirm-reward"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Use points now" data-vi="Dùng điểm ngay">Dùng điểm ngay</span></button></div></div>
+         </section>
+         <section class="app-screen hidden" id="redeemdone" data-ready="true" data-module="wallet" aria-labelledby="redeemdone-title">
+           <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-10" aria-hidden="true"></i></span><h1 id="redeemdone-title" class="mt-6 text-3xl font-black" data-en="Reward ready" data-vi="Phần thưởng đã sẵn sàng">Phần thưởng đã sẵn sàng</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="Show this code to Bitcoin Nail Bar staff." data-vi="Đưa mã này cho nhân viên Bitcoin Nail Bar.">Đưa mã này cho nhân viên Bitcoin Nail Bar.</p><div class="app-card mt-6"><p class="eyebrow" data-en="Redemption code" data-vi="Mã đổi quà">Mã đổi quà</p><strong class="mt-3 block text-3xl tracking-[.22em] text-app-cyan">NX-4821</strong><div class="my-5 border-t border-dashed border-app-line"></div><div class="flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Reward" data-vi="Phần thưởng">Phần thưởng</span><strong id="reward-done-title">Nâng cấp sơn gel</strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Points used" data-vi="Điểm đã dùng">Điểm đã dùng</span><strong id="reward-done-cost">800 điểm</strong></div></div><button class="app-button mt-5 w-full" type="button" data-action="navigate" data-target="wallet" data-en="Back to wallet" data-vi="Về ví điểm">Về ví điểm</button></div></div>
+         </section>
+         <section class="app-screen hidden" id="scan" data-ready="true" data-module="scan" aria-labelledby="scan-title">
+           <div class="mx-auto max-w-2xl"><div class="text-center"><p class="eyebrow" data-en="Fast check-in" data-vi="Check-in nhanh">Check-in nhanh</p><h1 id="scan-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Scan a business QR" data-vi="Quét QR của doanh nghiệp">Quét QR của doanh nghiệp</h1><p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-app-muted" data-en="Point your camera at the NEXORA code at the counter to check in and earn points." data-vi="Hướng camera vào mã NEXORA tại quầy để check-in và nhận điểm.">Hướng camera vào mã NEXORA tại quầy để check-in và nhận điểm.</p></div>
+           <div class="app-card relative mx-auto mt-6 aspect-square w-full max-w-[360px] overflow-hidden bg-[radial-gradient(circle_at_center,rgba(34,211,238,.12),transparent_60%)] p-6" id="scan-surface"><div class="absolute left-5 top-5 size-12 rounded-tl-2xl border-l-4 border-t-4 border-app-cyan"></div><div class="absolute right-5 top-5 size-12 rounded-tr-2xl border-r-4 border-t-4 border-app-cyan"></div><div class="absolute bottom-5 left-5 size-12 rounded-bl-2xl border-b-4 border-l-4 border-app-cyan"></div><div class="absolute bottom-5 right-5 size-12 rounded-br-2xl border-b-4 border-r-4 border-app-cyan"></div><div class="grid h-full place-items-center text-center"><div><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-cyan/10 text-app-cyan"><i data-lucide="scan-qr-code" class="size-10" aria-hidden="true"></i></span><p class="mt-4 text-sm font-bold" data-en="Camera ready" data-vi="Camera đã sẵn sàng">Camera đã sẵn sàng</p><p class="mt-1 text-xs text-app-muted" data-en="Tap below to simulate scanning" data-vi="Chạm nút dưới để mô phỏng quét">Chạm nút dưới để mô phỏng quét</p></div></div><div id="scan-loading-state" class="pointer-events-none absolute inset-x-8 bottom-6 hidden rounded-xl bg-app-panel/90 p-3 text-center text-xs font-bold text-app-cyan" data-state="loading" data-en="Reading QR code…" data-vi="Đang đọc mã QR…">Đang đọc mã QR…</div><div id="scan-line" class="pointer-events-none absolute inset-x-8 top-10 hidden h-0.5 bg-gradient-to-r from-transparent via-app-cyan to-transparent shadow-[0_0_18px_#22d3ee]"></div></div>
+-          <button type="button" class="app-button mx-auto mt-5 flex w-full max-w-[360px]" data-action="start-scan"><i data-lucide="camera" class="size-4" aria-hidden="true"></i><span data-en="Start scanning" data-vi="Bắt đầu quét">Bắt đầu quét</span></button><button type="button" class="mx-auto mt-4 block min-h-11 text-sm font-bold text-app-muted" data-action="navigate" data-target="onb1" data-en="Enter a code instead" data-vi="Nhập mã thay thế">Nhập mã thay thế</button>
++          <button type="button" class="app-button mx-auto mt-5 flex w-full max-w-[360px]" data-action="start-scan"><i data-lucide="camera" class="size-4" aria-hidden="true"></i><span data-en="Start scanning" data-vi="Bắt đầu quét">Bắt đầu quét</span></button><button type="button" class="mx-auto mt-4 block min-h-11 text-sm font-bold text-app-muted" data-action="enter-code" data-en="Enter a code instead" data-vi="Nhập mã thay thế">Nhập mã thay thế</button>
+           <div class="app-card mt-7"><div class="flex items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-purple/10 text-app-pink"><i data-lucide="map-pin" class="size-5" aria-hidden="true"></i></span><div class="flex-1"><p class="eyebrow" data-en="Nearby" data-vi="Gần bạn">Gần bạn</p><h2 class="font-black">Bitcoin Nail Bar</h2><p class="text-xs text-app-muted">0.2 mi · Open until 7:00 PM</p></div><span class="rounded-full bg-app-green/10 px-2 py-1 text-xs font-bold text-app-green" data-en="Open" data-vi="Đang mở">Đang mở</span></div></div></div>
+         </section>
+         <section class="app-screen hidden" id="onb1" data-ready="true" data-module="scan" aria-labelledby="onb1-title">
+           <div class="mx-auto max-w-xl"><p class="eyebrow" data-en="Welcome gift" data-vi="Quà chào mừng">Quà chào mừng</p><h1 id="onb1-title" class="mt-2 text-3xl font-black" data-en="25 points are waiting" data-vi="25 điểm đang chờ bạn">25 điểm đang chờ bạn</h1><p class="mt-3 text-sm text-app-muted" data-en="Gifted by Bitcoin Nail Bar. Enter your phone to claim it." data-vi="Bitcoin Nail Bar tặng bạn. Nhập số điện thoại để nhận.">Bitcoin Nail Bar tặng bạn. Nhập số điện thoại để nhận.</p><input id="onb-phone" class="app-input mt-6" type="tel" inputmode="tel" autocomplete="tel" data-en-ph="(832) 555-0148" data-vi-ph="(832) 555-0148" placeholder="(832) 555-0148"><p id="onb-phone-error" class="field-error hidden" role="alert"></p><button class="app-button mt-5 w-full" type="button" data-action="claim-welcome" data-en="Claim 25 points" data-vi="Nhận 25 điểm">Nhận 25 điểm</button></div>
+         </section>
+         <section class="app-screen hidden" id="onb2" data-ready="true" data-module="scan" aria-labelledby="onb2-title">
+           <div class="mx-auto max-w-xl"><p class="eyebrow" data-en="Optional messages" data-vi="Tin nhắn tùy chọn">Tin nhắn tùy chọn</p><h1 id="onb2-title" class="mt-2 text-3xl font-black" data-en="Choose what to receive" data-vi="Chọn nội dung muốn nhận">Chọn nội dung muốn nhận</h1><label class="app-card mt-6 flex items-start gap-3"><input class="mt-1 size-5 accent-app-purple" type="checkbox" data-consent-choice="business:bitcoin-nail-bar"><span><strong data-en="Rewards & offers from Bitcoin Nail Bar" data-vi="Điểm và ưu đãi từ Bitcoin Nail Bar">Điểm và ưu đãi từ Bitcoin Nail Bar</strong><small class="block text-app-muted" data-en="Up to 4 marketing messages per month." data-vi="Tối đa 4 tin tiếp thị mỗi tháng.">Tối đa 4 tin tiếp thị mỗi tháng.</small></span></label><label class="app-card mt-3 flex items-start gap-3"><input class="mt-1 size-5 accent-app-purple" type="checkbox" data-consent-choice="networkOffers"><span><strong data-en="Nearby partner offers" data-vi="Ưu đãi từ đối tác gần bạn">Ưu đãi từ đối tác gần bạn</strong></span></label><p id="consent-error" class="field-error hidden" role="alert"></p><button class="app-button mt-5 w-full" type="button" data-action="accept-consent" data-en="Agree & continue" data-vi="Đồng ý & tiếp tục">Đồng ý & tiếp tục</button><button class="app-button-secondary mt-3 w-full" type="button" data-action="skip-consent" data-en="Skip — points only" data-vi="Bỏ qua — chỉ nhận điểm">Bỏ qua — chỉ nhận điểm</button><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Consent is not required to receive points. STOP/HELP supported." data-vi="Không bắt buộc đồng ý để nhận điểm. Hỗ trợ STOP/HELP.">Không bắt buộc đồng ý để nhận điểm. Hỗ trợ STOP/HELP.</p></div>
+         </section>
+         <section class="app-screen hidden" id="onb3" data-ready="true" data-module="scan" aria-labelledby="onb3-title">
+           <div class="mx-auto max-w-xl"><p class="eyebrow" data-en="Double opt-in" data-vi="Xác nhận hai bước">Xác nhận hai bước</p><h1 id="onb3-title" class="mt-2 text-3xl font-black" data-en="Confirm your number" data-vi="Xác nhận số điện thoại">Xác nhận số điện thoại</h1><div class="app-card mt-6 text-sm leading-6 text-app-muted">Nexora: Bitcoin Nail Bar added 25 pts. Reply Y to confirm messages. STOP=cancel HELP=help.</div><button class="app-button mt-5 w-full" type="button" data-action="confirm-double-opt-in" data-en="Reply Y (demo)" data-vi="Trả lời Y (mô phỏng)">Trả lời Y (mô phỏng)</button></div>
+@@ -208,41 +209,41 @@
+           <div class="mb-5"><p class="eyebrow" data-en="Verified local businesses" data-vi="Doanh nghiệp địa phương đã xác minh">Doanh nghiệp địa phương đã xác minh</p><h1 id="explore-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Explore nearby" data-vi="Khám phá gần bạn">Khám phá gần bạn</h1><p class="mt-1 text-sm text-app-muted" data-en="Find trusted places with real visit and service data." data-vi="Tìm địa điểm uy tín với dữ liệu lượt ghé và dịch vụ thực.">Tìm địa điểm uy tín với dữ liệu lượt ghé và dịch vụ thực.</p></div>
+           <div class="relative"><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-app-muted" aria-hidden="true"></i><input id="explore-search" class="app-input pl-11" type="search" data-en-ph="Search salons, spas, coffee…" data-vi-ph="Tìm salon, spa, cà phê…" placeholder="Tìm salon, spa, cà phê…"></div>
+           <div class="mt-3 flex gap-2 overflow-x-auto pb-2" aria-label="Bộ lọc doanh nghiệp"><button class="app-chip" type="button" aria-pressed="true" data-explore-filter="all" data-en="All" data-vi="Tất cả">Tất cả</button><button class="app-chip" type="button" aria-pressed="false" data-explore-filter="nails" data-en="Nails" data-vi="Nail">Nail</button><button class="app-chip" type="button" aria-pressed="false" data-explore-filter="spa" data-en="Spa" data-vi="Spa">Spa</button><button class="app-chip" type="button" aria-pressed="false" data-explore-filter="coffee" data-en="Coffee" data-vi="Cà phê">Cà phê</button><button class="app-chip" type="button" aria-pressed="false" data-explore-filter="new" data-en="New" data-vi="Mới">Mới</button></div>
+           <div id="business-grid" class="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+             <article class="app-card hidden" data-business-id="bitcoin-nail-bar"><button type="button" class="app-button-secondary" data-action="view-business" data-business-id="bitcoin-nail-bar">Xem doanh nghiệp</button><button type="button" class="app-button-secondary" data-action="toggle-favorite" data-favorite-business="bitcoin-nail-bar" aria-pressed="true"><span data-en="Favorite" data-vi="Yêu thích">Yêu thích</span></button></article>
+             <article class="app-card hidden" data-business-id="golden-glow-spa"><button type="button" class="app-button-secondary" data-action="view-business" data-business-id="golden-glow-spa">Xem doanh nghiệp</button><button type="button" class="app-button-secondary" data-action="toggle-favorite" data-favorite-business="golden-glow-spa" aria-pressed="false"><span data-en="Favorite" data-vi="Yêu thích">Yêu thích</span></button></article>
+             <article class="app-card overflow-hidden p-0" data-business-card data-business-id="bitcoin-nail-bar" data-category="nails" data-search="bitcoin nail bar manicure pedicure"><div class="relative h-44"><img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=900&q=80" alt="Dịch vụ nail tại Bitcoin Nail Bar" class="h-full w-full object-cover"><span class="absolute left-3 top-3 rounded-full bg-black/65 px-2.5 py-1 text-[11px] font-bold backdrop-blur" data-en="NEXORA verified" data-vi="NEXORA xác minh">NEXORA xác minh</span></div><div class="p-4"><div class="flex items-start justify-between gap-3"><div><h2 class="font-black">Bitcoin Nail Bar</h2><p class="mt-1 text-xs text-app-muted">Nails · 0.2 mi</p></div><span class="flex items-center gap-1 text-sm font-black text-app-gold"><i data-lucide="star" class="size-4 fill-current" aria-hidden="true"></i>4.9</span></div><div class="mt-4 grid grid-cols-3 gap-2 text-center"><div class="rounded-xl bg-app-panel p-2"><strong class="block text-sm">1.8k</strong><span class="text-[10px] text-app-muted" data-en="visits" data-vi="lượt ghé">lượt ghé</span></div><div class="rounded-xl bg-app-panel p-2"><strong class="block text-sm">420</strong><span class="text-[10px] text-app-muted" data-en="looks" data-vi="kiểu">kiểu</span></div><div class="rounded-xl bg-app-panel p-2"><strong class="block text-sm">$45</strong><span class="text-[10px] text-app-muted" data-en="from" data-vi="từ">từ</span></div></div><button type="button" class="app-button-secondary mt-4 w-full" data-action="view-business" data-business-id="bitcoin-nail-bar" data-en="View business" data-vi="Xem doanh nghiệp">Xem doanh nghiệp</button></div></article>
+             <article class="app-card overflow-hidden p-0" data-business-card data-business-id="golden-glow-spa" data-category="spa" data-search="golden glow spa facial massage"><div class="relative h-44"><img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=900&q=80" alt="Không gian thư giãn tại Golden Glow Spa" class="h-full w-full object-cover"><span class="absolute left-3 top-3 rounded-full bg-app-purple/80 px-2.5 py-1 text-[11px] font-bold backdrop-blur" data-en="Co-op partner" data-vi="Đối tác liên minh">Đối tác liên minh</span></div><div class="p-4"><div class="flex items-start justify-between gap-3"><div><h2 class="font-black">Golden Glow Spa</h2><p class="mt-1 text-xs text-app-muted">Spa · 1.1 mi</p></div><span class="flex items-center gap-1 text-sm font-black text-app-gold"><i data-lucide="star" class="size-4 fill-current" aria-hidden="true"></i>4.8</span></div><p class="mt-4 text-sm leading-6 text-app-muted" data-en="Facials, massage and skin treatments with verified pricing." data-vi="Chăm sóc da, massage và liệu trình với giá đã xác minh.">Chăm sóc da, massage và liệu trình với giá đã xác minh.</p><button type="button" class="app-button-secondary mt-4 w-full" data-action="view-business" data-business-id="golden-glow-spa" data-en="View business" data-vi="Xem doanh nghiệp">Xem doanh nghiệp</button></div></article>
+             <article class="app-card overflow-hidden p-0 md:col-span-2 xl:col-span-1" data-business-card data-business-id="moon-coffee" data-category="coffee new" data-search="moon coffee bakery latte"><div class="relative h-44"><img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80" alt="Quầy cà phê Moon Coffee" class="h-full w-full object-cover"><span class="absolute left-3 top-3 rounded-full bg-app-green/80 px-2.5 py-1 text-[11px] font-bold text-black" data-en="New on NEXORA" data-vi="Mới trên NEXORA">Mới trên NEXORA</span></div><div class="p-4"><div class="flex items-start justify-between gap-3"><div><h2 class="font-black">Moon Coffee</h2><p class="mt-1 text-xs text-app-muted">Coffee · 0.8 mi</p></div><span class="flex items-center gap-1 text-sm font-black text-app-gold"><i data-lucide="star" class="size-4 fill-current" aria-hidden="true"></i>4.7</span></div><p class="mt-4 text-sm leading-6 text-app-muted" data-en="Small-batch coffee, pastries and member-only offers." data-vi="Cà phê rang mẻ nhỏ, bánh ngọt và ưu đãi riêng cho thành viên.">Cà phê rang mẻ nhỏ, bánh ngọt và ưu đãi riêng cho thành viên.</p><button type="button" class="app-button-secondary mt-4 w-full" data-action="view-business" data-business-id="moon-coffee" data-en="View business" data-vi="Xem doanh nghiệp">Xem doanh nghiệp</button></div></article>
+           </div>
+-          <div id="explore-empty-state" class="app-card mt-4 hidden text-center" data-state="empty"><i data-lucide="search-x" class="mx-auto size-8 text-app-muted" aria-hidden="true"></i><h2 class="mt-3 font-black" data-en="No businesses found" data-vi="Không tìm thấy doanh nghiệp">Không tìm thấy doanh nghiệp</h2><p class="mt-1 text-sm text-app-muted" data-en="Try another keyword or category." data-vi="Hãy thử từ khóa hoặc danh mục khác.">Hãy thử từ khóa hoặc danh mục khác.</p></div>
++          <div id="explore-empty-state" class="app-card mt-4 hidden text-center" data-state="empty"><i data-lucide="search-x" class="mx-auto size-8 text-app-muted" aria-hidden="true"></i><h2 class="mt-3 font-black" data-en="No businesses found" data-vi="Không tìm thấy doanh nghiệp">Không tìm thấy doanh nghiệp</h2><p class="mt-1 text-sm text-app-muted" data-en="Try another keyword or category." data-vi="Hãy thử từ khóa hoặc danh mục khác.">Hãy thử từ khóa hoặc danh mục khác.</p></div><button type="button" class="app-button-secondary mt-4" data-action="simulate-geo-push" data-en="Simulate nearby alert" data-vi="Mô phỏng thông báo gần bạn">Mô phỏng thông báo gần bạn</button>
+         </section>
+         <section class="app-screen hidden" id="business" data-ready="true" data-module="explore" aria-labelledby="business-title">
+           <div class="relative -mx-4 -mt-5 h-56 overflow-hidden sm:-mx-6 lg:-mx-8 lg:-mt-8 lg:h-72"><img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1600&q=85" alt="Không gian Bitcoin Nail Bar" class="h-full w-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-app-bg via-app-bg/20 to-black/20"></div><button class="icon-button absolute left-4 top-4 bg-black/50 text-white sm:left-6 lg:left-8 lg:top-8" type="button" data-action="back" data-back-target="explore" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button></div><div class="relative -mt-12"><div class="app-card"><div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><div class="flex flex-wrap items-center gap-2"><span class="rounded-full bg-app-green/10 px-2.5 py-1 text-xs font-bold text-app-green" data-en="NEXORA verified" data-vi="NEXORA xác minh">NEXORA xác minh</span><span class="rounded-full bg-app-cyan/10 px-2.5 py-1 text-xs font-bold text-app-cyan" data-en="Open until 7 PM" data-vi="Mở đến 19:00">Mở đến 19:00</span></div><h1 id="business-title" class="mt-3 text-2xl font-black sm:text-3xl">Bitcoin Nail Bar</h1><p class="mt-1 text-sm text-app-muted">1288 Westheimer Rd · Houston · 0.2 mi</p></div><div class="flex items-center gap-2 text-app-gold"><i data-lucide="star" class="size-5 fill-current" aria-hidden="true"></i><strong class="text-xl">4.9</strong><span class="text-xs text-app-muted">(486)</span></div></div><div class="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4"><button class="app-button" type="button" data-action="navigate" data-target="book1"><i data-lucide="calendar-plus" class="size-4" aria-hidden="true"></i><span data-en="Book" data-vi="Đặt lịch">Đặt lịch</span></button><button class="app-button-secondary" type="button" data-action="navigate" data-target="rewards"><i data-lucide="gift" class="size-4" aria-hidden="true"></i><span data-en="Rewards" data-vi="Phần thưởng">Phần thưởng</span></button><button class="app-button-secondary" type="button" data-action="navigate" data-target="tip"><i data-lucide="badge-dollar-sign" class="size-4" aria-hidden="true"></i><span data-en="Tip" data-vi="Gửi tip">Gửi tip</span></button><button class="app-button-secondary" type="button" data-action="show-directions"><i data-lucide="navigation" class="size-4" aria-hidden="true"></i><span data-en="Directions" data-vi="Chỉ đường">Chỉ đường</span></button></div></div><div class="mt-4 grid gap-4 lg:grid-cols-[1fr_320px]"><section class="app-card"><h2 class="section-title" data-en="Popular services" data-vi="Dịch vụ phổ biến">Dịch vụ phổ biến</h2><div class="mt-4 divide-y divide-app-line"><div class="flex justify-between gap-4 py-3"><span><strong class="block text-sm" data-en="Gel manicure" data-vi="Sơn gel">Sơn gel</strong><small class="text-app-muted">45 phút</small></span><strong>$45</strong></div><div class="flex justify-between gap-4 py-3"><span><strong class="block text-sm" data-en="Signature pedicure" data-vi="Pedicure đặc biệt">Pedicure đặc biệt</strong><small class="text-app-muted">60 phút</small></span><strong>$55</strong></div><div class="flex justify-between gap-4 py-3"><span><strong class="block text-sm" data-en="Nail art add-on" data-vi="Vẽ móng bổ sung">Vẽ móng bổ sung</strong><small class="text-app-muted">20 phút</small></span><strong>$18</strong></div></div></section><aside class="app-card"><h2 class="section-title" data-en="Trust signals" data-vi="Thông tin xác thực">Thông tin xác thực</h2><ul class="mt-4 space-y-3 text-sm"><li class="flex gap-2"><i data-lucide="badge-check" class="size-5 shrink-0 text-app-green" aria-hidden="true"></i><span data-en="Business identity verified" data-vi="Danh tính doanh nghiệp đã xác minh">Danh tính doanh nghiệp đã xác minh</span></li><li class="flex gap-2"><i data-lucide="receipt-text" class="size-5 shrink-0 text-app-cyan" aria-hidden="true"></i><span data-en="Prices verified 3 days ago" data-vi="Giá được xác minh 3 ngày trước">Giá được xác minh 3 ngày trước</span></li><li class="flex gap-2"><i data-lucide="users-round" class="size-5 shrink-0 text-app-pink" aria-hidden="true"></i><span data-en="1,842 verified visits" data-vi="1.842 lượt ghé đã xác thực">1.842 lượt ghé đã xác thực</span></li></ul></aside></div></div>
+         </section>
+         <section class="app-screen hidden" id="profile" data-ready="true" data-module="profile" aria-labelledby="profile-title">
+           <div class="mb-5"><p class="eyebrow" data-en="Your account" data-vi="Tài khoản của bạn">Tài khoản của bạn</p><h1 id="profile-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Profile & settings" data-vi="Hồ sơ & cài đặt">Hồ sơ & cài đặt</h1></div>
+           <div class="grid gap-4 lg:grid-cols-[340px_1fr]">
+             <aside class="app-card text-center"><div class="relative mx-auto size-24"><img data-profile-avatar src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80" alt="Ảnh hồ sơ Jessica" class="size-24 rounded-3xl object-cover"><span class="absolute -bottom-1 -right-1 grid size-8 place-items-center rounded-full border-4 border-app-card bg-app-green text-app-bg"><i data-lucide="check" class="size-4" aria-hidden="true"></i></span></div><h2 data-profile-name class="mt-4 text-xl font-black">Jessica Nguyen</h2><p data-profile-phone class="mt-1 text-sm text-app-muted">(832) 555-0148</p><span class="mt-4 inline-flex rounded-full bg-app-purple/10 px-3 py-1.5 text-xs font-bold text-app-pink" data-en="Member since 2024" data-vi="Thành viên từ 2024">Thành viên từ 2024</span><button type="button" class="app-button-secondary mt-5 w-full" data-action="edit-profile" data-en="Edit profile" data-vi="Chỉnh sửa hồ sơ">Chỉnh sửa hồ sơ</button></aside>
+             <div class="space-y-4"><section class="app-card"><div class="mb-4 flex items-center justify-between"><div><p class="eyebrow" data-en="Language" data-vi="Ngôn ngữ">Ngôn ngữ</p><h2 class="section-title" data-en="Display language" data-vi="Ngôn ngữ hiển thị">Ngôn ngữ hiển thị</h2></div><i data-lucide="languages" class="size-5 text-app-cyan" aria-hidden="true"></i></div><div class="grid grid-cols-2 gap-2"><button class="app-chip justify-center" type="button" data-action="language" data-language="vi" aria-pressed="true">Tiếng Việt</button><button class="app-chip justify-center" type="button" data-action="language" data-language="en" aria-pressed="false">English</button></div></section>
+             <section class="app-card p-2"><button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-xl px-3 text-left hover:bg-white/5" data-action="navigate" data-target="msgprefs"><span class="grid size-10 place-items-center rounded-xl bg-app-cyan/10 text-app-cyan"><i data-lucide="message-square-more" class="size-5" aria-hidden="true"></i></span><span class="flex-1"><strong class="block text-sm" data-en="Messages & privacy" data-vi="Tin nhắn & riêng tư">Tin nhắn & riêng tư</strong><span class="text-xs text-app-muted" data-en="Consent and notification preferences" data-vi="Đồng ý và tùy chọn thông báo">Đồng ý và tùy chọn thông báo</span></span><i data-lucide="chevron-right" class="size-4 text-app-muted" aria-hidden="true"></i></button><button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-xl px-3 text-left hover:bg-white/5" data-action="navigate" data-target="referral"><span class="grid size-10 place-items-center rounded-xl bg-app-pink/10 text-app-pink"><i data-lucide="user-round-plus" class="size-5" aria-hidden="true"></i></span><span class="flex-1"><strong class="block text-sm" data-en="Invite friends" data-vi="Mời bạn bè">Mời bạn bè</strong><span class="text-xs text-app-muted" data-en="Give 100 points, earn 50" data-vi="Tặng 100 điểm, nhận 50">Tặng 100 điểm, nhận 50</span></span><i data-lucide="chevron-right" class="size-4 text-app-muted" aria-hidden="true"></i></button><button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-xl px-3 text-left hover:bg-white/5" data-action="navigate" data-target="activity"><span class="grid size-10 place-items-center rounded-xl bg-app-purple/10 text-app-pink"><i data-lucide="bell-ring" class="size-5" aria-hidden="true"></i></span><span class="flex-1"><strong class="block text-sm" data-en="Activity & messages" data-vi="Hoạt động & tin nhắn">Hoạt động & tin nhắn</strong><span class="text-xs text-app-muted" data-en="Receipts, confirmations and alerts" data-vi="Biên nhận, xác nhận và cảnh báo">Biên nhận, xác nhận và cảnh báo</span></span><i data-lucide="chevron-right" class="size-4 text-app-muted" aria-hidden="true"></i></button></section>
+             <div class="grid gap-2">
+               <button type="button" class="app-button-secondary w-full" data-action="payment-methods"><i data-lucide="credit-card" class="size-4" aria-hidden="true"></i><span data-en="Payment methods" data-vi="Phương thức thanh toán">Phương thức thanh toán</span></button>
+               <button type="button" class="app-button-secondary w-full" data-action="privacy-details"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Privacy details" data-vi="Thông tin riêng tư">Thông tin riêng tư</span></button>
+               <button type="button" class="app-button-secondary w-full" data-action="reset-demo"><i data-lucide="rotate-ccw" class="size-4" aria-hidden="true"></i><span data-en="Reset demo data" data-vi="Đặt lại dữ liệu mẫu">Đặt lại dữ liệu mẫu</span></button>
+               <button type="button" class="app-button-secondary w-full border-app-red/30 text-app-red" data-action="logout"><i data-lucide="log-out" class="size-4" aria-hidden="true"></i><span data-en="Log out" data-vi="Đăng xuất">Đăng xuất</span></button>
+             </div></div>
+           </div>
+         </section>
+         <section class="app-screen hidden" id="referral" data-ready="true" data-module="profile" aria-labelledby="referral-title">
+-          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="profile" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Share the good stuff" data-vi="Chia sẻ điều hay">Chia sẻ điều hay</p><h1 id="referral-title" class="text-2xl font-black" data-en="Invite friends" data-vi="Mời bạn bè">Mời bạn bè</h1></div></div><div class="overflow-hidden rounded-3xl bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,.3),transparent_40%),linear-gradient(135deg,#6d2bf0,#4a23d9_55%,#0757cf)] p-6 text-center sm:p-8"><span class="mx-auto grid size-16 place-items-center rounded-3xl bg-white/15"><i data-lucide="gift" class="size-8" aria-hidden="true"></i></span><h2 class="mt-5 text-2xl font-black" data-en="Give 100, get 50" data-vi="Tặng 100, nhận 50">Tặng 100, nhận 50</h2><p class="mx-auto mt-2 max-w-md text-sm leading-6 text-white/75" data-en="Your friend receives 100 welcome points. You earn 50 after their first verified visit." data-vi="Bạn bè nhận 100 điểm chào mừng. Bạn nhận 50 điểm sau lượt ghé xác thực đầu tiên của họ.">Bạn bè nhận 100 điểm chào mừng. Bạn nhận 50 điểm sau lượt ghé xác thực đầu tiên của họ.</p><div class="mx-auto mt-6 max-w-sm rounded-2xl bg-black/20 p-4"><span class="text-xs font-bold text-white/60" data-en="Your invite code" data-vi="Mã giới thiệu của bạn">Mã giới thiệu của bạn</span><strong id="referral-code" class="mt-1 block text-2xl tracking-[.2em]">JESSICA50</strong></div><button class="mt-4 min-h-11 rounded-xl bg-white px-5 py-3 text-sm font-black text-app-purple" type="button" data-action="copy-referral"><i data-lucide="copy" class="mr-2 inline size-4" aria-hidden="true"></i><span data-en="Copy invite link" data-vi="Sao chép liên kết mời">Sao chép liên kết mời</span></button></div><div class="app-card mt-4"><h2 class="section-title" data-en="Your impact" data-vi="Kết quả của bạn">Kết quả của bạn</h2><div class="mt-4 grid grid-cols-3 gap-3 text-center"><div class="rounded-xl bg-app-panel p-3"><strong class="block text-xl">6</strong><span class="text-[11px] text-app-muted" data-en="Invited" data-vi="Đã mời">Đã mời</span></div><div class="rounded-xl bg-app-panel p-3"><strong class="block text-xl">4</strong><span class="text-[11px] text-app-muted" data-en="Joined" data-vi="Đã tham gia">Đã tham gia</span></div><div class="rounded-xl bg-app-panel p-3"><strong class="block text-xl text-app-green">200</strong><span class="text-[11px] text-app-muted" data-en="Points earned" data-vi="Điểm đã nhận">Điểm đã nhận</span></div></div></div></div>
++          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="profile" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Share the good stuff" data-vi="Chia sẻ điều hay">Chia sẻ điều hay</p><h1 id="referral-title" class="text-2xl font-black" data-en="Invite friends" data-vi="Mời bạn bè">Mời bạn bè</h1></div></div><div class="overflow-hidden rounded-3xl bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,.3),transparent_40%),linear-gradient(135deg,#6d2bf0,#4a23d9_55%,#0757cf)] p-6 text-center sm:p-8"><span class="mx-auto grid size-16 place-items-center rounded-3xl bg-white/15"><i data-lucide="gift" class="size-8" aria-hidden="true"></i></span><h2 class="mt-5 text-2xl font-black" data-en="Give 100, get 50" data-vi="Tặng 100, nhận 50">Tặng 100, nhận 50</h2><p class="mx-auto mt-2 max-w-md text-sm leading-6 text-white/75" data-en="Your friend receives points from the first business they check in at. Your reward is released after their first paid visit." data-vi="Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Điểm của bạn chỉ được cộng sau lượt ghé có thanh toán đầu tiên của họ.">Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Điểm của bạn chỉ được cộng sau lượt ghé có thanh toán đầu tiên của họ.</p><div class="mx-auto mt-6 max-w-sm rounded-2xl bg-black/20 p-4"><span class="text-xs font-bold text-white/60" data-en="Your invite code" data-vi="Mã giới thiệu của bạn">Mã giới thiệu của bạn</span><strong id="referral-code" class="mt-1 block text-2xl tracking-[.2em]">JESSICA50</strong></div><button class="mt-4 min-h-11 rounded-xl bg-white px-5 py-3 text-sm font-black text-app-purple" type="button" data-action="copy-referral"><i data-lucide="copy" class="mr-2 inline size-4" aria-hidden="true"></i><span data-en="Copy invite link" data-vi="Sao chép liên kết mời">Sao chép liên kết mời</span></button></div><div class="app-card mt-4"><h2 class="section-title" data-en="Your impact" data-vi="Kết quả của bạn">Kết quả của bạn</h2><div class="mt-4 grid grid-cols-3 gap-3 text-center"><div class="rounded-xl bg-app-panel p-3"><strong class="block text-xl">6</strong><span class="text-[11px] text-app-muted" data-en="Invited" data-vi="Đã mời">Đã mời</span></div><div class="rounded-xl bg-app-panel p-3"><strong class="block text-xl">4</strong><span class="text-[11px] text-app-muted" data-en="Joined" data-vi="Đã tham gia">Đã tham gia</span></div><div class="rounded-xl bg-app-panel p-3"><strong class="block text-xl text-app-green">200</strong><span class="text-[11px] text-app-muted" data-en="Points earned" data-vi="Điểm đã nhận">Điểm đã nhận</span></div></div></div></div>
+         </section>
+         <section class="app-screen hidden" id="msgprefs" data-ready="true" data-module="profile" aria-labelledby="msgprefs-title">
+           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="profile" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="You stay in control" data-vi="Bạn luôn kiểm soát">Bạn luôn kiểm soát</p><h1 id="msgprefs-title" class="text-2xl font-black" data-en="Messages & privacy" data-vi="Tin nhắn & riêng tư">Tin nhắn & riêng tư</h1></div></div><div class="space-y-4"><section class="app-card"><h2 class="section-title" data-en="Essential messages" data-vi="Tin nhắn thiết yếu">Tin nhắn thiết yếu</h2><label class="mt-4 flex min-h-14 items-center justify-between gap-4 border-t border-app-line pt-4"><span><strong class="block text-sm" data-en="Booking and receipt messages" data-vi="Tin lịch hẹn và biên nhận">Tin lịch hẹn và biên nhận</strong><small class="text-app-muted" data-en="Transactional messages are always delivered" data-vi="Tin giao dịch luôn được gửi">Tin giao dịch luôn được gửi</small></span><input class="size-5 accent-app-purple" type="checkbox" checked disabled aria-disabled="true"></label></section><section class="app-card"><h2 class="section-title" data-en="Marketing preferences" data-vi="Tùy chọn tiếp thị">Tùy chọn tiếp thị</h2><div class="mt-2 divide-y divide-app-line"><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm">Bitcoin Nail Bar</strong><small class="text-app-muted" data-en="Marketing offers from this business" data-vi="Ưu đãi tiếp thị từ doanh nghiệp này">Ưu đãi tiếp thị từ doanh nghiệp này</small></span><input class="size-5 accent-app-purple" type="checkbox" data-business-pref="bitcoin-nail-bar"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="Nearby partner offers" data-vi="Ưu đãi đối tác gần bạn">Ưu đãi đối tác gần bạn</strong></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="networkOffers"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="Booking reminders" data-vi="Nhắc lịch hẹn">Nhắc lịch hẹn</strong></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="bookingReminders"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="Nearby deal notifications" data-vi="Thông báo ưu đãi gần bạn">Thông báo ưu đãi gần bạn</strong></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="nearbyDeals"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="AI suggestions from history" data-vi="Gợi ý AI từ lịch sử">Gợi ý AI từ lịch sử</strong></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="aiSuggestions"></label></div></section><section class="app-card border-app-cyan/20 bg-app-cyan/[.04]"><div class="flex gap-3"><i data-lucide="shield-check" class="size-5 shrink-0 text-app-cyan" aria-hidden="true"></i><p class="text-sm leading-6 text-app-muted" data-en="NEXORA never sells your personal data. Changes are saved on this device for the prototype." data-vi="NEXORA không bán dữ liệu cá nhân. Trong bản mẫu, thay đổi được lưu trên thiết bị này.">NEXORA không bán dữ liệu cá nhân. Trong bản mẫu, thay đổi được lưu trên thiết bị này.</p></div></section><p class="text-center text-xs text-app-muted" data-en="Each change is saved immediately on this device." data-vi="Mỗi thay đổi được lưu ngay trên thiết bị này.">Mỗi thay đổi được lưu ngay trên thiết bị này.</p></div></div>
+         </section>
+       </main>
+     </div>
+ 
+     <div id="form-error-state" class="pointer-events-none fixed inset-x-4 top-24 z-[65] hidden justify-center" data-state="error" role="alert"><div class="rounded-xl border border-app-red/30 bg-app-card px-4 py-3 text-sm font-bold text-app-red" data-en="Please check the highlighted fields." data-vi="Vui lòng kiểm tra các trường được đánh dấu.">Vui lòng kiểm tra các trường được đánh dấu.</div></div>
+     <div id="toast-region" class="pointer-events-none fixed inset-x-4 bottom-24 z-[70] flex justify-center lg:bottom-8 lg:left-auto lg:right-8" aria-live="polite" aria-atomic="true"></div>
+     <div id="app-overlay" class="fixed inset-0 z-[80] hidden items-end justify-center bg-black/70 p-4 backdrop-blur-sm sm:items-center" data-overlay aria-hidden="true">
+@@ -258,38 +259,83 @@
+         </div>
+       </div>
+     </div>
+     <nav id="mobile-nav" class="fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-app-line bg-app-panel/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden" aria-label="Điều hướng chính" data-nav-surface="mobile"></nav>
+   </div>
+   <script>
+     const STORAGE_KEY = 'nexora.customer.prototype.v1';
+     const SCHEMA_VERSION = 1;
+     const BUSINESS_ID = 'bitcoin-nail-bar';
+     const PAYMENT_METHODS = ['Venmo', 'Zelle', 'Cash App'];
++    const CHECKIN_BUSINESSES = new Set(['bitcoin-nail-bar', 'golden-glow-spa', 'moon-coffee']);
++    const CHECKIN_STAFF_BUSINESSES = Object.freeze({
++      'staff-anna': BUSINESS_ID,
++      'staff-maria': BUSINESS_ID
++    });
++    const CHECKIN_STATION_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
++    const CHECKIN_ID_PATTERN = /^checkin-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
++    const REFERRAL_COPY = {
++      en: 'Your friend receives points from the first business they check in at. Your reward is released after their first paid visit.',
++      vi: 'Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Điểm của bạn chỉ được cộng sau lượt ghé có thanh toán đầu tiên của họ.'
++    };
+     const BUSINESS_CONSENT_SCOPE = `business:${BUSINESS_ID}`;
+     const CONSENT_SCOPES = [BUSINESS_CONSENT_SCOPE, 'networkOffers'];
+     const OFFER_IDS = new Set(['offer-glow', 'offer-moon']);
+     const LOOK_PHOTO_MAX_LENGTH = 1_500_000;
+     const REWARDS = {
+       credit5: { key: 'credit5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'service_credit', cost: 500, title: { vi: 'Tín dụng dịch vụ $5', en: '$5 service credit' } },
+       freepedi: { key: 'freepedi', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 1000, title: { vi: 'Pedicure cơ bản miễn phí', en: 'Free classic pedicure' } },
+       voucher25: { key: 'voucher25', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'percent_code', cost: 800, title: { vi: 'Giảm 25% dịch vụ', en: '25% off any service' } },
+       glow: { key: 'glow', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'service_credit', cost: 800, title: { vi: 'Tín dụng $10 tại Golden Glow', en: '$10 Golden Glow credit' } },
+       moon: { key: 'moon', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'moon-coffee', type: 'free_service', cost: 600, title: { vi: 'Đồ uống miễn phí', en: 'Free drink' } },
+       bistro: { key: 'bistro', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'percent_code', cost: 450, title: { vi: 'Giảm 10% dịch vụ', en: '10% off service' } },
+       gel: { key: 'gel', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 2500, title: { vi: 'Nâng cấp sơn gel', en: 'Gel polish upgrade' } }
+     };
+ 
+     function getRewardDefinition(key) {
+       return Object.prototype.hasOwnProperty.call(REWARDS, key) ? REWARDS[key] : null;
+     }
+ 
++    function parseNexoraQr(payload) {
++      if (typeof payload !== 'string' || !payload.trim() || payload !== payload.trim()) {
++        return { ok: false, code: 'invalid_qr' };
++      }
++      try {
++        // URL normalizes several hostile forms (for example backslashes), so reject
++        // anything that is not the exact production HTTPS origin before parsing.
++        if (!/^https:\/\/nexoratouch\.com\//.test(payload) || /nexoratouch\.com\/{2,}/.test(payload) || /[\r\n\t]/.test(payload)
++          || /\/(?:\.{1,2})(?:[/?#]|$)/.test(payload) || /%2e/i.test(payload)) return { ok: false, code: 'invalid_qr' };
++        const url = new URL(payload);
++        if (url.protocol !== 'https:' || url.hostname !== 'nexoratouch.com' || url.port
++          || url.username || url.password || url.hash) return { ok: false, code: 'invalid_qr' };
++        const parts = url.pathname.split('/').filter(Boolean);
++        if (parts.length !== 3 || parts[0] !== 'touch') return { ok: false, code: 'invalid_qr' };
++        const [, businessId, station] = parts;
++        if (!CHECKIN_BUSINESSES.has(businessId) || !CHECKIN_STATION_PATTERN.test(station)) {
++          return { ok: false, code: 'invalid_qr' };
++        }
++        if (url.pathname !== `/touch/${businessId}/${station}`) return { ok: false, code: 'invalid_qr' };
++        const staffValues = url.searchParams.getAll('staffProfileId');
++        if (staffValues.length > 1 || [...url.searchParams.keys()].some((key) => key !== 'staffProfileId')) {
++          return { ok: false, code: 'invalid_qr' };
++        }
++        const staffProfileId = staffValues[0] ? staffValues[0].trim() : null;
++        if (staffValues.length === 1 && !staffProfileId) return { ok: false, code: 'invalid_qr' };
++        if (staffProfileId && CHECKIN_STAFF_BUSINESSES[staffProfileId] !== businessId) {
++          return { ok: false, code: 'invalid_qr' };
++        }
++        return { ok: true, businessId, station, staffProfileId };
++      } catch {
++        return { ok: false, code: 'invalid_qr' };
++      }
++    }
++
+     function createDefaultState() {
+       return {
+         schemaVersion: SCHEMA_VERSION,
+         updatedAt: new Date().toISOString(),
+         session: {
+           authenticated: true,
+           phone: '8325550148',
+           otpCode: '246810',
+           otpRequestedAt: null,
+           otpAttempts: 0,
+@@ -1198,39 +1244,41 @@
+     }
+ 
+     function migrateState(value) {
+       const defaults = createDefaultState();
+       if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
+       const rawRedemptionClaims = collectRawRedemptionClaims(value.redemptions);
+       const rawTransactionLedgerClaims = collectRawTransactionLedgerClaims(value.ledger);
+       const rawBookingLedgerClaims = collectRawBookingLedgerClaims(value.ledger);
+       const rawAppointmentClaims = collectRawAppointmentClaims(value.appointments);
+       const rawFeedbackLedgerClaims = collectRawFeedbackLedgerClaims(value.ledger);
++      const rawCheckinLedgerClaims = collectRawCheckinLedgerClaims(value.ledger);
+       const rawFeedbackClaims = collectRawFeedbackClaims(value.feedback, value.feedbackClaims);
+       const migrated = mergeRecord(defaults, value);
+       migrated.schemaVersion = SCHEMA_VERSION;
+       migrated.updatedAt = new Date().toISOString();
+       if (!['vi', 'en'].includes(migrated.profile.language)) migrated.profile.language = defaults.profile.language;
+       if (!['all', 'nails', 'spa', 'coffee', 'new'].includes(migrated.ui.exploreFilter)) migrated.ui.exploreFilter = defaults.ui.exploreFilter;
+       if (!['all', 'saved', 'beauty', 'food'].includes(migrated.ui.offerFilter)) migrated.ui.offerFilter = defaults.ui.offerFilter;
+       migrated.consents = migrated.consents.map((consent) => consent.scope === 'network'
+         ? { ...consent, scope: 'networkOffers' }
+         : consent);
+       Object.entries(migrated.businesses).forEach(([businessId, business]) => {
+         business.id = businessId;
+       });
+       Object.entries(migrated.staffProfiles).forEach(([staffProfileId, staff]) => {
+         staff.id = staffProfileId;
+       });
+       migrated.looks = migrated.looks
+         .map((look) => normalizePersistedLook(migrated, look))
+         .filter(Boolean);
++      reconcileCheckins(migrated, rawCheckinLedgerClaims);
+       migrated.savedOfferIds = normalizeOfferIds(migrated.savedOfferIds);
+       migrated.wishes = normalizeWishes(migrated.wishes);
+       migrated.followedTechIds = normalizeFollowedTechIds(migrated, migrated.followedTechIds);
+       if (!Object.prototype.hasOwnProperty.call(migrated.businesses, migrated.ui.selectedBusinessId)) {
+         migrated.ui.selectedBusinessId = BUSINESS_ID;
+       }
+       const selectedStaff = isRecord(migrated.staffProfiles[migrated.ui.selectedStaffId])
+         && migrated.staffProfiles[migrated.ui.selectedStaffId].businessId === BUSINESS_ID
+         ? migrated.staffProfiles[migrated.ui.selectedStaffId]
+         : migrated.staffProfiles['staff-anna'];
+@@ -1265,25 +1313,27 @@
+         .map((item) => normalizePersistedFeedback(migrated, item))
+         .filter(Boolean);
+       const pendingAttempt = migrated.ui.pendingContext.rewardAttempt;
+       const rawPendingClaims = isRecord(pendingAttempt) && Array.isArray(value.redemptions)
+         ? rawRedemptionClaims.filter((claim) => claim.idempotencyKey === pendingAttempt.idempotencyKey)
+         : [];
+       reconcileRewardPairs(migrated);
+       reconcileTransactionPairs(migrated, rawTransactionLedgerClaims);
+       reconcileBookingPairs(migrated, rawBookingLedgerClaims, rawAppointmentClaims);
+       reconcileFeedbackPairs(migrated, rawFeedbackClaims, rawFeedbackLedgerClaims);
++      reconcileCheckins(migrated, rawCheckinLedgerClaims);
+       deduplicateLedgerIds(migrated);
+       reconcileRewardPairs(migrated);
+       reconcileTransactionPairs(migrated, rawTransactionLedgerClaims);
+       reconcileBookingPairs(migrated, rawBookingLedgerClaims, rawAppointmentClaims);
+       reconcileFeedbackPairs(migrated, rawFeedbackClaims, rawFeedbackLedgerClaims);
++      reconcileCheckins(migrated, rawCheckinLedgerClaims);
+       reconcilePendingRewardAttempt(migrated, rawPendingClaims);
+       reconcilePendingTransactions(migrated);
+       migrated.ui.pendingContext.consentScopes = migrated.ui.pendingContext.consentScopes.filter((scope) => CONSENT_SCOPES.includes(scope));
+       const bookingDraftBusinessId = normalizedRequiredText(migrated.ui.bookingDraft.businessId);
+       migrated.ui.bookingDraft.businessId = getValidBusiness(migrated, bookingDraftBusinessId)
+         ? bookingDraftBusinessId
+         : BUSINESS_ID;
+       for (const field of ['service', 'staff', 'day', 'time']) {
+         migrated.ui.bookingDraft[field] = normalizedRequiredText(migrated.ui.bookingDraft[field]) ?? '';
+       }
+@@ -1540,20 +1590,41 @@
+       { id:'explore', icon:'map-pin', en:'Explore', vi:'Khám phá' },
+       { id:'profile', icon:'user-round', en:'Profile', vi:'Cá nhân' }
+     ];
+     function getBusinessBalance(appState, businessId) {
+       const balance = isRecord(appState?.balances) ? appState.balances[businessId] : null;
+       return isRecord(balance) && Number.isFinite(balance.points)
+         ? balance
+         : { points: 0, credits: 0, expiringPoints: null };
+     }
+ 
++    function validateStoredBalance(appState, businessId) {
++      const balance = isRecord(appState?.balances) ? appState.balances[businessId] : null;
++      const expiringPoints = balance?.expiringPoints;
++      const validExpiring = expiringPoints === null
++        || (isRecord(expiringPoints)
++          && typeof expiringPoints.amount === 'number'
++          && Number.isFinite(expiringPoints.amount)
++          && expiringPoints.amount >= 0
++          && typeof expiringPoints.date === 'string'
++          && expiringPoints.date.trim().length > 0);
++      if (!isRecord(balance)
++        || typeof balance.points !== 'number'
++        || !Number.isFinite(balance.points)
++        || balance.points < 0
++        || typeof balance.credits !== 'number'
++        || !Number.isFinite(balance.credits)
++        || balance.credits < 0
++        || !validExpiring) return { ok: false, code: 'invalid_balance' };
++      return { ok: true, balance };
++    }
++
+     function getValidBusiness(appState, businessId) {
+       if (typeof businessId !== 'string' || !businessId) return null;
+       const business = isRecord(appState?.businesses) ? appState.businesses[businessId] : null;
+       return isRecord(business) && business.id === businessId ? business : null;
+     }
+ 
+     function validateRewardBusinesses(appState, reward) {
+       const sourceBusiness = getValidBusiness(appState, reward.sourceBusinessId);
+       const acceptingBusiness = getValidBusiness(appState, reward.acceptingBusinessId);
+       if (!sourceBusiness || !acceptingBusiness) return { ok: false, code: 'unknown_business' };
+@@ -1876,20 +1947,253 @@
+         createdAt: timestamp.value
+       };
+       const nextBalance = { ...validation.balance, points: validation.nextPoints };
+       const nextBalances = { ...appState.balances, [validation.businessId]: nextBalance };
+       const nextLedger = [entry, ...appState.ledger];
+       appState.balances = nextBalances;
+       appState.ledger = nextLedger;
+       return entry;
+     }
+ 
++    function checkinTimestamp(value) {
++      if (typeof value !== 'string' || !value) return null;
++      const milliseconds = Date.parse(value);
++      const timestamp = domainTimestamp(milliseconds);
++      return timestamp.ok && timestamp.value === value ? timestamp.value : null;
++    }
++
++    function normalizeCheckinRecord(appState, raw) {
++      if (!isRecord(raw) || typeof raw.id !== 'string' || !CHECKIN_ID_PATTERN.test(raw.id.trim())) return null;
++      const id = raw.id.trim();
++      const businessId = typeof raw.businessId === 'string' ? raw.businessId.trim() : '';
++      const business = getValidBusiness(appState, businessId);
++      const station = typeof raw.station === 'string' ? raw.station.trim() : '';
++      const scannedAt = checkinTimestamp(raw.scannedAt);
++      const status = raw.status === 'sending' ? 'queued' : raw.status;
++      const confirmedAt = raw.confirmedAt === null || raw.confirmedAt === undefined
++        ? null
++        : checkinTimestamp(raw.confirmedAt);
++      const staffProfileId = raw.staffProfileId === null || raw.staffProfileId === undefined
++        ? null
++        : typeof raw.staffProfileId === 'string' ? raw.staffProfileId.trim() : '';
++      const staff = staffProfileId ? appState.staffProfiles?.[staffProfileId] : null;
++      if (!business || !CHECKIN_STATION_PATTERN.test(station) || !scannedAt
++        || !['queued', 'confirmed'].includes(status)
++        || (status === 'queued' && raw.confirmedAt !== null && raw.confirmedAt !== undefined)
++        || (status === 'confirmed' && !confirmedAt)
++        || (staffProfileId && (!isRecord(staff) || staff.id !== staffProfileId || staff.businessId !== businessId))) return null;
++      const parsed = parseNexoraQr(raw.sourceQr);
++      if (!parsed.ok || parsed.businessId !== businessId || parsed.station !== station
++        || parsed.staffProfileId !== (staffProfileId || null)) return null;
++      return {
++        ...raw,
++        id,
++        businessId,
++        station,
++        staffProfileId: staffProfileId || null,
++        sourceQr: raw.sourceQr,
++        scannedAt,
++        status,
++        confirmedAt: status === 'confirmed' ? confirmedAt : null
++      };
++    }
++
++    function collectRawCheckinLedgerClaims(ledger) {
++      if (!Array.isArray(ledger)) return [];
++      return ledger.flatMap((entry) => {
++        if (!isRecord(entry)) return [];
++        const refType = typeof entry.refType === 'string' ? entry.refType.trim() : '';
++        const type = typeof entry.type === 'string' ? entry.type.trim() : '';
++        const refId = typeof entry.refId === 'string' ? entry.refId.trim() : '';
++        return refId && (refType === 'checkin' || type === 'checkin') ? [refId] : [];
++      });
++    }
++
++    function reconcileCheckins(appState, rawLedgerClaims = []) {
++      if (!Array.isArray(appState.checkins) || !Array.isArray(appState.ledger)) {
++        appState.checkins = [];
++        appState.offlineQueue = [];
++        return;
++      }
++      const rawClaimedIds = new Set(rawLedgerClaims);
++      const seenIds = new Set();
++      const selectedLedger = new Set();
++      const selected = [];
++      appState.checkins.map((item) => normalizeCheckinRecord(appState, item)).filter(Boolean).forEach((checkin) => {
++        if (seenIds.has(checkin.id)) return;
++        const entries = appState.ledger.filter((entry) => isRecord(entry)
++          && entry.type === 'visit' && entry.refType === 'checkin' && entry.refId === checkin.id
++          && entry.businessId === checkin.businessId && entry.pointsDelta === appState.businesses[checkin.businessId].checkinPoints
++          && entry.createdAt === checkin.scannedAt);
++        const allClaims = appState.ledger.filter((entry) => isRecord(entry) && entry.refId === checkin.id
++          && (entry.refType === 'checkin' || entry.type === 'checkin'));
++        const validConfirmed = checkin.status === 'confirmed' && entries.length === 1 && allClaims.length === 1;
++        const validQueued = checkin.status === 'queued' && entries.length === 0 && allClaims.length === 0 && !rawClaimedIds.has(checkin.id);
++        if (!validConfirmed && !validQueued) return;
++        seenIds.add(checkin.id);
++        if (validConfirmed) selectedLedger.add(entries[0]);
++        selected.push(checkin);
++      });
++      appState.checkins = selected;
++      appState.ledger = appState.ledger.filter((entry) => {
++        if (!isRecord(entry)) return false;
++        if (entry.refType !== 'checkin' && entry.type !== 'checkin') return true;
++        return selectedLedger.has(entry);
++      });
++      const queuedIds = new Set(selected.filter((checkin) => checkin.status === 'queued').map((checkin) => checkin.id));
++      const existingQueue = Array.isArray(appState.offlineQueue) ? appState.offlineQueue : [];
++      appState.offlineQueue = [...new Set(existingQueue.filter((id) => typeof id === 'string' && queuedIds.has(id)))];
++      selected.forEach((checkin) => {
++        if (checkin.status === 'queued' && !appState.offlineQueue.includes(checkin.id)) appState.offlineQueue.push(checkin.id);
++      });
++    }
++
++    function checkinLedgerEntry(appState, checkin, ledgerId) {
++      const business = getValidBusiness(appState, checkin.businessId);
++      const points = business?.checkinPoints;
++      if (!business || typeof points !== 'number' || !Number.isSafeInteger(points) || points < 0) return { ok: false, code: 'invalid_rule' };
++      const timestamp = checkinTimestamp(checkin.scannedAt);
++      if (!timestamp) return { ok: false, code: 'invalid_time' };
++      if (typeof ledgerId !== 'string' || !ledgerId) return { ok: false, code: 'id_generation_failed' };
++      const existingIds = new Set(appState.ledger.filter((entry) => isRecord(entry)).map((entry) => entry.id));
++      if (existingIds.has(ledgerId)) return { ok: false, code: 'id_generation_failed' };
++      return {
++        ok: true,
++        entry: { id: ledgerId, businessId: checkin.businessId, type: 'visit', pointsDelta: points, refType: 'checkin', refId: checkin.id, createdAt: timestamp },
++        points,
++        timestamp
++      };
++    }
++
++    function completeCheckin(appState, checkin, now = Date.now(), preparedLedgerId = null) {
++      if (!isRecord(appState) || !Array.isArray(appState.checkins) || !Array.isArray(appState.ledger)
++        || !Array.isArray(appState.offlineQueue) || !isRecord(appState.businesses)
++        || !isRecord(appState.balances) || !isRecord(appState.staffProfiles) || !isRecord(checkin)) return { ok: false, code: 'invalid_state' };
++      const timestamp = domainTimestamp(now);
++      if (!timestamp.ok) return timestamp;
++      const normalized = normalizeCheckinRecord(appState, checkin);
++      if (!normalized) return { ok: false, code: 'invalid_checkin' };
++      if (normalized.id !== checkin.id) return { ok: false, code: 'invalid_checkin' };
++      const storedBalance = validateStoredBalance(appState, normalized.businessId);
++      if (!storedBalance.ok) return storedBalance;
++      const matchingCheckins = appState.checkins.filter((item) => isRecord(item) && item.id === normalized.id);
++      if (matchingCheckins.length > 1) return { ok: false, code: 'invalid_checkin' };
++      const canonicalCheckin = matchingCheckins[0];
++      if (canonicalCheckin && ['businessId', 'station', 'staffProfileId', 'sourceQr', 'scannedAt'].some((key) => canonicalCheckin[key] !== normalized[key])) {
++        return { ok: false, code: 'invalid_checkin' };
++      }
++      const existing = appState.ledger.filter((entry) => isRecord(entry) && entry.refId === normalized.id
++        && (entry.refType === 'checkin' || entry.type === 'checkin' || entry.type === 'visit'));
++      const validEntries = existing.filter((entry) => entry.type === 'visit' && entry.refType === 'checkin'
++        && entry.businessId === normalized.businessId
++        && entry.pointsDelta === appState.businesses[normalized.businessId]?.checkinPoints
++        && entry.createdAt === normalized.scannedAt);
++      if (existing.length) {
++        if (!matchingCheckins.length) return { ok: false, code: 'invalid_checkin' };
++        if (existing.length !== 1 || validEntries.length !== 1 || normalized.status !== 'confirmed' || canonicalCheckin.status !== 'confirmed') {
++          return { ok: false, code: 'ledger_conflict' };
++        }
++        if (normalized.confirmedAt === null || !checkin.confirmedAt) return { ok: false, code: 'ledger_conflict' };
++        return { ok: true, checkin: normalized, points: validEntries[0].pointsDelta, idempotent: true };
++      }
++      if (normalized.status === 'confirmed') return { ok: false, code: 'ledger_missing' };
++      const balance = storedBalance.balance;
++      const ledgerIdResult = preparedLedgerId ? { ok: true, value: preparedLedgerId } : createDomainId('ledger');
++      if (!ledgerIdResult.ok) return ledgerIdResult;
++      const ledger = checkinLedgerEntry(appState, normalized, ledgerIdResult.value);
++      if (!ledger.ok) return ledger;
++      const nextPoints = balance.points + ledger.points;
++      if (!Number.isFinite(nextPoints) || nextPoints < 0) return { ok: false, code: 'invalid_points_delta' };
++      const nextCheckin = { ...normalized, status: 'confirmed', confirmedAt: timestamp.value };
++      const index = appState.checkins.findIndex((item) => isRecord(item) && item.id === normalized.id);
++      const nextCheckins = index < 0
++        ? [nextCheckin, ...appState.checkins]
++        : appState.checkins.map((item, position) => {
++          if (position !== index) return item;
++          // Preserve the caller's object reference for queued retries while still
++          // committing the complete record atomically.
++          Object.assign(item, nextCheckin);
++          return item;
++        });
++      appState.checkins = nextCheckins;
++      appState.balances = { ...appState.balances, [normalized.businessId]: { ...balance, points: nextPoints } };
++      appState.ledger = [ledger.entry, ...appState.ledger];
++      appState.offlineQueue = appState.offlineQueue.filter((id) => id !== normalized.id);
++      return { ok: true, checkin: nextCheckin, points: ledger.points, idempotent: false };
++    }
++
++    function submitCheckin(appState, payload, online = true, now = Date.now()) {
++      if (!isRecord(appState) || !isRecord(appState.businesses) || !isRecord(appState.balances)
++        || !isRecord(appState.staffProfiles) || !Array.isArray(appState.checkins)
++        || !Array.isArray(appState.offlineQueue) || !Array.isArray(appState.ledger)) return { ok: false, code: 'invalid_state' };
++      const timestamp = domainTimestamp(now);
++      if (!timestamp.ok) return timestamp;
++      const parsed = parseNexoraQr(payload);
++      const business = parsed.ok ? getValidBusiness(appState, parsed.businessId) : null;
++      if (!parsed.ok || !business) return { ok: false, code: 'invalid_qr' };
++      const staff = parsed.staffProfileId ? appState.staffProfiles[parsed.staffProfileId] : null;
++      if (parsed.staffProfileId && (!isRecord(staff) || staff.id !== parsed.staffProfileId || staff.businessId !== parsed.businessId)) {
++        return { ok: false, code: 'invalid_qr' };
++      }
++      const storedBalance = validateStoredBalance(appState, parsed.businessId);
++      if (!storedBalance.ok) return storedBalance;
++      const duplicate = appState.checkins.some((item) => {
++        if (!isRecord(item) || item.businessId !== parsed.businessId) return false;
++        const scanned = Date.parse(item.scannedAt);
++        const delta = now - scanned;
++        return Number.isFinite(scanned) && delta >= 0 && delta < 120 * 60 * 1000;
++      });
++      if (duplicate) return { ok: false, code: 'duplicate_checkin' };
++      const id = createDomainId('checkin');
++      if (!id.ok) return id;
++      if (appState.checkins.some((item) => isRecord(item) && item.id === id.value)
++        || appState.ledger.some((entry) => isRecord(entry) && entry.refId === id.value)) return { ok: false, code: 'id_generation_failed' };
++      const checkin = {
++        id: id.value,
++        businessId: parsed.businessId,
++        station: parsed.station,
++        staffProfileId: parsed.staffProfileId,
++        sourceQr: payload,
++        scannedAt: timestamp.value,
++        status: online ? 'sending' : 'queued',
++        confirmedAt: null
++      };
++      if (!online) {
++        appState.checkins = [checkin, ...appState.checkins];
++        appState.offlineQueue = [...appState.offlineQueue, checkin.id];
++        return { ok: true, checkin, queued: true };
++      }
++      const result = completeCheckin(appState, checkin, now);
++      return result.ok ? { ...result, queued: false } : result;
++    }
++
++    function retryQueuedCheckins(appState, online = true, now = Date.now()) {
++      if (!online) return { ok: false, code: 'offline', retried: 0 };
++      const timestamp = domainTimestamp(now);
++      if (!timestamp.ok) return { ...timestamp, retried: 0 };
++      if (!isRecord(appState) || !Array.isArray(appState.offlineQueue) || !Array.isArray(appState.checkins)) return { ok: false, code: 'invalid_state', retried: 0 };
++      const ids = [...new Set(appState.offlineQueue)];
++      let retried = 0;
++      ids.forEach((id) => {
++        const checkin = appState.checkins.find((item) => isRecord(item) && item.id === id);
++        if (!checkin) return;
++        const result = checkin.status === 'confirmed'
++          ? completeCheckin(appState, checkin, now)
++          : checkin.status === 'queued' ? completeCheckin(appState, checkin, now) : { ok: false };
++        if (result.ok) {
++          if (result.idempotent) appState.offlineQueue = appState.offlineQueue.filter((queueId) => queueId !== checkin.id);
++          retried += result.idempotent ? 0 : 1;
++        }
++      });
++      return { ok: true, retried };
++    }
++
+     function hasTransactionState(appState, collectionName) {
+       return isRecord(appState)
+         && isRecord(appState.businesses)
+         && isRecord(appState.balances)
+         && isRecord(appState.ui)
+         && isRecord(appState.ui.pendingContext)
+         && Array.isArray(appState.ledger)
+         && Array.isArray(appState[collectionName]);
+     }
+ 
+@@ -2496,21 +2800,21 @@
+         openPayment: 'Mở {method} để thanh toán', addPhoto: 'Thêm ảnh',
+         methodNotEnabledStaff: '{method} · thợ chưa bật', methodNotEnabledBusiness: '{method} · tiệm chưa bật',
+         tipSentTo: 'Đã gửi tip cho {recipient}', tipReceived: '{recipient} đã nhận tip của bạn',
+         tipPendingSla: '{business} thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.',
+         tipPointsAdded: 'Đã cộng {points} điểm cảm ơn', paymentPendingSla: '{business} thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.',
+         paymentPointsAdded: 'Đã cộng {points} điểm thanh toán trực tiếp', invalidTipAmount: 'Số tiền tip tối thiểu là $1 và tối đa hai chữ số thập phân.',
+         invalidPaymentAmount: 'Số tiền phải từ $1 và tối đa hai chữ số thập phân.', staffMethodDisabled: 'Thợ chưa bật phương thức này.',
+         businessMethodDisabled: 'Tiệm chưa bật phương thức này.', transactionFailed: 'Không thể lưu giao dịch. Vui lòng thử lại.',
+         addPhotoDetail: 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.', imageReadFailed: 'Không thể đọc ảnh này.',
+         verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
+-        inviteCopied: 'Đã sao chép liên kết', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
++        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
+         cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
+         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
+         invalidPhone: 'Nhập số điện thoại US gồm 10 số.', cooldown: 'Vui lòng chờ đủ 30 giây.',
+         invalidOtp: 'Mã phải đúng 6 số.', otpLocked: 'Đã khóa 15 phút do nhập sai nhiều lần.',
+         existingAccount: 'Số này đã có tài khoản; hãy xác thực để đăng nhập.', alreadyClaimed: 'Số này đã nhận quà chào mừng.',
+         consentChoiceRequired: 'Chọn ít nhất một mục hoặc dùng Bỏ qua.',
+         pushTitle: 'Bật thông báo?', pushDetail: 'Nhận xác nhận lịch, thanh toán và cảnh báo điểm sắp hết hạn.',
+         pushConfirm: 'Bật thông báo', pushLater: 'Để sau',
+         editProfileTitle: 'Chỉnh sửa hồ sơ', profileName: 'Họ tên', profilePhone: 'Điện thoại', profileAvatar: 'URL ảnh đại diện', invalidProfile: 'Tên và số điện thoại chưa hợp lệ.', invalidAvatar: 'URL ảnh đại diện phải dùng HTTPS.', profileSaved: 'Đã lưu hồ sơ.',
+         paymentMethodsTitle: 'Phương thức thanh toán', paymentMethodsSaved: 'Đã lưu phương thức.',
+@@ -2528,21 +2832,21 @@
+         openPayment: 'Open {method} to pay', addPhoto: 'Add a photo',
+         methodNotEnabledStaff: '{method} · not enabled by staff', methodNotEnabledBusiness: '{method} · not enabled by business',
+         tipSentTo: 'Tip sent to {recipient}', tipReceived: '{recipient} received your tip',
+         tipPendingSla: '{business} usually confirms within 10 minutes. NEXORA never holds your money.',
+         tipPointsAdded: '{points} thank-you points added', paymentPendingSla: '{business} usually confirms within 10 minutes. NEXORA never holds your money.',
+         paymentPointsAdded: '{points} direct-pay points added', invalidTipAmount: 'Tip must be at least $1 with at most two decimal places.',
+         invalidPaymentAmount: 'Amount must be at least $1 with at most two decimal places.', staffMethodDisabled: 'The staff member has not enabled this method.',
+         businessMethodDisabled: 'The business has not enabled this method.', transactionFailed: 'Could not save the transaction. Please try again.',
+         addPhotoDetail: 'The production app will open your device photo picker.', imageReadFailed: 'Could not read this image.',
+         verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
+-        inviteCopied: 'Invite link copied', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
++        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
+         cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
+         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
+         invalidPhone: 'Enter a 10-digit US phone number.', cooldown: 'Please wait for the 30-second cooldown.',
+         invalidOtp: 'Enter the valid 6-digit code.', otpLocked: 'Locked for 15 minutes after too many attempts.',
+         existingAccount: 'This number already has an account; verify to sign in.', alreadyClaimed: 'This number already claimed the welcome gift.',
+         consentChoiceRequired: 'Choose at least one option or Skip.',
+         pushTitle: 'Turn on notifications?', pushDetail: 'Get booking, payment and point-expiry updates.',
+         pushConfirm: 'Turn on', pushLater: 'Maybe later',
+         editProfileTitle: 'Edit profile', profileName: 'Name', profilePhone: 'Phone', profileAvatar: 'Avatar URL', invalidProfile: 'Name and phone are invalid.', invalidAvatar: 'Avatar URL must use HTTPS.', profileSaved: 'Profile saved.',
+         paymentMethodsTitle: 'Payment methods', paymentMethodsSaved: 'Payment methods saved.',
+@@ -2754,57 +3058,48 @@
+       commitState((draft) => { draft.ui.overlay = null; });
+       const overlay = document.getElementById('app-overlay');
+       overlay.classList.add('hidden');
+       overlay.classList.remove('flex');
+       overlay.setAttribute('aria-hidden', 'true');
+       document.body.classList.remove('overflow-hidden');
+       restoreOverlayFocus(returnFocus);
+       return true;
+     }
+ 
+-    function startScan() {
+-      const line = document.getElementById('scan-line');
+-      const loading = document.getElementById('scan-loading-state');
+-      line.classList.remove('hidden');
+-      loading.classList.remove('hidden');
+-      showToast(t('scanRecognized'));
+-      window.setTimeout(() => { line.classList.add('hidden'); loading.classList.add('hidden'); navigateTo('onb1'); }, 900);
+-    }
+-
+-    function selectTip(amount, control) {
++    const selectTip = (amount, control) => {
+       const canonical = canonicalMoneyAmount(amount);
+       if (!canonical.ok) return canonical;
+       commitState((draft) => { draft.ui.selectedTip = canonical.value; });
+       document.getElementById('tip-custom-amount').value = '';
+       document.querySelectorAll('[data-action="select-tip"]').forEach((button) => button.setAttribute('aria-pressed', String(button === control)));
+       const copy = document.querySelector('[data-action="send-tip"] span');
+       if (copy) copy.textContent = t('continueTip', { amount: state.ui.selectedTip });
+       return { ok: true, amount: state.ui.selectedTip };
+-    }
++    };
+ 
+     function transactionErrorKey(result, kind) {
+       if (result.code === 'method_disabled') return kind === 'tip' ? 'staffMethodDisabled' : 'businessMethodDisabled';
+       if (result.code === 'invalid_amount') return kind === 'tip' ? 'invalidTipAmount' : 'invalidPaymentAmount';
+       return 'transactionFailed';
+     }
+ 
+     function openExternalPayment(method, amount, recipient) {
+       const links = {
+         Venmo: `venmo://paycharge?txn=pay&recipients=${encodeURIComponent(recipient)}&amount=${amount.toFixed(2)}`,
+         Zelle: 'https://www.zellepay.com/get-started',
+         'Cash App': `https://cash.app/$${encodeURIComponent(recipient)}/${amount.toFixed(2)}`
+       };
+       const link = links[method];
+       if (link) window.open?.(link, '_blank', 'noopener,noreferrer');
+     }
+ 
+-    function sendTip() {
++    const sendTip = () => {
+       const recipient = document.getElementById('tip-recipient');
+       const customInput = document.getElementById('tip-custom-amount');
+       const customAmount = typeof customInput.value === 'string' && customInput.value.trim()
+         ? customInput.value.trim()
+         : state.ui.selectedTip;
+       const staff = state.staffProfiles[recipient.value];
+       const result = commitState((draft) => createTip(draft, {
+         businessId: BUSINESS_ID,
+         staffProfileId: recipient.value,
+         staffName: staff?.name,
+@@ -2813,60 +3108,60 @@
+         note: document.getElementById('tip-note').value
+       }));
+       if (!result.ok) {
+         showToast(t(transactionErrorKey(result, 'tip')), 'error');
+         return result;
+       }
+       openExternalPayment(result.tip.method, result.tip.amount, result.tip.staffName);
+       renderTipResult();
+       navigateTo('tipdone');
+       return result;
+-    }
++    };
+ 
+-    function confirmTip() {
++    const confirmTip = () => {
+       const result = commitState((draft) => confirmTipRecord(draft, draft.ui.pendingContext.tipId));
+       if (!result.ok) {
+         showToast(t('transactionFailed'), 'error');
+         return result;
+       }
+       renderApp();
+       renderTipResult();
+       return result;
+-    }
++    };
+ 
+-    function sendPayment() {
++    const sendPayment = () => {
+       const result = commitState((draft) => createDirectPayment(draft, {
+         businessId: draft.ui.selectedBusinessId,
+         amount: document.getElementById('payment-amount').value,
+         method: draft.ui.paymentMethod
+       }));
+       if (!result.ok) {
+         showToast(t(transactionErrorKey(result, 'payment')), 'error');
+         return result;
+       }
+       const business = state.businesses[result.payment.businessId];
+       openExternalPayment(result.payment.method, result.payment.amount, business.name);
+       renderPaymentResult();
+       navigateTo('paydone');
+       return result;
+-    }
++    };
+ 
+-    function confirmPayment() {
++    const confirmPayment = () => {
+       const result = commitState((draft) => confirmDirectPayment(draft, draft.ui.pendingContext.paymentId));
+       if (!result.ok) {
+         showToast(t('transactionFailed'), 'error');
+         return result;
+       }
+       renderApp();
+       renderPaymentResult();
+       return result;
+-    }
++    };
+ 
+     function renderRewardPreview(reward) {
+       const balance = getBusinessBalance(state, reward.sourceBusinessId).points;
+       document.getElementById('reward-title').textContent = reward.title[state.profile.language] ?? reward.title.vi;
+       document.getElementById('reward-business').textContent = getValidBusiness(state, reward.acceptingBusinessId)?.name ?? t('unknownBusiness');
+       document.getElementById('reward-cost').textContent = formatPoints(reward.cost);
+       document.getElementById('reward-balance').textContent = formatPoints(balance);
+       document.getElementById('reward-after').textContent = formatPoints(balance - reward.cost);
+     }
+ 
+@@ -2911,21 +3206,21 @@
+           rewardKey: reward.key,
+           idempotencyKey,
+           completed: false
+         };
+       });
+       renderRewardPreview(reward);
+       if (navigate) navigateTo('redeem');
+       return { ok: true, idempotencyKey };
+     }
+ 
+-    function confirmReward(navigate = true) {
++    const confirmReward = (navigate = true) => {
+       const attempt = state.ui.pendingContext.rewardAttempt;
+       if (!isRecord(attempt) || typeof attempt.rewardKey !== 'string' || typeof attempt.idempotencyKey !== 'string') {
+         const result = { ok: false, code: 'no_pending_reward' };
+         if (navigate) showToast(t('noPendingReward'), 'error');
+         return result;
+       }
+       const result = commitState((draft) => {
+         const redemption = redeemReward(draft, attempt.rewardKey, attempt.idempotencyKey);
+         if (redemption.ok) draft.ui.pendingContext.rewardAttempt.completed = true;
+         return redemption;
+@@ -2945,21 +3240,21 @@
+       }
+       const reward = getRewardDefinition(result.redemption.rewardKey);
+       if (!reward) return { ok: false, code: 'unknown_reward' };
+       document.getElementById('reward-done-title').textContent = reward.title[state.profile.language];
+       document.getElementById('reward-done-cost').textContent = formatPoints(result.redemption.cost);
+       if (navigate) {
+         renderApp();
+         navigateTo('redeemdone');
+       }
+       return result;
+-    }
++    };
+ 
+     function filterExplore(query = '') {
+       const term = query.trim().toLowerCase();
+       let visible = 0;
+       document.querySelectorAll('[data-business-card]').forEach((card) => {
+         const categoryMatch = state.ui.exploreFilter === 'all' || String(card.dataset.category ?? '').split(' ').includes(state.ui.exploreFilter);
+         const show = categoryMatch && String(card.dataset.search ?? '').toLowerCase().includes(term);
+         card.classList.toggle('hidden', !show);
+         if (show) visible += 1;
+       });
+@@ -3181,67 +3476,67 @@
+       note.className = 'mt-2';
+       note.textContent = look.note || t('noLookNote');
+       const business = document.createElement('p');
+       business.className = 'mt-2 text-app-muted';
+       const businessName = getValidBusiness(state, look.businessId)?.name ?? t('unknownBusiness');
+       business.textContent = `${look.staffName} · ${businessName}`;
+       fragment.append(service, note, business);
+       return fragment;
+     }
+ 
+-    function saveOffer(control) {
++    const saveOffer = (control) => {
+       const offerId = control?.dataset?.offerId;
+       if (!OFFER_IDS.has(offerId)) return { ok: false, code: 'unknown_offer' };
+       const saved = commitState((draft) => toggleSavedOffer(draft, offerId));
+       renderOffers();
+       return { ok: true, saved };
+-    }
++    };
+ 
+-    function addWish() {
++    const addWish = () => {
+       const input = document.getElementById('wish-input');
+       const result = commitState((draft) => addWishRecord(draft, input?.value ?? ''));
+       if (result.ok && input) input.value = '';
+       renderWishes();
+       return result;
+-    }
++    };
+ 
+-    function saveLook() {
++    const saveLook = () => {
+       const service = document.getElementById('look-service')?.value ?? '';
+       const color = document.getElementById('look-color')?.value ?? '';
+       const note = document.getElementById('look-notes')?.value ?? '';
+       const photoDataUrl = document.getElementById('look-photo-preview')?.dataset?.photo ?? '';
+       const result = commitState((draft) => saveLookRecord(draft, {
+         businessId: BUSINESS_ID, visitId: 'visit-1001', staffProfileId: 'staff-anna', staffName: 'Anna', service, color, note, photoDataUrl
+       }));
+       renderLooks();
+       return result;
+-    }
++    };
+ 
+     function applyRating(rating) {
+       document.querySelectorAll('[data-action="set-rating"]').forEach((button) => {
+         const active = Number(button.dataset.rating) <= rating;
+         button.setAttribute('aria-pressed', String(active));
+         button.querySelector('svg, i')?.classList.toggle('fill-current', active);
+       });
+     }
+ 
+     function setRating(rating) {
+       const normalized = Number(rating);
+       if (!Number.isInteger(normalized) || normalized < 1 || normalized > 5) {
+         return { ok: false, code: 'invalid_rating' };
+       }
+       commitState((draft) => { draft.ui.rating = normalized; });
+       applyRating(normalized);
+       return { ok: true, rating: normalized };
+     }
+ 
+-    function submitReview() {
++    const submitReview = () => {
+       const result = commitState((draft) => submitFeedback(draft, {
+         visitId: 'visit-1001',
+         businessId: BUSINESS_ID,
+         stars: draft.ui.rating,
+         text: document.getElementById('review-notes').value
+       }));
+       if (!result.ok) {
+         const errorKeys = {
+           invalid_rating: 'ratingRequired',
+           already_submitted: 'feedbackAlreadySent'
+@@ -3249,42 +3544,42 @@
+         const errorKey = errorKeys[result.code] ?? 'feedbackFailed';
+         showToast(t(errorKey), 'error');
+         renderFeedback();
+         return result;
+       }
+       document.getElementById('review-notes').value = '';
+       renderApp();
+       navigateTo('home');
+       showToast(t('reviewThanks'));
+       return result;
+-    }
++    };
+ 
+-    function reviewBooking() {
++    const reviewBooking = () => {
+       renderBooking();
+       navigateTo('book2');
+-    }
++    };
+ 
+-    function confirmBooking() {
++    const confirmBooking = () => {
+       const note = document.getElementById('booking-note').value;
+       const result = commitState((draft) => {
+         draft.ui.bookingDraft.note = typeof note === 'string' ? note.trim() : '';
+         return createBookingRequest(draft, draft.ui.bookingDraft);
+       });
+       if (!result.ok) {
+         const errorKeys = { missing_selection: 'bookingMissingSelection' };
+         showToast(t(errorKeys[result.code] ?? 'bookingFailed'), 'error');
+         return result;
+       }
+       renderBooking();
+       navigateTo('book3');
+       return result;
+-    }
++    };
+ 
+     function confirmBookingDemo() {
+       const result = commitState((draft) => confirmBookingRequest(draft, draft.ui.pendingContext.bookingId));
+       if (!result.ok) {
+         showToast(t('bookingConfirmFailed'), 'error');
+         return result;
+       }
+       renderApp();
+       return result;
+     }
+@@ -3558,21 +3853,40 @@
+       title: t('resetTitle'),
+       html: t('resetDetail'),
+       onConfirm: () => {
+         state = createDefaultState();
+         saveState(state);
+         renderApp();
+         navigateTo('home');
+         showToast(t('dataReset'));
+       }
+     }, control));
+-    registerAction('start-scan', () => startScan());
++    registerAction('start-scan', () => {
++      const line = document.getElementById('scan-line');
++      const loading = document.getElementById('scan-loading-state');
++      line?.classList.remove('hidden');
++      loading?.classList.remove('hidden');
++      window.setTimeout(() => {
++        line?.classList.add('hidden');
++        loading?.classList.add('hidden');
++        const payload = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
++        const result = commitState((draft) => submitCheckin(draft, payload, window.navigator?.onLine !== false));
++        if (!result.ok) {
++          showToast(result.code === 'duplicate_checkin' ? t('recentCheckin') : t('invalidQr'), 'error');
++          return;
++        }
++        renderApp();
++        showToast(result.queued ? t('checkinQueued') : t('checkinSuccess'));
++        navigateTo('home');
++      }, 900);
++    });
++    registerAction('enter-code', () => navigateTo('onb1'));
+     registerAction('select-tip', (control) => selectTip(control.dataset.amount, control));
+     registerAction('send-tip', () => sendTip());
+     registerAction('confirm-tip', () => confirmTip());
+     registerAction('send-payment', () => sendPayment());
+     registerAction('confirm-payment', () => confirmPayment());
+     registerAction('open-business-history', (control) => {
+       const businessId = control.dataset.businessId;
+       if (!isRecord(state.businesses[businessId])) {
+         showToast(t('unknownBusiness'), 'error');
+         return;
+@@ -3695,25 +4009,77 @@
+       commitState((draft) => { draft.ui.selectedBusinessId = businessId; });
+       renderExplore();
+       navigateTo('business');
+     });
+     registerAction('set-rating', (control) => setRating(control.dataset.rating));
+     registerAction('submit-review', () => submitReview());
+     registerAction('review-booking', () => reviewBooking());
+     registerAction('confirm-booking', () => confirmBooking());
+     registerAction('confirm-booking-demo', () => confirmBookingDemo());
+     registerAction('add-calendar', () => downloadBookingCalendar(state, state.ui.pendingContext.bookingId));
+-    registerAction('open-google-review', () => window.open?.('https://www.google.com/search?q=Bitcoin+Nail+Bar+reviews', '_blank', 'noopener,noreferrer'));
++    registerAction('open-google-review', () => {
++      const url = 'https://www.google.com/search?q=Bitcoin+Nail+Bar+reviews';
++      try {
++        window.open?.(url, '_blank', 'noopener,noreferrer');
++        if (typeof document !== 'undefined') showToast(t('googleReviewOpened'));
++      } catch {
++        if (typeof document !== 'undefined') showToast(t('googleReviewFailed'), 'error');
++      }
++    });
+     registerAction('show-directions', () => showToast(t('openingMaps')));
+-    registerAction('copy-referral', () => {
+-      navigator.clipboard?.writeText('https://nexora.example/invite/JESSICA50');
+-      showToast(t('inviteCopied'));
++    registerAction('simulate-geo-push', () => {
++      const result = commitState((draft) => {
++        const timestamp = domainTimestamp(Date.now());
++        if (!timestamp.ok) return timestamp;
++        const dedupeKey = 'demo-nearby-golden-glow';
++        if (draft.notifications.some((item) => item.dedupeKey === dedupeKey)) return { ok: false, code: 'already_notified' };
++        const id = createDomainId('note');
++        if (!id.ok) return id;
++        draft.notifications.unshift({ id: id.value, dedupeKey, type: 'nearby', title: { vi: 'Golden Glow Spa ở gần bạn', en: 'Golden Glow Spa is nearby' }, target: 'business', businessId: 'golden-glow-spa', read: false, createdAt: timestamp.value });
++        return { ok: true };
++      });
++      showToast(result.ok ? t('nearbyNotificationCreated') : t('notificationFailed'), result.ok ? 'success' : 'error');
++      renderGlobalState();
++      renderActivity();
++    });
++    registerAction('simulate-wish-push', () => {
++      const result = commitState((draft) => {
++        const timestamp = domainTimestamp(Date.now());
++        if (!timestamp.ok) return timestamp;
++        const dedupeKey = 'demo-wish-match';
++        if (draft.notifications.some((item) => item.dedupeKey === dedupeKey)) return { ok: false, code: 'already_notified' };
++        const id = createDomainId('note');
++        if (!id.ok) return id;
++        draft.notifications.unshift({ id: id.value, dedupeKey, type: 'wish_match', title: { vi: 'Có ưu đãi mới khớp mong muốn', en: 'A new offer matches your wish' }, target: 'offers', read: false, createdAt: timestamp.value });
++        return { ok: true };
++      });
++      showToast(result.ok ? t('wishNotificationCreated') : t('notificationFailed'), result.ok ? 'success' : 'error');
++      renderGlobalState();
++      renderActivity();
++    });
++    registerAction('copy-referral', async () => {
++      const url = `https://nexora.example/invite/${state.profile.referralCode}`;
++      try {
++        const clipboard = window.navigator?.clipboard;
++        if (clipboard?.writeText) await clipboard.writeText(url);
++        else {
++          const input = document.createElement('textarea');
++          input.value = url;
++          document.body.append(input);
++          input.select?.();
++          if (!document.execCommand?.('copy')) throw new Error('copy_failed');
++          input.remove();
++        }
++        if (typeof document !== 'undefined') showToast(t('inviteCopied'));
++      } catch {
++        if (typeof document !== 'undefined') showToast(t('inviteCopyFailed'), 'error');
++      }
+     });
+ 
+     function handleAction(event) {
+       const nav = event.target.closest('[data-nav-target]');
+       if (nav) return navigateTo(nav.dataset.navTarget);
+       const explore = event.target.closest('[data-explore-filter]');
+       if (explore) {
+         commitState((draft) => { draft.ui.exploreFilter = explore.dataset.exploreFilter; });
+         selectExclusive(explore, '[data-explore-filter]');
+         return filterExplore(document.getElementById('explore-search')?.value ?? '');
+@@ -4200,32 +4566,45 @@
+         state.ui.activeScreen = screenId;
+         state.ui.activeModule = SCREEN_MODULE[screenId];
+         state.ui.pendingContext.bookingId = null;
+       }
+       showScreen(screenId);
+       updateNavigation();
+     }
+ 
+     function renderApp() {
+       applyLanguage(state.profile.language);
++      const referralCopy = document.querySelector('[data-en*="welcome points"]');
++      if (referralCopy) {
++        referralCopy.dataset.en = REFERRAL_COPY.en;
++        referralCopy.dataset.vi = REFERRAL_COPY.vi;
++        referralCopy.textContent = REFERRAL_COPY[state.profile.language];
++      }
+       renderNavigation();
+       renderGlobalState();
+       updateNavigation();
+       renderDomainViews();
+       if (window.lucide) window.lucide.createIcons();
+     }
+ 
+     function initializeApp() {
+       document.addEventListener('click', handleAction);
+       document.addEventListener('input', handleInput);
+       document.addEventListener('change', handleChange);
+       document.addEventListener('keydown', handleKeydown);
++      window.addEventListener?.('online', () => {
++        const result = commitState((draft) => retryQueuedCheckins(draft, true));
++        if (result.retried > 0) {
++          renderApp();
++          showToast(state.profile.language === 'en' ? `${result.retried} queued check-in(s) sent.` : `Đã gửi lại ${result.retried} check-in.`);
++        }
++      });
+       renderApp();
+       restorePersistedUi();
+     }
+ 
+     window.NEXORA_TEST_API = {
+       STORAGE_KEY,
+       createDefaultState,
+       migrateState,
+       loadState,
+       saveState,
+@@ -4251,17 +4630,22 @@
+       setBusinessMarketing,
+       claimWelcomeGift,
+       requestExistingAccountOtp,
+       validateAvatarUrl,
+       saveLookRecord,
+       toggleSavedOffer,
+       addWishRecord,
+       removeWishRecord,
+       canFollowTech,
+       toggleFollowTech,
+-      createTechMoveNotification
++      createTechMoveNotification,
++      confirmReward,
++      parseNexoraQr,
++      completeCheckin,
++      submitCheckin,
++      retryQueuedCheckins
+     };
+ 
+     if (!window.NEXORA_SKIP_INIT) initializeApp();
+   </script>
+ </body>
+ </html>
+diff --git a/html/customer/cutomer-reward.test.mjs b/html/customer/cutomer-reward.test.mjs
+index 3d61266..da71338 100644
+--- a/html/customer/cutomer-reward.test.mjs
++++ b/html/customer/cutomer-reward.test.mjs
+@@ -244,21 +244,21 @@ test('sanitizes collection elements and preserves valid nullable unions', () =>
+ 
+   assert.equal(migrated.ledger.length, 1);
+   assert.equal(migrated.ledger[0].businessId, 'golden-glow-spa');
+   assert.equal(migrated.ledger[0].futureField, 'kept');
+   assert.equal(migrated.visits.length, 1);
+   assert.equal(migrated.visits[0].futureField, 'kept');
+   assert.equal(migrated.tips.length, 1);
+   assert.equal(JSON.stringify(migrated.wishes), JSON.stringify(['Pedicure deal']));
+   assert.equal(JSON.stringify(migrated.savedOfferIds), JSON.stringify(['offer-glow']));
+   assert.equal(JSON.stringify(migrated.welcomeClaims), JSON.stringify(['7135550199']));
+-  assert.equal(JSON.stringify(migrated.offlineQueue), JSON.stringify(['checkin-1']));
++  assert.equal(JSON.stringify(migrated.offlineQueue), JSON.stringify([]));
+   assert.equal(JSON.stringify(migrated.balances['bitcoin-nail-bar'].expiringPoints), JSON.stringify({ amount: 50, date: '2026-09-01' }));
+   assert.equal(migrated.balances['golden-glow-spa'].expiringPoints, null);
+   assert.equal(migrated.balances['moon-coffee'].expiringPoints, null);
+   assert.equal(migrated.ui.currentRewardKey, 'gel');
+   assert.equal(JSON.stringify(migrated.ui.overlay), JSON.stringify({ kind: 'notice' }));
+ 
+   const invalidUnions = api.migrateState({
+     balances: { 'bitcoin-nail-bar': { expiringPoints: { amount: Infinity, date: 7 } } },
+     ui: { currentRewardKey: 7, overlay: [] }
+   });
+@@ -509,24 +509,23 @@ test('requests a fresh OTP before routing an existing account to verification',
+   const result = api.requestExistingAccountOtp(app, '(832) 555-0148', 5000);
+   assert.equal(result.ok, true);
+   assert.equal(result.code, 'existing_account');
+   assert.equal(app.session.phone, '8325550148');
+   assert.equal(app.session.otpRequestedAt, 5000);
+   assert.equal(api.requestExistingAccountOtp(app, '(832) 555-0148', 5001).code, 'cooldown');
+ });
+ 
+ test('routes scanning through welcome claim and wires existing-account OTP before login2', () => {
+   const source = html();
+-  const scanBody = source.match(/function startScan\(\)\s*\{([\s\S]*?)\n\s*\}\n\n\s*function selectTip/)?.[1];
+-  assert.ok(scanBody, 'startScan body must be available');
+-  assert.match(scanBody, /navigateTo\('onb1'\)/);
+-  assert.doesNotMatch(scanBody, /navigateTo\('onb2'\)/);
++  const scanAction = source.match(/registerAction\('start-scan',[\s\S]*?registerAction\('enter-code'/)?.[0];
++  assert.ok(scanAction, 'start-scan action must be available');
++  assert.match(scanAction, /submitCheckin/);
+ 
+   const claimAction = source.match(/registerAction\('claim-welcome',[\s\S]*?registerAction\('accept-consent'/)?.[0];
+   assert.ok(claimAction, 'claim welcome action must be registered');
+   assert.match(claimAction, /requestExistingAccountOtp/);
+   assert.ok(claimAction.indexOf('requestExistingAccountOtp') < claimAction.indexOf("navigateTo('login2')"));
+ });
+ 
+ test('round-trips valid consent preferences and welcome claims through migration', () => {
+   const { api, storage } = testApi();
+   const app = api.createDefaultState();
+@@ -1404,21 +1403,21 @@ test('binds restored pending attempts to normalized valid persisted reward state
+     skipInit: false,
+     document: validDocument,
+     randomUUID: () => { throw new Error('valid retry must not create a new ID'); }
+   });
+ 
+   assert.equal(validDocument.getElementById('redeem').classList.contains('hidden'), false);
+   assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt.rewardKey', valid.context), 'credit5');
+   assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt.idempotencyKey', valid.context), 'restored-attempt');
+   assert.equal(valid.storage.getItem(valid.api.STORAGE_KEY), validRaw);
+   const balanceBefore = vm.runInContext("state.balances['bitcoin-nail-bar'].points", valid.context);
+-  const retry = valid.context.confirmReward(false);
++  const retry = valid.api.confirmReward(false);
+   assert.equal(retry.ok, true);
+   assert.equal(retry.idempotent, true);
+   assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", valid.context), balanceBefore);
+ 
+   const invalidCases = [
+     rewardPair({
+       redemption: { idempotencyKey: ' pending-conflict ', rewardKey: 'voucher25', cost: 800 },
+       ledger: { pointsDelta: -800 }
+     }),
+     rewardPair({
+@@ -1446,21 +1445,21 @@ test('binds restored pending attempts to normalized valid persisted reward state
+         createStubElement({ id: 'redeem', classNames: ['app-screen', 'hidden'] })
+       ]
+     });
+     const loaded = testApi({
+       'nexora.customer.prototype.v1': JSON.stringify(invalidState)
+     }, { skipInit: false, document });
+     const pointsBefore = invalidState.balances['bitcoin-nail-bar'].points;
+ 
+     assert.equal(document.getElementById('rewards').classList.contains('hidden'), false);
+     assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt', loaded.context), null);
+-    assert.equal(loaded.context.confirmReward(false).code, 'no_pending_reward');
++    assert.equal(loaded.api.confirmReward(false).code, 'no_pending_reward');
+     assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", loaded.context), pointsBefore);
+   });
+ });
+ 
+ test('retains malformed raw reward claims when rejecting a pending attempt', () => {
+   const variants = [
+     { name: 'non-string reward key', redemption: { rewardKey: 17 } },
+     { name: 'blank reward key', redemption: { rewardKey: '   ' } },
+     { name: 'missing reward key', redemption: { rewardKey: undefined } },
+     { name: 'missing required field', redemption: { sourceBusinessId: undefined } },
+@@ -1469,21 +1468,21 @@ test('retains malformed raw reward claims when rejecting a pending attempt', ()
+ 
+   variants.forEach((variant) => {
+     const pair = rewardPair({
+       redemption: { idempotencyKey: ' pending-raw-claim ', ...variant.redemption },
+       ledger: variant.ledger
+     });
+     const loaded = reloadPendingRewardClaims([pair.redemption], [pair.ledger]);
+ 
+     assert.equal(loaded.document.getElementById('rewards').classList.contains('hidden'), false, variant.name);
+     assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt', loaded.context), null, variant.name);
+-    assert.equal(loaded.context.confirmReward(false).code, 'no_pending_reward', variant.name);
++    assert.equal(loaded.api.confirmReward(false).code, 'no_pending_reward', variant.name);
+     assert.equal(
+       vm.runInContext("state.balances['bitcoin-nail-bar'].points", loaded.context),
+       loaded.pointsBefore,
+       variant.name
+     );
+     assert.equal(loaded.idCalls(), 0, variant.name);
+   });
+ });
+ 
+ test('clears a pending attempt when duplicate raw claims share its logical key', () => {
+@@ -1495,21 +1494,21 @@ test('clears a pending attempt when duplicate raw claims share its logical key',
+     redemption: { id: 'raw-duplicate-b', idempotencyKey: 'pending-raw-claim' },
+     ledger: { id: 'raw-duplicate-ledger-b' }
+   });
+   const loaded = reloadPendingRewardClaims(
+     [first.redemption, second.redemption],
+     [first.ledger, second.ledger]
+   );
+ 
+   assert.equal(loaded.document.getElementById('rewards').classList.contains('hidden'), false);
+   assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt', loaded.context), null);
+-  assert.equal(loaded.context.confirmReward(false).code, 'no_pending_reward');
++  assert.equal(loaded.api.confirmReward(false).code, 'no_pending_reward');
+   assert.equal(
+     vm.runInContext("state.balances['bitcoin-nail-bar'].points", loaded.context),
+     loaded.pointsBefore
+   );
+   assert.equal(loaded.idCalls(), 0);
+ });
+ 
+ test('keeps only one-to-one persisted redemption and redeem-ledger pairs', () => {
+   const { api, storage } = testApi();
+   const { redemption, ledger } = rewardPair();
+@@ -1659,27 +1658,27 @@ test('reuses one persisted idempotency key for repeated confirmation of the same
+   let uuidCall = 0;
+   const randomUUID = () => `00000000-0000-4000-8000-${String(++uuidCall).padStart(12, '0')}`;
+   const { context: openingContext, storage } = testApi({}, { document: createDocumentStub(), randomUUID });
+ 
+   openingContext.openReward('credit5', false);
+   const attempt = vm.runInContext('structuredClone(state.ui.pendingContext.rewardAttempt)', openingContext);
+   assert.equal(attempt.rewardKey, 'credit5');
+   assert.ok(attempt.idempotencyKey.length > 0);
+   assert.equal(apiState(storage).ui.pendingContext.rewardAttempt.idempotencyKey, attempt.idempotencyKey);
+ 
+-  const { context, storage: reloadedStorage } = testApi(storage.dump(), { document: createDocumentStub(), randomUUID });
++  const { context, api: contextApi, storage: reloadedStorage } = testApi(storage.dump(), { document: createDocumentStub(), randomUUID });
+   assert.equal(
+     vm.runInContext('state.ui.pendingContext.rewardAttempt.idempotencyKey', context),
+     attempt.idempotencyKey
+   );
+-  const first = context.confirmReward(false);
+-  const second = context.confirmReward(false);
++  const first = contextApi.confirmReward(false);
++  const second = contextApi.confirmReward(false);
+   assert.equal(first.ok, true);
+   assert.equal(second.redemption.id, first.redemption.id);
+   assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", context), 1950);
+   assert.equal(
+     apiState(reloadedStorage).redemptions.filter((item) => item.idempotencyKey === attempt.idempotencyKey).length,
+     1
+   );
+ });
+ 
+ const validBookingInput = {
+@@ -2370,25 +2369,27 @@ test('completes every detail screen', () => {
+   for (const id of detailScreens) {
+     assert.match(source, new RegExp(`<section[^>]+id="${id}"[^>]+data-ready="true"`));
+     assert.match(source, new RegExp(`id="${id}-title"`));
+   }
+   assert.equal((source.match(/data-ready="true"/g) || []).length, 31);
+ });
+ 
+ test('implements delegated interactions for the complete prototype', () => {
+   const source = html();
+   const functions = [
++    'createDefaultState', 'migrateState', 'loadState', 'saveState',
+     'navigateTo', 'setLanguage', 'showToast', 'openOverlay', 'closeOverlay',
+-    'startScan', 'selectTip', 'sendTip', 'confirmTip', 'sendPayment',
+-    'confirmPayment', 'openReward', 'confirmReward', 'filterExplore',
+-    'filterOffers', 'saveOffer', 'addWish', 'saveLook', 'setRating',
+-    'submitReview', 'reviewBooking', 'confirmBooking'
++    'renderApp', 'requestOtp', 'verifyOtp', 'recordConsent',
++    'appendLedger', 'redeemReward', 'createTip', 'confirmTipRecord',
++    'createDirectPayment', 'confirmDirectPayment', 'createBookingRequest',
++    'confirmBookingRequest', 'submitFeedback', 'saveLookRecord',
++    'toggleSavedOffer', 'addWishRecord', 'toggleFollowTech', 'submitCheckin'
+   ];
+   for (const name of functions) {
+     assert.match(source, new RegExp(`function ${name}\\(`), `${name} must be implemented`);
+   }
+   assert.match(source, /function handleAction\(event\)/);
+   assert.match(source, /document\.addEventListener\('click', handleAction\)/);
+   assert.doesNotMatch(source, /\sonclick=/i);
+ });
+ 
+ test('keeps Vietnamese and English content in sync', () => {
+@@ -2810,10 +2811,164 @@ test('refreshes dynamic offer view and use labels after switching to English', (
+     '[data-offer-filter]': []
+   } });
+   const { context } = testApi({}, { document });
+   context.renderOffers();
+   assert.equal(viewControl.textContent, 'Xem');
+   assert.equal(useControl.textContent, 'Dùng ưu đãi');
+   context.setLanguage('en');
+   assert.equal(viewControl.textContent, 'View');
+   assert.equal(useControl.textContent, 'Use offer');
+ });
++
++test('maps every declared data-action to a registered handler', () => {
++  const source = html();
++  const declared = new Set([...source.matchAll(/data-action="([^"]+)"/g)].map((match) => match[1]));
++  const registered = new Set([...source.matchAll(/registerAction\('([^']+)'/g)].map((match) => match[1]));
++  const missing = [...declared].filter((name) => !registered.has(name));
++  assert.deepEqual(missing, []);
++});
++
++test('keeps all screen and back targets valid', () => {
++  const source = html();
++  const ids = new Set([...source.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
++  for (const [, target] of source.matchAll(/data-(?:target|back-target)="([^"]+)"/g)) {
++    assert.ok(ids.has(target), `missing target #${target}`);
++  }
++});
++
++test('contains persistence, transaction and customer marketplace contracts', () => {
++  const source = html();
++  for (const token of ['nexora.customer.prototype.v1', 'confirmTipRecord', 'confirmDirectPayment', 'confirmBookingRequest', 'submitFeedback', 'toggleFollowTech']) assert.match(source, new RegExp(token));
++  assert.doesNotMatch(source, /followerCount|followerList|Interview Invite|Find Work/);
++  assert.doesNotMatch(source, /const state = \{\s*activeScreen/);
++  assert.doesNotMatch(source, /state\.(?:language|activeScreen|activeModule|pointBalance|savedOffers|booking|rating)\b/);
++});
++
++test('removes obsolete pre-localStorage action functions', () => {
++  const source = html();
++  for (const name of ['startScan', 'selectTip', 'sendTip', 'confirmTip', 'sendPayment', 'confirmPayment', 'confirmReward', 'saveOffer', 'addWish', 'saveLook', 'submitReview', 'reviewBooking', 'confirmBooking']) {
++    assert.doesNotMatch(source, new RegExp(`function ${name}\\(`));
++  }
++});
++
++test('keeps platform stubs responsive instead of silently succeeding', () => {
++  const source = html();
++  for (const action of ['start-scan', 'enter-code', 'scan-receipt', 'show-directions', 'open-google-review', 'payment-methods', 'privacy-details']) {
++    assert.match(source, new RegExp(`registerAction\\('${action}'`));
++  }
++  assert.match(source, /catch\s*\{/);
++});
++
++test('queues offline QR check-in and awards points after retry with scan timestamp', () => {
++  const { api } = testApi();
++  const app = api.createDefaultState();
++  const before = app.balances['bitcoin-nail-bar'].points;
++  const queued = api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', false, 1000);
++  assert.equal(queued.checkin.status, 'queued');
++  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
++  api.retryQueuedCheckins(app, true, 5000);
++  assert.equal(queued.checkin.status, 'confirmed');
++  assert.equal(queued.checkin.scannedAt, new Date(1000).toISOString());
++  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 120);
++  assert.equal(api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', true, 6000).code, 'duplicate_checkin');
++});
++
++test('strictly validates Nexora QR origin, route and staff ownership', () => {
++  const { api } = testApi();
++  assert.equal(api.parseNexoraQr('https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna').ok, true);
++  for (const payload of [
++    'http://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna',
++    'https://evil.example/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna',
++    'https://nexoratouch.com/touch/unknown/front?staffProfileId=staff-anna',
++    'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-missing',
++    'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=',
++    'https://nexoratouch.com/touch/bitcoin-nail-bar/front?x=1'
++  ]) assert.equal(api.parseNexoraQr(payload).code, 'invalid_qr', payload);
++});
++
++test('does not partially mutate online check-in when ledger ID generation fails', () => {
++  let calls = 0;
++  const { api } = testApi({}, { randomUUID: () => {
++    calls += 1;
++    if (calls === 2) throw new Error('ledger id unavailable');
++    return '00000000-0000-4000-8000-000000000002';
++  } });
++  const app = api.createDefaultState();
++  const before = JSON.stringify(app);
++  assert.equal(api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', true, 1000).code, 'id_generation_failed');
++  assert.equal(JSON.stringify(app), before);
++});
++
++test('quarantines tampered persisted check-in claims and queue references', () => {
++  const { api } = testApi();
++  const id = 'checkin-00000000-0000-4000-8000-000000000003';
++  const scannedAt = '1970-01-01T00:00:01.000Z';
++  const payload = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
++  const migrated = api.migrateState({
++    checkins: [{ id, businessId: 'bitcoin-nail-bar', station: 'front', staffProfileId: 'staff-anna', sourceQr: payload, scannedAt, status: 'queued', confirmedAt: null }],
++    offlineQueue: [id, 'missing'],
++    ledger: [{ id: 'raw-checkin-claim', businessId: 'bitcoin-nail-bar', type: 'visit', pointsDelta: 120, refType: 'checkin', refId: id, createdAt: scannedAt }]
++  });
++  assert.equal(JSON.stringify(migrated.checkins), '[]');
++  assert.equal(JSON.stringify(migrated.offlineQueue), '[]');
++  assert.equal(migrated.ledger.some((entry) => entry.refId === id), false);
++});
++
++test('fails closed on malformed check-in balances before UUID or queue mutation', () => {
++  const payload = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
++  for (const malformed of [
++    undefined,
++    null,
++    { points: '120', credits: 0, expiringPoints: null },
++    { points: Number.NaN, credits: 0, expiringPoints: null },
++    { points: -1, credits: 0, expiringPoints: null },
++    { points: 120, credits: Number.NaN, expiringPoints: null },
++    { points: 120, credits: 0, expiringPoints: { amount: '80', date: '2026-08-30' } }
++  ]) {
++    let uuidCalls = 0;
++    const { api } = testApi({}, { randomUUID: () => {
++      uuidCalls += 1;
++      return '00000000-0000-4000-8000-000000000004';
++    } });
++    const app = api.createDefaultState();
++    app.balances['bitcoin-nail-bar'] = malformed;
++    const before = JSON.stringify(app);
++    assert.equal(api.submitCheckin(app, payload, true, 1000).code, 'invalid_balance');
++    assert.equal(JSON.stringify(app), before);
++    assert.equal(uuidCalls, 0);
++
++    const validApi = testApi().api;
++    const queuedApp = validApi.createDefaultState();
++    const queued = validApi.submitCheckin(queuedApp, payload, false, 1000);
++    assert.equal(queued.ok, true);
++    queuedApp.balances['bitcoin-nail-bar'] = malformed;
++    const queuedBefore = JSON.stringify(queuedApp);
++    const retry = validApi.retryQueuedCheckins(queuedApp, true, 5000);
++    assert.equal(retry.ok, true);
++    assert.equal(JSON.stringify(queuedApp), queuedBefore);
++    assert.equal(queued.checkin.status, 'queued');
++  }
++});
++
++test('rejects a missing offline queue before completeCheckin can partially mutate', () => {
++  const { api } = testApi();
++  const app = api.createDefaultState();
++  const queued = api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', false, 1000);
++  assert.equal(queued.ok, true);
++  app.offlineQueue = null;
++  const before = JSON.stringify(app);
++  assert.equal(api.completeCheckin(app, queued.checkin, 5000).code, 'invalid_state');
++  assert.equal(JSON.stringify(app), before);
++});
++
++test('completeCheckin rejects malformed domain collections before mutation', () => {
++  const { api } = testApi();
++  for (const field of ['businesses', 'balances', 'staffProfiles', 'checkins', 'ledger', 'offlineQueue']) {
++    const app = api.createDefaultState();
++    const pending = api.submitCheckin(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna', false, 1000);
++    assert.equal(pending.ok, true);
++    app[field] = null;
++    const before = JSON.stringify(app);
++    assert.equal(api.completeCheckin(app, pending.checkin, 5000).code, 'invalid_state', field);
++    assert.equal(JSON.stringify(app), before, field);
++  }
++});

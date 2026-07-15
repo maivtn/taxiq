@@ -1,0 +1,1795 @@
+# Review package: 62f7b20a86071ae92b4f5bf45feacdd57256a2ae..dd76e126c35b91e7acccd075ad7d3c5fd7a51e78
+
+## Commits
+dd76e12 fix: block replayed pending transactions
+dadbba4 feat: persist pending tip and direct payments
+
+## Files changed
+ html/customer/cutomer-reward.html     | 848 +++++++++++++++++++++++++++++++++-
+ html/customer/cutomer-reward.test.mjs | 453 +++++++++++++++++-
+ 2 files changed, 1276 insertions(+), 25 deletions(-)
+
+## Diff
+diff --git a/html/customer/cutomer-reward.html b/html/customer/cutomer-reward.html
+index 1ea8c60..ffe6522 100644
+--- a/html/customer/cutomer-reward.html
++++ b/html/customer/cutomer-reward.html
+@@ -119,30 +119,30 @@
+             <button class="app-card flex min-h-24 items-center gap-4 text-left" type="button" data-action="navigate" data-target="book1"><span class="grid size-12 place-items-center rounded-2xl bg-app-gold/10 text-app-gold"><i data-lucide="calendar-plus" class="size-6" aria-hidden="true"></i></span><span><strong class="block" data-en="Book again" data-vi="Đặt lại lịch">Đặt lại lịch</strong><small class="text-app-muted" data-en="Send a booking request" data-vi="Gửi yêu cầu đặt lịch">Gửi yêu cầu đặt lịch</small></span></button>
+             <button class="app-card flex min-h-24 items-center gap-4 text-left" type="button" data-action="navigate" data-target="review"><span class="grid size-12 place-items-center rounded-2xl bg-app-red/10 text-app-red"><i data-lucide="message-circle-heart" class="size-6" aria-hidden="true"></i></span><span><strong class="block" data-en="Private feedback" data-vi="Phản hồi riêng">Phản hồi riêng</strong><small class="text-app-muted" data-en="Help the business improve" data-vi="Giúp doanh nghiệp cải thiện">Giúp doanh nghiệp cải thiện</small></span></button>
+           </div>
+         </section>
+         <section class="app-screen hidden" id="activity" data-ready="true" data-module="home" aria-labelledby="activity-title">
+           <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Updates & receipts" data-vi="Cập nhật & biên nhận">Cập nhật & biên nhận</p><h1 id="activity-title" class="text-2xl font-black" data-en="Activity" data-vi="Hoạt động">Hoạt động</h1></div></div>
+           <div class="grid gap-4 lg:grid-cols-[1fr_320px]"><div class="space-y-3"><article class="app-card flex gap-3"><span class="grid size-11 shrink-0 place-items-center rounded-xl bg-app-green/10 text-app-green"><i data-lucide="circle-check" class="size-5" aria-hidden="true"></i></span><div class="flex-1"><div class="flex justify-between gap-3"><strong data-en="Check-in completed" data-vi="Đã check-in">Đã check-in</strong><strong class="text-app-green">+120</strong></div><p class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar · 2 hours ago</p></div></article><article class="app-card flex gap-3"><span class="grid size-11 shrink-0 place-items-center rounded-xl bg-app-purple/10 text-app-pink"><i data-lucide="calendar-check" class="size-5" aria-hidden="true"></i></span><div class="flex-1"><strong data-en="Booking confirmed" data-vi="Lịch hẹn đã xác nhận">Lịch hẹn đã xác nhận</strong><p class="mt-1 text-sm text-app-muted">Gel manicure · Anna · Thu 2:00 PM</p></div></article><article class="app-card flex gap-3"><span class="grid size-11 shrink-0 place-items-center rounded-xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-5" aria-hidden="true"></i></span><div class="flex-1"><strong data-en="Points expire soon" data-vi="Điểm sắp hết hạn">Điểm sắp hết hạn</strong><p class="mt-1 text-sm text-app-muted" data-en="80 Moon Coffee points expire Aug 30." data-vi="80 điểm Moon Coffee hết hạn ngày 30/8.">80 điểm Moon Coffee hết hạn ngày 30/8.</p></div></article></div><aside class="app-card h-fit"><p class="eyebrow" data-en="This month" data-vi="Tháng này">Tháng này</p><div class="mt-4 grid grid-cols-2 gap-3"><div class="rounded-xl bg-app-panel p-3"><strong class="text-xl">4</strong><span class="mt-1 block text-xs text-app-muted" data-en="visits" data-vi="lượt ghé">lượt ghé</span></div><div class="rounded-xl bg-app-panel p-3"><strong class="text-xl">+510</strong><span class="mt-1 block text-xs text-app-muted" data-en="points" data-vi="điểm">điểm</span></div></div></aside></div>
+         </section>
+         <section class="app-screen hidden" id="tip" data-ready="true" data-module="home" aria-labelledby="tip-title">
+           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Pay staff directly" data-vi="Trả trực tiếp cho nhân viên">Trả trực tiếp cho nhân viên</p><h1 id="tip-title" class="text-2xl font-black" data-en="Send a tip" data-vi="Gửi tip">Gửi tip</h1></div></div>
+-          <div class="app-card"><div class="flex items-center gap-3"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="Nhân viên Anna" class="size-14 rounded-2xl object-cover"><div class="flex-1"><label class="eyebrow" for="tip-recipient" data-en="Tip recipient" data-vi="Người nhận tip">Người nhận tip</label><select id="tip-recipient" class="app-input mt-1"><option>Anna · Nail technician</option><option>Maria · Nail technician</option><option>Salon team</option></select></div></div><p class="mt-5 text-sm font-bold" data-en="Choose an amount" data-vi="Chọn số tiền">Chọn số tiền</p><div class="mt-3 grid grid-cols-3 gap-2"><button type="button" class="app-chip justify-center" data-action="select-tip" data-amount="5" aria-pressed="false">$5</button><button type="button" class="app-chip justify-center" data-action="select-tip" data-amount="10" aria-pressed="true">$10</button><button type="button" class="app-chip justify-center" data-action="select-tip" data-amount="20" aria-pressed="false">$20</button></div><label class="mt-5 block text-sm font-bold" for="tip-note" data-en="Note (optional)" data-vi="Lời nhắn (không bắt buộc)">Lời nhắn (không bắt buộc)</label><textarea id="tip-note" class="app-input mt-2 min-h-24 resize-none" data-en-ph="Thank you for the beautiful nails!" data-vi-ph="Cảm ơn bạn đã làm bộ nail thật đẹp!" placeholder="Cảm ơn bạn đã làm bộ nail thật đẹp!"></textarea><div class="mt-4 rounded-xl bg-app-green/[.06] p-3 text-xs leading-5 text-app-muted"><strong class="text-app-green" data-en="Direct payment" data-vi="Thanh toán trực tiếp">Thanh toán trực tiếp</strong><span data-en=" — NEXORA never holds your money or charges a platform fee." data-vi=" — NEXORA không giữ tiền và không thu phí nền tảng."> — NEXORA không giữ tiền và không thu phí nền tảng.</span></div><button type="button" class="app-button mt-5 w-full" data-action="send-tip"><span data-en="Continue with $10" data-vi="Tiếp tục với $10">Tiếp tục với $10</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button></div></div>
++          <div class="app-card"><div class="flex items-center gap-3"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="Nhân viên Anna" class="size-14 rounded-2xl object-cover"><div class="flex-1"><label class="eyebrow" for="tip-recipient" data-en="Tip recipient" data-vi="Người nhận tip">Người nhận tip</label><select id="tip-recipient" class="app-input mt-1"><option value="staff-anna">Anna · Nail technician</option><option value="staff-maria">Maria · Nail technician</option></select></div></div><p class="mt-5 text-sm font-bold" data-en="Choose an amount" data-vi="Chọn số tiền">Chọn số tiền</p><div class="mt-3 grid grid-cols-3 gap-2"><button type="button" class="app-chip justify-center" data-action="select-tip" data-amount="5" aria-pressed="false">$5</button><button type="button" class="app-chip justify-center" data-action="select-tip" data-amount="10" aria-pressed="true">$10</button><button type="button" class="app-chip justify-center" data-action="select-tip" data-amount="20" aria-pressed="false">$20</button></div><input id="tip-custom-amount" class="app-input mt-3" type="number" min="1" step="0.01" data-en-ph="Custom amount" data-vi-ph="Số tiền khác" placeholder="Số tiền khác"><p class="mt-5 text-sm font-bold" data-en="Send with" data-vi="Gửi bằng">Gửi bằng</p><div id="tip-method-list" class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3"></div><label class="mt-5 block text-sm font-bold" for="tip-note" data-en="Note (optional)" data-vi="Lời nhắn (không bắt buộc)">Lời nhắn (không bắt buộc)</label><textarea id="tip-note" class="app-input mt-2 min-h-24 resize-none" data-en-ph="Thank you for the beautiful nails!" data-vi-ph="Cảm ơn bạn đã làm bộ nail thật đẹp!" placeholder="Cảm ơn bạn đã làm bộ nail thật đẹp!"></textarea><div class="mt-4 rounded-xl bg-app-green/[.06] p-3 text-xs leading-5 text-app-muted"><strong class="text-app-green" data-en="Direct payment" data-vi="Thanh toán trực tiếp">Thanh toán trực tiếp</strong><span data-en=" — NEXORA never holds your money or charges a platform fee." data-vi=" — NEXORA không giữ tiền và không thu phí nền tảng."> — NEXORA không giữ tiền và không thu phí nền tảng.</span></div><button type="button" class="app-button mt-5 w-full" data-action="send-tip"><span data-en="Continue with $10" data-vi="Tiếp tục với $10">Tiếp tục với $10</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button></div></div>
+         </section>
+         <section class="app-screen hidden" id="tipdone" data-ready="true" data-module="home" aria-labelledby="tipdone-title">
+-          <div class="mx-auto max-w-xl text-center"><div id="tip-pending"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Awaiting confirmation" data-vi="Đang chờ xác nhận">Đang chờ xác nhận</p><h1 id="tipdone-title" class="mt-2 text-3xl font-black" data-en="Tip sent to Anna" data-vi="Đã gửi tip cho Anna">Đã gửi tip cho Anna</h1><p class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted" data-en="Bitcoin Nail Bar usually confirms within 10 minutes. We will notify you." data-vi="Bitcoin Nail Bar thường xác nhận trong 10 phút. Chúng tôi sẽ thông báo cho bạn.">Bitcoin Nail Bar thường xác nhận trong 10 phút. Chúng tôi sẽ thông báo cho bạn.</p><div class="app-card mt-6 text-left"><div class="flex justify-between"><span data-en="Tip amount" data-vi="Số tiền tip">Số tiền tip</span><strong id="tipdone-amount">$10.00</strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3"><span data-en="Payment method" data-vi="Phương thức">Phương thức</span><strong>Venmo</strong></div></div><button type="button" class="app-button mt-5 w-full" data-action="confirm-tip" data-en="Simulate salon confirmation" data-vi="Mô phỏng tiệm xác nhận">Mô phỏng tiệm xác nhận</button></div><div id="tip-confirmed" class="hidden"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="circle-check" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Confirmed" data-vi="Đã xác nhận">Đã xác nhận</p><h2 class="mt-2 text-3xl font-black" data-en="Anna received your tip" data-vi="Anna đã nhận tip của bạn">Anna đã nhận tip của bạn</h2><p class="mt-3 text-app-green" data-en="+100 thank-you points added" data-vi="Đã cộng 100 điểm cảm ơn">Đã cộng 100 điểm cảm ơn</p><button type="button" class="app-button mt-6 w-full" data-action="navigate" data-target="home" data-en="Back to home" data-vi="Về trang chủ">Về trang chủ</button></div></div>
++          <div class="mx-auto max-w-xl text-center"><div id="tip-pending"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Awaiting confirmation" data-vi="Đang chờ xác nhận">Đang chờ xác nhận</p><h1 id="tipdone-title" class="mt-2 text-3xl font-black">Đã gửi tip cho Anna</h1><p id="tip-pending-copy" class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted">Bitcoin Nail Bar thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.</p><div class="app-card mt-6 text-left"><div class="flex justify-between"><span data-en="Tip amount" data-vi="Số tiền tip">Số tiền tip</span><strong id="tipdone-amount">$10.00</strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3"><span data-en="Recipient" data-vi="Người nhận">Người nhận</span><strong id="tipdone-recipient">Anna</strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3"><span data-en="Payment method" data-vi="Phương thức">Phương thức</span><strong id="tipdone-method">Venmo</strong></div></div><button type="button" class="app-button mt-5 w-full" data-action="confirm-tip" data-en="Simulate business confirmation" data-vi="Mô phỏng doanh nghiệp xác nhận">Mô phỏng doanh nghiệp xác nhận</button></div><div id="tip-confirmed" class="hidden"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="circle-check" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Confirmed" data-vi="Đã xác nhận">Đã xác nhận</p><h2 id="tip-confirmed-title" class="mt-2 text-3xl font-black">Anna đã nhận tip của bạn</h2><p id="tip-confirmed-points-copy" class="mt-3 text-app-green">Đã cộng 100 điểm cảm ơn</p><strong id="tipdone-points" class="sr-only">+100 điểm</strong><button type="button" class="app-button mt-6 w-full" data-action="navigate" data-target="home" data-en="Back to home" data-vi="Về trang chủ">Về trang chủ</button></div></div>
+         </section>
+         <section class="app-screen hidden" id="pay" data-ready="true" data-module="home" aria-labelledby="pay-title">
+-          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Zero platform fee" data-vi="Phí nền tảng 0%">Phí nền tảng 0%</p><h1 id="pay-title" class="text-2xl font-black" data-en="Pay salon directly" data-vi="Thanh toán trực tiếp cho tiệm">Thanh toán trực tiếp cho tiệm</h1></div></div><div class="app-card"><label class="text-sm font-bold" for="payment-amount" data-en="Amount" data-vi="Số tiền">Số tiền</label><div class="relative mt-2"><span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black">$</span><input id="payment-amount" class="app-input pl-10 text-2xl font-black" type="number" min="1" step="0.01" value="55.00"></div><p class="mt-5 text-sm font-bold" data-en="Send with" data-vi="Gửi bằng">Gửi bằng</p><div class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3"><button type="button" class="app-chip justify-center" data-payment-method="Zelle" aria-pressed="true">Zelle</button><button type="button" class="app-chip justify-center" data-payment-method="Venmo" aria-pressed="false">Venmo</button><button type="button" class="app-chip justify-center" data-payment-method="Cash App" aria-pressed="false">Cash App</button></div><div class="mt-5 rounded-xl border border-app-line bg-app-panel p-4"><div class="flex justify-between"><span class="text-sm text-app-muted" data-en="Business receives" data-vi="Tiệm nhận">Tiệm nhận</span><strong>$55.00</strong></div><div class="mt-2 flex justify-between"><span class="text-sm text-app-muted" data-en="NEXORA fee" data-vi="Phí NEXORA">Phí NEXORA</span><strong class="text-app-green">$0.00</strong></div></div><button type="button" class="app-button mt-5 w-full" data-action="send-payment"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Open Zelle to pay" data-vi="Mở Zelle để thanh toán">Mở Zelle để thanh toán</span></button></div></div>
++          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Zero platform fee" data-vi="Phí nền tảng 0%">Phí nền tảng 0%</p><h1 id="pay-title" class="text-2xl font-black" data-en="Pay salon directly" data-vi="Thanh toán trực tiếp cho tiệm">Thanh toán trực tiếp cho tiệm</h1></div></div><div class="app-card"><label class="text-sm font-bold" for="payment-amount" data-en="Amount" data-vi="Số tiền">Số tiền</label><div class="relative mt-2"><span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black">$</span><input id="payment-amount" class="app-input pl-10 text-2xl font-black" type="number" min="1" step="0.01" value="55.00"></div><p class="mt-5 text-sm font-bold" data-en="Send with" data-vi="Gửi bằng">Gửi bằng</p><div id="payment-method-list" class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3"></div><div class="mt-5 rounded-xl border border-app-line bg-app-panel p-4"><div class="flex justify-between"><span class="text-sm text-app-muted" data-en="Business receives" data-vi="Tiệm nhận">Tiệm nhận</span><strong id="payment-business-receives">$55.00</strong></div><div class="mt-2 flex justify-between"><span class="text-sm text-app-muted" data-en="NEXORA fee" data-vi="Phí NEXORA">Phí NEXORA</span><strong class="text-app-green">$0.00</strong></div></div><p class="mt-4 text-xs leading-5 text-app-muted" data-en="NEXORA never holds your money; the business confirms the external payment." data-vi="NEXORA không giữ tiền; doanh nghiệp sẽ xác nhận khoản thanh toán bên ngoài.">NEXORA không giữ tiền; doanh nghiệp sẽ xác nhận khoản thanh toán bên ngoài.</p><button type="button" class="app-button mt-5 w-full" data-action="send-payment"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Open Zelle to pay" data-vi="Mở Zelle để thanh toán">Mở Zelle để thanh toán</span></button></div></div>
+         </section>
+         <section class="app-screen hidden" id="paydone" data-ready="true" data-module="home" aria-labelledby="paydone-title">
+-          <div class="mx-auto max-w-xl text-center"><div id="payment-pending"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-cyan/10 text-app-cyan"><i data-lucide="send" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment reported" data-vi="Đã báo thanh toán">Đã báo thanh toán</p><h1 id="paydone-title" class="mt-2 text-3xl font-black" data-en="$55 sent to the salon" data-vi="Đã gửi $55 cho tiệm">Đã gửi $55 cho tiệm</h1><p class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted" data-en="Your payment is waiting for Bitcoin Nail Bar to confirm." data-vi="Thanh toán đang chờ Bitcoin Nail Bar xác nhận.">Thanh toán đang chờ Bitcoin Nail Bar xác nhận.</p><button type="button" class="app-button mt-6 w-full" data-action="confirm-payment" data-en="Simulate salon confirmation" data-vi="Mô phỏng tiệm xác nhận">Mô phỏng tiệm xác nhận</button></div><div id="payment-confirmed" class="hidden"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment confirmed" data-vi="Đã xác nhận thanh toán">Đã xác nhận thanh toán</p><h2 class="mt-2 text-3xl font-black" data-en="You're all set" data-vi="Thanh toán hoàn tất">Thanh toán hoàn tất</h2><p class="mt-3 text-app-green" data-en="+132 direct-pay points added" data-vi="Đã cộng 132 điểm thanh toán trực tiếp">Đã cộng 132 điểm thanh toán trực tiếp</p><button type="button" class="app-button mt-6 w-full" data-action="navigate" data-target="home" data-en="Done" data-vi="Hoàn tất">Hoàn tất</button></div></div>
++          <div class="mx-auto max-w-xl text-center"><div id="payment-pending"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-cyan/10 text-app-cyan"><i data-lucide="send" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment reported" data-vi="Đã báo thanh toán">Đã báo thanh toán</p><h1 id="paydone-title" class="mt-2 text-3xl font-black">Đã gửi $55.00 cho tiệm</h1><p id="payment-pending-copy" class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted">Bitcoin Nail Bar thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.</p><div class="app-card mt-6 text-left"><div class="flex justify-between"><span data-en="Business receives" data-vi="Tiệm nhận">Tiệm nhận</span><strong id="payment-confirmed-amount">$55.00</strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3"><span data-en="Payment method" data-vi="Phương thức">Phương thức</span><strong id="payment-result-method">Zelle</strong></div></div><button type="button" class="app-button mt-6 w-full" data-action="confirm-payment" data-en="Simulate business confirmation" data-vi="Mô phỏng doanh nghiệp xác nhận">Mô phỏng doanh nghiệp xác nhận</button></div><div id="payment-confirmed" class="hidden"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment confirmed" data-vi="Đã xác nhận thanh toán">Đã xác nhận thanh toán</p><h2 class="mt-2 text-3xl font-black" data-en="You're all set" data-vi="Thanh toán hoàn tất">Thanh toán hoàn tất</h2><p id="payment-confirmed-points-copy" class="mt-3 text-app-green">Đã cộng 66 điểm thanh toán trực tiếp</p><strong id="payment-confirmed-points" class="sr-only">+66 điểm</strong><button type="button" class="app-button mt-6 w-full" data-action="navigate" data-target="home" data-en="Done" data-vi="Hoàn tất">Hoàn tất</button></div></div>
+         </section>
+         <section class="app-screen hidden" id="looks" data-ready="true" data-module="home" aria-labelledby="looks-title">
+           <div class="mb-5 flex items-center justify-between gap-3"><div class="flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Your style archive" data-vi="Bộ sưu tập phong cách">Bộ sưu tập phong cách</p><h1 id="looks-title" class="text-2xl font-black" data-en="My looks" data-vi="Kiểu của tôi">Kiểu của tôi</h1></div></div><button class="app-button" type="button" data-action="navigate" data-target="addlook"><i data-lucide="plus" class="size-4" aria-hidden="true"></i><span class="hidden sm:inline" data-en="Add look" data-vi="Thêm kiểu">Thêm kiểu</span></button></div>
+           <div id="looks-grid" class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4"><article class="app-card overflow-hidden p-0"><img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=700&q=80" alt="Mẫu nail tím ánh kim" class="aspect-square w-full object-cover"><div class="p-3"><strong class="block text-sm" data-en="Galaxy chrome" data-vi="Tím ánh kim">Tím ánh kim</strong><span class="text-xs text-app-muted">Bitcoin Nail Bar · 12/07</span></div></article><article class="app-card overflow-hidden p-0"><img src="https://images.unsplash.com/photo-1610992015732-2449b76344bc?auto=format&fit=crop&w=700&q=80" alt="Mẫu nail hồng sữa" class="aspect-square w-full object-cover"><div class="p-3"><strong class="block text-sm" data-en="Soft pink" data-vi="Hồng sữa">Hồng sữa</strong><span class="text-xs text-app-muted">Bitcoin Nail Bar · 18/06</span></div></article><article class="app-card overflow-hidden p-0"><img src="https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&w=700&q=80" alt="Mẫu nail xanh mùa hè" class="aspect-square w-full object-cover"><div class="p-3"><strong class="block text-sm" data-en="Summer blue" data-vi="Xanh mùa hè">Xanh mùa hè</strong><span class="text-xs text-app-muted">Luna Studio · 29/05</span></div></article></div>
+         </section>
+         <section class="app-screen hidden" id="addlook" data-ready="true" data-module="home" aria-labelledby="addlook-title">
+           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="looks" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Save the details" data-vi="Lưu lại chi tiết">Lưu lại chi tiết</p><h1 id="addlook-title" class="text-2xl font-black" data-en="Add a new look" data-vi="Thêm kiểu mới">Thêm kiểu mới</h1></div></div>
+           <div class="app-card"><button type="button" class="grid min-h-44 w-full place-items-center rounded-2xl border border-dashed border-app-line bg-app-panel text-center" data-action="upload-look"><span><i data-lucide="image-plus" class="mx-auto size-8 text-app-pink" aria-hidden="true"></i><strong class="mt-3 block" data-en="Add a photo" data-vi="Thêm ảnh">Thêm ảnh</strong><small class="mt-1 block text-app-muted" data-en="JPG or PNG, up to 10 MB" data-vi="JPG hoặc PNG, tối đa 10 MB">JPG hoặc PNG, tối đa 10 MB</small></span></button><div class="mt-5 grid gap-4 sm:grid-cols-2"><label class="text-sm font-bold"><span data-en="Service" data-vi="Dịch vụ">Dịch vụ</span><input id="look-service" class="app-input mt-2" data-en-ph="e.g. Gel manicure" data-vi-ph="VD: Sơn gel" placeholder="VD: Sơn gel"></label><label class="text-sm font-bold"><span data-en="Color / formula" data-vi="Màu / công thức">Màu / công thức</span><input id="look-color" class="app-input mt-2" data-en-ph="e.g. Lilac #142" data-vi-ph="VD: Lilac #142" placeholder="VD: Lilac #142"></label></div><label class="mt-4 block text-sm font-bold"><span data-en="Notes" data-vi="Ghi chú">Ghi chú</span><textarea id="look-notes" class="app-input mt-2 min-h-28 resize-y" data-en-ph="Shape, technician and anything to remember…" data-vi-ph="Dáng, kỹ thuật viên và điều cần nhớ…" placeholder="Dáng, kỹ thuật viên và điều cần nhớ…"></textarea></label><button type="button" class="app-button mt-5 w-full" data-action="save-look"><i data-lucide="save" class="size-4" aria-hidden="true"></i><span data-en="Save look" data-vi="Lưu kiểu">Lưu kiểu</span></button></div></div>
+         </section>
+         <section class="app-screen hidden" id="review" data-ready="true" data-module="home" aria-labelledby="review-title">
+@@ -254,20 +254,21 @@
+           <button id="overlay-confirm" type="button" class="app-button" data-action="confirm-overlay"></button>
+         </div>
+       </div>
+     </div>
+     <nav id="mobile-nav" class="fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-app-line bg-app-panel/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden" aria-label="Điều hướng chính" data-nav-surface="mobile"></nav>
+   </div>
+   <script>
+     const STORAGE_KEY = 'nexora.customer.prototype.v1';
+     const SCHEMA_VERSION = 1;
+     const BUSINESS_ID = 'bitcoin-nail-bar';
++    const PAYMENT_METHODS = ['Venmo', 'Zelle', 'Cash App'];
+     const BUSINESS_CONSENT_SCOPE = `business:${BUSINESS_ID}`;
+     const CONSENT_SCOPES = [BUSINESS_CONSENT_SCOPE, 'networkOffers'];
+     const REWARDS = {
+       credit5: { key: 'credit5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'service_credit', cost: 500, title: { vi: 'Tín dụng dịch vụ $5', en: '$5 service credit' } },
+       freepedi: { key: 'freepedi', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 1000, title: { vi: 'Pedicure cơ bản miễn phí', en: 'Free classic pedicure' } },
+       voucher25: { key: 'voucher25', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'percent_code', cost: 800, title: { vi: 'Giảm 25% dịch vụ', en: '25% off any service' } },
+       glow: { key: 'glow', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'service_credit', cost: 800, title: { vi: 'Tín dụng $10 tại Golden Glow', en: '$10 Golden Glow credit' } },
+       moon: { key: 'moon', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'moon-coffee', type: 'free_service', cost: 600, title: { vi: 'Đồ uống miễn phí', en: 'Free drink' } },
+       bistro: { key: 'bistro', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'percent_code', cost: 450, title: { vi: 'Giảm 10% dịch vụ', en: '10% off service' } },
+       gel: { key: 'gel', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 2500, title: { vi: 'Nâng cấp sơn gel', en: 'Gel polish upgrade' } }
+@@ -366,21 +367,23 @@
+         wishes: ['Gói spa đôi cuối tuần'],
+         followedTechIds: [],
+         notifications: [
+           { id: 'note-welcome', type: 'system', title: { vi: 'Điểm mới đã được cộng', en: 'New points were added' }, target: 'history', read: false, createdAt: '2026-07-14T10:43:00.000Z' }
+         ],
+         offlineQueue: [],
+         ui: {
+           activeScreen: 'home', activeModule: 'home', selectedBusinessId: BUSINESS_ID,
+           selectedTip: 10, selectedTipMethod: 'Venmo', selectedStaffId: 'staff-anna',
+           paymentMethod: 'Zelle', rating: 0, currentRewardKey: null,
+-          exploreFilter: 'all', offerFilter: 'all', pendingContext: { consentScopes: [], rewardAttempt: null },
++          exploreFilter: 'all', offerFilter: 'all', pendingContext: {
++            consentScopes: [], rewardAttempt: null, tipId: null, paymentId: null
++          },
+           bookingDraft: { businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM', note: '' },
+           overlay: null, pushPromptCount: 0
+         }
+       };
+     }
+ 
+     function isRecord(value) {
+       return Object.prototype.toString.call(value) === '[object Object]';
+     }
+ 
+@@ -472,20 +475,32 @@
+ 
+     function collectRawRedemptionClaims(redemptions) {
+       if (!Array.isArray(redemptions)) return [];
+       return redemptions.flatMap((redemption) => {
+         if (!isRecord(redemption) || typeof redemption.idempotencyKey !== 'string') return [];
+         const idempotencyKey = redemption.idempotencyKey.trim();
+         return idempotencyKey ? [{ idempotencyKey, redemption }] : [];
+       });
+     }
+ 
++    function collectRawTransactionLedgerClaims(ledger) {
++      if (!Array.isArray(ledger)) return [];
++      return ledger.flatMap((entry) => {
++        if (!isRecord(entry)) return [];
++        const refType = typeof entry.refType === 'string' ? entry.refType.trim() : '';
++        const refId = typeof entry.refId === 'string' ? entry.refId.trim() : '';
++        return ['tip', 'direct_payment'].includes(refType) && refId
++          ? [{ refType, refId, entry }]
++          : [];
++      });
++    }
++
+     function normalizePersistedRedemptions(appState) {
+       appState.redemptions = appState.redemptions
+         .map(normalizePersistedRedemption)
+         .filter(Boolean);
+     }
+ 
+     function hasCurrentRewardMetadata(redemption) {
+       const reward = getRewardDefinition(redemption.rewardKey);
+       return Boolean(reward)
+         && redemption.rewardKey === reward.key
+@@ -528,28 +543,25 @@
+         if (redemptionIds.has(candidate.redemption.id)
+           || idempotencyKeys.has(candidate.redemption.idempotencyKey)
+           || ledgerIds.has(candidate.entry.id)) return;
+         redemptionIds.add(candidate.redemption.id);
+         idempotencyKeys.add(candidate.redemption.idempotencyKey);
+         ledgerIds.add(candidate.entry.id);
+         selected.push(candidate);
+       });
+ 
+       const selectedEntries = new Set(selected.map(({ entry }) => entry));
+-      const keptLedgerIds = new Set();
+       appState.redemptions = selected.map(({ redemption }) => redemption);
+       appState.ledger = appState.ledger.filter((entry) => {
+         const rewardEntry = isRewardLedgerEntry(entry);
+         if (rewardEntry && !selectedEntries.has(entry)) return false;
+         if (!rewardEntry && ledgerIds.has(entry.id)) return false;
+-        if (keptLedgerIds.has(entry.id)) return false;
+-        keptLedgerIds.add(entry.id);
+         return true;
+       });
+     }
+ 
+     function reconcilePendingRewardAttempt(appState, rawClaims) {
+       const attempt = appState.ui.pendingContext.rewardAttempt;
+       if (!isRecord(attempt)) return;
+       const reward = getRewardDefinition(attempt.rewardKey);
+       const businesses = reward ? validateRewardBusinesses(appState, reward) : { ok: false };
+       const surviving = appState.redemptions.filter((redemption) => (
+@@ -568,20 +580,270 @@
+           && redemptionSortKey(surviving[0]) === redemptionSortKey(normalizedClaim);
+       if (!reward
+         || !businesses.ok
+         || appState.ui.currentRewardKey !== attempt.rewardKey
+         || !validBinding) {
+         appState.ui.currentRewardKey = null;
+         appState.ui.pendingContext.rewardAttempt = null;
+       }
+     }
+ 
++    function validStoredTimestamp(value) {
++      if (typeof value !== 'string' || !value) return false;
++      const milliseconds = Date.parse(value);
++      const timestamp = domainTimestamp(milliseconds);
++      return timestamp.ok && timestamp.value === value;
++    }
++
++    function canonicalMoneyAmount(value) {
++      const candidate = typeof value === 'string' && value.trim() ? Number(value.trim()) : value;
++      if (typeof candidate !== 'number' || !Number.isFinite(candidate)) {
++        return { ok: false, code: 'invalid_amount' };
++      }
++      const scaled = candidate * 100;
++      const cents = Math.round(scaled);
++      if (!Number.isSafeInteger(cents) || cents < 100 || Math.abs(scaled - cents) > 1e-7) {
++        return { ok: false, code: 'invalid_amount' };
++      }
++      return { ok: true, value: cents / 100 };
++    }
++
++    function canonicalRuleSnapshot(value, fallback) {
++      const candidate = typeof value === 'number' && Number.isFinite(value) ? value : fallback;
++      return typeof candidate === 'number' && Number.isFinite(candidate) && candidate >= 0
++        ? candidate
++        : null;
++    }
++
++    function calculateTipPoints(tip) {
++      const points = Math.round(tip.amount * tip.tipMultiplier);
++      return Number.isSafeInteger(points) && points >= 0 ? points : null;
++    }
++
++    function calculateDirectPaymentPoints(payment) {
++      const spendPoints = Math.round(payment.amount);
++      const bonusPoints = Math.round(payment.amount * payment.directPayBonusPct / 100);
++      const totalPoints = spendPoints + bonusPoints;
++      return Number.isSafeInteger(spendPoints) && spendPoints >= 0
++        && Number.isSafeInteger(bonusPoints) && bonusPoints >= 0
++        && Number.isSafeInteger(totalPoints)
++        ? { spendPoints, bonusPoints, totalPoints }
++        : null;
++    }
++
++    function normalizePersistedTip(appState, tip) {
++      if (!isRecord(tip)) return null;
++      const id = typeof tip.id === 'string' ? tip.id.trim() : '';
++      const businessId = typeof tip.businessId === 'string' ? tip.businessId.trim() : '';
++      const staffProfileId = typeof tip.staffProfileId === 'string' ? tip.staffProfileId.trim() : '';
++      const business = getValidBusiness(appState, businessId);
++      const staff = isRecord(appState.staffProfiles?.[staffProfileId])
++        && appState.staffProfiles[staffProfileId].id === staffProfileId
++        && appState.staffProfiles[staffProfileId].businessId === businessId
++        ? appState.staffProfiles[staffProfileId]
++        : null;
++      const amount = canonicalMoneyAmount(tip.amount);
++      const status = tip.status === 'pending' || tip.status === 'confirmed' ? tip.status : null;
++      const createdAt = validStoredTimestamp(tip.createdAt) ? tip.createdAt : null;
++      const confirmedAt = tip.confirmedAt === null ? null : validStoredTimestamp(tip.confirmedAt) ? tip.confirmedAt : undefined;
++      const legacyMethod = Array.isArray(staff?.methods)
++        ? staff.methods.find((method) => PAYMENT_METHODS.includes(method))
++        : null;
++      const method = typeof tip.method === 'string' && PAYMENT_METHODS.includes(tip.method.trim())
++        ? tip.method.trim()
++        : legacyMethod;
++      const tipMultiplier = canonicalRuleSnapshot(tip.tipMultiplier, business?.tipMultiplier);
++      const normalized = business && staff && amount.ok && status && createdAt && method && tipMultiplier !== null
++        ? {
++            ...tip,
++            id,
++            businessId,
++            staffProfileId,
++            staffName: typeof staff.name === 'string' ? staff.name.trim() : '',
++            amount: amount.value,
++            method,
++            note: typeof tip.note === 'string' ? tip.note : '',
++            status,
++            createdAt,
++            confirmedAt,
++            tipMultiplier
++          }
++        : null;
++      if (!normalized || !id || !normalized.staffName || calculateTipPoints(normalized) === null) return null;
++      if ((status === 'pending' && confirmedAt !== null) || (status === 'confirmed' && typeof confirmedAt !== 'string')) return null;
++      return normalized;
++    }
++
++    function normalizePersistedDirectPayment(appState, payment) {
++      if (!isRecord(payment)) return null;
++      const id = typeof payment.id === 'string' ? payment.id.trim() : '';
++      const businessId = typeof payment.businessId === 'string' ? payment.businessId.trim() : '';
++      const business = getValidBusiness(appState, businessId);
++      const amount = canonicalMoneyAmount(payment.amount);
++      const status = payment.status === 'pending' || payment.status === 'confirmed' ? payment.status : null;
++      const createdAt = validStoredTimestamp(payment.createdAt) ? payment.createdAt : null;
++      const confirmedAt = payment.confirmedAt === null ? null : validStoredTimestamp(payment.confirmedAt) ? payment.confirmedAt : undefined;
++      const legacyMethod = Array.isArray(business?.methods)
++        ? business.methods.find((method) => PAYMENT_METHODS.includes(method))
++        : null;
++      const method = typeof payment.method === 'string' && PAYMENT_METHODS.includes(payment.method.trim())
++        ? payment.method.trim()
++        : legacyMethod;
++      const directPayBonusPct = canonicalRuleSnapshot(payment.directPayBonusPct, business?.directPayBonusPct);
++      const normalized = business && amount.ok && status && createdAt && method && directPayBonusPct !== null
++        ? {
++            ...payment,
++            id,
++            businessId,
++            amount: amount.value,
++            method,
++            status,
++            createdAt,
++            confirmedAt,
++            directPayBonusPct
++          }
++        : null;
++      if (!normalized || !id || !calculateDirectPaymentPoints(normalized)) return null;
++      if ((status === 'pending' && confirmedAt !== null) || (status === 'confirmed' && typeof confirmedAt !== 'string')) return null;
++      return normalized;
++    }
++
++    function isTipLedgerEntry(entry) {
++      return entry.type === 'tip_bonus' || entry.refType === 'tip';
++    }
++
++    function isDirectPaymentLedgerEntry(entry) {
++      return ['visit_spend', 'directpay_bonus'].includes(entry.type) || entry.refType === 'direct_payment';
++    }
++
++    function isTransactionLedgerEntry(entry) {
++      return isTipLedgerEntry(entry) || isDirectPaymentLedgerEntry(entry);
++    }
++
++    function isTipLedgerPair(tip, entry) {
++      return entry.type === 'tip_bonus'
++        && entry.refType === 'tip'
++        && entry.refId === tip.id
++        && entry.businessId === tip.businessId
++        && entry.pointsDelta === calculateTipPoints(tip);
++    }
++
++    function isDirectPaymentLedgerPair(payment, entry, type, pointsDelta) {
++      return entry.type === type
++        && entry.refType === 'direct_payment'
++        && entry.refId === payment.id
++        && entry.businessId === payment.businessId
++        && entry.pointsDelta === pointsDelta;
++    }
++
++    function transactionSortKey(record) {
++      return JSON.stringify(Object.keys(record).sort().map((key) => [key, record[key]]));
++    }
++
++    function reconcileTransactionPairs(appState, rawClaims = []) {
++      const transactionLedger = appState.ledger.filter(isTransactionLedgerEntry);
++      const selectedEntries = new Set();
++      const selectedLedgerIds = new Set();
++      const rawClaimedIds = {
++        tip: new Set(rawClaims.filter((claim) => claim.refType === 'tip').map((claim) => claim.refId)),
++        direct_payment: new Set(rawClaims.filter((claim) => claim.refType === 'direct_payment').map((claim) => claim.refId))
++      };
++
++      const selectRecords = (confirmedCandidates, pendingRecords, refType) => {
++        const selected = [];
++        const selectedIds = new Set();
++        confirmedCandidates.sort((left, right) => left.sortKey.localeCompare(right.sortKey));
++        confirmedCandidates.forEach((candidate) => {
++          if (selectedIds.has(candidate.record.id)
++            || candidate.entries.some((entry) => selectedEntries.has(entry) || selectedLedgerIds.has(entry.id))) return;
++          selectedIds.add(candidate.record.id);
++          candidate.entries.forEach((entry) => {
++            selectedEntries.add(entry);
++            selectedLedgerIds.add(entry.id);
++          });
++          selected.push(candidate.record);
++        });
++        pendingRecords.sort((left, right) => transactionSortKey(left).localeCompare(transactionSortKey(right)));
++        pendingRecords.forEach((record) => {
++          if (!selectedIds.has(record.id) && !rawClaimedIds[refType].has(record.id)) {
++            selectedIds.add(record.id);
++            selected.push(record);
++          }
++        });
++        return selected;
++      };
++
++      const tipCandidates = [];
++      appState.tips.filter((tip) => tip.status === 'confirmed').forEach((tip) => {
++        transactionLedger.filter((entry) => isTipLedgerPair(tip, entry)).forEach((entry) => {
++          tipCandidates.push({
++            record: tip,
++            entries: [entry],
++            sortKey: `${transactionSortKey(tip)}:${ledgerSortKey(entry)}`
++          });
++        });
++      });
++      appState.tips = selectRecords(
++        tipCandidates,
++        appState.tips.filter((tip) => tip.status === 'pending'),
++        'tip'
++      );
++
++      const paymentCandidates = [];
++      appState.directPayments.filter((payment) => payment.status === 'confirmed').forEach((payment) => {
++        const points = calculateDirectPaymentPoints(payment);
++        const spendEntries = transactionLedger.filter((entry) => (
++          isDirectPaymentLedgerPair(payment, entry, 'visit_spend', points.spendPoints)
++        ));
++        const bonusEntries = transactionLedger.filter((entry) => (
++          isDirectPaymentLedgerPair(payment, entry, 'directpay_bonus', points.bonusPoints)
++        ));
++        spendEntries.forEach((spendEntry) => bonusEntries.forEach((bonusEntry) => {
++          if (spendEntry === bonusEntry || spendEntry.id === bonusEntry.id) return;
++          paymentCandidates.push({
++            record: payment,
++            entries: [spendEntry, bonusEntry],
++            sortKey: `${transactionSortKey(payment)}:${ledgerSortKey(spendEntry)}:${ledgerSortKey(bonusEntry)}`
++          });
++        }));
++      });
++      appState.directPayments = selectRecords(
++        paymentCandidates,
++        appState.directPayments.filter((payment) => payment.status === 'pending'),
++        'direct_payment'
++      );
++      appState.ledger = appState.ledger.filter((entry) => !isTransactionLedgerEntry(entry) || selectedEntries.has(entry));
++    }
++
++    function deduplicateLedgerIds(appState) {
++      const selectedById = new Map();
++      const priority = (entry) => isRewardLedgerEntry(entry) ? 0 : isTransactionLedgerEntry(entry) ? 1 : 2;
++      appState.ledger.forEach((entry) => {
++        const selected = selectedById.get(entry.id);
++        if (!selected
++          || priority(entry) < priority(selected)
++          || (priority(entry) === priority(selected) && ledgerSortKey(entry).localeCompare(ledgerSortKey(selected)) < 0)) {
++          selectedById.set(entry.id, entry);
++        }
++      });
++      appState.ledger = appState.ledger.filter((entry) => selectedById.get(entry.id) === entry);
++    }
++
++    function reconcilePendingTransactions(appState) {
++      const tipId = appState.ui.pendingContext.tipId;
++      const paymentId = appState.ui.pendingContext.paymentId;
++      if (tipId !== null && !appState.tips.some((tip) => tip.id === tipId)) appState.ui.pendingContext.tipId = null;
++      if (paymentId !== null && !appState.directPayments.some((payment) => payment.id === paymentId)) {
++        appState.ui.pendingContext.paymentId = null;
++      }
++    }
++
+     function mergeKnownUnion(defaultValue, incomingValue, path) {
+       if (path.join('.') === 'session.otpRequestedAt') {
+         const valid = incomingValue === null || (typeof incomingValue === 'number' && Number.isFinite(incomingValue));
+         return { handled: true, value: valid ? incomingValue : structuredClone(defaultValue) };
+       }
+       if (path.length === 3 && path[0] === 'balances' && path[2] === 'expiringPoints') {
+         if (incomingValue === null) return { handled: true, value: null };
+         if (isRecord(incomingValue) && typeof incomingValue.amount === 'number' && Number.isFinite(incomingValue.amount) && typeof incomingValue.date === 'string') {
+           return { handled: true, value: { amount: incomingValue.amount, date: incomingValue.date } };
+         }
+@@ -602,20 +864,24 @@
+           && typeof incomingValue.completed === 'boolean';
+         return {
+           handled: true,
+           value: valid ? {
+             rewardKey: incomingValue.rewardKey.trim(),
+             idempotencyKey: incomingValue.idempotencyKey.trim(),
+             completed: incomingValue.completed
+           } : structuredClone(defaultValue)
+         };
+       }
++      if (['ui.pendingContext.tipId', 'ui.pendingContext.paymentId'].includes(path.join('.'))) {
++        const normalized = typeof incomingValue === 'string' ? incomingValue.trim() : '';
++        return { handled: true, value: normalized || null };
++      }
+       if (path.join('.') === 'ui.overlay') {
+         return { handled: true, value: incomingValue === null || isRecord(incomingValue) ? structuredClone(incomingValue) : structuredClone(defaultValue) };
+       }
+       return { handled: false };
+     }
+ 
+     function mergeRecord(defaultValue, incomingValue, path = []) {
+       const union = mergeKnownUnion(defaultValue, incomingValue, path);
+       if (union.handled) return union.value;
+       if (Array.isArray(defaultValue)) return mergeArray(defaultValue, incomingValue, path);
+@@ -635,40 +901,71 @@
+       if (typeof defaultValue === 'number') {
+         return typeof incomingValue === 'number' && Number.isFinite(incomingValue) ? incomingValue : defaultValue;
+       }
+       return typeof incomingValue === typeof defaultValue ? incomingValue : structuredClone(defaultValue);
+     }
+ 
+     function migrateState(value) {
+       const defaults = createDefaultState();
+       if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
+       const rawRedemptionClaims = collectRawRedemptionClaims(value.redemptions);
++      const rawTransactionLedgerClaims = collectRawTransactionLedgerClaims(value.ledger);
+       const migrated = mergeRecord(defaults, value);
+       migrated.schemaVersion = SCHEMA_VERSION;
+       migrated.updatedAt = new Date().toISOString();
+       if (!['vi', 'en'].includes(migrated.profile.language)) migrated.profile.language = defaults.profile.language;
+       migrated.consents = migrated.consents.map((consent) => consent.scope === 'network'
+         ? { ...consent, scope: 'networkOffers' }
+         : consent);
+       Object.entries(migrated.businesses).forEach(([businessId, business]) => {
+         business.id = businessId;
+       });
++      Object.entries(migrated.staffProfiles).forEach(([staffProfileId, staff]) => {
++        staff.id = staffProfileId;
++      });
+       if (!Object.prototype.hasOwnProperty.call(migrated.businesses, migrated.ui.selectedBusinessId)) {
+         migrated.ui.selectedBusinessId = BUSINESS_ID;
+       }
++      const selectedStaff = isRecord(migrated.staffProfiles[migrated.ui.selectedStaffId])
++        && migrated.staffProfiles[migrated.ui.selectedStaffId].businessId === BUSINESS_ID
++        ? migrated.staffProfiles[migrated.ui.selectedStaffId]
++        : migrated.staffProfiles['staff-anna'];
++      migrated.ui.selectedStaffId = selectedStaff.id;
++      const enabledTipMethods = Array.isArray(selectedStaff.methods)
++        ? selectedStaff.methods.filter((method) => PAYMENT_METHODS.includes(method))
++        : [];
++      if (!enabledTipMethods.includes(migrated.ui.selectedTipMethod)) {
++        migrated.ui.selectedTipMethod = enabledTipMethods[0] ?? defaults.ui.selectedTipMethod;
++      }
++      const selectedTip = canonicalMoneyAmount(migrated.ui.selectedTip);
++      migrated.ui.selectedTip = selectedTip.ok ? selectedTip.value : defaults.ui.selectedTip;
++      const selectedBusiness = getValidBusiness(migrated, migrated.ui.selectedBusinessId);
++      const enabledPaymentMethods = Array.isArray(selectedBusiness?.methods)
++        ? selectedBusiness.methods.filter((method) => PAYMENT_METHODS.includes(method))
++        : [];
++      if (!enabledPaymentMethods.includes(migrated.ui.paymentMethod)) {
++        migrated.ui.paymentMethod = enabledPaymentMethods[0] ?? defaults.ui.paymentMethod;
++      }
+       normalizePersistedRedemptions(migrated);
++      migrated.tips = migrated.tips.map((tip) => normalizePersistedTip(migrated, tip)).filter(Boolean);
++      migrated.directPayments = migrated.directPayments
++        .map((payment) => normalizePersistedDirectPayment(migrated, payment))
++        .filter(Boolean);
+       const pendingAttempt = migrated.ui.pendingContext.rewardAttempt;
+       const rawPendingClaims = isRecord(pendingAttempt) && Array.isArray(value.redemptions)
+         ? rawRedemptionClaims.filter((claim) => claim.idempotencyKey === pendingAttempt.idempotencyKey)
+         : [];
+       reconcileRewardPairs(migrated);
++      reconcileTransactionPairs(migrated, rawTransactionLedgerClaims);
++      deduplicateLedgerIds(migrated);
+       reconcilePendingRewardAttempt(migrated, rawPendingClaims);
++      reconcilePendingTransactions(migrated);
+       migrated.ui.pendingContext.consentScopes = migrated.ui.pendingContext.consentScopes.filter((scope) => CONSENT_SCOPES.includes(scope));
+       delete migrated.pointBalance;
+       delete migrated.savedOffers;
+       return migrated;
+     }
+ 
+     function loadState(storage = window.localStorage, now = () => Date.now()) {
+       const raw = storage.getItem(STORAGE_KEY);
+       if (!raw) {
+         const fresh = createDefaultState();
+@@ -946,22 +1243,24 @@
+       try {
+         return { ok: true, value: date.toISOString() };
+       } catch {
+         return { ok: false, code: 'invalid_time' };
+       }
+     }
+ 
+     function createDomainId(prefix) {
+       try {
+         const value = crypto.randomUUID();
+-        return typeof value === 'string' && value.trim().length > 0
+-          ? { ok: true, value: `${prefix}-${value.trim()}` }
++        const normalized = typeof value === 'string' ? value.trim() : '';
++        const validUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(normalized);
++        return validUuid
++          ? { ok: true, value: `${prefix}-${normalized}` }
+           : { ok: false, code: 'id_generation_failed' };
+       } catch {
+         return { ok: false, code: 'id_generation_failed' };
+       }
+     }
+ 
+     function validateLedgerInput(appState, input) {
+       if (!isRecord(appState) || !isRecord(appState.businesses) || !isRecord(appState.balances) || !Array.isArray(appState.ledger)) {
+         return { ok: false, code: 'invalid_state' };
+       }
+@@ -1003,20 +1302,308 @@
+         createdAt: timestamp.value
+       };
+       const nextBalance = { ...validation.balance, points: validation.nextPoints };
+       const nextBalances = { ...appState.balances, [validation.businessId]: nextBalance };
+       const nextLedger = [entry, ...appState.ledger];
+       appState.balances = nextBalances;
+       appState.ledger = nextLedger;
+       return entry;
+     }
+ 
++    function hasTransactionState(appState, collectionName) {
++      return isRecord(appState)
++        && isRecord(appState.businesses)
++        && isRecord(appState.balances)
++        && isRecord(appState.ui)
++        && isRecord(appState.ui.pendingContext)
++        && Array.isArray(appState.ledger)
++        && Array.isArray(appState[collectionName]);
++    }
++
++    function enabledOwnerMethod(owner, value) {
++      const method = typeof value === 'string' ? value.trim() : '';
++      return PAYMENT_METHODS.includes(method) && Array.isArray(owner?.methods) && owner.methods.includes(method)
++        ? method
++        : null;
++    }
++
++    function createTip(appState, input, now = Date.now()) {
++      if (!hasTransactionState(appState, 'tips') || !isRecord(appState.staffProfiles) || !isRecord(input)) {
++        return { ok: false, code: 'invalid_state' };
++      }
++      const businessId = typeof input.businessId === 'string' ? input.businessId.trim() : '';
++      const staffProfileId = typeof input.staffProfileId === 'string' ? input.staffProfileId.trim() : '';
++      const business = getValidBusiness(appState, businessId);
++      if (!business) return { ok: false, code: 'unknown_business' };
++      const staff = isRecord(appState.staffProfiles[staffProfileId])
++        && appState.staffProfiles[staffProfileId].id === staffProfileId
++        && appState.staffProfiles[staffProfileId].businessId === businessId
++        ? appState.staffProfiles[staffProfileId]
++        : null;
++      if (!staff || typeof staff.name !== 'string' || !staff.name.trim()) return { ok: false, code: 'unknown_staff' };
++      const amount = canonicalMoneyAmount(input.amount);
++      if (!amount.ok) return amount;
++      const method = enabledOwnerMethod(staff, input.method);
++      if (!method) return { ok: false, code: 'method_disabled' };
++      const tipMultiplier = canonicalRuleSnapshot(business.tipMultiplier, null);
++      if (tipMultiplier === null) return { ok: false, code: 'invalid_rule' };
++      const points = calculateTipPoints({ amount: amount.value, tipMultiplier });
++      if (points === null) return { ok: false, code: 'invalid_rule' };
++      const timestamp = domainTimestamp(now);
++      if (!timestamp.ok) return timestamp;
++      const id = createDomainId('tip');
++      if (!id.ok) return id;
++      if (appState.tips.some((tip) => isRecord(tip) && tip.id === id.value)) {
++        return { ok: false, code: 'id_generation_failed' };
++      }
++      const tip = {
++        id: id.value,
++        businessId,
++        staffProfileId,
++        staffName: staff.name.trim(),
++        amount: amount.value,
++        method,
++        note: typeof input.note === 'string' ? input.note.trim() : '',
++        tipMultiplier,
++        status: 'pending',
++        createdAt: timestamp.value,
++        confirmedAt: null
++      };
++      const nextTips = [...appState.tips, tip];
++      const nextUi = {
++        ...appState.ui,
++        pendingContext: { ...appState.ui.pendingContext, tipId: tip.id }
++      };
++      appState.tips = nextTips;
++      appState.ui = nextUi;
++      return { ok: true, tip, points };
++    }
++
++    function isCanonicalRuntimeTip(appState, tip) {
++      const normalized = normalizePersistedTip(appState, tip);
++      return Boolean(normalized)
++        && tip.id === normalized.id
++        && tip.businessId === normalized.businessId
++        && tip.staffProfileId === normalized.staffProfileId
++        && tip.staffName === normalized.staffName
++        && tip.amount === normalized.amount
++        && tip.method === normalized.method
++        && typeof tip.note === 'string'
++        && tip.tipMultiplier === normalized.tipMultiplier
++        && tip.status === normalized.status
++        && tip.createdAt === normalized.createdAt
++        && tip.confirmedAt === normalized.confirmedAt;
++    }
++
++    function confirmTipRecord(appState, tipId, now = Date.now()) {
++      if (!hasTransactionState(appState, 'tips') || !isRecord(appState.staffProfiles)) {
++        return { ok: false, code: 'invalid_state' };
++      }
++      const normalizedId = typeof tipId === 'string' ? tipId.trim() : '';
++      const matches = appState.tips.filter((tip) => isRecord(tip) && tip.id === normalizedId);
++      if (!matches.length) return { ok: false, code: 'not_found' };
++      if (matches.length !== 1 || !isCanonicalRuntimeTip(appState, matches[0])) {
++        return { ok: false, code: 'invalid_state' };
++      }
++      const tip = matches[0];
++      const points = calculateTipPoints(tip);
++      const linkedLedger = appState.ledger.filter((entry) => isRecord(entry)
++        && entry.refId === tip.id
++        && isTipLedgerEntry(entry));
++      if (tip.status === 'confirmed') {
++        if (linkedLedger.length !== 1 || !isTipLedgerPair(tip, linkedLedger[0])) {
++          return { ok: false, code: 'invalid_state' };
++        }
++        return { ok: true, tip, points, idempotent: true };
++      }
++      if (linkedLedger.length) return { ok: false, code: 'invalid_state' };
++      const ledgerValidation = validateLedgerInput(appState, {
++        businessId: tip.businessId,
++        type: 'tip_bonus',
++        pointsDelta: points,
++        refType: 'tip',
++        refId: tip.id
++      });
++      if (!ledgerValidation.ok) return ledgerValidation;
++      const timestamp = domainTimestamp(now);
++      if (!timestamp.ok) return timestamp;
++      const ledgerId = createDomainId('ledger-tip');
++      if (!ledgerId.ok) return ledgerId;
++      if (appState.ledger.some((entry) => isRecord(entry) && entry.id === ledgerId.value)) {
++        return { ok: false, code: 'id_generation_failed' };
++      }
++      const confirmedTip = { ...tip, status: 'confirmed', confirmedAt: timestamp.value };
++      const ledgerEntry = {
++        id: ledgerId.value,
++        businessId: tip.businessId,
++        type: 'tip_bonus',
++        pointsDelta: points,
++        refType: 'tip',
++        refId: tip.id,
++        createdAt: timestamp.value
++      };
++      const nextBalance = { ...ledgerValidation.balance, points: ledgerValidation.nextPoints };
++      const nextBalances = { ...appState.balances, [tip.businessId]: nextBalance };
++      const nextTips = appState.tips.map((item) => item === tip ? confirmedTip : item);
++      const nextLedger = [ledgerEntry, ...appState.ledger];
++      appState.balances = nextBalances;
++      appState.tips = nextTips;
++      appState.ledger = nextLedger;
++      return { ok: true, tip: confirmedTip, points, idempotent: false };
++    }
++
++    function createDirectPayment(appState, input, now = Date.now()) {
++      if (!hasTransactionState(appState, 'directPayments') || !isRecord(input)) {
++        return { ok: false, code: 'invalid_state' };
++      }
++      const businessId = typeof input.businessId === 'string' ? input.businessId.trim() : '';
++      const business = getValidBusiness(appState, businessId);
++      if (!business) return { ok: false, code: 'unknown_business' };
++      const amount = canonicalMoneyAmount(input.amount);
++      if (!amount.ok) return amount;
++      const method = enabledOwnerMethod(business, input.method);
++      if (!method) return { ok: false, code: 'method_disabled' };
++      const directPayBonusPct = canonicalRuleSnapshot(business.directPayBonusPct, null);
++      if (directPayBonusPct === null) return { ok: false, code: 'invalid_rule' };
++      const points = calculateDirectPaymentPoints({ amount: amount.value, directPayBonusPct });
++      if (!points) return { ok: false, code: 'invalid_rule' };
++      const timestamp = domainTimestamp(now);
++      if (!timestamp.ok) return timestamp;
++      const id = createDomainId('pay');
++      if (!id.ok) return id;
++      if (appState.directPayments.some((payment) => isRecord(payment) && payment.id === id.value)) {
++        return { ok: false, code: 'id_generation_failed' };
++      }
++      const payment = {
++        id: id.value,
++        businessId,
++        amount: amount.value,
++        method,
++        directPayBonusPct,
++        status: 'pending',
++        createdAt: timestamp.value,
++        confirmedAt: null
++      };
++      const nextPayments = [...appState.directPayments, payment];
++      const nextUi = {
++        ...appState.ui,
++        pendingContext: { ...appState.ui.pendingContext, paymentId: payment.id }
++      };
++      appState.directPayments = nextPayments;
++      appState.ui = nextUi;
++      return { ok: true, payment, ...points };
++    }
++
++    function isCanonicalRuntimeDirectPayment(appState, payment) {
++      const normalized = normalizePersistedDirectPayment(appState, payment);
++      return Boolean(normalized)
++        && payment.id === normalized.id
++        && payment.businessId === normalized.businessId
++        && payment.amount === normalized.amount
++        && payment.method === normalized.method
++        && payment.directPayBonusPct === normalized.directPayBonusPct
++        && payment.status === normalized.status
++        && payment.createdAt === normalized.createdAt
++        && payment.confirmedAt === normalized.confirmedAt;
++    }
++
++    function confirmDirectPayment(appState, paymentId, now = Date.now()) {
++      if (!hasTransactionState(appState, 'directPayments')) return { ok: false, code: 'invalid_state' };
++      const normalizedId = typeof paymentId === 'string' ? paymentId.trim() : '';
++      const matches = appState.directPayments.filter((payment) => isRecord(payment) && payment.id === normalizedId);
++      if (!matches.length) return { ok: false, code: 'not_found' };
++      if (matches.length !== 1 || !isCanonicalRuntimeDirectPayment(appState, matches[0])) {
++        return { ok: false, code: 'invalid_state' };
++      }
++      const payment = matches[0];
++      const points = calculateDirectPaymentPoints(payment);
++      const linkedLedger = appState.ledger.filter((entry) => isRecord(entry)
++        && entry.refId === payment.id
++        && isDirectPaymentLedgerEntry(entry));
++      const spendEntry = linkedLedger.find((entry) => (
++        isDirectPaymentLedgerPair(payment, entry, 'visit_spend', points.spendPoints)
++      ));
++      const bonusEntry = linkedLedger.find((entry) => (
++        isDirectPaymentLedgerPair(payment, entry, 'directpay_bonus', points.bonusPoints)
++      ));
++      if (payment.status === 'confirmed') {
++        if (linkedLedger.length !== 2 || !spendEntry || !bonusEntry || spendEntry === bonusEntry || spendEntry.id === bonusEntry.id) {
++          return { ok: false, code: 'invalid_state' };
++        }
++        return { ok: true, payment, spendPoints: points.spendPoints, bonusPoints: points.bonusPoints, idempotent: true };
++      }
++      if (linkedLedger.length) return { ok: false, code: 'invalid_state' };
++      const spendValidation = validateLedgerInput(appState, {
++        businessId: payment.businessId,
++        type: 'visit_spend',
++        pointsDelta: points.spendPoints,
++        refType: 'direct_payment',
++        refId: payment.id
++      });
++      if (!spendValidation.ok) return spendValidation;
++      const bonusValidation = validateLedgerInput(appState, {
++        businessId: payment.businessId,
++        type: 'directpay_bonus',
++        pointsDelta: points.bonusPoints,
++        refType: 'direct_payment',
++        refId: payment.id
++      });
++      if (!bonusValidation.ok) return bonusValidation;
++      const nextPoints = spendValidation.balance.points + points.totalPoints;
++      if (!Number.isFinite(nextPoints)) return { ok: false, code: 'invalid_points_delta' };
++      const timestamp = domainTimestamp(now);
++      if (!timestamp.ok) return timestamp;
++      const spendLedgerId = createDomainId('ledger-direct-spend');
++      if (!spendLedgerId.ok) return spendLedgerId;
++      const bonusLedgerId = createDomainId('ledger-direct-bonus');
++      if (!bonusLedgerId.ok) return bonusLedgerId;
++      const existingLedgerIds = new Set(appState.ledger.map((entry) => isRecord(entry) ? entry.id : null));
++      if (spendLedgerId.value === bonusLedgerId.value
++        || existingLedgerIds.has(spendLedgerId.value)
++        || existingLedgerIds.has(bonusLedgerId.value)) {
++        return { ok: false, code: 'id_generation_failed' };
++      }
++      const confirmedPayment = { ...payment, status: 'confirmed', confirmedAt: timestamp.value };
++      const spendLedgerEntry = {
++        id: spendLedgerId.value,
++        businessId: payment.businessId,
++        type: 'visit_spend',
++        pointsDelta: points.spendPoints,
++        refType: 'direct_payment',
++        refId: payment.id,
++        createdAt: timestamp.value
++      };
++      const bonusLedgerEntry = {
++        id: bonusLedgerId.value,
++        businessId: payment.businessId,
++        type: 'directpay_bonus',
++        pointsDelta: points.bonusPoints,
++        refType: 'direct_payment',
++        refId: payment.id,
++        createdAt: timestamp.value
++      };
++      const nextBalance = { ...spendValidation.balance, points: nextPoints };
++      const nextBalances = { ...appState.balances, [payment.businessId]: nextBalance };
++      const nextPayments = appState.directPayments.map((item) => item === payment ? confirmedPayment : item);
++      const nextLedger = [bonusLedgerEntry, spendLedgerEntry, ...appState.ledger];
++      appState.balances = nextBalances;
++      appState.directPayments = nextPayments;
++      appState.ledger = nextLedger;
++      return {
++        ok: true,
++        payment: confirmedPayment,
++        spendPoints: points.spendPoints,
++        bonusPoints: points.bonusPoints,
++        idempotent: false
++      };
++    }
++
+     function redeemReward(appState, rewardKey, idempotencyKey, now = Date.now()) {
+       if (!isRecord(appState) || !isRecord(appState.businesses) || !isRecord(appState.balances)
+         || !Array.isArray(appState.redemptions) || !Array.isArray(appState.ledger)) {
+         return { ok: false, code: 'invalid_state' };
+       }
+       const normalizedRewardKey = typeof rewardKey === 'string' ? rewardKey.trim() : '';
+       const normalizedIdempotencyKey = typeof idempotencyKey === 'string' ? idempotencyKey.trim() : '';
+       if (!normalizedIdempotencyKey) return { ok: false, code: 'invalid_idempotency_key' };
+       const existing = appState.redemptions.filter((item) => isRecord(item)
+         && typeof item.idempotencyKey === 'string'
+@@ -1084,20 +1671,27 @@
+       appState.ledger = nextLedger;
+       return { ok: true, redemption, idempotent: false };
+     }
+     const COPY = {
+       vi: {
+         points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
+         paymentSent: 'Đã gửi ${amount} cho tiệm', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu',
+         offerSaved: 'Đã lưu ưu đãi', wishRequired: 'Hãy nhập mong muốn', wishShared: 'Đã gửi mong muốn ẩn danh',
+         lookServiceRequired: 'Hãy nhập tên dịch vụ', lookSaved: 'Đã lưu kiểu mới', ratingRequired: 'Hãy chọn số sao',
+         reviewThanks: 'Cảm ơn phản hồi của bạn', openPayment: 'Mở {method} để thanh toán', addPhoto: 'Thêm ảnh',
++        methodNotEnabledStaff: '{method} · thợ chưa bật', methodNotEnabledBusiness: '{method} · tiệm chưa bật',
++        tipSentTo: 'Đã gửi tip cho {recipient}', tipReceived: '{recipient} đã nhận tip của bạn',
++        tipPendingSla: '{business} thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.',
++        tipPointsAdded: 'Đã cộng {points} điểm cảm ơn', paymentPendingSla: '{business} thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.',
++        paymentPointsAdded: 'Đã cộng {points} điểm thanh toán trực tiếp', invalidTipAmount: 'Số tiền tip tối thiểu là $1 và tối đa hai chữ số thập phân.',
++        invalidPaymentAmount: 'Số tiền phải từ $1 và tối đa hai chữ số thập phân.', staffMethodDisabled: 'Thợ chưa bật phương thức này.',
++        businessMethodDisabled: 'Tiệm chưa bật phương thức này.', transactionFailed: 'Không thể lưu giao dịch. Vui lòng thử lại.',
+         addPhotoDetail: 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.',
+         verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
+         inviteCopied: 'Đã sao chép liên kết', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
+         cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
+         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
+         invalidPhone: 'Nhập số điện thoại US gồm 10 số.', cooldown: 'Vui lòng chờ đủ 30 giây.',
+         invalidOtp: 'Mã phải đúng 6 số.', otpLocked: 'Đã khóa 15 phút do nhập sai nhiều lần.',
+         existingAccount: 'Số này đã có tài khoản; hãy xác thực để đăng nhập.', alreadyClaimed: 'Số này đã nhận quà chào mừng.',
+         consentChoiceRequired: 'Chọn ít nhất một mục hoặc dùng Bỏ qua.',
+         pushTitle: 'Bật thông báo?', pushDetail: 'Nhận xác nhận lịch, thanh toán và cảnh báo điểm sắp hết hạn.',
+@@ -1107,20 +1701,27 @@
+         privacyTitle: 'Thông tin riêng tư', privacyDetail: 'NEXORA không bán dữ liệu cá nhân. Tùy chọn của bản mẫu chỉ được lưu trên thiết bị này.',
+         resetTitle: 'Đặt lại dữ liệu mẫu?', resetDetail: 'Điểm, lịch sử và tùy chọn sẽ trở về dữ liệu ban đầu.',
+         logoutTitle: 'Đăng xuất?', logoutDetail: 'Dữ liệu điểm vẫn được giữ trên thiết bị này.'
+       },
+       en: {
+         points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
+         paymentSent: '${amount} sent to the salon', insufficientPoints: 'Not enough points', saved: 'Saved',
+         offerSaved: 'Offer saved', wishRequired: 'Enter a wish first', wishShared: 'Anonymous wish shared',
+         lookServiceRequired: 'Enter a service name', lookSaved: 'New look saved', ratingRequired: 'Choose a rating',
+         reviewThanks: 'Thanks for your feedback', openPayment: 'Open {method} to pay', addPhoto: 'Add a photo',
++        methodNotEnabledStaff: '{method} · not enabled by staff', methodNotEnabledBusiness: '{method} · not enabled by business',
++        tipSentTo: 'Tip sent to {recipient}', tipReceived: '{recipient} received your tip',
++        tipPendingSla: '{business} usually confirms within 10 minutes. NEXORA never holds your money.',
++        tipPointsAdded: '{points} thank-you points added', paymentPendingSla: '{business} usually confirms within 10 minutes. NEXORA never holds your money.',
++        paymentPointsAdded: '{points} direct-pay points added', invalidTipAmount: 'Tip must be at least $1 with at most two decimal places.',
++        invalidPaymentAmount: 'Amount must be at least $1 with at most two decimal places.', staffMethodDisabled: 'The staff member has not enabled this method.',
++        businessMethodDisabled: 'The business has not enabled this method.', transactionFailed: 'Could not save the transaction. Please try again.',
+         addPhotoDetail: 'The production app will open your device photo picker.',
+         verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
+         inviteCopied: 'Invite link copied', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
+         cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
+         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
+         invalidPhone: 'Enter a 10-digit US phone number.', cooldown: 'Please wait for the 30-second cooldown.',
+         invalidOtp: 'Enter the valid 6-digit code.', otpLocked: 'Locked for 15 minutes after too many attempts.',
+         existingAccount: 'This number already has an account; verify to sign in.', alreadyClaimed: 'This number already claimed the welcome gift.',
+         consentChoiceRequired: 'Choose at least one option or Skip.',
+         pushTitle: 'Turn on notifications?', pushDetail: 'Get booking, payment and point-expiry updates.',
+@@ -1342,49 +1943,108 @@
+     function startScan() {
+       const line = document.getElementById('scan-line');
+       const loading = document.getElementById('scan-loading-state');
+       line.classList.remove('hidden');
+       loading.classList.remove('hidden');
+       showToast(t('scanRecognized'));
+       window.setTimeout(() => { line.classList.add('hidden'); loading.classList.add('hidden'); navigateTo('onb1'); }, 900);
+     }
+ 
+     function selectTip(amount, control) {
+-      state.selectedTip = Number(amount) || 10;
++      const canonical = canonicalMoneyAmount(amount);
++      if (!canonical.ok) return canonical;
++      commitState((draft) => { draft.ui.selectedTip = canonical.value; });
++      document.getElementById('tip-custom-amount').value = '';
+       document.querySelectorAll('[data-action="select-tip"]').forEach((button) => button.setAttribute('aria-pressed', String(button === control)));
+       const copy = document.querySelector('[data-action="send-tip"] span');
+-      copy.textContent = t('continueTip', { amount: state.selectedTip });
++      if (copy) copy.textContent = t('continueTip', { amount: state.ui.selectedTip });
++      return { ok: true, amount: state.ui.selectedTip };
++    }
++
++    function transactionErrorKey(result, kind) {
++      if (result.code === 'method_disabled') return kind === 'tip' ? 'staffMethodDisabled' : 'businessMethodDisabled';
++      if (result.code === 'invalid_amount') return kind === 'tip' ? 'invalidTipAmount' : 'invalidPaymentAmount';
++      return 'transactionFailed';
++    }
++
++    function openExternalPayment(method, amount, recipient) {
++      const links = {
++        Venmo: `venmo://paycharge?txn=pay&recipients=${encodeURIComponent(recipient)}&amount=${amount.toFixed(2)}`,
++        Zelle: 'https://www.zellepay.com/get-started',
++        'Cash App': `https://cash.app/$${encodeURIComponent(recipient)}/${amount.toFixed(2)}`
++      };
++      const link = links[method];
++      if (link) window.open?.(link, '_blank', 'noopener,noreferrer');
+     }
+ 
+     function sendTip() {
+-      document.getElementById('tipdone-amount').textContent = `$${state.selectedTip.toFixed(2)}`;
+-      document.getElementById('tip-pending').classList.remove('hidden');
+-      document.getElementById('tip-confirmed').classList.add('hidden');
++      const recipient = document.getElementById('tip-recipient');
++      const customInput = document.getElementById('tip-custom-amount');
++      const customAmount = typeof customInput.value === 'string' && customInput.value.trim()
++        ? customInput.value.trim()
++        : state.ui.selectedTip;
++      const staff = state.staffProfiles[recipient.value];
++      const result = commitState((draft) => createTip(draft, {
++        businessId: BUSINESS_ID,
++        staffProfileId: recipient.value,
++        staffName: staff?.name,
++        amount: customAmount,
++        method: draft.ui.selectedTipMethod,
++        note: document.getElementById('tip-note').value
++      }));
++      if (!result.ok) {
++        showToast(t(transactionErrorKey(result, 'tip')), 'error');
++        return result;
++      }
++      openExternalPayment(result.tip.method, result.tip.amount, result.tip.staffName);
++      renderTipResult();
+       navigateTo('tipdone');
++      return result;
+     }
+ 
+     function confirmTip() {
+-      document.getElementById('tip-pending').classList.add('hidden');
+-      document.getElementById('tip-confirmed').classList.remove('hidden');
++      const result = commitState((draft) => confirmTipRecord(draft, draft.ui.pendingContext.tipId));
++      if (!result.ok) {
++        showToast(t('transactionFailed'), 'error');
++        return result;
++      }
++      renderApp();
++      renderTipResult();
++      return result;
+     }
+ 
+     function sendPayment() {
+-      const amount = Math.max(1, Number(document.getElementById('payment-amount').value) || 0);
+-      document.getElementById('paydone-title').textContent = t('paymentSent', { amount: amount.toFixed(2) });
+-      document.getElementById('payment-pending').classList.remove('hidden');
+-      document.getElementById('payment-confirmed').classList.add('hidden');
++      const result = commitState((draft) => createDirectPayment(draft, {
++        businessId: draft.ui.selectedBusinessId,
++        amount: document.getElementById('payment-amount').value,
++        method: draft.ui.paymentMethod
++      }));
++      if (!result.ok) {
++        showToast(t(transactionErrorKey(result, 'payment')), 'error');
++        return result;
++      }
++      const business = state.businesses[result.payment.businessId];
++      openExternalPayment(result.payment.method, result.payment.amount, business.name);
++      renderPaymentResult();
+       navigateTo('paydone');
++      return result;
+     }
+ 
+     function confirmPayment() {
+-      document.getElementById('payment-pending').classList.add('hidden');
+-      document.getElementById('payment-confirmed').classList.remove('hidden');
++      const result = commitState((draft) => confirmDirectPayment(draft, draft.ui.pendingContext.paymentId));
++      if (!result.ok) {
++        showToast(t('transactionFailed'), 'error');
++        return result;
++      }
++      renderApp();
++      renderPaymentResult();
++      return result;
+     }
+ 
+     function renderRewardPreview(reward) {
+       const balance = getBusinessBalance(state, reward.sourceBusinessId).points;
+       document.getElementById('reward-title').textContent = reward.title[state.profile.language] ?? reward.title.vi;
+       document.getElementById('reward-business').textContent = getValidBusiness(state, reward.acceptingBusinessId)?.name ?? t('unknownBusiness');
+       document.getElementById('reward-cost').textContent = formatPoints(reward.cost);
+       document.getElementById('reward-balance').textContent = formatPoints(balance);
+       document.getElementById('reward-after').textContent = formatPoints(balance - reward.cost);
+     }
+@@ -1783,35 +2443,73 @@
+       showToast(t('inviteCopied'));
+     });
+ 
+     function handleAction(event) {
+       const nav = event.target.closest('[data-nav-target]');
+       if (nav) return navigateTo(nav.dataset.navTarget);
+       const explore = event.target.closest('[data-explore-filter]');
+       if (explore) { state.exploreFilter = explore.dataset.exploreFilter; selectExclusive(explore, '[data-explore-filter]'); return filterExplore(document.getElementById('explore-search').value); }
+       const offerFilter = event.target.closest('[data-offer-filter]');
+       if (offerFilter) { state.offerFilter = offerFilter.dataset.offerFilter; selectExclusive(offerFilter, '[data-offer-filter]'); return filterOffers(document.getElementById('offer-search').value); }
++      const tipMethod = event.target.closest('[data-tip-method]');
++      if (tipMethod) {
++        if (tipMethod.disabled) return;
++        commitState((draft) => { draft.ui.selectedTipMethod = tipMethod.dataset.tipMethod; });
++        selectExclusive(tipMethod, '[data-tip-method]');
++        return;
++      }
+       const payment = event.target.closest('[data-payment-method]');
+-      if (payment) { state.paymentMethod = payment.dataset.paymentMethod; selectExclusive(payment, '[data-payment-method]'); const label = document.querySelector('[data-action="send-payment"] span'); label.textContent = t('openPayment', { method: state.paymentMethod }); return; }
++      if (payment) {
++        if (payment.disabled) return;
++        commitState((draft) => { draft.ui.paymentMethod = payment.dataset.paymentMethod; });
++        selectExclusive(payment, '[data-payment-method]');
++        const label = document.querySelector('[data-action="send-payment"] span');
++        if (label) label.textContent = t('openPayment', { method: state.ui.paymentMethod });
++        return;
++      }
+       for (const key of ['service', 'staff', 'day', 'time']) { const control = event.target.closest(`[data-book-${key}]`); if (control) return selectExclusive(control, `[data-book-${key}]`, key, control.dataset[`book${key[0].toUpperCase()}${key.slice(1)}`]); }
+       const control = event.target.closest('[data-action]');
+       if (!control || control.disabled) return;
+       const handler = ACTIONS.get(control.dataset.action);
+       if (handler) handler(control, event);
+     }
+ 
+     function handleInput(event) {
+       if (event.target.id === 'explore-search') filterExplore(event.target.value);
+       if (event.target.id === 'offer-search') filterOffers(event.target.value);
++      if (event.target.id === 'payment-amount') {
++        const amount = canonicalMoneyAmount(event.target.value);
++        document.getElementById('payment-business-receives').textContent = amount.ok ? `$${amount.value.toFixed(2)}` : '$0.00';
++      }
++      if (event.target.id === 'tip-custom-amount') {
++        const amount = canonicalMoneyAmount(event.target.value);
++        const label = document.querySelector('[data-action="send-tip"] span');
++        if (label) label.textContent = t('continueTip', { amount: amount.ok ? amount.value : state.ui.selectedTip });
++      }
+     }
+ 
+     function handleChange(event) {
++      if (event.target.id === 'tip-recipient') {
++        commitState((draft) => {
++          const staff = draft.staffProfiles[event.target.value];
++          if (!staff || staff.businessId !== BUSINESS_ID) return;
++          draft.ui.selectedStaffId = staff.id;
++          const enabledMethods = Array.isArray(staff.methods)
++            ? staff.methods.filter((method) => PAYMENT_METHODS.includes(method))
++            : [];
++          if (!enabledMethods.includes(draft.ui.selectedTipMethod)) {
++            draft.ui.selectedTipMethod = enabledMethods[0] ?? draft.ui.selectedTipMethod;
++          }
++        });
++        renderTipMethods();
++        return;
++      }
+       const businessPref = event.target.closest('[data-business-pref]');
+       if (businessPref) {
+         const result = commitState((draft) => setBusinessMarketing(draft, businessPref.dataset.businessPref, businessPref.checked));
+         if (!result.ok) {
+           renderPreferences();
+           showToast(t('preferenceSaveFailed'), 'error');
+           return;
+         }
+         renderPreferences();
+         showToast(t('businessPreferenceSaved'));
+@@ -1997,25 +2695,111 @@
+         button.textContent = t(availability.labelKey, availability.variables);
+         button.disabled = availability.disabled;
+         if (availability.disabled) button.setAttribute('aria-disabled', 'true');
+         footer.append(cost, button);
+         card.append(title, business, footer);
+         return card;
+       });
+       list.replaceChildren(...cards);
+     }
+ 
++    function renderMethodButton(method, enabled, selected, dataKey, disabledCopyKey) {
++      const button = document.createElement('button');
++      button.type = 'button';
++      button.className = 'app-chip justify-center';
++      button.dataset[dataKey] = method;
++      button.disabled = !enabled;
++      button.setAttribute('aria-pressed', String(enabled && selected));
++      if (!enabled) {
++        button.setAttribute('aria-disabled', 'true');
++        button.textContent = t(disabledCopyKey, { method });
++      } else {
++        button.textContent = method;
++      }
++      return button;
++    }
++
++    function renderTipMethods() {
++      const list = document.getElementById('tip-method-list');
++      const recipient = document.getElementById('tip-recipient');
++      if (!list || !recipient) return;
++      recipient.value = state.ui.selectedStaffId;
++      const staff = state.staffProfiles[state.ui.selectedStaffId];
++      const buttons = PAYMENT_METHODS.map((method) => renderMethodButton(
++        method,
++        Array.isArray(staff?.methods) && staff.methods.includes(method),
++        method === state.ui.selectedTipMethod,
++        'tipMethod',
++        'methodNotEnabledStaff'
++      ));
++      list.replaceChildren(...buttons);
++      const sendLabel = document.querySelector('[data-action="send-tip"] span');
++      if (sendLabel) sendLabel.textContent = t('continueTip', { amount: state.ui.selectedTip });
++    }
++
++    function renderPaymentMethods() {
++      const list = document.getElementById('payment-method-list');
++      if (!list) return;
++      const business = getValidBusiness(state, state.ui.selectedBusinessId);
++      const buttons = PAYMENT_METHODS.map((method) => renderMethodButton(
++        method,
++        Array.isArray(business?.methods) && business.methods.includes(method),
++        method === state.ui.paymentMethod,
++        'paymentMethod',
++        'methodNotEnabledBusiness'
++      ));
++      list.replaceChildren(...buttons);
++      const sendLabel = document.querySelector('[data-action="send-payment"] span');
++      if (sendLabel) sendLabel.textContent = t('openPayment', { method: state.ui.paymentMethod });
++    }
++
++    function renderTipResult() {
++      const tip = state.tips.find((item) => item.id === state.ui.pendingContext.tipId);
++      if (!tip) return;
++      const business = getValidBusiness(state, tip.businessId);
++      const points = calculateTipPoints(tip);
++      document.getElementById('tipdone-amount').textContent = `$${tip.amount.toFixed(2)}`;
++      document.getElementById('tipdone-recipient').textContent = tip.staffName;
++      document.getElementById('tipdone-method').textContent = tip.method;
++      document.getElementById('tipdone-title').textContent = t('tipSentTo', { recipient: tip.staffName });
++      document.getElementById('tip-pending-copy').textContent = t('tipPendingSla', { business: business.name });
++      document.getElementById('tip-confirmed-title').textContent = t('tipReceived', { recipient: tip.staffName });
++      document.getElementById('tip-confirmed-points-copy').textContent = t('tipPointsAdded', { points: formatPoints(points, false) });
++      document.getElementById('tipdone-points').textContent = `+${formatPoints(points)}`;
++      document.getElementById('tip-pending').classList.toggle('hidden', tip.status === 'confirmed');
++      document.getElementById('tip-confirmed').classList.toggle('hidden', tip.status !== 'confirmed');
++    }
++
++    function renderPaymentResult() {
++      const payment = state.directPayments.find((item) => item.id === state.ui.pendingContext.paymentId);
++      if (!payment) return;
++      const business = getValidBusiness(state, payment.businessId);
++      const points = calculateDirectPaymentPoints(payment);
++      document.getElementById('paydone-title').textContent = t('paymentSent', { amount: payment.amount.toFixed(2) });
++      document.getElementById('payment-pending-copy').textContent = t('paymentPendingSla', { business: business.name });
++      document.getElementById('payment-confirmed-amount').textContent = `$${payment.amount.toFixed(2)}`;
++      document.getElementById('payment-result-method').textContent = payment.method;
++      document.getElementById('payment-confirmed-points-copy').textContent = t('paymentPointsAdded', { points: formatPoints(points.totalPoints, false) });
++      document.getElementById('payment-confirmed-points').textContent = `+${formatPoints(points.totalPoints)}`;
++      document.getElementById('payment-pending').classList.toggle('hidden', payment.status === 'confirmed');
++      document.getElementById('payment-confirmed').classList.toggle('hidden', payment.status !== 'confirmed');
++    }
++
+     function renderDomainViews() {
+       renderProfile();
+       renderBalances();
+       renderLedger();
+       renderRewards();
++      renderTipMethods();
++      renderPaymentMethods();
++      renderTipResult();
++      renderPaymentResult();
+     }
+ 
+     function restorePersistedUi() {
+       let screenId = state.ui.activeScreen;
+       if (!Object.prototype.hasOwnProperty.call(SCREEN_MODULE, screenId)) {
+         screenId = 'home';
+         state.ui.activeScreen = screenId;
+         state.ui.activeModule = SCREEN_MODULE[screenId];
+       }
+       if (screenId === 'redeem') {
+@@ -2023,20 +2807,32 @@
+         if (preview.ok) {
+           renderRewardPreview(preview.reward);
+         } else {
+           screenId = 'rewards';
+           state.ui.activeScreen = screenId;
+           state.ui.activeModule = SCREEN_MODULE[screenId];
+           state.ui.currentRewardKey = null;
+           state.ui.pendingContext.rewardAttempt = null;
+         }
+       }
++      if (screenId === 'tipdone' && !state.tips.some((tip) => tip.id === state.ui.pendingContext.tipId)) {
++        screenId = 'tip';
++        state.ui.activeScreen = screenId;
++        state.ui.activeModule = SCREEN_MODULE[screenId];
++        state.ui.pendingContext.tipId = null;
++      }
++      if (screenId === 'paydone' && !state.directPayments.some((payment) => payment.id === state.ui.pendingContext.paymentId)) {
++        screenId = 'pay';
++        state.ui.activeScreen = screenId;
++        state.ui.activeModule = SCREEN_MODULE[screenId];
++        state.ui.pendingContext.paymentId = null;
++      }
+       showScreen(screenId);
+       updateNavigation();
+     }
+ 
+     function renderApp() {
+       applyLanguage(state.profile.language);
+       renderNavigation();
+       renderGlobalState();
+       updateNavigation();
+       renderDomainViews();
+@@ -2054,20 +2850,24 @@
+ 
+     window.NEXORA_TEST_API = {
+       STORAGE_KEY,
+       createDefaultState,
+       migrateState,
+       loadState,
+       saveState,
+       translate,
+       getBusinessBalance,
+       appendLedger,
++      createTip,
++      confirmTipRecord,
++      createDirectPayment,
++      confirmDirectPayment,
+       redeemReward,
+       normalizeUsPhone,
+       requestOtp,
+       verifyOtp,
+       recordConsent,
+       stageConsentScopes,
+       confirmPendingConsent,
+       skipPendingConsent,
+       setPreference,
+       setBusinessMarketing,
+diff --git a/html/customer/cutomer-reward.test.mjs b/html/customer/cutomer-reward.test.mjs
+index ce1e32f..6f4f554 100644
+--- a/html/customer/cutomer-reward.test.mjs
++++ b/html/customer/cutomer-reward.test.mjs
+@@ -99,30 +99,36 @@ function createDocumentStub({
+       if (selector === '[data-reward-gap-copy]') return rewardGapCopyNodes;
+       if (selector === '[data-reward-progress]') return rewardProgressNodes;
+       if (selector === '[data-signature-reward-cta]') return signatureRewardControls;
+       if (selector === '.app-screen') return screenNodes;
+       return [];
+     }
+   };
+   return document;
+ }
+ 
+-function testApi(seed = {}, { skipInit = true, document, randomUUID = () => '00000000-0000-4000-8000-000000000001' } = {}) {
++function testApi(seed = {}, {
++  skipInit = true,
++  document,
++  randomUUID = () => '00000000-0000-4000-8000-000000000001',
++  open = () => null
++} = {}) {
+   const source = html();
+   const script = source.match(/<script>\s*([\s\S]*?)<\/script>\s*<\/body>/)?.[1];
+   assert.ok(script, 'inline application script must exist');
+   const storage = createMemoryStorage(seed);
+   const window = {
+     localStorage: storage,
+     NEXORA_SKIP_INIT: skipInit,
+     setTimeout() { return 1; },
+     clearTimeout() {},
++    open,
+     lucide: null
+   };
+   if (document) window.document = document;
+   const globals = {
+     window,
+     localStorage: storage,
+     structuredClone,
+     Intl,
+     Date,
+     Math,
+@@ -658,20 +664,465 @@ test('returns domain results for rewards with missing businesses or alliance dat
+   const { api } = testApi();
+   const missingBusiness = api.createDefaultState();
+   delete missingBusiness.businesses['golden-glow-spa'];
+   assert.equal(api.redeemReward(missingBusiness, 'glow', 'missing-business', 1000).code, 'unknown_business');
+ 
+   const missingAlliance = api.createDefaultState();
+   missingAlliance.businesses['golden-glow-spa'].allianceId = '';
+   assert.equal(api.redeemReward(missingAlliance, 'glow', 'missing-alliance', 1000).code, 'invalid_alliance');
+ });
+ 
++test('awards tip points only after confirmation and only once', () => {
++  const { api } = testApi();
++  const app = api.createDefaultState();
++  const before = app.balances['bitcoin-nail-bar'].points;
++  assert.equal(api.createTip(app, {
++    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', staffName: 'Forged',
++    amount: 10, method: 'Cash App', note: ''
++  }, 500).code, 'method_disabled');
++  const pending = api.createTip(app, {
++    businessId: ' bitcoin-nail-bar ', staffProfileId: ' staff-anna ', staffName: 'Forged',
++    amount: '10.00', method: ' Venmo ', note: 'Cảm ơn'
++  }, 1000);
++
++  assert.equal(pending.ok, true);
++  assert.equal(pending.tip.staffName, 'Anna');
++  assert.equal(pending.tip.tipMultiplier, 10);
++  assert.equal(pending.tip.status, 'pending');
++  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
++  app.businesses['bitcoin-nail-bar'].tipMultiplier = 99;
++
++  const confirmed = api.confirmTipRecord(app, pending.tip.id, 2000);
++  const retry = api.confirmTipRecord(app, pending.tip.id, 3000);
++  assert.equal(confirmed.points, 100);
++  assert.equal(retry.idempotent, true);
++  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 100);
++  assert.equal(app.ledger.filter((entry) => entry.refId === pending.tip.id).length, 1);
++});
++
++test('awards spend and direct-pay bonus only after salon confirms', () => {
++  const { api } = testApi();
++  const app = api.createDefaultState();
++  const before = app.balances['bitcoin-nail-bar'].points;
++  assert.equal(api.createDirectPayment(app, {
++    businessId: 'bitcoin-nail-bar', amount: 55, method: 'PayPal'
++  }, 500).code, 'method_disabled');
++  const pending = api.createDirectPayment(app, {
++    businessId: ' bitcoin-nail-bar ', amount: '55.00', method: ' Zelle '
++  }, 1000);
++
++  assert.equal(pending.ok, true);
++  assert.equal(pending.payment.directPayBonusPct, 20);
++  assert.equal(pending.payment.status, 'pending');
++  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
++  app.businesses['bitcoin-nail-bar'].directPayBonusPct = 90;
++
++  const confirmed = api.confirmDirectPayment(app, pending.payment.id, 2000);
++  const retry = api.confirmDirectPayment(app, pending.payment.id, 3000);
++  assert.deepEqual([confirmed.spendPoints, confirmed.bonusPoints], [55, 11]);
++  assert.equal(retry.idempotent, true);
++  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 66);
++  assert.equal(app.ledger.filter((entry) => entry.refId === pending.payment.id).length, 2);
++});
++
++test('rejects noncanonical transaction inputs before mutating state', () => {
++  const { api } = testApi();
++  const invalidInputs = [
++    () => api.createTip(app, { businessId: 'missing', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo' }, 1000),
++    () => api.createTip(app, { businessId: 'golden-glow-spa', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo' }, 1000),
++    () => api.createTip(app, { businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 1.001, method: 'Venmo' }, 1000),
++    () => api.createTip(app, { businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo' }, 9e15),
++    () => api.createDirectPayment(app, { businessId: 'missing', amount: 55, method: 'Zelle' }, 1000),
++    () => api.createDirectPayment(app, { businessId: 'bitcoin-nail-bar', amount: Infinity, method: 'Zelle' }, 1000),
++    () => api.createDirectPayment(app, { businessId: 'bitcoin-nail-bar', amount: 55, method: 'PayPal' }, 1000),
++    () => api.createDirectPayment(app, { businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle' }, null)
++  ];
++  const app = api.createDefaultState();
++  invalidInputs.forEach((invoke) => {
++    const before = JSON.stringify(app);
++    assert.equal(invoke().ok, false);
++    assert.equal(JSON.stringify(app), before);
++  });
++
++  const malformedUuid = testApi({}, { randomUUID: () => 'not-a-uuid' });
++  const malformedState = malformedUuid.api.createDefaultState();
++  const beforeUuid = JSON.stringify(malformedState);
++  assert.equal(malformedUuid.api.createTip(malformedState, {
++    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
++  }, 1000).code, 'id_generation_failed');
++  assert.equal(JSON.stringify(malformedState), beforeUuid);
++});
++
++test('canonicalizes persisted staff identity before creating a tip', () => {
++  const { api } = testApi();
++  const migrated = api.migrateState({
++    staffProfiles: {
++      'staff-anna': { id: 'forged-staff-id', name: 'Canonical Anna' }
++    }
++  });
++
++  assert.equal(migrated.staffProfiles['staff-anna'].id, 'staff-anna');
++  const result = api.createTip(migrated, {
++    businessId: 'bitcoin-nail-bar',
++    staffProfileId: 'staff-anna',
++    staffName: '<img src=x onerror=alert(1)>',
++    amount: 10,
++    method: 'Venmo'
++  }, 1000);
++  assert.equal(result.ok, true);
++  assert.equal(result.tip.staffName, 'Canonical Anna');
++});
++
++test('keeps tip and direct-payment confirmations atomic when ledger IDs fail', () => {
++  let tipUuidCall = 0;
++  const tipApi = testApi({}, {
++    randomUUID: () => {
++      tipUuidCall += 1;
++      if (tipUuidCall === 2) throw new Error('tip ledger UUID unavailable');
++      return `00000000-0000-4000-8000-00000000000${tipUuidCall}`;
++    }
++  }).api;
++  const tipState = tipApi.createDefaultState();
++  const pendingTip = tipApi.createTip(tipState, {
++    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
++  }, 1000);
++  const tipBefore = JSON.stringify(tipState);
++  assert.equal(tipApi.confirmTipRecord(tipState, pendingTip.tip.id, 2000).code, 'id_generation_failed');
++  assert.equal(JSON.stringify(tipState), tipBefore);
++
++  let paymentUuidCall = 0;
++  const paymentApi = testApi({}, {
++    randomUUID: () => {
++      paymentUuidCall += 1;
++      if (paymentUuidCall === 3) throw new Error('bonus ledger UUID unavailable');
++      return `00000000-0000-4000-8000-00000000000${paymentUuidCall}`;
++    }
++  }).api;
++  const paymentState = paymentApi.createDefaultState();
++  const pendingPayment = paymentApi.createDirectPayment(paymentState, {
++    businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
++  }, 1000);
++  const paymentBefore = JSON.stringify(paymentState);
++  assert.equal(paymentApi.confirmDirectPayment(paymentState, pendingPayment.payment.id, 2000).code, 'id_generation_failed');
++  assert.equal(JSON.stringify(paymentState), paymentBefore);
++});
++
++test('rejects broken confirmed transaction relationships on idempotent retries', () => {
++  let uuidCall = 0;
++  const { api } = testApi({}, {
++    randomUUID: () => {
++      uuidCall += 1;
++      return `00000000-0000-4000-8000-${String(uuidCall).padStart(12, '0')}`;
++    }
++  });
++
++  const tipState = api.createDefaultState();
++  const tip = api.createTip(tipState, {
++    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
++  }, 1000).tip;
++  api.confirmTipRecord(tipState, tip.id, 2000);
++  tipState.ledger.find((entry) => entry.refId === tip.id).pointsDelta = 101;
++  const tipBefore = JSON.stringify(tipState);
++  assert.equal(api.confirmTipRecord(tipState, tip.id, 3000).code, 'invalid_state');
++  assert.equal(JSON.stringify(tipState), tipBefore);
++
++  const paymentState = api.createDefaultState();
++  const payment = api.createDirectPayment(paymentState, {
++    businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
++  }, 1000).payment;
++  api.confirmDirectPayment(paymentState, payment.id, 2000);
++  paymentState.ledger.find((entry) => entry.refId === payment.id && entry.type === 'directpay_bonus').refType = 'tip';
++  const paymentBefore = JSON.stringify(paymentState);
++  assert.equal(api.confirmDirectPayment(paymentState, payment.id, 3000).code, 'invalid_state');
++  assert.equal(JSON.stringify(paymentState), paymentBefore);
++});
++
++test('round-trips rule snapshots and reconciles transaction ledger pairs without touching rewards', () => {
++  let uuidCall = 0;
++  const { api, storage } = testApi({}, {
++    randomUUID: () => {
++      uuidCall += 1;
++      return `00000000-0000-4000-8000-${String(uuidCall).padStart(12, '0')}`;
++    }
++  });
++  const app = api.createDefaultState();
++  const tip = api.createTip(app, {
++    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
++  }, 1000).tip;
++  const payment = api.createDirectPayment(app, {
++    businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
++  }, 1100).payment;
++  api.confirmTipRecord(app, tip.id, 2000);
++  api.confirmDirectPayment(app, payment.id, 2100);
++  const reward = rewardPair({
++    redemption: { id: 'task5-reward', idempotencyKey: 'task5-reward' },
++    ledger: { id: 'task5-reward-ledger' }
++  });
++  app.redemptions = [reward.redemption];
++  app.ledger.push(
++    reward.ledger,
++    { ...app.ledger.find((entry) => entry.refId === tip.id), id: 'duplicate-tip-ledger' },
++    {
++      id: 'orphan-direct-ledger', businessId: 'bitcoin-nail-bar', type: 'directpay_bonus',
++      pointsDelta: 999, refType: 'direct_payment', refId: 'missing-payment',
++      createdAt: '2026-07-14T10:00:00.000Z'
++    }
++  );
++  app.tips.push({ ...tip });
++
++  const migrated = api.migrateState(app);
++  assert.equal(migrated.tips.length, 1);
++  assert.equal(migrated.directPayments.length, 1);
++  assert.equal(migrated.tips[0].tipMultiplier, 10);
++  assert.equal(migrated.directPayments[0].directPayBonusPct, 20);
++  assert.equal(migrated.ledger.filter((entry) => entry.refId === tip.id).length, 1);
++  assert.equal(migrated.ledger.filter((entry) => entry.refId === payment.id).length, 2);
++  assert.equal(migrated.redemptions.length, 1);
++  assert.equal(migrated.ledger.some((entry) => entry.id === reward.ledger.id), true);
++  assert.equal(migrated.ledger.some((entry) => entry.id === 'orphan-direct-ledger'), false);
++
++  api.saveState(migrated, storage);
++  const loaded = api.loadState(storage);
++  loaded.businesses['bitcoin-nail-bar'].tipMultiplier = 70;
++  loaded.businesses['bitcoin-nail-bar'].directPayBonusPct = 70;
++  assert.equal(api.confirmTipRecord(loaded, tip.id, 3000).points, 100);
++  assert.deepEqual(
++    [api.confirmDirectPayment(loaded, payment.id, 3000).spendPoints, api.confirmDirectPayment(loaded, payment.id, 3000).bonusPoints],
++    [55, 11]
++  );
++});
++
++test('prefers a valid transaction relation over a malformed duplicate ledger ID regardless of input order', () => {
++  let uuidCall = 0;
++  const { api } = testApi({}, {
++    randomUUID: () => {
++      uuidCall += 1;
++      return `00000000-0000-4000-8000-${String(uuidCall).padStart(12, '0')}`;
++    }
++  });
++  const app = api.createDefaultState();
++  const tip = api.createTip(app, {
++    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
++  }, 1000).tip;
++  const confirmedTip = api.confirmTipRecord(app, tip.id, 2000).tip;
++  const validLedger = app.ledger.find((entry) => entry.refId === tip.id);
++  const unrelatedLedger = app.ledger.filter((entry) => entry !== validLedger);
++  const malformedDuplicate = {
++    ...validLedger,
++    businessId: 'golden-glow-spa',
++    pointsDelta: 999
++  };
++
++  for (const relations of [
++    [malformedDuplicate, validLedger],
++    [validLedger, malformedDuplicate]
++  ]) {
++    const migrated = api.migrateState({
++      ...app,
++      tips: [confirmedTip],
++      ledger: [...relations, ...unrelatedLedger]
++    });
++    assert.equal(migrated.tips.length, 1);
++    assert.equal(migrated.ledger.filter((entry) => entry.refId === tip.id).length, 1);
++    assert.equal(migrated.ledger.find((entry) => entry.refId === tip.id).businessId, 'bitcoin-nail-bar');
++    assert.equal(migrated.redemptions.length, 1);
++    assert.equal(migrated.ledger.some((entry) => entry.refId === 'red-demo'), true);
++  }
++});
++
++function replayedPendingTransactionFixture(kind, claimVariant) {
++  let uuidCalls = 0;
++  const { api } = testApi({}, {
++    randomUUID: () => {
++      uuidCalls += 1;
++      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
++    }
++  });
++  const app = api.createDefaultState();
++  const isTip = kind === 'tip';
++  const created = isTip
++    ? api.createTip(app, {
++        businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
++      }, 1000).tip
++    : api.createDirectPayment(app, {
++        businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
++      }, 1000).payment;
++  const collection = isTip ? 'tips' : 'directPayments';
++  const contextKey = isTip ? 'tipId' : 'paymentId';
++  const refType = isTip ? 'tip' : 'direct_payment';
++
++  if (claimVariant === 'valid_reordered_duplicate') {
++    const confirmed = isTip
++      ? api.confirmTipRecord(app, created.id, 2000).tip
++      : api.confirmDirectPayment(app, created.id, 2000).payment;
++    app[collection] = [{ ...confirmed, status: 'pending', confirmedAt: null }];
++    const linked = app.ledger.filter((entry) => entry.refId === created.id).reverse();
++    const unrelated = app.ledger.filter((entry) => entry.refId !== created.id);
++    app.ledger = [
++      { refType, refId: ` ${created.id} ` },
++      ...linked,
++      { refType, refId: created.id },
++      ...unrelated
++    ];
++  } else {
++    app.ledger = [
++      { refType, refId: created.id },
++      {
++        id: `malformed-${kind}-claim`, businessId: 'golden-glow-spa', type: 'wrong_type',
++        pointsDelta: 999, refType, refId: ` ${created.id} `, createdAt: 'not-a-time'
++      },
++      ...app.ledger
++    ];
++  }
++
++  const balanceBefore = app.balances['bitcoin-nail-bar'].points;
++  uuidCalls = 0;
++  return {
++    api,
++    app,
++    created,
++    collection,
++    contextKey,
++    balanceBefore,
++    uuidCallCount: () => uuidCalls
++  };
++}
++
++function assertReplayedPendingTransactionIsQuarantined(kind, claimVariant) {
++  const fixture = replayedPendingTransactionFixture(kind, claimVariant);
++  const migrated = fixture.api.migrateState(fixture.app);
++  const confirm = kind === 'tip' ? fixture.api.confirmTipRecord : fixture.api.confirmDirectPayment;
++
++  assert.equal(migrated[fixture.collection].some((record) => record.id === fixture.created.id), false);
++  assert.equal(migrated.ui.pendingContext[fixture.contextKey], null);
++  assert.equal(migrated.balances['bitcoin-nail-bar'].points, fixture.balanceBefore);
++  assert.equal(migrated.ledger.some((entry) => entry.refId?.trim?.() === fixture.created.id), false);
++  assert.equal(migrated.redemptions.some((redemption) => redemption.id === 'red-demo'), true);
++  assert.equal(migrated.ledger.some((entry) => entry.refId === 'red-demo'), true);
++
++  const ledgerBeforeRetry = JSON.stringify(migrated.ledger);
++  const retry = confirm(migrated, fixture.created.id, 3000);
++  assert.equal(retry.ok, false);
++  assert.equal(retry.code, 'not_found');
++  assert.equal(migrated.balances['bitcoin-nail-bar'].points, fixture.balanceBefore);
++  assert.equal(JSON.stringify(migrated.ledger), ledgerBeforeRetry);
++  assert.equal(fixture.uuidCallCount(), 0);
++}
++
++test('quarantines replayed pending tips from valid or malformed raw tip ledger claims', () => {
++  for (const variant of ['valid_reordered_duplicate', 'malformed']) {
++    assertReplayedPendingTransactionIsQuarantined('tip', variant);
++  }
++});
++
++test('quarantines replayed pending direct payments from valid or malformed raw payment ledger claims', () => {
++  for (const variant of ['valid_reordered_duplicate', 'malformed']) {
++    assertReplayedPendingTransactionIsQuarantined('payment', variant);
++  }
++});
++
++test('restores pending tip and payment receipts without creating replacement records', () => {
++  const buildPending = (kind) => {
++    const { api } = testApi();
++    const app = api.createDefaultState();
++    if (kind === 'tip') {
++      const result = api.createTip(app, {
++        businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo'
++      }, 1000);
++      app.ui.activeScreen = 'tipdone';
++      return { api, app, id: result.tip.id };
++    }
++    const result = api.createDirectPayment(app, {
++      businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
++    }, 1000);
++    app.ui.activeScreen = 'paydone';
++    return { api, app, id: result.payment.id };
++  };
++
++  for (const kind of ['tip', 'payment']) {
++    const { api, app, id } = buildPending(kind);
++    const screenId = kind === 'tip' ? 'tipdone' : 'paydone';
++    const home = createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] });
++    const receipt = createStubElement({ id: screenId, classNames: ['app-screen', 'hidden'] });
++    const document = createDocumentStub({ screenNodes: [home, receipt] });
++    const raw = JSON.stringify(app);
++    const loaded = testApi({ [api.STORAGE_KEY]: raw }, {
++      skipInit: false,
++      document,
++      randomUUID: () => { throw new Error('reload must not create a transaction'); }
++    });
++
++    assert.equal(receipt.classList.contains('hidden'), false, kind);
++    assert.equal(loaded.storage.getItem(api.STORAGE_KEY), raw, kind);
++    assert.equal(vm.runInContext(`state.${kind === 'tip' ? 'tips' : 'directPayments'}.length`, loaded.context), 1, kind);
++    assert.equal(vm.runInContext(`state.ui.pendingContext.${kind === 'tip' ? 'tipId' : 'paymentId'}`, loaded.context), id, kind);
++    assert.equal(document.getElementById(kind === 'tip' ? 'tipdone-amount' : 'payment-confirmed-amount').textContent, kind === 'tip' ? '$10.00' : '$55.00');
++  }
++});
++
++test('persists recipient method fallback and renders disabled reasons bilingually without unsafe receipt HTML', () => {
++  const document = createDocumentStub();
++  const { api, context, storage } = testApi({}, { skipInit: false, document });
++  const recipient = document.getElementById('tip-recipient');
++  recipient.value = 'staff-maria';
++  context.handleChange({ target: recipient });
++
++  const persisted = api.loadState(storage);
++  assert.equal(persisted.ui.selectedStaffId, 'staff-maria');
++  assert.equal(persisted.ui.selectedTipMethod, 'Zelle');
++  const tipButtons = document.getElementById('tip-method-list').children;
++  assert.equal(tipButtons.find((button) => button.textContent.includes('Venmo')).disabled, true);
++  assert.match(tipButtons.find((button) => button.textContent.includes('Venmo')).textContent, /chưa bật/);
++
++  context.setLanguage('en');
++  const englishButtons = document.getElementById('tip-method-list').children;
++  assert.match(englishButtons.find((button) => button.textContent.includes('Venmo')).textContent, /not enabled/);
++
++  const source = html();
++  for (const [start, end] of [
++    ['renderTipResult', 'renderPaymentResult'],
++    ['renderPaymentResult', 'renderDomainViews']
++  ]) {
++    const body = source.match(new RegExp(`function ${start}\\(\\) \\{([\\s\\S]*?)\\n\\s*\\}\\n\\n\\s*function ${end}`))?.[1];
++    assert.ok(body, `${start} must be available`);
++    assert.doesNotMatch(body, /innerHTML/);
++    assert.match(body, /textContent/);
++  }
++  assert.match(source, /NEXORA[^<]*(?:không giữ tiền|never holds)/i);
++  assert.match(source, /(?:10|15) (?:phút|minutes)/i);
++});
++
++test('opens an external payment only after the pending record is persisted by a user action', () => {
++  let opened = 0;
++  let persistedAtOpen = false;
++  const document = createDocumentStub();
++  document.getElementById('tip-recipient').value = 'staff-anna';
++  document.getElementById('tip-custom-amount').value = '';
++  document.getElementById('tip-note').value = 'Thanks';
++  const action = createStubElement({ dataset: { action: 'send-tip' } });
++  const { api, context, storage } = testApi({}, {
++    skipInit: false,
++    document,
++    open() {
++      opened += 1;
++      persistedAtOpen = api.loadState(storage).tips.length === 1;
++    }
++  });
++  const event = { target: { closest(selector) { return selector === '[data-action]' ? action : null; } } };
++
++  context.handleAction(event);
++
++  assert.equal(opened, 1);
++  assert.equal(persistedAtOpen, true);
++  assert.equal(api.loadState(storage).tips[0].status, 'pending');
++});
++
+ test('round-trips valid reward ledger state and drops duplicate-sensitive records', () => {
+   const { api, storage } = testApi();
+   const ledger = {
+     id: 'ledger-reward-1', businessId: 'bitcoin-nail-bar', type: 'redeem', pointsDelta: -500,
+     refType: 'redemption', refId: 'redemption-1', createdAt: '2026-07-14T10:00:00.000Z'
+   };
+   const redemption = {
+     id: 'redemption-1', idempotencyKey: 'reward-round-trip', rewardKey: 'credit5',
+     sourceBusinessId: 'bitcoin-nail-bar', acceptingBusinessId: 'bitcoin-nail-bar', cost: 500,
+     status: 'ready', qrPayload: 'NEXORA:credit5:reward-round-trip', createdAt: '2026-07-14T10:00:00.000Z'

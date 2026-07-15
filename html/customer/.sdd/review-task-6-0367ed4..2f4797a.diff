@@ -1,0 +1,1824 @@
+# Review package: 0367ed41512a7d07dd4b305f2889bda14f97c313..2f4797a
+
+## Commits
+2f4797a feat: add confirmed bookings and compliant feedback
+
+## Files changed
+ html/customer/cutomer-reward.html     | 816 +++++++++++++++++++++++++++++++++-
+ html/customer/cutomer-reward.test.mjs | 390 +++++++++++++++-
+ 2 files changed, 1174 insertions(+), 32 deletions(-)
+
+## Diff
+diff --git a/html/customer/cutomer-reward.html b/html/customer/cutomer-reward.html
+index 84cee4c..7a3bdba 100644
+--- a/html/customer/cutomer-reward.html
++++ b/html/customer/cutomer-reward.html
+@@ -84,22 +84,22 @@
+             <button type="button" class="icon-button hidden sm:inline-grid" data-action="open-notifications" aria-label="Thông báo"><i data-lucide="bell" class="size-5" aria-hidden="true"></i></button>
+           </div>
+ 
+           <div class="grid gap-4 xl:grid-cols-[1.35fr_.65fr]">
+             <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_90%_10%,rgba(34,211,238,.24),transparent_38%),linear-gradient(135deg,#6d2bf0,#4a23d9_48%,#0757cf)] p-5 shadow-2xl shadow-app-purple/20 sm:p-6">
+               <div class="relative z-10 flex items-start justify-between gap-4"><div><p class="text-xs font-extrabold uppercase tracking-[.18em] text-white/70" data-en="Bitcoin Nail Bar balance" data-vi="Điểm tại Bitcoin Nail Bar">Điểm tại Bitcoin Nail Bar</p><div class="mt-2 flex items-end gap-2"><strong data-balance-points="bitcoin-nail-bar" data-balance-business="bitcoin-nail-bar" class="text-4xl font-black tracking-tight sm:text-5xl">2,450</strong><span class="pb-1 text-sm font-bold text-white/70" data-en="points" data-vi="điểm">điểm</span></div></div><span class="grid size-11 place-items-center rounded-2xl bg-white/15"><i data-lucide="gem" class="size-5" aria-hidden="true"></i></span></div>
+               <div class="relative z-10 mt-6 grid grid-cols-2 gap-3"><div class="metric-card"><strong class="block text-lg" data-reward-gap-value>—</strong><span class="text-xs text-white/65" data-en="to your next reward" data-vi="để nhận quà tiếp theo">để nhận quà tiếp theo</span></div><div class="metric-card"><strong class="block text-lg">96%</strong><span class="text-xs text-white/65" data-en="tier progress" data-vi="tiến độ hạng">tiến độ hạng</span></div></div>
+               <div class="relative z-10 mt-4 h-2 overflow-hidden rounded-full bg-black/20"><span class="block h-full rounded-full bg-gradient-to-r from-app-cyan to-white" data-reward-progress role="progressbar" aria-valuemin="0" aria-valuemax="100"></span></div>
+             </div>
+ 
+-            <div class="app-card flex flex-col justify-between">
+-              <div><div class="flex items-center justify-between"><p class="eyebrow" data-en="Next appointment" data-vi="Lịch hẹn sắp tới">Lịch hẹn sắp tới</p><span class="rounded-full bg-app-green/10 px-2.5 py-1 text-[11px] font-bold text-app-green" data-en="Confirmed" data-vi="Đã xác nhận">Đã xác nhận</span></div><h2 class="mt-3 text-xl font-black">Gel manicure</h2><p class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar · Anna</p><div class="mt-4 flex items-center gap-2 text-sm"><i data-lucide="calendar-days" class="size-4 text-app-cyan" aria-hidden="true"></i><span data-en="Thursday · 2:00 PM" data-vi="Thứ Năm · 2:00 CH">Thứ Năm · 2:00 CH</span></div></div>
++            <div id="home-appointment" class="app-card hidden flex-col justify-between">
++              <div><div class="flex items-center justify-between"><p class="eyebrow" data-en="Next appointment" data-vi="Lịch hẹn sắp tới">Lịch hẹn sắp tới</p><span class="rounded-full bg-app-green/10 px-2.5 py-1 text-[11px] font-bold text-app-green" data-en="Confirmed" data-vi="Đã xác nhận">Đã xác nhận</span></div><strong class="mt-3 block text-lg" data-appointment-copy></strong></div>
+               <button type="button" class="app-button-secondary mt-5 w-full" data-action="navigate" data-target="book1"><i data-lucide="calendar-plus" class="size-4" aria-hidden="true"></i><span data-en="Book again" data-vi="Đặt lại lịch">Đặt lại lịch</span></button>
+             </div>
+           </div>
+ 
+           <div class="mt-6"><div class="mb-3 flex items-center justify-between"><h2 class="section-title" data-en="Quick actions" data-vi="Thao tác nhanh">Thao tác nhanh</h2><button type="button" class="text-xs font-bold text-app-pink" data-action="navigate" data-target="allmenu" data-en="View all" data-vi="Xem tất cả">Xem tất cả</button></div><div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+             <button type="button" class="app-card flex min-h-24 flex-col items-start justify-between text-left transition hover:-translate-y-0.5 hover:border-app-purple" data-action="navigate" data-target="rewards"><i data-lucide="gift" class="size-5 text-app-pink" aria-hidden="true"></i><span class="text-sm font-bold" data-en="Rewards" data-vi="Phần thưởng">Phần thưởng</span></button>
+             <button type="button" class="app-card flex min-h-24 flex-col items-start justify-between text-left transition hover:-translate-y-0.5 hover:border-app-cyan" data-action="navigate" data-target="looks"><i data-lucide="images" class="size-5 text-app-cyan" aria-hidden="true"></i><span class="text-sm font-bold" data-en="My looks" data-vi="Kiểu của tôi">Kiểu của tôi</span></button>
+             <button type="button" class="app-card flex min-h-24 flex-col items-start justify-between text-left transition hover:-translate-y-0.5 hover:border-app-green" data-action="navigate" data-target="tip"><i data-lucide="badge-dollar-sign" class="size-5 text-app-green" aria-hidden="true"></i><span class="text-sm font-bold" data-en="Send a tip" data-vi="Gửi tip">Gửi tip</span></button>
+             <button type="button" class="app-card flex min-h-24 flex-col items-start justify-between text-left transition hover:-translate-y-0.5 hover:border-app-gold" data-action="navigate" data-target="offers"><i data-lucide="badge-percent" class="size-5 text-app-gold" aria-hidden="true"></i><span class="text-sm font-bold" data-en="Offers" data-vi="Ưu đãi">Ưu đãi</span></button>
+           </div></div>
+@@ -140,34 +140,34 @@
+         <section class="app-screen hidden" id="looks" data-ready="true" data-module="home" aria-labelledby="looks-title">
+           <div class="mb-5 flex items-center justify-between gap-3"><div class="flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Your style archive" data-vi="Bộ sưu tập phong cách">Bộ sưu tập phong cách</p><h1 id="looks-title" class="text-2xl font-black" data-en="My looks" data-vi="Kiểu của tôi">Kiểu của tôi</h1></div></div><button class="app-button" type="button" data-action="navigate" data-target="addlook"><i data-lucide="plus" class="size-4" aria-hidden="true"></i><span class="hidden sm:inline" data-en="Add look" data-vi="Thêm kiểu">Thêm kiểu</span></button></div>
+           <div id="looks-grid" class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4"><article class="app-card overflow-hidden p-0"><img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=700&q=80" alt="Mẫu nail tím ánh kim" class="aspect-square w-full object-cover"><div class="p-3"><strong class="block text-sm" data-en="Galaxy chrome" data-vi="Tím ánh kim">Tím ánh kim</strong><span class="text-xs text-app-muted">Bitcoin Nail Bar · 12/07</span></div></article><article class="app-card overflow-hidden p-0"><img src="https://images.unsplash.com/photo-1610992015732-2449b76344bc?auto=format&fit=crop&w=700&q=80" alt="Mẫu nail hồng sữa" class="aspect-square w-full object-cover"><div class="p-3"><strong class="block text-sm" data-en="Soft pink" data-vi="Hồng sữa">Hồng sữa</strong><span class="text-xs text-app-muted">Bitcoin Nail Bar · 18/06</span></div></article><article class="app-card overflow-hidden p-0"><img src="https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&w=700&q=80" alt="Mẫu nail xanh mùa hè" class="aspect-square w-full object-cover"><div class="p-3"><strong class="block text-sm" data-en="Summer blue" data-vi="Xanh mùa hè">Xanh mùa hè</strong><span class="text-xs text-app-muted">Luna Studio · 29/05</span></div></article></div>
+         </section>
+         <section class="app-screen hidden" id="addlook" data-ready="true" data-module="home" aria-labelledby="addlook-title">
+           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="looks" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Save the details" data-vi="Lưu lại chi tiết">Lưu lại chi tiết</p><h1 id="addlook-title" class="text-2xl font-black" data-en="Add a new look" data-vi="Thêm kiểu mới">Thêm kiểu mới</h1></div></div>
+           <div class="app-card"><button type="button" class="grid min-h-44 w-full place-items-center rounded-2xl border border-dashed border-app-line bg-app-panel text-center" data-action="upload-look"><span><i data-lucide="image-plus" class="mx-auto size-8 text-app-pink" aria-hidden="true"></i><strong class="mt-3 block" data-en="Add a photo" data-vi="Thêm ảnh">Thêm ảnh</strong><small class="mt-1 block text-app-muted" data-en="JPG or PNG, up to 10 MB" data-vi="JPG hoặc PNG, tối đa 10 MB">JPG hoặc PNG, tối đa 10 MB</small></span></button><div class="mt-5 grid gap-4 sm:grid-cols-2"><label class="text-sm font-bold"><span data-en="Service" data-vi="Dịch vụ">Dịch vụ</span><input id="look-service" class="app-input mt-2" data-en-ph="e.g. Gel manicure" data-vi-ph="VD: Sơn gel" placeholder="VD: Sơn gel"></label><label class="text-sm font-bold"><span data-en="Color / formula" data-vi="Màu / công thức">Màu / công thức</span><input id="look-color" class="app-input mt-2" data-en-ph="e.g. Lilac #142" data-vi-ph="VD: Lilac #142" placeholder="VD: Lilac #142"></label></div><label class="mt-4 block text-sm font-bold"><span data-en="Notes" data-vi="Ghi chú">Ghi chú</span><textarea id="look-notes" class="app-input mt-2 min-h-28 resize-y" data-en-ph="Shape, technician and anything to remember…" data-vi-ph="Dáng, kỹ thuật viên và điều cần nhớ…" placeholder="Dáng, kỹ thuật viên và điều cần nhớ…"></textarea></label><button type="button" class="app-button mt-5 w-full" data-action="save-look"><i data-lucide="save" class="size-4" aria-hidden="true"></i><span data-en="Save look" data-vi="Lưu kiểu">Lưu kiểu</span></button></div></div>
+         </section>
+         <section class="app-screen hidden" id="review" data-ready="true" data-module="home" aria-labelledby="review-title">
+           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Private to the business" data-vi="Chỉ doanh nghiệp nhìn thấy">Chỉ doanh nghiệp nhìn thấy</p><h1 id="review-title" class="text-2xl font-black" data-en="How was your visit?" data-vi="Trải nghiệm của bạn thế nào?">Trải nghiệm của bạn thế nào?</h1></div></div>
+-          <div class="app-card"><div class="flex items-center gap-3"><span class="grid size-12 place-items-center rounded-2xl bg-app-purple/10 text-app-pink"><i data-lucide="sparkles" class="size-6" aria-hidden="true"></i></span><div><strong>Bitcoin Nail Bar</strong><p class="text-xs text-app-muted">Gel manicure · Anna · 12/07</p></div></div><p class="mt-6 text-sm font-bold" data-en="Your rating" data-vi="Đánh giá của bạn">Đánh giá của bạn</p><div class="mt-2 flex gap-2" aria-label="Chọn số sao"><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="1" aria-label="1 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="2" aria-label="2 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="3" aria-label="3 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="4" aria-label="4 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="5" aria-label="5 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button></div><label class="mt-5 block text-sm font-bold"><span data-en="What could be better?" data-vi="Điều gì có thể tốt hơn?">Điều gì có thể tốt hơn?</span><textarea id="review-notes" class="app-input mt-2 min-h-32 resize-y" data-en-ph="Share details privately…" data-vi-ph="Chia sẻ riêng với doanh nghiệp…" placeholder="Chia sẻ riêng với doanh nghiệp…"></textarea></label><button type="button" class="app-button mt-5 w-full" data-action="submit-review"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Send feedback" data-vi="Gửi phản hồi">Gửi phản hồi</span></button></div></div>
++          <div class="app-card"><div class="flex items-center gap-3"><span class="grid size-12 place-items-center rounded-2xl bg-app-purple/10 text-app-pink"><i data-lucide="sparkles" class="size-6" aria-hidden="true"></i></span><div><strong>Bitcoin Nail Bar</strong><p class="text-xs text-app-muted">Gel manicure · Anna · 12/07</p></div></div><p class="mt-6 text-sm font-bold" data-en="Your rating" data-vi="Đánh giá của bạn">Đánh giá của bạn</p><div class="mt-2 flex gap-2" aria-label="Chọn số sao"><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="1" aria-label="1 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="2" aria-label="2 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="3" aria-label="3 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="4" aria-label="4 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button><button class="icon-button text-app-gold" type="button" data-action="set-rating" data-rating="5" aria-label="5 sao"><i data-lucide="star" class="size-5" aria-hidden="true"></i></button></div><label class="mt-5 block text-sm font-bold"><span data-en="What could be better?" data-vi="Điều gì có thể tốt hơn?">Điều gì có thể tốt hơn?</span><textarea id="review-notes" class="app-input mt-2 min-h-32 resize-y" data-en-ph="Share details privately…" data-vi-ph="Chia sẻ riêng với doanh nghiệp…" placeholder="Chia sẻ riêng với doanh nghiệp…"></textarea></label><p class="mt-4 rounded-xl bg-app-green/5 p-3 text-xs leading-5 text-app-muted" data-en="Earn 15 points for private feedback at any rating. Google sharing is optional and never rewarded." data-vi="Nhận 15 điểm cho phản hồi riêng ở mọi mức sao. Chia sẻ Google là tùy chọn và không được thưởng.">Nhận 15 điểm cho phản hồi riêng ở mọi mức sao. Chia sẻ Google là tùy chọn và không được thưởng.</p><button type="button" class="app-button mt-5 w-full" data-action="submit-review"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Send feedback + earn 15 points" data-vi="Gửi phản hồi + nhận 15 điểm">Gửi phản hồi + nhận 15 điểm</span></button><button type="button" class="app-button-secondary mt-3 w-full" data-action="open-google-review" data-en="Share on Google (optional · no points)" data-vi="Chia sẻ lên Google (tùy chọn · không điểm)">Chia sẻ lên Google (tùy chọn · không điểm)</button></div></div>
+         </section>
+         <section class="app-screen hidden" id="offers" data-ready="true" data-module="home" aria-labelledby="offers-title">
+           <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Picked for you" data-vi="Dành riêng cho bạn">Dành riêng cho bạn</p><h1 id="offers-title" class="text-2xl font-black" data-en="Offers & wishlist" data-vi="Ưu đãi & mong muốn">Ưu đãi & mong muốn</h1></div></div>
+           <div class="grid gap-4 xl:grid-cols-[1fr_340px]"><div><div class="relative"><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-app-muted" aria-hidden="true"></i><input id="offer-search" class="app-input pl-11" type="search" data-en-ph="Search offers…" data-vi-ph="Tìm ưu đãi…" placeholder="Tìm ưu đãi…"></div><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" aria-pressed="true" data-offer-filter="all" data-en="All" data-vi="Tất cả">Tất cả</button><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="beauty" data-en="Beauty" data-vi="Làm đẹp">Làm đẹp</button><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="food" data-en="Food" data-vi="Ẩm thực">Ẩm thực</button></div><div class="mt-4 grid gap-4 md:grid-cols-2"><article class="app-card overflow-hidden p-0" data-offer-card data-category="beauty" data-search="golden glow facial spa"><img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80" alt="Ưu đãi chăm sóc da" class="h-40 w-full object-cover"><div class="p-4"><span class="text-xs font-bold text-app-gold" data-en="20% OFF" data-vi="GIẢM 20%">GIẢM 20%</span><h2 class="mt-2 font-black" data-en="Glow facial" data-vi="Chăm sóc da Glow">Chăm sóc da Glow</h2><p class="mt-1 text-xs text-app-muted">Golden Glow Spa · Hết hạn 21/07</p><button class="app-button-secondary mt-4 w-full" type="button" data-action="save-offer"><i data-lucide="bookmark" class="size-4" aria-hidden="true"></i><span data-en="Save offer" data-vi="Lưu ưu đãi">Lưu ưu đãi</span></button></div></article><article class="app-card overflow-hidden p-0" data-offer-card data-category="food" data-search="moon coffee latte pastry"><img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80" alt="Ưu đãi cà phê" class="h-40 w-full object-cover"><div class="p-4"><span class="text-xs font-bold text-app-green" data-en="BUY 1 GET 1" data-vi="MUA 1 TẶNG 1">MUA 1 TẶNG 1</span><h2 class="mt-2 font-black" data-en="Member latte" data-vi="Latte thành viên">Latte thành viên</h2><p class="mt-1 text-xs text-app-muted">Moon Coffee · Hết hạn 31/07</p><button class="app-button-secondary mt-4 w-full" type="button" data-action="save-offer"><i data-lucide="bookmark" class="size-4" aria-hidden="true"></i><span data-en="Save offer" data-vi="Lưu ưu đãi">Lưu ưu đãi</span></button></div></article></div></div><aside class="app-card h-fit"><p class="eyebrow" data-en="Tell businesses" data-vi="Gửi mong muốn">Gửi mong muốn</p><h2 class="mt-1 section-title" data-en="What would you love?" data-vi="Bạn mong muốn ưu đãi gì?">Bạn mong muốn ưu đãi gì?</h2><p class="mt-2 text-sm leading-6 text-app-muted" data-en="Your idea is shared anonymously." data-vi="Ý tưởng được gửi ẩn danh.">Ý tưởng được gửi ẩn danh.</p><div class="mt-4 flex gap-2"><input id="wish-input" class="app-input" data-en-ph="e.g. Birthday nail package" data-vi-ph="VD: Gói nail sinh nhật" placeholder="VD: Gói nail sinh nhật"><button class="icon-button" type="button" data-action="add-wish" aria-label="Thêm mong muốn"><i data-lucide="plus" class="size-5" aria-hidden="true"></i></button></div><ul id="wish-list" class="mt-4 space-y-2 text-sm"><li class="rounded-xl bg-app-panel p-3" data-en="Weekend couple spa package" data-vi="Gói spa đôi cuối tuần">Gói spa đôi cuối tuần</li></ul></aside></div>
+         </section>
+         <section class="app-screen hidden" id="book1" data-ready="true" data-module="home" aria-labelledby="book1-title">
+           <div class="mx-auto max-w-3xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Step 1 of 3" data-vi="Bước 1/3">Bước 1/3</p><h1 id="book1-title" class="text-2xl font-black" data-en="Choose your appointment" data-vi="Chọn lịch hẹn">Chọn lịch hẹn</h1></div></div><div class="app-card"><h2 class="section-title" data-en="Service" data-vi="Dịch vụ">Dịch vụ</h2><div class="mt-3 grid gap-2 sm:grid-cols-2"><button class="app-chip justify-between rounded-xl" type="button" data-book-service="Gel manicure" aria-pressed="true"><span data-en="Gel manicure" data-vi="Sơn gel">Sơn gel</span><strong>$45</strong></button><button class="app-chip justify-between rounded-xl" type="button" data-book-service="Pedicure" aria-pressed="false"><span data-en="Signature pedicure" data-vi="Pedicure đặc biệt">Pedicure đặc biệt</span><strong>$55</strong></button></div><h2 class="mt-6 section-title" data-en="Technician" data-vi="Kỹ thuật viên">Kỹ thuật viên</h2><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" data-book-staff="Anna" aria-pressed="true">Anna</button><button class="app-chip" type="button" data-book-staff="Mia" aria-pressed="false">Mia</button><button class="app-chip" type="button" data-book-staff="No preference" aria-pressed="false" data-en="No preference" data-vi="Không yêu cầu">Không yêu cầu</button></div><h2 class="mt-6 section-title" data-en="Date & time" data-vi="Ngày & giờ">Ngày & giờ</h2><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" data-book-day="Thu 16 Jul" aria-pressed="true" data-en="Thu 16" data-vi="T5 16/7">T5 16/7</button><button class="app-chip" type="button" data-book-day="Fri 17 Jul" aria-pressed="false" data-en="Fri 17" data-vi="T6 17/7">T6 17/7</button><button class="app-chip" type="button" data-book-day="Sat 18 Jul" aria-pressed="false" data-en="Sat 18" data-vi="T7 18/7">T7 18/7</button></div><div class="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5"><button class="app-chip justify-center" type="button" data-book-time="10:00 AM" aria-pressed="false">10:00</button><button class="app-chip justify-center" type="button" data-book-time="11:30 AM" aria-pressed="false">11:30</button><button class="app-chip justify-center" type="button" data-book-time="2:00 PM" aria-pressed="true">14:00</button><button class="app-chip justify-center" type="button" data-book-time="3:30 PM" aria-pressed="false">15:30</button><button class="app-chip justify-center" type="button" data-book-time="5:00 PM" aria-pressed="false">17:00</button></div><button class="app-button mt-6 w-full" type="button" data-action="review-booking"><span data-en="Review booking" data-vi="Xem lại lịch hẹn">Xem lại lịch hẹn</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button></div></div>
+         </section>
+         <section class="app-screen hidden" id="book2" data-ready="true" data-module="home" aria-labelledby="book2-title">
+           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="book1" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Step 2 of 3" data-vi="Bước 2/3">Bước 2/3</p><h1 id="book2-title" class="text-2xl font-black" data-en="Review your request" data-vi="Kiểm tra yêu cầu">Kiểm tra yêu cầu</h1></div></div><div class="app-card"><div class="flex items-center gap-3 border-b border-app-line pb-4"><span class="grid size-12 place-items-center rounded-2xl bg-app-purple/10 text-app-pink"><i data-lucide="store" class="size-6" aria-hidden="true"></i></span><div><strong>Bitcoin Nail Bar</strong><p class="text-xs text-app-muted">1288 Westheimer Rd · 0.2 mi</p></div></div><dl class="mt-4 space-y-4 text-sm"><div class="flex justify-between gap-4"><dt class="text-app-muted" data-en="Service" data-vi="Dịch vụ">Dịch vụ</dt><dd id="booking-service-summary" class="font-bold">Sơn gel · $45</dd></div><div class="flex justify-between gap-4"><dt class="text-app-muted" data-en="Technician" data-vi="Kỹ thuật viên">Kỹ thuật viên</dt><dd id="booking-staff-summary" class="font-bold">Anna</dd></div><div class="flex justify-between gap-4"><dt class="text-app-muted" data-en="Time" data-vi="Thời gian">Thời gian</dt><dd id="booking-time-summary" class="font-bold">T5 16/7 · 14:00</dd></div></dl><label class="mt-5 block text-sm font-bold"><span data-en="Note for the business (optional)" data-vi="Ghi chú cho tiệm (không bắt buộc)">Ghi chú cho tiệm (không bắt buộc)</span><textarea id="booking-note" class="app-input mt-2 min-h-24" data-en-ph="Anything the team should know…" data-vi-ph="Điều tiệm cần biết…" placeholder="Điều tiệm cần biết…"></textarea></label><p class="mt-4 rounded-xl bg-app-cyan/5 p-3 text-xs leading-5 text-app-muted" data-en="This is a request. The business will confirm your appointment shortly." data-vi="Đây là yêu cầu đặt lịch. Doanh nghiệp sẽ xác nhận trong ít phút.">Đây là yêu cầu đặt lịch. Doanh nghiệp sẽ xác nhận trong ít phút.</p><button class="app-button mt-5 w-full" type="button" data-action="confirm-booking"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Send booking request" data-vi="Gửi yêu cầu đặt lịch">Gửi yêu cầu đặt lịch</span></button></div></div>
+         </section>
+         <section class="app-screen hidden" id="book3" data-ready="true" data-module="home" aria-labelledby="book3-title">
+-          <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="calendar-check-2" class="size-10" aria-hidden="true"></i></span><p class="eyebrow mt-6" data-en="Step 3 of 3" data-vi="Bước 3/3">Bước 3/3</p><h1 id="book3-title" class="mt-2 text-3xl font-black" data-en="Request sent" data-vi="Đã gửi yêu cầu">Đã gửi yêu cầu</h1><p class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted" data-en="Bitcoin Nail Bar usually responds within 10 minutes. We will notify you as soon as they confirm." data-vi="Bitcoin Nail Bar thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.">Bitcoin Nail Bar thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.</p><div class="app-card mt-6 text-left"><div id="booking-pending" class="flex items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-5" aria-hidden="true"></i></span><div><strong data-en="Awaiting confirmation" data-vi="Đang chờ xác nhận">Đang chờ xác nhận</strong><p class="text-xs text-app-muted">Gel manicure · Anna · Thu 2:00 PM</p></div></div><div id="booking-confirmed" class="hidden items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-green/10 text-app-green"><i data-lucide="circle-check" class="size-5" aria-hidden="true"></i></span><strong data-en="Appointment confirmed" data-vi="Lịch hẹn đã xác nhận">Lịch hẹn đã xác nhận</strong></div></div><button class="app-button mt-5 w-full" type="button" data-action="navigate" data-target="home" data-en="Back to home" data-vi="Về trang chủ">Về trang chủ</button></div></div>
++          <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="calendar-check-2" class="size-10" aria-hidden="true"></i></span><p class="eyebrow mt-6" data-en="Step 3 of 3" data-vi="Bước 3/3">Bước 3/3</p><h1 id="book3-title" class="mt-2 text-3xl font-black" data-en="Request sent" data-vi="Đã gửi yêu cầu">Đã gửi yêu cầu</h1><p id="booking-status-copy" class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted" data-en="Bitcoin Nail Bar usually responds within 10 minutes. We will notify you as soon as they confirm." data-vi="Bitcoin Nail Bar thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.">Bitcoin Nail Bar thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.</p><div class="app-card mt-6 text-left"><div id="booking-pending" class="flex items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-5" aria-hidden="true"></i></span><div><strong data-en="Awaiting confirmation" data-vi="Đang chờ xác nhận">Đang chờ xác nhận</strong><p class="text-xs text-app-muted" data-booking-copy></p></div></div><div id="booking-confirmed" class="hidden items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-green/10 text-app-green"><i data-lucide="circle-check" class="size-5" aria-hidden="true"></i></span><div><strong data-en="Appointment confirmed" data-vi="Lịch hẹn đã xác nhận">Lịch hẹn đã xác nhận</strong><p class="text-xs text-app-muted" data-booking-copy></p></div></div></div><button id="booking-demo-confirm" class="app-button mt-5 w-full" type="button" data-action="confirm-booking-demo" data-en="Simulate salon confirmation" data-vi="Mô phỏng tiệm xác nhận">Mô phỏng tiệm xác nhận</button><button id="booking-calendar" class="app-button-secondary mt-3 hidden w-full" type="button" data-action="add-calendar" data-en="Add to calendar" data-vi="Thêm vào lịch">Thêm vào lịch</button><button class="app-button-secondary mt-3 w-full" type="button" data-action="navigate" data-target="home" data-en="Back to home" data-vi="Về trang chủ">Về trang chủ</button></div></div>
+         </section>
+         <section class="app-screen hidden" id="login1" data-ready="true" data-module="home" aria-labelledby="login1-title">
+           <div class="mx-auto grid min-h-[70vh] max-w-md place-items-center"><div class="w-full"><span class="grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-app-purple to-app-pink"><i data-lucide="sparkles" class="size-6" aria-hidden="true"></i></span><p class="eyebrow mt-7" data-en="Welcome to NEXORA" data-vi="Chào mừng đến NEXORA">Chào mừng đến NEXORA</p><h1 id="login1-title" class="mt-2 text-3xl font-black" data-en="Your rewards, one tap away" data-vi="Mọi phần thưởng trong một chạm">Mọi phần thưởng trong một chạm</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="Enter your mobile number to sign in or create an account." data-vi="Nhập số điện thoại để đăng nhập hoặc tạo tài khoản.">Nhập số điện thoại để đăng nhập hoặc tạo tài khoản.</p><label class="mt-7 block text-sm font-bold"><span data-en="Mobile number" data-vi="Số điện thoại">Số điện thoại</span><div class="mt-2 flex gap-2"><span class="grid min-h-11 place-items-center rounded-xl border border-app-line bg-app-panel px-3 text-sm font-bold">+1</span><input id="login-phone" class="app-input" type="tel" inputmode="tel" autocomplete="tel" data-en-ph="(832) 555-0148" data-vi-ph="(832) 555-0148" placeholder="(832) 555-0148"></div></label><p id="login-phone-error" class="field-error hidden" role="alert"></p><button class="app-button mt-5 w-full" type="button" data-action="request-otp"><span data-en="Continue" data-vi="Tiếp tục">Tiếp tục</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button><p class="mt-5 text-center text-xs leading-5 text-app-muted" data-en="By continuing, you agree to the Terms and Privacy Policy." data-vi="Khi tiếp tục, bạn đồng ý với Điều khoản và Chính sách riêng tư.">Khi tiếp tục, bạn đồng ý với Điều khoản và Chính sách riêng tư.</p></div></div>
+         </section>
+         <section class="app-screen hidden" id="login2" data-ready="true" data-module="home" aria-labelledby="login2-title">
+           <div class="mx-auto grid min-h-[70vh] max-w-md place-items-center"><div class="w-full"><button class="icon-button" type="button" data-action="back" data-back-target="login1" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><p class="eyebrow mt-7" data-en="Secure sign in" data-vi="Đăng nhập an toàn">Đăng nhập an toàn</p><h1 id="login2-title" class="mt-2 text-3xl font-black" data-en="Check your messages" data-vi="Kiểm tra tin nhắn">Kiểm tra tin nhắn</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="We sent a 6-digit code to your US number." data-vi="Mã 6 chữ số đã được gửi đến số điện thoại US của bạn.">Mã 6 chữ số đã được gửi đến số điện thoại US của bạn.</p><label class="mt-7 block text-sm font-bold"><span data-en="Verification code" data-vi="Mã xác thực">Mã xác thực</span><input id="otp-code" class="app-input mt-2 text-center text-xl font-black tracking-[.4em]" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" data-en-ph="000000" data-vi-ph="000000" placeholder="000000"></label><p class="mt-2 rounded-xl bg-app-cyan/5 p-3 text-xs text-app-cyan" data-en="Prototype code: 246810" data-vi="Mã dùng thử: 246810">Mã dùng thử: 246810</p><p id="otp-error" class="field-error hidden" role="alert"></p><button class="app-button mt-5 w-full" type="button" data-action="verify-otp"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Verify & sign in" data-vi="Xác thực & đăng nhập">Xác thực & đăng nhập</span></button><button id="otp-resend" class="mt-4 min-h-11 w-full text-sm font-bold text-app-cyan" type="button" data-action="resend-code" data-en="Resend code" data-vi="Gửi lại mã">Gửi lại mã</button></div></div>
+         </section>
+         <section class="app-screen hidden" id="wallet" data-ready="true" data-module="wallet" aria-labelledby="wallet-title">
+           <div class="mb-5 flex items-end justify-between gap-4"><div><p class="eyebrow" data-en="Your rewards" data-vi="Phần thưởng của bạn">Phần thưởng của bạn</p><h1 id="wallet-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Points wallet" data-vi="Ví điểm">Ví điểm</h1><p class="mt-1 text-sm text-app-muted" data-en="Each business keeps its own point balance." data-vi="Điểm được tách riêng theo từng doanh nghiệp.">Điểm được tách riêng theo từng doanh nghiệp.</p></div><button type="button" class="app-button-secondary hidden sm:inline-flex" data-action="navigate" data-target="history"><i data-lucide="history" class="size-4" aria-hidden="true"></i><span data-en="History" data-vi="Lịch sử">Lịch sử</span></button></div>
+           <div id="wallet-business-list" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
+@@ -356,62 +356,63 @@
+           }
+         ],
+         tips: [],
+         directPayments: [],
+         bookingRequests: [],
+         appointments: [],
+         looks: [
+           { id: 'look-galaxy', businessId: BUSINESS_ID, visitId: 'visit-1001', staffProfileId: 'staff-anna', staffName: 'Anna', service: 'Gel manicure', color: 'OPI Bubble Bath #S86', note: 'Galaxy chrome', photoDataUrl: '', createdAt: '2026-07-12T16:20:00.000Z' }
+         ],
+         feedback: [],
++        feedbackClaims: [],
+         savedOfferIds: [],
+         wishes: ['Gói spa đôi cuối tuần'],
+         followedTechIds: [],
+         notifications: [
+           { id: 'note-welcome', type: 'system', title: { vi: 'Điểm mới đã được cộng', en: 'New points were added' }, target: 'history', read: false, createdAt: '2026-07-14T10:43:00.000Z' }
+         ],
+         offlineQueue: [],
+         ui: {
+           activeScreen: 'home', activeModule: 'home', selectedBusinessId: BUSINESS_ID,
+           selectedTip: 10, selectedTipMethod: 'Venmo', selectedStaffId: 'staff-anna',
+           paymentMethod: 'Zelle', rating: 0, currentRewardKey: null,
+           exploreFilter: 'all', offerFilter: 'all', pendingContext: {
+-            consentScopes: [], rewardAttempt: null, tipId: null, paymentId: null
++            consentScopes: [], rewardAttempt: null, tipId: null, paymentId: null, bookingId: null
+           },
+           bookingDraft: { businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM', note: '' },
+           overlay: null, pushPromptCount: 0
+         }
+       };
+     }
+ 
+     function isRecord(value) {
+       return Object.prototype.toString.call(value) === '[object Object]';
+     }
+ 
+     const OBJECT_COLLECTION_FIELDS = {
+       ledger: { id: 'string', businessId: 'string', type: 'string', pointsDelta: 'number', refType: 'string', refId: 'string', createdAt: 'string' },
+       consents: { id: 'string', scope: 'string', action: 'string', method: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
+       visits: { id: 'string', businessId: 'string', staffProfileId: 'string', occurredAt: 'string' },
+       checkins: { id: 'string', businessId: 'string', staffProfileId: 'nullableString', scannedAt: 'string', status: 'string' },
+       redemptions: { id: 'string', idempotencyKey: 'string', rewardKey: 'string', sourceBusinessId: 'string', acceptingBusinessId: 'string', cost: 'number', status: 'string', createdAt: 'string' },
+       tips: { id: 'string', businessId: 'string', staffProfileId: 'string', amount: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
+       directPayments: { id: 'string', businessId: 'string', amount: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
+-      bookingRequests: { id: 'string', businessId: 'string', status: 'string', createdAt: 'string' },
+-      appointments: { id: 'string', bookingId: 'string', businessId: 'string', status: 'string' },
++      bookingRequests: { id: 'string', businessId: 'string', service: 'string', staff: 'string', day: 'string', time: 'string', bookingBonus: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
++      appointments: { id: 'string', bookingId: 'string', businessId: 'string', service: 'string', staff: 'string', day: 'string', time: 'string', status: 'string', createdAt: 'string' },
+       looks: { id: 'string', businessId: 'string', visitId: 'nullableString', staffProfileId: 'nullableString', createdAt: 'string' },
+       feedback: { id: 'string', visitId: 'string', businessId: 'string', stars: 'number', createdAt: 'string' },
+       notifications: { id: 'string', type: 'string', target: 'string', createdAt: 'string' }
+     };
+ 
+     function isStringArrayPath(path) {
+       const key = path.join('.');
+-      return ['profile.paymentMethods', 'welcomeClaims', 'savedOfferIds', 'wishes', 'followedTechIds', 'offlineQueue', 'ui.pendingContext.consentScopes'].includes(key)
++      return ['profile.paymentMethods', 'welcomeClaims', 'savedOfferIds', 'wishes', 'followedTechIds', 'offlineQueue', 'feedbackClaims', 'ui.pendingContext.consentScopes'].includes(key)
+         || (path.length === 3 && path[2] === 'methods' && ['businesses', 'staffProfiles'].includes(path[0]));
+     }
+ 
+     function matchesFieldType(value, type) {
+       if (type === 'string') return typeof value === 'string' && value.length > 0;
+       if (type === 'number') return typeof value === 'number' && Number.isFinite(value);
+       if (type === 'nullableString') return value === null || typeof value === 'string';
+       return false;
+     }
+ 
+@@ -494,20 +495,71 @@
+         if (refType === 'tip' || type === 'tip_bonus') {
+           claims.push({ refType: 'tip', refId, entry });
+         }
+         if (refType === 'direct_payment' || ['visit_spend', 'directpay_bonus'].includes(type)) {
+           claims.push({ refType: 'direct_payment', refId, entry });
+         }
+         return claims;
+       });
+     }
+ 
++    function collectRawBookingLedgerClaims(ledger) {
++      if (!Array.isArray(ledger)) return [];
++      return ledger.flatMap((entry) => {
++        if (!isRecord(entry)) return [];
++        const type = typeof entry.type === 'string' ? entry.type.trim() : '';
++        const refType = typeof entry.refType === 'string' ? entry.refType.trim() : '';
++        const refId = typeof entry.refId === 'string' ? entry.refId.trim() : '';
++        return refId && (type === 'booking_bonus' || refType === 'booking') ? [refId] : [];
++      });
++    }
++
++    function collectRawAppointmentClaims(appointments) {
++      if (!Array.isArray(appointments)) return [];
++      return appointments.flatMap((appointment) => {
++        const bookingId = isRecord(appointment) && typeof appointment.bookingId === 'string'
++          ? appointment.bookingId.trim()
++          : '';
++        return bookingId ? [bookingId] : [];
++      });
++    }
++
++    function collectRawFeedbackLedgerClaims(ledger) {
++      if (!Array.isArray(ledger)) return [];
++      return ledger.flatMap((entry) => {
++        if (!isRecord(entry)) return [];
++        const type = typeof entry.type === 'string' ? entry.type.trim() : '';
++        const refType = typeof entry.refType === 'string' ? entry.refType.trim() : '';
++        const refId = typeof entry.refId === 'string' ? entry.refId.trim() : '';
++        const visitId = typeof entry.visitId === 'string' ? entry.visitId.trim() : '';
++        const businessId = typeof entry.businessId === 'string' ? entry.businessId.trim() : '';
++        return refId && (type === 'feedback' || refType === 'feedback')
++          ? [{ id: refId, visitId, businessId }]
++          : [];
++      });
++    }
++
++    function collectRawFeedbackClaims(feedback, feedbackClaims) {
++      const claims = Array.isArray(feedbackClaims)
++        ? feedbackClaims.flatMap((visitId) => typeof visitId === 'string' && visitId.trim() ? [{ visitId: visitId.trim() }] : [])
++        : [];
++      if (!Array.isArray(feedback)) return claims;
++      feedback.forEach((item) => {
++        if (!isRecord(item)) return;
++        const id = typeof item.id === 'string' ? item.id.trim() : '';
++        const visitId = typeof item.visitId === 'string' ? item.visitId.trim() : '';
++        const businessId = typeof item.businessId === 'string' ? item.businessId.trim() : '';
++        if (visitId) claims.push({ id, visitId, businessId });
++      });
++      return claims;
++    }
++
+     function normalizePersistedRedemptions(appState) {
+       appState.redemptions = appState.redemptions
+         .map(normalizePersistedRedemption)
+         .filter(Boolean);
+     }
+ 
+     function hasCurrentRewardMetadata(redemption) {
+       const reward = getRewardDefinition(redemption.rewardKey);
+       return Boolean(reward)
+         && redemption.rewardKey === reward.key
+@@ -814,41 +866,269 @@
+         }));
+       });
+       appState.directPayments = selectRecords(
+         paymentCandidates,
+         appState.directPayments.filter((payment) => payment.status === 'pending'),
+         'direct_payment'
+       );
+       appState.ledger = appState.ledger.filter((entry) => !isTransactionLedgerEntry(entry) || selectedEntries.has(entry));
+     }
+ 
++    function normalizedRequiredText(value) {
++      const normalized = typeof value === 'string' ? value.trim() : '';
++      return normalized || null;
++    }
++
++    function normalizePersistedBooking(appState, booking) {
++      if (!isRecord(booking)) return null;
++      const id = normalizedRequiredText(booking.id);
++      const businessId = normalizedRequiredText(booking.businessId);
++      const business = businessId ? getValidBusiness(appState, businessId) : null;
++      const service = normalizedRequiredText(booking.service);
++      const staff = normalizedRequiredText(booking.staff);
++      const day = normalizedRequiredText(booking.day);
++      const time = normalizedRequiredText(booking.time);
++      const status = ['requested', 'confirmed'].includes(booking.status) ? booking.status : null;
++      const createdAt = validStoredTimestamp(booking.createdAt) ? booking.createdAt : null;
++      const confirmedAt = booking.confirmedAt === null
++        ? null
++        : validStoredTimestamp(booking.confirmedAt) ? booking.confirmedAt : undefined;
++      const bookingBonus = canonicalRuleSnapshot(booking.bookingBonus, business?.bookingBonus);
++      if (!id || !business || !service || !staff || !day || !time || !status || !createdAt
++        || !Number.isSafeInteger(bookingBonus)) return null;
++      if ((status === 'requested' && confirmedAt !== null)
++        || (status === 'confirmed' && typeof confirmedAt !== 'string')) return null;
++      return {
++        ...booking,
++        id,
++        businessId,
++        service,
++        staff,
++        day,
++        time,
++        note: typeof booking.note === 'string' ? booking.note.trim() : '',
++        bookingBonus,
++        status,
++        createdAt,
++        confirmedAt
++      };
++    }
++
++    function normalizePersistedAppointment(appState, appointment) {
++      if (!isRecord(appointment)) return null;
++      const id = normalizedRequiredText(appointment.id);
++      const bookingId = normalizedRequiredText(appointment.bookingId);
++      const businessId = normalizedRequiredText(appointment.businessId);
++      const service = normalizedRequiredText(appointment.service);
++      const staff = normalizedRequiredText(appointment.staff);
++      const day = normalizedRequiredText(appointment.day);
++      const time = normalizedRequiredText(appointment.time);
++      const createdAt = validStoredTimestamp(appointment.createdAt) ? appointment.createdAt : null;
++      if (!id || !bookingId || !getValidBusiness(appState, businessId) || !service || !staff || !day || !time
++        || appointment.status !== 'confirmed' || !createdAt) return null;
++      return { ...appointment, id, bookingId, businessId, service, staff, day, time, status: 'confirmed', createdAt };
++    }
++
++    function isBookingLedgerEntry(entry) {
++      return entry.type === 'booking_bonus' || entry.refType === 'booking';
++    }
++
++    function isBookingLedgerPair(booking, entry) {
++      return entry.type === 'booking_bonus'
++        && entry.refType === 'booking'
++        && entry.refId === booking.id
++        && entry.businessId === booking.businessId
++        && entry.pointsDelta === booking.bookingBonus;
++    }
++
++    function isBookingAppointmentPair(booking, appointment) {
++      return appointment.bookingId === booking.id
++        && appointment.businessId === booking.businessId
++        && appointment.service === booking.service
++        && appointment.staff === booking.staff
++        && appointment.day === booking.day
++        && appointment.time === booking.time
++        && appointment.status === 'confirmed'
++        && appointment.createdAt === booking.confirmedAt;
++    }
++
++    function reconcileBookingPairs(appState, rawLedgerClaims = [], rawAppointmentClaims = []) {
++      const selectedEntries = new Set();
++      const selectedLedgerIds = new Set();
++      const selectedAppointments = new Set();
++      const selectedAppointmentIds = new Set();
++      const selectedBookingIds = new Set();
++      const selectedBookings = [];
++      const bookingLedger = appState.ledger.filter(isBookingLedgerEntry);
++      const candidates = [];
++
++      appState.bookingRequests.filter((booking) => booking.status === 'confirmed').forEach((booking) => {
++        const appointments = appState.appointments.filter((appointment) => isBookingAppointmentPair(booking, appointment));
++        const ledgerEntries = booking.bookingBonus > 0
++          ? bookingLedger.filter((entry) => isBookingLedgerPair(booking, entry))
++          : [null];
++        appointments.forEach((appointment) => ledgerEntries.forEach((entry) => {
++          candidates.push({
++            booking,
++            appointment,
++            entry,
++            sortKey: `${transactionSortKey(booking)}:${transactionSortKey(appointment)}:${entry ? ledgerSortKey(entry) : ''}`
++          });
++        }));
++      });
++      candidates.sort((left, right) => left.sortKey.localeCompare(right.sortKey));
++      candidates.forEach((candidate) => {
++        if (selectedBookingIds.has(candidate.booking.id)
++          || selectedAppointments.has(candidate.appointment)
++          || selectedAppointmentIds.has(candidate.appointment.id)
++          || (candidate.entry && (selectedEntries.has(candidate.entry) || selectedLedgerIds.has(candidate.entry.id)))) return;
++        const allLinkedLedger = bookingLedger.filter((entry) => entry.refId === candidate.booking.id);
++        if ((candidate.booking.bookingBonus === 0 && allLinkedLedger.length)
++          || (candidate.booking.bookingBonus > 0 && allLinkedLedger.length !== 1)) return;
++        selectedBookingIds.add(candidate.booking.id);
++        selectedAppointments.add(candidate.appointment);
++        selectedAppointmentIds.add(candidate.appointment.id);
++        if (candidate.entry) {
++          selectedEntries.add(candidate.entry);
++          selectedLedgerIds.add(candidate.entry.id);
++        }
++        selectedBookings.push(candidate.booking);
++      });
++
++      const replayedIds = new Set([...rawLedgerClaims, ...rawAppointmentClaims]);
++      appState.bookingRequests
++        .filter((booking) => booking.status === 'requested')
++        .sort((left, right) => transactionSortKey(left).localeCompare(transactionSortKey(right)))
++        .forEach((booking) => {
++          if (!selectedBookingIds.has(booking.id) && !replayedIds.has(booking.id)) {
++            selectedBookingIds.add(booking.id);
++            selectedBookings.push(booking);
++          }
++        });
++      appState.bookingRequests = selectedBookings;
++      appState.appointments = appState.appointments.filter((appointment) => selectedAppointments.has(appointment));
++      appState.ledger = appState.ledger.filter((entry) => !isBookingLedgerEntry(entry) || selectedEntries.has(entry));
++    }
++
++    function normalizePersistedFeedback(appState, feedback) {
++      if (!isRecord(feedback)) return null;
++      const id = normalizedRequiredText(feedback.id);
++      const visitId = normalizedRequiredText(feedback.visitId);
++      const businessId = normalizedRequiredText(feedback.businessId);
++      const visits = visitId && Array.isArray(appState.visits)
++        ? appState.visits.filter((visit) => isRecord(visit) && visit.id === visitId)
++        : [];
++      const visit = visits.length === 1 ? visits[0] : null;
++      const createdAt = validStoredTimestamp(feedback.createdAt) ? feedback.createdAt : null;
++      if (!id || !visit || !getValidBusiness(appState, businessId) || visit.businessId !== businessId
++        || !Number.isInteger(feedback.stars) || feedback.stars < 1 || feedback.stars > 5 || !createdAt) return null;
++      return {
++        ...feedback,
++        id,
++        visitId,
++        businessId,
++        stars: feedback.stars,
++        text: typeof feedback.text === 'string' ? feedback.text.trim() : '',
++        createdAt
++      };
++    }
++
++    function isFeedbackLedgerEntry(entry) {
++      return entry.type === 'feedback' || entry.refType === 'feedback';
++    }
++
++    function isFeedbackLedgerPair(feedback, entry) {
++      return entry.type === 'feedback'
++        && entry.refType === 'feedback'
++        && entry.refId === feedback.id
++        && entry.visitId === feedback.visitId
++        && entry.businessId === feedback.businessId
++        && entry.pointsDelta === 15;
++    }
++
++    function reconcileFeedbackPairs(appState, rawFeedbackClaims = [], rawLedgerClaims = []) {
++      const feedbackLedger = appState.ledger.filter(isFeedbackLedgerEntry);
++      const candidates = [];
++      appState.feedback.forEach((feedback) => {
++        feedbackLedger.filter((entry) => isFeedbackLedgerPair(feedback, entry)).forEach((entry) => {
++          candidates.push({
++            feedback,
++            entry,
++            sortKey: `${transactionSortKey(feedback)}:${ledgerSortKey(entry)}`
++          });
++        });
++      });
++      candidates.sort((left, right) => left.sortKey.localeCompare(right.sortKey));
++      const feedbackIds = new Set();
++      const visitIds = new Set();
++      const selectedEntries = new Set();
++      const selectedLedgerIds = new Set();
++      const selectedFeedback = [];
++      candidates.forEach((candidate) => {
++        const linked = feedbackLedger.filter((entry) => entry.refId === candidate.feedback.id);
++        if (linked.length !== 1
++          || feedbackIds.has(candidate.feedback.id)
++          || visitIds.has(candidate.feedback.visitId)
++          || selectedEntries.has(candidate.entry)
++          || selectedLedgerIds.has(candidate.entry.id)) return;
++        feedbackIds.add(candidate.feedback.id);
++        visitIds.add(candidate.feedback.visitId);
++        selectedEntries.add(candidate.entry);
++        selectedLedgerIds.add(candidate.entry.id);
++        selectedFeedback.push(candidate.feedback);
++      });
++      const claimedVisits = new Set(appState.feedbackClaims);
++      [...rawFeedbackClaims, ...rawLedgerClaims].forEach((claim) => {
++        const visits = appState.visits.filter((visit) => visit.id === claim.visitId);
++        if (visits.length !== 1) return;
++        if (claim.businessId && claim.businessId !== visits[0].businessId) return;
++        claimedVisits.add(claim.visitId);
++      });
++      selectedFeedback.forEach((feedback) => claimedVisits.add(feedback.visitId));
++      appState.feedback = selectedFeedback;
++      appState.feedbackClaims = [...claimedVisits]
++        .filter((visitId) => appState.visits.some((visit) => visit.id === visitId))
++        .sort();
++      appState.ledger = appState.ledger.filter((entry) => !isFeedbackLedgerEntry(entry) || selectedEntries.has(entry));
++    }
++
+     function deduplicateLedgerIds(appState) {
+       const selectedById = new Map();
+-      const priority = (entry) => isRewardLedgerEntry(entry) ? 0 : isTransactionLedgerEntry(entry) ? 1 : 2;
++      const priority = (entry) => isRewardLedgerEntry(entry)
++        ? 0
++        : isTransactionLedgerEntry(entry)
++          ? 1
++          : isBookingLedgerEntry(entry)
++            ? 2
++            : isFeedbackLedgerEntry(entry) ? 3 : 4;
+       appState.ledger.forEach((entry) => {
+         const selected = selectedById.get(entry.id);
+         if (!selected
+           || priority(entry) < priority(selected)
+           || (priority(entry) === priority(selected) && ledgerSortKey(entry).localeCompare(ledgerSortKey(selected)) < 0)) {
+           selectedById.set(entry.id, entry);
+         }
+       });
+       appState.ledger = appState.ledger.filter((entry) => selectedById.get(entry.id) === entry);
+     }
+ 
+     function reconcilePendingTransactions(appState) {
+       const tipId = appState.ui.pendingContext.tipId;
+       const paymentId = appState.ui.pendingContext.paymentId;
+       if (tipId !== null && !appState.tips.some((tip) => tip.id === tipId)) appState.ui.pendingContext.tipId = null;
+       if (paymentId !== null && !appState.directPayments.some((payment) => payment.id === paymentId)) {
+         appState.ui.pendingContext.paymentId = null;
+       }
++      const bookingId = appState.ui.pendingContext.bookingId;
++      if (bookingId !== null && !appState.bookingRequests.some((booking) => booking.id === bookingId)) {
++        appState.ui.pendingContext.bookingId = null;
++      }
+     }
+ 
+     function mergeKnownUnion(defaultValue, incomingValue, path) {
+       if (path.join('.') === 'session.otpRequestedAt') {
+         const valid = incomingValue === null || (typeof incomingValue === 'number' && Number.isFinite(incomingValue));
+         return { handled: true, value: valid ? incomingValue : structuredClone(defaultValue) };
+       }
+       if (path.length === 3 && path[0] === 'balances' && path[2] === 'expiringPoints') {
+         if (incomingValue === null) return { handled: true, value: null };
+         if (isRecord(incomingValue) && typeof incomingValue.amount === 'number' && Number.isFinite(incomingValue.amount) && typeof incomingValue.date === 'string') {
+@@ -871,21 +1151,21 @@
+           && typeof incomingValue.completed === 'boolean';
+         return {
+           handled: true,
+           value: valid ? {
+             rewardKey: incomingValue.rewardKey.trim(),
+             idempotencyKey: incomingValue.idempotencyKey.trim(),
+             completed: incomingValue.completed
+           } : structuredClone(defaultValue)
+         };
+       }
+-      if (['ui.pendingContext.tipId', 'ui.pendingContext.paymentId'].includes(path.join('.'))) {
++      if (['ui.pendingContext.tipId', 'ui.pendingContext.paymentId', 'ui.pendingContext.bookingId'].includes(path.join('.'))) {
+         const normalized = typeof incomingValue === 'string' ? incomingValue.trim() : '';
+         return { handled: true, value: normalized || null };
+       }
+       if (path.join('.') === 'ui.overlay') {
+         return { handled: true, value: incomingValue === null || isRecord(incomingValue) ? structuredClone(incomingValue) : structuredClone(defaultValue) };
+       }
+       return { handled: false };
+     }
+ 
+     function mergeRecord(defaultValue, incomingValue, path = []) {
+@@ -909,20 +1189,24 @@
+         return typeof incomingValue === 'number' && Number.isFinite(incomingValue) ? incomingValue : defaultValue;
+       }
+       return typeof incomingValue === typeof defaultValue ? incomingValue : structuredClone(defaultValue);
+     }
+ 
+     function migrateState(value) {
+       const defaults = createDefaultState();
+       if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
+       const rawRedemptionClaims = collectRawRedemptionClaims(value.redemptions);
+       const rawTransactionLedgerClaims = collectRawTransactionLedgerClaims(value.ledger);
++      const rawBookingLedgerClaims = collectRawBookingLedgerClaims(value.ledger);
++      const rawAppointmentClaims = collectRawAppointmentClaims(value.appointments);
++      const rawFeedbackLedgerClaims = collectRawFeedbackLedgerClaims(value.ledger);
++      const rawFeedbackClaims = collectRawFeedbackClaims(value.feedback, value.feedbackClaims);
+       const migrated = mergeRecord(defaults, value);
+       migrated.schemaVersion = SCHEMA_VERSION;
+       migrated.updatedAt = new Date().toISOString();
+       if (!['vi', 'en'].includes(migrated.profile.language)) migrated.profile.language = defaults.profile.language;
+       migrated.consents = migrated.consents.map((consent) => consent.scope === 'network'
+         ? { ...consent, scope: 'networkOffers' }
+         : consent);
+       Object.entries(migrated.businesses).forEach(([businessId, business]) => {
+         business.id = businessId;
+       });
+@@ -950,30 +1234,54 @@
+         ? selectedBusiness.methods.filter((method) => PAYMENT_METHODS.includes(method))
+         : [];
+       if (!enabledPaymentMethods.includes(migrated.ui.paymentMethod)) {
+         migrated.ui.paymentMethod = enabledPaymentMethods[0] ?? defaults.ui.paymentMethod;
+       }
+       normalizePersistedRedemptions(migrated);
+       migrated.tips = migrated.tips.map((tip) => normalizePersistedTip(migrated, tip)).filter(Boolean);
+       migrated.directPayments = migrated.directPayments
+         .map((payment) => normalizePersistedDirectPayment(migrated, payment))
+         .filter(Boolean);
++      migrated.bookingRequests = migrated.bookingRequests
++        .map((booking) => normalizePersistedBooking(migrated, booking))
++        .filter(Boolean);
++      migrated.appointments = migrated.appointments
++        .map((appointment) => normalizePersistedAppointment(migrated, appointment))
++        .filter(Boolean);
++      migrated.feedback = migrated.feedback
++        .map((item) => normalizePersistedFeedback(migrated, item))
++        .filter(Boolean);
+       const pendingAttempt = migrated.ui.pendingContext.rewardAttempt;
+       const rawPendingClaims = isRecord(pendingAttempt) && Array.isArray(value.redemptions)
+         ? rawRedemptionClaims.filter((claim) => claim.idempotencyKey === pendingAttempt.idempotencyKey)
+         : [];
+       reconcileRewardPairs(migrated);
+       reconcileTransactionPairs(migrated, rawTransactionLedgerClaims);
++      reconcileBookingPairs(migrated, rawBookingLedgerClaims, rawAppointmentClaims);
++      reconcileFeedbackPairs(migrated, rawFeedbackClaims, rawFeedbackLedgerClaims);
+       deduplicateLedgerIds(migrated);
+       reconcilePendingRewardAttempt(migrated, rawPendingClaims);
+       reconcilePendingTransactions(migrated);
+       migrated.ui.pendingContext.consentScopes = migrated.ui.pendingContext.consentScopes.filter((scope) => CONSENT_SCOPES.includes(scope));
++      const bookingDraftBusinessId = normalizedRequiredText(migrated.ui.bookingDraft.businessId);
++      migrated.ui.bookingDraft.businessId = getValidBusiness(migrated, bookingDraftBusinessId)
++        ? bookingDraftBusinessId
++        : BUSINESS_ID;
++      for (const field of ['service', 'staff', 'day', 'time']) {
++        migrated.ui.bookingDraft[field] = normalizedRequiredText(migrated.ui.bookingDraft[field]) ?? '';
++      }
++      migrated.ui.bookingDraft.note = typeof migrated.ui.bookingDraft.note === 'string'
++        ? migrated.ui.bookingDraft.note.trim()
++        : '';
++      if (!Number.isInteger(migrated.ui.rating) || migrated.ui.rating < 0 || migrated.ui.rating > 5) {
++        migrated.ui.rating = defaults.ui.rating;
++      }
+       delete migrated.pointBalance;
+       delete migrated.savedOffers;
+       return migrated;
+     }
+ 
+     function loadState(storage = window.localStorage, now = () => Date.now()) {
+       const raw = storage.getItem(STORAGE_KEY);
+       if (!raw) {
+         const fresh = createDefaultState();
+         storage.setItem(STORAGE_KEY, JSON.stringify(fresh));
+@@ -1597,20 +1905,260 @@
+       appState.ledger = nextLedger;
+       return {
+         ok: true,
+         payment: confirmedPayment,
+         spendPoints: points.spendPoints,
+         bonusPoints: points.bonusPoints,
+         idempotent: false
+       };
+     }
+ 
++    function hasBookingState(appState) {
++      return hasTransactionState(appState, 'bookingRequests') && Array.isArray(appState.appointments);
++    }
++
++    function createBookingRequest(appState, input, now = Date.now()) {
++      if (!hasBookingState(appState) || !isRecord(input)) return { ok: false, code: 'invalid_state' };
++      const businessId = normalizedRequiredText(input.businessId);
++      const business = businessId ? getValidBusiness(appState, businessId) : null;
++      if (!business) return { ok: false, code: 'unknown_business' };
++      const service = normalizedRequiredText(input.service);
++      const staff = normalizedRequiredText(input.staff);
++      const day = normalizedRequiredText(input.day);
++      const time = normalizedRequiredText(input.time);
++      if (!service || !staff || !day || !time) return { ok: false, code: 'missing_selection' };
++      const bookingBonus = canonicalRuleSnapshot(business.bookingBonus, null);
++      if (!Number.isSafeInteger(bookingBonus)) return { ok: false, code: 'invalid_rule' };
++      const timestamp = domainTimestamp(now);
++      if (!timestamp.ok) return timestamp;
++      const id = createDomainId('book');
++      if (!id.ok) return id;
++      if (appState.bookingRequests.some((booking) => isRecord(booking) && booking.id === id.value)) {
++        return { ok: false, code: 'id_generation_failed' };
++      }
++      const booking = {
++        id: id.value,
++        businessId,
++        service,
++        staff,
++        day,
++        time,
++        note: typeof input.note === 'string' ? input.note.trim() : '',
++        bookingBonus,
++        status: 'requested',
++        createdAt: timestamp.value,
++        confirmedAt: null
++      };
++      const nextBookings = [...appState.bookingRequests, booking];
++      const nextUi = {
++        ...appState.ui,
++        pendingContext: { ...appState.ui.pendingContext, bookingId: booking.id }
++      };
++      appState.bookingRequests = nextBookings;
++      appState.ui = nextUi;
++      return { ok: true, booking, points: bookingBonus };
++    }
++
++    function isCanonicalRuntimeBooking(appState, booking) {
++      const normalized = normalizePersistedBooking(appState, booking);
++      return Boolean(normalized)
++        && booking.id === normalized.id
++        && booking.businessId === normalized.businessId
++        && booking.service === normalized.service
++        && booking.staff === normalized.staff
++        && booking.day === normalized.day
++        && booking.time === normalized.time
++        && typeof booking.note === 'string'
++        && booking.bookingBonus === normalized.bookingBonus
++        && booking.status === normalized.status
++        && booking.createdAt === normalized.createdAt
++        && booking.confirmedAt === normalized.confirmedAt;
++    }
++
++    function confirmBookingRequest(appState, bookingId, now = Date.now()) {
++      if (!hasBookingState(appState)) return { ok: false, code: 'invalid_state' };
++      const normalizedId = normalizedRequiredText(bookingId);
++      const matches = appState.bookingRequests.filter((booking) => isRecord(booking) && booking.id === normalizedId);
++      if (!matches.length) return { ok: false, code: 'not_found' };
++      if (matches.length !== 1 || !isCanonicalRuntimeBooking(appState, matches[0])) {
++        return { ok: false, code: 'invalid_state' };
++      }
++      const booking = matches[0];
++      const linkedAppointments = appState.appointments.filter((appointment) => isRecord(appointment)
++        && appointment.bookingId === booking.id);
++      const linkedLedger = appState.ledger.filter((entry) => isRecord(entry) && entry.refId === booking.id);
++      if (booking.status === 'confirmed') {
++        const validAppointment = linkedAppointments.length === 1
++          && isBookingAppointmentPair(booking, linkedAppointments[0]);
++        const validLedger = booking.bookingBonus > 0
++          ? linkedLedger.length === 1 && isBookingLedgerPair(booking, linkedLedger[0])
++          : linkedLedger.length === 0;
++        if (!validAppointment || !validLedger) return { ok: false, code: 'invalid_state' };
++        return { ok: true, booking, appointment: linkedAppointments[0], points: booking.bookingBonus, idempotent: true };
++      }
++      if (linkedAppointments.length || linkedLedger.length) return { ok: false, code: 'invalid_state' };
++      const ledgerValidation = booking.bookingBonus > 0
++        ? validateLedgerInput(appState, {
++            businessId: booking.businessId,
++            type: 'booking_bonus',
++            pointsDelta: booking.bookingBonus,
++            refType: 'booking',
++            refId: booking.id
++          })
++        : { ok: true, balance: getBusinessBalance(appState, booking.businessId) };
++      if (!ledgerValidation.ok) return ledgerValidation;
++      const timestamp = domainTimestamp(now);
++      if (!timestamp.ok) return timestamp;
++      const appointmentId = createDomainId('appt');
++      if (!appointmentId.ok) return appointmentId;
++      const ledgerId = booking.bookingBonus > 0 ? createDomainId('ledger-booking') : null;
++      if (ledgerId && !ledgerId.ok) return ledgerId;
++      const existingAppointmentIds = new Set(appState.appointments.map((appointment) => isRecord(appointment) ? appointment.id : null));
++      const existingLedgerIds = new Set(appState.ledger.map((entry) => isRecord(entry) ? entry.id : null));
++      if (existingAppointmentIds.has(appointmentId.value)
++        || (ledgerId && (existingLedgerIds.has(ledgerId.value) || ledgerId.value === appointmentId.value))) {
++        return { ok: false, code: 'id_generation_failed' };
++      }
++      const confirmedBooking = { ...booking, status: 'confirmed', confirmedAt: timestamp.value };
++      const appointment = {
++        id: appointmentId.value,
++        bookingId: booking.id,
++        businessId: booking.businessId,
++        service: booking.service,
++        staff: booking.staff,
++        day: booking.day,
++        time: booking.time,
++        status: 'confirmed',
++        createdAt: timestamp.value
++      };
++      const ledgerEntry = ledgerId ? {
++        id: ledgerId.value,
++        businessId: booking.businessId,
++        type: 'booking_bonus',
++        pointsDelta: booking.bookingBonus,
++        refType: 'booking',
++        refId: booking.id,
++        createdAt: timestamp.value
++      } : null;
++      const nextBookings = appState.bookingRequests.map((item) => item === booking ? confirmedBooking : item);
++      const nextAppointments = [...appState.appointments, appointment];
++      const nextLedger = ledgerEntry ? [ledgerEntry, ...appState.ledger] : [...appState.ledger];
++      const nextBalances = ledgerEntry
++        ? {
++            ...appState.balances,
++            [booking.businessId]: { ...ledgerValidation.balance, points: ledgerValidation.nextPoints }
++          }
++        : { ...appState.balances };
++      appState.balances = nextBalances;
++      appState.bookingRequests = nextBookings;
++      appState.appointments = nextAppointments;
++      appState.ledger = nextLedger;
++      return {
++        ok: true,
++        booking: confirmedBooking,
++        appointment,
++        points: booking.bookingBonus,
++        idempotent: false
++      };
++    }
++
++    function hasFeedbackState(appState) {
++      return hasTransactionState(appState, 'feedback')
++        && Array.isArray(appState.visits)
++        && Array.isArray(appState.feedbackClaims);
++    }
++
++    function isCanonicalRuntimeFeedback(appState, feedback) {
++      const normalized = normalizePersistedFeedback(appState, feedback);
++      return Boolean(normalized)
++        && feedback.id === normalized.id
++        && feedback.visitId === normalized.visitId
++        && feedback.businessId === normalized.businessId
++        && feedback.stars === normalized.stars
++        && typeof feedback.text === 'string'
++        && feedback.createdAt === normalized.createdAt;
++    }
++
++    function submitFeedback(appState, input, now = Date.now()) {
++      if (!hasFeedbackState(appState) || !isRecord(input)) return { ok: false, code: 'invalid_state' };
++      const visitId = normalizedRequiredText(input.visitId);
++      const businessId = normalizedRequiredText(input.businessId);
++      const business = businessId ? getValidBusiness(appState, businessId) : null;
++      if (!business) return { ok: false, code: 'unknown_business' };
++      const visits = appState.visits.filter((visit) => isRecord(visit) && visit.id === visitId);
++      if (!visits.length) return { ok: false, code: 'visit_not_found' };
++      if (visits.length !== 1) return { ok: false, code: 'invalid_state' };
++      if (visits[0].businessId !== businessId) return { ok: false, code: 'visit_business_mismatch' };
++      if (!Number.isInteger(input.stars) || input.stars < 1 || input.stars > 5) {
++        return { ok: false, code: 'invalid_rating' };
++      }
++      const existing = appState.feedback.filter((item) => isRecord(item) && item.visitId === visitId);
++      const claimed = appState.feedbackClaims.includes(visitId);
++      if (existing.length) {
++        if (existing.length !== 1 || !claimed || !isCanonicalRuntimeFeedback(appState, existing[0])) {
++          return { ok: false, code: 'invalid_state' };
++        }
++        const linkedLedger = appState.ledger.filter((entry) => isRecord(entry) && entry.refId === existing[0].id);
++        if (linkedLedger.length !== 1 || !isFeedbackLedgerPair(existing[0], linkedLedger[0])) {
++          return { ok: false, code: 'invalid_state' };
++        }
++        return { ok: false, code: 'already_submitted', feedback: existing[0], points: 0 };
++      }
++      if (claimed) return { ok: false, code: 'already_submitted', points: 0 };
++      const timestamp = domainTimestamp(now);
++      if (!timestamp.ok) return timestamp;
++      const feedbackId = createDomainId('feedback');
++      if (!feedbackId.ok) return feedbackId;
++      const ledgerValidation = validateLedgerInput(appState, {
++        businessId,
++        type: 'feedback',
++        pointsDelta: 15,
++        refType: 'feedback',
++        refId: feedbackId.value
++      });
++      if (!ledgerValidation.ok) return ledgerValidation;
++      const ledgerId = createDomainId('ledger-feedback');
++      if (!ledgerId.ok) return ledgerId;
++      if (appState.feedback.some((item) => isRecord(item) && item.id === feedbackId.value)
++        || appState.ledger.some((entry) => isRecord(entry) && entry.id === ledgerId.value)) {
++        return { ok: false, code: 'id_generation_failed' };
++      }
++      const feedback = {
++        id: feedbackId.value,
++        visitId,
++        businessId,
++        stars: input.stars,
++        text: typeof input.text === 'string' ? input.text.trim() : '',
++        createdAt: timestamp.value
++      };
++      const ledgerEntry = {
++        id: ledgerId.value,
++        businessId,
++        type: 'feedback',
++        pointsDelta: 15,
++        refType: 'feedback',
++        refId: feedback.id,
++        visitId,
++        createdAt: timestamp.value
++      };
++      const nextBalance = { ...ledgerValidation.balance, points: ledgerValidation.nextPoints };
++      const nextBalances = { ...appState.balances, [businessId]: nextBalance };
++      const nextFeedback = [...appState.feedback, feedback];
++      const nextClaims = [...appState.feedbackClaims, visitId];
++      const nextLedger = [ledgerEntry, ...appState.ledger];
++      appState.balances = nextBalances;
++      appState.feedback = nextFeedback;
++      appState.feedbackClaims = nextClaims;
++      appState.ledger = nextLedger;
++      return { ok: true, feedback, points: 15 };
++    }
++
+     function redeemReward(appState, rewardKey, idempotencyKey, now = Date.now()) {
+       if (!isRecord(appState) || !isRecord(appState.businesses) || !isRecord(appState.balances)
+         || !Array.isArray(appState.redemptions) || !Array.isArray(appState.ledger)) {
+         return { ok: false, code: 'invalid_state' };
+       }
+       const normalizedRewardKey = typeof rewardKey === 'string' ? rewardKey.trim() : '';
+       const normalizedIdempotencyKey = typeof idempotencyKey === 'string' ? idempotencyKey.trim() : '';
+       if (!normalizedIdempotencyKey) return { ok: false, code: 'invalid_idempotency_key' };
+       const existing = appState.redemptions.filter((item) => isRecord(item)
+         && typeof item.idempotencyKey === 'string'
+@@ -1677,21 +2225,23 @@
+       appState.redemptions = nextRedemptions;
+       appState.ledger = nextLedger;
+       return { ok: true, redemption, idempotent: false };
+     }
+     const COPY = {
+       vi: {
+         points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
+         paymentSent: 'Đã gửi ${amount} cho tiệm', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu',
+         offerSaved: 'Đã lưu ưu đãi', wishRequired: 'Hãy nhập mong muốn', wishShared: 'Đã gửi mong muốn ẩn danh',
+         lookServiceRequired: 'Hãy nhập tên dịch vụ', lookSaved: 'Đã lưu kiểu mới', ratingRequired: 'Hãy chọn số sao',
+-        reviewThanks: 'Cảm ơn phản hồi của bạn', openPayment: 'Mở {method} để thanh toán', addPhoto: 'Thêm ảnh',
++        reviewThanks: 'Đã gửi phản hồi riêng và cộng 15 điểm.', feedbackSent: 'Đã gửi phản hồi', feedbackSubmit: 'Gửi phản hồi + nhận 15 điểm', feedbackAlreadySent: 'Lượt ghé này đã gửi phản hồi.', feedbackFailed: 'Không thể gửi phản hồi. Vui lòng thử lại.',
++        bookingMissingSelection: 'Chọn đủ dịch vụ, thợ, ngày và giờ.', bookingFailed: 'Không thể lưu yêu cầu đặt lịch. Vui lòng thử lại.', bookingConfirmFailed: 'Không thể xác nhận lịch hẹn. Vui lòng thử lại.', bookingRequestedTitle: 'Đã gửi yêu cầu', bookingConfirmedTitle: 'Lịch hẹn đã xác nhận', bookingPendingSla: '{business} thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.', bookingConfirmedCopy: '{business} đã xác nhận lịch hẹn và cộng {points} điểm.',
++        openPayment: 'Mở {method} để thanh toán', addPhoto: 'Thêm ảnh',
+         methodNotEnabledStaff: '{method} · thợ chưa bật', methodNotEnabledBusiness: '{method} · tiệm chưa bật',
+         tipSentTo: 'Đã gửi tip cho {recipient}', tipReceived: '{recipient} đã nhận tip của bạn',
+         tipPendingSla: '{business} thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.',
+         tipPointsAdded: 'Đã cộng {points} điểm cảm ơn', paymentPendingSla: '{business} thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.',
+         paymentPointsAdded: 'Đã cộng {points} điểm thanh toán trực tiếp', invalidTipAmount: 'Số tiền tip tối thiểu là $1 và tối đa hai chữ số thập phân.',
+         invalidPaymentAmount: 'Số tiền phải từ $1 và tối đa hai chữ số thập phân.', staffMethodDisabled: 'Thợ chưa bật phương thức này.',
+         businessMethodDisabled: 'Tiệm chưa bật phương thức này.', transactionFailed: 'Không thể lưu giao dịch. Vui lòng thử lại.',
+         addPhotoDetail: 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.',
+         verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
+         inviteCopied: 'Đã sao chép liên kết', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
+@@ -1707,21 +2257,23 @@
+         paymentMethodsTitle: 'Phương thức thanh toán', paymentMethodsSaved: 'Đã lưu phương thức.',
+         privacyTitle: 'Thông tin riêng tư', privacyDetail: 'NEXORA không bán dữ liệu cá nhân. Tùy chọn của bản mẫu chỉ được lưu trên thiết bị này.',
+         resetTitle: 'Đặt lại dữ liệu mẫu?', resetDetail: 'Điểm, lịch sử và tùy chọn sẽ trở về dữ liệu ban đầu.',
+         logoutTitle: 'Đăng xuất?', logoutDetail: 'Dữ liệu điểm vẫn được giữ trên thiết bị này.'
+       },
+       en: {
+         points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
+         paymentSent: '${amount} sent to the salon', insufficientPoints: 'Not enough points', saved: 'Saved',
+         offerSaved: 'Offer saved', wishRequired: 'Enter a wish first', wishShared: 'Anonymous wish shared',
+         lookServiceRequired: 'Enter a service name', lookSaved: 'New look saved', ratingRequired: 'Choose a rating',
+-        reviewThanks: 'Thanks for your feedback', openPayment: 'Open {method} to pay', addPhoto: 'Add a photo',
++        reviewThanks: 'Private feedback sent and 15 points added.', feedbackSent: 'Feedback sent', feedbackSubmit: 'Send feedback + earn 15 points', feedbackAlreadySent: 'Feedback was already sent for this visit.', feedbackFailed: 'Could not send feedback. Please try again.',
++        bookingMissingSelection: 'Choose service, technician, day and time.', bookingFailed: 'Could not save the booking request. Please try again.', bookingConfirmFailed: 'Could not confirm the appointment. Please try again.', bookingRequestedTitle: 'Request sent', bookingConfirmedTitle: 'Appointment confirmed', bookingPendingSla: '{business} usually responds within 10 minutes. We will notify you as soon as they confirm.', bookingConfirmedCopy: '{business} confirmed the appointment and added {points} points.',
++        openPayment: 'Open {method} to pay', addPhoto: 'Add a photo',
+         methodNotEnabledStaff: '{method} · not enabled by staff', methodNotEnabledBusiness: '{method} · not enabled by business',
+         tipSentTo: 'Tip sent to {recipient}', tipReceived: '{recipient} received your tip',
+         tipPendingSla: '{business} usually confirms within 10 minutes. NEXORA never holds your money.',
+         tipPointsAdded: '{points} thank-you points added', paymentPendingSla: '{business} usually confirms within 10 minutes. NEXORA never holds your money.',
+         paymentPointsAdded: '{points} direct-pay points added', invalidTipAmount: 'Tip must be at least $1 with at most two decimal places.',
+         invalidPaymentAmount: 'Amount must be at least $1 with at most two decimal places.', staffMethodDisabled: 'The staff member has not enabled this method.',
+         businessMethodDisabled: 'The business has not enabled this method.', transactionFailed: 'Could not save the transaction. Please try again.',
+         addPhotoDetail: 'The production app will open your device photo picker.',
+         verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
+         inviteCopied: 'Invite link copied', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
+@@ -2195,52 +2747,180 @@
+       title.textContent = color || service;
+       const detail = document.createElement('span');
+       detail.className = 'mt-1 text-xs text-app-muted';
+       detail.textContent = service;
+       card.append(title, detail);
+       document.getElementById('looks-grid').prepend(card);
+       navigateTo('looks');
+       showToast(t('lookSaved'));
+     }
+ 
+-    function setRating(rating) {
+-      state.rating = Number(rating);
++    function applyRating(rating) {
+       document.querySelectorAll('[data-action="set-rating"]').forEach((button) => {
+-        const active = Number(button.dataset.rating) <= state.rating;
++        const active = Number(button.dataset.rating) <= rating;
+         button.setAttribute('aria-pressed', String(active));
+         button.querySelector('svg, i')?.classList.toggle('fill-current', active);
+       });
+     }
+ 
++    function setRating(rating) {
++      const normalized = Number(rating);
++      if (!Number.isInteger(normalized) || normalized < 1 || normalized > 5) {
++        return { ok: false, code: 'invalid_rating' };
++      }
++      commitState((draft) => { draft.ui.rating = normalized; });
++      applyRating(normalized);
++      return { ok: true, rating: normalized };
++    }
++
+     function submitReview() {
+-      if (!state.rating) return showToast(t('ratingRequired'), 'error');
++      const result = commitState((draft) => submitFeedback(draft, {
++        visitId: 'visit-1001',
++        businessId: BUSINESS_ID,
++        stars: draft.ui.rating,
++        text: document.getElementById('review-notes').value
++      }));
++      if (!result.ok) {
++        const errorKeys = {
++          invalid_rating: 'ratingRequired',
++          already_submitted: 'feedbackAlreadySent'
++        };
++        const errorKey = errorKeys[result.code] ?? 'feedbackFailed';
++        showToast(t(errorKey), 'error');
++        renderFeedback();
++        return result;
++      }
+       document.getElementById('review-notes').value = '';
++      renderApp();
+       navigateTo('home');
+       showToast(t('reviewThanks'));
++      return result;
+     }
+ 
+     function reviewBooking() {
+-      document.getElementById('booking-service-summary').textContent = state.booking.service;
+-      document.getElementById('booking-staff-summary').textContent = state.booking.staff;
+-      document.getElementById('booking-time-summary').textContent = `${state.booking.day} · ${state.booking.time}`;
++      renderBooking();
+       navigateTo('book2');
+     }
+ 
+     function confirmBooking() {
+-      document.getElementById('booking-pending').classList.remove('hidden');
+-      document.getElementById('booking-confirmed').classList.add('hidden');
++      const note = document.getElementById('booking-note').value;
++      const result = commitState((draft) => {
++        draft.ui.bookingDraft.note = typeof note === 'string' ? note.trim() : '';
++        return createBookingRequest(draft, draft.ui.bookingDraft);
++      });
++      if (!result.ok) {
++        const errorKeys = { missing_selection: 'bookingMissingSelection' };
++        showToast(t(errorKeys[result.code] ?? 'bookingFailed'), 'error');
++        return result;
++      }
++      renderBooking();
+       navigateTo('book3');
++      return result;
+     }
+ 
+-    function selectExclusive(control, selector, stateKey, value) {
++    function confirmBookingDemo() {
++      const result = commitState((draft) => confirmBookingRequest(draft, draft.ui.pendingContext.bookingId));
++      if (!result.ok) {
++        showToast(t('bookingConfirmFailed'), 'error');
++        return result;
++      }
++      renderApp();
++      return result;
++    }
++
++    function formatIcsUtc(date) {
++      const pad = (value) => String(value).padStart(2, '0');
++      return `${date.getUTCFullYear()}${pad(date.getUTCMonth() + 1)}${pad(date.getUTCDate())}T${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}${pad(date.getUTCSeconds())}Z`;
++    }
++
++    function escapeIcsText(value) {
++      return String(value ?? '')
++        .replaceAll('\\', '\\\\')
++        .replaceAll(';', '\\;')
++        .replaceAll(',', '\\,')
++        .replace(/\r\n|\r|\n/g, '\\n');
++    }
++
++    function parseBookingStart(booking) {
++      const dayMatch = normalizedRequiredText(booking.day)?.match(/^(?:[A-Za-z]{3}\s+)?(\d{1,2})\s+([A-Za-z]{3})$/);
++      const timeMatch = normalizedRequiredText(booking.time)?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
++      const created = new Date(booking.createdAt);
++      const month = dayMatch ? ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].indexOf(dayMatch[2].toLowerCase()) : -1;
++      if (!dayMatch || !timeMatch || month < 0 || !Number.isFinite(created.getTime())) return null;
++      const day = Number(dayMatch[1]);
++      const rawHour = Number(timeMatch[1]);
++      const minute = Number(timeMatch[2]);
++      if (rawHour < 1 || rawHour > 12 || minute < 0 || minute > 59) return null;
++      const hour = rawHour % 12 + (timeMatch[3].toUpperCase() === 'PM' ? 12 : 0);
++      const start = new Date(Date.UTC(created.getUTCFullYear(), month, day, hour, minute));
++      if (start.getUTCMonth() !== month || start.getUTCDate() !== day) return null;
++      return start;
++    }
++
++    function buildBookingCalendar(appState, bookingId) {
++      const relation = confirmBookingRequest(appState, bookingId);
++      if (!relation.ok || !relation.idempotent) return { ok: false, code: 'booking_not_confirmed' };
++      const start = parseBookingStart(relation.booking);
++      const stamp = new Date(relation.booking.confirmedAt);
++      if (!start || !Number.isFinite(stamp.getTime())) return { ok: false, code: 'invalid_calendar_time' };
++      const end = new Date(start.getTime() + 60 * 60 * 1000);
++      const business = getValidBusiness(appState, relation.booking.businessId);
++      if (!business || typeof business.name !== 'string' || !business.name.trim()) {
++        return { ok: false, code: 'unknown_business' };
++      }
++      const lines = [
++        'BEGIN:VCALENDAR',
++        'VERSION:2.0',
++        'PRODID:-//NEXORA//Customer Booking//EN',
++        'CALSCALE:GREGORIAN',
++        'BEGIN:VEVENT',
++        `UID:${escapeIcsText(`${relation.appointment.id}@nexora.local`)}`,
++        `DTSTAMP:${formatIcsUtc(stamp)}`,
++        `DTSTART:${formatIcsUtc(start)}`,
++        `DTEND:${formatIcsUtc(end)}`,
++        `SUMMARY:${escapeIcsText(`${relation.booking.service} at ${business.name.trim()}`)}`,
++        `DESCRIPTION:${escapeIcsText(relation.booking.note)}`,
++        'END:VEVENT',
++        'END:VCALENDAR'
++      ];
++      return { ok: true, content: `${lines.join('\r\n')}\r\n` };
++    }
++
++    function downloadBookingCalendar(appState, bookingId) {
++      const calendar = buildBookingCalendar(appState, bookingId);
++      if (!calendar.ok
++        || typeof URL?.createObjectURL !== 'function'
++        || typeof URL?.revokeObjectURL !== 'function'
++        || typeof Blob !== 'function') return calendar;
++      let objectUrl = null;
++      try {
++        const link = document.createElement('a');
++        objectUrl = URL.createObjectURL(new Blob([calendar.content], { type: 'text/calendar;charset=utf-8' }));
++        link.href = objectUrl;
++        link.download = 'nexora-booking.ics';
++        link.click();
++        return { ok: true };
++      } catch {
++        return { ok: false, code: 'calendar_failed' };
++      } finally {
++        if (objectUrl) {
++          try {
++            URL.revokeObjectURL(objectUrl);
++          } catch {
++            // Calendar download already completed; cleanup failures stay non-fatal.
++          }
++        }
++      }
++    }
++
++    function selectExclusive(control, selector) {
+       document.querySelectorAll(selector).forEach((button) => button.setAttribute('aria-pressed', String(button === control)));
+-      if (stateKey) state.booking[stateKey] = value;
+     }
+ 
+     const ACTIONS = new Map();
+ 
+     function registerAction(name, handler) {
+       ACTIONS.set(name, handler);
+     }
+ 
+     registerAction('navigate', (control) => navigateTo(control.dataset.target));
+     registerAction('back', (control) => navigateTo(control.dataset.backTarget));
+@@ -2431,20 +3111,23 @@
+         control.disabled = false;
+       }
+     });
+     registerAction('save-offer', (control) => saveOffer(control));
+     registerAction('add-wish', () => addWish());
+     registerAction('save-look', () => saveLook());
+     registerAction('set-rating', (control) => setRating(control.dataset.rating));
+     registerAction('submit-review', () => submitReview());
+     registerAction('review-booking', () => reviewBooking());
+     registerAction('confirm-booking', () => confirmBooking());
++    registerAction('confirm-booking-demo', () => confirmBookingDemo());
++    registerAction('add-calendar', () => downloadBookingCalendar(state, state.ui.pendingContext.bookingId));
++    registerAction('open-google-review', () => window.open?.('https://www.google.com/search?q=Bitcoin+Nail+Bar+reviews', '_blank', 'noopener,noreferrer'));
+     registerAction('upload-look', (control) => openOverlay({
+       title: t('addPhoto'),
+       html: t('addPhotoDetail'),
+       confirmLabel: t('gotIt'),
+       hideCancel: true
+     }, control));
+     registerAction('show-directions', () => showToast(t('openingMaps')));
+     registerAction('copy-referral', () => {
+       navigator.clipboard?.writeText('https://nexora.example/invite/JESSICA50');
+       showToast(t('inviteCopied'));
+@@ -2466,21 +3149,29 @@
+       }
+       const payment = event.target.closest('[data-payment-method]');
+       if (payment) {
+         if (payment.disabled) return;
+         commitState((draft) => { draft.ui.paymentMethod = payment.dataset.paymentMethod; });
+         selectExclusive(payment, '[data-payment-method]');
+         const label = document.querySelector('[data-action="send-payment"] span');
+         if (label) label.textContent = t('openPayment', { method: state.ui.paymentMethod });
+         return;
+       }
+-      for (const key of ['service', 'staff', 'day', 'time']) { const control = event.target.closest(`[data-book-${key}]`); if (control) return selectExclusive(control, `[data-book-${key}]`, key, control.dataset[`book${key[0].toUpperCase()}${key.slice(1)}`]); }
++      for (const field of ['service', 'staff', 'day', 'time']) {
++        const bookingControl = event.target.closest(`[data-book-${field}]`);
++        if (bookingControl) {
++          const datasetKey = `book${field[0].toUpperCase()}${field.slice(1)}`;
++          commitState((draft) => { draft.ui.bookingDraft[field] = bookingControl.dataset[datasetKey]; });
++          selectExclusive(bookingControl, `[data-book-${field}]`);
++          return;
++        }
++      }
+       const control = event.target.closest('[data-action]');
+       if (!control || control.disabled) return;
+       const handler = ACTIONS.get(control.dataset.action);
+       if (handler) handler(control, event);
+     }
+ 
+     function handleInput(event) {
+       if (event.target.id === 'explore-search') filterExplore(event.target.value);
+       if (event.target.id === 'offer-search') filterOffers(event.target.value);
+       if (event.target.id === 'payment-amount') {
+@@ -2784,29 +3475,97 @@
+       document.getElementById('paydone-title').textContent = t('paymentSent', { amount: payment.amount.toFixed(2) });
+       document.getElementById('payment-pending-copy').textContent = t('paymentPendingSla', { business: business.name });
+       document.getElementById('payment-confirmed-amount').textContent = `$${payment.amount.toFixed(2)}`;
+       document.getElementById('payment-result-method').textContent = payment.method;
+       document.getElementById('payment-confirmed-points-copy').textContent = t('paymentPointsAdded', { points: formatPoints(points.totalPoints, false) });
+       document.getElementById('payment-confirmed-points').textContent = `+${formatPoints(points.totalPoints)}`;
+       document.getElementById('payment-pending').classList.toggle('hidden', payment.status === 'confirmed');
+       document.getElementById('payment-confirmed').classList.toggle('hidden', payment.status !== 'confirmed');
+     }
+ 
++    function bookingDetail(booking) {
++      return `${booking.service} · ${booking.staff} · ${booking.day} ${booking.time}`;
++    }
++
++    function renderBooking() {
++      const draft = state.ui.bookingDraft;
++      document.getElementById('booking-service-summary').textContent = draft.service;
++      document.getElementById('booking-staff-summary').textContent = draft.staff;
++      document.getElementById('booking-time-summary').textContent = `${draft.day} · ${draft.time}`;
++      for (const field of ['service', 'staff', 'day', 'time']) {
++        const datasetKey = `book${field[0].toUpperCase()}${field.slice(1)}`;
++        document.querySelectorAll(`[data-book-${field}]`).forEach((control) => {
++          control.setAttribute('aria-pressed', String(control.dataset[datasetKey] === draft[field]));
++        });
++      }
++      const booking = state.bookingRequests.find((item) => item.id === state.ui.pendingContext.bookingId);
++      if (!booking) return;
++      const confirmed = booking.status === 'confirmed';
++      document.getElementById('booking-pending').classList.toggle('hidden', confirmed);
++      document.getElementById('booking-pending').classList.toggle('flex', !confirmed);
++      document.getElementById('booking-confirmed').classList.toggle('hidden', !confirmed);
++      document.getElementById('booking-confirmed').classList.toggle('flex', confirmed);
++      document.getElementById('booking-demo-confirm').classList.toggle('hidden', confirmed);
++      document.getElementById('booking-calendar').classList.toggle('hidden', !confirmed);
++      let statusKey = 'requested';
++      if (confirmed) statusKey = 'confirmed';
++      const statusCopy = {
++        requested: { title: 'bookingRequestedTitle', detail: 'bookingPendingSla' },
++        confirmed: { title: 'bookingConfirmedTitle', detail: 'bookingConfirmedCopy' }
++      }[statusKey];
++      document.getElementById('book3-title').textContent = t(statusCopy.title);
++      const business = getValidBusiness(state, booking.businessId);
++      document.getElementById('booking-status-copy').textContent = t(statusCopy.detail, {
++        business: business?.name ?? t('unknownBusiness'),
++        points: formatPoints(booking.bookingBonus, false)
++      });
++      document.querySelectorAll('[data-booking-copy]').forEach((element) => {
++        element.textContent = bookingDetail(booking);
++      });
++    }
++
++    function renderAppointment() {
++      const container = document.getElementById('home-appointment');
++      if (!container) return;
++      const appointment = state.appointments.at(-1);
++      container.classList.toggle('hidden', !appointment);
++      container.classList.toggle('flex', Boolean(appointment));
++      const copy = container.querySelector('[data-appointment-copy]');
++      if (appointment && copy) copy.textContent = bookingDetail(appointment);
++    }
++
++    function renderFeedback() {
++      const alreadySubmitted = state.feedbackClaims.includes('visit-1001');
++      const submit = document.querySelector('[data-action="submit-review"]');
++      if (submit) {
++        submit.disabled = alreadySubmitted;
++        submit.setAttribute('aria-disabled', String(alreadySubmitted));
++        const label = submit.querySelector('span');
++        let labelKey = 'feedbackSubmit';
++        if (alreadySubmitted) labelKey = 'feedbackSent';
++        if (label) label.textContent = t(labelKey);
++      }
++      applyRating(state.ui.rating);
++    }
++
+     function renderDomainViews() {
+       renderProfile();
+       renderBalances();
+       renderLedger();
+       renderRewards();
+       renderTipMethods();
+       renderPaymentMethods();
+       renderTipResult();
+       renderPaymentResult();
++      renderBooking();
++      renderAppointment();
++      renderFeedback();
+     }
+ 
+     function restorePersistedUi() {
+       let screenId = state.ui.activeScreen;
+       if (!Object.prototype.hasOwnProperty.call(SCREEN_MODULE, screenId)) {
+         screenId = 'home';
+         state.ui.activeScreen = screenId;
+         state.ui.activeModule = SCREEN_MODULE[screenId];
+       }
+       if (screenId === 'redeem') {
+@@ -2826,20 +3585,26 @@
+         state.ui.activeScreen = screenId;
+         state.ui.activeModule = SCREEN_MODULE[screenId];
+         state.ui.pendingContext.tipId = null;
+       }
+       if (screenId === 'paydone' && !state.directPayments.some((payment) => payment.id === state.ui.pendingContext.paymentId)) {
+         screenId = 'pay';
+         state.ui.activeScreen = screenId;
+         state.ui.activeModule = SCREEN_MODULE[screenId];
+         state.ui.pendingContext.paymentId = null;
+       }
++      if (screenId === 'book3' && !state.bookingRequests.some((booking) => booking.id === state.ui.pendingContext.bookingId)) {
++        screenId = 'book1';
++        state.ui.activeScreen = screenId;
++        state.ui.activeModule = SCREEN_MODULE[screenId];
++        state.ui.pendingContext.bookingId = null;
++      }
+       showScreen(screenId);
+       updateNavigation();
+     }
+ 
+     function renderApp() {
+       applyLanguage(state.profile.language);
+       renderNavigation();
+       renderGlobalState();
+       updateNavigation();
+       renderDomainViews();
+@@ -2861,20 +3626,23 @@
+       migrateState,
+       loadState,
+       saveState,
+       translate,
+       getBusinessBalance,
+       appendLedger,
+       createTip,
+       confirmTipRecord,
+       createDirectPayment,
+       confirmDirectPayment,
++      createBookingRequest,
++      confirmBookingRequest,
++      submitFeedback,
+       redeemReward,
+       normalizeUsPhone,
+       requestOtp,
+       verifyOtp,
+       recordConsent,
+       stageConsentScopes,
+       confirmPendingConsent,
+       skipPendingConsent,
+       setPreference,
+       setBusinessMarketing,
+diff --git a/html/customer/cutomer-reward.test.mjs b/html/customer/cutomer-reward.test.mjs
+index 1c7887a..2f5453e 100644
+--- a/html/customer/cutomer-reward.test.mjs
++++ b/html/customer/cutomer-reward.test.mjs
+@@ -26,74 +26,86 @@ function createClassList(initial = []) {
+     contains(name) { return values.has(name); },
+     toggle(name, force) {
+       const active = force === undefined ? !values.has(name) : Boolean(force);
+       if (active) values.add(name);
+       else values.delete(name);
+       return active;
+     }
+   };
+ }
+ 
+-function createStubElement({ id = '', dataset = {}, textContent = '', placeholder = '', classNames = [], onFocus = null } = {}) {
++function createStubElement({ id = '', dataset = {}, textContent = '', placeholder = '', classNames = [], onFocus = null, querySelectors = {} } = {}) {
+   const attributes = {};
+   return {
+     id,
+     dataset,
+     textContent,
+     placeholder,
+     attributes,
+     children: [],
+     classList: createClassList(classNames),
+     disabled: false,
+     hidden: false,
+     style: {},
++    clicked: false,
+     isConnected: true,
+     innerHTML: '',
+     append(...children) { this.children.push(...children); },
+     prepend(...children) { this.children.unshift(...children); },
+     replaceChildren(...children) { this.children = [...children]; },
+     remove() { this.isConnected = false; },
+     setAttribute(name, value) { attributes[name] = String(value); },
+     getAttribute(name) { return attributes[name] ?? null; },
+     removeAttribute(name) { delete attributes[name]; },
+     getClientRects() { return this.isConnected && !this.hidden && !this.classList.contains('hidden') ? [{}] : []; },
+-    querySelector() { return null; },
+-    querySelectorAll() { return []; },
++    querySelector(selector) { return querySelectors[selector] ?? null; },
++    querySelectorAll(selector) {
++      const result = querySelectors[selector];
++      return Array.isArray(result) ? result : result ? [result] : [];
++    },
+     closest() { return null; },
++    click() { this.clicked = true; },
+     focus() { onFocus?.(this); }
+   };
+ }
+ 
+ function createDocumentStub({
+   localizedNodes = [], placeholderNodes = [], languageControls = [],
+   notificationControls = [], overlayCloseControls = [], balancePointNodes = [],
+   balanceWithUnitNodes = [], balanceAvailableNodes = [], rewardGapValueNodes = [],
+   rewardGapCopyNodes = [], rewardProgressNodes = [], signatureRewardControls = [],
+-  screenNodes = []
++  screenNodes = [], extraElements = [], selectorNodes = {}
+ } = {}) {
+   const listeners = [];
+-  const elements = new Map(screenNodes.map((element) => [element.id, element]));
++  const elements = new Map([...screenNodes, ...extraElements].map((element) => [element.id, element]));
+   const document = {
+     listeners,
+     documentElement: { lang: 'vi' },
+     body: { classList: createClassList() },
+     activeElement: null,
+     addEventListener(type, handler) { listeners.push({ type, handler }); },
+     createElement() { return createStubElement(); },
+     getElementById(id) {
+       if (!elements.has(id)) {
+         elements.set(id, createStubElement({ id, onFocus: (element) => { document.activeElement = element; } }));
+       }
+       return elements.get(id);
+     },
+-    querySelector() { return null; },
++    querySelector(selector) {
++      const result = selectorNodes[selector];
++      return Array.isArray(result) ? result[0] ?? null : result ?? null;
++    },
+     querySelectorAll(selector) {
++      if (Object.prototype.hasOwnProperty.call(selectorNodes, selector)) {
++        const result = selectorNodes[selector];
++        return Array.isArray(result) ? result : result ? [result] : [];
++      }
+       if (selector === '[data-en][data-vi]') return localizedNodes;
+       if (selector === '[data-en-ph][data-vi-ph]') return placeholderNodes;
+       if (selector === '[data-language]') return languageControls;
+       if (selector === '[data-action="open-notifications"]') return notificationControls;
+       if (selector === '[data-action="close-overlay"]') return overlayCloseControls;
+       if (selector === '[data-balance-points]') return balancePointNodes;
+       if (selector === '[data-balance-with-unit]') return balanceWithUnitNodes;
+       if (selector === '[data-balance-available]') return balanceAvailableNodes;
+       if (selector === '[data-reward-gap-value]') return rewardGapValueNodes;
+       if (selector === '[data-reward-gap-copy]') return rewardGapCopyNodes;
+@@ -103,21 +115,23 @@ function createDocumentStub({
+       return [];
+     }
+   };
+   return document;
+ }
+ 
+ function testApi(seed = {}, {
+   skipInit = true,
+   document,
+   randomUUID = () => '00000000-0000-4000-8000-000000000001',
+-  open = () => null
++  open = () => null,
++  url = URL,
++  blob = Blob
+ } = {}) {
+   const source = html();
+   const script = source.match(/<script>\s*([\s\S]*?)<\/script>\s*<\/body>/)?.[1];
+   assert.ok(script, 'inline application script must exist');
+   const storage = createMemoryStorage(seed);
+   const window = {
+     localStorage: storage,
+     NEXORA_SKIP_INIT: skipInit,
+     setTimeout() { return 1; },
+     clearTimeout() {},
+@@ -126,21 +140,22 @@ function testApi(seed = {}, {
+   };
+   if (document) window.document = document;
+   const globals = {
+     window,
+     localStorage: storage,
+     structuredClone,
+     Intl,
+     Date,
+     Math,
+     JSON,
+-    URL,
++    URL: url,
++    Blob: blob,
+     crypto: { randomUUID },
+     console
+   };
+   if (document) globals.document = document;
+   const context = vm.createContext(globals);
+   vm.runInContext(script, context);
+   return { api: window.NEXORA_TEST_API, storage, context };
+ }
+ 
+ test('creates versioned Vietnamese demo state with per-business balances', () => {
+@@ -1660,20 +1675,379 @@ test('reuses one persisted idempotency key for repeated confirmation of the same
+   const second = context.confirmReward(false);
+   assert.equal(first.ok, true);
+   assert.equal(second.redemption.id, first.redemption.id);
+   assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].points", context), 1950);
+   assert.equal(
+     apiState(reloadedStorage).redemptions.filter((item) => item.idempotencyKey === attempt.idempotencyKey).length,
+     1
+   );
+ });
+ 
++const validBookingInput = {
++  businessId: 'bitcoin-nail-bar',
++  service: ' Gel manicure ',
++  staff: ' Anna ',
++  day: ' Thu 16 Jul ',
++  time: ' 2:00 PM ',
++  note: ' Màu hồng sữa '
++};
++
++test('keeps booking points pending, snapshots the rule and confirms exactly once', () => {
++  let uuidCalls = 0;
++  const { api } = testApi({}, {
++    randomUUID: () => {
++      uuidCalls += 1;
++      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
++    }
++  });
++  const app = api.createDefaultState();
++  const before = app.balances['bitcoin-nail-bar'].points;
++  const requested = api.createBookingRequest(app, validBookingInput, 1000);
++
++  assert.equal(requested.ok, true);
++  assert.equal(requested.booking.status, 'requested');
++  assert.equal(requested.booking.service, 'Gel manicure');
++  assert.equal(requested.booking.bookingBonus, 25);
++  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
++  assert.equal(app.appointments.length, 0);
++  assert.equal(app.ledger.some((entry) => entry.refId === requested.booking.id), false);
++
++  app.businesses['bitcoin-nail-bar'].bookingBonus = 999;
++  const first = api.confirmBookingRequest(app, requested.booking.id, 2000);
++  const second = api.confirmBookingRequest(app, requested.booking.id, 3000);
++
++  assert.equal(first.ok, true);
++  assert.equal(first.idempotent, false);
++  assert.equal(second.idempotent, true);
++  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 25);
++  assert.equal(app.appointments.length, 1);
++  assert.equal(app.appointments[0].bookingId, requested.booking.id);
++  assert.equal(app.ledger.filter((entry) => entry.refId === requested.booking.id).length, 1);
++  assert.equal(uuidCalls, 3);
++});
++
++test('rejects noncanonical booking inputs and keeps create and confirm failures atomic', () => {
++  const { api } = testApi();
++  const app = api.createDefaultState();
++  const invalidCalls = [
++    () => api.createBookingRequest(app, { ...validBookingInput, businessId: 'missing' }, 1000),
++    () => api.createBookingRequest(app, { ...validBookingInput, service: '   ' }, 1000),
++    () => api.createBookingRequest(app, { ...validBookingInput, staff: null }, 1000),
++    () => api.createBookingRequest(app, { ...validBookingInput, day: '' }, 1000),
++    () => api.createBookingRequest(app, { ...validBookingInput, time: ' ' }, 1000),
++    () => api.createBookingRequest(app, validBookingInput, Infinity)
++  ];
++  invalidCalls.forEach((invoke) => {
++    const before = JSON.stringify(app);
++    assert.equal(invoke().ok, false);
++    assert.equal(JSON.stringify(app), before);
++  });
++
++  const malformedUuid = testApi({}, { randomUUID: () => 'not-a-uuid' }).api;
++  const malformedState = malformedUuid.createDefaultState();
++  const malformedBefore = JSON.stringify(malformedState);
++  assert.equal(malformedUuid.createBookingRequest(malformedState, validBookingInput, 1000).code, 'id_generation_failed');
++  assert.equal(JSON.stringify(malformedState), malformedBefore);
++
++  let uuidCalls = 0;
++  const confirmApi = testApi({}, {
++    randomUUID: () => {
++      uuidCalls += 1;
++      if (uuidCalls === 3) throw new Error('booking ledger UUID unavailable');
++      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
++    }
++  }).api;
++  const confirmState = confirmApi.createDefaultState();
++  const booking = confirmApi.createBookingRequest(confirmState, validBookingInput, 1000).booking;
++  const beforeConfirm = JSON.stringify(confirmState);
++  assert.equal(confirmApi.confirmBookingRequest(confirmState, booking.id, 2000).code, 'id_generation_failed');
++  assert.equal(JSON.stringify(confirmState), beforeConfirm);
++});
++
++test('rejects broken confirmed booking relationships and supports a zero-point business', () => {
++  let uuidCalls = 0;
++  const { api } = testApi({}, {
++    randomUUID: () => {
++      uuidCalls += 1;
++      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
++    }
++  });
++  const app = api.createDefaultState();
++  const booking = api.createBookingRequest(app, validBookingInput, 1000).booking;
++  api.confirmBookingRequest(app, booking.id, 2000);
++  app.appointments[0].businessId = 'golden-glow-spa';
++  const beforeRetry = JSON.stringify(app);
++  assert.equal(api.confirmBookingRequest(app, booking.id, 3000).code, 'invalid_state');
++  assert.equal(JSON.stringify(app), beforeRetry);
++
++  const moonState = api.createDefaultState();
++  const moonBefore = moonState.balances['moon-coffee'].points;
++  const moon = api.createBookingRequest(moonState, {
++    ...validBookingInput,
++    businessId: 'moon-coffee',
++    service: 'Latte tasting'
++  }, 4000).booking;
++  const confirmed = api.confirmBookingRequest(moonState, moon.id, 5000);
++  assert.equal(confirmed.ok, true);
++  assert.equal(confirmed.points, 0);
++  assert.equal(moonState.appointments.length, 1);
++  assert.equal(moonState.ledger.some((entry) => entry.refId === moon.id), false);
++  assert.equal(moonState.balances['moon-coffee'].points, moonBefore);
++});
++
++test('quarantines downgraded booking claims during migration so confirmation cannot replay', () => {
++  let uuidCalls = 0;
++  const { api } = testApi({}, {
++    randomUUID: () => {
++      uuidCalls += 1;
++      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
++    }
++  });
++  const app = api.createDefaultState();
++  const booking = api.createBookingRequest(app, validBookingInput, 1000).booking;
++  api.confirmBookingRequest(app, booking.id, 2000);
++  app.bookingRequests = [{ ...app.bookingRequests[0], status: 'requested', confirmedAt: null }];
++  const linked = app.ledger.find((entry) => entry.refId === booking.id);
++  linked.refType = 'tampered';
++  const balanceAfterAward = app.balances['bitcoin-nail-bar'].points;
++  uuidCalls = 0;
++
++  const migrated = api.migrateState(app);
++  assert.equal(migrated.bookingRequests.some((item) => item.id === booking.id), false);
++  assert.equal(migrated.appointments.some((item) => item.bookingId === booking.id), false);
++  assert.equal(migrated.ledger.some((entry) => entry.refId === booking.id), false);
++  assert.equal(migrated.ui.pendingContext.bookingId, null);
++  assert.equal(migrated.balances['bitcoin-nail-bar'].points, balanceAfterAward);
++  assert.equal(api.confirmBookingRequest(migrated, booking.id, 3000).code, 'not_found');
++  assert.equal(uuidCalls, 0);
++});
++
++test('awards 15 points for one-star private feedback and blocks another award by visit', () => {
++  let uuidCalls = 0;
++  const { api } = testApi({}, {
++    randomUUID: () => {
++      uuidCalls += 1;
++      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
++    }
++  });
++  const app = api.createDefaultState();
++  const before = app.balances['bitcoin-nail-bar'].points;
++  const first = api.submitFeedback(app, {
++    visitId: ' visit-1001 ', businessId: ' bitcoin-nail-bar ', stars: 1, text: ' Cần cải thiện '
++  }, 1000);
++  const second = api.submitFeedback(app, {
++    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 5, text: 'Lặp'
++  }, 2000);
++
++  assert.equal(first.ok, true);
++  assert.equal(first.feedback.stars, 1);
++  assert.equal(first.feedback.text, 'Cần cải thiện');
++  assert.equal(second.code, 'already_submitted');
++  assert.equal(app.feedback.length, 1);
++  assert.equal(app.ledger.filter((entry) => entry.refId === first.feedback.id).length, 1);
++  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 15);
++  assert.equal(uuidCalls, 2);
++});
++
++test('validates feedback visit ownership and precomputes IDs before any mutation', () => {
++  const { api } = testApi();
++  const app = api.createDefaultState();
++  for (const input of [
++    { visitId: 'missing', businessId: 'bitcoin-nail-bar', stars: 5 },
++    { visitId: 'visit-1001', businessId: 'golden-glow-spa', stars: 5 },
++    { visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 0 },
++    { visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 1.5 }
++  ]) {
++    const before = JSON.stringify(app);
++    assert.equal(api.submitFeedback(app, input, 1000).ok, false);
++    assert.equal(JSON.stringify(app), before);
++  }
++
++  let uuidCalls = 0;
++  const atomicApi = testApi({}, {
++    randomUUID: () => {
++      uuidCalls += 1;
++      if (uuidCalls === 2) throw new Error('feedback ledger UUID unavailable');
++      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
++    }
++  }).api;
++  const atomicState = atomicApi.createDefaultState();
++  const atomicBefore = JSON.stringify(atomicState);
++  assert.equal(atomicApi.submitFeedback(atomicState, {
++    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 5, text: 'Tốt'
++  }, 1000).code, 'id_generation_failed');
++  assert.equal(JSON.stringify(atomicState), atomicBefore);
++});
++
++test('rejects a broken runtime feedback relation and migration blocks replay of a raw claim', () => {
++  let uuidCalls = 0;
++  const { api, storage } = testApi({}, {
++    randomUUID: () => {
++      uuidCalls += 1;
++      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
++    }
++  });
++  const app = api.createDefaultState();
++  const feedback = api.submitFeedback(app, {
++    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 2, text: 'Riêng tư'
++  }, 1000).feedback;
++  app.ledger.find((entry) => entry.refId === feedback.id).pointsDelta = 999;
++  const runtimeBefore = JSON.stringify(app);
++  assert.equal(api.submitFeedback(app, {
++    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 5
++  }, 2000).code, 'invalid_state');
++  assert.equal(JSON.stringify(app), runtimeBefore);
++
++  app.feedback = [];
++  app.feedbackClaims = [];
++  const balanceAfterAward = app.balances['bitcoin-nail-bar'].points;
++  const migrated = api.migrateState(app);
++  api.saveState(migrated, storage);
++  const loaded = api.loadState(storage);
++  uuidCalls = 0;
++  const ledgerBefore = JSON.stringify(loaded.ledger);
++  const replay = api.submitFeedback(loaded, {
++    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 5
++  }, 3000);
++  assert.equal(replay.code, 'already_submitted');
++  assert.equal(loaded.balances['bitcoin-nail-bar'].points, balanceAfterAward);
++  assert.equal(JSON.stringify(loaded.ledger), ledgerBefore);
++  assert.equal(uuidCalls, 0);
++});
++
++test('restores book3, appointment and rating without writing storage during bootstrap', () => {
++  let uuidCalls = 0;
++  const setup = testApi({}, {
++    randomUUID: () => {
++      uuidCalls += 1;
++      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
++    }
++  });
++  const persistedState = setup.api.createDefaultState();
++  const booking = setup.api.createBookingRequest(persistedState, validBookingInput, Date.UTC(2026, 6, 14)).booking;
++  setup.api.confirmBookingRequest(persistedState, booking.id, Date.UTC(2026, 6, 14, 1));
++  persistedState.ui.activeScreen = 'book3';
++  persistedState.ui.activeModule = 'home';
++  persistedState.ui.rating = 4;
++  const raw = JSON.stringify(persistedState);
++
++  const home = createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] });
++  const book1 = createStubElement({ id: 'book1', classNames: ['app-screen', 'hidden'] });
++  const book3 = createStubElement({ id: 'book3', classNames: ['app-screen', 'hidden'] });
++  const appointmentCopy = createStubElement();
++  const homeAppointment = createStubElement({
++    id: 'home-appointment', classNames: ['hidden'], querySelectors: { '[data-appointment-copy]': appointmentCopy }
++  });
++  const ratingControls = [1, 2, 3, 4, 5].map((rating) => createStubElement({
++    dataset: { action: 'set-rating', rating: String(rating) }
++  }));
++  const submitLabel = createStubElement();
++  const submit = createStubElement({
++    dataset: { action: 'submit-review' }, querySelectors: { span: submitLabel }
++  });
++  const document = createDocumentStub({
++    screenNodes: [home, book1, book3],
++    extraElements: [homeAppointment],
++    selectorNodes: {
++      '[data-action="set-rating"]': ratingControls,
++      '[data-action="submit-review"]': submit
++    }
++  });
++  const { storage } = testApi({ [setup.api.STORAGE_KEY]: raw }, {
++    skipInit: false,
++    document,
++    randomUUID: () => { throw new Error('bootstrap must not create IDs'); }
++  });
++
++  assert.equal(book3.classList.contains('hidden'), false);
++  assert.equal(document.getElementById('booking-pending').classList.contains('hidden'), true);
++  assert.equal(document.getElementById('booking-confirmed').classList.contains('hidden'), false);
++  assert.equal(homeAppointment.classList.contains('hidden'), false);
++  assert.match(appointmentCopy.textContent, /Gel manicure.*Anna.*Thu 16 Jul.*2:00 PM/);
++  assert.deepEqual(ratingControls.map((control) => control.attributes['aria-pressed']), ['true', 'true', 'true', 'true', 'false']);
++  assert.equal(storage.getItem(setup.api.STORAGE_KEY), raw);
++});
++
++test('keeps Google sharing optional and unrewarded regardless of rating or private feedback', () => {
++  const opened = [];
++  const { context } = testApi({}, {
++    open: (...args) => { opened.push(args); }
++  });
++  vm.runInContext(`submitFeedback(state, {
++    visitId: 'visit-1001', businessId: 'bitcoin-nail-bar', stars: 1, text: 'Cần cải thiện'
++  }, 1000)`, context);
++  const before = vm.runInContext('JSON.stringify(state)', context);
++
++  assert.doesNotThrow(() => vm.runInContext("ACTIONS.get('open-google-review')()", context));
++  assert.equal(opened.length, 1);
++  assert.equal(vm.runInContext('JSON.stringify(state)', context), before);
++
++  const source = html();
++  assert.match(source, /data-action="open-google-review"/);
++  const action = source.match(/registerAction\('open-google-review',[\s\S]*?\);/)?.[0];
++  assert.ok(action);
++  assert.doesNotMatch(action, /submitFeedback|appendLedger|commitState|rating/);
++  assert.match(source, /optional[^<]*no points|tùy chọn[^<]*không điểm/i);
++});
++
++test('guards missing calendar bookings and downloads an escaped valid ICS for a confirmed fixture', () => {
++  const captured = { blobs: [], revoked: [] };
++  class CapturedBlob {
++    constructor(parts, options) {
++      this.parts = parts;
++      this.options = options;
++    }
++  }
++  const url = {
++    createObjectURL(blob) {
++      captured.blobs.push(blob);
++      return `blob:calendar-${captured.blobs.length}`;
++    },
++    revokeObjectURL(value) { captured.revoked.push(value); }
++  };
++  let uuidCalls = 0;
++  const document = createDocumentStub();
++  const { context } = testApi({}, {
++    document,
++    url,
++    blob: CapturedBlob,
++    randomUUID: () => {
++      uuidCalls += 1;
++      return `00000000-0000-4000-8000-${String(uuidCalls).padStart(12, '0')}`;
++    }
++  });
++
++  assert.doesNotThrow(() => vm.runInContext("ACTIONS.get('add-calendar')()", context));
++  assert.equal(captured.blobs.length, 0);
++
++  vm.runInContext(`
++    const calendarBooking = createBookingRequest(state, {
++      businessId: 'bitcoin-nail-bar', service: 'Gel, manicure', staff: 'Anna',
++      day: 'Thu 16 Jul', time: '2:00 PM', note: 'Pink; shine\\nNo fragrance'
++    }, Date.UTC(2026, 6, 14));
++    confirmBookingRequest(state, calendarBooking.booking.id, Date.UTC(2026, 6, 14, 1));
++    ACTIONS.get('add-calendar')();
++  `, context);
++
++  assert.equal(captured.blobs.length, 1);
++  const ics = captured.blobs[0].parts.join('');
++  assert.match(ics, /^BEGIN:VCALENDAR\r\nVERSION:2\.0\r\nPRODID:/);
++  assert.match(ics, /\r\nUID:[^\r\n]+\r\n/);
++  assert.match(ics, /\r\nDTSTAMP:\d{8}T\d{6}Z\r\n/);
++  assert.match(ics, /\r\nDTSTART:\d{8}T\d{6}Z\r\n/);
++  assert.match(ics, /\r\nDTEND:\d{8}T\d{6}Z\r\n/);
++  assert.match(ics, /SUMMARY:Gel\\, manicure at Bitcoin Nail Bar/);
++  assert.match(ics, /DESCRIPTION:Pink\\; shine\\nNo fragrance/);
++  assert.match(ics, /END:VEVENT\r\nEND:VCALENDAR\r\n$/);
++  assert.deepEqual(captured.revoked, ['blob:calendar-1']);
++});
++
+ function apiState(storage) {
+   return JSON.parse(storage.getItem('nexora.customer.prototype.v1'));
+ }
+ 
+ test('accepts only HTTPS avatar URLs and keeps the existing avatar when blank', () => {
+   const { api } = testApi();
+   const current = 'https://images.example/avatar.png';
+   assert.equal(api.validateAvatarUrl('', current).value, current);
+   assert.equal(api.validateAvatarUrl('not a url', current).ok, false);
+   assert.equal(api.validateAvatarUrl('http://images.example/avatar.png', current).ok, false);

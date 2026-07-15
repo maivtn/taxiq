@@ -1,0 +1,315 @@
+# Review package: eb22b72546e0459aee97dc598372cf57886315e9..a90f5751a5f87fabbfe89fcd2c42bc84500e062b
+
+## Commits
+a90f575 feat: add customer prototype local storage state
+
+## Files changed
+ html/customer/cutomer-reward.html     | 178 +++++++++++++++++++++++++++++++---
+ html/customer/cutomer-reward.test.mjs |  66 +++++++++++++
+ 2 files changed, 232 insertions(+), 12 deletions(-)
+
+## Diff
+diff --git a/html/customer/cutomer-reward.html b/html/customer/cutomer-reward.html
+index fe09795..3f6235a 100644
+--- a/html/customer/cutomer-reward.html
++++ b/html/customer/cutomer-reward.html
+@@ -234,26 +234,170 @@
+         </section>
+       </main>
+     </div>
+ 
+     <div id="form-error-state" class="pointer-events-none fixed inset-x-4 top-24 z-[65] hidden justify-center" data-state="error" role="alert"><div class="rounded-xl border border-app-red/30 bg-app-card px-4 py-3 text-sm font-bold text-app-red" data-en="Please check the highlighted fields." data-vi="Vui lòng kiểm tra các trường được đánh dấu.">Vui lòng kiểm tra các trường được đánh dấu.</div></div>
+     <div id="toast-region" class="pointer-events-none fixed inset-x-4 bottom-24 z-[70] flex justify-center lg:bottom-8 lg:left-auto lg:right-8" aria-live="polite" aria-atomic="true"></div>
+     <div id="app-overlay" class="fixed inset-0 z-[80] hidden items-end justify-center bg-black/70 p-4 backdrop-blur-sm sm:items-center" data-overlay aria-hidden="true"><div class="app-card w-full max-w-md" role="dialog" aria-modal="true" aria-labelledby="overlay-title"><div class="flex items-start justify-between gap-4"><div><p class="eyebrow" data-en="NEXORA notice" data-vi="Thông báo NEXORA">Thông báo NEXORA</p><h2 id="overlay-title" class="mt-1 text-xl font-black" data-en="Please confirm" data-vi="Vui lòng xác nhận">Vui lòng xác nhận</h2></div><button type="button" class="icon-button" data-action="close-overlay" aria-label="Đóng"><i data-lucide="x" class="size-5" aria-hidden="true"></i></button></div><p id="overlay-message" class="mt-4 text-sm leading-6 text-app-muted"></p><button id="overlay-confirm" type="button" class="app-button mt-5 w-full" data-action="close-overlay" data-en="Got it" data-vi="Đã hiểu">Đã hiểu</button></div></div>
+     <nav id="mobile-nav" class="fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-app-line bg-app-panel/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden" aria-label="Điều hướng chính" data-nav-surface="mobile"></nav>
+   </div>
+   <script>
+-    const state = {
+-      activeScreen: 'home', activeModule: 'home', language: 'vi', selectedTip: 10,
+-      paymentMethod: 'Zelle', rating: 0, currentReward: null, pointBalance: 2450,
+-      exploreFilter: 'all', offerFilter: 'all', savedOffers: new Set(), wishes: [], looks: [],
+-      booking: { service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM' }
+-    };
++    const STORAGE_KEY = 'nexora.customer.prototype.v1';
++    const SCHEMA_VERSION = 1;
++    const BUSINESS_ID = 'bitcoin-nail-bar';
++
++    function createDefaultState() {
++      return {
++        schemaVersion: SCHEMA_VERSION,
++        updatedAt: new Date().toISOString(),
++        session: {
++          authenticated: true,
++          phone: '8325550148',
++          otpCode: '246810',
++          otpRequestedAt: 0,
++          otpAttempts: 0,
++          lockedUntil: 0
++        },
++        profile: {
++          id: 'cust-jessica',
++          name: 'Jessica Nguyen',
++          phone: '8325550148',
++          avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80',
++          language: 'vi',
++          referralCode: 'JESSICA50',
++          paymentMethods: ['Zelle', 'Venmo']
++        },
++        businesses: {
++          'bitcoin-nail-bar': {
++            id: 'bitcoin-nail-bar', name: 'Bitcoin Nail Bar', allianceId: 'houston-beauty',
++            tipMultiplier: 10, directPayBonusPct: 20, bookingBonus: 25, checkinPoints: 120,
++            methods: ['Zelle', 'Venmo', 'Cash App'], favorite: true
++          },
++          'golden-glow-spa': {
++            id: 'golden-glow-spa', name: 'Golden Glow Spa', allianceId: 'houston-beauty',
++            tipMultiplier: 5, directPayBonusPct: 10, bookingBonus: 20, checkinPoints: 80,
++            methods: ['Zelle', 'Venmo'], favorite: false
++          },
++          'moon-coffee': {
++            id: 'moon-coffee', name: 'Moon Coffee', allianceId: 'houston-beauty',
++            tipMultiplier: 2, directPayBonusPct: 5, bookingBonus: 0, checkinPoints: 10,
++            methods: ['Cash App'], favorite: false
++          }
++        },
++        staffProfiles: {
++          'staff-anna': { id: 'staff-anna', name: 'Anna', businessId: BUSINESS_ID, methods: ['Venmo', 'Zelle'], followNotifyOptIn: false },
++          'staff-maria': { id: 'staff-maria', name: 'Maria', businessId: BUSINESS_ID, methods: ['Zelle', 'Cash App'], followNotifyOptIn: true }
++        },
++        balances: {
++          'bitcoin-nail-bar': { points: 2450, credits: 0, expiringPoints: null },
++          'golden-glow-spa': { points: 600, credits: 0, expiringPoints: null },
++          'moon-coffee': { points: 120, credits: 0, expiringPoints: { amount: 80, date: '2026-08-30' } }
++        },
++        ledger: [
++          { id: 'led-visit-1', businessId: BUSINESS_ID, type: 'visit', pointsDelta: 120, refType: 'visit', refId: 'visit-1001', createdAt: '2026-07-14T10:42:00.000Z' },
++          { id: 'led-redeem-1', businessId: BUSINESS_ID, type: 'redeem', pointsDelta: -800, refType: 'redemption', refId: 'red-demo', createdAt: '2026-07-11T15:00:00.000Z' },
++          { id: 'led-welcome-1', businessId: BUSINESS_ID, type: 'welcome', pointsDelta: 25, refType: 'onboarding', refId: 'welcome-demo', createdAt: '2026-06-01T12:00:00.000Z' }
++        ],
++        consents: [],
++        welcomeClaims: [],
++        preferences: {
++          businessMarketing: { [BUSINESS_ID]: false },
++          networkOffers: false,
++          bookingReminders: true,
++          nearbyDeals: true,
++          aiSuggestions: true,
++          pushPermission: 'prompt'
++        },
++        visits: [
++          { id: 'visit-1001', businessId: BUSINESS_ID, staffProfileId: 'staff-anna', staffName: 'Anna', service: 'Gel manicure', occurredAt: '2026-07-12T16:00:00.000Z' }
++        ],
++        checkins: [],
++        redemptions: [],
++        tips: [],
++        directPayments: [],
++        bookingRequests: [],
++        appointments: [],
++        looks: [
++          { id: 'look-galaxy', businessId: BUSINESS_ID, visitId: 'visit-1001', staffProfileId: 'staff-anna', staffName: 'Anna', service: 'Gel manicure', color: 'OPI Bubble Bath #S86', note: 'Galaxy chrome', photoDataUrl: '', createdAt: '2026-07-12T16:20:00.000Z' }
++        ],
++        feedback: [],
++        savedOfferIds: [],
++        wishes: ['Gói spa đôi cuối tuần'],
++        followedTechIds: [],
++        notifications: [
++          { id: 'note-welcome', type: 'system', title: { vi: 'Điểm mới đã được cộng', en: 'New points were added' }, target: 'history', read: false, createdAt: '2026-07-14T10:43:00.000Z' }
++        ],
++        offlineQueue: [],
++        ui: {
++          activeScreen: 'home', activeModule: 'home', selectedBusinessId: BUSINESS_ID,
++          selectedTip: 10, selectedTipMethod: 'Venmo', selectedStaffId: 'staff-anna',
++          paymentMethod: 'Zelle', rating: 0, currentRewardKey: null,
++          exploreFilter: 'all', offerFilter: 'all', pendingContext: {},
++          bookingDraft: { businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM', note: '' },
++          overlay: null, pushPromptCount: 0
++        }
++      };
++    }
++
++    function mergeRecord(defaultValue, incomingValue) {
++      if (!incomingValue || typeof incomingValue !== 'object' || Array.isArray(incomingValue)) return structuredClone(defaultValue);
++      const result = structuredClone(defaultValue);
++      for (const [key, value] of Object.entries(incomingValue)) {
++        if (value && typeof value === 'object' && !Array.isArray(value) && result[key] && typeof result[key] === 'object' && !Array.isArray(result[key])) {
++          result[key] = mergeRecord(result[key], value);
++        } else {
++          result[key] = value;
++        }
++      }
++      return result;
++    }
++
++    function migrateState(value) {
++      const defaults = createDefaultState();
++      if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
++      const migrated = mergeRecord(defaults, value);
++      migrated.schemaVersion = SCHEMA_VERSION;
++      migrated.updatedAt = new Date().toISOString();
++      delete migrated.pointBalance;
++      delete migrated.savedOffers;
++      return migrated;
++    }
++
++    function loadState(storage = window.localStorage, now = () => Date.now()) {
++      const raw = storage.getItem(STORAGE_KEY);
++      if (!raw) {
++        const fresh = createDefaultState();
++        storage.setItem(STORAGE_KEY, JSON.stringify(fresh));
++        return fresh;
++      }
++      try {
++        return migrateState(JSON.parse(raw));
++      } catch {
++        storage.setItem(`${STORAGE_KEY}.corrupt.${now()}`, raw);
++        const fresh = createDefaultState();
++        storage.setItem(STORAGE_KEY, JSON.stringify(fresh));
++        return fresh;
++      }
++    }
++
++    function saveState(appState, storage = window.localStorage) {
++      appState.updatedAt = new Date().toISOString();
++      storage.setItem(STORAGE_KEY, JSON.stringify(appState));
++    }
++
++    let state = loadState();
++
++    function commitState(mutator) {
++      const result = mutator(state);
++      saveState(state);
++      return result;
++    }
+     const SCREEN_MODULE = {
+       home:'home', allmenu:'home', activity:'home', tip:'home', tipdone:'home', pay:'home', paydone:'home', looks:'home', addlook:'home', review:'home', offers:'home', book1:'home', book2:'home', book3:'home', login1:'home', login2:'home',
+       wallet:'wallet', history:'wallet', rewards:'wallet', redeem:'wallet', redeemdone:'wallet',
+       scan:'scan', onb1:'scan', onb2:'scan', onb3:'scan', onb4:'scan',
+       explore:'explore', business:'explore',
+       profile:'profile', referral:'profile', msgprefs:'profile'
+     };
+     const ROOT_SCREENS = ['home', 'wallet', 'scan', 'explore', 'profile'];
+     const NAV_ITEMS = [
+       { id:'home', icon:'house', en:'Home', vi:'Trang chủ' },
+@@ -537,20 +681,30 @@
+         'save-preferences': () => showToast(state.language === 'vi' ? 'Đã lưu tùy chọn' : 'Preferences saved')
+       };
+       actions[control.dataset.action]?.();
+     }
+ 
+     function handleInput(event) {
+       if (event.target.id === 'explore-search') filterExplore(event.target.value);
+       if (event.target.id === 'offer-search') filterOffers(event.target.value);
+     }
+ 
+-    document.addEventListener('click', handleAction);
+-    document.addEventListener('input', handleInput);
+-    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeOverlay(); });
++    function initializeApp() {
++      document.addEventListener('click', handleAction);
++      document.addEventListener('input', handleInput);
++      document.addEventListener('change', handleChange);
++      document.addEventListener('keydown', handleKeydown);
++      renderApp();
++    }
++
++    window.NEXORA_TEST_API = {
++      STORAGE_KEY,
++      createDefaultState,
++      migrateState,
++      loadState,
++      saveState
++    };
+ 
+-    renderNavigation();
+-    updateNavigation();
+-    if (window.lucide) window.lucide.createIcons();
++    if (!window.NEXORA_SKIP_INIT) initializeApp();
+   </script>
+ </body>
+ </html>
+diff --git a/html/customer/cutomer-reward.test.mjs b/html/customer/cutomer-reward.test.mjs
+index 9001fe2..0666d33 100644
+--- a/html/customer/cutomer-reward.test.mjs
++++ b/html/customer/cutomer-reward.test.mjs
+@@ -1,15 +1,81 @@
+ import test from 'node:test';
+ import assert from 'node:assert/strict';
+ import { existsSync, readFileSync } from 'node:fs';
+ import { dirname, join } from 'node:path';
+ import { fileURLToPath } from 'node:url';
++import vm from 'node:vm';
++
++function createMemoryStorage(seed = {}) {
++  const values = new Map(Object.entries(seed));
++  return {
++    getItem(key) { return values.has(key) ? values.get(key) : null; },
++    setItem(key, value) { values.set(key, String(value)); },
++    removeItem(key) { values.delete(key); },
++    clear() { values.clear(); },
++    key(index) { return [...values.keys()][index] ?? null; },
++    get length() { return values.size; },
++    dump() { return Object.fromEntries(values); }
++  };
++}
++
++function testApi(seed = {}) {
++  const source = html();
++  const script = source.match(/<script>\s*([\s\S]*?)<\/script>\s*<\/body>/)?.[1];
++  assert.ok(script, 'inline application script must exist');
++  const storage = createMemoryStorage(seed);
++  const window = {
++    localStorage: storage,
++    NEXORA_SKIP_INIT: true,
++    setTimeout() { return 1; },
++    clearTimeout() {},
++    lucide: null
++  };
++  const context = vm.createContext({
++    window,
++    localStorage: storage,
++    structuredClone,
++    Intl,
++    Date,
++    Math,
++    JSON,
++    URL,
++    crypto: { randomUUID: () => '00000000-0000-4000-8000-000000000001' },
++    console
++  });
++  vm.runInContext(script, context);
++  return { api: window.NEXORA_TEST_API, storage };
++}
++
++test('creates versioned Vietnamese demo state with per-business balances', () => {
++  const { api } = testApi();
++  const state = api.createDefaultState();
++  assert.equal(state.schemaVersion, 1);
++  assert.equal(state.profile.language, 'vi');
++  assert.equal(state.balances['bitcoin-nail-bar'].points, 2450);
++  assert.equal(state.balances['golden-glow-spa'].points, 600);
++  assert.equal(state.balances['moon-coffee'].points, 120);
++  assert.equal('pointBalance' in state, false);
++});
++
++test('persists state and recovers corrupt JSON into a timestamped backup', () => {
++  const { api, storage } = testApi();
++  const state = api.createDefaultState();
++  state.profile.name = 'Lan Nguyen';
++  api.saveState(state, storage);
++  assert.equal(api.loadState(storage).profile.name, 'Lan Nguyen');
++
++  storage.setItem(api.STORAGE_KEY, '{broken');
++  const recovered = api.loadState(storage, () => 1720936800000);
++  assert.equal(recovered.profile.language, 'vi');
++  assert.equal(storage.getItem(`${api.STORAGE_KEY}.corrupt.1720936800000`), '{broken');
++});
+ 
+ const here = dirname(fileURLToPath(import.meta.url));
+ const target = join(here, 'cutomer-reward.html');
+ 
+ function html() {
+   assert.ok(existsSync(target), 'cutomer-reward.html must exist');
+   return readFileSync(target, 'utf8');
+ }
+ 
+ test('loads the approved frontend stack', () => {
