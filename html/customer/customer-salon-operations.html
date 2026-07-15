@@ -12,6 +12,8 @@
     .ops-card { @apply rounded-3xl border border-slate-200 bg-white p-5 shadow-sm; }
     .ops-nav-button { @apply min-h-12 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700; }
     .ops-nav-button[aria-selected="true"] { @apply border-transparent bg-gradient-to-r from-fuchsia-600 to-blue-500 text-white shadow-md; }
+    .ops-button { @apply min-h-12 rounded-2xl bg-gradient-to-r from-fuchsia-600 to-blue-500 px-4 font-black text-white shadow-md outline-none focus:ring-2 focus:ring-fuchsia-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50; }
+    .ops-button-secondary { @apply min-h-12 rounded-2xl border border-slate-200 bg-white px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50; }
   </style>
 </head>
 <body>
@@ -47,22 +49,50 @@
       </button>
     </nav>
 
+    <p id="ops-entry-error" class="mt-4 hidden rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-800" role="alert"></p>
+
     <section id="ops-liveticket" class="mt-4" role="tabpanel" aria-labelledby="ops-tab-liveticket" tabindex="-1" data-ops-screen="liveticket">
-      <article class="ops-card">
-        <div class="flex items-start justify-between gap-4">
-          <div>
-            <p class="text-xs font-black uppercase tracking-[0.16em] text-blue-600">Customer live ticket</p>
-            <h2 class="mt-1 text-2xl font-black">Phiếu dịch vụ trực tiếp</h2>
-          </div>
-          <i data-lucide="receipt-text" aria-hidden="true" class="size-7 text-blue-500"></i>
-        </div>
-        <p class="mt-4 text-sm leading-6 text-slate-600">Theo dõi dịch vụ đang thực hiện, kỹ thuật viên và tổng tiền hiện tại. Ticket sẽ được tạo từ guest check-in hợp lệ ở bước tiếp theo.</p>
-        <dl class="mt-5 grid gap-3 sm:grid-cols-3">
-          <div class="rounded-2xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Status</dt><dd class="mt-1 font-black">Ready for live events</dd></div>
-          <div class="rounded-2xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Technician</dt><dd class="mt-1 font-black">Awaiting assignment</dd></div>
-          <div class="rounded-2xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Current total</dt><dd class="mt-1 font-black">Calculated per ticket</dd></div>
-        </dl>
+      <article id="ops-ticket-empty" class="ops-card">
+        <h2 class="text-xl font-black">Customer Live Ticket / Phiếu dịch vụ</h2>
+        <p class="mt-3 text-sm leading-6 text-slate-600">No live ticket is selected / Chưa chọn phiếu dịch vụ.</p>
       </article>
+      <div id="ops-ticket-content" class="hidden">
+        <article class="ops-card overflow-hidden p-0">
+          <div class="bg-gradient-to-br from-blue-600 via-indigo-600 to-fuchsia-600 p-5 text-white">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-xs font-black uppercase tracking-[0.16em] text-white/70">Customer Live Ticket</p>
+                <h2 id="ops-ticket-number" class="mt-1 text-3xl font-black"></h2>
+              </div>
+              <span id="ops-ticket-status" class="rounded-full bg-white/20 px-3 py-1 text-xs font-black"></span>
+            </div>
+            <p id="ops-ticket-business" class="mt-4 text-sm font-bold text-white/80"></p>
+          </div>
+          <div class="p-5">
+            <div id="ops-ticket-items" class="divide-y divide-dashed divide-slate-200"></div>
+            <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4 text-xl font-black">
+              <span>Current Total / Hiện tại</span><strong id="ops-ticket-total"></strong>
+            </div>
+          </div>
+        </article>
+        <article class="ops-card mt-4">
+          <p class="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Technician / Kỹ thuật viên</p>
+          <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <strong id="ops-ticket-staff" class="text-xl"></strong>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" class="ops-button-secondary" data-ops-action="call-tech">Call / Gọi</button>
+              <button type="button" class="ops-button-secondary" data-ops-action="message-tech">Msg / Nhắn</button>
+            </div>
+          </div>
+          <button type="button" class="ops-button-secondary mt-4 w-full" data-ops-action="review-staff-eligibility">Review staff eligibility / Kiểm tra nhân viên</button>
+        </article>
+        <nav class="mt-4 grid grid-cols-4 gap-2" aria-label="Ticket actions / Tác vụ phiếu">
+          <button type="button" class="ops-button px-2 text-xs sm:text-sm" data-ops-action="open-ticket-tab" data-target="liveticket">Ticket</button>
+          <button type="button" class="ops-button-secondary px-2 text-xs sm:text-sm" data-ops-action="open-ticket-tab" data-target="pay">Pay</button>
+          <button type="button" class="ops-button-secondary px-2 text-xs sm:text-sm" data-ops-action="open-ticket-tab" data-target="review">Review</button>
+          <button type="button" class="ops-button-secondary px-2 text-xs sm:text-sm" data-ops-action="open-ticket-tab" data-target="reward">Reward</button>
+        </nav>
+      </div>
     </section>
 
     <section id="ops-staffnoteligible" class="mt-4 hidden" role="tabpanel" aria-labelledby="ops-tab-staffnoteligible" tabindex="-1" data-ops-screen="staffnoteligible">
@@ -74,11 +104,18 @@
           </div>
           <i data-lucide="user-round-x" aria-hidden="true" class="size-7 text-rose-500"></i>
         </div>
-        <p class="mt-4 text-sm leading-6 text-slate-600">Giữ nguyên lựa chọn hiện tại trong khi salon kiểm tra kỹ năng và tình trạng sẵn sàng. Không tự động đổi kỹ thuật viên.</p>
-        <div class="mt-5 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm text-rose-900">
-          Recommended staff and “Ask Front Desk” actions will appear when an eligibility event is attached to a live ticket.
-        </div>
+        <p id="ops-eligibility-warning" class="mt-4 text-sm leading-6 text-slate-600"></p>
+        <dl class="mt-5 grid gap-3 sm:grid-cols-2">
+          <div class="rounded-2xl bg-rose-50 p-4"><dt class="text-xs text-rose-600">Requested Staff / Nhân viên yêu cầu</dt><dd id="ops-requested-staff" class="mt-1 font-black"></dd></div>
+          <div class="rounded-2xl bg-rose-50 p-4"><dt class="text-xs text-rose-600">Service / Dịch vụ</dt><dd id="ops-requested-service" class="mt-1 font-black"></dd></div>
+        </dl>
       </article>
+      <article class="ops-card mt-4">
+        <h3 class="text-lg font-black">Recommended / Đề xuất</h3>
+        <div id="ops-recommended-staff" class="mt-3 grid gap-3"></div>
+      </article>
+      <button id="ops-choose-staff" type="button" class="ops-button mt-4 w-full" data-ops-action="choose-recommended-staff" disabled>Choose staff / Chọn nhân viên</button>
+      <button type="button" class="ops-button-secondary mt-3 w-full" data-ops-action="ask-front-desk">Ask Front Desk / Hỏi lễ tân</button>
     </section>
 
     <section id="ops-addonapproval" class="mt-4 hidden" role="tabpanel" aria-labelledby="ops-tab-addonapproval" tabindex="-1" data-ops-screen="addonapproval">
@@ -115,6 +152,32 @@ const OPS_ROLE_COPY = Object.freeze({
   'Front Desk': 'Front Desk / Lễ tân — hỗ trợ điều phối ticket và yêu cầu của khách.',
   Staff: 'Staff / Nhân viên — theo dõi dịch vụ và gửi sự kiện vận hành.'
 });
+const OPS_BUSINESSES = Object.freeze({
+  'bitcoin-nail-bar': Object.freeze({ id: 'bitcoin-nail-bar', name: 'Bitcoin Nail Bar' }),
+  'golden-glow-spa': Object.freeze({ id: 'golden-glow-spa', name: 'Golden Glow Spa' }),
+  'moon-coffee': Object.freeze({ id: 'moon-coffee', name: 'Moon Coffee' })
+});
+const OPS_SERVICES = Object.freeze({
+  'bitcoin-nail-bar': Object.freeze({
+    'deluxe-pedicure': Object.freeze({ key: 'deluxe-pedicure', label: 'Deluxe Pedicure', amountCents: 5500, promoCents: -550 }),
+    'acrylic-full-set': Object.freeze({ key: 'acrylic-full-set', label: 'Acrylic Full Set', amountCents: 6500, promoCents: 0 })
+  }),
+  'golden-glow-spa': Object.freeze({
+    'signature-facial': Object.freeze({ key: 'signature-facial', label: 'Signature Facial', amountCents: 7500, promoCents: 0 })
+  }),
+  'moon-coffee': Object.freeze({
+    'signature-drink': Object.freeze({ key: 'signature-drink', label: 'Signature Drink', amountCents: 800, promoCents: 0 })
+  })
+});
+const OPS_STAFF = Object.freeze({
+  'staff-jenny': Object.freeze({ id: 'staff-jenny', name: 'Jenny', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['deluxe-pedicure']), available: true }),
+  'staff-tina': Object.freeze({ id: 'staff-tina', name: 'Tina', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['acrylic-full-set']), available: false }),
+  'staff-kevin': Object.freeze({ id: 'staff-kevin', name: 'Kevin', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['deluxe-pedicure', 'acrylic-full-set']), available: true }),
+  'staff-anna': Object.freeze({ id: 'staff-anna', name: 'Anna', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['deluxe-pedicure']), available: true }),
+  'staff-maria': Object.freeze({ id: 'staff-maria', name: 'Maria', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['acrylic-full-set']), available: true }),
+  'staff-spa-linh': Object.freeze({ id: 'staff-spa-linh', name: 'Linh', businessId: 'golden-glow-spa', serviceSkills: Object.freeze(['signature-facial']), available: true })
+});
+const OPS_TICKET_ID_PATTERN = /^ticket-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function opsRecord(value) {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) return false;
@@ -243,6 +306,174 @@ function opsNormalizeRecords(value) {
   return records;
 }
 
+function opsService(businessId, serviceKey) {
+  const catalog = Object.prototype.hasOwnProperty.call(OPS_SERVICES, businessId)
+    ? OPS_SERVICES[businessId]
+    : null;
+  return catalog && Object.prototype.hasOwnProperty.call(catalog, serviceKey)
+    ? catalog[serviceKey]
+    : null;
+}
+
+function opsStaff(staffId) {
+  return typeof staffId === 'string' && Object.prototype.hasOwnProperty.call(OPS_STAFF, staffId)
+    ? OPS_STAFF[staffId]
+    : null;
+}
+
+function expectedTicketLineItems(ticketId, service) {
+  const items = [{
+    id: `${ticketId}-service`, type: 'service', label: service.label, amountCents: service.amountCents
+  }];
+  if (service.promoCents) {
+    items.push({
+      id: `${ticketId}-promo`, type: 'discount', label: 'Promo NEW10', amountCents: service.promoCents
+    });
+  }
+  return items;
+}
+
+function normalizeOpsLineItems(value, ticketId, service) {
+  if (!Array.isArray(value)) return null;
+  const expected = expectedTicketLineItems(ticketId, service);
+  if (value.length !== expected.length) return null;
+  const normalized = [];
+  const seenIds = new Set();
+  for (let index = 0; index < value.length; index += 1) {
+    const item = value[index];
+    const canonical = expected[index];
+    if (!opsRecord(item) || opsHasUnsafeOwnKeys(item)
+      || opsOwn(item, 'id') !== canonical.id || opsOwn(item, 'type') !== canonical.type
+      || opsOwn(item, 'label') !== canonical.label || opsOwn(item, 'amountCents') !== canonical.amountCents
+      || seenIds.has(canonical.id)) return null;
+    seenIds.add(canonical.id);
+    normalized.push(canonical);
+  }
+  return normalized;
+}
+
+function normalizeServiceTicket(value) {
+  if (!opsRecord(value) || opsHasUnsafeOwnKeys(value)) return null;
+  const id = opsOwn(value, 'id');
+  const guestCheckinId = opsOwn(value, 'guestCheckinId');
+  const businessId = opsOwn(value, 'businessId');
+  const serviceKey = opsOwn(value, 'serviceKey');
+  const service = opsService(businessId, serviceKey);
+  const staffProfileId = opsOwn(value, 'staffProfileId');
+  const staff = staffProfileId === null ? null : opsStaff(staffProfileId);
+  const createdAt = opsOwn(value, 'createdAt');
+  const completedAt = opsOwn(value, 'completedAt');
+  const frontDeskRequestedAt = opsOwn(value, 'frontDeskRequestedAt');
+  const status = opsOwn(value, 'status');
+  const number = opsOwn(value, 'number');
+  if (typeof id !== 'string' || id !== id.trim() || !OPS_TICKET_ID_PATTERN.test(id)
+    || !opsCanonicalId(guestCheckinId, 'guest-checkin') || !service
+    || !Number.isSafeInteger(number) || number < 104
+    || !['waiting', 'in_service', 'completed'].includes(status)
+    || (staffProfileId !== null && (!staff || staff.businessId !== businessId))
+    || !opsStoredTimestamp(createdAt)
+    || (completedAt !== null && (!opsStoredTimestamp(completedAt) || Date.parse(completedAt) < Date.parse(createdAt)))
+    || (status === 'completed') !== (completedAt !== null)
+    || (frontDeskRequestedAt !== null && (!opsStoredTimestamp(frontDeskRequestedAt)
+      || Date.parse(frontDeskRequestedAt) < Date.parse(createdAt)))) return null;
+  const lineItems = normalizeOpsLineItems(opsOwn(value, 'lineItems'), id, service);
+  if (!lineItems) return null;
+  const total = lineItems.reduce((sum, item) => sum + item.amountCents, 0);
+  if (!Number.isSafeInteger(total) || opsOwn(value, 'currentTotalCents') !== total) return null;
+  return {
+    id, number, guestCheckinId, businessId, serviceKey, status, staffProfileId,
+    lineItems, currentTotalCents: total, frontDeskRequestedAt, createdAt, completedAt
+  };
+}
+
+function normalizeServiceTicketCollection(value) {
+  if (!Array.isArray(value)) return { ok: false, value: [] };
+  const normalized = [];
+  const ids = new Set();
+  const guestIds = new Set();
+  const numbers = new Set();
+  for (const row of value) {
+    const ticket = normalizeServiceTicket(row);
+    if (!ticket || ids.has(ticket.id) || guestIds.has(ticket.guestCheckinId) || numbers.has(ticket.number)) {
+      return { ok: false, value: [] };
+    }
+    ids.add(ticket.id);
+    guestIds.add(ticket.guestCheckinId);
+    numbers.add(ticket.number);
+    normalized.push(ticket);
+  }
+  return { ok: true, value: normalized };
+}
+
+function recommendedStaffIds(businessId, serviceKey, requestedStaffId) {
+  return Object.values(OPS_STAFF)
+    .filter((staff) => staff.id !== requestedStaffId && staff.businessId === businessId
+      && staff.serviceSkills.includes(serviceKey))
+    .map((staff) => staff.id);
+}
+
+function eligibilityId(ticketId, serviceKey, staffId) {
+  return `eligibility-${ticketId.slice('ticket-'.length)}-${serviceKey}-${staffId.slice('staff-'.length)}`;
+}
+
+function normalizeStaffEligibility(value, tickets) {
+  if (!opsRecord(value) || opsHasUnsafeOwnKeys(value)) return null;
+  const ticketId = opsOwn(value, 'ticketId');
+  const ticket = tickets.find((row) => row.id === ticketId);
+  const serviceKey = opsOwn(value, 'serviceKey');
+  const requestedStaffId = opsOwn(value, 'requestedStaffId');
+  const requested = opsStaff(requestedStaffId);
+  const service = ticket ? opsService(ticket.businessId, serviceKey) : null;
+  if (!ticket || !service || !requested || requested.businessId !== ticket.businessId) return null;
+  const eligible = requested.available && requested.serviceSkills.includes(serviceKey);
+  const expectedRecommendations = eligible ? [] : recommendedStaffIds(ticket.businessId, serviceKey, requestedStaffId);
+  const recommendations = opsOwn(value, 'recommendedStaffIds');
+  const selectedStaffId = opsOwn(value, 'selectedStaffId');
+  const selectedAt = opsOwn(value, 'selectedAt');
+  const id = opsOwn(value, 'id');
+  if (id !== eligibilityId(ticket.id, serviceKey, requestedStaffId)
+    || opsOwn(value, 'eligible') !== eligible || !Array.isArray(recommendations)
+    || JSON.stringify(recommendations) !== JSON.stringify(expectedRecommendations)
+    || (selectedStaffId !== null && (!expectedRecommendations.includes(selectedStaffId)
+      || !opsStaff(selectedStaffId)?.available || ticket.staffProfileId !== selectedStaffId))
+    || (selectedStaffId === null) !== (selectedAt === null)
+    || (selectedAt !== null && (!opsStoredTimestamp(selectedAt)
+      || Date.parse(selectedAt) < Date.parse(ticket.createdAt)))) return null;
+  return {
+    id, ticketId, serviceKey, requestedStaffId, eligible,
+    recommendedStaffIds: [...recommendations], selectedStaffId, selectedAt
+  };
+}
+
+function normalizeEligibilityCollection(value, tickets) {
+  if (!Array.isArray(value)) return { ok: false, value: [] };
+  const normalized = [];
+  const ids = new Set();
+  const semanticKeys = new Set();
+  for (const row of value) {
+    const event = normalizeStaffEligibility(row, tickets);
+    const semanticKey = event ? `${event.ticketId}\u0000${event.serviceKey}\u0000${event.requestedStaffId}` : '';
+    if (!event || ids.has(event.id) || semanticKeys.has(semanticKey)) return { ok: false, value: [] };
+    ids.add(event.id);
+    semanticKeys.add(semanticKey);
+    normalized.push(event);
+  }
+  return { ok: true, value: normalized };
+}
+
+function normalizeAddOnCollection(value) {
+  if (!Array.isArray(value)) return { ok: false, value: [] };
+  const normalized = opsNormalizeRecords(value);
+  const ids = new Set();
+  if (normalized.length !== value.length || normalized.some((row) => {
+    const id = opsCanonicalId(opsOwn(row, 'id'), 'addon');
+    if (!id || ids.has(id)) return true;
+    ids.add(id);
+    return false;
+  })) return { ok: false, value: [] };
+  return { ok: true, value: normalized };
+}
+
 function createOperationsState() {
   return {
     schemaVersion: OPS_SCHEMA_VERSION,
@@ -265,17 +496,38 @@ function normalizeOperationsState(value) {
     const selectedTicketId = opsOwn(ui, 'selectedTicketId');
     const selectedStaffId = opsOwn(ui, 'selectedStaffId');
     const updatedAt = opsOwn(value, 'updatedAt');
+    const ticketResult = normalizeServiceTicketCollection(opsOwn(value, 'serviceTickets'));
+    const tickets = ticketResult.ok ? ticketResult.value : [];
+    const addOnResult = normalizeAddOnCollection(opsOwn(value, 'addOnRequests'));
+    const eligibilityResult = ticketResult.ok
+      ? normalizeEligibilityCollection(opsOwn(value, 'staffEligibility'), tickets)
+      : { ok: false, value: [] };
+    const staffEligibility = eligibilityResult.ok ? eligibilityResult.value : [];
+    const selectedTicket = typeof selectedTicketId === 'string'
+      ? tickets.find((ticket) => ticket.id === selectedTicketId)
+      : null;
+    const selectedEvent = selectedTicket
+      ? [...staffEligibility].reverse().find((event) => event.ticketId === selectedTicket.id && !event.eligible)
+      : null;
+    const unresolvedEvent = selectedEvent?.selectedStaffId === null ? selectedEvent : null;
+    const reconciledStaffId = typeof selectedStaffId === 'string'
+      && selectedEvent?.recommendedStaffIds.includes(selectedStaffId)
+      && opsStaff(selectedStaffId)?.available
+      ? selectedStaffId
+      : null;
+    let reconciledScreen = OPS_SCREENS.includes(activeScreen) ? activeScreen : 'liveticket';
+    if (reconciledScreen === 'staffnoteligible' && !unresolvedEvent) reconciledScreen = 'liveticket';
     return {
       schemaVersion: OPS_SCHEMA_VERSION,
       updatedAt: opsStoredTimestamp(updatedAt) ? updatedAt : fallback.updatedAt,
-      serviceTickets: opsNormalizeRecords(opsOwn(value, 'serviceTickets')),
-      addOnRequests: opsNormalizeRecords(opsOwn(value, 'addOnRequests')),
-      staffEligibility: opsNormalizeRecords(opsOwn(value, 'staffEligibility')),
+      serviceTickets: tickets,
+      addOnRequests: addOnResult.ok ? addOnResult.value : [],
+      staffEligibility,
       ui: {
-        activeScreen: OPS_SCREENS.includes(activeScreen) ? activeScreen : 'liveticket',
+        activeScreen: reconciledScreen,
         role: OPS_ROLES.includes(role) ? role : 'Customer',
-        selectedTicketId: selectedTicketId === null ? null : opsCanonicalId(selectedTicketId),
-        selectedStaffId: selectedStaffId === null ? null : opsCanonicalId(selectedStaffId, 'staff')
+        selectedTicketId: selectedTicket?.id || null,
+        selectedStaffId: reconciledStaffId
       }
     };
   } catch {
@@ -424,7 +676,180 @@ function readCustomerSnapshot(storage) {
   }
 }
 
+function operationsStateIntegrity(state) {
+  if (!opsRecord(state) || !Array.isArray(state.serviceTickets)
+    || !Array.isArray(state.addOnRequests) || !Array.isArray(state.staffEligibility)) return false;
+  const tickets = normalizeServiceTicketCollection(state.serviceTickets);
+  const addOns = normalizeAddOnCollection(state.addOnRequests);
+  if (!tickets.ok || !addOns.ok) return false;
+  const eligibility = normalizeEligibilityCollection(state.staffEligibility, tickets.value);
+  if (!eligibility.ok) return false;
+  if (JSON.stringify(tickets.value) !== JSON.stringify(state.serviceTickets)
+    || JSON.stringify(addOns.value) !== JSON.stringify(state.addOnRequests)
+    || JSON.stringify(eligibility.value) !== JSON.stringify(state.staffEligibility)) return false;
+  const ui = state.ui;
+  if (!opsRecord(ui) || !OPS_SCREENS.includes(ui.activeScreen) || !OPS_ROLES.includes(ui.role)) return false;
+  const selectedTicket = ui.selectedTicketId === null
+    ? null
+    : tickets.value.find((ticket) => ticket.id === ui.selectedTicketId);
+  if (ui.selectedTicketId !== null && !selectedTicket) return false;
+  if (ui.selectedStaffId !== null) {
+    const event = selectedTicket
+      ? [...eligibility.value].reverse().find((row) => row.ticketId === selectedTicket.id && !row.eligible)
+      : null;
+    if (!event?.recommendedStaffIds.includes(ui.selectedStaffId) || !opsStaff(ui.selectedStaffId)?.available) return false;
+  }
+  if (ui.activeScreen === 'staffnoteligible') {
+    const event = selectedTicket
+      ? [...eligibility.value].reverse().find((row) => row.ticketId === selectedTicket.id
+        && !row.eligible && row.selectedStaffId === null)
+      : null;
+    if (!event) return false;
+  }
+  return true;
+}
+
+function normalizeGuestForTicket(value) {
+  if (!opsRecord(value) || opsHasUnsafeOwnKeys(value)) return null;
+  const id = opsOwn(value, 'id');
+  const businessId = opsOwn(value, 'businessId');
+  const serviceKey = opsOwn(value, 'serviceKey');
+  const rawStaffId = opsOwn(value, 'staffProfileId');
+  const staffProfileId = rawStaffId === undefined || rawStaffId === null ? null : rawStaffId;
+  const service = opsService(businessId, serviceKey);
+  const staff = staffProfileId === null ? null : opsStaff(staffProfileId);
+  if (!opsCanonicalId(id, 'guest-checkin') || !service
+    || (staffProfileId !== null && (!staff || staff.businessId !== businessId))) return null;
+  return { id, businessId, serviceKey, staffProfileId, service };
+}
+
+function createServiceTicket(state, guestCheckin, now = Date.now()) {
+  const guest = normalizeGuestForTicket(guestCheckin);
+  if (!guest) return { ok: false, code: 'invalid_guest' };
+  if (!operationsStateIntegrity(state)) return { ok: false, code: 'invalid_state' };
+  const existing = state.serviceTickets.find((ticket) => ticket.guestCheckinId === guest.id);
+  if (existing) {
+    const selection = [...state.staffEligibility].reverse().find((event) => event.ticketId === existing.id
+      && event.selectedStaffId === existing.staffProfileId);
+    const staffIsCanonical = existing.staffProfileId === guest.staffProfileId
+      || (selection && selection.requestedStaffId === guest.staffProfileId);
+    if (existing.businessId !== guest.businessId || existing.serviceKey !== guest.serviceKey || !staffIsCanonical) {
+      return { ok: false, code: 'invalid_existing_ticket' };
+    }
+    return { ok: true, ticket: existing, idempotent: true };
+  }
+  const id = opsId('ticket');
+  if (!id.ok) return id;
+  if (state.serviceTickets.some((ticket) => ticket.id === id.value)) return { ok: false, code: 'id_collision' };
+  const timestamp = opsTimestamp(now);
+  if (!timestamp.ok) return timestamp;
+  const maximumNumber = state.serviceTickets.reduce((maximum, ticket) => Math.max(maximum, ticket.number), 103);
+  if (!Number.isSafeInteger(maximumNumber) || maximumNumber >= Number.MAX_SAFE_INTEGER) {
+    return { ok: false, code: 'number_exhausted' };
+  }
+  const lineItems = expectedTicketLineItems(id.value, guest.service);
+  const currentTotalCents = lineItems.reduce((sum, item) => sum + item.amountCents, 0);
+  if (!Number.isSafeInteger(currentTotalCents)) return { ok: false, code: 'invalid_total' };
+  const ticket = {
+    id: id.value,
+    number: maximumNumber + 1,
+    guestCheckinId: guest.id,
+    businessId: guest.businessId,
+    serviceKey: guest.serviceKey,
+    status: 'in_service',
+    staffProfileId: guest.staffProfileId,
+    lineItems,
+    currentTotalCents,
+    frontDeskRequestedAt: null,
+    createdAt: timestamp.value,
+    completedAt: null
+  };
+  state.serviceTickets.push(ticket);
+  state.ui.selectedTicketId = ticket.id;
+  state.ui.selectedStaffId = null;
+  state.ui.activeScreen = 'liveticket';
+  return { ok: true, ticket };
+}
+
+function evaluateStaffEligibility(state, ticketId, serviceKey, staffId) {
+  if (!operationsStateIntegrity(state)) return { ok: false, code: 'invalid_state' };
+  const ticket = state.serviceTickets.find((row) => row.id === ticketId);
+  const service = ticket ? opsService(ticket.businessId, serviceKey) : null;
+  const requested = opsStaff(staffId);
+  if (!ticket || !service || !requested || requested.businessId !== ticket.businessId) {
+    return { ok: false, code: 'invalid_eligibility_request' };
+  }
+  const id = eligibilityId(ticket.id, serviceKey, requested.id);
+  const existing = state.staffEligibility.find((event) => event.id === id);
+  if (existing) return { ok: true, ...existing, idempotent: true };
+  const eligible = requested.available && requested.serviceSkills.includes(serviceKey);
+  const recommendations = eligible ? [] : recommendedStaffIds(ticket.businessId, serviceKey, requested.id);
+  const event = {
+    id,
+    ticketId: ticket.id,
+    serviceKey,
+    requestedStaffId: requested.id,
+    eligible,
+    recommendedStaffIds: recommendations,
+    selectedStaffId: null,
+    selectedAt: null
+  };
+  state.staffEligibility.push(event);
+  state.ui.selectedTicketId = ticket.id;
+  state.ui.selectedStaffId = recommendations.find((candidate) => opsStaff(candidate)?.available) || null;
+  return { ok: true, ...event };
+}
+
+function chooseRecommendedStaff(state, ticketId, staffId, now = Date.now()) {
+  if (!operationsStateIntegrity(state)) return { ok: false, code: 'invalid_state' };
+  const ticket = state.serviceTickets.find((row) => row.id === ticketId);
+  const event = ticket
+    ? [...state.staffEligibility].reverse().find((row) => row.ticketId === ticket.id && !row.eligible)
+    : null;
+  if (!ticket || !event || !event.recommendedStaffIds.includes(staffId)) {
+    return { ok: false, code: 'staff_not_recommended' };
+  }
+  const staff = opsStaff(staffId);
+  if (!staff || staff.businessId !== ticket.businessId) return { ok: false, code: 'staff_not_recommended' };
+  if (!staff.available) return { ok: false, code: 'staff_unavailable' };
+  if (event.selectedStaffId !== null) {
+    if (event.selectedStaffId === staff.id && ticket.staffProfileId === staff.id) {
+      return { ok: true, ticket, staff, selectedAt: event.selectedAt, idempotent: true };
+    }
+    return { ok: false, code: 'staff_already_selected' };
+  }
+  const timestamp = opsTimestamp(now);
+  if (!timestamp.ok) return timestamp;
+  if (Date.parse(timestamp.value) < Date.parse(ticket.createdAt)) {
+    return { ok: false, code: 'invalid_time_order' };
+  }
+  ticket.staffProfileId = staff.id;
+  event.selectedStaffId = staff.id;
+  event.selectedAt = timestamp.value;
+  state.ui.selectedTicketId = ticket.id;
+  state.ui.selectedStaffId = staff.id;
+  return { ok: true, ticket, staff, selectedAt: timestamp.value };
+}
+
+function askFrontDesk(state, ticketId, now = Date.now()) {
+  if (!operationsStateIntegrity(state)) return { ok: false, code: 'invalid_state' };
+  const ticket = state.serviceTickets.find((row) => row.id === ticketId);
+  if (!ticket) return { ok: false, code: 'ticket_not_found' };
+  if (ticket.frontDeskRequestedAt !== null) return { ok: true, ticket, idempotent: true };
+  const timestamp = opsTimestamp(now);
+  if (!timestamp.ok) return timestamp;
+  if (Date.parse(timestamp.value) < Date.parse(ticket.createdAt)) {
+    return { ok: false, code: 'invalid_time_order' };
+  }
+  ticket.frontDeskRequestedAt = timestamp.value;
+  return { ok: true, ticket };
+}
+
 let operationsState = loadOperationsState();
+let operationsCustomerSnapshot = emptyCustomerSnapshot();
+let operationsEntryBlocked = false;
+let operationsPayHandoff = null;
+const OPS_ACTIONS = new Map();
 
 function cloneOperationsState(value) {
   try {
@@ -481,6 +906,116 @@ function setOperationsStatus(message) {
   if (status) status.textContent = message;
 }
 
+function opsMoney(cents) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
+}
+
+function registerOpsAction(name, handler) {
+  if (typeof name === 'string' && typeof handler === 'function') OPS_ACTIONS.set(name, handler);
+}
+
+function getRegisteredOpsActions() {
+  return [...OPS_ACTIONS.keys()];
+}
+
+function getPayHandoff() {
+  return operationsPayHandoff ? cloneOperationsState(operationsPayHandoff) : null;
+}
+
+function latestIneligibleEvent(ticketId) {
+  return [...operationsState.staffEligibility].reverse().find((event) => event.ticketId === ticketId
+    && !event.eligible && event.selectedStaffId === null) || null;
+}
+
+function renderLiveTicket() {
+  const empty = document.getElementById('ops-ticket-empty');
+  const content = document.getElementById('ops-ticket-content');
+  const ticket = operationsEntryBlocked
+    ? null
+    : operationsState.serviceTickets.find((row) => row.id === operationsState.ui.selectedTicketId);
+  empty?.classList.toggle('hidden', Boolean(ticket));
+  content?.classList.toggle('hidden', !ticket);
+  if (!ticket) return;
+  const business = Object.prototype.hasOwnProperty.call(operationsCustomerSnapshot.businesses, ticket.businessId)
+    ? operationsCustomerSnapshot.businesses[ticket.businessId]
+    : OPS_BUSINESSES[ticket.businessId];
+  const number = document.getElementById('ops-ticket-number');
+  const status = document.getElementById('ops-ticket-status');
+  const businessName = document.getElementById('ops-ticket-business');
+  const total = document.getElementById('ops-ticket-total');
+  const staffName = document.getElementById('ops-ticket-staff');
+  if (number) number.textContent = `#${ticket.number}`;
+  if (status) status.textContent = ticket.status === 'in_service' ? 'In Service / Đang làm' : ticket.status.replace('_', ' ');
+  if (businessName) businessName.textContent = business?.name || ticket.businessId;
+  if (total) total.textContent = opsMoney(ticket.currentTotalCents);
+  if (staffName) staffName.textContent = opsStaff(ticket.staffProfileId)?.name || 'Unassigned / Chưa chỉ định';
+  const items = document.getElementById('ops-ticket-items');
+  if (items) {
+    const rows = ticket.lineItems.map((item) => {
+      const row = document.createElement('div');
+      row.className = 'flex items-center justify-between gap-4 py-3';
+      const label = document.createElement('span');
+      const amount = document.createElement('strong');
+      label.textContent = item.label;
+      amount.textContent = opsMoney(item.amountCents);
+      if (item.amountCents < 0) amount.className = 'text-emerald-600';
+      row.append(label, amount);
+      return row;
+    });
+    items.replaceChildren(...rows);
+  }
+}
+
+function renderEligibility() {
+  const event = latestIneligibleEvent(operationsState.ui.selectedTicketId);
+  const requested = event ? opsStaff(event.requestedStaffId) : null;
+  const service = event
+    ? opsService(operationsState.serviceTickets.find((ticket) => ticket.id === event.ticketId)?.businessId, event.serviceKey)
+    : null;
+  const warning = document.getElementById('ops-eligibility-warning');
+  const requestedStaff = document.getElementById('ops-requested-staff');
+  const requestedService = document.getElementById('ops-requested-service');
+  if (warning) warning.textContent = requested && service
+    ? `${requested.name} is not eligible for ${service.label}. Salon staff will not be changed until you choose. / Nhân viên sẽ không tự động bị đổi.`
+    : 'No staff eligibility warning / Không có cảnh báo nhân viên.';
+  if (requestedStaff) requestedStaff.textContent = requested?.name || '—';
+  if (requestedService) requestedService.textContent = service?.label || '—';
+  const host = document.getElementById('ops-recommended-staff');
+  if (host) {
+    const cards = (event?.recommendedStaffIds || []).map((staffId) => {
+      const staff = opsStaff(staffId);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'ops-button-secondary text-left';
+      button.dataset.opsAction = 'select-recommended-staff';
+      button.dataset.staffId = staff.id;
+      button.disabled = !staff.available;
+      button.setAttribute('aria-disabled', String(!staff.available));
+      button.setAttribute('aria-selected', String(staff.available && operationsState.ui.selectedStaffId === staff.id));
+      button.textContent = `${staff.name} · ${staff.available ? 'Available / Sẵn sàng' : 'Unavailable / Không sẵn sàng'}`;
+      return button;
+    });
+    host.replaceChildren(...cards);
+  }
+  const choose = document.getElementById('ops-choose-staff');
+  if (choose) {
+    const selected = event?.recommendedStaffIds.includes(operationsState.ui.selectedStaffId)
+      ? opsStaff(operationsState.ui.selectedStaffId)
+      : null;
+    const selectable = selected?.available ? selected : null;
+    choose.disabled = !selectable;
+    choose.setAttribute('aria-disabled', String(!selectable));
+    choose.textContent = selectable
+      ? `Choose ${selectable.name} / Chọn ${selectable.name}`
+      : 'Choose staff / Chọn nhân viên';
+  }
+}
+
+function renderOperationsContent() {
+  renderLiveTicket();
+  renderEligibility();
+}
+
 function renderRoleCopy() {
   const copy = document.getElementById('ops-role-copy');
   if (copy) copy.textContent = OPS_ROLE_COPY[operationsState.ui.role] || OPS_ROLE_COPY.Customer;
@@ -496,14 +1031,18 @@ function renderOperationsScreen({ focus = false } = {}) {
   });
   document.querySelectorAll('[data-ops-screen-target]').forEach((control) => {
     const active = control.dataset.opsScreenTarget === activeScreen;
+    const unavailable = control.dataset.opsScreenTarget === 'staffnoteligible'
+      && !latestIneligibleEvent(operationsState.ui.selectedTicketId);
+    control.disabled = unavailable;
+    control.setAttribute('aria-disabled', String(unavailable));
     control.setAttribute('aria-selected', String(active));
-    control.setAttribute('tabindex', active ? '0' : '-1');
+    control.setAttribute('tabindex', active && !unavailable ? '0' : '-1');
   });
 }
 
 function activateOperationsScreen(control, focusTarget = 'panel') {
   const target = control.dataset.opsScreenTarget;
-  if (!OPS_SCREENS.includes(target)) return false;
+  if (!OPS_SCREENS.includes(target) || control.disabled || control.getAttribute('aria-disabled') === 'true') return false;
   const controls = Array.from(document.querySelectorAll('[data-ops-screen-target]'));
   const previousControl = controls.find((item) => item.dataset.opsScreenTarget === operationsState.ui.activeScreen);
   const result = commitOperations((draft) => {
@@ -523,6 +1062,12 @@ function activateOperationsScreen(control, focusTarget = 'panel') {
 }
 
 function handleOperationsClick(event) {
+  const actionControl = event.target?.closest?.('[data-ops-action]');
+  if (actionControl && !actionControl.disabled && actionControl.getAttribute('aria-disabled') !== 'true') {
+    const handler = OPS_ACTIONS.get(actionControl.dataset.opsAction);
+    if (handler) handler(actionControl);
+    return;
+  }
   const control = event.target?.closest?.('[data-ops-screen-target]');
   if (!control || control.disabled || control.getAttribute('aria-disabled') === 'true') return;
   activateOperationsScreen(control);
@@ -531,7 +1076,8 @@ function handleOperationsClick(event) {
 function handleOperationsKeydown(event) {
   const control = event.target?.closest?.('[data-ops-screen-target]');
   if (!control || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-  const controls = Array.from(document.querySelectorAll('[data-ops-screen-target]'));
+  const controls = Array.from(document.querySelectorAll('[data-ops-screen-target]'))
+    .filter((item) => !item.disabled && item.getAttribute('aria-disabled') !== 'true');
   const currentIndex = controls.indexOf(control);
   if (currentIndex < 0 || controls.length === 0) return;
   let nextIndex = currentIndex;
@@ -543,7 +1089,145 @@ function handleOperationsKeydown(event) {
   activateOperationsScreen(controls[nextIndex], 'tab');
 }
 
+function resolveOperationsEntry(snapshot, href) {
+  let url;
+  try {
+    url = new URL(href);
+  } catch {
+    return { ok: false, code: 'invalid_entry' };
+  }
+  if (url.searchParams.has('guestCheckinId')) {
+    const ids = url.searchParams.getAll('guestCheckinId');
+    if (ids.length !== 1 || !opsCanonicalId(ids[0], 'guest-checkin')) {
+      return { ok: false, code: 'invalid_guest_query' };
+    }
+    const matches = snapshot.guestCheckins.filter((guest) => guest.id === ids[0]);
+    return matches.length === 1
+      ? { ok: true, guest: matches[0], explicit: true }
+      : { ok: false, code: 'guest_not_found' };
+  }
+  const selected = operationsState.serviceTickets.find((ticket) => ticket.id === operationsState.ui.selectedTicketId);
+  if (selected) return { ok: true, ticket: selected, explicit: false };
+  if (snapshot.guestCheckins.length > 0) return { ok: true, guest: snapshot.guestCheckins[0], explicit: false };
+  return {
+    ok: true,
+    guest: {
+      id: 'guest-checkin-demo', businessId: 'bitcoin-nail-bar', name: 'Amy Nguyen',
+      phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-jenny'
+    },
+    explicit: false,
+    demo: true
+  };
+}
+
+registerOpsAction('review-staff-eligibility', () => {
+  const ticket = operationsState.serviceTickets.find((row) => row.id === operationsState.ui.selectedTicketId);
+  if (!ticket || !ticket.staffProfileId) {
+    setOperationsStatus('Cannot review staff / Không thể kiểm tra nhân viên.');
+    return;
+  }
+  const result = commitOperations((draft) => {
+    const evaluated = evaluateStaffEligibility(draft, ticket.id, ticket.serviceKey, ticket.staffProfileId);
+    if (evaluated.ok) draft.ui.activeScreen = evaluated.eligible ? 'liveticket' : 'staffnoteligible';
+    return evaluated;
+  });
+  if (!result.ok) {
+    setOperationsStatus('Cannot review staff / Không thể kiểm tra nhân viên.');
+    return;
+  }
+  renderOperationsContent();
+  renderOperationsScreen({ focus: !result.eligible });
+  setOperationsStatus(result.eligible
+    ? 'Requested staff is eligible / Nhân viên phù hợp.'
+    : 'Staff eligibility needs your choice / Cần chọn nhân viên phù hợp.');
+});
+
+registerOpsAction('select-recommended-staff', (control) => {
+  const staffId = control.dataset.staffId;
+  const result = commitOperations((draft) => {
+    const event = [...draft.staffEligibility].reverse().find((row) => row.ticketId === draft.ui.selectedTicketId && !row.eligible);
+    if (!event?.recommendedStaffIds.includes(staffId) || !opsStaff(staffId)?.available) {
+      return { ok: false, code: 'staff_not_selectable' };
+    }
+    draft.ui.selectedStaffId = staffId;
+    return { ok: true };
+  });
+  if (!result.ok) return setOperationsStatus('Staff is not selectable / Không thể chọn nhân viên.');
+  renderEligibility();
+});
+
+registerOpsAction('choose-recommended-staff', () => {
+  const result = commitOperations((draft) => {
+    const chosen = chooseRecommendedStaff(draft, draft.ui.selectedTicketId, draft.ui.selectedStaffId);
+    if (chosen.ok) draft.ui.activeScreen = 'liveticket';
+    return chosen;
+  });
+  if (!result.ok) return setOperationsStatus('Cannot choose staff / Không thể chọn nhân viên.');
+  renderOperationsContent();
+  renderOperationsScreen({ focus: true });
+  setOperationsStatus('Staff selected / Đã chọn nhân viên.');
+});
+
+registerOpsAction('ask-front-desk', () => {
+  const result = commitOperations((draft) => askFrontDesk(draft, draft.ui.selectedTicketId));
+  setOperationsStatus(result.ok
+    ? 'Front Desk has been notified / Lễ tân đã được thông báo.'
+    : 'Front Desk request failed / Không thể báo lễ tân.');
+});
+
+registerOpsAction('call-tech', () => setOperationsStatus('Demo only: open the device dialer in production.'));
+registerOpsAction('message-tech', () => setOperationsStatus('Demo only: open messaging in production.'));
+registerOpsAction('open-ticket-tab', (control) => {
+  const ticket = operationsState.serviceTickets.find((row) => row.id === operationsState.ui.selectedTicketId);
+  if (!ticket) return setOperationsStatus('No live ticket / Chưa có phiếu dịch vụ.');
+  if (control.dataset.target === 'pay') {
+    operationsPayHandoff = Object.freeze({ guestCheckinId: ticket.guestCheckinId });
+    setOperationsStatus('Pay handoff is ready / Đã chuẩn bị chuyển sang thanh toán.');
+    return;
+  }
+  setOperationsStatus(control.dataset.target === 'liveticket'
+    ? 'Ticket is open / Đang mở phiếu.'
+    : `${control.dataset.target} continues in Customer App.`);
+});
+
 function initializeOperations() {
+  operationsCustomerSnapshot = readCustomerSnapshot();
+  const href = typeof window.location?.href === 'string'
+    ? window.location.href
+    : 'https://example.invalid/customer-salon-operations.html';
+  const entry = resolveOperationsEntry(operationsCustomerSnapshot, href);
+  const entryError = document.getElementById('ops-entry-error');
+  operationsEntryBlocked = !entry.ok;
+  if (!entry.ok) {
+    const message = 'Guest check-in was not found or is ambiguous / Không tìm thấy hoặc lượt check-in không rõ ràng.';
+    if (entryError) {
+      entryError.textContent = message;
+      entryError.classList.remove('hidden');
+    }
+    setOperationsStatus(message);
+  } else {
+    entryError?.classList.add('hidden');
+    const result = commitOperations((draft) => {
+      if (entry.ticket) {
+        draft.ui.selectedTicketId = entry.ticket.id;
+        draft.ui.selectedStaffId = null;
+        draft.ui.activeScreen = 'liveticket';
+        return { ok: true, ticket: entry.ticket, idempotent: true };
+      }
+      const created = createServiceTicket(draft, entry.guest);
+      if (created.ok) draft.ui.activeScreen = 'liveticket';
+      return created;
+    });
+    if (!result.ok) {
+      operationsEntryBlocked = true;
+      const message = 'Live ticket could not be created / Không thể tạo phiếu dịch vụ.';
+      if (entryError) {
+        entryError.textContent = message;
+        entryError.classList.remove('hidden');
+      }
+      setOperationsStatus(message);
+    }
+  }
   const role = document.getElementById('ops-role');
   if (role) {
     role.value = operationsState.ui.role;
@@ -571,6 +1255,7 @@ function initializeOperations() {
   document.addEventListener('click', handleOperationsClick);
   document.addEventListener('keydown', handleOperationsKeydown);
   renderRoleCopy();
+  renderOperationsContent();
   renderOperationsScreen();
   try {
     window.lucide?.createIcons();
@@ -589,7 +1274,14 @@ window.NEXORA_OPERATIONS_TEST_API = {
   readCustomerSnapshot,
   commitOperations,
   getOperationsState,
-  opsId
+  opsId,
+  createServiceTicket,
+  evaluateStaffEligibility,
+  chooseRecommendedStaff,
+  askFrontDesk,
+  resolveOperationsEntry,
+  getPayHandoff,
+  getRegisteredOpsActions
 };
 if (!window.NEXORA_OPS_SKIP_INIT) initializeOperations();
 </script>

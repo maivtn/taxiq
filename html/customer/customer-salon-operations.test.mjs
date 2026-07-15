@@ -79,7 +79,26 @@ function plain(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function createStubNode({ id = '', screen = '', target = '' } = {}) {
+function guestCheckin(overrides = {}) {
+  return {
+    id: 'guest-checkin-1',
+    businessId: 'bitcoin-nail-bar',
+    name: 'Amy Nguyen',
+    phone: '8325550198',
+    serviceKey: 'deluxe-pedicure',
+    staffProfileId: 'staff-jenny',
+    ...overrides
+  };
+}
+
+function seedServiceTicket(api, overrides = {}, now = 1000) {
+  const state = api.createOperationsState();
+  const created = api.createServiceTicket(state, guestCheckin(overrides), now);
+  assert.equal(created.ok, true);
+  return { state, ticket: created.ticket };
+}
+
+function createStubNode({ id = '', screen = '', target = '', action = '', actionTarget = '' } = {}) {
   const listeners = new Map();
   const attributes = new Map();
   const classes = new Set();
@@ -87,6 +106,8 @@ function createStubNode({ id = '', screen = '', target = '' } = {}) {
     id,
     value: '',
     textContent: '',
+    className: '',
+    children: [],
     disabled: false,
     dataset: {},
     focusCount: 0,
@@ -117,22 +138,32 @@ function createStubNode({ id = '', screen = '', target = '' } = {}) {
       return event;
     },
     setAttribute(name, value) { attributes.set(name, String(value)); },
+    removeAttribute(name) { attributes.delete(name); },
     getAttribute(name) { return attributes.has(name) ? attributes.get(name) : null; },
+    append(...items) { node.children.push(...items); },
+    replaceChildren(...items) { node.children = [...items]; },
     focus() {
       node.focusCount += 1;
       node.onFocus?.();
     },
     closest(selector) {
       if (selector === '[data-ops-screen-target]' && node.dataset.opsScreenTarget) return node;
+      if (selector === '[data-ops-action]' && node.dataset.opsAction) return node;
       return null;
     }
   };
   if (screen) node.dataset.opsScreen = screen;
   if (target) node.dataset.opsScreenTarget = target;
+  if (action) node.dataset.opsAction = action;
+  if (actionTarget) node.dataset.target = actionTarget;
   return node;
 }
 
-function uiApi({ storage = createAuditStorage(), lucide } = {}) {
+function uiApi({
+  storage = createAuditStorage(),
+  lucide,
+  href = 'https://example.test/customer/customer-salon-operations.html'
+} = {}) {
   const script = SOURCE.match(/<script id="operations-app-script">([\s\S]*?)<\/script>/)?.[1];
   assert.ok(script, 'operations script must exist');
   const role = createStubNode({ id: 'ops-role' });
@@ -142,11 +173,31 @@ function uiApi({ storage = createAuditStorage(), lucide } = {}) {
     id: `ops-${screen}`, screen
   }));
   const screenButtons = ['liveticket', 'staffnoteligible', 'addonapproval'].map((target) => createStubNode({ target }));
-  const byId = new Map([[role.id, role], [status.id, status], [copy.id, copy], ...screens.map((node) => [node.id, node])]);
+  const dynamicIds = [
+    'ops-entry-error', 'ops-ticket-empty', 'ops-ticket-content', 'ops-ticket-number',
+    'ops-ticket-status', 'ops-ticket-business', 'ops-ticket-items', 'ops-ticket-total',
+    'ops-ticket-staff', 'ops-eligibility-warning', 'ops-requested-staff',
+    'ops-requested-service', 'ops-recommended-staff', 'ops-choose-staff'
+  ];
+  const dynamicNodes = dynamicIds.map((id) => createStubNode({ id }));
+  const actionButtons = {
+    review: createStubNode({ action: 'review-staff-eligibility' }),
+    pay: createStubNode({ action: 'open-ticket-tab', actionTarget: 'pay' }),
+    call: createStubNode({ action: 'call-tech' }),
+    message: createStubNode({ action: 'message-tech' }),
+    choose: dynamicNodes.find((node) => node.id === 'ops-choose-staff'),
+    frontDesk: createStubNode({ action: 'ask-front-desk' })
+  };
+  actionButtons.choose.dataset.opsAction = 'choose-recommended-staff';
+  const byId = new Map([
+    [role.id, role], [status.id, status], [copy.id, copy],
+    ...screens.map((node) => [node.id, node]), ...dynamicNodes.map((node) => [node.id, node])
+  ]);
   const documentListeners = new Map();
   const document = {
     activeElement: null,
     getElementById(id) { return byId.get(id) || null; },
+    createElement() { return createStubNode(); },
     querySelectorAll(selector) {
       if (selector === '[data-ops-screen]') return screens;
       if (selector === '[data-ops-screen-target]') return screenButtons;
@@ -174,7 +225,7 @@ function uiApi({ storage = createAuditStorage(), lucide } = {}) {
   for (const node of [...screens, ...screenButtons, role]) {
     node.onFocus = () => { document.activeElement = node; };
   }
-  const window = { localStorage: storage };
+  const window = { localStorage: storage, location: { href } };
   if (lucide !== undefined) window.lucide = lucide;
   const context = vm.createContext({
     window, localStorage: storage, structuredClone, console, URL, Date, document,
@@ -182,7 +233,23 @@ function uiApi({ storage = createAuditStorage(), lucide } = {}) {
   });
   window.window = window;
   vm.runInContext(script, context);
-  return { api: window.NEXORA_OPERATIONS_TEST_API, storage, document, role, status, copy, screens, screenButtons };
+  return {
+    api: window.NEXORA_OPERATIONS_TEST_API, storage, document, role, status, copy,
+    screens, screenButtons, byId, actionButtons, window
+  };
+}
+
+function customerStorageJson(guestCheckins, businesses = {
+  'bitcoin-nail-bar': { id: 'bitcoin-nail-bar', name: 'Bitcoin Nail Bar' },
+  'golden-glow-spa': { id: 'golden-glow-spa', name: 'Golden Glow Spa' },
+  'moon-coffee': { id: 'moon-coffee', name: 'Moon Coffee' }
+}) {
+  return JSON.stringify({
+    schemaVersion: 2,
+    profile: { id: 'cust-amy', name: 'Amy Nguyen', phone: '8325550198' },
+    businesses,
+    guestCheckins
+  });
 }
 
 function throwingLocalStorageApi() {
@@ -301,7 +368,7 @@ test('normalization rejects invalid timestamps, arrays, screens, and roles deter
   });
 });
 
-test('structured arrays accept only safe own plain records and deep-clone them', () => {
+test('strict domain normalization drops ambiguous tickets while preserving safe add-on records', () => {
   const { api } = testApi();
   const inherited = Object.create({ inherited: true });
   inherited.id = 'ticket-inherited';
@@ -316,32 +383,26 @@ test('structured arrays accept only safe own plain records and deep-clone them',
     ui: {}
   });
 
-  assert.deepEqual(plain(normalized.serviceTickets), [safe]);
-  assert.deepEqual(plain(normalized.addOnRequests), [{ id: 'addon-safe', amountCents: 1500 }]);
-  assert.deepEqual(plain(normalized.staffEligibility), [{ id: 'eligibility-safe', eligible: false }]);
-  normalized.serviceTickets[0].nested.label = 'changed';
-  assert.equal(safe.nested.label, 'plain text');
+  assert.deepEqual(plain(normalized.serviceTickets), []);
+  assert.deepEqual(plain(normalized.addOnRequests), []);
+  assert.deepEqual(plain(normalized.staffEligibility), []);
   assert.equal({}.polluted, undefined);
 });
 
 test('save does not mutate caller input and returns the normalized state it persisted', () => {
   const { api } = testApi();
   const storage = createMemoryStorage();
-  const input = {
-    schemaVersion: 1,
-    updatedAt: '2026-07-15T03:04:42.000Z',
-    serviceTickets: [{ id: 'ticket-1', nested: { value: 1 } }],
-    addOnRequests: [], staffEligibility: [],
-    ui: { activeScreen: 'liveticket', role: 'Staff', selectedTicketId: 'ticket-1', selectedStaffId: null }
-  };
+  const { state: input } = seedServiceTicket(api);
+  input.updatedAt = '2026-07-15T03:04:42.000Z';
+  input.ui.role = 'Staff';
   const before = JSON.stringify(input);
 
   const saved = api.saveOperationsState(input, storage);
 
   assert.equal(JSON.stringify(input), before);
   assert.deepEqual(plain(saved), JSON.parse(storage.getItem(api.OPS_STORAGE_KEY)));
-  saved.serviceTickets[0].nested.value = 2;
-  assert.equal(input.serviceTickets[0].nested.value, 1);
+  saved.serviceTickets[0].lineItems[0].label = 'changed';
+  assert.equal(input.serviceTickets[0].lineItems[0].label, 'Deluxe Pedicure');
 });
 
 test('customer bridge returns only allowlisted sanitized fields and never writes storage', () => {
@@ -553,6 +614,382 @@ test('UUID helper accepts only canonical UUID v4 values', () => {
   assert.equal(api.opsId('ticket').code, 'id_failed');
 });
 
+test('creates one canonical live ticket per exact guest check-in with integer cents', () => {
+  const { api } = testApi();
+  const state = api.createOperationsState();
+  const guest = guestCheckin();
+
+  const first = api.createServiceTicket(state, guest, 1000);
+  const afterFirst = JSON.stringify(state);
+  const replay = api.createServiceTicket(state, guest, Number.NaN);
+
+  assert.equal(first.ok, true);
+  assert.equal(first.ticket.guestCheckinId, guest.id);
+  assert.equal(first.ticket.number, 104);
+  assert.equal(first.ticket.status, 'in_service');
+  assert.equal(first.ticket.currentTotalCents, 4950);
+  assert.deepEqual(plain(first.ticket.lineItems).map(({ type, amountCents }) => ({ type, amountCents })), [
+    { type: 'service', amountCents: 5500 },
+    { type: 'discount', amountCents: -550 }
+  ]);
+  assert.equal(replay.ok, true);
+  assert.equal(replay.idempotent, true);
+  assert.equal(replay.ticket.id, first.ticket.id);
+  assert.equal(JSON.stringify(state), afterFirst);
+});
+
+test('uses the authoritative multi-business service catalog without mixing promos', () => {
+  const cases = [
+    ['bitcoin-nail-bar', 'acrylic-full-set', 6500],
+    ['golden-glow-spa', 'signature-facial', 7500],
+    ['moon-coffee', 'signature-drink', 800]
+  ];
+  for (const [businessId, serviceKey, total] of cases) {
+    const { api } = testApi();
+    const state = api.createOperationsState();
+    const result = api.createServiceTicket(state, guestCheckin({
+      id: `guest-checkin-${businessId}`,
+      businessId,
+      serviceKey,
+      staffProfileId: null
+    }), 1000);
+    assert.equal(result.ok, true);
+    assert.equal(result.ticket.businessId, businessId);
+    assert.equal(result.ticket.serviceKey, serviceKey);
+    assert.equal(result.ticket.lineItems.length, 1);
+    assert.equal(result.ticket.currentTotalCents, total);
+  }
+});
+
+test('rejects invalid guest, cross-business service, and cross-business staff before ID generation', () => {
+  const { api, context } = testApi();
+  const state = api.createOperationsState();
+  let uuidCalls = 0;
+  context.crypto.randomUUID = () => {
+    uuidCalls += 1;
+    return '00000000-0000-4000-8000-000000000099';
+  };
+  for (const guest of [
+    guestCheckin({ id: ' guest-checkin-1 ' }),
+    guestCheckin({ businessId: 'unknown-business' }),
+    guestCheckin({ businessId: 'golden-glow-spa', serviceKey: 'deluxe-pedicure', staffProfileId: null }),
+    guestCheckin({ businessId: 'golden-glow-spa', serviceKey: 'signature-facial', staffProfileId: 'staff-jenny' }),
+    guestCheckin({ staffProfileId: 'staff-unknown' })
+  ]) {
+    const before = JSON.stringify(state);
+    assert.equal(api.createServiceTicket(state, guest, 1000).ok, false);
+    assert.equal(JSON.stringify(state), before);
+  }
+  assert.equal(uuidCalls, 0);
+});
+
+test('fails closed on malformed or semantically duplicate ticket persistence before mutation', () => {
+  for (const tamper of [
+    (state) => state.serviceTickets.push(structuredClone(state.serviceTickets[0])),
+    (state) => { state.serviceTickets[0].lineItems.push(structuredClone(state.serviceTickets[0].lineItems[0])); },
+    (state) => { state.serviceTickets[0].number = '104'; },
+    (state) => {
+      const copy = structuredClone(state.serviceTickets[0]);
+      copy.id = 'ticket-00000000-0000-4000-8000-000000000099';
+      copy.guestCheckinId = 'guest-checkin-other';
+      state.serviceTickets.push(copy);
+    }
+  ]) {
+    const { api, context } = testApi();
+    const { state } = seedServiceTicket(api);
+    tamper(state);
+    let uuidCalls = 0;
+    context.crypto.randomUUID = () => {
+      uuidCalls += 1;
+      return '00000000-0000-4000-8000-000000000100';
+    };
+    const before = JSON.stringify(state);
+    const result = api.createServiceTicket(state, guestCheckin({ id: 'guest-checkin-2' }), 2000);
+    assert.equal(result.ok, false);
+    assert.equal(result.code, 'invalid_state');
+    assert.equal(JSON.stringify(state), before);
+    assert.equal(uuidCalls, 0);
+  }
+});
+
+test('keeps ticket IDs, timestamps, and numbers collision-safe', () => {
+  const { api, context } = testApi();
+  const { state, ticket } = seedServiceTicket(api);
+  const beforeCollision = JSON.stringify(state);
+  context.crypto.randomUUID = () => ticket.id.slice('ticket-'.length);
+  const collision = api.createServiceTicket(state, guestCheckin({ id: 'guest-checkin-2' }), 2000);
+  assert.equal(collision.code, 'id_collision');
+  assert.equal(JSON.stringify(state), beforeCollision);
+
+  context.crypto.randomUUID = () => '00000000-0000-4000-8000-000000000099';
+  const invalidTime = api.createServiceTicket(state, guestCheckin({ id: 'guest-checkin-2' }), Infinity);
+  assert.equal(invalidTime.code, 'invalid_time');
+  assert.equal(JSON.stringify(state), beforeCollision);
+
+  const created = api.createServiceTicket(state, guestCheckin({ id: 'guest-checkin-2' }), 2000);
+  assert.equal(created.ok, true);
+  assert.equal(created.ticket.number, 105);
+});
+
+test('strict migration rejects whole ambiguous ticket collections and reconciles dependent UI', () => {
+  const { api } = testApi();
+  const { state } = seedServiceTicket(api);
+  const duplicate = structuredClone(state.serviceTickets[0]);
+  duplicate.id = 'ticket-00000000-0000-4000-8000-000000000099';
+  state.serviceTickets.push(duplicate);
+  state.ui.selectedTicketId = duplicate.id;
+  state.ui.selectedStaffId = 'staff-kevin';
+  state.ui.activeScreen = 'staffnoteligible';
+
+  const normalized = api.normalizeOperationsState(state);
+
+  assert.deepEqual(plain(normalized.serviceTickets), []);
+  assert.deepEqual(plain(normalized.staffEligibility), []);
+  assert.equal(normalized.ui.selectedTicketId, null);
+  assert.equal(normalized.ui.selectedStaffId, null);
+  assert.equal(normalized.ui.activeScreen, 'liveticket');
+});
+
+test('evaluates requested staff exactly without replacing them and returns honest recommendations', () => {
+  const { api } = testApi();
+  const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' });
+  const beforeStaff = ticket.staffProfileId;
+
+  const result = api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny');
+  const afterFirst = JSON.stringify(state);
+  const replay = api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny');
+
+  assert.equal(result.ok, true);
+  assert.equal(result.eligible, false);
+  assert.equal(ticket.staffProfileId, beforeStaff);
+  assert.ok(result.recommendedStaffIds.includes('staff-tina'));
+  assert.ok(result.recommendedStaffIds.includes('staff-kevin'));
+  assert.equal(replay.idempotent, true);
+  assert.equal(JSON.stringify(state), afterFirst);
+});
+
+test('rejects wrong-business eligibility and unavailable recommendations atomically', () => {
+  const { api } = testApi();
+  const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' });
+  for (const [serviceKey, staffId] of [
+    ['signature-facial', 'staff-jenny'],
+    ['acrylic-full-set', 'staff-spa-linh'],
+    ['missing-service', 'staff-jenny']
+  ]) {
+    const before = JSON.stringify(state);
+    assert.equal(api.evaluateStaffEligibility(state, ticket.id, serviceKey, staffId).ok, false);
+    assert.equal(JSON.stringify(state), before);
+  }
+  assert.equal(api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny').ok, true);
+  const beforeChoice = JSON.stringify(state);
+  const unavailable = api.chooseRecommendedStaff(state, ticket.id, 'staff-tina', 2000);
+  assert.equal(unavailable.ok, false);
+  assert.equal(unavailable.code, 'staff_unavailable');
+  assert.equal(JSON.stringify(state), beforeChoice);
+});
+
+test('chooses only an available recommendation with stored chronology and exact replay', () => {
+  const { api } = testApi();
+  const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' }, 1000);
+  assert.equal(api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny').ok, true);
+  const beforeEarly = JSON.stringify(state);
+  assert.equal(api.chooseRecommendedStaff(state, ticket.id, 'staff-kevin', 999).code, 'invalid_time_order');
+  assert.equal(JSON.stringify(state), beforeEarly);
+
+  const chosen = api.chooseRecommendedStaff(state, ticket.id, 'staff-kevin', 2000);
+  const afterChosen = JSON.stringify(state);
+  const replay = api.chooseRecommendedStaff(state, ticket.id, 'staff-kevin', Number.NaN);
+
+  assert.equal(chosen.ok, true);
+  assert.equal(ticket.staffProfileId, 'staff-kevin');
+  assert.equal(chosen.selectedAt, '1970-01-01T00:00:02.000Z');
+  assert.equal(replay.ok, true);
+  assert.equal(replay.idempotent, true);
+  assert.equal(JSON.stringify(state), afterChosen);
+});
+
+test('resolved staff eligibility cannot persist the warning as the active screen', () => {
+  const { api } = testApi();
+  const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' });
+  assert.equal(api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny').ok, true);
+  assert.equal(api.chooseRecommendedStaff(state, ticket.id, 'staff-kevin', 2000).ok, true);
+  state.ui.activeScreen = 'staffnoteligible';
+
+  const normalized = api.normalizeOperationsState(state);
+
+  assert.equal(normalized.ui.activeScreen, 'liveticket');
+  assert.equal(normalized.ui.selectedStaffId, 'staff-kevin');
+});
+
+test('fails eligibility closed when persisted events are duplicated or tampered', () => {
+  const { api } = testApi();
+  const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' });
+  assert.equal(api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny').ok, true);
+  state.staffEligibility.push(structuredClone(state.staffEligibility[0]));
+  const before = JSON.stringify(state);
+  const result = api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny');
+  assert.equal(result.code, 'invalid_state');
+  assert.equal(JSON.stringify(state), before);
+});
+
+test('front desk requests are chronological, atomic, and idempotent', () => {
+  const { api } = testApi();
+  const { state, ticket } = seedServiceTicket(api, {}, 1000);
+  const before = JSON.stringify(state);
+  assert.equal(api.askFrontDesk(state, ticket.id, 999).code, 'invalid_time_order');
+  assert.equal(JSON.stringify(state), before);
+
+  const requested = api.askFrontDesk(state, ticket.id, 2000);
+  const afterRequested = JSON.stringify(state);
+  const replay = api.askFrontDesk(state, ticket.id, Infinity);
+  assert.equal(requested.ok, true);
+  assert.equal(ticket.frontDeskRequestedAt, '1970-01-01T00:00:02.000Z');
+  assert.equal(replay.idempotent, true);
+  assert.equal(JSON.stringify(state), afterRequested);
+});
+
+test('initialization selects the exact query guest and always enters Customer Live Ticket', () => {
+  const customerKey = 'nexora.customer.prototype.v1';
+  const first = guestCheckin({ id: 'guest-checkin-first' });
+  const second = guestCheckin({
+    id: 'guest-checkin-second', serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny'
+  });
+  const storage = createAuditStorage({ [customerKey]: customerStorageJson([first, second]) });
+  const harness = uiApi({
+    storage,
+    href: 'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-second'
+  });
+  const state = harness.api.getOperationsState();
+
+  assert.equal(state.serviceTickets.length, 1);
+  assert.equal(state.serviceTickets[0].guestCheckinId, second.id);
+  assert.equal(state.ui.selectedTicketId, state.serviceTickets[0].id);
+  assert.equal(state.ui.activeScreen, 'liveticket');
+  assert.equal(harness.screens[0].classList.contains('hidden'), false);
+  assert.equal(harness.api.getPayHandoff(), null);
+});
+
+test('invalid or ambiguous query entry fails accessibly without first-guest or demo fallback', () => {
+  const customerKey = 'nexora.customer.prototype.v1';
+  const customerJson = customerStorageJson([guestCheckin({ id: 'guest-checkin-first' })]);
+  for (const query of [
+    'guestCheckinId=guest-checkin-missing',
+    'guestCheckinId=guest-checkin-first&guestCheckinId=guest-checkin-first',
+    'guestCheckinId=%20guest-checkin-first%20'
+  ]) {
+    const storage = createAuditStorage({ [customerKey]: customerJson });
+    const harness = uiApi({
+      storage,
+      href: `https://example.test/customer/customer-salon-operations.html?${query}`
+    });
+    assert.equal(harness.api.getOperationsState().serviceTickets.length, 0);
+    assert.equal(harness.api.getPayHandoff(), null);
+    assert.match(harness.status.textContent, /guest check-in|lượt check-in/i);
+    assert.equal(harness.byId.get('ops-entry-error').classList.contains('hidden'), false);
+  }
+});
+
+test('without a query initialization may use the demo guest but still starts Live Ticket, never Pay', () => {
+  const harness = uiApi();
+  const state = harness.api.getOperationsState();
+  assert.equal(state.serviceTickets.length, 1);
+  assert.equal(state.serviceTickets[0].guestCheckinId, 'guest-checkin-demo');
+  assert.equal(state.ui.activeScreen, 'liveticket');
+  assert.equal(harness.api.getPayHandoff(), null);
+});
+
+test('explicit Pay action alone prepares an exact guest handoff without navigation', () => {
+  const customerKey = 'nexora.customer.prototype.v1';
+  const guest = guestCheckin({ id: 'guest-checkin-pay' });
+  const href = 'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-pay';
+  const harness = uiApi({
+    storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }), href
+  });
+  assert.equal(harness.api.getPayHandoff(), null);
+
+  harness.document.dispatchClick(harness.actionButtons.call);
+  assert.equal(harness.api.getPayHandoff(), null);
+  assert.match(harness.status.textContent, /demo|dialer/i);
+
+  harness.document.dispatchClick(harness.actionButtons.pay);
+  assert.deepEqual(plain(harness.api.getPayHandoff()), { guestCheckinId: guest.id });
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
+  assert.equal(harness.window.location.href, href);
+});
+
+test('staff warning is conditional and recommendation CTA, availability, and ARIA stay aligned', () => {
+  const customerKey = 'nexora.customer.prototype.v1';
+  const guest = guestCheckin({
+    id: 'guest-checkin-ineligible', serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny'
+  });
+  const harness = uiApi({
+    storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }),
+    href: 'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-ineligible'
+  });
+
+  harness.document.dispatchClick(harness.actionButtons.review);
+
+  const state = harness.api.getOperationsState();
+  assert.equal(state.ui.activeScreen, 'staffnoteligible');
+  assert.equal(state.serviceTickets[0].staffProfileId, 'staff-jenny');
+  assert.equal(harness.byId.get('ops-requested-staff').textContent, 'Jenny');
+  assert.equal(harness.byId.get('ops-requested-service').textContent, 'Acrylic Full Set');
+  const cards = harness.byId.get('ops-recommended-staff').children;
+  const tina = cards.find((card) => card.dataset.staffId === 'staff-tina');
+  const kevin = cards.find((card) => card.dataset.staffId === 'staff-kevin');
+  assert.equal(tina.disabled, true);
+  assert.match(tina.textContent, /Unavailable|Không sẵn sàng/);
+  assert.equal(kevin.getAttribute('aria-selected'), 'true');
+  assert.equal(harness.actionButtons.choose.textContent, 'Choose Kevin / Chọn Kevin');
+
+  harness.document.dispatchClick(harness.actionButtons.choose);
+  assert.equal(harness.api.getOperationsState().serviceTickets[0].staffProfileId, 'staff-kevin');
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
+});
+
+test('eligible requested staff stays on Live Ticket and never shows the warning screen', () => {
+  const customerKey = 'nexora.customer.prototype.v1';
+  const guest = guestCheckin({ id: 'guest-checkin-eligible' });
+  const harness = uiApi({
+    storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }),
+    href: 'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-eligible'
+  });
+  harness.document.dispatchClick(harness.actionButtons.review);
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
+  assert.equal(harness.api.getOperationsState().staffEligibility[0].eligible, true);
+  assert.match(harness.status.textContent, /eligible|phù hợp/i);
+});
+
+test('live ticket and customer business labels render as inert text with exact ticket values', () => {
+  const customerKey = 'nexora.customer.prototype.v1';
+  const guest = guestCheckin({ id: 'guest-checkin-xss', name: '<img src=x onerror=alert(1)>' });
+  const businesses = {
+    'bitcoin-nail-bar': { id: 'bitcoin-nail-bar', name: '<svg onload=alert(1)>' }
+  };
+  const harness = uiApi({
+    storage: createAuditStorage({ [customerKey]: customerStorageJson([guest], businesses) }),
+    href: 'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-xss'
+  });
+  assert.equal(harness.byId.get('ops-ticket-number').textContent, '#104');
+  assert.equal(harness.byId.get('ops-ticket-status').textContent, 'In Service / Đang làm');
+  assert.equal(harness.byId.get('ops-ticket-business').textContent, '<svg onload=alert(1)>');
+  assert.equal(harness.byId.get('ops-ticket-total').textContent, '$49.50');
+  assert.deepEqual(
+    harness.byId.get('ops-ticket-items').children.map((row) => row.children[0].textContent),
+    ['Deluxe Pedicure', 'Promo NEW10']
+  );
+});
+
+test('all enabled delegated controls are registered and companion keeps exactly three operations screens', () => {
+  const actions = [...SOURCE.matchAll(/data-ops-action="([^"]+)"/g)].map((match) => match[1]);
+  const { api } = testApi();
+  const registered = api.getRegisteredOpsActions();
+  for (const action of new Set(actions)) assert.ok(registered.includes(action), `unregistered ${action}`);
+  assert.equal((SOURCE.match(/data-ops-screen="/g) || []).length, 3);
+  assert.match(SOURCE, /Ticket[\s\S]*Pay[\s\S]*Review[\s\S]*Reward/);
+  assert.doesNotMatch(SOURCE, /location\.(?:href|assign)\s*=.*pay|navigate.*pay/i);
+});
+
 test('standalone shell uses mobile viewport, browser CDNs, and no build dependency', () => {
   assert.match(SOURCE, /<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">/);
   assert.match(SOURCE, /https:\/\/cdn\.jsdelivr\.net\/npm\/@tailwindcss\/browser@4/);
@@ -613,14 +1050,16 @@ test('role persistence failure restores the select and state with an accessible 
 test('ARIA tabs support ArrowLeft, ArrowRight, Home, and End with persisted activation', () => {
   const harness = uiApi();
   const [live, eligibility, addon] = harness.screenButtons;
+  assert.equal(eligibility.disabled, true);
+  assert.equal(eligibility.getAttribute('aria-disabled'), 'true');
 
   const right = harness.document.dispatchKeydown(live, 'ArrowRight');
   assert.equal(right.defaultPrevented, true);
-  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'staffnoteligible');
-  assert.equal(harness.document.activeElement, eligibility);
-  assert.equal(eligibility.getAttribute('aria-selected'), 'true');
+  assert.equal(harness.api.getOperationsState().ui.activeScreen, 'addonapproval');
+  assert.equal(harness.document.activeElement, addon);
+  assert.equal(addon.getAttribute('aria-selected'), 'true');
 
-  harness.document.dispatchKeydown(eligibility, 'End');
+  harness.document.dispatchKeydown(addon, 'End');
   assert.equal(harness.api.getOperationsState().ui.activeScreen, 'addonapproval');
   assert.equal(harness.document.activeElement, addon);
 
