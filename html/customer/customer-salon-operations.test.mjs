@@ -1397,6 +1397,47 @@ test('conditional tabs and add-on controls expose localized disabled reasons thr
   assert.ok(addon.getAttribute('title'));
 });
 
+test('resolved add-on controls explain accepted and declined outcomes in both languages', () => {
+  const expected = [
+    { language: 'vi', decision: 'accepted', reason: 'Dịch vụ thêm này đã được chấp nhận.' },
+    { language: 'vi', decision: 'declined', reason: 'Dịch vụ thêm này đã bị từ chối.' },
+    { language: 'en', decision: 'accepted', reason: 'This add-on has already been accepted.' },
+    { language: 'en', decision: 'declined', reason: 'This add-on has already been declined.' }
+  ];
+  const actual = [];
+  const customerKey = 'nexora.customer.prototype.v1';
+
+  for (const language of ['vi', 'en']) {
+    for (const decision of ['accepted', 'declined']) {
+      const guest = guestCheckin({ id: `guest-checkin-resolved-${language}-${decision}` });
+      const harness = uiApi({
+        language,
+        storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }),
+        href: `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${guest.id}`
+      });
+      const open = harness.actionButtons.openAddon;
+      assert.equal(open.disabled, false);
+      assert.equal(open.getAttribute('title'), null);
+      harness.document.dispatchClick(open);
+      assert.equal(open.disabled, false);
+      assert.equal(open.getAttribute('title'), null);
+      harness.document.dispatchClick(
+        decision === 'accepted' ? harness.actionButtons.acceptAddon : harness.actionButtons.declineAddon
+      );
+      const phone = harness.byId.get('ops-addon-phone');
+      phone.value = '0198';
+      phone.dispatch('input');
+      harness.document.dispatchClick(harness.actionButtons.confirmAddon);
+
+      assert.equal(harness.api.getOperationsState().addOnRequests[0].status, decision);
+      assert.equal(open.disabled, true);
+      actual.push({ language, decision, reason: open.getAttribute('title') });
+    }
+  }
+
+  assert.deepEqual(actual, expected);
+});
+
 test('all dynamic Operations status, role, add-on, and ticket copy comes from the VI/EN registry', () => {
   assert.equal((SOURCE.match(/\bsetOperationsStatus\(/g) || []).length, 2);
   assert.doesNotMatch(SOURCE, /OPS_ROLE_COPY|suggested \/ đề xuất|Unassigned \/ Chưa chỉ định/);

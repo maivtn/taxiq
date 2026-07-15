@@ -303,6 +303,102 @@
       stroke-linejoin: round;
     }
 
+    .nav-parent {
+      position: relative;
+    }
+
+    .nav-caret {
+      width: 16px;
+      height: 16px;
+      margin-left: auto;
+      flex-shrink: 0;
+      color: rgba(255, 255, 255, 0.6);
+      transition: transform 0.24s ease, color 0.2s;
+    }
+
+    .nav-parent:hover .nav-caret {
+      color: #fff;
+    }
+
+    .nav-parent.is-expanded .nav-caret {
+      transform: rotate(180deg);
+    }
+
+    .nav-caret path {
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .nav-subnav {
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.24s ease;
+    }
+
+    .nav-subnav.is-collapsed {
+      grid-template-rows: 0fr;
+    }
+
+    .nav-subnav-inner {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+      margin: 2px 0 4px 30px;
+      padding: 2px 0 2px 12px;
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .nav-subitem {
+      display: flex;
+      width: 100%;
+      height: 38px;
+      align-items: center;
+      gap: 8px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      padding: 0 12px;
+      color: rgba(255, 255, 255, 0.62);
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-subitem:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+
+    .nav-subitem.is-active {
+      background: rgba(255, 255, 255, 0.09);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .nav-subitem-dot {
+      width: 6px;
+      height: 6px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .nav-subitem:hover .nav-subitem-dot {
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .nav-subitem.is-active .nav-subitem-dot {
+      background: var(--brand-cyan);
+      box-shadow: 0 0 8px rgba(50, 215, 255, 0.6);
+    }
+
     .sidebar-footer {
       margin-top: auto;
       flex-shrink: 0;
@@ -4017,6 +4113,261 @@
       line-height: 1.55;
     }
 
+    /* ===== Follow-up SMS composer ===== */
+    .sms-compose-recipient {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 14px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+    }
+
+    .sms-missed-pill {
+      gap: 5px;
+      background: rgba(239, 68, 68, 0.12);
+      color: #dc2626;
+    }
+
+    .sms-compose-templates {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .sms-template-chip {
+      border: 1px solid var(--nexora-border);
+      border-radius: 999px;
+      background: #f7f9fc;
+      padding: 7px 13px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 700;
+      transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
+    }
+
+    .sms-template-chip:hover {
+      transform: translateY(-1px);
+      border-color: var(--nexora-electric);
+      color: var(--nexora-electric);
+    }
+
+    .sms-template-chip.is-active {
+      border-color: transparent;
+      background: rgba(43, 89, 255, 0.12);
+      color: var(--nexora-electric);
+    }
+
+    .sms-compose-box {
+      overflow: hidden;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+    }
+
+    .sms-tag-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--nexora-rule);
+      background: #fbfdff;
+      padding: 10px 14px;
+    }
+
+    .sms-tag-hint {
+      color: var(--nexora-subtle);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .sms-tag-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid rgba(70, 72, 216, 0.18);
+      border-radius: 7px;
+      background: rgba(70, 72, 216, 0.08);
+      padding: 5px 10px;
+      color: var(--nexora-brand);
+      font-size: 11px;
+      font-weight: 700;
+      transition: background 0.2s;
+    }
+
+    .sms-tag-btn:hover {
+      background: rgba(70, 72, 216, 0.16);
+    }
+
+    .sms-compose-textarea {
+      display: block;
+      width: 100%;
+      min-height: 108px;
+      resize: vertical;
+      border: 0;
+      background: transparent;
+      padding: 14px;
+      color: var(--nexora-text);
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.6;
+      outline: none;
+    }
+
+    .sms-compose-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      border-top: 1px solid var(--nexora-rule);
+      padding: 10px 14px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .sms-char-count {
+      color: var(--nexora-electric);
+      font-weight: 800;
+    }
+
+    .sms-char-count.multi {
+      color: var(--nexora-warning);
+    }
+
+    .sms-preview-card {
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #f4f7fb;
+      padding: 14px;
+    }
+
+    .sms-preview-label {
+      margin-bottom: 8px;
+      color: var(--nexora-subtle);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .sms-bubble {
+      max-width: 88%;
+      border-radius: 16px 16px 16px 4px;
+      background: #fff;
+      padding: 11px 14px;
+      color: var(--nexora-text);
+      font-size: 13px;
+      line-height: 1.55;
+      word-wrap: break-word;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    }
+
+    .sms-bubble .sms-lnk {
+      color: var(--nexora-electric);
+      text-decoration: underline;
+    }
+
+    .sms-preview-empty {
+      color: var(--nexora-subtle);
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    .sms-confirm-box {
+      display: none;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 10px;
+      background: rgba(245, 158, 11, 0.09);
+      padding: 12px 14px;
+    }
+
+    .sms-confirm-box.show {
+      display: block;
+    }
+
+    .sms-confirm-title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #9a5a00;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .sms-confirm-detail {
+      margin-top: 6px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.6;
+    }
+
+    .sms-compose-actions {
+      justify-content: space-between;
+    }
+
+    .sms-cost {
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .sms-action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .booking-toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      max-width: min(92vw, 380px);
+      border: 1px solid rgba(0, 184, 115, 0.4);
+      border-radius: 12px;
+      background: #06331f;
+      padding: 13px 16px;
+      color: #d6ffe9;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 18px 44px rgba(6, 24, 16, 0.4);
+      opacity: 0;
+      transform: translateY(14px);
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .booking-toast::before {
+      content: "\2713";
+      display: inline-flex;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--nexora-success);
+      color: #06331f;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .booking-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .booking-status-cell {
       white-space: nowrap;
     }
@@ -5921,12 +6272,39 @@
           </span>
           <span>Stations & QR Codes</span>
         </button>
-        <button class="nav-item is-active" type="button" aria-current="page">
+        <button class="nav-item nav-parent is-expanded" type="button" data-nav-group aria-expanded="true" aria-controls="booking-hub-subnav">
           <span class="sidebar-icon-wrap">
             <i class="lucide-menu-icon" data-lucide="calendar-days" aria-hidden="true"></i>
           </span>
           <span>Booking Hub</span>
+          <svg class="nav-caret" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
         </button>
+        <div class="nav-subnav" id="booking-hub-subnav" data-nav-subnav>
+          <div class="nav-subnav-inner">
+            <button class="nav-subitem is-active" type="button" data-tab-target="booking" aria-controls="panel-booking">
+              <span class="nav-subitem-dot" aria-hidden="true"></span>
+              <span>Booking Book</span>
+            </button>
+            <button class="nav-subitem" type="button" data-tab-target="customers" aria-controls="panel-customers">
+              <span class="nav-subitem-dot" aria-hidden="true"></span>
+              <span>Customers</span>
+            </button>
+            <button class="nav-subitem" type="button" data-tab-target="calllog" aria-controls="panel-calllog">
+              <span class="nav-subitem-dot" aria-hidden="true"></span>
+              <span>Call Log</span>
+            </button>
+            <button class="nav-subitem" type="button" data-tab-target="plans" aria-controls="panel-plans">
+              <span class="nav-subitem-dot" aria-hidden="true"></span>
+              <span>Plans</span>
+            </button>
+            <button class="nav-subitem" type="button" data-tab-target="settings" aria-controls="panel-settings">
+              <span class="nav-subitem-dot" aria-hidden="true"></span>
+              <span>Salon Settings</span>
+            </button>
+          </div>
+        </div>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
             <i class="lucide-menu-icon" data-lucide="chart-no-axes-combined" aria-hidden="true"></i>
@@ -7486,6 +7864,70 @@
 
     
 
+    <div class="booking-detail-modal sms-compose-modal" data-sms-modal hidden>
+      <div class="booking-detail-dialog sms-compose-dialog" role="dialog" aria-modal="true" aria-labelledby="sms-compose-title">
+        <div class="booking-detail-head">
+          <div>
+            <div class="booking-detail-title" id="sms-compose-title">Follow-up SMS</div>
+            <div class="booking-detail-sub">Win back a missed call — send a friendly booking invite.</div>
+          </div>
+          <button class="booking-detail-close" type="button" data-sms-close aria-label="Close follow-up composer"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+        </div>
+        <div class="booking-detail-body">
+          <div class="sms-compose-recipient">
+            <div class="booking-detail-avatar" data-sms-initials></div>
+            <div>
+              <div class="booking-detail-name" data-sms-name></div>
+              <div class="booking-detail-hero-sub">
+                <span data-sms-phone></span>
+                <span data-sms-time></span>
+              </div>
+            </div>
+            <div class="booking-detail-status-pill sms-missed-pill"><i class="bi bi-telephone-x" aria-hidden="true"></i> Missed</div>
+          </div>
+
+          <div class="booking-detail-section">
+            <div class="booking-detail-section-title"><i class="bi bi-lightning-charge" aria-hidden="true"></i>Quick templates</div>
+            <div class="sms-compose-templates" data-sms-templates></div>
+          </div>
+
+          <div class="sms-compose-box">
+            <div class="sms-tag-toolbar" data-sms-tagbar>
+              <span class="sms-tag-hint">Insert</span>
+              <button class="sms-tag-btn" type="button" data-sms-tag="{TenKhach}"><i class="bi bi-person" aria-hidden="true"></i> Name</button>
+              <button class="sms-tag-btn" type="button" data-sms-tag="{TenTiem}"><i class="bi bi-shop" aria-hidden="true"></i> Salon</button>
+              <button class="sms-tag-btn" type="button" data-sms-tag="{Link}"><i class="bi bi-link-45deg" aria-hidden="true"></i> Book link</button>
+              <button class="sms-tag-btn" type="button" data-sms-tag="{SoDT}"><i class="bi bi-telephone" aria-hidden="true"></i> Phone</button>
+            </div>
+            <textarea class="sms-compose-textarea" data-sms-text placeholder="Write your follow-up message..."></textarea>
+            <div class="sms-compose-footer">
+              <span>Reply STOP to opt out</span>
+              <span class="sms-char-count" data-sms-count>0 chars — 0 SMS</span>
+            </div>
+          </div>
+
+          <div class="sms-preview-card">
+            <div class="sms-preview-label">Preview on customer's phone</div>
+            <div class="sms-bubble" data-sms-bubble><span class="sms-preview-empty">Message preview appears here…</span></div>
+          </div>
+
+          <div class="sms-confirm-box" data-sms-confirm>
+            <div class="sms-confirm-title"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Confirm before sending</div>
+            <div class="sms-confirm-detail" data-sms-confirm-detail></div>
+          </div>
+        </div>
+        <div class="booking-detail-actions sms-compose-actions">
+          <span class="sms-cost" data-sms-cost>1 recipient · 1 SMS</span>
+          <div class="sms-action-buttons">
+            <button class="booking-secondary-button" type="button" data-sms-close>Cancel</button>
+            <button class="booking-primary-button" type="button" data-sms-send><i class="bi bi-send" aria-hidden="true"></i> Send SMS</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="booking-toast" data-booking-toast role="status" aria-live="polite"></div>
+
     <div class="trial-modal" data-trial-modal hidden role="dialog" aria-modal="true" aria-labelledby="trial-modal-title">
       <div class="trial-dialog">
         <button class="trial-close" type="button" data-trial-close aria-label="Close modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
@@ -8902,6 +9344,16 @@
       });
     });
 
+    var navGroupToggle = document.querySelector('[data-nav-group]');
+    var navSubnav = document.querySelector('[data-nav-subnav]');
+    if (navGroupToggle && navSubnav) {
+      navGroupToggle.addEventListener('click', function() {
+        var collapsed = navSubnav.classList.toggle('is-collapsed');
+        navGroupToggle.classList.toggle('is-expanded', !collapsed);
+        navGroupToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      });
+    }
+
     window.addEventListener('popstate', function() {
       var params = new URLSearchParams(window.location.search);
       activateMainTab(params.get('tab'), { syncUrl: false });
@@ -9352,6 +9804,216 @@
     var callFilter = 'all';
     var callSearch = '';
 
+    /* ===== Follow-up SMS composer (ported from SMS dashboard) ===== */
+    var SMS_FOLLOWUP_TEMPLATES = [
+      { title: '📞 Sorry we missed you', text: 'Hi {TenKhach}, sorry we missed your call at {TenTiem}! Book your appointment here: {Link} or call {SoDT}.' },
+      { title: '🎁 Win-back offer', text: 'Hi {TenKhach}! We missed your call — book with {TenTiem} this week and get 15% off your visit. Reserve: {Link}' },
+      { title: '💬 Quick reply', text: 'Hi! This is {TenTiem}. We saw your missed call — how can we help? Reply here or book online: {Link}' }
+    ];
+
+    var GSM7_BASIC = '@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&\'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà';
+    var GSM7_EXT = '^{}\\[~]|€';
+
+    function smsInfo(text) {
+      if (!text) return { units: 0, parts: 0, encoding: 'GSM-7' };
+      var isUnicode = false;
+      var gsmUnits = 0;
+      for (var i = 0; i < text.length; i++) {
+        var ch = text.charAt(i);
+        if (GSM7_BASIC.indexOf(ch) !== -1) gsmUnits += 1;
+        else if (GSM7_EXT.indexOf(ch) !== -1) gsmUnits += 2;
+        else { isUnicode = true; break; }
+      }
+      if (isUnicode) {
+        var units = text.length;
+        return { units: units, parts: units <= 70 ? 1 : Math.ceil(units / 67), encoding: 'UCS-2' };
+      }
+      return { units: gsmUnits, parts: gsmUnits <= 160 ? 1 : Math.ceil(gsmUnits / 153), encoding: 'GSM-7' };
+    }
+
+    var smsState = { call: null, confirming: false };
+
+    function smsModal() {
+      return document.querySelector('[data-sms-modal]');
+    }
+
+    function setBookingDetailTextIn(root, selector, value) {
+      var el = root ? root.querySelector(selector) : null;
+      if (el) el.textContent = value || '';
+    }
+
+    function smsDisplayName(call) {
+      return call && call.name && call.name !== 'Unknown' ? call.name : 'Missed caller';
+    }
+
+    function smsSamples() {
+      var call = smsState.call || {};
+      var first = call.name && call.name !== 'Unknown' ? call.name.split(/\s+/)[0] : 'there';
+      return {
+        '{TenKhach}': first,
+        '{TenTiem}': 'Bitcoin Nail Bar',
+        '{Link}': 'nexora.ai/b/x7k2',
+        '{SoDT}': '832-786-5576'
+      };
+    }
+
+    function renderSmsTemplates() {
+      var host = document.querySelector('[data-sms-templates]');
+      if (!host) return;
+      host.innerHTML = SMS_FOLLOWUP_TEMPLATES.map(function(t, i) {
+        return '<button class="sms-template-chip' + (i === 0 ? ' is-active' : '') + '" type="button" data-sms-template="' + i + '">' + escapeHtml(t.title) + '</button>';
+      }).join('');
+    }
+
+    function updateSmsPreview(text) {
+      var modal = smsModal();
+      var bubble = modal ? modal.querySelector('[data-sms-bubble]') : null;
+      if (!bubble) return;
+      if (!text.trim()) {
+        bubble.innerHTML = '<span class="sms-preview-empty">Message preview appears here…</span>';
+        return;
+      }
+      var safe = escapeHtml(text);
+      var samples = smsSamples();
+      Object.keys(samples).forEach(function(tag) {
+        var safeTag = escapeHtml(tag);
+        var rendered = tag === '{Link}'
+          ? '<span class="sms-lnk">' + escapeHtml(samples[tag]) + '</span>'
+          : '<strong>' + escapeHtml(samples[tag]) + '</strong>';
+        safe = safe.split(safeTag).join(rendered);
+      });
+      bubble.innerHTML = safe.replace(/\n/g, '<br>');
+    }
+
+    function resetSmsConfirm() {
+      var modal = smsModal();
+      if (!modal) return;
+      smsState.confirming = false;
+      var box = modal.querySelector('[data-sms-confirm]');
+      if (box) box.classList.remove('show');
+      var sendBtn = modal.querySelector('[data-sms-send]');
+      if (sendBtn) sendBtn.innerHTML = '<i class="bi bi-send" aria-hidden="true"></i> Send SMS';
+    }
+
+    function updateSmsComposer() {
+      var modal = smsModal();
+      if (!modal) return;
+      var textarea = modal.querySelector('[data-sms-text]');
+      var text = textarea ? textarea.value : '';
+      var info = smsInfo(text);
+      var parts = Math.max(info.parts, 1);
+
+      var countEl = modal.querySelector('[data-sms-count]');
+      if (countEl) {
+        countEl.textContent = info.units + ' chars — ' + info.parts + ' SMS (' + info.encoding + ')';
+        countEl.classList.toggle('multi', info.parts > 1);
+      }
+      var costEl = modal.querySelector('[data-sms-cost]');
+      if (costEl) costEl.textContent = '1 recipient · ' + parts + ' SMS';
+
+      updateSmsPreview(text);
+      if (smsState.confirming) resetSmsConfirm();
+    }
+
+    function openFollowupSms(call) {
+      var modal = smsModal();
+      if (!modal || !call) return;
+      smsState.call = call;
+
+      var name = smsDisplayName(call);
+      var initials = modal.querySelector('[data-sms-initials]');
+      if (initials) initials.textContent = getBookingCustomerInitials(name);
+      setBookingDetailTextIn(modal, '[data-sms-name]', name);
+      setBookingDetailTextIn(modal, '[data-sms-phone]', '+1 ' + call.phone);
+      setBookingDetailTextIn(modal, '[data-sms-time]', call.time);
+
+      renderSmsTemplates();
+      var textarea = modal.querySelector('[data-sms-text]');
+      if (textarea) textarea.value = SMS_FOLLOWUP_TEMPLATES[0].text;
+
+      resetSmsConfirm();
+      updateSmsComposer();
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      if (textarea) { textarea.focus(); textarea.setSelectionRange(textarea.value.length, textarea.value.length); }
+    }
+
+    function closeFollowupSms() {
+      var modal = smsModal();
+      if (!modal) return;
+      resetSmsConfirm();
+      modal.hidden = true;
+      smsState.call = null;
+      document.body.style.overflow = '';
+    }
+
+    function applySmsTemplate(index) {
+      var tpl = SMS_FOLLOWUP_TEMPLATES[index];
+      var modal = smsModal();
+      var textarea = modal ? modal.querySelector('[data-sms-text]') : null;
+      if (!tpl || !textarea) return;
+      textarea.value = tpl.text;
+      modal.querySelectorAll('[data-sms-template]').forEach(function(chip) {
+        chip.classList.toggle('is-active', chip.dataset.smsTemplate === String(index));
+      });
+      textarea.focus();
+      updateSmsComposer();
+    }
+
+    function insertSmsTag(tag) {
+      var modal = smsModal();
+      var textarea = modal ? modal.querySelector('[data-sms-text]') : null;
+      if (!textarea) return;
+      var start = textarea.selectionStart || 0;
+      var end = textarea.selectionEnd || 0;
+      var value = textarea.value;
+      textarea.value = value.slice(0, start) + tag + value.slice(end);
+      var pos = start + tag.length;
+      textarea.focus();
+      textarea.setSelectionRange(pos, pos);
+      updateSmsComposer();
+    }
+
+    function sendFollowupSms() {
+      var modal = smsModal();
+      if (!modal) return;
+      var textarea = modal.querySelector('[data-sms-text]');
+      var text = textarea ? textarea.value.trim() : '';
+      if (!text) { if (textarea) textarea.focus(); return; }
+
+      var info = smsInfo(text);
+      var parts = Math.max(info.parts, 1);
+
+      if (!smsState.confirming) {
+        smsState.confirming = true;
+        var call = smsState.call || {};
+        var detail = modal.querySelector('[data-sms-confirm-detail]');
+        if (detail) {
+          detail.innerHTML =
+            'To: <strong>' + escapeHtml(smsDisplayName(call)) + '</strong> (+1 ' + escapeHtml(call.phone || '') + ')<br>' +
+            'Length: <strong>' + info.units + ' chars</strong> · ' + parts + ' SMS (' + info.encoding + ')';
+        }
+        var box = modal.querySelector('[data-sms-confirm]');
+        if (box) { box.classList.add('show'); box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+        var sendBtn = modal.querySelector('[data-sms-send]');
+        if (sendBtn) sendBtn.innerHTML = '<i class="bi bi-check-lg" aria-hidden="true"></i> Confirm send';
+        return;
+      }
+
+      var phone = smsState.call && smsState.call.phone;
+      closeFollowupSms();
+      showBookingToast('Follow-up SMS sent' + (phone ? ' to +1 ' + phone : '') + '.');
+    }
+
+    function showBookingToast(message) {
+      var toast = document.querySelector('[data-booking-toast]');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showBookingToast._t);
+      showBookingToast._t = setTimeout(function() { toast.classList.remove('show'); }, 4200);
+    }
+
     function formatCallDur(sec) {
       if (!sec) return '—';
       return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
@@ -9428,7 +10090,7 @@
         var meta = CALL_STATUS_META[c.status] || { cls: 'booking-status-new', icon: '', label: c.status };
         var metaIcon = meta.icon ? '<i class="bi ' + meta.icon + '" aria-hidden="true"></i> ' : '';
         var action = c.status === 'missed'
-          ? '<button class="booking-mini-button primary" type="button" title="Follow-up SMS" aria-label="Follow-up SMS"><i class="bi bi-reply" aria-hidden="true"></i><span class="booking-mini-label">Follow-up SMS</span></button>'
+          ? '<button class="booking-mini-button primary" type="button" data-call-sms="' + CALLS.indexOf(c) + '" title="Follow-up SMS" aria-label="Follow-up SMS"><i class="bi bi-reply" aria-hidden="true"></i><span class="booking-mini-label">Follow-up SMS</span></button>'
           : '';
         return '<tr class="booking-table-row">' +
           '<td>' + escapeHtml(c.time) + '</td>' +
@@ -9479,6 +10141,46 @@
         callFilter = callChip.dataset.callStatus;
         renderCalls();
         return;
+      }
+
+      var callSmsBtn = event.target.closest('[data-call-sms]');
+      if (callSmsBtn) {
+        openFollowupSms(CALLS[parseInt(callSmsBtn.dataset.callSms, 10)]);
+        return;
+      }
+
+      if (event.target.closest('[data-sms-close]') || event.target.matches('[data-sms-modal]')) {
+        closeFollowupSms();
+        return;
+      }
+
+      var smsTemplate = event.target.closest('[data-sms-template]');
+      if (smsTemplate) {
+        applySmsTemplate(parseInt(smsTemplate.dataset.smsTemplate, 10));
+        return;
+      }
+
+      var smsTag = event.target.closest('[data-sms-tag]');
+      if (smsTag) {
+        insertSmsTag(smsTag.dataset.smsTag);
+        return;
+      }
+
+      if (event.target.closest('[data-sms-send]')) {
+        sendFollowupSms();
+        return;
+      }
+    });
+
+    var smsTextarea = document.querySelector('[data-sms-text]');
+    if (smsTextarea) {
+      smsTextarea.addEventListener('input', updateSmsComposer);
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        var modal = smsModal();
+        if (modal && !modal.hidden) closeFollowupSms();
       }
     });
 

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đánh giá - Bitcoin Nail Bar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    @keyframes pop-in {
+      0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+      70%  { transform: scale(1.15) rotate(3deg); }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    @keyframes slide-up {
+      from { transform: translateY(16px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+    .animate-pop  { animation: pop-in  0.45s cubic-bezier(0.175,0.885,0.32,1.275) both; }
+    .animate-up-1 { animation: slide-up 0.35s ease 0.1s  both; }
+    .animate-up-2 { animation: slide-up 0.35s ease 0.22s both; }
+    .animate-up-3 { animation: slide-up 0.35s ease 0.34s both; }
+    .tag-chip { transition: all 0.15s ease; }
+    .tag-chip.selected { background-color: #10b981; color: white; border-color: #10b981; }
+    .star-btn svg { transition: all 0.1s ease; }
+    .star-btn.active svg { fill: #f59e0b; stroke: #f59e0b; }
+    .btn-nexora-primary { background: linear-gradient(90deg, #6c4df6 0%, #4f46e5 100%); position: relative; }
+    .btn-nexora-primary:hover { background: #563bd8; }
+    .btn-glow-pulse { position: relative; }
+    .btn-glow-pulse::after {
+      content: '';
+      position: absolute;
+      inset: -2.5px;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, #6c4df6, #16b7ff);
+      z-index: -1;
+      opacity: 0.55;
+      filter: blur(6px);
+      animation: pulseGlow 2.5s infinite alternate;
+    }
+    @keyframes pulseGlow {
+      from { opacity: 0.4; filter: blur(5px); }
+      to   { opacity: 0.75; filter: blur(9px); }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+
+  <div class="max-w-md mx-auto px-3 py-3 space-y-3">
+
+    <!-- Success Banner -->
+    <div class="flex items-center gap-3 animate-pop bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-200 shrink-0">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-lg font-black text-gray-800">Tip Sent! 🎉</h1>
+        <p class="text-xs text-gray-400">Cảm ơn sự hào phóng của bạn!</p>
+      </div>
+    </div>
+
+    <!-- Receipt Card (rendered by JS) -->
+    <div id="receiptCard" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-up-1"></div>
+
+    <!-- Review Section -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-up-2">
+      <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100 px-4 py-2.5 flex items-center justify-between">
+        <div>
+          <h3 id="reviewTitle" class="font-bold text-gray-800 text-sm">Đánh giá dịch vụ</h3>
+          <p id="reviewSubtitle" class="text-xs text-gray-400 mt-0.5">Hãy đánh giá trải nghiệm của bạn</p>
+        </div>
+        <p class="text-sm font-semibold text-amber-500" id="ratingLabel">Rất tốt</p>
+      </div>
+
+      <div class="p-3 space-y-3">
+        <!-- Stars -->
+        <div class="flex items-center gap-1.5" id="starRating">
+          <button class="star-btn active" onclick="setRating(1)"><svg class="w-8 h-8 fill-amber-400 stroke-amber-400" viewBox="0 0 24 24" stroke-width="0.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+          <button class="star-btn active" onclick="setRating(2)"><svg class="w-8 h-8 fill-amber-400 stroke-amber-400" viewBox="0 0 24 24" stroke-width="0.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+          <button class="star-btn active" onclick="setRating(3)"><svg class="w-8 h-8 fill-amber-400 stroke-amber-400" viewBox="0 0 24 24" stroke-width="0.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+          <button class="star-btn active" onclick="setRating(4)"><svg class="w-8 h-8 fill-amber-400 stroke-amber-400" viewBox="0 0 24 24" stroke-width="0.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+          <button class="star-btn"        onclick="setRating(5)"><svg class="w-8 h-8 fill-gray-200 stroke-gray-200" viewBox="0 0 24 24" stroke-width="0.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+        </div>
+
+        <!-- Tags -->
+        <div class="flex flex-wrap gap-1.5">
+          <button onclick="toggleTag(this)" class="tag-chip border border-gray-200 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">💅 Nail đẹp</button>
+          <button onclick="toggleTag(this)" class="tag-chip border border-gray-200 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">✨ Sơn bền màu</button>
+          <button onclick="toggleTag(this)" class="tag-chip border border-gray-200 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">🖌️ Thợ khéo tay</button>
+          <button onclick="toggleTag(this)" class="tag-chip border border-gray-200 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">🧼 Sạch sẽ</button>
+          <button onclick="toggleTag(this)" class="tag-chip border border-gray-200 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">😊 Thân thiện</button>
+          <button onclick="toggleTag(this)" class="tag-chip border border-gray-200 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">⏱️ Đúng giờ</button>
+          <button onclick="toggleTag(this)" class="tag-chip border border-gray-200 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">🎨 Nhiều mẫu</button>
+          <button onclick="toggleTag(this)" class="tag-chip border border-gray-200 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">🏠 Không gian đẹp</button>
+        </div>
+
+        <!-- Comment -->
+        <textarea id="reviewText" rows="2"
+          placeholder="Nhập nhận xét hoặc chọn gợi ý bên trên..."
+          class="w-full text-sm text-gray-700 border border-gray-200 rounded-lg px-3 py-2 resize-none focus:outline-none focus:border-emerald-400 placeholder-gray-300 transition"></textarea>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-2 animate-up-3 pb-2">
+      <button onclick="submitReview()" class="btn-glow-pulse flex-1 relative btn-nexora-primary text-white text-sm font-extrabold py-3 px-6 rounded-full shadow-md transition-all duration-300 hover:scale-[1.04] active:scale-95 flex items-center justify-center gap-1.5">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        Gửi đánh giá
+      </button>
+      <button onclick="skipReview()" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-[#6c4df6] text-sm font-extrabold rounded-full shadow-sm border border-slate-200/80 transition-all duration-300 hover:scale-[1.04] active:scale-95">
+        Bỏ qua
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl opacity-0 transition-opacity duration-300 pointer-events-none z-50"></div>
+
+  <script>
+    const paymentIcons = {
+      zelle:    { icon: 'https://merchant-portal-html.vercel.app/atm-qr/icons/zelle.png',      badge: 'Zelle' },
+      venmo:    { icon: 'https://merchant-portal-html.vercel.app/atm-qr/icons/venmo.png',      badge: 'Venmo' },
+      cashapp:  { icon: 'https://merchant-portal-html.vercel.app/atm-qr/icons/cash_app.png',   badge: 'Cash App' },
+      apple:    { icon: 'https://merchant-portal-html.vercel.app/atm-qr/icons/apple_cash.png', badge: 'Apple Cash' },
+      paypal:   { icon: 'https://merchant-portal-html.vercel.app/atm-qr/icons/paypal.png',     badge: 'PayPal' },
+      vlinkpay: { icon: 'https://merchant-portal-html.vercel.app/atm-qr/icons/vlinkpay.png',   badge: 'VLinkPay' },
+    };
+
+    const ratingLabels = ['', 'Tệ', 'Chưa tốt', 'Bình thường', 'Rất tốt', 'Xuất sắc'];
+    let currentRating = 4;
+
+    const fmt = n => `$${parseFloat(Number(n).toFixed(2))}`;
+
+    function payRowHTML(pi, total) {
+      return `
+        <div class="px-4 py-3 flex items-center justify-between border-t border-gray-50">
+          <div>
+            <p class="text-xs text-gray-400 uppercase tracking-wider font-medium mb-0.5">Total Tip</p>
+            <span class="text-2xl font-black text-emerald-600">${fmt(total)}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <img src="${pi.icon}" alt="${pi.badge}" class="w-8 h-8 rounded-full object-cover shadow-sm" />
+            <span class="text-sm font-bold text-gray-700">${pi.badge}</span>
+          </div>
+        </div>`;
+    }
+
+    function initPage() {
+      const params    = new URLSearchParams(window.location.search);
+      const total     = parseFloat(params.get('amount') || '0');
+      const via       = params.get('via') || 'zelle';
+      const isMulti   = params.get('isMulti') === '1';
+      const splitMode = params.get('splitMode') || 'equal';
+      const staffList = (() => { try { return JSON.parse(params.get('staffList') || '[]'); } catch { return []; } })();
+      const pi        = paymentIcons[via] || paymentIcons.zelle;
+
+      if (!isMulti) {
+        // ── Single staff receipt ──────────────────────────────────────────
+        const s = staffList[0] || { name: 'Mary S.', role: 'Nail Technician', initial: 'M', from: '#7c3aed', to: '#6d28d9' };
+        document.getElementById('receiptCard').innerHTML = `
+          <div class="px-4 py-3 flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center text-white text-base font-bold shadow-sm select-none shrink-0"
+                 style="background:linear-gradient(135deg,${s.from},${s.to})">${s.initial}</div>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-gray-800 text-sm">${s.name}</p>
+              <p class="text-xs text-gray-400">${s.role}</p>
+            </div>
+            <div class="flex gap-0.5">
+              ${[1,2,3,4].map(() => `<svg class="w-3.5 h-3.5 fill-amber-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`).join('')}
+              <svg class="w-3.5 h-3.5 fill-gray-200" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            </div>
+          </div>
+          ${payRowHTML(pi, total)}`;
+
+      } else {
+        // ── Multi-staff receipt ───────────────────────────────────────────
+        document.getElementById('reviewTitle').textContent    = 'Đánh giá Bitcoin Nail Bar';
+        document.getElementById('reviewSubtitle').textContent = 'Hãy chia sẻ trải nghiệm của bạn hôm nay';
+
+        // Shop header
+        const shopHeader = `
+          <div class="px-4 py-3 flex items-center gap-3 border-b border-gray-50">
+            <div class="w-11 h-11 rounded-xl bg-white border border-gray-100 shadow-sm shrink-0 overflow-hidden flex items-center justify-center p-1">
+              <img src="https://bitcoinnailbar.com/assets/bitcoinnailbar_logo.webp" alt="Bitcoin Nail Bar"
+                   class="w-full h-full object-contain"
+                   onerror="this.parentElement.innerHTML='<span class=\\'text-xs font-extrabold text-violet-600\\'>BNB</span>'" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-gray-800 text-sm">Bitcoin Nail Bar</p>
+              <p class="text-xs text-gray-400">${staffList.map(s => s.name).join(' · ')}</p>
+            </div>
+          </div>`;
+
+        // Staff breakdown
+        let breakdownHTML = '';
+        if (splitMode === 'individual') {
+          breakdownHTML = `
+            <div class="px-4 py-2 space-y-1.5 border-b border-gray-50">
+              ${staffList.map(s => `
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0 select-none"
+                       style="background:linear-gradient(135deg,${s.from},${s.to})">${s.initial}</div>
+                  <span class="text-xs font-medium text-gray-600 flex-1">${s.name}</span>
+                  <span class="text-sm font-bold text-gray-800">${fmt(Number(s.amount) || 0)}</span>
+                </div>`).join('')}
+            </div>`;
+        } else {
+          // equal split — show per-person
+          const each = staffList.length > 0 ? total / staffList.length : 0;
+          breakdownHTML = `
+            <div class="px-4 py-2 flex items-center gap-1.5 border-b border-gray-50">
+              ${staffList.map(s => `
+                <div class="flex items-center gap-1.5 flex-1">
+                  <div class="w-6 h-6 rounded-md flex items-center justify-center text-white text-xs font-bold shrink-0 select-none"
+                       style="background:linear-gradient(135deg,${s.from},${s.to})">${s.initial}</div>
+                  <span class="text-xs text-gray-500">${s.name.split(' ')[0]}</span>
+                </div>`).join('')}
+              <span class="text-xs font-semibold text-violet-500 shrink-0">${fmt(each)}/người</span>
+            </div>`;
+        }
+
+        document.getElementById('receiptCard').innerHTML = shopHeader + breakdownHTML + payRowHTML(pi, total);
+      }
+    }
+
+    function setRating(n) {
+      currentRating = n;
+      document.querySelectorAll('.star-btn').forEach((btn, i) => {
+        const svg = btn.querySelector('svg');
+        if (i < n) { btn.classList.add('active');    svg.setAttribute('class', 'w-8 h-8 fill-amber-400 stroke-amber-400'); }
+        else        { btn.classList.remove('active'); svg.setAttribute('class', 'w-8 h-8 fill-gray-200 stroke-gray-200'); }
+      });
+      document.getElementById('ratingLabel').textContent = ratingLabels[n];
+    }
+
+    function toggleTag(btn) {
+      btn.classList.toggle('selected');
+      if (btn.classList.contains('selected')) {
+        const cur = document.getElementById('reviewText').value.trim();
+        const tag = btn.textContent.trim();
+        if (!cur.includes(tag))
+          document.getElementById('reviewText').value = cur ? cur + ', ' + tag : tag;
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.opacity = '1';
+      setTimeout(() => t.style.opacity = '0', 2500);
+    }
+
+    function submitReview() {
+      showToast('✓ Cảm ơn đánh giá của bạn!');
+      setTimeout(() => { window.location.href = 'select-staff.html'; }, 2000);
+    }
+
+    function skipReview() { window.location.href = 'select-staff.html'; }
+
+    initPage();
+  </script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hướng dẫn gửi tip</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .method-btn { transition: all 0.15s ease; }
+    .method-btn.selected { outline: 3px solid #10b981; outline-offset: 2px; }
+    .method-btn:hover { transform: scale(1.03); }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-start justify-center p-4">
+
+  <div class="w-full max-w-md space-y-3 py-4">
+
+    <!-- Số tiền tip -->
+    <div class="bg-white border border-gray-100 rounded-xl shadow-sm px-4 py-3 text-center">
+      <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Số tiền tip</p>
+      <p id="tipAmount" class="text-3xl font-extrabold text-emerald-600 leading-tight mt-0.5">$0</p>
+      <p id="tipRecipient" class="text-xs text-gray-500 mt-0.5"></p>
+    </div>
+
+    <!-- Chọn / đổi phương thức thanh toán -->
+    <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-3">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <img id="currentMethodIcon" src="" alt="" class="w-9 h-9 rounded-full object-cover shadow-sm shrink-0" onerror="this.style.display='none'" />
+          <div class="min-w-0">
+            <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Phương thức thanh toán</p>
+            <p id="currentMethodName" class="text-sm font-bold text-gray-800 leading-tight truncate"></p>
+          </div>
+        </div>
+        <button onclick="toggleMethodList()" class="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-violet-600 bg-violet-50 border border-violet-100 px-3 py-1.5 rounded-lg hover:bg-violet-100 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+          Đổi
+        </button>
+      </div>
+      <div id="methodRow" class="hidden grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-gray-100"></div>
+    </div>
+
+    <!-- Account panel — VLinkPay (chỉ hiện khi via=vlinkpay) -->
+    <div id="vlinkpayPanel" class="hidden bg-emerald-50 rounded-xl border border-emerald-200 p-3">
+      <div class="flex items-center justify-between mb-2.5">
+        <p class="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Tài khoản VLinkPay</p>
+        <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">VLinkPay</span>
+      </div>
+      <div class="flex gap-3 items-center">
+        <div class="shrink-0 bg-white rounded-lg p-1.5 shadow-sm border border-emerald-100">
+          <img id="vlinkQrImg" src="" alt="QR" class="w-20 h-20 rounded" />
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs text-gray-400 mb-1">Địa chỉ ví</p>
+          <p id="vlinkWallet" class="text-xs font-mono font-semibold text-gray-800 break-all leading-relaxed"></p>
+          <button onclick="copyVlinkWallet()" class="mt-2 w-full text-xs font-semibold text-emerald-600 bg-white border border-emerald-200 px-2.5 py-1.5 rounded-lg hover:bg-emerald-50 transition flex items-center justify-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Sao chép địa chỉ ví
+          </button>
+        </div>
+      </div>
+      <p id="vlinkCopySuccess" class="hidden mt-1.5 text-xs text-emerald-600 font-medium text-center">✓ Đã sao chép địa chỉ ví</p>
+    </div>
+
+    <!-- Step guide -->
+    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-3">
+      <p class="text-sm font-bold text-indigo-700 mb-3 flex items-center gap-1.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        <span id="guideTitle">Cách gửi tip</span>
+      </p>
+      <div class="space-y-0">
+
+        <!-- Step 1 -->
+        <div class="flex gap-2.5">
+          <div class="flex flex-col items-center shrink-0">
+            <div class="w-5 h-5 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[10px] font-bold">1</div>
+            <div class="w-px flex-1 bg-indigo-200 my-1"></div>
+          </div>
+          <div class="flex-1 min-w-0 pb-3">
+            <p class="text-xs font-semibold text-gray-700 leading-tight" id="step1Label"></p>
+            <div id="step1Sub" class="mt-1.5"></div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex gap-2.5">
+          <div class="flex flex-col items-center shrink-0">
+            <div class="w-5 h-5 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[10px] font-bold">2</div>
+            <div class="w-px flex-1 bg-indigo-200 my-1"></div>
+          </div>
+          <div class="flex-1 min-w-0 pb-3">
+            <p class="text-xs font-semibold text-gray-700 leading-tight" id="step2Label"></p>
+            <p class="text-xs text-gray-500 mt-0.5" id="step2Sub"></p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex gap-2.5">
+          <div class="flex flex-col items-center shrink-0">
+            <div class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">3</div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-semibold text-gray-700 leading-tight">Quay lại &amp; xác nhận</p>
+            <p class="text-xs text-gray-500 mt-0.5">Nhấn nút bên dưới để ghi nhận tip đã gửi</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Upload proof -->
+    <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-3">
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2.5">
+        Ảnh xác nhận thanh toán
+        <span class="normal-case tracking-normal text-gray-300 font-medium">(tùy chọn)</span>
+      </p>
+
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Take photo -->
+        <button type="button" onclick="document.getElementById('cameraInput').click()"
+          class="flex flex-col items-center justify-center gap-1.5 py-3 rounded-lg border-2 border-dashed border-gray-300 text-blue-600 hover:border-blue-400 hover:bg-blue-50/50 transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.66-.9l.82-1.2A2 2 0 0110.07 4h3.86a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+          <span class="text-sm font-bold">Chụp ảnh</span>
+        </button>
+
+        <!-- Choose file -->
+        <button type="button" onclick="document.getElementById('fileInput').click()"
+          class="flex flex-col items-center justify-center gap-1.5 py-3 rounded-lg border-2 border-dashed border-gray-300 text-blue-600 hover:border-blue-400 hover:bg-blue-50/50 transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+          <span class="text-sm font-bold">Chọn file</span>
+        </button>
+      </div>
+
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="addFiles(this.files); this.value='';" />
+      <input type="file" id="fileInput" accept="image/*" multiple class="hidden" onchange="addFiles(this.files); this.value='';" />
+
+      <!-- Previews -->
+      <div id="previewGrid" class="hidden grid grid-cols-3 gap-2 mt-3"></div>
+
+      <p class="text-xs text-gray-500 mt-2.5 leading-relaxed">
+        Tải lên ảnh rõ nét xác nhận thanh toán của bạn.<br>
+        <span id="remainingText">Bạn có thể tải lên tối đa 3 file.</span><br>
+        Mỗi file phải nhỏ hơn 5MB.
+      </p>
+    </div>
+
+    <!-- Confirm Button -->
+    <button id="confirmBtn" onclick="confirmTip()"
+      class="w-full py-3 text-white font-bold rounded-xl shadow-lg active:scale-95 transition-all duration-200"
+      style="background: linear-gradient(to right, #7c3aed, #6d28d9); font-size: 0.9rem;">
+      <span id="confirmBtnText">Tôi đã gửi tip</span>
+    </button>
+
+  </div>
+
+  <script>
+    // ── Payment accounts (đồng bộ với tip.html) ──────────────────────
+    const paymentAccounts = {
+      zelle:    { value: 'test@example.usvaq',        badge: 'Zelle',      app: 'Zelle',      copyStep: 'Copy email Zelle',             from: '#7c3aed', to: '#6d28d9' },
+      venmo:    { value: '@marys-nail',                badge: 'Venmo',      app: 'Venmo',      copyStep: 'Copy tên Venmo',               from: '#0ea5e9', to: '#3b82f6' },
+      cashapp:  { value: '$marynails',                 badge: 'Cash App',   app: 'Cash App',   copyStep: 'Copy Cash Tag',                from: '#22c55e', to: '#10b981' },
+      apple:    { value: '(555) 123-4567',             badge: 'Apple Cash', app: 'Apple Cash', copyStep: 'Copy số điện thoại',           from: '#1f2937', to: '#111827' },
+      paypal:   { value: 'mary@nailstudio.com',        badge: 'PayPal',     app: 'PayPal',     copyStep: 'Copy email PayPal',            from: '#1d4ed8', to: '#4338ca' },
+      vlinkpay: { value: '',                            badge: 'VLinkPay',   app: 'VLINKPAY',   copyStep: 'Quét QR hoặc copy địa chỉ ví', from: '#10b981', to: '#0d9488' },
+    };
+    const shopAccounts = {
+      zelle:    { value: 'bitcoinnailbarhouston@gmail.com', badge: 'Zelle',      app: 'Zelle',      copyStep: 'Copy email Zelle',             from: '#7c3aed', to: '#6d28d9' },
+      venmo:    { value: '@bitcoinnailbar',                 badge: 'Venmo',      app: 'Venmo',      copyStep: 'Copy tên Venmo',               from: '#0ea5e9', to: '#3b82f6' },
+      cashapp:  { value: '$bitcoinnailbar',                 badge: 'Cash App',   app: 'Cash App',   copyStep: 'Copy Cash Tag',                from: '#22c55e', to: '#10b981' },
+      apple:    { value: '(713) 000-0000',                  badge: 'Apple Cash', app: 'Apple Cash', copyStep: 'Copy số điện thoại',           from: '#1f2937', to: '#111827' },
+      paypal:   { value: 'bitcoinnailbarhouston@gmail.com', badge: 'PayPal',     app: 'PayPal',     copyStep: 'Copy email PayPal',            from: '#1d4ed8', to: '#4338ca' },
+      vlinkpay: { value: '',                                badge: 'VLinkPay',   app: 'VLINKPAY',   copyStep: 'Quét QR hoặc copy địa chỉ ví', from: '#10b981', to: '#0d9488' },
+    };
+    const ICON_BASE = 'https://merchant-portal-html.vercel.app/atm-qr/icons/';
+    const paymentIcons = {
+      zelle:    ICON_BASE + 'zelle.png',
+      venmo:    ICON_BASE + 'venmo.png',
+      cashapp:  ICON_BASE + 'cash_app.png',
+      apple:    ICON_BASE + 'apple_cash.png',
+      paypal:   ICON_BASE + 'paypal.png',
+      vlinkpay: ICON_BASE + 'vlinkpay.png',
+    };
+    const METHOD_ORDER = ['zelle', 'venmo', 'cashapp', 'apple', 'paypal', 'vlinkpay'];
+    const VLINK_WALLET = 'VLK:0x3f9A8b2C1d4E5f6A7B8C9D0E1F2A3B4C5D6E7F8';
+    const fmt = n => `$${parseFloat(n.toFixed(2))}`;
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+    // ── Đọc dữ liệu truyền từ trang Tip ──────────────────────────────
+    const _p       = new URLSearchParams(location.search);
+    const amount   = parseFloat(_p.get('amount') || '0');
+    let   via      = _p.get('via') || 'zelle';
+    const IS_MULTI = _p.get('isMulti') === '1';
+    const splitMode = _p.get('splitMode') || 'equal';
+    const staffList = (() => { try { return JSON.parse(_p.get('staffList') || '[]'); } catch { return []; } })();
+
+    const amtStr     = amount > 0 ? fmt(amount) : '?';
+    const singleName = (staffList[0] && staffList[0].name) || 'Mary S.';
+    const recipient  = IS_MULTI ? 'Bitcoin Nail Bar' : singleName;
+
+    const currentAcc = () => (IS_MULTI ? shopAccounts : paymentAccounts)[via] || paymentAccounts.zelle;
+
+    // ── Bộ chọn / đổi phương thức thanh toán ─────────────────────────
+    function renderMethods() {
+      const accounts = IS_MULTI ? shopAccounts : paymentAccounts;
+      document.getElementById('methodRow').innerHTML = METHOD_ORDER.map(key => {
+        const a = accounts[key];
+        const active = key === via;
+        return `
+          <button onclick="switchMethod('${key}')"
+            class="method-btn ${active ? 'selected' : ''} flex flex-col items-center gap-1 p-2 rounded-lg border-2 ${active ? 'border-emerald-400 bg-emerald-50' : 'border-gray-100'}">
+            <img src="${paymentIcons[key]}" alt="${a.badge}" class="w-9 h-9 rounded-full object-cover shadow-sm" onerror="this.style.display='none'" />
+            <span class="text-[11px] font-medium ${active ? 'text-emerald-700' : 'text-gray-600'}">${a.badge}</span>
+          </button>`;
+      }).join('');
+    }
+
+    function renderCurrentMethod() {
+      const icon = document.getElementById('currentMethodIcon');
+      icon.src = paymentIcons[via];
+      icon.style.display = '';
+      document.getElementById('currentMethodName').textContent = currentAcc().badge;
+    }
+
+    function toggleMethodList() {
+      document.getElementById('methodRow').classList.toggle('hidden');
+    }
+
+    function switchMethod(method) {
+      via = method;
+      renderMethods();
+      renderCurrentMethod();
+      render();
+      document.getElementById('methodRow').classList.add('hidden'); // thu gọn sau khi chọn
+    }
+
+    // ── Render hướng dẫn động ────────────────────────────────────────
+    function render() {
+      const acc = currentAcc();
+      document.getElementById('guideTitle').textContent = `Cách gửi tip qua ${acc.badge}`;
+      document.getElementById('confirmBtnText').textContent = buildBtnText();
+      document.getElementById('confirmBtn').style.background = `linear-gradient(to right, ${acc.from}, ${acc.to})`;
+
+      if (via === 'vlinkpay') {
+        document.getElementById('vlinkpayPanel').classList.remove('hidden');
+        document.getElementById('vlinkWallet').textContent = VLINK_WALLET;
+        document.getElementById('vlinkQrImg').src =
+          'https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=4&data=' + encodeURIComponent(VLINK_WALLET);
+
+        document.getElementById('step1Label').textContent = 'Quét QR code hoặc sao chép địa chỉ ví';
+        document.getElementById('step1Sub').innerHTML =
+          '<p class="text-xs text-indigo-600 font-medium">QR code &amp; địa chỉ ví đã hiển thị ngay phía trên ↑</p>';
+        document.getElementById('step2Label').textContent =
+          `Mở app VLINKPAY → chọn Send Gift → Nhập địa chỉ ví và chọn asset USDV → gửi ${amtStr}`;
+        document.getElementById('step2Sub').textContent =
+          'Chọn đúng asset USDV trước khi nhập số tiền. Tip ghi nhận tự động, thợ nhận ngay.';
+      } else {
+        document.getElementById('vlinkpayPanel').classList.add('hidden');
+        document.getElementById('step1Label').textContent = acc.copyStep;
+        document.getElementById('step1Sub').innerHTML =
+          '<div class="flex items-center gap-2 bg-white border border-indigo-200 rounded-lg px-2.5 py-1.5">' +
+            '<span class="text-xs font-mono text-gray-700 truncate flex-1 min-w-0">' + esc(acc.value) + '</span>' +
+            '<button onclick="copyValue()" class="shrink-0 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition whitespace-nowrap">Sao chép ↗</button>' +
+          '</div>' +
+          '<p id="copySuccess" class="hidden mt-1 text-xs text-emerald-600 font-medium">✓ Đã sao chép</p>';
+        document.getElementById('step2Label').textContent =
+          `Mở app ${acc.app} → chuyển ${amtStr} cho ${recipient}`;
+        document.getElementById('step2Sub').textContent =
+          amount > 0 ? `Nhập đúng số tiền ${amtStr} khi chuyển khoản` : 'Nhập số tiền tip bạn muốn gửi';
+      }
+    }
+
+    function buildBtnText() {
+      const acc = currentAcc();
+      const totalStr = amount > 0 ? `${fmt(amount)} ` : '';
+      if (!IS_MULTI) return `Tôi đã gửi tip ${totalStr}cho ${singleName} qua ${acc.badge}`;
+      if (splitMode === 'equal') {
+        const names = staffList.map(s => s.name.split(' ')[0]).join(', ');
+        const each  = amount > 0 && staffList.length ? ` (${fmt(amount / staffList.length)}/người)` : '';
+        return `Tôi đã gửi ${totalStr}cho ${names}${each} qua ${acc.badge} của Bitcoin Nail Bar`;
+      }
+      const parts = staffList.map(s => `${s.name.split(' ')[0]} ${fmt(Number(s.amount) || 0)}`).join(' + ');
+      return `Tôi đã gửi (${parts}) qua ${acc.badge} của Bitcoin Nail Bar`;
+    }
+
+    function copyValue() {
+      navigator.clipboard?.writeText(currentAcc().value);
+      const el = document.getElementById('copySuccess');
+      if (el) { el.classList.remove('hidden'); setTimeout(() => el.classList.add('hidden'), 2000); }
+    }
+    function copyVlinkWallet() {
+      navigator.clipboard?.writeText(VLINK_WALLET);
+      const el = document.getElementById('vlinkCopySuccess');
+      if (el) { el.classList.remove('hidden'); setTimeout(() => el.classList.add('hidden'), 2000); }
+    }
+
+    // ── Upload proof ─────────────────────────────────────────────────
+    const MAX_FILES = 3;
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    let proofFiles = [];
+
+    function addFiles(fileList) {
+      for (const file of fileList) {
+        if (proofFiles.length >= MAX_FILES) { alert('Bạn chỉ có thể tải lên tối đa ' + MAX_FILES + ' file.'); break; }
+        if (!file.type.startsWith('image/')) { alert('"' + file.name + '" không phải file ảnh.'); continue; }
+        if (file.size > MAX_SIZE)            { alert('"' + file.name + '" vượt quá 5MB.'); continue; }
+        proofFiles.push(file);
+      }
+      renderPreviews();
+    }
+
+    function removeFile(index) { proofFiles.splice(index, 1); renderPreviews(); }
+
+    function renderPreviews() {
+      const grid = document.getElementById('previewGrid');
+      grid.innerHTML = '';
+      grid.classList.toggle('hidden', proofFiles.length === 0);
+      proofFiles.forEach((file, i) => {
+        const url = URL.createObjectURL(file);
+        const cell = document.createElement('div');
+        cell.className = 'relative aspect-square rounded-lg overflow-hidden border border-gray-200';
+        cell.innerHTML =
+          '<img src="' + url + '" class="w-full h-full object-cover" onload="URL.revokeObjectURL(this.src)" />' +
+          '<button onclick="removeFile(' + i + ')" class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/60 text-white text-xs flex items-center justify-center leading-none hover:bg-black/80">&times;</button>';
+        grid.appendChild(cell);
+      });
+      const remaining = MAX_FILES - proofFiles.length;
+      document.getElementById('remainingText').textContent =
+        remaining > 0 ? 'Bạn có thể tải lên tối đa ' + remaining + ' file.' : 'Đã đạt tối đa ' + MAX_FILES + ' file.';
+    }
+
+    function confirmTip() {
+      // Ảnh xác nhận là tùy chọn — cho phép tiếp tục dù chưa upload
+      window.location.href = 'review.html' + location.search;
+    }
+
+    // Hiển thị số tiền tip + người nhận
+    document.getElementById('tipAmount').textContent = amtStr;
+    document.getElementById('tipRecipient').textContent = `cho ${recipient}`;
+
+    renderMethods();
+    renderCurrentMethod();
+    render();
+  </script>
+
+</body>
+</html>
