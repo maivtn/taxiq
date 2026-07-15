@@ -4377,20 +4377,342 @@ test('Task 4 round 2 integrity error hides unusable retries and executes only sa
   assert.equal(home.classList.contains('hidden'), false);
 });
 
-test('Task 4 review CTAs execute Replace, Create Account and Continue Guest without consuming claims', () => {
+function task5Api(api) {
+  assert.equal(typeof api.mergeGuestJourney, 'function', 'mergeGuestJourney must be exposed');
+  return api;
+}
+
+function seedVerifiedGuestReceipt(api, app, {
+  phone = '8325550198', businessId = 'bitcoin-nail-bar', method = 'Zelle',
+  tipBasisPoints = 1800, baseTime = 1000
+} = {}) {
+  const routes = {
+    'bitcoin-nail-bar': ['https://nexoratouch.com/touch/bitcoin-nail-bar/front', 'deluxe-pedicure'],
+    'golden-glow-spa': ['https://nexoratouch.com/touch/golden-glow-spa/lobby', 'signature-facial'],
+    'moon-coffee': ['https://nexoratouch.com/touch/moon-coffee/counter', 'signature-drink']
+  };
+  const route = routes[businessId];
+  assert.ok(route, `missing test route for ${businessId}`);
+  assert.equal(api.stageSalonScan(app, route[0]).ok, true);
+  const createdGuest = api.createGuestCheckin(app, {
+    name: 'Amy Nguyen', phone, serviceKey: route[1], staffProfileId: null
+  }, baseTime);
+  assert.equal(createdGuest.ok, true);
+  const createdCheckout = api.createCheckoutDraft(app, {
+    guestCheckinId: createdGuest.guestCheckin.id
+  }, baseTime + 100);
+  assert.equal(createdCheckout.ok, true);
+  assert.equal(api.setCheckoutTip(app, createdCheckout.checkoutDraft.id, tipBasisPoints).ok, true);
+  assert.equal(api.setCheckoutMethod(app, createdCheckout.checkoutDraft.id, method).ok, true);
+  const submitted = ['Zelle', 'Venmo'].includes(method)
+    ? api.submitPaymentProof(app, {
+        checkoutDraftId: createdCheckout.checkoutDraft.id,
+        note: '', imageDataUrl: ''
+      }, baseTime + 200)
+    : api.submitCheckoutWithoutUpload(app, createdCheckout.checkoutDraft.id, baseTime + 200);
+  assert.equal(submitted.ok, true);
+  const verified = api.verifyPaymentProof(app, submitted.proof.id, baseTime + 300);
+  assert.equal(verified.ok, true);
+  return {
+    guest: createdGuest.guestCheckin,
+    checkout: createdCheckout.checkoutDraft,
+    proof: submitted.proof,
+    receipt: verified.receipt,
+    claims: verified.claims
+  };
+}
+
+function bindMergePhone(app, phone = '8325550198') {
+  app.session.phone = phone;
+  app.profile.phone = phone;
+}
+
+test('Task 5 merges an authoritative verified guest aggregate once without generating IDs on replay', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  const fixture = seedVerifiedGuestReceipt(api, app);
+  bindMergePhone(app);
+  const beforePoints = app.balances['bitcoin-nail-bar'].points;
+  const expectedPoints = fixture.claims.reduce((total, claim) => total + claim.points, 0);
+
+  const merged = api.mergeGuestJourney(app, '(832) 555-0198', 3000);
+
+  assert.equal(merged.ok, true);
+  assert.equal(merged.claimedCount, fixture.claims.length);
+  assert.equal(merged.claimedPoints, expectedPoints);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforePoints + expectedPoints);
+  const claimed = app.guestRewardClaims.filter((claim) => claim.sourceId === fixture.proof.id);
+  assert.equal(claimed.every((claim) => claim.status === 'claimed'
+    && claim.claimedAt === new Date(3000).toISOString()), true);
+  assert.equal(app.guestCheckins.find((row) => row.id === fixture.guest.id).claimedAt, new Date(3000).toISOString());
+  assert.equal(api.validateVerifiedPaymentAggregate(app, fixture.proof.id).ok, true);
+  const claimLedgers = app.ledger.filter((entry) => entry.refType === 'guest_claim');
+  assert.equal(claimLedgers.length, fixture.claims.length);
+  for (const claim of claimed) {
+    const linked = claimLedgers.filter((entry) => entry.refId === claim.id);
+    assert.equal(linked.length, 1);
+    assert.equal(linked[0].businessId, claim.businessId);
+    assert.equal(linked[0].type, claim.sourceType);
+    assert.equal(linked[0].pointsDelta, claim.points);
+    assert.equal(linked[0].createdAt, claim.claimedAt);
+  }
+
+  const snapshot = JSON.stringify(app);
+  const calls = ids.calls();
+  assert.equal(JSON.stringify(api.mergeGuestJourney(app, '8325550198', 4000)), JSON.stringify({
+    ok: true, claimedPoints: 0, claimedCount: 0
+  }));
+  assert.equal(JSON.stringify(app), snapshot);
+  assert.equal(ids.calls(), calls);
+});
+
+test('Task 5 rejects invalid, different, or session/profile-mismatched phones byte-for-byte', () => {
+  for (const [label, sessionPhone, profilePhone, input] of [
+    ['different phone', '8325550198', '8325550198', '8325550100'],
+    ['invalid input', '8325550198', '8325550198', '555'],
+    ['session mismatch', '8325550100', '8325550198', '8325550198'],
+    ['profile mismatch', '8325550198', '8325550100', '8325550198']
+  ]) {
+    const ids = createUuidSequence();
+    const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+    const app = api.createDefaultState();
+    seedVerifiedGuestReceipt(api, app);
+    app.session.phone = sessionPhone;
+    app.profile.phone = profilePhone;
+    const before = JSON.stringify(app);
+    const calls = ids.calls();
+    const result = api.mergeGuestJourney(app, input, 3000);
+    assert.equal(result.ok, false, label);
+    assert.equal(result.code, 'phone_mismatch', label);
+    assert.equal(JSON.stringify(app), before, label);
+    assert.equal(ids.calls(), calls, label);
+  }
+});
+
+test('Task 5 merges multiple verified salons into exact per-business balances and ledgers', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  const nail = seedVerifiedGuestReceipt(api, app, {
+    businessId: 'bitcoin-nail-bar', baseTime: 1000
+  });
+  const spa = seedVerifiedGuestReceipt(api, app, {
+    businessId: 'golden-glow-spa', baseTime: 2000
+  });
+  bindMergePhone(app);
+  const before = Object.fromEntries(Object.entries(app.balances).map(([id, balance]) => [id, balance.points]));
+  const expectedByBusiness = {};
+  for (const claim of [...nail.claims, ...spa.claims]) {
+    expectedByBusiness[claim.businessId] = (expectedByBusiness[claim.businessId] ?? 0) + claim.points;
+  }
+
+  const merged = api.mergeGuestJourney(app, '8325550198', 4000);
+
+  assert.equal(merged.ok, true);
+  assert.equal(merged.claimedCount, nail.claims.length + spa.claims.length);
+  assert.equal(merged.claimedPoints, Object.values(expectedByBusiness).reduce((sum, value) => sum + value, 0));
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before['bitcoin-nail-bar'] + expectedByBusiness['bitcoin-nail-bar']);
+  assert.equal(app.balances['golden-glow-spa'].points, before['golden-glow-spa'] + expectedByBusiness['golden-glow-spa']);
+  assert.equal(app.balances['moon-coffee'].points, before['moon-coffee']);
+  for (const claim of [...nail.claims, ...spa.claims]) {
+    assert.equal(app.ledger.filter((entry) => entry.refType === 'guest_claim'
+      && entry.refId === claim.id && entry.businessId === claim.businessId
+      && entry.type === claim.sourceType && entry.pointsDelta === claim.points).length, 1);
+  }
+});
+
+test('Task 5 preflights the whole batch and rolls back every claim when one balance or ID fails', () => {
+  {
+    const ids = createUuidSequence();
+    const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+    const app = api.createDefaultState();
+    seedVerifiedGuestReceipt(api, app, { businessId: 'bitcoin-nail-bar', baseTime: 1000 });
+    seedVerifiedGuestReceipt(api, app, { businessId: 'golden-glow-spa', baseTime: 2000 });
+    bindMergePhone(app);
+    app.balances['golden-glow-spa'].points = -1;
+    const before = JSON.stringify(app);
+    const calls = ids.calls();
+    assert.equal(api.mergeGuestJourney(app, '8325550198', 4000).code, 'invalid_balance');
+    assert.equal(JSON.stringify(app), before);
+    assert.equal(ids.calls(), calls);
+  }
+
+  {
+    let failMergeId = false;
+    let mergeCalls = 0;
+    const ids = createUuidSequence();
+    const api = task5Api(testApi({}, { randomUUID: () => {
+      if (failMergeId) {
+        mergeCalls += 1;
+        return mergeCalls === 2 ? 'not-a-uuid' : `aaaaaaaa-aaaa-4aaa-8aaa-${String(mergeCalls).padStart(12, '0')}`;
+      }
+      return ids.randomUUID();
+    } }).api);
+    const app = api.createDefaultState();
+    seedVerifiedGuestReceipt(api, app);
+    bindMergePhone(app);
+    const before = JSON.stringify(app);
+    failMergeId = true;
+    assert.equal(api.mergeGuestJourney(app, '8325550198', 3000).code, 'id_generation_failed');
+    assert.equal(JSON.stringify(app), before);
+  }
+});
+
+test('Task 5 fails closed on duplicate or tampered owner, artifact, formula and chronology data', () => {
+  const variants = [
+    ['duplicate owner', (app) => app.guestCheckins.push(structuredClone(app.guestCheckins[0]))],
+    ['noncanonical owner ID', (app) => { app.guestCheckins[0].id = ` ${app.guestCheckins[0].id} `; }],
+    ['claim owner mismatch', (app) => { app.guestRewardClaims[0].businessId = 'golden-glow-spa'; }],
+    ['duplicate claim ID', (app) => app.guestRewardClaims.push(structuredClone(app.guestRewardClaims[0]))],
+    ['proof owner mismatch', (app) => { app.paymentProofs[0].businessId = 'golden-glow-spa'; }],
+    ['unrelated malformed proof ID', (app) => {
+      app.paymentProofs.push({ id: 'proof-not-a-uuid', status: 'pending_verification' });
+    }],
+    ['duplicate receipt ID', (app) => app.receipts.push(structuredClone(app.receipts[0]))],
+    ['formula tamper', (app) => { app.guestRewardClaims[0].points += 1; }],
+    ['claim chronology tamper', (app) => { app.guestRewardClaims[0].createdAt = new Date(5000).toISOString(); }],
+    ['duplicate ledger ID', (app) => app.ledger.push(structuredClone(app.ledger[0]))]
+  ];
+  for (const [label, mutate] of variants) {
+    const ids = createUuidSequence();
+    const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+    const app = api.createDefaultState();
+    seedVerifiedGuestReceipt(api, app);
+    bindMergePhone(app);
+    mutate(app);
+    const before = JSON.stringify(app);
+    const calls = ids.calls();
+    assert.equal(api.mergeGuestJourney(app, '8325550198', 6000).ok, false, label);
+    assert.equal(JSON.stringify(app), before, label);
+    assert.equal(ids.calls(), calls, label);
+  }
+
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  seedVerifiedGuestReceipt(api, app);
+  bindMergePhone(app);
+  const before = JSON.stringify(app);
+  assert.equal(api.mergeGuestJourney(app, '8325550198', 1299).code, 'invalid_time_order');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(ids.calls(), 7);
+});
+
+test('Task 5 enforces the pending and claimed guest-claim ledger lifecycle', () => {
+  {
+    const ids = createUuidSequence();
+    const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+    const app = api.createDefaultState();
+    const fixture = seedVerifiedGuestReceipt(api, app);
+    bindMergePhone(app);
+    app.ledger.unshift({
+      id: 'ledger-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+      businessId: fixture.claims[0].businessId,
+      type: fixture.claims[0].sourceType,
+      pointsDelta: fixture.claims[0].points,
+      refType: 'guest_claim',
+      refId: fixture.claims[0].id,
+      createdAt: new Date(3000).toISOString()
+    });
+    const before = JSON.stringify(app);
+    assert.equal(api.mergeGuestJourney(app, '8325550198', 3000).ok, false);
+    assert.equal(JSON.stringify(app), before);
+  }
+
+  for (const [label, mutate] of [
+    ['missing claimed ledger', (app, claim) => {
+      app.ledger = app.ledger.filter((entry) => entry.refId !== claim.id);
+    }],
+    ['wrong claimed ledger', (app, claim) => {
+      app.ledger.find((entry) => entry.refId === claim.id).pointsDelta += 1;
+    }],
+    ['ambiguous claimed ledger ref', (app, claim) => {
+      const entry = app.ledger.find((row) => row.refId === claim.id);
+      app.ledger.push({ ...structuredClone(entry), id: 'ledger-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' });
+    }],
+    ['wrong check-in claimed timestamp', (app, claim) => {
+      app.guestCheckins.find((row) => row.id === claim.guestCheckinId).claimedAt = new Date(3500).toISOString();
+    }]
+  ]) {
+    const ids = createUuidSequence();
+    const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+    const app = api.createDefaultState();
+    const fixture = seedVerifiedGuestReceipt(api, app);
+    bindMergePhone(app);
+    assert.equal(api.mergeGuestJourney(app, '8325550198', 3000).ok, true);
+    mutate(app, fixture.claims[0]);
+    const before = JSON.stringify(app);
+    const calls = ids.calls();
+    assert.equal(api.mergeGuestJourney(app, '8325550198', 4000).ok, false, label);
+    assert.equal(JSON.stringify(app), before, label);
+    assert.equal(ids.calls(), calls, label);
+  }
+});
+
+test('Task 5 claimed guest rewards survive canonical migration and reload validation', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  const fixture = seedVerifiedGuestReceipt(api, app);
+  bindMergePhone(app);
+  assert.equal(api.mergeGuestJourney(app, '8325550198', 3000).ok, true);
+  const balance = app.balances['bitcoin-nail-bar'].points;
+
+  const migrated = api.migrateState(structuredClone(app));
+
+  assert.equal(migrated.guestRewardClaims.length, fixture.claims.length);
+  assert.equal(migrated.guestRewardClaims.every((claim) => claim.status === 'claimed'), true);
+  assert.equal(migrated.ledger.filter((entry) => entry.refType === 'guest_claim').length, fixture.claims.length);
+  assert.equal(migrated.balances['bitcoin-nail-bar'].points, balance);
+  assert.equal(api.validateVerifiedPaymentAggregate(migrated, fixture.proof.id).ok, true);
+  const snapshot = JSON.stringify(migrated);
+  assert.equal(JSON.stringify(api.mergeGuestJourney(migrated, '8325550198', 4000)), JSON.stringify({
+    ok: true, claimedPoints: 0, claimedCount: 0
+  }));
+  assert.equal(JSON.stringify(migrated), snapshot);
+});
+
+test('Task 5 migration never heals an ambiguous claimed guest ledger ID into a replayable state', () => {
+  const ids = createUuidSequence();
+  const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  seedVerifiedGuestReceipt(api, app);
+  bindMergePhone(app);
+  assert.equal(api.mergeGuestJourney(app, '8325550198', 3000).ok, true);
+  const guestLedger = app.ledger.find((entry) => entry.refType === 'guest_claim');
+  app.ledger.push(structuredClone(guestLedger));
+
+  const migrated = api.migrateState(structuredClone(app));
+  const before = JSON.stringify(migrated);
+  const result = api.mergeGuestJourney(migrated, '8325550198', 4000);
+
+  assert.equal(result.ok, false);
+  assert.equal(JSON.stringify(migrated), before);
+});
+
+test('Task 5 receipt CTAs prefill login or return to the scan camera without consuming claims', () => {
   const home = createStubElement({ id: 'home', classNames: ['app-screen', 'hidden'] });
   const pay = createStubElement({ id: 'pay', classNames: ['app-screen', 'hidden'] });
   const paydone = createStubElement({ id: 'paydone', classNames: ['app-screen'] });
-  const onb1 = createStubElement({ id: 'onb1', classNames: ['app-screen', 'hidden'] });
+  const login1 = createStubElement({ id: 'login1', classNames: ['app-screen', 'hidden'] });
+  const scan = createStubElement({ id: 'scan', classNames: ['app-screen', 'hidden'] });
   const directView = createStubElement({ id: 'direct-payment-view', dataset: { payView: 'direct' } });
   const checkoutView = createStubElement({ id: 'guest-checkout-view', dataset: { payView: 'checkout' }, classNames: ['hidden'] });
   const proofView = createStubElement({ id: 'payment-proof-view', dataset: { payView: 'payment-proof' }, classNames: ['hidden'] });
-  const phone = createStubElement({ id: 'onb-phone' });
+  const cameraView = createStubElement({ id: 'scan-camera-view', dataset: { scanView: 'camera' }, classNames: ['hidden'] });
+  const contextView = createStubElement({ id: 'scan-context-view', dataset: { scanView: 'context' } });
+  const guestView = createStubElement({ id: 'scan-guest-view', dataset: { scanView: 'guest' }, classNames: ['hidden'] });
+  const phone = createStubElement({ id: 'login-phone' });
+  const toastRegion = createStubElement({ id: 'toast-region' });
   const document = createDocumentStub({
-    screenNodes: [home, pay, paydone, onb1],
-    extraElements: [directView, checkoutView, proofView, phone],
+    screenNodes: [home, pay, paydone, login1, scan],
+    extraElements: [directView, checkoutView, proofView, cameraView, contextView, guestView,
+      phone, toastRegion, createStubElement({ id: 'form-error-state', classNames: ['hidden'] }),
+      createStubElement({ id: 'scan-demo-business' })],
     selectorNodes: {
       '[data-pay-view]': [directView, checkoutView, proofView],
+      '[data-scan-view]': [cameraView, contextView, guestView],
       '[data-scan-customer]': createStubElement(),
       '[data-scan-balance]': createStubElement(),
       '[data-scan-staff]': createStubElement(),
@@ -4434,12 +4756,132 @@ test('Task 4 review CTAs execute Replace, Create Account and Continue Guest with
   `, context);
   vm.runInContext("ACTIONS.get('create-account-from-receipt')()", context);
   assert.equal(phone.value, '8325550198');
-  assert.equal(vm.runInContext('state.ui.activeScreen', context), 'onb1');
+  assert.equal(vm.runInContext('state.ui.activeScreen', context), 'login1');
+  assert.equal(document.activeElement, phone);
   assert.equal(vm.runInContext('JSON.stringify(state.guestRewardClaims) === claimSnapshot', context), true);
 
   vm.runInContext("ACTIONS.get('continue-as-guest')()", context);
-  assert.equal(vm.runInContext('state.ui.activeScreen', context), 'home');
+  assert.equal(vm.runInContext('state.ui.activeScreen', context), 'scan');
+  assert.equal(cameraView.attributes['aria-hidden'], 'false');
+  assert.equal(contextView.attributes['aria-hidden'], 'true');
+  assert.equal(toastRegion.children[0].children[1].textContent, 'Điểm đang chờ; dùng cùng số điện thoại để nhận sau.');
+  assert.equal(vm.runInContext('state.guestRewardClaims.every((claim) => claim.status === "pending")', context), true);
   assert.equal(vm.runInContext('JSON.stringify(state.guestRewardClaims) === claimSnapshot', context), true);
+
+  vm.runInContext("state.profile.language = 'en'; ACTIONS.get('continue-as-guest')()", context);
+  assert.equal(toastRegion.children[0].children[1].textContent, 'Rewards are pending; use the same phone to claim later.');
+  assert.equal(vm.runInContext('JSON.stringify(state.guestRewardClaims) === claimSnapshot', context), true);
+});
+
+function otpDocument() {
+  const home = createStubElement({ id: 'home', classNames: ['app-screen', 'hidden'] });
+  const login2 = createStubElement({ id: 'login2', classNames: ['app-screen'] });
+  const otpCode = createStubElement({ id: 'otp-code' });
+  otpCode.value = '246810';
+  return createDocumentStub({
+    screenNodes: [home, login2],
+    extraElements: [otpCode, createStubElement({ id: 'otp-error', classNames: ['hidden'] }),
+      createStubElement({ id: 'toast-region' }),
+      createStubElement({ id: 'form-error-state', classNames: ['hidden'] })],
+    selectorNodes: {
+      '[data-scan-customer]': createStubElement(),
+      '[data-scan-balance]': createStubElement(),
+      '[data-scan-staff]': createStubElement(),
+      '[data-scan-service]': createStubElement()
+    }
+  });
+}
+
+test('Task 5 OTP verification atomically authenticates and merges matching guest rewards', () => {
+  const seedIds = createUuidSequence();
+  const seedApi = testApi({}, { randomUUID: () => seedIds.randomUUID() }).api;
+  const app = seedApi.createDefaultState();
+  const now = Date.now();
+  const fixture = seedVerifiedGuestReceipt(seedApi, app, { baseTime: now - 5000 });
+  app.session.authenticated = false;
+  assert.equal(seedApi.requestOtp(app, '8325550198', now - 1000).ok, true);
+  const beforePoints = app.balances['bitcoin-nail-bar'].points;
+  const expected = fixture.claims.reduce((sum, claim) => sum + claim.points, 0);
+  const actionIds = createUuidSequence();
+  const { storage, context } = testApi({
+    [seedApi.STORAGE_KEY]: JSON.stringify(app)
+  }, { document: otpDocument(), randomUUID: () => actionIds.randomUUID() });
+
+  vm.runInContext("ACTIONS.get('verify-otp')()", context);
+
+  const saved = apiState(storage);
+  assert.equal(saved.session.authenticated, true);
+  assert.equal(saved.session.phone, '8325550198');
+  assert.equal(saved.profile.phone, '8325550198');
+  assert.equal(saved.guestRewardClaims.every((claim) => claim.status === 'claimed'), true);
+  assert.equal(saved.balances['bitcoin-nail-bar'].points, beforePoints + expected);
+  assert.equal(saved.ui.activeScreen, 'home');
+});
+
+test('Task 5 OTP merge failure leaves authentication, profile, claims and ledger byte-identical', () => {
+  const ids = createUuidSequence();
+  const api = testApi({}, { randomUUID: () => ids.randomUUID() }).api;
+  const app = api.createDefaultState();
+  const now = Date.now();
+  seedVerifiedGuestReceipt(api, app, { baseTime: now - 5000 });
+  app.session.authenticated = false;
+  assert.equal(api.requestOtp(app, '8325550198', now - 1000).ok, true);
+  const loaded = testApi({
+    [api.STORAGE_KEY]: JSON.stringify(app)
+  }, { document: otpDocument(), randomUUID: () => ids.randomUUID() });
+  vm.runInContext(`
+    state.guestRewardClaims[0].points += 1;
+    globalThis.beforeFailedOtpMerge = JSON.stringify(state);
+  `, loaded.context);
+
+  vm.runInContext("ACTIONS.get('verify-otp')()", loaded.context);
+
+  assert.equal(vm.runInContext('JSON.stringify(state) === beforeFailedOtpMerge', loaded.context), true);
+  assert.equal(vm.runInContext('state.session.authenticated', loaded.context), false);
+  assert.notEqual(vm.runInContext('state.profile.phone', loaded.context), '8325550198');
+  assert.equal(vm.runInContext("state.ledger.some((entry) => entry.refType === 'guest_claim')", loaded.context), false);
+});
+
+test('Task 5 OTP treats a normalized matching noncanonical guest owner as an atomic merge failure', () => {
+  const ids = createUuidSequence();
+  const api = testApi({}, { randomUUID: () => ids.randomUUID() }).api;
+  const app = api.createDefaultState();
+  const now = Date.now();
+  seedVerifiedGuestReceipt(api, app, { baseTime: now - 5000 });
+  app.session.authenticated = false;
+  assert.equal(api.requestOtp(app, '8325550198', now - 1000).ok, true);
+  const loaded = testApi({
+    [api.STORAGE_KEY]: JSON.stringify(app)
+  }, { document: otpDocument(), randomUUID: () => ids.randomUUID() });
+  vm.runInContext(`
+    state.guestCheckins[0].phone = '(832) 555-0198';
+    globalThis.beforeNoncanonicalOtpMerge = JSON.stringify(state);
+  `, loaded.context);
+
+  vm.runInContext("ACTIONS.get('verify-otp')()", loaded.context);
+
+  assert.equal(vm.runInContext('JSON.stringify(state) === beforeNoncanonicalOtpMerge', loaded.context), true);
+  assert.equal(vm.runInContext('state.session.authenticated', loaded.context), false);
+  assert.notEqual(vm.runInContext('state.profile.phone', loaded.context), '8325550198');
+});
+
+test('Task 5 OTP verification without a matching guest logs in without creating claim ledgers', () => {
+  const api = testApi().api;
+  const app = api.createDefaultState();
+  app.session.authenticated = false;
+  assert.equal(api.requestOtp(app, '8325550198', Date.now() - 1000).ok, true);
+  const ledger = JSON.stringify(app.ledger);
+  const loaded = testApi({
+    [api.STORAGE_KEY]: JSON.stringify(app)
+  }, { document: otpDocument() });
+
+  vm.runInContext("ACTIONS.get('verify-otp')()", loaded.context);
+
+  const saved = apiState(loaded.storage);
+  assert.equal(saved.session.authenticated, true);
+  assert.equal(saved.profile.phone, '8325550198');
+  assert.equal(JSON.stringify(saved.ledger), ledger);
+  assert.equal(saved.guestRewardClaims.length, 0);
 });
 
 test('Task 4 quota fallback persists proof metadata without image and reports an error', () => {

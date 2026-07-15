@@ -889,6 +889,8 @@
     const PAYMENT_PROOF_ID_PATTERN = /^proof-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const RECEIPT_ID_PATTERN = /^receipt-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const GUEST_REWARD_CLAIM_ID_PATTERN = /^guest-claim-(visit_spend|directpay_bonus|tip_bonus)-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const GUEST_CHECKIN_ID_PATTERN = /^guest-checkin-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const LEDGER_ID_PATTERN = /^ledger-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     function nonNegativeCents(value) {
       return Number.isSafeInteger(value) && value >= 0 ? value : null;
@@ -1498,6 +1500,175 @@
       return { ok: true, receipt: receipts[0], claims: values.map((_, index) => matched[index][0]) };
     }
 
+    function collectionHasUniqueExactIds(values) {
+      if (!Array.isArray(values)) return false;
+      const ids = new Set();
+      return values.every((row) => {
+        if (!isRecord(row) || typeof row.id !== 'string' || !row.id
+          || row.id !== row.id.trim() || ids.has(row.id)) return false;
+        ids.add(row.id);
+        return true;
+      });
+    }
+
+    function isExactGuestClaimLedgerEntry(entry, claim) {
+      return isRecord(entry) && LEDGER_ID_PATTERN.test(entry.id)
+        && entry.businessId === claim.businessId && entry.type === claim.sourceType
+        && entry.pointsDelta === claim.points && entry.refType === 'guest_claim'
+        && entry.refId === claim.id && entry.createdAt === claim.claimedAt
+        && validStoredTimestamp(entry.createdAt)
+        && timestampAtOrAfter(entry.createdAt, claim.createdAt);
+    }
+
+    function validateGuestClaimLedgerLifecycle(appState, authoritativeClaims) {
+      if (!collectionHasUniqueExactIds(appState?.ledger)) {
+        return { ok: false, code: 'invalid_ledger' };
+      }
+      const claimById = new Map(authoritativeClaims.map((claim) => [claim.id, claim]));
+      const linkedByClaim = new Map(authoritativeClaims.map((claim) => [claim.id, []]));
+      for (const entry of appState.ledger) {
+        const refType = normalizedRequiredText(entry.refType);
+        const refId = normalizedRequiredText(entry.refId);
+        if (refType !== 'guest_claim' && !claimById.has(refId)) continue;
+        const claim = claimById.get(refId);
+        if (!claim || entry.refType !== 'guest_claim' || entry.refId !== refId
+          || !LEDGER_ID_PATTERN.test(entry.id)) return { ok: false, code: 'invalid_claim_ledger' };
+        linkedByClaim.get(claim.id).push(entry);
+      }
+      for (const claim of authoritativeClaims) {
+        const linked = linkedByClaim.get(claim.id);
+        if (claim.status === 'pending') {
+          if (linked.length !== 0) return { ok: false, code: 'invalid_claim_ledger' };
+        } else if (claim.status === 'claimed') {
+          if (linked.length !== 1 || !isExactGuestClaimLedgerEntry(linked[0], claim)) {
+            return { ok: false, code: 'invalid_claim_ledger' };
+          }
+        } else {
+          return { ok: false, code: 'invalid_verified_artifacts' };
+        }
+      }
+      return { ok: true };
+    }
+
+    function mergeGuestJourney(appState, phoneInput, now = Date.now()) {
+      const phone = normalizeUsPhone(phoneInput);
+      if (phone.length !== 10 || normalizeUsPhone(appState?.session?.phone) !== phone
+        || normalizeUsPhone(appState?.profile?.phone) !== phone) {
+        return { ok: false, code: 'phone_mismatch' };
+      }
+      if (!Array.isArray(appState?.guestCheckins) || !Array.isArray(appState?.guestRewardClaims)
+        || !Array.isArray(appState?.paymentProofs) || !Array.isArray(appState?.receipts)
+        || !Array.isArray(appState?.ledger)
+        || !isRecord(appState?.balances)) return { ok: false, code: 'invalid_state' };
+      if (!collectionHasUniqueCanonicalIds(appState.guestRewardClaims, GUEST_REWARD_CLAIM_ID_PATTERN)
+        || !collectionHasUniqueCanonicalIds(appState.paymentProofs, PAYMENT_PROOF_ID_PATTERN)
+        || !collectionHasUniqueCanonicalIds(appState.receipts, RECEIPT_ID_PATTERN)) {
+        return { ok: false, code: 'invalid_verified_artifacts' };
+      }
+      if (!collectionHasUniqueExactIds(appState.guestCheckins)) {
+        return { ok: false, code: 'invalid_claim_owner' };
+      }
+      const matchingCheckins = appState.guestCheckins.filter((row) => isRecord(row) && row.phone === phone);
+      if (matchingCheckins.length === 0) return { ok: false, code: 'phone_mismatch' };
+      for (const checkin of appState.guestCheckins) {
+        const normalized = normalizeGuestCheckin(appState, checkin);
+        if (!GUEST_CHECKIN_ID_PATTERN.test(checkin.id)
+          || !normalized || !recordMatchesCanonicalFields(checkin, normalized)) {
+          return { ok: false, code: 'invalid_claim_owner' };
+        }
+      }
+
+      const authoritativeClaims = [];
+      for (const proof of appState.paymentProofs.filter((row) => isRecord(row) && row.status === 'verified')) {
+        const aggregate = validateVerifiedPaymentAggregate(appState, proof.id);
+        if (!aggregate.ok) return aggregate;
+        authoritativeClaims.push(...aggregate.claims);
+      }
+      const authoritativeSet = new Set(authoritativeClaims);
+      const eligibleIds = new Set(matchingCheckins.map((row) => row.id));
+      if (appState.guestRewardClaims.some((claim) => (
+        (eligibleIds.has(claim.guestCheckinId) || claim.status === 'claimed')
+        && !authoritativeSet.has(claim)
+      ))) return { ok: false, code: 'invalid_verified_artifacts' };
+      const ledgerValidation = validateGuestClaimLedgerLifecycle(appState, authoritativeClaims);
+      if (!ledgerValidation.ok) return ledgerValidation;
+
+      const eligibleClaims = authoritativeClaims.filter((claim) => eligibleIds.has(claim.guestCheckinId));
+      for (const checkin of matchingCheckins) {
+        const claims = eligibleClaims.filter((claim) => claim.guestCheckinId === checkin.id);
+        const pending = claims.some((claim) => claim.status === 'pending');
+        if (pending && checkin.claimedAt !== null) {
+          return { ok: false, code: 'invalid_claim_lifecycle' };
+        }
+        if (claims.length > 0 && !pending) {
+          const claimTimestamps = new Set(claims.map((claim) => claim.claimedAt));
+          if (!validStoredTimestamp(checkin.claimedAt)
+            || claimTimestamps.size !== 1 || !claimTimestamps.has(checkin.claimedAt)
+            || claims.some((claim) => claim.status !== 'claimed')) {
+            return { ok: false, code: 'invalid_claim_lifecycle' };
+          }
+        }
+      }
+      const targets = eligibleClaims.filter((claim) => claim.status === 'pending');
+      if (targets.length === 0) return { ok: true, claimedPoints: 0, claimedCount: 0 };
+
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      if (targets.some((claim) => !timestampAtOrAfter(timestamp.value, claim.createdAt))) {
+        return { ok: false, code: 'invalid_time_order' };
+      }
+      const totalsByBusiness = new Map();
+      let claimedPoints = 0;
+      for (const claim of targets) {
+        const nextBusinessTotal = (totalsByBusiness.get(claim.businessId) ?? 0) + claim.points;
+        claimedPoints += claim.points;
+        if (!Number.isSafeInteger(nextBusinessTotal) || !Number.isSafeInteger(claimedPoints)) {
+          return { ok: false, code: 'invalid_points_delta' };
+        }
+        totalsByBusiness.set(claim.businessId, nextBusinessTotal);
+      }
+      for (const [businessId, points] of totalsByBusiness) {
+        const stored = validateStoredBalance(appState, businessId);
+        if (!stored.ok) return stored;
+        if (!Number.isSafeInteger(stored.balance.points + points)) {
+          return { ok: false, code: 'invalid_balance' };
+        }
+      }
+
+      const draft = structuredClone(appState);
+      const existingLedgerIds = new Set(appState.ledger.map((entry) => entry.id));
+      const preparedLedgerIds = new Set();
+      for (const target of targets) {
+        const claim = draft.guestRewardClaims.find((row) => row.id === target.id);
+        if (!claim) return { ok: false, code: 'invalid_verified_artifacts' };
+        const entry = appendLedger(draft, {
+          businessId: claim.businessId,
+          type: claim.sourceType,
+          pointsDelta: claim.points,
+          refType: 'guest_claim',
+          refId: claim.id,
+          now
+        });
+        if (entry?.ok === false) return entry;
+        if (!isRecord(entry) || !LEDGER_ID_PATTERN.test(entry.id)
+          || existingLedgerIds.has(entry.id) || preparedLedgerIds.has(entry.id)) {
+          return { ok: false, code: 'id_generation_failed' };
+        }
+        preparedLedgerIds.add(entry.id);
+        claim.status = 'claimed';
+        claim.claimedAt = timestamp.value;
+      }
+      const targetCheckinIds = new Set(targets.map((claim) => claim.guestCheckinId));
+      for (const checkin of draft.guestCheckins.filter((row) => targetCheckinIds.has(row.id))) {
+        const remaining = draft.guestRewardClaims.some((claim) => (
+          claim.guestCheckinId === checkin.id && claim.status === 'pending'
+        ));
+        if (!remaining) checkin.claimedAt = timestamp.value;
+      }
+      replaceState(appState, draft);
+      return { ok: true, claimedPoints, claimedCount: targets.length };
+    }
+
     function verifiedProofArtifacts(appState, checkout, proof) {
       return validateVerifiedPaymentAggregate(appState, proof.id);
     }
@@ -1985,11 +2156,12 @@
     }
 
     function isTipLedgerEntry(entry) {
-      return entry.type === 'tip_bonus' || entry.refType === 'tip';
+      return entry.refType !== 'guest_claim' && (entry.type === 'tip_bonus' || entry.refType === 'tip');
     }
 
     function isDirectPaymentLedgerEntry(entry) {
-      return ['visit_spend', 'directpay_bonus'].includes(entry.type) || entry.refType === 'direct_payment';
+      return entry.refType !== 'guest_claim'
+        && (['visit_spend', 'directpay_bonus'].includes(entry.type) || entry.refType === 'direct_payment');
     }
 
     function isTransactionLedgerEntry(entry) {
@@ -2312,6 +2484,15 @@
 
     function deduplicateLedgerIds(appState) {
       const selectedById = new Map();
+      const entriesById = new Map();
+      appState.ledger.forEach((entry) => {
+        if (!entriesById.has(entry.id)) entriesById.set(entry.id, []);
+        entriesById.get(entry.id).push(entry);
+      });
+      const ambiguousGuestClaimIds = new Set([...entriesById]
+        .filter(([, entries]) => entries.length > 1
+          && entries.some((entry) => normalizedRequiredText(entry.refType) === 'guest_claim'))
+        .map(([id]) => id));
       const priority = (entry) => isRewardLedgerEntry(entry)
         ? 0
         : isTransactionLedgerEntry(entry)
@@ -2327,7 +2508,9 @@
           selectedById.set(entry.id, entry);
         }
       });
-      appState.ledger = appState.ledger.filter((entry) => selectedById.get(entry.id) === entry);
+      appState.ledger = appState.ledger.filter((entry) => (
+        ambiguousGuestClaimIds.has(entry.id) || selectedById.get(entry.id) === entry
+      ));
     }
 
     function reconcilePendingTransactions(appState) {
@@ -4183,6 +4366,7 @@
         addPhotoDetail: 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.', imageReadFailed: 'Không thể đọc ảnh này.',
         verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
         paymentIntegrityTitle: 'Không thể xác minh biên nhận', paymentIntegrityDetail: 'Dữ liệu xác minh không nhất quán. Không thể thử lại thanh toán này một cách an toàn.', returnHome: 'Về trang chủ',
+        guestRewardsPending: 'Điểm đang chờ; dùng cùng số điện thoại để nhận sau.',
         inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Nhập họ tên, số điện thoại US 10 số và lựa chọn hợp lệ.', noPreference: 'Không yêu cầu', notAvailable: 'Chưa có thông tin', guestCheckinSuccess: 'Đã check-in cho khách. Điểm đang chờ xác nhận.', guestNotFound: 'Không tìm thấy lượt check-in của khách.', serviceNotFound: 'Không tìm thấy dịch vụ đã chọn.', checkoutFailed: 'Không thể chuẩn bị thanh toán. Vui lòng thử lại.', selectPaymentMethod: 'Chọn phương thức thanh toán để tiếp tục.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', invalidImage: 'Chỉ dùng ảnh JPEG hoặc PNG hợp lệ.', proofSavedWithoutImage: 'Bộ nhớ ảnh đã đầy; đã lưu bằng chứng không kèm ảnh.', proofSubmitFailed: 'Không thể gửi bằng chứng thanh toán.', verificationFailed: 'Không thể cập nhật xác minh thanh toán.', proofRejected: 'Bằng chứng thanh toán đã bị từ chối.', createAccount: 'Tạo tài khoản NEXORA', continueGuest: 'Tiếp tục với tư cách khách', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
         cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
@@ -4216,6 +4400,7 @@
         addPhotoDetail: 'The production app will open your device photo picker.', imageReadFailed: 'Could not read this image.',
         verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
         paymentIntegrityTitle: 'Receipt could not be verified', paymentIntegrityDetail: 'Verification data is inconsistent. This payment cannot be retried safely.', returnHome: 'Return Home',
+        guestRewardsPending: 'Rewards are pending; use the same phone to claim later.',
         inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Enter a name, a 10-digit US phone number and valid selections.', noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in. Points are pending confirmation.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'The selected service was not found.', checkoutFailed: 'Could not prepare checkout. Please try again.', selectPaymentMethod: 'Select a payment method to continue.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', invalidImage: 'Use a valid JPEG or PNG image.', proofSavedWithoutImage: 'Image storage is full; proof details were saved without the image.', proofSubmitFailed: 'Could not submit payment proof.', verificationFailed: 'Could not update payment verification.', proofRejected: 'The payment proof was rejected.', createAccount: 'Create NEXORA Account', continueGuest: 'Continue as Guest', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
         cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
@@ -5466,12 +5651,25 @@
       navigateTo('login2');
     });
     registerAction('verify-otp', () => {
-      const result = commitState((draft) => verifyOtp(draft, document.getElementById('otp-code').value));
+      const result = commitState((draft) => {
+        const verified = verifyOtp(draft, document.getElementById('otp-code').value);
+        if (!verified.ok) return verified;
+        draft.profile.phone = draft.session.phone;
+        const hasMatchingGuest = draft.guestCheckins.some((row) => (
+          normalizeUsPhone(row.phone) === draft.session.phone
+        ));
+        const merge = hasMatchingGuest
+          ? mergeGuestJourney(draft, draft.session.phone)
+          : { ok: true, claimedPoints: 0, claimedCount: 0 };
+        return merge.ok ? { ...verified, merge } : merge;
+      });
       if (!result.ok) {
         setFieldError('otp-error', t(result.code === 'locked' ? 'otpLocked' : 'invalidOtp'));
         return;
       }
       setFieldError('otp-error');
+      renderApp();
+      if (result.merge.claimedPoints > 0) showToast(`${result.merge.claimedPoints} ${t('points')}`);
       navigateTo('home');
     });
     registerAction('resend-code', () => {
@@ -5802,11 +6000,15 @@
         ? state.guestCheckins.find((row) => row.id === checkout.guestCheckinId)
         : null;
       if (!guestCheckin) return showToast(t('guestNotFound'), 'error');
-      document.getElementById('onb-phone').value = guestCheckin.phone;
-      navigateTo('onb1');
-      document.getElementById('onb-phone').focus({ preventScroll: true });
+      document.getElementById('login-phone').value = guestCheckin.phone;
+      navigateTo('login1');
+      document.getElementById('login-phone').focus({ preventScroll: true });
     });
-    registerAction('continue-as-guest', () => navigateTo('home'));
+    registerAction('continue-as-guest', () => {
+      showToast(t('guestRewardsPending'));
+      setScanView('camera', { focus: false });
+      navigateTo('scan');
+    });
     registerAction('select-tip', (control) => selectTip(control.dataset.amount, control));
     registerAction('send-tip', () => sendTip());
     registerAction('confirm-tip', () => confirmTip());
@@ -6761,6 +6963,7 @@
       submitCheckoutWithoutUpload,
       submitPaymentProof,
       validateVerifiedPaymentAggregate,
+      mergeGuestJourney,
       verifyPaymentProof,
       rejectPaymentProof,
       removePaymentProofImage,
