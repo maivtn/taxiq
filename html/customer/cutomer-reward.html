@@ -753,9 +753,16 @@
     const REFERRAL_REWARD_POINTS = 50;
     const CHECKOUT_METHODS = new Set(['Card', 'Zelle', 'Venmo', 'Pay at Counter']);
     const TIP_BASIS_POINTS = new Set([0, 1500, 1800, 2000]);
+    const LINE_ITEM_TYPES = new Set(['service', 'addon', 'discount']);
+    const CLAIM_SOURCE_TYPES = new Set(['visit_spend', 'directpay_bonus', 'tip_bonus']);
 
     function nonNegativeCents(value) {
       return Number.isSafeInteger(value) && value >= 0 ? value : null;
+    }
+
+    function timestampAtOrAfter(value, lowerBound) {
+      return validStoredTimestamp(value) && validStoredTimestamp(lowerBound)
+        && Date.parse(value) >= Date.parse(lowerBound);
     }
 
     function replaceState(target, source) {
@@ -798,15 +805,20 @@
 
     function normalizeLineItems(value) {
       if (!Array.isArray(value) || value.length === 0) return null;
-      const lineItems = value.map((item) => ({
-        id: normalizedRequiredText(item?.id),
-        type: normalizedRequiredText(item?.type),
-        label: normalizedRequiredText(item?.label),
-        amountCents: Number.isSafeInteger(item?.amountCents) ? item.amountCents : null,
-        sourceAddOnId: item?.sourceAddOnId === null || item?.sourceAddOnId === undefined
-          ? null : normalizedRequiredText(item.sourceAddOnId)
-      }));
-      return lineItems.some((item) => !item.id || !item.type || !item.label || item.amountCents === null) ? null : lineItems;
+      const lineItems = value.map((item) => {
+        if (!isRecord(item)) return null;
+        const id = normalizedRequiredText(item.id);
+        const type = normalizedRequiredText(item.type);
+        const label = normalizedRequiredText(item.label);
+        const amountCents = Number.isSafeInteger(item.amountCents) ? item.amountCents : null;
+        const sourceOmitted = item.sourceAddOnId === null || item.sourceAddOnId === undefined;
+        const sourceAddOnId = sourceOmitted ? null : normalizedRequiredText(item.sourceAddOnId);
+        const validSign = type === 'discount' ? amountCents < 0 : amountCents > 0;
+        if (!id || !LINE_ITEM_TYPES.has(type) || !label || amountCents === null || !validSign
+          || (!sourceOmitted && (!sourceAddOnId || type !== 'addon'))) return null;
+        return { id, type, label, amountCents, sourceAddOnId };
+      });
+      return lineItems.some((item) => item === null) ? null : lineItems;
     }
 
     function normalizeCheckoutDraft(appState, value) {
@@ -814,17 +826,34 @@
       const id = normalizedRequiredText(value.id);
       const guestCheckinId = normalizedRequiredText(value.guestCheckinId);
       const businessId = normalizedRequiredText(value.businessId);
+      const guestCheckin = appState.guestCheckins.find((row) => (
+        row.id === guestCheckinId && row.businessId === businessId
+      ));
       const lineItems = normalizeLineItems(value.lineItems);
       const status = CHECKOUT_STATUSES.has(value.status) ? value.status : null;
       const method = value.method === null || CHECKOUT_METHODS.has(value.method) ? value.method : undefined;
       const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
       const cents = ['subtotalCents', 'discountCents', 'beforeTipCents', 'tipCents', 'totalCents']
         .map((key) => nonNegativeCents(value[key]));
-      if (!id || !appState.guestCheckins.some((row) => row.id === guestCheckinId && row.businessId === businessId)
-        || !getValidBusiness(appState, businessId) || !lineItems || !status || method === undefined
-        || !TIP_BASIS_POINTS.has(value.tipBasisPoints) || cents.includes(null) || !createdAt) return null;
+      if (!id || !guestCheckin || !getValidBusiness(appState, businessId) || !lineItems || !status
+        || method === undefined || (method === null && status !== 'draft')
+        || !TIP_BASIS_POINTS.has(value.tipBasisPoints) || cents.includes(null) || !createdAt
+        || !timestampAtOrAfter(createdAt, guestCheckin.scannedAt)) return null;
       const [subtotalCents, discountCents, beforeTipCents, tipCents, totalCents] = cents;
-      if (beforeTipCents !== subtotalCents - discountCents || totalCents !== beforeTipCents + tipCents) return null;
+      const calculatedSubtotal = lineItems
+        .filter((item) => item.type !== 'discount')
+        .reduce((total, item) => total + item.amountCents, 0);
+      const calculatedDiscount = -lineItems
+        .filter((item) => item.type === 'discount')
+        .reduce((total, item) => total + item.amountCents, 0);
+      const calculatedBeforeTip = calculatedSubtotal - calculatedDiscount;
+      const calculatedTip = Math.round(calculatedBeforeTip * value.tipBasisPoints / 10000);
+      const calculatedTotal = calculatedBeforeTip + calculatedTip;
+      if (![calculatedSubtotal, calculatedDiscount, calculatedBeforeTip, calculatedTip, calculatedTotal]
+        .every((amount) => Number.isSafeInteger(amount) && amount >= 0)
+        || subtotalCents !== calculatedSubtotal || discountCents !== calculatedDiscount
+        || beforeTipCents !== calculatedBeforeTip || tipCents !== calculatedTip
+        || totalCents !== calculatedTotal) return null;
       return { id, guestCheckinId, businessId, lineItems, status, subtotalCents, discountCents,
         beforeTipCents, tipBasisPoints: value.tipBasisPoints, tipCents, totalCents, method, createdAt };
     }
@@ -840,13 +869,14 @@
       const amountCents = nonNegativeCents(value.amountCents);
       const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
       const verifiedAt = value.verifiedAt === null || validStoredTimestamp(value.verifiedAt) ? value.verifiedAt : undefined;
-      if (!id || !checkout || checkout.businessId !== businessId || !method || !status || amountCents === null
-        || amountCents !== checkout.totalCents || !createdAt || verifiedAt === undefined) return null;
+      if (!id || !checkout || checkout.businessId !== businessId || !method || method !== checkout.method
+        || !status || amountCents === null || amountCents !== checkout.totalCents || !createdAt
+        || !timestampAtOrAfter(createdAt, checkout.createdAt) || verifiedAt === undefined) return null;
       const aligned = (status === 'verified' && checkout.status === 'confirmed' && verifiedAt)
         || (status === 'rejected' && checkout.status === 'rejected' && verifiedAt)
         || (['draft', 'pending_verification'].includes(status)
           && ['draft', 'pending_verification'].includes(checkout.status) && verifiedAt === null);
-      if (!aligned) return null;
+      if (!aligned || (verifiedAt !== null && !timestampAtOrAfter(verifiedAt, createdAt))) return null;
       return { id, checkoutDraftId, businessId, method, amountCents, status,
         note: typeof value.note === 'string' ? value.note.slice(0, 280) : '',
         imageDataUrl: sanitizeLookPhoto(value.imageDataUrl), rejectReason: normalizedRequiredText(value.rejectReason),
@@ -856,9 +886,16 @@
     function normalizeReceipt(appState, value) {
       if (!isRecord(value)) return null;
       const checkout = appState.checkoutDrafts.find((row) => row.id === normalizedRequiredText(value.checkoutDraftId));
+      const proofs = checkout ? appState.paymentProofs.filter((proof) => (
+        proof.checkoutDraftId === checkout.id && proof.status === 'verified'
+      )) : [];
+      const proof = proofs.length === 1 ? proofs[0] : null;
       const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
-      return normalizedRequiredText(value.id) && checkout?.status === 'confirmed'
-        && value.businessId === checkout.businessId && value.totalCents === checkout.totalCents && createdAt
+      return normalizedRequiredText(value.id) && checkout?.status === 'confirmed' && checkout.method !== null
+        && proof && value.businessId === checkout.businessId && value.method === checkout.method
+        && value.tipCents === checkout.tipCents && value.totalCents === checkout.totalCents && createdAt
+        && timestampAtOrAfter(createdAt, checkout.createdAt)
+        && timestampAtOrAfter(createdAt, proof.verifiedAt)
         ? { id: value.id.trim(), checkoutDraftId: checkout.id, businessId: checkout.businessId,
           method: checkout.method, tipCents: checkout.tipCents, totalCents: checkout.totalCents,
           lineItems: structuredClone(checkout.lineItems), createdAt }
@@ -868,15 +905,23 @@
     function normalizeGuestRewardClaim(appState, value) {
       if (!isRecord(value)) return null;
       const checkin = appState.guestCheckins.find((row) => row.id === normalizedRequiredText(value.guestCheckinId));
+      const sourceType = normalizedRequiredText(value.sourceType);
+      const sourceId = normalizedRequiredText(value.sourceId);
+      const proofs = appState.paymentProofs.filter((proof) => proof.id === sourceId && proof.status === 'verified');
+      const proof = proofs.length === 1 ? proofs[0] : null;
+      const checkout = proof ? appState.checkoutDrafts.find((row) => row.id === proof.checkoutDraftId) : null;
       const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
       const claimedAt = value.claimedAt === null || validStoredTimestamp(value.claimedAt) ? value.claimedAt : undefined;
       const status = ['pending', 'claimed'].includes(value.status) ? value.status : null;
       return normalizedRequiredText(value.id) && checkin && value.businessId === checkin.businessId
-        && normalizedRequiredText(value.sourceType) && normalizedRequiredText(value.sourceId)
+        && CLAIM_SOURCE_TYPES.has(sourceType) && proof && proof.businessId === checkin.businessId
+        && checkout?.guestCheckinId === checkin.id && checkout.businessId === checkin.businessId
         && Number.isSafeInteger(value.points) && value.points > 0 && status && createdAt && claimedAt !== undefined
+        && timestampAtOrAfter(createdAt, proof.verifiedAt)
         && ((status === 'pending' && claimedAt === null) || (status === 'claimed' && claimedAt))
+        && (claimedAt === null || timestampAtOrAfter(claimedAt, createdAt))
         ? { id: value.id.trim(), guestCheckinId: checkin.id, businessId: checkin.businessId,
-          sourceType: value.sourceType.trim(), sourceId: value.sourceId.trim(), points: value.points,
+          sourceType, sourceId, points: value.points,
           status, createdAt, claimedAt }
         : null;
     }
@@ -898,8 +943,11 @@
       const aligned = status === 'invited'
         ? joinedAt === null && rewardedAt === null && businessId === null && value.rewardPoints === 0
         : status === 'joined'
-          ? joinedAt && rewardedAt === null && businessId === null && value.rewardPoints === 0
-          : joinedAt && rewardedAt && getValidBusiness(appState, businessId) && value.rewardPoints === REFERRAL_REWARD_POINTS;
+          ? joinedAt && timestampAtOrAfter(joinedAt, createdAt)
+            && rewardedAt === null && businessId === null && value.rewardPoints === 0
+          : joinedAt && timestampAtOrAfter(joinedAt, createdAt)
+            && rewardedAt && timestampAtOrAfter(rewardedAt, joinedAt)
+            && getValidBusiness(appState, businessId) && value.rewardPoints === REFERRAL_REWARD_POINTS;
       if (!aligned) return null;
       return { id, referrerId, code, friendPhone, status, rewardPoints: value.rewardPoints,
         businessId, createdAt, joinedAt, rewardedAt };
@@ -1498,6 +1546,14 @@
       migrated.paymentProofs = normalizeList(value.paymentProofs, normalizePaymentProof);
       migrated.receipts = normalizeList(value.receipts, normalizeReceipt);
       migrated.guestRewardClaims = normalizeList(value.guestRewardClaims, normalizeGuestRewardClaim);
+      const claimCounts = new Map();
+      migrated.guestRewardClaims.forEach((claim) => {
+        const key = JSON.stringify([claim.guestCheckinId, claim.sourceType, claim.sourceId]);
+        claimCounts.set(key, (claimCounts.get(key) ?? 0) + 1);
+      });
+      migrated.guestRewardClaims = migrated.guestRewardClaims.filter((claim) => (
+        claimCounts.get(JSON.stringify([claim.guestCheckinId, claim.sourceType, claim.sourceId])) === 1
+      ));
       migrated.referrals = normalizeList(value.referrals, normalizeReferral);
       for (const [field, collection] of [
         ['guestCheckinId', migrated.guestCheckins], ['checkoutDraftId', migrated.checkoutDrafts],

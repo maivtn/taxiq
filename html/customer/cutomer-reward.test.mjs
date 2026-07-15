@@ -158,6 +158,49 @@ function testApi(seed = {}, {
   return { api: window.NEXORA_TEST_API, storage, context };
 }
 
+function customerJourneyFixture() {
+  return {
+    guestCheckins: [{
+      id: 'guest-checkin-1', businessId: 'bitcoin-nail-bar', name: 'Amy Nguyen',
+      phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-anna',
+      station: 'front', sourceQr: 'https://nexoratouch.com/touch/bitcoin-nail-bar/front',
+      status: 'checked_in', pointsPending: 120, scannedAt: '2026-07-15T03:04:42.000Z',
+      claimedAt: null
+    }],
+    checkoutDrafts: [{
+      id: 'checkout-1', guestCheckinId: 'guest-checkin-1', businessId: 'bitcoin-nail-bar',
+      lineItems: [
+        { id: 'line-service', type: 'service', label: 'Deluxe pedicure', amountCents: 5000, sourceAddOnId: null },
+        { id: 'line-addon', type: 'addon', label: 'Gel upgrade', amountCents: 1000, sourceAddOnId: 'addon-request-1' },
+        { id: 'line-discount', type: 'discount', label: 'Loyalty discount', amountCents: -500, sourceAddOnId: null }
+      ],
+      status: 'confirmed', subtotalCents: 6000, discountCents: 500, beforeTipCents: 5500,
+      tipBasisPoints: 2000, tipCents: 1100, totalCents: 6600, method: 'Zelle',
+      createdAt: '2026-07-15T03:10:00.000Z'
+    }],
+    paymentProofs: [{
+      id: 'proof-1', checkoutDraftId: 'checkout-1', businessId: 'bitcoin-nail-bar',
+      method: 'Zelle', amountCents: 6600, status: 'verified', note: '', imageDataUrl: '',
+      rejectReason: null, createdAt: '2026-07-15T03:12:00.000Z', verifiedAt: '2026-07-15T03:13:00.000Z'
+    }],
+    receipts: [{
+      id: 'receipt-1', checkoutDraftId: 'checkout-1', businessId: 'bitcoin-nail-bar',
+      method: 'Zelle', tipCents: 1100, totalCents: 6600, createdAt: '2026-07-15T03:14:00.000Z'
+    }],
+    guestRewardClaims: [{
+      id: 'claim-1', guestCheckinId: 'guest-checkin-1', businessId: 'bitcoin-nail-bar',
+      sourceType: 'visit_spend', sourceId: 'proof-1', points: 66, status: 'pending',
+      createdAt: '2026-07-15T03:15:00.000Z', claimedAt: null
+    }],
+    referrals: [{
+      id: 'referral-1', referrerId: 'cust-jessica', code: 'JESSICA50', friendPhone: '8325550117',
+      status: 'rewarded', rewardPoints: 50, businessId: 'bitcoin-nail-bar',
+      createdAt: '2026-07-15T02:50:00.000Z', joinedAt: '2026-07-15T03:00:00.000Z',
+      rewardedAt: '2026-07-15T03:16:00.000Z'
+    }]
+  };
+}
+
 test('creates versioned Vietnamese demo state with per-business balances', () => {
   const { api } = testApi();
   const state = api.createDefaultState();
@@ -205,6 +248,207 @@ test('drops malformed cross-surface customer records during migration', () => {
   assert.deepEqual(migrated.checkoutDrafts, []);
   assert.deepEqual(migrated.paymentProofs, []);
   assert.deepEqual(migrated.referrals, []);
+});
+
+test('customer journey invariant keeps one fully canonical cross-surface chain', () => {
+  const { api } = testApi();
+  const migrated = api.migrateState(customerJourneyFixture());
+
+  assert.equal(migrated.guestCheckins.length, 1);
+  assert.equal(migrated.checkoutDrafts.length, 1);
+  assert.equal(migrated.paymentProofs.length, 1);
+  assert.equal(migrated.receipts.length, 1);
+  assert.equal(migrated.guestRewardClaims.length, 1);
+  assert.equal(migrated.guestRewardClaims[0].status, 'pending');
+  assert.equal(migrated.referrals.length, 1);
+  assert.equal(migrated.referrals[0].status, 'rewarded');
+});
+
+test('customer journey invariant cascades a rejected parent through every descendant', () => {
+  const { api } = testApi();
+  const fixture = customerJourneyFixture();
+  fixture.checkoutDrafts[0].createdAt = '2026-07-15T03:00:00.000Z';
+
+  const migrated = api.migrateState(fixture);
+
+  assert.equal(migrated.guestCheckins.length, 1);
+  assert.equal(migrated.checkoutDrafts.length, 0);
+  assert.equal(migrated.paymentProofs.length, 0);
+  assert.equal(migrated.receipts.length, 0);
+  assert.equal(migrated.guestRewardClaims.length, 0);
+});
+
+test('operations snapshot invariant defaults corrupt data, clones valid arrays and never writes', () => {
+  const { api } = testApi();
+  let raw = null;
+  let setCalls = 0;
+  const storage = {
+    getItem(key) {
+      assert.equal(key, api.OPERATIONS_STORAGE_KEY);
+      return raw;
+    },
+    setItem() { setCalls += 1; }
+  };
+  const empty = { serviceTickets: [], addOnRequests: [], staffEligibility: [] };
+
+  assert.equal(JSON.stringify(api.readOperationsSnapshot(storage)), JSON.stringify(empty));
+  raw = '{broken';
+  assert.equal(JSON.stringify(api.readOperationsSnapshot(storage)), JSON.stringify(empty));
+  raw = JSON.stringify({
+    schemaVersion: 1,
+    serviceTickets: [{ id: 'ticket-1', detail: { status: 'ready' } }],
+    addOnRequests: [{ id: 'addon-request-1' }],
+    staffEligibility: [{ staffProfileId: 'staff-anna' }]
+  });
+  const first = api.readOperationsSnapshot(storage);
+  first.serviceTickets[0].detail.status = 'mutated';
+  const second = api.readOperationsSnapshot(storage);
+
+  assert.equal(second.serviceTickets[0].detail.status, 'ready');
+  assert.equal(second.addOnRequests[0].id, 'addon-request-1');
+  assert.equal(second.staffEligibility[0].staffProfileId, 'staff-anna');
+  assert.equal(setCalls, 0);
+});
+
+test('customer journey invariant never changes balances or ledger during migration', () => {
+  const { api } = testApi();
+  const persisted = api.createDefaultState();
+  Object.assign(persisted, customerJourneyFixture());
+  const balancesBefore = JSON.stringify(persisted.balances);
+  const ledgerBefore = JSON.stringify(persisted.ledger);
+
+  const migrated = api.migrateState(persisted);
+
+  assert.equal(JSON.stringify(migrated.balances), balancesBefore);
+  assert.equal(JSON.stringify(migrated.ledger), ledgerBefore);
+  assert.equal(migrated.guestRewardClaims[0].status, 'pending');
+});
+
+test('customer journey invariant rejects null terminal methods and mismatched proof or receipt methods', () => {
+  const { api } = testApi();
+  for (const status of ['pending_verification', 'confirmed', 'rejected']) {
+    const fixture = customerJourneyFixture();
+    fixture.checkoutDrafts[0].status = status;
+    fixture.checkoutDrafts[0].method = null;
+    fixture.paymentProofs[0].status = status === 'confirmed' ? 'verified' : status;
+    fixture.paymentProofs[0].verifiedAt = status === 'pending_verification'
+      ? null
+      : '2026-07-15T03:13:00.000Z';
+    assert.equal(api.migrateState(fixture).checkoutDrafts.length, 0, status);
+  }
+
+  const proofMismatch = customerJourneyFixture();
+  proofMismatch.paymentProofs[0].method = 'Venmo';
+  const migratedProofMismatch = api.migrateState(proofMismatch);
+  assert.equal(migratedProofMismatch.checkoutDrafts.length, 1);
+  assert.equal(migratedProofMismatch.paymentProofs.length, 0);
+  assert.equal(migratedProofMismatch.receipts.length, 0);
+  assert.equal(migratedProofMismatch.guestRewardClaims.length, 0);
+
+  const receiptMismatch = customerJourneyFixture();
+  receiptMismatch.receipts[0].method = 'Venmo';
+  assert.equal(api.migrateState(receiptMismatch).receipts.length, 0);
+});
+
+test('customer journey invariant recalculates line items, totals and basis-point tips', () => {
+  const { api } = testApi();
+  const variants = [
+    ['unknown line type', (checkout) => { checkout.lineItems[1].type = 'fee'; }],
+    ['wrong service sign', (checkout) => { checkout.lineItems[0].amountCents = -5000; }],
+    ['add-on source on service', (checkout) => { checkout.lineItems[0].sourceAddOnId = 'addon-request-fake'; }],
+    ['subtotal mismatch', (checkout) => {
+      checkout.subtotalCents = 6100;
+      checkout.beforeTipCents = 5600;
+      checkout.totalCents = 6700;
+    }],
+    ['discount mismatch', (checkout) => {
+      checkout.discountCents = 400;
+      checkout.beforeTipCents = 5600;
+      checkout.totalCents = 6700;
+    }],
+    ['tip mismatch', (checkout) => {
+      checkout.tipCents = 1000;
+      checkout.totalCents = 6500;
+    }]
+  ];
+
+  for (const [label, mutate] of variants) {
+    const fixture = customerJourneyFixture();
+    mutate(fixture.checkoutDrafts[0]);
+    const migrated = api.migrateState(fixture);
+    assert.equal(migrated.checkoutDrafts.length, 0, label);
+    assert.equal(migrated.paymentProofs.length, 0, `${label}: proof`);
+    assert.equal(migrated.receipts.length, 0, `${label}: receipt`);
+    assert.equal(migrated.guestRewardClaims.length, 0, `${label}: claim`);
+  }
+});
+
+test('customer journey invariant rejects reversed chronology at every lifecycle boundary', () => {
+  const { api } = testApi();
+  const variants = [
+    ['checkout before scan', 'checkoutDrafts', (fixture) => {
+      fixture.checkoutDrafts[0].createdAt = '2026-07-15T03:00:00.000Z';
+    }],
+    ['proof before checkout', 'paymentProofs', (fixture) => {
+      fixture.paymentProofs[0].createdAt = '2026-07-15T03:09:00.000Z';
+    }],
+    ['verification before proof', 'paymentProofs', (fixture) => {
+      fixture.paymentProofs[0].verifiedAt = '2026-07-15T03:11:00.000Z';
+    }],
+    ['receipt before verification', 'receipts', (fixture) => {
+      fixture.receipts[0].createdAt = '2026-07-15T03:12:30.000Z';
+    }],
+    ['claim before verification', 'guestRewardClaims', (fixture) => {
+      fixture.guestRewardClaims[0].createdAt = '2026-07-15T03:12:30.000Z';
+    }],
+    ['claim completion before creation', 'guestRewardClaims', (fixture) => {
+      fixture.guestRewardClaims[0].status = 'claimed';
+      fixture.guestRewardClaims[0].claimedAt = '2026-07-15T03:14:00.000Z';
+    }],
+    ['referral joins before invite', 'referrals', (fixture) => {
+      fixture.referrals[0].joinedAt = '2026-07-15T02:40:00.000Z';
+    }],
+    ['referral rewards before join', 'referrals', (fixture) => {
+      fixture.referrals[0].rewardedAt = '2026-07-15T02:55:00.000Z';
+    }]
+  ];
+
+  for (const [label, collection, mutate] of variants) {
+    const fixture = customerJourneyFixture();
+    mutate(fixture);
+    assert.equal(api.migrateState(fixture)[collection].length, 0, label);
+  }
+});
+
+test('customer journey invariant accepts claims only from unique verified same-business proofs', () => {
+  const { api } = testApi();
+
+  const pending = customerJourneyFixture();
+  pending.checkoutDrafts[0].status = 'pending_verification';
+  pending.paymentProofs[0].status = 'pending_verification';
+  pending.paymentProofs[0].verifiedAt = null;
+  assert.equal(api.migrateState(pending).guestRewardClaims.length, 0, 'pending proof');
+
+  const rejected = customerJourneyFixture();
+  rejected.checkoutDrafts[0].status = 'rejected';
+  rejected.paymentProofs[0].status = 'rejected';
+  assert.equal(api.migrateState(rejected).guestRewardClaims.length, 0, 'rejected proof');
+
+  const fake = customerJourneyFixture();
+  fake.guestRewardClaims[0].sourceId = 'proof-fake';
+  assert.equal(api.migrateState(fake).guestRewardClaims.length, 0, 'fake proof');
+
+  const fakeType = customerJourneyFixture();
+  fakeType.guestRewardClaims[0].sourceType = 'cashback';
+  assert.equal(api.migrateState(fakeType).guestRewardClaims.length, 0, 'fake source type');
+
+  const wrongBusiness = customerJourneyFixture();
+  wrongBusiness.guestRewardClaims[0].businessId = 'golden-glow-spa';
+  assert.equal(api.migrateState(wrongBusiness).guestRewardClaims.length, 0, 'wrong business');
+
+  const duplicate = customerJourneyFixture();
+  duplicate.guestRewardClaims.push({ ...duplicate.guestRewardClaims[0], id: 'claim-2' });
+  assert.equal(api.migrateState(duplicate).guestRewardClaims.length, 0, 'duplicate logical claim');
 });
 
 test('persists state and recovers corrupt JSON into a timestamped backup', () => {
