@@ -8,7 +8,7 @@
 
 ### Overview
 
-NEXORA TOUCH giúp khách hàng theo dõi điểm theo từng doanh nghiệp, check-in, đổi dịch vụ, gửi tip hoặc thanh toán trực tiếp, đặt lịch yêu cầu, lưu lại kiểu đã làm và khám phá các doanh nghiệp lân cận. Ứng dụng bảo vệ ranh giới giữa NEXORA và doanh nghiệp: NEXORA không giữ tiền, không phát hành nghĩa vụ điểm và chỉ hiển thị các giao dịch đã có trạng thái rõ ràng.
+NEXORA TOUCH giúp khách hàng theo dõi điểm theo từng doanh nghiệp, dùng một màn Salon Scan để quét QR check-in tại nhiều salon, đổi dịch vụ, gửi tip hoặc thanh toán trực tiếp, đặt lịch yêu cầu, lưu lại kiểu đã làm và khám phá các doanh nghiệp lân cận. Ứng dụng bảo vệ ranh giới giữa NEXORA và doanh nghiệp: NEXORA không giữ tiền, không phát hành nghĩa vụ điểm và chỉ hiển thị các giao dịch đã có trạng thái rõ ràng.
 
 ### Key Concepts
 
@@ -24,6 +24,7 @@ NEXORA TOUCH giúp khách hàng theo dõi điểm theo từng doanh nghiệp, ch
 | Reward Receipt | Mã đổi quà sau khi điểm đã được trừ, dùng để doanh nghiệp xác nhận việc sử dụng reward. |
 | Booking Request | Yêu cầu đặt lịch chờ doanh nghiệp xác nhận; không phải instant booking và chưa phải giao dịch thanh toán. |
 | Shared Visit | Lượt ghé đã xác thực giữa khách và nhân viên; là điều kiện tối thiểu để theo dõi technician. |
+| Customer App Salon Scan | Màn Scan trong ứng dụng khách hàng dùng QR NEXORA TOUCH để nhận diện salon, station và technician tùy chọn; khách có thể check-in nhiều salon, mỗi nơi vẫn giữ điểm riêng. |
 | Customer Data Store (`localStorage`) | Kho dữ liệu cục bộ của prototype trên một thiết bị; production cần API và đồng bộ nhiều thiết bị. |
 
 ### User Roles
@@ -79,41 +80,48 @@ flowchart TD
     L --> M([Vào trang chủ])
 ```
 
-#### Workflow: Check-in tại doanh nghiệp và nhận điểm
+#### Workflow: Customer App Salon Scan — check-in nhiều salon
 
 **Primary Actor:** Customer
-**Trigger:** Khách chọn Scan hoặc nhập mã NEXORA
-**Outcome:** Lượt ghé được ghi nhận một lần, điểm được cộng đúng business hoặc được xếp hàng để gửi lại khi có mạng.
+**Trigger:** Khách chọn Scan hoặc nhập mã QR NEXORA TOUCH tại bất kỳ salon tham gia nào
+**Outcome:** Màn Scan nhận diện đúng salon, station và technician tùy chọn; lượt ghé được ghi nhận một lần, điểm được cộng đúng salon hoặc được xếp hàng để gửi lại khi có mạng.
 
 **User Stories:**
 
-- As a Customer, I want to quét mã tại quầy, so that lượt ghé và điểm được ghi nhận nhanh.
+- As a Customer, I want to dùng một màn Scan cho nhiều salon, so that tôi không cần cài hoặc học một cách check-in riêng cho từng nơi.
+- As a Customer, I want to biết QR đang thuộc salon nào trước khi ghi nhận, so that điểm không bị cộng nhầm business.
 - As a Customer, I want to check-in khi mạng yếu, so that tôi không mất lượt ghé.
 - As a Customer, I want to được báo khi quét trùng hoặc mã không hợp lệ, so that tôi biết cần làm gì tiếp theo.
 
 | Step | Who | Action | System Response | Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Customer | Mở camera hoặc nhập mã | Đọc mã theo format NEXORA Touch | Prototype mô phỏng camera; production cần decoder |
-| 2 | Platform | Kiểm tra doanh nghiệp, station và nhân viên | Từ chối origin/path/parameter không hợp lệ | Chỉ nhận HTTPS trên domain NEXORA |
-| 3 | Platform | Kiểm tra lượt ghé gần nhất | Chặn check-in trùng trong cửa sổ bảo vệ | Không tạo điểm lần hai |
-| 4 | Platform | Xác định trạng thái kết nối | Online ghi nhận ngay; offline đưa vào hàng đợi | Lưu thời điểm quét |
-| 5 | Platform | Ghi nhận visit và ledger | Cộng rule điểm của business khi hoàn tất | Số dư không được âm |
-| 6 | Customer | Trở lại trang chủ | Hiển thị toast và hoạt động mới nhất | Retry tự động khi có mạng |
+| 1 | Customer | Mở màn Scan | Hiển thị camera hoặc ô nhập mã dùng chung cho mọi salon | Không cần chọn salon trước |
+| 2 | Customer | Quét QR tại salon A, B hoặc salon khác | Đọc mã NEXORA TOUCH | Prototype mô phỏng camera; production cần decoder |
+| 3 | Platform | Nhận diện salon, station và technician tùy chọn | Hiển thị salon đích trước khi hoàn tất | Chỉ nhận QR có nguồn hợp lệ |
+| 4 | Platform | Kiểm tra salon/station/technician và lượt ghé gần nhất | Từ chối mã sai hoặc check-in trùng tại cùng salon | Lịch sử salon khác không bị coi là trùng |
+| 5 | Platform | Xác định trạng thái kết nối | Online ghi nhận ngay; offline đưa vào hàng đợi | Lưu thời điểm quét và salon đích |
+| 6 | Platform | Ghi nhận visit và ledger của salon đã nhận diện | Cộng rule điểm của đúng salon | Không cộng vào balance chung |
+| 7 | Customer | Trở lại trang chủ hoặc Wallet | Hiển thị salon vừa check-in, điểm và activity tương ứng | Có thể mở Scan để check-in salon tiếp theo |
+| 8 | Platform | Nhận mạng lại hoặc xử lý retry | Gửi queue đúng salon và chống award lặp | Retry giữ nguyên scan timestamp |
 
 ```mermaid
 flowchart TD
-    A([Khách quét mã]) --> B[Đọc mã NEXORA]
+    A([Khách mở Salon Scan]) --> B[Quét QR salon]
     B --> C{Mã hợp lệ?}
     C -- Không --> D[Hiển thị mã không hợp lệ]
-    C -- Có --> E{Đã check-in gần đây?}
-    E -- Có --> F[Chặn lượt trùng]
-    E -- Chưa --> G{Có kết nối?}
-    G -- Không --> H[Xếp hàng check-in]
-    H --> I[Retry khi có mạng]
-    G -- Có --> J[Ghi nhận lượt ghé]
-    I --> J
-    J --> K[Cộng điểm theo business]
-    K --> L([Hiển thị kết quả])
+    C -- Có --> E[Nhận diện salon và station]
+    E --> F{Đã check-in gần đây tại salon này?}
+    F -- Có --> G[Chặn lượt trùng]
+    F -- Chưa --> H{Có kết nối?}
+    H -- Không --> I[Xếp hàng đúng salon]
+    I --> J[Retry khi có mạng]
+    H -- Có --> K[Ghi nhận lượt ghé]
+    J --> K
+    K --> L[Cộng điểm cho salon đích]
+    L --> M[Hiển thị Wallet và Activity]
+    M --> N{Check-in salon khác?}
+    N -- Có --> B
+    N -- Không --> O([Hoàn tất])
 ```
 
 #### Workflow: Khám phá reward và đổi điểm
