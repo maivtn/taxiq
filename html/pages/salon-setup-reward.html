@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     :root {
       --luxury-gold: #d4af37;
@@ -802,6 +803,61 @@
     .reward-proto .filter-chip { border: 1px solid var(--line); border-radius: 999px; background: #fff; padding: 6px 14px; font-size: 13px; font-weight: 800; color: var(--muted); cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s; }
     .reward-proto .filter-chip:hover { border-color: var(--p); color: var(--p); }
     .reward-proto .filter-chip.is-active { background: linear-gradient(135deg, var(--p), var(--p2)); border-color: transparent; color: #fff; }
+    .reward-proto .filter-chip [data-filter-count]::before { content: "("; }
+    .reward-proto .filter-chip [data-filter-count]::after { content: ")"; }
+    .reward-proto .program-meta { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; font-weight: 600; color: #98a2b3; }
+    .reward-proto .program-buttons { display: flex; gap: 8px; margin-top: 12px; }
+    .reward-proto .prog-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); border-radius: 10px; background: #fff; padding: 8px 10px; font-size: 13px; font-weight: 800; color: #4b5568; cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s; }
+    /* each action button gets its own colour */
+    .reward-proto .prog-btn[data-program-view] { color: #2563eb; border-color: #cdddff; background: #eff4ff; }
+    .reward-proto .prog-btn[data-program-view]:hover { color: #1d4ed8; border-color: #2563eb; background: #e4edff; }
+    .reward-proto .prog-btn[data-program-edit] { color: #7048f4; border-color: #e0d5ff; background: #f5f1ff; }
+    .reward-proto .prog-btn[data-program-edit]:hover { color: #5a34e0; border-color: #7048f4; background: #ede6ff; }
+    .reward-proto .prog-btn[data-program-pause] { color: #d97706; border-color: #ffe2b8; background: #fff6e9; }
+    .reward-proto .prog-btn[data-program-pause]:hover { color: #b45309; border-color: #f59e0b; background: #ffefd6; }
+    /* desktop: move the action buttons to the right (plenty of horizontal space); mobile keeps them stacked below */
+    @media (min-width: 801px) {
+      .reward-proto .program {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: auto auto auto;
+        align-content: center;
+        column-gap: 16px;
+      }
+      .reward-proto .program > .title { grid-column: 1 / -1; }
+      .reward-proto .program > .muted,
+      .reward-proto .program > .program-meta { grid-column: 1; min-width: 0; }
+      .reward-proto .program-buttons {
+        grid-column: 2;
+        grid-row: 2 / -1;
+        align-self: start;
+        justify-content: flex-end;
+        margin-top: 0;
+      }
+      .reward-proto .program-buttons .prog-btn {
+        flex: 0 0 auto;
+        gap: 5px;
+        padding: 6px 11px;
+        font-size: 12px;
+        border-radius: 8px;
+      }
+    }
+    .reward-proto .reward-split { grid-template-columns: 7fr 5fr; }
+
+    /* SweetAlert2 styled to match this site */
+    .swal2-popup { font-family: Inter, system-ui, sans-serif !important; border-radius: 20px !important; box-shadow: 0 24px 60px rgba(8, 16, 34, 0.25) !important; }
+    .swal2-title { font-size: 20px !important; font-weight: 900 !important; color: #101828 !important; }
+    .swal2-html-container { font-size: 14px !important; color: #667085 !important; }
+    .swal2-actions { gap: 10px !important; }
+    .swal2-styled.swal2-confirm { border-radius: 13px !important; font-weight: 900 !important; font-size: 14px !important; padding: 11px 22px !important; background: linear-gradient(135deg, #7048f4, #c42de5) !important; box-shadow: 0 12px 26px rgba(112, 72, 244, 0.28) !important; }
+    .swal2-styled.swal2-cancel { border-radius: 13px !important; font-weight: 900 !important; font-size: 14px !important; padding: 11px 22px !important; background: #eef1f6 !important; color: #4b5568 !important; }
+    .swal2-styled:focus { box-shadow: none !important; }
+    .swal2-icon.swal2-success { border-color: #18a66f !important; color: #18a66f !important; }
+    .swal2-icon.swal2-success [class^='swal2-success-line'] { background-color: #18a66f !important; }
+    .swal2-icon.swal2-success .swal2-success-ring { border-color: rgba(24, 166, 111, 0.3) !important; }
+    @media (max-width: 800px) {
+      .reward-proto .reward-split { grid-template-columns: 1fr; }
+    }
     .reward-proto .line { align-items: center; }
     .reward-proto .line select,
     .reward-proto .line input:not([type="checkbox"]) { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: #fff; font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); }
@@ -6184,12 +6240,20 @@
                   <div class="card kpi"><span class="muted">Redeemed</span><b>542</b><span class="chip g">42.2%</span></div>
                 </div>
                 <div style="height:14px"></div>
-                <div class="grid g2">
+                <div class="grid g2 reward-split">
                   <div class="card" data-programs-list>
-                    <div class="title"><h3>Active Programs</h3><span class="chip" data-programs-count>8</span></div>
-                    <div class="program"><div class="title"><h3>Review &amp; Earn</h3><div class="program-actions"><span class="chip">542 issued</span><button class="program-edit" type="button" data-program-edit aria-label="Edit reward" title="Edit"><i class="bi bi-pencil"></i></button><label class="switch" title="Turn on/off"><input type="checkbox" checked data-program-toggle><span class="switch-track"></span></label></div></div><p class="muted">$5 after verified review</p></div>
-                    <div class="program"><div class="title"><h3>Tip &amp; Earn</h3><div class="program-actions"><span class="chip">286 issued</span><button class="program-edit" type="button" data-program-edit aria-label="Edit reward" title="Edit"><i class="bi bi-pencil"></i></button><label class="switch" title="Turn on/off"><input type="checkbox" checked data-program-toggle><span class="switch-track"></span></label></div></div><p class="muted">50 points after tipping</p></div>
-                    <div class="program"><div class="title"><h3>Welcome Reward</h3><div class="program-actions"><span class="chip">221 issued</span><button class="program-edit" type="button" data-program-edit aria-label="Edit reward" title="Edit"><i class="bi bi-pencil"></i></button><label class="switch" title="Turn on/off"><input type="checkbox" checked data-program-toggle><span class="switch-track"></span></label></div></div><p class="muted">15% off first visit</p></div>
+                    <div class="title"><h3>Reward List</h3></div>
+                    <div class="reward-filters" data-reward-filters>
+                      <button class="filter-chip is-active" type="button" data-reward-filter="all">All <span data-filter-count="all">6</span></button>
+                      <button class="filter-chip" type="button" data-reward-filter="active">Active <span data-filter-count="active">5</span></button>
+                      <button class="filter-chip" type="button" data-reward-filter="paused">Paused <span data-filter-count="paused">1</span></button>
+                    </div>
+                    <div class="program" data-status="active" data-reward-name="Review &amp; Earn" data-reward-value="$5" data-reward-trigger="After Verified Review" data-reward-type="Dollar Credit" data-reward-expiry="30 days"><div class="title"><h3>Review &amp; Earn</h3><span class="chip g" data-status-chip>Active</span></div><p class="muted">$5 after verified review · 542 issued</p><div class="program-meta" data-program-meta><i class="bi bi-clock-history" aria-hidden="true"></i> Created Jun 2, 2026</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="prog-btn" type="button" data-program-edit><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="prog-btn" type="button" data-program-pause><i class="bi bi-pause-fill" aria-hidden="true"></i> Pause</button></div></div>
+                    <div class="program" data-status="active" data-reward-name="Tip &amp; Earn" data-reward-value="50 pts" data-reward-trigger="After Tip" data-reward-type="Bonus Points" data-reward-expiry="60 days"><div class="title"><h3>Tip &amp; Earn</h3><span class="chip g" data-status-chip>Active</span></div><p class="muted">50 points after tipping · 286 issued</p><div class="program-meta" data-program-meta><i class="bi bi-clock-history" aria-hidden="true"></i> Created May 18, 2026</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="prog-btn" type="button" data-program-edit><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="prog-btn" type="button" data-program-pause><i class="bi bi-pause-fill" aria-hidden="true"></i> Pause</button></div></div>
+                    <div class="program" data-status="active" data-reward-name="Welcome Reward" data-reward-value="15%" data-reward-trigger="After Visit" data-reward-type="Percent Off" data-reward-expiry="30 days"><div class="title"><h3>Welcome Reward</h3><span class="chip g" data-status-chip>Active</span></div><p class="muted">15% off first visit · 221 issued</p><div class="program-meta" data-program-meta><i class="bi bi-clock-history" aria-hidden="true"></i> Updated Jul 10, 2026</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="prog-btn" type="button" data-program-edit><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="prog-btn" type="button" data-program-pause><i class="bi bi-pause-fill" aria-hidden="true"></i> Pause</button></div></div>
+                    <div class="program" data-status="active" data-reward-name="Birthday Treat" data-reward-value="$10" data-reward-trigger="After Visit" data-reward-type="Dollar Credit" data-reward-expiry="14 days"><div class="title"><h3>Birthday Treat</h3><span class="chip g" data-status-chip>Active</span></div><p class="muted">$10 birthday credit · 138 issued</p><div class="program-meta" data-program-meta><i class="bi bi-clock-history" aria-hidden="true"></i> Created Apr 5, 2026</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="prog-btn" type="button" data-program-edit><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="prog-btn" type="button" data-program-pause><i class="bi bi-pause-fill" aria-hidden="true"></i> Pause</button></div></div>
+                    <div class="program" data-status="active" data-reward-name="Referral Bonus" data-reward-value="100 pts" data-reward-trigger="After Referral" data-reward-type="Bonus Points" data-reward-expiry="90 days"><div class="title"><h3>Referral Bonus</h3><span class="chip g" data-status-chip>Active</span></div><p class="muted">100 points per referral · 96 issued</p><div class="program-meta" data-program-meta><i class="bi bi-clock-history" aria-hidden="true"></i> Created Mar 22, 2026</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="prog-btn" type="button" data-program-edit><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="prog-btn" type="button" data-program-pause><i class="bi bi-pause-fill" aria-hidden="true"></i> Pause</button></div></div>
+                    <div class="program is-off" data-status="paused" data-reward-name="Win-back Offer" data-reward-value="20%" data-reward-trigger="After Visit" data-reward-type="Percent Off" data-reward-expiry="45 days"><div class="title"><h3>Win-back Offer</h3><span class="chip paused" data-status-chip>Paused</span></div><p class="muted">20% off to return · 54 issued</p><div class="program-meta" data-program-meta><i class="bi bi-clock-history" aria-hidden="true"></i> Updated Jun 28, 2026</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="prog-btn" type="button" data-program-edit><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="prog-btn" type="button" data-program-pause><i class="bi bi-play-fill" aria-hidden="true"></i> Resume</button></div></div>
                   </div>
                   <div class="card soft">
                     <div class="title"><h3>AI Suggestions</h3><span class="chip">3</span></div>
@@ -6204,7 +6268,7 @@
               <div class="reward-proto">
                 <div class="grid g2">
                   <div class="card">
-                    <div class="title"><h3>Create Reward</h3><span class="chip">Step 1</span></div>
+                    <div class="title"><h3 data-create-title>Create Reward</h3><span class="chip" data-create-step>Step 1</span></div>
                     <div class="grid g2 reward-types">
                       <div class="rewardType active" role="button" tabindex="0" data-reward-type data-reward-value="$5" data-reward-title="Earn $5 Reward"><b>Dollar Credit</b><p class="muted">$5, $10 or custom</p></div>
                       <div class="rewardType" role="button" tabindex="0" data-reward-type data-reward-value="15%" data-reward-title="15% Off Reward"><b>Percent Off</b><p class="muted">10%, 15%, 20%</p></div>
@@ -7711,6 +7775,7 @@
 
     document.querySelectorAll('[data-tab-target]').forEach(function(tab) {
       tab.addEventListener('click', function() {
+        if (tab.dataset.tabTarget === 'create-reward') resetCreateMode();
         activateMainTab(tab.dataset.tabTarget);
       });
     });
@@ -7726,6 +7791,7 @@
 
     document.querySelectorAll('[data-nav-subitem-target]').forEach(function(item) {
       item.addEventListener('click', function() {
+        if (item.dataset.navSubitemTarget === 'create-reward') resetCreateMode();
         activateMainTab(item.dataset.navSubitemTarget);
       });
     });
@@ -8366,10 +8432,10 @@
           else inp.classList.remove('invalid');
         });
         if (!valid) {
-          showRewardToast('Please enter a reward name and value before continuing.');
+          showRewardToast('Please enter a reward name and value first.');
           return;
         }
-        activateMainTab('reward-rules');
+        confirmAndCreateReward();
       });
     }
 
@@ -8389,13 +8455,15 @@
       var nameInput = document.querySelector('[data-reward-name-input]');
       var valueInput = document.querySelector('[data-reward-value-input]');
       var triggerSelect = document.querySelector('[data-reward-trigger-select]');
+      var expiryInput = document.querySelector('[data-reward-expiry-input]');
       var activeType = document.querySelector('[data-reward-type].active');
       var typeLabel = activeType && activeType.querySelector('b') ? activeType.querySelector('b').textContent : '';
       return {
         name: (nameInput && nameInput.value.trim()) || 'Untitled Reward',
         value: (valueInput && valueInput.value.trim()) || '',
         trigger: (triggerSelect && triggerSelect.value) || '',
-        type: typeLabel
+        type: typeLabel,
+        expiry: (expiryInput && expiryInput.value.trim()) || '30 days'
       };
     }
 
@@ -8406,72 +8474,231 @@
       if (!isNaN(current)) node.textContent = String(Math.max(0, current + (delta || 1)));
     }
 
-    var PROGRAM_ACTIONS = '<div class="program-actions"><span class="chip g">New</span>' +
-      '<button class="program-edit" type="button" data-program-edit aria-label="Edit reward" title="Edit"><i class="bi bi-pencil"></i></button>' +
-      '<label class="switch" title="Turn on/off"><input type="checkbox" checked data-program-toggle><span class="switch-track"></span></label></div>';
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/[&<>"]/g, function(c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+      });
+    }
+
+    function programInnerHTML(dateLabel) {
+      return '<div class="title"><h3></h3><span class="chip g" data-status-chip>Active</span></div>' +
+        '<p class="muted"></p>' +
+        '<div class="program-meta" data-program-meta><i class="bi bi-clock-history" aria-hidden="true"></i> ' + dateLabel + '</div>' +
+        '<div class="program-buttons">' +
+        '<button class="prog-btn" type="button" data-program-view><i class="bi bi-eye" aria-hidden="true"></i> View</button>' +
+        '<button class="prog-btn" type="button" data-program-edit><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button>' +
+        '<button class="prog-btn" type="button" data-program-pause><i class="bi bi-pause-fill" aria-hidden="true"></i> Pause</button>' +
+        '</div>';
+    }
+
+    function updateFilterCounts() {
+      var programs = document.querySelectorAll('[data-programs-list] .program');
+      var all = programs.length, active = 0;
+      programs.forEach(function(p) { if ((p.dataset.status || 'active') !== 'paused') active++; });
+      function setCount(f, n) { var el = document.querySelector('[data-filter-count="' + f + '"]'); if (el) el.textContent = n; }
+      setCount('all', all); setCount('active', active); setCount('paused', all - active);
+      var kpi = document.querySelector('[data-active-rewards-count]');
+      if (kpi) kpi.textContent = active;
+    }
+
+    var editingProgram = null;
+    var currentRewardFilter = 'all';
+
+    function formatToday() {
+      return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function setCreateMode(editing) {
+      var titleEl = document.querySelector('[data-create-title]');
+      var stepEl = document.querySelector('[data-create-step]');
+      var continueBtn = document.querySelector('[data-create-continue]');
+      var pubBtn = document.querySelector('[data-publish-reward]');
+      if (titleEl) titleEl.textContent = editing ? 'Edit Reward' : 'Create Reward';
+      if (stepEl) stepEl.textContent = editing ? 'Editing' : 'Step 1';
+      if (continueBtn) continueBtn.textContent = editing ? 'Save Changes' : 'Continue';
+      if (pubBtn) pubBtn.textContent = editing ? 'Save Changes' : 'Publish Reward';
+    }
+
+    function resetCreateMode() {
+      editingProgram = null;
+      setCreateMode(false);
+    }
+
+    function programSubtitle(draft) {
+      var parts = [];
+      if (draft.value) parts.push(draft.value);
+      if (draft.trigger) parts.push(draft.trigger);
+      return parts.join(' · ') || 'Custom reward';
+    }
+
+    function applyRewardFilter(filter) {
+      currentRewardFilter = filter;
+      document.querySelectorAll('[data-reward-filter]').forEach(function(chip) {
+        chip.classList.toggle('is-active', chip.dataset.rewardFilter === filter);
+      });
+      document.querySelectorAll('[data-programs-list] .program').forEach(function(program) {
+        var status = program.dataset.status || 'active';
+        program.style.display = (filter === 'all' || filter === status) ? '' : 'none';
+      });
+    }
 
     function addProgramToDashboard(draft) {
       var list = document.querySelector('[data-programs-list]');
       if (!list) return;
-      var subtitleParts = [];
-      if (draft.value) subtitleParts.push(draft.value);
-      if (draft.trigger) subtitleParts.push(draft.trigger);
       var program = document.createElement('div');
       program.className = 'program';
-      program.innerHTML = '<div class="title"><h3></h3>' + PROGRAM_ACTIONS + '</div><p class="muted"></p>';
+      program.dataset.status = 'active';
+      program.dataset.rewardName = draft.name;
+      program.dataset.rewardValue = draft.value;
+      program.dataset.rewardTrigger = draft.trigger;
+      program.dataset.rewardType = draft.type;
+      program.dataset.rewardExpiry = draft.expiry;
+      program.innerHTML = programInnerHTML('Created ' + formatToday());
       program.querySelector('h3').textContent = draft.name;
-      program.querySelector('p').textContent = subtitleParts.join(' · ') || 'Just published';
+      program.querySelector('p').textContent = programSubtitle(draft);
       list.appendChild(program);
-      bumpCount('[data-programs-count]');
-      bumpCount('[data-active-rewards-count]');
+      updateFilterCounts();
+      applyRewardFilter(currentRewardFilter);
+    }
+
+    function updateProgramFromDraft(program, draft) {
+      var heading = program.querySelector('h3');
+      var subtitle = program.querySelector('p');
+      if (heading) heading.textContent = draft.name;
+      if (subtitle) subtitle.textContent = programSubtitle(draft);
+      program.dataset.rewardName = draft.name;
+      program.dataset.rewardValue = draft.value;
+      program.dataset.rewardTrigger = draft.trigger;
+      program.dataset.rewardType = draft.type;
+      program.dataset.rewardExpiry = draft.expiry;
+      var meta = program.querySelector('[data-program-meta]');
+      if (meta) meta.innerHTML = '<i class="bi bi-clock-history" aria-hidden="true"></i> Updated ' + formatToday();
+    }
+
+    function startEditProgram(program) {
+      editingProgram = program;
+      var nameInput = document.querySelector('[data-reward-name-input]');
+      var valueInput = document.querySelector('[data-reward-value-input]');
+      var triggerSelect = document.querySelector('[data-reward-trigger-select]');
+      var heading = program.querySelector('h3');
+      if (nameInput) nameInput.value = program.dataset.rewardName || (heading ? heading.textContent : '');
+      if (valueInput) valueInput.value = program.dataset.rewardValue || '';
+      if (triggerSelect && program.dataset.rewardTrigger) triggerSelect.value = program.dataset.rewardTrigger;
+      var expiryInput = document.querySelector('[data-reward-expiry-input]');
+      if (expiryInput && program.dataset.rewardExpiry) expiryInput.value = program.dataset.rewardExpiry;
+      var type = program.dataset.rewardType;
+      if (type) {
+        document.querySelectorAll('[data-reward-type]').forEach(function(card) {
+          var label = card.querySelector('b');
+          var on = !!(label && label.textContent === type);
+          card.classList.toggle('active', on);
+          card.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+      }
+      updateRewardPreview();
+      setCreateMode(true);
+      activateMainTab('create-reward');
+    }
+
+    document.querySelectorAll('[data-reward-filter]').forEach(function(chip) {
+      chip.addEventListener('click', function() { applyRewardFilter(chip.dataset.rewardFilter); });
+    });
+
+    function setProgramPaused(program, paused) {
+      program.classList.toggle('is-off', paused);
+      program.dataset.status = paused ? 'paused' : 'active';
+      var chip = program.querySelector('[data-status-chip]');
+      if (chip) { chip.textContent = paused ? 'Paused' : 'Active'; chip.className = 'chip ' + (paused ? 'paused' : 'g'); }
+      var pauseBtn = program.querySelector('[data-program-pause]');
+      if (pauseBtn) pauseBtn.innerHTML = paused
+        ? '<i class="bi bi-play-fill" aria-hidden="true"></i> Resume'
+        : '<i class="bi bi-pause-fill" aria-hidden="true"></i> Pause';
+      updateFilterCounts();
+      applyRewardFilter(currentRewardFilter);
+    }
+
+    function buildRewardCardHTML(name, value, expiry) {
+      return '<div class="reward-proto" style="text-align:left">' +
+        '<div class="card" style="background:linear-gradient(135deg,#10172e,#573b9c);color:#fff">' +
+        '<span class="chip g">Bitcoin Nail Bar</span>' +
+        '<h2 style="font-size:30px">' + escapeHtml(name || 'Reward') + '</h2>' +
+        '<p style="color:#ccd3e5">Reward customers with <b>' + escapeHtml(value || '—') + '</b> — applied on their next visit.</p>' +
+        '<div class="line"><span>Expires</span><b>' + escapeHtml(expiry || '30 days') + '</b></div>' +
+        '<div class="line"><span>Minimum spend</span><b>$25</b></div>' +
+        '<div class="line"><span>Use</span><b>Next visit</b></div>' +
+        '</div></div>';
+    }
+
+    function viewProgram(program) {
+      if (typeof Swal === 'undefined') return;
+      Swal.fire({
+        html: buildRewardCardHTML(program.dataset.rewardName, program.dataset.rewardValue, program.dataset.rewardExpiry),
+        showConfirmButton: true,
+        confirmButtonText: 'Close',
+        width: 460
+      });
     }
 
     var programsList = document.querySelector('[data-programs-list]');
     if (programsList) {
       programsList.addEventListener('click', function(event) {
-        var editBtn = event.target.closest('[data-program-edit]');
-        if (!editBtn) return;
-        var program = editBtn.closest('.program');
+        var program = event.target.closest('.program');
         if (!program) return;
-        var editing = program.classList.toggle('is-editing');
-        var heading = program.querySelector('h3');
-        var subtitle = program.querySelector('p');
-        [heading, subtitle].forEach(function(el) {
-          if (el) el.contentEditable = editing ? 'true' : 'false';
-        });
-        editBtn.setAttribute('aria-pressed', editing ? 'true' : 'false');
-        editBtn.title = editing ? 'Done' : 'Edit';
-        if (editing && heading) heading.focus();
+        if (event.target.closest('[data-program-view]')) { viewProgram(program); return; }
+        if (event.target.closest('[data-program-edit]')) { startEditProgram(program); return; }
+        if (event.target.closest('[data-program-pause]')) { setProgramPaused(program, program.dataset.status !== 'paused'); return; }
       });
-      programsList.addEventListener('change', function(event) {
-        var toggle = event.target.closest('[data-program-toggle]');
-        if (!toggle) return;
-        var program = toggle.closest('.program');
-        if (!program) return;
-        var off = !toggle.checked;
-        program.classList.toggle('is-off', off);
-        bumpCount('[data-active-rewards-count]', off ? -1 : 1);
+    }
+
+    function buildPreviewHTML() {
+      var titleEl = document.querySelector('[data-preview-title]');
+      var card = titleEl ? titleEl.closest('.card') : null;
+      return '<div class="reward-proto" style="text-align:left">' + (card ? card.outerHTML : '') + '</div>';
+    }
+
+    function finalizeReward() {
+      var draft = getRewardDraft();
+      var wasEditing = !!editingProgram;
+      if (wasEditing) {
+        updateProgramFromDraft(editingProgram, draft);
+        editingProgram = null;
+      } else {
+        addProgramToDashboard(draft);
+      }
+      setCreateMode(false);
+      activateMainTab('reward-dashboard');
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({ icon: 'success', title: wasEditing ? 'Reward updated' : 'Reward created', text: draft.name, timer: 1500, showConfirmButton: false });
+      } else {
+        showRewardToast(wasEditing ? ('Reward "' + draft.name + '" updated.') : ('Reward "' + draft.name + '" created.'));
+      }
+    }
+
+    function confirmAndCreateReward() {
+      var editing = !!editingProgram;
+      if (typeof Swal === 'undefined') { finalizeReward(); return; }
+      Swal.fire({
+        title: editing ? 'Save changes to this reward?' : 'Create this reward?',
+        html: buildPreviewHTML(),
+        showCancelButton: true,
+        confirmButtonText: editing ? 'Save changes' : 'Confirm & create',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#7048f4',
+        cancelButtonColor: '#98a2b3',
+        width: 480
+      }).then(function(result) {
+        if (result && result.isConfirmed) finalizeReward();
       });
     }
 
     var publishButton = document.querySelector('[data-publish-reward]');
     if (publishButton) {
       publishButton.addEventListener('click', function() {
-        if (publishButton.disabled) return;
-        var draft = getRewardDraft();
-        addProgramToDashboard(draft);
-        showRewardToast('Reward "' + draft.name + '" published — added to Active Programs.');
-        var originalText = publishButton.textContent;
-        publishButton.textContent = 'Published ✓';
-        publishButton.disabled = true;
-        setTimeout(function() {
-          activateMainTab('reward-dashboard');
-          publishButton.textContent = originalText;
-          publishButton.disabled = false;
-        }, 1400);
+        confirmAndCreateReward();
       });
     }
 
+    updateFilterCounts();
     activateMainTabFromUrl();
   </script>
 </body>
