@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>NEXORA Salon Operations Companion</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <style type="text/tailwindcss">
+    @theme { --color-nexora-violet: #c026d3; --color-nexora-blue: #3284ff; }
+    body { @apply m-0 min-h-screen bg-slate-100 font-sans text-slate-950; }
+    .ops-card { @apply rounded-3xl border border-slate-200 bg-white p-5 shadow-sm; }
+    .ops-nav-button { @apply min-h-12 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700; }
+    .ops-nav-button[aria-selected="true"] { @apply border-transparent bg-gradient-to-r from-fuchsia-600 to-blue-500 text-white shadow-md; }
+  </style>
+</head>
+<body>
+<main id="ops-app" class="min-h-screen bg-slate-100 text-slate-950">
+  <header class="sticky top-0 z-20 bg-slate-950 px-4 py-3 text-white shadow-lg">
+    <div class="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-xs font-bold tracking-[0.2em] text-white/60">NEXORA TOUCH</p>
+        <h1 class="text-lg font-black">Salon Operations Companion</h1>
+      </div>
+      <label class="flex items-center justify-between gap-3 text-sm font-bold sm:justify-start">
+        <span>Vai trò / Role</span>
+        <select id="ops-role" aria-label="Chọn vai trò vận hành / Select operations role" class="min-h-11 rounded-xl bg-white px-3 text-slate-950 outline-none ring-fuchsia-400 focus:ring-2">
+          <option value="Customer">Customer / Khách hàng</option>
+          <option value="Front Desk">Front Desk / Lễ tân</option>
+          <option value="Staff">Staff / Nhân viên</option>
+        </select>
+      </label>
+    </div>
+    <p id="ops-role-copy" class="mx-auto mt-2 max-w-5xl text-xs text-white/70"></p>
+  </header>
+
+  <div class="mx-auto max-w-5xl p-4 sm:p-6">
+    <nav class="grid grid-cols-1 gap-2 sm:grid-cols-3" role="tablist" aria-label="Màn hình vận hành / Operations screens">
+      <button id="ops-tab-liveticket" type="button" class="ops-nav-button" role="tab" aria-controls="ops-liveticket" data-ops-screen-target="liveticket">
+        Live Ticket
+      </button>
+      <button id="ops-tab-staffnoteligible" type="button" class="ops-nav-button" role="tab" aria-controls="ops-staffnoteligible" data-ops-screen-target="staffnoteligible">
+        Staff Eligibility
+      </button>
+      <button id="ops-tab-addonapproval" type="button" class="ops-nav-button" role="tab" aria-controls="ops-addonapproval" data-ops-screen-target="addonapproval">
+        Add-on Approval
+      </button>
+    </nav>
+
+    <section id="ops-liveticket" class="mt-4" role="tabpanel" aria-labelledby="ops-tab-liveticket" tabindex="-1" data-ops-screen="liveticket">
+      <article class="ops-card">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-xs font-black uppercase tracking-[0.16em] text-blue-600">Customer live ticket</p>
+            <h2 class="mt-1 text-2xl font-black">Phiếu dịch vụ trực tiếp</h2>
+          </div>
+          <i data-lucide="receipt-text" aria-hidden="true" class="size-7 text-blue-500"></i>
+        </div>
+        <p class="mt-4 text-sm leading-6 text-slate-600">Theo dõi dịch vụ đang thực hiện, kỹ thuật viên và tổng tiền hiện tại. Ticket sẽ được tạo từ guest check-in hợp lệ ở bước tiếp theo.</p>
+        <dl class="mt-5 grid gap-3 sm:grid-cols-3">
+          <div class="rounded-2xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Status</dt><dd class="mt-1 font-black">Ready for live events</dd></div>
+          <div class="rounded-2xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Technician</dt><dd class="mt-1 font-black">Awaiting assignment</dd></div>
+          <div class="rounded-2xl bg-slate-50 p-3"><dt class="text-xs text-slate-500">Current total</dt><dd class="mt-1 font-black">Calculated per ticket</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section id="ops-staffnoteligible" class="mt-4 hidden" role="tabpanel" aria-labelledby="ops-tab-staffnoteligible" tabindex="-1" data-ops-screen="staffnoteligible">
+      <article class="ops-card">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-xs font-black uppercase tracking-[0.16em] text-rose-600">Eligibility review</p>
+            <h2 class="mt-1 text-2xl font-black">Kỹ thuật viên chưa phù hợp</h2>
+          </div>
+          <i data-lucide="user-round-x" aria-hidden="true" class="size-7 text-rose-500"></i>
+        </div>
+        <p class="mt-4 text-sm leading-6 text-slate-600">Giữ nguyên lựa chọn hiện tại trong khi salon kiểm tra kỹ năng và tình trạng sẵn sàng. Không tự động đổi kỹ thuật viên.</p>
+        <div class="mt-5 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm text-rose-900">
+          Recommended staff and “Ask Front Desk” actions will appear when an eligibility event is attached to a live ticket.
+        </div>
+      </article>
+    </section>
+
+    <section id="ops-addonapproval" class="mt-4 hidden" role="tabpanel" aria-labelledby="ops-tab-addonapproval" tabindex="-1" data-ops-screen="addonapproval">
+      <article class="ops-card">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-xs font-black uppercase tracking-[0.16em] text-fuchsia-600">Customer approval</p>
+            <h2 class="mt-1 text-2xl font-black">Phê duyệt dịch vụ thêm</h2>
+          </div>
+          <i data-lucide="badge-plus" aria-hidden="true" class="size-7 text-fuchsia-500"></i>
+        </div>
+        <p class="mt-4 text-sm leading-6 text-slate-600">Khách sẽ xem giá, xác nhận bốn số cuối điện thoại rồi chấp nhận hoặc từ chối đề xuất add-on. Tổng tiền chỉ đổi sau khi chấp nhận thành công.</p>
+        <div class="mt-5 rounded-2xl border border-fuchsia-100 bg-fuchsia-50 p-4 text-sm text-fuchsia-950">
+          No pending add-on request. New requests will be joined by ticket ID without writing Customer App storage.
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <div id="ops-toast" role="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+</main>
+
+<script id="operations-app-script">
+const OPS_STORAGE_KEY = 'nexora.customer.crosssurface.v1';
+const CUSTOMER_STORAGE_KEY = 'nexora.customer.prototype.v1';
+const OPS_SCHEMA_VERSION = 1;
+const OPS_SCREENS = Object.freeze(['liveticket', 'staffnoteligible', 'addonapproval']);
+const OPS_ROLES = Object.freeze(['Customer', 'Front Desk', 'Staff']);
+const OPS_UNSAFE_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
+const OPS_INVALID_CLONE = Symbol('invalid-clone');
+const OPS_ROLE_COPY = Object.freeze({
+  Customer: 'Customer / Khách hàng — theo dõi ticket và quyết định các yêu cầu cần phê duyệt.',
+  'Front Desk': 'Front Desk / Lễ tân — hỗ trợ điều phối ticket và yêu cầu của khách.',
+  Staff: 'Staff / Nhân viên — theo dõi dịch vụ và gửi sự kiện vận hành.'
+});
+
+function opsRecord(value) {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) return false;
+  try {
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype === null) return true;
+    return Object.getPrototypeOf(prototype) === null
+      && Object.prototype.hasOwnProperty.call(prototype, 'constructor')
+      && typeof prototype.constructor === 'function'
+      && prototype.constructor.name === 'Object';
+  } catch {
+    return false;
+  }
+}
+
+function opsOwn(value, key) {
+  if (!opsRecord(value)) return undefined;
+  try {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    return descriptor && Object.prototype.hasOwnProperty.call(descriptor, 'value') ? descriptor.value : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function opsText(value) {
+  const text = typeof value === 'string' ? value.trim() : '';
+  return text || null;
+}
+
+function opsCanonicalId(value, prefix = '') {
+  if (typeof value !== 'string' || value !== value.trim() || value.length > 160) return null;
+  const pattern = prefix
+    ? new RegExp(`^${prefix}-[a-z0-9]+(?:-[a-z0-9]+)*$`)
+    : /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+  return pattern.test(value) ? value : null;
+}
+
+function opsTimestamp(now) {
+  if (typeof now !== 'number' || !Number.isFinite(now)) return { ok: false, code: 'invalid_time' };
+  try {
+    return { ok: true, value: new Date(now).toISOString() };
+  } catch {
+    return { ok: false, code: 'invalid_time' };
+  }
+}
+
+function opsStoredTimestamp(value) {
+  if (typeof value !== 'string') return false;
+  const milliseconds = Date.parse(value);
+  const timestamp = opsTimestamp(milliseconds);
+  return timestamp.ok && timestamp.value === value;
+}
+
+function opsCurrentTimestamp() {
+  const timestamp = opsTimestamp(Date.now());
+  return timestamp.ok ? timestamp.value : '1970-01-01T00:00:00.000Z';
+}
+
+function opsId(prefix) {
+  if (!opsCanonicalId(`${prefix}-value`)) return { ok: false, code: 'id_failed' };
+  try {
+    const value = crypto.randomUUID();
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)) {
+      return { ok: false, code: 'id_failed' };
+    }
+    return { ok: true, value: `${prefix}-${value.toLowerCase()}` };
+  } catch {
+    return { ok: false, code: 'id_failed' };
+  }
+}
+
+function opsSafeStorageText(value) {
+  return typeof value === 'string' && value.length <= 2000 && !/[<>\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(value);
+}
+
+function opsCloneSafeValue(value, depth = 0) {
+  if (depth > 12) return OPS_INVALID_CLONE;
+  if (value === null || typeof value === 'boolean') return value;
+  if (typeof value === 'string') return opsSafeStorageText(value) ? value : OPS_INVALID_CLONE;
+  if (typeof value === 'number') return Number.isFinite(value) ? value : OPS_INVALID_CLONE;
+  if (Array.isArray(value)) {
+    if (value.length > 500) return OPS_INVALID_CLONE;
+    const cloned = [];
+    for (const item of value) {
+      const safeItem = opsCloneSafeValue(item, depth + 1);
+      if (safeItem === OPS_INVALID_CLONE) return OPS_INVALID_CLONE;
+      cloned.push(safeItem);
+    }
+    return cloned;
+  }
+  if (!opsRecord(value)) return OPS_INVALID_CLONE;
+  let keys;
+  try {
+    keys = Reflect.ownKeys(value);
+  } catch {
+    return OPS_INVALID_CLONE;
+  }
+  if (keys.length > 100 || keys.some((key) => typeof key !== 'string' || OPS_UNSAFE_KEYS.has(key))) {
+    return OPS_INVALID_CLONE;
+  }
+  const cloned = {};
+  for (const key of keys) {
+    let descriptor;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(value, key);
+    } catch {
+      return OPS_INVALID_CLONE;
+    }
+    if (!descriptor || !Object.prototype.hasOwnProperty.call(descriptor, 'value')) return OPS_INVALID_CLONE;
+    const safeValue = opsCloneSafeValue(descriptor.value, depth + 1);
+    if (safeValue === OPS_INVALID_CLONE) return OPS_INVALID_CLONE;
+    cloned[key] = safeValue;
+  }
+  return cloned;
+}
+
+function opsNormalizeRecords(value) {
+  if (!Array.isArray(value)) return [];
+  const records = [];
+  for (const item of value) {
+    if (!opsRecord(item)) continue;
+    const cloned = opsCloneSafeValue(item);
+    if (cloned !== OPS_INVALID_CLONE) records.push(cloned);
+  }
+  return records;
+}
+
+function createOperationsState() {
+  return {
+    schemaVersion: OPS_SCHEMA_VERSION,
+    updatedAt: opsCurrentTimestamp(),
+    serviceTickets: [],
+    addOnRequests: [],
+    staffEligibility: [],
+    ui: { activeScreen: 'liveticket', role: 'Customer', selectedTicketId: null, selectedStaffId: null }
+  };
+}
+
+function normalizeOperationsState(value) {
+  const fallback = createOperationsState();
+  try {
+    if (!opsRecord(value) || opsOwn(value, 'schemaVersion') !== OPS_SCHEMA_VERSION) return fallback;
+    const uiValue = opsOwn(value, 'ui');
+    const ui = opsRecord(uiValue) ? uiValue : null;
+    const activeScreen = opsOwn(ui, 'activeScreen');
+    const role = opsOwn(ui, 'role');
+    const selectedTicketId = opsOwn(ui, 'selectedTicketId');
+    const selectedStaffId = opsOwn(ui, 'selectedStaffId');
+    const updatedAt = opsOwn(value, 'updatedAt');
+    return {
+      schemaVersion: OPS_SCHEMA_VERSION,
+      updatedAt: opsStoredTimestamp(updatedAt) ? updatedAt : fallback.updatedAt,
+      serviceTickets: opsNormalizeRecords(opsOwn(value, 'serviceTickets')),
+      addOnRequests: opsNormalizeRecords(opsOwn(value, 'addOnRequests')),
+      staffEligibility: opsNormalizeRecords(opsOwn(value, 'staffEligibility')),
+      ui: {
+        activeScreen: OPS_SCREENS.includes(activeScreen) ? activeScreen : 'liveticket',
+        role: OPS_ROLES.includes(role) ? role : 'Customer',
+        selectedTicketId: selectedTicketId === null ? null : opsCanonicalId(selectedTicketId),
+        selectedStaffId: selectedStaffId === null ? null : opsCanonicalId(selectedStaffId, 'staff')
+      }
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+function loadOperationsState(storage = window.localStorage) {
+  try {
+    const raw = storage.getItem(OPS_STORAGE_KEY);
+    return normalizeOperationsState(JSON.parse(raw || 'null'));
+  } catch {
+    return createOperationsState();
+  }
+}
+
+function saveOperationsState(value, storage = window.localStorage) {
+  const normalized = normalizeOperationsState(value);
+  normalized.updatedAt = opsCurrentTimestamp();
+  storage.setItem(OPS_STORAGE_KEY, JSON.stringify(normalized));
+  return normalized;
+}
+
+function opsCustomerText(value) {
+  if (typeof value !== 'string') return '';
+  const text = value.trim();
+  return text.length <= 200 ? text : '';
+}
+
+function opsPhone(value) {
+  if (value === null || value === undefined || value === '') return '';
+  if (typeof value !== 'string') return '';
+  const digits = value.replace(/\D/g, '');
+  return digits.length === 10 ? digits : '';
+}
+
+function opsHasUnsafeOwnKeys(value) {
+  if (!opsRecord(value)) return true;
+  try {
+    return Reflect.ownKeys(value).some((key) => typeof key !== 'string' || OPS_UNSAFE_KEYS.has(key));
+  } catch {
+    return true;
+  }
+}
+
+function emptyCustomerSnapshot() {
+  return { profile: null, businesses: {}, guestCheckins: [] };
+}
+
+function readCustomerSnapshot(storage = window.localStorage) {
+  try {
+    const raw = JSON.parse(storage.getItem(CUSTOMER_STORAGE_KEY) || 'null');
+    if (!opsRecord(raw) || opsOwn(raw, 'schemaVersion') !== 2) return emptyCustomerSnapshot();
+
+    const rawProfile = opsOwn(raw, 'profile');
+    const profileId = opsCanonicalId(opsOwn(rawProfile, 'id'), 'cust');
+    const profile = opsRecord(rawProfile) && !opsHasUnsafeOwnKeys(rawProfile) && profileId
+      ? {
+          id: profileId,
+          name: opsCustomerText(opsOwn(rawProfile, 'name')),
+          phone: opsPhone(opsOwn(rawProfile, 'phone'))
+        }
+      : null;
+
+    const businesses = {};
+    const rawBusinesses = opsOwn(raw, 'businesses');
+    if (opsRecord(rawBusinesses)) {
+      for (const [key, business] of Object.entries(rawBusinesses)) {
+        const id = opsCanonicalId(key);
+        const storedId = opsOwn(business, 'id');
+        const name = opsCustomerText(opsOwn(business, 'name'));
+        if (!id || !opsRecord(business) || opsHasUnsafeOwnKeys(business) || storedId !== id || !name) continue;
+        businesses[id] = { id, name };
+      }
+    }
+
+    const rawRows = opsOwn(raw, 'guestCheckins');
+    const rows = Array.isArray(rawRows) ? rawRows : [];
+    const idCounts = new Map();
+    for (const row of rows) {
+      const id = opsCanonicalId(opsOwn(row, 'id'), 'guest-checkin');
+      if (id) idCounts.set(id, (idCounts.get(id) || 0) + 1);
+    }
+    const guestCheckins = [];
+    for (const row of rows) {
+      if (!opsRecord(row) || opsHasUnsafeOwnKeys(row)) continue;
+      const id = opsCanonicalId(opsOwn(row, 'id'), 'guest-checkin');
+      const businessId = opsCanonicalId(opsOwn(row, 'businessId'));
+      const serviceKey = opsCanonicalId(opsOwn(row, 'serviceKey'));
+      const rawStaffId = opsOwn(row, 'staffProfileId');
+      const staffProfileId = rawStaffId === null || rawStaffId === undefined
+        ? null
+        : opsCanonicalId(rawStaffId, 'staff');
+      if (!id || idCounts.get(id) !== 1 || !businessId || !businesses[businessId] || !serviceKey
+        || (rawStaffId !== null && rawStaffId !== undefined && !staffProfileId)) continue;
+      guestCheckins.push({
+        id,
+        businessId,
+        name: opsCustomerText(opsOwn(row, 'name')),
+        phone: opsPhone(opsOwn(row, 'phone')),
+        serviceKey,
+        staffProfileId
+      });
+    }
+    return { profile, businesses, guestCheckins };
+  } catch {
+    return emptyCustomerSnapshot();
+  }
+}
+
+let operationsState = loadOperationsState();
+
+function cloneOperationsState(value) {
+  try {
+    return structuredClone(value);
+  } catch {
+    return JSON.parse(JSON.stringify(value));
+  }
+}
+
+function getOperationsState() {
+  return cloneOperationsState(operationsState);
+}
+
+function commitOperations(mutator, storage = window.localStorage) {
+  if (typeof mutator !== 'function') return { ok: false, code: 'mutation_failed' };
+  const draft = cloneOperationsState(operationsState);
+  let result;
+  try {
+    result = mutator(draft);
+  } catch (error) {
+    return { ok: false, code: 'mutation_failed', error };
+  }
+  if (opsRecord(result) && opsOwn(result, 'ok') === false) return result;
+
+  let previousRaw;
+  try {
+    previousRaw = storage.getItem(OPS_STORAGE_KEY);
+  } catch (error) {
+    return { ok: false, code: 'persist_failed', error };
+  }
+  let saved;
+  try {
+    saved = saveOperationsState(draft, storage);
+  } catch (error) {
+    try {
+      if (previousRaw === null) storage.removeItem(OPS_STORAGE_KEY);
+      else storage.setItem(OPS_STORAGE_KEY, previousRaw);
+    } catch {
+      // Best-effort rollback for storage implementations that mutate before throwing.
+    }
+    return { ok: false, code: 'persist_failed', error };
+  }
+  operationsState = saved;
+  return opsRecord(result) ? result : { ok: true };
+}
+
+function setOperationsStatus(message) {
+  const status = document.getElementById('ops-toast');
+  if (status) status.textContent = message;
+}
+
+function renderRoleCopy() {
+  const copy = document.getElementById('ops-role-copy');
+  if (copy) copy.textContent = OPS_ROLE_COPY[operationsState.ui.role] || OPS_ROLE_COPY.Customer;
+}
+
+function renderOperationsScreen({ focus = false } = {}) {
+  const activeScreen = operationsState.ui.activeScreen;
+  document.querySelectorAll('[data-ops-screen]').forEach((screen) => {
+    const active = screen.dataset.opsScreen === activeScreen;
+    screen.classList.toggle('hidden', !active);
+    screen.setAttribute('aria-hidden', String(!active));
+    if (active && focus) screen.focus();
+  });
+  document.querySelectorAll('[data-ops-screen-target]').forEach((control) => {
+    const active = control.dataset.opsScreenTarget === activeScreen;
+    control.setAttribute('aria-selected', String(active));
+    control.setAttribute('tabindex', active ? '0' : '-1');
+  });
+}
+
+function handleOperationsClick(event) {
+  const control = event.target?.closest?.('[data-ops-screen-target]');
+  if (!control || control.disabled || control.getAttribute('aria-disabled') === 'true') return;
+  const target = control.dataset.opsScreenTarget;
+  if (!OPS_SCREENS.includes(target)) return;
+  const result = commitOperations((draft) => {
+    draft.ui.activeScreen = target;
+    return { ok: true };
+  });
+  if (!result.ok) {
+    renderOperationsScreen();
+    setOperationsStatus('Không thể lưu màn hình / Screen change was not saved.');
+    return;
+  }
+  renderOperationsScreen({ focus: true });
+  setOperationsStatus(`Đã mở ${control.textContent.trim()}.`);
+}
+
+function initializeOperations() {
+  const role = document.getElementById('ops-role');
+  if (role) {
+    role.value = operationsState.ui.role;
+    role.addEventListener('change', () => {
+      const requestedRole = role.value;
+      if (!OPS_ROLES.includes(requestedRole)) {
+        role.value = operationsState.ui.role;
+        setOperationsStatus('Vai trò không hợp lệ / Invalid role.');
+        return;
+      }
+      const result = commitOperations((draft) => {
+        draft.ui.role = requestedRole;
+        return { ok: true };
+      });
+      if (!result.ok) {
+        role.value = operationsState.ui.role;
+        renderRoleCopy();
+        setOperationsStatus('Không thể lưu vai trò / Role change was not saved.');
+        return;
+      }
+      renderRoleCopy();
+      setOperationsStatus(`Đã lưu vai trò ${operationsState.ui.role}.`);
+    });
+  }
+  document.addEventListener('click', handleOperationsClick);
+  renderRoleCopy();
+  renderOperationsScreen();
+  try {
+    window.lucide?.createIcons();
+  } catch {
+    // Icons are decorative; the companion remains usable if the CDN is unavailable.
+  }
+}
+
+window.NEXORA_OPERATIONS_TEST_API = {
+  OPS_STORAGE_KEY,
+  CUSTOMER_STORAGE_KEY,
+  createOperationsState,
+  normalizeOperationsState,
+  loadOperationsState,
+  saveOperationsState,
+  readCustomerSnapshot,
+  commitOperations,
+  getOperationsState,
+  opsId
+};
+if (!window.NEXORA_OPS_SKIP_INIT) initializeOperations();
+</script>
+</body>
+</html>
