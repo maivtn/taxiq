@@ -135,7 +135,9 @@ function testApi(seed = {}, {
   randomUUID = () => '00000000-0000-4000-8000-000000000001',
   open = () => null,
   url = URL,
-  blob = Blob
+  blob = Blob,
+  fileReader,
+  image
 } = {}) {
   const source = html();
   const script = source.match(/<script>\s*([\s\S]*?)<\/script>\s*<\/body>/)?.[1];
@@ -164,6 +166,8 @@ function testApi(seed = {}, {
     console
   };
   if (document) globals.document = document;
+  if (fileReader) globals.FileReader = fileReader;
+  if (image) globals.Image = image;
   const context = vm.createContext(globals);
   vm.runInContext(script, context);
   return { api: window.NEXORA_TEST_API, storage, context };
@@ -179,30 +183,34 @@ function customerJourneyFixture() {
       claimedAt: null
     }],
     checkoutDrafts: [{
-      id: 'checkout-1', guestCheckinId: 'guest-checkin-1', businessId: 'bitcoin-nail-bar',
+      id: 'checkout-00000000-0000-4000-8000-000000000001', guestCheckinId: 'guest-checkin-1', businessId: 'bitcoin-nail-bar',
       lineItems: [
-        { id: 'line-service', type: 'service', label: 'Deluxe pedicure', amountCents: 5000, sourceAddOnId: null },
-        { id: 'line-addon', type: 'addon', label: 'Gel upgrade', amountCents: 1000, sourceAddOnId: 'addon-request-1' },
-        { id: 'line-discount', type: 'discount', label: 'Loyalty discount', amountCents: -500, sourceAddOnId: null }
+        { id: 'service-guest-checkin-1', type: 'service', label: 'Deluxe Pedicure', amountCents: 5500, sourceAddOnId: null },
+        { id: 'promo-guest-checkin-1', type: 'discount', label: 'Promo NEW10', amountCents: -550, sourceAddOnId: null }
       ],
-      status: 'confirmed', subtotalCents: 6000, discountCents: 500, beforeTipCents: 5500,
-      tipBasisPoints: 2000, tipCents: 1100, totalCents: 6600, method: 'Zelle',
+      status: 'confirmed', subtotalCents: 5500, discountCents: 550, beforeTipCents: 4950,
+      tipBasisPoints: 2000, tipCents: 990, totalCents: 5940, method: 'Zelle',
       createdAt: '2026-07-15T03:10:00.000Z'
     }],
     paymentProofs: [{
-      id: 'proof-1', checkoutDraftId: 'checkout-1', businessId: 'bitcoin-nail-bar',
-      method: 'Zelle', amountCents: 6600, status: 'verified', note: '', imageDataUrl: '',
+      id: 'proof-00000000-0000-4000-8000-000000000002', checkoutDraftId: 'checkout-00000000-0000-4000-8000-000000000001', businessId: 'bitcoin-nail-bar',
+      method: 'Zelle', amountCents: 5940, status: 'verified', note: '', imageDataUrl: '',
       rejectReason: null, createdAt: '2026-07-15T03:12:00.000Z', verifiedAt: '2026-07-15T03:13:00.000Z'
     }],
     receipts: [{
-      id: 'receipt-1', checkoutDraftId: 'checkout-1', businessId: 'bitcoin-nail-bar',
-      method: 'Zelle', tipCents: 1100, totalCents: 6600, createdAt: '2026-07-15T03:14:00.000Z'
+      id: 'receipt-00000000-0000-4000-8000-000000000003', checkoutDraftId: 'checkout-00000000-0000-4000-8000-000000000001', businessId: 'bitcoin-nail-bar',
+      method: 'Zelle', tipCents: 990, totalCents: 5940,
+      lineItems: [
+        { id: 'service-guest-checkin-1', type: 'service', label: 'Deluxe Pedicure', amountCents: 5500, sourceAddOnId: null },
+        { id: 'promo-guest-checkin-1', type: 'discount', label: 'Promo NEW10', amountCents: -550, sourceAddOnId: null }
+      ],
+      createdAt: '2026-07-15T03:13:00.000Z'
     }],
-    guestRewardClaims: [{
-      id: 'claim-1', guestCheckinId: 'guest-checkin-1', businessId: 'bitcoin-nail-bar',
-      sourceType: 'visit_spend', sourceId: 'proof-1', points: 66, status: 'pending',
-      createdAt: '2026-07-15T03:15:00.000Z', claimedAt: null
-    }],
+    guestRewardClaims: [
+      { id: 'guest-claim-visit_spend-00000000-0000-4000-8000-000000000004', guestCheckinId: 'guest-checkin-1', businessId: 'bitcoin-nail-bar', sourceType: 'visit_spend', sourceId: 'proof-00000000-0000-4000-8000-000000000002', points: 55, status: 'pending', createdAt: '2026-07-15T03:13:00.000Z', claimedAt: null },
+      { id: 'guest-claim-directpay_bonus-00000000-0000-4000-8000-000000000005', guestCheckinId: 'guest-checkin-1', businessId: 'bitcoin-nail-bar', sourceType: 'directpay_bonus', sourceId: 'proof-00000000-0000-4000-8000-000000000002', points: 5, status: 'pending', createdAt: '2026-07-15T03:13:00.000Z', claimedAt: null },
+      { id: 'guest-claim-tip_bonus-00000000-0000-4000-8000-000000000006', guestCheckinId: 'guest-checkin-1', businessId: 'bitcoin-nail-bar', sourceType: 'tip_bonus', sourceId: 'proof-00000000-0000-4000-8000-000000000002', points: 9, status: 'pending', createdAt: '2026-07-15T03:13:00.000Z', claimedAt: null }
+    ],
     referrals: [{
       id: 'referral-1', referrerId: 'cust-jessica', code: 'JESSICA50', friendPhone: '8325550117',
       status: 'rewarded', rewardPoints: 50, businessId: 'bitcoin-nail-bar',
@@ -269,8 +277,8 @@ test('customer journey invariant keeps one fully canonical cross-surface chain',
   assert.equal(migrated.checkoutDrafts.length, 1);
   assert.equal(migrated.paymentProofs.length, 1);
   assert.equal(migrated.receipts.length, 1);
-  assert.equal(migrated.guestRewardClaims.length, 1);
-  assert.equal(migrated.guestRewardClaims[0].status, 'pending');
+  assert.equal(migrated.guestRewardClaims.length, 3);
+  assert.equal(migrated.guestRewardClaims.every((claim) => claim.status === 'pending'), true);
   assert.equal(migrated.referrals.length, 1);
   assert.equal(migrated.referrals[0].status, 'rewarded');
 });
@@ -351,14 +359,18 @@ test('customer journey invariant rejects null terminal methods and mismatched pr
   const proofMismatch = customerJourneyFixture();
   proofMismatch.paymentProofs[0].method = 'Venmo';
   const migratedProofMismatch = api.migrateState(proofMismatch);
-  assert.equal(migratedProofMismatch.checkoutDrafts.length, 1);
+  assert.equal(migratedProofMismatch.checkoutDrafts.length, 0);
   assert.equal(migratedProofMismatch.paymentProofs.length, 0);
   assert.equal(migratedProofMismatch.receipts.length, 0);
   assert.equal(migratedProofMismatch.guestRewardClaims.length, 0);
 
   const receiptMismatch = customerJourneyFixture();
   receiptMismatch.receipts[0].method = 'Venmo';
-  assert.equal(api.migrateState(receiptMismatch).receipts.length, 0);
+  const migratedReceiptMismatch = api.migrateState(receiptMismatch);
+  assert.equal(migratedReceiptMismatch.checkoutDrafts.length, 0);
+  assert.equal(migratedReceiptMismatch.paymentProofs.length, 0);
+  assert.equal(migratedReceiptMismatch.receipts.length, 0);
+  assert.equal(migratedReceiptMismatch.guestRewardClaims.length, 0);
 });
 
 test('customer journey invariant recalculates line items, totals and basis-point tips', () => {
@@ -414,7 +426,7 @@ test('customer journey invariant rejects reversed chronology at every lifecycle 
     }],
     ['claim completion before creation', 'guestRewardClaims', (fixture) => {
       fixture.guestRewardClaims[0].status = 'claimed';
-      fixture.guestRewardClaims[0].claimedAt = '2026-07-15T03:14:00.000Z';
+      fixture.guestRewardClaims[0].claimedAt = '2026-07-15T03:12:30.000Z';
     }],
     ['referral joins before invite', 'referrals', (fixture) => {
       fixture.referrals[0].joinedAt = '2026-07-15T02:40:00.000Z';
@@ -443,6 +455,7 @@ test('customer journey invariant accepts claims only from unique verified same-b
   const rejected = customerJourneyFixture();
   rejected.checkoutDrafts[0].status = 'rejected';
   rejected.paymentProofs[0].status = 'rejected';
+  rejected.paymentProofs[0].rejectReason = 'Amount mismatch';
   assert.equal(api.migrateState(rejected).guestRewardClaims.length, 0, 'rejected proof');
 
   const fake = customerJourneyFixture();
@@ -458,7 +471,10 @@ test('customer journey invariant accepts claims only from unique verified same-b
   assert.equal(api.migrateState(wrongBusiness).guestRewardClaims.length, 0, 'wrong business');
 
   const duplicate = customerJourneyFixture();
-  duplicate.guestRewardClaims.push({ ...duplicate.guestRewardClaims[0], id: 'claim-2' });
+  duplicate.guestRewardClaims.push({
+    ...duplicate.guestRewardClaims[0],
+    id: 'guest-claim-visit_spend-00000000-0000-4000-8000-000000000099'
+  });
   assert.equal(api.migrateState(duplicate).guestRewardClaims.length, 0, 'duplicate logical claim');
 });
 
@@ -3694,7 +3710,8 @@ test('resets the nested pay view when the existing direct-payment route is reope
 
 function task4Api(api) {
   for (const name of ['submitPaymentProof', 'verifyPaymentProof', 'rejectPaymentProof',
-    'removePaymentProofImage', 'retryRejectedCheckout']) {
+    'removePaymentProofImage', 'retryRejectedCheckout', 'calculatePaymentProofRewards',
+    'validateVerifiedPaymentAggregate']) {
     assert.equal(typeof api[name], 'function', `${name} must be exposed`);
   }
   return api;
@@ -3724,6 +3741,23 @@ function seedPendingProof(api, app, options = {}) {
   return { checkout, proof: result.proof };
 }
 
+test('Task 4 review formulas use subtotal and tip floors plus a fixed direct-pay bonus', () => {
+  const api = task4Api(testApi().api);
+  const rewardMap = (checkout) => Object.fromEntries(api.calculatePaymentProofRewards(checkout));
+  assert.deepEqual(rewardMap({ subtotalCents: 99, tipCents: 99, method: 'Zelle' }), {
+    directpay_bonus: 5
+  });
+  assert.deepEqual(rewardMap({ subtotalCents: 100, tipCents: 100, method: 'Zelle' }), {
+    visit_spend: 1, directpay_bonus: 5, tip_bonus: 1
+  });
+  assert.deepEqual(rewardMap({ subtotalCents: 199, tipCents: 199, method: 'Card' }), {
+    visit_spend: 1, directpay_bonus: 5, tip_bonus: 1
+  });
+  assert.deepEqual(rewardMap({ subtotalCents: 100, tipCents: 100, method: 'Pay at Counter' }), {
+    visit_spend: 1, tip_bonus: 1
+  });
+});
+
 test('Task 4 keeps uploaded proof pending then verifies formulas exactly once', () => {
   const loaded = testApi({}, { randomUUID: () => createUuidSequence().randomUUID() });
   const api = task4Api(loaded.api);
@@ -3750,7 +3784,7 @@ test('Task 4 keeps uploaded proof pending then verifies formulas exactly once', 
   assert.equal(verified.receipt.totalCents, 5841);
   assert.deepEqual(
     Object.fromEntries(verified.claims.map((claim) => [claim.sourceType, claim.points])),
-    { visit_spend: 50, directpay_bonus: 10, tip_bonus: 89 }
+    { visit_spend: 55, directpay_bonus: 5, tip_bonus: 8 }
   );
   assert.equal(verified.claims.every((claim) => claim.status === 'pending'
     && claim.sourceId === submitted.proof.id
@@ -3789,13 +3823,15 @@ test('Task 4 verifies Card and Pay at Counter through the same proof domain path
     const result = api.verifyPaymentProof(app, proof.id, 3000);
     assert.equal(result.ok, true, method);
     assert.equal(result.receipt.method, method);
-    assert.equal(JSON.stringify(result.claims.map((claim) => claim.sourceType)), JSON.stringify(['visit_spend']));
-    assert.equal(result.claims[0].points, 50);
+    const expectedTypes = method === 'Card' ? ['visit_spend', 'directpay_bonus'] : ['visit_spend'];
+    assert.equal(JSON.stringify(result.claims.map((claim) => claim.sourceType)), JSON.stringify(expectedTypes));
+    assert.equal(result.claims[0].points, 55);
+    if (method === 'Card') assert.equal(result.claims[1].points, 5);
   }
 });
 
 test('Task 4 keeps verification atomic across ID and chronology failures', () => {
-  for (const failAt of [4, 5, 6]) {
+  for (const failAt of [4, 5, 6, 7]) {
     let calls = 0;
     const { api: rawApi } = testApi({}, { randomUUID: () => {
       calls += 1;
@@ -3859,6 +3895,151 @@ test('Task 4 rejects semantic receipt or claim duplicates and malformed verified
   const before = JSON.stringify(app);
   assert.equal(api.verifyPaymentProof(app, proof.id, 4000).ok, false);
   assert.equal(JSON.stringify(app), before);
+});
+
+test('Task 4 review aggregate rejects every malformed artifact ID, formula and owner mutation', () => {
+  const variants = [
+    ['receipt raw whitespace', (app) => { app.receipts[0].id = ` ${app.receipts[0].id} `; }],
+    ['receipt non-v4 UUID', (app) => { app.receipts[0].id = 'receipt-00000000-0000-1000-8000-000000000004'; }],
+    ['visit claim raw whitespace', (app) => { app.guestRewardClaims[0].id = ` ${app.guestRewardClaims[0].id} `; }],
+    ['direct claim non-v4 UUID', (app) => { app.guestRewardClaims[1].id = 'guest-claim-directpay_bonus-00000000-0000-1000-8000-000000000006'; }],
+    ['tip claim non-v4 UUID', (app) => { app.guestRewardClaims[2].id = 'guest-claim-tip_bonus-not-a-uuid'; }],
+    ['wrong formula', (app) => { app.guestRewardClaims[0].points += 1; }],
+    ['duplicate guest owner', (app) => { app.guestCheckins.push(structuredClone(app.guestCheckins[0])); }],
+    ['noncanonical guest owner', (app) => { app.guestCheckins[0].phone = '(832) 555-0198'; }],
+    ['missing receipt', (app) => { app.receipts = []; }],
+    ['missing tip claim', (app) => { app.guestRewardClaims.pop(); }],
+    ['receipt chronology', (app) => { app.receipts[0].createdAt = new Date(2999).toISOString(); }],
+    ['claim chronology', (app) => { app.guestRewardClaims[0].createdAt = new Date(2999).toISOString(); }]
+  ];
+  for (const [label, mutate] of variants) {
+    const ids = createUuidSequence();
+    const api = task4Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+    const app = api.createDefaultState();
+    const { proof } = seedPendingProof(api, app, { method: 'Zelle', staffProfileId: null });
+    assert.equal(api.verifyPaymentProof(app, proof.id, 3000).ok, true, label);
+    mutate(app);
+    const before = JSON.stringify(app);
+    assert.equal(api.validateVerifiedPaymentAggregate(app, proof.id).ok, false, label);
+    assert.equal(api.verifyPaymentProof(app, proof.id, 4000).ok, false, label);
+    assert.equal(JSON.stringify(app), before, `${label}: replay unchanged`);
+  }
+});
+
+test('Task 4 review aggregate enforces collection-wide semantic ID uniqueness', () => {
+  for (const collection of ['receipts', 'guestRewardClaims']) {
+    const ids = createUuidSequence();
+    const api = task4Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+    const app = api.createDefaultState();
+    const { proof } = seedPendingProof(api, app, { method: 'Zelle', staffProfileId: null });
+    assert.equal(api.verifyPaymentProof(app, proof.id, 3000).ok, true);
+    const source = app[collection][0];
+    app[collection].push({
+      ...structuredClone(source),
+      id: ` ${source.id} `,
+      ...(collection === 'receipts' ? { checkoutDraftId: 'checkout-unrelated' } : { sourceId: 'proof-unrelated' })
+    });
+    const before = JSON.stringify(app);
+    assert.equal(api.validateVerifiedPaymentAggregate(app, proof.id).ok, false, collection);
+    assert.equal(api.verifyPaymentProof(app, proof.id, 4000).ok, false, collection);
+    assert.equal(JSON.stringify(app), before, collection);
+  }
+});
+
+test('Task 4 review aggregate preserves a canonical claimed reward lifecycle', () => {
+  const ids = createUuidSequence();
+  const api = task4Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
+  const app = api.createDefaultState();
+  const { proof } = seedPendingProof(api, app, { method: 'Zelle', staffProfileId: null });
+  assert.equal(api.verifyPaymentProof(app, proof.id, 3000).ok, true);
+  app.guestRewardClaims[0].status = 'claimed';
+  app.guestRewardClaims[0].claimedAt = new Date(4000).toISOString();
+  assert.equal(api.validateVerifiedPaymentAggregate(app, proof.id).ok, true);
+  assert.equal(api.verifyPaymentProof(app, proof.id, 5000).idempotent, true);
+
+  const persisted = customerJourneyFixture();
+  persisted.guestRewardClaims[0].status = 'claimed';
+  persisted.guestRewardClaims[0].claimedAt = '2026-07-15T03:14:00.000Z';
+  const migrated = api.migrateState(persisted);
+  assert.equal(migrated.checkoutDrafts.length, 1);
+  assert.equal(migrated.paymentProofs.length, 1);
+  assert.equal(migrated.guestRewardClaims.length, 3);
+  assert.equal(migrated.guestRewardClaims[0].status, 'claimed');
+});
+
+test('Task 4 review aggregate keeps every verification ID collision atomic', () => {
+  const positions = [
+    [4, 'receipts', 'receipt'],
+    [5, 'guestRewardClaims', 'guest-claim-visit_spend'],
+    [6, 'guestRewardClaims', 'guest-claim-directpay_bonus'],
+    [7, 'guestRewardClaims', 'guest-claim-tip_bonus']
+  ];
+  for (const [position, collection, prefix] of positions) {
+    let calls = 0;
+    const api = task4Api(testApi({}, { randomUUID: () => {
+      calls += 1;
+      return `00000000-0000-4000-8000-${String(calls).padStart(12, '0')}`;
+    } }).api);
+    const app = api.createDefaultState();
+    const { proof } = seedPendingProof(api, app, { method: 'Zelle', staffProfileId: null });
+    const uuid = `00000000-0000-4000-8000-${String(position).padStart(12, '0')}`;
+    app[collection].push({ id: `${prefix}-${uuid}` });
+    const before = JSON.stringify(app);
+    assert.equal(api.verifyPaymentProof(app, proof.id, 3000).code, 'id_generation_failed', prefix);
+    assert.equal(JSON.stringify(app), before, prefix);
+  }
+});
+
+test('Task 4 review aggregate keeps retry UUID and chronology failures atomic', () => {
+  for (const failAt of [4, 5]) {
+    let calls = 0;
+    const api = task4Api(testApi({}, { randomUUID: () => {
+      calls += 1;
+      return calls === failAt
+        ? 'invalid-id'
+        : `00000000-0000-4000-8000-${String(calls).padStart(12, '0')}`;
+    } }).api);
+    const app = api.createDefaultState();
+    const { proof } = seedPendingProof(api, app, { method: 'Venmo', staffProfileId: null });
+    assert.equal(api.rejectPaymentProof(app, proof.id, 'No match', 3000).ok, true);
+    const before = JSON.stringify(app);
+    assert.equal(api.retryRejectedCheckout(app, proof.id, 'Pay at Counter', 4000).code, 'id_generation_failed');
+    assert.equal(JSON.stringify(app), before, `retry ID ${failAt}`);
+  }
+
+  const api = task4Api(testApi().api);
+  const app = api.createDefaultState();
+  const { proof } = seedPendingProof(api, app, { method: 'Venmo' });
+  assert.equal(api.rejectPaymentProof(app, proof.id, 'No match', 3000).ok, true);
+  const before = JSON.stringify(app);
+  assert.equal(api.retryRejectedCheckout(app, proof.id, 'Zelle', 2999).code, 'invalid_time_order');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('Task 4 review aggregate migration drops the entire tampered verified chain', () => {
+  const variants = [
+    ['receipt ID whitespace', (fixture) => { fixture.receipts[0].id = ` ${fixture.receipts[0].id} `; }],
+    ['claim ID malformed', (fixture) => { fixture.guestRewardClaims[2].id = 'guest-claim-tip_bonus-invalid'; }],
+    ['global receipt duplicate', (fixture) => { fixture.receipts.push(structuredClone(fixture.receipts[0])); }],
+    ['global claim duplicate', (fixture) => { fixture.guestRewardClaims.push(structuredClone(fixture.guestRewardClaims[0])); }],
+    ['duplicate owner', (fixture) => { fixture.guestCheckins.push(structuredClone(fixture.guestCheckins[0])); }],
+    ['noncanonical owner', (fixture) => { fixture.guestCheckins[0].phone = '(832) 555-0198'; }],
+    ['wrong formula', (fixture) => { fixture.guestRewardClaims[1].points = 6; }],
+    ['missing receipt', (fixture) => { fixture.receipts = []; }],
+    ['missing claim', (fixture) => { fixture.guestRewardClaims.pop(); }],
+    ['receipt timestamp mismatch', (fixture) => { fixture.receipts[0].createdAt = '2026-07-15T03:14:00.000Z'; }],
+    ['claim timestamp mismatch', (fixture) => { fixture.guestRewardClaims[0].createdAt = '2026-07-15T03:14:00.000Z'; }]
+  ];
+  const api = task4Api(testApi().api);
+  for (const [label, mutate] of variants) {
+    const fixture = customerJourneyFixture();
+    mutate(fixture);
+    const migrated = api.migrateState(fixture);
+    assert.equal(migrated.checkoutDrafts.length, 0, `${label}: checkout`);
+    assert.equal(migrated.paymentProofs.length, 0, `${label}: proof`);
+    assert.equal(migrated.receipts.length, 0, `${label}: receipt`);
+    assert.equal(migrated.guestRewardClaims.length, 0, `${label}: claims`);
+  }
 });
 
 test('Task 4 accepts only sanitized JPEG proof images and locks verified proof images', () => {
@@ -3935,7 +4116,7 @@ test('Task 4 payment proof and receipt controls are localized, safe and fully re
   }
 });
 
-test('Task 4 paydone states synchronize focus and aria while rendering receipt labels as text', () => {
+test('Task 4 paydone states synchronize focus and aria while rendering canonical receipt labels as text', () => {
   const pending = createStubElement({ id: 'payment-pending-view', dataset: { paydoneView: 'pending' } });
   const confirmed = createStubElement({ id: 'payment-confirmed-view', dataset: { paydoneView: 'confirmed' }, classNames: ['hidden'] });
   const rejected = createStubElement({ id: 'payment-rejected-view', dataset: { paydoneView: 'rejected' }, classNames: ['hidden'] });
@@ -3961,7 +4142,7 @@ test('Task 4 paydone states synchronize focus and aria while rendering receipt l
     setCheckoutMethod(state, checkout.id, 'Zelle');
     const proof = submitPaymentProof(state, { checkoutDraftId: checkout.id, note: '', imageDataUrl: '' }, 2000).proof;
     verifyPaymentProof(state, proof.id, 3000);
-    state.receipts[0].lineItems[0].label = '<img src=x onerror=alert(1)>';
+    state.ui.pendingContext.paydoneKind = 'payment_proof';
     state.ui.activeScreen = 'paydone';
   `, context);
   context.renderPaydone();
@@ -3969,8 +4150,172 @@ test('Task 4 paydone states synchronize focus and aria while rendering receipt l
   assert.equal(confirmed.attributes['aria-hidden'], 'false');
   assert.equal(pending.attributes['aria-hidden'], 'true');
   assert.equal(rejected.attributes['aria-hidden'], 'true');
-  assert.equal(receiptItems.children[0].children[0].textContent, '<img src=x onerror=alert(1)>');
+  assert.equal(receiptItems.children[0].children[0].textContent, 'Pedicure cao cấp');
   assert.equal(receiptTotal.textContent.length > 0, true);
+});
+
+test('Task 4 review Pay Done selects one discriminated source across render and reload', () => {
+  const direct = createStubElement({ id: 'direct-payment-result-view' });
+  const pending = createStubElement({ id: 'payment-pending-view', dataset: { paydoneView: 'pending' } });
+  const confirmed = createStubElement({ id: 'payment-confirmed-view', dataset: { paydoneView: 'confirmed' }, classNames: ['hidden'] });
+  const rejected = createStubElement({ id: 'payment-rejected-view', dataset: { paydoneView: 'rejected' }, classNames: ['hidden'] });
+  const directTitle = createStubElement({ id: 'direct-paydone-title' });
+  const confirmedTitle = createStubElement({ id: 'payment-confirmed-title' });
+  const document = createDocumentStub({
+    extraElements: [direct, pending, confirmed, rejected, directTitle, confirmedTitle,
+      createStubElement({ id: 'payment-pending-title' }), createStubElement({ id: 'payment-rejected-title' }),
+      createStubElement({ id: 'confirmed-receipt-items' }), createStubElement({ id: 'confirmed-receipt-total' }),
+      createStubElement({ id: 'payment-reject-reason' })],
+    selectorNodes: { '[data-paydone-view]': [pending, confirmed, rejected] }
+  });
+  const ids = createUuidSequence();
+  const { api, context } = testApi({}, { document, randomUUID: () => ids.randomUUID() });
+  task4Api(api);
+  vm.runInContext(`
+    const historicalDirect = createDirectPayment(state, {
+      businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle'
+    }, 500).payment;
+    const checkout = createCheckoutDraft(state, {
+      guestCheckinId: createGuestCheckin(state,
+        (stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'),
+        { name: 'Amy', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }), 1000).guestCheckin.id
+    }, 1000).checkoutDraft;
+    setCheckoutMethod(state, checkout.id, 'Zelle');
+    const selectedProof = submitPaymentProof(state, {
+      checkoutDraftId: checkout.id, note: '', imageDataUrl: ''
+    }, 2000).proof;
+    verifyPaymentProof(state, selectedProof.id, 3000);
+    state.ui.pendingContext.paymentId = historicalDirect.id;
+    state.ui.pendingContext.paymentProofId = selectedProof.id;
+    state.ui.pendingContext.paydoneKind = 'payment_proof';
+    state.ui.activeScreen = 'paydone';
+  `, context);
+  context.renderPaydone();
+  context.renderPaymentResult();
+  assert.equal(confirmed.classList.contains('hidden'), false);
+  assert.equal(direct.classList.contains('hidden'), true);
+  assert.equal(direct.attributes['aria-hidden'], 'true');
+  assert.equal(document.activeElement, confirmedTitle);
+
+  const raw = JSON.parse(vm.runInContext('JSON.stringify(state)', context));
+  const migrated = api.migrateState(raw);
+  assert.equal(migrated.directPayments.length, 1);
+  assert.equal(migrated.paymentProofs.length, 1);
+  assert.equal(migrated.ui.pendingContext.paydoneKind, 'payment_proof');
+  assert.equal(migrated.ui.pendingContext.paymentId, null);
+  assert.equal(typeof migrated.ui.pendingContext.paymentProofId, 'string');
+
+  vm.runInContext(`
+    state.ui.pendingContext.paydoneKind = 'direct_payment';
+    state.ui.pendingContext.paymentId = state.directPayments[0].id;
+    state.ui.pendingContext.paymentProofId = state.paymentProofs[0].id;
+  `, context);
+  context.renderPaydone();
+  context.renderPaymentResult();
+  assert.equal(direct.classList.contains('hidden'), false);
+  assert.equal(direct.attributes['aria-hidden'], 'false');
+  assert.equal(confirmed.attributes['aria-hidden'], 'true');
+  assert.equal(document.activeElement, directTitle);
+});
+
+test('Task 4 review Pay Done never renders a tampered verified aggregate as confirmed', () => {
+  const direct = createStubElement({ id: 'direct-payment-result-view' });
+  const pending = createStubElement({ id: 'payment-pending-view', dataset: { paydoneView: 'pending' } });
+  const confirmed = createStubElement({ id: 'payment-confirmed-view', dataset: { paydoneView: 'confirmed' }, classNames: ['hidden'] });
+  const rejected = createStubElement({ id: 'payment-rejected-view', dataset: { paydoneView: 'rejected' }, classNames: ['hidden'] });
+  const rejectedTitle = createStubElement({ id: 'payment-rejected-title' });
+  const reason = createStubElement({ id: 'payment-reject-reason' });
+  const document = createDocumentStub({
+    extraElements: [direct, pending, confirmed, rejected, rejectedTitle, reason,
+      createStubElement({ id: 'payment-pending-title' }), createStubElement({ id: 'payment-confirmed-title' }),
+      createStubElement({ id: 'confirmed-receipt-items' }), createStubElement({ id: 'confirmed-receipt-total' })],
+    selectorNodes: { '[data-paydone-view]': [pending, confirmed, rejected] }
+  });
+  const ids = createUuidSequence();
+  const { context } = testApi({}, { document, randomUUID: () => ids.randomUUID() });
+  vm.runInContext(`
+    const checkout = createCheckoutDraft(state, {
+      guestCheckinId: createGuestCheckin(state,
+        (stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'),
+        { name: 'Amy', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }), 1000).guestCheckin.id
+    }, 1000).checkoutDraft;
+    setCheckoutMethod(state, checkout.id, 'Zelle');
+    const proof = submitPaymentProof(state, { checkoutDraftId: checkout.id, note: '', imageDataUrl: '' }, 2000).proof;
+    verifyPaymentProof(state, proof.id, 3000);
+    state.guestRewardClaims[0].points += 1;
+    state.ui.pendingContext.paydoneKind = 'payment_proof';
+    state.ui.activeScreen = 'paydone';
+  `, context);
+  context.renderPaydone();
+  assert.equal(confirmed.attributes['aria-hidden'], 'true');
+  assert.equal(rejected.attributes['aria-hidden'], 'false');
+  assert.equal(reason.textContent.length > 0, true);
+  assert.equal(document.activeElement, rejectedTitle);
+});
+
+test('Task 4 review CTAs execute Replace, Create Account and Continue Guest without consuming claims', () => {
+  const home = createStubElement({ id: 'home', classNames: ['app-screen', 'hidden'] });
+  const pay = createStubElement({ id: 'pay', classNames: ['app-screen', 'hidden'] });
+  const paydone = createStubElement({ id: 'paydone', classNames: ['app-screen'] });
+  const onb1 = createStubElement({ id: 'onb1', classNames: ['app-screen', 'hidden'] });
+  const directView = createStubElement({ id: 'direct-payment-view', dataset: { payView: 'direct' } });
+  const checkoutView = createStubElement({ id: 'guest-checkout-view', dataset: { payView: 'checkout' }, classNames: ['hidden'] });
+  const proofView = createStubElement({ id: 'payment-proof-view', dataset: { payView: 'payment-proof' }, classNames: ['hidden'] });
+  const phone = createStubElement({ id: 'onb-phone' });
+  const document = createDocumentStub({
+    screenNodes: [home, pay, paydone, onb1],
+    extraElements: [directView, checkoutView, proofView, phone],
+    selectorNodes: {
+      '[data-pay-view]': [directView, checkoutView, proofView],
+      '[data-scan-customer]': createStubElement(),
+      '[data-scan-balance]': createStubElement(),
+      '[data-scan-staff]': createStubElement(),
+      '[data-scan-service]': createStubElement()
+    }
+  });
+  const ids = createUuidSequence();
+  const { context } = testApi({}, { document, randomUUID: () => ids.randomUUID() });
+  vm.runInContext(`
+    const checkout = createCheckoutDraft(state, {
+      guestCheckinId: createGuestCheckin(state,
+        (stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'),
+        { name: 'Amy', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }), 1000).guestCheckin.id
+    }, 1000).checkoutDraft;
+    setCheckoutMethod(state, checkout.id, 'Zelle');
+    const rejectedProof = submitPaymentProof(state, {
+      checkoutDraftId: checkout.id, note: '', imageDataUrl: ''
+    }, 2000).proof;
+    rejectPaymentProof(state, rejectedProof.id, 'No match', 3000);
+    state.ui.pendingContext.paydoneKind = 'payment_proof';
+    state.ui.activeScreen = 'paydone';
+    globalThis.rejectedCheckoutSnapshot = JSON.stringify(state.checkoutDrafts[0]);
+    globalThis.rejectedProofSnapshot = JSON.stringify(state.paymentProofs[0]);
+  `, context);
+  vm.runInContext("ACTIONS.get('replace-payment-proof')()", context);
+  assert.equal(vm.runInContext('state.checkoutDrafts.length', context), 2);
+  assert.equal(vm.runInContext('JSON.stringify(state.checkoutDrafts[0]) === rejectedCheckoutSnapshot', context), true);
+  assert.equal(vm.runInContext('JSON.stringify(state.paymentProofs[0]) === rejectedProofSnapshot', context), true);
+  assert.equal(vm.runInContext('state.ui.activeScreen', context), 'pay');
+  assert.equal(proofView.classList.contains('hidden'), false);
+
+  vm.runInContext(`
+    const retry = state.checkoutDrafts[1];
+    const proof = submitPaymentProof(state, {
+      checkoutDraftId: retry.id, note: '', imageDataUrl: ''
+    }, Date.now() + 1000).proof;
+    verifyPaymentProof(state, proof.id, Date.now() + 2000);
+    state.ui.pendingContext.paydoneKind = 'payment_proof';
+    state.ui.activeScreen = 'paydone';
+    globalThis.claimSnapshot = JSON.stringify(state.guestRewardClaims);
+  `, context);
+  vm.runInContext("ACTIONS.get('create-account-from-receipt')()", context);
+  assert.equal(phone.value, '8325550198');
+  assert.equal(vm.runInContext('state.ui.activeScreen', context), 'onb1');
+  assert.equal(vm.runInContext('JSON.stringify(state.guestRewardClaims) === claimSnapshot', context), true);
+
+  vm.runInContext("ACTIONS.get('continue-as-guest')()", context);
+  assert.equal(vm.runInContext('state.ui.activeScreen', context), 'home');
+  assert.equal(vm.runInContext('JSON.stringify(state.guestRewardClaims) === claimSnapshot', context), true);
 });
 
 test('Task 4 quota fallback persists proof metadata without image and reports an error', () => {
@@ -4012,6 +4357,71 @@ test('Task 4 quota fallback persists proof metadata without image and reports an
   assert.equal(vm.runInContext('state.paymentProofs.length', context), 1);
   assert.equal(vm.runInContext('state.paymentProofs[0].imageDataUrl', context), '');
   assert.equal(document.getElementById('toast-region').children[0].className.includes('text-app-red'), true);
+});
+
+test('Task 4 review image converts PNG input to a bounded sanitized JPEG', async () => {
+  const document = createDocumentStub();
+  const canvas = createStubElement();
+  let drawn = null;
+  canvas.getContext = () => ({
+    drawImage(image, x, y, width, height) { drawn = { image, x, y, width, height }; }
+  });
+  canvas.toDataURL = (type, quality) => {
+    assert.equal(type, 'image/jpeg');
+    assert.equal(quality, 0.78);
+    return 'data:image/jpeg;base64,AAAA';
+  };
+  const createElement = document.createElement.bind(document);
+  document.createElement = (tagName) => tagName === 'canvas' ? canvas : createElement(tagName);
+  class StubFileReader {
+    readAsDataURL() {
+      this.result = 'data:image/png;base64,AAAA';
+      this.onload();
+    }
+  }
+  class StubImage {
+    set src(value) {
+      this.source = value;
+      this.width = 1440;
+      this.height = 720;
+      this.onload();
+    }
+  }
+  const { context } = testApi({}, { document, fileReader: StubFileReader, image: StubImage });
+  const result = await context.compressImage({ type: 'image/png' });
+  assert.equal(result, 'data:image/jpeg;base64,AAAA');
+  assert.equal(canvas.width, 720);
+  assert.equal(canvas.height, 360);
+  assert.deepEqual({ x: drawn.x, y: drawn.y, width: drawn.width, height: drawn.height }, {
+    x: 0, y: 0, width: 720, height: 360
+  });
+});
+
+test('Task 4 review image fully clears a stale valid preview after a later compression error', async () => {
+  const fileInput = createStubElement({ id: 'payment-proof-file' });
+  const preview = createStubElement({ id: 'payment-proof-preview', classNames: ['hidden'] });
+  const remove = createStubElement({ id: 'remove-payment-proof', classNames: ['hidden'] });
+  const error = createStubElement({ id: 'payment-proof-error', classNames: ['hidden'] });
+  const document = createDocumentStub({ extraElements: [fileInput, preview, remove, error] });
+  const { context } = testApi({}, { document });
+  vm.runInContext("compressImage = async () => 'data:image/jpeg;base64,AAAA'", context);
+  fileInput.files = [{ name: 'valid.png' }];
+  fileInput.value = '/tmp/valid.png';
+  await context.handleChange({ target: fileInput });
+  assert.equal(preview.src, 'data:image/jpeg;base64,AAAA');
+  assert.equal(preview.classList.contains('hidden'), false);
+  assert.equal(remove.classList.contains('hidden'), false);
+
+  vm.runInContext("compressImage = async () => { throw new Error('decode failed'); }", context);
+  fileInput.files = [{ name: 'invalid.png' }];
+  fileInput.value = '/tmp/invalid.png';
+  await context.handleChange({ target: fileInput });
+  assert.equal(fileInput.value, '');
+  assert.equal(preview.src, '');
+  assert.equal(preview.classList.contains('hidden'), true);
+  assert.equal(remove.classList.contains('hidden'), true);
+  assert.equal(vm.runInContext('pendingProofImageDataUrl', context), '');
+  assert.equal(error.classList.contains('hidden'), false);
 });
 
 test('Task 4 refuses tampered artifacts in pending and rejected idempotent paths', () => {

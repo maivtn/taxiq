@@ -559,7 +559,7 @@
           paymentMethod: 'Zelle', rating: 0, currentRewardKey: null,
           exploreFilter: 'all', offerFilter: 'all', pendingContext: {
             consentScopes: [], rewardAttempt: null, redemptionId: null, tipId: null, paymentId: null, bookingId: null,
-            scanContext: null, guestCheckinId: null, checkoutDraftId: null, paymentProofId: null
+            scanContext: null, guestCheckinId: null, checkoutDraftId: null, paymentProofId: null, paydoneKind: null
           },
           bookingDraft: { businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM', note: '' },
           overlay: null, pushPromptCount: 0
@@ -887,6 +887,8 @@
     const CLAIM_SOURCE_TYPES = new Set(['visit_spend', 'directpay_bonus', 'tip_bonus']);
     const CHECKOUT_ID_PATTERN = /^checkout-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const PAYMENT_PROOF_ID_PATTERN = /^proof-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const RECEIPT_ID_PATTERN = /^receipt-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const GUEST_REWARD_CLAIM_ID_PATTERN = /^guest-claim-(visit_spend|directpay_bonus|tip_bonus)-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     function nonNegativeCents(value) {
       return Number.isSafeInteger(value) && value >= 0 ? value : null;
@@ -1056,6 +1058,12 @@
         && appState.paymentProofs.filter((row) => isRecord(row) && row.id === proof.id).length === 1;
     }
 
+    function selectPaymentProofContext(appState, proofId) {
+      appState.ui.pendingContext.paymentId = null;
+      appState.ui.pendingContext.paymentProofId = proofId;
+      appState.ui.pendingContext.paydoneKind = 'payment_proof';
+    }
+
     function createCheckoutDraft(appState, input, now = Date.now()) {
       if (!isRecord(input) || !Array.isArray(appState?.guestCheckins)
         || !Array.isArray(appState?.checkoutDrafts) || !isRecord(appState?.ui?.pendingContext)) {
@@ -1171,7 +1179,7 @@
         if (artifacts.receipts.length > 0 || artifacts.claims.length > 0) {
           return { ok: false, code: 'invalid_existing_artifacts' };
         }
-        appState.ui.pendingContext.paymentProofId = proof.id;
+        selectPaymentProofContext(appState, proof.id);
         return { ok: true, proof, idempotent: true };
       }
       if (checkout.status === 'pending_verification') {
@@ -1205,7 +1213,7 @@
       };
       appState.paymentProofs.push(proof);
       checkout.status = 'pending_verification';
-      appState.ui.pendingContext.paymentProofId = proof.id;
+      selectPaymentProofContext(appState, proof.id);
       return { ok: true, proof };
     }
 
@@ -1302,7 +1310,7 @@
         if (artifacts.receipts.length > 0 || artifacts.claims.length > 0) {
           return { ok: false, code: 'invalid_existing_artifacts' };
         }
-        appState.ui.pendingContext.paymentProofId = proof.id;
+        selectPaymentProofContext(appState, proof.id);
         return { ok: true, proof, idempotent: true };
       }
       if (checkout.status !== 'draft') return { ok: false, code: 'invalid_checkout_state' };
@@ -1335,8 +1343,19 @@
       };
       appState.paymentProofs.push(proof);
       checkout.status = 'pending_verification';
-      appState.ui.pendingContext.paymentProofId = proof.id;
+      selectPaymentProofContext(appState, proof.id);
       return { ok: true, proof };
+    }
+
+    function calculatePaymentProofRewards(checkout) {
+      if (!isRecord(checkout) || nonNegativeCents(checkout.subtotalCents) === null
+        || nonNegativeCents(checkout.tipCents) === null || !CHECKOUT_METHODS.has(checkout.method)) return null;
+      const values = [
+        ['visit_spend', Math.floor(checkout.subtotalCents / 100)],
+        ['directpay_bonus', ['Card', 'Zelle', 'Venmo'].includes(checkout.method) ? 5 : 0],
+        ['tip_bonus', checkout.tipCents > 0 ? Math.floor(checkout.tipCents / 100) : 0]
+      ];
+      return values.filter(([, points]) => Number.isSafeInteger(points) && points > 0);
     }
 
     function expectedProofClaimValues(appState, checkout, proof, guestCheckin) {
@@ -1344,17 +1363,7 @@
       if (!business || guestCheckin.businessId !== checkout.businessId
         || proof.businessId !== checkout.businessId || proof.method !== checkout.method
         || proof.amountCents !== checkout.totalCents) return null;
-      const spendPoints = Math.round(checkout.beforeTipCents / 100);
-      const values = [
-        ['visit_spend', spendPoints],
-        ['directpay_bonus', ['Zelle', 'Venmo'].includes(checkout.method)
-          ? Math.round(spendPoints * business.directPayBonusPct / 100)
-          : 0],
-        ['tip_bonus', checkout.tipCents > 0 && guestCheckin.staffProfileId
-          ? Math.round(checkout.tipCents / 100 * business.tipMultiplier)
-          : 0]
-      ];
-      return values.filter(([, points]) => Number.isSafeInteger(points) && points > 0);
+      return calculatePaymentProofRewards(checkout);
     }
 
     function semanticProofArtifacts(appState, checkout, proof) {
@@ -1370,7 +1379,7 @@
     function isExactReceipt(appState, receipt, checkout, proof) {
       const normalized = normalizeReceipt(appState, receipt);
       return Boolean(normalized) && typeof receipt.id === 'string'
-        && receipt.id === receipt.id.trim() && receipt.id.startsWith('receipt-')
+        && receipt.id === receipt.id.trim() && RECEIPT_ID_PATTERN.test(receipt.id)
         && receipt.checkoutDraftId === checkout.id && receipt.businessId === checkout.businessId
         && receipt.method === checkout.method && receipt.tipCents === checkout.tipCents
         && receipt.totalCents === checkout.totalCents
@@ -1379,17 +1388,85 @@
     }
 
     function isExactClaim(claim, expected, checkout, proof, guestCheckin) {
-      return isRecord(claim) && typeof claim.id === 'string'
-        && claim.id === claim.id.trim() && claim.id.startsWith(`guest-claim-${expected[0]}-`)
+      if (!isRecord(claim)) return false;
+      const validLifecycle = claim.status === 'pending'
+        ? claim.claimedAt === null
+        : claim.status === 'claimed' && validStoredTimestamp(claim.claimedAt)
+          && timestampAtOrAfter(claim.claimedAt, claim.createdAt);
+      return typeof claim.id === 'string'
+        && claim.id === claim.id.trim() && GUEST_REWARD_CLAIM_ID_PATTERN.test(claim.id)
+        && claim.id.startsWith(`guest-claim-${expected[0]}-`)
         && claim.guestCheckinId === guestCheckin.id && claim.businessId === checkout.businessId
         && claim.sourceType === expected[0] && claim.sourceId === proof.id
-        && claim.points === expected[1] && claim.status === 'pending'
-        && claim.createdAt === proof.verifiedAt && claim.claimedAt === null;
+        && claim.points === expected[1] && validLifecycle
+        && claim.createdAt === proof.verifiedAt;
     }
 
-    function verifiedProofArtifacts(appState, checkout, proof, guestCheckin) {
+    function collectionHasUniqueCanonicalIds(values, pattern) {
+      if (!Array.isArray(values)) return false;
+      const ids = new Set();
+      return values.every((row) => {
+        if (!isRecord(row) || typeof row.id !== 'string' || row.id !== row.id.trim()
+          || !pattern.test(row.id) || ids.has(row.id)) return false;
+        ids.add(row.id);
+        return true;
+      });
+    }
+
+    function recordMatchesCanonicalFields(value, canonical) {
+      return isRecord(value) && isRecord(canonical)
+        && Object.keys(canonical).every((key) => (
+          JSON.stringify(value[key]) === JSON.stringify(canonical[key])
+        ));
+    }
+
+    function rawVerifiedAggregateMatches(rawState, checkout, proof, guestCheckin, expectedClaimCount) {
+      if (!isRecord(rawState) || !collectionHasUniqueCanonicalIds(rawState.receipts, RECEIPT_ID_PATTERN)
+        || !collectionHasUniqueCanonicalIds(rawState.guestRewardClaims, GUEST_REWARD_CLAIM_ID_PATTERN)) return false;
+      const owners = Array.isArray(rawState.guestCheckins) ? rawState.guestCheckins.filter((row) => (
+        isRecord(row) && normalizedRequiredText(row.id) === guestCheckin.id
+      )) : [];
+      const checkouts = Array.isArray(rawState.checkoutDrafts) ? rawState.checkoutDrafts.filter((row) => (
+        isRecord(row) && normalizedRequiredText(row.id) === checkout.id
+      )) : [];
+      const proofs = Array.isArray(rawState.paymentProofs) ? rawState.paymentProofs.filter((row) => (
+        isRecord(row) && normalizedRequiredText(row.id) === proof.id
+      )) : [];
+      const receipts = rawState.receipts.filter((row) => (
+        normalizedRequiredText(row.checkoutDraftId) === checkout.id
+      ));
+      const claims = rawState.guestRewardClaims.filter((row) => (
+        normalizedRequiredText(row.sourceId) === proof.id
+      ));
+      return owners.length === 1 && owners[0].id === guestCheckin.id
+        && recordMatchesCanonicalFields(owners[0], guestCheckin)
+        && checkouts.length === 1 && checkouts[0].id === checkout.id
+        && proofs.length === 1 && proofs[0].id === proof.id
+        && receipts.length === 1 && receipts[0].checkoutDraftId === checkout.id
+        && claims.length === expectedClaimCount
+        && claims.every((claim) => claim.sourceId === proof.id);
+    }
+
+    function validateVerifiedPaymentAggregate(appState, proofId, rawState = appState) {
+      const context = canonicalProofContext(appState, proofId);
+      if (!context.ok) return context;
+      const { checkout, proof, guestCheckin } = context;
+      if (checkout.status !== 'confirmed' || proof.status !== 'verified' || !proof.verifiedAt) {
+        return { ok: false, code: 'invalid_verified_artifacts' };
+      }
+      const owners = appState.guestCheckins.filter((row) => (
+        isRecord(row) && normalizedRequiredText(row.id) === guestCheckin.id
+      ));
+      const normalizedOwner = normalizeGuestCheckin(appState, guestCheckin);
       const values = expectedProofClaimValues(appState, checkout, proof, guestCheckin);
-      if (!values) return { ok: false, code: 'invalid_proof' };
+      if (!values || owners.length !== 1 || owners[0] !== guestCheckin
+        || owners[0].id !== guestCheckin.id || !normalizedOwner
+        || !recordMatchesCanonicalFields(guestCheckin, normalizedOwner)
+        || !collectionHasUniqueCanonicalIds(appState.receipts, RECEIPT_ID_PATTERN)
+        || !collectionHasUniqueCanonicalIds(appState.guestRewardClaims, GUEST_REWARD_CLAIM_ID_PATTERN)
+        || !rawVerifiedAggregateMatches(rawState, checkout, proof, guestCheckin, values.length)) {
+        return { ok: false, code: 'invalid_verified_artifacts' };
+      }
       const { receipts, claims } = semanticProofArtifacts(appState, checkout, proof);
       if (receipts.length !== 1 || !isExactReceipt(appState, receipts[0], checkout, proof)
         || claims.length !== values.length) return { ok: false, code: 'invalid_verified_artifacts' };
@@ -1402,6 +1479,10 @@
         return { ok: false, code: 'invalid_verified_artifacts' };
       }
       return { ok: true, receipt: receipts[0], claims: values.map((_, index) => matched[index][0]) };
+    }
+
+    function verifiedProofArtifacts(appState, checkout, proof) {
+      return validateVerifiedPaymentAggregate(appState, proof.id);
     }
 
     function verifyPaymentProof(appState, proofId, now = Date.now()) {
@@ -1573,7 +1654,7 @@
           }
         }
         appState.ui.pendingContext.checkoutDraftId = retry.id;
-        appState.ui.pendingContext.paymentProofId = retryProof?.id ?? null;
+        selectPaymentProofContext(appState, retryProof?.id ?? null);
         return { ok: true, checkoutDraft: retry, proof: retryProof, idempotent: true };
       }
       const timestamp = domainTimestamp(now);
@@ -1623,7 +1704,7 @@
       appState.checkoutDrafts.push(retryCheckout);
       if (retryProof) appState.paymentProofs.push(retryProof);
       appState.ui.pendingContext.checkoutDraftId = retryCheckout.id;
-      appState.ui.pendingContext.paymentProofId = retryProof?.id ?? null;
+      selectPaymentProofContext(appState, retryProof?.id ?? null);
       return { ok: true, checkoutDraft: retryCheckout, proof: retryProof };
     }
 
@@ -1681,18 +1762,22 @@
 
     function normalizeReceipt(appState, value) {
       if (!isRecord(value)) return null;
-      const checkout = appState.checkoutDrafts.find((row) => row.id === normalizedRequiredText(value.checkoutDraftId));
+      const id = typeof value.id === 'string' && value.id === value.id.trim()
+        && RECEIPT_ID_PATTERN.test(value.id) ? value.id : null;
+      const checkoutDraftId = typeof value.checkoutDraftId === 'string'
+        && value.checkoutDraftId === value.checkoutDraftId.trim() ? value.checkoutDraftId : null;
+      const checkout = appState.checkoutDrafts.find((row) => row.id === checkoutDraftId);
       const proofs = checkout ? appState.paymentProofs.filter((proof) => (
         proof.checkoutDraftId === checkout.id && proof.status === 'verified'
       )) : [];
       const proof = proofs.length === 1 ? proofs[0] : null;
       const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
-      return normalizedRequiredText(value.id) && checkout?.status === 'confirmed' && checkout.method !== null
+      return id && checkout?.status === 'confirmed' && checkout.method !== null
         && proof && value.businessId === checkout.businessId && value.method === checkout.method
         && value.tipCents === checkout.tipCents && value.totalCents === checkout.totalCents && createdAt
-        && timestampAtOrAfter(createdAt, checkout.createdAt)
-        && timestampAtOrAfter(createdAt, proof.verifiedAt)
-        ? { id: value.id.trim(), checkoutDraftId: checkout.id, businessId: checkout.businessId,
+        && createdAt === proof.verifiedAt
+        && JSON.stringify(value.lineItems) === JSON.stringify(checkout.lineItems)
+        ? { id, checkoutDraftId: checkout.id, businessId: checkout.businessId,
           method: checkout.method, tipCents: checkout.tipCents, totalCents: checkout.totalCents,
           lineItems: structuredClone(checkout.lineItems), createdAt }
         : null;
@@ -1700,25 +1785,35 @@
 
     function normalizeGuestRewardClaim(appState, value) {
       if (!isRecord(value)) return null;
-      const checkin = appState.guestCheckins.find((row) => row.id === normalizedRequiredText(value.guestCheckinId));
-      const sourceType = normalizedRequiredText(value.sourceType);
-      const sourceId = normalizedRequiredText(value.sourceId);
+      const id = typeof value.id === 'string' && value.id === value.id.trim()
+        && GUEST_REWARD_CLAIM_ID_PATTERN.test(value.id) ? value.id : null;
+      const guestCheckinId = typeof value.guestCheckinId === 'string'
+        && value.guestCheckinId === value.guestCheckinId.trim() ? value.guestCheckinId : null;
+      const checkin = appState.guestCheckins.find((row) => row.id === guestCheckinId);
+      const sourceType = typeof value.sourceType === 'string'
+        && value.sourceType === value.sourceType.trim() ? value.sourceType : null;
+      const sourceId = typeof value.sourceId === 'string'
+        && value.sourceId === value.sourceId.trim() ? value.sourceId : null;
       const proofs = appState.paymentProofs.filter((proof) => proof.id === sourceId && proof.status === 'verified');
       const proof = proofs.length === 1 ? proofs[0] : null;
       const checkout = proof ? appState.checkoutDrafts.find((row) => row.id === proof.checkoutDraftId) : null;
       const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
-      const claimedAt = value.claimedAt === null || validStoredTimestamp(value.claimedAt) ? value.claimedAt : undefined;
-      const status = ['pending', 'claimed'].includes(value.status) ? value.status : null;
-      return normalizedRequiredText(value.id) && checkin && value.businessId === checkin.businessId
+      const claimedAt = value.claimedAt === null || validStoredTimestamp(value.claimedAt)
+        ? value.claimedAt
+        : undefined;
+      const validLifecycle = value.status === 'pending'
+        ? claimedAt === null
+        : value.status === 'claimed' && claimedAt !== undefined && claimedAt !== null
+          && timestampAtOrAfter(claimedAt, createdAt);
+      const expected = checkout ? calculatePaymentProofRewards(checkout)?.find(([type]) => type === sourceType) : null;
+      return id && checkin && value.businessId === checkin.businessId
         && CLAIM_SOURCE_TYPES.has(sourceType) && proof && proof.businessId === checkin.businessId
         && checkout?.guestCheckinId === checkin.id && checkout.businessId === checkin.businessId
-        && Number.isSafeInteger(value.points) && value.points > 0 && status && createdAt && claimedAt !== undefined
-        && timestampAtOrAfter(createdAt, proof.verifiedAt)
-        && ((status === 'pending' && claimedAt === null) || (status === 'claimed' && claimedAt))
-        && (claimedAt === null || timestampAtOrAfter(claimedAt, createdAt))
-        ? { id: value.id.trim(), guestCheckinId: checkin.id, businessId: checkin.businessId,
+        && id.startsWith(`guest-claim-${sourceType}-`) && expected && value.points === expected[1]
+        && validLifecycle && createdAt === proof.verifiedAt
+        ? { id, guestCheckinId: checkin.id, businessId: checkin.businessId,
           sourceType, sourceId, points: value.points,
-          status, createdAt, claimedAt }
+          status: value.status, createdAt, claimedAt }
         : null;
     }
 
@@ -2225,6 +2320,23 @@
       if (paymentId !== null && !appState.directPayments.some((payment) => payment.id === paymentId)) {
         appState.ui.pendingContext.paymentId = null;
       }
+      const proofId = appState.ui.pendingContext.paymentProofId;
+      if (proofId !== null && !appState.paymentProofs.some((proof) => proof.id === proofId)) {
+        appState.ui.pendingContext.paymentProofId = null;
+      }
+      const hasPayment = appState.ui.pendingContext.paymentId !== null;
+      const hasProof = appState.ui.pendingContext.paymentProofId !== null;
+      if (appState.ui.pendingContext.paydoneKind === 'direct_payment' && hasPayment) {
+        appState.ui.pendingContext.paymentProofId = null;
+      } else if (appState.ui.pendingContext.paydoneKind === 'payment_proof' && hasProof) {
+        appState.ui.pendingContext.paymentId = null;
+      } else if (appState.ui.pendingContext.paydoneKind === null && hasPayment !== hasProof) {
+        appState.ui.pendingContext.paydoneKind = hasPayment ? 'direct_payment' : 'payment_proof';
+      } else {
+        appState.ui.pendingContext.paydoneKind = null;
+        appState.ui.pendingContext.paymentId = null;
+        appState.ui.pendingContext.paymentProofId = null;
+      }
       const bookingId = appState.ui.pendingContext.bookingId;
       if (bookingId !== null && !appState.bookingRequests.some((booking) => booking.id === bookingId)) {
         appState.ui.pendingContext.bookingId = null;
@@ -2280,6 +2392,12 @@
         const normalized = typeof incomingValue === 'string' ? incomingValue.trim() : '';
         return { handled: true, value: normalized || null };
       }
+      if (path.join('.') === 'ui.pendingContext.paydoneKind') {
+        return {
+          handled: true,
+          value: ['direct_payment', 'payment_proof'].includes(incomingValue) ? incomingValue : null
+        };
+      }
       if (path.join('.') === 'ui.overlay') {
         return { handled: true, value: incomingValue === null || isRecord(incomingValue) ? structuredClone(incomingValue) : structuredClone(defaultValue) };
       }
@@ -2307,6 +2425,43 @@
         return typeof incomingValue === 'number' && Number.isFinite(incomingValue) ? incomingValue : defaultValue;
       }
       return typeof incomingValue === typeof defaultValue ? incomingValue : structuredClone(defaultValue);
+    }
+
+    function reconcileVerifiedPaymentAggregates(appState, rawState = appState) {
+      const invalidCheckoutIds = new Set();
+      const invalidProofIds = new Set();
+      appState.checkoutDrafts.filter((checkout) => checkout.status === 'confirmed').forEach((checkout) => {
+        const proofs = appState.paymentProofs.filter((proof) => (
+          normalizedRequiredText(proof.checkoutDraftId) === checkout.id && proof.status === 'verified'
+        ));
+        if (proofs.length !== 1
+          || !validateVerifiedPaymentAggregate(appState, proofs[0].id, rawState).ok) {
+          invalidCheckoutIds.add(checkout.id);
+          proofs.forEach((proof) => invalidProofIds.add(proof.id));
+        }
+      });
+      appState.paymentProofs.filter((proof) => proof.status === 'verified').forEach((proof) => {
+        const checkout = appState.checkoutDrafts.find((row) => row.id === proof.checkoutDraftId);
+        if (!checkout || checkout.status !== 'confirmed'
+          || !validateVerifiedPaymentAggregate(appState, proof.id, rawState).ok) {
+          invalidProofIds.add(proof.id);
+          if (checkout) invalidCheckoutIds.add(checkout.id);
+        }
+      });
+      appState.paymentProofs.forEach((proof) => {
+        if (invalidCheckoutIds.has(proof.checkoutDraftId)) invalidProofIds.add(proof.id);
+      });
+      if (invalidCheckoutIds.size === 0 && invalidProofIds.size === 0) return;
+      appState.checkoutDrafts = appState.checkoutDrafts.filter((checkout) => !invalidCheckoutIds.has(checkout.id));
+      appState.paymentProofs = appState.paymentProofs.filter((proof) => !invalidProofIds.has(proof.id));
+      appState.receipts = appState.receipts.filter((receipt) => !invalidCheckoutIds.has(receipt.checkoutDraftId));
+      appState.guestRewardClaims = appState.guestRewardClaims.filter((claim) => !invalidProofIds.has(claim.sourceId));
+      if (invalidCheckoutIds.has(appState.ui.pendingContext.checkoutDraftId)) {
+        appState.ui.pendingContext.checkoutDraftId = null;
+      }
+      if (invalidProofIds.has(appState.ui.pendingContext.paymentProofId)) {
+        appState.ui.pendingContext.paymentProofId = null;
+      }
     }
 
     function migrateState(value) {
@@ -2342,6 +2497,7 @@
       migrated.paymentProofs = normalizeList(value.paymentProofs, normalizePaymentProof);
       migrated.receipts = normalizeList(value.receipts, normalizeReceipt);
       migrated.guestRewardClaims = normalizeList(value.guestRewardClaims, normalizeGuestRewardClaim);
+      reconcileVerifiedPaymentAggregates(migrated, value);
       const claimCounts = new Map();
       migrated.guestRewardClaims.forEach((claim) => {
         const key = JSON.stringify([claim.guestCheckinId, claim.sourceType, claim.sourceId]);
@@ -3563,7 +3719,12 @@
       const nextPayments = [...appState.directPayments, payment];
       const nextUi = {
         ...appState.ui,
-        pendingContext: { ...appState.ui.pendingContext, paymentId: payment.id }
+        pendingContext: {
+          ...appState.ui.pendingContext,
+          paymentId: payment.id,
+          paymentProofId: null,
+          paydoneKind: 'direct_payment'
+        }
       };
       appState.directPayments = nextPayments;
       appState.ui = nextUi;
@@ -4266,6 +4427,7 @@
     function showPaydoneView(name, options = {}) {
       const directResult = document.getElementById('direct-payment-result-view');
       directResult?.classList.add('hidden');
+      directResult?.setAttribute('aria-hidden', 'true');
       let activeView = null;
       document.querySelectorAll('[data-paydone-view]').forEach((view) => {
         const active = view.dataset.paydoneView === name;
@@ -4282,13 +4444,18 @@
       document.getElementById(focusTargetId)?.focus({ preventScroll: true });
     }
 
-    function showDirectPaymentResult() {
+    function showDirectPaymentResult(options = {}) {
       const directResult = document.getElementById('direct-payment-result-view');
       directResult?.classList.remove('hidden');
+      directResult?.setAttribute('aria-hidden', 'false');
       document.querySelectorAll('[data-paydone-view]').forEach((view) => {
         view.classList.add('hidden');
         view.setAttribute('aria-hidden', 'true');
       });
+      if (options.focus === false || state.ui.activeScreen !== 'paydone') return;
+      const title = document.getElementById('direct-paydone-title');
+      title?.setAttribute('tabindex', '-1');
+      title?.focus({ preventScroll: true });
     }
 
     function localizedCheckoutItemLabel(draft, item) {
@@ -4342,24 +4509,28 @@
     }
 
     function renderPaydone() {
+      if (state.ui.pendingContext.paydoneKind !== 'payment_proof') return;
       const proof = state.paymentProofs.find((row) => row.id === state.ui.pendingContext.paymentProofId);
       if (!proof) return;
+      const verifiedAggregate = proof.status === 'verified'
+        ? validateVerifiedPaymentAggregate(state, proof.id)
+        : null;
       const viewName = proof.status === 'verified'
-        ? 'confirmed'
+        ? verifiedAggregate.ok ? 'confirmed' : 'rejected'
         : proof.status === 'rejected' ? 'rejected' : 'pending';
       const titleKey = viewName === 'confirmed'
         ? 'paymentConfirmedTitle'
         : viewName === 'rejected' ? 'proofRejected' : 'pendingVerification';
       document.getElementById('paydone-title').textContent = t(titleKey);
       showPaydoneView(viewName, { focus: state.ui.activeScreen === 'paydone' });
-      if (proof.status === 'rejected') {
-        document.getElementById('payment-reject-reason').textContent = proof.rejectReason || t('proofRejected');
+      if (proof.status === 'rejected' || (proof.status === 'verified' && !verifiedAggregate.ok)) {
+        document.getElementById('payment-reject-reason').textContent = proof.status === 'rejected'
+          ? proof.rejectReason || t('proofRejected')
+          : t('verificationFailed');
         return;
       }
       if (proof.status !== 'verified') return;
-      const receipts = state.receipts.filter((row) => row.checkoutDraftId === proof.checkoutDraftId);
-      if (receipts.length !== 1) return;
-      const receipt = receipts[0];
+      const receipt = verifiedAggregate.receipt;
       const list = document.getElementById('confirmed-receipt-items');
       const receiptRows = [...receipt.lineItems];
       if (receipt.tipCents > 0) receiptRows.push({ label: t('tip'), amountCents: receipt.tipCents });
@@ -4970,6 +5141,21 @@
       });
     }
 
+    function resetPaymentProofImageUi(clearInput = true) {
+      pendingProofImageDataUrl = '';
+      const preview = document.getElementById('payment-proof-preview');
+      if (preview) {
+        preview.src = '';
+        preview.removeAttribute('src');
+        preview.classList.add('hidden');
+      }
+      document.getElementById('remove-payment-proof')?.classList.add('hidden');
+      if (clearInput) {
+        const input = document.getElementById('payment-proof-file');
+        if (input) input.value = '';
+      }
+    }
+
     function lookOverlayContent(look) {
       const fragment = document.createElement('div');
       const service = document.createElement('p');
@@ -5473,12 +5659,7 @@
     });
     registerAction('upload-payment-proof', () => document.getElementById('payment-proof-file').click());
     registerAction('remove-payment-proof', () => {
-      pendingProofImageDataUrl = '';
-      const preview = document.getElementById('payment-proof-preview');
-      preview.removeAttribute('src');
-      preview.classList.add('hidden');
-      document.getElementById('payment-proof-file').value = '';
-      document.getElementById('remove-payment-proof').classList.add('hidden');
+      resetPaymentProofImageUi();
       setFieldError('payment-proof-error');
     });
     registerAction('submit-payment-proof', () => {
@@ -5497,11 +5678,7 @@
       }
       if (!result.ok) return setFieldError('payment-proof-error', t('proofSubmitFailed'));
       setFieldError('payment-proof-error');
-      pendingProofImageDataUrl = '';
-      const preview = document.getElementById('payment-proof-preview');
-      preview.removeAttribute('src');
-      preview.classList.add('hidden');
-      document.getElementById('remove-payment-proof').classList.add('hidden');
+      resetPaymentProofImageUi();
       renderApp();
       navigateTo('paydone');
       renderPaydone();
@@ -5874,6 +6051,7 @@
     async function handleChange(event) {
       if (event.target.id === 'payment-proof-file') {
         const file = event.target.files?.[0];
+        resetPaymentProofImageUi(false);
         if (!file) return;
         try {
           pendingProofImageDataUrl = await compressImage(file);
@@ -5883,7 +6061,7 @@
           document.getElementById('remove-payment-proof').classList.remove('hidden');
           setFieldError('payment-proof-error');
         } catch {
-          pendingProofImageDataUrl = '';
+          resetPaymentProofImageUi();
           setFieldError('payment-proof-error', t('invalidImage'));
         }
         return;
@@ -6276,6 +6454,7 @@
     }
 
     function renderPaymentResult() {
+      if (state.ui.pendingContext.paydoneKind !== 'direct_payment') return;
       const payment = state.directPayments.find((item) => item.id === state.ui.pendingContext.paymentId);
       if (!payment) return;
       showDirectPaymentResult();
@@ -6414,17 +6593,17 @@
         state.ui.activeModule = SCREEN_MODULE[screenId];
         state.ui.pendingContext.tipId = null;
       }
-      const hasPendingPaymentResult = state.directPayments.some((payment) => (
-        payment.id === state.ui.pendingContext.paymentId
-      ));
-      const hasPendingProofResult = state.paymentProofs.some((proof) => (
-        proof.id === state.ui.pendingContext.paymentProofId
-      ));
+      const hasPendingPaymentResult = state.ui.pendingContext.paydoneKind === 'direct_payment'
+        && state.directPayments.some((payment) => payment.id === state.ui.pendingContext.paymentId);
+      const hasPendingProofResult = state.ui.pendingContext.paydoneKind === 'payment_proof'
+        && state.paymentProofs.some((proof) => proof.id === state.ui.pendingContext.paymentProofId);
       if (screenId === 'paydone' && !hasPendingPaymentResult && !hasPendingProofResult) {
         screenId = 'pay';
         state.ui.activeScreen = screenId;
         state.ui.activeModule = SCREEN_MODULE[screenId];
         state.ui.pendingContext.paymentId = null;
+        state.ui.pendingContext.paymentProofId = null;
+        state.ui.pendingContext.paydoneKind = null;
       }
       if (screenId === 'book3' && !state.bookingRequests.some((booking) => booking.id === state.ui.pendingContext.bookingId)) {
         screenId = 'book1';
@@ -6519,8 +6698,10 @@
       createCheckoutDraft,
       setCheckoutTip,
       setCheckoutMethod,
+      calculatePaymentProofRewards,
       submitCheckoutWithoutUpload,
       submitPaymentProof,
+      validateVerifiedPaymentAggregate,
       verifyPaymentProof,
       rejectPaymentProof,
       removePaymentProofImage,
