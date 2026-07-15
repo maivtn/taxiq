@@ -1255,8 +1255,27 @@
         )).length === 1;
     }
 
+    function canonicalGuestOwnerForCheckout(appState, checkout) {
+      if (!Array.isArray(appState?.guestCheckins) || !isRecord(checkout)
+        || typeof checkout.guestCheckinId !== 'string'
+        || checkout.guestCheckinId !== checkout.guestCheckinId.trim()) return null;
+      const owners = appState.guestCheckins.filter((row) => (
+        isRecord(row) && normalizedRequiredText(row.id) === checkout.guestCheckinId
+      ));
+      if (owners.length !== 1 || owners[0].id !== checkout.guestCheckinId) return null;
+      const owner = owners[0];
+      const normalized = normalizeGuestCheckin(appState, owner);
+      return normalized && recordMatchesCanonicalFields(owner, normalized) ? owner : null;
+    }
+
+    function paymentProofCollectionsPassIdPreflight(appState) {
+      return collectionHasUniqueCanonicalIds(appState?.receipts, RECEIPT_ID_PATTERN)
+        && collectionHasUniqueCanonicalIds(appState?.guestRewardClaims, GUEST_REWARD_CLAIM_ID_PATTERN);
+    }
+
     function canonicalProofContext(appState, proofId) {
-      if (!Array.isArray(appState?.paymentProofs) || typeof proofId !== 'string'
+      if (!Array.isArray(appState?.paymentProofs) || !Array.isArray(appState?.checkoutDrafts)
+        || !paymentProofCollectionsPassIdPreflight(appState) || typeof proofId !== 'string'
         || proofId !== proofId.trim() || !PAYMENT_PROOF_ID_PATTERN.test(proofId)) {
         return { ok: false, code: 'proof_not_found' };
       }
@@ -1274,9 +1293,7 @@
       if (checkoutMatches.length !== 1 || checkoutMatches[0].id !== checkoutId
         || proof.checkoutDraftId !== checkoutId) return { ok: false, code: 'invalid_proof' };
       const checkout = checkoutMatches[0];
-      const guestCheckin = Array.isArray(appState.guestCheckins)
-        ? appState.guestCheckins.find((row) => row.id === checkout.guestCheckinId)
-        : null;
+      const guestCheckin = canonicalGuestOwnerForCheckout(appState, checkout);
       const linkedProofs = appState.paymentProofs.filter((row) => (
         isRecord(row) && normalizedRequiredText(row.checkoutDraftId) === checkout.id
       ));
@@ -4165,6 +4182,7 @@
         businessMethodDisabled: 'Tiệm chưa bật phương thức này.', transactionFailed: 'Không thể lưu giao dịch. Vui lòng thử lại.',
         addPhotoDetail: 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.', imageReadFailed: 'Không thể đọc ảnh này.',
         verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
+        paymentIntegrityTitle: 'Không thể xác minh biên nhận', paymentIntegrityDetail: 'Dữ liệu xác minh không nhất quán. Không thể thử lại thanh toán này một cách an toàn.', returnHome: 'Về trang chủ',
         inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Nhập họ tên, số điện thoại US 10 số và lựa chọn hợp lệ.', noPreference: 'Không yêu cầu', notAvailable: 'Chưa có thông tin', guestCheckinSuccess: 'Đã check-in cho khách. Điểm đang chờ xác nhận.', guestNotFound: 'Không tìm thấy lượt check-in của khách.', serviceNotFound: 'Không tìm thấy dịch vụ đã chọn.', checkoutFailed: 'Không thể chuẩn bị thanh toán. Vui lòng thử lại.', selectPaymentMethod: 'Chọn phương thức thanh toán để tiếp tục.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', invalidImage: 'Chỉ dùng ảnh JPEG hoặc PNG hợp lệ.', proofSavedWithoutImage: 'Bộ nhớ ảnh đã đầy; đã lưu bằng chứng không kèm ảnh.', proofSubmitFailed: 'Không thể gửi bằng chứng thanh toán.', verificationFailed: 'Không thể cập nhật xác minh thanh toán.', proofRejected: 'Bằng chứng thanh toán đã bị từ chối.', createAccount: 'Tạo tài khoản NEXORA', continueGuest: 'Tiếp tục với tư cách khách', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
         cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
@@ -4197,6 +4215,7 @@
         businessMethodDisabled: 'The business has not enabled this method.', transactionFailed: 'Could not save the transaction. Please try again.',
         addPhotoDetail: 'The production app will open your device photo picker.', imageReadFailed: 'Could not read this image.',
         verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
+        paymentIntegrityTitle: 'Receipt could not be verified', paymentIntegrityDetail: 'Verification data is inconsistent. This payment cannot be retried safely.', returnHome: 'Return Home',
         inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Enter a name, a 10-digit US phone number and valid selections.', noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in. Points are pending confirmation.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'The selected service was not found.', checkoutFailed: 'Could not prepare checkout. Please try again.', selectPaymentMethod: 'Select a payment method to continue.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', invalidImage: 'Use a valid JPEG or PNG image.', proofSavedWithoutImage: 'Image storage is full; proof details were saved without the image.', proofSubmitFailed: 'Could not submit payment proof.', verificationFailed: 'Could not update payment verification.', proofRejected: 'The payment proof was rejected.', createAccount: 'Create NEXORA Account', continueGuest: 'Continue as Guest', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
         cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
@@ -4458,6 +4477,39 @@
       title?.focus({ preventScroll: true });
     }
 
+    function setPaymentIntegrityPresentation(integrityError) {
+      for (const selector of [
+        '[data-action="replace-payment-proof"]',
+        '[data-action="pay-at-counter"]'
+      ]) {
+        const control = document.querySelector(selector);
+        if (!control) continue;
+        control.disabled = integrityError;
+        control.classList.toggle('hidden', integrityError);
+        control.setAttribute('aria-disabled', String(integrityError));
+        control.setAttribute('aria-hidden', String(integrityError));
+      }
+      const rejectedView = document.getElementById('payment-rejected-view');
+      if (!rejectedView) return;
+      let safeAction = [...rejectedView.children].find((child) => (
+        child.id === 'payment-integrity-safe-action'
+      ));
+      if (!safeAction && integrityError) {
+        safeAction = document.createElement('button');
+        safeAction.id = 'payment-integrity-safe-action';
+        safeAction.type = 'button';
+        safeAction.className = 'app-button-secondary mt-3 w-full';
+        safeAction.dataset.action = 'navigate';
+        safeAction.dataset.target = 'home';
+        rejectedView.append(safeAction);
+      }
+      if (!safeAction) return;
+      safeAction.textContent = t('returnHome');
+      safeAction.disabled = false;
+      safeAction.classList.toggle('hidden', !integrityError);
+      safeAction.setAttribute('aria-hidden', String(!integrityError));
+    }
+
     function localizedCheckoutItemLabel(draft, item) {
       if (item.type !== 'service') return item.label;
       const guestCheckin = state.guestCheckins.find((row) => row.id === draft.guestCheckinId);
@@ -4515,18 +4567,25 @@
       const verifiedAggregate = proof.status === 'verified'
         ? validateVerifiedPaymentAggregate(state, proof.id)
         : null;
+      const integrityError = proof.status === 'verified' && !verifiedAggregate.ok;
       const viewName = proof.status === 'verified'
-        ? verifiedAggregate.ok ? 'confirmed' : 'rejected'
+        ? integrityError ? 'rejected' : 'confirmed'
         : proof.status === 'rejected' ? 'rejected' : 'pending';
-      const titleKey = viewName === 'confirmed'
+      const titleKey = integrityError
+        ? 'paymentIntegrityTitle'
+        : viewName === 'confirmed'
         ? 'paymentConfirmedTitle'
         : viewName === 'rejected' ? 'proofRejected' : 'pendingVerification';
       document.getElementById('paydone-title').textContent = t(titleKey);
+      document.getElementById('payment-rejected-title').textContent = t(
+        integrityError ? 'paymentIntegrityTitle' : 'proofRejected'
+      );
+      setPaymentIntegrityPresentation(integrityError);
       showPaydoneView(viewName, { focus: state.ui.activeScreen === 'paydone' });
-      if (proof.status === 'rejected' || (proof.status === 'verified' && !verifiedAggregate.ok)) {
+      if (proof.status === 'rejected' || integrityError) {
         document.getElementById('payment-reject-reason').textContent = proof.status === 'rejected'
           ? proof.rejectReason || t('proofRejected')
-          : t('verificationFailed');
+          : t('paymentIntegrityDetail');
         return;
       }
       if (proof.status !== 'verified') return;

@@ -3741,6 +3741,69 @@ function seedPendingProof(api, app, options = {}) {
   return { checkout, proof: result.proof };
 }
 
+test('Task 4 round 2 preflights owners and all artifact IDs before verify reject or retry', () => {
+  const receiptId = 'receipt-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+  const claimId = 'guest-claim-visit_spend-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+  const variants = [
+    ['duplicate semantic guest owner', (app) => {
+      app.guestCheckins.push(structuredClone(app.guestCheckins[0]));
+    }],
+    ['noncanonical owner phone', (app) => {
+      app.guestCheckins[0].phone = '(832) 555-0198';
+    }],
+    ['noncanonical raw owner identity', (app) => {
+      app.guestCheckins[0].name = ` ${app.guestCheckins[0].name} `;
+    }],
+    ['unrelated malformed receipt ID', (app) => {
+      app.receipts.push({ id: 'receipt-not-a-uuid', checkoutDraftId: 'checkout-unrelated' });
+    }],
+    ['unrelated semantic-duplicate receipt IDs', (app) => {
+      app.receipts.push(
+        { id: receiptId, checkoutDraftId: 'checkout-unrelated-a' },
+        { id: receiptId, checkoutDraftId: 'checkout-unrelated-b' }
+      );
+    }],
+    ['unrelated malformed claim ID', (app) => {
+      app.guestRewardClaims.push({ id: 'guest-claim-tip_bonus-not-a-uuid', sourceId: 'proof-unrelated' });
+    }],
+    ['unrelated semantic-duplicate claim IDs', (app) => {
+      app.guestRewardClaims.push(
+        { id: claimId, sourceId: 'proof-unrelated-a' },
+        { id: claimId, sourceId: 'proof-unrelated-b' }
+      );
+    }]
+  ];
+  for (const transition of ['verify', 'reject', 'retry']) {
+    for (const [variant, mutate] of variants) {
+      let uuidCalls = 0;
+      let trackCalls = false;
+      const ids = createUuidSequence();
+      const api = task4Api(testApi({}, { randomUUID: () => {
+        if (trackCalls) uuidCalls += 1;
+        return ids.randomUUID();
+      } }).api);
+      const app = api.createDefaultState();
+      const { proof } = seedPendingProof(api, app, { method: 'Zelle', staffProfileId: null });
+      if (transition === 'retry') {
+        assert.equal(api.rejectPaymentProof(app, proof.id, 'No match', 3000).ok, true);
+      }
+      mutate(app);
+      const beforeBytes = JSON.stringify(app);
+      const before = JSON.parse(beforeBytes);
+      trackCalls = true;
+      const result = transition === 'verify'
+        ? api.verifyPaymentProof(app, proof.id, 3000)
+        : transition === 'reject'
+          ? api.rejectPaymentProof(app, proof.id, 'No match', 3000)
+          : api.retryRejectedCheckout(app, proof.id, 'Pay at Counter', 4000);
+      assert.equal(result.ok, false, `${transition}: ${variant}`);
+      assert.deepEqual(JSON.parse(JSON.stringify(app)), before, `${transition}: ${variant}: deep state`);
+      assert.equal(JSON.stringify(app), beforeBytes, `${transition}: ${variant}: byte state`);
+      assert.equal(uuidCalls, 0, `${transition}: ${variant}: UUID preflight`);
+    }
+  }
+});
+
 test('Task 4 review formulas use subtotal and tip floors plus a fixed direct-pay bonus', () => {
   const api = task4Api(testApi().api);
   const rewardMap = (checkout) => Object.fromEntries(api.calculatePaymentProofRewards(checkout));
@@ -4251,6 +4314,67 @@ test('Task 4 review Pay Done never renders a tampered verified aggregate as conf
   assert.equal(rejected.attributes['aria-hidden'], 'false');
   assert.equal(reason.textContent.length > 0, true);
   assert.equal(document.activeElement, rejectedTitle);
+});
+
+test('Task 4 round 2 integrity error hides unusable retries and executes only safe navigation', () => {
+  const home = createStubElement({ id: 'home', classNames: ['app-screen', 'hidden'] });
+  const paydone = createStubElement({ id: 'paydone', classNames: ['app-screen'] });
+  const direct = createStubElement({ id: 'direct-payment-result-view' });
+  const pending = createStubElement({ id: 'payment-pending-view', dataset: { paydoneView: 'pending' } });
+  const confirmed = createStubElement({ id: 'payment-confirmed-view', dataset: { paydoneView: 'confirmed' }, classNames: ['hidden'] });
+  const rejected = createStubElement({ id: 'payment-rejected-view', dataset: { paydoneView: 'rejected' }, classNames: ['hidden'] });
+  const rejectedTitle = createStubElement({ id: 'payment-rejected-title' });
+  const reason = createStubElement({ id: 'payment-reject-reason' });
+  const replace = createStubElement({ dataset: { action: 'replace-payment-proof' } });
+  const counter = createStubElement({ dataset: { action: 'pay-at-counter' } });
+  replace.closest = (selector) => selector === '[data-action]' ? replace : null;
+  counter.closest = (selector) => selector === '[data-action]' ? counter : null;
+  const document = createDocumentStub({
+    screenNodes: [home, paydone],
+    extraElements: [direct, pending, confirmed, rejected, rejectedTitle, reason, replace, counter,
+      createStubElement({ id: 'payment-pending-title' }), createStubElement({ id: 'payment-confirmed-title' }),
+      createStubElement({ id: 'confirmed-receipt-items' }), createStubElement({ id: 'confirmed-receipt-total' })],
+    selectorNodes: {
+      '[data-paydone-view]': [pending, confirmed, rejected],
+      '[data-action="replace-payment-proof"]': replace,
+      '[data-action="pay-at-counter"]': counter
+    }
+  });
+  const ids = createUuidSequence();
+  const { context } = testApi({}, { document, randomUUID: () => ids.randomUUID() });
+  vm.runInContext(`
+    const checkout = createCheckoutDraft(state, {
+      guestCheckinId: createGuestCheckin(state,
+        (stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'),
+        { name: 'Amy', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }), 1000).guestCheckin.id
+    }, 1000).checkoutDraft;
+    setCheckoutMethod(state, checkout.id, 'Zelle');
+    const proof = submitPaymentProof(state, { checkoutDraftId: checkout.id, note: '', imageDataUrl: '' }, 2000).proof;
+    verifyPaymentProof(state, proof.id, 3000);
+    state.guestRewardClaims[0].points += 1;
+    state.ui.pendingContext.paydoneKind = 'payment_proof';
+    state.ui.activeScreen = 'paydone';
+    globalThis.integrityStateSnapshot = JSON.stringify(state);
+  `, context);
+
+  context.renderPaydone();
+  assert.equal(rejected.attributes['aria-hidden'], 'false');
+  for (const control of [replace, counter]) {
+    assert.equal(control.disabled, true);
+    assert.equal(control.classList.contains('hidden'), true);
+    assert.equal(control.attributes['aria-hidden'], 'true');
+    context.handleAction({ target: control });
+  }
+  assert.equal(vm.runInContext('JSON.stringify(state) === integrityStateSnapshot', context), true);
+  const safe = rejected.children.find((child) => child.id === 'payment-integrity-safe-action');
+  assert.ok(safe, 'integrity state must expose a safe action');
+  assert.equal(safe.dataset.action, 'navigate');
+  assert.equal(safe.dataset.target, 'home');
+  assert.equal(safe.classList.contains('hidden'), false);
+  safe.closest = (selector) => selector === '[data-action]' ? safe : null;
+  context.handleAction({ target: safe });
+  assert.equal(vm.runInContext('state.ui.activeScreen', context), 'home');
+  assert.equal(home.classList.contains('hidden'), false);
 });
 
 test('Task 4 review CTAs execute Replace, Create Account and Continue Guest without consuming claims', () => {
