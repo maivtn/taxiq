@@ -33,13 +33,14 @@ function createClassList(initial = []) {
   };
 }
 
-function createStubElement({ id = '', dataset = {}, textContent = '', placeholder = '', classNames = [], onFocus = null, querySelectors = {} } = {}) {
+function createStubElement({ id = '', dataset = {}, textContent = '', placeholder = '', value = '', classNames = [], onFocus = null, querySelectors = {} } = {}) {
   const attributes = {};
   return {
     id,
     dataset,
     textContent,
     placeholder,
+    value,
     attributes,
     children: [],
     classList: createClassList(classNames),
@@ -64,6 +65,7 @@ function createStubElement({ id = '', dataset = {}, textContent = '', placeholde
     },
     closest() { return null; },
     click() { this.clicked = true; },
+    select() { this.selected = true; },
     focus() { onFocus?.(this); }
   };
 }
@@ -132,6 +134,7 @@ function createDocumentStub({
 function testApi(seed = {}, {
   skipInit = true,
   document,
+  navigator,
   randomUUID = () => '00000000-0000-4000-8000-000000000001',
   open = () => null,
   url = URL,
@@ -151,6 +154,7 @@ function testApi(seed = {}, {
     open,
     lucide: null
   };
+  if (navigator) window.navigator = navigator;
   if (document) window.document = document;
   const globals = {
     window,
@@ -216,6 +220,10 @@ function customerJourneyFixture() {
       status: 'rewarded', rewardPoints: 50, businessId: 'bitcoin-nail-bar',
       createdAt: '2026-07-15T02:50:00.000Z', joinedAt: '2026-07-15T03:00:00.000Z',
       rewardedAt: '2026-07-15T03:16:00.000Z'
+    }],
+    ledger: [{
+      id: 'led-referral-1', businessId: 'bitcoin-nail-bar', type: 'referral', pointsDelta: 50,
+      refType: 'referral', refId: 'referral-1', createdAt: '2026-07-15T03:16:00.000Z'
     }]
   };
 }
@@ -6044,4 +6052,374 @@ test('completeCheckin rejects malformed domain collections before mutation', () 
     assert.equal(api.completeCheckin(app, pending.checkin, 5000).code, 'invalid_state', field);
     assert.equal(JSON.stringify(app), before, field);
   }
+});
+
+test('referral invite normalizes a friend phone, blocks self-referral, and is lifetime-idempotent', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, { randomUUID: () => {
+    uuidCalls += 1;
+    return '00000000-0000-4000-8000-000000000201';
+  } });
+  const app = api.createDefaultState();
+  const invalidBefore = JSON.stringify(app);
+  assert.equal(api.createReferralInvite(app, { friendPhone: '555' }, 1000).code, 'invalid_phone');
+  assert.equal(api.createReferralInvite(app, { friendPhone: '(832) 555-0148' }, 1000).code, 'self_referral');
+  assert.equal(JSON.stringify(app), invalidBefore);
+  assert.equal(uuidCalls, 0);
+
+  const created = api.createReferralInvite(app, { friendPhone: '(832) 555-0111' }, 1000);
+  assert.equal(created.ok, true);
+  assert.equal(created.referral.friendPhone, '8325550111');
+  assert.equal(created.referral.status, 'invited');
+  assert.equal(uuidCalls, 1);
+  const repeated = api.createReferralInvite(app, { friendPhone: '832-555-0111' }, 2000);
+  assert.equal(repeated.idempotent, true);
+  assert.equal(repeated.referral.id, created.referral.id);
+  assert.equal(app.referrals.length, 1);
+  assert.equal(uuidCalls, 1);
+});
+
+test('referral points require joined then a qualifying paid visit and pair exactly with one business ledger entry', () => {
+  let counter = 210;
+  const { api } = testApi({}, { randomUUID: () => `00000000-0000-4000-8000-${String(counter++).padStart(12, '0')}` });
+  const app = api.createDefaultState();
+  const created = api.createReferralInvite(app, { friendPhone: '8325550112' }, 1000);
+  const beforePremature = JSON.stringify(app);
+  assert.equal(api.releaseReferralReward(app, created.referral.id, 'bitcoin-nail-bar', 1500).code, 'paid_visit_required');
+  assert.equal(JSON.stringify(app), beforePremature);
+  assert.equal(app.ledger.some((entry) => entry.refId === created.referral.id), false);
+
+  const joined = api.advanceReferral(app, created.referral.id, 'joined', 2000);
+  assert.equal(joined.referral.status, 'joined');
+  assert.equal(app.ledger.some((entry) => entry.refId === created.referral.id), false);
+  const beforePoints = app.balances['bitcoin-nail-bar'].points;
+  const rewarded = api.releaseReferralReward(app, created.referral.id, 'bitcoin-nail-bar', 3000);
+  assert.equal(rewarded.ok, true);
+  assert.equal(rewarded.points, 50);
+  assert.equal(rewarded.referral.status, 'rewarded');
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforePoints + 50);
+  const entries = app.ledger.filter((entry) => entry.refId === created.referral.id);
+  assert.equal(entries.length, 1);
+  assert.deepEqual({
+    businessId: entries[0].businessId,
+    type: entries[0].type,
+    pointsDelta: entries[0].pointsDelta,
+    refType: entries[0].refType,
+    createdAt: entries[0].createdAt
+  }, {
+    businessId: 'bitcoin-nail-bar', type: 'referral', pointsDelta: 50,
+    refType: 'referral', createdAt: new Date(3000).toISOString()
+  });
+});
+
+test('referral transitions reject bad chronology and invalid events without mutation', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const created = api.createReferralInvite(app, { friendPhone: '8325550113' }, 2000);
+  for (const [event, now] of [['paid', 3000], ['joined', 1999]]) {
+    const before = JSON.stringify(app);
+    const result = api.advanceReferral(app, created.referral.id, event, now);
+    assert.equal(result.ok, false);
+    assert.equal(JSON.stringify(app), before);
+  }
+  assert.equal(api.advanceReferral(app, created.referral.id, 'joined', 3000).ok, true);
+  const joinedBefore = JSON.stringify(app);
+  assert.equal(api.advanceReferral(app, created.referral.id, 'joined', Number.NaN).idempotent, true);
+  assert.equal(JSON.stringify(app), joinedBefore);
+});
+
+test('referral idempotency is fail-closed for cross-business and ledger tampering', () => {
+  let counter = 220;
+  const { api } = testApi({}, { randomUUID: () => `00000000-0000-4000-8000-${String(counter++).padStart(12, '0')}` });
+  const app = api.createDefaultState();
+  const created = api.createReferralInvite(app, { friendPhone: '8325550114' }, 1000);
+  api.advanceReferral(app, created.referral.id, 'joined', 2000);
+  api.releaseReferralReward(app, created.referral.id, 'bitcoin-nail-bar', 3000);
+  const rewardedBefore = JSON.stringify(app);
+  assert.equal(api.releaseReferralReward(app, created.referral.id, 'bitcoin-nail-bar', 4000).idempotent, true);
+  assert.equal(JSON.stringify(app), rewardedBefore);
+  assert.equal(api.releaseReferralReward(app, created.referral.id, 'golden-glow-spa', 4000).ok, false);
+  assert.equal(JSON.stringify(app), rewardedBefore);
+
+  app.ledger.find((entry) => entry.refId === created.referral.id).pointsDelta = 49;
+  const tamperedBefore = JSON.stringify(app);
+  assert.equal(api.releaseReferralReward(app, created.referral.id, 'bitcoin-nail-bar', 5000).code, 'invalid_referral_state');
+  assert.equal(api.advanceReferral(app, created.referral.id, 'joined', 5000).code, 'invalid_referral_state');
+  assert.equal(api.createReferralInvite(app, { friendPhone: '8325550114' }, 5000).code, 'invalid_referral_state');
+  assert.equal(JSON.stringify(app), tamperedBefore);
+});
+
+test('referral creation validates time, UUID, collisions, canonical owner, and duplicate chains before mutation', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, { randomUUID: () => {
+    uuidCalls += 1;
+    return '00000000-0000-4000-8000-000000000230';
+  } });
+  const app = api.createDefaultState();
+  const initial = JSON.stringify(app);
+  assert.equal(api.createReferralInvite(app, { friendPhone: '8325550120' }, Number.NaN).code, 'invalid_time');
+  assert.equal(uuidCalls, 0);
+  assert.equal(JSON.stringify(app), initial);
+
+  const first = api.createReferralInvite(app, { friendPhone: '8325550120' }, 1000);
+  assert.equal(first.ok, true);
+  const collisionBefore = JSON.stringify(app);
+  assert.equal(api.createReferralInvite(app, { friendPhone: '8325550121' }, 2000).code, 'id_generation_failed');
+  assert.equal(JSON.stringify(app), collisionBefore);
+
+  const duplicate = structuredClone(app.referrals[0]);
+  duplicate.id = 'referral-duplicate';
+  app.referrals.push(duplicate);
+  const duplicateBefore = JSON.stringify(app);
+  assert.equal(api.createReferralInvite(app, { friendPhone: '8325550122' }, 3000).code, 'invalid_referral_state');
+  assert.equal(JSON.stringify(app), duplicateBefore);
+
+  const owner = api.createDefaultState();
+  owner.profile.referralCode = ' jessica50 ';
+  const ownerBefore = JSON.stringify(owner);
+  assert.equal(api.createReferralInvite(owner, { friendPhone: '8325550122' }, 3000).code, 'invalid_referral_owner');
+  assert.equal(JSON.stringify(owner), ownerBefore);
+
+  const mismatchedOwner = api.createDefaultState();
+  mismatchedOwner.session.phone = '8325550199';
+  const mismatchBefore = JSON.stringify(mismatchedOwner);
+  assert.equal(api.createReferralInvite(mismatchedOwner, { friendPhone: '8325550122' }, 3000).code, 'invalid_referral_owner');
+  assert.equal(JSON.stringify(mismatchedOwner), mismatchBefore);
+});
+
+test('referral release rolls back atomically on UUID failure or ledger-id collision', () => {
+  const uuids = [
+    '00000000-0000-4000-8000-000000000240',
+    'not-a-uuid'
+  ];
+  const { api } = testApi({}, { randomUUID: () => uuids.shift() });
+  const app = api.createDefaultState();
+  const created = api.createReferralInvite(app, { friendPhone: '8325550123' }, 1000);
+  api.advanceReferral(app, created.referral.id, 'joined', 2000);
+  const before = JSON.stringify(app);
+  assert.equal(api.releaseReferralReward(app, created.referral.id, 'bitcoin-nail-bar', 3000).code, 'id_generation_failed');
+  assert.equal(JSON.stringify(app), before);
+
+  const collisionUuid = '00000000-0000-4000-8000-000000000241';
+  const collisionSetup = testApi({}, { randomUUID: (() => {
+    const values = ['00000000-0000-4000-8000-000000000242', collisionUuid];
+    return () => values.shift();
+  })() });
+  const collisionApp = collisionSetup.api.createDefaultState();
+  const collisionReferral = collisionSetup.api.createReferralInvite(collisionApp, { friendPhone: '8325550124' }, 1000);
+  collisionSetup.api.advanceReferral(collisionApp, collisionReferral.referral.id, 'joined', 2000);
+  collisionApp.ledger.unshift({
+    id: `ledger-${collisionUuid}`, businessId: 'bitcoin-nail-bar', type: 'visit', pointsDelta: 1,
+    refType: 'visit', refId: 'visit-collision', createdAt: new Date(1500).toISOString()
+  });
+  const collisionBefore = JSON.stringify(collisionApp);
+  assert.equal(collisionSetup.api.releaseReferralReward(collisionApp, collisionReferral.referral.id, 'bitcoin-nail-bar', 3000).code, 'id_generation_failed');
+  assert.equal(JSON.stringify(collisionApp), collisionBefore);
+});
+
+test('rewarded friend remains lifetime-idempotent and cannot create a second reward chain', () => {
+  let counter = 250;
+  const { api } = testApi({}, { randomUUID: () => `00000000-0000-4000-8000-${String(counter++).padStart(12, '0')}` });
+  const app = api.createDefaultState();
+  const first = api.createReferralInvite(app, { friendPhone: '8325550125' }, 1000);
+  api.advanceReferral(app, first.referral.id, 'joined', 2000);
+  api.releaseReferralReward(app, first.referral.id, 'bitcoin-nail-bar', 3000);
+  const before = JSON.stringify(app);
+  const repeated = api.createReferralInvite(app, { friendPhone: '(832) 555-0125' }, 4000);
+  assert.equal(repeated.idempotent, true);
+  assert.equal(repeated.referral.id, first.referral.id);
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(app.ledger.filter((entry) => entry.refId === first.referral.id).length, 1);
+});
+
+test('rewarded referral replay rejects malformed IDs and business balances byte-for-byte', () => {
+  let counter = 255;
+  const { api } = testApi({}, { randomUUID: () => `00000000-0000-4000-8000-${String(counter++).padStart(12, '0')}` });
+  const canonical = api.createDefaultState();
+  const created = api.createReferralInvite(canonical, { friendPhone: '8325550129' }, 1000);
+  api.advanceReferral(canonical, created.referral.id, 'joined', 2000);
+  api.releaseReferralReward(canonical, created.referral.id, 'bitcoin-nail-bar', 3000);
+
+  for (const mutate of [
+    (app) => { app.referrals[0].id = 'bad'; app.ledger.find((entry) => entry.refType === 'referral').refId = 'bad'; },
+    (app) => { app.ledger.find((entry) => entry.refType === 'referral').id = 'bad'; },
+    (app) => { app.balances['bitcoin-nail-bar'].points = -1; }
+  ]) {
+    const app = structuredClone(canonical);
+    mutate(app);
+    const before = JSON.stringify(app);
+    assert.equal(api.releaseReferralReward(app, app.referrals[0].id, 'bitcoin-nail-bar', 4000).ok, false);
+    assert.equal(JSON.stringify(app), before);
+  }
+});
+
+test('referral migration preserves canonical history and quarantines ambiguous or unpaired artifacts', () => {
+  const { api } = testApi();
+  const referral = {
+    id: 'referral-legacy-1', referrerId: 'cust-jessica', code: 'JESSICA50', friendPhone: '8325550126',
+    status: 'rewarded', rewardPoints: 50, businessId: 'bitcoin-nail-bar',
+    createdAt: new Date(1000).toISOString(), joinedAt: new Date(2000).toISOString(), rewardedAt: new Date(3000).toISOString()
+  };
+  const referralLedger = {
+    id: 'led-referral-legacy-1', businessId: 'bitcoin-nail-bar', type: 'referral', pointsDelta: 50,
+    refType: 'referral', refId: referral.id, createdAt: referral.rewardedAt
+  };
+  const unrelated = {
+    id: 'led-unrelated', businessId: 'bitcoin-nail-bar', type: 'visit', pointsDelta: 3,
+    refType: 'visit', refId: 'visit-unrelated', createdAt: new Date(500).toISOString()
+  };
+  const migrated = api.migrateState({ referrals: [referral], ledger: [referralLedger, unrelated] });
+  assert.deepEqual(migrated.referrals.map((row) => row.id), [referral.id]);
+  assert.equal(migrated.ledger.some((entry) => entry.id === referralLedger.id), true);
+  assert.equal(migrated.ledger.some((entry) => entry.id === unrelated.id), true);
+
+  const ambiguous = api.migrateState({
+    referrals: [referral, { ...referral, id: 'referral-legacy-2' }],
+    ledger: [referralLedger, unrelated]
+  });
+  assert.deepEqual(ambiguous.referrals, []);
+  assert.equal(ambiguous.ledger.some((entry) => entry.refType === 'referral'), false);
+  assert.equal(ambiguous.ledger.some((entry) => entry.id === unrelated.id), true);
+
+  const missingPair = api.migrateState({ referrals: [referral], ledger: [unrelated] });
+  assert.deepEqual(missingPair.referrals, []);
+
+  const crossTypeCollision = api.migrateState({
+    referrals: [referral],
+    ledger: [referralLedger, { ...unrelated, id: referralLedger.id }]
+  });
+  assert.deepEqual(crossTypeCollision.referrals, []);
+  assert.equal(crossTypeCollision.ledger.some((entry) => entry.id === referralLedger.id), false);
+
+  const orphanArtifact = {
+    ...referralLedger,
+    id: 'led-referral-orphan',
+    refId: 'referral-missing'
+  };
+  assert.doesNotThrow(() => api.migrateState({ referrals: [], ledger: [orphanArtifact, unrelated] }));
+  const orphanMigrated = api.migrateState({ referrals: [], ledger: [orphanArtifact, unrelated] });
+  assert.equal(orphanMigrated.ledger.some((entry) => entry.id === orphanArtifact.id), false);
+  assert.equal(orphanMigrated.ledger.some((entry) => entry.id === unrelated.id), true);
+});
+
+test('referral state survives save and reload with its exact paired ledger', () => {
+  let counter = 260;
+  const setup = testApi({}, { randomUUID: () => `00000000-0000-4000-8000-${String(counter++).padStart(12, '0')}` });
+  const app = setup.api.createDefaultState();
+  const created = setup.api.createReferralInvite(app, { friendPhone: '8325550127' }, 1000);
+  setup.api.advanceReferral(app, created.referral.id, 'joined', 2000);
+  setup.api.releaseReferralReward(app, created.referral.id, 'golden-glow-spa', 3000);
+  setup.api.saveState(app, setup.storage);
+  const loaded = setup.api.loadState(setup.storage);
+  assert.equal(loaded.referrals.length, 1);
+  assert.equal(loaded.referrals[0].businessId, 'golden-glow-spa');
+  assert.equal(loaded.ledger.filter((entry) => entry.refId === created.referral.id).length, 1);
+});
+
+test('referral QR renders 81 deterministic safe cells', () => {
+  const host = createStubElement({ id: 'referral-qr' });
+  const document = createDocumentStub({ extraElements: [host] });
+  const { context } = testApi({}, { document });
+  context.renderReferralQr('JESSICA50');
+  const first = host.children.map((cell) => cell.className);
+  assert.equal(host.children.length, 81);
+  assert.equal(host.children.every((cell) => cell.tagName === 'SPAN'), true);
+  assert.equal(host.children.every((cell) => cell.textContent === '' && cell.innerHTML === ''), true);
+  context.renderReferralQr('JESSICA50');
+  assert.deepEqual(host.children.map((cell) => cell.className), first);
+});
+
+test('referral history masks phones and builds dynamic controls through safe text nodes', () => {
+  const ids = ['referral-code', 'referral-qr', 'referral-invited-count', 'referral-joined-count',
+    'referral-rewarded-count', 'referral-invite-list'];
+  const elements = ids.map((id) => createStubElement({ id }));
+  const document = createDocumentStub({ extraElements: elements });
+  const { context } = testApi({}, { document });
+  vm.runInContext("commitState((draft) => createReferralInvite(draft, { friendPhone: '8325550130' }, 1000))", context);
+  context.renderReferrals();
+  const list = document.getElementById('referral-invite-list');
+  const row = list.children[0];
+  assert.equal(list.innerHTML, '');
+  assert.equal(row.children[0].children[0].textContent, '••• 0130');
+  assert.equal(row.children[1].dataset.action, 'simulate-referral-joined');
+  assert.equal(row.children[1].dataset.referralId.startsWith('referral-'), true);
+});
+
+test('referral sharing uses native share, clipboard fallback, manual fallback, and treats AbortError as failure', async () => {
+  const { api } = testApi();
+  const url = api.buildReferralUrl({ code: 'JESSICA 50', id: 'referral/a?b' });
+  assert.equal(url, 'https://nexoratouch.com/r/JESSICA%2050?invite=referral%2Fa%3Fb');
+  let nativePayload;
+  const native = await api.shareReferralLink(url, {
+    share: async (payload) => { nativePayload = payload; }
+  }, 'Invite safely');
+  assert.equal(native.ok, true);
+  assert.equal(native.method, 'native');
+  assert.equal(nativePayload.url, url);
+
+  let copied;
+  const clipboard = await api.shareReferralLink(url, {
+    clipboard: { writeText: async (value) => { copied = value; } }
+  }, 'Invite safely');
+  assert.equal(clipboard.method, 'clipboard');
+  assert.equal(copied, url);
+
+  assert.equal((await api.shareReferralLink(url, {}, 'Invite safely')).code, 'manual_share_required');
+  assert.equal((await api.shareReferralLink(url, {
+    clipboard: { writeText: async () => { throw new Error('denied'); } }
+  }, 'Invite safely')).code, 'manual_share_required');
+  const abort = new Error('cancelled');
+  abort.name = 'AbortError';
+  const cancelled = await api.shareReferralLink(url, { share: async () => { throw abort; } }, 'Invite safely');
+  assert.equal(cancelled.ok, false);
+  assert.equal(cancelled.code, 'share_cancelled');
+});
+
+test('show-referral-qr reveals and focuses the QR with correct ARIA state', () => {
+  const panel = createStubElement({ id: 'referral-qr-panel', classNames: ['hidden'] });
+  panel.setAttribute('aria-hidden', 'true');
+  const qr = createStubElement({ id: 'referral-qr' });
+  const document = createDocumentStub({ extraElements: [panel, qr] });
+  const { context } = testApi({}, { document });
+  const control = createStubElement({ dataset: { action: 'show-referral-qr' } });
+  vm.runInContext("ACTIONS.get('show-referral-qr')", context)(control);
+  assert.equal(panel.classList.contains('hidden'), false);
+  assert.equal(panel.getAttribute('aria-hidden'), 'false');
+  assert.equal(qr.getAttribute('tabindex'), '-1');
+  assert.equal(document.activeElement, qr);
+  assert.equal(control.getAttribute('aria-expanded'), 'true');
+});
+
+test('dynamic referral simulation actions advance joined and paid-visit states', () => {
+  let counter = 270;
+  const ids = ['referral-code', 'referral-qr', 'referral-invited-count', 'referral-joined-count',
+    'referral-rewarded-count', 'referral-invite-list', 'toast-region', 'form-error-state'];
+  const document = createDocumentStub({ extraElements: ids.map((id) => createStubElement({ id })) });
+  const { context } = testApi({}, {
+    document,
+    randomUUID: () => `00000000-0000-4000-8000-${String(counter++).padStart(12, '0')}`
+  });
+  const created = vm.runInContext("commitState((draft) => createReferralInvite(draft, { friendPhone: '8325550131' }, 1000))", context);
+  const joinedControl = createStubElement({ dataset: { referralId: created.referral.id } });
+  vm.runInContext("ACTIONS.get('simulate-referral-joined')", context)(joinedControl);
+  assert.equal(vm.runInContext("state.referrals[0].status", context), 'joined');
+  const paidControl = createStubElement({ dataset: { referralId: created.referral.id } });
+  vm.runInContext("ACTIONS.get('simulate-referral-paid-visit')", context)(paidControl);
+  assert.equal(vm.runInContext("state.referrals[0].status", context), 'rewarded');
+  assert.equal(vm.runInContext("state.ledger.filter((entry) => entry.refId === state.referrals[0].id).length", context), 1);
+});
+
+test('referral UI is localized, action-complete, standalone, and keeps exactly 31 screens', () => {
+  const source = html();
+  for (const action of ['share-referral', 'show-referral-qr', 'simulate-referral-joined', 'simulate-referral-paid-visit']) {
+    assert.match(source, new RegExp(`registerAction\\('${action}'`));
+  }
+  for (const id of ['referral-friend-phone', 'referral-qr', 'referral-invite-list', 'referral-manual-link']) {
+    assert.match(source, new RegExp(`id="${id}"`));
+  }
+  assert.match(source, /data-en="Invited"[^>]+data-vi="Đã mời"/);
+  assert.match(source, /data-en="Rewarded"[^>]+data-vi="Đã thưởng"/);
+  assert.equal(screenIds(source).length, 31);
+  assert.match(source, /@tailwindcss\/browser/);
+  assert.match(source, /unpkg\.com\/lucide/);
 });

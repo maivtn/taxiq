@@ -57,7 +57,7 @@
   </style>
 </head>
 <body>
-  <template id="referral-copy-contract"><p data-en="Your friend receives points from the first business they check in at. Your reward is released after their first paid visit." data-vi="Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Điểm của bạn chỉ được cộng sau lượt ghé có thanh toán đầu tiên của họ.">Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Điểm của bạn chỉ được cộng sau lượt ghé có thanh toán đầu tiên của họ.</p></template>
+  <template id="referral-copy-contract"><p data-en="Your friend receives points from the first business they check in at. Your 50-point reward is funded by that business and released after their first paid visit." data-vi="Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Phần thưởng 50 điểm của bạn do doanh nghiệp đó tài trợ và chỉ được cộng sau lượt ghé có thanh toán đầu tiên.">Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Phần thưởng 50 điểm của bạn do doanh nghiệp đó tài trợ và chỉ được cộng sau lượt ghé có thanh toán đầu tiên.</p></template>
   <div id="app-shell" class="min-h-dvh lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
     <aside id="desktop-sidebar" class="hidden min-h-dvh border-r border-app-line bg-app-panel lg:sticky lg:top-0 lg:flex lg:flex-col">
       <div class="px-6 py-7">
@@ -271,7 +271,21 @@
           </div>
         </section>
         <section class="app-screen hidden" id="referral" data-ready="true" data-module="profile" aria-labelledby="referral-title">
-          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="profile" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Share the good stuff" data-vi="Chia sẻ điều hay">Chia sẻ điều hay</p><h1 id="referral-title" class="text-2xl font-black" data-en="Invite friends" data-vi="Mời bạn bè">Mời bạn bè</h1></div></div><div class="overflow-hidden rounded-3xl bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,.3),transparent_40%),linear-gradient(135deg,#6d2bf0,#4a23d9_55%,#0757cf)] p-6 text-center sm:p-8"><span class="mx-auto grid size-16 place-items-center rounded-3xl bg-white/15"><i data-lucide="gift" class="size-8" aria-hidden="true"></i></span><h2 class="mt-5 text-2xl font-black" data-en="Give 100, get 50" data-vi="Tặng 100, nhận 50">Tặng 100, nhận 50</h2><p class="mx-auto mt-2 max-w-md text-sm leading-6 text-white/75" data-en="Your friend receives points from the first business they check in at. Your reward is released after their first paid visit." data-vi="Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Điểm của bạn chỉ được cộng sau lượt ghé có thanh toán đầu tiên của họ.">Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Điểm của bạn chỉ được cộng sau lượt ghé có thanh toán đầu tiên của họ.</p><div class="mx-auto mt-6 max-w-sm rounded-2xl bg-black/20 p-4"><span class="text-xs font-bold text-white/60" data-en="Your invite code" data-vi="Mã giới thiệu của bạn">Mã giới thiệu của bạn</span><strong id="referral-code" class="mt-1 block text-2xl tracking-[.2em]">JESSICA50</strong></div><button class="mt-4 min-h-11 rounded-xl bg-white px-5 py-3 text-sm font-black text-app-purple" type="button" data-action="copy-referral"><i data-lucide="copy" class="mr-2 inline size-4" aria-hidden="true"></i><span data-en="Copy invite link" data-vi="Sao chép liên kết mời">Sao chép liên kết mời</span></button></div><div class="app-card mt-4"><h2 class="section-title" data-en="Your impact" data-vi="Kết quả của bạn">Kết quả của bạn</h2><div class="mt-4 grid grid-cols-3 gap-3 text-center"><div class="rounded-xl bg-app-panel p-3"><strong class="block text-xl">6</strong><span class="text-[11px] text-app-muted" data-en="Invited" data-vi="Đã mời">Đã mời</span></div><div class="rounded-xl bg-app-panel p-3"><strong class="block text-xl">4</strong><span class="text-[11px] text-app-muted" data-en="Joined" data-vi="Đã tham gia">Đã tham gia</span></div><div class="rounded-xl bg-app-panel p-3"><strong class="block text-xl text-app-green">200</strong><span class="text-[11px] text-app-muted" data-en="Points earned" data-vi="Điểm đã nhận">Điểm đã nhận</span></div></div></div></div>
+          <div class="mx-auto max-w-2xl">
+            <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="profile" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Business-funded points" data-vi="Điểm do doanh nghiệp tài trợ">Điểm do doanh nghiệp tài trợ</p><h1 id="referral-title" class="text-2xl font-black" data-en="Invite friends" data-vi="Mời bạn bè">Mời bạn bè</h1></div></div>
+            <section id="referral-summary" class="app-card">
+              <div class="flex justify-between gap-3"><div><p class="text-sm font-bold" data-en="Your NEXORA referral code" data-vi="Mã giới thiệu NEXORA của bạn">Mã giới thiệu NEXORA của bạn</p><strong id="referral-code" class="mt-2 block text-3xl tracking-[.16em] text-app-cyan">JESSICA50</strong></div><span class="h-fit rounded-full bg-app-purple/20 px-3 py-1 text-xs font-bold text-app-pink" data-en="Customer" data-vi="Khách hàng">Khách hàng</span></div>
+              <p class="mt-4 text-sm leading-6 text-app-muted" data-en="Your friend receives points from the first business they check in at. You receive 50 points from that business only after their first paid visit." data-vi="Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Bạn chỉ nhận 50 điểm do doanh nghiệp đó tài trợ sau lượt ghé có thanh toán đầu tiên của họ.">Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Bạn chỉ nhận 50 điểm do doanh nghiệp đó tài trợ sau lượt ghé có thanh toán đầu tiên của họ.</p>
+              <label class="mt-4 block text-sm font-bold" for="referral-friend-phone" data-en="Friend phone" data-vi="Số điện thoại bạn bè">Số điện thoại bạn bè</label>
+              <input id="referral-friend-phone" class="app-input mt-2" type="tel" inputmode="tel" autocomplete="tel" data-en-ph="10-digit US phone" data-vi-ph="Số điện thoại US gồm 10 số" placeholder="Số điện thoại US gồm 10 số">
+              <p id="referral-error" class="field-error hidden" role="alert"></p>
+              <div class="mt-4 grid gap-3 sm:grid-cols-2"><button type="button" class="app-button w-full" data-action="share-referral"><i data-lucide="share-2" class="size-4" aria-hidden="true"></i><span data-en="Share referral link" data-vi="Chia sẻ liên kết giới thiệu">Chia sẻ liên kết giới thiệu</span></button><button type="button" class="app-button-secondary w-full" data-action="show-referral-qr" aria-expanded="false" aria-controls="referral-qr-panel"><i data-lucide="qr-code" class="size-4" aria-hidden="true"></i><span data-en="Show prototype QR" data-vi="Hiện QR bản mẫu">Hiện QR bản mẫu</span></button></div>
+              <div id="referral-qr-panel" class="hidden" aria-hidden="true"><div id="referral-qr" class="mx-auto mt-5 grid w-44 grid-cols-9 rounded-2xl bg-white p-3 shadow" role="img" aria-label="Referral QR"></div><p class="mt-2 text-center text-xs text-app-muted" data-en="Prototype QR — share the link for a usable invite." data-vi="QR bản mẫu — hãy chia sẻ liên kết để gửi lời mời có thể dùng.">QR bản mẫu — hãy chia sẻ liên kết để gửi lời mời có thể dùng.</p></div>
+              <div id="referral-manual-share" class="mt-4 hidden"><label class="block text-xs font-bold text-app-muted" for="referral-manual-link" data-en="Copy this link manually" data-vi="Tự sao chép liên kết này">Tự sao chép liên kết này</label><input id="referral-manual-link" class="app-input mt-2" type="text" readonly></div>
+            </section>
+            <section class="mt-4 grid grid-cols-3 gap-3 text-center" aria-label="Referral totals"><div class="app-card p-3"><span class="text-xs text-app-muted" data-en="Invited" data-vi="Đã mời">Đã mời</span><strong id="referral-invited-count" class="mt-1 block text-2xl">0</strong></div><div class="app-card p-3"><span class="text-xs text-app-muted" data-en="Joined" data-vi="Đã tham gia">Đã tham gia</span><strong id="referral-joined-count" class="mt-1 block text-2xl">0</strong></div><div class="app-card p-3"><span class="text-xs text-app-muted" data-en="Rewarded" data-vi="Đã thưởng">Đã thưởng</span><strong id="referral-rewarded-count" class="mt-1 block text-2xl text-app-green">0</strong></div></section>
+            <section class="app-card mt-4"><div class="flex items-center justify-between gap-3"><h2 class="section-title" data-en="Referral history" data-vi="Lịch sử giới thiệu">Lịch sử giới thiệu</h2><i data-lucide="shield-check" class="size-5 text-app-cyan" aria-hidden="true"></i></div><p class="mt-1 text-xs text-app-muted" data-en="Only the final four phone digits are shown on this device." data-vi="Chỉ bốn số điện thoại cuối được hiển thị trên thiết bị này.">Chỉ bốn số điện thoại cuối được hiển thị trên thiết bị này.</p><div id="referral-invite-list" class="mt-3 divide-y divide-app-line" aria-label="Referral history"></div></section>
+          </div>
         </section>
         <section class="app-screen hidden" id="msgprefs" data-ready="true" data-module="profile" aria-labelledby="msgprefs-title">
           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="profile" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="You stay in control" data-vi="Bạn luôn kiểm soát">Bạn luôn kiểm soát</p><h1 id="msgprefs-title" class="text-2xl font-black" data-en="Messages & privacy" data-vi="Tin nhắn & riêng tư">Tin nhắn & riêng tư</h1></div></div><div class="space-y-4"><section class="app-card"><h2 class="section-title" data-en="Essential messages" data-vi="Tin nhắn thiết yếu">Tin nhắn thiết yếu</h2><label class="mt-4 flex min-h-14 items-center justify-between gap-4 border-t border-app-line pt-4"><span><strong class="block text-sm" data-en="Booking and receipt messages" data-vi="Tin lịch hẹn và biên nhận">Tin lịch hẹn và biên nhận</strong><small class="text-app-muted" data-en="Transactional messages are always delivered" data-vi="Tin giao dịch luôn được gửi">Tin giao dịch luôn được gửi</small></span><input class="size-5 accent-app-purple" type="checkbox" checked disabled aria-disabled="true"></label></section><section class="app-card"><h2 class="section-title" data-en="Marketing preferences" data-vi="Tùy chọn tiếp thị">Tùy chọn tiếp thị</h2><div class="mt-2 divide-y divide-app-line"><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm">Bitcoin Nail Bar</strong><small class="text-app-muted" data-en="Marketing offers from this business" data-vi="Ưu đãi tiếp thị từ doanh nghiệp này">Ưu đãi tiếp thị từ doanh nghiệp này</small></span><input class="size-5 accent-app-purple" type="checkbox" data-business-pref="bitcoin-nail-bar"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="Nearby partner offers" data-vi="Ưu đãi đối tác gần bạn">Ưu đãi đối tác gần bạn</strong></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="networkOffers"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="Booking reminders" data-vi="Nhắc lịch hẹn">Nhắc lịch hẹn</strong></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="bookingReminders"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="Nearby deal notifications" data-vi="Thông báo ưu đãi gần bạn">Thông báo ưu đãi gần bạn</strong></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="nearbyDeals"></label><label class="flex min-h-16 items-center justify-between gap-4"><span><strong class="block text-sm" data-en="AI suggestions from history" data-vi="Gợi ý AI từ lịch sử">Gợi ý AI từ lịch sử</strong></span><input class="size-5 accent-app-purple" type="checkbox" data-pref="aiSuggestions"></label></div></section><section class="app-card border-app-cyan/20 bg-app-cyan/[.04]"><div class="flex gap-3"><i data-lucide="shield-check" class="size-5 shrink-0 text-app-cyan" aria-hidden="true"></i><p class="text-sm leading-6 text-app-muted" data-en="NEXORA never sells your personal data. Changes are saved on this device for the prototype." data-vi="NEXORA không bán dữ liệu cá nhân. Trong bản mẫu, thay đổi được lưu trên thiết bị này.">NEXORA không bán dữ liệu cá nhân. Trong bản mẫu, thay đổi được lưu trên thiết bị này.</p></div></section><p class="text-center text-xs text-app-muted" data-en="Each change is saved immediately on this device." data-vi="Mỗi thay đổi được lưu ngay trên thiết bị này.">Mỗi thay đổi được lưu ngay trên thiết bị này.</p></div></div>
@@ -322,8 +336,8 @@
     const CHECKIN_STATION_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
     const CHECKIN_ID_PATTERN = /^checkin-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const REFERRAL_COPY = {
-      en: 'Your friend receives points from the first business they check in at. Your reward is released after their first paid visit.',
-      vi: 'Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Điểm của bạn chỉ được cộng sau lượt ghé có thanh toán đầu tiên của họ.'
+      en: 'Your friend receives points from the first business they check in at. Your 50-point reward is funded by that business and released after their first paid visit.',
+      vi: 'Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Phần thưởng 50 điểm của bạn do doanh nghiệp đó tài trợ và chỉ được cộng sau lượt ghé có thanh toán đầu tiên.'
     };
     const BUSINESS_CONSENT_SCOPE = `business:${BUSINESS_ID}`;
     const CONSENT_SCOPES = [BUSINESS_CONSENT_SCOPE, 'networkOffers'];
@@ -935,6 +949,8 @@
     const GUEST_REWARD_CLAIM_ID_PATTERN = /^guest-claim-(visit_spend|directpay_bonus|tip_bonus)-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const GUEST_CHECKIN_ID_PATTERN = /^guest-checkin-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const LEDGER_ID_PATTERN = /^ledger-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const REFERRAL_ID_PATTERN = /^referral-[a-z0-9]+(?:-[a-z0-9]+)*$/i;
+    const LEGACY_REFERRAL_LEDGER_ID_PATTERN = /^led-referral-[a-z0-9]+(?:-[a-z0-9]+)*$/i;
 
     function nonNegativeCents(value) {
       return Number.isSafeInteger(value) && value >= 0 ? value : null;
@@ -2135,18 +2151,50 @@
         : null;
     }
 
+    const REFERRAL_FIELDS = Object.freeze([
+      'id', 'referrerId', 'code', 'friendPhone', 'status', 'rewardPoints', 'businessId',
+      'createdAt', 'joinedAt', 'rewardedAt'
+    ]);
+
+    function canonicalReferralOwner(appState) {
+      if (!isRecord(appState) || !isRecord(appState.profile) || !isRecord(appState.session)
+        || !Array.isArray(appState.referrals) || !Array.isArray(appState.ledger)) {
+        return { ok: false, code: 'invalid_referral_owner' };
+      }
+      const id = typeof appState.profile.id === 'string' ? appState.profile.id : '';
+      const code = typeof appState.profile.referralCode === 'string' ? appState.profile.referralCode : '';
+      const profilePhone = typeof appState.profile.phone === 'string' ? appState.profile.phone : '';
+      const sessionPhone = typeof appState.session.phone === 'string' ? appState.session.phone : '';
+      const canonicalCode = /^[A-Z0-9]{4,32}$/.test(code);
+      const canonicalProfilePhone = profilePhone.length === 10 && normalizeUsPhone(profilePhone) === profilePhone;
+      const canonicalSessionPhone = sessionPhone.length === 10 && normalizeUsPhone(sessionPhone) === sessionPhone;
+      if (!id || id !== id.trim() || !canonicalCode || !canonicalProfilePhone || !canonicalSessionPhone
+        || profilePhone !== sessionPhone) {
+        return { ok: false, code: 'invalid_referral_owner' };
+      }
+      return { ok: true, id, code, profilePhone, sessionPhone };
+    }
+
     function normalizeReferral(appState, value) {
-      if (!isRecord(value)) return null;
-      const id = normalizedRequiredText(value.id);
-      const referrerId = normalizedRequiredText(value.referrerId);
-      const code = normalizedRequiredText(value.code);
-      const friendPhone = normalizeUsPhone(value.friendPhone);
+      const owner = canonicalReferralOwner(appState);
+      if (!owner.ok || !isRecord(value)) return null;
+      const id = typeof value.id === 'string' && value.id === value.id.trim()
+        && REFERRAL_ID_PATTERN.test(value.id) ? value.id : null;
+      const referrerId = typeof value.referrerId === 'string' && value.referrerId === value.referrerId.trim()
+        ? value.referrerId
+        : null;
+      const code = typeof value.code === 'string' && value.code === value.code.trim() ? value.code : null;
+      const normalizedFriendPhone = normalizeUsPhone(value.friendPhone);
+      const friendPhone = typeof value.friendPhone === 'string' && value.friendPhone === normalizedFriendPhone
+        ? normalizedFriendPhone
+        : '';
       const status = REFERRAL_STATUSES.has(value.status) ? value.status : null;
       const createdAt = validStoredTimestamp(value.createdAt) ? value.createdAt : null;
       const rewardedAt = value.rewardedAt === null || validStoredTimestamp(value.rewardedAt) ? value.rewardedAt : undefined;
       const joinedAt = value.joinedAt === null || validStoredTimestamp(value.joinedAt) ? value.joinedAt : undefined;
       const businessId = value.businessId === null ? null : normalizedRequiredText(value.businessId);
-      if (!id || referrerId !== appState.profile.id || !code || friendPhone.length !== 10 || !status
+      if (!id || referrerId !== owner.id || code !== owner.code || friendPhone.length !== 10
+        || friendPhone === owner.profilePhone || friendPhone === owner.sessionPhone || !status
         || !Number.isSafeInteger(value.rewardPoints) || value.rewardPoints < 0 || !createdAt
         || joinedAt === undefined || rewardedAt === undefined) return null;
       const aligned = status === 'invited'
@@ -2160,6 +2208,237 @@
       if (!aligned) return null;
       return { id, referrerId, code, friendPhone, status, rewardPoints: value.rewardPoints,
         businessId, createdAt, joinedAt, rewardedAt };
+    }
+
+    function sameCanonicalReferralRecord(value, canonical) {
+      if (!canonical || Object.keys(value).length !== REFERRAL_FIELDS.length) return false;
+      return REFERRAL_FIELDS.every((field) => Object.prototype.hasOwnProperty.call(value, field)
+        && value[field] === canonical[field]);
+    }
+
+    function isReferralLedgerArtifact(entry, referralIds = new Set()) {
+      return isRecord(entry) && (entry.type === 'referral' || entry.refType === 'referral'
+        || referralIds.has(entry.refId)
+        || (typeof entry.refId === 'string' && referralIds.has(entry.refId.trim())));
+    }
+
+    function isExactReferralLedgerPair(appState, referral, entry) {
+      return isRecord(entry)
+        && typeof entry.id === 'string' && entry.id === entry.id.trim() && entry.id.length > 0
+        && (LEDGER_ID_PATTERN.test(entry.id) || LEGACY_REFERRAL_LEDGER_ID_PATTERN.test(entry.id))
+        && referral.status === 'rewarded'
+        && entry.businessId === referral.businessId
+        && getValidBusiness(appState, entry.businessId)
+        && entry.type === 'referral'
+        && entry.pointsDelta === REFERRAL_REWARD_POINTS
+        && entry.refType === 'referral'
+        && entry.refId === referral.id
+        && entry.createdAt === referral.rewardedAt;
+    }
+
+    function validateReferralState(appState) {
+      const owner = canonicalReferralOwner(appState);
+      if (!owner.ok) return owner;
+      const canonical = [];
+      const ids = new Set();
+      const friendPhones = new Set();
+      for (const value of appState.referrals) {
+        const referral = normalizeReferral(appState, value);
+        if (!sameCanonicalReferralRecord(value, referral)
+          || ids.has(referral?.id) || friendPhones.has(referral?.friendPhone)) {
+          return { ok: false, code: 'invalid_referral_state' };
+        }
+        ids.add(referral.id);
+        friendPhones.add(referral.friendPhone);
+        canonical.push(referral);
+      }
+      const ledgerIds = new Set();
+      for (const entry of appState.ledger) {
+        if (!isRecord(entry) || typeof entry.id !== 'string' || entry.id !== entry.id.trim()
+          || !entry.id || ledgerIds.has(entry.id)
+          || normalizedRequiredText(entry.businessId) !== entry.businessId
+          || !getValidBusiness(appState, entry.businessId)
+          || normalizedRequiredText(entry.type) !== entry.type
+          || !Number.isSafeInteger(entry.pointsDelta)
+          || normalizedRequiredText(entry.refType) !== entry.refType
+          || normalizedRequiredText(entry.refId) !== entry.refId
+          || !validStoredTimestamp(entry.createdAt)) return { ok: false, code: 'invalid_referral_state' };
+        ledgerIds.add(entry.id);
+      }
+      const artifacts = appState.ledger.filter((entry) => isReferralLedgerArtifact(entry, ids));
+      if (artifacts.some((entry) => !ids.has(entry.refId))) {
+        return { ok: false, code: 'invalid_referral_state' };
+      }
+      for (const referral of canonical) {
+        const pairs = artifacts.filter((entry) => entry.refId === referral.id);
+        const validPairing = referral.status === 'rewarded'
+          ? pairs.length === 1 && isExactReferralLedgerPair(appState, referral, pairs[0])
+          : pairs.length === 0;
+        const balance = referral.status === 'rewarded'
+          ? validateStoredBalance(appState, referral.businessId)
+          : { ok: true };
+        if (!validPairing || !balance.ok) return { ok: false, code: 'invalid_referral_state' };
+      }
+      return { ok: true, owner, referrals: canonical };
+    }
+
+    function collectRawReferralClaims(values) {
+      if (!Array.isArray(values)) return [];
+      return values.filter(isRecord).map((value) => ({
+        id: typeof value.id === 'string' && value.id.trim() ? value.id.trim() : null,
+        friendPhone: normalizeUsPhone(value.friendPhone).length === 10 ? normalizeUsPhone(value.friendPhone) : null
+      }));
+    }
+
+    function reconcileReferrals(appState, rawClaims = [], rawLedger = []) {
+      const idCounts = new Map();
+      const phoneCounts = new Map();
+      rawClaims.forEach((claim) => {
+        if (claim.id) idCounts.set(claim.id, (idCounts.get(claim.id) ?? 0) + 1);
+        if (claim.friendPhone) phoneCounts.set(claim.friendPhone, (phoneCounts.get(claim.friendPhone) ?? 0) + 1);
+      });
+      const normalized = appState.referrals.filter((referral) => (
+        idCounts.get(referral.id) === 1 && phoneCounts.get(referral.friendPhone) === 1
+      ));
+      const knownIds = new Set([...rawClaims.map((claim) => claim.id).filter(Boolean), ...normalized.map((row) => row.id)]);
+      const rawLedgerGroups = new Map();
+      if (Array.isArray(rawLedger)) rawLedger.filter(isRecord).forEach((entry) => {
+        const id = typeof entry.id === 'string' && entry.id.trim() ? entry.id.trim() : null;
+        if (!id) return;
+        const group = rawLedgerGroups.get(id) ?? { count: 0, referralArtifact: false };
+        group.count += 1;
+        group.referralArtifact ||= isReferralLedgerArtifact(entry, knownIds);
+        rawLedgerGroups.set(id, group);
+      });
+      const taintedLedgerIds = new Set([...rawLedgerGroups]
+        .filter(([, group]) => group.count > 1 && group.referralArtifact)
+        .map(([id]) => id));
+      appState.ledger = appState.ledger.filter((entry) => (
+        !taintedLedgerIds.has(typeof entry.id === 'string' ? entry.id.trim() : '')
+      ));
+      const artifacts = appState.ledger.filter((entry) => isReferralLedgerArtifact(entry, knownIds));
+      const surviving = normalized.filter((referral) => {
+        const pairs = artifacts.filter((entry) => typeof entry.refId === 'string'
+          && entry.refId.trim() === referral.id);
+        return referral.status === 'rewarded'
+          ? pairs.length === 1 && isExactReferralLedgerPair(appState, referral, pairs[0])
+          : pairs.length === 0;
+      });
+      const survivingIds = new Set(surviving.map((referral) => referral.id));
+      appState.referrals = surviving;
+      appState.ledger = appState.ledger.filter((entry) => {
+        if (!isReferralLedgerArtifact(entry, knownIds)) return true;
+        const referral = surviving.find((row) => row.id === entry.refId);
+        return survivingIds.has(entry.refId) && isExactReferralLedgerPair(appState, referral, entry);
+      });
+    }
+
+    function createReferralInvite(appState, input, now = Date.now()) {
+      const integrity = validateReferralState(appState);
+      if (!integrity.ok) return integrity;
+      const friendPhone = normalizeUsPhone(input?.friendPhone);
+      if (friendPhone.length !== 10) return { ok: false, code: 'invalid_phone' };
+      if (friendPhone === integrity.owner.profilePhone || friendPhone === integrity.owner.sessionPhone) {
+        return { ok: false, code: 'self_referral' };
+      }
+      const existing = integrity.referrals.find((referral) => referral.friendPhone === friendPhone);
+      if (existing) {
+        return { ok: true, referral: appState.referrals.find((row) => row.id === existing.id), idempotent: true };
+      }
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const id = createDomainId('referral');
+      if (!id.ok) return id;
+      if (appState.referrals.some((referral) => referral.id === id.value)) {
+        return { ok: false, code: 'id_generation_failed' };
+      }
+      const referral = {
+        id: id.value,
+        referrerId: integrity.owner.id,
+        code: integrity.owner.code,
+        friendPhone,
+        status: 'invited',
+        rewardPoints: 0,
+        businessId: null,
+        createdAt: timestamp.value,
+        joinedAt: null,
+        rewardedAt: null
+      };
+      const draft = structuredClone(appState);
+      draft.referrals = [...draft.referrals, referral];
+      const nextIntegrity = validateReferralState(draft);
+      if (!nextIntegrity.ok) return nextIntegrity;
+      replaceState(appState, draft);
+      return { ok: true, referral: appState.referrals.find((row) => row.id === referral.id) };
+    }
+
+    function advanceReferral(appState, referralId, event, now = Date.now()) {
+      const integrity = validateReferralState(appState);
+      if (!integrity.ok) return integrity;
+      const referral = integrity.referrals.find((row) => row.id === referralId);
+      if (!referral) return { ok: false, code: 'referral_not_found' };
+      if (event !== 'joined') return { ok: false, code: 'invalid_referral_event' };
+      if (referral.status === 'joined' || referral.status === 'rewarded') {
+        return { ok: true, referral: appState.referrals.find((row) => row.id === referral.id), idempotent: true };
+      }
+      if (referral.status !== 'invited') return { ok: false, code: 'invalid_referral_state' };
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      if (!timestampAtOrAfter(timestamp.value, referral.createdAt)) {
+        return { ok: false, code: 'invalid_referral_chronology' };
+      }
+      const draft = structuredClone(appState);
+      const next = draft.referrals.find((row) => row.id === referral.id);
+      next.status = 'joined';
+      next.joinedAt = timestamp.value;
+      const nextIntegrity = validateReferralState(draft);
+      if (!nextIntegrity.ok) return nextIntegrity;
+      replaceState(appState, draft);
+      return { ok: true, referral: appState.referrals.find((row) => row.id === referral.id) };
+    }
+
+    function releaseReferralReward(appState, referralId, businessId, now = Date.now()) {
+      const integrity = validateReferralState(appState);
+      if (!integrity.ok) return integrity;
+      if (typeof businessId !== 'string' || businessId !== businessId.trim()
+        || !getValidBusiness(appState, businessId)) return { ok: false, code: 'invalid_referral_business' };
+      const referral = integrity.referrals.find((row) => row.id === referralId);
+      if (!referral) return { ok: false, code: 'referral_not_found' };
+      if (referral.status === 'rewarded') {
+        if (referral.businessId !== businessId) return { ok: false, code: 'invalid_referral_business' };
+        return { ok: true, referral: appState.referrals.find((row) => row.id === referral.id),
+          points: REFERRAL_REWARD_POINTS, idempotent: true };
+      }
+      if (referral.status !== 'joined') return { ok: false, code: 'paid_visit_required' };
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      if (!timestampAtOrAfter(timestamp.value, referral.joinedAt)) {
+        return { ok: false, code: 'invalid_referral_chronology' };
+      }
+      const draft = structuredClone(appState);
+      const entry = appendLedger(draft, {
+        businessId,
+        type: 'referral',
+        pointsDelta: REFERRAL_REWARD_POINTS,
+        refType: 'referral',
+        refId: referral.id,
+        now
+      });
+      if (entry?.ok === false) return entry;
+      if (!isRecord(entry) || entry.createdAt !== timestamp.value
+        || appState.ledger.some((current) => current.id === entry.id)) {
+        return { ok: false, code: 'id_generation_failed' };
+      }
+      const next = draft.referrals.find((row) => row.id === referral.id);
+      next.status = 'rewarded';
+      next.rewardPoints = REFERRAL_REWARD_POINTS;
+      next.businessId = businessId;
+      next.rewardedAt = timestamp.value;
+      const nextIntegrity = validateReferralState(draft);
+      if (!nextIntegrity.ok) return nextIntegrity;
+      replaceState(appState, draft);
+      return { ok: true, referral: appState.referrals.find((row) => row.id === referral.id),
+        points: REFERRAL_REWARD_POINTS };
     }
 
     function validExpiryDate(value) {
@@ -2805,6 +3084,7 @@
       const rawFeedbackLedgerClaims = collectRawFeedbackLedgerClaims(value.ledger);
       const rawCheckinLedgerClaims = collectRawCheckinLedgerClaims(value.ledger);
       const rawFeedbackClaims = collectRawFeedbackClaims(value.feedback, value.feedbackClaims);
+      const rawReferralClaims = collectRawReferralClaims(value.referrals);
       const migrated = mergeRecord(defaults, value);
       migrated.schemaVersion = SCHEMA_VERSION;
       migrated.updatedAt = new Date().toISOString();
@@ -2839,6 +3119,7 @@
         claimCounts.get(JSON.stringify([claim.guestCheckinId, claim.sourceType, claim.sourceId])) === 1
       ));
       migrated.referrals = normalizeList(value.referrals, normalizeReferral);
+      reconcileReferrals(migrated, rawReferralClaims, value.ledger);
       for (const [field, collection] of [
         ['guestCheckinId', migrated.guestCheckins], ['checkoutDraftId', migrated.checkoutDrafts],
         ['paymentProofId', migrated.paymentProofs]
@@ -4499,7 +4780,7 @@
         verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
         paymentIntegrityTitle: 'Không thể xác minh biên nhận', paymentIntegrityDetail: 'Dữ liệu xác minh không nhất quán. Không thể thử lại thanh toán này một cách an toàn.', returnHome: 'Về trang chủ',
         guestRewardsPending: 'Điểm đang chờ; dùng cùng số điện thoại để nhận sau.',
-        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Nhập họ tên, số điện thoại US 10 số và lựa chọn hợp lệ.', noPreference: 'Không yêu cầu', notAvailable: 'Chưa có thông tin', guestCheckinSuccess: 'Đã check-in cho khách. Điểm đang chờ xác nhận.', guestNotFound: 'Không tìm thấy lượt check-in của khách.', serviceNotFound: 'Không tìm thấy dịch vụ đã chọn.', checkoutFailed: 'Không thể chuẩn bị thanh toán. Vui lòng thử lại.', selectPaymentMethod: 'Chọn phương thức thanh toán để tiếp tục.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', invalidImage: 'Chỉ dùng ảnh JPEG hoặc PNG hợp lệ.', proofSavedWithoutImage: 'Bộ nhớ ảnh đã đầy; đã lưu bằng chứng không kèm ảnh.', proofSubmitFailed: 'Không thể gửi bằng chứng thanh toán.', verificationFailed: 'Không thể cập nhật xác minh thanh toán.', proofRejected: 'Bằng chứng thanh toán đã bị từ chối.', createAccount: 'Tạo tài khoản NEXORA', continueGuest: 'Tiếp tục với tư cách khách', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
+        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', selfReferral: 'Bạn không thể tự giới thiệu chính mình.', referralShared: 'Đã chia sẻ liên kết giới thiệu.', shareCancelled: 'Bạn đã hủy chia sẻ. Có thể tự sao chép liên kết bên dưới.', shareManual: 'Không thể chia sẻ tự động. Hãy sao chép liên kết bên dưới.', referralUpdateFailed: 'Không thể cập nhật lời mời một cách an toàn.', referralInvited: 'Đã mời', referralJoined: 'Đã tham gia', referralRewarded: 'Đã thưởng', simulateJoined: 'Mô phỏng đã tham gia', simulatePaidVisit: 'Mô phỏng lượt ghé trả phí', referralEmpty: 'Chưa có lời mời nào.', referralShareTitle: 'Lời mời NEXORA', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Nhập họ tên, số điện thoại US 10 số và lựa chọn hợp lệ.', noPreference: 'Không yêu cầu', notAvailable: 'Chưa có thông tin', guestCheckinSuccess: 'Đã check-in cho khách. Điểm đang chờ xác nhận.', guestNotFound: 'Không tìm thấy lượt check-in của khách.', serviceNotFound: 'Không tìm thấy dịch vụ đã chọn.', checkoutFailed: 'Không thể chuẩn bị thanh toán. Vui lòng thử lại.', selectPaymentMethod: 'Chọn phương thức thanh toán để tiếp tục.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', invalidImage: 'Chỉ dùng ảnh JPEG hoặc PNG hợp lệ.', proofSavedWithoutImage: 'Bộ nhớ ảnh đã đầy; đã lưu bằng chứng không kèm ảnh.', proofSubmitFailed: 'Không thể gửi bằng chứng thanh toán.', verificationFailed: 'Không thể cập nhật xác minh thanh toán.', proofRejected: 'Bằng chứng thanh toán đã bị từ chối.', createAccount: 'Tạo tài khoản NEXORA', continueGuest: 'Tiếp tục với tư cách khách', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
         cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
         invalidPhone: 'Nhập số điện thoại US gồm 10 số.', cooldown: 'Vui lòng chờ đủ 30 giây.',
@@ -4533,7 +4814,7 @@
         verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
         paymentIntegrityTitle: 'Receipt could not be verified', paymentIntegrityDetail: 'Verification data is inconsistent. This payment cannot be retried safely.', returnHome: 'Return Home',
         guestRewardsPending: 'Rewards are pending; use the same phone to claim later.',
-        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Enter a name, a 10-digit US phone number and valid selections.', noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in. Points are pending confirmation.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'The selected service was not found.', checkoutFailed: 'Could not prepare checkout. Please try again.', selectPaymentMethod: 'Select a payment method to continue.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', invalidImage: 'Use a valid JPEG or PNG image.', proofSavedWithoutImage: 'Image storage is full; proof details were saved without the image.', proofSubmitFailed: 'Could not submit payment proof.', verificationFailed: 'Could not update payment verification.', proofRejected: 'The payment proof was rejected.', createAccount: 'Create NEXORA Account', continueGuest: 'Continue as Guest', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
+        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', selfReferral: 'You cannot refer yourself.', referralShared: 'Referral link shared.', shareCancelled: 'Sharing was cancelled. You can copy the link below.', shareManual: 'Automatic sharing is unavailable. Copy the link below.', referralUpdateFailed: 'Could not safely update this invite.', referralInvited: 'Invited', referralJoined: 'Joined', referralRewarded: 'Rewarded', simulateJoined: 'Simulate joined', simulatePaidVisit: 'Simulate paid visit', referralEmpty: 'No invites yet.', referralShareTitle: 'NEXORA invitation', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Enter a name, a 10-digit US phone number and valid selections.', noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in. Points are pending confirmation.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'The selected service was not found.', checkoutFailed: 'Could not prepare checkout. Please try again.', selectPaymentMethod: 'Select a payment method to continue.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', invalidImage: 'Use a valid JPEG or PNG image.', proofSavedWithoutImage: 'Image storage is full; proof details were saved without the image.', proofSubmitFailed: 'Could not submit payment proof.', verificationFailed: 'Could not update payment verification.', proofRejected: 'The payment proof was rejected.', createAccount: 'Create NEXORA Account', continueGuest: 'Continue as Guest', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
         cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
         invalidPhone: 'Enter a 10-digit US phone number.', cooldown: 'Please wait for the 30-second cooldown.',
@@ -5483,6 +5764,129 @@
       list.replaceChildren(...visitCards, ...notifications);
     }
 
+    function renderReferralQr(code) {
+      const host = document.getElementById('referral-qr');
+      if (!host) return;
+      const value = typeof code === 'string' ? code : '';
+      const seed = [...value].reduce((current, character) => (
+        ((current * 33) ^ character.charCodeAt(0)) >>> 0
+      ), 5381);
+      const cells = Array.from({ length: 81 }, (_, index) => {
+        const cell = document.createElement('span');
+        const column = index % 9;
+        const row = Math.floor(index / 9);
+        const finder = (column < 3 && row < 3) || (column > 5 && row < 3) || (column < 3 && row > 5);
+        const dark = finder || ((((seed >>> (index % 24)) ^ (index * 13)) & 1) === 1);
+        cell.className = `aspect-square ${dark ? 'bg-slate-950' : 'bg-white'}`;
+        cell.setAttribute('aria-hidden', 'true');
+        return cell;
+      });
+      host.replaceChildren(...cells);
+      host.setAttribute('aria-label', state.profile.language === 'en'
+        ? `Prototype referral QR for ${value}`
+        : `QR giới thiệu bản mẫu cho ${value}`);
+    }
+
+    function referralDemoButton(action, referralId, label) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'app-button-secondary mt-3 w-full sm:w-auto';
+      button.dataset.action = action;
+      button.dataset.referralId = referralId;
+      button.textContent = label;
+      return button;
+    }
+
+    function renderReferrals() {
+      const code = document.getElementById('referral-code');
+      if (code) code.textContent = state.profile.referralCode;
+      renderReferralQr(state.profile.referralCode);
+      const referrals = Array.isArray(state.referrals) ? state.referrals.filter(isRecord) : [];
+      for (const status of ['invited', 'joined', 'rewarded']) {
+        const count = document.getElementById(`referral-${status}-count`);
+        if (count) count.textContent = String(referrals.filter((row) => row.status === status).length);
+      }
+      const list = document.getElementById('referral-invite-list');
+      if (!list) return;
+      if (referrals.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'py-5 text-center text-sm text-app-muted';
+        empty.textContent = t('referralEmpty');
+        list.replaceChildren(empty);
+        return;
+      }
+      const rows = referrals.map((referral) => {
+        const row = document.createElement('article');
+        row.className = 'py-4 first:pt-1 last:pb-1';
+        const top = document.createElement('div');
+        top.className = 'flex items-center justify-between gap-3';
+        const phone = document.createElement('span');
+        phone.className = 'font-bold';
+        const canonicalPhone = typeof referral.friendPhone === 'string' ? referral.friendPhone : '';
+        phone.textContent = `••• ${canonicalPhone.slice(-4)}`;
+        const status = document.createElement('strong');
+        status.className = referral.status === 'rewarded' ? 'text-sm text-app-green' : 'text-sm text-app-muted';
+        const statusKey = { invited: 'referralInvited', joined: 'referralJoined', rewarded: 'referralRewarded' }[referral.status]
+          ?? 'referralUpdateFailed';
+        status.textContent = referral.status === 'rewarded'
+          ? `+${referral.rewardPoints} ${t('points')} · ${t(statusKey)}`
+          : t(statusKey);
+        top.append(phone, status);
+        row.append(top);
+        if (referral.status === 'invited') {
+          row.append(referralDemoButton('simulate-referral-joined', referral.id, t('simulateJoined')));
+        } else if (referral.status === 'joined') {
+          row.append(referralDemoButton('simulate-referral-paid-visit', referral.id, t('simulatePaidVisit')));
+        }
+        return row;
+      });
+      list.replaceChildren(...rows);
+    }
+
+    function buildReferralUrl(referral) {
+      const code = typeof referral?.code === 'string' ? referral.code : '';
+      const id = typeof referral?.id === 'string' ? referral.id : '';
+      return `https://nexoratouch.com/r/${encodeURIComponent(code)}?invite=${encodeURIComponent(id)}`;
+    }
+
+    async function shareReferralLink(url, platform = window.navigator, text = REFERRAL_COPY.vi) {
+      if (typeof url !== 'string' || !url) return { ok: false, code: 'manual_share_required', url };
+      if (typeof platform?.share === 'function') {
+        try {
+          await platform.share({ title: 'NEXORA', text, url });
+          return { ok: true, method: 'native', url };
+        } catch (error) {
+          if (error?.name === 'AbortError') return { ok: false, code: 'share_cancelled', url };
+        }
+      }
+      if (typeof platform?.clipboard?.writeText === 'function') {
+        try {
+          await platform.clipboard.writeText(url);
+          return { ok: true, method: 'clipboard', url };
+        } catch {
+          return { ok: false, code: 'manual_share_required', url };
+        }
+      }
+      return { ok: false, code: 'manual_share_required', url };
+    }
+
+    function revealManualReferralLink(url) {
+      const region = document.getElementById('referral-manual-share');
+      const input = document.getElementById('referral-manual-link');
+      if (!region || !input) return;
+      input.value = url;
+      region.classList.remove('hidden');
+      input.focus?.({ preventScroll: true });
+      input.select?.();
+    }
+
+    function hideManualReferralLink() {
+      const region = document.getElementById('referral-manual-share');
+      const input = document.getElementById('referral-manual-link');
+      region?.classList.add('hidden');
+      if (input) input.value = '';
+    }
+
     function compressImage(file, maxEdge = 720, quality = 0.78) {
       return new Promise((resolve, reject) => {
         if (!file || typeof FileReader !== 'function' || typeof Image !== 'function') {
@@ -5893,6 +6297,7 @@
           commitState((draft) => {
             draft.profile.name = name;
             draft.profile.phone = phone;
+            draft.session.phone = phone;
             draft.profile.avatar = avatar.value;
           });
           renderApp();
@@ -6362,23 +6767,63 @@
       renderGlobalState();
       renderActivity();
     });
-    registerAction('copy-referral', async () => {
-      const url = `https://nexora.example/invite/${state.profile.referralCode}`;
-      try {
-        const clipboard = window.navigator?.clipboard;
-        if (clipboard?.writeText) await clipboard.writeText(url);
-        else {
-          const input = document.createElement('textarea');
-          input.value = url;
-          document.body.append(input);
-          input.select?.();
-          if (!document.execCommand?.('copy')) throw new Error('copy_failed');
-          input.remove();
-        }
-        if (typeof document !== 'undefined') showToast(t('inviteCopied'));
-      } catch {
-        if (typeof document !== 'undefined') showToast(t('inviteCopyFailed'), 'error');
+    registerAction('show-referral-qr', (control) => {
+      const panel = document.getElementById('referral-qr-panel');
+      const qr = document.getElementById('referral-qr');
+      if (!panel || !qr) return { ok: false, code: 'referral_qr_unavailable' };
+      panel.classList.remove('hidden');
+      panel.setAttribute('aria-hidden', 'false');
+      control?.setAttribute('aria-expanded', 'true');
+      qr.setAttribute('tabindex', '-1');
+      qr.focus?.({ preventScroll: true });
+      return { ok: true };
+    });
+    registerAction('share-referral', async () => {
+      const phone = document.getElementById('referral-friend-phone')?.value ?? '';
+      const created = commitState((draft) => createReferralInvite(draft, { friendPhone: phone }));
+      if (!created.ok) {
+        const errorKey = created.code === 'self_referral'
+          ? 'selfReferral'
+          : created.code === 'invalid_phone' ? 'invalidPhone' : 'referralUpdateFailed';
+        setFieldError('referral-error', t(errorKey));
+        return created;
       }
+      const url = buildReferralUrl(created.referral);
+      const shared = await shareReferralLink(url, window.navigator, REFERRAL_COPY[state.profile.language]);
+      renderReferrals();
+      if (shared.ok) {
+        hideManualReferralLink();
+        setFieldError('referral-error');
+        showToast(t('referralShared'));
+        return { ...shared, referral: created.referral, idempotent: created.idempotent === true };
+      }
+      revealManualReferralLink(url);
+      setFieldError('referral-error', t(shared.code === 'share_cancelled' ? 'shareCancelled' : 'shareManual'));
+      return { ...shared, referral: created.referral, idempotent: created.idempotent === true };
+    });
+    registerAction('simulate-referral-joined', (control) => {
+      const result = commitState((draft) => advanceReferral(draft, control?.dataset?.referralId, 'joined'));
+      if (!result.ok) {
+        showToast(t('referralUpdateFailed'), 'error');
+        renderReferrals();
+        return result;
+      }
+      renderApp();
+      return result;
+    });
+    registerAction('simulate-referral-paid-visit', (control) => {
+      const result = commitState((draft) => releaseReferralReward(
+        draft,
+        control?.dataset?.referralId,
+        draft.ui.selectedBusinessId
+      ));
+      if (!result.ok) {
+        showToast(t('referralUpdateFailed'), 'error');
+        renderReferrals();
+        return result;
+      }
+      renderApp();
+      return result;
     });
 
     function handleAction(event) {
@@ -6952,6 +7397,7 @@
       renderWishes();
       renderExplore();
       renderActivity();
+      renderReferrals();
       renderScanContext();
     }
 
@@ -7053,6 +7499,13 @@
       normalizeReceipt,
       normalizeGuestRewardClaim,
       normalizeReferral,
+      createReferralInvite,
+      advanceReferral,
+      releaseReferralReward,
+      buildReferralUrl,
+      shareReferralLink,
+      renderReferralQr,
+      renderReferrals,
       translate,
       getBusinessBalance,
       appendLedger,
