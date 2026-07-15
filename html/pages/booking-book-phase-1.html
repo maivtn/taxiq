@@ -4358,6 +4358,18 @@
       #nx-campaign-root .modal-footer { flex-direction: column; align-items: stretch; }
     }
 
+    .booking-duration {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .booking-duration .bi { color: var(--nexora-subtle); font-size: 13px; }
+
     .booking-status-cell {
       white-space: nowrap;
     }
@@ -6688,16 +6700,24 @@
                       <table class="booking-table" data-booking-table>
                         <thead>
                           <tr>
+                            <th scope="col">Call Start</th>
                             <th scope="col">Customer</th>
                             <th scope="col">Service</th>
                             <th scope="col">Technician</th>
-                            <th scope="col">Time</th>
+                            <th scope="col">Appointment</th>
+                            <th scope="col">Duration</th>
                             <th scope="col">Status</th>
                             <th scope="col">Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr class="booking-table-row is-done" data-booking-item data-booking-id="booking-kim-phan" data-booking-name="Kim Phan" data-booking-phone="7135550148" data-booking-email="kim.phan@example.com" data-booking-service="Pedicure Gel Polish" data-booking-tech="Lan T." data-booking-date="2026-07-09" data-booking-note="Prefers warm water and extra heel care. Customer confirmed arrival by phone and asked to keep the same chair as last visit.">
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main booking-callstart-main">8:12 AM</div>
+                                <div class="booking-time-date booking-callstart-date">Jul 9, 2026</div>
+                              </div>
+                            </td>
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Kim Phan <span class="badge booking-source-voice">Voice</span></div>
@@ -6719,6 +6739,7 @@
                                 <div class="booking-time-date">July 9, 2026</div>
                               </div>
                             </td>
+                            <td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">2:34</span></span></td>
                             <td class="booking-status-cell"><span class="badge booking-status booking-status-done">Completed</span></td>
                             <td>
                               <div class="booking-actions">
@@ -6728,6 +6749,12 @@
                           </tr>
 
                           <tr class="booking-table-row is-sms-sent" data-booking-item data-booking-id="booking-sophie-tran" data-booking-name="Sophie Tran" data-booking-phone="2815550196" data-booking-email="sophie.tran@example.com" data-booking-service="Gel Manicure Nail Art" data-booking-tech="Kim N." data-booking-date="2026-07-09" data-booking-note="Booked from landing page after seeing the gel manicure promo. Customer wants a neutral pink base with one simple accent nail.">
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main booking-callstart-main">9:05 AM</div>
+                                <div class="booking-time-date booking-callstart-date">Jul 9, 2026</div>
+                              </div>
+                            </td>
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Sophie Tran <span class="badge booking-source-lp">Landing Page</span></div>
@@ -6749,6 +6776,7 @@
                                 <div class="booking-time-date">July 9, 2026</div>
                               </div>
                             </td>
+                            <td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">1:47</span></span></td>
                             <td class="booking-status-cell"><span class="badge booking-status booking-status-sms">SMS Sent</span></td>
                             <td>
                               <div class="booking-actions">
@@ -6760,6 +6788,12 @@
                           </tr>
 
                           <tr class="booking-table-row is-new" data-booking-item data-booking-id="booking-mai-nguyen" data-booking-name="Mai Nguyen" data-booking-phone="8325550164" data-booking-email="mai.nguyen@example.com" data-booking-service="Gel Full Set Removal" data-booking-tech="Linda" data-booking-date="2026-07-09" data-booking-note="Customer initially requested Elio but he was unavailable; booked with Linda instead. Phone: 14182188221. Please confirm almond shape and light pink finish before start time.">
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main booking-callstart-main">11:36 AM</div>
+                                <div class="booking-time-date booking-callstart-date">Jul 9, 2026</div>
+                              </div>
+                            </td>
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Mai Nguyen <span class="badge booking-source-voice">Voice</span> <span class="badge badge-warning">Request</span></div>
@@ -6781,6 +6815,7 @@
                                 <div class="booking-time-date">July 9, 2026</div>
                               </div>
                             </td>
+                            <td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">3:12</span></span></td>
                             <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
                             <td>
                               <div class="booking-actions">
@@ -6792,6 +6827,12 @@
                           </tr>
 
                           <tr class="booking-table-row is-new" data-booking-item data-booking-id="booking-jennifer-s" data-booking-name="Jennifer S." data-booking-phone="7135550127" data-booking-email="jennifer.s@example.com" data-booking-service="Full Set Acrylic French Tip" data-booking-tech="Mai P." data-booking-date="2026-07-09" data-booking-note="Customer asked for a quiet corner and extra time for acrylic removal. She may bring a reference photo for the French tip shape.">
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main booking-callstart-main">12:18 PM</div>
+                                <div class="booking-time-date booking-callstart-date">Jul 9, 2026</div>
+                              </div>
+                            </td>
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Jennifer S. <span class="badge booking-source-sms">SMS</span></div>
@@ -6813,6 +6854,7 @@
                                 <div class="booking-time-date">July 9, 2026</div>
                               </div>
                             </td>
+                            <td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">1:29</span></span></td>
                             <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
                             <td>
                               <div class="booking-actions">
@@ -6824,6 +6866,12 @@
                           </tr>
 
                           <tr class="booking-table-row is-new" data-booking-item data-booking-id="booking-tina-vo" data-booking-name="Tina Vo" data-booking-phone="3465550188" data-booking-email="tina.vo@example.com" data-booking-service="Dip Powder Chrome Design" data-booking-tech="Lan T." data-booking-date="2026-07-17" data-booking-note="Requested chrome design but has not picked a color yet. Send reminder SMS the morning of the appointment.">
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main booking-callstart-main">6:44 PM</div>
+                                <div class="booking-time-date booking-callstart-date">Jul 16, 2026</div>
+                              </div>
+                            </td>
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Tina Vo <span class="badge booking-source-lp">Landing Page</span></div>
@@ -6845,6 +6893,7 @@
                                 <div class="booking-time-date">July 17, 2026</div>
                               </div>
                             </td>
+                            <td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">2:05</span></span></td>
                             <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
                             <td>
                               <div class="booking-actions">
@@ -6856,6 +6905,12 @@
                           </tr>
 
                           <tr class="booking-table-row is-new" data-booking-item data-booking-id="booking-anna-le" data-booking-name="Anna Le" data-booking-phone="2815550119" data-booking-email="anna.le@example.com" data-booking-service="Pedicure Gel Polish" data-booking-tech="Mai P." data-booking-date="2026-07-17" data-booking-note="QR booking request came in after hours. Customer prefers an evening slot and asked to be notified if an earlier opening appears.">
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main booking-callstart-main">9:23 PM</div>
+                                <div class="booking-time-date booking-callstart-date">Jul 16, 2026</div>
+                              </div>
+                            </td>
                             <td>
                               <div class="booking-customer">
                                 <div class="booking-customer-name">Anna Le <span class="badge booking-source-qr">QR</span> <span class="badge badge-warning">Request</span></div>
@@ -6877,6 +6932,7 @@
                                 <div class="booking-time-date">July 17, 2026</div>
                               </div>
                             </td>
+                            <td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">0:58</span></span></td>
                             <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
                             <td>
                               <div class="booking-actions">
@@ -7896,7 +7952,7 @@
 
               <!-- PHONE PREVIEW -->
               <div class="sms-preview">
-                <div class="sms-preview-label">📱 Preview trên điện thoại khách</div>
+                <div class="sms-preview-label"><i class="bi bi-phone" aria-hidden="true"></i> Preview trên điện thoại khách</div>
                 <div class="sms-bubble" id="smsBubble"><span class="sms-preview-empty">Tin nhắn sẽ hiển thị ở đây...</span></div>
               </div>
             </div>
@@ -7952,7 +8008,7 @@
             </div>
             <div style="display:flex;gap:10px;">
               <button class="btn-outline" id="cancelComposerBtn">Hủy</button>
-              <button class="btn-primary" id="sendCampaignBtn">🚀 Gửi Campaign</button>
+              <button class="btn-primary" id="sendCampaignBtn"><i class="bi bi-send" aria-hidden="true"></i> Gửi Campaign</button>
             </div>
           </div>
         </div>
@@ -8006,6 +8062,11 @@
               <div class="trial-field trial-span-2">
                 <label class="trial-label" for="trial-city">City / area <span class="trial-optional">(optional)</span></label>
                 <input class="trial-input" id="trial-city" data-trial-city type="text" value="Houston, TX" placeholder="Houston, TX">
+              </div>
+
+              <div class="trial-field trial-span-2">
+                <label class="trial-label" for="trial-website">Website <span class="trial-optional">(optional)</span></label>
+                <input class="trial-input" id="trial-website" data-trial-website type="url" value="" placeholder="https://bitcoinnailbar.com" autocomplete="url" inputmode="url">
               </div>
 
               <div class="trial-field trial-span-2">
@@ -8373,6 +8434,19 @@
       return actions;
     }
 
+function getBookingCardCallStart(item) {
+      var main = item.querySelector('.booking-callstart-main');
+      var date = item.querySelector('.booking-callstart-date');
+      var m = main ? main.textContent.trim() : '';
+      var d = date ? date.textContent.trim() : '';
+      return (m + (d ? ' · ' + d : '')).trim() || '-';
+    }
+
+    function getBookingCardDuration(item) {
+      var v = item.querySelector('.booking-duration-value');
+      return v ? v.textContent.trim() : '-';
+    }
+
     function renderBookingCards() {
       var panel = document.getElementById('booking-subpanel-today');
       if (!panel) return;
@@ -8399,8 +8473,10 @@
           '</div>' +
           '<div class="booking-service-list">' + services + '</div>' +
           '<div class="booking-card-info-list">' +
+            '<div class="booking-card-info-row"><span class="booking-card-label">Call Start</span><span class="booking-card-value">' + escapeHtml(getBookingCardCallStart(item)) + '</span></div>' +
             '<div class="booking-card-info-row"><span class="booking-card-label">Technician</span><span class="booking-card-value">' + escapeHtml(item.dataset.bookingTech || '-') + '</span></div>' +
-            '<div class="booking-card-info-row"><span class="booking-card-label">Time</span><span class="booking-card-value">' + escapeHtml(getBookingCardTimeText(item)) + '</span></div>' +
+            '<div class="booking-card-info-row"><span class="booking-card-label">Appointment</span><span class="booking-card-value">' + escapeHtml(getBookingCardTimeText(item)) + '</span></div>' +
+            '<div class="booking-card-info-row"><span class="booking-card-label">Duration</span><span class="booking-card-value">' + escapeHtml(getBookingCardDuration(item)) + '</span></div>' +
             '<div class="booking-card-info-row"><span class="booking-card-label">Source</span><span class="booking-card-value booking-source-list">' + renderBookingSourceBadges(item) + '</span></div>' +
           '</div>' +
           '<div class="booking-card-actions">' + renderBookingActionButtons(item) + '</div>' +
@@ -9472,7 +9548,7 @@
       if (bookingAction) {
         var item = findBookingItemFromAction(bookingAction);
         if (bookingAction.dataset.bookingAction === 'send-sms') {
-          sendBookingSms(item);
+          if (window.openSmsCampaignComposer) window.openSmsCampaignComposer({ segment: 'new' });
         } else if (bookingAction.dataset.bookingAction === 'done') {
           completeBookingItem(item);
         } else if (bookingAction.dataset.bookingAction === 'noshow') {
