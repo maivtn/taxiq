@@ -205,7 +205,7 @@
           <div id="scan-context-view" class="hidden" data-scan-view="context" aria-hidden="true">
             <div class="app-card mt-6">
               <p class="eyebrow" data-en="Salon recognized" data-vi="Đã nhận diện salon">Đã nhận diện salon</p>
-              <h2 id="scan-context-business" class="mt-2 text-xl font-black"></h2>
+              <h2 id="scan-context-business" class="mt-2 text-xl font-black" tabindex="-1"></h2>
               <dl class="mt-4 space-y-3 text-sm">
                 <div class="flex justify-between gap-4"><dt data-en="Customer" data-vi="Khách hàng">Khách hàng</dt><dd data-scan-customer class="text-right font-bold"></dd></div>
                 <div class="flex justify-between gap-4"><dt data-en="Rewards available" data-vi="Điểm hiện có">Điểm hiện có</dt><dd data-scan-balance class="text-right font-bold"></dd></div>
@@ -221,8 +221,8 @@
             <div class="app-card mt-6 space-y-4">
               <label class="block text-sm font-bold"><span data-en="Name" data-vi="Họ tên">Họ tên</span><input id="guest-name" class="app-input mt-2" autocomplete="name"></label>
               <label class="block text-sm font-bold"><span data-en="Phone" data-vi="Điện thoại">Điện thoại</span><input id="guest-phone" class="app-input mt-2" type="tel" inputmode="tel" autocomplete="tel"></label>
-              <label class="block text-sm font-bold"><span data-en="Service" data-vi="Dịch vụ">Dịch vụ</span><select id="guest-service" class="app-input mt-2"><option value="deluxe-pedicure">Deluxe Pedicure — $55</option><option value="acrylic-full-set">Acrylic Full Set — $65</option></select></label>
-              <label class="block text-sm font-bold"><span data-en="Technician" data-vi="Kỹ thuật viên">Kỹ thuật viên</span><select id="guest-staff" class="app-input mt-2"><option value="" data-en="No preference" data-vi="Không yêu cầu">Không yêu cầu</option><option value="staff-anna">Anna</option><option value="staff-maria">Maria</option></select></label>
+              <label class="block text-sm font-bold"><span data-en="Service" data-vi="Dịch vụ">Dịch vụ</span><select id="guest-service" class="app-input mt-2"></select></label>
+              <label class="block text-sm font-bold"><span data-en="Technician" data-vi="Kỹ thuật viên">Kỹ thuật viên</span><select id="guest-staff" class="app-input mt-2"></select></label>
               <p id="guest-checkin-error" class="field-error hidden" role="alert"></p>
               <button type="button" class="app-button w-full" data-action="submit-guest-checkin" data-en="Check in now" data-vi="Check-in ngay">Check-in ngay</button>
             </div>
@@ -307,6 +307,18 @@
       'staff-anna': BUSINESS_ID,
       'staff-maria': BUSINESS_ID
     });
+    const GUEST_SERVICE_CATALOG = Object.freeze({
+      'bitcoin-nail-bar': Object.freeze([
+        Object.freeze({ key: 'deluxe-pedicure', label: Object.freeze({ vi: 'Pedicure cao cấp', en: 'Deluxe Pedicure' }), amountCents: 5500 }),
+        Object.freeze({ key: 'acrylic-full-set', label: Object.freeze({ vi: 'Bộ móng acrylic', en: 'Acrylic Full Set' }), amountCents: 6500 })
+      ]),
+      'golden-glow-spa': Object.freeze([
+        Object.freeze({ key: 'signature-facial', label: Object.freeze({ vi: 'Chăm sóc da đặc trưng', en: 'Signature Facial' }), amountCents: 7500 })
+      ]),
+      'moon-coffee': Object.freeze([
+        Object.freeze({ key: 'signature-drink', label: Object.freeze({ vi: 'Đồ uống đặc trưng', en: 'Signature Drink' }), amountCents: 800 })
+      ])
+    });
     const CHECKIN_STATION_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
     const CHECKIN_ID_PATTERN = /^checkin-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const REFERRAL_COPY = {
@@ -329,6 +341,20 @@
 
     function getRewardDefinition(key) {
       return Object.prototype.hasOwnProperty.call(REWARDS, key) ? REWARDS[key] : null;
+    }
+
+    function getGuestServiceDefinition(businessId, serviceKey) {
+      const services = GUEST_SERVICE_CATALOG[businessId];
+      return Array.isArray(services)
+        ? services.find((service) => service.key === serviceKey) ?? null
+        : null;
+    }
+
+    function isValidGuestStaffAssignment(appState, businessId, staffProfileId) {
+      if (staffProfileId === null) return true;
+      const staff = isRecord(appState?.staffProfiles) ? appState.staffProfiles[staffProfileId] : null;
+      return CHECKIN_STAFF_BUSINESSES[staffProfileId] === businessId
+        && isRecord(staff) && staff.id === staffProfileId && staff.businessId === businessId;
     }
 
     function parseNexoraQr(payload) {
@@ -393,8 +419,9 @@
       const phone = normalizeUsPhone(input.phone);
       const serviceKey = normalizedRequiredText(input.serviceKey);
       const staffProfileId = input.staffProfileId === null ? null : normalizedRequiredText(input.staffProfileId);
-      if (!name || phone.length !== 10 || !serviceKey
-        || (staffProfileId && CHECKIN_STAFF_BUSINESSES[staffProfileId] !== parsed.businessId)) {
+      const service = getGuestServiceDefinition(parsed.businessId, serviceKey);
+      if (!name || phone.length !== 10 || !service
+        || !isValidGuestStaffAssignment(appState, parsed.businessId, staffProfileId)) {
         return { ok: false, code: 'invalid_guest' };
       }
       const business = getValidBusiness(appState, parsed.businessId);
@@ -893,7 +920,9 @@
       const staffProfileId = value.staffProfileId === null ? null : normalizedRequiredText(value.staffProfileId);
       const scannedAt = validStoredTimestamp(value.scannedAt) ? value.scannedAt : null;
       const claimedAt = value.claimedAt === null || validStoredTimestamp(value.claimedAt) ? value.claimedAt : undefined;
-      if (!id || !getValidBusiness(appState, businessId) || !name || phone.length !== 10 || !serviceKey
+      if (!id || !getValidBusiness(appState, businessId) || !name || phone.length !== 10
+        || !getGuestServiceDefinition(businessId, serviceKey)
+        || !isValidGuestStaffAssignment(appState, businessId, staffProfileId)
         || !station || !sourceQr || value.status !== 'checked_in' || !Number.isSafeInteger(value.pointsPending)
         || value.pointsPending < 0 || !scannedAt || claimedAt === undefined) return null;
       return { id, businessId, name, phone, serviceKey, staffProfileId, station, sourceQr,
@@ -3304,7 +3333,7 @@
         businessMethodDisabled: 'Tiệm chưa bật phương thức này.', transactionFailed: 'Không thể lưu giao dịch. Vui lòng thử lại.',
         addPhotoDetail: 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.', imageReadFailed: 'Không thể đọc ảnh này.',
         verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
-        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Nhập họ tên, số điện thoại US 10 số và lựa chọn hợp lệ.', noPreference: 'Không yêu cầu', notAvailable: 'Chưa có thông tin', guestCheckinSuccess: 'Đã check-in cho khách. Điểm đang chờ xác nhận.', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
+        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Nhập họ tên, số điện thoại US 10 số và lựa chọn hợp lệ.', noPreference: 'Không yêu cầu', notAvailable: 'Chưa có thông tin', guestCheckinSuccess: 'Đã check-in cho khách. Điểm đang chờ xác nhận.', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
         cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
         invalidPhone: 'Nhập số điện thoại US gồm 10 số.', cooldown: 'Vui lòng chờ đủ 30 giây.',
@@ -3336,7 +3365,7 @@
         businessMethodDisabled: 'The business has not enabled this method.', transactionFailed: 'Could not save the transaction. Please try again.',
         addPhotoDetail: 'The production app will open your device photo picker.', imageReadFailed: 'Could not read this image.',
         verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
-        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Enter a name, a 10-digit US phone number and valid selections.', noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in. Points are pending confirmation.', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
+        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Enter a name, a 10-digit US phone number and valid selections.', noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in. Points are pending confirmation.', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
         cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
         invalidPhone: 'Enter a 10-digit US phone number.', cooldown: 'Please wait for the 30-second cooldown.',
@@ -3464,19 +3493,68 @@
       element.classList.toggle('hidden', !message);
     }
 
-    function setScanView(name) {
+    function renderGuestCheckinOptions() {
+      const serviceSelect = document.getElementById('guest-service');
+      const staffSelect = document.getElementById('guest-staff');
+      if (!serviceSelect || !staffSelect) return;
+      const context = state.ui.pendingContext.scanContext;
+      const businessId = isRecord(context) ? context.businessId : null;
+      const services = GUEST_SERVICE_CATALOG[businessId] ?? [];
+      const language = state.profile.language === 'en' ? 'en' : 'vi';
+      const selectedService = serviceSelect.value;
+      const serviceOptions = services.map((service) => {
+        const option = document.createElement('option');
+        option.value = service.key;
+        const price = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+          .format(service.amountCents / 100);
+        option.textContent = `${service.label[language]} — ${price}`;
+        return option;
+      });
+      serviceSelect.replaceChildren(...serviceOptions);
+      serviceSelect.value = services.some((service) => service.key === selectedService)
+        ? selectedService
+        : services[0]?.key ?? '';
+
+      const selectedStaff = staffSelect.value;
+      const noPreference = document.createElement('option');
+      noPreference.value = '';
+      noPreference.textContent = t('noPreference');
+      const staffOptions = Object.values(state.staffProfiles)
+        .filter((staff) => isRecord(staff)
+          && isValidGuestStaffAssignment(state, businessId, staff.id))
+        .map((staff) => {
+          const option = document.createElement('option');
+          option.value = staff.id;
+          option.textContent = staff.name;
+          return option;
+        });
+      staffSelect.replaceChildren(noPreference, ...staffOptions);
+      staffSelect.value = staffOptions.some((option) => option.value === selectedStaff) ? selectedStaff : '';
+    }
+
+    function setScanView(name, options = {}) {
+      let activeView = null;
       document.querySelectorAll('[data-scan-view]').forEach((view) => {
         const active = view.dataset.scanView === name;
         view.classList.toggle('hidden', !active);
         view.setAttribute('aria-hidden', String(!active));
+        if (active) activeView = view;
       });
+      if (!activeView || options.focus === false) return;
+      const focusTargetId = {
+        camera: 'scan-demo-business',
+        context: 'scan-context-business',
+        guest: 'guest-name'
+      }[name];
+      document.getElementById(focusTargetId)?.focus({ preventScroll: true });
     }
 
     function renderScanContext() {
       const context = state.ui.pendingContext.scanContext;
       const business = context ? getValidBusiness(state, context.businessId) : null;
+      renderGuestCheckinOptions();
       if (!business) {
-        setScanView('camera');
+        setScanView('camera', { focus: state.ui.activeScreen === 'scan' });
         return;
       }
       const balance = getBusinessBalance(state, business.id);
@@ -3490,28 +3568,44 @@
     }
 
     function openManualSalonCode(trigger) {
-      const content = document.createElement('label');
-      content.className = 'block text-sm font-bold';
-      content.textContent = t('salonQrUrl');
+      const content = document.createElement('div');
+      const label = document.createElement('label');
+      label.className = 'block text-sm font-bold';
+      label.textContent = t('salonQrUrl');
       const input = document.createElement('input');
       input.id = 'manual-salon-code';
       input.className = 'app-input mt-2';
       input.placeholder = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front';
-      content.append(input);
+      input.setAttribute('aria-describedby', 'manual-salon-code-error');
+      input.setAttribute('aria-invalid', 'false');
+      label.append(input);
+      const error = document.createElement('p');
+      error.id = 'manual-salon-code-error';
+      error.className = 'field-error hidden';
+      error.setAttribute('role', 'alert');
+      content.append(label, error);
       openOverlay({
         title: t('enterSalonCode'),
         content,
+        successFocus: document.getElementById('scan-context-business'),
         onConfirm: () => {
           const result = commitState((draft) => stageSalonScan(draft, input.value));
           if (!result.ok) {
-            showToast(t('invalidQr'), 'error');
+            input.setAttribute('aria-invalid', 'true');
+            error.textContent = t('manualSalonCodeInvalid');
+            error.classList.remove('hidden');
+            input.focus({ preventScroll: true });
             return false;
           }
+          input.setAttribute('aria-invalid', 'false');
+          error.textContent = '';
+          error.classList.add('hidden');
           renderScanContext();
           setScanView('context');
           return true;
         }
       }, trigger);
+      input.focus({ preventScroll: true });
     }
 
     function profileEditorMarkup() {
@@ -3568,8 +3662,8 @@
       (isVisibleElement(target) ? target : fallback).focus?.({ preventScroll: true });
     }
 
-    function openOverlay({ title, html = '', content = null, confirmLabel = t('confirm'), cancelLabel = t('cancel'), onConfirm = null, onCancel = null, hideCancel = false }, trigger = document.activeElement) {
-      overlayRuntime = { onConfirm, onCancel };
+    function openOverlay({ title, html = '', content = null, confirmLabel = t('confirm'), cancelLabel = t('cancel'), onConfirm = null, onCancel = null, hideCancel = false, successFocus = null }, trigger = document.activeElement) {
+      overlayRuntime = { onConfirm, onCancel, successFocus };
       overlayReturnFocus = trigger;
       state.ui.overlay = { kind: 'dialog' };
       document.getElementById('overlay-title').textContent = title;
@@ -3596,7 +3690,6 @@
       const returnFocus = overlayReturnFocus;
       const callback = result === true ? callbacks?.onConfirm : result === false ? callbacks?.onCancel : null;
       if (callback && callback() === false) {
-        document.getElementById('overlay-confirm').focus();
         return false;
       }
       if (overlayRuntime !== callbacks) return true;
@@ -3608,7 +3701,7 @@
       overlay.classList.remove('flex');
       overlay.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('overflow-hidden');
-      restoreOverlayFocus(returnFocus);
+      restoreOverlayFocus(result === true && callbacks?.successFocus ? callbacks.successFocus : returnFocus);
       return true;
     }
 

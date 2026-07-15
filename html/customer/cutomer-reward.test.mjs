@@ -83,7 +83,11 @@ function createDocumentStub({
     body: { classList: createClassList() },
     activeElement: null,
     addEventListener(type, handler) { listeners.push({ type, handler }); },
-    createElement() { return createStubElement(); },
+    createElement(tagName = '') {
+      const element = createStubElement({ onFocus: (focused) => { document.activeElement = focused; } });
+      element.tagName = String(tagName).toUpperCase();
+      return element;
+    },
     getElementById(id) {
       if (!elements.has(id)) {
         elements.set(id, createStubElement({ id, onFocus: (element) => { document.activeElement = element; } }));
@@ -115,6 +119,13 @@ function createDocumentStub({
       return [];
     }
   };
+  elements.forEach((element) => {
+    const focus = element.focus.bind(element);
+    element.focus = (...args) => {
+      document.activeElement = element;
+      focus(...args);
+    };
+  });
   return document;
 }
 
@@ -219,7 +230,7 @@ test('migrates customer journey collections into schema v2 without changing the 
     profile: { language: 'vi' },
     guestCheckins: [{
       id: 'guest-checkin-1', businessId: 'bitcoin-nail-bar', name: 'Amy Nguyen',
-      phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-jenny',
+      phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-anna',
       station: 'front', sourceQr: 'https://nexoratouch.com/touch/bitcoin-nail-bar/front',
       status: 'checked_in', pointsPending: 120, scannedAt: '2026-07-15T03:04:42.000Z',
       claimedAt: null
@@ -3347,6 +3358,164 @@ test('provides nested multi-salon and guest scan views with localized copy and s
   assert.ok(memberAction);
   assert.match(memberAction, /completeMemberSalonCheckin/);
   assert.match(source, /function renderScanContext\(\)[\s\S]*?\.textContent/);
+});
+
+test('scopes runtime guest services and staff to the staged business catalog', () => {
+  const { api, context } = testApi();
+  const app = api.createDefaultState();
+  api.stageSalonScan(app, 'https://nexoratouch.com/touch/golden-glow-spa/lobby');
+  const guest = { name: 'Amy Nguyen', phone: '832-555-0198', staffProfileId: null };
+
+  for (const serviceKey of ['arbitrary-service', 'deluxe-pedicure']) {
+    const before = JSON.stringify(app);
+    assert.equal(api.createGuestCheckin(app, { ...guest, serviceKey }, 1000).code, 'invalid_guest');
+    assert.equal(JSON.stringify(app), before);
+  }
+  const beforeStaff = JSON.stringify(app);
+  assert.equal(api.createGuestCheckin(app, {
+    ...guest, serviceKey: 'signature-facial', staffProfileId: 'staff-anna'
+  }, 1000).code, 'invalid_guest');
+  assert.equal(JSON.stringify(app), beforeStaff);
+  assert.equal(api.createGuestCheckin(app, { ...guest, serviceKey: 'signature-facial' }, 1000).ok, true);
+
+  for (const [businessId, serviceKey, amountCents] of [
+    ['bitcoin-nail-bar', 'deluxe-pedicure', 5500],
+    ['bitcoin-nail-bar', 'acrylic-full-set', 6500],
+    ['golden-glow-spa', 'signature-facial', 7500],
+    ['moon-coffee', 'signature-drink', 800]
+  ]) {
+    assert.equal(vm.runInContext(
+      `getGuestServiceDefinition('${businessId}', '${serviceKey}').amountCents`, context
+    ), amountCents);
+  }
+});
+
+test('drops persisted guest check-ins with arbitrary services or cross-business staff', () => {
+  const { api } = testApi();
+  const golden = {
+    id: 'guest-checkin-golden', businessId: 'golden-glow-spa', name: 'Amy Nguyen',
+    phone: '8325550198', serviceKey: 'signature-facial', staffProfileId: null,
+    station: 'lobby', sourceQr: 'https://nexoratouch.com/touch/golden-glow-spa/lobby',
+    status: 'checked_in', pointsPending: 80, scannedAt: '2026-07-15T03:04:42.000Z',
+    claimedAt: null
+  };
+  assert.equal(api.migrateState({ guestCheckins: [golden] }).guestCheckins.length, 1);
+  for (const tampered of [
+    { ...golden, serviceKey: 'anything-goes' },
+    { ...golden, serviceKey: 'deluxe-pedicure' },
+    { ...golden, staffProfileId: 'staff-anna' }
+  ]) {
+    assert.deepEqual(api.migrateState({ guestCheckins: [tampered] }).guestCheckins, []);
+  }
+});
+
+test('renders localized guest options only for the staged business and refreshes language', () => {
+  const service = createStubElement({ id: 'guest-service' });
+  const staff = createStubElement({ id: 'guest-staff' });
+  const document = createDocumentStub({
+    extraElements: [service, staff],
+    selectorNodes: {
+      '[data-scan-customer]': createStubElement(),
+      '[data-scan-balance]': createStubElement(),
+      '[data-scan-staff]': createStubElement(),
+      '[data-scan-service]': createStubElement()
+    }
+  });
+  const { context } = testApi({}, { document });
+  vm.runInContext("commitState((draft) => stageSalonScan(draft, 'https://nexoratouch.com/touch/golden-glow-spa/lobby'))", context);
+
+  context.renderGuestCheckinOptions();
+  assert.deepEqual(service.children.map((option) => option.value), ['signature-facial']);
+  assert.match(service.children[0].textContent, /^Chăm sóc da đặc trưng/);
+  assert.deepEqual(staff.children.map((option) => option.value), ['']);
+  assert.equal(staff.children[0].textContent, 'Không yêu cầu');
+
+  context.setLanguage('en');
+  assert.match(service.children[0].textContent, /^Signature Facial/);
+  assert.equal(staff.children[0].textContent, 'No preference');
+
+  vm.runInContext("stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front')", context);
+  context.renderGuestCheckinOptions();
+  assert.deepEqual(staff.children.map((option) => option.value), ['', 'staff-anna', 'staff-maria']);
+});
+
+test('moves focus into every active nested scan view while hiding the previous view', () => {
+  const camera = createStubElement({ id: 'scan-camera-view', dataset: { scanView: 'camera' } });
+  const contextView = createStubElement({ id: 'scan-context-view', dataset: { scanView: 'context' }, classNames: ['hidden'] });
+  const guest = createStubElement({ id: 'guest-checkin-view', dataset: { scanView: 'guest' }, classNames: ['hidden'] });
+  const selector = createStubElement({ id: 'scan-demo-business' });
+  const heading = createStubElement({ id: 'scan-context-business' });
+  const name = createStubElement({ id: 'guest-name' });
+  const document = createDocumentStub({
+    extraElements: [camera, contextView, guest, selector, heading, name],
+    selectorNodes: { '[data-scan-view]': [camera, contextView, guest] }
+  });
+  const { context } = testApi({}, { document });
+
+  for (const [viewName, target, activeView] of [
+    ['context', heading, contextView], ['guest', name, guest], ['camera', selector, camera]
+  ]) {
+    context.setScanView(viewName);
+    assert.equal(document.activeElement, target);
+    assert.equal(activeView.attributes['aria-hidden'], 'false');
+    for (const hiddenView of [camera, contextView, guest].filter((view) => view !== activeView)) {
+      assert.equal(hiddenView.attributes['aria-hidden'], 'true');
+      assert.equal(hiddenView.classList.contains('hidden'), true);
+    }
+  }
+  assert.match(html(), /id="scan-context-business"[^>]*tabindex="-1"/);
+});
+
+test('keeps invalid manual salon codes inline and returns focus to the active context on success', () => {
+  const camera = createStubElement({ id: 'scan-camera-view', dataset: { scanView: 'camera' } });
+  const contextView = createStubElement({ id: 'scan-context-view', dataset: { scanView: 'context' }, classNames: ['hidden'] });
+  const guestView = createStubElement({ id: 'guest-checkin-view', dataset: { scanView: 'guest' }, classNames: ['hidden'] });
+  const trigger = createStubElement({ id: 'manual-trigger' });
+  const heading = createStubElement({ id: 'scan-context-business' });
+  const selector = createStubElement({ id: 'scan-demo-business' });
+  const guestName = createStubElement({ id: 'guest-name' });
+  const service = createStubElement({ id: 'guest-service' });
+  const staff = createStubElement({ id: 'guest-staff' });
+  const scanCustomer = createStubElement();
+  const scanBalance = createStubElement();
+  const scanStaff = createStubElement();
+  const scanService = createStubElement();
+  const document = createDocumentStub({
+    extraElements: [camera, contextView, guestView, trigger, heading, selector, guestName, service, staff],
+    selectorNodes: {
+      '[data-scan-view]': [camera, contextView, guestView],
+      '[data-scan-customer]': scanCustomer,
+      '[data-scan-balance]': scanBalance,
+      '[data-scan-staff]': scanStaff,
+      '[data-scan-service]': scanService
+    }
+  });
+  const { api, context } = testApi({}, { document });
+
+  context.openManualSalonCode(trigger);
+  const content = document.getElementById('overlay-content').children[0];
+  assert.equal(content.tagName, 'DIV');
+  const label = content.children[0];
+  const input = label.children[0];
+  const error = content.children[1];
+  assert.equal(document.activeElement, input);
+  assert.equal(error.getAttribute('role'), 'alert');
+
+  input.value = 'not-a-qr';
+  assert.equal(context.closeOverlay(true), false);
+  assert.equal(document.getElementById('app-overlay').attributes['aria-hidden'], 'false');
+  assert.equal(input.attributes['aria-invalid'], 'true');
+  assert.equal(error.textContent, 'URL QR salon không hợp lệ.');
+  assert.equal(error.classList.contains('hidden'), false);
+  assert.equal(document.activeElement, input);
+
+  input.value = 'https://nexoratouch.com/touch/golden-glow-spa/lobby';
+  assert.equal(context.closeOverlay(true), true);
+  assert.equal(input.attributes['aria-invalid'], 'false');
+  assert.equal(error.classList.contains('hidden'), true);
+  assert.equal(document.activeElement, heading);
+  assert.equal(vm.runInContext('state.ui.pendingContext.scanContext.businessId', context), 'golden-glow-spa');
+  assert.equal(api.translate('en', 'manualSalonCodeInvalid'), 'Enter a valid salon QR URL.');
 });
 
 test('queues offline QR check-in and awards points after retry with scan timestamp', () => {
