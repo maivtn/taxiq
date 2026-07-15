@@ -160,26 +160,96 @@ const OPS_ROLES = Object.freeze(['Customer', 'Front Desk', 'Staff']);
 const OPS_UNSAFE_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
 const OPS_RESERVED_OBJECT_KEYS = new Set([...OPS_UNSAFE_KEYS, ...Object.getOwnPropertyNames(Object.prototype)]);
 const OPS_INVALID_CLONE = Symbol('invalid-clone');
-const OPS_ROLE_COPY = Object.freeze({
-  Customer: 'Customer / Khách hàng — theo dõi ticket và quyết định các yêu cầu cần phê duyệt.',
-  'Front Desk': 'Front Desk / Lễ tân — hỗ trợ điều phối ticket và yêu cầu của khách.',
-  Staff: 'Staff / Nhân viên — theo dõi dịch vụ và gửi sự kiện vận hành.'
-});
 const OPS_COPY = Object.freeze({
-  vi: { in_service: 'Đang làm', waiting: 'Đang chờ', completed: 'Hoàn tất', accepted: 'Đã chấp nhận',
+  vi: {
+    in_service: 'Đang làm', waiting: 'Đang chờ', completed: 'Hoàn tất', accepted: 'Đã chấp nhận',
     declined: 'Đã từ chối', available: 'Sẵn sàng', unavailable: 'Chưa sẵn sàng', choose: 'Chọn',
     frontDeskSent: 'Đã báo lễ tân', requestFailed: 'Không thể gửi yêu cầu',
-    notEligible: (staff, service) => `${staff} chưa đủ điều kiện cho ${service}.` },
-  en: { in_service: 'In service', waiting: 'Waiting', completed: 'Completed', accepted: 'Accepted',
+    roleCustomerName: 'Khách hàng', roleFrontDeskName: 'Lễ tân', roleStaffName: 'Nhân viên',
+    roleCustomerCopy: 'Khách hàng — theo dõi phiếu và quyết định các yêu cầu cần phê duyệt.',
+    roleFrontDeskCopy: 'Lễ tân — hỗ trợ điều phối phiếu và yêu cầu của khách.',
+    roleStaffCopy: 'Nhân viên — theo dõi dịch vụ và gửi sự kiện vận hành.',
+    liveTicketScreen: 'Phiếu dịch vụ', eligibilityScreen: 'Điều kiện nhân viên',
+    addOnScreen: 'Phê duyệt dịch vụ thêm', screenChangeFailed: 'Không thể lưu thay đổi màn hình.',
+    screenOpened: (screen) => `Đã mở ${screen}.`, staffReviewFailed: 'Không thể kiểm tra nhân viên.',
+    staffEligible: 'Nhân viên được yêu cầu phù hợp.', staffChoiceRequired: 'Cần chọn nhân viên phù hợp.',
+    staffNotSelectable: 'Không thể chọn nhân viên.', staffChooseFailed: 'Không thể chọn nhân viên.',
+    staffSelected: 'Đã chọn nhân viên.', addonUnavailable: 'Không thể mở dịch vụ thêm.',
+    addonReview: 'Vui lòng xem dịch vụ thêm.',
+    addonAcceptPrompt: 'Đã chọn chấp nhận; vui lòng xác nhận số điện thoại.',
+    addonDeclinePrompt: 'Đã chọn từ chối; vui lòng xác nhận số điện thoại.',
+    phoneError: 'Xác nhận số điện thoại không khớp. Hãy chọn lại và thử lại.',
+    phoneRetry: 'Xác nhận thất bại; vui lòng thử lại.',
+    addonAccepted: 'Đã chấp nhận dịch vụ thêm.', addonDeclined: 'Đã từ chối dịch vụ thêm.',
+    callDemo: 'Bản demo: ứng dụng sẽ mở trình gọi điện trên thiết bị ở bản production.',
+    messageDemo: 'Bản demo: ứng dụng sẽ mở tin nhắn trên thiết bị ở bản production.',
+    noLiveTicket: 'Chưa có phiếu dịch vụ.', checkoutOpening: 'Đang mở thanh toán khách.',
+    checkoutOpenFailed: 'Không thể mở thanh toán. Vui lòng thử lại nút Thanh toán.',
+    ticketOpen: 'Đang mở phiếu.', reviewContinue: 'Tiếp tục Đánh giá trong Ứng dụng Khách hàng.',
+    rewardContinue: 'Tiếp tục Phần thưởng trong Ứng dụng Khách hàng.',
+    entryError: 'Không tìm thấy hoặc lượt check-in không rõ ràng.',
+    ticketCreateFailed: 'Không thể tạo phiếu dịch vụ.', invalidRole: 'Vai trò không hợp lệ.',
+    roleSaveFailed: 'Không thể lưu vai trò.', roleSaved: (role) => `Đã lưu vai trò ${role}.`,
+    suggested: (staff) => `${staff} đề xuất`, unassigned: 'Chưa chỉ định',
+    notEligible: (staff, service) => `${staff} chưa đủ điều kiện cho ${service}.`,
+    chooseStaffReason: 'Chọn một nhân viên được đề xuất trước.',
+    staffUnavailableReason: 'Nhân viên này hiện chưa sẵn sàng.',
+    eligibilityTabReason: 'Chỉ mở khi cần chọn nhân viên phù hợp.',
+    addonTabReason: 'Chỉ mở khi có dịch vụ thêm đang chờ phê duyệt.',
+    addonActionReason: 'Chỉ Khách hàng có phiếu hỗ trợ mới có thể mở dịch vụ thêm.',
+    addonDecisionReason: 'Mở một dịch vụ thêm đang chờ trước.',
+    addonConfirmReason: 'Chọn Chấp nhận/Từ chối và nhập đủ 4 số cuối.',
+    phoneUnavailableReason: 'Mở một dịch vụ thêm đang chờ trước khi xác nhận điện thoại.',
+    entryBlockedReason: 'Khắc phục lỗi check-in trước khi tiếp tục.'
+  },
+  en: {
+    in_service: 'In service', waiting: 'Waiting', completed: 'Completed', accepted: 'Accepted',
     declined: 'Declined', available: 'Available', unavailable: 'Unavailable', choose: 'Choose',
     frontDeskSent: 'Front Desk has been notified', requestFailed: 'Request failed',
-    notEligible: (staff, service) => `${staff} is not eligible for ${service}.` }
+    roleCustomerName: 'Customer', roleFrontDeskName: 'Front Desk', roleStaffName: 'Staff',
+    roleCustomerCopy: 'Customer — track the ticket and decide approval requests.',
+    roleFrontDeskCopy: 'Front Desk — coordinate the ticket and customer requests.',
+    roleStaffCopy: 'Staff — track service and send operations events.',
+    liveTicketScreen: 'Live Ticket', eligibilityScreen: 'Staff Eligibility',
+    addOnScreen: 'Add-on Approval', screenChangeFailed: 'Screen change was not saved.',
+    screenOpened: (screen) => `Opened ${screen}.`, staffReviewFailed: 'Cannot review staff.',
+    staffEligible: 'The requested staff member is eligible.', staffChoiceRequired: 'Choose an eligible staff member.',
+    staffNotSelectable: 'Staff is not selectable.', staffChooseFailed: 'Cannot choose staff.',
+    staffSelected: 'Staff selected.', addonUnavailable: 'Cannot open the add-on.',
+    addonReview: 'Review the suggested add-on.', addonAcceptPrompt: 'Accept selected; confirm the phone number.',
+    addonDeclinePrompt: 'Decline selected; confirm the phone number.',
+    phoneError: 'Phone confirmation did not match. Choose again and retry.',
+    phoneRetry: 'Phone confirmation failed; retry.', addonAccepted: 'Add-on accepted.',
+    addonDeclined: 'Add-on declined.', callDemo: 'Demo: the production app opens the device dialer.',
+    messageDemo: 'Demo: the production app opens device messaging.', noLiveTicket: 'No live ticket.',
+    checkoutOpening: 'Opening Guest Checkout.', checkoutOpenFailed: 'Checkout could not open. Retry Pay.',
+    ticketOpen: 'Ticket is open.', reviewContinue: 'Continue Review in the Customer App.',
+    rewardContinue: 'Continue Rewards in the Customer App.',
+    entryError: 'The guest check-in was not found or is ambiguous.',
+    ticketCreateFailed: 'The live ticket could not be created.', invalidRole: 'Invalid role.',
+    roleSaveFailed: 'Role change was not saved.', roleSaved: (role) => `Saved role ${role}.`,
+    suggested: (staff) => `${staff} suggested`, unassigned: 'Unassigned',
+    notEligible: (staff, service) => `${staff} is not eligible for ${service}.`,
+    chooseStaffReason: 'Choose a recommended staff member first.',
+    staffUnavailableReason: 'This staff member is currently unavailable.',
+    eligibilityTabReason: 'Available only when an eligible staff choice is required.',
+    addonTabReason: 'Available only while an add-on awaits approval.',
+    addonActionReason: 'Only a Customer with a supported ticket can open an add-on.',
+    addonDecisionReason: 'Open a pending add-on first.',
+    addonConfirmReason: 'Choose Accept or Decline and enter the last four phone digits.',
+    phoneUnavailableReason: 'Open a pending add-on before confirming the phone number.',
+    entryBlockedReason: 'Resolve the check-in error before continuing.'
+  }
 });
 const opsLanguage = () => document.documentElement.lang === 'en' ? 'en' : 'vi';
 const opsT = (key, ...args) => {
   const value = OPS_COPY[opsLanguage()][key];
   return typeof value === 'function' ? value(...args) : value;
 };
+const OPS_ROLE_KEY = Object.freeze({ Customer: 'Customer', 'Front Desk': 'FrontDesk', Staff: 'Staff' });
+const OPS_SCREEN_KEY = Object.freeze({
+  liveticket: 'liveTicketScreen', staffnoteligible: 'eligibilityScreen', addonapproval: 'addOnScreen'
+});
 const OPS_BUSINESSES = Object.freeze({
   'bitcoin-nail-bar': Object.freeze({ id: 'bitcoin-nail-bar', name: 'Bitcoin Nail Bar' }),
   'golden-glow-spa': Object.freeze({ id: 'golden-glow-spa', name: 'Golden Glow Spa' }),
@@ -1355,7 +1425,7 @@ function clearAddOnInteraction({ clearError = true } = {}) {
   const phone = document.getElementById('ops-addon-phone');
   if (phone) phone.value = '';
   const confirm = document.getElementById('ops-addon-confirm');
-  setDisabledReason(confirm, true, 'Chọn Chấp nhận/Từ chối và nhập đủ 4 số cuối.');
+  setDisabledReason(confirm, true, opsT('addonConfirmReason'));
   const error = document.getElementById('ops-addon-error');
   if (error && clearError) {
     error.textContent = '';
@@ -1370,8 +1440,7 @@ function updateAddOnConfirm() {
   const digits = phone.value;
   const disabled = !currentAddOnUiState().canReview
     || !['accepted', 'declined'].includes(pendingAddOnDecision) || !/^\d{4}$/.test(digits);
-  setDisabledReason(document.getElementById('ops-addon-confirm'), disabled,
-    'Chọn Chấp nhận/Từ chối và nhập đủ 4 số cuối.');
+  setDisabledReason(confirm, disabled, opsT('addonConfirmReason'));
 }
 
 function syncAddOnControls() {
@@ -1383,15 +1452,12 @@ function syncAddOnControls() {
     if (action === 'open-addon') disabled = !(availability.canPropose || availability.canReview);
     if (['accept-addon', 'decline-addon'].includes(action)) disabled = !availability.canReview;
     if (disabled !== null) {
-      control.disabled = disabled;
-      control.setAttribute('aria-disabled', String(disabled));
+      const reason = action === 'open-addon' ? opsT('addonActionReason') : opsT('addonDecisionReason');
+      setDisabledReason(control, disabled, reason);
     }
   });
   const phone = document.getElementById('ops-addon-phone');
-  if (phone) {
-    phone.disabled = !availability.canReview;
-    phone.setAttribute('aria-disabled', String(!availability.canReview));
-  }
+  setDisabledReason(phone, !availability.canReview, opsT('phoneUnavailableReason'));
   updateAddOnConfirm();
 }
 
@@ -1401,7 +1467,7 @@ function renderAddOn() {
     ? operationsState.serviceTickets.find((row) => row.id === addOn.ticketId)
     : null;
   const values = {
-    'ops-addon-staff': addOn ? `${opsStaff(addOn.staffProfileId)?.name || addOn.staffProfileId} suggested / đề xuất` : '',
+    'ops-addon-staff': addOn ? opsT('suggested', opsStaff(addOn.staffProfileId)?.name || addOn.staffProfileId) : '',
     'ops-addon-label': addOn?.label || '',
     'ops-addon-amount': addOn ? `+ ${opsMoney(addOn.amountCents)}` : '',
     'ops-addon-current': ticket ? opsMoney(ticket.currentTotalCents) : '',
@@ -1440,7 +1506,7 @@ function renderLiveTicket() {
   document.getElementById('ops-ticket-status').textContent = opsT(ticket.status);
   if (businessName) businessName.textContent = business?.name || ticket.businessId;
   if (total) total.textContent = opsMoney(ticket.currentTotalCents);
-  if (staffName) staffName.textContent = opsStaff(ticket.staffProfileId)?.name || 'Unassigned / Chưa chỉ định';
+  if (staffName) staffName.textContent = opsStaff(ticket.staffProfileId)?.name || opsT('unassigned');
   const items = document.getElementById('ops-ticket-items');
   if (items) {
     const rows = ticket.lineItems.map((item) => {
@@ -1481,8 +1547,7 @@ function renderEligibility() {
       button.className = 'ops-button-secondary text-left';
       button.dataset.opsAction = 'select-recommended-staff';
       button.dataset.staffId = staff.id;
-      button.disabled = !staff.available;
-      button.setAttribute('aria-disabled', String(!staff.available));
+      setDisabledReason(button, !staff.available, opsT('staffUnavailableReason'));
       button.setAttribute('aria-pressed', String(staff.available && operationsState.ui.selectedStaffId === staff.id));
       button.textContent = `${staff.name} · ${opsT(staff.available ? 'available' : 'unavailable')}`;
       return button;
@@ -1495,8 +1560,7 @@ function renderEligibility() {
       ? opsStaff(operationsState.ui.selectedStaffId)
       : null;
     const selected = candidate?.available ? candidate : null;
-    setDisabledReason(document.getElementById('ops-choose-staff'), !selected,
-      'Chọn một nhân viên được đề xuất trước.');
+    setDisabledReason(choose, !selected, opsT('chooseStaffReason'));
     choose.textContent = selected ? `${opsT('choose')} ${selected.name}` : opsT('choose');
   }
 }
@@ -1510,7 +1574,8 @@ function renderOperationsContent() {
 
 function renderRoleCopy() {
   const copy = document.getElementById('ops-role-copy');
-  if (copy) copy.textContent = OPS_ROLE_COPY[operationsState.ui.role] || OPS_ROLE_COPY.Customer;
+  const key = OPS_ROLE_KEY[operationsState.ui.role] || OPS_ROLE_KEY.Customer;
+  if (copy) copy.textContent = opsT(`role${key}Copy`);
 }
 
 function renderOperationsScreen({ focus = false } = {}) {
@@ -1529,15 +1594,19 @@ function renderOperationsScreen({ focus = false } = {}) {
       : control.dataset.opsScreenTarget === 'staffnoteligible'
         && !latestIneligibleEvent(operationsState.ui.selectedTicketId);
     const addOnUnavailable = control.dataset.opsScreenTarget === 'addonapproval' && !addOnAvailability.canReview;
-    control.disabled = unavailable || addOnUnavailable;
-    control.setAttribute('aria-disabled', String(unavailable || addOnUnavailable));
+    const disabled = unavailable || addOnUnavailable;
+    const reason = operationsEntryBlocked
+      ? opsT('entryBlockedReason')
+      : control.dataset.opsScreenTarget === 'staffnoteligible'
+        ? opsT('eligibilityTabReason')
+        : opsT('addonTabReason');
+    setDisabledReason(control, disabled, reason);
     control.setAttribute('aria-selected', String(active));
-    control.setAttribute('tabindex', active && !unavailable && !addOnUnavailable ? '0' : '-1');
+    control.setAttribute('tabindex', active && !disabled ? '0' : '-1');
   });
   if (operationsEntryBlocked) {
     document.querySelectorAll('[data-ops-action]').forEach((control) => {
-      control.disabled = true;
-      control.setAttribute('aria-disabled', 'true');
+      setDisabledReason(control, true, opsT('entryBlockedReason'));
     });
   }
 }
@@ -1555,13 +1624,13 @@ function activateOperationsScreen(control, focusTarget = 'panel') {
   if (!result.ok) {
     renderOperationsScreen();
     if (focusTarget === 'tab') previousControl?.focus();
-    setOperationsStatus('Không thể lưu màn hình / Screen change was not saved.');
+    opsToast(opsT('screenChangeFailed'));
     return false;
   }
   if (target !== 'addonapproval') clearAddOnInteraction();
   renderOperationsScreen({ focus: focusTarget === 'panel' });
   if (focusTarget === 'tab') control.focus();
-  setOperationsStatus(`Đã mở ${control.textContent.trim()}.`);
+  opsToast(opsT('screenOpened', opsT(OPS_SCREEN_KEY[target])));
   return true;
 }
 
@@ -1640,7 +1709,7 @@ registerOpsAction('activate-screen', (control) => activateOperationsScreen(contr
 registerOpsAction('review-staff-eligibility', () => {
   const ticket = operationsState.serviceTickets.find((row) => row.id === operationsState.ui.selectedTicketId);
   if (!ticket || !ticket.staffProfileId) {
-    setOperationsStatus('Cannot review staff / Không thể kiểm tra nhân viên.');
+    opsToast(opsT('staffReviewFailed'));
     return;
   }
   const result = commitOperations((draft) => {
@@ -1649,14 +1718,12 @@ registerOpsAction('review-staff-eligibility', () => {
     return evaluated;
   });
   if (!result.ok) {
-    setOperationsStatus('Cannot review staff / Không thể kiểm tra nhân viên.');
+    opsToast(opsT('staffReviewFailed'));
     return;
   }
   renderOperationsContent();
   renderOperationsScreen({ focus: !result.eligible });
-  setOperationsStatus(result.eligible
-    ? 'Requested staff is eligible / Nhân viên phù hợp.'
-    : 'Staff eligibility needs your choice / Cần chọn nhân viên phù hợp.');
+  opsToast(opsT(result.eligible ? 'staffEligible' : 'staffChoiceRequired'));
 });
 
 registerOpsAction('select-recommended-staff', (control) => {
@@ -1670,7 +1737,7 @@ registerOpsAction('select-recommended-staff', (control) => {
     draft.ui.selectedStaffId = staffId;
     return { ok: true };
   });
-  if (!result.ok) return setOperationsStatus('Staff is not selectable / Không thể chọn nhân viên.');
+  if (!result.ok) return opsToast(opsT('staffNotSelectable'));
   renderEligibility();
 });
 
@@ -1680,10 +1747,10 @@ registerOpsAction('choose-recommended-staff', () => {
     if (chosen.ok) draft.ui.activeScreen = 'liveticket';
     return chosen;
   });
-  if (!result.ok) return setOperationsStatus('Cannot choose staff / Không thể chọn nhân viên.');
+  if (!result.ok) return opsToast(opsT('staffChooseFailed'));
   renderOperationsContent();
   renderOperationsScreen({ focus: true });
-  setOperationsStatus('Staff selected / Đã chọn nhân viên.');
+  opsToast(opsT('staffSelected'));
 });
 
 registerOpsAction('ask-front-desk', () => {
@@ -1695,7 +1762,7 @@ registerOpsAction('open-addon', () => {
   clearAddOnInteraction();
   const availability = currentAddOnUiState();
   if (!availability.canPropose && !availability.canReview) {
-    setOperationsStatus('Cannot open add-on / Không thể mở dịch vụ thêm.');
+    opsToast(opsT('addonUnavailable'));
     return { ok: false, code: 'addon_unavailable' };
   }
   const result = commitOperations((draft) => {
@@ -1712,12 +1779,12 @@ registerOpsAction('open-addon', () => {
     return proposed;
   });
   if (!result.ok) {
-    setOperationsStatus('Cannot open add-on / Không thể mở dịch vụ thêm.');
+    opsToast(opsT('addonUnavailable'));
     return result;
   }
   renderOperationsContent();
   renderOperationsScreen({ focus: true });
-  setOperationsStatus('Review the suggested add-on / Vui lòng xem dịch vụ thêm.');
+  opsToast(opsT('addonReview'));
   return result;
 });
 
@@ -1725,14 +1792,14 @@ registerOpsAction('accept-addon', () => {
   if (!currentAddOnUiState().canReview) return;
   pendingAddOnDecision = 'accepted';
   updateAddOnConfirm();
-  setOperationsStatus('Accept selected; confirm phone / Đã chọn chấp nhận, vui lòng xác nhận số điện thoại.');
+  opsToast(opsT('addonAcceptPrompt'));
 });
 
 registerOpsAction('decline-addon', () => {
   if (!currentAddOnUiState().canReview) return;
   pendingAddOnDecision = 'declined';
   updateAddOnConfirm();
-  setOperationsStatus('Decline selected; confirm phone / Đã chọn từ chối, vui lòng xác nhận số điện thoại.');
+  opsToast(opsT('addonDeclinePrompt'));
 });
 
 registerOpsAction('confirm-addon-phone', () => {
@@ -1752,38 +1819,35 @@ registerOpsAction('confirm-addon-phone', () => {
   if (!result.ok) {
     clearAddOnInteraction({ clearError: false });
     if (error) {
-      error.textContent = 'Phone confirmation failed. Choose again and retry. / Xác nhận không khớp. Hãy chọn lại và thử lại.';
+      error.textContent = opsT('phoneError');
       error.classList.remove('hidden');
       error.focus?.({ preventScroll: true });
     }
-    setOperationsStatus('Phone confirmation failed; retry / Xác nhận thất bại; vui lòng thử lại.');
+    opsToast(opsT('phoneRetry'));
     return result;
   }
   clearAddOnInteraction();
   renderOperationsContent();
   renderOperationsScreen({ focus: true });
-  setOperationsStatus(decision === 'accepted'
-    ? 'Add-on accepted / Đã chấp nhận dịch vụ thêm.'
-    : 'Add-on declined / Đã từ chối dịch vụ thêm.');
+  opsToast(opsT(decision === 'accepted' ? 'addonAccepted' : 'addonDeclined'));
   return result;
 });
 
-registerOpsAction('call-tech', () => setOperationsStatus('Demo only: open the device dialer in production.'));
-registerOpsAction('message-tech', () => setOperationsStatus('Demo only: open messaging in production.'));
+registerOpsAction('call-tech', () => opsToast(opsT('callDemo')));
+registerOpsAction('message-tech', () => opsToast(opsT('messageDemo')));
 registerOpsAction('open-ticket-tab', (control) => {
   const ticket = operationsState.serviceTickets.find((row) => row.id === operationsState.ui.selectedTicketId);
-  if (!ticket) return setOperationsStatus('No live ticket / Chưa có phiếu dịch vụ.');
+  if (!ticket) return opsToast(opsT('noLiveTicket'));
   if (control.dataset.target === 'pay') {
     operationsPayHandoff = Object.freeze({ guestCheckinId: ticket.guestCheckinId });
     const navigated = assignOperationsCheckout(ticket.guestCheckinId);
-    setOperationsStatus(navigated.ok
-      ? 'Opening Guest Checkout / Đang mở thanh toán.'
-      : 'Checkout could not open. Please retry Pay / Không thể mở thanh toán. Vui lòng thử lại.');
+    opsToast(opsT(navigated.ok ? 'checkoutOpening' : 'checkoutOpenFailed'));
     return navigated;
   }
-  setOperationsStatus(control.dataset.target === 'liveticket'
-    ? 'Ticket is open / Đang mở phiếu.'
-    : `${control.dataset.target} continues in Customer App.`);
+  const copyKey = control.dataset.target === 'liveticket'
+    ? 'ticketOpen'
+    : control.dataset.target === 'review' ? 'reviewContinue' : 'rewardContinue';
+  opsToast(opsT(copyKey));
 });
 
 function initializeOperations() {
@@ -1801,13 +1865,13 @@ function initializeOperations() {
   operationsEntryBlocked = !entry.ok;
   if (!entry.ok) {
     operationsPayHandoff = null;
-    const message = 'Guest check-in was not found or is ambiguous / Không tìm thấy hoặc lượt check-in không rõ ràng.';
+    const message = opsT('entryError');
     if (entryError) {
       entryError.textContent = message;
       entryError.classList.remove('hidden');
       entryError.focus?.({ preventScroll: true });
     }
-    setOperationsStatus(message);
+    opsToast(message);
   } else {
     entryError?.classList.add('hidden');
     const result = entry.demo
@@ -1827,12 +1891,12 @@ function initializeOperations() {
     if (!result.ok) {
       operationsEntryBlocked = true;
       operationsPayHandoff = null;
-      const message = 'Live ticket could not be created / Không thể tạo phiếu dịch vụ.';
+      const message = opsT('ticketCreateFailed');
       if (entryError) {
         entryError.textContent = message;
         entryError.classList.remove('hidden');
       }
-      setOperationsStatus(message);
+      opsToast(message);
     }
   }
   const role = document.getElementById('ops-role');
@@ -1842,7 +1906,7 @@ function initializeOperations() {
       const requestedRole = role.value;
       if (!OPS_ROLES.includes(requestedRole)) {
         role.value = operationsState.ui.role;
-        setOperationsStatus('Vai trò không hợp lệ / Invalid role.');
+        opsToast(opsT('invalidRole'));
         return;
       }
       const result = commitOperations((draft) => {
@@ -1855,14 +1919,15 @@ function initializeOperations() {
       if (!result.ok) {
         role.value = operationsState.ui.role;
         renderRoleCopy();
-        setOperationsStatus('Không thể lưu vai trò / Role change was not saved.');
+        opsToast(opsT('roleSaveFailed'));
         return;
       }
       clearAddOnInteraction();
       renderRoleCopy();
       renderOperationsContent();
       renderOperationsScreen();
-      setOperationsStatus(`Đã lưu vai trò ${operationsState.ui.role}.`);
+      const roleKey = OPS_ROLE_KEY[operationsState.ui.role] || OPS_ROLE_KEY.Customer;
+      opsToast(opsT('roleSaved', opsT(`role${roleKey}Name`)));
     });
   }
   const addOnPhone = document.getElementById('ops-addon-phone');

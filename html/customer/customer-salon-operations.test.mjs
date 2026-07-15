@@ -184,7 +184,8 @@ function uiApi({
   lucide,
   href = 'https://example.test/customer/customer-salon-operations.html',
   prefillStale = false,
-  throwLocationAccessor = false
+  throwLocationAccessor = false,
+  language = 'vi'
 } = {}) {
   const script = SOURCE.match(/<script id="operations-app-script">([\s\S]*?)<\/script>/)?.[1];
   assert.ok(script, 'operations script must exist');
@@ -236,7 +237,7 @@ function uiApi({
   const documentListeners = new Map();
   const document = {
     activeElement: null,
-    documentElement: { lang: 'vi' },
+    documentElement: { lang: language },
     getElementById(id) { return byId.get(id) || null; },
     createElement() { return createStubNode(); },
     querySelectorAll(selector) {
@@ -1258,15 +1259,15 @@ test('every enabled static and dynamic Task 8 action dispatches its state, UI, o
   });
 
   harness.document.dispatchClick(harness.actionButtons.call);
-  assert.match(harness.status.textContent, /dialer/i);
+  assert.match(harness.status.textContent, /trình gọi điện/i);
   harness.document.dispatchClick(harness.actionButtons.message);
-  assert.match(harness.status.textContent, /messaging/i);
+  assert.match(harness.status.textContent, /tin nhắn/i);
   harness.document.dispatchClick(harness.actionButtons.ticket);
-  assert.match(harness.status.textContent, /ticket is open/i);
+  assert.match(harness.status.textContent, /đang mở phiếu/i);
   harness.document.dispatchClick(harness.actionButtons.reviewTab);
-  assert.match(harness.status.textContent, /review continues/i);
+  assert.match(harness.status.textContent, /tiếp tục đánh giá/i);
   harness.document.dispatchClick(harness.actionButtons.reward);
-  assert.match(harness.status.textContent, /reward continues/i);
+  assert.match(harness.status.textContent, /tiếp tục phần thưởng/i);
 
   harness.document.dispatchClick(harness.actionButtons.review);
   assert.equal(harness.api.getOperationsState().ui.activeScreen, 'staffnoteligible');
@@ -1352,6 +1353,111 @@ test('companion defaults to Vietnamese and localizes dynamic status with accessi
   assert.equal(harness.status.textContent, 'Đã báo lễ tân');
 });
 
+test('conditional tabs and add-on controls expose localized disabled reasons through every transition', () => {
+  const customerKey = 'nexora.customer.prototype.v1';
+  const guest = guestCheckin({ id: 'guest-checkin-disabled-reasons' });
+  const harness = uiApi({
+    storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }),
+    href: `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${guest.id}`
+  });
+  const [live, eligibility, addon] = harness.screenButtons;
+
+  assert.equal(live.disabled, false);
+  assert.equal(live.getAttribute('title'), null);
+  assert.equal(eligibility.disabled, true);
+  assert.ok(eligibility.getAttribute('title'));
+  assert.equal(addon.disabled, true);
+  assert.ok(addon.getAttribute('title'));
+  assert.equal(harness.actionButtons.openAddon.disabled, false);
+  assert.equal(harness.actionButtons.openAddon.getAttribute('title'), null);
+
+  harness.role.value = 'Staff';
+  harness.role.dispatch('change');
+  assert.equal(harness.actionButtons.openAddon.disabled, true);
+  assert.ok(harness.actionButtons.openAddon.getAttribute('title'));
+  assert.equal(addon.disabled, true);
+  assert.ok(addon.getAttribute('title'));
+
+  harness.role.value = 'Customer';
+  harness.role.dispatch('change');
+  assert.equal(harness.actionButtons.openAddon.disabled, false);
+  assert.equal(harness.actionButtons.openAddon.getAttribute('title'), null);
+  harness.document.dispatchClick(harness.actionButtons.openAddon);
+  assert.equal(addon.disabled, false);
+  assert.equal(addon.getAttribute('title'), null);
+
+  harness.document.dispatchClick(harness.actionButtons.declineAddon);
+  const phone = harness.byId.get('ops-addon-phone');
+  phone.value = '0198';
+  phone.dispatch('input');
+  harness.document.dispatchClick(harness.actionButtons.confirmAddon);
+  assert.equal(harness.actionButtons.openAddon.disabled, true);
+  assert.ok(harness.actionButtons.openAddon.getAttribute('title'));
+  assert.equal(addon.disabled, true);
+  assert.ok(addon.getAttribute('title'));
+});
+
+test('all dynamic Operations status, role, add-on, and ticket copy comes from the VI/EN registry', () => {
+  assert.equal((SOURCE.match(/\bsetOperationsStatus\(/g) || []).length, 2);
+  assert.doesNotMatch(SOURCE, /OPS_ROLE_COPY|suggested \/ đề xuất|Unassigned \/ Chưa chỉ định/);
+  const runtime = SOURCE.slice(SOURCE.indexOf('const OPS_BUSINESSES'));
+  assert.doesNotMatch(runtime, /Demo only:|Cannot review staff|continues in Customer App|Không thể lưu màn hình \/ Screen/);
+
+  const expected = {
+    vi: {
+      roleCopy: 'Khách hàng — theo dõi phiếu và quyết định các yêu cầu cần phê duyệt.',
+      call: 'Bản demo: ứng dụng sẽ mở trình gọi điện trên thiết bị ở bản production.',
+      message: 'Bản demo: ứng dụng sẽ mở tin nhắn trên thiết bị ở bản production.',
+      review: 'Tiếp tục Đánh giá trong Ứng dụng Khách hàng.',
+      reward: 'Tiếp tục Phần thưởng trong Ứng dụng Khách hàng.',
+      addonReview: 'Vui lòng xem dịch vụ thêm.',
+      addonStaff: 'Jenny đề xuất',
+      addonAccept: 'Đã chọn chấp nhận; vui lòng xác nhận số điện thoại.',
+      phoneError: 'Xác nhận số điện thoại không khớp. Hãy chọn lại và thử lại.',
+      roleSaved: 'Đã lưu vai trò Nhân viên.'
+    },
+    en: {
+      roleCopy: 'Customer — track the ticket and decide approval requests.',
+      call: 'Demo: the production app opens the device dialer.',
+      message: 'Demo: the production app opens device messaging.',
+      review: 'Continue Review in the Customer App.',
+      reward: 'Continue Rewards in the Customer App.',
+      addonReview: 'Review the suggested add-on.',
+      addonStaff: 'Jenny suggested',
+      addonAccept: 'Accept selected; confirm the phone number.',
+      phoneError: 'Phone confirmation did not match. Choose again and retry.',
+      roleSaved: 'Saved role Staff.'
+    }
+  };
+
+  for (const language of ['vi', 'en']) {
+    const harness = uiApi({ language });
+    const copy = expected[language];
+    assert.equal(harness.copy.textContent, copy.roleCopy);
+    harness.document.dispatchClick(harness.actionButtons.call);
+    assert.equal(harness.status.textContent, copy.call);
+    harness.document.dispatchClick(harness.actionButtons.message);
+    assert.equal(harness.status.textContent, copy.message);
+    harness.document.dispatchClick(harness.actionButtons.reviewTab);
+    assert.equal(harness.status.textContent, copy.review);
+    harness.document.dispatchClick(harness.actionButtons.reward);
+    assert.equal(harness.status.textContent, copy.reward);
+    harness.document.dispatchClick(harness.actionButtons.openAddon);
+    assert.equal(harness.status.textContent, copy.addonReview);
+    assert.equal(harness.byId.get('ops-addon-staff').textContent, copy.addonStaff);
+    harness.document.dispatchClick(harness.actionButtons.acceptAddon);
+    assert.equal(harness.status.textContent, copy.addonAccept);
+    const phone = harness.byId.get('ops-addon-phone');
+    phone.value = '0000';
+    phone.dispatch('input');
+    harness.document.dispatchClick(harness.actionButtons.confirmAddon);
+    assert.equal(harness.byId.get('ops-addon-error').textContent, copy.phoneError);
+    harness.role.value = 'Staff';
+    harness.role.dispatch('change');
+    assert.equal(harness.status.textContent, copy.roleSaved);
+  }
+});
+
 test('standalone shell uses mobile viewport, browser CDNs, and no build dependency', () => {
   assert.match(SOURCE, /<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">/);
   assert.match(SOURCE, /https:\/\/cdn\.jsdelivr\.net\/npm\/@tailwindcss\/browser@4/);
@@ -1381,8 +1487,8 @@ test('role and screen controls persist operations state with hidden, aria, and f
   harness.role.dispatch('change');
 
   assert.equal(harness.api.getOperationsState().ui.role, 'Staff');
-  assert.match(harness.copy.textContent, /Staff/);
-  assert.match(harness.status.textContent, /Staff/);
+  assert.match(harness.copy.textContent, /Nhân viên/);
+  assert.match(harness.status.textContent, /Nhân viên/);
 
   harness.document.dispatchClick(harness.actionButtons.openAddon);
   assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
@@ -1729,7 +1835,7 @@ test('add-on UI executes open decision sanitized phone and confirm with accessib
   harness.document.dispatchClick(harness.actionButtons.openAddon);
   assert.equal(harness.api.getOperationsState().addOnRequests[0].status, 'proposed');
   assert.equal(harness.api.getOperationsState().ui.activeScreen, 'addonapproval');
-  assert.equal(harness.byId.get('ops-addon-staff').textContent, 'Jenny suggested / đề xuất');
+  assert.equal(harness.byId.get('ops-addon-staff').textContent, 'Jenny đề xuất');
   assert.equal(harness.byId.get('ops-addon-label').textContent, 'Gel Polish');
   assert.equal(harness.byId.get('ops-addon-amount').textContent, '+ $15.00');
   assert.equal(harness.byId.get('ops-addon-current').textContent, '$49.50');
@@ -1940,6 +2046,7 @@ test('add-on controls follow Customer role, ticket support, staff assignment, an
     href: `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${unsupportedGuest.id}`
   });
   assert.equal(unsupported.actionButtons.openAddon.disabled, true);
+  assert.ok(unsupported.actionButtons.openAddon.getAttribute('title'));
 
   const unassignedGuest = guestCheckin({ id: 'guest-checkin-unassigned-addon', staffProfileId: null });
   const unassigned = uiApi({
@@ -1947,6 +2054,7 @@ test('add-on controls follow Customer role, ticket support, staff assignment, an
     href: `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${unassignedGuest.id}`
   });
   assert.equal(unassigned.actionButtons.openAddon.disabled, true);
+  assert.ok(unassigned.actionButtons.openAddon.getAttribute('title'));
 
   assert.match(SOURCE, /id="ops-addon-error"[^>]+tabindex="-1"/);
   assert.match(SOURCE, /id="ops-entry-error"[^>]+tabindex="-1"/);

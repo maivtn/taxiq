@@ -3651,7 +3651,8 @@ test('provides accessible nested checkout payment views and complete localized a
   const source = html();
   assert.equal((source.match(/data-pay-view="(?:direct|checkout|payment-proof)"/g) || []).length, 3);
   assert.doesNotMatch(source, /\bconst SERVICE_CATALOG\b/);
-  for (const action of ['open-guest-checkout', 'select-checkout-tip', 'select-checkout-method', 'continue-checkout']) {
+  assert.doesNotMatch(source, /data-action="open-guest-checkout"|registerAction\('open-guest-checkout'/);
+  for (const action of ['select-checkout-tip', 'select-checkout-method', 'continue-checkout']) {
     assert.match(source, new RegExp(`registerAction\\('${action}'`));
   }
   for (const key of ['guestNotFound', 'serviceNotFound', 'checkoutFailed', 'selectPaymentMethod']) {
@@ -6670,6 +6671,32 @@ function acceptedOperationsSnapshot(checkout, {
     staffEligibility: []
   };
 }
+
+test('legacy direct-pay checkout controls cannot bypass the explicit Operations Pay handoff', () => {
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  const guest = seedGuestCheckin(setup.api, app);
+  const operations = acceptedOperationsSnapshot({
+    guestCheckinId: guest.id,
+    businessId: guest.businessId
+  });
+  const document = createDocumentStub();
+  const loaded = testApi({
+    [setup.api.STORAGE_KEY]: JSON.stringify(app),
+    [setup.api.OPERATIONS_STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, ...operations })
+  }, { document });
+  const staleControl = {
+    dataset: { action: 'open-guest-checkout' },
+    disabled: false,
+    closest(selector) { return selector === '[data-action]' ? this : null; }
+  };
+
+  loaded.context.handleAction({ target: staleControl });
+
+  assert.equal(vm.runInContext("ACTIONS.has('open-guest-checkout')", loaded.context), false);
+  assert.equal(vm.runInContext('state.checkoutDrafts.length', loaded.context), 0);
+  assert.equal(vm.runInContext('state.ui.pendingContext.checkoutDraftId', loaded.context), null);
+});
 
 test('imports an accepted operations add-on once and recomputes the 18 percent total in cents', () => {
   const { api } = testApi();
