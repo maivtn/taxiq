@@ -4113,259 +4113,221 @@
       line-height: 1.55;
     }
 
-    /* ===== Follow-up SMS composer ===== */
-    .sms-compose-recipient {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
-      gap: 14px;
-      align-items: center;
-      border: 1px solid var(--nexora-border);
-      border-radius: 10px;
-      background: #fff;
-      padding: 14px;
-      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+    /* ===== ✦ SMS Campaign composer (faithful port of nexora-sms-dashboard.html) ===== */
+    #nx-campaign-root{
+      --bg:#0a0a0f; --surface:#12121a; --card:#1a1a26; --border:#2a2a3d;
+      --purple:#7c3aed; --purple-light:#a855f7; --cyan:#06b6d4; --pink:#ec4899;
+      --green:#10b981; --orange:#f59e0b; --red:#ef4444;
+      --text:#f1f0ff; --text-muted:#8b8ba7; --text-dim:#5a5a7a;
+      --gradient:linear-gradient(135deg,#7c3aed,#06b6d4);
+      font-family:'Inter',sans-serif; color:var(--text);
     }
-
-    .sms-missed-pill {
-      gap: 5px;
-      background: rgba(239, 68, 68, 0.12);
-      color: #dc2626;
-    }
-
-    .sms-compose-templates {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .sms-template-chip {
-      border: 1px solid var(--nexora-border);
-      border-radius: 999px;
-      background: #f7f9fc;
-      padding: 7px 13px;
-      color: var(--nexora-muted);
-      font-size: 12px;
-      font-weight: 700;
-      transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
-    }
-
-    .sms-template-chip:hover {
-      transform: translateY(-1px);
-      border-color: var(--nexora-electric);
-      color: var(--nexora-electric);
-    }
-
-    .sms-template-chip.is-active {
-      border-color: transparent;
-      background: rgba(43, 89, 255, 0.12);
-      color: var(--nexora-electric);
-    }
-
-    .sms-compose-box {
-      overflow: hidden;
-      border: 1px solid var(--nexora-border);
-      border-radius: 10px;
-      background: #fff;
-      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
-    }
-
-    .sms-tag-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      border-bottom: 1px solid var(--nexora-rule);
-      background: #fbfdff;
-      padding: 10px 14px;
-    }
-
-    .sms-tag-hint {
-      color: var(--nexora-subtle);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .sms-tag-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      border: 1px solid rgba(70, 72, 216, 0.18);
-      border-radius: 7px;
-      background: rgba(70, 72, 216, 0.08);
-      padding: 5px 10px;
-      color: var(--nexora-brand);
-      font-size: 11px;
-      font-weight: 700;
-      transition: background 0.2s;
-    }
-
-    .sms-tag-btn:hover {
-      background: rgba(70, 72, 216, 0.16);
-    }
-
-    .sms-compose-textarea {
-      display: block;
-      width: 100%;
-      min-height: 108px;
-      resize: vertical;
-      border: 0;
-      background: transparent;
-      padding: 14px;
-      color: var(--nexora-text);
-      font-family: inherit;
-      font-size: 14px;
-      line-height: 1.6;
-      outline: none;
-    }
-
-    .sms-compose-footer {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      border-top: 1px solid var(--nexora-rule);
-      padding: 10px 14px;
-      color: var(--nexora-muted);
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .sms-char-count {
-      color: var(--nexora-electric);
-      font-weight: 800;
-    }
-
-    .sms-char-count.multi {
-      color: var(--nexora-warning);
-    }
-
-    .sms-preview-card {
-      border: 1px solid var(--nexora-border);
-      border-radius: 10px;
-      background: #f4f7fb;
-      padding: 14px;
-    }
-
-    .sms-preview-label {
-      margin-bottom: 8px;
-      color: var(--nexora-subtle);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .sms-bubble {
-      max-width: 88%;
-      border-radius: 16px 16px 16px 4px;
-      background: #fff;
-      padding: 11px 14px;
-      color: var(--nexora-text);
-      font-size: 13px;
-      line-height: 1.55;
-      word-wrap: break-word;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-    }
-
-    .sms-bubble .sms-lnk {
-      color: var(--nexora-electric);
-      text-decoration: underline;
-    }
-
-    .sms-preview-empty {
-      color: var(--nexora-subtle);
-      font-size: 12px;
-      font-style: italic;
-    }
-
-    .sms-confirm-box {
-      display: none;
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      border-radius: 10px;
-      background: rgba(245, 158, 11, 0.09);
-      padding: 12px 14px;
-    }
-
-    .sms-confirm-box.show {
-      display: block;
-    }
-
-    .sms-confirm-title {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      color: #9a5a00;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .sms-confirm-detail {
-      margin-top: 6px;
-      color: var(--nexora-muted);
-      font-size: 12px;
-      font-weight: 600;
-      line-height: 1.6;
-    }
-
-    .sms-compose-actions {
-      justify-content: space-between;
-    }
-
-    .sms-cost {
-      color: var(--nexora-muted);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .sms-action-buttons {
-      display: flex;
-      gap: 10px;
-    }
-
-    .booking-toast {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      max-width: min(92vw, 380px);
-      border: 1px solid rgba(0, 184, 115, 0.4);
-      border-radius: 12px;
-      background: #06331f;
-      padding: 13px 16px;
-      color: #d6ffe9;
-      font-size: 13px;
-      font-weight: 700;
-      box-shadow: 0 18px 44px rgba(6, 24, 16, 0.4);
-      opacity: 0;
-      transform: translateY(14px);
-      pointer-events: none;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-    }
-
-    .booking-toast::before {
-      content: "\2713";
-      display: inline-flex;
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background: var(--nexora-success);
-      color: #06331f;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .booking-toast.show {
-      opacity: 1;
-      transform: translateY(0);
+    #nx-campaign-root .btn-primary { background: var(--gradient);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: opacity 0.15s;
+        font-family: inherit; }
+    #nx-campaign-root .btn-primary:hover { opacity: 0.88; }
+    #nx-campaign-root .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    #nx-campaign-root .btn-outline { background: transparent;
+        color: var(--text-muted);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 18px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: inherit; }
+    #nx-campaign-root .btn-outline:hover { border-color: var(--purple); color: var(--text); }
+    #nx-campaign-root .modal-overlay { display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+        padding: 16px; }
+    #nx-campaign-root .modal-overlay.open { display: flex; }
+    #nx-campaign-root .modal { background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        width: 680px;
+        max-width: 100%;
+        max-height: 90vh;
+        overflow-y: auto; }
+    #nx-campaign-root .modal-header { padding: 24px 28px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        background: var(--card);
+        z-index: 2; }
+    #nx-campaign-root .modal-title { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 600; }
+    #nx-campaign-root .modal-close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
+    #nx-campaign-root .modal-body { padding: 24px 28px; }
+    #nx-campaign-root .field-group { margin-bottom: 20px; }
+    #nx-campaign-root .field-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    #nx-campaign-root .segment-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    #nx-campaign-root .segment-btn { background: var(--surface);
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 10px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.15s;
+        font-family: inherit;
+        color: var(--text); }
+    #nx-campaign-root .segment-btn:hover { border-color: var(--purple); }
+    #nx-campaign-root .segment-btn.selected { border-color: var(--purple); background: rgba(124,58,237,0.1); }
+    #nx-campaign-root .segment-btn-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+    #nx-campaign-root .segment-btn-name { font-size: 12px; font-weight: 600; display: block; }
+    #nx-campaign-root .segment-btn-count { font-size: 11px; color: var(--cyan); display: block; margin-top: 2px; }
+    #nx-campaign-root .sms-composer { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    #nx-campaign-root .sms-toolbar { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    #nx-campaign-root .tag-btn { background: rgba(124,58,237,0.15);
+        color: var(--purple-light);
+        border: none;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 11px;
+        cursor: pointer;
+        font-weight: 500;
+        font-family: inherit; }
+    #nx-campaign-root .tag-btn:hover { background: rgba(124,58,237,0.3); }
+    #nx-campaign-root .sms-textarea { width: 100%;
+        background: transparent;
+        border: none;
+        color: var(--text);
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        padding: 14px;
+        resize: none;
+        height: 100px;
+        outline: none;
+        line-height: 1.6; }
+    #nx-campaign-root .sms-footer { padding: 10px 14px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: var(--text-muted);
+        flex-wrap: wrap;
+        gap: 6px; }
+    #nx-campaign-root .char-count { color: var(--cyan); font-weight: 600; }
+    #nx-campaign-root .char-count.multi { color: var(--orange); }
+    #nx-campaign-root .sms-preview { margin-top: 12px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px; }
+    #nx-campaign-root .sms-preview-label { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+    #nx-campaign-root .sms-bubble { background: #2b2b3d;
+        border-radius: 16px 16px 16px 4px;
+        padding: 10px 14px;
+        font-size: 13px;
+        line-height: 1.5;
+        max-width: 85%;
+        word-wrap: break-word;
+        color: var(--text); }
+    #nx-campaign-root .sms-bubble .lnk { color: var(--cyan); text-decoration: underline; }
+    #nx-campaign-root .sms-preview-empty { font-size: 12px; color: var(--text-dim); font-style: italic; }
+    #nx-campaign-root .template-list { display: flex; flex-direction: column; gap: 8px; }
+    #nx-campaign-root .template-item { background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+        width: 100%;
+        font-family: inherit;
+        color: var(--text); }
+    #nx-campaign-root .template-item:hover { border-color: var(--purple); }
+    #nx-campaign-root .template-item-title { font-size: 12px; font-weight: 600; color: var(--purple-light); margin-bottom: 4px; }
+    #nx-campaign-root .template-item-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    #nx-campaign-root .form-input, #nx-campaign-root .form-select, #nx-campaign-root .form-textarea { width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        padding: 10px 14px;
+        outline: none;
+        transition: border-color 0.15s; }
+    #nx-campaign-root .form-input:focus, #nx-campaign-root .form-select:focus, #nx-campaign-root .form-textarea:focus { border-color: var(--purple); }
+    #nx-campaign-root .form-select option { background: var(--card); }
+    #nx-campaign-root .form-textarea { resize: vertical; min-height: 80px; }
+    #nx-campaign-root .modal-footer { padding: 20px 28px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        position: sticky;
+        bottom: 0;
+        background: var(--card); }
+    #nx-campaign-root .cost-preview { background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.3); border-radius: 10px; padding: 10px 16px; }
+    #nx-campaign-root .cost-preview.warn { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.35); }
+    #nx-campaign-root .cost-preview-label { font-size: 11px; color: var(--text-muted); }
+    #nx-campaign-root .cost-preview-amount { font-size: 16px; font-weight: 700; color: var(--cyan); }
+    #nx-campaign-root .cost-preview.warn .cost-preview-amount { color: var(--red); }
+    #nx-campaign-root .schedule-options { display: flex; gap: 10px; }
+    #nx-campaign-root .schedule-opt { flex: 1;
+        background: var(--surface);
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        padding: 12px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.15s;
+        font-family: inherit;
+        color: var(--text); }
+    #nx-campaign-root .schedule-opt:hover { border-color: var(--purple); }
+    #nx-campaign-root .schedule-opt.selected { border-color: var(--purple); background: rgba(124,58,237,0.1); }
+    #nx-campaign-root .schedule-opt-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+    #nx-campaign-root .schedule-opt-label { font-size: 12px; font-weight: 600; }
+    #nx-campaign-root .time-input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    #nx-campaign-root .confirm-box { display: none;
+        background: rgba(245,158,11,0.08);
+        border: 1px solid rgba(245,158,11,0.35);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px; }
+    #nx-campaign-root .confirm-box.show { display: block; }
+    #nx-campaign-root .confirm-title { font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 8px; }
+    #nx-campaign-root .confirm-detail { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+    #nx-campaign-root .confirm-detail strong { color: var(--text); }
+    #nx-campaign-root .success-banner { display: none;
+        background: rgba(16,185,129,0.1);
+        border: 1px solid rgba(16,185,129,0.3);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        align-items: center;
+        gap: 12px; }
+    #nx-campaign-root .success-banner.show { display: flex; }
+    #nx-campaign-root .success-icon { font-size: 24px; }
+    #nx-campaign-root .success-text { font-size: 14px; color: var(--green); font-weight: 500; }
+    #nx-campaign-root .success-banner { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 140; margin: 0; }
+    /* responsive */
+    @media (max-width: 640px) {
+      #nx-campaign-root .segment-grid { grid-template-columns: repeat(2, 1fr); }
+      #nx-campaign-root .schedule-options { flex-direction: column; }
+      #nx-campaign-root .modal-footer { flex-direction: column; align-items: stretch; }
     }
 
     .booking-status-cell {
@@ -7864,69 +7826,111 @@
 
     
 
-    <div class="booking-detail-modal sms-compose-modal" data-sms-modal hidden>
-      <div class="booking-detail-dialog sms-compose-dialog" role="dialog" aria-modal="true" aria-labelledby="sms-compose-title">
-        <div class="booking-detail-head">
-          <div>
-            <div class="booking-detail-title" id="sms-compose-title">Follow-up SMS</div>
-            <div class="booking-detail-sub">Win back a missed call — send a friendly booking invite.</div>
+    <!-- ✦ Tạo SMS Campaign composer (ported from nexora-sms-dashboard.html) -->
+    <div id="nx-campaign-root">
+      <div class="modal-overlay" id="composerModal">
+        <div class="modal">
+          <div class="modal-header">
+            <div class="modal-title">✦ Tạo SMS Campaign</div>
+            <button class="modal-close" id="closeComposerBtn" aria-label="Đóng">✕</button>
           </div>
-          <button class="booking-detail-close" type="button" data-sms-close aria-label="Close follow-up composer"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
-        </div>
-        <div class="booking-detail-body">
-          <div class="sms-compose-recipient">
-            <div class="booking-detail-avatar" data-sms-initials></div>
-            <div>
-              <div class="booking-detail-name" data-sms-name></div>
-              <div class="booking-detail-hero-sub">
-                <span data-sms-phone></span>
-                <span data-sms-time></span>
+          <div class="modal-body">
+
+            <!-- STEP 1: SEGMENT -->
+            <div class="field-group">
+              <div class="field-label">Bước 1 — Chọn nhóm khách</div>
+              <div class="segment-grid" id="segmentGrid"></div>
+            </div>
+
+            <!-- STEP 2: TEMPLATES -->
+            <div class="field-group">
+              <div class="field-label">Bước 2 — Chọn template hoặc tự viết</div>
+              <div class="template-list" id="templateList"></div>
+            </div>
+
+            <!-- STEP 3: COMPOSER -->
+            <div class="field-group">
+              <div class="field-label">Bước 3 — Soạn nội dung SMS</div>
+              <div class="sms-composer">
+                <div class="sms-toolbar" id="tagToolbar">
+                  <span style="font-size:11px;color:var(--text-dim);">Chèn:</span>
+                  <button class="tag-btn" data-tag="{TenKhach}">👤 Tên khách</button>
+                  <button class="tag-btn" data-tag="{TenTiem}">💅 Tên tiệm</button>
+                  <button class="tag-btn" data-tag="{Link}">🔗 Link offer</button>
+                  <button class="tag-btn" data-tag="{SoDT}">📞 Số điện thoại</button>
+                </div>
+                <textarea class="sms-textarea" id="smsText" placeholder="Soạn tin nhắn..."></textarea>
+                <div class="sms-footer">
+                  <span>Reply STOP để hủy nhận tin</span>
+                  <span class="char-count" id="charCountBox">0 ký tự — 0 tin</span>
+                </div>
+              </div>
+
+              <!-- PHONE PREVIEW -->
+              <div class="sms-preview">
+                <div class="sms-preview-label">📱 Preview trên điện thoại khách</div>
+                <div class="sms-bubble" id="smsBubble"><span class="sms-preview-empty">Tin nhắn sẽ hiển thị ở đây...</span></div>
               </div>
             </div>
-            <div class="booking-detail-status-pill sms-missed-pill"><i class="bi bi-telephone-x" aria-hidden="true"></i> Missed</div>
-          </div>
 
-          <div class="booking-detail-section">
-            <div class="booking-detail-section-title"><i class="bi bi-lightning-charge" aria-hidden="true"></i>Quick templates</div>
-            <div class="sms-compose-templates" data-sms-templates></div>
-          </div>
-
-          <div class="sms-compose-box">
-            <div class="sms-tag-toolbar" data-sms-tagbar>
-              <span class="sms-tag-hint">Insert</span>
-              <button class="sms-tag-btn" type="button" data-sms-tag="{TenKhach}"><i class="bi bi-person" aria-hidden="true"></i> Name</button>
-              <button class="sms-tag-btn" type="button" data-sms-tag="{TenTiem}"><i class="bi bi-shop" aria-hidden="true"></i> Salon</button>
-              <button class="sms-tag-btn" type="button" data-sms-tag="{Link}"><i class="bi bi-link-45deg" aria-hidden="true"></i> Book link</button>
-              <button class="sms-tag-btn" type="button" data-sms-tag="{SoDT}"><i class="bi bi-telephone" aria-hidden="true"></i> Phone</button>
+            <!-- STEP 4: LANDING PAGE -->
+            <div class="field-group">
+              <div class="field-label">Bước 4 — Đính kèm Landing Page (tùy chọn)</div>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <select class="form-select" style="flex:1;min-width:200px;" id="lpSelect">
+                  <option value="">-- Không đính kèm --</option>
+                  <option value="comeback">✅ Comeback Offer July (nexora.ai/btcnailbar/comeback-offer-july)</option>
+                  <option value="birthday">🎂 Birthday Special (nexora.ai/btcnailbar/birthday-july)</option>
+                </select>
+                <button class="btn-outline" id="createLpBtn">+ Tạo trang</button>
+              </div>
             </div>
-            <textarea class="sms-compose-textarea" data-sms-text placeholder="Write your follow-up message..."></textarea>
-            <div class="sms-compose-footer">
-              <span>Reply STOP to opt out</span>
-              <span class="sms-char-count" data-sms-count>0 chars — 0 SMS</span>
+
+            <!-- STEP 5: SCHEDULE -->
+            <div class="field-group">
+              <div class="field-label">Bước 5 — Lịch gửi</div>
+              <div class="schedule-options" id="scheduleOptions">
+                <button class="schedule-opt selected" data-mode="now">
+                  <span class="schedule-opt-icon">⚡</span>
+                  <span class="schedule-opt-label">Gửi ngay</span>
+                </button>
+                <button class="schedule-opt" data-mode="schedule">
+                  <span class="schedule-opt-icon">🕐</span>
+                  <span class="schedule-opt-label">Hẹn giờ</span>
+                </button>
+                <button class="schedule-opt" data-mode="auto">
+                  <span class="schedule-opt-icon">🤖</span>
+                  <span class="schedule-opt-label">Tự động</span>
+                </button>
+              </div>
+              <div class="time-input-row" id="timeInputRow" style="display:none;">
+                <input class="form-input" type="date" id="schedDate">
+                <input class="form-input" type="time" id="schedTime" value="10:00">
+              </div>
             </div>
+
+            <!-- CONFIRM STEP -->
+            <div class="confirm-box" id="confirmBox">
+              <div class="confirm-title">⚠️ Xác nhận trước khi gửi</div>
+              <div class="confirm-detail" id="confirmDetail"></div>
+            </div>
+
           </div>
 
-          <div class="sms-preview-card">
-            <div class="sms-preview-label">Preview on customer's phone</div>
-            <div class="sms-bubble" data-sms-bubble><span class="sms-preview-empty">Message preview appears here…</span></div>
-          </div>
-
-          <div class="sms-confirm-box" data-sms-confirm>
-            <div class="sms-confirm-title"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Confirm before sending</div>
-            <div class="sms-confirm-detail" data-sms-confirm-detail></div>
-          </div>
-        </div>
-        <div class="booking-detail-actions sms-compose-actions">
-          <span class="sms-cost" data-sms-cost>1 recipient · 1 SMS</span>
-          <div class="sms-action-buttons">
-            <button class="booking-secondary-button" type="button" data-sms-close>Cancel</button>
-            <button class="booking-primary-button" type="button" data-sms-send><i class="bi bi-send" aria-hidden="true"></i> Send SMS</button>
+          <div class="modal-footer">
+            <div class="cost-preview" id="costBox">
+              <div class="cost-preview-label" id="costLabel">Chi phí ước tính</div>
+              <div class="cost-preview-amount" id="costPreview">—</div>
+            </div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-outline" id="cancelComposerBtn">Hủy</button>
+              <button class="btn-primary" id="sendCampaignBtn">🚀 Gửi Campaign</button>
+            </div>
           </div>
         </div>
       </div>
+      <div class="success-banner" id="successBanner"><span class="success-icon">✅</span><span class="success-text" id="successText"></span></div>
     </div>
-
-    <div class="booking-toast" data-booking-toast role="status" aria-live="polite"></div>
 
     <div class="trial-modal" data-trial-modal hidden role="dialog" aria-modal="true" aria-labelledby="trial-modal-title">
       <div class="trial-dialog">
@@ -9804,216 +9808,6 @@
     var callFilter = 'all';
     var callSearch = '';
 
-    /* ===== Follow-up SMS composer (ported from SMS dashboard) ===== */
-    var SMS_FOLLOWUP_TEMPLATES = [
-      { title: '📞 Sorry we missed you', text: 'Hi {TenKhach}, sorry we missed your call at {TenTiem}! Book your appointment here: {Link} or call {SoDT}.' },
-      { title: '🎁 Win-back offer', text: 'Hi {TenKhach}! We missed your call — book with {TenTiem} this week and get 15% off your visit. Reserve: {Link}' },
-      { title: '💬 Quick reply', text: 'Hi! This is {TenTiem}. We saw your missed call — how can we help? Reply here or book online: {Link}' }
-    ];
-
-    var GSM7_BASIC = '@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&\'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà';
-    var GSM7_EXT = '^{}\\[~]|€';
-
-    function smsInfo(text) {
-      if (!text) return { units: 0, parts: 0, encoding: 'GSM-7' };
-      var isUnicode = false;
-      var gsmUnits = 0;
-      for (var i = 0; i < text.length; i++) {
-        var ch = text.charAt(i);
-        if (GSM7_BASIC.indexOf(ch) !== -1) gsmUnits += 1;
-        else if (GSM7_EXT.indexOf(ch) !== -1) gsmUnits += 2;
-        else { isUnicode = true; break; }
-      }
-      if (isUnicode) {
-        var units = text.length;
-        return { units: units, parts: units <= 70 ? 1 : Math.ceil(units / 67), encoding: 'UCS-2' };
-      }
-      return { units: gsmUnits, parts: gsmUnits <= 160 ? 1 : Math.ceil(gsmUnits / 153), encoding: 'GSM-7' };
-    }
-
-    var smsState = { call: null, confirming: false };
-
-    function smsModal() {
-      return document.querySelector('[data-sms-modal]');
-    }
-
-    function setBookingDetailTextIn(root, selector, value) {
-      var el = root ? root.querySelector(selector) : null;
-      if (el) el.textContent = value || '';
-    }
-
-    function smsDisplayName(call) {
-      return call && call.name && call.name !== 'Unknown' ? call.name : 'Missed caller';
-    }
-
-    function smsSamples() {
-      var call = smsState.call || {};
-      var first = call.name && call.name !== 'Unknown' ? call.name.split(/\s+/)[0] : 'there';
-      return {
-        '{TenKhach}': first,
-        '{TenTiem}': 'Bitcoin Nail Bar',
-        '{Link}': 'nexora.ai/b/x7k2',
-        '{SoDT}': '832-786-5576'
-      };
-    }
-
-    function renderSmsTemplates() {
-      var host = document.querySelector('[data-sms-templates]');
-      if (!host) return;
-      host.innerHTML = SMS_FOLLOWUP_TEMPLATES.map(function(t, i) {
-        return '<button class="sms-template-chip' + (i === 0 ? ' is-active' : '') + '" type="button" data-sms-template="' + i + '">' + escapeHtml(t.title) + '</button>';
-      }).join('');
-    }
-
-    function updateSmsPreview(text) {
-      var modal = smsModal();
-      var bubble = modal ? modal.querySelector('[data-sms-bubble]') : null;
-      if (!bubble) return;
-      if (!text.trim()) {
-        bubble.innerHTML = '<span class="sms-preview-empty">Message preview appears here…</span>';
-        return;
-      }
-      var safe = escapeHtml(text);
-      var samples = smsSamples();
-      Object.keys(samples).forEach(function(tag) {
-        var safeTag = escapeHtml(tag);
-        var rendered = tag === '{Link}'
-          ? '<span class="sms-lnk">' + escapeHtml(samples[tag]) + '</span>'
-          : '<strong>' + escapeHtml(samples[tag]) + '</strong>';
-        safe = safe.split(safeTag).join(rendered);
-      });
-      bubble.innerHTML = safe.replace(/\n/g, '<br>');
-    }
-
-    function resetSmsConfirm() {
-      var modal = smsModal();
-      if (!modal) return;
-      smsState.confirming = false;
-      var box = modal.querySelector('[data-sms-confirm]');
-      if (box) box.classList.remove('show');
-      var sendBtn = modal.querySelector('[data-sms-send]');
-      if (sendBtn) sendBtn.innerHTML = '<i class="bi bi-send" aria-hidden="true"></i> Send SMS';
-    }
-
-    function updateSmsComposer() {
-      var modal = smsModal();
-      if (!modal) return;
-      var textarea = modal.querySelector('[data-sms-text]');
-      var text = textarea ? textarea.value : '';
-      var info = smsInfo(text);
-      var parts = Math.max(info.parts, 1);
-
-      var countEl = modal.querySelector('[data-sms-count]');
-      if (countEl) {
-        countEl.textContent = info.units + ' chars — ' + info.parts + ' SMS (' + info.encoding + ')';
-        countEl.classList.toggle('multi', info.parts > 1);
-      }
-      var costEl = modal.querySelector('[data-sms-cost]');
-      if (costEl) costEl.textContent = '1 recipient · ' + parts + ' SMS';
-
-      updateSmsPreview(text);
-      if (smsState.confirming) resetSmsConfirm();
-    }
-
-    function openFollowupSms(call) {
-      var modal = smsModal();
-      if (!modal || !call) return;
-      smsState.call = call;
-
-      var name = smsDisplayName(call);
-      var initials = modal.querySelector('[data-sms-initials]');
-      if (initials) initials.textContent = getBookingCustomerInitials(name);
-      setBookingDetailTextIn(modal, '[data-sms-name]', name);
-      setBookingDetailTextIn(modal, '[data-sms-phone]', '+1 ' + call.phone);
-      setBookingDetailTextIn(modal, '[data-sms-time]', call.time);
-
-      renderSmsTemplates();
-      var textarea = modal.querySelector('[data-sms-text]');
-      if (textarea) textarea.value = SMS_FOLLOWUP_TEMPLATES[0].text;
-
-      resetSmsConfirm();
-      updateSmsComposer();
-      modal.hidden = false;
-      document.body.style.overflow = 'hidden';
-      if (textarea) { textarea.focus(); textarea.setSelectionRange(textarea.value.length, textarea.value.length); }
-    }
-
-    function closeFollowupSms() {
-      var modal = smsModal();
-      if (!modal) return;
-      resetSmsConfirm();
-      modal.hidden = true;
-      smsState.call = null;
-      document.body.style.overflow = '';
-    }
-
-    function applySmsTemplate(index) {
-      var tpl = SMS_FOLLOWUP_TEMPLATES[index];
-      var modal = smsModal();
-      var textarea = modal ? modal.querySelector('[data-sms-text]') : null;
-      if (!tpl || !textarea) return;
-      textarea.value = tpl.text;
-      modal.querySelectorAll('[data-sms-template]').forEach(function(chip) {
-        chip.classList.toggle('is-active', chip.dataset.smsTemplate === String(index));
-      });
-      textarea.focus();
-      updateSmsComposer();
-    }
-
-    function insertSmsTag(tag) {
-      var modal = smsModal();
-      var textarea = modal ? modal.querySelector('[data-sms-text]') : null;
-      if (!textarea) return;
-      var start = textarea.selectionStart || 0;
-      var end = textarea.selectionEnd || 0;
-      var value = textarea.value;
-      textarea.value = value.slice(0, start) + tag + value.slice(end);
-      var pos = start + tag.length;
-      textarea.focus();
-      textarea.setSelectionRange(pos, pos);
-      updateSmsComposer();
-    }
-
-    function sendFollowupSms() {
-      var modal = smsModal();
-      if (!modal) return;
-      var textarea = modal.querySelector('[data-sms-text]');
-      var text = textarea ? textarea.value.trim() : '';
-      if (!text) { if (textarea) textarea.focus(); return; }
-
-      var info = smsInfo(text);
-      var parts = Math.max(info.parts, 1);
-
-      if (!smsState.confirming) {
-        smsState.confirming = true;
-        var call = smsState.call || {};
-        var detail = modal.querySelector('[data-sms-confirm-detail]');
-        if (detail) {
-          detail.innerHTML =
-            'To: <strong>' + escapeHtml(smsDisplayName(call)) + '</strong> (+1 ' + escapeHtml(call.phone || '') + ')<br>' +
-            'Length: <strong>' + info.units + ' chars</strong> · ' + parts + ' SMS (' + info.encoding + ')';
-        }
-        var box = modal.querySelector('[data-sms-confirm]');
-        if (box) { box.classList.add('show'); box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
-        var sendBtn = modal.querySelector('[data-sms-send]');
-        if (sendBtn) sendBtn.innerHTML = '<i class="bi bi-check-lg" aria-hidden="true"></i> Confirm send';
-        return;
-      }
-
-      var phone = smsState.call && smsState.call.phone;
-      closeFollowupSms();
-      showBookingToast('Follow-up SMS sent' + (phone ? ' to +1 ' + phone : '') + '.');
-    }
-
-    function showBookingToast(message) {
-      var toast = document.querySelector('[data-booking-toast]');
-      if (!toast) return;
-      toast.textContent = message;
-      toast.classList.add('show');
-      clearTimeout(showBookingToast._t);
-      showBookingToast._t = setTimeout(function() { toast.classList.remove('show'); }, 4200);
-    }
-
     function formatCallDur(sec) {
       if (!sec) return '—';
       return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
@@ -10145,45 +9939,10 @@
 
       var callSmsBtn = event.target.closest('[data-call-sms]');
       if (callSmsBtn) {
-        openFollowupSms(CALLS[parseInt(callSmsBtn.dataset.callSms, 10)]);
-        return;
-      }
-
-      if (event.target.closest('[data-sms-close]') || event.target.matches('[data-sms-modal]')) {
-        closeFollowupSms();
-        return;
-      }
-
-      var smsTemplate = event.target.closest('[data-sms-template]');
-      if (smsTemplate) {
-        applySmsTemplate(parseInt(smsTemplate.dataset.smsTemplate, 10));
-        return;
-      }
-
-      var smsTag = event.target.closest('[data-sms-tag]');
-      if (smsTag) {
-        insertSmsTag(smsTag.dataset.smsTag);
-        return;
-      }
-
-      if (event.target.closest('[data-sms-send]')) {
-        sendFollowupSms();
+        if (window.openSmsCampaignComposer) window.openSmsCampaignComposer({ segment: 'new' });
         return;
       }
     });
-
-    var smsTextarea = document.querySelector('[data-sms-text]');
-    if (smsTextarea) {
-      smsTextarea.addEventListener('input', updateSmsComposer);
-    }
-
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') {
-        var modal = smsModal();
-        if (modal && !modal.hidden) closeFollowupSms();
-      }
-    });
-
     updateBookingSearchPlaceholder();
     initBookingViewMode();
     updateBookingKpis();
@@ -10191,6 +9950,289 @@
     renderCallStats();
     renderCalls();
     activateMainTabFromUrl();
+  </script>
+  <!-- ✦ SMS Campaign composer logic (ported from nexora-sms-dashboard.html) -->
+  <script>
+    (function () {
+      const PRICE_PER_SMS = 0.025; // $ mỗi tin (1 segment)
+
+      const SEGMENTS = [
+        { id: 'new',      icon: '🌟', name: 'Khách Mới',           shortName: 'Khách Mới', count: 234, accent: 'var(--cyan)',   badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
+          desc: 'Gọi lần đầu, chưa quay lại. Welcome + offer để chốt lần 2.' },
+        { id: 'day15',    icon: '📅', name: '15 Ngày Chưa Ghé',    shortName: '15 Ngày',   count: 187, accent: 'var(--green)',  badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
+          desc: 'Nhắc nhở nhẹ nhàng — móng cần touch up chưa?' },
+        { id: 'day30',    icon: '⏰', name: '30 Ngày Chưa Ghé',    shortName: '30 Ngày',   count: 312, accent: 'var(--purple)', badge: 'scheduled', badgeText: 'Hẹn giờ',  countLabel: 'khách',
+          desc: 'Lâu không gặp — gửi offer hấp dẫn để kéo về.' },
+        { id: 'day60',    icon: '🔥', name: '60 Ngày Inactive',    shortName: '60 Ngày',   count: 156, accent: 'var(--orange)', badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
+          desc: 'Sắp mất khách — win-back offer mạnh nhất.' },
+        { id: 'vip',      icon: '💎', name: 'Khách VIP',           shortName: 'VIP',       count: 89,  accent: 'var(--pink)',   badge: 'sent',      badgeText: 'Đã gửi',   countLabel: 'khách',
+          desc: 'Top spenders — priority booking, exclusive offers.' },
+        { id: 'birthday', icon: '🎂', name: 'Sinh Nhật Tháng Này', shortName: 'Sinh Nhật', count: 42,  accent: 'linear-gradient(90deg, var(--pink), var(--orange))', badge: 'scheduled', badgeText: 'Auto', countLabel: 'khách tháng 7',
+          desc: 'Gửi tự động — tặng free nail art hoặc discount.' }
+      ];
+
+      const TEMPLATES = {
+        new: [
+          { title: '🌟 Welcome Back', text: 'Xin chào {TenKhach}! Cảm ơn đã ghé {TenTiem}. Book lại hôm nay và nhận 15% OFF cho lần tiếp theo! {Link}' },
+          { title: '🎁 First Return Offer', text: 'Hi {TenKhach}! {TenTiem} dành cho bạn ưu đãi đặc biệt — Miễn phí nail art khi làm full set lần này. Đặt lịch: {Link}' }
+        ],
+        day15: [
+          { title: '💅 Touch Up Reminder', text: 'Chào {TenKhach}! Móng của bạn đến lúc touch up rồi đó. {TenTiem} có slot trống tuần này — Đặt ngay: {Link}' },
+          { title: '⭐ Quick Check-in', text: 'Hi {TenKhach}! Lâu rồi không gặp. {TenTiem} đang có deal đặc biệt tuần này. Xem ngay: {Link}' }
+        ],
+        day30: [
+          { title: '🔥 30-Day Comeback', text: '{TenKhach} ơi! Đã 1 tháng rồi nè. {TenTiem} nhớ bạn — Giảm 20% khi quay lại tuần này. Đặt lịch: {Link}' },
+          { title: '💖 Miss You Offer', text: 'Chào {TenKhach}! {TenTiem} có chương trình khuyến mãi cho khách quen. Xem ngay trước khi hết: {Link}' }
+        ],
+        day60: [
+          { title: '🔥 Win-Back Offer', text: 'Chào {TenKhach}! {TenTiem} dành cho bạn ưu đãi đặc biệt — Giảm 30% + Tặng gel tay miễn phí. Chỉ trong tuần này: {Link}' },
+          { title: '💎 VIP Win-Back', text: 'Hi {TenKhach}! Chúng tôi nhớ bạn. Quay lại {TenTiem} tuần này nhận ngay combo đặc biệt: {Link}' }
+        ],
+        vip: [
+          { title: '💎 VIP Priority', text: 'Chào {TenKhach}! Với tư cách khách VIP, bạn được ưu tiên đặt lịch trước cho mùa hè này. Book ngay: {Link}' },
+          { title: '⭐ Exclusive VIP Offer', text: 'Hi {TenKhach}! {TenTiem} vừa ra dịch vụ mới — VIP khách được thử miễn phí. Đặt lịch: {Link}' }
+        ],
+        birthday: [
+          { title: '🎂 Happy Birthday', text: 'Chúc mừng sinh nhật {TenKhach}! {TenTiem} tặng bạn FREE nail art hôm nay. Đặt lịch sinh nhật: {Link}' },
+          { title: '🎁 Birthday Gift', text: 'Happy Birthday {TenKhach}! Quà sinh nhật từ {TenTiem}: Giảm 25% + Tặng chăm sóc tay miễn phí. Book: {Link}' }
+        ]
+      };
+
+      // Giá trị mẫu để preview tin nhắn
+      const TAG_SAMPLES = {
+        '{TenKhach}': 'Linh',
+        '{TenTiem}': 'Bitcoin Nail Bar',
+        '{Link}': 'nexora.ai/b/x7k2',
+        '{SoDT}': '832-786-5576'
+      };
+
+      /* ============================================================
+         STATE
+         ============================================================ */
+      const state = {
+        segment: SEGMENTS[0],
+        scheduleMode: 'now',
+        credits: 847,
+        confirming: false,
+        lpColor: '#7c3aed',
+        features: { showPhone: true, showBook: true, showCountdown: true, showReviews: false }
+      };
+
+      const $ = id => document.getElementById(id);
+
+      function escapeHtml(s) {
+        return s.replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+      }
+
+      /* ============================================================
+         ĐẾM SMS ĐÚNG CHUẨN — GSM-7 vs UCS-2
+         GSM-7: 160 ký tự/tin (153 nếu nhiều tin, ký tự mở rộng tính 2)
+         UCS-2 (tiếng Việt có dấu, emoji): 70 ký tự/tin (67 nếu nhiều tin)
+         ============================================================ */
+      const GSM7_BASIC = '@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&\'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà';
+      const GSM7_EXT = '^{}\\[~]|€';
+
+      function smsInfo(text) {
+        if (!text) return { units: 0, parts: 0, encoding: 'GSM-7', perPart: 160 };
+
+        let isUnicode = false;
+        let gsmUnits = 0;
+        for (const ch of text) {
+          if (GSM7_BASIC.includes(ch)) gsmUnits += 1;
+          else if (GSM7_EXT.includes(ch)) gsmUnits += 2;
+          else { isUnicode = true; break; }
+        }
+
+        if (isUnicode) {
+          const units = text.length; // UTF-16 units = UCS-2 units (emoji = 2)
+          const parts = units <= 70 ? 1 : Math.ceil(units / 67);
+          return { units, parts, encoding: 'UCS-2', perPart: units <= 70 ? 70 : 67 };
+        }
+        const parts = gsmUnits <= 160 ? 1 : Math.ceil(gsmUnits / 153);
+        return { units: gsmUnits, parts, encoding: 'GSM-7', perPart: gsmUnits <= 160 ? 160 : 153 };
+      }
+
+      function renderSegmentButtons() {
+        $('segmentGrid').innerHTML = SEGMENTS.map(s => `
+          <button class="segment-btn" data-segment="${s.id}" id="seg-${s.id}">
+            <span class="segment-btn-icon">${s.icon}</span>
+            <span class="segment-btn-name">${escapeHtml(s.shortName)}</span>
+            <span class="segment-btn-count">${s.count} khách</span>
+          </button>
+        `).join('');
+      }
+
+      function renderTemplates(segId) {
+        const list = TEMPLATES[segId] || [];
+        $('templateList').innerHTML = list.map((t, i) => `
+          <button class="template-item" data-index="${i}">
+            <div class="template-item-title">${escapeHtml(t.title)}</div>
+            <div class="template-item-text">${escapeHtml(t.text)}</div>
+          </button>
+        `).join('');
+      }
+
+      /* ============================================================
+         COMPOSER
+         ============================================================ */
+      function openComposer(segId) {
+        const seg = SEGMENTS.find(s => s.id === segId) || SEGMENTS[0];
+        state.segment = seg;
+        state.confirming = false;
+        $('confirmBox').classList.remove('show');
+        $('sendCampaignBtn').textContent = '🚀 Gửi Campaign';
+
+        document.querySelectorAll('.segment-btn').forEach(b => b.classList.toggle('selected', b.dataset.segment === seg.id));
+        renderTemplates(seg.id);
+        updateCost();
+        $('composerModal').classList.add('open');
+      }
+
+      function closeComposer() {
+        $('composerModal').classList.remove('open');
+        state.confirming = false;
+        $('confirmBox').classList.remove('show');
+        $('sendCampaignBtn').textContent = '🚀 Gửi Campaign';
+      }
+
+      function updateCharCount() {
+        const text = $('smsText').value;
+        const info = smsInfo(text);
+        const box = $('charCountBox');
+        box.textContent = `${info.units} ký tự — ${info.parts} tin (${info.encoding}, ${info.perPart}/tin)`;
+        box.classList.toggle('multi', info.parts > 1);
+        updateSmsPreview(text);
+        updateCost();
+        // Người dùng sửa nội dung sau khi bấm xác nhận → reset bước xác nhận
+        if (state.confirming) {
+          state.confirming = false;
+          $('confirmBox').classList.remove('show');
+          $('sendCampaignBtn').textContent = '🚀 Gửi Campaign';
+        }
+      }
+
+      function updateSmsPreview(text) {
+        const bubble = $('smsBubble');
+        if (!text.trim()) {
+          bubble.innerHTML = '<span class="sms-preview-empty">Tin nhắn sẽ hiển thị ở đây...</span>';
+          return;
+        }
+        let safe = escapeHtml(text);
+        for (const [tag, val] of Object.entries(TAG_SAMPLES)) {
+          const safeTag = escapeHtml(tag);
+          const rendered = tag === '{Link}' ? `<span class="lnk">${escapeHtml(val)}</span>` : `<strong>${escapeHtml(val)}</strong>`;
+          safe = safe.split(safeTag).join(rendered);
+        }
+        bubble.innerHTML = safe.replace(/\n/g, '<br>');
+      }
+
+      function updateCost() {
+        const info = smsInfo($('smsText').value);
+        const parts = Math.max(info.parts, 1);
+        const totalSms = state.segment.count * parts;
+        const cost = (totalSms * PRICE_PER_SMS).toFixed(2);
+        const enough = state.credits >= totalSms;
+
+        $('costPreview').textContent = `${state.segment.count} khách × ${parts} tin = ${totalSms} SMS ($${cost})`;
+        $('costLabel').textContent = enough ? 'Chi phí ước tính' : `⚠️ Không đủ credits (còn ${state.credits})`;
+        $('costBox').classList.toggle('warn', !enough);
+        $('sendCampaignBtn').disabled = !enough;
+      }
+
+      function updateCredits(newVal) {
+        state.credits = newVal;
+        const el = $('creditsDisplay');
+        if (el) { el.textContent = newVal.toLocaleString(); el.classList.toggle('low', newVal < 100); }
+        const usd = $('creditsUsd');
+        if (usd) usd.textContent = `≈ ${(newVal * PRICE_PER_SMS).toFixed(2)} remaining`;
+      }
+
+      function sendCampaign() {
+        const text = $('smsText').value.trim();
+        if (!text) { alert('Vui lòng soạn nội dung SMS trước.'); return; }
+
+        if (state.scheduleMode === 'schedule' && !$('schedDate').value) {
+          alert('Vui lòng chọn ngày gửi.');
+          return;
+        }
+
+        const info = smsInfo(text);
+        const totalSms = state.segment.count * info.parts;
+
+        if (state.credits < totalSms) {
+          alert(`Không đủ credits: cần ${totalSms}, còn ${state.credits}. Vui lòng mua thêm.`);
+          return;
+        }
+
+        // Bước xác nhận — bấm lần 1 hiện chi tiết, lần 2 mới gửi
+        if (!state.confirming) {
+          state.confirming = true;
+          const when = state.scheduleMode === 'now' ? 'Gửi ngay lập tức'
+            : state.scheduleMode === 'schedule' ? `Hẹn giờ: ${$('schedDate').value} lúc ${$('schedTime').value}`
+            : 'Tự động theo điều kiện segment';
+          $('confirmDetail').innerHTML =
+            `Nhóm: <strong>${escapeHtml(state.segment.name)}</strong> (${state.segment.count} khách)<br>` +
+            `Số tin: <strong>${totalSms} SMS</strong> (${info.parts} tin/khách, ${info.encoding})<br>` +
+            `Chi phí: <strong>$${(totalSms * PRICE_PER_SMS).toFixed(2)}</strong> — trừ ${totalSms} credits<br>` +
+            `Lịch: <strong>${when}</strong>`;
+          $('confirmBox').classList.add('show');
+          $('confirmBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          $('sendCampaignBtn').textContent = '✅ Xác nhận gửi';
+          return;
+        }
+
+        // Đã xác nhận → gửi
+        updateCredits(state.credits - totalSms);
+        closeComposer();
+
+        const msg = state.scheduleMode === 'now'
+          ? `✅ Đã gửi ${totalSms} SMS đến ${state.segment.count} khách (${state.segment.name}).`
+          : state.scheduleMode === 'schedule'
+            ? `⏰ Đã lên lịch ${totalSms} SMS — gửi ${$('schedDate').value} lúc ${$('schedTime').value}.`
+            : `🤖 Đã bật gửi tự động cho nhóm ${state.segment.name}.`;
+        $('successText').textContent = msg;
+        $('successBanner').classList.add('show');
+        clearTimeout(sendCampaign._t);
+        sendCampaign._t = setTimeout(() => $('successBanner').classList.remove('show'), 6000);
+      }
+
+      // ── event wiring (ported) ──
+      $('closeComposerBtn').addEventListener('click', closeComposer);
+      $('cancelComposerBtn').addEventListener('click', closeComposer);
+      $('composerModal').addEventListener('click', function (e) { if (e.target === e.currentTarget) closeComposer(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('composerModal') && $('composerModal').classList.contains('open')) closeComposer(); });
+      $('segmentGrid').addEventListener('click', function (e) {
+        var btn = e.target.closest('.segment-btn'); if (!btn) return;
+        var seg = SEGMENTS.find(function (s) { return s.id === btn.dataset.segment; }); if (!seg) return;
+        state.segment = seg;
+        document.querySelectorAll('.segment-btn').forEach(function (b) { b.classList.toggle('selected', b === btn); });
+        renderTemplates(seg.id); updateCost();
+      });
+      $('templateList').addEventListener('click', function (e) {
+        var item = e.target.closest('.template-item'); if (!item) return;
+        var tmpl = (TEMPLATES[state.segment.id] || [])[Number(item.dataset.index)]; if (!tmpl) return;
+        $('smsText').value = tmpl.text; updateCharCount();
+      });
+      $('tagToolbar').addEventListener('click', function (e) {
+        var btn = e.target.closest('.tag-btn'); if (!btn) return;
+        var ta = $('smsText'); var tag = btn.dataset.tag;
+        var s = ta.selectionStart, en = ta.selectionEnd;
+        ta.value = ta.value.slice(0, s) + tag + ta.value.slice(en);
+        ta.selectionStart = ta.selectionEnd = s + tag.length; ta.focus(); updateCharCount();
+      });
+      $('smsText').addEventListener('input', updateCharCount);
+      $('scheduleOptions').addEventListener('click', function (e) {
+        var btn = e.target.closest('.schedule-opt'); if (!btn) return;
+        state.scheduleMode = btn.dataset.mode;
+        document.querySelectorAll('.schedule-opt').forEach(function (b) { b.classList.toggle('selected', b === btn); });
+        $('timeInputRow').style.display = state.scheduleMode === 'schedule' ? 'grid' : 'none';
+      });
+      $('sendCampaignBtn').addEventListener('click', sendCampaign);
+      var _lp = $('createLpBtn'); if (_lp) _lp.addEventListener('click', closeComposer);
+
+      renderSegmentButtons();
+      window.openSmsCampaignComposer = function (opts) { openComposer((opts && opts.segment) || 'new'); };
+    })();
   </script>
 </body>
 </html>
