@@ -197,6 +197,8 @@ const OPS_COPY = Object.freeze({
     eligibilityTabReason: 'Chỉ mở khi cần chọn nhân viên phù hợp.',
     addonTabReason: 'Chỉ mở khi có dịch vụ thêm đang chờ phê duyệt.',
     addonActionReason: 'Chỉ Khách hàng có phiếu hỗ trợ mới có thể mở dịch vụ thêm.',
+    addonAlreadyAcceptedReason: 'Dịch vụ thêm này đã được chấp nhận.',
+    addonAlreadyDeclinedReason: 'Dịch vụ thêm này đã bị từ chối.',
     addonDecisionReason: 'Mở một dịch vụ thêm đang chờ trước.',
     addonConfirmReason: 'Chọn Chấp nhận/Từ chối và nhập đủ 4 số cuối.',
     phoneUnavailableReason: 'Mở một dịch vụ thêm đang chờ trước khi xác nhận điện thoại.',
@@ -235,6 +237,8 @@ const OPS_COPY = Object.freeze({
     eligibilityTabReason: 'Available only when an eligible staff choice is required.',
     addonTabReason: 'Available only while an add-on awaits approval.',
     addonActionReason: 'Only a Customer with a supported ticket can open an add-on.',
+    addonAlreadyAcceptedReason: 'This add-on has already been accepted.',
+    addonAlreadyDeclinedReason: 'This add-on has already been declined.',
     addonDecisionReason: 'Open a pending add-on first.',
     addonConfirmReason: 'Choose Accept or Decline and enter the last four phone digits.',
     phoneUnavailableReason: 'Open a pending add-on before confirming the phone number.',
@@ -1408,6 +1412,9 @@ function currentAddOnUiState() {
     ? operationsState.addOnRequests.filter((row) => row.ticketId === ticket.id && row.label === catalog.label)
     : [];
   const proposed = requests.length === 1 && requests[0].status === 'proposed' ? requests[0] : null;
+  const resolved = requests.length === 1 && ['accepted', 'declined'].includes(requests[0].status)
+    ? requests[0]
+    : null;
   const customerEligible = operationsState.ui.role === 'Customer' && opsTicketSupportsAddOn(ticket);
   const proposalEligible = customerEligible && proposed
     && proposed.businessId === ticket.businessId && proposed.staffProfileId === ticket.staffProfileId
@@ -1415,6 +1422,7 @@ function currentAddOnUiState() {
   return {
     ticket,
     proposed: proposalEligible ? proposed : null,
+    resolvedStatus: resolved?.status || null,
     canPropose: customerEligible && requests.length === 0,
     canReview: Boolean(proposalEligible)
   };
@@ -1452,7 +1460,10 @@ function syncAddOnControls() {
     if (action === 'open-addon') disabled = !(availability.canPropose || availability.canReview);
     if (['accept-addon', 'decline-addon'].includes(action)) disabled = !availability.canReview;
     if (disabled !== null) {
-      const reason = action === 'open-addon' ? opsT('addonActionReason') : opsT('addonDecisionReason');
+      const resolvedReasonKey = availability.resolvedStatus === 'accepted'
+        ? 'addonAlreadyAcceptedReason'
+        : availability.resolvedStatus === 'declined' ? 'addonAlreadyDeclinedReason' : 'addonActionReason';
+      const reason = action === 'open-addon' ? opsT(resolvedReasonKey) : opsT('addonDecisionReason');
       setDisabledReason(control, disabled, reason);
     }
   });
