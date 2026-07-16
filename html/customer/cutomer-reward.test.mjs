@@ -6756,7 +6756,9 @@ test('checkout handoff resumes every canonical state without creating duplicate 
     const checkout = seedCheckoutDraft(api, app, {
       method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna'
     });
-    return { app, checkout };
+    const operations = acceptedOperationsSnapshot(checkout);
+    assert.equal(api.importAcceptedAddOns(app, checkout.id, operations).ok, true);
+    return { app, checkout, operations };
   };
   const fixtures = [];
   fixtures.push({ ...makeApp(), expectedView: 'checkout', expectedScreen: 'pay' });
@@ -6788,7 +6790,7 @@ test('checkout handoff resumes every canonical state without creating duplicate 
   }
 
   for (const fixture of fixtures) {
-    const operations = acceptedOperationsSnapshot(fixture.checkout);
+    const operations = fixture.operations;
     const counts = JSON.stringify({
       checkouts: fixture.app.checkoutDrafts.length,
       proofs: fixture.app.paymentProofs.length,
@@ -6812,6 +6814,23 @@ test('checkout handoff resumes every canonical state without creating duplicate 
       claims: fixture.app.guestRewardClaims.length
     }), counts);
   }
+});
+
+test('checkout handoff rejects a terminal checkout that omits an authoritative accepted add-on', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const pending = seedPendingProof(api, app, {
+    method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna'
+  });
+  const operations = acceptedOperationsSnapshot(pending.checkout);
+  const before = JSON.stringify(app);
+  const result = api.consumeGuestCheckoutHandoff(app, {
+    ok: true, present: true, guestCheckinId: pending.checkout.guestCheckinId
+  }, operations, 4000);
+
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'invalid_operations_snapshot');
+  assert.equal(JSON.stringify(app), before);
 });
 
 test('scan checkout candidates use canonical IDs, completed lifecycle and immutable snapshots', () => {
@@ -7149,10 +7168,16 @@ test('initialization refuses an in-service handoff and keeps the persisted custo
 test('initialization re-enters a pending checkout on Pay Done instead of the editable checkout', () => {
   const setup = testApi();
   const app = setup.api.createDefaultState();
-  const pending = seedPendingProof(setup.api, app, {
+  const checkout = seedCheckoutDraft(setup.api, app, {
     method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna'
   });
-  const operations = acceptedOperationsSnapshot(pending.checkout);
+  const operations = acceptedOperationsSnapshot(checkout);
+  assert.equal(setup.api.importAcceptedAddOns(app, checkout.id, operations).ok, true);
+  const submitted = setup.api.submitPaymentProof(app, {
+    checkoutDraftId: checkout.id,
+    note: '', imageDataUrl: 'data:image/jpeg;base64,AA=='
+  }, 2000);
+  assert.equal(submitted.ok, true);
   const home = createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] });
   const pay = createStubElement({ id: 'pay', classNames: ['app-screen', 'hidden'] });
   const paydone = createStubElement({ id: 'paydone', classNames: ['app-screen', 'hidden'] });
@@ -7180,7 +7205,7 @@ test('initialization re-enters a pending checkout on Pay Done instead of the edi
       '[data-paydone-view]': [pendingView, confirmedView, rejectedView]
     }
   });
-  const href = `https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${pending.checkout.guestCheckinId}`;
+  const href = `https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${checkout.guestCheckinId}`;
   const loaded = testApi({
     [setup.api.STORAGE_KEY]: JSON.stringify(app),
     [setup.api.OPERATIONS_STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, ...operations })
@@ -7190,7 +7215,7 @@ test('initialization re-enters a pending checkout on Pay Done instead of the edi
   assert.equal(paydone.classList.contains('hidden'), false);
   assert.equal(pay.classList.contains('hidden'), true);
   assert.equal(pendingView.attributes['aria-hidden'], 'false');
-  assert.equal(checkoutView.attributes['aria-hidden'], 'true');
+  assert.equal(checkoutView.classList.contains('hidden'), true);
 });
 
 test('imports a canonical no-preference ticket with no add-ons without inventing a line item', () => {

@@ -1636,6 +1636,19 @@
       return importAcceptedAddOnsFromAuthority(appState, checkoutDraftId, authority);
     }
 
+    function checkoutMatchesOperationsAuthority(checkout, authority) {
+      const accepted = authority.operations.addOnRequests.filter((addOn) => (
+        addOn.ticketId === authority.ticket.id && addOn.status === 'accepted'
+      ));
+      const checkoutAddOns = checkout.lineItems.filter((item) => item.type === 'addon');
+      if (checkout.beforeTipCents !== authority.ticket.currentTotalCents
+        || checkoutAddOns.length !== accepted.length) return false;
+      return accepted.every((addOn) => checkoutAddOns.some((item) => (
+        item.id === `addon-${addOn.id}` && item.sourceAddOnId === addOn.id
+          && item.label === addOn.label && item.amountCents === addOn.amountCents
+      )));
+    }
+
     function parseCustomerHttpUrl(href, expectedFileName) {
       try {
         const url = new URL(href);
@@ -1789,6 +1802,9 @@
         if (!imported.ok) return imported;
         reentry = resolveCheckoutReentry(appState, authority.guestCheckin);
         if (!reentry.ok || reentry.create) return { ok: false, code: 'invalid_checkout_state' };
+      }
+      if (!checkoutMatchesOperationsAuthority(reentry.checkout, authority)) {
+        return { ok: false, code: 'invalid_operations_snapshot' };
       }
       applyCheckoutReentryContext(appState, authority, reentry);
       return {
@@ -8219,9 +8235,13 @@
           : handoff;
         if (consumed.ok) {
           renderApp();
-          showScreen('pay');
-          renderGuestCheckout();
-          showPayView('checkout');
+          showScreen(consumed.targetScreen);
+          if (consumed.targetScreen === 'pay') {
+            renderGuestCheckout();
+            showPayView('checkout');
+          } else {
+            renderPaydone();
+          }
           cleanConsumedHandoffUrl(currentHref);
           return;
         }
