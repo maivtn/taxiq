@@ -1963,6 +1963,62 @@ test('scanning a different canonical staff QR replaces pending scan authority an
   }
 });
 
+test('rescanning the same canonical QR preserves a tampered replay fingerprint and fails closed', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  api.stageSalonScan(app, payload);
+  api.prepareTipFromScan(app);
+  const first = api.createTipFromScan(app, {
+    amount: 9, method: 'Zelle', note: ''
+  }, 1000);
+  app.ui.pendingContext.tipScanReplayFingerprint = '["tampered","front","staff-spa-linh"]';
+  const beforeRescan = JSON.stringify(app);
+  const calls = ids.calls();
+
+  assert.equal(api.stageSalonScan(app, payload).ok, true);
+  assert.equal(JSON.stringify(app), beforeRescan);
+  const beforePrepare = JSON.stringify(app);
+  const prepared = api.prepareTipFromScan(app);
+  assert.equal(prepared.ok, false);
+  assert.equal(prepared.code, 'invalid_tip_replay');
+  assert.equal(JSON.stringify(app), beforePrepare);
+  const replay = api.createTipFromScan(app, {
+    amount: 9, method: 'Zelle', note: ''
+  }, 2000);
+  assert.equal(replay.ok, false);
+  assert.equal(replay.code, 'invalid_tip_replay');
+  assert.equal(app.tips.length, 1);
+  assert.equal(app.tips[0], first.tip);
+  assert.equal(ids.calls(), calls);
+});
+
+test('a pending replay with an unresolvable prior scan context cannot be cleared by a different QR', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const goldenQr = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  const bitcoinQr = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+  api.stageSalonScan(app, goldenQr);
+  api.prepareTipFromScan(app);
+  const first = api.createTipFromScan(app, {
+    amount: 9, method: 'Zelle', note: ''
+  }, 1000);
+  const replayId = app.ui.pendingContext.tipScanReplayId;
+  app.ui.pendingContext.scanContext.station = 'tampered';
+
+  assert.equal(api.stageSalonScan(app, bitcoinQr).ok, true);
+  assert.equal(app.ui.pendingContext.tipScanReplayId, replayId);
+  const beforePrepare = JSON.stringify(app);
+  const prepared = api.prepareTipFromScan(app);
+  assert.equal(prepared.ok, false);
+  assert.equal(prepared.code, 'invalid_tip_replay');
+  assert.equal(JSON.stringify(app), beforePrepare);
+  assert.equal(app.tips.length, 1);
+  assert.equal(app.tips[0], first.tip);
+});
+
 test('scan-tip replay fails closed for mismatched input or a corrupt retained tip', () => {
   for (const corrupt of [false, true]) {
     const ids = createUuidSequence();
