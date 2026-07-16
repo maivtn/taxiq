@@ -56,6 +56,7 @@
       { label: 'Create Reward', tab: 'create-reward' },
       { label: 'Reward Analytics', tab: 'reward-analytics' }
     ] },
+    { type: 'item', label: 'POS', icon: 'monitor' },
     { type: 'item', label: 'Analytics', icon: 'chart-no-axes-combined' },
     { type: 'item', label: 'Settings', icon: 'settings' },
     { type: 'item', label: 'Support', icon: 'circle-question-mark' }
@@ -141,15 +142,7 @@
     '<label class="search">' +
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 21-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>' +
       '<input type="search" placeholder="Search tech, station, review...">' +
-    '</label>' +
-    '<div class="header-actions">' +
-      '<div class="language-switcher" aria-label="Language switcher"><button class="is-active" type="button">EN</button><button type="button">VI</button></div>' +
-      '<button class="icon-button notification-button" type="button" aria-label="Notifications">' +
-        '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 7-3 9h18c0-2-3-2-3-9ZM13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>' +
-        '<span class="notification-dot"></span>' +
-      '</button>' +
-      '<button class="profile-button" type="button"><span class="avatar">NT</span><span class="profile-copy"><strong>Nexora Touch</strong><span>Merchant</span></span></button>' +
-    '</div>';
+    '</label>';
 
   function navigate(tab) {
     var fn = (typeof cfg.onNavigate === 'function') ? cfg.onNavigate
@@ -198,17 +191,6 @@
           setDrawer(false);
         });
       })(tabs[j]);
-    }
-
-    // language switcher
-    var langs = document.querySelectorAll('.header .language-switcher button');
-    for (var k = 0; k < langs.length; k++) {
-      (function (b) {
-        b.addEventListener('click', function () {
-          for (var m = 0; m < langs.length; m++) langs[m].classList.remove('is-active');
-          b.classList.add('is-active');
-        });
-      })(langs[k]);
     }
 
     // mobile drawer open / close

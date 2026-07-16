@@ -671,7 +671,7 @@
         ui: {
           activeScreen: 'home', activeModule: 'home', selectedBusinessId: BUSINESS_ID,
           selectedTip: 10, selectedTipMethod: 'Venmo', selectedStaffId: 'staff-anna',
-          paymentMethod: 'Zelle', rating: 0, currentRewardKey: null,
+          paymentMethod: 'Zelle', payViewIntent: 'direct', rating: 0, currentRewardKey: null,
           exploreFilter: 'all', offerFilter: 'all', pendingContext: {
             consentScopes: [], rewardAttempt: null, redemptionId: null, tipId: null, paymentId: null, bookingId: null,
             scanContext: null, tipScanArmed: false, guestCheckinId: null, checkoutDraftId: null, paymentProofId: null, paydoneKind: null
@@ -1340,6 +1340,7 @@
           return { ok: false, code: 'invalid_existing_checkout' };
         }
         appState.ui.pendingContext.checkoutDraftId = existing[0].id;
+        appState.ui.payViewIntent = 'checkout';
         return { ok: true, checkoutDraft: existing[0], idempotent: true };
       }
       if (!inputMatchesCatalogLineItems(input.lineItems, guestCheckin, service)) {
@@ -1371,6 +1372,7 @@
       };
       appState.checkoutDrafts.push(checkoutDraft);
       appState.ui.pendingContext.checkoutDraftId = checkoutDraft.id;
+      appState.ui.payViewIntent = 'checkout';
       return { ok: true, checkoutDraft };
     }
 
@@ -1899,6 +1901,7 @@
       appState.ui.pendingContext.paymentId = null;
       appState.ui.pendingContext.paymentProofId = reentry.proof?.id ?? null;
       appState.ui.pendingContext.paydoneKind = reentry.proof ? 'payment_proof' : null;
+      appState.ui.payViewIntent = 'checkout';
       appState.ui.activeScreen = reentry.targetScreen;
       appState.ui.activeModule = SCREEN_MODULE[reentry.targetScreen];
     }
@@ -2858,6 +2861,7 @@
           }
         }
         appState.ui.pendingContext.checkoutDraftId = retry.id;
+        appState.ui.payViewIntent = 'checkout';
         selectPaymentProofContext(appState, retryProof?.id ?? null);
         return { ok: true, checkoutDraft: retry, proof: retryProof, idempotent: true };
       }
@@ -2908,6 +2912,7 @@
       appState.checkoutDrafts.push(retryCheckout);
       if (retryProof) appState.paymentProofs.push(retryProof);
       appState.ui.pendingContext.checkoutDraftId = retryCheckout.id;
+      appState.ui.payViewIntent = 'checkout';
       selectPaymentProofContext(appState, retryProof?.id ?? null);
       return { ok: true, checkoutDraft: retryCheckout, proof: retryProof };
     }
@@ -4030,6 +4035,26 @@
         if (migrated.ui.pendingContext[field] !== null
           && !collection.some((row) => row.id === migrated.ui.pendingContext[field])) migrated.ui.pendingContext[field] = null;
       }
+      const rawUi = isRecord(value.ui) ? value.ui : null;
+      const hasExplicitPayIntent = Boolean(rawUi
+        && Object.prototype.hasOwnProperty.call(rawUi, 'payViewIntent'));
+      if (hasExplicitPayIntent) {
+        migrated.ui.payViewIntent = ['direct', 'checkout'].includes(rawUi.payViewIntent)
+          ? rawUi.payViewIntent
+          : 'direct';
+      } else {
+        const pendingGuest = migrated.guestCheckins.find((row) => (
+          row.id === migrated.ui.pendingContext.guestCheckinId
+        ));
+        const pendingCheckout = migrated.checkoutDrafts.find((row) => (
+          row.id === migrated.ui.pendingContext.checkoutDraftId
+        ));
+        migrated.ui.payViewIntent = migrated.ui.activeScreen === 'pay'
+          && pendingGuest && pendingCheckout && pendingCheckout.status === 'draft'
+          && pendingCheckout.guestCheckinId === pendingGuest.id
+          ? 'checkout'
+          : 'direct';
+      }
       migrated.looks = migrated.looks
         .map((look) => normalizePersistedLook(migrated, look))
         .filter(Boolean);
@@ -4149,6 +4174,7 @@
 
     let state = loadState();
     let pendingProofImageDataUrl = '';
+    let renderedScanPaymentIdentity = null;
 
     function commitState(mutator) {
       const draft = structuredClone(state);
@@ -5268,6 +5294,7 @@
       const nextPayments = [...appState.directPayments, payment];
       const nextUi = {
         ...appState.ui,
+        payViewIntent: 'direct',
         pendingContext: {
           ...appState.ui.pendingContext,
           paymentId: payment.id,
@@ -5825,6 +5852,7 @@
     function navigateTo(screenId, options = {}) {
       const next = showScreen(screenId);
       if (next.id === 'pay' && options.resetPayView !== false) {
+        state.ui.payViewIntent = 'direct';
         showPayView('direct', { focus: false });
       }
       state.ui.activeScreen = next.id;
@@ -5978,6 +6006,7 @@
       const business = context ? getValidBusiness(state, context.businessId) : null;
       renderGuestCheckinOptions();
       if (!business) {
+        renderedScanPaymentIdentity = null;
         const ticketSelect = document.getElementById('scan-payment-ticket');
         const paymentAction = document.getElementById('scan-payment-action');
         if (ticketSelect) {
@@ -6080,7 +6109,19 @@
       if (paymentReason) {
         paymentReason.textContent = candidates.length === 0 ? t('scanPaymentRequiresCompleted') : '';
       }
-      syncScanPaymentOwnership(candidates);
+      const scan = resolveCanonicalScanContext(state);
+      const nextIdentity = scan.ok ? JSON.stringify([
+        scan.parsed.businessId,
+        scan.parsed.station,
+        scan.parsed.staffProfileId,
+        ticketSelect?.value ?? ''
+      ]) : null;
+      const identityChanged = renderedScanPaymentIdentity !== nextIdentity;
+      renderedScanPaymentIdentity = nextIdentity;
+      syncScanPaymentOwnership(candidates, {
+        clearInput: identityChanged,
+        clearError: identityChanged
+      });
     }
 
     function setScanPaymentError(message = '') {
@@ -8060,6 +8101,13 @@
 
     async function handleChange(event) {
       if (event.target.id === 'scan-payment-ticket') {
+        const scan = resolveCanonicalScanContext(state);
+        renderedScanPaymentIdentity = scan.ok ? JSON.stringify([
+          scan.parsed.businessId,
+          scan.parsed.station,
+          scan.parsed.staffProfileId,
+          event.target.value
+        ]) : null;
         syncScanPaymentOwnership(null, { clearInput: true, clearError: true });
         return;
       }
@@ -8681,7 +8729,9 @@
           : { ok: false };
         const restoresCheckout = reentry.ok && !reentry.create
           && reentry.targetScreen === 'pay' && reentry.view === 'checkout'
-          && reentry.checkout === checkout;
+          && reentry.checkout === checkout
+          && state.ui.payViewIntent === 'checkout';
+        state.ui.payViewIntent = restoresCheckout ? 'checkout' : 'direct';
         showPayView(restoresCheckout ? 'checkout' : 'direct', { focus: false });
       }
       updateNavigation();
@@ -8748,6 +8798,7 @@
         }
         state.ui.activeScreen = 'home';
         state.ui.activeModule = 'home';
+        state.ui.payViewIntent = 'direct';
         state.ui.pendingContext.checkoutDraftId = null;
         state.ui.pendingContext.paymentId = null;
         state.ui.pendingContext.paymentProofId = null;

@@ -84,9 +84,9 @@ Parser phải từ chối origin khác, HTTP, host/path thừa, fragment, creden
 
 - Check-in: thành viên chỉ mở form đã prefill khi session/profile phone đã xác minh và khớp chính xác. Khi đăng xuất, CTA member bị khóa; guest mở cùng form với tên/số điện thoại để trống. Cả hai tạo record canonical trong `guestCheckins` và mở Operations Live Ticket.
 - Tip: chỉ bật khi QR có staff canonical và staff đã bật ít nhất một phương thức; helper re-parse QR khi prefill và khi tạo tip để không tin selector DOM.
-- Payment: chỉ hiện candidate có exact ticket `completed` đúng business. Join dùng `guestCheckinId`/`ticketId`, không dùng tên hoặc số điện thoại hiển thị; action đọc lại Operations snapshot ngay lúc click. Candidate chưa sở hữu phải **ẩn/opaque ticket, dịch vụ và số tiền cho tới khi xác minh 4 số cuối**; input được lọc còn 4 chữ số, CTA bị khóa khi chưa đủ và mismatch hiển thị inline. Session/profile đã xác thực đúng phone thì được miễn.
+- Payment: chỉ hiện candidate có exact ticket `completed` đúng business. Join dùng `guestCheckinId`/`ticketId`, không dùng tên hoặc số điện thoại hiển thị; action đọc lại Operations snapshot ngay lúc click. Candidate chưa sở hữu phải **ẩn/opaque ticket, dịch vụ và số tiền cho tới khi xác minh 4 số cuối**; input được lọc còn 4 chữ số, CTA bị khóa khi chưa đủ và mismatch hiển thị inline. Last-4/error bị xóa khi canonical scan context hoặc selected guest đổi tự động, nhưng rerender cùng identity vẫn giữ input. Session/profile đã xác thực đúng phone thì được miễn.
 
-Ticket `in_service` không thể mở checkout. Re-entry checkout draft mở `pay`; pending/confirmed/rejected mở đúng view trong `paydone`. Reload exact draft + pending context khôi phục nested checkout, còn context thiếu/stale/corrupt về direct pay an toàn. Không tạo checkout hoặc proof thứ hai.
+Ticket `in_service` không thể mở checkout. Re-entry checkout draft mở `pay`; pending/confirmed/rejected mở đúng view trong `paydone`. `ui.payViewIntent` lưu explicit checkout/direct-pay intent trước reload: scan/handoff re-arm checkout, còn navigation Pay Salon Direct ghi direct nên một draft cũ không kéo khách ngược vào checkout. Context thiếu/stale/corrupt về direct pay an toàn. Không tạo checkout hoặc proof thứ hai.
 
 ### 4.4 Tip và thanh toán trực tiếp
 

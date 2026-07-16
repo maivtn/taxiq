@@ -6499,6 +6499,107 @@ test('scan payment clears last4 when candidate changes or scan context disappear
   assert.equal(action.disabled, true);
 });
 
+test('programmatic scan identity change clears last4 but same context and candidate rerender preserves it', () => {
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  const guest = seedGuestCheckin(setup.api, app, { staffProfileId: 'staff-anna' });
+  assert.equal(setup.api.stageSalonScan(
+    app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'
+  ).ok, true);
+  const operations = acceptedOperationsSnapshot({ guestCheckinId: guest.id, businessId: guest.businessId });
+  const ticket = createStubElement({ id: 'scan-payment-ticket' });
+  const phone = createStubElement({ id: 'scan-payment-phone-last4' });
+  const action = createStubElement({ id: 'scan-payment-action' });
+  const error = createStubElement({ id: 'scan-payment-error', classNames: ['hidden'] });
+  const document = createDocumentStub({ extraElements: [
+    ticket, phone, action, error,
+    createStubElement({ id: 'scan-payment-reason' }),
+    createStubElement({ id: 'scan-payment-ownership' })
+  ] });
+  const loaded = testApi({
+    [setup.api.STORAGE_KEY]: JSON.stringify(app),
+    [setup.api.OPERATIONS_STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, ...operations })
+  }, { document });
+
+  vm.runInContext('renderScanContext()', loaded.context);
+  phone.value = '0198';
+  loaded.context.handleInput({ target: phone });
+  vm.runInContext("state.profile.language = 'en'; renderScanContext()", loaded.context);
+  assert.equal(phone.value, '0198', 'ordinary same-identity rerender');
+  assert.equal(action.disabled, false);
+
+  vm.runInContext(`
+    stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna');
+    renderScanContext();
+  `, loaded.context);
+  assert.equal(ticket.value, guest.id);
+  assert.equal(phone.value, '', 'new canonical scan identity');
+  assert.equal(action.disabled, true);
+  assert.equal(error.classList.contains('hidden'), true);
+  assert.equal(phone.getAttribute('aria-invalid'), 'false');
+});
+
+test('automatic payment candidate replacement clears last4 and inline error', () => {
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  const first = seedGuestCheckin(setup.api, app, { staffProfileId: 'staff-anna' });
+  const second = {
+    ...structuredClone(first),
+    id: 'guest-checkin-00000000-0000-4000-8000-000000000002',
+    name: 'Nancy Tran',
+    phone: '8325550177'
+  };
+  app.guestCheckins.push(second);
+  assert.equal(setup.api.stageSalonScan(
+    app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'
+  ).ok, true);
+  const firstOps = acceptedOperationsSnapshot({ guestCheckinId: first.id, businessId: first.businessId });
+  const secondOps = acceptedOperationsSnapshot(
+    { guestCheckinId: second.id, businessId: second.businessId },
+    {
+      ticketId: 'ticket-00000000-0000-4000-8000-000000000093',
+      addOnId: 'addon-00000000-0000-4000-8000-000000000094'
+    }
+  );
+  secondOps.serviceTickets[0].number = 105;
+  const both = {
+    serviceTickets: [...firstOps.serviceTickets, ...secondOps.serviceTickets],
+    addOnRequests: [...firstOps.addOnRequests, ...secondOps.addOnRequests],
+    staffEligibility: []
+  };
+  const ticket = createStubElement({ id: 'scan-payment-ticket' });
+  const phone = createStubElement({ id: 'scan-payment-phone-last4' });
+  const action = createStubElement({ id: 'scan-payment-action' });
+  const error = createStubElement({ id: 'scan-payment-error', classNames: ['hidden'] });
+  const document = createDocumentStub({ extraElements: [
+    ticket, phone, action, error,
+    createStubElement({ id: 'scan-payment-reason' }),
+    createStubElement({ id: 'scan-payment-ownership' })
+  ] });
+  const loaded = testApi({
+    [setup.api.STORAGE_KEY]: JSON.stringify(app),
+    [setup.api.OPERATIONS_STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, ...both })
+  }, { document });
+
+  vm.runInContext('renderScanContext()', loaded.context);
+  assert.equal(ticket.value, first.id);
+  phone.value = '0198';
+  loaded.context.handleInput({ target: phone });
+  vm.runInContext("setScanPaymentError('wrong last4')", loaded.context);
+  loaded.storage.setItem(
+    setup.api.OPERATIONS_STORAGE_KEY,
+    JSON.stringify({ schemaVersion: 1, ...secondOps })
+  );
+  vm.runInContext('renderScanContext()', loaded.context);
+
+  assert.equal(ticket.value, second.id);
+  assert.equal(phone.value, '');
+  assert.equal(action.disabled, true);
+  assert.equal(error.textContent, '');
+  assert.equal(error.classList.contains('hidden'), true);
+  assert.equal(phone.getAttribute('aria-invalid'), 'false');
+});
+
 test('profile editor cannot replace verified phone without OTP while verified OTP ownership can skip last4', () => {
   const setup = testApi();
   const app = setup.api.createDefaultState();
@@ -6552,6 +6653,7 @@ test('documents QR context routing, completed-ticket authority and prototype sim
     assert.match(source, /(?:ẩn|opaque)[^\n]*(?:ticket|phiếu|dịch vụ|service)[^\n]*(?:4 số|xác minh|verif)/i, name);
     assert.match(source, /(?:OTP[^\n]*đổi số|đổi số[^\n]*OTP|phone[^\n]*OTP)/i, name);
     assert.match(source, /(?:reload[^\n]*checkout|tải lại[^\n]*checkout)/i, name);
+    assert.match(source, /(?:payViewIntent|direct-pay intent|ý định direct-pay)[^\n]*(?:reload|tải lại)/i, name);
   }
   assert.match(crossSurface, /superseded|được thay thế/i);
   assert.match(crossSurface, /2026-07-16-customer-qr-payment-tip-implementation-plan\.md/);
@@ -7859,10 +7961,13 @@ test('prepare scanned checkout verifies canonical phone ownership and is idempot
   const opened = api.prepareScanCheckout(app, guest.id, '0198', operations, 5000);
   assert.equal(opened.ok, true);
   assert.equal(opened.view, 'checkout');
+  assert.equal(app.ui.payViewIntent, 'checkout');
   const afterFirst = JSON.stringify(app);
+  app.ui.payViewIntent = 'direct';
   const replay = api.prepareScanCheckout(app, guest.id, '0198', operations, 6000);
   assert.equal(replay.ok, true);
   assert.equal(replay.idempotent, true);
+  assert.equal(app.ui.payViewIntent, 'checkout');
   assert.equal(JSON.stringify(app), afterFirst);
 
   const authenticated = api.createDefaultState();
@@ -8197,6 +8302,53 @@ test('normal reload restores a canonical draft checkout but stale checkout conte
     assert.equal(direct.getAttribute('aria-hidden'), stale ? 'false' : 'true', `direct stale=${stale}`);
     if (!stale) assert.equal(checkout.id, app.ui.pendingContext.checkoutDraftId);
   }
+});
+
+test('explicit generic direct-pay navigation survives reload even with a valid checkout draft context', () => {
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  seedCheckoutDraft(setup.api, app, {
+    method: 'Card', tipBasisPoints: 0, staffProfileId: null
+  });
+  app.ui.activeScreen = 'pay';
+  app.ui.activeModule = 'home';
+  const makePayDocument = () => {
+    const home = createStubElement({ id: 'home', classNames: ['app-screen', 'hidden'] });
+    const pay = createStubElement({ id: 'pay', classNames: ['app-screen'] });
+    const direct = createStubElement({ id: 'direct-payment-view', dataset: { payView: 'direct' } });
+    const checkout = createStubElement({
+      id: 'guest-checkout-view', dataset: { payView: 'checkout' }, classNames: ['hidden']
+    });
+    const proof = createStubElement({
+      id: 'payment-proof-view', dataset: { payView: 'payment-proof' }, classNames: ['hidden']
+    });
+    return {
+      document: createDocumentStub({
+        screenNodes: [home, pay], extraElements: [direct, checkout, proof],
+        selectorNodes: { '[data-pay-view]': [direct, checkout, proof] }
+      }),
+      direct,
+      checkout
+    };
+  };
+
+  const first = makePayDocument();
+  const loaded = testApi({ [setup.api.STORAGE_KEY]: JSON.stringify(app) }, {
+    skipInit: false, document: first.document,
+    location: { href: 'https://example.test/customer/cutomer-reward.html' }
+  });
+  assert.equal(first.checkout.getAttribute('aria-hidden'), 'false');
+  vm.runInContext("navigateTo('pay')", loaded.context);
+  assert.equal(first.direct.getAttribute('aria-hidden'), 'false');
+
+  const second = makePayDocument();
+  const reloaded = testApi(loaded.storage.dump(), {
+    skipInit: false, document: second.document,
+    location: { href: 'https://example.test/customer/cutomer-reward.html' }
+  });
+  assert.equal(second.direct.getAttribute('aria-hidden'), 'false');
+  assert.equal(second.checkout.getAttribute('aria-hidden'), 'true');
+  assert.equal(vm.runInContext('state.ui.payViewIntent', reloaded.context), 'direct');
 });
 
 test('initialization refuses an in-service handoff and keeps the persisted customer state unchanged', () => {

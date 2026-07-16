@@ -276,22 +276,24 @@
   fill: none;
 }
 
+/* collapse via max-height so a collapsed group leaves ZERO height — overflow
+   clips the inner's margins/border too, which the old grid 0fr trick did not
+   (that left a stray strip between groups that read as a horizontal line). */
 .nav-subnav {
-  display: grid;
-  grid-template-rows: 1fr;
-  transition: grid-template-rows 0.24s ease;
+  display: block;
+  overflow: hidden;
+  max-height: 500px;
+  transition: max-height 0.26s ease;
 }
 
 .nav-subnav.is-collapsed {
-  grid-template-rows: 0fr;
+  max-height: 0;
 }
 
 .nav-subnav-inner {
   display: flex;
-  min-height: 0;
   flex-direction: column;
   gap: 2px;
-  overflow: hidden;
   margin: 2px 0 6px 30px;
   padding-left: 14px;
   border-left: 1px solid rgba(255, 255, 255, 0.12);
