@@ -78,13 +78,13 @@ QR hợp lệ có dạng chính xác:
 https://nexoratouch.com/touch/[businessId]/[station]?staffProfileId=...
 ```
 
-Parser phải từ chối origin khác, HTTP, host/path thừa, fragment, credential, tham số lạ, station/business/staff không hợp lệ. Check-in ghi timestamp; khi offline đưa vào `offlineQueue`, khi có mạng retry. Check-in trùng trong cửa sổ bảo vệ hiện tại bị từ chối.
+Parser phải từ chối origin khác, HTTP, host/path thừa, fragment, credential, tham số lạ, station/business/staff không hợp lệ. Check-in ghi timestamp; khi offline đưa vào `offlineQueue`, khi có mạng retry. Service check-in submit lại với exact business/station/name/phone/service/staff trong cửa sổ 120 phút reuse đúng một record canonical; nhiều record khớp hoặc record hỏng fail closed. Service khác trong cửa sổ và cùng service từ phút 120 trở đi tạo lượt mới.
 
 **Bộ định tuyến ngữ cảnh QR (QR context router)** không đoán mục đích từ `station`. QR chỉ resolve business/station/staff tùy chọn, rồi `scan-context-view` đưa ra ba intent:
 
-- Check-in: thành viên chỉ mở form đã prefill khi session/profile phone đã xác minh và khớp chính xác. Khi đăng xuất, CTA member bị khóa; guest mở cùng form với tên/số điện thoại để trống. Cả hai tạo record canonical trong `guestCheckins` và mở Operations Live Ticket.
-- Tip: chỉ bật khi QR có staff canonical và staff đã bật ít nhất một phương thức; helper re-parse QR khi prefill và khi tạo tip để không tin selector DOM.
-- Payment: chỉ hiện candidate có exact ticket `completed` đúng business. Join dùng `guestCheckinId`/`ticketId`, không dùng tên hoặc số điện thoại hiển thị; action đọc lại Operations snapshot ngay lúc click. Candidate chưa sở hữu phải **ẩn/opaque ticket, dịch vụ và số tiền cho tới khi xác minh 4 số cuối**; input được lọc còn 4 chữ số, CTA bị khóa khi chưa đủ và mismatch hiển thị inline. Last-4/error bị xóa khi canonical scan context hoặc selected guest đổi tự động, nhưng rerender cùng identity vẫn giữ input. Session/profile đã xác thực đúng phone thì được miễn.
+- Check-in: thành viên chỉ mở form đã prefill khi session/profile phone đã xác minh và khớp chính xác. Khi đăng xuất, CTA member bị khóa, toàn bộ tên/điểm/tóm tắt riêng dùng placeholder VI/EN và prefill hồ sơ cũ bị xóa; guest mở cùng form với tên/số điện thoại để trống. Cả hai tạo record canonical trong `guestCheckins` và mở Operations Live Ticket.
+- Tip: chỉ bật khi QR có staff canonical và staff đã bật ít nhất một phương thức; helper re-parse QR khi prefill và khi tạo tip để không tin selector DOM. `tipEntryIntent`, `tipScanReplayId` và fingerprint context được persist: double-send, reload, lỗi điều hướng hoặc quét lại cùng QR trong lúc tip còn pending đều reuse đúng transaction; context/input/record sai fail closed. Chỉ sau terminal hoặc explicit generic/new intent mới tạo tip khác; URL không mang replay authority.
+- Payment: chỉ hiện candidate có exact ticket `completed` đúng business. Join dùng `guestCheckinId`/`ticketId`, không dùng tên hoặc số điện thoại hiển thị; action đọc lại Operations snapshot ngay lúc click. Candidate chưa sở hữu phải **ẩn/opaque ticket, dịch vụ và số tiền cho tới khi xác minh 4 số cuối**; input được lọc còn 4 chữ số, CTA bị khóa khi chưa đủ và mismatch hiển thị inline. Last-4/error bị xóa khi canonical scan context/selected guest đổi hoặc cùng candidate trở thành owned sau OTP; rerender cùng identity chỉ giữ input khi vẫn chưa owned. Session/profile đã xác thực đúng phone thì được miễn.
 
 Ticket `in_service` không thể mở checkout. Re-entry checkout draft mở `pay`; pending/confirmed/rejected mở đúng view trong `paydone`. `ui.payViewIntent` lưu explicit checkout/direct-pay intent trước reload: scan/handoff re-arm checkout, còn navigation Pay Salon Direct ghi direct nên một draft cũ không kéo khách ngược vào checkout. Context thiếu/stale/corrupt về direct pay an toàn. Không tạo checkout hoặc proof thứ hai.
 
@@ -147,6 +147,7 @@ Invariant quan trọng:
 - Mọi balance và ledger entry đều có `businessId` hợp lệ.
 - Ledger là append-only; debit reward không được làm âm số dư.
 - `redemptions.idempotencyKey` chống redeem lặp; `rewardAttempt` và receipt context nằm trong `ui.pendingContext`.
+- `ui.pendingContext.tipEntryIntent` phân biệt `generic | scan`; scan replay ID/fingerprint không lấy từ URL và chỉ trỏ tới một tip canonical `pending`.
 - Tip/payment/booking có trạng thái và `confirmedAt` riêng; không cộng điểm từ bản ghi pending.
 - `feedbackClaims` chống đánh giá trùng visit.
 - Notification mô phỏng có `dedupeKey`; follow notification chỉ phát khi nhân viên opt-in và có salon mới.

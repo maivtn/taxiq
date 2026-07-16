@@ -1843,6 +1843,209 @@ test('armed canonical tip scan context round-trips reload and still locks the QR
   assert.equal(loaded.ui.pendingContext.tipScanArmed, false);
 });
 
+test('completed scan-tip creation replays the same pending tip idempotently', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  assert.equal(api.stageSalonScan(app, payload).ok, true);
+  assert.equal(api.prepareTipFromScan(app).ok, true);
+  const input = { amount: 10, method: 'Zelle', note: 'Cảm ơn' };
+  const first = api.createTipFromScan(app, input, 1000);
+  const calls = ids.calls();
+  const replay = api.createTipFromScan(app, input, 2000);
+
+  assert.equal(first.ok, true);
+  assert.equal(app.ui.pendingContext.tipEntryIntent, 'scan');
+  assert.equal(app.ui.pendingContext.tipScanReplayId, first.tip.id);
+  assert.equal(replay.ok, true);
+  assert.equal(replay.idempotent, true);
+  assert.equal(replay.tip, first.tip);
+  assert.equal(app.tips.length, 1);
+  assert.equal(ids.calls(), calls);
+});
+
+test('scan-tip replay survives save and reload without generating another transaction', () => {
+  const ids = createUuidSequence();
+  const { api, storage } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  api.stageSalonScan(app, payload);
+  api.prepareTipFromScan(app);
+  const input = { amount: 9, method: 'Zelle', note: '' };
+  const first = api.createTipFromScan(app, input, 1000);
+  api.saveState(app, storage);
+  const loaded = api.loadState(storage);
+  const calls = ids.calls();
+
+  const replay = api.createTipFromScan(loaded, input, 2000);
+
+  assert.equal(replay.ok, true);
+  assert.equal(replay.idempotent, true);
+  assert.equal(replay.tip.id, first.tip.id);
+  assert.equal(loaded.tips.length, 1);
+  assert.equal(ids.calls(), calls);
+});
+
+test('rescanning the same staff QR re-enters its one pending scan tip', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  const input = { amount: 9, method: 'Zelle', note: 'Cảm ơn' };
+  api.stageSalonScan(app, payload);
+  api.prepareTipFromScan(app);
+  const first = api.createTipFromScan(app, input, 1000);
+  const calls = ids.calls();
+
+  assert.equal(api.stageSalonScan(app, payload).ok, true);
+  assert.equal(api.prepareTipFromScan(app).ok, true);
+  const replay = api.createTipFromScan(app, input, 2000);
+
+  assert.equal(replay.ok, true);
+  assert.equal(replay.idempotent, true);
+  assert.equal(replay.tip, first.tip);
+  assert.equal(app.tips.length, 1);
+  assert.equal(ids.calls(), calls);
+});
+
+test('rescanning the same staff QR starts a new tip only after the prior tip is terminal', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  const input = { amount: 9, method: 'Zelle', note: '' };
+  api.stageSalonScan(app, payload);
+  api.prepareTipFromScan(app);
+  const first = api.createTipFromScan(app, input, 1000);
+  assert.equal(api.confirmTipRecord(app, first.tip.id, 2000).ok, true);
+
+  assert.equal(api.stageSalonScan(app, payload).ok, true);
+  assert.equal(api.prepareTipFromScan(app).ok, true);
+  const next = api.createTipFromScan(app, input, 3000);
+
+  assert.equal(next.ok, true);
+  assert.notEqual(next.tip.id, first.tip.id);
+  assert.equal(app.tips.length, 2);
+});
+
+test('scan-tip replay fails closed for mismatched input or a corrupt retained tip', () => {
+  for (const corrupt of [false, true]) {
+    const ids = createUuidSequence();
+    const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+    const app = api.createDefaultState();
+    api.stageSalonScan(
+      app, 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh'
+    );
+    api.prepareTipFromScan(app);
+    const input = { amount: 10, method: 'Zelle', note: 'Thanks' };
+    api.createTipFromScan(app, input, 1000);
+    if (corrupt) app.tips[0].note = ' tampered ';
+    const before = JSON.stringify(app);
+    const calls = ids.calls();
+
+    const replay = api.createTipFromScan(
+      app, corrupt ? input : { ...input, amount: 11 }, 2000
+    );
+
+    assert.equal(replay.ok, false, `corrupt=${corrupt}`);
+    assert.equal(replay.code, 'invalid_tip_replay', `corrupt=${corrupt}`);
+    assert.equal(JSON.stringify(app), before, `corrupt=${corrupt}`);
+    assert.equal(ids.calls(), calls, `corrupt=${corrupt}`);
+  }
+});
+
+test('explicit generic tip entry clears scan replay authority and permits a separate tip', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  api.stageSalonScan(
+    app, 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh'
+  );
+  api.prepareTipFromScan(app);
+  const scanned = api.createTipFromScan(app, {
+    amount: 10, method: 'Zelle', note: ''
+  }, 1000);
+
+  assert.equal(api.prepareGenericTipContext(app, {
+    businessId: 'bitcoin-nail-bar', preferredStaffId: 'staff-anna'
+  }).ok, true);
+  assert.equal(app.ui.pendingContext.tipEntryIntent, 'generic');
+  assert.equal(app.ui.pendingContext.tipScanReplayId, null);
+  const generic = api.createTip(app, {
+    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna',
+    amount: 7, method: 'Venmo', note: ''
+  }, 2000);
+
+  assert.equal(scanned.ok, true);
+  assert.equal(generic.ok, true);
+  assert.notEqual(generic.tip.id, scanned.tip.id);
+  assert.equal(app.tips.length, 2);
+});
+
+test('scan-tip action retry after navigation failure re-enters one persisted transaction', () => {
+  const ids = createUuidSequence();
+  const setup = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = setup.api.createDefaultState();
+  setup.api.stageSalonScan(
+    app, 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh'
+  );
+  setup.api.prepareTipFromScan(app);
+  const document = createDocumentStub();
+  document.getElementById('tip-custom-amount').value = '10';
+  document.getElementById('tip-note').value = '';
+  const loaded = testApi({ [setup.api.STORAGE_KEY]: JSON.stringify(app) }, {
+    document, randomUUID: () => ids.randomUUID()
+  });
+  vm.runInContext(`
+    renderTipResult = () => {};
+    navigateTo = () => { throw new Error('navigation blocked'); };
+    globalThis.firstFailed = false;
+    globalThis.secondFailed = false;
+    try { ACTIONS.get('send-tip')(); } catch { firstFailed = true; }
+    try { ACTIONS.get('send-tip')(); } catch { secondFailed = true; }
+  `, loaded.context);
+
+  const persisted = loaded.api.loadState(loaded.storage);
+  assert.equal(vm.runInContext('firstFailed && secondFailed', loaded.context), true);
+  assert.equal(persisted.tips.length, 1);
+  assert.equal(persisted.ui.pendingContext.tipScanReplayId, persisted.tips[0].id);
+  assert.equal(persisted.ui.pendingContext.tipId, persisted.tips[0].id);
+});
+
+test('same-QR scan Tip action reopens the pending receipt instead of an editable tip form', () => {
+  const ids = createUuidSequence();
+  const setup = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = setup.api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  setup.api.stageSalonScan(app, payload);
+  setup.api.prepareTipFromScan(app);
+  const first = setup.api.createTipFromScan(app, {
+    amount: 9, method: 'Zelle', note: 'Cảm ơn'
+  }, 1000);
+  setup.api.stageSalonScan(app, payload);
+  const loaded = testApi({ [setup.api.STORAGE_KEY]: JSON.stringify(app) }, {
+    document: createDocumentStub(), randomUUID: () => ids.randomUUID()
+  });
+
+  vm.runInContext(`
+    globalThis.navigationCalls = [];
+    globalThis.resultRenders = 0;
+    navigateTo = (...args) => navigationCalls.push(args);
+    renderApp = () => {};
+    renderTipResult = () => { resultRenders += 1; };
+    globalThis.sameQrOpenResult = ACTIONS.get('open-scan-tip')();
+  `, loaded.context);
+
+  assert.equal(vm.runInContext('sameQrOpenResult.ok', loaded.context), true);
+  assert.equal(vm.runInContext('state.ui.activeScreen', loaded.context), 'tipdone');
+  assert.equal(vm.runInContext('JSON.stringify(navigationCalls.map((row) => row[0]))', loaded.context), '["tipdone"]');
+  assert.equal(vm.runInContext('resultRenders', loaded.context), 1);
+  const persisted = loaded.api.loadState(loaded.storage);
+  assert.equal(persisted.tips.length, 1);
+  assert.equal(persisted.ui.pendingContext.tipId, first.tip.id);
+});
+
 test('migration cancels armed authority for noncanonical or tampered tip scan context', () => {
   const { api } = testApi();
   const canonical = {
@@ -1864,6 +2067,27 @@ test('migration cancels armed authority for noncanonical or tampered tip scan co
     assert.equal(migrated.ui.pendingContext.scanContext, null);
     assert.equal(migrated.ui.pendingContext.tipScanArmed, false);
   }
+});
+
+test('migration treats an invalid explicit tip entry intent as generic instead of reviving legacy scan authority', () => {
+  const { api } = testApi();
+  const migrated = api.migrateState({
+    ui: { pendingContext: {
+      scanContext: {
+        payload: 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh',
+        businessId: 'golden-glow-spa', station: 'front', staffProfileId: 'staff-spa-linh'
+      },
+      tipScanArmed: true,
+      tipEntryIntent: 'unexpected',
+      tipScanReplayId: 'tip-00000000-0000-4000-8000-000000000001',
+      tipScanReplayFingerprint: '["golden-glow-spa","front","staff-spa-linh"]'
+    } }
+  });
+
+  assert.equal(migrated.ui.pendingContext.tipEntryIntent, 'generic');
+  assert.equal(migrated.ui.pendingContext.tipScanArmed, false);
+  assert.equal(migrated.ui.pendingContext.tipScanReplayId, null);
+  assert.equal(migrated.ui.pendingContext.tipScanReplayFingerprint, null);
 });
 
 test('generic tip context cancels stale QR authority and chooses one canonical business recipient', () => {
@@ -5132,13 +5356,14 @@ test('Task 5 claims distinct same-salon guest check-ins that share one canonical
   const api = task5Api(testApi({}, { randomUUID: () => ids.randomUUID() }).api);
   const app = api.createDefaultState();
   const first = seedVerifiedGuestReceipt(api, app, { baseTime: 1000 });
-  const second = seedVerifiedGuestReceipt(api, app, { baseTime: 2000 });
+  const secondBaseTime = 1000 + (120 * 60 * 1000);
+  const second = seedVerifiedGuestReceipt(api, app, { baseTime: secondBaseTime });
   bindMergePhone(app);
   assert.notEqual(first.guest.id, second.guest.id);
   const expected = [...first.claims, ...second.claims].reduce((sum, claim) => sum + claim.points, 0);
   const beforePoints = app.balances['bitcoin-nail-bar'].points;
 
-  const result = api.mergeGuestJourney(app, '8325550198', 3000);
+  const result = api.mergeGuestJourney(app, '8325550198', secondBaseTime + 1000);
 
   assert.equal(result.ok, true);
   assert.equal(result.claimedCount, first.claims.length + second.claims.length);
@@ -6279,6 +6504,99 @@ test('logged-out scan disables member prefill and forged member action cannot si
   assert.equal(result.code, 'authentication_required');
   assert.equal(guestName.value, 'keep');
   assert.equal(guestPhone.value, 'keep');
+});
+
+test('logged-out scan hides retained member identity and balances with localized placeholders', () => {
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  app.session.authenticated = false;
+  assert.equal(setup.api.stageSalonScan(
+    app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna'
+  ).ok, true);
+  const guestName = createStubElement({ id: 'guest-name', value: app.profile.name });
+  const guestPhone = createStubElement({ id: 'guest-phone', value: app.profile.phone });
+  const scanCustomer = createStubElement();
+  const scanBalance = createStubElement();
+  const scanStaff = createStubElement();
+  const scanService = createStubElement();
+  const document = createDocumentStub({
+    extraElements: [guestName, guestPhone],
+    selectorNodes: {
+      '[data-scan-customer]': scanCustomer,
+      '[data-scan-balance]': scanBalance,
+      '[data-scan-staff]': scanStaff,
+      '[data-scan-service]': scanService
+    }
+  });
+  const loaded = testApi({ [setup.api.STORAGE_KEY]: JSON.stringify(app) }, { document });
+
+  vm.runInContext('renderScanContext()', loaded.context);
+  assert.equal(scanCustomer.textContent, 'Chưa đăng nhập');
+  assert.equal(scanBalance.textContent, 'Đăng nhập để xem');
+  assert.equal(scanStaff.textContent, 'Đăng nhập để xem');
+  assert.equal(scanService.textContent, 'Đăng nhập để xem');
+  assert.equal(guestName.value, '');
+  assert.equal(guestPhone.value, '');
+  assert.equal([scanCustomer, scanBalance, scanStaff, scanService]
+    .some((node) => /Amy|2[.,]?450|2450|0198/.test(node.textContent)), false);
+
+  vm.runInContext("state.profile.language = 'en'; renderScanContext()", loaded.context);
+  assert.equal(scanCustomer.textContent, 'Signed out');
+  assert.equal(scanBalance.textContent, 'Sign in to view');
+  assert.equal(scanStaff.textContent, 'Sign in to view');
+  assert.equal(scanService.textContent, 'Sign in to view');
+
+  vm.runInContext(`
+    state.session.authenticated = true;
+    state.session.phone = state.profile.phone;
+    state.profile.language = 'vi';
+    renderScanContext();
+  `, loaded.context);
+  assert.equal(scanCustomer.textContent, app.profile.name);
+  assert.match(scanBalance.textContent, /2[.,]450 điểm/);
+});
+
+test('same completed ticket becoming owned after OTP clears stale last4 mismatch state', () => {
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  const guest = seedGuestCheckin(setup.api, app, { staffProfileId: 'staff-anna' });
+  app.session.authenticated = false;
+  assert.equal(setup.api.stageSalonScan(
+    app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'
+  ).ok, true);
+  const operations = acceptedOperationsSnapshot({ guestCheckinId: guest.id, businessId: guest.businessId });
+  const ticket = createStubElement({ id: 'scan-payment-ticket' });
+  const phone = createStubElement({ id: 'scan-payment-phone-last4' });
+  const action = createStubElement({ id: 'scan-payment-action' });
+  const error = createStubElement({ id: 'scan-payment-error', classNames: ['hidden'] });
+  const document = createDocumentStub({ extraElements: [
+    ticket, phone, action, error,
+    createStubElement({ id: 'scan-payment-reason' }),
+    createStubElement({ id: 'scan-payment-ownership' })
+  ] });
+  const loaded = testApi({
+    [setup.api.STORAGE_KEY]: JSON.stringify(app),
+    [setup.api.OPERATIONS_STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, ...operations })
+  }, { document });
+
+  vm.runInContext('renderScanContext()', loaded.context);
+  phone.value = '0000';
+  vm.runInContext("setScanPaymentError('last4_mismatch')", loaded.context);
+  assert.equal(phone.getAttribute('aria-invalid'), 'true');
+  assert.equal(error.classList.contains('hidden'), false);
+
+  vm.runInContext(`
+    state.session.authenticated = true;
+    state.session.phone = '${guest.phone}';
+    state.profile.phone = '${guest.phone}';
+    renderScanContext();
+  `, loaded.context);
+  assert.equal(phone.value, '');
+  assert.equal(phone.disabled, true);
+  assert.equal(action.disabled, false);
+  assert.equal(phone.getAttribute('aria-invalid'), 'false');
+  assert.equal(error.textContent, '');
+  assert.equal(error.classList.contains('hidden'), true);
 });
 
 test('scan Tip action commits exact QR authority and never navigates after helper, tamper, or persistence failure', () => {

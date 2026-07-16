@@ -71,6 +71,8 @@ Pay trên Operations và `consumeGuestCheckoutHandoff` đều re-check ticket ex
 
 `prepareTipFromScan` re-parse payload và kiểm tra lại quan hệ business/staff trước khi đổi UI context. Khi gửi, `createTipFromScan` phải re-parse lần nữa và khóa `businessId/staffProfileId` của transaction đúng QR; thay select bằng DevTools không thể đổi recipient. Màn tip dùng `selectedBusinessId`, không hardcode Bitcoin Nail Bar. Chỉ method có trong staff canonical mới được chọn.
 
+Authority retry nằm trong `ui.pendingContext`, không nằm trong URL: `tipEntryIntent = scan | generic`, `tipScanReplayId` và fingerprint exact `{businessId, station, staffProfileId}`. Double-send, reload, lỗi navigation hoặc quét lại cùng QR khi tip scan còn `pending` phải validate unique canonical record cùng amount/method/note rồi trả record đó với `idempotent: true`. Replay ID/context/record sai phải fail closed, không rơi xuống generic. Chỉ `prepareGenericTipContext`, một QR/new intent khác rõ ràng, hoặc cùng QR sau khi tip trước đã terminal mới được tạo tip mới.
+
 V1 hỗ trợ một staff cho mỗi tip. Multi-recipient tip trong `html/tip-flow` được hoãn vì cần batch transaction atomic, payout owner rõ ràng và idempotency chung. Không được ghép nhiều tip bằng URL/client-only state.
 
 Tip tiếp tục là giao dịch độc lập đi thẳng tới staff:
@@ -128,6 +130,7 @@ Khi chưa có candidate, nút Payment bị disable và có lý do nhìn thấy/�
 - Pending add-on: không complete ticket.
 - Storage fail: rollback memory/UI theo commit adapter hiện có.
 - Double action: domain action idempotent hoặc trả lỗi mà không tạo record thứ hai.
+- Thiết bị đăng xuất: scan summary không render tên, phone prefill, điểm hoặc member summary đã lưu; chỉ session/profile phone verified mới xem. Khi OTP làm cùng candidate trở thành owned, last-4 mismatch và `aria-invalid` cũ phải được xóa.
 
 ## 6. Acceptance criteria
 

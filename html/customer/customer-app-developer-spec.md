@@ -289,7 +289,7 @@ Format mỗi màn: **Purpose (VI)** → **Entry points** → **UI & data** → *
 - **QR format (LOCKED):** `nexoratouch.com/touch/[salon]/[station]?staffProfileId=…` — business, station, staff đều lấy từ URL này. App phải parse đúng format production đang dùng.
 - **Behaviors (app thật):** scan QR → resolve context → route: QR business/station → check-in flow; QR có staffProfileId → màn tip/review đúng thợ; QR redemption → xác nhận sử dụng reward.
 - **Backend:** `POST /checkins {qr_payload, lat/lng optional}` → cộng điểm theo earn rule của business, ledger entry `visit`.
-- **Edge cases:** QR không hợp lệ → error rõ ràng; check-in trùng (2 lần < X phút cùng tiệm) → chặn chống farm điểm; camera permission denied → hướng dẫn mở Settings + fallback Enter Code; **mạng yếu → queue + retry backoff, UI "đang gửi lại…", timestamp tính lúc scan (BR-C17)**.
+- **Edge cases:** QR không hợp lệ → error rõ ràng; submit lại đúng cùng business/station/name/phone/service/staff trong **120 phút** trả lại đúng service check-in canonical (`idempotent: true`), còn nhiều bản ghi khớp hoặc bản ghi hỏng thì fail closed; service khác trong cửa sổ và cùng service từ phút 120 trở đi là lượt mới. Camera permission denied → hướng dẫn mở Settings + fallback Enter Code; **mạng yếu → queue + retry backoff, UI "đang gửi lại…", timestamp tính lúc scan (BR-C17)**.
 
 ---
 
@@ -583,7 +583,7 @@ referral_invites     (id, referrer_id, friend_phone_hash, status[invited|joined|
 
 ## 9. Open questions cho PO
 
-1. **X phút chống check-in trùng** (TC-C12) — đề xuất 120 phút; cần anh chốt.
+1. **Cửa sổ service check-in retry:** đã chốt 120 phút; exact semantic retry reuse một record, khác service hoặc từ phút 120 là lượt mới.
 2. **Timeout confirm**: 72h cho tip/pay, 24h cho booking — đúng ý anh chưa?
 3. **Khách hủy booking đã confirm** — V1 gọi tiệm hay cần nút hủy trong app?
 4. **Business rời NEXORA** — điểm khách tại business đó: freeze hiển thị bao lâu trước khi ẩn?
@@ -639,8 +639,9 @@ Customer mở screen `scan`, quét QR `https://nexoratouch.com/touch/{businessId
 
 - `scan`: `scan-camera-view` → `scan-context-view` → `guest-checkin-view`.
 - Service check-in thành công luôn mở Customer Live Ticket trong `customer-salon-operations.html`; không tự mở thanh toán.
-- Tip từ QR chỉ bật khi `staffProfileId` canonical có ít nhất một payment method; `prepareTipFromScan` và `createTipFromScan` re-parse payload để khóa đúng business/staff.
-- Payment từ QR chỉ liệt kê ticket `completed` đúng business bằng join ID canonical giữa `guestCheckins` và Operations. Trên thiết bị dùng chung, candidate chưa sở hữu phải **ẩn/opaque toàn bộ chi tiết phiếu, dịch vụ và số tiền trước khi xác minh 4 số cuối**; session/profile đã xác minh đúng phone mới được thấy nhãn đầy đủ và miễn last-4. Input chỉ nhận đúng 4 chữ số, CTA bị khóa cho tới khi hợp lệ, mismatch hiện inline. Last-4/error phải xóa khi canonical scan context hoặc selected `guestCheckinId` thay đổi, kể cả scan/candidate replacement từ code; rerender cùng identity như đổi ngôn ngữ phải giữ input. Action đọc lại Operations snapshot tại click rồi dùng chung completed-gated checkout handoff.
+- Tip từ QR chỉ bật khi `staffProfileId` canonical có ít nhất một payment method; `prepareTipFromScan` và `createTipFromScan` re-parse payload để khóa đúng business/staff. `ui.pendingContext.tipEntryIntent = scan | generic`, `tipScanReplayId` và fingerprint business/station/staff giữ authority qua save/reload hoặc lỗi điều hướng: retry exact amount/method/note trả lại cùng tip `pending`, input/context/record sai thì fail closed. Quét lại cùng QR khi tip còn pending cũng re-enter record đó; chỉ tip đã terminal hoặc thao tác generic/new intent rõ ràng mới được tạo tip khác. URL không sở hữu replay ID hoặc transaction.
+- Tóm tắt thành viên trên scan (tên, điểm, staff/service riêng) chỉ render khi `session.authenticated` và phone session/profile khớp chính xác. Khi đăng xuất phải dùng placeholder VI/EN và xóa name/phone đã prefill từ hồ sơ khỏi form dùng chung.
+- Payment từ QR chỉ liệt kê ticket `completed` đúng business bằng join ID canonical giữa `guestCheckins` và Operations. Trên thiết bị dùng chung, candidate chưa sở hữu phải **ẩn/opaque toàn bộ chi tiết phiếu, dịch vụ và số tiền trước khi xác minh 4 số cuối**; session/profile đã xác minh đúng phone mới được thấy nhãn đầy đủ và miễn last-4. Input chỉ nhận đúng 4 chữ số, CTA bị khóa cho tới khi hợp lệ, mismatch hiện inline. Last-4/error phải xóa khi canonical scan context hoặc selected `guestCheckinId` thay đổi, kể cả scan/candidate replacement từ code; nếu cùng candidate trở thành owned sau OTP thì cũng xóa input, error và `aria-invalid`. Rerender cùng identity như đổi ngôn ngữ phải giữ input khi vẫn chưa owned. Action đọc lại Operations snapshot tại click rồi dùng chung completed-gated checkout handoff.
 - Ticket checkout mở `guest-checkout-view` → `payment-proof-view` cho Zelle/Venmo. `ui.payViewIntent` lưu explicit checkout/direct-pay intent: scan/handoff re-arm `checkout`, còn generic Pay Salon Direct ghi `direct`; vì vậy reload chỉ khôi phục exact draft khi intent là checkout và vẫn giữ direct pay nếu khách vừa chủ động mở direct. Context thiếu/stale/corrupt phải về direct pay an toàn. Nếu checkout đã pending/confirmed/rejected, scan re-entry mở đúng nested view trong `paydone` và không tạo artifact trùng.
 - **Legacy direct pay / Pay Salon Direct** vẫn là giao dịch tự do nhập số tiền ở `pay`; nó không phải ticket checkout và không được dùng để bỏ qua lifecycle dịch vụ.
 - `paydone`: `payment-pending-view` → `payment-confirmed-view` hoặc `payment-rejected-view`.
@@ -666,6 +667,8 @@ Prototype chỉ **mô phỏng camera và payment callback**, upload, Front Desk 
 - localStorage quota đầy: thử lưu metadata proof không ảnh và báo rõ cho khách.
 - Add-on khác business, sai ticket, sai 4 số cuối hoặc đã resolve bị từ chối atomic.
 - Candidate chưa xác minh không lộ ticket number/service/amount; đổi profile phone không qua OTP không thể bỏ qua last-4.
+- Session đăng xuất không lộ tên, phone prefill, điểm hoặc tóm tắt thành viên còn lưu trên thiết bị; OTP đúng owner xóa last-4 mismatch cũ.
+- Double-submit service check-in trong 120 phút và retry tip scan qua reload/navigation/same-QR re-scan đều reuse exact record; replay mơ hồ/hỏng không tạo record thay thế.
 - Referral tự giới thiệu, chưa joined hoặc chưa có paid visit không được cộng điểm.
 
 ### Acceptance tests
@@ -681,3 +684,5 @@ Prototype chỉ **mô phỏng camera và payment callback**, upload, Front Desk 
 9. Member scan mở form dịch vụ đã prefill và tạo `guestCheckins` canonical trước Live Ticket; guest entry để trống tên/số điện thoại.
 10. Reload exact draft checkout trở lại nested checkout; pending context stale hoặc thiếu owner trở về direct pay.
 11. Hai guest completed trên thiết bị chung chỉ hiện nhãn opaque; sai last-4 báo inline, đúng last-4 mới mở chi tiết checkout.
+12. Đăng xuất rồi render scan ở VI/EN không lộ tên/phone/điểm cũ; OTP đúng owner xóa lỗi last-4 trên cùng candidate.
+13. Tip scan double-send, reload và quét lại cùng QR khi pending chỉ có một transaction; sau confirm mới cho tạo tip scan mới.

@@ -438,9 +438,19 @@
         station: parsed.station,
         staffProfileId: parsed.staffProfileId
       };
+      const fingerprint = JSON.stringify([parsed.businessId, parsed.station, parsed.staffProfileId]);
+      const retainedReplay = classifyTipScanReplay(
+        appState, fingerprint, parsed.businessId, parsed.staffProfileId
+      );
+      const preserveReplay = ['pending', 'corrupt'].includes(retainedReplay.kind);
       appState.ui.selectedBusinessId = parsed.businessId;
       appState.ui.pendingContext.scanContext = context;
       appState.ui.pendingContext.tipScanArmed = false;
+      if (!preserveReplay) {
+        appState.ui.pendingContext.tipEntryIntent = 'generic';
+        appState.ui.pendingContext.tipScanReplayId = null;
+        appState.ui.pendingContext.tipScanReplayFingerprint = null;
+      }
       return { ok: true, context, business };
     }
 
@@ -475,11 +485,62 @@
     function prepareTipFromScan(appState) {
       const target = resolveTipScanTarget(appState);
       if (!target.ok) return target;
+      const fingerprint = canonicalTipScanFingerprint(appState);
+      if (!fingerprint) return { ok: false, code: 'invalid_scan_context' };
+      const pendingContext = appState.ui.pendingContext;
+      if (pendingContext.tipEntryIntent === 'scan' && pendingContext.tipScanReplayId !== null) {
+        if (pendingContext.tipScanReplayFingerprint !== fingerprint) {
+          return { ok: false, code: 'invalid_tip_replay' };
+        }
+        const replay = classifyTipScanReplay(
+          appState, fingerprint, target.business.id, target.staff.id
+        );
+        if (replay.kind === 'corrupt') return { ok: false, code: 'invalid_tip_replay' };
+        if (replay.kind === 'pending') {
+          appState.ui.selectedBusinessId = target.business.id;
+          appState.ui.selectedStaffId = target.staff.id;
+          appState.ui.selectedTipMethod = target.method;
+          pendingContext.tipScanArmed = false;
+          return { ...target, replay: replay.kind, tip: replay.tip };
+        }
+      }
       appState.ui.selectedBusinessId = target.business.id;
       appState.ui.selectedStaffId = target.staff.id;
       appState.ui.selectedTipMethod = target.method;
       appState.ui.pendingContext.tipScanArmed = true;
+      appState.ui.pendingContext.tipEntryIntent = 'scan';
+      appState.ui.pendingContext.tipScanReplayId = null;
+      appState.ui.pendingContext.tipScanReplayFingerprint = fingerprint;
       return target;
+    }
+
+    function canonicalTipScanFingerprint(appState) {
+      const context = appState?.ui?.pendingContext?.scanContext;
+      const target = resolveTipScanTarget(appState);
+      if (!target.ok || !isRecord(context)) return null;
+      return JSON.stringify([context.businessId, context.station, context.staffProfileId]);
+    }
+
+    function classifyTipScanReplay(appState, fingerprint, businessId, staffProfileId) {
+      const pendingContext = appState?.ui?.pendingContext;
+      if (!isRecord(pendingContext) || pendingContext.tipEntryIntent !== 'scan'
+        || pendingContext.tipScanReplayId === null) return { kind: 'none' };
+      if (typeof fingerprint !== 'string' || pendingContext.tipScanReplayFingerprint !== fingerprint) {
+        return { kind: 'corrupt' };
+      }
+      const replayId = typeof pendingContext.tipScanReplayId === 'string'
+        && pendingContext.tipScanReplayId === pendingContext.tipScanReplayId.trim()
+        ? pendingContext.tipScanReplayId
+        : '';
+      const matches = replayId && Array.isArray(appState?.tips)
+        ? appState.tips.filter((tip) => isRecord(tip) && tip.id === replayId)
+        : [];
+      const tip = matches.length === 1 ? matches[0] : null;
+      if (!tip || pendingContext.tipId !== replayId || !isCanonicalRuntimeTip(appState, tip)
+        || tip.businessId !== businessId || tip.staffProfileId !== staffProfileId) {
+        return { kind: 'corrupt' };
+      }
+      return { kind: tip.status === 'pending' ? 'pending' : 'terminal', tip };
     }
 
     function prepareGenericTipContext(appState, input) {
@@ -519,6 +580,9 @@
       appState.ui.selectedStaffId = staffProfileId;
       appState.ui.selectedTipMethod = method;
       appState.ui.pendingContext.tipScanArmed = false;
+      appState.ui.pendingContext.tipEntryIntent = 'generic';
+      appState.ui.pendingContext.tipScanReplayId = null;
+      appState.ui.pendingContext.tipScanReplayFingerprint = null;
       return { ok: true, business, staff, method };
     }
 
@@ -723,7 +787,8 @@
           paymentMethod: 'Zelle', payViewIntent: 'direct', rating: 0, currentRewardKey: null,
           exploreFilter: 'all', offerFilter: 'all', pendingContext: {
             consentScopes: [], rewardAttempt: null, redemptionId: null, tipId: null, paymentId: null, bookingId: null,
-            scanContext: null, tipScanArmed: false, guestCheckinId: null, checkoutDraftId: null, paymentProofId: null, paydoneKind: null
+            scanContext: null, tipScanArmed: false, tipEntryIntent: 'generic', tipScanReplayId: null,
+            tipScanReplayFingerprint: null, guestCheckinId: null, checkoutDraftId: null, paymentProofId: null, paydoneKind: null
           },
           bookingDraft: { businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM', note: '' },
           overlay: null, pushPromptCount: 0
@@ -4128,17 +4193,47 @@
       if (!enabledTipMethods.includes(migrated.ui.selectedTipMethod)) {
         migrated.ui.selectedTipMethod = enabledTipMethods[0] ?? defaults.ui.selectedTipMethod;
       }
-      if (migrated.ui.pendingContext.tipScanArmed === true) {
+      const rawPendingContext = isRecord(rawUi?.pendingContext) ? rawUi.pendingContext : null;
+      const hasExplicitTipEntryIntent = Boolean(rawPendingContext
+        && Object.prototype.hasOwnProperty.call(rawPendingContext, 'tipEntryIntent'));
+      migrated.ui.pendingContext.tipEntryIntent = hasExplicitTipEntryIntent
+        ? ['generic', 'scan'].includes(rawPendingContext.tipEntryIntent)
+          ? rawPendingContext.tipEntryIntent
+          : 'generic'
+        : rawPendingContext?.tipScanArmed === true ? 'scan' : 'generic';
+      migrated.ui.pendingContext.tipScanReplayId = migrated.ui.pendingContext.tipEntryIntent === 'scan'
+        && (rawPendingContext?.tipScanReplayId === null
+          || (typeof rawPendingContext?.tipScanReplayId === 'string' && rawPendingContext.tipScanReplayId === rawPendingContext.tipScanReplayId.trim()))
+        ? rawPendingContext?.tipScanReplayId ?? null
+        : null;
+      migrated.ui.pendingContext.tipScanReplayFingerprint = migrated.ui.pendingContext.tipEntryIntent === 'scan'
+        && (rawPendingContext?.tipScanReplayFingerprint === null
+          || typeof rawPendingContext?.tipScanReplayFingerprint === 'string')
+        ? rawPendingContext?.tipScanReplayFingerprint ?? null
+        : null;
+      if (migrated.ui.pendingContext.tipEntryIntent === 'scan') {
         const scanTarget = resolveTipScanTarget(migrated);
+        const currentFingerprint = canonicalTipScanFingerprint(migrated);
+        const legacyPreparedScan = !hasExplicitTipEntryIntent
+          && rawPendingContext?.tipScanArmed === true
+          && migrated.ui.pendingContext.tipScanReplayId === null;
+        if (legacyPreparedScan && currentFingerprint) {
+          migrated.ui.pendingContext.tipScanReplayFingerprint = currentFingerprint;
+        }
+        const preparedFingerprintMatches = currentFingerprint !== null
+          && currentFingerprint === migrated.ui.pendingContext.tipScanReplayFingerprint;
+        migrated.ui.pendingContext.tipScanArmed = Boolean(scanTarget.ok
+          && migrated.ui.pendingContext.tipScanReplayId === null
+          && preparedFingerprintMatches);
         if (scanTarget.ok) {
           migrated.ui.selectedBusinessId = scanTarget.business.id;
           migrated.ui.selectedStaffId = scanTarget.staff.id;
           migrated.ui.selectedTipMethod = scanTarget.method;
-        } else {
-          migrated.ui.pendingContext.tipScanArmed = false;
         }
       } else {
         migrated.ui.pendingContext.tipScanArmed = false;
+        migrated.ui.pendingContext.tipScanReplayId = null;
+        migrated.ui.pendingContext.tipScanReplayFingerprint = null;
       }
       const selectedTip = canonicalMoneyAmount(migrated.ui.selectedTip);
       migrated.ui.selectedTip = selectedTip.ok ? selectedTip.value : defaults.ui.selectedTip;
@@ -5220,19 +5315,56 @@
 
     function createTipFromScan(appState, input, now = Date.now()) {
       if (!isRecord(input)) return { ok: false, code: 'invalid_state' };
-      if (appState?.ui?.pendingContext?.tipScanArmed !== true) {
+      const pendingContext = appState?.ui?.pendingContext;
+      if (!isRecord(pendingContext) || pendingContext.tipEntryIntent !== 'scan') {
         return { ok: false, code: 'tip_scan_not_armed' };
       }
       const target = resolveTipScanTarget(appState);
       if (!target.ok) return target;
+      const currentFingerprint = canonicalTipScanFingerprint(appState);
+      if (!currentFingerprint || pendingContext.tipScanReplayFingerprint !== currentFingerprint) {
+        return { ok: false, code: 'invalid_tip_replay' };
+      }
+      const amount = canonicalMoneyAmount(input.amount);
+      if (!amount.ok) return amount;
+      const method = enabledOwnerMethod(target.staff, input.method);
+      if (!method) return { ok: false, code: 'method_disabled' };
+      const note = typeof input.note === 'string' ? input.note.trim() : '';
+      if (pendingContext.tipScanReplayId !== null) {
+        const replayId = typeof pendingContext.tipScanReplayId === 'string'
+          && pendingContext.tipScanReplayId === pendingContext.tipScanReplayId.trim()
+          ? pendingContext.tipScanReplayId
+          : '';
+        const matches = replayId && Array.isArray(appState.tips)
+          ? appState.tips.filter((tip) => isRecord(tip) && tip.id === replayId)
+          : [];
+        const tip = matches.length === 1 ? matches[0] : null;
+        if (!tip || !isCanonicalRuntimeTip(appState, tip) || tip.status !== 'pending'
+          || pendingContext.tipId !== replayId
+          || tip.businessId !== target.business.id || tip.staffProfileId !== target.staff.id
+          || tip.amount !== amount.value || tip.method !== method || tip.note !== note) {
+          return { ok: false, code: 'invalid_tip_replay' };
+        }
+        const points = calculateTipPoints(tip);
+        return points === null
+          ? { ok: false, code: 'invalid_tip_replay' }
+          : { ok: true, tip, points, idempotent: true };
+      }
+      if (pendingContext.tipScanArmed !== true) {
+        return { ok: false, code: 'invalid_tip_replay' };
+      }
       const created = createTip(appState, {
         businessId: target.business.id,
         staffProfileId: target.staff.id,
-        amount: input.amount,
-        method: input.method,
-        note: input.note
+        amount: amount.value,
+        method,
+        note
       }, now);
-      if (created.ok) appState.ui.pendingContext.tipScanArmed = false;
+      if (created.ok) {
+        appState.ui.pendingContext.tipScanArmed = false;
+        appState.ui.pendingContext.tipEntryIntent = 'scan';
+        appState.ui.pendingContext.tipScanReplayId = created.tip.id;
+      }
       return created;
     }
 
@@ -5775,6 +5907,7 @@
     }
     const COPY = {
       vi: {
+        scanSignedOutCustomer: 'Chưa đăng nhập', scanPrivateSummary: 'Đăng nhập để xem',
         points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', noExpiry: 'Chưa có điểm sắp hết hạn.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', rewardReadyStatus: 'Sẵn sàng', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
         paymentSent: 'Đã gửi ${amount} cho tiệm', paymentConfirmedTitle: 'Đã xác nhận thanh toán', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu', saveOffer: 'Lưu ưu đãi', view: 'Xem', rebook: 'Đặt lại', tip: 'Gửi tip', delete: 'Xóa', followingTech: 'Đang theo dõi thợ', followTech: 'Theo dõi thợ', removeWish: 'Xóa mong muốn', favorite: 'Đã yêu thích', addFavorite: 'Thêm yêu thích', recentVisit: 'Lượt ghé gần đây',
         offerSaved: 'Đã lưu ưu đãi', offerRemoved: 'Đã bỏ lưu ưu đãi', offerSaveFailed: 'Ưu đãi không hợp lệ.', offerDetails: 'Chi tiết ưu đãi', offerDetail: 'Xem điều kiện, thời hạn và doanh nghiệp phát hành trước khi dùng.', wishRequired: 'Hãy nhập mong muốn', wishDuplicate: 'Mong muốn này đã tồn tại.', wishShared: 'Đã gửi mong muốn ẩn danh',
@@ -5809,6 +5942,7 @@
         logoutTitle: 'Đăng xuất?', logoutDetail: 'Dữ liệu điểm vẫn được giữ trên thiết bị này.', useOffer: 'Dùng ưu đãi'
       },
       en: {
+        scanSignedOutCustomer: 'Signed out', scanPrivateSummary: 'Sign in to view',
         points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', noExpiry: 'No points expiring soon.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', rewardReadyStatus: 'Ready', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
         paymentSent: '${amount} sent to the salon', paymentConfirmedTitle: 'Payment Confirmed', insufficientPoints: 'Not enough points', saved: 'Saved', saveOffer: 'Save offer', view: 'View', rebook: 'Rebook', tip: 'Tip', delete: 'Delete', followingTech: 'Following tech', followTech: 'Follow tech', removeWish: 'Remove wish', favorite: 'Favorite', addFavorite: 'Add favorite', recentVisit: 'Recent visit',
         offerSaved: 'Offer saved', offerRemoved: 'Offer removed', offerSaveFailed: 'Invalid offer.', offerDetails: 'Offer details', offerDetail: 'Review terms, expiry and issuing business before use.', wishRequired: 'Enter a wish first', wishDuplicate: 'This wish already exists.', wishShared: 'Anonymous wish shared',
@@ -6079,20 +6213,34 @@
       const balanceCopy = document.querySelector('[data-scan-balance]');
       const staffCopy = document.querySelector('[data-scan-staff]');
       const serviceCopy = document.querySelector('[data-scan-service]');
-      if (customerCopy) customerCopy.textContent = state.profile.name;
-      if (balanceCopy) balanceCopy.textContent = `${formatPointNumber(balance.points)} ${t('points')}`;
-      if (staffCopy) {
-        staffCopy.textContent = context.staffProfileId
-          ? (state.staffProfiles[context.staffProfileId]?.name || t('noPreference'))
-          : t('noPreference');
-      }
-      if (serviceCopy) serviceCopy.textContent = t('notAvailable');
-
-      const memberAction = document.getElementById('scan-member-action');
-      const memberReason = document.getElementById('scan-member-reason');
       const memberReady = state.session.authenticated === true
         && /^\d{10}$/.test(state.session.phone)
         && state.profile.phone === state.session.phone;
+      if (customerCopy) customerCopy.textContent = memberReady
+        ? state.profile.name
+        : t('scanSignedOutCustomer');
+      if (balanceCopy) balanceCopy.textContent = memberReady
+        ? `${formatPointNumber(balance.points)} ${t('points')}`
+        : t('scanPrivateSummary');
+      if (staffCopy) {
+        staffCopy.textContent = memberReady
+          ? context.staffProfileId
+            ? (state.staffProfiles[context.staffProfileId]?.name || t('noPreference'))
+            : t('noPreference')
+          : t('scanPrivateSummary');
+      }
+      if (serviceCopy) serviceCopy.textContent = memberReady
+        ? t('notAvailable')
+        : t('scanPrivateSummary');
+      if (!memberReady) {
+        const guestName = document.getElementById('guest-name');
+        const guestPhone = document.getElementById('guest-phone');
+        if (guestName?.value === state.profile.name) guestName.value = '';
+        if (guestPhone && normalizeUsPhone(guestPhone.value) === state.profile.phone) guestPhone.value = '';
+      }
+
+      const memberAction = document.getElementById('scan-member-action');
+      const memberReason = document.getElementById('scan-member-reason');
       if (memberAction) {
         memberAction.disabled = !memberReady;
         memberAction.setAttribute('aria-disabled', String(!memberReady));
@@ -6202,7 +6350,7 @@
         : null;
       const owned = Boolean(guest && authenticatedSessionOwnsGuest(state, guest));
       if (options.clearInput === true || owned || !candidate) phoneLast4.value = '';
-      setScanPaymentError(options.clearError === true ? null : scanPaymentErrorCode);
+      setScanPaymentError(options.clearError === true || owned || !candidate ? null : scanPaymentErrorCode);
       phoneLast4.setAttribute('aria-describedby', 'scan-payment-reason scan-payment-ownership scan-payment-error');
       phoneLast4.disabled = !candidate || owned;
       phoneLast4.setAttribute('aria-disabled', String(!candidate || owned));
@@ -6578,7 +6726,7 @@
           method: draft.ui.selectedTipMethod,
           note: document.getElementById('tip-note').value
         };
-        if (draft.ui.pendingContext.tipScanArmed === true) {
+        if (draft.ui.pendingContext.tipEntryIntent === 'scan') {
           return createTipFromScan(draft, input);
         }
         const staff = draft.staffProfiles[draft.ui.selectedStaffId];
@@ -7603,9 +7751,10 @@
       const result = commitState((draft) => {
         const prepared = prepareTipFromScan(draft);
         if (!prepared.ok) return prepared;
-        draft.ui.activeScreen = 'tip';
+        const targetScreen = prepared.replay === 'pending' ? 'tipdone' : 'tip';
+        draft.ui.activeScreen = targetScreen;
         draft.ui.activeModule = SCREEN_MODULE.tip;
-        return prepared;
+        return { ...prepared, targetScreen };
       });
       if (!result.ok) {
         renderScanContext();
@@ -7613,7 +7762,8 @@
         return result;
       }
       renderApp();
-      navigateTo('tip', { persist: false });
+      navigateTo(result.targetScreen, { persist: false });
+      if (result.targetScreen === 'tipdone') renderTipResult();
       return result;
     });
     registerAction('open-scan-payment', () => {
@@ -8212,7 +8362,7 @@
           renderTipMethods();
           return { ok: false, code: 'method_disabled' };
         }
-        if (state.ui.pendingContext.tipScanArmed === true) {
+        if (state.ui.pendingContext.tipEntryIntent === 'scan') {
           const target = resolveTipScanTarget(state);
           if (!target.ok || target.staff.id !== staffProfileId) {
             renderTipMethods();
@@ -8229,7 +8379,6 @@
           if (!enabledMethods.includes(draft.ui.selectedTipMethod)) {
             draft.ui.selectedTipMethod = enabledMethods[0];
           }
-          draft.ui.pendingContext.tipScanArmed = false;
           return { ok: true };
         });
         if (!result.ok) {
