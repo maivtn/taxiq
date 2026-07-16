@@ -441,16 +441,24 @@
       const fingerprint = JSON.stringify([parsed.businessId, parsed.station, parsed.staffProfileId]);
       const hasReplayAuthority = appState.ui.pendingContext.tipEntryIntent === 'scan'
         && appState.ui.pendingContext.tipScanReplayId !== null;
-      const priorFingerprint = hasReplayAuthority ? canonicalTipScanFingerprint(appState) : null;
-      if (hasReplayAuthority && priorFingerprint === null) {
-        return { ok: false, code: 'invalid_tip_replay' };
+      let priorFingerprint = null;
+      let priorReplay = { kind: 'none' };
+      if (hasReplayAuthority) {
+        const priorTarget = resolveTipScanTarget(appState);
+        priorFingerprint = canonicalTipScanFingerprint(appState);
+        if (!priorTarget.ok || priorFingerprint === null
+          || appState.ui.pendingContext.tipScanReplayFingerprint !== priorFingerprint) {
+          return { ok: false, code: 'invalid_tip_replay' };
+        }
+        priorReplay = classifyTipScanReplay(
+          appState, priorFingerprint, priorTarget.business.id, priorTarget.staff.id
+        );
+        if (!['pending', 'terminal'].includes(priorReplay.kind)) {
+          return { ok: false, code: 'invalid_tip_replay' };
+        }
       }
       const sameCanonicalScan = hasReplayAuthority && priorFingerprint === fingerprint;
-      const retainedReplay = sameCanonicalScan
-        ? classifyTipScanReplay(appState, fingerprint, parsed.businessId, parsed.staffProfileId)
-        : { kind: 'none' };
-      const preserveReplay = sameCanonicalScan
-        && ['pending', 'corrupt'].includes(retainedReplay.kind);
+      const preserveReplay = sameCanonicalScan && priorReplay.kind === 'pending';
       appState.ui.selectedBusinessId = parsed.businessId;
       appState.ui.pendingContext.scanContext = context;
       appState.ui.pendingContext.tipScanArmed = false;
@@ -525,7 +533,9 @@
     function canonicalTipScanFingerprint(appState) {
       const context = appState?.ui?.pendingContext?.scanContext;
       const target = resolveTipScanTarget(appState);
-      if (!target.ok || !isRecord(context)) return null;
+      if (!target.ok || !hasExactOwnKeys(
+        context, ['payload', 'businessId', 'station', 'staffProfileId']
+      )) return null;
       return JSON.stringify([context.businessId, context.station, context.staffProfileId]);
     }
 
@@ -5386,6 +5396,8 @@
         && tip.amount === normalized.amount
         && tip.method === normalized.method
         && typeof tip.note === 'string'
+        && tip.note === normalized.note
+        && tip.note === tip.note.trim()
         && tip.tipMultiplier === normalized.tipMultiplier
         && tip.status === normalized.status
         && tip.createdAt === normalized.createdAt

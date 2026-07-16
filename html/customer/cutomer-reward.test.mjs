@@ -1930,37 +1930,34 @@ test('rescanning the same staff QR starts a new tip only after the prior tip is 
 });
 
 test('scanning a different canonical staff QR replaces pending scan authority and creates the exact new recipient', () => {
-  for (const corruptPriorReplay of [false, true]) {
-    const ids = createUuidSequence();
-    const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
-    const app = api.createDefaultState();
-    const goldenQr = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
-    const bitcoinQr = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
-    api.stageSalonScan(app, goldenQr);
-    api.prepareTipFromScan(app);
-    const golden = api.createTipFromScan(app, {
-      amount: 9, method: 'Zelle', note: 'Golden visit'
-    }, 1000);
-    if (corruptPriorReplay) golden.tip.note = ' tampered ';
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const goldenQr = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  const bitcoinQr = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+  api.stageSalonScan(app, goldenQr);
+  api.prepareTipFromScan(app);
+  const golden = api.createTipFromScan(app, {
+    amount: 9, method: 'Zelle', note: 'Golden visit'
+  }, 1000);
 
-    assert.equal(api.stageSalonScan(app, bitcoinQr).ok, true);
-    assert.equal(app.ui.pendingContext.scanContext.businessId, 'bitcoin-nail-bar');
-    assert.equal(app.ui.pendingContext.tipScanReplayId, null);
-    const prepared = api.prepareTipFromScan(app);
-    assert.equal(prepared.ok, true, `corrupt=${corruptPriorReplay}`);
-    assert.equal(prepared.staff.id, 'staff-anna');
-    assert.equal(app.ui.pendingContext.tipEntryIntent, 'scan');
-    const bitcoin = api.createTipFromScan(app, {
-      amount: 7, method: 'Zelle', note: 'Bitcoin visit'
-    }, 2000);
+  assert.equal(api.stageSalonScan(app, bitcoinQr).ok, true);
+  assert.equal(app.ui.pendingContext.scanContext.businessId, 'bitcoin-nail-bar');
+  assert.equal(app.ui.pendingContext.tipScanReplayId, null);
+  const prepared = api.prepareTipFromScan(app);
+  assert.equal(prepared.ok, true);
+  assert.equal(prepared.staff.id, 'staff-anna');
+  assert.equal(app.ui.pendingContext.tipEntryIntent, 'scan');
+  const bitcoin = api.createTipFromScan(app, {
+    amount: 7, method: 'Zelle', note: 'Bitcoin visit'
+  }, 2000);
 
-    assert.equal(bitcoin.ok, true, `corrupt=${corruptPriorReplay}`);
-    assert.notEqual(bitcoin.tip.id, golden.tip.id);
-    assert.equal(bitcoin.tip.businessId, 'bitcoin-nail-bar');
-    assert.equal(bitcoin.tip.staffProfileId, 'staff-anna');
-    assert.equal(app.tips.length, 2);
-    assert.equal(app.tips[0], golden.tip);
-  }
+  assert.equal(bitcoin.ok, true);
+  assert.notEqual(bitcoin.tip.id, golden.tip.id);
+  assert.equal(bitcoin.tip.businessId, 'bitcoin-nail-bar');
+  assert.equal(bitcoin.tip.staffProfileId, 'staff-anna');
+  assert.equal(app.tips.length, 2);
+  assert.equal(app.tips[0], golden.tip);
 });
 
 test('rescanning the same canonical QR preserves a tampered replay fingerprint and fails closed', () => {
@@ -1977,7 +1974,9 @@ test('rescanning the same canonical QR preserves a tampered replay fingerprint a
   const beforeRescan = JSON.stringify(app);
   const calls = ids.calls();
 
-  assert.equal(api.stageSalonScan(app, payload).ok, true);
+  const staged = api.stageSalonScan(app, payload);
+  assert.equal(staged.ok, false);
+  assert.equal(staged.code, 'invalid_tip_replay');
   assert.equal(JSON.stringify(app), beforeRescan);
   const beforePrepare = JSON.stringify(app);
   const prepared = api.prepareTipFromScan(app);
@@ -1992,6 +1991,61 @@ test('rescanning the same canonical QR preserves a tampered replay fingerprint a
   assert.equal(app.tips.length, 1);
   assert.equal(app.tips[0], first.tip);
   assert.equal(ids.calls(), calls);
+});
+
+test('a corrupt prior tip bundle cannot be replaced by a different canonical QR', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const goldenQr = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  const bitcoinQr = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+  api.stageSalonScan(app, goldenQr);
+  api.prepareTipFromScan(app);
+  api.createTipFromScan(app, { amount: 9, method: 'Zelle', note: '' }, 1000);
+  app.tips[0].note = ' tampered ';
+  const before = JSON.stringify(app);
+  const calls = ids.calls();
+
+  const staged = api.stageSalonScan(app, bitcoinQr);
+
+  assert.equal(staged.ok, false);
+  assert.equal(staged.code, 'invalid_tip_replay');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(app.tips.length, 1);
+  assert.equal(ids.calls(), calls);
+});
+
+test('a canonical prior context swap cannot launder a replay into a duplicate original tip', () => {
+  for (const alsoSwapFingerprint of [false, true]) {
+    const ids = createUuidSequence();
+    const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+    const app = api.createDefaultState();
+    const goldenQr = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+    const bitcoinQr = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+    api.stageSalonScan(app, goldenQr);
+    api.prepareTipFromScan(app);
+    const first = api.createTipFromScan(app, { amount: 9, method: 'Zelle', note: '' }, 1000);
+    app.ui.pendingContext.scanContext = {
+      payload: bitcoinQr,
+      businessId: 'bitcoin-nail-bar',
+      station: 'front',
+      staffProfileId: 'staff-anna'
+    };
+    if (alsoSwapFingerprint) {
+      app.ui.pendingContext.tipScanReplayFingerprint = '["bitcoin-nail-bar","front","staff-anna"]';
+    }
+    const before = JSON.stringify(app);
+    const calls = ids.calls();
+
+    const staged = api.stageSalonScan(app, goldenQr);
+
+    assert.equal(staged.ok, false, `fingerprint=${alsoSwapFingerprint}`);
+    assert.equal(staged.code, 'invalid_tip_replay', `fingerprint=${alsoSwapFingerprint}`);
+    assert.equal(JSON.stringify(app), before, `fingerprint=${alsoSwapFingerprint}`);
+    assert.equal(app.tips.length, 1);
+    assert.equal(app.tips[0], first.tip);
+    assert.equal(ids.calls(), calls);
+  }
 });
 
 test('a pending replay with an unresolvable prior scan context rejects every rescan atomically', () => {

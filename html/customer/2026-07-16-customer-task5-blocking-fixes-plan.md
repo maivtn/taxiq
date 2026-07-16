@@ -48,7 +48,7 @@
 - Consumes: `prepareTipFromScan`, `prepareGenericTipContext`, `createTipFromScan`, `sendTip`.
 - Produces: `ui.pendingContext.tipEntryIntent` (`generic | scan`) và `tipScanReplayId`; exact scan replay trả cùng tip với `idempotent: true`.
 
-- [x] Viết domain/action tests cho double invoke, save/reload/same-QR replay, different-QR replacement, atomic rejection của tampered fingerprint/prior context, terminal prior tip và explicit switch sang generic.
+- [x] Viết domain/action tests cho double invoke, save/reload/same-QR replay, different-QR replacement, atomic validation của full replay bundle/context-swap, terminal prior tip và explicit switch sang generic.
 - [x] Chạy targeted tests và xác nhận retry hiện tạo generic tip thứ hai hoặc bị mất scan authority.
 - [x] Persist explicit intent/replay ID; validate unique canonical pending tip và exact amount/method/note/QR target trước khi replay.
 - [x] Giữ scan intent fail-closed khi replay context thiếu/hỏng; `prepareGenericTipContext` là thao tác duy nhất chuyển sang generic.
