@@ -6075,6 +6075,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
 <body>
   <div class="shell">
@@ -6111,30 +6112,44 @@
           </span>
           <span>Staff</span>
         </button>
-        <button class="nav-item" type="button">
-          <span class="sidebar-icon-wrap">
-            <i class="lucide-menu-icon" data-lucide="hand-coins" aria-hidden="true"></i>
-          </span>
-          <span>Tips</span>
-        </button>
+        <div class="nav-group" data-nav-group="payments">
+          <button class="nav-item is-parent" type="button" data-nav-parent-toggle aria-expanded="false">
+            <span class="sidebar-icon-wrap">
+              <i class="lucide-menu-icon" data-lucide="wallet" aria-hidden="true"></i>
+            </span>
+            <span>Payments & Payouts</span>
+            <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+          <div class="nav-submenu">
+            <button class="nav-subitem" type="button">Overview</button>
+            <button class="nav-subitem" type="button">Customer Payments</button>
+            <button class="nav-subitem" type="button">Tips</button>
+            <button class="nav-subitem" type="button">Payroll</button>
+            <button class="nav-subitem" type="button">Direct Savings</button>
+          </div>
+        </div>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
             <i class="lucide-menu-icon" data-lucide="star" aria-hidden="true"></i>
           </span>
           <span>Reviews</span>
         </button>
-        <button class="nav-item" type="button">
-          <span class="sidebar-icon-wrap">
-            <i class="lucide-menu-icon" data-lucide="credit-card" aria-hidden="true"></i>
-          </span>
-          <span>Transactions</span>
-        </button>
-        <button class="nav-item" type="button">
-          <span class="sidebar-icon-wrap">
-            <i class="lucide-menu-icon" data-lucide="qr-code" aria-hidden="true"></i>
-          </span>
-          <span>Stations & QR Codes</span>
-        </button>
+        <div class="nav-group" data-nav-group="stations">
+          <button class="nav-item is-parent" type="button" data-nav-parent-toggle aria-expanded="false">
+            <span class="sidebar-icon-wrap">
+              <i class="lucide-menu-icon" data-lucide="qr-code" aria-hidden="true"></i>
+            </span>
+            <span>Stations & QR Codes</span>
+            <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+          <div class="nav-submenu">
+            <button class="nav-subitem" type="button">QR Stations</button>
+          </div>
+        </div>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
             <i class="lucide-menu-icon" data-lucide="calendar-days" aria-hidden="true"></i>
@@ -6636,6 +6651,8 @@
       document.querySelectorAll('[data-tab-panel]').forEach(function(panel) {
         panel.classList.toggle('is-active', panel.dataset.tabPanel === activeTarget);
       });
+
+      if (window.NEXORA_SHELL && window.NEXORA_SHELL.setActiveTab) window.NEXORA_SHELL.setActiveTab(activeTarget);
 
       document.querySelectorAll('[data-nav-subitem-target]').forEach(function(item) {
         item.classList.toggle('is-active', item.dataset.navSubitemTarget === activeTarget);
@@ -8780,5 +8797,10 @@
     setWizardStep(1);
     activateMainTabFromUrl();
   </script>
+
+  <script>
+    window.NEXORA_SHELL = { activePage: 'reward', activeTab: 'reward-dashboard' };
+  </script>
+  <script src="../assets/nexora-shell.js"></script>
 </body>
 </html>

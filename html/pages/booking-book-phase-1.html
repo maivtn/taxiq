@@ -6214,6 +6214,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
 <body>
   <div class="shell">
@@ -6250,30 +6251,44 @@
           </span>
           <span>Staff</span>
         </button>
-        <button class="nav-item" type="button">
+        <button class="nav-item nav-parent" type="button" data-nav-group aria-expanded="false" aria-controls="payments-subnav">
           <span class="sidebar-icon-wrap">
-            <i class="lucide-menu-icon" data-lucide="hand-coins" aria-hidden="true"></i>
+            <i class="lucide-menu-icon" data-lucide="wallet" aria-hidden="true"></i>
           </span>
-          <span>Tips</span>
+          <span>Payments & Payouts</span>
+          <svg class="nav-caret" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
         </button>
+        <div class="nav-subnav is-collapsed" id="payments-subnav" data-nav-subnav>
+          <div class="nav-subnav-inner">
+            <button class="nav-subitem" type="button"><span class="nav-subitem-dot" aria-hidden="true"></span><span>Overview</span></button>
+            <button class="nav-subitem" type="button"><span class="nav-subitem-dot" aria-hidden="true"></span><span>Customer Payments</span></button>
+            <button class="nav-subitem" type="button"><span class="nav-subitem-dot" aria-hidden="true"></span><span>Tips</span></button>
+            <button class="nav-subitem" type="button"><span class="nav-subitem-dot" aria-hidden="true"></span><span>Payroll</span></button>
+            <button class="nav-subitem" type="button"><span class="nav-subitem-dot" aria-hidden="true"></span><span>Direct Savings</span></button>
+          </div>
+        </div>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
             <i class="lucide-menu-icon" data-lucide="star" aria-hidden="true"></i>
           </span>
           <span>Reviews</span>
         </button>
-        <button class="nav-item" type="button">
-          <span class="sidebar-icon-wrap">
-            <i class="lucide-menu-icon" data-lucide="credit-card" aria-hidden="true"></i>
-          </span>
-          <span>Transactions</span>
-        </button>
-        <button class="nav-item" type="button">
+        <button class="nav-item nav-parent" type="button" data-nav-group aria-expanded="false" aria-controls="stations-subnav">
           <span class="sidebar-icon-wrap">
             <i class="lucide-menu-icon" data-lucide="qr-code" aria-hidden="true"></i>
           </span>
           <span>Stations & QR Codes</span>
+          <svg class="nav-caret" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
         </button>
+        <div class="nav-subnav is-collapsed" id="stations-subnav" data-nav-subnav>
+          <div class="nav-subnav-inner">
+            <button class="nav-subitem" type="button"><span class="nav-subitem-dot" aria-hidden="true"></span><span>QR Stations</span></button>
+          </div>
+        </div>
         <button class="nav-item nav-parent is-expanded" type="button" data-nav-group aria-expanded="true" aria-controls="booking-hub-subnav">
           <span class="sidebar-icon-wrap">
             <i class="lucide-menu-icon" data-lucide="calendar-days" aria-hidden="true"></i>
@@ -8265,6 +8280,8 @@
         panel.classList.toggle('is-active', panel.dataset.tabPanel === activeTarget);
       });
 
+      if (window.NEXORA_SHELL && window.NEXORA_SHELL.setActiveTab) window.NEXORA_SHELL.setActiveTab(activeTarget);
+
       if (!options || options.syncUrl !== false) {
         syncMainTabUrl(activeTarget, options && options.replaceUrl ? 'replace' : 'push');
       }
@@ -9452,15 +9469,15 @@ function getBookingCardCallStart(item) {
       });
     });
 
-    var navGroupToggle = document.querySelector('[data-nav-group]');
-    var navSubnav = document.querySelector('[data-nav-subnav]');
-    if (navGroupToggle && navSubnav) {
+    document.querySelectorAll('[data-nav-group]').forEach(function(navGroupToggle) {
+      var navSubnav = document.getElementById(navGroupToggle.getAttribute('aria-controls'));
+      if (!navSubnav) return;
       navGroupToggle.addEventListener('click', function() {
         var collapsed = navSubnav.classList.toggle('is-collapsed');
         navGroupToggle.classList.toggle('is-expanded', !collapsed);
         navGroupToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
       });
-    }
+    });
 
     window.addEventListener('popstate', function() {
       var params = new URLSearchParams(window.location.search);
@@ -10338,5 +10355,10 @@ function getBookingCardCallStart(item) {
       window.openSmsCampaignComposer = function (opts) { openComposer((opts && opts.segment) || 'new'); };
     })();
   </script>
+
+  <script>
+    window.NEXORA_SHELL = { activePage: 'booking', activeTab: 'booking' };
+  </script>
+  <script src="../assets/nexora-shell.js"></script>
 </body>
 </html>
