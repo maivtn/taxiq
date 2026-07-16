@@ -1736,9 +1736,12 @@
       }
       if (matches.length === 0) return { ok: true, create: true };
       const active = matches.filter((checkout) => checkout.status !== 'rejected');
-      const checkout = active.length === 1
-        ? active[0]
-        : active.length === 0 && matches.length === 1 ? matches[0] : null;
+      let checkout = active.length === 1 ? active[0] : null;
+      if (active.length === 0) {
+        const latestTime = Math.max(...matches.map((candidate) => Date.parse(candidate.createdAt)));
+        const latest = matches.filter((candidate) => Date.parse(candidate.createdAt) === latestTime);
+        checkout = latest.length === 1 ? latest[0] : null;
+      }
       if (!checkout) return { ok: false, code: 'invalid_checkout_state' };
       const linkedProofs = appState.paymentProofs.filter((proof) => (
         isRecord(proof) && normalizedRequiredText(proof.checkoutDraftId) === checkout.id
@@ -1774,6 +1777,21 @@
       return { ok: false, code: 'invalid_checkout_state' };
     }
 
+    function checkoutReentryFollowsCompletion(appState, reentry, authority) {
+      const completedAt = authority.ticket.completedAt;
+      if (!timestampAtOrAfter(reentry.checkout.createdAt, completedAt)) return false;
+      if (reentry.proof && (!timestampAtOrAfter(reentry.proof.createdAt, completedAt)
+        || (reentry.proof.verifiedAt !== null
+          && !timestampAtOrAfter(reentry.proof.verifiedAt, completedAt)))) return false;
+      if (!reentry.proof) return true;
+      const artifacts = semanticProofArtifacts(appState, reentry.checkout, reentry.proof);
+      return [...artifacts.receipts, ...artifacts.claims].every((artifact) => (
+        timestampAtOrAfter(artifact.createdAt, completedAt)
+        && (artifact.claimedAt === undefined || artifact.claimedAt === null
+          || timestampAtOrAfter(artifact.claimedAt, completedAt))
+      ));
+    }
+
     function applyCheckoutReentryContext(appState, authority, reentry) {
       appState.ui.pendingContext.guestCheckinId = authority.guestCheckin.id;
       appState.ui.pendingContext.checkoutDraftId = reentry.checkout.id;
@@ -1789,12 +1807,20 @@
       if (!reentry.ok) return reentry;
       let created = null;
       if (reentry.create) {
+        const timestamp = domainTimestamp(now);
+        if (!timestamp.ok) return timestamp;
+        if (!timestampAtOrAfter(timestamp.value, authority.ticket.completedAt)) {
+          return { ok: false, code: 'invalid_time_order' };
+        }
         created = createCheckoutDraft(appState, {
           guestCheckinId: authority.guestCheckin.id
         }, now);
         if (!created.ok) return created;
         reentry = resolveCheckoutReentry(appState, authority.guestCheckin);
         if (!reentry.ok || reentry.create) return { ok: false, code: 'invalid_checkout_state' };
+      }
+      if (!checkoutReentryFollowsCompletion(appState, reentry, authority)) {
+        return { ok: false, code: 'invalid_time_order' };
       }
       let imported = { ok: true, importedCount: 0, idempotent: true };
       if (reentry.checkout.status === 'draft') {
@@ -1821,6 +1847,8 @@
 
     function consumeGuestCheckoutHandoff(appState, handoff, operationsSnapshot, now = Date.now()) {
       if (!isRecord(handoff) || handoff.ok !== true || handoff.present !== true
+        || typeof handoff.guestCheckinId !== 'string'
+        || handoff.guestCheckinId !== handoff.guestCheckinId.toLowerCase()
         || !GUEST_CHECKIN_ID_PATTERN.test(handoff.guestCheckinId)
         || !Array.isArray(appState?.guestCheckins)) return { ok: false, code: 'invalid_handoff' };
       const draft = structuredClone(appState);
@@ -8245,6 +8273,13 @@
           cleanConsumedHandoffUrl(currentHref);
           return;
         }
+        if (handoff.ok) {
+          renderApp();
+          showScreen(state.ui.activeScreen);
+          updateNavigation();
+          showToast(t('addonImportFailed'), 'error');
+          return;
+        }
         state.ui.activeScreen = 'home';
         state.ui.activeModule = 'home';
         state.ui.pendingContext.checkoutDraftId = null;
@@ -8254,7 +8289,7 @@
         renderApp();
         showScreen('home');
         showPayView('direct', { focus: false });
-        showToast(handoff.ok ? t('addonImportFailed') : t('handoffInvalid'), 'error');
+        showToast(t('handoffInvalid'), 'error');
         return;
       }
       renderApp();

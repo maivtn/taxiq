@@ -3807,10 +3807,10 @@ function task4Api(api) {
 }
 
 function seedCheckoutDraft(api, app, {
-  method = 'Zelle', tipBasisPoints = 1800, staffProfileId = 'staff-anna'
+  method = 'Zelle', tipBasisPoints = 1800, staffProfileId = 'staff-anna', now = 1000
 } = {}) {
   const guest = seedGuestCheckin(api, app, { staffProfileId });
-  const created = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1000);
+  const created = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, now);
   assert.equal(created.ok, true);
   assert.equal(api.setCheckoutTip(app, created.checkoutDraft.id, tipBasisPoints).ok, true);
   assert.equal(api.setCheckoutMethod(app, created.checkoutDraft.id, method).ok, true);
@@ -3818,14 +3818,15 @@ function seedCheckoutDraft(api, app, {
 }
 
 function seedPendingProof(api, app, options = {}) {
-  const checkout = seedCheckoutDraft(api, app, options);
+  const { proofNow = 2000, ...checkoutOptions } = options;
+  const checkout = seedCheckoutDraft(api, app, checkoutOptions);
   const result = ['Zelle', 'Venmo'].includes(checkout.method)
     ? api.submitPaymentProof(app, {
         checkoutDraftId: checkout.id,
         note: 'Zelle sent from Amy',
         imageDataUrl: 'data:image/jpeg;base64,AA=='
-      }, 2000)
-    : api.submitCheckoutWithoutUpload(app, checkout.id, 2000);
+      }, proofNow)
+    : api.submitCheckoutWithoutUpload(app, checkout.id, proofNow);
   assert.equal(result.ok, true);
   return { checkout, proof: result.proof };
 }
@@ -6702,7 +6703,7 @@ test('completed ticket is mandatory before checkout handoff mutates customer sta
   });
   const opened = api.consumeGuestCheckoutHandoff(app, {
     ok: true, present: true, guestCheckinId: guest.id
-  }, completed, 2000);
+  }, completed, 5000);
   assert.equal(opened.ok, true);
   assert.equal(opened.view, 'checkout');
   assert.equal(opened.targetScreen, 'pay');
@@ -6754,7 +6755,7 @@ test('checkout handoff resumes every canonical state without creating duplicate 
   const makeApp = () => {
     const app = api.createDefaultState();
     const checkout = seedCheckoutDraft(api, app, {
-      method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna'
+      method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna', now: 5000
     });
     const operations = acceptedOperationsSnapshot(checkout);
     assert.equal(api.importAcceptedAddOns(app, checkout.id, operations).ok, true);
@@ -6767,7 +6768,7 @@ test('checkout handoff resumes every canonical state without creating duplicate 
     fixture.proof = api.submitPaymentProof(fixture.app, {
       checkoutDraftId: fixture.checkout.id,
       note: '', imageDataUrl: 'data:image/jpeg;base64,AA=='
-    }, 2000).proof;
+    }, 6000).proof;
     fixtures.push({ ...fixture, expectedView: 'pending', expectedScreen: 'paydone' });
   }
   {
@@ -6775,8 +6776,8 @@ test('checkout handoff resumes every canonical state without creating duplicate 
     fixture.proof = api.submitPaymentProof(fixture.app, {
       checkoutDraftId: fixture.checkout.id,
       note: '', imageDataUrl: 'data:image/jpeg;base64,AA=='
-    }, 2000).proof;
-    assert.equal(api.verifyPaymentProof(fixture.app, fixture.proof.id, 3000).ok, true);
+    }, 6000).proof;
+    assert.equal(api.verifyPaymentProof(fixture.app, fixture.proof.id, 7000).ok, true);
     fixtures.push({ ...fixture, expectedView: 'confirmed', expectedScreen: 'paydone' });
   }
   {
@@ -6784,8 +6785,8 @@ test('checkout handoff resumes every canonical state without creating duplicate 
     fixture.proof = api.submitPaymentProof(fixture.app, {
       checkoutDraftId: fixture.checkout.id,
       note: '', imageDataUrl: 'data:image/jpeg;base64,AA=='
-    }, 2000).proof;
-    assert.equal(api.rejectPaymentProof(fixture.app, fixture.proof.id, 'Không khớp', 3000).ok, true);
+    }, 6000).proof;
+    assert.equal(api.rejectPaymentProof(fixture.app, fixture.proof.id, 'Không khớp', 7000).ok, true);
     fixtures.push({ ...fixture, expectedView: 'rejected', expectedScreen: 'paydone' });
   }
 
@@ -6800,8 +6801,8 @@ test('checkout handoff resumes every canonical state without creating duplicate 
     const handoff = {
       ok: true, present: true, guestCheckinId: fixture.checkout.guestCheckinId
     };
-    const first = api.consumeGuestCheckoutHandoff(fixture.app, handoff, operations, 4000);
-    const second = api.consumeGuestCheckoutHandoff(fixture.app, handoff, operations, 5000);
+    const first = api.consumeGuestCheckoutHandoff(fixture.app, handoff, operations, 8000);
+    const second = api.consumeGuestCheckoutHandoff(fixture.app, handoff, operations, 9000);
     assert.equal(first.ok, true, fixture.expectedView);
     assert.equal(second.ok, true, fixture.expectedView);
     assert.equal(first.view, fixture.expectedView);
@@ -6820,7 +6821,7 @@ test('checkout handoff rejects a terminal checkout that omits an authoritative a
   const { api } = testApi();
   const app = api.createDefaultState();
   const pending = seedPendingProof(api, app, {
-    method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna'
+    method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna', now: 5000, proofNow: 6000
   });
   const operations = acceptedOperationsSnapshot(pending.checkout);
   const before = JSON.stringify(app);
@@ -6831,6 +6832,111 @@ test('checkout handoff rejects a terminal checkout that omits an authoritative a
   assert.equal(result.ok, false);
   assert.equal(result.code, 'invalid_operations_snapshot');
   assert.equal(JSON.stringify(app), before);
+});
+
+test('completed checkout chronology is preflighted before IDs and rejects every stale re-entry atomically', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  const fresh = api.createDefaultState();
+  const freshGuest = seedGuestCheckin(api, fresh, { staffProfileId: 'staff-anna' });
+  const completed = acceptedOperationsSnapshot({
+    guestCheckinId: freshGuest.id, businessId: freshGuest.businessId
+  });
+  const freshBefore = JSON.stringify(fresh);
+  const callsBefore = uuidCalls;
+  const early = api.consumeGuestCheckoutHandoff(fresh, {
+    ok: true, present: true, guestCheckinId: freshGuest.id
+  }, completed, 3999);
+  assert.equal(early.ok, false);
+  assert.equal(early.code, 'invalid_time_order');
+  assert.equal(JSON.stringify(fresh), freshBefore);
+  assert.equal(uuidCalls, callsBefore);
+
+  const makeStale = (status) => {
+    const app = api.createDefaultState();
+    const checkout = seedCheckoutDraft(api, app, {
+      method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna', now: 2000
+    });
+    const operations = acceptedOperationsSnapshot(checkout);
+    assert.equal(api.importAcceptedAddOns(app, checkout.id, operations).ok, true);
+    if (status !== 'draft') {
+      const proof = api.submitPaymentProof(app, {
+        checkoutDraftId: checkout.id,
+        note: '', imageDataUrl: 'data:image/jpeg;base64,AA=='
+      }, 3000).proof;
+      if (status === 'confirmed') assert.equal(api.verifyPaymentProof(app, proof.id, 3500).ok, true);
+      if (status === 'rejected') assert.equal(api.rejectPaymentProof(app, proof.id, 'Sai', 3500).ok, true);
+    }
+    return { app, checkout, operations };
+  };
+  for (const status of ['draft', 'pending_verification', 'confirmed', 'rejected']) {
+    const target = makeStale(status);
+    const before = JSON.stringify(target.app);
+    const result = api.consumeGuestCheckoutHandoff(target.app, {
+      ok: true, present: true, guestCheckinId: target.checkout.guestCheckinId
+    }, target.operations, 5000);
+    assert.equal(result.ok, false, status);
+    assert.equal(result.code, 'invalid_time_order', status);
+    assert.equal(JSON.stringify(target.app), before, status);
+  }
+});
+
+test('handoff and scan resume the unique latest rejected retry without duplicating artifacts', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  const app = api.createDefaultState();
+  const first = seedCheckoutDraft(api, app, {
+    method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna', now: 5000
+  });
+  const operations = acceptedOperationsSnapshot(first);
+  assert.equal(api.importAcceptedAddOns(app, first.id, operations).ok, true);
+  const firstProof = api.submitPaymentProof(app, {
+    checkoutDraftId: first.id, note: '', imageDataUrl: 'data:image/jpeg;base64,AA=='
+  }, 6000).proof;
+  assert.equal(api.rejectPaymentProof(app, firstProof.id, 'Sai lần một', 7000).ok, true);
+  const second = api.retryRejectedCheckout(app, firstProof.id, 'Zelle', 8000).checkoutDraft;
+  const secondProof = api.submitPaymentProof(app, {
+    checkoutDraftId: second.id, note: '', imageDataUrl: 'data:image/jpeg;base64,AA=='
+  }, 9000).proof;
+  assert.equal(api.rejectPaymentProof(app, secondProof.id, 'Sai lần hai', 10000).ok, true);
+  const baselineCounts = JSON.stringify({
+    checkouts: app.checkoutDrafts.length,
+    proofs: app.paymentProofs.length,
+    receipts: app.receipts.length,
+    claims: app.guestRewardClaims.length
+  });
+
+  const handoff = api.consumeGuestCheckoutHandoff(app, {
+    ok: true, present: true, guestCheckinId: first.guestCheckinId
+  }, operations, 11000);
+  assert.equal(handoff.ok, true);
+  assert.equal(handoff.view, 'rejected');
+  assert.equal(handoff.checkoutDraft.id, second.id);
+  assert.equal(handoff.idempotent, true);
+  const scan = api.prepareScanCheckout(app, first.guestCheckinId, '0198', operations, 12000);
+  assert.equal(scan.ok, true);
+  assert.equal(scan.checkoutDraft.id, second.id);
+  assert.equal(scan.idempotent, true);
+  assert.equal(JSON.stringify({
+    checkouts: app.checkoutDrafts.length,
+    proofs: app.paymentProofs.length,
+    receipts: app.receipts.length,
+    claims: app.guestRewardClaims.length
+  }), baselineCounts);
+
+  const ambiguous = structuredClone(app);
+  ambiguous.checkoutDrafts.find((row) => row.id === first.id).createdAt = second.createdAt;
+  const before = JSON.stringify(ambiguous);
+  const blocked = api.consumeGuestCheckoutHandoff(ambiguous, {
+    ok: true, present: true, guestCheckinId: first.guestCheckinId
+  }, operations, 13000);
+  assert.equal(blocked.ok, false);
+  assert.equal(blocked.code, 'invalid_checkout_state');
+  assert.equal(JSON.stringify(ambiguous), before);
 });
 
 test('scan checkout candidates use canonical IDs, completed lifecycle and immutable snapshots', () => {
@@ -6884,11 +6990,11 @@ test('prepare scanned checkout verifies canonical phone ownership and is idempot
   assert.equal(rejected.code, 'invalid_checkout_state');
   assert.equal(JSON.stringify(app), before);
 
-  const opened = api.prepareScanCheckout(app, guest.id, '0198', operations, 2000);
+  const opened = api.prepareScanCheckout(app, guest.id, '0198', operations, 5000);
   assert.equal(opened.ok, true);
   assert.equal(opened.view, 'checkout');
   const afterFirst = JSON.stringify(app);
-  const replay = api.prepareScanCheckout(app, guest.id, '0198', operations, 3000);
+  const replay = api.prepareScanCheckout(app, guest.id, '0198', operations, 6000);
   assert.equal(replay.ok, true);
   assert.equal(replay.idempotent, true);
   assert.equal(JSON.stringify(app), afterFirst);
@@ -6908,9 +7014,63 @@ test('prepare scanned checkout verifies canonical phone ownership and is idempot
       guestCheckinId: authenticatedGuest.id,
       businessId: authenticatedGuest.businessId
     }),
-    2000
+    5000
   );
   assert.equal(authenticatedResult.ok, true);
+});
+
+test('scanned checkout boundary failures are no-throw and byte-identical', () => {
+  const { api } = testApi();
+  const base = api.createDefaultState();
+  const guest = seedGuestCheckin(api, base, { staffProfileId: 'staff-anna' });
+  assert.equal(api.stageSalonScan(
+    base, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'
+  ).ok, true);
+  const operations = acceptedOperationsSnapshot({ guestCheckinId: guest.id, businessId: guest.businessId });
+  const duplicate = structuredClone(operations);
+  duplicate.serviceTickets.push(structuredClone(duplicate.serviceTickets[0]));
+  const corrupt = structuredClone(operations);
+  corrupt.serviceTickets[0].completedAt = 'not-a-time';
+  const cases = [
+    ['fake ID', () => {}, 'guest-checkin-00000000-0000-4000-8000-000000000099', '0198', operations],
+    ['cross business', (app) => {
+      api.stageSalonScan(app, 'https://nexoratouch.com/touch/golden-glow-spa/front');
+    }, guest.id, '0198', operations],
+    ['tampered payload', (app) => {
+      app.ui.pendingContext.scanContext.payload = 'https://nexoratouch.com/touch/golden-glow-spa/front';
+    }, guest.id, '0198', operations],
+    ['partial session phone', (app) => {
+      app.session.phone = guest.phone;
+      app.profile.phone = '8325550000';
+    }, guest.id, '0000', operations],
+    ['duplicate snapshot', () => {}, guest.id, '0198', duplicate],
+    ['corrupt snapshot', () => {}, guest.id, '0198', corrupt]
+  ];
+  for (const [name, setup, guestCheckinId, phoneLast4, snapshot] of cases) {
+    const app = structuredClone(base);
+    setup(app);
+    const before = JSON.stringify(app);
+    let result;
+    assert.doesNotThrow(() => {
+      result = api.prepareScanCheckout(app, guestCheckinId, phoneLast4, snapshot, 5000);
+    }, name);
+    assert.equal(result.ok, false, name);
+    assert.equal(JSON.stringify(app), before, name);
+  }
+
+  for (const guestCheckinId of [Symbol('guest'), null, {}, 'GUEST-CHECKIN-00000000-0000-4000-8000-000000000001']) {
+    const app = structuredClone(base);
+    const before = JSON.stringify(app);
+    let result;
+    assert.doesNotThrow(() => {
+      result = api.consumeGuestCheckoutHandoff(app, {
+        ok: true, present: true, guestCheckinId
+      }, operations, 5000);
+    });
+    assert.equal(result.ok, false);
+    assert.equal(result.code, 'invalid_handoff');
+    assert.equal(JSON.stringify(app), before);
+  }
 });
 
 test('legacy direct-pay checkout controls cannot bypass the explicit Operations Pay handoff', () => {
@@ -7146,6 +7306,8 @@ test('initialization refuses an in-service handoff and keeps the persisted custo
     guestCheckinId: guest.id,
     businessId: guest.businessId
   }, { status: 'in_service' });
+  app.ui.activeScreen = 'scan';
+  app.ui.activeModule = 'scan';
   const raw = JSON.stringify(app);
   const href = `https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${guest.id}`;
   const replacements = [];
@@ -7153,14 +7315,17 @@ test('initialization refuses an in-service handoff and keeps the persisted custo
     [setup.api.STORAGE_KEY]: raw,
     [setup.api.OPERATIONS_STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, ...operations })
   }, {
-    skipInit: false,
+    skipInit: true,
     document: createDocumentStub(),
     location: { href },
     history: { replaceState(state, title, url) { replacements.push(String(url)); } }
   });
+  const runtimeBefore = vm.runInContext('JSON.stringify(state)', loaded.context);
+  vm.runInContext('initializeApp()', loaded.context);
 
   assert.equal(vm.runInContext('state.checkoutDrafts.length', loaded.context), 0);
-  assert.equal(vm.runInContext('state.ui.activeScreen', loaded.context), 'home');
+  assert.equal(vm.runInContext('JSON.stringify(state)', loaded.context), runtimeBefore);
+  assert.equal(vm.runInContext('state.ui.activeScreen', loaded.context), 'scan');
   assert.equal(loaded.storage.getItem(setup.api.STORAGE_KEY), raw);
   assert.deepEqual(replacements, []);
 });
@@ -7169,14 +7334,14 @@ test('initialization re-enters a pending checkout on Pay Done instead of the edi
   const setup = testApi();
   const app = setup.api.createDefaultState();
   const checkout = seedCheckoutDraft(setup.api, app, {
-    method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna'
+    method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna', now: 5000
   });
   const operations = acceptedOperationsSnapshot(checkout);
   assert.equal(setup.api.importAcceptedAddOns(app, checkout.id, operations).ok, true);
   const submitted = setup.api.submitPaymentProof(app, {
     checkoutDraftId: checkout.id,
     note: '', imageDataUrl: 'data:image/jpeg;base64,AA=='
-  }, 2000);
+  }, 6000);
   assert.equal(submitted.ok, true);
   const home = createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] });
   const pay = createStubElement({ id: 'pay', classNames: ['app-screen', 'hidden'] });
