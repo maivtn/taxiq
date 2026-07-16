@@ -6351,6 +6351,67 @@
     .sms-temp-hidden {
       display: none !important;
     }
+    /* SweetAlert2 — match booking design system */
+    .swal2-popup {
+      font-family: Inter, system-ui, sans-serif !important;
+      border-radius: 16px !important;
+      box-shadow: 0 24px 60px rgba(8, 16, 34, 0.28) !important;
+    }
+
+    .swal2-title {
+      font-size: 19px !important;
+      font-weight: 800 !important;
+      color: var(--nexora-text) !important;
+    }
+
+    .swal2-html-container {
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      color: var(--nexora-muted) !important;
+    }
+
+    .swal2-actions {
+      gap: 10px !important;
+    }
+
+    .swal2-styled.swal2-confirm {
+      border-radius: 10px !important;
+      padding: 10px 20px !important;
+      font-size: 14px !important;
+      font-weight: 800 !important;
+      background: var(--nexora-brand) !important;
+      box-shadow: 0 12px 26px rgba(70, 72, 216, 0.26) !important;
+    }
+
+    .swal2-styled.swal2-cancel {
+      border-radius: 10px !important;
+      padding: 10px 20px !important;
+      font-size: 14px !important;
+      font-weight: 800 !important;
+      background: var(--nexora-surface-muted) !important;
+      color: var(--nexora-muted) !important;
+    }
+
+    .swal2-styled:focus {
+      box-shadow: none !important;
+    }
+
+    .swal2-icon.swal2-success {
+      border-color: var(--nexora-success) !important;
+      color: var(--nexora-success) !important;
+    }
+
+    .swal2-icon.swal2-success [class^='swal2-success-line'] {
+      background-color: var(--nexora-success) !important;
+    }
+
+    .swal2-icon.swal2-success .swal2-success-ring {
+      border-color: rgba(0, 184, 115, 0.3) !important;
+    }
+
+    .swal2-timer-progress-bar {
+      background: var(--nexora-success) !important;
+    }
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
@@ -8375,6 +8436,7 @@
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     var DEFAULT_MAIN_TAB = 'booking';
     var BOOKING_TODAY_DATE = '2026-07-09';
@@ -10294,8 +10356,18 @@ function getBookingCardCallStart(item) {
       c.birthday = modal.querySelector('[data-cf-birthday]').value || '';
       c.type = modal.querySelector('[data-cf-type]').value;
       c.status = modal.querySelector('[data-cf-status]').classList.contains('is-on') ? 'active' : 'inactive';
+      var savedName = c.name;
       closeCustModal();
       renderCustomers();
+      if (window.Swal) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Customer updated',
+          text: savedName,
+          timer: 1600,
+          showConfirmButton: false
+        });
+      }
     }
 
     document.addEventListener('keydown', function(event) {
