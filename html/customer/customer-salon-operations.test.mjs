@@ -215,6 +215,7 @@ function uiApi({
     message: createStubNode({ action: 'message-tech' }),
     choose: dynamicNodes.find((node) => node.id === 'ops-choose-staff'),
     frontDesk: createStubNode({ action: 'ask-front-desk' }),
+    complete: createStubNode({ action: 'complete-service' }),
     openAddon: createStubNode({ action: 'open-addon' }),
     acceptAddon: createStubNode({ action: 'accept-addon' }),
     declineAddon: createStubNode({ action: 'decline-addon' }),
@@ -968,6 +969,231 @@ test('front desk requests are chronological, atomic, and idempotent', () => {
   assert.equal(JSON.stringify(state), afterRequested);
 });
 
+test('complete service enforces simulator role, lifecycle, add-on resolution, and idempotency atomically', () => {
+  {
+    const { api } = testApi();
+    const { state, ticket } = seedServiceTicket(api, {}, 1000);
+    const before = JSON.stringify(state);
+    const result = api.completeServiceTicket(state, ticket.id, 2000);
+    assert.deepEqual(plain(result), { ok: false, code: 'operations_role_required' });
+    assert.equal(JSON.stringify(state), before);
+  }
+
+  for (const role of ['Staff', 'Front Desk']) {
+    const { api } = testApi();
+    const { state, ticket } = seedServiceTicket(api, {}, 1000);
+    state.ui.role = role;
+    const result = api.completeServiceTicket(state, ticket.id, 2000);
+    assert.equal(result.ok, true, role);
+    assert.equal(ticket.status, 'completed', role);
+    assert.equal(ticket.completedAt, '1970-01-01T00:00:02.000Z', role);
+    const completed = JSON.stringify(state);
+    const replay = api.completeServiceTicket(state, ticket.id, Infinity);
+    assert.equal(replay.ok, true, role);
+    assert.equal(replay.idempotent, true, role);
+    assert.equal(JSON.stringify(state), completed, role);
+  }
+
+  {
+    const { api } = testApi();
+    const fixture = seedTicketWithCustomer(api);
+    const proposal = api.proposeAddOn(fixture.state, {
+      ticketId: fixture.ticket.id,
+      businessId: fixture.ticket.businessId,
+      staffProfileId: fixture.ticket.staffProfileId,
+      label: 'Gel Polish',
+      amountCents: 1500
+    }, 2000);
+    assert.equal(proposal.ok, true);
+    fixture.state.ui.role = 'Staff';
+    const before = JSON.stringify(fixture.state);
+    assert.equal(api.completeServiceTicket(fixture.state, fixture.ticket.id, 3000).code, 'addon_pending');
+    assert.equal(JSON.stringify(fixture.state), before);
+  }
+
+  for (const decision of ['accepted', 'declined']) {
+    const { api } = testApi();
+    const fixture = seedTicketWithCustomer(api);
+    const proposal = api.proposeAddOn(fixture.state, {
+      ticketId: fixture.ticket.id,
+      businessId: fixture.ticket.businessId,
+      staffProfileId: fixture.ticket.staffProfileId,
+      label: 'Gel Polish',
+      amountCents: 1500
+    }, 2000);
+    assert.equal(api.resolveAddOn(
+      fixture.state, proposal.addOn.id, decision, '0198', fixture.customerSnapshot, 3000
+    ).ok, true);
+    fixture.state.ui.role = 'Front Desk';
+    assert.equal(api.completeServiceTicket(fixture.state, fixture.ticket.id, 4000).ok, true, decision);
+    assert.equal(fixture.ticket.status, 'completed', decision);
+  }
+});
+
+test('complete service rejects stale chronology, unknown, duplicate, waiting, and corrupt tickets unchanged', () => {
+  const staleFixtures = [];
+  {
+    const { api } = testApi();
+    const fixture = seedServiceTicket(api, {}, 1000);
+    fixture.state.ui.role = 'Staff';
+    staleFixtures.push({ api, ...fixture, now: 999 });
+  }
+  {
+    const { api } = testApi();
+    const fixture = seedServiceTicket(api, {}, 1000);
+    assert.equal(api.askFrontDesk(fixture.state, fixture.ticket.id, 3000).ok, true);
+    fixture.state.ui.role = 'Staff';
+    staleFixtures.push({ api, ...fixture, now: 2999 });
+  }
+  {
+    const { api } = testApi();
+    const fixture = seedServiceTicket(api, {
+      serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny'
+    }, 1000);
+    assert.equal(api.evaluateStaffEligibility(
+      fixture.state, fixture.ticket.id, fixture.ticket.serviceKey, fixture.ticket.staffProfileId
+    ).ok, true);
+    assert.equal(api.chooseRecommendedStaff(fixture.state, fixture.ticket.id, 'staff-kevin', 3000).ok, true);
+    fixture.state.ui.role = 'Front Desk';
+    staleFixtures.push({ api, ...fixture, now: 2999 });
+  }
+  {
+    const { api } = testApi();
+    const fixture = seedTicketWithCustomer(api);
+    const proposal = api.proposeAddOn(fixture.state, {
+      ticketId: fixture.ticket.id,
+      businessId: fixture.ticket.businessId,
+      staffProfileId: fixture.ticket.staffProfileId,
+      label: 'Gel Polish',
+      amountCents: 1500
+    }, 2000);
+    assert.equal(api.resolveAddOn(
+      fixture.state, proposal.addOn.id, 'accepted', '0198', fixture.customerSnapshot, 3000
+    ).ok, true);
+    fixture.state.ui.role = 'Staff';
+    staleFixtures.push({ api, ...fixture, now: 2999 });
+  }
+  for (const fixture of staleFixtures) {
+    const before = JSON.stringify(fixture.state);
+    assert.equal(
+      fixture.api.completeServiceTicket(fixture.state, fixture.ticket.id, fixture.now).code,
+      'invalid_time_order'
+    );
+    assert.equal(JSON.stringify(fixture.state), before);
+  }
+
+  {
+    const { api } = testApi();
+    const { state } = seedServiceTicket(api);
+    state.ui.role = 'Staff';
+    const before = JSON.stringify(state);
+    assert.equal(api.completeServiceTicket(state, 'ticket-00000000-0000-4000-8000-999999999999', 2000).code, 'ticket_not_found');
+    assert.equal(JSON.stringify(state), before);
+  }
+  {
+    const { api } = testApi();
+    const { state, ticket } = seedServiceTicket(api);
+    state.ui.role = 'Staff';
+    ticket.status = 'waiting';
+    const before = JSON.stringify(state);
+    assert.equal(api.completeServiceTicket(state, ticket.id, 2000).code, 'ticket_not_in_service');
+    assert.equal(JSON.stringify(state), before);
+  }
+  for (const mutate of [
+    (state) => state.serviceTickets.push(structuredClone(state.serviceTickets[0])),
+    (state) => { state.serviceTickets[0].currentTotalCents += 1; }
+  ]) {
+    const { api } = testApi();
+    const { state, ticket } = seedServiceTicket(api);
+    state.ui.role = 'Staff';
+    mutate(state);
+    const before = JSON.stringify(state);
+    assert.equal(api.completeServiceTicket(state, ticket.id, 2000).code, 'invalid_state');
+    assert.equal(JSON.stringify(state), before);
+  }
+});
+
+test('complete service UI gates roles, proposed add-ons, Pay lifecycle, and handler rechecks', () => {
+  assert.match(SOURCE, /data-ops-action="complete-service"/);
+  const customerKey = 'nexora.customer.prototype.v1';
+  for (const language of ['vi', 'en']) {
+    const guest = guestCheckin({ id: `guest-checkin-complete-ui-${language}` });
+    const href = `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${guest.id}`;
+    const harness = uiApi({
+      language,
+      storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }),
+      href
+    });
+
+    assert.equal(harness.api.getRegisteredOpsActions().includes('complete-service'), true);
+    assert.equal(harness.actionButtons.complete.disabled, true);
+    assert.match(harness.actionButtons.complete.getAttribute('title'), language === 'vi' ? /nhân viên|lễ tân/i : /staff|front desk/i);
+    assert.equal(harness.actionButtons.pay.disabled, true);
+    assert.match(harness.actionButtons.pay.getAttribute('title'), language === 'vi' ? /hoàn tất/i : /complete/i);
+
+    harness.actionButtons.pay.disabled = false;
+    harness.actionButtons.pay.setAttribute('aria-disabled', 'false');
+    harness.document.dispatchClick(harness.actionButtons.pay);
+    assert.equal(harness.api.getPayHandoff(), null);
+    assert.equal(harness.window.location.href, href);
+    assert.match(harness.status.textContent, language === 'vi' ? /hoàn tất/i : /complete/i);
+
+    harness.role.value = language === 'vi' ? 'Staff' : 'Front Desk';
+    harness.role.dispatch('change');
+    assert.equal(harness.actionButtons.complete.disabled, false);
+    harness.document.dispatchClick(harness.actionButtons.complete);
+    assert.equal(harness.api.getOperationsState().serviceTickets[0].status, 'completed');
+    assert.equal(harness.actionButtons.complete.disabled, true);
+    assert.equal(harness.actionButtons.pay.disabled, false);
+    assert.equal(harness.actionButtons.pay.getAttribute('title'), null);
+  }
+
+  const proposedGuest = guestCheckin({ id: 'guest-checkin-complete-proposed' });
+  const proposed = uiApi({
+    storage: createAuditStorage({ [customerKey]: customerStorageJson([proposedGuest]) }),
+    href: `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${proposedGuest.id}`
+  });
+  proposed.document.dispatchClick(proposed.actionButtons.openAddon);
+  proposed.role.value = 'Staff';
+  proposed.role.dispatch('change');
+  assert.equal(proposed.actionButtons.complete.disabled, true);
+  assert.match(proposed.actionButtons.complete.getAttribute('title'), /dịch vụ thêm/i);
+});
+
+test('complete service persistence failure rolls back ticket and controls with an accessible error', () => {
+  const setup = testApi();
+  const guest = guestCheckin({ id: 'guest-checkin-complete-persist' });
+  const { state } = seedServiceTicket(setup.api, { id: guest.id });
+  state.ui.role = 'Staff';
+  const storage = createAuditStorage({
+    [setup.api.OPS_STORAGE_KEY]: JSON.stringify(state),
+    [setup.api.CUSTOMER_STORAGE_KEY]: customerStorageJson([guest])
+  });
+  const originalSetItem = storage.setItem.bind(storage);
+  let failWrites = false;
+  storage.setItem = (key, value) => {
+    if (failWrites) {
+      storage.calls.push({ method: 'setItem', key, value: String(value) });
+      throw new Error('quota exceeded');
+    }
+    originalSetItem(key, value);
+  };
+  const harness = uiApi({
+    storage,
+    href: `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${guest.id}`
+  });
+  const before = JSON.stringify(harness.api.getOperationsState());
+  failWrites = true;
+
+  harness.document.dispatchClick(harness.actionButtons.complete);
+
+  assert.equal(JSON.stringify(harness.api.getOperationsState()), before);
+  assert.equal(harness.api.getOperationsState().serviceTickets[0].status, 'in_service');
+  assert.equal(harness.actionButtons.complete.disabled, false);
+  assert.equal(harness.actionButtons.pay.disabled, true);
+  assert.match(harness.status.textContent, /không thể|failed|could not/i);
+});
+
 test('completed tickets reject every staff and front-desk live-routing operation unchanged', () => {
   {
     const { api } = testApi();
@@ -1162,7 +1388,7 @@ test('a first-load demo never outranks or renumbers a later real sanitized guest
   assert.equal(state.ui.activeScreen, 'liveticket');
 });
 
-test('explicit Pay action alone prepares and navigates the exact guest handoff', () => {
+test('explicit Pay action prepares and navigates the exact guest handoff only after completion', () => {
   const customerKey = 'nexora.customer.prototype.v1';
   const guest = guestCheckin({ id: 'guest-checkin-pay' });
   const href = 'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-pay';
@@ -1175,6 +1401,13 @@ test('explicit Pay action alone prepares and navigates the exact guest handoff',
   assert.equal(harness.api.getPayHandoff(), null);
   assert.match(harness.status.textContent, /demo|dialer/i);
 
+  harness.document.dispatchClick(harness.actionButtons.pay);
+  assert.equal(harness.api.getPayHandoff(), null);
+  assert.equal(harness.window.location.href, href);
+
+  harness.role.value = 'Staff';
+  harness.role.dispatch('change');
+  harness.document.dispatchClick(harness.actionButtons.complete);
   harness.document.dispatchClick(harness.actionButtons.pay);
   assert.deepEqual(plain(harness.api.getPayHandoff()), { guestCheckinId: guest.id });
   assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
@@ -1285,6 +1518,10 @@ test('every enabled static and dynamic Task 8 action dispatches its state, UI, o
   harness.document.dispatchClick(harness.actionButtons.choose);
   assert.equal(harness.api.getOperationsState().serviceTickets[0].staffProfileId, 'staff-maria');
   assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
+  harness.role.value = 'Front Desk';
+  harness.role.dispatch('change');
+  harness.document.dispatchClick(harness.actionButtons.complete);
+  assert.equal(harness.api.getOperationsState().serviceTickets[0].status, 'completed');
   harness.document.dispatchClick(harness.actionButtons.pay);
   assert.deepEqual(plain(harness.api.getPayHandoff()), { guestCheckinId: guest.id });
 });
@@ -1836,6 +2073,9 @@ test('only explicit Pay action performs the exact same-origin checkout handoff a
   const harness = uiApi({ storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }), href });
   harness.document.dispatchClick(harness.actionButtons.call);
   assert.equal(harness.window.location.href, href);
+  harness.role.value = 'Staff';
+  harness.role.dispatch('change');
+  harness.document.dispatchClick(harness.actionButtons.complete);
   harness.document.dispatchClick(harness.actionButtons.pay);
   assert.equal(
     harness.window.location.href,
@@ -1844,6 +2084,9 @@ test('only explicit Pay action performs the exact same-origin checkout handoff a
   assert.deepEqual(plain(harness.api.getPayHandoff()), { guestCheckinId: guest.id });
 
   const failed = uiApi({ storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }), href });
+  failed.role.value = 'Staff';
+  failed.role.dispatch('change');
+  failed.document.dispatchClick(failed.actionButtons.complete);
   Object.defineProperty(failed.window, 'location', {
     value: { href, assign() { throw new Error('blocked'); } }, configurable: true
   });
@@ -1853,6 +2096,9 @@ test('only explicit Pay action performs the exact same-origin checkout handoff a
   assert.match(failed.status.textContent, /retry|thử lại/i);
 
   const blockedAccessor = uiApi({ storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }), href });
+  blockedAccessor.role.value = 'Staff';
+  blockedAccessor.role.dispatch('change');
+  blockedAccessor.document.dispatchClick(blockedAccessor.actionButtons.complete);
   Object.defineProperty(blockedAccessor.window, 'location', {
     configurable: true,
     get() { throw new Error('location blocked'); }

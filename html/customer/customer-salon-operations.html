@@ -83,6 +83,7 @@
           </div>
           <button type="button" class="ops-button-secondary mt-4 w-full" data-ops-action="review-staff-eligibility">Kiểm tra điều kiện nhân viên</button>
           <button type="button" class="ops-button-secondary mt-3 w-full" data-ops-action="open-addon">Review suggested add-on / Xem dịch vụ thêm</button>
+          <button type="button" class="ops-button mt-3 w-full" data-ops-action="complete-service">Hoàn tất dịch vụ / Complete service</button>
         </article>
         <nav class="mt-4 grid grid-cols-4 gap-2" aria-label="Ticket actions / Tác vụ phiếu">
           <button type="button" class="ops-button px-2 text-xs sm:text-sm" data-ops-action="open-ticket-tab" data-target="liveticket">Ticket</button>
@@ -185,6 +186,9 @@ const OPS_COPY = Object.freeze({
     messageDemo: 'Bản demo: ứng dụng sẽ mở tin nhắn trên thiết bị ở bản production.',
     noLiveTicket: 'Chưa có phiếu dịch vụ.', checkoutOpening: 'Đang mở thanh toán khách.',
     checkoutOpenFailed: 'Không thể mở thanh toán. Vui lòng thử lại nút Thanh toán.',
+    paymentRequiresCompletion: 'Tiệm phải hoàn tất dịch vụ trước khi mở thanh toán.',
+    serviceCompleted: 'Bản demo: dịch vụ đã được đánh dấu hoàn tất.',
+    serviceCompleteFailed: 'Không thể hoàn tất dịch vụ. Trạng thái phiếu chưa thay đổi.',
     ticketOpen: 'Đang mở phiếu.', reviewContinue: 'Tiếp tục Đánh giá trong Ứng dụng Khách hàng.',
     rewardContinue: 'Tiếp tục Phần thưởng trong Ứng dụng Khách hàng.',
     entryError: 'Không tìm thấy hoặc lượt check-in không rõ ràng.',
@@ -202,6 +206,11 @@ const OPS_COPY = Object.freeze({
     addonDecisionReason: 'Mở một dịch vụ thêm đang chờ trước.',
     addonConfirmReason: 'Chọn Chấp nhận/Từ chối và nhập đủ 4 số cuối.',
     phoneUnavailableReason: 'Mở một dịch vụ thêm đang chờ trước khi xác nhận điện thoại.',
+    completeRoleReason: 'Chỉ Nhân viên hoặc Lễ tân trong bộ mô phỏng mới có thể hoàn tất dịch vụ.',
+    completeAddonPendingReason: 'Khách cần chấp nhận hoặc từ chối dịch vụ thêm trước.',
+    completeLifecycleReason: 'Chỉ có thể hoàn tất phiếu đang làm.',
+    completeAlreadyReason: 'Dịch vụ này đã hoàn tất.',
+    payCompletionReason: 'Dịch vụ phải được tiệm hoàn tất trước khi thanh toán.',
     entryBlockedReason: 'Khắc phục lỗi check-in trước khi tiếp tục.'
   },
   en: {
@@ -225,6 +234,9 @@ const OPS_COPY = Object.freeze({
     addonDeclined: 'Add-on declined.', callDemo: 'Demo: the production app opens the device dialer.',
     messageDemo: 'Demo: the production app opens device messaging.', noLiveTicket: 'No live ticket.',
     checkoutOpening: 'Opening Guest Checkout.', checkoutOpenFailed: 'Checkout could not open. Retry Pay.',
+    paymentRequiresCompletion: 'The salon must complete the service before checkout can open.',
+    serviceCompleted: 'Demo: the service was marked completed.',
+    serviceCompleteFailed: 'The service could not be completed. The ticket was not changed.',
     ticketOpen: 'Ticket is open.', reviewContinue: 'Continue Review in the Customer App.',
     rewardContinue: 'Continue Rewards in the Customer App.',
     entryError: 'The guest check-in was not found or is ambiguous.',
@@ -242,6 +254,11 @@ const OPS_COPY = Object.freeze({
     addonDecisionReason: 'Open a pending add-on first.',
     addonConfirmReason: 'Choose Accept or Decline and enter the last four phone digits.',
     phoneUnavailableReason: 'Open a pending add-on before confirming the phone number.',
+    completeRoleReason: 'Only Staff or Front Desk in this simulator can complete the service.',
+    completeAddonPendingReason: 'The customer must accept or decline the add-on first.',
+    completeLifecycleReason: 'Only an in-service ticket can be completed.',
+    completeAlreadyReason: 'This service is already completed.',
+    payCompletionReason: 'The salon must complete the service before payment.',
     entryBlockedReason: 'Resolve the check-in error before continuing.'
   }
 });
@@ -1022,6 +1039,40 @@ function createServiceTicket(state, guestCheckin, now = Date.now()) {
   return { ok: true, ticket };
 }
 
+function completeServiceTicket(state, ticketId, now = Date.now()) {
+  if (!operationsStateIntegrity(state)) return { ok: false, code: 'invalid_state' };
+  if (!['Staff', 'Front Desk'].includes(state.ui.role)) {
+    return { ok: false, code: 'operations_role_required' };
+  }
+  const tickets = state.serviceTickets.filter((row) => row.id === ticketId);
+  if (tickets.length !== 1) return { ok: false, code: 'ticket_not_found' };
+  const ticket = tickets[0];
+  const ticketAddOns = state.addOnRequests.filter((row) => row.ticketId === ticket.id);
+  if (ticketAddOns.some((row) => row.status === 'proposed')) {
+    return { ok: false, code: 'addon_pending' };
+  }
+  if (ticket.status === 'completed') return { ok: true, ticket, idempotent: true };
+  if (ticket.status !== 'in_service') return { ok: false, code: 'ticket_not_in_service' };
+  const timestamp = opsTimestamp(now);
+  if (!timestamp.ok) return timestamp;
+  const eventTimes = [ticket.createdAt, ticket.frontDeskRequestedAt]
+    .concat(state.staffEligibility
+      .filter((event) => event.ticketId === ticket.id)
+      .map((event) => event.selectedAt))
+    .concat(ticketAddOns.flatMap((addOn) => [addOn.createdAt, addOn.resolvedAt]))
+    .filter((value) => value !== null)
+    .map((value) => Date.parse(value));
+  if (eventTimes.some((value) => !Number.isFinite(value))
+    || Date.parse(timestamp.value) < Math.max(...eventTimes)) {
+    return { ok: false, code: 'invalid_time_order' };
+  }
+  ticket.status = 'completed';
+  ticket.completedAt = timestamp.value;
+  state.ui.activeScreen = 'liveticket';
+  state.ui.selectedStaffId = null;
+  return { ok: true, ticket };
+}
+
 function evaluateStaffEligibility(state, ticketId, serviceKey, staffId) {
   if (!operationsStateIntegrity(state)) return { ok: false, code: 'invalid_state' };
   const ticket = state.serviceTickets.find((row) => row.id === ticketId);
@@ -1472,6 +1523,35 @@ function syncAddOnControls() {
   updateAddOnConfirm();
 }
 
+function syncLiveTicketControls() {
+  const ticket = operationsEntryBlocked
+    ? null
+    : operationsState.serviceTickets.find((row) => row.id === operationsState.ui.selectedTicketId) || null;
+  const hasProposedAddOn = Boolean(ticket && operationsState.addOnRequests.some((row) => (
+    row.ticketId === ticket.id && row.status === 'proposed'
+  )));
+  document.querySelectorAll('[data-ops-action]').forEach((control) => {
+    const action = control.dataset.opsAction;
+    if (action === 'complete-service') {
+      const roleAllowed = ['Staff', 'Front Desk'].includes(operationsState.ui.role);
+      const disabled = !ticket || ticket.status !== 'in_service' || !roleAllowed || hasProposedAddOn;
+      const reason = !ticket
+        ? opsT('noLiveTicket')
+        : ticket.status === 'completed'
+          ? opsT('completeAlreadyReason')
+          : ticket.status !== 'in_service'
+            ? opsT('completeLifecycleReason')
+            : !roleAllowed
+              ? opsT('completeRoleReason')
+              : opsT('completeAddonPendingReason');
+      setDisabledReason(control, disabled, reason);
+    }
+    if (action === 'open-ticket-tab' && control.dataset.target === 'pay') {
+      setDisabledReason(control, !ticket || ticket.status !== 'completed', opsT('payCompletionReason'));
+    }
+  });
+}
+
 function renderAddOn() {
   const addOn = operationsEntryBlocked ? null : selectedProposedAddOn();
   const ticket = addOn
@@ -1581,6 +1661,7 @@ function renderOperationsContent() {
   renderEligibility();
   renderAddOn();
   syncAddOnControls();
+  syncLiveTicketControls();
 }
 
 function renderRoleCopy() {
@@ -1846,10 +1927,23 @@ registerOpsAction('confirm-addon-phone', () => {
 
 registerOpsAction('call-tech', () => opsToast(opsT('callDemo')));
 registerOpsAction('message-tech', () => opsToast(opsT('messageDemo')));
+registerOpsAction('complete-service', () => {
+  const result = commitOperations((draft) => (
+    completeServiceTicket(draft, draft.ui.selectedTicketId)
+  ));
+  renderOperationsContent();
+  renderOperationsScreen();
+  opsToast(opsT(result.ok ? 'serviceCompleted' : 'serviceCompleteFailed'));
+  return result;
+});
 registerOpsAction('open-ticket-tab', (control) => {
   const ticket = operationsState.serviceTickets.find((row) => row.id === operationsState.ui.selectedTicketId);
   if (!ticket) return opsToast(opsT('noLiveTicket'));
   if (control.dataset.target === 'pay') {
+    if (ticket.status !== 'completed') {
+      opsToast(opsT('paymentRequiresCompletion'));
+      return { ok: false, code: 'service_not_completed' };
+    }
     operationsPayHandoff = Object.freeze({ guestCheckinId: ticket.guestCheckinId });
     const navigated = assignOperationsCheckout(ticket.guestCheckinId);
     opsToast(opsT(navigated.ok ? 'checkoutOpening' : 'checkoutOpenFailed'));
@@ -1975,6 +2069,7 @@ window.NEXORA_OPERATIONS_TEST_API = {
   getOperationsState,
   opsId,
   createServiceTicket,
+  completeServiceTicket,
   evaluateStaffEligibility,
   chooseRecommendedStaff,
   askFrontDesk,
