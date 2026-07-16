@@ -439,10 +439,13 @@
         staffProfileId: parsed.staffProfileId
       };
       const fingerprint = JSON.stringify([parsed.businessId, parsed.station, parsed.staffProfileId]);
-      const retainedReplay = classifyTipScanReplay(
-        appState, fingerprint, parsed.businessId, parsed.staffProfileId
-      );
-      const preserveReplay = ['pending', 'corrupt'].includes(retainedReplay.kind);
+      const sameReplayFingerprint = appState.ui.pendingContext.tipEntryIntent === 'scan'
+        && appState.ui.pendingContext.tipScanReplayFingerprint === fingerprint;
+      const retainedReplay = sameReplayFingerprint
+        ? classifyTipScanReplay(appState, fingerprint, parsed.businessId, parsed.staffProfileId)
+        : { kind: 'none' };
+      const preserveReplay = sameReplayFingerprint
+        && ['pending', 'corrupt'].includes(retainedReplay.kind);
       appState.ui.selectedBusinessId = parsed.businessId;
       appState.ui.pendingContext.scanContext = context;
       appState.ui.pendingContext.tipScanArmed = false;

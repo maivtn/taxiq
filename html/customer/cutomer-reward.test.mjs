@@ -1929,6 +1929,40 @@ test('rescanning the same staff QR starts a new tip only after the prior tip is 
   assert.equal(app.tips.length, 2);
 });
 
+test('scanning a different canonical staff QR replaces pending scan authority and creates the exact new recipient', () => {
+  for (const corruptPriorReplay of [false, true]) {
+    const ids = createUuidSequence();
+    const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+    const app = api.createDefaultState();
+    const goldenQr = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+    const bitcoinQr = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+    api.stageSalonScan(app, goldenQr);
+    api.prepareTipFromScan(app);
+    const golden = api.createTipFromScan(app, {
+      amount: 9, method: 'Zelle', note: 'Golden visit'
+    }, 1000);
+    if (corruptPriorReplay) golden.tip.note = ' tampered ';
+
+    assert.equal(api.stageSalonScan(app, bitcoinQr).ok, true);
+    assert.equal(app.ui.pendingContext.scanContext.businessId, 'bitcoin-nail-bar');
+    assert.equal(app.ui.pendingContext.tipScanReplayId, null);
+    const prepared = api.prepareTipFromScan(app);
+    assert.equal(prepared.ok, true, `corrupt=${corruptPriorReplay}`);
+    assert.equal(prepared.staff.id, 'staff-anna');
+    assert.equal(app.ui.pendingContext.tipEntryIntent, 'scan');
+    const bitcoin = api.createTipFromScan(app, {
+      amount: 7, method: 'Zelle', note: 'Bitcoin visit'
+    }, 2000);
+
+    assert.equal(bitcoin.ok, true, `corrupt=${corruptPriorReplay}`);
+    assert.notEqual(bitcoin.tip.id, golden.tip.id);
+    assert.equal(bitcoin.tip.businessId, 'bitcoin-nail-bar');
+    assert.equal(bitcoin.tip.staffProfileId, 'staff-anna');
+    assert.equal(app.tips.length, 2);
+    assert.equal(app.tips[0], golden.tip);
+  }
+});
+
 test('scan-tip replay fails closed for mismatched input or a corrupt retained tip', () => {
   for (const corrupt of [false, true]) {
     const ids = createUuidSequence();
