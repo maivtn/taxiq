@@ -522,6 +522,35 @@
       return { ok: true, business, staff, method };
     }
 
+    function matchesRecentGuestCheckinSemantic(value, identity, timestamp) {
+      if (!isRecord(value)) return false;
+      const scannedAt = typeof value.scannedAt === 'string' ? Date.parse(value.scannedAt) : NaN;
+      const staffProfileId = value.staffProfileId === null ? null : normalizedRequiredText(value.staffProfileId);
+      return Number.isFinite(scannedAt) && Math.abs(timestamp - scannedAt) < CHECKIN_WINDOW_MS
+        && normalizedRequiredText(value.businessId) === identity.businessId
+        && normalizedRequiredText(value.name) === identity.name
+        && normalizeUsPhone(value.phone) === identity.phone
+        && normalizedRequiredText(value.serviceKey) === identity.serviceKey
+        && staffProfileId === identity.staffProfileId
+        && normalizedRequiredText(value.station) === identity.station;
+    }
+
+    function canonicalGuestCheckinReplay(appState, value, identity) {
+      const normalized = normalizeGuestCheckin(appState, value);
+      const parsedSource = parseNexoraQr(value?.sourceQr);
+      const idMatches = Array.isArray(appState?.guestCheckins) && typeof value?.id === 'string'
+        ? appState.guestCheckins.filter((row) => (
+            isRecord(row) && normalizedRequiredText(row.id) === value.id
+          ))
+        : [];
+      return Boolean(normalized) && GUEST_CHECKIN_ID_PATTERN.test(value.id)
+        && value.id === value.id.trim() && idMatches.length === 1 && idMatches[0] === value
+        && recordMatchesCanonicalFields(value, normalized)
+        && parsedSource.ok && parsedSource.businessId === identity.businessId
+        && parsedSource.station === identity.station
+        && parsedSource.staffProfileId === identity.scanStaffProfileId;
+    }
+
     function createGuestCheckin(appState, input, now = Date.now()) {
       const context = appState?.ui?.pendingContext?.scanContext;
       if (!isRecord(context) || !isRecord(input) || !Array.isArray(appState?.guestCheckins)
@@ -544,6 +573,26 @@
       }
       const timestamp = domainTimestamp(now);
       if (!timestamp.ok) return timestamp;
+      const identity = {
+        businessId: parsed.businessId,
+        name,
+        phone,
+        serviceKey,
+        staffProfileId,
+        station: parsed.station,
+        scanStaffProfileId: parsed.staffProfileId
+      };
+      const retryMatches = appState.guestCheckins.filter((item) => (
+        matchesRecentGuestCheckinSemantic(item, identity, now)
+      ));
+      if (retryMatches.length > 0) {
+        if (retryMatches.length !== 1
+          || !canonicalGuestCheckinReplay(appState, retryMatches[0], identity)) {
+          return { ok: false, code: 'ambiguous_guest_checkin' };
+        }
+        appState.ui.pendingContext.guestCheckinId = retryMatches[0].id;
+        return { ok: true, guestCheckin: retryMatches[0], idempotent: true };
+      }
       const id = createDomainId('guest-checkin');
       if (!id.ok) return id;
       if (appState.guestCheckins.some((item) => isRecord(item) && item.id === id.value)) {

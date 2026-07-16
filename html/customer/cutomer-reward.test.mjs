@@ -6041,6 +6041,81 @@ test('creates a guest check-in claim without crediting the signed-in profile', (
   assert.equal(app.profile.points, undefined);
 });
 
+test('service check-in exact retry reuses one canonical record before UUID or mutation', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  api.stageSalonScan(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
+  const input = {
+    name: 'Amy Nguyen', phone: '(832) 555-0198',
+    serviceKey: 'deluxe-pedicure', staffProfileId: null
+  };
+  const first = api.createGuestCheckin(app, input, 1000);
+  const callsAfterFirst = ids.calls();
+  const replay = api.createGuestCheckin(app, input, 2000);
+
+  assert.equal(replay.ok, true);
+  assert.equal(replay.idempotent, true);
+  assert.equal(replay.guestCheckin, first.guestCheckin);
+  assert.equal(app.guestCheckins.length, 1);
+  assert.equal(app.ui.pendingContext.guestCheckinId, first.guestCheckin.id);
+  assert.equal(ids.calls(), callsAfterFirst);
+});
+
+test('service check-in retry fails closed on ambiguous or noncanonical semantic matches', () => {
+  for (const corrupt of [false, true]) {
+    const ids = createUuidSequence();
+    const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+    const app = api.createDefaultState();
+    api.stageSalonScan(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
+    const input = {
+      name: 'Amy Nguyen', phone: '8325550198',
+      serviceKey: 'deluxe-pedicure', staffProfileId: null
+    };
+    const first = api.createGuestCheckin(app, input, 1000).guestCheckin;
+    if (corrupt) {
+      first.name = ` ${first.name} `;
+    } else {
+      app.guestCheckins.push({
+        ...structuredClone(first),
+        id: 'guest-checkin-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+      });
+    }
+    app.ui.pendingContext.guestCheckinId = 'sentinel-guest';
+    const before = JSON.stringify(app);
+    const calls = ids.calls();
+
+    const replay = api.createGuestCheckin(app, input, 2000);
+
+    assert.equal(replay.ok, false, `corrupt=${corrupt}`);
+    assert.equal(replay.code, 'ambiguous_guest_checkin', `corrupt=${corrupt}`);
+    assert.equal(JSON.stringify(app), before, `corrupt=${corrupt}`);
+    assert.equal(ids.calls(), calls, `corrupt=${corrupt}`);
+  }
+});
+
+test('service check-in permits a different service inside and the same service outside the 120 minute window', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  api.stageSalonScan(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
+  const base = {
+    name: 'Amy Nguyen', phone: '8325550198', staffProfileId: null
+  };
+  const first = api.createGuestCheckin(app, { ...base, serviceKey: 'deluxe-pedicure' }, 1000);
+  const otherService = api.createGuestCheckin(app, { ...base, serviceKey: 'acrylic-full-set' }, 2000);
+  const laterVisit = api.createGuestCheckin(
+    app, { ...base, serviceKey: 'deluxe-pedicure' }, 1000 + (120 * 60 * 1000)
+  );
+
+  assert.equal(first.ok, true);
+  assert.equal(otherService.ok, true);
+  assert.equal(otherService.idempotent, undefined);
+  assert.equal(laterVisit.ok, true);
+  assert.equal(laterVisit.idempotent, undefined);
+  assert.equal(app.guestCheckins.length, 3);
+});
+
 test('completes a staged member salon check-in through the existing offline and duplicate rules', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
@@ -8235,25 +8310,62 @@ test('navigation failure leaves saved check-in, reports retry, and does not expo
   document.getElementById('guest-phone').value = '8325550198';
   document.getElementById('guest-service').value = 'deluxe-pedicure';
   document.getElementById('guest-staff').value = '';
+  let routeAttempts = 0;
   const location = {
     href: 'https://example.test/customer/cutomer-reward.html',
-    assign() { throw new Error('blocked'); }
+    assign() { routeAttempts += 1; throw new Error('blocked'); }
   };
-  const { api, context, storage } = testApi({}, { document, location });
+  const ids = createUuidSequence();
+  const { api, context, storage } = testApi({}, {
+    document, location, randomUUID: () => ids.randomUUID()
+  });
   vm.runInContext(`
     stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
     globalThis.navigationCalls = [];
     navigateTo = (...args) => navigationCalls.push(args);
     renderApp = () => {};
     showToast = () => {};
-    ACTIONS.get('submit-guest-checkin')();
+    globalThis.firstSubmit = ACTIONS.get('submit-guest-checkin')();
+    globalThis.retrySubmit = ACTIONS.get('submit-guest-checkin')();
   `, context);
   assert.equal(api.loadState(storage).guestCheckins.length, 1);
+  assert.equal(vm.runInContext('firstSubmit.guestCheckin.id', context), vm.runInContext('retrySubmit.guestCheckin.id', context));
+  assert.equal(routeAttempts, 2);
   assert.equal(vm.runInContext('navigationCalls.length', context), 0);
   const error = document.getElementById('guest-checkin-error');
   assert.match(error.textContent, /retry|thử lại/i);
   assert.equal(document.activeElement, error);
   assert.match(html(), /id="guest-checkin-error"[^>]+tabindex="-1"/);
+});
+
+test('rapid double service submit routes one canonical guest ID without adding a second payment candidate', () => {
+  const document = createDocumentStub();
+  document.getElementById('guest-name').value = 'Amy Nguyen';
+  document.getElementById('guest-phone').value = '8325550198';
+  document.getElementById('guest-service').value = 'deluxe-pedicure';
+  document.getElementById('guest-staff').value = '';
+  const assigned = [];
+  const location = {
+    href: 'https://example.test/customer/cutomer-reward.html',
+    assign(value) { assigned.push(String(value)); }
+  };
+  const ids = createUuidSequence();
+  const { api, context, storage } = testApi({}, {
+    document, location, randomUUID: () => ids.randomUUID()
+  });
+  vm.runInContext(`
+    stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
+    renderApp = () => {};
+    showToast = () => {};
+    globalThis.firstSubmit = ACTIONS.get('submit-guest-checkin')();
+    globalThis.secondSubmit = ACTIONS.get('submit-guest-checkin')();
+  `, context);
+
+  const persisted = api.loadState(storage);
+  assert.equal(persisted.guestCheckins.length, 1);
+  assert.equal(vm.runInContext('firstSubmit.guestCheckin.id', context), vm.runInContext('secondSubmit.guestCheckin.id', context));
+  assert.equal(assigned.length, 2);
+  assert.equal(new Set(assigned).size, 1);
 });
 
 test('throwing location accessor still leaves the successful check-in persisted and retryable', () => {

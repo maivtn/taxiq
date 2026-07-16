@@ -6213,6 +6213,144 @@
         line-height: 1.25;
       }
     }
+    /* customer edit modal */
+    .cust-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(8, 15, 34, 0.55);
+    }
+
+    .cust-modal-overlay[hidden] {
+      display: none;
+    }
+
+    .cust-modal {
+      width: min(560px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 16px;
+      background: var(--nexora-surface);
+      box-shadow: 0 24px 60px rgba(8, 16, 34, 0.28);
+    }
+
+    .cust-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--nexora-border);
+    }
+
+    .cust-modal-head h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--nexora-text);
+    }
+
+    .cust-modal-close {
+      display: inline-flex;
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--nexora-muted);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .cust-modal-close:hover {
+      background: var(--nexora-surface-muted);
+      color: var(--nexora-text);
+    }
+
+    .cust-modal-body {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      padding: 20px;
+    }
+
+    .cust-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .cust-field-full {
+      grid-column: 1 / -1;
+    }
+
+    .cust-field > span,
+    .cust-status-row > span {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--nexora-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .cust-status-row {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .cust-status-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cust-status-toggle span {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--nexora-text);
+    }
+
+    .cust-modal-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 20px;
+      border-top: 1px solid var(--nexora-border);
+    }
+
+    .cust-modal-foot .booking-mini-button {
+      height: 38px;
+      padding: 0 16px;
+    }
+
+    .cust-inactive-tag {
+      margin-left: 6px;
+      color: var(--nexora-muted);
+    }
+
+    @media (max-width: 560px) {
+      .cust-modal-body {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* TEMP HIDE — Follow-up SMS & Send SMS buttons (delete this block to restore) */
+    .booking-sms-action,
+    [data-call-sms],
+    .sms-temp-hidden {
+      display: none !important;
+    }
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
@@ -7925,6 +8063,54 @@
 
     
 
+    <!-- Customer edit modal -->
+    <div class="cust-modal-overlay" data-cust-modal hidden>
+      <div class="cust-modal" role="dialog" aria-modal="true" aria-labelledby="cust-modal-title">
+        <div class="cust-modal-head">
+          <h3 id="cust-modal-title">Update customer</h3>
+          <button class="cust-modal-close" type="button" data-cust-modal-close aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+        </div>
+        <div class="cust-modal-body">
+          <label class="cust-field cust-field-full">
+            <span>Name</span>
+            <input class="booking-input" type="text" data-cf-name placeholder="Customer name">
+          </label>
+          <label class="cust-field">
+            <span>Email</span>
+            <input class="booking-input" type="email" data-cf-email placeholder="name@email.com">
+          </label>
+          <label class="cust-field">
+            <span>Birthday</span>
+            <input class="booking-input" type="text" data-cf-birthday placeholder="Jun 9, 2026" autocomplete="off">
+          </label>
+          <label class="cust-field cust-field-full">
+            <span>Address</span>
+            <input class="booking-input" type="text" data-cf-address placeholder="Street, city, state">
+          </label>
+          <label class="cust-field cust-field-full">
+            <span>Type</span>
+            <select class="booking-input" data-cf-type>
+              <option value="Individual">Individual</option>
+              <option value="Business">Business</option>
+              <option value="VIP">VIP</option>
+              <option value="Partner">Partner</option>
+            </select>
+          </label>
+          <div class="cust-status-row">
+            <span>Status</span>
+            <div class="cust-status-toggle">
+              <button class="toggle-pill is-on" type="button" data-cf-status role="switch" aria-checked="true" aria-label="Toggle active status"></button>
+              <span data-cf-status-label>Active</span>
+            </div>
+          </div>
+        </div>
+        <div class="cust-modal-foot">
+          <button class="booking-mini-button" type="button" data-cust-modal-close>Cancel</button>
+          <button class="booking-mini-button primary" type="button" data-cust-save><i class="bi bi-check-lg" aria-hidden="true"></i><span class="booking-mini-label">Save changes</span></button>
+        </div>
+      </div>
+    </div>
+
     <!-- ✦ Tạo SMS Campaign composer (ported from nexora-sms-dashboard.html) -->
     <div id="nx-campaign-root">
       <div class="modal-overlay" id="composerModal">
@@ -9536,6 +9722,18 @@ function getBookingCardCallStart(item) {
       }
     }
 
+    var custBirthdayInput = document.querySelector('[data-cf-birthday]');
+    var custBirthdayPicker = null;
+    if (custBirthdayInput && window.flatpickr) {
+      custBirthdayPicker = flatpickr(custBirthdayInput, {
+        altInput: true,
+        altFormat: 'M j, Y',
+        dateFormat: 'Y-m-d',
+        altInputClass: 'booking-input',
+        disableMobile: true
+      });
+    }
+
     var bookingClearFilters = document.querySelector('[data-booking-clear-filters]');
     if (bookingClearFilters) {
       bookingClearFilters.addEventListener('click', clearBookingFilters);
@@ -9886,14 +10084,20 @@ function getBookingCardCallStart(item) {
           : '—';
         var src = CUST_SRC[c.src];
         var srcHtml = src ? '<i class="bi ' + src.icon + '" aria-hidden="true"></i> ' + escapeHtml(src.label) : '—';
+        var inactiveTag = (c.status === 'inactive')
+          ? ' <span class="badge badge-soft cust-inactive-tag">Inactive</span>'
+          : '';
         return '<tr class="booking-table-row">' +
-          '<td><div class="booking-customer-name">' + escapeHtml(c.name) + '</div></td>' +
+          '<td><div class="booking-customer-name">' + escapeHtml(c.name) + inactiveTag + '</div></td>' +
           '<td>+1 ' + escapeHtml(c.phone) + '</td>' +
           '<td>' + segHtml + '</td>' +
           '<td><span class="badge badge-soft">' + srcHtml + '</span></td>' +
           '<td>' + c.visits + '</td>' +
           '<td>' + escapeHtml(c.last) + '</td>' +
-          '<td><div class="booking-actions"><button class="booking-mini-button" type="button" title="Send SMS" aria-label="Send SMS"><i class="bi bi-chat-dots" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button></div></td>' +
+          '<td><div class="booking-actions">' +
+            '<button class="booking-mini-button" type="button" data-cust-edit="' + CUSTOMERS.indexOf(c) + '" title="Edit" aria-label="Edit customer"><i class="bi bi-pencil" aria-hidden="true"></i><span class="booking-mini-label">Edit</span></button>' +
+            '<button class="booking-mini-button sms-temp-hidden" type="button" title="Send SMS" aria-label="Send SMS"><i class="bi bi-chat-dots" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>' +
+          '</div></td>' +
         '</tr>';
       }).join('');
 
@@ -10043,7 +10247,87 @@ function getBookingCardCallStart(item) {
       updatePromoCount();
     }
 
+    var custEditIndex = -1;
+
+    function custTypeOf(c) { return c.type || (c.seg === 'vip' ? 'VIP' : 'Individual'); }
+    function custStatusOf(c) { return c.status || 'active'; }
+
+    function setCustStatusToggle(on) {
+      var btn = document.querySelector('[data-cf-status]');
+      var lbl = document.querySelector('[data-cf-status-label]');
+      if (btn) { btn.classList.toggle('is-on', on); btn.setAttribute('aria-checked', on ? 'true' : 'false'); }
+      if (lbl) lbl.textContent = on ? 'Active' : 'Inactive';
+    }
+
+    function openCustModal(index) {
+      var c = CUSTOMERS[index];
+      var modal = document.querySelector('[data-cust-modal]');
+      if (!c || !modal) return;
+      custEditIndex = index;
+      modal.querySelector('[data-cf-name]').value = c.name || '';
+      modal.querySelector('[data-cf-email]').value = c.email || '';
+      modal.querySelector('[data-cf-address]').value = c.address || '';
+      if (custBirthdayPicker) {
+        if (c.birthday) custBirthdayPicker.setDate(c.birthday, false);
+        else custBirthdayPicker.clear();
+      } else {
+        modal.querySelector('[data-cf-birthday]').value = c.birthday || '';
+      }
+      modal.querySelector('[data-cf-type]').value = custTypeOf(c);
+      setCustStatusToggle(custStatusOf(c) === 'active');
+      modal.hidden = false;
+    }
+
+    function closeCustModal() {
+      var modal = document.querySelector('[data-cust-modal]');
+      if (modal) modal.hidden = true;
+      custEditIndex = -1;
+    }
+
+    function saveCustModal() {
+      var modal = document.querySelector('[data-cust-modal]');
+      var c = CUSTOMERS[custEditIndex];
+      if (!modal || !c) { closeCustModal(); return; }
+      c.name = (modal.querySelector('[data-cf-name]').value || '').trim() || c.name;
+      c.email = (modal.querySelector('[data-cf-email]').value || '').trim();
+      c.address = (modal.querySelector('[data-cf-address]').value || '').trim();
+      c.birthday = modal.querySelector('[data-cf-birthday]').value || '';
+      c.type = modal.querySelector('[data-cf-type]').value;
+      c.status = modal.querySelector('[data-cf-status]').classList.contains('is-on') ? 'active' : 'inactive';
+      closeCustModal();
+      renderCustomers();
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key !== 'Escape') return;
+      var modal = document.querySelector('[data-cust-modal]');
+      if (modal && !modal.hidden) closeCustModal();
+    });
+
     document.addEventListener('click', function(event) {
+      var custEditBtn = event.target.closest('[data-cust-edit]');
+      if (custEditBtn) {
+        openCustModal(parseInt(custEditBtn.dataset.custEdit, 10));
+        return;
+      }
+
+      var custStatusBtn = event.target.closest('[data-cf-status]');
+      if (custStatusBtn) {
+        setCustStatusToggle(!custStatusBtn.classList.contains('is-on'));
+        return;
+      }
+
+      var custSaveBtn = event.target.closest('[data-cust-save]');
+      if (custSaveBtn) {
+        saveCustModal();
+        return;
+      }
+
+      if (event.target.closest('[data-cust-modal-close]') || event.target.matches('[data-cust-modal]')) {
+        closeCustModal();
+        return;
+      }
+
       var segChip = event.target.closest('[data-cust-seg]');
       if (segChip) {
         custFilter.seg = segChip.dataset.custSeg;
