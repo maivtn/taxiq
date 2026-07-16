@@ -319,7 +319,8 @@
     const CHECKIN_BUSINESSES = new Set(['bitcoin-nail-bar', 'golden-glow-spa', 'moon-coffee']);
     const CHECKIN_STAFF_BUSINESSES = Object.freeze({
       'staff-anna': BUSINESS_ID,
-      'staff-maria': BUSINESS_ID
+      'staff-maria': BUSINESS_ID,
+      'staff-spa-linh': 'golden-glow-spa'
     });
     const GUEST_SERVICE_CATALOG = Object.freeze({
       'bitcoin-nail-bar': Object.freeze([
@@ -422,6 +423,43 @@
       return { ok: true, context, business };
     }
 
+    function resolveTipScanTarget(appState) {
+      if (!isRecord(appState?.ui?.pendingContext) || !isRecord(appState?.staffProfiles)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const context = appState.ui.pendingContext.scanContext;
+      if (!isRecord(context)) return { ok: false, code: 'missing_scan_context' };
+      const parsed = parseNexoraQr(context.payload);
+      if (!parsed.ok || parsed.businessId !== context.businessId || parsed.station !== context.station
+        || parsed.staffProfileId !== context.staffProfileId) {
+        return { ok: false, code: 'invalid_scan_context' };
+      }
+      if (!parsed.staffProfileId) return { ok: false, code: 'staff_required' };
+      const business = getValidBusiness(appState, parsed.businessId);
+      const staff = appState.staffProfiles[parsed.staffProfileId];
+      if (!business || !isRecord(staff) || staff.id !== parsed.staffProfileId
+        || staff.businessId !== parsed.businessId || typeof staff.name !== 'string' || !staff.name.trim()) {
+        return { ok: false, code: 'invalid_scan_context' };
+      }
+      const enabledMethods = PAYMENT_METHODS.filter((method) => (
+        Array.isArray(staff.methods) && staff.methods.includes(method)
+      ));
+      if (!enabledMethods.length) return { ok: false, code: 'method_disabled' };
+      const method = enabledMethods.includes(appState.ui.selectedTipMethod)
+        ? appState.ui.selectedTipMethod
+        : enabledMethods[0];
+      return { ok: true, business, staff, method };
+    }
+
+    function prepareTipFromScan(appState) {
+      const target = resolveTipScanTarget(appState);
+      if (!target.ok) return target;
+      appState.ui.selectedBusinessId = target.business.id;
+      appState.ui.selectedStaffId = target.staff.id;
+      appState.ui.selectedTipMethod = target.method;
+      return target;
+    }
+
     function createGuestCheckin(appState, input, now = Date.now()) {
       const context = appState?.ui?.pendingContext?.scanContext;
       if (!isRecord(context) || !isRecord(input) || !Array.isArray(appState?.guestCheckins)
@@ -508,7 +546,8 @@
         },
         staffProfiles: {
           'staff-anna': { id: 'staff-anna', name: 'Anna', businessId: BUSINESS_ID, methods: ['Venmo', 'Zelle'], followNotifyOptIn: false },
-          'staff-maria': { id: 'staff-maria', name: 'Maria', businessId: BUSINESS_ID, methods: ['Zelle', 'Cash App'], followNotifyOptIn: true }
+          'staff-maria': { id: 'staff-maria', name: 'Maria', businessId: BUSINESS_ID, methods: ['Zelle', 'Cash App'], followNotifyOptIn: true },
+          'staff-spa-linh': { id: 'staff-spa-linh', name: 'Linh', businessId: 'golden-glow-spa', methods: ['Zelle', 'Venmo'], followNotifyOptIn: false }
         },
         balances: {
           'bitcoin-nail-bar': { points: 2450, credits: 0, expiringPoints: null },
@@ -3918,13 +3957,16 @@
       if (!Object.prototype.hasOwnProperty.call(migrated.businesses, migrated.ui.selectedBusinessId)) {
         migrated.ui.selectedBusinessId = BUSINESS_ID;
       }
-      const selectedStaff = isRecord(migrated.staffProfiles[migrated.ui.selectedStaffId])
-        && migrated.staffProfiles[migrated.ui.selectedStaffId].businessId === BUSINESS_ID
-        ? migrated.staffProfiles[migrated.ui.selectedStaffId]
-        : migrated.staffProfiles['staff-anna'];
-      migrated.ui.selectedStaffId = selectedStaff.id;
-      const enabledTipMethods = Array.isArray(selectedStaff.methods)
-        ? selectedStaff.methods.filter((method) => PAYMENT_METHODS.includes(method))
+      const persistedSelectedStaff = migrated.staffProfiles[migrated.ui.selectedStaffId];
+      const selectedStaff = isRecord(persistedSelectedStaff)
+        && persistedSelectedStaff.id === migrated.ui.selectedStaffId
+        && persistedSelectedStaff.businessId === migrated.ui.selectedBusinessId
+        ? persistedSelectedStaff
+        : Object.values(migrated.staffProfiles).find((staff) => isRecord(staff)
+          && staff.id && staff.businessId === migrated.ui.selectedBusinessId) ?? null;
+      migrated.ui.selectedStaffId = selectedStaff?.id ?? null;
+      const enabledTipMethods = Array.isArray(selectedStaff?.methods)
+        ? PAYMENT_METHODS.filter((method) => selectedStaff.methods.includes(method))
         : [];
       if (!enabledTipMethods.includes(migrated.ui.selectedTipMethod)) {
         migrated.ui.selectedTipMethod = enabledTipMethods[0] ?? defaults.ui.selectedTipMethod;
@@ -5003,6 +5045,19 @@
       appState.tips = nextTips;
       appState.ui = nextUi;
       return { ok: true, tip, points };
+    }
+
+    function createTipFromScan(appState, input, now = Date.now()) {
+      if (!isRecord(input)) return { ok: false, code: 'invalid_state' };
+      const target = resolveTipScanTarget(appState);
+      if (!target.ok) return target;
+      return createTip(appState, {
+        businessId: target.business.id,
+        staffProfileId: target.staff.id,
+        amount: input.amount,
+        method: input.method,
+        note: input.note
+      }, now);
     }
 
     function isCanonicalRuntimeTip(appState, tip) {
@@ -6154,20 +6209,30 @@
     }
 
     const sendTip = () => {
-      const recipient = document.getElementById('tip-recipient');
       const customInput = document.getElementById('tip-custom-amount');
       const customAmount = typeof customInput.value === 'string' && customInput.value.trim()
         ? customInput.value.trim()
         : state.ui.selectedTip;
-      const staff = state.staffProfiles[recipient.value];
-      const result = commitState((draft) => createTip(draft, {
-        businessId: BUSINESS_ID,
-        staffProfileId: recipient.value,
-        staffName: staff?.name,
-        amount: customAmount,
-        method: draft.ui.selectedTipMethod,
-        note: document.getElementById('tip-note').value
-      }));
+      const result = commitState((draft) => {
+        const input = {
+          amount: customAmount,
+          method: draft.ui.selectedTipMethod,
+          note: document.getElementById('tip-note').value
+        };
+        if (isRecord(draft.ui.pendingContext.scanContext)) {
+          return createTipFromScan(draft, input);
+        }
+        const staff = draft.staffProfiles[draft.ui.selectedStaffId];
+        if (!isRecord(staff) || staff.id !== draft.ui.selectedStaffId
+          || staff.businessId !== draft.ui.selectedBusinessId) {
+          return { ok: false, code: 'unknown_staff' };
+        }
+        return createTip(draft, {
+          ...input,
+          businessId: staff.businessId,
+          staffProfileId: staff.id
+        });
+      });
       if (!result.ok) {
         showToast(t(transactionErrorKey(result, 'tip')), 'error');
         return result;
@@ -7688,7 +7753,7 @@
       if (event.target.id === 'tip-recipient') {
         commitState((draft) => {
           const staff = draft.staffProfiles[event.target.value];
-          if (!staff || staff.businessId !== BUSINESS_ID) return;
+          if (!staff || staff.businessId !== draft.ui.selectedBusinessId) return;
           draft.ui.selectedStaffId = staff.id;
           const enabledMethods = Array.isArray(staff.methods)
             ? staff.methods.filter((method) => PAYMENT_METHODS.includes(method))
@@ -8011,11 +8076,25 @@
       const list = document.getElementById('tip-method-list');
       const recipient = document.getElementById('tip-recipient');
       if (!list || !recipient) return;
-      recipient.value = state.ui.selectedStaffId;
+      const staffOptions = Object.values(state.staffProfiles)
+        .filter((staff) => isRecord(staff) && staff.id
+          && staff.businessId === state.ui.selectedBusinessId)
+        .map((staff) => {
+          const option = document.createElement('option');
+          option.value = staff.id;
+          option.textContent = staff.name;
+          return option;
+        });
+      recipient.replaceChildren(...staffOptions);
       const staff = state.staffProfiles[state.ui.selectedStaffId];
+      const selectedStaff = isRecord(staff) && staff.id === state.ui.selectedStaffId
+        && staff.businessId === state.ui.selectedBusinessId
+        ? staff
+        : null;
+      recipient.value = selectedStaff?.id ?? '';
       const buttons = PAYMENT_METHODS.map((method) => renderMethodButton(
         method,
-        Array.isArray(staff?.methods) && staff.methods.includes(method),
+        Array.isArray(selectedStaff?.methods) && selectedStaff.methods.includes(method),
         method === state.ui.selectedTipMethod,
         'tipMethod',
         'methodNotEnabledStaff'
@@ -8359,6 +8438,8 @@
       confirmReward,
       parseNexoraQr,
       stageSalonScan,
+      prepareTipFromScan,
+      createTipFromScan,
       createGuestCheckin,
       calculateCheckoutTotals,
       createCheckoutDraft,
