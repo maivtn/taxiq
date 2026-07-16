@@ -34,7 +34,7 @@ Sau khi scan thành công, màn context hiển thị ba hành động:
 
 1. **Check-in / bắt đầu dịch vụ** — giữ luồng member và guest hiện có.
 2. **Tip thợ** — chỉ bật khi QR có `staffProfileId` hợp lệ; prefill đúng business, staff và phương thức đầu tiên staff đã bật.
-3. **Thanh toán dịch vụ hoàn tất** — chỉ bật khi local customer state có đúng guest check-in và Operations snapshot có đúng một ticket `completed` tương ứng. Nếu có nhiều ticket, khách chọn ticket theo mã ticket/dịch vụ; không tự chọn “ticket mới nhất”.
+3. **Thanh toán dịch vụ hoàn tất** — chỉ bật khi local customer state có guest check-in và Operations snapshot có đúng một ticket `completed` cho từng check-in. Nếu có nhiều guest check-in đủ điều kiện, khách chọn ticket theo mã ticket/dịch vụ; mỗi guest check-in vẫn chỉ được có một ticket và không tự chọn “ticket mới nhất”.
 
 Không đoán mục đích từ tên `station`. Điều này giữ QR tương thích và tránh mở nhầm giao dịch.
 
@@ -61,11 +61,13 @@ QR check-in → Live Ticket (in_service)
 - idempotent khi ticket đã hoàn tất hợp lệ;
 - không tạo payment, receipt hoặc điểm.
 
+Trong prototype localStorage, dropdown role chỉ là **bộ mô phỏng actor**, không phải authorization thật. Copy và tài liệu không được tuyên bố đây là bảo mật production. Bản thật phải lấy actor/session, business membership và staff assignment từ backend tin cậy; Front Desk chỉ được thao tác đúng business và Staff chỉ đúng ticket được phân công.
+
 Pay trên Operations và `consumeGuestCheckoutHandoff` đều re-check ticket exact `completed`. UI disabled chỉ là hỗ trợ; domain gate là authority.
 
 ### 2.3 Tip từ QR
 
-`prepareTipFromScan` re-parse payload và kiểm tra lại quan hệ business/staff trước khi đổi UI context. Màn tip dùng `selectedBusinessId`, không hardcode Bitcoin Nail Bar. Chỉ method có trong staff canonical mới được chọn.
+`prepareTipFromScan` re-parse payload và kiểm tra lại quan hệ business/staff trước khi đổi UI context. Khi gửi, `createTipFromScan` phải re-parse lần nữa và khóa `businessId/staffProfileId` của transaction đúng QR; thay select bằng DevTools không thể đổi recipient. Màn tip dùng `selectedBusinessId`, không hardcode Bitcoin Nail Bar. Chỉ method có trong staff canonical mới được chọn.
 
 V1 hỗ trợ một staff cho mỗi tip. Multi-recipient tip trong `html/tip-flow` được hoãn vì cần batch transaction atomic, payout owner rõ ràng và idempotency chung. Không được ghép nhiều tip bằng URL/client-only state.
 
@@ -73,7 +75,7 @@ Tip tiếp tục là giao dịch độc lập đi thẳng tới staff:
 
 ```text
 draft UI → pending tip → external payment handoff
-→ business/staff confirm → points
+→ business/staff confirm (nút demo trong prototype) → points
 ```
 
 Checkout gratuity vẫn thuộc checkout ticket và được verify cùng receipt; không dùng chung record với standalone staff tip.
@@ -86,7 +88,16 @@ Checkout gratuity vẫn thuộc checkout ticket và được verify cùng receip
 - local `guestCheckins[].id` và `businessId`;
 - Operations `serviceTickets[].guestCheckinId`, `businessId`, `status === completed`.
 
-Không join bằng tên hoặc số điện thoại hiển thị. Candidate phải có ticket/guest duy nhất và snapshot Operations canonical. Chọn candidate rồi gọi chung completed-gated checkout handoff, vì vậy add-on import, tip trong bill, proof và receipt không bị nhân đôi logic.
+Không join bằng tên hoặc số điện thoại hiển thị. Candidate phải có ticket/guest duy nhất và snapshot Operations canonical. Trước khi mở, domain yêu cầu 4 số cuối trùng phone canonical của guest (hoặc session/profile đã xác thực có đúng phone) để tránh lộ/mở ticket khác trên thiết bị dùng chung. Action phải đọc lại localStorage Operations và revalidate đồng bộ ngay lúc click; V1 không tuyên bố chống được stale/malicious localStorage như backend revision thật. Chọn candidate rồi gọi chung completed-gated checkout handoff, vì vậy add-on import, tip trong bill, proof và receipt không bị nhân đôi logic.
+
+Re-entry theo checkout hiện có:
+
+- chưa có checkout → tạo `draft`;
+- `draft` → resume checkout;
+- `pending_verification` → mở pending result;
+- `confirmed` → mở receipt confirmed;
+- `rejected` → mở rejected/retry flow;
+- duplicate/tampered artifacts → fail closed, không tạo bản ghi mới.
 
 Khi chưa có candidate, nút Payment bị disable và có lý do nhìn thấy/đọc được: “Dịch vụ phải được tiệm hoàn tất trước khi thanh toán.”
 
@@ -111,7 +122,7 @@ Khi chưa có candidate, nút Payment bị disable và có lý do nhìn thấy/�
 
 - QR invalid/cross-business staff: fail closed, không đổi context.
 - Staff không có method: Tip disabled và giải thích.
-- Ticket đang làm/không tồn tại/duplicate/stale snapshot: không tạo checkout.
+- Ticket đang làm/không tồn tại/duplicate/snapshot không canonical: không tạo checkout.
 - Pending add-on: không complete ticket.
 - Storage fail: rollback memory/UI theo commit adapter hiện có.
 - Double action: domain action idempotent hoặc trả lỗi mà không tạo record thứ hai.
@@ -122,7 +133,7 @@ Khi chưa có candidate, nút Payment bị disable và có lý do nhìn thấy/�
 2. Scan staff QR có CTA Tip và mở màn tip đúng business/staff/method.
 3. Scan QR không có staff không được mở tip tùy ý.
 4. Ticket `in_service` không mở checkout qua Operations Pay, URL handoff hay Scan Payment.
-5. Staff/Front Desk hoàn tất ticket canonical; Customer không có quyền hoàn tất.
+5. Role simulator Staff/Front Desk hoàn tất ticket canonical; Customer không được hoàn tất trong prototype. Production vẫn cần authorization backend.
 6. Add-on `proposed` chặn hoàn tất; accepted/declined cho phép hoàn tất.
 7. Ticket `completed` xuất hiện trong selector Scan Payment đúng business và mở checkout hiện có.
 8. Tip/payment pending không cộng điểm; confirm/verify mới cộng đúng business, idempotent.
@@ -132,6 +143,6 @@ Khi chưa có candidate, nút Payment bị disable và có lý do nhìn thấy/�
 
 - Camera QR thật, backend/webhook, multi-device sync.
 - Multi-recipient tip và upload proof riêng cho standalone tip.
+- Review entry từ staff QR (developer spec cho phép tip/review) chưa thay đổi trong V1 này; màn Review hiện có vẫn đi từ visit/payment flow.
 - Hợp nhất toàn bộ member check-in và guest check-in thành một schema service-checkin mới.
 - Xóa legacy “Pay Salon Direct”; nó vẫn là direct-pay tự do, không phải ticket checkout.
-

@@ -90,6 +90,7 @@ Cập nhật fixture handoff thành ticket completed và thêm test:
 
 - `in_service` không tạo checkout, không import add-on, không đổi pending context;
 - exact `completed` ticket tạo/reuse checkout;
+- re-entry `draft/pending_verification/confirmed/rejected` mở đúng view, không tạo artifact trùng;
 - missing/duplicate/cross-business/corrupt Operations snapshot fail closed;
 - gate áp dụng khi initialize từ URL và khi gọi domain trực tiếp.
 
@@ -118,9 +119,10 @@ Thêm pure API `listScanCheckoutCandidates(appState, operationsSnapshot)`:
 - kết quả ổn định gồm `guestCheckinId`, `ticketId`, `number`, `serviceKey`, `currentTotalCents`;
 - không mutate input.
 
-Thêm `prepareScanCheckout(appState, guestCheckinId, operationsSnapshot, now)`:
+Thêm `prepareScanCheckout(appState, guestCheckinId, phoneLast4, operationsSnapshot, now)`:
 
 - candidate exact mới được mở checkout;
+- yêu cầu 4 số cuối khớp guest canonical, trừ khi session/profile authenticated đã khớp exact phone;
 - gọi lại idempotent;
 - candidate giả/cross-business không đổi state.
 
@@ -145,13 +147,14 @@ git commit -m "feat: gate scanned checkout on completed tickets"
 - Modify: `html/customer/cutomer-reward.html`
 - Modify: `html/customer/cutomer-reward.test.mjs`
 
-### Bước 1 — Viết test đỏ cho `prepareTipFromScan`
+### Bước 1 — Viết test đỏ cho `prepareTipFromScan` và `createTipFromScan`
 
 - staff QR canonical prefill exact business/staff và enabled method;
 - business-only QR trả `staff_required` và không đổi state;
 - cross-business/tampered/stale context fail closed nguyên tử;
 - staff không có method trả `method_disabled`;
 - selected method được giữ nếu vẫn enabled, nếu không fallback deterministic.
+- đổi recipient/business ở UI sau scan vẫn bị `createTipFromScan` từ chối hoặc ghi đúng target QR; transaction không tin select.
 
 ### Bước 2 — Viết regression test cho `sendTip`
 
@@ -172,7 +175,7 @@ Kỳ vọng: FAIL vì helper chưa tồn tại và `sendTip` đang hardcode busi
 - thêm `prepareTipFromScan` cạnh `stageSalonScan`;
 - sửa migration selected staff để tôn trọng `selectedBusinessId` thay vì ép Bitcoin Nail Bar;
 - render recipient theo staff canonical của selected business;
-- sửa `sendTip` derive/validate staff owner trước `createTip`;
+- thêm `createTipFromScan` re-parse QR ngay lúc tạo; `sendTip` dùng action này khi có scan context và derive/validate staff owner ở entry khác;
 - export helper cho test.
 
 ### Bước 4 — Verify và commit
@@ -202,6 +205,7 @@ Trong `scan-context-view` yêu cầu:
 - có `open-scan-tip` và `open-scan-payment` đã đăng ký;
 - tip disabled + visible/ARIA reason khi QR không có staff/method;
 - payment select chỉ render completed candidates đúng business;
+- payment yêu cầu 4 số cuối khi session/profile không sở hữu guest check-in;
 - payment disabled + reason khi chưa completed;
 - labels/copy VI/EN đều qua registry;
 - vẫn đúng 31 screens, mobile bottom nav và desktop sidebar.
@@ -274,4 +278,3 @@ Kịch bản bắt buộc:
 ### Bước 4 — Final status
 
 Xác nhận chỉ file trong `html/customer` được commit; không stage/xóa `html/nexora/*` hoặc `html/tip-flow/*` đang là thay đổi của người dùng.
-
