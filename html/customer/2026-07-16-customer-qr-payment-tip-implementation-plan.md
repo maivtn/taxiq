@@ -10,6 +10,8 @@
 
 **Tài liệu thiết kế:** `html/customer/customer-qr-payment-tip-design.md`
 
+**Release rule:** Task 1–4 là một release nguyên tử, không deploy riêng commit trung gian. Plan này sở hữu completion/common gate và supersede phần interface trùng trong `2026-07-15-customer-reward-entitlements-implementation-plan.md`; reward code chỉ consume contract sau cùng.
+
 ---
 
 ## Task 1: Operations hoàn tất dịch vụ và khóa Pay theo lifecycle
@@ -104,10 +106,10 @@ Kỳ vọng ban đầu: test `in_service` FAIL vì handoff hiện vẫn mở che
 
 ### Bước 2 — Implement common completed gate
 
-- dùng `normalizeOperationsSnapshotForImport` một lần;
+- thêm `resolveCheckoutOperationsAuthority(appState, guestCheckinId, operationsSnapshot)` để normalize đúng một lần và trả `{operations, guestCheckin, ticket}` canonical;
 - yêu cầu đúng một ticket theo `guestCheckinId`, đúng business, `status === 'completed'` và chronology canonical trước `createCheckoutDraft`;
-- truyền normalized snapshot vào import hoặc đảm bảo không có hai logic normalize lệch nhau;
-- trả error code riêng `service_not_completed` cho ticket hợp lệ nhưng chưa xong.
+- tách `importAcceptedAddOnsFromAuthority(appState, checkoutDraftId, authority)` cho internal path; public `importAcceptedAddOns` chỉ là raw-snapshot wrapper để giữ compatibility;
+- error taxonomy đóng: `invalid_operations_snapshot`, `guest_not_found`, `ticket_not_found`, `cross_business_ticket`, `service_not_completed`, `invalid_checkout_state`.
 
 ### Bước 3 — Viết test đỏ cho scan candidate selector
 
@@ -196,12 +198,14 @@ git commit -m "feat: route scanned staff QR to tip"
 - Modify: `html/customer/cutomer-reward.test.mjs`
 - Modify: `html/customer/customer-app-developer-spec.md`
 - Modify: `html/customer/customer-app-independent-guide.md`
+- Modify: `html/customer/customer-salon-cross-surface-design.md`
+- Modify: `html/customer/2026-07-15-customer-reward-entitlements-implementation-plan.md`
 
 ### Bước 1 — Viết UI contract test đỏ
 
 Trong `scan-context-view` yêu cầu:
 
-- giữ action check-in member/guest;
+- member primary action mở form service check-in prefill profile name/phone; submit tạo record trong canonical cross-surface collection và mở Live Ticket giống guest;
 - có `open-scan-tip` và `open-scan-payment` đã đăng ký;
 - tip disabled + visible/ARIA reason khi QR không có staff/method;
 - payment select chỉ render completed candidates đúng business;
@@ -209,6 +213,14 @@ Trong `scan-context-view` yêu cầu:
 - payment disabled + reason khi chưa completed;
 - labels/copy VI/EN đều qua registry;
 - vẫn đúng 31 screens, mobile bottom nav và desktop sidebar.
+
+Thêm behavioral tests click-level:
+
+- helper/persistence fail không navigate;
+- selector giả hoặc tampered `scanContext.payload` không tạo tip/checkout;
+- action payment đọc lại Operations snapshot tại click và chọn đúng candidate;
+- success luôn mở checkout view, không rơi vào legacy direct-pay;
+- member scan → service form prefilled → Live Ticket, không đi vào quick-checkin-only path.
 
 ### Bước 2 — Implement scan context UI
 
@@ -224,6 +236,7 @@ Trong `scan-context-view` yêu cầu:
 - ghi rõ QR context router không đoán theo station;
 - khóa completed gate cho ticket checkout;
 - phân biệt legacy direct pay và ticket checkout;
+- cập nhật/đánh dấu supersede trong `customer-salon-cross-surface-design.md` và reward-entitlements plan ở phần completion gate;
 - ghi prototype camera/payment callback là mô phỏng.
 
 ### Bước 4 — Verify và commit
@@ -260,8 +273,8 @@ Sửa mọi Critical/Important finding theo TDD và chạy lại suite.
 ```bash
 node --test html/customer/cutomer-reward.test.mjs
 node --test html/customer/customer-salon-operations.test.mjs
-rg -n "@apply[^;]*(app-|ops-)" html/customer/*.html
-git diff --check
+if rg -n "@apply[^;]*(app-|ops-)" html/customer/*.html; then exit 1; fi
+git diff --check -- html/customer
 ```
 
 ### Bước 3 — Browser smoke trên local HTTP

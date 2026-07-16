@@ -4,6 +4,8 @@
 **Phạm vi:** `cutomer-reward.html`, `customer-salon-operations.html` và test tương ứng.  
 **Tham chiếu UX:** `html/tip-flow/*` (không dùng làm nguồn dữ liệu hay transaction authority).
 
+**Trạng thái:** Đã chốt để triển khai theo yêu cầu ngày 2026-07-16. Thiết kế này sở hữu `completeServiceTicket`, completed-ticket checkout gate và QR intent routing; các đoạn tương ứng trong reward-entitlements/cross-surface plan cũ chỉ consume contract này, không triển khai lại.
+
 ## 1. Kết quả rà soát
 
 Prototype hiện đã có:
@@ -32,7 +34,7 @@ QR chỉ xác định context tin cậy `{businessId, station, staffProfileId?}`
 
 Sau khi scan thành công, màn context hiển thị ba hành động:
 
-1. **Check-in / bắt đầu dịch vụ** — giữ luồng member và guest hiện có.
+1. **Check-in / bắt đầu dịch vụ** — member đã đăng nhập mở form dịch vụ được prefill từ profile; guest tự nhập. Cả hai cùng tạo record service check-in canonical tương thích Operations (collection legacy hiện mang tên `guestCheckins`) rồi mở Live Ticket. Không dùng member quick-checkin `checkins` làm authority cho service/payment.
 2. **Tip thợ** — chỉ bật khi QR có `staffProfileId` hợp lệ; prefill đúng business, staff và phương thức đầu tiên staff đã bật.
 3. **Thanh toán dịch vụ hoàn tất** — chỉ bật khi local customer state có guest check-in và Operations snapshot có đúng một ticket `completed` cho từng check-in. Nếu có nhiều guest check-in đủ điều kiện, khách chọn ticket theo mã ticket/dịch vụ; mỗi guest check-in vẫn chỉ được có một ticket và không tự chọn “ticket mới nhất”.
 
@@ -144,5 +146,5 @@ Khi chưa có candidate, nút Payment bị disable và có lý do nhìn thấy/�
 - Camera QR thật, backend/webhook, multi-device sync.
 - Multi-recipient tip và upload proof riêng cho standalone tip.
 - Review entry từ staff QR (developer spec cho phép tip/review) chưa thay đổi trong V1 này; màn Review hiện có vẫn đi từ visit/payment flow.
-- Hợp nhất toàn bộ member check-in và guest check-in thành một schema service-checkin mới.
+- Đổi tên/migrate collection legacy `guestCheckins` thành `serviceCheckins`; V1 tái sử dụng collection để member và guest đều vào được Live Ticket.
 - Xóa legacy “Pay Salon Direct”; nó vẫn là direct-pay tự do, không phải ticket checkout.
