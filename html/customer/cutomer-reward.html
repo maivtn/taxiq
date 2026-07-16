@@ -442,14 +442,15 @@
       const hasReplayAuthority = appState.ui.pendingContext.tipEntryIntent === 'scan'
         && appState.ui.pendingContext.tipScanReplayId !== null;
       const priorFingerprint = hasReplayAuthority ? canonicalTipScanFingerprint(appState) : null;
+      if (hasReplayAuthority && priorFingerprint === null) {
+        return { ok: false, code: 'invalid_tip_replay' };
+      }
       const sameCanonicalScan = hasReplayAuthority && priorFingerprint === fingerprint;
       const retainedReplay = sameCanonicalScan
         ? classifyTipScanReplay(appState, fingerprint, parsed.businessId, parsed.staffProfileId)
         : { kind: 'none' };
-      const preserveReplay = hasReplayAuthority && (
-        priorFingerprint === null
-        || (sameCanonicalScan && ['pending', 'corrupt'].includes(retainedReplay.kind))
-      );
+      const preserveReplay = sameCanonicalScan
+        && ['pending', 'corrupt'].includes(retainedReplay.kind);
       appState.ui.selectedBusinessId = parsed.businessId;
       appState.ui.pendingContext.scanContext = context;
       appState.ui.pendingContext.tipScanArmed = false;

@@ -1994,7 +1994,7 @@ test('rescanning the same canonical QR preserves a tampered replay fingerprint a
   assert.equal(ids.calls(), calls);
 });
 
-test('a pending replay with an unresolvable prior scan context cannot be cleared by a different QR', () => {
+test('a pending replay with an unresolvable prior scan context rejects every rescan atomically', () => {
   const ids = createUuidSequence();
   const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
   const app = api.createDefaultState();
@@ -2005,18 +2005,21 @@ test('a pending replay with an unresolvable prior scan context cannot be cleared
   const first = api.createTipFromScan(app, {
     amount: 9, method: 'Zelle', note: ''
   }, 1000);
-  const replayId = app.ui.pendingContext.tipScanReplayId;
   app.ui.pendingContext.scanContext.station = 'tampered';
+  const before = JSON.stringify(app);
+  const calls = ids.calls();
 
-  assert.equal(api.stageSalonScan(app, bitcoinQr).ok, true);
-  assert.equal(app.ui.pendingContext.tipScanReplayId, replayId);
-  const beforePrepare = JSON.stringify(app);
-  const prepared = api.prepareTipFromScan(app);
-  assert.equal(prepared.ok, false);
-  assert.equal(prepared.code, 'invalid_tip_replay');
-  assert.equal(JSON.stringify(app), beforePrepare);
+  const different = api.stageSalonScan(app, bitcoinQr);
+  assert.equal(different.ok, false);
+  assert.equal(different.code, 'invalid_tip_replay');
+  assert.equal(JSON.stringify(app), before);
+  const original = api.stageSalonScan(app, goldenQr);
+  assert.equal(original.ok, false);
+  assert.equal(original.code, 'invalid_tip_replay');
+  assert.equal(JSON.stringify(app), before);
   assert.equal(app.tips.length, 1);
   assert.equal(app.tips[0], first.tip);
+  assert.equal(ids.calls(), calls);
 });
 
 test('scan-tip replay fails closed for mismatched input or a corrupt retained tip', () => {
