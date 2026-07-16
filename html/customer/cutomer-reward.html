@@ -1522,7 +1522,54 @@
       return { ok: true, serviceTickets: tickets, addOnRequests: addOns, staffEligibility };
     }
 
-    function importAcceptedAddOns(appState, checkoutDraftId, operationsSnapshot) {
+    function originalStaffProfileIdForTicket(operations, ticket) {
+      let originalStaffProfileId = ticket.staffProfileId;
+      const ticketEligibility = operations.staffEligibility.filter((event) => event.ticketId === ticket.id);
+      for (let index = ticketEligibility.length - 1; index >= 0; index -= 1) {
+        originalStaffProfileId = ticketEligibility[index].requestedStaffId;
+      }
+      return originalStaffProfileId;
+    }
+
+    function resolveOperationsAuthorityFromCanonical(appState, guestCheckinId, operations, requireCompleted) {
+      if (!Array.isArray(appState?.guestCheckins) || !operations?.ok
+        || !Array.isArray(operations.serviceTickets) || !Array.isArray(operations.addOnRequests)
+        || !Array.isArray(operations.staffEligibility)) return { ok: false, code: 'invalid_checkout_state' };
+      if (typeof guestCheckinId !== 'string' || guestCheckinId !== guestCheckinId.toLowerCase()
+        || !GUEST_CHECKIN_ID_PATTERN.test(guestCheckinId)) return { ok: false, code: 'guest_not_found' };
+      const guestMatches = appState.guestCheckins.filter((row) => (
+        isRecord(row) && normalizedRequiredText(row.id) === guestCheckinId
+      ));
+      const guestCheckin = guestMatches.length === 1 ? guestMatches[0] : null;
+      const normalizedGuest = guestCheckin ? normalizeGuestCheckin(appState, guestCheckin) : null;
+      if (!guestCheckin || guestCheckin.id !== guestCheckinId || !normalizedGuest
+        || !recordMatchesCanonicalFields(guestCheckin, normalizedGuest)) {
+        return { ok: false, code: 'guest_not_found' };
+      }
+      const tickets = operations.serviceTickets.filter((ticket) => ticket.guestCheckinId === guestCheckin.id);
+      if (tickets.length !== 1) return { ok: false, code: 'ticket_not_found' };
+      const ticket = tickets[0];
+      if (ticket.businessId !== guestCheckin.businessId) {
+        return { ok: false, code: 'cross_business_ticket' };
+      }
+      if (ticket.serviceKey !== guestCheckin.serviceKey
+        || !timestampAtOrAfter(ticket.createdAt, guestCheckin.scannedAt)
+        || originalStaffProfileIdForTicket(operations, ticket) !== guestCheckin.staffProfileId) {
+        return { ok: false, code: 'invalid_operations_snapshot' };
+      }
+      if (requireCompleted && ticket.status !== 'completed') {
+        return { ok: false, code: 'service_not_completed' };
+      }
+      return { ok: true, operations, guestCheckin, ticket };
+    }
+
+    function resolveCheckoutOperationsAuthority(appState, guestCheckinId, operationsSnapshot) {
+      const operations = normalizeOperationsSnapshotForImport(operationsSnapshot);
+      if (!operations.ok) return operations;
+      return resolveOperationsAuthorityFromCanonical(appState, guestCheckinId, operations, true);
+    }
+
+    function importAcceptedAddOnsFromAuthority(appState, checkoutDraftId, authority) {
       if (!Array.isArray(appState?.checkoutDrafts) || !Array.isArray(appState?.guestCheckins)) {
         return { ok: false, code: 'invalid_checkout_state' };
       }
@@ -1539,21 +1586,11 @@
         || !isCanonicalCheckoutForGuest(appState, checkout, guestCheckin)) {
         return { ok: false, code: 'invalid_checkout_state' };
       }
-      const operations = normalizeOperationsSnapshotForImport(operationsSnapshot);
-      if (!operations.ok) return operations;
-      const tickets = operations.serviceTickets.filter((ticket) => ticket.guestCheckinId === guestCheckin.id);
-      if (tickets.length !== 1 || tickets[0].businessId !== checkout.businessId) {
-        return { ok: false, code: tickets.length === 1 ? 'cross_business_ticket' : 'ticket_not_found' };
+      if (!authority?.ok || authority.guestCheckin.id !== guestCheckin.id
+        || authority.ticket.businessId !== checkout.businessId) {
+        return { ok: false, code: 'invalid_checkout_state' };
       }
-      const ticket = tickets[0];
-      let originalStaffProfileId = ticket.staffProfileId;
-      const ticketEligibility = operations.staffEligibility.filter((event) => event.ticketId === ticket.id);
-      for (let index = ticketEligibility.length - 1; index >= 0; index -= 1) {
-        originalStaffProfileId = ticketEligibility[index].requestedStaffId;
-      }
-      if (originalStaffProfileId !== guestCheckin.staffProfileId) {
-        return { ok: false, code: 'invalid_operations_snapshot' };
-      }
+      const { operations, ticket } = authority;
       const accepted = operations.addOnRequests.filter((addOn) => (
         addOn.ticketId === ticket.id && addOn.status === 'accepted'
       ));
@@ -1583,6 +1620,20 @@
       checkout.lineItems = lineItems;
       Object.assign(checkout, totals);
       return { ok: true, importedCount: additions.length, checkoutDraft: checkout };
+    }
+
+    function importAcceptedAddOns(appState, checkoutDraftId, operationsSnapshot) {
+      const checkout = Array.isArray(appState?.checkoutDrafts)
+        ? appState.checkoutDrafts.find((row) => row.id === checkoutDraftId)
+        : null;
+      if (!checkout) return { ok: false, code: 'invalid_checkout_state' };
+      const operations = normalizeOperationsSnapshotForImport(operationsSnapshot);
+      if (!operations.ok) return operations;
+      const authority = resolveOperationsAuthorityFromCanonical(
+        appState, checkout.guestCheckinId, operations, false
+      );
+      if (!authority.ok) return authority;
+      return importAcceptedAddOnsFromAuthority(appState, checkoutDraftId, authority);
     }
 
     function parseCustomerHttpUrl(href, expectedFileName) {
@@ -1656,34 +1707,189 @@
       return { ok: true, present: true, guestCheckinId };
     }
 
+    function resolveCheckoutReentry(appState, guestCheckin) {
+      if (!Array.isArray(appState?.checkoutDrafts) || !Array.isArray(appState?.paymentProofs)
+        || !Array.isArray(appState?.receipts) || !Array.isArray(appState?.guestRewardClaims)
+        || !isRecord(appState?.ui?.pendingContext)
+        || !collectionHasUniqueCanonicalIds(appState.paymentProofs, PAYMENT_PROOF_ID_PATTERN)
+        || !paymentProofCollectionsPassIdPreflight(appState)) {
+        return { ok: false, code: 'invalid_checkout_state' };
+      }
+      const matches = appState.checkoutDrafts.filter((row) => (
+        isRecord(row) && normalizedRequiredText(row.guestCheckinId) === guestCheckin.id
+      ));
+      if (matches.some((checkout) => !isCanonicalCheckoutForGuest(appState, checkout, guestCheckin))) {
+        return { ok: false, code: 'invalid_checkout_state' };
+      }
+      if (matches.length === 0) return { ok: true, create: true };
+      const active = matches.filter((checkout) => checkout.status !== 'rejected');
+      const checkout = active.length === 1
+        ? active[0]
+        : active.length === 0 && matches.length === 1 ? matches[0] : null;
+      if (!checkout) return { ok: false, code: 'invalid_checkout_state' };
+      const linkedProofs = appState.paymentProofs.filter((proof) => (
+        isRecord(proof) && normalizedRequiredText(proof.checkoutDraftId) === checkout.id
+      ));
+      if (checkout.status === 'draft') {
+        if (linkedProofs.length !== 0) return { ok: false, code: 'invalid_checkout_state' };
+        return { ok: true, create: false, checkout, proof: null, view: 'checkout', targetScreen: 'pay' };
+      }
+      if (linkedProofs.length !== 1) return { ok: false, code: 'invalid_checkout_state' };
+      const proofContext = canonicalProofContext(appState, linkedProofs[0].id);
+      if (!proofContext.ok || proofContext.checkout !== checkout) {
+        return { ok: false, code: 'invalid_checkout_state' };
+      }
+      const { proof } = proofContext;
+      const artifacts = semanticProofArtifacts(appState, checkout, proof);
+      if (checkout.status === 'pending_verification') {
+        if (proof.status !== 'pending_verification' || artifacts.receipts.length !== 0
+          || artifacts.claims.length !== 0) return { ok: false, code: 'invalid_checkout_state' };
+        return { ok: true, create: false, checkout, proof, view: 'pending', targetScreen: 'paydone' };
+      }
+      if (checkout.status === 'confirmed') {
+        const verified = proof.status === 'verified'
+          ? validateVerifiedPaymentAggregate(appState, proof.id)
+          : { ok: false };
+        if (!verified.ok) return { ok: false, code: 'invalid_checkout_state' };
+        return { ok: true, create: false, checkout, proof, view: 'confirmed', targetScreen: 'paydone' };
+      }
+      if (checkout.status === 'rejected') {
+        if (proof.status !== 'rejected' || artifacts.receipts.length !== 0
+          || artifacts.claims.length !== 0) return { ok: false, code: 'invalid_checkout_state' };
+        return { ok: true, create: false, checkout, proof, view: 'rejected', targetScreen: 'paydone' };
+      }
+      return { ok: false, code: 'invalid_checkout_state' };
+    }
+
+    function applyCheckoutReentryContext(appState, authority, reentry) {
+      appState.ui.pendingContext.guestCheckinId = authority.guestCheckin.id;
+      appState.ui.pendingContext.checkoutDraftId = reentry.checkout.id;
+      appState.ui.pendingContext.paymentId = null;
+      appState.ui.pendingContext.paymentProofId = reentry.proof?.id ?? null;
+      appState.ui.pendingContext.paydoneKind = reentry.proof ? 'payment_proof' : null;
+      appState.ui.activeScreen = reentry.targetScreen;
+      appState.ui.activeModule = SCREEN_MODULE[reentry.targetScreen];
+    }
+
+    function consumeCheckoutAuthority(appState, authority, now) {
+      let reentry = resolveCheckoutReentry(appState, authority.guestCheckin);
+      if (!reentry.ok) return reentry;
+      let created = null;
+      if (reentry.create) {
+        created = createCheckoutDraft(appState, {
+          guestCheckinId: authority.guestCheckin.id
+        }, now);
+        if (!created.ok) return created;
+        reentry = resolveCheckoutReentry(appState, authority.guestCheckin);
+        if (!reentry.ok || reentry.create) return { ok: false, code: 'invalid_checkout_state' };
+      }
+      let imported = { ok: true, importedCount: 0, idempotent: true };
+      if (reentry.checkout.status === 'draft') {
+        imported = importAcceptedAddOnsFromAuthority(appState, reentry.checkout.id, authority);
+        if (!imported.ok) return imported;
+        reentry = resolveCheckoutReentry(appState, authority.guestCheckin);
+        if (!reentry.ok || reentry.create) return { ok: false, code: 'invalid_checkout_state' };
+      }
+      applyCheckoutReentryContext(appState, authority, reentry);
+      return {
+        ok: true,
+        guestCheckin: authority.guestCheckin,
+        checkoutDraft: reentry.checkout,
+        proof: reentry.proof,
+        importedCount: imported.importedCount ?? 0,
+        view: reentry.view,
+        targetScreen: reentry.targetScreen,
+        idempotent: created === null && (reentry.checkout.status !== 'draft' || imported.idempotent === true)
+      };
+    }
+
     function consumeGuestCheckoutHandoff(appState, handoff, operationsSnapshot, now = Date.now()) {
       if (!isRecord(handoff) || handoff.ok !== true || handoff.present !== true
         || !GUEST_CHECKIN_ID_PATTERN.test(handoff.guestCheckinId)
         || !Array.isArray(appState?.guestCheckins)) return { ok: false, code: 'invalid_handoff' };
       const draft = structuredClone(appState);
-      const guestMatches = draft.guestCheckins.filter((row) => row.id === handoff.guestCheckinId);
-      const guest = guestMatches.length === 1 ? guestMatches[0] : null;
-      if (!guest || !normalizeGuestCheckin(draft, guest)) return { ok: false, code: 'guest_not_found' };
-      const created = createCheckoutDraft(draft, { guestCheckinId: guest.id }, now);
-      if (!created.ok || created.checkoutDraft.status !== 'draft') {
-        return created.ok ? { ok: false, code: 'checkout_not_draft' } : created;
-      }
-      const imported = importAcceptedAddOns(draft, created.checkoutDraft.id, operationsSnapshot);
-      if (!imported.ok) return imported;
-      draft.ui.pendingContext.guestCheckinId = guest.id;
-      draft.ui.pendingContext.checkoutDraftId = created.checkoutDraft.id;
-      draft.ui.pendingContext.paymentId = null;
-      draft.ui.pendingContext.paymentProofId = null;
-      draft.ui.pendingContext.paydoneKind = null;
-      draft.ui.activeScreen = 'pay';
-      draft.ui.activeModule = SCREEN_MODULE.pay;
+      const authority = resolveCheckoutOperationsAuthority(
+        draft, handoff.guestCheckinId, operationsSnapshot
+      );
+      if (!authority.ok) return authority;
+      const consumed = consumeCheckoutAuthority(draft, authority, now);
+      if (!consumed.ok) return consumed;
+      const checkoutId = consumed.checkoutDraft.id;
+      const proofId = consumed.proof?.id ?? null;
       replaceState(appState, draft);
       return {
-        ok: true,
-        guestCheckin: guest,
-        checkoutDraft: appState.checkoutDrafts.find((row) => row.id === created.checkoutDraft.id),
-        importedCount: imported.importedCount,
-        idempotent: created.idempotent === true && imported.idempotent === true
+        ...consumed,
+        guestCheckin: appState.guestCheckins.find((row) => row.id === handoff.guestCheckinId),
+        checkoutDraft: appState.checkoutDrafts.find((row) => row.id === checkoutId),
+        proof: proofId ? appState.paymentProofs.find((row) => row.id === proofId) : null
+      };
+    }
+
+    function resolveCanonicalScanContext(appState) {
+      const context = appState?.ui?.pendingContext?.scanContext;
+      if (!isRecord(context)) return { ok: false, code: 'invalid_checkout_state' };
+      const parsed = parseNexoraQr(context.payload);
+      if (!parsed.ok || parsed.businessId !== context.businessId || parsed.station !== context.station
+        || parsed.staffProfileId !== context.staffProfileId || !getValidBusiness(appState, parsed.businessId)) {
+        return { ok: false, code: 'invalid_checkout_state' };
+      }
+      return { ok: true, context, parsed };
+    }
+
+    function listScanCheckoutCandidates(appState, operationsSnapshot) {
+      const scan = resolveCanonicalScanContext(appState);
+      const operations = normalizeOperationsSnapshotForImport(operationsSnapshot);
+      if (!scan.ok || !operations.ok || !Array.isArray(appState?.guestCheckins)) return [];
+      const candidates = [];
+      for (const guest of appState.guestCheckins) {
+        if (!isRecord(guest) || guest.businessId !== scan.parsed.businessId) continue;
+        const authority = resolveOperationsAuthorityFromCanonical(
+          appState, guest.id, operations, true
+        );
+        if (!authority.ok) continue;
+        candidates.push({
+          guestCheckinId: authority.guestCheckin.id,
+          ticketId: authority.ticket.id,
+          number: authority.ticket.number,
+          serviceKey: authority.ticket.serviceKey,
+          currentTotalCents: authority.ticket.currentTotalCents
+        });
+      }
+      return candidates.sort((left, right) => (
+        left.number - right.number || left.ticketId.localeCompare(right.ticketId)
+      ));
+    }
+
+    function authenticatedSessionOwnsGuest(appState, guestCheckin) {
+      return appState?.session?.authenticated === true
+        && typeof appState.session.phone === 'string' && appState.session.phone === guestCheckin.phone
+        && typeof appState?.profile?.phone === 'string' && appState.profile.phone === guestCheckin.phone;
+    }
+
+    function prepareScanCheckout(appState, guestCheckinId, phoneLast4, operationsSnapshot, now = Date.now()) {
+      const draft = structuredClone(appState);
+      const scan = resolveCanonicalScanContext(draft);
+      if (!scan.ok) return scan;
+      const authority = resolveCheckoutOperationsAuthority(draft, guestCheckinId, operationsSnapshot);
+      if (!authority.ok) return authority;
+      if (authority.guestCheckin.businessId !== scan.parsed.businessId) {
+        return { ok: false, code: 'cross_business_ticket' };
+      }
+      const ownsGuest = authenticatedSessionOwnsGuest(draft, authority.guestCheckin);
+      if (!ownsGuest && (typeof phoneLast4 !== 'string' || !/^\d{4}$/.test(phoneLast4)
+        || authority.guestCheckin.phone.slice(-4) !== phoneLast4)) {
+        return { ok: false, code: 'invalid_checkout_state' };
+      }
+      const consumed = consumeCheckoutAuthority(draft, authority, now);
+      if (!consumed.ok) return consumed;
+      const checkoutId = consumed.checkoutDraft.id;
+      const proofId = consumed.proof?.id ?? null;
+      replaceState(appState, draft);
+      return {
+        ...consumed,
+        guestCheckin: appState.guestCheckins.find((row) => row.id === guestCheckinId),
+        checkoutDraft: appState.checkoutDrafts.find((row) => row.id === checkoutId),
+        proof: proofId ? appState.paymentProofs.find((row) => row.id === proofId) : null
       };
     }
 
@@ -8044,10 +8250,13 @@
       saveState,
       readOperationsSnapshot,
       normalizeOperationsSnapshotForImport,
+      resolveCheckoutOperationsAuthority,
       importAcceptedAddOns,
       buildOperationsLiveTicketUrl,
       parseGuestCheckoutHandoff,
       consumeGuestCheckoutHandoff,
+      listScanCheckoutCandidates,
+      prepareScanCheckout,
       cleanConsumedHandoffUrl,
       normalizeGuestCheckin,
       normalizeCheckoutDraft,

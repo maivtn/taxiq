@@ -6645,14 +6645,15 @@ test('referral UI is localized, action-complete, standalone, and keeps exactly 3
 
 function acceptedOperationsSnapshot(checkout, {
   addOnId = 'addon-00000000-0000-4000-8000-000000000091',
-  ticketId = 'ticket-00000000-0000-4000-8000-000000000090'
+  ticketId = 'ticket-00000000-0000-4000-8000-000000000090',
+  status = 'completed'
 } = {}) {
   const guestCreatedAt = '1970-01-01T00:00:01.000Z';
   const resolvedAt = '1970-01-01T00:00:02.000Z';
   return {
     serviceTickets: [{
       id: ticketId, number: 104, guestCheckinId: checkout.guestCheckinId,
-      businessId: checkout.businessId, serviceKey: 'deluxe-pedicure', status: 'in_service',
+      businessId: checkout.businessId, serviceKey: 'deluxe-pedicure', status,
       staffProfileId: 'staff-anna',
       lineItems: [
         { id: `${ticketId}-service`, type: 'service', label: 'Deluxe Pedicure', amountCents: 5500 },
@@ -6660,7 +6661,7 @@ function acceptedOperationsSnapshot(checkout, {
         { id: `${ticketId}-addon-${addOnId}`, type: 'addon', label: 'Gel Polish', amountCents: 1500, sourceAddOnId: addOnId }
       ],
       currentTotalCents: 6450, frontDeskRequestedAt: null,
-      createdAt: guestCreatedAt, completedAt: null
+      createdAt: guestCreatedAt, completedAt: status === 'completed' ? '1970-01-01T00:00:04.000Z' : null
     }],
     addOnRequests: [{
       id: addOnId, ticketId, guestCheckinId: checkout.guestCheckinId,
@@ -6671,6 +6672,227 @@ function acceptedOperationsSnapshot(checkout, {
     staffEligibility: []
   };
 }
+
+test('completed ticket is mandatory before checkout handoff mutates customer state', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app, { staffProfileId: 'staff-anna' });
+  const inService = acceptedOperationsSnapshot({
+    guestCheckinId: guest.id,
+    businessId: guest.businessId
+  }, { status: 'in_service' });
+  const before = JSON.stringify(app);
+  const callsBefore = uuidCalls;
+
+  const blocked = api.consumeGuestCheckoutHandoff(app, {
+    ok: true, present: true, guestCheckinId: guest.id
+  }, inService, 2000);
+
+  assert.equal(blocked.ok, false);
+  assert.equal(blocked.code, 'service_not_completed');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(uuidCalls, callsBefore);
+
+  const completed = acceptedOperationsSnapshot({
+    guestCheckinId: guest.id,
+    businessId: guest.businessId
+  });
+  const opened = api.consumeGuestCheckoutHandoff(app, {
+    ok: true, present: true, guestCheckinId: guest.id
+  }, completed, 2000);
+  assert.equal(opened.ok, true);
+  assert.equal(opened.view, 'checkout');
+  assert.equal(opened.targetScreen, 'pay');
+  assert.equal(app.checkoutDrafts.length, 1);
+  assert.equal(app.checkoutDrafts[0].lineItems.at(-1).sourceAddOnId, completed.addOnRequests[0].id);
+});
+
+test('checkout authority fails closed for missing duplicate cross-business and corrupt operations records', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app, { staffProfileId: 'staff-anna' });
+  const handoff = { ok: true, present: true, guestCheckinId: guest.id };
+  const canonical = acceptedOperationsSnapshot({ guestCheckinId: guest.id, businessId: guest.businessId });
+  const crossBusiness = structuredClone(canonical);
+  const ticket = crossBusiness.serviceTickets[0];
+  ticket.businessId = 'golden-glow-spa';
+  ticket.serviceKey = 'signature-facial';
+  ticket.staffProfileId = null;
+  ticket.lineItems = [{
+    id: `${ticket.id}-service`, type: 'service', label: 'Signature Facial', amountCents: 7500
+  }];
+  ticket.currentTotalCents = 7500;
+  crossBusiness.addOnRequests = [];
+  const duplicate = structuredClone(canonical);
+  duplicate.serviceTickets.push(structuredClone(duplicate.serviceTickets[0]));
+  const corrupt = structuredClone(canonical);
+  corrupt.serviceTickets[0].completedAt = '1970-01-01T00:00:00.000Z';
+
+  for (const [snapshot, code] of [
+    [{ serviceTickets: [], addOnRequests: [], staffEligibility: [] }, 'ticket_not_found'],
+    [duplicate, 'invalid_operations_snapshot'],
+    [crossBusiness, 'cross_business_ticket'],
+    [corrupt, 'invalid_operations_snapshot']
+  ]) {
+    const target = structuredClone(app);
+    const before = JSON.stringify(target);
+    const result = api.consumeGuestCheckoutHandoff(target, handoff, snapshot, 2000);
+    assert.equal(result.ok, false, code);
+    assert.equal(result.code, code);
+    assert.equal(JSON.stringify(target), before, code);
+  }
+});
+
+test('checkout handoff resumes every canonical state without creating duplicate artifacts', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  const makeApp = () => {
+    const app = api.createDefaultState();
+    const checkout = seedCheckoutDraft(api, app, {
+      method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna'
+    });
+    return { app, checkout };
+  };
+  const fixtures = [];
+  fixtures.push({ ...makeApp(), expectedView: 'checkout', expectedScreen: 'pay' });
+  {
+    const fixture = makeApp();
+    fixture.proof = api.submitPaymentProof(fixture.app, {
+      checkoutDraftId: fixture.checkout.id,
+      note: '', imageDataUrl: 'data:image/jpeg;base64,AA=='
+    }, 2000).proof;
+    fixtures.push({ ...fixture, expectedView: 'pending', expectedScreen: 'paydone' });
+  }
+  {
+    const fixture = makeApp();
+    fixture.proof = api.submitPaymentProof(fixture.app, {
+      checkoutDraftId: fixture.checkout.id,
+      note: '', imageDataUrl: 'data:image/jpeg;base64,AA=='
+    }, 2000).proof;
+    assert.equal(api.verifyPaymentProof(fixture.app, fixture.proof.id, 3000).ok, true);
+    fixtures.push({ ...fixture, expectedView: 'confirmed', expectedScreen: 'paydone' });
+  }
+  {
+    const fixture = makeApp();
+    fixture.proof = api.submitPaymentProof(fixture.app, {
+      checkoutDraftId: fixture.checkout.id,
+      note: '', imageDataUrl: 'data:image/jpeg;base64,AA=='
+    }, 2000).proof;
+    assert.equal(api.rejectPaymentProof(fixture.app, fixture.proof.id, 'Không khớp', 3000).ok, true);
+    fixtures.push({ ...fixture, expectedView: 'rejected', expectedScreen: 'paydone' });
+  }
+
+  for (const fixture of fixtures) {
+    const operations = acceptedOperationsSnapshot(fixture.checkout);
+    const counts = JSON.stringify({
+      checkouts: fixture.app.checkoutDrafts.length,
+      proofs: fixture.app.paymentProofs.length,
+      receipts: fixture.app.receipts.length,
+      claims: fixture.app.guestRewardClaims.length
+    });
+    const handoff = {
+      ok: true, present: true, guestCheckinId: fixture.checkout.guestCheckinId
+    };
+    const first = api.consumeGuestCheckoutHandoff(fixture.app, handoff, operations, 4000);
+    const second = api.consumeGuestCheckoutHandoff(fixture.app, handoff, operations, 5000);
+    assert.equal(first.ok, true, fixture.expectedView);
+    assert.equal(second.ok, true, fixture.expectedView);
+    assert.equal(first.view, fixture.expectedView);
+    assert.equal(first.targetScreen, fixture.expectedScreen);
+    assert.equal(second.idempotent, true);
+    assert.equal(JSON.stringify({
+      checkouts: fixture.app.checkoutDrafts.length,
+      proofs: fixture.app.paymentProofs.length,
+      receipts: fixture.app.receipts.length,
+      claims: fixture.app.guestRewardClaims.length
+    }), counts);
+  }
+});
+
+test('scan checkout candidates use canonical IDs, completed lifecycle and immutable snapshots', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app, { staffProfileId: 'staff-anna' });
+  assert.equal(api.stageSalonScan(
+    app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'
+  ).ok, true);
+  const operations = acceptedOperationsSnapshot({ guestCheckinId: guest.id, businessId: guest.businessId });
+  const beforeApp = JSON.stringify(app);
+  const beforeOperations = JSON.stringify(operations);
+  assert.deepEqual(JSON.parse(JSON.stringify(api.listScanCheckoutCandidates(app, operations))), [{
+    guestCheckinId: guest.id,
+    ticketId: operations.serviceTickets[0].id,
+    number: 104,
+    serviceKey: 'deluxe-pedicure',
+    currentTotalCents: 6450
+  }]);
+  assert.equal(JSON.stringify(app), beforeApp);
+  assert.equal(JSON.stringify(operations), beforeOperations);
+
+  const inService = acceptedOperationsSnapshot(
+    { guestCheckinId: guest.id, businessId: guest.businessId },
+    { status: 'in_service' }
+  );
+  assert.deepEqual(JSON.parse(JSON.stringify(api.listScanCheckoutCandidates(app, inService))), []);
+  const duplicate = structuredClone(operations);
+  duplicate.serviceTickets.push(structuredClone(duplicate.serviceTickets[0]));
+  assert.deepEqual(JSON.parse(JSON.stringify(api.listScanCheckoutCandidates(app, duplicate))), []);
+  const missingId = structuredClone(operations);
+  missingId.serviceTickets[0].guestCheckinId = 'guest-checkin-00000000-0000-4000-8000-000000000099';
+  missingId.addOnRequests[0].guestCheckinId = missingId.serviceTickets[0].guestCheckinId;
+  assert.deepEqual(JSON.parse(JSON.stringify(api.listScanCheckoutCandidates(app, missingId))), []);
+});
+
+test('prepare scanned checkout verifies canonical phone ownership and is idempotent', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  const app = api.createDefaultState();
+  const guest = seedGuestCheckin(api, app, { staffProfileId: 'staff-anna' });
+  assert.equal(api.stageSalonScan(
+    app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'
+  ).ok, true);
+  const operations = acceptedOperationsSnapshot({ guestCheckinId: guest.id, businessId: guest.businessId });
+  const before = JSON.stringify(app);
+  const rejected = api.prepareScanCheckout(app, guest.id, '0000', operations, 2000);
+  assert.equal(rejected.ok, false);
+  assert.equal(rejected.code, 'invalid_checkout_state');
+  assert.equal(JSON.stringify(app), before);
+
+  const opened = api.prepareScanCheckout(app, guest.id, '0198', operations, 2000);
+  assert.equal(opened.ok, true);
+  assert.equal(opened.view, 'checkout');
+  const afterFirst = JSON.stringify(app);
+  const replay = api.prepareScanCheckout(app, guest.id, '0198', operations, 3000);
+  assert.equal(replay.ok, true);
+  assert.equal(replay.idempotent, true);
+  assert.equal(JSON.stringify(app), afterFirst);
+
+  const authenticated = api.createDefaultState();
+  const authenticatedGuest = seedGuestCheckin(api, authenticated, { staffProfileId: 'staff-anna' });
+  authenticated.session.phone = authenticatedGuest.phone;
+  authenticated.profile.phone = authenticatedGuest.phone;
+  assert.equal(api.stageSalonScan(
+    authenticated, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'
+  ).ok, true);
+  const authenticatedResult = api.prepareScanCheckout(
+    authenticated,
+    authenticatedGuest.id,
+    '',
+    acceptedOperationsSnapshot({
+      guestCheckinId: authenticatedGuest.id,
+      businessId: authenticatedGuest.businessId
+    }),
+    2000
+  );
+  assert.equal(authenticatedResult.ok, true);
+});
 
 test('legacy direct-pay checkout controls cannot bypass the explicit Operations Pay handoff', () => {
   const setup = testApi();
@@ -6895,6 +7117,80 @@ test('initialization consumes a valid handoff atomically, opens checkout, and cl
   assert.equal(checkoutView.getAttribute('aria-hidden'), 'false');
   assert.equal(document.activeElement, document.getElementById('guest-checkout-title'));
   assert.deepEqual(replacements, ['https://example.test/customer/cutomer-reward.html']);
+});
+
+test('initialization refuses an in-service handoff and keeps the persisted customer state unchanged', () => {
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  const guest = seedGuestCheckin(setup.api, app, { staffProfileId: 'staff-anna' });
+  const operations = acceptedOperationsSnapshot({
+    guestCheckinId: guest.id,
+    businessId: guest.businessId
+  }, { status: 'in_service' });
+  const raw = JSON.stringify(app);
+  const href = `https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${guest.id}`;
+  const replacements = [];
+  const loaded = testApi({
+    [setup.api.STORAGE_KEY]: raw,
+    [setup.api.OPERATIONS_STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, ...operations })
+  }, {
+    skipInit: false,
+    document: createDocumentStub(),
+    location: { href },
+    history: { replaceState(state, title, url) { replacements.push(String(url)); } }
+  });
+
+  assert.equal(vm.runInContext('state.checkoutDrafts.length', loaded.context), 0);
+  assert.equal(vm.runInContext('state.ui.activeScreen', loaded.context), 'home');
+  assert.equal(loaded.storage.getItem(setup.api.STORAGE_KEY), raw);
+  assert.deepEqual(replacements, []);
+});
+
+test('initialization re-enters a pending checkout on Pay Done instead of the editable checkout', () => {
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  const pending = seedPendingProof(setup.api, app, {
+    method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna'
+  });
+  const operations = acceptedOperationsSnapshot(pending.checkout);
+  const home = createStubElement({ id: 'home', classNames: ['app-screen', 'is-active'] });
+  const pay = createStubElement({ id: 'pay', classNames: ['app-screen', 'hidden'] });
+  const paydone = createStubElement({ id: 'paydone', classNames: ['app-screen', 'hidden'] });
+  const direct = createStubElement({ id: 'direct-payment-view', dataset: { payView: 'direct' } });
+  const checkoutView = createStubElement({
+    id: 'guest-checkout-view', dataset: { payView: 'checkout' }, classNames: ['hidden']
+  });
+  const proofView = createStubElement({
+    id: 'payment-proof-view', dataset: { payView: 'payment-proof' }, classNames: ['hidden']
+  });
+  const pendingView = createStubElement({
+    id: 'payment-pending-view', dataset: { paydoneView: 'pending' }, classNames: ['hidden']
+  });
+  const confirmedView = createStubElement({
+    id: 'payment-confirmed-view', dataset: { paydoneView: 'confirmed' }, classNames: ['hidden']
+  });
+  const rejectedView = createStubElement({
+    id: 'payment-rejected-view', dataset: { paydoneView: 'rejected' }, classNames: ['hidden']
+  });
+  const document = createDocumentStub({
+    screenNodes: [home, pay, paydone],
+    extraElements: [direct, checkoutView, proofView, pendingView, confirmedView, rejectedView],
+    selectorNodes: {
+      '[data-pay-view]': [direct, checkoutView, proofView],
+      '[data-paydone-view]': [pendingView, confirmedView, rejectedView]
+    }
+  });
+  const href = `https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=${pending.checkout.guestCheckinId}`;
+  const loaded = testApi({
+    [setup.api.STORAGE_KEY]: JSON.stringify(app),
+    [setup.api.OPERATIONS_STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, ...operations })
+  }, { skipInit: false, document, location: { href }, history: { replaceState() {} } });
+
+  assert.equal(vm.runInContext('state.ui.activeScreen', loaded.context), 'paydone');
+  assert.equal(paydone.classList.contains('hidden'), false);
+  assert.equal(pay.classList.contains('hidden'), true);
+  assert.equal(pendingView.attributes['aria-hidden'], 'false');
+  assert.equal(checkoutView.attributes['aria-hidden'], 'true');
 });
 
 test('imports a canonical no-preference ticket with no add-ons without inventing a line item', () => {
