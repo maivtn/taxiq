@@ -199,6 +199,14 @@
             </select>
             <button type="button" class="app-button mx-auto mt-4 flex w-full max-w-[360px]" data-action="start-scan"><i data-lucide="camera" class="size-4" aria-hidden="true"></i><span data-en="Scan salon QR" data-vi="Quét QR salon">Quét QR salon</span></button>
             <button type="button" class="app-button-secondary mx-auto mt-3 block w-full max-w-[360px]" data-action="enter-code" data-en="Enter code" data-vi="Nhập mã">Nhập mã</button>
+            <section class="mx-auto mt-6 w-full max-w-[360px]" aria-labelledby="scan-demo-actions-title">
+              <h2 id="scan-demo-actions-title" class="eyebrow" data-en="SIMULATE" data-vi="MÔ PHỎNG">MÔ PHỎNG</h2>
+              <div class="mt-3 grid grid-cols-3 gap-2">
+                <button type="button" class="app-card flex min-h-24 flex-col items-center justify-center gap-2 p-3 text-center transition hover:border-app-cyan focus-visible:border-app-cyan" data-action="simulate-checkin"><span class="grid size-9 place-items-center rounded-xl bg-app-cyan/10 text-app-cyan"><i data-lucide="user-round-check" class="size-5" aria-hidden="true"></i></span><span class="text-xs font-black" data-en="Check-in" data-vi="Check-in">Check-in</span></button>
+                <button type="button" class="app-card flex min-h-24 flex-col items-center justify-center gap-2 p-3 text-center transition hover:border-app-pink focus-visible:border-app-pink" data-action="simulate-payment"><span class="grid size-9 place-items-center rounded-xl bg-app-purple/10 text-app-pink"><i data-lucide="credit-card" class="size-5" aria-hidden="true"></i></span><span class="text-xs font-black" data-en="Payment" data-vi="Thanh toán">Thanh toán</span></button>
+                <button type="button" class="app-card flex min-h-24 flex-col items-center justify-center gap-2 p-3 text-center transition hover:border-app-green focus-visible:border-app-green" data-action="simulate-tip"><span class="grid size-9 place-items-center rounded-xl bg-app-green/10 text-app-green"><i data-lucide="badge-dollar-sign" class="size-5" aria-hidden="true"></i></span><span class="text-xs font-black" data-en="Tip" data-vi="Tip">Tip</span></button>
+              </div>
+            </section>
             <div class="app-card mt-7"><div class="flex items-center gap-3"><span class="grid size-11 place-items-center rounded-xl bg-app-purple/10 text-app-pink"><i data-lucide="map-pin" class="size-5" aria-hidden="true"></i></span><div class="flex-1"><p class="eyebrow" data-en="Nearby" data-vi="Gần bạn">Gần bạn</p><h2 class="font-black">Bitcoin Nail Bar</h2><p class="text-xs text-app-muted" data-en="0.2 mi · Open until 7:00 PM" data-vi="0,2 dặm · Mở cửa đến 7:00 tối">0,2 dặm · Mở cửa đến 7:00 tối</p></div><span class="rounded-full bg-app-green/10 px-2 py-1 text-xs font-bold text-app-green" data-en="Open" data-vi="Đang mở">Đang mở</span></div></div>
           </div>
 
@@ -335,6 +343,11 @@
     const OPERATIONS_STORAGE_KEY = 'nexora.customer.crosssurface.v1';
     const SCHEMA_VERSION = 2;
     const BUSINESS_ID = 'bitcoin-nail-bar';
+    const FIXED_SCAN_DEMO = Object.freeze({
+      businessId: BUSINESS_ID,
+      staffProfileId: 'staff-anna',
+      payload: 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna'
+    });
     const PAYMENT_METHODS = ['Venmo', 'Zelle', 'Cash App'];
     const CHECKIN_BUSINESSES = new Set(['bitcoin-nail-bar', 'golden-glow-spa', 'moon-coffee']);
     const CHECKIN_STAFF_BUSINESSES = Object.freeze({
@@ -623,6 +636,34 @@
       appState.ui.pendingContext.tipScanReplayId = null;
       appState.ui.pendingContext.tipScanReplayFingerprint = null;
       return { ok: true, business, staff, method };
+    }
+
+    function prepareFixedScanDemo(appState, intent) {
+      if (!isRecord(appState?.ui) || !['checkin', 'payment', 'tip'].includes(intent)) {
+        return { ok: false, code: 'invalid_demo_intent' };
+      }
+      if (intent === 'checkin') {
+        const staged = stageSalonScan(appState, FIXED_SCAN_DEMO.payload);
+        if (!staged.ok) return staged;
+        const member = appState.session.authenticated === true
+          && /^\d{10}$/.test(appState.session.phone)
+          && appState.profile.phone === appState.session.phone;
+        return { ...staged, intent, targetScreen: 'scan', member };
+      }
+      if (intent === 'payment') {
+        const business = getValidBusiness(appState, FIXED_SCAN_DEMO.businessId);
+        if (!business) return { ok: false, code: 'unknown_business' };
+        appState.ui.selectedBusinessId = business.id;
+        appState.ui.payViewIntent = 'direct';
+        return { ok: true, intent, targetScreen: 'pay', business };
+      }
+      const prepared = prepareGenericTipContext(appState, {
+        businessId: FIXED_SCAN_DEMO.businessId,
+        preferredStaffId: FIXED_SCAN_DEMO.staffProfileId
+      });
+      return prepared.ok
+        ? { ...prepared, intent, targetScreen: 'tip' }
+        : prepared;
     }
 
     function matchesRecentGuestCheckinSemantic(value, identity, timestamp) {
@@ -1961,11 +2002,13 @@
     function parseGuestCheckoutHandoff(href) {
       const url = parseCustomerHttpUrl(href, 'cutomer-reward.html');
       if (!url) return { ok: false, present: true, code: 'invalid_handoff' };
-      const keys = [...url.searchParams.keys()];
-      if (keys.length === 0) return { ok: true, present: false };
-      const allowed = new Set(['handoff', 'guestCheckinId']);
       const handoffValues = url.searchParams.getAll('handoff');
       const guestValues = url.searchParams.getAll('guestCheckinId');
+      // Not a checkout handoff at all — e.g. a bare URL or only ?tab= from tab persistence.
+      // Bail out as "not present" so normal restore runs instead of flagging an invalid link.
+      if (handoffValues.length === 0 && guestValues.length === 0) return { ok: true, present: false };
+      const keys = [...url.searchParams.keys()];
+      const allowed = new Set(['handoff', 'guestCheckinId', 'tab']);
       const guestCheckinId = guestValues[0];
       if (keys.some((key) => !allowed.has(key)) || handoffValues.length !== 1
         || handoffValues[0] !== 'guest-checkout' || guestValues.length !== 1
@@ -6092,6 +6135,25 @@
       return next;
     }
 
+    function syncTabParam(module) {
+      if (!module) return;
+      try {
+        const url = new URL(window.location.href);
+        if (url.searchParams.get('tab') === module) return;
+        url.searchParams.set('tab', module);
+        window.history.replaceState(window.history.state, '', url);
+      } catch {}
+    }
+
+    function readTabParam() {
+      try {
+        const tab = new URL(window.location.href).searchParams.get('tab');
+        return tab && ROOT_SCREENS.includes(tab) ? tab : null;
+      } catch {
+        return null;
+      }
+    }
+
     function navigateTo(screenId, options = {}) {
       const next = showScreen(screenId);
       if (next.id === 'pay' && options.resetPayView !== false) {
@@ -6100,6 +6162,7 @@
       }
       state.ui.activeScreen = next.id;
       state.ui.activeModule = SCREEN_MODULE[next.id] || 'home';
+      syncTabParam(state.ui.activeModule);
       if (options.persist !== false) saveState(state);
       updateNavigation();
       window.scrollTo?.({ top: 0, behavior: 'auto' });
@@ -7788,6 +7851,30 @@
         showToast(t('dataReset'));
       }
     }, control));
+    function openFixedScanDemo(intent) {
+      const result = commitState((draft) => prepareFixedScanDemo(draft, intent));
+      if (!result.ok) {
+        showToast(t('scanIntentFailed'), 'error');
+        return result;
+      }
+      if (intent === 'checkin') {
+        const opened = openServiceCheckinForm(result.member);
+        if (!opened.ok) showToast(t('scanIntentFailed'), 'error');
+        return opened;
+      }
+      if (intent === 'payment') {
+        renderPaymentMethods();
+        navigateTo('pay');
+        return result;
+      }
+      renderTipMethods();
+      navigateTo('tip', { persist: false });
+      return result;
+    }
+
+    registerAction('simulate-checkin', () => openFixedScanDemo('checkin'));
+    registerAction('simulate-payment', () => openFixedScanDemo('payment'));
+    registerAction('simulate-tip', () => openFixedScanDemo('tip'));
     registerAction('start-scan', () => {
       const line = document.getElementById('scan-line');
       const loading = document.getElementById('scan-loading-state');
@@ -8630,16 +8717,16 @@
       if (list) {
         const cards = Object.entries(state.businesses).filter(([, business]) => isRecord(business)).map(([businessId, business]) => {
         const card = document.createElement('article');
-        card.className = 'app-card';
+        card.className = 'app-card flex flex-wrap items-center gap-x-3 gap-y-4';
         const name = document.createElement('h2');
-        name.className = 'font-black';
+        name.className = 'w-full font-black';
         name.textContent = business.name;
         const points = document.createElement('strong');
-        points.className = 'mt-5 block text-3xl font-black';
+        points.className = 'mr-auto text-3xl font-black';
         points.textContent = formatPoints(getBusinessBalance(state, businessId).points);
         const history = document.createElement('button');
         history.type = 'button';
-        history.className = 'app-button-secondary mt-5 w-full';
+        history.className = 'flex w-fit items-center gap-1.5 rounded-lg border border-[#252c51] bg-[#0d1024] px-3 py-1.5 text-xs font-bold text-[#f7f7ff] transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22d3ee]';
         history.dataset.action = 'open-business-history';
         history.dataset.businessId = businessId;
         history.textContent = t('history');
@@ -8932,6 +9019,15 @@
 
     function restorePersistedUi() {
       let screenId = state.ui.activeScreen;
+      // A ?tab= in the URL wins over the persisted screen so a reload (or a shared/
+      // hand-edited link) lands on that tab. When the persisted screen already belongs
+      // to the requested tab, keep it so its sub-screen (e.g. wallet → history) survives.
+      const requestedTab = readTabParam();
+      if (requestedTab && SCREEN_MODULE[screenId] !== requestedTab) {
+        screenId = requestedTab;
+        state.ui.activeScreen = screenId;
+        state.ui.activeModule = SCREEN_MODULE[screenId];
+      }
       if (!Object.prototype.hasOwnProperty.call(SCREEN_MODULE, screenId)) {
         screenId = 'home';
         state.ui.activeScreen = screenId;
@@ -8996,6 +9092,7 @@
         state.ui.payViewIntent = restoresCheckout ? 'checkout' : 'direct';
         showPayView(restoresCheckout ? 'checkout' : 'direct', { focus: false });
       }
+      syncTabParam(state.ui.activeModule);
       updateNavigation();
     }
 
@@ -9140,6 +9237,7 @@
       stageSalonScan,
       prepareTipFromScan,
       prepareGenericTipContext,
+      prepareFixedScanDemo,
       createTipFromScan,
       createGuestCheckin,
       calculateCheckoutTotals,

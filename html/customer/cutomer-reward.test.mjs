@@ -4382,6 +4382,54 @@ test('stages a salon scan without awarding points and supports a different salon
   assert.equal(JSON.stringify(app.balances), before);
 });
 
+test('prepares fixed scan demo intents without creating transactions', () => {
+  const { api } = testApi();
+  const transactionSnapshot = (app) => JSON.stringify({
+    checkins: app.checkins,
+    guestCheckins: app.guestCheckins,
+    tips: app.tips,
+    directPayments: app.directPayments,
+    ledger: app.ledger
+  });
+
+  const checkinApp = api.createDefaultState();
+  checkinApp.ui.selectedBusinessId = 'golden-glow-spa';
+  const checkinBefore = transactionSnapshot(checkinApp);
+  const checkin = api.prepareFixedScanDemo(checkinApp, 'checkin');
+  assert.equal(checkin.ok, true);
+  assert.equal(checkin.targetScreen, 'scan');
+  assert.equal(checkin.member, true);
+  assert.equal(checkinApp.ui.pendingContext.scanContext.businessId, 'bitcoin-nail-bar');
+  assert.equal(checkinApp.ui.pendingContext.scanContext.staffProfileId, 'staff-anna');
+  assert.equal(transactionSnapshot(checkinApp), checkinBefore);
+
+  const paymentApp = api.createDefaultState();
+  paymentApp.ui.selectedBusinessId = 'golden-glow-spa';
+  const paymentBefore = transactionSnapshot(paymentApp);
+  const payment = api.prepareFixedScanDemo(paymentApp, 'payment');
+  assert.equal(payment.ok, true);
+  assert.equal(payment.targetScreen, 'pay');
+  assert.equal(paymentApp.ui.selectedBusinessId, 'bitcoin-nail-bar');
+  assert.equal(paymentApp.ui.payViewIntent, 'direct');
+  assert.equal(transactionSnapshot(paymentApp), paymentBefore);
+
+  const tipApp = api.createDefaultState();
+  tipApp.ui.selectedBusinessId = 'golden-glow-spa';
+  const tipBefore = transactionSnapshot(tipApp);
+  const tip = api.prepareFixedScanDemo(tipApp, 'tip');
+  assert.equal(tip.ok, true);
+  assert.equal(tip.targetScreen, 'tip');
+  assert.equal(tipApp.ui.selectedBusinessId, 'bitcoin-nail-bar');
+  assert.equal(tipApp.ui.selectedStaffId, 'staff-anna');
+  assert.equal(tipApp.ui.pendingContext.tipEntryIntent, 'generic');
+  assert.equal(transactionSnapshot(tipApp), tipBefore);
+
+  const invalidApp = api.createDefaultState();
+  const invalidBefore = JSON.stringify(invalidApp);
+  assert.equal(api.prepareFixedScanDemo(invalidApp, 'unknown').code, 'invalid_demo_intent');
+  assert.equal(JSON.stringify(invalidApp), invalidBefore);
+});
+
 function seedGuestCheckin(api, app, {
   payload = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front',
   serviceKey = 'deluxe-pedicure',
@@ -6763,6 +6811,41 @@ test('provides nested multi-salon and guest scan views with localized copy and s
   assert.ok(memberAction);
   assert.match(memberAction, /openServiceCheckinForm\(true\)/);
   assert.match(source, /function renderScanContext\(\)[\s\S]*?\.textContent/);
+});
+
+test('shows three fixed demo shortcuts below the scan camera controls', () => {
+  const source = html();
+  const cameraStart = source.indexOf('id="scan-camera-view"');
+  const contextStart = source.indexOf('id="scan-context-view"');
+  assert.ok(cameraStart > -1 && contextStart > cameraStart);
+  const cameraView = source.slice(cameraStart, contextStart);
+  assert.ok(cameraView.indexOf('id="scan-demo-actions-title"') > cameraView.indexOf('data-action="enter-code"'));
+  assert.match(cameraView, /id="scan-demo-actions-title"[^>]*data-en="SIMULATE"[^>]*data-vi="MÔ PHỎNG"/);
+  assert.deepEqual(
+    [...cameraView.matchAll(/data-action="simulate-(checkin|payment|tip)"/g)].map((match) => match[1]),
+    ['checkin', 'payment', 'tip']
+  );
+  for (const [action, en, vi] of [
+    ['checkin', 'Check-in', 'Check-in'],
+    ['payment', 'Payment', 'Thanh toán'],
+    ['tip', 'Tip', 'Tip']
+  ]) {
+    assert.match(cameraView, new RegExp(`data-action="simulate-${action}"[\\s\\S]*?data-en="${en}"[^>]*data-vi="${vi}"`));
+    assert.match(source, new RegExp(`registerAction\\('simulate-${action}', \\(\\) => openFixedScanDemo\\('${action}'\\)\\)`));
+  }
+});
+
+test('fixed scan demo dispatcher opens existing flows without submitting transactions', () => {
+  const source = html();
+  const dispatcher = source.match(/function openFixedScanDemo\(intent\)[\s\S]*?registerAction\('simulate-checkin'/)?.[0];
+  assert.ok(dispatcher);
+  assert.match(dispatcher, /prepareFixedScanDemo\(draft, intent\)/);
+  assert.match(dispatcher, /openServiceCheckinForm\(result\.member\)/);
+  assert.match(dispatcher, /renderPaymentMethods\(\)/);
+  assert.match(dispatcher, /navigateTo\('pay'\)/);
+  assert.match(dispatcher, /renderTipMethods\(\)/);
+  assert.match(dispatcher, /navigateTo\('tip'/);
+  assert.doesNotMatch(dispatcher, /createGuestCheckin|createTip|createDirectPayment|sendTip|sendPayment/);
 });
 
 test('scan context exposes a localized responsive intent router with accessible disabled reasons', () => {

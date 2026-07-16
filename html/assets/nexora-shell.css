@@ -163,6 +163,7 @@
   text-align: left;
   font-size: 14px;
   font-weight: 700;
+  text-decoration: none;
   cursor: pointer;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }

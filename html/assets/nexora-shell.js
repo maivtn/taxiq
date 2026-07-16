@@ -21,7 +21,8 @@
 
   var PAGES = {
     booking: 'booking-book-phase-1.html',
-    reward: 'salon-setup-reward.html'
+    reward: 'salon-setup-reward.html',
+    pos: 'pos-1.html'
   };
 
   // Single source of truth for the whole sidebar.
@@ -56,7 +57,7 @@
       { label: 'Create Reward', tab: 'create-reward' },
       { label: 'Reward Analytics', tab: 'reward-analytics' }
     ] },
-    { type: 'item', label: 'POS', icon: 'monitor' },
+    { type: 'item', label: 'POS', icon: 'monitor', page: 'pos' },
     { type: 'item', label: 'Analytics', icon: 'chart-no-axes-combined' },
     { type: 'item', label: 'Settings', icon: 'settings' },
     { type: 'item', label: 'Support', icon: 'circle-question-mark' }
@@ -80,7 +81,13 @@
   var CARET = '<svg class="nav-caret" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>';
 
   function renderFlat(node) {
-    return '<button class="nav-item" type="button">' + iconWrap(node.icon) + '<span>' + esc(node.label) + '</span></button>';
+    var inner = iconWrap(node.icon) + '<span>' + esc(node.label) + '</span>';
+    if (node.page) {
+      var active = node.page === activePage;
+      var href = PAGES[node.page] || '#';
+      return '<a class="nav-item' + (active ? ' is-active' : '') + '" href="' + href + '">' + inner + '</a>';
+    }
+    return '<button class="nav-item" type="button">' + inner + '</button>';
   }
 
   function renderGroup(node) {
