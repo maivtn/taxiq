@@ -439,23 +439,16 @@
         staffProfileId: parsed.staffProfileId
       };
       const fingerprint = JSON.stringify([parsed.businessId, parsed.station, parsed.staffProfileId]);
-      const hasReplayAuthority = appState.ui.pendingContext.tipEntryIntent === 'scan'
-        && appState.ui.pendingContext.tipScanReplayId !== null;
+      const priorIntent = resolveTipScanIntentState(appState);
+      if (priorIntent.kind === 'corrupt') {
+        return { ok: false, code: 'invalid_tip_replay' };
+      }
+      const hasReplayAuthority = ['pending', 'terminal'].includes(priorIntent.kind);
       let priorFingerprint = null;
       let priorReplay = { kind: 'none' };
       if (hasReplayAuthority) {
-        const priorTarget = resolveTipScanTarget(appState);
-        priorFingerprint = canonicalTipScanFingerprint(appState);
-        if (!priorTarget.ok || priorFingerprint === null
-          || appState.ui.pendingContext.tipScanReplayFingerprint !== priorFingerprint) {
-          return { ok: false, code: 'invalid_tip_replay' };
-        }
-        priorReplay = classifyTipScanReplay(
-          appState, priorFingerprint, priorTarget.business.id, priorTarget.staff.id
-        );
-        if (!['pending', 'terminal'].includes(priorReplay.kind)) {
-          return { ok: false, code: 'invalid_tip_replay' };
-        }
+        priorFingerprint = priorIntent.fingerprint;
+        priorReplay = priorIntent;
       }
       const sameCanonicalScan = hasReplayAuthority && priorFingerprint === fingerprint;
       const preserveReplay = sameCanonicalScan && priorReplay.kind === 'pending';
@@ -504,21 +497,22 @@
       const fingerprint = canonicalTipScanFingerprint(appState);
       if (!fingerprint) return { ok: false, code: 'invalid_scan_context' };
       const pendingContext = appState.ui.pendingContext;
-      if (pendingContext.tipEntryIntent === 'scan' && pendingContext.tipScanReplayId !== null) {
-        if (pendingContext.tipScanReplayFingerprint !== fingerprint) {
-          return { ok: false, code: 'invalid_tip_replay' };
-        }
-        const replay = classifyTipScanReplay(
-          appState, fingerprint, target.business.id, target.staff.id
-        );
-        if (replay.kind === 'corrupt') return { ok: false, code: 'invalid_tip_replay' };
-        if (replay.kind === 'pending') {
-          appState.ui.selectedBusinessId = target.business.id;
-          appState.ui.selectedStaffId = target.staff.id;
-          appState.ui.selectedTipMethod = target.method;
-          pendingContext.tipScanArmed = false;
-          return { ...target, replay: replay.kind, tip: replay.tip };
-        }
+      const intentState = resolveTipScanIntentState(appState);
+      if (intentState.kind === 'corrupt') {
+        return { ok: false, code: 'invalid_tip_replay' };
+      }
+      if (intentState.kind === 'pending') {
+        appState.ui.selectedBusinessId = target.business.id;
+        appState.ui.selectedStaffId = target.staff.id;
+        appState.ui.selectedTipMethod = target.method;
+        pendingContext.tipScanArmed = false;
+        return { ...target, replay: intentState.kind, tip: intentState.tip };
+      }
+      if (intentState.kind === 'prepared') {
+        appState.ui.selectedBusinessId = target.business.id;
+        appState.ui.selectedStaffId = target.staff.id;
+        appState.ui.selectedTipMethod = target.method;
+        return target;
       }
       appState.ui.selectedBusinessId = target.business.id;
       appState.ui.selectedStaffId = target.staff.id;
@@ -527,6 +521,7 @@
       appState.ui.pendingContext.tipEntryIntent = 'scan';
       appState.ui.pendingContext.tipScanReplayId = null;
       appState.ui.pendingContext.tipScanReplayFingerprint = fingerprint;
+      appState.ui.pendingContext.tipId = null;
       return target;
     }
 
@@ -560,6 +555,31 @@
       }
       const lifecycle = resolveCanonicalTipLifecycle(appState, tip);
       return lifecycle.ok ? { kind: lifecycle.kind, tip } : { kind: 'corrupt' };
+    }
+
+    function resolveTipScanIntentState(appState) {
+      const pendingContext = appState?.ui?.pendingContext;
+      if (!isRecord(pendingContext) || pendingContext.tipEntryIntent !== 'scan') {
+        return { kind: 'generic' };
+      }
+      const target = resolveTipScanTarget(appState);
+      const fingerprint = canonicalTipScanFingerprint(appState);
+      if (!target.ok || fingerprint === null
+        || pendingContext.tipScanReplayFingerprint !== fingerprint) {
+        return { kind: 'corrupt' };
+      }
+      if (pendingContext.tipScanReplayId === null) {
+        return pendingContext.tipScanArmed === true && pendingContext.tipId === null
+          ? { kind: 'prepared', fingerprint, target }
+          : { kind: 'corrupt' };
+      }
+      if (pendingContext.tipScanArmed !== false) return { kind: 'corrupt' };
+      const replay = classifyTipScanReplay(
+        appState, fingerprint, target.business.id, target.staff.id
+      );
+      return ['pending', 'terminal'].includes(replay.kind)
+        ? { ...replay, fingerprint, target }
+        : { kind: 'corrupt' };
     }
 
     function prepareGenericTipContext(appState, input) {
@@ -4241,10 +4261,21 @@
         }
         const preparedFingerprintMatches = currentFingerprint !== null
           && currentFingerprint === migrated.ui.pendingContext.tipScanReplayFingerprint;
-        migrated.ui.pendingContext.tipScanArmed = Boolean(scanTarget.ok
-          && migrated.ui.pendingContext.tipScanReplayId === null
-          && preparedFingerprintMatches);
-        if (scanTarget.ok) {
+        const isPreparedShape = migrated.ui.pendingContext.tipScanReplayId === null
+          && rawPendingContext?.tipScanArmed === true
+          && migrated.ui.pendingContext.tipId === null;
+        const isReplayShape = migrated.ui.pendingContext.tipScanReplayId !== null
+          && rawPendingContext?.tipScanArmed === false
+          && migrated.ui.pendingContext.tipId === migrated.ui.pendingContext.tipScanReplayId;
+        const validScanShape = scanTarget.ok && preparedFingerprintMatches
+          && (isPreparedShape || isReplayShape);
+        const hasBooleanArmed = typeof rawPendingContext?.tipScanArmed === 'boolean';
+        migrated.ui.pendingContext.tipScanArmed = validScanShape
+          ? isPreparedShape
+          : migrated.ui.pendingContext.tipScanReplayId === null
+            ? false
+            : hasBooleanArmed ? rawPendingContext.tipScanArmed : true;
+        if (validScanShape) {
           migrated.ui.selectedBusinessId = scanTarget.business.id;
           migrated.ui.selectedStaffId = scanTarget.staff.id;
           migrated.ui.selectedTipMethod = scanTarget.method;
@@ -5344,23 +5375,18 @@
       if (!currentFingerprint || pendingContext.tipScanReplayFingerprint !== currentFingerprint) {
         return { ok: false, code: 'invalid_tip_replay' };
       }
+      const intentState = resolveTipScanIntentState(appState);
+      if (intentState.kind === 'corrupt') {
+        return { ok: false, code: 'invalid_tip_replay' };
+      }
       const amount = canonicalMoneyAmount(input.amount);
       if (!amount.ok) return amount;
       const method = enabledOwnerMethod(target.staff, input.method);
       if (!method) return { ok: false, code: 'method_disabled' };
       const note = typeof input.note === 'string' ? input.note.trim() : '';
-      if (pendingContext.tipScanReplayId !== null) {
-        const replayId = typeof pendingContext.tipScanReplayId === 'string'
-          && pendingContext.tipScanReplayId === pendingContext.tipScanReplayId.trim()
-          ? pendingContext.tipScanReplayId
-          : '';
-        const matches = replayId && Array.isArray(appState.tips)
-          ? appState.tips.filter((tip) => isRecord(tip) && tip.id === replayId)
-          : [];
-        const tip = matches.length === 1 ? matches[0] : null;
-        if (!tip || !isCanonicalRuntimeTip(appState, tip) || tip.status !== 'pending'
-          || pendingContext.tipId !== replayId
-          || tip.businessId !== target.business.id || tip.staffProfileId !== target.staff.id
+      if (intentState.kind === 'pending') {
+        const tip = intentState.tip;
+        if (tip.businessId !== target.business.id || tip.staffProfileId !== target.staff.id
           || tip.amount !== amount.value || tip.method !== method || tip.note !== note) {
           return { ok: false, code: 'invalid_tip_replay' };
         }
@@ -5369,7 +5395,7 @@
           ? { ok: false, code: 'invalid_tip_replay' }
           : { ok: true, tip, points, idempotent: true };
       }
-      if (pendingContext.tipScanArmed !== true) {
+      if (intentState.kind !== 'prepared') {
         return { ok: false, code: 'invalid_tip_replay' };
       }
       const created = createTip(appState, {

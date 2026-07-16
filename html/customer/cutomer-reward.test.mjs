@@ -1865,6 +1865,54 @@ test('completed scan-tip creation replays the same pending tip idempotently', ()
   assert.equal(ids.calls(), calls);
 });
 
+test('a partial created scan intent missing its replay ID rejects every rescan atomically', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const goldenQr = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  const bitcoinQr = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+  api.stageSalonScan(app, goldenQr);
+  api.prepareTipFromScan(app);
+  const first = api.createTipFromScan(app, {
+    amount: 10, method: 'Zelle', note: ''
+  }, 1000);
+  app.ui.pendingContext.tipScanReplayId = null;
+
+  for (const nextQr of [goldenQr, bitcoinQr]) {
+    const before = JSON.stringify(app);
+    const calls = ids.calls();
+    const staged = api.stageSalonScan(app, nextQr);
+
+    assert.equal(staged.ok, false, nextQr);
+    assert.equal(staged.code, 'invalid_tip_replay', nextQr);
+    assert.equal(JSON.stringify(app), before, nextQr);
+    assert.equal(app.tips.length, 1, nextQr);
+    assert.equal(app.tips[0], first.tip, nextQr);
+    assert.equal(ids.calls(), calls, nextQr);
+  }
+});
+
+test('a complete prepared scan intent can be rescanned before creation for the same or a different target', () => {
+  const goldenQr = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  const bitcoinQr = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+  for (const nextQr of [goldenQr, bitcoinQr]) {
+    const { api } = testApi();
+    const app = api.createDefaultState();
+    api.stageSalonScan(app, goldenQr);
+    api.prepareTipFromScan(app);
+
+    assert.equal(api.stageSalonScan(app, nextQr).ok, true, nextQr);
+    const prepared = api.prepareTipFromScan(app);
+
+    assert.equal(prepared.ok, true, nextQr);
+    assert.equal(app.ui.pendingContext.tipEntryIntent, 'scan', nextQr);
+    assert.equal(app.ui.pendingContext.tipScanArmed, true, nextQr);
+    assert.equal(app.ui.pendingContext.tipScanReplayId, null, nextQr);
+    assert.equal(app.ui.pendingContext.tipId, null, nextQr);
+    assert.equal(prepared.staff.id, nextQr === goldenQr ? 'staff-spa-linh' : 'staff-anna', nextQr);
+  }
+});
+
 test('scan-tip replay survives save and reload without generating another transaction', () => {
   const ids = createUuidSequence();
   const { api, storage } = testApi({}, { randomUUID: () => ids.randomUUID() });
@@ -1922,6 +1970,7 @@ test('rescanning the same staff QR starts a new tip only after the prior tip is 
 
   assert.equal(api.stageSalonScan(app, payload).ok, true);
   assert.equal(api.prepareTipFromScan(app).ok, true);
+  assert.equal(app.ui.pendingContext.tipId, null);
   const next = api.createTipFromScan(app, input, 3000);
 
   assert.equal(next.ok, true);
@@ -1948,6 +1997,7 @@ test('scanning a different canonical staff QR replaces pending scan authority an
   assert.equal(prepared.ok, true);
   assert.equal(prepared.staff.id, 'staff-anna');
   assert.equal(app.ui.pendingContext.tipEntryIntent, 'scan');
+  assert.equal(app.ui.pendingContext.tipId, null);
   const bitcoin = api.createTipFromScan(app, {
     amount: 7, method: 'Zelle', note: 'Bitcoin visit'
   }, 2000);
@@ -2150,6 +2200,37 @@ test('scan-tip replay fails closed for mismatched input or a corrupt retained ti
   }
 });
 
+test('direct scan-tip replay rejects a pending tip with a linked tip ledger artifact', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  api.stageSalonScan(
+    app, 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh'
+  );
+  api.prepareTipFromScan(app);
+  const input = { amount: 10, method: 'Zelle', note: '' };
+  const first = api.createTipFromScan(app, input, 1000);
+  app.ledger.unshift({
+    id: 'ledger-tip-00000000-0000-4000-8000-000000000081',
+    businessId: first.tip.businessId,
+    type: 'tip_bonus',
+    pointsDelta: first.points,
+    refType: 'tip',
+    refId: first.tip.id,
+    createdAt: new Date(2000).toISOString()
+  });
+  const before = JSON.stringify(app);
+  const calls = ids.calls();
+
+  const replay = api.createTipFromScan(app, input, 3000);
+
+  assert.equal(replay.ok, false);
+  assert.equal(replay.code, 'invalid_tip_replay');
+  assert.equal(JSON.stringify(app), before);
+  assert.equal(app.tips.length, 1);
+  assert.equal(ids.calls(), calls);
+});
+
 test('explicit generic tip entry clears scan replay authority and permits a separate tip', () => {
   const ids = createUuidSequence();
   const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
@@ -2206,6 +2287,54 @@ test('scan-tip action retry after navigation failure re-enters one persisted tra
   assert.equal(persisted.tips.length, 1);
   assert.equal(persisted.ui.pendingContext.tipScanReplayId, persisted.tips[0].id);
   assert.equal(persisted.ui.pendingContext.tipId, persisted.tips[0].id);
+});
+
+test('scan-tip send action rejects a pending replay with linked ledger before payment or navigation', () => {
+  const ids = createUuidSequence();
+  const setup = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = setup.api.createDefaultState();
+  setup.api.stageSalonScan(
+    app, 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh'
+  );
+  setup.api.prepareTipFromScan(app);
+  const first = setup.api.createTipFromScan(app, {
+    amount: 10, method: 'Zelle', note: ''
+  }, 1000);
+  const document = createDocumentStub();
+  document.getElementById('tip-custom-amount').value = '10';
+  document.getElementById('tip-note').value = '';
+  let opened = 0;
+  const loaded = testApi({ [setup.api.STORAGE_KEY]: JSON.stringify(app) }, {
+    document,
+    randomUUID: () => ids.randomUUID(),
+    open() { opened += 1; }
+  });
+  const storedBefore = loaded.storage.getItem(setup.api.STORAGE_KEY);
+  vm.runInContext(`
+    state.ledger.unshift({
+      id: 'ledger-tip-00000000-0000-4000-8000-000000000082',
+      businessId: '${first.tip.businessId}',
+      type: 'tip_bonus',
+      pointsDelta: ${first.points},
+      refType: 'tip',
+      refId: '${first.tip.id}',
+      createdAt: '${new Date(2000).toISOString()}'
+    });
+    globalThis.beforeInvalidReplay = JSON.stringify(state);
+    globalThis.navigationCalls = [];
+    navigateTo = (...args) => navigationCalls.push(args);
+    renderTipResult = () => { throw new Error('must not render'); };
+    globalThis.invalidReplayResult = ACTIONS.get('send-tip')();
+  `, loaded.context);
+
+  assert.equal(vm.runInContext('invalidReplayResult.ok', loaded.context), false);
+  assert.equal(vm.runInContext('invalidReplayResult.code', loaded.context), 'invalid_tip_replay');
+  assert.equal(vm.runInContext('JSON.stringify(state) === beforeInvalidReplay', loaded.context), true);
+  assert.equal(vm.runInContext('state.tips.length', loaded.context), 1);
+  assert.equal(vm.runInContext('navigationCalls.length', loaded.context), 0);
+  assert.equal(opened, 0);
+  assert.equal(loaded.storage.getItem(setup.api.STORAGE_KEY), storedBefore);
+  assert.equal(ids.calls(), 1);
 });
 
 test('same-QR scan Tip action reopens the pending receipt instead of an editable tip form', () => {
@@ -2283,6 +2412,44 @@ test('migration treats an invalid explicit tip entry intent as generic instead o
   assert.equal(migrated.ui.pendingContext.tipScanArmed, false);
   assert.equal(migrated.ui.pendingContext.tipScanReplayId, null);
   assert.equal(migrated.ui.pendingContext.tipScanReplayFingerprint, null);
+});
+
+test('reload quarantines a partial created scan intent until an explicit generic switch', () => {
+  const ids = createUuidSequence();
+  const { api, storage } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  api.stageSalonScan(app, payload);
+  api.prepareTipFromScan(app);
+  const first = api.createTipFromScan(app, {
+    amount: 10, method: 'Zelle', note: ''
+  }, 1000);
+  app.ui.pendingContext.tipScanReplayId = null;
+  storage.setItem(api.STORAGE_KEY, JSON.stringify(app));
+
+  const loaded = api.loadState(storage);
+  const before = JSON.stringify(loaded);
+  const calls = ids.calls();
+
+  assert.equal(loaded.ui.pendingContext.tipEntryIntent, 'scan');
+  assert.equal(loaded.ui.pendingContext.tipScanArmed, false);
+  assert.equal(loaded.ui.pendingContext.tipScanReplayId, null);
+  assert.equal(loaded.ui.pendingContext.tipId, first.tip.id);
+  for (const result of [
+    api.stageSalonScan(loaded, payload),
+    api.prepareTipFromScan(loaded),
+    api.createTipFromScan(loaded, { amount: 10, method: 'Zelle', note: '' }, 2000)
+  ]) {
+    assert.equal(result.ok, false);
+    assert.equal(result.code, 'invalid_tip_replay');
+    assert.equal(JSON.stringify(loaded), before);
+  }
+  assert.equal(loaded.tips.length, 1);
+  assert.equal(ids.calls(), calls);
+  assert.equal(api.prepareGenericTipContext(loaded, {
+    businessId: 'bitcoin-nail-bar', preferredStaffId: 'staff-anna'
+  }).ok, true);
+  assert.equal(loaded.ui.pendingContext.tipEntryIntent, 'generic');
 });
 
 test('generic tip context cancels stale QR authority and chooses one canonical business recipient', () => {
