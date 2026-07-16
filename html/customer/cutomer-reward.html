@@ -554,11 +554,12 @@
         ? appState.tips.filter((tip) => isRecord(tip) && tip.id === replayId)
         : [];
       const tip = matches.length === 1 ? matches[0] : null;
-      if (!tip || pendingContext.tipId !== replayId || !isCanonicalRuntimeTip(appState, tip)
+      if (!tip || pendingContext.tipId !== replayId
         || tip.businessId !== businessId || tip.staffProfileId !== staffProfileId) {
         return { kind: 'corrupt' };
       }
-      return { kind: tip.status === 'pending' ? 'pending' : 'terminal', tip };
+      const lifecycle = resolveCanonicalTipLifecycle(appState, tip);
+      return lifecycle.ok ? { kind: lifecycle.kind, tip } : { kind: 'corrupt' };
     }
 
     function prepareGenericTipContext(appState, input) {
@@ -5404,6 +5405,23 @@
         && tip.confirmedAt === normalized.confirmedAt;
     }
 
+    function resolveCanonicalTipLifecycle(appState, tip) {
+      if (!Array.isArray(appState?.ledger) || !isCanonicalRuntimeTip(appState, tip)) {
+        return { ok: false, code: 'invalid_tip_lifecycle' };
+      }
+      const linkedLedger = appState.ledger.filter((entry) => isRecord(entry)
+        && entry.refId === tip.id
+        && isTipLedgerEntry(entry));
+      if (tip.status === 'pending') {
+        return linkedLedger.length === 0
+          ? { ok: true, kind: 'pending', linkedLedger: [] }
+          : { ok: false, code: 'invalid_tip_lifecycle' };
+      }
+      return linkedLedger.length === 1 && isTipLedgerPair(tip, linkedLedger[0])
+        ? { ok: true, kind: 'terminal', linkedLedger }
+        : { ok: false, code: 'invalid_tip_lifecycle' };
+    }
+
     function confirmTipRecord(appState, tipId, now = Date.now()) {
       if (!hasTransactionState(appState, 'tips') || !isRecord(appState.staffProfiles)) {
         return { ok: false, code: 'invalid_state' };
@@ -5411,21 +5429,16 @@
       const normalizedId = typeof tipId === 'string' ? tipId.trim() : '';
       const matches = appState.tips.filter((tip) => isRecord(tip) && tip.id === normalizedId);
       if (!matches.length) return { ok: false, code: 'not_found' };
-      if (matches.length !== 1 || !isCanonicalRuntimeTip(appState, matches[0])) {
+      if (matches.length !== 1) {
         return { ok: false, code: 'invalid_state' };
       }
       const tip = matches[0];
+      const lifecycle = resolveCanonicalTipLifecycle(appState, tip);
+      if (!lifecycle.ok) return { ok: false, code: 'invalid_state' };
       const points = calculateTipPoints(tip);
-      const linkedLedger = appState.ledger.filter((entry) => isRecord(entry)
-        && entry.refId === tip.id
-        && isTipLedgerEntry(entry));
-      if (tip.status === 'confirmed') {
-        if (linkedLedger.length !== 1 || !isTipLedgerPair(tip, linkedLedger[0])) {
-          return { ok: false, code: 'invalid_state' };
-        }
+      if (lifecycle.kind === 'terminal') {
         return { ok: true, tip, points, idempotent: true };
       }
-      if (linkedLedger.length) return { ok: false, code: 'invalid_state' };
       const ledgerValidation = validateLedgerInput(appState, {
         businessId: tip.businessId,
         type: 'tip_bonus',

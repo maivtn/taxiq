@@ -2048,6 +2048,54 @@ test('a canonical prior context swap cannot launder a replay into a duplicate or
   }
 });
 
+test('scan replay bundle rejects forged tip lifecycle and linked ledger states atomically', () => {
+  for (const variant of ['confirmed_without_ledger', 'confirmed_wrong_ledger', 'confirmed_duplicate_ledger', 'pending_with_ledger']) {
+    const ids = createUuidSequence();
+    const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+    const app = api.createDefaultState();
+    const goldenQr = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+    const bitcoinQr = 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna';
+    api.stageSalonScan(app, goldenQr);
+    api.prepareTipFromScan(app);
+    const first = api.createTipFromScan(app, { amount: 9, method: 'Zelle', note: '' }, 1000);
+    const tip = first.tip;
+    const canonicalLedger = {
+      id: 'ledger-tip-00000000-0000-4000-8000-000000000091',
+      businessId: tip.businessId,
+      type: 'tip_bonus',
+      pointsDelta: 45,
+      refType: 'tip',
+      refId: tip.id,
+      createdAt: new Date(2000).toISOString()
+    };
+    if (variant !== 'pending_with_ledger') {
+      tip.status = 'confirmed';
+      tip.confirmedAt = new Date(2000).toISOString();
+    }
+    if (variant === 'confirmed_wrong_ledger') {
+      app.ledger.unshift({ ...canonicalLedger, pointsDelta: 44 });
+    } else if (variant === 'confirmed_duplicate_ledger') {
+      app.ledger.unshift(
+        canonicalLedger,
+        { ...canonicalLedger, id: 'ledger-tip-00000000-0000-4000-8000-000000000092' }
+      );
+    } else if (variant === 'pending_with_ledger') {
+      app.ledger.unshift(canonicalLedger);
+    }
+    for (const nextQr of [goldenQr, bitcoinQr]) {
+      const before = JSON.stringify(app);
+      const calls = ids.calls();
+      const staged = api.stageSalonScan(app, nextQr);
+
+      assert.equal(staged.ok, false, `${variant}: ${nextQr}`);
+      assert.equal(staged.code, 'invalid_tip_replay', `${variant}: ${nextQr}`);
+      assert.equal(JSON.stringify(app), before, `${variant}: ${nextQr}`);
+      assert.equal(app.tips.length, 1, `${variant}: ${nextQr}`);
+      assert.equal(ids.calls(), calls, `${variant}: ${nextQr}`);
+    }
+  }
+});
+
 test('a pending replay with an unresolvable prior scan context rejects every rescan atomically', () => {
   const ids = createUuidSequence();
   const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
