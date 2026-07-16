@@ -82,11 +82,11 @@ Parser phải từ chối origin khác, HTTP, host/path thừa, fragment, creden
 
 **Bộ định tuyến ngữ cảnh QR (QR context router)** không đoán mục đích từ `station`. QR chỉ resolve business/station/staff tùy chọn, rồi `scan-context-view` đưa ra ba intent:
 
-- Check-in: thành viên mở form dịch vụ đã prefill profile; guest mở cùng form với tên/số điện thoại để trống. Cả hai tạo record canonical trong `guestCheckins` và mở Operations Live Ticket.
+- Check-in: thành viên chỉ mở form đã prefill khi session/profile phone đã xác minh và khớp chính xác. Khi đăng xuất, CTA member bị khóa; guest mở cùng form với tên/số điện thoại để trống. Cả hai tạo record canonical trong `guestCheckins` và mở Operations Live Ticket.
 - Tip: chỉ bật khi QR có staff canonical và staff đã bật ít nhất một phương thức; helper re-parse QR khi prefill và khi tạo tip để không tin selector DOM.
-- Payment: chỉ hiện candidate có exact ticket `completed` đúng business. Join dùng `guestCheckinId`/`ticketId`, không dùng tên hoặc số điện thoại hiển thị; action đọc lại Operations snapshot ngay lúc click. Thiết bị dùng chung phải nhập 4 số cuối, còn session/profile đã xác thực đúng phone thì được miễn.
+- Payment: chỉ hiện candidate có exact ticket `completed` đúng business. Join dùng `guestCheckinId`/`ticketId`, không dùng tên hoặc số điện thoại hiển thị; action đọc lại Operations snapshot ngay lúc click. Candidate chưa sở hữu phải **ẩn/opaque ticket, dịch vụ và số tiền cho tới khi xác minh 4 số cuối**; input được lọc còn 4 chữ số, CTA bị khóa khi chưa đủ và mismatch hiển thị inline. Session/profile đã xác thực đúng phone thì được miễn.
 
-Ticket `in_service` không thể mở checkout. Re-entry checkout draft mở `pay`; pending/confirmed/rejected mở đúng view trong `paydone`. Không tạo checkout hoặc proof thứ hai.
+Ticket `in_service` không thể mở checkout. Re-entry checkout draft mở `pay`; pending/confirmed/rejected mở đúng view trong `paydone`. Reload exact draft + pending context khôi phục nested checkout, còn context thiếu/stale/corrupt về direct pay an toàn. Không tạo checkout hoặc proof thứ hai.
 
 ### 4.4 Tip và thanh toán trực tiếp
 
@@ -116,7 +116,7 @@ Ticket `in_service` không thể mở checkout. Re-entry checkout draft mở `pa
 
 ### 4.8 Profile, privacy và referral
 
-- Profile cho sửa tên, số điện thoại, avatar URL hợp lệ, ngôn ngữ và phương thức thanh toán.
+- Profile cho sửa tên, avatar URL hợp lệ, ngôn ngữ và phương thức thanh toán. Số điện thoại là identity đã xác minh: profile editor không đổi trực tiếp; đổi số phải qua OTP rồi mới cập nhật đồng thời profile/session.
 - Transactional messages luôn bật; marketing/business/network và AI suggestions là tùy chọn, lưu ngay trên thiết bị.
 - Referral là điểm do doanh nghiệp tài trợ: bạn mới +100 sau check-in đầu tiên, người giới thiệu +50 sau lượt ghé có thanh toán; đây không phải affiliate cash.
 

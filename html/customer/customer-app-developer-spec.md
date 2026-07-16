@@ -633,15 +633,15 @@ referral_invites     (id, referrer_id, friend_phone_hash, status[invited|joined|
 
 ### Mục đích và điểm vào
 
-Customer mở screen `scan`, quét QR `https://nexoratouch.com/touch/{businessId}/{station}` và xác nhận đúng salon. **Bộ định tuyến ngữ cảnh QR (QR context router)** chỉ resolve `{businessId, station, staffProfileId?}` và không đoán mục đích từ `station`; sau đó khách chọn check-in, tip hoặc thanh toán. Thành viên và guest đều dùng `guest-checkin-view` để chọn dịch vụ; thành viên được prefill tên/số điện thoại từ profile. Submit của cả hai tạo service check-in canonical trong `guestCheckins` và mở Live Ticket. Guest Checkout luôn bắt đầu từ một `guestCheckinId`, không bắt đầu từ tên hoặc số điện thoại tự do.
+Customer mở screen `scan`, quét QR `https://nexoratouch.com/touch/{businessId}/{station}` và xác nhận đúng salon. **Bộ định tuyến ngữ cảnh QR (QR context router)** chỉ resolve `{businessId, station, staffProfileId?}` và không đoán mục đích từ `station`; sau đó khách chọn check-in, tip hoặc thanh toán. Thành viên và guest đều dùng `guest-checkin-view` để chọn dịch vụ; chỉ session có profile/số điện thoại đã xác minh mới được prefill. Khi đăng xuất, CTA member bị vô hiệu hóa và khách vẫn có thể dùng guest entry. Submit của cả hai tạo service check-in canonical trong `guestCheckins` và mở Live Ticket. Guest Checkout luôn bắt đầu từ một `guestCheckinId`, không bắt đầu từ tên hoặc số điện thoại tự do.
 
 ### UI và dữ liệu
 
 - `scan`: `scan-camera-view` → `scan-context-view` → `guest-checkin-view`.
 - Service check-in thành công luôn mở Customer Live Ticket trong `customer-salon-operations.html`; không tự mở thanh toán.
 - Tip từ QR chỉ bật khi `staffProfileId` canonical có ít nhất một payment method; `prepareTipFromScan` và `createTipFromScan` re-parse payload để khóa đúng business/staff.
-- Payment từ QR chỉ liệt kê ticket `completed` đúng business bằng join ID canonical giữa `guestCheckins` và Operations. Action đọc lại Operations snapshot tại click, yêu cầu 4 số cuối nếu session/profile không sở hữu lượt check-in, rồi dùng chung completed-gated checkout handoff.
-- Ticket checkout mở `guest-checkout-view` → `payment-proof-view` cho Zelle/Venmo. Nếu checkout đã pending/confirmed/rejected, scan re-entry mở đúng nested view trong `paydone` và không tạo artifact trùng.
+- Payment từ QR chỉ liệt kê ticket `completed` đúng business bằng join ID canonical giữa `guestCheckins` và Operations. Trên thiết bị dùng chung, candidate chưa sở hữu phải **ẩn/opaque toàn bộ chi tiết phiếu, dịch vụ và số tiền trước khi xác minh 4 số cuối**; session/profile đã xác minh đúng phone mới được thấy nhãn đầy đủ và miễn last-4. Input chỉ nhận đúng 4 chữ số, CTA bị khóa cho tới khi hợp lệ, mismatch hiện inline và được xóa khi đổi candidate/context hoặc mở checkout thành công. Action đọc lại Operations snapshot tại click rồi dùng chung completed-gated checkout handoff.
+- Ticket checkout mở `guest-checkout-view` → `payment-proof-view` cho Zelle/Venmo. Reload với exact draft + pending context phải khôi phục nested checkout; context thiếu/stale/corrupt phải về direct pay an toàn. Nếu checkout đã pending/confirmed/rejected, scan re-entry mở đúng nested view trong `paydone` và không tạo artifact trùng.
 - **Legacy direct pay / Pay Salon Direct** vẫn là giao dịch tự do nhập số tiền ở `pay`; nó không phải ticket checkout và không được dùng để bỏ qua lifecycle dịch vụ.
 - `paydone`: `payment-pending-view` → `payment-confirmed-view` hoặc `payment-rejected-view`.
 - Số tiền lưu bằng integer cents; tip lưu bằng basis points `0 | 1500 | 1800 | 2000`.
@@ -650,6 +650,8 @@ Customer mở screen `scan`, quét QR `https://nexoratouch.com/touch/{businessId
 ### Hành vi và trạng thái
 
 Operations là authority cho lifecycle `in_service → completed`. Ticket phải ở trạng thái **ticket completed** trước khi Pay trên Live Ticket hoặc Scan Payment có thể mở checkout; UI disabled chỉ là trợ giúp, domain helper vẫn re-check exact ticket. `checkoutDraft.status` đi `draft → pending_verification → confirmed | rejected`. `paymentProof.status` đi `draft → pending_verification → verified | rejected`. Pending hoặc rejected không tạo receipt, không cộng balance và không ghi ledger. Verified tạo receipt bất biến và các `guestRewardClaims.status = pending`; claim chỉ merge sau OTP với đúng số điện thoại, vào đúng `businessId`, đúng một lần.
+
+Số điện thoại là verified identity: profile editor không được thay đổi `profile.phone` hoặc `session.phone`. Đổi số bắt buộc đi qua OTP rồi mới đồng bộ profile/session; sửa tên/avatar không được tự cấp quyền sở hữu guest check-in.
 
 ### Ranh giới backend
 
@@ -663,6 +665,7 @@ Prototype chỉ **mô phỏng camera và payment callback**, upload, Front Desk 
 - Proof verify/reject lặp lại không tạo receipt, claim hoặc ledger trùng.
 - localStorage quota đầy: thử lưu metadata proof không ảnh và báo rõ cho khách.
 - Add-on khác business, sai ticket, sai 4 số cuối hoặc đã resolve bị từ chối atomic.
+- Candidate chưa xác minh không lộ ticket number/service/amount; đổi profile phone không qua OTP không thể bỏ qua last-4.
 - Referral tự giới thiệu, chưa joined hoặc chưa có paid visit không được cộng điểm.
 
 ### Acceptance tests
@@ -676,3 +679,5 @@ Prototype chỉ **mô phỏng camera và payment callback**, upload, Front Desk 
 7. Referral chỉ release `50` điểm business-funded sau sự kiện paid visit.
 8. Scan staff QR mở Tip đúng business/staff/method; business-only QR hiển thị lý do Tip bị vô hiệu hóa.
 9. Member scan mở form dịch vụ đã prefill và tạo `guestCheckins` canonical trước Live Ticket; guest entry để trống tên/số điện thoại.
+10. Reload exact draft checkout trở lại nested checkout; pending context stale hoặc thiếu owner trở về direct pay.
+11. Hai guest completed trên thiết bị chung chỉ hiện nhãn opaque; sai last-4 báo inline, đúng last-4 mới mở chi tiết checkout.

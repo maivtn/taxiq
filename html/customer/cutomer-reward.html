@@ -216,7 +216,8 @@
             <div id="scan-intent-grid" class="mt-4 grid gap-4 md:grid-cols-2">
               <section class="app-card md:col-span-2" aria-labelledby="scan-checkin-intent-title">
                 <div class="flex items-start gap-3"><span class="grid size-11 shrink-0 place-items-center rounded-xl bg-app-cyan/10 text-app-cyan"><i data-lucide="user-round-check" class="size-5" aria-hidden="true"></i></span><div><h3 id="scan-checkin-intent-title" class="font-black" data-en="Start a service" data-vi="Bắt đầu dịch vụ">Bắt đầu dịch vụ</h3><p class="mt-1 text-xs leading-5 text-app-muted" data-en="Choose a service, check in and open the salon Live Ticket." data-vi="Chọn dịch vụ, check-in và mở Live Ticket của tiệm.">Chọn dịch vụ, check-in và mở Live Ticket của tiệm.</p></div></div>
-                <div class="mt-4 grid gap-3 sm:grid-cols-2"><button type="button" class="app-button w-full" data-action="member-salon-checkin" data-en="Continue with my profile" data-vi="Tiếp tục bằng hồ sơ của tôi">Tiếp tục bằng hồ sơ của tôi</button><button type="button" class="app-button-secondary w-full" data-action="open-guest-checkin" data-en="Continue as guest" data-vi="Tiếp tục với tư cách khách">Tiếp tục với tư cách khách</button></div>
+                <div class="mt-4 grid gap-3 sm:grid-cols-2"><button id="scan-member-action" type="button" class="app-button w-full" data-action="member-salon-checkin" aria-describedby="scan-member-reason" data-en="Continue with my profile" data-vi="Tiếp tục bằng hồ sơ của tôi">Tiếp tục bằng hồ sơ của tôi</button><button type="button" class="app-button-secondary w-full" data-action="open-guest-checkin" data-en="Continue as guest" data-vi="Tiếp tục với tư cách khách">Tiếp tục với tư cách khách</button></div>
+                <p id="scan-member-reason" class="mt-2 text-xs leading-5 text-app-muted" role="status"></p>
               </section>
               <section class="app-card" aria-labelledby="scan-tip-intent-title">
                 <div class="flex items-start gap-3"><span class="grid size-11 shrink-0 place-items-center rounded-xl bg-app-green/10 text-app-green"><i data-lucide="badge-dollar-sign" class="size-5" aria-hidden="true"></i></span><div><h3 id="scan-tip-intent-title" class="font-black" data-en="Tip this staff member" data-vi="Tip cho thợ này">Tip cho thợ này</h3><p class="mt-1 text-xs leading-5 text-app-muted" data-en="The QR must identify a staff member with an enabled payment method." data-vi="QR phải xác định thợ có ít nhất một phương thức nhận tiền đã bật.">QR phải xác định thợ có ít nhất một phương thức nhận tiền đã bật.</p></div></div>
@@ -225,11 +226,12 @@
               </section>
               <section class="app-card" aria-labelledby="scan-payment-intent-title">
                 <div class="flex items-start gap-3"><span class="grid size-11 shrink-0 place-items-center rounded-xl bg-app-purple/10 text-app-pink"><i data-lucide="receipt-text" class="size-5" aria-hidden="true"></i></span><div><h3 id="scan-payment-intent-title" class="font-black" data-en="Pay a completed service" data-vi="Thanh toán dịch vụ đã hoàn tất">Thanh toán dịch vụ đã hoàn tất</h3><p class="mt-1 text-xs leading-5 text-app-muted" data-en="Only tickets completed by the salon appear here." data-vi="Chỉ phiếu đã được tiệm hoàn tất mới xuất hiện ở đây.">Chỉ phiếu đã được tiệm hoàn tất mới xuất hiện ở đây.</p></div></div>
-                <label class="mt-4 block text-sm font-bold" for="scan-payment-ticket"><span data-en="Completed ticket" data-vi="Phiếu đã hoàn tất">Phiếu đã hoàn tất</span><select id="scan-payment-ticket" class="app-input mt-2" aria-describedby="scan-payment-reason scan-payment-ownership" disabled aria-disabled="true"></select></label>
-                <label class="mt-3 block text-sm font-bold" for="scan-payment-phone-last4"><span data-en="Last 4 phone digits" data-vi="4 số cuối điện thoại">4 số cuối điện thoại</span><input id="scan-payment-phone-last4" class="app-input mt-2" type="text" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{4}" aria-describedby="scan-payment-ownership"></label>
-                <button id="scan-payment-action" type="button" class="app-button mt-4 w-full" data-action="open-scan-payment" aria-describedby="scan-payment-reason scan-payment-ownership" disabled aria-disabled="true" data-en="Open ticket checkout" data-vi="Mở thanh toán phiếu">Mở thanh toán phiếu</button>
+                <label class="mt-4 block text-sm font-bold" for="scan-payment-ticket"><span data-en="Completed ticket" data-vi="Phiếu đã hoàn tất">Phiếu đã hoàn tất</span><select id="scan-payment-ticket" class="app-input mt-2" aria-describedby="scan-payment-reason scan-payment-ownership scan-payment-error" disabled aria-disabled="true"></select></label>
+                <label class="mt-3 block text-sm font-bold" for="scan-payment-phone-last4"><span data-en="Last 4 phone digits" data-vi="4 số cuối điện thoại">4 số cuối điện thoại</span><input id="scan-payment-phone-last4" class="app-input mt-2" type="text" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{4}" aria-describedby="scan-payment-reason scan-payment-ownership scan-payment-error" aria-invalid="false"></label>
+                <button id="scan-payment-action" type="button" class="app-button mt-4 w-full" data-action="open-scan-payment" aria-describedby="scan-payment-reason scan-payment-ownership scan-payment-error" disabled aria-disabled="true" data-en="Open ticket checkout" data-vi="Mở thanh toán phiếu">Mở thanh toán phiếu</button>
                 <p id="scan-payment-reason" class="mt-2 text-xs leading-5 text-app-muted" role="status"></p>
                 <p id="scan-payment-ownership" class="mt-1 text-xs leading-5 text-app-muted" role="status"></p>
+                <p id="scan-payment-error" class="field-error hidden" role="alert"></p>
               </section>
             </div>
           </div>
@@ -5714,7 +5716,7 @@
         verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
         paymentIntegrityTitle: 'Không thể xác minh biên nhận', paymentIntegrityDetail: 'Dữ liệu xác minh không nhất quán. Không thể thử lại thanh toán này một cách an toàn.', returnHome: 'Về trang chủ',
         guestRewardsPending: 'Điểm đang chờ; dùng cùng số điện thoại để nhận sau.',
-        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', selfReferral: 'Không thể tự giới thiệu chính mình.', referralShared: 'Đã chia sẻ link giới thiệu.', shareFailed: 'Không thể chia sẻ link.', shareCancelled: 'Bạn đã hủy chia sẻ. Có thể tự sao chép liên kết bên dưới.', shareManual: 'Không thể chia sẻ tự động. Hãy sao chép liên kết bên dưới.', referralUpdateFailed: 'Không thể cập nhật giới thiệu.', referralInvited: 'Đã mời', referralJoined: 'Đã tham gia', referralRewarded: 'Đã thưởng', simulateJoined: 'Mô phỏng đã tham gia', simulatePaidVisit: 'Mô phỏng lượt ghé trả phí', referralEmpty: 'Chưa có lời mời nào.', referralShareTitle: 'Lời mời NEXORA', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Vui lòng kiểm tra tên, số điện thoại và dịch vụ.', noPreference: 'Không ưu tiên', notAvailable: 'Chưa có', guestCheckinSuccess: 'Đã check-in khách.', guestRouteFailed: 'Đã lưu check-in nhưng chưa thể mở phiếu. Vui lòng thử lại.', guestNotFound: 'Không tìm thấy lượt check-in khách.', serviceNotFound: 'Không tìm thấy dịch vụ.', checkoutFailed: 'Không thể tạo thanh toán.', addonImportFailed: 'Không thể nhập add-on đã duyệt.', handoffInvalid: 'Liên kết thanh toán không hợp lệ hoặc đã hết hiệu lực.', selectPaymentMethod: 'Vui lòng chọn phương thức thanh toán.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', invalidImage: 'Ảnh không hợp lệ.', proofSavedWithoutImage: 'Đã lưu bằng chứng không kèm ảnh do giới hạn bộ nhớ.', proofSubmitFailed: 'Không thể gửi bằng chứng.', verificationFailed: 'Không thể cập nhật xác minh.', proofRejected: 'Lễ tân đã từ chối bằng chứng.', askFrontDesk: 'Vui lòng trao đổi với lễ tân.', createAccount: 'Tạo tài khoản NEXORA', continueGuest: 'Tiếp tục với tư cách khách', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', scanTipRequiresStaff: 'QR này không xác định thợ. Hãy quét QR có tên thợ để tip.', scanTipMethodUnavailable: 'Thợ trong QR chưa bật phương thức nhận tip.', scanTipReady: 'Tip sẽ được gửi đúng cho {staff} tại {business}.', scanPaymentRequiresCompleted: 'Dịch vụ phải được tiệm hoàn tất trước khi thanh toán.', scanPaymentPhoneRequired: 'Nhập 4 số cuối điện thoại của lượt check-in để mở phiếu.', scanPaymentOwned: 'Lượt check-in khớp với hồ sơ đã xác thực; không cần nhập 4 số cuối.', scanPaymentCandidate: 'Phiếu #{number} · {service} · {amount}', scanIntentFailed: 'Không thể mở thao tác từ QR. Hãy quét lại và thử lại.', memberServiceTitle: 'Chọn dịch vụ cho {name}', guestServiceTitle: 'Chọn dịch vụ với tư cách khách', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
+        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', selfReferral: 'Không thể tự giới thiệu chính mình.', referralShared: 'Đã chia sẻ link giới thiệu.', shareFailed: 'Không thể chia sẻ link.', shareCancelled: 'Bạn đã hủy chia sẻ. Có thể tự sao chép liên kết bên dưới.', shareManual: 'Không thể chia sẻ tự động. Hãy sao chép liên kết bên dưới.', referralUpdateFailed: 'Không thể cập nhật giới thiệu.', referralInvited: 'Đã mời', referralJoined: 'Đã tham gia', referralRewarded: 'Đã thưởng', simulateJoined: 'Mô phỏng đã tham gia', simulatePaidVisit: 'Mô phỏng lượt ghé trả phí', referralEmpty: 'Chưa có lời mời nào.', referralShareTitle: 'Lời mời NEXORA', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Vui lòng kiểm tra tên, số điện thoại và dịch vụ.', noPreference: 'Không ưu tiên', notAvailable: 'Chưa có', guestCheckinSuccess: 'Đã check-in khách.', guestRouteFailed: 'Đã lưu check-in nhưng chưa thể mở phiếu. Vui lòng thử lại.', guestNotFound: 'Không tìm thấy lượt check-in khách.', serviceNotFound: 'Không tìm thấy dịch vụ.', checkoutFailed: 'Không thể tạo thanh toán.', addonImportFailed: 'Không thể nhập add-on đã duyệt.', handoffInvalid: 'Liên kết thanh toán không hợp lệ hoặc đã hết hiệu lực.', selectPaymentMethod: 'Vui lòng chọn phương thức thanh toán.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', invalidImage: 'Ảnh không hợp lệ.', proofSavedWithoutImage: 'Đã lưu bằng chứng không kèm ảnh do giới hạn bộ nhớ.', proofSubmitFailed: 'Không thể gửi bằng chứng.', verificationFailed: 'Không thể cập nhật xác minh.', proofRejected: 'Lễ tân đã từ chối bằng chứng.', askFrontDesk: 'Vui lòng trao đổi với lễ tân.', createAccount: 'Tạo tài khoản NEXORA', continueGuest: 'Tiếp tục với tư cách khách', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', scanMemberLoginAction: 'Đăng nhập để dùng hồ sơ', scanMemberLoginReason: 'Hãy đăng nhập để điền tự động hồ sơ đã xác minh; bạn vẫn có thể tiếp tục với tư cách khách.', scanTipRequiresStaff: 'QR này không xác định thợ. Hãy quét QR có tên thợ để tip.', scanTipMethodUnavailable: 'Thợ trong QR chưa bật phương thức nhận tip.', scanTipReady: 'Tip sẽ được gửi đúng cho {staff} tại {business}.', scanPaymentRequiresCompleted: 'Dịch vụ phải được tiệm hoàn tất trước khi thanh toán.', scanPaymentPhoneRequired: 'Nhập 4 số cuối điện thoại của lượt check-in để mở phiếu.', scanPaymentOwned: 'Lượt check-in khớp với hồ sơ đã xác thực; không cần nhập 4 số cuối.', scanPaymentCandidate: 'Phiếu #{number} · {service} · {amount}', scanPaymentPrivateCandidate: 'Dịch vụ đã hoàn tất {index}', scanPaymentLast4Mismatch: '4 số cuối điện thoại không khớp với lượt check-in này.', scanIntentFailed: 'Không thể mở thao tác từ QR. Hãy quét lại và thử lại.', memberServiceTitle: 'Chọn dịch vụ cho {name}', guestServiceTitle: 'Chọn dịch vụ với tư cách khách', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
         cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
         invalidPhone: 'Nhập số điện thoại US gồm 10 số.', cooldown: 'Vui lòng chờ đủ 30 giây.',
@@ -5723,7 +5725,7 @@
         consentChoiceRequired: 'Chọn ít nhất một mục hoặc dùng Bỏ qua.',
         pushTitle: 'Bật thông báo?', pushDetail: 'Nhận xác nhận lịch, thanh toán và cảnh báo điểm sắp hết hạn.',
         pushConfirm: 'Bật thông báo', pushLater: 'Để sau',
-        editProfileTitle: 'Chỉnh sửa hồ sơ', profileName: 'Họ tên', profilePhone: 'Điện thoại', profileAvatar: 'URL ảnh đại diện', invalidProfile: 'Tên và số điện thoại chưa hợp lệ.', invalidAvatar: 'URL ảnh đại diện phải dùng HTTPS.', profileSaved: 'Đã lưu hồ sơ.',
+        editProfileTitle: 'Chỉnh sửa hồ sơ', profileName: 'Họ tên', profilePhone: 'Điện thoại', profileAvatar: 'URL ảnh đại diện', invalidProfile: 'Tên và số điện thoại chưa hợp lệ.', profilePhoneVerificationRequired: 'Cần xác minh OTP trước khi đổi số điện thoại.', invalidAvatar: 'URL ảnh đại diện phải dùng HTTPS.', profileSaved: 'Đã lưu hồ sơ.',
         paymentMethodsTitle: 'Phương thức thanh toán', paymentMethodsSaved: 'Đã lưu phương thức.',
         privacyTitle: 'Thông tin riêng tư', privacyDetail: 'NEXORA không bán dữ liệu cá nhân. Tùy chọn của bản mẫu chỉ được lưu trên thiết bị này.',
         resetTitle: 'Đặt lại dữ liệu mẫu?', resetDetail: 'Điểm, lịch sử và tùy chọn sẽ trở về dữ liệu ban đầu.',
@@ -5748,7 +5750,7 @@
         verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
         paymentIntegrityTitle: 'Receipt could not be verified', paymentIntegrityDetail: 'Verification data is inconsistent. This payment cannot be retried safely.', returnHome: 'Return Home',
         guestRewardsPending: 'Rewards are pending; use the same phone to claim later.',
-        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', selfReferral: 'You cannot refer yourself.', referralShared: 'Referral link shared.', shareFailed: 'Referral link could not be shared.', shareCancelled: 'Sharing was cancelled. You can copy the link below.', shareManual: 'Automatic sharing is unavailable. Copy the link below.', referralUpdateFailed: 'Referral could not be updated.', referralInvited: 'Invited', referralJoined: 'Joined', referralRewarded: 'Rewarded', simulateJoined: 'Simulate joined', simulatePaidVisit: 'Simulate paid visit', referralEmpty: 'No invites yet.', referralShareTitle: 'NEXORA invitation', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Check the name, phone, and service.', noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in.', guestRouteFailed: 'Check-in was saved, but the ticket could not open. Please retry.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'Service was not found.', checkoutFailed: 'Checkout could not be created.', addonImportFailed: 'The approved add-on could not be imported.', handoffInvalid: 'This checkout link is invalid or expired.', selectPaymentMethod: 'Select a payment method.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', invalidImage: 'The image is invalid.', proofSavedWithoutImage: 'Proof was saved without the image because storage is full.', proofSubmitFailed: 'Proof could not be submitted.', verificationFailed: 'Verification could not be updated.', proofRejected: 'Front Desk rejected the proof.', askFrontDesk: 'Please ask Front Desk.', createAccount: 'Create NEXORA Account', continueGuest: 'Continue as Guest', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', scanTipRequiresStaff: 'This QR does not identify a staff member. Scan a staff QR to tip.', scanTipMethodUnavailable: 'The staff member in this QR has no enabled tip method.', scanTipReady: 'Your tip will go to {staff} at {business}.', scanPaymentRequiresCompleted: 'The salon must complete the service before checkout.', scanPaymentPhoneRequired: 'Enter the last 4 phone digits from check-in to open the ticket.', scanPaymentOwned: 'This check-in matches your verified profile; the last 4 digits are not required.', scanPaymentCandidate: 'Ticket #{number} · {service} · {amount}', scanIntentFailed: 'This QR action could not open. Scan again and retry.', memberServiceTitle: 'Choose a service for {name}', guestServiceTitle: 'Choose a service as guest', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
+        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', selfReferral: 'You cannot refer yourself.', referralShared: 'Referral link shared.', shareFailed: 'Referral link could not be shared.', shareCancelled: 'Sharing was cancelled. You can copy the link below.', shareManual: 'Automatic sharing is unavailable. Copy the link below.', referralUpdateFailed: 'Referral could not be updated.', referralInvited: 'Invited', referralJoined: 'Joined', referralRewarded: 'Rewarded', simulateJoined: 'Simulate joined', simulatePaidVisit: 'Simulate paid visit', referralEmpty: 'No invites yet.', referralShareTitle: 'NEXORA invitation', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Check the name, phone, and service.', noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in.', guestRouteFailed: 'Check-in was saved, but the ticket could not open. Please retry.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'Service was not found.', checkoutFailed: 'Checkout could not be created.', addonImportFailed: 'The approved add-on could not be imported.', handoffInvalid: 'This checkout link is invalid or expired.', selectPaymentMethod: 'Select a payment method.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', invalidImage: 'The image is invalid.', proofSavedWithoutImage: 'Proof was saved without the image because storage is full.', proofSubmitFailed: 'Proof could not be submitted.', verificationFailed: 'Verification could not be updated.', proofRejected: 'Front Desk rejected the proof.', askFrontDesk: 'Please ask Front Desk.', createAccount: 'Create NEXORA Account', continueGuest: 'Continue as Guest', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', scanMemberLoginAction: 'Sign in to use my profile', scanMemberLoginReason: 'Sign in to prefill a verified profile; you can still continue as a guest.', scanTipRequiresStaff: 'This QR does not identify a staff member. Scan a staff QR to tip.', scanTipMethodUnavailable: 'The staff member in this QR has no enabled tip method.', scanTipReady: 'Your tip will go to {staff} at {business}.', scanPaymentRequiresCompleted: 'The salon must complete the service before checkout.', scanPaymentPhoneRequired: 'Enter the last 4 phone digits from check-in to open the ticket.', scanPaymentOwned: 'This check-in matches your verified profile; the last 4 digits are not required.', scanPaymentCandidate: 'Ticket #{number} · {service} · {amount}', scanPaymentPrivateCandidate: 'Completed service {index}', scanPaymentLast4Mismatch: 'The last 4 phone digits do not match this check-in.', scanIntentFailed: 'This QR action could not open. Scan again and retry.', memberServiceTitle: 'Choose a service for {name}', guestServiceTitle: 'Choose a service as guest', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
         cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
         invalidPhone: 'Enter a 10-digit US phone number.', cooldown: 'Please wait for the 30-second cooldown.',
@@ -5757,7 +5759,7 @@
         consentChoiceRequired: 'Choose at least one option or Skip.',
         pushTitle: 'Turn on notifications?', pushDetail: 'Get booking, payment and point-expiry updates.',
         pushConfirm: 'Turn on', pushLater: 'Maybe later',
-        editProfileTitle: 'Edit profile', profileName: 'Name', profilePhone: 'Phone', profileAvatar: 'Avatar URL', invalidProfile: 'Name and phone are invalid.', invalidAvatar: 'Avatar URL must use HTTPS.', profileSaved: 'Profile saved.',
+        editProfileTitle: 'Edit profile', profileName: 'Name', profilePhone: 'Phone', profileAvatar: 'Avatar URL', invalidProfile: 'Name and phone are invalid.', profilePhoneVerificationRequired: 'Verify the new phone with OTP before changing it.', invalidAvatar: 'Avatar URL must use HTTPS.', profileSaved: 'Profile saved.',
         paymentMethodsTitle: 'Payment methods', paymentMethodsSaved: 'Payment methods saved.',
         privacyTitle: 'Privacy details', privacyDetail: 'NEXORA never sells your personal data. Prototype preferences stay on this device.',
         resetTitle: 'Reset demo data?', resetDetail: 'Points, history and preferences return to their defaults.',
@@ -5924,12 +5926,18 @@
     function openServiceCheckinForm(useProfile) {
       const scan = resolveCanonicalScanContext(state);
       if (!scan.ok) return scan;
+      const verifiedProfile = state.session.authenticated === true
+        && /^\d{10}$/.test(state.session.phone)
+        && state.profile.phone === state.session.phone;
+      if (useProfile === true && !verifiedProfile) {
+        return { ok: false, code: 'authentication_required' };
+      }
       renderGuestCheckinOptions();
       const name = document.getElementById('guest-name');
       const phone = document.getElementById('guest-phone');
       const staff = document.getElementById('guest-staff');
       const title = document.getElementById('service-checkin-title');
-      const member = useProfile === true && state.session.authenticated === true;
+      const member = useProfile === true;
       if (name) name.value = member ? state.profile.name : '';
       if (phone) phone.value = member ? state.profile.phone : '';
       if (staff) {
@@ -5970,6 +5978,19 @@
       const business = context ? getValidBusiness(state, context.businessId) : null;
       renderGuestCheckinOptions();
       if (!business) {
+        const ticketSelect = document.getElementById('scan-payment-ticket');
+        const paymentAction = document.getElementById('scan-payment-action');
+        if (ticketSelect) {
+          ticketSelect.replaceChildren();
+          ticketSelect.value = '';
+          ticketSelect.disabled = true;
+          ticketSelect.setAttribute('aria-disabled', 'true');
+        }
+        if (paymentAction) {
+          paymentAction.disabled = true;
+          paymentAction.setAttribute('aria-disabled', 'true');
+        }
+        syncScanPaymentOwnership([], { clearInput: true, clearError: true });
         setScanView('camera', { focus: state.ui.activeScreen === 'scan' });
         return;
       }
@@ -5987,6 +6008,21 @@
           : t('noPreference');
       }
       if (serviceCopy) serviceCopy.textContent = t('notAvailable');
+
+      const memberAction = document.getElementById('scan-member-action');
+      const memberReason = document.getElementById('scan-member-reason');
+      const memberReady = state.session.authenticated === true
+        && /^\d{10}$/.test(state.session.phone)
+        && state.profile.phone === state.session.phone;
+      if (memberAction) {
+        memberAction.disabled = !memberReady;
+        memberAction.setAttribute('aria-disabled', String(!memberReady));
+        const language = state.profile.language === 'en' ? 'en' : 'vi';
+        memberAction.textContent = memberReady
+          ? (memberAction.dataset[language] ?? memberAction.textContent)
+          : t('scanMemberLoginAction');
+      }
+      if (memberReason) memberReason.textContent = memberReady ? '' : t('scanMemberLoginReason');
 
       const tipAction = document.getElementById('scan-tip-action');
       const tipReason = document.getElementById('scan-tip-reason');
@@ -6015,17 +6051,23 @@
       const candidates = listScanCheckoutCandidates(state, operations);
       if (ticketSelect) {
         const selectedId = ticketSelect.value;
-        const candidateOptions = candidates.map((candidate) => {
+        const candidateOptions = candidates.map((candidate, index) => {
           const option = document.createElement('option');
-          const definition = getGuestServiceDefinition(business.id, candidate.serviceKey);
-          const service = definition?.label?.[state.profile.language === 'en' ? 'en' : 'vi']
-            ?? candidate.serviceKey;
+          const guest = state.guestCheckins.find((item) => item.id === candidate.guestCheckinId);
+          const owned = Boolean(guest && authenticatedSessionOwnsGuest(state, guest));
           option.value = candidate.guestCheckinId;
-          option.textContent = t('scanPaymentCandidate', {
-            number: candidate.number,
-            service,
-            amount: formatCents(candidate.currentTotalCents)
-          });
+          if (owned) {
+            const definition = getGuestServiceDefinition(business.id, candidate.serviceKey);
+            const service = definition?.label?.[state.profile.language === 'en' ? 'en' : 'vi']
+              ?? candidate.serviceKey;
+            option.textContent = t('scanPaymentCandidate', {
+              number: candidate.number,
+              service,
+              amount: formatCents(candidate.currentTotalCents)
+            });
+          } else {
+            option.textContent = t('scanPaymentPrivateCandidate', { index: index + 1 });
+          }
           return option;
         });
         ticketSelect.replaceChildren(...candidateOptions);
@@ -6035,21 +6077,27 @@
         ticketSelect.disabled = candidates.length === 0;
         ticketSelect.setAttribute('aria-disabled', String(candidates.length === 0));
       }
-      if (paymentAction) {
-        paymentAction.disabled = candidates.length === 0;
-        paymentAction.setAttribute('aria-disabled', String(candidates.length === 0));
-      }
       if (paymentReason) {
         paymentReason.textContent = candidates.length === 0 ? t('scanPaymentRequiresCompleted') : '';
       }
       syncScanPaymentOwnership(candidates);
     }
 
-    function syncScanPaymentOwnership(candidates = null) {
+    function setScanPaymentError(message = '') {
+      const phoneLast4 = document.getElementById('scan-payment-phone-last4');
+      const error = document.getElementById('scan-payment-error');
+      if (phoneLast4) phoneLast4.setAttribute('aria-invalid', String(Boolean(message)));
+      if (!error) return;
+      error.textContent = message;
+      error.classList.toggle('hidden', !message);
+    }
+
+    function syncScanPaymentOwnership(candidates = null, options = {}) {
       const ticketSelect = document.getElementById('scan-payment-ticket');
       const phoneLast4 = document.getElementById('scan-payment-phone-last4');
       const ownership = document.getElementById('scan-payment-ownership');
-      if (!ticketSelect || !phoneLast4 || !ownership) return;
+      const paymentAction = document.getElementById('scan-payment-action');
+      if (!ticketSelect || !phoneLast4 || !ownership) return { ok: false, code: 'missing_scan_controls' };
       const available = Array.isArray(candidates)
         ? candidates
         : listScanCheckoutCandidates(state, readOperationsSnapshot());
@@ -6058,12 +6106,20 @@
         ? state.guestCheckins.find((item) => item.id === candidate.guestCheckinId)
         : null;
       const owned = Boolean(guest && authenticatedSessionOwnsGuest(state, guest));
+      if (options.clearInput === true || owned || !candidate) phoneLast4.value = '';
+      if (options.clearError === true) setScanPaymentError();
+      phoneLast4.setAttribute('aria-describedby', 'scan-payment-reason scan-payment-ownership scan-payment-error');
       phoneLast4.disabled = !candidate || owned;
       phoneLast4.setAttribute('aria-disabled', String(!candidate || owned));
-      if (owned) phoneLast4.value = '';
       ownership.textContent = candidate
         ? t(owned ? 'scanPaymentOwned' : 'scanPaymentPhoneRequired')
         : '';
+      const ready = Boolean(candidate && (owned || /^\d{4}$/.test(phoneLast4.value)));
+      if (paymentAction) {
+        paymentAction.disabled = !ready;
+        paymentAction.setAttribute('aria-disabled', String(!ready));
+      }
+      return { ok: true, candidate, guest, owned, ready };
     }
 
     function formatCents(cents) {
@@ -7368,6 +7424,14 @@
             setFieldError('profile-edit-error', t('invalidProfile'));
             return false;
           }
+          const currentProfilePhone = normalizeUsPhone(state.profile.phone);
+          const currentSessionPhone = normalizeUsPhone(state.session.phone);
+          const changesVerifiedPhone = phone !== currentProfilePhone
+            || (state.session.authenticated === true && phone !== currentSessionPhone);
+          if (changesVerifiedPhone) {
+            setFieldError('profile-edit-error', t('profilePhoneVerificationRequired'));
+            return false;
+          }
           const avatar = validateAvatarUrl(document.getElementById('profile-avatar-input').value, state.profile.avatar);
           if (!avatar.ok) {
             setFieldError('profile-edit-error', t('invalidAvatar'));
@@ -7376,8 +7440,6 @@
           setFieldError('profile-edit-error');
           commitState((draft) => {
             draft.profile.name = name;
-            draft.profile.phone = phone;
-            draft.session.phone = phone;
             draft.profile.avatar = avatar.value;
           });
           renderApp();
@@ -7463,14 +7525,29 @@
       const guestCheckinId = document.getElementById('scan-payment-ticket')?.value ?? '';
       const phoneLast4 = document.getElementById('scan-payment-phone-last4')?.value?.trim?.() ?? '';
       const operations = readOperationsSnapshot();
+      const candidates = listScanCheckoutCandidates(state, operations);
       const result = commitState((draft) => prepareScanCheckout(
         draft, guestCheckinId, phoneLast4, operations, Date.now()
       ));
       if (!result.ok) {
+        const candidate = candidates.find((item) => item.guestCheckinId === guestCheckinId);
+        const guest = candidate
+          ? state.guestCheckins.find((item) => item.id === candidate.guestCheckinId)
+          : null;
+        const owned = Boolean(guest && authenticatedSessionOwnsGuest(state, guest));
+        if (guest && !owned && (!/^\d{4}$/.test(phoneLast4) || !guest.phone.endsWith(phoneLast4))) {
+          setScanPaymentError(t('scanPaymentLast4Mismatch'));
+          document.getElementById('scan-payment-phone-last4')?.focus?.({ preventScroll: true });
+          syncScanPaymentOwnership(candidates);
+          return result;
+        }
         renderScanContext();
         showToast(t('scanIntentFailed'), 'error');
         return result;
       }
+      const phoneInput = document.getElementById('scan-payment-phone-last4');
+      if (phoneInput) phoneInput.value = '';
+      setScanPaymentError();
       renderApp();
       if (result.targetScreen === 'pay') {
         navigateTo('pay', { resetPayView: false, persist: false });
@@ -7974,11 +8051,16 @@
         const label = document.querySelector('[data-action="send-tip"] span');
         if (label) label.textContent = t('continueTip', { amount: amount.ok ? amount.value : state.ui.selectedTip });
       }
+      if (event.target.id === 'scan-payment-phone-last4') {
+        event.target.value = String(event.target.value ?? '').replace(/\D/g, '').slice(0, 4);
+        setScanPaymentError();
+        syncScanPaymentOwnership();
+      }
     }
 
     async function handleChange(event) {
       if (event.target.id === 'scan-payment-ticket') {
-        syncScanPaymentOwnership();
+        syncScanPaymentOwnership(null, { clearInput: true, clearError: true });
         return;
       }
       if (event.target.id === 'payment-proof-file') {
@@ -8588,6 +8670,20 @@
         state.ui.pendingContext.bookingId = null;
       }
       showScreen(screenId);
+      if (screenId === 'pay') {
+        const pending = state.ui.pendingContext;
+        const guests = state.guestCheckins.filter((guest) => guest.id === pending.guestCheckinId);
+        const checkouts = state.checkoutDrafts.filter((checkout) => checkout.id === pending.checkoutDraftId);
+        const guest = guests.length === 1 ? guests[0] : null;
+        const checkout = checkouts.length === 1 ? checkouts[0] : null;
+        const reentry = guest && checkout && checkout.guestCheckinId === guest.id
+          ? resolveCheckoutReentry(state, guest)
+          : { ok: false };
+        const restoresCheckout = reentry.ok && !reentry.create
+          && reentry.targetScreen === 'pay' && reentry.view === 'checkout'
+          && reentry.checkout === checkout;
+        showPayView(restoresCheckout ? 'checkout' : 'direct', { focus: false });
+      }
       updateNavigation();
     }
 
