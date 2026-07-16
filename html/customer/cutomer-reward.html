@@ -4175,6 +4175,7 @@
     let state = loadState();
     let pendingProofImageDataUrl = '';
     let renderedScanPaymentIdentity = null;
+    let scanPaymentErrorCode = null;
 
     function commitState(mutator) {
       const draft = structuredClone(state);
@@ -6124,7 +6125,11 @@
       });
     }
 
-    function setScanPaymentError(message = '') {
+    function setScanPaymentError(code = null) {
+      scanPaymentErrorCode = code === 'last4_mismatch' ? code : null;
+      const message = scanPaymentErrorCode === 'last4_mismatch'
+        ? t('scanPaymentLast4Mismatch')
+        : '';
       const phoneLast4 = document.getElementById('scan-payment-phone-last4');
       const error = document.getElementById('scan-payment-error');
       if (phoneLast4) phoneLast4.setAttribute('aria-invalid', String(Boolean(message)));
@@ -6148,7 +6153,7 @@
         : null;
       const owned = Boolean(guest && authenticatedSessionOwnsGuest(state, guest));
       if (options.clearInput === true || owned || !candidate) phoneLast4.value = '';
-      if (options.clearError === true) setScanPaymentError();
+      setScanPaymentError(options.clearError === true ? null : scanPaymentErrorCode);
       phoneLast4.setAttribute('aria-describedby', 'scan-payment-reason scan-payment-ownership scan-payment-error');
       phoneLast4.disabled = !candidate || owned;
       phoneLast4.setAttribute('aria-disabled', String(!candidate || owned));
@@ -7577,7 +7582,7 @@
           : null;
         const owned = Boolean(guest && authenticatedSessionOwnsGuest(state, guest));
         if (guest && !owned && (!/^\d{4}$/.test(phoneLast4) || !guest.phone.endsWith(phoneLast4))) {
-          setScanPaymentError(t('scanPaymentLast4Mismatch'));
+          setScanPaymentError('last4_mismatch');
           document.getElementById('scan-payment-phone-last4')?.focus?.({ preventScroll: true });
           syncScanPaymentOwnership(candidates);
           return result;

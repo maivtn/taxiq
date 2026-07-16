@@ -6539,6 +6539,49 @@ test('programmatic scan identity change clears last4 but same context and candid
   assert.equal(phone.getAttribute('aria-invalid'), 'false');
 });
 
+test('same scan identity retranslates an inline last4 mismatch while preserving the invalid input', () => {
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  const guest = seedGuestCheckin(setup.api, app, { staffProfileId: 'staff-anna' });
+  assert.equal(setup.api.stageSalonScan(
+    app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'
+  ).ok, true);
+  const operations = acceptedOperationsSnapshot({ guestCheckinId: guest.id, businessId: guest.businessId });
+  const ticket = createStubElement({ id: 'scan-payment-ticket' });
+  const phone = createStubElement({ id: 'scan-payment-phone-last4' });
+  const action = createStubElement({ id: 'scan-payment-action' });
+  const error = createStubElement({ id: 'scan-payment-error', classNames: ['hidden'] });
+  const document = createDocumentStub({ extraElements: [
+    ticket, phone, action, error,
+    createStubElement({ id: 'scan-payment-reason' }),
+    createStubElement({ id: 'scan-payment-ownership' })
+  ] });
+  const loaded = testApi({
+    [setup.api.STORAGE_KEY]: JSON.stringify(app),
+    [setup.api.OPERATIONS_STORAGE_KEY]: JSON.stringify({ schemaVersion: 1, ...operations })
+  }, { document });
+
+  vm.runInContext('renderScanContext()', loaded.context);
+  phone.value = '0000';
+  vm.runInContext("ACTIONS.get('open-scan-payment')()", loaded.context);
+  assert.match(error.textContent, /4 số cuối điện thoại không khớp/);
+  assert.equal(phone.getAttribute('aria-invalid'), 'true');
+
+  loaded.context.setLanguage('en');
+  assert.equal(phone.value, '0000');
+  assert.equal(phone.getAttribute('aria-invalid'), 'true');
+  assert.match(error.textContent, /The last 4 phone digits do not match/);
+
+  vm.runInContext(`
+    stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna');
+    renderScanContext();
+  `, loaded.context);
+  assert.equal(phone.value, '');
+  assert.equal(phone.getAttribute('aria-invalid'), 'false');
+  assert.equal(error.textContent, '');
+  assert.equal(error.classList.contains('hidden'), true);
+});
+
 test('automatic payment candidate replacement clears last4 and inline error', () => {
   const setup = testApi();
   const app = setup.api.createDefaultState();
@@ -6585,7 +6628,7 @@ test('automatic payment candidate replacement clears last4 and inline error', ()
   assert.equal(ticket.value, first.id);
   phone.value = '0198';
   loaded.context.handleInput({ target: phone });
-  vm.runInContext("setScanPaymentError('wrong last4')", loaded.context);
+  vm.runInContext("setScanPaymentError('last4_mismatch')", loaded.context);
   loaded.storage.setItem(
     setup.api.OPERATIONS_STORAGE_KEY,
     JSON.stringify({ schemaVersion: 1, ...secondOps })
@@ -8349,6 +8392,23 @@ test('explicit generic direct-pay navigation survives reload even with a valid c
   assert.equal(second.direct.getAttribute('aria-hidden'), 'false');
   assert.equal(second.checkout.getAttribute('aria-hidden'), 'true');
   assert.equal(vm.runInContext('state.ui.payViewIntent', reloaded.context), 'direct');
+});
+
+test('pay intent migration infers a legacy canonical draft but fails an invalid explicit intent closed', () => {
+  const { api } = testApi();
+  const legacy = api.createDefaultState();
+  seedCheckoutDraft(api, legacy, {
+    method: 'Card', tipBasisPoints: 0, staffProfileId: null
+  });
+  legacy.ui.activeScreen = 'pay';
+  legacy.ui.activeModule = 'home';
+  delete legacy.ui.payViewIntent;
+
+  assert.equal(api.migrateState(legacy).ui.payViewIntent, 'checkout');
+
+  const invalidExplicit = structuredClone(legacy);
+  invalidExplicit.ui.payViewIntent = 'unexpected';
+  assert.equal(api.migrateState(invalidExplicit).ui.payViewIntent, 'direct');
 });
 
 test('initialization refuses an in-service handoff and keeps the persisted customer state unchanged', () => {
