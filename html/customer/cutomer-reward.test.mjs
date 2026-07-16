@@ -1786,6 +1786,258 @@ test('selected business generic tip ignores a forged DOM recipient and derives c
   assert.equal(JSON.stringify(invalid), before);
 });
 
+test('tip scan authority must be explicitly armed and is consumed only after a successful tip', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  app.ui.pendingContext.tipScanArmed = true;
+
+  assert.equal(api.stageSalonScan(app, payload).ok, true);
+  assert.equal(app.ui.pendingContext.tipScanArmed, false);
+  const unarmedBefore = JSON.stringify(app);
+  assert.equal(api.createTipFromScan(app, {
+    amount: 10, method: 'Zelle', note: ''
+  }, 1000).code, 'tip_scan_not_armed');
+  assert.equal(JSON.stringify(app), unarmedBefore);
+
+  assert.equal(api.prepareTipFromScan(app).ok, true);
+  assert.equal(app.ui.pendingContext.tipScanArmed, true);
+  const invalidBefore = JSON.stringify(app);
+  assert.equal(api.createTipFromScan(app, {
+    amount: 0, method: 'Zelle', note: ''
+  }, 1000).code, 'invalid_amount');
+  assert.equal(JSON.stringify(app), invalidBefore);
+  assert.equal(app.ui.pendingContext.tipScanArmed, true);
+
+  const created = api.createTipFromScan(app, {
+    amount: 10, method: 'Zelle', note: ''
+  }, 1000);
+  assert.equal(created.ok, true);
+  assert.equal(created.tip.staffProfileId, 'staff-spa-linh');
+  assert.equal(app.ui.pendingContext.tipScanArmed, false);
+});
+
+test('armed canonical tip scan context round-trips reload and still locks the QR recipient', () => {
+  const { api, storage } = testApi();
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  assert.equal(api.stageSalonScan(app, payload).ok, true);
+  assert.equal(api.prepareTipFromScan(app).ok, true);
+  api.saveState(app, storage);
+
+  const loaded = api.loadState(storage);
+  assert.deepEqual(Object.keys(loaded.ui.pendingContext.scanContext).sort(), [
+    'businessId', 'payload', 'staffProfileId', 'station'
+  ]);
+  assert.equal(loaded.ui.pendingContext.scanContext.payload, payload);
+  assert.equal(loaded.ui.pendingContext.tipScanArmed, true);
+  loaded.ui.selectedBusinessId = 'bitcoin-nail-bar';
+  loaded.ui.selectedStaffId = 'staff-anna';
+  const created = api.createTipFromScan(loaded, {
+    businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna',
+    amount: 9, method: 'Zelle', note: ''
+  }, 1000);
+  assert.equal(created.ok, true);
+  assert.equal(created.tip.businessId, 'golden-glow-spa');
+  assert.equal(created.tip.staffProfileId, 'staff-spa-linh');
+  assert.equal(loaded.ui.pendingContext.tipScanArmed, false);
+});
+
+test('migration cancels armed authority for noncanonical or tampered tip scan context', () => {
+  const { api } = testApi();
+  const canonical = {
+    payload: 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh',
+    businessId: 'golden-glow-spa',
+    station: 'front',
+    staffProfileId: 'staff-spa-linh'
+  };
+  for (const scanContext of [
+    { ...canonical, unexpected: true },
+    { ...canonical, businessId: 'bitcoin-nail-bar' },
+    { ...canonical, station: 'lobby' },
+    { ...canonical, payload: 'https://nexoratouch.com/touch/bitcoin-nail-bar/front?staffProfileId=staff-anna' },
+    { ...canonical, staffProfileId: 'staff-anna' }
+  ]) {
+    const migrated = api.migrateState({
+      ui: { pendingContext: { scanContext, tipScanArmed: true } }
+    });
+    assert.equal(migrated.ui.pendingContext.scanContext, null);
+    assert.equal(migrated.ui.pendingContext.tipScanArmed, false);
+  }
+});
+
+test('generic tip context cancels stale QR authority and chooses one canonical business recipient', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const payload = 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh';
+  assert.equal(api.stageSalonScan(app, payload).ok, true);
+  assert.equal(api.prepareTipFromScan(app).ok, true);
+
+  const bitcoin = api.prepareGenericTipContext(app, { businessId: 'bitcoin-nail-bar' });
+  assert.equal(bitcoin.ok, true);
+  assert.equal(app.ui.pendingContext.tipScanArmed, false);
+  assert.equal(app.ui.selectedBusinessId, 'bitcoin-nail-bar');
+  assert.equal(app.ui.selectedStaffId, 'staff-anna');
+  assert.equal(app.ui.selectedTipMethod, 'Venmo');
+  const created = api.createTip(app, {
+    businessId: app.ui.selectedBusinessId,
+    staffProfileId: app.ui.selectedStaffId,
+    amount: 7,
+    method: app.ui.selectedTipMethod
+  }, 1000);
+  assert.equal(created.tip.staffProfileId, 'staff-anna');
+
+  app.ui.selectedTipMethod = 'Cash App';
+  const golden = api.prepareGenericTipContext(app, { businessId: 'golden-glow-spa' });
+  assert.equal(golden.ok, true);
+  assert.equal(app.ui.selectedStaffId, 'staff-spa-linh');
+  assert.equal(app.ui.selectedTipMethod, 'Venmo');
+
+  const before = JSON.stringify(app);
+  assert.equal(api.prepareGenericTipContext(app, {
+    businessId: 'golden-glow-spa', preferredStaffId: 'staff-anna'
+  }).code, 'unknown_staff');
+  assert.equal(JSON.stringify(app), before);
+});
+
+test('unarmed stale scan context never hijacks a generic sendTip recipient', () => {
+  const setup = testApi();
+  const app = setup.api.createDefaultState();
+  assert.equal(setup.api.stageSalonScan(
+    app, 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh'
+  ).ok, true);
+  app.ui.selectedBusinessId = 'bitcoin-nail-bar';
+  app.ui.selectedStaffId = 'staff-anna';
+  app.ui.selectedTipMethod = 'Venmo';
+  const document = createDocumentStub();
+  document.getElementById('tip-custom-amount').value = '6';
+  document.getElementById('tip-note').value = '';
+  const loaded = testApi({
+    [setup.api.STORAGE_KEY]: JSON.stringify(app)
+  }, { document });
+
+  assert.equal(vm.runInContext('state.ui.pendingContext.tipScanArmed', loaded.context), false);
+  const result = vm.runInContext('sendTip()', loaded.context);
+  assert.equal(result.ok, true);
+  const persisted = loaded.api.loadState(loaded.storage);
+  assert.equal(persisted.tips[0].businessId, 'bitcoin-nail-bar');
+  assert.equal(persisted.tips[0].staffProfileId, 'staff-anna');
+});
+
+test('generic navigate and Tip from Look clear stale scan authority before rendering the intended staff', () => {
+  const home = createStubElement({ id: 'home' });
+  const tip = createStubElement({ id: 'tip', classNames: ['hidden'] });
+  const document = createDocumentStub({ screenNodes: [home, tip] });
+  const loaded = testApi({}, { skipInit: false, document });
+  const armGolden = () => vm.runInContext(`
+    stageSalonScan(state, 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh');
+    prepareTipFromScan(state);
+  `, loaded.context);
+
+  armGolden();
+  const navigate = vm.runInContext("ACTIONS.get('navigate')", loaded.context);
+  const homeTip = navigate({ dataset: { target: 'tip', businessId: 'bitcoin-nail-bar' } });
+  assert.equal(homeTip.ok, true);
+  assert.deepEqual(JSON.parse(vm.runInContext(`JSON.stringify({
+    screen: state.ui.activeScreen,
+    businessId: state.ui.selectedBusinessId,
+    staffId: state.ui.selectedStaffId,
+    method: state.ui.selectedTipMethod,
+    armed: state.ui.pendingContext.tipScanArmed
+  })`, loaded.context)), {
+    screen: 'tip', businessId: 'bitcoin-nail-bar', staffId: 'staff-anna', method: 'Venmo', armed: false
+  });
+  assert.deepEqual(
+    document.getElementById('tip-recipient').children.map((option) => option.value),
+    ['staff-anna', 'staff-maria']
+  );
+
+  armGolden();
+  vm.runInContext("state.ui.selectedBusinessId = 'bitcoin-nail-bar'", loaded.context);
+  const businessTip = navigate({ dataset: { target: 'tip' } });
+  assert.equal(businessTip.ok, true);
+  assert.equal(vm.runInContext('state.ui.selectedStaffId', loaded.context), 'staff-anna');
+  assert.equal(vm.runInContext('state.ui.pendingContext.tipScanArmed', loaded.context), false);
+
+  armGolden();
+  const tipLook = vm.runInContext("ACTIONS.get('tip-look')", loaded.context);
+  const lookResult = tipLook({ dataset: { lookId: 'look-galaxy' } });
+  assert.equal(lookResult.ok, true);
+  assert.deepEqual(JSON.parse(vm.runInContext(`JSON.stringify({
+    businessId: state.ui.selectedBusinessId,
+    staffId: state.ui.selectedStaffId,
+    armed: state.ui.pendingContext.tipScanArmed
+  })`, loaded.context)), {
+    businessId: 'bitcoin-nail-bar', staffId: 'staff-anna', armed: false
+  });
+
+  vm.runInContext(`
+    state.ui.selectedBusinessId = 'golden-glow-spa';
+    state.ui.selectedStaffId = 'staff-anna';
+    state.ui.selectedTipMethod = 'Cash App';
+  `, loaded.context);
+  const goldenBusinessTip = navigate({ dataset: { target: 'tip' } });
+  assert.equal(goldenBusinessTip.ok, true);
+  assert.deepEqual(JSON.parse(vm.runInContext(`JSON.stringify({
+    businessId: state.ui.selectedBusinessId,
+    staffId: state.ui.selectedStaffId,
+    method: state.ui.selectedTipMethod
+  })`, loaded.context)), {
+    businessId: 'golden-glow-spa', staffId: 'staff-spa-linh', method: 'Venmo'
+  });
+  assert.deepEqual(
+    document.getElementById('tip-recipient').children.map((option) => option.value),
+    ['staff-spa-linh']
+  );
+  document.getElementById('tip-custom-amount').value = '5';
+  document.getElementById('tip-note').value = '';
+  const sent = vm.runInContext('sendTip()', loaded.context);
+  assert.equal(sent.ok, true);
+  assert.equal(sent.tip.businessId, 'golden-glow-spa');
+  assert.equal(sent.tip.staffProfileId, 'staff-spa-linh');
+
+  const source = html();
+  assert.equal((source.match(/data-action="navigate" data-target="tip" data-business-id="bitcoin-nail-bar"/g) || []).length, 2);
+});
+
+test('generic tip entry persistence failure keeps the armed target and current screen unchanged', () => {
+  const home = createStubElement({ id: 'home' });
+  const tip = createStubElement({ id: 'tip', classNames: ['hidden'] });
+  const document = createDocumentStub({ screenNodes: [home, tip] });
+  const loaded = testApi({}, { skipInit: false, document });
+  vm.runInContext(`
+    stageSalonScan(state, 'https://nexoratouch.com/touch/golden-glow-spa/front?staffProfileId=staff-spa-linh');
+    prepareTipFromScan(state);
+  `, loaded.context);
+  const before = vm.runInContext('JSON.stringify(state)', loaded.context);
+  loaded.storage.setItem = () => { throw new Error('quota'); };
+  const navigate = vm.runInContext("ACTIONS.get('navigate')", loaded.context);
+  let result;
+  assert.doesNotThrow(() => {
+    result = navigate({ dataset: { target: 'tip', businessId: 'bitcoin-nail-bar' } });
+  });
+  assert.equal(result.code, 'persist_failed');
+  assert.equal(vm.runInContext('JSON.stringify(state)', loaded.context), before);
+  assert.equal(home.classList.contains('hidden'), false);
+  assert.equal(tip.classList.contains('hidden'), true);
+});
+
+test('forged tip recipient change rerenders canonical selection without a no-op persistence write', async () => {
+  const document = createDocumentStub();
+  const loaded = testApi({}, { skipInit: false, document });
+  const recipient = document.getElementById('tip-recipient');
+  recipient.value = 'staff-spa-linh';
+  let writes = 0;
+  loaded.storage.setItem = () => { writes += 1; };
+  const before = vm.runInContext('JSON.stringify(state)', loaded.context);
+
+  const result = await loaded.context.handleChange({ target: recipient });
+  assert.equal(result.code, 'unknown_staff');
+  assert.equal(writes, 0);
+  assert.equal(vm.runInContext('JSON.stringify(state)', loaded.context), before);
+  assert.equal(recipient.value, 'staff-anna');
+});
+
 test('round-trips valid reward ledger state and drops duplicate-sensitive records', () => {
   const { api, storage } = testApi();
   const ledger = {
