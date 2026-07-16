@@ -6,6 +6,8 @@
 
 **Architecture:** Giữ `REWARDS`/`redemptions` hiện tại cho point redemption; thêm `REWARD_CAMPAIGNS` chỉ đọc và collection `rewardEntitlements` có lifecycle riêng. Domain action là authority cho issue/reserve/apply/remove/consume; renderer chỉ phản ánh state. Customer schema nâng tuần tự từ `2` lên `3`.
 
+> **Supersede note 16/07/2026:** completion gate trong Task 4 bên dưới đã **được thay thế (superseded)** bởi `customer-qr-payment-tip-design.md` và `2026-07-16-customer-qr-payment-tip-implementation-plan.md`. QR release sở hữu `completeServiceTicket`, common completed-ticket handoff và Scan Payment router; reward-entitlements chỉ consume contract đó, không triển khai lại. Phần reward schema/UI của kế hoạch này chưa vì vậy được coi là đã triển khai.
+
 **Tech Stack:** Single-file HTML, Tailwind CSS Browser CDN v4, Lucide Icons, vanilla JavaScript, versioned localStorage, Node `node:test` + `vm` harness.
 
 ## Global Constraints

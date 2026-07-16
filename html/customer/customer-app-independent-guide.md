@@ -80,10 +80,19 @@ https://nexoratouch.com/touch/[businessId]/[station]?staffProfileId=...
 
 Parser phải từ chối origin khác, HTTP, host/path thừa, fragment, credential, tham số lạ, station/business/staff không hợp lệ. Check-in ghi timestamp; khi offline đưa vào `offlineQueue`, khi có mạng retry. Check-in trùng trong cửa sổ bảo vệ hiện tại bị từ chối.
 
+**Bộ định tuyến ngữ cảnh QR (QR context router)** không đoán mục đích từ `station`. QR chỉ resolve business/station/staff tùy chọn, rồi `scan-context-view` đưa ra ba intent:
+
+- Check-in: thành viên mở form dịch vụ đã prefill profile; guest mở cùng form với tên/số điện thoại để trống. Cả hai tạo record canonical trong `guestCheckins` và mở Operations Live Ticket.
+- Tip: chỉ bật khi QR có staff canonical và staff đã bật ít nhất một phương thức; helper re-parse QR khi prefill và khi tạo tip để không tin selector DOM.
+- Payment: chỉ hiện candidate có exact ticket `completed` đúng business. Join dùng `guestCheckinId`/`ticketId`, không dùng tên hoặc số điện thoại hiển thị; action đọc lại Operations snapshot ngay lúc click. Thiết bị dùng chung phải nhập 4 số cuối, còn session/profile đã xác thực đúng phone thì được miễn.
+
+Ticket `in_service` không thể mở checkout. Re-entry checkout draft mở `pay`; pending/confirmed/rejected mở đúng view trong `paydone`. Không tạo checkout hoặc proof thứ hai.
+
 ### 4.4 Tip và thanh toán trực tiếp
 
 - `tip`: chọn nhân viên, số tiền, phương thức được bật và ghi chú.
 - `pay`: nhập số tiền, chọn phương thức ngoài NEXORA.
+- **Legacy direct pay / Pay Salon Direct** là giao dịch tự do tách biệt; nó không đại diện cho ticket checkout và không bỏ qua completed gate.
 - Gửi giao dịch tạo bản ghi `pending`; không cộng điểm ngay.
 - `tipdone`/`paydone`: nút mô phỏng chỉ đại diện cho callback xác nhận của doanh nghiệp trong prototype. Sau `confirmed` mới cộng bonus và ghi ledger.
 
@@ -157,7 +166,7 @@ Mọi control tương tác dùng `data-action` và được đăng ký trong `AC
 | Navigation/modal | `navigate`, `back`, `open-notifications`, `open-notification`, `close-overlay`, `cancel-overlay`, `confirm-overlay` | Đổi screen, đánh dấu notification đã đọc, đóng/xác nhận modal |
 | Auth/consent | `request-otp`, `verify-otp`, `resend-code`, `claim-welcome`, `accept-consent`, `skip-consent`, `confirm-double-opt-in`, `finish-onboarding` | Cập nhật session/consent/preference, có validation |
 | Ví/reward | `open-business-history`, `open-reward`, `confirm-reward`, `show-reward-qr`, `use-offer` | Kiểm tra balance/alliance, tạo receipt hoặc hiển thị lỗi |
-| Scan | `start-scan`, `enter-code` | Demo camera/QR; parser và queue vẫn chạy qua domain logic |
+| Scan | `start-scan`, `enter-code`, `member-salon-checkin`, `open-guest-checkin`, `open-scan-tip`, `open-scan-payment` | Demo camera/QR; chọn service check-in, Tip staff canonical hoặc completed-ticket checkout |
 | Tiền trực tiếp | `select-tip`, `send-tip`, `confirm-tip`, `send-payment`, `confirm-payment` | Pending trước, confirmed sau; không có wallet NEXORA |
 | Looks/wishes | `save-look`, `upload-look`, `view-look`, `rebook-look`, `tip-look`, `delete-look`, `scan-receipt`, `add-wish`, `remove-wish` | Lưu/xem/rebook, thêm/xóa wish; scan receipt hiện rõ là capability ngoài prototype |
 | Explore | `toggle-favorite`, `view-business`, `show-directions`, `save-offer`, `view-offer`, `toggle-follow-tech` | Cập nhật favorite/offer/follow hoặc mở Maps |
@@ -179,7 +188,7 @@ Các control bị disable phải có `disabled`/`aria-disabled` và lý do hiể
 ### Cần backend hoặc tích hợp thật
 
 - API auth/OTP, SMS provider và consent ledger TCPA.
-- QR decoder/camera permission, server-side check-in dedupe và offline sync.
+- QR decoder/camera permission, server-side check-in dedupe và offline sync. Prototype đang mô phỏng camera và payment callback; dropdown role Operations không phải authorization thật.
 - Business callbacks cho tip/payment/booking/reward receipt.
 - Payment deep link/webhook, push notification, Google review attribution.
 - Upload ảnh production, object storage, moderation và multi-device sync.
@@ -235,7 +244,7 @@ Tài liệu này là bản handoff độc lập cho `html/customer`; mã chạy 
 - Storage: Customer schema v2 tại `nexora.customer.prototype.v1`; Operations schema v1 tại `nexora.customer.crosssurface.v1`.
 - Customer domain actions: `stageSalonScan`, `createGuestCheckin`, `createCheckoutDraft`, `submitPaymentProof`, `verifyPaymentProof`, `mergeGuestJourney`, `createReferralInvite`, `releaseReferralReward`, `importAcceptedAddOns`.
 - Operations domain actions: `createServiceTicket`, `evaluateStaffEligibility`, `chooseRecommendedStaff`, `proposeAddOn`, `resolveAddOn`.
-- Luồng bắt buộc: guest check-in thành công mở Customer Live Ticket trước; Staff Not Eligible và Approve Add-on chỉ hiện theo điều kiện; chỉ nút Pay rõ ràng trên Live Ticket handoff sang Guest Checkout.
+- Luồng bắt buộc: service check-in thành công mở Customer Live Ticket trước; Staff Not Eligible và Approve Add-on chỉ hiện theo điều kiện; Pay trên Live Ticket hoặc Scan Payment chỉ handoff sang Guest Checkout khi exact ticket đã `completed`.
 - Frontend simulation: QR camera, file upload, Call/Message, Front Desk verification, payment handoff và paid-visit referral event.
 - External production dependencies: API/auth, OTP/SMS, camera permission, object storage, malware scan, payment/deep links, webhook verification, server ledger và audit log.
 - Verification: `node --test html/customer/cutomer-reward.test.mjs` và `node --test html/customer/customer-salon-operations.test.mjs`.

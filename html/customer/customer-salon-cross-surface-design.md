@@ -1,7 +1,7 @@
 # Customer App + Salon Cross-surface Prototype — Design Spec
 
 **Ngày:** 15/07/2026
-**Trạng thái:** Chờ review
+**Trạng thái:** Được thay thế một phần ngày 16/07/2026 bởi `customer-qr-payment-tip-design.md` và `2026-07-16-customer-qr-payment-tip-implementation-plan.md`.
 **Phạm vi file:** Chỉ `html/customer`
 
 ## 1. Mục tiêu
@@ -69,7 +69,19 @@ Các flow companion không được thêm vào danh sách 31 `app-screen` của 
 | Guest check-in, checkout, proof, receipt, guest claim, referral | `nexora.customer.prototype.v1` | Companion chỉ đọc snapshot đã sanitize |
 | Service ticket, staff eligibility, add-on request | `nexora.customer.crosssurface.v1` | Customer chỉ đọc accepted add-on đã sanitize |
 
-Cross-surface join chỉ dùng `guestCheckinId` và `ticketId`; không join theo tên hoặc số điện thoại hiển thị. Guest check-in thành công mở Customer Live Ticket trước; chỉ nút Pay rõ ràng tại đây mới handoff sang Guest Checkout. Staff Not Eligible chỉ hiện khi kết quả eligibility không đạt; Approve Add-on chỉ hiện khi có add-on đang chờ quyết định. `cutomer-reward.html` vẫn đúng 31 `.app-screen`; các flow mới là nested views. `customer-salon-operations.html` chứa ba screen độc lập `ops-liveticket`, `ops-staffnoteligible`, `ops-addonapproval`. Trạng thái tài liệu vẫn là **Chờ review** cho tới khi Product Owner phê duyệt.
+Cross-surface join chỉ dùng `guestCheckinId` và `ticketId`; không join theo tên hoặc số điện thoại hiển thị. Service check-in thành công mở Customer Live Ticket trước. Pay trên Live Ticket và Scan Payment đều chỉ handoff sang Guest Checkout khi exact Operations ticket ở trạng thái `completed`; Scan Payment đọc snapshot mới tại click và yêu cầu 4 số cuối nếu session/profile không sở hữu guest check-in. Staff Not Eligible chỉ hiện khi kết quả eligibility không đạt; Approve Add-on chỉ hiện khi có add-on đang chờ quyết định. `cutomer-reward.html` vẫn đúng 31 `.app-screen`; các flow mới là nested views. `customer-salon-operations.html` chứa ba screen độc lập `ops-liveticket`, `ops-staffnoteligible`, `ops-addonapproval`.
+
+### 4.1 Supersede note — QR intent và completion gate
+
+Thiết kế ngày 16/07/2026 superseded/được thay thế phần mô tả “chỉ Pay trên Live Ticket” của bản này bằng contract chung:
+
+- QR là context router cho check-in, tip và payment; không suy đoán intent từ `station`.
+- Member và guest cùng tạo service check-in canonical trong `guestCheckins` trước Live Ticket.
+- Operations `completeServiceTicket` là authority cho `in_service → completed`.
+- Live Ticket Pay, URL handoff và Scan Payment dùng cùng completed-ticket gate.
+- `Pay Salon Direct` cũ vẫn là direct-pay tự do, không phải checkout của ticket.
+
+Chi tiết triển khai và acceptance nằm trong `2026-07-16-customer-qr-payment-tip-implementation-plan.md`; không triển khai lại completion gate ở kế hoạch cũ.
 
 ## 5. UI và accessibility
 
