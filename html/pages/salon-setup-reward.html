@@ -844,6 +844,26 @@
     }
     .reward-proto .reward-split { grid-template-columns: 7fr 5fr; }
 
+    /* multi-step reward wizard */
+    .reward-proto .reward-steps { display: flex; align-items: center; gap: 8px; margin: 4px 0 18px; }
+    .reward-proto .reward-step { display: inline-flex; align-items: center; gap: 9px; border: 0; background: transparent; padding: 4px; cursor: pointer; font: inherit; color: var(--muted); }
+    .reward-proto .reward-step-num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: #edf1f7; color: #667085; font-weight: 900; font-size: 14px; flex-shrink: 0; transition: background 0.2s, color 0.2s; }
+    .reward-proto .reward-step-label { font-weight: 800; font-size: 14px; white-space: nowrap; }
+    .reward-proto .reward-step.is-active .reward-step-num { background: linear-gradient(135deg, var(--p), var(--p2)); color: #fff; }
+    .reward-proto .reward-step.is-active .reward-step-label { color: var(--ink); }
+    .reward-proto .reward-step.is-done .reward-step-num { background: var(--green); color: #fff; }
+    .reward-proto .reward-step-bar { flex: 1; height: 2px; background: var(--line); border-radius: 2px; min-width: 14px; }
+    .reward-proto .reward-wizard-step { display: none; }
+    .reward-proto .reward-wizard-step.is-active { display: block; animation: rewardStepFade 0.2s ease; }
+    @keyframes rewardStepFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .reward-proto .reward-wizard-nav { display: flex; align-items: center; gap: 10px; margin-top: 18px; }
+    .reward-proto .reward-wizard-nav .spacer { flex: 1; }
+    .reward-proto .reward-wizard-nav .btn { display: inline-flex; align-items: center; gap: 6px; }
+    @media (max-width: 640px) {
+      .reward-proto .reward-step-label { display: none; }
+      .reward-proto .reward-step.is-active .reward-step-label { display: inline; font-size: 13px; }
+    }
+
     /* SweetAlert2 styled to match this site */
     .swal2-popup { font-family: Inter, system-ui, sans-serif !important; border-radius: 20px !important; box-shadow: 0 24px 60px rgba(8, 16, 34, 0.25) !important; }
     .swal2-title { font-size: 20px !important; font-weight: 900 !important; color: #101828 !important; }
@@ -6134,8 +6154,6 @@
           <div class="nav-submenu">
             <button class="nav-subitem is-active" type="button" data-nav-subitem-target="reward-dashboard">Reward Dashboard</button>
             <button class="nav-subitem" type="button" data-nav-subitem-target="create-reward">Create Reward</button>
-            <button class="nav-subitem" type="button" data-nav-subitem-target="reward-rules">Reward Rules</button>
-            <button class="nav-subitem" type="button" data-nav-subitem-target="audience-delivery">Audience &amp; Delivery</button>
             <button class="nav-subitem" type="button" data-nav-subitem-target="reward-analytics">Reward Analytics</button>
           </div>
         </div>
@@ -6210,18 +6228,6 @@
                 </span>
                 <span>Create Reward</span>
               </button>
-              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="reward-rules" aria-controls="panel-reward-rules">
-                <span class="page-tab-icon">
-                  <i class="bi bi-list-check" aria-hidden="true"></i>
-                </span>
-                <span>Reward Rules</span>
-              </button>
-              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="audience-delivery" aria-controls="panel-audience-delivery">
-                <span class="page-tab-icon">
-                  <i class="bi bi-send" aria-hidden="true"></i>
-                </span>
-                <span>Audience &amp; Delivery</span>
-              </button>
               <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="reward-analytics" aria-controls="panel-reward-analytics">
                 <span class="page-tab-icon">
                   <i class="bi bi-graph-up" aria-hidden="true"></i>
@@ -6266,81 +6272,101 @@
             </section>
             <section class="tab-panel" id="panel-create-reward" data-tab-panel="create-reward" aria-label="Create Reward panel">
               <div class="reward-proto">
-                <div class="grid g2">
-                  <div class="card">
-                    <div class="title"><h3 data-create-title>Create Reward</h3><span class="chip" data-create-step>Step 1</span></div>
-                    <div class="grid g2 reward-types">
-                      <div class="rewardType active" role="button" tabindex="0" data-reward-type data-reward-value="$5" data-reward-title="Earn $5 Reward"><b>Dollar Credit</b><p class="muted">$5, $10 or custom</p></div>
-                      <div class="rewardType" role="button" tabindex="0" data-reward-type data-reward-value="15%" data-reward-title="15% Off Reward"><b>Percent Off</b><p class="muted">10%, 15%, 20%</p></div>
-                      <div class="rewardType" role="button" tabindex="0" data-reward-type data-reward-value="Free add-on" data-reward-title="Free Add-on Reward"><b>Free Add-on</b><p class="muted">Gel, French, design</p></div>
-                      <div class="rewardType" role="button" tabindex="0" data-reward-type data-reward-value="50 pts" data-reward-title="Earn Bonus Points"><b>Bonus Points</b><p class="muted">Reward points</p></div>
+                <div class="card">
+                  <div class="title"><h3 data-create-title>Create Reward</h3><span class="chip" data-create-step>3 steps</span></div>
+                  <div class="reward-steps" data-reward-steps>
+                    <button class="reward-step is-active" type="button" data-step-go="1"><span class="reward-step-num">1</span><span class="reward-step-label">Reward</span></button>
+                    <span class="reward-step-bar"></span>
+                    <button class="reward-step" type="button" data-step-go="2"><span class="reward-step-num">2</span><span class="reward-step-label">Rules</span></button>
+                    <span class="reward-step-bar"></span>
+                    <button class="reward-step" type="button" data-step-go="3"><span class="reward-step-num">3</span><span class="reward-step-label">Audience &amp; Delivery</span></button>
+                  </div>
+
+                  <!-- Step 1: Reward -->
+                  <div class="reward-wizard-step is-active" data-wizard-step="1">
+                    <div class="grid g2">
+                      <div class="card">
+                        <div class="title"><h3>Reward Details</h3><span class="chip">Step 1</span></div>
+                        <div class="grid g2 reward-types">
+                          <div class="rewardType active" role="button" tabindex="0" data-reward-type data-reward-value="$5" data-reward-title="Earn $5 Reward"><b>Dollar Credit</b><p class="muted">$5, $10 or custom</p></div>
+                          <div class="rewardType" role="button" tabindex="0" data-reward-type data-reward-value="15%" data-reward-title="15% Off Reward"><b>Percent Off</b><p class="muted">10%, 15%, 20%</p></div>
+                          <div class="rewardType" role="button" tabindex="0" data-reward-type data-reward-value="Free add-on" data-reward-title="Free Add-on Reward"><b>Free Add-on</b><p class="muted">Gel, French, design</p></div>
+                          <div class="rewardType" role="button" tabindex="0" data-reward-type data-reward-value="50 pts" data-reward-title="Earn Bonus Points"><b>Bonus Points</b><p class="muted">Reward points</p></div>
+                        </div>
+                        <div style="height:12px"></div>
+                        <div class="form2">
+                          <div class="field"><label>Reward Name</label><input value="Review &amp; Earn $5" data-reward-name-input></div>
+                          <div class="field"><label>Reward Value</label><input value="$5" data-reward-value-input></div>
+                          <div class="field"><label>Trigger</label><select data-reward-trigger-select><option>After Verified Review</option><option>After Tip</option><option>After Visit</option><option>After Referral</option></select></div>
+                          <div class="field"><label>Applies To</label><select><option>All Services</option><option>Selected Services</option><option>Minimum Spend</option></select></div>
+                          <div class="field"><label>Expiration</label><input value="30 days" data-reward-expiry-input></div>
+                          <div class="field"><label>Usage Limit</label><input value="1 per customer"></div>
+                        </div>
+                      </div>
+                      <div class="card" style="background:linear-gradient(135deg,#10172e,#573b9c);color:#fff">
+                        <span class="chip g">Bitcoin Nail Bar</span>
+                        <h2 style="font-size:30px" data-preview-title>Review &amp; Earn $5</h2>
+                        <p style="color:#ccd3e5">Reward customers with <b data-preview-value>$5</b> — applied on their next visit.</p>
+                        <div class="line"><span>Expires</span><b data-preview-expiry>30 days</b></div>
+                        <div class="line"><span>Minimum spend</span><b>$25</b></div>
+                        <div class="line"><span>Use</span><b>Next visit</b></div>
+                      </div>
                     </div>
-                    <div style="height:12px"></div>
-                    <div class="form2">
-                      <div class="field"><label>Reward Name</label><input value="Review &amp; Earn $5" data-reward-name-input></div>
-                      <div class="field"><label>Reward Value</label><input value="$5" data-reward-value-input></div>
-                      <div class="field"><label>Trigger</label><select data-reward-trigger-select><option>After Verified Review</option><option>After Tip</option><option>After Visit</option><option>After Referral</option></select></div>
-                      <div class="field"><label>Applies To</label><select><option>All Services</option><option>Selected Services</option><option>Minimum Spend</option></select></div>
-                      <div class="field"><label>Expiration</label><input value="30 days" data-reward-expiry-input></div>
-                      <div class="field"><label>Usage Limit</label><input value="1 per customer"></div>
+                  </div>
+
+                  <!-- Step 2: Rules -->
+                  <div class="reward-wizard-step" data-wizard-step="2">
+                    <div class="grid g2">
+                      <div class="card">
+                        <div class="title"><h3>Qualification Rules</h3><span class="chip">Triggers</span></div>
+                        <div class="line"><span>Trigger</span><select><option>Verified review</option><option>Tip received</option><option>Visit completed</option><option>Referral</option></select></div>
+                        <div class="line"><span>Ticket status</span><select><option>Paid &amp; Closed</option><option>Any status</option></select></div>
+                        <div class="line"><span>Minimum Spend</span><input value="$25"></div>
+                        <div class="line"><span>Review Window</span><input value="7 days"></div>
+                        <div class="line"><span>Exclusions</span><input value="Refunded / disputed"></div>
+                        <button class="btn o" style="margin-top:12px" type="button" data-add-rule>+ Add Rule</button>
+                      </div>
+                      <div class="card soft">
+                        <div class="title"><h3>Usage Rules</h3><span class="chip">Redemption</span></div>
+                        <div class="line"><span>Combine promotions</span><label class="switch"><input type="checkbox"><span class="switch-track"></span></label></div>
+                        <div class="line"><span>Use with membership</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
+                        <div class="line"><span>Minimum purchase</span><input value="$25"></div>
+                        <div class="line"><span>Valid locations</span><select><option>Bitcoin Nail Bar</option><option>All Locations</option></select></div>
+                        <div class="line"><span>Auto apply</span><select><option>Ask customer</option><option>Apply automatically</option><option>Manual</option></select></div>
+                      </div>
                     </div>
-                    <button class="btn p" style="margin-top:12px" type="button" data-create-continue>Continue</button>
                   </div>
-                  <div class="card" style="background:linear-gradient(135deg,#10172e,#573b9c);color:#fff">
-                    <span class="chip g">Bitcoin Nail Bar</span>
-                    <h2 style="font-size:30px" data-preview-title>Review &amp; Earn $5</h2>
-                    <p style="color:#ccd3e5">Reward customers with <b data-preview-value>$5</b> — applied on their next visit.</p>
-                    <div class="line"><span>Expires</span><b data-preview-expiry>30 days</b></div>
-                    <div class="line"><span>Minimum spend</span><b>$25</b></div>
-                    <div class="line"><span>Use</span><b>Next visit</b></div>
-                  </div>
-                </div>
-              </div>
-            </section>
-            <section class="tab-panel" id="panel-reward-rules" data-tab-panel="reward-rules" aria-label="Reward Rules panel">
-              <div class="reward-proto">
-                <div class="grid g2">
-                  <div class="card">
-                    <div class="title"><h3>Qualification Rules</h3><span class="chip">Step 2</span></div>
-                    <div class="line"><span>Trigger</span><select><option>Verified review</option><option>Tip received</option><option>Visit completed</option><option>Referral</option></select></div>
-                    <div class="line"><span>Ticket status</span><select><option>Paid &amp; Closed</option><option>Any status</option></select></div>
-                    <div class="line"><span>Minimum Spend</span><input value="$25"></div>
-                    <div class="line"><span>Review Window</span><input value="7 days"></div>
-                    <div class="line"><span>Exclusions</span><input value="Refunded / disputed"></div>
-                    <button class="btn o" style="margin-top:12px" type="button" data-add-rule>+ Add Rule</button>
-                  </div>
-                  <div class="card soft">
-                    <div class="title"><h3>Usage Rules</h3><span class="chip">Redemption</span></div>
-                    <div class="line"><span>Combine promotions</span><label class="switch"><input type="checkbox"><span class="switch-track"></span></label></div>
-                    <div class="line"><span>Use with membership</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
-                    <div class="line"><span>Minimum purchase</span><input value="$25"></div>
-                    <div class="line"><span>Valid locations</span><select><option>Bitcoin Nail Bar</option><option>All Locations</option></select></div>
-                    <div class="line"><span>Auto apply</span><select><option>Ask customer</option><option>Apply automatically</option><option>Manual</option></select></div>
-                    <button class="btn p" style="margin-top:12px" type="button" data-tab-jump="audience-delivery">Continue</button>
-                  </div>
-                </div>
-              </div>
-            </section>
-            <section class="tab-panel" id="panel-audience-delivery" data-tab-panel="audience-delivery" aria-label="Audience & Delivery panel">
-              <div class="reward-proto">
-                <div class="grid g2">
-                  <div class="card">
-                    <div class="title"><h3>Audience</h3><span class="chip">Step 3</span></div>
-                    <div class="form2">
-                      <div class="field"><label>Segment</label><select><option>All Customers</option><option>New Customers</option><option>VIP</option><option>Inactive 30+ Days</option><option>Customers Who Reviewed</option></select></div>
-                      <div class="field"><label>Location</label><select><option>Bitcoin Nail Bar</option><option>All Locations</option></select></div>
-                      <div class="field"><label>Delivery</label><select><option>Immediately</option><option>Next Morning</option><option>Custom</option></select></div>
-                      <div class="field"><label>Language</label><select><option>Auto</option><option>English</option><option>Vietnamese</option></select></div>
+
+                  <!-- Step 3: Audience & Delivery -->
+                  <div class="reward-wizard-step" data-wizard-step="3">
+                    <div class="grid g2">
+                      <div class="card">
+                        <div class="title"><h3>Audience</h3><span class="chip">Targeting</span></div>
+                        <div class="form2">
+                          <div class="field"><label>Segment</label><select><option>All Customers</option><option>New Customers</option><option>VIP</option><option>Inactive 30+ Days</option><option>Customers Who Reviewed</option></select></div>
+                          <div class="field"><label>Location</label><select><option>Bitcoin Nail Bar</option><option>All Locations</option></select></div>
+                          <div class="field"><label>Delivery</label><select><option>Immediately</option><option>Next Morning</option><option>Custom</option></select></div>
+                          <div class="field"><label>Language</label><select><option>Auto</option><option>English</option><option>Vietnamese</option></select></div>
+                        </div>
+                        <p class="muted">App users receive in-app reward. Guests receive SMS reward link.</p>
+                      </div>
+                      <div class="card soft">
+                        <div class="title"><h3>Channels</h3><span class="chip">Delivery</span></div>
+                        <div class="line"><span>Nexora App</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
+                        <div class="line"><span>Push Notification</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
+                        <div class="line"><span>SMS Guest Fallback</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
+                        <div class="line"><span>Email</span><label class="switch"><input type="checkbox"><span class="switch-track"></span></label></div>
+                      </div>
                     </div>
-                    <p class="muted">App users receive in-app reward. Guests receive SMS reward link.</p>
                   </div>
-                  <div class="card soft">
-                    <div class="title"><h3>Channels</h3><span class="chip">Step 4</span></div>
-                    <div class="line"><span>Nexora App</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
-                    <div class="line"><span>Push Notification</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
-                    <div class="line"><span>SMS Guest Fallback</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
-                    <div class="line"><span>Email</span><label class="switch"><input type="checkbox"><span class="switch-track"></span></label></div>
-                    <button class="btn g" style="margin-top:12px" type="button" data-publish-reward>Publish Reward</button>
+
+                  <!-- Wizard navigation -->
+                  <div class="reward-wizard-nav">
+                    <button class="btn o" type="button" data-wizard-back hidden><i class="bi bi-arrow-left" aria-hidden="true"></i> Back</button>
+                    <span class="spacer"></span>
+                    <button class="btn o" type="button" data-wizard-save hidden>Save Changes</button>
+                    <button class="btn p" type="button" data-wizard-next>Continue <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+                    <button class="btn g" type="button" data-publish-reward hidden>Publish Reward</button>
                   </div>
                 </div>
               </div>
@@ -8422,19 +8448,72 @@
       });
     });
 
-    var createContinue = document.querySelector('[data-create-continue]');
-    if (createContinue) {
-      createContinue.addEventListener('click', function() {
-        var valid = true;
-        [rewardNameInput, rewardValueInput].forEach(function(inp) {
-          if (!inp) return;
-          if (!inp.value.trim()) { inp.classList.add('invalid'); valid = false; }
-          else inp.classList.remove('invalid');
-        });
-        if (!valid) {
-          showRewardToast('Please enter a reward name and value first.');
-          return;
-        }
+    var WIZARD_STEPS = 3;
+    var currentWizardStep = 1;
+
+    function updateWizardNav() {
+      var editing = !!editingProgram;
+      var isLast = currentWizardStep === WIZARD_STEPS;
+      var backBtn = document.querySelector('[data-wizard-back]');
+      var nextBtn = document.querySelector('[data-wizard-next]');
+      var pubBtn = document.querySelector('[data-publish-reward]');
+      var saveBtn = document.querySelector('[data-wizard-save]');
+      if (backBtn) backBtn.hidden = currentWizardStep === 1;
+      if (nextBtn) nextBtn.hidden = isLast;
+      if (pubBtn) { pubBtn.hidden = !isLast; pubBtn.textContent = editing ? 'Save Changes' : 'Publish Reward'; }
+      if (saveBtn) saveBtn.hidden = !(editing && !isLast);
+    }
+
+    function setWizardStep(step) {
+      currentWizardStep = Math.min(WIZARD_STEPS, Math.max(1, step));
+      document.querySelectorAll('[data-wizard-step]').forEach(function(panel) {
+        panel.classList.toggle('is-active', Number(panel.dataset.wizardStep) === currentWizardStep);
+      });
+      document.querySelectorAll('[data-step-go]').forEach(function(pill) {
+        var n = Number(pill.dataset.stepGo);
+        pill.classList.toggle('is-active', n === currentWizardStep);
+        pill.classList.toggle('is-done', n < currentWizardStep);
+      });
+      updateWizardNav();
+    }
+
+    function validateRewardStep1() {
+      var valid = true;
+      [rewardNameInput, rewardValueInput].forEach(function(inp) {
+        if (!inp) return;
+        if (!inp.value.trim()) { inp.classList.add('invalid'); valid = false; }
+        else inp.classList.remove('invalid');
+      });
+      if (!valid) showRewardToast('Please enter a reward name and value first.');
+      return valid;
+    }
+
+    var wizardNext = document.querySelector('[data-wizard-next]');
+    if (wizardNext) {
+      wizardNext.addEventListener('click', function() {
+        if (currentWizardStep === 1 && !validateRewardStep1()) return;
+        setWizardStep(currentWizardStep + 1);
+      });
+    }
+
+    var wizardBack = document.querySelector('[data-wizard-back]');
+    if (wizardBack) {
+      wizardBack.addEventListener('click', function() {
+        setWizardStep(currentWizardStep - 1);
+      });
+    }
+
+    document.querySelectorAll('[data-step-go]').forEach(function(pill) {
+      pill.addEventListener('click', function() {
+        var target = Number(pill.dataset.stepGo);
+        if (target > 1 && currentWizardStep === 1 && !validateRewardStep1()) return;
+        setWizardStep(target);
+      });
+    });
+
+    var wizardSave = document.querySelector('[data-wizard-save]');
+    if (wizardSave) {
+      wizardSave.addEventListener('click', function() {
         confirmAndCreateReward();
       });
     }
@@ -8511,16 +8590,14 @@
     function setCreateMode(editing) {
       var titleEl = document.querySelector('[data-create-title]');
       var stepEl = document.querySelector('[data-create-step]');
-      var continueBtn = document.querySelector('[data-create-continue]');
-      var pubBtn = document.querySelector('[data-publish-reward]');
       if (titleEl) titleEl.textContent = editing ? 'Edit Reward' : 'Create Reward';
-      if (stepEl) stepEl.textContent = editing ? 'Editing' : 'Step 1';
-      if (continueBtn) continueBtn.textContent = editing ? 'Save Changes' : 'Continue';
-      if (pubBtn) pubBtn.textContent = editing ? 'Save Changes' : 'Publish Reward';
+      if (stepEl) stepEl.textContent = editing ? 'Editing' : '3 steps';
+      updateWizardNav();
     }
 
     function resetCreateMode() {
       editingProgram = null;
+      setWizardStep(1);
       setCreateMode(false);
     }
 
@@ -8596,6 +8673,7 @@
         });
       }
       updateRewardPreview();
+      setWizardStep(1);
       setCreateMode(true);
       activateMainTab('create-reward');
     }
@@ -8699,6 +8777,7 @@
     }
 
     updateFilterCounts();
+    setWizardStep(1);
     activateMainTabFromUrl();
   </script>
 </body>

@@ -84,6 +84,7 @@
           <button type="button" class="ops-button-secondary mt-4 w-full" data-ops-action="review-staff-eligibility">Kiểm tra điều kiện nhân viên</button>
           <button type="button" class="ops-button-secondary mt-3 w-full" data-ops-action="open-addon">Review suggested add-on / Xem dịch vụ thêm</button>
           <button type="button" class="ops-button mt-3 w-full" data-ops-action="complete-service">Hoàn tất dịch vụ / Complete service</button>
+          <p id="ops-complete-reason" class="mt-2 hidden text-sm font-bold text-amber-700"></p>
         </article>
         <nav class="mt-4 grid grid-cols-4 gap-2" aria-label="Ticket actions / Tác vụ phiếu">
           <button type="button" class="ops-button px-2 text-xs sm:text-sm" data-ops-action="open-ticket-tab" data-target="liveticket">Ticket</button>
@@ -91,6 +92,7 @@
           <button type="button" class="ops-button-secondary px-2 text-xs sm:text-sm" data-ops-action="open-ticket-tab" data-target="review">Review</button>
           <button type="button" class="ops-button-secondary px-2 text-xs sm:text-sm" data-ops-action="open-ticket-tab" data-target="reward">Reward</button>
         </nav>
+        <p id="ops-pay-reason" class="mt-2 hidden text-sm font-bold text-amber-700"></p>
       </div>
     </section>
 
@@ -707,6 +709,12 @@ function addOnArtifactsReconcile(tickets, addOns) {
   });
 }
 
+function ticketAddOnLifecycleReconciles(tickets, addOns) {
+  return tickets.every((ticket) => ticket.status !== 'completed' || !addOns.some((addOn) => (
+    addOn.ticketId === ticket.id && addOn.status === 'proposed'
+  )));
+}
+
 function createOperationsState() {
   return {
     schemaVersion: OPS_SCHEMA_VERSION,
@@ -734,7 +742,8 @@ function normalizeOperationsState(value) {
       ? normalizeAddOnCollection(opsOwn(value, 'addOnRequests'), ticketResult.value)
       : { ok: false, value: [] };
     const artifactsOk = ticketResult.ok && addOnResult.ok
-      && addOnArtifactsReconcile(ticketResult.value, addOnResult.value);
+      && addOnArtifactsReconcile(ticketResult.value, addOnResult.value)
+      && ticketAddOnLifecycleReconciles(ticketResult.value, addOnResult.value);
     const tickets = artifactsOk ? ticketResult.value : [];
     const addOnRequests = artifactsOk ? addOnResult.value : [];
     const eligibilityResult = artifactsOk
@@ -942,6 +951,7 @@ function operationsStateIntegrity(state) {
     : { ok: false, value: [] };
   if (!tickets.ok || !addOns.ok) return false;
   if (!addOnArtifactsReconcile(tickets.value, addOns.value)) return false;
+  if (!ticketAddOnLifecycleReconciles(tickets.value, addOns.value)) return false;
   const eligibility = normalizeEligibilityCollection(state.staffEligibility, tickets.value);
   if (!eligibility.ok) return false;
   if (JSON.stringify(tickets.value) !== JSON.stringify(state.serviceTickets)
@@ -1071,6 +1081,13 @@ function completeServiceTicket(state, ticketId, now = Date.now()) {
   state.ui.activeScreen = 'liveticket';
   state.ui.selectedStaffId = null;
   return { ok: true, ticket };
+}
+
+function canOpenTicketPayment(state, ticketId) {
+  if (!operationsStateIntegrity(state)) return false;
+  const tickets = state.serviceTickets.filter((row) => row.id === ticketId);
+  if (tickets.length !== 1 || tickets[0].status !== 'completed') return false;
+  return !state.addOnRequests.some((row) => row.ticketId === ticketId && row.status === 'proposed');
 }
 
 function evaluateStaffEligibility(state, ticketId, serviceKey, staffId) {
@@ -1356,11 +1373,20 @@ function opsToast(message) {
   setOperationsStatus(message);
 }
 
-function setDisabledReason(control, disabled, reason) {
+function setDisabledReason(control, disabled, reason, reasonId = null) {
   if (!control) return;
   control.disabled = disabled;
   control.setAttribute('aria-disabled', String(disabled));
   if (disabled) control.setAttribute('title', reason); else control.removeAttribute('title');
+  if (typeof reasonId === 'string' && reasonId) {
+    const reasonNode = document.getElementById(reasonId);
+    if (reasonNode) {
+      reasonNode.textContent = disabled ? reason : '';
+      reasonNode.classList.toggle('hidden', !disabled);
+    }
+    if (disabled && reasonNode) control.setAttribute('aria-describedby', reasonId);
+    else control.removeAttribute('aria-describedby');
+  }
 }
 
 function opsMoney(cents) {
@@ -1544,10 +1570,15 @@ function syncLiveTicketControls() {
             : !roleAllowed
               ? opsT('completeRoleReason')
               : opsT('completeAddonPendingReason');
-      setDisabledReason(control, disabled, reason);
+      setDisabledReason(control, disabled, reason, 'ops-complete-reason');
     }
     if (action === 'open-ticket-tab' && control.dataset.target === 'pay') {
-      setDisabledReason(control, !ticket || ticket.status !== 'completed', opsT('payCompletionReason'));
+      setDisabledReason(
+        control,
+        !ticket || !canOpenTicketPayment(operationsState, ticket.id),
+        opsT('payCompletionReason'),
+        'ops-pay-reason'
+      );
     }
   });
 }
@@ -1698,7 +1729,12 @@ function renderOperationsScreen({ focus = false } = {}) {
   });
   if (operationsEntryBlocked) {
     document.querySelectorAll('[data-ops-action]').forEach((control) => {
-      setDisabledReason(control, true, opsT('entryBlockedReason'));
+      const reasonId = control.dataset.opsAction === 'complete-service'
+        ? 'ops-complete-reason'
+        : control.dataset.opsAction === 'open-ticket-tab' && control.dataset.target === 'pay'
+          ? 'ops-pay-reason'
+          : null;
+      setDisabledReason(control, true, opsT('entryBlockedReason'), reasonId);
     });
   }
 }
@@ -1934,13 +1970,19 @@ registerOpsAction('complete-service', () => {
   renderOperationsContent();
   renderOperationsScreen();
   opsToast(opsT(result.ok ? 'serviceCompleted' : 'serviceCompleteFailed'));
+  if (result.ok) {
+    const payControl = Array.from(document.querySelectorAll('[data-ops-action]')).find((control) => (
+      control.dataset.opsAction === 'open-ticket-tab' && control.dataset.target === 'pay'
+    ));
+    payControl?.focus?.({ preventScroll: true });
+  }
   return result;
 });
 registerOpsAction('open-ticket-tab', (control) => {
   const ticket = operationsState.serviceTickets.find((row) => row.id === operationsState.ui.selectedTicketId);
   if (!ticket) return opsToast(opsT('noLiveTicket'));
   if (control.dataset.target === 'pay') {
-    if (ticket.status !== 'completed') {
+    if (!canOpenTicketPayment(operationsState, ticket.id)) {
       opsToast(opsT('paymentRequiresCompletion'));
       return { ok: false, code: 'service_not_completed' };
     }
@@ -2070,6 +2112,7 @@ window.NEXORA_OPERATIONS_TEST_API = {
   opsId,
   createServiceTicket,
   completeServiceTicket,
+  canOpenTicketPayment,
   evaluateStaffEligibility,
   chooseRecommendedStaff,
   askFrontDesk,

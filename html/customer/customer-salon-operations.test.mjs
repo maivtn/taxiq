@@ -202,7 +202,8 @@ function uiApi({
     'ops-ticket-staff', 'ops-eligibility-warning', 'ops-requested-staff',
     'ops-requested-service', 'ops-recommended-staff', 'ops-choose-staff',
     'ops-addon-staff', 'ops-addon-label', 'ops-addon-amount', 'ops-addon-current',
-    'ops-addon-new', 'ops-addon-phone', 'ops-addon-error', 'ops-addon-confirm'
+    'ops-addon-new', 'ops-addon-phone', 'ops-addon-error', 'ops-addon-confirm',
+    'ops-complete-reason', 'ops-pay-reason'
   ];
   const dynamicNodes = dynamicIds.map((id) => createStubNode({ id }));
   const actionButtons = {
@@ -271,7 +272,7 @@ function uiApi({
       return event;
     }
   };
-  for (const node of [...screens, ...screenButtons, role]) {
+  for (const node of [...screens, ...screenButtons, ...Object.values(actionButtons), role]) {
     node.onFocus = () => { document.activeElement = node; };
   }
   const window = { localStorage: storage };
@@ -1194,6 +1195,105 @@ test('complete service persistence failure rolls back ticket and controls with a
   assert.match(harness.status.textContent, /không thể|failed|could not/i);
 });
 
+test('completed proposed add-on persistence fails closed for normalize, load, replay, controls, and Pay handoff', () => {
+  const setup = testApi();
+  const guest = guestCheckin({ id: 'guest-checkin-completed-proposed' });
+  const fixture = seedTicketWithCustomer(setup.api);
+  fixture.ticket.guestCheckinId = guest.id;
+  const proposal = setup.api.proposeAddOn(fixture.state, {
+    ticketId: fixture.ticket.id,
+    businessId: fixture.ticket.businessId,
+    staffProfileId: fixture.ticket.staffProfileId,
+    label: 'Gel Polish',
+    amountCents: 1500
+  }, 2000);
+  assert.equal(proposal.ok, true);
+  fixture.ticket.status = 'completed';
+  fixture.ticket.completedAt = '1970-01-01T00:00:03.000Z';
+  fixture.state.ui.role = 'Staff';
+  const corruptBytes = JSON.stringify(fixture.state);
+  const beforeReplay = JSON.stringify(fixture.state);
+
+  const normalized = setup.api.normalizeOperationsState(fixture.state);
+  assert.deepEqual(plain(normalized.serviceTickets), []);
+  assert.deepEqual(plain(normalized.addOnRequests), []);
+  const loaded = setup.api.loadOperationsState(createMemoryStorage({
+    [setup.api.OPS_STORAGE_KEY]: corruptBytes
+  }));
+  assert.deepEqual(plain(loaded.serviceTickets), []);
+  assert.deepEqual(plain(loaded.addOnRequests), []);
+  assert.equal(setup.api.canOpenTicketPayment(fixture.state, fixture.ticket.id), false);
+  assert.equal(setup.api.completeServiceTicket(fixture.state, fixture.ticket.id, 4000).code, 'invalid_state');
+  assert.equal(JSON.stringify(fixture.state), beforeReplay);
+
+  const customerKey = 'nexora.customer.prototype.v1';
+  const href = `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${guest.id}`;
+  const harness = uiApi({
+    storage: createAuditStorage({
+      [setup.api.OPS_STORAGE_KEY]: corruptBytes,
+      [customerKey]: customerStorageJson([guest])
+    }),
+    href
+  });
+  assert.equal(harness.api.getOperationsState().serviceTickets[0].status, 'in_service');
+  assert.equal(harness.actionButtons.pay.disabled, true);
+  harness.actionButtons.pay.disabled = false;
+  harness.actionButtons.pay.setAttribute('aria-disabled', 'false');
+  harness.document.dispatchClick(harness.actionButtons.pay);
+  assert.equal(harness.api.getPayHandoff(), null);
+  assert.equal(harness.window.location.href, href);
+});
+
+test('visible completion reasons are localized, described, cleared, and focus moves to enabled Pay', () => {
+  assert.match(SOURCE, /id="ops-complete-reason"/);
+  assert.match(SOURCE, /id="ops-pay-reason"/);
+  const customerKey = 'nexora.customer.prototype.v1';
+  const expected = {
+    vi: {
+      role: 'Chỉ Nhân viên hoặc Lễ tân trong bộ mô phỏng mới có thể hoàn tất dịch vụ.',
+      pay: 'Dịch vụ phải được tiệm hoàn tất trước khi thanh toán.',
+      completed: 'Dịch vụ này đã hoàn tất.'
+    },
+    en: {
+      role: 'Only Staff or Front Desk in this simulator can complete the service.',
+      pay: 'The salon must complete the service before payment.',
+      completed: 'This service is already completed.'
+    }
+  };
+  for (const language of ['vi', 'en']) {
+    const guest = guestCheckin({ id: `guest-checkin-visible-reason-${language}` });
+    const harness = uiApi({
+      language,
+      storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }),
+      href: `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${guest.id}`
+    });
+    const completeReason = harness.byId.get('ops-complete-reason');
+    const payReason = harness.byId.get('ops-pay-reason');
+
+    assert.equal(harness.actionButtons.complete.getAttribute('aria-describedby'), 'ops-complete-reason');
+    assert.equal(completeReason.textContent, expected[language].role);
+    assert.equal(completeReason.classList.contains('hidden'), false);
+    assert.equal(harness.actionButtons.pay.getAttribute('aria-describedby'), 'ops-pay-reason');
+    assert.equal(payReason.textContent, expected[language].pay);
+    assert.equal(payReason.classList.contains('hidden'), false);
+
+    harness.role.value = language === 'vi' ? 'Staff' : 'Front Desk';
+    harness.role.dispatch('change');
+    assert.equal(harness.actionButtons.complete.getAttribute('aria-describedby'), null);
+    assert.equal(completeReason.textContent, '');
+    assert.equal(completeReason.classList.contains('hidden'), true);
+
+    harness.document.dispatchClick(harness.actionButtons.complete);
+    assert.equal(harness.document.activeElement, harness.actionButtons.pay);
+    assert.equal(harness.actionButtons.complete.getAttribute('aria-describedby'), 'ops-complete-reason');
+    assert.equal(completeReason.textContent, expected[language].completed);
+    assert.equal(completeReason.classList.contains('hidden'), false);
+    assert.equal(harness.actionButtons.pay.getAttribute('aria-describedby'), null);
+    assert.equal(payReason.textContent, '');
+    assert.equal(payReason.classList.contains('hidden'), true);
+  }
+});
+
 test('completed tickets reject every staff and front-desk live-routing operation unchanged', () => {
   {
     const { api } = testApi();
@@ -1561,7 +1661,7 @@ test('companion defaults to Vietnamese and localizes dynamic status with accessi
   assert.match(SOURCE, /<h1 class="font-black">Vận hành Salon<\/h1>/);
   assert.match(SOURCE, /<span id="ops-ticket-status"><\/span>/);
   assert.match(SOURCE, /data-lucide="sparkles"[^>]*aria-hidden="true"/);
-  assert.match(SOURCE, /function setDisabledReason\(control, disabled, reason\)/);
+  assert.match(SOURCE, /function setDisabledReason\(control, disabled, reason, reasonId = null\)/);
 
   const customerKey = 'nexora.customer.prototype.v1';
   const guest = guestCheckin({
@@ -2023,7 +2123,7 @@ test('add-on UUID failures, collisions, roles, completed tickets, and resolution
   const completedBefore = JSON.stringify(first.state);
   assert.equal(api.resolveAddOn(
     first.state, proposal.addOn.id, 'accepted', '0198', first.customerSnapshot, 1400
-  ).code, 'ticket_completed');
+  ).code, 'invalid_state');
   assert.equal(JSON.stringify(first.state), completedBefore);
 
   let invalidUuidCalls = 0;
