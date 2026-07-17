@@ -11342,3 +11342,288 @@ test('persisted salon payment draft drops the transfer assertion and unknown pay
     clientRequestId: 'r', businessId: 'bitcoin-nail-bar', method: 'Zelle', proofImages: ['nope']
   }), null);
 });
+
+test('keeps every seeded look through migration and gives each one a photo', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  assert.equal(app.looks.length, 6);
+  const migrated = api.migrateState(app);
+  assert.equal(migrated.looks.map((look) => look.id).join(','), app.looks.map((look) => look.id).join(','));
+  for (const look of migrated.looks) {
+    assert.ok(look.photoDataUrl || look.photoUrl, `look needs a photo: ${look.id}`);
+  }
+});
+
+test('allows only hosted stock photography in a look photoUrl', () => {
+  const { api } = testApi();
+  assert.equal(api.sanitizeLookPhotoUrl('https://images.unsplash.com/photo-1?w=600'), 'https://images.unsplash.com/photo-1?w=600');
+  assert.equal(api.sanitizeLookPhotoUrl('https://evil.example.com/x.jpg'), '');
+  assert.equal(api.sanitizeLookPhotoUrl('javascript:alert(1)'), '');
+  assert.equal(api.sanitizeLookPhotoUrl('http://images.unsplash.com/photo-1'), '');
+  assert.equal(api.sanitizeLookPhotoUrl(null), '');
+});
+
+test('strips an untrusted photoUrl smuggled into a persisted look', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  app.looks[0].photoUrl = 'https://evil.example.com/track.gif';
+  assert.equal(api.migrateState(app).looks[0].photoUrl, '');
+});
+
+test('reads a receipt by matching the account business, service catalog and staff', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const receipt = 'BITCOIN NAIL BAR\n123 Bellaire Blvd\nTech: Maria\nGel Shellac Manicure  $45.00\nTotal $45.00';
+  const read = api.parseReceiptText(app, receipt);
+  assert.equal(read.ok, true);
+  assert.equal(read.draft.businessId, 'bitcoin-nail-bar');
+  assert.equal(read.draft.service, 'Gel Shellac Manicure');
+  assert.equal(read.draft.staffProfileId, 'staff-maria');
+  // A scan is not a check-in, so it must never claim a visit.
+  assert.equal(read.draft.visitId, null);
+});
+
+test('reads a receipt printed with Vietnamese service labels', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const read = api.parseReceiptText(app, 'Bitcoin Nail Bar\nManicure sơn gel Shellac  $45.00');
+  assert.equal(read.ok, true);
+  assert.equal(read.draft.service, 'Manicure sơn gel Shellac');
+  assert.equal(read.draft.staffProfileId, null);
+});
+
+test('refuses receipts it cannot place instead of guessing', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  assert.equal(api.parseReceiptText(app, '').code, 'unreadable_receipt');
+  assert.equal(api.parseReceiptText(app, 'STARBUCKS\nLatte $5').code, 'business_not_found');
+  assert.equal(api.parseReceiptText(app, 'Bitcoin Nail Bar\nParking $3').code, 'service_not_found');
+});
+
+test('never attributes a receipt to a tech from another business', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  // Linh works at golden-glow-spa, so her name on a nail bar receipt must not stick.
+  const read = api.parseReceiptText(app, 'Bitcoin Nail Bar\nTech: Linh\nClassic Manicure $30');
+  assert.equal(read.ok, true);
+  assert.equal(read.draft.staffProfileId, null);
+});
+
+test('falls back to the newest visit that is not archived as a look yet', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  // visit-1001 is already archived by look-galaxy.
+  assert.equal(api.scanReceiptDraft(app).code, 'no_receipt');
+  app.visits.push({ id: 'visit-1002', businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-maria', staffName: 'Maria', service: 'Dip Powder', occurredAt: '2026-07-15T16:00:00.000Z' });
+  const scan = api.scanReceiptDraft(app);
+  assert.equal(scan.ok, true);
+  assert.equal(scan.draft.visitId, 'visit-1002');
+  assert.equal(scan.draft.service, 'Dip Powder');
+});
+
+test('edits a look without letting the form rewrite its provenance', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const before = app.looks.find((look) => look.id === 'look-chrome-french');
+  const result = api.updateLookRecord(app, 'look-chrome-french', { service: 'Chrome French', color: 'Ice chrome #C22', note: 'Ngắn hơn', photoDataUrl: '' });
+  assert.equal(result.ok, true);
+  assert.equal(result.look.color, 'Ice chrome #C22');
+  assert.equal(result.look.businessId, before.businessId);
+  assert.equal(result.look.staffProfileId, 'staff-maria');
+  assert.equal(result.look.createdAt, before.createdAt);
+  // The seeded photo survives an edit that uploads nothing.
+  assert.equal(result.look.photoUrl, before.photoUrl);
+  assert.equal(app.looks.indexOf(result.look), 1, 'an edit must not reorder the archive');
+});
+
+test('rejects an edit that empties a look and one that targets nothing', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  assert.equal(api.updateLookRecord(app, 'look-nope', { service: 'x' }).code, 'look_not_found');
+  // A look carrying a photo still says something once its text is cleared, so that edit is allowed.
+  assert.equal(api.updateLookRecord(app, 'look-galaxy', { service: '', color: '', note: '', photoDataUrl: '' }).ok, true);
+  // A text-only look has nothing left, so clearing it is refused and the record is untouched.
+  const created = api.saveLookRecord(app, { businessId: 'bitcoin-nail-bar', visitId: null, staffProfileId: null, staffName: '', service: 'Pedicure', color: '', note: '', photoDataUrl: '' }, 1000);
+  assert.equal(created.ok, true);
+  assert.equal(api.updateLookRecord(app, created.look.id, { service: '  ', color: '', note: '', photoDataUrl: '' }).code, 'empty_look');
+  assert.equal(app.looks.find((look) => look.id === created.look.id).service, 'Pedicure');
+});
+
+function receiptScanContext() {
+  const camera = createStubElement({ id: 'receipt-scan-camera' });
+  camera.matches = (selector) => selector === '[data-receipt-scan]';
+  camera.files = [{ name: 'receipt.jpg' }];
+  const document = createDocumentStub({ extraElements: [camera] });
+  return { camera, ...testApi({}, { document }) };
+}
+
+test('scan-receipt opens the camera and a read receipt offers a prefilled look', async () => {
+  const { camera, context } = receiptScanContext();
+  const control = createStubElement({ dataset: { action: 'scan-receipt' } });
+  context.handleAction({ target: { closest: (selector) => selector === '[data-action]' ? control : null } });
+  assert.equal(camera.clicked, true);
+
+  context.recognizeReceipt = async () => ({ ok: true, text: 'Bitcoin Nail Bar\nTech: Maria\nDip Powder $50' });
+  await context.handleChange({ target: camera });
+  // The draft is only staged once the customer confirms what the scan read.
+  assert.equal(vm.runInContext('state.ui.lookScanDraft', context), null);
+  vm.runInContext('overlayRuntime.onConfirm()', context);
+  const draft = vm.runInContext('state.ui.lookScanDraft', context);
+  assert.equal(draft.service, 'Dip Powder');
+  assert.equal(draft.staffProfileId, 'staff-maria');
+  assert.equal(vm.runInContext('state.ui.activeScreen', context), 'addlook');
+  assert.equal(vm.runInContext("document.getElementById('look-service').value", context), 'Dip Powder');
+  // Re-picking the same file must still fire a change.
+  assert.equal(camera.value, '');
+});
+
+test('an unreadable receipt falls back to the last visit rather than dead-ending', async () => {
+  const { camera, context } = receiptScanContext();
+  vm.runInContext("state.visits.push({ id: 'visit-1002', businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-maria', staffName: 'Maria', service: 'Dip Powder', occurredAt: '2026-07-15T16:00:00.000Z' })", context);
+  context.recognizeReceipt = async () => ({ ok: false, code: 'ocr_unavailable' });
+  await context.handleChange({ target: camera });
+  vm.runInContext('overlayRuntime.onConfirm()', context);
+  assert.equal(vm.runInContext('state.ui.lookScanDraft.visitId', context), 'visit-1002');
+  // The progress line must not be left behind once the scan settles.
+  assert.equal(vm.runInContext("document.getElementById('receipt-scan-status').textContent", context), '');
+});
+
+test('a look saved from a scan keeps the scanned provenance, then clears the draft', async () => {
+  const { camera, context } = receiptScanContext();
+  context.recognizeReceipt = async () => ({ ok: true, text: 'Bitcoin Nail Bar\nTech: Maria\nDip Powder $50' });
+  await context.handleChange({ target: camera });
+  vm.runInContext('overlayRuntime.onConfirm()', context);
+  vm.runInContext("document.getElementById('look-color').value = 'Mocha #M3'", context);
+  const control = createStubElement({ dataset: { action: 'save-look' } });
+  vm.runInContext('ACTIONS', context).get('save-look')(control);
+  const saved = vm.runInContext('state.looks[0]', context);
+  assert.equal(saved.service, 'Dip Powder');
+  assert.equal(saved.color, 'Mocha #M3');
+  assert.equal(saved.staffProfileId, 'staff-maria');
+  assert.equal(saved.visitId, null, 'a scan must not claim a visit');
+  assert.equal(vm.runInContext('state.ui.lookScanDraft', context), null);
+});
+
+function looksScreenContext() {
+  const grid = createStubElement({ id: 'looks-grid' });
+  const document = createDocumentStub({ extraElements: [grid] });
+  const loaded = testApi({}, { document });
+  const titles = () => grid.children.map((card) => card.children.at(1)?.children.at(0)?.textContent);
+  return { grid, titles, ...loaded };
+}
+
+test('searches looks across service, color, note, tech and business name', () => {
+  const { titles, context } = looksScreenContext();
+  const search = (query) => {
+    vm.runInContext(`state.ui.lookQuery = ${JSON.stringify(query)}; renderLooks()`, context);
+    return titles();
+  };
+  assert.equal(search('').length, 6);
+  assert.deepEqual(search('maria'), ['Pearl chrome #C21']);
+  assert.deepEqual(search('lilac'), ['Lilac #142']);
+  assert.deepEqual(search('sinh nhật'), []);
+  // Business name lives outside the look record but is still searchable.
+  assert.deepEqual(search('golden glow'), ['Lilac #142']);
+  assert.deepEqual(search('CHROME').length, 2, 'search must ignore case');
+});
+
+test('orders the archive newest or oldest first', () => {
+  const { titles, context } = looksScreenContext();
+  vm.runInContext('renderLooks()', context);
+  assert.equal(titles().at(0), 'OPI Bubble Bath #S86');
+  vm.runInContext("state.ui.lookSort = 'oldest'; renderLooks()", context);
+  assert.equal(titles().at(0), 'Lilac #142');
+  assert.equal(titles().at(-1), 'OPI Bubble Bath #S86');
+});
+
+test('tells an empty archive apart from a search that matched nothing', () => {
+  const { context } = looksScreenContext();
+  const empty = () => vm.runInContext("document.getElementById('looks-empty')", context);
+  const cta = () => vm.runInContext("document.getElementById('looks-empty-cta')", context);
+  vm.runInContext('renderLooks()', context);
+  assert.equal(empty().classList.contains('hidden'), true);
+  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), '6 kiểu đã lưu');
+
+  vm.runInContext("state.ui.lookQuery = 'zzz'; renderLooks()", context);
+  assert.equal(empty().classList.contains('hidden'), false);
+  assert.equal(vm.runInContext("document.getElementById('looks-empty-title').textContent", context), 'Không tìm thấy kiểu phù hợp');
+  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), 'Hiển thị 0/6 kiểu');
+  // Offering "add a look" would answer the wrong problem when the search is merely too narrow.
+  assert.equal(cta().classList.contains('hidden'), true);
+
+  vm.runInContext("state.looks = []; state.ui.lookQuery = ''; renderLooks()", context);
+  assert.equal(vm.runInContext("document.getElementById('looks-empty-title').textContent", context), 'Chưa có kiểu nào');
+  assert.equal(cta().classList.contains('hidden'), false);
+});
+
+// The harness hands out one fixed UUID, so anything creating more than one record needs its own.
+function sequentialUuid() {
+  let call = 0;
+  return () => {
+    call += 1;
+    return `00000000-0000-4000-8000-${String(call).padStart(12, '0')}`;
+  };
+}
+
+test('carries a friend name through an invite without breaking invites that have none', () => {
+  const { api } = testApi({}, { randomUUID: sequentialUuid() });
+  const app = api.createDefaultState();
+
+  const named = api.createReferralInvite(app, { friendPhone: '8325550121', friendName: '  Mai Vũ  ' }, 1000);
+  assert.equal(named.ok, true);
+  assert.equal(named.referral.friendName, 'Mai Vũ');
+  // An invite with no name keeps the key off the record entirely rather than storing an empty one.
+  const anonymous = api.createReferralInvite(app, { friendPhone: '8325550122' }, 2000);
+  assert.equal(anonymous.ok, true);
+  assert.equal('friendName' in anonymous.referral, false);
+
+  // Both shapes have to survive the check every referral write runs first, or one bad record would
+  // take the whole history down.
+  assert.equal(api.advanceReferral(app, named.referral.id, 'joined', 3000).ok, true);
+  assert.equal(api.advanceReferral(app, anonymous.referral.id, 'joined', 3000).ok, true);
+  assert.equal(app.referrals.find((row) => row.id === named.referral.id).friendName, 'Mai Vũ');
+
+  // And both must read back unchanged, so a reload cannot quietly drop them.
+  const stored = (id) => app.referrals.find((row) => row.id === id);
+  assert.equal(api.normalizeReferral(app, stored(named.referral.id))?.friendName, 'Mai Vũ');
+  assert.equal(api.normalizeReferral(app, stored(anonymous.referral.id))?.friendName, undefined);
+  assert.equal(api.migrateState(app).referrals.length, 3);
+});
+
+test('rejects a referral whose name is present but is not a name', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const created = api.createReferralInvite(app, { friendPhone: '8325550123', friendName: 'Mai Vũ' }, 1000);
+  assert.equal(created.ok, true);
+  const stored = app.referrals.find((row) => row.id === created.referral.id);
+
+  for (const friendName of ['', '   ', ' Mai Vũ', 42, null]) {
+    const tampered = { ...stored, friendName };
+    assert.equal(api.normalizeReferral(app, tampered), null, `must reject ${JSON.stringify(friendName)}`);
+  }
+  // A tampered record is not silently repaired: the write path refuses the whole state, and a
+  // reload drops that record while the sound ones survive.
+  stored.friendName = '';
+  assert.equal(api.advanceReferral(app, created.referral.id, 'joined', 2000).code, 'invalid_referral_state');
+  const reloaded = api.migrateState(app).referrals;
+  assert.deepEqual([...reloaded].map((row) => row.id), ['referral-demo-1']);
+});
+
+test('shows the friend name in referral history, and the masked number only without one', () => {
+  const document = createDocumentStub();
+  const { api, context } = testApi({}, { skipInit: false, document });
+  const list = document.getElementById('referral-invite-list');
+
+  // The seeded demo invite carries a name, so that is what the history shows.
+  vm.runInContext('renderReferrals();', context);
+  assert.equal(list.children[0].children[0].children[0].textContent, 'Linh Trần');
+
+  const app = api.createDefaultState();
+  const anonymous = api.createReferralInvite(app, { friendPhone: '8325550124' }, 1000);
+  assert.equal(anonymous.ok, true);
+  vm.runInContext(`state.referrals = ${JSON.stringify(app.referrals)}; renderReferrals();`, context);
+  const labels = list.children.map((row) => row.children[0].children[0].textContent);
+  assert.deepEqual(labels, ['Linh Trần', '••• 0124']);
+  // Whichever is shown, the full number never is.
+  for (const label of labels) assert.equal(label.includes('8325550124'), false);
+});

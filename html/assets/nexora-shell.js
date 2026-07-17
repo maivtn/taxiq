@@ -22,7 +22,7 @@
   var PAGES = {
     booking: 'booking-book-phase-1.html',
     reward: 'salon-setup-reward.html',
-    pos: 'pos-1.html'
+    pos: 'pos-phase-1.html'
   };
 
   // Single source of truth for the whole sidebar.
