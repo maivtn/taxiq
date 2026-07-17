@@ -11346,7 +11346,7 @@ test('persisted salon payment draft drops the transfer assertion and unknown pay
 test('keeps every seeded look through migration and gives each one a photo', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
-  assert.equal(app.looks.length, 14);
+  assert.equal(app.looks.length, 18);
   const migrated = api.migrateState(app);
   assert.equal(migrated.looks.map((look) => look.id).join(','), app.looks.map((look) => look.id).join(','));
   for (const look of migrated.looks) {
@@ -11500,7 +11500,7 @@ test('searches looks across service, color, note, tech and business name', () =>
     vm.runInContext(`state.ui.lookQuery = ${JSON.stringify(query)}; renderLooks()`, context);
     return titles();
   };
-  assert.equal(search('').length, 14);
+  assert.equal(search('').length, 18);
   assert.deepEqual(search('maria'), ['Pearl chrome #C21']);
   assert.deepEqual(search('lilac'), ['Lilac #142']);
   // Notes are Vietnamese, diacritics and all, so the search has to match them as typed.
@@ -11526,12 +11526,12 @@ test('tells an empty archive apart from a search that matched nothing', () => {
   const cta = () => vm.runInContext("document.getElementById('looks-empty-cta')", context);
   vm.runInContext('renderLooks()', context);
   assert.equal(empty().classList.contains('hidden'), true);
-  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), '14 kiểu đã lưu');
+  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), '18 kiểu đã lưu');
 
   vm.runInContext("state.ui.lookQuery = 'zzz'; renderLooks()", context);
   assert.equal(empty().classList.contains('hidden'), false);
   assert.equal(vm.runInContext("document.getElementById('looks-empty-title').textContent", context), 'Không tìm thấy kiểu phù hợp');
-  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), 'Hiển thị 0/14 kiểu');
+  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), 'Hiển thị 0/18 kiểu');
   // Offering "add a look" would answer the wrong problem when the search is merely too narrow.
   assert.equal(cta().classList.contains('hidden'), true);
 
