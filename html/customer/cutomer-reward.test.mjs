@@ -3163,7 +3163,9 @@ test('keeps booking points pending, snapshots the rule and confirms exactly once
   assert.equal(requested.booking.service, 'Gel manicure');
   assert.equal(requested.booking.bookingBonus, 25);
   assert.equal(app.balances['bitcoin-nail-bar'].points, before);
-  assert.equal(app.appointments.length, 0);
+  // Scoped to this booking: the seeded demo state already holds an earlier confirmed appointment.
+  const appointmentsFor = (bookingId) => app.appointments.filter((row) => row.bookingId === bookingId);
+  assert.equal(appointmentsFor(requested.booking.id).length, 0);
   assert.equal(app.ledger.some((entry) => entry.refId === requested.booking.id), false);
 
   app.businesses['bitcoin-nail-bar'].bookingBonus = 999;
@@ -3174,8 +3176,7 @@ test('keeps booking points pending, snapshots the rule and confirms exactly once
   assert.equal(first.idempotent, false);
   assert.equal(second.idempotent, true);
   assert.equal(app.balances['bitcoin-nail-bar'].points, before + 25);
-  assert.equal(app.appointments.length, 1);
-  assert.equal(app.appointments[0].bookingId, requested.booking.id);
+  assert.equal(appointmentsFor(requested.booking.id).length, 1);
   assert.equal(app.ledger.filter((entry) => entry.refId === requested.booking.id).length, 1);
   assert.equal(uuidCalls, 3);
 });
@@ -3229,7 +3230,8 @@ test('rejects broken confirmed booking relationships and supports a zero-point b
   const app = api.createDefaultState();
   const booking = api.createBookingRequest(app, validBookingInput, 1000).booking;
   api.confirmBookingRequest(app, booking.id, 2000);
-  app.appointments[0].businessId = 'golden-glow-spa';
+  // By bookingId, not by position: the seeded demo state already holds an earlier appointment.
+  app.appointments.find((row) => row.bookingId === booking.id).businessId = 'golden-glow-spa';
   const beforeRetry = JSON.stringify(app);
   assert.equal(api.confirmBookingRequest(app, booking.id, 3000).code, 'invalid_state');
   assert.equal(JSON.stringify(app), beforeRetry);
@@ -3244,7 +3246,7 @@ test('rejects broken confirmed booking relationships and supports a zero-point b
   const confirmed = api.confirmBookingRequest(moonState, moon.id, 5000);
   assert.equal(confirmed.ok, true);
   assert.equal(confirmed.points, 0);
-  assert.equal(moonState.appointments.length, 1);
+  assert.equal(moonState.appointments.filter((row) => row.bookingId === moon.id).length, 1);
   assert.equal(moonState.ledger.some((entry) => entry.refId === moon.id), false);
   assert.equal(moonState.balances['moon-coffee'].points, moonBefore);
 });
@@ -3703,7 +3705,7 @@ test('uses nested profile language with the shared translation dictionary', () =
 test('initializes the browser with defined entry-point dependencies', () => {
   const document = createDocumentStub();
   assert.doesNotThrow(() => testApi({}, { skipInit: false, document }));
-  assert.deepEqual(document.listeners.map(({ type }) => type), ['click', 'input', 'change', 'keydown']);
+  assert.deepEqual(document.listeners.map(({ type }) => type), ['click', 'input', 'change', 'keydown', 'submit']);
 
   const source = html();
   for (const name of ['handleAction', 'handleInput', 'handleKeydown', 'renderApp']) {
@@ -4011,7 +4013,7 @@ test('gives every enabled button an action and wires the known global controls',
   for (const button of buttons) {
     const openingTag = button.match(/<button\b[^>]*>/)?.[0] ?? '';
     if (/\sdisabled(?:\s|=|>)/.test(openingTag)) continue;
-    const interactive = /data-action=|data-nav-target=|data-explore-filter=|data-offer-filter=|data-payment-method=|data-book-(?:service|staff|day|time)=/.test(openingTag);
+    const interactive = /data-action=|data-nav-target=|data-explore-filter=|data-offer-filter=|data-reward-tab=|data-payment-method=|data-book-(?:service|staff|day|time)=/.test(openingTag);
     assert.ok(interactive, `enabled button needs an action: ${button.slice(0, 160)}`);
     const action = openingTag.match(/data-action="([^"]+)"/)?.[1];
     if (action) assert.ok(registeredActions.has(action), `button action must be registered: ${action}`);
@@ -4155,6 +4157,26 @@ test('commitState swaps live state only after draft persistence succeeds', () =>
   assert.equal(saved.ok, true);
   assert.equal(vm.runInContext('state.profile.name', context), 'Saved');
   assert.equal(storage.getItem('nexora.customer.prototype.v1').includes('Saved'), true);
+});
+
+test('submitting the wish form adds the wish and blocks native navigation', () => {
+  const document = createDocumentStub();
+  const { api } = testApi({}, { skipInit: false, document });
+  const submit = document.listeners.find(({ type }) => type === 'submit');
+  assert.ok(submit, 'a submit listener must be registered');
+
+  document.getElementById('wish-input').value = 'Gói nail sinh nhật';
+  let defaultPrevented = false;
+  submit.handler({ target: { closest: (selector) => (selector === '#wish-form' ? {} : null) }, preventDefault() { defaultPrevented = true; } });
+
+  assert.equal(defaultPrevented, true, 'form submit must not reload the page');
+  assert.ok(api.loadState().wishes.includes('Gói nail sinh nhật'), 'wish must be persisted');
+  assert.equal(document.getElementById('wish-input').value, '', 'input must reset after submit');
+
+  // A submit from any other form must be ignored.
+  let otherPrevented = false;
+  submit.handler({ target: { closest: () => null }, preventDefault() { otherPrevented = true; } });
+  assert.equal(otherPrevented, false);
 });
 
 test('persists looks, saved offers and unique wishes', () => {
@@ -8748,6 +8770,7 @@ test('referral invite normalizes a friend phone, blocks self-referral, and is li
     return '00000000-0000-4000-8000-000000000201';
   } });
   const app = api.createDefaultState();
+  const seeded = app.referrals.length;
   const invalidBefore = JSON.stringify(app);
   assert.equal(api.createReferralInvite(app, { friendPhone: '555' }, 1000).code, 'invalid_phone');
   assert.equal(api.createReferralInvite(app, { friendPhone: '(832) 555-0148' }, 1000).code, 'self_referral');
@@ -8762,7 +8785,7 @@ test('referral invite normalizes a friend phone, blocks self-referral, and is li
   const repeated = api.createReferralInvite(app, { friendPhone: '832-555-0111' }, 2000);
   assert.equal(repeated.idempotent, true);
   assert.equal(repeated.referral.id, created.referral.id);
-  assert.equal(app.referrals.length, 1);
+  assert.equal(app.referrals.length, seeded + 1);
   assert.equal(uuidCalls, 1);
 });
 
@@ -9041,8 +9064,9 @@ test('referral state survives save and reload with its exact paired ledger', () 
   setup.api.releaseReferralReward(app, created.referral.id, 'golden-glow-spa', 3000);
   setup.api.saveState(app, setup.storage);
   const loaded = setup.api.loadState(setup.storage);
-  assert.equal(loaded.referrals.length, 1);
-  assert.equal(loaded.referrals[0].businessId, 'golden-glow-spa');
+  const reloaded = loaded.referrals.find((referral) => referral.id === created.referral.id);
+  assert.ok(reloaded, 'the created referral must survive the reload');
+  assert.equal(reloaded.businessId, 'golden-glow-spa');
   assert.equal(loaded.ledger.filter((entry) => entry.refId === created.referral.id).length, 1);
 });
 
@@ -9098,10 +9122,11 @@ test('referral history masks phones and builds dynamic controls through safe tex
   const elements = ids.map((id) => createStubElement({ id }));
   const document = createDocumentStub({ extraElements: elements });
   const { context } = testApi({}, { document });
-  vm.runInContext("commitState((draft) => createReferralInvite(draft, { friendPhone: '8325550130' }, 1000))", context);
+  const created = vm.runInContext("commitState((draft) => createReferralInvite(draft, { friendPhone: '8325550130' }, 1000))", context);
   context.renderReferrals();
   const list = document.getElementById('referral-invite-list');
-  const row = list.children[0];
+  const row = list.children.find((child) => child.children[1]?.dataset?.referralId === created.referral.id);
+  assert.ok(row, 'the new invite must be rendered');
   assert.equal(list.innerHTML, '');
   assert.equal(row.children[0].children[0].textContent, '••• 0130');
   assert.equal(row.children[1].dataset.action, 'simulate-referral-joined');
@@ -9138,13 +9163,12 @@ test('referral sharing uses native share, clipboard fallback, manual fallback, a
   assert.equal(cancelled.code, 'share_cancelled');
 });
 
-test('share-referral action exposes a focused manual link and reuses one invite after native cancellation', async () => {
+test('share-referral action exposes a focused manual link after native cancellation without minting an invite', async () => {
   const ids = ['referral-code', 'referral-qr', 'referral-invited-count', 'referral-joined-count',
     'referral-rewarded-count', 'referral-invite-list', 'referral-error', 'referral-manual-share',
-    'referral-manual-link', 'referral-friend-phone'];
+    'referral-manual-link'];
   const elements = ids.map((id) => createStubElement({
     id,
-    value: id === 'referral-friend-phone' ? '(832) 555-0137' : '',
     classNames: id === 'referral-manual-share' ? ['hidden'] : []
   }));
   const document = createDocumentStub({ extraElements: elements });
@@ -9152,17 +9176,18 @@ test('share-referral action exposes a focused manual link and reuses one invite 
   abort.name = 'AbortError';
   const { context } = testApi({}, {
     document,
-    navigator: { share: async () => { throw abort; } },
-    randomUUID: () => '00000000-0000-4000-8000-000000000280'
+    navigator: { share: async () => { throw abort; } }
   });
   const action = vm.runInContext("ACTIONS.get('share-referral')", context);
+  const before = vm.runInContext('JSON.stringify(state.referrals)', context);
   const first = await action();
-  const second = await action();
+  await action();
   const manual = document.getElementById('referral-manual-share');
   const link = document.getElementById('referral-manual-link');
   assert.equal(first.code, 'share_cancelled');
-  assert.equal(second.idempotent, true);
-  assert.equal(vm.runInContext('state.referrals.length', context), 1);
+  assert.equal(first.url, 'https://nexoratouch.com/r/JESSICA50');
+  // Sharing only exposes the code link, so repeated attempts must leave referrals untouched.
+  assert.equal(vm.runInContext('JSON.stringify(state.referrals)', context), before);
   assert.equal(manual.classList.contains('hidden'), false);
   assert.equal(link.value, first.url);
   assert.equal(link.selected, true);
@@ -9170,22 +9195,17 @@ test('share-referral action exposes a focused manual link and reuses one invite 
   assert.equal(document.getElementById('referral-error').textContent.includes('sao chép'), true);
 });
 
-test('share-referral action handles clipboard, missing API, and persistence failures without duplicate invites', async () => {
+test('share-referral action handles clipboard and missing API without writing state', async () => {
   const setup = (navigator) => {
     const ids = ['referral-code', 'referral-qr', 'referral-invited-count', 'referral-joined-count',
       'referral-rewarded-count', 'referral-invite-list', 'referral-error', 'referral-manual-share',
-      'referral-manual-link', 'referral-friend-phone'];
+      'referral-manual-link'];
     const elements = ids.map((id) => createStubElement({
       id,
-      value: id === 'referral-friend-phone' ? '8325550133' : '',
       classNames: id === 'referral-manual-share' ? ['hidden'] : []
     }));
     const document = createDocumentStub({ extraElements: elements });
-    return { document, ...testApi({}, {
-      document,
-      navigator,
-      randomUUID: () => '00000000-0000-4000-8000-000000000281'
-    }) };
+    return { document, ...testApi({}, { document, navigator }) };
   };
 
   for (const navigator of [
@@ -9195,24 +9215,23 @@ test('share-referral action handles clipboard, missing API, and persistence fail
     const current = setup(navigator);
     vm.runInContext("state.profile.language = 'en'", current.context);
     const action = vm.runInContext("ACTIONS.get('share-referral')", current.context);
+    const before = vm.runInContext('JSON.stringify(state.referrals)', current.context);
     const first = await action();
-    const second = await action();
+    await action();
     assert.equal(first.code, 'manual_share_required');
-    assert.equal(second.idempotent, true);
-    assert.equal(vm.runInContext('state.referrals.length', current.context), 1);
+    assert.equal(vm.runInContext('JSON.stringify(state.referrals)', current.context), before);
     assert.equal(current.document.getElementById('referral-manual-share').classList.contains('hidden'), false);
     assert.equal(current.document.getElementById('referral-manual-link').selected, true);
     assert.equal(current.document.getElementById('referral-error').textContent.includes('Copy the link'), true);
   }
 
+  // Sharing is read-only, so it must never reach storage at all.
   const persistence = setup({});
-  persistence.storage.setItem = () => { throw new Error('quota'); };
-  const persistAction = vm.runInContext("ACTIONS.get('share-referral')", persistence.context);
-  const failed = await persistAction();
-  assert.equal(failed.code, 'persist_failed');
-  assert.equal(vm.runInContext('state.referrals.length', persistence.context), 0);
-  assert.equal(persistence.document.getElementById('referral-manual-share').classList.contains('hidden'), true);
-  assert.equal(persistence.document.getElementById('referral-error').textContent.length > 0, true);
+  let writes = 0;
+  persistence.storage.setItem = () => { writes += 1; };
+  await vm.runInContext("ACTIONS.get('share-referral')", persistence.context)();
+  assert.equal(writes, 0);
+  assert.equal(persistence.document.getElementById('referral-manual-share').classList.contains('hidden'), false);
 });
 
 test('referral accessible names switch between Vietnamese and English', () => {
@@ -9230,19 +9249,40 @@ test('referral accessible names switch between Vietnamese and English', () => {
   assert.equal(history.getAttribute('aria-label'), 'Lịch sử giới thiệu');
 });
 
-test('show-referral-qr reveals and focuses the QR with correct ARIA state', () => {
-  const panel = createStubElement({ id: 'referral-qr-panel', classNames: ['hidden'] });
-  panel.setAttribute('aria-hidden', 'true');
+test('copy-referral-link copies the code link and falls back to the manual link without clipboard', async () => {
+  const ids = ['referral-code', 'referral-qr', 'referral-error', 'referral-manual-share',
+    'referral-manual-link', 'toast-region', 'form-error-state'];
+  const document = createDocumentStub({ extraElements: ids.map((id) => createStubElement({ id })) });
+  const copied = [];
+  const { context } = testApi({}, {
+    document,
+    navigator: { clipboard: { writeText: async (value) => { copied.push(value); } } }
+  });
+
+  const ok = await vm.runInContext("ACTIONS.get('copy-referral-link')", context)();
+  assert.equal(ok.ok, true);
+  assert.deepEqual(copied, ['https://nexoratouch.com/r/JESSICA50']);
+  // Copying must never mint a referral: only a friend opening the link does that.
+  assert.equal(vm.runInContext('state.referrals.length', context), 1);
+
+  vm.runInContext('window.navigator = {}', context);
+  const fallback = await vm.runInContext("ACTIONS.get('copy-referral-link')", context)();
+  assert.equal(fallback.code, 'manual_share_required');
+  assert.equal(document.getElementById('referral-manual-link').value, 'https://nexoratouch.com/r/JESSICA50');
+});
+
+test('download-referral-qr saves the rendered QR image as a named file', () => {
   const qr = createStubElement({ id: 'referral-qr' });
-  const document = createDocumentStub({ extraElements: [panel, qr] });
+  const image = createStubElement({});
+  image.src = 'data:image/gif;base64,QVJU';
+  qr.querySelector = (selector) => (selector === 'img' ? image : null);
+  const ids = ['referral-code', 'referral-error', 'toast-region', 'form-error-state'];
+  const document = createDocumentStub({ extraElements: [qr, ...ids.map((id) => createStubElement({ id }))] });
   const { context } = testApi({}, { document });
-  const control = createStubElement({ dataset: { action: 'show-referral-qr' } });
-  vm.runInContext("ACTIONS.get('show-referral-qr')", context)(control);
-  assert.equal(panel.classList.contains('hidden'), false);
-  assert.equal(panel.getAttribute('aria-hidden'), 'false');
-  assert.equal(qr.getAttribute('tabindex'), '-1');
-  assert.equal(document.activeElement, qr);
-  assert.equal(control.getAttribute('aria-expanded'), 'true');
+
+  const result = vm.runInContext("ACTIONS.get('download-referral-qr')", context)();
+  assert.equal(result.ok, true);
+  assert.equal(result.source, 'data:image/gif;base64,QVJU');
 });
 
 test('dynamic referral simulation actions advance joined and paid-visit states', () => {
@@ -9255,23 +9295,29 @@ test('dynamic referral simulation actions advance joined and paid-visit states',
     randomUUID: () => `00000000-0000-4000-8000-${String(counter++).padStart(12, '0')}`
   });
   const created = vm.runInContext("commitState((draft) => createReferralInvite(draft, { friendPhone: '8325550131' }, 1000))", context);
+  context.createdReferralId = created.referral.id;
+  const statusOf = () => vm.runInContext("state.referrals.find((row) => row.id === createdReferralId).status", context);
   const joinedControl = createStubElement({ dataset: { referralId: created.referral.id } });
   vm.runInContext("ACTIONS.get('simulate-referral-joined')", context)(joinedControl);
-  assert.equal(vm.runInContext("state.referrals[0].status", context), 'joined');
+  assert.equal(statusOf(), 'joined');
   const paidControl = createStubElement({ dataset: { referralId: created.referral.id } });
   vm.runInContext("ACTIONS.get('simulate-referral-paid-visit')", context)(paidControl);
-  assert.equal(vm.runInContext("state.referrals[0].status", context), 'rewarded');
-  assert.equal(vm.runInContext("state.ledger.filter((entry) => entry.refId === state.referrals[0].id).length", context), 1);
+  assert.equal(statusOf(), 'rewarded');
+  assert.equal(vm.runInContext("state.ledger.filter((entry) => entry.refId === createdReferralId).length", context), 1);
 });
 
 test('referral UI is localized, action-complete, standalone, and keeps exactly 33 screens', () => {
   const source = html();
-  for (const action of ['share-referral', 'show-referral-qr', 'simulate-referral-joined', 'simulate-referral-paid-visit']) {
+  for (const action of ['share-referral', 'copy-referral-link', 'download-referral-qr', 'simulate-referral-joined', 'simulate-referral-paid-visit']) {
     assert.match(source, new RegExp(`registerAction\\('${action}'`));
   }
-  for (const id of ['referral-friend-phone', 'referral-qr', 'referral-invite-list', 'referral-manual-link']) {
+  for (const id of ['referral-qr', 'referral-invite-list', 'referral-manual-link']) {
     assert.match(source, new RegExp(`id="${id}"`));
   }
+  // The invite link needs no friend phone: the QR is always on screen and sharing is read-only.
+  assert.doesNotMatch(source, /id="referral-friend-phone"/);
+  assert.doesNotMatch(source, /registerAction\('show-referral-qr'/);
+  assert.doesNotMatch(source, /id="referral-qr-panel" class="hidden"/);
   assert.match(source, /data-en="Invited"[^>]+data-vi="Đã mời"/);
   assert.match(source, /data-en="Rewarded"[^>]+data-vi="Đã thưởng"/);
   assert.match(source, /id="referral-totals"[^>]+data-en-aria-label="Referral totals"[^>]+data-vi-aria-label="Tổng lượt giới thiệu"/);
@@ -10636,4 +10682,39 @@ test('uppercase paired add-on IDs fail migration, proof, receipt, aggregate, and
   assert.equal(api.mergeGuestJourney(app, guest.phone, 4000).ok, false);
   assert.equal(JSON.stringify(app), before);
   assert.equal(uuidCalls, callsBefore);
+});
+
+test('splits rewards into explore, redeemed and used tabs', () => {
+  const tabs = ['explore', 'redeemed', 'used'].map((tab) => createStubElement({ dataset: { rewardTab: tab } }));
+  const document = createDocumentStub({ selectorNodes: { '[data-reward-tab]': tabs } });
+  const { context } = testApi({}, { skipInit: false, document });
+  const list = document.getElementById('reward-list');
+  const clickTab = (tab) => context.handleAction({
+    target: { closest: (selector) => selector === '[data-reward-tab]' ? tab : null }
+  });
+
+  // Explore keeps the purchasable catalog and marks itself pressed.
+  assert.equal(vm.runInContext('state.ui.rewardTab', context), 'explore');
+  assert.equal(list.children.length, 11);
+  assert.deepEqual(tabs.map((tab) => tab.attributes['aria-pressed']), ['true', 'false', 'false']);
+
+  clickTab(tabs[1]);
+  assert.equal(vm.runInContext('state.ui.rewardTab', context), 'redeemed');
+  assert.deepEqual(tabs.map((tab) => tab.attributes['aria-pressed']), ['false', 'true', 'false']);
+  const readyIds = list.children.map((card) => card.dataset.redemptionId);
+  assert.ok(readyIds.length > 0);
+  for (const card of list.children) assert.equal(card.children.at(-1).children[0].textContent, 'Sẵn sàng');
+
+  clickTab(tabs[2]);
+  assert.equal(vm.runInContext('state.ui.rewardTab', context), 'used');
+  const usedIds = list.children.map((card) => card.dataset.redemptionId);
+  assert.equal(usedIds.some((id) => readyIds.includes(id)), false);
+
+  // Spending a redemption on a check-in moves it from redeemed to used.
+  const moved = readyIds[0];
+  vm.runInContext(`state.guestCheckins.push({ id: 'checkin-tab-probe', rewardRedemptionId: '${moved}' }); renderRewards()`, context);
+  assert.ok(list.children.some((card) => card.dataset.redemptionId === moved));
+  assert.equal(list.children.at(0).children.at(-1).children[0].textContent, 'Đã dùng');
+  clickTab(tabs[1]);
+  assert.equal(list.children.some((card) => card.dataset.redemptionId === moved), false);
 });

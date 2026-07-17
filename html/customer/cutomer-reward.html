@@ -36,6 +36,15 @@
       .app-button-secondary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#252c51] bg-none bg-[#0d1024] px-4 py-3 text-sm font-extrabold text-[#f7f7ff] shadow-none transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22d3ee] disabled:cursor-not-allowed disabled:opacity-50; }
       .app-input { @apply min-h-11 w-full rounded-xl border border-[#252c51] bg-[#0d1024] px-3.5 py-3 text-sm text-[#f7f7ff] outline-none placeholder:text-[#9da6c9] focus:border-[#22d3ee] focus:ring-2 focus:ring-[#22d3ee]/20; }
       .app-chip { @apply inline-flex min-h-11 items-center whitespace-nowrap rounded-full border border-[#252c51] bg-[#12162f] px-4 text-xs font-bold text-[#9da6c9] transition hover:border-[#7c3dff] hover:text-white aria-pressed:border-transparent aria-pressed:bg-[#7c3dff] aria-pressed:text-white; }
+      /* Reward cards sit two-up on phones, so everything inside them shrinks below sm. */
+      .reward-card { @apply flex flex-col p-3 sm:p-4; }
+      .reward-card-title { @apply text-sm font-black leading-5 sm:text-lg sm:leading-7; }
+      .reward-card-meta { @apply mt-1.5 flex-1 text-[11px] leading-4 text-[#9da6c9] sm:mt-2 sm:text-sm sm:leading-6; }
+      .reward-card-footer { @apply mt-3 flex flex-col items-stretch gap-2 sm:mt-5 sm:flex-row sm:items-center sm:justify-between sm:gap-3; }
+      .reward-card-cost { @apply text-xs sm:text-base; }
+      .reward-card-cta { @apply min-h-9 w-full px-2 py-2 text-[11px] sm:min-h-11 sm:w-auto sm:px-4 sm:py-3 sm:text-sm; }
+      .app-tabs { @apply inline-flex gap-1 rounded-xl border border-[#252c51] bg-[#12162f] p-1; }
+      .app-tab { @apply inline-flex min-h-9 items-center whitespace-nowrap rounded-lg px-4 text-xs font-bold text-[#9da6c9] transition hover:text-white aria-pressed:bg-[#7c3dff]/20 aria-pressed:text-white focus-visible:outline-2 focus-visible:outline-[#22d3ee]; }
       .icon-button { @apply inline-grid size-11 shrink-0 place-items-center rounded-xl border border-[#252c51] bg-[#12162f] text-[#9da6c9] hover:text-white focus-visible:outline-2 focus-visible:outline-[#22d3ee]; }
       .section-title { @apply text-base font-extrabold tracking-tight sm:text-lg; }
       .eyebrow { @apply text-[11px] font-extrabold uppercase tracking-[.18em] text-[#9da6c9]; }
@@ -121,10 +130,11 @@
 
             <div id="home-appointment" class="app-card hidden flex-col justify-between border-app-gold/30 bg-app-gold/[.05]">
               <div><div class="flex items-center justify-between"><p class="eyebrow" data-en="Upcoming booking" data-vi="Lịch hẹn sắp tới">Lịch hẹn sắp tới</p><span id="home-appointment-badge" class="rounded-full bg-app-green/10 px-2.5 py-1 text-[11px] font-bold text-app-green"></span></div><strong class="mt-3 block text-lg" data-appointment-copy></strong><p id="home-appointment-hint" class="mt-1 text-xs leading-5 text-app-muted"></p></div>
-              <div class="mt-5 grid grid-cols-2 gap-2">
+              <div id="home-appointment-arrival" class="mt-5 grid grid-cols-2 gap-2">
                 <button type="button" class="app-chip justify-center" data-action="set-arrival" data-arrival="on_my_way" aria-pressed="false"><span data-en="🚗 I'm On My Way" data-vi="🚗 Đang trên đường">🚗 Đang trên đường</span></button>
                 <button type="button" class="app-chip justify-center" data-action="set-arrival" data-arrival="arrived" aria-pressed="false"><span data-en="📍 I've Arrived" data-vi="📍 Đã tới nơi">📍 Đã tới nơi</span></button>
               </div>
+              <button type="button" id="home-appointment-checkin" class="app-button mt-3 hidden w-full" data-action="checkin-from-appointment"><i data-lucide="check" class="size-4" aria-hidden="true"></i><span data-en="Check In Now" data-vi="Check-in ngay">Check-in ngay</span></button>
               <button type="button" class="app-link mt-3" data-action="navigate" data-target="book1" data-en="Book again" data-vi="Đặt lại lịch">Đặt lại lịch</button>
             </div>
           </div>
@@ -232,9 +242,9 @@
           </section></div>
         </section>
         <section class="app-screen hidden" id="offers" data-ready="true" data-module="home" aria-labelledby="offers-title">
-          <div class="mt-3 flex gap-2"><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="saved" data-en="Saved" data-vi="Đã lưu">Đã lưu</button><button class="app-button-secondary" type="button" data-action="simulate-wish-push" data-en="Simulate wish match" data-vi="Mô phỏng ưu đãi phù hợp">Mô phỏng ưu đãi phù hợp</button><button class="sr-only" type="button" data-action="view-offer" data-offer-id="offer-glow">Xem</button><button class="sr-only" type="button" data-action="use-offer" data-reward-key="glow">Dùng ưu đãi</button></div><div id="offers-empty-state" class="hidden" data-state="empty"></div>
-          <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Picked for you" data-vi="Dành riêng cho bạn">Dành riêng cho bạn</p><h1 id="offers-title" class="text-2xl font-black" data-en="Offers & wishlist" data-vi="Ưu đãi & mong muốn">Ưu đãi & mong muốn</h1></div></div>
-          <div class="grid gap-4 xl:grid-cols-[1fr_340px]"><div><div class="relative"><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-app-muted" aria-hidden="true"></i><input id="offer-search" class="app-input pl-11" type="search" data-en-ph="Search offers…" data-vi-ph="Tìm ưu đãi…" placeholder="Tìm ưu đãi…"></div><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" aria-pressed="true" data-offer-filter="all" data-en="All" data-vi="Tất cả">Tất cả</button><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="beauty" data-en="Beauty" data-vi="Làm đẹp">Làm đẹp</button><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="food" data-en="Food" data-vi="Ẩm thực">Ẩm thực</button></div><div class="mt-4 grid gap-4 md:grid-cols-2"><article class="app-card overflow-hidden p-0" data-offer-card data-offer-id="offer-glow" data-category="beauty" data-search="golden glow facial spa"><img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80" alt="Ưu đãi chăm sóc da" class="h-40 w-full object-cover"><div class="p-4"><span class="text-xs font-bold text-app-gold" data-en="20% OFF" data-vi="GIẢM 20%">GIẢM 20%</span><h2 class="mt-2 font-black" data-en="Glow facial" data-vi="Chăm sóc da Glow">Chăm sóc da Glow</h2><p class="mt-1 text-xs text-app-muted">Golden Glow Spa · Hết hạn 21/07</p><button class="app-button-secondary mt-4 w-full" type="button" data-action="save-offer" data-offer-id="offer-glow"><i data-lucide="bookmark" class="size-4" aria-hidden="true"></i><span data-en="Save offer" data-vi="Lưu ưu đãi">Lưu ưu đãi</span></button></div></article><article class="app-card overflow-hidden p-0" data-offer-card data-offer-id="offer-moon" data-category="food" data-search="moon coffee latte pastry"><img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80" alt="Ưu đãi cà phê" class="h-40 w-full object-cover"><div class="p-4"><span class="text-xs font-bold text-app-green" data-en="BUY 1 GET 1" data-vi="MUA 1 TẶNG 1">MUA 1 TẶNG 1</span><h2 class="mt-2 font-black" data-en="Member latte" data-vi="Latte thành viên">Latte thành viên</h2><p class="mt-1 text-xs text-app-muted">Moon Coffee · Hết hạn 31/07</p><button class="app-button-secondary mt-4 w-full" type="button" data-action="save-offer" data-offer-id="offer-moon"><i data-lucide="bookmark" class="size-4" aria-hidden="true"></i><span data-en="Save offer" data-vi="Lưu ưu đãi">Lưu ưu đãi</span></button></div></article></div></div><aside class="app-card h-fit"><p class="eyebrow" data-en="Tell businesses" data-vi="Gửi mong muốn">Gửi mong muốn</p><h2 class="mt-1 section-title" data-en="What would you love?" data-vi="Bạn mong muốn ưu đãi gì?">Bạn mong muốn ưu đãi gì?</h2><p class="mt-2 text-sm leading-6 text-app-muted" data-en="Your idea is shared anonymously." data-vi="Ý tưởng được gửi ẩn danh.">Ý tưởng được gửi ẩn danh.</p><div class="mt-4 flex gap-2"><input id="wish-input" class="app-input" data-en-ph="e.g. Birthday nail package" data-vi-ph="VD: Gói nail sinh nhật" placeholder="VD: Gói nail sinh nhật"><button class="icon-button" type="button" data-action="add-wish" aria-label="Thêm mong muốn"><i data-lucide="plus" class="size-5" aria-hidden="true"></i></button></div><ul id="wish-list" class="mt-4 space-y-2 text-sm"><li class="rounded-xl bg-app-panel p-3" data-en="Weekend couple spa package" data-vi="Gói spa đôi cuối tuần">Gói spa đôi cuối tuần</li></ul></aside></div>
+          <div class="mb-4 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Picked for you" data-vi="Dành riêng cho bạn">Dành riêng cho bạn</p><h1 id="offers-title" class="text-2xl font-black" data-en="Offers & wishlist" data-vi="Ưu đãi & mong muốn">Ưu đãi & mong muốn</h1></div></div>
+          <div class="mb-3 app-tabs"><button class="app-tab" type="button" aria-pressed="false" data-offer-filter="saved" data-en="Saved" data-vi="Đã lưu">Đã lưu</button><button class="app-tab" type="button" aria-pressed="false" data-offer-filter="unsaved" data-en="Discover" data-vi="Khám phá">Khám phá</button></div><div class="sr-only"><button class="sr-only" type="button" data-action="view-offer" data-offer-id="offer-glow">Xem</button><button class="sr-only" type="button" data-action="use-offer" data-reward-key="glow">Dùng ưu đãi</button></div><div id="offers-empty-state" class="hidden" data-state="empty"></div>
+          <div class="grid gap-4 xl:grid-cols-[1fr_340px]"><div><div class="relative"><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-app-muted" aria-hidden="true"></i><input id="offer-search" class="app-input pl-11" type="search" data-en-ph="Search offers…" data-vi-ph="Tìm ưu đãi…" placeholder="Tìm ưu đãi…"></div><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" aria-pressed="true" data-offer-filter="all" data-en="All" data-vi="Tất cả">Tất cả</button><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="beauty" data-en="Beauty" data-vi="Làm đẹp">Làm đẹp</button><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="food" data-en="Food" data-vi="Ẩm thực">Ẩm thực</button></div><div class="mt-4 grid grid-cols-2 gap-3 md:gap-4"><article class="app-card overflow-hidden p-0" data-offer-card data-offer-id="offer-glow" data-category="beauty" data-search="golden glow facial spa"><img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80" alt="Ưu đãi chăm sóc da" class="h-28 w-full object-cover md:h-40"><div class="p-4"><span class="text-xs font-bold text-app-gold" data-en="20% OFF" data-vi="GIẢM 20%">GIẢM 20%</span><h2 class="mt-2 font-black" data-en="Glow facial" data-vi="Chăm sóc da Glow">Chăm sóc da Glow</h2><p class="mt-1 text-xs text-app-muted">Golden Glow Spa · Hết hạn 21/07</p><button class="app-button-secondary mt-4 w-full" type="button" data-action="save-offer" data-offer-id="offer-glow"><i data-lucide="bookmark" class="size-4" aria-hidden="true"></i><span data-en="Save offer" data-vi="Lưu ưu đãi">Lưu ưu đãi</span></button></div></article><article class="app-card overflow-hidden p-0" data-offer-card data-offer-id="offer-moon" data-category="food" data-search="moon coffee latte pastry"><img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80" alt="Ưu đãi cà phê" class="h-28 w-full object-cover md:h-40"><div class="p-4"><span class="text-xs font-bold text-app-green" data-en="BUY 1 GET 1" data-vi="MUA 1 TẶNG 1">MUA 1 TẶNG 1</span><h2 class="mt-2 font-black" data-en="Member latte" data-vi="Latte thành viên">Latte thành viên</h2><p class="mt-1 text-xs text-app-muted">Moon Coffee · Hết hạn 31/07</p><button class="app-button-secondary mt-4 w-full" type="button" data-action="save-offer" data-offer-id="offer-moon"><i data-lucide="bookmark" class="size-4" aria-hidden="true"></i><span data-en="Save offer" data-vi="Lưu ưu đãi">Lưu ưu đãi</span></button></div></article></div></div><aside class="app-card h-fit"><p class="eyebrow" data-en="Tell businesses" data-vi="Gửi mong muốn">Gửi mong muốn</p><h2 class="mt-1 section-title" data-en="What would you love?" data-vi="Bạn mong muốn ưu đãi gì?">Bạn mong muốn ưu đãi gì?</h2><p class="mt-2 text-sm leading-6 text-app-muted" data-en="Your idea is shared anonymously." data-vi="Ý tưởng được gửi ẩn danh.">Ý tưởng được gửi ẩn danh.</p><form id="wish-form" class="mt-4 flex gap-2" novalidate><input id="wish-input" class="app-input" name="wish" autocomplete="off" enterkeyhint="send" data-en-ph="e.g. Birthday nail package" data-vi-ph="VD: Gói nail sinh nhật" placeholder="VD: Gói nail sinh nhật"><button class="icon-button" type="button" data-action="add-wish" aria-label="Thêm mong muốn"><i data-lucide="plus" class="size-5" aria-hidden="true"></i></button></form><ul id="wish-list" class="mt-4 space-y-2 text-sm"><li class="rounded-xl bg-app-panel p-3" data-en="Weekend spa package" data-vi="Gói spa cuối tuần">Gói spa cuối tuần</li></ul><button class="app-button mt-4 w-full" type="button" data-action="submit-wishes"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Send wish" data-vi="Gửi mong muốn">Gửi mong muốn</span></button></aside></div>
         </section>
         <section class="app-screen hidden" id="book1" data-ready="true" data-module="home" aria-labelledby="book1-title">
           <div class="mx-auto max-w-3xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Step 1 of 3" data-vi="Bước 1/3">Bước 1/3</p><h1 id="book1-title" class="text-2xl font-black" data-en="Choose your appointment" data-vi="Chọn lịch hẹn">Chọn lịch hẹn</h1></div></div><div class="app-card"><h2 class="section-title" data-en="Service" data-vi="Dịch vụ">Dịch vụ</h2><div class="mt-3 grid gap-2 sm:grid-cols-2"><button class="app-chip justify-between rounded-xl" type="button" data-book-service="Gel manicure" aria-pressed="true"><span data-en="Gel manicure" data-vi="Sơn gel">Sơn gel</span><strong>$45</strong></button><button class="app-chip justify-between rounded-xl" type="button" data-book-service="Pedicure" aria-pressed="false"><span data-en="Signature pedicure" data-vi="Pedicure đặc biệt">Pedicure đặc biệt</span><strong>$55</strong></button></div><h2 class="mt-6 section-title" data-en="Technician" data-vi="Kỹ thuật viên">Kỹ thuật viên</h2><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" data-book-staff="Anna" aria-pressed="true">Anna</button><button class="app-chip" type="button" data-book-staff="Mia" aria-pressed="false">Mia</button><button class="app-chip" type="button" data-book-staff="No preference" aria-pressed="false" data-en="No preference" data-vi="Không yêu cầu">Không yêu cầu</button></div><h2 class="mt-6 section-title" data-en="Date & time" data-vi="Ngày & giờ">Ngày & giờ</h2><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" data-book-day="Thu 16 Jul" aria-pressed="true" data-en="Thu 16" data-vi="T5 16/7">T5 16/7</button><button class="app-chip" type="button" data-book-day="Fri 17 Jul" aria-pressed="false" data-en="Fri 17" data-vi="T6 17/7">T6 17/7</button><button class="app-chip" type="button" data-book-day="Sat 18 Jul" aria-pressed="false" data-en="Sat 18" data-vi="T7 18/7">T7 18/7</button></div><div class="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5"><button class="app-chip justify-center" type="button" data-book-time="10:00 AM" aria-pressed="false">10:00</button><button class="app-chip justify-center" type="button" data-book-time="11:30 AM" aria-pressed="false">11:30</button><button class="app-chip justify-center" type="button" data-book-time="2:00 PM" aria-pressed="true">14:00</button><button class="app-chip justify-center" type="button" data-book-time="3:30 PM" aria-pressed="false">15:30</button><button class="app-chip justify-center" type="button" data-book-time="5:00 PM" aria-pressed="false">17:00</button></div><button class="app-button mt-6 w-full" type="button" data-action="review-booking"><span data-en="Review booking" data-vi="Xem lại lịch hẹn">Xem lại lịch hẹn</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button></div></div>
@@ -274,7 +284,7 @@
           <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Every point accounted for" data-vi="Minh bạch từng điểm">Minh bạch từng điểm</p><h1 id="history-title" class="text-2xl font-black" data-en="Points history" data-vi="Lịch sử điểm">Lịch sử điểm</h1></div></div><div id="ledger-list" class="space-y-3"></div>
         </section>
         <section class="app-screen hidden" id="rewards" data-ready="true" data-module="wallet" aria-labelledby="rewards-title">
-          <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-balance-available="bitcoin-nail-bar" data-en="2,450 points available" data-vi="Có thể dùng 2.450 điểm">Có thể dùng 2.450 điểm</p><h1 id="rewards-title" class="text-2xl font-black" data-en="Choose a reward" data-vi="Chọn phần thưởng">Chọn phần thưởng</h1></div></div><div id="reward-list" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3"></div><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Points apply to services only — never cash out. Each business sets its own reward prices; NEXORA only keeps the ledger." data-vi="Điểm chỉ dùng cho dịch vụ — không đổi tiền mặt. Mỗi doanh nghiệp tự đặt giá thưởng; NEXORA chỉ lưu sổ cái.">Điểm chỉ dùng cho dịch vụ — không đổi tiền mặt. Mỗi doanh nghiệp tự đặt giá thưởng; NEXORA chỉ lưu sổ cái.</p>
+          <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-balance-available="bitcoin-nail-bar" data-en="2,450 points available" data-vi="Có thể dùng 2.450 điểm">Có thể dùng 2.450 điểm</p><h1 id="rewards-title" class="text-2xl font-black" data-en="Choose a reward" data-vi="Chọn phần thưởng">Chọn phần thưởng</h1></div></div><div class="mb-4 app-tabs"><button class="app-tab" type="button" aria-pressed="true" data-reward-tab="explore" data-en="Explore" data-vi="Khám phá">Khám phá</button><button class="app-tab" type="button" aria-pressed="false" data-reward-tab="redeemed" data-en="Available" data-vi="Khả dụng">Khả dụng</button><button class="app-tab" type="button" aria-pressed="false" data-reward-tab="used" data-en="Used" data-vi="Đã dùng">Đã dùng</button></div><div id="reward-list" class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3"></div><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Points apply to services only — never cash out. Each business sets its own reward prices; NEXORA only keeps the ledger." data-vi="Điểm chỉ dùng cho dịch vụ — không đổi tiền mặt. Mỗi doanh nghiệp tự đặt giá thưởng; NEXORA chỉ lưu sổ cái.">Điểm chỉ dùng cho dịch vụ — không đổi tiền mặt. Mỗi doanh nghiệp tự đặt giá thưởng; NEXORA chỉ lưu sổ cái.</p>
         </section>
         <section class="app-screen hidden" id="redeem" data-ready="true" data-module="wallet" aria-labelledby="redeem-title">
           <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="rewards" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Confirm redemption" data-vi="Xác nhận đổi điểm">Xác nhận đổi điểm</p><h1 id="redeem-title" class="text-2xl font-black" data-en="Redeem reward" data-vi="Đổi phần thưởng">Đổi phần thưởng</h1></div></div><div class="app-card"><div class="flex items-start gap-4"><span class="grid size-14 place-items-center rounded-2xl bg-app-pink/10 text-app-pink"><i data-lucide="gift" class="size-7" aria-hidden="true"></i></span><div><h2 id="reward-title" class="text-xl font-black">Nâng cấp sơn gel</h2><p id="reward-business" class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar</p></div></div><dl class="mt-6 space-y-4 rounded-2xl bg-app-panel p-4"><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Reward cost" data-vi="Điểm đổi quà">Điểm đổi quà</dt><dd id="reward-cost" class="font-black">800 điểm</dd></div><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Current balance" data-vi="Số dư hiện tại">Số dư hiện tại</dt><dd id="reward-balance" data-balance-with-unit="bitcoin-nail-bar" class="font-black">2.450 điểm</dd></div><div class="flex justify-between gap-4 border-t border-app-line pt-4 text-sm"><dt class="font-bold" data-en="Balance after" data-vi="Số dư còn lại">Số dư còn lại</dt><dd id="reward-after" class="font-black text-app-cyan">1.650 điểm</dd></div></dl><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Show the confirmation code to staff before the service is completed. This action cannot be undone." data-vi="Hãy đưa mã xác nhận cho nhân viên trước khi hoàn tất dịch vụ. Không thể hoàn tác thao tác này.">Hãy đưa mã xác nhận cho nhân viên trước khi hoàn tất dịch vụ. Không thể hoàn tác thao tác này.</p><button class="app-button mt-5 w-full" type="button" data-action="confirm-reward"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Use points now" data-vi="Dùng điểm ngay">Dùng điểm ngay</span></button></div></div>
@@ -490,11 +500,9 @@
             <section id="referral-summary" class="app-card">
               <div class="flex justify-between gap-3"><div><p class="text-sm font-bold" data-en="Your NEXORA referral code" data-vi="Mã giới thiệu NEXORA của bạn">Mã giới thiệu NEXORA của bạn</p><strong id="referral-code" class="mt-2 block text-3xl tracking-[.16em] text-app-cyan">JESSICA50</strong></div><span class="h-fit rounded-full bg-app-purple/20 px-3 py-1 text-xs font-bold text-app-pink" data-en="Customer" data-vi="Khách hàng">Khách hàng</span></div>
               <p class="mt-4 text-sm leading-6 text-app-muted" data-en="Your friend receives points from the first business they check in at. You receive 50 points from that business only after their first paid visit." data-vi="Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Bạn chỉ nhận 50 điểm do doanh nghiệp đó tài trợ sau lượt ghé có thanh toán đầu tiên của họ.">Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Bạn chỉ nhận 50 điểm do doanh nghiệp đó tài trợ sau lượt ghé có thanh toán đầu tiên của họ.</p>
-              <label class="mt-4 block text-sm font-bold" for="referral-friend-phone" data-en="Friend phone" data-vi="Số điện thoại bạn bè">Số điện thoại bạn bè</label>
-              <input id="referral-friend-phone" class="app-input mt-2" type="tel" inputmode="tel" autocomplete="tel" data-en-ph="10-digit US phone" data-vi-ph="Số điện thoại US gồm 10 số" placeholder="Số điện thoại US gồm 10 số">
               <p id="referral-error" class="field-error hidden" role="alert"></p>
-              <div class="mt-4 grid gap-3 sm:grid-cols-2"><button type="button" class="app-button w-full" data-action="share-referral"><i data-lucide="share-2" class="size-4" aria-hidden="true"></i><span data-en="Share referral link" data-vi="Chia sẻ liên kết giới thiệu">Chia sẻ liên kết giới thiệu</span></button><button type="button" class="app-button-secondary w-full" data-action="show-referral-qr" aria-expanded="false" aria-controls="referral-qr-panel"><i data-lucide="qr-code" class="size-4" aria-hidden="true"></i><span data-en="Show prototype QR" data-vi="Hiện QR bản mẫu">Hiện QR bản mẫu</span></button></div>
-              <div id="referral-qr-panel" class="hidden" aria-hidden="true"><div id="referral-qr" class="mx-auto mt-5 grid w-44 grid-cols-9 rounded-2xl bg-white p-3 shadow" role="img" aria-label="Referral QR"></div><p class="mt-2 text-center text-xs text-app-muted" data-en="Prototype QR — share the link for a usable invite." data-vi="QR bản mẫu — hãy chia sẻ liên kết để gửi lời mời có thể dùng.">QR bản mẫu — hãy chia sẻ liên kết để gửi lời mời có thể dùng.</p></div>
+              <div id="referral-qr-panel"><div id="referral-qr" class="mx-auto mt-5 w-64 max-w-full rounded-2xl bg-white p-4 shadow sm:w-72" role="img" aria-label="Referral QR"></div><p class="mt-2 text-center text-xs text-app-muted" data-en="Friends scan this code, or share the link below." data-vi="Bạn bè quét mã này, hoặc chia sẻ liên kết bên dưới.">Bạn bè quét mã này, hoặc chia sẻ liên kết bên dưới.</p></div>
+              <div class="mt-4 grid gap-3 sm:grid-cols-3"><button type="button" class="app-button w-full" data-action="share-referral"><i data-lucide="share-2" class="size-4" aria-hidden="true"></i><span data-en="Share link" data-vi="Chia sẻ liên kết">Chia sẻ liên kết</span></button><button type="button" class="app-button-secondary w-full" data-action="copy-referral-link"><i data-lucide="copy" class="size-4" aria-hidden="true"></i><span data-en="Copy link" data-vi="Sao chép liên kết">Sao chép liên kết</span></button><button type="button" class="app-button-secondary w-full" data-action="download-referral-qr"><i data-lucide="download" class="size-4" aria-hidden="true"></i><span data-en="Save QR" data-vi="Tải QR">Tải QR</span></button></div>
               <div id="referral-manual-share" class="mt-4 hidden"><label class="block text-xs font-bold text-app-muted" for="referral-manual-link" data-en="Copy this link manually" data-vi="Tự sao chép liên kết này">Tự sao chép liên kết này</label><input id="referral-manual-link" class="app-input mt-2" type="text" readonly></div>
             </section>
             <section id="referral-totals" class="mt-4 grid grid-cols-3 gap-3 text-center" data-en-aria-label="Referral totals" data-vi-aria-label="Tổng lượt giới thiệu" aria-label="Tổng lượt giới thiệu"><div class="app-card p-3"><span class="text-xs text-app-muted" data-en="Invited" data-vi="Đã mời">Đã mời</span><strong id="referral-invited-count" class="mt-1 block text-2xl">0</strong></div><div class="app-card p-3"><span class="text-xs text-app-muted" data-en="Joined" data-vi="Đã tham gia">Đã tham gia</span><strong id="referral-joined-count" class="mt-1 block text-2xl">0</strong></div><div class="app-card p-3"><span class="text-xs text-app-muted" data-en="Rewarded" data-vi="Đã thưởng">Đã thưởng</span><strong id="referral-rewarded-count" class="mt-1 block text-2xl text-app-green">0</strong></div></section>
@@ -745,6 +753,10 @@
       // Keep the priciest reward last: it is the one that must read as unaffordable at 2,450 pts.
       gel: { key: 'gel', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 2500, title: { vi: 'Nâng cấp sơn gel', en: 'Gel polish upgrade' } }
     };
+
+    // The rewards screen splits into what you can still buy, what you already bought and have not
+    // handed to staff yet, and what a check-in has already spent.
+    const REWARD_TABS = ['explore', 'redeemed', 'used'];
 
     // A reward with no points price cannot be bought, only granted. Such rewards never appear in the
     // rewards catalog or in the spend-your-points list; they only ever show up already redeemed.
@@ -1502,7 +1514,10 @@
         ledger: [
           { id: 'led-visit-1', businessId: BUSINESS_ID, type: 'visit', pointsDelta: 120, refType: 'visit', refId: 'visit-1001', createdAt: '2026-07-14T10:42:00.000Z' },
           { id: 'led-redeem-1', businessId: BUSINESS_ID, type: 'redeem', pointsDelta: -800, refType: 'redemption', refId: 'red-demo', createdAt: '2026-07-11T15:00:00.000Z' },
-          { id: 'led-welcome-1', businessId: BUSINESS_ID, type: 'welcome', pointsDelta: 25, refType: 'onboarding', refId: 'welcome-demo', createdAt: '2026-06-01T12:00:00.000Z' }
+          { id: 'led-welcome-1', businessId: BUSINESS_ID, type: 'welcome', pointsDelta: 25, refType: 'onboarding', refId: 'welcome-demo', createdAt: '2026-06-01T12:00:00.000Z' },
+          // Pairs with book-demo-bitcoin: a confirmed booking that earns a bonus must carry exactly
+          // one matching ledger entry, or confirmBookingRequest treats the pair as corrupt.
+          { id: 'led-booking-demo', businessId: BUSINESS_ID, type: 'booking_bonus', pointsDelta: 25, refType: 'booking', refId: 'book-demo-bitcoin', createdAt: '2026-07-15T09:00:30.000Z' }
         ],
         consents: [],
         welcomeClaims: [],
@@ -1528,7 +1543,15 @@
         paymentProofs: [],
         receipts: [],
         guestRewardClaims: [],
-        referrals: [],
+        referrals: [
+          // One friend already joined but has not been rewarded yet: 'joined' carries no ledger
+          // pair, so rewardPoints stays 0 and businessId stays null.
+          {
+            id: 'referral-demo-1', referrerId: 'cust-jessica', code: 'JESSICA50', friendPhone: '8325550172',
+            status: 'joined', rewardPoints: 0, businessId: null,
+            createdAt: '2026-07-13T09:15:00.000Z', joinedAt: '2026-07-14T11:30:00.000Z', rewardedAt: null
+          }
+        ],
         redemptions: [
           // Earned by referring a friend, so it cost no points. Listed first because it is the one
           // the check-in form surfaces alongside a spend-your-points option.
@@ -1548,15 +1571,31 @@
         tipProofs: [],
         tipReviews: [],
         directPayments: [],
-        bookingRequests: [],
-        appointments: [],
+        bookingRequests: [
+          {
+            id: 'book-demo-bitcoin', businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna',
+            day: 'Thu 16 Jul', time: '2:00 PM', note: '', bookingBonus: 25, status: 'confirmed',
+            createdAt: '2026-07-15T09:00:00.000Z', confirmedAt: '2026-07-15T09:00:30.000Z'
+          }
+        ],
+        // The guest already has a confirmed booking at this salon, so Home opens on the arrival
+        // prompt. An appointment only survives normalization while it is paired with the confirmed
+        // booking it came from and that booking's bonus ledger entry, so all three are seeded
+        // together and must agree — reconcileBookingPairs drops an appointment that stands alone.
+        appointments: [
+          {
+            id: 'appt-demo-bitcoin', bookingId: 'book-demo-bitcoin', businessId: BUSINESS_ID,
+            service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM',
+            status: 'confirmed', createdAt: '2026-07-15T09:00:30.000Z'
+          }
+        ],
         looks: [
           { id: 'look-galaxy', businessId: BUSINESS_ID, visitId: 'visit-1001', staffProfileId: 'staff-anna', staffName: 'Anna', service: 'Gel manicure', color: 'OPI Bubble Bath #S86', note: 'Galaxy chrome', photoDataUrl: '', createdAt: '2026-07-12T16:20:00.000Z' }
         ],
         feedback: [],
         feedbackClaims: [],
         savedOfferIds: [],
-        wishes: ['Gói spa đôi cuối tuần'],
+        wishes: ['Gói spa cuối tuần'],
         followedTechIds: [],
         notifications: [
           { id: 'note-welcome', type: 'system', title: { vi: 'Điểm mới đã được cộng', en: 'New points were added' }, target: 'history', read: false, createdAt: '2026-07-14T10:43:00.000Z' }
@@ -1567,7 +1606,7 @@
           selectedTip: 10, selectedTipMethod: 'Venmo', selectedStaffId: 'staff-anna',
           tipDraft: null,
           paymentMethod: 'Zelle', payViewIntent: 'direct', rating: 0, currentRewardKey: null,
-          exploreFilter: 'all', offerFilter: 'all', pendingContext: {
+          exploreFilter: 'all', offerFilter: 'all', rewardTab: 'explore', pendingContext: {
             consentScopes: [], rewardAttempt: null, redemptionId: null, tipId: null, tipBatchId: null, paymentId: null, bookingId: null,
             scanContext: null, tipScanArmed: false, tipEntryIntent: 'generic', tipScanReplayId: null,
             tipScanReplayFingerprint: null, tipDoneView: null, reviewMode: null,
@@ -5098,7 +5137,8 @@
       migrated.updatedAt = new Date().toISOString();
       if (!['vi', 'en'].includes(migrated.profile.language)) migrated.profile.language = defaults.profile.language;
       if (!['all', 'nails', 'spa', 'salon'].includes(migrated.ui.exploreFilter)) migrated.ui.exploreFilter = defaults.ui.exploreFilter;
-      if (!['all', 'saved', 'beauty', 'food'].includes(migrated.ui.offerFilter)) migrated.ui.offerFilter = defaults.ui.offerFilter;
+      if (!['all', 'saved', 'unsaved', 'beauty', 'food'].includes(migrated.ui.offerFilter)) migrated.ui.offerFilter = defaults.ui.offerFilter;
+      if (!REWARD_TABS.includes(migrated.ui.rewardTab)) migrated.ui.rewardTab = defaults.ui.rewardTab;
       migrated.consents = migrated.consents.map((consent) => consent.scope === 'network'
         ? { ...consent, scope: 'networkOffers' }
         : consent);
@@ -5818,6 +5858,14 @@
       if (appState.wishes.some((wish) => normalizeWishText(wish).toLocaleLowerCase() === value.toLocaleLowerCase())) return { ok: false, code: 'duplicate' };
       appState.wishes = [...appState.wishes, value];
       return { ok: true, value };
+    }
+
+    function clearWishRecords(appState) {
+      if (!isRecord(appState) || !Array.isArray(appState.wishes)) return { ok: false, code: 'invalid_state' };
+      const sent = appState.wishes.length;
+      if (!sent) return { ok: false, code: 'empty' };
+      appState.wishes = [];
+      return { ok: true, sent };
     }
 
     function removeWishRecord(appState, text) {
@@ -7719,7 +7767,7 @@
     const COPY = {
       vi: {
         scanSignedOutCustomer: 'Chưa đăng nhập', scanPrivateSummary: 'Đăng nhập để xem',
-        points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', noExpiry: 'Chưa có điểm sắp hết hạn.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', rewardReadyStatus: 'Sẵn sàng', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
+        points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', noExpiry: 'Chưa có điểm sắp hết hạn.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', rewardReadyStatus: 'Sẵn sàng', rewardUsedStatus: 'Đã dùng', showCode: 'Hiện mã', rewardRedeemedEmpty: 'Chưa có phần thưởng nào khả dụng. Hãy xem tab Khám phá.', rewardUsedEmpty: 'Chưa có phần thưởng nào được dùng tại tiệm.', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
         paymentSent: 'Đã gửi ${amount} cho tiệm', paymentConfirmedTitle: 'Đã xác nhận thanh toán', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu', saveOffer: 'Lưu ưu đãi', view: 'Xem', rebook: 'Đặt lại', tip: 'Gửi tip', delete: 'Xóa', followingTech: 'Đang theo dõi thợ', followTech: 'Theo dõi thợ', removeWish: 'Xóa mong muốn', favorite: 'Đã yêu thích', addFavorite: 'Thêm yêu thích', recentVisit: 'Lượt ghé gần đây',
         offerSaved: 'Đã lưu ưu đãi', offerRemoved: 'Đã bỏ lưu ưu đãi', offerSaveFailed: 'Ưu đãi không hợp lệ.', offerDetails: 'Chi tiết ưu đãi', offerDetail: 'Xem điều kiện, thời hạn và doanh nghiệp phát hành trước khi dùng.', wishRequired: 'Hãy nhập mong muốn', wishDuplicate: 'Mong muốn này đã tồn tại.', wishShared: 'Đã gửi mong muốn ẩn danh',
         lookServiceRequired: 'Hãy nhập tên dịch vụ', lookRequired: 'Hãy nhập ảnh, dịch vụ, màu hoặc ghi chú.', lookSaveFailed: 'Không thể lưu kiểu. Vui lòng thử lại.', lookPhotoQuota: 'Bộ nhớ ảnh đã đầy; đã lưu thông tin kiểu không kèm ảnh.', lookSaved: 'Đã lưu kiểu mới', noLookNote: 'Không có ghi chú.', deleteLook: 'Xóa kiểu này?', deleteLookDetail: 'Thao tác chỉ ảnh hưởng dữ liệu mẫu trên thiết bị.', followVisitRequired: 'Chỉ theo dõi thợ đã từng phục vụ bạn.', scanReceipt: 'Quét hóa đơn', scanReceiptDetail: 'Bản mẫu mô phỏng OCR hóa đơn.', ratingRequired: 'Hãy chọn số sao',
@@ -7737,7 +7785,7 @@
         verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
         paymentIntegrityTitle: 'Không thể xác minh biên nhận', paymentIntegrityDetail: 'Dữ liệu xác minh không nhất quán. Không thể thử lại thanh toán này một cách an toàn.', returnHome: 'Về trang chủ',
         guestRewardsPending: 'Điểm đang chờ; dùng cùng số điện thoại để nhận sau.',
-        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', selfReferral: 'Không thể tự giới thiệu chính mình.', referralShared: 'Đã chia sẻ link giới thiệu.', shareFailed: 'Không thể chia sẻ link.', shareCancelled: 'Bạn đã hủy chia sẻ. Có thể tự sao chép liên kết bên dưới.', shareManual: 'Không thể chia sẻ tự động. Hãy sao chép liên kết bên dưới.', referralUpdateFailed: 'Không thể cập nhật giới thiệu.', referralInvited: 'Đã mời', referralJoined: 'Đã tham gia', referralRewarded: 'Đã thưởng', simulateJoined: 'Mô phỏng đã tham gia', simulatePaidVisit: 'Mô phỏng lượt ghé trả phí', referralEmpty: 'Chưa có lời mời nào.', referralShareTitle: 'Lời mời NEXORA', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Vui lòng kiểm tra tên, số điện thoại và dịch vụ.', guestServiceRequired: 'Hãy chọn ít nhất một dịch vụ.', noPreference: 'Bất kỳ', notAvailable: 'Chưa có', guestCheckinSuccess: 'Đã check-in khách.', guestRouteFailed: 'Đã lưu check-in nhưng chưa thể mở phiếu. Vui lòng thử lại.', paymentAmountFromTicket: 'Tự điền từ phiếu dịch vụ của bạn ({service}).', startServiceDone: 'Tiệm đã bắt đầu dịch vụ.', startServiceFailed: 'Không thể bắt đầu dịch vụ.', startServiceNoStaff: 'Chưa có kỹ thuật viên nào làm được tất cả dịch vụ bạn chọn. Vui lòng hỏi quầy lễ tân.', bookingConfirmed: 'Đã xác nhận', arrivalPrompt: 'Báo tiệm để chuẩn bị trước khi bạn tới.', arrivalBadge_on_my_way: 'Đang trên đường', arrivalBadge_arrived: 'Đã tới nơi', arrivalHint_on_my_way: 'Tiệm đã biết bạn đang trên đường và sẽ chuẩn bị.', arrivalHint_arrived: 'Tiệm đã biết bạn có mặt. Mời bạn tới quầy.', arrivalSaved: 'Đã báo tiệm.', arrivalFailed: 'Không thể báo tiệm. Vui lòng thử lại.', activeServiceInProgress: 'Bạn đang được phục vụ', activeServiceWaiting: 'Bạn đã check-in, đang chờ tới lượt', liveTicketPendingNumber: 'Chờ tiệm mở phiếu', liveTicketStatus_awaiting_staff: 'Chờ tiệm xác nhận', liveTicketStatus_in_service: 'Đang làm', liveTicketStatus_completed: 'Đã hoàn tất', liveTicketPendingNote: 'Tiệm sẽ mở phiếu khi bắt đầu dịch vụ. Số tiền dưới đây là giá dịch vụ bạn đã chọn.', liveTicketLiveNote: 'Phiếu cập nhật theo tiệm. Dịch vụ thêm cần bạn xác nhận trước khi tính tiền.', addonSuggestedBy: '{staff} đề xuất', payAddonPending: 'Vui lòng trả lời dịch vụ thêm trước khi thanh toán.', payAwaitingTicket: 'Tiệm chưa mở phiếu cho bạn.', addonAccepted: 'Đã thêm dịch vụ vào phiếu.', addonDeclined: 'Đã từ chối dịch vụ thêm.', addonFailed: 'Không thể cập nhật dịch vụ thêm.', addonLast4Mismatch: '4 số cuối không khớp với lượt check-in này.', addonSuggestFailed: 'Không thể đề xuất dịch vụ thêm.', addonSuggested: 'Thợ vừa đề xuất một dịch vụ thêm.', liveTicketCallDemo: 'Bản demo: ứng dụng sẽ gọi {staff} ở bản production.', liveTicketMessageDemo: 'Bản demo: ứng dụng sẽ nhắn tin cho {staff} ở bản production.', liveTicketNoStaff: 'Chưa có kỹ thuật viên nào được gán.', guestNotFound: 'Không tìm thấy lượt check-in khách.', serviceNotFound: 'Không tìm thấy dịch vụ.', checkoutFailed: 'Không thể tạo thanh toán.', addonImportFailed: 'Không thể nhập add-on đã duyệt.', handoffInvalid: 'Liên kết thanh toán không hợp lệ hoặc đã hết hiệu lực.', selectPaymentMethod: 'Vui lòng chọn phương thức thanh toán.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', invalidImage: 'Ảnh không hợp lệ.', proofSavedWithoutImage: 'Đã lưu bằng chứng không kèm ảnh do giới hạn bộ nhớ.', proofSubmitFailed: 'Không thể gửi bằng chứng.', verificationFailed: 'Không thể cập nhật xác minh.', proofRejected: 'Lễ tân đã từ chối bằng chứng.', askFrontDesk: 'Vui lòng trao đổi với lễ tân.', createAccount: 'Tạo tài khoản NEXORA', continueGuest: 'Tiếp tục với tư cách khách', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', scanMemberLoginAction: 'Đăng nhập để dùng hồ sơ', scanMemberLoginReason: 'Hãy đăng nhập để điền tự động hồ sơ đã xác minh; bạn vẫn có thể tiếp tục với tư cách khách.', scanTipRequiresStaff: 'QR này không xác định thợ. Hãy quét QR có tên thợ để tip.', scanTipMethodUnavailable: 'Thợ trong QR chưa bật phương thức nhận tip.', scanTipReady: 'Tip sẽ được gửi đúng cho {staff} tại {business}.', scanPaymentRequiresCompleted: 'Dịch vụ phải được tiệm hoàn tất trước khi thanh toán.', scanPaymentPhoneRequired: 'Nhập 4 số cuối điện thoại của lượt check-in để mở phiếu.', scanPaymentOwned: 'Lượt check-in khớp với hồ sơ đã xác thực; không cần nhập 4 số cuối.', scanPaymentCandidate: 'Phiếu #{number} · {service} · {amount}', scanPaymentPrivateCandidate: 'Dịch vụ đã hoàn tất {index}', scanPaymentLast4Mismatch: '4 số cuối điện thoại không khớp với lượt check-in này.', scanIntentFailed: 'Không thể mở thao tác từ QR. Hãy quét lại và thử lại.', memberServiceTitle: 'Thành viên · ⭐ {points} điểm', guestServiceTitle: 'Khách · điểm sẽ cộng sau khi check-in', memberGreeting: 'Chào {name} 👋', guestGreeting: 'Chào bạn 👋', useRewardPoints: 'Dùng {points} điểm → {title}', rewardReadyHint: 'Phần thưởng đã đổi, sẵn sàng dùng cho lượt này.', rewardReadyOption: '{title} — sẵn sàng dùng', rewardPointsHint: 'Bạn có {points} điểm tại tiệm này. Chọn để dùng ngay khi check-in.', salonWelcomeTitle: 'Chào mừng đến {business}', salonWelcomeSubtitle: 'Đặt lịch hẹn hoặc check-in cho hôm nay', checkinDoneTitle: 'Đã check-in xong, {name}!', checkinQueueLine: '#{position} trong hàng chờ', checkinQueueOnly: 'Bạn là người tiếp theo', printTicketFailed: 'Không thể mở hộp thoại in.', introNext: 'Tiếp →', introStart: 'Bắt đầu ✨', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
+        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', selfReferral: 'Không thể tự giới thiệu chính mình.', referralShared: 'Đã chia sẻ link giới thiệu.', referralLinkCopied: 'Đã sao chép liên kết giới thiệu.', referralQrSaved: 'Đã tải mã QR.', shareFailed: 'Không thể chia sẻ link.', shareCancelled: 'Bạn đã hủy chia sẻ. Có thể tự sao chép liên kết bên dưới.', shareManual: 'Không thể chia sẻ tự động. Hãy sao chép liên kết bên dưới.', referralUpdateFailed: 'Không thể cập nhật giới thiệu.', referralInvited: 'Đã mời', referralJoined: 'Đã tham gia', referralRewarded: 'Đã thưởng', simulateJoined: 'Mô phỏng đã tham gia', simulatePaidVisit: 'Mô phỏng lượt ghé trả phí', referralEmpty: 'Chưa có lời mời nào.', referralShareTitle: 'Lời mời NEXORA', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Vui lòng kiểm tra tên, số điện thoại và dịch vụ.', guestServiceRequired: 'Hãy chọn ít nhất một dịch vụ.', noPreference: 'Bất kỳ', notAvailable: 'Chưa có', guestCheckinSuccess: 'Đã check-in khách.', guestRouteFailed: 'Đã lưu check-in nhưng chưa thể mở phiếu. Vui lòng thử lại.', paymentAmountFromTicket: 'Tự điền từ phiếu dịch vụ của bạn ({service}).', startServiceDone: 'Tiệm đã bắt đầu dịch vụ.', startServiceFailed: 'Không thể bắt đầu dịch vụ.', startServiceNoStaff: 'Chưa có kỹ thuật viên nào làm được tất cả dịch vụ bạn chọn. Vui lòng hỏi quầy lễ tân.', bookingConfirmed: 'Đã xác nhận', arrivalPrompt: 'Báo tiệm để chuẩn bị trước khi bạn tới.', arrivalBadge_on_my_way: 'Đang trên đường', arrivalBadge_arrived: 'Đã tới nơi', arrivalBadge_checked_in: 'Đã check-in', arrivalHint_on_my_way: 'Tiệm đã biết bạn đang trên đường và sẽ chuẩn bị.', arrivalHint_arrived: 'Tiệm đã biết bạn có mặt. Hãy check-in để tiệm mở phiếu cho bạn.', arrivalSaved: 'Đã báo tiệm.', arrivalFailed: 'Không thể báo tiệm. Vui lòng thử lại.', activeServiceInProgress: 'Bạn đang được phục vụ', activeServiceWaiting: 'Bạn đã check-in, đang chờ tới lượt', liveTicketPendingNumber: 'Chờ tiệm mở phiếu', liveTicketStatus_awaiting_staff: 'Chờ tiệm xác nhận', liveTicketStatus_in_service: 'Đang làm', liveTicketStatus_completed: 'Đã hoàn tất', liveTicketPendingNote: 'Tiệm sẽ mở phiếu khi bắt đầu dịch vụ. Số tiền dưới đây là giá dịch vụ bạn đã chọn.', liveTicketLiveNote: 'Phiếu cập nhật theo tiệm. Dịch vụ thêm cần bạn xác nhận trước khi tính tiền.', addonSuggestedBy: '{staff} đề xuất', payAddonPending: 'Vui lòng trả lời dịch vụ thêm trước khi thanh toán.', payAwaitingTicket: 'Tiệm chưa mở phiếu cho bạn.', addonAccepted: 'Đã thêm dịch vụ vào phiếu.', addonDeclined: 'Đã từ chối dịch vụ thêm.', addonFailed: 'Không thể cập nhật dịch vụ thêm.', addonLast4Mismatch: '4 số cuối không khớp với lượt check-in này.', addonSuggestFailed: 'Không thể đề xuất dịch vụ thêm.', addonSuggested: 'Thợ vừa đề xuất một dịch vụ thêm.', liveTicketCallDemo: 'Bản demo: ứng dụng sẽ gọi {staff} ở bản production.', liveTicketMessageDemo: 'Bản demo: ứng dụng sẽ nhắn tin cho {staff} ở bản production.', liveTicketNoStaff: 'Chưa có kỹ thuật viên nào được gán.', guestNotFound: 'Không tìm thấy lượt check-in khách.', serviceNotFound: 'Không tìm thấy dịch vụ.', checkoutFailed: 'Không thể tạo thanh toán.', addonImportFailed: 'Không thể nhập add-on đã duyệt.', handoffInvalid: 'Liên kết thanh toán không hợp lệ hoặc đã hết hiệu lực.', selectPaymentMethod: 'Vui lòng chọn phương thức thanh toán.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', invalidImage: 'Ảnh không hợp lệ.', proofSavedWithoutImage: 'Đã lưu bằng chứng không kèm ảnh do giới hạn bộ nhớ.', proofSubmitFailed: 'Không thể gửi bằng chứng.', verificationFailed: 'Không thể cập nhật xác minh.', proofRejected: 'Lễ tân đã từ chối bằng chứng.', askFrontDesk: 'Vui lòng trao đổi với lễ tân.', createAccount: 'Tạo tài khoản NEXORA', continueGuest: 'Tiếp tục với tư cách khách', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', scanMemberLoginAction: 'Đăng nhập để dùng hồ sơ', scanMemberLoginReason: 'Hãy đăng nhập để điền tự động hồ sơ đã xác minh; bạn vẫn có thể tiếp tục với tư cách khách.', scanTipRequiresStaff: 'QR này không xác định thợ. Hãy quét QR có tên thợ để tip.', scanTipMethodUnavailable: 'Thợ trong QR chưa bật phương thức nhận tip.', scanTipReady: 'Tip sẽ được gửi đúng cho {staff} tại {business}.', scanPaymentRequiresCompleted: 'Dịch vụ phải được tiệm hoàn tất trước khi thanh toán.', scanPaymentPhoneRequired: 'Nhập 4 số cuối điện thoại của lượt check-in để mở phiếu.', scanPaymentOwned: 'Lượt check-in khớp với hồ sơ đã xác thực; không cần nhập 4 số cuối.', scanPaymentCandidate: 'Phiếu #{number} · {service} · {amount}', scanPaymentPrivateCandidate: 'Dịch vụ đã hoàn tất {index}', scanPaymentLast4Mismatch: '4 số cuối điện thoại không khớp với lượt check-in này.', scanIntentFailed: 'Không thể mở thao tác từ QR. Hãy quét lại và thử lại.', memberServiceTitle: 'Thành viên · ⭐ {points} điểm', guestServiceTitle: 'Khách · điểm sẽ cộng sau khi check-in', memberGreeting: 'Chào {name} 👋', guestGreeting: 'Chào bạn 👋', useRewardPoints: 'Dùng {points} điểm → {title}', rewardReadyHint: 'Phần thưởng đã đổi, sẵn sàng dùng cho lượt này.', rewardReadyOption: '{title} — sẵn sàng dùng', rewardPointsHint: 'Bạn có {points} điểm tại tiệm này. Chọn để dùng ngay khi check-in.', salonWelcomeTitle: 'Chào mừng đến {business}', salonWelcomeSubtitle: 'Đặt lịch hẹn hoặc check-in cho hôm nay', checkinDoneTitle: 'Đã check-in xong, {name}!', checkinQueueLine: '#{position} trong hàng chờ', checkinQueueOnly: 'Bạn là người tiếp theo', printTicketFailed: 'Không thể mở hộp thoại in.', introNext: 'Tiếp →', introStart: 'Bắt đầu ✨', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
         cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
         invalidPhone: 'Nhập số điện thoại US gồm 10 số.', cooldown: 'Vui lòng chờ đủ 30 giây.',
@@ -7754,7 +7802,7 @@
       },
       en: {
         scanSignedOutCustomer: 'Signed out', scanPrivateSummary: 'Sign in to view',
-        points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', noExpiry: 'No points expiring soon.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', rewardReadyStatus: 'Ready', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
+        points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', noExpiry: 'No points expiring soon.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', rewardReadyStatus: 'Ready', rewardUsedStatus: 'Used', showCode: 'Show code', rewardRedeemedEmpty: 'You have not redeemed any reward yet. Check the Explore tab.', rewardUsedEmpty: 'No reward has been used at a salon yet.', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
         paymentSent: '${amount} sent to the salon', paymentConfirmedTitle: 'Payment Confirmed', insufficientPoints: 'Not enough points', saved: 'Saved', saveOffer: 'Save offer', view: 'View', rebook: 'Rebook', tip: 'Tip', delete: 'Delete', followingTech: 'Following tech', followTech: 'Follow tech', removeWish: 'Remove wish', favorite: 'Favorite', addFavorite: 'Add favorite', recentVisit: 'Recent visit',
         offerSaved: 'Offer saved', offerRemoved: 'Offer removed', offerSaveFailed: 'Invalid offer.', offerDetails: 'Offer details', offerDetail: 'Review terms, expiry and issuing business before use.', wishRequired: 'Enter a wish first', wishDuplicate: 'This wish already exists.', wishShared: 'Anonymous wish shared',
         lookServiceRequired: 'Enter a service name', lookRequired: 'Add a photo, service, color or note.', lookSaveFailed: 'Could not save this look.', lookPhotoQuota: 'Image storage is full; look details were saved without the photo.', lookSaved: 'New look saved', noLookNote: 'No note.', deleteLook: 'Delete this look?', deleteLookDetail: 'This only changes local demo data.', followVisitRequired: 'You can only follow a tech from a shared visit.', scanReceipt: 'Scan receipt', scanReceiptDetail: 'This prototype simulates receipt OCR.', ratingRequired: 'Choose a rating',
@@ -7772,7 +7820,7 @@
         verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
         paymentIntegrityTitle: 'Receipt could not be verified', paymentIntegrityDetail: 'Verification data is inconsistent. This payment cannot be retried safely.', returnHome: 'Return Home',
         guestRewardsPending: 'Rewards are pending; use the same phone to claim later.',
-        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', selfReferral: 'You cannot refer yourself.', referralShared: 'Referral link shared.', shareFailed: 'Referral link could not be shared.', shareCancelled: 'Sharing was cancelled. You can copy the link below.', shareManual: 'Automatic sharing is unavailable. Copy the link below.', referralUpdateFailed: 'Referral could not be updated.', referralInvited: 'Invited', referralJoined: 'Joined', referralRewarded: 'Rewarded', simulateJoined: 'Simulate joined', simulatePaidVisit: 'Simulate paid visit', referralEmpty: 'No invites yet.', referralShareTitle: 'NEXORA invitation', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Check the name, phone, and service.', guestServiceRequired: 'Pick at least one service.', noPreference: 'Anyone', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in.', guestRouteFailed: 'Check-in was saved, but the ticket could not open. Please retry.', paymentAmountFromTicket: 'Filled from your service ticket ({service}).', startServiceDone: 'The salon started your service.', startServiceFailed: 'The service could not be started.', startServiceNoStaff: 'No technician can cover every service you picked. Please ask the front desk.', bookingConfirmed: 'Confirmed', arrivalPrompt: 'Tell the salon so they can prepare before you arrive.', arrivalBadge_on_my_way: 'On my way', arrivalBadge_arrived: 'Arrived', arrivalHint_on_my_way: 'The salon knows you are on your way and will prepare.', arrivalHint_arrived: 'The salon knows you are here. Head to the counter.', arrivalSaved: 'The salon has been notified.', arrivalFailed: 'Could not notify the salon. Please retry.', activeServiceInProgress: "You're being served", activeServiceWaiting: "You're checked in and waiting", liveTicketPendingNumber: 'Awaiting salon', liveTicketStatus_awaiting_staff: 'Awaiting salon', liveTicketStatus_in_service: 'In service', liveTicketStatus_completed: 'Completed', liveTicketPendingNote: 'The salon opens your ticket when the service starts. The amount below is the service you picked.', liveTicketLiveNote: 'This ticket follows the salon. Add-ons need your approval before they are billed.', addonSuggestedBy: '{staff} suggested', payAddonPending: 'Answer the suggested add-on before paying.', payAwaitingTicket: 'The salon has not opened your ticket yet.', addonAccepted: 'The add-on was added to your ticket.', addonDeclined: 'The add-on was declined.', addonFailed: 'The add-on could not be updated.', addonLast4Mismatch: 'Those last 4 digits do not match this check-in.', addonSuggestFailed: 'The add-on could not be suggested.', addonSuggested: 'Your technician suggested an add-on.', liveTicketCallDemo: 'Demo: the production app calls {staff}.', liveTicketMessageDemo: 'Demo: the production app messages {staff}.', liveTicketNoStaff: 'No technician is assigned yet.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'Service was not found.', checkoutFailed: 'Checkout could not be created.', addonImportFailed: 'The approved add-on could not be imported.', handoffInvalid: 'This checkout link is invalid or expired.', selectPaymentMethod: 'Select a payment method.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', invalidImage: 'The image is invalid.', proofSavedWithoutImage: 'Proof was saved without the image because storage is full.', proofSubmitFailed: 'Proof could not be submitted.', verificationFailed: 'Verification could not be updated.', proofRejected: 'Front Desk rejected the proof.', askFrontDesk: 'Please ask Front Desk.', createAccount: 'Create NEXORA Account', continueGuest: 'Continue as Guest', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', scanMemberLoginAction: 'Sign in to use my profile', scanMemberLoginReason: 'Sign in to prefill a verified profile; you can still continue as a guest.', scanTipRequiresStaff: 'This QR does not identify a staff member. Scan a staff QR to tip.', scanTipMethodUnavailable: 'The staff member in this QR has no enabled tip method.', scanTipReady: 'Your tip will go to {staff} at {business}.', scanPaymentRequiresCompleted: 'The salon must complete the service before checkout.', scanPaymentPhoneRequired: 'Enter the last 4 phone digits from check-in to open the ticket.', scanPaymentOwned: 'This check-in matches your verified profile; the last 4 digits are not required.', scanPaymentCandidate: 'Ticket #{number} · {service} · {amount}', scanPaymentPrivateCandidate: 'Completed service {index}', scanPaymentLast4Mismatch: 'The last 4 phone digits do not match this check-in.', scanIntentFailed: 'This QR action could not open. Scan again and retry.', memberServiceTitle: 'Member · ⭐ {points} pts', guestServiceTitle: 'Guest · points are added after check-in', memberGreeting: 'Hi {name} 👋', guestGreeting: 'Hi there 👋', useRewardPoints: 'Use {points} pts → {title}', rewardReadyHint: 'Already redeemed and ready to use on this visit.', rewardReadyOption: '{title} — ready to use', rewardPointsHint: 'You have {points} pts at this salon. Pick one to use at check-in.', salonWelcomeTitle: 'Welcome to {business}', salonWelcomeSubtitle: 'Book an appointment or check in for today', checkinDoneTitle: "You're checked in, {name}!", checkinQueueLine: '#{position} in line', checkinQueueOnly: "You're next in line", printTicketFailed: 'The print dialog could not open.', introNext: 'Next →', introStart: 'Get Started ✨', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
+        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', selfReferral: 'You cannot refer yourself.', referralShared: 'Referral link shared.', referralLinkCopied: 'Referral link copied.', referralQrSaved: 'QR code saved.', shareFailed: 'Referral link could not be shared.', shareCancelled: 'Sharing was cancelled. You can copy the link below.', shareManual: 'Automatic sharing is unavailable. Copy the link below.', referralUpdateFailed: 'Referral could not be updated.', referralInvited: 'Invited', referralJoined: 'Joined', referralRewarded: 'Rewarded', simulateJoined: 'Simulate joined', simulatePaidVisit: 'Simulate paid visit', referralEmpty: 'No invites yet.', referralShareTitle: 'NEXORA invitation', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Check the name, phone, and service.', guestServiceRequired: 'Pick at least one service.', noPreference: 'Anyone', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in.', guestRouteFailed: 'Check-in was saved, but the ticket could not open. Please retry.', paymentAmountFromTicket: 'Filled from your service ticket ({service}).', startServiceDone: 'The salon started your service.', startServiceFailed: 'The service could not be started.', startServiceNoStaff: 'No technician can cover every service you picked. Please ask the front desk.', bookingConfirmed: 'Confirmed', arrivalPrompt: 'Tell the salon so they can prepare before you arrive.', arrivalBadge_on_my_way: 'On my way', arrivalBadge_arrived: 'Arrived', arrivalBadge_checked_in: 'Checked in', arrivalHint_on_my_way: 'The salon knows you are on your way and will prepare.', arrivalHint_arrived: 'The salon knows you are here. Check in so they can open your ticket.', arrivalSaved: 'The salon has been notified.', arrivalFailed: 'Could not notify the salon. Please retry.', activeServiceInProgress: "You're being served", activeServiceWaiting: "You're checked in and waiting", liveTicketPendingNumber: 'Awaiting salon', liveTicketStatus_awaiting_staff: 'Awaiting salon', liveTicketStatus_in_service: 'In service', liveTicketStatus_completed: 'Completed', liveTicketPendingNote: 'The salon opens your ticket when the service starts. The amount below is the service you picked.', liveTicketLiveNote: 'This ticket follows the salon. Add-ons need your approval before they are billed.', addonSuggestedBy: '{staff} suggested', payAddonPending: 'Answer the suggested add-on before paying.', payAwaitingTicket: 'The salon has not opened your ticket yet.', addonAccepted: 'The add-on was added to your ticket.', addonDeclined: 'The add-on was declined.', addonFailed: 'The add-on could not be updated.', addonLast4Mismatch: 'Those last 4 digits do not match this check-in.', addonSuggestFailed: 'The add-on could not be suggested.', addonSuggested: 'Your technician suggested an add-on.', liveTicketCallDemo: 'Demo: the production app calls {staff}.', liveTicketMessageDemo: 'Demo: the production app messages {staff}.', liveTicketNoStaff: 'No technician is assigned yet.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'Service was not found.', checkoutFailed: 'Checkout could not be created.', addonImportFailed: 'The approved add-on could not be imported.', handoffInvalid: 'This checkout link is invalid or expired.', selectPaymentMethod: 'Select a payment method.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', invalidImage: 'The image is invalid.', proofSavedWithoutImage: 'Proof was saved without the image because storage is full.', proofSubmitFailed: 'Proof could not be submitted.', verificationFailed: 'Verification could not be updated.', proofRejected: 'Front Desk rejected the proof.', askFrontDesk: 'Please ask Front Desk.', createAccount: 'Create NEXORA Account', continueGuest: 'Continue as Guest', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', scanMemberLoginAction: 'Sign in to use my profile', scanMemberLoginReason: 'Sign in to prefill a verified profile; you can still continue as a guest.', scanTipRequiresStaff: 'This QR does not identify a staff member. Scan a staff QR to tip.', scanTipMethodUnavailable: 'The staff member in this QR has no enabled tip method.', scanTipReady: 'Your tip will go to {staff} at {business}.', scanPaymentRequiresCompleted: 'The salon must complete the service before checkout.', scanPaymentPhoneRequired: 'Enter the last 4 phone digits from check-in to open the ticket.', scanPaymentOwned: 'This check-in matches your verified profile; the last 4 digits are not required.', scanPaymentCandidate: 'Ticket #{number} · {service} · {amount}', scanPaymentPrivateCandidate: 'Completed service {index}', scanPaymentLast4Mismatch: 'The last 4 phone digits do not match this check-in.', scanIntentFailed: 'This QR action could not open. Scan again and retry.', memberServiceTitle: 'Member · ⭐ {points} pts', guestServiceTitle: 'Guest · points are added after check-in', memberGreeting: 'Hi {name} 👋', guestGreeting: 'Hi there 👋', useRewardPoints: 'Use {points} pts → {title}', rewardReadyHint: 'Already redeemed and ready to use on this visit.', rewardReadyOption: '{title} — ready to use', rewardPointsHint: 'You have {points} pts at this salon. Pick one to use at check-in.', salonWelcomeTitle: 'Welcome to {business}', salonWelcomeSubtitle: 'Book an appointment or check in for today', checkinDoneTitle: "You're checked in, {name}!", checkinQueueLine: '#{position} in line', checkinQueueOnly: "You're next in line", printTicketFailed: 'The print dialog could not open.', introNext: 'Next →', introStart: 'Get Started ✨', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
         cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
         invalidPhone: 'Enter a 10-digit US phone number.', cooldown: 'Please wait for the 30-second cooldown.',
@@ -7863,8 +7911,34 @@
       }
     }
 
+    // Back returns to the screen the guest actually came from, not a fixed destination. The trail is
+    // kept in memory only: it is a property of this visit, not of the account, so it deliberately
+    // does not enter the persisted state (which is exact-key checked) and does not survive a reload.
+    // Every back button still names a data-back-target, which is the fallback when the trail is
+    // empty — a deep link opened cold has no previous screen to return to.
+    const screenTrail = [];
+    const SCREEN_TRAIL_LIMIT = 24;
+
+    function pushScreenTrail(screenId) {
+      if (!screenId) return;
+      screenTrail.push(screenId);
+      // A long enough session would otherwise grow this without bound.
+      if (screenTrail.length > SCREEN_TRAIL_LIMIT) screenTrail.shift();
+    }
+
+    function navigateBack(fallbackScreenId) {
+      const previous = screenTrail.pop() ?? null;
+      const target = previous ?? fallbackScreenId ?? 'home';
+      // track: false, or stepping back would itself be recorded and trap the guest in a loop.
+      navigateTo(target, { track: false });
+      return { ok: true, screen: target, fromTrail: previous !== null };
+    }
+
     function navigateTo(screenId, options = {}) {
+      const previous = state.ui.activeScreen;
       const next = showScreen(screenId);
+      // Only a real move is worth remembering: re-rendering the current screen is not a step.
+      if (options.track !== false && previous && previous !== next.id) pushScreenTrail(previous);
       if (next.id === 'pay' && options.resetPayView !== false) {
         state.ui.payViewIntent = 'direct';
         showPayView('direct', { focus: false });
@@ -9106,7 +9180,9 @@
       document.querySelectorAll('[data-offer-card]').forEach((card) => {
         const id = card.dataset.offerId;
         const categoryMatch = state.ui.offerFilter === 'all'
-          || (state.ui.offerFilter === 'saved' ? state.savedOfferIds.includes(id) : card.dataset.category === state.ui.offerFilter);
+          || (state.ui.offerFilter === 'saved' && state.savedOfferIds.includes(id))
+          || (state.ui.offerFilter === 'unsaved' && !state.savedOfferIds.includes(id))
+          || (!['saved', 'unsaved'].includes(state.ui.offerFilter) && card.dataset.category === state.ui.offerFilter);
         const show = categoryMatch && String(card.dataset.search ?? '').toLowerCase().includes(term);
         card.classList.toggle('hidden', !show);
         if (show) visible += 1;
@@ -9352,7 +9428,9 @@
       const image = document.createElement('img');
       image.src = source;
       image.alt = '';
-      image.className = 'block size-full';
+      // The QR is generated at 8px/module then scaled up by CSS; pixelated keeps module
+      // edges hard so scanners still resolve them.
+      image.className = 'block size-full [image-rendering:pixelated]';
       host.replaceChildren(image);
       return { ok: true, url };
     }
@@ -9534,8 +9612,34 @@
     const addWish = () => {
       const input = document.getElementById('wish-input');
       const result = commitState((draft) => addWishRecord(draft, input?.value ?? ''));
-      if (result.ok && input) input.value = '';
+      if (!result.ok) {
+        showToast(result.code === 'duplicate' ? t('wishDuplicate') : t('wishRequired'), 'error');
+        return result;
+      }
+      if (input) input.value = '';
       renderWishes();
+      showToast(t('wishShared'));
+      return result;
+    };
+
+    const submitWishes = () => {
+      const input = document.getElementById('wish-input');
+      const draftText = (input?.value ?? '').trim();
+      if (draftText) {
+        const added = commitState((state) => addWishRecord(state, draftText));
+        if (!added.ok && added.code !== 'duplicate') {
+          showToast(t('wishRequired'), 'error');
+          return added;
+        }
+      }
+      const result = commitState((state) => clearWishRecords(state));
+      if (!result.ok) {
+        showToast(t('wishRequired'), 'error');
+        return result;
+      }
+      if (input) input.value = '';
+      renderWishes();
+      showToast(t('wishShared'));
       return result;
     };
 
@@ -10069,7 +10173,7 @@
       }
       navigateTo(control.dataset.target);
     });
-    registerAction('back', (control) => navigateTo(control.dataset.backTarget));
+    registerAction('back', (control) => navigateBack(control.dataset.backTarget));
     registerAction('language', (control) => setLanguage(control.dataset.language));
     registerAction('close-overlay', () => closeOverlay(null));
     registerAction('cancel-overlay', () => closeOverlay(false));
@@ -10287,6 +10391,56 @@
       return result;
     }
 
+    // Arriving for a booking is the other way into check-in, alongside scanning the salon QR. The
+    // booking already says which salon, so the guest should not have to scan anything on arrival.
+    registerAction('checkin-from-appointment', () => {
+      const appointment = state.appointments.at(-1);
+      if (!appointment || appointment.arrivalStatus !== 'arrived') {
+        return { ok: false, code: 'not_arrived' };
+      }
+      const staged = commitState((draft) => stageSalonScan(
+        draft, `https://nexoratouch.com/touch/${appointment.businessId}/front`
+      ));
+      if (!staged.ok) {
+        showToast(t('invalidQr'), 'error');
+        return staged;
+      }
+      const verified = state.session.authenticated === true
+        && /^\d{10}$/.test(state.session.phone)
+        && state.profile.phone === state.session.phone;
+      // The check-in form lives inside the scan screen, so opening the form is not enough when the
+      // guest is standing on Home: the screen itself has to change, or the tap does nothing visible.
+      // Navigate first, because openServiceCheckinForm ends by selecting the form's own view.
+      navigateTo('scan');
+      const opened = openServiceCheckinForm(verified);
+      if (!opened.ok) {
+        showToast(t('scanIntentFailed'), 'error');
+        return opened;
+      }
+      prefillCheckinFromAppointment(appointment);
+      return opened;
+    });
+
+    // A booking records its service and technician as free text ("Gel manicure", "Anna"), not as
+    // catalog keys, so it can only prefill what that text actually names. Anything it does not
+    // resolve is left for the guest to choose rather than guessed at — a wrong guess here would be
+    // booked and billed.
+    function prefillCheckinFromAppointment(appointment) {
+      const businessId = appointment.businessId;
+      const staff = Object.values(state.staffProfiles).find((row) => isRecord(row)
+        && row.businessId === businessId && row.name === appointment.staff
+        && isValidGuestStaffAssignment(state, businessId, row.id));
+      const staffField = document.getElementById('guest-staff');
+      if (staffField && staff) staffField.value = staff.id;
+      const service = (GUEST_SERVICE_CATALOG[businessId] ?? []).find((row) => (
+        row.label.vi === appointment.service || row.label.en === appointment.service
+      ));
+      const serviceField = document.getElementById('guest-service');
+      if (serviceField && service) serviceField.value = service.key;
+      renderGuestCheckinOptions();
+      return { ok: true, staffProfileId: staff?.id ?? null, serviceKey: service?.key ?? null };
+    }
+
     registerAction('simulate-checkin', () => openFixedScanDemo('checkin'));
     registerAction('simulate-payment', () => openFixedScanDemo('payment'));
     registerAction('simulate-tip', () => openFixedScanDemo('tip'));
@@ -10501,6 +10655,20 @@
           return opened;
         }
         return opened;
+      }
+      // The tip screen is driven by a tip draft; landing on it without one shows an empty recipient
+      // list. Tipping from a ticket means tipping the technician who is actually working it, so the
+      // draft is opened on them rather than left for the guest to hunt for.
+      if (target === 'tip') {
+        const ticket = guestOperationsTicket(state);
+        if (!ticket?.staffProfileId) {
+          showToast(t('liveTicketNoStaff'), 'error');
+          return { ok: false, code: 'staff_not_assigned' };
+        }
+        return openGenericTip({
+          businessId: ticket.businessId,
+          preferredStaffId: ticket.staffProfileId
+        });
       }
       navigateTo(target);
       renderApp();
@@ -10753,6 +10921,21 @@
       content.append(detail, code);
       openOverlay({ title: t('redeem'), content, confirmLabel: t('gotIt'), hideCancel: true }, control);
     });
+    registerAction('show-redemption-qr', (control) => {
+      const matches = state.redemptions.filter((row) => isRecord(row) && row.id === control.dataset.redemptionId);
+      const redemption = matches.length === 1 && isValidPersistedRedemption(state, matches[0])
+        && !isSpentRedemption(state, matches[0]) ? matches[0] : null;
+      if (!redemption) return showToast(t('rewardUnavailable'), 'error');
+      const content = document.createElement('div');
+      const detail = document.createElement('p');
+      detail.className = 'text-sm leading-6 text-app-muted';
+      detail.textContent = redemption.qrPayload;
+      const code = document.createElement('code');
+      code.className = 'mt-4 block break-all rounded-xl bg-app-panel p-4 text-left text-sm text-app-cyan';
+      code.textContent = redemption.id;
+      content.append(detail, code);
+      openOverlay({ title: t('redeem'), content, confirmLabel: t('gotIt'), hideCancel: true }, control);
+    });
     registerAction('save-offer', (control) => {
       const offerId = control.dataset.offerId;
       if (!OFFER_IDS.has(offerId)) return showToast(t('offerSaveFailed'), 'error');
@@ -10766,14 +10949,8 @@
       openOverlay({ title, html: t('offerDetail'), hideCancel: true }, control);
     });
     registerAction('use-offer', (control) => openReward(control.dataset.rewardKey));
-    registerAction('add-wish', () => {
-      const input = document.getElementById('wish-input');
-      const result = commitState((draft) => addWishRecord(draft, input.value));
-      if (!result.ok) return showToast(result.code === 'duplicate' ? t('wishDuplicate') : t('wishRequired'), 'error');
-      input.value = '';
-      renderWishes();
-      showToast(t('wishShared'));
-    });
+    registerAction('add-wish', () => { addWish(); });
+    registerAction('submit-wishes', () => { submitWishes(); });
     registerAction('remove-wish', (control) => {
       commitState((draft) => removeWishRecord(draft, control.dataset.wish));
       renderWishes();
@@ -10924,54 +11101,62 @@
       renderGlobalState();
       renderActivity();
     });
-    registerAction('simulate-wish-push', () => {
-      const result = commitState((draft) => {
-        const timestamp = domainTimestamp(Date.now());
-        if (!timestamp.ok) return timestamp;
-        const dedupeKey = 'demo-wish-match';
-        if (draft.notifications.some((item) => item.dedupeKey === dedupeKey)) return { ok: false, code: 'already_notified' };
-        const id = createDomainId('note');
-        if (!id.ok) return id;
-        draft.notifications.unshift({ id: id.value, dedupeKey, type: 'wish_match', title: { vi: 'Có ưu đãi mới khớp mong muốn', en: 'A new offer matches your wish' }, target: 'offers', read: false, createdAt: timestamp.value });
-        return { ok: true };
-      });
-      showToast(result.ok ? t('wishNotificationCreated') : t('notificationFailed'), result.ok ? 'success' : 'error');
-      renderGlobalState();
-      renderActivity();
-    });
-    registerAction('show-referral-qr', (control) => {
-      const panel = document.getElementById('referral-qr-panel');
-      const qr = document.getElementById('referral-qr');
-      if (!panel || !qr) return { ok: false, code: 'referral_qr_unavailable' };
-      panel.classList.remove('hidden');
-      panel.setAttribute('aria-hidden', 'false');
-      control?.setAttribute('aria-expanded', 'true');
-      qr.setAttribute('tabindex', '-1');
-      qr.focus?.({ preventScroll: true });
-      return { ok: true };
-    });
+    // The invite link carries only the referral code: a referral record is created when a friend
+    // actually opens it, so sharing never mutates state.
     registerAction('share-referral', async () => {
-      const phone = document.getElementById('referral-friend-phone')?.value ?? '';
-      const created = commitState((draft) => createReferralInvite(draft, { friendPhone: phone }));
-      if (!created.ok) {
-        const errorKey = created.code === 'self_referral'
-          ? 'selfReferral'
-          : created.code === 'invalid_phone' ? 'invalidPhone' : 'referralUpdateFailed';
-        setFieldError('referral-error', t(errorKey));
-        return created;
+      const url = buildReferralShareUrl(state.profile.referralCode);
+      if (!url) {
+        setFieldError('referral-error', t('referralUpdateFailed'));
+        return { ok: false, code: 'invalid_referral_code' };
       }
-      const url = buildReferralUrl(created.referral);
       const shared = await shareReferralLink(url, window.navigator, REFERRAL_COPY[state.profile.language]);
-      renderReferrals();
       if (shared.ok) {
         hideManualReferralLink();
         setFieldError('referral-error');
         showToast(t('referralShared'));
-        return { ...shared, referral: created.referral, idempotent: created.idempotent === true };
+        return shared;
       }
       revealManualReferralLink(url);
       setFieldError('referral-error', t(shared.code === 'share_cancelled' ? 'shareCancelled' : 'shareManual'));
-      return { ...shared, referral: created.referral, idempotent: created.idempotent === true };
+      return shared;
+    });
+    registerAction('copy-referral-link', async () => {
+      const url = buildReferralShareUrl(state.profile.referralCode);
+      if (!url) {
+        setFieldError('referral-error', t('referralUpdateFailed'));
+        return { ok: false, code: 'invalid_referral_code' };
+      }
+      if (typeof window.navigator?.clipboard?.writeText !== 'function') {
+        revealManualReferralLink(url);
+        setFieldError('referral-error', t('shareManual'));
+        return { ok: false, code: 'manual_share_required', url };
+      }
+      try {
+        await window.navigator.clipboard.writeText(url);
+      } catch {
+        revealManualReferralLink(url);
+        setFieldError('referral-error', t('shareManual'));
+        return { ok: false, code: 'manual_share_required', url };
+      }
+      hideManualReferralLink();
+      setFieldError('referral-error');
+      showToast(t('referralLinkCopied'));
+      return { ok: true, method: 'clipboard', url };
+    });
+    // The QR is already a rendered data URL, so saving it is a plain anchor download.
+    registerAction('download-referral-qr', () => {
+      const source = document.getElementById('referral-qr')?.querySelector?.('img')?.src ?? '';
+      if (!source) {
+        setFieldError('referral-error', t('referralUpdateFailed'));
+        return { ok: false, code: 'referral_qr_unavailable' };
+      }
+      const link = document.createElement('a');
+      link.href = source;
+      link.download = `nexora-referral-${state.profile.referralCode}.gif`;
+      link.click?.();
+      setFieldError('referral-error');
+      showToast(t('referralQrSaved'));
+      return { ok: true, source };
     });
     registerAction('simulate-referral-joined', (control) => {
       const result = commitState((draft) => advanceReferral(draft, control?.dataset?.referralId, 'joined'));
@@ -11012,6 +11197,12 @@
         commitState((draft) => { draft.ui.offerFilter = offerFilter.dataset.offerFilter; });
         selectExclusive(offerFilter, '[data-offer-filter]');
         return filterOffers(document.getElementById('offer-search')?.value ?? '');
+      }
+      const rewardTab = event.target.closest('[data-reward-tab]');
+      if (rewardTab && REWARD_TABS.includes(rewardTab.dataset.rewardTab)) {
+        commitState((draft) => { draft.ui.rewardTab = rewardTab.dataset.rewardTab; });
+        selectExclusive(rewardTab, '[data-reward-tab]');
+        return renderRewards();
       }
       const tipMethod = event.target.closest('[data-tip-method]');
       if (tipMethod) {
@@ -11569,27 +11760,95 @@
         : { disabled: false, labelKey: 'redeem', variables: {} };
     }
 
+    // A redemption is spent the moment a check-in carries it — nothing ever rewrites its 'ready'
+    // status — so "used" is derived from the check-in list, not read off the redemption.
+    function isSpentRedemption(appState, redemption) {
+      return appState.guestCheckins.some((checkin) => isRecord(checkin)
+        && checkin.rewardRedemptionId === redemption.id);
+    }
+
+    function rewardTabRedemptions(appState, spent) {
+      return appState.redemptions
+        .filter((redemption) => isValidPersistedRedemption(appState, redemption)
+          && isSpentRedemption(appState, redemption) === spent);
+    }
+
+    function renderRedemptionCard(redemption, spent) {
+      const reward = getRewardDefinition(redemption.rewardKey);
+      const card = document.createElement('article');
+      card.className = 'app-card reward-card';
+      card.dataset.redemptionId = redemption.id;
+      const title = document.createElement('h2');
+      title.className = 'reward-card-title';
+      title.textContent = reward.title[state.profile.language] ?? reward.title.vi;
+      const metadata = document.createElement('p');
+      metadata.className = 'reward-card-meta';
+      const businessName = getValidBusiness(state, redemption.acceptingBusinessId)?.name ?? t('unknownBusiness');
+      const date = new Date(redemption.createdAt);
+      const locale = state.profile.language === 'en' ? 'en-US' : 'vi-VN';
+      const dateLabel = Number.isFinite(date.getTime()) ? date.toLocaleDateString(locale) : t('dateUnavailable');
+      metadata.textContent = `${businessName} · ${dateLabel}`;
+      const footer = document.createElement('div');
+      footer.className = 'reward-card-footer';
+      const status = document.createElement('span');
+      status.className = `reward-card-cost font-black ${spent ? 'text-app-muted' : 'text-app-green'}`;
+      status.textContent = spent ? t('rewardUsedStatus') : t('rewardReadyStatus');
+      footer.append(status);
+      // Only an unspent code is still worth showing to staff.
+      if (!spent) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'app-button-secondary reward-card-cta';
+        button.dataset.action = 'show-redemption-qr';
+        button.dataset.redemptionId = redemption.id;
+        button.textContent = t('showCode');
+        footer.append(button);
+      }
+      card.append(title, metadata, footer);
+      return card;
+    }
+
+    function renderRewardTabEmptyState(tab) {
+      const empty = document.createElement('p');
+      empty.className = 'col-span-full text-sm text-app-muted';
+      empty.dataset.state = 'empty';
+      empty.textContent = t(tab === 'used' ? 'rewardUsedEmpty' : 'rewardRedeemedEmpty');
+      return empty;
+    }
+
     function renderRewards() {
       const list = document.getElementById('reward-list');
       if (!list) return;
+      document.querySelectorAll('[data-reward-tab]').forEach((control) => {
+        control.setAttribute('aria-pressed', String(control.dataset.rewardTab === state.ui.rewardTab));
+      });
+      if (state.ui.rewardTab !== 'explore') {
+        const spent = state.ui.rewardTab === 'used';
+        const redemptions = rewardTabRedemptions(state, spent);
+        list.replaceChildren(...(redemptions.length > 0
+          ? redemptions.map((redemption) => renderRedemptionCard(redemption, spent))
+          : [renderRewardTabEmptyState(state.ui.rewardTab)]));
+        return;
+      }
       // Granted rewards are earned, not bought, so this catalog does not offer them.
       const cards = Object.values(REWARDS).filter(isPurchasableReward).map((reward) => {
         const availability = rewardAvailability(reward);
         const card = document.createElement('article');
-        card.className = 'app-card flex flex-col';
+        card.className = 'app-card reward-card';
         const title = document.createElement('h2');
-        title.className = 'text-lg font-black';
+        title.className = 'reward-card-title';
         title.textContent = reward.title[state.profile.language] ?? reward.title.vi;
         const business = document.createElement('p');
-        business.className = 'mt-2 flex-1 text-sm text-app-muted';
+        business.className = 'reward-card-meta';
         business.textContent = getValidBusiness(state, reward.acceptingBusinessId)?.name ?? t('unknownBusiness');
         const footer = document.createElement('div');
-        footer.className = 'mt-5 flex items-center justify-between gap-3';
+        footer.className = 'reward-card-footer';
         const cost = document.createElement('strong');
+        cost.className = 'reward-card-cost';
         cost.textContent = formatPoints(reward.cost);
         const button = document.createElement('button');
         button.type = 'button';
-        button.className = 'app-button-secondary';
+        button.className = 'app-button-secondary reward-card-cta';
         button.dataset.action = 'open-reward';
         button.dataset.rewardKey = reward.key;
         button.textContent = t(availability.labelKey, availability.variables);
@@ -11622,9 +11881,12 @@
       return state.profile.language === 'en' ? en : vi;
     }
 
+    // The sign belongs in front of the whole amount, not between the $ and the digits: a discount
+    // reads as -$5.5, never $-5.5.
     function formatTipCents(cents) {
       if (!Number.isSafeInteger(cents)) return '$0';
-      return `$${Number((cents / 100).toFixed(2))}`;
+      const amount = Number((Math.abs(cents) / 100).toFixed(2));
+      return `${cents < 0 ? '-' : ''}$${amount}`;
     }
 
     function formatTipInputCents(cents) {
@@ -12207,10 +12469,26 @@
       container.querySelectorAll('[data-action="set-arrival"]').forEach((control) => {
         control.setAttribute('aria-pressed', String(control.dataset.arrival === arrival));
       });
+      // Once the guest is checked in, asking whether they are on their way is nonsense: they are
+      // here and the salon knows. The whole arrival prompt steps aside, and the active-service card
+      // below becomes the thing that reports where their visit stands.
+      const checkedIn = state.guestCheckins.some((row) => isRecord(row) && row.claimedAt === null);
       const badge = document.getElementById('home-appointment-badge');
-      if (badge) badge.textContent = arrival ? t(`arrivalBadge_${arrival}`) : t('bookingConfirmed');
+      if (badge) {
+        badge.textContent = checkedIn
+          ? t('arrivalBadge_checked_in')
+          : (arrival ? t(`arrivalBadge_${arrival}`) : t('bookingConfirmed'));
+      }
       const hint = document.getElementById('home-appointment-hint');
-      if (hint) hint.textContent = arrival ? t(`arrivalHint_${arrival}`) : t('arrivalPrompt');
+      if (hint) {
+        hint.textContent = checkedIn ? '' : (arrival ? t(`arrivalHint_${arrival}`) : t('arrivalPrompt'));
+        hint.classList.toggle('hidden', checkedIn);
+      }
+      document.getElementById('home-appointment-arrival')?.classList.toggle('hidden', checkedIn);
+      // Being here is what makes checking in meaningful, so the button appears only once the guest
+      // says they have arrived — and goes away the moment they have.
+      document.getElementById('home-appointment-checkin')
+        ?.classList.toggle('hidden', arrival !== 'arrived' || checkedIn);
       renderActiveService();
     }
 
@@ -12436,6 +12714,11 @@
       document.addEventListener('input', handleInput);
       document.addEventListener('change', handleChange);
       document.addEventListener('keydown', handleKeydown);
+      document.addEventListener('submit', (event) => {
+        if (!event.target.closest('#wish-form')) return;
+        event.preventDefault();
+        addWish();
+      });
       window.addEventListener?.('online', () => {
         const result = commitState((draft) => retryQueuedCheckins(draft, true));
         if (result.retried > 0) {
