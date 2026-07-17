@@ -224,12 +224,15 @@
           <h1 id="paydone-title" class="sr-only" tabindex="-1" data-en="Payment status" data-vi="Trạng thái thanh toán">Trạng thái thanh toán</h1><div class="mx-auto max-w-xl"><div id="direct-payment-result-view" class="text-center"><div id="payment-pending"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-cyan/10 text-app-cyan"><i data-lucide="send" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment reported" data-vi="Đã báo thanh toán">Đã báo thanh toán</p><h2 id="direct-paydone-title" class="mt-2 text-3xl font-black">Đã gửi $55.00 cho tiệm</h2><p id="payment-pending-copy" class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted">Bitcoin Nail Bar thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.</p><div class="app-card mt-6 text-left"><div class="flex justify-between"><span data-en="Business receives" data-vi="Tiệm nhận">Tiệm nhận</span><strong id="payment-confirmed-amount">$55.00</strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3"><span data-en="Payment method" data-vi="Phương thức">Phương thức</span><strong id="payment-result-method">Zelle</strong></div></div><div id="direct-pay-proof-summary" class="app-card mt-4 hidden text-left"></div><button type="button" class="app-button mt-6 w-full" data-action="confirm-payment" data-en="Simulate business confirmation" data-vi="Mô phỏng doanh nghiệp xác nhận">Mô phỏng doanh nghiệp xác nhận</button><button type="button" id="direct-pay-reject-demo" class="app-button-secondary mt-3 hidden w-full" data-action="reject-direct-payment-demo" data-en="Simulate business rejection" data-vi="Mô phỏng doanh nghiệp từ chối">Mô phỏng doanh nghiệp từ chối</button></div><div id="payment-rejected" class="hidden"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-red/10 text-app-red"><i data-lucide="alert-triangle" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment rejected" data-vi="Thanh toán bị từ chối">Thanh toán bị từ chối</p><h2 id="direct-pay-rejected-title" class="mt-2 text-3xl font-black" tabindex="-1" data-en="The salon could not match this transfer" data-vi="Tiệm chưa đối chiếu được giao dịch này">Tiệm chưa đối chiếu được giao dịch này</h2><p id="direct-pay-reject-reason" class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted"></p><p class="mx-auto mt-3 max-w-md text-xs leading-5 text-app-muted" data-en="No points were added. Add a clearer confirmation image and send it again." data-vi="Chưa có điểm nào được cộng. Thêm ảnh xác nhận rõ hơn và gửi lại.">Chưa có điểm nào được cộng. Thêm ảnh xác nhận rõ hơn và gửi lại.</p><button type="button" class="app-button mt-6 w-full" data-action="replace-direct-payment-proof"><i data-lucide="refresh-cw" class="size-4" aria-hidden="true"></i><span data-en="Add a new proof" data-vi="Gửi lại bằng chứng">Gửi lại bằng chứng</span></button></div><div id="payment-confirmed" class="hidden"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment confirmed" data-vi="Đã xác nhận thanh toán">Đã xác nhận thanh toán</p><h2 class="mt-2 text-3xl font-black" data-en="You're all set" data-vi="Thanh toán hoàn tất">Thanh toán hoàn tất</h2><p id="payment-confirmed-points-copy" class="mt-3 text-app-green">Đã cộng 66 điểm thanh toán trực tiếp</p><strong id="payment-confirmed-points" class="sr-only">+66 điểm</strong><button type="button" id="direct-pay-review-cta" class="app-button mt-6 w-full" data-action="open-direct-pay-review"><i data-lucide="star" class="size-4" aria-hidden="true"></i><span data-en="Leave a review (+15 points)" data-vi="Đánh giá (+15 điểm)">Đánh giá (+15 điểm)</span></button><button type="button" class="app-button-secondary mt-3 w-full" data-action="navigate" data-target="home" data-en="Done" data-vi="Hoàn tất">Hoàn tất</button></div></div><section id="payment-pending-view" data-paydone-view="pending" class="hidden app-card text-center" aria-hidden="true" aria-labelledby="payment-pending-title"><i data-lucide="clock-3" class="mx-auto h-10 w-10 text-amber-600" aria-hidden="true"></i><p class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-amber-500"><i data-lucide="clock-3" class="size-4" aria-hidden="true"></i><span data-en="Pending" data-vi="Đang chờ">Đang chờ</span></p><h2 id="payment-pending-title" class="mt-3 text-xl font-black" tabindex="-1" data-en="Pending Front Desk verification" data-vi="Đang chờ lễ tân xác minh">Đang chờ lễ tân xác minh</h2><div class="mt-5 grid grid-cols-2 gap-3"><button type="button" class="app-button" data-action="verify-payment-proof-demo" data-en="Verify demo" data-vi="Xác minh thử">Xác minh thử</button><button type="button" class="app-button-secondary" data-action="reject-payment-proof-demo" data-en="Reject demo" data-vi="Từ chối thử">Từ chối thử</button></div></section><section id="payment-confirmed-view" data-paydone-view="confirmed" class="hidden" aria-hidden="true" aria-labelledby="payment-confirmed-title"><div class="app-card"><div class="flex justify-between gap-3"><h2 id="payment-confirmed-title" class="text-xl font-black" tabindex="-1" data-en="Payment Confirmed" data-vi="Đã xác nhận thanh toán">Đã xác nhận thanh toán</h2><span class="status-badge inline-flex items-center gap-1 text-emerald-700"><i data-lucide="circle-check" class="h-3 w-3" aria-hidden="true"></i><span>Paid</span></span></div><div id="confirmed-receipt-items" class="mt-4 divide-y divide-dashed"></div><div class="mt-4 flex justify-between text-xl font-black"><span data-en="Total Paid" data-vi="Tổng đã trả">Tổng đã trả</span><strong id="confirmed-receipt-total"></strong></div></div><button type="button" class="app-button mt-4 w-full" data-action="navigate" data-target="review" data-en="Leave Review" data-vi="Để lại đánh giá">Để lại đánh giá</button><div class="app-card mt-4"><button type="button" class="app-button w-full" data-action="create-account-from-receipt" data-en="Create NEXORA Account" data-vi="Tạo tài khoản NEXORA">Tạo tài khoản NEXORA</button><button type="button" class="app-button-secondary mt-3 w-full" data-action="continue-as-guest" data-en="Continue as Guest" data-vi="Tiếp tục với tư cách khách">Tiếp tục với tư cách khách</button></div></section><section id="payment-rejected-view" data-paydone-view="rejected" class="hidden app-card" aria-hidden="true" aria-labelledby="payment-rejected-title"><i data-lucide="circle-x" class="h-10 w-10 text-rose-500" aria-hidden="true"></i><p class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-rose-400"><i data-lucide="circle-x" class="size-4" aria-hidden="true"></i><span data-en="Rejected" data-vi="Bị từ chối">Bị từ chối</span></p><h2 id="payment-rejected-title" class="mt-3 text-xl font-black" tabindex="-1" data-en="Proof rejected" data-vi="Bằng chứng bị từ chối">Bằng chứng bị từ chối</h2><p id="payment-reject-reason" class="mt-2 text-sm text-slate-400"></p><button type="button" class="app-button mt-4 w-full" data-action="replace-payment-proof" data-en="Replace Proof" data-vi="Thay bằng chứng">Thay bằng chứng</button><button type="button" class="app-button-secondary mt-3 w-full" data-action="pay-at-counter" data-en="Pay at Counter" data-vi="Thanh toán tại quầy">Thanh toán tại quầy</button></section></div>
         </section>
         <section class="app-screen hidden" id="looks" data-ready="true" data-module="home" aria-labelledby="looks-title">
-          <div class="mb-5 flex items-center justify-between gap-3"><div class="flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Your style archive" data-vi="Bộ sưu tập phong cách">Bộ sưu tập phong cách</p><h1 id="looks-title" class="text-2xl font-black" data-en="My looks" data-vi="Kiểu của tôi">Kiểu của tôi</h1></div></div><button class="app-button" type="button" data-action="navigate" data-target="addlook"><i data-lucide="plus" class="size-4" aria-hidden="true"></i><span class="hidden sm:inline" data-en="Add look" data-vi="Thêm kiểu">Thêm kiểu</span></button></div>
-          <div class="mb-3 flex justify-end"><button type="button" class="app-button-secondary" data-action="scan-receipt"><i data-lucide="scan-text" class="size-4" aria-hidden="true"></i><span data-en="Scan receipt" data-vi="Quét hóa đơn">Quét hóa đơn</span></button></div><div id="looks-grid" class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4"></div>
+          <div class="mb-5 flex items-center justify-between gap-3"><div class="flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Your style archive" data-vi="Bộ sưu tập phong cách">Bộ sưu tập phong cách</p><h1 id="looks-title" class="text-2xl font-black" data-en="My looks" data-vi="Kiểu của tôi">Kiểu của tôi</h1><p id="looks-count" class="mt-1 text-xs text-app-muted" role="status"></p></div></div><button class="app-button" type="button" data-action="add-look"><i data-lucide="plus" class="size-4" aria-hidden="true"></i><span class="hidden sm:inline" data-en="Add look" data-vi="Thêm kiểu">Thêm kiểu</span></button></div>
+          <div class="mb-3 flex justify-end"><button type="button" class="app-button-secondary" data-action="scan-receipt"><i data-lucide="scan-text" class="size-4" aria-hidden="true"></i><span data-en="Scan receipt" data-vi="Quét hóa đơn">Quét hóa đơn</span></button></div>
+          <div class="mb-4 grid gap-3 sm:grid-cols-[1fr_auto]"><div class="relative"><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-app-muted" aria-hidden="true"></i><label class="sr-only" for="look-search" data-en="Search looks" data-vi="Tìm kiểu">Tìm kiểu</label><input id="look-search" class="app-input pl-11" type="search" data-en-ph="Search service, color, tech…" data-vi-ph="Tìm dịch vụ, màu, thợ…" placeholder="Tìm dịch vụ, màu, thợ…"></div><div class="flex gap-2" role="group" data-en-label="Sort looks" data-vi-label="Sắp xếp kiểu" aria-label="Sắp xếp kiểu"><button class="app-chip" type="button" aria-pressed="true" data-look-sort="newest" data-en="Newest" data-vi="Mới nhất">Mới nhất</button><button class="app-chip" type="button" aria-pressed="false" data-look-sort="oldest" data-en="Oldest" data-vi="Cũ nhất">Cũ nhất</button></div></div>
+          <div id="looks-grid" class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4"></div>
+          <div id="looks-empty" class="app-card hidden py-10 text-center" role="status"><i data-lucide="images" class="mx-auto size-10 text-app-muted" aria-hidden="true"></i><strong id="looks-empty-title" class="mt-4 block"></strong><p id="looks-empty-body" class="mx-auto mt-2 max-w-sm text-sm leading-6 text-app-muted"></p><button id="looks-empty-cta" class="app-button mx-auto mt-5 hidden" type="button" data-action="add-look"><i data-lucide="plus" class="size-4" aria-hidden="true"></i><span data-en="Add your first look" data-vi="Thêm kiểu đầu tiên">Thêm kiểu đầu tiên</span></button></div>
         </section>
         <section class="app-screen hidden" id="addlook" data-ready="true" data-module="home" aria-labelledby="addlook-title">
-          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="looks" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Save the details" data-vi="Lưu lại chi tiết">Lưu lại chi tiết</p><h1 id="addlook-title" class="text-2xl font-black" data-en="Add a new look" data-vi="Thêm kiểu mới">Thêm kiểu mới</h1></div></div>
-          <div class="app-card"><input id="look-photo-input" class="sr-only" type="file" accept="image/jpeg,image/png" data-look-photo><img id="look-photo-preview" class="hidden max-h-48 w-full rounded-2xl object-cover" alt="Ảnh kiểu đã chọn"><button type="button" class="grid min-h-44 w-full place-items-center rounded-2xl border border-dashed border-app-line bg-app-panel text-center" data-action="upload-look"><span><i data-lucide="image-plus" class="mx-auto size-8 text-app-pink" aria-hidden="true"></i><strong class="mt-3 block" data-en="Add a photo" data-vi="Thêm ảnh">Thêm ảnh</strong><small class="mt-1 block text-app-muted" data-en="JPG or PNG, up to 10 MB" data-vi="JPG hoặc PNG, tối đa 10 MB">JPG hoặc PNG, tối đa 10 MB</small></span></button><div class="mt-5 grid gap-4 sm:grid-cols-2"><label class="text-sm font-bold"><span data-en="Service" data-vi="Dịch vụ">Dịch vụ</span><input id="look-service" class="app-input mt-2" data-en-ph="e.g. Gel manicure" data-vi-ph="VD: Sơn gel" placeholder="VD: Sơn gel"></label><label class="text-sm font-bold"><span data-en="Color / formula" data-vi="Màu / công thức">Màu / công thức</span><input id="look-color" class="app-input mt-2" data-en-ph="e.g. Lilac #142" data-vi-ph="VD: Lilac #142" placeholder="VD: Lilac #142"></label></div><label class="mt-4 block text-sm font-bold"><span data-en="Notes" data-vi="Ghi chú">Ghi chú</span><textarea id="look-notes" class="app-input mt-2 min-h-28 resize-y" data-en-ph="Shape, technician and anything to remember…" data-vi-ph="Dáng, kỹ thuật viên và điều cần nhớ…" placeholder="Dáng, kỹ thuật viên và điều cần nhớ…"></textarea></label><button type="button" class="app-button mt-5 w-full" data-action="save-look"><i data-lucide="save" class="size-4" aria-hidden="true"></i><span data-en="Save look" data-vi="Lưu kiểu">Lưu kiểu</span></button></div></div>
+          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="looks" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Save the details" data-vi="Lưu lại chi tiết">Lưu lại chi tiết</p><h1 id="addlook-title" class="text-2xl font-black"><span data-addlook-mode="create" data-en="Add a new look" data-vi="Thêm kiểu mới">Thêm kiểu mới</span><span data-addlook-mode="edit" class="hidden" data-en="Edit look" data-vi="Sửa kiểu">Sửa kiểu</span></h1></div></div>
+          <div class="app-card"><p id="look-scanned-note" class="mb-4 hidden rounded-xl bg-app-green/5 p-3 text-xs leading-5 text-app-muted" role="status" data-en="Filled in from your scanned receipt. Add the color and notes only you know." data-vi="Đã điền từ hóa đơn bạn quét. Hãy bổ sung màu và ghi chú chỉ bạn mới biết.">Đã điền từ hóa đơn bạn quét. Hãy bổ sung màu và ghi chú chỉ bạn mới biết.</p><input id="look-photo-input" class="sr-only" type="file" accept="image/jpeg,image/png" data-look-photo><img id="look-photo-preview" class="hidden max-h-48 w-full rounded-2xl object-cover" alt="Ảnh kiểu đã chọn"><button type="button" class="grid min-h-44 w-full place-items-center rounded-2xl border border-dashed border-app-line bg-app-panel text-center" data-action="upload-look"><span><i data-lucide="image-plus" class="mx-auto size-8 text-app-pink" aria-hidden="true"></i><strong class="mt-3 block" data-en="Add a photo" data-vi="Thêm ảnh">Thêm ảnh</strong><small class="mt-1 block text-app-muted" data-en="JPG or PNG, up to 10 MB" data-vi="JPG hoặc PNG, tối đa 10 MB">JPG hoặc PNG, tối đa 10 MB</small></span></button><div class="mt-5 grid gap-4 sm:grid-cols-2"><label class="text-sm font-bold"><span data-en="Service" data-vi="Dịch vụ">Dịch vụ</span><input id="look-service" class="app-input mt-2" data-en-ph="e.g. Gel manicure" data-vi-ph="VD: Sơn gel" placeholder="VD: Sơn gel"></label><label class="text-sm font-bold"><span data-en="Color / formula" data-vi="Màu / công thức">Màu / công thức</span><input id="look-color" class="app-input mt-2" data-en-ph="e.g. Lilac #142" data-vi-ph="VD: Lilac #142" placeholder="VD: Lilac #142"></label></div><label class="mt-4 block text-sm font-bold"><span data-en="Notes" data-vi="Ghi chú">Ghi chú</span><textarea id="look-notes" class="app-input mt-2 min-h-28 resize-y" data-en-ph="Shape, technician and anything to remember…" data-vi-ph="Dáng, kỹ thuật viên và điều cần nhớ…" placeholder="Dáng, kỹ thuật viên và điều cần nhớ…"></textarea></label><button type="button" class="app-button mt-5 w-full" data-action="save-look"><i data-lucide="save" class="size-4" aria-hidden="true"></i><span data-addlook-mode="create" data-en="Save look" data-vi="Lưu kiểu">Lưu kiểu</span><span data-addlook-mode="edit" class="hidden" data-en="Update look" data-vi="Cập nhật kiểu">Cập nhật kiểu</span></button></div></div>
         </section>
         <section class="app-screen hidden" id="review" data-ready="true" data-module="home" aria-labelledby="review-title">
           <div class="mx-auto max-w-2xl"><div id="review-intro" class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Private to the business" data-vi="Chỉ doanh nghiệp nhìn thấy">Chỉ doanh nghiệp nhìn thấy</p><h1 id="review-title" class="text-2xl font-black" tabindex="-1" data-en="How was your visit?" data-vi="Trải nghiệm của bạn thế nào?">Trải nghiệm của bạn thế nào?</h1></div></div>
@@ -923,6 +926,10 @@
     // The rewards screen splits into what you can still buy, what you already bought and have not
     // handed to staff yet, and what a check-in has already spent.
     const REWARD_TABS = ['explore', 'redeemed', 'used'];
+
+    // The look archive is browsed newest-first by default because the most recent visit is the one a
+    // customer usually wants to rebook or show a technician.
+    const LOOK_SORTS = ['newest', 'oldest'];
 
     // A reward with no points price cannot be bought, only granted. Such rewards never appear in the
     // rewards catalog or in the spend-your-points list; they only ever show up already redeemed.
@@ -1830,7 +1837,12 @@
           }
         ],
         looks: [
-          { id: 'look-galaxy', businessId: BUSINESS_ID, visitId: 'visit-1001', staffProfileId: 'staff-anna', staffName: 'Anna', service: 'Gel manicure', color: 'OPI Bubble Bath #S86', note: 'Galaxy chrome', photoDataUrl: '', createdAt: '2026-07-12T16:20:00.000Z' }
+          { id: 'look-galaxy', businessId: BUSINESS_ID, visitId: 'visit-1001', staffProfileId: 'staff-anna', staffName: 'Anna', service: 'Gel manicure', color: 'OPI Bubble Bath #S86', note: 'Galaxy chrome', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=600&q=80', createdAt: '2026-07-12T16:20:00.000Z' },
+          { id: 'look-chrome-french', businessId: BUSINESS_ID, visitId: null, staffProfileId: 'staff-maria', staffName: 'Maria', service: 'Chrome French', color: 'Pearl chrome #C21', note: 'Đầu vuông ngắn, lớp chrome mỏng', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1610992015732-2449b76344bc?auto=format&fit=crop&w=600&q=80', createdAt: '2026-06-28T15:05:00.000Z' },
+          { id: 'look-almond-nude', businessId: BUSINESS_ID, visitId: null, staffProfileId: 'staff-sunny-k', staffName: 'Sunny K.', service: 'Gel extensions', color: 'Nude Rosé #N08', note: 'Dáng almond, dài vừa', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&w=600&q=80', createdAt: '2026-06-14T18:40:00.000Z' },
+          { id: 'look-red-classic', businessId: BUSINESS_ID, visitId: null, staffProfileId: 'staff-jenny-t', staffName: 'Jenny T.', service: 'Classic manicure', color: 'Big Apple Red #N25', note: 'Đỏ cổ điển cho tiệc cưới', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=600&q=80', createdAt: '2026-05-30T14:10:00.000Z' },
+          { id: 'look-glitter-ombre', businessId: BUSINESS_ID, visitId: null, staffProfileId: 'staff-kevin-v', staffName: 'Kevin V.', service: 'Acrylic full set', color: 'Champagne glitter ombré', note: 'Ombré nhũ chuyển từ gốc móng', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1607779097040-26e80aa78e66?auto=format&fit=crop&w=600&q=80', createdAt: '2026-05-11T17:25:00.000Z' },
+          { id: 'look-spa-pedi', businessId: 'golden-glow-spa', visitId: null, staffProfileId: 'staff-spa-linh', staffName: 'Linh', service: 'Spa pedicure', color: 'Lilac #142', note: 'Massage chân 20 phút, da nhạy cảm', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?auto=format&fit=crop&w=600&q=80', createdAt: '2026-04-22T13:00:00.000Z' }
         ],
         feedback: [],
         feedbackClaims: [],
@@ -1847,7 +1859,8 @@
           tipDraft: null,
           directPayDraft: null,
           paymentMethod: 'Zelle', payViewIntent: 'direct', rating: 0, currentRewardKey: null,
-          exploreFilter: 'all', offerFilter: 'all', rewardTab: 'explore', pendingContext: {
+          exploreFilter: 'all', offerFilter: 'all', rewardTab: 'explore',
+          lookSort: 'newest', lookQuery: '', editingLookId: null, lookScanDraft: null, pendingContext: {
             consentScopes: [], rewardAttempt: null, redemptionId: null, tipId: null, tipBatchId: null, paymentId: null, bookingId: null,
             scanContext: null, tipScanArmed: false, tipEntryIntent: 'generic', tipScanReplayId: null,
             tipScanReplayFingerprint: null, tipDoneView: null, reviewMode: null,
@@ -5444,6 +5457,8 @@
       if (!['all', 'nails', 'spa', 'salon'].includes(migrated.ui.exploreFilter)) migrated.ui.exploreFilter = defaults.ui.exploreFilter;
       if (!['all', 'saved', 'unsaved', 'beauty', 'food'].includes(migrated.ui.offerFilter)) migrated.ui.offerFilter = defaults.ui.offerFilter;
       if (!REWARD_TABS.includes(migrated.ui.rewardTab)) migrated.ui.rewardTab = defaults.ui.rewardTab;
+      if (!LOOK_SORTS.includes(migrated.ui.lookSort)) migrated.ui.lookSort = defaults.ui.lookSort;
+      if (typeof migrated.ui.lookQuery !== 'string') migrated.ui.lookQuery = defaults.ui.lookQuery;
       migrated.consents = migrated.consents.map((consent) => consent.scope === 'network'
         ? { ...consent, scope: 'networkOffers' }
         : consent);
@@ -5513,6 +5528,14 @@
       migrated.looks = migrated.looks
         .map((look) => normalizePersistedLook(migrated, look))
         .filter(Boolean);
+      // A dangling edit target would reopen the form against a look that no longer survived
+      // normalization, so the draft is dropped rather than pointed at nothing.
+      if (!migrated.looks.some((look) => look.id === migrated.ui.editingLookId)) {
+        migrated.ui.editingLookId = null;
+      }
+      // An OCR result only means anything in the session that scanned it; rehydrating one would let a
+      // stale receipt attach its visit to a look saved days later.
+      migrated.ui.lookScanDraft = null;
       reconcileCheckins(migrated, rawCheckinLedgerClaims);
       migrated.savedOfferIds = normalizeOfferIds(migrated.savedOfferIds);
       migrated.wishes = normalizeWishes(migrated.wishes);
@@ -5998,6 +6021,16 @@
       return candidate;
     }
 
+    // Seeded demo looks reference hosted stock photography instead of carrying a megabyte of base64
+    // each. A customer upload can never reach this field — it only ever produces a photoDataUrl — so
+    // the host allow-list keeps a persisted string from becoming an arbitrary img src.
+    function sanitizeLookPhotoUrl(value) {
+      if (typeof value !== 'string') return '';
+      const candidate = value.trim();
+      if (!candidate || candidate.length > 500) return '';
+      return /^https:\/\/images\.unsplash\.com\/[\w\-./?&=%,:+]*$/.test(candidate) ? candidate : '';
+    }
+
     function normalizeWishText(value) {
       return typeof value === 'string' ? value.trim() : '';
     }
@@ -6077,9 +6110,11 @@
       const color = typeof value.color === 'string' ? value.color.trim() : '';
       const note = typeof value.note === 'string' ? value.note.trim() : '';
       const photoDataUrl = sanitizeLookPhoto(value.photoDataUrl);
-      if (![service, color, note, photoDataUrl].some(Boolean)) return null;
+      const photoUrl = sanitizeLookPhotoUrl(value.photoUrl);
+      if (![service, color, note, photoDataUrl, photoUrl].some(Boolean)) return null;
       return {
         ...value,
+        photoUrl,
         id,
         businessId,
         visitId,
@@ -6143,6 +6178,28 @@
         createdAt: timestamp.value
       };
       appState.looks = [look, ...appState.looks];
+      return { ok: true, look };
+    }
+
+    // Editing only ever rewrites what the form owns. Provenance — which business, visit and tech the
+    // look came from, and when it was archived — is not the customer's to retype, so it is carried
+    // over untouched and the record keeps its place in the archive.
+    function updateLookRecord(appState, lookId, input) {
+      if (!isRecord(appState) || !Array.isArray(appState.looks) || !isRecord(input)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const id = normalizedRequiredText(lookId);
+      const index = id ? appState.looks.findIndex((look) => isRecord(look) && look.id === id) : -1;
+      if (index < 0) return { ok: false, code: 'look_not_found' };
+      const current = appState.looks[index];
+      const service = typeof input.service === 'string' ? input.service.trim() : '';
+      const color = typeof input.color === 'string' ? input.color.trim() : '';
+      const note = typeof input.note === 'string' ? input.note.trim() : '';
+      const photoDataUrl = sanitizeLookPhoto(input.photoDataUrl);
+      const photoUrl = photoDataUrl ? '' : sanitizeLookPhotoUrl(current.photoUrl);
+      if (![service, color, note, photoDataUrl, photoUrl].some(Boolean)) return { ok: false, code: 'empty_look' };
+      const look = { ...current, service, color, note, photoDataUrl, photoUrl };
+      appState.looks = appState.looks.map((item, position) => (position === index ? look : item));
       return { ok: true, look };
     }
 
@@ -8556,7 +8613,13 @@
         points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', noExpiry: 'Chưa có điểm sắp hết hạn.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', rewardReadyStatus: 'Sẵn sàng', rewardUsedStatus: 'Đã dùng', showCode: 'Hiện mã', rewardRedeemedEmpty: 'Chưa có phần thưởng nào khả dụng. Hãy xem tab Khám phá.', rewardUsedEmpty: 'Chưa có phần thưởng nào được dùng tại tiệm.', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
         paymentSent: 'Đã gửi ${amount} cho tiệm', paymentConfirmedTitle: 'Đã xác nhận thanh toán', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu', saveOffer: 'Lưu ưu đãi', view: 'Xem', rebook: 'Đặt lại', tip: 'Gửi tip', delete: 'Xóa', followingTech: 'Đang theo dõi thợ', followTech: 'Theo dõi thợ', removeWish: 'Xóa mong muốn', favorite: 'Đã yêu thích', addFavorite: 'Thêm yêu thích', recentVisit: 'Lượt ghé gần đây',
         offerSaved: 'Đã lưu ưu đãi', offerRemoved: 'Đã bỏ lưu ưu đãi', offerSaveFailed: 'Ưu đãi không hợp lệ.', offerPeriod: 'Thời gian áp dụng', offerLocation: 'Địa điểm áp dụng', offerTerms: 'Quy định', offerUnavailable: 'Không mở được ưu đãi này. Vui lòng thử lại.', wishRequired: 'Hãy nhập mong muốn', wishDuplicate: 'Mong muốn này đã tồn tại.', wishShared: 'Đã gửi mong muốn ẩn danh',
-        lookServiceRequired: 'Hãy nhập tên dịch vụ', lookRequired: 'Hãy nhập ảnh, dịch vụ, màu hoặc ghi chú.', lookSaveFailed: 'Không thể lưu kiểu. Vui lòng thử lại.', lookPhotoQuota: 'Bộ nhớ ảnh đã đầy; đã lưu thông tin kiểu không kèm ảnh.', lookSaved: 'Đã lưu kiểu mới', noLookNote: 'Không có ghi chú.', deleteLook: 'Xóa kiểu này?', deleteLookDetail: 'Thao tác chỉ ảnh hưởng dữ liệu mẫu trên thiết bị.', followVisitRequired: 'Chỉ theo dõi thợ đã từng phục vụ bạn.', scanReceipt: 'Quét hóa đơn', scanReceiptDetail: 'Bản mẫu mô phỏng OCR hóa đơn.', ratingRequired: 'Hãy chọn số sao',
+        lookServiceRequired: 'Hãy nhập tên dịch vụ', lookRequired: 'Hãy nhập ảnh, dịch vụ, màu hoặc ghi chú.', lookSaveFailed: 'Không thể lưu kiểu. Vui lòng thử lại.', lookPhotoQuota: 'Bộ nhớ ảnh đã đầy; đã lưu thông tin kiểu không kèm ảnh.', lookSaved: 'Đã lưu kiểu mới', lookUpdated: 'Đã cập nhật kiểu', lookNotFound: 'Không tìm thấy kiểu này.', noLookNote: 'Không có ghi chú.',
+        lookCount: '{count} kiểu đã lưu', lookCountFiltered: 'Hiển thị {shown}/{count} kiểu',
+        lookEmptyTitle: 'Chưa có kiểu nào', lookEmptyBody: 'Lưu ảnh, màu và ghi chú của mỗi lần làm để lần sau đặt lại chỉ trong một chạm.',
+        lookNoResultsTitle: 'Không tìm thấy kiểu phù hợp', lookNoResultsBody: 'Thử từ khóa khác, hoặc xóa ô tìm kiếm để xem lại tất cả.',
+        edit: 'Sửa', deleteLook: 'Xóa kiểu này?', deleteLookDetail: 'Thao tác chỉ ảnh hưởng dữ liệu mẫu trên thiết bị.', followVisitRequired: 'Chỉ theo dõi thợ đã từng phục vụ bạn.', scanReceipt: 'Quét hóa đơn', scanReceiptDetail: 'Bản mẫu mô phỏng OCR hóa đơn.',
+        scanReceiptFound: 'Đã đọc được hóa đơn gần nhất:', scanReceiptUse: 'Dùng để thêm kiểu',
+        scanReceiptEmpty: 'Không còn hóa đơn nào chưa lưu thành kiểu.', ratingRequired: 'Hãy chọn số sao',
         reviewThanks: 'Đã gửi phản hồi riêng và cộng 15 điểm.', feedbackSent: 'Đã gửi phản hồi', feedbackSubmit: 'Gửi phản hồi + nhận 15 điểm', feedbackAlreadySent: 'Lượt ghé này đã gửi phản hồi.', feedbackFailed: 'Không thể gửi phản hồi. Vui lòng thử lại.',
         bookingMissingSelection: 'Chọn đủ dịch vụ, thợ, ngày và giờ.', bookingFailed: 'Không thể lưu yêu cầu đặt lịch. Vui lòng thử lại.', bookingConfirmFailed: 'Không thể xác nhận lịch hẹn. Vui lòng thử lại.', bookingRequestedTitle: 'Đã gửi yêu cầu', bookingConfirmedTitle: 'Lịch hẹn đã xác nhận', bookingPendingSla: '{business} thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.', bookingConfirmedCopy: '{business} đã xác nhận lịch hẹn và cộng {points} điểm.',
         openPayment: 'Mở {method} để thanh toán', addPhoto: 'Thêm ảnh',
@@ -8592,7 +8655,13 @@
         points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', noExpiry: 'No points expiring soon.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', rewardReadyStatus: 'Ready', rewardUsedStatus: 'Used', showCode: 'Show code', rewardRedeemedEmpty: 'No reward is available to use yet. Check the Explore tab.', rewardUsedEmpty: 'No reward has been used at a salon yet.', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
         paymentSent: '${amount} sent to the salon', paymentConfirmedTitle: 'Payment Confirmed', insufficientPoints: 'Not enough points', saved: 'Saved', saveOffer: 'Save offer', view: 'View', rebook: 'Rebook', tip: 'Tip', delete: 'Delete', followingTech: 'Following tech', followTech: 'Follow tech', removeWish: 'Remove wish', favorite: 'Favorite', addFavorite: 'Add favorite', recentVisit: 'Recent visit',
         offerSaved: 'Offer saved', offerRemoved: 'Offer removed', offerSaveFailed: 'Invalid offer.', offerPeriod: 'When it runs', offerLocation: 'Where it applies', offerTerms: 'Terms', offerUnavailable: 'Could not open this offer. Please try again.', wishRequired: 'Enter a wish first', wishDuplicate: 'This wish already exists.', wishShared: 'Anonymous wish shared',
-        lookServiceRequired: 'Enter a service name', lookRequired: 'Add a photo, service, color or note.', lookSaveFailed: 'Could not save this look.', lookPhotoQuota: 'Image storage is full; look details were saved without the photo.', lookSaved: 'New look saved', noLookNote: 'No note.', deleteLook: 'Delete this look?', deleteLookDetail: 'This only changes local demo data.', followVisitRequired: 'You can only follow a tech from a shared visit.', scanReceipt: 'Scan receipt', scanReceiptDetail: 'This prototype simulates receipt OCR.', ratingRequired: 'Choose a rating',
+        lookServiceRequired: 'Enter a service name', lookRequired: 'Add a photo, service, color or note.', lookSaveFailed: 'Could not save this look.', lookPhotoQuota: 'Image storage is full; look details were saved without the photo.', lookSaved: 'New look saved', lookUpdated: 'Look updated', lookNotFound: 'That look no longer exists.', noLookNote: 'No note.',
+        lookCount: '{count} looks saved', lookCountFiltered: 'Showing {shown} of {count} looks',
+        lookEmptyTitle: 'No looks yet', lookEmptyBody: 'Save the photo, color and notes from each visit so rebooking the same look later takes one tap.',
+        lookNoResultsTitle: 'No looks match', lookNoResultsBody: 'Try a different keyword, or clear the search to see everything again.',
+        edit: 'Edit', deleteLook: 'Delete this look?', deleteLookDetail: 'This only changes local demo data.', followVisitRequired: 'You can only follow a tech from a shared visit.', scanReceipt: 'Scan receipt', scanReceiptDetail: 'This prototype simulates receipt OCR.',
+        scanReceiptFound: 'Read from your most recent receipt:', scanReceiptUse: 'Use for a new look',
+        scanReceiptEmpty: 'Every receipt is already saved as a look.', ratingRequired: 'Choose a rating',
         reviewThanks: 'Private feedback sent and 15 points added.', feedbackSent: 'Feedback sent', feedbackSubmit: 'Send feedback + earn 15 points', feedbackAlreadySent: 'Feedback was already sent for this visit.', feedbackFailed: 'Could not send feedback. Please try again.',
         bookingMissingSelection: 'Choose service, technician, day and time.', bookingFailed: 'Could not save the booking request. Please try again.', bookingConfirmFailed: 'Could not confirm the appointment. Please try again.', bookingRequestedTitle: 'Request sent', bookingConfirmedTitle: 'Appointment confirmed', bookingPendingSla: '{business} usually responds within 10 minutes. We will notify you as soon as they confirm.', bookingConfirmedCopy: '{business} confirmed the appointment and added {points} points.',
         openPayment: 'Open {method} to pay', addPhoto: 'Add a photo',
@@ -10137,16 +10206,69 @@
         && (!businessId || staff.businessId === businessId) && canFollowTech(appState, staffProfileId);
     }
 
+    // Search spans every field a customer would remember a look by, including the business name,
+    // which lives outside the look record itself.
+    function lookMatchesQuery(look, query) {
+      if (!query) return true;
+      const businessName = getValidBusiness(state, look.businessId)?.name ?? '';
+      return [look.service, look.color, look.note, look.staffName, businessName]
+        .some((field) => String(field ?? '').toLowerCase().includes(query));
+    }
+
+    function visibleLooks() {
+      const query = String(state.ui.lookQuery ?? '').trim().toLowerCase();
+      const looks = (Array.isArray(state.looks) ? state.looks : [])
+        .filter(isRecord)
+        .filter((look) => lookMatchesQuery(look, query));
+      // createdAt is an ISO string, so a plain string compare orders it correctly.
+      looks.sort((a, b) => (state.ui.lookSort === 'oldest'
+        ? String(a.createdAt).localeCompare(String(b.createdAt))
+        : String(b.createdAt).localeCompare(String(a.createdAt))));
+      return looks;
+    }
+
+    function renderLooksEmptyState(total, shown) {
+      const empty = document.getElementById('looks-empty');
+      if (!empty) return;
+      empty.classList.toggle('hidden', shown > 0);
+      if (shown > 0) return;
+      const searching = total > 0;
+      const title = document.getElementById('looks-empty-title');
+      const body = document.getElementById('looks-empty-body');
+      if (title) title.textContent = t(searching ? 'lookNoResultsTitle' : 'lookEmptyTitle');
+      if (body) body.textContent = t(searching ? 'lookNoResultsBody' : 'lookEmptyBody');
+      // Offering "add a look" while a search is simply too narrow would answer the wrong problem.
+      document.getElementById('looks-empty-cta')?.classList.toggle('hidden', searching);
+    }
+
     function renderLooks() {
       const grid = document.getElementById('looks-grid');
       if (!grid) return;
-      const cards = (Array.isArray(state.looks) ? state.looks : []).filter(isRecord).map((look) => {
+      const total = (Array.isArray(state.looks) ? state.looks : []).filter(isRecord).length;
+      const looks = visibleLooks();
+      const count = document.getElementById('looks-count');
+      if (count) {
+        count.textContent = looks.length === total
+          ? t('lookCount', { count: formatPointNumber(total) })
+          : t('lookCountFiltered', { shown: formatPointNumber(looks.length), count: formatPointNumber(total) });
+      }
+      document.querySelectorAll('[data-look-sort]').forEach((control) => {
+        control.setAttribute('aria-pressed', String(control.dataset.lookSort === state.ui.lookSort));
+      });
+      // The query persists across reloads, so the box is resynced — but never mid-keystroke, when the
+      // two already agree.
+      const search = document.getElementById('look-search');
+      if (search && search.value !== state.ui.lookQuery) search.value = state.ui.lookQuery;
+      renderLooksEmptyState(total, looks.length);
+      const cards = looks.map((look) => {
         const card = document.createElement('article');
         card.className = 'app-card overflow-hidden p-0';
-        if (look.photoDataUrl) {
+        const photo = sanitizeLookPhoto(look.photoDataUrl) || sanitizeLookPhotoUrl(look.photoUrl);
+        if (photo) {
           const image = document.createElement('img');
           image.className = 'aspect-square w-full object-cover';
-          image.src = sanitizeLookPhoto(look.photoDataUrl);
+          image.src = photo;
+          image.loading = 'lazy';
           image.alt = String(look.color || look.service || 'Look photo');
           card.append(image);
         } else {
@@ -10165,7 +10287,7 @@
         detail.textContent = `${look.service} · ${look.staffName}`;
         const actions = document.createElement('div');
         actions.className = 'mt-3 grid grid-cols-2 gap-2';
-        actions.append(createActionButton('view-look', t('view'), { lookId: look.id }), createActionButton('rebook-look', t('rebook'), { lookId: look.id }));
+        actions.append(createActionButton('view-look', t('view'), { lookId: look.id }), createActionButton('edit-look', t('edit'), { lookId: look.id }), createActionButton('rebook-look', t('rebook'), { lookId: look.id }));
         if (canRenderFollowTech(state, look.staffProfileId, look.businessId)) {
           actions.append(createActionButton('toggle-follow-tech', state.followedTechIds.includes(look.staffProfileId) ? t('followingTech') : t('followTech'), { staffId: look.staffProfileId }));
         }
@@ -10175,6 +10297,85 @@
         return card;
       });
       grid.replaceChildren(...cards);
+    }
+
+    // The prototype has no camera or OCR engine behind "scan receipt". A scan resolves to the most
+    // recent visit not already archived as a look and replays its receipt lines as the extracted
+    // fields — which is also the only path that gives a new look real provenance instead of the
+    // hardcoded demo visit.
+    function scanReceiptDraft(appState) {
+      if (!isRecord(appState) || !Array.isArray(appState.visits) || !Array.isArray(appState.looks)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const archived = new Set(appState.looks.filter(isRecord).map((look) => look.visitId).filter(Boolean));
+      const visit = appState.visits
+        .filter((item) => isRecord(item) && item.id && !archived.has(item.id) && getValidBusiness(appState, item.businessId))
+        .sort((a, b) => String(b.occurredAt).localeCompare(String(a.occurredAt)))[0] ?? null;
+      if (!visit) return { ok: false, code: 'no_receipt' };
+      return {
+        ok: true,
+        draft: {
+          visitId: visit.id,
+          businessId: visit.businessId,
+          staffProfileId: visit.staffProfileId ?? null,
+          staffName: typeof visit.staffName === 'string' ? visit.staffName : '',
+          service: typeof visit.service === 'string' ? visit.service : ''
+        }
+      };
+    }
+
+    function scanReceiptSummary(draft) {
+      const fragment = document.createElement('div');
+      const intro = document.createElement('p');
+      intro.textContent = t('scanReceiptFound');
+      const list = document.createElement('ul');
+      list.className = 'mt-3 space-y-1 text-sm text-app-muted';
+      const businessName = getValidBusiness(state, draft.businessId)?.name ?? t('unknownBusiness');
+      [draft.service, draft.staffName, businessName].filter(Boolean).forEach((line) => {
+        const item = document.createElement('li');
+        item.textContent = line;
+        list.append(item);
+      });
+      fragment.append(intro, list);
+      return fragment;
+    }
+
+    function editedLook() {
+      return state.ui.editingLookId
+        ? state.looks.find((item) => isRecord(item) && item.id === state.ui.editingLookId) ?? null
+        : null;
+    }
+
+    function renderLookForm() {
+      const look = editedLook();
+      const editing = Boolean(look);
+      document.querySelectorAll('[data-addlook-mode]').forEach((node) => {
+        node.classList.toggle('hidden', (node.dataset.addlookMode === 'edit') !== editing);
+      });
+      const scan = editing || !isRecord(state.ui.lookScanDraft) ? null : state.ui.lookScanDraft;
+      const service = document.getElementById('look-service');
+      const color = document.getElementById('look-color');
+      const notes = document.getElementById('look-notes');
+      if (service) service.value = look?.service ?? scan?.service ?? '';
+      if (color) color.value = look?.color ?? '';
+      if (notes) notes.value = look?.note ?? '';
+      // A scan fills in the service the receipt names; color and notes are things only the customer
+      // can supply, so they stay empty and keep the placeholders visible.
+      document.getElementById('look-scanned-note')?.classList.toggle('hidden', !scan);
+      const preview = document.getElementById('look-photo-preview');
+      if (!preview) return;
+      // Only an uploaded data URL is editable, so a seeded photoUrl previews but stays out of
+      // dataset.photo — that is what save-look reads back as the new upload.
+      const upload = sanitizeLookPhoto(look?.photoDataUrl);
+      const photo = upload || sanitizeLookPhotoUrl(look?.photoUrl);
+      preview.dataset.photo = upload;
+      if (photo) {
+        preview.src = photo;
+        preview.classList.remove('hidden');
+      } else {
+        preview.removeAttribute('src');
+        preview.classList.add('hidden');
+      }
     }
 
     function offerCopy(offer, field) {
@@ -12060,17 +12261,42 @@
       commitState((draft) => removeWishRecord(draft, control.dataset.wish));
       renderWishes();
     });
+    registerAction('add-look', () => {
+      commitState((draft) => { draft.ui.editingLookId = null; draft.ui.lookScanDraft = null; });
+      renderLookForm();
+      navigateTo('addlook');
+    });
+    registerAction('edit-look', (control) => {
+      const look = state.looks.find((item) => item.id === control.dataset.lookId);
+      if (!look) return showToast(t('lookNotFound'), 'error');
+      commitState((draft) => { draft.ui.editingLookId = look.id; draft.ui.lookScanDraft = null; });
+      renderLookForm();
+      navigateTo('addlook');
+    });
     registerAction('save-look', () => {
+      const scan = isRecord(state.ui.lookScanDraft) ? state.ui.lookScanDraft : null;
       const input = {
-        businessId: BUSINESS_ID,
-        visitId: 'visit-1001',
-        staffProfileId: 'staff-anna',
-        staffName: 'Anna',
+        businessId: scan?.businessId ?? BUSINESS_ID,
+        visitId: scan ? scan.visitId : 'visit-1001',
+        staffProfileId: scan ? scan.staffProfileId : 'staff-anna',
+        staffName: scan?.staffName ?? 'Anna',
         service: document.getElementById('look-service').value,
         color: document.getElementById('look-color').value,
         note: document.getElementById('look-notes').value,
         photoDataUrl: document.getElementById('look-photo-preview').dataset.photo ?? ''
       };
+      const editingLookId = state.ui.editingLookId;
+      if (editingLookId) {
+        const updated = commitState((draft) => {
+          const result = updateLookRecord(draft, editingLookId, input);
+          if (result.ok) draft.ui.editingLookId = null;
+          return result;
+        });
+        if (!updated.ok) return showToast(t(updated.code === 'empty_look' ? 'lookRequired' : 'lookNotFound'), 'error');
+        renderLooks();
+        navigateTo('looks');
+        return showToast(t('lookUpdated'));
+      }
       const before = structuredClone(state);
       let result;
       try {
@@ -12096,11 +12322,28 @@
         }
       }
       if (!result.ok) return showToast(t(result.code === 'empty_look' ? 'lookRequired' : 'lookSaveFailed'), 'error');
+      commitState((draft) => { draft.ui.lookScanDraft = null; });
       renderLooks();
       navigateTo('looks');
       showToast(t('lookSaved'));
     });
-    registerAction('scan-receipt', (control) => openOverlay({ title: t('scanReceipt'), html: t('scanReceiptDetail'), hideCancel: true }, control));
+    registerAction('scan-receipt', (control) => {
+      const scan = scanReceiptDraft(state);
+      if (!scan.ok) return openOverlay({ title: t('scanReceipt'), html: t('scanReceiptEmpty'), hideCancel: true }, control);
+      return openOverlay({
+        title: t('scanReceipt'),
+        content: scanReceiptSummary(scan.draft),
+        confirmLabel: t('scanReceiptUse'),
+        onConfirm: () => {
+          commitState((draft) => {
+            draft.ui.lookScanDraft = scan.draft;
+            draft.ui.editingLookId = null;
+          });
+          renderLookForm();
+          navigateTo('addlook');
+        }
+      }, control);
+    });
     registerAction('upload-look', () => document.getElementById('look-photo-input')?.click());
     registerAction('view-look', (control) => {
       const look = state.looks.find((item) => item.id === control.dataset.lookId);
@@ -12303,6 +12546,12 @@
         selectExclusive(offerFilter, '[data-offer-filter]');
         return filterOffers(document.getElementById('offer-search')?.value ?? '');
       }
+      const lookSort = event.target.closest('[data-look-sort]');
+      if (lookSort && LOOK_SORTS.includes(lookSort.dataset.lookSort)) {
+        commitState((draft) => { draft.ui.lookSort = lookSort.dataset.lookSort; });
+        selectExclusive(lookSort, '[data-look-sort]');
+        return renderLooks();
+      }
       const rewardTab = event.target.closest('[data-reward-tab]');
       if (rewardTab && REWARD_TABS.includes(rewardTab.dataset.rewardTab)) {
         commitState((draft) => { draft.ui.rewardTab = rewardTab.dataset.rewardTab; });
@@ -12346,6 +12595,10 @@
     function handleInput(event) {
       if (event.target.id === 'explore-search') filterExplore(event.target.value);
       if (event.target.id === 'offer-search') filterOffers(event.target.value);
+      if (event.target.id === 'look-search') {
+        commitState((draft) => { draft.ui.lookQuery = String(event.target.value ?? ''); });
+        renderLooks();
+      }
       if (event.target.id === 'tip-staff-search') renderTipStaffList(event.target.value);
       if (event.target.id === 'payment-amount') {
         const amount = canonicalMoneyAmount(event.target.value);

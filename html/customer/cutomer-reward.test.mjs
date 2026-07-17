@@ -4066,7 +4066,7 @@ test('gives every enabled button an action and wires the known global controls',
   for (const button of buttons) {
     const openingTag = button.match(/<button\b[^>]*>/)?.[0] ?? '';
     if (/\sdisabled(?:\s|=|>)/.test(openingTag)) continue;
-    const interactive = /data-action=|data-nav-target=|data-explore-filter=|data-offer-filter=|data-reward-tab=|data-payment-method=|data-book-(?:service|staff|day|time)=/.test(openingTag);
+    const interactive = /data-action=|data-nav-target=|data-explore-filter=|data-offer-filter=|data-reward-tab=|data-look-sort=|data-payment-method=|data-book-(?:service|staff|day|time)=/.test(openingTag);
     assert.ok(interactive, `enabled button needs an action: ${button.slice(0, 160)}`);
     const action = openingTag.match(/data-action="([^"]+)"/)?.[1];
     if (action) assert.ok(registeredActions.has(action), `button action must be registered: ${action}`);
