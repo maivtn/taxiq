@@ -11346,7 +11346,7 @@ test('persisted salon payment draft drops the transfer assertion and unknown pay
 test('keeps every seeded look through migration and gives each one a photo', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
-  assert.equal(app.looks.length, 12);
+  assert.equal(app.looks.length, 14);
   const migrated = api.migrateState(app);
   assert.equal(migrated.looks.map((look) => look.id).join(','), app.looks.map((look) => look.id).join(','));
   for (const look of migrated.looks) {
@@ -11500,10 +11500,12 @@ test('searches looks across service, color, note, tech and business name', () =>
     vm.runInContext(`state.ui.lookQuery = ${JSON.stringify(query)}; renderLooks()`, context);
     return titles();
   };
-  assert.equal(search('').length, 12);
+  assert.equal(search('').length, 14);
   assert.deepEqual(search('maria'), ['Pearl chrome #C21']);
   assert.deepEqual(search('lilac'), ['Lilac #142']);
-  assert.deepEqual(search('sinh nhật'), []);
+  // Notes are Vietnamese, diacritics and all, so the search has to match them as typed.
+  assert.deepEqual(search('sinh nhật'), ['Hoa nhí trên nền nude']);
+  assert.deepEqual(search('khong-co-gi'), []);
   // Business name lives outside the look record but is still searchable.
   assert.deepEqual(search('golden glow'), ['Lilac #142']);
   assert.deepEqual(search('CHROME').length, 2, 'search must ignore case');
@@ -11524,12 +11526,12 @@ test('tells an empty archive apart from a search that matched nothing', () => {
   const cta = () => vm.runInContext("document.getElementById('looks-empty-cta')", context);
   vm.runInContext('renderLooks()', context);
   assert.equal(empty().classList.contains('hidden'), true);
-  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), '12 kiểu đã lưu');
+  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), '14 kiểu đã lưu');
 
   vm.runInContext("state.ui.lookQuery = 'zzz'; renderLooks()", context);
   assert.equal(empty().classList.contains('hidden'), false);
   assert.equal(vm.runInContext("document.getElementById('looks-empty-title').textContent", context), 'Không tìm thấy kiểu phù hợp');
-  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), 'Hiển thị 0/12 kiểu');
+  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), 'Hiển thị 0/14 kiểu');
   // Offering "add a look" would answer the wrong problem when the search is merely too narrow.
   assert.equal(cta().classList.contains('hidden'), true);
 
