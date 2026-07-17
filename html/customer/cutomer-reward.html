@@ -243,8 +243,8 @@
         </section>
         <section class="app-screen hidden" id="offers" data-ready="true" data-module="home" aria-labelledby="offers-title">
           <div class="mb-4 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Picked for you" data-vi="Dành riêng cho bạn">Dành riêng cho bạn</p><h1 id="offers-title" class="text-2xl font-black" data-en="Offers & wishlist" data-vi="Ưu đãi & mong muốn">Ưu đãi & mong muốn</h1></div></div>
-          <div class="mb-3 app-tabs"><button class="app-tab" type="button" aria-pressed="false" data-offer-filter="saved" data-en="Saved" data-vi="Đã lưu">Đã lưu</button><button class="app-tab" type="button" aria-pressed="false" data-offer-filter="unsaved" data-en="Discover" data-vi="Khám phá">Khám phá</button></div><div class="sr-only"><button class="sr-only" type="button" data-action="view-offer" data-offer-id="offer-glow">Xem</button><button class="sr-only" type="button" data-action="use-offer" data-reward-key="glow">Dùng ưu đãi</button></div><div id="offers-empty-state" class="hidden" data-state="empty"></div>
-          <div class="grid gap-4 xl:grid-cols-[1fr_340px]"><div><div class="relative"><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-app-muted" aria-hidden="true"></i><input id="offer-search" class="app-input pl-11" type="search" data-en-ph="Search offers…" data-vi-ph="Tìm ưu đãi…" placeholder="Tìm ưu đãi…"></div><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" aria-pressed="true" data-offer-filter="all" data-en="All" data-vi="Tất cả">Tất cả</button><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="beauty" data-en="Beauty" data-vi="Làm đẹp">Làm đẹp</button><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="food" data-en="Food" data-vi="Ẩm thực">Ẩm thực</button></div><div class="mt-4 grid grid-cols-2 gap-3 md:gap-4"><article class="app-card overflow-hidden p-0" data-offer-card data-offer-id="offer-glow" data-category="beauty" data-search="golden glow facial spa"><img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80" alt="Ưu đãi chăm sóc da" class="h-28 w-full object-cover md:h-40"><div class="p-4"><span class="text-xs font-bold text-app-gold" data-en="20% OFF" data-vi="GIẢM 20%">GIẢM 20%</span><h2 class="mt-2 font-black" data-en="Glow facial" data-vi="Chăm sóc da Glow">Chăm sóc da Glow</h2><p class="mt-1 text-xs text-app-muted">Golden Glow Spa · Hết hạn 21/07</p><button class="app-button-secondary mt-4 w-full" type="button" data-action="save-offer" data-offer-id="offer-glow"><i data-lucide="bookmark" class="size-4" aria-hidden="true"></i><span data-en="Save offer" data-vi="Lưu ưu đãi">Lưu ưu đãi</span></button></div></article><article class="app-card overflow-hidden p-0" data-offer-card data-offer-id="offer-moon" data-category="food" data-search="moon coffee latte pastry"><img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80" alt="Ưu đãi cà phê" class="h-28 w-full object-cover md:h-40"><div class="p-4"><span class="text-xs font-bold text-app-green" data-en="BUY 1 GET 1" data-vi="MUA 1 TẶNG 1">MUA 1 TẶNG 1</span><h2 class="mt-2 font-black" data-en="Member latte" data-vi="Latte thành viên">Latte thành viên</h2><p class="mt-1 text-xs text-app-muted">Moon Coffee · Hết hạn 31/07</p><button class="app-button-secondary mt-4 w-full" type="button" data-action="save-offer" data-offer-id="offer-moon"><i data-lucide="bookmark" class="size-4" aria-hidden="true"></i><span data-en="Save offer" data-vi="Lưu ưu đãi">Lưu ưu đãi</span></button></div></article></div></div><aside class="app-card h-fit"><p class="eyebrow" data-en="Tell businesses" data-vi="Gửi mong muốn">Gửi mong muốn</p><h2 class="mt-1 section-title" data-en="What would you love?" data-vi="Bạn mong muốn ưu đãi gì?">Bạn mong muốn ưu đãi gì?</h2><p class="mt-2 text-sm leading-6 text-app-muted" data-en="Your idea is shared anonymously." data-vi="Ý tưởng được gửi ẩn danh.">Ý tưởng được gửi ẩn danh.</p><form id="wish-form" class="mt-4 flex gap-2" novalidate><input id="wish-input" class="app-input" name="wish" autocomplete="off" enterkeyhint="send" data-en-ph="e.g. Birthday nail package" data-vi-ph="VD: Gói nail sinh nhật" placeholder="VD: Gói nail sinh nhật"><button class="icon-button" type="button" data-action="add-wish" aria-label="Thêm mong muốn"><i data-lucide="plus" class="size-5" aria-hidden="true"></i></button></form><ul id="wish-list" class="mt-4 space-y-2 text-sm"><li class="rounded-xl bg-app-panel p-3" data-en="Weekend spa package" data-vi="Gói spa cuối tuần">Gói spa cuối tuần</li></ul><button class="app-button mt-4 w-full" type="button" data-action="submit-wishes"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Send wish" data-vi="Gửi mong muốn">Gửi mong muốn</span></button></aside></div>
+          <div class="mb-3 app-tabs"><button class="app-tab" type="button" aria-pressed="false" data-offer-filter="saved" data-en="Saved" data-vi="Đã lưu">Đã lưu</button><button class="app-tab" type="button" aria-pressed="false" data-offer-filter="unsaved" data-en="Discover" data-vi="Khám phá">Khám phá</button></div><div class="sr-only"><button class="sr-only" type="button" data-action="view-offer" data-offer-id="offer-glow">Xem</button></div><div id="offers-empty-state" class="hidden" data-state="empty"></div>
+          <div class="grid gap-4 xl:grid-cols-[1fr_340px]"><div><div class="relative"><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-app-muted" aria-hidden="true"></i><input id="offer-search" class="app-input pl-11" type="search" data-en-ph="Search offers…" data-vi-ph="Tìm ưu đãi…" placeholder="Tìm ưu đãi…"></div><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" aria-pressed="true" data-offer-filter="all" data-en="All" data-vi="Tất cả">Tất cả</button><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="beauty" data-en="Beauty" data-vi="Làm đẹp">Làm đẹp</button><button class="app-chip" type="button" aria-pressed="false" data-offer-filter="food" data-en="Food" data-vi="Ẩm thực">Ẩm thực</button></div><div id="offer-grid" class="mt-4 grid grid-cols-2 gap-3 md:gap-4"></div></div><aside class="app-card h-fit"><p class="eyebrow" data-en="Tell businesses" data-vi="Gửi mong muốn">Gửi mong muốn</p><h2 class="mt-1 section-title" data-en="What would you love?" data-vi="Bạn mong muốn ưu đãi gì?">Bạn mong muốn ưu đãi gì?</h2><p class="mt-2 text-sm leading-6 text-app-muted" data-en="Your idea is shared anonymously." data-vi="Ý tưởng được gửi ẩn danh.">Ý tưởng được gửi ẩn danh.</p><form id="wish-form" class="mt-4 flex gap-2" novalidate><input id="wish-input" class="app-input" name="wish" autocomplete="off" enterkeyhint="send" data-en-ph="e.g. Birthday nail package" data-vi-ph="VD: Gói nail sinh nhật" placeholder="VD: Gói nail sinh nhật"><button class="icon-button" type="button" data-action="add-wish" aria-label="Thêm mong muốn"><i data-lucide="plus" class="size-5" aria-hidden="true"></i></button></form><ul id="wish-list" class="mt-4 space-y-2 text-sm"><li class="rounded-xl bg-app-panel p-3" data-en="Weekend spa package" data-vi="Gói spa cuối tuần">Gói spa cuối tuần</li></ul><button class="app-button mt-4 w-full" type="button" data-action="submit-wishes"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Send wish" data-vi="Gửi mong muốn">Gửi mong muốn</span></button></aside></div>
         </section>
         <section class="app-screen hidden" id="book1" data-ready="true" data-module="home" aria-labelledby="book1-title">
           <div class="mx-auto max-w-3xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Step 1 of 3" data-vi="Bước 1/3">Bước 1/3</p><h1 id="book1-title" class="text-2xl font-black" data-en="Choose your appointment" data-vi="Chọn lịch hẹn">Chọn lịch hẹn</h1></div></div><div class="app-card"><h2 class="section-title" data-en="Service" data-vi="Dịch vụ">Dịch vụ</h2><div class="mt-3 grid gap-2 sm:grid-cols-2"><button class="app-chip justify-between rounded-xl" type="button" data-book-service="Gel manicure" aria-pressed="true"><span data-en="Gel manicure" data-vi="Sơn gel">Sơn gel</span><strong>$45</strong></button><button class="app-chip justify-between rounded-xl" type="button" data-book-service="Pedicure" aria-pressed="false"><span data-en="Signature pedicure" data-vi="Pedicure đặc biệt">Pedicure đặc biệt</span><strong>$55</strong></button></div><h2 class="mt-6 section-title" data-en="Technician" data-vi="Kỹ thuật viên">Kỹ thuật viên</h2><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" data-book-staff="Anna" aria-pressed="true">Anna</button><button class="app-chip" type="button" data-book-staff="Mia" aria-pressed="false">Mia</button><button class="app-chip" type="button" data-book-staff="No preference" aria-pressed="false" data-en="No preference" data-vi="Không yêu cầu">Không yêu cầu</button></div><h2 class="mt-6 section-title" data-en="Date & time" data-vi="Ngày & giờ">Ngày & giờ</h2><div class="mt-3 flex gap-2 overflow-x-auto pb-2"><button class="app-chip" type="button" data-book-day="Thu 16 Jul" aria-pressed="true" data-en="Thu 16" data-vi="T5 16/7">T5 16/7</button><button class="app-chip" type="button" data-book-day="Fri 17 Jul" aria-pressed="false" data-en="Fri 17" data-vi="T6 17/7">T6 17/7</button><button class="app-chip" type="button" data-book-day="Sat 18 Jul" aria-pressed="false" data-en="Sat 18" data-vi="T7 18/7">T7 18/7</button></div><div class="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5"><button class="app-chip justify-center" type="button" data-book-time="10:00 AM" aria-pressed="false">10:00</button><button class="app-chip justify-center" type="button" data-book-time="11:30 AM" aria-pressed="false">11:30</button><button class="app-chip justify-center" type="button" data-book-time="2:00 PM" aria-pressed="true">14:00</button><button class="app-chip justify-center" type="button" data-book-time="3:30 PM" aria-pressed="false">15:30</button><button class="app-chip justify-center" type="button" data-book-time="5:00 PM" aria-pressed="false">17:00</button></div><button class="app-button mt-6 w-full" type="button" data-action="review-booking"><span data-en="Review booking" data-vi="Xem lại lịch hẹn">Xem lại lịch hẹn</span><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i></button></div></div>
@@ -287,7 +287,7 @@
           <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-balance-available="bitcoin-nail-bar" data-en="2,450 points available" data-vi="Có thể dùng 2.450 điểm">Có thể dùng 2.450 điểm</p><h1 id="rewards-title" class="text-2xl font-black" data-en="Choose a reward" data-vi="Chọn phần thưởng">Chọn phần thưởng</h1></div></div><div class="mb-4 app-tabs"><button class="app-tab" type="button" aria-pressed="true" data-reward-tab="explore" data-en="Explore" data-vi="Khám phá">Khám phá</button><button class="app-tab" type="button" aria-pressed="false" data-reward-tab="redeemed" data-en="Available" data-vi="Khả dụng">Khả dụng</button><button class="app-tab" type="button" aria-pressed="false" data-reward-tab="used" data-en="Used" data-vi="Đã dùng">Đã dùng</button></div><div id="reward-list" class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3"></div><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Points apply to services only — never cash out. Each business sets its own reward prices; NEXORA only keeps the ledger." data-vi="Điểm chỉ dùng cho dịch vụ — không đổi tiền mặt. Mỗi doanh nghiệp tự đặt giá thưởng; NEXORA chỉ lưu sổ cái.">Điểm chỉ dùng cho dịch vụ — không đổi tiền mặt. Mỗi doanh nghiệp tự đặt giá thưởng; NEXORA chỉ lưu sổ cái.</p>
         </section>
         <section class="app-screen hidden" id="redeem" data-ready="true" data-module="wallet" aria-labelledby="redeem-title">
-          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="rewards" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Confirm redemption" data-vi="Xác nhận đổi điểm">Xác nhận đổi điểm</p><h1 id="redeem-title" class="text-2xl font-black" data-en="Redeem reward" data-vi="Đổi phần thưởng">Đổi phần thưởng</h1></div></div><div class="app-card"><div class="flex items-start gap-4"><span class="grid size-14 place-items-center rounded-2xl bg-app-pink/10 text-app-pink"><i data-lucide="gift" class="size-7" aria-hidden="true"></i></span><div><h2 id="reward-title" class="text-xl font-black">Nâng cấp sơn gel</h2><p id="reward-business" class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar</p></div></div><dl class="mt-6 space-y-4 rounded-2xl bg-app-panel p-4"><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Reward cost" data-vi="Điểm đổi quà">Điểm đổi quà</dt><dd id="reward-cost" class="font-black">800 điểm</dd></div><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Current balance" data-vi="Số dư hiện tại">Số dư hiện tại</dt><dd id="reward-balance" data-balance-with-unit="bitcoin-nail-bar" class="font-black">2.450 điểm</dd></div><div class="flex justify-between gap-4 border-t border-app-line pt-4 text-sm"><dt class="font-bold" data-en="Balance after" data-vi="Số dư còn lại">Số dư còn lại</dt><dd id="reward-after" class="font-black text-app-cyan">1.650 điểm</dd></div></dl><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Show the confirmation code to staff before the service is completed. This action cannot be undone." data-vi="Hãy đưa mã xác nhận cho nhân viên trước khi hoàn tất dịch vụ. Không thể hoàn tác thao tác này.">Hãy đưa mã xác nhận cho nhân viên trước khi hoàn tất dịch vụ. Không thể hoàn tác thao tác này.</p><button class="app-button mt-5 w-full" type="button" data-action="confirm-reward"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Use points now" data-vi="Dùng điểm ngay">Dùng điểm ngay</span></button></div></div>
+          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="rewards" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Confirm redemption" data-vi="Xác nhận đổi điểm">Xác nhận đổi điểm</p><h1 id="redeem-title" class="text-2xl font-black" data-en="Redeem reward" data-vi="Đổi phần thưởng">Đổi phần thưởng</h1></div></div><div class="app-card"><div class="flex items-start gap-4"><span class="grid size-14 place-items-center rounded-2xl bg-app-pink/10 text-app-pink"><i data-lucide="gift" class="size-7" aria-hidden="true"></i></span><div><h2 id="reward-title" class="text-xl font-black">Nâng cấp sơn gel</h2><p id="reward-business" class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar</p></div></div><dl class="mt-6 space-y-4 rounded-2xl bg-app-panel p-4"><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Reward cost" data-vi="Điểm đổi quà">Điểm đổi quà</dt><dd id="reward-cost" class="font-black">800 điểm</dd></div><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Current balance" data-vi="Số dư hiện tại">Số dư hiện tại</dt><dd id="reward-balance" data-balance-with-unit="bitcoin-nail-bar" class="font-black">2.450 điểm</dd></div><div class="flex justify-between gap-4 border-t border-app-line pt-4 text-sm"><dt class="font-bold" data-en="Balance after" data-vi="Số dư còn lại">Số dư còn lại</dt><dd id="reward-after" class="font-black text-app-cyan">1.650 điểm</dd></div></dl><p class="mt-4 text-xs leading-5 text-app-muted" data-en="This action cannot be undone." data-vi="Không thể hoàn tác thao tác này.">Không thể hoàn tác thao tác này.</p><button class="app-button mt-5 w-full" type="button" data-action="confirm-reward"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Use points now" data-vi="Dùng điểm ngay">Dùng điểm ngay</span></button></div></div>
         </section>
         <section class="app-screen hidden" id="redeemdone" data-ready="true" data-module="wallet" aria-labelledby="redeemdone-title">
           <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-10" aria-hidden="true"></i></span><h1 id="redeemdone-title" class="mt-6 text-3xl font-black" data-en="Reward ready" data-vi="Phần thưởng đã sẵn sàng">Phần thưởng đã sẵn sàng</h1><p id="redeemdone-business-copy" class="mt-3 text-sm leading-6 text-app-muted"></p><div class="app-card mt-6"><p class="eyebrow" data-en="Redemption code" data-vi="Mã đổi quà">Mã đổi quà</p><strong id="reward-done-code" class="mt-3 block text-3xl tracking-[.22em] text-app-cyan"></strong><div class="my-5 border-t border-dashed border-app-line"></div><div class="flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Reward" data-vi="Phần thưởng">Phần thưởng</span><strong id="reward-done-title"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Points used" data-vi="Điểm đã dùng">Điểm đã dùng</span><strong id="reward-done-cost"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-muted" data-en="Status" data-vi="Trạng thái">Trạng thái</span><strong id="reward-done-status"></strong></div></div><button class="app-button-secondary mt-4 w-full" type="button" data-action="show-reward-qr" data-en="Show QR code" data-vi="Hiện mã QR">Hiện mã QR</button><button class="app-button mt-3 w-full" type="button" data-action="navigate" data-target="wallet" data-en="Back to wallet" data-vi="Về ví điểm">Về ví điểm</button></div></div>
@@ -477,7 +477,7 @@
             <article class="app-card overflow-hidden p-0" data-business-card data-business-id="golden-glow-spa" data-category="spa" data-search="golden glow spa facial massage"><div class="relative h-44"><img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=900&q=80" alt="Không gian thư giãn tại Golden Glow Spa" class="h-full w-full object-cover"><span class="absolute left-3 top-3 rounded-full bg-app-purple/80 px-2.5 py-1 text-[11px] font-bold backdrop-blur" data-en="Co-op partner" data-vi="Đối tác liên minh">Đối tác liên minh</span></div><div class="p-4"><div class="flex items-start justify-between gap-3"><div><h2 class="font-black">Golden Glow Spa</h2><p class="mt-1 text-xs text-app-muted">Spa · 1.1 mi</p></div><span class="flex items-center gap-1 text-sm font-black text-app-gold"><i data-lucide="star" class="size-4 fill-current" aria-hidden="true"></i>4.8</span></div><p class="mt-4 text-sm leading-6 text-app-muted" data-en="Facials, massage and skin treatments with verified pricing." data-vi="Chăm sóc da, massage và liệu trình với giá đã xác minh.">Chăm sóc da, massage và liệu trình với giá đã xác minh.</p><button type="button" class="app-button-secondary mt-4 w-full" data-action="view-business" data-business-id="golden-glow-spa" data-en="View business" data-vi="Xem doanh nghiệp">Xem doanh nghiệp</button></div></article>
             <article class="app-card overflow-hidden p-0 md:col-span-2 xl:col-span-1" data-business-card data-business-id="moon-coffee" data-category="coffee new" data-search="moon coffee bakery latte"><div class="relative h-44"><img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80" alt="Quầy cà phê Moon Coffee" class="h-full w-full object-cover"><span class="absolute left-3 top-3 rounded-full bg-app-green/80 px-2.5 py-1 text-[11px] font-bold text-black" data-en="New on NEXORA" data-vi="Mới trên NEXORA">Mới trên NEXORA</span></div><div class="p-4"><div class="flex items-start justify-between gap-3"><div><h2 class="font-black">Moon Coffee</h2><p class="mt-1 text-xs text-app-muted">Coffee · 0.8 mi</p></div><span class="flex items-center gap-1 text-sm font-black text-app-gold"><i data-lucide="star" class="size-4 fill-current" aria-hidden="true"></i>4.7</span></div><p class="mt-4 text-sm leading-6 text-app-muted" data-en="Small-batch coffee, pastries and member-only offers." data-vi="Cà phê rang mẻ nhỏ, bánh ngọt và ưu đãi riêng cho thành viên.">Cà phê rang mẻ nhỏ, bánh ngọt và ưu đãi riêng cho thành viên.</p><button type="button" class="app-button-secondary mt-4 w-full" data-action="view-business" data-business-id="moon-coffee" data-en="View business" data-vi="Xem doanh nghiệp">Xem doanh nghiệp</button></div></article>
           </div>
-          <div id="explore-empty-state" class="app-card mt-4 hidden text-center" data-state="empty"><i data-lucide="search-x" class="mx-auto size-8 text-app-muted" aria-hidden="true"></i><h2 class="mt-3 font-black" data-en="No businesses found" data-vi="Không tìm thấy doanh nghiệp">Không tìm thấy doanh nghiệp</h2><p class="mt-1 text-sm text-app-muted" data-en="Try another keyword or category." data-vi="Hãy thử từ khóa hoặc danh mục khác.">Hãy thử từ khóa hoặc danh mục khác.</p></div><button type="button" class="app-button-secondary mt-4" data-action="simulate-geo-push" data-en="Simulate nearby alert" data-vi="Mô phỏng thông báo gần bạn">Mô phỏng thông báo gần bạn</button>
+          <div id="explore-empty-state" class="app-card mt-4 hidden text-center" data-state="empty"><i data-lucide="search-x" class="mx-auto size-8 text-app-muted" aria-hidden="true"></i><h2 class="mt-3 font-black" data-en="No businesses found" data-vi="Không tìm thấy doanh nghiệp">Không tìm thấy doanh nghiệp</h2><p class="mt-1 text-sm text-app-muted" data-en="Try another keyword or category." data-vi="Hãy thử từ khóa hoặc danh mục khác.">Hãy thử từ khóa hoặc danh mục khác.</p></div>
         </section>
         <section class="app-screen hidden" id="business" data-ready="true" data-module="explore" aria-labelledby="business-title">
           <div class="relative -mx-4 -mt-5 h-56 overflow-hidden sm:-mx-6 lg:-mx-8 lg:-mt-8 lg:h-72"><img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1600&q=85" alt="Không gian Bitcoin Nail Bar" class="h-full w-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-app-bg via-app-bg/20 to-black/20"></div><button class="icon-button absolute left-4 top-4 bg-black/50 text-white sm:left-6 lg:left-8 lg:top-8" type="button" data-action="back" data-back-target="explore" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button></div><div class="relative -mt-12"><div class="app-card"><div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><div class="flex flex-wrap items-center gap-2"><span class="rounded-full bg-app-green/10 px-2.5 py-1 text-xs font-bold text-app-green" data-en="NEXORA verified" data-vi="NEXORA xác minh">NEXORA xác minh</span><span class="rounded-full bg-app-cyan/10 px-2.5 py-1 text-xs font-bold text-app-cyan" data-en="Open until 7 PM" data-vi="Mở đến 19:00">Mở đến 19:00</span></div><h1 id="business-title" class="mt-3 text-2xl font-black sm:text-3xl">Bitcoin Nail Bar</h1><p class="mt-1 text-sm text-app-muted">1288 Westheimer Rd · Houston · 0.2 mi</p></div><div class="flex items-center gap-2 text-app-gold"><i data-lucide="star" class="size-5 fill-current" aria-hidden="true"></i><strong class="text-xl">4.9</strong><span class="text-xs text-app-muted">(486)</span></div></div><div class="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4"><button class="app-button" type="button" data-action="navigate" data-target="book1"><i data-lucide="calendar-plus" class="size-4" aria-hidden="true"></i><span data-en="Book" data-vi="Đặt lịch">Đặt lịch</span></button><button class="app-button-secondary" type="button" data-action="navigate" data-target="rewards"><i data-lucide="gift" class="size-4" aria-hidden="true"></i><span data-en="Rewards" data-vi="Phần thưởng">Phần thưởng</span></button><button class="app-button-secondary" type="button" data-action="navigate" data-target="tip"><i data-lucide="badge-dollar-sign" class="size-4" aria-hidden="true"></i><span data-en="Tip" data-vi="Gửi tip">Gửi tip</span></button><button class="app-button-secondary" type="button" data-action="show-directions"><i data-lucide="navigation" class="size-4" aria-hidden="true"></i><span data-en="Directions" data-vi="Chỉ đường">Chỉ đường</span></button></div></div><div class="mt-4 grid gap-4 lg:grid-cols-[1fr_320px]"><section class="app-card"><h2 class="section-title" data-en="Popular services" data-vi="Dịch vụ phổ biến">Dịch vụ phổ biến</h2><div class="mt-4 divide-y divide-app-line"><div class="flex justify-between gap-4 py-3"><span><strong class="block text-sm" data-en="Gel manicure" data-vi="Sơn gel">Sơn gel</strong><small class="text-app-muted">45 phút</small></span><strong>$45</strong></div><div class="flex justify-between gap-4 py-3"><span><strong class="block text-sm" data-en="Signature pedicure" data-vi="Pedicure đặc biệt">Pedicure đặc biệt</strong><small class="text-app-muted">60 phút</small></span><strong>$55</strong></div><div class="flex justify-between gap-4 py-3"><span><strong class="block text-sm" data-en="Nail art add-on" data-vi="Vẽ móng bổ sung">Vẽ móng bổ sung</strong><small class="text-app-muted">20 phút</small></span><strong>$18</strong></div></div></section><aside class="app-card"><h2 class="section-title" data-en="Trust signals" data-vi="Thông tin xác thực">Thông tin xác thực</h2><ul class="mt-4 space-y-3 text-sm"><li class="flex gap-2"><i data-lucide="badge-check" class="size-5 shrink-0 text-app-green" aria-hidden="true"></i><span data-en="Business identity verified" data-vi="Danh tính doanh nghiệp đã xác minh">Danh tính doanh nghiệp đã xác minh</span></li><li class="flex gap-2"><i data-lucide="receipt-text" class="size-5 shrink-0 text-app-cyan" aria-hidden="true"></i><span data-en="Prices verified 3 days ago" data-vi="Giá được xác minh 3 ngày trước">Giá được xác minh 3 ngày trước</span></li><li class="flex gap-2"><i data-lucide="users-round" class="size-5 shrink-0 text-app-pink" aria-hidden="true"></i><span data-en="1,842 verified visits" data-vi="1.842 lượt ghé đã xác thực">1.842 lượt ghé đã xác thực</span></li></ul></aside></div></div>
@@ -701,6 +701,120 @@
         detail: Object.freeze({ vi: 'Bitcoin Nail Bar · 1.000 điểm', en: 'Bitcoin Nail Bar · 1,000 pts' })
       })
     ]);
+    // An offer is a business advertising itself to every customer — it is not priced in points and
+    // never touches the ledger. Redeeming points is the rewards catalog's job (see REWARDS), so an
+    // offer carries only what the card and its detail dialog display.
+    const OFFERS = Object.freeze([
+      Object.freeze({
+        id: 'offer-glow', businessId: 'golden-glow-spa', category: 'beauty',
+        image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=900&q=80',
+        search: 'golden glow facial spa cham soc da',
+        badge: Object.freeze({ vi: 'GIẢM 20%', en: '20% OFF' }),
+        title: Object.freeze({ vi: 'Chăm sóc da Glow', en: 'Glow facial' }),
+        detail: Object.freeze({ vi: 'Golden Glow Spa · Hết hạn 21/07', en: 'Golden Glow Spa · Ends Jul 21' }),
+        description: Object.freeze({
+          vi: 'Liệu trình chăm sóc da mặt 60 phút gồm làm sạch sâu, tẩy tế bào chết và đắp mặt nạ dưỡng ẩm.',
+          en: 'A 60-minute facial with deep cleansing, exfoliation and a hydrating mask.'
+        }),
+        period: Object.freeze({ vi: '01/07 – 21/07/2026, mọi ngày trong tuần', en: 'Jul 1 – Jul 21, 2026, any day of the week' }),
+        location: Object.freeze({ vi: 'Golden Glow Spa · 4820 Bellaire Blvd, Houston', en: 'Golden Glow Spa · 4820 Bellaire Blvd, Houston' }),
+        terms: Object.freeze({
+          vi: 'Cần đặt lịch trước. Không áp dụng cùng khuyến mãi khác.',
+          en: 'Booking required. Cannot be combined with other promotions.'
+        })
+      }),
+      Object.freeze({
+        id: 'offer-moon', businessId: 'moon-coffee', category: 'food',
+        image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80',
+        search: 'moon coffee latte pastry ca phe',
+        badge: Object.freeze({ vi: 'MUA 1 TẶNG 1', en: 'BUY 1 GET 1' }),
+        title: Object.freeze({ vi: 'Latte thành viên', en: 'Member latte' }),
+        detail: Object.freeze({ vi: 'Moon Coffee · Hết hạn 31/07', en: 'Moon Coffee · Ends Jul 31' }),
+        description: Object.freeze({
+          vi: 'Mua một ly latte size vừa, tặng ngay ly thứ hai cùng loại.',
+          en: 'Buy one medium latte and get a second one of the same kind free.'
+        }),
+        period: Object.freeze({ vi: '01/07 – 31/07/2026, từ 7:00 đến 11:00', en: 'Jul 1 – Jul 31, 2026, from 7:00 to 11:00' }),
+        location: Object.freeze({ vi: 'Moon Coffee · 9188 Bellaire Blvd, Houston', en: 'Moon Coffee · 9188 Bellaire Blvd, Houston' }),
+        terms: Object.freeze({
+          vi: 'Mỗi khách một lần mỗi ngày. Chỉ dùng tại quán.',
+          en: 'One per customer per day. Dine-in only.'
+        })
+      }),
+      Object.freeze({
+        id: 'offer-gelx', businessId: BUSINESS_ID, category: 'beauty',
+        image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=900&q=80',
+        search: 'bitcoin nail bar gel x full set bo mong',
+        badge: Object.freeze({ vi: 'GIẢM 15%', en: '15% OFF' }),
+        title: Object.freeze({ vi: 'Bộ móng Gel-X', en: 'Full set Gel-X' }),
+        detail: Object.freeze({ vi: 'Bitcoin Nail Bar · Hết hạn 15/08', en: 'Bitcoin Nail Bar · Ends Aug 15' }),
+        description: Object.freeze({
+          vi: 'Bộ móng Gel-X trọn gói, đã gồm tháo móng cũ và tạo dáng theo yêu cầu.',
+          en: 'A complete Gel-X full set, including old-set removal and shaping to request.'
+        }),
+        period: Object.freeze({ vi: '10/07 – 15/08/2026, từ thứ Hai đến thứ Năm', en: 'Jul 10 – Aug 15, 2026, Monday through Thursday' }),
+        location: Object.freeze({ vi: 'Bitcoin Nail Bar · 6100 Westheimer Rd, Houston', en: 'Bitcoin Nail Bar · 6100 Westheimer Rd, Houston' }),
+        terms: Object.freeze({
+          vi: 'Không áp dụng cuối tuần và ngày lễ. Nói với nhân viên trước khi làm.',
+          en: 'Not valid on weekends or holidays. Tell staff before the service starts.'
+        })
+      }),
+      Object.freeze({
+        id: 'offer-lotus-pedi', businessId: 'lotus-nail-spa', category: 'beauty',
+        image: 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=900&q=80',
+        search: 'lotus nail spa pedicure massage chan',
+        badge: Object.freeze({ vi: 'TẶNG MASSAGE', en: 'FREE MASSAGE' }),
+        title: Object.freeze({ vi: 'Pedicure cao cấp', en: 'Deluxe pedicure' }),
+        detail: Object.freeze({ vi: 'Lotus Nail & Spa · Hết hạn 10/08', en: 'Lotus Nail & Spa · Ends Aug 10' }),
+        description: Object.freeze({
+          vi: 'Pedicure cao cấp tặng kèm 10 phút massage chân với đá nóng.',
+          en: 'A deluxe pedicure with a complimentary 10-minute hot stone foot massage.'
+        }),
+        period: Object.freeze({ vi: '05/07 – 10/08/2026, mọi ngày trong tuần', en: 'Jul 5 – Aug 10, 2026, any day of the week' }),
+        location: Object.freeze({ vi: 'Lotus Nail & Spa · 2717 Wilcrest Dr, Houston', en: 'Lotus Nail & Spa · 2717 Wilcrest Dr, Houston' }),
+        terms: Object.freeze({
+          vi: 'Phần massage tặng kèm không quy đổi thành tiền hay dịch vụ khác.',
+          en: 'The complimentary massage has no cash value and cannot be swapped.'
+        })
+      }),
+      Object.freeze({
+        id: 'offer-velvet-lash', businessId: 'velvet-lash-studio', category: 'beauty',
+        image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=900&q=80',
+        search: 'velvet lash studio noi mi classic extensions',
+        badge: Object.freeze({ vi: 'GIẢM 25%', en: '25% OFF' }),
+        title: Object.freeze({ vi: 'Nối mi classic', en: 'Classic lash set' }),
+        detail: Object.freeze({ vi: 'Velvet Lash Studio · Hết hạn 05/08', en: 'Velvet Lash Studio · Ends Aug 5' }),
+        description: Object.freeze({
+          vi: 'Nối mi classic toàn phần, kỹ thuật viên tư vấn độ cong và độ dài phù hợp khuôn mắt.',
+          en: 'A full classic lash set, with the artist advising the curl and length that suit your eyes.'
+        }),
+        period: Object.freeze({ vi: '01/07 – 05/08/2026, từ thứ Ba đến Chủ nhật', en: 'Jul 1 – Aug 5, 2026, Tuesday through Sunday' }),
+        location: Object.freeze({ vi: 'Velvet Lash Studio · 10600 Bellaire Blvd, Houston', en: 'Velvet Lash Studio · 10600 Bellaire Blvd, Houston' }),
+        terms: Object.freeze({
+          vi: 'Chỉ dành cho khách nối mi lần đầu tại studio. Cần đặt lịch trước.',
+          en: 'First-time lash clients at the studio only. Booking required.'
+        })
+      }),
+      Object.freeze({
+        id: 'offer-moon-combo', businessId: 'moon-coffee', category: 'food',
+        image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=900&q=80',
+        search: 'moon coffee combo sang banh sung bo croissant',
+        badge: Object.freeze({ vi: 'COMBO SÁNG', en: 'BREAKFAST COMBO' }),
+        title: Object.freeze({ vi: 'Cà phê và bánh sừng bò', en: 'Coffee and croissant' }),
+        detail: Object.freeze({ vi: 'Moon Coffee · Hết hạn 28/07', en: 'Moon Coffee · Ends Jul 28' }),
+        description: Object.freeze({
+          vi: 'Một ly cà phê tuỳ chọn kèm bánh sừng bò nướng trong ngày, giá trọn gói $6.',
+          en: 'Any coffee plus a croissant baked that morning, $6 for the pair.'
+        }),
+        period: Object.freeze({ vi: '08/07 – 28/07/2026, từ 7:00 đến 10:30', en: 'Jul 8 – Jul 28, 2026, from 7:00 to 10:30' }),
+        location: Object.freeze({ vi: 'Moon Coffee · 9188 Bellaire Blvd, Houston', en: 'Moon Coffee · 9188 Bellaire Blvd, Houston' }),
+        terms: Object.freeze({
+          vi: 'Áp dụng đến khi hết bánh trong ngày. Không đổi sang món khác.',
+          en: 'While the day’s pastries last. No substitutions.'
+        })
+      })
+    ]);
+
     const CHECKIN_STAFF_BUSINESSES = Object.freeze({
       'staff-anna': BUSINESS_ID,
       'staff-maria': BUSINESS_ID,
@@ -734,7 +848,7 @@
     };
     const BUSINESS_CONSENT_SCOPE = `business:${BUSINESS_ID}`;
     const CONSENT_SCOPES = [BUSINESS_CONSENT_SCOPE, 'networkOffers'];
-    const OFFER_IDS = new Set(['offer-glow', 'offer-moon']);
+    const OFFER_IDS = new Set(OFFERS.map((offer) => offer.id));
     const LOOK_PHOTO_MAX_LENGTH = 1_500_000;
     const REWARDS = {
       credit5: { key: 'credit5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'service_credit', cost: 500, title: { vi: 'Tín dụng dịch vụ $5', en: '$5 service credit' } },
@@ -7769,7 +7883,7 @@
         scanSignedOutCustomer: 'Chưa đăng nhập', scanPrivateSummary: 'Đăng nhập để xem',
         points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', noExpiry: 'Chưa có điểm sắp hết hạn.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', rewardReadyStatus: 'Sẵn sàng', rewardUsedStatus: 'Đã dùng', showCode: 'Hiện mã', rewardRedeemedEmpty: 'Chưa có phần thưởng nào khả dụng. Hãy xem tab Khám phá.', rewardUsedEmpty: 'Chưa có phần thưởng nào được dùng tại tiệm.', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
         paymentSent: 'Đã gửi ${amount} cho tiệm', paymentConfirmedTitle: 'Đã xác nhận thanh toán', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu', saveOffer: 'Lưu ưu đãi', view: 'Xem', rebook: 'Đặt lại', tip: 'Gửi tip', delete: 'Xóa', followingTech: 'Đang theo dõi thợ', followTech: 'Theo dõi thợ', removeWish: 'Xóa mong muốn', favorite: 'Đã yêu thích', addFavorite: 'Thêm yêu thích', recentVisit: 'Lượt ghé gần đây',
-        offerSaved: 'Đã lưu ưu đãi', offerRemoved: 'Đã bỏ lưu ưu đãi', offerSaveFailed: 'Ưu đãi không hợp lệ.', offerDetails: 'Chi tiết ưu đãi', offerDetail: 'Xem điều kiện, thời hạn và doanh nghiệp phát hành trước khi dùng.', wishRequired: 'Hãy nhập mong muốn', wishDuplicate: 'Mong muốn này đã tồn tại.', wishShared: 'Đã gửi mong muốn ẩn danh',
+        offerSaved: 'Đã lưu ưu đãi', offerRemoved: 'Đã bỏ lưu ưu đãi', offerSaveFailed: 'Ưu đãi không hợp lệ.', offerPeriod: 'Thời gian áp dụng', offerLocation: 'Địa điểm áp dụng', offerTerms: 'Quy định', offerUnavailable: 'Không mở được ưu đãi này. Vui lòng thử lại.', wishRequired: 'Hãy nhập mong muốn', wishDuplicate: 'Mong muốn này đã tồn tại.', wishShared: 'Đã gửi mong muốn ẩn danh',
         lookServiceRequired: 'Hãy nhập tên dịch vụ', lookRequired: 'Hãy nhập ảnh, dịch vụ, màu hoặc ghi chú.', lookSaveFailed: 'Không thể lưu kiểu. Vui lòng thử lại.', lookPhotoQuota: 'Bộ nhớ ảnh đã đầy; đã lưu thông tin kiểu không kèm ảnh.', lookSaved: 'Đã lưu kiểu mới', noLookNote: 'Không có ghi chú.', deleteLook: 'Xóa kiểu này?', deleteLookDetail: 'Thao tác chỉ ảnh hưởng dữ liệu mẫu trên thiết bị.', followVisitRequired: 'Chỉ theo dõi thợ đã từng phục vụ bạn.', scanReceipt: 'Quét hóa đơn', scanReceiptDetail: 'Bản mẫu mô phỏng OCR hóa đơn.', ratingRequired: 'Hãy chọn số sao',
         reviewThanks: 'Đã gửi phản hồi riêng và cộng 15 điểm.', feedbackSent: 'Đã gửi phản hồi', feedbackSubmit: 'Gửi phản hồi + nhận 15 điểm', feedbackAlreadySent: 'Lượt ghé này đã gửi phản hồi.', feedbackFailed: 'Không thể gửi phản hồi. Vui lòng thử lại.',
         bookingMissingSelection: 'Chọn đủ dịch vụ, thợ, ngày và giờ.', bookingFailed: 'Không thể lưu yêu cầu đặt lịch. Vui lòng thử lại.', bookingConfirmFailed: 'Không thể xác nhận lịch hẹn. Vui lòng thử lại.', bookingRequestedTitle: 'Đã gửi yêu cầu', bookingConfirmedTitle: 'Lịch hẹn đã xác nhận', bookingPendingSla: '{business} thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.', bookingConfirmedCopy: '{business} đã xác nhận lịch hẹn và cộng {points} điểm.',
@@ -7798,13 +7912,13 @@
         paymentMethodsTitle: 'Phương thức thanh toán', paymentMethodsSaved: 'Đã lưu phương thức.',
         privacyTitle: 'Thông tin riêng tư', privacyDetail: 'NEXORA không bán dữ liệu cá nhân. Tùy chọn của bản mẫu chỉ được lưu trên thiết bị này.',
         resetTitle: 'Đặt lại dữ liệu mẫu?', resetDetail: 'Điểm, lịch sử và tùy chọn sẽ trở về dữ liệu ban đầu.',
-        logoutTitle: 'Đăng xuất?', logoutDetail: 'Dữ liệu điểm vẫn được giữ trên thiết bị này.', useOffer: 'Dùng ưu đãi'
+        logoutTitle: 'Đăng xuất?', logoutDetail: 'Dữ liệu điểm vẫn được giữ trên thiết bị này.'
       },
       en: {
         scanSignedOutCustomer: 'Signed out', scanPrivateSummary: 'Sign in to view',
-        points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', noExpiry: 'No points expiring soon.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', rewardReadyStatus: 'Ready', rewardUsedStatus: 'Used', showCode: 'Show code', rewardRedeemedEmpty: 'You have not redeemed any reward yet. Check the Explore tab.', rewardUsedEmpty: 'No reward has been used at a salon yet.', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
+        points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', noExpiry: 'No points expiring soon.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', rewardReadyStatus: 'Ready', rewardUsedStatus: 'Used', showCode: 'Show code', rewardRedeemedEmpty: 'No reward is available to use yet. Check the Explore tab.', rewardUsedEmpty: 'No reward has been used at a salon yet.', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
         paymentSent: '${amount} sent to the salon', paymentConfirmedTitle: 'Payment Confirmed', insufficientPoints: 'Not enough points', saved: 'Saved', saveOffer: 'Save offer', view: 'View', rebook: 'Rebook', tip: 'Tip', delete: 'Delete', followingTech: 'Following tech', followTech: 'Follow tech', removeWish: 'Remove wish', favorite: 'Favorite', addFavorite: 'Add favorite', recentVisit: 'Recent visit',
-        offerSaved: 'Offer saved', offerRemoved: 'Offer removed', offerSaveFailed: 'Invalid offer.', offerDetails: 'Offer details', offerDetail: 'Review terms, expiry and issuing business before use.', wishRequired: 'Enter a wish first', wishDuplicate: 'This wish already exists.', wishShared: 'Anonymous wish shared',
+        offerSaved: 'Offer saved', offerRemoved: 'Offer removed', offerSaveFailed: 'Invalid offer.', offerPeriod: 'When it runs', offerLocation: 'Where it applies', offerTerms: 'Terms', offerUnavailable: 'Could not open this offer. Please try again.', wishRequired: 'Enter a wish first', wishDuplicate: 'This wish already exists.', wishShared: 'Anonymous wish shared',
         lookServiceRequired: 'Enter a service name', lookRequired: 'Add a photo, service, color or note.', lookSaveFailed: 'Could not save this look.', lookPhotoQuota: 'Image storage is full; look details were saved without the photo.', lookSaved: 'New look saved', noLookNote: 'No note.', deleteLook: 'Delete this look?', deleteLookDetail: 'This only changes local demo data.', followVisitRequired: 'You can only follow a tech from a shared visit.', scanReceipt: 'Scan receipt', scanReceiptDetail: 'This prototype simulates receipt OCR.', ratingRequired: 'Choose a rating',
         reviewThanks: 'Private feedback sent and 15 points added.', feedbackSent: 'Feedback sent', feedbackSubmit: 'Send feedback + earn 15 points', feedbackAlreadySent: 'Feedback was already sent for this visit.', feedbackFailed: 'Could not send feedback. Please try again.',
         bookingMissingSelection: 'Choose service, technician, day and time.', bookingFailed: 'Could not save the booking request. Please try again.', bookingConfirmFailed: 'Could not confirm the appointment. Please try again.', bookingRequestedTitle: 'Request sent', bookingConfirmedTitle: 'Appointment confirmed', bookingPendingSla: '{business} usually responds within 10 minutes. We will notify you as soon as they confirm.', bookingConfirmedCopy: '{business} confirmed the appointment and added {points} points.',
@@ -7833,7 +7947,7 @@
         paymentMethodsTitle: 'Payment methods', paymentMethodsSaved: 'Payment methods saved.',
         privacyTitle: 'Privacy details', privacyDetail: 'NEXORA never sells your personal data. Prototype preferences stay on this device.',
         resetTitle: 'Reset demo data?', resetDetail: 'Points, history and preferences return to their defaults.',
-        logoutTitle: 'Sign out?', logoutDetail: 'Your reward data stays on this device.', useOffer: 'Use offer'
+        logoutTitle: 'Sign out?', logoutDetail: 'Your reward data stays on this device.'
       }
     };
 
@@ -9264,29 +9378,83 @@
       grid.replaceChildren(...cards);
     }
 
+    function offerCopy(offer, field) {
+      return offer[field][state.profile.language] ?? offer[field].vi;
+    }
+
+    // An offer is a business advertising itself to every customer, so a card only ever reads or
+    // bookmarks it. Spending points is the rewards catalog's job and never happens from here.
+    function renderOfferCard(offer) {
+      const card = document.createElement('article');
+      card.className = 'app-card overflow-hidden p-0';
+      card.dataset.offerCard = '';
+      card.dataset.offerId = offer.id;
+      card.dataset.category = offer.category;
+      card.dataset.search = `${offer.search} ${offerCopy(offer, 'title')}`.toLowerCase();
+      const image = document.createElement('img');
+      image.src = offer.image;
+      image.alt = '';
+      image.loading = 'lazy';
+      image.className = 'h-28 w-full object-cover';
+      const body = document.createElement('div');
+      body.className = 'p-4';
+      const badge = document.createElement('span');
+      badge.className = 'text-xs font-bold text-app-green';
+      badge.textContent = offerCopy(offer, 'badge');
+      const title = document.createElement('h2');
+      title.className = 'mt-2 font-black';
+      title.textContent = offerCopy(offer, 'title');
+      const detail = document.createElement('p');
+      detail.className = 'mt-1 text-xs text-app-muted';
+      detail.textContent = offerCopy(offer, 'detail');
+      const actions = document.createElement('div');
+      actions.className = 'mt-4 grid gap-2';
+      actions.append(
+        createActionButton('view-offer', t('view'), { offerId: offer.id }),
+        createActionButton('save-offer', t('saveOffer'), { offerId: offer.id })
+      );
+      body.append(badge, title, detail, actions);
+      card.append(image, body);
+      return card;
+    }
+
+    // The detail dialog is the only place an offer states its full terms, so it carries the picture,
+    // what the deal actually is, and the three things a customer gets caught out by: when it runs,
+    // where it is honoured, and what the fine print says.
+    function renderOfferDetail(offer) {
+      const content = document.createElement('div');
+      const image = document.createElement('img');
+      image.src = offer.image;
+      image.alt = '';
+      image.className = 'h-40 w-full rounded-2xl object-cover';
+      const badge = document.createElement('span');
+      badge.className = 'mt-4 inline-block rounded-full bg-app-green/10 px-2.5 py-1 text-xs font-black text-app-green';
+      badge.textContent = offerCopy(offer, 'badge');
+      const description = document.createElement('p');
+      description.className = 'mt-3 text-sm leading-6';
+      description.textContent = offerCopy(offer, 'description');
+      const list = document.createElement('dl');
+      list.className = 'mt-4 space-y-3 rounded-2xl bg-app-panel p-4 text-left';
+      [['offerPeriod', 'period'], ['offerLocation', 'location'], ['offerTerms', 'terms']].forEach(([labelKey, field]) => {
+        const row = document.createElement('div');
+        const term = document.createElement('dt');
+        term.className = 'eyebrow';
+        term.textContent = t(labelKey);
+        const value = document.createElement('dd');
+        value.className = 'mt-1 text-sm leading-6';
+        value.textContent = offerCopy(offer, field);
+        row.append(term, value);
+        list.append(row);
+      });
+      content.append(image, badge, description, list);
+      return content;
+    }
+
     function renderOffers() {
-      document.querySelectorAll('[data-offer-card]').forEach((card, index) => {
-        if (!card.dataset.offerId) card.dataset.offerId = index === 0 ? 'offer-glow' : 'offer-moon';
-        const saveControl = card.querySelector('[data-action="save-offer"]');
-        if (saveControl) saveControl.dataset.offerId = card.dataset.offerId;
-        const body = card.querySelector('.p-4') ?? card;
-        let viewControl = body.querySelector?.('[data-action="view-offer"]');
-        let useControl = body.querySelector?.('[data-action="use-offer"]');
-        if (!viewControl || !useControl) {
-          const actions = document.createElement('div');
-          actions.className = 'mt-2 grid grid-cols-2 gap-2';
-          if (!viewControl) {
-            viewControl = createActionButton('view-offer', t('view'), { offerId: card.dataset.offerId });
-            actions.append(viewControl);
-          }
-          if (!useControl) {
-            useControl = createActionButton('use-offer', t('useOffer'), { rewardKey: card.dataset.offerId === 'offer-glow' ? 'glow' : 'moon' }, 'app-button');
-            actions.append(useControl);
-          }
-          body.append(actions);
-        }
-        if (viewControl) setActionLabel(viewControl, t('view'));
-        if (useControl) setActionLabel(useControl, t('useOffer'));
+      const grid = document.getElementById('offer-grid');
+      if (grid) grid.replaceChildren(...OFFERS.map(renderOfferCard));
+      document.querySelectorAll('[data-action="view-offer"]').forEach((control) => {
+        setActionLabel(control, t('view'));
       });
       document.querySelectorAll('[data-action="save-offer"]').forEach((control) => {
         const saved = state.savedOfferIds.includes(control.dataset.offerId);
@@ -10944,11 +11112,15 @@
       showToast(saved ? t('offerSaved') : t('offerRemoved'));
     });
     registerAction('view-offer', (control) => {
-      const card = control.closest('[data-offer-card]');
-      const title = card?.querySelector('h2')?.textContent || t('offerDetails');
-      openOverlay({ title, html: t('offerDetail'), hideCancel: true }, control);
+      const offer = OFFERS.find((entry) => entry.id === control.dataset.offerId);
+      if (!offer) return showToast(t('offerUnavailable'), 'error');
+      openOverlay({
+        title: offerCopy(offer, 'title'),
+        content: renderOfferDetail(offer),
+        confirmLabel: t('gotIt'),
+        hideCancel: true
+      }, control);
     });
-    registerAction('use-offer', (control) => openReward(control.dataset.rewardKey));
     registerAction('add-wish', () => { addWish(); });
     registerAction('submit-wishes', () => { submitWishes(); });
     registerAction('remove-wish', (control) => {

@@ -4326,37 +4326,62 @@ test('rejects tampered followed technicians and malformed opt-in values before U
   }
 });
 
-test('refreshes dynamic offer view and use labels after switching to English', () => {
-  const saveLabel = createStubElement({ textContent: 'Lưu ưu đãi' });
-  const saveControl = createStubElement({
-    dataset: { action: 'save-offer', offerId: 'offer-glow' },
-    querySelectors: { span: saveLabel }
+test('builds every offer card from data with only read and bookmark actions', () => {
+  const grid = createStubElement({ id: 'offer-grid' });
+  const document = createDocumentStub({
+    extraElements: [grid],
+    selectorNodes: { '[data-offer-filter]': [] }
   });
-  const viewControl = createStubElement({ dataset: { action: 'view-offer', offerId: 'offer-glow' }, textContent: 'Xem' });
-  const useControl = createStubElement({ dataset: { action: 'use-offer', rewardKey: 'glow' }, textContent: 'Dùng ưu đãi' });
-  const body = createStubElement({ querySelectors: {
-    '[data-action="view-offer"]': viewControl,
-    '[data-action="use-offer"]': useControl
-  } });
-  const card = createStubElement({
-    dataset: { offerId: 'offer-glow', category: 'beauty', search: 'glow' },
-    querySelectors: {
-      '[data-action="save-offer"]': saveControl,
-      '.p-4': body
-    }
+  const { context, api } = testApi({}, { document });
+  context.renderOffers();
+
+  // Every offer in the catalog gets a card, and OFFER_IDS is derived from that same list.
+  assert.equal(grid.children.length, 6);
+  const ids = grid.children.map((card) => card.dataset.offerId);
+  assert.deepEqual(ids, ['offer-glow', 'offer-moon', 'offer-gelx', 'offer-lotus-pedi', 'offer-velvet-lash', 'offer-moon-combo']);
+  for (const id of ids) assert.equal(api.toggleSavedOffer(structuredClone(api.createDefaultState()), id), true);
+
+  // An offer advertises; it never spends points. Only view and save may appear.
+  for (const card of grid.children) {
+    const actions = card.children.at(-1).children.at(-1).children;
+    assert.deepEqual(actions.map((button) => button.dataset.action), ['view-offer', 'save-offer']);
+  }
+  const source = html();
+  assert.doesNotMatch(source, /use-offer/);
+  assert.doesNotMatch(source, /useOffer/);
+
+  // Labels follow the active language.
+  const firstActions = grid.children[0].children.at(-1).children.at(-1).children;
+  assert.equal(firstActions[0].textContent, 'Xem');
+  context.setLanguage('en');
+  assert.equal(grid.children[0].children.at(-1).children.at(-1).children[0].textContent, 'View');
+});
+
+test('shows an offer detail dialog carrying its picture, period, location and terms', () => {
+  const grid = createStubElement({ id: 'offer-grid' });
+  const document = createDocumentStub({
+    extraElements: [grid],
+    selectorNodes: { '[data-offer-filter]': [] }
   });
-  const document = createDocumentStub({ selectorNodes: {
-    '[data-offer-card]': [card],
-    '[data-action="save-offer"]': [saveControl],
-    '[data-offer-filter]': []
-  } });
   const { context } = testApi({}, { document });
   context.renderOffers();
-  assert.equal(viewControl.textContent, 'Xem');
-  assert.equal(useControl.textContent, 'Dùng ưu đãi');
-  context.setLanguage('en');
-  assert.equal(viewControl.textContent, 'View');
-  assert.equal(useControl.textContent, 'Use offer');
+  const viewControl = createStubElement({ dataset: { action: 'view-offer', offerId: 'offer-moon' } });
+  context.handleAction({ target: { closest: (selector) => selector === '[data-action]' ? viewControl : null } });
+
+  assert.equal(document.getElementById('overlay-title').textContent, 'Latte thành viên');
+  const content = document.getElementById('overlay-content').children[0];
+  const [image, badge, description, list] = content.children;
+  assert.equal(image.tagName, 'IMG');
+  assert.match(image.src, /^https:\/\/images\.unsplash\.com\//);
+  assert.equal(badge.textContent, 'MUA 1 TẶNG 1');
+  assert.match(description.textContent, /latte size vừa/);
+  assert.deepEqual(list.children.map((row) => row.children[0].textContent),
+    ['Thời gian áp dụng', 'Địa điểm áp dụng', 'Quy định']);
+  assert.deepEqual(list.children.map((row) => row.children[1].textContent), [
+    '01/07 – 31/07/2026, từ 7:00 đến 11:00',
+    'Moon Coffee · 9188 Bellaire Blvd, Houston',
+    'Mỗi khách một lần mỗi ngày. Chỉ dùng tại quán.'
+  ]);
 });
 
 test('maps every declared data-action to a registered handler', () => {
