@@ -197,10 +197,12 @@
       .disp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .disp-stats > .disp-stat:last-child:nth-child(odd) { grid-column: 1 / -1; }
     }
-    .disp-stat { background: var(--nexora-surface); border: 1px solid var(--nexora-border); border-radius: 14px; padding: 14px; box-shadow: var(--nexora-card-shadow); text-align: center; }
+    .disp-stat { position: relative; overflow: hidden; background: var(--nexora-surface); border: 1px solid var(--nexora-border); border-radius: 14px; padding: 15px 14px; box-shadow: var(--nexora-card-shadow); text-align: center; transition: transform .18s, box-shadow .18s; }
+    .disp-stat::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--accent, var(--nexora-brand)); opacity: .85; }
+    .disp-stat:hover { transform: translateY(-2px); box-shadow: var(--nexora-soft-shadow); }
     .disp-num { font-size: 24px; font-weight: 900; color: var(--nexora-text); }
     .disp-lbl { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11px; font-weight: 800; color: var(--nexora-muted); margin-top: 3px; }
-    .disp-lbl i { font-size: 12px; line-height: 1; }
+    .disp-lbl i { font-size: 12px; line-height: 1; color: var(--accent, var(--nexora-brand)); }
     .disp-grid { display: grid; grid-template-columns: 1.45fr 1fr; gap: 14px; align-items: start; }
     @media (max-width: 1100px) { .disp-grid { grid-template-columns: 1fr; } }
 
@@ -371,10 +373,9 @@
     .swal2-timer-progress-bar { background: var(--nexora-success) !important; }
 
     /* ── bootstrap-icons sizing (icons inherit font-size, which is too small in dense labels) ── */
-    .pos-card-head h3 { display: flex; align-items: center; gap: 7px; }
-    .pos-card-head h3 i { font-size: 15px; line-height: 1; color: var(--nexora-brand); flex-shrink: 0; }
-    .pos-kpi-label { display: flex; align-items: center; gap: 6px; }
-    .pos-kpi-label i { font-size: 13px; line-height: 1; }
+    /* keep headings in normal inline flow so an inline (count) badge stays put — align the icon, don't flex the row */
+    .pos-card-head h3 i { font-size: 15px; color: var(--nexora-brand); margin-right: 6px; vertical-align: -1px; }
+    .pos-kpi-label i { font-size: 13px; color: var(--nexora-brand); margin-right: 5px; vertical-align: -1px; }
     .pos-btn i, .pos-chip i, .tag-btn i, .pill i, .fc-step i, .feed-line i, .wl-name i, .wl-meta i, .tech-sub i, .next-chip i, .pick-arrow i, .sel-hint i, .warn-row i, .cust-usual i, .cust-note i, .cust-pkg i, .pos-hint i, .pos-inline-lbl i, .ap-warn i, .confirm-title i, .sms-preview-lbl i, .pos-section-title i { line-height: 1; }
     .pos-table th i, .pos-table td i { line-height: 1; }
     .seg-btn-icon, .sched-opt-icon, .camp-icon { line-height: 1; color: var(--nexora-brand); }
@@ -441,11 +442,11 @@
         <section class="pos-panel is-active" data-pos-panel="dispatch" aria-label="Dispatch">
           <div class="pos-stack">
             <div class="disp-stats">
-              <div class="disp-stat"><div class="disp-num" data-fs-wait>0</div><div class="disp-lbl"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Waiting</div></div>
-              <div class="disp-stat"><div class="disp-num" data-fs-svc>0</div><div class="disp-lbl"><i class="bi bi-brush" aria-hidden="true"></i> In service</div></div>
-              <div class="disp-stat"><div class="disp-num" data-fs-ready>0</div><div class="disp-lbl"><i class="bi bi-cash-coin" aria-hidden="true"></i> Ready to pay</div></div>
-              <div class="disp-stat"><div class="disp-num" data-fs-done>0</div><div class="disp-lbl"><i class="bi bi-receipt" aria-hidden="true"></i> Tickets today</div></div>
-              <div class="disp-stat"><div class="disp-num" data-fs-rev>$0</div><div class="disp-lbl"><i class="bi bi-cash-stack" aria-hidden="true"></i> Revenue today</div></div>
+              <div class="disp-stat" style="--accent:var(--nexora-warning)"><div class="disp-num" data-fs-wait>0</div><div class="disp-lbl"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Waiting</div></div>
+              <div class="disp-stat" style="--accent:var(--nexora-violet)"><div class="disp-num" data-fs-svc>0</div><div class="disp-lbl"><i class="bi bi-brush" aria-hidden="true"></i> In service</div></div>
+              <div class="disp-stat" style="--accent:var(--nexora-electric)"><div class="disp-num" data-fs-ready>0</div><div class="disp-lbl"><i class="bi bi-cash-coin" aria-hidden="true"></i> Ready to pay</div></div>
+              <div class="disp-stat" style="--accent:var(--nexora-brand)"><div class="disp-num" data-fs-done>0</div><div class="disp-lbl"><i class="bi bi-receipt" aria-hidden="true"></i> Tickets today</div></div>
+              <div class="disp-stat" style="--accent:var(--nexora-success)"><div class="disp-num" data-fs-rev>$0</div><div class="disp-lbl"><i class="bi bi-cash-stack" aria-hidden="true"></i> Revenue today</div></div>
             </div>
 
             <div class="flow-strip">
@@ -1084,8 +1085,8 @@
             '<div class="wl-info"><div class="wl-name">' + esc(r.name) + ' <span class="pos-chip pos-chip-violet">' + esc(r.src) + '</span></div>' +
             '<div class="wl-meta">' + esc(r.svc) + (r.reqTech ? ' · 📌 wants ' + esc(techName(r.reqTech)) : '') + (r.promo ? ' · 🎁 ' + esc(r.promo) : '') + '</div>' +
             custProfHtml(r.name) + '</div>' +
-            '<div class="wl-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-ciq-ok="' + r.id + '">✓ Accept</button>' +
-            '<button class="x-btn" data-ciq-no="' + r.id + '" title="Decline">✕</button></div></div>';
+            '<div class="wl-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-ciq-ok="' + r.id + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Accept</button>' +
+            '<button class="x-btn" data-ciq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
         }).join(''));
       }
 
@@ -1100,12 +1101,12 @@
           var req = reqSkill(w);
           var ok = !req || (t.skills || []).indexOf(req) !== -1;
           return '<div class="wl-card">' +
-            '<div class="wl-info"><div class="wl-name">💅 ' + esc(t.name) + ' wants ticket #' + w.id + ' — ' + esc(w.name) + '</div>' +
+            '<div class="wl-info"><div class="wl-name"><i class="bi bi-brush" aria-hidden="true"></i> ' + esc(t.name) + ' wants ticket #' + w.id + ' — ' + esc(w.name) + '</div>' +
             '<div class="wl-meta">' + esc(w.svc || '') + ' · currently: ' + (w.techId ? esc(techName(w.techId)) : 'unassigned') + ' · skill ' + (req || '—') + ': ' +
             (ok ? '<span class="pos-good-text">Eligible ✓</span>' : '<span class="pos-danger-text">Missing ⚠ — approving is an override and is logged</span>') +
             '</div></div>' +
-            '<div class="wl-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-arq-ok="' + r.id + '">✓ Give to ' + esc(t.name) + '</button>' +
-            '<button class="x-btn" data-arq-no="' + r.id + '" title="Decline">✕</button></div></div>';
+            '<div class="wl-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-arq-ok="' + r.id + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Give to ' + esc(t.name) + '</button>' +
+            '<button class="x-btn" data-arq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
         }).join(''));
       }
 
@@ -1118,18 +1119,18 @@
         set('[data-eta-count]', open.length);
         html('[data-eta-list]', items.map(function (x) {
           var b = x.b, e = b.eta;
-          var chip = !e ? '<span class="pos-chip pos-chip-gray">⚪ No response yet</span>'
-            : e.st === 'otw' ? '<span class="pos-chip pos-chip-blue">🚗 On the way · ~' + etaRem(e) + "' out" + (e.share ? ' · 📍 live' : '') + '</span>'
-            : e.st === 'late' ? '<span class="pos-chip pos-chip-amber">🟠 Running late · ~' + etaRem(e) + "' out" + (e.share ? ' · 📍 live' : '') + '</span>'
-            : e.st === 'here' ? '<span class="pos-chip pos-chip-green">📍 At the door</span>'
-            : '<span class="pos-chip pos-chip-green">✅ In the queue</span>';
+          var chip = !e ? '<span class="pos-chip pos-chip-gray"><i class="bi bi-circle" aria-hidden="true"></i> No response yet</span>'
+            : e.st === 'otw' ? '<span class="pos-chip pos-chip-blue"><i class="bi bi-car-front-fill" aria-hidden="true"></i> On the way · ~' + etaRem(e) + "' out" + (e.share ? ' · 📍 live' : '') + '</span>'
+            : e.st === 'late' ? '<span class="pos-chip pos-chip-amber"><i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i> Running late · ~' + etaRem(e) + "' out" + (e.share ? ' · 📍 live' : '') + '</span>'
+            : e.st === 'here' ? '<span class="pos-chip pos-chip-green"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> At the door</span>'
+            : '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> In the queue</span>';
           var act = (e && e.st === 'in') ? ''
-            : (e && e.st === 'here') ? '<button class="pos-btn pos-btn-success pos-btn-sm" data-eta-in="' + x.i + '">✓ Check in to queue</button>'
-            : '<button class="pos-btn pos-btn-sm" data-eta-here="' + x.i + '">📍 Arrived</button>';
+            : (e && e.st === 'here') ? '<button class="pos-btn pos-btn-success pos-btn-sm" data-eta-in="' + x.i + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Check in to queue</button>'
+            : '<button class="pos-btn pos-btn-sm" data-eta-here="' + x.i + '"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> Arrived</button>';
           var map = (e && e.share && (e.st === 'otw' || e.st === 'late'))
             ? '<div class="live-map">🚗··········💅 Live trip — guest is sharing their route · ~' + etaRem(e) + "' out</div>" : '';
           return '<div class="wl-card">' +
-            '<div class="wl-info"><div class="wl-name">' + esc(b.name) + ' <span class="pos-chip pos-chip-blue">📅 ' + b.time + '</span></div>' +
+            '<div class="wl-info"><div class="wl-name">' + esc(b.name) + ' <span class="pos-chip pos-chip-blue"><i class="bi bi-calendar-event" aria-hidden="true"></i> ' + b.time + '</span></div>' +
             '<div class="wl-meta">' + esc(b.svc) + (b.techId ? ' · 📌 ' + esc(techName(b.techId)) : '') + '</div>' +
             custProfHtml(b.name) + '</div>' +
             chip + '<div class="wl-actions">' + act + '</div>' + map + '</div>';
@@ -1165,36 +1166,36 @@
               '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
               '<div class="wl-meta">' + esc(w.svc || 'No service chosen') + ' · in at ' + w.at + (w.phone ? ' · ' + esc(w.phone) : '') + reqTxt + '</div>' +
               custProfHtml(w.name) + '</div>' +
-              '<span class="wl-wait' + (late ? ' bad' : '') + '">⏳ ' + waitMin + "'</span>" +
+              '<span class="wl-wait' + (late ? ' bad' : '') + '"><i class="bi bi-hourglass-split" aria-hidden="true"></i> ' + waitMin + "'</span>" +
               '<div class="wl-actions">' +
-              '<button class="pos-btn pos-btn-primary pos-btn-sm" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '>▶ ' + (auto ? esc(auto.name) : 'No tech') + '</button>' +
-              '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove">✕</button></div></div>';
+              '<button class="pos-btn pos-btn-primary pos-btn-sm" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>' +
+              '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
           }
           if (w.status === 'ready') {
             var rdyMin = w.readyAtMs ? Math.max(0, Math.floor((now - w.readyAtMs) / 60000)) : 0;
             return '<div class="wl-card rdy">' +
               '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
-              '<div class="wl-meta">✅ ' + esc(techName(w.techId)) + ' finished · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div>' +
+              '<div class="wl-meta"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> ' + esc(techName(w.techId)) + ' finished · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div>' +
               custTagsHtml(w.name) + '</div>' +
-              '<span class="wl-wait' + (rdyMin > 5 ? ' bad' : '') + '">💵 waiting ' + rdyMin + "'</span>" +
-              '<div class="wl-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + w.id + '">💳 Charge</button>' +
-              '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove">✕</button></div></div>';
+              '<span class="wl-wait' + (rdyMin > 5 ? ' bad' : '') + '"><i class="bi bi-cash-coin" aria-hidden="true"></i> waiting ' + rdyMin + "'</span>" +
+              '<div class="wl-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + w.id + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
+              '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
           }
           var svcMin = w.svcAtMs ? Math.max(0, Math.floor((now - w.svcAtMs) / 60000)) : 0;
           return '<div class="wl-card svc' + sel + '">' +
             '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
-            '<div class="wl-meta">💅 ' + esc(techName(w.techId)) + ' in service · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div>' +
+            '<div class="wl-meta"><i class="bi bi-brush" aria-hidden="true"></i> ' + esc(techName(w.techId)) + ' in service · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div>' +
             custTagsHtml(w.name) + custStaffNote(w.name) + '</div>' +
-            '<span class="wl-wait">⏱ ' + svcMin + "'</span>" +
+            '<span class="wl-wait"><i class="bi bi-stopwatch" aria-hidden="true"></i> ' + svcMin + "'</span>" +
             '<div class="wl-actions">' +
-            '<button class="pos-btn pos-btn-sm" data-wswap="' + w.id + '" title="Swap tech">⇄</button>' +
-            '<button class="pos-btn pos-btn-sm" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay">✋ Done</button>' +
-            '<button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + w.id + '">💳 Charge</button>' +
-            '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove">✕</button></div></div>';
+            '<button class="pos-btn pos-btn-sm" data-wswap="' + w.id + '" title="Swap tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button>' +
+            '<button class="pos-btn pos-btn-sm" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
+            '<button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + w.id + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
+            '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
         }).join('') : '<div class="wl-empty">No guests yet — add a walk-in, or let the kiosk check someone in.</div>');
 
         var next = nextTech();
-        var board = selW ? '<div class="sel-hint">👆 Tap a free tech to ' + (selW.status === 'service' ? 'reassign' : 'assign') + ' <b>' + esc(selW.name) + '</b> — tap the card again to deselect</div>' : '';
+        var board = selW ? '<div class="sel-hint"><i class="bi bi-hand-index" aria-hidden="true"></i> Tap a free tech to ' + (selW.status === 'service' ? 'reassign' : 'assign') + ' <b>' + esc(selW.name) + '</b> — tap the card again to deselect</div>' : '';
         board += TECHS.map(function (t) {
           var busy = busyName(t.id);
           var pickable = selW && !busy && t.id !== selW.techId;
@@ -1204,12 +1205,12 @@
             '<span class="pos-avatar">' + initials(t.name) + '</span>' +
             '<span class="tech-dot ' + (busy ? 'tech-busy' : 'tech-free') + '"></span>' +
             '<span class="tech-name">' + esc(t.name) + '</span>' +
-            (BEEP[t.id] ? '<span class="pos-chip pos-chip-violet" style="font-size:10px;padding:2px 7px">📟 #' + BEEP[t.id] + '</span>' : '') +
-            (!busy && next && next.id === t.id ? '<span class="next-chip">🎯 Next up</span>' : '') +
-            '<span class="tech-sub">' + (busy ? '💅 ' + esc(busy) : 'Free') + ' · ' + t.turns + ' turns</span>' +
+            (BEEP[t.id] ? '<span class="pos-chip pos-chip-violet" style="font-size:10px;padding:2px 7px"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> #' + BEEP[t.id] + '</span>' : '') +
+            (!busy && next && next.id === t.id ? '<span class="next-chip"><i class="bi bi-bullseye" aria-hidden="true"></i> Next up</span>' : '') +
+            '<span class="tech-sub">' + (busy ? '<i class="bi bi-brush" aria-hidden="true"></i> ' + esc(busy) : 'Free') + ' · ' + t.turns + ' turns</span>' +
             mBadge +
-            (pickable ? '<span class="pick-arrow">👆 Assign</span>'
-              : '<button class="pos-btn pos-btn-sm" data-fpage="' + t.id + '" title="Beep this tech">📟</button>') +
+            (pickable ? '<span class="pick-arrow"><i class="bi bi-hand-index" aria-hidden="true"></i> Assign</span>'
+              : '<button class="pos-btn pos-btn-sm" data-fpage="' + t.id + '" title="Beep this tech"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i></button>') +
             '</div>';
           if (m && !m.okSkill && fWarn && fWarn.tid === t.id && selW && fWarn.wid === selW.id) {
             row += '<div class="warn-row">⚠ ' + esc(t.name) + ' has no <b>' + m.req + '</b> skill for "' + esc(selW.svc || '') + '" — tap again to ASSIGN ANYWAY (logged as an override; the manager owns it)</div>';
@@ -1218,7 +1219,7 @@
         }).join('');
         board += selW
           ? '<div class="pos-hint">% = match score: the service\'s required skill + turn fairness + an explicit request from the guest (skills are configured in 🏢 Management).</div>'
-          : '<div class="pos-hint">🟢 free · 🟠 in service — a turn is added when the ticket is paid. 📟 beeps the tech straight to their Staff App.</div>';
+          : '<div class="pos-hint"><i class="bi bi-record-fill" style="color:var(--nexora-success)" aria-hidden="true"></i> free · <i class="bi bi-record-fill" style="color:var(--nexora-warning)" aria-hidden="true"></i> in service — a turn is added when the ticket is paid. <i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> beeps the tech straight to their Staff App.</div>';
         html('[data-tech-board]', board);
       }
 
@@ -1508,14 +1509,14 @@
             '<span class="tech-dot ' + (open ? 'tech-free' : 'tech-off') + '"></span>' +
             '<span class="tech-name">' + esc(s.name) + ' <span style="font-weight:600;color:var(--nexora-subtle);font-size:11px">· ' + ROLE_LBL[s.role] + '</span></span>' +
             (t ? '<span class="pos-muted" style="font-size:11.5px">Station</span><input class="clk-station" data-clk-bnum="' + s.id + '" value="' + t.bnum + '">' : '') +
-            (t && BEEP[s.id] ? '<span class="pos-chip pos-chip-violet">📟 #' + BEEP[s.id] + (pos ? ' · turn ' + pos : '') + '</span>' : '') +
-            '<span class="tech-sub">' + (open ? '🟢 In since ' + timeFmt(open.in) : (ses.length ? 'Clocked out' : 'Not in')) + ' · ' + hrs.toFixed(1) + 'h today</span>' +
+            (t && BEEP[s.id] ? '<span class="pos-chip pos-chip-violet"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> #' + BEEP[s.id] + (pos ? ' · turn ' + pos : '') + '</span>' : '') +
+            '<span class="tech-sub">' + (open ? '<i class="bi bi-record-fill" aria-hidden="true"></i> In since ' + timeFmt(open.in) : (ses.length ? 'Clocked out' : 'Not in')) + ' · ' + hrs.toFixed(1) + 'h today</span>' +
             '<button class="pos-btn ' + (open ? '' : 'pos-btn-primary ') + 'pos-btn-sm" data-clk="' + s.id + '">' + (open ? '<i class="bi bi-stop-circle" aria-hidden="true"></i> Clock out' : '<i class="bi bi-camera" aria-hidden="true"></i> Clock in') + '</button>' +
             '</div>';
         }).join(''));
 
         html('[data-clk-notif]', NOTIF.length
-          ? NOTIF.slice(-6).reverse().map(function (n) { return '<div class="feed-line">📲 ' + esc(n.msg) + '</div>'; }).join('')
+          ? NOTIF.slice(-6).reverse().map(function (n) { return '<div class="feed-line"><i class="bi bi-phone" aria-hidden="true"></i> ' + esc(n.msg) + '</div>'; }).join('')
           : '<div class="pos-muted">No notifications yet — a tech scanning the QR gets one automatically.</div>');
 
         var log = [];
