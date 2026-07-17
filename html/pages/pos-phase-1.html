@@ -1510,7 +1510,7 @@
             (t ? '<span class="pos-muted" style="font-size:11.5px">Station</span><input class="clk-station" data-clk-bnum="' + s.id + '" value="' + t.bnum + '">' : '') +
             (t && BEEP[s.id] ? '<span class="pos-chip pos-chip-violet">📟 #' + BEEP[s.id] + (pos ? ' · turn ' + pos : '') + '</span>' : '') +
             '<span class="tech-sub">' + (open ? '🟢 In since ' + timeFmt(open.in) : (ses.length ? 'Clocked out' : 'Not in')) + ' · ' + hrs.toFixed(1) + 'h today</span>' +
-            '<button class="pos-btn ' + (open ? '' : 'pos-btn-primary ') + 'pos-btn-sm" data-clk="' + s.id + '">' + (open ? '⏹ Clock out' : '📷 Clock in') + '</button>' +
+            '<button class="pos-btn ' + (open ? '' : 'pos-btn-primary ') + 'pos-btn-sm" data-clk="' + s.id + '">' + (open ? '<i class="bi bi-stop-circle" aria-hidden="true"></i> Clock out' : '<i class="bi bi-camera" aria-hidden="true"></i> Clock in') + '</button>' +
             '</div>';
         }).join(''));
 
@@ -1813,7 +1813,7 @@
         var smInp = function (k, lbl) { return '<label class="pos-inline-lbl">' + lbl + '<input class="pos-mini" data-mg-sm="' + k + '" value="' + SMART[k] + '" style="width:46px"> %</label>'; };
         return '<div class="pos-card">' +
           '<div class="pos-card-head"><h3><i class="bi bi-gem" aria-hidden="true"></i> Smart Commission — performance bonus on top of the base %</h3>' +
-          '<button class="pos-btn pos-btn-sm ' + (SMART.on ? 'pos-btn-success' : '') + '" data-mg-smart>' + (SMART.on ? '🟢 On — turn off' : '⚪ Off — turn on') + '</button></div>' +
+          '<button class="pos-btn pos-btn-sm ' + (SMART.on ? 'pos-btn-success' : '') + '" data-mg-smart>' + (SMART.on ? '<i class="bi bi-check-circle-fill" aria-hidden="true"></i> On — turn off' : '<i class="bi bi-circle" aria-hidden="true"></i> Off — turn on') + '</button></div>' +
           '<div class="pos-inline" style="gap:14px;margin-bottom:12px">' +
           smInp('skillB', '💎 3+ expert skills +') + smInp('revB', '⭐ Rating 4.8+ +') + smInp('upsB', '✨ Upsell 20%+ +') + smInp('retB', '🔁 Steady guests +') + smInp('cap', '🧢 Max total bonus') +
           '</div>' +
@@ -1859,13 +1859,13 @@
           '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Tech</th><th>Weekly pay (<i class="bi bi-briefcase" aria-hidden="true"></i>)</th><th>Tips today</th><th>Total</th><th>Method</th><th>Status</th><th></th></tr></thead><tbody>' +
           rows.map(function (r) {
             var m = r.po.method;
-            var stChip = r.po.st === 'paid' ? '<span class="pos-chip pos-chip-green">✅ Paid ' + (r.po.paidAt ? timeFmt(r.po.paidAt) : '') + '</span>'
-              : !m ? '<span class="pos-chip pos-chip-amber">⏸ Held — no method</span>'
-              : r.po.st === 'ready' ? '<span class="pos-chip pos-chip-violet">🟣 Ready</span>'
-              : '<span class="pos-chip pos-chip-gray">⏳ Locking amount</span>';
+            var stChip = r.po.st === 'paid' ? '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Paid ' + (r.po.paidAt ? timeFmt(r.po.paidAt) : '') + '</span>'
+              : !m ? '<span class="pos-chip pos-chip-amber"><i class="bi bi-pause-circle" aria-hidden="true"></i> Held — no method</span>'
+              : r.po.st === 'ready' ? '<span class="pos-chip pos-chip-violet"><i class="bi bi-check2-circle" aria-hidden="true"></i> Ready</span>'
+              : '<span class="pos-chip pos-chip-gray"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Locking amount</span>';
             var act = r.po.st === 'paid' ? ''
-              : !m ? '<button class="pos-btn pos-btn-sm" data-mg-paysetup="' + r.t.id + '">🔗 Set up method</button>'
-              : '<button class="pos-btn pos-btn-success pos-btn-sm" data-mg-payout="' + r.t.id + '">💸 Pay ' + money(r.tot) + '</button>';
+              : !m ? '<button class="pos-btn pos-btn-sm" data-mg-paysetup="' + r.t.id + '"><i class="bi bi-link-45deg" aria-hidden="true"></i> Set up method</button>'
+              : '<button class="pos-btn pos-btn-success pos-btn-sm" data-mg-payout="' + r.t.id + '"><i class="bi bi-wallet2" aria-hidden="true"></i> Pay ' + money(r.tot) + '</button>';
             return '<tr>' +
               '<td><span class="pos-people"><span class="pos-avatar">' + initials(r.t.name) + '</span> <span class="pos-strong">' + esc(r.t.name) + '</span></span></td>' +
               '<td>' + money(r.pay) + '</td><td class="pos-good-text">' + money(r.tip) + '</td><td class="pos-strong">' + money(r.tot) + '</td>' +
@@ -1891,7 +1891,7 @@
             return '<tr>' +
               '<td><span class="pos-people"><span class="pos-avatar plain">' + s.ava + '</span> <span class="pos-strong">' + esc(s.name) + '</span></span></td>' +
               '<td>' + roleCell + '</td>' +
-              '<td>•••• <button class="pos-btn pos-btn-sm" data-mg-stpin="' + s.id + '">🔑 Reset PIN</button></td>' +
+              '<td>•••• <button class="pos-btn pos-btn-sm" data-mg-stpin="' + s.id + '"><i class="bi bi-key" aria-hidden="true"></i> Reset PIN</button></td>' +
               '<td class="pos-muted wrap">' + ROLE_ACCESS[s.role] + '</td></tr>';
           }).join('') +
           '</tbody></table></div>' +
@@ -2216,7 +2216,7 @@
         }
         var editing = apMode === 'edit';
         var reqList = Object.keys(apSvc).map(function (id) { return SVC_REQ[id]; }).filter(Boolean);
-        p.innerHTML = '<div class="pos-strong" style="font-size:14px">' + (editing ? '✏️ Edit appointment' : '➕ New appointment') + '</div>' +
+        p.innerHTML = '<div class="pos-strong" style="font-size:14px">' + (editing ? '<i class="bi bi-pencil-square" aria-hidden="true"></i> Edit appointment' : '<i class="bi bi-plus-lg" aria-hidden="true"></i> New appointment') + '</div>' +
           '<div class="ap-form">' +
           '<label>Customer</label><input class="pos-input" data-apf="name" maxlength="40" value="' + esc(apDraft.name || '') + '">' +
           '<label>Phone</label><input class="pos-input" data-apf="phone" maxlength="14" value="' + esc(apDraft.phone || '') + '">' +
@@ -2235,7 +2235,7 @@
           B_SLOTS.map(function (s) { return '<option' + (apDraft.time === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>' +
           '<div class="ap-warn" data-ap-warn>' + esc(apWarn) + '</div>' +
           '<button class="pos-btn pos-btn-primary" type="button" data-ap-save style="width:100%;justify-content:center"><i class="bi bi-check-lg"></i> Save appointment</button>' +
-          (editing ? '<button class="pos-btn pos-btn-danger" type="button" data-ap-del style="width:100%;margin-top:8px;justify-content:center">🗑 Cancel this appointment</button>' : '') +
+          (editing ? '<button class="pos-btn pos-btn-danger" type="button" data-ap-del style="width:100%;margin-top:8px;justify-content:center"><i class="bi bi-trash" aria-hidden="true"></i> Cancel this appointment</button>' : '') +
           '<button class="pos-btn" type="button" data-ap-close style="width:100%;margin-top:8px;justify-content:center">Close</button>' +
           '</div>';
       }
