@@ -151,7 +151,7 @@
             </button>
           </div>
 
-          <div class="mt-6"><div class="mb-3 flex items-center justify-between"><h2 class="section-title" data-en="🎁 Redeem now with your points" data-vi="🎁 Đổi ngay bằng điểm của bạn">🎁 Redeem now with your points</h2><button type="button" class="text-xs font-bold text-app-pink" data-action="navigate" data-target="rewards" data-en="All" data-vi="Tất cả">All</button></div>
+          <div class="mt-6"><div class="mb-3 flex items-center justify-between"><h2 class="section-title flex items-center gap-2"><i data-lucide="gift" class="size-5 text-app-pink" aria-hidden="true"></i><span data-en="Redeem now with your points" data-vi="Đổi ngay bằng điểm của bạn">Redeem now with your points</span></h2><button type="button" class="text-xs font-bold text-app-pink" data-action="navigate" data-target="rewards" data-en="All" data-vi="Tất cả">All</button></div>
             <div id="redeem-now-strip" class="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0"></div>
           </div>
 
@@ -13214,6 +13214,9 @@
       renderRedeemStrip();
     }
 
+    // Lucide glyph per reward type for the home "Redeem now" strip; locked rewards use 'lock'.
+    const REDEEM_STRIP_ICONS = { service_credit: 'wallet', free_service: 'gift', percent_code: 'badge-percent' };
+
     // The home "Redeem now" strip mirrors the rewards catalog: purchasable rewards, cheapest first,
     // so affordable options lead and the priciest (still-locked) reward trails. Each card reuses the
     // same open-reward action as the rewards screen; unaffordable ones send the guest to the catalog.
@@ -13238,9 +13241,14 @@
           card.dataset.rewardKey = reward.key;
         }
         const icon = document.createElement('span');
-        icon.className = 'grid size-10 shrink-0 place-items-center rounded-xl bg-app-purple/10 text-lg';
+        icon.className = 'grid size-10 shrink-0 place-items-center rounded-xl bg-app-purple/10 text-app-pink';
         icon.setAttribute('aria-hidden', 'true');
-        icon.textContent = availability.disabled ? '🔒' : '🎁';
+        const glyph = document.createElement('i');
+        glyph.className = 'size-5';
+        glyph.dataset.lucide = availability.disabled
+          ? 'lock'
+          : REDEEM_STRIP_ICONS[reward.type] ?? 'gift';
+        icon.append(glyph);
         const body = document.createElement('span');
         body.className = 'min-w-0';
         const title = document.createElement('strong');
