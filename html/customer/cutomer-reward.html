@@ -173,7 +173,7 @@
           <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             <button class="app-card flex min-h-24 items-center gap-4 text-left" type="button" data-action="navigate" data-target="rewards"><span class="grid size-12 place-items-center rounded-2xl bg-app-pink/10 text-app-pink"><i data-lucide="gift" class="size-6" aria-hidden="true"></i></span><span><strong class="block" data-en="Rewards" data-vi="Phần thưởng">Phần thưởng</strong><small class="text-app-muted" data-en="Redeem services with points" data-vi="Đổi dịch vụ bằng điểm">Đổi dịch vụ bằng điểm</small></span></button>
             <button class="app-card flex min-h-24 items-center gap-4 text-left" type="button" data-action="navigate" data-target="tip" data-business-id="bitcoin-nail-bar"><span class="grid size-12 place-items-center rounded-2xl bg-app-green/10 text-app-green"><i data-lucide="badge-dollar-sign" class="size-6" aria-hidden="true"></i></span><span><strong class="block" data-en="Send a tip" data-vi="Gửi tip">Gửi tip</strong><small class="text-app-muted" data-en="Pay staff directly" data-vi="Trả trực tiếp cho nhân viên">Trả trực tiếp cho nhân viên</small></span></button>
-            <button class="app-card flex min-h-24 items-center gap-4 text-left" type="button" data-action="navigate" data-target="pay"><span class="grid size-12 place-items-center rounded-2xl bg-app-cyan/10 text-app-cyan"><i data-lucide="send" class="size-6" aria-hidden="true"></i></span><span><strong class="block" data-en="Pay salon" data-vi="Thanh toán tiệm">Thanh toán tiệm</strong><small class="text-app-muted" data-en="Direct payment, zero platform fee" data-vi="Thanh toán trực tiếp, phí nền tảng 0%">Thanh toán trực tiếp, phí nền tảng 0%</small></span></button>
+            <button class="app-card flex min-h-24 items-center gap-4 text-left" type="button" data-action="open-salon-payment"><span class="grid size-12 place-items-center rounded-2xl bg-app-cyan/10 text-app-cyan"><i data-lucide="send" class="size-6" aria-hidden="true"></i></span><span><strong class="block" data-en="Pay salon" data-vi="Thanh toán tiệm">Thanh toán tiệm</strong><small class="text-app-muted" data-en="Direct payment, zero platform fee" data-vi="Thanh toán trực tiếp, phí nền tảng 0%">Thanh toán trực tiếp, phí nền tảng 0%</small></span></button>
             <button class="app-card flex min-h-24 items-center gap-4 text-left" type="button" data-action="navigate" data-target="looks"><span class="grid size-12 place-items-center rounded-2xl bg-app-purple/10 text-app-pink"><i data-lucide="images" class="size-6" aria-hidden="true"></i></span><span><strong class="block" data-en="My looks" data-vi="Kiểu của tôi">Kiểu của tôi</strong><small class="text-app-muted" data-en="Photos, colors and service notes" data-vi="Ảnh, màu và ghi chú dịch vụ">Ảnh, màu và ghi chú dịch vụ</small></span></button>
             <button class="app-card flex min-h-24 items-center gap-4 text-left" type="button" data-action="navigate" data-target="book1"><span class="grid size-12 place-items-center rounded-2xl bg-app-gold/10 text-app-gold"><i data-lucide="calendar-plus" class="size-6" aria-hidden="true"></i></span><span><strong class="block" data-en="Book again" data-vi="Đặt lại lịch">Đặt lại lịch</strong><small class="text-app-muted" data-en="Send a booking request" data-vi="Gửi yêu cầu đặt lịch">Gửi yêu cầu đặt lịch</small></span></button>
             <button class="app-card flex min-h-24 items-center gap-4 text-left" type="button" data-action="navigate" data-target="review"><span class="grid size-12 place-items-center rounded-2xl bg-app-red/10 text-app-red"><i data-lucide="message-circle-heart" class="size-6" aria-hidden="true"></i></span><span><strong class="block" data-en="Private feedback" data-vi="Phản hồi riêng">Phản hồi riêng</strong><small class="text-app-muted" data-en="Help the business improve" data-vi="Giúp doanh nghiệp cải thiện">Giúp doanh nghiệp cải thiện</small></span></button>
@@ -193,7 +193,7 @@
               <div class="app-card">
                 <h2 id="tip-details-heading" class="section-title" tabindex="-1" data-en="Tip amount & payment" data-vi="Số tiền tip và thanh toán">Số tiền tip và thanh toán</h2>
                 <div id="tip-selected-summary" class="mt-3 flex flex-wrap gap-2"></div>
-                <div class="mt-5 grid grid-cols-2 gap-2" role="group" aria-label="Cách chia tip"><button id="tip-split-equal" type="button" class="app-chip justify-center" data-action="set-tip-split" data-split-mode="equal" aria-pressed="true" data-en="Split equally" data-vi="Chia đều">Chia đều</button><button id="tip-split-individual" type="button" class="app-chip justify-center" data-action="set-tip-split" data-split-mode="individual" aria-pressed="false" data-en="Individual amounts" data-vi="Tip riêng từng thợ">Tip riêng từng thợ</button></div>
+                <div id="tip-split-group" class="mt-5 grid grid-cols-2 gap-2" role="group" aria-label="Cách chia tip"><button id="tip-split-equal" type="button" class="app-chip justify-center" data-action="set-tip-split" data-split-mode="equal" aria-pressed="true" data-en="Split equally" data-vi="Chia đều">Chia đều</button><button id="tip-split-individual" type="button" class="app-chip justify-center" data-action="set-tip-split" data-split-mode="individual" aria-pressed="false" data-en="Individual amounts" data-vi="Tip riêng từng thợ">Tip riêng từng thợ</button></div>
                 <div id="tip-equal-allocation" class="mt-5"><label class="text-sm font-bold" for="tip-total-amount" data-en="Total tip" data-vi="Tổng tiền tip">Tổng tiền tip</label><div class="mt-3 grid grid-cols-4 gap-2"><button type="button" class="app-chip justify-center" data-action="select-tip-total" data-cents="1000">$10</button><button type="button" class="app-chip justify-center" data-action="select-tip-total" data-cents="2000">$20</button><button type="button" class="app-chip justify-center" data-action="select-tip-total" data-cents="3000">$30</button><button type="button" class="app-chip justify-center" data-action="select-tip-total" data-cents="4000">$40</button></div><input id="tip-total-amount" class="app-input mt-3 text-xl font-black" type="number" min="1" step="0.01" value="10"></div>
                 <div id="tip-individual-allocation" class="mt-5 hidden"><div id="tip-individual-list" class="space-y-3"></div></div>
                 <div class="mt-5 flex items-center justify-between border-t border-app-line pt-4"><span class="font-bold" data-en="Total" data-vi="Tổng cộng">Tổng cộng</span><strong id="tip-allocation-total" class="text-2xl text-app-green">$10</strong></div>
@@ -218,10 +218,10 @@
           <div class="mx-auto max-w-2xl text-center"><h1 id="tipdone-title" class="sr-only" tabindex="-1" data-en="Tip status" data-vi="Trạng thái tip">Trạng thái tip</h1><div id="tip-batch-receipt" class="app-card mb-5 text-left"></div><section data-tipdone-view="pending" aria-hidden="false" aria-labelledby="tip-pending-title"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Awaiting confirmation" data-vi="Đang chờ xác nhận">Đang chờ xác nhận</p><h2 id="tip-pending-title" class="mt-2 text-3xl font-black" tabindex="-1" data-en="Salon is checking your proof" data-vi="Tiệm đang kiểm tra bằng chứng">Tiệm đang kiểm tra bằng chứng</h2><p class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted" data-en="No points are added until the salon confirms." data-vi="Chưa cộng điểm cho đến khi tiệm xác nhận.">Chưa cộng điểm cho đến khi tiệm xác nhận.</p><div class="mt-6 grid grid-cols-2 gap-3"><button type="button" class="app-button" data-action="confirm-tip-batch-demo" data-en="Confirm demo" data-vi="Xác nhận thử">Xác nhận thử</button><button type="button" class="app-button-secondary" data-action="reject-tip-batch-demo" data-en="Reject demo" data-vi="Từ chối thử">Từ chối thử</button></div></section><section class="hidden" data-tipdone-view="rejected" aria-hidden="true" aria-labelledby="tip-rejected-title"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-red/10 text-app-red"><i data-lucide="circle-x" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Proof rejected" data-vi="Bằng chứng bị từ chối">Bằng chứng bị từ chối</p><h2 id="tip-rejected-title" class="mt-2 text-3xl font-black" tabindex="-1" data-en="Please replace your proof" data-vi="Vui lòng thay bằng chứng">Vui lòng thay bằng chứng</h2><p id="tip-reject-reason" class="mt-3 text-sm text-app-red"></p><button type="button" class="app-button mt-6 w-full" data-action="replace-tip-batch-proof" data-en="Replace proof" data-vi="Thay bằng chứng">Thay bằng chứng</button></section><section class="hidden" data-tipdone-view="confirmed" aria-hidden="true" aria-labelledby="tip-confirmed-title"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="circle-check" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Confirmed" data-vi="Đã xác nhận">Đã xác nhận</p><h2 id="tip-confirmed-title" class="mt-2 text-3xl font-black" tabindex="-1" data-en="Your tip was confirmed" data-vi="Khoản tip đã được xác nhận">Khoản tip đã được xác nhận</h2><p id="tip-confirmed-points-copy" class="mt-3 text-app-green"></p><button type="button" class="app-button mt-6 w-full" data-action="open-tip-review" data-en="Review your experience" data-vi="Đánh giá trải nghiệm">Đánh giá trải nghiệm</button><button type="button" class="app-button-secondary mt-3 w-full" data-action="skip-tip-review" data-en="Skip review" data-vi="Bỏ qua đánh giá">Bỏ qua đánh giá</button></section><section class="hidden" data-tipdone-view="tip-and-earn" aria-hidden="true" aria-labelledby="tip-earn-title"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-purple/10 text-app-pink"><i data-lucide="gift" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5">TIP &amp; EARN</p><h2 id="tip-earn-title" class="mt-2 text-3xl font-black" tabindex="-1" data-en="Thank you" data-vi="Cảm ơn bạn">Cảm ơn bạn</h2><p id="tip-earn-summary" class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted"></p><button type="button" class="app-button mt-6 w-full" data-action="navigate" data-target="home" data-en="Done" data-vi="Hoàn tất">Hoàn tất</button><button type="button" class="app-button-secondary mt-3 w-full" data-action="open-google-review" data-en="Share on Google (optional · no points)" data-vi="Chia sẻ lên Google (tùy chọn · không điểm)">Chia sẻ lên Google (tùy chọn · không điểm)</button></section></div>
         </section>
         <section class="app-screen hidden" id="pay" data-ready="true" data-module="home" aria-labelledby="pay-title">
-          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Zero platform fee" data-vi="Phí nền tảng 0%">Phí nền tảng 0%</p><h1 id="pay-title" class="text-2xl font-black" data-en="Pay salon directly" data-vi="Thanh toán trực tiếp cho tiệm">Thanh toán trực tiếp cho tiệm</h1></div></div><div id="direct-payment-view" data-pay-view="direct" aria-hidden="false"><div class="app-card"><label class="text-sm font-bold" for="payment-amount" data-en="Amount" data-vi="Số tiền">Số tiền</label><div class="relative mt-2"><span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black">$</span><input id="payment-amount" class="app-input pl-10 text-2xl font-black" type="number" min="1" step="0.01" value="55.00"></div><p id="payment-amount-source" class="mt-2 hidden text-xs leading-5 text-app-cyan"></p><p class="mt-5 text-sm font-bold" data-en="Send with" data-vi="Gửi bằng">Gửi bằng</p><div id="payment-method-list" class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3"></div><div class="mt-5 rounded-xl border border-app-line bg-app-panel p-4"><div class="flex justify-between"><span class="text-sm text-app-muted" data-en="Business receives" data-vi="Tiệm nhận">Tiệm nhận</span><strong id="payment-business-receives">$55.00</strong></div><div class="mt-2 flex justify-between"><span class="text-sm text-app-muted" data-en="NEXORA fee" data-vi="Phí NEXORA">Phí NEXORA</span><strong class="text-app-green">$0.00</strong></div></div><p class="mt-4 text-xs leading-5 text-app-muted" data-en="NEXORA never holds your money; the business confirms the external payment." data-vi="NEXORA không giữ tiền; doanh nghiệp sẽ xác nhận khoản thanh toán bên ngoài.">NEXORA không giữ tiền; doanh nghiệp sẽ xác nhận khoản thanh toán bên ngoài.</p><button type="button" class="app-button mt-5 w-full" data-action="send-payment"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="Open Zelle to pay" data-vi="Mở Zelle để thanh toán">Mở Zelle để thanh toán</span></button></div></div><section id="guest-checkout-view" class="hidden" data-pay-view="checkout" aria-hidden="true" aria-labelledby="guest-checkout-title"><div class="app-card"><h2 id="guest-checkout-title" class="text-xl font-black" tabindex="-1" data-en="Guest Checkout" data-vi="Thanh toán khách">Thanh toán khách</h2><div id="guest-checkout-items" class="mt-4 divide-y divide-dashed"></div><div class="mt-4 flex justify-between text-lg font-black"><span data-en="Before Tip" data-vi="Trước tip">Trước tip</span><strong id="checkout-before-tip"></strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3 text-xl font-black"><span data-en="Total" data-vi="Tổng cộng">Tổng cộng</span><strong id="checkout-total"></strong></div></div><fieldset class="app-card mt-4"><legend class="font-black" data-en="Tip technician" data-vi="Tip cho thợ">Tip cho thợ</legend><div class="mt-3 grid grid-cols-2 gap-3"><button type="button" class="app-chip" data-action="select-checkout-tip" data-basis-points="0" data-en="No Tip" data-vi="Không tip" aria-pressed="true">Không tip</button><button type="button" class="app-chip" data-action="select-checkout-tip" data-basis-points="1500" aria-pressed="false">15%</button><button type="button" class="app-chip" data-action="select-checkout-tip" data-basis-points="1800" aria-pressed="false">18%</button><button type="button" class="app-chip" data-action="select-checkout-tip" data-basis-points="2000" aria-pressed="false">20%</button></div></fieldset><fieldset class="app-card mt-4"><legend class="font-black" data-en="Payment method" data-vi="Phương thức thanh toán">Phương thức thanh toán</legend><div class="mt-3 grid gap-3"><button type="button" class="app-button-secondary" data-action="select-checkout-method" data-method="Card" aria-pressed="false" data-en="Card" data-vi="Thẻ">Thẻ</button><button type="button" class="app-button-secondary" data-action="select-checkout-method" data-method="Zelle" aria-pressed="false">Zelle</button><button type="button" class="app-button-secondary" data-action="select-checkout-method" data-method="Venmo" aria-pressed="false">Venmo</button><button type="button" class="app-button-secondary" data-action="select-checkout-method" data-method="Pay at Counter" aria-pressed="false" data-en="Pay at Counter" data-vi="Thanh toán tại quầy">Thanh toán tại quầy</button></div></fieldset><p id="checkout-error" class="field-error hidden" role="alert"></p><p id="checkout-continue-reason" class="mt-3 text-sm text-app-muted" data-en="Select a payment method to continue." data-vi="Chọn phương thức thanh toán để tiếp tục.">Chọn phương thức thanh toán để tiếp tục.</p><button id="continue-checkout" type="button" class="app-button mt-4 w-full" data-action="continue-checkout" disabled aria-disabled="true" aria-describedby="checkout-continue-reason" data-en="Continue" data-vi="Tiếp tục">Tiếp tục</button></section><section id="payment-proof-view" class="hidden" data-pay-view="payment-proof" aria-hidden="true" aria-labelledby="payment-proof-title"><div class="app-card"><div class="flex items-center justify-between"><h2 id="payment-proof-title" class="text-xl font-black" tabindex="-1" data-en="Payment Proof" data-vi="Bằng chứng thanh toán">Bằng chứng thanh toán</h2><span class="inline-flex items-center gap-1"><i data-lucide="image-up" class="size-4" aria-hidden="true"></i><span data-en="Proof" data-vi="Bằng chứng">Bằng chứng</span></span></div><div class="mt-5 flex justify-between text-xl font-black"><span id="payment-proof-method"></span><strong id="payment-proof-amount"></strong></div></div><div class="app-card mt-4"><label class="sr-only" for="payment-proof-file" data-en="Payment proof image" data-vi="Ảnh bằng chứng thanh toán">Ảnh bằng chứng thanh toán</label><input id="payment-proof-file" class="sr-only" type="file" accept="image/jpeg,image/png"><button type="button" class="app-button-secondary w-full" data-action="upload-payment-proof" data-en="Upload screenshot" data-vi="Tải ảnh bằng chứng">Tải ảnh bằng chứng</button><img id="payment-proof-preview" class="mt-3 hidden max-h-64 w-full rounded-2xl object-contain" alt="Payment proof preview"><button id="remove-payment-proof" type="button" class="app-link mt-2 hidden" data-action="remove-payment-proof" data-en="Remove image" data-vi="Xóa ảnh">Xóa ảnh</button><label class="mt-4 block text-sm font-bold" for="payment-proof-note" data-en="Note" data-vi="Ghi chú">Ghi chú</label><textarea id="payment-proof-note" class="app-input mt-2" maxlength="280"></textarea><p id="payment-proof-error" class="field-error hidden" role="alert"></p><button type="button" class="app-button mt-4 w-full" data-action="submit-payment-proof" data-en="Submit proof" data-vi="Gửi bằng chứng">Gửi bằng chứng</button></div></section></div>
+          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Zero platform fee" data-vi="Phí nền tảng 0%">Phí nền tảng 0%</p><h1 id="pay-title" class="text-2xl font-black" data-en="Pay salon directly" data-vi="Thanh toán trực tiếp cho tiệm">Thanh toán trực tiếp cho tiệm</h1></div></div><div id="direct-payment-view" data-pay-view="direct" aria-hidden="false"><div class="app-card"><div class="flex items-center gap-4"><span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-app-cyan/10 text-app-cyan"><i data-lucide="store" class="size-6" aria-hidden="true"></i></span><div class="min-w-0 flex-1"><p class="eyebrow" data-en="Paying" data-vi="Thanh toán cho">Thanh toán cho</p><strong id="direct-pay-business-name" class="block truncate text-lg"></strong><small id="direct-pay-business-meta" class="text-app-muted"></small></div></div></div><div class="app-card mt-4"><label class="text-sm font-bold" for="payment-amount" data-en="Amount" data-vi="Số tiền">Số tiền</label><p id="payment-amount-source" class="mt-2 hidden text-xs leading-5 text-app-cyan"></p><div id="direct-pay-presets" class="mt-3 grid grid-cols-4 gap-2"><button type="button" class="app-chip justify-center py-2 text-sm font-black" data-action="select-direct-pay-amount" data-cents="2000" aria-pressed="false">$20</button><button type="button" class="app-chip justify-center py-2 text-sm font-black" data-action="select-direct-pay-amount" data-cents="4000" aria-pressed="false">$40</button><button type="button" class="app-chip justify-center py-2 text-sm font-black" data-action="select-direct-pay-amount" data-cents="6000" aria-pressed="false">$60</button><button type="button" class="app-chip justify-center py-2 text-sm font-black" data-action="select-direct-pay-amount" data-cents="8000" aria-pressed="false">$80</button></div><div class="relative mt-3"><span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black">$</span><input id="payment-amount" class="app-input pl-10 text-2xl font-black" type="number" min="1" step="0.01" placeholder="0.00" aria-describedby="payment-amount-source"></div><p id="direct-pay-amount-error" class="field-error mt-2 hidden" role="alert"></p><p class="mt-5 text-sm font-bold" data-en="Send with" data-vi="Gửi bằng">Gửi bằng</p><div id="payment-method-list" class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3"></div><p id="direct-pay-method-error" class="field-error mt-2 hidden" role="alert"></p><div class="mt-5 rounded-xl border border-app-line bg-app-panel p-4"><div class="flex justify-between"><span class="text-sm text-app-muted" data-en="Business receives" data-vi="Tiệm nhận">Tiệm nhận</span><strong id="payment-business-receives">$0.00</strong></div><div class="mt-2 flex justify-between"><span class="text-sm text-app-muted" data-en="NEXORA fee" data-vi="Phí NEXORA">Phí NEXORA</span><strong class="text-app-green">$0.00</strong></div><div class="mt-2 flex justify-between"><span class="text-sm text-app-muted" data-en="Points when confirmed" data-vi="Điểm khi được xác nhận">Điểm khi được xác nhận</span><strong id="direct-pay-points-preview" class="text-app-gold">+0</strong></div></div><p class="mt-4 text-xs leading-5 text-app-muted" data-en="NEXORA never holds your money; the business confirms the external payment." data-vi="NEXORA không giữ tiền; doanh nghiệp sẽ xác nhận khoản thanh toán bên ngoài.">NEXORA không giữ tiền; doanh nghiệp sẽ xác nhận khoản thanh toán bên ngoài.</p><button type="button" class="app-button mt-5 w-full" data-action="direct-pay-next" data-next-pay-view="direct-guide"><i data-lucide="arrow-right" class="size-4" aria-hidden="true"></i><span data-en="View payment guide" data-vi="Xem hướng dẫn thanh toán">Xem hướng dẫn thanh toán</span></button></div></div><section id="direct-pay-guide-view" class="hidden" data-pay-view="direct-guide" aria-hidden="true" aria-labelledby="direct-pay-guide-heading"><div class="app-card"><div class="flex items-start justify-between gap-3"><div><p class="eyebrow" data-en="Payment guide" data-vi="Hướng dẫn thanh toán">Hướng dẫn thanh toán</p><h2 id="direct-pay-guide-heading" class="mt-1 section-title" tabindex="-1"></h2></div><div class="text-right"><strong id="direct-pay-guide-total" class="block text-2xl text-app-green"></strong><button type="button" class="mt-1 text-xs font-bold text-app-pink" data-action="direct-pay-next" data-next-pay-view="direct" data-en="Change method" data-vi="Đổi phương thức">Đổi phương thức</button></div></div><div id="direct-pay-vlinkpay-panel" class="mt-5 hidden rounded-xl border border-app-green/25 bg-app-green/[.06] p-4"><div class="flex items-center justify-between gap-3"><strong class="text-sm text-app-green" data-en="VLinkPay account" data-vi="Tài khoản VLinkPay">Tài khoản VLinkPay</strong><span class="rounded-full bg-app-green/10 px-2 py-1 text-xs font-black text-app-green">VLinkPay</span></div><div class="mt-3 flex items-center gap-3"><div class="shrink-0 rounded-xl bg-white p-2"><img id="direct-pay-vlinkpay-qr" class="size-24 rounded-lg" alt="QR VLinkPay"></div><div class="min-w-0 flex-1"><p class="text-xs text-app-muted" data-en="Wallet address" data-vi="Địa chỉ ví">Địa chỉ ví</p><code id="direct-pay-vlinkpay-wallet" class="mt-1 block break-all text-xs font-bold"></code><button type="button" class="app-button-secondary mt-3 w-full py-2 text-xs" data-action="copy-direct-pay-payout" data-en="Copy wallet address" data-vi="Sao chép địa chỉ ví">Sao chép địa chỉ ví</button></div></div></div><ol class="mt-6 space-y-4"><li id="direct-pay-account-step" class="flex gap-3"><span class="grid size-8 shrink-0 place-items-center rounded-full bg-app-purple/10 font-black text-app-pink">1</span><div class="min-w-0 flex-1"><strong id="direct-pay-step1-label"></strong><div id="direct-pay-payout-row" class="mt-2 flex items-center gap-2 rounded-xl border border-app-line bg-app-panel p-3"><code id="direct-pay-payout-value" class="min-w-0 flex-1 select-all break-all"></code><button type="button" class="app-link shrink-0" data-action="copy-direct-pay-payout" data-en="Copy" data-vi="Sao chép">Sao chép</button></div><p id="direct-pay-vlinkpay-hint" class="mt-2 hidden text-xs leading-5 text-app-muted" data-en="The QR code & wallet address are shown above ↑" data-vi="QR code & địa chỉ ví đã hiển thị ngay phía trên ↑">QR code &amp; địa chỉ ví đã hiển thị ngay phía trên ↑</p><p id="direct-pay-copy-status" class="mt-2 text-xs text-app-green" aria-live="polite"></p></div></li><li class="flex gap-3"><span class="grid size-8 shrink-0 place-items-center rounded-full bg-app-purple/10 font-black text-app-pink">2</span><div class="min-w-0 flex-1"><p id="direct-pay-transfer-instruction" class="pt-1 text-sm leading-6"></p><p id="direct-pay-transfer-detail" class="mt-1 text-xs leading-5 text-app-muted"></p></div></li><li class="flex gap-3"><span class="grid size-8 shrink-0 place-items-center rounded-full bg-app-green/10 font-black text-app-green">3</span><p class="pt-1 text-sm leading-6" data-en="Return to NEXORA and tap I sent the payment." data-vi="Quay lại NEXORA và nhấn Tôi đã thanh toán.">Quay lại NEXORA và nhấn Tôi đã thanh toán.</p></li></ol><div class="mt-5 rounded-xl bg-app-green/[.06] p-3 text-xs leading-5 text-app-muted"><strong class="text-app-green">NEXORA</strong><span data-en=" never holds your money. The salon confirms this transfer before points are added." data-vi=" không giữ tiền của bạn. Tiệm xác nhận giao dịch này trước khi điểm được cộng."> không giữ tiền của bạn. Tiệm xác nhận giao dịch này trước khi điểm được cộng.</span></div></div><div class="app-card mt-4"><h3 class="section-title" data-en="Payment confirmation image" data-vi="Ảnh xác nhận thanh toán">Ảnh xác nhận thanh toán</h3><p class="mt-2 text-sm leading-6 text-app-muted" data-en="Optional. Add up to 3 images, 5 MB each." data-vi="Tùy chọn. Thêm tối đa 3 ảnh, mỗi ảnh 5 MB.">Tùy chọn. Thêm tối đa 3 ảnh, mỗi ảnh 5 MB.</p><div class="mt-4 grid grid-cols-2 gap-3"><button type="button" class="app-button-secondary flex-col" data-action="take-direct-pay-proof"><i data-lucide="camera" class="size-6" aria-hidden="true"></i><span data-en="Take photo" data-vi="Chụp ảnh">Chụp ảnh</span></button><button type="button" class="app-button-secondary flex-col" data-action="upload-direct-pay-proof"><i data-lucide="folder-open" class="size-6" aria-hidden="true"></i><span data-en="Choose file" data-vi="Chọn file">Chọn file</span></button></div><label class="sr-only" for="direct-pay-proof-camera" data-en="Take a payment proof photo" data-vi="Chụp ảnh bằng chứng thanh toán">Chụp ảnh bằng chứng thanh toán</label><input id="direct-pay-proof-camera" class="sr-only" type="file" accept="image/*" capture="environment"><label class="sr-only" for="direct-pay-proof-file" data-en="Choose payment proof images" data-vi="Chọn ảnh bằng chứng thanh toán">Chọn ảnh bằng chứng thanh toán</label><input id="direct-pay-proof-file" class="sr-only" type="file" accept="image/*" multiple><div id="direct-pay-proof-preview-grid" class="mt-4 grid grid-cols-3 gap-3"></div><p id="direct-pay-proof-error" class="field-error mt-3 hidden" role="alert"></p></div><button type="button" class="app-button-secondary mt-4 w-full" data-action="open-direct-pay-app"><i data-lucide="external-link" class="size-4" aria-hidden="true"></i><span></span></button><button type="button" class="app-button mt-3 w-full" data-action="submit-direct-payment"><i data-lucide="send" class="size-4" aria-hidden="true"></i><span data-en="I sent the payment" data-vi="Tôi đã thanh toán">Tôi đã thanh toán</span></button></section><section id="guest-checkout-view" class="hidden" data-pay-view="checkout" aria-hidden="true" aria-labelledby="guest-checkout-title"><div class="app-card"><h2 id="guest-checkout-title" class="text-xl font-black" tabindex="-1" data-en="Guest Checkout" data-vi="Thanh toán khách">Thanh toán khách</h2><div id="guest-checkout-items" class="mt-4 divide-y divide-dashed"></div><div class="mt-4 flex justify-between text-lg font-black"><span data-en="Before Tip" data-vi="Trước tip">Trước tip</span><strong id="checkout-before-tip"></strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3 text-xl font-black"><span data-en="Total" data-vi="Tổng cộng">Tổng cộng</span><strong id="checkout-total"></strong></div></div><fieldset class="app-card mt-4"><legend class="font-black" data-en="Tip technician" data-vi="Tip cho thợ">Tip cho thợ</legend><div class="mt-3 grid grid-cols-2 gap-3"><button type="button" class="app-chip" data-action="select-checkout-tip" data-basis-points="0" data-en="No Tip" data-vi="Không tip" aria-pressed="true">Không tip</button><button type="button" class="app-chip" data-action="select-checkout-tip" data-basis-points="1500" aria-pressed="false">15%</button><button type="button" class="app-chip" data-action="select-checkout-tip" data-basis-points="1800" aria-pressed="false">18%</button><button type="button" class="app-chip" data-action="select-checkout-tip" data-basis-points="2000" aria-pressed="false">20%</button></div></fieldset><fieldset class="app-card mt-4"><legend class="font-black" data-en="Payment method" data-vi="Phương thức thanh toán">Phương thức thanh toán</legend><div class="mt-3 grid gap-3"><button type="button" class="app-button-secondary" data-action="select-checkout-method" data-method="Card" aria-pressed="false" data-en="Card" data-vi="Thẻ">Thẻ</button><button type="button" class="app-button-secondary" data-action="select-checkout-method" data-method="Zelle" aria-pressed="false">Zelle</button><button type="button" class="app-button-secondary" data-action="select-checkout-method" data-method="Venmo" aria-pressed="false">Venmo</button><button type="button" class="app-button-secondary" data-action="select-checkout-method" data-method="Pay at Counter" aria-pressed="false" data-en="Pay at Counter" data-vi="Thanh toán tại quầy">Thanh toán tại quầy</button></div></fieldset><p id="checkout-error" class="field-error hidden" role="alert"></p><p id="checkout-continue-reason" class="mt-3 text-sm text-app-muted" data-en="Select a payment method to continue." data-vi="Chọn phương thức thanh toán để tiếp tục.">Chọn phương thức thanh toán để tiếp tục.</p><button id="continue-checkout" type="button" class="app-button mt-4 w-full" data-action="continue-checkout" disabled aria-disabled="true" aria-describedby="checkout-continue-reason" data-en="Continue" data-vi="Tiếp tục">Tiếp tục</button></section><section id="payment-proof-view" class="hidden" data-pay-view="payment-proof" aria-hidden="true" aria-labelledby="payment-proof-title"><div class="app-card"><div class="flex items-center justify-between"><h2 id="payment-proof-title" class="text-xl font-black" tabindex="-1" data-en="Payment Proof" data-vi="Bằng chứng thanh toán">Bằng chứng thanh toán</h2><span class="inline-flex items-center gap-1"><i data-lucide="image-up" class="size-4" aria-hidden="true"></i><span data-en="Proof" data-vi="Bằng chứng">Bằng chứng</span></span></div><div class="mt-5 flex justify-between text-xl font-black"><span id="payment-proof-method"></span><strong id="payment-proof-amount"></strong></div></div><div class="app-card mt-4"><label class="sr-only" for="payment-proof-file" data-en="Payment proof image" data-vi="Ảnh bằng chứng thanh toán">Ảnh bằng chứng thanh toán</label><input id="payment-proof-file" class="sr-only" type="file" accept="image/jpeg,image/png"><button type="button" class="app-button-secondary w-full" data-action="upload-payment-proof" data-en="Upload screenshot" data-vi="Tải ảnh bằng chứng">Tải ảnh bằng chứng</button><img id="payment-proof-preview" class="mt-3 hidden max-h-64 w-full rounded-2xl object-contain" alt="Payment proof preview"><button id="remove-payment-proof" type="button" class="app-link mt-2 hidden" data-action="remove-payment-proof" data-en="Remove image" data-vi="Xóa ảnh">Xóa ảnh</button><label class="mt-4 block text-sm font-bold" for="payment-proof-note" data-en="Note" data-vi="Ghi chú">Ghi chú</label><textarea id="payment-proof-note" class="app-input mt-2" maxlength="280"></textarea><p id="payment-proof-error" class="field-error hidden" role="alert"></p><button type="button" class="app-button mt-4 w-full" data-action="submit-payment-proof" data-en="Submit proof" data-vi="Gửi bằng chứng">Gửi bằng chứng</button></div></section></div>
         </section>
         <section class="app-screen hidden" id="paydone" data-ready="true" data-module="home" aria-labelledby="paydone-title">
-          <h1 id="paydone-title" class="sr-only" tabindex="-1" data-en="Payment status" data-vi="Trạng thái thanh toán">Trạng thái thanh toán</h1><div class="mx-auto max-w-xl"><div id="direct-payment-result-view" class="text-center"><div id="payment-pending"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-cyan/10 text-app-cyan"><i data-lucide="send" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment reported" data-vi="Đã báo thanh toán">Đã báo thanh toán</p><h2 id="direct-paydone-title" class="mt-2 text-3xl font-black">Đã gửi $55.00 cho tiệm</h2><p id="payment-pending-copy" class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted">Bitcoin Nail Bar thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.</p><div class="app-card mt-6 text-left"><div class="flex justify-between"><span data-en="Business receives" data-vi="Tiệm nhận">Tiệm nhận</span><strong id="payment-confirmed-amount">$55.00</strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3"><span data-en="Payment method" data-vi="Phương thức">Phương thức</span><strong id="payment-result-method">Zelle</strong></div></div><button type="button" class="app-button mt-6 w-full" data-action="confirm-payment" data-en="Simulate business confirmation" data-vi="Mô phỏng doanh nghiệp xác nhận">Mô phỏng doanh nghiệp xác nhận</button></div><div id="payment-confirmed" class="hidden"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment confirmed" data-vi="Đã xác nhận thanh toán">Đã xác nhận thanh toán</p><h2 class="mt-2 text-3xl font-black" data-en="You're all set" data-vi="Thanh toán hoàn tất">Thanh toán hoàn tất</h2><p id="payment-confirmed-points-copy" class="mt-3 text-app-green">Đã cộng 66 điểm thanh toán trực tiếp</p><strong id="payment-confirmed-points" class="sr-only">+66 điểm</strong><button type="button" class="app-button mt-6 w-full" data-action="navigate" data-target="home" data-en="Done" data-vi="Hoàn tất">Hoàn tất</button></div></div><section id="payment-pending-view" data-paydone-view="pending" class="hidden app-card text-center" aria-hidden="true" aria-labelledby="payment-pending-title"><i data-lucide="clock-3" class="mx-auto h-10 w-10 text-amber-600" aria-hidden="true"></i><p class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-amber-500"><i data-lucide="clock-3" class="size-4" aria-hidden="true"></i><span data-en="Pending" data-vi="Đang chờ">Đang chờ</span></p><h2 id="payment-pending-title" class="mt-3 text-xl font-black" tabindex="-1" data-en="Pending Front Desk verification" data-vi="Đang chờ lễ tân xác minh">Đang chờ lễ tân xác minh</h2><div class="mt-5 grid grid-cols-2 gap-3"><button type="button" class="app-button" data-action="verify-payment-proof-demo" data-en="Verify demo" data-vi="Xác minh thử">Xác minh thử</button><button type="button" class="app-button-secondary" data-action="reject-payment-proof-demo" data-en="Reject demo" data-vi="Từ chối thử">Từ chối thử</button></div></section><section id="payment-confirmed-view" data-paydone-view="confirmed" class="hidden" aria-hidden="true" aria-labelledby="payment-confirmed-title"><div class="app-card"><div class="flex justify-between gap-3"><h2 id="payment-confirmed-title" class="text-xl font-black" tabindex="-1" data-en="Payment Confirmed" data-vi="Đã xác nhận thanh toán">Đã xác nhận thanh toán</h2><span class="status-badge inline-flex items-center gap-1 text-emerald-700"><i data-lucide="circle-check" class="h-3 w-3" aria-hidden="true"></i><span>Paid</span></span></div><div id="confirmed-receipt-items" class="mt-4 divide-y divide-dashed"></div><div class="mt-4 flex justify-between text-xl font-black"><span data-en="Total Paid" data-vi="Tổng đã trả">Tổng đã trả</span><strong id="confirmed-receipt-total"></strong></div></div><button type="button" class="app-button mt-4 w-full" data-action="navigate" data-target="review" data-en="Leave Review" data-vi="Để lại đánh giá">Để lại đánh giá</button><div class="app-card mt-4"><button type="button" class="app-button w-full" data-action="create-account-from-receipt" data-en="Create NEXORA Account" data-vi="Tạo tài khoản NEXORA">Tạo tài khoản NEXORA</button><button type="button" class="app-button-secondary mt-3 w-full" data-action="continue-as-guest" data-en="Continue as Guest" data-vi="Tiếp tục với tư cách khách">Tiếp tục với tư cách khách</button></div></section><section id="payment-rejected-view" data-paydone-view="rejected" class="hidden app-card" aria-hidden="true" aria-labelledby="payment-rejected-title"><i data-lucide="circle-x" class="h-10 w-10 text-rose-500" aria-hidden="true"></i><p class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-rose-400"><i data-lucide="circle-x" class="size-4" aria-hidden="true"></i><span data-en="Rejected" data-vi="Bị từ chối">Bị từ chối</span></p><h2 id="payment-rejected-title" class="mt-3 text-xl font-black" tabindex="-1" data-en="Proof rejected" data-vi="Bằng chứng bị từ chối">Bằng chứng bị từ chối</h2><p id="payment-reject-reason" class="mt-2 text-sm text-slate-400"></p><button type="button" class="app-button mt-4 w-full" data-action="replace-payment-proof" data-en="Replace Proof" data-vi="Thay bằng chứng">Thay bằng chứng</button><button type="button" class="app-button-secondary mt-3 w-full" data-action="pay-at-counter" data-en="Pay at Counter" data-vi="Thanh toán tại quầy">Thanh toán tại quầy</button></section></div>
+          <h1 id="paydone-title" class="sr-only" tabindex="-1" data-en="Payment status" data-vi="Trạng thái thanh toán">Trạng thái thanh toán</h1><div class="mx-auto max-w-xl"><div id="direct-payment-result-view" class="text-center"><div id="payment-pending"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-cyan/10 text-app-cyan"><i data-lucide="send" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment reported" data-vi="Đã báo thanh toán">Đã báo thanh toán</p><h2 id="direct-paydone-title" class="mt-2 text-3xl font-black">Đã gửi $55.00 cho tiệm</h2><p id="payment-pending-copy" class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted">Bitcoin Nail Bar thường xác nhận trong 10 phút. NEXORA không giữ tiền của bạn.</p><div class="app-card mt-6 text-left"><div class="flex justify-between"><span data-en="Business receives" data-vi="Tiệm nhận">Tiệm nhận</span><strong id="payment-confirmed-amount">$55.00</strong></div><div class="mt-3 flex justify-between border-t border-app-line pt-3"><span data-en="Payment method" data-vi="Phương thức">Phương thức</span><strong id="payment-result-method">Zelle</strong></div></div><div id="direct-pay-proof-summary" class="app-card mt-4 hidden text-left"></div><button type="button" class="app-button mt-6 w-full" data-action="confirm-payment" data-en="Simulate business confirmation" data-vi="Mô phỏng doanh nghiệp xác nhận">Mô phỏng doanh nghiệp xác nhận</button><button type="button" id="direct-pay-reject-demo" class="app-button-secondary mt-3 hidden w-full" data-action="reject-direct-payment-demo" data-en="Simulate business rejection" data-vi="Mô phỏng doanh nghiệp từ chối">Mô phỏng doanh nghiệp từ chối</button></div><div id="payment-rejected" class="hidden"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-red/10 text-app-red"><i data-lucide="alert-triangle" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment rejected" data-vi="Thanh toán bị từ chối">Thanh toán bị từ chối</p><h2 id="direct-pay-rejected-title" class="mt-2 text-3xl font-black" tabindex="-1" data-en="The salon could not match this transfer" data-vi="Tiệm chưa đối chiếu được giao dịch này">Tiệm chưa đối chiếu được giao dịch này</h2><p id="direct-pay-reject-reason" class="mx-auto mt-3 max-w-md text-sm leading-6 text-app-muted"></p><p class="mx-auto mt-3 max-w-md text-xs leading-5 text-app-muted" data-en="No points were added. Add a clearer confirmation image and send it again." data-vi="Chưa có điểm nào được cộng. Thêm ảnh xác nhận rõ hơn và gửi lại.">Chưa có điểm nào được cộng. Thêm ảnh xác nhận rõ hơn và gửi lại.</p><button type="button" class="app-button mt-6 w-full" data-action="replace-direct-payment-proof"><i data-lucide="refresh-cw" class="size-4" aria-hidden="true"></i><span data-en="Add a new proof" data-vi="Gửi lại bằng chứng">Gửi lại bằng chứng</span></button></div><div id="payment-confirmed" class="hidden"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-9" aria-hidden="true"></i></span><p class="eyebrow mt-5" data-en="Payment confirmed" data-vi="Đã xác nhận thanh toán">Đã xác nhận thanh toán</p><h2 class="mt-2 text-3xl font-black" data-en="You're all set" data-vi="Thanh toán hoàn tất">Thanh toán hoàn tất</h2><p id="payment-confirmed-points-copy" class="mt-3 text-app-green">Đã cộng 66 điểm thanh toán trực tiếp</p><strong id="payment-confirmed-points" class="sr-only">+66 điểm</strong><button type="button" id="direct-pay-review-cta" class="app-button mt-6 w-full" data-action="open-direct-pay-review"><i data-lucide="star" class="size-4" aria-hidden="true"></i><span data-en="Leave a review (+15 points)" data-vi="Đánh giá (+15 điểm)">Đánh giá (+15 điểm)</span></button><button type="button" class="app-button-secondary mt-3 w-full" data-action="navigate" data-target="home" data-en="Done" data-vi="Hoàn tất">Hoàn tất</button></div></div><section id="payment-pending-view" data-paydone-view="pending" class="hidden app-card text-center" aria-hidden="true" aria-labelledby="payment-pending-title"><i data-lucide="clock-3" class="mx-auto h-10 w-10 text-amber-600" aria-hidden="true"></i><p class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-amber-500"><i data-lucide="clock-3" class="size-4" aria-hidden="true"></i><span data-en="Pending" data-vi="Đang chờ">Đang chờ</span></p><h2 id="payment-pending-title" class="mt-3 text-xl font-black" tabindex="-1" data-en="Pending Front Desk verification" data-vi="Đang chờ lễ tân xác minh">Đang chờ lễ tân xác minh</h2><div class="mt-5 grid grid-cols-2 gap-3"><button type="button" class="app-button" data-action="verify-payment-proof-demo" data-en="Verify demo" data-vi="Xác minh thử">Xác minh thử</button><button type="button" class="app-button-secondary" data-action="reject-payment-proof-demo" data-en="Reject demo" data-vi="Từ chối thử">Từ chối thử</button></div></section><section id="payment-confirmed-view" data-paydone-view="confirmed" class="hidden" aria-hidden="true" aria-labelledby="payment-confirmed-title"><div class="app-card"><div class="flex justify-between gap-3"><h2 id="payment-confirmed-title" class="text-xl font-black" tabindex="-1" data-en="Payment Confirmed" data-vi="Đã xác nhận thanh toán">Đã xác nhận thanh toán</h2><span class="status-badge inline-flex items-center gap-1 text-emerald-700"><i data-lucide="circle-check" class="h-3 w-3" aria-hidden="true"></i><span>Paid</span></span></div><div id="confirmed-receipt-items" class="mt-4 divide-y divide-dashed"></div><div class="mt-4 flex justify-between text-xl font-black"><span data-en="Total Paid" data-vi="Tổng đã trả">Tổng đã trả</span><strong id="confirmed-receipt-total"></strong></div></div><button type="button" class="app-button mt-4 w-full" data-action="navigate" data-target="review" data-en="Leave Review" data-vi="Để lại đánh giá">Để lại đánh giá</button><div class="app-card mt-4"><button type="button" class="app-button w-full" data-action="create-account-from-receipt" data-en="Create NEXORA Account" data-vi="Tạo tài khoản NEXORA">Tạo tài khoản NEXORA</button><button type="button" class="app-button-secondary mt-3 w-full" data-action="continue-as-guest" data-en="Continue as Guest" data-vi="Tiếp tục với tư cách khách">Tiếp tục với tư cách khách</button></div></section><section id="payment-rejected-view" data-paydone-view="rejected" class="hidden app-card" aria-hidden="true" aria-labelledby="payment-rejected-title"><i data-lucide="circle-x" class="h-10 w-10 text-rose-500" aria-hidden="true"></i><p class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-rose-400"><i data-lucide="circle-x" class="size-4" aria-hidden="true"></i><span data-en="Rejected" data-vi="Bị từ chối">Bị từ chối</span></p><h2 id="payment-rejected-title" class="mt-3 text-xl font-black" tabindex="-1" data-en="Proof rejected" data-vi="Bằng chứng bị từ chối">Bằng chứng bị từ chối</h2><p id="payment-reject-reason" class="mt-2 text-sm text-slate-400"></p><button type="button" class="app-button mt-4 w-full" data-action="replace-payment-proof" data-en="Replace Proof" data-vi="Thay bằng chứng">Thay bằng chứng</button><button type="button" class="app-button-secondary mt-3 w-full" data-action="pay-at-counter" data-en="Pay at Counter" data-vi="Thanh toán tại quầy">Thanh toán tại quầy</button></section></div>
         </section>
         <section class="app-screen hidden" id="looks" data-ready="true" data-module="home" aria-labelledby="looks-title">
           <div class="mb-5 flex items-center justify-between gap-3"><div class="flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Your style archive" data-vi="Bộ sưu tập phong cách">Bộ sưu tập phong cách</p><h1 id="looks-title" class="text-2xl font-black" data-en="My looks" data-vi="Kiểu của tôi">Kiểu của tôi</h1></div></div><button class="app-button" type="button" data-action="navigate" data-target="addlook"><i data-lucide="plus" class="size-4" aria-hidden="true"></i><span class="hidden sm:inline" data-en="Add look" data-vi="Thêm kiểu">Thêm kiểu</span></button></div>
@@ -277,8 +277,8 @@
             <div class="relative z-10 mt-5 h-2 overflow-hidden rounded-full bg-black/25"><span id="wallet-tier-progress" data-tier-progress class="block h-full rounded-full bg-gradient-to-r from-app-cyan to-white transition-[width] duration-500" style="width:0%" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></span></div>
             <p id="wallet-tier-gap" data-tier-gap class="relative z-10 mt-2 text-xs font-bold text-white/75"></p>
           </div>
-          <div id="wallet-business-list" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
-          <div class="mt-6 grid gap-4 lg:grid-cols-[1fr_320px]"><article class="app-card"><div class="flex items-center justify-between"><h2 class="section-title" data-en="Recent point activity" data-vi="Hoạt động điểm gần đây">Hoạt động điểm gần đây</h2><button type="button" class="text-xs font-bold text-app-cyan" data-action="navigate" data-target="history" data-en="Full history" data-vi="Toàn bộ lịch sử">Toàn bộ lịch sử</button></div><div id="wallet-activity-list" class="mt-4 divide-y divide-app-line"></div></article><aside class="app-card border-app-gold/20 bg-app-gold/[.05]"><i data-lucide="clock-3" class="size-5 text-app-gold" aria-hidden="true"></i><h2 class="mt-3 font-black" data-en="Points expiry" data-vi="Điểm sắp hết hạn">Điểm sắp hết hạn</h2><p id="wallet-expiry-copy" class="mt-2 text-sm leading-6 text-app-muted"></p></aside></div>
+          <div id="wallet-business-list" class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3"></div>
+          <div class="mt-6 grid gap-4 lg:grid-cols-[1fr_320px]"><article class="app-card"><div class="flex items-center justify-between"><h2 class="section-title" data-en="Recent point activity" data-vi="Hoạt động điểm gần đây">Hoạt động điểm gần đây</h2><button type="button" class="text-xs font-bold text-app-cyan" data-action="navigate" data-target="history" data-en="Full history" data-vi="Toàn bộ lịch sử">Toàn bộ lịch sử</button></div><div id="wallet-activity-list" class="mt-4 divide-y divide-app-line"></div></article><aside class="app-card flex h-fit items-start gap-3 border-app-gold/20 bg-app-gold/[.05]"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-5" aria-hidden="true"></i></span><div class="min-w-0 flex-1"><h2 class="font-black" data-en="Points expiry" data-vi="Điểm sắp hết hạn">Điểm sắp hết hạn</h2><p id="wallet-expiry-copy" class="mt-1 text-sm leading-6 text-app-muted"></p></div></aside></div>
         </section>
         <section class="app-screen hidden" id="history" data-ready="true" data-module="wallet" aria-labelledby="history-title">
           <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Every point accounted for" data-vi="Minh bạch từng điểm">Minh bạch từng điểm</p><h1 id="history-title" class="text-2xl font-black" data-en="Points history" data-vi="Lịch sử điểm">Lịch sử điểm</h1></div></div><div id="ledger-list" class="space-y-3"></div>
@@ -418,6 +418,23 @@
                 </div>
               </div>
             </div>
+            <div id="liveticket-swap-card" class="app-card mt-4 hidden border-app-amber/40" aria-labelledby="liveticket-swap-heading">
+              <div class="flex items-center justify-between gap-3">
+                <p id="liveticket-swap-heading" class="eyebrow" data-en="Requested staff warning" data-vi="Cảnh báo thợ bạn yêu cầu">Cảnh báo thợ bạn yêu cầu</p>
+                <span class="rounded-full bg-app-amber/15 px-3 py-1 text-xs font-black text-app-amber" data-en="Review" data-vi="Cần xem lại">Cần xem lại</span>
+              </div>
+              <p id="liveticket-swap-reason" class="mt-3 text-sm leading-6 text-app-muted"></p>
+              <dl class="mt-4 space-y-2 text-sm">
+                <div class="flex justify-between gap-3"><dt class="text-app-muted" data-en="Requested staff" data-vi="Thợ bạn yêu cầu">Thợ bạn yêu cầu</dt><dd id="liveticket-swap-requested" class="font-bold"></dd></div>
+                <div class="flex justify-between gap-3 border-t border-app-line pt-2"><dt class="text-app-muted" data-en="Service" data-vi="Dịch vụ">Dịch vụ</dt><dd id="liveticket-swap-service" class="font-bold"></dd></div>
+              </dl>
+              <p id="liveticket-swap-options-label" class="eyebrow mt-4" data-en="Recommended" data-vi="Thợ được đề xuất">Thợ được đề xuất</p>
+              <div id="liveticket-swap-options" class="mt-2 grid gap-2" role="radiogroup" aria-labelledby="liveticket-swap-options-label"></div>
+              <p id="liveticket-swap-empty" class="mt-2 hidden text-sm leading-6 text-app-muted"></p>
+              <p id="liveticket-swap-error" class="field-error mt-2 hidden" role="alert"></p>
+              <button type="button" id="liveticket-swap-confirm" class="app-button mt-4 w-full" data-action="liveticket-staff-choose"></button>
+              <button type="button" class="app-button-secondary mt-3 w-full" data-action="liveticket-staff-front-desk" data-en="Ask Front Desk" data-vi="Hỏi lễ tân">Hỏi lễ tân</button>
+            </div>
             <div id="liveticket-addon-card" class="app-card mt-4 hidden border-app-amber/40">
               <div class="flex items-center justify-between gap-3">
                 <p id="liveticket-addon-staff" class="eyebrow"></p>
@@ -451,6 +468,7 @@
               <p class="text-xs leading-5 text-app-muted" data-en="Prototype only — stands in for the salon." data-vi="Chỉ dùng cho bản mẫu — thay cho thao tác của tiệm.">Chỉ dùng cho bản mẫu — thay cho thao tác của tiệm.</p>
               <button type="button" class="app-button-secondary mt-3 w-full" data-action="start-service-demo"><i data-lucide="play" class="size-4" aria-hidden="true"></i><span data-en="Salon starts the service" data-vi="Tiệm bắt đầu dịch vụ">Tiệm bắt đầu dịch vụ</span></button>
               <button type="button" class="app-button-secondary mt-3 w-full" data-action="suggest-addon-demo"><i data-lucide="sparkles" class="size-4" aria-hidden="true"></i><span data-en="Technician suggests an add-on" data-vi="Thợ đề xuất dịch vụ thêm">Thợ đề xuất dịch vụ thêm</span></button>
+              <button type="button" class="app-button-secondary mt-3 w-full" data-action="staff-busy-demo"><i data-lucide="user-x" class="size-4" aria-hidden="true"></i><span data-en="Requested technician is busy" data-vi="Thợ bạn yêu cầu đang bận">Thợ bạn yêu cầu đang bận</span></button>
             </div>
           </div>
         </section>
@@ -638,6 +656,32 @@
       return value.length > 9 ? `${value.slice(0, 6)}…${value.slice(-3)}` : value;
     }
 
+    // Paying the salon needs a business-owned account to copy on the guide screen, the same way a
+    // staff tip needs a staff-owned one. Bitcoin Nail Bar's accounts stay in
+    // BUSINESS_TIP_PAYOUT_VALUES above: a multi-staff tip batch already pays out through them, and
+    // rewriting those ids/values would move existing tip batches onto a different account.
+    // golden-glow-spa is deliberately absent: it is the fixture for a salon that has not configured a
+    // payout account, which both the multi-recipient tip batch and Pay salon must refuse rather than
+    // invent an account for.
+    const SALON_PAYOUT_BUSINESS_IDS = Object.freeze([
+      'sunset-hair-lounge', 'lotus-nail-spa', 'orchid-beauty-bar',
+      'velvet-lash-studio', 'moon-coffee'
+    ]);
+
+    function businessPayoutValue(businessId, method, index) {
+      const handle = businessId.replace(/-/g, '');
+      const titled = businessId.split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join('');
+      const values = {
+        Zelle: `pay@${handle}.com`,
+        Venmo: `@${businessId}`,
+        'Cash App': `$${titled}`,
+        'Apple Cash': `(713) 555-${String(2100 + index).padStart(4, '0')}`,
+        PayPal: `billing@${handle}.com`,
+        VLinkPay: VLINKPAY_WALLET
+      };
+      return values[method];
+    }
+
     const TIP_PAYOUT_ACCOUNTS = Object.freeze([
       ...BITCOIN_TIP_STAFF_IDS.flatMap((ownerId, index) => PAYMENT_METHODS.map((method) => {
         const value = tipStaffPayoutValue(ownerId, method, index);
@@ -656,7 +700,15 @@
           ownerType: 'business', ownerId: BUSINESS_ID, businessId: BUSINESS_ID, method, value,
           maskedValue: maskedTipPayoutValue(value), version: 1, enabled: true
         });
-      })
+      }),
+      ...SALON_PAYOUT_BUSINESS_IDS.flatMap((ownerId, index) => PAYMENT_METHODS.map((method) => {
+        const value = businessPayoutValue(ownerId, method, index);
+        return Object.freeze({
+          id: `tip-payout-business-${ownerId}-${TIP_METHOD_SLUGS[method]}`,
+          ownerType: 'business', ownerId, businessId: ownerId, method, value,
+          maskedValue: maskedTipPayoutValue(value), version: 1, enabled: true
+        });
+      }))
     ]);
     const CHECKIN_BUSINESSES = new Set(['bitcoin-nail-bar', 'golden-glow-spa', 'moon-coffee']);
     // Explore directory: beauty venues only (nails / spa / salon). Six entries keeps the
@@ -1291,14 +1343,83 @@
     // Who the salon puts on a ticket when the guest asked for nobody in particular ("Bất kỳ").
     // Must cover every booked service and be free right now, which is the same bar the salon's own
     // recommendations use. Returns null when nobody qualifies, and the ticket then stays waiting.
-    function assignableStaffIdForCheckin(checkin) {
+    //
+    // `excludeStaffId` is the technician the salon has just told this guest cannot take them: having
+    // said so, it cannot answer "anyone" by handing them straight back.
+    function assignableStaffIdForCheckin(checkin, excludeStaffId = null) {
       const serviceKeys = guestServiceKeys(checkin?.businessId, checkin?.serviceKeys);
       if (!serviceKeys) return null;
       const candidate = Object.values(IMPORTED_OPS_STAFF).find((staff) => (
-        staff.businessId === checkin.businessId && staff.available
+        staff.id !== excludeStaffId && staff.businessId === checkin.businessId && staff.available
           && importedStaffCoversAll(staff, serviceKeys)
       ));
       return candidate?.id ?? null;
+    }
+
+    // What the salon has to tell the guest about the technician they asked for, or null when there
+    // is nothing to say.
+    //
+    // Two of the three reasons are derived: the technician is marked unavailable, or does not cover
+    // every booked service. Both are the same bar assignableStaffIdForCheckin uses, so a guest is
+    // never told a technician is fine and then handed someone else. The third — the technician is
+    // tied up with the guest in front of them right now — is a fact only the salon knows, and this
+    // prototype has no salon to report it; `busyNow` is where that report would arrive. It is the
+    // weakest of the three, so a derived reason always outranks it in what the guest is shown.
+    //
+    // Recommendations are derived the way the salon derives them, minus anyone already busy.
+    function guestStaffSwapRequest(checkin, busyNow = false) {
+      const serviceKeys = guestServiceKeys(checkin?.businessId, checkin?.serviceKeys);
+      const requestedStaffId = checkin?.staffProfileId ?? null;
+      if (!serviceKeys || !requestedStaffId) return null;
+      const requested = importedOpsStaff(requestedStaffId);
+      if (!requested || requested.businessId !== checkin.businessId) return null;
+      const uncoveredKeys = serviceKeys.filter((key) => !requested.serviceSkills.includes(key));
+      if (requested.available && uncoveredKeys.length === 0 && !busyNow) return null;
+      return {
+        requestedStaffId,
+        // A skill gap is the more specific reason, and unlike being busy it does not go away by
+        // waiting, so it is the one the guest is told about.
+        reason: uncoveredKeys.length > 0 ? 'skill' : 'busy',
+        uncoveredKeys,
+        recommendedStaffIds: importedRecommendedStaffIds(checkin.businessId, serviceKeys, requestedStaffId)
+          .filter((staffId) => importedOpsStaff(staffId)?.available === true)
+      };
+    }
+
+    // The guest answering that request. Only a technician the salon would itself recommend may be
+    // chosen, and only while the ticket is still unopened — once the salon has opened it the
+    // technician is settled and a change is theirs to make, not the guest's. Whether the requested
+    // technician still qualifies is deliberately not a gate: a guest who is told their technician is
+    // busy is entitled to move on, and the salon never has a reason to refuse a swap to someone free
+    // who covers the work.
+    function chooseGuestStaff(appState, guestCheckinId, staffProfileId, storage) {
+      if (!isRecord(appState) || !Array.isArray(appState.guestCheckins)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const id = normalizedRequiredText(guestCheckinId);
+      const matches = appState.guestCheckins.filter((row) => isRecord(row) && row.id === id);
+      if (!id || matches.length !== 1) return { ok: false, code: 'guest_not_found' };
+      const checkin = matches[0];
+      if (checkin.claimedAt !== null || checkin.serviceStartedAt) {
+        return { ok: false, code: 'guest_already_served' };
+      }
+      const swap = guestStaffSwapRequest(checkin, true);
+      if (!swap) return { ok: false, code: 'staff_not_requested' };
+      // Handing the choice back to the salon is only an answer when the salon has someone to give:
+      // with nobody free who covers the work, "anyone" would be a ticket that never opens.
+      if (staffProfileId === null
+        ? swap.recommendedStaffIds.length === 0
+        : (!swap.recommendedStaffIds.includes(staffProfileId)
+          || !isValidGuestStaffAssignment(appState, checkin.businessId, staffProfileId))) {
+        return { ok: false, code: 'staff_not_recommended' };
+      }
+      const snapshot = readOperationsSnapshot(storage);
+      if (snapshot.invalid) return { ok: false, code: 'invalid_operations_snapshot' };
+      if (snapshot.serviceTickets.some((row) => isRecord(row) && row.guestCheckinId === id)) {
+        return { ok: false, code: 'guest_already_served' };
+      }
+      checkin.staffProfileId = staffProfileId;
+      return { ok: true, checkin, staffProfileId };
     }
 
     // Builds the ticket exactly the way the salon builds it, so both surfaces read the same record:
@@ -1342,7 +1463,7 @@
     // shared snapshot rather than only stamping the check-in, because "the salon started the
     // service" means exactly that a ticket is open with a technician on it. The guest's own choice
     // of technician is never overridden; the salon only fills one in when they asked for nobody.
-    function startGuestService(appState, guestCheckinId, now = Date.now(), storage) {
+    function startGuestService(appState, guestCheckinId, now = Date.now(), storage, excludeStaffId = null) {
       if (!isRecord(appState) || !Array.isArray(appState.guestCheckins)) {
         return { ok: false, code: 'invalid_state' };
       }
@@ -1364,7 +1485,10 @@
       if (!timestampAtOrAfter(timestamp.value, checkin.scannedAt)) {
         return { ok: false, code: 'invalid_time_order' };
       }
-      const staffProfileId = checkin.staffProfileId ?? assignableStaffIdForCheckin(checkin);
+      // A technician the guest asked for who is busy or cannot cover the booking is the guest's to
+      // resolve first, so the salon never silently opens a ticket on someone who does not qualify.
+      if (guestStaffSwapRequest(checkin)) return { ok: false, code: 'staff_not_eligible' };
+      const staffProfileId = checkin.staffProfileId ?? assignableStaffIdForCheckin(checkin, excludeStaffId);
       if (!staffProfileId) return { ok: false, code: 'no_staff_available' };
       const ticketId = createDomainId('ticket');
       if (!ticketId.ok) return ticketId;
@@ -1685,6 +1809,8 @@
         tipProofs: [],
         tipReviews: [],
         directPayments: [],
+        directPaymentProofs: [],
+        paymentReviews: [],
         bookingRequests: [
           {
             id: 'book-demo-bitcoin', businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna',
@@ -1719,6 +1845,7 @@
           activeScreen: 'home', activeModule: 'home', selectedBusinessId: BUSINESS_ID,
           selectedTip: 10, selectedTipMethod: 'Venmo', selectedStaffId: 'staff-anna',
           tipDraft: null,
+          directPayDraft: null,
           paymentMethod: 'Zelle', payViewIntent: 'direct', rating: 0, currentRewardKey: null,
           exploreFilter: 'all', offerFilter: 'all', rewardTab: 'explore', pendingContext: {
             consentScopes: [], rewardAttempt: null, redemptionId: null, tipId: null, tipBatchId: null, paymentId: null, bookingId: null,
@@ -1784,6 +1911,8 @@
       tipProofs: { id: 'string', tipBatchId: 'string', businessId: 'string', attemptNumber: 'number', status: 'string', createdAt: 'string' },
       tipReviews: { id: 'string', tipBatchId: 'string', businessId: 'string', stars: 'number', createdAt: 'string' },
       directPayments: { id: 'string', businessId: 'string', amount: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
+      directPaymentProofs: { id: 'string', directPaymentId: 'string', businessId: 'string', attemptNumber: 'number', status: 'string', createdAt: 'string' },
+      paymentReviews: { id: 'string', directPaymentId: 'string', businessId: 'string', stars: 'number', createdAt: 'string' },
       bookingRequests: { id: 'string', businessId: 'string', service: 'string', staff: 'string', day: 'string', time: 'string', bookingBonus: 'number', status: 'string', createdAt: 'string', confirmedAt: 'nullableString' },
       appointments: { id: 'string', bookingId: 'string', businessId: 'string', service: 'string', staff: 'string', day: 'string', time: 'string', status: 'string', createdAt: 'string' },
       looks: { id: 'string', businessId: 'string', visitId: 'nullableString', staffProfileId: 'nullableString', createdAt: 'string' },
@@ -4603,15 +4732,60 @@
       return normalized;
     }
 
+    // A Pay salon payment carries a proof envelope: the clientRequestId/fingerprint that make the
+    // submit idempotent, the proof it is currently waiting on, and the payout account it was quoted
+    // against. Payments created without a proof step (legacy rows, and the QR/live-ticket path that
+    // still opens an external app directly) have the whole envelope null. Half an envelope is corrupt
+    // rather than legacy, so it fails closed instead of being treated as either.
+    function normalizedDirectPayEnvelope(payment) {
+      const text = {
+        clientRequestId: payment.clientRequestId,
+        fingerprint: payment.fingerprint,
+        currentProofId: payment.currentProofId,
+        payoutAccountId: payment.payoutAccountId,
+        payoutMaskedValue: payment.payoutMaskedValue
+      };
+      const keys = Object.keys(text);
+      const blank = keys.filter((key) => text[key] === null || text[key] === undefined);
+      const version = payment.payoutAccountVersion;
+      if (blank.length === keys.length) {
+        if (version !== null && version !== undefined) return null;
+        return {
+          clientRequestId: null, fingerprint: null, currentProofId: null,
+          payoutAccountId: null, payoutAccountVersion: null, payoutMaskedValue: null,
+          proofBacked: false
+        };
+      }
+      if (blank.length) return null;
+      const normalized = Object.fromEntries(keys.map((key) => [key, normalizedRequiredText(text[key])]));
+      if (keys.some((key) => !normalized[key])) return null;
+      if (!Number.isSafeInteger(version) || version < 1) return null;
+      return { ...normalized, payoutAccountVersion: version, proofBacked: true };
+    }
+
     function normalizePersistedDirectPayment(appState, payment) {
       if (!isRecord(payment)) return null;
       const id = typeof payment.id === 'string' ? payment.id.trim() : '';
       const businessId = typeof payment.businessId === 'string' ? payment.businessId.trim() : '';
       const business = getValidBusiness(appState, businessId);
       const amount = canonicalMoneyAmount(payment.amount);
-      const status = payment.status === 'pending' || payment.status === 'confirmed' ? payment.status : null;
+      const envelope = normalizedDirectPayEnvelope(payment);
+      // Only a proof-backed payment can be rejected: rejection means the salon looked at a proof and
+      // turned it down, and a legacy payment has no proof to turn down.
+      const status = payment.status === 'pending' || payment.status === 'confirmed'
+        ? payment.status
+        : payment.status === 'rejected' && envelope?.proofBacked ? 'rejected' : null;
       const createdAt = validStoredTimestamp(payment.createdAt) ? payment.createdAt : null;
       const confirmedAt = payment.confirmedAt === null ? null : validStoredTimestamp(payment.confirmedAt) ? payment.confirmedAt : undefined;
+      const rejectedAt = payment.rejectedAt === null || payment.rejectedAt === undefined
+        ? null
+        : validStoredTimestamp(payment.rejectedAt) ? payment.rejectedAt : undefined;
+      const updatedAt = payment.updatedAt === undefined
+        ? createdAt
+        : validStoredTimestamp(payment.updatedAt) ? payment.updatedAt : undefined;
+      const rejectReason = payment.rejectReason === null || payment.rejectReason === undefined
+        ? null
+        : normalizedRequiredText(payment.rejectReason) || undefined;
       const legacyMethod = Array.isArray(business?.methods)
         ? business.methods.find((method) => PAYMENT_METHODS.includes(method))
         : null;
@@ -4619,21 +4793,35 @@
         ? payment.method.trim()
         : legacyMethod;
       const directPayBonusPct = canonicalRuleSnapshot(payment.directPayBonusPct, business?.directPayBonusPct);
-      const normalized = business && amount.ok && status && createdAt && method && directPayBonusPct !== null
+      const normalized = business && amount.ok && status && createdAt && method && envelope
+        && directPayBonusPct !== null && typeof updatedAt === 'string'
+        && rejectedAt !== undefined && rejectReason !== undefined
         ? {
             ...payment,
             id,
+            clientRequestId: envelope.clientRequestId,
             businessId,
             amount: amount.value,
             method,
+            payoutAccountId: envelope.payoutAccountId,
+            payoutAccountVersion: envelope.payoutAccountVersion,
+            payoutMaskedValue: envelope.payoutMaskedValue,
+            fingerprint: envelope.fingerprint,
             status,
+            currentProofId: envelope.currentProofId,
+            rejectReason,
             createdAt,
+            updatedAt,
             confirmedAt,
+            rejectedAt,
             directPayBonusPct
           }
         : null;
       if (!normalized || !id || !calculateDirectPaymentPoints(normalized)) return null;
       if ((status === 'pending' && confirmedAt !== null) || (status === 'confirmed' && typeof confirmedAt !== 'string')) return null;
+      if ((status === 'rejected') !== (typeof rejectedAt === 'string')) return null;
+      if ((status === 'rejected') !== (rejectReason !== null)) return null;
+      if (Date.parse(updatedAt) < Date.parse(createdAt)) return null;
       return normalized;
     }
 
@@ -4740,9 +4928,12 @@
           });
         }));
       });
+      // Candidates are the confirmed payments backed by a valid ledger pair. Pending and rejected
+      // payments carry no ledger by design, so they survive on their own: dropping a rejected one
+      // would lose the customer's proof and the replacement path with it.
       appState.directPayments = selectRecords(
         paymentCandidates,
-        appState.directPayments.filter((payment) => payment.status === 'pending'),
+        appState.directPayments.filter((payment) => payment.status === 'pending' || payment.status === 'rejected'),
         'direct_payment'
       );
       appState.ledger = appState.ledger.filter((entry) => !isTransactionLedgerEntry(entry) || selectedEntries.has(entry));
@@ -5399,6 +5590,7 @@
       const selectedTip = canonicalMoneyAmount(migrated.ui.selectedTip);
       migrated.ui.selectedTip = selectedTip.ok ? selectedTip.value : defaults.ui.selectedTip;
       migrated.ui.tipDraft = normalizePersistedTipDraft(migrated, migrated.ui.tipDraft);
+      migrated.ui.directPayDraft = normalizePersistedDirectPayDraft(migrated, migrated.ui.directPayDraft);
       const selectedBusiness = getValidBusiness(migrated, migrated.ui.selectedBusinessId);
       const enabledPaymentMethods = Array.isArray(selectedBusiness?.methods)
         ? selectedBusiness.methods.filter((method) => PAYMENT_METHODS.includes(method))
@@ -6527,6 +6719,27 @@
       return { ...available, method, account: matching[0] };
     }
 
+    // Paying the salon has no recipient to pick, so it resolves the business-owned payout account
+    // directly instead of going through canonicalTipRecipients.
+    function availableBusinessPayouts(appState, businessId) {
+      const business = getValidBusiness(appState, normalizedRequiredText(businessId));
+      if (!business) return { ok: false, code: 'unknown_business' };
+      const accounts = tipOwnerPayoutAccounts('business', business.id, business.id, business);
+      if (!accounts.length) return { ok: false, code: 'salon_payout_required' };
+      return { ok: true, business, businessId: business.id, accounts };
+    }
+
+    function resolveBusinessPayout(appState, input) {
+      if (!isRecord(input)) return { ok: false, code: 'invalid_state' };
+      const available = availableBusinessPayouts(appState, input.businessId);
+      if (!available.ok) return available;
+      const method = normalizedRequiredText(input.method);
+      if (!method || !PAYMENT_METHODS.includes(method)) return { ok: false, code: 'method_disabled' };
+      const matching = available.accounts.filter((account) => account.method === method);
+      if (matching.length !== 1) return { ok: false, code: 'method_disabled' };
+      return { ...available, method, account: matching[0] };
+    }
+
     function createTipDraft(appState, input) {
       if (!isRecord(appState?.ui) || !isRecord(appState?.ui?.pendingContext) || !isRecord(input)) {
         return { ok: false, code: 'invalid_state' };
@@ -6615,6 +6828,9 @@
       draft.recipientIds = recipients.recipientIds;
       draft.individualCents = individualCents;
       draft.method = method;
+      // A single recipient has nothing to split: the total input is the only amount field on screen,
+      // so leaving splitMode on 'individual' would bill from a hidden individualCents entry.
+      if (recipients.recipientIds.length === 1) draft.splitMode = 'equal';
       appState.ui.selectedStaffId = recipients.recipientIds[0];
       appState.ui.selectedTipMethod = method;
       return { ok: true, draft, recipients: recipients.staff };
@@ -7438,13 +7654,22 @@
       }
       const payment = {
         id: id.value,
+        clientRequestId: null,
         businessId,
         amount: amount.value,
         method,
         directPayBonusPct,
+        payoutAccountId: null,
+        payoutAccountVersion: null,
+        payoutMaskedValue: null,
+        fingerprint: null,
         status: 'pending',
+        currentProofId: null,
+        rejectReason: null,
         createdAt: timestamp.value,
-        confirmedAt: null
+        updatedAt: timestamp.value,
+        confirmedAt: null,
+        rejectedAt: null
       };
       const nextPayments = [...appState.directPayments, payment];
       const nextUi = {
@@ -7466,13 +7691,22 @@
       const normalized = normalizePersistedDirectPayment(appState, payment);
       return Boolean(normalized)
         && payment.id === normalized.id
+        && payment.clientRequestId === normalized.clientRequestId
         && payment.businessId === normalized.businessId
         && payment.amount === normalized.amount
         && payment.method === normalized.method
         && payment.directPayBonusPct === normalized.directPayBonusPct
+        && payment.payoutAccountId === normalized.payoutAccountId
+        && payment.payoutAccountVersion === normalized.payoutAccountVersion
+        && payment.payoutMaskedValue === normalized.payoutMaskedValue
+        && payment.fingerprint === normalized.fingerprint
         && payment.status === normalized.status
+        && payment.currentProofId === normalized.currentProofId
+        && payment.rejectReason === normalized.rejectReason
         && payment.createdAt === normalized.createdAt
-        && payment.confirmedAt === normalized.confirmedAt;
+        && payment.updatedAt === normalized.updatedAt
+        && payment.confirmedAt === normalized.confirmedAt
+        && payment.rejectedAt === normalized.rejectedAt;
     }
 
     function confirmDirectPayment(appState, paymentId, now = Date.now()) {
@@ -7484,6 +7718,15 @@
         return { ok: false, code: 'invalid_state' };
       }
       const payment = matches[0];
+      const proofs = Array.isArray(appState.directPaymentProofs) ? appState.directPaymentProofs : [];
+      const linkedProofs = proofs.filter((proof) => isRecord(proof)
+        && proof.id === payment.currentProofId
+        && proof.directPaymentId === payment.id);
+      // currentProofId and the proof row must agree in both directions: a proof-backed payment whose
+      // proof vanished, or a legacy payment that somehow grew one, is corrupt.
+      if (Boolean(payment.currentProofId) !== (linkedProofs.length === 1)) {
+        return { ok: false, code: 'invalid_state' };
+      }
       const points = calculateDirectPaymentPoints(payment);
       const linkedLedger = appState.ledger.filter((entry) => isRecord(entry)
         && entry.refId === payment.id
@@ -7499,6 +7742,12 @@
           return { ok: false, code: 'invalid_state' };
         }
         return { ok: true, payment, spendPoints: points.spendPoints, bonusPoints: points.bonusPoints, idempotent: true };
+      }
+      // A rejected payment is not a payment awaiting confirmation: it has to go back through
+      // replaceDirectPaymentProof so the salon confirms against a proof it has actually seen.
+      if (payment.status !== 'pending') return { ok: false, code: 'direct_payment_not_pending' };
+      if (linkedProofs.length === 1 && linkedProofs[0].status !== 'pending') {
+        return { ok: false, code: 'invalid_state' };
       }
       if (linkedLedger.length) return { ok: false, code: 'invalid_state' };
       const spendValidation = validateLedgerInput(appState, {
@@ -7521,6 +7770,10 @@
       if (!Number.isFinite(nextPoints)) return { ok: false, code: 'invalid_points_delta' };
       const timestamp = domainTimestamp(now);
       if (!timestamp.ok) return timestamp;
+      // updatedAt may not precede createdAt, or the row it writes fails its own normalizer.
+      if (Date.parse(timestamp.value) < Date.parse(payment.createdAt)) {
+        return { ok: false, code: 'invalid_time_order' };
+      }
       const spendLedgerId = createDomainId('ledger-direct-spend');
       if (!spendLedgerId.ok) return spendLedgerId;
       const bonusLedgerId = createDomainId('ledger-direct-bonus');
@@ -7531,7 +7784,14 @@
         || existingLedgerIds.has(bonusLedgerId.value)) {
         return { ok: false, code: 'id_generation_failed' };
       }
-      const confirmedPayment = { ...payment, status: 'confirmed', confirmedAt: timestamp.value };
+      const confirmedPayment = {
+        ...payment,
+        status: 'confirmed',
+        rejectReason: null,
+        updatedAt: timestamp.value,
+        confirmedAt: timestamp.value,
+        rejectedAt: null
+      };
       const spendLedgerEntry = {
         id: spendLedgerId.value,
         businessId: payment.businessId,
@@ -7554,16 +7814,428 @@
       const nextBalances = { ...appState.balances, [payment.businessId]: nextBalance };
       const nextPayments = appState.directPayments.map((item) => item === payment ? confirmedPayment : item);
       const nextLedger = [bonusLedgerEntry, spendLedgerEntry, ...appState.ledger];
+      const confirmedProof = linkedProofs.length === 1
+        ? { ...linkedProofs[0], status: 'confirmed', resolvedAt: timestamp.value, rejectReason: null }
+        : null;
       appState.balances = nextBalances;
       appState.directPayments = nextPayments;
       appState.ledger = nextLedger;
+      if (confirmedProof) {
+        appState.directPaymentProofs = appState.directPaymentProofs.map((proof) => (
+          proof === linkedProofs[0] ? confirmedProof : proof
+        ));
+      }
       return {
         ok: true,
         payment: confirmedPayment,
+        proof: confirmedProof,
         spendPoints: points.spendPoints,
         bonusPoints: points.bonusPoints,
         idempotent: false
       };
+    }
+
+    function directPaymentFingerprint(input) {
+      return JSON.stringify({
+        businessId: input.businessId,
+        amountCents: input.amountCents,
+        currency: 'USD',
+        method: input.method,
+        payoutAccountId: input.account.id,
+        payoutAccountVersion: input.account.version,
+        payoutOwnerType: input.account.ownerType,
+        payoutOwnerId: input.account.ownerId,
+        note: input.note
+      });
+    }
+
+    function createDirectPayDraft(appState, input) {
+      if (!isRecord(appState?.ui) || !isRecord(appState?.ui?.pendingContext) || !isRecord(input)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const payouts = availableBusinessPayouts(appState, input.businessId);
+      if (!payouts.ok) return payouts;
+      const method = payouts.accounts.some((account) => account.method === appState.ui.paymentMethod)
+        ? appState.ui.paymentMethod
+        : payouts.accounts[0]?.method ?? null;
+      if (!method) return { ok: false, code: 'method_disabled' };
+      const requestId = createDomainId('pay-request');
+      if (!requestId.ok) return requestId;
+      // An amount only counts as prefilled when a live ticket actually supplied one. Everything else
+      // starts blank so the presets read as a suggestion rather than a number the customer owes.
+      const ticketCents = Number.isSafeInteger(input.amountCents) && input.amountCents >= 100
+        ? input.amountCents
+        : null;
+      const draft = {
+        clientRequestId: requestId.value,
+        businessId: payouts.businessId,
+        amountCents: ticketCents,
+        amountSource: ticketCents !== null && input.amountSource === 'ticket' ? 'ticket' : 'manual',
+        method,
+        note: '',
+        proofImages: [],
+        transferAsserted: false,
+        view: 'details'
+      };
+      appState.ui.directPayDraft = draft;
+      appState.ui.selectedBusinessId = payouts.businessId;
+      appState.ui.paymentMethod = method;
+      appState.ui.payViewIntent = 'direct';
+      appState.ui.pendingContext.paymentId = null;
+      appState.ui.pendingContext.paymentProofId = null;
+      appState.ui.pendingContext.paydoneKind = 'direct_payment';
+      return { ok: true, draft, business: payouts.business, accounts: payouts.accounts };
+    }
+
+    function normalizePersistedDirectPayDraft(appState, value) {
+      if (!isRecord(value)) return null;
+      const clientRequestId = normalizedRequiredText(value.clientRequestId);
+      const payouts = availableBusinessPayouts(appState, value.businessId);
+      if (!clientRequestId || !payouts.ok) return null;
+      const method = payouts.accounts.some((account) => account.method === value.method)
+        ? value.method
+        : payouts.accounts[0]?.method ?? null;
+      if (!method) return null;
+      const images = normalizedTipProofImages(value.proofImages ?? []);
+      if (!images) return null;
+      const amountCents = Number.isSafeInteger(value.amountCents) && value.amountCents >= 100
+        ? value.amountCents
+        : null;
+      return {
+        clientRequestId,
+        businessId: payouts.businessId,
+        amountCents,
+        amountSource: amountCents !== null && value.amountSource === 'ticket' ? 'ticket' : 'manual',
+        method,
+        note: typeof value.note === 'string' ? value.note.trim().slice(0, 280) : '',
+        proofImages: images,
+        // transferAsserted is never restored from storage: the assertion is a fresh act by the
+        // customer, not a flag that survives a reload.
+        transferAsserted: false,
+        view: value.view === 'guide' ? 'guide' : 'details'
+      };
+    }
+
+    function submitDirectPayment(appState, input, now = Date.now()) {
+      if (!hasTransactionState(appState, 'directPayments') || !Array.isArray(appState.directPaymentProofs)
+        || !isRecord(input)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const clientRequestId = normalizedRequiredText(input.clientRequestId);
+      if (!clientRequestId) return { ok: false, code: 'invalid_request' };
+      const payout = resolveBusinessPayout(appState, { businessId: input.businessId, method: input.method });
+      if (!payout.ok) return payout;
+      const amount = canonicalMoneyAmount(
+        Number.isSafeInteger(input.amountCents) ? input.amountCents / 100 : input.amount
+      );
+      if (!amount.ok) return amount;
+      const amountCents = Math.round(amount.value * 100);
+      const directPayBonusPct = canonicalRuleSnapshot(payout.business.directPayBonusPct, null);
+      if (directPayBonusPct === null) return { ok: false, code: 'invalid_rule' };
+      const points = calculateDirectPaymentPoints({ amount: amount.value, directPayBonusPct });
+      if (!points) return { ok: false, code: 'invalid_rule' };
+      if (input.transferAsserted !== true) return { ok: false, code: 'transfer_confirmation_required' };
+      const proofImages = normalizedTipProofImages(input.proofImages ?? []);
+      if (!proofImages) return { ok: false, code: 'invalid_proof' };
+      const note = typeof input.note === 'string' ? input.note.trim().slice(0, 280) : '';
+      const fingerprint = directPaymentFingerprint({
+        businessId: payout.businessId,
+        amountCents,
+        method: payout.method,
+        account: payout.account,
+        note
+      });
+      const existing = appState.directPayments.filter((payment) => isRecord(payment)
+        && payment.clientRequestId === clientRequestId);
+      if (existing.length > 1) return { ok: false, code: 'invalid_state' };
+      // A double-tap on "I sent it", or a reload mid-submit, must return the payment already recorded
+      // rather than bill the salon twice. A changed amount/method under the same request id is a
+      // different transaction wearing an old id, so it fails instead of silently replacing it.
+      if (existing.length === 1) {
+        const payment = existing[0];
+        if (payment.fingerprint !== fingerprint) return { ok: false, code: 'request_mismatch' };
+        const proofs = appState.directPaymentProofs.filter((proof) => isRecord(proof)
+          && proof.directPaymentId === payment.id);
+        if (!proofs.length) return { ok: false, code: 'invalid_state' };
+        return {
+          ok: true,
+          payment,
+          proof: proofs.find((proof) => proof.id === payment.currentProofId) ?? proofs.at(-1),
+          idempotent: true,
+          ...points
+        };
+      }
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const paymentId = createDomainId('pay');
+      if (!paymentId.ok) return paymentId;
+      const proofId = createDomainId('pay-proof');
+      if (!proofId.ok) return proofId;
+      const generatedIds = [paymentId.value, proofId.value];
+      const existingIds = new Set([
+        ...appState.directPayments.map((row) => row?.id),
+        ...appState.directPaymentProofs.map((row) => row?.id),
+        ...appState.ledger.map((row) => row?.id)
+      ]);
+      if (new Set(generatedIds).size !== generatedIds.length || generatedIds.some((id) => existingIds.has(id))) {
+        return { ok: false, code: 'id_generation_failed' };
+      }
+      const payment = {
+        id: paymentId.value,
+        clientRequestId,
+        businessId: payout.businessId,
+        amount: amount.value,
+        method: payout.method,
+        directPayBonusPct,
+        payoutAccountId: payout.account.id,
+        payoutAccountVersion: payout.account.version,
+        payoutMaskedValue: payout.account.maskedValue,
+        fingerprint,
+        status: 'pending',
+        currentProofId: proofId.value,
+        rejectReason: null,
+        createdAt: timestamp.value,
+        updatedAt: timestamp.value,
+        confirmedAt: null,
+        rejectedAt: null
+      };
+      const proof = {
+        id: proofId.value,
+        directPaymentId: payment.id,
+        businessId: payout.businessId,
+        attemptNumber: 1,
+        transferAsserted: true,
+        note,
+        images: [...proofImages],
+        status: 'pending',
+        rejectReason: null,
+        createdAt: timestamp.value,
+        resolvedAt: null
+      };
+      appState.directPayments = [...appState.directPayments, payment];
+      appState.directPaymentProofs = [...appState.directPaymentProofs, proof];
+      appState.ui = {
+        ...appState.ui,
+        payViewIntent: 'direct',
+        pendingContext: {
+          ...appState.ui.pendingContext,
+          paymentId: payment.id,
+          paymentProofId: proof.id,
+          paydoneKind: 'direct_payment'
+        }
+      };
+      return { ok: true, payment, proof, idempotent: false, ...points };
+    }
+
+    function validateDirectPaymentAggregate(appState, paymentId) {
+      if (!hasTransactionState(appState, 'directPayments') || !Array.isArray(appState.directPaymentProofs)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const normalizedId = normalizedRequiredText(paymentId);
+      const matches = appState.directPayments.filter((payment) => isRecord(payment) && payment.id === normalizedId);
+      if (!matches.length) return { ok: false, code: 'not_found' };
+      if (matches.length !== 1 || !isCanonicalRuntimeDirectPayment(appState, matches[0])) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const payment = matches[0];
+      if (!payment.currentProofId) return { ok: false, code: 'direct_payment_proof_required' };
+      const proofs = appState.directPaymentProofs.filter((proof) => isRecord(proof)
+        && proof.directPaymentId === payment.id);
+      const current = proofs.filter((proof) => proof.id === payment.currentProofId);
+      if (current.length !== 1 || current[0].businessId !== payment.businessId) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const points = calculateDirectPaymentPoints(payment);
+      if (!points) return { ok: false, code: 'invalid_state' };
+      return { ok: true, payment, proofs, proof: current[0], points };
+    }
+
+    function rejectDirectPayment(appState, paymentId, reason, now = Date.now()) {
+      const aggregate = validateDirectPaymentAggregate(appState, paymentId);
+      if (!aggregate.ok) return aggregate;
+      if (aggregate.payment.status === 'rejected') return { ...aggregate, idempotent: true };
+      if (aggregate.payment.status !== 'pending') return { ok: false, code: 'direct_payment_not_pending' };
+      const rejectReason = normalizedRequiredText(reason);
+      if (!rejectReason) return { ok: false, code: 'reject_reason_required' };
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok || Date.parse(timestamp.value) < Date.parse(aggregate.payment.updatedAt)) {
+        return { ok: false, code: 'invalid_time_order' };
+      }
+      const rejectedPayment = {
+        ...aggregate.payment,
+        status: 'rejected',
+        rejectReason,
+        updatedAt: timestamp.value,
+        confirmedAt: null,
+        rejectedAt: timestamp.value
+      };
+      const rejectedProof = { ...aggregate.proof, status: 'rejected', resolvedAt: timestamp.value, rejectReason };
+      appState.directPayments = appState.directPayments.map((payment) => (
+        payment === aggregate.payment ? rejectedPayment : payment
+      ));
+      appState.directPaymentProofs = appState.directPaymentProofs.map((proof) => (
+        proof === aggregate.proof ? rejectedProof : proof
+      ));
+      return { ok: true, payment: rejectedPayment, proof: rejectedProof, idempotent: false };
+    }
+
+    function replaceDirectPaymentProof(appState, input, now = Date.now()) {
+      if (!isRecord(input)) return { ok: false, code: 'invalid_state' };
+      const aggregate = validateDirectPaymentAggregate(appState, input.directPaymentId);
+      if (!aggregate.ok) return aggregate;
+      if (aggregate.payment.status !== 'rejected') return { ok: false, code: 'direct_payment_not_rejected' };
+      if (input.transferAsserted !== true) return { ok: false, code: 'transfer_confirmation_required' };
+      const images = normalizedTipProofImages(input.proofImages ?? []);
+      if (!images) return { ok: false, code: 'invalid_proof' };
+      // The replacement proof has to be for the same account the payment was quoted against. If the
+      // salon rotated its payout account, the old transfer no longer evidences this payment.
+      const payout = resolveBusinessPayout(appState, {
+        businessId: aggregate.payment.businessId,
+        method: aggregate.payment.method
+      });
+      if (!payout.ok || payout.account.id !== aggregate.payment.payoutAccountId
+        || payout.account.version !== aggregate.payment.payoutAccountVersion) {
+        return { ok: false, code: 'stale_payout' };
+      }
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok || Date.parse(timestamp.value) < Date.parse(aggregate.payment.updatedAt)) {
+        return { ok: false, code: 'invalid_time_order' };
+      }
+      const proofId = createDomainId('pay-proof');
+      if (!proofId.ok) return proofId;
+      if (appState.directPaymentProofs.some((proof) => isRecord(proof) && proof.id === proofId.value)
+        || appState.ledger.some((entry) => isRecord(entry) && entry.id === proofId.value)) {
+        return { ok: false, code: 'id_generation_failed' };
+      }
+      const proof = {
+        id: proofId.value,
+        directPaymentId: aggregate.payment.id,
+        businessId: aggregate.payment.businessId,
+        attemptNumber: Math.max(...aggregate.proofs.map((item) => item.attemptNumber)) + 1,
+        transferAsserted: true,
+        note: typeof input.note === 'string' ? input.note.trim().slice(0, 280) : '',
+        images: [...images],
+        status: 'pending',
+        rejectReason: null,
+        createdAt: timestamp.value,
+        resolvedAt: null
+      };
+      const pendingPayment = {
+        ...aggregate.payment,
+        status: 'pending',
+        currentProofId: proof.id,
+        rejectReason: null,
+        updatedAt: timestamp.value,
+        rejectedAt: null
+      };
+      appState.directPayments = appState.directPayments.map((payment) => (
+        payment === aggregate.payment ? pendingPayment : payment
+      ));
+      appState.directPaymentProofs = [...appState.directPaymentProofs, proof];
+      appState.ui.pendingContext.paymentProofId = proof.id;
+      return { ok: true, payment: pendingPayment, proof, idempotent: false };
+    }
+
+    function isPaymentReviewLedgerPair(review, entry) {
+      return isRecord(entry)
+        && entry.type === 'feedback'
+        && entry.refType === 'payment_review'
+        && entry.refId === review.id
+        && entry.directPaymentId === review.directPaymentId
+        && entry.businessId === review.businessId
+        && entry.pointsDelta === 15;
+    }
+
+    function isCanonicalDirectPaymentReview(appState, review) {
+      if (!isRecord(review)
+        || !normalizedRequiredText(review.id)
+        || !normalizedRequiredText(review.directPaymentId)
+        || !getValidBusiness(appState, review.businessId)
+        || !Number.isInteger(review.stars) || review.stars < 1 || review.stars > 5
+        || !Array.isArray(review.tags)
+        || new Set(review.tags).size !== review.tags.length
+        || review.tags.some((tag) => !TIP_REVIEW_TAGS.includes(tag))
+        || typeof review.note !== 'string' || review.note !== review.note.trim()
+        || review.note.length > 500
+        || !validStoredTimestamp(review.createdAt)) return false;
+      const payments = appState.directPayments.filter((payment) => payment.id === review.directPaymentId);
+      if (payments.length !== 1 || payments[0].businessId !== review.businessId
+        || payments[0].status !== 'confirmed') return false;
+      const ledgers = appState.ledger.filter((entry) => isRecord(entry)
+        && (entry.refType === 'payment_review' || (entry.type === 'feedback' && entry.refId === review.id)));
+      return ledgers.length === 1 && isPaymentReviewLedgerPair(review, ledgers[0]);
+    }
+
+    function submitDirectPaymentReview(appState, input, now = Date.now()) {
+      if (!isRecord(appState) || !Array.isArray(appState.paymentReviews) || !Array.isArray(appState.ledger)
+        || !isRecord(appState.balances) || !isRecord(input)) return { ok: false, code: 'invalid_state' };
+      const aggregate = validateDirectPaymentAggregate(appState, input.directPaymentId);
+      if (!aggregate.ok) return aggregate;
+      if (aggregate.payment.status !== 'confirmed') return { ok: false, code: 'direct_payment_not_confirmed' };
+      const existing = appState.paymentReviews.filter((review) => isRecord(review)
+        && review.directPaymentId === aggregate.payment.id);
+      if (existing.length > 1) return { ok: false, code: 'invalid_state' };
+      if (existing.length === 1) {
+        return isCanonicalDirectPaymentReview(appState, existing[0])
+          ? { ok: true, review: existing[0], points: 15, idempotent: true }
+          : { ok: false, code: 'invalid_state' };
+      }
+      if (!Number.isInteger(input.stars) || input.stars < 1 || input.stars > 5) {
+        return { ok: false, code: 'invalid_rating' };
+      }
+      if (!Array.isArray(input.tags)) return { ok: false, code: 'invalid_review_tag' };
+      const tags = [...new Set(input.tags.map((tag) => normalizedRequiredText(tag)).filter(Boolean))].sort();
+      if (tags.some((tag) => !TIP_REVIEW_TAGS.includes(tag))) {
+        return { ok: false, code: 'invalid_review_tag' };
+      }
+      const note = typeof input.note === 'string' ? input.note.trim() : '';
+      if (note.length > 500) return { ok: false, code: 'invalid_review_note' };
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok || Date.parse(timestamp.value) < Date.parse(aggregate.payment.confirmedAt)) {
+        return { ok: false, code: 'invalid_time_order' };
+      }
+      const reviewId = createDomainId('pay-review');
+      if (!reviewId.ok) return reviewId;
+      const ledgerValidation = validateLedgerInput(appState, {
+        businessId: aggregate.payment.businessId,
+        type: 'feedback',
+        pointsDelta: 15,
+        refType: 'payment_review',
+        refId: reviewId.value
+      });
+      if (!ledgerValidation.ok) return ledgerValidation;
+      const ledgerId = createDomainId('ledger-pay-review');
+      if (!ledgerId.ok) return ledgerId;
+      if (appState.paymentReviews.some((review) => review.id === reviewId.value)
+        || appState.ledger.some((entry) => entry.id === ledgerId.value)
+        || reviewId.value === ledgerId.value) return { ok: false, code: 'id_generation_failed' };
+      const review = {
+        id: reviewId.value,
+        directPaymentId: aggregate.payment.id,
+        businessId: aggregate.payment.businessId,
+        subjectKey: `direct-payment:${aggregate.payment.id}`,
+        stars: input.stars,
+        tags,
+        note,
+        createdAt: timestamp.value
+      };
+      const ledgerEntry = {
+        id: ledgerId.value,
+        businessId: aggregate.payment.businessId,
+        type: 'feedback',
+        pointsDelta: 15,
+        refType: 'payment_review',
+        refId: review.id,
+        directPaymentId: aggregate.payment.id,
+        createdAt: timestamp.value
+      };
+      appState.paymentReviews = [...appState.paymentReviews, review];
+      appState.balances = {
+        ...appState.balances,
+        [aggregate.payment.businessId]: { ...ledgerValidation.balance, points: ledgerValidation.nextPoints }
+      };
+      appState.ledger = [ledgerEntry, ...appState.ledger];
+      return { ok: true, review, points: 15, idempotent: false };
     }
 
     function hasBookingState(appState) {
@@ -7895,11 +8567,12 @@
         paymentPointsAdded: 'Đã cộng {points} điểm thanh toán trực tiếp', invalidTipAmount: 'Số tiền tip tối thiểu là $1 và tối đa hai chữ số thập phân.',
         invalidPaymentAmount: 'Số tiền phải từ $1 và tối đa hai chữ số thập phân.', staffMethodDisabled: 'Thợ chưa bật phương thức này.',
         businessMethodDisabled: 'Tiệm chưa bật phương thức này.', transactionFailed: 'Không thể lưu giao dịch. Vui lòng thử lại.',
+        salonPayoutRequired: 'Tiệm này chưa cài đặt tài khoản nhận tiền, nên chưa thể thanh toán qua NEXORA.',
         addPhotoDetail: 'Bản mẫu sẽ dùng trình chọn ảnh của thiết bị trong phiên bản thật.', imageReadFailed: 'Không thể đọc ảnh này.',
         verificationResent: 'Đã gửi lại mã 246810', openingMaps: 'Đang mở ứng dụng bản đồ',
         paymentIntegrityTitle: 'Không thể xác minh biên nhận', paymentIntegrityDetail: 'Dữ liệu xác minh không nhất quán. Không thể thử lại thanh toán này một cách an toàn.', returnHome: 'Về trang chủ',
         guestRewardsPending: 'Điểm đang chờ; dùng cùng số điện thoại để nhận sau.',
-        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', selfReferral: 'Không thể tự giới thiệu chính mình.', referralShared: 'Đã chia sẻ link giới thiệu.', referralLinkCopied: 'Đã sao chép liên kết giới thiệu.', referralQrSaved: 'Đã tải mã QR.', shareFailed: 'Không thể chia sẻ link.', shareCancelled: 'Bạn đã hủy chia sẻ. Có thể tự sao chép liên kết bên dưới.', shareManual: 'Không thể chia sẻ tự động. Hãy sao chép liên kết bên dưới.', referralUpdateFailed: 'Không thể cập nhật giới thiệu.', referralInvited: 'Đã mời', referralJoined: 'Đã tham gia', referralRewarded: 'Đã thưởng', simulateJoined: 'Mô phỏng đã tham gia', simulatePaidVisit: 'Mô phỏng lượt ghé trả phí', referralEmpty: 'Chưa có lời mời nào.', referralShareTitle: 'Lời mời NEXORA', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Vui lòng kiểm tra tên, số điện thoại và dịch vụ.', guestServiceRequired: 'Hãy chọn ít nhất một dịch vụ.', noPreference: 'Bất kỳ', notAvailable: 'Chưa có', guestCheckinSuccess: 'Đã check-in khách.', guestRouteFailed: 'Đã lưu check-in nhưng chưa thể mở phiếu. Vui lòng thử lại.', paymentAmountFromTicket: 'Tự điền từ phiếu dịch vụ của bạn ({service}).', startServiceDone: 'Tiệm đã bắt đầu dịch vụ.', startServiceFailed: 'Không thể bắt đầu dịch vụ.', startServiceNoStaff: 'Chưa có kỹ thuật viên nào làm được tất cả dịch vụ bạn chọn. Vui lòng hỏi quầy lễ tân.', bookingConfirmed: 'Đã xác nhận', arrivalPrompt: 'Báo tiệm để chuẩn bị trước khi bạn tới.', arrivalBadge_on_my_way: 'Đang trên đường', arrivalBadge_arrived: 'Đã tới nơi', arrivalBadge_checked_in: 'Đã check-in', arrivalHint_on_my_way: 'Tiệm đã biết bạn đang trên đường và sẽ chuẩn bị.', arrivalHint_arrived: 'Tiệm đã biết bạn có mặt. Hãy check-in để tiệm mở phiếu cho bạn.', arrivalSaved: 'Đã báo tiệm.', arrivalFailed: 'Không thể báo tiệm. Vui lòng thử lại.', activeServiceInProgress: 'Bạn đang được phục vụ', activeServiceWaiting: 'Bạn đã check-in, đang chờ tới lượt', liveTicketPendingNumber: 'Chờ tiệm mở phiếu', liveTicketStatus_awaiting_staff: 'Chờ tiệm xác nhận', liveTicketStatus_in_service: 'Đang làm', liveTicketStatus_completed: 'Đã hoàn tất', liveTicketPendingNote: 'Tiệm sẽ mở phiếu khi bắt đầu dịch vụ. Số tiền dưới đây là giá dịch vụ bạn đã chọn.', liveTicketLiveNote: 'Phiếu cập nhật theo tiệm. Dịch vụ thêm cần bạn xác nhận trước khi tính tiền.', addonSuggestedBy: '{staff} đề xuất', payAddonPending: 'Vui lòng trả lời dịch vụ thêm trước khi thanh toán.', payAwaitingTicket: 'Tiệm chưa mở phiếu cho bạn.', addonAccepted: 'Đã thêm dịch vụ vào phiếu.', addonDeclined: 'Đã từ chối dịch vụ thêm.', addonFailed: 'Không thể cập nhật dịch vụ thêm.', addonLast4Mismatch: '4 số cuối không khớp với lượt check-in này.', addonSuggestFailed: 'Không thể đề xuất dịch vụ thêm.', addonSuggested: 'Thợ vừa đề xuất một dịch vụ thêm.', liveTicketCallDemo: 'Bản demo: ứng dụng sẽ gọi {staff} ở bản production.', liveTicketMessageDemo: 'Bản demo: ứng dụng sẽ nhắn tin cho {staff} ở bản production.', liveTicketNoStaff: 'Chưa có kỹ thuật viên nào được gán.', guestNotFound: 'Không tìm thấy lượt check-in khách.', serviceNotFound: 'Không tìm thấy dịch vụ.', checkoutFailed: 'Không thể tạo thanh toán.', addonImportFailed: 'Không thể nhập add-on đã duyệt.', handoffInvalid: 'Liên kết thanh toán không hợp lệ hoặc đã hết hiệu lực.', selectPaymentMethod: 'Vui lòng chọn phương thức thanh toán.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', invalidImage: 'Ảnh không hợp lệ.', proofSavedWithoutImage: 'Đã lưu bằng chứng không kèm ảnh do giới hạn bộ nhớ.', proofSubmitFailed: 'Không thể gửi bằng chứng.', verificationFailed: 'Không thể cập nhật xác minh.', proofRejected: 'Lễ tân đã từ chối bằng chứng.', askFrontDesk: 'Vui lòng trao đổi với lễ tân.', createAccount: 'Tạo tài khoản NEXORA', continueGuest: 'Tiếp tục với tư cách khách', salonQrUrl: 'URL QR salon', enterSalonCode: 'Nhập mã salon', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', scanMemberLoginAction: 'Đăng nhập để dùng hồ sơ', scanMemberLoginReason: 'Hãy đăng nhập để điền tự động hồ sơ đã xác minh; bạn vẫn có thể tiếp tục với tư cách khách.', scanTipRequiresStaff: 'QR này không xác định thợ. Hãy quét QR có tên thợ để tip.', scanTipMethodUnavailable: 'Thợ trong QR chưa bật phương thức nhận tip.', scanTipReady: 'Tip sẽ được gửi đúng cho {staff} tại {business}.', scanPaymentRequiresCompleted: 'Dịch vụ phải được tiệm hoàn tất trước khi thanh toán.', scanPaymentPhoneRequired: 'Nhập 4 số cuối điện thoại của lượt check-in để mở phiếu.', scanPaymentOwned: 'Lượt check-in khớp với hồ sơ đã xác thực; không cần nhập 4 số cuối.', scanPaymentCandidate: 'Phiếu #{number} · {service} · {amount}', scanPaymentPrivateCandidate: 'Dịch vụ đã hoàn tất {index}', scanPaymentLast4Mismatch: '4 số cuối điện thoại không khớp với lượt check-in này.', scanIntentFailed: 'Không thể mở thao tác từ QR. Hãy quét lại và thử lại.', memberServiceTitle: 'Thành viên · ⭐ {points} điểm', guestServiceTitle: 'Khách · điểm sẽ cộng sau khi check-in', memberGreeting: 'Chào {name} 👋', guestGreeting: 'Chào bạn 👋', useRewardPoints: 'Dùng {points} điểm → {title}', rewardReadyHint: 'Phần thưởng đã đổi, sẵn sàng dùng cho lượt này.', rewardReadyOption: '{title} — sẵn sàng dùng', rewardPointsHint: 'Bạn có {points} điểm tại tiệm này. Chọn để dùng ngay khi check-in.', salonWelcomeTitle: 'Chào mừng đến {business}', salonWelcomeSubtitle: 'Đặt lịch hẹn hoặc check-in cho hôm nay', checkinDoneTitle: 'Đã check-in xong, {name}!', checkinQueueLine: '#{position} trong hàng chờ', checkinQueueOnly: 'Bạn là người tiếp theo', printTicketFailed: 'Không thể mở hộp thoại in.', introNext: 'Tiếp →', introStart: 'Bắt đầu ✨', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
+        inviteCopied: 'Đã sao chép liên kết', inviteCopyFailed: 'Không thể sao chép. Hãy sao chép thủ công.', selfReferral: 'Không thể tự giới thiệu chính mình.', referralShared: 'Đã chia sẻ link giới thiệu.', referralLinkCopied: 'Đã sao chép liên kết giới thiệu.', referralQrSaved: 'Đã tải mã QR.', shareFailed: 'Không thể chia sẻ link.', shareCancelled: 'Bạn đã hủy chia sẻ. Có thể tự sao chép liên kết bên dưới.', shareManual: 'Không thể chia sẻ tự động. Hãy sao chép liên kết bên dưới.', referralUpdateFailed: 'Không thể cập nhật giới thiệu.', referralInvited: 'Đã mời', referralJoined: 'Đã tham gia', referralRewarded: 'Đã thưởng', simulateJoined: 'Mô phỏng đã tham gia', simulatePaidVisit: 'Mô phỏng lượt ghé trả phí', referralEmpty: 'Chưa có lời mời nào.', referralShareTitle: 'Lời mời NEXORA', recentCheckin: 'Bạn vừa check-in tại đây; vui lòng thử lại sau.', invalidQr: 'Mã QR không hợp lệ.', invalidGuest: 'Vui lòng kiểm tra tên, số điện thoại và dịch vụ.', guestServiceRequired: 'Hãy chọn ít nhất một dịch vụ.', noPreference: 'Bất kỳ', notAvailable: 'Chưa có', guestCheckinSuccess: 'Đã check-in khách.', guestRouteFailed: 'Đã lưu check-in nhưng chưa thể mở phiếu. Vui lòng thử lại.', paymentAmountFromTicket: 'Tự điền từ phiếu dịch vụ của bạn ({service}).', startServiceDone: 'Tiệm đã bắt đầu dịch vụ.', startServiceFailed: 'Không thể bắt đầu dịch vụ.', startServiceNoStaff: 'Chưa có kỹ thuật viên nào làm được tất cả dịch vụ bạn chọn. Vui lòng hỏi quầy lễ tân.', bookingConfirmed: 'Đã xác nhận', arrivalPrompt: 'Báo tiệm để chuẩn bị trước khi bạn tới.', arrivalBadge_on_my_way: 'Đang trên đường', arrivalBadge_arrived: 'Đã tới nơi', arrivalHint_on_my_way: 'Tiệm đã biết bạn đang trên đường và sẽ chuẩn bị.', arrivalHint_arrived: 'Tiệm đã biết bạn có mặt. Hãy check-in để tiệm mở phiếu cho bạn.', arrivalSaved: 'Đã báo tiệm.', arrivalFailed: 'Không thể báo tiệm. Vui lòng thử lại.', activeServiceInProgress: 'Bạn đang được phục vụ', activeServiceWaiting: 'Bạn đã check-in, đang chờ tới lượt', liveTicketPendingNumber: 'Chờ tiệm mở phiếu', liveTicketStatus_awaiting_staff: 'Chờ tiệm xác nhận', liveTicketStatus_in_service: 'Đang làm', liveTicketStatus_completed: 'Đã hoàn tất', liveTicketPendingNote: 'Tiệm sẽ mở phiếu khi bắt đầu dịch vụ. Số tiền dưới đây là giá dịch vụ bạn đã chọn.', liveTicketLiveNote: 'Phiếu cập nhật theo tiệm. Dịch vụ thêm cần bạn xác nhận trước khi tính tiền.', addonSuggestedBy: '{staff} đề xuất', payAddonPending: 'Vui lòng trả lời dịch vụ thêm trước khi thanh toán.', payAwaitingTicket: 'Tiệm chưa mở phiếu cho bạn.', addonAccepted: 'Đã thêm dịch vụ vào phiếu.', addonDeclined: 'Đã từ chối dịch vụ thêm.', addonFailed: 'Không thể cập nhật dịch vụ thêm.', addonLast4Mismatch: '4 số cuối không khớp với lượt check-in này.', addonSuggestFailed: 'Không thể đề xuất dịch vụ thêm.', addonSuggested: 'Thợ vừa đề xuất một dịch vụ thêm.', liveTicketCallDemo: 'Bản demo: ứng dụng sẽ gọi {staff} ở bản production.', liveTicketMessageDemo: 'Bản demo: ứng dụng sẽ nhắn tin cho {staff} ở bản production.', liveTicketNoStaff: 'Chưa có kỹ thuật viên nào được gán.', staffSwapReason_skill: '{staff} chưa được đánh dấu đủ điều kiện cho {service}.', staffSwapReason_busy: '{staff} đang bận nên tiệm chưa thể mở phiếu cho bạn.', staffSwapOptionAvailable: '{role} · Có thể nhận', staffSwapChoose: 'Chọn {staff}', staffSwapChooseAny: 'Để tiệm chọn thợ', staffSwapAnyLabel: 'Thợ bất kỳ', staffSwapAnyDetail: 'Tiệm chọn thợ đang rảnh làm được dịch vụ của bạn', staffSwapDoneAny: 'Tiệm sẽ chọn thợ phù hợp cho bạn.', staffSwapPickOne: 'Hãy chọn một kỹ thuật viên.', staffSwapEmpty: 'Chưa có kỹ thuật viên nào khác làm được dịch vụ này. Hãy hỏi lễ tân.', staffSwapRequested: 'Tiệm báo thợ bạn yêu cầu chưa nhận được lượt này.', staffSwapDone: 'Đã đổi sang {staff}.', staffSwapFailed: 'Không thể đổi kỹ thuật viên.', staffSwapUnavailable: 'Thợ bạn yêu cầu vẫn nhận được lượt này.', startServiceStaffIneligible: 'Thợ bạn yêu cầu chưa nhận được lượt này. Hãy đổi thợ trước.', guestNotFound: 'Không tìm thấy lượt check-in khách.', serviceNotFound: 'Không tìm thấy dịch vụ.', checkoutFailed: 'Không thể tạo thanh toán.', addonImportFailed: 'Không thể nhập add-on đã duyệt.', handoffInvalid: 'Liên kết thanh toán không hợp lệ hoặc đã hết hiệu lực.', selectPaymentMethod: 'Vui lòng chọn phương thức thanh toán.', pendingVerification: 'Đang chờ xác minh thanh toán.', paymentProofRequired: 'Cần bằng chứng thanh toán.', invalidImage: 'Ảnh không hợp lệ.', proofSavedWithoutImage: 'Đã lưu bằng chứng không kèm ảnh do giới hạn bộ nhớ.', proofSubmitFailed: 'Không thể gửi bằng chứng.', verificationFailed: 'Không thể cập nhật xác minh.', proofRejected: 'Lễ tân đã từ chối bằng chứng.', askFrontDesk: 'Vui lòng trao đổi với lễ tân.', createAccount: 'Tạo tài khoản NEXORA', continueGuest: 'Tiếp tục với tư cách khách', salonQrUrl: 'URL QR', enterSalonCode: 'Nhập mã', manualSalonCodeInvalid: 'URL QR salon không hợp lệ.', scanMemberLoginAction: 'Đăng nhập để dùng hồ sơ', scanMemberLoginReason: 'Hãy đăng nhập để điền tự động hồ sơ đã xác minh; bạn vẫn có thể tiếp tục với tư cách khách.', scanTipRequiresStaff: 'QR này không xác định thợ. Hãy quét QR có tên thợ để tip.', scanTipMethodUnavailable: 'Thợ trong QR chưa bật phương thức nhận tip.', scanTipReady: 'Tip sẽ được gửi đúng cho {staff} tại {business}.', scanPaymentRequiresCompleted: 'Dịch vụ phải được tiệm hoàn tất trước khi thanh toán.', scanPaymentPhoneRequired: 'Nhập 4 số cuối điện thoại của lượt check-in để mở phiếu.', scanPaymentOwned: 'Lượt check-in khớp với hồ sơ đã xác thực; không cần nhập 4 số cuối.', scanPaymentCandidate: 'Phiếu #{number} · {service} · {amount}', scanPaymentPrivateCandidate: 'Dịch vụ đã hoàn tất {index}', scanPaymentLast4Mismatch: '4 số cuối điện thoại không khớp với lượt check-in này.', scanIntentFailed: 'Không thể mở thao tác từ QR. Hãy quét lại và thử lại.', memberServiceTitle: 'Thành viên · ⭐ {points} điểm', guestServiceTitle: 'Khách · điểm sẽ cộng sau khi check-in', memberGreeting: 'Chào {name} 👋', guestGreeting: 'Chào bạn 👋', useRewardPoints: 'Dùng {points} điểm → {title}', rewardReadyHint: 'Phần thưởng đã đổi, sẵn sàng dùng cho lượt này.', rewardReadyOption: '{title} — sẵn sàng dùng', rewardPointsHint: 'Bạn có {points} điểm tại tiệm này. Chọn để dùng ngay khi check-in.', salonWelcomeTitle: 'Chào mừng đến {business}', salonWelcomeSubtitle: 'Đặt lịch hẹn hoặc check-in cho hôm nay', checkinDoneTitle: 'Đã check-in xong, {name}!', checkinQueueLine: '#{position} trong hàng chờ', checkinQueueOnly: 'Bạn là người tiếp theo', printTicketFailed: 'Không thể mở hộp thoại in.', introNext: 'Tiếp →', introStart: 'Bắt đầu ✨', checkinQueued: 'Mạng yếu — check-in đang chờ gửi lại.', checkinSuccess: 'Check-in thành công và đã cộng điểm.', googleReviewOpened: 'Đã mở Google Reviews.', googleReviewFailed: 'Không thể mở Google Reviews.', nearbyNotificationCreated: 'Đã tạo thông báo ưu đãi gần bạn.', wishNotificationCreated: 'Đã mô phỏng ưu đãi phù hợp.', notificationFailed: 'Không thể tạo thông báo.', preferencesSaved: 'Đã lưu tùy chọn', businessPreferenceSaved: 'Đã lưu tùy chọn doanh nghiệp.', preferenceSaveFailed: 'Không thể lưu tùy chọn. Vui lòng thử lại.', consentSaveFailed: 'Không thể lưu lựa chọn đồng ý. Vui lòng thử lại.',
         cancel: 'Hủy', confirm: 'Xác nhận', gotIt: 'Đã hiểu', closeDialog: 'Đóng hộp thoại', dataReset: 'Dữ liệu mẫu đã được đặt lại',
         loggedOut: 'Đã đăng xuất', notificationLabel: 'Thông báo, {count} chưa đọc',
         invalidPhone: 'Nhập số điện thoại US gồm 10 số.', cooldown: 'Vui lòng chờ đủ 30 giây.',
@@ -7930,11 +8603,12 @@
         paymentPointsAdded: '{points} direct-pay points added', invalidTipAmount: 'Tip must be at least $1 with at most two decimal places.',
         invalidPaymentAmount: 'Amount must be at least $1 with at most two decimal places.', staffMethodDisabled: 'The staff member has not enabled this method.',
         businessMethodDisabled: 'The business has not enabled this method.', transactionFailed: 'Could not save the transaction. Please try again.',
+        salonPayoutRequired: 'This salon has not set up a payout account yet, so it cannot be paid through NEXORA.',
         addPhotoDetail: 'The production app will open your device photo picker.', imageReadFailed: 'Could not read this image.',
         verificationResent: 'Code 246810 resent', openingMaps: 'Opening maps',
         paymentIntegrityTitle: 'Receipt could not be verified', paymentIntegrityDetail: 'Verification data is inconsistent. This payment cannot be retried safely.', returnHome: 'Return Home',
         guestRewardsPending: 'Rewards are pending; use the same phone to claim later.',
-        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', selfReferral: 'You cannot refer yourself.', referralShared: 'Referral link shared.', referralLinkCopied: 'Referral link copied.', referralQrSaved: 'QR code saved.', shareFailed: 'Referral link could not be shared.', shareCancelled: 'Sharing was cancelled. You can copy the link below.', shareManual: 'Automatic sharing is unavailable. Copy the link below.', referralUpdateFailed: 'Referral could not be updated.', referralInvited: 'Invited', referralJoined: 'Joined', referralRewarded: 'Rewarded', simulateJoined: 'Simulate joined', simulatePaidVisit: 'Simulate paid visit', referralEmpty: 'No invites yet.', referralShareTitle: 'NEXORA invitation', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Check the name, phone, and service.', guestServiceRequired: 'Pick at least one service.', noPreference: 'Anyone', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in.', guestRouteFailed: 'Check-in was saved, but the ticket could not open. Please retry.', paymentAmountFromTicket: 'Filled from your service ticket ({service}).', startServiceDone: 'The salon started your service.', startServiceFailed: 'The service could not be started.', startServiceNoStaff: 'No technician can cover every service you picked. Please ask the front desk.', bookingConfirmed: 'Confirmed', arrivalPrompt: 'Tell the salon so they can prepare before you arrive.', arrivalBadge_on_my_way: 'On my way', arrivalBadge_arrived: 'Arrived', arrivalBadge_checked_in: 'Checked in', arrivalHint_on_my_way: 'The salon knows you are on your way and will prepare.', arrivalHint_arrived: 'The salon knows you are here. Check in so they can open your ticket.', arrivalSaved: 'The salon has been notified.', arrivalFailed: 'Could not notify the salon. Please retry.', activeServiceInProgress: "You're being served", activeServiceWaiting: "You're checked in and waiting", liveTicketPendingNumber: 'Awaiting salon', liveTicketStatus_awaiting_staff: 'Awaiting salon', liveTicketStatus_in_service: 'In service', liveTicketStatus_completed: 'Completed', liveTicketPendingNote: 'The salon opens your ticket when the service starts. The amount below is the service you picked.', liveTicketLiveNote: 'This ticket follows the salon. Add-ons need your approval before they are billed.', addonSuggestedBy: '{staff} suggested', payAddonPending: 'Answer the suggested add-on before paying.', payAwaitingTicket: 'The salon has not opened your ticket yet.', addonAccepted: 'The add-on was added to your ticket.', addonDeclined: 'The add-on was declined.', addonFailed: 'The add-on could not be updated.', addonLast4Mismatch: 'Those last 4 digits do not match this check-in.', addonSuggestFailed: 'The add-on could not be suggested.', addonSuggested: 'Your technician suggested an add-on.', liveTicketCallDemo: 'Demo: the production app calls {staff}.', liveTicketMessageDemo: 'Demo: the production app messages {staff}.', liveTicketNoStaff: 'No technician is assigned yet.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'Service was not found.', checkoutFailed: 'Checkout could not be created.', addonImportFailed: 'The approved add-on could not be imported.', handoffInvalid: 'This checkout link is invalid or expired.', selectPaymentMethod: 'Select a payment method.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', invalidImage: 'The image is invalid.', proofSavedWithoutImage: 'Proof was saved without the image because storage is full.', proofSubmitFailed: 'Proof could not be submitted.', verificationFailed: 'Verification could not be updated.', proofRejected: 'Front Desk rejected the proof.', askFrontDesk: 'Please ask Front Desk.', createAccount: 'Create NEXORA Account', continueGuest: 'Continue as Guest', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', scanMemberLoginAction: 'Sign in to use my profile', scanMemberLoginReason: 'Sign in to prefill a verified profile; you can still continue as a guest.', scanTipRequiresStaff: 'This QR does not identify a staff member. Scan a staff QR to tip.', scanTipMethodUnavailable: 'The staff member in this QR has no enabled tip method.', scanTipReady: 'Your tip will go to {staff} at {business}.', scanPaymentRequiresCompleted: 'The salon must complete the service before checkout.', scanPaymentPhoneRequired: 'Enter the last 4 phone digits from check-in to open the ticket.', scanPaymentOwned: 'This check-in matches your verified profile; the last 4 digits are not required.', scanPaymentCandidate: 'Ticket #{number} · {service} · {amount}', scanPaymentPrivateCandidate: 'Completed service {index}', scanPaymentLast4Mismatch: 'The last 4 phone digits do not match this check-in.', scanIntentFailed: 'This QR action could not open. Scan again and retry.', memberServiceTitle: 'Member · ⭐ {points} pts', guestServiceTitle: 'Guest · points are added after check-in', memberGreeting: 'Hi {name} 👋', guestGreeting: 'Hi there 👋', useRewardPoints: 'Use {points} pts → {title}', rewardReadyHint: 'Already redeemed and ready to use on this visit.', rewardReadyOption: '{title} — ready to use', rewardPointsHint: 'You have {points} pts at this salon. Pick one to use at check-in.', salonWelcomeTitle: 'Welcome to {business}', salonWelcomeSubtitle: 'Book an appointment or check in for today', checkinDoneTitle: "You're checked in, {name}!", checkinQueueLine: '#{position} in line', checkinQueueOnly: "You're next in line", printTicketFailed: 'The print dialog could not open.', introNext: 'Next →', introStart: 'Get Started ✨', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
+        inviteCopied: 'Invite link copied', inviteCopyFailed: 'Could not copy. Please copy it manually.', selfReferral: 'You cannot refer yourself.', referralShared: 'Referral link shared.', referralLinkCopied: 'Referral link copied.', referralQrSaved: 'QR code saved.', shareFailed: 'Referral link could not be shared.', shareCancelled: 'Sharing was cancelled. You can copy the link below.', shareManual: 'Automatic sharing is unavailable. Copy the link below.', referralUpdateFailed: 'Referral could not be updated.', referralInvited: 'Invited', referralJoined: 'Joined', referralRewarded: 'Rewarded', simulateJoined: 'Simulate joined', simulatePaidVisit: 'Simulate paid visit', referralEmpty: 'No invites yet.', referralShareTitle: 'NEXORA invitation', recentCheckin: 'You recently checked in here; try again later.', invalidQr: 'Invalid QR code.', invalidGuest: 'Check the name, phone, and service.', guestServiceRequired: 'Pick at least one service.', noPreference: 'Anyone', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in.', guestRouteFailed: 'Check-in was saved, but the ticket could not open. Please retry.', paymentAmountFromTicket: 'Filled from your service ticket ({service}).', startServiceDone: 'The salon started your service.', startServiceFailed: 'The service could not be started.', startServiceNoStaff: 'No technician can cover every service you picked. Please ask the front desk.', bookingConfirmed: 'Confirmed', arrivalPrompt: 'Tell the salon so they can prepare before you arrive.', arrivalBadge_on_my_way: 'On my way', arrivalBadge_arrived: 'Arrived', arrivalHint_on_my_way: 'The salon knows you are on your way and will prepare.', arrivalHint_arrived: 'The salon knows you are here. Check in so they can open your ticket.', arrivalSaved: 'The salon has been notified.', arrivalFailed: 'Could not notify the salon. Please retry.', activeServiceInProgress: "You're being served", activeServiceWaiting: "You're checked in and waiting", liveTicketPendingNumber: 'Awaiting salon', liveTicketStatus_awaiting_staff: 'Awaiting salon', liveTicketStatus_in_service: 'In service', liveTicketStatus_completed: 'Completed', liveTicketPendingNote: 'The salon opens your ticket when the service starts. The amount below is the service you picked.', liveTicketLiveNote: 'This ticket follows the salon. Add-ons need your approval before they are billed.', addonSuggestedBy: '{staff} suggested', payAddonPending: 'Answer the suggested add-on before paying.', payAwaitingTicket: 'The salon has not opened your ticket yet.', addonAccepted: 'The add-on was added to your ticket.', addonDeclined: 'The add-on was declined.', addonFailed: 'The add-on could not be updated.', addonLast4Mismatch: 'Those last 4 digits do not match this check-in.', addonSuggestFailed: 'The add-on could not be suggested.', addonSuggested: 'Your technician suggested an add-on.', liveTicketCallDemo: 'Demo: the production app calls {staff}.', liveTicketMessageDemo: 'Demo: the production app messages {staff}.', liveTicketNoStaff: 'No technician is assigned yet.', staffSwapReason_skill: '{staff} is not marked eligible for {service}.', staffSwapReason_busy: '{staff} is busy, so the salon cannot open your ticket yet.', staffSwapOptionAvailable: '{role} · Available', staffSwapChoose: 'Choose {staff}', staffSwapChooseAny: 'Let the salon choose', staffSwapAnyLabel: 'Any technician', staffSwapAnyDetail: 'The salon picks whoever is free and covers your service', staffSwapDoneAny: 'The salon will pick a technician for you.', staffSwapPickOne: 'Pick a technician.', staffSwapEmpty: 'No other technician covers this service. Please ask the front desk.', staffSwapRequested: 'The salon says your requested technician cannot take this visit.', staffSwapDone: 'Switched to {staff}.', staffSwapFailed: 'The technician could not be changed.', staffSwapUnavailable: 'Your requested technician can still take this visit.', startServiceStaffIneligible: 'Your requested technician cannot take this visit. Change technician first.', guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'Service was not found.', checkoutFailed: 'Checkout could not be created.', addonImportFailed: 'The approved add-on could not be imported.', handoffInvalid: 'This checkout link is invalid or expired.', selectPaymentMethod: 'Select a payment method.', pendingVerification: 'Payment verification is pending.', paymentProofRequired: 'Payment proof is required.', invalidImage: 'The image is invalid.', proofSavedWithoutImage: 'Proof was saved without the image because storage is full.', proofSubmitFailed: 'Proof could not be submitted.', verificationFailed: 'Verification could not be updated.', proofRejected: 'Front Desk rejected the proof.', askFrontDesk: 'Please ask Front Desk.', createAccount: 'Create NEXORA Account', continueGuest: 'Continue as Guest', salonQrUrl: 'Salon QR URL', enterSalonCode: 'Enter salon code', manualSalonCodeInvalid: 'Enter a valid salon QR URL.', scanMemberLoginAction: 'Sign in to use my profile', scanMemberLoginReason: 'Sign in to prefill a verified profile; you can still continue as a guest.', scanTipRequiresStaff: 'This QR does not identify a staff member. Scan a staff QR to tip.', scanTipMethodUnavailable: 'The staff member in this QR has no enabled tip method.', scanTipReady: 'Your tip will go to {staff} at {business}.', scanPaymentRequiresCompleted: 'The salon must complete the service before checkout.', scanPaymentPhoneRequired: 'Enter the last 4 phone digits from check-in to open the ticket.', scanPaymentOwned: 'This check-in matches your verified profile; the last 4 digits are not required.', scanPaymentCandidate: 'Ticket #{number} · {service} · {amount}', scanPaymentPrivateCandidate: 'Completed service {index}', scanPaymentLast4Mismatch: 'The last 4 phone digits do not match this check-in.', scanIntentFailed: 'This QR action could not open. Scan again and retry.', memberServiceTitle: 'Member · ⭐ {points} pts', guestServiceTitle: 'Guest · points are added after check-in', memberGreeting: 'Hi {name} 👋', guestGreeting: 'Hi there 👋', useRewardPoints: 'Use {points} pts → {title}', rewardReadyHint: 'Already redeemed and ready to use on this visit.', rewardReadyOption: '{title} — ready to use', rewardPointsHint: 'You have {points} pts at this salon. Pick one to use at check-in.', salonWelcomeTitle: 'Welcome to {business}', salonWelcomeSubtitle: 'Book an appointment or check in for today', checkinDoneTitle: "You're checked in, {name}!", checkinQueueLine: '#{position} in line', checkinQueueOnly: "You're next in line", printTicketFailed: 'The print dialog could not open.', introNext: 'Next →', introStart: 'Get Started ✨', checkinQueued: 'Weak connection — check-in queued for retry.', checkinSuccess: 'Check-in complete and points added.', googleReviewOpened: 'Google Reviews opened.', googleReviewFailed: 'Could not open Google Reviews.', nearbyNotificationCreated: 'Nearby-offer notification created.', wishNotificationCreated: 'Matching offer simulated.', notificationFailed: 'Could not create notification.', preferencesSaved: 'Preference saved', businessPreferenceSaved: 'Business preference saved.', preferenceSaveFailed: 'Could not save your preference. Please try again.', consentSaveFailed: 'Could not save your consent choice. Please try again.',
         cancel: 'Cancel', confirm: 'Confirm', gotIt: 'Got it', closeDialog: 'Close dialog', dataReset: 'Demo data was reset',
         loggedOut: 'Signed out', notificationLabel: 'Notifications, {count} unread',
         invalidPhone: 'Enter a 10-digit US phone number.', cooldown: 'Please wait for the 30-second cooldown.',
@@ -8350,6 +9024,23 @@
     // Deliberately not persisted: an unconfirmed answer means nothing.
     let liveTicketAddOnDecision = null;
 
+    // The salon's report that a technician cannot take this visit — { guestCheckinId, staffProfileId }
+    // — and which recommendation the guest has highlighted in reply. Both are deliberately not
+    // persisted: the report stands in for a salon action this prototype has no salon to make, and an
+    // unconfirmed highlight means nothing. It names the technician rather than only the check-in,
+    // because the salon has to keep its word once the guest answers "anyone".
+    let liveTicketStaffBusyReport = null;
+    let liveTicketStaffChoice = null;
+    // Marks the "let the salon choose" option apart from a technician's id, which is what a swap to
+    // it actually writes: no preference at all.
+    const LIVE_TICKET_ANY_STAFF = 'any';
+
+    function reportedBusyStaffId(guestCheckinId) {
+      return liveTicketStaffBusyReport?.guestCheckinId === guestCheckinId
+        ? liveTicketStaffBusyReport.staffProfileId
+        : null;
+    }
+
     function liveTicketContactDemo(key) {
       const ticket = guestOperationsTicket(state);
       const staffName = ticket?.staffProfileId
@@ -8414,17 +9105,113 @@
       const note = document.getElementById('liveticket-note');
       if (note) note.textContent = pending ? t('liveTicketPendingNote') : t('liveTicketLiveNote');
       renderLiveTicketReward(checkin);
+      // Only a ticket the salon has not opened yet can still have its technician swapped. The card
+      // is raised either by a reason derived from the check-in or by the salon reporting the
+      // technician is busy, which in this prototype is the demo control standing in for it.
+      // The report only speaks about the technician it named, so answering it — by swapping or by
+      // handing the choice back — is what takes the card down.
+      const reported = pending && reportedBusyStaffId(checkin.id) === checkin.staffProfileId;
+      // Everything the salon could raise about the requested technician, and the subset of it this
+      // app can work out on its own. The first says whether there is a swap to offer at all; the
+      // second is the part that blocks the salon from opening the ticket.
+      const swap = pending ? guestStaffSwapRequest(checkin, true) : null;
+      const derivedSwap = pending ? guestStaffSwapRequest(checkin) : null;
+      const swapShown = renderLiveTicketStaffSwap(checkin, reported ? swap : null);
       const addOn = renderLiveTicketAddOn(pending);
       renderLiveTicketActions(pending, Boolean(addOn));
       // The demo controls only stand in for the salon. Starting the service is offered until the
-      // salon has a ticket open; suggesting an add-on only makes sense once it does.
+      // salon has a ticket open, and withheld while the requested technician does not qualify —
+      // that is the salon's own rule, and the guest resolves it through the swap card. Suggesting
+      // an add-on only makes sense once a ticket exists.
       const demo = document.getElementById('liveticket-demo');
-      const canSimulate = pending && !checkin.serviceStartedAt;
+      const canSimulate = pending && !checkin.serviceStartedAt && !swapShown && !derivedSwap;
+      const canFlagSwap = Boolean(swap) && !checkin.serviceStartedAt && !swapShown;
       const canSuggest = !pending && ticket.status === 'in_service' && !addOn;
       document.querySelector('[data-action="start-service-demo"]')?.classList.toggle('hidden', !canSimulate);
+      document.querySelector('[data-action="staff-busy-demo"]')?.classList.toggle('hidden', !canFlagSwap);
       document.querySelector('[data-action="suggest-addon-demo"]')?.classList.toggle('hidden', !canSuggest);
-      if (demo) demo.classList.toggle('hidden', !canSimulate && !canSuggest);
-      return { ok: true, pending, guestCheckinId: checkin.id, canSimulate, canSuggest, addOnPending: Boolean(addOn) };
+      if (demo) demo.classList.toggle('hidden', !canSimulate && !canSuggest && !canFlagSwap);
+      return {
+        ok: true, pending, guestCheckinId: checkin.id, canSimulate, canSuggest, canFlagSwap,
+        addOnPending: Boolean(addOn), swapPending: swapShown
+      };
+    }
+
+    // The salon telling the guest their technician cannot take this visit. The card is derived
+    // entirely from the check-in, so it disappears by itself the moment the guest picks someone who
+    // qualifies. Returns whether it is on screen.
+    function renderLiveTicketStaffSwap(checkin, swap) {
+      const card = document.getElementById('liveticket-swap-card');
+      if (!card) return false;
+      card.classList.toggle('hidden', !swap);
+      if (!swap) {
+        liveTicketStaffChoice = null;
+        setFieldError('liveticket-swap-error');
+        return false;
+      }
+      const staffName = (staffProfileId) => state.staffProfiles[staffProfileId]?.name ?? staffProfileId;
+      const language = state.profile.language === 'en' ? 'en' : 'vi';
+      // A skill gap is about specific services, so name only those; being busy is about the visit.
+      const serviceLabel = guestServiceListLabel(
+        checkin.businessId,
+        swap.reason === 'skill' ? swap.uncoveredKeys : checkin.serviceKeys,
+        language
+      );
+      const reason = document.getElementById('liveticket-swap-reason');
+      if (reason) reason.textContent = t(`staffSwapReason_${swap.reason}`, {
+        staff: staffName(swap.requestedStaffId), service: serviceLabel
+      });
+      const requested = document.getElementById('liveticket-swap-requested');
+      if (requested) requested.textContent = staffName(swap.requestedStaffId);
+      const service = document.getElementById('liveticket-swap-service');
+      if (service) service.textContent = guestServiceListLabel(checkin.businessId, checkin.serviceKeys, language);
+      // Letting the salon choose is offered last, under the named technicians: it is the answer for
+      // a guest who does not want to pick, and it only means something when there is somebody free
+      // for the salon to pick. LIVE_TICKET_ANY_STAFF is its option id — deliberately not a staff id.
+      const choices = swap.recommendedStaffIds.length
+        ? [...swap.recommendedStaffIds, LIVE_TICKET_ANY_STAFF]
+        : [];
+      if (liveTicketStaffChoice !== null && !choices.includes(liveTicketStaffChoice)) {
+        liveTicketStaffChoice = null;
+      }
+      const selected = liveTicketStaffChoice ?? choices[0] ?? null;
+      const options = document.getElementById('liveticket-swap-options');
+      if (options) options.replaceChildren(...choices.map((choice) => {
+        const any = choice === LIVE_TICKET_ANY_STAFF;
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = `w-full rounded-xl border p-3 text-left ${choice === selected
+          ? 'border-app-purple bg-app-purple/10'
+          : 'border-app-line'}`;
+        option.dataset.action = 'liveticket-staff-option';
+        option.dataset.staffId = choice;
+        option.setAttribute('role', 'radio');
+        option.setAttribute('aria-checked', String(choice === selected));
+        const name = document.createElement('strong');
+        name.className = 'block text-lg';
+        name.textContent = any ? t('staffSwapAnyLabel') : staffName(choice);
+        const detail = document.createElement('small');
+        detail.className = 'block text-app-muted';
+        detail.textContent = any
+          ? t('staffSwapAnyDetail')
+          : t('staffSwapOptionAvailable', { role: state.staffProfiles[choice]?.role ?? '' });
+        option.append(name, detail);
+        return option;
+      }));
+      const empty = document.getElementById('liveticket-swap-empty');
+      if (empty) {
+        empty.textContent = t('staffSwapEmpty');
+        empty.classList.toggle('hidden', selected !== null);
+      }
+      // With nobody to switch to, the only honest answer left is the front desk.
+      const confirm = document.getElementById('liveticket-swap-confirm');
+      if (confirm) {
+        confirm.textContent = selected === LIVE_TICKET_ANY_STAFF
+          ? t('staffSwapChooseAny')
+          : (selected ? t('staffSwapChoose', { staff: staffName(selected) }) : '');
+        confirm.classList.toggle('hidden', selected === null);
+      }
+      return true;
     }
 
     // The reward the guest attached at check-in rides along on the ticket, so they can see the
@@ -8740,6 +9527,7 @@
       if (!activeView || options.focus === false) return;
       const focusTargetId = {
         direct: 'payment-amount',
+        'direct-guide': 'direct-pay-guide-heading',
         checkout: 'guest-checkout-title',
         'payment-proof': 'payment-proof-title'
       }[name];
@@ -9064,6 +9852,9 @@
     function transactionErrorKey(result, kind) {
       if (result.code === 'method_disabled') return kind === 'tip' ? 'staffMethodDisabled' : 'businessMethodDisabled';
       if (result.code === 'invalid_amount') return kind === 'tip' ? 'invalidTipAmount' : 'invalidPaymentAmount';
+      // Nothing failed here: the salon simply has nowhere to receive the money yet, and a generic
+      // "could not save the transaction" would send the customer off to retry something unfixable.
+      if (result.code === 'salon_payout_required') return 'salonPayoutRequired';
       return 'transactionFailed';
     }
 
@@ -9123,18 +9914,26 @@
       return result;
     };
 
-    const sendPayment = () => {
-      const result = commitState((draft) => createDirectPayment(draft, {
-        businessId: draft.ui.selectedBusinessId,
-        amount: document.getElementById('payment-amount').value,
-        method: draft.ui.paymentMethod
+    const submitDirectPaymentFlow = () => {
+      const draft = state.ui.directPayDraft;
+      if (!isRecord(draft)) {
+        showToast(t(transactionErrorKey({ code: 'invalid_state' }, 'payment')), 'error');
+        return { ok: false, code: 'invalid_state' };
+      }
+      const result = commitState((next) => submitDirectPayment(next, {
+        clientRequestId: next.ui.directPayDraft?.clientRequestId,
+        businessId: next.ui.directPayDraft?.businessId,
+        amountCents: next.ui.directPayDraft?.amountCents,
+        method: next.ui.directPayDraft?.method,
+        note: next.ui.directPayDraft?.note,
+        proofImages: next.ui.directPayDraft?.proofImages,
+        transferAsserted: true
       }));
       if (!result.ok) {
+        setDirectPayProofError(result.code === 'invalid_proof' ? result.code : null);
         showToast(t(transactionErrorKey(result, 'payment')), 'error');
         return result;
       }
-      const business = state.businesses[result.payment.businessId];
-      openExternalPayment(result.payment.method, result.payment.amount, business.name);
       renderPaymentResult();
       navigateTo('paydone');
       return result;
@@ -10278,12 +11077,20 @@
       const tags = [...document.querySelectorAll('[data-action="toggle-tip-review-tag"][aria-pressed="true"]')]
         .map((control) => control.dataset.reviewTag);
       const note = document.getElementById('tip-review-notes')?.value ?? '';
-      const result = commitState((draft) => submitTipBatchReview(draft, {
-        tipBatchId: draft.ui.pendingContext.tipBatchId,
-        stars: draft.ui.rating,
-        tags,
-        note
-      }));
+      const salonPayment = state.ui.pendingContext.reviewMode === 'direct_payment';
+      const result = commitState((draft) => (salonPayment
+        ? submitDirectPaymentReview(draft, {
+          directPaymentId: draft.ui.pendingContext.paymentId,
+          stars: draft.ui.rating,
+          tags,
+          note
+        })
+        : submitTipBatchReview(draft, {
+          tipBatchId: draft.ui.pendingContext.tipBatchId,
+          stars: draft.ui.rating,
+          tags,
+          note
+        })));
       if (!result.ok) {
         const message = result.code === 'invalid_rating'
           ? localizedTipCopy('Hãy chọn số sao.', 'Choose a rating.')
@@ -10548,9 +11355,8 @@
         return opened;
       }
       if (intent === 'payment') {
-        renderPaymentMethods();
-        prefillDirectPaymentAmount();
-        navigateTo('pay');
+        const opened = openSalonPayment(state.ui.selectedBusinessId);
+        if (!opened.ok) return opened;
         return result;
       }
       renderTipMethods();
@@ -10760,15 +11566,84 @@
       return result;
     });
     registerAction('start-service-demo', () => {
-      const result = commitState((draft) => startGuestService(draft, draft.ui.pendingContext.guestCheckinId));
+      // A guest who answered "anyone" after being told someone is busy must not be handed back to
+      // them, so the salon assigns around whoever it named.
+      const result = commitState((draft) => startGuestService(
+        draft, draft.ui.pendingContext.guestCheckinId, Date.now(), undefined,
+        reportedBusyStaffId(draft.ui.pendingContext.guestCheckinId)
+      ));
       if (!result.ok) {
-        showToast(t(result.code === 'no_staff_available' ? 'startServiceNoStaff' : 'startServiceFailed'), 'error');
+        const codes = {
+          no_staff_available: 'startServiceNoStaff',
+          staff_not_eligible: 'startServiceStaffIneligible'
+        };
+        showToast(t(codes[result.code] ?? 'startServiceFailed'), 'error');
         return result;
       }
       renderApp();
       renderLiveTicket();
       showToast(t('startServiceDone'));
       return result;
+    });
+    // Demo stand-in for the salon reporting that the requested technician cannot take this visit —
+    // usually because they are still with someone, which nothing here can know. The card it raises
+    // is otherwise derived from the check-in, so it needs a technician to actually have been asked
+    // for: with "Bất kỳ" there is nobody to be busy and nothing to swap.
+    registerAction('staff-busy-demo', () => {
+      const current = currentLiveTicket();
+      if (!current.ok || !current.pending || !guestStaffSwapRequest(current.checkin, true)) {
+        showToast(t('staffSwapUnavailable'), 'error');
+        return { ok: false, code: 'staff_already_eligible' };
+      }
+      liveTicketStaffBusyReport = {
+        guestCheckinId: current.checkin.id, staffProfileId: current.checkin.staffProfileId
+      };
+      liveTicketStaffChoice = null;
+      renderLiveTicket();
+      showToast(t('staffSwapRequested'));
+      document.getElementById('liveticket-swap-reason')?.focus?.({ preventScroll: true });
+      return { ok: true, guestCheckinId: current.checkin.id };
+    });
+    registerAction('liveticket-staff-option', (control) => {
+      const choice = control.dataset.staffId;
+      if (!choice) return { ok: false, code: 'invalid_staff' };
+      liveTicketStaffChoice = choice;
+      setFieldError('liveticket-swap-error');
+      renderLiveTicket();
+      return { ok: true, choice };
+    });
+    // Changing technician is written straight through: unlike an add-on it costs the guest nothing
+    // and only affects who serves them, which is theirs to decide while the ticket is unopened.
+    registerAction('liveticket-staff-choose', () => {
+      const current = currentLiveTicket();
+      const swap = current.ok && current.pending ? guestStaffSwapRequest(current.checkin, true) : null;
+      const choice = liveTicketStaffChoice ?? swap?.recommendedStaffIds[0] ?? null;
+      if (choice === null) {
+        setFieldError('liveticket-swap-error', t('staffSwapPickOne'));
+        return { ok: false, code: 'staff_not_selected' };
+      }
+      // Answering "anyone" is a swap to no preference at all: the salon picks when it opens the
+      // ticket, which is later than now and from whoever is free then.
+      const staffProfileId = choice === LIVE_TICKET_ANY_STAFF ? null : choice;
+      const result = commitState((draft) => chooseGuestStaff(
+        draft, draft.ui.pendingContext.guestCheckinId, staffProfileId
+      ));
+      if (!result.ok) {
+        showToast(t('staffSwapFailed'), 'error');
+        return result;
+      }
+      liveTicketStaffChoice = null;
+      setFieldError('liveticket-swap-error');
+      renderApp();
+      renderLiveTicket();
+      showToast(staffProfileId === null
+        ? t('staffSwapDoneAny')
+        : t('staffSwapDone', { staff: state.staffProfiles[staffProfileId]?.name ?? staffProfileId }));
+      return result;
+    });
+    registerAction('liveticket-staff-front-desk', () => {
+      showToast(t('askFrontDesk'));
+      return { ok: true };
     });
     registerAction('suggest-addon-demo', () => {
       const result = suggestGuestAddOn(state, Date.now());
@@ -11055,8 +11930,66 @@
     registerAction('submit-tip-review', () => submitCurrentTipReview());
     registerAction('skip-tip-review', () => finishTipReviewFlow());
     registerAction('finish-tip-flow', () => closeTipFlow());
-    registerAction('send-payment', () => sendPayment());
+    registerAction('open-salon-payment', () => openSalonPayment(state.ui.selectedBusinessId));
+    registerAction('direct-pay-next', (control) => advanceDirectPayFlow(control.dataset.nextPayView));
+    registerAction('select-direct-pay-amount', (control) => selectDirectPayAmountCents(control.dataset.cents));
+    registerAction('copy-direct-pay-payout', () => copyDirectPayPayout());
+    registerAction('open-direct-pay-app', () => {
+      const draft = state.ui.directPayDraft;
+      const business = getValidBusiness(state, draft?.businessId);
+      if (!isRecord(draft) || !business || !Number.isSafeInteger(draft.amountCents)) {
+        return directPayFlowError({ ok: false, code: 'invalid_state' });
+      }
+      openExternalPayment(draft.method, draft.amountCents / 100, business.name);
+      return { ok: true };
+    });
+    registerAction('take-direct-pay-proof', () => document.getElementById('direct-pay-proof-camera')?.click());
+    registerAction('upload-direct-pay-proof', () => document.getElementById('direct-pay-proof-file')?.click());
+    registerAction('remove-direct-pay-proof', (control) => {
+      const index = Number(control.dataset.proofIndex);
+      const result = commitState((draft) => {
+        if (!isRecord(draft.ui.directPayDraft) || !Array.isArray(draft.ui.directPayDraft.proofImages)
+          || !Number.isInteger(index) || index < 0 || index >= draft.ui.directPayDraft.proofImages.length) {
+          return { ok: false, code: 'invalid_proof' };
+        }
+        draft.ui.directPayDraft.proofImages.splice(index, 1);
+        return { ok: true };
+      });
+      if (!result.ok) return directPayFlowError(result);
+      renderDirectPayProofPreviews();
+      return result;
+    });
+    // A rejected payment reuses the guide, so "I sent the payment" has to route to the replacement
+    // instead of opening a second payment for the same transfer.
+    registerAction('submit-direct-payment', () => {
+      const paymentId = state.ui.pendingContext.paymentId;
+      const aggregate = paymentId ? validateDirectPaymentAggregate(state, paymentId) : { ok: false };
+      return aggregate.ok && aggregate.payment.status === 'rejected'
+        ? submitDirectPayProofReplacement()
+        : submitDirectPaymentFlow();
+    });
     registerAction('confirm-payment', () => confirmPayment());
+    registerAction('reject-direct-payment-demo', () => resolveCurrentDirectPayment(
+      rejectDirectPayment,
+      localizedTipCopy('Không khớp giao dịch mẫu', 'Demo transfer did not match')
+    ));
+    registerAction('replace-direct-payment-proof', () => beginDirectPayProofReplacement());
+    registerAction('open-direct-pay-review', () => {
+      const aggregate = validateDirectPaymentAggregate(state, state.ui.pendingContext.paymentId);
+      if (!aggregate.ok || aggregate.payment.status !== 'confirmed') return directPayFlowError(aggregate);
+      const result = commitState((draft) => {
+        draft.ui.pendingContext.reviewMode = 'direct_payment';
+        draft.ui.rating = 0;
+        draft.ui.activeScreen = 'review';
+        draft.ui.activeModule = SCREEN_MODULE.review;
+        return { ok: true };
+      });
+      if (!result.ok) return directPayFlowError(result);
+      renderApp();
+      navigateTo('review', { persist: false });
+      renderTipReview();
+      return result;
+    });
     registerAction('open-business-history', (control) => {
       const businessId = control.dataset.businessId;
       if (!isRecord(state.businesses[businessId])) {
@@ -11386,10 +12319,13 @@
       const payment = event.target.closest('[data-payment-method]');
       if (payment) {
         if (payment.disabled) return;
-        commitState((draft) => { draft.ui.paymentMethod = payment.dataset.paymentMethod; });
+        commitState((draft) => {
+          draft.ui.paymentMethod = payment.dataset.paymentMethod;
+          // The draft owns the method the guide quotes, so it has to move with the selection.
+          if (isRecord(draft.ui.directPayDraft)) draft.ui.directPayDraft.method = payment.dataset.paymentMethod;
+        });
         selectExclusive(payment, '[data-payment-method]');
-        const label = document.querySelector('[data-action="send-payment"] span');
-        if (label) label.textContent = t('openPayment', { method: state.ui.paymentMethod });
+        renderDirectPayGuide();
         return;
       }
       for (const field of ['service', 'staff', 'day', 'time']) {
@@ -11411,6 +12347,15 @@
       if (event.target.id === 'explore-search') filterExplore(event.target.value);
       if (event.target.id === 'offer-search') filterOffers(event.target.value);
       if (event.target.id === 'tip-staff-search') renderTipStaffList(event.target.value);
+      if (event.target.id === 'payment-amount') {
+        const amount = canonicalMoneyAmount(event.target.value);
+        const cents = amount.ok ? Math.round(amount.value * 100) : null;
+        if (commitDirectPayAmountCents(cents).ok) {
+          setFieldError('direct-pay-amount-error');
+          renderDirectPayDetails();
+        }
+        return;
+      }
       if (event.target.id === 'tip-total-amount') {
         const amount = canonicalMoneyAmount(event.target.value);
         if (amount.ok) {
@@ -11553,6 +12498,48 @@
           preview.classList.remove('hidden');
         } catch {
           showToast(t('imageReadFailed'), 'error');
+        }
+        return;
+      }
+      if (['direct-pay-proof-camera', 'direct-pay-proof-file'].includes(event.target.id)) {
+        const files = [...(event.target.files ?? [])];
+        if (!isRecord(state.ui.directPayDraft) || files.length === 0) return;
+        const remaining = Math.max(0, 3 - state.ui.directPayDraft.proofImages.length);
+        if (files.length > remaining) {
+          setFieldError('direct-pay-proof-error', localizedTipCopy('Chỉ được tải tối đa 3 ảnh.', 'You can upload at most 3 images.'));
+          event.target.value = '';
+          return;
+        }
+        const nextImages = [];
+        try {
+          for (const file of files) {
+            if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+              throw new Error('invalid_direct_pay_proof');
+            }
+            const imageDataUrl = await compressImage(file, 1440, 0.78);
+            const estimatedBytes = Math.ceil(imageDataUrl.length * 0.75);
+            if (estimatedBytes > 700 * 1024) throw new Error('direct_pay_proof_too_large');
+            nextImages.push(imageDataUrl);
+          }
+          const allImages = [...state.ui.directPayDraft.proofImages, ...nextImages];
+          const totalBytes = allImages.reduce((sum, source) => sum + Math.ceil(source.length * 0.75), 0);
+          if (totalBytes > 1.8 * 1024 * 1024) throw new Error('direct_pay_proof_payload_too_large');
+          const result = commitState((draft) => {
+            if (!isRecord(draft.ui.directPayDraft)) return { ok: false, code: 'direct_pay_draft_missing' };
+            draft.ui.directPayDraft.proofImages = allImages;
+            return { ok: true };
+          });
+          if (!result.ok) throw result.error ?? new Error(result.code);
+          setFieldError('direct-pay-proof-error');
+          renderDirectPayProofPreviews();
+          if (window.lucide) window.lucide.createIcons();
+        } catch {
+          setFieldError('direct-pay-proof-error', localizedTipCopy(
+            'Ảnh không hợp lệ, quá lớn hoặc bộ nhớ không đủ.',
+            'The image is invalid, too large, or storage is full.'
+          ));
+        } finally {
+          event.target.value = '';
         }
         return;
       }
@@ -11852,18 +12839,24 @@
       });
       const list = document.getElementById('wallet-business-list');
       if (list) {
-        const cards = Object.entries(state.businesses).filter(([, business]) => isRecord(business)).map(([businessId, business]) => {
+        // A business with no balance and no ledger entry has nothing to show, so it stays hidden
+        // until the customer actually earns or spends a point there.
+        const ledgered = new Set(Array.isArray(state.ledger)
+          ? state.ledger.filter(isRecord).map((entry) => entry.businessId)
+          : []);
+        const cards = Object.entries(state.businesses).filter(([businessId, business]) => isRecord(business)
+          && (getBusinessBalance(state, businessId).points > 0 || ledgered.has(businessId))).map(([businessId, business]) => {
         const card = document.createElement('article');
-        card.className = 'app-card flex flex-wrap items-center gap-x-3 gap-y-4';
+        card.className = 'app-card flex flex-wrap items-center gap-x-3 gap-y-2 p-3 sm:gap-y-4 sm:p-4';
         const name = document.createElement('h2');
-        name.className = 'w-full font-black';
+        name.className = 'w-full break-words text-sm font-black sm:text-base';
         name.textContent = business.name;
         const points = document.createElement('strong');
-        points.className = 'mr-auto text-3xl font-black';
+        points.className = 'mr-auto text-xl font-black sm:text-3xl';
         points.textContent = formatPoints(getBusinessBalance(state, businessId).points);
         const history = document.createElement('button');
         history.type = 'button';
-        history.className = 'flex w-fit items-center gap-1.5 rounded-lg border border-[#252c51] bg-[#0d1024] px-3 py-1.5 text-xs font-bold text-[#f7f7ff] transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22d3ee]';
+        history.className = 'flex w-fit items-center gap-1.5 rounded-lg border border-[#252c51] bg-[#0d1024] px-2.5 py-1 text-[11px] font-bold text-[#f7f7ff] transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22d3ee] sm:px-3 sm:py-1.5 sm:text-xs';
         history.dataset.action = 'open-business-history';
         history.dataset.businessId = businessId;
         history.textContent = t('history');
@@ -12167,10 +13160,21 @@
         chip.textContent = state.staffProfiles[staffProfileId]?.name ?? staffProfileId;
         return chip;
       }));
+      const isSingleRecipient = draft.recipientIds.length === 1;
+      document.getElementById('tip-split-group')?.classList.toggle('hidden', isSingleRecipient);
       document.getElementById('tip-split-equal')?.setAttribute('aria-pressed', String(draft.splitMode === 'equal'));
       document.getElementById('tip-split-individual')?.setAttribute('aria-pressed', String(draft.splitMode === 'individual'));
       document.getElementById('tip-equal-allocation')?.classList.toggle('hidden', draft.splitMode !== 'equal');
       document.getElementById('tip-individual-allocation')?.classList.toggle('hidden', draft.splitMode !== 'individual');
+      const totalLabel = document.querySelector('label[for="tip-total-amount"]');
+      if (totalLabel) {
+        const copy = isSingleRecipient
+          ? { vi: 'Số tiền tip', en: 'Tip amount' }
+          : { vi: 'Tổng tiền tip', en: 'Total tip' };
+        totalLabel.dataset.vi = copy.vi;
+        totalLabel.dataset.en = copy.en;
+        totalLabel.textContent = copy[state.profile.language] ?? copy.vi;
+      }
       const totalInput = document.getElementById('tip-total-amount');
       if (totalInput && document.activeElement !== totalInput) totalInput.value = formatTipInputCents(draft.totalCents);
       const individualList = document.getElementById('tip-individual-list');
@@ -12441,6 +13445,10 @@
     }
 
     function renderTipReview() {
+      if (state.ui.pendingContext.reviewMode === 'direct_payment') {
+        renderDirectPayReview();
+        return;
+      }
       if (state.ui.pendingContext.reviewMode !== 'tip_batch') {
         showReviewView('visit', { focus: false });
         return;
@@ -12452,6 +13460,59 @@
       renderTipBatchReceipt(aggregate, 'tip-review-receipt');
       renderTipRatingLabel();
       if (existing) renderTipRewardCard(aggregate);
+    }
+
+    // A salon payment review reuses the tip batch review view: same stars, same tag chips, same
+    // +15 feedback award. Only the receipt at the top differs, because the money went to the salon
+    // rather than to a staff member.
+    function renderDirectPayReview() {
+      const aggregate = validateDirectPaymentAggregate(state, state.ui.pendingContext.paymentId);
+      if (!aggregate.ok || aggregate.payment.status !== 'confirmed') return;
+      const existing = state.paymentReviews.find((review) => review.directPaymentId === aggregate.payment.id);
+      showReviewView(existing ? 'submitted' : 'batch', { focus: false });
+      renderDirectPayReviewReceipt(aggregate);
+      renderTipRatingLabel();
+      if (existing) {
+        const badge = document.getElementById('tip-reward-business');
+        if (badge) badge.textContent = getValidBusiness(state, aggregate.payment.businessId)?.name ?? '';
+        const pointsCopy = document.getElementById('tip-reward-points-copy');
+        const points = formatPoints(aggregate.points.totalPoints, false);
+        if (pointsCopy) {
+          pointsCopy.textContent = localizedTipCopy(
+            `Nhận ${points} điểm — áp dụng cho lần ghé tiếp theo.`,
+            `Earn ${points} points — valid on your next visit.`
+          );
+        }
+      }
+    }
+
+    function renderDirectPayReviewReceipt(aggregate) {
+      const receipt = document.getElementById('tip-review-receipt');
+      if (!receipt) return;
+      const business = getValidBusiness(state, aggregate.payment.businessId);
+      const heading = document.createElement('div');
+      heading.className = 'flex items-center justify-between gap-3';
+      const who = document.createElement('div');
+      const label = document.createElement('p');
+      label.className = 'eyebrow';
+      label.textContent = localizedTipCopy('Đã thanh toán cho', 'Paid to');
+      const name = document.createElement('strong');
+      name.className = 'block text-lg';
+      name.textContent = business?.name ?? aggregate.payment.businessId;
+      who.append(label, name);
+      const amount = document.createElement('strong');
+      amount.className = 'text-2xl text-app-green';
+      amount.textContent = formatTipCents(Math.round(aggregate.payment.amount * 100));
+      heading.append(who, amount);
+      const method = document.createElement('div');
+      method.className = 'mt-3 flex justify-between border-t border-app-line pt-3 text-sm';
+      const methodLabel = document.createElement('span');
+      methodLabel.className = 'text-app-muted';
+      methodLabel.textContent = localizedTipCopy('Phương thức', 'Payment method');
+      const methodValue = document.createElement('strong');
+      methodValue.textContent = aggregate.payment.method;
+      method.append(methodLabel, methodValue);
+      receipt.replaceChildren(heading, method);
     }
 
     function renderTipRatingLabel() {
@@ -12506,29 +13567,326 @@
 
     // Scanning to pay should not make the guest retype what they owe: fill the amount from the
     // open ticket. Falls back to whatever is in the field when there is no ticket to read.
-    function prefillDirectPaymentAmount() {
-      const input = document.getElementById('payment-amount');
-      if (!input) return { ok: false, code: 'amount_field_missing' };
+    // The amount only auto-fills when an open live ticket actually names a total. Anything else leaves
+    // the field blank behind the preset chips rather than inventing a number to pay.
+    function directPayTicketSeed(businessId) {
       const current = currentLiveTicket();
       const cents = current.ok ? current.ticket.currentTotalCents : null;
-      if (!Number.isSafeInteger(cents) || cents <= 0) return { ok: false, code: 'no_open_ticket' };
-      input.value = (cents / 100).toFixed(2);
-      const receives = document.getElementById('payment-business-receives');
-      if (receives) receives.textContent = formatTipCents(cents);
-      const source = document.getElementById('payment-amount-source');
-      if (source) {
-        source.textContent = t('paymentAmountFromTicket', {
-          service: currentLiveTicketServiceLabel(current.checkin)
-        });
-        source.classList.remove('hidden');
-      }
-      return { ok: true, amountCents: cents };
+      return Number.isSafeInteger(cents) && cents > 0
+        ? { businessId, amountCents: cents, amountSource: 'ticket' }
+        : { businessId };
+    }
+
+    function openSalonPayment(businessId) {
+      const prepared = ensureDirectPayDraft(directPayTicketSeed(businessId));
+      if (!prepared.ok) return directPayFlowError(prepared);
+      renderDirectPayFlow();
+      navigateTo('pay');
+      return prepared;
     }
 
     function currentLiveTicketServiceLabel(checkin) {
       return guestServiceListLabel(
         checkin?.businessId, checkin?.serviceKeys, state.profile.language === 'en' ? 'en' : 'vi'
       );
+    }
+
+    const DIRECT_PAY_VIEWS = Object.freeze(['direct', 'direct-guide']);
+
+    function directPayFlowError(result) {
+      showToast(t(transactionErrorKey(result, 'payment')), 'error');
+      return result;
+    }
+
+    function setDirectPayProofError(code) {
+      setFieldError('direct-pay-proof-error', code
+        ? localizedTipCopy('Ảnh bằng chứng không hợp lệ.', 'The proof image is invalid.')
+        : undefined);
+    }
+
+    // Entering Pay salon always rebuilds the draft unless one is already open for this salon, so a
+    // stale amount from a previous visit can never ride along into a new transfer.
+    function ensureDirectPayDraft(input = {}) {
+      const businessId = normalizedRequiredText(input.businessId) || state.ui.selectedBusinessId;
+      const existing = state.ui.directPayDraft;
+      if (isRecord(existing) && existing.businessId === businessId && input.amountCents === undefined) {
+        return { ok: true, draft: existing };
+      }
+      return commitState((draft) => createDirectPayDraft(draft, {
+        businessId,
+        amountCents: input.amountCents,
+        amountSource: input.amountSource
+      }));
+    }
+
+    function setDirectPayDraftView(name) {
+      const activeName = DIRECT_PAY_VIEWS.includes(name) ? name : 'direct';
+      const result = commitState((draft) => {
+        if (!isRecord(draft.ui.directPayDraft)) return { ok: false, code: 'direct_pay_draft_missing' };
+        draft.ui.directPayDraft.view = activeName === 'direct-guide' ? 'guide' : 'details';
+        return { ok: true };
+      });
+      if (!result.ok) return directPayFlowError(result);
+      renderDirectPayFlow();
+      return result;
+    }
+
+    function advanceDirectPayFlow(name) {
+      const draft = state.ui.directPayDraft;
+      if (!isRecord(draft)) return directPayFlowError({ ok: false, code: 'direct_pay_draft_missing' });
+      if (name === 'direct-guide') {
+        // The guide quotes a specific amount into a specific account, so both must resolve before it
+        // can be shown at all.
+        const amount = canonicalMoneyAmount(
+          Number.isSafeInteger(draft.amountCents) ? draft.amountCents / 100 : null
+        );
+        if (!amount.ok) {
+          setFieldError('direct-pay-amount-error', localizedTipCopy(
+            'Nhập số tiền từ $1 trở lên.',
+            'Enter an amount of $1 or more.'
+          ));
+          return directPayFlowError(amount);
+        }
+        const payout = resolveBusinessPayout(state, { businessId: draft.businessId, method: draft.method });
+        if (!payout.ok) return directPayFlowError(payout);
+      }
+      setFieldError('direct-pay-amount-error');
+      return setDirectPayDraftView(name);
+    }
+
+    function commitDirectPayAmountCents(cents) {
+      return commitState((draft) => {
+        if (!isRecord(draft.ui.directPayDraft)) return { ok: false, code: 'direct_pay_draft_missing' };
+        draft.ui.directPayDraft.amountCents = cents;
+        // Once the customer touches the amount it is theirs, not the ticket's, so the "from your
+        // ticket" hint must stop claiming otherwise.
+        draft.ui.directPayDraft.amountSource = 'manual';
+        return { ok: true };
+      });
+    }
+
+    function selectDirectPayAmountCents(value) {
+      const cents = Number(value);
+      if (!Number.isSafeInteger(cents) || cents < 100) {
+        return directPayFlowError({ ok: false, code: 'invalid_amount' });
+      }
+      const result = commitDirectPayAmountCents(cents);
+      if (!result.ok) return directPayFlowError(result);
+      setFieldError('direct-pay-amount-error');
+      renderDirectPayDetails();
+      return result;
+    }
+
+    async function copyDirectPayPayout() {
+      const value = document.getElementById('direct-pay-payout-value')?.textContent ?? '';
+      const status = document.getElementById('direct-pay-copy-status');
+      let copied = false;
+      try {
+        if (window.navigator?.clipboard?.writeText) {
+          await window.navigator.clipboard.writeText(value);
+          copied = true;
+        } else {
+          const input = document.createElement('textarea');
+          input.value = value;
+          input.setAttribute('readonly', '');
+          input.className = 'fixed -left-[9999px]';
+          document.body.append?.(input);
+          input.select();
+          copied = document.execCommand?.('copy') === true;
+          input.remove();
+        }
+      } catch {
+        copied = false;
+      }
+      if (status) status.textContent = copied
+        ? localizedTipCopy('Đã sao chép.', 'Copied.')
+        : localizedTipCopy('Không thể sao chép tự động. Hãy chọn và sao chép thủ công.', 'Automatic copy failed. Select and copy it manually.');
+      return { ok: copied, code: copied ? 'copied' : 'copy_failed' };
+    }
+
+    function renderDirectPayDetails() {
+      const draft = state.ui.directPayDraft;
+      if (!isRecord(draft)) return;
+      const business = getValidBusiness(state, draft.businessId);
+      const name = document.getElementById('direct-pay-business-name');
+      const meta = document.getElementById('direct-pay-business-meta');
+      if (name) name.textContent = business?.name ?? draft.businessId;
+      if (meta) {
+        meta.textContent = localizedTipCopy(
+          `Thanh toán trực tiếp · thưởng ${business?.directPayBonusPct ?? 0}%`,
+          `Direct payment · ${business?.directPayBonusPct ?? 0}% bonus`
+        );
+      }
+      const input = document.getElementById('payment-amount');
+      if (input && document.activeElement !== input) {
+        input.value = Number.isSafeInteger(draft.amountCents) ? formatTipInputCents(draft.amountCents) : '';
+      }
+      const source = document.getElementById('payment-amount-source');
+      if (source) {
+        const fromTicket = draft.amountSource === 'ticket' && Number.isSafeInteger(draft.amountCents);
+        source.textContent = fromTicket ? t('paymentAmountFromTicket', {
+          service: currentLiveTicketServiceLabel(currentLiveTicket().checkin)
+        }) : '';
+        source.classList.toggle('hidden', !fromTicket);
+      }
+      document.querySelectorAll('[data-action="select-direct-pay-amount"]').forEach((control) => {
+        control.setAttribute('aria-pressed', String(Number(control.dataset.cents) === draft.amountCents));
+      });
+      const receives = document.getElementById('payment-business-receives');
+      if (receives) receives.textContent = formatTipCents(Number.isSafeInteger(draft.amountCents) ? draft.amountCents : 0);
+      const pointsPreview = document.getElementById('direct-pay-points-preview');
+      if (pointsPreview) {
+        const points = Number.isSafeInteger(draft.amountCents) && business
+          ? calculateDirectPaymentPoints({
+            amount: draft.amountCents / 100,
+            directPayBonusPct: canonicalRuleSnapshot(business.directPayBonusPct, null)
+          })
+          : null;
+        pointsPreview.textContent = `+${formatPoints(points ? points.totalPoints : 0, false)}`;
+      }
+      renderPaymentMethods();
+    }
+
+    function renderDirectPayGuide() {
+      const draft = state.ui.directPayDraft;
+      if (!isRecord(draft)) return;
+      const payout = resolveBusinessPayout(state, { businessId: draft.businessId, method: draft.method });
+      if (!payout.ok || !Number.isSafeInteger(draft.amountCents)) return;
+      const business = getValidBusiness(state, draft.businessId);
+      const recipient = business?.name ?? draft.businessId;
+      const methodGuide = TIP_METHOD_GUIDES[payout.method];
+      const isVLinkPay = payout.method === 'VLinkPay';
+      const heading = document.getElementById('direct-pay-guide-heading');
+      const total = document.getElementById('direct-pay-guide-total');
+      const value = document.getElementById('direct-pay-payout-value');
+      const step1 = document.getElementById('direct-pay-step1-label');
+      const instruction = document.getElementById('direct-pay-transfer-instruction');
+      const detail = document.getElementById('direct-pay-transfer-detail');
+      const vlinkPanel = document.getElementById('direct-pay-vlinkpay-panel');
+      const vlinkWallet = document.getElementById('direct-pay-vlinkpay-wallet');
+      const vlinkQr = document.getElementById('direct-pay-vlinkpay-qr');
+      if (heading) heading.textContent = localizedTipCopy(`Trả qua ${payout.method}`, `Pay with ${payout.method}`);
+      if (total) total.textContent = formatTipCents(draft.amountCents);
+      if (value) {
+        value.textContent = payout.account.value;
+        value.dataset.payoutAccountId = payout.account.id;
+      }
+      if (step1) step1.textContent = localizedTipCopy(methodGuide.copyVi, methodGuide.copyEn);
+      document.getElementById('direct-pay-payout-row')?.classList.toggle('hidden', isVLinkPay);
+      document.getElementById('direct-pay-vlinkpay-hint')?.classList.toggle('hidden', !isVLinkPay);
+      vlinkPanel?.classList.toggle('hidden', !isVLinkPay);
+      if (vlinkWallet) vlinkWallet.textContent = isVLinkPay ? payout.account.value : '';
+      if (vlinkQr) {
+        vlinkQr.src = isVLinkPay
+          ? `https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=4&data=${encodeURIComponent(payout.account.value)}`
+          : '';
+      }
+      if (instruction) {
+        instruction.textContent = isVLinkPay
+          ? localizedTipCopy(
+            `Mở app VLINKPAY → chọn Send → nhập địa chỉ ví → gửi ${formatTipCents(draft.amountCents)} cho ${recipient}.`,
+            `Open VLINKPAY → choose Send → enter the wallet address → send ${formatTipCents(draft.amountCents)} to ${recipient}.`
+          )
+          : localizedTipCopy(
+            `Mở app ${methodGuide.app} và chuyển ${formatTipCents(draft.amountCents)} cho ${recipient}.`,
+            `Open ${methodGuide.app} and send ${formatTipCents(draft.amountCents)} to ${recipient}.`
+          );
+      }
+      if (detail) {
+        detail.textContent = isVLinkPay
+          ? localizedTipCopy(
+            'Chọn đúng asset USDV trước khi nhập số tiền.',
+            'Choose the USDV asset before entering the amount.'
+          )
+          : localizedTipCopy(
+            `Nhập đúng số tiền ${formatTipCents(draft.amountCents)} khi chuyển khoản.`,
+            `Enter the exact amount ${formatTipCents(draft.amountCents)} when sending.`
+          );
+      }
+      const openApp = document.querySelector('[data-action="open-direct-pay-app"] span');
+      if (openApp) openApp.textContent = t('openPayment', { method: payout.method });
+    }
+
+    function renderDirectPayProofPreviews() {
+      const grid = document.getElementById('direct-pay-proof-preview-grid');
+      const images = state.ui.directPayDraft?.proofImages;
+      if (!grid || !Array.isArray(images)) return;
+      grid.replaceChildren(...images.map((source, index) => {
+        const cell = document.createElement('div');
+        cell.className = 'relative aspect-square overflow-hidden rounded-xl border border-app-line';
+        const image = document.createElement('img');
+        image.src = source;
+        image.alt = localizedTipCopy(`Bằng chứng thanh toán ${index + 1}`, `Payment proof ${index + 1}`);
+        image.className = 'size-full object-cover';
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'icon-button absolute right-1 top-1 size-7 bg-black/70 text-white';
+        remove.dataset.action = 'remove-direct-pay-proof';
+        remove.dataset.proofIndex = String(index);
+        remove.setAttribute('aria-label', localizedTipCopy(`Xóa ảnh ${index + 1}`, `Remove image ${index + 1}`));
+        const icon = document.createElement('i');
+        icon.setAttribute('data-lucide', 'x');
+        icon.className = 'size-4';
+        remove.append(icon);
+        cell.append(image, remove);
+        return cell;
+      }));
+    }
+
+    function renderDirectPayFlow() {
+      const draft = state.ui.directPayDraft;
+      if (!isRecord(draft)) return;
+      renderDirectPayDetails();
+      renderDirectPayGuide();
+      renderDirectPayProofPreviews();
+      // Guest checkout shares the pay screen. Only take over the view when the screen is actually in
+      // direct-pay intent, or a re-render would yank the customer out of their checkout.
+      if (state.ui.payViewIntent === 'direct') {
+        showPayView(draft.view === 'guide' ? 'direct-guide' : 'direct', { focus: false });
+      }
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function resolveCurrentDirectPayment(action, ...args) {
+      const result = commitState((draft) => action(draft, draft.ui.pendingContext.paymentId, ...args));
+      if (!result.ok) return directPayFlowError(result);
+      renderPaymentResult();
+      return result;
+    }
+
+    function beginDirectPayProofReplacement() {
+      const paymentId = state.ui.pendingContext.paymentId;
+      const aggregate = validateDirectPaymentAggregate(state, paymentId);
+      if (!aggregate.ok) return directPayFlowError(aggregate);
+      // Reopen the guide seeded from the rejected payment so the customer re-attaches a proof against
+      // the same amount and account, then submits through replaceDirectPaymentProof.
+      const result = commitState((draft) => {
+        const prepared = createDirectPayDraft(draft, { businessId: aggregate.payment.businessId });
+        if (!prepared.ok) return prepared;
+        prepared.draft.amountCents = Math.round(aggregate.payment.amount * 100);
+        prepared.draft.method = aggregate.payment.method;
+        prepared.draft.view = 'guide';
+        draft.ui.paymentMethod = aggregate.payment.method;
+        draft.ui.pendingContext.paymentId = aggregate.payment.id;
+        return prepared;
+      });
+      if (!result.ok) return directPayFlowError(result);
+      renderDirectPayFlow();
+      navigateTo('pay', { resetPayView: false });
+      return result;
+    }
+
+    function submitDirectPayProofReplacement() {
+      const result = commitState((draft) => replaceDirectPaymentProof(draft, {
+        directPaymentId: draft.ui.pendingContext.paymentId,
+        proofImages: draft.ui.directPayDraft?.proofImages,
+        note: draft.ui.directPayDraft?.note,
+        transferAsserted: true
+      }));
+      if (!result.ok) return directPayFlowError(result);
+      renderPaymentResult();
+      navigateTo('paydone');
+      return result;
     }
 
     function renderPaymentMethods() {
@@ -12543,8 +13901,6 @@
         'methodNotEnabledBusiness'
       ));
       list.replaceChildren(...buttons);
-      const sendLabel = document.querySelector('[data-action="send-payment"] span');
-      if (sendLabel) sendLabel.textContent = t('openPayment', { method: state.ui.paymentMethod });
     }
 
     function renderTipResult() {
@@ -12584,8 +13940,50 @@
       document.getElementById('payment-result-method').textContent = payment.method;
       document.getElementById('payment-confirmed-points-copy').textContent = t('paymentPointsAdded', { points: formatPoints(points.totalPoints, false) });
       document.getElementById('payment-confirmed-points').textContent = `+${formatPoints(points.totalPoints)}`;
-      document.getElementById('payment-pending').classList.toggle('hidden', payment.status === 'confirmed');
+      document.getElementById('payment-pending').classList.toggle('hidden', payment.status !== 'pending');
+      document.getElementById('payment-rejected')?.classList.toggle('hidden', payment.status !== 'rejected');
       document.getElementById('payment-confirmed').classList.toggle('hidden', payment.status !== 'confirmed');
+      const reason = document.getElementById('direct-pay-reject-reason');
+      if (reason) reason.textContent = payment.rejectReason ?? '';
+      // The demo reject button and the review CTA only make sense for a proof-backed payment: a legacy
+      // direct payment has no proof for the salon to turn down and no aggregate to review.
+      const proofBacked = Boolean(payment.currentProofId);
+      document.getElementById('direct-pay-reject-demo')?.classList.toggle('hidden', !proofBacked);
+      document.getElementById('direct-pay-review-cta')?.classList.toggle('hidden', !proofBacked);
+      renderDirectPayProofSummary(payment);
+    }
+
+    function renderDirectPayProofSummary(payment) {
+      const host = document.getElementById('direct-pay-proof-summary');
+      if (!host) return;
+      const proofs = Array.isArray(state.directPaymentProofs)
+        ? state.directPaymentProofs.filter((proof) => isRecord(proof) && proof.id === payment.currentProofId)
+        : [];
+      const proof = proofs.length === 1 ? proofs[0] : null;
+      if (!proof || !proof.images.length) {
+        host.replaceChildren();
+        host.classList.add('hidden');
+        return;
+      }
+      const heading = document.createElement('p');
+      heading.className = 'text-sm font-bold';
+      heading.textContent = proof.attemptNumber > 1
+        ? localizedTipCopy(`Bằng chứng đã gửi (lần ${proof.attemptNumber})`, `Proof sent (attempt ${proof.attemptNumber})`)
+        : localizedTipCopy('Bằng chứng đã gửi', 'Proof sent');
+      const grid = document.createElement('div');
+      grid.className = 'mt-3 grid grid-cols-3 gap-3';
+      grid.replaceChildren(...proof.images.map((source, index) => {
+        const cell = document.createElement('div');
+        cell.className = 'aspect-square overflow-hidden rounded-xl border border-app-line';
+        const image = document.createElement('img');
+        image.src = source;
+        image.alt = localizedTipCopy(`Bằng chứng thanh toán ${index + 1}`, `Payment proof ${index + 1}`);
+        image.className = 'size-full object-cover';
+        cell.append(image);
+        return cell;
+      }));
+      host.replaceChildren(heading, grid);
+      host.classList.remove('hidden');
     }
 
     function bookingDetail(booking) {
@@ -12633,34 +14031,31 @@
       const container = document.getElementById('home-appointment');
       if (!container) return;
       const appointment = state.appointments.at(-1);
-      container.classList.toggle('hidden', !appointment);
-      container.classList.toggle('flex', Boolean(appointment));
+      // Once the guest is checked in, the appointment has stopped being upcoming — they are here
+      // and the salon knows. The card steps aside entirely and the active-service card below
+      // becomes the thing that reports where their visit stands.
+      const checkedIn = state.guestCheckins.some((row) => isRecord(row) && row.claimedAt === null);
+      const visible = Boolean(appointment) && !checkedIn;
+      container.classList.toggle('hidden', !visible);
+      container.classList.toggle('flex', visible);
       const copy = container.querySelector('[data-appointment-copy]');
       if (appointment && copy) copy.textContent = bookingDetail(appointment);
       const arrival = appointment?.arrivalStatus ?? null;
       container.querySelectorAll('[data-action="set-arrival"]').forEach((control) => {
         control.setAttribute('aria-pressed', String(control.dataset.arrival === arrival));
       });
-      // Once the guest is checked in, asking whether they are on their way is nonsense: they are
-      // here and the salon knows. The whole arrival prompt steps aside, and the active-service card
-      // below becomes the thing that reports where their visit stands.
-      const checkedIn = state.guestCheckins.some((row) => isRecord(row) && row.claimedAt === null);
       const badge = document.getElementById('home-appointment-badge');
-      if (badge) {
-        badge.textContent = checkedIn
-          ? t('arrivalBadge_checked_in')
-          : (arrival ? t(`arrivalBadge_${arrival}`) : t('bookingConfirmed'));
-      }
+      if (badge) badge.textContent = arrival ? t(`arrivalBadge_${arrival}`) : t('bookingConfirmed');
       const hint = document.getElementById('home-appointment-hint');
       if (hint) {
-        hint.textContent = checkedIn ? '' : (arrival ? t(`arrivalHint_${arrival}`) : t('arrivalPrompt'));
-        hint.classList.toggle('hidden', checkedIn);
+        hint.textContent = arrival ? t(`arrivalHint_${arrival}`) : t('arrivalPrompt');
+        hint.classList.remove('hidden');
       }
-      document.getElementById('home-appointment-arrival')?.classList.toggle('hidden', checkedIn);
+      document.getElementById('home-appointment-arrival')?.classList.remove('hidden');
       // Being here is what makes checking in meaningful, so the button appears only once the guest
-      // says they have arrived — and goes away the moment they have.
+      // says they have arrived.
       document.getElementById('home-appointment-checkin')
-        ?.classList.toggle('hidden', arrival !== 'arrived' || checkedIn);
+        ?.classList.toggle('hidden', arrival !== 'arrived');
       renderActiveService();
     }
 
@@ -12719,6 +14114,7 @@
       renderTipMethods();
       renderTipFlow();
       renderPaymentMethods();
+      renderDirectPayFlow();
       renderGuestCheckout();
       renderPaymentProof();
       renderPaydone();
@@ -12956,6 +14352,8 @@
       saveState,
       readOperationsSnapshot,
       startGuestService,
+      guestStaffSwapRequest,
+      chooseGuestStaff,
       normalizeOperationsSnapshotForImport,
       resolveCheckoutOperationsAuthority,
       importAcceptedAddOns,
@@ -12996,6 +14394,15 @@
       confirmTipRecord,
       createDirectPayment,
       confirmDirectPayment,
+      availableBusinessPayouts,
+      resolveBusinessPayout,
+      createDirectPayDraft,
+      normalizePersistedDirectPayDraft,
+      submitDirectPayment,
+      validateDirectPaymentAggregate,
+      rejectDirectPayment,
+      replaceDirectPaymentProof,
+      submitDirectPaymentReview,
       createBookingRequest,
       confirmBookingRequest,
       submitFeedback,

@@ -3110,6 +3110,28 @@ test('canonicalizes persisted business identity and keeps wallet and reward vali
   assert.equal(vm.runInContext("redeemReward(state, 'glow', 'spoofed-runtime-attempt', 1000).code", context), 'unknown_business');
 });
 
+test('wallet hides businesses with no balance and no point history', () => {
+  const document = createDocumentStub();
+  const { context } = testApi({}, { skipInit: false, document });
+  const cardIds = () => document.getElementById('wallet-business-list').children
+    .map((card) => card.children.at(-1).dataset.businessId);
+
+  assert.equal(cardIds().includes('lotus-nail-spa'), false, 'an untouched business is hidden');
+
+  vm.runInContext("state.balances['lotus-nail-spa'] = { points: 40, credits: 0, expiringPoints: null }; renderBalances()", context);
+  assert.equal(cardIds().includes('lotus-nail-spa'), true, 'a balance alone is enough to show');
+
+  vm.runInContext(`
+    state.balances['lotus-nail-spa'] = { points: 0, credits: 0, expiringPoints: null };
+    state.ledger = [...state.ledger, {
+      id: 'led-spent-out', businessId: 'lotus-nail-spa', type: 'redeem', pointsDelta: -40,
+      refType: 'redemption', refId: 'red-spent-out', createdAt: '2026-07-15T10:00:00.000Z'
+    }];
+    renderBalances();
+  `, context);
+  assert.equal(cardIds().includes('lotus-nail-spa'), true, 'a spent-to-zero business keeps its history card');
+});
+
 test('reuses one persisted idempotency key for repeated confirmation of the same UI attempt', () => {
   let uuidCall = 0;
   const randomUUID = () => `00000000-0000-4000-8000-${String(++uuidCall).padStart(12, '0')}`;
@@ -3422,6 +3444,37 @@ test('restores book3, appointment and rating without writing storage during boot
   assert.match(appointmentCopy.textContent, /Gel manicure.*Anna.*Thu 16 Jul.*2:00 PM/);
   assert.deepEqual(ratingControls.map((control) => control.attributes['aria-pressed']), ['true', 'true', 'true', 'true', 'false']);
   assert.equal(storage.getItem(setup.api.STORAGE_KEY), raw);
+});
+
+test('drops the upcoming-appointment card from Home once the guest is checked in', () => {
+  const homeAppointment = createStubElement({
+    id: 'home-appointment',
+    classNames: ['hidden'],
+    querySelectors: { '[data-appointment-copy]': createStubElement(), '[data-action="set-arrival"]': [] }
+  });
+  const document = createDocumentStub({ extraElements: [homeAppointment] });
+  const { context } = testApi({}, { document });
+  vm.runInContext(`
+    const booking = createBookingRequest(state, ${JSON.stringify(validBookingInput)}, Date.UTC(2026, 6, 14)).booking;
+    confirmBookingRequest(state, booking.id, Date.UTC(2026, 6, 14, 1));
+    renderAppointment();
+  `, context);
+  assert.equal(homeAppointment.classList.contains('hidden'), false);
+  assert.equal(homeAppointment.classList.contains('flex'), true);
+
+  const checkin = customerJourneyFixture().guestCheckins[0];
+  vm.runInContext(`
+    state.guestCheckins.push(${JSON.stringify(checkin)});
+    renderAppointment();
+  `, context);
+  assert.equal(homeAppointment.classList.contains('hidden'), true);
+  assert.equal(homeAppointment.classList.contains('flex'), false);
+
+  vm.runInContext(`
+    state.guestCheckins[0].claimedAt = '2026-07-15T04:00:00.000Z';
+    renderAppointment();
+  `, context);
+  assert.equal(homeAppointment.classList.contains('hidden'), false);
 });
 
 test('keeps Google sharing optional and unrewarded regardless of rating or private feedback', () => {
@@ -3969,7 +4022,7 @@ test('renders every business-aware reward without unsafe state HTML', () => {
 
   const walletCards = document.getElementById('wallet-business-list').children;
   const rewardCards = document.getElementById('reward-list').children;
-  assert.equal(walletCards.length, 7);
+  assert.equal(walletCards.length, 4, 'businesses with no balance and no ledger entry stay hidden');
   assert.equal(walletCards[0].children[0].textContent, '<img src=x onerror=alert(1)>');
   assert.equal(rewardCards.length, 11);
   const gelButton = rewardCards.at(-1).children.at(-1).children.at(-1);
@@ -7635,11 +7688,15 @@ test('fixed scan demo dispatcher opens existing flows without submitting transac
   assert.ok(dispatcher);
   assert.match(dispatcher, /prepareFixedScanDemo\(draft, intent\)/);
   assert.match(dispatcher, /openServiceCheckinForm\(result\.member\)/);
-  assert.match(dispatcher, /renderPaymentMethods\(\)/);
-  assert.match(dispatcher, /navigateTo\('pay'\)/);
+  assert.match(dispatcher, /openSalonPayment\(state\.ui\.selectedBusinessId\)/);
   assert.match(dispatcher, /renderTipMethods\(\)/);
   assert.match(dispatcher, /navigateTo\('tip'/);
   assert.doesNotMatch(dispatcher, /createGuestCheckin|createTip|createDirectPayment|sendTip|sendPayment/);
+  // The pay screen is opened by openSalonPayment now, which seeds a draft rather than a transaction.
+  const salonPayment = source.match(/function openSalonPayment\(businessId\)[\s\S]*?\n    \}/)?.[0];
+  assert.ok(salonPayment);
+  assert.match(salonPayment, /navigateTo\('pay'\)/);
+  assert.doesNotMatch(salonPayment, /createDirectPayment\(|submitDirectPayment\(/);
 });
 
 test('scan context exposes a localized responsive intent router with accessible disabled reasons', () => {
@@ -10742,4 +10799,546 @@ test('splits rewards into explore, redeemed and used tabs', () => {
   assert.equal(list.children.at(0).children.at(-1).children[0].textContent, 'Đã dùng');
   clickTab(tabs[1]);
   assert.equal(list.children.some((card) => card.dataset.redemptionId === moved), false);
+});
+
+test('a single tip recipient hides the split group, forces equal mode and relabels the amount', () => {
+  const splitGroup = createStubElement({ id: 'tip-split-group' });
+  const totalLabel = createStubElement({ dataset: { vi: 'Tổng tiền tip', en: 'Total tip' } });
+  const individualList = createStubElement({ id: 'tip-individual-list' });
+  const totalInput = createStubElement({ id: 'tip-total-amount' });
+  const document = createDocumentStub({
+    extraElements: [splitGroup, individualList, totalInput],
+    selectorNodes: { 'label[for="tip-total-amount"]': totalLabel }
+  });
+  const { context } = testApi({}, { document });
+  assert.equal(vm.runInContext(`createTipDraft(state, {
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', preferredStaffId: 'staff-anna'
+  }).ok`, context), true);
+
+  // Two recipients: splitting is meaningful, so the group stays and 'individual' sticks.
+  assert.equal(vm.runInContext("updateTipDraftRecipients(state, ['staff-anna', 'staff-maria']).ok", context), true);
+  vm.runInContext("state.ui.tipDraft.splitMode = 'individual'; renderTipAllocation();", context);
+  assert.equal(splitGroup.classList.contains('hidden'), false);
+  assert.equal(vm.runInContext('state.ui.tipDraft.splitMode', context), 'individual');
+  assert.equal(totalLabel.textContent, 'Tổng tiền tip');
+
+  // Dropping back to one recipient must reset the mode, or the total would come
+  // from a hidden individualCents entry instead of the visible amount field.
+  assert.equal(vm.runInContext("updateTipDraftRecipients(state, ['staff-anna']).ok", context), true);
+  assert.equal(vm.runInContext('state.ui.tipDraft.splitMode', context), 'equal');
+  vm.runInContext('renderTipAllocation();', context);
+  assert.equal(splitGroup.classList.contains('hidden'), true);
+  assert.equal(totalLabel.textContent, 'Số tiền tip');
+  assert.equal(totalLabel.dataset.en, 'Tip amount');
+});
+
+const GUEST_SWAP_CHECKIN_ID = 'guest-checkin-00000000-0000-4000-8000-000000000010';
+
+function ineligibleStaffCheckin(overrides = {}) {
+  return {
+    id: GUEST_SWAP_CHECKIN_ID, businessId: 'bitcoin-nail-bar', name: 'Amy Nguyen',
+    phone: '8325550198', serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t',
+    station: 'front', sourceQr: 'https://nexoratouch.com/touch/bitcoin-nail-bar/front',
+    status: 'checked_in', pointsPending: 0, scannedAt: '2026-07-15T03:04:42.000Z',
+    claimedAt: null, ...overrides
+  };
+}
+
+test('raises a staff swap from a derived reason, or from the salon reporting one', () => {
+  const { api } = testApi();
+
+  // Jenny has no acrylic skill: a gap waiting cannot close, so it names the service.
+  const skill = api.guestStaffSwapRequest(ineligibleStaffCheckin());
+  assert.equal(skill.reason, 'skill');
+  assert.deepEqual([...skill.uncoveredKeys], ['acrylic-full-set']);
+  // Kevin covers acrylic but is not free, so he is never recommended as the way out.
+  assert.deepEqual([...skill.recommendedStaffIds], ['staff-lisa-n', 'staff-maria']);
+
+  const unavailable = api.guestStaffSwapRequest(ineligibleStaffCheckin({ staffProfileId: 'staff-kevin-v' }));
+  assert.equal(unavailable.reason, 'busy');
+  assert.deepEqual([...unavailable.uncoveredKeys], []);
+  assert.deepEqual([...unavailable.recommendedStaffIds], ['staff-lisa-n', 'staff-maria']);
+
+  // A technician who qualifies, and a guest who asked for nobody, raise nothing on their own.
+  const eligible = ineligibleStaffCheckin({ staffProfileId: 'staff-lisa-n' });
+  assert.equal(api.guestStaffSwapRequest(eligible), null);
+  assert.equal(api.guestStaffSwapRequest(ineligibleStaffCheckin({ staffProfileId: null })), null);
+  assert.equal(api.guestStaffSwapRequest(ineligibleStaffCheckin({ serviceKeys: ['classic-manicure'] })), null);
+
+  // Being tied up right now is only ever the salon's word: nothing here can derive it, so it is
+  // the one reason that has to be reported — and it cannot invent a technician nobody asked for.
+  const reported = api.guestStaffSwapRequest(eligible, true);
+  assert.equal(reported.reason, 'busy');
+  assert.deepEqual([...reported.recommendedStaffIds], ['staff-maria']);
+  assert.equal(api.guestStaffSwapRequest(ineligibleStaffCheckin({ staffProfileId: null }), true), null);
+  // A derived reason outranks it: Jenny is not busy, she cannot do the work at all.
+  assert.equal(api.guestStaffSwapRequest(ineligibleStaffCheckin(), true).reason, 'skill');
+});
+
+test('lets the guest switch to a recommended technician, or back to no preference', () => {
+  const { api, storage } = testApi();
+  const state = api.createDefaultState();
+  state.guestCheckins = [ineligibleStaffCheckin()];
+
+  // Only the salon's own recommendations are accepted: not the unavailable technician who has
+  // the skill, and not one who is free but cannot do the service.
+  assert.equal(api.chooseGuestStaff(state, GUEST_SWAP_CHECKIN_ID, 'staff-kevin-v', storage).code, 'staff_not_recommended');
+  assert.equal(api.chooseGuestStaff(state, GUEST_SWAP_CHECKIN_ID, 'staff-anna', storage).code, 'staff_not_recommended');
+  assert.equal(state.guestCheckins[0].staffProfileId, 'staff-jenny-t');
+
+  const chosen = api.chooseGuestStaff(state, GUEST_SWAP_CHECKIN_ID, 'staff-maria', storage);
+  assert.equal(chosen.ok, true);
+  assert.equal(state.guestCheckins[0].staffProfileId, 'staff-maria');
+  // The warning is derived, so answering it is what clears it.
+  assert.equal(api.guestStaffSwapRequest(state.guestCheckins[0]), null);
+  // A guest told their technician is busy may keep moving: qualifying is not a gate on swapping.
+  assert.equal(api.chooseGuestStaff(state, GUEST_SWAP_CHECKIN_ID, 'staff-lisa-n', storage).ok, true);
+
+  // Handing the choice back to the salon is a swap to no preference at all.
+  assert.equal(api.chooseGuestStaff(state, GUEST_SWAP_CHECKIN_ID, null, storage).ok, true);
+  assert.equal(state.guestCheckins[0].staffProfileId, null);
+  // The stored check-in must still be one the app would read back, either way.
+  assert.equal(api.normalizeGuestCheckin(state, state.guestCheckins[0])?.staffProfileId, null);
+  // With nobody asked for there is nobody to swap away from.
+  assert.equal(api.chooseGuestStaff(state, GUEST_SWAP_CHECKIN_ID, 'staff-maria', storage).code, 'staff_not_requested');
+});
+
+test('refuses to answer "anyone" when the salon has nobody free to give', () => {
+  const { api, storage } = testApi();
+  const state = api.createDefaultState();
+  // Only Kevin covers acrylic besides Lisa and Maria; with Lisa requested and the rest of the
+  // recommendations gone, "anyone" would be a ticket that never opens.
+  state.guestCheckins = [ineligibleStaffCheckin({
+    staffProfileId: 'staff-jenny-t', serviceKeys: ['deluxe-pedicure', 'acrylic-full-set']
+  })];
+  const swap = api.guestStaffSwapRequest(state.guestCheckins[0]);
+  assert.deepEqual([...swap.recommendedStaffIds], ['staff-lisa-n']);
+  assert.equal(api.chooseGuestStaff(state, GUEST_SWAP_CHECKIN_ID, null, storage).ok, true);
+
+  const none = api.createDefaultState();
+  none.guestCheckins = [ineligibleStaffCheckin({ serviceKeys: ['signature-facial'] })];
+  assert.equal(api.chooseGuestStaff(none, GUEST_SWAP_CHECKIN_ID, null, storage).code, 'staff_not_requested');
+});
+
+test('refuses a technician swap once the salon owns the ticket', () => {
+  const { api, storage } = testApi();
+  const state = api.createDefaultState();
+  state.guestCheckins = [ineligibleStaffCheckin({ serviceStartedAt: '2026-07-15T03:20:00.000Z' })];
+  assert.equal(api.chooseGuestStaff(state, GUEST_SWAP_CHECKIN_ID, 'staff-maria', storage).code, 'guest_already_served');
+
+  const claimed = api.createDefaultState();
+  claimed.guestCheckins = [ineligibleStaffCheckin({ claimedAt: '2026-07-15T03:30:00.000Z' })];
+  assert.equal(api.chooseGuestStaff(claimed, GUEST_SWAP_CHECKIN_ID, 'staff-maria', storage).code, 'guest_already_served');
+});
+
+test('will not open a ticket on a technician the guest asked for who does not qualify', () => {
+  const { api, storage } = testApi();
+  const state = api.createDefaultState();
+  state.guestCheckins = [ineligibleStaffCheckin()];
+
+  const blocked = api.startGuestService(state, GUEST_SWAP_CHECKIN_ID, Date.parse('2026-07-15T03:20:00.000Z'), storage);
+  assert.equal(blocked.ok, false);
+  assert.equal(blocked.code, 'staff_not_eligible');
+  assert.equal(api.readOperationsSnapshot(storage).serviceTickets.length, 0);
+  assert.equal(state.guestCheckins[0].serviceStartedAt, undefined);
+
+  // Swapping is what unblocks it, and the ticket then opens on the technician actually chosen.
+  assert.equal(api.chooseGuestStaff(state, GUEST_SWAP_CHECKIN_ID, 'staff-lisa-n', storage).ok, true);
+  const started = api.startGuestService(state, GUEST_SWAP_CHECKIN_ID, Date.parse('2026-07-15T03:20:00.000Z'), storage);
+  assert.equal(started.ok, true);
+  assert.equal(started.ticket.staffProfileId, 'staff-lisa-n');
+});
+
+test('never assigns a guest back to the technician it just called busy', () => {
+  const { api, storage } = testApi();
+  const state = api.createDefaultState();
+  // Lisa is declared before Maria, so she is who "anyone" lands on unless she is excluded.
+  state.guestCheckins = [ineligibleStaffCheckin({ staffProfileId: null })];
+  const assigned = api.startGuestService(state, GUEST_SWAP_CHECKIN_ID, Date.parse('2026-07-15T03:20:00.000Z'), storage);
+  assert.equal(assigned.ticket.staffProfileId, 'staff-lisa-n');
+
+  // A fresh surface: the snapshot already holds this guest's ticket, and one guest has only one.
+  const second = testApi();
+  const excluded = second.api.createDefaultState();
+  excluded.guestCheckins = [ineligibleStaffCheckin({ staffProfileId: null })];
+  const other = second.api.startGuestService(
+    excluded, GUEST_SWAP_CHECKIN_ID, Date.parse('2026-07-15T03:20:00.000Z'), second.storage, 'staff-lisa-n'
+  );
+  assert.equal(other.ticket.staffProfileId, 'staff-maria');
+});
+
+test('offers the busy simulation for any requested technician, and swaps through the card', () => {
+  const startButton = createStubElement({ dataset: { action: 'start-service-demo' } });
+  const flagButton = createStubElement({ dataset: { action: 'staff-busy-demo' } });
+  const suggestButton = createStubElement({ dataset: { action: 'suggest-addon-demo' } });
+  const confirmButton = createStubElement({
+    id: 'liveticket-swap-confirm', dataset: { action: 'liveticket-staff-choose' }
+  });
+  const document = createDocumentStub({
+    extraElements: [confirmButton],
+    selectorNodes: {
+      '[data-action="start-service-demo"]': startButton,
+      '[data-action="staff-busy-demo"]': flagButton,
+      '[data-action="suggest-addon-demo"]': suggestButton
+    }
+  });
+  const { context } = testApi({}, { skipInit: false, document });
+  // Each case is a fresh visit: the salon's snapshot goes with the check-in it belongs to.
+  const seed = (checkin) => vm.runInContext(`
+    window.localStorage.removeItem(OPERATIONS_STORAGE_KEY);
+    state.guestCheckins = [${JSON.stringify(checkin)}];
+    state.ui.pendingContext.guestCheckinId = '${GUEST_SWAP_CHECKIN_ID}';
+    renderLiveTicket();
+  `, context);
+  const click = (element) => context.handleAction({
+    target: { closest: (selector) => selector === '[data-action]' ? element : null }
+  });
+  const card = document.getElementById('liveticket-swap-card');
+  const options = document.getElementById('liveticket-swap-options');
+
+  // A technician who qualifies: the salon can start, and can also report her busy — that is a fact
+  // only it knows, so it must be offered even though nothing here can derive it.
+  let rendered = seed(ineligibleStaffCheckin({ staffProfileId: 'staff-maria' }));
+  assert.equal(rendered.canSimulate, true);
+  assert.equal(rendered.canFlagSwap, true);
+  assert.equal(rendered.swapPending, false);
+  assert.equal(card.classList.contains('hidden'), true);
+
+  click(flagButton);
+  assert.equal(card.classList.contains('hidden'), false);
+  assert.equal(
+    document.getElementById('liveticket-swap-reason').textContent,
+    'Maria đang bận nên tiệm chưa thể mở phiếu cho bạn.'
+  );
+  // Answering comes first: the salon cannot start on a technician it just called busy.
+  assert.equal(startButton.classList.contains('hidden'), true);
+  assert.equal(flagButton.classList.contains('hidden'), true);
+
+  // "Anyone" sits under the named technicians, and the salon keeps its word: it assigns around
+  // Maria rather than handing the guest straight back to her.
+  assert.deepEqual(options.children.map((option) => option.dataset.staffId), ['staff-lisa-n', 'any']);
+  assert.equal(options.children[1].children[0].textContent, 'Thợ bất kỳ');
+  click(options.children[1]);
+  assert.equal(confirmButton.textContent, 'Để tiệm chọn thợ');
+  click(confirmButton);
+  assert.equal(vm.runInContext('state.guestCheckins[0].staffProfileId', context), null);
+  assert.equal(card.classList.contains('hidden'), true);
+  click(startButton);
+  assert.equal(vm.runInContext('readOperationsSnapshot().serviceTickets.at(-1).staffProfileId', context), 'staff-lisa-n');
+
+  // A guest who asked for nobody has no technician to be busy and nothing to swap.
+  rendered = seed(ineligibleStaffCheckin({ staffProfileId: null }));
+  assert.equal(rendered.canFlagSwap, false);
+  assert.equal(rendered.canSimulate, true);
+  assert.equal(flagButton.classList.contains('hidden'), true);
+
+  // Jenny cannot do acrylic at all: that is derived, so starting is withheld until it is answered
+  // and the only thing left to do is raise it.
+  rendered = seed(ineligibleStaffCheckin());
+  assert.equal(rendered.canSimulate, false);
+  assert.equal(rendered.canFlagSwap, true);
+  assert.equal(startButton.classList.contains('hidden'), true);
+  assert.equal(flagButton.classList.contains('hidden'), false);
+
+  click(flagButton);
+  assert.equal(card.classList.contains('hidden'), false);
+  assert.equal(
+    document.getElementById('liveticket-swap-reason').textContent,
+    'Jenny T. chưa được đánh dấu đủ điều kiện cho Bộ móng acrylic.'
+  );
+  assert.equal(document.getElementById('liveticket-swap-requested').textContent, 'Jenny T.');
+  assert.deepEqual(options.children.map((option) => option.dataset.staffId), ['staff-lisa-n', 'staff-maria', 'any']);
+  // The first recommendation is highlighted, so the button always names who it would pick.
+  assert.deepEqual(options.children.map((option) => option.attributes['aria-checked']), ['true', 'false', 'false']);
+  assert.equal(confirmButton.textContent, 'Chọn Lisa N.');
+
+  click(options.children[1]);
+  assert.deepEqual(options.children.map((option) => option.attributes['aria-checked']), ['false', 'true', 'false']);
+  assert.equal(confirmButton.textContent, 'Chọn Maria');
+
+  click(confirmButton);
+  assert.equal(vm.runInContext('state.guestCheckins[0].staffProfileId', context), 'staff-maria');
+  // Answering it puts the salon back in charge: the card is gone and the service can start.
+  assert.equal(card.classList.contains('hidden'), true);
+  rendered = vm.runInContext('renderLiveTicket()', context);
+  assert.equal(rendered.swapPending, false);
+  assert.equal(rendered.canSimulate, true);
+  assert.equal(startButton.classList.contains('hidden'), false);
+});
+
+const SALON_PROOF_IMAGE = 'data:image/png;base64,AA==';
+
+function salonPaymentInput(overrides = {}) {
+  return {
+    clientRequestId: 'pay-request-1',
+    businessId: 'bitcoin-nail-bar',
+    amountCents: 5500,
+    method: 'Zelle',
+    note: 'sent',
+    proofImages: [SALON_PROOF_IMAGE],
+    transferAsserted: true,
+    ...overrides
+  };
+}
+
+test('salon payout resolves business-owned accounts and refuses salons without one', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+
+  const zelle = api.resolveBusinessPayout(app, { businessId: 'bitcoin-nail-bar', method: 'Zelle' });
+  assert.equal(zelle.ok, true);
+  assert.equal(zelle.account.ownerType, 'business');
+  assert.equal(zelle.account.ownerId, 'bitcoin-nail-bar');
+
+  // Moon Coffee only enables Cash App, so every other method must stay closed.
+  assert.equal(api.resolveBusinessPayout(app, { businessId: 'moon-coffee', method: 'Cash App' }).ok, true);
+  assert.equal(api.resolveBusinessPayout(app, { businessId: 'moon-coffee', method: 'Zelle' }).code, 'method_disabled');
+  assert.equal(api.resolveBusinessPayout(app, { businessId: 'golden-glow-spa', method: 'Zelle' }).code, 'salon_payout_required');
+  assert.equal(api.resolveBusinessPayout(app, { businessId: 'missing', method: 'Zelle' }).code, 'unknown_business');
+});
+
+test('salon payment draft only claims a prefilled amount when a ticket supplied one', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+
+  const seeded = api.createDirectPayDraft(app, {
+    businessId: 'bitcoin-nail-bar', amountCents: 5500, amountSource: 'ticket'
+  });
+  assert.equal(seeded.ok, true);
+  assert.deepEqual([seeded.draft.amountCents, seeded.draft.amountSource], [5500, 'ticket']);
+
+  const blank = api.createDirectPayDraft(app, { businessId: 'bitcoin-nail-bar' });
+  assert.deepEqual([blank.draft.amountCents, blank.draft.amountSource], [null, 'manual']);
+  assert.equal(blank.draft.proofImages.length, 0);
+  assert.deepEqual([blank.draft.transferAsserted, blank.draft.view], [false, 'details']);
+
+  // Claiming 'ticket' without an amount would put a "from your ticket" hint over an empty field.
+  const lying = api.createDirectPayDraft(app, { businessId: 'bitcoin-nail-bar', amountSource: 'ticket' });
+  assert.equal(lying.draft.amountSource, 'manual');
+  assert.equal(api.createDirectPayDraft(app, { businessId: 'golden-glow-spa' }).code, 'salon_payout_required');
+});
+
+test('salon payment requires the transfer assertion and a valid proof before recording anything', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  for (const invalid of [
+    salonPaymentInput({ transferAsserted: false }),
+    salonPaymentInput({ transferAsserted: undefined }),
+    salonPaymentInput({ proofImages: ['not-an-image'] }),
+    salonPaymentInput({ proofImages: [SALON_PROOF_IMAGE, SALON_PROOF_IMAGE, SALON_PROOF_IMAGE, SALON_PROOF_IMAGE] }),
+    salonPaymentInput({ amountCents: 50 }),
+    salonPaymentInput({ method: 'Wire' }),
+    salonPaymentInput({ businessId: 'golden-glow-spa' }),
+    salonPaymentInput({ clientRequestId: '  ' })
+  ]) {
+    const before = JSON.stringify(app);
+    assert.equal(api.submitDirectPayment(app, invalid, 1000).ok, false);
+    assert.equal(JSON.stringify(app), before);
+  }
+  assert.equal(app.directPayments.length, 0);
+  assert.equal(app.directPaymentProofs.length, 0);
+});
+
+test('salon payment awards nothing until the salon confirms the proof', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const before = app.balances['bitcoin-nail-bar'].points;
+
+  const submitted = api.submitDirectPayment(app, salonPaymentInput(), 1000);
+  assert.equal(submitted.ok, true);
+  assert.equal(submitted.payment.status, 'pending');
+  assert.equal(submitted.payment.payoutAccountId, 'tip-payout-business-bitcoin-zelle');
+  assert.equal(submitted.proof.attemptNumber, 1);
+  assert.equal(submitted.proof.directPaymentId, submitted.payment.id);
+  // Pending is not paid: no ledger, no balance movement.
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
+  assert.equal(app.ledger.filter((entry) => entry.refId === submitted.payment.id).length, 0);
+
+  const confirmed = api.confirmDirectPayment(app, submitted.payment.id, 2000);
+  assert.equal(confirmed.ok, true);
+  assert.deepEqual([confirmed.spendPoints, confirmed.bonusPoints], [55, 11]);
+  assert.equal(confirmed.proof.status, 'confirmed');
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 66);
+  assert.equal(app.ledger.filter((entry) => entry.refId === submitted.payment.id).length, 2);
+});
+
+test('salon payment resubmit is idempotent and refuses a changed request under the same id', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const first = api.submitDirectPayment(app, salonPaymentInput(), 1000);
+  assert.equal(first.idempotent, false);
+
+  const replay = api.submitDirectPayment(app, salonPaymentInput(), 1500);
+  assert.equal(replay.idempotent, true);
+  assert.equal(replay.payment.id, first.payment.id);
+  assert.equal(app.directPayments.length, 1);
+  assert.equal(app.directPaymentProofs.length, 1);
+
+  // Same request id, different money: that is a new transaction wearing an old id.
+  const mismatch = api.submitDirectPayment(app, salonPaymentInput({ amountCents: 9900 }), 1600);
+  assert.equal(mismatch.code, 'request_mismatch');
+  assert.equal(app.directPayments.length, 1);
+});
+
+test('rejected salon payment keeps points at zero and only clears through a replacement proof', () => {
+  // The default harness UUID is a constant, so a second proof would collide with the first.
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const before = app.balances['bitcoin-nail-bar'].points;
+  const submitted = api.submitDirectPayment(app, salonPaymentInput(), 1000);
+
+  const rejected = api.rejectDirectPayment(app, submitted.payment.id, ' Amount does not match ', 2000);
+  assert.equal(rejected.ok, true);
+  assert.equal(rejected.payment.status, 'rejected');
+  assert.equal(rejected.payment.rejectReason, 'Amount does not match');
+  assert.equal(rejected.proof.status, 'rejected');
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
+  assert.equal(api.rejectDirectPayment(app, submitted.payment.id, 'again', 2100).idempotent, true);
+
+  // A rejected payment cannot be confirmed behind the customer's back.
+  assert.equal(api.confirmDirectPayment(app, submitted.payment.id, 2200).code, 'direct_payment_not_pending');
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before);
+
+  assert.equal(api.replaceDirectPaymentProof(app, {
+    directPaymentId: submitted.payment.id, proofImages: [SALON_PROOF_IMAGE], transferAsserted: false
+  }, 2300).code, 'transfer_confirmation_required');
+
+  const replaced = api.replaceDirectPaymentProof(app, {
+    directPaymentId: submitted.payment.id, proofImages: [SALON_PROOF_IMAGE], transferAsserted: true
+  }, 2400);
+  assert.equal(replaced.ok, true);
+  assert.equal(replaced.payment.status, 'pending');
+  assert.equal(replaced.payment.rejectReason, null);
+  assert.equal(replaced.proof.attemptNumber, 2);
+  assert.equal(app.directPaymentProofs.length, 2);
+  assert.equal(app.directPayments.length, 1);
+
+  assert.equal(api.confirmDirectPayment(app, submitted.payment.id, 3000).ok, true);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, before + 66);
+});
+
+test('salon payment reject and replace refuse a payment that is not in the matching state', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const submitted = api.submitDirectPayment(app, salonPaymentInput(), 1000);
+
+  // Replacing a proof only makes sense once the salon has turned one down.
+  assert.equal(api.replaceDirectPaymentProof(app, {
+    directPaymentId: submitted.payment.id, proofImages: [SALON_PROOF_IMAGE], transferAsserted: true
+  }, 1100).code, 'direct_payment_not_rejected');
+
+  api.confirmDirectPayment(app, submitted.payment.id, 2000);
+  assert.equal(api.rejectDirectPayment(app, submitted.payment.id, 'too late', 2100).code, 'direct_payment_not_pending');
+  assert.equal(api.replaceDirectPaymentProof(app, {
+    directPaymentId: submitted.payment.id, proofImages: [SALON_PROOF_IMAGE], transferAsserted: true
+  }, 2200).code, 'direct_payment_not_rejected');
+});
+
+test('legacy direct payments without a proof stay confirmable but expose no proof aggregate', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const legacy = api.createDirectPayment(app, { businessId: 'bitcoin-nail-bar', amount: 20, method: 'Venmo' }, 1000);
+  assert.equal(legacy.ok, true);
+  assert.equal(legacy.payment.currentProofId, null);
+  assert.equal(legacy.payment.clientRequestId, null);
+
+  // No proof means nothing for the salon to reject, and nothing to review.
+  assert.equal(api.validateDirectPaymentAggregate(app, legacy.payment.id).code, 'direct_payment_proof_required');
+  assert.equal(api.rejectDirectPayment(app, legacy.payment.id, 'nope', 1100).code, 'direct_payment_proof_required');
+  assert.equal(api.confirmDirectPayment(app, legacy.payment.id, 2000).ok, true);
+});
+
+test('salon payment review awards 15 points once and only after confirmation', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const submitted = api.submitDirectPayment(app, salonPaymentInput(), 1000);
+
+  assert.equal(api.submitDirectPaymentReview(app, {
+    directPaymentId: submitted.payment.id, stars: 5, tags: [], note: ''
+  }, 1100).code, 'direct_payment_not_confirmed');
+
+  api.confirmDirectPayment(app, submitted.payment.id, 2000);
+  const points = app.balances['bitcoin-nail-bar'].points;
+
+  for (const invalid of [
+    { stars: 0, tags: [], note: '' },
+    { stars: 6, tags: [], note: '' },
+    { stars: 5, tags: ['not-a-tag'], note: '' },
+    { stars: 5, tags: [], note: 'x'.repeat(501) }
+  ]) {
+    assert.equal(api.submitDirectPaymentReview(app, {
+      directPaymentId: submitted.payment.id, ...invalid
+    }, 3000).ok, false);
+  }
+  assert.equal(app.paymentReviews.length, 0);
+
+  const review = api.submitDirectPaymentReview(app, {
+    directPaymentId: submitted.payment.id, stars: 5, tags: ['friendly', 'clean', 'clean'], note: ' great '
+  }, 3000);
+  assert.equal(review.ok, true);
+  assert.equal(review.points, 15);
+  assert.deepEqual([...review.review.tags], ['clean', 'friendly']);
+  assert.equal(review.review.note, 'great');
+  assert.equal(review.review.subjectKey, `direct-payment:${submitted.payment.id}`);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, points + 15);
+
+  const retry = api.submitDirectPaymentReview(app, {
+    directPaymentId: submitted.payment.id, stars: 1, tags: [], note: ''
+  }, 3100);
+  assert.equal(retry.idempotent, true);
+  assert.equal(app.paymentReviews.length, 1);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, points + 15);
+});
+
+test('salon payment survives a storage round trip and rejects a tampered proof envelope', () => {
+  const { api, storage } = testApi();
+  const app = api.createDefaultState();
+  const submitted = api.submitDirectPayment(app, salonPaymentInput(), 1000);
+  api.rejectDirectPayment(app, submitted.payment.id, 'blurry', 2000);
+  api.saveState(app);
+
+  const loaded = api.loadState();
+  assert.equal(loaded.directPayments.length, 1);
+  assert.equal(loaded.directPaymentProofs.length, 1);
+  assert.equal(loaded.directPayments[0].status, 'rejected');
+  assert.equal(api.validateDirectPaymentAggregate(loaded, submitted.payment.id).ok, true);
+
+  // Half an envelope is corrupt, not a legacy row: dropping the proof pointer must not silently
+  // downgrade a rejected payment into a confirmable legacy one.
+  const tampered = JSON.parse(storage.getItem(api.STORAGE_KEY));
+  tampered.directPayments[0].currentProofId = null;
+  storage.setItem(api.STORAGE_KEY, JSON.stringify(tampered));
+  const reloaded = api.loadState();
+  assert.equal(reloaded.directPayments.length, 0);
+});
+
+test('persisted salon payment draft drops the transfer assertion and unknown payouts', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+
+  const restored = api.normalizePersistedDirectPayDraft(app, {
+    clientRequestId: 'pay-request-1',
+    businessId: 'bitcoin-nail-bar',
+    amountCents: 5500,
+    amountSource: 'ticket',
+    method: 'Zelle',
+    note: ' note ',
+    proofImages: [SALON_PROOF_IMAGE],
+    transferAsserted: true,
+    view: 'guide'
+  });
+  // A reload must never carry "I sent it" across: the assertion is a fresh act by the customer.
+  assert.equal(restored.transferAsserted, false);
+  assert.deepEqual([restored.amountCents, restored.amountSource, restored.view], [5500, 'ticket', 'guide']);
+  assert.equal(restored.note, 'note');
+
+  assert.equal(api.normalizePersistedDirectPayDraft(app, null), null);
+  assert.equal(api.normalizePersistedDirectPayDraft(app, { clientRequestId: '', businessId: 'bitcoin-nail-bar' }), null);
+  assert.equal(api.normalizePersistedDirectPayDraft(app, {
+    clientRequestId: 'r', businessId: 'golden-glow-spa'
+  }), null);
+  assert.equal(api.normalizePersistedDirectPayDraft(app, {
+    clientRequestId: 'r', businessId: 'bitcoin-nail-bar', method: 'Zelle', proofImages: ['nope']
+  }), null);
 });
