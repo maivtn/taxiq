@@ -677,7 +677,7 @@
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    window.NEXORA_SHELL = { activePage: 'pos', activeTab: '' };
+    window.NEXORA_SHELL = { activePage: 'pos', activeTab: 'dispatch' };
   </script>
   <script src="../assets/nexora-shell.js"></script>
   <script>
@@ -2549,8 +2549,12 @@
         if (id === 'management') renderManagement();
         if (id === 'appointments') renderAppt();
         if (id !== 'sms') closeComposer();
+        if (window.NEXORA_SHELL && window.NEXORA_SHELL.setActiveTab) window.NEXORA_SHELL.setActiveTab(id);
       }
       tabBtns.forEach(function (t) { t.addEventListener('click', function () { activateTab(t.getAttribute('data-pos-tab')); }); });
+
+      // The sidebar's POS sub-items drive this page's tabs through the shell's navigate hook.
+      window.activateMainTab = activateTab;
 
       /* ═══════════ boot ═══════════ */
       qclkRotate();

@@ -57,7 +57,13 @@
       { label: 'Create Reward', tab: 'create-reward' },
       { label: 'Reward Analytics', tab: 'reward-analytics' }
     ] },
-    { type: 'item', label: 'POS', icon: 'monitor', page: 'pos' },
+    { type: 'group', key: 'pos', label: 'POS', icon: 'monitor', page: 'pos', items: [
+      { label: 'Dispatch', tab: 'dispatch' },
+      { label: 'Time Clock', tab: 'clock' },
+      { label: 'Management', tab: 'management' },
+      { label: 'SMS', tab: 'sms' },
+      { label: 'Appointments', tab: 'appointments' }
+    ] },
     { type: 'item', label: 'Analytics', icon: 'chart-no-axes-combined' },
     { type: 'item', label: 'Settings', icon: 'settings' },
     { type: 'item', label: 'Support', icon: 'circle-question-mark' }
@@ -66,6 +72,17 @@
   // Resolve the initial active tab: ?tab= wins, then config.
   var urlTab = '';
   try { urlTab = new URLSearchParams(window.location.search).get('tab') || ''; } catch (e) { urlTab = ''; }
+
+  // A ?tab= no sub-item owns (stale bookmark, typo) must not win: the page falls back to its
+  // own default tab, so honouring the bad value here would leave the sidebar highlighting
+  // nothing while a panel is plainly on screen.
+  var nativeTabs = [];
+  NAV.forEach(function (node) {
+    if (node.type !== 'group' || node.page !== activePage || !node.items) return;
+    node.items.forEach(function (it) { if (it.tab) nativeTabs.push(it.tab); });
+  });
+  if (urlTab && nativeTabs.length && nativeTabs.indexOf(urlTab) === -1) urlTab = '';
+
   var activeTab = urlTab || cfg.activeTab || '';
 
   function esc(s) {
