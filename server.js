@@ -54,6 +54,15 @@ async function initDb() {
       history JSONB DEFAULT '[]',
       updated_at TIMESTAMPTZ DEFAULT now()
     );
+    CREATE TABLE IF NOT EXISTS milestones (
+      business_key TEXT, kind TEXT,
+      created_at TIMESTAMPTZ DEFAULT now(),
+      PRIMARY KEY (business_key, kind)
+    );
+    CREATE TABLE IF NOT EXISTS weekly_log (
+      week_key TEXT PRIMARY KEY,
+      sent_at TIMESTAMPTZ DEFAULT now()
+    );
   `);
   console.log('✅ Database ready.');
 }
@@ -292,6 +301,84 @@ function getBiz(toNumber) {
   return { biz, key: biz.key };
 }
 
+
+// ── TRIAL RESULTS ENGINE ─────────────────────────────────────
+const AVG_TICKET = Number(process.env.AVG_TICKET || 47); // ước tính doanh thu/booking
+
+// Trả về true nếu milestone này CHƯA từng xảy ra (và đánh dấu luôn)
+async function firstTime(bizKey, kind) {
+  if (!pool) return false;
+  try {
+    const r = await pool.query(
+      `INSERT INTO milestones (business_key, kind) VALUES ($1,$2)
+       ON CONFLICT DO NOTHING RETURNING kind`, [bizKey, kind]);
+    return r.rowCount === 1;
+  } catch { return false; }
+}
+
+// Wow-moment: cuộc gọi đầu tiên AI trả lời
+async function wowFirstCall(biz, callerPhone) {
+  if (!OWNER_PHONE) return;
+  if (await firstTime(biz.key, 'first_call')) {
+    await sendSms(OWNER_PHONE,
+      `🎉 ${biz.name}: AI vừa trả lời CUỘC GỌI ĐẦU TIÊN!\nKhách: ${callerPhone||'?'}\nHệ thống chính thức trực máy 24/7 cho tiệm từ giờ phút này.`,
+      biz.twilioFrom);
+  }
+}
+
+// Wow-moment: booking đầu tiên AI chốt
+async function wowFirstBooking(biz, j, callerPhone) {
+  if (!OWNER_PHONE) return;
+  if (await firstTime(biz.key, 'first_booking')) {
+    await sendSms(OWNER_PHONE,
+      `🏆 BOOKING ĐẦU TIÊN AI chốt cho ${biz.name}!\n${j.name||'?'} · ${j.service||j.topic||'?'} · ${j.preferred_time||''}\nKhông có AI, cuộc gọi này có thể đã mất vào tay tiệm khác.`,
+      biz.twilioFrom);
+  }
+}
+
+// Báo Cáo Tuần — thứ Hai 8:00 sáng giờ Texas
+function chicagoNow() {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+}
+async function sendWeeklyReports() {
+  if (!pool || !OWNER_PHONE) return;
+  for (const biz of Object.values(BUSINESSES)) {
+    try {
+      const c = await pool.query(`
+        SELECT
+          COUNT(*) FILTER (WHERE outcome <> 'missed')   AS answered,
+          COUNT(*) FILTER (WHERE outcome = 'missed')    AS missed,
+          COUNT(*) FILTER (WHERE is_new_caller)         AS newc
+        FROM calls
+        WHERE business_key=$1 AND created_at > now()-interval '7 days'`, [biz.key]);
+      const l = await pool.query(
+        `SELECT COUNT(*) AS bookings FROM leads
+         WHERE business_key=$1 AND created_at > now()-interval '7 days'`, [biz.key]);
+      const a = Number(c.rows[0].answered||0), m = Number(c.rows[0].missed||0),
+            n = Number(c.rows[0].newc||0), b = Number(l.rows[0].bookings||0);
+      if (a + m + b === 0) continue; // tuần không có hoạt động thì bỏ qua
+      const rev = b * AVG_TICKET;
+      await sendSms(OWNER_PHONE,
+        `📊 BÁO CÁO TUẦN — ${biz.name}\n☎️ ${a} cuộc AI trả lời\n📅 ${b} booking ≈ $${rev.toLocaleString('en-US')}\n📵 ${m} cuộc nhỡ được cứu bằng text\n🆕 ${n} khách mới\nTắt AI, các con số này về 0. 💜`,
+        biz.twilioFrom);
+    } catch (e) { console.error('Weekly report error:', biz.key, e.message); }
+  }
+  console.log('📊 Weekly reports sent.');
+}
+async function weeklyTick() {
+  if (!pool) return;
+  const now = chicagoNow();
+  if (now.getDay() !== 1 || now.getHours() !== 8) return; // chỉ thứ Hai 8h sáng
+  const key = now.toISOString().slice(0,10);
+  try {
+    const r = await pool.query(
+      `INSERT INTO weekly_log (week_key) VALUES ($1)
+       ON CONFLICT DO NOTHING RETURNING week_key`, [key]);
+    if (r.rowCount === 1) await sendWeeklyReports();
+  } catch (e) { console.error('weeklyTick:', e.message); }
+}
+setInterval(weeklyTick, 15 * 60 * 1000); // kiểm tra mỗi 15 phút
+
 // ── Fastify ───────────────────────────────────────────────────
 const fastify = Fastify();
 await fastify.register(fastifyWs);
@@ -464,11 +551,13 @@ fastify.register(async (f) => {
               );
             }
             console.log(`✅ ${outcome} lưu: ${j.name||'?'}`);
+            if (outcome === 'booking') await wowFirstBooking(biz, j, callerPhone);
           }
         } catch (err) { console.error('Extract error:', err.message); }
       }
 
       await saveCall({ bizKey: biz.key, phone: callerPhone, duration, outcome, isNew });
+      if (outcome !== 'missed') await wowFirstCall(biz, callerPhone);
     });
   });
 });
