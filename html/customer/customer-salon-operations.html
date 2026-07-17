@@ -166,7 +166,7 @@ const OPS_INVALID_CLONE = Symbol('invalid-clone');
 const OPS_COPY = Object.freeze({
   vi: {
     in_service: 'Đang làm', waiting: 'Đang chờ', completed: 'Hoàn tất', accepted: 'Đã chấp nhận',
-    declined: 'Đã từ chối', available: 'Sẵn sàng', unavailable: 'Chưa sẵn sàng', choose: 'Chọn',
+    declined: 'Đã từ chối', available: 'Sẵn sàng', unavailable: 'Chưa sẵn sàng', availableSoon: 'Sắp trống', skill_expert: 'Chuyên sâu', skill_good: 'Khá', choose: 'Chọn',
     frontDeskSent: 'Đã báo lễ tân', requestFailed: 'Không thể gửi yêu cầu',
     roleCustomerName: 'Khách hàng', roleFrontDeskName: 'Lễ tân', roleStaffName: 'Nhân viên',
     roleCustomerCopy: 'Khách hàng — theo dõi phiếu và quyết định các yêu cầu cần phê duyệt.',
@@ -212,12 +212,12 @@ const OPS_COPY = Object.freeze({
     completeAddonPendingReason: 'Khách cần chấp nhận hoặc từ chối dịch vụ thêm trước.',
     completeLifecycleReason: 'Chỉ có thể hoàn tất phiếu đang làm.',
     completeAlreadyReason: 'Dịch vụ này đã hoàn tất.',
-    payCompletionReason: 'Dịch vụ phải được tiệm hoàn tất trước khi thanh toán.',
+    payCompletionReason: 'Vui lòng trả lời dịch vụ thêm trước khi thanh toán.',
     entryBlockedReason: 'Khắc phục lỗi check-in trước khi tiếp tục.'
   },
   en: {
     in_service: 'In service', waiting: 'Waiting', completed: 'Completed', accepted: 'Accepted',
-    declined: 'Declined', available: 'Available', unavailable: 'Unavailable', choose: 'Choose',
+    declined: 'Declined', available: 'Available', unavailable: 'Unavailable', availableSoon: 'Available soon', skill_expert: 'Expert', skill_good: 'Good', choose: 'Choose',
     frontDeskSent: 'Front Desk has been notified', requestFailed: 'Request failed',
     roleCustomerName: 'Customer', roleFrontDeskName: 'Front Desk', roleStaffName: 'Staff',
     roleCustomerCopy: 'Customer — track the ticket and decide approval requests.',
@@ -260,7 +260,7 @@ const OPS_COPY = Object.freeze({
     completeAddonPendingReason: 'The customer must accept or decline the add-on first.',
     completeLifecycleReason: 'Only an in-service ticket can be completed.',
     completeAlreadyReason: 'This service is already completed.',
-    payCompletionReason: 'The salon must complete the service before payment.',
+    payCompletionReason: 'Answer the suggested add-on before paying.',
     entryBlockedReason: 'Resolve the check-in error before continuing.'
   }
 });
@@ -278,9 +278,15 @@ const OPS_BUSINESSES = Object.freeze({
   'golden-glow-spa': Object.freeze({ id: 'golden-glow-spa', name: 'Golden Glow Spa' }),
   'moon-coffee': Object.freeze({ id: 'moon-coffee', name: 'Moon Coffee' })
 });
+// Mirrors GUEST_SERVICE_CATALOG in cutomer-reward.html, which is the source of truth for keys and
+// amounts. Ops carries the flat English label and promoCents; the customer app carries {vi,en}.
 const OPS_SERVICES = Object.freeze({
   'bitcoin-nail-bar': Object.freeze({
     'deluxe-pedicure': Object.freeze({ key: 'deluxe-pedicure', label: 'Deluxe Pedicure', amountCents: 5500, promoCents: -550 }),
+    'gel-shellac-manicure': Object.freeze({ key: 'gel-shellac-manicure', label: 'Gel Shellac Manicure', amountCents: 4500, promoCents: 0 }),
+    'gel-x-full-set': Object.freeze({ key: 'gel-x-full-set', label: 'Full Set Gel-X', amountCents: 6500, promoCents: 0 }),
+    'dip-powder': Object.freeze({ key: 'dip-powder', label: 'Dip Powder', amountCents: 5000, promoCents: 0 }),
+    'classic-manicure': Object.freeze({ key: 'classic-manicure', label: 'Classic Manicure', amountCents: 3000, promoCents: 0 }),
     'acrylic-full-set': Object.freeze({ key: 'acrylic-full-set', label: 'Acrylic Full Set', amountCents: 6500, promoCents: 0 })
   }),
   'golden-glow-spa': Object.freeze({
@@ -290,13 +296,36 @@ const OPS_SERVICES = Object.freeze({
     'signature-drink': Object.freeze({ key: 'signature-drink', label: 'Signature Drink', amountCents: 800, promoCents: 0 })
   })
 });
+// `available` stays the boolean the eligibility rules read. `availability` refines it for display
+// only: 'soon' still counts as unavailable now, but tells the guest it is worth waiting for.
+//
+// Ids and names mirror `staffProfiles` in cutomer-reward.html, and the key set is exactly
+// CHECKIN_STAFF_BUSINESSES there: every technician a guest can check in with, and no other.
+// (david-l and mary-s are customer-app profiles that cannot take a check-in, so ops omits them and
+// a ticket naming them is correctly invalid.)
+//
+// Declaration order is load-bearing: recommendedStaffIds preserves it, and evaluateStaffEligibility
+// auto-selects the first *available* recommendation.
+//
+// A guest books several services on one ticket and keeps one technician, so a technician only
+// qualifies by covering the whole booking. That makes breadth matter: with narrow specialists most
+// combinations would have nobody eligible at all. Lisa N. is the salon's all-rounder and covers
+// every service, which is what guarantees no combination can strand a guest.
+//
+// The two deliberate gaps are load-bearing, not oversights:
+//   - Jenny T. does not do acrylic. Requesting her for an acrylic set is what makes her ineligible
+//     and drives the change-technician flow.
+//   - Maria does not do pedicure, which is the ineligible case the customer app's imported
+//     eligibility fixture is built on.
+// Kevin V. is the one busy expert: skilled, but never available right now.
 const OPS_STAFF = Object.freeze({
-  'staff-jenny': Object.freeze({ id: 'staff-jenny', name: 'Jenny', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['deluxe-pedicure']), available: true }),
-  'staff-tina': Object.freeze({ id: 'staff-tina', name: 'Tina', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['acrylic-full-set']), available: false }),
-  'staff-kevin': Object.freeze({ id: 'staff-kevin', name: 'Kevin', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['deluxe-pedicure', 'acrylic-full-set']), available: true }),
-  'staff-anna': Object.freeze({ id: 'staff-anna', name: 'Anna', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['deluxe-pedicure']), available: true }),
-  'staff-maria': Object.freeze({ id: 'staff-maria', name: 'Maria', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['acrylic-full-set']), available: true }),
-  'staff-spa-linh': Object.freeze({ id: 'staff-spa-linh', name: 'Linh', businessId: 'golden-glow-spa', serviceSkills: Object.freeze(['signature-facial']), available: true })
+  'staff-jenny-t': Object.freeze({ id: 'staff-jenny-t', name: 'Jenny T.', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['deluxe-pedicure', 'classic-manicure', 'gel-shellac-manicure', 'gel-x-full-set', 'dip-powder']), skillLevels: Object.freeze({ 'deluxe-pedicure': 'expert', 'classic-manicure': 'good', 'gel-shellac-manicure': 'good', 'gel-x-full-set': 'good', 'dip-powder': 'good' }), available: true, availability: 'available' }),
+  'staff-kevin-v': Object.freeze({ id: 'staff-kevin-v', name: 'Kevin V.', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['acrylic-full-set', 'gel-x-full-set']), skillLevels: Object.freeze({ 'acrylic-full-set': 'expert', 'gel-x-full-set': 'good' }), available: false, availability: 'soon' }),
+  'staff-lisa-n': Object.freeze({ id: 'staff-lisa-n', name: 'Lisa N.', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['deluxe-pedicure', 'gel-shellac-manicure', 'gel-x-full-set', 'dip-powder', 'classic-manicure', 'acrylic-full-set']), skillLevels: Object.freeze({ 'deluxe-pedicure': 'good', 'gel-shellac-manicure': 'expert', 'gel-x-full-set': 'expert', 'dip-powder': 'good', 'classic-manicure': 'good', 'acrylic-full-set': 'good' }), available: true, availability: 'available' }),
+  'staff-anna': Object.freeze({ id: 'staff-anna', name: 'Anna', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['deluxe-pedicure', 'classic-manicure', 'dip-powder']), skillLevels: Object.freeze({ 'deluxe-pedicure': 'good', 'classic-manicure': 'good', 'dip-powder': 'good' }), available: true, availability: 'available' }),
+  'staff-maria': Object.freeze({ id: 'staff-maria', name: 'Maria', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['gel-shellac-manicure', 'gel-x-full-set', 'dip-powder', 'classic-manicure', 'acrylic-full-set']), skillLevels: Object.freeze({ 'gel-shellac-manicure': 'good', 'gel-x-full-set': 'good', 'dip-powder': 'good', 'classic-manicure': 'good', 'acrylic-full-set': 'expert' }), available: true, availability: 'available' }),
+  'staff-sunny-k': Object.freeze({ id: 'staff-sunny-k', name: 'Sunny K.', businessId: 'bitcoin-nail-bar', serviceSkills: Object.freeze(['gel-x-full-set', 'dip-powder', 'gel-shellac-manicure']), skillLevels: Object.freeze({ 'gel-x-full-set': 'expert', 'dip-powder': 'expert', 'gel-shellac-manicure': 'good' }), available: true, availability: 'available' }),
+  'staff-spa-linh': Object.freeze({ id: 'staff-spa-linh', name: 'Linh', businessId: 'golden-glow-spa', serviceSkills: Object.freeze(['signature-facial']), skillLevels: Object.freeze({ 'signature-facial': 'expert' }), available: true, availability: 'available' })
 });
 const OPS_TICKET_ID_PATTERN = /^ticket-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const OPS_ADDON_ID_PATTERN = /^addon-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -446,16 +475,48 @@ function opsStaff(staffId) {
     : null;
 }
 
-function expectedTicketLineItems(ticketId, service) {
-  const items = [{
-    id: `${ticketId}-service`, type: 'service', label: service.label, amountCents: service.amountCents
-  }];
-  if (service.promoCents) {
-    items.push({
-      id: `${ticketId}-promo`, type: 'discount', label: 'Promo NEW10', amountCents: service.promoCents
-    });
+// A guest may book several services on one ticket. The stored order is always the catalog's own
+// declaration order, never the order the guest tapped the chips: that makes the list canonical, so a
+// permuted or duplicated copy of the same selection cannot pass normalization as a different value.
+// Returns null unless every key is a real service of this business and at least one is present.
+function opsServiceKeys(businessId, value) {
+  const catalog = Object.prototype.hasOwnProperty.call(OPS_SERVICES, businessId)
+    ? OPS_SERVICES[businessId]
+    : null;
+  if (!catalog || !Array.isArray(value) || value.length === 0) return null;
+  const requested = new Set();
+  for (const key of value) {
+    if (typeof key !== 'string' || !Object.prototype.hasOwnProperty.call(catalog, key)
+      || requested.has(key)) return null;
+    requested.add(key);
   }
-  return items;
+  return Object.keys(catalog).filter((key) => requested.has(key));
+}
+
+function opsServices(businessId, serviceKeys) {
+  return serviceKeys.map((key) => opsService(businessId, key));
+}
+
+// One service line per booked service, each followed by its own promo line, so a discount always
+// sits with the service it came from. Add-ons are appended after all of these by the caller.
+function expectedTicketLineItems(ticketId, services) {
+  return services.flatMap((service) => {
+    const items = [{
+      id: `${ticketId}-service-${service.key}`,
+      type: 'service',
+      label: service.label,
+      amountCents: service.amountCents
+    }];
+    if (service.promoCents) {
+      items.push({
+        id: `${ticketId}-promo-${service.key}`,
+        type: 'discount',
+        label: 'Promo NEW10',
+        amountCents: service.promoCents
+      });
+    }
+    return items;
+  });
 }
 
 function opsAddOnCatalogEntry(businessId, label, amountCents) {
@@ -474,9 +535,9 @@ function opsTicketSupportsAddOn(ticket) {
   return Boolean(staff && staff.businessId === ticket.businessId && catalog);
 }
 
-function normalizeOpsLineItems(value, ticketId, businessId, service) {
+function normalizeOpsLineItems(value, ticketId, businessId, services) {
   if (!Array.isArray(value)) return null;
-  const expected = expectedTicketLineItems(ticketId, service);
+  const expected = expectedTicketLineItems(ticketId, services);
   if (value.length < expected.length) return null;
   const normalized = [];
   const seenIds = new Set();
@@ -511,14 +572,13 @@ function normalizeOpsLineItems(value, ticketId, businessId, service) {
 
 function normalizeServiceTicket(value) {
   if (!opsHasExactKeys(value, [
-    'id', 'number', 'guestCheckinId', 'businessId', 'serviceKey', 'status', 'staffProfileId',
+    'id', 'number', 'guestCheckinId', 'businessId', 'serviceKeys', 'status', 'staffProfileId',
     'lineItems', 'currentTotalCents', 'frontDeskRequestedAt', 'createdAt', 'completedAt'
   ])) return null;
   const id = opsOwn(value, 'id');
   const guestCheckinId = opsOwn(value, 'guestCheckinId');
   const businessId = opsOwn(value, 'businessId');
-  const serviceKey = opsOwn(value, 'serviceKey');
-  const service = opsService(businessId, serviceKey);
+  const serviceKeys = opsServiceKeys(businessId, opsOwn(value, 'serviceKeys'));
   const staffProfileId = opsOwn(value, 'staffProfileId');
   const staff = staffProfileId === null ? null : opsStaff(staffProfileId);
   const createdAt = opsOwn(value, 'createdAt');
@@ -527,24 +587,35 @@ function normalizeServiceTicket(value) {
   const status = opsOwn(value, 'status');
   const number = opsOwn(value, 'number');
   if (typeof id !== 'string' || id !== id.trim() || !OPS_TICKET_ID_PATTERN.test(id)
-    || !opsCanonicalId(guestCheckinId, 'guest-checkin') || !service
+    || !opsCanonicalId(guestCheckinId, 'guest-checkin') || !serviceKeys
+    // The stored order must already be canonical, or two spellings of one selection would both pass.
+    || !opsSameOrder(opsOwn(value, 'serviceKeys'), serviceKeys)
     || !Number.isSafeInteger(number) || number < 104
     || !['waiting', 'in_service', 'completed'].includes(status)
     || (staffProfileId !== null && (!staff || staff.businessId !== businessId))
+    // Nobody is working a ticket that has no technician on it: 'waiting' is exactly that state.
+    || (staffProfileId === null) !== (status === 'waiting')
     || !opsStoredTimestamp(createdAt)
     || (completedAt !== null && (!opsStoredTimestamp(completedAt) || Date.parse(completedAt) < Date.parse(createdAt)))
     || (status === 'completed') !== (completedAt !== null)
     || (frontDeskRequestedAt !== null && (!opsStoredTimestamp(frontDeskRequestedAt)
       || Date.parse(frontDeskRequestedAt) < Date.parse(createdAt)
       || (completedAt !== null && Date.parse(frontDeskRequestedAt) > Date.parse(completedAt))))) return null;
-  const lineItems = normalizeOpsLineItems(opsOwn(value, 'lineItems'), id, businessId, service);
+  const lineItems = normalizeOpsLineItems(
+    opsOwn(value, 'lineItems'), id, businessId, opsServices(businessId, serviceKeys)
+  );
   if (!lineItems) return null;
   const total = lineItems.reduce((sum, item) => sum + item.amountCents, 0);
   if (!Number.isSafeInteger(total) || opsOwn(value, 'currentTotalCents') !== total) return null;
   return {
-    id, number, guestCheckinId, businessId, serviceKey, status, staffProfileId,
+    id, number, guestCheckinId, businessId, serviceKeys: [...serviceKeys], status, staffProfileId,
     lineItems, currentTotalCents: total, frontDeskRequestedAt, createdAt, completedAt
   };
+}
+
+function opsSameOrder(raw, canonical) {
+  return Array.isArray(raw) && raw.length === canonical.length
+    && raw.every((key, index) => key === canonical[index]);
 }
 
 function normalizeServiceTicketCollection(value) {
@@ -566,34 +637,42 @@ function normalizeServiceTicketCollection(value) {
   return { ok: true, value: normalized };
 }
 
-function recommendedStaffIds(businessId, serviceKey, requestedStaffId) {
+// One guest keeps one technician, so a technician only qualifies by covering every service on the
+// ticket. Being expert at one of them is not enough to be recommended for the whole booking.
+function opsStaffCoversAll(staff, serviceKeys) {
+  return serviceKeys.every((key) => staff.serviceSkills.includes(key));
+}
+
+function recommendedStaffIds(businessId, serviceKeys, requestedStaffId) {
   return Object.values(OPS_STAFF)
     .filter((staff) => staff.id !== requestedStaffId && staff.businessId === businessId
-      && staff.serviceSkills.includes(serviceKey))
+      && opsStaffCoversAll(staff, serviceKeys))
     .map((staff) => staff.id);
 }
 
-function eligibilityId(ticketId, serviceKey, staffId) {
-  return `eligibility-${ticketId.slice('ticket-'.length)}-${serviceKey}-${staffId.slice('staff-'.length)}`;
+function eligibilityId(ticketId, serviceKeys, staffId) {
+  return `eligibility-${ticketId.slice('ticket-'.length)}-${serviceKeys.join('+')}-${staffId.slice('staff-'.length)}`;
 }
 
 function normalizeStaffEligibility(value, tickets) {
   if (!opsRecord(value) || opsHasUnsafeOwnKeys(value)) return null;
   const ticketId = opsOwn(value, 'ticketId');
   const ticket = tickets.find((row) => row.id === ticketId);
-  const serviceKey = opsOwn(value, 'serviceKey');
+  const serviceKeys = opsOwn(value, 'serviceKeys');
   const requestedStaffId = opsOwn(value, 'requestedStaffId');
   const requested = opsStaff(requestedStaffId);
-  const service = ticket ? opsService(ticket.businessId, serviceKey) : null;
-  if (!ticket || !service || serviceKey !== ticket.serviceKey
+  // Eligibility is about the whole booking, so it only ever binds to the ticket's own service list.
+  if (!ticket || !opsSameOrder(serviceKeys, ticket.serviceKeys)
     || !requested || requested.businessId !== ticket.businessId) return null;
-  const eligible = requested.available && requested.serviceSkills.includes(serviceKey);
-  const expectedRecommendations = eligible ? [] : recommendedStaffIds(ticket.businessId, serviceKey, requestedStaffId);
+  const eligible = requested.available && opsStaffCoversAll(requested, ticket.serviceKeys);
+  const expectedRecommendations = eligible
+    ? []
+    : recommendedStaffIds(ticket.businessId, ticket.serviceKeys, requestedStaffId);
   const recommendations = opsOwn(value, 'recommendedStaffIds');
   const selectedStaffId = opsOwn(value, 'selectedStaffId');
   const selectedAt = opsOwn(value, 'selectedAt');
   const id = opsOwn(value, 'id');
-  if (id !== eligibilityId(ticket.id, serviceKey, requestedStaffId)
+  if (id !== eligibilityId(ticket.id, ticket.serviceKeys, requestedStaffId)
     || opsOwn(value, 'eligible') !== eligible || !Array.isArray(recommendations)
     || JSON.stringify(recommendations) !== JSON.stringify(expectedRecommendations)
     || (selectedStaffId !== null && (!expectedRecommendations.includes(selectedStaffId)
@@ -603,7 +682,7 @@ function normalizeStaffEligibility(value, tickets) {
       || Date.parse(selectedAt) < Date.parse(ticket.createdAt)
       || (ticket.completedAt !== null && Date.parse(selectedAt) > Date.parse(ticket.completedAt))))) return null;
   return {
-    id, ticketId, serviceKey, requestedStaffId, eligible,
+    id, ticketId, serviceKeys: [...serviceKeys], requestedStaffId, eligible,
     recommendedStaffIds: [...recommendations], selectedStaffId, selectedAt
   };
 }
@@ -615,7 +694,7 @@ function normalizeEligibilityCollection(value, tickets) {
   const semanticKeys = new Set();
   for (const row of value) {
     const event = normalizeStaffEligibility(row, tickets);
-    const semanticKey = event ? `${event.ticketId}\u0000${event.serviceKey}\u0000${event.requestedStaffId}` : '';
+    const semanticKey = event ? `${event.ticketId}\u0000${event.serviceKeys.join("+")}\u0000${event.requestedStaffId}` : '';
     if (!event || ids.has(event.id) || semanticKeys.has(semanticKey)) return { ok: false, value: [] };
     ids.add(event.id);
     semanticKeys.add(semanticKey);
@@ -919,20 +998,24 @@ function readCustomerSnapshot(storage) {
       if (!opsRecord(row) || opsHasUnsafeOwnKeys(row)) continue;
       const id = opsCanonicalId(opsOwn(row, 'id'), 'guest-checkin');
       const businessId = opsCanonicalId(opsOwn(row, 'businessId'));
-      const serviceKey = opsCanonicalId(opsOwn(row, 'serviceKey'));
+      const rawServiceKeys = opsOwn(row, 'serviceKeys');
+      const serviceKeys = Array.isArray(rawServiceKeys) && rawServiceKeys.length > 0
+        && rawServiceKeys.every((key) => opsCanonicalId(key))
+        ? rawServiceKeys
+        : null;
       const rawStaffId = opsOwn(row, 'staffProfileId');
       const staffProfileId = rawStaffId === null || rawStaffId === undefined
         ? null
         : opsCanonicalId(rawStaffId, 'staff');
       if (!id || idCounts.get(id) !== 1 || !businessId
-        || !Object.prototype.hasOwnProperty.call(businesses, businessId) || !serviceKey
+        || !Object.prototype.hasOwnProperty.call(businesses, businessId) || !serviceKeys
         || (rawStaffId !== null && rawStaffId !== undefined && !staffProfileId)) continue;
       guestCheckins.push({
         id,
         businessId,
         name: opsCustomerText(opsOwn(row, 'name')),
         phone: opsPhone(opsOwn(row, 'phone')),
-        serviceKey,
+        serviceKeys: [...serviceKeys],
         staffProfileId
       });
     }
@@ -991,14 +1074,13 @@ function normalizeGuestForTicket(value) {
   if (!opsRecord(value) || opsHasUnsafeOwnKeys(value)) return null;
   const id = opsOwn(value, 'id');
   const businessId = opsOwn(value, 'businessId');
-  const serviceKey = opsOwn(value, 'serviceKey');
+  const serviceKeys = opsServiceKeys(businessId, opsOwn(value, 'serviceKeys'));
   const rawStaffId = opsOwn(value, 'staffProfileId');
   const staffProfileId = rawStaffId === undefined || rawStaffId === null ? null : rawStaffId;
-  const service = opsService(businessId, serviceKey);
   const staff = staffProfileId === null ? null : opsStaff(staffProfileId);
-  if (!opsCanonicalId(id, 'guest-checkin') || !service
+  if (!opsCanonicalId(id, 'guest-checkin') || !serviceKeys
     || (staffProfileId !== null && (!staff || staff.businessId !== businessId))) return null;
-  return { id, businessId, serviceKey, staffProfileId, service };
+  return { id, businessId, serviceKeys, staffProfileId, services: opsServices(businessId, serviceKeys) };
 }
 
 function createServiceTicket(state, guestCheckin, now = Date.now()) {
@@ -1011,7 +1093,8 @@ function createServiceTicket(state, guestCheckin, now = Date.now()) {
       && event.selectedStaffId === existing.staffProfileId);
     const staffIsCanonical = existing.staffProfileId === guest.staffProfileId
       || (selection && selection.requestedStaffId === guest.staffProfileId);
-    if (existing.businessId !== guest.businessId || existing.serviceKey !== guest.serviceKey || !staffIsCanonical) {
+    if (existing.businessId !== guest.businessId
+      || !opsSameOrder(existing.serviceKeys, guest.serviceKeys) || !staffIsCanonical) {
       return { ok: false, code: 'invalid_existing_ticket' };
     }
     return { ok: true, ticket: existing, idempotent: true };
@@ -1025,7 +1108,7 @@ function createServiceTicket(state, guestCheckin, now = Date.now()) {
   if (!Number.isSafeInteger(maximumNumber) || maximumNumber >= Number.MAX_SAFE_INTEGER) {
     return { ok: false, code: 'number_exhausted' };
   }
-  const lineItems = expectedTicketLineItems(id.value, guest.service);
+  const lineItems = expectedTicketLineItems(id.value, guest.services);
   const currentTotalCents = lineItems.reduce((sum, item) => sum + item.amountCents, 0);
   if (!Number.isSafeInteger(currentTotalCents)) return { ok: false, code: 'invalid_total' };
   const ticket = {
@@ -1033,8 +1116,10 @@ function createServiceTicket(state, guestCheckin, now = Date.now()) {
     number: maximumNumber + 1,
     guestCheckinId: guest.id,
     businessId: guest.businessId,
-    serviceKey: guest.serviceKey,
-    status: 'in_service',
+    serviceKeys: [...guest.serviceKeys],
+    // A guest who expressed no preference has nobody on their ticket yet, so it cannot be in
+    // service: it waits until the salon assigns a technician.
+    status: guest.staffProfileId === null ? 'waiting' : 'in_service',
     staffProfileId: guest.staffProfileId,
     lineItems,
     currentTotalCents,
@@ -1083,32 +1168,36 @@ function completeServiceTicket(state, ticketId, now = Date.now()) {
   return { ok: true, ticket };
 }
 
+// A guest may settle up whenever they like, so a ticket does not have to be finished to be paid.
+// An add-on still waiting on their answer does block payment: until they accept or decline it, the
+// amount owed is not settled and paying would bill the wrong total.
 function canOpenTicketPayment(state, ticketId) {
   if (!operationsStateIntegrity(state)) return false;
   const tickets = state.serviceTickets.filter((row) => row.id === ticketId);
-  if (tickets.length !== 1 || tickets[0].status !== 'completed') return false;
+  if (tickets.length !== 1) return false;
   return !state.addOnRequests.some((row) => row.ticketId === ticketId && row.status === 'proposed');
 }
 
-function evaluateStaffEligibility(state, ticketId, serviceKey, staffId) {
+function evaluateStaffEligibility(state, ticketId, serviceKeys, staffId) {
   if (!operationsStateIntegrity(state)) return { ok: false, code: 'invalid_state' };
   const ticket = state.serviceTickets.find((row) => row.id === ticketId);
-  const service = ticket ? opsService(ticket.businessId, serviceKey) : null;
   const requested = opsStaff(staffId);
-  if (!ticket || !service || serviceKey !== ticket.serviceKey || staffId !== ticket.staffProfileId
+  if (!ticket || !opsSameOrder(serviceKeys, ticket.serviceKeys) || staffId !== ticket.staffProfileId
     || !requested || requested.businessId !== ticket.businessId) {
     return { ok: false, code: 'invalid_eligibility_request' };
   }
   if (ticket.status === 'completed') return { ok: false, code: 'ticket_completed' };
-  const id = eligibilityId(ticket.id, serviceKey, requested.id);
+  const id = eligibilityId(ticket.id, ticket.serviceKeys, requested.id);
   const existing = state.staffEligibility.find((event) => event.id === id);
   if (existing) return { ok: true, ...existing, idempotent: true };
-  const eligible = requested.available && requested.serviceSkills.includes(serviceKey);
-  const recommendations = eligible ? [] : recommendedStaffIds(ticket.businessId, serviceKey, requested.id);
+  const eligible = requested.available && opsStaffCoversAll(requested, ticket.serviceKeys);
+  const recommendations = eligible
+    ? []
+    : recommendedStaffIds(ticket.businessId, ticket.serviceKeys, requested.id);
   const event = {
     id,
     ticketId: ticket.id,
-    serviceKey,
+    serviceKeys: [...ticket.serviceKeys],
     requestedStaffId: requested.id,
     eligible,
     recommendedStaffIds: recommendations,
@@ -1142,7 +1231,7 @@ function chooseRecommendedStaff(state, ticketId, staffId, now = Date.now()) {
     return { ok: false, code: 'staff_not_recommended' };
   }
   const staff = opsStaff(staffId);
-  if (!staff || staff.businessId !== ticket.businessId || !staff.serviceSkills.includes(ticket.serviceKey)) {
+  if (!staff || staff.businessId !== ticket.businessId || !opsStaffCoversAll(staff, ticket.serviceKeys)) {
     return { ok: false, code: 'staff_not_recommended' };
   }
   if (!staff.available) return { ok: false, code: 'staff_unavailable' };
@@ -1152,6 +1241,8 @@ function chooseRecommendedStaff(state, ticketId, staffId, now = Date.now()) {
     return { ok: false, code: 'invalid_time_order' };
   }
   ticket.staffProfileId = staff.id;
+  // The ticket now has someone on it, so it is no longer merely waiting.
+  if (ticket.status === 'waiting') ticket.status = 'in_service';
   event.selectedStaffId = staff.id;
   event.selectedAt = timestamp.value;
   state.ui.selectedTicketId = ticket.id;
@@ -1649,17 +1740,20 @@ function renderLiveTicket() {
 function renderEligibility() {
   const event = operationsEntryBlocked ? null : latestIneligibleEvent(operationsState.ui.selectedTicketId);
   const requested = event ? opsStaff(event.requestedStaffId) : null;
-  const service = event
-    ? opsService(operationsState.serviceTickets.find((ticket) => ticket.id === event.ticketId)?.businessId, event.serviceKey)
+  const businessId = event
+    ? operationsState.serviceTickets.find((ticket) => ticket.id === event.ticketId)?.businessId
     : null;
+  const serviceLabel = event && businessId
+    ? opsServiceListLabel(businessId, event.serviceKeys)
+    : '';
   const warning = document.getElementById('ops-eligibility-warning');
   const requestedStaff = document.getElementById('ops-requested-staff');
   const requestedService = document.getElementById('ops-requested-service');
-  if (warning) warning.textContent = operationsEntryBlocked || !requested || !service
+  if (warning) warning.textContent = operationsEntryBlocked || !requested || !serviceLabel
     ? ''
-    : opsT('notEligible', requested.name, service.label);
+    : opsT('notEligible', requested.name, serviceLabel);
   if (requestedStaff) requestedStaff.textContent = operationsEntryBlocked ? '' : requested?.name || '—';
-  if (requestedService) requestedService.textContent = operationsEntryBlocked ? '' : service?.label || '—';
+  if (requestedService) requestedService.textContent = operationsEntryBlocked ? '' : serviceLabel || '—';
   const host = document.getElementById('ops-recommended-staff');
   if (host) {
     const cards = (event?.recommendedStaffIds || []).map((staffId) => {
@@ -1671,7 +1765,7 @@ function renderEligibility() {
       button.dataset.staffId = staff.id;
       setDisabledReason(button, !staff.available, opsT('staffUnavailableReason'));
       button.setAttribute('aria-pressed', String(staff.available && operationsState.ui.selectedStaffId === staff.id));
-      button.textContent = `${staff.name} · ${opsT(staff.available ? 'available' : 'unavailable')}`;
+      button.textContent = [staff.name, opsStaffSkillLabel(staff, event?.serviceKeys), opsStaffAvailabilityLabel(staff)].filter(Boolean).join(' · ');
       return button;
     });
     host.replaceChildren(...cards);
@@ -1685,6 +1779,28 @@ function renderEligibility() {
     setDisabledReason(choose, !selected, opsT('chooseStaffReason'));
     choose.textContent = selected ? `${opsT('choose')} ${selected.name}` : opsT('choose');
   }
+}
+
+function opsServiceListLabel(businessId, serviceKeys) {
+  return (serviceKeys || [])
+    .map((key) => opsService(businessId, key)?.label)
+    .filter(Boolean)
+    .join(' + ');
+}
+
+// Display-only helpers: how good the staff member is at the requested services, and how soon they
+// can take the guest. The services are already named above the list, so they are not repeated.
+// A recommended technician covers every booked service, so the honest single word for the whole
+// booking is their weakest level across it: 'expert' only when they are expert at all of it.
+function opsStaffSkillLabel(staff, serviceKeys) {
+  const levels = (serviceKeys || []).map((key) => staff?.skillLevels?.[key]);
+  if (levels.length === 0 || levels.some((level) => !level)) return '';
+  return opsT(levels.every((level) => level === 'expert') ? 'skill_expert' : 'skill_good');
+}
+
+function opsStaffAvailabilityLabel(staff) {
+  if (staff?.available) return opsT('available');
+  return opsT(staff?.availability === 'soon' ? 'availableSoon' : 'unavailable');
 }
 
 function renderOperationsContent() {
@@ -1812,7 +1928,7 @@ function resolveOperationsEntry(snapshot, href) {
     ok: true,
     guest: {
       id: 'guest-checkin-demo', businessId: 'bitcoin-nail-bar', name: 'Amy Nguyen',
-      phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-jenny'
+      phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: 'staff-jenny-t'
     },
     explicit: false,
     demo: true
@@ -1841,7 +1957,7 @@ registerOpsAction('review-staff-eligibility', () => {
     return;
   }
   const result = commitOperations((draft) => {
-    const evaluated = evaluateStaffEligibility(draft, ticket.id, ticket.serviceKey, ticket.staffProfileId);
+    const evaluated = evaluateStaffEligibility(draft, ticket.id, ticket.serviceKeys, ticket.staffProfileId);
     if (evaluated.ok) draft.ui.activeScreen = evaluated.eligible ? 'liveticket' : 'staffnoteligible';
     return evaluated;
   });

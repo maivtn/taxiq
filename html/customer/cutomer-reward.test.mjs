@@ -202,7 +202,7 @@ function customerJourneyFixture() {
   return {
     guestCheckins: [{
       id: 'guest-checkin-1', businessId: 'bitcoin-nail-bar', name: 'Amy Nguyen',
-      phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-anna',
+      phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: 'staff-anna',
       station: 'front', sourceQr: 'https://nexoratouch.com/touch/bitcoin-nail-bar/front',
       status: 'checked_in', pointsPending: 120, scannedAt: '2026-07-15T03:04:42.000Z',
       claimedAt: null
@@ -210,8 +210,8 @@ function customerJourneyFixture() {
     checkoutDrafts: [{
       id: 'checkout-00000000-0000-4000-8000-000000000001', guestCheckinId: 'guest-checkin-1', businessId: 'bitcoin-nail-bar',
       lineItems: [
-        { id: 'service-guest-checkin-1', type: 'service', label: 'Deluxe Pedicure', amountCents: 5500, sourceAddOnId: null },
-        { id: 'promo-guest-checkin-1', type: 'discount', label: 'Promo NEW10', amountCents: -550, sourceAddOnId: null }
+        { id: 'service-guest-checkin-1-deluxe-pedicure', type: 'service', label: 'Deluxe Pedicure', amountCents: 5500, sourceAddOnId: null },
+        { id: 'promo-guest-checkin-1-deluxe-pedicure', type: 'discount', label: 'Promo NEW10', amountCents: -550, sourceAddOnId: null }
       ],
       status: 'confirmed', subtotalCents: 5500, discountCents: 550, beforeTipCents: 4950,
       tipBasisPoints: 2000, tipCents: 990, totalCents: 5940, method: 'Zelle',
@@ -226,8 +226,8 @@ function customerJourneyFixture() {
       id: 'receipt-00000000-0000-4000-8000-000000000003', checkoutDraftId: 'checkout-00000000-0000-4000-8000-000000000001', businessId: 'bitcoin-nail-bar',
       method: 'Zelle', tipCents: 990, totalCents: 5940,
       lineItems: [
-        { id: 'service-guest-checkin-1', type: 'service', label: 'Deluxe Pedicure', amountCents: 5500, sourceAddOnId: null },
-        { id: 'promo-guest-checkin-1', type: 'discount', label: 'Promo NEW10', amountCents: -550, sourceAddOnId: null }
+        { id: 'service-guest-checkin-1-deluxe-pedicure', type: 'service', label: 'Deluxe Pedicure', amountCents: 5500, sourceAddOnId: null },
+        { id: 'promo-guest-checkin-1-deluxe-pedicure', type: 'discount', label: 'Promo NEW10', amountCents: -550, sourceAddOnId: null }
       ],
       createdAt: '2026-07-15T03:13:00.000Z'
     }],
@@ -252,7 +252,7 @@ function customerJourneyFixture() {
 test('creates versioned Vietnamese demo state with per-business balances', () => {
   const { api } = testApi();
   const state = api.createDefaultState();
-  assert.equal(state.schemaVersion, 2);
+  assert.equal(state.schemaVersion, 3);
   assert.equal(state.profile.language, 'vi');
   assert.equal(state.balances['bitcoin-nail-bar'].points, 2450);
   assert.equal(state.balances['golden-glow-spa'].points, 600);
@@ -260,14 +260,14 @@ test('creates versioned Vietnamese demo state with per-business balances', () =>
   assert.equal('pointBalance' in state, false);
 });
 
-test('migrates customer journey collections into schema v2 without changing the storage key', () => {
+test('migrates customer journey collections into schema v3 without changing the storage key', () => {
   const { api } = testApi();
   const migrated = api.migrateState({
     schemaVersion: 1,
     profile: { language: 'vi' },
     guestCheckins: [{
       id: 'guest-checkin-1', businessId: 'bitcoin-nail-bar', name: 'Amy Nguyen',
-      phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-anna',
+      phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: 'staff-anna',
       station: 'front', sourceQr: 'https://nexoratouch.com/touch/bitcoin-nail-bar/front',
       status: 'checked_in', pointsPending: 120, scannedAt: '2026-07-15T03:04:42.000Z',
       claimedAt: null
@@ -275,7 +275,7 @@ test('migrates customer journey collections into schema v2 without changing the 
   });
 
   assert.equal(api.STORAGE_KEY, 'nexora.customer.prototype.v1');
-  assert.equal(migrated.schemaVersion, 2);
+  assert.equal(migrated.schemaVersion, 3);
   assert.equal(migrated.guestCheckins.length, 1);
   assert.deepEqual(migrated.checkoutDrafts, []);
   assert.deepEqual(migrated.paymentProofs, []);
@@ -1083,7 +1083,7 @@ test('awards tip points only after confirmation and only once', () => {
   const before = app.balances['bitcoin-nail-bar'].points;
   assert.equal(api.createTip(app, {
     businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', staffName: 'Forged',
-    amount: 10, method: 'Cash App', note: ''
+    amount: 10, method: 'Wire', note: ''
   }, 500).code, 'method_disabled');
   const pending = api.createTip(app, {
     businessId: ' bitcoin-nail-bar ', staffProfileId: ' staff-anna ', staffName: 'Forged',
@@ -1134,7 +1134,7 @@ test('awards spend and direct-pay bonus only after salon confirms', () => {
   const app = api.createDefaultState();
   const before = app.balances['bitcoin-nail-bar'].points;
   assert.equal(api.createDirectPayment(app, {
-    businessId: 'bitcoin-nail-bar', amount: 55, method: 'PayPal'
+    businessId: 'bitcoin-nail-bar', amount: 55, method: 'Wire'
   }, 500).code, 'method_disabled');
   const pending = api.createDirectPayment(app, {
     businessId: ' bitcoin-nail-bar ', amount: '55.00', method: ' Zelle '
@@ -1163,7 +1163,7 @@ test('rejects noncanonical transaction inputs before mutating state', () => {
     () => api.createTip(app, { businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-anna', amount: 10, method: 'Venmo' }, 9e15),
     () => api.createDirectPayment(app, { businessId: 'missing', amount: 55, method: 'Zelle' }, 1000),
     () => api.createDirectPayment(app, { businessId: 'bitcoin-nail-bar', amount: Infinity, method: 'Zelle' }, 1000),
-    () => api.createDirectPayment(app, { businessId: 'bitcoin-nail-bar', amount: 55, method: 'PayPal' }, 1000),
+    () => api.createDirectPayment(app, { businessId: 'bitcoin-nail-bar', amount: 55, method: 'Wire' }, 1000),
     () => api.createDirectPayment(app, { businessId: 'bitcoin-nail-bar', amount: 55, method: 'Zelle' }, null)
   ];
   const app = api.createDefaultState();
@@ -1582,14 +1582,19 @@ test('persists recipient method fallback and renders disabled reasons bilinguall
 
   const persisted = api.loadState(storage);
   assert.equal(persisted.ui.selectedStaffId, 'staff-maria');
-  assert.equal(persisted.ui.selectedTipMethod, 'Zelle');
+  assert.equal(persisted.ui.selectedTipMethod, 'Venmo');
   const tipButtons = document.getElementById('tip-method-list').children;
-  assert.equal(tipButtons.find((button) => button.textContent.includes('Venmo')).disabled, true);
-  assert.match(tipButtons.find((button) => button.textContent.includes('Venmo')).textContent, /chưa bật/);
+  assert.equal(tipButtons.length, 6);
+  assert.equal(tipButtons.every((button) => button.disabled === false), true);
+
+  vm.runInContext("state.ui.selectedBusinessId = 'golden-glow-spa'; state.ui.selectedStaffId = 'staff-spa-linh'; state.ui.selectedTipMethod = 'Zelle'; renderTipMethods();", context);
+  const limitedButtons = document.getElementById('tip-method-list').children;
+  assert.equal(limitedButtons.find((button) => button.textContent.includes('Cash App')).disabled, true);
+  assert.match(limitedButtons.find((button) => button.textContent.includes('Cash App')).textContent, /chưa bật/);
 
   context.setLanguage('en');
   const englishButtons = document.getElementById('tip-method-list').children;
-  assert.match(englishButtons.find((button) => button.textContent.includes('Venmo')).textContent, /not enabled/);
+  assert.match(englishButtons.find((button) => button.textContent.includes('Cash App')).textContent, /not enabled/);
 
   const source = html();
   for (const [start, end] of [
@@ -1649,8 +1654,8 @@ test('tip from scan prepares the exact canonical Golden Glow staff and determini
   app.ui.selectedTipMethod = 'Cash App';
   const fallback = api.prepareTipFromScan(app);
   assert.equal(fallback.ok, true);
-  assert.equal(fallback.method, 'Venmo');
-  assert.equal(app.ui.selectedTipMethod, 'Venmo');
+  assert.equal(fallback.method, 'Zelle');
+  assert.equal(app.ui.selectedTipMethod, 'Zelle');
 });
 
 test('tip from scan rejects missing stale and methodless staff context atomically', () => {
@@ -1734,7 +1739,7 @@ test('selected business migration and tip recipient rendering stay on canonical 
   });
   assert.equal(migrated.ui.selectedBusinessId, 'golden-glow-spa');
   assert.equal(migrated.ui.selectedStaffId, 'staff-spa-linh');
-  assert.equal(migrated.ui.selectedTipMethod, 'Venmo');
+  assert.equal(migrated.ui.selectedTipMethod, 'Zelle');
 
   const document = createDocumentStub({ selectorNodes: {
     '[data-action="send-tip"] span': createStubElement()
@@ -2477,7 +2482,7 @@ test('generic tip context cancels stale QR authority and chooses one canonical b
   const golden = api.prepareGenericTipContext(app, { businessId: 'golden-glow-spa' });
   assert.equal(golden.ok, true);
   assert.equal(app.ui.selectedStaffId, 'staff-spa-linh');
-  assert.equal(app.ui.selectedTipMethod, 'Venmo');
+  assert.equal(app.ui.selectedTipMethod, 'Zelle');
 
   const before = JSON.stringify(app);
   assert.equal(api.prepareGenericTipContext(app, {
@@ -2535,7 +2540,8 @@ test('generic navigate and Tip from Look clear stale scan authority before rende
   });
   assert.deepEqual(
     document.getElementById('tip-recipient').children.map((option) => option.value),
-    ['staff-anna', 'staff-maria']
+    ['staff-anna', 'staff-maria', 'staff-david-l', 'staff-sunny-k', 'staff-jenny-t',
+      'staff-kevin-v', 'staff-mary-s', 'staff-lisa-n']
   );
 
   armGolden();
@@ -2569,7 +2575,7 @@ test('generic navigate and Tip from Look clear stale scan authority before rende
     staffId: state.ui.selectedStaffId,
     method: state.ui.selectedTipMethod
   })`, loaded.context)), {
-    businessId: 'golden-glow-spa', staffId: 'staff-spa-linh', method: 'Venmo'
+    businessId: 'golden-glow-spa', staffId: 'staff-spa-linh', method: 'Zelle'
   });
   assert.deepEqual(
     document.getElementById('tip-recipient').children.map((option) => option.value),
@@ -2760,7 +2766,8 @@ test('rejects persisted receipts with invalid status and restores rewards safely
   persisted.ui.activeScreen = 'redeemdone';
   persisted.ui.activeModule = 'wallet';
   persisted.ui.pendingContext.redemptionId = 'red-demo';
-  persisted.redemptions[0].status = 'redeemed';
+  // By id, not by position: the seeded redemption list holds more than one reward.
+  persisted.redemptions.find((row) => row.id === 'red-demo').status = 'redeemed';
   const document = createDocumentStub();
   const loaded = testApi({ [api.STORAGE_KEY]: JSON.stringify(persisted) }, { document, skipInit: false });
   assert.equal(vm.runInContext('state.ui.activeScreen', loaded.context), 'rewards');
@@ -3771,7 +3778,7 @@ test('keeps Tailwind v4 stylesheet compilable', () => {
 const requiredScreens = [
   'login1', 'login2', 'onb1', 'onb2', 'onb3', 'onb4', 'home', 'allmenu',
   'activity', 'wallet', 'history', 'rewards', 'redeem', 'redeemdone', 'scan',
-  'tip', 'tipdone', 'pay', 'paydone', 'looks', 'addlook', 'review', 'book1',
+  'checkindone', 'liveticket', 'tip', 'tipdone', 'pay', 'paydone', 'looks', 'addlook', 'review', 'book1',
   'book2', 'book3', 'explore', 'business', 'offers', 'referral', 'profile',
   'msgprefs'
 ];
@@ -3782,14 +3789,14 @@ function screenIds(source) {
     .filter(Boolean);
 }
 
-test('contains the exact 31-screen inventory', () => {
+test('contains the exact 33-screen inventory', () => {
   const ids = screenIds(html()).sort();
   assert.deepEqual(ids, [...requiredScreens].sort());
 });
 
-test('keeps 31 app screens and exposes every salon nested view accessibly', () => {
+test('keeps 33 app screens and exposes every salon nested view accessibly', () => {
   const source = html();
-  assert.equal(screenIds(source).length, 31);
+  assert.equal(screenIds(source).length, 33);
   for (const id of ['scan-camera-view', 'scan-context-view', 'guest-checkin-view', 'guest-checkout-view',
     'payment-proof-view', 'payment-pending-view', 'payment-confirmed-view', 'payment-rejected-view',
     'referral-summary', 'referral-qr', 'referral-invite-list']) {
@@ -3805,7 +3812,7 @@ test('keeps final salon messages exact in both languages and pairs Paid with an 
   const messages = {
     vi: {
       points: 'điểm', invalidGuest: 'Vui lòng kiểm tra tên, số điện thoại và dịch vụ.',
-      noPreference: 'Không ưu tiên', notAvailable: 'Chưa có', guestCheckinSuccess: 'Đã check-in khách.',
+      noPreference: 'Bất kỳ', notAvailable: 'Chưa có', guestCheckinSuccess: 'Đã check-in khách.',
       guestNotFound: 'Không tìm thấy lượt check-in khách.', serviceNotFound: 'Không tìm thấy dịch vụ.',
       checkoutFailed: 'Không thể tạo thanh toán.', selectPaymentMethod: 'Vui lòng chọn phương thức thanh toán.',
       invalidImage: 'Ảnh không hợp lệ.', proofSavedWithoutImage: 'Đã lưu bằng chứng không kèm ảnh do giới hạn bộ nhớ.',
@@ -3817,7 +3824,7 @@ test('keeps final salon messages exact in both languages and pairs Paid with an 
     },
     en: {
       points: 'points', invalidGuest: 'Check the name, phone, and service.',
-      noPreference: 'No preference', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in.',
+      noPreference: 'Anyone', notAvailable: 'Not available', guestCheckinSuccess: 'Guest checked in.',
       guestNotFound: 'Guest check-in was not found.', serviceNotFound: 'Service was not found.',
       checkoutFailed: 'Checkout could not be created.', selectPaymentMethod: 'Select a payment method.',
       invalidImage: 'The image is invalid.', proofSavedWithoutImage: 'Proof was saved without the image because storage is full.',
@@ -3866,7 +3873,7 @@ test('completes every detail screen', () => {
     assert.match(source, new RegExp(`<section[^>]+id="${id}"[^>]+data-ready="true"`));
     assert.match(source, new RegExp(`id="${id}-title"`));
   }
-  assert.equal((source.match(/data-ready="true"/g) || []).length, 31);
+  assert.equal((source.match(/data-ready="true"/g) || []).length, 33);
 });
 
 test('implements delegated interactions for the complete prototype', () => {
@@ -3950,7 +3957,7 @@ test('renders persisted balances across home wallet and rewards hooks', () => {
   assert.ok(claimAction.indexOf('renderBalances()') < claimAction.indexOf("navigateTo('onb2')"));
 });
 
-test('renders seven business-aware rewards without unsafe state HTML', () => {
+test('renders every business-aware reward without unsafe state HTML', () => {
   const document = createDocumentStub();
   testApi({
     'nexora.customer.prototype.v1': JSON.stringify({
@@ -3960,9 +3967,9 @@ test('renders seven business-aware rewards without unsafe state HTML', () => {
 
   const walletCards = document.getElementById('wallet-business-list').children;
   const rewardCards = document.getElementById('reward-list').children;
-  assert.equal(walletCards.length, 3);
+  assert.equal(walletCards.length, 7);
   assert.equal(walletCards[0].children[0].textContent, '<img src=x onerror=alert(1)>');
-  assert.equal(rewardCards.length, 7);
+  assert.equal(rewardCards.length, 11);
   const gelButton = rewardCards.at(-1).children.at(-1).children.at(-1);
   assert.equal(gelButton.disabled, true);
   assert.equal(gelButton.textContent, 'Cần thêm 50');
@@ -4009,7 +4016,7 @@ test('gives every enabled button an action and wires the known global controls',
     const action = openingTag.match(/data-action="([^"]+)"/)?.[1];
     if (action) assert.ok(registeredActions.has(action), `button action must be registered: ${action}`);
   }
-  for (const action of ['open-notifications', 'edit-profile', 'payment-methods', 'privacy-details', 'logout', 'reset-demo']) {
+  for (const action of ['open-notifications', 'edit-profile', 'logout', 'reset-demo']) {
     assert.match(source, new RegExp(`data-action="${action}"`));
     assert.ok(registeredActions.has(action), `global action must be registered: ${action}`);
   }
@@ -4421,7 +4428,9 @@ test('prepares fixed scan demo intents without creating transactions', () => {
   assert.equal(tip.targetScreen, 'tip');
   assert.equal(tipApp.ui.selectedBusinessId, 'bitcoin-nail-bar');
   assert.equal(tipApp.ui.selectedStaffId, 'staff-anna');
-  assert.equal(tipApp.ui.pendingContext.tipEntryIntent, 'generic');
+  assert.equal(tipApp.ui.pendingContext.tipEntryIntent, 'scan');
+  assert.equal(tipApp.ui.tipDraft.entryType, 'staff_qr');
+  assert.equal(tipApp.ui.tipDraft.lockedStaffProfileId, 'staff-anna');
   assert.equal(transactionSnapshot(tipApp), tipBefore);
 
   const invalidApp = api.createDefaultState();
@@ -4438,7 +4447,7 @@ function seedGuestCheckin(api, app, {
 } = {}) {
   assert.equal(api.stageSalonScan(app, payload).ok, true);
   const created = api.createGuestCheckin(app, {
-    name: 'Amy Nguyen', phone: '8325550198', serviceKey, staffProfileId
+    name: 'Amy Nguyen', phone: '8325550198', serviceKeys: [serviceKey], staffProfileId
   }, now);
   assert.equal(created.ok, true);
   return created.guestCheckin;
@@ -4725,7 +4734,7 @@ test('routes all four checkout methods without creating the wrong proof state', 
     const { context } = testApi({}, { document });
     vm.runInContext(`
       stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
-      createGuestCheckin(state, { name: 'Amy Nguyen', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }, 1000);
+      createGuestCheckin(state, { name: 'Amy Nguyen', phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: null }, 1000);
       createCheckoutDraft(state, { guestCheckinId: state.guestCheckins[0].id }, 1000);
       setCheckoutMethod(state, state.ui.pendingContext.checkoutDraftId, ${JSON.stringify(method)});
       ACTIONS.get('continue-checkout')();
@@ -4780,7 +4789,7 @@ test('moves focus and synchronizes checkout selections and disabled reason', () 
   const { api, context } = testApi({}, { document });
   vm.runInContext(`
     stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
-    createGuestCheckin(state, { name: 'Amy Nguyen', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }, 1000);
+    createGuestCheckin(state, { name: 'Amy Nguyen', phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: null }, 1000);
     createCheckoutDraft(state, { guestCheckinId: state.guestCheckins[0].id }, 1000);
   `, context);
 
@@ -5332,7 +5341,7 @@ test('Task 4 paydone states synchronize focus and aria while rendering canonical
     const checkout = createCheckoutDraft(state, {
       guestCheckinId: createGuestCheckin(state,
         (stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'),
-        { name: 'Amy', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }), 1000).guestCheckin.id
+        { name: 'Amy', phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: null }), 1000).guestCheckin.id
     }, 1000).checkoutDraft;
     setCheckoutMethod(state, checkout.id, 'Zelle');
     const proof = submitPaymentProof(state, { checkoutDraftId: checkout.id, note: '', imageDataUrl: '' }, 2000).proof;
@@ -5373,7 +5382,7 @@ test('Task 4 review Pay Done selects one discriminated source across render and 
     const checkout = createCheckoutDraft(state, {
       guestCheckinId: createGuestCheckin(state,
         (stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'),
-        { name: 'Amy', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }), 1000).guestCheckin.id
+        { name: 'Amy', phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: null }), 1000).guestCheckin.id
     }, 1000).checkoutDraft;
     setCheckoutMethod(state, checkout.id, 'Zelle');
     const selectedProof = submitPaymentProof(state, {
@@ -5432,7 +5441,7 @@ test('Task 4 review Pay Done never renders a tampered verified aggregate as conf
     const checkout = createCheckoutDraft(state, {
       guestCheckinId: createGuestCheckin(state,
         (stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'),
-        { name: 'Amy', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }), 1000).guestCheckin.id
+        { name: 'Amy', phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: null }), 1000).guestCheckin.id
     }, 1000).checkoutDraft;
     setCheckoutMethod(state, checkout.id, 'Zelle');
     const proof = submitPaymentProof(state, { checkoutDraftId: checkout.id, note: '', imageDataUrl: '' }, 2000).proof;
@@ -5478,7 +5487,7 @@ test('Task 4 round 2 integrity error hides unusable retries and executes only sa
     const checkout = createCheckoutDraft(state, {
       guestCheckinId: createGuestCheckin(state,
         (stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'),
-        { name: 'Amy', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }), 1000).guestCheckin.id
+        { name: 'Amy', phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: null }), 1000).guestCheckin.id
     }, 1000).checkoutDraft;
     setCheckoutMethod(state, checkout.id, 'Zelle');
     const proof = submitPaymentProof(state, { checkoutDraftId: checkout.id, note: '', imageDataUrl: '' }, 2000).proof;
@@ -5527,7 +5536,7 @@ function seedVerifiedGuestReceipt(api, app, {
   assert.ok(route, `missing test route for ${businessId}`);
   assert.equal(api.stageSalonScan(app, route[0]).ok, true);
   const createdGuest = api.createGuestCheckin(app, {
-    name: 'Amy Nguyen', phone, serviceKey: route[1], staffProfileId: null
+    name: 'Amy Nguyen', phone, serviceKeys: [route[1]], staffProfileId: null
   }, baseTime);
   assert.equal(createdGuest.ok, true);
   const createdCheckout = api.createCheckoutDraft(app, {
@@ -5706,7 +5715,7 @@ test('Task 5 accepts a canonical draft checkout without a proof', () => {
   const fixture = seedVerifiedGuestReceipt(api, app, { baseTime: 1000 });
   assert.equal(api.stageSalonScan(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front').ok, true);
   const draftGuest = api.createGuestCheckin(app, {
-    name: 'Draft Guest', phone: '8325550100', serviceKey: 'deluxe-pedicure', staffProfileId: null
+    name: 'Draft Guest', phone: '8325550100', serviceKeys: ['deluxe-pedicure'], staffProfileId: null
   }, 2000).guestCheckin;
   const draft = api.createCheckoutDraft(app, { guestCheckinId: draftGuest.id }, 2100).checkoutDraft;
   assert.equal(draft.status, 'draft');
@@ -5731,7 +5740,7 @@ test('Task 5 preserves rejected retry history while claiming the one verified re
   const app = api.createDefaultState();
   assert.equal(api.stageSalonScan(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front').ok, true);
   const guest = api.createGuestCheckin(app, {
-    name: 'Amy Nguyen', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null
+    name: 'Amy Nguyen', phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: null
   }, 1000).guestCheckin;
   const firstCheckout = api.createCheckoutDraft(app, { guestCheckinId: guest.id }, 1100).checkoutDraft;
   assert.equal(api.setCheckoutTip(app, firstCheckout.id, 1800).ok, true);
@@ -5983,7 +5992,7 @@ test('Task 5 preflights malformed canonical-ID records across every relevant col
         ...structuredClone(app.guestCheckins[0]),
         id: 'guest-checkin-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
         phone: '8325550100',
-        serviceKey: 'missing-service'
+        serviceKeys: ['missing-service']
       });
     }],
     ['checkout chronology', (app) => {
@@ -6359,7 +6368,7 @@ test('Task 5 receipt CTAs prefill login or return to the scan camera without con
     const checkout = createCheckoutDraft(state, {
       guestCheckinId: createGuestCheckin(state,
         (stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front'),
-        { name: 'Amy', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }), 1000).guestCheckin.id
+        { name: 'Amy', phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: null }), 1000).guestCheckin.id
     }, 1000).checkoutDraft;
     setCheckoutMethod(state, checkout.id, 'Zelle');
     const rejectedProof = submitPaymentProof(state, {
@@ -6537,7 +6546,7 @@ test('Task 4 quota fallback persists proof metadata without image and reports an
   task4Api(api);
   vm.runInContext(`
     stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
-    createGuestCheckin(state, { name: 'Amy', phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: null }, 1000);
+    createGuestCheckin(state, { name: 'Amy', phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: null }, 1000);
     createCheckoutDraft(state, { guestCheckinId: state.guestCheckins[0].id }, 1000);
     setCheckoutMethod(state, state.checkoutDrafts[0].id, 'Zelle');
     pendingProofImageDataUrl = 'data:image/jpeg;base64,AA==';
@@ -6666,7 +6675,7 @@ test('creates a guest check-in claim without crediting the signed-in profile', (
   api.stageSalonScan(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
   const before = app.balances['bitcoin-nail-bar'].points;
   const result = api.createGuestCheckin(app, {
-    name: 'Amy Nguyen', phone: '832-555-0198', serviceKey: 'deluxe-pedicure', staffProfileId: null
+    name: 'Amy Nguyen', phone: '832-555-0198', serviceKeys: ['deluxe-pedicure'], staffProfileId: null
   }, Date.parse('2026-07-15T03:04:42.000Z'));
   assert.equal(result.ok, true);
   assert.equal(result.guestCheckin.businessId, 'bitcoin-nail-bar');
@@ -6683,7 +6692,7 @@ test('service check-in exact retry reuses one canonical record before UUID or mu
   api.stageSalonScan(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
   const input = {
     name: 'Amy Nguyen', phone: '(832) 555-0198',
-    serviceKey: 'deluxe-pedicure', staffProfileId: null
+    serviceKeys: ['deluxe-pedicure'], staffProfileId: null
   };
   const first = api.createGuestCheckin(app, input, 1000);
   const callsAfterFirst = ids.calls();
@@ -6705,7 +6714,7 @@ test('service check-in retry fails closed on ambiguous or noncanonical semantic 
     api.stageSalonScan(app, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
     const input = {
       name: 'Amy Nguyen', phone: '8325550198',
-      serviceKey: 'deluxe-pedicure', staffProfileId: null
+      serviceKeys: ['deluxe-pedicure'], staffProfileId: null
     };
     const first = api.createGuestCheckin(app, input, 1000).guestCheckin;
     if (corrupt) {
@@ -6737,10 +6746,10 @@ test('service check-in permits a different service inside and the same service o
   const base = {
     name: 'Amy Nguyen', phone: '8325550198', staffProfileId: null
   };
-  const first = api.createGuestCheckin(app, { ...base, serviceKey: 'deluxe-pedicure' }, 1000);
-  const otherService = api.createGuestCheckin(app, { ...base, serviceKey: 'acrylic-full-set' }, 2000);
+  const first = api.createGuestCheckin(app, { ...base, serviceKeys: ['deluxe-pedicure'] }, 1000);
+  const otherService = api.createGuestCheckin(app, { ...base, serviceKeys: ['acrylic-full-set'] }, 2000);
   const laterVisit = api.createGuestCheckin(
-    app, { ...base, serviceKey: 'deluxe-pedicure' }, 1000 + (120 * 60 * 1000)
+    app, { ...base, serviceKeys: ['deluxe-pedicure'] }, 1000 + (120 * 60 * 1000)
   );
 
   assert.equal(first.ok, true);
@@ -6776,7 +6785,7 @@ test('rejects missing or tampered staged member context and cross-business guest
   api.stageSalonScan(app, 'https://nexoratouch.com/touch/golden-glow-spa/lobby');
   const staged = JSON.stringify(app);
   const guest = api.createGuestCheckin(app, {
-    name: 'Amy Nguyen', phone: '832-555-0198', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-anna'
+    name: 'Amy Nguyen', phone: '832-555-0198', serviceKeys: ['deluxe-pedicure'], staffProfileId: 'staff-anna'
   }, 1000);
   assert.equal(guest.code, 'invalid_guest');
   assert.equal(JSON.stringify(app), staged);
@@ -6790,7 +6799,6 @@ test('rejects missing or tampered staged member context and cross-business guest
 test('provides nested multi-salon and guest scan views with localized copy and safe actions', () => {
   const source = html();
   assert.equal((source.match(/data-scan-view="(?:camera|context|guest)"/g) || []).length, 3);
-  assert.match(source, /id="scan-demo-business"/);
   assert.match(source, /id="guest-checkin-view"/);
   for (const key of ['invalidGuest', 'noPreference', 'notAvailable', 'guestCheckinSuccess',
     'scanTipRequiresStaff', 'scanTipMethodUnavailable', 'scanPaymentRequiresCompleted',
@@ -6811,6 +6819,745 @@ test('provides nested multi-salon and guest scan views with localized copy and s
   assert.ok(memberAction);
   assert.match(memberAction, /openServiceCheckinForm\(true\)/);
   assert.match(source, /function renderScanContext\(\)[\s\S]*?\.textContent/);
+});
+
+test('Bitcoin Nail Bar tip catalog includes the six selectable staff profiles from tip-flow', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+  const methods = ['Zelle', 'Venmo', 'Cash App', 'Apple Cash', 'PayPal', 'VLinkPay'];
+  const expected = [
+    ['staff-david-l', 'David L.', 'Nail Technician'],
+    ['staff-sunny-k', 'Sunny K.', 'Senior Gel Specialist'],
+    ['staff-jenny-t', 'Jenny T.', 'Senior Nail Technician'],
+    ['staff-kevin-v', 'Kevin V.', 'Acrylic & Gel Specialist'],
+    ['staff-mary-s', 'Mary S.', 'Nail Technician'],
+    ['staff-lisa-n', 'Lisa N.', 'Gel & Extensions']
+  ];
+
+  for (const [id, name, role] of expected) {
+    assert.ok(app.staffProfiles[id], `${id} must exist`);
+    assert.deepEqual(JSON.parse(JSON.stringify(app.staffProfiles[id])), {
+      id, name, role, businessId: 'bitcoin-nail-bar', methods, followNotifyOptIn: false
+    });
+  }
+});
+
+test('reference payment methods resolve for every Bitcoin Nail Bar tip recipient', () => {
+  const { api, context } = testApi();
+  const app = api.createDefaultState();
+  const methods = JSON.parse(vm.runInContext('JSON.stringify(PAYMENT_METHODS)', context));
+  assert.deepEqual(methods, ['Zelle', 'Venmo', 'Cash App', 'Apple Cash', 'PayPal', 'VLinkPay']);
+
+  const staff = Object.values(app.staffProfiles)
+    .filter((profile) => profile.businessId === 'bitcoin-nail-bar');
+  assert.equal(staff.length, 8);
+  for (const profile of staff) {
+    assert.deepEqual(JSON.parse(JSON.stringify(profile.methods)), methods, profile.id);
+    for (const method of methods) {
+      const payout = api.resolveTipPayout(app, {
+        businessId: 'bitcoin-nail-bar', recipientIds: [profile.id], method
+      });
+      assert.equal(payout.ok, true, `${profile.id}:${method}`);
+      assert.equal(payout.account.ownerId, profile.id, `${profile.id}:${method}`);
+    }
+  }
+  for (const method of methods) {
+    const payout = api.resolveTipPayout(app, {
+      businessId: 'bitcoin-nail-bar',
+      recipientIds: ['staff-anna', 'staff-maria'],
+      method
+    });
+    assert.equal(payout.ok, true, `salon:${method}`);
+    assert.equal(payout.account.ownerType, 'business', `salon:${method}`);
+  }
+});
+
+test('legacy Bitcoin Nail Bar state upgrades VLinkPay before the payment control is selected', () => {
+  const setup = testApi();
+  const legacy = setup.api.createDefaultState();
+  legacy.businesses['bitcoin-nail-bar'].methods = ['Zelle', 'Venmo'];
+  Object.values(legacy.staffProfiles)
+    .filter((staff) => staff.businessId === 'bitcoin-nail-bar')
+    .forEach((staff) => { staff.methods = ['Zelle', 'Venmo']; });
+
+  const document = createDocumentStub();
+  const loaded = testApi({
+    [setup.api.STORAGE_KEY]: JSON.stringify(legacy)
+  }, { skipInit: false, document });
+  assert.equal(vm.runInContext(`createTipDraft(state, {
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', preferredStaffId: 'staff-anna'
+  }).ok`, loaded.context), true);
+  assert.equal(vm.runInContext("updateTipDraftRecipients(state, ['staff-anna', 'staff-maria']).ok", loaded.context), true);
+
+  const selectVLinkPay = vm.runInContext("ACTIONS.get('select-tip-batch-method')", loaded.context);
+  const selected = selectVLinkPay({ dataset: { method: 'VLinkPay' } });
+  assert.equal(selected.ok, true);
+  assert.equal(vm.runInContext('state.ui.tipDraft.method', loaded.context), 'VLinkPay');
+  assert.deepEqual(JSON.parse(vm.runInContext(`JSON.stringify({
+    business: state.businesses['bitcoin-nail-bar'].methods,
+    anna: state.staffProfiles['staff-anna'].methods,
+    maria: state.staffProfiles['staff-maria'].methods
+  })`, loaded.context)), {
+    business: ['Zelle', 'Venmo', 'Cash App', 'Apple Cash', 'PayPal', 'VLinkPay'],
+    anna: ['Zelle', 'Venmo', 'Cash App', 'Apple Cash', 'PayPal', 'VLinkPay'],
+    maria: ['Zelle', 'Venmo', 'Cash App', 'Apple Cash', 'PayPal', 'VLinkPay']
+  });
+});
+
+test('tip payment controls expose only methods that can actually be selected', () => {
+  const methodList = createStubElement({ id: 'tip-batch-method-list' });
+  const document = createDocumentStub({ extraElements: [methodList] });
+  const { context } = testApi({}, { document });
+  vm.runInContext(`
+    state.staffProfiles['staff-anna'].methods = ['Venmo'];
+    state.ui.selectedTipMethod = 'Zelle';
+    createTipDraft(state, {
+      businessId: 'bitcoin-nail-bar', entryType: 'menu', preferredStaffId: 'staff-anna'
+    });
+    renderTipBatchMethods();
+  `, context);
+
+  assert.equal(vm.runInContext('state.ui.tipDraft.method', context), 'Venmo');
+  assert.deepEqual(methodList.children.map((button) => button.dataset.method), ['Venmo']);
+  const selectMethod = vm.runInContext("ACTIONS.get('select-tip-batch-method')", context);
+  assert.equal(selectMethod({ dataset: { method: 'Venmo' } }).ok, true);
+
+  vm.runInContext(`
+    state.staffProfiles['staff-anna'].methods = [...PAYMENT_METHODS];
+    state.staffProfiles['staff-maria'].methods = [...PAYMENT_METHODS];
+    state.businesses['bitcoin-nail-bar'].methods = ['Cash App'];
+    updateTipDraftRecipients(state, ['staff-anna', 'staff-maria']);
+    renderTipBatchMethods();
+  `, context);
+  assert.equal(vm.runInContext('state.ui.tipDraft.method', context), 'Cash App');
+  assert.deepEqual(methodList.children.map((button) => button.dataset.method), ['Cash App']);
+  assert.equal(selectMethod({ dataset: { method: 'Cash App' } }).ok, true);
+});
+
+test('all six reference payment controls select successfully for single and multi-staff tips', () => {
+  const methodList = createStubElement({ id: 'tip-batch-method-list' });
+  const document = createDocumentStub({ extraElements: [methodList] });
+  const { context } = testApi({}, { document });
+  const methods = ['Zelle', 'Venmo', 'Cash App', 'Apple Cash', 'PayPal', 'VLinkPay'];
+  vm.runInContext(`createTipDraft(state, {
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', preferredStaffId: 'staff-mary-s'
+  });`, context);
+  const selectMethod = vm.runInContext("ACTIONS.get('select-tip-batch-method')", context);
+
+  for (const method of methods) {
+    const selected = selectMethod({ dataset: { method } });
+    assert.equal(selected.ok, true, `single:${method}`);
+    assert.equal(vm.runInContext('state.ui.tipDraft.method', context), method, `single:${method}`);
+    assert.equal(document.getElementById('tip-payout-value').textContent.length > 0, true, `single:${method}`);
+  }
+
+  assert.equal(vm.runInContext("updateTipDraftRecipients(state, ['staff-anna', 'staff-maria']).ok", context), true);
+  context.renderTipBatchMethods();
+  assert.deepEqual(methodList.children.map((button) => button.dataset.method), methods);
+  for (const method of methods) {
+    const selected = selectMethod({ dataset: { method } });
+    assert.equal(selected.ok, true, `multi:${method}`);
+    assert.equal(vm.runInContext('state.ui.tipDraft.method', context), method, `multi:${method}`);
+    assert.equal(document.getElementById('tip-payout-value').textContent.length > 0, true, `multi:${method}`);
+  }
+});
+
+test('VLinkPay guide mirrors the reference wallet QR and USDV instructions', () => {
+  const vlinkPanel = createStubElement({ id: 'tip-vlinkpay-panel', classNames: ['hidden'] });
+  const accountStep = createStubElement({ id: 'tip-guide-account-step' });
+  const accountRow = createStubElement({ id: 'tip-payout-account-row' });
+  const document = createDocumentStub({
+    extraElements: [vlinkPanel, accountStep, accountRow]
+  });
+  const { context } = testApi({}, { document });
+  vm.runInContext(`createTipDraft(state, {
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', preferredStaffId: 'staff-mary-s'
+  });`, context);
+  const selectMethod = vm.runInContext("ACTIONS.get('select-tip-batch-method')", context);
+
+  assert.equal(selectMethod({ dataset: { method: 'VLinkPay' } }).ok, true);
+  assert.equal(vlinkPanel.classList.contains('hidden'), false);
+  assert.equal(document.getElementById('tip-vlinkpay-wallet').textContent,
+    'VLK:0x3f9A8b2C1d4E5f6A7B8C9D0E1F2A3B4C5D6E7F8');
+  assert.match(document.getElementById('tip-vlinkpay-qr').src, /create-qr-code/);
+  // Step 1 stays, but its address row would only repeat the address shown in the panel above.
+  assert.equal(accountStep.classList.contains('hidden'), false);
+  assert.equal(accountRow.classList.contains('hidden'), true);
+  assert.match(document.getElementById('tip-guide-step1-label').textContent, /địa chỉ ví|wallet address/);
+  assert.match(document.getElementById('tip-transfer-instruction').textContent, /Send Gift/);
+  assert.match(document.getElementById('tip-transfer-detail').textContent, /USDV/);
+
+  assert.equal(selectMethod({ dataset: { method: 'PayPal' } }).ok, true);
+  assert.equal(vlinkPanel.classList.contains('hidden'), true);
+  assert.equal(accountStep.classList.contains('hidden'), false);
+  assert.equal(accountRow.classList.contains('hidden'), false);
+  assert.match(document.getElementById('tip-guide-step1-label').textContent, /PayPal/);
+  assert.match(document.getElementById('tip-transfer-instruction').textContent, /PayPal/);
+});
+
+test('reference tip payment methods render all six branded controls', () => {
+  const methodList = createStubElement({ id: 'tip-batch-method-list' });
+  const document = createDocumentStub({ extraElements: [methodList] });
+  const { context } = testApi({}, { document });
+  assert.equal(vm.runInContext(`createTipDraft(state, {
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', preferredStaffId: 'staff-mary-s'
+  }).ok`, context), true);
+
+  context.renderTipBatchMethods();
+  assert.equal(methodList.children.length, 6);
+  assert.deepEqual(methodList.children.map((button) => button.children[0]?.tagName),
+    ['IMG', 'IMG', 'IMG', 'IMG', 'IMG', 'IMG']);
+  assert.deepEqual(methodList.children.map((button) => button.children[0]?.alt),
+    ['Zelle', 'Venmo', 'Cash App', 'Apple Cash', 'PayPal', 'VLinkPay']);
+});
+
+test('tip batch allocation splits cents deterministically and derives individual totals', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+
+  const equal = api.calculateTipAllocations(app, {
+    businessId: 'bitcoin-nail-bar',
+    recipientIds: ['staff-maria', 'staff-anna'],
+    splitMode: 'equal',
+    totalCents: 1001
+  });
+  assert.equal(equal.ok, true);
+  assert.deepEqual(JSON.parse(JSON.stringify(equal.allocations)), [
+    { staffProfileId: 'staff-anna', amountCents: 501 },
+    { staffProfileId: 'staff-maria', amountCents: 500 }
+  ]);
+  assert.equal(equal.totalCents, 1001);
+
+  const individual = api.calculateTipAllocations(app, {
+    businessId: 'bitcoin-nail-bar',
+    recipientIds: ['staff-anna', 'staff-maria'],
+    splitMode: 'individual',
+    individualCents: { 'staff-anna': 625, 'staff-maria': 375 }
+  });
+  assert.equal(individual.ok, true);
+  assert.equal(individual.totalCents, 1000);
+  assert.equal(api.calculateTipAllocations(app, {
+    businessId: 'bitcoin-nail-bar',
+    recipientIds: ['staff-anna', 'staff-anna'],
+    splitMode: 'equal',
+    totalCents: 1000
+  }).code, 'duplicate_staff');
+});
+
+test('individual tip rows include reference quick amounts and omit redundant decimal zeros', () => {
+  const individualList = createStubElement({ id: 'tip-individual-list' });
+  const totalInput = createStubElement({ id: 'tip-total-amount' });
+  const allocationTotal = createStubElement({ id: 'tip-allocation-total' });
+  const document = createDocumentStub({
+    extraElements: [individualList, totalInput, allocationTotal]
+  });
+  const { context } = testApi({}, { document });
+  assert.equal(vm.runInContext(`createTipDraft(state, {
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', preferredStaffId: 'staff-anna'
+  }).ok`, context), true);
+  assert.equal(vm.runInContext("updateTipDraftRecipients(state, ['staff-anna', 'staff-maria']).ok", context), true);
+  vm.runInContext("state.ui.tipDraft.splitMode = 'individual'; renderTipAllocation();", context);
+
+  assert.equal(individualList.children.length, 2);
+  const annaRow = individualList.children.find((row) => row.dataset.tipIndividualRow === 'staff-anna');
+  const mariaRow = individualList.children.find((row) => row.dataset.tipIndividualRow === 'staff-maria');
+  assert.ok(annaRow);
+  assert.ok(mariaRow);
+  for (const row of [annaRow, mariaRow]) {
+    const quickButtons = row.children[2].children;
+    assert.deepEqual(quickButtons.map((button) => button.dataset.cents), ['500', '1000', '1500', '2000']);
+    assert.equal(quickButtons.every((button) => button.dataset.action === 'select-tip-individual'), true);
+  }
+  assert.equal(annaRow.children[3].children[1].value, '10');
+  assert.equal(mariaRow.children[3].children[1].value, '5');
+  assert.equal(totalInput.value, '10');
+  assert.equal(allocationTotal.textContent, '$15');
+  assert.doesNotMatch(allocationTotal.textContent, /[.,]00$/);
+});
+
+test('individual tip quick action updates only its staff amount with compact money', () => {
+  const individualList = createStubElement({ id: 'tip-individual-list' });
+  const allocationTotal = createStubElement({ id: 'tip-allocation-total' });
+  const document = createDocumentStub({ extraElements: [individualList, allocationTotal] });
+  const { context } = testApi({}, { document });
+  vm.runInContext(`createTipDraft(state, {
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', preferredStaffId: 'staff-anna'
+  }); updateTipDraftRecipients(state, ['staff-anna', 'staff-maria']); state.ui.tipDraft.splitMode = 'individual';`, context);
+
+  const handler = vm.runInContext("ACTIONS.get('select-tip-individual')", context);
+  assert.equal(typeof handler, 'function');
+  const selected = handler({ dataset: { staffId: 'staff-maria', cents: '1500' } });
+  assert.equal(selected.ok, true);
+  assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(state.ui.tipDraft.individualCents)', context)), {
+    'staff-anna': 1000,
+    'staff-maria': 1500
+  });
+  assert.equal(allocationTotal.textContent, '$25');
+});
+
+test('tip batch payout uses staff for one recipient and salon for multiple recipients', () => {
+  const { api } = testApi();
+  const app = api.createDefaultState();
+
+  const staff = api.resolveTipPayout(app, {
+    businessId: 'bitcoin-nail-bar', recipientIds: ['staff-anna'], method: 'Venmo'
+  });
+  assert.equal(staff.ok, true);
+  assert.equal(staff.account.ownerType, 'staff');
+  assert.equal(staff.account.ownerId, 'staff-anna');
+  assert.equal(staff.account.method, 'Venmo');
+
+  const salon = api.resolveTipPayout(app, {
+    businessId: 'bitcoin-nail-bar', recipientIds: ['staff-anna', 'staff-maria'], method: 'Zelle'
+  });
+  assert.equal(salon.ok, true);
+  assert.equal(salon.account.ownerType, 'business');
+  assert.equal(salon.account.ownerId, 'bitcoin-nail-bar');
+  assert.equal(salon.account.method, 'Zelle');
+
+  app.staffProfiles['staff-spa-maya'] = {
+    id: 'staff-spa-maya', name: 'Maya', businessId: 'golden-glow-spa', methods: ['Zelle']
+  };
+  assert.equal(api.resolveTipPayout(app, {
+    businessId: 'golden-glow-spa',
+    recipientIds: ['staff-spa-linh', 'staff-spa-maya'],
+    method: 'Zelle'
+  }).code, 'salon_payout_required');
+});
+
+test('tip batch submit creates one parent, staff allocations and proof then exact-retries', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const input = {
+    clientRequestId: 'tip-request-demo-1',
+    businessId: 'bitcoin-nail-bar',
+    entryType: 'menu',
+    lockedStaffProfileId: null,
+    recipientIds: ['staff-maria', 'staff-anna'],
+    splitMode: 'equal',
+    totalCents: 1001,
+    individualCents: {},
+    method: 'Zelle',
+    note: 'Thank you',
+    proofImages: [],
+    transferAsserted: true
+  };
+
+  const submitted = api.submitTipBatch(app, input, 1000);
+  assert.equal(submitted.ok, true);
+  assert.equal(submitted.batch.status, 'pending');
+  assert.equal(app.tipBatches.length, 1);
+  assert.equal(app.tips.length, 2);
+  assert.equal(app.tipProofs.length, 1);
+  assert.equal(app.ledger.filter((entry) => entry.refType === 'tip_batch').length, 0);
+  assert.deepEqual(JSON.parse(JSON.stringify(
+    app.tips.map((tip) => tip.amountCents).sort((a, b) => a - b)
+  )), [500, 501]);
+  const calls = ids.calls();
+
+  const replay = api.submitTipBatch(app, input, 2000);
+  assert.equal(replay.ok, true);
+  assert.equal(replay.idempotent, true);
+  assert.equal(replay.batch.id, submitted.batch.id);
+  assert.equal(app.tipBatches.length, 1);
+  assert.equal(app.tips.length, 2);
+  assert.equal(app.tipProofs.length, 1);
+  assert.equal(ids.calls(), calls);
+  assert.equal(api.submitTipBatch(app, { ...input, totalCents: 1200 }, 3000).code, 'request_mismatch');
+});
+
+test('tip batch lifecycle confirms the aggregate once and creates one batch reward ledger', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const beforePoints = app.balances['bitcoin-nail-bar'].points;
+  const submitted = api.submitTipBatch(app, {
+    clientRequestId: 'tip-request-confirm-1',
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', lockedStaffProfileId: null,
+    recipientIds: ['staff-anna', 'staff-maria'], splitMode: 'equal', totalCents: 1000,
+    individualCents: {}, method: 'Zelle', note: '', proofImages: [], transferAsserted: true
+  }, 1000);
+  assert.equal(submitted.ok, true);
+  assert.equal(api.validateTipBatchAggregate(app, submitted.batch.id).ok, true);
+
+  const confirmed = api.confirmTipBatch(app, submitted.batch.id, 2000);
+  assert.equal(confirmed.ok, true);
+  assert.equal(confirmed.points, 100);
+  assert.equal(confirmed.batch.status, 'confirmed');
+  assert.equal(app.tips.every((tip) => tip.status === 'confirmed'), true);
+  assert.equal(app.tipProofs[0].status, 'confirmed');
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforePoints + 100);
+  const ledgers = app.ledger.filter((entry) => entry.refType === 'tip_batch');
+  assert.equal(ledgers.length, 1);
+  assert.equal(ledgers[0].refId, submitted.batch.id);
+
+  const calls = ids.calls();
+  const replay = api.confirmTipBatch(app, submitted.batch.id, 3000);
+  assert.equal(replay.ok, true);
+  assert.equal(replay.idempotent, true);
+  assert.equal(app.ledger.filter((entry) => entry.refType === 'tip_batch').length, 1);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforePoints + 100);
+  assert.equal(ids.calls(), calls);
+});
+
+test('tip batch proof rejection and replacement reuse the same parent without rewards', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const beforePoints = app.balances['bitcoin-nail-bar'].points;
+  const submitted = api.submitTipBatch(app, {
+    clientRequestId: 'tip-request-reject-1',
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', lockedStaffProfileId: null,
+    recipientIds: ['staff-anna', 'staff-maria'], splitMode: 'individual', totalCents: 99999,
+    individualCents: { 'staff-anna': 700, 'staff-maria': 300 }, method: 'Zelle',
+    note: 'First attempt', proofImages: [], transferAsserted: true
+  }, 1000);
+  const rejected = api.rejectTipBatch(app, submitted.batch.id, ' Amount does not match ', 2000);
+  assert.equal(rejected.ok, true);
+  assert.equal(rejected.batch.status, 'rejected');
+  assert.equal(rejected.batch.rejectReason, 'Amount does not match');
+  assert.equal(app.tips.every((tip) => tip.status === 'rejected'), true);
+  assert.equal(app.tipProofs[0].status, 'rejected');
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforePoints);
+  assert.equal(app.ledger.filter((entry) => entry.refType === 'tip_batch').length, 0);
+
+  const replacement = api.replaceTipBatchProof(app, {
+    tipBatchId: submitted.batch.id,
+    transferAsserted: true,
+    note: 'Corrected proof',
+    proofImages: []
+  }, 3000);
+  assert.equal(replacement.ok, true);
+  assert.equal(replacement.batch.id, submitted.batch.id);
+  assert.equal(replacement.batch.status, 'pending');
+  assert.equal(replacement.proof.attemptNumber, 2);
+  assert.equal(app.tipProofs.length, 2);
+  assert.equal(app.tipProofs.filter((proof) => proof.status === 'pending').length, 1);
+  assert.equal(app.tips.every((tip) => tip.status === 'pending'), true);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforePoints);
+
+  app.tips.pop();
+  const snapshot = JSON.stringify(app);
+  assert.equal(api.confirmTipBatch(app, submitted.batch.id, 4000).code, 'invalid_tip_batch');
+  assert.equal(JSON.stringify(app), snapshot);
+});
+
+test('tip batch reload preserves pending rejected and confirmed aggregates without new IDs', () => {
+  for (const lifecycle of ['pending', 'rejected', 'confirmed']) {
+    const ids = createUuidSequence();
+    const setup = testApi({}, { randomUUID: () => ids.randomUUID() });
+    const app = setup.api.createDefaultState();
+    const submitted = setup.api.submitTipBatch(app, {
+      clientRequestId: `tip-request-reload-${lifecycle}`,
+      businessId: 'bitcoin-nail-bar', entryType: 'menu', lockedStaffProfileId: null,
+      recipientIds: ['staff-anna', 'staff-maria'], splitMode: 'equal', totalCents: 1000,
+      individualCents: {}, method: 'Zelle', note: '', proofImages: [], transferAsserted: true
+    }, 1000);
+    if (lifecycle === 'rejected') setup.api.rejectTipBatch(app, submitted.batch.id, 'No match', 2000);
+    if (lifecycle === 'confirmed') setup.api.confirmTipBatch(app, submitted.batch.id, 2000);
+    setup.api.saveState(app, setup.storage);
+    const loadedApi = testApi(setup.storage.dump(), {
+      randomUUID: () => { throw new Error('reload must not create tip batch IDs'); }
+    }).api;
+    const loaded = loadedApi.loadState(createMemoryStorage(setup.storage.dump()));
+
+    assert.equal(loaded.tipBatches.length, 1, lifecycle);
+    assert.equal(loaded.tips.length, 2, lifecycle);
+    assert.equal(loaded.tipProofs.length, 1, lifecycle);
+    assert.equal(loaded.tipBatches[0].status, lifecycle);
+    assert.equal(loaded.ui.pendingContext.tipBatchId, submitted.batch.id);
+    assert.equal(loadedApi.validateTipBatchAggregate(loaded, submitted.batch.id).ok, true, lifecycle);
+    assert.equal(loaded.ledger.filter((entry) => entry.refType === 'tip_batch').length,
+      lifecycle === 'confirmed' ? 1 : 0, lifecycle);
+  }
+});
+
+test('tip batch migration quarantines an incomplete parent child proof bundle', () => {
+  const ids = createUuidSequence();
+  const setup = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = setup.api.createDefaultState();
+  const submitted = setup.api.submitTipBatch(app, {
+    clientRequestId: 'tip-request-corrupt-reload',
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', lockedStaffProfileId: null,
+    recipientIds: ['staff-anna', 'staff-maria'], splitMode: 'equal', totalCents: 1000,
+    individualCents: {}, method: 'Zelle', note: '', proofImages: [], transferAsserted: true
+  }, 1000);
+  app.tips.pop();
+  app.ui.pendingContext.tipBatchId = submitted.batch.id;
+
+  const migrated = setup.api.migrateState(app);
+  assert.equal(migrated.tipBatches.length, 0);
+  assert.equal(migrated.tips.filter((tip) => tip.tipBatchId === submitted.batch.id).length, 0);
+  assert.equal(migrated.tipProofs.filter((proof) => proof.tipBatchId === submitted.batch.id).length, 0);
+  assert.equal(migrated.ui.pendingContext.tipBatchId, null);
+});
+
+test('multi-tip QR preselects scanned staff but lets the customer replace the selection', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const draft = api.createTipDraft(app, {
+    businessId: 'bitcoin-nail-bar',
+    entryType: 'staff_qr',
+    lockedStaffProfileId: 'staff-anna'
+  });
+  assert.equal(draft.ok, true);
+  assert.equal(app.ui.tipDraft.lockedStaffProfileId, 'staff-anna');
+  assert.deepEqual(JSON.parse(JSON.stringify(app.ui.tipDraft.recipientIds)), ['staff-anna']);
+  assert.equal(api.updateTipDraftRecipients(app, ['staff-david-l']).ok, true);
+  assert.deepEqual(JSON.parse(JSON.stringify(app.ui.tipDraft.recipientIds)), ['staff-david-l']);
+  assert.equal(api.updateTipDraftRecipients(app, ['staff-david-l', 'staff-sunny-k']).ok, true);
+  assert.equal(api.updateTipDraftRecipients(app, ['staff-david-l', 'staff-spa-linh']).code, 'unknown_staff');
+
+  const submitted = api.submitTipBatch(app, {
+    ...app.ui.tipDraft,
+    transferAsserted: true
+  }, 1000);
+  assert.equal(submitted.ok, true);
+  assert.deepEqual(JSON.parse(JSON.stringify(
+    submitted.tips.map((tip) => tip.staffProfileId).sort()
+  )), ['staff-david-l', 'staff-sunny-k']);
+});
+
+test('multi-tip flow reuses tip tipdone and review as accessible nested views', () => {
+  const source = html();
+  assert.equal(screenIds(source).length, 33);
+  assert.equal((source.match(/data-tip-view="(?:staff|details|guide)"/g) || []).length, 3);
+  assert.doesNotMatch(source, /data-tip-view="(?:allocation|method|proof)"/);
+  assert.equal((source.match(/data-tipdone-view="(?:pending|rejected|confirmed|tip-and-earn)"/g) || []).length, 4);
+  assert.equal((source.match(/data-review-view="(?:visit|batch|submitted)"/g) || []).length, 3);
+  for (const id of ['tip-staff-search', 'tip-staff-list', 'tip-split-equal', 'tip-split-individual',
+    'tip-total-amount', 'tip-individual-list', 'tip-batch-method-list', 'tip-payout-value',
+    'tip-proof-camera', 'tip-proof-file', 'tip-proof-preview-grid', 'tip-batch-receipt',
+    'tip-review-tags', 'tip-review-notes']) assert.match(source, new RegExp(`id="${id}"`));
+  assert.match(source, /id="tip-proof-camera"[^>]*accept="image\/\*"[^>]*capture="environment"/);
+  assert.match(source, /id="tip-proof-file"[^>]*accept="image\/\*"[^>]*multiple/);
+  assert.doesNotMatch(source, /id="tip-proof-note"|id="tip-transfer-asserted"/);
+  assert.doesNotMatch(source, /Ghi chú \(không bắt buộc\)|I confirm that I sent this tip|Tôi xác nhận đã gửi khoản tip/);
+  for (const action of ['toggle-tip-staff', 'set-tip-split', 'tip-next', 'tip-back',
+    'select-tip-batch-method', 'copy-tip-payout', 'take-tip-proof', 'upload-tip-proof', 'remove-tip-proof',
+    'submit-tip-batch', 'confirm-tip-batch-demo', 'reject-tip-batch-demo',
+    'replace-tip-batch-proof', 'open-tip-review', 'toggle-tip-review-tag',
+    'submit-tip-review', 'skip-tip-review']) {
+    assert.match(source, new RegExp(`registerAction\\('${action}'`), action);
+  }
+  assert.doesNotMatch(source, /tip-locked-notice|Đã khóa từ QR|Locked from QR|không thể bỏ chọn|cannot be removed/);
+});
+
+test('multi-tip staff selector searches and displays staff roles', () => {
+  const staffList = createStubElement({ id: 'tip-staff-list' });
+  const document = createDocumentStub({ extraElements: [staffList] });
+  const { context } = testApi({}, { document });
+  const created = vm.runInContext(`createTipDraft(state, {
+    businessId: 'bitcoin-nail-bar',
+    entryType: 'staff_qr',
+    lockedStaffProfileId: 'staff-anna'
+  })`, context);
+  assert.equal(created.ok, true);
+
+  context.renderTipStaffList('senior gel');
+  assert.equal(staffList.children.length, 1);
+  const copy = staffList.children[0].children[1];
+  assert.equal(copy.children[0].textContent, 'Sunny K.');
+  assert.equal(copy.children[1].textContent, 'Senior Gel Specialist');
+});
+
+test('first-open intro walks three slides, then stays dismissed once seen', () => {
+  const source = html();
+  assert.equal((source.match(/data-intro-slide="[012]"/g) || []).length, 3);
+  for (const copy of ['One app — points everywhere', 'Search by what you need', 'Your looks, saved forever']) {
+    assert.ok(source.includes(copy), copy);
+  }
+
+  const slides = [0, 1, 2].map((index) => createStubElement({
+    id: `intro-slide-${index}`, dataset: { introSlide: String(index) },
+    classNames: index === 0 ? [] : ['hidden']
+  }));
+  const overlay = createStubElement({ id: 'intro-overlay', classNames: ['hidden'] });
+  const next = createStubElement({ id: 'intro-next' });
+  const document = createDocumentStub({
+    extraElements: [overlay, next, ...slides],
+    selectorNodes: { '[data-intro-slide]': slides }
+  });
+  const { api, context, storage } = testApi({}, { document });
+
+  assert.equal(api.createDefaultState().ui.introSeen, false);
+  vm.runInContext('renderApp()', context);
+  assert.equal(overlay.classList.contains('hidden'), false, 'intro shows on a fresh install');
+  assert.equal(slides[0].classList.contains('hidden'), false);
+
+  vm.runInContext("ACTIONS.get('intro-next')()", context);
+  assert.equal(slides[1].classList.contains('hidden'), false, 'second slide is shown');
+  assert.equal(slides[0].classList.contains('hidden'), true);
+  vm.runInContext("ACTIONS.get('intro-next')()", context);
+  assert.equal(slides[2].classList.contains('hidden'), false, 'third slide is shown');
+  assert.equal(vm.runInContext('state.ui.introSeen', context), false, 'still open on the last slide');
+
+  // Finishing the last slide closes it and the choice survives a reload.
+  vm.runInContext("ACTIONS.get('intro-next')()", context);
+  assert.equal(overlay.classList.contains('hidden'), true);
+  assert.equal(api.loadState(storage).ui.introSeen, true);
+  vm.runInContext('renderApp()', context);
+  assert.equal(overlay.classList.contains('hidden'), true, 'a seen intro never reopens');
+});
+
+test('skipping the intro dismisses it permanently', () => {
+  const overlay = createStubElement({ id: 'intro-overlay', classNames: ['hidden'] });
+  const document = createDocumentStub({ extraElements: [overlay] });
+  const { api, context, storage } = testApi({}, { document });
+  vm.runInContext('renderApp()', context);
+  assert.equal(overlay.classList.contains('hidden'), false);
+  vm.runInContext("ACTIONS.get('intro-skip')()", context);
+  assert.equal(overlay.classList.contains('hidden'), true);
+  assert.equal(api.loadState(storage).ui.introSeen, true);
+});
+
+test('tip guide submit confirms the demo batch and opens the reference rating step', () => {
+  const ids = createUuidSequence();
+  const tipScreen = createStubElement({ id: 'tip' });
+  const reviewScreen = createStubElement({ id: 'review', classNames: ['hidden'] });
+  const document = createDocumentStub({ screenNodes: [tipScreen, reviewScreen] });
+  const { context } = testApi({}, {
+    document,
+    randomUUID: () => ids.randomUUID()
+  });
+  const prepared = vm.runInContext(`createTipDraft(state, {
+    businessId: 'bitcoin-nail-bar',
+    entryType: 'menu',
+    preferredStaffId: 'staff-mary-s'
+  })`, context);
+  assert.equal(prepared.ok, true);
+  vm.runInContext("state.ui.tipDraft.view = 'guide'", context);
+
+  const result = vm.runInContext('submitCurrentTipBatch()', context);
+  assert.equal(result.ok, true);
+  assert.deepEqual(JSON.parse(vm.runInContext(`JSON.stringify({
+    activeScreen: state.ui.activeScreen,
+    reviewMode: state.ui.pendingContext.reviewMode,
+    rating: state.ui.rating,
+    batchStatus: state.tipBatches[0]?.status,
+    proofAsserted: state.tipProofs[0]?.transferAsserted,
+    proofNote: state.tipProofs[0]?.note,
+    draft: state.ui.tipDraft
+  })`, context)), {
+    activeScreen: 'review',
+    reviewMode: 'tip_batch',
+    rating: 4,
+    batchStatus: 'confirmed',
+    proofAsserted: true,
+    proofNote: '',
+    draft: null
+  });
+});
+
+test('a confirmed tip batch does not invalidate later batches through the shared ledger', () => {
+  const ids = createUuidSequence();
+  const tipScreen = createStubElement({ id: 'tip' });
+  const reviewScreen = createStubElement({ id: 'review', classNames: ['hidden'] });
+  const document = createDocumentStub({ screenNodes: [tipScreen, reviewScreen] });
+  const { context } = testApi({}, { document, randomUUID: () => ids.randomUUID() });
+
+  const sendTip = (preferredStaffId) => {
+    const prepared = vm.runInContext(`createTipDraft(state, {
+      businessId: 'bitcoin-nail-bar',
+      entryType: 'menu',
+      preferredStaffId: '${preferredStaffId}'
+    })`, context);
+    assert.equal(prepared.ok, true);
+    vm.runInContext("state.ui.tipDraft.view = 'guide'", context);
+    return vm.runInContext('submitCurrentTipBatch()', context);
+  };
+
+  assert.equal(sendTip('staff-mary-s').ok, true);
+  // The second batch must not pick up the first batch's tip_batch ledger entry.
+  assert.equal(sendTip('staff-anna').ok, true);
+  assert.equal(sendTip('staff-maria').ok, true);
+
+  assert.deepEqual(JSON.parse(vm.runInContext(`JSON.stringify({
+    statuses: state.tipBatches.map((batch) => batch.status),
+    ledgerEntries: state.ledger.filter((entry) => entry.refType === 'tip_batch').length,
+    aggregates: state.tipBatches.map((batch) => validateTipBatchAggregate(state, batch.id).ok)
+  })`, context)), {
+    statuses: ['confirmed', 'confirmed', 'confirmed'],
+    ledgerEntries: 3,
+    aggregates: [true, true, true]
+  });
+});
+
+test('reference rating includes five stars and all eight experience tags', () => {
+  const { context } = testApi();
+  assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(TIP_REVIEW_TAGS)', context)), [
+    'beautiful', 'durable', 'skillful', 'clean', 'friendly', 'punctual', 'variety', 'ambience'
+  ]);
+  const source = html();
+  const batchView = source.match(/data-review-view="batch"([\s\S]*?)data-review-view="submitted"/)?.[1];
+  assert.ok(batchView);
+  assert.equal((batchView.match(/data-action="set-rating"/g) || []).length, 5);
+  assert.deepEqual([...batchView.matchAll(/data-review-tag="([^"]+)"/g)].map((match) => match[1]), [
+    'beautiful', 'durable', 'skillful', 'clean', 'friendly', 'punctual', 'variety', 'ambience'
+  ]);
+});
+
+test('tip batch review submits once with normalized tags and one shared feedback reward', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const submitted = api.submitTipBatch(app, {
+    clientRequestId: 'tip-request-review-1',
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', lockedStaffProfileId: null,
+    recipientIds: ['staff-anna', 'staff-maria'], splitMode: 'equal', totalCents: 1000,
+    individualCents: {}, method: 'Zelle', note: '', proofImages: [], transferAsserted: true
+  }, 1000);
+  api.confirmTipBatch(app, submitted.batch.id, 2000);
+  const beforeReviewPoints = app.balances['bitcoin-nail-bar'].points;
+  const review = api.submitTipBatchReview(app, {
+    tipBatchId: submitted.batch.id,
+    stars: 1,
+    tags: ['clean', 'friendly', 'clean'],
+    note: '  Private note  '
+  }, 3000);
+  assert.equal(review.ok, true);
+  assert.equal(review.review.stars, 1);
+  assert.deepEqual(JSON.parse(JSON.stringify(review.review.tags)), ['clean', 'friendly']);
+  assert.equal(review.review.note, 'Private note');
+  assert.equal(app.tipReviews.length, 1);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforeReviewPoints + 15);
+  assert.equal(app.ledger.filter((entry) => entry.refType === 'tip_review').length, 1);
+
+  const calls = ids.calls();
+  const replay = api.submitTipBatchReview(app, {
+    tipBatchId: submitted.batch.id, stars: 5, tags: [], note: 'Changed'
+  }, 4000);
+  assert.equal(replay.ok, true);
+  assert.equal(replay.idempotent, true);
+  assert.equal(replay.review.id, review.review.id);
+  assert.equal(app.tipReviews.length, 1);
+  assert.equal(app.balances['bitcoin-nail-bar'].points, beforeReviewPoints + 15);
+  assert.equal(ids.calls(), calls);
+});
+
+test('tip batch review rejects pending batches and unknown experience tags atomically', () => {
+  const ids = createUuidSequence();
+  const { api } = testApi({}, { randomUUID: () => ids.randomUUID() });
+  const app = api.createDefaultState();
+  const submitted = api.submitTipBatch(app, {
+    clientRequestId: 'tip-request-review-invalid',
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', lockedStaffProfileId: null,
+    recipientIds: ['staff-anna'], splitMode: 'equal', totalCents: 500,
+    individualCents: {}, method: 'Venmo', note: '', proofImages: [], transferAsserted: true
+  }, 1000);
+  const snapshot = JSON.stringify(app);
+  assert.equal(api.submitTipBatchReview(app, {
+    tipBatchId: submitted.batch.id, stars: 5, tags: [], note: ''
+  }, 2000).code, 'tip_batch_not_confirmed');
+  assert.equal(JSON.stringify(app), snapshot);
+  api.confirmTipBatch(app, submitted.batch.id, 2000);
+  const confirmedSnapshot = JSON.stringify(app);
+  assert.equal(api.submitTipBatchReview(app, {
+    tipBatchId: submitted.batch.id, stars: 5, tags: ['forged'], note: ''
+  }, 3000).code, 'invalid_review_tag');
+  assert.equal(JSON.stringify(app), confirmedSnapshot);
 });
 
 test('shows three fixed demo shortcuts below the scan camera controls', () => {
@@ -6867,12 +7614,12 @@ test('scan context exposes a localized responsive intent router with accessible 
   assert.match(source, /id="scan-payment-error"[^>]+role="alert"/);
   assert.match(source, /replaceChildren\(\.\.\.candidateOptions\)/);
   assert.doesNotMatch(source, /scan-payment-ticket[\s\S]{0,2500}\.innerHTML\s*=/);
-  assert.equal(screenIds(source).length, 31);
+  assert.equal(screenIds(source).length, 33);
   assert.match(source, /id="mobile-nav"[^>]*lg:hidden/);
   assert.match(source, /id="desktop-sidebar"[^>]*hidden[^>]*lg:flex/);
 });
 
-test('member scan opens the canonical service form prefilled, while guest entry stays blank, then routes Live Ticket', () => {
+test('member scan opens the canonical service form prefilled, while guest entry stays blank, then opens the in-app Live Ticket', () => {
   const setup = testApi();
   const app = setup.api.createDefaultState();
   assert.equal(setup.api.stageSalonScan(
@@ -6910,16 +7657,19 @@ test('member scan opens the canonical service form prefilled, while guest entry 
   assert.equal(guestName.value, '');
   assert.equal(guestPhone.value, '');
   vm.runInContext("ACTIONS.get('member-salon-checkin')()", loaded.context);
-  vm.runInContext("renderApp = () => {}; showToast = () => {}; ACTIONS.get('submit-guest-checkin')()", loaded.context);
+  vm.runInContext("renderApp = () => {}; showToast = () => {}; navigateTo = () => {}; ACTIONS.get('submit-guest-checkin')()", loaded.context);
 
   const persisted = loaded.api.loadState(loaded.storage);
   assert.equal(persisted.guestCheckins.length, 1);
   assert.equal(persisted.checkins.length, 0);
   assert.equal(persisted.guestCheckins[0].name, app.profile.name);
   assert.equal(persisted.guestCheckins[0].phone, app.profile.phone);
-  assert.deepEqual(assigned, [
-    `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${encodeURIComponent(persisted.guestCheckins[0].id)}`
-  ]);
+  // The live ticket is a screen in this app now, so nothing navigates off-site.
+  assert.deepEqual(assigned, []);
+  vm.runInContext("globalThis.opened = ACTIONS.get('open-live-ticket')()", loaded.context);
+  assert.equal(vm.runInContext('opened.ok', loaded.context), true);
+  assert.equal(vm.runInContext('opened.guestCheckinId', loaded.context), persisted.guestCheckins[0].id);
+  assert.deepEqual(assigned, []);
 });
 
 test('logged-out scan disables member prefill and forged member action cannot silently become guest check-in', () => {
@@ -7549,15 +8299,15 @@ test('scopes runtime guest services and staff to the staged business catalog', (
 
   for (const serviceKey of ['arbitrary-service', 'deluxe-pedicure']) {
     const before = JSON.stringify(app);
-    assert.equal(api.createGuestCheckin(app, { ...guest, serviceKey }, 1000).code, 'invalid_guest');
+    assert.equal(api.createGuestCheckin(app, { ...guest, serviceKeys: [serviceKey] }, 1000).code, 'invalid_guest');
     assert.equal(JSON.stringify(app), before);
   }
   const beforeStaff = JSON.stringify(app);
   assert.equal(api.createGuestCheckin(app, {
-    ...guest, serviceKey: 'signature-facial', staffProfileId: 'staff-anna'
+    ...guest, serviceKeys: ['signature-facial'], staffProfileId: 'staff-anna'
   }, 1000).code, 'invalid_guest');
   assert.equal(JSON.stringify(app), beforeStaff);
-  assert.equal(api.createGuestCheckin(app, { ...guest, serviceKey: 'signature-facial' }, 1000).ok, true);
+  assert.equal(api.createGuestCheckin(app, { ...guest, serviceKeys: ['signature-facial'] }, 1000).ok, true);
 
   for (const [businessId, serviceKey, amountCents] of [
     ['bitcoin-nail-bar', 'deluxe-pedicure', 5500],
@@ -7575,15 +8325,15 @@ test('drops persisted guest check-ins with arbitrary services or cross-business 
   const { api } = testApi();
   const golden = {
     id: 'guest-checkin-golden', businessId: 'golden-glow-spa', name: 'Amy Nguyen',
-    phone: '8325550198', serviceKey: 'signature-facial', staffProfileId: null,
+    phone: '8325550198', serviceKeys: ['signature-facial'], staffProfileId: null,
     station: 'lobby', sourceQr: 'https://nexoratouch.com/touch/golden-glow-spa/lobby',
     status: 'checked_in', pointsPending: 80, scannedAt: '2026-07-15T03:04:42.000Z',
     claimedAt: null
   };
   assert.equal(api.migrateState({ guestCheckins: [golden] }).guestCheckins.length, 1);
   for (const tampered of [
-    { ...golden, serviceKey: 'anything-goes' },
-    { ...golden, serviceKey: 'deluxe-pedicure' },
+    { ...golden, serviceKeys: ['anything-goes'] },
+    { ...golden, serviceKeys: ['deluxe-pedicure'] },
     { ...golden, staffProfileId: 'staff-anna' }
   ]) {
     assert.deepEqual(api.migrateState({ guestCheckins: [tampered] }).guestCheckins, []);
@@ -7593,8 +8343,10 @@ test('drops persisted guest check-ins with arbitrary services or cross-business 
 test('renders localized guest options only for the staged business and refreshes language', () => {
   const service = createStubElement({ id: 'guest-service' });
   const staff = createStubElement({ id: 'guest-staff' });
+  const serviceOptions = createStubElement({ id: 'guest-service-options' });
+  const staffOptions = createStubElement({ id: 'guest-staff-options' });
   const document = createDocumentStub({
-    extraElements: [service, staff],
+    extraElements: [service, staff, serviceOptions, staffOptions],
     selectorNodes: {
       '[data-scan-customer]': createStubElement(),
       '[data-scan-balance]': createStubElement(),
@@ -7606,19 +8358,23 @@ test('renders localized guest options only for the staged business and refreshes
   vm.runInContext("commitState((draft) => stageSalonScan(draft, 'https://nexoratouch.com/touch/golden-glow-spa/lobby'))", context);
 
   context.renderGuestCheckinOptions();
-  assert.deepEqual(service.children.map((option) => option.value), ['signature-facial']);
-  assert.match(service.children[0].textContent, /^Chăm sóc da đặc trưng/);
-  assert.deepEqual(staff.children.map((option) => option.value), ['', 'staff-spa-linh']);
-  assert.equal(staff.children[0].textContent, 'Không ưu tiên');
-  assert.equal(staff.children[1].textContent, 'Linh');
+  // Services and technicians are offered as chips; the hidden fields stay the submitted value.
+  assert.deepEqual(serviceOptions.children.map((chip) => chip.dataset.serviceKey), ['signature-facial']);
+  assert.match(serviceOptions.children[0].textContent, /^Chăm sóc da đặc trưng/);
+  assert.equal(service.value, 'signature-facial');
+  assert.deepEqual(staffOptions.children.map((chip) => chip.dataset.staffId), ['', 'staff-spa-linh']);
+  assert.equal(staffOptions.children[0].textContent, 'Bất kỳ');
+  assert.equal(staffOptions.children[1].textContent, 'Linh');
+  assert.equal(staff.value, '');
 
   context.setLanguage('en');
-  assert.match(service.children[0].textContent, /^Signature Facial/);
-  assert.equal(staff.children[0].textContent, 'No preference');
+  assert.match(serviceOptions.children[0].textContent, /^Signature Facial/);
+  assert.equal(staffOptions.children[0].textContent, 'Anyone');
 
   vm.runInContext("stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front')", context);
   context.renderGuestCheckinOptions();
-  assert.deepEqual(staff.children.map((option) => option.value), ['', 'staff-anna', 'staff-maria']);
+  assert.deepEqual(staffOptions.children.map((chip) => chip.dataset.staffId),
+    ['', 'staff-anna', 'staff-maria', 'staff-sunny-k', 'staff-jenny-t', 'staff-kevin-v', 'staff-lisa-n']);
 });
 
 test('moves focus into every active nested scan view while hiding the previous view', () => {
@@ -8290,17 +9046,50 @@ test('referral state survives save and reload with its exact paired ledger', () 
   assert.equal(loaded.ledger.filter((entry) => entry.refId === created.referral.id).length, 1);
 });
 
-test('referral QR renders 81 deterministic safe cells', () => {
+test('referral QR encodes the real share link through the qrcode library as a safe image', () => {
   const host = createStubElement({ id: 'referral-qr' });
   const document = createDocumentStub({ extraElements: [host] });
   const { context } = testApi({}, { document });
-  context.renderReferralQr('JESSICA50');
-  const first = host.children.map((cell) => cell.className);
-  assert.equal(host.children.length, 81);
-  assert.equal(host.children.every((cell) => cell.tagName === 'SPAN'), true);
-  assert.equal(host.children.every((cell) => cell.textContent === '' && cell.innerHTML === ''), true);
-  context.renderReferralQr('JESSICA50');
-  assert.deepEqual(host.children.map((cell) => cell.className), first);
+
+  // The page loads qrcode-generator from a CDN; stand in for it to assert what we hand over.
+  const encoded = [];
+  vm.runInContext(`window.qrcode = (typeNumber, level) => {
+    globalThis.qrArgs = [typeNumber, level];
+    let payload = '';
+    return {
+      addData(value) { payload = value; },
+      make() {},
+      createDataURL(cellSize, margin) {
+        globalThis.qrCalls = (globalThis.qrCalls || []);
+        globalThis.qrCalls.push({ payload, cellSize, margin });
+        return 'data:image/gif;base64,QVJU';
+      }
+    };
+  }`, context);
+
+  const result = context.renderReferralQr('JESSICA50');
+  assert.equal(result.ok, true);
+  assert.equal(result.url, 'https://nexoratouch.com/r/JESSICA50');
+  encoded.push(...JSON.parse(vm.runInContext('JSON.stringify(qrCalls)', context)));
+  // The QR must carry the scannable link, not the bare code.
+  assert.equal(encoded[0].payload, 'https://nexoratouch.com/r/JESSICA50');
+  assert.equal(host.children.length, 1);
+  assert.equal(host.children[0].tagName, 'IMG');
+  assert.equal(host.children[0].src, 'data:image/gif;base64,QVJU');
+  // Decorative image inside a labelled role="img" host, and nothing injected as raw HTML.
+  assert.equal(host.children[0].alt, '');
+  assert.equal(host.children[0].innerHTML, '');
+  assert.match(host.getAttribute('aria-label'), /JESSICA50/);
+});
+
+test('referral QR degrades safely when the qrcode library is unavailable', () => {
+  const host = createStubElement({ id: 'referral-qr' });
+  const document = createDocumentStub({ extraElements: [host] });
+  const { context } = testApi({}, { document });
+  const result = context.renderReferralQr('JESSICA50');
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'qr_library_unavailable');
+  assert.equal(host.children.length, 0, 'no stale or fake QR is left behind');
 });
 
 test('referral history masks phones and builds dynamic controls through safe text nodes', () => {
@@ -8475,7 +9264,7 @@ test('dynamic referral simulation actions advance joined and paid-visit states',
   assert.equal(vm.runInContext("state.ledger.filter((entry) => entry.refId === state.referrals[0].id).length", context), 1);
 });
 
-test('referral UI is localized, action-complete, standalone, and keeps exactly 31 screens', () => {
+test('referral UI is localized, action-complete, standalone, and keeps exactly 33 screens', () => {
   const source = html();
   for (const action of ['share-referral', 'show-referral-qr', 'simulate-referral-joined', 'simulate-referral-paid-visit']) {
     assert.match(source, new RegExp(`registerAction\\('${action}'`));
@@ -8488,7 +9277,7 @@ test('referral UI is localized, action-complete, standalone, and keeps exactly 3
   assert.match(source, /id="referral-totals"[^>]+data-en-aria-label="Referral totals"[^>]+data-vi-aria-label="Tổng lượt giới thiệu"/);
   assert.match(source, /id="referral-invite-list"[^>]+data-en-aria-label="Referral history"[^>]+data-vi-aria-label="Lịch sử giới thiệu"/);
   assert.match(source, /\[data-en-aria-label\]\[data-vi-aria-label\]/);
-  assert.equal(screenIds(source).length, 31);
+  assert.equal(screenIds(source).length, 33);
   assert.match(source, /@tailwindcss\/browser/);
   assert.match(source, /unpkg\.com\/lucide/);
 });
@@ -8503,11 +9292,11 @@ function acceptedOperationsSnapshot(checkout, {
   return {
     serviceTickets: [{
       id: ticketId, number: 104, guestCheckinId: checkout.guestCheckinId,
-      businessId: checkout.businessId, serviceKey: 'deluxe-pedicure', status,
+      businessId: checkout.businessId, serviceKeys: ['deluxe-pedicure'], status,
       staffProfileId: 'staff-anna',
       lineItems: [
-        { id: `${ticketId}-service`, type: 'service', label: 'Deluxe Pedicure', amountCents: 5500 },
-        { id: `${ticketId}-promo`, type: 'discount', label: 'Promo NEW10', amountCents: -550 },
+        { id: `${ticketId}-service-deluxe-pedicure`, type: 'service', label: 'Deluxe Pedicure', amountCents: 5500 },
+        { id: `${ticketId}-promo-deluxe-pedicure`, type: 'discount', label: 'Promo NEW10', amountCents: -550 },
         { id: `${ticketId}-addon-${addOnId}`, type: 'addon', label: 'Gel Polish', amountCents: 1500, sourceAddOnId: addOnId }
       ],
       currentTotalCents: 6450, frontDeskRequestedAt: null,
@@ -8523,41 +9312,39 @@ function acceptedOperationsSnapshot(checkout, {
   };
 }
 
-test('completed ticket is mandatory before checkout handoff mutates customer state', () => {
+test('checkout handoff opens for a ticket still in service as well as a completed one', () => {
   let uuidCalls = 0;
   const { api } = testApi({}, {
     randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
   });
   const app = api.createDefaultState();
   const guest = seedGuestCheckin(api, app, { staffProfileId: 'staff-anna' });
+
+  // A guest may settle up before the service finishes, so status is not a gate.
   const inService = acceptedOperationsSnapshot({
     guestCheckinId: guest.id,
     businessId: guest.businessId
   }, { status: 'in_service' });
-  const before = JSON.stringify(app);
-  const callsBefore = uuidCalls;
-
-  const blocked = api.consumeGuestCheckoutHandoff(app, {
-    ok: true, present: true, guestCheckinId: guest.id
-  }, inService, 2000);
-
-  assert.equal(blocked.ok, false);
-  assert.equal(blocked.code, 'service_not_completed');
-  assert.equal(JSON.stringify(app), before);
-  assert.equal(uuidCalls, callsBefore);
-
-  const completed = acceptedOperationsSnapshot({
-    guestCheckinId: guest.id,
-    businessId: guest.businessId
-  });
   const opened = api.consumeGuestCheckoutHandoff(app, {
     ok: true, present: true, guestCheckinId: guest.id
-  }, completed, 5000);
+  }, inService, 2000);
   assert.equal(opened.ok, true);
   assert.equal(opened.view, 'checkout');
   assert.equal(opened.targetScreen, 'pay');
   assert.equal(app.checkoutDrafts.length, 1);
-  assert.equal(app.checkoutDrafts[0].lineItems.at(-1).sourceAddOnId, completed.addOnRequests[0].id);
+  assert.equal(app.checkoutDrafts[0].lineItems.at(-1).sourceAddOnId, inService.addOnRequests[0].id);
+
+  // Re-entering once the salon has completed the same ticket resolves to that one draft, not a new
+  // one: paying early must not leave a second checkout behind.
+  const completed = acceptedOperationsSnapshot({
+    guestCheckinId: guest.id,
+    businessId: guest.businessId
+  });
+  const reentry = api.consumeGuestCheckoutHandoff(app, {
+    ok: true, present: true, guestCheckinId: guest.id
+  }, completed, 5000);
+  assert.equal(reentry.ok, true);
+  assert.equal(app.checkoutDrafts.length, 1);
 });
 
 test('checkout authority fails closed for missing duplicate cross-business and corrupt operations records', () => {
@@ -8569,10 +9356,12 @@ test('checkout authority fails closed for missing duplicate cross-business and c
   const crossBusiness = structuredClone(canonical);
   const ticket = crossBusiness.serviceTickets[0];
   ticket.businessId = 'golden-glow-spa';
-  ticket.serviceKey = 'signature-facial';
-  ticket.staffProfileId = null;
+  ticket.serviceKeys = ['signature-facial'];
+  // Otherwise valid for its own business, so the cross-business rule is what rejects it rather
+  // than the technician invariant firing first.
+  ticket.staffProfileId = 'staff-spa-linh';
   ticket.lineItems = [{
-    id: `${ticket.id}-service`, type: 'service', label: 'Signature Facial', amountCents: 7500
+    id: `${ticket.id}-service-signature-facial`, type: 'service', label: 'Signature Facial', amountCents: 7500
   }];
   ticket.currentTotalCents = 7500;
   crossBusiness.addOnRequests = [];
@@ -8683,7 +9472,7 @@ test('checkout handoff rejects a terminal checkout that omits an authoritative a
   assert.equal(JSON.stringify(app), before);
 });
 
-test('completed checkout chronology is preflighted before IDs and rejects every stale re-entry atomically', () => {
+test('checkout chronology is preflighted before IDs and rejects every stale re-entry atomically', () => {
   let uuidCalls = 0;
   const { api } = testApi({}, {
     randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
@@ -8695,15 +9484,20 @@ test('completed checkout chronology is preflighted before IDs and rejects every 
   });
   const freshBefore = JSON.stringify(fresh);
   const callsBefore = uuidCalls;
+  // Paying early is allowed, but not before the ticket exists at all. The ticket opens at 1000, so
+  // 999 is the one moment that is still impossible — and it must be caught before an ID is minted.
   const early = api.consumeGuestCheckoutHandoff(fresh, {
     ok: true, present: true, guestCheckinId: freshGuest.id
-  }, completed, 3999);
+  }, completed, 999);
   assert.equal(early.ok, false);
   assert.equal(early.code, 'invalid_time_order');
   assert.equal(JSON.stringify(fresh), freshBefore);
   assert.equal(uuidCalls, callsBefore);
 
-  const makeStale = (status) => {
+  // Each of these pays at 2000 while the salon only completes the ticket at 4000 — i.e. the guest
+  // settled up early, which is now allowed. Re-entering afterwards must resolve to what already
+  // exists rather than mint a second checkout for the same visit.
+  const makeEarlyPayment = (status) => {
     const app = api.createDefaultState();
     const checkout = seedCheckoutDraft(api, app, {
       method: 'Zelle', tipBasisPoints: 1800, staffProfileId: 'staff-anna', now: 2000
@@ -8720,15 +9514,16 @@ test('completed checkout chronology is preflighted before IDs and rejects every 
     }
     return { app, checkout, operations };
   };
-  for (const status of ['draft', 'pending_verification', 'confirmed', 'rejected']) {
-    const target = makeStale(status);
-    const before = JSON.stringify(target.app);
+  for (const status of ['draft', 'pending_verification', 'confirmed']) {
+    const target = makeEarlyPayment(status);
+    const draftsBefore = target.app.checkoutDrafts.length;
+    const proofsBefore = target.app.paymentProofs.length;
     const result = api.consumeGuestCheckoutHandoff(target.app, {
       ok: true, present: true, guestCheckinId: target.checkout.guestCheckinId
     }, target.operations, 5000);
-    assert.equal(result.ok, false, status);
-    assert.equal(result.code, 'invalid_time_order', status);
-    assert.equal(JSON.stringify(target.app), before, status);
+    assert.equal(result.ok, true, status);
+    assert.equal(target.app.checkoutDrafts.length, draftsBefore, status);
+    assert.equal(target.app.paymentProofs.length, proofsBefore, status);
   }
 });
 
@@ -8802,17 +9597,24 @@ test('scan checkout candidates use canonical IDs, completed lifecycle and immuta
     guestCheckinId: guest.id,
     ticketId: operations.serviceTickets[0].id,
     number: 104,
-    serviceKey: 'deluxe-pedicure',
+    serviceKeys: ['deluxe-pedicure'],
     currentTotalCents: 6450
   }]);
   assert.equal(JSON.stringify(app), beforeApp);
   assert.equal(JSON.stringify(operations), beforeOperations);
 
+  // A guest may pay before the service finishes, so an in-service ticket is a valid candidate too.
   const inService = acceptedOperationsSnapshot(
     { guestCheckinId: guest.id, businessId: guest.businessId },
     { status: 'in_service' }
   );
-  assert.deepEqual(JSON.parse(JSON.stringify(api.listScanCheckoutCandidates(app, inService))), []);
+  assert.deepEqual(JSON.parse(JSON.stringify(api.listScanCheckoutCandidates(app, inService))), [{
+    guestCheckinId: guest.id,
+    ticketId: inService.serviceTickets[0].id,
+    number: 104,
+    serviceKeys: ['deluxe-pedicure'],
+    currentTotalCents: 6450
+  }]);
   const duplicate = structuredClone(operations);
   duplicate.serviceTickets.push(structuredClone(duplicate.serviceTickets[0]));
   assert.deepEqual(JSON.parse(JSON.stringify(api.listScanCheckoutCandidates(app, duplicate))), []);
@@ -9039,7 +9841,7 @@ test('strict guest checkout handoff parser rejects missing repeated unknown malf
   );
 });
 
-test('successful guest check-in action persists then routes to Live Ticket and never calls navigateTo pay', () => {
+test('successful guest check-in persists, shows the confirmation, then opens the in-app Live Ticket and never calls navigateTo pay', () => {
   const document = createDocumentStub();
   document.getElementById('guest-name').value = 'Amy Nguyen';
   document.getElementById('guest-phone').value = '8325550198';
@@ -9061,13 +9863,19 @@ test('successful guest check-in action persists then routes to Live Ticket and n
   `, context);
   const persisted = api.loadState(storage);
   assert.equal(persisted.guestCheckins.length, 1);
-  assert.equal(vm.runInContext('navigationCalls.length', context), 0);
-  assert.deepEqual(assigned, [
-    `https://example.test/customer/customer-salon-operations.html?guestCheckinId=${encodeURIComponent(persisted.guestCheckins[0].id)}`
-  ]);
+  // Submitting shows the check-in confirmation and does not leave the app on its own.
+  assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(navigationCalls)', context)), [['checkindone']]);
+  assert.deepEqual(assigned, []);
+
+  vm.runInContext("ACTIONS.get('open-live-ticket')()", context);
+  assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(navigationCalls)', context)),
+    [['checkindone'], ['liveticket']]);
+  assert.deepEqual(assigned, [], 'the live ticket is in-app and never leaves the page');
+  assert.ok(JSON.parse(vm.runInContext('JSON.stringify(navigationCalls)', context))
+    .every(([screen]) => screen !== 'pay'));
 });
 
-test('navigation failure leaves saved check-in, reports retry, and does not expose Pay', () => {
+test('a blocked location never touches the saved check-in and the in-app Live Ticket still opens', () => {
   const document = createDocumentStub();
   document.getElementById('guest-name').value = 'Amy Nguyen';
   document.getElementById('guest-phone').value = '8325550198';
@@ -9085,23 +9893,27 @@ test('navigation failure leaves saved check-in, reports retry, and does not expo
   vm.runInContext(`
     stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
     globalThis.navigationCalls = [];
+    globalThis.toasts = [];
     navigateTo = (...args) => navigationCalls.push(args);
     renderApp = () => {};
-    showToast = () => {};
+    showToast = (message, tone) => toasts.push([message, tone]);
     globalThis.firstSubmit = ACTIONS.get('submit-guest-checkin')();
     globalThis.retrySubmit = ACTIONS.get('submit-guest-checkin')();
+    globalThis.opened = ACTIONS.get('open-live-ticket')();
   `, context);
+  // Check-in stays saved and idempotent.
   assert.equal(api.loadState(storage).guestCheckins.length, 1);
   assert.equal(vm.runInContext('firstSubmit.guestCheckin.id', context), vm.runInContext('retrySubmit.guestCheckin.id', context));
-  assert.equal(routeAttempts, 2);
-  assert.equal(vm.runInContext('navigationCalls.length', context), 0);
-  const error = document.getElementById('guest-checkin-error');
-  assert.match(error.textContent, /retry|thử lại/i);
-  assert.equal(document.activeElement, error);
-  assert.match(html(), /id="guest-checkin-error"[^>]+tabindex="-1"/);
+  // The live ticket is in-app, so a hostile location can neither be reached nor break it.
+  assert.equal(routeAttempts, 0);
+  assert.equal(vm.runInContext('opened.ok', context), true);
+  assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(navigationCalls)', context)).at(-1), ['liveticket']);
+  assert.equal(vm.runInContext('toasts.filter(([, tone]) => tone === "error").length', context), 0);
+  assert.ok(JSON.parse(vm.runInContext('JSON.stringify(navigationCalls)', context))
+    .every(([screen]) => screen !== 'pay'));
 });
 
-test('rapid double service submit routes one canonical guest ID without adding a second payment candidate', () => {
+test('rapid double service submit keeps one canonical guest ID without adding a second payment candidate', () => {
   const document = createDocumentStub();
   document.getElementById('guest-name').value = 'Amy Nguyen';
   document.getElementById('guest-phone').value = '8325550198';
@@ -9120,18 +9932,23 @@ test('rapid double service submit routes one canonical guest ID without adding a
     stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
     renderApp = () => {};
     showToast = () => {};
+    navigateTo = () => {};
     globalThis.firstSubmit = ACTIONS.get('submit-guest-checkin')();
     globalThis.secondSubmit = ACTIONS.get('submit-guest-checkin')();
+    globalThis.firstOpen = ACTIONS.get('open-live-ticket')();
+    globalThis.secondOpen = ACTIONS.get('open-live-ticket')();
   `, context);
 
   const persisted = api.loadState(storage);
   assert.equal(persisted.guestCheckins.length, 1);
   assert.equal(vm.runInContext('firstSubmit.guestCheckin.id', context), vm.runInContext('secondSubmit.guestCheckin.id', context));
-  assert.equal(assigned.length, 2);
-  assert.equal(new Set(assigned).size, 1);
+  // Both opens resolve the same canonical guest, and nothing leaves the page.
+  assert.equal(vm.runInContext('firstOpen.guestCheckinId', context), persisted.guestCheckins[0].id);
+  assert.equal(vm.runInContext('secondOpen.guestCheckinId', context), persisted.guestCheckins[0].id);
+  assert.deepEqual(assigned, []);
 });
 
-test('throwing location accessor still leaves the successful check-in persisted and retryable', () => {
+test('throwing location accessor leaves the check-in persisted and the in-app Live Ticket usable', () => {
   const document = createDocumentStub();
   document.getElementById('guest-name').value = 'Amy Nguyen';
   document.getElementById('guest-phone').value = '8325550198';
@@ -9140,14 +9957,20 @@ test('throwing location accessor still leaves the successful check-in persisted 
   const { api, context, storage } = testApi({}, { document });
   vm.runInContext(`
     stageSalonScan(state, 'https://nexoratouch.com/touch/bitcoin-nail-bar/front');
+    globalThis.toasts = [];
     renderApp = () => {};
-    showToast = () => {};
+    navigateTo = () => {};
+    showToast = (message, tone) => toasts.push([message, tone]);
     Object.defineProperty(window, 'location', { configurable: true,
       get() { throw new Error('location blocked'); } });
   `, context);
   assert.doesNotThrow(() => vm.runInContext("ACTIONS.get('submit-guest-checkin')()", context));
   assert.equal(api.loadState(storage).guestCheckins.length, 1);
-  assert.match(document.getElementById('guest-checkin-error').textContent, /retry|thử lại/i);
+  // The in-app Live Ticket never reads location, so a throwing accessor cannot break it.
+  assert.doesNotThrow(() => vm.runInContext("globalThis.opened = ACTIONS.get('open-live-ticket')()", context));
+  assert.equal(vm.runInContext('opened.ok', context), true);
+  assert.equal(api.loadState(storage).guestCheckins.length, 1);
+  assert.equal(vm.runInContext('toasts.filter(([, tone]) => tone === "error").length', context), 0);
 });
 
 test('initialization consumes a valid handoff atomically, opens checkout, and cleans the URL', () => {
@@ -9286,7 +10109,7 @@ test('pay intent migration infers a legacy canonical draft but fails an invalid 
   assert.equal(api.migrateState(invalidExplicit).ui.payViewIntent, 'direct');
 });
 
-test('initialization refuses an in-service handoff and keeps the persisted customer state unchanged', () => {
+test('initialization opens a checkout from an in-service handoff so a guest can settle up early', () => {
   const setup = testApi();
   const app = setup.api.createDefaultState();
   const guest = seedGuestCheckin(setup.api, app, { staffProfileId: 'staff-anna' });
@@ -9308,14 +10131,14 @@ test('initialization refuses an in-service handoff and keeps the persisted custo
     location: { href },
     history: { replaceState(state, title, url) { replacements.push(String(url)); } }
   });
-  const runtimeBefore = vm.runInContext('JSON.stringify(state)', loaded.context);
   vm.runInContext('initializeApp()', loaded.context);
 
-  assert.equal(vm.runInContext('state.checkoutDrafts.length', loaded.context), 0);
-  assert.equal(vm.runInContext('JSON.stringify(state)', loaded.context), runtimeBefore);
-  assert.equal(vm.runInContext('state.ui.activeScreen', loaded.context), 'scan');
-  assert.equal(loaded.storage.getItem(setup.api.STORAGE_KEY), raw);
-  assert.deepEqual(replacements, []);
+  // The service is still under way, but the guest may pay now, so the handoff opens the checkout.
+  assert.equal(vm.runInContext('state.checkoutDrafts.length', loaded.context), 1);
+  assert.equal(vm.runInContext('state.ui.activeScreen', loaded.context), 'pay');
+  // The consumed handoff is cleaned out of the URL so a refresh cannot replay it.
+  assert.equal(replacements.length, 1);
+  assert.doesNotMatch(replacements[0], /handoff=guest-checkout/);
 });
 
 test('initialization re-enters a pending checkout on Pay Done instead of the editable checkout', () => {
@@ -9375,7 +10198,9 @@ test('imports a canonical no-preference ticket with no add-ons without inventing
   const { api } = testApi();
   const app = api.createDefaultState();
   const checkout = seedCheckoutDraft(api, app, { method: 'Card', tipBasisPoints: 0, staffProfileId: null });
-  const operations = acceptedOperationsSnapshot(checkout);
+  // A guest who asked for nobody has no technician yet, which is exactly what 'waiting' means:
+  // the salon has not assigned anyone, so no service is under way and none can have finished.
+  const operations = acceptedOperationsSnapshot(checkout, { status: 'waiting' });
   operations.serviceTickets[0].staffProfileId = null;
   operations.serviceTickets[0].lineItems.pop();
   operations.serviceTickets[0].currentTotalCents = 4950;
@@ -9448,10 +10273,10 @@ function acceptedSwitchedStaffSnapshot(checkout) {
   snapshot.staffEligibility = [{
     id: `eligibility-${uuid}-deluxe-pedicure-maria`,
     ticketId: ticket.id,
-    serviceKey: ticket.serviceKey,
+    serviceKeys: [...ticket.serviceKeys],
     requestedStaffId: 'staff-maria',
     eligible: false,
-    recommendedStaffIds: ['staff-jenny', 'staff-kevin', 'staff-anna'],
+    recommendedStaffIds: ['staff-jenny-t', 'staff-lisa-n', 'staff-anna'],
     selectedStaffId: 'staff-anna',
     selectedAt: '1970-01-01T00:00:01.500Z'
   }];
@@ -9556,7 +10381,7 @@ test('operations import mirrors exact staff catalog, eligibility fields, chronol
     (snapshot) => { delete snapshot.staffEligibility[0].selectedStaffId; },
     (snapshot) => { snapshot.staffEligibility[0].selectedAt = '1970-01-01T00:00:00.500Z'; },
     (snapshot) => { snapshot.staffEligibility[0].selectedAt = '1970-01-01T00:00:02.500Z'; },
-    (snapshot) => { snapshot.staffEligibility[0].selectedStaffId = 'staff-kevin'; },
+    (snapshot) => { snapshot.staffEligibility[0].selectedStaffId = 'staff-lisa-n'; },
     (snapshot) => { snapshot.unrelated = true; },
     (snapshot) => {
       const unrelated = structuredClone(snapshot.serviceTickets[0]);

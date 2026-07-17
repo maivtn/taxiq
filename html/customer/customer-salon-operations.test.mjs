@@ -89,8 +89,8 @@ function guestCheckin(overrides = {}) {
     businessId: 'bitcoin-nail-bar',
     name: 'Amy Nguyen',
     phone: '8325550198',
-    serviceKey: 'deluxe-pedicure',
-    staffProfileId: 'staff-jenny',
+    serviceKeys: ['deluxe-pedicure'],
+    staffProfileId: 'staff-jenny-t',
     ...overrides
   };
 }
@@ -112,7 +112,7 @@ function seedTicketWithCustomer(api, { phone = '8325550198' } = {}) {
       businesses: { 'bitcoin-nail-bar': { id: 'bitcoin-nail-bar', name: 'Bitcoin Nail Bar' } },
       guestCheckins: [{
         id: ticket.guestCheckinId, businessId: ticket.businessId, name: 'Amy Nguyen', phone,
-        serviceKey: ticket.serviceKey, staffProfileId: ticket.staffProfileId
+        serviceKeys: ticket.serviceKeys, staffProfileId: ticket.staffProfileId
       }]
     }
   };
@@ -311,7 +311,7 @@ function customerStorageJson(guestCheckins, businesses = {
 }
 
 function persistedOperationsBytes({
-  guest = guestCheckin({ id: 'guest-checkin-old', serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' }),
+  guest = guestCheckin({ id: 'guest-checkin-old', serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t' }),
   activeScreen = 'liveticket',
   withEligibility = false
 } = {}) {
@@ -320,7 +320,7 @@ function persistedOperationsBytes({
   const created = api.createServiceTicket(state, guest, 1000);
   assert.equal(created.ok, true);
   if (withEligibility) {
-    assert.equal(api.evaluateStaffEligibility(state, created.ticket.id, guest.serviceKey, guest.staffProfileId).ok, true);
+    assert.equal(api.evaluateStaffEligibility(state, created.ticket.id, guest.serviceKeys, guest.staffProfileId).ok, true);
   }
   state.ui.activeScreen = activeScreen;
   return JSON.stringify(state);
@@ -360,7 +360,7 @@ test('sanitizes customer snapshot before companion use', () => {
     'nexora.customer.prototype.v1': JSON.stringify({
       schemaVersion: 2,
       profile: { id: 'cust-amy', name: '<img>', phone: '8325550198' },
-      guestCheckins: [{ id: 'guest-checkin-1', businessId: 'bitcoin-nail-bar', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-jenny' }],
+      guestCheckins: [{ id: 'guest-checkin-1', businessId: 'bitcoin-nail-bar', serviceKeys: ['deluxe-pedicure'], staffProfileId: 'staff-jenny-t' }],
       secret: 'drop-me'
     })
   }));
@@ -490,7 +490,7 @@ test('customer bridge returns only allowlisted sanitized fields and never writes
     },
     guestCheckins: [{
       id: 'guest-checkin-1', businessId: 'bitcoin-nail-bar', name: '<svg onload=alert(1)>',
-      phone: '832-555-0198', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-jenny',
+      phone: '832-555-0198', serviceKeys: ['deluxe-pedicure'], staffProfileId: 'staff-jenny-t',
       sourceQr: 'drop-me', pointsPending: 120
     }],
     session: { otpCode: '246810' }, ledger: [{ pointsDelta: 999 }], paymentProofs: [{ secret: true }]
@@ -506,7 +506,7 @@ test('customer bridge returns only allowlisted sanitized fields and never writes
   });
   assert.deepEqual(plain(snapshot.guestCheckins), [{
     id: 'guest-checkin-1', businessId: 'bitcoin-nail-bar', name: '<svg onload=alert(1)>',
-    phone: '8325550198', serviceKey: 'deluxe-pedicure', staffProfileId: 'staff-jenny'
+    phone: '8325550198', serviceKeys: ['deluxe-pedicure'], staffProfileId: 'staff-jenny-t'
   }]);
   assert.equal(storage.peek(customerKey), customerJson);
   assert.deepEqual(storage.calls.filter((call) => call.method !== 'getItem'), []);
@@ -524,13 +524,13 @@ test('customer bridge rejects malformed IDs, relationships, fields, dangerous ke
       "__proto__": { "id": "__proto__", "name": "Danger" }
     },
     "guestCheckins": [
-      { "id": "guest-checkin-dup", "businessId": "bitcoin-nail-bar", "name": "One", "phone": "8325550198", "serviceKey": "deluxe-pedicure", "staffProfileId": null },
-      { "id": "guest-checkin-dup", "businessId": "bitcoin-nail-bar", "name": "Two", "phone": "8325550198", "serviceKey": "deluxe-pedicure", "staffProfileId": null },
-      { "id": " guest-checkin-space ", "businessId": "bitcoin-nail-bar", "serviceKey": "deluxe-pedicure", "staffProfileId": null },
-      { "id": "guest-checkin-unknown", "businessId": "missing", "serviceKey": "deluxe-pedicure", "staffProfileId": null },
-      { "id": "guest-checkin-service", "businessId": "bitcoin-nail-bar", "serviceKey": "Bad Service", "staffProfileId": null },
-      { "id": "guest-checkin-staff", "businessId": "bitcoin-nail-bar", "serviceKey": "deluxe-pedicure", "staffProfileId": "unknown" },
-      { "id": "guest-checkin-valid", "businessId": "bitcoin-nail-bar", "name": "Valid", "phone": "not-a-phone", "serviceKey": "deluxe-pedicure", "staffProfileId": null, "constructor": { "polluted": true } }
+      { "id": "guest-checkin-dup", "businessId": "bitcoin-nail-bar", "name": "One", "phone": "8325550198", "serviceKeys": ["deluxe-pedicure"], "staffProfileId": null },
+      { "id": "guest-checkin-dup", "businessId": "bitcoin-nail-bar", "name": "Two", "phone": "8325550198", "serviceKeys": ["deluxe-pedicure"], "staffProfileId": null },
+      { "id": " guest-checkin-space ", "businessId": "bitcoin-nail-bar", "serviceKeys": ["deluxe-pedicure"], "staffProfileId": null },
+      { "id": "guest-checkin-unknown", "businessId": "missing", "serviceKeys": ["deluxe-pedicure"], "staffProfileId": null },
+      { "id": "guest-checkin-service", "businessId": "bitcoin-nail-bar", "serviceKeys": ["Bad Service"], "staffProfileId": null },
+      { "id": "guest-checkin-staff", "businessId": "bitcoin-nail-bar", "serviceKeys": ["deluxe-pedicure"], "staffProfileId": "unknown" },
+      { "id": "guest-checkin-valid", "businessId": "bitcoin-nail-bar", "name": "Valid", "phone": "not-a-phone", "serviceKeys": ["deluxe-pedicure"], "staffProfileId": null, "constructor": { "polluted": true } }
     ]
   }`);
 
@@ -557,10 +557,10 @@ test('customer bridge never satisfies guest ownership through inherited or reser
       "__proto__": { "id": "__proto__", "name": "Prototype" }
     },
     "guestCheckins": [
-      { "id": "guest-checkin-constructor", "businessId": "constructor", "serviceKey": "deluxe-pedicure", "staffProfileId": null },
-      { "id": "guest-checkin-tostring", "businessId": "toString", "serviceKey": "deluxe-pedicure", "staffProfileId": null },
-      { "id": "guest-checkin-prototype", "businessId": "__proto__", "serviceKey": "deluxe-pedicure", "staffProfileId": null },
-      { "id": "guest-checkin-orphan", "businessId": "valueOf", "serviceKey": "deluxe-pedicure", "staffProfileId": null }
+      { "id": "guest-checkin-constructor", "businessId": "constructor", "serviceKeys": ["deluxe-pedicure"], "staffProfileId": null },
+      { "id": "guest-checkin-tostring", "businessId": "toString", "serviceKeys": ["deluxe-pedicure"], "staffProfileId": null },
+      { "id": "guest-checkin-prototype", "businessId": "__proto__", "serviceKeys": ["deluxe-pedicure"], "staffProfileId": null },
+      { "id": "guest-checkin-orphan", "businessId": "valueOf", "serviceKeys": ["deluxe-pedicure"], "staffProfileId": null }
     ]
   }`;
   const storage = createAuditStorage({ [api.CUSTOMER_STORAGE_KEY]: customerJson });
@@ -723,14 +723,17 @@ test('uses the authoritative multi-business service catalog without mixing promo
     const result = api.createServiceTicket(state, guestCheckin({
       id: `guest-checkin-${businessId}`,
       businessId,
-      serviceKey,
+      serviceKeys: [serviceKey],
       staffProfileId: null
     }), 1000);
     assert.equal(result.ok, true);
     assert.equal(result.ticket.businessId, businessId);
-    assert.equal(result.ticket.serviceKey, serviceKey);
+    assert.deepEqual(plain(result.ticket.serviceKeys), [serviceKey]);
     assert.equal(result.ticket.lineItems.length, 1);
     assert.equal(result.ticket.currentTotalCents, total);
+    // No technician was requested, so nobody is working it yet.
+    assert.equal(result.ticket.status, 'waiting');
+    assert.equal(result.ticket.staffProfileId, null);
   }
 });
 
@@ -745,8 +748,8 @@ test('rejects invalid guest, cross-business service, and cross-business staff be
   for (const guest of [
     guestCheckin({ id: ' guest-checkin-1 ' }),
     guestCheckin({ businessId: 'unknown-business' }),
-    guestCheckin({ businessId: 'golden-glow-spa', serviceKey: 'deluxe-pedicure', staffProfileId: null }),
-    guestCheckin({ businessId: 'golden-glow-spa', serviceKey: 'signature-facial', staffProfileId: 'staff-jenny' }),
+    guestCheckin({ businessId: 'golden-glow-spa', serviceKeys: ['deluxe-pedicure'], staffProfileId: null }),
+    guestCheckin({ businessId: 'golden-glow-spa', serviceKeys: ['signature-facial'], staffProfileId: 'staff-jenny-t' }),
     guestCheckin({ staffProfileId: 'staff-unknown' })
   ]) {
     const before = JSON.stringify(state);
@@ -811,7 +814,7 @@ test('strict migration rejects whole ambiguous ticket collections and reconciles
   duplicate.id = 'ticket-00000000-0000-4000-8000-000000000099';
   state.serviceTickets.push(duplicate);
   state.ui.selectedTicketId = duplicate.id;
-  state.ui.selectedStaffId = 'staff-kevin';
+  state.ui.selectedStaffId = 'staff-lisa-n';
   state.ui.activeScreen = 'staffnoteligible';
 
   const normalized = api.normalizeOperationsState(state);
@@ -825,18 +828,18 @@ test('strict migration rejects whole ambiguous ticket collections and reconciles
 
 test('evaluates requested staff exactly without replacing them and returns honest recommendations', () => {
   const { api } = testApi();
-  const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' });
+  const { state, ticket } = seedServiceTicket(api, { serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t' });
   const beforeStaff = ticket.staffProfileId;
 
-  const result = api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny');
+  const result = api.evaluateStaffEligibility(state, ticket.id, ['acrylic-full-set'], 'staff-jenny-t');
   const afterFirst = JSON.stringify(state);
-  const replay = api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny');
+  const replay = api.evaluateStaffEligibility(state, ticket.id, ['acrylic-full-set'], 'staff-jenny-t');
 
   assert.equal(result.ok, true);
   assert.equal(result.eligible, false);
   assert.equal(ticket.staffProfileId, beforeStaff);
-  assert.ok(result.recommendedStaffIds.includes('staff-tina'));
-  assert.ok(result.recommendedStaffIds.includes('staff-kevin'));
+  assert.ok(result.recommendedStaffIds.includes('staff-kevin-v'));
+  assert.ok(result.recommendedStaffIds.includes('staff-lisa-n'));
   assert.equal(replay.idempotent, true);
   assert.equal(JSON.stringify(state), afterFirst);
 });
@@ -844,12 +847,12 @@ test('evaluates requested staff exactly without replacing them and returns hones
 test('eligibility runtime and persistence bind to the ticket actual service and requested staff', () => {
   const { api } = testApi();
   for (const [serviceKey, staffId] of [
-    ['acrylic-full-set', 'staff-jenny'],
-    ['deluxe-pedicure', 'staff-kevin']
+    ['acrylic-full-set', 'staff-jenny-t'],
+    ['deluxe-pedicure', 'staff-lisa-n']
   ]) {
     const { state, ticket } = seedServiceTicket(api);
     const before = JSON.stringify(state);
-    const result = api.evaluateStaffEligibility(state, ticket.id, serviceKey, staffId);
+    const result = api.evaluateStaffEligibility(state, ticket.id, [serviceKey], staffId);
     assert.equal(result.ok, false);
     assert.equal(result.code, 'invalid_eligibility_request');
     assert.equal(JSON.stringify(state), before);
@@ -857,16 +860,16 @@ test('eligibility runtime and persistence bind to the ticket actual service and 
 
   const { state, ticket } = seedServiceTicket(api);
   state.staffEligibility = [{
-    id: `eligibility-${ticket.id.slice('ticket-'.length)}-acrylic-full-set-jenny`,
+    id: `eligibility-${ticket.id.slice('ticket-'.length)}-acrylic-full-set-jenny-t`,
     ticketId: ticket.id,
-    serviceKey: 'acrylic-full-set',
-    requestedStaffId: 'staff-jenny',
+    serviceKeys: ['acrylic-full-set'],
+    requestedStaffId: 'staff-jenny-t',
     eligible: false,
-    recommendedStaffIds: ['staff-tina', 'staff-kevin', 'staff-maria'],
+    recommendedStaffIds: ['staff-kevin-v', 'staff-lisa-n', 'staff-maria'],
     selectedStaffId: null,
     selectedAt: null
   }];
-  state.ui.selectedStaffId = 'staff-kevin';
+  state.ui.selectedStaffId = 'staff-lisa-n';
   const normalized = api.normalizeOperationsState(state);
   assert.deepEqual(plain(normalized.staffEligibility), []);
   assert.equal(normalized.ui.selectedStaffId, null);
@@ -874,19 +877,19 @@ test('eligibility runtime and persistence bind to the ticket actual service and 
 
 test('rejects wrong-business eligibility and unavailable recommendations atomically', () => {
   const { api } = testApi();
-  const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' });
+  const { state, ticket } = seedServiceTicket(api, { serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t' });
   for (const [serviceKey, staffId] of [
-    ['signature-facial', 'staff-jenny'],
+    ['signature-facial', 'staff-jenny-t'],
     ['acrylic-full-set', 'staff-spa-linh'],
-    ['missing-service', 'staff-jenny']
+    ['missing-service', 'staff-jenny-t']
   ]) {
     const before = JSON.stringify(state);
-    assert.equal(api.evaluateStaffEligibility(state, ticket.id, serviceKey, staffId).ok, false);
+    assert.equal(api.evaluateStaffEligibility(state, ticket.id, [serviceKey], staffId).ok, false);
     assert.equal(JSON.stringify(state), before);
   }
-  assert.equal(api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny').ok, true);
+  assert.equal(api.evaluateStaffEligibility(state, ticket.id, ['acrylic-full-set'], 'staff-jenny-t').ok, true);
   const beforeChoice = JSON.stringify(state);
-  const unavailable = api.chooseRecommendedStaff(state, ticket.id, 'staff-tina', 2000);
+  const unavailable = api.chooseRecommendedStaff(state, ticket.id, 'staff-kevin-v', 2000);
   assert.equal(unavailable.ok, false);
   assert.equal(unavailable.code, 'staff_unavailable');
   assert.equal(JSON.stringify(state), beforeChoice);
@@ -894,18 +897,18 @@ test('rejects wrong-business eligibility and unavailable recommendations atomica
 
 test('chooses only an available recommendation with stored chronology and exact replay', () => {
   const { api } = testApi();
-  const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' }, 1000);
-  assert.equal(api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny').ok, true);
+  const { state, ticket } = seedServiceTicket(api, { serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t' }, 1000);
+  assert.equal(api.evaluateStaffEligibility(state, ticket.id, ['acrylic-full-set'], 'staff-jenny-t').ok, true);
   const beforeEarly = JSON.stringify(state);
-  assert.equal(api.chooseRecommendedStaff(state, ticket.id, 'staff-kevin', 999).code, 'invalid_time_order');
+  assert.equal(api.chooseRecommendedStaff(state, ticket.id, 'staff-lisa-n', 999).code, 'invalid_time_order');
   assert.equal(JSON.stringify(state), beforeEarly);
 
-  const chosen = api.chooseRecommendedStaff(state, ticket.id, 'staff-kevin', 2000);
+  const chosen = api.chooseRecommendedStaff(state, ticket.id, 'staff-lisa-n', 2000);
   const afterChosen = JSON.stringify(state);
-  const replay = api.chooseRecommendedStaff(state, ticket.id, 'staff-kevin', Number.NaN);
+  const replay = api.chooseRecommendedStaff(state, ticket.id, 'staff-lisa-n', Number.NaN);
 
   assert.equal(chosen.ok, true);
-  assert.equal(ticket.staffProfileId, 'staff-kevin');
+  assert.equal(ticket.staffProfileId, 'staff-lisa-n');
   assert.equal(chosen.selectedAt, '1970-01-01T00:00:02.000Z');
   assert.equal(replay.ok, true);
   assert.equal(replay.idempotent, true);
@@ -914,23 +917,23 @@ test('chooses only an available recommendation with stored chronology and exact 
 
 test('resolved staff eligibility cannot persist the warning as the active screen', () => {
   const { api } = testApi();
-  const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' });
-  assert.equal(api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny').ok, true);
-  assert.equal(api.chooseRecommendedStaff(state, ticket.id, 'staff-kevin', 2000).ok, true);
+  const { state, ticket } = seedServiceTicket(api, { serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t' });
+  assert.equal(api.evaluateStaffEligibility(state, ticket.id, ['acrylic-full-set'], 'staff-jenny-t').ok, true);
+  assert.equal(api.chooseRecommendedStaff(state, ticket.id, 'staff-lisa-n', 2000).ok, true);
   state.ui.activeScreen = 'staffnoteligible';
 
   const normalized = api.normalizeOperationsState(state);
 
   assert.equal(normalized.ui.activeScreen, 'liveticket');
-  assert.equal(normalized.ui.selectedStaffId, 'staff-kevin');
+  assert.equal(normalized.ui.selectedStaffId, 'staff-lisa-n');
 });
 
 test('the latest eligibility event is authoritative over every older ineligible event', () => {
   const { api } = testApi();
-  const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' });
-  assert.equal(api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKey, ticket.staffProfileId).ok, true);
-  assert.equal(api.chooseRecommendedStaff(state, ticket.id, 'staff-kevin', 2000).ok, true);
-  assert.equal(api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKey, ticket.staffProfileId).eligible, true);
+  const { state, ticket } = seedServiceTicket(api, { serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t' });
+  assert.equal(api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKeys, ticket.staffProfileId).ok, true);
+  assert.equal(api.chooseRecommendedStaff(state, ticket.id, 'staff-lisa-n', 2000).ok, true);
+  assert.equal(api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKeys, ticket.staffProfileId).eligible, true);
   const before = JSON.stringify(state);
 
   const staleChoice = api.chooseRecommendedStaff(state, ticket.id, 'staff-maria', 3000);
@@ -945,11 +948,11 @@ test('the latest eligibility event is authoritative over every older ineligible 
 
 test('fails eligibility closed when persisted events are duplicated or tampered', () => {
   const { api } = testApi();
-  const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' });
-  assert.equal(api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny').ok, true);
+  const { state, ticket } = seedServiceTicket(api, { serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t' });
+  assert.equal(api.evaluateStaffEligibility(state, ticket.id, ['acrylic-full-set'], 'staff-jenny-t').ok, true);
   state.staffEligibility.push(structuredClone(state.staffEligibility[0]));
   const before = JSON.stringify(state);
-  const result = api.evaluateStaffEligibility(state, ticket.id, 'acrylic-full-set', 'staff-jenny');
+  const result = api.evaluateStaffEligibility(state, ticket.id, ['acrylic-full-set'], 'staff-jenny-t');
   assert.equal(result.code, 'invalid_state');
   assert.equal(JSON.stringify(state), before);
 });
@@ -1049,12 +1052,12 @@ test('complete service rejects stale chronology, unknown, duplicate, waiting, an
   {
     const { api } = testApi();
     const fixture = seedServiceTicket(api, {
-      serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny'
+      serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t'
     }, 1000);
     assert.equal(api.evaluateStaffEligibility(
-      fixture.state, fixture.ticket.id, fixture.ticket.serviceKey, fixture.ticket.staffProfileId
+      fixture.state, fixture.ticket.id, fixture.ticket.serviceKeys, fixture.ticket.staffProfileId
     ).ok, true);
-    assert.equal(api.chooseRecommendedStaff(fixture.state, fixture.ticket.id, 'staff-kevin', 3000).ok, true);
+    assert.equal(api.chooseRecommendedStaff(fixture.state, fixture.ticket.id, 'staff-lisa-n', 3000).ok, true);
     fixture.state.ui.role = 'Front Desk';
     staleFixtures.push({ api, ...fixture, now: 2999 });
   }
@@ -1093,9 +1096,12 @@ test('complete service rejects stale chronology, unknown, duplicate, waiting, an
   }
   {
     const { api } = testApi();
-    const { state, ticket } = seedServiceTicket(api);
+    // A guest who requested nobody waits with no technician on the ticket, so there is no service
+    // under way to complete. The status is reached the real way rather than forced, because
+    // 'waiting' with a technician attached is now an incoherent state the normalizer rejects.
+    const { state, ticket } = seedServiceTicket(api, { staffProfileId: null });
+    assert.equal(ticket.status, 'waiting');
     state.ui.role = 'Staff';
-    ticket.status = 'waiting';
     const before = JSON.stringify(state);
     assert.equal(api.completeServiceTicket(state, ticket.id, 2000).code, 'ticket_not_in_service');
     assert.equal(JSON.stringify(state), before);
@@ -1129,15 +1135,12 @@ test('complete service UI gates roles, proposed add-ons, Pay lifecycle, and hand
     assert.equal(harness.api.getRegisteredOpsActions().includes('complete-service'), true);
     assert.equal(harness.actionButtons.complete.disabled, true);
     assert.match(harness.actionButtons.complete.getAttribute('title'), language === 'vi' ? /nhân viên|lễ tân/i : /staff|front desk/i);
-    assert.equal(harness.actionButtons.pay.disabled, true);
-    assert.match(harness.actionButtons.pay.getAttribute('title'), language === 'vi' ? /hoàn tất/i : /complete/i);
-
-    harness.actionButtons.pay.disabled = false;
-    harness.actionButtons.pay.setAttribute('aria-disabled', 'false');
+    // Completion gates the Complete button, never Pay: a guest may settle up while still in the
+    // chair, so Pay is live from the start.
+    assert.equal(harness.actionButtons.pay.disabled, false);
+    assert.equal(harness.actionButtons.pay.getAttribute('title'), null);
     harness.document.dispatchClick(harness.actionButtons.pay);
-    assert.equal(harness.api.getPayHandoff(), null);
-    assert.equal(harness.window.location.href, href);
-    assert.match(harness.status.textContent, language === 'vi' ? /hoàn tất/i : /complete/i);
+    assert.deepEqual(plain(harness.api.getPayHandoff()), { guestCheckinId: guest.id });
 
     harness.role.value = language === 'vi' ? 'Staff' : 'Front Desk';
     harness.role.dispatch('change');
@@ -1191,7 +1194,8 @@ test('complete service persistence failure rolls back ticket and controls with a
   assert.equal(JSON.stringify(harness.api.getOperationsState()), before);
   assert.equal(harness.api.getOperationsState().serviceTickets[0].status, 'in_service');
   assert.equal(harness.actionButtons.complete.disabled, false);
-  assert.equal(harness.actionButtons.pay.disabled, true);
+  // Pay never depended on completion, so a failed completion leaves it alone.
+  assert.equal(harness.actionButtons.pay.disabled, false);
   assert.match(harness.status.textContent, /không thể|failed|could not/i);
 });
 
@@ -1235,13 +1239,13 @@ test('completed proposed add-on persistence fails closed for normalize, load, re
     }),
     href
   });
+  // The corrupt record is dropped entirely and a clean ticket is opened in its place. That fresh
+  // ticket carries no pending add-on, so nothing blocks paying it even though it is still running.
   assert.equal(harness.api.getOperationsState().serviceTickets[0].status, 'in_service');
-  assert.equal(harness.actionButtons.pay.disabled, true);
-  harness.actionButtons.pay.disabled = false;
-  harness.actionButtons.pay.setAttribute('aria-disabled', 'false');
+  assert.deepEqual(plain(harness.api.getOperationsState().addOnRequests), []);
+  assert.equal(harness.actionButtons.pay.disabled, false);
   harness.document.dispatchClick(harness.actionButtons.pay);
-  assert.equal(harness.api.getPayHandoff(), null);
-  assert.equal(harness.window.location.href, href);
+  assert.deepEqual(plain(harness.api.getPayHandoff()), { guestCheckinId: guest.id });
 });
 
 test('visible completion reasons are localized, described, cleared, and focus moves to enabled Pay', () => {
@@ -1251,12 +1255,12 @@ test('visible completion reasons are localized, described, cleared, and focus mo
   const expected = {
     vi: {
       role: 'Chỉ Nhân viên hoặc Lễ tân trong bộ mô phỏng mới có thể hoàn tất dịch vụ.',
-      pay: 'Dịch vụ phải được tiệm hoàn tất trước khi thanh toán.',
+      pay: 'Vui lòng trả lời dịch vụ thêm trước khi thanh toán.',
       completed: 'Dịch vụ này đã hoàn tất.'
     },
     en: {
       role: 'Only Staff or Front Desk in this simulator can complete the service.',
-      pay: 'The salon must complete the service before payment.',
+      pay: 'Answer the suggested add-on before paying.',
       completed: 'This service is already completed.'
     }
   };
@@ -1273,9 +1277,10 @@ test('visible completion reasons are localized, described, cleared, and focus mo
     assert.equal(harness.actionButtons.complete.getAttribute('aria-describedby'), 'ops-complete-reason');
     assert.equal(completeReason.textContent, expected[language].role);
     assert.equal(completeReason.classList.contains('hidden'), false);
-    assert.equal(harness.actionButtons.pay.getAttribute('aria-describedby'), 'ops-pay-reason');
-    assert.equal(payReason.textContent, expected[language].pay);
-    assert.equal(payReason.classList.contains('hidden'), false);
+    // Pay is not gated by completion, so there is nothing to explain about it yet.
+    assert.equal(harness.actionButtons.pay.getAttribute('aria-describedby'), null);
+    assert.equal(payReason.textContent, '');
+    assert.equal(payReason.classList.contains('hidden'), true);
 
     harness.role.value = language === 'vi' ? 'Staff' : 'Front Desk';
     harness.role.dispatch('change');
@@ -1301,18 +1306,18 @@ test('completed tickets reject every staff and front-desk live-routing operation
     ticket.status = 'completed';
     ticket.completedAt = '1970-01-01T00:00:03.000Z';
     const before = JSON.stringify(state);
-    const result = api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKey, ticket.staffProfileId);
+    const result = api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKeys, ticket.staffProfileId);
     assert.equal(result.code, 'ticket_completed');
     assert.equal(JSON.stringify(state), before);
   }
   {
     const { api } = testApi();
-    const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' });
-    assert.equal(api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKey, ticket.staffProfileId).ok, true);
+    const { state, ticket } = seedServiceTicket(api, { serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t' });
+    assert.equal(api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKeys, ticket.staffProfileId).ok, true);
     ticket.status = 'completed';
     ticket.completedAt = '1970-01-01T00:00:03.000Z';
     const before = JSON.stringify(state);
-    assert.equal(api.chooseRecommendedStaff(state, ticket.id, 'staff-kevin', 2000).code, 'ticket_completed');
+    assert.equal(api.chooseRecommendedStaff(state, ticket.id, 'staff-lisa-n', 2000).code, 'ticket_completed');
     assert.equal(JSON.stringify(state), before);
   }
   {
@@ -1329,9 +1334,9 @@ test('completed tickets reject every staff and front-desk live-routing operation
 test('normalization rejects staff and front-desk timestamps after ticket completion', () => {
   {
     const { api } = testApi();
-    const { state, ticket } = seedServiceTicket(api, { serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny' });
-    assert.equal(api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKey, ticket.staffProfileId).ok, true);
-    assert.equal(api.chooseRecommendedStaff(state, ticket.id, 'staff-kevin', 4000).ok, true);
+    const { state, ticket } = seedServiceTicket(api, { serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t' });
+    assert.equal(api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKeys, ticket.staffProfileId).ok, true);
+    assert.equal(api.chooseRecommendedStaff(state, ticket.id, 'staff-lisa-n', 4000).ok, true);
     ticket.status = 'completed';
     ticket.completedAt = '1970-01-01T00:00:03.000Z';
     const normalized = api.normalizeOperationsState(state);
@@ -1355,7 +1360,7 @@ test('initialization selects the exact query guest and always enters Customer Li
   const customerKey = 'nexora.customer.prototype.v1';
   const first = guestCheckin({ id: 'guest-checkin-first' });
   const second = guestCheckin({
-    id: 'guest-checkin-second', serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny'
+    id: 'guest-checkin-second', serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t'
   });
   const storage = createAuditStorage({ [customerKey]: customerStorageJson([first, second]) });
   const harness = uiApi({
@@ -1488,7 +1493,7 @@ test('a first-load demo never outranks or renumbers a later real sanitized guest
   assert.equal(state.ui.activeScreen, 'liveticket');
 });
 
-test('explicit Pay action prepares and navigates the exact guest handoff only after completion', () => {
+test('explicit Pay action prepares and navigates the exact guest handoff without waiting for completion', () => {
   const customerKey = 'nexora.customer.prototype.v1';
   const guest = guestCheckin({ id: 'guest-checkin-pay' });
   const href = 'https://example.test/customer/customer-salon-operations.html?guestCheckinId=guest-checkin-pay';
@@ -1501,13 +1506,7 @@ test('explicit Pay action prepares and navigates the exact guest handoff only af
   assert.equal(harness.api.getPayHandoff(), null);
   assert.match(harness.status.textContent, /demo|dialer/i);
 
-  harness.document.dispatchClick(harness.actionButtons.pay);
-  assert.equal(harness.api.getPayHandoff(), null);
-  assert.equal(harness.window.location.href, href);
-
-  harness.role.value = 'Staff';
-  harness.role.dispatch('change');
-  harness.document.dispatchClick(harness.actionButtons.complete);
+  // The service is still under way, but a guest may settle up whenever they like.
   harness.document.dispatchClick(harness.actionButtons.pay);
   assert.deepEqual(plain(harness.api.getPayHandoff()), { guestCheckinId: guest.id });
   assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
@@ -1515,12 +1514,19 @@ test('explicit Pay action prepares and navigates the exact guest handoff only af
     harness.window.location.href,
     'https://example.test/customer/cutomer-reward.html?handoff=guest-checkout&guestCheckinId=guest-checkin-pay'
   );
+
+  // Completing the ticket afterwards leaves the same handoff in place.
+  harness.role.value = 'Staff';
+  harness.role.dispatch('change');
+  harness.document.dispatchClick(harness.actionButtons.complete);
+  harness.document.dispatchClick(harness.actionButtons.pay);
+  assert.deepEqual(plain(harness.api.getPayHandoff()), { guestCheckinId: guest.id });
 });
 
 test('staff warning is conditional and recommendation CTA, availability, and ARIA stay aligned', () => {
   const customerKey = 'nexora.customer.prototype.v1';
   const guest = guestCheckin({
-    id: 'guest-checkin-ineligible', serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny'
+    id: 'guest-checkin-ineligible', serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t'
   });
   const harness = uiApi({
     storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }),
@@ -1531,20 +1537,20 @@ test('staff warning is conditional and recommendation CTA, availability, and ARI
 
   const state = harness.api.getOperationsState();
   assert.equal(state.ui.activeScreen, 'staffnoteligible');
-  assert.equal(state.serviceTickets[0].staffProfileId, 'staff-jenny');
-  assert.equal(harness.byId.get('ops-requested-staff').textContent, 'Jenny');
+  assert.equal(state.serviceTickets[0].staffProfileId, 'staff-jenny-t');
+  assert.equal(harness.byId.get('ops-requested-staff').textContent, 'Jenny T.');
   assert.equal(harness.byId.get('ops-requested-service').textContent, 'Acrylic Full Set');
   const cards = harness.byId.get('ops-recommended-staff').children;
-  const tina = cards.find((card) => card.dataset.staffId === 'staff-tina');
-  const kevin = cards.find((card) => card.dataset.staffId === 'staff-kevin');
+  const tina = cards.find((card) => card.dataset.staffId === 'staff-kevin-v');
+  const kevin = cards.find((card) => card.dataset.staffId === 'staff-lisa-n');
   assert.equal(tina.disabled, true);
-  assert.equal(tina.textContent, 'Tina · Chưa sẵn sàng');
+  assert.equal(tina.textContent, 'Kevin V. · Chuyên sâu · Sắp trống');
   assert.equal(kevin.getAttribute('aria-pressed'), 'true');
   assert.equal(kevin.getAttribute('aria-selected'), null);
-  assert.equal(harness.actionButtons.choose.textContent, 'Chọn Kevin');
+  assert.equal(harness.actionButtons.choose.textContent, 'Chọn Lisa N.');
 
   harness.document.dispatchClick(harness.actionButtons.choose);
-  assert.equal(harness.api.getOperationsState().serviceTickets[0].staffProfileId, 'staff-kevin');
+  assert.equal(harness.api.getOperationsState().serviceTickets[0].staffProfileId, 'staff-lisa-n');
   assert.equal(harness.api.getOperationsState().ui.activeScreen, 'liveticket');
 });
 
@@ -1584,7 +1590,7 @@ test('live ticket and customer business labels render as inert text with exact t
 test('every enabled static and dynamic Task 8 action dispatches its state, UI, or handoff effect', () => {
   const customerKey = 'nexora.customer.prototype.v1';
   const guest = guestCheckin({
-    id: 'guest-checkin-actions', serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny'
+    id: 'guest-checkin-actions', serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t'
   });
   const harness = uiApi({
     storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }),
@@ -1665,7 +1671,7 @@ test('companion defaults to Vietnamese and localizes dynamic status with accessi
 
   const customerKey = 'nexora.customer.prototype.v1';
   const guest = guestCheckin({
-    id: 'guest-checkin-final-copy', serviceKey: 'acrylic-full-set', staffProfileId: 'staff-jenny'
+    id: 'guest-checkin-final-copy', serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-jenny-t'
   });
   const harness = uiApi({
     storage: createAuditStorage({ [customerKey]: customerStorageJson([guest]) }),
@@ -1677,12 +1683,13 @@ test('companion defaults to Vietnamese and localizes dynamic status with accessi
   harness.document.dispatchClick(harness.actionButtons.review);
   assert.equal(
     harness.byId.get('ops-eligibility-warning').textContent,
-    'Jenny chưa đủ điều kiện cho Acrylic Full Set.'
+    'Jenny T. chưa đủ điều kiện cho Acrylic Full Set.'
   );
   const cards = harness.byId.get('ops-recommended-staff').children;
-  assert.equal(cards.find((card) => card.dataset.staffId === 'staff-tina').textContent, 'Tina · Chưa sẵn sàng');
-  assert.equal(cards.find((card) => card.dataset.staffId === 'staff-kevin').textContent, 'Kevin · Sẵn sàng');
-  assert.equal(harness.actionButtons.choose.textContent, 'Chọn Kevin');
+  // Chips now carry what they are good at and how soon they can take the guest.
+  assert.equal(cards.find((card) => card.dataset.staffId === 'staff-kevin-v').textContent, 'Kevin V. · Chuyên sâu · Sắp trống');
+  assert.equal(cards.find((card) => card.dataset.staffId === 'staff-lisa-n').textContent, 'Lisa N. · Khá · Sẵn sàng');
+  assert.equal(harness.actionButtons.choose.textContent, 'Chọn Lisa N.');
   assert.equal(harness.actionButtons.choose.getAttribute('aria-disabled'), 'false');
   assert.equal(harness.actionButtons.choose.getAttribute('title'), null);
 
@@ -1789,7 +1796,7 @@ test('all dynamic Operations status, role, add-on, and ticket copy comes from th
       review: 'Tiếp tục Đánh giá trong Ứng dụng Khách hàng.',
       reward: 'Tiếp tục Phần thưởng trong Ứng dụng Khách hàng.',
       addonReview: 'Vui lòng xem dịch vụ thêm.',
-      addonStaff: 'Jenny đề xuất',
+      addonStaff: 'Jenny T. đề xuất',
       addonAccept: 'Đã chọn chấp nhận; vui lòng xác nhận số điện thoại.',
       phoneError: 'Xác nhận số điện thoại không khớp. Hãy chọn lại và thử lại.',
       roleSaved: 'Đã lưu vai trò Nhân viên.'
@@ -1801,7 +1808,7 @@ test('all dynamic Operations status, role, add-on, and ticket copy comes from th
       review: 'Continue Review in the Customer App.',
       reward: 'Continue Rewards in the Customer App.',
       addonReview: 'Review the suggested add-on.',
-      addonStaff: 'Jenny suggested',
+      addonStaff: 'Jenny T. suggested',
       addonAccept: 'Accept selected; confirm the phone number.',
       phoneError: 'Phone confirmation did not match. Choose again and retry.',
       roleSaved: 'Saved role Staff.'
@@ -2016,7 +2023,7 @@ test('wrong phone, changed decision, duplicate owners, and decline are atomic', 
   const { api } = testApi();
   const fixture = seedTicketWithCustomer(api);
   const proposed = api.proposeAddOn(fixture.state, {
-    ticketId: fixture.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    ticketId: fixture.ticket.id, staffProfileId: 'staff-jenny-t', businessId: 'bitcoin-nail-bar',
     label: 'Gel Polish', amountCents: 1500
   }, 1000);
   for (const [last4, snapshot] of [
@@ -2045,7 +2052,7 @@ test('proposal binds to catalog, active ticket, current staff, chronology, uniqu
   const cases = [
     ['arbitrary label', { label: 'Mystery', amountCents: 1500 }],
     ['arbitrary amount', { label: 'Gel Polish', amountCents: 1 }],
-    ['wrong staff', { label: 'Gel Polish', amountCents: 1500, staffProfileId: 'staff-kevin' }],
+    ['wrong staff', { label: 'Gel Polish', amountCents: 1500, staffProfileId: 'staff-lisa-n' }],
     ['wrong business', { label: 'Gel Polish', amountCents: 1500, businessId: 'golden-glow-spa' }]
   ];
   for (const [, overrides] of cases) {
@@ -2066,14 +2073,14 @@ test('proposal binds to catalog, active ticket, current staff, chronology, uniqu
   completed.ticket.completedAt = new Date(2000).toISOString();
   const completedBefore = JSON.stringify(completed.state);
   assert.equal(api.proposeAddOn(completed.state, {
-    ticketId: completed.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    ticketId: completed.ticket.id, staffProfileId: 'staff-jenny-t', businessId: 'bitcoin-nail-bar',
     label: 'Gel Polish', amountCents: 1500
   }, 1500).code, 'ticket_completed');
   assert.equal(JSON.stringify(completed.state), completedBefore);
 
   const first = seedTicketWithCustomer(api);
   const created = api.proposeAddOn(first.state, {
-    ticketId: first.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    ticketId: first.ticket.id, staffProfileId: 'staff-jenny-t', businessId: 'bitcoin-nail-bar',
     label: 'Gel Polish', amountCents: 1500
   }, 999);
   assert.equal(created.code, 'invalid_time_order');
@@ -2091,7 +2098,7 @@ test('add-on UUID failures, collisions, roles, completed tickets, and resolution
   const { api } = testApi({}, { randomUUID: () => values[uuidCall++] });
   const first = seedTicketWithCustomer(api);
   const proposal = api.proposeAddOn(first.state, {
-    ticketId: first.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    ticketId: first.ticket.id, staffProfileId: 'staff-jenny-t', businessId: 'bitcoin-nail-bar',
     label: 'Gel Polish', amountCents: 1500
   }, 1000);
   assert.equal(proposal.ok, true);
@@ -2100,7 +2107,7 @@ test('add-on UUID failures, collisions, roles, completed tickets, and resolution
   assert.equal(second.ok, true);
   const beforeCollision = JSON.stringify(first.state);
   assert.equal(api.proposeAddOn(first.state, {
-    ticketId: second.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    ticketId: second.ticket.id, staffProfileId: 'staff-jenny-t', businessId: 'bitcoin-nail-bar',
     label: 'Gel Polish', amountCents: 1500
   }, 1000).code, 'id_collision');
   assert.equal(JSON.stringify(first.state), beforeCollision);
@@ -2133,7 +2140,7 @@ test('add-on UUID failures, collisions, roles, completed tickets, and resolution
   const invalidFixture = seedTicketWithCustomer(invalid.api);
   const invalidBefore = JSON.stringify(invalidFixture.state);
   assert.equal(invalid.api.proposeAddOn(invalidFixture.state, {
-    ticketId: invalidFixture.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    ticketId: invalidFixture.ticket.id, staffProfileId: 'staff-jenny-t', businessId: 'bitcoin-nail-bar',
     label: 'Gel Polish', amountCents: 1500
   }, 1000).code, 'id_failed');
   assert.equal(JSON.stringify(invalidFixture.state), invalidBefore);
@@ -2143,7 +2150,7 @@ test('strict add-on reconciliation rejects duplicate semantics and mismatched ac
   const { api } = testApi();
   const fixture = seedTicketWithCustomer(api);
   const proposed = api.proposeAddOn(fixture.state, {
-    ticketId: fixture.ticket.id, staffProfileId: 'staff-jenny', businessId: 'bitcoin-nail-bar',
+    ticketId: fixture.ticket.id, staffProfileId: 'staff-jenny-t', businessId: 'bitcoin-nail-bar',
     label: 'Gel Polish', amountCents: 1500
   }, 1000);
   api.resolveAddOn(fixture.state, proposed.addOn.id, 'accepted', '0198', fixture.customerSnapshot, 2000);
@@ -2222,7 +2229,7 @@ test('add-on UI executes open decision sanitized phone and confirm with accessib
   harness.document.dispatchClick(harness.actionButtons.openAddon);
   assert.equal(harness.api.getOperationsState().addOnRequests[0].status, 'proposed');
   assert.equal(harness.api.getOperationsState().ui.activeScreen, 'addonapproval');
-  assert.equal(harness.byId.get('ops-addon-staff').textContent, 'Jenny đề xuất');
+  assert.equal(harness.byId.get('ops-addon-staff').textContent, 'Jenny T. đề xuất');
   assert.equal(harness.byId.get('ops-addon-label').textContent, 'Gel Polish');
   assert.equal(harness.byId.get('ops-addon-amount').textContent, '+ $15.00');
   assert.equal(harness.byId.get('ops-addon-current').textContent, '$49.50');
@@ -2250,12 +2257,12 @@ test('add-on UI executes open decision sanitized phone and confirm with accessib
 test('pending add-on blocks the registered staff switch without state or storage loss', () => {
   const setup = testApi();
   const guest = guestCheckin({
-    id: 'guest-checkin-pending-switch', serviceKey: 'acrylic-full-set', staffProfileId: 'staff-tina'
+    id: 'guest-checkin-pending-switch', serviceKeys: ['acrylic-full-set'], staffProfileId: 'staff-kevin-v'
   });
   const { state, ticket } = seedServiceTicket(setup.api, {
-    id: guest.id, serviceKey: guest.serviceKey, staffProfileId: guest.staffProfileId
+    id: guest.id, serviceKeys: guest.serviceKeys, staffProfileId: guest.staffProfileId
   });
-  const eligibility = setup.api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKey, ticket.staffProfileId);
+  const eligibility = setup.api.evaluateStaffEligibility(state, ticket.id, ticket.serviceKeys, ticket.staffProfileId);
   assert.equal(eligibility.ok, true);
   assert.equal(setup.api.proposeAddOn(state, {
     ticketId: ticket.id,
@@ -2301,7 +2308,7 @@ test('commit rejects any lossy post-mutation normalization before touching stora
   const before = JSON.stringify(loaded.api.getOperationsState());
 
   const result = loaded.api.commitOperations((draft) => {
-    draft.serviceTickets[0].staffProfileId = 'staff-kevin';
+    draft.serviceTickets[0].staffProfileId = 'staff-lisa-n';
     return { ok: true };
   }, storage);
 
@@ -2426,7 +2433,7 @@ test('add-on controls follow Customer role, ticket support, staff assignment, an
 
   const unsupportedGuest = guestCheckin({
     id: 'guest-checkin-unsupported-addon', businessId: 'golden-glow-spa',
-    serviceKey: 'signature-facial', staffProfileId: 'staff-spa-linh'
+    serviceKeys: ['signature-facial'], staffProfileId: 'staff-spa-linh'
   });
   const unsupported = uiApi({
     storage: createAuditStorage({ [customerKey]: customerStorageJson([unsupportedGuest]) }),
