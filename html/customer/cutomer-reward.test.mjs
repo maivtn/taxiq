@@ -11346,7 +11346,7 @@ test('persisted salon payment draft drops the transfer assertion and unknown pay
 test('keeps every seeded look through migration and gives each one a photo', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
-  assert.equal(app.looks.length, 6);
+  assert.equal(app.looks.length, 12);
   const migrated = api.migrateState(app);
   assert.equal(migrated.looks.map((look) => look.id).join(','), app.looks.map((look) => look.id).join(','));
   for (const look of migrated.looks) {
@@ -11409,18 +11409,6 @@ test('never attributes a receipt to a tech from another business', () => {
   assert.equal(read.draft.staffProfileId, null);
 });
 
-test('falls back to the newest visit that is not archived as a look yet', () => {
-  const { api } = testApi();
-  const app = api.createDefaultState();
-  // visit-1001 is already archived by look-galaxy.
-  assert.equal(api.scanReceiptDraft(app).code, 'no_receipt');
-  app.visits.push({ id: 'visit-1002', businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-maria', staffName: 'Maria', service: 'Dip Powder', occurredAt: '2026-07-15T16:00:00.000Z' });
-  const scan = api.scanReceiptDraft(app);
-  assert.equal(scan.ok, true);
-  assert.equal(scan.draft.visitId, 'visit-1002');
-  assert.equal(scan.draft.service, 'Dip Powder');
-});
-
 test('edits a look without letting the form rewrite its provenance', () => {
   const { api } = testApi();
   const app = api.createDefaultState();
@@ -11453,46 +11441,40 @@ function receiptScanContext() {
   const camera = createStubElement({ id: 'receipt-scan-camera' });
   camera.matches = (selector) => selector === '[data-receipt-scan]';
   camera.files = [{ name: 'receipt.jpg' }];
-  const document = createDocumentStub({ extraElements: [camera] });
-  return { camera, ...testApi({}, { document }) };
+
+  // The scanner swaps between four sibling views, so the stub has to carry all four.
+  const views = ['idle', 'busy', 'result', 'error'].map((name) =>
+    createStubElement({ dataset: { scannerView: name }, classNames: name === 'idle' ? [] : ['hidden'] }));
+  const dialog = createStubElement();
+  const scanner = createStubElement({ id: 'receipt-scanner', classNames: ['hidden'] });
+  scanner.querySelectorAll = (selector) => (selector === '[data-scanner-view]' ? views : []);
+  scanner.querySelector = (selector) => (selector === '[role="dialog"]' ? dialog : null);
+
+  // Rows are built at render time, so the lookup has to walk whatever was just appended.
+  const fields = createStubElement({ id: 'receipt-scanner-fields' });
+  fields.querySelector = (selector) => {
+    const name = selector.match(/\[data-scan-field="([^"]+)"\]/)?.[1];
+    if (!name) return null;
+    const walk = (nodes) => {
+      for (const node of nodes) {
+        if (node?.dataset?.scanField === name) return node;
+        const found = walk(node?.children ?? []);
+        if (found) return found;
+      }
+      return null;
+    };
+    return walk(fields.children);
+  };
+
+  const document = createDocumentStub({ extraElements: [camera, scanner, fields] });
+  return { camera, scanner, views, ...testApi({}, { document }) };
 }
-
-test('scan-receipt opens the camera and a read receipt offers a prefilled look', async () => {
-  const { camera, context } = receiptScanContext();
-  const control = createStubElement({ dataset: { action: 'scan-receipt' } });
-  context.handleAction({ target: { closest: (selector) => selector === '[data-action]' ? control : null } });
-  assert.equal(camera.clicked, true);
-
-  context.recognizeReceipt = async () => ({ ok: true, text: 'Bitcoin Nail Bar\nTech: Maria\nDip Powder $50' });
-  await context.handleChange({ target: camera });
-  // The draft is only staged once the customer confirms what the scan read.
-  assert.equal(vm.runInContext('state.ui.lookScanDraft', context), null);
-  vm.runInContext('overlayRuntime.onConfirm()', context);
-  const draft = vm.runInContext('state.ui.lookScanDraft', context);
-  assert.equal(draft.service, 'Dip Powder');
-  assert.equal(draft.staffProfileId, 'staff-maria');
-  assert.equal(vm.runInContext('state.ui.activeScreen', context), 'addlook');
-  assert.equal(vm.runInContext("document.getElementById('look-service').value", context), 'Dip Powder');
-  // Re-picking the same file must still fire a change.
-  assert.equal(camera.value, '');
-});
-
-test('an unreadable receipt falls back to the last visit rather than dead-ending', async () => {
-  const { camera, context } = receiptScanContext();
-  vm.runInContext("state.visits.push({ id: 'visit-1002', businessId: 'bitcoin-nail-bar', staffProfileId: 'staff-maria', staffName: 'Maria', service: 'Dip Powder', occurredAt: '2026-07-15T16:00:00.000Z' })", context);
-  context.recognizeReceipt = async () => ({ ok: false, code: 'ocr_unavailable' });
-  await context.handleChange({ target: camera });
-  vm.runInContext('overlayRuntime.onConfirm()', context);
-  assert.equal(vm.runInContext('state.ui.lookScanDraft.visitId', context), 'visit-1002');
-  // The progress line must not be left behind once the scan settles.
-  assert.equal(vm.runInContext("document.getElementById('receipt-scan-status').textContent", context), '');
-});
 
 test('a look saved from a scan keeps the scanned provenance, then clears the draft', async () => {
   const { camera, context } = receiptScanContext();
   context.recognizeReceipt = async () => ({ ok: true, text: 'Bitcoin Nail Bar\nTech: Maria\nDip Powder $50' });
   await context.handleChange({ target: camera });
-  vm.runInContext('overlayRuntime.onConfirm()', context);
+  vm.runInContext("ACTIONS.get('apply-receipt-scan')()", context);
   vm.runInContext("document.getElementById('look-color').value = 'Mocha #M3'", context);
   const control = createStubElement({ dataset: { action: 'save-look' } });
   vm.runInContext('ACTIONS', context).get('save-look')(control);
@@ -11518,7 +11500,7 @@ test('searches looks across service, color, note, tech and business name', () =>
     vm.runInContext(`state.ui.lookQuery = ${JSON.stringify(query)}; renderLooks()`, context);
     return titles();
   };
-  assert.equal(search('').length, 6);
+  assert.equal(search('').length, 12);
   assert.deepEqual(search('maria'), ['Pearl chrome #C21']);
   assert.deepEqual(search('lilac'), ['Lilac #142']);
   assert.deepEqual(search('sinh nhật'), []);
@@ -11532,7 +11514,7 @@ test('orders the archive newest or oldest first', () => {
   vm.runInContext('renderLooks()', context);
   assert.equal(titles().at(0), 'OPI Bubble Bath #S86');
   vm.runInContext("state.ui.lookSort = 'oldest'; renderLooks()", context);
-  assert.equal(titles().at(0), 'Lilac #142');
+  assert.equal(titles().at(0), 'Mint #L07');
   assert.equal(titles().at(-1), 'OPI Bubble Bath #S86');
 });
 
@@ -11542,12 +11524,12 @@ test('tells an empty archive apart from a search that matched nothing', () => {
   const cta = () => vm.runInContext("document.getElementById('looks-empty-cta')", context);
   vm.runInContext('renderLooks()', context);
   assert.equal(empty().classList.contains('hidden'), true);
-  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), '6 kiểu đã lưu');
+  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), '12 kiểu đã lưu');
 
   vm.runInContext("state.ui.lookQuery = 'zzz'; renderLooks()", context);
   assert.equal(empty().classList.contains('hidden'), false);
   assert.equal(vm.runInContext("document.getElementById('looks-empty-title').textContent", context), 'Không tìm thấy kiểu phù hợp');
-  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), 'Hiển thị 0/6 kiểu');
+  assert.equal(vm.runInContext("document.getElementById('looks-count').textContent", context), 'Hiển thị 0/12 kiểu');
   // Offering "add a look" would answer the wrong problem when the search is merely too narrow.
   assert.equal(cta().classList.contains('hidden'), true);
 
@@ -11626,4 +11608,64 @@ test('shows the friend name in referral history, and the masked number only with
   assert.deepEqual(labels, ['Linh Trần', '••• 0124']);
   // Whichever is shown, the full number never is.
   for (const label of labels) assert.equal(label.includes('8325550124'), false);
+});
+
+test('the scanner walks dropzone to result and reports OCR progress', async () => {
+  const { camera, context } = receiptScanContext();
+  const view = () => vm.runInContext(`[...document.getElementById('receipt-scanner').querySelectorAll('[data-scanner-view]')].find((n) => !n.classList.contains('hidden'))?.dataset.scannerView`, context);
+  vm.runInContext("ACTIONS.get('scan-receipt')(null)", context);
+  assert.equal(view(), 'idle');
+
+  const stages = [];
+  context.recognizeReceipt = async (file, onProgress) => {
+    onProgress('scanStageEngine', 0);
+    onProgress('scanStageReading', 13);
+    stages.push(vm.runInContext("document.getElementById('receipt-scanner-status').textContent", context));
+    return { ok: true, text: 'Bitcoin Nail Bar\nTech: Maria\nDip Powder $50' };
+  };
+  await context.handleChange({ target: camera });
+  assert.deepEqual(stages, ['Đang đọc chữ… 13%']);
+  assert.equal(view(), 'result');
+  assert.equal(vm.runInContext("document.getElementById('receipt-scanner-fields').children.length", context), 3);
+  assert.match(vm.runInContext("document.getElementById('receipt-scanner-raw').textContent", context), /Dip Powder/);
+});
+
+test('an unticked tech is left out of the look, and the business cannot be dropped', async () => {
+  const { camera, context } = receiptScanContext();
+  context.recognizeReceipt = async () => ({ ok: true, text: 'Bitcoin Nail Bar\nTech: Maria\nDip Powder $50' });
+  await context.handleChange({ target: camera });
+
+  const untick = (name) => vm.runInContext(`document.getElementById('receipt-scanner-fields').querySelector('[data-scan-field="${name}"]').checked = false`, context);
+  untick('staff');
+  vm.runInContext("ACTIONS.get('apply-receipt-scan')()", context);
+  const draft = vm.runInContext('state.ui.lookScanDraft', context);
+  assert.equal(draft.service, 'Dip Powder');
+  assert.equal(draft.staffProfileId, null, 'an unticked tech must not reach the look');
+  assert.equal(draft.staffName, '');
+});
+
+test('a receipt the reader cannot place offers retry and manual entry, never a guess', async () => {
+  const { camera, context } = receiptScanContext();
+  const view = () => vm.runInContext(`[...document.getElementById('receipt-scanner').querySelectorAll('[data-scanner-view]')].find((n) => !n.classList.contains('hidden'))?.dataset.scannerView`, context);
+  context.recognizeReceipt = async () => ({ ok: true, text: 'STARBUCKS\nLatte $5' });
+  await context.handleChange({ target: camera });
+  assert.equal(view(), 'error');
+  assert.equal(vm.runInContext("document.getElementById('receipt-scanner-error').textContent", context), 'Không nhận ra tiệm hoặc dịch vụ nào trên hóa đơn này.');
+  // Nothing was invented from a receipt that did not match.
+  assert.equal(vm.runInContext('state.ui.lookScanDraft', context), null);
+
+  vm.runInContext("ACTIONS.get('scan-receipt-retry')()", context);
+  assert.equal(view(), 'idle');
+
+  vm.runInContext("ACTIONS.get('scan-receipt-manual')()", context);
+  assert.equal(vm.runInContext('state.ui.activeScreen', context), 'addlook');
+  assert.equal(vm.runInContext('state.ui.lookScanDraft', context), null);
+  assert.equal(vm.runInContext("document.getElementById('receipt-scanner').classList.contains('hidden')", context), true);
+});
+
+test('a failed OCR engine is reported as itself, not as an unreadable receipt', async () => {
+  const { camera, context } = receiptScanContext();
+  context.recognizeReceipt = async () => ({ ok: false, code: 'ocr_unavailable' });
+  await context.handleChange({ target: camera });
+  assert.equal(vm.runInContext("document.getElementById('receipt-scanner-error').textContent", context), 'Không chạy được bộ đọc OCR. Kiểm tra kết nối rồi thử lại.');
 });

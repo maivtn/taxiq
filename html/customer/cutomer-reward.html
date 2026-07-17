@@ -226,7 +226,7 @@
         </section>
         <section class="app-screen hidden" id="looks" data-ready="true" data-module="home" aria-labelledby="looks-title">
           <div class="mb-5 flex items-center justify-between gap-3"><div class="flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Your style archive" data-vi="Bộ sưu tập phong cách">Bộ sưu tập phong cách</p><h1 id="looks-title" class="text-2xl font-black" data-en="My looks" data-vi="Kiểu của tôi">Kiểu của tôi</h1><p id="looks-count" class="mt-1 text-xs text-app-muted" role="status"></p></div></div><button class="app-button" type="button" data-action="add-look"><i data-lucide="plus" class="size-4" aria-hidden="true"></i><span class="hidden sm:inline" data-en="Add look" data-vi="Thêm kiểu">Thêm kiểu</span></button></div>
-          <div class="mb-3 flex flex-wrap items-center justify-end gap-2"><input id="receipt-scan-camera" class="sr-only" type="file" accept="image/*" capture="environment" data-receipt-scan><input id="receipt-scan-file" class="sr-only" type="file" accept="image/*" data-receipt-scan><p id="receipt-scan-status" class="mr-auto hidden text-xs text-app-muted" role="status" aria-live="polite"></p><button type="button" class="app-button-secondary" data-action="scan-receipt"><i data-lucide="camera" class="size-4" aria-hidden="true"></i><span data-en="Scan receipt" data-vi="Quét hóa đơn">Quét hóa đơn</span></button><button type="button" class="app-button-secondary" data-action="upload-receipt"><i data-lucide="scan-text" class="size-4" aria-hidden="true"></i><span data-en="Upload receipt" data-vi="Tải hóa đơn">Tải hóa đơn</span></button></div>
+          <div class="mb-3 flex justify-end"><button type="button" class="app-button-secondary" data-action="scan-receipt"><i data-lucide="scan-text" class="size-4" aria-hidden="true"></i><span data-en="Scan receipt" data-vi="Quét hóa đơn">Quét hóa đơn</span></button></div>
           <div class="mb-4 grid gap-3 sm:grid-cols-[1fr_auto]"><div class="relative"><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-app-muted" aria-hidden="true"></i><label class="sr-only" for="look-search" data-en="Search looks" data-vi="Tìm kiểu">Tìm kiểu</label><input id="look-search" class="app-input pl-11" type="search" data-en-ph="Search service, color, tech…" data-vi-ph="Tìm dịch vụ, màu, thợ…" placeholder="Tìm dịch vụ, màu, thợ…"></div><div class="flex gap-2" role="group" data-en-label="Sort looks" data-vi-label="Sắp xếp kiểu" aria-label="Sắp xếp kiểu"><button class="app-chip" type="button" aria-pressed="true" data-look-sort="newest" data-en="Newest" data-vi="Mới nhất">Mới nhất</button><button class="app-chip" type="button" aria-pressed="false" data-look-sort="oldest" data-en="Oldest" data-vi="Cũ nhất">Cũ nhất</button></div></div>
           <div id="looks-grid" class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4"></div>
           <div id="looks-empty" class="app-card hidden py-10 text-center" role="status"><i data-lucide="images" class="mx-auto size-10 text-app-muted" aria-hidden="true"></i><strong id="looks-empty-title" class="mt-4 block"></strong><p id="looks-empty-body" class="mx-auto mt-2 max-w-sm text-sm leading-6 text-app-muted"></p><button id="looks-empty-cta" class="app-button mx-auto mt-5 hidden" type="button" data-action="add-look"><i data-lucide="plus" class="size-4" aria-hidden="true"></i><span data-en="Add your first look" data-vi="Thêm kiểu đầu tiên">Thêm kiểu đầu tiên</span></button></div>
@@ -549,6 +549,54 @@
         <div id="overlay-actions" class="mt-5 grid gap-2 sm:grid-cols-2">
           <button id="overlay-cancel" type="button" class="app-button-secondary" data-action="cancel-overlay"></button>
           <button id="overlay-confirm" type="button" class="app-button" data-action="confirm-overlay"></button>
+        </div>
+      </div>
+    </div>
+    <div id="receipt-scanner" class="fixed inset-0 z-[92] hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm" aria-hidden="true">
+      <div class="app-card w-full max-w-md" role="dialog" aria-modal="true" aria-labelledby="receipt-scanner-title" tabindex="-1">
+        <div class="flex items-center justify-between gap-3">
+          <h2 id="receipt-scanner-title" class="flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em]"><i data-lucide="receipt-text" class="size-4 text-app-cyan" aria-hidden="true"></i><span data-en="Receipt scanner" data-vi="Quét hóa đơn">Quét hóa đơn</span></h2>
+          <button class="icon-button" type="button" data-action="close-receipt-scanner" aria-label="Đóng"><i data-lucide="x" class="size-5" aria-hidden="true"></i></button>
+        </div>
+        <input id="receipt-scan-camera" class="sr-only" type="file" accept="image/*" capture="environment" data-receipt-scan>
+        <input id="receipt-scan-file" class="sr-only" type="file" accept="image/jpeg,image/png" data-receipt-scan>
+        <div data-scanner-view="idle">
+          <div class="mt-5 grid place-items-center rounded-2xl border border-dashed border-app-line bg-app-panel p-8 text-center">
+            <i data-lucide="receipt-text" class="size-10 text-app-muted" aria-hidden="true"></i>
+            <strong class="mt-4 block" data-en="Take a photo or upload a receipt" data-vi="Chụp ảnh hoặc tải hóa đơn lên">Chụp ảnh hoặc tải hóa đơn lên</strong>
+            <small class="mt-1 block text-app-muted" data-en="JPG or PNG from a business you visited" data-vi="JPG hoặc PNG từ tiệm bạn đã ghé">JPG hoặc PNG từ tiệm bạn đã ghé</small>
+          </div>
+          <div class="mt-5 grid grid-cols-2 gap-3">
+            <button class="app-button" type="button" data-action="scan-receipt-camera"><i data-lucide="camera" class="size-4" aria-hidden="true"></i><span data-en="Camera" data-vi="Chụp ảnh">Chụp ảnh</span></button>
+            <button class="app-button-secondary" type="button" data-action="scan-receipt-upload"><i data-lucide="upload" class="size-4" aria-hidden="true"></i><span data-en="Upload file" data-vi="Tải ảnh lên">Tải ảnh lên</span></button>
+          </div>
+        </div>
+        <div data-scanner-view="busy" class="hidden">
+          <img id="receipt-scanner-preview" class="mt-5 max-h-44 w-full rounded-2xl object-cover" alt="">
+          <p id="receipt-scanner-status" class="mt-4 text-center text-sm text-app-muted" role="status" aria-live="polite"></p>
+          <div class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-app-panel"><div id="receipt-scanner-bar" class="h-full w-0 rounded-full bg-gradient-to-r from-app-cyan to-app-purple transition-[width]"></div></div>
+        </div>
+        <div data-scanner-view="result" class="hidden">
+          <p class="eyebrow mt-5" data-en="Detected" data-vi="Đã đọc được">Đã đọc được</p>
+          <ul id="receipt-scanner-fields" class="mt-3 space-y-2"></ul>
+          <details class="mt-4">
+            <summary class="cursor-pointer text-xs text-app-muted" data-en="Show raw OCR text" data-vi="Xem text OCR gốc">Xem text OCR gốc</summary>
+            <pre id="receipt-scanner-raw" class="mt-2 max-h-32 overflow-auto whitespace-pre-wrap rounded-xl bg-app-panel p-3 text-[11px] leading-4 text-app-muted"></pre>
+          </details>
+          <div class="mt-5 grid grid-cols-2 gap-3">
+            <button class="app-button-secondary" type="button" data-action="close-receipt-scanner" data-en="Cancel" data-vi="Hủy">Hủy</button>
+            <button class="app-button" type="button" data-action="apply-receipt-scan"><i data-lucide="check" class="size-4" aria-hidden="true"></i><span data-en="Use for a new look" data-vi="Dùng để thêm kiểu">Dùng để thêm kiểu</span></button>
+          </div>
+        </div>
+        <div data-scanner-view="error" class="hidden">
+          <div class="mt-5 rounded-2xl border border-app-red/30 bg-app-red/5 p-6 text-center">
+            <i data-lucide="scan-line" class="mx-auto size-8 text-app-red" aria-hidden="true"></i>
+            <strong id="receipt-scanner-error" class="mt-3 block text-sm"></strong>
+          </div>
+          <div class="mt-5 grid grid-cols-2 gap-3">
+            <button class="app-button-secondary" type="button" data-action="scan-receipt-retry" data-en="Try another photo" data-vi="Thử ảnh khác">Thử ảnh khác</button>
+            <button class="app-button" type="button" data-action="scan-receipt-manual" data-en="Enter by hand" data-vi="Nhập tay">Nhập tay</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1843,7 +1891,15 @@
           { id: 'look-almond-nude', businessId: BUSINESS_ID, visitId: null, staffProfileId: 'staff-sunny-k', staffName: 'Sunny K.', service: 'Gel extensions', color: 'Nude Rosé #N08', note: 'Dáng almond, dài vừa', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&w=600&q=80', createdAt: '2026-06-14T18:40:00.000Z' },
           { id: 'look-red-classic', businessId: BUSINESS_ID, visitId: null, staffProfileId: 'staff-jenny-t', staffName: 'Jenny T.', service: 'Classic manicure', color: 'Big Apple Red #N25', note: 'Đỏ cổ điển cho tiệc cưới', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=600&q=80', createdAt: '2026-05-30T14:10:00.000Z' },
           { id: 'look-glitter-ombre', businessId: BUSINESS_ID, visitId: null, staffProfileId: 'staff-kevin-v', staffName: 'Kevin V.', service: 'Acrylic full set', color: 'Champagne glitter ombré', note: 'Ombré nhũ chuyển từ gốc móng', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1607779097040-26e80aa78e66?auto=format&fit=crop&w=600&q=80', createdAt: '2026-05-11T17:25:00.000Z' },
-          { id: 'look-spa-pedi', businessId: 'golden-glow-spa', visitId: null, staffProfileId: 'staff-spa-linh', staffName: 'Linh', service: 'Spa pedicure', color: 'Lilac #142', note: 'Massage chân 20 phút, da nhạy cảm', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?auto=format&fit=crop&w=600&q=80', createdAt: '2026-04-22T13:00:00.000Z' }
+          { id: 'look-spa-pedi', businessId: 'golden-glow-spa', visitId: null, staffProfileId: 'staff-spa-linh', staffName: 'Linh', service: 'Spa pedicure', color: 'Lilac #142', note: 'Massage chân 20 phút, da nhạy cảm', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1519415943484-9fa1873496d4?auto=format&fit=crop&w=600&q=80', createdAt: '2026-04-22T13:00:00.000Z' },
+          { id: 'look-dip-mauve', businessId: BUSINESS_ID, visitId: null, staffProfileId: 'staff-david-l', staffName: 'David L.', service: 'Dip Powder', color: 'Mauve Dusk #D12', note: 'Bột nhúng, giữ được 4 tuần', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80', createdAt: '2026-07-02T15:30:00.000Z' },
+          { id: 'look-gelx-cocoa', businessId: BUSINESS_ID, visitId: null, staffProfileId: 'staff-lisa-n', staffName: 'Lisa N.', service: 'Gel extensions', color: 'Cocoa #G44', note: 'Dáng coffin, nâu sữa', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=80', createdAt: '2026-06-05T14:20:00.000Z' },
+          { id: 'look-milky-square', businessId: BUSINESS_ID, visitId: null, staffProfileId: 'staff-mary-s', staffName: 'Mary S.', service: 'Classic manicure', color: 'Milky White #M02', note: 'Móng ngắn vuông, đi làm', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=600&q=80', createdAt: '2026-05-20T16:45:00.000Z' },
+          // Businesses outside the nail bar have no staff profiles in this account, so their looks
+          // record the tech's name without claiming a profile the app cannot verify.
+          { id: 'look-balayage', businessId: 'sunset-hair-lounge', visitId: null, staffProfileId: null, staffName: 'Trang', service: 'Balayage', color: 'Caramel bronde', note: 'Nhuộm ombré, dặm lại sau 3 tháng', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=600&q=80', createdAt: '2026-06-18T11:15:00.000Z' },
+          { id: 'look-lash-volume', businessId: 'velvet-lash-studio', visitId: null, staffProfileId: null, staffName: 'Hân', service: 'Volume lashes', color: 'Fan 4D 0.07', note: 'Cong C, dài 11mm', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=600&q=80', createdAt: '2026-05-02T10:30:00.000Z' },
+          { id: 'look-lotus-mint', businessId: 'lotus-nail-spa', visitId: null, staffProfileId: null, staffName: 'Ngọc', service: 'Spa pedicure', color: 'Mint #L07', note: 'Tẩy da chết, đắp mặt nạ chân', photoDataUrl: '', photoUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=600&q=80', createdAt: '2026-03-14T09:50:00.000Z' }
         ],
         feedback: [],
         feedbackClaims: [],
@@ -8636,10 +8692,13 @@
         lookEmptyTitle: 'Chưa có kiểu nào', lookEmptyBody: 'Lưu ảnh, màu và ghi chú của mỗi lần làm để lần sau đặt lại chỉ trong một chạm.',
         lookNoResultsTitle: 'Không tìm thấy kiểu phù hợp', lookNoResultsBody: 'Thử từ khóa khác, hoặc xóa ô tìm kiếm để xem lại tất cả.',
         edit: 'Sửa', deleteLook: 'Xóa kiểu này?', deleteLookDetail: 'Thao tác chỉ ảnh hưởng dữ liệu mẫu trên thiết bị.', followVisitRequired: 'Chỉ theo dõi thợ đã từng phục vụ bạn.', scanReceipt: 'Quét hóa đơn', scanReceiptDetail: 'Bản mẫu mô phỏng OCR hóa đơn.',
-        scanReceiptFound: 'Đã đọc được từ hóa đơn:', scanReceiptUse: 'Dùng để thêm kiểu',
-        scanReceiptEmpty: 'Không còn hóa đơn nào chưa lưu thành kiểu.',
-        scanReceiptWorking: 'Đang đọc hóa đơn…',
-        scanReceiptFallback: 'Không đọc được hóa đơn; dùng tạm lần ghé gần nhất.', ratingRequired: 'Hãy chọn số sao',
+        scanStageEngine: 'Đang tải bộ đọc OCR…', scanStageInit: 'Đang khởi tạo…', scanStageReading: 'Đang đọc chữ…',
+        scanFieldBusiness: 'Tiệm', scanFieldService: 'Dịch vụ', scanFieldStaff: 'Thợ',
+        scanRawEmpty: 'Không đọc được chữ nào.',
+        scanErrorEngine: 'Không chạy được bộ đọc OCR. Kiểm tra kết nối rồi thử lại.',
+        scanErrorUnreadable: 'Ảnh này không đọc được chữ. Thử chụp rõ và đủ sáng hơn.',
+        scanErrorNoMatch: 'Không nhận ra tiệm hoặc dịch vụ nào trên hóa đơn này.',
+        scanBusinessRequired: 'Cần giữ lại tiệm thì mới thêm kiểu được.', ratingRequired: 'Hãy chọn số sao',
         reviewThanks: 'Đã gửi phản hồi riêng và cộng 15 điểm.', feedbackSent: 'Đã gửi phản hồi', feedbackSubmit: 'Gửi phản hồi + nhận 15 điểm', feedbackAlreadySent: 'Lượt ghé này đã gửi phản hồi.', feedbackFailed: 'Không thể gửi phản hồi. Vui lòng thử lại.',
         bookingMissingSelection: 'Chọn đủ dịch vụ, thợ, ngày và giờ.', bookingFailed: 'Không thể lưu yêu cầu đặt lịch. Vui lòng thử lại.', bookingConfirmFailed: 'Không thể xác nhận lịch hẹn. Vui lòng thử lại.', bookingRequestedTitle: 'Đã gửi yêu cầu', bookingConfirmedTitle: 'Lịch hẹn đã xác nhận', bookingPendingSla: '{business} thường phản hồi trong 10 phút. Chúng tôi sẽ báo ngay khi tiệm xác nhận.', bookingConfirmedCopy: '{business} đã xác nhận lịch hẹn và cộng {points} điểm.',
         openPayment: 'Mở {method} để thanh toán', addPhoto: 'Thêm ảnh',
@@ -8680,10 +8739,13 @@
         lookEmptyTitle: 'No looks yet', lookEmptyBody: 'Save the photo, color and notes from each visit so rebooking the same look later takes one tap.',
         lookNoResultsTitle: 'No looks match', lookNoResultsBody: 'Try a different keyword, or clear the search to see everything again.',
         edit: 'Edit', deleteLook: 'Delete this look?', deleteLookDetail: 'This only changes local demo data.', followVisitRequired: 'You can only follow a tech from a shared visit.', scanReceipt: 'Scan receipt', scanReceiptDetail: 'This prototype simulates receipt OCR.',
-        scanReceiptFound: 'Read from your receipt:', scanReceiptUse: 'Use for a new look',
-        scanReceiptEmpty: 'Every receipt is already saved as a look.',
-        scanReceiptWorking: 'Reading your receipt…',
-        scanReceiptFallback: 'Could not read that receipt; showing your most recent visit instead.', ratingRequired: 'Choose a rating',
+        scanStageEngine: 'Loading OCR engine…', scanStageInit: 'Initializing…', scanStageReading: 'Reading text…',
+        scanFieldBusiness: 'Business', scanFieldService: 'Service', scanFieldStaff: 'Tech',
+        scanRawEmpty: 'No text could be read.',
+        scanErrorEngine: 'The OCR engine could not run. Check your connection and try again.',
+        scanErrorUnreadable: 'No text could be read from that photo. Try a sharper, brighter shot.',
+        scanErrorNoMatch: 'No business or service on this receipt was recognized.',
+        scanBusinessRequired: 'Keep the business to add a look from this receipt.', ratingRequired: 'Choose a rating',
         reviewThanks: 'Private feedback sent and 15 points added.', feedbackSent: 'Feedback sent', feedbackSubmit: 'Send feedback + earn 15 points', feedbackAlreadySent: 'Feedback was already sent for this visit.', feedbackFailed: 'Could not send feedback. Please try again.',
         bookingMissingSelection: 'Choose service, technician, day and time.', bookingFailed: 'Could not save the booking request. Please try again.', bookingConfirmFailed: 'Could not confirm the appointment. Please try again.', bookingRequestedTitle: 'Request sent', bookingConfirmedTitle: 'Appointment confirmed', bookingPendingSla: '{business} usually responds within 10 minutes. We will notify you as soon as they confirm.', bookingConfirmedCopy: '{business} confirmed the appointment and added {points} points.',
         openPayment: 'Open {method} to pay', addPhoto: 'Add a photo',
@@ -10358,55 +10420,35 @@
       };
     }
 
-    async function recognizeReceipt(file) {
+    // Tesseract reports its own lifecycle — fetching the engine, then the language model, then the
+    // recognition pass. Each stage is surfaced as-is so a slow first run reads as progress rather than
+    // a hang.
+    const OCR_STAGE_COPY = {
+      'loading tesseract core': 'scanStageEngine',
+      'loading language traineddata': 'scanStageEngine',
+      'initializing tesseract': 'scanStageInit',
+      'initializing api': 'scanStageInit',
+      'recognizing text': 'scanStageReading'
+    };
+
+    async function recognizeReceipt(file, onProgress = null) {
       if (typeof Tesseract === 'undefined' || typeof Tesseract.recognize !== 'function') {
         return { ok: false, code: 'ocr_unavailable' };
       }
       try {
-        const result = await Tesseract.recognize(file, 'eng');
+        const result = await Tesseract.recognize(file, 'eng', {
+          logger: (message) => {
+            if (typeof onProgress !== 'function' || !isRecord(message)) return;
+            const key = OCR_STAGE_COPY[message.status];
+            if (!key) return;
+            const progress = Number(message.progress);
+            onProgress(key, Number.isFinite(progress) ? Math.round(progress * 100) : 0);
+          }
+        });
         return { ok: true, text: String(result?.data?.text ?? '') };
       } catch {
         return { ok: false, code: 'ocr_failed' };
       }
-    }
-
-    // When OCR cannot run — no library, offline, an unreadable photo — the scan falls back to the most
-    // recent visit not already archived, so the flow still leads somewhere useful.
-    function scanReceiptDraft(appState) {
-      if (!isRecord(appState) || !Array.isArray(appState.visits) || !Array.isArray(appState.looks)) {
-        return { ok: false, code: 'invalid_state' };
-      }
-      const archived = new Set(appState.looks.filter(isRecord).map((look) => look.visitId).filter(Boolean));
-      const visit = appState.visits
-        .filter((item) => isRecord(item) && item.id && !archived.has(item.id) && getValidBusiness(appState, item.businessId))
-        .sort((a, b) => String(b.occurredAt).localeCompare(String(a.occurredAt)))[0] ?? null;
-      if (!visit) return { ok: false, code: 'no_receipt' };
-      return {
-        ok: true,
-        draft: {
-          visitId: visit.id,
-          businessId: visit.businessId,
-          staffProfileId: visit.staffProfileId ?? null,
-          staffName: typeof visit.staffName === 'string' ? visit.staffName : '',
-          service: typeof visit.service === 'string' ? visit.service : ''
-        }
-      };
-    }
-
-    function scanReceiptSummary(draft) {
-      const fragment = document.createElement('div');
-      const intro = document.createElement('p');
-      intro.textContent = t('scanReceiptFound');
-      const list = document.createElement('ul');
-      list.className = 'mt-3 space-y-1 text-sm text-app-muted';
-      const businessName = getValidBusiness(state, draft.businessId)?.name ?? t('unknownBusiness');
-      [draft.service, draft.staffName, businessName].filter(Boolean).forEach((line) => {
-        const item = document.createElement('li');
-        item.textContent = line;
-        list.append(item);
-      });
-      fragment.append(intro, list);
-      return fragment;
     }
 
     function editedLook() {
@@ -12387,31 +12429,145 @@
       navigateTo('looks');
       showToast(t('lookSaved'));
     });
-    registerAction('scan-receipt', () => document.getElementById('receipt-scan-camera')?.click());
-    registerAction('upload-receipt', () => document.getElementById('receipt-scan-file')?.click());
+    // The scanner is a self-contained dialog rather than app state: nothing it holds is worth
+    // persisting, and a half-read receipt should never survive a reload.
+    let receiptScan = null;
+    let receiptScanReturnFocus = null;
 
-    function setReceiptScanStatus(message) {
-      const status = document.getElementById('receipt-scan-status');
-      if (!status) return;
-      status.textContent = message ?? '';
-      status.classList.toggle('hidden', !message);
+    function setReceiptScannerView(view) {
+      const scanner = document.getElementById('receipt-scanner');
+      if (!scanner) return;
+      scanner.querySelectorAll('[data-scanner-view]').forEach((node) => {
+        node.classList.toggle('hidden', node.dataset.scannerView !== view);
+      });
     }
 
-    function offerReceiptDraft(draft, control) {
-      openOverlay({
-        title: t('scanReceipt'),
-        content: scanReceiptSummary(draft),
-        confirmLabel: t('scanReceiptUse'),
-        onConfirm: () => {
-          commitState((state) => {
-            state.ui.lookScanDraft = draft;
-            state.ui.editingLookId = null;
-          });
-          renderLookForm();
-          navigateTo('addlook');
-        }
-      }, control);
+    function openReceiptScanner(trigger) {
+      const scanner = document.getElementById('receipt-scanner');
+      if (!scanner) return;
+      receiptScan = null;
+      receiptScanReturnFocus = trigger ?? null;
+      setReceiptScannerView('idle');
+      scanner.classList.remove('hidden');
+      scanner.classList.add('flex');
+      scanner.setAttribute('aria-hidden', 'false');
+      scanner.querySelector('[role="dialog"]')?.focus?.();
     }
+
+    function closeReceiptScanner() {
+      const scanner = document.getElementById('receipt-scanner');
+      if (!scanner) return;
+      receiptScan = null;
+      scanner.classList.add('hidden');
+      scanner.classList.remove('flex');
+      scanner.setAttribute('aria-hidden', 'true');
+      receiptScanReturnFocus?.focus?.();
+      receiptScanReturnFocus = null;
+    }
+
+    function setReceiptScanProgress(stageKey, percent) {
+      const status = document.getElementById('receipt-scanner-status');
+      const bar = document.getElementById('receipt-scanner-bar');
+      if (status) status.textContent = percent > 0 ? `${t(stageKey)} ${percent}%` : t(stageKey);
+      if (bar) bar.style.width = `${Math.max(2, percent)}%`;
+    }
+
+    function showReceiptScanError(code) {
+      const copy = { ocr_unavailable: 'scanErrorEngine', ocr_failed: 'scanErrorEngine', unreadable_receipt: 'scanErrorUnreadable' };
+      const node = document.getElementById('receipt-scanner-error');
+      if (node) node.textContent = t(copy[code] ?? 'scanErrorNoMatch');
+      setReceiptScannerView('error');
+    }
+
+    function receiptFieldRow(labelKey, value, name) {
+      const row = document.createElement('li');
+      row.className = 'flex items-center gap-3 rounded-xl border border-app-line bg-app-panel p-3';
+      const box = document.createElement('input');
+      box.type = 'checkbox';
+      box.className = 'size-4 accent-current text-app-green';
+      box.checked = true;
+      box.dataset.scanField = name;
+      box.id = `receipt-scan-${name}`;
+      const label = document.createElement('label');
+      label.className = 'flex-1 text-sm';
+      label.htmlFor = box.id;
+      const caption = document.createElement('small');
+      caption.className = 'block text-app-muted';
+      caption.textContent = t(labelKey);
+      const strong = document.createElement('strong');
+      strong.textContent = value;
+      label.append(caption, strong);
+      row.append(box, label);
+      return row;
+    }
+
+    function showReceiptScanResult(draft, rawText) {
+      receiptScan = { draft, rawText };
+      const list = document.getElementById('receipt-scanner-fields');
+      const rows = [receiptFieldRow('scanFieldBusiness', getValidBusiness(state, draft.businessId)?.name ?? '', 'business')];
+      rows.push(receiptFieldRow('scanFieldService', draft.service, 'service'));
+      // A receipt that never named a tech has no row to offer rather than an empty one.
+      if (draft.staffName) rows.push(receiptFieldRow('scanFieldStaff', draft.staffName, 'staff'));
+      list?.replaceChildren(...rows);
+      const raw = document.getElementById('receipt-scanner-raw');
+      if (raw) raw.textContent = rawText.trim() || t('scanRawEmpty');
+      setReceiptScannerView('result');
+    }
+
+    async function readReceiptFile(file) {
+      const preview = document.getElementById('receipt-scanner-preview');
+      let objectUrl = '';
+      // The thumbnail is decoration; if the browser will not hand out a URL for this file, the scan
+      // itself must still run.
+      try {
+        objectUrl = URL.createObjectURL(file);
+        if (preview) preview.src = objectUrl;
+      } catch {
+        objectUrl = '';
+      }
+      setReceiptScannerView('busy');
+      setReceiptScanProgress('scanStageEngine', 0);
+      const scan = await recognizeReceipt(file, setReceiptScanProgress);
+      if (objectUrl) try { URL.revokeObjectURL(objectUrl); } catch { /* nothing to release */ }
+      if (!scan.ok) return showReceiptScanError(scan.code);
+      const read = parseReceiptText(state, scan.text);
+      if (!read.ok) return showReceiptScanError(read.code);
+      return showReceiptScanResult(read.draft, scan.text);
+    }
+
+    registerAction('scan-receipt', (control) => openReceiptScanner(control));
+    registerAction('close-receipt-scanner', () => closeReceiptScanner());
+    registerAction('scan-receipt-camera', () => document.getElementById('receipt-scan-camera')?.click());
+    registerAction('scan-receipt-upload', () => document.getElementById('receipt-scan-file')?.click());
+    registerAction('scan-receipt-retry', () => setReceiptScannerView('idle'));
+    registerAction('scan-receipt-manual', () => {
+      closeReceiptScanner();
+      commitState((draft) => { draft.ui.editingLookId = null; draft.ui.lookScanDraft = null; });
+      renderLookForm();
+      navigateTo('addlook');
+    });
+    registerAction('apply-receipt-scan', () => {
+      if (!receiptScan) return;
+      const checked = (name) => document.getElementById('receipt-scanner-fields')
+        ?.querySelector(`[data-scan-field="${name}"]`)?.checked !== false;
+      // Unticking the business would leave the look with nowhere to belong, so that row alone is
+      // load-bearing: without it there is nothing to apply.
+      if (!checked('business')) return showToast(t('scanBusinessRequired'), 'error');
+      const source = receiptScan.draft;
+      const draft = {
+        ...source,
+        service: checked('service') ? source.service : '',
+        staffProfileId: checked('staff') ? source.staffProfileId : null,
+        staffName: checked('staff') ? source.staffName : ''
+      };
+      closeReceiptScanner();
+      commitState((state) => {
+        state.ui.lookScanDraft = draft;
+        state.ui.editingLookId = null;
+      });
+      renderLookForm();
+      navigateTo('addlook');
+    });
     registerAction('upload-look', () => document.getElementById('look-photo-input')?.click());
     registerAction('view-look', (control) => {
       const look = state.looks.find((item) => item.id === control.dataset.lookId);
@@ -12813,17 +12969,7 @@
         // Clearing the input now means picking the same photo twice still re-fires change.
         event.target.value = '';
         if (!file) return;
-        setReceiptScanStatus(t('scanReceiptWorking'));
-        const scan = await recognizeReceipt(file);
-        const read = scan.ok ? parseReceiptText(state, scan.text) : scan;
-        setReceiptScanStatus('');
-        if (read.ok) return offerReceiptDraft(read.draft, event.target);
-        // A photo the reader could not place still should not dead-end: the most recent unarchived
-        // visit is offered instead, labelled as the guess it is.
-        const fallback = scanReceiptDraft(state);
-        if (!fallback.ok) return openOverlay({ title: t('scanReceipt'), html: t('scanReceiptEmpty'), hideCancel: true }, event.target);
-        showToast(t('scanReceiptFallback'), 'error');
-        return offerReceiptDraft(fallback.draft, event.target);
+        return readReceiptFile(file);
       }
       if (event.target.matches?.('[data-look-photo]')) {
         const file = event.target.files?.[0];
@@ -14760,7 +14906,6 @@
       saveLookRecord,
       updateLookRecord,
       parseReceiptText,
-      scanReceiptDraft,
       sanitizeLookPhotoUrl,
       toggleSavedOffer,
       addWishRecord,
