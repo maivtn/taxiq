@@ -80,9 +80,9 @@
     .pos-grid { display: grid; gap: 14px; }
     .pos-g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .pos-g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    /* stat grids stay 2-up all the way down to the smallest phone */
     @media (max-width: 1000px) { .pos-g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 900px) { .pos-g2 { grid-template-columns: 1fr; } }
-    @media (max-width: 560px) { .pos-g4 { grid-template-columns: 1fr; } }
     .pos-split { display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px; align-items: start; }
     @media (max-width: 1000px) { .pos-split { grid-template-columns: 1fr; } }
     .mg-split { display: grid; grid-template-columns: 1.1fr 2.4fr; gap: 14px; align-items: start; }
@@ -192,11 +192,15 @@
 
     /* ── dispatch (floor) ── */
     .disp-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
-    @media (max-width: 900px) { .disp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 480px) { .disp-stats { grid-template-columns: 1fr; } }
+    /* 2 tiles per row on tablet/mobile — the odd 5th tile spans the full row instead of leaving a hole */
+    @media (max-width: 900px) {
+      .disp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .disp-stats > .disp-stat:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    }
     .disp-stat { background: var(--nexora-surface); border: 1px solid var(--nexora-border); border-radius: 14px; padding: 14px; box-shadow: var(--nexora-card-shadow); text-align: center; }
     .disp-num { font-size: 24px; font-weight: 900; color: var(--nexora-text); }
-    .disp-lbl { font-size: 11px; font-weight: 800; color: var(--nexora-muted); margin-top: 3px; }
+    .disp-lbl { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11px; font-weight: 800; color: var(--nexora-muted); margin-top: 3px; }
+    .disp-lbl i { font-size: 12px; line-height: 1; }
     .disp-grid { display: grid; grid-template-columns: 1.45fr 1fr; gap: 14px; align-items: start; }
     @media (max-width: 1100px) { .disp-grid { grid-template-columns: 1fr; } }
 
@@ -365,6 +369,48 @@
     .swal2-icon.swal2-success [class^='swal2-success-line'] { background-color: var(--nexora-success) !important; }
     .swal2-icon.swal2-success .swal2-success-ring { border-color: rgba(0, 184, 115, .3) !important; }
     .swal2-timer-progress-bar { background: var(--nexora-success) !important; }
+
+    /* ── bootstrap-icons sizing (icons inherit font-size, which is too small in dense labels) ── */
+    .pos-card-head h3 { display: flex; align-items: center; gap: 7px; }
+    .pos-card-head h3 i { font-size: 15px; line-height: 1; color: var(--nexora-brand); flex-shrink: 0; }
+    .pos-kpi-label { display: flex; align-items: center; gap: 6px; }
+    .pos-kpi-label i { font-size: 13px; line-height: 1; }
+    .pos-btn i, .pos-chip i, .tag-btn i, .pill i, .fc-step i, .feed-line i, .wl-name i, .wl-meta i, .tech-sub i, .next-chip i, .pick-arrow i, .sel-hint i, .warn-row i, .cust-usual i, .cust-note i, .cust-pkg i, .pos-hint i, .pos-inline-lbl i, .ap-warn i, .confirm-title i, .sms-preview-lbl i, .pos-section-title i { line-height: 1; }
+    .pos-table th i, .pos-table td i { line-height: 1; }
+    .seg-btn-icon, .sched-opt-icon, .camp-icon { line-height: 1; color: var(--nexora-brand); }
+    .pos-icon-btn i, .x-btn i { font-size: 13px; line-height: 1; }
+    .flow-strip > b i { margin-right: 4px; }
+
+    /* ── mobile pass ── */
+    @media (max-width: 640px) {
+      .content { padding: 14px 12px 88px; }
+      /* 5 tabs wrapped into 3 rows ate the fold — one swipeable strip instead */
+      .page-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; margin-inline: -12px; padding-inline: 12px; scroll-snap-type: x proximity; }
+      .page-tabs::-webkit-scrollbar { display: none; }
+      .page-tab { flex: 0 0 auto; scroll-snap-align: start; }
+      .pos-card { padding: 14px; border-radius: 14px; }
+      .disp-stat { padding: 12px 10px; }
+      .disp-num { font-size: 21px; }
+      .pos-kpi-value { font-size: 22px; }
+      .pos-card-head { margin-bottom: 12px; }
+      /* the inline "add guest" row overflowed the card at 360px — let the fields fill the width */
+      .pos-card-head .pos-inline { width: 100%; }
+      .pos-card-head .pos-inline .pos-input { flex: 1 1 120px; width: auto !important; min-width: 0; }
+      .wl-actions { flex-wrap: wrap; }
+      .tech-sub { margin-left: 0; }
+      /* 44px tap targets on touch */
+      .x-btn, .pos-icon-btn { width: 36px; height: 36px; }
+      .sms-modal { padding: 0; }
+      .sms-dialog { border-radius: 0; min-height: 100vh; }
+      .sms-mhead, .sms-mfoot { position: sticky; z-index: 1; background: var(--nexora-surface); }
+      .sms-mhead { top: 0; }
+      .sms-mfoot { bottom: 0; background: var(--nexora-surface-muted); }
+      .sms-mbody { padding: 16px; }
+      .sms-mfoot .pos-inline { flex: 1; justify-content: flex-end; }
+      .clk-qr img { width: 132px; height: 132px; }
+      .rev-bars { height: 108px; }
+      .sched-opt { padding: 10px 4px; font-size: 11px; }
+    }
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
@@ -379,7 +425,7 @@
         <div class="page-heading">
           <div class="page-title-row">
             <h1 class="page-title">POS</h1>
-            <span class="pos-chip pos-chip-gold">👑 Owner · Brian</span>
+            <span class="pos-chip pos-chip-gold"><i class="bi bi-award-fill" aria-hidden="true"></i> Owner · Brian</span>
           </div>
           <p class="page-description">Bitcoin Nail Bar · Houston, TX — run the front desk: time clock, salon management, SMS marketing, and appointments.</p>
           <div class="page-tabs" role="tablist" aria-label="POS sections">
@@ -395,41 +441,41 @@
         <section class="pos-panel is-active" data-pos-panel="dispatch" aria-label="Dispatch">
           <div class="pos-stack">
             <div class="disp-stats">
-              <div class="disp-stat"><div class="disp-num" data-fs-wait>0</div><div class="disp-lbl">⏳ Waiting</div></div>
-              <div class="disp-stat"><div class="disp-num" data-fs-svc>0</div><div class="disp-lbl">💅 In service</div></div>
-              <div class="disp-stat"><div class="disp-num" data-fs-ready>0</div><div class="disp-lbl">💵 Ready to pay</div></div>
-              <div class="disp-stat"><div class="disp-num" data-fs-done>0</div><div class="disp-lbl">✅ Tickets today</div></div>
-              <div class="disp-stat"><div class="disp-num" data-fs-rev>$0</div><div class="disp-lbl">💰 Revenue today</div></div>
+              <div class="disp-stat"><div class="disp-num" data-fs-wait>0</div><div class="disp-lbl"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Waiting</div></div>
+              <div class="disp-stat"><div class="disp-num" data-fs-svc>0</div><div class="disp-lbl"><i class="bi bi-brush" aria-hidden="true"></i> In service</div></div>
+              <div class="disp-stat"><div class="disp-num" data-fs-ready>0</div><div class="disp-lbl"><i class="bi bi-cash-coin" aria-hidden="true"></i> Ready to pay</div></div>
+              <div class="disp-stat"><div class="disp-num" data-fs-done>0</div><div class="disp-lbl"><i class="bi bi-receipt" aria-hidden="true"></i> Tickets today</div></div>
+              <div class="disp-stat"><div class="disp-num" data-fs-rev>$0</div><div class="disp-lbl"><i class="bi bi-cash-stack" aria-hidden="true"></i> Revenue today</div></div>
             </div>
 
             <div class="flow-strip">
-              <b style="color:var(--nexora-brand)">🗺️ CHECK-IN → ASSIGNMENT:</b>
-              <span class="fc-step">🖥️ Kiosk / 📱 App / 🌐 QR web</span><span class="fc-arr">→</span>
-              <span class="fc-step">📥 Front desk confirms</span><span class="fc-arr">→</span>
-              <span class="fc-step">⏳ Queue</span><span class="fc-arr">→</span>
-              <span class="fc-step">👆 Assign: ▶ one tap / two taps / 📟 page</span><span class="fc-arr">→</span>
-              <span class="fc-step">📟 Beep the tech</span><span class="fc-arr">→</span>
-              <span class="fc-step">🗣️ Confirm the service with the guest</span><span class="fc-arr">→</span>
-              <span class="fc-step">▶ In service</span><span class="fc-arr">→</span>
-              <span class="fc-step">✅ Done</span><span class="fc-arr">→</span>
-              <span class="fc-step">💵 Checkout</span>
+              <b style="color:var(--nexora-brand)"><i class="bi bi-diagram-3" aria-hidden="true"></i>CHECK-IN → ASSIGNMENT:</b>
+              <span class="fc-step"><i class="bi bi-display" aria-hidden="true"></i> Kiosk / <i class="bi bi-phone" aria-hidden="true"></i> App / <i class="bi bi-globe" aria-hidden="true"></i> QR web</span><span class="fc-arr">→</span>
+              <span class="fc-step"><i class="bi bi-inbox-fill" aria-hidden="true"></i> Front desk confirms</span><span class="fc-arr">→</span>
+              <span class="fc-step"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Queue</span><span class="fc-arr">→</span>
+              <span class="fc-step"><i class="bi bi-hand-index" aria-hidden="true"></i> Assign: <i class="bi bi-play-fill" aria-hidden="true"></i> one tap / two taps / <i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> page</span><span class="fc-arr">→</span>
+              <span class="fc-step"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> Beep the tech</span><span class="fc-arr">→</span>
+              <span class="fc-step"><i class="bi bi-chat-quote" aria-hidden="true"></i> Confirm the service with the guest</span><span class="fc-arr">→</span>
+              <span class="fc-step"><i class="bi bi-play-fill" aria-hidden="true"></i> In service</span><span class="fc-arr">→</span>
+              <span class="fc-step"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Done</span><span class="fc-arr">→</span>
+              <span class="fc-step"><i class="bi bi-cash-coin" aria-hidden="true"></i> Checkout</span>
               <span class="fc-alt">The kiosk and the front desk drop guests straight into the queue with no confirmation step · online bookings surface 15 minutes before their slot · techs tap ✓ Accept / ▶ / ✅ themselves in the Staff App and the POS syncs in realtime.</span>
             </div>
 
             <div class="pos-card panel-violet" data-ciq-panel hidden>
-              <div class="pos-card-head"><h3>📥 Check-in from the Nexora App / QR — waiting on the front desk (<span data-ciq-count>0</span>)</h3></div>
+              <div class="pos-card-head"><h3><i class="bi bi-inbox-fill" aria-hidden="true"></i> Check-in from the Nexora App / QR — waiting on the front desk (<span data-ciq-count>0</span>)</h3></div>
               <div data-ciq-list></div>
               <div class="spec-note"><b>📐 SPEC — Check-in request:</b> Three doors feed the same queue: (1) the Nexora App — a known guest, identified by their account; (2) a QR that opens the web check-in with no app install — new guests; (3) the kiosk or the front desk. App and QR create a <b>request</b> — the front desk taps ✓ to accept (into the queue, keeping the requested tech and any promo/reward already chosen) or ✕ to decline (the app tells the guest why: fully booked, tech off…). Once confirmed, the guest's app switches to the Live Ticket.</div>
             </div>
 
             <div class="pos-card panel-amber" data-arq-panel hidden>
-              <div class="pos-card-head"><h3>🔐 Tech access requests — waiting on front desk / manager (<span data-arq-count>0</span>)</h3></div>
+              <div class="pos-card-head"><h3><i class="bi bi-shield-lock" aria-hidden="true"></i> Tech access requests — waiting on front desk / manager (<span data-arq-count>0</span>)</h3></div>
               <div data-arq-list></div>
               <div class="spec-note"><b>📐 SPEC — Access request:</b> A tech scans the QR on a guest's ticket in the Staff App. If the ticket is already theirs it opens straight to the work ticket. Someone else's ticket — or an unassigned one — is blocked, with a "Request access" button that lands here together with a <b>skill check</b>. Approving assigns or reassigns the tech and writes it to the ticket's audit log; if they lack the skill the override must be justified (production requires a manager PIN). Declining reports back to the Staff App. This is what stops techs from jumping tickets to grab guests.</div>
             </div>
 
             <div class="pos-card panel-blue" data-eta-panel hidden>
-              <div class="pos-card-head"><h3>📅 Today's bookings &amp; ETA — guests on the way (<span data-eta-count>0</span>)</h3></div>
+              <div class="pos-card-head"><h3><i class="bi bi-calendar-event" aria-hidden="true"></i> Today's bookings &amp; ETA — guests on the way (<span data-eta-count>0</span>)</h3></div>
               <div data-eta-list></div>
               <div class="spec-note"><b>📐 SPEC — Booking &amp; ETA (#79):</b> Solves "the guest has an appointment but nobody knows when they'll show". The guest taps <b>🚗 On my way</b> in the app and the salon sees a live ETA here, in lanes: <b>Booked → On the way → Arrived → Checked in</b>. Privacy has two levels: by default only the <b>ETA</b> is shared; the guest can opt into <b>📍 Share live trip</b> for an Uber-style view. Live trip location only runs in the foreground while moving (no permanent background permission — easier App Store review, kinder to the battery), updates every 30–60s over websocket, and shuts off on the arrival geofence or after 60 minutes. Guests without the app get an SMS at T-60 with a web link that does the same thing. Production adds a geofence that detects arrival automatically plus AI prep that holds the requested tech and readies the chair.</div>
             </div>
@@ -437,7 +483,7 @@
             <div class="disp-grid">
               <div class="pos-card">
                 <div class="pos-card-head">
-                  <h3>⏳ Queue</h3>
+                  <h3><i class="bi bi-hourglass-split" aria-hidden="true"></i> Queue</h3>
                   <div class="pos-inline">
                     <input class="pos-input" data-wl-name placeholder="Guest name" style="width:130px;height:34px">
                     <input class="pos-input" data-wl-phone placeholder="Phone" style="width:120px;height:34px">
@@ -448,7 +494,7 @@
               </div>
 
               <div class="pos-card">
-                <div class="pos-card-head"><h3>💅 Techs on shift — turns today</h3></div>
+                <div class="pos-card-head"><h3><i class="bi bi-brush" aria-hidden="true"></i> Techs on shift — turns today</h3></div>
                 <div data-tech-board></div>
               </div>
             </div>
@@ -463,8 +509,8 @@
         <div class="sms-modal" data-qn-modal role="dialog" aria-modal="true" aria-label="Quick note">
           <div class="sms-dialog" style="max-width:520px">
             <div class="sms-mhead">
-              <h3>🧠 Quick note — <span data-qn-name></span></h3>
-              <button class="pos-icon-btn" type="button" data-qn-skip aria-label="Skip">✕</button>
+              <h3><i class="bi bi-lightbulb" aria-hidden="true"></i> Quick note — <span data-qn-name></span></h3>
+              <button class="pos-icon-btn" type="button" data-qn-skip aria-label="Skip"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
             </div>
             <div class="sms-mbody">
               <p class="pos-muted" style="margin:0 0 10px">Anything worth remembering for next time? One tap, or skip it — this shows on the Staff App right after ✋ Done.</p>
@@ -473,7 +519,7 @@
             </div>
             <div class="sms-mfoot" style="justify-content:flex-end">
               <button class="pos-btn pos-btn-sm" type="button" data-qn-skip>Skip</button>
-              <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-qn-save>💾 Save note</button>
+              <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-qn-save><i class="bi bi-floppy" aria-hidden="true"></i> Save note</button>
             </div>
           </div>
         </div>
@@ -483,7 +529,7 @@
           <div class="pos-stack">
             <div class="pos-card">
               <div class="pos-card-head">
-                <h3>🕐 Clock-in QR — techs scan with the Nexora Staff App</h3>
+                <h3><i class="bi bi-clock" aria-hidden="true"></i> Clock-in QR — techs scan with the Nexora Staff App</h3>
                 <span class="pos-chip pos-chip-gray" data-clk-date></span>
               </div>
               <div class="clk-qr-card">
@@ -500,7 +546,7 @@
             <div class="pos-split">
               <div class="pos-card">
                 <div class="pos-card-head">
-                  <h3>👥 Today's shift — turn order follows clock-in time</h3>
+                  <h3><i class="bi bi-people-fill" aria-hidden="true"></i> Today's shift — turn order follows clock-in time</h3>
                   <span class="pos-chip pos-chip-green" data-clk-oncount>0 on shift</span>
                 </div>
                 <div data-clk-grid></div>
@@ -509,11 +555,11 @@
 
               <div class="pos-stack">
                 <div class="pos-card soft">
-                  <div class="pos-card-head"><h3>🔔 Pushed to Staff App</h3></div>
+                  <div class="pos-card-head"><h3><i class="bi bi-bell-fill" aria-hidden="true"></i> Pushed to Staff App</h3></div>
                   <div data-clk-notif></div>
                 </div>
                 <div class="pos-card soft">
-                  <div class="pos-card-head"><h3>📜 Today's log</h3></div>
+                  <div class="pos-card-head"><h3><i class="bi bi-journal-text" aria-hidden="true"></i> Today's log</h3></div>
                   <div data-clk-log></div>
                 </div>
               </div>
@@ -535,17 +581,17 @@
           <div class="pos-card">
             <div class="pos-card-head">
               <div>
-                <h3>💬 SMS Campaigns</h3>
+                <h3><i class="bi bi-chat-dots" aria-hidden="true"></i> SMS Campaigns</h3>
                 <div class="pos-muted" style="margin-top:4px">Chọn nhóm khách → Soạn tin → Gửi hoặc hẹn giờ</div>
               </div>
               <div class="pos-inline">
                 <span class="pos-chip pos-chip-gray">Owner &amp; Manager only</span>
                 <span class="pos-chip pos-chip-blue" data-sms-credits>SMS credits: 847</span>
-                <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-sms-new>✦ Tạo Campaign Mới</button>
+                <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-sms-new><i class="bi bi-stars" aria-hidden="true"></i> Tạo Campaign Mới</button>
               </div>
             </div>
 
-            <div class="sms-banner" data-sms-banner><span>✅</span><span data-sms-banner-text></span></div>
+            <div class="sms-banner" data-sms-banner><span><i class="bi bi-check-circle-fill" aria-hidden="true"></i></span><span data-sms-banner-text></span></div>
 
             <div class="pos-grid pos-g4">
               <div class="pos-card soft"><div class="pos-kpi-label">Tổng khách</div><div class="pos-kpi-value">1,284</div><div class="pos-kpi-foot"><span class="pos-chip pos-chip-green">↑ +23 tuần này</span></div></div>
@@ -566,8 +612,8 @@
           <div class="sms-modal" data-sms-modal role="dialog" aria-modal="true" aria-label="Tạo SMS Campaign">
             <div class="sms-dialog">
               <div class="sms-mhead">
-                <h3>✦ Tạo SMS Campaign</h3>
-                <button class="pos-icon-btn" type="button" data-sms-close aria-label="Đóng">✕</button>
+                <h3><i class="bi bi-stars" aria-hidden="true"></i> Tạo SMS Campaign</h3>
+                <button class="pos-icon-btn" type="button" data-sms-close aria-label="Đóng"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
               </div>
               <div class="sms-mbody">
                 <div class="sms-step">
@@ -585,10 +631,10 @@
                   <div class="sms-composer">
                     <div class="sms-toolbar" data-tag-toolbar>
                       <span style="font-size:11px;font-weight:700;color:var(--nexora-subtle)">Chèn:</span>
-                      <button class="tag-btn" type="button" data-tag="{TenKhach}">👤 Tên khách</button>
-                      <button class="tag-btn" type="button" data-tag="{TenTiem}">💅 Tên tiệm</button>
-                      <button class="tag-btn" type="button" data-tag="{Link}">🔗 Link offer</button>
-                      <button class="tag-btn" type="button" data-tag="{SoDT}">📞 Số điện thoại</button>
+                      <button class="tag-btn" type="button" data-tag="{TenKhach}"><i class="bi bi-person" aria-hidden="true"></i> Tên khách</button>
+                      <button class="tag-btn" type="button" data-tag="{TenTiem}"><i class="bi bi-brush" aria-hidden="true"></i> Tên tiệm</button>
+                      <button class="tag-btn" type="button" data-tag="{Link}"><i class="bi bi-link-45deg" aria-hidden="true"></i> Link offer</button>
+                      <button class="tag-btn" type="button" data-tag="{SoDT}"><i class="bi bi-telephone" aria-hidden="true"></i> Số điện thoại</button>
                     </div>
                     <textarea class="sms-textarea" data-sms-text placeholder="Soạn tin nhắn..."></textarea>
                     <div class="sms-foot">
@@ -597,7 +643,7 @@
                     </div>
                   </div>
                   <div class="sms-preview">
-                    <div class="sms-preview-lbl">📱 Preview trên điện thoại khách</div>
+                    <div class="sms-preview-lbl"><i class="bi bi-phone" aria-hidden="true"></i> Preview trên điện thoại khách</div>
                     <div class="sms-bubble" data-sms-bubble><span class="sms-bubble-empty">Tin nhắn sẽ hiển thị ở đây...</span></div>
                   </div>
                 </div>
@@ -614,9 +660,9 @@
                 <div class="sms-step">
                   <span class="sms-step-lbl">Bước 5 — Lịch gửi</span>
                   <div class="sched-row" data-sched-row>
-                    <button class="sched-opt is-on" type="button" data-mode="now"><span class="sched-opt-icon">⚡</span> Gửi ngay</button>
-                    <button class="sched-opt" type="button" data-mode="schedule"><span class="sched-opt-icon">🕐</span> Hẹn giờ</button>
-                    <button class="sched-opt" type="button" data-mode="auto"><span class="sched-opt-icon">🤖</span> Tự động</button>
+                    <button class="sched-opt is-on" type="button" data-mode="now"><span class="sched-opt-icon"><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i></span> Gửi ngay</button>
+                    <button class="sched-opt" type="button" data-mode="schedule"><span class="sched-opt-icon"><i class="bi bi-clock" aria-hidden="true"></i></span> Hẹn giờ</button>
+                    <button class="sched-opt" type="button" data-mode="auto"><span class="sched-opt-icon"><i class="bi bi-robot" aria-hidden="true"></i></span> Tự động</button>
                   </div>
                   <div class="sched-time" data-sched-time>
                     <input class="pos-input" type="date" data-sched-date>
@@ -625,7 +671,7 @@
                 </div>
 
                 <div class="confirm-box" data-confirm-box>
-                  <div class="confirm-title">⚠️ Xác nhận trước khi gửi</div>
+                  <div class="confirm-title"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> Xác nhận trước khi gửi</div>
                   <div class="confirm-detail" data-confirm-detail></div>
                 </div>
               </div>
@@ -637,7 +683,7 @@
                 </div>
                 <div class="pos-inline">
                   <button class="pos-btn pos-btn-sm" type="button" data-sms-cancel>Hủy</button>
-                  <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-sms-send>🚀 Gửi Campaign</button>
+                  <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-sms-send><i class="bi bi-rocket-takeoff" aria-hidden="true"></i> Gửi Campaign</button>
                 </div>
               </div>
             </div>
@@ -648,9 +694,9 @@
         <section class="pos-panel" data-pos-panel="appointments" aria-label="Appointments">
           <div class="pos-card">
             <div class="pos-card-head">
-              <h3>📅 Appointments</h3>
+              <h3><i class="bi bi-calendar-check" aria-hidden="true"></i> Appointments</h3>
               <div class="pos-inline">
-                <span class="pos-muted">🟪 tech assigned · 🟧 unassigned</span>
+                <span class="pos-muted"><i class="bi bi-square-fill" style="color:var(--nexora-violet)" aria-hidden="true"></i> tech assigned · <i class="bi bi-square-fill" style="color:var(--nexora-warning)" aria-hidden="true"></i> unassigned</span>
                 <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-ap-add><i class="bi bi-plus-lg"></i> New appointment</button>
               </div>
             </div>
@@ -1515,10 +1561,10 @@
         var tips = SALES.reduce(function (a, s) { return a + s.tip; }, 0);
         var bills = SALES.length;
         return '<div class="pos-grid pos-g4">' +
-          '<div class="pos-card"><div class="pos-kpi-label">💵 Revenue today</div><div class="pos-kpi-value">' + money0(rev) + '</div><div class="pos-kpi-foot"><span class="pos-chip pos-chip-green">' + bills + ' tickets paid</span></div></div>' +
-          '<div class="pos-card"><div class="pos-kpi-label">🧾 Average ticket</div><div class="pos-kpi-value">' + money(bills ? rev / bills : 0) + '</div><div class="pos-kpi-foot"><span class="pos-chip pos-chip-gray">tip included, after discounts</span></div></div>' +
-          '<div class="pos-card"><div class="pos-kpi-label">💚 Tips today</div><div class="pos-kpi-value">' + money0(tips) + '</div><div class="pos-kpi-foot"><span class="pos-chip pos-chip-green">100% to techs</span></div></div>' +
-          '<div class="pos-card"><div class="pos-kpi-label">🪑 Waiting / service / pay</div><div class="pos-kpi-value">' + floorCount('waiting') + ' / ' + floorCount('service') + ' / ' + floorCount('ready') + '</div><div class="pos-kpi-foot"><span class="pos-chip pos-chip-blue">in the salon right now</span></div></div>' +
+          '<div class="pos-card"><div class="pos-kpi-label"><i class="bi bi-cash-stack" aria-hidden="true"></i> Revenue today</div><div class="pos-kpi-value">' + money0(rev) + '</div><div class="pos-kpi-foot"><span class="pos-chip pos-chip-green">' + bills + ' tickets paid</span></div></div>' +
+          '<div class="pos-card"><div class="pos-kpi-label"><i class="bi bi-receipt" aria-hidden="true"></i> Average ticket</div><div class="pos-kpi-value">' + money(bills ? rev / bills : 0) + '</div><div class="pos-kpi-foot"><span class="pos-chip pos-chip-gray">tip included, after discounts</span></div></div>' +
+          '<div class="pos-card"><div class="pos-kpi-label"><i class="bi bi-heart-fill" aria-hidden="true"></i> Tips today</div><div class="pos-kpi-value">' + money0(tips) + '</div><div class="pos-kpi-foot"><span class="pos-chip pos-chip-green">100% to techs</span></div></div>' +
+          '<div class="pos-card"><div class="pos-kpi-label"><i class="bi bi-person-workspace" aria-hidden="true"></i> Waiting / service / pay</div><div class="pos-kpi-value">' + floorCount('waiting') + ' / ' + floorCount('service') + ' / ' + floorCount('ready') + '</div><div class="pos-kpi-foot"><span class="pos-chip pos-chip-blue">in the salon right now</span></div></div>' +
           '</div>';
       }
 
@@ -1527,7 +1573,7 @@
         var week = WEEK_PREV.concat([['Today', rev]]);
         var mx = Math.max.apply(null, week.map(function (w) { return w[1]; }).concat([1]));
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3>📈 Revenue — last 7 days</h3></div>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-graph-up-arrow" aria-hidden="true"></i> Revenue — last 7 days</h3></div>' +
           '<div class="rev-bars">' + week.map(function (w, i) {
             return '<div class="rev-bar' + (i === week.length - 1 ? ' today' : '') + '">' +
               '<span class="rv">' + money0(w[1]) + '</span>' +
@@ -1538,10 +1584,10 @@
 
       function mgPayrollHtml(ps) {
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3>👥 Techs &amp; pay — today</h3>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-people-fill" aria-hidden="true"></i> Techs &amp; pay — today</h3>' +
           '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-addtech><i class="bi bi-person-plus"></i> Add tech</button></div>' +
           '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr>' +
-          '<th>Tech</th><th>Turns</th><th>🕐 Hours</th><th>Service $</th><th>Comm %</th><th>Commission</th><th>Tip</th><th>Tech takes</th><th>Weekly guarantee</th><th></th>' +
+          '<th>Tech</th><th>Turns</th><th><i class="bi bi-clock" aria-hidden="true"></i> Hours</th><th>Service $</th><th>Comm %</th><th>Commission</th><th>Tip</th><th>Tech takes</th><th>Weekly guarantee</th><th></th>' +
           '</tr></thead><tbody>' +
           TECHS.map(function (t) {
             var p = ps[t.id] || { svc: 0, tip: 0 };
@@ -1569,7 +1615,7 @@
 
       function mgSkillsHtml() {
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3>🧰 Tech skills — dispatch scores matches off this table</h3></div>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-tools" aria-hidden="true"></i> Tech skills — dispatch scores matches off this table</h3></div>' +
           '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Tech</th>' +
           SKILLS.map(function (s) { return '<th style="text-align:center">' + s + '</th>'; }).join('') +
           '</tr></thead><tbody>' +
@@ -1584,7 +1630,7 @@
           }).join('') +
           '</tbody></table></div>' +
           '<div class="pos-hint">Tap a cell to cycle: — → ✓ Good → ★ Expert → off. ★ Expert adds +' + MATCH_RULES.wExp + ' match points on the required skill and is a 💎 Smart Commission condition. Techs missing a skill get flagged at assignment (an override is written to the audit log).</div>' +
-          '<div class="pos-section-title">🤝 Customer fit — which guest groups each tech suits (+' + MATCH_RULES.wFit + ' match points on a tag hit)</div>' +
+          '<div class="pos-section-title"><i class="bi bi-people" aria-hidden="true"></i> Customer fit — which guest groups each tech suits (+' + MATCH_RULES.wFit + ' match points on a tag hit)</div>' +
           TECHS.map(function (t) {
             return '<div class="pill-row" style="margin:6px 0"><b style="font-size:12px;min-width:60px">' + esc(t.name) + '</b>' +
               FIT_TAGS.map(function (f) {
@@ -1600,7 +1646,7 @@
           return '<label class="pos-inline-lbl">' + lbl + '<input class="pos-mini" data-mg-mr="' + k + '" value="' + MATCH_RULES[k] + '" style="width:52px"></label>';
         };
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3>🧾 Service → required skill</h3><span class="pos-muted">kiosk · dispatch · Staff App all read this — no guessing</span></div>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-receipt" aria-hidden="true"></i> Service → required skill</h3><span class="pos-muted">kiosk · dispatch · Staff App all read this — no guessing</span></div>' +
           '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Service group</th><th>Required skill</th><th>Eligible techs (★ = expert)</th></tr></thead><tbody>' +
           MENU.map(function (c) {
             var req = SVC_REQ[c.id] || '';
@@ -1615,7 +1661,7 @@
               '</select></td><td class="wrap">' + elTxt + '</td></tr>';
           }).join('') +
           '</tbody></table></div>' +
-          '<div class="pos-section-title">⚙️ Match rules — assignment weights (dispatch reads them live)</div>' +
+          '<div class="pos-section-title"><i class="bi bi-sliders" aria-hidden="true"></i> Match rules — assignment weights (dispatch reads them live)</div>' +
           '<div class="pos-inline" style="gap:14px">' +
           mrInp('wSkill', '✓ Has the skill (base)') + mrInp('wMiss', '⚠ Missing the skill') + mrInp('wExp', '★ Expert +') +
           mrInp('wTurn', '⚖️ Fairness max +') + mrInp('wReq', '📌 Guest requested +') + mrInp('wPref', '🏷️ Regular tech +') + mrInp('wFit', '🤝 Customer fit +') +
@@ -1633,7 +1679,7 @@
       function mgCustHtml() {
         var LVL = [['owner', '🔒 Owner only', 'var(--nexora-danger)'], ['staff', '👥 Techs / front desk', 'var(--nexora-warning)'], ['customer', '📱 Guest sees', 'var(--nexora-success)']];
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3>🏷️ Customer profiles — tags &amp; three-level notes</h3></div>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-tags" aria-hidden="true"></i> Customer profiles — tags &amp; three-level notes</h3></div>' +
           '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Guest</th><th>Regular tech</th><th>Tags</th><th>Notes by visibility</th></tr></thead><tbody>' +
           CUSTOMERS.map(function (c, ci) {
             return '<tr>' +
@@ -1681,9 +1727,9 @@
         }).sort(function (a, b) { return b.gap - a.gap; });
 
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3>🎯 Guarantee &amp; performance — this week (day ' + AD_DAYS_DONE + '/' + AD_DAYS_WEEK + ')</h3><span class="pos-muted">techs needing attention first</span></div>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-bullseye" aria-hidden="true"></i> Guarantee &amp; performance — this week (day ' + AD_DAYS_DONE + '/' + AD_DAYS_WEEK + ')</h3><span class="pos-muted">techs needing attention first</span></div>' +
           '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr>' +
-          '<th>Tech</th><th>Guarantee</th><th>Needs /week</th><th>/day</th><th>Done this week</th><th>Projected</th><th>Guarantee vs earnings</th><th>⭐ Rating</th><th>Upsell</th><th>🔁 Rebook</th><th>🔧 Rework</th>' +
+          '<th>Tech</th><th>Guarantee</th><th>Needs /week</th><th>/day</th><th>Done this week</th><th>Projected</th><th>Guarantee vs earnings</th><th><i class="bi bi-star-fill" aria-hidden="true"></i> Rating</th><th>Upsell</th><th><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Rebook</th><th><i class="bi bi-wrench" aria-hidden="true"></i> Rework</th>' +
           '</tr></thead><tbody>' +
           rows.map(function (r) {
             var p = r.target ? Math.min(100, Math.round(r.done / r.target * 100)) : 100;
@@ -1726,9 +1772,9 @@
         }).sort(function (a, b) { return a.own - b.own; });
 
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3>💼 Pay model &amp; real split — on what techs actually produced (day ' + AD_DAYS_DONE + '/' + AD_DAYS_WEEK + ')</h3><span class="pos-muted">riskiest tech first · tips excluded (100% to techs)</span></div>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-briefcase" aria-hidden="true"></i> Pay model &amp; real split — on what techs actually produced (day ' + AD_DAYS_DONE + '/' + AD_DAYS_WEEK + ')</h3><span class="pos-muted">riskiest tech first · tips excluded (100% to techs)</span></div>' +
           '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr>' +
-          '<th>Tech</th><th>Pay model</th><th>Split over target</th><th>Guarantee</th><th>📥 Produced this week</th><th>Tech takes</th><th>Salon keeps</th><th>Salon % (standard → real)</th><th>🧭 What to do</th>' +
+          '<th>Tech</th><th>Pay model</th><th>Split over target</th><th>Guarantee</th><th><i class="bi bi-inbox-fill" aria-hidden="true"></i> Produced this week</th><th>Tech takes</th><th>Salon keeps</th><th>Salon % (standard → real)</th><th><i class="bi bi-compass" aria-hidden="true"></i> What to do</th>' +
           '</tr></thead><tbody>' +
           rows.map(function (r) {
             var t = r.t;
@@ -1766,7 +1812,7 @@
       function mgSmartHtml(ps) {
         var smInp = function (k, lbl) { return '<label class="pos-inline-lbl">' + lbl + '<input class="pos-mini" data-mg-sm="' + k + '" value="' + SMART[k] + '" style="width:46px"> %</label>'; };
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3>💎 Smart Commission — performance bonus on top of the base %</h3>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-gem" aria-hidden="true"></i> Smart Commission — performance bonus on top of the base %</h3>' +
           '<button class="pos-btn pos-btn-sm ' + (SMART.on ? 'pos-btn-success' : '') + '" data-mg-smart>' + (SMART.on ? '🟢 On — turn off' : '⚪ Off — turn on') + '</button></div>' +
           '<div class="pos-inline" style="gap:14px;margin-bottom:12px">' +
           smInp('skillB', '💎 3+ expert skills +') + smInp('revB', '⭐ Rating 4.8+ +') + smInp('upsB', '✨ Upsell 20%+ +') + smInp('retB', '🔁 Steady guests +') + smInp('cap', '🧢 Max total bonus') +
@@ -1803,14 +1849,14 @@
         var missN = rows.filter(function (r) { return !r.po.method; }).length;
 
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3>💸 Payout Center — weekly run (amount from 💼 pay model + 100% of tips)</h3></div>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-wallet2" aria-hidden="true"></i> Payout Center — weekly run (amount from 💼 pay model + 100% of tips)</h3></div>' +
           '<div class="pos-grid pos-g4" style="margin-bottom:14px">' +
           '<div class="pos-card soft"><div class="pos-kpi-label">⏳ Unpaid</div><div class="pos-kpi-value">' + money0(pendTot) + '</div><div class="pos-muted" style="font-size:11.5px">pay + tips still owed</div></div>' +
-          '<div class="pos-card soft"><div class="pos-kpi-label">💚 Tips today</div><div class="pos-kpi-value">' + money0(tipTot) + '</div><div class="pos-muted" style="font-size:11.5px">100% to techs, paid with payroll</div></div>' +
-          '<div class="pos-card soft"><div class="pos-kpi-label">✅ Ready to pay</div><div class="pos-kpi-value">' + readyN + '</div><div class="pos-muted" style="font-size:11.5px">amount locked, waiting on a tap</div></div>' +
-          '<div class="pos-card soft"><div class="pos-kpi-label">⚠ Missing method</div><div class="pos-kpi-value ' + (missN ? 'pos-warn-text' : '') + '">' + missN + '</div><div class="pos-muted" style="font-size:11.5px">no payout destination — held</div></div>' +
+          '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-heart-fill" aria-hidden="true"></i> Tips today</div><div class="pos-kpi-value">' + money0(tipTot) + '</div><div class="pos-muted" style="font-size:11.5px">100% to techs, paid with payroll</div></div>' +
+          '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Ready to pay</div><div class="pos-kpi-value">' + readyN + '</div><div class="pos-muted" style="font-size:11.5px">amount locked, waiting on a tap</div></div>' +
+          '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> Missing method</div><div class="pos-kpi-value ' + (missN ? 'pos-warn-text' : '') + '">' + missN + '</div><div class="pos-muted" style="font-size:11.5px">no payout destination — held</div></div>' +
           '</div>' +
-          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Tech</th><th>Weekly pay (💼)</th><th>Tips today</th><th>Total</th><th>Method</th><th>Status</th><th></th></tr></thead><tbody>' +
+          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Tech</th><th>Weekly pay (<i class="bi bi-briefcase" aria-hidden="true"></i>)</th><th>Tips today</th><th>Total</th><th>Method</th><th>Status</th><th></th></tr></thead><tbody>' +
           rows.map(function (r) {
             var m = r.po.method;
             var stChip = r.po.st === 'paid' ? '<span class="pos-chip pos-chip-green">✅ Paid ' + (r.po.paidAt ? timeFmt(r.po.paidAt) : '') + '</span>'
@@ -1834,7 +1880,7 @@
 
       function mgStaffHtml() {
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3>👥 Staff accounts — the role decides what a login sees</h3><span class="pos-muted">per-permission detail lives in the 🔐 matrix below</span></div>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-person-badge" aria-hidden="true"></i> Staff accounts — the role decides what a login sees</h3><span class="pos-muted">per-permission detail lives in the 🔐 matrix below</span></div>' +
           '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Employee</th><th>Role</th><th>Login PIN</th><th>Access</th></tr></thead><tbody>' +
           STAFF.map(function (s) {
             var roleCell = s.role === 'owner'
@@ -1861,7 +1907,7 @@
 
       function mgRolesHtml() {
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3>🔐 Roles &amp; permissions</h3><span class="pos-muted">tap a cell to cycle: None → Limited → Full</span></div>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-shield-lock" aria-hidden="true"></i> Roles &amp; permissions</h3><span class="pos-muted">tap a cell to cycle: None → Limited → Full</span></div>' +
           '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Permission</th>' +
           PERM_ROLES.map(function (r) { return '<th style="text-align:center">' + r[1] + '</th>'; }).join('') +
           '</tr></thead><tbody>' +
@@ -1879,7 +1925,7 @@
       function mgLogHtml() {
         if (!ADMIN_LOG.length) return '';
         return '<div class="pos-card soft">' +
-          '<div class="pos-card-head"><h3>🧾 Audit log — this session</h3><span class="pos-muted">production writes these server-side</span></div>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-journal-text" aria-hidden="true"></i> Audit log — this session</h3><span class="pos-muted">production writes these server-side</span></div>' +
           ADMIN_LOG.slice(-8).reverse().map(function (l) { return '<div class="feed-line">' + timeFmt(l.at) + ' · ' + esc(l.msg) + '</div>'; }).join('') +
           '</div>';
       }
