@@ -93,3 +93,13 @@ test('renders multi-group management and a privacy-aware Create Group dialog', (
   for (const name of ['groupName', 'groupDescription', 'groupType', 'groupVisibility', 'groupPosting']) assert.match(html, new RegExp(`name="${name}"`));
   assert.match(html, /data-mixed-privacy-confirm/);
 });
+
+test('renders the group chat, thread, member, and moderation workspace', () => {
+  const html = source();
+  for (const marker of ['data-group-list-view', 'data-group-chat-view', 'data-message-list', 'data-group-member-rail', 'data-group-thread-panel', 'data-message-composer']) assert.match(html, new RegExp(marker));
+  for (const copy of ['Back to Groups', 'Join Requests', 'Pinned Messages']) assert.match(html, new RegExp(copy));
+  assert.match(html, /aria-label="Search messages"/);
+  assert.match(html, /aria-label="Close thread"/);
+  assert.match(html, /aria-label="Attach photo"/);
+  assert.match(html, /aria-label="Attach file"/);
+});

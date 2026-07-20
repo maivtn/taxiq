@@ -6905,6 +6905,54 @@
                 <div class="group-toolbar"><label><span class="sr-only">Search groups</span><input type="search" placeholder="Search groups..." data-group-search></label><div class="community-filter-row"><button class="is-active" type="button" data-group-filter="all">All</button><button type="button" data-group-filter="staff">Staff</button><button type="button" data-group-filter="customer">Customer</button><button type="button" data-group-filter="mixed">Mixed</button><button type="button" data-group-filter="archived">Archived</button></div></div>
                 <div class="group-grid" data-group-grid></div>
               </div>
+              <div class="group-chat-view" data-group-chat-view hidden>
+                <header class="group-chat-head">
+                  <button type="button" data-groups-back>Back to Groups</button>
+                  <div class="group-chat-identity">
+                    <h2 data-active-group-name>Group</h2>
+                    <p><span data-active-group-privacy>Private</span> · <span data-active-group-members>0 members</span></p>
+                  </div>
+                  <button type="button" aria-label="Search messages" data-message-search>Search</button>
+                  <button type="button" data-members-open>Members</button>
+                  <button type="button" data-group-settings>Settings</button>
+                </header>
+                <div class="group-chat-shell">
+                  <div class="group-message-column">
+                    <div class="message-list" data-message-list></div>
+                    <form class="message-composer" data-message-composer>
+                      <label class="sr-only" for="group-message-input">Message</label>
+                      <textarea id="group-message-input" data-message-input rows="2" placeholder="Write a message..."></textarea>
+                      <div class="message-composer-actions">
+                        <button type="button" aria-label="Mention a member" data-group-mention>@</button>
+                        <button type="button" aria-label="Choose emoji" data-group-emoji>☺</button>
+                        <button type="button" aria-label="Attach photo" data-group-attachment="photo">Photo</button>
+                        <button type="button" aria-label="Attach file" data-group-attachment="file">File</button>
+                        <button class="community-primary" type="submit">Send</button>
+                      </div>
+                      <p class="community-field-error" data-message-error aria-live="polite"></p>
+                    </form>
+                  </div>
+                  <aside class="group-member-rail" data-group-member-rail data-group-side-panel="members">
+                    <h3>Members</h3>
+                    <div data-member-list></div>
+                    <h3>Join Requests</h3>
+                    <div data-join-requests></div>
+                    <h3>Pinned Messages</h3>
+                    <div data-pinned-messages></div>
+                  </aside>
+                  <aside class="group-thread-panel" data-group-thread-panel data-group-side-panel="thread" hidden>
+                    <button class="thread-close" type="button" aria-label="Close thread" data-thread-close>×</button>
+                    <h3>Thread</h3>
+                    <div data-thread-messages></div>
+                    <form data-thread-form>
+                      <label class="sr-only" for="group-thread-input">Reply to thread</label>
+                      <input id="group-thread-input" data-thread-input aria-label="Reply to thread">
+                      <button type="submit">Reply</button>
+                      <p class="community-field-error" data-thread-error aria-live="polite"></p>
+                    </form>
+                  </aside>
+                </div>
+              </div>
               <div class="community-dialog-backdrop" data-create-group-dialog hidden>
                 <section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="create-group-title">
                   <header><h2 id="create-group-title">Create Group</h2><button type="button" aria-label="Close Create Group" data-dialog-close>×</button></header>

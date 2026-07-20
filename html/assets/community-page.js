@@ -15,6 +15,27 @@
       { id:'new-hire', name:'New Hire Onboarding', type:'staff', visibility:'private', members:6, unread:0, activity:'Yesterday', archived:false, description:'Training, policies, and first-week checklists.' }
     ],
     groupFilter: 'all',
+    activeGroupId: '',
+    activeThreadId: '',
+    memberDrawerOpen: false,
+    members: [
+      { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online' },
+      { id:'admin-mia', name:'Mia Tran', role:'admin', status:'online' },
+      { id:'member-linh', name:'Linh Nguyen', role:'moderator', status:'away' },
+      { id:'member-sophie', name:'Sophie Carter', role:'member', status:'offline' }
+    ],
+    messages: {
+      'staff-main': [
+        { id:'staff-message-1', authorId:'owner-nexora', body:'Friday coverage is the priority this week. Please confirm your hours.', time:'9:05 AM', pinned:true, reactions:{ '👍':3 }, replies:[{ id:'reply-1', authorId:'admin-mia', body:'Front desk is covered until 6 PM.', time:'9:12 AM' },{ id:'reply-2', authorId:'member-linh', body:'I can cover the closing shift.', time:'9:18 AM' }] },
+        { id:'staff-message-2', authorId:'admin-mia', body:'The new Gel-X color cards are at station two.', time:'10:24 AM', pinned:false, reactions:{ '✨':2 }, replies:[] },
+        { id:'staff-message-3', authorId:'member-sophie', body:'I completed the sanitation checklist.', time:'11:03 AM', pinned:false, reactions:{}, replies:[] }
+      ],
+      'vip-club': [
+        { id:'vip-message-1', authorId:'owner-nexora', body:'VIP members get first access to the summer color preview.', time:'Yesterday', pinned:true, reactions:{ '💜':12 }, replies:[] },
+        { id:'vip-message-2', authorId:'member-sophie', body:'Can appointments be booked directly from the preview?', time:'Yesterday', pinned:false, reactions:{}, replies:[] }
+      ]
+    },
+    messageSequence: 0,
     viewerReactions: {},
     noticeTimer: 0
   };
@@ -114,6 +135,112 @@
     if (!group) return { ok: false, error: 'Group not found.' };
     group.archived = !group.archived;
     return { ok: true, group: group };
+  }
+
+  function findMember(memberId) {
+    var index;
+    for (index = 0; index < state.members.length; index += 1) {
+      if (state.members[index].id === memberId) return state.members[index];
+    }
+    return null;
+  }
+
+  function findMessage(groupId, messageId) {
+    var messages = state.messages[groupId] || [];
+    var index;
+    for (index = 0; index < messages.length; index += 1) {
+      if (messages[index].id === messageId) return messages[index];
+    }
+    return null;
+  }
+
+  function nextChatId(prefix) {
+    state.messageSequence += 1;
+    return prefix + '-' + new Date().getTime() + '-' + state.messageSequence;
+  }
+
+  function openGroup(groupId) {
+    var group = findGroup(groupId);
+    if (!group) return { ok: false, error: 'Group not found.' };
+    state.activeGroupId = groupId;
+    state.activeThreadId = '';
+    state.memberDrawerOpen = false;
+    return { ok: true, value: group, group: group };
+  }
+
+  function sendMessage(groupId, body) {
+    var group = findGroup(groupId);
+    var text = String(body == null ? '' : body).replace(/^\s+|\s+$/g, '');
+    var message;
+    if (!group) return { ok: false, error: 'Group not found.' };
+    if (!text) return { ok: false, error: 'Write a message before sending.' };
+    if (!state.messages[groupId]) state.messages[groupId] = [];
+    message = { id:nextChatId('message'), authorId:'owner-nexora', body:text, time:'Just now', pinned:false, reactions:{}, replies:[] };
+    state.messages[groupId].push(message);
+    return { ok: true, value: message, message: message };
+  }
+
+  function addMessageReaction(groupId, messageId, emoji) {
+    var group = findGroup(groupId);
+    var message;
+    var reaction = String(emoji == null ? '' : emoji).replace(/^\s+|\s+$/g, '');
+    if (!group) return { ok: false, error: 'Group not found.' };
+    message = findMessage(groupId, messageId);
+    if (!message) return { ok: false, error: 'Message not found.' };
+    if (!reaction) return { ok: false, error: 'Choose a reaction.' };
+    message.reactions[reaction] = (message.reactions[reaction] || 0) + 1;
+    return { ok: true, value: message, message: message };
+  }
+
+  function addThreadReply(groupId, messageId, body) {
+    var group = findGroup(groupId);
+    var message;
+    var text = String(body == null ? '' : body).replace(/^\s+|\s+$/g, '');
+    var reply;
+    if (!group) return { ok: false, error: 'Group not found.' };
+    message = findMessage(groupId, messageId);
+    if (!message) return { ok: false, error: 'Message not found.' };
+    if (!text) return { ok: false, error: 'Write a reply before sending.' };
+    reply = { id:nextChatId('reply'), authorId:'owner-nexora', body:text, time:'Just now' };
+    message.replies.push(reply);
+    return { ok: true, value: reply, reply: reply, message: message };
+  }
+
+  function setMemberRole(groupId, memberId, role) {
+    var group = findGroup(groupId);
+    var member;
+    if (!group) return { ok: false, error: 'Group not found.' };
+    member = findMember(memberId);
+    if (!member) return { ok: false, error: 'Member not found.' };
+    if (['admin', 'moderator', 'member'].indexOf(role) === -1) return { ok: false, error: 'Choose admin, moderator, or member.' };
+    member.role = role;
+    return { ok: true, value: member, member: member };
+  }
+
+  function moderateMessage(groupId, messageId, action) {
+    var group = findGroup(groupId);
+    var messages;
+    var message;
+    var index;
+    if (!group) return { ok: false, error: 'Group not found.' };
+    message = findMessage(groupId, messageId);
+    if (!message) return { ok: false, error: 'Message not found.' };
+    if (action === 'pin') {
+      message.pinned = !message.pinned;
+      return { ok: true, value: message, message: message };
+    }
+    if (action === 'delete') {
+      messages = state.messages[groupId];
+      for (index = 0; index < messages.length; index += 1) {
+        if (messages[index].id === messageId) {
+          messages.splice(index, 1);
+          break;
+        }
+      }
+      if (state.activeThreadId === messageId) state.activeThreadId = '';
+      return { ok: true, value: message, message: message };
+    }
+    return { ok: false, error: 'Choose a valid moderation action.' };
   }
 
   function filterFeedPosts(filter) {
@@ -278,6 +405,124 @@
     if (unread) unread.textContent = state.groups.reduce(function (sum, group) { return sum + group.unread; }, 0);
   }
 
+  function renderMessageReactions(message) {
+    var html = '';
+    var emoji;
+    for (emoji in message.reactions) {
+      if (Object.prototype.hasOwnProperty.call(message.reactions, emoji)) {
+        html += '<button type="button" data-message-id="' + escapeHtml(message.id) + '" data-message-reaction="' + escapeHtml(emoji) + '">' + escapeHtml(emoji) + ' ' + message.reactions[emoji] + '</button>';
+      }
+    }
+    html += '<button type="button" aria-label="Add thumbs up reaction" data-message-id="' + escapeHtml(message.id) + '" data-message-reaction="👍">+ 👍</button>';
+    return html;
+  }
+
+  function renderMessage(message) {
+    var author = findMember(message.authorId) || { name: 'Community member', role: 'member' };
+    return '<article class="group-message" data-message-id="' + escapeHtml(message.id) + '">' +
+      '<header><span class="group-message-avatar">' + escapeHtml(author.name.slice(0, 2).toUpperCase()) + '</span><div><strong>' + escapeHtml(author.name) + '</strong><span>' + escapeHtml(author.role) + ' · ' + escapeHtml(message.time) + '</span></div>' + (message.pinned ? '<span class="message-pinned">Pinned</span>' : '') + '</header>' +
+      '<p>' + escapeHtml(message.body) + '</p>' +
+      '<footer><div class="message-reactions">' + renderMessageReactions(message) + '</div><button type="button" data-thread-open="' + escapeHtml(message.id) + '">' + message.replies.length + ' replies</button><button type="button" data-message-id="' + escapeHtml(message.id) + '" data-message-moderation="pin">' + (message.pinned ? 'Unpin' : 'Pin') + '</button><button type="button" data-message-id="' + escapeHtml(message.id) + '" data-message-moderation="delete">Delete</button></footer>' +
+      '</article>';
+  }
+
+  function renderMemberRail() {
+    var list = document.querySelector('[data-member-list]');
+    var joins = document.querySelector('[data-join-requests]');
+    var pinned = document.querySelector('[data-pinned-messages]');
+    var messages = state.messages[state.activeGroupId] || [];
+    var roles = ['owner', 'admin', 'moderator', 'member'];
+    var labels = { owner:'Owner', admin:'Admins', moderator:'Moderators', member:'Members' };
+    var html = '';
+    var roleIndex;
+    var memberIndex;
+    var member;
+    var pinnedMessages;
+    if (!list) return;
+    for (roleIndex = 0; roleIndex < roles.length; roleIndex += 1) {
+      html += '<section class="member-role-group"><h4>' + labels[roles[roleIndex]] + '</h4>';
+      for (memberIndex = 0; memberIndex < state.members.length; memberIndex += 1) {
+        member = state.members[memberIndex];
+        if (member.role === roles[roleIndex]) {
+          html += '<div class="group-member"><span class="member-status is-' + escapeHtml(member.status) + '" aria-label="' + escapeHtml(member.status) + '"></span><span><strong>' + escapeHtml(member.name) + '</strong><small>' + escapeHtml(member.status) + '</small></span>';
+          if (member.role === 'owner') {
+            html += '<span class="member-owner-label">Owner</span>';
+          } else {
+            html += '<label class="sr-only" for="role-' + escapeHtml(member.id) + '">Role for ' + escapeHtml(member.name) + '</label><select id="role-' + escapeHtml(member.id) + '" data-member-role="' + escapeHtml(member.id) + '"><option value="admin"' + (member.role === 'admin' ? ' selected' : '') + '>Admin</option><option value="moderator"' + (member.role === 'moderator' ? ' selected' : '') + '>Moderator</option><option value="member"' + (member.role === 'member' ? ' selected' : '') + '>Member</option></select>';
+          }
+          html += '</div>';
+        }
+      }
+      html += '</section>';
+    }
+    list.innerHTML = html;
+    if (joins) joins.innerHTML = '<div class="join-request"><span><strong>Jamie Lee</strong><small>Verified customer</small></span><button type="button" data-join-request-action="approve">Approve</button><button type="button" data-join-request-action="decline">Decline</button></div>';
+    if (pinned) {
+      pinnedMessages = messages.filter(function (message) { return message.pinned; });
+      pinned.innerHTML = pinnedMessages.length ? pinnedMessages.map(function (message) { return '<button type="button" data-thread-open="' + escapeHtml(message.id) + '">' + escapeHtml(message.body) + '</button>'; }).join('') : '<p class="group-side-empty">No pinned messages.</p>';
+    }
+  }
+
+  function renderThread() {
+    var panel = document.querySelector('[data-group-thread-panel]');
+    var memberRail = document.querySelector('[data-group-member-rail]');
+    var messages = document.querySelector('[data-thread-messages]');
+    var message;
+    var author;
+    var html = '';
+    var index;
+    if (!panel || !memberRail) return;
+    if (!state.activeThreadId) {
+      panel.hidden = true;
+      panel.classList.remove('is-mobile-open');
+      memberRail.hidden = false;
+      memberRail.classList.toggle('is-mobile-open', state.memberDrawerOpen);
+      return;
+    }
+    message = findMessage(state.activeGroupId, state.activeThreadId);
+    if (!message) {
+      state.activeThreadId = '';
+      renderThread();
+      return;
+    }
+    panel.hidden = false;
+    panel.classList.add('is-mobile-open');
+    memberRail.hidden = true;
+    author = findMember(message.authorId) || { name: 'Community member' };
+    html = '<article class="thread-message is-parent"><strong>' + escapeHtml(author.name) + '</strong><p>' + escapeHtml(message.body) + '</p><span>' + escapeHtml(message.time) + '</span></article>';
+    for (index = 0; index < message.replies.length; index += 1) {
+      author = findMember(message.replies[index].authorId) || { name: 'Community member' };
+      html += '<article class="thread-message"><strong>' + escapeHtml(author.name) + '</strong><p>' + escapeHtml(message.replies[index].body) + '</p><span>' + escapeHtml(message.replies[index].time) + '</span></article>';
+    }
+    messages.innerHTML = html;
+  }
+
+  function renderGroupChat() {
+    var group = findGroup(state.activeGroupId);
+    var list = document.querySelector('[data-message-list]');
+    var name = document.querySelector('[data-active-group-name]');
+    var privacy = document.querySelector('[data-active-group-privacy]');
+    var members = document.querySelector('[data-active-group-members]');
+    var messages;
+    if (!group || !list) return;
+    messages = state.messages[group.id] || [];
+    if (name) name.textContent = group.name;
+    if (privacy) privacy.textContent = group.visibility.charAt(0).toUpperCase() + group.visibility.slice(1);
+    if (members) members.textContent = group.members + ' members';
+    list.innerHTML = messages.length ? messages.map(renderMessage).join('') : '<p class="community-empty-state">No messages yet. Start the conversation.</p>';
+    renderMemberRail();
+    renderThread();
+  }
+
+  function renderGroupWorkspace() {
+    var list = document.querySelector('[data-group-list-view]');
+    var chat = document.querySelector('[data-group-chat-view]');
+    if (!list || !chat) return;
+    list.hidden = !!state.activeGroupId;
+    chat.hidden = !state.activeGroupId;
+    if (state.activeGroupId) renderGroupChat();
+  }
+
   function updateGroupFilterButtons() {
     var buttons = document.querySelectorAll('[data-group-filter]');
     var index;
@@ -328,78 +573,147 @@
     return null;
   }
 
-  function bindFeedControls() {
-    document.addEventListener('click', function (event) {
-      var target = event.target;
-      var tab = closestWithAttribute(target, 'data-tab-target');
-      var filter = closestWithAttribute(target, 'data-feed-filter');
-      var reaction = closestWithAttribute(target, 'data-feed-reaction');
-      var save = closestWithAttribute(target, 'data-feed-save');
-      var pin = closestWithAttribute(target, 'data-feed-pin');
-      var attachment = closestWithAttribute(target, 'data-demo-attachment');
-      var focusComposer = closestWithAttribute(target, 'data-focus-feed-composer');
-      var groupFilter = closestWithAttribute(target, 'data-group-filter');
-      var createGroupOpen = closestWithAttribute(target, 'data-create-group-open');
-      var dialogClose = closestWithAttribute(target, 'data-dialog-close');
-      var groupArchive = closestWithAttribute(target, 'data-group-archive');
-      var groupOpen = closestWithAttribute(target, 'data-group-open');
-      var groupManage = closestWithAttribute(target, 'data-group-manage');
-      if (tab) {
-        activateCommunityTab(tab.getAttribute('data-tab-target'));
-        if (typeof window.setDrawer === 'function') window.setDrawer(false);
-      } else if (filter) {
-        state.feedFilter = filter.getAttribute('data-feed-filter');
-        updateFilterButtons();
-        renderFeed();
-      } else if (reaction) {
-        togglePostReaction(reaction.getAttribute('data-post-id'), reaction.getAttribute('data-feed-reaction'));
-      } else if (save) {
-        toggleSavedPost(save.getAttribute('data-post-id'));
-      } else if (pin) {
-        togglePinnedPost(pin.getAttribute('data-post-id'));
-      } else if (attachment) {
-        showCommunityNotice(attachment.getAttribute('data-demo-attachment') + ' attachments are ready for the full Community release.');
-      } else if (focusComposer) {
-        var composer = document.querySelector('#community-post-body');
-        if (composer) composer.focus();
-      } else if (groupFilter) {
-        state.groupFilter = groupFilter.getAttribute('data-group-filter');
-        updateGroupFilterButtons();
-        renderGroups();
-      } else if (createGroupOpen) {
-        setCreateGroupDialog(true);
-      } else if (dialogClose) {
-        setCreateGroupDialog(false);
-      } else if (groupArchive) {
-        var archiveResult = toggleArchivedGroup(groupArchive.getAttribute('data-group-archive'));
-        if (archiveResult.ok) {
-          renderGroups();
-          showCommunityNotice(archiveResult.group.archived ? 'Group archived.' : 'Group restored.');
-        } else {
-          showCommunityNotice(archiveResult.error);
-        }
-      } else if (groupOpen) {
-        showCommunityNotice('Group chat opens in the next Community update.');
-      } else if (groupManage) {
-        showCommunityNotice('Group management opens in the next Community update.');
+  function handleGroupsClick(event) {
+    var target = event.target;
+    var open = closestWithAttribute(target, 'data-group-open');
+    var back = closestWithAttribute(target, 'data-groups-back');
+    var thread = closestWithAttribute(target, 'data-thread-open');
+    var threadClose = closestWithAttribute(target, 'data-thread-close');
+    var reaction = closestWithAttribute(target, 'data-message-reaction');
+    var moderation = closestWithAttribute(target, 'data-message-moderation');
+    var membersOpen = closestWithAttribute(target, 'data-members-open');
+    var groupFilter = closestWithAttribute(target, 'data-group-filter');
+    var createGroupOpen = closestWithAttribute(target, 'data-create-group-open');
+    var dialogClose = closestWithAttribute(target, 'data-dialog-close');
+    var groupArchive = closestWithAttribute(target, 'data-group-archive');
+    var groupManage = closestWithAttribute(target, 'data-group-manage');
+    var attachment = closestWithAttribute(target, 'data-group-attachment');
+    var mention = closestWithAttribute(target, 'data-group-mention');
+    var emoji = closestWithAttribute(target, 'data-group-emoji');
+    var search = closestWithAttribute(target, 'data-message-search');
+    var settings = closestWithAttribute(target, 'data-group-settings');
+    var joinRequest = closestWithAttribute(target, 'data-join-request-action');
+    var result;
+    var input;
+    var rail;
+    if (open) {
+      result = openGroup(open.getAttribute('data-group-open'));
+      if (result.ok) renderGroupWorkspace();
+      else showCommunityNotice(result.error);
+      return;
+    }
+    if (back) {
+      state.activeGroupId = '';
+      state.activeThreadId = '';
+      state.memberDrawerOpen = false;
+      renderGroupWorkspace();
+      return;
+    }
+    if (thread) {
+      state.activeThreadId = thread.getAttribute('data-thread-open');
+      renderThread();
+      return;
+    }
+    if (threadClose) {
+      state.activeThreadId = '';
+      renderThread();
+      return;
+    }
+    if (reaction) {
+      result = addMessageReaction(state.activeGroupId, reaction.getAttribute('data-message-id'), reaction.getAttribute('data-message-reaction'));
+      if (result.ok) renderGroupChat();
+      else showCommunityNotice(result.error);
+      return;
+    }
+    if (moderation) {
+      result = moderateMessage(state.activeGroupId, moderation.getAttribute('data-message-id'), moderation.getAttribute('data-message-moderation'));
+      if (result.ok) {
+        renderGroupChat();
+        showCommunityNotice(moderation.getAttribute('data-message-moderation') === 'delete' ? 'Message deleted.' : (result.message.pinned ? 'Message pinned.' : 'Message unpinned.'));
+      } else {
+        showCommunityNotice(result.error);
       }
-    });
+      return;
+    }
+    if (membersOpen) {
+      state.memberDrawerOpen = !state.memberDrawerOpen;
+      rail = document.querySelector('[data-group-member-rail]');
+      if (rail) rail.classList.toggle('is-mobile-open', state.memberDrawerOpen);
+      return;
+    }
+    if (groupFilter) {
+      state.groupFilter = groupFilter.getAttribute('data-group-filter');
+      updateGroupFilterButtons();
+      renderGroups();
+      return;
+    }
+    if (createGroupOpen) {
+      setCreateGroupDialog(true);
+      return;
+    }
+    if (dialogClose) {
+      setCreateGroupDialog(false);
+      return;
+    }
+    if (groupArchive) {
+      result = toggleArchivedGroup(groupArchive.getAttribute('data-group-archive'));
+      if (result.ok) {
+        renderGroups();
+        showCommunityNotice(result.group.archived ? 'Group archived.' : 'Group restored.');
+      } else {
+        showCommunityNotice(result.error);
+      }
+      return;
+    }
+    if (groupManage || settings) {
+      showCommunityNotice('Group settings are ready for the full Community release.');
+      return;
+    }
+    if (attachment) {
+      showCommunityNotice(attachment.getAttribute('data-group-attachment') + ' attachments are ready for the full Community release.');
+      return;
+    }
+    if (mention || emoji) {
+      input = document.querySelector('[data-message-input]');
+      if (input) {
+        input.value += mention ? '@' : '☺';
+        input.focus();
+      }
+      return;
+    }
+    if (search) {
+      showCommunityNotice('Message search is ready for the full Community release.');
+      return;
+    }
+    if (joinRequest) showCommunityNotice(joinRequest.getAttribute('data-join-request-action') === 'approve' ? 'Join request approved.' : 'Join request declined.');
+  }
 
-    document.addEventListener('submit', function (event) {
+  function bindGroupControls() {
+    var panel = document.querySelector('#panel-groups');
+    if (!panel) return;
+    panel.addEventListener('click', handleGroupsClick);
+    panel.addEventListener('submit', function (event) {
       var form = event.target;
       var result;
-      if (form && form.getAttribute && form.getAttribute('data-feed-composer') !== null) {
+      var error;
+      if (form && form.getAttribute && form.getAttribute('data-message-composer') !== null) {
         event.preventDefault();
-        result = addFeedPost(document.querySelector('#community-post-body').value, document.querySelector('[data-feed-audience]').value);
-        document.querySelector('[data-feed-error]').textContent = result.ok ? '' : result.error;
+        result = sendMessage(state.activeGroupId, form.querySelector('[data-message-input]').value);
+        error = form.querySelector('[data-message-error]');
+        if (error) error.textContent = result.ok ? '' : result.error;
         if (result.ok) {
-          document.querySelector('#community-post-body').value = '';
-          showCommunityNotice('Your post is live.');
+          form.querySelector('[data-message-input]').value = '';
+          renderGroupChat();
         }
-      } else if (form && form.getAttribute && form.getAttribute('data-feed-comment-form') !== null) {
+      } else if (form && form.getAttribute && form.getAttribute('data-thread-form') !== null) {
         event.preventDefault();
-        result = addFeedComment(form.getAttribute('data-post-id'), form.querySelector('[name="comment"]').value);
-        if (!result.ok) showCommunityNotice(result.error);
+        result = addThreadReply(state.activeGroupId, state.activeThreadId, form.querySelector('[data-thread-input]').value);
+        error = form.querySelector('[data-thread-error]');
+        if (error) error.textContent = result.ok ? '' : result.error;
+        if (result.ok) {
+          form.querySelector('[data-thread-input]').value = '';
+          renderGroupChat();
+        }
       } else if (form && form.getAttribute && form.getAttribute('data-create-group-form') !== null) {
         event.preventDefault();
         result = createGroup({
@@ -420,15 +734,70 @@
         }
       }
     });
-
-    document.addEventListener('input', function (event) {
+    panel.addEventListener('input', function (event) {
       var target = event.target;
       if (target && target.getAttribute && target.getAttribute('data-group-search') !== null) renderGroups();
     });
-
-    document.addEventListener('change', function (event) {
+    panel.addEventListener('change', function (event) {
       var target = event.target;
-      if (target && target.getAttribute && target.getAttribute('name') === 'groupType') updateMixedPrivacyConfirmation();
+      var result;
+      if (!target || !target.getAttribute) return;
+      if (target.getAttribute('name') === 'groupType') updateMixedPrivacyConfirmation();
+      if (target.getAttribute('data-member-role') !== null) {
+        result = setMemberRole(state.activeGroupId, target.getAttribute('data-member-role'), target.value);
+        if (result.ok) renderMemberRail();
+        else showCommunityNotice(result.error);
+      }
+    });
+  }
+
+  function bindFeedControls() {
+    document.addEventListener('click', function (event) {
+      var target = event.target;
+      var tab = closestWithAttribute(target, 'data-tab-target');
+      var filter = closestWithAttribute(target, 'data-feed-filter');
+      var reaction = closestWithAttribute(target, 'data-feed-reaction');
+      var save = closestWithAttribute(target, 'data-feed-save');
+      var pin = closestWithAttribute(target, 'data-feed-pin');
+      var attachment = closestWithAttribute(target, 'data-demo-attachment');
+      var focusComposer = closestWithAttribute(target, 'data-focus-feed-composer');
+      if (tab) {
+        activateCommunityTab(tab.getAttribute('data-tab-target'));
+        if (typeof window.setDrawer === 'function') window.setDrawer(false);
+      } else if (filter) {
+        state.feedFilter = filter.getAttribute('data-feed-filter');
+        updateFilterButtons();
+        renderFeed();
+      } else if (reaction) {
+        togglePostReaction(reaction.getAttribute('data-post-id'), reaction.getAttribute('data-feed-reaction'));
+      } else if (save) {
+        toggleSavedPost(save.getAttribute('data-post-id'));
+      } else if (pin) {
+        togglePinnedPost(pin.getAttribute('data-post-id'));
+      } else if (attachment) {
+        showCommunityNotice(attachment.getAttribute('data-demo-attachment') + ' attachments are ready for the full Community release.');
+      } else if (focusComposer) {
+        var composer = document.querySelector('#community-post-body');
+        if (composer) composer.focus();
+      }
+    });
+
+    document.addEventListener('submit', function (event) {
+      var form = event.target;
+      var result;
+      if (form && form.getAttribute && form.getAttribute('data-feed-composer') !== null) {
+        event.preventDefault();
+        result = addFeedPost(document.querySelector('#community-post-body').value, document.querySelector('[data-feed-audience]').value);
+        document.querySelector('[data-feed-error]').textContent = result.ok ? '' : result.error;
+        if (result.ok) {
+          document.querySelector('#community-post-body').value = '';
+          showCommunityNotice('Your post is live.');
+        }
+      } else if (form && form.getAttribute && form.getAttribute('data-feed-comment-form') !== null) {
+        event.preventDefault();
+        result = addFeedComment(form.getAttribute('data-post-id'), form.querySelector('[name="comment"]').value);
+        if (!result.ok) showCommunityNotice(result.error);
+      }
     });
   }
 
@@ -453,13 +822,22 @@
     createGroup: createGroup,
     updateGroup: updateGroup,
     toggleArchivedGroup: toggleArchivedGroup,
+    openGroup: openGroup,
+    sendMessage: sendMessage,
+    addMessageReaction: addMessageReaction,
+    addThreadReply: addThreadReply,
+    setMemberRole: setMemberRole,
+    moderateMessage: moderateMessage,
     renderGroups: renderGroups,
+    renderGroupChat: renderGroupChat,
     activateTab: activateCommunityTab
   };
   window.activateCommunityTab = activateCommunityTab;
   window.showCommunityNotice = showCommunityNotice;
 
   bindFeedControls();
+  bindGroupControls();
   renderFeed();
   renderGroups();
+  renderGroupWorkspace();
 }());

@@ -99,4 +99,32 @@ test('creates four unique group IDs within one millisecond', () => {
   assert.ok(ids.every((id) => id.indexOf('group-1720000000000') === 0));
 });
 
+test('keeps chat, threads, and roles isolated per group', () => {
+  const api = loadApi();
+  const vipMessages = api.state.messages['vip-club'];
+  assert.equal(api.openGroup('missing').ok, false);
+  assert.equal(api.openGroup('staff-main').ok, true);
+  assert.equal(api.sendMessage('staff-main', ' ').ok, false);
+  const sent = api.sendMessage('staff-main', '  Please confirm Friday coverage.  ');
+  assert.equal(sent.ok, true);
+  assert.equal(sent.message.body, 'Please confirm Friday coverage.');
+  assert.equal(api.state.messages['vip-club'], vipMessages);
+  assert.equal(api.addThreadReply('staff-main', sent.message.id, 'I can cover 9–5.').ok, true);
+  assert.equal(sent.message.replies.length, 1);
+  assert.equal(api.setMemberRole('staff-main', 'member-linh', 'moderator').ok, true);
+  assert.equal(api.setMemberRole('staff-main', 'member-linh', 'owner').ok, false);
+});
+
+test('validates reactions and owner moderation within the selected group', () => {
+  const api = loadApi();
+  assert.equal(api.addMessageReaction('missing', 'staff-message-1', '👍').ok, false);
+  assert.equal(api.addMessageReaction('staff-main', 'missing', '👍').ok, false);
+  assert.equal(api.addMessageReaction('staff-main', 'staff-message-1', ' ').ok, false);
+  assert.equal(api.addMessageReaction('staff-main', 'staff-message-1', '👍').message.reactions['👍'], 4);
+  assert.equal(api.moderateMessage('staff-main', 'staff-message-2', 'pin').message.pinned, true);
+  assert.equal(api.moderateMessage('staff-main', 'staff-message-3', 'delete').ok, true);
+  assert.equal(api.state.messages['staff-main'].some((message) => message.id === 'staff-message-3'), false);
+  assert.equal(api.state.messages['vip-club'].length, 2);
+});
+
 export { loadApi };
