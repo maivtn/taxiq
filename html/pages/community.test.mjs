@@ -29,22 +29,22 @@ test('shows the expanded Community submenu from the reference', () => {
   assert.match(html, /class="nav-subitem is-active"[^>]*>[\s\S]*?<span>Feed<\/span>/);
 });
 
-test('does not render page tabs or tab content', () => {
+test('renders one Booking Book-style page tab for every Community submenu', () => {
   const html = source();
-  assert.doesNotMatch(html, /class="page-tabs/);
-  assert.doesNotMatch(html, /class="tab-content/);
-  assert.doesNotMatch(html, /data-tab-panel=/);
-  assert.doesNotMatch(html, /role="tabpanel"/);
+  assert.match(html, /class="page-tabs" role="tablist" aria-label="Community sections"/);
+  for (const tab of ['feed', 'groups', 'learning', 'jobs', 'events']) {
+    assert.match(html, new RegExp(`class="page-tab[^\"]*"[^>]*data-tab-target="${tab}"[^>]*aria-controls="panel-${tab}"`));
+    assert.match(html, new RegExp(`id="panel-${tab}"[^>]*data-tab-panel="${tab}"`));
+  }
 });
 
-test('keeps Feed as the default view and opens Owner Jobs from the submenu', () => {
+test('keeps Feed active by default and synchronizes submenu and page tabs', () => {
   const html = source();
-  assert.match(html, /class="nav-subitem is-active"[^>]*data-community-view="feed"[^>]*aria-pressed="true"/);
-  assert.match(html, /class="nav-subitem"[^>]*data-community-view="jobs"[^>]*aria-pressed="false"/);
-  assert.match(html, /data-community-panel="feed"/);
-  assert.match(html, /data-community-panel="jobs" hidden/);
-  assert.match(html, /document\.querySelectorAll\("\[data-community-view\]"\)/);
-  assert.match(html, /panel\.hidden = panel\.dataset\.communityPanel !== view/);
+  assert.match(html, /class="nav-subitem is-active"[^>]*data-tab-target="feed"[^>]*aria-controls="panel-feed"/);
+  assert.match(html, /class="page-tab is-active"[^>]*aria-selected="true"[^>]*data-tab-target="feed"/);
+  assert.match(html, /class="tab-panel is-active"[^>]*id="panel-feed"[^>]*data-tab-panel="feed"/);
+  assert.match(html, /document\.querySelectorAll\('\[data-tab-target\]'\)/);
+  assert.match(html, /panel\.hidden = !isActive/);
 });
 
 test('adapts the salon Owner side of the AI Matching mockup', () => {

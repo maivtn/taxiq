@@ -6740,23 +6740,23 @@
         </button>
         <div class="nav-subnav" id="community-subnav" data-nav-subnav>
           <div class="nav-subnav-inner">
-            <button class="nav-subitem is-active" type="button" data-community-view="feed" aria-pressed="true">
+            <button class="nav-subitem is-active" type="button" data-tab-target="feed" aria-controls="panel-feed">
               <span class="nav-subitem-dot" aria-hidden="true"></span>
               <span>Feed</span>
             </button>
-            <button class="nav-subitem" type="button">
+            <button class="nav-subitem" type="button" data-tab-target="groups" aria-controls="panel-groups">
               <span class="nav-subitem-dot" aria-hidden="true"></span>
               <span>Groups</span>
             </button>
-            <button class="nav-subitem" type="button">
+            <button class="nav-subitem" type="button" data-tab-target="learning" aria-controls="panel-learning">
               <span class="nav-subitem-dot" aria-hidden="true"></span>
               <span>Learning</span>
             </button>
-            <button class="nav-subitem" type="button" data-community-view="jobs" aria-pressed="false">
+            <button class="nav-subitem" type="button" data-tab-target="jobs" aria-controls="panel-jobs">
               <span class="nav-subitem-dot" aria-hidden="true"></span>
               <span>Jobs</span>
             </button>
-            <button class="nav-subitem" type="button">
+            <button class="nav-subitem" type="button" data-tab-target="events" aria-controls="panel-events">
               <span class="nav-subitem-dot" aria-hidden="true"></span>
               <span>Events</span>
             </button>
@@ -6837,14 +6837,63 @@
       </header>
 
       <main class="content" aria-label="Community content">
-        <section class="blank-stage community-view" data-community-panel="feed">
+        <section class="blank-stage">
           <div class="page-heading">
             <h1 class="page-title">Community</h1>
             <p class="page-description">Connect, learn, and grow with the Nexora community.</p>
+            <div class="page-tabs" role="tablist" aria-label="Community sections">
+              <button class="page-tab is-active" type="button" role="tab" aria-selected="true" data-tab-target="feed" aria-controls="panel-feed">
+                <span class="page-tab-icon"><i data-lucide="message-square" aria-hidden="true"></i></span>
+                <span>Feed</span>
+              </button>
+              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="groups" aria-controls="panel-groups">
+                <span class="page-tab-icon"><i data-lucide="users" aria-hidden="true"></i></span>
+                <span>Groups</span>
+              </button>
+              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="learning" aria-controls="panel-learning">
+                <span class="page-tab-icon"><i data-lucide="graduation-cap" aria-hidden="true"></i></span>
+                <span>Learning</span>
+              </button>
+              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="jobs" aria-controls="panel-jobs">
+                <span class="page-tab-icon"><i data-lucide="briefcase-business" aria-hidden="true"></i></span>
+                <span>Jobs</span>
+              </button>
+              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="events" aria-controls="panel-events">
+                <span class="page-tab-icon"><i data-lucide="calendar-days" aria-hidden="true"></i></span>
+                <span>Events</span>
+              </button>
+            </div>
           </div>
-        </section>
 
-        <section class="blank-stage community-view owner-jobs-shell" data-community-panel="jobs" hidden>
+          <div class="tab-content">
+            <section class="tab-panel is-active" id="panel-feed" data-tab-panel="feed" role="tabpanel" aria-label="Community Feed">
+              <div class="placeholder-panel">
+                <div>
+                  <h2>Feed</h2>
+                  <p>Follow updates, conversations, and highlights from the Nexora community.</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="tab-panel" id="panel-groups" data-tab-panel="groups" role="tabpanel" aria-label="Community Groups" hidden>
+              <div class="placeholder-panel">
+                <div>
+                  <h2>Groups</h2>
+                  <p>Join focused groups to exchange ideas with owners and nail professionals.</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="tab-panel" id="panel-learning" data-tab-panel="learning" role="tabpanel" aria-label="Community Learning" hidden>
+              <div class="placeholder-panel">
+                <div>
+                  <h2>Learning</h2>
+                  <p>Discover practical resources and lessons created for the salon community.</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="tab-panel owner-jobs-shell" id="panel-jobs" data-tab-panel="jobs" role="tabpanel" aria-label="Owner Jobs" hidden>
           <div class="owner-jobs-heading">
             <div>
               <h1 class="page-title">Owner Jobs</h1>
@@ -6913,6 +6962,17 @@
             <strong>Privacy and hiring guardrails</strong>
             <p>AI ranks anonymous tech profiles; you never see identity from a suggestion alone. Contact is a two-way door: the tech must approve before you see any name or phone number. NEXORA is a connection board and does not hire, pay, recruit, or advise on 1099/W-2 terms.</p>
           </aside>
+            </section>
+
+            <section class="tab-panel" id="panel-events" data-tab-panel="events" role="tabpanel" aria-label="Community Events" hidden>
+              <div class="placeholder-panel">
+                <div>
+                  <h2>Events</h2>
+                  <p>See upcoming community events, meetups, and professional sessions.</p>
+                </div>
+              </div>
+            </section>
+          </div>
         </section>
       </main>
     </div>
@@ -6932,20 +6992,22 @@
       });
     });
 
-    function setCommunityView(view) {
-      document.querySelectorAll("[data-community-view]").forEach(function (button) {
-        var selected = button.dataset.communityView === view;
-        button.classList.toggle("is-active", selected);
-        button.setAttribute("aria-pressed", selected ? "true" : "false");
+    function activateCommunityTab(target) {
+      document.querySelectorAll('[data-tab-target]').forEach(function (tab) {
+        var isActive = tab.dataset.tabTarget === target;
+        tab.classList.toggle('is-active', isActive);
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
       });
-      document.querySelectorAll("[data-community-panel]").forEach(function (panel) {
-        panel.hidden = panel.dataset.communityPanel !== view;
+      document.querySelectorAll('[data-tab-panel]').forEach(function (panel) {
+        var isActive = panel.dataset.tabPanel === target;
+        panel.classList.toggle('is-active', isActive);
+        panel.hidden = !isActive;
       });
     }
 
-    document.querySelectorAll("[data-community-view]").forEach(function (button) {
-      button.addEventListener("click", function () {
-        setCommunityView(button.dataset.communityView);
+    document.querySelectorAll('[data-tab-target]').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        activateCommunityTab(tab.dataset.tabTarget);
         setDrawer(false);
       });
     });
