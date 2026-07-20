@@ -630,6 +630,53 @@
       font-size: 12px;
     }
 
+    .signature-field { min-width: 0; }
+    .signature-pad {
+      position: relative;
+      overflow: hidden;
+      border: 1.5px solid #69748c;
+      border-radius: 12px;
+      background: #fff;
+    }
+    .signature-pad:focus-within {
+      border-color: var(--action);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, .14);
+    }
+    .signature-canvas {
+      display: block;
+      width: 100%;
+      height: 156px;
+      background: transparent;
+      cursor: crosshair;
+      touch-action: none;
+    }
+    .signature-canvas:focus { outline: 0; }
+    .signature-placeholder {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: #858ea2;
+      font-size: 14px;
+      font-weight: 750;
+      pointer-events: none;
+      transition: opacity .15s ease;
+    }
+    .signature-pad.has-signature .signature-placeholder { opacity: 0; }
+    .signature-actions { display: flex; justify-content: flex-end; margin-top: 4px; }
+    .signature-clear {
+      min-width: 72px;
+      min-height: 44px;
+      border: 0;
+      padding: 8px 2px;
+      color: var(--action-dark);
+      background: transparent;
+      cursor: pointer;
+      font-weight: 850;
+    }
+    .signature-clear:disabled { color: #929bad; cursor: default; }
+    .signature-details { margin-top: 2px; }
+
     .action-bar {
       position: fixed;
       inset: auto 0 0;
@@ -1141,11 +1188,22 @@
               </label>
               <p class="error-message" id="certification-acknowledgment-error"></p>
 
-              <div class="field-grid two-column">
+              <div class="signature-field">
+                <span class="field-label" id="signature-label">Signature of U.S. person <span class="required-marker" aria-hidden="true">*</span></span>
+                <div class="signature-pad" id="signature-pad">
+                  <canvas id="signature-canvas" class="signature-canvas" tabindex="0" aria-labelledby="signature-label" aria-describedby="signature-help">Use touch, stylus, or mouse to draw your signature.</canvas>
+                  <span class="signature-placeholder" id="signature-placeholder" aria-hidden="true">Ký bằng ngón tay</span>
+                </div>
+                <div class="signature-actions screen-only">
+                  <button class="signature-clear" id="clear-signature" type="button" disabled>Ký lại</button>
+                </div>
+                <p class="field-help" id="signature-help">Use your finger, stylus, or mouse, or enter your full legal name below as a keyboard-accessible signature.</p>
+              </div>
+
+              <div class="field-grid two-column signature-details">
                 <div class="field">
-                  <label class="field-label" for="signature">Signature of U.S. person <span class="required-marker" aria-hidden="true">*</span></label>
-                  <input id="signature" name="signature" type="text" autocomplete="off" required aria-describedby="signature-help signature-error" placeholder="Type your full legal name">
-                  <p class="field-help" id="signature-help">Typing your name is a prototype acknowledgment, not a third-party digital signature.</p>
+                  <label class="field-label" for="signature">Full legal name <span class="required-marker" aria-hidden="true">*</span></label>
+                  <input id="signature" name="signature" type="text" autocomplete="name" required aria-describedby="signature-error" placeholder="Linh Nguyen">
                   <p class="error-message" id="signature-error"></p>
                 </div>
                 <div class="field">
@@ -1226,6 +1284,12 @@
           || (classification === "llc" && stringValue(llcCode).toUpperCase() === "P");
       }
 
+      function formatUsDate(value) {
+        const input = stringValue(value).trim();
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input);
+        return match ? match[2] + "/" + match[3] + "/" + match[1] : input;
+      }
+
       function sanitizeDraft(values) {
         const draft = {};
         const input = values && typeof values === "object" ? values : {};
@@ -1296,6 +1360,7 @@
           ein: "",
           backupWithholdingSubject: false,
           certificationAcknowledgment: true,
+          signatureDrawn: true,
           signature: "Linh Nguyen",
           signatureDate: stringValue(dateString)
         };
@@ -1352,7 +1417,7 @@
           { label: "Backup withholding", value: input.backupWithholdingSubject ? "Subject" : "Not subject" },
           { label: "Part II - Certification", value: "TIN and U.S. person certifications acknowledged" },
           { label: "Signature", value: stringValue(input.signature).trim() || "Not provided" },
-          { label: "Date", value: stringValue(input.signatureDate).trim() || "Not provided" }
+          { label: "Date", value: formatUsDate(input.signatureDate) || "Not provided" }
         ];
       }
 
@@ -1427,6 +1492,7 @@
         STORAGE_KEY,
         digitsOnly,
         formatTin,
+        formatUsDate,
         isValidTin,
         line3bApplies,
         sanitizeDraft,

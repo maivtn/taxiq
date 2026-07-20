@@ -107,6 +107,23 @@ test('offers a complete Dev test fixture action', () => {
   assert.match(html, /applyValues\(createDevFixture\(/);
 });
 
+test('renders the approved handwritten signature controls in source order', () => {
+  const html = source();
+  const ids = [
+    'signature-pad', 'signature-canvas', 'signature-placeholder',
+    'clear-signature', 'signature', 'signature-date'
+  ];
+  let cursor = -1;
+  ids.forEach((id) => {
+    const next = html.indexOf(`id="${id}"`);
+    assert.ok(next > cursor, `${id} must follow the previous signature control`);
+    cursor = next;
+  });
+  assert.match(html, /id="signature-placeholder"[^>]*>Ký bằng ngón tay<\/span>/);
+  assert.match(html, /id="clear-signature"[^>]*disabled[^>]*>Ký lại<\/button>/);
+  assert.match(html, /for="signature"[^>]*>Full legal name/);
+});
+
 test('offers separate Print and Download PDF completion actions', () => {
   const html = source();
   assert.match(html, /id="print-form"[^>]*>Print<\/button>/);
@@ -147,7 +164,27 @@ test('creates a complete valid Dev fixture', () => {
   assert.equal(fixture.certificationAcknowledgment, true);
   assert.equal(fixture.signature, 'Linh Nguyen');
   assert.equal(fixture.signatureDate, '2026-07-20');
+  assert.equal(fixture.signatureDrawn, true);
   assert.equal(Object.keys(helpers.validateValues(fixture)).length, 0);
+});
+
+test('accepts legal name as the accessible fallback while retaining demo ink state', () => {
+  const form = api();
+  const fixture = form.createDevFixture('2026-07-20');
+  assert.equal(fixture.signatureDrawn, true);
+  assert.equal(Object.keys(form.validateValues(fixture)).length, 0);
+
+  const withoutInk = form.validateValues({ ...fixture, signatureDrawn: false });
+  assert.equal(Object.keys(withoutInk).length, 0);
+  const withoutName = form.validateValues({ ...fixture, signature: '' });
+  assert.equal(withoutName.signature, 'Type your full legal name to sign.');
+});
+
+test('formats a valid signature date for U.S. print and PDF output', () => {
+  const form = api();
+  assert.equal(form.formatUsDate('2026-07-20'), '07/20/2026');
+  assert.equal(form.formatUsDate(''), '');
+  assert.equal(form.formatUsDate('20/07/2026'), '20/07/2026');
 });
 
 test('formats and validates SSN and EIN by TIN type', () => {
@@ -175,6 +212,7 @@ test('removes TIN and signature from the device-local draft', () => {
     businessName: 'Amy Nail Studio',
     ssn: '123-45-6789',
     ein: '12-3456789',
+    signatureDrawn: true,
     signature: 'Amy Nguyen',
     signatureDate: '2026-07-20'
   });
@@ -185,6 +223,7 @@ test('removes TIN and signature from the device-local draft', () => {
   assert.equal('ein' in draft, false);
   assert.equal('signature' in draft, false);
   assert.equal('signatureDate' in draft, false);
+  assert.equal('signatureDrawn' in draft, false);
 });
 
 test('returns field-specific errors for missing and conditional values', () => {
@@ -216,6 +255,7 @@ test('accepts a complete U.S. address and certification while rejecting invalid 
     tinType: 'ssn',
     ssn: '123-45-6789',
     certificationAcknowledgment: true,
+    signatureDrawn: true,
     signature: 'Amy Nguyen',
     signatureDate: '2026-07-20'
   };
@@ -259,6 +299,7 @@ test('maps every completed W-9 group into printable PDF rows', () => {
     tinType: 'ein',
     ein: '12-3456789',
     backupWithholdingSubject: false,
+    signatureDrawn: true,
     signature: 'Amy Nguyen',
     signatureDate: '2026-07-20'
   });
@@ -274,5 +315,5 @@ test('maps every completed W-9 group into printable PDF rows', () => {
   assert.equal(fields['Part I - EIN'], '12-3456789');
   assert.equal(fields['Backup withholding'], 'Not subject');
   assert.equal(fields['Signature'], 'Amy Nguyen');
-  assert.equal(fields['Date'], '2026-07-20');
+  assert.equal(fields['Date'], '07/20/2026');
 });
