@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 
 const REWARD_PAGE = new URL('./salon-setup-reward.html', import.meta.url);
 
@@ -48,4 +49,68 @@ test('keeps the existing reward builder inside Reward Catalog', () => {
   assert.match(html, /data-reward-builder[\s\S]*?data-create-title>Create Reward/);
   assert.match(html, /function showRewardBuilder\(open\)/);
   assert.match(html, /activateMainTab\('reward-catalog'\)/);
+});
+
+test('renders and updates the Redemptions and return revenue chart', () => {
+  const html = source();
+  assert.match(html, /<select[^>]*data-loyalty-analytics-range[^>]*aria-label="Analytics date range"/);
+  assert.match(html, /<option value="17d" selected>Jul 1–17, 2026<\/option>/);
+  assert.match(html, /data-loyalty-analytics-chart[^>]*role="img"/);
+  assert.match(html, /data-chart-series="revenue"/);
+  assert.match(html, /data-chart-series="redemptions"/);
+  assert.match(html, /data-analytics-revenue-total/);
+  assert.match(html, /data-analytics-redemptions-total/);
+  assert.match(html, /const LOYALTY_ANALYTICS_RANGES =/);
+  assert.match(html, /function renderLoyaltyAnalytics\(rangeKey\)/);
+  assert.match(html, /loyaltyAnalyticsRange\.addEventListener\('change'/);
+  assert.match(html, /<title>' \+ label \+ ': \$' \+ revenue/);
+  assert.match(html, /<title>' \+ label \+ ': ' \+ redemptions \+ ' redemptions/);
+});
+
+test('recalculates chart totals and SVG series when the analytics range changes', () => {
+  const html = source();
+  const analyticsScript = html.match(/const LOYALTY_ANALYTICS_RANGES =[\s\S]*?(?=\n    document\.querySelectorAll\('\[data-view-wallet\]')/);
+  assert.ok(analyticsScript, 'missing executable loyalty analytics script');
+
+  const chart = {
+    innerHTML: '',
+    ariaLabel: '',
+    setAttribute(name, value) {
+      if (name === 'aria-label') this.ariaLabel = value;
+    }
+  };
+  const range = {
+    value: '17d',
+    changeHandler: null,
+    addEventListener(eventName, handler) {
+      if (eventName === 'change') this.changeHandler = handler;
+    }
+  };
+  const revenueTotal = { textContent: '' };
+  const redemptionsTotal = { textContent: '' };
+  const period = { textContent: '' };
+  const nodes = new Map([
+    ['[data-loyalty-analytics-chart]', chart],
+    ['[data-loyalty-analytics-range]', range],
+    ['[data-analytics-revenue-total]', revenueTotal],
+    ['[data-analytics-redemptions-total]', redemptionsTotal],
+    ['[data-loyalty-chart-period]', period]
+  ]);
+
+  vm.runInNewContext(analyticsScript[0], {
+    document: { querySelector(selector) { return nodes.get(selector) || null; } }
+  });
+
+  assert.equal(revenueTotal.textContent, '$12,840');
+  assert.equal(redemptionsTotal.textContent, '261');
+  assert.match(chart.innerHTML, /data-chart-series="revenue"/);
+  assert.match(chart.innerHTML, /data-chart-series="redemptions"/);
+  assert.equal(typeof range.changeHandler, 'function');
+
+  range.value = '30d';
+  range.changeHandler();
+  assert.equal(revenueTotal.textContent, '$21,460');
+  assert.equal(redemptionsTotal.textContent, '438');
+  assert.equal(period.textContent, 'Performance across the last 30 days');
+  assert.match(chart.ariaLabel, /438 redemptions and \$21,460 return revenue/);
 });
