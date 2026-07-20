@@ -450,6 +450,74 @@ test('reward receipt exposes lifecycle expiry and gift card remaining value', ()
   }
 });
 
+test('labels loyalty simulation controls as Demo QA and not production', () => {
+  const source = html();
+  assert.match(source, /id="loyalty-demo-panel"/);
+  assert.match(source, /Demo\/QA — không thuộc production/);
+  for (const action of ['settle_pending', 'toggle_pause', 'make_stale', 'partial_refund', 'void_restore', 'consume_gift_card', 'expire_instruments']) {
+    assert.match(source, new RegExp(`data-loyalty-demo="${action}"`));
+  }
+});
+
+test('routes Demo QA actions through loyalty domain functions', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const before = state.balances['bitcoin-nail-bar'].available;
+
+  const result = api.runLoyaltyDemoAction(state, 'settle_pending', {
+    businessId: 'bitcoin-nail-bar', amount: 20
+  }, Date.parse('2026-07-20T12:00:00Z'));
+
+  assert.equal(result.ok, true);
+  assert.equal(state.balances['bitcoin-nail-bar'].available, before + 20);
+});
+
+test('runs every loyalty Demo QA scenario through append-only lifecycle changes', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  const now = Date.parse('2026-07-20T12:00:00Z');
+
+  const paused = api.createDefaultState();
+  assert.equal(api.runLoyaltyDemoAction(paused, 'toggle_pause', {}, now).status, 'paused');
+  assert.equal(paused.ui.loyaltyDemo.catalogStatus.credit5, 'paused');
+  assert.equal(api.runLoyaltyDemoAction(paused, 'toggle_pause', {}, now + 1).status, 'active');
+
+  const stale = api.createDefaultState();
+  const staleVersion = stale.balances['bitcoin-nail-bar'].version;
+  assert.equal(api.runLoyaltyDemoAction(stale, 'make_stale', {}, now).ok, true);
+  assert.equal(stale.balances['bitcoin-nail-bar'].version, staleVersion + 1);
+
+  const refunded = api.createDefaultState();
+  const refund = api.runLoyaltyDemoAction(refunded, 'partial_refund', {}, now);
+  assert.equal(refund.ok, true);
+  assert.equal(refund.ledger.type, 'refund_reversal');
+  assert.equal(refund.ledger.reversalOf, 'led-visit-1');
+
+  const voided = api.createDefaultState();
+  const voidAvailable = voided.balances['bitcoin-nail-bar'].available;
+  const voidResult = api.runLoyaltyDemoAction(voided, 'void_restore', {}, now);
+  assert.equal(voidResult.ok, true);
+  assert.equal(voidResult.instrument.status, 'voided');
+  assert.equal(voided.balances['bitcoin-nail-bar'].available, voidAvailable + voidResult.instrument.pointsSpent);
+
+  const gift = api.createDefaultState();
+  const giftAvailable = gift.balances['bitcoin-nail-bar'].available;
+  const giftResult = api.runLoyaltyDemoAction(gift, 'consume_gift_card', {}, now);
+  assert.equal(giftResult.ok, true);
+  assert.equal(giftResult.instrument.remainingValueCents, 300);
+  assert.equal(gift.balances['bitcoin-nail-bar'].available, giftAvailable - 500);
+  assert.equal(giftResult.ledger.type, 'gift_card_used');
+
+  const expired = api.createDefaultState();
+  const expireAvailable = expired.balances['bitcoin-nail-bar'].available;
+  const expireResult = api.runLoyaltyDemoAction(expired, 'expire_instruments', {}, now);
+  assert.equal(expireResult.ok, true);
+  assert.ok(expireResult.expired.length > 0);
+  assert.equal(expired.balances['bitcoin-nail-bar'].available, expireAvailable);
+});
+
 test('migrates customer journey collections into schema v3 without changing the storage key', () => {
   const { api } = testApi();
   const migrated = api.migrateState({

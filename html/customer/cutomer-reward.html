@@ -313,6 +313,20 @@
           <div id="wallet-empty" class="hidden app-card text-center"><strong data-en="No point activity yet" data-vi="Chưa có hoạt động điểm">Chưa có hoạt động điểm</strong></div>
           <div id="wallet-business-list" class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3"></div>
           <div class="mt-6 grid gap-4 lg:grid-cols-[1fr_320px]"><article class="app-card"><div class="flex items-center justify-between"><h2 class="section-title" data-en="Recent point activity" data-vi="Hoạt động điểm gần đây">Hoạt động điểm gần đây</h2><button type="button" class="text-xs font-bold text-app-cyan" data-action="navigate" data-target="history" data-en="Full history" data-vi="Toàn bộ lịch sử">Toàn bộ lịch sử</button></div><div id="wallet-activity-list" class="mt-4 divide-y divide-app-line"></div></article><aside class="app-card flex h-fit items-start gap-3 border-app-gold/20 bg-app-gold/[.05]"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-5" aria-hidden="true"></i></span><div class="min-w-0 flex-1"><h2 class="font-black" data-en="Points expiry" data-vi="Điểm sắp hết hạn">Điểm sắp hết hạn</h2><p id="wallet-expiry-copy" class="mt-1 text-sm leading-6 text-app-muted"></p></div></aside></div>
+          <details id="loyalty-demo-panel" class="app-card mt-6 border-dashed border-app-gold/40">
+            <summary class="min-h-11 cursor-pointer py-2 text-sm font-black text-app-gold" data-en="Demo/QA — not production" data-vi="Demo/QA — không thuộc production">Demo/QA — không thuộc production</summary>
+            <p class="mt-2 text-xs leading-5 text-app-muted" data-en="These controls simulate business events for product review and QA." data-vi="Các nút này mô phỏng sự kiện nghiệp vụ để PO và QA kiểm tra.">Các nút này mô phỏng sự kiện nghiệp vụ để PO và QA kiểm tra.</p>
+            <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="settle_pending" data-en="Settle pending points" data-vi="Chuyển điểm đang chờ">Chuyển điểm đang chờ</button>
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="toggle_pause" data-en="Pause/unpause $5 reward" data-vi="Pause/unpause reward $5">Pause/unpause reward $5</button>
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="make_stale" data-en="Make balance stale" data-vi="Tạo stale balance">Tạo stale balance</button>
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="partial_refund" data-en="Partial refund" data-vi="Hoàn tiền một phần">Hoàn tiền một phần</button>
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="void_restore" data-en="Void and restore points" data-vi="Hủy reward và hoàn điểm">Hủy reward và hoàn điểm</button>
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="consume_gift_card" data-en="Use $2 Gift Card" data-vi="Dùng $2 Gift Card">Dùng $2 Gift Card</button>
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="expire_instruments" data-en="Expire issued rewards" data-vi="Cho reward hết hạn">Cho reward hết hạn</button>
+            </div>
+            <p id="loyalty-demo-result" class="mt-3 text-xs font-bold text-app-cyan" aria-live="polite"></p>
+          </details>
         </section>
         <section class="app-screen hidden" id="history" data-ready="true" data-module="wallet" aria-labelledby="history-title">
           <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Every point accounted for" data-vi="Minh bạch từng điểm">Minh bạch từng điểm</p><h1 id="history-title" class="text-2xl font-black" data-en="Points history" data-vi="Lịch sử điểm">Lịch sử điểm</h1></div></div><div id="ledger-list" class="space-y-3"></div>
@@ -1198,8 +1212,11 @@
         : { eligible: true, code: 'eligible', missingPoints: 0 };
     }
 
-    function getRewardDefinition(key) {
-      return Object.prototype.hasOwnProperty.call(REWARDS, key) ? REWARDS[key] : null;
+    function getRewardDefinition(key, appState = null) {
+      const reward = Object.prototype.hasOwnProperty.call(REWARDS, key) ? REWARDS[key] : null;
+      if (!reward) return null;
+      const override = appState?.ui?.loyaltyDemo?.catalogStatus?.[key];
+      return ['active', 'paused'].includes(override) ? { ...reward, status: override } : reward;
     }
 
     function getGuestServiceDefinition(businessId, serviceKey) {
@@ -2142,6 +2159,7 @@
             tipScanReplayFingerprint: null, tipDoneView: null, reviewMode: null,
             guestCheckinId: null, checkoutDraftId: null, paymentProofId: null, paydoneKind: null
           },
+          loyaltyDemo: { catalogStatus: {} },
           bookingDraft: { businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM', note: '' },
           overlay: null, pushPromptCount: 0, introSeen: false
         }
@@ -2284,7 +2302,7 @@
       const id = redemption.id.trim();
       const idempotencyKey = redemption.idempotencyKey.trim();
       const rewardKey = redemption.rewardKey.trim();
-      const reward = getRewardDefinition(rewardKey);
+      const reward = getRewardDefinition(rewardKey, appState);
       if (!id || !idempotencyKey || !rewardKey || !reward) return null;
       const pointsSpent = redemption.pointsSpent ?? redemption.cost;
       const issuedAt = redemption.issuedAt ?? redemption.createdAt;
@@ -5864,6 +5882,15 @@
       if (!REWARD_TABS.includes(migrated.ui.rewardTab)) migrated.ui.rewardTab = defaults.ui.rewardTab;
       if (!LOOK_SORTS.includes(migrated.ui.lookSort)) migrated.ui.lookSort = defaults.ui.lookSort;
       if (typeof migrated.ui.lookQuery !== 'string') migrated.ui.lookQuery = defaults.ui.lookQuery;
+      const rawCatalogStatus = isRecord(value.ui?.loyaltyDemo?.catalogStatus)
+        ? value.ui.loyaltyDemo.catalogStatus
+        : {};
+      migrated.ui.loyaltyDemo = { catalogStatus: {} };
+      Object.keys(REWARDS).forEach((rewardKey) => {
+        if (['active', 'paused'].includes(rawCatalogStatus[rewardKey])) {
+          migrated.ui.loyaltyDemo.catalogStatus[rewardKey] = rawCatalogStatus[rewardKey];
+        }
+      });
       migrated.consents = migrated.consents.map((consent) => consent.scope === 'network'
         ? { ...consent, scope: 'networkOffers' }
         : consent);
@@ -9026,7 +9053,7 @@
         }
         return { ok: true, instrument: existing[0], redemption: existing[0], idempotent: true };
       }
-      const reward = getRewardDefinition(rewardKey);
+      const reward = getRewardDefinition(rewardKey, appState);
       if (!reward) return { ok: false, code: 'unknown_reward' };
       const issuingLocationId = typeof request.issuingLocationId === 'string'
         ? request.issuingLocationId.trim()
@@ -9105,7 +9132,7 @@
     }
 
     function redeemReward(appState, rewardKey, idempotencyKey, now = Date.now()) {
-      const reward = getRewardDefinition(typeof rewardKey === 'string' ? rewardKey.trim() : '');
+      const reward = getRewardDefinition(typeof rewardKey === 'string' ? rewardKey.trim() : '', appState);
       const balance = reward ? getBusinessBalance(appState, reward.sourceBusinessId) : null;
       return issueReward(appState, {
         rewardKey,
@@ -9352,6 +9379,112 @@
         events,
         idempotent: false
       };
+    }
+
+    function runLoyaltyDemoAction(appState, action, payload = {}, now = Date.now()) {
+      if (!isRecord(appState) || !isRecord(payload)) return { ok: false, code: 'invalid_state' };
+      const businessId = typeof payload.businessId === 'string' ? payload.businessId : BUSINESS_ID;
+      if (action === 'settle_pending') {
+        const balance = getBusinessBalance(appState, businessId);
+        const requested = Number.isSafeInteger(payload.amount) && payload.amount > 0 ? payload.amount : 20;
+        return settlePendingPoints(appState, businessId, Math.min(requested, balance.pending), 'Demo/QA settle pending', now);
+      }
+      if (action === 'toggle_pause') {
+        const rewardKey = typeof payload.rewardKey === 'string' ? payload.rewardKey : 'credit5';
+        const reward = getRewardDefinition(rewardKey, appState);
+        if (!reward || !isRecord(appState.ui?.loyaltyDemo?.catalogStatus)) {
+          return { ok: false, code: 'invalid_demo_catalog' };
+        }
+        const status = reward.status === 'paused' ? 'active' : 'paused';
+        appState.ui.loyaltyDemo.catalogStatus[rewardKey] = status;
+        return { ok: true, action, rewardKey, status };
+      }
+      if (action === 'make_stale') {
+        const stored = validateStoredBalance(appState, businessId);
+        if (!stored.ok) return stored;
+        const timestamp = domainTimestamp(now);
+        if (!timestamp.ok) return timestamp;
+        const nextBalance = {
+          ...stored.balance,
+          version: stored.balance.version + 1,
+          updatedAt: timestamp.value
+        };
+        appState.balances = { ...appState.balances, [businessId]: nextBalance };
+        return { ok: true, action, balance: nextBalance };
+      }
+      if (action === 'partial_refund') {
+        const transactionId = typeof payload.transactionId === 'string' ? payload.transactionId : 'led-visit-1';
+        const original = appState.ledger.find((entry) => isRecord(entry) && entry.id === transactionId);
+        if (!original || !Number.isSafeInteger(original.pointsDelta) || original.pointsDelta <= 0) {
+          return { ok: false, code: 'transaction_not_reversible' };
+        }
+        const reversed = appState.ledger
+          .filter((entry) => entry.reversalOf === transactionId && Number.isSafeInteger(entry.pointsDelta) && entry.pointsDelta < 0)
+          .reduce((total, entry) => total + Math.abs(entry.pointsDelta), 0);
+        const remaining = original.pointsDelta - reversed;
+        const requested = Number.isSafeInteger(payload.amount) && payload.amount > 0 ? payload.amount : 60;
+        if (remaining <= 0) return { ok: false, code: 'already_fully_reversed' };
+        return reversePointTransaction(
+          appState, transactionId, Math.min(requested, remaining), 'Demo/QA partial refund', now
+        );
+      }
+      if (action === 'void_restore') {
+        let instrument = appState.redemptions.find((row) => isRecord(row)
+          && row.status === 'issued' && row.pointsSpent > 0 && row.catalogSnapshot?.type !== 'gift_card');
+        if (!instrument) {
+          const reward = getRewardDefinition('credit5', appState);
+          if (!reward) return { ok: false, code: 'unknown_reward' };
+          const balance = getBusinessBalance(appState, reward.sourceBusinessId);
+          const issued = issueReward(appState, {
+            rewardKey: reward.key,
+            idempotencyKey: `demo-void-${now}`,
+            expectedBalanceVersion: balance.version,
+            issuingLocationId: reward.acceptingBusinessId,
+            now
+          });
+          if (!issued.ok) return issued;
+          instrument = issued.redemption;
+        }
+        return voidRewardInstrument(
+          appState, instrument.id, { restorePoints: true, reason: 'Demo/QA manager void' }, now + 1
+        );
+      }
+      if (action === 'consume_gift_card') {
+        let instrument = appState.redemptions.find((row) => isRecord(row)
+          && row.status === 'issued' && row.catalogSnapshot?.type === 'gift_card'
+          && Number.isSafeInteger(row.remainingValueCents) && row.remainingValueCents > 0);
+        if (!instrument) {
+          const reward = getRewardDefinition('gift5', appState);
+          if (!reward) return { ok: false, code: 'unknown_reward' };
+          const balance = getBusinessBalance(appState, reward.sourceBusinessId);
+          const issued = issueReward(appState, {
+            rewardKey: reward.key,
+            idempotencyKey: `demo-gift-${now}`,
+            expectedBalanceVersion: balance.version,
+            issuingLocationId: reward.acceptingBusinessId,
+            now
+          });
+          if (!issued.ok) return issued;
+          instrument = issued.redemption;
+        }
+        const requested = Number.isSafeInteger(payload.amountCents) && payload.amountCents > 0
+          ? payload.amountCents
+          : 200;
+        return consumeGiftCard(
+          appState,
+          instrument.id,
+          Math.min(requested, instrument.remainingValueCents),
+          instrument.issuingLocationId,
+          now + 1
+        );
+      }
+      if (action === 'expire_instruments') {
+        const issued = appState.redemptions.filter((row) => isRecord(row) && row.status === 'issued');
+        if (issued.length === 0) return { ok: false, code: 'no_issued_instrument' };
+        const future = Math.max(now, ...issued.map((row) => Date.parse(row.expiresAt) + 1));
+        return expireRewardInstruments(appState, future);
+      }
+      return { ok: false, code: 'unknown_demo_action' };
     }
     const COPY = {
       vi: {
@@ -10870,14 +11003,14 @@
         || typeof attempt.issuingLocationId !== 'string'
         || !attempt.issuingLocationId.trim()
         || appState.ui.currentRewardKey !== attempt.rewardKey) return { ok: false, code: 'invalid_reward_attempt' };
-      const reward = getRewardDefinition(attempt.rewardKey);
+      const reward = getRewardDefinition(attempt.rewardKey, appState);
       if (!reward) return { ok: false, code: 'unknown_reward' };
       const businesses = validateRewardBusinesses(appState, reward);
       return businesses.ok ? { ok: true, attempt, reward } : businesses;
     }
 
     function openReward(key, navigate = true) {
-      const reward = getRewardDefinition(key);
+      const reward = getRewardDefinition(key, state);
       const businesses = reward ? validateRewardBusinesses(state, reward) : { ok: false, code: 'unknown_reward' };
       if (!reward || !businesses.ok) {
         if (navigate) showToast(t('rewardUnavailable'), 'error');
@@ -10942,7 +11075,7 @@
             if (isRecord(pendingAttempt)) pendingAttempt.expectedBalanceVersion = result.currentVersion;
             return { ok: true };
           });
-          const currentReward = getRewardDefinition(attempt.rewardKey);
+          const currentReward = getRewardDefinition(attempt.rewardKey, state);
           if (currentReward) renderRewardPreview(currentReward);
         }
         const flowStatus = document.getElementById('reward-flow-status');
@@ -10973,7 +11106,7 @@
         }
         return result;
       }
-      const reward = getRewardDefinition(result.redemption.rewardKey);
+      const reward = getRewardDefinition(result.redemption.rewardKey, state);
       if (!reward) return { ok: false, code: 'unknown_reward' };
       renderRewardReceipt();
       if (navigate) {
@@ -13069,6 +13202,44 @@
         return { ok: false, code: 'wallet_render_failed', error };
       }
     });
+    registerAction('loyalty-demo', (control) => {
+      const action = control.dataset.loyaltyDemo;
+      const result = commitState((draft) => runLoyaltyDemoAction(draft, action, {}, Date.now()));
+      const resultCopy = document.getElementById('loyalty-demo-result');
+      if (!result.ok) {
+        const message = state.profile.language === 'en'
+          ? `Demo could not run (${result.code}).`
+          : `Không chạy được mô phỏng (${result.code}).`;
+        if (resultCopy) resultCopy.textContent = message;
+        showToast(message, 'error');
+        return result;
+      }
+      renderApp();
+      const labels = state.profile.language === 'en'
+        ? {
+            settle_pending: 'Pending points moved to Available.',
+            toggle_pause: `Reward is now ${result.status}.`,
+            make_stale: 'Balance version changed.',
+            partial_refund: 'Partial refund reversal created.',
+            void_restore: 'Unused reward voided and points restored.',
+            consume_gift_card: 'Gift Card stored value was partially used.',
+            expire_instruments: `${result.expired?.length ?? 0} reward(s) expired.`
+          }
+        : {
+            settle_pending: 'Đã chuyển điểm đang chờ sang Khả dụng.',
+            toggle_pause: `Reward hiện ở trạng thái ${result.status}.`,
+            make_stale: 'Đã thay đổi phiên bản số dư.',
+            partial_refund: 'Đã tạo giao dịch thu hồi điểm do hoàn tiền một phần.',
+            void_restore: 'Đã hủy reward chưa dùng và hoàn điểm.',
+            consume_gift_card: 'Đã dùng một phần giá trị Gift Card.',
+            expire_instruments: `Đã cho ${result.expired?.length ?? 0} reward hết hạn.`
+          };
+      const message = labels[action] ?? (state.profile.language === 'en' ? 'Demo completed.' : 'Đã chạy mô phỏng.');
+      const refreshedCopy = document.getElementById('loyalty-demo-result');
+      if (refreshedCopy) refreshedCopy.textContent = message;
+      showToast(message);
+      return result;
+    });
     registerAction('open-reward', (control) => openReward(control.dataset.rewardKey));
     registerAction('confirm-reward', (control) => {
       control.disabled = true;
@@ -14373,7 +14544,8 @@
         return;
       }
       // Granted rewards are earned, not bought, so this catalog does not offer them.
-      const cards = Object.values(REWARDS).filter(isPurchasableReward).map((reward) => {
+      const cards = Object.values(REWARDS).filter(isPurchasableReward).map((baseReward) => {
+        const reward = getRewardDefinition(baseReward.key, state);
         const availability = rewardAvailability(reward);
         const card = document.createElement('article');
         card.className = 'app-card reward-card';
@@ -15816,6 +15988,7 @@
       voidRewardInstrument,
       consumeGiftCard,
       expireRewardInstruments,
+      runLoyaltyDemoAction,
       normalizeUsPhone,
       requestOtp,
       verifyOtp,
