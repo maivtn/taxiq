@@ -351,15 +351,18 @@
 
     .section-number {
       display: grid;
-      width: 32px;
+      width: auto;
+      min-width: 32px;
       height: 32px;
-      flex: 0 0 32px;
+      flex: 0 0 auto;
       place-items: center;
       border-radius: 10px;
+      padding: 0 6px;
       color: #fff;
       background: #242942;
       font-size: 13px;
       font-weight: 900;
+      white-space: nowrap;
     }
 
     .section-title {
@@ -380,9 +383,11 @@
 
     .part-heading .section-number {
       width: auto;
+      flex: 0 0 auto;
       padding: 0 10px;
       border-radius: 6px;
       background: #111;
+      white-space: nowrap;
     }
 
     .section-content {
@@ -640,6 +645,8 @@
       margin: 0 auto;
     }
 
+    #dev-fill { grid-column: 1 / -1; }
+
     .button {
       display: inline-flex;
       min-height: 44px;
@@ -791,7 +798,18 @@
       }
       .form-section:last-child { border-bottom: 1px solid #000; }
       .section-heading { padding: .07in .09in; border-color: #000; background: #fff; }
-      .section-number { width: auto; height: 20px; padding: 0 7px; border-radius: 0; background: #000; font-size: 8pt; }
+      .section-number {
+        width: auto;
+        height: 20px;
+        border: 1px solid #000;
+        border-radius: 0;
+        padding: 0 7px;
+        color: #fff;
+        background: #000;
+        font-size: 8pt;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
       .section-title { font-size: 10pt; }
       .section-subtitle { display: none; }
       .section-content { gap: .08in; padding: .08in .09in .1in; }
@@ -879,7 +897,8 @@
         <p>No data was sent to the IRS. Không có dữ liệu nào được gửi cho IRS; hãy cung cấp biểu mẫu cho đơn vị yêu cầu.</p>
         <div class="completion-actions">
           <button class="button" type="button" id="back-to-form">Back to form</button>
-          <button class="button button-primary" type="button" id="print-form">Print / Save PDF</button>
+          <button class="button" type="button" id="print-form">Print</button>
+          <button class="button button-primary" type="button" id="download-pdf">Download PDF</button>
         </div>
       </section>
 
@@ -1137,6 +1156,7 @@
 
         <div class="action-bar screen-only">
           <div class="action-inner">
+            <button class="button" type="button" id="dev-fill">Dev: Fill test data</button>
             <button class="button button-danger" type="button" id="clear-form" aria-label="Reset form">Reset</button>
             <button class="button" type="button" id="save-draft">Save draft</button>
             <button class="button button-primary" type="submit" id="primary-action">Continue <span aria-hidden="true">→</span></button>
@@ -1251,6 +1271,154 @@
         return errors;
       }
 
+      function createDevFixture(dateString) {
+        return {
+          taxpayerName: "Linh Nguyen",
+          businessName: "",
+          classification: "individual",
+          llcCode: "",
+          otherClassificationDetail: "",
+          foreignOwners: false,
+          exemptPayeeCode: "",
+          fatcaCode: "",
+          streetAddress: "1200 Bellaire Boulevard, Apt 8",
+          city: "Houston",
+          state: "TX",
+          zip: "77072",
+          requesterDetails: "",
+          accountNumbers: "NAIL-TECH-001",
+          tinType: "ssn",
+          ssn: "123-45-6789",
+          ein: "",
+          backupWithholdingSubject: false,
+          certificationAcknowledgment: true,
+          signature: "Linh Nguyen",
+          signatureDate: stringValue(dateString)
+        };
+      }
+
+      function classificationLabel(values) {
+        const input = values && typeof values === "object" ? values : {};
+        const labels = {
+          individual: "Individual / sole proprietor",
+          "c-corp": "C corporation",
+          "s-corp": "S corporation",
+          partnership: "Partnership",
+          trust: "Trust / estate"
+        };
+        if (input.classification === "llc") {
+          const llcLabels = { C: "C corporation", S: "S corporation", P: "Partnership" };
+          return "LLC - " + (llcLabels[stringValue(input.llcCode).toUpperCase()] || "Unspecified");
+        }
+        if (input.classification === "other") {
+          return stringValue(input.otherClassificationDetail).trim() || "Other";
+        }
+        return labels[input.classification] || "Not provided";
+      }
+
+      function pdfFieldRows(values) {
+        const input = values && typeof values === "object" ? values : {};
+        const exemptionParts = [];
+        if (stringValue(input.exemptPayeeCode).trim()) {
+          exemptionParts.push("Payee code " + stringValue(input.exemptPayeeCode).trim());
+        }
+        if (stringValue(input.fatcaCode).trim()) {
+          exemptionParts.push("FATCA code " + stringValue(input.fatcaCode).trim().toUpperCase());
+        }
+        const locality = [stringValue(input.city).trim(), stringValue(input.state).trim().toUpperCase()]
+          .filter(Boolean).join(", ");
+        const address = [stringValue(input.streetAddress).trim(), [locality, stringValue(input.zip).trim()].filter(Boolean).join(" ")]
+          .filter(Boolean).join(", ");
+        const tinType = input.tinType === "ein" ? "EIN" : "SSN";
+        const tinValue = input.tinType === "ein" ? stringValue(input.ein) : stringValue(input.ssn);
+        const line3b = line3bApplies(input.classification, input.llcCode)
+          ? (input.foreignOwners ? "Yes" : "No")
+          : "Not applicable";
+
+        return [
+          { label: "1 Name", value: stringValue(input.taxpayerName).trim() || "Not provided" },
+          { label: "2 Business name", value: stringValue(input.businessName).trim() || "None" },
+          { label: "3a Federal tax classification", value: classificationLabel(input) },
+          { label: "3b Foreign partners, owners, or beneficiaries", value: line3b },
+          { label: "4 Exemptions", value: exemptionParts.join("; ") || "None" },
+          { label: "5-6 Address", value: address || "Not provided" },
+          { label: "Requester", value: stringValue(input.requesterDetails).trim() || "Not provided" },
+          { label: "7 Account number(s)", value: stringValue(input.accountNumbers).trim() || "None" },
+          { label: "Part I - " + tinType, value: tinValue || "Not provided" },
+          { label: "Backup withholding", value: input.backupWithholdingSubject ? "Subject" : "Not subject" },
+          { label: "Part II - Certification", value: "TIN and U.S. person certifications acknowledged" },
+          { label: "Signature", value: stringValue(input.signature).trim() || "Not provided" },
+          { label: "Date", value: stringValue(input.signatureDate).trim() || "Not provided" }
+        ];
+      }
+
+      function safePdfFilename(taxpayerName) {
+        const safeName = stringValue(taxpayerName)
+          .replace(/[Đđ]/g, function (character) { return character === "Đ" ? "D" : "d"; })
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/gi, "-")
+          .replace(/^-+|-+$/g, "")
+          .slice(0, 72);
+        return "Form-W9-" + (safeName || "Completed") + ".pdf";
+      }
+
+      function buildImagePdf(jpegBytes, imageWidth, imageHeight) {
+        if (!(jpegBytes instanceof Uint8Array) || !jpegBytes.length) {
+          throw new TypeError("JPEG bytes are required.");
+        }
+        const width = Math.max(1, Math.round(Number(imageWidth) || 0));
+        const height = Math.max(1, Math.round(Number(imageHeight) || 0));
+        const encoder = new TextEncoder();
+        const chunks = [];
+        const offsets = new Array(6).fill(0);
+        let byteLength = 0;
+
+        function append(value) {
+          const bytes = typeof value === "string" ? encoder.encode(value) : value;
+          chunks.push(bytes);
+          byteLength += bytes.length;
+        }
+
+        function beginObject(number) {
+          offsets[number] = byteLength;
+          append(number + " 0 obj\n");
+        }
+
+        append("%PDF-1.4\n%Binary\n");
+        beginObject(1);
+        append("<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+        beginObject(2);
+        append("<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+        beginObject(3);
+        append("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\nendobj\n");
+        beginObject(4);
+        append("<< /Type /XObject /Subtype /Image /Width " + width + " /Height " + height + " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + jpegBytes.length + " >>\nstream\n");
+        append(jpegBytes);
+        append("\nendstream\nendobj\n");
+        const content = "q\n612 0 0 792 0 0 cm\n/Im0 Do\nQ\n";
+        const contentBytes = encoder.encode(content);
+        beginObject(5);
+        append("<< /Length " + contentBytes.length + " >>\nstream\n");
+        append(contentBytes);
+        append("endstream\nendobj\n");
+
+        const xrefOffset = byteLength;
+        append("xref\n0 6\n0000000000 65535 f \n");
+        for (let number = 1; number <= 5; number += 1) {
+          append(String(offsets[number]).padStart(10, "0") + " 00000 n \n");
+        }
+        append("trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" + xrefOffset + "\n%%EOF\n");
+
+        const pdfBytes = new Uint8Array(byteLength);
+        let cursor = 0;
+        chunks.forEach(function (chunk) {
+          pdfBytes.set(chunk, cursor);
+          cursor += chunk.length;
+        });
+        return pdfBytes;
+      }
+
       window.W9_FORM_TEST_API = Object.freeze({
         STORAGE_KEY,
         digitsOnly,
@@ -1258,7 +1426,11 @@
         isValidTin,
         line3bApplies,
         sanitizeDraft,
-        validateValues
+        validateValues,
+        createDevFixture,
+        pdfFieldRows,
+        safePdfFilename,
+        buildImagePdf
       });
 
       if (window.W9_FORM_SKIP_INIT) return;
@@ -1349,6 +1521,190 @@
             signature: byId("signature").value,
             signatureDate: byId("signature-date").value
           };
+        }
+
+        function applyValues(values) {
+          const input = values && typeof values === "object" ? values : {};
+          const textFieldIds = {
+            taxpayerName: "taxpayer-name",
+            businessName: "business-name",
+            llcCode: "llc-code",
+            otherClassificationDetail: "other-classification-detail",
+            exemptPayeeCode: "exempt-payee-code",
+            fatcaCode: "fatca-code",
+            streetAddress: "street-address",
+            city: "city",
+            state: "state",
+            zip: "zip",
+            requesterDetails: "requester-details",
+            accountNumbers: "account-numbers",
+            ssn: "ssn",
+            ein: "ein",
+            signature: "signature",
+            signatureDate: "signature-date"
+          };
+
+          form.reset();
+          if (CLASSIFICATIONS.has(input.classification)) {
+            const classificationControl = document.querySelector('input[name="classification"][value="' + input.classification + '"]');
+            if (classificationControl) classificationControl.checked = true;
+          }
+          if (input.tinType === "ssn" || input.tinType === "ein") {
+            byId("tin-type-" + input.tinType).checked = true;
+          }
+
+          syncConditionals();
+          Object.keys(textFieldIds).forEach(function (key) {
+            if (typeof input[key] === "string") byId(textFieldIds[key]).value = input[key];
+          });
+          syncConditionals();
+
+          byId("foreign-owners").checked = Boolean(input.foreignOwners) && !byId("foreign-owners").disabled;
+          byId("backup-withholding-subject").checked = Boolean(input.backupWithholdingSubject);
+          byId("certification-acknowledgment").checked = Boolean(input.certificationAcknowledgment);
+          ["ssn", "ein"].forEach(function (type) { byId(type + "-mask").hidden = true; });
+
+          form.dispatchEvent(new window.Event("input", { bubbles: true }));
+          form.dispatchEvent(new window.Event("change", { bubbles: true }));
+        }
+
+        function renderPdfCanvas(values) {
+          const canvas = document.createElement("canvas");
+          canvas.width = 1275;
+          canvas.height = 1650;
+          const context = canvas.getContext("2d");
+          if (!context) throw new Error("Canvas rendering is unavailable.");
+
+          const margin = 74;
+          const contentWidth = canvas.width - (margin * 2);
+          let cursorY = 58;
+          context.fillStyle = "#ffffff";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          context.textBaseline = "top";
+
+          function setFont(size, weight, family) {
+            context.font = (weight || "400") + " " + size + "px " + (family || "Arial, sans-serif");
+          }
+
+          function wrappedLines(text, maxWidth, maxLines) {
+            const words = stringValue(text).replace(/\s+/g, " ").trim().split(" ").filter(Boolean);
+            const lines = [];
+            let current = "";
+            words.forEach(function (word) {
+              const candidate = current ? current + " " + word : word;
+              if (!current || context.measureText(candidate).width <= maxWidth) {
+                current = candidate;
+              } else {
+                lines.push(current);
+                current = word;
+              }
+            });
+            if (current) lines.push(current);
+            if (!lines.length) lines.push("Not provided");
+            if (lines.length > maxLines) {
+              const clipped = lines.slice(0, maxLines);
+              clipped[maxLines - 1] = clipped[maxLines - 1].replace(/[. ]+$/, "") + "...";
+              return clipped;
+            }
+            return lines;
+          }
+
+          function drawPart(title, rows) {
+            context.fillStyle = "#151820";
+            context.fillRect(margin, cursorY, contentWidth, 38);
+            setFont(18, "700");
+            context.fillStyle = "#ffffff";
+            context.fillText(title, margin + 14, cursorY + 8);
+            cursorY += 38;
+
+            rows.forEach(function (row, index) {
+              setFont(13, "700");
+              const valueLines = (function () {
+                setFont(18, "400");
+                return wrappedLines(row.value, contentWidth - 28, 3);
+              }());
+              const rowHeight = Math.max(58, 18 + (valueLines.length * 23) + 14);
+              context.fillStyle = index % 2 === 0 ? "#ffffff" : "#f5f6fa";
+              context.fillRect(margin, cursorY, contentWidth, rowHeight);
+              context.strokeStyle = "#aeb7c8";
+              context.lineWidth = 1;
+              context.strokeRect(margin, cursorY, contentWidth, rowHeight);
+              setFont(13, "700");
+              context.fillStyle = "#4b5364";
+              context.fillText(row.label, margin + 14, cursorY + 8);
+              setFont(18, "400");
+              context.fillStyle = "#111318";
+              valueLines.forEach(function (line, lineIndex) {
+                context.fillText(line, margin + 14, cursorY + 27 + (lineIndex * 23));
+              });
+              cursorY += rowHeight;
+            });
+            cursorY += 13;
+          }
+
+          setFont(60, "700", "Georgia, serif");
+          context.fillStyle = "#111318";
+          context.fillText("W-9", margin, cursorY);
+          setFont(27, "700");
+          context.fillText("Request for Taxpayer Identification", 285, cursorY + 2);
+          context.fillText("Number and Certification", 285, cursorY + 36);
+          setFont(13, "400");
+          context.fillStyle = "#4b5364";
+          context.fillText("Form W-9 (Rev. March 2024) - Department of the Treasury", 285, cursorY + 76);
+          cursorY += 116;
+
+          context.fillStyle = "#eef2ff";
+          context.fillRect(margin, cursorY, contentWidth, 64);
+          context.strokeStyle = "#4f46e5";
+          context.strokeRect(margin, cursorY, contentWidth, 64);
+          setFont(16, "700");
+          context.fillStyle = "#25206f";
+          context.fillText("Give this completed form to the requester. Do not send it directly to the IRS.", margin + 14, cursorY + 10);
+          setFont(13, "400");
+          context.fillText("Generated locally from the completed Nexora Tax W-9 form.", margin + 14, cursorY + 35);
+          cursorY += 82;
+
+          const rows = pdfFieldRows(values);
+          drawPart("Taxpayer information", rows.slice(0, 2));
+          drawPart("Federal classification, exemptions, and address", rows.slice(2, 8));
+          drawPart("Part I - Taxpayer Identification Number", rows.slice(8, 9));
+          drawPart("Part II - Certification", rows.slice(9));
+
+          context.strokeStyle = "#111318";
+          context.beginPath();
+          context.moveTo(margin, canvas.height - 58);
+          context.lineTo(canvas.width - margin, canvas.height - 58);
+          context.stroke();
+          setFont(12, "400");
+          context.fillStyle = "#4b5364";
+          context.fillText("Form W-9 (Rev. March 2024) - Printable completed record", margin, canvas.height - 42);
+          context.textAlign = "right";
+          context.fillText("Nexora Tax", canvas.width - margin, canvas.height - 42);
+          context.textAlign = "left";
+          return canvas;
+        }
+
+        function downloadW9Pdf(values) {
+          const canvas = renderPdfCanvas(values);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.94);
+          const encoded = dataUrl.split(",")[1];
+          if (!encoded) throw new Error("PDF image generation failed.");
+          const binary = window.atob(encoded);
+          const jpegBytes = new Uint8Array(binary.length);
+          for (let index = 0; index < binary.length; index += 1) {
+            jpegBytes[index] = binary.charCodeAt(index);
+          }
+          const pdfBytes = buildImagePdf(jpegBytes, canvas.width, canvas.height);
+          const blob = new window.Blob([pdfBytes], { type: "application/pdf" });
+          const objectUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = objectUrl;
+          link.download = safePdfFilename(values.taxpayerName);
+          link.style.display = "none";
+          document.body.append(link);
+          link.click();
+          link.remove();
+          window.setTimeout(function () { window.URL.revokeObjectURL(objectUrl); }, 2000);
         }
 
         function showStatus(message, isError) {
@@ -1608,6 +1964,20 @@
           showStatus("Saved draft discarded.", false);
         });
 
+        byId("dev-fill").addEventListener("click", function () {
+          const now = new Date();
+          const localDate = [
+            now.getFullYear(),
+            String(now.getMonth() + 1).padStart(2, "0"),
+            String(now.getDate()).padStart(2, "0")
+          ].join("-");
+          applyValues(createDevFixture(localDate));
+          restoreBanner.hidden = true;
+          completionPanel.hidden = true;
+          document.querySelectorAll("details.optional-group").forEach(function (details) { details.open = true; });
+          showStatus("Complete test data filled. Review the form, then submit to demo completion.", false);
+        });
+
         byId("clear-form").addEventListener("click", function () {
           if (!window.confirm("Clear every field and remove the saved draft from this device?")) return;
           form.reset();
@@ -1646,7 +2016,33 @@
           completionPanel.hidden = true;
           byId("taxpayer-name").focus();
         });
-        byId("print-form").addEventListener("click", function () { window.print(); });
+        byId("print-form").addEventListener("click", function () {
+          if (typeof window.print !== "function") {
+            showStatus("Print is unavailable here. Use Download PDF instead.", true);
+            return;
+          }
+          try {
+            window.print();
+            showStatus("Print requested. If no dialog appears, use Download PDF.", false);
+          } catch (error) {
+            showStatus("Print is unavailable here. Use Download PDF instead.", true);
+          }
+        });
+        byId("download-pdf").addEventListener("click", function () {
+          const button = byId("download-pdf");
+          const originalLabel = button.textContent;
+          button.disabled = true;
+          button.textContent = "Creating PDF...";
+          try {
+            downloadW9Pdf(readValues());
+            showStatus("PDF created. Check your Downloads folder.", false);
+          } catch (error) {
+            showStatus("Could not create the PDF. Use Print or your browser menu instead.", true);
+          } finally {
+            button.disabled = false;
+            button.textContent = originalLabel;
+          }
+        });
 
         window.addEventListener("beforeprint", function () {
           document.querySelectorAll("details.optional-group:not([open])").forEach(function (details) {
