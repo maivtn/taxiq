@@ -316,6 +316,41 @@ test('uses available points only and reports paused stock limit and location fai
   ).code, 'limit_reached');
 });
 
+test('stops stale issuance without mutating wallet ledger or instruments', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const wallet = state.balances['bitcoin-nail-bar'];
+  const before = JSON.stringify({ balances: state.balances, ledger: state.ledger, redemptions: state.redemptions });
+  const result = api.issueReward(state, {
+    rewardKey: 'credit5', idempotencyKey: 'attempt-stale',
+    expectedBalanceVersion: wallet.version - 1,
+    issuingLocationId: 'bitcoin-nail-bar', now: Date.parse('2026-07-20T10:00:00.000Z')
+  });
+  assert.equal(result.code, 'stale_balance');
+  assert.equal(JSON.stringify({ balances: state.balances, ledger: state.ledger, redemptions: state.redemptions }), before);
+});
+
+test('atomically issues a catalog snapshot and returns it for duplicate confirmation', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const request = {
+    rewardKey: 'credit5', idempotencyKey: 'attempt-1',
+    expectedBalanceVersion: state.balances['bitcoin-nail-bar'].version,
+    issuingLocationId: 'bitcoin-nail-bar', now: Date.parse('2026-07-20T10:00:00.000Z')
+  };
+  const first = api.issueReward(state, request);
+  const second = api.issueReward(state, request);
+  assert.equal(first.ok, true);
+  assert.equal(first.instrument.status, 'issued');
+  assert.equal(first.instrument.catalogSnapshot.type, 'dollar_discount');
+  assert.match(first.instrument.code, /^NT-/);
+  assert.equal(first.instrument.pointsSpent, 500);
+  assert.equal(second.instrument.id, first.instrument.id);
+  assert.equal(second.idempotent, true);
+  assert.equal(state.balances['bitcoin-nail-bar'].available, 1950);
+  assert.equal(state.balances['bitcoin-nail-bar'].version, 2);
+});
+
 test('migrates customer journey collections into schema v3 without changing the storage key', () => {
   const { api } = testApi();
   const migrated = api.migrateState({
@@ -2804,7 +2839,7 @@ test('persists and renders the actual redemption receipt context', () => {
   const redemption = redeemed.redemption;
   assert.equal(vm.runInContext('state.ui.pendingContext.redemptionId', loaded.context), redemption.id);
   assert.equal(document.getElementById('reward-done-code').textContent, redemption.qrPayload);
-  assert.equal(document.getElementById('reward-done-title').textContent, 'Tín dụng dịch vụ $5');
+  assert.equal(document.getElementById('reward-done-title').textContent, 'Giảm $5 dịch vụ');
   assert.equal(document.getElementById('reward-done-status').textContent, 'Sẵn sàng');
   loaded.context.navigateTo('redeemdone', { focus: false });
   const persisted = loaded.api.loadState(loaded.storage);

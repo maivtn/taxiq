@@ -1888,7 +1888,7 @@
       if (kind === 'redemption') {
         const matches = appState.redemptions.filter((row) => isRecord(row) && row.id === reference);
         const redemption = matches.length === 1 ? matches[0] : null;
-        if (!redemption || redemption.status !== 'ready'
+        if (!redemption || !['ready', 'issued'].includes(redemption.status)
           || redemption.acceptingBusinessId !== businessId) {
           return { ok: false, code: 'invalid_reward' };
         }
@@ -1927,7 +1927,7 @@
 
     function createDefaultState() {
       const walletUpdatedAt = new Date().toISOString();
-      return {
+      const defaultState = {
         schemaVersion: SCHEMA_VERSION,
         updatedAt: new Date().toISOString(),
         session: {
@@ -2137,6 +2137,10 @@
           overlay: null, pushPromptCount: 0, introSeen: false
         }
       };
+      defaultState.redemptions = defaultState.redemptions
+        .map((instrument) => normalizePersistedRedemption(instrument, defaultState))
+        .filter(Boolean);
+      return defaultState;
     }
 
     function isRecord(value) {
@@ -2240,17 +2244,19 @@
     }
 
     function isRedemptionLedgerPair(redemption, entry) {
+      const pointsSpent = redemption.pointsSpent ?? redemption.cost;
       return entry.type === 'redeem'
         && entry.refType === 'redemption'
         && entry.refId === redemption.id
         && entry.businessId === redemption.sourceBusinessId
-        && entry.pointsDelta === -redemption.cost;
+        && entry.pointsDelta === -pointsSpent;
     }
 
     function redemptionSortKey(redemption) {
       return JSON.stringify([
         redemption.id, redemption.idempotencyKey, redemption.rewardKey, redemption.sourceBusinessId,
-        redemption.acceptingBusinessId, redemption.cost, redemption.status, redemption.createdAt,
+        redemption.acceptingBusinessId, redemption.pointsSpent ?? redemption.cost, redemption.status,
+        redemption.issuedAt ?? redemption.createdAt,
         typeof redemption.qrPayload === 'string' ? redemption.qrPayload : ''
       ]);
     }
@@ -2261,18 +2267,56 @@
       ]);
     }
 
-    function normalizePersistedRedemption(redemption) {
+    function normalizePersistedRedemption(redemption, appState = null) {
       if (!isRecord(redemption)
+        || typeof redemption.id !== 'string'
         || typeof redemption.idempotencyKey !== 'string'
         || typeof redemption.rewardKey !== 'string') return null;
+      const id = redemption.id.trim();
       const idempotencyKey = redemption.idempotencyKey.trim();
       const rewardKey = redemption.rewardKey.trim();
-      if (!idempotencyKey || !rewardKey) return null;
+      const reward = getRewardDefinition(rewardKey);
+      if (!id || !idempotencyKey || !rewardKey || !reward) return null;
+      const pointsSpent = redemption.pointsSpent ?? redemption.cost;
+      const issuedAt = redemption.issuedAt ?? redemption.createdAt;
+      const issuedMilliseconds = Date.parse(issuedAt);
+      const expiresAt = validStoredTimestamp(redemption.expiresAt)
+        ? redemption.expiresAt
+        : Number.isFinite(issuedMilliseconds)
+          ? new Date(issuedMilliseconds + reward.validityDays * 86400000).toISOString()
+          : '';
+      const status = redemption.status === 'ready' ? 'issued' : redemption.status;
+      const customerId = typeof redemption.customerId === 'string' && redemption.customerId.trim()
+        ? redemption.customerId.trim()
+        : appState?.profile?.id;
+      const instrumentCode = typeof redemption.code === 'string' && /^NT-[A-Z0-9]+$/.test(redemption.code)
+        ? redemption.code
+        : `NT-${id.replace(/^red-/, '').replace(/[^a-z0-9]/gi, '').slice(0, 8).toUpperCase()}`;
       return {
         ...redemption,
+        id,
         idempotencyKey,
         rewardKey,
-        qrPayload: `NEXORA:${rewardKey}:${idempotencyKey}`
+        catalogSnapshot: isRecord(redemption.catalogSnapshot)
+          ? structuredClone(redemption.catalogSnapshot)
+          : snapshotRewardDefinition(reward),
+        customerId,
+        issuingLocationId: typeof redemption.issuingLocationId === 'string' && redemption.issuingLocationId.trim()
+          ? redemption.issuingLocationId.trim()
+          : redemption.acceptingBusinessId,
+        eligibleLocationIds: Array.isArray(redemption.eligibleLocationIds)
+          ? redemption.eligibleLocationIds.filter((locationId) => typeof locationId === 'string' && locationId.trim())
+          : [...reward.eligibleLocationIds],
+        pointsSpent,
+        cost: pointsSpent,
+        status,
+        code: instrumentCode,
+        qrPayload: `NEXORA:${rewardKey}:${idempotencyKey}`,
+        initialValueCents: redemption.initialValueCents ?? (reward.type === 'gift_card' ? reward.valueCents : null),
+        remainingValueCents: redemption.remainingValueCents ?? (reward.type === 'gift_card' ? reward.valueCents : null),
+        issuedAt,
+        createdAt: issuedAt,
+        expiresAt
       };
     }
 
@@ -2401,17 +2445,19 @@
 
     function normalizePersistedRedemptions(appState) {
       appState.redemptions = appState.redemptions
-        .map(normalizePersistedRedemption)
+        .map((redemption) => normalizePersistedRedemption(redemption, appState))
         .filter(Boolean);
     }
 
     function hasCurrentRewardMetadata(redemption) {
       const reward = getRewardDefinition(redemption.rewardKey);
-      return Boolean(reward)
-        && redemption.rewardKey === reward.key
-        && redemption.sourceBusinessId === reward.sourceBusinessId
-        && redemption.acceptingBusinessId === reward.acceptingBusinessId
-        && redemption.cost === reward.cost
+      const snapshot = redemption.catalogSnapshot;
+      return Boolean(reward && isRecord(snapshot))
+        && redemption.rewardKey === snapshot.key
+        && redemption.sourceBusinessId === snapshot.sourceBusinessId
+        && redemption.acceptingBusinessId === snapshot.acceptingBusinessId
+        && redemption.pointsSpent === snapshot.cost
+        && redemption.cost === redemption.pointsSpent
         && redemption.qrPayload === `NEXORA:${reward.key}:${redemption.idempotencyKey}`;
     }
 
@@ -2426,8 +2472,18 @@
         && typeof redemption.rewardKey === 'string'
         && redemption.rewardKey === redemption.rewardKey.trim()
         && redemption.rewardKey.length > 0
-        && redemption.status === 'ready'
-        && validStoredTimestamp(redemption.createdAt)
+        && typeof redemption.customerId === 'string'
+        && redemption.customerId.length > 0
+        && ['issued', 'redeemed', 'expired', 'voided', 'reversed'].includes(redemption.status)
+        && Number.isSafeInteger(redemption.pointsSpent)
+        && redemption.pointsSpent >= 0
+        && validStoredTimestamp(redemption.issuedAt)
+        && redemption.createdAt === redemption.issuedAt
+        && validStoredTimestamp(redemption.expiresAt)
+        && typeof redemption.code === 'string'
+        && /^NT-[A-Z0-9]+$/.test(redemption.code)
+        && Array.isArray(redemption.eligibleLocationIds)
+        && redemption.eligibleLocationIds.length > 0
         && hasCurrentRewardMetadata(redemption)
         && validateRewardBusinesses(appState, redemption).ok;
     }
@@ -2481,7 +2537,7 @@
         redemption.idempotencyKey === attempt.idempotencyKey
       ));
       const normalizedClaim = rawClaims.length === 1
-        ? normalizePersistedRedemption(rawClaims[0].redemption)
+        ? normalizePersistedRedemption(rawClaims[0].redemption, appState)
         : null;
       const validBinding = rawClaims.length === 0
         ? surviving.length === 0
@@ -5630,6 +5686,13 @@
           value: valid ? {
             rewardKey: incomingValue.rewardKey.trim(),
             idempotencyKey: incomingValue.idempotencyKey.trim(),
+            expectedBalanceVersion: Number.isSafeInteger(incomingValue.expectedBalanceVersion)
+              && incomingValue.expectedBalanceVersion > 0
+              ? incomingValue.expectedBalanceVersion
+              : null,
+            issuingLocationId: typeof incomingValue.issuingLocationId === 'string'
+              ? incomingValue.issuingLocationId.trim() || null
+              : null,
             completed: incomingValue.completed
           } : structuredClone(defaultValue)
         };
@@ -5969,6 +6032,18 @@
         .map((item) => normalizePersistedFeedback(migrated, item))
         .filter(Boolean);
       const pendingAttempt = migrated.ui.pendingContext.rewardAttempt;
+      if (isRecord(pendingAttempt)) {
+        const pendingReward = getRewardDefinition(pendingAttempt.rewardKey);
+        const pendingBalance = pendingReward
+          ? getBusinessBalance(migrated, pendingReward.sourceBusinessId)
+          : null;
+        if (!Number.isSafeInteger(pendingAttempt.expectedBalanceVersion)) {
+          pendingAttempt.expectedBalanceVersion = pendingBalance?.version ?? null;
+        }
+        if (!pendingAttempt.issuingLocationId && pendingReward) {
+          pendingAttempt.issuingLocationId = pendingReward.acceptingBusinessId;
+        }
+      }
       const rawPendingClaims = isRecord(pendingAttempt) && Array.isArray(value.redemptions)
         ? rawRedemptionClaims.filter((claim) => claim.idempotencyKey === pendingAttempt.idempotencyKey)
         : [];
@@ -8876,22 +8951,65 @@
       return { ok: true, feedback, points: 15 };
     }
 
-    function redeemReward(appState, rewardKey, idempotencyKey, now = Date.now()) {
-      if (!isRecord(appState) || !isRecord(appState.businesses) || !isRecord(appState.balances)
+    function snapshotRewardDefinition(reward) {
+      return structuredClone({
+        key: reward.key,
+        sourceBusinessId: reward.sourceBusinessId,
+        acceptingBusinessId: reward.acceptingBusinessId,
+        type: reward.type,
+        title: reward.title,
+        description: reward.description,
+        conditions: reward.conditions,
+        cost: reward.cost,
+        valueCents: reward.valueCents ?? null,
+        valuePercent: reward.valuePercent ?? null,
+        minimumSpendCents: reward.minimumSpendCents,
+        maximumDiscountCents: reward.maximumDiscountCents,
+        linkedItemId: reward.linkedItemId,
+        eligibleLocationIds: reward.eligibleLocationIds,
+        stackingRule: reward.stackingRule,
+        validityDays: reward.validityDays
+      });
+    }
+
+    function isValidRewardInstrument(appState, instrument) {
+      if (!isRecord(instrument)
+        || typeof instrument.id !== 'string' || !instrument.id.trim()
+        || typeof instrument.idempotencyKey !== 'string' || instrument.idempotencyKey !== instrument.idempotencyKey.trim()
+        || typeof instrument.rewardKey !== 'string' || !instrument.rewardKey.trim()
+        || typeof instrument.customerId !== 'string' || !instrument.customerId.trim()
+        || instrument.status !== 'issued'
+        || !Number.isSafeInteger(instrument.pointsSpent) || instrument.pointsSpent <= 0
+        || instrument.cost !== instrument.pointsSpent
+        || !isRecord(instrument.catalogSnapshot)
+        || instrument.catalogSnapshot.key !== instrument.rewardKey
+        || instrument.catalogSnapshot.cost !== instrument.pointsSpent
+        || !validStoredTimestamp(instrument.issuedAt)
+        || instrument.createdAt !== instrument.issuedAt
+        || !validStoredTimestamp(instrument.expiresAt)
+        || typeof instrument.code !== 'string' || !/^NT-[A-Z0-9]+$/.test(instrument.code)
+        || instrument.qrPayload !== `NEXORA:${instrument.rewardKey}:${instrument.idempotencyKey}`
+        || !Array.isArray(instrument.eligibleLocationIds)
+        || instrument.eligibleLocationIds.length === 0) return false;
+      return validateRewardBusinesses(appState, instrument).ok;
+    }
+
+    function issueReward(appState, request) {
+      if (!isRecord(appState) || !isRecord(request) || !isRecord(appState.balances)
         || !Array.isArray(appState.redemptions) || !Array.isArray(appState.ledger)) {
         return { ok: false, code: 'invalid_state' };
       }
-      const normalizedRewardKey = typeof rewardKey === 'string' ? rewardKey.trim() : '';
-      const normalizedIdempotencyKey = typeof idempotencyKey === 'string' ? idempotencyKey.trim() : '';
-      if (!normalizedIdempotencyKey) return { ok: false, code: 'invalid_idempotency_key' };
+      const rewardKey = typeof request.rewardKey === 'string' ? request.rewardKey.trim() : '';
+      const idempotencyKey = typeof request.idempotencyKey === 'string' ? request.idempotencyKey.trim() : '';
+      if (!idempotencyKey) return { ok: false, code: 'invalid_idempotency_key' };
       const existing = appState.redemptions.filter((item) => isRecord(item)
         && typeof item.idempotencyKey === 'string'
-        && item.idempotencyKey.trim() === normalizedIdempotencyKey);
+        && item.idempotencyKey.trim() === idempotencyKey);
       if (existing.length) {
-        if (existing.some((item) => typeof item.rewardKey !== 'string' || item.rewardKey.trim() !== normalizedRewardKey)) {
+        if (existing.some((item) => typeof item.rewardKey !== 'string' || item.rewardKey.trim() !== rewardKey)) {
           return { ok: false, code: 'idempotency_conflict' };
         }
-        if (existing.length !== 1 || !isValidPersistedRedemption(appState, existing[0])) {
+        if (existing.length !== 1 || !isValidRewardInstrument(appState, existing[0])) {
           return { ok: false, code: 'invalid_state' };
         }
         const linkedLedger = appState.ledger.filter((entry) => isRecord(entry)
@@ -8900,53 +9018,96 @@
         if (linkedLedger.length !== 1 || !isRedemptionLedgerPair(existing[0], linkedLedger[0])) {
           return { ok: false, code: 'invalid_state' };
         }
-        return { ok: true, redemption: existing[0], idempotent: true };
+        return { ok: true, instrument: existing[0], redemption: existing[0], idempotent: true };
       }
-      const reward = getRewardDefinition(normalizedRewardKey);
+      const reward = getRewardDefinition(rewardKey);
       if (!reward) return { ok: false, code: 'unknown_reward' };
-      if (!Number.isFinite(reward.cost) || reward.cost <= 0) return { ok: false, code: 'invalid_reward' };
-      const businessValidation = validateRewardBusinesses(appState, reward);
-      if (!businessValidation.ok) return businessValidation;
+      const issuingLocationId = typeof request.issuingLocationId === 'string'
+        ? request.issuingLocationId.trim()
+        : '';
+      const eligibility = getRewardEligibility(appState, reward, issuingLocationId);
+      if (!eligibility.eligible) {
+        return {
+          ok: false,
+          code: eligibility.code,
+          missing: eligibility.missingPoints,
+          eligibleLocationIds: eligibility.eligibleLocationIds
+        };
+      }
       const storedBalance = validateStoredBalance(appState, reward.sourceBusinessId);
       if (!storedBalance.ok) return storedBalance;
       const balance = storedBalance.balance;
-      if (balance.points < reward.cost) {
-        return { ok: false, code: 'insufficient_points', missing: reward.cost - balance.points };
+      if (!Number.isSafeInteger(request.expectedBalanceVersion)
+        || request.expectedBalanceVersion !== balance.version) {
+        return { ok: false, code: 'stale_balance', currentBalance: balance.available, currentVersion: balance.version };
       }
-      const timestamp = domainTimestamp(now);
+      const timestamp = domainTimestamp(request.now ?? Date.now());
       if (!timestamp.ok) return timestamp;
-      const redemptionId = createDomainId('red');
-      if (!redemptionId.ok) return redemptionId;
+      const expiryTimestamp = domainTimestamp(Date.parse(timestamp.value) + reward.validityDays * 86400000);
+      if (!expiryTimestamp.ok) return expiryTimestamp;
+      const instrumentId = createDomainId('red');
+      if (!instrumentId.ok) return instrumentId;
       const ledgerId = createDomainId('ledger');
       if (!ledgerId.ok) return ledgerId;
-      const redemption = {
-        id: redemptionId.value,
-        idempotencyKey: normalizedIdempotencyKey,
+      const nextAvailable = balance.available - reward.cost;
+      const nextBalance = {
+        ...balance,
+        available: nextAvailable,
+        points: nextAvailable,
+        version: balance.version + 1,
+        updatedAt: timestamp.value
+      };
+      const instrumentCode = `NT-${instrumentId.value.replace(/^red-/, '').replace(/-/g, '').slice(0, 8).toUpperCase()}`;
+      const instrument = {
+        id: instrumentId.value,
+        idempotencyKey,
         rewardKey: reward.key,
+        catalogSnapshot: snapshotRewardDefinition(reward),
+        customerId: appState.profile.id,
         sourceBusinessId: reward.sourceBusinessId,
         acceptingBusinessId: reward.acceptingBusinessId,
+        issuingLocationId,
+        eligibleLocationIds: [...reward.eligibleLocationIds],
+        pointsSpent: reward.cost,
         cost: reward.cost,
-        status: 'ready',
-        qrPayload: `NEXORA:${reward.key}:${normalizedIdempotencyKey}`,
-        createdAt: timestamp.value
+        status: 'issued',
+        code: instrumentCode,
+        qrPayload: `NEXORA:${reward.key}:${idempotencyKey}`,
+        initialValueCents: reward.type === 'gift_card' ? reward.valueCents : null,
+        remainingValueCents: reward.type === 'gift_card' ? reward.valueCents : null,
+        issuedAt: timestamp.value,
+        createdAt: timestamp.value,
+        expiresAt: expiryTimestamp.value
       };
       const ledgerEntry = {
         id: ledgerId.value,
         businessId: reward.sourceBusinessId,
         type: 'redeem',
         pointsDelta: -reward.cost,
+        balanceBefore: balance.available,
+        balanceAfter: nextAvailable,
         refType: 'redemption',
-        refId: redemption.id,
+        refId: instrument.id,
+        reason: 'reward_issued',
+        reversalOf: null,
         createdAt: timestamp.value
       };
-      const nextBalance = { ...balance, points: balance.points - reward.cost };
-      const nextBalances = { ...appState.balances, [reward.sourceBusinessId]: nextBalance };
-      const nextRedemptions = [...appState.redemptions, redemption];
-      const nextLedger = [ledgerEntry, ...appState.ledger];
-      appState.balances = nextBalances;
-      appState.redemptions = nextRedemptions;
-      appState.ledger = nextLedger;
-      return { ok: true, redemption, idempotent: false };
+      appState.balances = { ...appState.balances, [reward.sourceBusinessId]: nextBalance };
+      appState.redemptions = [...appState.redemptions, instrument];
+      appState.ledger = [ledgerEntry, ...appState.ledger];
+      return { ok: true, instrument, redemption: instrument, idempotent: false };
+    }
+
+    function redeemReward(appState, rewardKey, idempotencyKey, now = Date.now()) {
+      const reward = getRewardDefinition(typeof rewardKey === 'string' ? rewardKey.trim() : '');
+      const balance = reward ? getBusinessBalance(appState, reward.sourceBusinessId) : null;
+      return issueReward(appState, {
+        rewardKey,
+        idempotencyKey,
+        expectedBalanceVersion: balance?.version,
+        issuingLocationId: reward?.acceptingBusinessId,
+        now
+      });
     }
     const COPY = {
       vi: {
@@ -9284,7 +9445,7 @@
         return { ready: [], affordable: [], points: 0 };
       }
       const ready = appState.redemptions.filter((redemption) => isRecord(redemption)
-        && redemption.status === 'ready'
+        && ['ready', 'issued'].includes(redemption.status)
         && redemption.acceptingBusinessId === businessId
         && !appState.guestCheckins.some((checkin) => isRecord(checkin)
           && checkin.rewardRedemptionId === redemption.id));
@@ -10415,6 +10576,9 @@
         || typeof attempt.rewardKey !== 'string'
         || typeof attempt.idempotencyKey !== 'string'
         || !attempt.idempotencyKey.trim()
+        || !Number.isSafeInteger(attempt.expectedBalanceVersion)
+        || typeof attempt.issuingLocationId !== 'string'
+        || !attempt.issuingLocationId.trim()
         || appState.ui.currentRewardKey !== attempt.rewardKey) return { ok: false, code: 'invalid_reward_attempt' };
       const reward = getRewardDefinition(attempt.rewardKey);
       if (!reward) return { ok: false, code: 'unknown_reward' };
@@ -10444,11 +10608,14 @@
         idempotencyKey = attemptId.value;
       }
       commitState((draft) => {
+        const balance = getBusinessBalance(draft, reward.sourceBusinessId);
         draft.ui.currentRewardKey = reward.key;
         draft.ui.pendingContext.redemptionId = null;
         draft.ui.pendingContext.rewardAttempt = {
           rewardKey: reward.key,
           idempotencyKey,
+          expectedBalanceVersion: balance.version,
+          issuingLocationId: reward.acceptingBusinessId,
           completed: false
         };
       });
@@ -10465,7 +10632,13 @@
         return result;
       }
       const result = commitState((draft) => {
-        const redemption = redeemReward(draft, attempt.rewardKey, attempt.idempotencyKey);
+        const redemption = issueReward(draft, {
+          rewardKey: attempt.rewardKey,
+          idempotencyKey: attempt.idempotencyKey,
+          expectedBalanceVersion: attempt.expectedBalanceVersion,
+          issuingLocationId: attempt.issuingLocationId,
+          now: Date.now()
+        });
         if (redemption.ok) {
           draft.ui.pendingContext.rewardAttempt.completed = true;
           draft.ui.pendingContext.redemptionId = redemption.redemption.id;
@@ -15220,6 +15393,8 @@
       createBookingRequest,
       confirmBookingRequest,
       submitFeedback,
+      issueReward,
+      isValidRewardInstrument,
       redeemReward,
       normalizeUsPhone,
       requestOtp,
