@@ -65,3 +65,25 @@ test('ports every QR Codes section and its kiosk surface', () => {
     'Leads đã thu từ QR này', 'Promotion Code', 'Chế độ Kiosk'
   ]) assert.ok(html.includes(copy), `missing QR copy: ${copy}`);
 });
+
+test('ports QR generation, preview, verification, download, print, kiosk, and publish behavior', () => {
+  const html = source();
+  for (const fn of [
+    'qrUrl', 'renderQrPromoOptions', 'renderQrCode', 'renderQrLeads',
+    'verifyCode', 'markCodeUsed', 'buildQrPageHtml', 'updateQrPreview',
+    'openKiosk', 'printPoster', 'refreshQr'
+  ]) assert.match(html, new RegExp(`function ${fn}\\(`), `missing ${fn}`);
+
+  assert.match(html, /typeof QRCode === 'undefined'/);
+  assert.match(html, /Không tải được thư viện QR/);
+  assert.match(html, /QR_PROMOS = \[/);
+  assert.match(html, /QR_LEADS = \[/);
+  assert.match(html, /qrGuideBtn.*addEventListener/s);
+  assert.match(html, /qrDownloadBtn.*addEventListener/s);
+  assert.match(html, /qrPrintBtn.*addEventListener/s);
+  assert.match(html, /kioskBtn.*addEventListener/s);
+  assert.match(html, /publishQrBtn.*addEventListener/s);
+  assert.match(html, /verifyInput.*keydown/s);
+  assert.match(html, /Reply STOP để hủy, HELP để được hỗ trợ/);
+  assert.match(html, /Text Me My Promotion Code/);
+});
