@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     :root {
       --luxury-gold: #d4af37;
@@ -6511,6 +6512,14 @@
               <span class="nav-subitem-dot" aria-hidden="true"></span>
               <span>Call Log</span>
             </button>
+            <button class="nav-subitem" type="button" data-tab-target="sms-campaigns" aria-controls="panel-sms-campaigns">
+              <span class="nav-subitem-dot" aria-hidden="true"></span>
+              <span>SMS Campaigns</span>
+            </button>
+            <button class="nav-subitem" type="button" data-tab-target="qr-codes" aria-controls="panel-qr-codes">
+              <span class="nav-subitem-dot" aria-hidden="true"></span>
+              <span>QR Codes</span>
+            </button>
             <button class="nav-subitem" type="button" data-tab-target="plans" aria-controls="panel-plans">
               <span class="nav-subitem-dot" aria-hidden="true"></span>
               <span>Plans</span>
@@ -6629,6 +6638,14 @@
                   <i class="bi bi-telephone" aria-hidden="true"></i>
                 </span>
                 <span>Call Log</span>
+              </button>
+              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="sms-campaigns" aria-controls="panel-sms-campaigns">
+                <span class="page-tab-icon"><i class="bi bi-chat-dots" aria-hidden="true"></i></span>
+                <span>SMS Campaigns</span>
+              </button>
+              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="qr-codes" aria-controls="panel-qr-codes">
+                <span class="page-tab-icon"><i class="bi bi-qr-code" aria-hidden="true"></i></span>
+                <span>QR Codes</span>
               </button>
               <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="plans" aria-controls="panel-plans">
                 <span class="page-tab-icon">
@@ -8117,6 +8134,8 @@
                 </article>
               </div>
             </section>
+            <section class="tab-panel" id="panel-sms-campaigns" data-tab-panel="sms-campaigns" role="tabpanel" aria-label="SMS Campaigns panel"></section>
+            <section class="tab-panel" id="panel-qr-codes" data-tab-panel="qr-codes" role="tabpanel" aria-label="QR Codes panel"></section>
           </div>
         </section>
       </main>
