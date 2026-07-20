@@ -207,10 +207,11 @@ function createGroupDom() {
     chatHead: fakeElement({ 'data-group-overlay-background': '' }),
     messageColumn: fakeElement({ 'data-group-overlay-background': '' }),
     membersTrigger: fakeElement({ 'data-members-open': '', 'aria-expanded': 'false', 'aria-controls': 'group-member-panel' }),
+    memberClose: fakeElement({ 'data-members-close': '' }),
     threadTrigger: fakeElement({ 'data-thread-open': 'staff-message-1', 'aria-expanded': 'false', 'aria-controls': 'group-thread-panel' }),
     memberFirst: fakeElement(),
     memberLast: fakeElement(),
-    memberRail: fakeElement({ id: 'group-member-panel', 'aria-label': 'Group members' }),
+    memberRail: fakeElement({ id: 'group-member-panel', 'aria-label': 'Group members', tabindex: '-1' }),
     memberList: fakeElement(),
     joins: fakeElement(),
     pinned: fakeElement(),
@@ -226,14 +227,16 @@ function createGroupDom() {
     settingsDescription: fakeElement({ name: 'manageGroupDescription' }),
     settingsVisibility: fakeElement({ name: 'manageGroupVisibility' }),
     settingsPosting: fakeElement({ name: 'manageGroupPosting' }),
-    settingsError: fakeElement()
+    settingsError: fakeElement(),
+    renderedManageButton: fakeElement({ 'data-group-manage': 'staff-main' })
   };
+  elements.duplicateThreadTrigger = fakeElement({ 'data-thread-open': 'staff-message-1' });
   elements.chat.hidden = true;
   elements.threadPanel.hidden = true;
   elements.attachmentStatus.hidden = true;
   elements.settingsDialog.hidden = true;
   elements.settingsDialog.selectorMap['input,select,textarea'] = elements.settingsDescription;
-  elements.memberRail.selectorMap[focusableSelector] = [elements.memberFirst, elements.memberLast];
+  elements.memberRail.selectorMap[focusableSelector] = [elements.memberClose, elements.memberFirst, elements.memberLast];
   elements.threadPanel.selectorMap[focusableSelector] = [elements.threadFirst, elements.threadLast];
   const panel = fakeElement({ id: 'panel-groups' });
   const selectorMap = {
@@ -278,8 +281,9 @@ function createGroupDom() {
     querySelector(selector) { return selectorMap[selector] || null; },
     querySelectorAll(selector) {
       if (selector === '[data-group-filter]') return groupFilters;
-      if (selector === '[data-thread-open]') return [elements.threadTrigger];
+      if (selector === '[data-thread-open]') return [elements.duplicateThreadTrigger, elements.threadTrigger];
       if (selector === '[data-group-overlay-background]') return [elements.chatHead, elements.messageColumn];
+      if (selector === '[data-group-manage]') return [elements.renderedManageButton];
       return [];
     }
   };
@@ -405,6 +409,11 @@ test('filters, saves, progresses, and safely shares owner courses', () => {
   const beforeRejectedShare = JSON.stringify(api.state.posts);
   assert.equal(api.shareCourse('course-retention', 'vip-club').ok, false);
   assert.equal(JSON.stringify(api.state.posts), beforeRejectedShare);
+  api.toggleArchivedGroup('staff-main');
+  const beforeArchivedShare = JSON.stringify(api.state.posts);
+  assert.equal(api.shareCourse('course-retention', 'staff-main').ok, false);
+  assert.equal(JSON.stringify(api.state.posts), beforeArchivedShare);
+  api.toggleArchivedGroup('staff-main');
   const shared = api.shareCourse('course-retention', 'staff-main');
   assert.equal(shared.ok, true);
   assert.equal(api.state.posts[0], shared.post);
@@ -717,12 +726,12 @@ test('makes mobile member and thread overlays modal, keyboard-contained, and foc
   assert.equal(dom.elements.memberRail.getAttribute('aria-modal'), 'true');
   assert.equal(dom.elements.chatHead.getAttribute('inert'), '');
   assert.equal(dom.elements.messageColumn.getAttribute('aria-hidden'), 'true');
-  assert.equal(dom.document.activeElement, dom.elements.memberFirst);
-  assert.equal(dom.fireDocument('keydown', dom.elements.memberFirst, { key: 'Tab', shiftKey: true }).defaultPrevented, true);
+  assert.equal(dom.document.activeElement, dom.elements.memberClose);
+  assert.equal(dom.fireDocument('keydown', dom.elements.memberClose, { key: 'Tab', shiftKey: true }).defaultPrevented, true);
   assert.equal(dom.document.activeElement, dom.elements.memberLast);
   assert.equal(dom.fireDocument('keydown', dom.elements.memberLast, { key: 'Tab' }).defaultPrevented, true);
-  assert.equal(dom.document.activeElement, dom.elements.memberFirst);
-  assert.equal(dom.fireDocument('keydown', dom.elements.memberFirst, { key: 'Escape' }).defaultPrevented, true);
+  assert.equal(dom.document.activeElement, dom.elements.memberClose);
+  assert.equal(dom.fireDocument('keydown', dom.elements.memberClose, { key: 'Escape' }).defaultPrevented, true);
   assert.equal(api.state.memberDrawerOpen, false);
   assert.equal(dom.elements.membersTrigger.getAttribute('aria-expanded'), 'false');
   assert.equal(dom.elements.memberRail.getAttribute('aria-modal'), null);
@@ -750,6 +759,46 @@ test('makes mobile member and thread overlays modal, keyboard-contained, and foc
   assert.equal(dom.document.activeElement, dom.elements.threadTrigger);
 });
 
+test('closes an owner-only mobile member drawer by pointer and restores the Members trigger', () => {
+  const dom = createGroupDom();
+  const api = loadApi({ document: dom.document, window: { innerWidth: 390 }, setTimeout() { return 1; }, clearTimeout() {} });
+  const created = api.createGroup({ name: 'Fresh Staff Group', type: 'staff' });
+  dom.fire('click', fakeElement({ 'data-group-open': created.group.id }));
+  assert.match(dom.elements.memberList.innerHTML, /Nexora Touch/);
+  assert.doesNotMatch(dom.elements.memberList.innerHTML, /Mia Tran|Linh Nguyen|Sophie Carter/);
+  assert.match(dom.elements.joins.innerHTML, /No pending requests/);
+  assert.match(dom.elements.pinned.innerHTML, /No pinned messages/);
+  dom.elements.memberRail.selectorMap['button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[href]'] = [dom.elements.memberClose];
+
+  dom.elements.membersTrigger.focus();
+  dom.fire('click', dom.elements.membersTrigger);
+  assert.equal(api.state.memberDrawerOpen, true);
+  assert.equal(dom.document.activeElement, dom.elements.memberClose);
+  dom.fire('click', dom.elements.memberClose);
+  assert.equal(api.state.memberDrawerOpen, false);
+  assert.equal(dom.elements.memberRail.classList.contains('is-mobile-open'), false);
+  assert.equal(dom.elements.memberRail.getAttribute('aria-modal'), null);
+  assert.equal(dom.elements.messageColumn.getAttribute('inert'), null);
+  assert.equal(dom.document.activeElement, dom.elements.membersTrigger);
+});
+
+test('keeps the member rail usable and non-modal at 768px', () => {
+  const dom = createGroupDom();
+  loadApi({ document: dom.document, window: { innerWidth: 768 }, setTimeout() { return 1; }, clearTimeout() {} });
+  dom.fire('click', fakeElement({ 'data-group-open': 'staff-main' }));
+  assert.equal(dom.elements.memberRail.hidden, false);
+  assert.equal(dom.elements.memberRail.getAttribute('aria-hidden'), 'false');
+  assert.equal(dom.elements.membersTrigger.getAttribute('aria-expanded'), 'true');
+
+  dom.elements.membersTrigger.focus();
+  dom.fire('click', dom.elements.membersTrigger);
+  assert.equal(dom.document.activeElement, dom.elements.memberRail);
+  assert.equal(dom.elements.memberRail.getAttribute('role'), null);
+  assert.equal(dom.elements.memberRail.getAttribute('aria-modal'), null);
+  assert.equal(dom.elements.chatHead.getAttribute('inert'), null);
+  assert.equal(dom.elements.messageColumn.getAttribute('aria-hidden'), null);
+});
+
 test('keeps desktop member and thread panels non-modal', () => {
   const dom = createGroupDom();
   const api = loadApi({ document: dom.document, window: { innerWidth: 1024 }, setTimeout() { return 1; }, clearTimeout() {} });
@@ -757,7 +806,8 @@ test('keeps desktop member and thread panels non-modal', () => {
   assert.equal(dom.elements.membersTrigger.getAttribute('aria-expanded'), 'true');
   assert.equal(dom.elements.memberRail.getAttribute('aria-hidden'), 'false');
 
-  dom.document.activeElement = dom.elements.threadTrigger;
+  dom.elements.threadTrigger.focus();
+  dom.elements.threadTrigger.isConnected = true;
   dom.fire('click', dom.elements.threadTrigger);
   assert.equal(api.state.activeThreadId, 'staff-message-1');
   assert.equal(dom.elements.memberRail.hidden, true);
@@ -772,6 +822,7 @@ test('keeps desktop member and thread panels non-modal', () => {
   assert.equal(dom.elements.memberRail.hidden, false);
   assert.equal(dom.elements.threadPanel.hidden, true);
   assert.equal(dom.elements.membersTrigger.getAttribute('aria-expanded'), 'true');
+  assert.equal(dom.document.activeElement, dom.elements.threadTrigger);
 });
 
 test('delegates composer, reply, reaction, moderation, and role-change actions', () => {
@@ -845,7 +896,10 @@ test('delegates composer, reply, reaction, moderation, and role-change actions',
   assert.equal(api.state.joinRequests['staff-main'].some((item) => item.id === request.id), false);
   assert.equal(api.state.groups.find((group) => group.id === 'staff-main').members, beforeMemberCount + 1);
 
-  dom.fire('click', fakeElement({ 'data-group-manage': 'staff-main' }));
+  const manageOpener = fakeElement({ 'data-group-manage': 'staff-main' });
+  manageOpener.ownerDocument = dom.document;
+  manageOpener.focus();
+  dom.fire('click', manageOpener);
   assert.equal(dom.elements.settingsDialog.hidden, false);
   assert.equal(dom.elements.settingsDescription.value, api.state.groups.find((group) => group.id === 'staff-main').description);
   dom.elements.settingsDescription.value = 'Managed from the session dialog.';
@@ -861,6 +915,9 @@ test('delegates composer, reply, reaction, moderation, and role-change actions',
   assert.equal(api.state.groups.find((group) => group.id === 'staff-main').description, 'Managed from the session dialog.');
   assert.equal(api.state.groups.find((group) => group.id === 'staff-main').posting, 'owner');
   assert.equal(dom.elements.settingsDialog.hidden, true);
+  assert.notEqual(dom.document.activeElement, manageOpener);
+  assert.equal(dom.document.activeElement, dom.elements.renderedManageButton);
+  assert.equal(dom.document.activeElement.getAttribute('data-group-manage'), 'staff-main');
 });
 
 test('escapes user messages and thread replies in rendered markup', () => {
@@ -1105,6 +1162,10 @@ test('keeps failed Event operations atomic', () => {
   assert.equal(api.state.activeEventId, activeEventId);
   assert.equal(api.announceEvent(event.id, 'missing').ok, false);
   assert.equal(JSON.stringify(api.state.posts), postsSnapshot);
+  api.toggleArchivedGroup(event.audience);
+  const archivedPostsSnapshot = JSON.stringify(api.state.posts);
+  assert.equal(api.announceEvent(event.id, event.audience).ok, false);
+  assert.equal(JSON.stringify(api.state.posts), archivedPostsSnapshot);
 });
 
 test('delegates Event list and calendar controls and escapes rendered event content', () => {
@@ -1163,6 +1224,10 @@ test('delegates Event list and calendar controls and escapes rendered event cont
   api.setEventRsvp(event.id, 'declined');
   assert.equal((detail.innerHTML.match(/aria-pressed="true"/g) || []).length, 1);
   assert.match(detail.innerHTML, /aria-pressed="true"[^>]*data-event-rsvp="declined"/);
+  api.toggleArchivedGroup(event.audience);
+  api.renderEvents();
+  assert.match(detail.innerHTML, /data-event-announce[^>]*disabled/);
+  assert.match(detail.innerHTML, /Restore the linked group before announcing this event/);
 });
 
 test('keeps all five Community state domains available and independently mutable', () => {

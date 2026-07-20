@@ -600,6 +600,7 @@
     var post;
     if (!course) return { ok: false, error: 'Course not found.' };
     if (!group || group.type !== 'staff') return { ok: false, error: 'Choose a Staff group to share this course.' };
+    if (group.archived) return { ok: false, error: 'Restore this Staff group before sharing a course.' };
     post = {
       id: 'feed-course-' + (state.posts.length + 1) + '-' + new Date().getTime(),
       kind: 'announcement',
@@ -700,6 +701,7 @@
     var post;
     if (!event) return { ok:false, error:'Event not found.' };
     if (!group) return { ok:false, error:'Group not found.' };
+    if (group.archived) return { ok:false, error:'Restore this group before announcing the event.' };
     post = {
       id:'feed-event-' + (state.posts.length + 1) + '-' + new Date().getTime(),
       kind:'announcement',
@@ -898,18 +900,19 @@
     var messageId = groupOverlayMessageId;
     var triggers;
     var index;
-    if (!panel) return;
-    panel.removeAttribute('role');
-    panel.removeAttribute('aria-modal');
+    if (panel) {
+      panel.removeAttribute('role');
+      panel.removeAttribute('aria-modal');
+      setGroupOverlayBackground(false);
+    }
     activeGroupOverlayPanel = null;
     groupOverlayOpener = null;
     groupOverlayKind = '';
     groupOverlayMessageId = '';
-    setGroupOverlayBackground(false);
     if (!restoreFocus) return;
     if (kind === 'members') {
       opener = document.querySelector('[data-members-open]') || opener;
-    } else if (kind === 'thread') {
+    } else if (kind === 'thread' && (!opener || opener.isConnected === false)) {
       triggers = document.querySelectorAll('[data-thread-open]');
       for (index = 0; index < triggers.length; index += 1) {
         if (triggers[index].getAttribute('data-thread-open') === messageId) {
@@ -923,12 +926,13 @@
 
   function openGroupOverlay(panel, opener, kind, messageId) {
     var first;
-    if (!panel || !isMobileGroupOverlay()) return;
+    if (!panel) return;
     if (activeGroupOverlayPanel && activeGroupOverlayPanel !== panel) closeGroupOverlay(false);
-    activeGroupOverlayPanel = panel;
     groupOverlayOpener = opener || document.activeElement;
     groupOverlayKind = kind;
     groupOverlayMessageId = messageId || '';
+    if (!isMobileGroupOverlay()) return;
+    activeGroupOverlayPanel = panel;
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     setGroupOverlayBackground(true);
@@ -1075,6 +1079,18 @@
     updateGroupFilterButtons();
   }
 
+  function focusRenderedGroupManage(groupId) {
+    var buttons = document.querySelectorAll('[data-group-manage]');
+    var index;
+    for (index = 0; index < buttons.length; index += 1) {
+      if (buttons[index].getAttribute('data-group-manage') === groupId) {
+        buttons[index].focus();
+        return true;
+      }
+    }
+    return false;
+  }
+
   function renderCourseCard(course) {
     return '<article class="course-card community-card" data-course-id="' + escapeHtml(course.id) + '">' +
       '<div class="course-card-head"><span>' + escapeHtml(course.categoryLabel) + '</span><button type="button" data-course-save="' + escapeHtml(course.id) + '">' + (course.saved ? 'Saved' : 'Save') + '</button></div>' +
@@ -1135,6 +1151,7 @@
     var group;
     var totals;
     var attendees;
+    var announceUnavailable;
     if (!detail) return;
     if (!event) {
       detail.innerHTML = '<h3>Event details</h3><p>Select an event to view RSVP, Attendees, Linked group, and Reminder status.</p>';
@@ -1143,10 +1160,11 @@
     group = findGroup(event.audience) || { id:'', name:'Unknown group' };
     totals = event.rsvpTotals || { going:0, maybe:0, declined:0 };
     attendees = event.attendees && event.attendees.length ? event.attendees.map(function (name) { return '<li>' + escapeHtml(name) + '</li>'; }).join('') : '<li>No attendees listed yet.</li>';
+    announceUnavailable = group.archived === true;
     detail.innerHTML = '<span class="event-type is-' + escapeHtml(event.type) + '">' + escapeHtml(eventTypeLabel(event.type)) + '</span><h3>' + escapeHtml(event.title) + '</h3><p>' + escapeHtml(formatEventDate(event.start)) + ' · ' + escapeHtml(formatEventTime(event.start)) + '</p>' +
       '<dl><div><dt>Linked group</dt><dd>' + escapeHtml(group.name) + '</dd></div><div><dt>Reminder</dt><dd>' + (event.reminder ? 'Scheduled' : 'Off') + '</dd></div><div><dt>Capacity</dt><dd>' + event.capacity + '</dd></div></dl>' +
       '<h4>RSVP</h4><div class="event-rsvp-actions"><button type="button" class="' + (event.rsvp === 'going' ? 'is-active' : '') + '" aria-pressed="' + (event.rsvp === 'going' ? 'true' : 'false') + '" data-event-rsvp="going" data-event-id="' + escapeHtml(event.id) + '">Going ' + totals.going + '</button><button type="button" class="' + (event.rsvp === 'maybe' ? 'is-active' : '') + '" aria-pressed="' + (event.rsvp === 'maybe' ? 'true' : 'false') + '" data-event-rsvp="maybe" data-event-id="' + escapeHtml(event.id) + '">Maybe ' + totals.maybe + '</button><button type="button" class="' + (event.rsvp === 'declined' ? 'is-active' : '') + '" aria-pressed="' + (event.rsvp === 'declined' ? 'true' : 'false') + '" data-event-rsvp="declined" data-event-id="' + escapeHtml(event.id) + '">Declined ' + totals.declined + '</button></div>' +
-      '<h4>Attendees</h4><ul class="event-attendees">' + attendees + '</ul><button class="event-announce" type="button" data-event-announce="' + escapeHtml(group.id) + '" data-event-id="' + escapeHtml(event.id) + '">Announce to linked group</button>';
+      '<h4>Attendees</h4><ul class="event-attendees">' + attendees + '</ul><button class="event-announce" type="button" data-event-announce="' + escapeHtml(group.id) + '" data-event-id="' + escapeHtml(event.id) + '"' + (announceUnavailable ? ' disabled aria-describedby="event-announce-unavailable"' : '') + '>Announce to linked group</button>' + (announceUnavailable ? '<p class="event-action-note" id="event-announce-unavailable">Restore the linked group before announcing this event.</p>' : '');
   }
 
   function renderEventCalendar(events) {
@@ -1580,6 +1598,7 @@
     var reaction = closestWithAttribute(target, 'data-message-reaction');
     var moderation = closestWithAttribute(target, 'data-message-moderation');
     var membersOpen = closestWithAttribute(target, 'data-members-open');
+    var membersClose = closestWithAttribute(target, 'data-members-close');
     var groupFilter = closestWithAttribute(target, 'data-group-filter');
     var createGroupOpen = closestWithAttribute(target, 'data-create-group-open');
     var dialogClose = closestWithAttribute(target, 'data-dialog-close');
@@ -1648,6 +1667,15 @@
       }
       return;
     }
+    if (membersClose) {
+      if (!state.memberDrawerOpen) return;
+      state.memberDrawerOpen = false;
+      rail = document.querySelector('[data-group-member-rail]');
+      if (rail) rail.classList.remove('is-mobile-open');
+      closeGroupOverlay(true);
+      syncGroupSidePanelAccessibility();
+      return;
+    }
     if (membersOpen) {
       rail = document.querySelector('[data-group-member-rail]');
       if (!isMobileGroupOverlay()) {
@@ -1658,6 +1686,7 @@
         }
         state.memberDrawerOpen = false;
         syncGroupSidePanelAccessibility();
+        if (rail && typeof rail.focus === 'function') rail.focus();
         return;
       }
       if (state.activeThreadId) {
@@ -1764,6 +1793,7 @@
       var form = event.target;
       var result;
       var error;
+      var manageReturnId;
       if (form && form.getAttribute && form.getAttribute('data-message-composer') !== null) {
         event.preventDefault();
         result = sendMessage(state.activeGroupId, form.querySelector('[data-message-input]').value);
@@ -1811,10 +1841,12 @@
         error = form.querySelector('[data-group-settings-error]');
         if (error) error.textContent = result.ok ? '' : result.error;
         if (result.ok) {
+          manageReturnId = dialogOpener && dialogOpener.getAttribute ? dialogOpener.getAttribute('data-group-manage') : '';
           setGroupSettingsDialog(false);
           renderGroups();
           renderGroupWorkspace();
           renderFeedAudienceOptions();
+          if (manageReturnId) focusRenderedGroupManage(manageReturnId);
           showCommunityNotice('Group privacy and posting settings updated.');
         }
       }

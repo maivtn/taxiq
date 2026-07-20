@@ -118,7 +118,8 @@ test('renders the group chat, thread, member, and moderation workspace', () => {
   assert.match(html, /data-message-search-input/);
   assert.match(html, /data-message-attachment-status/);
   assert.match(html, /aria-expanded="false"[^>]*aria-controls="group-member-panel"[^>]*data-members-open/);
-  assert.match(html, /id="group-member-panel"[^>]*aria-label="Group members"[^>]*data-group-member-rail/);
+  assert.match(html, /id="group-member-panel"[^>]*tabindex="-1"[^>]*aria-label="Group members"[^>]*data-group-member-rail/);
+  assert.match(html, /aria-label="Close members"[^>]*data-members-close/);
   assert.match(html, /id="group-thread-panel"[^>]*aria-label="Message thread"[^>]*data-group-thread-panel/);
   assert.equal((html.match(/data-group-overlay-background/g) || []).length, 2);
   assert.match(html, /aria-label="Close thread"/);
@@ -196,6 +197,9 @@ test('provides responsive Community layouts, reduced motion, and legible focus a
   assert.match(css, /:focus-visible\s*\{[^}]*outline:\s*2px\s+solid/);
   assert.doesNotMatch(css, /outline:\s*(?:[3-9]|\d{2,})px/);
   assert.match(css, /@media\s*\(max-width:\s*760px\)[\s\S]*?\.community-dialog-backdrop\s*\{[^}]*padding:\s*16px/);
+  assert.doesNotMatch(css, /@media\s*\(max-width:\s*900px\)\{[^\n]*\.group-member-rail:not\(\.is-mobile-open\)\{display:none\}/);
+  assert.match(css, /@media\s*\(max-width:\s*760px\)[^\n]*\.group-member-rail:not\(\.is-mobile-open\)\{display:none\}/);
+  assert.match(css, /\.group-member-rail>h3~h3\{margin-top:22px\}/);
   assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*?\.community-dialog[\s\S]*?\.community-notice[\s\S]*?\.group-thread-panel[^{]*\{[^}]*transition:\s*none!important/);
 });
 
