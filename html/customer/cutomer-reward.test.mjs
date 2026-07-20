@@ -284,6 +284,38 @@ test('migrates a legacy points balance without changing spendable value', () => 
   assert.equal(wallet.version, 1);
 });
 
+test('defines all five customer reward types with required semantics', () => {
+  const { api } = testApi();
+  const rewards = Object.values(api.REWARDS).filter(api.isPurchasableReward);
+  assert.deepEqual(new Set(rewards.map((reward) => reward.type)), new Set([
+    'gift_card', 'dollar_discount', 'percent_discount', 'free_service', 'free_product'
+  ]));
+  rewards.forEach((reward) => assert.equal(api.validateRewardDefinition(reward).ok, true));
+  assert.ok(rewards.find((reward) => reward.type === 'percent_discount').maximumDiscountCents > 0);
+  assert.ok(rewards.find((reward) => reward.type === 'free_product').linkedItemId);
+});
+
+test('uses available points only and reports paused stock limit and location failures', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  state.balances['bitcoin-nail-bar'] = {
+    ...state.balances['bitcoin-nail-bar'], available: 100, points: 100, pending: 5000
+  };
+  assert.equal(api.getRewardEligibility(state, api.REWARDS.credit5, 'bitcoin-nail-bar').code, 'insufficient_points');
+  assert.equal(api.getRewardEligibility(state, { ...api.REWARDS.credit5, status: 'paused' }, 'bitcoin-nail-bar').code, 'reward_paused');
+  assert.equal(api.getRewardEligibility(state, { ...api.REWARDS.credit5, stock: 0 }, 'bitcoin-nail-bar').code, 'out_of_stock');
+  assert.equal(api.getRewardEligibility(state, api.REWARDS.credit5, 'moon-coffee').code, 'wrong_location');
+  state.redemptions.push({
+    ...state.redemptions[0], id: 'limit-reward', idempotencyKey: 'limit-attempt',
+    rewardKey: 'credit5', customerId: state.profile.id, status: 'issued'
+  });
+  assert.equal(api.getRewardEligibility(
+    state,
+    { ...api.REWARDS.credit5, perCustomerLimit: 1 },
+    'bitcoin-nail-bar'
+  ).code, 'limit_reached');
+});
+
 test('migrates customer journey collections into schema v3 without changing the storage key', () => {
   const { api } = testApi();
   const migrated = api.migrateState({

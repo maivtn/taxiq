@@ -976,21 +976,149 @@
     const OFFER_IDS = new Set(OFFERS.map((offer) => offer.id));
     const LOOK_PHOTO_MAX_LENGTH = 1_500_000;
     const REWARDS = {
-      credit5: { key: 'credit5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'service_credit', cost: 500, title: { vi: 'Tín dụng dịch vụ $5', en: '$5 service credit' } },
-      freepedi: { key: 'freepedi', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 1000, title: { vi: 'Pedicure cơ bản miễn phí', en: 'Free classic pedicure' } },
-      voucher25: { key: 'voucher25', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'percent_code', cost: 800, title: { vi: 'Giảm 25% dịch vụ', en: '25% off any service' } },
-      glow: { key: 'glow', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'service_credit', cost: 800, title: { vi: 'Tín dụng $10 tại Golden Glow', en: '$10 Golden Glow credit' } },
-      moon: { key: 'moon', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'moon-coffee', type: 'free_service', cost: 600, title: { vi: 'Đồ uống miễn phí', en: 'Free drink' } },
-      bistro: { key: 'bistro', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'percent_code', cost: 450, title: { vi: 'Giảm 10% dịch vụ', en: '10% off service' } },
-      credit10: { key: 'credit10', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'service_credit', cost: 900, title: { vi: 'Tín dụng dịch vụ $10', en: '$10 service credit' } },
-      voucher15: { key: 'voucher15', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'percent_code', cost: 400, title: { vi: 'Giảm 15% dịch vụ', en: '15% off any service' } },
-      freedip: { key: 'freedip', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 1800, title: { vi: 'Nhúng bột Dip miễn phí', en: 'Free dip powder' } },
-      naildesign: { key: 'naildesign', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 1200, title: { vi: 'Vẽ móng nghệ thuật miễn phí', en: 'Free nail art design' } },
+      credit5: {
+        key: 'credit5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'dollar_discount', cost: 500, valueCents: 500,
+        title: { vi: 'Giảm $5 dịch vụ', en: '$5 service discount' },
+        description: { vi: 'Giảm cố định $5 cho dịch vụ đủ điều kiện.', en: '$5 off an eligible service.' },
+        conditions: { vi: 'Hóa đơn dịch vụ từ $20; dùng một lần.', en: '$20 service minimum; one-time use.' },
+        minimumSpendCents: 2000, maximumDiscountCents: null, linkedItemId: null,
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 90, perCustomerLimit: 3, stock: 50
+      },
+      gift5: {
+        key: 'gift5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'gift_card', cost: 500, valueCents: 500,
+        title: { vi: 'Gift Card $5', en: '$5 Gift Card' },
+        description: { vi: 'Giá trị lưu trữ dùng dần cho dịch vụ.', en: 'Stored value for eligible services.' },
+        conditions: { vi: 'Không đổi lại thành điểm hoặc tiền mặt.', en: 'Cannot be converted back to points or cash.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: null,
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 180, perCustomerLimit: 2, stock: 50
+      },
+      freepedi: {
+        key: 'freepedi', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'free_service', cost: 1000, valueCents: 3500,
+        title: { vi: 'Pedicure cơ bản miễn phí', en: 'Free classic pedicure' },
+        description: { vi: 'Một dịch vụ pedicure cơ bản.', en: 'One classic pedicure service.' },
+        conditions: { vi: 'Đặt lịch trước; không gồm add-on.', en: 'Appointment required; add-ons excluded.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: 'classic-pedicure',
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 60, perCustomerLimit: 2, stock: 20
+      },
+      voucher25: {
+        key: 'voucher25', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'percent_discount', cost: 800, valuePercent: 25,
+        title: { vi: 'Giảm 25% dịch vụ', en: '25% off any service' },
+        description: { vi: 'Giảm 25% cho một dịch vụ.', en: '25% off one service.' },
+        conditions: { vi: 'Tối đa $20; hóa đơn từ $30.', en: '$20 maximum; $30 minimum spend.' },
+        minimumSpendCents: 3000, maximumDiscountCents: 2000, linkedItemId: null,
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 45, perCustomerLimit: 2, stock: 30
+      },
+      glow: {
+        key: 'glow', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa',
+        type: 'dollar_discount', cost: 800, valueCents: 1000,
+        title: { vi: 'Giảm $10 tại Golden Glow', en: '$10 off at Golden Glow' },
+        description: { vi: 'Giảm $10 cho dịch vụ spa đủ điều kiện.', en: '$10 off an eligible spa service.' },
+        conditions: { vi: 'Hóa đơn từ $40.', en: '$40 minimum spend.' },
+        minimumSpendCents: 4000, maximumDiscountCents: null, linkedItemId: null,
+        eligibleLocationIds: ['golden-glow-spa'], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 60, perCustomerLimit: 2, stock: 20
+      },
+      moon: {
+        key: 'moon', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'moon-coffee',
+        type: 'free_service', cost: 600, valueCents: 800,
+        title: { vi: 'Đồ uống miễn phí', en: 'Free drink' },
+        description: { vi: 'Một đồ uống đặc trưng.', en: 'One signature drink.' },
+        conditions: { vi: 'Không gồm topping bổ sung.', en: 'Extra toppings excluded.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: 'signature-drink',
+        eligibleLocationIds: ['moon-coffee'], stackingRule: 'stackable', status: 'active',
+        validityDays: 30, perCustomerLimit: 3, stock: 40
+      },
+      bistro: {
+        key: 'bistro', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa',
+        type: 'percent_discount', cost: 450, valuePercent: 10,
+        title: { vi: 'Giảm 10% dịch vụ', en: '10% off service' },
+        description: { vi: 'Giảm 10% tại Golden Glow.', en: '10% off at Golden Glow.' },
+        conditions: { vi: 'Tối đa $15.', en: '$15 maximum discount.' },
+        minimumSpendCents: 0, maximumDiscountCents: 1500, linkedItemId: null,
+        eligibleLocationIds: ['golden-glow-spa'], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 45, perCustomerLimit: 2, stock: 25
+      },
+      credit10: {
+        key: 'credit10', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'dollar_discount', cost: 900, valueCents: 1000,
+        title: { vi: 'Giảm $10 dịch vụ', en: '$10 service discount' },
+        description: { vi: 'Giảm cố định $10.', en: '$10 fixed discount.' },
+        conditions: { vi: 'Hóa đơn từ $35.', en: '$35 minimum spend.' },
+        minimumSpendCents: 3500, maximumDiscountCents: null, linkedItemId: null,
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 60, perCustomerLimit: 2, stock: 30
+      },
+      voucher15: {
+        key: 'voucher15', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'percent_discount', cost: 400, valuePercent: 15,
+        title: { vi: 'Giảm 15% dịch vụ', en: '15% off any service' },
+        description: { vi: 'Giảm 15% cho một dịch vụ.', en: '15% off one service.' },
+        conditions: { vi: 'Tối đa $12.', en: '$12 maximum discount.' },
+        minimumSpendCents: 2000, maximumDiscountCents: 1200, linkedItemId: null,
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 45, perCustomerLimit: 2, stock: 40
+      },
+      freedip: {
+        key: 'freedip', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'free_service', cost: 1800, valueCents: 5500,
+        title: { vi: 'Nhúng bột Dip miễn phí', en: 'Free dip powder' },
+        description: { vi: 'Một dịch vụ Dip Powder.', en: 'One Dip Powder service.' },
+        conditions: { vi: 'Không gồm tháo bột hoặc nail art.', en: 'Removal and nail art excluded.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: 'dip-powder',
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 60, perCustomerLimit: 1, stock: 15
+      },
+      naildesign: {
+        key: 'naildesign', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'free_service', cost: 1200, valueCents: 2000,
+        title: { vi: 'Vẽ móng nghệ thuật miễn phí', en: 'Free nail art design' },
+        description: { vi: 'Một add-on nail art cơ bản.', en: 'One basic nail-art add-on.' },
+        conditions: { vi: 'Tối đa hai móng.', en: 'Up to two nails.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: 'nail-art-design',
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'stackable', status: 'active',
+        validityDays: 45, perCustomerLimit: 2, stock: 25
+      },
+      productOil: {
+        key: 'productOil', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'free_product', cost: 1100, valueCents: 1800,
+        title: { vi: 'Dầu dưỡng biểu bì miễn phí', en: 'Free cuticle oil' },
+        description: { vi: 'Một chai dầu dưỡng biểu bì.', en: 'One bottle of cuticle oil.' },
+        conditions: { vi: 'Tùy tồn kho tại tiệm.', en: 'Subject to in-store inventory.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: 'sku-cuticle-oil',
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 30, perCustomerLimit: 1, stock: 12
+      },
       // Granted, never bought: the guest earns this by referring a friend, so it costs 0 points and
       // is deliberately kept out of the redeem-with-points catalog (see isPurchasableReward).
-      referral5: { key: 'referral5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'service_credit', cost: 0, title: { vi: 'Giới thiệu bạn bè — nhận $5', en: 'Refer friends — earn $5' } },
+      referral5: {
+        key: 'referral5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'dollar_discount', cost: 0, valueCents: 500,
+        title: { vi: 'Giới thiệu bạn bè — nhận $5', en: 'Refer friends — earn $5' },
+        description: { vi: 'Quà giới thiệu đã được cấp.', en: 'Granted referral reward.' },
+        conditions: { vi: 'Dùng một lần.', en: 'One-time use.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: null,
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 90, perCustomerLimit: 10, stock: null
+      },
       // Keep the priciest reward last: it is the one that must read as unaffordable at 2,450 pts.
-      gel: { key: 'gel', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 2500, title: { vi: 'Nâng cấp sơn gel', en: 'Gel polish upgrade' } }
+      gel: {
+        key: 'gel', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'free_service', cost: 2500, valueCents: 2000,
+        title: { vi: 'Nâng cấp sơn gel', en: 'Gel polish upgrade' },
+        description: { vi: 'Nâng cấp sơn gel cho một dịch vụ.', en: 'Gel-polish upgrade for one service.' },
+        conditions: { vi: 'Phải dùng cùng dịch vụ manicure hoặc pedicure.', en: 'Must accompany a manicure or pedicure.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: 'gel-polish-upgrade',
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'stackable', status: 'active',
+        validityDays: 60, perCustomerLimit: 1, stock: 20
+      }
     };
 
     // The rewards screen splits into what you can still buy, what you already bought and have not
@@ -1005,6 +1133,60 @@
     // rewards catalog or in the spend-your-points list; they only ever show up already redeemed.
     function isPurchasableReward(reward) {
       return Number.isSafeInteger(reward?.cost) && reward.cost > 0;
+    }
+
+    const REWARD_TYPES = new Set(['gift_card', 'dollar_discount', 'percent_discount', 'free_service', 'free_product']);
+
+    function validateRewardDefinition(reward) {
+      if (!isRecord(reward) || typeof reward.key !== 'string' || !reward.key.trim()) return { ok: false, code: 'invalid_reward' };
+      if (!REWARD_TYPES.has(reward.type)) return { ok: false, code: 'invalid_reward_type' };
+      if (!Number.isSafeInteger(reward.cost) || reward.cost <= 0) return { ok: false, code: 'invalid_reward_cost' };
+      if (!isRecord(reward.title) || typeof reward.title.vi !== 'string' || typeof reward.title.en !== 'string') return { ok: false, code: 'invalid_reward_title' };
+      if (!isRecord(reward.description) || typeof reward.description.vi !== 'string' || typeof reward.description.en !== 'string') return { ok: false, code: 'invalid_reward_description' };
+      if (!isRecord(reward.conditions) || typeof reward.conditions.vi !== 'string' || typeof reward.conditions.en !== 'string') return { ok: false, code: 'invalid_reward_conditions' };
+      if (!['active', 'paused'].includes(reward.status)) return { ok: false, code: 'invalid_reward_status' };
+      if (!['stackable', 'not_stackable'].includes(reward.stackingRule)) return { ok: false, code: 'invalid_stacking_rule' };
+      if (!Array.isArray(reward.eligibleLocationIds) || reward.eligibleLocationIds.length === 0
+        || reward.eligibleLocationIds.some((id) => typeof id !== 'string' || !id.trim())) return { ok: false, code: 'invalid_reward_locations' };
+      if (!Number.isSafeInteger(reward.validityDays) || reward.validityDays <= 0) return { ok: false, code: 'invalid_reward_validity' };
+      if (!Number.isSafeInteger(reward.perCustomerLimit) || reward.perCustomerLimit <= 0) return { ok: false, code: 'invalid_reward_limit' };
+      if (reward.stock !== null && (!Number.isSafeInteger(reward.stock) || reward.stock < 0)) return { ok: false, code: 'invalid_reward_stock' };
+      if (!Number.isSafeInteger(reward.minimumSpendCents) || reward.minimumSpendCents < 0) return { ok: false, code: 'invalid_minimum_spend' };
+      if (reward.type === 'percent_discount'
+        && (!Number.isSafeInteger(reward.valuePercent) || reward.valuePercent <= 0 || reward.valuePercent > 100
+          || !Number.isSafeInteger(reward.maximumDiscountCents) || reward.maximumDiscountCents <= 0)) {
+        return { ok: false, code: 'maximum_discount_required' };
+      }
+      if (['gift_card', 'dollar_discount'].includes(reward.type)
+        && (!Number.isSafeInteger(reward.valueCents) || reward.valueCents <= 0)) return { ok: false, code: 'invalid_reward_value' };
+      if (['free_service', 'free_product'].includes(reward.type)
+        && (typeof reward.linkedItemId !== 'string' || !reward.linkedItemId.trim())) return { ok: false, code: 'linked_item_required' };
+      return { ok: true };
+    }
+
+    function getRewardEligibility(appState, reward, locationId = reward?.acceptingBusinessId) {
+      const definition = validateRewardDefinition(reward);
+      if (!definition.ok) return { eligible: false, code: definition.code };
+      const businesses = validateRewardBusinesses(appState, reward);
+      if (!businesses.ok) return { eligible: false, code: businesses.code };
+      if (reward.status !== 'active') return { eligible: false, code: 'reward_paused' };
+      if (reward.stock === 0) return { eligible: false, code: 'out_of_stock' };
+      if (!reward.eligibleLocationIds.includes(locationId)) {
+        return { eligible: false, code: 'wrong_location', eligibleLocationIds: [...reward.eligibleLocationIds] };
+      }
+      const customerId = appState?.profile?.id;
+      const issuedCount = Array.isArray(appState?.redemptions)
+        ? appState.redemptions.filter((instrument) => isRecord(instrument)
+          && instrument.rewardKey === reward.key
+          && instrument.customerId === customerId
+          && ['ready', 'issued', 'redeemed'].includes(instrument.status)).length
+        : 0;
+      if (issuedCount >= reward.perCustomerLimit) return { eligible: false, code: 'limit_reached' };
+      const available = getBusinessBalance(appState, reward.sourceBusinessId).available;
+      const missingPoints = Math.max(0, reward.cost - available);
+      return missingPoints > 0
+        ? { eligible: false, code: 'insufficient_points', missingPoints }
+        : { eligible: true, code: 'eligible', missingPoints: 0 };
     }
 
     function getRewardDefinition(key) {
@@ -13535,15 +13717,21 @@
     }
 
     function rewardAvailability(reward) {
-      const businesses = validateRewardBusinesses(state, reward);
-      if (!businesses.ok) {
-        const labelKey = businesses.code === 'unknown_business' ? 'rewardUnavailable' : 'differentAlliance';
-        return { disabled: true, labelKey };
+      const result = getRewardEligibility(state, reward, reward.acceptingBusinessId);
+      if (result.eligible) return { disabled: false, labelKey: 'redeem', variables: {} };
+      if (result.code === 'insufficient_points') {
+        return { disabled: true, labelKey: 'morePointsNeeded', variables: { points: formatPoints(result.missingPoints, false) } };
       }
-      const missing = Math.max(0, reward.cost - getBusinessBalance(state, reward.sourceBusinessId).points);
-      return missing > 0
-        ? { disabled: true, labelKey: 'morePointsNeeded', variables: { points: formatPoints(missing, false) } }
-        : { disabled: false, labelKey: 'redeem', variables: {} };
+      const labelKeys = {
+        unknown_business: 'rewardUnavailable',
+        invalid_alliance: 'differentAlliance',
+        not_same_alliance: 'differentAlliance',
+        reward_paused: 'rewardPaused',
+        out_of_stock: 'rewardOutOfStock',
+        limit_reached: 'rewardLimitReached',
+        wrong_location: 'rewardWrongLocation'
+      };
+      return { disabled: true, labelKey: labelKeys[result.code] ?? 'rewardUnavailable', variables: {} };
     }
 
     // A redemption is spent the moment a check-in carries it — nothing ever rewrites its 'ready'
@@ -14967,6 +15155,11 @@
     window.NEXORA_TEST_API = {
       STORAGE_KEY,
       OPERATIONS_STORAGE_KEY,
+      REWARDS,
+      COPY,
+      isPurchasableReward,
+      validateRewardDefinition,
+      getRewardEligibility,
       createDefaultState,
       migrateState,
       loadState,
