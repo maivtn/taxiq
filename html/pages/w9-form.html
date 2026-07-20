@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>Secure Form W-9 | Nexora Tax</title>
+  <meta name="description" content="Mobile-first Form W-9 information collection for U.S. persons and entities.">
+  <style>
+    :root {
+      --ink: #151820;
+      --muted: #5d6678;
+      --paper: #fffefa;
+      --page: #eef1f7;
+      --line: #cbd2df;
+      --line-strong: #252a35;
+      --action: #4f46e5;
+      --action-dark: #3730a3;
+      --action-soft: #eef2ff;
+      --error: #b42318;
+      --error-soft: #fff1f0;
+      --success: #087a55;
+      --success-soft: #eafaf3;
+      --warning: #945500;
+      --warning-soft: #fff7e8;
+      --shadow: 0 18px 54px rgba(27, 35, 58, .12);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--page);
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 50% -10%, rgba(79, 70, 229, .12), transparent 38rem),
+        var(--page);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button, summary, label { -webkit-tap-highlight-color: transparent; }
+    a { color: var(--action-dark); }
+    [hidden] { display: none !important; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 58px;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(79, 70, 229, .15);
+      background: rgba(255, 255, 255, .92);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #202337;
+      font-weight: 850;
+      letter-spacing: -.02em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 10px;
+      color: #fff;
+      background: linear-gradient(145deg, #6d5dfc, #3730a3);
+      box-shadow: 0 8px 18px rgba(79, 70, 229, .28);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .secure-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--success);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .secure-label::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #18a777;
+      box-shadow: 0 0 0 4px rgba(24, 167, 119, .12);
+    }
+
+    .page-wrap {
+      width: min(100%, 960px);
+      margin: 0 auto;
+      padding: 16px 12px 132px;
+    }
+
+    .paper {
+      border: 1px solid rgba(83, 92, 117, .18);
+      border-radius: 22px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .form-hero {
+      padding: 22px 18px 18px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 90% 0, rgba(255, 255, 255, .18), transparent 15rem),
+        linear-gradient(145deg, #171b34, #302765 72%, #4f46e5);
+    }
+
+    .hero-kicker {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: #d9dcff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .form-hero h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(34px, 11vw, 56px);
+      line-height: .95;
+      letter-spacing: -.05em;
+    }
+
+    .form-hero h2 {
+      max-width: 650px;
+      margin: 14px 0 0;
+      font-size: clamp(17px, 5vw, 28px);
+      line-height: 1.18;
+      letter-spacing: -.025em;
+    }
+
+    .hero-meta {
+      margin: 10px 0 0;
+      color: #dfe2ff;
+      font-size: 13px;
+    }
+
+    .purpose-note {
+      margin: 14px 0 0;
+      padding: 13px 14px;
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .09);
+      color: #f3f4ff;
+      font-size: 13px;
+    }
+
+    .purpose-note strong { color: #fff; }
+    .purpose-note a { color: #fff; font-weight: 800; }
+
+    .progress-shell {
+      padding: 15px 14px 13px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .progress-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 11px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .progress-top output { color: var(--action-dark); }
+
+    .progress-track {
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e8ebf2;
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #6d5dfc, #4f46e5);
+      transition: width .2s ease;
+    }
+
+    .step-list {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 3px;
+      margin: 11px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .step-link {
+      display: flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .step-link[aria-current="step"] {
+      color: var(--action-dark);
+      background: var(--action-soft);
+    }
+
+    .restore-banner,
+    .error-summary,
+    .completion-panel {
+      margin: 14px 14px 0;
+      padding: 14px;
+      border-radius: 14px;
+    }
+
+    .restore-banner {
+      border: 1px solid #f1c777;
+      background: var(--warning-soft);
+    }
+
+    .restore-banner strong,
+    .restore-banner p,
+    .error-summary h2,
+    .error-summary p,
+    .completion-panel h2,
+    .completion-panel p { margin: 0; }
+
+    .restore-banner p,
+    .error-summary p,
+    .completion-panel p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .banner-actions,
+    .completion-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 11px;
+    }
+
+    .error-summary {
+      border: 1px solid #efb2ae;
+      background: var(--error-soft);
+      color: var(--error);
+    }
+
+    .error-summary h2 { font-size: 15px; }
+    .error-summary ul { margin: 9px 0 0; padding-left: 20px; }
+    .error-summary a { color: var(--error); font-weight: 750; }
+
+    .completion-panel {
+      border: 1px solid #8bd8bb;
+      background: var(--success-soft);
+      color: #075e43;
+    }
+
+    .completion-icon {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      margin-bottom: 10px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--success);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    form { margin: 0; }
+
+    .form-body {
+      display: grid;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .form-section {
+      margin: 0;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      scroll-margin-top: 76px;
+      overflow: hidden;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      padding: 15px 15px 13px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff, #fafbfe);
+    }
+
+    .section-number {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
+      place-items: center;
+      border-radius: 10px;
+      color: #fff;
+      background: #242942;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.25;
+      letter-spacing: -.015em;
+    }
+
+    .section-heading p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .part-heading .section-number {
+      width: auto;
+      padding: 0 10px;
+      border-radius: 6px;
+      background: #111;
+    }
+
+    .section-content {
+      display: grid;
+      gap: 16px;
+      padding: 16px 15px 18px;
+    }
+
+    .field-grid { display: grid; gap: 14px; }
+    .field { min-width: 0; }
+
+    .field-label,
+    .group-label {
+      display: block;
+      margin-bottom: 7px;
+      color: #262b38;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .required-marker { color: var(--error); }
+
+    .field-help {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      display: block;
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #aeb7c8;
+      border-radius: 11px;
+      outline: 0;
+      background: #fff;
+      color: var(--ink);
+      padding: 11px 12px;
+      transition: border-color .14s ease, box-shadow .14s ease, background .14s ease;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    input::placeholder,
+    textarea::placeholder { color: #8b94a6; }
+
+    input:focus,
+    select:focus,
+    textarea:focus,
+    button:focus-visible,
+    summary:focus-visible,
+    a:focus-visible {
+      border-color: var(--action);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, .16);
+      outline: 0;
+    }
+
+    input[aria-invalid="true"],
+    select[aria-invalid="true"],
+    textarea[aria-invalid="true"] {
+      border-color: var(--error);
+      background: #fffafa;
+    }
+
+    input:disabled,
+    select:disabled,
+    textarea:disabled {
+      color: #8b94a6;
+      background: #f2f4f8;
+      cursor: not-allowed;
+    }
+
+    .error-message {
+      min-height: 0;
+      margin: 6px 0 0;
+      color: var(--error);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .choice-grid {
+      display: grid;
+      gap: 9px;
+    }
+
+    .choice-card,
+    .check-card {
+      position: relative;
+      display: flex;
+      min-height: 52px;
+      align-items: flex-start;
+      gap: 11px;
+      padding: 12px;
+      border: 1px solid #b8c0cf;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color .14s ease, background .14s ease, box-shadow .14s ease;
+    }
+
+    .choice-card:hover,
+    .check-card:hover { border-color: #7e88a0; }
+
+    .choice-card:has(input:checked),
+    .check-card:has(input:checked) {
+      border-color: var(--action);
+      background: var(--action-soft);
+      box-shadow: 0 0 0 1px var(--action);
+    }
+
+    .choice-card input,
+    .check-card input {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 20px;
+      margin: 2px 0 0;
+      accent-color: var(--action);
+    }
+
+    .choice-copy { min-width: 0; }
+    .choice-copy strong { display: block; font-size: 14px; }
+    .choice-copy small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+
+    .conditional-panel {
+      padding: 13px;
+      border: 1px solid #c9cdfb;
+      border-radius: 13px;
+      background: #f7f7ff;
+    }
+
+    details.optional-group {
+      border: 1px dashed #aeb7c8;
+      border-radius: 13px;
+      background: #fbfcff;
+    }
+
+    details.optional-group summary {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 13px;
+      cursor: pointer;
+      color: #33394a;
+      font-size: 13px;
+      font-weight: 800;
+      list-style: none;
+    }
+
+    details.optional-group summary::-webkit-details-marker { display: none; }
+    details.optional-group summary::after { content: "+"; color: var(--action); font-size: 20px; }
+    details.optional-group[open] summary::after { content: "−"; }
+
+    .details-content {
+      display: grid;
+      gap: 14px;
+      padding: 2px 13px 14px;
+    }
+
+    .address-row { display: grid; gap: 14px; }
+
+    .tin-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .tin-field-wrap { position: relative; }
+
+    .tin-mask {
+      position: absolute;
+      inset: 1px 1px 1px 1px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 46px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+    }
+
+    .tin-mask button {
+      min-width: 44px;
+      min-height: 44px;
+      margin: -9px -10px -9px 8px;
+      border: 0;
+      border-radius: 9px;
+      color: var(--action-dark);
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .privacy-note {
+      display: flex;
+      gap: 10px;
+      padding: 12px 13px;
+      border: 1px solid #a8d8c8;
+      border-radius: 13px;
+      background: #f0faf6;
+      color: #185f4a;
+      font-size: 12px;
+    }
+
+    .privacy-note strong { display: block; margin-bottom: 2px; }
+    .privacy-icon { font-size: 19px; line-height: 1.2; }
+
+    .certification-copy {
+      padding: 14px;
+      border-left: 4px solid #242942;
+      border-radius: 0 12px 12px 0;
+      background: #f6f7fa;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 13px;
+    }
+
+    .certification-copy p { margin: 0; }
+    .certification-copy ol { margin: 9px 0 0; padding-left: 20px; }
+    .certification-copy li + li { margin-top: 6px; }
+
+    .certification-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .action-bar {
+      position: fixed;
+      inset: auto 0 0;
+      z-index: 40;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      border-top: 1px solid rgba(84, 94, 119, .2);
+      background: rgba(255, 255, 255, .94);
+      box-shadow: 0 -16px 38px rgba(25, 31, 48, .12);
+      backdrop-filter: blur(18px);
+    }
+
+    .action-inner {
+      display: grid;
+      grid-template-columns: auto 1fr 1.35fr;
+      gap: 8px;
+      width: min(100%, 930px);
+      margin: 0 auto;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid #aeb7c8;
+      border-radius: 11px;
+      padding: 10px 13px;
+      background: #fff;
+      color: #33394a;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 850;
+      text-decoration: none;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+
+    .button:hover { border-color: #747f98; background: #f8f9fc; }
+    .button:active { transform: translateY(1px); }
+    .button-primary { border-color: var(--action); color: #fff; background: var(--action); }
+    .button-primary:hover { border-color: var(--action-dark); background: var(--action-dark); }
+    .button-danger { color: var(--error); }
+    .button-icon { width: 44px; padding: 0; font-size: 17px; }
+
+    .button:disabled {
+      border-color: #d6dbe5;
+      color: #8b94a6;
+      background: #eceff4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .footer-note {
+      padding: 3px 16px 22px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .print-only { display: none; }
+
+    @media (min-width: 600px) {
+      .page-wrap { padding: 24px 18px 128px; }
+      .form-hero { padding: 28px 28px 24px; }
+      .progress-shell { padding-inline: 24px; }
+      .form-body { padding: 20px; }
+      .field-grid.two-column { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .address-row { grid-template-columns: minmax(0, 1fr) 132px 150px; }
+      .choice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .choice-card.wide { grid-column: 1 / -1; }
+    }
+
+    @media (min-width: 768px) {
+      .site-header { padding-inline: 24px; }
+      .paper { border-radius: 8px; }
+      .form-hero {
+        display: grid;
+        grid-template-columns: 148px minmax(0, 1fr) 184px;
+        gap: 22px;
+        align-items: start;
+        border-bottom: 3px solid #111;
+        color: #111;
+        background: var(--paper);
+      }
+      .hero-kicker { grid-column: 1; display: block; color: #333; }
+      .form-hero h1 { grid-column: 1; grid-row: 1 / span 2; align-self: center; color: #111; font-size: 54px; }
+      .form-hero h2 { grid-column: 2; margin: 0; color: #111; text-align: center; }
+      .hero-meta { grid-column: 2; margin: 0; color: #333; text-align: center; }
+      .purpose-note {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+        margin: 0;
+        border: 0;
+        border-left: 2px solid #111;
+        border-radius: 0;
+        padding: 2px 0 2px 18px;
+        background: transparent;
+        color: #111;
+      }
+      .purpose-note strong,
+      .purpose-note a { color: #111; }
+      .progress-shell { background: #f8f9fd; }
+      .form-body { gap: 0; }
+      .form-section { border-radius: 0; border-color: var(--line-strong); border-bottom: 0; }
+      .form-section:last-child { border-bottom: 1px solid var(--line-strong); }
+      .section-heading { border-color: var(--line-strong); background: #fff; }
+      .section-content { padding: 18px 20px 22px; }
+      .choice-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .choice-card.wide { grid-column: auto; }
+      .action-inner { grid-template-columns: auto 150px 190px; justify-content: end; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+
+    @page { size: Letter portrait; margin: 0.35in; }
+
+    @media print {
+      :root { --paper: #fff; --ink: #000; --line: #555; --line-strong: #000; }
+      body { min-width: 0; background: #fff; color: #000; font-size: 10pt; }
+      .screen-only,
+      .site-header,
+      .progress-shell,
+      .restore-banner,
+      .error-summary,
+      .action-bar,
+      .footer-note,
+      .field-help,
+      .error-message,
+      details.optional-group summary::after { display: none !important; }
+      .print-only { display: block; }
+      .page-wrap { width: 100%; margin: 0; padding: 0; }
+      .paper { border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
+      .form-hero {
+        display: grid;
+        grid-template-columns: 1.05in 1fr 1.55in;
+        gap: .15in;
+        padding: 0 0 .08in;
+        border-bottom: 2px solid #000;
+        color: #000;
+        background: #fff;
+      }
+      .form-hero h1 { grid-column: 1; grid-row: 1 / span 2; align-self: center; color: #000; font-size: 34pt; }
+      .form-hero h2 { grid-column: 2; margin: 0; color: #000; font-size: 15pt; text-align: center; }
+      .hero-meta { grid-column: 2; margin: 0; color: #000; font-size: 8pt; text-align: center; }
+      .purpose-note {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+        margin: 0;
+        padding: 0 0 0 .12in;
+        border: 0;
+        border-left: 1px solid #000;
+        border-radius: 0;
+        color: #000;
+        background: #fff;
+        font-size: 8pt;
+      }
+      .purpose-note strong,
+      .purpose-note a { color: #000; }
+      .form-body { display: block; padding: .08in 0 0; }
+      .form-section {
+        break-inside: avoid;
+        border: 1px solid #000;
+        border-bottom: 0;
+        border-radius: 0;
+        overflow: visible;
+      }
+      .form-section:last-child { border-bottom: 1px solid #000; }
+      .section-heading { padding: .07in .09in; border-color: #000; background: #fff; }
+      .section-number { width: auto; height: 20px; padding: 0 7px; border-radius: 0; background: #000; font-size: 8pt; }
+      .section-heading h2 { font-size: 10pt; }
+      .section-heading p { display: none; }
+      .section-content { gap: .08in; padding: .08in .09in .1in; }
+      .field-grid, .address-row { gap: .07in; }
+      .field-grid.two-column { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .address-row { grid-template-columns: 1fr .72in 1in; }
+      .field-label, .group-label { margin-bottom: 2px; font-size: 7.5pt; }
+      input[type="text"], input[type="date"], select, textarea {
+        min-height: 24px;
+        border: 0;
+        border-bottom: 1px solid #000;
+        border-radius: 0;
+        padding: 2px 3px;
+        background: #fff !important;
+        color: #000;
+        box-shadow: none;
+      }
+      textarea { min-height: 32px; }
+      .choice-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; }
+      .choice-card, .check-card { min-height: 28px; padding: 3px 4px; border: 0; border-radius: 0; box-shadow: none !important; }
+      .choice-card input, .check-card input { width: 13px; height: 13px; flex-basis: 13px; }
+      .choice-copy strong { font-size: 7.5pt; }
+      .choice-copy small { display: none; }
+      details.optional-group { display: block; border: 0; background: #fff; }
+      details.optional-group summary { display: none; }
+      details.optional-group .details-content { display: grid; padding: 0; }
+      .conditional-panel, .privacy-note, .certification-copy { border-radius: 0; background: #fff; }
+      .privacy-note { padding: 4px; border-color: #000; color: #000; font-size: 7pt; }
+      .certification-copy { padding: 6px 8px; border-left: 3px solid #000; font-size: 7.5pt; }
+      .certification-copy ol { margin-top: 4px; }
+      .certification-copy li + li { margin-top: 2px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header screen-only">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">NT</span> Nexora Tax</div>
+    <span class="secure-label">Secure form</span>
+  </header>
+
+  <main class="page-wrap">
+    <article class="paper" aria-labelledby="page-title">
+      <header class="form-hero">
+        <div class="hero-kicker">Form <span>(Rev. March 2024)</span></div>
+        <h1 id="page-title">W-9</h1>
+        <h2>Request for Taxpayer Identification Number and Certification</h2>
+        <p class="hero-meta">Department of the Treasury · Internal Revenue Service</p>
+        <div class="purpose-note">
+          <strong>Give this form to the requester. Do not send this form to the IRS.</strong><br>
+          W-9 dùng để cung cấp TIN cho đơn vị trả tiền. Không gửi trực tiếp biểu mẫu này cho IRS.
+          <a href="https://www.irs.gov/pub/irs-pdf/fw9.pdf" target="_blank" rel="noopener noreferrer">Official instructions</a>
+        </div>
+      </header>
+
+      <section class="progress-shell screen-only" aria-label="Form progress">
+        <div class="progress-top"><span>Your progress</span><output id="progress-output">0% complete</output></div>
+        <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress-fill"></div></div>
+        <ol class="step-list">
+          <li><a class="step-link" href="#taxpayer-section" data-step-link="taxpayer-section" aria-current="step">Info</a></li>
+          <li><a class="step-link" href="#classification-section" data-step-link="classification-section">Type</a></li>
+          <li><a class="step-link" href="#address-section" data-step-link="address-section">Address</a></li>
+          <li><a class="step-link" href="#tin-section" data-step-link="tin-section">TIN</a></li>
+          <li><a class="step-link" href="#certification-section" data-step-link="certification-section">Sign</a></li>
+        </ol>
+      </section>
+
+      <aside class="restore-banner screen-only" id="restore-banner" hidden>
+        <strong>Continue your saved draft?</strong>
+        <p>Bản nháp chỉ chứa thông tin không nhạy cảm trên thiết bị này. TIN và chữ ký không được lưu.</p>
+        <div class="banner-actions">
+          <button class="button button-primary" type="button" id="restore-draft">Restore draft</button>
+          <button class="button" type="button" id="discard-draft">Discard</button>
+        </div>
+      </aside>
+
+      <section class="error-summary screen-only" id="error-summary" role="alert" aria-live="assertive" tabindex="-1" hidden>
+        <h2>Check the highlighted fields</h2>
+        <p>Vui lòng sửa các mục bên dưới trước khi hoàn tất W-9.</p>
+        <ul id="error-summary-list"></ul>
+      </section>
+
+      <section class="completion-panel screen-only" id="completion-panel" tabindex="-1" hidden>
+        <div class="completion-icon" aria-hidden="true">✓</div>
+        <h2>W-9 is complete</h2>
+        <p>No data was sent to the IRS. Không có dữ liệu nào được gửi cho IRS; hãy cung cấp biểu mẫu cho đơn vị yêu cầu.</p>
+        <div class="completion-actions">
+          <button class="button" type="button" id="back-to-form">Back to form</button>
+          <button class="button button-primary" type="button" id="print-form">Print / Save PDF</button>
+        </div>
+      </section>
+
+      <form id="w9-form" novalidate>
+        <div class="form-body">
+          <fieldset class="form-section" id="taxpayer-section" data-required-fields="taxpayer-name">
+            <legend class="section-heading">
+              <span class="section-number">1–2</span>
+              <span><h2>Taxpayer information</h2><p>Thông tin phải khớp với hồ sơ khai thuế của bạn.</p></span>
+            </legend>
+            <div class="section-content">
+              <div class="field">
+                <label class="field-label" for="taxpayer-name">1 Name of individual/entity <span class="required-marker" aria-hidden="true">*</span></label>
+                <input id="taxpayer-name" name="taxpayerName" type="text" autocomplete="name" required aria-describedby="taxpayer-name-help taxpayer-name-error" placeholder="Legal name shown on your tax return">
+                <p class="field-help" id="taxpayer-name-help">For a sole proprietor or disregarded entity, enter the owner's name here.</p>
+                <p class="error-message" id="taxpayer-name-error"></p>
+              </div>
+              <div class="field">
+                <label class="field-label" for="business-name">2 Business name/disregarded entity name</label>
+                <input id="business-name" name="businessName" type="text" autocomplete="organization" aria-describedby="business-name-help" placeholder="If different from line 1">
+                <p class="field-help" id="business-name-help">Optional. Enter a business, trade, DBA, or disregarded entity name.</p>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-section" id="classification-section" data-required-fields="classification">
+            <legend class="section-heading">
+              <span class="section-number">3–4</span>
+              <span><h2>Federal tax classification</h2><p>Chọn đúng một loại phân loại thuế liên bang.</p></span>
+            </legend>
+            <div class="section-content">
+              <div class="field">
+                <span class="group-label">3a Select one classification <span class="required-marker" aria-hidden="true">*</span></span>
+                <div class="choice-grid" role="radiogroup" aria-describedby="classification-error">
+                  <label class="choice-card">
+                    <input id="classification-individual" name="classification" type="radio" value="individual" required>
+                    <span class="choice-copy"><strong>Individual / sole proprietor</strong><small>Includes a single-member disregarded entity owned by an individual.</small></span>
+                  </label>
+                  <label class="choice-card">
+                    <input id="classification-c-corp" name="classification" type="radio" value="c-corp">
+                    <span class="choice-copy"><strong>C corporation</strong></span>
+                  </label>
+                  <label class="choice-card">
+                    <input id="classification-s-corp" name="classification" type="radio" value="s-corp">
+                    <span class="choice-copy"><strong>S corporation</strong></span>
+                  </label>
+                  <label class="choice-card">
+                    <input id="classification-partnership" name="classification" type="radio" value="partnership">
+                    <span class="choice-copy"><strong>Partnership</strong></span>
+                  </label>
+                  <label class="choice-card">
+                    <input id="classification-trust" name="classification" type="radio" value="trust">
+                    <span class="choice-copy"><strong>Trust / estate</strong></span>
+                  </label>
+                  <label class="choice-card">
+                    <input id="classification-llc" name="classification" type="radio" value="llc">
+                    <span class="choice-copy"><strong>Limited liability company (LLC)</strong><small>Enter C, S, or P below.</small></span>
+                  </label>
+                  <label class="choice-card wide">
+                    <input id="classification-other" name="classification" type="radio" value="other">
+                    <span class="choice-copy"><strong>Other</strong><small>See the official instructions.</small></span>
+                  </label>
+                </div>
+                <p class="error-message" id="classification-error"></p>
+              </div>
+
+              <div class="conditional-panel" id="llc-panel" hidden>
+                <div class="field-grid two-column">
+                  <div class="field">
+                    <label class="field-label" for="llc-code">LLC tax classification <span class="required-marker" aria-hidden="true">*</span></label>
+                    <select id="llc-code" name="llcCode" disabled aria-describedby="llc-code-help llc-code-error">
+                      <option value="">Choose one</option>
+                      <option value="C">C — C corporation</option>
+                      <option value="S">S — S corporation</option>
+                      <option value="P">P — Partnership</option>
+                    </select>
+                    <p class="field-help" id="llc-code-help">A disregarded LLC should select the owner's classification instead of LLC.</p>
+                    <p class="error-message" id="llc-code-error"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="conditional-panel" id="other-classification-panel" hidden>
+                <div class="field">
+                  <label class="field-label" for="other-classification-detail">Describe the other classification</label>
+                  <input id="other-classification-detail" name="otherClassificationDetail" type="text" disabled placeholder="Tax classification">
+                </div>
+              </div>
+
+              <div class="conditional-panel" id="foreign-owners-panel" hidden>
+                <label class="check-card" for="foreign-owners">
+                  <input id="foreign-owners" name="foreignOwners" type="checkbox" disabled>
+                  <span class="choice-copy"><strong>3b Foreign partners, owners, or beneficiaries</strong><small>Check only when the flow-through rules in line 3b apply.</small></span>
+                </label>
+              </div>
+
+              <details class="optional-group">
+                <summary>4 Exemptions <span>Optional</span></summary>
+                <div class="details-content field-grid two-column">
+                  <div class="field">
+                    <label class="field-label" for="exempt-payee-code">Exempt payee code</label>
+                    <input id="exempt-payee-code" name="exemptPayeeCode" type="text" inputmode="numeric" maxlength="2" placeholder="If any">
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for="fatca-code">FATCA reporting exemption code</label>
+                    <input id="fatca-code" name="fatcaCode" type="text" maxlength="1" autocapitalize="characters" placeholder="If any">
+                    <p class="field-help">Applies to accounts maintained outside the United States.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-section" id="address-section" data-required-fields="street-address city state zip">
+            <legend class="section-heading">
+              <span class="section-number">5–7</span>
+              <span><h2>Address and requester details</h2><p>Địa chỉ nhận thư thuế và thông tin tài khoản liên quan.</p></span>
+            </legend>
+            <div class="section-content">
+              <div class="field">
+                <label class="field-label" for="street-address">5 Address <span class="required-marker" aria-hidden="true">*</span></label>
+                <input id="street-address" name="streetAddress" type="text" autocomplete="street-address" required aria-describedby="street-address-error" placeholder="Number, street, apartment or suite">
+                <p class="error-message" id="street-address-error"></p>
+              </div>
+              <div class="address-row">
+                <div class="field">
+                  <label class="field-label" for="city">6 City <span class="required-marker" aria-hidden="true">*</span></label>
+                  <input id="city" name="city" type="text" autocomplete="address-level2" required aria-describedby="city-error">
+                  <p class="error-message" id="city-error"></p>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="state">State <span class="required-marker" aria-hidden="true">*</span></label>
+                  <input id="state" name="state" type="text" autocomplete="address-level1" autocapitalize="characters" maxlength="2" required aria-describedby="state-error" placeholder="TX">
+                  <p class="error-message" id="state-error"></p>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="zip">ZIP code <span class="required-marker" aria-hidden="true">*</span></label>
+                  <input id="zip" name="zip" type="text" autocomplete="postal-code" inputmode="numeric" maxlength="10" required aria-describedby="zip-error" placeholder="00000">
+                  <p class="error-message" id="zip-error"></p>
+                </div>
+              </div>
+
+              <details class="optional-group">
+                <summary>Requester and account details <span>Optional</span></summary>
+                <div class="details-content">
+                  <div class="field">
+                    <label class="field-label" for="requester-details">Requester's name and address</label>
+                    <textarea id="requester-details" name="requesterDetails" autocomplete="off" placeholder="Requester name and mailing address"></textarea>
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for="account-numbers">7 Account number(s)</label>
+                    <input id="account-numbers" name="accountNumbers" type="text" autocomplete="off" placeholder="List related account number(s), if any">
+                  </div>
+                </div>
+              </details>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-section" id="tin-section" data-required-fields="tin-type ssn">
+            <legend class="section-heading part-heading">
+              <span class="section-number">Part I</span>
+              <span><h2>Taxpayer Identification Number (TIN)</h2><p>Chọn SSN hoặc EIN và nhập đủ 9 chữ số.</p></span>
+            </legend>
+            <div class="section-content">
+              <p class="field-help">The TIN should match the name entered on line 1 to help avoid backup withholding.</p>
+              <div class="field">
+                <span class="group-label">TIN type <span class="required-marker" aria-hidden="true">*</span></span>
+                <div class="tin-switch" role="radiogroup" aria-describedby="tin-type-error">
+                  <label class="choice-card">
+                    <input id="tin-type-ssn" name="tinType" type="radio" value="ssn" checked>
+                    <span class="choice-copy"><strong>SSN</strong><small>Social Security number</small></span>
+                  </label>
+                  <label class="choice-card">
+                    <input id="tin-type-ein" name="tinType" type="radio" value="ein">
+                    <span class="choice-copy"><strong>EIN</strong><small>Employer identification number</small></span>
+                  </label>
+                </div>
+                <p class="error-message" id="tin-type-error"></p>
+              </div>
+
+              <div class="field" id="ssn-field">
+                <label class="field-label" for="ssn">Social security number <span class="required-marker" aria-hidden="true">*</span></label>
+                <div class="tin-field-wrap">
+                  <input id="ssn" name="ssn" type="text" inputmode="numeric" autocomplete="off" maxlength="11" required aria-describedby="ssn-help ssn-error" placeholder="000-00-0000">
+                  <div class="tin-mask" id="ssn-mask" hidden><span id="ssn-mask-value">•••-••-••••</span><button type="button" data-reveal-tin="ssn" aria-label="Edit Social Security number">Edit</button></div>
+                </div>
+                <p class="field-help" id="ssn-help">For individuals, this is generally your SSN.</p>
+                <p class="error-message" id="ssn-error"></p>
+              </div>
+
+              <div class="field" id="ein-field" hidden>
+                <label class="field-label" for="ein">Employer identification number <span class="required-marker" aria-hidden="true">*</span></label>
+                <div class="tin-field-wrap">
+                  <input id="ein" name="ein" type="text" inputmode="numeric" autocomplete="off" maxlength="10" disabled aria-describedby="ein-help ein-error" placeholder="00-0000000">
+                  <div class="tin-mask" id="ein-mask" hidden><span id="ein-mask-value">••-•••••••</span><button type="button" data-reveal-tin="ein" aria-label="Edit employer identification number">Edit</button></div>
+                </div>
+                <p class="field-help" id="ein-help">For entities, this is generally the EIN.</p>
+                <p class="error-message" id="ein-error"></p>
+              </div>
+
+              <div class="privacy-note screen-only">
+                <span class="privacy-icon" aria-hidden="true">🔒</span>
+                <span><strong>Private on this device</strong>TIN không được lưu trong bản nháp, URL, nhật ký hoặc analytics. Trang này không có kết nối gửi dữ liệu.</span>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-section" id="certification-section" data-required-fields="certification-acknowledgment signature signature-date">
+            <legend class="section-heading part-heading">
+              <span class="section-number">Part II</span>
+              <span><h2>Certification</h2><p>Đọc kỹ trước khi ký tên và ghi ngày.</p></span>
+            </legend>
+            <div class="section-content">
+              <div class="certification-copy">
+                <p><strong>Under penalties of perjury, I certify that:</strong></p>
+                <ol>
+                  <li>The TIN entered is correct, or I am waiting for a TIN to be issued.</li>
+                  <li>I am not subject to backup withholding, unless I indicate below that the IRS has notified me otherwise.</li>
+                  <li>I am a U.S. citizen or another U.S. person for federal tax purposes.</li>
+                  <li>Any FATCA exemption code entered on this form is correct.</li>
+                </ol>
+              </div>
+
+              <label class="check-card" for="backup-withholding-subject">
+                <input id="backup-withholding-subject" name="backupWithholdingSubject" type="checkbox">
+                <span class="choice-copy"><strong>I am currently subject to backup withholding</strong><small>Choose this only if the IRS has notified you because of unreported interest or dividends.</small></span>
+              </label>
+
+              <p class="certification-note">Certain transactions do not require every certification item. Review the official instructions when real estate, secured property, debt cancellation, IRA contributions, interest, or dividends are involved.</p>
+
+              <label class="check-card" for="certification-acknowledgment">
+                <input id="certification-acknowledgment" name="certificationAcknowledgment" type="checkbox" required aria-describedby="certification-acknowledgment-error">
+                <span class="choice-copy"><strong>I have read and accept the certification above. <span class="required-marker" aria-hidden="true">*</span></strong><small>Tôi xác nhận đã đọc và đồng ý với nội dung chứng nhận.</small></span>
+              </label>
+              <p class="error-message" id="certification-acknowledgment-error"></p>
+
+              <div class="field-grid two-column">
+                <div class="field">
+                  <label class="field-label" for="signature">Signature of U.S. person <span class="required-marker" aria-hidden="true">*</span></label>
+                  <input id="signature" name="signature" type="text" autocomplete="off" required aria-describedby="signature-help signature-error" placeholder="Type your full legal name">
+                  <p class="field-help" id="signature-help">Typing your name is a prototype acknowledgment, not a third-party digital signature.</p>
+                  <p class="error-message" id="signature-error"></p>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="signature-date">Date <span class="required-marker" aria-hidden="true">*</span></label>
+                  <input id="signature-date" name="signatureDate" type="date" required aria-describedby="signature-date-error">
+                  <p class="error-message" id="signature-date-error"></p>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="action-bar screen-only">
+          <div class="action-inner">
+            <button class="button button-icon button-danger" type="button" id="clear-form" aria-label="Clear form">×</button>
+            <button class="button" type="button" id="save-draft">Save draft</button>
+            <button class="button button-primary" type="submit" id="primary-action">Continue <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </form>
+
+      <p class="footer-note screen-only">Form W-9 (Rev. March 2024) · Web prototype · Review the official IRS instructions before use.</p>
+      <p class="print-only">Form W-9 (Rev. March 2024) · Give completed form to the requester.</p>
+    </article>
+  </main>
+
+  <script id="w9-form-script">
+  </script>
+</body>
+</html>
