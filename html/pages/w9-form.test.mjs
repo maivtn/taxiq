@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
-import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import vm from 'node:vm';
@@ -13,17 +12,6 @@ const CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrom
 function source() {
   assert.ok(existsSync(PAGE_URL), 'w9-form.html must exist');
   return readFileSync(PAGE_URL, 'utf8');
-}
-
-function freePort() {
-  return new Promise((resolve, reject) => {
-    const server = createServer();
-    server.once('error', reject);
-    server.listen(0, '127.0.0.1', () => {
-      const address = server.address();
-      server.close(() => resolve(address.port));
-    });
-  });
 }
 
 async function waitForJson(url, timeoutMs = 10_000) {
@@ -85,30 +73,65 @@ async function connectCdp(webSocketUrl) {
   };
 }
 
-async function waitFor(downloadDir, predicate, timeoutMs = 10_000) {
+async function waitFor(label, predicate, timeoutMs = 10_000) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     const value = predicate();
     if (value) return value;
     await new Promise((resolve) => setTimeout(resolve, 50));
   }
-  throw new Error(`Timed out waiting for browser state in ${downloadDir}`);
+  throw new Error(`Timed out waiting for ${label}`);
+}
+
+function waitForExit(child, timeoutMs) {
+  if (!child || child.exitCode !== null) return Promise.resolve(true);
+  return new Promise((resolve) => {
+    const onExit = () => {
+      clearTimeout(timer);
+      resolve(true);
+    };
+    const timer = setTimeout(() => {
+      child.off('exit', onExit);
+      resolve(child.exitCode !== null);
+    }, timeoutMs);
+    child.once('exit', onExit);
+  });
+}
+
+async function stopChrome(child) {
+  if (!child || child.exitCode !== null) return;
+  const gracefulExit = waitForExit(child, 1_000);
+  try { child.kill('SIGTERM'); } catch (error) { /* Process may already be gone. */ }
+  if (await gracefulExit) return;
+  const forcedExit = waitForExit(child, 1_000);
+  try { child.kill('SIGKILL'); } catch (error) { /* Process may already be gone. */ }
+  await forcedExit;
 }
 
 test('exercises the handwritten signature lifecycle and custom PDF output in Chrome', { timeout: 30_000 }, async () => {
   assert.ok(existsSync(CHROME_PATH), 'local Google Chrome must exist');
-  const browserDir = mkdtempSync(join(tmpdir(), 'w9-browser-'));
-  const downloadDir = join(browserDir, 'downloads');
-  mkdirSync(downloadDir);
-  const port = await freePort();
-  const chrome = spawn(CHROME_PATH, [
-    '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
-    '--disable-background-networking', `--remote-debugging-port=${port}`,
-    `--user-data-dir=${join(browserDir, 'profile')}`, 'about:blank'
-  ], { stdio: 'ignore' });
+  let browserDir;
+  let downloadDir;
+  let chrome;
   let cdp;
 
   try {
+    browserDir = mkdtempSync(join(tmpdir(), 'w9-browser-'));
+    downloadDir = join(browserDir, 'downloads');
+    const profileDir = join(browserDir, 'profile');
+    mkdirSync(downloadDir);
+    mkdirSync(profileDir);
+    chrome = spawn(CHROME_PATH, [
+      '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
+      '--disable-background-networking', '--remote-debugging-port=0',
+      `--user-data-dir=${profileDir}`, 'about:blank'
+    ], { stdio: 'ignore' });
+    const port = await waitFor('Chrome DevToolsActivePort', () => {
+      const activePortPath = join(profileDir, 'DevToolsActivePort');
+      if (!existsSync(activePortPath)) return 0;
+      const portLine = readFileSync(activePortPath, 'utf8').split(/\r?\n/, 1)[0];
+      return /^\d+$/.test(portLine) ? Number(portLine) : 0;
+    });
     const targets = await waitForJson(`http://127.0.0.1:${port}/json/list`);
     const pageTarget = targets.find((target) => target.type === 'page');
     assert.ok(pageTarget?.webSocketDebuggerUrl, 'Chrome page target must be available');
@@ -187,6 +210,47 @@ test('exercises the handwritten signature lifecycle and custom PDF output in Chr
       });
     }
 
+    async function capturedRegionStats(elementId) {
+      const clip = await evaluate(`(() => {
+        const rect = document.getElementById(${JSON.stringify(elementId)}).getBoundingClientRect();
+        return {
+          x: rect.left + window.scrollX,
+          y: rect.top + window.scrollY,
+          width: rect.width,
+          height: rect.height,
+          scale: 1
+        };
+      })()`);
+      const screenshot = await cdp.send('Page.captureScreenshot', {
+        format: 'png',
+        captureBeyondViewport: true,
+        fromSurface: true,
+        clip
+      });
+      return evaluate(`(async () => {
+        const image = new Image();
+        const loaded = new Promise((resolve, reject) => {
+          image.onload = resolve;
+          image.onerror = () => reject(new Error('Could not decode captured print pixels.'));
+        });
+        image.src = 'data:image/png;base64,' + ${JSON.stringify(screenshot.data)};
+        await loaded;
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
+        const context = canvas.getContext('2d');
+        context.drawImage(image, 0, 0);
+        const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+        let darkPixels = 0;
+        for (let index = 0; index < pixels.length; index += 4) {
+          if (pixels[index + 3] > 0 && pixels[index] < 100 && pixels[index + 1] < 100 && pixels[index + 2] < 100) {
+            darkPixels += 1;
+          }
+        }
+        return { width: canvas.width, height: canvas.height, darkPixels };
+      })()`);
+    }
+
     const initial = await canvasState();
     const tapX = initial.rect.x + 32;
     const tapY = initial.rect.y + 34;
@@ -220,7 +284,41 @@ test('exercises the handwritten signature lifecycle and custom PDF output in Chr
     assert.equal(competingPointer.beforePrimaryUp, true, 'a second pointer must not draw or take ownership');
     assert.equal(competingPointer.afterPrimaryUp, false, 'the original tap must complete after a second pointer is ignored');
 
-    await evaluate(`document.getElementById('clear-signature').click()`);
+    const clearedDuringPointer = await evaluate(`(() => {
+      const canvas = document.getElementById('signature-canvas');
+      const rect = canvas.getBoundingClientRect();
+      const originalSetCapture = canvas.setPointerCapture;
+      const originalHasCapture = canvas.hasPointerCapture;
+      const originalReleaseCapture = canvas.releasePointerCapture;
+      let capturedPointer = null;
+      let releasedPointer = null;
+      canvas.setPointerCapture = (pointerId) => { capturedPointer = pointerId; };
+      canvas.hasPointerCapture = (pointerId) => capturedPointer === pointerId;
+      canvas.releasePointerCapture = (pointerId) => {
+        if (capturedPointer === pointerId) {
+          releasedPointer = pointerId;
+          capturedPointer = null;
+        }
+      };
+      const send = (type) => canvas.dispatchEvent(new PointerEvent(type, {
+        bubbles: true, cancelable: true, pointerId: 51, pointerType: 'touch',
+        clientX: rect.left + 30, clientY: rect.top + 30, isPrimary: true
+      }));
+      send('pointerdown');
+      document.getElementById('clear-signature').click();
+      send('pointerup');
+      canvas.setPointerCapture = originalSetCapture;
+      canvas.hasPointerCapture = originalHasCapture;
+      canvas.releasePointerCapture = originalReleaseCapture;
+      return {
+        releasedPointer,
+        clearDisabled: document.getElementById('clear-signature').disabled
+      };
+    })()`);
+    assert.deepEqual(clearedDuringPointer, { releasedPointer: 51, clearDisabled: true });
+    assert.equal((await canvasState()).inkPixels, 0,
+      'pointerup after clearing an owned pointer must not recreate a tap dot');
+
     const drawStart = await canvasState();
     const startX = drawStart.rect.x + 45;
     const startY = drawStart.rect.y + 70;
@@ -235,6 +333,30 @@ test('exercises the handwritten signature lifecycle and custom PDF output in Chr
     });
     await new Promise((resolve) => setTimeout(resolve, 100));
     assert.ok((await canvasState()).inkPixels > 0, 'resize must preserve handwritten ink');
+
+    await evaluate(`(() => {
+      document.getElementById('signature-date').value = '2026-07-20';
+      document.getElementById('signature-date').dispatchEvent(new Event('change', { bubbles: true }));
+    })()`);
+    await cdp.send('Emulation.setEmulatedMedia', { media: 'print' });
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const printUi = await evaluate(`({
+      placeholderDisplay: getComputedStyle(document.getElementById('signature-placeholder')).display,
+      actionsDisplay: getComputedStyle(document.querySelector('.signature-actions')).display,
+      printDate: document.getElementById('signature-date-print').textContent
+    })`);
+    assert.deepEqual(printUi, {
+      placeholderDisplay: 'none',
+      actionsDisplay: 'none',
+      printDate: '07/20/2026'
+    });
+    const printedInk = await capturedRegionStats('signature-canvas');
+    await evaluate(`document.getElementById('clear-signature').click()`);
+    const printedEmpty = await capturedRegionStats('signature-canvas');
+    assert.ok(printedInk.darkPixels > 10 && printedEmpty.darkPixels === 0,
+      `printed signature pixels must survive: ink=${printedInk.darkPixels}, empty=${printedEmpty.darkPixels}`);
+    await cdp.send('Emulation.setEmulatedMedia', { media: 'screen' });
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     await evaluate(`document.getElementById('clear-signature').click()`);
     assert.deepEqual(await canvasState().then(({ inkPixels, clearDisabled }) => ({ inkPixels, clearDisabled })), {
@@ -362,11 +484,11 @@ test('exercises the handwritten signature lifecycle and custom PDF output in Chr
     }
   } finally {
     cdp?.close();
-    if (chrome.exitCode === null) {
-      chrome.kill('SIGTERM');
-      await new Promise((resolve) => chrome.once('exit', resolve));
+    await stopChrome(chrome);
+    if (browserDir) {
+      rmSync(browserDir, { recursive: true, force: true });
+      assert.equal(existsSync(browserDir), false, 'temporary Chrome directory must be removed');
     }
-    rmSync(browserDir, { recursive: true, force: true });
   }
 });
 

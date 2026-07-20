@@ -1588,6 +1588,16 @@
         }
 
         function clearSignature() {
+          const pointerToRelease = activeSignaturePointer;
+          activeSignaturePointer = null;
+          signaturePointerMoved = false;
+          if (pointerToRelease !== null) {
+            try {
+              if (signatureCanvas.hasPointerCapture(pointerToRelease)) {
+                signatureCanvas.releasePointerCapture(pointerToRelease);
+              }
+            } catch (error) { /* Pointer capture may already have ended. */ }
+          }
           signatureContext.save();
           signatureContext.setTransform(1, 0, 0, 1, 0, 0);
           signatureContext.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
