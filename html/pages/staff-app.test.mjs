@@ -139,6 +139,8 @@ function createJobsHarness() {
     };
   });
   const contactReview = createControl('open-contact');
+  const saveProfile = createControl('save-profile');
+  const profileFields = Array.from({ length: 6 }, () => ({ disabled: false }));
   const profileControls = [
     ['profile-active', 'active'],
     ['profile-paused', 'paused'],
@@ -171,6 +173,9 @@ function createJobsHarness() {
       if (selector === '[data-job-dialog]') return dialogs;
       if (selector === '[data-job-profile-status]') return profileControls;
       if (selector === '[data-job-action="open-contact"]') return [contactReview];
+      if (selector === '[data-job-profile-field] input, [data-job-action="save-profile"]') {
+        return [...profileFields, saveProfile];
+      }
       return [];
     }
   };
@@ -193,6 +198,8 @@ function createJobsHarness() {
       return profileControls.find((control) => control.dataset.jobAction === action);
     },
     contactReview,
+    profileFields,
+    saveProfile,
     notice,
     dialog(name) {
       return dialogs.find((dialog) => dialog.dataset.jobDialog === name);
@@ -204,12 +211,17 @@ function createJobsHarness() {
         ? this.button(matchId, action)
         : action === 'open-contact'
           ? contactReview
+          : action === 'save-profile'
+            ? saveProfile
           : profileControls.find((candidate) => candidate.dataset.jobAction === action)
             || createControl(action);
       if (control.disabled) return control;
       document.activeElement = control;
       clickHandler({ target: control });
       return control;
+    },
+    delegateClick(control) {
+      clickHandler({ target: control });
     }
   };
 }
@@ -302,6 +314,8 @@ test('makes profile deletion destructive and terminal', () => {
   state = jobs.reduceJobsState(state, { type: 'profile-status', status: 'paused' });
   assert.equal(state.profileStatus, 'deleted');
   assert.equal(state.matches.golden, 'deleted');
+  state = jobs.reduceJobsState(state, { type: 'open-contact' });
+  assert.equal(state.dialog, null);
 });
 
 test('hides deleted matches and does not restore them after profile activation', () => {
@@ -312,13 +326,19 @@ test('hides deleted matches and does not restore them after profile activation',
   assert.equal(jobs.card('golden').classList.contains('hidden'), true);
   assert.equal(jobs.profileButton('profile-active').disabled, true);
   assert.equal(jobs.profileButton('profile-paused').disabled, true);
+  assert.equal(jobs.profileFields.every((field) => field.disabled), true);
+  assert.equal(jobs.saveProfile.disabled, true);
+  assert.equal(jobs.contactReview.disabled, true);
   assert.equal(jobs.activeElement(), jobs.matchesTab);
   const deletionNotice = jobs.notice.textContent;
 
   jobs.click('profile-active');
+  jobs.delegateClick(jobs.saveProfile);
+  jobs.delegateClick(jobs.contactReview);
   assert.equal(jobs.card('rose').classList.contains('hidden'), true);
   assert.equal(jobs.card('golden').classList.contains('hidden'), true);
   assert.equal(jobs.notice.textContent, deletionNotice);
+  assert.equal(jobs.dialog('contact').classList.contains('hidden'), true);
 });
 
 test('makes shared and declined contact decisions terminal for the request', () => {
