@@ -1,7 +1,8 @@
 # Thiết kế hoàn thiện Loyalty phía khách hàng
 
-**Ngày:** 2026-07-20  
-**Phạm vi:** `html/customer/cutomer-reward.html` và bộ kiểm thử liên quan  
+**Ngày:** 2026-07-20
+
+**Phạm vi:** `html/customer/cutomer-reward.html` và bộ kiểm thử liên quan
 **Nguồn yêu cầu:** `html/customer/18072026/nexora-loyalty-ui-handoff.md` và `Nexora-Touch-Loyalty-BA-Functional-Specification.md`
 
 ## 1. Mục tiêu
