@@ -53,9 +53,12 @@
       { label: 'Salon Settings', tab: 'settings' }
     ] },
     { type: 'group', key: 'reward', label: 'Reward', icon: 'gift', page: 'reward', items: [
-      { label: 'Reward Dashboard', tab: 'reward-dashboard' },
-      { label: 'Create Reward', tab: 'create-reward' },
-      { label: 'Reward Analytics', tab: 'reward-analytics' }
+      { label: 'Overview', tab: 'overview' },
+      { label: 'Earn Rules', tab: 'earn-rules' },
+      { label: 'Reward Catalog', tab: 'reward-catalog' },
+      { label: 'Customers', tab: 'customers' },
+      { label: 'Loyalty Activity', tab: 'loyalty-activity' },
+      { label: 'Analytics', tab: 'analytics' }
     ] },
     { type: 'group', key: 'pos', label: 'POS', icon: 'monitor', page: 'pos', items: [
       { label: 'Dispatch', tab: 'dispatch' },
