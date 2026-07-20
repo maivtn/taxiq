@@ -4353,6 +4353,44 @@
     #nx-campaign-root .success-banner.show { display: flex; }
     #nx-campaign-root .success-icon { display: inline-flex; color: var(--nexora-success); font-size: 20px; }
     #nx-campaign-root .success-text { color: var(--nexora-text); font-size: 14px; font-weight: 700; }
+    #panel-sms-campaigns { --cyan:#0891b2; --green:var(--nexora-success); --purple:var(--nexora-violet); --orange:var(--nexora-warning); --pink:#ec4899; }
+    #panel-sms-campaigns .marketing-panel-head,
+    #panel-qr-codes .marketing-panel-head { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:18px; }
+    #panel-sms-campaigns .marketing-panel-head h2,
+    #panel-qr-codes .marketing-panel-head h2 { margin:0; font-size:22px; line-height:1.2; }
+    #panel-sms-campaigns .marketing-panel-head p,
+    #panel-qr-codes .marketing-panel-head p { margin:6px 0 0; color:var(--nexora-muted); font-size:13px; line-height:1.55; }
+    #panel-sms-campaigns .marketing-panel-actions { display:flex; align-items:stretch; gap:10px; }
+    #panel-sms-campaigns .sms-credit-pill { display:grid; grid-template-columns:auto auto; gap:2px 10px; min-width:170px; border:1px solid var(--nexora-border); border-radius:12px; background:#fff; padding:9px 12px; box-shadow:var(--nexora-card-shadow); }
+    #panel-sms-campaigns .sms-credit-pill span { color:var(--nexora-subtle); font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+    #panel-sms-campaigns .sms-credit-pill strong { grid-row:1 / 3; grid-column:2; align-self:center; color:var(--nexora-brand); font-size:20px; }
+    #panel-sms-campaigns .sms-credit-pill small { color:var(--nexora-muted); font-size:10px; }
+    #panel-sms-campaigns .sms-campaign-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:24px; }
+    #panel-sms-campaigns .sms-stat-card,
+    #panel-sms-campaigns .sms-campaign-card { position:relative; overflow:hidden; border:1px solid var(--nexora-border); border-radius:12px; background:#fff; box-shadow:var(--nexora-card-shadow); }
+    #panel-sms-campaigns .sms-stat-card { padding:16px; }
+    #panel-sms-campaigns .sms-stat-card::before,
+    #panel-sms-campaigns .sms-campaign-card::before { content:""; position:absolute; inset:0 0 auto; height:3px; background:var(--card-accent,var(--nexora-brand)); }
+    #panel-sms-campaigns .sms-stat-card span { display:block; color:var(--nexora-muted); font-size:11px; font-weight:700; }
+    #panel-sms-campaigns .sms-stat-card strong { display:block; margin:7px 0 3px; color:var(--card-accent,var(--nexora-brand)); font-size:25px; }
+    #panel-sms-campaigns .sms-stat-card small { color:var(--nexora-subtle); font-size:10px; }
+    #panel-sms-campaigns .sms-stat-card.cyan { --card-accent:#0891b2; }
+    #panel-sms-campaigns .sms-stat-card.violet { --card-accent:var(--nexora-violet); }
+    #panel-sms-campaigns .sms-stat-card.green { --card-accent:var(--nexora-success); }
+    #panel-sms-campaigns .sms-stat-card.orange { --card-accent:var(--nexora-warning); }
+    #panel-sms-campaigns .marketing-section-heading h3 { margin:0 0 12px; font-size:14px; }
+    #panel-sms-campaigns .sms-campaign-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    #panel-sms-campaigns .sms-campaign-card { width:100%; padding:17px; color:var(--nexora-text); text-align:left; transition:.2s ease; }
+    #panel-sms-campaigns .sms-campaign-card:hover { border-color:rgba(70,72,216,.5); transform:translateY(-2px); }
+    #panel-sms-campaigns .sms-campaign-icon { margin-bottom:9px; color:var(--nexora-brand); font-size:22px; }
+    #panel-sms-campaigns .sms-campaign-name { font-size:14px; font-weight:800; }
+    #panel-sms-campaigns .sms-campaign-desc { min-height:54px; margin:5px 0 13px; color:var(--nexora-muted); font-size:11px; line-height:1.55; }
+    #panel-sms-campaigns .sms-campaign-meta { display:flex; justify-content:space-between; align-items:end; gap:10px; }
+    #panel-sms-campaigns .sms-campaign-count { color:#0891b2; font-size:19px; font-weight:800; }
+    #panel-sms-campaigns .sms-campaign-count-label { color:var(--nexora-subtle); font-size:9px; }
+    #panel-sms-campaigns .sms-campaign-badge { border-radius:999px; background:var(--nexora-surface-muted); padding:4px 8px; color:var(--nexora-muted); font-size:9px; font-weight:800; }
+    @media (max-width:900px) { #panel-sms-campaigns .sms-campaign-stats { grid-template-columns:repeat(2,minmax(0,1fr)); } #panel-sms-campaigns .sms-campaign-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:600px) { #panel-sms-campaigns .marketing-panel-head { flex-direction:column; } #panel-sms-campaigns .marketing-panel-actions { width:100%; flex-direction:column; } #panel-sms-campaigns .sms-campaign-stats, #panel-sms-campaigns .sms-campaign-grid { grid-template-columns:1fr; } }
     @media (max-width: 640px) {
       #nx-campaign-root .segment-grid { grid-template-columns: repeat(2, 1fr); }
       #nx-campaign-root .schedule-options { flex-direction: column; }
@@ -8134,7 +8172,32 @@
                 </article>
               </div>
             </section>
-            <section class="tab-panel" id="panel-sms-campaigns" data-tab-panel="sms-campaigns" role="tabpanel" aria-label="SMS Campaigns panel"></section>
+            <section class="tab-panel" id="panel-sms-campaigns" data-tab-panel="sms-campaigns" role="tabpanel" aria-label="SMS Campaigns panel">
+              <div class="marketing-panel-head">
+                <div>
+                  <h2>💬 SMS Campaigns</h2>
+                  <p>Chọn nhóm khách → Soạn tin → Gửi hoặc hẹn giờ</p>
+                </div>
+                <div class="marketing-panel-actions">
+                  <div class="sms-credit-pill">
+                    <span>SMS Credits</span>
+                    <strong data-sms-credits>847</strong>
+                    <small data-sms-credits-usd>≈ $21.18 remaining</small>
+                  </div>
+                  <button class="booking-primary-button" type="button" data-sms-campaign-new><i class="bi bi-stars" aria-hidden="true"></i> Tạo Campaign Mới</button>
+                </div>
+              </div>
+              <div class="sms-campaign-stats">
+                <article class="sms-stat-card cyan"><span>Tổng khách</span><strong>1,284</strong><small>↑ +23 tuần này</small></article>
+                <article class="sms-stat-card violet"><span>SMS đã gửi tháng này</span><strong>3,412</strong><small>↑ +18% so tháng trước</small></article>
+                <article class="sms-stat-card green"><span>Khách quay lại</span><strong>147</strong><small>↑ từ SMS tháng này</small></article>
+                <article class="sms-stat-card orange"><span>Revenue từ SMS</span><strong>$8,820</strong><small>↑ avg $60/khách quay lại</small></article>
+              </div>
+              <div class="marketing-section-heading">
+                <h3>Nhóm khách — Chọn để gửi campaign</h3>
+              </div>
+              <div class="sms-campaign-grid" data-sms-campaign-grid></div>
+            </section>
             <section class="tab-panel" id="panel-qr-codes" data-tab-panel="qr-codes" role="tabpanel" aria-label="QR Codes panel"></section>
           </div>
         </section>
@@ -10558,6 +10621,19 @@ function getBookingCardCallStart(item) {
         `).join('');
       }
 
+      function renderSmsCampaignCards() {
+        const grid = document.querySelector('[data-sms-campaign-grid]');
+        if (!grid) return;
+        grid.innerHTML = SEGMENTS.map(function(s) {
+          return '<button class="sms-campaign-card" type="button" data-sms-segment="' + s.id + '" style="--card-accent:' + s.accent + '">' +
+            '<span class="sms-campaign-icon">' + s.icon + '</span>' +
+            '<span class="sms-campaign-name">' + escapeHtml(s.name) + '</span>' +
+            '<span class="sms-campaign-desc">' + escapeHtml(s.desc) + '</span>' +
+            '<span class="sms-campaign-meta"><span><span class="sms-campaign-count">' + s.count + '</span><span class="sms-campaign-count-label">' + escapeHtml(s.countLabel) + '</span></span>' +
+            '<span class="sms-campaign-badge">' + escapeHtml(s.badgeText) + '</span></span></button>';
+        }).join('');
+      }
+
       function renderTemplates(segId) {
         const list = TEMPLATES[segId] || [];
         $('templateList').innerHTML = list.map((t, i) => `
@@ -10637,10 +10713,13 @@ function getBookingCardCallStart(item) {
 
       function updateCredits(newVal) {
         state.credits = newVal;
-        const el = $('creditsDisplay');
-        if (el) { el.textContent = newVal.toLocaleString(); el.classList.toggle('low', newVal < 100); }
-        const usd = $('creditsUsd');
-        if (usd) usd.textContent = `≈ ${(newVal * PRICE_PER_SMS).toFixed(2)} remaining`;
+        document.querySelectorAll('[data-sms-credits]').forEach(function(el) {
+          el.textContent = newVal.toLocaleString();
+          el.classList.toggle('low', newVal < 100);
+        });
+        document.querySelectorAll('[data-sms-credits-usd]').forEach(function(el) {
+          el.textContent = `≈ $${(newVal * PRICE_PER_SMS).toFixed(2)} remaining`;
+        });
       }
 
       function sendCampaign() {
@@ -10726,7 +10805,18 @@ function getBookingCardCallStart(item) {
       $('sendCampaignBtn').addEventListener('click', sendCampaign);
       var _lp = $('createLpBtn'); if (_lp) _lp.addEventListener('click', closeComposer);
 
+      document.querySelectorAll('[data-sms-campaign-new]').forEach(function(btn) {
+        btn.addEventListener('click', function() { openComposer('new'); });
+      });
+      const smsCampaignGrid = document.querySelector('[data-sms-campaign-grid]');
+      if (smsCampaignGrid) smsCampaignGrid.addEventListener('click', function(event) {
+        const btn = event.target.closest('[data-sms-segment]');
+        if (btn) openComposer(btn.dataset.smsSegment);
+      });
+
       renderSegmentButtons();
+      renderSmsCampaignCards();
+      updateCredits(state.credits);
       window.openSmsCampaignComposer = function (opts) { openComposer((opts && opts.segment) || 'new'); };
     })();
   </script>
