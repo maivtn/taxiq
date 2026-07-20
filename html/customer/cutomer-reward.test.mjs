@@ -445,6 +445,16 @@ test('renders distinct wallet balances and accessible loading error states', () 
   assert.match(source, /registerAction\('retry-wallet'/);
 });
 
+test('styles the upcoming appointment Book again action as a compact underlined link', () => {
+  const source = html();
+  const match = source.match(/<button type="button" class="([^"]*)" data-action="navigate" data-target="book1" data-en="Book again"/);
+  assert.ok(match, 'upcoming appointment Book again action must exist');
+  const classes = new Set(match[1].split(/\s+/));
+  for (const className of ['text-xs', 'underline', 'underline-offset-4', 'min-h-11']) {
+    assert.ok(classes.has(className), `Book again action must include ${className}`);
+  }
+});
+
 test('reward review identifies the customer conditions location and exact balance change', () => {
   const source = html();
   for (const id of ['reward-customer', 'reward-conditions', 'reward-location', 'reward-balance', 'reward-after']) {
