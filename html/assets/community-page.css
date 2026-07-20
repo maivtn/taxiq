@@ -44,3 +44,33 @@
 @media(prefers-reduced-motion:reduce){
   .community-dialog,.community-notice,.group-thread-panel{scroll-behavior:auto;transition:none!important}
 }
+
+#panel-jobs .community-dialog input:not([type="checkbox"]),
+#panel-jobs .community-dialog textarea {
+  min-height: 44px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 10px;
+  background: var(--nexora-surface-muted);
+  padding: 10px 12px;
+  color: var(--nexora-text);
+  line-height: 1.4;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+#panel-jobs .community-dialog textarea {
+  min-height: 104px;
+  resize: vertical;
+}
+
+#panel-jobs .community-dialog input:not([type="checkbox"])::placeholder,
+#panel-jobs .community-dialog textarea::placeholder {
+  color: var(--nexora-subtle);
+}
+
+#panel-jobs .community-dialog input:not([type="checkbox"]):focus,
+#panel-jobs .community-dialog textarea:focus {
+  border-color: var(--nexora-electric);
+  outline: 0;
+  background: var(--nexora-surface);
+  box-shadow: 0 0 0 3px rgba(43, 89, 255, 0.14);
+}
