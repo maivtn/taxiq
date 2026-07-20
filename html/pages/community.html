@@ -7055,5 +7055,22 @@
     drawerButton.addEventListener("click", function () { setDrawer(!sidebar.classList.contains("is-open")); });
     backdrop.addEventListener("click", function () { setDrawer(false); });
   </script>
+
+  <script>
+    var communityTab = 'feed';
+    try {
+      var requestedCommunityTab = new URLSearchParams(window.location.search).get('tab');
+      if (['feed', 'groups', 'learning', 'jobs', 'events'].indexOf(requestedCommunityTab) !== -1) {
+        communityTab = requestedCommunityTab;
+      }
+    } catch (error) {}
+    activateCommunityTab(communityTab);
+    window.NEXORA_SHELL = {
+      activePage: 'community',
+      activeTab: communityTab,
+      onNavigate: activateCommunityTab
+    };
+  </script>
+  <script src="../assets/nexora-shell.js"></script>
 </body>
 </html>

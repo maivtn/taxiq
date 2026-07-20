@@ -6,7 +6,8 @@
 
    Per-page config (set BEFORE this script runs):
      window.NEXORA_SHELL = {
-       activePage: 'booking' | 'reward',   // which functional group is native
+       activePage: 'booking' | 'community' | 'reward' | 'pos',
+                                           // which functional group is native
        activeTab:  '<tabId>',              // initial highlighted sub-item
        onNavigate: function (tabId) {}     // optional; defaults to window.activateMainTab
      };
@@ -21,6 +22,7 @@
 
   var PAGES = {
     booking: 'booking-book-phase-1.html',
+    community: 'community.html',
     reward: 'salon-setup-reward.html',
     pos: 'pos-phase-1.html'
   };
@@ -51,6 +53,13 @@
       { label: 'Call Log', tab: 'calllog' },
       { label: 'Plans', tab: 'plans' },
       { label: 'Salon Settings', tab: 'settings' }
+    ] },
+    { type: 'group', key: 'community', label: 'Community', icon: 'users-round', page: 'community', items: [
+      { label: 'Feed', tab: 'feed' },
+      { label: 'Groups', tab: 'groups' },
+      { label: 'Learning', tab: 'learning' },
+      { label: 'Jobs', tab: 'jobs' },
+      { label: 'Events', tab: 'events' }
     ] },
     { type: 'group', key: 'reward', label: 'Reward', icon: 'gift', page: 'reward', items: [
       { label: 'Overview', tab: 'overview' },

@@ -1,79 +1,79 @@
-# NEXORA — Loyalty & AI Offer: Câu trả lời và câu hỏi cần xác nhận
+# NEXORA — Khách hàng thân thiết và đề xuất ưu đãi bằng AI
 
 **Ngày:** 20/07/2026  
-**Mục đích:** Tổng hợp các quyết định đã có trong tài liệu và các câu hỏi cần Product Owner xác nhận trước khi estimate và triển khai.
+**Mục đích:** Tổng hợp các quyết định đã có, các phương án kỹ thuật đã thống nhất và các câu hỏi cần Chủ sản phẩm (PO) xác nhận trước khi ước tính và triển khai.
 
 ## 1. Các câu đã có câu trả lời
 
-### 1.1 Loyalty
+### 1.1 Chương trình khách hàng thân thiết
 
-1. Điểm được trừ khi khách hàng hoặc nhân viên xác nhận **phát hành reward**.
-2. Việc hoàn điểm cho reward chưa sử dụng nhưng đã hết hạn hoặc bị Manager void là **cấu hình của merchant**.
-3. Việc phục hồi reward sau refund tuân theo **chính sách của Owner** và phải được hiển thị trước khi xác nhận.
-4. Khi partial refund, điểm đã tích được reverse dựa trên **phần eligible net spend được hoàn**.
-5. Quy tắc stack với promotion được **Owner cấu hình theo từng reward**.
-6. Package credit và reward Free Service/Free Product không được thanh toán cho cùng một line item.
-7. Phạm vi cross-location được cấu hình theo từng reward:
-   - Chỉ location phát hành
-   - Một số location được chọn thuộc cùng merchant
-   - Tất cả location thuộc cùng merchant
-8. Gift Card mua bằng điểm được mô tả là **stored monetary value** và có thể còn số dư sau khi sử dụng.
-9. Reward Percent Discount bắt buộc phải có maximum discount.
-10. Owner cấu hình thời điểm Pending Points chuyển thành Available, ví dụ ngay sau payment hoặc sau một khoảng hold.
-11. Tax và tip không được tích điểm nếu Owner không bật. Phần thanh toán bằng reward không được tích điểm. Retail product và gift-card purchase có thể cấu hình eligibility.
-12. Guest checkout có thể được liên kết sau bằng cùng số điện thoại đã xác minh để nhận các điểm đang pending.
+1. Điểm được trừ khi khách hàng hoặc nhân viên xác nhận **phát hành phần thưởng**.
+2. Việc hoàn điểm cho phần thưởng chưa sử dụng nhưng đã hết hạn hoặc bị Quản lý hủy là **cấu hình của doanh nghiệp**.
+3. Việc phục hồi phần thưởng sau khi hoàn tiền tuân theo **chính sách của Chủ doanh nghiệp** và phải được hiển thị trước khi xác nhận.
+4. Khi hoàn tiền một phần, điểm đã tích được thu hồi dựa trên **phần chi tiêu ròng đủ điều kiện được hoàn**.
+5. Chủ doanh nghiệp cấu hình theo từng phần thưởng việc phần thưởng đó có được kết hợp với chương trình khuyến mãi hay không.
+6. Quyền lợi của gói trả trước và phần thưởng Dịch vụ/Sản phẩm miễn phí không được thanh toán cho cùng một dòng hàng hoặc dịch vụ.
+7. Phạm vi sử dụng tại nhiều cơ sở được cấu hình theo từng phần thưởng:
+   - Chỉ cơ sở phát hành
+   - Một số cơ sở được chọn thuộc cùng doanh nghiệp
+   - Tất cả cơ sở thuộc cùng doanh nghiệp
+8. Thẻ quà tặng mua bằng điểm được xem là **giá trị tiền tệ lưu trữ** và có thể còn số dư sau khi sử dụng.
+9. Phần thưởng giảm giá theo phần trăm bắt buộc phải có mức giảm tối đa.
+10. Chủ doanh nghiệp cấu hình thời điểm Điểm chờ chuyển thành Điểm khả dụng, ví dụ ngay sau thanh toán hoặc sau một khoảng tạm giữ.
+11. Thuế và tiền boa không được tích điểm nếu Chủ doanh nghiệp không bật. Phần thanh toán bằng phần thưởng không được tích điểm. Hàng bán lẻ và giao dịch mua thẻ quà tặng có thể được cấu hình điều kiện tích điểm.
+12. Thanh toán với tư cách khách có thể được liên kết sau bằng cùng số điện thoại đã xác minh để nhận các điểm đang chờ.
 
-### 1.2 AI Offer Suggestions
+### 1.2 Đề xuất ưu đãi bằng AI
 
-1. Customer wish được nhập tại **Offers & Wishlist → What would you love?** trong ứng dụng khách hàng.
-2. Wish được hiển thị cho doanh nghiệp dưới dạng nhu cầu đã gom nhóm và ẩn danh.
-3. Trong Phase 1, AI chỉ tạo draft. Owner phải review và xác nhận trước khi publish.
-4. Owner quyết định giá, mức discount và lịch chạy cuối cùng.
-5. Mockup sử dụng customer demand, giá dịch vụ hiện tại và quiet hours để giải thích suggestion.
-6. Việc dismiss suggestion được mô tả là một learning signal.
-7. Khách hàng có thể tắt AI suggestions trong phần tùy chọn thông báo và quyền riêng tư.
-8. Cần có functional specification, API/data model và QA acceptance criteria riêng trước khi estimate đáng tin cậy.
+1. Mong muốn của khách hàng được nhập tại **Ưu đãi và danh sách mong muốn → Bạn mong muốn điều gì?** trong ứng dụng khách hàng.
+2. Mong muốn được hiển thị cho doanh nghiệp dưới dạng nhu cầu đã gom nhóm và ẩn danh.
+3. Trong Giai đoạn 1, AI chỉ tạo bản nháp. Chủ doanh nghiệp phải xem xét và xác nhận trước khi đăng.
+4. Chủ doanh nghiệp quyết định giá, mức giảm và lịch chạy cuối cùng.
+5. Bản mẫu sử dụng nhu cầu khách hàng, giá dịch vụ hiện tại và giờ vắng để giải thích đề xuất.
+6. Việc bỏ qua một đề xuất được ghi nhận làm tín hiệu để hệ thống học và cải thiện.
+7. Khách hàng có thể tắt đề xuất AI trong phần tùy chọn thông báo và quyền riêng tư.
+8. Cần có đặc tả chức năng, mô hình dữ liệu/API và tiêu chí nghiệm thu kiểm thử riêng trước khi có thể ước tính đáng tin cậy.
 
-## 2. Các câu hỏi cần Product Owner xác nhận
+## 2. Các câu hỏi cần Chủ sản phẩm xác nhận
 
-### 2.1 Loyalty
+### 2.1 Chương trình khách hàng thân thiết
 
-1. Product Owner đã chính thức duyệt việc trừ điểm tại thời điểm phát hành reward là chính sách cuối cùng chưa?
-2. Mặc định có hoàn điểm khi reward chưa sử dụng bị hết hạn không?
-3. Mặc định có hoàn điểm khi Manager void reward chưa sử dụng không?
-4. Khi refund hóa đơn đã dùng reward, hệ thống phải phục hồi reward, hoàn điểm hay giữ nguyên?
-5. Giá trị mặc định và giới hạn tối đa cho maximum discount của Percent Discount là bao nhiêu?
+1. Chủ sản phẩm đã chính thức duyệt việc trừ điểm tại thời điểm phát hành phần thưởng là chính sách cuối cùng chưa?
+2. Mặc định có hoàn điểm khi phần thưởng chưa sử dụng bị hết hạn không?
+3. Mặc định có hoàn điểm khi Quản lý hủy phần thưởng chưa sử dụng không?
+4. Khi hoàn tiền hóa đơn đã dùng phần thưởng, hệ thống phải phục hồi phần thưởng, hoàn điểm hay giữ nguyên?
+5. Giá trị mặc định và giới hạn tối đa cho mức giảm của phần thưởng giảm giá theo phần trăm là bao nhiêu?
 
-### 2.2 AI Offer Suggestions
+### 2.2 Đề xuất ưu đãi bằng AI
 
-1. Khách hàng có phải consent rõ ràng trước khi wish data được dùng để tạo merchant insight không?
-2. Cần tối thiểu bao nhiêu khách hàng trước khi hiển thị insight để tránh suy ra danh tính?
-3. Bán kính demand 10 miles là cố định hay Owner có thể cấu hình?
-4. Demand sử dụng khoảng dữ liệu 7, 30 hay 90 ngày?
-5. AI được phép sử dụng những nguồn dữ liệu production nào: giá dịch vụ, booking history, availability và quiet hours thực tế?
-6. Guardrail cho minimum price, minimum margin và maximum discount là gì? Ai có quyền duyệt ngoại lệ?
-7. Estimated redemptions, average ticket và return rate được tính bằng công thức hoặc mô hình nào?
-8. Owner có thể hoàn tác việc dismiss suggestion không? Dismissal được lưu làm learning signal trong bao lâu?
+1. Khách hàng có phải đồng ý rõ ràng trước khi dữ liệu mong muốn được dùng để tạo thông tin nhu cầu cho doanh nghiệp không?
+2. Cần tối thiểu bao nhiêu khách hàng trước khi hiển thị thông tin nhu cầu để tránh suy ra danh tính?
+3. Bán kính nhu cầu 10 dặm là cố định hay Chủ doanh nghiệp có thể cấu hình?
+4. Nhu cầu được tính từ dữ liệu trong 7, 30 hay 90 ngày?
+5. AI được phép sử dụng những nguồn dữ liệu thực tế nào: giá dịch vụ, lịch sử đặt lịch, lịch còn trống và giờ vắng?
+6. Quy tắc bảo vệ đối với giá tối thiểu, lợi nhuận tối thiểu và mức giảm tối đa là gì? Ai có quyền duyệt ngoại lệ?
+7. Số lượt sử dụng dự kiến, giá trị hóa đơn trung bình và tỷ lệ quay lại được tính bằng công thức hoặc mô hình nào?
+8. Chủ doanh nghiệp có thể hoàn tác việc bỏ qua đề xuất không? Quyết định bỏ qua được lưu làm tín hiệu học trong bao lâu?
 
-## 3. Quyết định kỹ thuật đề xuất đã thống nhất
+## 3. Các quyết định kỹ thuật đề xuất đã thống nhất
 
-### 3.1 Loyalty
+### 3.1 Chương trình khách hàng thân thiết
 
-1. **Partial refund:** Reverse điểm theo các line item thực sự được refund. Nếu chỉ refund một phần line item, reverse theo tỷ lệ eligible net spend của line đó; không phân bổ theo tổng toàn hóa đơn.
-2. **Gift Card và tax:** Áp dụng discount trước, tính tax trên taxable amount, sau đó mới dùng Gift Card để thanh toán. Gift Card là tender, không phải discount.
-3. **Data model Gift Card:** Việc phát hành reward tạo một Gift Card riêng có `balance`, transaction ledger và trạng thái. `RewardInstrument` chỉ lưu liên kết tới Gift Card được tạo.
-4. **Pending Points:** Payment POS đã confirmed thì điểm chuyển Available ngay. External payment hoặc giao dịch rủi ro cao tiếp tục ở trạng thái Pending theo hold period được cấu hình.
-5. **Mặc định tích điểm:** Services và retail product được tích điểm. Tax, tip, gift-card purchase, reward-covered amount và package-covered amount không được tích điểm.
+1. **Hoàn tiền một phần:** Thu hồi điểm theo các dòng hàng hoặc dịch vụ thực sự được hoàn tiền. Nếu chỉ hoàn một phần của một dòng, thu hồi theo tỷ lệ chi tiêu ròng đủ điều kiện của dòng đó; không phân bổ theo tổng toàn hóa đơn.
+2. **Thẻ quà tặng và thuế:** Áp dụng giảm giá trước, tính thuế trên số tiền chịu thuế, sau đó mới dùng thẻ quà tặng để thanh toán. Thẻ quà tặng là phương thức thanh toán, không phải khoản giảm giá.
+3. **Mô hình dữ liệu thẻ quà tặng:** Việc phát hành phần thưởng tạo một thẻ quà tặng riêng có số dư, sổ giao dịch và trạng thái. `RewardInstrument` chỉ lưu liên kết tới thẻ quà tặng được tạo.
+4. **Điểm chờ:** Giao dịch tại điểm bán đã xác nhận thì điểm chuyển thành khả dụng ngay. Thanh toán bên ngoài hoặc giao dịch có rủi ro cao tiếp tục ở trạng thái `Pending` trong khoảng tạm giữ được cấu hình.
+5. **Mặc định tích điểm:** Dịch vụ và hàng bán lẻ được tích điểm. Thuế, tiền boa, giao dịch mua thẻ quà tặng, phần được thanh toán bằng phần thưởng và phần được thanh toán bằng gói trả trước không được tích điểm.
 
-### 3.2 AI Offer Suggestions
+### 3.2 Đề xuất ưu đãi bằng AI
 
-1. **Business object:** AI tạo `OfferSuggestion` hoặc `OfferDraft`. Sau khi Owner duyệt, hệ thống mới chuyển draft thành `Promotion`.
-2. **Stacking:** Mặc định không stack. Chỉ cho phép khi cả Promotion và Loyalty Reward đều bật stacking. Package credit và Free Service reward không được áp dụng trên cùng line item.
-3. **Điều kiện hiển thị estimate:** Chỉ hiển thị estimate tài chính khi có tối thiểu 30 giao dịch lịch sử phù hợp và confidence đạt ngưỡng cấu hình. Nếu không đủ dữ liệu, hiển thị “Chưa đủ dữ liệu” thay cho con số dự báo.
-4. **Notification cap:** AI-match notification dùng chung giới hạn marketing: tối đa 1 thông báo mỗi tuần và 4 thông báo mỗi tháng cho một khách hàng. Khách hàng có thể mute bất kỳ lúc nào.
-5. **Audit:** Lưu input snapshot, nguồn dữ liệu, model và version, suggestion ban đầu, confidence, các chỉnh sửa của Owner, approval, nội dung publish, dismiss action, actor và timestamp.
+1. **Đối tượng nghiệp vụ:** AI tạo bản ghi đề xuất hoặc bản nháp (`OfferSuggestion`/`OfferDraft`). Sau khi Chủ doanh nghiệp duyệt, hệ thống mới chuyển bản nháp thành chương trình khuyến mãi (`Promotion`).
+2. **Kết hợp ưu đãi:** Mặc định không cho phép kết hợp. Chỉ cho phép khi cả chương trình khuyến mãi và phần thưởng khách hàng thân thiết đều bật quyền kết hợp. Quyền lợi gói trả trước và phần thưởng Dịch vụ miễn phí không được áp dụng trên cùng một dòng dịch vụ.
+3. **Điều kiện hiển thị số liệu dự kiến:** Chỉ hiển thị số liệu tài chính dự kiến khi có tối thiểu 30 giao dịch lịch sử phù hợp và độ tin cậy đạt ngưỡng cấu hình. Nếu không đủ dữ liệu, hiển thị “Chưa đủ dữ liệu” thay cho con số dự báo.
+4. **Giới hạn thông báo:** Thông báo ưu đãi phù hợp do AI đề xuất dùng chung giới hạn tiếp thị: tối đa 1 thông báo mỗi tuần và 4 thông báo mỗi tháng cho một khách hàng. Khách hàng có thể tắt bất kỳ lúc nào.
+5. **Nhật ký kiểm tra:** Lưu ảnh chụp dữ liệu đầu vào, nguồn dữ liệu, mô hình và phiên bản, đề xuất ban đầu, độ tin cậy, các chỉnh sửa của Chủ doanh nghiệp, bước phê duyệt, nội dung đã đăng, hành động bỏ qua, người thực hiện và thời gian.
 
-## 4. Mức độ sẵn sàng để estimate
+## 4. Mức độ sẵn sàng để ước tính
 
-- **Loyalty:** Thiết kế kỹ thuật chính đã đủ rõ hơn; vẫn cần Product Owner xác nhận chính sách hoàn điểm, refund reward và giới hạn Percent Discount.
-- **AI Offer Suggestions:** Chưa sẵn sàng để estimate đáng tin cậy. Vẫn cần xác nhận consent/privacy, demand scope, data source, pricing guardrail, mô hình estimate và hành vi Undo; sau đó phải hoàn thiện functional specification, API/data model và QA acceptance criteria.
+- **Chương trình khách hàng thân thiết:** Thiết kế kỹ thuật chính đã rõ hơn; vẫn cần Chủ sản phẩm xác nhận chính sách hoàn điểm, xử lý phần thưởng khi hoàn tiền và giới hạn giảm giá theo phần trăm.
+- **Đề xuất ưu đãi bằng AI:** Chưa sẵn sàng để ước tính đáng tin cậy. Vẫn cần xác nhận sự đồng ý/quyền riêng tư, phạm vi nhu cầu, nguồn dữ liệu, quy tắc bảo vệ giá, mô hình ước tính và hành vi Hoàn tác; sau đó phải hoàn thiện đặc tả chức năng, mô hình dữ liệu/API và tiêu chí nghiệm thu kiểm thử.
