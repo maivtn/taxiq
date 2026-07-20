@@ -3629,6 +3629,31 @@
       box-shadow: var(--nexora-card-shadow);
     }
 
+    .booking-calendar-panel { margin-top: 2px; }
+    .booking-team-calendar { overflow: hidden; border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; }
+    .booking-calendar-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 14px; border-bottom: 1px solid var(--nexora-border); background: linear-gradient(180deg, #fff, #fafbff); }
+    .booking-calendar-title { color: var(--nexora-text); font-size: 14px; font-weight: 900; }
+    .booking-calendar-subtitle { margin-top: 3px; color: var(--nexora-subtle); font-size: 11px; font-weight: 700; }
+    .booking-calendar-nav { display: inline-flex; align-items: center; gap: 6px; }
+    .booking-calendar-nav-label { min-width: 124px; color: var(--nexora-text); font-size: 12px; font-weight: 800; text-align: center; }
+    .booking-calendar-scroll { overflow: auto; }
+    [data-booking-team-calendar] { min-width: 660px; }
+    .booking-calendar-empty { display: grid; min-height: 420px; place-items: center; padding: 28px; color: var(--nexora-muted); font-size: 13px; font-weight: 700; text-align: center; }
+    .booking-team-calendar .calendar_default_main { border: 0; background: #fff; font-family: Inter, system-ui, sans-serif; }
+    .booking-team-calendar .calendar_default_corner_inner,
+    .booking-team-calendar .calendar_default_colheader_inner,
+    .booking-team-calendar .calendar_default_rowheader_inner { border-color: #e8edf5; background: #fbfcfe; }
+    .booking-team-calendar .calendar_default_colheader_inner { color: #334155; font-size: 12px; font-weight: 800; letter-spacing: -.01em; }
+    .booking-team-calendar .calendar_default_rowheader_inner { color: #64748b; font-size: 11px; font-weight: 800; letter-spacing: -.01em; }
+    .booking-team-calendar .calendar_default_cell_inner { border-color: #edf1f6; background: linear-gradient(90deg, rgba(248, 250, 252, .34), rgba(255, 255, 255, 0) 24px); }
+    .booking-team-calendar .calendar_default_event_inner { overflow: hidden; border-radius: 11px !important; box-shadow: 0 6px 18px rgba(15, 23, 42, .10); transition: box-shadow .16s ease, transform .16s ease; }
+    .booking-team-calendar .calendar_default_event:hover .calendar_default_event_inner { box-shadow: 0 10px 22px rgba(15, 23, 42, .16); transform: translateY(-1px); }
+    .booking-calendar-event { overflow: hidden; font-family: Inter, system-ui, sans-serif; line-height: 1.32; }
+    .booking-calendar-event-name { overflow: hidden; font-size: 11px; font-weight: 900; letter-spacing: -.015em; text-overflow: ellipsis; white-space: nowrap; }
+    .booking-calendar-event-service { overflow: hidden; margin-top: 2px; font-size: 9.5px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+    .booking-calendar-event-meta { margin-top: 4px; font-size: 8.5px; font-weight: 700; opacity: .72; }
+    @media (max-width: 720px) { .booking-calendar-head { align-items: flex-start; flex-direction: column; } .booking-calendar-nav { width: 100%; justify-content: space-between; } .booking-view-button { padding: 0 8px; } }
+
     .booking-date {
       display: flex;
       min-width: 0;
@@ -3760,10 +3785,6 @@
       grid-template-columns: 1fr;
       gap: 10px;
       margin-bottom: 14px;
-      border: 1px solid var(--nexora-border);
-      border-radius: 10px;
-      background: var(--nexora-canvas);
-      padding: 12px;
     }
 
     /* Customer & Call Log search: compact on desktop, full-width only on mobile */
@@ -3780,17 +3801,26 @@
     }
 
     .booking-control-field {
-      display: grid;
-      gap: 6px;
+      position: relative;
+      display: block;
       min-width: 0;
     }
 
     .booking-control-label {
+      position: absolute;
+      z-index: 1;
+      top: -6px;
+      left: 8px;
+      background: #fff;
+      padding: 0 4px;
       color: var(--nexora-subtle);
       font-size: 10px;
       font-weight: 800;
       letter-spacing: 0.05em;
+      line-height: 1.2;
+      pointer-events: none;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
     .booking-select,
@@ -4023,6 +4053,13 @@
       border-bottom: 0;
       background: #fff;
       justify-content: flex-end;
+    }
+
+    .booking-detail-action-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-right: auto;
     }
 
     .booking-detail-title {
@@ -7101,7 +7138,16 @@
                       <div class="booking-view-switch" role="group" aria-label="Booking view mode">
                         <button class="booking-view-button" type="button" data-booking-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
                         <button class="booking-view-button" type="button" data-booking-view-target="card" aria-pressed="false"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
+                        <button class="booking-view-button" type="button" data-booking-view-target="calendar" aria-pressed="false"><i class="bi bi-calendar3" aria-hidden="true"></i>Calendar</button>
                       </div>
+                    </div>
+
+                    <div class="booking-status-chips" data-booking-status-chips role="group" aria-label="Filter appointments by status">
+                      <button class="booking-status-chip is-active" type="button" data-booking-status-chip="all" aria-pressed="true">All <span class="booking-status-chip-count" data-booking-status-count="all">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="new" aria-pressed="false">New <span class="booking-status-chip-count" data-booking-status-count="new">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="sms-sent" aria-pressed="false">SMS Sent <span class="booking-status-chip-count" data-booking-status-count="sms-sent">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="done" aria-pressed="false">Completed <span class="booking-status-chip-count" data-booking-status-count="done">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="noshow" aria-pressed="false">No-show <span class="booking-status-chip-count" data-booking-status-count="noshow">0</span></button>
                     </div>
 
 
@@ -7382,6 +7428,23 @@
                     <div class="booking-card-panel" data-booking-view-panel="card" hidden>
                       <div class="booking-card-list" data-booking-card-list></div>
                     </div>
+                    <div class="booking-calendar-panel" data-booking-view-panel="calendar" hidden>
+                      <div class="booking-team-calendar">
+                        <div class="booking-calendar-head">
+                          <div>
+                            <div class="booking-calendar-title">Team calendar</div>
+                            <div class="booking-calendar-subtitle">Appointments grouped by technician</div>
+                          </div>
+                          <div class="booking-calendar-nav" aria-label="Calendar date controls">
+                            <button class="booking-mini-button" type="button" data-booking-calendar-prev aria-label="Previous day"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
+                            <span class="booking-calendar-nav-label" data-booking-calendar-date></span>
+                            <button class="booking-mini-button" type="button" data-booking-calendar-today>Today</button>
+                            <button class="booking-mini-button" type="button" data-booking-calendar-next aria-label="Next day"><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+                          </div>
+                        </div>
+                        <div class="booking-calendar-scroll"><div data-booking-team-calendar aria-label="Team booking calendar"></div></div>
+                      </div>
+                    </div>
                     <div class="booking-empty" data-booking-empty hidden>No matching bookings found.</div>
                   </article>
                 </div>
@@ -7443,6 +7506,7 @@
                       </div>
                     </div>
                     <div class="booking-detail-actions">
+                      <div class="booking-detail-action-list" data-booking-detail-actions></div>
                       <button class="booking-secondary-button" type="button" data-booking-detail-close>Close</button>
                     </div>
                   </div>
@@ -8816,6 +8880,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@daypilot/daypilot-lite-javascript@5.9.0/daypilot-javascript.min.js"></script>
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -8838,6 +8903,23 @@
     var bookingStatusFilter = 'all';
     var bookingDateFromPicker = null;
     var bookingDateToPicker = null;
+    var bookingTeamCalendar = null;
+    var bookingCalendarDate = BOOKING_TODAY_DATE;
+    var BOOKING_CALENDAR_COLORS = [
+      { bg: '#ebe6ff', border: '#7456e9', text: '#272343' },
+      { bg: '#e0f3f8', border: '#2b96ba', text: '#173a47' },
+      { bg: '#e5f7f1', border: '#158a69', text: '#163d34' },
+      { bg: '#fff1d6', border: '#d97706', text: '#654003' },
+      { bg: '#fde7f0', border: '#c24182', text: '#5e203f' }
+    ];
+    var BOOKING_CALENDAR_TECHNICIANS = ['Lan T.', 'Kim N.', 'Linda', 'Mai P.', 'Andy', 'Tina', 'Helen', 'Vy'];
+    var BOOKING_CALENDAR_SERVICE_DURATIONS = {
+      'Pedicure Gel Polish': 75,
+      'Gel Manicure Nail Art': 60,
+      'Gel Full Set Removal': 90,
+      'Full Set Acrylic French Tip': 90,
+      'Dip Powder Chrome Design': 90
+    };
 
     function renderLucideIcons() {
       if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -9011,11 +9093,141 @@
       filterBookingItems();
     }
 
+    function bookingCalendarPad(value) { return String(value).padStart(2, '0'); }
+
+    function formatBookingCalendarDate(date) {
+      return date.getFullYear() + '-' + bookingCalendarPad(date.getMonth() + 1) + '-' + bookingCalendarPad(date.getDate());
+    }
+
+    function formatBookingCalendarDateTime(date) {
+      return formatBookingCalendarDate(date) + 'T' + bookingCalendarPad(date.getHours()) + ':' + bookingCalendarPad(date.getMinutes()) + ':00';
+    }
+
+    function bookingCalendarRows() {
+      var panel = document.getElementById('booking-subpanel-today');
+      return panel ? Array.from(panel.querySelectorAll('[data-booking-item]')) : [];
+    }
+
+    function bookingCalendarColumns() {
+      var columns = [];
+      BOOKING_CALENDAR_TECHNICIANS.forEach(function(tech) {
+        columns.push({ id: tech, name: tech, toolTip: tech });
+      });
+      return columns;
+    }
+
+    function bookingCalendarColor(tech, columns) {
+      var index = columns.map(function(column) { return column.id; }).indexOf(tech);
+      return BOOKING_CALENDAR_COLORS[(index < 0 ? 0 : index) % BOOKING_CALENDAR_COLORS.length];
+    }
+
+    function bookingCalendarAppointmentStart(item) {
+      var blocks = item.querySelectorAll('.booking-time-block');
+      var appointmentBlock = blocks.length > 1 ? blocks[1] : blocks[0];
+      var rawTime = appointmentBlock ? (appointmentBlock.querySelector('.booking-time-main') || {}).textContent || '' : '';
+      var match = rawTime.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+      var hour = 9, minute = 0;
+      if (match) {
+        hour = +match[1] % 12;
+        if (String(match[3]).toUpperCase() === 'PM') hour += 12;
+        minute = +match[2];
+      }
+      return (item.dataset.bookingDate || BOOKING_TODAY_DATE) + 'T' + bookingCalendarPad(hour) + ':' + bookingCalendarPad(minute) + ':00';
+    }
+
+    function bookingCalendarDurationMinutes(item) {
+      var service = (item.dataset.bookingService || '').trim();
+      return BOOKING_CALENDAR_SERVICE_DURATIONS[service] || 60;
+    }
+
+    function bookingCalendarEnd(start, minutes) {
+      var end = new Date(start);
+      end.setMinutes(end.getMinutes() + minutes);
+      return formatBookingCalendarDateTime(end);
+    }
+
+    function bookingCalendarEvent(item, columns) {
+      var tech = (item.dataset.bookingTech || '').trim() || 'unassigned';
+      var color = bookingCalendarColor(tech, columns);
+      var start = bookingCalendarAppointmentStart(item);
+      var minutes = bookingCalendarDurationMinutes(item);
+      var service = item.dataset.bookingService || 'Service to confirm';
+      var status = getBookingStatusText(item);
+      return {
+        id: item.dataset.bookingId,
+        text: item.dataset.bookingName || 'Guest',
+        start: start,
+        end: bookingCalendarEnd(start, minutes),
+        resource: tech,
+        backColor: color.bg,
+        borderColor: color.border,
+        barColor: color.border,
+        fontColor: color.text,
+        borderRadius: 10,
+        padding: 8,
+        cssClass: 'booking-calendar-event',
+        html: '<div class="booking-calendar-event"><div class="booking-calendar-event-name">' + escapeHtml(item.dataset.bookingName || 'Guest') + '</div>' +
+          '<div class="booking-calendar-event-service">' + escapeHtml(service) + '</div>' +
+          '<div class="booking-calendar-event-meta">' + minutes + ' min · ' + escapeHtml(status) + '</div></div>',
+        toolTip: (item.dataset.bookingName || 'Guest') + ' · ' + service
+      };
+    }
+
+    function updateBookingCalendarDateLabel() {
+      var label = document.querySelector('[data-booking-calendar-date]');
+      if (!label) return;
+      label.textContent = new Date(bookingCalendarDate + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+
+    function renderBookingCalendar() {
+      if (!bookingTeamCalendar) return;
+      var rows = bookingCalendarRows();
+      var columns = bookingCalendarColumns(rows);
+      var events = rows.filter(function(item) {
+        return !item.hidden && item.dataset.bookingDate === bookingCalendarDate;
+      }).map(function(item) { return bookingCalendarEvent(item, columns); });
+      bookingTeamCalendar.update({ startDate: bookingCalendarDate, columns: columns, events: events });
+      updateBookingCalendarDateLabel();
+    }
+
+    function initBookingCalendar() {
+      var el = document.querySelector('[data-booking-team-calendar]');
+      if (!el || bookingTeamCalendar) return;
+      if (!window.DayPilot) {
+        el.innerHTML = '<div class="booking-calendar-empty">The calendar library could not load.<br>Check the internet connection and refresh this page.</div>';
+        return;
+      }
+      bookingTeamCalendar = new DayPilot.Calendar(el, {
+        viewType: 'Resources',
+        startDate: bookingCalendarDate,
+        columns: bookingCalendarColumns(bookingCalendarRows()),
+        businessBeginsHour: 9,
+        businessEndsHour: 20,
+        heightSpec: 'BusinessHoursNoScroll',
+        cellDuration: 15,
+        cellHeight: 28,
+        hourWidth: 64,
+        headerHeight: 44,
+        timeFormat: 'Clock12Hours',
+        eventMoveHandling: 'Disabled',
+        eventResizeHandling: 'Disabled',
+        timeRangeSelectedHandling: 'Disabled',
+        onEventClick: function(args) { openBookingDetailModal(findBookingItemById(args.e.id())); }
+      });
+      bookingTeamCalendar.init();
+      renderBookingCalendar();
+    }
+
+    function setBookingCalendarDate(date) {
+      bookingCalendarDate = formatBookingCalendarDate(date);
+      renderBookingCalendar();
+    }
+
     function setBookingViewMode(mode) {
       var panel = document.getElementById('booking-subpanel-today');
       if (!panel) return;
 
-      var nextMode = mode === 'card' ? 'card' : 'table';
+      var nextMode = mode === 'card' || mode === 'calendar' ? mode : 'table';
       panel.dataset.bookingViewMode = nextMode;
 
       panel.querySelectorAll('[data-booking-view-panel]').forEach(function(viewPanel) {
@@ -9027,6 +9239,8 @@
         button.classList.toggle('is-active', isActive);
         button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
       });
+
+      if (nextMode === 'calendar') { initBookingCalendar(); renderBookingCalendar(); }
     }
 
     function findBookingItemById(id) {
@@ -9041,7 +9255,10 @@
       if (item) return item;
 
       var card = action.closest('[data-booking-card-id]');
-      return card ? findBookingItemById(card.dataset.bookingCardId) : null;
+      if (card) return findBookingItemById(card.dataset.bookingCardId);
+
+      var modal = action.closest('[data-booking-detail-modal]');
+      return modal ? findBookingItemById(modal.dataset.bookingDetailItemId) : null;
     }
 
     function getBookingStatusText(item) {
@@ -9067,7 +9284,7 @@
       return time + ' · ' + date;
     }
 
-    function renderBookingActionButtons(item) {
+    function renderBookingOperationalActionButtons(item) {
       var actions = '';
       if (item && item.classList.contains('is-new')) {
         actions += '<button class="booking-mini-button primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>';
@@ -9077,8 +9294,17 @@
       if (item && (item.classList.contains('is-new') || item.classList.contains('is-sms-sent'))) {
         actions += '<button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>';
       }
+      return actions;
+    }
+
+    function renderBookingActionButtons(item) {
+      var actions = renderBookingOperationalActionButtons(item);
       actions += '<button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>';
       return actions;
+    }
+
+    function renderBookingDetailActions(item) {
+      return renderBookingOperationalActionButtons(item);
     }
 
 function getBookingCardCallStart(item) {
@@ -9229,6 +9455,7 @@ function getBookingCardCallStart(item) {
 
       updateBookingKpis();
       renderBookingCards();
+      renderBookingCalendar();
     }
 
     function clearBookingFilters() {
@@ -9353,6 +9580,9 @@ function getBookingCardCallStart(item) {
       setBookingDetailText('[data-booking-detail-status]', status ? status.textContent.trim() : '-');
       setBookingDetailText('[data-booking-detail-time]', getBookingCardTimeText(item));
       setBookingDetailText('[data-booking-detail-note]', item.dataset.bookingNote);
+      var actionTarget = modal.querySelector('[data-booking-detail-actions]');
+      if (actionTarget) actionTarget.innerHTML = renderBookingDetailActions(item);
+      modal.dataset.bookingDetailItemId = item.dataset.bookingId;
 
       modal.hidden = false;
       document.body.style.overflow = 'hidden';
@@ -10202,10 +10432,26 @@ function getBookingCardCallStart(item) {
       });
     });
 
+    var bookingCalendarPrev = document.querySelector('[data-booking-calendar-prev]');
+    var bookingCalendarNext = document.querySelector('[data-booking-calendar-next]');
+    var bookingCalendarToday = document.querySelector('[data-booking-calendar-today]');
+    if (bookingCalendarPrev) bookingCalendarPrev.addEventListener('click', function() {
+      var previous = new Date(bookingCalendarDate + 'T12:00:00'); previous.setDate(previous.getDate() - 1);
+      setBookingCalendarDate(previous);
+    });
+    if (bookingCalendarNext) bookingCalendarNext.addEventListener('click', function() {
+      var next = new Date(bookingCalendarDate + 'T12:00:00'); next.setDate(next.getDate() + 1);
+      setBookingCalendarDate(next);
+    });
+    if (bookingCalendarToday) bookingCalendarToday.addEventListener('click', function() {
+      setBookingCalendarDate(new Date(BOOKING_TODAY_DATE + 'T12:00:00'));
+    });
+
     document.addEventListener('click', function(event) {
       var bookingAction = event.target.closest('[data-booking-action]');
       if (bookingAction) {
         var item = findBookingItemFromAction(bookingAction);
+        var detailModal = bookingAction.closest('[data-booking-detail-modal]');
         if (bookingAction.dataset.bookingAction === 'send-sms') {
           if (window.openSmsCampaignComposer) window.openSmsCampaignComposer({ segment: 'new' });
         } else if (bookingAction.dataset.bookingAction === 'done') {
@@ -10213,6 +10459,9 @@ function getBookingCardCallStart(item) {
         } else if (bookingAction.dataset.bookingAction === 'noshow') {
           markBookingNoShow(item);
         } else if (bookingAction.dataset.bookingAction === 'detail') {
+          openBookingDetailModal(item);
+        }
+        if (detailModal && item && (bookingAction.dataset.bookingAction === 'done' || bookingAction.dataset.bookingAction === 'noshow')) {
           openBookingDetailModal(item);
         }
       }

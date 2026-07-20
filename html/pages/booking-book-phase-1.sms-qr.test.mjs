@@ -106,6 +106,64 @@ test('keeps shared tab and query-string synchronization for new targets', () => 
   assert.match(html, /var DEFAULT_MAIN_TAB = 'booking'/);
 });
 
+test('adds a POS-style resource calendar to the booking view switch', () => {
+  const html = source();
+
+  assert.match(html, /data-booking-view-target="calendar"/);
+  assert.match(html, /data-booking-view-panel="calendar"/);
+  assert.match(html, /@daypilot\/daypilot-lite-javascript@5\.9\.0\/daypilot-javascript\.min\.js/);
+  assert.match(html, /new DayPilot\.Calendar/);
+  assert.match(html, /viewType:\s*'Resources'/);
+  assert.match(html, /var BOOKING_CALENDAR_TECHNICIANS = \['Lan T\.', 'Kim N\.', 'Linda', 'Mai P\.', 'Andy', 'Tina', 'Helen', 'Vy'\];/);
+  assert.match(html, /BOOKING_CALENDAR_TECHNICIANS\.forEach/);
+  assert.match(html, /BOOKING_CALENDAR_SERVICE_DURATIONS/);
+  assert.match(html, /function renderBookingCalendar\(/);
+  assert.match(html, /function bookingCalendarEvent\(/);
+});
+
+test('provides the table booking actions from Appointment details', () => {
+  const html = source();
+
+  assert.match(html, /data-booking-detail-actions/);
+  assert.match(html, /function renderBookingDetailActions\(item\)/);
+  assert.match(html, /modal\.dataset\.bookingDetailItemId = item\.dataset\.bookingId/);
+  assert.match(html, /action\.closest\('\[data-booking-detail-modal\]'\)/);
+  assert.match(html, /findBookingItemById\(modal\.dataset\.bookingDetailItemId\)/);
+});
+
+test('restores status filter chips in the Appointments Overview', () => {
+  const html = source();
+
+  assert.match(html, /data-booking-status-chip="all"/);
+  assert.match(html, /data-booking-status-chip="new"/);
+  assert.match(html, /data-booking-status-chip="sms-sent"/);
+  assert.match(html, /data-booking-status-chip="done"/);
+  assert.match(html, /data-booking-status-chip="noshow"/);
+  assert.match(html, /data-booking-status-count="all"/);
+  assert.match(html, /aria-label="Filter appointments by status"/);
+});
+
+test('positions booking filter labels over the input corner', () => {
+  const html = source();
+  const fieldRule = html.match(/\.booking-control-field\s*\{([^}]*)\}/)?.[1] || '';
+  const labelRule = html.match(/\.booking-control-label\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(fieldRule, /position:\s*relative;/);
+  assert.match(labelRule, /position:\s*absolute;/);
+  assert.match(labelRule, /top:\s*-\d+px;/);
+  assert.match(labelRule, /left:\s*\d+px;/);
+  assert.match(labelRule, /background:\s*#fff;/);
+});
+
+test('keeps booking controls free of a containing surface', () => {
+  const html = source();
+  const controlsRule = html.match(/\.booking-controls\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.doesNotMatch(controlsRule, /\bborder\s*:/);
+  assert.doesNotMatch(controlsRule, /\bbackground\s*:/);
+  assert.doesNotMatch(controlsRule, /\bpadding\s*:/);
+});
+
 test('keeps inline scripts valid when Live Server injects its reload client', () => {
   const liveReloadClient = '<script>window.__liveReloadReady = true;</script>';
   const servedHtml = source().replace(/<\/body>/i, `${liveReloadClient}\n</body>`);
