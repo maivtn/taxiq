@@ -7,6 +7,8 @@
   var groupOverlayOpener = null;
   var groupOverlayKind = '';
   var groupOverlayMessageId = '';
+  var groupThreadReturnToMembers = false;
+  var groupOverlayFocusableSelector = 'button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[href]';
   var state = {
     posts: [
       { id:'feed-announcement-1', kind:'announcement', audience:'staff', author:'Nexora Touch', role:'Owner', group:'Nexora Touch Staff', time:'12 min ago', body:'Friday hours are updated. Please review your station coverage before 4 PM.', reactions:{ '👍':4 }, comments:[], saved:false, pinned:false },
@@ -909,6 +911,7 @@
     groupOverlayOpener = null;
     groupOverlayKind = '';
     groupOverlayMessageId = '';
+    if (kind === 'thread') groupThreadReturnToMembers = false;
     if (!restoreFocus) return;
     if (kind === 'members') {
       opener = document.querySelector('[data-members-open]') || opener;
@@ -936,8 +939,60 @@
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
     setGroupOverlayBackground(true);
-    first = panel.querySelector('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[href]');
+    first = panel.querySelector(groupOverlayFocusableSelector);
     if (first) first.focus();
+  }
+
+  function findGroupOverlayControl(panel, attribute, value) {
+    var controls = panel ? panel.querySelectorAll('[' + attribute + ']') : [];
+    var index;
+    for (index = 0; index < controls.length; index += 1) {
+      if (controls[index].getAttribute(attribute) === value) return controls[index];
+    }
+    return null;
+  }
+
+  function focusMemberOverlayFallback(rail) {
+    var target = rail ? rail.querySelector('[data-members-close]') : null;
+    if (!target) target = rail;
+    if (!target || typeof target.focus !== 'function') return false;
+    target.focus();
+    return true;
+  }
+
+  function focusMemberOverlayAfterRender(attribute, value) {
+    var rail = document.querySelector('[data-group-member-rail]');
+    var target;
+    if (!rail || activeGroupOverlayPanel !== rail || !isMobileGroupOverlay()) return false;
+    target = findGroupOverlayControl(rail, attribute, value);
+    if (!target || typeof target.focus !== 'function') return focusMemberOverlayFallback(rail);
+    target.focus();
+    return true;
+  }
+
+  function closeThreadOverlay() {
+    var returnToMembers = groupThreadReturnToMembers && isMobileGroupOverlay();
+    var messageId = state.activeThreadId || groupOverlayMessageId;
+    var rail;
+    var membersButton;
+    var pinned;
+    var pinnedTrigger;
+    state.activeThreadId = '';
+    closeGroupOverlay(!returnToMembers);
+    if (!returnToMembers) {
+      renderThread();
+      return;
+    }
+    state.memberDrawerOpen = true;
+    renderThread();
+    rail = document.querySelector('[data-group-member-rail]');
+    membersButton = document.querySelector('[data-members-open]');
+    openGroupOverlay(rail, membersButton, 'members', '');
+    pinned = document.querySelector('[data-pinned-messages]');
+    pinnedTrigger = findGroupOverlayControl(pinned, 'data-thread-open', messageId);
+    if (pinnedTrigger && typeof pinnedTrigger.focus === 'function') pinnedTrigger.focus();
+    else focusMemberOverlayAfterRender('data-thread-open', messageId);
+    syncGroupSidePanelAccessibility();
   }
 
   function handleGroupOverlayKeydown(event) {
@@ -946,6 +1001,8 @@
     var last;
     var kind;
     var rail;
+    var activeIndex = -1;
+    var index;
     if (!activeGroupOverlayPanel || event.defaultPrevented) return;
     if (!isMobileGroupOverlay()) {
       closeGroupOverlay(false);
@@ -955,8 +1012,11 @@
     if (event.key === 'Escape') {
       event.preventDefault();
       kind = groupOverlayKind;
-      if (kind === 'thread') state.activeThreadId = '';
-      else state.memberDrawerOpen = false;
+      if (kind === 'thread') {
+        closeThreadOverlay();
+        return;
+      }
+      state.memberDrawerOpen = false;
       rail = document.querySelector('[data-group-member-rail]');
       if (rail) rail.classList.remove('is-mobile-open');
       closeGroupOverlay(true);
@@ -965,11 +1025,20 @@
       return;
     }
     if (event.key !== 'Tab') return;
-    focusable = activeGroupOverlayPanel.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[href]');
+    focusable = activeGroupOverlayPanel.querySelectorAll(groupOverlayFocusableSelector);
     if (!focusable.length) return;
     first = focusable[0];
     last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
+    for (index = 0; index < focusable.length; index += 1) {
+      if (focusable[index] === document.activeElement) {
+        activeIndex = index;
+        break;
+      }
+    }
+    if (activeIndex === -1) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
+    } else if (event.shiftKey && document.activeElement === first) {
       event.preventDefault();
       last.focus();
     } else if (!event.shiftKey && document.activeElement === last) {
@@ -1616,6 +1685,8 @@
     var input;
     var rail;
     var panel;
+    var pinned;
+    var returnToMembers;
     var closesActiveThread;
     if (open) {
       result = openGroup(open.getAttribute('data-group-open'));
@@ -1632,21 +1703,22 @@
       return;
     }
     if (thread) {
+      rail = document.querySelector('[data-group-member-rail]');
+      pinned = document.querySelector('[data-pinned-messages]');
+      returnToMembers = isMobileGroupOverlay() && activeGroupOverlayPanel === rail && state.memberDrawerOpen && findGroupOverlayControl(pinned, 'data-thread-open', thread.getAttribute('data-thread-open')) === thread;
       closeGroupOverlay(false);
       state.memberDrawerOpen = false;
-      rail = document.querySelector('[data-group-member-rail]');
       if (rail) rail.classList.remove('is-mobile-open');
       state.activeThreadId = thread.getAttribute('data-thread-open');
       renderThread();
       panel = document.querySelector('[data-group-thread-panel]');
+      groupThreadReturnToMembers = returnToMembers;
       openGroupOverlay(panel, thread, 'thread', state.activeThreadId);
       syncGroupSidePanelAccessibility();
       return;
     }
     if (threadClose) {
-      state.activeThreadId = '';
-      closeGroupOverlay(true);
-      renderThread();
+      closeThreadOverlay();
       return;
     }
     if (reaction) {
@@ -1721,6 +1793,7 @@
       if (result.ok) {
         renderGroups();
         renderFeedAudienceOptions();
+        renderEvents();
         showCommunityNotice(result.group.archived ? 'Group archived.' : 'Group restored.');
       } else {
         showCommunityNotice(result.error);
@@ -1780,6 +1853,8 @@
       if (result.ok) {
         renderGroupChat();
         renderGroups();
+        if (result.action === 'approve') focusMemberOverlayAfterRender('data-member-role', result.request.memberId);
+        else focusMemberOverlayAfterRender('data-join-request-action', result.action);
         showCommunityNotice(result.action === 'approve' ? 'Join request approved.' : 'Join request declined.');
       } else showCommunityNotice(result.error);
     }
@@ -1866,7 +1941,10 @@
       if (target.getAttribute('name') === 'groupType') updateMixedPrivacyConfirmation();
       if (target.getAttribute('data-member-role') !== null) {
         result = setMemberRole(state.activeGroupId, target.getAttribute('data-member-role'), target.value);
-        if (result.ok) renderMemberRail();
+        if (result.ok) {
+          renderMemberRail();
+          focusMemberOverlayAfterRender('data-member-role', target.getAttribute('data-member-role'));
+        }
         else showCommunityNotice(result.error);
       }
     });

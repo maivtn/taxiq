@@ -209,6 +209,7 @@ function createGroupDom() {
     membersTrigger: fakeElement({ 'data-members-open': '', 'aria-expanded': 'false', 'aria-controls': 'group-member-panel' }),
     memberClose: fakeElement({ 'data-members-close': '' }),
     threadTrigger: fakeElement({ 'data-thread-open': 'staff-message-1', 'aria-expanded': 'false', 'aria-controls': 'group-thread-panel' }),
+    pinnedThreadTrigger: fakeElement({ 'data-thread-open': 'staff-message-1', 'aria-expanded': 'false', 'aria-controls': 'group-thread-panel' }),
     memberFirst: fakeElement(),
     memberLast: fakeElement(),
     memberRail: fakeElement({ id: 'group-member-panel', 'aria-label': 'Group members', tabindex: '-1' }),
@@ -228,7 +229,10 @@ function createGroupDom() {
     settingsVisibility: fakeElement({ name: 'manageGroupVisibility' }),
     settingsPosting: fakeElement({ name: 'manageGroupPosting' }),
     settingsError: fakeElement(),
-    renderedManageButton: fakeElement({ 'data-group-manage': 'staff-main' })
+    renderedManageButton: fakeElement({ 'data-group-manage': 'staff-main' }),
+    eventList: fakeElement(),
+    eventCalendar: fakeElement(),
+    eventDetail: fakeElement()
   };
   elements.duplicateThreadTrigger = fakeElement({ 'data-thread-open': 'staff-message-1' });
   elements.chat.hidden = true;
@@ -237,6 +241,8 @@ function createGroupDom() {
   elements.settingsDialog.hidden = true;
   elements.settingsDialog.selectorMap['input,select,textarea'] = elements.settingsDescription;
   elements.memberRail.selectorMap[focusableSelector] = [elements.memberClose, elements.memberFirst, elements.memberLast];
+  elements.memberRail.selectorMap['[data-members-close]'] = elements.memberClose;
+  elements.pinned.selectorMap['[data-thread-open]'] = [elements.pinnedThreadTrigger];
   elements.threadPanel.selectorMap[focusableSelector] = [elements.threadFirst, elements.threadLast];
   const panel = fakeElement({ id: 'panel-groups' });
   const selectorMap = {
@@ -262,7 +268,10 @@ function createGroupDom() {
     '[name="manageGroupDescription"]': elements.settingsDescription,
     '[name="manageGroupVisibility"]': elements.settingsVisibility,
     '[name="manageGroupPosting"]': elements.settingsPosting,
-    '[data-group-settings-error]': elements.settingsError
+    '[data-group-settings-error]': elements.settingsError,
+    '[data-event-list]': elements.eventList,
+    '[data-event-calendar]': elements.eventCalendar,
+    '[data-event-detail]': elements.eventDetail
   };
   const documentListeners = {};
   const body = {
@@ -281,7 +290,7 @@ function createGroupDom() {
     querySelector(selector) { return selectorMap[selector] || null; },
     querySelectorAll(selector) {
       if (selector === '[data-group-filter]') return groupFilters;
-      if (selector === '[data-thread-open]') return [elements.duplicateThreadTrigger, elements.threadTrigger];
+      if (selector === '[data-thread-open]') return [elements.duplicateThreadTrigger, elements.threadTrigger, elements.pinnedThreadTrigger];
       if (selector === '[data-group-overlay-background]') return [elements.chatHead, elements.messageColumn];
       if (selector === '[data-group-manage]') return [elements.renderedManageButton];
       return [];
@@ -731,6 +740,14 @@ test('makes mobile member and thread overlays modal, keyboard-contained, and foc
   assert.equal(dom.document.activeElement, dom.elements.memberLast);
   assert.equal(dom.fireDocument('keydown', dom.elements.memberLast, { key: 'Tab' }).defaultPrevented, true);
   assert.equal(dom.document.activeElement, dom.elements.memberClose);
+  const outsideMemberDrawer = fakeElement();
+  outsideMemberDrawer.ownerDocument = dom.document;
+  dom.document.activeElement = outsideMemberDrawer;
+  assert.equal(dom.fireDocument('keydown', outsideMemberDrawer, { key: 'Tab' }).defaultPrevented, true);
+  assert.equal(dom.document.activeElement, dom.elements.memberClose);
+  dom.document.activeElement = outsideMemberDrawer;
+  assert.equal(dom.fireDocument('keydown', outsideMemberDrawer, { key: 'Tab', shiftKey: true }).defaultPrevented, true);
+  assert.equal(dom.document.activeElement, dom.elements.memberLast);
   assert.equal(dom.fireDocument('keydown', dom.elements.memberClose, { key: 'Escape' }).defaultPrevented, true);
   assert.equal(api.state.memberDrawerOpen, false);
   assert.equal(dom.elements.membersTrigger.getAttribute('aria-expanded'), 'false');
@@ -757,6 +774,103 @@ test('makes mobile member and thread overlays modal, keyboard-contained, and foc
   assert.equal(dom.elements.threadPanel.getAttribute('aria-modal'), null);
   assert.equal(dom.elements.chatHead.getAttribute('aria-hidden'), null);
   assert.equal(dom.document.activeElement, dom.elements.threadTrigger);
+});
+
+test('restores a rerendered role control inside the mobile Members modal', () => {
+  const dom = createGroupDom();
+  const api = loadApi({ document: dom.document, window: { innerWidth: 390 }, setTimeout() { return 1; }, clearTimeout() {} });
+  dom.fire('click', fakeElement({ 'data-group-open': 'staff-main' }));
+  dom.fire('click', dom.elements.membersTrigger);
+
+  const oldRoleControl = fakeElement({ 'data-member-role': 'member-sophie' });
+  const renderedRoleControl = fakeElement({ 'data-member-role': 'member-sophie' });
+  oldRoleControl.value = 'admin';
+  oldRoleControl.ownerDocument = dom.document;
+  oldRoleControl.parentNode = dom.elements.memberList;
+  renderedRoleControl.ownerDocument = dom.document;
+  renderedRoleControl.parentNode = dom.elements.memberList;
+  dom.elements.memberRail.selectorMap['[data-member-role]'] = [renderedRoleControl];
+  oldRoleControl.focus();
+
+  dom.fire('change', oldRoleControl);
+
+  assert.equal(api.state.members['staff-main'].find((member) => member.id === 'member-sophie').role, 'admin');
+  assert.equal(dom.document.activeElement, renderedRoleControl);
+  assert.equal(dom.elements.memberRail.getAttribute('aria-modal'), 'true');
+});
+
+test('keeps focus in the mobile Members modal after delegated join approval and decline', () => {
+  const approveDom = createGroupDom();
+  const approveApi = loadApi({ document: approveDom.document, window: { innerWidth: 390 }, setTimeout() { return 1; }, clearTimeout() {} });
+  approveDom.fire('click', fakeElement({ 'data-group-open': 'staff-main' }));
+  approveDom.fire('click', approveDom.elements.membersTrigger);
+  const approveRequest = approveApi.state.joinRequests['staff-main'][0];
+  const approveControl = fakeElement({ 'data-join-request-id': approveRequest.id, 'data-join-request-action': 'approve' });
+  const approvedMemberRole = fakeElement({ 'data-member-role': approveRequest.memberId });
+  approveControl.ownerDocument = approveDom.document;
+  approveControl.parentNode = approveDom.elements.joins;
+  approvedMemberRole.ownerDocument = approveDom.document;
+  approvedMemberRole.parentNode = approveDom.elements.memberList;
+  approveDom.elements.memberRail.selectorMap['[data-member-role]'] = [approvedMemberRole];
+  approveControl.focus();
+
+  approveDom.fire('click', approveControl);
+
+  assert.equal(approveApi.state.joinRequests['staff-main'].length, 0);
+  assert.equal(approveDom.document.activeElement, approvedMemberRole);
+  assert.equal(approveDom.elements.memberRail.getAttribute('aria-modal'), 'true');
+
+  const declineDom = createGroupDom();
+  const declineApi = loadApi({ document: declineDom.document, window: { innerWidth: 390 }, setTimeout() { return 1; }, clearTimeout() {} });
+  declineDom.fire('click', fakeElement({ 'data-group-open': 'staff-main' }));
+  declineDom.fire('click', declineDom.elements.membersTrigger);
+  const declineRequest = declineApi.state.joinRequests['staff-main'][0];
+  const declineControl = fakeElement({ 'data-join-request-id': declineRequest.id, 'data-join-request-action': 'decline' });
+  declineControl.ownerDocument = declineDom.document;
+  declineControl.parentNode = declineDom.elements.joins;
+  declineDom.elements.memberRail.selectorMap['[data-join-request-action]'] = [];
+  declineControl.focus();
+
+  declineDom.fire('click', declineControl);
+
+  assert.equal(declineApi.state.joinRequests['staff-main'].length, 0);
+  assert.equal(declineDom.document.activeElement, declineDom.elements.memberClose);
+  assert.equal(declineDom.elements.memberRail.getAttribute('aria-modal'), 'true');
+});
+
+test('returns a pinned mobile thread to a visible Members modal context', () => {
+  const dom = createGroupDom();
+  const api = loadApi({ document: dom.document, window: { innerWidth: 390 }, setTimeout() { return 1; }, clearTimeout() {} });
+  dom.fire('click', fakeElement({ 'data-group-open': 'staff-main' }));
+  dom.fire('click', dom.elements.membersTrigger);
+  dom.elements.pinnedThreadTrigger.focus();
+
+  dom.fire('click', dom.elements.pinnedThreadTrigger);
+  assert.equal(api.state.activeThreadId, 'staff-message-1');
+  assert.equal(dom.elements.threadPanel.getAttribute('aria-modal'), 'true');
+  const renderedPinnedTrigger = fakeElement({ 'data-thread-open': 'staff-message-1', 'aria-expanded': 'true', 'aria-controls': 'group-thread-panel' });
+  renderedPinnedTrigger.ownerDocument = dom.document;
+  renderedPinnedTrigger.parentNode = dom.elements.pinned;
+  dom.elements.pinnedThreadTrigger.isConnected = false;
+  dom.elements.pinned.selectorMap['[data-thread-open]'] = [renderedPinnedTrigger];
+  dom.fire('click', dom.elements.threadFirst);
+
+  assert.equal(api.state.activeThreadId, '');
+  assert.equal(api.state.memberDrawerOpen, true);
+  assert.equal(dom.elements.memberRail.hidden, false);
+  assert.equal(dom.elements.memberRail.classList.contains('is-mobile-open'), true);
+  assert.equal(dom.elements.memberRail.getAttribute('aria-modal'), 'true');
+  assert.equal(dom.elements.messageColumn.getAttribute('inert'), '');
+  assert.equal(dom.document.activeElement, renderedPinnedTrigger);
+
+  dom.fire('click', renderedPinnedTrigger);
+  dom.elements.pinned.selectorMap['[data-thread-open]'] = [];
+  renderedPinnedTrigger.isConnected = false;
+  assert.equal(dom.fireDocument('keydown', dom.elements.threadFirst, { key: 'Escape' }).defaultPrevented, true);
+
+  assert.equal(api.state.memberDrawerOpen, true);
+  assert.equal(dom.elements.memberRail.getAttribute('aria-modal'), 'true');
+  assert.equal(dom.document.activeElement, dom.elements.memberClose);
 });
 
 test('closes an owner-only mobile member drawer by pointer and restores the Members trigger', () => {
@@ -1166,6 +1280,25 @@ test('keeps failed Event operations atomic', () => {
   const archivedPostsSnapshot = JSON.stringify(api.state.posts);
   assert.equal(api.announceEvent(event.id, event.audience).ok, false);
   assert.equal(JSON.stringify(api.state.posts), archivedPostsSnapshot);
+});
+
+test('rerenders Event announcement availability after delegated group archive and restore', () => {
+  const dom = createGroupDom();
+  const api = loadApi({ document: dom.document, setTimeout() { return 1; }, clearTimeout() {} });
+  assert.doesNotMatch(dom.elements.eventDetail.innerHTML, /data-event-announce="staff-main"[^>]*disabled/);
+  assert.doesNotMatch(dom.elements.eventDetail.innerHTML, /Restore the linked group before announcing this event/);
+
+  dom.fire('click', fakeElement({ 'data-group-archive': 'staff-main' }));
+
+  assert.equal(api.state.groups.find((group) => group.id === 'staff-main').archived, true);
+  assert.match(dom.elements.eventDetail.innerHTML, /data-event-announce="staff-main"[^>]*disabled/);
+  assert.match(dom.elements.eventDetail.innerHTML, /Restore the linked group before announcing this event/);
+
+  dom.fire('click', fakeElement({ 'data-group-archive': 'staff-main' }));
+
+  assert.equal(api.state.groups.find((group) => group.id === 'staff-main').archived, false);
+  assert.doesNotMatch(dom.elements.eventDetail.innerHTML, /data-event-announce="staff-main"[^>]*disabled/);
+  assert.doesNotMatch(dom.elements.eventDetail.innerHTML, /Restore the linked group before announcing this event/);
 });
 
 test('delegates Event list and calendar controls and escapes rendered event content', () => {
