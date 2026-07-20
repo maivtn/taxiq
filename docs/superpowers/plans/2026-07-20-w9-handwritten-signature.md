@@ -452,6 +452,10 @@ test('keeps handwritten ink in print while hiding signature actions', () => {
   assert.match(printBlock, /\.signature-actions[^}]*display:\s*none/);
   assert.match(printBlock, /\.signature-canvas[^}]*height:/);
   assert.match(printBlock, /\.signature-pad[^}]*border-bottom:\s*1px solid #000/);
+  assert.match(printBlock, /#signature-date[^}]*display:\s*none/);
+  assert.match(printBlock, /\.signature-date-print[^}]*display:\s*block/);
+  assert.match(html, /id="signature-date-print"/);
+  assert.match(html, /function syncPrintedSignatureDate\(\)[\s\S]*formatUsDate/);
 });
 
 test('draws the handwritten signature into the downloaded PDF canvas', () => {
@@ -489,7 +493,32 @@ Inside the existing print media block add:
 }
 .signature-canvas { height: .62in; }
 .signature-details { grid-template-columns: 1fr 1.25in; }
+#signature-date { display: none; }
+.signature-date-print {
+  display: block;
+  min-height: 24px;
+  border-bottom: 1px solid #000;
+  padding: 2px 3px;
+}
 ```
+
+Add this screen-hidden value immediately after the native date input:
+
+```html
+<span class="print-only signature-date-print" id="signature-date-print"></span>
+```
+
+Keep it synchronized with the required U.S. print format:
+
+```js
+function syncPrintedSignatureDate() {
+  byId("signature-date-print").textContent = formatUsDate(byId("signature-date").value);
+}
+
+byId("signature-date").addEventListener("change", syncPrintedSignatureDate);
+```
+
+Call `syncPrintedSignatureDate()` during initialization and at the start of the existing `beforeprint` listener. This guarantees browser Print uses `MM/DD/YYYY` instead of the browser locale rendering of `input[type="date"]`.
 
 - [ ] **Step 4: Render handwritten ink in a dedicated PDF signature block**
 
