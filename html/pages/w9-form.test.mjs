@@ -70,6 +70,18 @@ test('keeps every section badge on one line', () => {
   );
 });
 
+test('keeps section header borders aligned across the fieldset', () => {
+  const html = source();
+  const headingRule = html.match(/\n    \.section-heading\s*{([^}]*)}/);
+  assert.ok(headingRule, 'section-heading rule must exist');
+  assert.match(headingRule[1], /width:\s*100%/);
+  assert.match(headingRule[1], /float:\s*left/);
+  assert.match(
+    html,
+    /\.section-heading\s*\+\s*\.section-content\s*{[^}]*clear:\s*both/s
+  );
+});
+
 test('preserves section badges when printing', () => {
   const html = source();
   const rules = [...html.matchAll(/\.section-number\s*{([^}]*)}/g)];

@@ -342,6 +342,8 @@
 
     .section-heading {
       display: flex;
+      width: 100%;
+      float: left;
       align-items: flex-start;
       gap: 11px;
       padding: 15px 15px 13px;
@@ -395,6 +397,8 @@
       gap: 16px;
       padding: 16px 15px 18px;
     }
+
+    .section-heading + .section-content { clear: both; }
 
     .field-grid { display: grid; gap: 14px; }
     .field { min-width: 0; }
