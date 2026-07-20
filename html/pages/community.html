@@ -143,7 +143,7 @@
       margin-top: 2px;
       overflow: hidden;
       color: rgba(255, 255, 255, 0.6);
-      font-size: 10px;
+      font-size: 11px;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -164,7 +164,7 @@
 
     .panel-kicker {
       color: rgba(255, 255, 255, 0.45);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -590,7 +590,7 @@
 
     .profile-copy span {
       color: var(--nexora-subtle);
-      font-size: 10px;
+      font-size: 11px;
     }
 
     .content {
@@ -845,21 +845,6 @@
       line-height: 19px;
     }
 
-    .owner-jobs-notice {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      z-index: 80;
-      max-width: min(360px, calc(100vw - 32px));
-      border-radius: 12px;
-      background: var(--nexora-text);
-      padding: 12px 14px;
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-      box-shadow: var(--nexora-soft-shadow);
-    }
-
     @media (min-width: 900px) {
       .owner-candidate-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -894,6 +879,11 @@
       background: #fff;
       color: var(--nexora-text);
       transform: translateY(-1px);
+    }
+
+    .page-tab:focus-visible {
+      outline: 2px solid var(--nexora-electric);
+      outline-offset: 2px;
     }
 
     .page-tab.is-active {
@@ -960,7 +950,7 @@
         gap: 3px;
         border-radius: 10px;
         padding: 5px 2px;
-        font-size: 10px;
+        font-size: 11px;
         line-height: 1.12;
         text-align: center;
         box-shadow: none;
@@ -991,7 +981,7 @@
     @media (max-width: 380px) {
       .page-tab {
         min-height: 46px;
-        font-size: 9px;
+        font-size: 11px;
       }
 
       .page-tab-icon {
@@ -1169,7 +1159,7 @@
 
     .kpi-label {
       color: var(--nexora-subtle);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -1213,7 +1203,7 @@
 
     .card-meta {
       color: var(--nexora-subtle);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -1235,7 +1225,7 @@
       background: var(--nexora-canvas);
       color: var(--nexora-muted);
       text-align: left;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -1259,7 +1249,7 @@
       gap: 5px;
       border-radius: 999px;
       padding: 4px 9px;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       text-transform: uppercase;
     }
@@ -1504,7 +1494,7 @@
       margin-top: 3px;
       color: var(--nexora-subtle);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
     }
 
@@ -1558,7 +1548,7 @@
 
     .owner-feed-time {
       color: var(--brand-cyan);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       white-space: nowrap;
     }
@@ -1585,7 +1575,7 @@
       border-radius: 12px;
       background: #fff;
       color: var(--nexora-muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s, color 0.2s;
     }
@@ -2111,7 +2101,7 @@
       background: rgba(255, 255, 255, 0.7);
       padding: 6px 10px;
       color: var(--nexora-brand);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       text-transform: uppercase;
     }
@@ -2119,7 +2109,7 @@
     .settings-hero.is-compact .settings-eyebrow {
       gap: 6px;
       padding: 5px 9px;
-      font-size: 9.5px;
+      font-size: 11px;
     }
 
     .settings-title {
@@ -2182,7 +2172,7 @@
       gap: 5px;
       border-radius: 999px;
       padding: 6px 9px;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 650;
       line-height: 1.2;
       white-space: nowrap;
@@ -2196,7 +2186,7 @@
 
     .settings-hero.is-compact .settings-sync-pill strong {
       display: inline;
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 800;
     }
 
@@ -2455,7 +2445,7 @@
 
     .settings-help {
       color: var(--nexora-muted);
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 500;
       line-height: 1.45;
     }
@@ -2644,7 +2634,7 @@
       gap: 5px;
       padding: 0 7px 4px;
       color: var(--nexora-subtle);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 750;
       letter-spacing: 0.02em;
       text-transform: uppercase;
@@ -2739,7 +2729,7 @@
       position: absolute;
       top: 50%;
       color: var(--nexora-subtle);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 600;
       transform: translateY(-50%);
       pointer-events: none;
@@ -2862,7 +2852,7 @@
       background: var(--nexora-canvas);
       padding: 6px 9px;
       color: var(--nexora-muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
     }
 
@@ -2906,7 +2896,7 @@
     .settings-offer-desc {
       margin-top: 5px;
       color: var(--nexora-muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 650;
       line-height: 1.45;
     }
@@ -3085,7 +3075,7 @@
     .settings-template-code {
       color: var(--brand-cyan);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0;
       margin-top: 2px;
@@ -3093,7 +3083,7 @@
 
     .settings-template-effect {
       color: var(--nexora-success);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 750;
       line-height: 1.45;
     }
@@ -3250,7 +3240,7 @@
 
     .settings-language-status {
       color: var(--nexora-muted);
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 500;
       line-height: 1.45;
       margin-top: 8px;
@@ -3260,7 +3250,7 @@
       margin-top: 6px;
       text-align: right;
       color: var(--nexora-muted);
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 700;
     }
 
@@ -3437,7 +3427,7 @@
       background: #fff;
       padding: 7px 11px;
       color: var(--nexora-text);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
     }
 
@@ -3519,7 +3509,7 @@
       align-items: center;
       gap: 5px;
       color: var(--nexora-muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 500;
       line-height: 1.45;
     }
@@ -3566,7 +3556,7 @@
       align-items: center;
       gap: 5px;
       color: var(--nexora-success);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
     }
 
@@ -3591,7 +3581,7 @@
       margin-top: 12px;
       color: var(--nexora-subtle);
       text-align: center;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 500;
       line-height: 1.45;
     }
@@ -3600,7 +3590,7 @@
       margin: -6px 22px 22px;
       color: var(--nexora-muted);
       text-align: center;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 600;
       line-height: 1.6;
     }
@@ -3939,7 +3929,7 @@
 
     .booking-control-label {
       color: var(--nexora-subtle);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.05em;
       text-transform: uppercase;
@@ -4009,7 +3999,7 @@
       background: var(--nexora-canvas);
       color: var(--nexora-muted);
       text-align: left;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.05em;
       text-transform: uppercase;
@@ -4326,7 +4316,7 @@
 
     .booking-detail-label {
       color: var(--nexora-subtle);
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.05em;
       text-transform: uppercase;
@@ -4499,7 +4489,7 @@
     #nx-campaign-root .char-count { color: var(--nx-electric); font-weight: 800; }
     #nx-campaign-root .char-count.multi { color: var(--nexora-warning); }
     #nx-campaign-root .sms-preview { margin-top: 12px; border: 1px solid var(--nexora-border); border-radius: 10px; background: #f4f7fb; padding: 14px; }
-    #nx-campaign-root .sms-preview-label { margin-bottom: 8px; color: var(--nexora-subtle); font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+    #nx-campaign-root .sms-preview-label { margin-bottom: 8px; color: var(--nexora-subtle); font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
     #nx-campaign-root .sms-bubble { max-width: 85%; border-radius: 16px 16px 16px 4px; background: #fff; padding: 11px 14px; color: var(--nexora-text); font-size: 13px; line-height: 1.5; word-wrap: break-word; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08); }
     #nx-campaign-root .sms-bubble .lnk { color: var(--nx-electric); text-decoration: underline; }
     #nx-campaign-root .sms-preview-empty { color: var(--nexora-subtle); font-size: 12px; font-style: italic; }
@@ -4622,7 +4612,7 @@
       align-items: center;
       border-radius: 999px;
       padding: 4px 9px;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       letter-spacing: 0.02em;
     }
@@ -4786,7 +4776,7 @@
 
     .booking-card-label {
       color: var(--nexora-subtle);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.04em;
       text-transform: uppercase;
@@ -5017,7 +5007,7 @@
 
     .tech-stat span {
       color: var(--nexora-muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       line-height: 1;
       white-space: nowrap;
@@ -5271,7 +5261,7 @@
     .tech-choice-meta {
       margin-top: 2px;
       color: var(--nexora-muted);
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 500;
     }
 
@@ -5397,7 +5387,7 @@
 
     .tech-schedule-time span {
       color: var(--nexora-muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       text-transform: uppercase;
     }
@@ -5502,7 +5492,7 @@
       background: transparent;
       padding: 8px 4px;
       color: var(--nexora-muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
     }
 
@@ -5841,7 +5831,7 @@
         display: inline-flex;
         gap: 5px;
         padding: 4px 7px;
-        font-size: 8px;
+        font-size: 11px;
         line-height: 1;
         vertical-align: middle;
       }
@@ -5947,7 +5937,7 @@
 
       .booking-table td::before {
         color: var(--nexora-subtle);
-        font-size: 9px;
+        font-size: 11px;
         font-weight: 800;
         letter-spacing: 0.04em;
         line-height: 1.4;
@@ -6061,7 +6051,7 @@
 
       #panel-plans .roi-label {
         margin-top: 3px;
-        font-size: 8.5px;
+        font-size: 11px;
         line-height: 1.2;
       }
 
@@ -6128,7 +6118,7 @@
         width: 24px;
         height: 24px;
         border-radius: 8px;
-        font-size: 10px;
+        font-size: 11px;
       }
 
       #panel-overview .overview-kpis .kpi-icon svg {
@@ -6139,14 +6129,14 @@
       #panel-overview .overview-kpis .kpi-top .badge {
         max-width: 52px;
         padding: 4px 5px;
-        font-size: 7.5px;
+        font-size: 11px;
         line-height: 1.05;
         text-align: center;
         white-space: normal;
       }
 
       #panel-overview .overview-kpis .kpi-label {
-        font-size: 7.5px;
+        font-size: 11px;
         letter-spacing: 0.035em;
         line-height: 1.15;
       }
@@ -6159,7 +6149,7 @@
 
       #panel-overview .overview-kpis .kpi-trend {
         margin-top: 5px;
-        font-size: 8.5px;
+        font-size: 11px;
         line-height: 1.2;
       }
 
@@ -6230,7 +6220,7 @@
         content: attr(data-label);
         flex: 0 0 auto;
         color: var(--nexora-subtle);
-        font-size: 9px;
+        font-size: 11px;
         font-weight: 700;
         letter-spacing: 0.04em;
         text-transform: uppercase;
@@ -6309,7 +6299,7 @@
         gap: 5px;
         border-radius: 10px;
         padding: 7px 4px;
-        font-size: 8.5px;
+        font-size: 11px;
         line-height: 1.15;
         overflow-wrap: anywhere;
       }
@@ -6372,14 +6362,14 @@
       .voice-kpi-section .kpi-top .badge {
         max-width: 66px;
         padding: 4px 6px;
-        font-size: 8.5px;
+        font-size: 11px;
         line-height: 1.05;
         text-align: center;
         white-space: normal;
       }
 
       .voice-kpi-section .kpi-label {
-        font-size: 8.5px;
+        font-size: 11px;
         letter-spacing: 0.04em;
         line-height: 1.15;
       }
@@ -6391,7 +6381,7 @@
 
       .voice-kpi-section .kpi-trend {
         margin-top: 6px;
-        font-size: 10px;
+        font-size: 11px;
         line-height: 1.25;
       }
 
@@ -6433,14 +6423,14 @@
       .booking-sub-panel .kpi-top .badge {
         max-width: 56px;
         padding: 4px 5px;
-        font-size: 8px;
+        font-size: 11px;
         line-height: 1.05;
         text-align: center;
         white-space: normal;
       }
 
       .booking-sub-panel .kpi-label {
-        font-size: 8px;
+        font-size: 11px;
         letter-spacing: 0.04em;
         line-height: 1.15;
       }
@@ -6452,7 +6442,7 @@
 
       .booking-sub-panel .kpi-trend {
         margin-top: 5px;
-        font-size: 9px;
+        font-size: 11px;
         line-height: 1.25;
       }
     }
@@ -6657,6 +6647,7 @@
     }
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/community-page.css">
 </head>
 <body>
   <div class="shell">
@@ -6844,23 +6835,23 @@
             <h1 class="page-title">Community</h1>
             <p class="page-description">Connect, learn, and grow with the Nexora community.</p>
             <div class="page-tabs" role="tablist" aria-label="Community sections">
-              <button class="page-tab is-active" type="button" role="tab" aria-selected="true" data-tab-target="feed" aria-controls="panel-feed">
+              <button class="page-tab is-active" type="button" role="tab" aria-selected="true" tabindex="0" data-tab-target="feed" aria-controls="panel-feed">
                 <span class="page-tab-icon"><i data-lucide="message-square" aria-hidden="true"></i></span>
                 <span>Feed</span>
               </button>
-              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="groups" aria-controls="panel-groups">
+              <button class="page-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-tab-target="groups" aria-controls="panel-groups">
                 <span class="page-tab-icon"><i data-lucide="users" aria-hidden="true"></i></span>
                 <span>Groups</span>
               </button>
-              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="learning" aria-controls="panel-learning">
+              <button class="page-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-tab-target="learning" aria-controls="panel-learning">
                 <span class="page-tab-icon"><i data-lucide="graduation-cap" aria-hidden="true"></i></span>
                 <span>Learning</span>
               </button>
-              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="jobs" aria-controls="panel-jobs">
+              <button class="page-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-tab-target="jobs" aria-controls="panel-jobs">
                 <span class="page-tab-icon"><i data-lucide="briefcase-business" aria-hidden="true"></i></span>
                 <span>Jobs</span>
               </button>
-              <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="events" aria-controls="panel-events">
+              <button class="page-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-tab-target="events" aria-controls="panel-events">
                 <span class="page-tab-icon"><i data-lucide="calendar-days" aria-hidden="true"></i></span>
                 <span>Events</span>
               </button>
@@ -6869,30 +6860,126 @@
 
           <div class="tab-content">
             <section class="tab-panel is-active" id="panel-feed" data-tab-panel="feed" role="tabpanel" aria-label="Community Feed">
-              <div class="placeholder-panel">
-                <div>
-                  <h2>Feed</h2>
-                  <p>Follow updates, conversations, and highlights from the Nexora community.</p>
+              <div class="community-panel-head">
+                <div><span class="community-eyebrow">Owner community</span><h2>Feed</h2><p>Stay on top of conversations across every salon group.</p></div>
+                <button class="community-primary" type="button" data-focus-feed-composer><i data-lucide="square-pen" aria-hidden="true"></i>Create post</button>
+              </div>
+              <div class="community-layout community-layout-feed">
+                <div class="community-main-stack">
+                  <form class="feed-composer community-card" data-feed-composer>
+                    <label for="community-post-body">Share an update</label>
+                    <textarea id="community-post-body" rows="3" placeholder="Share an announcement, question, or update..."></textarea>
+                    <div class="feed-composer-actions">
+                      <select aria-label="Post audience" data-feed-audience><option value="all">All groups</option><option value="staff">Staff groups</option><option value="customer">Customer groups</option><optgroup label="Specific groups"><option value="staff-main">Nexora Touch Staff</option><option value="vip-club">VIP Nail Club</option><option value="weekend-promos">Weekend Promotions</option><option value="new-hire">New Hire Onboarding</option></optgroup></select>
+                      <button type="button" data-demo-attachment="photo">Photo</button><button type="button" data-demo-attachment="file">File</button><button type="button" data-demo-attachment="poll">Poll</button>
+                      <button class="community-primary" type="submit">Post</button>
+                    </div>
+                    <div class="composer-attachment" data-feed-attachment-status role="status" aria-live="polite" hidden><span>Selected: <strong data-feed-attachment-name></strong></span><button type="button" data-feed-attachment-clear>Clear</button></div>
+                    <p class="community-field-error" data-feed-error aria-live="polite"></p>
+                  </form>
+                  <div class="community-filter-row" aria-label="Feed filters">
+                    <button class="is-active" type="button" aria-pressed="true" data-feed-filter="all">All</button><button type="button" aria-pressed="false" data-feed-filter="announcements">Announcements</button><button type="button" aria-pressed="false" data-feed-filter="staff">Staff</button><button type="button" aria-pressed="false" data-feed-filter="customer">Customers</button><button type="button" aria-pressed="false" data-feed-filter="saved">Saved</button>
+                  </div>
+                  <div class="feed-list" data-feed-list></div>
                 </div>
+                <aside class="community-side-stack">
+                  <section class="community-card attention-card"><h3>Needs your attention</h3><button type="button"><strong>3</strong><span>Pending join requests</span></button><button type="button"><strong>2</strong><span>Customer questions</span></button><button type="button"><strong>1</strong><span>Reported message</span></button></section>
+                  <section class="community-card insight-card"><h3>Community insights</h3><dl><div><dt>Active members</dt><dd>86</dd></div><div><dt>Engagement</dt><dd>+18%</dd></div><div><dt>Top group</dt><dd>VIP Nail Club</dd></div><div><dt>Avg. response</dt><dd>24 min</dd></div></dl></section>
+                </aside>
               </div>
             </section>
 
             <section class="tab-panel" id="panel-groups" data-tab-panel="groups" role="tabpanel" aria-label="Community Groups" hidden>
-              <div class="placeholder-panel">
-                <div>
-                  <h2>Groups</h2>
-                  <p>Join focused groups to exchange ideas with owners and nail professionals.</p>
+              <div data-group-list-view>
+                <div class="community-panel-head"><div><span class="community-eyebrow">Salon communities</span><h2>Groups</h2><p>Create focused spaces for your staff and customers.</p></div><button class="community-primary" type="button" data-create-group-open>Create Group</button></div>
+                <div class="group-summary-grid"><article><span>Total groups</span><strong data-group-total>4</strong></article><article><span>Total members</span><strong data-member-total>110</strong></article><article><span>Unread messages</span><strong data-unread-total>25</strong></article><article><span>Pending requests</span><strong data-pending-total>4</strong></article></div>
+                <div class="group-toolbar"><label><span class="sr-only">Search groups</span><input type="search" placeholder="Search groups..." data-group-search></label><div class="community-filter-row"><button class="is-active" type="button" aria-pressed="true" data-group-filter="all">All</button><button type="button" aria-pressed="false" data-group-filter="staff">Staff</button><button type="button" aria-pressed="false" data-group-filter="customer">Customer</button><button type="button" aria-pressed="false" data-group-filter="mixed">Mixed</button><button type="button" aria-pressed="false" data-group-filter="archived">Archived</button></div></div>
+                <div class="group-grid" data-group-grid></div>
+              </div>
+              <div class="group-chat-view" data-group-chat-view hidden>
+                <header class="group-chat-head" data-group-overlay-background>
+                  <button type="button" data-groups-back>Back to Groups</button>
+                  <div class="group-chat-identity">
+                    <h2 data-active-group-name>Group</h2>
+                    <p><span data-active-group-privacy>Private</span> · <span data-active-group-members>0 members</span></p>
+                  </div>
+                  <label class="group-message-search"><span class="sr-only">Search messages</span><input type="search" aria-label="Search messages" placeholder="Search messages" data-message-search-input><small data-message-search-summary aria-live="polite"></small></label>
+                  <button type="button" aria-expanded="false" aria-controls="group-member-panel" data-members-open>Members</button>
+                  <button type="button" data-group-settings>Settings</button>
+                </header>
+                <div class="group-chat-shell">
+                  <div class="group-message-column" data-group-overlay-background>
+                    <div class="message-list" data-message-list></div>
+                    <form class="message-composer" data-message-composer>
+                      <label class="sr-only" for="group-message-input">Message</label>
+                      <textarea id="group-message-input" data-message-input rows="2" placeholder="Write a message..."></textarea>
+                      <div class="message-composer-actions">
+                        <button type="button" aria-label="Mention a member" data-group-mention>@</button>
+                        <button type="button" aria-label="Choose emoji" data-group-emoji>☺</button>
+                        <button type="button" aria-label="Attach photo" data-group-attachment="photo">Photo</button>
+                        <button type="button" aria-label="Attach file" data-group-attachment="file">File</button>
+                        <button class="community-primary" type="submit">Send</button>
+                      </div>
+                      <div class="composer-attachment" data-message-attachment-status role="status" aria-live="polite" hidden><span>Selected: <strong data-message-attachment-name></strong></span><button type="button" data-message-attachment-clear>Clear</button></div>
+                      <p class="community-field-error" data-message-error aria-live="polite"></p>
+                    </form>
+                  </div>
+                  <aside class="group-member-rail" id="group-member-panel" tabindex="-1" aria-label="Group members" data-group-member-rail data-group-side-panel="members">
+                    <button class="thread-close member-close" type="button" aria-label="Close members" data-members-close>×</button>
+                    <h3>Members</h3>
+                    <div data-member-list></div>
+                    <h3>Join Requests</h3>
+                    <div data-join-requests></div>
+                    <h3>Pinned Messages</h3>
+                    <div data-pinned-messages></div>
+                  </aside>
+                  <aside class="group-thread-panel" id="group-thread-panel" aria-label="Message thread" data-group-thread-panel data-group-side-panel="thread" hidden>
+                    <button class="thread-close" type="button" aria-label="Close thread" data-thread-close>×</button>
+                    <h3>Thread</h3>
+                    <div data-thread-messages></div>
+                    <form data-thread-form>
+                      <label class="sr-only" for="group-thread-input">Reply to thread</label>
+                      <input id="group-thread-input" data-thread-input aria-label="Reply to thread">
+                      <button type="submit">Reply</button>
+                      <p class="community-field-error" data-thread-error aria-live="polite"></p>
+                    </form>
+                  </aside>
                 </div>
+              </div>
+              <div class="community-dialog-backdrop" data-create-group-dialog hidden>
+                <section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="create-group-title">
+                  <header><h2 id="create-group-title">Create Group</h2><button type="button" aria-label="Close Create Group" data-dialog-close>×</button></header>
+                  <form data-create-group-form>
+                    <label>Group name<input name="groupName" required></label><label>Description<textarea name="groupDescription" rows="3"></textarea></label>
+                    <label>Group type<select name="groupType"><option value="staff">Staff</option><option value="customer">Customer</option><option value="mixed">Mixed</option></select></label>
+                    <label>Visibility<select name="groupVisibility"><option value="private">Private</option><option value="discoverable">Discoverable to verified customers</option></select></label>
+                    <label>Who can post<select name="groupPosting"><option value="members">All members</option><option value="moderators">Admins and moderators</option><option value="owner">Owner only</option></select></label>
+                    <label class="mixed-confirm" hidden><input type="checkbox" data-mixed-privacy-confirm> I understand staff and customers can see one another in this group.</label>
+                    <p class="community-field-error" data-group-form-error aria-live="polite"></p>
+                    <footer><button type="button" data-dialog-close>Cancel</button><button class="community-primary" type="submit">Create Group</button></footer>
+                  </form>
+                </section>
+              </div>
+              <div class="community-dialog-backdrop" data-group-settings-dialog hidden>
+                <section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="group-settings-title">
+                  <header><div><h2 id="group-settings-title">Manage Group</h2><p data-manage-group-name></p></div><button type="button" aria-label="Close Group Settings" data-dialog-close>×</button></header>
+                  <form data-group-settings-form>
+                    <label>Description<textarea name="manageGroupDescription" rows="3"></textarea></label>
+                    <label>Privacy<select name="manageGroupVisibility"><option value="private">Private</option><option value="discoverable">Discoverable to verified customers</option></select></label>
+                    <label>Who can post<select name="manageGroupPosting"><option value="members">All members</option><option value="moderators">Admins and moderators</option><option value="owner">Owner only</option></select></label>
+                    <p class="community-field-error" data-group-settings-error aria-live="polite"></p>
+                    <footer><button type="button" data-dialog-close>Cancel</button><button class="community-primary" type="submit">Save settings</button></footer>
+                  </form>
+                </section>
               </div>
             </section>
 
             <section class="tab-panel" id="panel-learning" data-tab-panel="learning" role="tabpanel" aria-label="Community Learning" hidden>
-              <div class="placeholder-panel">
-                <div>
-                  <h2>Learning</h2>
-                  <p>Discover practical resources and lessons created for the salon community.</p>
-                </div>
-              </div>
+              <div class="community-panel-head"><div><span class="community-eyebrow">Owner education</span><h2>Learning</h2><p>Build stronger operations, marketing, and teams.</p></div></div>
+              <article class="learning-hero community-card"><div><span>Recommended for your salon</span><h3>Turn first-time guests into regulars</h3><p>Build a follow-up rhythm that improves retention without discounting.</p><button class="community-primary" type="button" data-course-continue="course-retention">Continue learning</button></div><strong>65%</strong></article>
+              <div class="community-filter-row" aria-label="Course filters"><button class="is-active" type="button" aria-pressed="true" data-course-filter="all">All</button><button type="button" aria-pressed="false" data-course-filter="operations">Operations</button><button type="button" aria-pressed="false" data-course-filter="marketing">Marketing</button><button type="button" aria-pressed="false" data-course-filter="team-management">Team Management</button><button type="button" aria-pressed="false" data-course-filter="customer-experience">Customer Experience</button></div>
+              <div class="learning-layout"><div><h3>Continue Learning</h3><div class="course-grid" data-course-grid></div></div><aside class="community-side-stack"><section class="community-card learning-workshop"><h3>Upcoming live workshop</h3><strong>Build a high-performing front desk</strong><p>August 12 · 10:00 AM · 45 min</p><button type="button" data-learning-workshop>Reserve seat</button></section><section class="community-card learning-saved"><h3>Saved resources</h3><div data-saved-course-list></div></section></aside></div>
+              <div class="community-dialog-backdrop" data-share-course-dialog hidden><section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="share-course-title"><header><h2 id="share-course-title">Share to Staff Group</h2><button type="button" aria-label="Close Share Course" data-share-course-close data-dialog-close>×</button></header><form data-share-course-form><label>Staff group<select name="courseGroup" data-staff-group-options></select></label><p class="community-field-error" data-share-course-error aria-live="polite"></p><footer><button type="button" data-share-course-close data-dialog-close>Cancel</button><button class="community-primary" type="submit">Share course</button></footer></form></section></div>
             </section>
 
             <section class="tab-panel owner-jobs-shell" id="panel-jobs" data-tab-panel="jobs" role="tabpanel" aria-label="Owner Jobs" hidden>
@@ -6901,8 +6988,13 @@
               <h1 class="page-title">Owner Jobs</h1>
               <p class="page-description">Find nail techs who match your open role while protecting candidate identity.</p>
             </div>
-            <span class="owner-ai-badge"><i data-lucide="sparkles" aria-hidden="true"></i> AI Matching</span>
+            <div class="owner-jobs-heading-actions">
+              <span class="owner-ai-badge"><i data-lucide="sparkles" aria-hidden="true"></i> AI Matching</span>
+              <button class="community-primary" type="button" data-create-job-open>Create Job Post</button>
+            </div>
           </div>
+
+          <div class="job-metric-grid"><article><span>Active Posts</span><strong data-job-metric="active-posts">1</strong></article><article><span>New Matches</span><strong data-job-metric="new-matches">2</strong></article><article><span>Contact Requests</span><strong data-job-metric="contact-requests">0</strong></article><article><span>Interviews</span><strong data-job-metric="interviews">0</strong></article></div>
 
           <article class="owner-demand-card">
             <span class="owner-demand-icon"><i data-lucide="users-round" aria-hidden="true"></i></span>
@@ -6912,15 +7004,19 @@
             </div>
           </article>
 
-          <article class="owner-post-card">
-            <strong>Your active post: “Need Gel-X + Design, split 6/4”</strong>
-            <p>AI ranks anonymous tech profiles by skills, expectations, distance, and schedule. Techs already working at your salon are excluded.</p>
-          </article>
+          <div data-active-job-list>
+            <article class="owner-post-card">
+              <strong>Your active post: “Need Gel-X + Design, split 6/4”</strong>
+              <p>Gel-X, Design · Within 10 miles · Friday through Sunday · Split 6/4</p>
+            </article>
+          </div>
 
           <div class="owner-section-title">
             <h2>Anonymous candidates for your post</h2>
             <span class="owner-ai-badge">2 matches</span>
           </div>
+
+          <div class="job-filter-row"><select data-candidate-filter="skill" aria-label="Filter by skill"><option value="all">All skills</option><option value="Gel-X">Gel-X</option><option value="Design">Design</option><option value="Pedicure">Pedicure</option></select><select data-candidate-filter="distance" aria-label="Filter by distance"><option value="all">Any distance</option><option value="5">Within 5 miles</option><option value="10">Within 10 miles</option></select><select data-candidate-filter="availability" aria-label="Filter by availability"><option value="all">Any availability</option><option value="weekdays">Weekdays</option><option value="weekends">Weekends</option></select><select data-candidate-filter="compensation" aria-label="Filter by compensation"><option value="all">Any compensation</option><option value="split-6-4">Split 6/4</option><option value="weekly-guarantee">Weekly guarantee</option></select></div>
 
           <div class="owner-candidate-grid">
             <article class="owner-candidate-card" data-owner-candidate="a7">
@@ -6937,6 +7033,8 @@
               <p class="owner-why"><strong>Why:</strong> Both required skills match, compensation expectation equals your offer, and availability covers your busiest hours.</p>
               <div class="owner-job-actions">
                 <button class="owner-action is-primary" type="button" data-owner-job-action="request-contact">Request contact</button>
+                <button class="owner-action is-secondary" type="button" aria-pressed="false" data-owner-job-action="save">Save Candidate</button>
+                <button class="owner-action is-secondary" type="button" data-owner-job-action="share">Share with manager</button>
                 <button class="owner-action is-secondary" type="button" data-owner-job-action="dismiss">Dismiss</button>
               </div>
             </article>
@@ -6955,30 +7053,37 @@
               <p class="owner-why"><strong>Why:</strong> Gel-X matches, but no design skill is listed and this tech expects a weekly guarantee your post does not offer.</p>
               <div class="owner-job-actions">
                 <button class="owner-action is-primary" type="button" data-owner-job-action="request-contact">Request contact</button>
+                <button class="owner-action is-secondary" type="button" aria-pressed="false" data-owner-job-action="save">Save Candidate</button>
+                <button class="owner-action is-secondary" type="button" data-owner-job-action="share">Share with manager</button>
                 <button class="owner-action is-secondary" type="button" data-owner-job-action="dismiss">Dismiss</button>
               </div>
             </article>
           </div>
+          <div class="job-empty community-empty-state" data-job-empty role="status" aria-live="polite" hidden><strong>No candidates match these filters.</strong><span>Try broader skills, distance, availability, or compensation.</span><button type="button" data-job-clear-filters>Clear filters</button></div>
+
+          <div class="job-pipeline" data-job-pipeline><article><span>Matched</span><strong data-stage-count="matched">2</strong></article><article><span>Contact Requested</span><strong data-stage-count="contact-requested">0</strong></article><article><span>Interviewing</span><strong data-stage-count="interviewing">0</strong></article><article><span>Closed</span><strong data-stage-count="closed">0</strong></article></div>
 
           <aside class="owner-guardrail">
             <strong>Privacy and hiring guardrails</strong>
             <p>AI ranks anonymous tech profiles; you never see identity from a suggestion alone. Contact is a two-way door: the tech must approve before you see any name or phone number. NEXORA is a connection board and does not hire, pay, recruit, or advise on 1099/W-2 terms.</p>
           </aside>
+
+          <div class="community-dialog-backdrop" data-create-job-dialog hidden><section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="create-job-title"><header><h2 id="create-job-title">Create Job Post</h2><button type="button" aria-label="Close Create Job Post" data-dialog-close>×</button></header><form data-create-job-form><label>Role title<input name="jobTitle" required></label><label>Required skills<input name="jobSkills" required></label><label>Maximum distance<input name="jobDistance" type="number" min="1" value="10"></label><label>Availability<input name="jobAvailability"></label><label>Compensation preference<select name="jobCompensation"><option value="split-6-4">Split 6/4</option><option value="weekly-guarantee">Weekly guarantee</option></select></label><p class="community-field-error" data-job-form-error aria-live="polite"></p><footer><button type="button" data-dialog-close>Cancel</button><button class="community-primary" type="submit">Publish post</button></footer></form></section></div>
             </section>
 
             <section class="tab-panel" id="panel-events" data-tab-panel="events" role="tabpanel" aria-label="Community Events" hidden>
-              <div class="placeholder-panel">
-                <div>
-                  <h2>Events</h2>
-                  <p>See upcoming community events, meetups, and professional sessions.</p>
-                </div>
-              </div>
+              <div class="community-panel-head"><div><span class="community-eyebrow">Salon calendar</span><h2>Events</h2><p>Plan training, customer experiences, promotions, and networking.</p></div><button class="community-primary" type="button" data-create-event-open>Create Event</button></div>
+              <div class="event-toolbar"><div class="community-filter-row"><button class="is-active" type="button" aria-pressed="true" data-event-filter="all">All</button><button type="button" aria-pressed="false" data-event-filter="staff-training">Staff Training</button><button type="button" aria-pressed="false" data-event-filter="customer-event">Customer Event</button><button type="button" aria-pressed="false" data-event-filter="promotion">Promotion</button><button type="button" aria-pressed="false" data-event-filter="industry">Industry</button></div><div class="event-view-switch"><button class="is-active" type="button" aria-pressed="true" data-event-view="list">List</button><button type="button" aria-pressed="false" data-event-view="calendar">Calendar</button></div></div>
+              <div class="event-layout"><div data-event-list></div><div data-event-calendar hidden></div><aside class="community-card event-detail" data-event-detail><h3>Event details</h3><p>Select an event to view RSVP, Attendees, Linked group, and Reminder status.</p></aside></div>
+              <div class="community-dialog-backdrop" data-create-event-dialog hidden><section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="create-event-title"><header><h2 id="create-event-title">Create Event</h2><button type="button" aria-label="Close Create Event" data-dialog-close>×</button></header><form data-create-event-form><label>Title<input name="eventTitle" required></label><label>Description<textarea name="eventDescription"></textarea></label><label>Type<select name="eventType"><option value="staff-training">Staff Training</option><option value="customer-event">Customer Event</option><option value="promotion">Promotion</option><option value="industry">Industry</option></select></label><label>Starts<input name="eventStart" type="datetime-local" required></label><label>Ends<input name="eventEnd" type="datetime-local" required></label><label>Mode<select name="eventMode"><option value="in-person">In person</option><option value="online">Online</option></select></label><label>Location<input name="eventLocation"></label><label>Audience<select name="eventAudience" data-event-group-options></select></label><label>Capacity<input name="eventCapacity" type="number" min="1" value="20"></label><label class="event-check"><input name="eventRsvp" type="checkbox" checked> RSVP required</label><label class="event-check"><input name="eventReminder" type="checkbox" checked> Send reminder</label><p class="community-field-error" data-event-form-error aria-live="polite"></p><footer><button type="button" data-dialog-close>Cancel</button><button class="community-primary" type="submit">Create Event</button></footer></form></section></div>
             </section>
           </div>
         </section>
       </main>
     </div>
   </div>
+
+  <div class="community-notice" data-community-notice role="status" aria-live="polite" hidden></div>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
@@ -6991,53 +7096,6 @@
         var collapsed = subnav.classList.toggle("is-collapsed");
         toggle.classList.toggle("is-expanded", !collapsed);
         toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
-      });
-    });
-
-    function activateCommunityTab(target) {
-      document.querySelectorAll('[data-tab-target]').forEach(function (tab) {
-        var isActive = tab.dataset.tabTarget === target;
-        tab.classList.toggle('is-active', isActive);
-        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
-      });
-      document.querySelectorAll('[data-tab-panel]').forEach(function (panel) {
-        var isActive = panel.dataset.tabPanel === target;
-        panel.classList.toggle('is-active', isActive);
-        panel.hidden = !isActive;
-      });
-    }
-
-    document.querySelectorAll('[data-tab-target]').forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        activateCommunityTab(tab.dataset.tabTarget);
-        setDrawer(false);
-      });
-    });
-
-    var jobsNoticeTimer = 0;
-    function showJobsNotice(message) {
-      var oldNotice = document.querySelector("[data-owner-jobs-notice]");
-      if (oldNotice) oldNotice.remove();
-      var notice = document.createElement("div");
-      notice.className = "owner-jobs-notice";
-      notice.dataset.ownerJobsNotice = "";
-      notice.setAttribute("role", "status");
-      notice.textContent = message;
-      document.body.appendChild(notice);
-      window.clearTimeout(jobsNoticeTimer);
-      jobsNoticeTimer = window.setTimeout(function () { notice.remove(); }, 2600);
-    }
-
-    document.querySelectorAll("[data-owner-job-action]").forEach(function (button) {
-      button.addEventListener("click", function () {
-        if (button.dataset.ownerJobAction === "request-contact") {
-          showJobsNotice("Request sent. The tech decides whether to reveal their contact.");
-          return;
-        }
-        var candidate = button.closest("[data-owner-candidate]");
-        if (candidate) candidate.classList.add("is-dismissed");
-        button.disabled = true;
-        showJobsNotice("Candidate dismissed. AI will use this feedback to improve matches.");
       });
     });
 
@@ -7056,6 +7114,7 @@
     backdrop.addEventListener("click", function () { setDrawer(false); });
   </script>
 
+  <script src="../assets/community-page.js"></script>
   <script>
     var communityTab = 'feed';
     try {

@@ -657,7 +657,12 @@ Use this transition guard:
 ```js
 function moveCandidate(candidateId, stage) {
   var allowed = ['matched', 'contact-requested', 'interviewing', 'closed'];
-  var candidate = state.candidates.find(function (item) { return item.id === candidateId; });
+  var candidate = null;
+  state.candidates.some(function (item) {
+    if (item.id !== candidateId) return false;
+    candidate = item;
+    return true;
+  });
   if (!candidate) return { ok:false, error:'Candidate not found.' };
   if (allowed.indexOf(stage) === -1) return { ok:false, error:'Choose a valid hiring stage.' };
   candidate.stage = stage;
@@ -947,4 +952,4 @@ git log -7 --oneline
 node --test html/pages/community.test.mjs html/assets/community-page.test.mjs
 ```
 
-Expected: clean worktree, seven task commits, and zero test failures.
+Expected: clean worktree, at least seven task commits plus any required review-fix commits, and zero test failures.
