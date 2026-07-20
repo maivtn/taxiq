@@ -1542,6 +1542,7 @@
         const clearSignatureButton = byId("clear-signature");
         let signatureDrawn = false;
         let activeSignaturePointer = null;
+        let signaturePointerMoved = false;
         let statusTimer = 0;
         let storage = null;
 
@@ -1818,6 +1819,22 @@
 
           function drawSignatureBlock(signatureSource, signerName, signatureDate) {
             const blockHeight = 168;
+            const leftX = margin + 14;
+            const leftWidth = 590;
+            const rightX = margin + 640;
+            const rightWidth = contentWidth - 654;
+
+            function boundedLines(text, maxWidth, maxLines) {
+              return wrappedLines(text, maxWidth, maxLines).map(function (line) {
+                const suffix = line.endsWith("...") ? "..." : "";
+                let content = suffix ? line.slice(0, -3) : line;
+                while (content && context.measureText(content + suffix).width > maxWidth) {
+                  content = content.slice(0, -1).trimEnd();
+                }
+                return content + suffix;
+              });
+            }
+
             context.fillStyle = "#ffffff";
             context.fillRect(margin, cursorY, contentWidth, blockHeight);
             context.strokeStyle = "#aeb7c8";
@@ -1827,22 +1844,28 @@
             context.fillText("Signature of U.S. person", margin + 14, cursorY + 8);
 
             if (signatureSource && signatureSource.width && signatureSource.height && values.signatureDrawn) {
-              const maxWidth = 590;
               const maxHeight = 88;
-              const scale = Math.min(maxWidth / signatureSource.width, maxHeight / signatureSource.height);
+              const scale = Math.min(leftWidth / signatureSource.width, maxHeight / signatureSource.height);
               const drawWidth = signatureSource.width * scale;
               const drawHeight = signatureSource.height * scale;
-              context.drawImage(signatureSource, margin + 14, cursorY + 28, drawWidth, drawHeight);
+              context.drawImage(signatureSource, leftX, cursorY + 28, drawWidth, drawHeight);
             } else {
-              setFont(30, "400", "Georgia, serif");
+              setFont(26, "400", "Georgia, serif");
               context.fillStyle = "#111318";
-              context.fillText("/s/ " + stringValue(signerName).trim(), margin + 14, cursorY + 52);
+              boundedLines("/s/ " + stringValue(signerName).trim(), leftWidth, 3).forEach(function (line, index) {
+                context.fillText(line, leftX, cursorY + 42 + (index * 29));
+              });
             }
 
+            setFont(12, "700");
+            context.fillStyle = "#4b5364";
+            context.fillText("Full legal name", rightX, cursorY + 31);
             setFont(15, "400");
             context.fillStyle = "#111318";
-            context.fillText("Full legal name: " + stringValue(signerName).trim(), margin + 640, cursorY + 50);
-            context.fillText("Date: " + formatUsDate(signatureDate), margin + 640, cursorY + 80);
+            boundedLines(stringValue(signerName).trim(), rightWidth, 3).forEach(function (line, index) {
+              context.fillText(line, rightX, cursorY + 50 + (index * 19));
+            });
+            context.fillText("Date: " + formatUsDate(signatureDate), rightX, cursorY + 118);
             cursorY += blockHeight + 13;
           }
 
@@ -2047,7 +2070,10 @@
 
         function applyDraft(draft) {
           const safeDraft = sanitizeDraft(draft);
+          form.reset();
           clearSignature();
+          syncPrintedSignatureDate();
+          ["ssn", "ein"].forEach(function (type) { byId(type + "-mask").hidden = true; });
           const textFieldIds = {
             taxpayerName: "taxpayer-name",
             businessName: "business-name",
@@ -2143,7 +2169,12 @@
 
         signatureCanvas.addEventListener("pointerdown", function (event) {
           if (event.pointerType === "mouse" && event.button !== 0) return;
+          if (activeSignaturePointer !== null) {
+            event.preventDefault();
+            return;
+          }
           activeSignaturePointer = event.pointerId;
+          signaturePointerMoved = false;
           signatureCanvas.setPointerCapture(event.pointerId);
           const point = signaturePoint(event);
           signatureContext.beginPath();
@@ -2156,13 +2187,23 @@
           const point = signaturePoint(event);
           signatureContext.lineTo(point.x, point.y);
           signatureContext.stroke();
+          signaturePointerMoved = true;
           setSignatureState(true);
           event.preventDefault();
         });
 
         ["pointerup", "pointercancel", "lostpointercapture"].forEach(function (type) {
           signatureCanvas.addEventListener(type, function (event) {
-            if (event.pointerId === activeSignaturePointer) activeSignaturePointer = null;
+            if (event.pointerId !== activeSignaturePointer) return;
+            if (type === "pointerup" && !signaturePointerMoved) {
+              const point = signaturePoint(event);
+              signatureContext.beginPath();
+              signatureContext.arc(point.x, point.y, signatureContext.lineWidth / 2, 0, Math.PI * 2);
+              signatureContext.fill();
+              setSignatureState(true);
+            }
+            activeSignaturePointer = null;
+            signaturePointerMoved = false;
           });
         });
 
@@ -2213,6 +2254,7 @@
           if (!window.confirm("Clear every field and remove the saved draft from this device?")) return;
           form.reset();
           clearSignature();
+          syncPrintedSignatureDate();
           if (storage) {
             try { storage.removeItem(STORAGE_KEY); } catch (error) { /* Storage is best-effort. */ }
           }
