@@ -99,13 +99,13 @@
     if (Object.prototype.hasOwnProperty.call(updates, 'visibility')) {
       if (updates.visibility === 'discoverable' && group.type !== 'customer') return { ok: false, error: 'Only Customer groups can be discoverable.' };
       if (updates.visibility !== 'private' && updates.visibility !== 'discoverable') return { ok: false, error: 'Choose a valid visibility.' };
-      group.visibility = updates.visibility;
     }
-    if (Object.prototype.hasOwnProperty.call(updates, 'description')) group.description = String(updates.description == null ? '' : updates.description).replace(/^\s+|\s+$/g, '');
     if (Object.prototype.hasOwnProperty.call(updates, 'posting')) {
       if (validPosting.indexOf(updates.posting) === -1) return { ok: false, error: 'Choose a valid posting permission.' };
-      group.posting = updates.posting;
     }
+    if (Object.prototype.hasOwnProperty.call(updates, 'visibility')) group.visibility = updates.visibility;
+    if (Object.prototype.hasOwnProperty.call(updates, 'description')) group.description = String(updates.description == null ? '' : updates.description).replace(/^\s+|\s+$/g, '');
+    if (Object.prototype.hasOwnProperty.call(updates, 'posting')) group.posting = updates.posting;
     return { ok: true, group: group };
   }
 

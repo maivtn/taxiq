@@ -5,7 +5,7 @@ import vm from 'node:vm';
 
 const SCRIPT_URL = new URL('./community-page.js', import.meta.url);
 
-function loadApi() {
+function loadApi(overrides = {}) {
   const document = {
     readyState: 'loading',
     addEventListener() {},
@@ -19,14 +19,16 @@ function loadApi() {
     setTimeout,
     clearTimeout
   };
-  vm.runInNewContext(readFileSync(SCRIPT_URL, 'utf8'), {
+  const context = {
     window,
     document,
     URLSearchParams,
     setTimeout,
     clearTimeout,
     console
-  });
+  };
+  if (overrides.Date) context.Date = overrides.Date;
+  vm.runInNewContext(readFileSync(SCRIPT_URL, 'utf8'), context);
   return window.NEXORA_COMMUNITY;
 }
 
@@ -62,6 +64,39 @@ test('applies privacy-first group defaults and creates multiple groups', () => {
   assert.equal(api.updateGroup(created.group.id, { posting: 'moderators' }).group.posting, 'moderators');
   assert.equal(api.toggleArchivedGroup(created.group.id).group.archived, true);
   assert.ok(api.filterGroups('', 'all').length >= 5);
+});
+
+test('rejects invalid group creation and keeps failed updates atomic', () => {
+  const api = loadApi();
+  const customer = api.state.groups[1];
+  const originalDescription = customer.description;
+  const originalVisibility = customer.visibility;
+  const originalPosting = customer.posting;
+  const invalidType = api.createGroup({ name: 'Invalid type', type: 'public' });
+  const failedUpdate = api.updateGroup(customer.id, {
+    visibility: 'discoverable',
+    description: 'This change must not persist.',
+    posting: 'everyone'
+  });
+
+  assert.equal(invalidType.ok, false);
+  assert.match(invalidType.error, /valid group type/i);
+  assert.equal(failedUpdate.ok, false);
+  assert.equal(customer.visibility, originalVisibility);
+  assert.equal(customer.description, originalDescription);
+  assert.equal(customer.posting, originalPosting);
+});
+
+test('creates four unique group IDs within one millisecond', () => {
+  function FixedDate() {}
+  FixedDate.prototype.getTime = function () { return 1720000000000; };
+  const api = loadApi({ Date: FixedDate });
+  const created = ['One', 'Two', 'Three', 'Four'].map((name) => api.createGroup({ name, type: 'staff' }));
+  const ids = created.map((result) => result.group.id);
+
+  assert.ok(created.every((result) => result.ok));
+  assert.equal(new Set(ids).size, 4);
+  assert.ok(ids.every((id) => id.indexOf('group-1720000000000') === 0));
 });
 
 export { loadApi };
