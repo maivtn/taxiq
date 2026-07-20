@@ -109,7 +109,7 @@
       <main id="screen-region" class="mx-auto w-full max-w-[1200px] px-4 pb-[calc(6.75rem+env(safe-area-inset-bottom))] pt-5 outline-none sm:px-6 lg:px-8 lg:pb-10 lg:pt-8" tabindex="-1">
         <section class="app-screen is-active" id="home" data-ready="true" data-module="home" aria-labelledby="home-title">
           <div class="mb-5 flex items-start justify-between gap-4">
-            <div><p class="eyebrow" data-en="Tuesday, July 14" data-vi="Thứ Ba, 14 tháng 7">Thứ Ba, 14 tháng 7</p><h1 id="home-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Good morning, Jessica" data-vi="Chào buổi sáng, Jessica">Chào buổi sáng, Jessica</h1><p class="mt-1 text-sm text-app-muted" data-en="Your next reward is closer than you think." data-vi="Phần thưởng tiếp theo đang ở rất gần.">Phần thưởng tiếp theo đang ở rất gần.</p></div>
+            <div><p class="eyebrow" data-en="Tuesday, July 14" data-vi="Thứ Ba, 14 tháng 7">Thứ Ba, 14 tháng 7</p><h1 id="home-title" class="mt-1 text-xl font-black tracking-tight sm:text-3xl" data-en="Good morning, Jessica" data-vi="Chào buổi sáng, Jessica">Chào buổi sáng, Jessica</h1><p class="mt-1 text-sm text-app-muted" data-en="Your next reward is closer than you think." data-vi="Phần thưởng tiếp theo đang ở rất gần.">Phần thưởng tiếp theo đang ở rất gần.</p></div>
             <button type="button" class="icon-button hidden lg:inline-grid" data-action="open-notifications" aria-label="Thông báo"><i data-lucide="bell" class="size-5" aria-hidden="true"></i></button>
           </div>
 
@@ -130,13 +130,13 @@
             </div>
 
             <div id="home-appointment" class="app-card hidden flex-col justify-between border-app-gold/30 bg-app-gold/[.05]">
-              <div><div class="flex items-center justify-between"><p class="eyebrow" data-en="Upcoming booking" data-vi="Lịch hẹn sắp tới">Lịch hẹn sắp tới</p><span id="home-appointment-badge" class="rounded-full bg-app-green/10 px-2.5 py-1 text-[11px] font-bold text-app-green"></span></div><strong class="mt-3 block text-md" data-appointment-copy></strong><p id="home-appointment-hint" class="mt-1 text-xs leading-5 text-app-muted"></p></div>
+              <div><div class="flex items-center justify-between"><p class="eyebrow" data-en="Upcoming booking" data-vi="Lịch hẹn sắp tới">Lịch hẹn sắp tới</p><span id="home-appointment-badge" class="rounded-full bg-app-green/10 px-2.5 py-1 text-[11px] font-bold text-app-green"></span></div><strong class="mt-3 block text-sm" data-appointment-copy></strong><p id="home-appointment-hint" class="mt-1 text-xs leading-5 text-app-muted"></p></div>
               <div id="home-appointment-arrival" class="mt-5 grid grid-cols-2 gap-2">
                 <button type="button" class="app-chip justify-center" data-action="set-arrival" data-arrival="on_my_way" aria-pressed="false"><span data-en="🚗 I'm On My Way" data-vi="🚗 Đang trên đường">🚗 Đang trên đường</span></button>
                 <button type="button" class="app-chip justify-center" data-action="set-arrival" data-arrival="arrived" aria-pressed="false"><span data-en="📍 I've Arrived" data-vi="📍 Đã tới nơi">📍 Đã tới nơi</span></button>
               </div>
               <button type="button" id="home-appointment-checkin" class="app-button mt-3 hidden w-full" data-action="checkin-from-appointment"><i data-lucide="check" class="size-4" aria-hidden="true"></i><span data-en="Check In Now" data-vi="Check-in ngay">Check-in ngay</span></button>
-              <button type="button" class="app-link mt-3 inline-flex min-h-11 items-center justify-center text-xs underline underline-offset-4" data-action="navigate" data-target="book1" data-en="Book again" data-vi="Đặt lại lịch">Đặt lại lịch</button>
+              <button type="button" class="app-link mt-1 inline-flex min-h-11 items-center justify-center text-xs underline underline-offset-4" data-action="navigate" data-target="book1" data-en="Book again" data-vi="Đặt lại lịch">Đặt lại lịch</button>
             </div>
           </div>
 
@@ -183,7 +183,7 @@
             </article>
             <div class="space-y-4">
               <button type="button" class="app-card flex w-full items-center gap-4 text-left transition hover:-translate-y-0.5 hover:border-app-pink" data-action="navigate" data-target="referral">
-                <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-app-purple/10 text-2xl" aria-hidden="true">🤝</span>
+                <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-app-purple/10 text-app-purple" aria-hidden="true"><i data-lucide="handshake" class="size-6" aria-hidden="true"></i></span>
                 <span class="min-w-0 flex-1"><strong class="block" data-en="Invite friends — you +50, they +100" data-vi="Mời bạn bè — bạn +50, bạn bè +100">Invite friends — you +50, they +100</strong><small class="mt-0.5 block text-app-muted" data-en="Share your code JESSICA50" data-vi="Chia sẻ mã JESSICA50">Share your code JESSICA50</small></span>
                 <i data-lucide="chevron-right" class="size-4 shrink-0 text-app-muted" aria-hidden="true"></i>
               </button>

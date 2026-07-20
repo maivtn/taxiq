@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.0/skeleton.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.0/themes/monarch/theme.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.0/themes/monarch/palettes/purple.min.css">
   <style>
     :root {
       --luxury-gold: #d4af37;
@@ -266,31 +269,43 @@
     .feed-line { font-size: 12px; font-weight: 600; color: var(--nexora-muted); padding: 8px 0; border-bottom: 1px solid var(--nexora-rule); line-height: 1.6; }
     .feed-line:last-child { border-bottom: 0; }
 
-    /* ── appointments calendar ── */
-    .ap-daybar { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-    .ap-day { border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 7px 16px; font-size: 13px; font-weight: 800; color: var(--nexora-muted); }
-    .ap-day.is-active { background: var(--nexora-brand); border-color: transparent; color: #fff; }
-    .ap-count { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--nexora-muted); }
-    .ap-grid { display: grid; grid-template-columns: 1.5fr 320px; gap: 14px; align-items: start; }
-    @media (max-width: 1000px) { .ap-grid { grid-template-columns: 1fr; } }
-    .ap-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
-    .ap-table th { padding: 8px 6px; text-align: center; font-size: 11px; font-weight: 800; color: var(--nexora-muted); border-bottom: 1px solid var(--nexora-border); white-space: nowrap; }
-    .ap-table th:first-child { text-align: left; }
-    .ap-table td { padding: 4px; border-bottom: 1px solid var(--nexora-rule); vertical-align: top; }
-    .ap-time { font-weight: 800; color: var(--nexora-subtle); white-space: nowrap; font-size: 11px; }
-    .ap-card { display: block; width: 100%; border: 0; border-radius: 8px; background: #efeaff; color: var(--nexora-text); padding: 6px 8px; font-size: 11.5px; font-weight: 800; text-align: left; line-height: 1.25; margin-bottom: 4px; }
-    .ap-card:last-child { margin-bottom: 0; }
-    .ap-card.unassigned { background: #fff4e2; }
-    .ap-card.is-sel { outline: 2px solid var(--nexora-brand); }
-    .ap-card .ap-svc { font-weight: 600; color: var(--nexora-muted); font-size: 10.5px; }
-    .ap-cell-add { width: 100%; border: 1px dashed var(--nexora-border); border-radius: 8px; background: transparent; color: var(--nexora-subtle); padding: 5px; font-size: 13px; }
-    .ap-cell-add:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
+    /* ── appointments / FullCalendar ── */
+    .ap-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .ap-summary { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .ap-count { font-size: 12px; font-weight: 800; color: var(--nexora-text); }
+    .ap-filter { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 800; color: var(--nexora-muted); text-transform: uppercase; letter-spacing: .04em; }
+    .ap-filter .pos-input { height: 36px; min-width: 160px; text-transform: none; letter-spacing: 0; }
+    .ap-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 14px; align-items: start; }
+    .ap-calendar-shell { min-width: 0; overflow: hidden; border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; padding: 12px; }
+    .ap-calendar-empty { display: grid; place-items: center; min-height: 540px; padding: 32px; color: var(--nexora-muted); font-size: 13px; font-weight: 700; text-align: center; line-height: 1.7; }
+    .ap-form-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 0 8px; }
+    .ap-form-grid > div { min-width: 0; }
+    .ap-form-meta { display: flex; align-items: center; gap: 6px; margin: 8px 0 2px; flex-wrap: wrap; }
+    .ap-panel-empty { text-align: center; padding: 34px 10px; line-height: 1.8; }
+    .ap-panel-empty i { display: block; margin-bottom: 10px; color: var(--nexora-brand); font-size: 28px; }
     .ap-form label { display: block; font-size: 11px; font-weight: 800; color: var(--nexora-muted); text-transform: uppercase; letter-spacing: .04em; margin: 10px 0 4px; }
     .ap-form .pos-input { width: 100%; }
     .ap-chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .ap-chip { border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 6px 9px; font-size: 12px; font-weight: 700; color: var(--nexora-muted); }
     .ap-chip.is-on { background: var(--nexora-brand); border-color: transparent; color: #fff; }
     .ap-warn { font-size: 11.5px; font-weight: 700; color: var(--nexora-warning); margin-top: 10px; min-height: 16px; }
+
+    /* FullCalendar v7 hashes theme classes, so eventDidMount adds this stable local hook. */
+    .ap-calendar-shell .nexora-ap-event { border-inline-start: 3px solid var(--ap-event-accent, var(--nexora-brand)) !important; border-radius: 7px !important; box-shadow: 0 3px 10px rgba(15, 23, 42, .12); cursor: pointer; overflow: hidden; }
+    .ap-calendar-shell .nexora-ap-event:hover { filter: saturate(1.1); box-shadow: 0 6px 14px rgba(15, 23, 42, .18); }
+    .ap-event { min-width: 0; overflow: hidden; }
+    .ap-event-top { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+    .ap-event-time { font-size: 9.5px; font-weight: 900; opacity: .88; }
+    .ap-event-name { overflow: hidden; font-size: 10.5px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+    .ap-event-service { overflow: hidden; margin-top: 2px; font-size: 9px; font-weight: 700; opacity: .82; text-overflow: ellipsis; white-space: nowrap; }
+    .ap-event-status { display: inline-block; margin-top: 3px; border-radius: 999px; background: rgba(255,255,255,.22); padding: 1px 5px; font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: .03em; }
+    @media (max-width: 1120px) { .ap-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 720px) {
+      .ap-calendar-shell { padding: 8px; }
+      .ap-filter { width: 100%; }
+      .ap-filter .pos-input { flex: 1; min-width: 0; }
+      .ap-form-grid { grid-template-columns: 1fr 1fr; }
+    }
 
     /* ── sms campaigns ── */
     .sms-banner { display: none; align-items: center; gap: 10px; border: 1px solid rgba(0, 184, 115, .35); background: #e7f8f0; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-size: 13px; font-weight: 700; color: #04794f; }
@@ -697,23 +712,30 @@
             <div class="pos-card-head">
               <h3><i class="bi bi-calendar-check" aria-hidden="true"></i> Appointments</h3>
               <div class="pos-inline">
-                <span class="pos-muted"><i class="bi bi-square-fill" style="color:var(--nexora-violet)" aria-hidden="true"></i> tech assigned · <i class="bi bi-square-fill" style="color:var(--nexora-warning)" aria-hidden="true"></i> unassigned</span>
                 <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-ap-add><i class="bi bi-plus-lg"></i> New appointment</button>
               </div>
             </div>
-            <div class="ap-daybar">
-              <button class="ap-day is-active" type="button" data-ap-day="today">Today</button>
-              <button class="ap-day" type="button" data-ap-day="tomorrow">Tomorrow</button>
-              <span class="ap-count" data-ap-count></span>
+            <div class="ap-toolbar">
+              <div class="ap-summary">
+                <span class="pos-chip pos-chip-blue"><i class="bi bi-calendar3" aria-hidden="true"></i> <span class="ap-count" data-ap-count>0 appointments</span></span>
+                <span class="pos-chip pos-chip-green" data-ap-confirmed>0 confirmed</span>
+                <span class="pos-chip pos-chip-amber" data-ap-unassigned>0 unassigned</span>
+              </div>
+              <label class="ap-filter">
+                <i class="bi bi-person-badge" aria-hidden="true"></i> Technician
+                <select class="pos-input" data-ap-tech-filter aria-label="Filter appointments by technician">
+                  <option value="all">All technicians</option>
+                </select>
+              </label>
             </div>
             <div class="ap-grid">
-              <div class="pos-table-wrap">
-                <table class="ap-table" data-ap-table></table>
+              <div class="ap-calendar-shell">
+                <div data-ap-calendar aria-label="Appointment calendar"></div>
               </div>
               <div class="pos-card soft" data-ap-panel></div>
             </div>
             <div class="spec-note">
-              <b>📐 SPEC S12 — Staff appointments:</b> Same bookings table as the public web booking (S11) and the kiosk (S3) — realtime sync. Columns are per tech; unassigned bookings get their own orange column for the front desk to assign later. Production reschedules by drag-and-drop; this prototype uses the form. Double-booking is checked server-side on tech+time (the client only warns). SMS confirmation on create/edit/cancel plus a reminder 2 hours ahead. A no-show past 30 minutes auto-cancels and returns the slot to the pool. Front desk and up can edit; techs only see their own column.
+              <b>📐 SPEC S12 — Staff appointments:</b> Same bookings as the public web booking (S11) and kiosk (S3), presented in a professional day/week calendar. Front desk can select an empty time range, drag to reschedule, resize duration, filter by technician, or use the booking form. The prototype prevents overlapping appointments for the same technician; production repeats that check server-side and sends SMS on create, edit, or cancel.
             </div>
           </div>
         </section>
@@ -721,6 +743,9 @@
     </div>
   </div>
 
+  <script src="../assets/pos-appointments-data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.0/all/global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.0/themes/monarch/global.min.js"></script>
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
@@ -2162,20 +2187,96 @@
       });
 
       /* ═══════════ 📅 APPOINTMENTS ═══════════ */
-      var B_SLOTS = ['10:00 AM', '10:45 AM', '11:30 AM', '12:15 PM', '1:00 PM', '1:45 PM', '2:30 PM', '3:00 PM', '3:45 PM', '4:30 PM', '5:15 PM', '6:00 PM'];
-      // b.eta = how the booked guest is arriving: null (no response) | {st:'otw'|'late', min, at, share} | {st:'here'} | {st:'in'}
-      var BOOKINGS = [
-        { name: 'Emily Torres', phone: '(832) 555-0198', time: '2:30 PM', techId: 't1', svc: '🦶 Pedicure', day: 'today', eta: null },
-        { name: 'Mai Nguyễn', phone: '(713) 552-0194', time: '3:00 PM', techId: 't2', svc: '💅 Gel Service', day: 'today', eta: { st: 'otw', min: 18, at: Date.now(), share: true } },
-        { name: 'Hằng Phạm', phone: '(281) 774-3358', time: '4:30 PM', techId: null, svc: '🦶 Pedicure', day: 'today', eta: null },
-        { name: 'Linh Trần', phone: '(832) 431-8827', time: '1:00 PM', techId: 't3', svc: '✨ Acrylic — Full Set + 🎨 Add-on & Extra', day: 'today' },
-        { name: 'Sarah Johnson', phone: '(713) 225-7809', time: '11:30 AM', techId: 't3', svc: '✨ Acrylic — Full Set', day: 'tomorrow' },
-        { name: 'Jessica Kim', phone: '(832) 906-4471', time: '2:30 PM', techId: null, svc: '🤲 Manicure', day: 'tomorrow' }
-      ];
-      var apDay = 'today', apSel = null, apMode = null, apDraft = null, apSvc = {}, apWarn = '';
-      function apList() {
-        return BOOKINGS.map(function (b, i) { return { b: b, i: i }; })
-          .filter(function (x) { return (x.b.day || 'today') === apDay; });
+      var appointmentData = window.NEXORA_APPOINTMENTS_DATA;
+      var BOOKINGS = appointmentData ? appointmentData.createSeedBookings(new Date()) : [];
+      var AP_COLORS = {
+        t1: { bg: '#5b5ce2', border: '#4243c7', text: '#ffffff' },
+        t2: { bg: '#0787a5', border: '#056c85', text: '#ffffff' },
+        t3: { bg: '#118a62', border: '#08724f', text: '#ffffff' },
+        t4: { bg: '#d97706', border: '#b45309', text: '#ffffff' },
+        t5: { bg: '#c24182', border: '#a5326c', text: '#ffffff' },
+        unassigned: { bg: '#fff1d6', border: '#f59e0b', text: '#7c4a03' }
+      };
+      var AP_STATUS = { pending: 'Pending', confirmed: 'Confirmed', 'checked-in': 'Checked in', completed: 'Completed', 'no-show': 'No show' };
+      var apCalendar = null, apTechFilter = 'all', apSel = null, apMode = null, apDraft = null, apSvc = {}, apWarn = '';
+
+      function apFormatLocal(date) {
+        if (appointmentData) return appointmentData.formatLocalDateTime(date);
+        function pad(n) { return String(n).padStart(2, '0'); }
+        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) +
+          'T' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+      }
+      function apClock(date) {
+        var hour = date.getHours(), suffix = hour >= 12 ? 'PM' : 'AM';
+        return (hour % 12 || 12) + ':' + String(date.getMinutes()).padStart(2, '0') + ' ' + suffix;
+      }
+      function apRelativeDay(start) {
+        var key = String(start || '').slice(0, 10);
+        var today = apFormatLocal(new Date()).slice(0, 10);
+        var tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+        if (key === today) return 'today';
+        if (key === apFormatLocal(tomorrow).slice(0, 10)) return 'tomorrow';
+        return 'future';
+      }
+      function apBookingById(id) {
+        return BOOKINGS.find(function (b) { return String(b.id) === String(id); }) || null;
+      }
+      function apBookingIndex(id) {
+        return BOOKINGS.findIndex(function (b) { return String(b.id) === String(id); });
+      }
+      function apFilteredBookings() {
+        return BOOKINGS.filter(function (b) {
+          if (apTechFilter === 'all') return true;
+          if (apTechFilter === 'unassigned') return !b.techId;
+          return b.techId === apTechFilter;
+        });
+      }
+      function apVisibleBookings() {
+        var list = apFilteredBookings();
+        if (!apCalendar || !apCalendar.view) return list;
+        var start = apCalendar.view.activeStart.getTime(), end = apCalendar.view.activeEnd.getTime();
+        return list.filter(function (b) {
+          var at = new Date(b.start).getTime();
+          return at >= start && at < end;
+        });
+      }
+      function apColor(techId) { return AP_COLORS[techId || 'unassigned'] || AP_COLORS.t1; }
+      function apEvent(booking) {
+        var color = apColor(booking.techId);
+        return {
+          id: String(booking.id),
+          title: booking.name,
+          start: booking.start,
+          end: booking.end,
+          color: color.bg,
+          contrastColor: color.text,
+          extendedProps: {
+            bookingId: booking.id,
+            phone: booking.phone,
+            svc: booking.svc,
+            status: booking.status,
+            source: booking.source,
+            techId: booking.techId,
+            techName: booking.techId ? techName(booking.techId) : 'Unassigned',
+            accent: color.border
+          }
+        };
+      }
+      function apRenderSummary() {
+        var visible = apVisibleBookings();
+        set('[data-ap-count]', visible.length + ' appointment' + (visible.length === 1 ? '' : 's'));
+        set('[data-ap-confirmed]', visible.filter(function (b) { return b.status === 'confirmed' || b.status === 'checked-in'; }).length + ' confirmed');
+        set('[data-ap-unassigned]', visible.filter(function (b) { return !b.techId; }).length + ' unassigned');
+      }
+      function apPopulateTechFilter() {
+        var select = $('[data-ap-tech-filter]');
+        if (!select) return;
+        var value = apTechFilter;
+        select.innerHTML = '<option value="all">All technicians</option>' +
+          TECHS.map(function (t) { return '<option value="' + t.id + '">' + esc(t.name) + '</option>'; }).join('') +
+          '<option value="unassigned">Unassigned</option>';
+        if (Array.from(select.options).some(function (o) { return o.value === value; })) select.value = value;
+        else { apTechFilter = 'all'; select.value = 'all'; }
       }
       function custByPhone(p) {
         var d = String(p || '').replace(/\D/g, '');
@@ -2183,41 +2284,103 @@
         return CUSTOMERS.find(function (c) { return c.phone.replace(/\D/g, '').slice(-10) === d.slice(-10); }) || null;
       }
 
-      function renderAppt() {
-        document.querySelectorAll('[data-ap-day]').forEach(function (b) { b.classList.toggle('is-active', b.getAttribute('data-ap-day') === apDay); });
-        var list = apList();
-        set('[data-ap-count]', list.length + ' appointment' + (list.length === 1 ? '' : 's') + ' · ' + (apDay === 'today' ? 'today' : 'tomorrow'));
+      function apApplyCalendarMove(info) {
+        var booking = apBookingById(info.event.id);
+        if (!booking) { info.revert(); return; }
+        var candidate = {
+          id: booking.id,
+          techId: booking.techId,
+          start: apFormatLocal(info.event.start),
+          end: apFormatLocal(info.event.end || new Date(info.event.start.getTime() + 60 * 60000))
+        };
+        if (appointmentData && appointmentData.hasTechConflict(BOOKINGS, candidate, booking.id)) {
+          info.revert();
+          toast(techName(booking.techId) + ' already has an overlapping appointment.', 'warning');
+          return;
+        }
+        booking.start = candidate.start;
+        booking.end = candidate.end;
+        booking.time = apClock(info.event.start);
+        booking.day = apRelativeDay(candidate.start);
+        renderFloor();
+        apRenderSummary();
+        if (apMode === 'edit' && String(apSel) === String(booking.id)) apOpenEdit(booking.id);
+        toast('Appointment rescheduled · SMS update sent');
+      }
 
-        var cols = TECHS.map(function (t) { return { id: t.id, name: t.name }; }).concat([{ id: null, name: 'Unassigned' }]);
-        var h = '<thead><tr><th>Time</th>' + cols.map(function (c) {
-          return '<th>' + (c.id ? '<span class="pos-avatar" style="width:26px;height:26px;font-size:10px">' + initials(c.name) + '</span><br>' : '✨<br>') + esc(c.name) + '</th>';
-        }).join('') + '</tr></thead><tbody>';
-        h += B_SLOTS.map(function (slot) {
-          return '<tr><td class="ap-time">' + slot + '</td>' + cols.map(function (c) {
-            var found = list.filter(function (x) { return x.b.time === slot && (x.b.techId || null) === c.id; });
-            if (found.length) {
-              return '<td>' + found.map(function (x) {
-                return '<button class="ap-card ' + (c.id ? '' : 'unassigned') + (apSel === x.i ? ' is-sel' : '') + '" data-apsel="' + x.i + '">' +
-                  esc(x.b.name) + '<div class="ap-svc">' + esc(x.b.svc) + '</div></button>';
-              }).join('') + '</td>';
-            }
-            return '<td><button class="ap-cell-add" data-apnew="' + slot + '|' + (c.id || '') + '">＋</button></td>';
-          }).join('') + '</tr>';
-        }).join('') + '</tbody>';
-        html('[data-ap-table]', h);
+      function apInitCalendar() {
+        var el = $('[data-ap-calendar]');
+        if (!el || apCalendar) return;
+        if (!window.FullCalendar) {
+          el.innerHTML = '<div class="ap-calendar-empty"><div><i class="bi bi-wifi-off" aria-hidden="true"></i><br>The calendar library could not load.<br>Check the internet connection and refresh this page.</div></div>';
+          return;
+        }
+        apCalendar = new FullCalendar.Calendar(el, {
+          initialDate: new Date(),
+          initialView: window.innerWidth <= 720 ? 'listWeek' : 'timeGridWeek',
+          headerToolbar: { left: 'prev,next today', center: 'title', right: 'timeGridDay,timeGridWeek,listWeek' },
+          allDaySlot: false,
+          nowIndicator: true,
+          navLinks: true,
+          selectable: true,
+          selectMirror: true,
+          editable: true,
+          eventResizableFromStart: true,
+          slotMinTime: '09:00:00',
+          slotMaxTime: '19:00:00',
+          slotDuration: '00:15:00',
+          slotHeaderInterval: '01:00:00',
+          scrollTime: '09:00:00',
+          businessHours: { daysOfWeek: [1, 2, 3, 4, 5, 6, 0], startTime: '09:00', endTime: '19:00' },
+          eventTimeFormat: { hour: 'numeric', minute: '2-digit', meridiem: 'short' },
+          dayHeaderFormat: { weekday: 'short', month: 'numeric', day: 'numeric' },
+          height: 'auto',
+          events: function (fetchInfo, successCallback) {
+            successCallback(apFilteredBookings().map(apEvent));
+          },
+          select: function (info) {
+            apOpenNew(info.start, info.end, apTechFilter !== 'all' && apTechFilter !== 'unassigned' ? apTechFilter : null);
+            apCalendar.unselect();
+          },
+          eventClick: function (info) { apOpenEdit(info.event.id); },
+          eventDrop: apApplyCalendarMove,
+          eventResize: apApplyCalendarMove,
+          datesSet: function () { apRenderSummary(); },
+          eventDidMount: function (info) {
+            info.el.classList.add('nexora-ap-event');
+            info.el.style.setProperty('--ap-event-accent', info.event.extendedProps.accent);
+            info.el.title = info.event.title + ' · ' + info.event.extendedProps.techName + ' · ' + info.event.extendedProps.svc;
+          },
+          eventContent: function (info) {
+            var p = info.event.extendedProps;
+            return { html: '<div class="ap-event"><div class="ap-event-top"><span class="ap-event-time">' + esc(info.timeText) + '</span><span class="ap-event-name">' + esc(info.event.title) + '</span></div>' +
+              '<div class="ap-event-service">' + esc(p.techName) + ' · ' + esc(p.svc) + '</div>' +
+              '<span class="ap-event-status">' + esc(AP_STATUS[p.status] || p.status || 'Pending') + '</span></div>' };
+          }
+        });
+        apCalendar.render();
+      }
+
+      function renderAppt() {
+        apPopulateTechFilter();
+        var panel = $('[data-pos-panel="appointments"]');
+        if (panel && panel.classList.contains('is-active')) apInitCalendar();
+        if (apCalendar) apCalendar.refetchEvents();
+        apRenderSummary();
         renderApPanel();
       }
 
       function renderApPanel() {
         var p = $('[data-ap-panel]');
         if (!apMode) {
-          p.innerHTML = '<div class="pos-muted" style="text-align:center;padding:28px 8px;line-height:1.8">' +
-            'Tap an appointment to edit, reschedule, or cancel.<br>Tap an empty ＋ cell to book that slot.<br><br>🟪 tech assigned · 🟧 unassigned</div>';
+          p.innerHTML = '<div class="ap-panel-empty pos-muted"><i class="bi bi-calendar2-week" aria-hidden="true"></i>' +
+            '<strong>Select an appointment</strong><br>Click an event to edit it, or drag across an empty time range to create a booking.<br><br>Drag events to reschedule · drag an edge to change duration</div>';
           return;
         }
         var editing = apMode === 'edit';
         var reqList = Object.keys(apSvc).map(function (id) { return SVC_REQ[id]; }).filter(Boolean);
         p.innerHTML = '<div class="pos-strong" style="font-size:14px">' + (editing ? '<i class="bi bi-pencil-square" aria-hidden="true"></i> Edit appointment' : '<i class="bi bi-plus-lg" aria-hidden="true"></i> New appointment') + '</div>' +
+          (editing ? '<div class="ap-form-meta"><span class="pos-chip pos-chip-blue">' + esc(AP_STATUS[apDraft.status] || apDraft.status) + '</span><span class="pos-chip pos-chip-gray">' + esc(apDraft.source || 'Front desk') + '</span></div>' : '') +
           '<div class="ap-form">' +
           '<label>Customer</label><input class="pos-input" data-apf="name" maxlength="40" value="' + esc(apDraft.name || '') + '">' +
           '<label>Phone</label><input class="pos-input" data-apf="phone" maxlength="14" value="' + esc(apDraft.phone || '') + '">' +
@@ -2229,11 +2392,12 @@
             var missing = reqList.filter(function (r) { return (t.skills || []).indexOf(r) === -1; });
             return '<option value="' + t.id + '"' + (apDraft.techId === t.id ? ' selected' : '') + '>' + esc(t.name) + (missing.length ? ' — missing ' + missing.join(', ') : '') + '</option>';
           }).join('') + '</select>' +
-          '<label>Day</label><select class="pos-input" data-apf="day">' +
-          '<option value="today"' + (apDraft.day !== 'tomorrow' ? ' selected' : '') + '>Today</option>' +
-          '<option value="tomorrow"' + (apDraft.day === 'tomorrow' ? ' selected' : '') + '>Tomorrow</option></select>' +
-          '<label>Time</label><select class="pos-input" data-apf="time">' +
-          B_SLOTS.map(function (s) { return '<option' + (apDraft.time === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>' +
+          '<div class="ap-form-grid"><div><label>Date</label><input class="pos-input" type="date" data-apf="date" value="' + esc(apDraft.date) + '"></div>' +
+          '<div><label>Start time</label><input class="pos-input" type="time" step="900" data-apf="time" value="' + esc(apDraft.time) + '"></div></div>' +
+          '<div class="ap-form-grid"><div><label>Duration</label><select class="pos-input" data-apf="duration">' +
+          [30, 45, 60, 75, 90, 120].map(function (m) { return '<option value="' + m + '"' + (+apDraft.duration === m ? ' selected' : '') + '>' + m + ' minutes</option>'; }).join('') + '</select></div>' +
+          '<div><label>Status</label><select class="pos-input" data-apf="status">' +
+          Object.keys(AP_STATUS).map(function (s) { return '<option value="' + s + '"' + (apDraft.status === s ? ' selected' : '') + '>' + AP_STATUS[s] + '</option>'; }).join('') + '</select></div></div>' +
           '<div class="ap-warn" data-ap-warn>' + esc(apWarn) + '</div>' +
           '<button class="pos-btn pos-btn-primary" type="button" data-ap-save style="width:100%;justify-content:center"><i class="bi bi-check-lg"></i> Save appointment</button>' +
           (editing ? '<button class="pos-btn pos-btn-danger" type="button" data-ap-del style="width:100%;margin-top:8px;justify-content:center"><i class="bi bi-trash" aria-hidden="true"></i> Cancel this appointment</button>' : '') +
@@ -2246,34 +2410,31 @@
         if (!p.querySelector('[data-apf="name"]')) return;
         var f = function (k) { var el = p.querySelector('[data-apf="' + k + '"]'); return el ? el.value : ''; };
         apDraft.name = f('name'); apDraft.phone = f('phone');
-        apDraft.techId = f('tech') || null; apDraft.day = f('day'); apDraft.time = f('time');
+        apDraft.techId = f('tech') || null; apDraft.date = f('date'); apDraft.time = f('time');
+        apDraft.duration = +f('duration') || 60; apDraft.status = f('status') || 'confirmed';
       }
-      function apOpenNew(slot, techId) {
+      function apOpenNew(start, end, techId) {
+        var startDate = start instanceof Date ? new Date(start) : (apCalendar ? new Date(apCalendar.getDate()) : new Date());
+        if (!(start instanceof Date)) startDate.setHours(10, 0, 0, 0);
+        var endDate = end instanceof Date ? new Date(end) : new Date(startDate.getTime() + 60 * 60000);
         apMode = 'new'; apSel = null; apSvc = {}; apWarn = '';
-        apDraft = { name: '', phone: '', techId: techId || null, day: apDay, time: slot || B_SLOTS[0] };
-        renderAppt();
+        apDraft = { name: '', phone: '', techId: techId || null, date: apFormatLocal(startDate).slice(0, 10), time: apFormatLocal(startDate).slice(11, 16), duration: Math.max(15, Math.round((endDate - startDate) / 60000)), status: 'confirmed', source: 'Front desk' };
+        renderApPanel();
+      }
+      function apOpenEdit(id) {
+        var b = apBookingById(id); if (!b) return;
+        var start = new Date(b.start), end = new Date(b.end);
+        apSel = b.id; apMode = 'edit'; apWarn = ''; apSvc = {};
+        (b.serviceIds || []).forEach(function (serviceId) { apSvc[serviceId] = 1; });
+        if (!Object.keys(apSvc).length) MENU.forEach(function (c) { if ((b.svc || '').indexOf(c.label) !== -1) apSvc[c.id] = 1; });
+        apDraft = { name: b.name, phone: b.phone, techId: b.techId || null, date: b.start.slice(0, 10), time: b.start.slice(11, 16), duration: Math.max(15, Math.round((end - start) / 60000)), status: b.status || 'confirmed', source: b.source || 'Front desk' };
+        renderApPanel();
       }
 
       document.addEventListener('click', function (e) {
         if (!e.target.closest('[data-pos-panel="appointments"]')) return;
 
-        var dayBtn = e.target.closest('[data-ap-day]');
-        if (dayBtn) { apDay = dayBtn.getAttribute('data-ap-day'); apMode = null; apSel = null; renderAppt(); return; }
-
-        if (e.target.closest('[data-ap-add]')) { apOpenNew(B_SLOTS[0], null); return; }
-
-        var nw = e.target.closest('[data-apnew]');
-        if (nw) { var pr = nw.getAttribute('data-apnew').split('|'); apOpenNew(pr[0], pr[1] || null); return; }
-
-        var sel = e.target.closest('[data-apsel]');
-        if (sel) {
-          apSel = +sel.getAttribute('data-apsel'); apMode = 'edit'; apWarn = '';
-          var b = BOOKINGS[apSel];
-          apSvc = {};
-          MENU.forEach(function (c) { if ((b.svc || '').indexOf(c.label) !== -1) apSvc[c.id] = 1; });
-          apDraft = { name: b.name, phone: b.phone, techId: b.techId || null, day: b.day || 'today', time: b.time };
-          renderAppt(); return;
-        }
+        if (e.target.closest('[data-ap-add]')) { apOpenNew(null, null, apTechFilter !== 'all' && apTechFilter !== 'unassigned' ? apTechFilter : null); return; }
 
         var ch = e.target.closest('[data-apsvc]');
         if (ch) {
@@ -2287,12 +2448,13 @@
 
         if (e.target.closest('[data-ap-del]')) {
           if (apSel == null) return;
-          var victim = BOOKINGS[apSel];
+          var victim = apBookingById(apSel); if (!victim) return;
           confirmBox('Cancel ' + victim.name + "'s appointment?", 'Production texts the guest and returns the slot to the pool.').then(function (ok) {
             if (!ok) return;
-            BOOKINGS.splice(apSel, 1);
+            var index = apBookingIndex(apSel); if (index >= 0) BOOKINGS.splice(index, 1);
             apMode = null; apSel = null; apWarn = '';
-            renderAppt(); toast('Appointment cancelled', 'info');
+            if (apCalendar) apCalendar.refetchEvents();
+            renderAppt(); renderFloor(); toast('Appointment cancelled · SMS sent', 'info');
           });
           return;
         }
@@ -2302,23 +2464,36 @@
           var name = (apDraft.name || '').trim();
           if (!name) { apWarn = '⚠️ Enter the customer name.'; renderApPanel(); return; }
           if (!Object.keys(apSvc).length) { apWarn = '⚠️ Pick at least one service.'; renderApPanel(); return; }
-          // Client-side double-book warning; production re-checks tech+time server-side.
-          var clash = apDraft.techId && BOOKINGS.some(function (b, i) {
-            return i !== apSel && (b.day || 'today') === apDraft.day && b.time === apDraft.time && b.techId === apDraft.techId;
-          });
-          if (clash) {
-            apWarn = '⚠️ ' + techName(apDraft.techId) + ' is already booked at ' + apDraft.time + ' — change the time or the tech.';
+          if (!apDraft.date || !apDraft.time) { apWarn = '⚠️ Pick a valid date and start time.'; renderApPanel(); return; }
+          var start = new Date(apDraft.date + 'T' + apDraft.time + ':00');
+          var end = new Date(start.getTime() + apDraft.duration * 60000);
+          if (!Number.isFinite(start.getTime())) { apWarn = '⚠️ Pick a valid date and start time.'; renderApPanel(); return; }
+          var candidate = { id: apSel, techId: apDraft.techId, start: apFormatLocal(start), end: apFormatLocal(end) };
+          if (appointmentData && appointmentData.hasTechConflict(BOOKINGS, candidate, apSel)) {
+            apWarn = '⚠️ ' + techName(apDraft.techId) + ' already has an overlapping appointment. Change the time or technician.';
             renderApPanel(); return;
           }
+          var serviceIds = MENU.filter(function (c) { return apSvc[c.id]; }).map(function (c) { return c.id; });
           var svc = MENU.filter(function (c) { return apSvc[c.id]; }).map(function (c) { return c.icon + ' ' + c.label; }).join(' + ');
-          var rec = { name: name, phone: apDraft.phone, time: apDraft.time, techId: apDraft.techId, svc: svc, day: apDraft.day };
-          if (apMode === 'edit' && apSel != null) BOOKINGS[apSel] = rec; else BOOKINGS.push(rec);
-          apDay = apDraft.day; apMode = null; apSel = null; apWarn = '';
-          renderAppt();
+          var rec = apMode === 'edit' ? apBookingById(apSel) : null;
+          if (!rec) { rec = { id: 'apt-' + Date.now(), source: 'Front desk', eta: null }; BOOKINGS.push(rec); }
+          rec.name = name; rec.phone = apDraft.phone; rec.techId = apDraft.techId; rec.serviceIds = serviceIds; rec.svc = svc;
+          rec.start = candidate.start; rec.end = candidate.end; rec.time = apClock(start); rec.day = apRelativeDay(candidate.start); rec.status = apDraft.status;
+          apMode = null; apSel = null; apWarn = '';
+          if (apCalendar) { apCalendar.gotoDate(start); apCalendar.refetchEvents(); }
+          renderAppt(); renderFloor();
           var known = custByPhone(rec.phone);
           toast('Saved · SMS confirmation sent' + (known ? ' to ' + known.name : ''));
           return;
         }
+      });
+
+      document.addEventListener('change', function (e) {
+        var filter = e.target.closest('[data-ap-tech-filter]');
+        if (!filter) return;
+        apTechFilter = filter.value;
+        if (apCalendar) apCalendar.refetchEvents();
+        apRenderSummary();
       });
 
       // Phone mask on the booking form

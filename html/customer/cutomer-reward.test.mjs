@@ -455,6 +455,14 @@ test('styles the upcoming appointment Book again action as a compact underlined 
   }
 });
 
+test('uses the Lucide handshake icon in the Invite friends card', () => {
+  const source = html();
+  const card = source.match(/<button type="button" class="app-card[^"]*" data-action="navigate" data-target="referral">([\s\S]*?)<\/button>/)?.[1];
+  assert.ok(card, 'Invite friends card must exist');
+  assert.match(card, /data-lucide="handshake"/);
+  assert.doesNotMatch(card, /🤝/);
+});
+
 test('reward review identifies the customer conditions location and exact balance change', () => {
   const source = html();
   for (const id of ['reward-customer', 'reward-conditions', 'reward-location', 'reward-balance', 'reward-after']) {
