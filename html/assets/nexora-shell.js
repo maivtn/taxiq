@@ -51,6 +51,8 @@
       { label: 'Booking Book', tab: 'booking' },
       { label: 'Customers', tab: 'customers' },
       { label: 'Call Log', tab: 'calllog' },
+      { label: 'SMS Campaigns', tab: 'sms-campaigns' },
+      { label: 'QR Codes', tab: 'qr-codes' },
       { label: 'Plans', tab: 'plans' },
       { label: 'Salon Settings', tab: 'settings' }
     ] },

@@ -3,19 +3,27 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
 const BOOKING_URL = new URL('./booking-book-phase-1.html', import.meta.url);
+const SHELL_URL = new URL('../assets/nexora-shell.js', import.meta.url);
 
 function source() {
   assert.ok(existsSync(BOOKING_URL), 'booking-book-phase-1.html must exist');
   return readFileSync(BOOKING_URL, 'utf8');
 }
 
+function shellSource() {
+  assert.ok(existsSync(SHELL_URL), 'nexora-shell.js must exist');
+  return readFileSync(SHELL_URL, 'utf8');
+}
+
 test('registers SMS Campaigns and QR Codes in both Booking Hub navigation surfaces', () => {
   const html = source();
+  const shell = shellSource();
   for (const [target, label] of [['sms-campaigns', 'SMS Campaigns'], ['qr-codes', 'QR Codes']]) {
     assert.equal((html.match(new RegExp(`data-tab-target="${target}"`, 'g')) || []).length, 2);
     assert.match(html, new RegExp(`data-tab-target="${target}"[^>]*aria-controls="panel-${target}"`));
     assert.match(html, new RegExp(`<span>${label}<\\/span>`));
     assert.match(html, new RegExp(`id="panel-${target}"[^>]*data-tab-panel="${target}"[^>]*role="tabpanel"`));
+    assert.match(shell, new RegExp(`label: '${label}', tab: '${target}'`));
   }
   assert.match(html, /qrcodejs\/1\.0\.0\/qrcode\.min\.js/);
 });
@@ -64,6 +72,11 @@ test('ports every QR Codes section and its kiosk surface', () => {
     'Checkbox đồng ý nhận SMS', 'Link & Mã QR', 'Verify code tại quầy',
     'Leads đã thu từ QR này', 'Promotion Code', 'Chế độ Kiosk'
   ]) assert.ok(html.includes(copy), `missing QR copy: ${copy}`);
+});
+
+test('keeps QR form sections inside their desktop grid column', () => {
+  const html = source();
+  assert.match(html, /#panel-qr-codes \.qr-form-stack,\s*#panel-qr-codes \.qr-section \{ min-width:0; \}/);
 });
 
 test('ports QR generation, preview, verification, download, print, kiosk, and publish behavior', () => {
