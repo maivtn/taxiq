@@ -63,4 +63,5 @@ test('renders job profile, activity, consent, and guardrail content', () => {
   assert.match(html, /does not hire, pay, recruit/i);
   assert.match(html, /AI only suggests/i);
   assert.match(html, /1099\/W-2/i);
+  assert.match(html, /Employment terms are between you and the salon\. Consult a professional for tax\/legal questions\./);
 });

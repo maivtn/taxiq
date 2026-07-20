@@ -1660,11 +1660,11 @@
               <button type="button" class="grid h-9 w-9 place-items-center rounded-lg text-nexoraSubtle" aria-label="Jobs help"><i data-lucide="circle-help" class="h-4 w-4"></i></button>
             </header>
             <div class="grid grid-cols-3 border-b border-nailBlush bg-white" role="tablist" aria-label="Jobs views">
-              <button type="button" role="tab" aria-selected="true" aria-controls="job-panel-matches" data-job-tab="matches">Matches</button>
-              <button type="button" role="tab" aria-selected="false" aria-controls="job-panel-profile" data-job-tab="profile">My Job Profile</button>
-              <button type="button" role="tab" aria-selected="false" aria-controls="job-panel-activity" data-job-tab="activity">Activity</button>
+              <button type="button" id="job-tab-matches" role="tab" aria-selected="true" aria-controls="job-panel-matches" data-job-tab="matches">Matches</button>
+              <button type="button" id="job-tab-profile" role="tab" aria-selected="false" aria-controls="job-panel-profile" data-job-tab="profile">My Job Profile</button>
+              <button type="button" id="job-tab-activity" role="tab" aria-selected="false" aria-controls="job-panel-activity" data-job-tab="activity">Activity</button>
             </div>
-            <section id="job-panel-matches" class="space-y-3 px-3 py-4" data-job-panel="matches">
+            <section id="job-panel-matches" class="space-y-3 px-3 py-4" role="tabpanel" aria-labelledby="job-tab-matches" data-job-panel="matches">
               <div class="rounded-lg border border-nexoraSuccess/20 bg-nexoraSuccess/10 p-3 text-[11px] font-semibold leading-4 text-nexoraSuccess">
                 Your current salon can never see this profile. Salons see skills and expectations, never your name, photo, phone, or current salon.
               </div>
@@ -1691,7 +1691,7 @@
                 </div>
               </article>
             </section>
-            <section id="job-panel-profile" class="hidden space-y-3 px-3 py-4" data-job-panel="profile">
+            <section id="job-panel-profile" class="hidden space-y-3 px-3 py-4" role="tabpanel" aria-labelledby="job-tab-profile" data-job-panel="profile">
               <div class="flex items-center justify-between rounded-lg border border-nailBlush bg-white p-3 shadow-card"><div><p class="text-[10px] font-semibold uppercase text-nexoraMuted">Profile status</p><p class="text-[13px] font-semibold capitalize" data-job-profile-current>active</p></div><span class="rounded-full bg-nexoraSuccess/10 px-2 py-1 text-[9px] font-semibold text-nexoraSuccess">Anonymous always on</span></div>
               <div class="space-y-2 rounded-lg border border-nailBlush bg-white p-3 shadow-card">
                 <label class="block text-[10px] font-semibold text-nexoraMuted" data-job-profile-field="skills">Skills<input class="mt-1 h-9 w-full rounded-lg bg-nailPearl px-3 text-[11px] text-nexoraText" value="Gel-X, Design, Pedicure"></label>
@@ -1708,12 +1708,12 @@
                 <button type="button" class="rounded-lg border border-nexoraDanger/30 bg-nexoraDanger/10 px-2 py-2 text-[10px] font-semibold text-nexoraDanger" data-job-profile-status="deleted" data-job-action="open-delete">Delete</button>
               </div>
             </section>
-            <section id="job-panel-activity" class="hidden space-y-2 px-3 py-4" data-job-panel="activity">
+            <section id="job-panel-activity" class="hidden space-y-2 px-3 py-4" role="tabpanel" aria-labelledby="job-tab-activity" data-job-panel="activity">
               <div class="rounded-lg border border-nailBlush bg-white p-3 shadow-card" data-job-activity-state="interested"><p class="text-[12px] font-semibold">Interested</p><p class="text-[10px] text-nexoraMuted">Rose Nails &amp; Spa received your anonymous profile.</p></div>
               <div class="rounded-lg border border-nexoraBrand/30 bg-white p-3 shadow-card" data-job-activity-state="contact-requested"><div class="flex items-center justify-between gap-2"><div><p class="text-[12px] font-semibold">Contact requested</p><p class="text-[10px] text-nexoraMuted">Rose Nails &amp; Spa wants to talk.</p></div><button type="button" class="rounded-lg bg-nexoraBrand px-2 py-2 text-[10px] font-semibold text-white" data-job-action="open-contact">Review</button></div><p class="mt-2 text-[9px] font-semibold uppercase text-nexoraBrandDark" data-job-contact-current>requested</p></div>
               <div class="rounded-lg border border-nailBlush bg-white p-3 shadow-card" data-job-activity-state="contact-shared"><p class="text-[12px] font-semibold">Contact shared</p><p class="text-[10px] text-nexoraMuted">Both sides can now talk directly.</p></div>
               <div class="rounded-lg border border-nailBlush bg-white p-3 shadow-card" data-job-activity-state="declined"><p class="text-[12px] font-semibold">Declined</p><p class="text-[10px] text-nexoraMuted">The salon learned nothing about your identity.</p></div>
-              <div class="rounded-lg bg-nailBlush p-3 text-[10px] font-medium leading-4 text-nexoraText"><strong>AI only suggests.</strong> You decide every connection. NEXORA does not hire, pay, recruit, guarantee work, or advise on 1099/W-2. Employment terms stay between you and the salon.</div>
+              <div class="rounded-lg bg-nailBlush p-3 text-[10px] font-medium leading-4 text-nexoraText"><strong>AI only suggests.</strong> You decide every connection. NEXORA does not hire, pay, recruit, guarantee work, or advise on 1099/W-2. Employment terms are between you and the salon. Consult a professional for tax/legal questions.</div>
             </section>
           </div>
           <nav class="absolute inset-x-0 bottom-0 z-30 grid h-[66px] grid-cols-5 border-t border-nailBlush bg-white/95 px-1 backdrop-blur-xl">
