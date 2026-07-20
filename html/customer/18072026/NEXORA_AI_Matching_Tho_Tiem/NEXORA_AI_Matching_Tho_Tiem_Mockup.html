@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXORA TOUCH — AI Matching Thợ ↔ Tiệm (Mockup)</title>
+<style>
+  :root{
+    --purple:#7c6cf0; --purple-soft:#a99df5; --purple-bg:#f2effd;
+    --ink:#1d1b2e; --muted:#6f6a85; --line:#e8e5f4;
+    --green:#1d9e6f; --green-bg:#e3f6ee;
+    --gold:#b98900; --gold-bg:#fdf3d7;
+    --red:#c94f4f; --card:#ffffff; --page:#f7f6fb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+  body{background:var(--page);color:var(--ink);min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--purple),var(--purple-soft));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px}
+  .brand b{font-size:15px;letter-spacing:.4px}
+  .brand span{display:block;font-size:11.5px;color:var(--muted)}
+  .langbtn{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 14px;font-size:12.5px;font-weight:600;color:var(--purple);cursor:pointer}
+  .mocknote{background:var(--gold-bg);color:var(--gold);border:1px dashed var(--gold);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600;margin-bottom:16px}
+
+  /* view switch */
+  .switch{display:flex;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:20px}
+  .switch button{flex:1;border:none;background:transparent;padding:12px;font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer}
+  .switch button.on{background:var(--purple);color:#fff}
+
+  h2{font-size:16px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+  .sub{font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.55}
+  .aibadge{background:var(--purple-bg);color:var(--purple);font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:20px;letter-spacing:.5px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--purple);border-radius:14px;padding:15px;margin-bottom:13px}
+  .card .row1{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+  .card h3{font-size:14.5px;line-height:1.35}
+  .conf{font-size:11px;font-weight:800;padding:3px 10px;border-radius:14px;white-space:nowrap}
+  .conf.hi{background:var(--green-bg);color:var(--green)}
+  .conf.mid{background:var(--gold-bg);color:var(--gold)}
+  .why{font-size:12.5px;color:var(--muted);margin:8px 0 10px;line-height:1.55}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .chip{font-size:11px;font-weight:700;background:var(--purple-bg);color:var(--purple);border-radius:12px;padding:3px 10px}
+  .chip.flag{background:#f4f3f8;color:var(--muted);font-weight:600}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{border:none;border-radius:10px;padding:9px 16px;font-size:12.5px;font-weight:700;cursor:pointer}
+  .btn.primary{background:var(--purple);color:#fff}
+  .btn.ghost{background:#fff;color:var(--muted);border:1px solid var(--line)}
+  .btn.ghost:hover{color:var(--red);border-color:var(--red)}
+
+  .insight{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:20px}
+  .insight .num{font-size:22px;font-weight:800;color:var(--purple)}
+  .insight .lbl{font-size:12.5px;font-weight:600;margin-top:2px}
+  .insight .hint{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.45}
+
+  .privacy{background:var(--green-bg);border-radius:12px;padding:11px 14px;font-size:12px;line-height:1.55;color:var(--green);font-weight:600;margin-bottom:16px}
+  .disc{background:var(--purple-bg);border-radius:14px;padding:14px 16px;font-size:12.5px;line-height:1.6;margin-top:10px}
+  .disc b{color:var(--purple)}
+  .disc ul{margin:6px 0 0 18px}
+  .disc li{margin-bottom:4px}
+
+  .hidden{display:none}
+  .dismissed{opacity:.45;filter:grayscale(.4)}
+
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(29,27,46,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+  .modal.show{display:flex}
+  .mbox{background:#fff;border-radius:16px;padding:22px;max-width:380px;width:100%}
+  .mbox h3{font-size:15px;margin-bottom:8px}
+  .mbox p{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:16px}
+
+  #toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:13px;padding:11px 20px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center;z-index:60}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">N</div>
+      <div>
+        <b>NEXORA TOUCH · Jobs</b>
+        <span data-en="AI Matching — Nail Techs ↔ Salons" data-vi="AI Matching — Thợ Nail ↔ Tiệm">AI Matching — Nail Techs ↔ Salons</span>
+      </div>
+    </div>
+    <button class="langbtn" onclick="toggleLang()" id="langbtn">Tiếng Việt</button>
+  </div>
+
+  <div class="mocknote" data-en="⚠ MOCKUP — tech view lives in the STAFF APP, salon view lives in the BUSINESS DASHBOARD. Data is demo." data-vi="⚠ MOCKUP — phía thợ nằm trong STAFF APP, phía tiệm nằm trong BUSINESS DASHBOARD. Số liệu là demo.">⚠ MOCKUP — tech view lives in the STAFF APP, salon view lives in the BUSINESS DASHBOARD. Data is demo.</div>
+
+  <div class="switch">
+    <button id="swTech" class="on" onclick="showView(0)" data-en="👩‍🎨 I'm a nail tech — find me a salon" data-vi="👩‍🎨 Tôi là thợ — tìm tiệm cho tôi">👩‍🎨 I'm a nail tech — find me a salon</button>
+    <button id="swSalon" onclick="showView(1)" data-en="🏪 I own a salon — find me techs" data-vi="🏪 Tôi là chủ tiệm — tìm thợ cho tôi">🏪 I own a salon — find me techs</button>
+  </div>
+
+  <!-- ================= TECH VIEW ================= -->
+  <div id="viewTech">
+    <div class="privacy" data-en="🔒 You are anonymous. Salons see your skills and expectations — never your name, photo, phone, or current salon. Your current salon can NEVER see this profile." data-vi="🔒 Bạn đang ẩn danh. Tiệm chỉ thấy tay nghề và mong muốn — không bao giờ thấy tên, ảnh, SĐT hay tiệm hiện tại của bạn. Tiệm bạn đang làm KHÔNG BAO GIỜ thấy hồ sơ này.">🔒 You are anonymous. Salons see your skills and expectations — never your name, photo, phone, or current salon. Your current salon can NEVER see this profile.</div>
+
+    <h2><span data-en="Salons hiring near you" data-vi="Tiệm đang tuyển gần bạn">Salons hiring near you</span> <span class="aibadge">AI</span></h2>
+    <p class="sub" data-en="Matched by skills, distance, pay split and schedule — by meaning, not keywords (“làm bột” still matches “acrylic”)." data-vi="Ghép theo tay nghề, khoảng cách, ăn chia và lịch làm — theo ý nghĩa, không cần trùng từ (“làm bột” vẫn khớp “acrylic”).">Matched by skills, distance, pay split and schedule — by meaning, not keywords (“làm bột” still matches “acrylic”).</p>
+
+    <div class="card" id="t1">
+      <div class="row1">
+        <h3 data-en="Rose Nails &amp; Spa — needs Gel-X + Design" data-vi="Rose Nails &amp; Spa — cần thợ Gel-X + Design">Rose Nails &amp; Spa — needs Gel-X + Design</h3>
+        <span class="conf hi" data-en="94% match" data-vi="Khớp 94%">94% match</span>
+      </div>
+      <div class="chips">
+        <span class="chip">Gel-X</span><span class="chip">Design</span>
+        <span class="chip flag" data-en="4.2 miles" data-vi="4.2 dặm">4.2 miles</span>
+        <span class="chip flag" data-en="Split 6/4 · guarantee first 2 weeks" data-vi="Ăn chia 6/4 · bao lương 2 tuần đầu">Split 6/4 · guarantee first 2 weeks</span>
+      </div>
+      <p class="why" data-en="Why: matches your 2 strongest skills, split equals your expectation, and their busy hours fit your schedule." data-vi="Lý do: trùng 2 tay nghề mạnh nhất của bạn, mức ăn chia đúng mong muốn, giờ đông khách khớp lịch bạn rảnh.">Why: matches your 2 strongest skills, split equals your expectation, and their busy hours fit your schedule.</p>
+      <div class="btnrow">
+        <button class="btn primary" onclick="interest(1)" data-en="I'm interested (stay anonymous)" data-vi="Tôi quan tâm (vẫn ẩn danh)">I'm interested (stay anonymous)</button>
+        <button class="btn ghost" onclick="dismissCard('t1')" data-en="Dismiss" data-vi="Bỏ qua">Dismiss</button>
+      </div>
+    </div>
+
+    <div class="card" id="t2">
+      <div class="row1">
+        <h3 data-en="Golden Glow Spa — needs Pedicure + Waxing" data-vi="Golden Glow Spa — cần thợ Pedicure + Waxing">Golden Glow Spa — needs Pedicure + Waxing</h3>
+        <span class="conf mid" data-en="76% match" data-vi="Khớp 76%">76% match</span>
+      </div>
+      <div class="chips">
+        <span class="chip">Pedicure</span><span class="chip">Waxing</span>
+        <span class="chip flag" data-en="9.8 miles" data-vi="9.8 dặm">9.8 miles</span>
+        <span class="chip flag" data-en="Weekly pay offered" data-vi="Trả lương tuần">Weekly pay offered</span>
+      </div>
+      <p class="why" data-en="Why: pedicure matches, but waxing is not in your profile and it's farther than your usual range." data-vi="Lý do: pedicure khớp, nhưng waxing không có trong hồ sơ của bạn và xa hơn bán kính quen thuộc.">Why: pedicure matches, but waxing is not in your profile and it's farther than your usual range.</p>
+      <div class="btnrow">
+        <button class="btn primary" onclick="interest(2)" data-en="I'm interested (stay anonymous)" data-vi="Tôi quan tâm (vẫn ẩn danh)">I'm interested (stay anonymous)</button>
+        <button class="btn ghost" onclick="dismissCard('t2')" data-en="Dismiss" data-vi="Bỏ qua">Dismiss</button>
+      </div>
+    </div>
+
+    <div class="disc">
+      <b data-en="How your privacy works" data-vi="Quyền riêng tư của bạn hoạt động thế nào">How your privacy works</b>
+      <ul>
+        <li data-en="Tapping “I'm interested” shares only your anonymous profile. Your name and phone are revealed ONLY if the salon wants to talk AND you approve." data-vi="Bấm “Tôi quan tâm” chỉ gửi hồ sơ ẩn danh. Tên và SĐT chỉ được tiết lộ KHI tiệm muốn liên hệ VÀ bạn bấm đồng ý.">Tapping “I'm interested” shares only your anonymous profile. Your name and phone are revealed ONLY if the salon wants to talk AND you approve.</li>
+        <li data-en="Employment terms are between you and the salon. NEXORA doesn't hire, pay, or advise on tax matters — consult a professional." data-vi="Điều khoản làm việc là giữa bạn và tiệm. NEXORA không tuyển, không trả lương, không tư vấn thuế — hãy hỏi chuyên gia.">Employment terms are between you and the salon. NEXORA doesn't hire, pay, or advise on tax matters — consult a professional.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ================= SALON VIEW ================= -->
+  <div id="viewSalon" class="hidden">
+    <div class="insight">
+      <div class="num">8</div>
+      <div class="lbl" data-en="Gel-X techs are job-hunting within 10 miles of you" data-vi="thợ Gel-X đang tìm việc trong 10 dặm quanh bạn">Gel-X techs are job-hunting within 10 miles of you</div>
+      <div class="hint" data-en="Anonymous, grouped demand. Shown only when 3+ techs match — individuals can never be identified." data-vi="Nhu cầu ẩn danh, gom nhóm. Chỉ hiện khi có từ 3 thợ trở lên — không thể suy ra cá nhân.">Anonymous, grouped demand. Shown only when 3+ techs match — individuals can never be identified.</div>
+    </div>
+
+    <h2><span data-en="Anonymous candidates for your post" data-vi="Ứng viên ẩn danh cho tin của bạn">Anonymous candidates for your post</span> <span class="aibadge">AI</span></h2>
+    <p class="sub" data-en="Your post: “Need Gel-X + Design, split 6/4”. AI ranks anonymous tech profiles — you see skills and expectations, never identities. Techs working at your salon are never shown." data-vi="Tin của bạn: “Cần Gel-X + Design, ăn chia 6/4”. AI xếp hạng hồ sơ thợ ẩn danh — bạn thấy tay nghề và mong muốn, không bao giờ thấy danh tính. Thợ đang làm tại tiệm bạn không bao giờ xuất hiện.">Your post: “Need Gel-X + Design, split 6/4”. AI ranks anonymous tech profiles — you see skills and expectations, never identities. Techs working at your salon are never shown.</p>
+
+    <div class="card" id="s1">
+      <div class="row1">
+        <h3 data-en="Tech #A7 — Gel-X · Design · 5 yrs" data-vi="Thợ #A7 — Gel-X · Design · 5 năm">Tech #A7 — Gel-X · Design · 5 yrs</h3>
+        <span class="conf hi" data-en="94% match" data-vi="Khớp 94%">94% match</span>
+      </div>
+      <div class="chips">
+        <span class="chip flag" data-en="Within 5 miles" data-vi="Trong 5 dặm">Within 5 miles</span>
+        <span class="chip flag" data-en="Wants split 6/4" data-vi="Muốn ăn chia 6/4">Wants split 6/4</span>
+        <span class="chip flag" data-en="License: self-reported" data-vi="License: tự khai">License: self-reported</span>
+      </div>
+      <p class="why" data-en="Why: both required skills, expectation equals your offer, available your busiest hours (Fri–Sun)." data-vi="Lý do: đủ cả 2 tay nghề yêu cầu, mong muốn đúng mức bạn đưa ra, rảnh đúng giờ đông khách nhất (Thứ 6–CN).">Why: both required skills, expectation equals your offer, available your busiest hours (Fri–Sun).</p>
+      <div class="btnrow">
+        <button class="btn primary" onclick="contactReq()" data-en="Request contact" data-vi="Xin liên hệ">Request contact</button>
+        <button class="btn ghost" onclick="dismissCard('s1')" data-en="Dismiss" data-vi="Bỏ qua">Dismiss</button>
+      </div>
+    </div>
+
+    <div class="card" id="s2">
+      <div class="row1">
+        <h3 data-en="Tech #C2 — Gel-X · Pedicure · 2 yrs" data-vi="Thợ #C2 — Gel-X · Pedicure · 2 năm">Tech #C2 — Gel-X · Pedicure · 2 yrs</h3>
+        <span class="conf mid" data-en="71% match" data-vi="Khớp 71%">71% match</span>
+      </div>
+      <div class="chips">
+        <span class="chip flag" data-en="Within 10 miles" data-vi="Trong 10 dặm">Within 10 miles</span>
+        <span class="chip flag" data-en="Wants weekly guarantee" data-vi="Muốn bao lương tuần">Wants weekly guarantee</span>
+      </div>
+      <p class="why" data-en="Why: Gel-X matches but no design skill listed; expects a weekly guarantee your post doesn't offer." data-vi="Lý do: Gel-X khớp nhưng chưa có tay nghề design; muốn bao lương tuần mà tin của bạn chưa có.">Why: Gel-X matches but no design skill listed; expects a weekly guarantee your post doesn't offer.</p>
+      <div class="btnrow">
+        <button class="btn primary" onclick="contactReq()" data-en="Request contact" data-vi="Xin liên hệ">Request contact</button>
+        <button class="btn ghost" onclick="dismissCard('s2')" data-en="Dismiss" data-vi="Bỏ qua">Dismiss</button>
+      </div>
+    </div>
+
+    <div class="disc">
+      <b data-en="What NEXORA does — and doesn't do" data-vi="NEXORA làm gì — và không làm gì">What NEXORA does — and doesn't do</b>
+      <ul>
+        <li data-en="NEXORA is a connection board. We don't hire, pay, recruit, or advise on 1099/W-2 — all terms are between you and the tech." data-vi="NEXORA là bảng tin kết nối. Chúng tôi không tuyển, không trả lương, không môi giới, không tư vấn 1099/W-2 — mọi điều khoản là giữa bạn và thợ.">NEXORA is a connection board. We don't hire, pay, recruit, or advise on 1099/W-2 — all terms are between you and the tech.</li>
+        <li data-en="Contact is a two-way door: the tech must approve before you see any identity. A declined request tells you nothing about who they are." data-vi="Liên hệ là cửa 2 chiều: thợ phải đồng ý thì bạn mới thấy danh tính. Bị từ chối cũng không lộ họ là ai.">Contact is a two-way door: the tech must approve before you see any identity. A declined request tells you nothing about who they are.</li>
+        <li data-en="You cannot search for a specific person, and your own staff never appear here." data-vi="Bạn không thể dò tìm một người cụ thể, và thợ đang làm tại tiệm bạn không bao giờ xuất hiện ở đây.">You cannot search for a specific person, and your own staff never appear here.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- reveal modal (tech side of mutual accept) -->
+<div class="modal" id="revealmodal">
+  <div class="mbox">
+    <h3 data-en="Rose Nails &amp; Spa wants to talk with you" data-vi="Rose Nails &amp; Spa muốn liên hệ với bạn">Rose Nails &amp; Spa wants to talk with you</h3>
+    <p data-en="Share your name and phone number with this salon? Until you agree, they only see your anonymous profile." data-vi="Chia sẻ tên và số điện thoại với tiệm này? Trước khi bạn đồng ý, họ chỉ thấy hồ sơ ẩn danh của bạn.">Share your name and phone number with this salon? Until you agree, they only see your anonymous profile.</p>
+    <div class="btnrow">
+      <button class="btn primary" onclick="reveal(true)" data-en="Yes, share my contact" data-vi="Đồng ý, chia sẻ liên hệ">Yes, share my contact</button>
+      <button class="btn ghost" onclick="reveal(false)" data-en="No, stay anonymous" data-vi="Không, giữ ẩn danh">No, stay anonymous</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var lang = 'en';
+var MSG = {
+  interest: {en:'Sent! The salon will see your ANONYMOUS profile only.', vi:'Đã gửi! Tiệm chỉ thấy hồ sơ ẨN DANH của bạn.'},
+  dismiss:  {en:'Dismissed. This match will not appear again.', vi:'Đã bỏ qua. Match này sẽ không hiện lại.'},
+  contact:  {en:'Request sent. The tech decides whether to reveal their contact.', vi:'Đã gửi yêu cầu. Thợ sẽ quyết định có tiết lộ liên hệ hay không.'},
+  revealed: {en:'Contact shared. You two can talk directly now — NEXORA steps back here.', vi:'Đã chia sẻ liên hệ. Hai bên tự trao đổi từ đây — NEXORA dừng vai trò tại đây.'},
+  declined: {en:'Declined. The salon learns nothing about who you are.', vi:'Đã từ chối. Tiệm không biết gì thêm về bạn.'}
+};
+function toggleLang(){
+  lang = (lang === 'en') ? 'vi' : 'en';
+  document.getElementById('langbtn').textContent = (lang === 'en') ? 'Tiếng Việt' : 'English';
+  var els = document.querySelectorAll('[data-en]');
+  for (var i = 0; i < els.length; i++){
+    els[i].innerHTML = (lang === 'en') ? els[i].getAttribute('data-en') : els[i].getAttribute('data-vi');
+  }
+}
+function toast(key){
+  var t = document.getElementById('toast');
+  t.textContent = MSG[key][lang];
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+function showView(n){
+  document.getElementById('viewTech').classList.toggle('hidden', n === 1);
+  document.getElementById('viewSalon').classList.toggle('hidden', n === 0);
+  document.getElementById('swTech').classList.toggle('on', n === 0);
+  document.getElementById('swSalon').classList.toggle('on', n === 1);
+}
+function interest(n){
+  toast('interest');
+  if (n === 1){
+    setTimeout(function(){ document.getElementById('revealmodal').classList.add('show'); }, 1800);
+  }
+}
+function contactReq(){ toast('contact'); }
+function reveal(yes){
+  document.getElementById('revealmodal').classList.remove('show');
+  toast(yes ? 'revealed' : 'declined');
+}
+function dismissCard(id){
+  document.getElementById(id).classList.add('dismissed');
+  toast('dismiss');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXORA TOUCH — Business Dashboard · AI Offer Suggestions (Mockup)</title>
+<style>
+  :root{
+    --purple:#7c6cf0; --purple-soft:#a99df5; --purple-bg:#f2effd;
+    --ink:#1d1b2e; --muted:#6f6a85; --line:#e8e5f4;
+    --green:#1d9e6f; --green-bg:#e3f6ee;
+    --gold:#b98900; --gold-bg:#fdf3d7;
+    --red:#c94f4f; --card:#ffffff; --page:#f7f6fb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+  body{background:var(--page);color:var(--ink);min-height:100vh}
+  .wrap{max-width:960px;margin:0 auto;padding:20px 16px 60px}
+
+  /* top bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:18px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--purple),var(--purple-soft));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px}
+  .brand b{font-size:15px;letter-spacing:.4px}
+  .brand span{display:block;font-size:11.5px;color:var(--muted)}
+  .langbtn{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 14px;font-size:12.5px;font-weight:600;color:var(--purple);cursor:pointer}
+  .mocknote{background:var(--gold-bg);color:var(--gold);border:1px dashed var(--gold);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600;margin-bottom:18px}
+
+  h2{font-size:17px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+  .sub{font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+  .aibadge{background:var(--purple-bg);color:var(--purple);font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:20px;letter-spacing:.5px}
+
+  /* demand panel */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:26px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .stat .num{font-size:24px;font-weight:800;color:var(--purple)}
+  .stat .lbl{font-size:12.5px;font-weight:600;margin-top:2px}
+  .stat .hint{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.45}
+  .trend{font-size:11px;font-weight:700;color:var(--green);background:var(--green-bg);border-radius:12px;padding:2px 8px;display:inline-block;margin-top:6px}
+
+  /* suggestion cards */
+  .sugg{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--purple);border-radius:14px;padding:16px;margin-bottom:14px}
+  .sugg .row1{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+  .sugg h3{font-size:15px;line-height:1.35}
+  .conf{font-size:11px;font-weight:800;padding:3px 10px;border-radius:14px;white-space:nowrap}
+  .conf.hi{background:var(--green-bg);color:var(--green)}
+  .conf.mid{background:var(--gold-bg);color:var(--gold)}
+  .why{font-size:12.5px;color:var(--muted);margin:8px 0 10px;line-height:1.55}
+  .why b{color:var(--ink)}
+  .est{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+  .est div{font-size:12px;color:var(--muted)}
+  .est div b{display:block;font-size:14.5px;color:var(--ink)}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer}
+  .btn.primary{background:var(--purple);color:#fff}
+  .btn.ghost{background:#fff;color:var(--muted);border:1px solid var(--line)}
+  .btn.ghost:hover{color:var(--red);border-color:var(--red)}
+
+  /* disclaimers */
+  .disc{background:var(--purple-bg);border-radius:14px;padding:14px 16px;font-size:12.5px;line-height:1.6;color:var(--ink);margin-top:8px}
+  .disc b{color:var(--purple)}
+  .disc ul{margin:6px 0 0 18px}
+  .disc li{margin-bottom:4px}
+
+  /* toast */
+  #toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:13px;padding:11px 20px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .dismissed{opacity:.45;filter:grayscale(.4)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">N</div>
+      <div>
+        <b>NEXORA TOUCH · Business</b>
+        <span data-en="Rose Nails &amp; Spa — Owner Dashboard" data-vi="Rose Nails &amp; Spa — Bảng điều khiển chủ tiệm">Rose Nails &amp; Spa — Owner Dashboard</span>
+      </div>
+    </div>
+    <button class="langbtn" onclick="toggleLang()" id="langbtn">Tiếng Việt</button>
+  </div>
+
+  <div class="mocknote" data-en="⚠ MOCKUP — for the business dashboard (web), NOT a customer-app screen. Numbers are demo data." data-vi="⚠ MOCKUP — dành cho dashboard doanh nghiệp (web), KHÔNG phải màn hình app khách. Số liệu là dữ liệu demo.">⚠ MOCKUP — for the business dashboard (web), NOT a customer-app screen. Numbers are demo data.</div>
+
+  <!-- ===== 1. ANONYMOUS DEMAND PANEL ===== -->
+  <h2><span data-en="Customer demand near you" data-vi="Nhu cầu khách quanh bạn">Customer demand near you</span> <span class="aibadge">AI</span></h2>
+  <p class="sub" data-en="What customers within 10 miles are wishing for right now — grouped by meaning, fully anonymous. You never see who they are." data-vi="Khách trong bán kính 10 dặm đang mong đợi gì — gom nhóm theo ý nghĩa, hoàn toàn ẩn danh. Bạn không bao giờ thấy danh tính khách.">What customers within 10 miles are wishing for right now — grouped by meaning, fully anonymous. You never see who they are.</p>
+
+  <div class="grid">
+    <div class="stat">
+      <div class="num">12</div>
+      <div class="lbl" data-en="waiting for a pedicure deal" data-vi="đang chờ deal pedicure">waiting for a pedicure deal</div>
+      <div class="hint" data-en="Wishes like “pedi combo”, “pedicure discount”, “giảm giá pedi” — matched by meaning, not exact words." data-vi="Các mong đợi như “pedi combo”, “pedicure discount”, “giảm giá pedi” — ghép theo ý nghĩa, không cần trùng từ.">Wishes like “pedi combo”, “pedicure discount”, “giảm giá pedi” — matched by meaning, not exact words.</div>
+      <span class="trend" data-en="▲ +4 this week" data-vi="▲ +4 tuần này">▲ +4 this week</span>
+    </div>
+    <div class="stat">
+      <div class="num">7</div>
+      <div class="lbl" data-en="looking for gel-X under $60" data-vi="tìm gel-X dưới $60">looking for gel-X under $60</div>
+      <div class="hint" data-en="Price-sensitive segment. Most wishes mention a budget cap." data-vi="Nhóm nhạy cảm về giá. Đa số mong đợi có ghi mức giá tối đa.">Price-sensitive segment. Most wishes mention a budget cap.</div>
+      <span class="trend" data-en="▲ +2 this week" data-vi="▲ +2 tuần này">▲ +2 this week</span>
+    </div>
+    <div class="stat">
+      <div class="num">5</div>
+      <div class="lbl" data-en="asking about weekday openings" data-vi="hỏi lịch trống ngày thường">asking about weekday openings</div>
+      <div class="hint" data-en="Matches your slowest hours: Tue–Thu 10am–2pm." data-vi="Trùng khung giờ vắng nhất của bạn: Thứ 3–5, 10h–14h.">Matches your slowest hours: Tue–Thu 10am–2pm.</div>
+      <span class="trend" data-en="— steady" data-vi="— ổn định">— steady</span>
+    </div>
+  </div>
+
+  <!-- ===== 2. AI OFFER SUGGESTIONS ===== -->
+  <h2><span data-en="Suggested offers" data-vi="Offer được đề xuất">Suggested offers</span> <span class="aibadge">AI</span></h2>
+  <p class="sub" data-en="Drafts generated from the demand above + your quiet hours. AI only suggests — nothing goes live until you review and confirm." data-vi="Bản nháp tạo từ nhu cầu ở trên + khung giờ vắng của bạn. AI chỉ gợi ý — không có gì được đăng cho đến khi bạn xem và xác nhận.">Drafts generated from the demand above + your quiet hours. AI only suggests — nothing goes live until you review and confirm.</p>
+
+  <div class="sugg" id="s1">
+    <div class="row1">
+      <h3 data-en="Weekday Pedi Combo — 20% OFF (Tue–Thu, 10am–2pm)" data-vi="Combo Pedi ngày thường — GIẢM 20% (Thứ 3–5, 10h–14h)">Weekday Pedi Combo — 20% OFF (Tue–Thu, 10am–2pm)</h3>
+      <span class="conf hi" data-en="High confidence · 92%" data-vi="Độ tin cậy cao · 92%">High confidence · 92%</span>
+    </div>
+    <p class="why" data-en="Why: 12 anonymous customers nearby are wishing for a pedicure deal, and Tue–Thu 10am–2pm are your quietest hours." data-vi="Lý do: 12 khách ẩn danh gần bạn đang mong deal pedicure, và Thứ 3–5 10h–14h là khung giờ vắng nhất của bạn.">Why: <b>12 anonymous customers</b> nearby are wishing for a pedicure deal, and <b>Tue–Thu 10am–2pm</b> are your quietest hours.</p>
+    <div class="est">
+      <div><b>8–12</b><span data-en="est. redemptions / month" data-vi="lượt đổi ước tính / tháng">est. redemptions / month</span></div>
+      <div><b>~$38</b><span data-en="avg. ticket after discount" data-vi="hóa đơn TB sau giảm giá">avg. ticket after discount</span></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn primary" onclick="createOffer(1)" data-en="Review &amp; create this offer" data-vi="Xem &amp; tạo offer này">Review &amp; create this offer</button>
+      <button class="btn ghost" onclick="dismiss(1)" data-en="Dismiss" data-vi="Bỏ qua">Dismiss</button>
+    </div>
+  </div>
+
+  <div class="sugg" id="s2">
+    <div class="row1">
+      <h3 data-en="Gel-X New Set — $55 intro price (any day)" data-vi="Bộ Gel-X mới — giá làm quen $55 (mọi ngày)">Gel-X New Set — $55 intro price (any day)</h3>
+      <span class="conf mid" data-en="Medium confidence · 74%" data-vi="Độ tin cậy trung bình · 74%">Medium confidence · 74%</span>
+    </div>
+    <p class="why" data-en="Why: 7 anonymous customers nearby want gel-X under $60. Your current gel-X price is $68 — a $55 intro offer clears their budget cap." data-vi="Lý do: 7 khách ẩn danh gần bạn muốn gel-X dưới $60. Giá gel-X hiện tại của bạn là $68 — offer làm quen $55 nằm trong ngân sách của họ.">Why: <b>7 anonymous customers</b> nearby want gel-X under $60. Your current gel-X price is $68 — a $55 intro offer clears their budget cap.</p>
+    <div class="est">
+      <div><b>4–7</b><span data-en="est. redemptions / month" data-vi="lượt đổi ước tính / tháng">est. redemptions / month</span></div>
+      <div><b>~62%</b><span data-en="est. return within 60 days" data-vi="ước tính quay lại trong 60 ngày">est. return within 60 days</span></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn primary" onclick="createOffer(2)" data-en="Review &amp; create this offer" data-vi="Xem &amp; tạo offer này">Review &amp; create this offer</button>
+      <button class="btn ghost" onclick="dismiss(2)" data-en="Dismiss" data-vi="Bỏ qua">Dismiss</button>
+    </div>
+  </div>
+
+  <!-- ===== 3. DISCLAIMERS / GUARDRAILS ===== -->
+  <div class="disc">
+    <b data-en="How this works — and what AI will never do" data-vi="Cách hoạt động — và những gì AI không bao giờ làm">How this works — and what AI will never do</b>
+    <ul>
+      <li data-en="AI only suggests. Every offer requires your review and confirmation before it goes live. You set the final price, discount and schedule." data-vi="AI chỉ gợi ý. Mọi offer đều cần bạn xem và xác nhận trước khi đăng. Bạn quyết định giá, mức giảm và lịch cuối cùng.">AI only suggests. Every offer requires your review and confirmation before it goes live. You set the final price, discount and schedule.</li>
+      <li data-en="Customer identity is never revealed. You see counts and grouped wishes only — never names, phone numbers or profiles." data-vi="Danh tính khách không bao giờ bị lộ. Bạn chỉ thấy số lượng và mong đợi gom nhóm — không bao giờ thấy tên, số điện thoại hay hồ sơ.">Customer identity is never revealed. You see counts and grouped wishes only — never names, phone numbers or profiles.</li>
+      <li data-en="When you publish an offer, matching customers get at most a limited number of AI-match notifications — no spam, and they can mute suggestions anytime." data-vi="Khi bạn đăng offer, khách phù hợp chỉ nhận số lượng thông báo AI-match có giới hạn — không spam, và họ có thể tắt gợi ý bất cứ lúc nào.">When you publish an offer, matching customers get at most a limited number of AI-match notifications — no spam, and they can mute suggestions anytime.</li>
+      <li data-en="Estimates are projections from local demand, not guarantees. Point costs and rewards always follow your own business rules." data-vi="Các con số ước tính là dự phóng từ nhu cầu địa phương, không phải cam kết. Chi phí điểm và thưởng luôn theo quy tắc riêng của doanh nghiệp bạn.">Estimates are projections from local demand, not guarantees. Point costs and rewards always follow your own business rules.</li>
+    </ul>
+  </div>
+
+</div>
+<div id="toast"></div>
+
+<script>
+var lang = 'en';
+var MSG = {
+  create: {en:'Demo: this would open the offer editor pre-filled with the AI draft.', vi:'Demo: sẽ mở trình tạo offer với bản nháp AI điền sẵn.'},
+  dismiss:{en:'Suggestion dismissed. AI will learn from this.', vi:'Đã bỏ qua gợi ý. AI sẽ ghi nhận để cải thiện.'}
+};
+function toggleLang(){
+  lang = (lang === 'en') ? 'vi' : 'en';
+  document.getElementById('langbtn').textContent = (lang === 'en') ? 'Tiếng Việt' : 'English';
+  var els = document.querySelectorAll('[data-en]');
+  for (var i = 0; i < els.length; i++){
+    els[i].innerHTML = (lang === 'en') ? els[i].getAttribute('data-en') : els[i].getAttribute('data-vi');
+  }
+}
+function toast(key){
+  var t = document.getElementById('toast');
+  t.textContent = MSG[key][lang];
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+}
+function createOffer(n){ toast('create'); }
+function dismiss(n){
+  document.getElementById('s' + n).classList.add('dismissed');
+  toast('dismiss');
+}
+</script>
+</body>
+</html>
