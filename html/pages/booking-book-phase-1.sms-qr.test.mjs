@@ -22,6 +22,22 @@ function smsDashboardSource() {
   return readFileSync(SMS_DASHBOARD_URL, 'utf8');
 }
 
+function browserParsedInlineScripts(html) {
+  const scripts = [];
+  const openScript = /<script\b([^>]*)>/gi;
+  let match;
+
+  while ((match = openScript.exec(html))) {
+    const contentStart = openScript.lastIndex;
+    const contentEnd = html.toLowerCase().indexOf('</script>', contentStart);
+    assert.notEqual(contentEnd, -1, 'every script element must be closed');
+    if (!/\bsrc\s*=/i.test(match[1])) scripts.push(html.slice(contentStart, contentEnd));
+    openScript.lastIndex = contentEnd + '</script>'.length;
+  }
+
+  return scripts;
+}
+
 test('registers SMS Campaigns and QR Codes in both Booking Hub navigation surfaces', () => {
   const html = source();
   const shell = shellSource();
@@ -40,6 +56,20 @@ test('keeps shared tab and query-string synchronization for new targets', () => 
   assert.match(html, /document\.querySelectorAll\('\[data-tab-target\]'\)/);
   assert.match(html, /url\.searchParams\.set\('tab', target\)/);
   assert.match(html, /var DEFAULT_MAIN_TAB = 'booking'/);
+});
+
+test('keeps inline scripts valid when Live Server injects its reload client', () => {
+  const liveReloadClient = '<script>window.__liveReloadReady = true;</script>';
+  const servedHtml = source().replace(/<\/body>/i, `${liveReloadClient}\n</body>`);
+  const inlineScripts = browserParsedInlineScripts(servedHtml);
+
+  assert.ok(inlineScripts.length > 0, 'expected inline scripts in the served page');
+  inlineScripts.forEach((script, index) => {
+    assert.doesNotThrow(
+      () => new Function(script),
+      `browser-parsed inline script ${index + 1} must remain syntactically valid`
+    );
+  });
 });
 
 test('labels the populated Booking Book main landmark accurately', () => {
