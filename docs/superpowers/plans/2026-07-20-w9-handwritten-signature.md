@@ -15,6 +15,7 @@
 - Keep the signature bitmap, signer name, and signature date out of `localStorage`.
 - Preserve the existing mobile-first layout from 320 pixels wide and all existing W-9 fields and validation behavior.
 - The pad must accept touch, stylus, and mouse using Pointer Events.
+- Keep `Full legal name` as the required keyboard-accessible signature fallback; canvas ink is optional.
 - Print and Download PDF must show the handwritten mark, legal signer name, and `MM/DD/YYYY` date.
 - `Reset`, draft restore, and `Ký lại` must leave an empty pad; Dev Fill must draw a synthetic demo signature.
 - Use test-first red-green cycles for every production change.
@@ -36,7 +37,7 @@
 
 **Interfaces:**
 - Consumes: existing `validateValues(values)`, `createDevFixture(dateString)`, `sanitizeDraft(values)`, and `pdfFieldRows(values)` helpers.
-- Produces: `formatUsDate(value: unknown): string`, the `signatureDrawn: boolean` value contract, and DOM ids `signature-pad`, `signature-canvas`, `signature-placeholder`, `clear-signature`, `signature`, and `signature-date`.
+- Produces: `formatUsDate(value: unknown): string`, the Dev-only `signatureDrawn: boolean` fixture flag, and DOM ids `signature-pad`, `signature-canvas`, `signature-placeholder`, `clear-signature`, `signature`, and `signature-date`.
 
 - [ ] **Step 1: Write failing markup, validation, and date tests**
 
@@ -60,14 +61,16 @@ test('renders the approved handwritten signature controls in source order', () =
   assert.match(html, /for="signature"[^>]*>Full legal name/);
 });
 
-test('requires handwritten ink separately from signer name and date', () => {
+test('accepts legal name as the accessible fallback while retaining demo ink state', () => {
   const form = api();
   const fixture = form.createDevFixture('2026-07-20');
   assert.equal(fixture.signatureDrawn, true);
   assert.equal(Object.keys(form.validateValues(fixture)).length, 0);
 
   const withoutInk = form.validateValues({ ...fixture, signatureDrawn: false });
-  assert.equal(withoutInk.signatureDrawn, 'Draw your signature to continue.');
+  assert.equal(Object.keys(withoutInk).length, 0);
+  const withoutName = form.validateValues({ ...fixture, signature: '' });
+  assert.equal(withoutName.signature, 'Type your full legal name to sign.');
 });
 
 test('formats a valid signature date for U.S. print and PDF output', () => {
@@ -85,10 +88,10 @@ Update the existing valid fixture objects in the validation and PDF-row tests to
 Run:
 
 ```bash
-node --test --test-name-pattern='handwritten signature controls|handwritten ink|signature date' html/pages/w9-form.test.mjs
+node --test --test-name-pattern='handwritten signature controls|accessible fallback|signature date' html/pages/w9-form.test.mjs
 ```
 
-Expected: FAIL because the signature-pad ids, `signatureDrawn` validation, and `formatUsDate` do not exist.
+Expected: FAIL because the signature-pad ids, Dev ink flag, and `formatUsDate` do not exist.
 
 - [ ] **Step 3: Add the approved signature markup and responsive styles**
 
@@ -98,14 +101,13 @@ Replace the current signature/date two-column block in `html/pages/w9-form.html`
 <div class="signature-field">
   <span class="field-label" id="signature-label">Signature of U.S. person <span class="required-marker" aria-hidden="true">*</span></span>
   <div class="signature-pad" id="signature-pad">
-    <canvas id="signature-canvas" class="signature-canvas" tabindex="0" aria-labelledby="signature-label" aria-describedby="signature-help signature-draw-error">Use touch, stylus, or mouse to draw your signature.</canvas>
+    <canvas id="signature-canvas" class="signature-canvas" tabindex="0" aria-labelledby="signature-label" aria-describedby="signature-help">Use touch, stylus, or mouse to draw your signature.</canvas>
     <span class="signature-placeholder" id="signature-placeholder" aria-hidden="true">Ký bằng ngón tay</span>
   </div>
   <div class="signature-actions screen-only">
     <button class="signature-clear" id="clear-signature" type="button" disabled>Ký lại</button>
   </div>
-  <p class="field-help" id="signature-help">Use your finger, stylus, or mouse to sign inside the box.</p>
-  <p class="error-message" id="signature-draw-error"></p>
+  <p class="field-help" id="signature-help">Use your finger, stylus, or mouse, or enter your full legal name below as a keyboard-accessible signature.</p>
 </div>
 
 <div class="field-grid two-column signature-details">
@@ -137,7 +139,6 @@ Add these base styles after `.certification-note`:
   border-color: var(--action);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, .14);
 }
-.signature-pad[aria-invalid="true"] { border-color: var(--error); }
 .signature-canvas {
   display: block;
   width: 100%;
@@ -186,14 +187,7 @@ function formatUsDate(value) {
 }
 ```
 
-Add the separate handwritten validation before the legal-name validation:
-
-```js
-if (!input.signatureDrawn) errors.signatureDrawn = "Draw your signature to continue.";
-if (!signature) errors.signature = "Type your full legal name to sign.";
-```
-
-Set `signatureDrawn: true` in `createDevFixture`. In `pdfFieldRows`, format the date with:
+Keep the existing required legal-name validation as the accessible signature fallback and set `signatureDrawn: true` in `createDevFixture`. In `pdfFieldRows`, format the date with:
 
 ```js
 { label: "Date", value: formatUsDate(input.signatureDate) || "Not provided" }
@@ -206,7 +200,7 @@ The existing `DRAFT_FIELDS` allowlist remains unchanged, which excludes `signatu
 Run:
 
 ```bash
-node --test --test-name-pattern='handwritten signature controls|handwritten ink|signature date' html/pages/w9-form.test.mjs
+node --test --test-name-pattern='handwritten signature controls|accessible fallback|signature date' html/pages/w9-form.test.mjs
 node --test html/pages/w9-form.test.mjs
 ```
 
@@ -229,7 +223,7 @@ git commit -m "feat: add W-9 handwritten signature contract"
 
 **Interfaces:**
 - Consumes: Task 1 DOM ids and `signatureDrawn` validation contract.
-- Produces: initializer-local functions `resizeSignatureCanvas(preserve)`, `clearSignature()`, `drawSyntheticSignature()`, and `localDateValue(date)`; `readValues()` returns `signatureDrawn`.
+- Produces: initializer-local functions `resizeSignatureCanvas(preserve)`, `clearSignature()`, `drawSyntheticSignature()`, and `localDateValue(date)`; handwritten state stays controller-local.
 
 - [ ] **Step 1: Write failing Pointer Events and lifecycle tests**
 
@@ -290,10 +284,6 @@ function setSignatureState(hasInk) {
   signatureDrawn = Boolean(hasInk);
   signaturePad.classList.toggle("has-signature", signatureDrawn);
   clearSignatureButton.disabled = !signatureDrawn;
-  if (signatureDrawn) {
-    signaturePad.removeAttribute("aria-invalid");
-    byId("signature-draw-error").textContent = "";
-  }
 }
 
 function configureSignatureInk() {
@@ -377,8 +367,6 @@ window.addEventListener("resize", function () { resizeSignatureCanvas(true); });
 
 - [ ] **Step 4: Integrate values, errors, dates, Reset, restore, and Dev Fill**
 
-Add `signatureDrawn: "signature-canvas"` and `signatureDrawn: "signature-draw-error"` to the id/error maps. Add `signatureDrawn` to the certification section keys. Return `signatureDrawn` from `readValues()`.
-
 Use this local date helper:
 
 ```js
@@ -417,7 +405,7 @@ syncConditionals();
 updateProgress();
 ```
 
-In `clearErrors` and `renderErrors`, set `aria-invalid` on `signature-pad` as well as the focusable canvas when handling `signatureDrawn`.
+Keep the existing legal-name id/error mapping and certification section keys unchanged; the canvas has no separate validation error because typed legal name is the fallback.
 
 - [ ] **Step 5: Run targeted and full tests to verify GREEN**
 
@@ -471,6 +459,7 @@ test('draws the handwritten signature into the downloaded PDF canvas', () => {
   assert.match(html, /function renderPdfCanvas\(values, signatureSource\)/);
   assert.match(html, /function drawSignatureBlock\(signatureSource, signerName, signatureDate\)/);
   assert.match(html, /context\.drawImage\(signatureSource/);
+  assert.match(html, /"\/s\/ " \+ stringValue\(signerName\)/);
   assert.match(html, /renderPdfCanvas\(values, signatureSource\)/);
   assert.match(html, /downloadW9Pdf\(readValues\(\), signatureCanvas\)/);
 });
@@ -532,6 +521,10 @@ function drawSignatureBlock(signatureSource, signerName, signatureDate) {
     const drawWidth = signatureSource.width * scale;
     const drawHeight = signatureSource.height * scale;
     context.drawImage(signatureSource, margin + 14, cursorY + 28, drawWidth, drawHeight);
+  } else {
+    setFont(30, "400", "Georgia, serif");
+    context.fillStyle = "#111318";
+    context.fillText("/s/ " + stringValue(signerName).trim(), margin + 14, cursorY + 52);
   }
 
   setFont(15, "400");

@@ -45,18 +45,18 @@ inside the pad, so normal one-finger scrolling remains available elsewhere.
 - `Ký lại` is disabled while the pad is empty and is a normal button so it never
   submits the form.
 
-The signature pad is required for the prototype completion flow. `Full legal
-name` identifies the person represented by the handwritten mark; it stays
-editable because an authorized signer for an entity may differ from the entity
-name on line 1. The Dev fixture uses `Linh Nguyen`.
+The signature pad is the primary pointer-based signing experience. `Full legal
+name` is the accessible electronic-signature fallback and remains required, so
+a person who cannot draw with a pointer can still complete the form using the
+keyboard. It stays editable because an authorized signer for an entity may
+differ from the entity name on line 1. The Dev fixture uses `Linh Nguyen`.
 
 ## Form State and Validation
 
-The page tracks whether the canvas contains at least one completed stroke.
-That state is included in required-section progress and full-form validation.
-Submitting an empty pad produces `Draw your signature to continue.` and focuses
-the signature pad. The existing legal-name and date validation remain separate,
-so each missing item receives its own error.
+The page tracks whether the canvas contains at least one completed stroke so it
+can preserve, clear, print, and export the handwritten mark. Canvas ink is not a
+separate validation requirement: the required legal-name field is the keyboard
+fallback. Missing legal name or date receives its own existing validation error.
 
 The handwritten bitmap, legal name, and date are sensitive completion data and
 are excluded from the device-local draft. Restoring a draft always presents an
@@ -84,8 +84,8 @@ rule consistent with the W-9 print layout.
 The custom Download PDF flow copies the handwritten bitmap into the rendered
 PDF page. It also prints the legal signer name and the U.S.-formatted signature
 date. The PDF must not substitute the name alone when a handwritten signature
-exists. Empty-signature PDF generation is prevented by the same form validation
-used for completion.
+exists; when the pad is empty, it renders `/s/ Full legal name` as the accessible
+typed-signature fallback.
 
 ## Accessibility
 
@@ -93,12 +93,12 @@ used for completion.
   `Signature of U.S. person` plus concise instructions describing touch, stylus,
   or mouse input.
 - Visible focus styling surrounds the complete pad.
-- The validation message is associated with the pad using `aria-describedby`
-  and the invalid state is exposed with `aria-invalid`.
+- Instructions associated with the pad explain pointer signing and identify the
+  required legal-name field as the keyboard fallback.
 - `Ký lại`, `Full legal name`, and `Date` have explicit programmatic labels.
 - The legal-name field remains a text representation of the signer for assistive
-  technology and printed output; it does not silently satisfy the required
-  handwritten-pad validation.
+  technology and satisfies the signature requirement when pointer drawing is
+  unavailable.
 - Controls keep at least a 44-pixel touch target and the layout works without
   horizontal scrolling from 320 pixels wide.
 
@@ -111,13 +111,14 @@ The implementation is complete when automated and visual checks confirm:
 - Touch, stylus, and mouse drawing use Pointer Events and record real strokes.
 - Device-pixel-ratio scaling produces sharp ink and resizing does not discard an
   existing signature.
-- Empty signature submission is rejected and focuses the pad.
+- A legal name and date can complete the signature section without canvas ink.
+- Missing legal name is rejected and focuses the legal-name field.
 - `Ký lại` and `Reset` return the pad to its empty state.
 - Dev Fill produces a complete synthetic demo signature, name, and current date.
 - Draft persistence contains no canvas data, legal signer name, or signature date.
 - Browser print contains the handwritten mark without screen-only controls.
-- Download PDF contains the handwritten mark, `Linh Nguyen`, and a date formatted
-  as `MM/DD/YYYY`.
+- Download PDF contains the handwritten mark when present, otherwise `/s/` plus
+  the legal name, and a date formatted as `MM/DD/YYYY`.
 - The signature area fits and remains usable at 320, 375, and 430 pixel widths.
 - Existing W-9 validation, printing, and PDF tests continue to pass.
 
