@@ -11209,6 +11209,12 @@ function getBookingCardCallStart(item) {
             var L='vi';
             var KIOSK=${kiosk};
             function g(id){return document.getElementById(id);}
+            function kioskFocusables(){
+              return Array.prototype.filter.call(
+                document.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled])'),
+                function(element){return element.offsetParent !== null;}
+              );
+            }
             function setLang(l){
               L=l; var t=I18N[l];
               g('tNm').textContent=t.nm; g('tPh').textContent=t.ph; g('tCs').textContent=t.cs;
@@ -11256,6 +11262,30 @@ function getBookingCardCallStart(item) {
               g('bok').style.display='block';
               if(KIOSK){ T=setTimeout(reset,8000); }
             };
+            document.addEventListener('keydown',function(event){
+              if (KIOSK && event.key === 'Escape') {
+                event.preventDefault();
+                parent.postMessage({ type: 'nexora-kiosk-close' }, '*');
+                return;
+              }
+              if (!KIOSK || event.key !== 'Tab') return;
+              var focusable=kioskFocusables();
+              if(!focusable.length)return;
+              var first=focusable[0];
+              var last=focusable[focusable.length-1];
+              if(event.shiftKey && document.activeElement === first){
+                event.preventDefault(); last.focus();
+              }else if(!event.shiftKey && document.activeElement === last){
+                event.preventDefault(); first.focus();
+              }
+            });
+            window.addEventListener('message',function(event){
+              if(!KIOSK || event.source !== parent || !event.data || event.data.type !== 'nexora-kiosk-focus')return;
+              var focusable=kioskFocusables();
+              if(!focusable.length)return;
+              var target=event.data.edge === 'last' ? focusable[focusable.length-1] : focusable[0];
+              target.focus();
+            });
           </scr` + `ipt>
           </body></html>`;
       }
@@ -11268,11 +11298,38 @@ function getBookingCardCallStart(item) {
       }
 
       let kioskOpener = null;
+      let kioskBackgroundStates = [];
+
+      function setKioskBackgroundInert(inert) {
+        const overlay = byId('kioskOverlay');
+        if (inert) {
+          kioskBackgroundStates = [];
+          let surface = overlay;
+          while (surface && surface !== document.body) {
+            const parent = surface.parentElement;
+            if (!parent) break;
+            Array.from(parent.children)
+              .filter(function(element) { return element !== surface && element.tagName !== 'SCRIPT'; })
+              .forEach(function(element) {
+                kioskBackgroundStates.push({ element: element, wasInert: element.hasAttribute('inert') });
+                element.setAttribute('inert', '');
+              });
+            surface = parent;
+          }
+          return;
+        }
+        kioskBackgroundStates.forEach(function(state) {
+          if (state.wasInert) state.element.setAttribute('inert', '');
+          else state.element.removeAttribute('inert');
+        });
+        kioskBackgroundStates = [];
+      }
 
       function openKiosk() {
         const overlay = byId('kioskOverlay');
         kioskOpener = document.activeElement;
         byId('kioskIframe').srcdoc = buildQrPageHtml(true);
+        setKioskBackgroundInert(true);
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
         byId('kioskExit').focus();
@@ -11283,6 +11340,7 @@ function getBookingCardCallStart(item) {
         if (!overlay.classList.contains('open')) return;
         overlay.classList.remove('open');
         overlay.setAttribute('aria-hidden', 'true');
+        setKioskBackgroundInert(false);
         if (kioskOpener && typeof kioskOpener.focus === 'function') kioskOpener.focus();
         kioskOpener = null;
       }
@@ -11359,11 +11417,23 @@ function getBookingCardCallStart(item) {
       byId('qrPrintBtn').addEventListener('click', printPoster);
       byId('kioskBtn').addEventListener('click', openKiosk);
       byId('kioskExit').addEventListener('click', closeKiosk);
+      byId('kioskExit').addEventListener('keydown', function(event) {
+        if (event.key !== 'Tab') return;
+        event.preventDefault();
+        byId('kioskIframe').contentWindow.postMessage({
+          type: 'nexora-kiosk-focus',
+          edge: event.shiftKey ? 'last' : 'first'
+        }, '*');
+      });
       document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape' && byId('kioskOverlay').classList.contains('open')) {
           event.preventDefault();
           closeKiosk();
         }
+      });
+      window.addEventListener('message', function(event) {
+        if (event.source !== byId('kioskIframe').contentWindow || !event.data || event.data.type !== 'nexora-kiosk-close') return;
+        closeKiosk();
       });
       byId('publishQrBtn').addEventListener('click', function() {
         alert('🚀 QR đã publish!\n\n' + byId('qrName').value + '\nKhuyến mãi: ' + qrState.promo.label + '\nLink: https://' + qrUrl() + '\n\nTải PNG và in đặt tại quầy. Leads sẽ đổ về tab Customers.');

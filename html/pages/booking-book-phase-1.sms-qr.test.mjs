@@ -137,3 +137,26 @@ test('provides the complete kiosk dialog accessibility and focus lifecycle', () 
   assert.match(html, /byId\('kioskExit'\)\.addEventListener\('click', closeKiosk\);/);
   assert.match(html, /document\.addEventListener\('keydown',[\s\S]*event\.key === 'Escape'[\s\S]*closeKiosk\(\)/);
 });
+
+test('bridges iframe Escape to the parent with source validation', () => {
+  const html = source();
+  assert.match(html, /if \(KIOSK && event\.key === 'Escape'\)[\s\S]*parent\.postMessage\(\{ type: 'nexora-kiosk-close' \}, '\*'\)/);
+  assert.match(html, /window\.addEventListener\('message',[\s\S]*event\.source !== byId\('kioskIframe'\)\.contentWindow[\s\S]*event\.data\.type !== 'nexora-kiosk-close'[\s\S]*closeKiosk\(\)/);
+});
+
+test('makes every background surface inert while kiosk mode is open and restores it on close', () => {
+  const html = source();
+  assert.match(html, /let kioskBackgroundStates = \[\];/);
+  assert.match(html, /function setKioskBackgroundInert\(inert\)[\s\S]*let surface = overlay;[\s\S]*while \(surface && surface !== document\.body\)[\s\S]*parent\.children[\s\S]*element !== surface[\s\S]*wasInert: element\.hasAttribute\('inert'\)[\s\S]*element\.setAttribute\('inert', ''\)[\s\S]*removeAttribute\('inert'\)/);
+  assert.doesNotMatch(html, /kioskBackgroundStates = Array\.from\(document\.body\.children\)/);
+  assert.match(html, /function openKiosk\(\)[\s\S]*setKioskBackgroundInert\(true\)/);
+  assert.match(html, /function closeKiosk\(\)[\s\S]*setKioskBackgroundInert\(false\)/);
+});
+
+test('contains forward and reverse Tab focus inside the generated kiosk form', () => {
+  const html = source();
+  assert.match(html, /function kioskFocusables\(\)[\s\S]*button:not\(\[disabled\]\)[\s\S]*element\.offsetParent !== null/);
+  assert.match(html, /if \(!KIOSK \|\| event\.key !== 'Tab'\) return;[\s\S]*event\.shiftKey && document\.activeElement === first[\s\S]*last\.focus\(\)[\s\S]*!event\.shiftKey && document\.activeElement === last[\s\S]*first\.focus\(\)/);
+  assert.match(html, /event\.source !== parent[\s\S]*event\.data\.type !== 'nexora-kiosk-focus'[\s\S]*event\.data\.edge === 'last'/);
+  assert.match(html, /byId\('kioskExit'\)\.addEventListener\('keydown',[\s\S]*event\.key !== 'Tab'[\s\S]*nexora-kiosk-focus[\s\S]*event\.shiftKey \? 'last' : 'first'/);
+});
