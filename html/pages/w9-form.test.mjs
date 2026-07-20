@@ -124,6 +124,31 @@ test('renders the approved handwritten signature controls in source order', () =
   assert.match(html, /for="signature"[^>]*>Full legal name/);
 });
 
+test('wires touch, stylus, and mouse drawing through Pointer Events', () => {
+  const html = source();
+  assert.match(html, /signatureCanvas\.addEventListener\("pointerdown"/);
+  assert.match(html, /signatureCanvas\.addEventListener\("pointermove"/);
+  assert.match(html, /\["pointerup", "pointercancel", "lostpointercapture"\]/);
+  assert.match(html, /signatureCanvas\.setPointerCapture\(event\.pointerId\)/);
+  assert.match(html, /window\.devicePixelRatio/);
+  assert.match(html, /resizeSignatureCanvas\(true\)/);
+});
+
+test('clears and demo-fills handwritten signature state', () => {
+  const html = source();
+  assert.match(html, /byId\("clear-signature"\)\.addEventListener\("click", clearSignature\)/);
+  assert.match(html, /function clearSignature\(\)[\s\S]*setSignatureState\(false\)/);
+  assert.match(html, /function drawSyntheticSignature\(\)[\s\S]*setSignatureState\(true\)/);
+  assert.match(html, /form\.reset\(\);[\s\S]*clearSignature\(\)/);
+  assert.match(html, /applyValues\(createDevFixture\(localDate\)\)[\s\S]*drawSyntheticSignature\(\)/);
+});
+
+test('defaults signature date to the current local calendar date', () => {
+  const html = source();
+  assert.match(html, /function localDateValue\(date\)/);
+  assert.match(html, /byId\("signature-date"\)\.value = localDateValue\(new Date\(\)\)/);
+});
+
 test('offers separate Print and Download PDF completion actions', () => {
   const html = source();
   assert.match(html, /id="print-form"[^>]*>Print<\/button>/);

@@ -1519,10 +1519,91 @@
         const progressOutput = byId("progress-output");
         const primaryAction = byId("primary-action");
         const formStatus = byId("form-status");
+        const signaturePad = byId("signature-pad");
+        const signatureCanvas = byId("signature-canvas");
+        const signatureContext = signatureCanvas.getContext("2d");
+        const clearSignatureButton = byId("clear-signature");
+        let signatureDrawn = false;
+        let activeSignaturePointer = null;
         let statusTimer = 0;
         let storage = null;
 
         try { storage = window.localStorage; } catch (error) { storage = null; }
+
+        if (!signatureContext) throw new Error("Signature drawing is unavailable.");
+
+        function setSignatureState(hasInk) {
+          signatureDrawn = Boolean(hasInk);
+          signaturePad.classList.toggle("has-signature", signatureDrawn);
+          clearSignatureButton.disabled = !signatureDrawn;
+        }
+
+        function configureSignatureInk() {
+          const ratio = Math.max(1, window.devicePixelRatio || 1);
+          signatureContext.setTransform(ratio, 0, 0, ratio, 0, 0);
+          signatureContext.strokeStyle = "#111318";
+          signatureContext.fillStyle = "#111318";
+          signatureContext.lineWidth = 2.4;
+          signatureContext.lineCap = "round";
+          signatureContext.lineJoin = "round";
+        }
+
+        function resizeSignatureCanvas(preserve) {
+          const rect = signatureCanvas.getBoundingClientRect();
+          const ratio = Math.max(1, window.devicePixelRatio || 1);
+          const width = Math.max(1, Math.round(rect.width * ratio));
+          const height = Math.max(1, Math.round(rect.height * ratio));
+          if (signatureCanvas.width === width && signatureCanvas.height === height) return;
+
+          const copy = document.createElement("canvas");
+          copy.width = signatureCanvas.width || width;
+          copy.height = signatureCanvas.height || height;
+          if (preserve && signatureDrawn && signatureCanvas.width && signatureCanvas.height) {
+            copy.getContext("2d").drawImage(signatureCanvas, 0, 0);
+          }
+          signatureCanvas.width = width;
+          signatureCanvas.height = height;
+          configureSignatureInk();
+          if (preserve && signatureDrawn) {
+            signatureContext.drawImage(copy, 0, 0, copy.width, copy.height, 0, 0, rect.width, rect.height);
+          }
+        }
+
+        function clearSignature() {
+          signatureContext.save();
+          signatureContext.setTransform(1, 0, 0, 1, 0, 0);
+          signatureContext.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+          signatureContext.restore();
+          setSignatureState(false);
+          clearErrors();
+          updateProgress();
+        }
+
+        function signaturePoint(event) {
+          const rect = signatureCanvas.getBoundingClientRect();
+          return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+        }
+
+        function localDateValue(date) {
+          return [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, "0"),
+            String(date.getDate()).padStart(2, "0")
+          ].join("-");
+        }
+
+        function drawSyntheticSignature() {
+          clearSignature();
+          const rect = signatureCanvas.getBoundingClientRect();
+          signatureContext.beginPath();
+          signatureContext.moveTo(rect.width * .14, rect.height * .62);
+          signatureContext.bezierCurveTo(rect.width * .25, rect.height * .15, rect.width * .32, rect.height * .86, rect.width * .43, rect.height * .42);
+          signatureContext.bezierCurveTo(rect.width * .51, rect.height * .2, rect.width * .56, rect.height * .75, rect.width * .66, rect.height * .44);
+          signatureContext.bezierCurveTo(rect.width * .72, rect.height * .3, rect.width * .76, rect.height * .58, rect.width * .84, rect.height * .46);
+          signatureContext.stroke();
+          setSignatureState(true);
+          updateProgress();
+        }
 
         const idByKey = {
           taxpayerName: "taxpayer-name",
@@ -1588,6 +1669,7 @@
             ein: byId("ein").value,
             backupWithholdingSubject: byId("backup-withholding-subject").checked,
             certificationAcknowledgment: byId("certification-acknowledgment").checked,
+            signatureDrawn,
             signature: byId("signature").value,
             signatureDate: byId("signature-date").value
           };
@@ -1615,6 +1697,7 @@
           };
 
           form.reset();
+          clearSignature();
           if (CLASSIFICATIONS.has(input.classification)) {
             const classificationControl = document.querySelector('input[name="classification"][value="' + input.classification + '"]');
             if (classificationControl) classificationControl.checked = true;
@@ -1912,6 +1995,7 @@
 
         function applyDraft(draft) {
           const safeDraft = sanitizeDraft(draft);
+          clearSignature();
           const textFieldIds = {
             taxpayerName: "taxpayer-name",
             businessName: "business-name",
@@ -2005,6 +2089,34 @@
           updateProgress();
         });
 
+        signatureCanvas.addEventListener("pointerdown", function (event) {
+          if (event.pointerType === "mouse" && event.button !== 0) return;
+          activeSignaturePointer = event.pointerId;
+          signatureCanvas.setPointerCapture(event.pointerId);
+          const point = signaturePoint(event);
+          signatureContext.beginPath();
+          signatureContext.moveTo(point.x, point.y);
+          event.preventDefault();
+        });
+
+        signatureCanvas.addEventListener("pointermove", function (event) {
+          if (event.pointerId !== activeSignaturePointer) return;
+          const point = signaturePoint(event);
+          signatureContext.lineTo(point.x, point.y);
+          signatureContext.stroke();
+          setSignatureState(true);
+          event.preventDefault();
+        });
+
+        ["pointerup", "pointercancel", "lostpointercapture"].forEach(function (type) {
+          signatureCanvas.addEventListener(type, function (event) {
+            if (event.pointerId === activeSignaturePointer) activeSignaturePointer = null;
+          });
+        });
+
+        byId("clear-signature").addEventListener("click", clearSignature);
+        window.addEventListener("resize", function () { resizeSignatureCanvas(true); });
+
         byId("save-draft").addEventListener("click", function () {
           if (!storage) {
             showStatus("Draft storage is unavailable on this device.", true);
@@ -2035,13 +2147,9 @@
         });
 
         byId("dev-fill").addEventListener("click", function () {
-          const now = new Date();
-          const localDate = [
-            now.getFullYear(),
-            String(now.getMonth() + 1).padStart(2, "0"),
-            String(now.getDate()).padStart(2, "0")
-          ].join("-");
+          const localDate = localDateValue(new Date());
           applyValues(createDevFixture(localDate));
+          drawSyntheticSignature();
           restoreBanner.hidden = true;
           completionPanel.hidden = true;
           document.querySelectorAll("details.optional-group").forEach(function (details) { details.open = true; });
@@ -2051,6 +2159,7 @@
         byId("clear-form").addEventListener("click", function () {
           if (!window.confirm("Clear every field and remove the saved draft from this device?")) return;
           form.reset();
+          clearSignature();
           if (storage) {
             try { storage.removeItem(STORAGE_KEY); } catch (error) { /* Storage is best-effort. */ }
           }
@@ -2127,6 +2236,8 @@
           });
         });
 
+        resizeSignatureCanvas(false);
+        byId("signature-date").value = localDateValue(new Date());
         syncConditionals();
         updateProgress();
         const savedDraft = readStoredDraft();
