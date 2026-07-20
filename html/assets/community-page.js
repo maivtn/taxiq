@@ -55,6 +55,14 @@
     },
     messageSequence: 0,
     viewerReactions: {},
+    courses: [
+      { id:'course-retention', title:'Customer retention playbook', category:'customer-experience', categoryLabel:'Customer Experience', duration:'18 min', progress:65, saved:false },
+      { id:'course-pricing', title:'Pricing services for healthy margins', category:'operations', categoryLabel:'Operations', duration:'24 min', progress:20, saved:false },
+      { id:'course-instagram', title:'Instagram content in 30 minutes a week', category:'marketing', categoryLabel:'Marketing', duration:'16 min', progress:0, saved:false },
+      { id:'course-one-on-ones', title:'Run better one-on-ones', category:'team-management', categoryLabel:'Team Management', duration:'12 min', progress:80, saved:false }
+    ],
+    courseFilter: 'all',
+    activeShareCourseId: '',
     noticeTimer: 0
   };
 
@@ -79,6 +87,14 @@
     var index;
     for (index = 0; index < state.groups.length; index += 1) {
       if (state.groups[index].id === groupId) return state.groups[index];
+    }
+    return null;
+  }
+
+  function findCourse(courseId) {
+    var index;
+    for (index = 0; index < state.courses.length; index += 1) {
+      if (state.courses[index].id === courseId) return state.courses[index];
     }
     return null;
   }
@@ -345,6 +361,57 @@
     return { ok: true, post: post };
   }
 
+  function filterCourses(category) {
+    var selected = category || 'all';
+    return state.courses.filter(function (course) {
+      return selected === 'all' || course.category === selected;
+    });
+  }
+
+  function toggleSavedCourse(courseId) {
+    var course = findCourse(courseId);
+    if (!course) return { ok: false, error: 'Course not found.' };
+    course.saved = !course.saved;
+    renderCourses();
+    return { ok: true, course: course };
+  }
+
+  function setCourseProgress(courseId, percent) {
+    var course = findCourse(courseId);
+    var progress = Number(percent);
+    if (!course) return { ok: false, error: 'Course not found.' };
+    if (isNaN(progress)) progress = 0;
+    course.progress = Math.max(0, Math.min(100, progress));
+    renderCourses();
+    return { ok: true, course: course };
+  }
+
+  function shareCourse(courseId, groupId) {
+    var course = findCourse(courseId);
+    var group = findGroup(groupId);
+    var post;
+    if (!course) return { ok: false, error: 'Course not found.' };
+    if (!group || group.type !== 'staff') return { ok: false, error: 'Choose a Staff group to share this course.' };
+    post = {
+      id: 'feed-course-' + (state.posts.length + 1) + '-' + new Date().getTime(),
+      kind: 'announcement',
+      audience: 'staff',
+      groupId: group.id,
+      author: 'Nexora Touch',
+      role: 'Owner',
+      group: group.name,
+      time: 'Just now',
+      body: 'Learning resource shared: ' + course.title + '.',
+      reactions: {},
+      comments: [],
+      saved: false,
+      pinned: false
+    };
+    state.posts.unshift(post);
+    renderFeed();
+    return { ok: true, course: course, group: group, post: post };
+  }
+
   function showCommunityNotice(message) {
     var oldNotice = document.querySelector('[data-community-notice]');
     var notice;
@@ -424,6 +491,25 @@
     if (total) total.textContent = state.groups.filter(function (group) { return !group.archived; }).length;
     if (members) members.textContent = state.groups.reduce(function (sum, group) { return sum + group.members; }, 0);
     if (unread) unread.textContent = state.groups.reduce(function (sum, group) { return sum + group.unread; }, 0);
+  }
+
+  function renderCourseCard(course) {
+    return '<article class="course-card community-card" data-course-id="' + escapeHtml(course.id) + '">' +
+      '<div class="course-card-head"><span>' + escapeHtml(course.categoryLabel) + '</span><button type="button" data-course-save="' + escapeHtml(course.id) + '">' + (course.saved ? 'Saved' : 'Save') + '</button></div>' +
+      '<h4>' + escapeHtml(course.title) + '</h4><p>' + escapeHtml(course.duration) + ' · Owner education</p>' +
+      '<div class="course-progress"><div role="progressbar" aria-label="Course progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + course.progress + '"><span style="width:' + course.progress + '%"></span></div><strong>' + course.progress + '%</strong></div>' +
+      '<footer><button type="button" data-course-continue="' + escapeHtml(course.id) + '">' + (course.progress ? 'Continue' : 'Start learning') + '</button><button type="button" data-course-share="' + escapeHtml(course.id) + '">Share</button></footer>' +
+      '</article>';
+  }
+
+  function renderCourses() {
+    var grid = document.querySelector('[data-course-grid]');
+    var saved = document.querySelector('[data-saved-course-list]');
+    var courses;
+    if (!grid) return;
+    courses = filterCourses(state.courseFilter);
+    grid.innerHTML = courses.map(renderCourseCard).join('') || '<p class="community-empty-state">No courses match this filter yet.</p>';
+    if (saved) saved.innerHTML = state.courses.filter(function (course) { return course.saved; }).map(function (course) { return '<button type="button" data-course-continue="' + escapeHtml(course.id) + '">' + escapeHtml(course.title) + '</button>'; }).join('') || '<p>No saved resources yet.</p>';
   }
 
   function renderMessageReactions(message) {
@@ -551,6 +637,30 @@
     for (index = 0; index < buttons.length; index += 1) {
       buttons[index].classList.toggle('is-active', buttons[index].getAttribute('data-group-filter') === state.groupFilter);
     }
+  }
+
+  function updateCourseFilterButtons() {
+    var buttons = document.querySelectorAll('[data-course-filter]');
+    var index;
+    for (index = 0; index < buttons.length; index += 1) {
+      buttons[index].classList.toggle('is-active', buttons[index].getAttribute('data-course-filter') === state.courseFilter);
+    }
+  }
+
+  function setShareCourseDialog(open, courseId) {
+    var dialog = document.querySelector('[data-share-course-dialog]');
+    var options = document.querySelector('[data-staff-group-options]');
+    var course = findCourse(courseId || state.activeShareCourseId);
+    var staffGroups;
+    if (!dialog) return;
+    if (open && !course) return;
+    if (open) {
+      state.activeShareCourseId = course.id;
+      staffGroups = state.groups.filter(function (group) { return group.type === 'staff' && !group.archived; });
+      if (options) options.innerHTML = staffGroups.map(function (group) { return '<option value="' + escapeHtml(group.id) + '">' + escapeHtml(group.name) + '</option>'; }).join('');
+    }
+    dialog.hidden = !open;
+    if (open && options) options.focus();
   }
 
   function setCreateGroupDialog(open) {
@@ -823,6 +933,56 @@
     });
   }
 
+  function bindLearningControls() {
+    document.addEventListener('click', function (event) {
+      var target = event.target;
+      var filter = closestWithAttribute(target, 'data-course-filter');
+      var save = closestWithAttribute(target, 'data-course-save');
+      var continueCourse = closestWithAttribute(target, 'data-course-continue');
+      var share = closestWithAttribute(target, 'data-course-share');
+      var close = closestWithAttribute(target, 'data-share-course-close');
+      var workshop = closestWithAttribute(target, 'data-learning-workshop');
+      var course;
+      var result;
+      if (filter) {
+        state.courseFilter = filter.getAttribute('data-course-filter');
+        updateCourseFilterButtons();
+        renderCourses();
+      } else if (save) {
+        result = toggleSavedCourse(save.getAttribute('data-course-save'));
+        if (!result.ok) showCommunityNotice(result.error);
+      } else if (continueCourse) {
+        course = findCourse(continueCourse.getAttribute('data-course-continue'));
+        if (!course) showCommunityNotice('Course not found.');
+        else {
+          setCourseProgress(course.id, course.progress + 10);
+          showCommunityNotice(course.progress === 100 ? 'Course completed.' : 'Learning progress updated.');
+        }
+      } else if (share) {
+        setShareCourseDialog(true, share.getAttribute('data-course-share'));
+      } else if (close) {
+        setShareCourseDialog(false);
+      } else if (workshop) {
+        showCommunityNotice('Your workshop seat is reserved.');
+      }
+    });
+
+    document.addEventListener('submit', function (event) {
+      var form = event.target;
+      var result;
+      var error;
+      if (!form || !form.getAttribute || form.getAttribute('data-share-course-form') === null) return;
+      event.preventDefault();
+      result = shareCourse(state.activeShareCourseId, form.querySelector('[name="courseGroup"]').value);
+      error = form.querySelector('[data-share-course-error]');
+      if (error) error.textContent = result.ok ? '' : result.error;
+      if (result.ok) {
+        setShareCourseDialog(false);
+        showCommunityNotice('Course shared with ' + result.group.name + '.');
+      }
+    });
+  }
+
   function updateFilterButtons() {
     var buttons = document.querySelectorAll('[data-feed-filter]');
     var index;
@@ -839,6 +999,10 @@
     addFeedComment: addFeedComment,
     toggleSavedPost: toggleSavedPost,
     togglePinnedPost: togglePinnedPost,
+    filterCourses: filterCourses,
+    toggleSavedCourse: toggleSavedCourse,
+    setCourseProgress: setCourseProgress,
+    shareCourse: shareCourse,
     groupDefaults: groupDefaults,
     filterGroups: filterGroups,
     createGroup: createGroup,
@@ -852,6 +1016,7 @@
     moderateMessage: moderateMessage,
     renderGroups: renderGroups,
     renderGroupChat: renderGroupChat,
+    renderCourses: renderCourses,
     activateTab: activateCommunityTab
   };
   window.activateCommunityTab = activateCommunityTab;
@@ -859,7 +1024,9 @@
 
   bindFeedControls();
   bindGroupControls();
+  bindLearningControls();
   renderFeed();
   renderGroups();
   renderGroupWorkspace();
+  renderCourses();
 }());

@@ -152,6 +152,18 @@ test('toggles the viewer reaction on a Feed post', () => {
   assert.equal(api.togglePostReaction('feed-announcement-1', '👍').post.reactions['👍'], 4);
 });
 
+test('filters, saves, progresses, and safely shares owner courses', () => {
+  const api = loadApi();
+  for (const category of ['operations', 'marketing', 'team-management', 'customer-experience']) {
+    assert.ok(api.filterCourses(category).every((course) => course.category === category));
+  }
+  assert.equal(api.toggleSavedCourse('course-retention').ok, true);
+  assert.equal(api.setCourseProgress('course-retention', 125).course.progress, 100);
+  assert.equal(api.setCourseProgress('course-retention', -25).course.progress, 0);
+  assert.equal(api.shareCourse('course-retention', 'vip-club').ok, false);
+  assert.equal(api.shareCourse('course-retention', 'staff-main').ok, true);
+});
+
 test('applies privacy-first group defaults and creates multiple groups', () => {
   const api = loadApi();
   const groupDefaults = (type) => JSON.parse(JSON.stringify(api.groupDefaults(type)));

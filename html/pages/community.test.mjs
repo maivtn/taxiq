@@ -103,3 +103,11 @@ test('renders the group chat, thread, member, and moderation workspace', () => {
   assert.match(html, /aria-label="Attach photo"/);
   assert.match(html, /aria-label="Attach file"/);
 });
+
+test('renders owner Learning recommendations, progress, workshop, and sharing', () => {
+  const html = source();
+  for (const copy of ['Recommended for your salon', 'Continue Learning', 'Saved resources', 'Upcoming live workshop', 'Share to Staff Group']) assert.match(html, new RegExp(copy));
+  for (const category of ['operations', 'marketing', 'team-management', 'customer-experience']) assert.match(html, new RegExp(`data-course-filter="${category}"`));
+  assert.match(html, /data-course-grid/);
+  assert.match(html, /data-share-course-dialog/);
+});
