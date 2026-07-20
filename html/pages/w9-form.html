@@ -287,6 +287,28 @@
       color: #075e43;
     }
 
+    .form-status {
+      position: fixed;
+      right: 14px;
+      bottom: calc(88px + env(safe-area-inset-bottom));
+      z-index: 50;
+      max-width: min(360px, calc(100vw - 28px));
+      padding: 12px 14px;
+      border: 1px solid #8bd8bb;
+      border-radius: 12px;
+      background: #effbf6;
+      color: #075e43;
+      box-shadow: 0 14px 38px rgba(25, 31, 48, .18);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .form-status.is-error {
+      border-color: #efb2ae;
+      background: var(--error-soft);
+      color: var(--error);
+    }
+
     .completion-icon {
       display: grid;
       width: 42px;
@@ -723,6 +745,7 @@
       .progress-shell,
       .restore-banner,
       .error-summary,
+      .form-status,
       .action-bar,
       .footer-note,
       .field-help,
@@ -858,6 +881,8 @@
           <button class="button button-primary" type="button" id="print-form">Print / Save PDF</button>
         </div>
       </section>
+
+      <div class="form-status screen-only" id="form-status" role="status" aria-live="polite" hidden></div>
 
       <form id="w9-form" novalidate>
         <div class="form-body">
@@ -1124,6 +1149,529 @@
   </main>
 
   <script id="w9-form-script">
+    (function () {
+      "use strict";
+
+      const STORAGE_KEY = "taxiq.w9.mobile.draft.v1";
+      const DRAFT_FIELDS = [
+        "taxpayerName", "businessName", "classification", "llcCode",
+        "otherClassificationDetail", "foreignOwners", "exemptPayeeCode",
+        "fatcaCode", "streetAddress", "city", "state", "zip",
+        "requesterDetails", "accountNumbers", "tinType"
+      ];
+      const CLASSIFICATIONS = new Set([
+        "individual", "c-corp", "s-corp", "partnership", "trust", "llc", "other"
+      ]);
+      const STATE_CODES = new Set([
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+        "DC", "AS", "GU", "MP", "PR", "VI"
+      ]);
+
+      function stringValue(value) {
+        return value == null ? "" : String(value);
+      }
+
+      function digitsOnly(value) {
+        return stringValue(value).replace(/\D/g, "").slice(0, 9);
+      }
+
+      function formatTin(type, value) {
+        const digits = digitsOnly(value);
+        if (type === "ein") {
+          return digits.length > 2 ? digits.slice(0, 2) + "-" + digits.slice(2) : digits;
+        }
+        if (digits.length > 5) {
+          return digits.slice(0, 3) + "-" + digits.slice(3, 5) + "-" + digits.slice(5);
+        }
+        if (digits.length > 3) return digits.slice(0, 3) + "-" + digits.slice(3);
+        return digits;
+      }
+
+      function isValidTin(type, value) {
+        return (type === "ssn" || type === "ein") && digitsOnly(value).length === 9;
+      }
+
+      function line3bApplies(classification, llcCode) {
+        return classification === "partnership"
+          || classification === "trust"
+          || (classification === "llc" && stringValue(llcCode).toUpperCase() === "P");
+      }
+
+      function sanitizeDraft(values) {
+        const draft = {};
+        const input = values && typeof values === "object" ? values : {};
+        DRAFT_FIELDS.forEach(function (key) {
+          if (!Object.prototype.hasOwnProperty.call(input, key)) return;
+          const value = input[key];
+          if (typeof value === "string" || typeof value === "boolean") draft[key] = value;
+        });
+        return draft;
+      }
+
+      function validateValues(values) {
+        const input = values && typeof values === "object" ? values : {};
+        const errors = {};
+        const taxpayerName = stringValue(input.taxpayerName).trim();
+        const classification = stringValue(input.classification);
+        const llcCode = stringValue(input.llcCode).toUpperCase();
+        const streetAddress = stringValue(input.streetAddress).trim();
+        const city = stringValue(input.city).trim();
+        const state = stringValue(input.state).trim().toUpperCase();
+        const zip = stringValue(input.zip).trim();
+        const tinType = stringValue(input.tinType);
+        const signature = stringValue(input.signature).trim();
+        const signatureDate = stringValue(input.signatureDate).trim();
+
+        if (!taxpayerName) errors.taxpayerName = "Enter the name shown on your tax return.";
+        if (!CLASSIFICATIONS.has(classification)) errors.classification = "Choose one federal tax classification.";
+        if (classification === "llc" && !["C", "S", "P"].includes(llcCode)) {
+          errors.llcCode = "Choose C, S, or P for the LLC.";
+        }
+        if (!streetAddress) errors.streetAddress = "Enter your street address.";
+        if (!city) errors.city = "Enter your city.";
+        if (!STATE_CODES.has(state)) errors.state = "Enter a valid 2-letter U.S. state or territory code.";
+        if (!/^\d{5}(?:-\d{4})?$/.test(zip)) errors.zip = "Enter a valid 5-digit ZIP or ZIP+4.";
+        if (tinType !== "ssn" && tinType !== "ein") {
+          errors.tinType = "Choose SSN or EIN.";
+        } else if (!isValidTin(tinType, input[tinType])) {
+          errors[tinType] = tinType === "ssn"
+            ? "Enter a valid 9-digit SSN."
+            : "Enter a valid 9-digit EIN.";
+        }
+        if (!input.certificationAcknowledgment) {
+          errors.certificationAcknowledgment = "Accept the certification to continue.";
+        }
+        if (!signature) errors.signature = "Type your full legal name to sign.";
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(signatureDate)) errors.signatureDate = "Enter the signature date.";
+        return errors;
+      }
+
+      window.W9_FORM_TEST_API = Object.freeze({
+        STORAGE_KEY,
+        digitsOnly,
+        formatTin,
+        isValidTin,
+        line3bApplies,
+        sanitizeDraft,
+        validateValues
+      });
+
+      if (window.W9_FORM_SKIP_INIT) return;
+
+      function init() {
+        const document = window.document;
+        const form = document.getElementById("w9-form");
+        if (!form) return;
+
+        const byId = function (id) { return document.getElementById(id); };
+        const errorSummary = byId("error-summary");
+        const errorSummaryList = byId("error-summary-list");
+        const completionPanel = byId("completion-panel");
+        const restoreBanner = byId("restore-banner");
+        const progressFill = byId("progress-fill");
+        const progressOutput = byId("progress-output");
+        const primaryAction = byId("primary-action");
+        const formStatus = byId("form-status");
+        let statusTimer = 0;
+        let storage = null;
+
+        try { storage = window.localStorage; } catch (error) { storage = null; }
+
+        const idByKey = {
+          taxpayerName: "taxpayer-name",
+          classification: "classification-individual",
+          llcCode: "llc-code",
+          streetAddress: "street-address",
+          city: "city",
+          state: "state",
+          zip: "zip",
+          tinType: "tin-type-ssn",
+          ssn: "ssn",
+          ein: "ein",
+          certificationAcknowledgment: "certification-acknowledgment",
+          signature: "signature",
+          signatureDate: "signature-date"
+        };
+        const errorIdByKey = {
+          taxpayerName: "taxpayer-name-error",
+          classification: "classification-error",
+          llcCode: "llc-code-error",
+          streetAddress: "street-address-error",
+          city: "city-error",
+          state: "state-error",
+          zip: "zip-error",
+          tinType: "tin-type-error",
+          ssn: "ssn-error",
+          ein: "ein-error",
+          certificationAcknowledgment: "certification-acknowledgment-error",
+          signature: "signature-error",
+          signatureDate: "signature-date-error"
+        };
+        const sectionKeys = {
+          "taxpayer-section": ["taxpayerName"],
+          "classification-section": ["classification", "llcCode"],
+          "address-section": ["streetAddress", "city", "state", "zip"],
+          "tin-section": ["tinType", "ssn", "ein"],
+          "certification-section": ["certificationAcknowledgment", "signature", "signatureDate"]
+        };
+
+        function selectedValue(name) {
+          const selected = document.querySelector('input[name="' + name + '"]:checked');
+          return selected ? selected.value : "";
+        }
+
+        function readValues() {
+          return {
+            taxpayerName: byId("taxpayer-name").value,
+            businessName: byId("business-name").value,
+            classification: selectedValue("classification"),
+            llcCode: byId("llc-code").value,
+            otherClassificationDetail: byId("other-classification-detail").value,
+            foreignOwners: byId("foreign-owners").checked,
+            exemptPayeeCode: byId("exempt-payee-code").value,
+            fatcaCode: byId("fatca-code").value,
+            streetAddress: byId("street-address").value,
+            city: byId("city").value,
+            state: byId("state").value,
+            zip: byId("zip").value,
+            requesterDetails: byId("requester-details").value,
+            accountNumbers: byId("account-numbers").value,
+            tinType: selectedValue("tinType"),
+            ssn: byId("ssn").value,
+            ein: byId("ein").value,
+            backupWithholdingSubject: byId("backup-withholding-subject").checked,
+            certificationAcknowledgment: byId("certification-acknowledgment").checked,
+            signature: byId("signature").value,
+            signatureDate: byId("signature-date").value
+          };
+        }
+
+        function showStatus(message, isError) {
+          window.clearTimeout(statusTimer);
+          formStatus.textContent = message;
+          formStatus.classList.toggle("is-error", Boolean(isError));
+          formStatus.hidden = false;
+          statusTimer = window.setTimeout(function () { formStatus.hidden = true; }, 3600);
+        }
+
+        function clearErrors() {
+          Object.keys(errorIdByKey).forEach(function (key) {
+            const message = byId(errorIdByKey[key]);
+            const control = byId(idByKey[key]);
+            if (message) message.textContent = "";
+            if (control) control.removeAttribute("aria-invalid");
+          });
+          errorSummaryList.replaceChildren();
+          errorSummary.hidden = true;
+        }
+
+        function renderErrors(errors, focusFirst) {
+          clearErrors();
+          const entries = Object.entries(errors);
+          if (!entries.length) return;
+
+          entries.forEach(function (entry) {
+            const key = entry[0];
+            const message = entry[1];
+            const controlId = idByKey[key];
+            const control = controlId ? byId(controlId) : null;
+            const inlineError = errorIdByKey[key] ? byId(errorIdByKey[key]) : null;
+            if (control) control.setAttribute("aria-invalid", "true");
+            if (inlineError) inlineError.textContent = message;
+            if (controlId) {
+              const item = document.createElement("li");
+              const link = document.createElement("a");
+              link.href = "#" + controlId;
+              link.textContent = message;
+              link.addEventListener("click", function (event) {
+                event.preventDefault();
+                if (control) control.focus();
+              });
+              item.append(link);
+              errorSummaryList.append(item);
+            }
+          });
+
+          errorSummary.hidden = false;
+          if (focusFirst) {
+            const first = byId(idByKey[entries[0][0]]);
+            if (first) first.focus();
+            else errorSummary.focus();
+          }
+        }
+
+        function syncConditionals() {
+          const classification = selectedValue("classification");
+          const llcCode = byId("llc-code");
+          const isLlc = classification === "llc";
+          byId("llc-panel").hidden = !isLlc;
+          llcCode.disabled = !isLlc;
+          if (!isLlc) llcCode.value = "";
+
+          const otherDetail = byId("other-classification-detail");
+          const isOther = classification === "other";
+          byId("other-classification-panel").hidden = !isOther;
+          otherDetail.disabled = !isOther;
+          if (!isOther) otherDetail.value = "";
+
+          const applies = line3bApplies(classification, llcCode.value);
+          const foreignOwners = byId("foreign-owners");
+          byId("foreign-owners-panel").hidden = !applies;
+          foreignOwners.disabled = !applies;
+          if (!applies) foreignOwners.checked = false;
+
+          const tinType = selectedValue("tinType") || "ssn";
+          ["ssn", "ein"].forEach(function (type) {
+            const active = type === tinType;
+            const input = byId(type);
+            byId(type + "-field").hidden = !active;
+            input.disabled = !active;
+            input.required = active;
+            if (!active) byId(type + "-mask").hidden = true;
+          });
+        }
+
+        function sectionCompletion(values) {
+          const errors = validateValues(values);
+          const result = {};
+          Object.keys(sectionKeys).forEach(function (sectionId) {
+            const keys = sectionKeys[sectionId];
+            result[sectionId] = keys.every(function (key) { return !errors[key]; });
+          });
+          return result;
+        }
+
+        function updateProgress() {
+          const completion = sectionCompletion(readValues());
+          const sectionIds = Object.keys(sectionKeys);
+          const completeCount = sectionIds.filter(function (id) { return completion[id]; }).length;
+          const percent = Math.round((completeCount / sectionIds.length) * 100);
+          progressFill.style.width = percent + "%";
+          progressOutput.value = percent + "% complete";
+          progressOutput.textContent = percent + "% complete";
+          primaryAction.textContent = completeCount === sectionIds.length ? "Submit W-9 →" : "Continue →";
+
+          let currentAssigned = false;
+          document.querySelectorAll("[data-step-link]").forEach(function (link) {
+            const sectionId = link.dataset.stepLink;
+            const isCurrent = !currentAssigned && !completion[sectionId];
+            if (isCurrent) currentAssigned = true;
+            if (isCurrent || (!currentAssigned && sectionId === sectionIds[sectionIds.length - 1])) {
+              link.setAttribute("aria-current", "step");
+            } else {
+              link.removeAttribute("aria-current");
+            }
+          });
+          return completion;
+        }
+
+        function maskTin(type) {
+          const input = byId(type);
+          const mask = byId(type + "-mask");
+          if (!isValidTin(type, input.value)) {
+            mask.hidden = true;
+            return;
+          }
+          const lastFour = digitsOnly(input.value).slice(-4);
+          byId(type + "-mask-value").textContent = type === "ssn"
+            ? "•••-••-" + lastFour
+            : "••-•••" + lastFour;
+          mask.hidden = false;
+        }
+
+        function applyDraft(draft) {
+          const safeDraft = sanitizeDraft(draft);
+          const textFieldIds = {
+            taxpayerName: "taxpayer-name",
+            businessName: "business-name",
+            llcCode: "llc-code",
+            otherClassificationDetail: "other-classification-detail",
+            exemptPayeeCode: "exempt-payee-code",
+            fatcaCode: "fatca-code",
+            streetAddress: "street-address",
+            city: "city",
+            state: "state",
+            zip: "zip",
+            requesterDetails: "requester-details",
+            accountNumbers: "account-numbers"
+          };
+          Object.keys(textFieldIds).forEach(function (key) {
+            if (typeof safeDraft[key] === "string") byId(textFieldIds[key]).value = safeDraft[key];
+          });
+          if (CLASSIFICATIONS.has(safeDraft.classification)) {
+            const classificationControl = document.querySelector('input[name="classification"][value="' + safeDraft.classification + '"]');
+            if (classificationControl) classificationControl.checked = true;
+          }
+          if (safeDraft.tinType === "ssn" || safeDraft.tinType === "ein") {
+            byId("tin-type-" + safeDraft.tinType).checked = true;
+          }
+          syncConditionals();
+          if (safeDraft.llcCode && !byId("llc-code").disabled) byId("llc-code").value = safeDraft.llcCode;
+          if (safeDraft.foreignOwners && !byId("foreign-owners").disabled) byId("foreign-owners").checked = true;
+          syncConditionals();
+          updateProgress();
+        }
+
+        function readStoredDraft() {
+          if (!storage) return null;
+          try {
+            const raw = storage.getItem(STORAGE_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            return parsed && typeof parsed === "object" ? sanitizeDraft(parsed) : null;
+          } catch (error) {
+            return null;
+          }
+        }
+
+        document.querySelectorAll('input[name="classification"], #llc-code, input[name="tinType"]').forEach(function (control) {
+          control.addEventListener("change", function () {
+            syncConditionals();
+            clearErrors();
+            updateProgress();
+          });
+        });
+
+        ["ssn", "ein"].forEach(function (type) {
+          const input = byId(type);
+          input.addEventListener("input", function () {
+            input.value = formatTin(type, input.value);
+            byId(type + "-mask").hidden = true;
+            clearErrors();
+            updateProgress();
+          });
+          input.addEventListener("focus", function () { byId(type + "-mask").hidden = true; });
+          input.addEventListener("blur", function () { maskTin(type); });
+        });
+
+        document.querySelectorAll("[data-reveal-tin]").forEach(function (button) {
+          button.addEventListener("click", function () {
+            const type = button.dataset.revealTin;
+            byId(type + "-mask").hidden = true;
+            byId(type).focus();
+          });
+        });
+
+        byId("state").addEventListener("input", function (event) {
+          event.target.value = event.target.value.replace(/[^a-z]/gi, "").toUpperCase().slice(0, 2);
+        });
+        byId("fatca-code").addEventListener("input", function (event) {
+          event.target.value = event.target.value.replace(/[^a-z]/gi, "").toUpperCase().slice(0, 1);
+        });
+        byId("zip").addEventListener("input", function (event) {
+          const digits = stringValue(event.target.value).replace(/\D/g, "").slice(0, 9);
+          event.target.value = digits.length > 5 ? digits.slice(0, 5) + "-" + digits.slice(5) : digits;
+        });
+
+        form.addEventListener("input", function (event) {
+          if (event.target.id !== "ssn" && event.target.id !== "ein") {
+            clearErrors();
+            updateProgress();
+          }
+        });
+        form.addEventListener("change", function () {
+          clearErrors();
+          updateProgress();
+        });
+
+        byId("save-draft").addEventListener("click", function () {
+          if (!storage) {
+            showStatus("Draft storage is unavailable on this device.", true);
+            return;
+          }
+          try {
+            storage.setItem(STORAGE_KEY, JSON.stringify(sanitizeDraft(readValues())));
+            restoreBanner.hidden = true;
+            showStatus("Draft saved on this device. TIN and signature were not saved.", false);
+          } catch (error) {
+            showStatus("The draft could not be saved on this device.", true);
+          }
+        });
+
+        byId("restore-draft").addEventListener("click", function () {
+          const draft = readStoredDraft();
+          if (draft) applyDraft(draft);
+          restoreBanner.hidden = true;
+          showStatus("Draft restored. Re-enter your TIN and signature to finish.", false);
+        });
+
+        byId("discard-draft").addEventListener("click", function () {
+          if (storage) {
+            try { storage.removeItem(STORAGE_KEY); } catch (error) { /* Storage is best-effort. */ }
+          }
+          restoreBanner.hidden = true;
+          showStatus("Saved draft discarded.", false);
+        });
+
+        byId("clear-form").addEventListener("click", function () {
+          if (!window.confirm("Clear every field and remove the saved draft from this device?")) return;
+          form.reset();
+          if (storage) {
+            try { storage.removeItem(STORAGE_KEY); } catch (error) { /* Storage is best-effort. */ }
+          }
+          ["ssn", "ein"].forEach(function (type) { byId(type + "-mask").hidden = true; });
+          restoreBanner.hidden = true;
+          completionPanel.hidden = true;
+          clearErrors();
+          syncConditionals();
+          updateProgress();
+          byId("taxpayer-name").focus();
+          showStatus("Form and saved draft cleared.", false);
+        });
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+          const values = readValues();
+          const errors = validateValues(values);
+          if (Object.keys(errors).length) {
+            renderErrors(errors, true);
+            completionPanel.hidden = true;
+            return;
+          }
+          clearErrors();
+          if (storage) {
+            try { storage.removeItem(STORAGE_KEY); } catch (error) { /* Storage is best-effort. */ }
+          }
+          completionPanel.hidden = false;
+          completionPanel.focus();
+          completionPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        byId("back-to-form").addEventListener("click", function () {
+          completionPanel.hidden = true;
+          byId("taxpayer-name").focus();
+        });
+        byId("print-form").addEventListener("click", function () { window.print(); });
+
+        window.addEventListener("beforeprint", function () {
+          document.querySelectorAll("details.optional-group:not([open])").forEach(function (details) {
+            details.dataset.openedForPrint = "true";
+            details.open = true;
+          });
+        });
+        window.addEventListener("afterprint", function () {
+          document.querySelectorAll('details.optional-group[data-opened-for-print="true"]').forEach(function (details) {
+            details.open = false;
+            delete details.dataset.openedForPrint;
+          });
+        });
+
+        syncConditionals();
+        updateProgress();
+        const savedDraft = readStoredDraft();
+        restoreBanner.hidden = !savedDraft || Object.keys(savedDraft).length === 0;
+      }
+
+      if (window.document.readyState === "loading") {
+        window.document.addEventListener("DOMContentLoaded", init, { once: true });
+      } else {
+        init();
+      }
+    }());
   </script>
 </body>
 </html>
