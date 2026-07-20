@@ -362,14 +362,17 @@
       font-weight: 900;
     }
 
-    .section-heading h2 {
+    .section-title {
+      display: block;
       margin: 0;
       font-size: 17px;
+      font-weight: 800;
       line-height: 1.25;
       letter-spacing: -.015em;
     }
 
-    .section-heading p {
+    .section-subtitle {
+      display: block;
       margin: 4px 0 0;
       color: var(--muted);
       font-size: 12px;
@@ -791,8 +794,8 @@
       .form-section:last-child { border-bottom: 1px solid #000; }
       .section-heading { padding: .07in .09in; border-color: #000; background: #fff; }
       .section-number { width: auto; height: 20px; padding: 0 7px; border-radius: 0; background: #000; font-size: 8pt; }
-      .section-heading h2 { font-size: 10pt; }
-      .section-heading p { display: none; }
+      .section-title { font-size: 10pt; }
+      .section-subtitle { display: none; }
       .section-content { gap: .08in; padding: .08in .09in .1in; }
       .field-grid, .address-row { gap: .07in; }
       .field-grid.two-column { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -888,8 +891,8 @@
         <div class="form-body">
           <fieldset class="form-section" id="taxpayer-section" data-required-fields="taxpayer-name">
             <legend class="section-heading">
-              <span class="section-number">1–2</span>
-              <span><h2>Taxpayer information</h2><p>Thông tin phải khớp với hồ sơ khai thuế của bạn.</p></span>
+              <span class="section-number">1-2</span>
+              <span><span class="section-title">Taxpayer information</span><span class="section-subtitle">Thông tin phải khớp với hồ sơ khai thuế của bạn.</span></span>
             </legend>
             <div class="section-content">
               <div class="field">
@@ -908,8 +911,8 @@
 
           <fieldset class="form-section" id="classification-section" data-required-fields="classification">
             <legend class="section-heading">
-              <span class="section-number">3–4</span>
-              <span><h2>Federal tax classification</h2><p>Chọn đúng một loại phân loại thuế liên bang.</p></span>
+              <span class="section-number">3-4</span>
+              <span><span class="section-title">Federal tax classification</span><span class="section-subtitle">Chọn đúng một loại phân loại thuế liên bang.</span></span>
             </legend>
             <div class="section-content">
               <div class="field">
@@ -996,8 +999,8 @@
 
           <fieldset class="form-section" id="address-section" data-required-fields="street-address city state zip">
             <legend class="section-heading">
-              <span class="section-number">5–7</span>
-              <span><h2>Address and requester details</h2><p>Địa chỉ nhận thư thuế và thông tin tài khoản liên quan.</p></span>
+              <span class="section-number">5-7</span>
+              <span><span class="section-title">Address and requester details</span><span class="section-subtitle">Địa chỉ nhận thư thuế và thông tin tài khoản liên quan.</span></span>
             </legend>
             <div class="section-content">
               <div class="field">
@@ -1042,7 +1045,7 @@
           <fieldset class="form-section" id="tin-section" data-required-fields="tin-type ssn">
             <legend class="section-heading part-heading">
               <span class="section-number">Part I</span>
-              <span><h2>Taxpayer Identification Number (TIN)</h2><p>Chọn SSN hoặc EIN và nhập đủ 9 chữ số.</p></span>
+              <span><span class="section-title">Taxpayer Identification Number (TIN)</span><span class="section-subtitle">Chọn SSN hoặc EIN và nhập đủ 9 chữ số.</span></span>
             </legend>
             <div class="section-content">
               <p class="field-help">The TIN should match the name entered on line 1 to help avoid backup withholding.</p>
@@ -1091,7 +1094,7 @@
           <fieldset class="form-section" id="certification-section" data-required-fields="certification-acknowledgment signature signature-date">
             <legend class="section-heading part-heading">
               <span class="section-number">Part II</span>
-              <span><h2>Certification</h2><p>Đọc kỹ trước khi ký tên và ghi ngày.</p></span>
+              <span><span class="section-title">Certification</span><span class="section-subtitle">Đọc kỹ trước khi ký tên và ghi ngày.</span></span>
             </legend>
             <div class="section-content">
               <div class="certification-copy">

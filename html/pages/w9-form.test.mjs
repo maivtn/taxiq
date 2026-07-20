@@ -51,6 +51,13 @@ test('declares mobile-first touch, safe-area, and US Letter print behavior', () 
   assert.match(html, /@media\s*\(min-width:\s*768px\)/);
 });
 
+test('keeps fieldset legends within valid phrasing content', () => {
+  const html = source();
+  const legends = [...html.matchAll(/<legend\b[\s\S]*?<\/legend>/g)].map((match) => match[0]);
+  assert.equal(legends.length, 5);
+  legends.forEach((legend) => assert.doesNotMatch(legend, /<h[1-6]\b/i));
+});
+
 function api() {
   const html = source();
   const script = html.match(/<script id="w9-form-script">([\s\S]*?)<\/script>/)?.[1];
