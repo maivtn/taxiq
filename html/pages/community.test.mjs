@@ -36,3 +36,28 @@ test('does not render page tabs or tab content', () => {
   assert.doesNotMatch(html, /data-tab-panel=/);
   assert.doesNotMatch(html, /role="tabpanel"/);
 });
+
+test('keeps Feed as the default view and opens Owner Jobs from the submenu', () => {
+  const html = source();
+  assert.match(html, /class="nav-subitem is-active"[^>]*data-community-view="feed"[^>]*aria-pressed="true"/);
+  assert.match(html, /class="nav-subitem"[^>]*data-community-view="jobs"[^>]*aria-pressed="false"/);
+  assert.match(html, /data-community-panel="feed"/);
+  assert.match(html, /data-community-panel="jobs" hidden/);
+  assert.match(html, /document\.querySelectorAll\("\[data-community-view\]"\)/);
+  assert.match(html, /panel\.hidden = panel\.dataset\.communityPanel !== view/);
+});
+
+test('adapts the salon Owner side of the AI Matching mockup', () => {
+  const html = source();
+  assert.match(html, /Owner Jobs/);
+  assert.match(html, /Gel-X techs are job-hunting within 10 miles of you/);
+  assert.match(html, /Anonymous candidates for your post/);
+  assert.match(html, /Tech #A7 — Gel-X · Design · 5 yrs/);
+  assert.match(html, /94% match/);
+  assert.match(html, /Tech #C2 — Gel-X · Pedicure · 2 yrs/);
+  assert.match(html, /71% match/);
+  assert.match(html, /AI ranks anonymous tech profiles/);
+  assert.match(html, /Contact is a two-way door/);
+  assert.match(html, /data-owner-job-action="request-contact"/);
+  assert.match(html, /data-owner-job-action="dismiss"/);
+});

@@ -623,6 +623,247 @@
       line-height: 20px;
     }
 
+    .community-view[hidden] {
+      display: none !important;
+    }
+
+    .owner-jobs-shell {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .owner-jobs-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .owner-ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(70, 72, 216, 0.2);
+      border-radius: 999px;
+      background: rgba(70, 72, 216, 0.08);
+      padding: 7px 11px;
+      color: var(--nexora-brand-dark);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .owner-demand-card,
+    .owner-post-card,
+    .owner-candidate-card,
+    .owner-guardrail {
+      border: 1px solid var(--nexora-border);
+      border-radius: 16px;
+      background: var(--nexora-surface);
+      box-shadow: var(--nexora-card-shadow);
+    }
+
+    .owner-demand-card {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 16px;
+      border-color: rgba(0, 184, 115, 0.24);
+      background: linear-gradient(135deg, #fff 0%, rgba(0, 184, 115, 0.08) 100%);
+    }
+
+    .owner-demand-icon {
+      display: grid;
+      width: 44px;
+      height: 44px;
+      place-items: center;
+      border-radius: 12px;
+      background: rgba(0, 184, 115, 0.12);
+      color: var(--nexora-success);
+    }
+
+    .owner-demand-card strong,
+    .owner-post-card strong {
+      display: block;
+      color: var(--nexora-text);
+      font-size: 15px;
+      line-height: 22px;
+    }
+
+    .owner-demand-card p,
+    .owner-post-card p {
+      margin: 5px 0 0;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .owner-post-card {
+      margin-bottom: 18px;
+      padding: 16px;
+      border-left: 4px solid var(--nexora-brand);
+    }
+
+    .owner-section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 0 12px;
+    }
+
+    .owner-section-title h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 26px;
+    }
+
+    .owner-candidate-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .owner-candidate-card {
+      padding: 18px;
+      transition: opacity 0.2s, filter 0.2s, transform 0.2s;
+    }
+
+    .owner-candidate-card.is-dismissed {
+      opacity: 0.45;
+      filter: grayscale(0.45);
+    }
+
+    .owner-candidate-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .owner-candidate-head h3 {
+      margin: 0;
+      color: var(--nexora-text);
+      font-size: 15px;
+      line-height: 22px;
+    }
+
+    .owner-confidence {
+      flex-shrink: 0;
+      border-radius: 999px;
+      padding: 6px 9px;
+      background: rgba(0, 184, 115, 0.1);
+      color: #008b59;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .owner-confidence.is-medium {
+      background: rgba(245, 158, 11, 0.12);
+      color: #b96d00;
+    }
+
+    .owner-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .owner-chip {
+      border-radius: 999px;
+      background: var(--nexora-surface-muted);
+      padding: 6px 9px;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .owner-why {
+      margin: 14px 0 0;
+      border-radius: 12px;
+      background: rgba(70, 72, 216, 0.06);
+      padding: 12px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      line-height: 19px;
+    }
+
+    .owner-why strong {
+      color: var(--nexora-brand-dark);
+    }
+
+    .owner-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .owner-action {
+      min-height: 40px;
+      border-radius: 10px;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .owner-action.is-primary {
+      border: 1px solid var(--nexora-brand);
+      background: var(--nexora-brand);
+      color: #fff;
+    }
+
+    .owner-action.is-secondary {
+      border: 1px solid var(--nexora-border);
+      background: #fff;
+      color: var(--nexora-muted);
+    }
+
+    .owner-guardrail {
+      margin-top: 16px;
+      padding: 16px;
+      border-color: rgba(70, 72, 216, 0.2);
+      background: linear-gradient(135deg, #fff 0%, rgba(70, 72, 216, 0.06) 100%);
+    }
+
+    .owner-guardrail strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--nexora-brand-dark);
+      font-size: 13px;
+    }
+
+    .owner-guardrail p {
+      margin: 0;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      line-height: 19px;
+    }
+
+    .owner-jobs-notice {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 80;
+      max-width: min(360px, calc(100vw - 32px));
+      border-radius: 12px;
+      background: var(--nexora-text);
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: var(--nexora-soft-shadow);
+    }
+
+    @media (min-width: 900px) {
+      .owner-candidate-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
     .page-tabs {
       display: flex;
       flex-wrap: wrap;
@@ -6499,7 +6740,7 @@
         </button>
         <div class="nav-subnav" id="community-subnav" data-nav-subnav>
           <div class="nav-subnav-inner">
-            <button class="nav-subitem is-active" type="button">
+            <button class="nav-subitem is-active" type="button" data-community-view="feed" aria-pressed="true">
               <span class="nav-subitem-dot" aria-hidden="true"></span>
               <span>Feed</span>
             </button>
@@ -6511,7 +6752,7 @@
               <span class="nav-subitem-dot" aria-hidden="true"></span>
               <span>Learning</span>
             </button>
-            <button class="nav-subitem" type="button">
+            <button class="nav-subitem" type="button" data-community-view="jobs" aria-pressed="false">
               <span class="nav-subitem-dot" aria-hidden="true"></span>
               <span>Jobs</span>
             </button>
@@ -6596,11 +6837,82 @@
       </header>
 
       <main class="content" aria-label="Community content">
-        <section class="blank-stage">
+        <section class="blank-stage community-view" data-community-panel="feed">
           <div class="page-heading">
             <h1 class="page-title">Community</h1>
             <p class="page-description">Connect, learn, and grow with the Nexora community.</p>
           </div>
+        </section>
+
+        <section class="blank-stage community-view owner-jobs-shell" data-community-panel="jobs" hidden>
+          <div class="owner-jobs-heading">
+            <div>
+              <h1 class="page-title">Owner Jobs</h1>
+              <p class="page-description">Find nail techs who match your open role while protecting candidate identity.</p>
+            </div>
+            <span class="owner-ai-badge"><i data-lucide="sparkles" aria-hidden="true"></i> AI Matching</span>
+          </div>
+
+          <article class="owner-demand-card">
+            <span class="owner-demand-icon"><i data-lucide="users-round" aria-hidden="true"></i></span>
+            <div>
+              <strong>4 Gel-X techs are job-hunting within 10 miles of you</strong>
+              <p>Anonymous, grouped demand. Shown only when 3+ techs match, so individuals can never be identified.</p>
+            </div>
+          </article>
+
+          <article class="owner-post-card">
+            <strong>Your active post: “Need Gel-X + Design, split 6/4”</strong>
+            <p>AI ranks anonymous tech profiles by skills, expectations, distance, and schedule. Techs already working at your salon are excluded.</p>
+          </article>
+
+          <div class="owner-section-title">
+            <h2>Anonymous candidates for your post</h2>
+            <span class="owner-ai-badge">2 matches</span>
+          </div>
+
+          <div class="owner-candidate-grid">
+            <article class="owner-candidate-card" data-owner-candidate="a7">
+              <div class="owner-candidate-head">
+                <h3>Tech #A7 — Gel-X · Design · 5 yrs</h3>
+                <span class="owner-confidence">94% match</span>
+              </div>
+              <div class="owner-chip-row">
+                <span class="owner-chip">Licensed</span>
+                <span class="owner-chip">Expects split 6/4</span>
+                <span class="owner-chip">Fri–Sun available</span>
+                <span class="owner-chip">Within 4 miles</span>
+              </div>
+              <p class="owner-why"><strong>Why:</strong> Both required skills match, compensation expectation equals your offer, and availability covers your busiest hours.</p>
+              <div class="owner-actions">
+                <button class="owner-action is-primary" type="button" data-owner-job-action="request-contact">Request contact</button>
+                <button class="owner-action is-secondary" type="button" data-owner-job-action="dismiss">Dismiss</button>
+              </div>
+            </article>
+
+            <article class="owner-candidate-card" data-owner-candidate="c2">
+              <div class="owner-candidate-head">
+                <h3>Tech #C2 — Gel-X · Pedicure · 2 yrs</h3>
+                <span class="owner-confidence is-medium">71% match</span>
+              </div>
+              <div class="owner-chip-row">
+                <span class="owner-chip">Licensed</span>
+                <span class="owner-chip">Wants weekly guarantee</span>
+                <span class="owner-chip">Weekdays available</span>
+                <span class="owner-chip">Within 8 miles</span>
+              </div>
+              <p class="owner-why"><strong>Why:</strong> Gel-X matches, but no design skill is listed and this tech expects a weekly guarantee your post does not offer.</p>
+              <div class="owner-actions">
+                <button class="owner-action is-primary" type="button" data-owner-job-action="request-contact">Request contact</button>
+                <button class="owner-action is-secondary" type="button" data-owner-job-action="dismiss">Dismiss</button>
+              </div>
+            </article>
+          </div>
+
+          <aside class="owner-guardrail">
+            <strong>Privacy and hiring guardrails</strong>
+            <p>AI ranks anonymous tech profiles; you never see identity from a suggestion alone. Contact is a two-way door: the tech must approve before you see any name or phone number. NEXORA is a connection board and does not hire, pay, recruit, or advise on 1099/W-2 terms.</p>
+          </aside>
         </section>
       </main>
     </div>
@@ -6617,6 +6929,51 @@
         var collapsed = subnav.classList.toggle("is-collapsed");
         toggle.classList.toggle("is-expanded", !collapsed);
         toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      });
+    });
+
+    function setCommunityView(view) {
+      document.querySelectorAll("[data-community-view]").forEach(function (button) {
+        var selected = button.dataset.communityView === view;
+        button.classList.toggle("is-active", selected);
+        button.setAttribute("aria-pressed", selected ? "true" : "false");
+      });
+      document.querySelectorAll("[data-community-panel]").forEach(function (panel) {
+        panel.hidden = panel.dataset.communityPanel !== view;
+      });
+    }
+
+    document.querySelectorAll("[data-community-view]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        setCommunityView(button.dataset.communityView);
+        setDrawer(false);
+      });
+    });
+
+    var jobsNoticeTimer = 0;
+    function showJobsNotice(message) {
+      var oldNotice = document.querySelector("[data-owner-jobs-notice]");
+      if (oldNotice) oldNotice.remove();
+      var notice = document.createElement("div");
+      notice.className = "owner-jobs-notice";
+      notice.dataset.ownerJobsNotice = "";
+      notice.setAttribute("role", "status");
+      notice.textContent = message;
+      document.body.appendChild(notice);
+      window.clearTimeout(jobsNoticeTimer);
+      jobsNoticeTimer = window.setTimeout(function () { notice.remove(); }, 2600);
+    }
+
+    document.querySelectorAll("[data-owner-job-action]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        if (button.dataset.ownerJobAction === "request-contact") {
+          showJobsNotice("Request sent. The tech decides whether to reveal their contact.");
+          return;
+        }
+        var candidate = button.closest("[data-owner-candidate]");
+        if (candidate) candidate.classList.add("is-dismissed");
+        button.disabled = true;
+        showJobsNotice("Candidate dismissed. AI will use this feedback to improve matches.");
       });
     });
 
