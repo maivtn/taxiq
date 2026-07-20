@@ -21,6 +21,35 @@ test('appointments calendar renders technicians as resource columns with time on
   assert.match(html, /data-ap-tech-filter/);
 });
 
+test('empty appointment cells expose a subtle create affordance that keeps cell selection clickable', () => {
+  assert.match(html, /onBeforeCellRender/);
+  assert.match(html, /ap-cell-add/);
+  assert.match(html, /pointer-events:\s*none/);
+  assert.match(html, /onTimeRangeSelected:[\s\S]*apOpenNew/);
+});
+
+test('selected time ranges stay highlighted while the new appointment form is open', () => {
+  assert.match(html, /onTimeRangeSelected:\s*function \(args\) \{[\s\S]*apOpenNew/);
+  assert.doesNotMatch(html, /onTimeRangeSelected:\s*function \(args\) \{[\s\S]{0,260}apCalendar\.clearSelection\(\)/);
+  assert.match(html, /data-ap-close\][\s\S]{0,220}apCalendar\.clearSelection\(\)/);
+  assert.match(html, /calendar_default_shadow_inner/);
+});
+
+test('team calendar applies a polished resource-grid visual treatment', () => {
+  assert.match(html, /calendar_default_colheader_inner/);
+  assert.match(html, /calendar_default_rowheader_inner/);
+  assert.match(html, /calendar_default_event_inner/);
+  assert.match(html, /\.ap-cell-add\s*>\s*span/);
+});
+
+test('opening a new appointment gives the soft detail card a short loading state', () => {
+  assert.match(html, /apPanelLoading/);
+  assert.match(html, /ap-panel-loading/);
+  assert.match(html, /aria-busy/);
+  assert.match(html, /function apBeginNewPanelLoad/);
+  assert.match(html, /function apOpenNew[\s\S]{0,900}apBeginNewPanelLoad\(\)/);
+});
+
 test('legacy hand-built appointment table is removed', () => {
   assert.doesNotMatch(html, /data-ap-table/);
   assert.doesNotMatch(html, /class="ap-table"/);
