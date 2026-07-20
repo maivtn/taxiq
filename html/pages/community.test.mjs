@@ -57,6 +57,7 @@ test('keeps Feed active by default and synchronizes submenu and page tabs', () =
   assert.match(html, /class="tab-panel is-active"[^>]*id="panel-feed"[^>]*data-tab-panel="feed"/);
   assert.match(runtime, /document\.querySelectorAll\('\[data-tab-target\]'\)/);
   assert.match(runtime, /panels\[index\]\.hidden = !panelActive/);
+  assert.match(runtime, /window\.NEXORA_SHELL\.setActiveTab\(tabId\)/);
 });
 
 test('adapts the salon Owner side of the AI Matching mockup', () => {
@@ -87,6 +88,8 @@ test('loads the page-scoped Community assets and renders the owner Feed regions'
   assert.match(html, /<script src="\.\.\/assets\/community-page\.js"><\/script>/);
   assert.match(html, /data-feed-composer/);
   assert.match(html, /data-feed-audience/);
+  assert.match(html, /data-feed-attachment-status/);
+  assert.match(html, /data-feed-attachment-clear/);
   assert.match(html, /data-feed-filter="announcements"/);
   assert.match(html, /data-feed-list/);
   assert.match(html, /Needs your attention/);
@@ -103,6 +106,8 @@ test('renders multi-group management and a privacy-aware Create Group dialog', (
   assert.match(html, /role="dialog"[^>]*aria-modal="true"[^>]*aria-labelledby="create-group-title"/);
   for (const name of ['groupName', 'groupDescription', 'groupType', 'groupVisibility', 'groupPosting']) assert.match(html, new RegExp(`name="${name}"`));
   assert.match(html, /data-mixed-privacy-confirm/);
+  assert.match(html, /data-group-settings-dialog/);
+  for (const name of ['manageGroupDescription', 'manageGroupVisibility', 'manageGroupPosting']) assert.match(html, new RegExp(`name="${name}"`));
 });
 
 test('renders the group chat, thread, member, and moderation workspace', () => {
@@ -110,6 +115,12 @@ test('renders the group chat, thread, member, and moderation workspace', () => {
   for (const marker of ['data-group-list-view', 'data-group-chat-view', 'data-message-list', 'data-group-member-rail', 'data-group-thread-panel', 'data-message-composer']) assert.match(html, new RegExp(marker));
   for (const copy of ['Back to Groups', 'Join Requests', 'Pinned Messages']) assert.match(html, new RegExp(copy));
   assert.match(html, /aria-label="Search messages"/);
+  assert.match(html, /data-message-search-input/);
+  assert.match(html, /data-message-attachment-status/);
+  assert.match(html, /aria-expanded="false"[^>]*aria-controls="group-member-panel"[^>]*data-members-open/);
+  assert.match(html, /id="group-member-panel"[^>]*aria-label="Group members"[^>]*data-group-member-rail/);
+  assert.match(html, /id="group-thread-panel"[^>]*aria-label="Message thread"[^>]*data-group-thread-panel/);
+  assert.equal((html.match(/data-group-overlay-background/g) || []).length, 2);
   assert.match(html, /aria-label="Close thread"/);
   assert.match(html, /aria-label="Attach photo"/);
   assert.match(html, /aria-label="Attach file"/);
@@ -128,6 +139,22 @@ test('adds owner job metrics, filters, pipeline, and management actions', () => 
   for (const copy of ['Create Job Post', 'Active Posts', 'New Matches', 'Contact Requests', 'Interviews', 'Matched', 'Contact Requested', 'Interviewing', 'Closed', 'Save Candidate', 'Share with manager']) assert.match(html, new RegExp(copy));
   for (const filter of ['skill', 'distance', 'availability', 'compensation']) assert.match(html, new RegExp(`data-candidate-filter="${filter}"`));
   assert.match(html, /data-create-job-dialog/);
+  assert.match(html, /data-active-job-list/);
+  assert.match(html, /data-job-metric="active-posts"/);
+  assert.match(html, /data-job-empty[^>]*role="status"/);
+  assert.match(html, /data-job-clear-filters/);
+});
+
+test('gives every Community filter, Event view, and initial RSVP selection programmatic state', () => {
+  const html = source();
+  const runtime = readFileSync(new URL('../assets/community-page.js', import.meta.url), 'utf8');
+  for (const attribute of ['data-feed-filter', 'data-group-filter', 'data-course-filter', 'data-event-filter', 'data-event-view']) {
+    const buttons = [...html.matchAll(new RegExp(`<button[^>]*${attribute}="[^"]+"[^>]*>`, 'g'))].map((match) => match[0]);
+    assert.ok(buttons.length >= 2, `${attribute} must render a selection set`);
+    assert.ok(buttons.every((button) => /aria-pressed="(?:true|false)"/.test(button)), `${attribute} must expose aria-pressed`);
+    assert.equal(buttons.filter((button) => /aria-pressed="true"/.test(button)).length, 1, `${attribute} must start with one pressed control`);
+  }
+  assert.match(runtime, /data-event-rsvp[\s\S]*aria-pressed/);
 });
 
 test('renders event views, filters, RSVP details, and creation controls', () => {

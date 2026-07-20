@@ -6870,14 +6870,15 @@
                     <label for="community-post-body">Share an update</label>
                     <textarea id="community-post-body" rows="3" placeholder="Share an announcement, question, or update..."></textarea>
                     <div class="feed-composer-actions">
-                      <select aria-label="Post audience" data-feed-audience><option value="all">All groups</option><option value="staff">Staff groups</option><option value="customer">Customer groups</option></select>
+                      <select aria-label="Post audience" data-feed-audience><option value="all">All groups</option><option value="staff">Staff groups</option><option value="customer">Customer groups</option><optgroup label="Specific groups"><option value="staff-main">Nexora Touch Staff</option><option value="vip-club">VIP Nail Club</option><option value="weekend-promos">Weekend Promotions</option><option value="new-hire">New Hire Onboarding</option></optgroup></select>
                       <button type="button" data-demo-attachment="photo">Photo</button><button type="button" data-demo-attachment="file">File</button><button type="button" data-demo-attachment="poll">Poll</button>
                       <button class="community-primary" type="submit">Post</button>
                     </div>
+                    <div class="composer-attachment" data-feed-attachment-status role="status" aria-live="polite" hidden><span>Selected: <strong data-feed-attachment-name></strong></span><button type="button" data-feed-attachment-clear>Clear</button></div>
                     <p class="community-field-error" data-feed-error aria-live="polite"></p>
                   </form>
                   <div class="community-filter-row" aria-label="Feed filters">
-                    <button class="is-active" type="button" data-feed-filter="all">All</button><button type="button" data-feed-filter="announcements">Announcements</button><button type="button" data-feed-filter="staff">Staff</button><button type="button" data-feed-filter="customer">Customers</button><button type="button" data-feed-filter="saved">Saved</button>
+                    <button class="is-active" type="button" aria-pressed="true" data-feed-filter="all">All</button><button type="button" aria-pressed="false" data-feed-filter="announcements">Announcements</button><button type="button" aria-pressed="false" data-feed-filter="staff">Staff</button><button type="button" aria-pressed="false" data-feed-filter="customer">Customers</button><button type="button" aria-pressed="false" data-feed-filter="saved">Saved</button>
                   </div>
                   <div class="feed-list" data-feed-list></div>
                 </div>
@@ -6891,23 +6892,23 @@
             <section class="tab-panel" id="panel-groups" data-tab-panel="groups" role="tabpanel" aria-label="Community Groups" hidden>
               <div data-group-list-view>
                 <div class="community-panel-head"><div><span class="community-eyebrow">Salon communities</span><h2>Groups</h2><p>Create focused spaces for your staff and customers.</p></div><button class="community-primary" type="button" data-create-group-open>Create Group</button></div>
-                <div class="group-summary-grid"><article><span>Total groups</span><strong data-group-total>4</strong></article><article><span>Total members</span><strong data-member-total>110</strong></article><article><span>Unread messages</span><strong data-unread-total>25</strong></article><article><span>Pending requests</span><strong>3</strong></article></div>
-                <div class="group-toolbar"><label><span class="sr-only">Search groups</span><input type="search" placeholder="Search groups..." data-group-search></label><div class="community-filter-row"><button class="is-active" type="button" data-group-filter="all">All</button><button type="button" data-group-filter="staff">Staff</button><button type="button" data-group-filter="customer">Customer</button><button type="button" data-group-filter="mixed">Mixed</button><button type="button" data-group-filter="archived">Archived</button></div></div>
+                <div class="group-summary-grid"><article><span>Total groups</span><strong data-group-total>4</strong></article><article><span>Total members</span><strong data-member-total>110</strong></article><article><span>Unread messages</span><strong data-unread-total>25</strong></article><article><span>Pending requests</span><strong data-pending-total>4</strong></article></div>
+                <div class="group-toolbar"><label><span class="sr-only">Search groups</span><input type="search" placeholder="Search groups..." data-group-search></label><div class="community-filter-row"><button class="is-active" type="button" aria-pressed="true" data-group-filter="all">All</button><button type="button" aria-pressed="false" data-group-filter="staff">Staff</button><button type="button" aria-pressed="false" data-group-filter="customer">Customer</button><button type="button" aria-pressed="false" data-group-filter="mixed">Mixed</button><button type="button" aria-pressed="false" data-group-filter="archived">Archived</button></div></div>
                 <div class="group-grid" data-group-grid></div>
               </div>
               <div class="group-chat-view" data-group-chat-view hidden>
-                <header class="group-chat-head">
+                <header class="group-chat-head" data-group-overlay-background>
                   <button type="button" data-groups-back>Back to Groups</button>
                   <div class="group-chat-identity">
                     <h2 data-active-group-name>Group</h2>
                     <p><span data-active-group-privacy>Private</span> · <span data-active-group-members>0 members</span></p>
                   </div>
-                  <button type="button" aria-label="Search messages" data-message-search>Search</button>
-                  <button type="button" data-members-open>Members</button>
+                  <label class="group-message-search"><span class="sr-only">Search messages</span><input type="search" aria-label="Search messages" placeholder="Search messages" data-message-search-input><small data-message-search-summary aria-live="polite"></small></label>
+                  <button type="button" aria-expanded="false" aria-controls="group-member-panel" data-members-open>Members</button>
                   <button type="button" data-group-settings>Settings</button>
                 </header>
                 <div class="group-chat-shell">
-                  <div class="group-message-column">
+                  <div class="group-message-column" data-group-overlay-background>
                     <div class="message-list" data-message-list></div>
                     <form class="message-composer" data-message-composer>
                       <label class="sr-only" for="group-message-input">Message</label>
@@ -6919,10 +6920,11 @@
                         <button type="button" aria-label="Attach file" data-group-attachment="file">File</button>
                         <button class="community-primary" type="submit">Send</button>
                       </div>
+                      <div class="composer-attachment" data-message-attachment-status role="status" aria-live="polite" hidden><span>Selected: <strong data-message-attachment-name></strong></span><button type="button" data-message-attachment-clear>Clear</button></div>
                       <p class="community-field-error" data-message-error aria-live="polite"></p>
                     </form>
                   </div>
-                  <aside class="group-member-rail" data-group-member-rail data-group-side-panel="members">
+                  <aside class="group-member-rail" id="group-member-panel" aria-label="Group members" data-group-member-rail data-group-side-panel="members">
                     <h3>Members</h3>
                     <div data-member-list></div>
                     <h3>Join Requests</h3>
@@ -6930,7 +6932,7 @@
                     <h3>Pinned Messages</h3>
                     <div data-pinned-messages></div>
                   </aside>
-                  <aside class="group-thread-panel" data-group-thread-panel data-group-side-panel="thread" hidden>
+                  <aside class="group-thread-panel" id="group-thread-panel" aria-label="Message thread" data-group-thread-panel data-group-side-panel="thread" hidden>
                     <button class="thread-close" type="button" aria-label="Close thread" data-thread-close>×</button>
                     <h3>Thread</h3>
                     <div data-thread-messages></div>
@@ -6957,12 +6959,24 @@
                   </form>
                 </section>
               </div>
+              <div class="community-dialog-backdrop" data-group-settings-dialog hidden>
+                <section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="group-settings-title">
+                  <header><div><h2 id="group-settings-title">Manage Group</h2><p data-manage-group-name></p></div><button type="button" aria-label="Close Group Settings" data-dialog-close>×</button></header>
+                  <form data-group-settings-form>
+                    <label>Description<textarea name="manageGroupDescription" rows="3"></textarea></label>
+                    <label>Privacy<select name="manageGroupVisibility"><option value="private">Private</option><option value="discoverable">Discoverable to verified customers</option></select></label>
+                    <label>Who can post<select name="manageGroupPosting"><option value="members">All members</option><option value="moderators">Admins and moderators</option><option value="owner">Owner only</option></select></label>
+                    <p class="community-field-error" data-group-settings-error aria-live="polite"></p>
+                    <footer><button type="button" data-dialog-close>Cancel</button><button class="community-primary" type="submit">Save settings</button></footer>
+                  </form>
+                </section>
+              </div>
             </section>
 
             <section class="tab-panel" id="panel-learning" data-tab-panel="learning" role="tabpanel" aria-label="Community Learning" hidden>
               <div class="community-panel-head"><div><span class="community-eyebrow">Owner education</span><h2>Learning</h2><p>Build stronger operations, marketing, and teams.</p></div></div>
               <article class="learning-hero community-card"><div><span>Recommended for your salon</span><h3>Turn first-time guests into regulars</h3><p>Build a follow-up rhythm that improves retention without discounting.</p><button class="community-primary" type="button" data-course-continue="course-retention">Continue learning</button></div><strong>65%</strong></article>
-              <div class="community-filter-row" aria-label="Course filters"><button class="is-active" type="button" data-course-filter="all">All</button><button type="button" data-course-filter="operations">Operations</button><button type="button" data-course-filter="marketing">Marketing</button><button type="button" data-course-filter="team-management">Team Management</button><button type="button" data-course-filter="customer-experience">Customer Experience</button></div>
+              <div class="community-filter-row" aria-label="Course filters"><button class="is-active" type="button" aria-pressed="true" data-course-filter="all">All</button><button type="button" aria-pressed="false" data-course-filter="operations">Operations</button><button type="button" aria-pressed="false" data-course-filter="marketing">Marketing</button><button type="button" aria-pressed="false" data-course-filter="team-management">Team Management</button><button type="button" aria-pressed="false" data-course-filter="customer-experience">Customer Experience</button></div>
               <div class="learning-layout"><div><h3>Continue Learning</h3><div class="course-grid" data-course-grid></div></div><aside class="community-side-stack"><section class="community-card learning-workshop"><h3>Upcoming live workshop</h3><strong>Build a high-performing front desk</strong><p>August 12 · 10:00 AM · 45 min</p><button type="button" data-learning-workshop>Reserve seat</button></section><section class="community-card learning-saved"><h3>Saved resources</h3><div data-saved-course-list></div></section></aside></div>
               <div class="community-dialog-backdrop" data-share-course-dialog hidden><section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="share-course-title"><header><h2 id="share-course-title">Share to Staff Group</h2><button type="button" aria-label="Close Share Course" data-share-course-close data-dialog-close>×</button></header><form data-share-course-form><label>Staff group<select name="courseGroup" data-staff-group-options></select></label><p class="community-field-error" data-share-course-error aria-live="polite"></p><footer><button type="button" data-share-course-close data-dialog-close>Cancel</button><button class="community-primary" type="submit">Share course</button></footer></form></section></div>
             </section>
@@ -6979,7 +6993,7 @@
             </div>
           </div>
 
-          <div class="job-metric-grid"><article><span>Active Posts</span><strong>1</strong></article><article><span>New Matches</span><strong>4</strong></article><article><span>Contact Requests</span><strong>2</strong></article><article><span>Interviews</span><strong>1</strong></article></div>
+          <div class="job-metric-grid"><article><span>Active Posts</span><strong data-job-metric="active-posts">1</strong></article><article><span>New Matches</span><strong data-job-metric="new-matches">2</strong></article><article><span>Contact Requests</span><strong data-job-metric="contact-requests">0</strong></article><article><span>Interviews</span><strong data-job-metric="interviews">0</strong></article></div>
 
           <article class="owner-demand-card">
             <span class="owner-demand-icon"><i data-lucide="users-round" aria-hidden="true"></i></span>
@@ -6989,10 +7003,12 @@
             </div>
           </article>
 
-          <article class="owner-post-card">
-            <strong>Your active post: “Need Gel-X + Design, split 6/4”</strong>
-            <p>AI ranks anonymous tech profiles by skills, expectations, distance, and schedule. Techs already working at your salon are excluded.</p>
-          </article>
+          <div data-active-job-list>
+            <article class="owner-post-card">
+              <strong>Your active post: “Need Gel-X + Design, split 6/4”</strong>
+              <p>Gel-X, Design · Within 10 miles · Friday through Sunday · Split 6/4</p>
+            </article>
+          </div>
 
           <div class="owner-section-title">
             <h2>Anonymous candidates for your post</h2>
@@ -7016,7 +7032,7 @@
               <p class="owner-why"><strong>Why:</strong> Both required skills match, compensation expectation equals your offer, and availability covers your busiest hours.</p>
               <div class="owner-job-actions">
                 <button class="owner-action is-primary" type="button" data-owner-job-action="request-contact">Request contact</button>
-                <button class="owner-action is-secondary" type="button" data-owner-job-action="save">Save Candidate</button>
+                <button class="owner-action is-secondary" type="button" aria-pressed="false" data-owner-job-action="save">Save Candidate</button>
                 <button class="owner-action is-secondary" type="button" data-owner-job-action="share">Share with manager</button>
                 <button class="owner-action is-secondary" type="button" data-owner-job-action="dismiss">Dismiss</button>
               </div>
@@ -7036,12 +7052,13 @@
               <p class="owner-why"><strong>Why:</strong> Gel-X matches, but no design skill is listed and this tech expects a weekly guarantee your post does not offer.</p>
               <div class="owner-job-actions">
                 <button class="owner-action is-primary" type="button" data-owner-job-action="request-contact">Request contact</button>
-                <button class="owner-action is-secondary" type="button" data-owner-job-action="save">Save Candidate</button>
+                <button class="owner-action is-secondary" type="button" aria-pressed="false" data-owner-job-action="save">Save Candidate</button>
                 <button class="owner-action is-secondary" type="button" data-owner-job-action="share">Share with manager</button>
                 <button class="owner-action is-secondary" type="button" data-owner-job-action="dismiss">Dismiss</button>
               </div>
             </article>
           </div>
+          <div class="job-empty community-empty-state" data-job-empty role="status" aria-live="polite" hidden><strong>No candidates match these filters.</strong><span>Try broader skills, distance, availability, or compensation.</span><button type="button" data-job-clear-filters>Clear filters</button></div>
 
           <div class="job-pipeline" data-job-pipeline><article><span>Matched</span><strong data-stage-count="matched">2</strong></article><article><span>Contact Requested</span><strong data-stage-count="contact-requested">0</strong></article><article><span>Interviewing</span><strong data-stage-count="interviewing">0</strong></article><article><span>Closed</span><strong data-stage-count="closed">0</strong></article></div>
 
@@ -7055,7 +7072,7 @@
 
             <section class="tab-panel" id="panel-events" data-tab-panel="events" role="tabpanel" aria-label="Community Events" hidden>
               <div class="community-panel-head"><div><span class="community-eyebrow">Salon calendar</span><h2>Events</h2><p>Plan training, customer experiences, promotions, and networking.</p></div><button class="community-primary" type="button" data-create-event-open>Create Event</button></div>
-              <div class="event-toolbar"><div class="community-filter-row"><button class="is-active" type="button" data-event-filter="all">All</button><button type="button" data-event-filter="staff-training">Staff Training</button><button type="button" data-event-filter="customer-event">Customer Event</button><button type="button" data-event-filter="promotion">Promotion</button><button type="button" data-event-filter="industry">Industry</button></div><div class="event-view-switch"><button class="is-active" type="button" data-event-view="list">List</button><button type="button" data-event-view="calendar">Calendar</button></div></div>
+              <div class="event-toolbar"><div class="community-filter-row"><button class="is-active" type="button" aria-pressed="true" data-event-filter="all">All</button><button type="button" aria-pressed="false" data-event-filter="staff-training">Staff Training</button><button type="button" aria-pressed="false" data-event-filter="customer-event">Customer Event</button><button type="button" aria-pressed="false" data-event-filter="promotion">Promotion</button><button type="button" aria-pressed="false" data-event-filter="industry">Industry</button></div><div class="event-view-switch"><button class="is-active" type="button" aria-pressed="true" data-event-view="list">List</button><button type="button" aria-pressed="false" data-event-view="calendar">Calendar</button></div></div>
               <div class="event-layout"><div data-event-list></div><div data-event-calendar hidden></div><aside class="community-card event-detail" data-event-detail><h3>Event details</h3><p>Select an event to view RSVP, Attendees, Linked group, and Reminder status.</p></aside></div>
               <div class="community-dialog-backdrop" data-create-event-dialog hidden><section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="create-event-title"><header><h2 id="create-event-title">Create Event</h2><button type="button" aria-label="Close Create Event" data-dialog-close>×</button></header><form data-create-event-form><label>Title<input name="eventTitle" required></label><label>Description<textarea name="eventDescription"></textarea></label><label>Type<select name="eventType"><option value="staff-training">Staff Training</option><option value="customer-event">Customer Event</option><option value="promotion">Promotion</option><option value="industry">Industry</option></select></label><label>Starts<input name="eventStart" type="datetime-local" required></label><label>Ends<input name="eventEnd" type="datetime-local" required></label><label>Mode<select name="eventMode"><option value="in-person">In person</option><option value="online">Online</option></select></label><label>Location<input name="eventLocation"></label><label>Audience<select name="eventAudience" data-event-group-options></select></label><label>Capacity<input name="eventCapacity" type="number" min="1" value="20"></label><label class="event-check"><input name="eventRsvp" type="checkbox" checked> RSVP required</label><label class="event-check"><input name="eventReminder" type="checkbox" checked> Send reminder</label><p class="community-field-error" data-event-form-error aria-live="polite"></p><footer><button type="button" data-dialog-close>Cancel</button><button class="community-primary" type="submit">Create Event</button></footer></form></section></div>
             </section>

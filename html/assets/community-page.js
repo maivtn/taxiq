@@ -3,6 +3,10 @@
 
   var activeDialog = null;
   var dialogOpener = null;
+  var activeGroupOverlayPanel = null;
+  var groupOverlayOpener = null;
+  var groupOverlayKind = '';
+  var groupOverlayMessageId = '';
   var state = {
     posts: [
       { id:'feed-announcement-1', kind:'announcement', audience:'staff', author:'Nexora Touch', role:'Owner', group:'Nexora Touch Staff', time:'12 min ago', body:'Friday hours are updated. Please review your station coverage before 4 PM.', reactions:{ '👍':4 }, comments:[], saved:false, pinned:false },
@@ -10,6 +14,7 @@
       { id:'feed-staff-1', kind:'post', audience:'staff', author:'Mia Tran', role:'Admin', group:'Nexora Touch Staff', time:'1 hr ago', body:'The new Gel-X color cards are ready at station two.', reactions:{ '✨':3 }, comments:[], saved:false, pinned:false }
     ],
     feedFilter: 'all',
+    feedAttachment: null,
     groups: [
       { id:'staff-main', name:'Nexora Touch Staff', type:'staff', visibility:'private', members:12, unread:8, activity:'5 min ago', archived:false, description:'Daily operations, schedules, and team announcements.' },
       { id:'vip-club', name:'VIP Nail Club', type:'customer', visibility:'private', members:68, unread:14, activity:'18 min ago', archived:false, description:'Early access, care tips, and VIP-only offers.' },
@@ -20,28 +25,47 @@
     activeGroupId: '',
     activeThreadId: '',
     memberDrawerOpen: false,
+    managedGroupId: '',
+    messageSearch: '',
+    messageAttachments: {},
+    reports: [],
+    reportSequence: 0,
     members: {
       'staff-main': [
-        { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online' },
-        { id:'admin-mia', name:'Mia Tran', role:'admin', status:'online' },
-        { id:'member-linh', name:'Linh Nguyen', role:'moderator', status:'away' },
-        { id:'member-sophie', name:'Sophie Carter', role:'member', status:'offline' }
+        { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online', memberType:'staff' },
+        { id:'admin-mia', name:'Mia Tran', role:'admin', status:'online', memberType:'staff' },
+        { id:'member-linh', name:'Linh Nguyen', role:'moderator', status:'away', memberType:'staff' },
+        { id:'member-sophie', name:'Sophie Carter', role:'member', status:'offline', memberType:'staff' }
       ],
       'vip-club': [
-        { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online' },
-        { id:'vip-maya', name:'Maya Lewis', role:'moderator', status:'online' },
-        { id:'member-sophie', name:'Sophie Carter', role:'member', status:'offline' },
-        { id:'vip-noah', name:'Noah Williams', role:'member', status:'away' }
+        { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online', memberType:'staff' },
+        { id:'vip-maya', name:'Maya Lewis', role:'moderator', status:'online', memberType:'customer' },
+        { id:'member-sophie', name:'Sophie Carter', role:'member', status:'offline', memberType:'customer' },
+        { id:'vip-noah', name:'Noah Williams', role:'member', status:'away', memberType:'customer' }
       ],
       'weekend-promos': [
-        { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online' },
-        { id:'admin-mia', name:'Mia Tran', role:'admin', status:'online' },
-        { id:'vip-maya', name:'Maya Lewis', role:'member', status:'online' }
+        { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online', memberType:'staff' },
+        { id:'admin-mia', name:'Mia Tran', role:'admin', status:'online', memberType:'staff' },
+        { id:'vip-maya', name:'Maya Lewis', role:'member', status:'online', memberType:'customer' }
       ],
       'new-hire': [
-        { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online' },
-        { id:'member-linh', name:'Linh Nguyen', role:'moderator', status:'away' },
-        { id:'new-emily', name:'Emily Pham', role:'member', status:'online' }
+        { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online', memberType:'staff' },
+        { id:'member-linh', name:'Linh Nguyen', role:'moderator', status:'away', memberType:'staff' },
+        { id:'new-emily', name:'Emily Pham', role:'member', status:'online', memberType:'staff' }
+      ]
+    },
+    joinRequests: {
+      'staff-main': [
+        { id:'request-staff-ava', memberId:'staff-ava', name:'Ava Johnson', memberType:'staff', source:'staff-directory' }
+      ],
+      'vip-club': [
+        { id:'request-vip-jamie', memberId:'customer-jamie', name:'Jamie Lee', memberType:'customer', source:'verified-customer' }
+      ],
+      'weekend-promos': [
+        { id:'request-mixed-nora', memberId:'customer-nora', name:'Nora Chen', memberType:'customer', source:'verified-customer' }
+      ],
+      'new-hire': [
+        { id:'request-new-hire-carlos', memberId:'staff-carlos', name:'Carlos Diaz', memberType:'staff', source:'staff-directory' }
       ]
     },
     messages: {
@@ -58,10 +82,10 @@
     messageSequence: 0,
     viewerReactions: {},
     courses: [
-      { id:'course-retention', title:'Customer retention playbook', category:'customer-experience', categoryLabel:'Customer Experience', duration:'18 min', progress:65, saved:false },
-      { id:'course-pricing', title:'Pricing services for healthy margins', category:'operations', categoryLabel:'Operations', duration:'24 min', progress:20, saved:false },
-      { id:'course-instagram', title:'Instagram content in 30 minutes a week', category:'marketing', categoryLabel:'Marketing', duration:'16 min', progress:0, saved:false },
-      { id:'course-one-on-ones', title:'Run better one-on-ones', category:'team-management', categoryLabel:'Team Management', duration:'12 min', progress:80, saved:false }
+      { id:'course-retention', title:'Customer retention playbook', category:'customer-experience', categoryLabel:'Customer Experience', format:'Video', duration:'18 min', level:'Beginner', rating:4.9, progress:65, saved:false },
+      { id:'course-pricing', title:'Pricing services for healthy margins', category:'operations', categoryLabel:'Operations', format:'Guide', duration:'24 min', level:'Intermediate', rating:4.8, progress:20, saved:false },
+      { id:'course-instagram', title:'Instagram content in 30 minutes a week', category:'marketing', categoryLabel:'Marketing', format:'Video', duration:'16 min', level:'Beginner', rating:4.7, progress:0, saved:false },
+      { id:'course-one-on-ones', title:'Run better one-on-ones', category:'team-management', categoryLabel:'Team Management', format:'Workshop', duration:'12 min', level:'Intermediate', rating:4.9, progress:80, saved:false }
     ],
     courseFilter: 'all',
     activeShareCourseId: '',
@@ -78,6 +102,10 @@
       { id:'a7', skills:['Gel-X', 'Design'], distance:4, availability:['weekends'], compensation:'split-6-4', stage:'matched', saved:false },
       { id:'c2', skills:['Gel-X', 'Pedicure'], distance:8, availability:['weekdays'], compensation:'weekly-guarantee', stage:'matched', saved:false }
     ],
+    jobPosts: [
+      { id:'job-gel-x-design', title:'Need Gel-X + Design, split 6/4', skills:'Gel-X, Design', distance:10, availability:'Friday through Sunday', compensation:'split-6-4', status:'active', createdAt:'Active now' }
+    ],
+    jobSequence: 0,
     candidateFilters: { skill:'all', maxDistance:'all', availability:'all', compensation:'all' },
     noticeTimer: 0
   };
@@ -131,6 +159,13 @@
     return null;
   }
 
+  function normalizeDemoAttachment(kind, name) {
+    var label = String(name == null ? '' : name).replace(/^\s+|\s+$/g, '');
+    if (['photo', 'file'].indexOf(kind) === -1) return { ok:false, error:'Choose a photo or file attachment.' };
+    if (!label) return { ok:false, error:'Choose an attachment filename.' };
+    return { ok:true, attachment:{ kind:kind, name:label } };
+  }
+
   function groupDefaults(type) {
     if (type === 'staff' || type === 'mixed') return { visibility: 'private', joining: 'invite-only', posting: 'members' };
     if (type === 'customer') return { visibility: 'private', joining: 'approval', posting: 'members' };
@@ -141,7 +176,7 @@
     var search = String(query == null ? '' : query).replace(/^\s+|\s+$/g, '').toLowerCase();
     var selected = type || 'all';
     return state.groups.filter(function (group) {
-      var matchesFilter = selected === 'all' || (selected === 'archived' ? group.archived : group.type === selected);
+      var matchesFilter = selected === 'archived' ? group.archived : (!group.archived && (selected === 'all' || group.type === selected));
       var haystack = (group.name + ' ' + group.description).toLowerCase();
       return matchesFilter && haystack.indexOf(search) !== -1;
     });
@@ -177,6 +212,7 @@
     state.groups.push(group);
     state.members[group.id] = [{ id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online' }];
     state.messages[group.id] = [];
+    state.joinRequests[group.id] = [];
     return { ok: true, group: group };
   }
 
@@ -231,10 +267,42 @@
   function openGroup(groupId) {
     var group = findGroup(groupId);
     if (!group) return { ok: false, error: 'Group not found.' };
+    if (group.archived) return { ok:false, error:'Restore this group before opening chat.' };
     state.activeGroupId = groupId;
     state.activeThreadId = '';
     state.memberDrawerOpen = false;
+    state.messageSearch = '';
     return { ok: true, value: group, group: group };
+  }
+
+  function searchMessages(groupId, query) {
+    var group = findGroup(groupId);
+    var search = String(query == null ? '' : query).replace(/^\s+|\s+$/g, '').toLowerCase();
+    var messages;
+    if (!group) return { ok:false, error:'Group not found.', messages:[] };
+    messages = (state.messages[groupId] || []).filter(function (message) {
+      var author = findMember(groupId, message.authorId);
+      var haystack = message.body + ' ' + (author ? author.name : '');
+      return haystack.toLowerCase().indexOf(search) !== -1;
+    });
+    return { ok:true, messages:messages };
+  }
+
+  function selectMessageAttachment(groupId, kind, name) {
+    var group = findGroup(groupId);
+    var normalized;
+    if (!group) return { ok:false, error:'Group not found.' };
+    if (group.archived) return { ok:false, error:'Restore this group before attaching files.' };
+    normalized = normalizeDemoAttachment(kind, name);
+    if (!normalized.ok) return normalized;
+    state.messageAttachments[groupId] = normalized.attachment;
+    return { ok:true, attachment:normalized.attachment };
+  }
+
+  function clearMessageAttachment(groupId) {
+    if (!findGroup(groupId)) return { ok:false, error:'Group not found.' };
+    delete state.messageAttachments[groupId];
+    return { ok:true };
   }
 
   function sendMessage(groupId, body) {
@@ -245,7 +313,14 @@
     if (!text) return { ok: false, error: 'Write a message before sending.' };
     if (!state.messages[groupId]) state.messages[groupId] = [];
     message = { id:nextChatId('message'), authorId:'owner-nexora', body:text, time:'Just now', pinned:false, reactions:{}, replies:[] };
+    if (state.messageAttachments[groupId]) {
+      message.attachment = {
+        kind: state.messageAttachments[groupId].kind,
+        name: state.messageAttachments[groupId].name
+      };
+    }
     state.messages[groupId].push(message);
+    delete state.messageAttachments[groupId];
     return { ok: true, value: message, message: message };
   }
 
@@ -281,9 +356,72 @@
     if (!group) return { ok: false, error: 'Group not found.' };
     member = findMember(groupId, memberId);
     if (!member) return { ok: false, error: 'Member not found.' };
+    if (member.role === 'owner') return { ok: false, error: 'Transfer ownership before changing the Owner role.' };
     if (['admin', 'moderator', 'member'].indexOf(role) === -1) return { ok: false, error: 'Choose admin, moderator, or member.' };
     member.role = role;
     return { ok: true, value: member, member: member };
+  }
+
+  function isJoinRequestEligible(group, request) {
+    if (group.type === 'staff') return request.memberType === 'staff' && request.source === 'staff-directory';
+    if (group.type === 'customer') return request.memberType === 'customer';
+    if (group.type === 'mixed') return request.memberType === 'staff' || request.memberType === 'customer';
+    return false;
+  }
+
+  function resolveJoinRequest(groupId, requestId, action) {
+    var group = findGroup(groupId);
+    var requests = state.joinRequests[groupId] || [];
+    var request = null;
+    var index;
+    if (!group) return { ok:false, error:'Group not found.' };
+    if (['approve', 'decline'].indexOf(action) === -1) return { ok:false, error:'Choose approve or decline.' };
+    for (index = 0; index < requests.length; index += 1) {
+      if (requests[index].id === requestId) {
+        request = requests[index];
+        break;
+      }
+    }
+    if (!request) return { ok:false, error:'Join request not found.' };
+    if (action === 'approve') {
+      if (!isJoinRequestEligible(group, request)) return { ok:false, error:group.type === 'staff' ? 'Only Staff-directory members can join a Staff group.' : 'This member type cannot join the selected group.' };
+      if (findMember(groupId, request.memberId)) return { ok:false, error:'This person is already a group member.' };
+      state.members[groupId].push({
+        id:request.memberId,
+        name:request.name,
+        role:'member',
+        status:'offline',
+        memberType:request.memberType
+      });
+      group.members += 1;
+    }
+    requests.splice(index, 1);
+    return { ok:true, action:action, request:request, group:group };
+  }
+
+  function reportMessage(groupId, messageId) {
+    var group = findGroup(groupId);
+    var message;
+    if (!group) return { ok:false, error:'Group not found.' };
+    message = findMessage(groupId, messageId);
+    if (!message) return { ok:false, error:'Message not found.' };
+    if (!message.reported) {
+      state.reportSequence += 1;
+      message.reported = true;
+      state.reports.push({ id:'report-' + state.reportSequence, groupId:groupId, messageId:messageId, status:'open' });
+    }
+    return { ok:true, message:message };
+  }
+
+  function toggleMutedMember(groupId, memberId) {
+    var group = findGroup(groupId);
+    var member;
+    if (!group) return { ok:false, error:'Group not found.' };
+    member = findMember(groupId, memberId);
+    if (!member) return { ok:false, error:'Member not found.' };
+    if (member.role === 'owner') return { ok:false, error:'The group owner cannot be muted.' };
+    member.muted = !member.muted;
+    return { ok:true, member:member };
   }
 
   function moderateMessage(groupId, messageId, action) {
@@ -324,17 +462,49 @@
     });
   }
 
+  function resolveFeedAudience(target) {
+    var group;
+    if (target === 'all') return { ok:true, audience:'all', group:'Nexora Touch Community', groupId:'' };
+    if (target === 'staff') return { ok:true, audience:'staff', group:'Staff groups', groupId:'' };
+    if (target === 'customer') return { ok:true, audience:'customer', group:'Customer groups', groupId:'' };
+    group = findGroup(target);
+    if (!group || group.archived) return { ok:false, error:'Choose an active Community audience.' };
+    return {
+      ok:true,
+      audience:group.type === 'staff' ? 'staff' : (group.type === 'customer' ? 'customer' : 'all'),
+      group:group.name,
+      groupId:group.id
+    };
+  }
+
+  function selectFeedAttachment(kind, name) {
+    var normalized = normalizeDemoAttachment(kind, name);
+    if (!normalized.ok) return normalized;
+    state.feedAttachment = normalized.attachment;
+    renderFeedAttachment();
+    return { ok:true, attachment:normalized.attachment };
+  }
+
+  function clearFeedAttachment() {
+    state.feedAttachment = null;
+    renderFeedAttachment();
+    return { ok:true };
+  }
+
   function addFeedPost(text, audience) {
     var body = String(text == null ? '' : text).replace(/^\s+|\s+$/g, '');
+    var target;
     var createdPost;
     if (!body) return { ok: false, error: 'Write something before posting.' };
+    target = resolveFeedAudience(audience);
+    if (!target.ok) return target;
     createdPost = {
       id: 'feed-post-' + (state.posts.length + 1) + '-' + new Date().getTime(),
       kind: 'post',
-      audience: ['staff', 'customer'].indexOf(audience) !== -1 ? audience : 'all',
+      audience: target.audience,
       author: 'Nexora Touch',
       role: 'Owner',
-      group: 'Nexora Touch Community',
+      group: target.group,
       time: 'Just now',
       body: body,
       reactions: {},
@@ -342,8 +512,14 @@
       saved: false,
       pinned: false
     };
+    if (target.groupId) createdPost.groupId = target.groupId;
+    if (state.feedAttachment) {
+      createdPost.attachment = { kind:state.feedAttachment.kind, name:state.feedAttachment.name };
+    }
     state.posts.unshift(createdPost);
+    state.feedAttachment = null;
     renderFeed();
+    renderFeedAttachment();
     return { ok: true, post: createdPost };
   }
 
@@ -588,10 +764,32 @@
     var title = String(details.jobTitle == null ? '' : details.jobTitle).replace(/^\s+|\s+$/g, '');
     var skills = String(details.jobSkills == null ? '' : details.jobSkills).replace(/^\s+|\s+$/g, '');
     var distance = Number(details.jobDistance);
+    var compensation = details.jobCompensation || 'split-6-4';
     if (!title) return { ok:false, error:'Enter a role title.' };
     if (!skills) return { ok:false, error:'Enter at least one required skill.' };
     if (isNaN(distance) || distance < 1) return { ok:false, error:'Enter a maximum distance of at least 1 mile.' };
-    return { ok:true, job:{ title:title, skills:skills, distance:distance, availability:details.jobAvailability || '', compensation:details.jobCompensation || 'split-6-4' } };
+    if (['split-6-4', 'weekly-guarantee'].indexOf(compensation) === -1) return { ok:false, error:'Choose a valid compensation preference.' };
+    return { ok:true, job:{ title:title, skills:skills, distance:distance, availability:String(details.jobAvailability || '').replace(/^\s+|\s+$/g, ''), compensation:compensation } };
+  }
+
+  function publishJobPost(input) {
+    var validation = validateJobPost(input);
+    var job;
+    if (!validation.ok) return validation;
+    state.jobSequence += 1;
+    job = {
+      id:'job-post-' + new Date().getTime() + '-' + state.jobSequence,
+      title:validation.job.title,
+      skills:validation.job.skills,
+      distance:validation.job.distance,
+      availability:validation.job.availability,
+      compensation:validation.job.compensation,
+      status:'active',
+      createdAt:'Just now'
+    };
+    state.jobPosts.unshift(job);
+    renderJobs();
+    return { ok:true, job:job };
   }
 
   function showCommunityNotice(message) {
@@ -658,8 +856,127 @@
     }
   }
 
+  function isMobileGroupOverlay() {
+    if (typeof window.matchMedia === 'function') return window.matchMedia('(max-width: 760px)').matches;
+    return typeof window.innerWidth === 'number' && window.innerWidth <= 760;
+  }
+
+  function setGroupOverlayBackground(hidden) {
+    var backgrounds = document.querySelectorAll('[data-group-overlay-background]');
+    var index;
+    for (index = 0; index < backgrounds.length; index += 1) {
+      if (hidden) {
+        backgrounds[index].setAttribute('aria-hidden', 'true');
+        backgrounds[index].setAttribute('inert', '');
+      } else {
+        backgrounds[index].removeAttribute('aria-hidden');
+        backgrounds[index].removeAttribute('inert');
+      }
+    }
+  }
+
+  function syncGroupSidePanelAccessibility() {
+    var memberRail = document.querySelector('[data-group-member-rail]');
+    var threadPanel = document.querySelector('[data-group-thread-panel]');
+    var membersButton = document.querySelector('[data-members-open]');
+    var threadButtons = document.querySelectorAll('[data-thread-open]');
+    var mobile = isMobileGroupOverlay();
+    var memberExpanded = !!state.activeGroupId && !state.activeThreadId && (!mobile || state.memberDrawerOpen);
+    var index;
+    if (membersButton) membersButton.setAttribute('aria-expanded', memberExpanded ? 'true' : 'false');
+    if (memberRail) memberRail.setAttribute('aria-hidden', memberExpanded ? 'false' : 'true');
+    if (threadPanel) threadPanel.setAttribute('aria-hidden', state.activeThreadId ? 'false' : 'true');
+    for (index = 0; index < threadButtons.length; index += 1) {
+      threadButtons[index].setAttribute('aria-expanded', threadButtons[index].getAttribute('data-thread-open') === state.activeThreadId ? 'true' : 'false');
+    }
+  }
+
+  function closeGroupOverlay(restoreFocus) {
+    var panel = activeGroupOverlayPanel;
+    var opener = groupOverlayOpener;
+    var kind = groupOverlayKind;
+    var messageId = groupOverlayMessageId;
+    var triggers;
+    var index;
+    if (!panel) return;
+    panel.removeAttribute('role');
+    panel.removeAttribute('aria-modal');
+    activeGroupOverlayPanel = null;
+    groupOverlayOpener = null;
+    groupOverlayKind = '';
+    groupOverlayMessageId = '';
+    setGroupOverlayBackground(false);
+    if (!restoreFocus) return;
+    if (kind === 'members') {
+      opener = document.querySelector('[data-members-open]') || opener;
+    } else if (kind === 'thread') {
+      triggers = document.querySelectorAll('[data-thread-open]');
+      for (index = 0; index < triggers.length; index += 1) {
+        if (triggers[index].getAttribute('data-thread-open') === messageId) {
+          opener = triggers[index];
+          break;
+        }
+      }
+    }
+    if (opener && typeof opener.focus === 'function') opener.focus();
+  }
+
+  function openGroupOverlay(panel, opener, kind, messageId) {
+    var first;
+    if (!panel || !isMobileGroupOverlay()) return;
+    if (activeGroupOverlayPanel && activeGroupOverlayPanel !== panel) closeGroupOverlay(false);
+    activeGroupOverlayPanel = panel;
+    groupOverlayOpener = opener || document.activeElement;
+    groupOverlayKind = kind;
+    groupOverlayMessageId = messageId || '';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    setGroupOverlayBackground(true);
+    first = panel.querySelector('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[href]');
+    if (first) first.focus();
+  }
+
+  function handleGroupOverlayKeydown(event) {
+    var focusable;
+    var first;
+    var last;
+    var kind;
+    var rail;
+    if (!activeGroupOverlayPanel || event.defaultPrevented) return;
+    if (!isMobileGroupOverlay()) {
+      closeGroupOverlay(false);
+      syncGroupSidePanelAccessibility();
+      return;
+    }
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      kind = groupOverlayKind;
+      if (kind === 'thread') state.activeThreadId = '';
+      else state.memberDrawerOpen = false;
+      rail = document.querySelector('[data-group-member-rail]');
+      if (rail) rail.classList.remove('is-mobile-open');
+      closeGroupOverlay(true);
+      renderThread();
+      syncGroupSidePanelAccessibility();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    focusable = activeGroupOverlayPanel.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[href]');
+    if (!focusable.length) return;
+    first = focusable[0];
+    last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
   function bindDialogControls() {
     document.addEventListener('keydown', handleDialogKeydown);
+    document.addEventListener('keydown', handleGroupOverlayKeydown);
     document.addEventListener('click', function (event) {
       if (activeDialog && event.target === activeDialog) closeDialog(activeDialog);
     });
@@ -692,11 +1009,33 @@
     return '<article class="feed-post community-card" data-feed-post="' + escapeHtml(post.id) + '">' +
       '<header class="feed-post-head"><div><strong>' + escapeHtml(post.author) + '</strong><span>' + escapeHtml(post.role) + ' · ' + escapeHtml(post.group) + '</span></div><div class="feed-post-meta"><span>' + escapeHtml(post.time) + '</span>' + (post.pinned ? '<span class="feed-pin-label">Pinned</span>' : '') + '</div></header>' +
       '<p class="feed-post-body">' + escapeHtml(post.body) + '</p>' +
+      (post.attachment ? '<p class="feed-attachment"><strong>' + escapeHtml(post.attachment.kind === 'photo' ? 'Photo' : 'File') + ':</strong> ' + escapeHtml(post.attachment.name) + '</p>' : '') +
       '<div class="feed-reaction-row">' + renderReactions(post) + '<button type="button" class="feed-reaction" data-feed-reaction="👍" data-post-id="' + escapeHtml(post.id) + '">👍 React</button></div>' +
       '<div class="feed-post-actions"><button type="button" data-feed-save data-post-id="' + escapeHtml(post.id) + '">' + (post.saved ? 'Saved' : 'Save') + '</button><button type="button" data-feed-pin data-post-id="' + escapeHtml(post.id) + '">' + (post.pinned ? 'Unpin' : 'Pin') + '</button></div>' +
       '<div class="feed-comments">' + renderComments(post) + '</div>' +
       '<form class="feed-comment-form" data-feed-comment-form data-post-id="' + escapeHtml(post.id) + '"><label class="sr-only" for="comment-' + escapeHtml(post.id) + '">Comment on this post</label><input id="comment-' + escapeHtml(post.id) + '" name="comment" type="text" placeholder="Write a comment..."><button type="submit">Comment</button></form>' +
       '</article>';
+  }
+
+  function renderFeedAudienceOptions() {
+    var select = document.querySelector('[data-feed-audience]');
+    var selected;
+    var activeGroups;
+    if (!select) return;
+    selected = select.value || 'all';
+    activeGroups = state.groups.filter(function (group) { return !group.archived; });
+    select.innerHTML = '<option value="all">All groups</option><option value="staff">Staff groups</option><option value="customer">Customer groups</option><optgroup label="Specific groups">' + activeGroups.map(function (group) {
+      return '<option value="' + escapeHtml(group.id) + '">' + escapeHtml(group.name) + '</option>';
+    }).join('') + '</optgroup>';
+    select.value = resolveFeedAudience(selected).ok ? selected : 'all';
+  }
+
+  function renderFeedAttachment() {
+    var status = document.querySelector('[data-feed-attachment-status]');
+    var name = document.querySelector('[data-feed-attachment-name]');
+    if (!status) return;
+    status.hidden = !state.feedAttachment;
+    if (name) name.textContent = state.feedAttachment ? state.feedAttachment.name : '';
   }
 
   function renderFeed() {
@@ -708,6 +1047,7 @@
     posts = filterFeedPosts(state.feedFilter);
     for (index = 0; index < posts.length; index += 1) html += renderPost(posts[index]);
     list.innerHTML = html || '<p class="community-empty-state">No posts match this filter yet.</p>';
+    updateFilterButtons();
   }
 
   function renderGroups() {
@@ -716,23 +1056,29 @@
     var total = document.querySelector('[data-group-total]');
     var members = document.querySelector('[data-member-total]');
     var unread = document.querySelector('[data-unread-total]');
+    var pending = document.querySelector('[data-pending-total]');
     var query;
     var groups;
+    var activeGroups;
     if (!grid) return;
     query = search ? search.value : '';
     groups = filterGroups(query, state.groupFilter);
     grid.innerHTML = groups.length ? groups.map(function (group) {
-      return '<article class="group-card community-card" data-group-id="' + escapeHtml(group.id) + '"><div class="group-card-head"><span class="group-avatar">' + escapeHtml(group.name.slice(0, 2).toUpperCase()) + '</span><div><h3>' + escapeHtml(group.name) + '</h3><span class="group-type-badge">' + escapeHtml(group.type) + '</span><span class="group-privacy-badge">' + escapeHtml(group.visibility) + '</span></div></div><p>' + escapeHtml(group.description) + '</p><dl><div><dt>Members</dt><dd>' + group.members + '</dd></div><div><dt>Unread</dt><dd>' + group.unread + '</dd></div><div><dt>Activity</dt><dd>' + escapeHtml(group.activity) + '</dd></div></dl><footer><button type="button" data-group-open="' + escapeHtml(group.id) + '">Open Chat</button><button type="button" data-group-manage="' + escapeHtml(group.id) + '">Manage</button><button type="button" data-group-archive="' + escapeHtml(group.id) + '">' + (group.archived ? 'Restore' : 'Archive') + '</button></footer></article>';
+      var actions = group.archived ? '<button type="button" data-group-archive="' + escapeHtml(group.id) + '">Restore</button>' : '<button type="button" data-group-open="' + escapeHtml(group.id) + '">Open Chat</button><button type="button" data-group-manage="' + escapeHtml(group.id) + '">Manage</button><button type="button" data-group-archive="' + escapeHtml(group.id) + '">Archive</button>';
+      return '<article class="group-card community-card" data-group-id="' + escapeHtml(group.id) + '"><div class="group-card-head"><span class="group-avatar">' + escapeHtml(group.name.slice(0, 2).toUpperCase()) + '</span><div><h3>' + escapeHtml(group.name) + '</h3><span class="group-type-badge">' + escapeHtml(group.type) + '</span><span class="group-privacy-badge">' + escapeHtml(group.visibility) + '</span></div></div><p>' + escapeHtml(group.description) + '</p><dl><div><dt>Members</dt><dd>' + group.members + '</dd></div><div><dt>Unread</dt><dd>' + group.unread + '</dd></div><div><dt>Activity</dt><dd>' + escapeHtml(group.activity) + '</dd></div></dl><footer>' + actions + '</footer></article>';
     }).join('') : '<div class="community-empty"><h3>No groups found</h3><p>Change the filter or create a new group.</p></div>';
-    if (total) total.textContent = state.groups.filter(function (group) { return !group.archived; }).length;
-    if (members) members.textContent = state.groups.reduce(function (sum, group) { return sum + group.members; }, 0);
-    if (unread) unread.textContent = state.groups.reduce(function (sum, group) { return sum + group.unread; }, 0);
+    activeGroups = state.groups.filter(function (group) { return !group.archived; });
+    if (total) total.textContent = activeGroups.length;
+    if (members) members.textContent = activeGroups.reduce(function (sum, group) { return sum + group.members; }, 0);
+    if (unread) unread.textContent = activeGroups.reduce(function (sum, group) { return sum + group.unread; }, 0);
+    if (pending) pending.textContent = activeGroups.reduce(function (sum, group) { return sum + (state.joinRequests[group.id] || []).length; }, 0);
+    updateGroupFilterButtons();
   }
 
   function renderCourseCard(course) {
     return '<article class="course-card community-card" data-course-id="' + escapeHtml(course.id) + '">' +
       '<div class="course-card-head"><span>' + escapeHtml(course.categoryLabel) + '</span><button type="button" data-course-save="' + escapeHtml(course.id) + '">' + (course.saved ? 'Saved' : 'Save') + '</button></div>' +
-      '<h4>' + escapeHtml(course.title) + '</h4><p>' + escapeHtml(course.duration) + ' · Owner education</p>' +
+      '<h4>' + escapeHtml(course.title) + '</h4><ul class="course-meta" aria-label="Course details"><li>' + escapeHtml(course.format) + '</li><li>' + escapeHtml(course.duration) + '</li><li>' + escapeHtml(course.level) + '</li><li aria-label="Rating ' + course.rating + ' out of 5">★ ' + course.rating + '</li></ul>' +
       '<div class="course-progress"><div role="progressbar" aria-label="Course progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + course.progress + '"><span style="width:' + course.progress + '%"></span></div><strong>' + course.progress + '%</strong></div>' +
       '<footer><button type="button" data-course-continue="' + escapeHtml(course.id) + '">' + (course.progress ? 'Continue' : 'Start learning') + '</button><button type="button" data-course-share="' + escapeHtml(course.id) + '">Share</button></footer>' +
       '</article>';
@@ -746,6 +1092,7 @@
     courses = filterCourses(state.courseFilter);
     grid.innerHTML = courses.map(renderCourseCard).join('') || '<p class="community-empty-state">No courses match this filter yet.</p>';
     if (saved) saved.innerHTML = state.courses.filter(function (course) { return course.saved; }).map(function (course) { return '<button type="button" data-course-continue="' + escapeHtml(course.id) + '">' + escapeHtml(course.title) + '</button>'; }).join('') || '<p>No saved resources yet.</p>';
+    updateCourseFilterButtons();
   }
 
   function eventTypeLabel(type) {
@@ -798,7 +1145,7 @@
     attendees = event.attendees && event.attendees.length ? event.attendees.map(function (name) { return '<li>' + escapeHtml(name) + '</li>'; }).join('') : '<li>No attendees listed yet.</li>';
     detail.innerHTML = '<span class="event-type is-' + escapeHtml(event.type) + '">' + escapeHtml(eventTypeLabel(event.type)) + '</span><h3>' + escapeHtml(event.title) + '</h3><p>' + escapeHtml(formatEventDate(event.start)) + ' · ' + escapeHtml(formatEventTime(event.start)) + '</p>' +
       '<dl><div><dt>Linked group</dt><dd>' + escapeHtml(group.name) + '</dd></div><div><dt>Reminder</dt><dd>' + (event.reminder ? 'Scheduled' : 'Off') + '</dd></div><div><dt>Capacity</dt><dd>' + event.capacity + '</dd></div></dl>' +
-      '<h4>RSVP</h4><div class="event-rsvp-actions"><button type="button" class="' + (event.rsvp === 'going' ? 'is-active' : '') + '" data-event-rsvp="going" data-event-id="' + escapeHtml(event.id) + '">Going ' + totals.going + '</button><button type="button" class="' + (event.rsvp === 'maybe' ? 'is-active' : '') + '" data-event-rsvp="maybe" data-event-id="' + escapeHtml(event.id) + '">Maybe ' + totals.maybe + '</button><button type="button" class="' + (event.rsvp === 'declined' ? 'is-active' : '') + '" data-event-rsvp="declined" data-event-id="' + escapeHtml(event.id) + '">Declined ' + totals.declined + '</button></div>' +
+      '<h4>RSVP</h4><div class="event-rsvp-actions"><button type="button" class="' + (event.rsvp === 'going' ? 'is-active' : '') + '" aria-pressed="' + (event.rsvp === 'going' ? 'true' : 'false') + '" data-event-rsvp="going" data-event-id="' + escapeHtml(event.id) + '">Going ' + totals.going + '</button><button type="button" class="' + (event.rsvp === 'maybe' ? 'is-active' : '') + '" aria-pressed="' + (event.rsvp === 'maybe' ? 'true' : 'false') + '" data-event-rsvp="maybe" data-event-id="' + escapeHtml(event.id) + '">Maybe ' + totals.maybe + '</button><button type="button" class="' + (event.rsvp === 'declined' ? 'is-active' : '') + '" aria-pressed="' + (event.rsvp === 'declined' ? 'true' : 'false') + '" data-event-rsvp="declined" data-event-id="' + escapeHtml(event.id) + '">Declined ' + totals.declined + '</button></div>' +
       '<h4>Attendees</h4><ul class="event-attendees">' + attendees + '</ul><button class="event-announce" type="button" data-event-announce="' + escapeHtml(group.id) + '" data-event-id="' + escapeHtml(event.id) + '">Announce to linked group</button>';
   }
 
@@ -827,8 +1174,16 @@
     var filters = document.querySelectorAll('[data-event-filter]');
     var views = document.querySelectorAll('[data-event-view]');
     var index;
-    for (index = 0; index < filters.length; index += 1) filters[index].classList.toggle('is-active', filters[index].getAttribute('data-event-filter') === state.eventFilter);
-    for (index = 0; index < views.length; index += 1) views[index].classList.toggle('is-active', views[index].getAttribute('data-event-view') === state.eventView);
+    for (index = 0; index < filters.length; index += 1) {
+      var filterActive = filters[index].getAttribute('data-event-filter') === state.eventFilter;
+      filters[index].classList.toggle('is-active', filterActive);
+      filters[index].setAttribute('aria-pressed', filterActive ? 'true' : 'false');
+    }
+    for (index = 0; index < views.length; index += 1) {
+      var viewActive = views[index].getAttribute('data-event-view') === state.eventView;
+      views[index].classList.toggle('is-active', viewActive);
+      views[index].setAttribute('aria-pressed', viewActive ? 'true' : 'false');
+    }
   }
 
   function renderEvents() {
@@ -853,6 +1208,20 @@
     updateEventControls();
   }
 
+  function jobCompensationLabel(value) {
+    return value === 'weekly-guarantee' ? 'Weekly guarantee' : 'Split 6/4';
+  }
+
+  function renderJobPosts() {
+    var list = document.querySelector('[data-active-job-list]');
+    var jobs;
+    if (!list) return;
+    jobs = state.jobPosts.filter(function (job) { return job.status === 'active'; });
+    list.innerHTML = jobs.length ? jobs.map(function (job) {
+      return '<article class="owner-post-card" data-job-post="' + escapeHtml(job.id) + '"><strong>Your active post: “' + escapeHtml(job.title) + '”</strong><p>' + escapeHtml(job.skills) + ' · Within ' + job.distance + ' miles · ' + escapeHtml(job.availability || 'Flexible availability') + ' · ' + escapeHtml(jobCompensationLabel(job.compensation)) + '</p></article>';
+    }).join('') : '<p class="community-empty-state">No active job posts. Create one to start matching.</p>';
+  }
+
   function renderJobs() {
     var cards = document.querySelectorAll('[data-owner-candidate]');
     var visible = filterCandidates(state.candidateFilters);
@@ -861,6 +1230,8 @@
     var candidate;
     var save;
     var count;
+    var empty = document.querySelector('[data-job-empty]');
+    var metric;
     for (index = 0; index < cards.length; index += 1) {
       candidate = findCandidate(cards[index].getAttribute('data-owner-candidate'));
       if (!candidate) continue;
@@ -870,12 +1241,26 @@
       if (save) {
         save.textContent = candidate.saved ? 'Candidate Saved' : 'Save Candidate';
         save.classList.toggle('is-saved', candidate.saved);
+        save.setAttribute('aria-pressed', candidate.saved ? 'true' : 'false');
       }
     }
     for (index = 0; index < stages.length; index += 1) {
       count = document.querySelector('[data-stage-count="' + stages[index] + '"]');
       if (count) count.textContent = state.candidates.filter(function (item) { return item.stage === stages[index]; }).length;
     }
+    metric = document.querySelector('[data-job-metric="active-posts"]');
+    if (metric) metric.textContent = state.jobPosts.filter(function (job) { return job.status === 'active'; }).length;
+    metric = document.querySelector('[data-job-metric="new-matches"]');
+    if (metric) metric.textContent = state.candidates.filter(function (item) { return item.stage === 'matched'; }).length;
+    metric = document.querySelector('[data-job-metric="contact-requests"]');
+    if (metric) metric.textContent = state.candidates.filter(function (item) { return item.stage === 'contact-requested'; }).length;
+    metric = document.querySelector('[data-job-metric="interviews"]');
+    if (metric) metric.textContent = state.candidates.filter(function (item) { return item.stage === 'interviewing'; }).length;
+    if (empty) {
+      empty.hidden = visible.length !== 0;
+      empty.innerHTML = visible.length ? '' : '<strong>No candidates match these filters.</strong><span>Try broader skills, distance, availability, or compensation.</span><button type="button" data-job-clear-filters>Clear filters</button>';
+    }
+    renderJobPosts();
   }
 
   function renderMessageReactions(message) {
@@ -892,10 +1277,12 @@
 
   function renderMessage(message) {
     var author = findMember(state.activeGroupId, message.authorId) || { name: 'Community member', role: 'member' };
+    var attachment = message.attachment ? '<p class="message-attachment"><strong>' + escapeHtml(message.attachment.kind === 'photo' ? 'Photo' : 'File') + ':</strong> ' + escapeHtml(message.attachment.name) + '</p>' : '';
+    var mute = author.role === 'owner' ? '' : '<button type="button" data-member-mute="' + escapeHtml(message.authorId) + '">' + (author.muted ? 'Unmute member' : 'Mute member') + '</button>';
     return '<article class="group-message" data-message-id="' + escapeHtml(message.id) + '">' +
       '<header><span class="group-message-avatar">' + escapeHtml(author.name.slice(0, 2).toUpperCase()) + '</span><div><strong>' + escapeHtml(author.name) + '</strong><span>' + escapeHtml(author.role) + ' · ' + escapeHtml(message.time) + '</span></div>' + (message.pinned ? '<span class="message-pinned">Pinned</span>' : '') + '</header>' +
-      '<p>' + escapeHtml(message.body) + '</p>' +
-      '<footer><div class="message-reactions">' + renderMessageReactions(message) + '</div><button type="button" data-thread-open="' + escapeHtml(message.id) + '">' + message.replies.length + ' replies</button><button type="button" data-message-id="' + escapeHtml(message.id) + '" data-message-moderation="pin">' + (message.pinned ? 'Unpin' : 'Pin') + '</button><button type="button" data-message-id="' + escapeHtml(message.id) + '" data-message-moderation="delete">Delete</button></footer>' +
+      '<p>' + escapeHtml(message.body) + '</p>' + attachment +
+      '<footer><div class="message-reactions">' + renderMessageReactions(message) + '</div><button type="button" aria-controls="group-thread-panel" aria-expanded="' + (message.id === state.activeThreadId ? 'true' : 'false') + '" data-thread-open="' + escapeHtml(message.id) + '">' + message.replies.length + ' replies</button><button type="button" data-message-id="' + escapeHtml(message.id) + '" data-message-moderation="pin">' + (message.pinned ? 'Unpin' : 'Pin') + '</button><button type="button" data-message-id="' + escapeHtml(message.id) + '" data-message-report>' + (message.reported ? 'Reported' : 'Report') + '</button>' + mute + '<button type="button" data-message-id="' + escapeHtml(message.id) + '" data-message-moderation="delete">Delete</button></footer>' +
       '</article>';
   }
 
@@ -912,13 +1299,14 @@
     var memberIndex;
     var member;
     var pinnedMessages;
+    var requests;
     if (!list) return;
     for (roleIndex = 0; roleIndex < roles.length; roleIndex += 1) {
       html += '<section class="member-role-group"><h4>' + labels[roles[roleIndex]] + '</h4>';
       for (memberIndex = 0; memberIndex < groupMembers.length; memberIndex += 1) {
         member = groupMembers[memberIndex];
         if (member.role === roles[roleIndex]) {
-          html += '<div class="group-member"><span class="member-status is-' + escapeHtml(member.status) + '" aria-label="' + escapeHtml(member.status) + '"></span><span><strong>' + escapeHtml(member.name) + '</strong><small>' + escapeHtml(member.status) + '</small></span>';
+          html += '<div class="group-member"><span class="member-status is-' + escapeHtml(member.status) + '" aria-label="' + escapeHtml(member.status) + '"></span><span><strong>' + escapeHtml(member.name) + '</strong><small>' + escapeHtml(member.status) + (member.muted ? ' · Muted' : '') + '</small></span>';
           if (member.role === 'owner') {
             html += '<span class="member-owner-label">Owner</span>';
           } else {
@@ -930,10 +1318,16 @@
       html += '</section>';
     }
     list.innerHTML = html;
-    if (joins) joins.innerHTML = '<div class="join-request"><span><strong>Jamie Lee</strong><small>Verified customer</small></span><button type="button" data-join-request-action="approve">Approve</button><button type="button" data-join-request-action="decline">Decline</button></div>';
+    if (joins) {
+      requests = state.joinRequests[state.activeGroupId] || [];
+      joins.innerHTML = requests.length ? requests.map(function (request) {
+        var sourceLabel = request.source === 'staff-directory' ? 'Staff directory' : 'Verified customer';
+        return '<div class="join-request"><span><strong>' + escapeHtml(request.name) + '</strong><small>' + escapeHtml(sourceLabel) + '</small></span><button type="button" data-join-request-id="' + escapeHtml(request.id) + '" data-join-request-action="approve">Approve</button><button type="button" data-join-request-id="' + escapeHtml(request.id) + '" data-join-request-action="decline">Decline</button></div>';
+      }).join('') : '<p class="group-side-empty">No pending requests.</p>';
+    }
     if (pinned) {
       pinnedMessages = messages.filter(function (message) { return message.pinned; });
-      pinned.innerHTML = pinnedMessages.length ? pinnedMessages.map(function (message) { return '<button type="button" data-thread-open="' + escapeHtml(message.id) + '">' + escapeHtml(message.body) + '</button>'; }).join('') : '<p class="group-side-empty">No pinned messages.</p>';
+      pinned.innerHTML = pinnedMessages.length ? pinnedMessages.map(function (message) { return '<button type="button" aria-controls="group-thread-panel" aria-expanded="' + (message.id === state.activeThreadId ? 'true' : 'false') + '" data-thread-open="' + escapeHtml(message.id) + '">' + escapeHtml(message.body) + '</button>'; }).join('') : '<p class="group-side-empty">No pinned messages.</p>';
     }
   }
 
@@ -947,10 +1341,12 @@
     var index;
     if (!panel || !memberRail) return;
     if (!state.activeThreadId) {
+      if (groupOverlayKind === 'thread') closeGroupOverlay(false);
       panel.hidden = true;
       panel.classList.remove('is-mobile-open');
       memberRail.hidden = false;
       memberRail.classList.toggle('is-mobile-open', state.memberDrawerOpen);
+      syncGroupSidePanelAccessibility();
       return;
     }
     message = findMessage(state.activeGroupId, state.activeThreadId);
@@ -969,6 +1365,7 @@
       html += '<article class="thread-message"><strong>' + escapeHtml(author.name) + '</strong><p>' + escapeHtml(message.replies[index].body) + '</p><span>' + escapeHtml(message.replies[index].time) + '</span></article>';
     }
     messages.innerHTML = html;
+    syncGroupSidePanelAccessibility();
   }
 
   function renderGroupChat() {
@@ -977,15 +1374,31 @@
     var name = document.querySelector('[data-active-group-name]');
     var privacy = document.querySelector('[data-active-group-privacy]');
     var members = document.querySelector('[data-active-group-members]');
+    var searchInput = document.querySelector('[data-message-search-input]');
+    var searchSummary = document.querySelector('[data-message-search-summary]');
+    var searchResult;
     var messages;
     if (!group || !list) return;
-    messages = state.messages[group.id] || [];
+    searchResult = searchMessages(group.id, state.messageSearch);
+    messages = searchResult.ok ? searchResult.messages : [];
     if (name) name.textContent = group.name;
     if (privacy) privacy.textContent = group.visibility.charAt(0).toUpperCase() + group.visibility.slice(1);
     if (members) members.textContent = group.members + ' members';
-    list.innerHTML = messages.length ? messages.map(renderMessage).join('') : '<p class="community-empty-state">No messages yet. Start the conversation.</p>';
+    if (searchInput) searchInput.value = state.messageSearch;
+    if (searchSummary) searchSummary.textContent = state.messageSearch ? messages.length + ' message' + (messages.length === 1 ? '' : 's') + ' found.' : '';
+    list.innerHTML = messages.length ? messages.map(renderMessage).join('') : '<p class="community-empty-state">' + (state.messageSearch ? 'No messages match “' + escapeHtml(state.messageSearch) + '”. Clear search to see the conversation.' : 'No messages yet. Start the conversation.') + '</p>';
     renderMemberRail();
     renderThread();
+    renderMessageAttachment();
+  }
+
+  function renderMessageAttachment() {
+    var status = document.querySelector('[data-message-attachment-status]');
+    var name = document.querySelector('[data-message-attachment-name]');
+    var attachment = state.messageAttachments[state.activeGroupId];
+    if (!status) return;
+    status.hidden = !attachment;
+    if (name) name.textContent = attachment ? attachment.name : '';
   }
 
   function renderGroupWorkspace() {
@@ -1001,7 +1414,9 @@
     var buttons = document.querySelectorAll('[data-group-filter]');
     var index;
     for (index = 0; index < buttons.length; index += 1) {
-      buttons[index].classList.toggle('is-active', buttons[index].getAttribute('data-group-filter') === state.groupFilter);
+      var active = buttons[index].getAttribute('data-group-filter') === state.groupFilter;
+      buttons[index].classList.toggle('is-active', active);
+      buttons[index].setAttribute('aria-pressed', active ? 'true' : 'false');
     }
   }
 
@@ -1009,7 +1424,9 @@
     var buttons = document.querySelectorAll('[data-course-filter]');
     var index;
     for (index = 0; index < buttons.length; index += 1) {
-      buttons[index].classList.toggle('is-active', buttons[index].getAttribute('data-course-filter') === state.courseFilter);
+      var active = buttons[index].getAttribute('data-course-filter') === state.courseFilter;
+      buttons[index].classList.toggle('is-active', active);
+      buttons[index].setAttribute('aria-pressed', active ? 'true' : 'false');
     }
   }
 
@@ -1034,6 +1451,30 @@
     if (!dialog) return;
     if (open) openDialog(dialog, opener);
     else closeDialog(dialog);
+  }
+
+  function setGroupSettingsDialog(open, groupId, opener) {
+    var dialog = document.querySelector('[data-group-settings-dialog]');
+    var group = findGroup(groupId || state.managedGroupId);
+    var name = document.querySelector('[data-manage-group-name]');
+    var description = document.querySelector('[name="manageGroupDescription"]');
+    var visibility = document.querySelector('[name="manageGroupVisibility"]');
+    var posting = document.querySelector('[name="manageGroupPosting"]');
+    var error = document.querySelector('[data-group-settings-error]');
+    if (!dialog) return;
+    if (open) {
+      if (!group || group.archived) return;
+      state.managedGroupId = group.id;
+      if (name) name.textContent = group.name;
+      if (description) description.value = group.description;
+      if (visibility) visibility.value = group.visibility;
+      if (posting) posting.value = group.posting || 'members';
+      if (error) error.textContent = '';
+      openDialog(dialog, opener);
+    } else {
+      closeDialog(dialog);
+      state.managedGroupId = '';
+    }
   }
 
   function setCreateJobDialog(open, opener) {
@@ -1088,6 +1529,7 @@
       panels[index].classList.toggle('is-active', panelActive);
       panels[index].hidden = !panelActive;
     }
+    if (window.NEXORA_SHELL && typeof window.NEXORA_SHELL.setActiveTab === 'function') window.NEXORA_SHELL.setActiveTab(tabId);
     return tabId;
   }
 
@@ -1144,14 +1586,18 @@
     var groupArchive = closestWithAttribute(target, 'data-group-archive');
     var groupManage = closestWithAttribute(target, 'data-group-manage');
     var attachment = closestWithAttribute(target, 'data-group-attachment');
+    var attachmentClear = closestWithAttribute(target, 'data-message-attachment-clear');
     var mention = closestWithAttribute(target, 'data-group-mention');
     var emoji = closestWithAttribute(target, 'data-group-emoji');
-    var search = closestWithAttribute(target, 'data-message-search');
     var settings = closestWithAttribute(target, 'data-group-settings');
     var joinRequest = closestWithAttribute(target, 'data-join-request-action');
+    var report = closestWithAttribute(target, 'data-message-report');
+    var mute = closestWithAttribute(target, 'data-member-mute');
     var result;
     var input;
     var rail;
+    var panel;
+    var closesActiveThread;
     if (open) {
       result = openGroup(open.getAttribute('data-group-open'));
       if (result.ok) renderGroupWorkspace();
@@ -1162,16 +1608,25 @@
       state.activeGroupId = '';
       state.activeThreadId = '';
       state.memberDrawerOpen = false;
+      closeGroupOverlay(false);
       renderGroupWorkspace();
       return;
     }
     if (thread) {
+      closeGroupOverlay(false);
+      state.memberDrawerOpen = false;
+      rail = document.querySelector('[data-group-member-rail]');
+      if (rail) rail.classList.remove('is-mobile-open');
       state.activeThreadId = thread.getAttribute('data-thread-open');
       renderThread();
+      panel = document.querySelector('[data-group-thread-panel]');
+      openGroupOverlay(panel, thread, 'thread', state.activeThreadId);
+      syncGroupSidePanelAccessibility();
       return;
     }
     if (threadClose) {
       state.activeThreadId = '';
+      closeGroupOverlay(true);
       renderThread();
       return;
     }
@@ -1182,8 +1637,10 @@
       return;
     }
     if (moderation) {
+      closesActiveThread = moderation.getAttribute('data-message-moderation') === 'delete' && moderation.getAttribute('data-message-id') === state.activeThreadId;
       result = moderateMessage(state.activeGroupId, moderation.getAttribute('data-message-id'), moderation.getAttribute('data-message-moderation'));
       if (result.ok) {
+        if (closesActiveThread) closeGroupOverlay(false);
         renderGroupChat();
         showCommunityNotice(moderation.getAttribute('data-message-moderation') === 'delete' ? 'Message deleted.' : (result.message.pinned ? 'Message pinned.' : 'Message unpinned.'));
       } else {
@@ -1192,9 +1649,27 @@
       return;
     }
     if (membersOpen) {
-      state.memberDrawerOpen = !state.memberDrawerOpen;
       rail = document.querySelector('[data-group-member-rail]');
+      if (!isMobileGroupOverlay()) {
+        if (state.activeThreadId) {
+          state.activeThreadId = '';
+          closeGroupOverlay(false);
+          renderThread();
+        }
+        state.memberDrawerOpen = false;
+        syncGroupSidePanelAccessibility();
+        return;
+      }
+      if (state.activeThreadId) {
+        state.activeThreadId = '';
+        closeGroupOverlay(false);
+        renderThread();
+      }
+      state.memberDrawerOpen = !state.memberDrawerOpen;
       if (rail) rail.classList.toggle('is-mobile-open', state.memberDrawerOpen);
+      if (state.memberDrawerOpen) openGroupOverlay(rail, membersOpen, 'members', '');
+      else closeGroupOverlay(true);
+      syncGroupSidePanelAccessibility();
       return;
     }
     if (groupFilter) {
@@ -1208,25 +1683,43 @@
       return;
     }
     if (dialogClose) {
-      setCreateGroupDialog(false);
+      closeDialog();
+      state.managedGroupId = '';
       return;
     }
     if (groupArchive) {
       result = toggleArchivedGroup(groupArchive.getAttribute('data-group-archive'));
       if (result.ok) {
         renderGroups();
+        renderFeedAudienceOptions();
         showCommunityNotice(result.group.archived ? 'Group archived.' : 'Group restored.');
       } else {
         showCommunityNotice(result.error);
       }
       return;
     }
-    if (groupManage || settings) {
-      showCommunityNotice('Group settings are ready for the full Community release.');
+    if (groupManage) {
+      setGroupSettingsDialog(true, groupManage.getAttribute('data-group-manage'), groupManage);
+      return;
+    }
+    if (settings) {
+      setGroupSettingsDialog(true, state.activeGroupId, settings);
       return;
     }
     if (attachment) {
-      showCommunityNotice(attachment.getAttribute('data-group-attachment') + ' attachments are ready for the full Community release.');
+      result = selectMessageAttachment(state.activeGroupId, attachment.getAttribute('data-group-attachment'), attachment.getAttribute('data-group-attachment') === 'photo' ? 'salon-update-photo.jpg' : 'group-notes.pdf');
+      if (result.ok) {
+        renderMessageAttachment();
+        showCommunityNotice('Selected ' + result.attachment.name + ' for this message.');
+      } else {
+        showCommunityNotice(result.error);
+      }
+      return;
+    }
+    if (attachmentClear) {
+      result = clearMessageAttachment(state.activeGroupId);
+      if (result.ok) renderMessageAttachment();
+      else showCommunityNotice(result.error);
       return;
     }
     if (mention || emoji) {
@@ -1237,11 +1730,30 @@
       }
       return;
     }
-    if (search) {
-      showCommunityNotice('Message search is ready for the full Community release.');
+    if (report) {
+      result = reportMessage(state.activeGroupId, report.getAttribute('data-message-id'));
+      if (result.ok) {
+        renderGroupChat();
+        showCommunityNotice('Message reported for moderator review.');
+      } else showCommunityNotice(result.error);
       return;
     }
-    if (joinRequest) showCommunityNotice(joinRequest.getAttribute('data-join-request-action') === 'approve' ? 'Join request approved.' : 'Join request declined.');
+    if (mute) {
+      result = toggleMutedMember(state.activeGroupId, mute.getAttribute('data-member-mute'));
+      if (result.ok) {
+        renderGroupChat();
+        showCommunityNotice(result.member.muted ? 'Member muted.' : 'Member unmuted.');
+      } else showCommunityNotice(result.error);
+      return;
+    }
+    if (joinRequest) {
+      result = resolveJoinRequest(state.activeGroupId, joinRequest.getAttribute('data-join-request-id'), joinRequest.getAttribute('data-join-request-action'));
+      if (result.ok) {
+        renderGroupChat();
+        renderGroups();
+        showCommunityNotice(result.action === 'approve' ? 'Join request approved.' : 'Join request declined.');
+      } else showCommunityNotice(result.error);
+    }
   }
 
   function bindGroupControls() {
@@ -1286,13 +1798,34 @@
           updateMixedPrivacyConfirmation();
           setCreateGroupDialog(false);
           renderGroups();
+          renderFeedAudienceOptions();
           showCommunityNotice('Group created.');
+        }
+      } else if (form && form.getAttribute && form.getAttribute('data-group-settings-form') !== null) {
+        event.preventDefault();
+        result = updateGroup(state.managedGroupId, {
+          description:form.querySelector('[name="manageGroupDescription"]').value,
+          visibility:form.querySelector('[name="manageGroupVisibility"]').value,
+          posting:form.querySelector('[name="manageGroupPosting"]').value
+        });
+        error = form.querySelector('[data-group-settings-error]');
+        if (error) error.textContent = result.ok ? '' : result.error;
+        if (result.ok) {
+          setGroupSettingsDialog(false);
+          renderGroups();
+          renderGroupWorkspace();
+          renderFeedAudienceOptions();
+          showCommunityNotice('Group privacy and posting settings updated.');
         }
       }
     });
     panel.addEventListener('input', function (event) {
       var target = event.target;
       if (target && target.getAttribute && target.getAttribute('data-group-search') !== null) renderGroups();
+      if (target && target.getAttribute && target.getAttribute('data-message-search-input') !== null) {
+        state.messageSearch = target.value;
+        renderGroupChat();
+      }
     });
     panel.addEventListener('change', function (event) {
       var target = event.target;
@@ -1318,6 +1851,7 @@
       var save = closestWithAttribute(target, 'data-feed-save');
       var pin = closestWithAttribute(target, 'data-feed-pin');
       var attachment = closestWithAttribute(target, 'data-demo-attachment');
+      var attachmentClear = closestWithAttribute(target, 'data-feed-attachment-clear');
       var focusComposer = closestWithAttribute(target, 'data-focus-feed-composer');
       if (tab) {
         activateCommunityTab(tab.getAttribute('data-tab-target'));
@@ -1332,8 +1866,16 @@
         toggleSavedPost(save.getAttribute('data-post-id'));
       } else if (pin) {
         togglePinnedPost(pin.getAttribute('data-post-id'));
+      } else if (attachmentClear) {
+        clearFeedAttachment();
       } else if (attachment) {
-        showCommunityNotice(attachment.getAttribute('data-demo-attachment') + ' attachments are ready for the full Community release.');
+        if (attachment.getAttribute('data-demo-attachment') === 'poll') {
+          showCommunityNotice('Poll questions stay in this demo session; add your question in the post text.');
+        } else {
+          var selectedAttachment = selectFeedAttachment(attachment.getAttribute('data-demo-attachment'), attachment.getAttribute('data-demo-attachment') === 'photo' ? 'community-photo.jpg' : 'community-file.pdf');
+          if (selectedAttachment.ok) showCommunityNotice('Selected ' + selectedAttachment.attachment.name + ' for this post.');
+          else showCommunityNotice(selectedAttachment.error);
+        }
       } else if (focusComposer) {
         var composer = document.querySelector('#community-post-body');
         if (composer) composer.focus();
@@ -1417,6 +1959,7 @@
       var create = closestWithAttribute(target, 'data-create-job-open');
       var close = closestWithAttribute(target, 'data-dialog-close');
       var action = closestWithAttribute(target, 'data-owner-job-action');
+      var clearFilters = closestWithAttribute(target, 'data-job-clear-filters');
       var card;
       var candidateId;
       var actionName;
@@ -1427,6 +1970,12 @@
       }
       if (close) {
         setCreateJobDialog(false);
+        return;
+      }
+      if (clearFilters) {
+        state.candidateFilters = { skill:'all', maxDistance:'all', availability:'all', compensation:'all' };
+        Array.prototype.forEach.call(document.querySelectorAll('[data-candidate-filter]'), function (filter) { filter.value = 'all'; });
+        renderJobs();
         return;
       }
       if (!action) return;
@@ -1473,7 +2022,7 @@
       var error;
       if (!form || !form.getAttribute || form.getAttribute('data-create-job-form') === null) return;
       event.preventDefault();
-      result = validateJobPost({
+      result = publishJobPost({
         jobTitle: form.querySelector('[name="jobTitle"]').value,
         jobSkills: form.querySelector('[name="jobSkills"]').value,
         jobDistance: form.querySelector('[name="jobDistance"]').value,
@@ -1562,13 +2111,17 @@
     var buttons = document.querySelectorAll('[data-feed-filter]');
     var index;
     for (index = 0; index < buttons.length; index += 1) {
-      buttons[index].classList.toggle('is-active', buttons[index].getAttribute('data-feed-filter') === state.feedFilter);
+      var active = buttons[index].getAttribute('data-feed-filter') === state.feedFilter;
+      buttons[index].classList.toggle('is-active', active);
+      buttons[index].setAttribute('aria-pressed', active ? 'true' : 'false');
     }
   }
 
   window.NEXORA_COMMUNITY = {
     state: state,
     addFeedPost: addFeedPost,
+    selectFeedAttachment: selectFeedAttachment,
+    clearFeedAttachment: clearFeedAttachment,
     filterFeedPosts: filterFeedPosts,
     togglePostReaction: togglePostReaction,
     addFeedComment: addFeedComment,
@@ -1582,6 +2135,7 @@
     moveCandidate: moveCandidate,
     toggleSavedCandidate: toggleSavedCandidate,
     validateJobPost: validateJobPost,
+    publishJobPost: publishJobPost,
     filterEvents: filterEvents,
     createEvent: createEvent,
     setEventRsvp: setEventRsvp,
@@ -1593,9 +2147,15 @@
     toggleArchivedGroup: toggleArchivedGroup,
     openGroup: openGroup,
     sendMessage: sendMessage,
+    searchMessages: searchMessages,
+    selectMessageAttachment: selectMessageAttachment,
+    clearMessageAttachment: clearMessageAttachment,
     addMessageReaction: addMessageReaction,
     addThreadReply: addThreadReply,
     setMemberRole: setMemberRole,
+    resolveJoinRequest: resolveJoinRequest,
+    reportMessage: reportMessage,
+    toggleMutedMember: toggleMutedMember,
     moderateMessage: moderateMessage,
     renderGroups: renderGroups,
     renderGroupChat: renderGroupChat,
@@ -1613,6 +2173,8 @@
   bindLearningControls();
   bindJobControls();
   bindEventControls();
+  renderFeedAudienceOptions();
+  renderFeedAttachment();
   renderFeed();
   renderGroups();
   renderGroupWorkspace();
