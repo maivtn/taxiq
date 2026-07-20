@@ -156,6 +156,35 @@ function createDelegatedDom({ panelSelector, selectorMap = {}, selectorAllMap = 
   return { document, panel, appended, firePanel, fireDocument };
 }
 
+function createTabsDom() {
+  const names = ['feed', 'groups', 'learning', 'jobs', 'events'];
+  const pageTabs = names.map((name, index) => fakeElement({
+    role: 'tab',
+    'data-tab-target': name,
+    'aria-selected': index === 0 ? 'true' : 'false',
+    tabindex: index === 0 ? '0' : '-1'
+  }));
+  const sidebarTabs = names.map((name) => fakeElement({ 'data-tab-target': name }));
+  const panels = names.map((name, index) => {
+    const panel = fakeElement({ 'data-tab-panel': name, id: `panel-${name}` });
+    panel.hidden = index !== 0;
+    return panel;
+  });
+  const dom = createDelegatedDom({
+    panelSelector: '#no-feature-panel',
+    selectorAllMap: {
+      '[data-tab-target]': [...pageTabs, ...sidebarTabs],
+      '.page-tabs [role="tab"]': pageTabs,
+      '[data-tab-panel]': panels
+    }
+  });
+  for (const node of [...pageTabs, ...sidebarTabs, ...panels]) {
+    node.ownerDocument = dom.document;
+    node.parentNode = dom.document;
+  }
+  return { ...dom, names, pageTabs, sidebarTabs, panels };
+}
+
 function createGroupDom() {
   const elements = {
     list: fakeElement(),
@@ -619,10 +648,43 @@ test('keeps all five Community state domains available and independently mutable
   assert.ok(Array.isArray(api.state.candidates));
 });
 
+test('supports roving five-tab keyboard activation without changing sidebar aria state', () => {
+  const dom = createTabsDom();
+  const api = loadApi({ document: dom.document, setTimeout() { return 1; }, clearTimeout() {} });
+
+  api.activateTab('feed');
+  const assertActive = (name) => {
+    const index = dom.names.indexOf(name);
+    assert.equal(dom.pageTabs.filter((tab) => tab.getAttribute('aria-selected') === 'true').length, 1);
+    assert.equal(dom.pageTabs.filter((tab) => tab.getAttribute('tabindex') === '0').length, 1);
+    assert.equal(dom.panels.filter((panel) => !panel.hidden).length, 1);
+    assert.equal(dom.pageTabs[index].getAttribute('aria-selected'), 'true');
+    assert.equal(dom.pageTabs[index].getAttribute('tabindex'), '0');
+    assert.equal(dom.panels[index].hidden, false);
+    assert.equal(dom.document.activeElement, dom.pageTabs[index]);
+    assert.ok(dom.sidebarTabs.every((tab) => tab.getAttribute('aria-selected') === null));
+    assert.ok(dom.sidebarTabs.every((tab) => tab.getAttribute('tabindex') === null));
+  };
+
+  dom.document.activeElement = dom.pageTabs[0];
+  assert.equal(dom.fireDocument('keydown', dom.pageTabs[0], { key: 'ArrowRight' }).defaultPrevented, true);
+  assertActive('groups');
+  assert.equal(dom.fireDocument('keydown', dom.pageTabs[1], { key: 'End' }).defaultPrevented, true);
+  assertActive('events');
+  assert.equal(dom.fireDocument('keydown', dom.pageTabs[4], { key: 'ArrowRight' }).defaultPrevented, true);
+  assertActive('feed');
+  assert.equal(dom.fireDocument('keydown', dom.pageTabs[0], { key: 'ArrowLeft' }).defaultPrevented, true);
+  assertActive('events');
+  assert.equal(dom.fireDocument('keydown', dom.pageTabs[4], { key: 'Home' }).defaultPrevented, true);
+  assertActive('feed');
+});
+
 test('opens one active dialog, traps focus, closes from Escape and backdrop, and restores its opener', () => {
   const title = fakeElement({ name: 'jobTitle' });
   const cancel = fakeElement({ 'data-dialog-close': '' });
   const submit = fakeElement();
+  const shareField = fakeElement({ name: 'courseGroup' });
+  const shareCancel = fakeElement({ 'data-share-course-close': '', 'data-dialog-close': '' });
   const focusableSelector = 'button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[href]';
   const dialog = fakeElement(
     { 'data-create-job-dialog': '' },
@@ -634,31 +696,58 @@ test('opens one active dialog, traps focus, closes from Escape and backdrop, and
     }
   );
   dialog.hidden = true;
+  const shareDialog = fakeElement(
+    { 'data-share-course-dialog': '' },
+    {
+      'input,select,textarea': shareField,
+      'button': shareCancel,
+      [focusableSelector]: [shareField, shareCancel]
+    }
+  );
+  shareDialog.hidden = true;
   const error = fakeElement();
   const dom = createDelegatedDom({
     panelSelector: '#panel-jobs',
     selectorMap: {
       '[data-create-job-dialog]': dialog,
+      '[data-share-course-dialog]': shareDialog,
+      '[data-staff-group-options]': shareField,
       '[name="jobTitle"]': title,
       '[data-job-form-error]': error
     }
   });
-  for (const node of [dialog, title, cancel, submit]) node.ownerDocument = dom.document;
+  for (const node of [dialog, title, cancel, submit, shareDialog, shareField, shareCancel]) node.ownerDocument = dom.document;
   loadApi({ document: dom.document, setTimeout() { return 1; }, clearTimeout() {} });
   const opener = fakeElement({ 'data-create-job-open': '' });
+  const shareOpener = fakeElement({ 'data-course-share': 'course-retention' });
   opener.ownerDocument = dom.document;
+  shareOpener.ownerDocument = dom.document;
+  shareOpener.parentNode = dom.document;
   dom.document.activeElement = opener;
 
   dom.firePanel('click', opener);
   assert.equal(dialog.hidden, false);
   assert.equal(dom.document.activeElement, title);
+  const reverseWrapped = dom.fireDocument('keydown', title, { key: 'Tab', shiftKey: true });
+  assert.equal(reverseWrapped.defaultPrevented, true);
+  assert.equal(dom.document.activeElement, submit);
   dom.document.activeElement = submit;
   const wrapped = dom.fireDocument('keydown', submit, { key: 'Tab' });
   assert.equal(wrapped.defaultPrevented, true);
   assert.equal(dom.document.activeElement, title);
-  dom.fireDocument('keydown', title, { key: 'Escape' });
+  dom.firePanel('click', cancel);
   assert.equal(dialog.hidden, true);
   assert.equal(dom.document.activeElement, opener);
+
+  dom.firePanel('click', opener);
+  dom.fireDocument('click', shareOpener);
+  assert.equal(dialog.hidden, true);
+  assert.equal(shareDialog.hidden, false);
+  assert.equal([dialog, shareDialog].filter((item) => !item.hidden).length, 1);
+  assert.equal(dom.document.activeElement, shareField);
+  dom.fireDocument('keydown', shareField, { key: 'Escape' });
+  assert.equal(shareDialog.hidden, true);
+  assert.equal(dom.document.activeElement, shareOpener);
 
   dom.firePanel('click', opener);
   dom.fireDocument('click', dialog);

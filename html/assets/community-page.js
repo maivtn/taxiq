@@ -1071,12 +1071,17 @@
 
   function activateCommunityTab(tabId) {
     var tabs = document.querySelectorAll('[data-tab-target]');
+    var pageTabs = document.querySelectorAll('.page-tabs [role="tab"]');
     var panels = document.querySelectorAll('[data-tab-panel]');
     var index;
     for (index = 0; index < tabs.length; index += 1) {
       var tabActive = tabs[index].getAttribute('data-tab-target') === tabId;
       tabs[index].classList.toggle('is-active', tabActive);
-      tabs[index].setAttribute('aria-selected', tabActive ? 'true' : 'false');
+    }
+    for (index = 0; index < pageTabs.length; index += 1) {
+      var pageTabActive = pageTabs[index].getAttribute('data-tab-target') === tabId;
+      pageTabs[index].setAttribute('aria-selected', pageTabActive ? 'true' : 'false');
+      pageTabs[index].setAttribute('tabindex', pageTabActive ? '0' : '-1');
     }
     for (index = 0; index < panels.length; index += 1) {
       var panelActive = panels[index].getAttribute('data-tab-panel') === tabId;
@@ -1092,6 +1097,36 @@
       node = node.parentNode;
     }
     return null;
+  }
+
+  function handleCommunityTabKeydown(event) {
+    var tabs = document.querySelectorAll('.page-tabs [role="tab"]');
+    var currentTab = closestWithAttribute(event.target, 'data-tab-target');
+    var currentIndex = -1;
+    var nextIndex;
+    var nextTab;
+    var index;
+
+    if (!currentTab || currentTab.getAttribute('role') !== 'tab' || !tabs.length) return;
+
+    for (index = 0; index < tabs.length; index += 1) {
+      if (tabs[index] === currentTab) {
+        currentIndex = index;
+        break;
+      }
+    }
+    if (currentIndex === -1) return;
+
+    if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length;
+    else if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    else if (event.key === 'Home') nextIndex = 0;
+    else if (event.key === 'End') nextIndex = tabs.length - 1;
+    else return;
+
+    event.preventDefault();
+    nextTab = tabs[nextIndex];
+    activateCommunityTab(nextTab.getAttribute('data-tab-target'));
+    nextTab.focus();
   }
 
   function handleGroupsClick(event) {
@@ -1273,6 +1308,8 @@
   }
 
   function bindFeedControls() {
+    document.addEventListener('keydown', handleCommunityTabKeydown);
+
     document.addEventListener('click', function (event) {
       var target = event.target;
       var tab = closestWithAttribute(target, 'data-tab-target');

@@ -39,6 +39,16 @@ test('renders one Booking Book-style page tab for every Community submenu', () =
   }
 });
 
+test('starts the five page tabs with one roving keyboard stop and a visible focus ring', () => {
+  const html = source();
+  assert.match(html, /class="page-tab is-active"[^>]*role="tab"[^>]*aria-selected="true"[^>]*tabindex="0"[^>]*data-tab-target="feed"/);
+  for (const tab of ['groups', 'learning', 'jobs', 'events']) {
+    assert.match(html, new RegExp(`class="page-tab"[^>]*role="tab"[^>]*aria-selected="false"[^>]*tabindex="-1"[^>]*data-tab-target="${tab}"`));
+  }
+  assert.equal((html.match(/class="page-tab[^\"]*"[^>]*aria-selected="true"/g) || []).length, 1);
+  assert.match(html, /\.page-tab:focus-visible\s*\{[^}]*outline:\s*2px\s+solid/);
+});
+
 test('keeps Feed active by default and synchronizes submenu and page tabs', () => {
   const html = source();
   const runtime = readFileSync(new URL('../assets/community-page.js', import.meta.url), 'utf8');
@@ -146,10 +156,15 @@ test('keeps dialogs, notices, tabs, and shared shell accessible and connected', 
 });
 
 test('provides responsive Community layouts, reduced motion, and legible focus and text', () => {
+  const html = source();
   const css = readFileSync(COMMUNITY_CSS_URL, 'utf8');
-  const sizes = [...css.matchAll(/font-size:\s*(\d+)px/g)].map((match) => Number(match[1]));
-  assert.ok(sizes.length > 0);
-  assert.ok(sizes.every((size) => size >= 11), `Community CSS contains text smaller than 11px: ${sizes.filter((size) => size < 11).join(', ')}`);
+  const inlineCss = [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((match) => match[1]).join('\n');
+  const assetSizes = [...css.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].map((match) => Number(match[1]));
+  const inlineSizes = [...inlineCss.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].map((match) => Number(match[1]));
+  assert.ok(assetSizes.length > 0);
+  assert.ok(inlineSizes.length > 0);
+  assert.ok(assetSizes.every((size) => size >= 11), `Community asset CSS contains text smaller than 11px: ${assetSizes.filter((size) => size < 11).join(', ')}`);
+  assert.ok(inlineSizes.every((size) => size >= 11), `Community page CSS contains text smaller than 11px: ${inlineSizes.filter((size) => size < 11).join(', ')}`);
   assert.match(css, /\.community-dialog-backdrop\[hidden\]\s*\{[^}]*display:\s*none!important/);
   assert.match(css, /:focus-visible\s*\{[^}]*outline:\s*2px\s+solid/);
   assert.doesNotMatch(css, /outline:\s*(?:[3-9]|\d{2,})px/);
