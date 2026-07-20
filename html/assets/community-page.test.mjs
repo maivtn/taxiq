@@ -49,4 +49,19 @@ test('toggles the viewer reaction on a Feed post', () => {
   assert.equal(api.togglePostReaction('feed-announcement-1', '👍').post.reactions['👍'], 4);
 });
 
+test('applies privacy-first group defaults and creates multiple groups', () => {
+  const api = loadApi();
+  const groupDefaults = (type) => JSON.parse(JSON.stringify(api.groupDefaults(type)));
+  assert.deepEqual(groupDefaults('staff'), { visibility: 'private', joining: 'invite-only', posting: 'members' });
+  assert.deepEqual(groupDefaults('customer'), { visibility: 'private', joining: 'approval', posting: 'members' });
+  assert.deepEqual(groupDefaults('mixed'), { visibility: 'private', joining: 'invite-only', posting: 'members' });
+  assert.equal(api.createGroup({ name: '', type: 'staff' }).ok, false);
+  assert.equal(api.createGroup({ name: 'Holiday VIPs', type: 'mixed', privacyAcknowledged: false }).ok, false);
+  const created = api.createGroup({ name: 'Holiday VIPs', type: 'mixed', privacyAcknowledged: true });
+  assert.equal(created.ok, true);
+  assert.equal(api.updateGroup(created.group.id, { posting: 'moderators' }).group.posting, 'moderators');
+  assert.equal(api.toggleArchivedGroup(created.group.id).group.archived, true);
+  assert.ok(api.filterGroups('', 'all').length >= 5);
+});
+
 export { loadApi };

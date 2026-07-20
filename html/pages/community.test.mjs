@@ -81,3 +81,15 @@ test('loads the page-scoped Community assets and renders the owner Feed regions'
   assert.match(html, /Needs your attention/);
   assert.match(html, /Community insights/);
 });
+
+test('renders multi-group management and a privacy-aware Create Group dialog', () => {
+  const html = source();
+  for (const copy of ['Total groups', 'Total members', 'Unread messages', 'Pending requests']) assert.match(html, new RegExp(copy));
+  for (const type of ['all', 'staff', 'customer', 'mixed', 'archived']) assert.match(html, new RegExp(`data-group-filter="${type}"`));
+  assert.match(html, /data-group-search/);
+  assert.match(html, /data-group-grid/);
+  assert.match(html, /data-create-group-open/);
+  assert.match(html, /role="dialog"[^>]*aria-modal="true"[^>]*aria-labelledby="create-group-title"/);
+  for (const name of ['groupName', 'groupDescription', 'groupType', 'groupVisibility', 'groupPosting']) assert.match(html, new RegExp(`name="${name}"`));
+  assert.match(html, /data-mixed-privacy-confirm/);
+});

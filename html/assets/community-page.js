@@ -8,6 +8,13 @@
       { id:'feed-staff-1', kind:'post', audience:'staff', author:'Mia Tran', role:'Admin', group:'Nexora Touch Staff', time:'1 hr ago', body:'The new Gel-X color cards are ready at station two.', reactions:{ '✨':3 }, comments:[], saved:false, pinned:false }
     ],
     feedFilter: 'all',
+    groups: [
+      { id:'staff-main', name:'Nexora Touch Staff', type:'staff', visibility:'private', members:12, unread:8, activity:'5 min ago', archived:false, description:'Daily operations, schedules, and team announcements.' },
+      { id:'vip-club', name:'VIP Nail Club', type:'customer', visibility:'private', members:68, unread:14, activity:'18 min ago', archived:false, description:'Early access, care tips, and VIP-only offers.' },
+      { id:'weekend-promos', name:'Weekend Promotions', type:'mixed', visibility:'private', members:24, unread:3, activity:'1 hr ago', archived:false, description:'Coordinate weekend campaigns with staff and loyal customers.' },
+      { id:'new-hire', name:'New Hire Onboarding', type:'staff', visibility:'private', members:6, unread:0, activity:'Yesterday', archived:false, description:'Training, policies, and first-week checklists.' }
+    ],
+    groupFilter: 'all',
     viewerReactions: {},
     noticeTimer: 0
   };
@@ -27,6 +34,86 @@
       if (state.posts[index].id === postId) return state.posts[index];
     }
     return null;
+  }
+
+  function findGroup(groupId) {
+    var index;
+    for (index = 0; index < state.groups.length; index += 1) {
+      if (state.groups[index].id === groupId) return state.groups[index];
+    }
+    return null;
+  }
+
+  function groupDefaults(type) {
+    if (type === 'staff' || type === 'mixed') return { visibility: 'private', joining: 'invite-only', posting: 'members' };
+    if (type === 'customer') return { visibility: 'private', joining: 'approval', posting: 'members' };
+    return null;
+  }
+
+  function filterGroups(query, type) {
+    var search = String(query == null ? '' : query).replace(/^\s+|\s+$/g, '').toLowerCase();
+    var selected = type || 'all';
+    return state.groups.filter(function (group) {
+      var matchesFilter = selected === 'all' || (selected === 'archived' ? group.archived : group.type === selected);
+      var haystack = (group.name + ' ' + group.description).toLowerCase();
+      return matchesFilter && haystack.indexOf(search) !== -1;
+    });
+  }
+
+  function createGroup(input) {
+    var details = input || {};
+    var name = String(details.name == null ? '' : details.name).replace(/^\s+|\s+$/g, '');
+    var defaults = groupDefaults(details.type);
+    var id = 'group-' + new Date().getTime();
+    var suffix = 1;
+    var group;
+    if (!name) return { ok: false, error: 'Enter a group name.' };
+    if (!defaults) return { ok: false, error: 'Choose a valid group type.' };
+    if (details.type === 'mixed' && details.privacyAcknowledged !== true) return { ok: false, error: 'Confirm the Mixed group privacy acknowledgement.' };
+    while (findGroup(id)) {
+      id = 'group-' + new Date().getTime() + '-' + suffix;
+      suffix += 1;
+    }
+    group = {
+      id: id,
+      name: name,
+      type: details.type,
+      visibility: details.type === 'customer' && details.visibility === 'discoverable' ? 'discoverable' : defaults.visibility,
+      joining: defaults.joining,
+      posting: ['members', 'moderators', 'owner'].indexOf(details.posting) !== -1 ? details.posting : defaults.posting,
+      members: 1,
+      unread: 0,
+      activity: 'Just now',
+      archived: false,
+      description: String(details.description == null ? '' : details.description).replace(/^\s+|\s+$/g, '')
+    };
+    state.groups.push(group);
+    return { ok: true, group: group };
+  }
+
+  function updateGroup(groupId, changes) {
+    var group = findGroup(groupId);
+    var updates = changes || {};
+    var validPosting = ['members', 'moderators', 'owner'];
+    if (!group) return { ok: false, error: 'Group not found.' };
+    if (Object.prototype.hasOwnProperty.call(updates, 'visibility')) {
+      if (updates.visibility === 'discoverable' && group.type !== 'customer') return { ok: false, error: 'Only Customer groups can be discoverable.' };
+      if (updates.visibility !== 'private' && updates.visibility !== 'discoverable') return { ok: false, error: 'Choose a valid visibility.' };
+      group.visibility = updates.visibility;
+    }
+    if (Object.prototype.hasOwnProperty.call(updates, 'description')) group.description = String(updates.description == null ? '' : updates.description).replace(/^\s+|\s+$/g, '');
+    if (Object.prototype.hasOwnProperty.call(updates, 'posting')) {
+      if (validPosting.indexOf(updates.posting) === -1) return { ok: false, error: 'Choose a valid posting permission.' };
+      group.posting = updates.posting;
+    }
+    return { ok: true, group: group };
+  }
+
+  function toggleArchivedGroup(groupId) {
+    var group = findGroup(groupId);
+    if (!group) return { ok: false, error: 'Group not found.' };
+    group.archived = !group.archived;
+    return { ok: true, group: group };
   }
 
   function filterFeedPosts(filter) {
@@ -172,6 +259,50 @@
     list.innerHTML = html || '<p class="community-empty-state">No posts match this filter yet.</p>';
   }
 
+  function renderGroups() {
+    var grid = document.querySelector('[data-group-grid]');
+    var search = document.querySelector('[data-group-search]');
+    var total = document.querySelector('[data-group-total]');
+    var members = document.querySelector('[data-member-total]');
+    var unread = document.querySelector('[data-unread-total]');
+    var query;
+    var groups;
+    if (!grid) return;
+    query = search ? search.value : '';
+    groups = filterGroups(query, state.groupFilter);
+    grid.innerHTML = groups.length ? groups.map(function (group) {
+      return '<article class="group-card community-card" data-group-id="' + escapeHtml(group.id) + '"><div class="group-card-head"><span class="group-avatar">' + escapeHtml(group.name.slice(0, 2).toUpperCase()) + '</span><div><h3>' + escapeHtml(group.name) + '</h3><span class="group-type-badge">' + escapeHtml(group.type) + '</span><span class="group-privacy-badge">' + escapeHtml(group.visibility) + '</span></div></div><p>' + escapeHtml(group.description) + '</p><dl><div><dt>Members</dt><dd>' + group.members + '</dd></div><div><dt>Unread</dt><dd>' + group.unread + '</dd></div><div><dt>Activity</dt><dd>' + escapeHtml(group.activity) + '</dd></div></dl><footer><button type="button" data-group-open="' + escapeHtml(group.id) + '">Open Chat</button><button type="button" data-group-manage="' + escapeHtml(group.id) + '">Manage</button><button type="button" data-group-archive="' + escapeHtml(group.id) + '">' + (group.archived ? 'Restore' : 'Archive') + '</button></footer></article>';
+    }).join('') : '<div class="community-empty"><h3>No groups found</h3><p>Change the filter or create a new group.</p></div>';
+    if (total) total.textContent = state.groups.filter(function (group) { return !group.archived; }).length;
+    if (members) members.textContent = state.groups.reduce(function (sum, group) { return sum + group.members; }, 0);
+    if (unread) unread.textContent = state.groups.reduce(function (sum, group) { return sum + group.unread; }, 0);
+  }
+
+  function updateGroupFilterButtons() {
+    var buttons = document.querySelectorAll('[data-group-filter]');
+    var index;
+    for (index = 0; index < buttons.length; index += 1) {
+      buttons[index].classList.toggle('is-active', buttons[index].getAttribute('data-group-filter') === state.groupFilter);
+    }
+  }
+
+  function setCreateGroupDialog(open) {
+    var dialog = document.querySelector('[data-create-group-dialog]');
+    var name = document.querySelector('[name="groupName"]');
+    if (!dialog) return;
+    dialog.hidden = !open;
+    if (open && name) name.focus();
+  }
+
+  function updateMixedPrivacyConfirmation() {
+    var type = document.querySelector('[name="groupType"]');
+    var confirmation = document.querySelector('.mixed-confirm');
+    var checkbox = document.querySelector('[data-mixed-privacy-confirm]');
+    if (!type || !confirmation) return;
+    confirmation.hidden = type.value !== 'mixed';
+    if (type.value !== 'mixed' && checkbox) checkbox.checked = false;
+  }
+
   function activateCommunityTab(tabId) {
     var tabs = document.querySelectorAll('[data-tab-target]');
     var panels = document.querySelectorAll('[data-tab-panel]');
@@ -207,6 +338,12 @@
       var pin = closestWithAttribute(target, 'data-feed-pin');
       var attachment = closestWithAttribute(target, 'data-demo-attachment');
       var focusComposer = closestWithAttribute(target, 'data-focus-feed-composer');
+      var groupFilter = closestWithAttribute(target, 'data-group-filter');
+      var createGroupOpen = closestWithAttribute(target, 'data-create-group-open');
+      var dialogClose = closestWithAttribute(target, 'data-dialog-close');
+      var groupArchive = closestWithAttribute(target, 'data-group-archive');
+      var groupOpen = closestWithAttribute(target, 'data-group-open');
+      var groupManage = closestWithAttribute(target, 'data-group-manage');
       if (tab) {
         activateCommunityTab(tab.getAttribute('data-tab-target'));
         if (typeof window.setDrawer === 'function') window.setDrawer(false);
@@ -225,6 +362,26 @@
       } else if (focusComposer) {
         var composer = document.querySelector('#community-post-body');
         if (composer) composer.focus();
+      } else if (groupFilter) {
+        state.groupFilter = groupFilter.getAttribute('data-group-filter');
+        updateGroupFilterButtons();
+        renderGroups();
+      } else if (createGroupOpen) {
+        setCreateGroupDialog(true);
+      } else if (dialogClose) {
+        setCreateGroupDialog(false);
+      } else if (groupArchive) {
+        var archiveResult = toggleArchivedGroup(groupArchive.getAttribute('data-group-archive'));
+        if (archiveResult.ok) {
+          renderGroups();
+          showCommunityNotice(archiveResult.group.archived ? 'Group archived.' : 'Group restored.');
+        } else {
+          showCommunityNotice(archiveResult.error);
+        }
+      } else if (groupOpen) {
+        showCommunityNotice('Group chat opens in the next Community update.');
+      } else if (groupManage) {
+        showCommunityNotice('Group management opens in the next Community update.');
       }
     });
 
@@ -243,7 +400,35 @@
         event.preventDefault();
         result = addFeedComment(form.getAttribute('data-post-id'), form.querySelector('[name="comment"]').value);
         if (!result.ok) showCommunityNotice(result.error);
+      } else if (form && form.getAttribute && form.getAttribute('data-create-group-form') !== null) {
+        event.preventDefault();
+        result = createGroup({
+          name: form.querySelector('[name="groupName"]').value,
+          description: form.querySelector('[name="groupDescription"]').value,
+          type: form.querySelector('[name="groupType"]').value,
+          visibility: form.querySelector('[name="groupVisibility"]').value,
+          posting: form.querySelector('[name="groupPosting"]').value,
+          privacyAcknowledged: form.querySelector('[data-mixed-privacy-confirm]').checked
+        });
+        form.querySelector('[data-group-form-error]').textContent = result.ok ? '' : result.error;
+        if (result.ok) {
+          form.reset();
+          updateMixedPrivacyConfirmation();
+          setCreateGroupDialog(false);
+          renderGroups();
+          showCommunityNotice('Group created.');
+        }
       }
+    });
+
+    document.addEventListener('input', function (event) {
+      var target = event.target;
+      if (target && target.getAttribute && target.getAttribute('data-group-search') !== null) renderGroups();
+    });
+
+    document.addEventListener('change', function (event) {
+      var target = event.target;
+      if (target && target.getAttribute && target.getAttribute('name') === 'groupType') updateMixedPrivacyConfirmation();
     });
   }
 
@@ -263,6 +448,12 @@
     addFeedComment: addFeedComment,
     toggleSavedPost: toggleSavedPost,
     togglePinnedPost: togglePinnedPost,
+    groupDefaults: groupDefaults,
+    filterGroups: filterGroups,
+    createGroup: createGroup,
+    updateGroup: updateGroup,
+    toggleArchivedGroup: toggleArchivedGroup,
+    renderGroups: renderGroups,
     activateTab: activateCommunityTab
   };
   window.activateCommunityTab = activateCommunityTab;
@@ -270,4 +461,5 @@
 
   bindFeedControls();
   renderFeed();
+  renderGroups();
 }());

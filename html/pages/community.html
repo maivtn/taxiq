@@ -6899,11 +6899,25 @@
             </section>
 
             <section class="tab-panel" id="panel-groups" data-tab-panel="groups" role="tabpanel" aria-label="Community Groups" hidden>
-              <div class="placeholder-panel">
-                <div>
-                  <h2>Groups</h2>
-                  <p>Join focused groups to exchange ideas with owners and nail professionals.</p>
-                </div>
+              <div data-group-list-view>
+                <div class="community-panel-head"><div><span class="community-eyebrow">Salon communities</span><h2>Groups</h2><p>Create focused spaces for your staff and customers.</p></div><button class="community-primary" type="button" data-create-group-open>Create Group</button></div>
+                <div class="group-summary-grid"><article><span>Total groups</span><strong data-group-total>4</strong></article><article><span>Total members</span><strong data-member-total>110</strong></article><article><span>Unread messages</span><strong data-unread-total>25</strong></article><article><span>Pending requests</span><strong>3</strong></article></div>
+                <div class="group-toolbar"><label><span class="sr-only">Search groups</span><input type="search" placeholder="Search groups..." data-group-search></label><div class="community-filter-row"><button class="is-active" type="button" data-group-filter="all">All</button><button type="button" data-group-filter="staff">Staff</button><button type="button" data-group-filter="customer">Customer</button><button type="button" data-group-filter="mixed">Mixed</button><button type="button" data-group-filter="archived">Archived</button></div></div>
+                <div class="group-grid" data-group-grid></div>
+              </div>
+              <div class="community-dialog-backdrop" data-create-group-dialog hidden>
+                <section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="create-group-title">
+                  <header><h2 id="create-group-title">Create Group</h2><button type="button" aria-label="Close Create Group" data-dialog-close>×</button></header>
+                  <form data-create-group-form>
+                    <label>Group name<input name="groupName" required></label><label>Description<textarea name="groupDescription" rows="3"></textarea></label>
+                    <label>Group type<select name="groupType"><option value="staff">Staff</option><option value="customer">Customer</option><option value="mixed">Mixed</option></select></label>
+                    <label>Visibility<select name="groupVisibility"><option value="private">Private</option><option value="discoverable">Discoverable to verified customers</option></select></label>
+                    <label>Who can post<select name="groupPosting"><option value="members">All members</option><option value="moderators">Admins and moderators</option><option value="owner">Owner only</option></select></label>
+                    <label class="mixed-confirm" hidden><input type="checkbox" data-mixed-privacy-confirm> I understand staff and customers can see one another in this group.</label>
+                    <p class="community-field-error" data-group-form-error aria-live="polite"></p>
+                    <footer><button type="button" data-dialog-close>Cancel</button><button class="community-primary" type="submit">Create Group</button></footer>
+                  </form>
+                </section>
               </div>
             </section>
 
