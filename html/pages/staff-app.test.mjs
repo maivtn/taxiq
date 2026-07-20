@@ -189,7 +189,11 @@ function createJobsHarness() {
     button(matchId, action) {
       return this.card(matchId).controls.find((control) => control.dataset.jobAction === action);
     },
+    profileButton(action) {
+      return profileControls.find((control) => control.dataset.jobAction === action);
+    },
     contactReview,
+    notice,
     dialog(name) {
       return dialogs.find((dialog) => dialog.dataset.jobDialog === name);
     },
@@ -202,8 +206,8 @@ function createJobsHarness() {
           ? contactReview
           : profileControls.find((candidate) => candidate.dataset.jobAction === action)
             || createControl(action);
-      document.activeElement = control;
       if (control.disabled) return control;
+      document.activeElement = control;
       clickHandler({ target: control });
       return control;
     }
@@ -306,10 +310,15 @@ test('hides deleted matches and does not restore them after profile activation',
   jobs.click('confirm-delete');
   assert.equal(jobs.card('rose').classList.contains('hidden'), true);
   assert.equal(jobs.card('golden').classList.contains('hidden'), true);
+  assert.equal(jobs.profileButton('profile-active').disabled, true);
+  assert.equal(jobs.profileButton('profile-paused').disabled, true);
+  assert.equal(jobs.activeElement(), jobs.matchesTab);
+  const deletionNotice = jobs.notice.textContent;
 
   jobs.click('profile-active');
   assert.equal(jobs.card('rose').classList.contains('hidden'), true);
   assert.equal(jobs.card('golden').classList.contains('hidden'), true);
+  assert.equal(jobs.notice.textContent, deletionNotice);
 });
 
 test('makes shared and declined contact decisions terminal for the request', () => {

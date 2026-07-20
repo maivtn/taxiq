@@ -2369,6 +2369,7 @@
           });
           root.querySelectorAll('[data-job-profile-status]').forEach((button) => {
             button.setAttribute('aria-pressed', String(button.dataset.jobProfileStatus === state.profileStatus));
+            button.disabled = state.profileStatus === 'deleted';
           });
           root.querySelector('[data-job-profile-current]').textContent = state.profileStatus;
           root.querySelector('[data-job-contact-current]').textContent = state.contactStatus;
