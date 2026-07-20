@@ -97,6 +97,16 @@ function classList() {
 
 function createJobsHarness() {
   let clickHandler;
+  const document = {
+    activeElement: null,
+    querySelectorAll: () => [root]
+  };
+  const matchesTab = {
+    dataset: { jobTab: 'matches' },
+    classList: classList(),
+    setAttribute() {},
+    focus() { document.activeElement = this; }
+  };
   const matchButtons = {
     rose: [{ disabled: false }, { disabled: false }, { disabled: false }],
     golden: [{ disabled: false }, { disabled: false }, { disabled: false }]
@@ -121,9 +131,11 @@ function createJobsHarness() {
       if (selector === '[data-jobs-notice]') return notice;
       if (selector === '[data-job-profile-current]') return { textContent: '' };
       if (selector === '[data-job-contact-current]') return { textContent: '' };
+      if (selector === '[data-job-tab="matches"]') return matchesTab;
       return null;
     },
     querySelectorAll(selector) {
+      if (selector === '[data-job-tab]') return [matchesTab];
       if (selector === '[data-job-match]') return matchCards;
       if (selector === '[data-job-dialog]') return dialogs;
       return [];
@@ -134,7 +146,6 @@ function createJobsHarness() {
     setTimeout() { return 1; }
   };
   window.window = window;
-  const document = { querySelectorAll: () => [root] };
   const context = vm.createContext({ window, document, console, structuredClone });
   vm.runInContext(jobsScript(), context);
 
@@ -142,17 +153,26 @@ function createJobsHarness() {
     card(matchId) {
       return matchCards.find((card) => card.dataset.jobMatch === matchId);
     },
+    activeElement() { return document.activeElement; },
+    matchesTab,
     click(action, matchId) {
       const control = {
         dataset: { jobAction: action, jobMatchId: matchId },
         focusCount: 0,
-        focus() { this.focusCount += 1; },
+        focus() {
+          this.focusCount += 1;
+          const card = matchId
+            ? matchCards.find((candidate) => candidate.dataset.jobMatch === matchId)
+            : null;
+          if (!card?.classList.contains('hidden')) document.activeElement = this;
+        },
         closest(selector) {
           if (selector === '[data-job-tab]') return null;
           if (selector === '[data-job-action]') return this;
           return null;
         }
       };
+      document.activeElement = control;
       clickHandler({ target: control });
       return control;
     }
@@ -224,4 +244,12 @@ test('restores the dialog trigger after every dialog-closing outcome', () => {
     jobs.click(closeAction);
     assert.equal(trigger.focusCount, 1, `${closeAction} must restore focus`);
   }
+});
+
+test('moves focus to the visible Matches tab when reporting hides the trigger', () => {
+  const jobs = createJobsHarness();
+  jobs.click('report', 'rose');
+  jobs.click('submit-report');
+
+  assert.equal(jobs.activeElement(), jobs.matchesTab);
 });

@@ -2397,8 +2397,12 @@
           if (action === 'close-dialog') dispatch({ type: 'close-dialog' });
           if (action === 'save-profile') showNotice('Job profile saved for this demo.');
           if (DIALOG_CLOSING_ACTIONS.has(action)) {
-            dialogTrigger?.focus();
+            const trigger = dialogTrigger;
             dialogTrigger = null;
+            trigger?.focus();
+            if (trigger && document.activeElement !== trigger) {
+              root.querySelector('[data-job-tab="matches"]')?.focus();
+            }
           }
         });
 
