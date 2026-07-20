@@ -74,3 +74,27 @@
   background: var(--nexora-surface);
   box-shadow: 0 0 0 3px rgba(43, 89, 255, 0.14);
 }
+
+.feed-composer textarea {
+  display: block;
+  min-height: 108px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 12px;
+  background: var(--nexora-surface-muted);
+  padding: 12px 14px;
+  color: var(--nexora-text);
+  font-size: 14px;
+  line-height: 1.5;
+  outline: 0;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.feed-composer textarea::placeholder {
+  color: var(--nexora-subtle);
+}
+
+.feed-composer textarea:focus {
+  border-color: var(--nexora-electric);
+  background: var(--nexora-surface);
+  box-shadow: 0 0 0 3px rgba(43, 89, 255, 0.14);
+}

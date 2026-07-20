@@ -947,6 +947,96 @@
       font-weight: 800;
     }
 
+    /* Compact KPI cards for the overview sections */
+    .overview-kpis .kpi-card {
+      min-height: 78px;
+      padding: 5px 8px;
+    }
+
+    .overview-kpis .kpi-card::after {
+      top: -12px;
+      right: -12px;
+      width: 58px;
+      height: 58px;
+    }
+
+    .overview-kpis .kpi-top {
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .overview-kpis .kpi-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+    }
+
+    .overview-kpis .kpi-icon svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .overview-kpis .kpi-icon .bi {
+      font-size: 14px;
+    }
+
+    .overview-kpis .kpi-label {
+      font-size: 9px;
+      line-height: 1.1;
+    }
+
+    .overview-kpis .kpi-value {
+      margin-top: 1px;
+      font-size: 20px;
+    }
+
+    .overview-kpis .kpi-trend {
+      margin-top: 2px;
+      font-size: 10px;
+      line-height: 1.1;
+    }
+
+    .overview-kpis .kpi-card {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      column-gap: 8px;
+      align-items: center;
+    }
+
+    .overview-kpis .kpi-top {
+      display: contents;
+    }
+
+    .overview-kpis .kpi-icon {
+      grid-column: 1;
+      grid-row: 1 / span 3;
+    }
+
+    .overview-kpis .kpi-label,
+    .overview-kpis .kpi-value,
+    .overview-kpis .kpi-trend {
+      grid-column: 2;
+      min-width: 0;
+    }
+
+    .overview-kpis .kpi-label {
+      grid-row: 1;
+    }
+
+    .overview-kpis .kpi-value {
+      grid-row: 2;
+    }
+
+    .overview-kpis .kpi-trend {
+      grid-row: 3;
+    }
+
+    .overview-kpis .kpi-top .badge {
+      position: absolute;
+      top: 5px;
+      right: 8px;
+    }
+
     .overview-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -5964,9 +6054,9 @@
       }
 
       #panel-overview .overview-kpis .kpi-card {
-        min-height: 104px;
+        min-height: 78px;
         border-radius: 10px;
-        padding: 8px 6px;
+        padding: 5px 6px;
       }
 
       #panel-overview .overview-kpis .kpi-card::after {
@@ -6259,9 +6349,9 @@
       }
 
       .booking-sub-panel .kpi-card {
-        min-height: 112px;
+        min-height: 78px;
         border-radius: 10px;
-        padding: 8px 6px;
+        padding: 5px 6px;
       }
 
       .booking-sub-panel .kpi-card::after {
@@ -7024,7 +7114,7 @@
                       <table class="booking-table" data-booking-table>
                         <thead>
                           <tr>
-                            <th scope="col">Call Start</th>
+                            <th scope="col">Time</th>
                             <th scope="col">Customer</th>
                             <th scope="col">Service</th>
                             <th scope="col">Technician</th>
@@ -9010,7 +9100,7 @@ function getBookingCardCallStart(item) {
           '</div>' +
           '<div class="booking-service-list">' + services + '</div>' +
           '<div class="booking-card-info-list">' +
-            '<div class="booking-card-info-row"><span class="booking-card-label">Call Start</span><span class="booking-card-value">' + escapeHtml(getBookingCardCallStart(item)) + '</span></div>' +
+            '<div class="booking-card-info-row"><span class="booking-card-label">Time</span><span class="booking-card-value">' + escapeHtml(getBookingCardCallStart(item)) + '</span></div>' +
             '<div class="booking-card-info-row"><span class="booking-card-label">Technician</span><span class="booking-card-value">' + escapeHtml(item.dataset.bookingTech || '-') + '</span></div>' +
             '<div class="booking-card-info-row"><span class="booking-card-label">Appointment</span><span class="booking-card-value">' + escapeHtml(getBookingCardTimeText(item)) + '</span></div>' +
             '<div class="booking-card-info-row"><span class="booking-card-label">Duration</span><span class="booking-card-value">' + escapeHtml(getBookingCardDuration(item)) + '</span></div>' +
