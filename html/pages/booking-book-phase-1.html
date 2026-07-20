@@ -8286,11 +8286,11 @@
                   <div class="qr-section">
                     <div class="qr-section-title">🎁 Chương trình khuyến mãi</div>
                     <div class="qr-field">
-                      <div class="qr-field-label">Tên chiến dịch QR</div>
+                      <label class="qr-field-label" for="qrName">Tên chiến dịch QR</label>
                       <input class="booking-input" id="qrName" value="QR tại quầy — Tháng 7">
                     </div>
                     <div class="qr-field" style="margin-bottom:0;">
-                      <div class="qr-field-label">Chọn khuyến mãi khi khách scan</div>
+                      <label class="qr-field-label" for="qrPromo">Chọn khuyến mãi khi khách scan</label>
                       <select class="booking-input" id="qrPromo"></select>
                     </div>
                   </div>
@@ -8298,11 +8298,11 @@
                   <div class="qr-section">
                     <div class="qr-section-title">📝 Form khách điền</div>
                     <div class="qr-field">
-                      <div class="qr-field-label">Tiêu đề form</div>
+                      <label class="qr-field-label" for="qrFormTitle">Tiêu đề form</label>
                       <input class="booking-input" id="qrFormTitle" value="🎁 Nhận ưu đãi độc quyền từ Bitcoin Nail Bar!">
                     </div>
                     <div class="qr-field" style="margin-bottom:0;">
-                      <div class="qr-field-label">Nội dung / điều kiện nhận ưu đãi</div>
+                      <label class="qr-field-label" for="qrQuestion">Nội dung / điều kiện nhận ưu đãi</label>
                       <textarea class="booking-input" id="qrQuestion">Nhập tên và số phone bên dưới — promotion code sẽ gửi qua SMS trong 30 giây. Đưa code cho nhân viên khi thanh toán. Mỗi khách 1 code, áp dụng đến hết tháng 7.</textarea>
                     </div>
                     <div class="consent-note">
@@ -8312,7 +8312,7 @@
 
                   <div class="qr-section">
                     <div class="qr-section-title">🔗 Link & Mã QR</div>
-                    <div class="qr-field-label">Slug URL</div>
+                    <label class="qr-field-label" for="qrSlug">Slug URL</label>
                     <input class="booking-input" id="qrSlug" value="qr-thang7">
                     <div class="link-preview" id="qrLinkPreview">nexora.ai/btcnailbar/qr/qr-thang7</div>
                     <div class="qr-display-row">
@@ -8331,12 +8331,12 @@
 
                   <div class="qr-section">
                     <div class="qr-section-title">✅ Verify code tại quầy (nhân viên)</div>
-                    <div class="qr-field-label">Khách đưa code → gõ vào đây để kiểm tra trước khi giảm giá</div>
+                    <label class="qr-field-label" for="verifyInput">Khách đưa code → gõ vào đây để kiểm tra trước khi giảm giá</label>
                     <div class="verify-row">
                       <input class="booking-input" id="verifyInput" placeholder="VD: NAIL20-8Q2F" autocomplete="off">
                       <button class="booking-primary-button" type="button" id="verifyBtn">🔍 Kiểm tra</button>
                     </div>
-                    <div class="verify-result" id="verifyResult"></div>
+                    <div class="verify-result" id="verifyResult" role="status" aria-live="polite" aria-atomic="true"></div>
                   </div>
 
                   <div class="qr-section">
@@ -8531,9 +8531,9 @@
       <div class="success-banner" id="successBanner"><span class="success-icon"><i class="bi bi-check-circle-fill" aria-hidden="true"></i></span><span class="success-text" id="successText"></span></div>
     </div>
 
-    <div class="kiosk-overlay" id="kioskOverlay" aria-hidden="true">
+    <div class="kiosk-overlay" id="kioskOverlay" role="dialog" aria-modal="true" aria-labelledby="kioskTitle" aria-hidden="true">
       <div class="kiosk-bar">
-        <span class="kiosk-hint">🖥 Chế độ Kiosk — đặt tablet tại quầy, form tự reset sau mỗi khách</span>
+        <span class="kiosk-hint" id="kioskTitle">🖥 Chế độ Kiosk — đặt tablet tại quầy, form tự reset sau mỗi khách</span>
         <button class="booking-secondary-button" type="button" id="kioskExit">✕ Thoát Kiosk</button>
       </div>
       <iframe id="kioskIframe" title="Kiosk đăng ký nhận ưu đãi"></iframe>
@@ -11073,7 +11073,11 @@ function getBookingCardCallStart(item) {
       function verifyCode() {
         const box = byId('verifyResult');
         const raw = byId('verifyInput').value.trim().toUpperCase();
-        if (!raw) { box.className = 'verify-result'; return; }
+        if (!raw) {
+          box.className = 'verify-result show bad';
+          box.innerHTML = '⚠️ Vui lòng nhập promotion code để kiểm tra.';
+          return;
+        }
         const lead = QR_LEADS.find(l => l.code.toUpperCase() === raw);
         if (!lead) {
           box.className = 'verify-result show bad';
@@ -11090,7 +11094,7 @@ function getBookingCardCallStart(item) {
         box.innerHTML = `
           <div class="verify-name">✅ ${escapeQrHtml(lead.name)}</div>
           <div class="verify-meta">${lead.phone} • ${escapeQrHtml(promo.label)} • Nhận code: ${escapeQrHtml(lead.time)}</div>
-          <button class="btn-primary" id="markUsedBtn" data-code="${escapeQrHtml(lead.code)}">✔ Áp dụng & đánh dấu đã dùng</button>`;
+          <button class="booking-primary-button" type="button" id="markUsedBtn" data-code="${escapeQrHtml(lead.code)}">✔ Áp dụng & đánh dấu đã dùng</button>`;
       }
 
       function markCodeUsed(code) {
@@ -11129,6 +11133,7 @@ function getBookingCardCallStart(item) {
             input[type=text],input[type=tel],input[type=date],select{width:100%;padding:15px 14px;border-radius:12px;border:none;font-size:16px;margin-bottom:14px;background:white;color:#111;}
             .consent{display:flex;gap:10px;align-items:flex-start;font-size:11px;color:rgba(255,255,255,0.8);line-height:1.5;margin-bottom:14px;}
             .consent input{width:20px;height:20px;flex-shrink:0;margin-top:1px;}
+            .consent label{display:block;margin:0;font-size:inherit;letter-spacing:normal;text-transform:none;opacity:1;}
             button{width:100%;background:white;color:#7c3aed;border:none;padding:17px;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;}
             button:disabled{opacity:0.5;}
             .success{display:none;text-align:center;padding:10px 0;}
@@ -11156,13 +11161,13 @@ function getBookingCardCallStart(item) {
             <div class="promo">${escapeQrHtml(promo.label)}</div>
             <div class="cond">${question}</div>
             <div id="frm">
-              <label id="tNm">Tên của bạn</label>
+              <label id="tNm" for="nm">Tên của bạn</label>
               <input type="text" id="nm" placeholder="VD: Linh Trần" autocomplete="name">
-              <label id="tPh">Số điện thoại</label>
+              <label id="tPh" for="ph">Số điện thoại</label>
               <input type="tel" id="ph" placeholder="(832) 000-0000" inputmode="numeric" autocomplete="tel" maxlength="14">
               <div class="consent">
                 <input type="checkbox" id="cs">
-                <span id="tCs">Tôi đồng ý nhận tin nhắn từ Bitcoin Nail Bar. Tần suất thay đổi. Reply STOP để hủy, HELP để được hỗ trợ. Có thể tính phí tin nhắn & dữ liệu.</span>
+                <label id="tCs" for="cs">Tôi đồng ý nhận tin nhắn từ Bitcoin Nail Bar. Tần suất thay đổi. Reply STOP để hủy, HELP để được hỗ trợ. Có thể tính phí tin nhắn & dữ liệu.</label>
               </div>
               <button id="go">📩 Nhận Promotion Code qua SMS</button>
             </div>
@@ -11173,7 +11178,7 @@ function getBookingCardCallStart(item) {
               <div style="font-size:12px;color:rgba(255,255,255,0.7);" id="tShow">Đưa code này cho nhân viên khi thanh toán 💅</div>
               <button id="bk" style="margin-top:16px;background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);">📅 Đặt lịch giữ chỗ luôn</button>
               <div id="bkf" style="display:none;text-align:left;margin-top:16px;">
-                <label id="tSv">Dịch vụ</label>
+                <label id="tSv" for="sv">Dịch vụ</label>
                 <select id="sv">
                   <option>💅 Gel Manicure — $35</option>
                   <option>🦶 Pedicure Deluxe — $45</option>
@@ -11181,9 +11186,9 @@ function getBookingCardCallStart(item) {
                   <option>💎 Dip Powder — $50</option>
                   <option>🌸 Full Set Gel-X — $65</option>
                 </select>
-                <label id="tDt">Ngày</label>
+                <label id="tDt" for="dt">Ngày</label>
                 <input type="date" id="dt">
-                <label id="tTm">Giờ</label>
+                <label id="tTm" for="tm">Giờ</label>
                 <select id="tm">
                   <option value="">— chọn giờ —</option>
                   <option>10:00</option><option>11:00</option><option>12:00</option>
@@ -11262,9 +11267,24 @@ function getBookingCardCallStart(item) {
         byId('qrIframe').srcdoc = buildQrPageHtml(false);
       }
 
+      let kioskOpener = null;
+
       function openKiosk() {
+        const overlay = byId('kioskOverlay');
+        kioskOpener = document.activeElement;
         byId('kioskIframe').srcdoc = buildQrPageHtml(true);
-        byId('kioskOverlay').classList.add('open');
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+        byId('kioskExit').focus();
+      }
+
+      function closeKiosk() {
+        const overlay = byId('kioskOverlay');
+        if (!overlay.classList.contains('open')) return;
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+        if (kioskOpener && typeof kioskOpener.focus === 'function') kioskOpener.focus();
+        kioskOpener = null;
       }
 
       function printPoster() {
@@ -11338,7 +11358,13 @@ function getBookingCardCallStart(item) {
       });
       byId('qrPrintBtn').addEventListener('click', printPoster);
       byId('kioskBtn').addEventListener('click', openKiosk);
-      byId('kioskExit').addEventListener('click', function() { byId('kioskOverlay').classList.remove('open'); });
+      byId('kioskExit').addEventListener('click', closeKiosk);
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && byId('kioskOverlay').classList.contains('open')) {
+          event.preventDefault();
+          closeKiosk();
+        }
+      });
       byId('publishQrBtn').addEventListener('click', function() {
         alert('🚀 QR đã publish!\n\n' + byId('qrName').value + '\nKhuyến mãi: ' + qrState.promo.label + '\nLink: https://' + qrUrl() + '\n\nTải PNG và in đặt tại quầy. Leads sẽ đổ về tab Customers.');
       });

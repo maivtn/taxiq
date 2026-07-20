@@ -100,3 +100,40 @@ test('ports QR generation, preview, verification, download, print, kiosk, and pu
   assert.match(html, /Reply STOP để hủy, HELP để được hỗ trợ/);
   assert.match(html, /Text Me My Promotion Code/);
 });
+
+test('announces every promotion-code verification outcome including empty input', () => {
+  const html = source();
+  assert.match(html, /id="verifyResult"[^>]*role="status"[^>]*aria-live="polite"/);
+  assert.match(html, /if \(!raw\) \{[\s\S]*?box\.className = 'verify-result show bad';[\s\S]*?Vui lòng nhập promotion code để kiểm tra\.[\s\S]*?return;[\s\S]*?\}/);
+});
+
+test('associates QR configuration and verification fields with labels', () => {
+  const html = source();
+  for (const id of ['qrName', 'qrPromo', 'qrFormTitle', 'qrQuestion', 'qrSlug', 'verifyInput']) {
+    assert.match(html, new RegExp(`<label[^>]*for="${id}"[^>]*>`), `missing label for #${id}`);
+  }
+});
+
+test('associates generated scan and kiosk fields including SMS consent with labels', () => {
+  const html = source();
+  for (const id of ['nm', 'ph', 'cs', 'sv', 'dt', 'tm']) {
+    assert.match(html, new RegExp(`<label[^>]*for="${id}"[^>]*`), `missing generated label for #${id}`);
+  }
+});
+
+test('maps the generated apply action to the Booking primary button contract', () => {
+  const html = source();
+  assert.match(html, /<button class="booking-primary-button" type="button" id="markUsedBtn" data-code=/);
+  assert.doesNotMatch(html, /<button class="btn-primary" id="markUsedBtn"/);
+});
+
+test('provides the complete kiosk dialog accessibility and focus lifecycle', () => {
+  const html = source();
+  assert.match(html, /id="kioskOverlay"[^>]*role="dialog"[^>]*aria-modal="true"[^>]*aria-labelledby="kioskTitle"[^>]*aria-hidden="true"/);
+  assert.match(html, /id="kioskTitle"/);
+  assert.match(html, /let kioskOpener = null;/);
+  assert.match(html, /function openKiosk\(\)[\s\S]*kioskOpener = document\.activeElement;[\s\S]*overlay\.setAttribute\('aria-hidden', 'false'\);[\s\S]*byId\('kioskExit'\)\.focus\(\);/);
+  assert.match(html, /function closeKiosk\(\)[\s\S]*overlay\.setAttribute\('aria-hidden', 'true'\);[\s\S]*kioskOpener\.focus\(\);/);
+  assert.match(html, /byId\('kioskExit'\)\.addEventListener\('click', closeKiosk\);/);
+  assert.match(html, /document\.addEventListener\('keydown',[\s\S]*event\.key === 'Escape'[\s\S]*closeKiosk\(\)/);
+});
