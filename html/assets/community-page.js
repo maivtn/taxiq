@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  var activeDialog = null;
+  var dialogOpener = null;
   var state = {
     posts: [
       { id:'feed-announcement-1', kind:'announcement', audience:'staff', author:'Nexora Touch', role:'Owner', group:'Nexora Touch Staff', time:'12 min ago', body:'Friday hours are updated. Please review your station coverage before 4 PM.', reactions:{ '👍':4 }, comments:[], saved:false, pinned:false },
@@ -593,20 +595,74 @@
   }
 
   function showCommunityNotice(message) {
-    var oldNotice = document.querySelector('[data-community-notice]');
-    var notice;
-    if (oldNotice && oldNotice.parentNode) oldNotice.parentNode.removeChild(oldNotice);
-    if (!document.createElement || !document.body) return;
-    notice = document.createElement('div');
-    notice.className = 'community-notice';
-    notice.setAttribute('data-community-notice', '');
+    var notice = document.querySelector('[data-community-notice]');
+    if (!notice && document.createElement && document.body) {
+      notice = document.createElement('div');
+      notice.className = 'community-notice';
+      notice.setAttribute('data-community-notice', '');
+      document.body.appendChild(notice);
+    }
+    if (!notice) return;
     notice.setAttribute('role', 'status');
+    notice.setAttribute('aria-live', 'polite');
     notice.textContent = message;
-    document.body.appendChild(notice);
+    notice.hidden = false;
     window.clearTimeout(state.noticeTimer);
     state.noticeTimer = window.setTimeout(function () {
-      if (notice.parentNode) notice.parentNode.removeChild(notice);
+      notice.hidden = true;
     }, 2600);
+  }
+
+  function openDialog(dialog, opener) {
+    var first;
+    if (!dialog) return;
+    if (activeDialog && activeDialog !== dialog) closeDialog(activeDialog);
+    activeDialog = dialog;
+    dialogOpener = opener || document.activeElement;
+    dialog.hidden = false;
+    first = dialog.querySelector('input,select,textarea') || dialog.querySelector('button');
+    if (first) first.focus();
+  }
+
+  function closeDialog(dialog) {
+    var target = dialog || activeDialog;
+    var opener = dialogOpener;
+    if (!target) return;
+    target.hidden = true;
+    activeDialog = null;
+    dialogOpener = null;
+    if (opener && typeof opener.focus === 'function') opener.focus();
+  }
+
+  function handleDialogKeydown(event) {
+    var focusable;
+    var first;
+    var last;
+    if (!activeDialog) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeDialog(activeDialog);
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    focusable = activeDialog.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[href]');
+    if (!focusable.length) return;
+    first = focusable[0];
+    last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function bindDialogControls() {
+    document.addEventListener('keydown', handleDialogKeydown);
+    document.addEventListener('click', function (event) {
+      if (activeDialog && event.target === activeDialog) closeDialog(activeDialog);
+    });
   }
 
   function renderComments(post) {
@@ -957,7 +1013,7 @@
     }
   }
 
-  function setShareCourseDialog(open, courseId) {
+  function setShareCourseDialog(open, courseId, opener) {
     var dialog = document.querySelector('[data-share-course-dialog]');
     var options = document.querySelector('[data-staff-group-options]');
     var course = findCourse(courseId || state.activeShareCourseId);
@@ -969,31 +1025,28 @@
       staffGroups = state.groups.filter(function (group) { return group.type === 'staff' && !group.archived; });
       if (options) options.innerHTML = staffGroups.map(function (group) { return '<option value="' + escapeHtml(group.id) + '">' + escapeHtml(group.name) + '</option>'; }).join('');
     }
-    dialog.hidden = !open;
-    if (open && options) options.focus();
+    if (open) openDialog(dialog, opener);
+    else closeDialog(dialog);
   }
 
-  function setCreateGroupDialog(open) {
+  function setCreateGroupDialog(open, opener) {
     var dialog = document.querySelector('[data-create-group-dialog]');
-    var name = document.querySelector('[name="groupName"]');
     if (!dialog) return;
-    dialog.hidden = !open;
-    if (open && name) name.focus();
+    if (open) openDialog(dialog, opener);
+    else closeDialog(dialog);
   }
 
-  function setCreateJobDialog(open) {
+  function setCreateJobDialog(open, opener) {
     var dialog = document.querySelector('[data-create-job-dialog]');
-    var title = document.querySelector('[name="jobTitle"]');
     var error = document.querySelector('[data-job-form-error]');
     if (!dialog) return;
-    dialog.hidden = !open;
     if (error) error.textContent = '';
-    if (open && title) title.focus();
+    if (open) openDialog(dialog, opener);
+    else closeDialog(dialog);
   }
 
-  function setCreateEventDialog(open) {
+  function setCreateEventDialog(open, opener) {
     var dialog = document.querySelector('[data-create-event-dialog]');
-    var title = document.querySelector('[name="eventTitle"]');
     var options = document.querySelector('[data-event-group-options]');
     var error = document.querySelector('[data-event-form-error]');
     if (!dialog) return;
@@ -1002,9 +1055,9 @@
         return '<option value="' + escapeHtml(group.id) + '">' + escapeHtml(group.name) + '</option>';
       }).join('');
     }
-    dialog.hidden = !open;
     if (error) error.textContent = '';
-    if (open && title) title.focus();
+    if (open) openDialog(dialog, opener);
+    else closeDialog(dialog);
   }
 
   function updateMixedPrivacyConfirmation() {
@@ -1116,7 +1169,7 @@
       return;
     }
     if (createGroupOpen) {
-      setCreateGroupDialog(true);
+      setCreateGroupDialog(true, createGroupOpen);
       return;
     }
     if (dialogClose) {
@@ -1295,7 +1348,7 @@
           showCommunityNotice(course.progress === 100 ? 'Course completed.' : 'Learning progress updated.');
         }
       } else if (share) {
-        setShareCourseDialog(true, share.getAttribute('data-course-share'));
+        setShareCourseDialog(true, share.getAttribute('data-course-share'), share);
       } else if (close) {
         setShareCourseDialog(false);
       } else if (workshop) {
@@ -1332,7 +1385,7 @@
       var actionName;
       var result;
       if (create) {
-        setCreateJobDialog(true);
+        setCreateJobDialog(true, create);
         return;
       }
       if (close) {
@@ -1431,7 +1484,7 @@
         if (!result.ok) showCommunityNotice(result.error);
         else showCommunityNotice('Event announced to ' + result.group.name + '.');
       } else if (create) {
-        setCreateEventDialog(true);
+        setCreateEventDialog(true, create);
       } else if (close) {
         setCreateEventDialog(false);
       }
@@ -1517,6 +1570,7 @@
   window.activateCommunityTab = activateCommunityTab;
   window.showCommunityNotice = showCommunityNotice;
 
+  bindDialogControls();
   bindFeedControls();
   bindGroupControls();
   bindLearningControls();

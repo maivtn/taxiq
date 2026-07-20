@@ -46,6 +46,8 @@ function fakeElement(attributes = {}, selectorMap = {}) {
     value: '',
     textContent: '',
     innerHTML: '',
+    disabled: false,
+    ownerDocument: null,
     classList: {
       add(name) { classes.add(name); },
       remove(name) { classes.delete(name); },
@@ -65,9 +67,93 @@ function fakeElement(attributes = {}, selectorMap = {}) {
       if (!listeners[type]) listeners[type] = [];
       listeners[type].push(listener);
     },
-    querySelector(selector) { return this.selectorMap[selector] || null; },
-    focus() { this.focused = true; }
+    querySelector(selector) {
+      const value = this.selectorMap[selector];
+      return Array.isArray(value) ? (value[0] || null) : (value || null);
+    },
+    querySelectorAll(selector) {
+      const value = this.selectorMap[selector];
+      if (Array.isArray(value)) return value;
+      return value ? [value] : [];
+    },
+    focus() {
+      this.focused = true;
+      if (this.ownerDocument) this.ownerDocument.activeElement = this;
+    }
   };
+}
+
+function createDelegatedDom({ panelSelector, selectorMap = {}, selectorAllMap = {} }) {
+  const panel = fakeElement();
+  const documentListeners = {};
+  const appended = [];
+  const body = {
+    appendChild(node) {
+      node.parentNode = body;
+      appended.push(node);
+    },
+    removeChild(node) {
+      node.parentNode = null;
+      const index = appended.indexOf(node);
+      if (index >= 0) appended.splice(index, 1);
+    }
+  };
+  const document = {
+    readyState: 'loading',
+    activeElement: null,
+    body,
+    createElement() {
+      const node = fakeElement();
+      node.ownerDocument = document;
+      return node;
+    },
+    addEventListener(type, listener) {
+      if (!documentListeners[type]) documentListeners[type] = [];
+      documentListeners[type].push(listener);
+    },
+    querySelector(selector) {
+      if (selector === panelSelector) return panel;
+      return selectorMap[selector] || null;
+    },
+    querySelectorAll(selector) { return selectorAllMap[selector] || []; }
+  };
+  panel.parentNode = document;
+  panel.ownerDocument = document;
+
+  function fireOn(node, type, target, additions = {}) {
+    const handlers = node.listeners[type] || [];
+    assert.ok(handlers.length, `${type} must be delegated`);
+    const event = {
+      target,
+      key: additions.key,
+      shiftKey: Boolean(additions.shiftKey),
+      defaultPrevented: false,
+      preventDefault() { this.defaultPrevented = true; }
+    };
+    handlers.forEach((handler) => handler(event));
+    return event;
+  }
+
+  function firePanel(type, target, additions) {
+    if (!target.parentNode) target.parentNode = panel;
+    return fireOn(panel, type, target, additions);
+  }
+
+  function fireDocument(type, target, additions = {}) {
+    const handlers = documentListeners[type] || [];
+    assert.ok(handlers.length, `document must handle ${type}`);
+    const event = {
+      target,
+      key: additions.key,
+      shiftKey: Boolean(additions.shiftKey),
+      defaultPrevented: false,
+      preventDefault() { this.defaultPrevented = true; }
+    };
+    handlers.forEach((handler) => handler(event));
+    return event;
+  }
+
+  return { document, panel, appended, firePanel, fireDocument };
 }
 
 function createGroupDom() {
@@ -160,8 +246,14 @@ test('filters, saves, progresses, and safely shares owner courses', () => {
   assert.equal(api.toggleSavedCourse('course-retention').ok, true);
   assert.equal(api.setCourseProgress('course-retention', 125).course.progress, 100);
   assert.equal(api.setCourseProgress('course-retention', -25).course.progress, 0);
+  const beforeRejectedShare = JSON.stringify(api.state.posts);
   assert.equal(api.shareCourse('course-retention', 'vip-club').ok, false);
-  assert.equal(api.shareCourse('course-retention', 'staff-main').ok, true);
+  assert.equal(JSON.stringify(api.state.posts), beforeRejectedShare);
+  const shared = api.shareCourse('course-retention', 'staff-main');
+  assert.equal(shared.ok, true);
+  assert.equal(api.state.posts[0], shared.post);
+  assert.equal(shared.post.groupId, 'staff-main');
+  assert.equal(shared.post.group, 'Nexora Touch Staff');
 });
 
 test('applies privacy-first group defaults and creates multiple groups', () => {
@@ -371,6 +463,45 @@ test('validates owner job posts before publishing', () => {
   assert.equal(api.validateJobPost({ jobTitle: 'Nail Tech', jobSkills: 'Gel-X', jobDistance: 10 }).ok, true);
 });
 
+test('delegates Jobs filters, pipeline actions, and privacy-safe sharing', () => {
+  const notice = fakeElement({ 'data-community-notice': '' });
+  const saves = { a7: fakeElement({ 'data-owner-job-action': 'save' }), c2: fakeElement({ 'data-owner-job-action': 'save' }) };
+  const cards = {
+    a7: fakeElement({ 'data-owner-candidate': 'a7' }, { '[data-owner-job-action="save"]': saves.a7 }),
+    c2: fakeElement({ 'data-owner-candidate': 'c2' }, { '[data-owner-job-action="save"]': saves.c2 })
+  };
+  const counts = Object.fromEntries(['matched', 'contact-requested', 'interviewing', 'closed'].map((stage) => [stage, fakeElement()]));
+  const dom = createDelegatedDom({
+    panelSelector: '#panel-jobs',
+    selectorMap: {
+      '[data-community-notice]': notice,
+      ...Object.fromEntries(Object.entries(counts).map(([stage, node]) => [`[data-stage-count="${stage}"]`, node]))
+    },
+    selectorAllMap: { '[data-owner-candidate]': Object.values(cards) }
+  });
+  const api = loadApi({ document: dom.document, setTimeout() { return 1; }, clearTimeout() {} });
+
+  const skillFilter = fakeElement({ 'data-candidate-filter': 'skill' });
+  skillFilter.value = 'Pedicure';
+  dom.firePanel('change', skillFilter);
+  assert.equal(cards.a7.hidden, true);
+  assert.equal(cards.c2.hidden, false);
+
+  const request = fakeElement({ 'data-owner-job-action': 'request-contact' });
+  request.parentNode = cards.a7;
+  dom.firePanel('click', request);
+  assert.equal(api.state.candidates.find((candidate) => candidate.id === 'a7').stage, 'contact-requested');
+  assert.equal(counts['contact-requested'].textContent, 1);
+  assert.equal(request.textContent, 'Contact requested');
+
+  const beforeShare = JSON.stringify(api.state.candidates);
+  const share = fakeElement({ 'data-owner-job-action': 'share' });
+  share.parentNode = cards.c2;
+  dom.firePanel('click', share);
+  assert.equal(JSON.stringify(api.state.candidates), beforeShare);
+  assert.match(notice.textContent || dom.appended.at(-1).textContent, /Anonymous candidate summary shared/);
+});
+
 test('creates, filters, RSVPs, and announces salon events', () => {
   const api = loadApi();
   assert.ok(api.filterEvents('staff-training').every((event) => event.type === 'staff-training'));
@@ -409,6 +540,130 @@ test('keeps RSVP and Feed announcements scoped to known events and groups', () =
   assert.equal(api.state.posts.length, beforePosts + 1);
   assert.equal(announced.post.kind, 'announcement');
   assert.equal(announced.post.groupId, event.audience);
+});
+
+test('keeps failed Event operations atomic', () => {
+  const api = loadApi();
+  const event = api.state.events[0];
+  const eventSnapshot = JSON.stringify(event);
+  const eventsSnapshot = JSON.stringify(api.state.events);
+  const postsSnapshot = JSON.stringify(api.state.posts);
+  const activeEventId = api.state.activeEventId;
+
+  assert.equal(api.setEventRsvp(event.id, 'unknown').ok, false);
+  assert.equal(JSON.stringify(event), eventSnapshot);
+  assert.equal(api.createEvent({ title: 'Invalid event', type: 'industry', start: 'not-a-date' }).ok, false);
+  assert.equal(JSON.stringify(api.state.events), eventsSnapshot);
+  assert.equal(api.state.activeEventId, activeEventId);
+  assert.equal(api.announceEvent(event.id, 'missing').ok, false);
+  assert.equal(JSON.stringify(api.state.posts), postsSnapshot);
+});
+
+test('delegates Event list and calendar controls and escapes rendered event content', () => {
+  const list = fakeElement();
+  const calendar = fakeElement();
+  const detail = fakeElement();
+  const filters = ['all', 'staff-training', 'customer-event', 'promotion', 'industry'].map((type) => fakeElement({ 'data-event-filter': type }));
+  const views = ['list', 'calendar'].map((view) => fakeElement({ 'data-event-view': view }));
+  const dom = createDelegatedDom({
+    panelSelector: '#panel-events',
+    selectorMap: {
+      '[data-event-list]': list,
+      '[data-event-calendar]': calendar,
+      '[data-event-detail]': detail
+    },
+    selectorAllMap: {
+      '[data-event-filter]': filters,
+      '[data-event-view]': views
+    }
+  });
+  const api = loadApi({ document: dom.document, setTimeout() { return 1; }, clearTimeout() {} });
+
+  dom.firePanel('click', filters[1]);
+  assert.equal(api.state.eventFilter, 'staff-training');
+  assert.match(list.innerHTML, /Staff Training/);
+  assert.doesNotMatch(list.innerHTML, /Customer Event/);
+  dom.firePanel('click', views[1]);
+  assert.equal(api.state.eventView, 'calendar');
+  assert.equal(list.hidden, true);
+  assert.equal(calendar.hidden, false);
+  assert.match(calendar.innerHTML, /event-calendar-day/);
+
+  const event = api.state.events.find((item) => item.type === 'staff-training');
+  event.title = '<img src=x onerror=alert(1)>';
+  event.description = '<script>alert(2)</script>';
+  event.location = '<b>Back room</b>';
+  event.attendees = ['<svg onload=alert(3)>'];
+  api.renderEvents();
+  assert.match(list.innerHTML, /&lt;img src=x onerror=alert\(1\)&gt;/);
+  assert.match(list.innerHTML, /&lt;script&gt;alert\(2\)&lt;\/script&gt;/);
+  assert.match(list.innerHTML, /&lt;b&gt;Back room&lt;\/b&gt;/);
+  assert.match(calendar.innerHTML, /&lt;img src=x onerror=alert\(1\)&gt;/);
+  assert.match(detail.innerHTML, /&lt;svg onload=alert\(3\)&gt;/);
+  assert.doesNotMatch(list.innerHTML + calendar.innerHTML + detail.innerHTML, /<(?:img|script|svg|b)[ >]/);
+});
+
+test('keeps all five Community state domains available and independently mutable', () => {
+  const api = loadApi();
+  const originalGroups = api.state.groups.length;
+  const originalEvents = api.state.events.length;
+  api.addFeedPost('Independent feed change', 'staff');
+  api.createGroup({ name: 'Independent group', type: 'staff' });
+  api.toggleSavedCourse('course-retention');
+  api.toggleSavedCandidate('a7');
+  api.setEventRsvp(api.state.events[0].id, 'going');
+  assert.equal(api.state.groups.length, originalGroups + 1);
+  assert.equal(api.state.events.length, originalEvents);
+  assert.ok(Array.isArray(api.state.posts));
+  assert.ok(Array.isArray(api.state.courses));
+  assert.ok(Array.isArray(api.state.candidates));
+});
+
+test('opens one active dialog, traps focus, closes from Escape and backdrop, and restores its opener', () => {
+  const title = fakeElement({ name: 'jobTitle' });
+  const cancel = fakeElement({ 'data-dialog-close': '' });
+  const submit = fakeElement();
+  const focusableSelector = 'button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[href]';
+  const dialog = fakeElement(
+    { 'data-create-job-dialog': '' },
+    {
+      'input,select,textarea': title,
+      'button': cancel,
+      'input,select,textarea,button': cancel,
+      [focusableSelector]: [title, cancel, submit]
+    }
+  );
+  dialog.hidden = true;
+  const error = fakeElement();
+  const dom = createDelegatedDom({
+    panelSelector: '#panel-jobs',
+    selectorMap: {
+      '[data-create-job-dialog]': dialog,
+      '[name="jobTitle"]': title,
+      '[data-job-form-error]': error
+    }
+  });
+  for (const node of [dialog, title, cancel, submit]) node.ownerDocument = dom.document;
+  loadApi({ document: dom.document, setTimeout() { return 1; }, clearTimeout() {} });
+  const opener = fakeElement({ 'data-create-job-open': '' });
+  opener.ownerDocument = dom.document;
+  dom.document.activeElement = opener;
+
+  dom.firePanel('click', opener);
+  assert.equal(dialog.hidden, false);
+  assert.equal(dom.document.activeElement, title);
+  dom.document.activeElement = submit;
+  const wrapped = dom.fireDocument('keydown', submit, { key: 'Tab' });
+  assert.equal(wrapped.defaultPrevented, true);
+  assert.equal(dom.document.activeElement, title);
+  dom.fireDocument('keydown', title, { key: 'Escape' });
+  assert.equal(dialog.hidden, true);
+  assert.equal(dom.document.activeElement, opener);
+
+  dom.firePanel('click', opener);
+  dom.fireDocument('click', dialog);
+  assert.equal(dialog.hidden, true);
+  assert.equal(dom.document.activeElement, opener);
 });
 
 export { loadApi };

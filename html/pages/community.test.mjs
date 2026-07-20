@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
 const COMMUNITY_URL = new URL('./community.html', import.meta.url);
+const COMMUNITY_CSS_URL = new URL('../assets/community-page.css', import.meta.url);
 
 function source() {
   assert.ok(existsSync(COMMUNITY_URL), 'community.html must exist');
@@ -126,4 +127,45 @@ test('renders event views, filters, RSVP details, and creation controls', () => 
   assert.match(html, /data-event-list/);
   assert.match(html, /data-event-calendar/);
   for (const name of ['eventTitle', 'eventDescription', 'eventType', 'eventStart', 'eventEnd', 'eventMode', 'eventLocation', 'eventAudience', 'eventCapacity', 'eventRsvp', 'eventReminder']) assert.match(html, new RegExp(`name="${name}"`));
+});
+
+test('keeps dialogs, notices, tabs, and shared shell accessible and connected', () => {
+  const html = source();
+  const dialogs = [...html.matchAll(/<[^>]+role="dialog"[^>]*>/g)].map((match) => match[0]);
+  assert.ok(dialogs.length >= 4);
+  for (const dialog of dialogs) {
+    assert.match(dialog, /aria-modal="true"/);
+    assert.match(dialog, /aria-labelledby="[^"]+"/);
+  }
+  assert.match(html, /data-community-notice[^>]*role="status"[^>]*aria-live="polite"/);
+  for (const tab of ['feed', 'groups', 'learning', 'jobs', 'events']) {
+    assert.equal((html.match(new RegExp(`id="panel-${tab}"`, 'g')) || []).length, 1);
+  }
+  assert.match(html, /activePage:\s*'community'/);
+  assert.match(html, /onNavigate:\s*activateCommunityTab/);
+});
+
+test('provides responsive Community layouts, reduced motion, and legible focus and text', () => {
+  const css = readFileSync(COMMUNITY_CSS_URL, 'utf8');
+  const sizes = [...css.matchAll(/font-size:\s*(\d+)px/g)].map((match) => Number(match[1]));
+  assert.ok(sizes.length > 0);
+  assert.ok(sizes.every((size) => size >= 11), `Community CSS contains text smaller than 11px: ${sizes.filter((size) => size < 11).join(', ')}`);
+  assert.match(css, /\.community-dialog-backdrop\[hidden\]\s*\{[^}]*display:\s*none!important/);
+  assert.match(css, /:focus-visible\s*\{[^}]*outline:\s*2px\s+solid/);
+  assert.doesNotMatch(css, /outline:\s*(?:[3-9]|\d{2,})px/);
+  assert.match(css, /@media\s*\(max-width:\s*760px\)[\s\S]*?\.community-dialog-backdrop\s*\{[^}]*padding:\s*16px/);
+  assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*?\.community-dialog[\s\S]*?\.community-notice[\s\S]*?\.group-thread-panel[^{]*\{[^}]*transition:\s*none!important/);
+});
+
+test('uses the Nexora palette for Learning surfaces', () => {
+  const css = readFileSync(COMMUNITY_CSS_URL, 'utf8');
+  const learningStart = css.indexOf('.learning-hero');
+  const learningEnd = css.indexOf('.owner-jobs-heading-actions');
+  const learningCss = css.slice(learningStart, learningEnd);
+  assert.ok(learningStart >= 0 && learningEnd > learningStart);
+  assert.doesNotMatch(learningCss, /#[0-9a-f]{3,8}\b/i);
+});
+
+test('removes the unused legacy Owner Jobs notice styling', () => {
+  assert.doesNotMatch(source(), /\.owner-jobs-notice\s*\{/);
 });

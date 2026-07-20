@@ -845,21 +845,6 @@
       line-height: 19px;
     }
 
-    .owner-jobs-notice {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      z-index: 80;
-      max-width: min(360px, calc(100vw - 32px));
-      border-radius: 12px;
-      background: var(--nexora-text);
-      padding: 12px 14px;
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-      box-shadow: var(--nexora-soft-shadow);
-    }
-
     @media (min-width: 900px) {
       .owner-candidate-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -7074,6 +7059,8 @@
       </main>
     </div>
   </div>
+
+  <div class="community-notice" data-community-notice role="status" aria-live="polite" hidden></div>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
