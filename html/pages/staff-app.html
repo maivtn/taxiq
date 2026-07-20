@@ -1666,7 +1666,11 @@
             </div>
             <section id="job-panel-matches" class="space-y-3 px-3 py-4" role="tabpanel" aria-labelledby="job-tab-matches" data-job-panel="matches">
               <div class="rounded-lg border border-nexoraSuccess/20 bg-nexoraSuccess/10 p-3 text-[11px] font-semibold leading-4 text-nexoraSuccess">
-                Your current salon can never see this profile. Salons see skills and expectations, never your name, photo, phone, or current salon.
+                Your current salon can never see this profile. Your current salon is excluded from grouped demand insights. Salons see skills and expectations, never your name, photo, phone, or current salon.
+              </div>
+              <div class="flex items-center justify-between gap-2"><p class="text-[10px] font-semibold uppercase tracking-wide text-nexoraMuted">Suggested matches</p><span class="rounded-full bg-nexoraBrand/10 px-2 py-1 text-[9px] font-semibold text-nexoraBrandDark" data-job-ai-badge>AI</span></div>
+              <div class="hidden rounded-lg border border-nexoraWarning/30 bg-nexoraWarning/10 p-3 text-[11px] font-semibold leading-4 text-nexoraWarning" data-job-paused-explanation>
+                Matching is paused. Salons cannot receive your anonymous profile until you reactivate it.
               </div>
               <article class="rounded-xl border border-nailBlush border-l-4 border-l-nexoraBrand bg-white p-3 shadow-card" data-job-match="rose">
                 <div class="flex items-start justify-between gap-2"><h4 class="text-[12px] font-semibold">Rose Nails &amp; Spa</h4><span class="rounded-full bg-nexoraSuccess/10 px-2 py-1 text-[9px] font-semibold text-nexoraSuccess">94% match</span></div>
@@ -1710,9 +1714,9 @@
             </section>
             <section id="job-panel-activity" class="hidden space-y-2 px-3 py-4" role="tabpanel" aria-labelledby="job-tab-activity" data-job-panel="activity">
               <div class="rounded-lg border border-nailBlush bg-white p-3 shadow-card" data-job-activity-state="interested"><p class="text-[12px] font-semibold">Interested</p><p class="text-[10px] text-nexoraMuted">Rose Nails &amp; Spa received your anonymous profile.</p></div>
-              <div class="rounded-lg border border-nexoraBrand/30 bg-white p-3 shadow-card" data-job-activity-state="contact-requested"><div class="flex items-center justify-between gap-2"><div><p class="text-[12px] font-semibold">Contact requested</p><p class="text-[10px] text-nexoraMuted">Rose Nails &amp; Spa wants to talk.</p></div><button type="button" class="rounded-lg bg-nexoraBrand px-2 py-2 text-[10px] font-semibold text-white" data-job-action="open-contact">Review</button></div><p class="mt-2 text-[9px] font-semibold uppercase text-nexoraBrandDark" data-job-contact-current>requested</p></div>
-              <div class="rounded-lg border border-nailBlush bg-white p-3 shadow-card" data-job-activity-state="contact-shared"><p class="text-[12px] font-semibold">Contact shared</p><p class="text-[10px] text-nexoraMuted">Both sides can now talk directly.</p></div>
-              <div class="rounded-lg border border-nailBlush bg-white p-3 shadow-card" data-job-activity-state="declined"><p class="text-[12px] font-semibold">Declined</p><p class="text-[10px] text-nexoraMuted">The salon learned nothing about your identity.</p></div>
+              <div class="rounded-lg border border-nexoraBrand/30 bg-white p-3 shadow-card" data-job-activity-state="contact-requested" data-job-contact-state="requested"><div class="flex items-center justify-between gap-2"><div><p class="text-[12px] font-semibold" data-job-contact-title>Contact requested</p><p class="text-[10px] text-nexoraMuted" data-job-contact-description>Rose Nails &amp; Spa wants to talk.</p></div><button type="button" class="rounded-lg bg-nexoraBrand px-2 py-2 text-[10px] font-semibold text-white" data-job-action="open-contact">Review</button></div><p class="mt-2 text-[9px] font-semibold uppercase text-nexoraBrandDark" data-job-contact-current>requested</p></div>
+              <div class="hidden rounded-lg border border-nexoraSuccess/30 bg-white p-3 shadow-card" aria-hidden="true" data-job-activity-state="contact-shared" data-job-contact-state="shared"><p class="text-[12px] font-semibold" data-job-contact-title>Contact shared</p><p class="text-[10px] text-nexoraMuted" data-job-contact-description>You shared your contact. Both sides can now talk directly.</p><p class="mt-2 text-[9px] font-semibold uppercase text-nexoraSuccess" data-job-contact-current>shared</p></div>
+              <div class="hidden rounded-lg border border-nailBlush bg-white p-3 shadow-card" aria-hidden="true" data-job-activity-state="declined" data-job-contact-state="declined"><p class="text-[12px] font-semibold" data-job-contact-title>Contact declined</p><p class="text-[10px] text-nexoraMuted" data-job-contact-description>You stayed anonymous. The salon learned nothing about your identity.</p><p class="mt-2 text-[9px] font-semibold uppercase text-nexoraMuted" data-job-contact-current>declined</p></div>
               <div class="rounded-lg bg-nailBlush p-3 text-[10px] font-medium leading-4 text-nexoraText"><strong>AI only suggests.</strong> You decide every connection. NEXORA does not hire, pay, recruit, guarantee work, or advise on 1099/W-2. Employment terms are between you and the salon. Consult a professional for tax/legal questions.</div>
             </section>
           </div>
@@ -1724,9 +1728,9 @@
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="user-circle" class="h-5 w-5"></i>Profile</a>
           </nav>
           <div class="pointer-events-none absolute inset-x-3 bottom-20 z-40 hidden rounded-lg bg-nexoraInk px-3 py-2 text-[11px] font-semibold text-white shadow-phone" aria-live="polite" data-jobs-notice></div>
-          <div class="absolute inset-0 z-50 hidden items-center bg-nexoraInk/50 p-5" data-job-dialog="report" role="dialog" aria-modal="true" aria-labelledby="job-report-title"><div class="w-full rounded-xl bg-white p-4"><h4 id="job-report-title" class="text-[14px] font-semibold">Report this match</h4><label class="mt-3 block text-[10px] font-semibold text-nexoraMuted">Reason<select class="mt-1 h-9 w-full rounded-lg border border-nailBlush px-2 text-[11px]"><option>False or misleading post</option><option>Harassment</option><option>Unsafe working conditions</option></select></label><div class="mt-3 grid grid-cols-2 gap-2"><button type="button" class="rounded-lg border border-nailBlush py-2 text-[10px] font-semibold" data-job-action="close-dialog">Cancel</button><button type="button" class="rounded-lg bg-nexoraDanger py-2 text-[10px] font-semibold text-white" data-job-action="submit-report">Submit report</button></div></div></div>
-          <div class="absolute inset-0 z-50 hidden items-center bg-nexoraInk/50 p-5" data-job-dialog="contact" role="dialog" aria-modal="true" aria-labelledby="job-contact-title"><div class="w-full rounded-xl bg-white p-4"><h4 id="job-contact-title" class="text-[14px] font-semibold">Rose Nails &amp; Spa wants to talk</h4><p class="mt-2 text-[11px] leading-4 text-nexoraMuted">Share your name and phone number? Until you agree, the salon sees only your anonymous profile.</p><div class="mt-3 space-y-2"><button type="button" class="w-full rounded-lg bg-nexoraBrand py-2 text-[10px] font-semibold text-white" data-job-action="share-contact">Share contact</button><button type="button" class="w-full rounded-lg border border-nailBlush py-2 text-[10px] font-semibold" data-job-action="decline-contact">Stay anonymous</button><button type="button" class="w-full py-1 text-[10px] font-semibold text-nexoraMuted" data-job-action="close-dialog">Cancel</button></div></div></div>
-          <div class="absolute inset-0 z-50 hidden items-center bg-nexoraInk/50 p-5" data-job-dialog="delete" role="dialog" aria-modal="true" aria-labelledby="job-delete-title"><div class="w-full rounded-xl bg-white p-4"><h4 id="job-delete-title" class="text-[14px] font-semibold">Delete job profile?</h4><p class="mt-2 text-[11px] leading-4 text-nexoraMuted">This removes all matches and cannot be undone in the real product.</p><div class="mt-3 grid grid-cols-2 gap-2"><button type="button" class="rounded-lg border border-nailBlush py-2 text-[10px] font-semibold" data-job-action="close-dialog">Cancel</button><button type="button" class="rounded-lg bg-nexoraDanger py-2 text-[10px] font-semibold text-white" data-job-action="confirm-delete">Delete profile</button></div></div></div>
+          <div class="absolute inset-0 z-50 hidden items-center bg-nexoraInk/50 p-5" tabindex="-1" data-job-dialog="report" role="dialog" aria-modal="true" aria-labelledby="job-report-title"><div class="w-full rounded-xl bg-white p-4"><h4 id="job-report-title" class="text-[14px] font-semibold">Report this match</h4><label class="mt-3 block text-[10px] font-semibold text-nexoraMuted">Reason<select class="mt-1 h-9 w-full rounded-lg border border-nailBlush px-2 text-[11px]"><option>False or misleading post</option><option>Harassment</option><option>Unsafe working conditions</option></select></label><div class="mt-3 grid grid-cols-2 gap-2"><button type="button" class="rounded-lg border border-nailBlush py-2 text-[10px] font-semibold" data-job-action="close-dialog">Cancel</button><button type="button" class="rounded-lg bg-nexoraDanger py-2 text-[10px] font-semibold text-white" data-job-action="submit-report">Submit report</button></div></div></div>
+          <div class="absolute inset-0 z-50 hidden items-center bg-nexoraInk/50 p-5" tabindex="-1" data-job-dialog="contact" role="dialog" aria-modal="true" aria-labelledby="job-contact-title"><div class="w-full rounded-xl bg-white p-4"><h4 id="job-contact-title" class="text-[14px] font-semibold">Rose Nails &amp; Spa wants to talk</h4><p class="mt-2 text-[11px] leading-4 text-nexoraMuted">Share your name and phone number? Until you agree, the salon sees only your anonymous profile.</p><div class="mt-3 space-y-2"><button type="button" class="w-full rounded-lg bg-nexoraBrand py-2 text-[10px] font-semibold text-white" data-job-action="share-contact">Share contact</button><button type="button" class="w-full rounded-lg border border-nailBlush py-2 text-[10px] font-semibold" data-job-action="decline-contact">Stay anonymous</button><button type="button" class="w-full py-1 text-[10px] font-semibold text-nexoraMuted" data-job-action="close-dialog">Cancel</button></div></div></div>
+          <div class="absolute inset-0 z-50 hidden items-center bg-nexoraInk/50 p-5" tabindex="-1" data-job-dialog="delete" role="dialog" aria-modal="true" aria-labelledby="job-delete-title"><div class="w-full rounded-xl bg-white p-4"><h4 id="job-delete-title" class="text-[14px] font-semibold">Delete job profile?</h4><p class="mt-2 text-[11px] leading-4 text-nexoraMuted">This removes all matches and cannot be undone in the real product.</p><div class="mt-3 grid grid-cols-2 gap-2"><button type="button" class="rounded-lg border border-nailBlush py-2 text-[10px] font-semibold" data-job-action="close-dialog">Cancel</button><button type="button" class="rounded-lg bg-nexoraDanger py-2 text-[10px] font-semibold text-white" data-job-action="confirm-delete">Delete profile</button></div></div></div>
         </div>
       </article>
 
@@ -2260,6 +2264,7 @@
       const VALID_VIEWS = new Set(['matches', 'profile', 'activity']);
       const VALID_PROFILE_STATUSES = new Set(['active', 'paused', 'deleted']);
       const REPORTABLE_MATCH_STATUSES = new Set(['available', 'interested', 'dismissed']);
+      const MODAL_FOCUSABLE_SELECTOR = 'button:not([disabled]), select:not([disabled]), input:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
       const DIALOG_CLOSING_ACTIONS = new Set([
         'submit-report',
         'confirm-delete',
@@ -2283,7 +2288,9 @@
       function reduceJobsState(state, action) {
         const next = structuredClone(state);
         if (action.type === 'view' && VALID_VIEWS.has(action.view)) next.view = action.view;
-        if (action.type === 'interest' && next.matches[action.matchId] === 'available') {
+        if (action.type === 'interest'
+            && next.profileStatus === 'active'
+            && next.matches[action.matchId] === 'available') {
           next.matches[action.matchId] = 'interested';
         }
         if (action.type === 'dismiss' && next.matches[action.matchId] === 'available') {
@@ -2318,6 +2325,7 @@
           next.reportMatchId = null;
         }
         if (action.type === 'contact-decision'
+            && next.profileStatus !== 'deleted'
             && next.contactStatus === 'requested'
             && ['shared', 'declined'].includes(action.decision)) {
           next.contactStatus = action.decision;
@@ -2338,6 +2346,30 @@
         const notice = root.querySelector('[data-jobs-notice]');
         let noticeTimer = 0;
 
+        const activeDialog = () => state.dialog
+          ? root.querySelector(`[data-job-dialog="${state.dialog}"]`)
+          : null;
+
+        const focusableDialogControls = (dialog) => dialog
+          ? [...dialog.querySelectorAll(MODAL_FOCUSABLE_SELECTOR)].filter((control) => !control.disabled)
+          : [];
+
+        const focusActiveDialog = () => {
+          const dialog = activeDialog();
+          if (!dialog) return;
+          const [firstControl] = focusableDialogControls(dialog);
+          (firstControl || dialog).focus();
+        };
+
+        const restoreDialogFocus = () => {
+          const trigger = dialogTrigger;
+          dialogTrigger = null;
+          trigger?.focus();
+          if (trigger && document.activeElement !== trigger) {
+            root.querySelector('[data-job-tab="matches"]')?.focus();
+          }
+        };
+
         const showNotice = (message) => {
           notice.textContent = message;
           notice.classList.remove('hidden');
@@ -2355,16 +2387,20 @@
           root.querySelectorAll('[data-job-panel]').forEach((panel) => {
             panel.classList.toggle('hidden', panel.dataset.jobPanel !== state.view);
           });
+          root.querySelector('[data-job-paused-explanation]')?.classList.toggle('hidden', state.profileStatus !== 'paused');
           root.querySelectorAll('[data-job-match]').forEach((card) => {
             const status = state.matches[card.dataset.jobMatch];
             card.dataset.jobMatchStatus = status;
             card.classList.toggle('hidden', ['reported', 'deleted'].includes(status));
             card.classList.toggle('opacity-50', status === 'dismissed');
-            card.querySelectorAll('[data-job-action="interest"], [data-job-action="dismiss"]').forEach((button) => {
+            card.querySelectorAll('[data-job-action="interest"]').forEach((button) => {
+              button.disabled = state.profileStatus !== 'active' || status !== 'available';
+            });
+            card.querySelectorAll('[data-job-action="dismiss"]').forEach((button) => {
               button.disabled = status !== 'available';
             });
             card.querySelectorAll('[data-job-action="report"]').forEach((button) => {
-              button.disabled = false;
+              button.disabled = !REPORTABLE_MATCH_STATUSES.has(status);
             });
             const label = card.querySelector('[data-job-match-status]');
             if (label) label.textContent = status === 'available' ? '' : status;
@@ -2377,7 +2413,11 @@
             control.disabled = state.profileStatus === 'deleted';
           });
           root.querySelector('[data-job-profile-current]').textContent = state.profileStatus;
-          root.querySelector('[data-job-contact-current]').textContent = state.contactStatus;
+          root.querySelectorAll('[data-job-contact-state]').forEach((row) => {
+            const isCurrent = row.dataset.jobContactState === state.contactStatus;
+            row.classList.toggle('hidden', !isCurrent);
+            row.setAttribute('aria-hidden', String(!isCurrent));
+          });
           root.querySelectorAll('[data-job-action="open-contact"]').forEach((button) => {
             button.disabled = state.profileStatus === 'deleted' || state.contactStatus !== 'requested';
           });
@@ -2405,6 +2445,7 @@
           if (action === 'report') {
             dialogTrigger = control;
             dispatch({ type: 'open-report', matchId });
+            focusActiveDialog();
           }
           if (action === 'submit-report') dispatch({ type: 'report', matchId: state.reportMatchId }, 'Reported and hidden for review.');
           if (action === 'profile-active') dispatch({ type: 'profile-status', status: 'active' }, 'Job profile is active.');
@@ -2412,6 +2453,7 @@
           if (action === 'open-delete' || action === 'open-contact') {
             dialogTrigger = control;
             dispatch({ type: action });
+            focusActiveDialog();
           }
           if (action === 'confirm-delete') dispatch({ type: 'profile-status', status: 'deleted' }, 'Job profile deleted.');
           if (action === 'share-contact') dispatch({ type: 'contact-decision', decision: 'shared' }, 'Contact shared. You can talk directly now.');
@@ -2419,12 +2461,39 @@
           if (action === 'close-dialog') dispatch({ type: 'close-dialog' });
           if (action === 'save-profile') showNotice('Job profile saved for this demo.');
           if (DIALOG_CLOSING_ACTIONS.has(action)) {
-            const trigger = dialogTrigger;
-            dialogTrigger = null;
-            trigger?.focus();
-            if (trigger && document.activeElement !== trigger) {
-              root.querySelector('[data-job-tab="matches"]')?.focus();
-            }
+            restoreDialogFocus();
+          }
+        });
+
+        root.addEventListener('keydown', (event) => {
+          const dialog = activeDialog();
+          if (!dialog) return;
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            dispatch({ type: 'close-dialog' });
+            restoreDialogFocus();
+            return;
+          }
+          if (event.key !== 'Tab') return;
+
+          const controls = focusableDialogControls(dialog);
+          if (!controls.length) {
+            event.preventDefault();
+            dialog.focus();
+            return;
+          }
+
+          const firstControl = controls[0];
+          const lastControl = controls[controls.length - 1];
+          if (!controls.includes(document.activeElement)) {
+            event.preventDefault();
+            (event.shiftKey ? lastControl : firstControl).focus();
+          } else if (event.shiftKey && document.activeElement === firstControl) {
+            event.preventDefault();
+            lastControl.focus();
+          } else if (!event.shiftKey && document.activeElement === lastControl) {
+            event.preventDefault();
+            firstControl.focus();
           }
         });
 

@@ -97,6 +97,7 @@ function classList() {
 
 function createJobsHarness() {
   let clickHandler;
+  let keydownHandler;
   let matchCards;
   const document = {
     activeElement: null,
@@ -151,26 +152,64 @@ function createJobsHarness() {
     control.setAttribute = () => {};
     return control;
   });
+  const dialogControls = {
+    report: [createControl(null), createControl('close-dialog'), createControl('submit-report')],
+    contact: [createControl('share-contact'), createControl('decline-contact'), createControl('close-dialog')],
+    delete: [createControl('close-dialog'), createControl('confirm-delete')]
+  };
   const dialogs = ['report', 'contact', 'delete'].map((name) => ({
     dataset: { jobDialog: name },
-    classList: classList()
+    classList: classList(),
+    controls: dialogControls[name],
+    focus() { document.activeElement = this; },
+    querySelectorAll() { return this.controls; }
   }));
+  const pausedExplanation = { classList: classList() };
+  pausedExplanation.classList.add('hidden');
+  const contactRows = [
+    ['requested', 'Contact requested', 'Rose Nails & Spa wants to talk.', 'requested'],
+    ['shared', 'Contact shared', 'You shared your contact. Both sides can now talk directly.', 'shared'],
+    ['declined', 'Contact declined', 'You stayed anonymous. The salon learned nothing about your identity.', 'declined']
+  ].map(([status, title, description, label], index) => {
+    const row = {
+      dataset: { jobContactState: status },
+      classList: classList(),
+      title: { textContent: title },
+      description: { textContent: description },
+      status: { textContent: label },
+      attributes: {},
+      setAttribute(name, value) { this.attributes[name] = value; },
+      querySelector(selector) {
+        if (selector === '[data-job-contact-title]') return this.title;
+        if (selector === '[data-job-contact-description]') return this.description;
+        if (selector === '[data-job-contact-current]') return this.status;
+        return null;
+      }
+    };
+    if (index > 0) row.classList.add('hidden');
+    return row;
+  });
   const notice = { textContent: '', classList: classList() };
   const root = {
     addEventListener(type, handler) {
       if (type === 'click') clickHandler = handler;
+      if (type === 'keydown') keydownHandler = handler;
     },
     querySelector(selector) {
       if (selector === '[data-jobs-notice]') return notice;
+      if (selector === '[data-job-paused-explanation]') return pausedExplanation;
       if (selector === '[data-job-profile-current]') return { textContent: '' };
-      if (selector === '[data-job-contact-current]') return { textContent: '' };
+      if (selector === '[data-job-contact-current]') return contactRows[0].status;
       if (selector === '[data-job-tab="matches"]') return matchesTab;
+      const dialogName = selector.match(/^\[data-job-dialog="([^"]+)"\]$/)?.[1];
+      if (dialogName) return dialogs.find((dialog) => dialog.dataset.jobDialog === dialogName);
       return null;
     },
     querySelectorAll(selector) {
       if (selector === '[data-job-tab]') return [matchesTab];
       if (selector === '[data-job-match]') return matchCards;
       if (selector === '[data-job-dialog]') return dialogs;
+      if (selector === '[data-job-contact-state]') return contactRows;
       if (selector === '[data-job-profile-status]') return profileControls;
       if (selector === '[data-job-action="open-contact"]') return [contactReview];
       if (selector === '[data-job-profile-field] input, [data-job-action="save-profile"]') {
@@ -204,6 +243,19 @@ function createJobsHarness() {
     dialog(name) {
       return dialogs.find((dialog) => dialog.dataset.jobDialog === name);
     },
+    dialogControl(name, actionOrIndex) {
+      const controls = this.dialog(name).controls;
+      return typeof actionOrIndex === 'number'
+        ? controls[actionOrIndex]
+        : controls.find((control) => control.dataset.jobAction === actionOrIndex);
+    },
+    pausedExplanation,
+    contactRow(status) {
+      return contactRows.find((row) => row.dataset.jobContactState === status);
+    },
+    visibleContactRows() {
+      return contactRows.filter((row) => !row.classList.contains('hidden'));
+    },
     activeElement() { return document.activeElement; },
     matchesTab,
     click(action, matchId) {
@@ -214,6 +266,8 @@ function createJobsHarness() {
           : action === 'save-profile'
             ? saveProfile
           : profileControls.find((candidate) => candidate.dataset.jobAction === action)
+            || dialogs.find((dialog) => !dialog.classList.contains('hidden'))
+              ?.controls.find((candidate) => candidate.dataset.jobAction === action)
             || createControl(action);
       if (control.disabled) return control;
       document.activeElement = control;
@@ -222,6 +276,16 @@ function createJobsHarness() {
     },
     delegateClick(control) {
       clickHandler({ target: control });
+    },
+    pressKey(key, { shiftKey = false } = {}) {
+      const event = {
+        key,
+        shiftKey,
+        defaultPrevented: false,
+        preventDefault() { this.defaultPrevented = true; }
+      };
+      keydownHandler?.(event);
+      return event;
     }
   };
 }
@@ -385,4 +449,123 @@ test('keeps rendered Report controls enabled after interest and dismiss', () => 
   assert.equal(jobs.button('golden', 'report').disabled, false);
   jobs.click('report', 'golden');
   assert.equal(jobs.dialog('report').classList.contains('hidden'), false);
+});
+
+test('rejects interest while matching is paused', () => {
+  const jobs = jobsApi();
+  let state = jobs.reduceJobsState(jobs.createJobsState(), { type: 'profile-status', status: 'paused' });
+  state = jobs.reduceJobsState(state, { type: 'interest', matchId: 'rose' });
+
+  assert.equal(state.profileStatus, 'paused');
+  assert.equal(state.matches.rose, 'available');
+  assert.equal(state.identityRevealed, false);
+});
+
+test('explains paused matching while disabling Interest and retaining Report', () => {
+  assert.match(
+    source(),
+    /data-job-paused-explanation>\s*Matching is paused\. Salons cannot receive your anonymous profile until you reactivate it\.\s*<\/div>/
+  );
+  const jobs = createJobsHarness();
+  jobs.click('profile-paused');
+
+  assert.equal(jobs.pausedExplanation.classList.contains('hidden'), false);
+  assert.equal(jobs.button('rose', 'interest').disabled, true);
+  assert.equal(jobs.button('golden', 'interest').disabled, true);
+  assert.equal(jobs.button('rose', 'report').disabled, false);
+  assert.equal(jobs.button('golden', 'report').disabled, false);
+});
+
+test('rejects both contact decisions after profile deletion', () => {
+  const jobs = jobsApi();
+  for (const decision of ['shared', 'declined']) {
+    const deleted = jobs.reduceJobsState(jobs.createJobsState(), { type: 'profile-status', status: 'deleted' });
+    const next = jobs.reduceJobsState(deleted, { type: 'contact-decision', decision });
+
+    assert.equal(next.contactStatus, deleted.contactStatus);
+    assert.equal(next.identityRevealed, deleted.identityRevealed);
+  }
+});
+
+test('moves focus into each opened Jobs dialog', () => {
+  for (const [openAction, matchId, dialogName, firstControl] of [
+    ['report', 'rose', 'report', 0],
+    ['open-contact', undefined, 'contact', 'share-contact'],
+    ['open-delete', undefined, 'delete', 'close-dialog']
+  ]) {
+    const jobs = createJobsHarness();
+    jobs.click(openAction, matchId);
+    assert.equal(jobs.activeElement(), jobs.dialogControl(dialogName, firstControl), `${dialogName} initial focus`);
+  }
+});
+
+test('Escape closes the active dialog and restores its trigger', () => {
+  const jobs = createJobsHarness();
+  const trigger = jobs.click('report', 'rose');
+  jobs.dialogControl('report', 'submit-report').focus();
+  const escape = jobs.pressKey('Escape');
+
+  assert.equal(escape.defaultPrevented, true);
+  assert.equal(jobs.dialog('report').classList.contains('hidden'), true);
+  assert.equal(jobs.activeElement(), trigger);
+});
+
+test('forward Tab wraps to the first enabled control in the active dialog', () => {
+  const jobs = createJobsHarness();
+  jobs.click('open-contact');
+  jobs.dialogControl('contact', 'close-dialog').focus();
+  const tab = jobs.pressKey('Tab');
+
+  assert.equal(tab.defaultPrevented, true);
+  assert.equal(jobs.activeElement(), jobs.dialogControl('contact', 'share-contact'));
+});
+
+test('reverse Shift+Tab wraps to the last enabled control in the active dialog', () => {
+  const jobs = createJobsHarness();
+  jobs.click('open-contact');
+  jobs.dialogControl('contact', 'share-contact').focus();
+  const tab = jobs.pressKey('Tab', { shiftKey: true });
+
+  assert.equal(tab.defaultPrevented, true);
+  assert.equal(jobs.activeElement(), jobs.dialogControl('contact', 'close-dialog'));
+});
+
+test('shows truthful copy for each current contact state', () => {
+  const html = source();
+  for (const pattern of [
+    /data-job-contact-state="requested"[^\n]*data-job-contact-title>Contact requested<\/p>[^\n]*data-job-contact-description>Rose Nails &amp; Spa wants to talk\.<\/p>[^\n]*data-job-contact-current>requested<\/p>/,
+    /data-job-contact-state="shared"[^\n]*data-job-contact-title>Contact shared<\/p>[^\n]*data-job-contact-description>You shared your contact\. Both sides can now talk directly\.<\/p>[^\n]*data-job-contact-current>shared<\/p>/,
+    /data-job-contact-state="declined"[^\n]*data-job-contact-title>Contact declined<\/p>[^\n]*data-job-contact-description>You stayed anonymous\. The salon learned nothing about your identity\.<\/p>[^\n]*data-job-contact-current>declined<\/p>/
+  ]) assert.match(html, pattern);
+
+  const requestedJobs = createJobsHarness();
+  assert.deepEqual(requestedJobs.visibleContactRows().map((row) => [
+    row.title.textContent,
+    row.description.textContent,
+    row.status.textContent
+  ]), [['Contact requested', 'Rose Nails & Spa wants to talk.', 'requested']]);
+
+  const sharedJobs = createJobsHarness();
+  sharedJobs.click('open-contact');
+  sharedJobs.click('share-contact');
+  assert.deepEqual(sharedJobs.visibleContactRows().map((row) => [
+    row.title.textContent,
+    row.description.textContent,
+    row.status.textContent
+  ]), [['Contact shared', 'You shared your contact. Both sides can now talk directly.', 'shared']]);
+
+  const declinedJobs = createJobsHarness();
+  declinedJobs.click('open-contact');
+  declinedJobs.click('decline-contact');
+  assert.deepEqual(declinedJobs.visibleContactRows().map((row) => [
+    row.title.textContent,
+    row.description.textContent,
+    row.status.textContent
+  ]), [['Contact declined', 'You stayed anonymous. The salon learned nothing about your identity.', 'declined']]);
+});
+
+test('states current-salon insight exclusion and labels Matches AI visibly', () => {
+  const html = source();
+  assert.match(html, /Your current salon is excluded from grouped demand insights\./);
+  assert.match(html, /data-job-ai-badge[^>]*>AI<\/span>/);
 });
