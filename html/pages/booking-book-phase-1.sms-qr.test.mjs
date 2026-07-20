@@ -42,6 +42,12 @@ test('keeps shared tab and query-string synchronization for new targets', () => 
   assert.match(html, /var DEFAULT_MAIN_TAB = 'booking'/);
 });
 
+test('labels the populated Booking Book main landmark accurately', () => {
+  const html = source();
+  assert.match(html, /<main class="content" aria-label="Booking Book content">/);
+  assert.doesNotMatch(html, /aria-label="Blank Booking Book content"/);
+});
+
 test('ports the complete SMS Campaigns view and reuses the composer', () => {
   const html = source();
   for (const copy of [
@@ -60,6 +66,30 @@ test('ports the complete SMS Campaigns view and reuses the composer', () => {
   assert.match(html, /function renderSmsCampaignCards\(\)/);
   assert.match(html, /window\.openSmsCampaignComposer/);
   assert.match(html, /openComposer\(btn\.dataset\.smsSegment\)/);
+});
+
+test('provides a complete accessible focus lifecycle for the SMS composer', () => {
+  const html = source();
+
+  assert.match(html, /id="composerModal"[^>]*aria-hidden="true"/);
+  assert.match(html, /class="modal"[^>]*role="dialog"[^>]*aria-modal="true"[^>]*aria-labelledby="composerModalTitle"/);
+  assert.match(html, /id="composerModalTitle"/);
+  assert.match(html, /id="successBanner"[^>]*role="status"[^>]*aria-live="polite"[^>]*aria-atomic="true"/);
+  assert.match(html, /let composerOpener = null;/);
+  assert.match(html, /let composerBackgroundStates = \[\];/);
+  assert.match(html, /function setComposerBackgroundInert\(inert\)[\s\S]*let surface = overlay;[\s\S]*element !== surface[\s\S]*element\.setAttribute\('inert', ''\)[\s\S]*removeAttribute\('inert'\)/);
+  assert.match(html, /function openComposer\(segId\)[\s\S]*composerOpener = document\.activeElement;[\s\S]*setComposerBackgroundInert\(true\);[\s\S]*setAttribute\('aria-hidden', 'false'\);[\s\S]*\$\('closeComposerBtn'\)\.focus\(\);/);
+  assert.match(html, /function closeComposer\(\)[\s\S]*setAttribute\('aria-hidden', 'true'\);[\s\S]*setComposerBackgroundInert\(false\);[\s\S]*composerOpener\.focus\(\);/);
+  assert.match(html, /function composerFocusables\(\)[\s\S]*a\[href\][\s\S]*button:not\(\[disabled\]\)[\s\S]*element\.offsetParent !== null/);
+  assert.match(html, /event\.key !== 'Tab'[\s\S]*event\.shiftKey && document\.activeElement === first[\s\S]*last\.focus\(\)[\s\S]*!event\.shiftKey && document\.activeElement === last[\s\S]*first\.focus\(\)/);
+});
+
+test('prevents SMS campaigns from being scheduled in the past', () => {
+  const html = source();
+
+  assert.match(html, /\$\('schedDate'\)\.min = new Date\(\)\.toISOString\(\)\.slice\(0, 10\);/);
+  assert.match(html, /function scheduledDateTimeIsPast\(\)[\s\S]*new Date\(date \+ 'T' \+ time\)[\s\S]*Date\.now\(\)/);
+  assert.match(html, /state\.scheduleMode === 'schedule'[\s\S]*\$\('schedDate'\)\.validity\.rangeUnderflow[\s\S]*scheduledDateTimeIsPast\(\)[\s\S]*Vui lòng chọn ngày và giờ gửi trong tương lai\./);
 });
 
 test('opens the real landing page builder instead of silently closing the SMS composer', () => {

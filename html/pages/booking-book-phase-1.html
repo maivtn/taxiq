@@ -6697,7 +6697,7 @@
         </div>
       </header>
 
-      <main class="content" aria-label="Blank Booking Book content">
+      <main class="content" aria-label="Booking Book content">
         <section class="blank-stage">
           <div class="page-heading">
             <h1 class="page-title">Booking Book</h1>
@@ -8431,10 +8431,10 @@
 
     <!-- ✦ Tạo SMS Campaign composer (ported from nexora-sms-dashboard.html) -->
     <div id="nx-campaign-root">
-      <div class="modal-overlay" id="composerModal">
-        <div class="modal">
+      <div class="modal-overlay" id="composerModal" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="composerModalTitle">
           <div class="modal-header">
-            <div class="modal-title"><i class="bi bi-megaphone" aria-hidden="true"></i> Tạo SMS Campaign</div>
+            <div class="modal-title" id="composerModalTitle"><i class="bi bi-megaphone" aria-hidden="true"></i> Tạo SMS Campaign</div>
             <button class="modal-close" id="closeComposerBtn" aria-label="Đóng"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
           </div>
           <div class="modal-body">
@@ -8532,7 +8532,7 @@
           </div>
         </div>
       </div>
-      <div class="success-banner" id="successBanner"><span class="success-icon"><i class="bi bi-check-circle-fill" aria-hidden="true"></i></span><span class="success-text" id="successText"></span></div>
+      <div class="success-banner" id="successBanner" role="status" aria-live="polite" aria-atomic="true"><span class="success-icon"><i class="bi bi-check-circle-fill" aria-hidden="true"></i></span><span class="success-text" id="successText"></span></div>
     </div>
 
     <div class="kiosk-overlay" id="kioskOverlay" role="dialog" aria-modal="true" aria-labelledby="kioskTitle" aria-hidden="true">
@@ -10761,6 +10761,40 @@ function getBookingCardCallStart(item) {
       };
 
       const $ = id => document.getElementById(id);
+      let composerOpener = null;
+      let composerBackgroundStates = [];
+
+      function composerFocusables() {
+        return Array.prototype.filter.call(
+          $('composerModal').querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'),
+          function(element) { return element.offsetParent !== null; }
+        );
+      }
+
+      function setComposerBackgroundInert(inert) {
+        const overlay = $('composerModal');
+        if (inert) {
+          composerBackgroundStates = [];
+          let surface = overlay;
+          while (surface && surface !== document.body) {
+            const parent = surface.parentElement;
+            if (!parent) break;
+            Array.from(parent.children)
+              .filter(function(element) { return element !== surface && element.tagName !== 'SCRIPT'; })
+              .forEach(function(element) {
+                composerBackgroundStates.push({ element: element, wasInert: element.hasAttribute('inert') });
+                element.setAttribute('inert', '');
+              });
+            surface = parent;
+          }
+          return;
+        }
+        composerBackgroundStates.forEach(function(state) {
+          if (state.wasInert) state.element.setAttribute('inert', '');
+          else state.element.removeAttribute('inert');
+        });
+        composerBackgroundStates = [];
+      }
 
       function escapeHtml(s) {
         return s.replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
@@ -10831,6 +10865,7 @@ function getBookingCardCallStart(item) {
          COMPOSER
          ============================================================ */
       function openComposer(segId) {
+        const overlay = $('composerModal');
         const seg = SEGMENTS.find(s => s.id === segId) || SEGMENTS[0];
         state.segment = seg;
         state.confirming = false;
@@ -10840,14 +10875,32 @@ function getBookingCardCallStart(item) {
         document.querySelectorAll('.segment-btn').forEach(b => b.classList.toggle('selected', b.dataset.segment === seg.id));
         renderTemplates(seg.id);
         updateCost();
-        $('composerModal').classList.add('open');
+        composerOpener = document.activeElement;
+        setComposerBackgroundInert(true);
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+        $('closeComposerBtn').focus();
       }
 
       function closeComposer() {
-        $('composerModal').classList.remove('open');
+        const overlay = $('composerModal');
+        if (!overlay.classList.contains('open')) return;
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+        setComposerBackgroundInert(false);
         state.confirming = false;
         $('confirmBox').classList.remove('show');
         $('sendCampaignBtn').innerHTML = '<i class="bi bi-send" aria-hidden="true"></i> Gửi Campaign';
+        if (composerOpener && typeof composerOpener.focus === 'function') composerOpener.focus();
+        composerOpener = null;
+      }
+
+      function scheduledDateTimeIsPast() {
+        const date = $('schedDate').value;
+        const time = $('schedTime').value;
+        if (!date || !time) return false;
+        const scheduledAt = new Date(date + 'T' + time);
+        return !Number.isNaN(scheduledAt.getTime()) && scheduledAt.getTime() < Date.now();
       }
 
       function updateCharCount() {
@@ -10909,8 +10962,12 @@ function getBookingCardCallStart(item) {
         const text = $('smsText').value.trim();
         if (!text) { alert('Vui lòng soạn nội dung SMS trước.'); return; }
 
-        if (state.scheduleMode === 'schedule' && !$('schedDate').value) {
-          alert('Vui lòng chọn ngày gửi.');
+        if (state.scheduleMode === 'schedule' && (
+          !$('schedDate').value ||
+          $('schedDate').validity.rangeUnderflow ||
+          scheduledDateTimeIsPast()
+        )) {
+          alert('Vui lòng chọn ngày và giờ gửi trong tương lai.');
           return;
         }
 
@@ -10958,7 +11015,30 @@ function getBookingCardCallStart(item) {
       $('closeComposerBtn').addEventListener('click', closeComposer);
       $('cancelComposerBtn').addEventListener('click', closeComposer);
       $('composerModal').addEventListener('click', function (e) { if (e.target === e.currentTarget) closeComposer(); });
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('composerModal') && $('composerModal').classList.contains('open')) closeComposer(); });
+      document.addEventListener('keydown', function (event) {
+        const overlay = $('composerModal');
+        if (!overlay.classList.contains('open')) return;
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          closeComposer();
+          return;
+        }
+        if (event.key !== 'Tab') return;
+        const focusable = composerFocusables();
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (!overlay.contains(document.activeElement)) {
+          event.preventDefault();
+          first.focus();
+        } else if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
       $('segmentGrid').addEventListener('click', function (e) {
         var btn = e.target.closest('.segment-btn'); if (!btn) return;
         var seg = SEGMENTS.find(function (s) { return s.id === btn.dataset.segment; }); if (!seg) return;
@@ -10998,6 +11078,7 @@ function getBookingCardCallStart(item) {
       renderSegmentButtons();
       renderSmsCampaignCards();
       updateCredits(state.credits);
+      $('schedDate').min = new Date().toISOString().slice(0, 10);
       window.openSmsCampaignComposer = function (opts) { openComposer((opts && opts.segment) || 'new'); };
     })();
   </script>
