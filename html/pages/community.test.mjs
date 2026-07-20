@@ -61,3 +61,10 @@ test('adapts the salon Owner side of the AI Matching mockup', () => {
   assert.match(html, /data-owner-job-action="request-contact"/);
   assert.match(html, /data-owner-job-action="dismiss"/);
 });
+
+test('keeps Owner Jobs action buttons sized to their content', () => {
+  const html = source();
+  assert.equal((html.match(/class="owner-job-actions"/g) || []).length, 2);
+  assert.match(html, /\.owner-job-actions\s*\{[\s\S]*?display:\s*flex;/);
+  assert.match(html, /\.owner-action\s*\{[\s\S]*?width:\s*fit-content;[\s\S]*?flex:\s*0 0 auto;/);
+});
