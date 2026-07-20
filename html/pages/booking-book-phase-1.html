@@ -4164,7 +4164,7 @@
       font-size: 16px;
       font-weight: 800;
     }
-    #nx-campaign-root .modal-title .bi { color: var(--nx-brand); }
+    #nx-campaign-root .modal-title .marketing-icon { color: var(--nx-brand); }
     #nx-campaign-root .modal-close {
       display: inline-flex;
       width: 34px;
@@ -4204,7 +4204,7 @@
     }
     #nx-campaign-root .segment-btn:hover { border-color: var(--nx-brand); transform: translateY(-1px); }
     #nx-campaign-root .segment-btn.selected { border-color: var(--nx-brand); background: rgba(70, 72, 216, 0.08); box-shadow: 0 8px 18px rgba(70, 72, 216, 0.14); }
-    #nx-campaign-root .segment-btn-icon { display: block; margin-bottom: 5px; font-size: 20px; color: var(--nx-brand); }
+    #nx-campaign-root .segment-btn-icon { display: flex; justify-content: center; margin-bottom: 6px; color: var(--nx-brand); }
     #nx-campaign-root .segment-btn-name { display: block; font-size: 12px; font-weight: 700; }
     #nx-campaign-root .segment-btn-count { display: block; margin-top: 2px; font-size: 11px; font-weight: 700; color: var(--nx-cyan); }
     #nx-campaign-root .template-list { display: flex; flex-direction: column; gap: 8px; }
@@ -4257,7 +4257,7 @@
     #nx-campaign-root .char-count { color: var(--nx-electric); font-weight: 800; }
     #nx-campaign-root .char-count.multi { color: var(--nexora-warning); }
     #nx-campaign-root .sms-preview { margin-top: 12px; border: 1px solid var(--nexora-border); border-radius: 10px; background: #f4f7fb; padding: 14px; }
-    #nx-campaign-root .sms-preview-label { margin-bottom: 8px; color: var(--nexora-subtle); font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+    #nx-campaign-root .sms-preview-label { display:flex; align-items:center; gap:6px; margin-bottom: 8px; color: var(--nexora-subtle); font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
     #nx-campaign-root .sms-bubble { max-width: 85%; border-radius: 16px 16px 16px 4px; background: #fff; padding: 11px 14px; color: var(--nexora-text); font-size: 13px; line-height: 1.5; word-wrap: break-word; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08); }
     #nx-campaign-root .sms-bubble .lnk { color: var(--nx-electric); text-decoration: underline; }
     #nx-campaign-root .sms-preview-empty { color: var(--nexora-subtle); font-size: 12px; font-style: italic; }
@@ -4345,7 +4345,7 @@
     }
     #nx-campaign-root .schedule-opt:hover { border-color: var(--nx-brand); }
     #nx-campaign-root .schedule-opt.selected { border-color: var(--nx-brand); background: rgba(70, 72, 216, 0.08); }
-    #nx-campaign-root .schedule-opt-icon { display: block; margin-bottom: 5px; font-size: 17px; color: var(--nx-brand); }
+    #nx-campaign-root .schedule-opt-icon { display: flex; justify-content:center; margin-bottom: 6px; color: var(--nx-brand); }
     #nx-campaign-root .schedule-opt-label { font-size: 12px; font-weight: 700; }
     #nx-campaign-root .time-input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
     #nx-campaign-root .confirm-box { display: none; margin-bottom: 16px; border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; background: rgba(245, 158, 11, 0.09); padding: 14px 16px; }
@@ -4355,8 +4355,13 @@
     #nx-campaign-root .confirm-detail strong { color: var(--nexora-text); }
     #nx-campaign-root .success-banner { display: none; position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 140; align-items: center; gap: 10px; border: 1px solid rgba(0, 184, 115, 0.4); border-radius: 12px; background: #fff; padding: 13px 18px; box-shadow: 0 18px 44px rgba(8, 31, 73, 0.18); }
     #nx-campaign-root .success-banner.show { display: flex; }
-    #nx-campaign-root .success-icon { display: inline-flex; color: var(--nexora-success); font-size: 20px; }
+    #nx-campaign-root .success-icon { display: inline-flex; color: var(--nexora-success); }
     #nx-campaign-root .success-text { color: var(--nexora-text); font-size: 14px; font-weight: 700; }
+    .marketing-icon { width:18px; height:18px; flex:0 0 18px; stroke-width:2; }
+    .marketing-icon.is-compact { width:16px; height:16px; flex-basis:16px; }
+    .marketing-icon-label { display:inline-flex; align-items:center; gap:8px; }
+    .marketing-status { display:flex; align-items:flex-start; gap:8px; }
+    .marketing-status > .marketing-icon { margin-top:1px; }
     #panel-sms-campaigns { --cyan:#0891b2; --green:var(--nexora-success); --purple:var(--nexora-violet); --orange:var(--nexora-warning); --pink:#ec4899; }
     #panel-sms-campaigns .marketing-panel-head,
     #panel-qr-codes .marketing-panel-head { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:18px; }
@@ -4384,12 +4389,14 @@
     #panel-sms-campaigns .sms-stat-card.orange { --card-accent:var(--nexora-warning); }
     #panel-sms-campaigns .marketing-section-heading h3 { margin:0 0 12px; font-size:14px; }
     #panel-sms-campaigns .sms-campaign-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
-    #panel-sms-campaigns .sms-campaign-card { width:100%; padding:17px; color:var(--nexora-text); text-align:left; transition:.2s ease; }
+    #panel-sms-campaigns .sms-campaign-card { display:grid; grid-template-columns:40px minmax(0,1fr); column-gap:12px; row-gap:14px; width:100%; padding:17px; color:var(--nexora-text); text-align:left; transition:.2s ease; }
     #panel-sms-campaigns .sms-campaign-card:hover { border-color:rgba(70,72,216,.5); transform:translateY(-2px); }
-    #panel-sms-campaigns .sms-campaign-icon { margin-bottom:9px; color:var(--nexora-brand); font-size:22px; }
-    #panel-sms-campaigns .sms-campaign-name { font-size:14px; font-weight:800; }
-    #panel-sms-campaigns .sms-campaign-desc { min-height:54px; margin:5px 0 13px; color:var(--nexora-muted); font-size:11px; line-height:1.55; }
-    #panel-sms-campaigns .sms-campaign-meta { display:flex; justify-content:space-between; align-items:end; gap:10px; }
+    #panel-sms-campaigns .sms-campaign-icon { display:flex; grid-column:1; grid-row:1; width:40px; height:40px; align-items:center; justify-content:center; border-radius:10px; background:rgba(70,72,216,.09); color:var(--nexora-brand); }
+    #panel-sms-campaigns .sms-campaign-copy { grid-column:2; min-width:0; align-self:start; }
+    #panel-sms-campaigns .sms-campaign-name { display:block; font-size:14px; font-weight:800; line-height:1.3; }
+    #panel-sms-campaigns .sms-campaign-desc { display:block; margin-top:4px; color:var(--nexora-muted); font-size:11px; line-height:1.55; }
+    #panel-sms-campaigns .sms-campaign-meta { display:flex; grid-column:1 / -1; justify-content:space-between; align-items:end; gap:10px; padding-top:12px; border-top:1px solid var(--nexora-rule); }
+    #panel-sms-campaigns .sms-campaign-count-wrap { display:flex; align-items:baseline; gap:4px; }
     #panel-sms-campaigns .sms-campaign-count { color:#0891b2; font-size:19px; font-weight:800; }
     #panel-sms-campaigns .sms-campaign-count-label { color:var(--nexora-subtle); font-size:9px; }
     #panel-sms-campaigns .sms-campaign-badge { border-radius:999px; background:var(--nexora-surface-muted); padding:4px 8px; color:var(--nexora-muted); font-size:9px; font-weight:800; }
@@ -4408,12 +4415,12 @@
     #panel-qr-codes .qr-form-stack { display:grid; gap:14px; }
     #panel-qr-codes .qr-form-stack,
     #panel-qr-codes .qr-section { min-width:0; }
-    #panel-qr-codes .qr-section-title { margin-bottom:13px; font-size:13px; font-weight:900; }
+    #panel-qr-codes .qr-section-title { display:flex; align-items:center; gap:7px; margin-bottom:13px; font-size:13px; font-weight:900; }
     #panel-qr-codes .qr-field { display:grid; gap:6px; margin-bottom:12px; }
     #panel-qr-codes .qr-field:last-child { margin-bottom:0; }
     #panel-qr-codes .qr-field-label { margin-bottom:6px; color:var(--nexora-muted); font-size:10px; font-weight:800; }
     #panel-qr-codes textarea.booking-input { min-height:105px; resize:vertical; }
-    #panel-qr-codes .consent-note { margin-top:10px; border:1px solid rgba(245,158,11,.3); border-radius:9px; background:rgba(245,158,11,.07); padding:10px 12px; color:#9a5a00; font-size:10px; line-height:1.55; }
+    #panel-qr-codes .consent-note { display:flex; align-items:flex-start; gap:8px; margin-top:10px; border:1px solid rgba(245,158,11,.3); border-radius:9px; background:rgba(245,158,11,.07); padding:10px 12px; color:#9a5a00; font-size:10px; line-height:1.55; }
     #panel-qr-codes .link-preview { margin-top:7px; border-radius:8px; background:var(--nexora-surface-muted); padding:9px 11px; color:var(--nexora-brand); font-family:monospace; font-size:10px; overflow-wrap:anywhere; }
     #panel-qr-codes .qr-display-row { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:12px; }
     #panel-qr-codes .qr-box { display:grid; min-width:168px; min-height:168px; place-items:center; border:1px solid var(--nexora-border); border-radius:12px; background:#fff; padding:13px; }
@@ -4439,7 +4446,7 @@
     .kiosk-overlay { position:fixed; inset:0; z-index:200; display:none; flex-direction:column; background:#0b1220; }
     .kiosk-overlay.open { display:flex; }
     .kiosk-overlay .kiosk-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; border-bottom:1px solid rgba(255,255,255,.14); padding:10px 14px; }
-    .kiosk-overlay .kiosk-hint { color:#dbe5f4; font-size:11px; }
+    .kiosk-overlay .kiosk-hint { display:flex; align-items:center; gap:7px; color:#dbe5f4; font-size:11px; }
     .kiosk-overlay iframe { width:100%; flex:1; border:0; }
     @media (max-width:900px) { #panel-sms-campaigns .sms-campaign-stats { grid-template-columns:repeat(2,minmax(0,1fr)); } #panel-sms-campaigns .sms-campaign-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
     @media (max-width:980px) { #panel-qr-codes .guide-cols, #panel-qr-codes .qr-builder { grid-template-columns:1fr; } #panel-qr-codes .qr-preview { position:static; } }
@@ -6733,11 +6740,11 @@
                 <span>Call Log</span>
               </button>
               <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="sms-campaigns" aria-controls="panel-sms-campaigns">
-                <span class="page-tab-icon"><i class="bi bi-chat-dots" aria-hidden="true"></i></span>
+                <span class="page-tab-icon"><i class="marketing-icon" data-lucide="message-square" aria-hidden="true"></i></span>
                 <span>SMS Campaigns</span>
               </button>
               <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="qr-codes" aria-controls="panel-qr-codes">
-                <span class="page-tab-icon"><i class="bi bi-qr-code" aria-hidden="true"></i></span>
+                <span class="page-tab-icon"><i class="marketing-icon" data-lucide="qr-code" aria-hidden="true"></i></span>
                 <span>QR Codes</span>
               </button>
               <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="plans" aria-controls="panel-plans">
@@ -8223,7 +8230,7 @@
             <section class="tab-panel" id="panel-sms-campaigns" data-tab-panel="sms-campaigns" role="tabpanel" aria-label="SMS Campaigns panel">
               <div class="marketing-panel-head">
                 <div>
-                  <h2>💬 SMS Campaigns</h2>
+                  <h2 class="marketing-icon-label"><i class="marketing-icon" data-lucide="message-square" aria-hidden="true"></i><span>SMS Campaigns</span></h2>
                   <p>Chọn nhóm khách → Soạn tin → Gửi hoặc hẹn giờ</p>
                 </div>
                 <div class="marketing-panel-actions">
@@ -8232,14 +8239,14 @@
                     <strong data-sms-credits>847</strong>
                     <small data-sms-credits-usd>≈ $21.18 remaining</small>
                   </div>
-                  <button class="booking-primary-button" type="button" data-sms-campaign-new><i class="bi bi-stars" aria-hidden="true"></i> Tạo Campaign Mới</button>
+                  <button class="booking-primary-button" type="button" data-sms-campaign-new><i class="marketing-icon" data-lucide="sparkles" aria-hidden="true"></i><span>Tạo Campaign Mới</span></button>
                 </div>
               </div>
               <div class="sms-campaign-stats">
-                <article class="sms-stat-card cyan"><span>Tổng khách</span><strong>1,284</strong><small>↑ +23 tuần này</small></article>
-                <article class="sms-stat-card violet"><span>SMS đã gửi tháng này</span><strong>3,412</strong><small>↑ +18% so tháng trước</small></article>
-                <article class="sms-stat-card green"><span>Khách quay lại</span><strong>147</strong><small>↑ từ SMS tháng này</small></article>
-                <article class="sms-stat-card orange"><span>Revenue từ SMS</span><strong>$8,820</strong><small>↑ avg $60/khách quay lại</small></article>
+                <article class="sms-stat-card cyan"><span>Tổng khách</span><strong>1,284</strong><small class="marketing-icon-label"><i class="marketing-icon is-compact" data-lucide="trending-up" aria-hidden="true"></i><span>+23 tuần này</span></small></article>
+                <article class="sms-stat-card violet"><span>SMS đã gửi tháng này</span><strong>3,412</strong><small class="marketing-icon-label"><i class="marketing-icon is-compact" data-lucide="trending-up" aria-hidden="true"></i><span>+18% so tháng trước</span></small></article>
+                <article class="sms-stat-card green"><span>Khách quay lại</span><strong>147</strong><small class="marketing-icon-label"><i class="marketing-icon is-compact" data-lucide="trending-up" aria-hidden="true"></i><span>từ SMS tháng này</span></small></article>
+                <article class="sms-stat-card orange"><span>Revenue từ SMS</span><strong>$8,820</strong><small class="marketing-icon-label"><i class="marketing-icon is-compact" data-lucide="trending-up" aria-hidden="true"></i><span>avg $60/khách quay lại</span></small></article>
               </div>
               <div class="marketing-section-heading">
                 <h3>Nhóm khách — Chọn để gửi campaign</h3>
@@ -8249,46 +8256,46 @@
             <section class="tab-panel" id="panel-qr-codes" data-tab-panel="qr-codes" role="tabpanel" aria-label="QR Codes panel">
               <div class="marketing-panel-head">
                 <div>
-                  <h2>🔳 QR Codes</h2>
+                  <h2 class="marketing-icon-label"><i class="marketing-icon" data-lucide="qr-code" aria-hidden="true"></i><span>QR Codes</span></h2>
                   <p>Khách scan → điền tên + SĐT → nhận mã qua SMS → AI voice chào đúng tên khi gọi</p>
                 </div>
                 <div class="qr-head-actions">
-                  <button class="booking-secondary-button" type="button" id="qrGuideBtn">📖 Ẩn hướng dẫn</button>
-                  <button class="booking-primary-button" type="button" id="publishQrBtn">🚀 Publish QR</button>
+                  <button class="booking-secondary-button" type="button" id="qrGuideBtn"><i class="marketing-icon" data-lucide="book-open" aria-hidden="true"></i><span>Ẩn hướng dẫn</span></button>
+                  <button class="booking-primary-button" type="button" id="publishQrBtn"><i class="marketing-icon" data-lucide="upload-cloud" aria-hidden="true"></i><span>Publish QR</span></button>
                 </div>
               </div>
 
               <div class="guide-panel" id="qrGuide">
                 <div class="guide-cols">
                   <div>
-                    <div class="guide-phase-title" style="color:#b794f6;">🛠 Bước 1 — Chủ tiệm setup (làm 1 lần, ~3 phút)</div>
+                    <div class="guide-phase-title marketing-icon-label" style="color:#b794f6;"><i class="marketing-icon is-compact" data-lucide="settings" aria-hidden="true"></i><span>Bước 1 — Chủ tiệm setup (làm 1 lần, ~3 phút)</span></div>
                     <div class="guide-step"><div class="guide-num">1</div><div>Chọn <strong>chương trình khuyến mãi</strong> trong dropdown — khách scan sẽ nhận đúng offer này.</div></div>
                     <div class="guide-step"><div class="guide-num">2</div><div>Sửa <strong>tiêu đề + nội dung form</strong> nếu muốn. Nhìn preview điện thoại bên phải — khách thấy y như vậy. Có nút VI/EN cho khách Mỹ.</div></div>
-                    <div class="guide-step"><div class="guide-num">3</div><div>Bấm <strong>🚀 Publish QR</strong> → <strong>⬇️ Tải PNG</strong> → in ra, dán tại quầy, bàn làm nail, chỗ khách ngồi chờ.</div></div>
+                    <div class="guide-step"><div class="guide-num">3</div><div>Bấm <strong>Publish QR</strong> → <strong>Tải PNG</strong> → in ra, dán tại quầy, bàn làm nail, chỗ khách ngồi chờ.</div></div>
                   </div>
                   <div>
-                    <div class="guide-phase-title" style="color:#0891b2;">📱 Bước 2 — Khách scan (tự động, không cần làm gì)</div>
+                    <div class="guide-phase-title marketing-icon-label" style="color:#0891b2;"><i class="marketing-icon is-compact" data-lucide="smartphone" aria-hidden="true"></i><span>Bước 2 — Khách scan (tự động, không cần làm gì)</span></div>
                     <div class="guide-step"><div class="guide-num c2">4</div><div>Khách mở camera điện thoại, scan QR → hiện form: <strong>tên + số phone</strong> + ô đồng ý nhận SMS.</div></div>
                     <div class="guide-step"><div class="guide-num c2">5</div><div>Khách bấm gửi → <strong>promotion code về SMS trong 30 giây</strong>, mỗi khách 1 code riêng.</div></div>
                     <div class="guide-step"><div class="guide-num c2">6</div><div>Tên + phone tự vào <strong>Customers</strong> → lần sau khách gọi, AI voice <strong>chào đúng tên</strong>.</div></div>
                   </div>
                   <div>
-                    <div class="guide-phase-title" style="color:var(--nexora-success);">💵 Bước 3 — Nhân viên tại quầy (mỗi lần khách dùng code)</div>
+                    <div class="guide-phase-title marketing-icon-label" style="color:var(--nexora-success);"><i class="marketing-icon is-compact" data-lucide="dollar-sign" aria-hidden="true"></i><span>Bước 3 — Nhân viên tại quầy (mỗi lần khách dùng code)</span></div>
                     <div class="guide-step"><div class="guide-num c3">7</div><div>Khách đưa code khi thanh toán → gõ vào ô <strong>"Verify code tại quầy"</strong> bên dưới, bấm Kiểm tra.</div></div>
                     <div class="guide-step"><div class="guide-num c3">8</div><div><span style="color:var(--nexora-success);font-weight:700;">Xanh</span> = hợp lệ → giảm giá, bấm <strong>"Áp dụng & đánh dấu đã dùng"</strong>. <span style="color:var(--nexora-warning);font-weight:700;">Cam</span> = code đã dùng → từ chối. <span style="color:#dc2626;font-weight:700;">Đỏ</span> = code sai → nhờ khách mở lại SMS.</div></div>
                   </div>
                 </div>
                 <div class="guide-tips">
-                  <strong>⚠️ 3 lỗi hay gặp:</strong> quên bấm "đánh dấu đã dùng" → khách xài lại code, tiệm mất tiền •
+                  <span class="marketing-status"><i class="marketing-icon is-compact" data-lucide="alert-triangle" aria-hidden="true"></i><span><strong>3 lỗi hay gặp:</strong> quên bấm "đánh dấu đã dùng" → khách xài lại code, tiệm mất tiền •
                   in QR quá nhỏ → khách scan không được, in tối thiểu 5×5 cm •
-                  tự ý bỏ ô đồng ý nhận SMS → phạm luật TCPA, phạt $500–1,500/tin nhắn.
+                  tự ý bỏ ô đồng ý nhận SMS → phạm luật TCPA, phạt $500–1,500/tin nhắn.</span></span>
                 </div>
               </div>
 
               <div class="qr-builder">
                 <div class="qr-form-stack">
                   <div class="qr-section">
-                    <div class="qr-section-title">🎁 Chương trình khuyến mãi</div>
+                    <div class="qr-section-title"><i class="marketing-icon is-compact" data-lucide="gift" aria-hidden="true"></i><span>Chương trình khuyến mãi</span></div>
                     <div class="qr-field">
                       <label class="qr-field-label" for="qrName">Tên chiến dịch QR</label>
                       <input class="booking-input" id="qrName" value="QR tại quầy — Tháng 7">
@@ -8300,7 +8307,7 @@
                   </div>
 
                   <div class="qr-section">
-                    <div class="qr-section-title">📝 Form khách điền</div>
+                    <div class="qr-section-title"><i class="marketing-icon is-compact" data-lucide="file-text" aria-hidden="true"></i><span>Form khách điền</span></div>
                     <div class="qr-field">
                       <label class="qr-field-label" for="qrFormTitle">Tiêu đề form</label>
                       <input class="booking-input" id="qrFormTitle" value="🎁 Nhận ưu đãi độc quyền từ Bitcoin Nail Bar!">
@@ -8310,21 +8317,21 @@
                       <textarea class="booking-input" id="qrQuestion">Nhập tên và số phone bên dưới — promotion code sẽ gửi qua SMS trong 30 giây. Đưa code cho nhân viên khi thanh toán. Mỗi khách 1 code, áp dụng đến hết tháng 7.</textarea>
                     </div>
                     <div class="consent-note">
-                      ⚠️ Checkbox đồng ý nhận SMS (TCPA) là <strong>bắt buộc theo luật Mỹ</strong> — form luôn hiển thị, không tắt được. Không có consent, gửi SMS marketing có thể bị phạt $500–$1,500/tin.
+                      <i class="marketing-icon is-compact" data-lucide="alert-triangle" aria-hidden="true"></i><span>Checkbox đồng ý nhận SMS (TCPA) là <strong>bắt buộc theo luật Mỹ</strong> — form luôn hiển thị, không tắt được. Không có consent, gửi SMS marketing có thể bị phạt $500–$1,500/tin.</span>
                     </div>
                   </div>
 
                   <div class="qr-section">
-                    <div class="qr-section-title">🔗 Link & Mã QR</div>
+                    <div class="qr-section-title"><i class="marketing-icon is-compact" data-lucide="link" aria-hidden="true"></i><span>Link & Mã QR</span></div>
                     <label class="qr-field-label" for="qrSlug">Slug URL</label>
                     <input class="booking-input" id="qrSlug" value="qr-thang7">
                     <div class="link-preview" id="qrLinkPreview">nexora.ai/btcnailbar/qr/qr-thang7</div>
                     <div class="qr-display-row">
                       <div class="qr-box" id="qrCanvas"></div>
                       <div class="qr-actions">
-                        <button class="booking-secondary-button" type="button" id="qrDownloadBtn">⬇️ Tải PNG (in tại quầy)</button>
-                        <button class="booking-secondary-button" type="button" id="qrPrintBtn">🖨 In poster (A4)</button>
-                        <button class="booking-secondary-button" type="button" id="kioskBtn">🖥 Chế độ Kiosk (tablet tại quầy)</button>
+                        <button class="booking-secondary-button" type="button" id="qrDownloadBtn"><i class="marketing-icon" data-lucide="download" aria-hidden="true"></i><span>Tải PNG (in tại quầy)</span></button>
+                        <button class="booking-secondary-button" type="button" id="qrPrintBtn"><i class="marketing-icon" data-lucide="printer" aria-hidden="true"></i><span>In poster (A4)</span></button>
+                        <button class="booking-secondary-button" type="button" id="kioskBtn"><i class="marketing-icon" data-lucide="tablet" aria-hidden="true"></i><span>Chế độ Kiosk (tablet tại quầy)</span></button>
                         <div class="lead-flow-note">
                           Khách điền form → tự động thêm vào <strong>Customers</strong><br>
                           → AI voice nhận diện số & <strong>chào đúng tên</strong> khi khách gọi
@@ -8334,17 +8341,17 @@
                   </div>
 
                   <div class="qr-section">
-                    <div class="qr-section-title">✅ Verify code tại quầy (nhân viên)</div>
+                    <div class="qr-section-title"><i class="marketing-icon is-compact" data-lucide="check-circle" aria-hidden="true"></i><span>Verify code tại quầy (nhân viên)</span></div>
                     <label class="qr-field-label" for="verifyInput">Khách đưa code → gõ vào đây để kiểm tra trước khi giảm giá</label>
                     <div class="verify-row">
                       <input class="booking-input" id="verifyInput" placeholder="VD: NAIL20-8Q2F" autocomplete="off">
-                      <button class="booking-primary-button" type="button" id="verifyBtn">🔍 Kiểm tra</button>
+                      <button class="booking-primary-button" type="button" id="verifyBtn"><i class="marketing-icon" data-lucide="search" aria-hidden="true"></i><span>Kiểm tra</span></button>
                     </div>
                     <div class="verify-result" id="verifyResult" role="status" aria-live="polite" aria-atomic="true"></div>
                   </div>
 
                   <div class="qr-section">
-                    <div class="qr-section-title">👥 Leads đã thu từ QR này</div>
+                    <div class="qr-section-title"><i class="marketing-icon is-compact" data-lucide="users" aria-hidden="true"></i><span>Leads đã thu từ QR này</span></div>
                     <div style="overflow-x:auto;">
                       <table class="booking-table qr-leads-table">
                         <thead>
@@ -8368,7 +8375,7 @@
                     <div class="preview-dot" style="background:#febc2e"></div>
                     <div class="preview-dot" style="background:#28c840"></div>
                     <div class="preview-url" id="qrPreviewUrl">nexora.ai/btcnailbar/qr/qr-thang7</div>
-                    📱
+                    <i class="marketing-icon is-compact" data-lucide="smartphone" aria-hidden="true"></i>
                   </div>
                   <iframe id="qrIframe" title="QR scan page preview"></iframe>
                 </div>
@@ -8434,8 +8441,8 @@
       <div class="modal-overlay" id="composerModal" aria-hidden="true">
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="composerModalTitle">
           <div class="modal-header">
-            <div class="modal-title" id="composerModalTitle"><i class="bi bi-megaphone" aria-hidden="true"></i> Tạo SMS Campaign</div>
-            <button class="modal-close" id="closeComposerBtn" aria-label="Đóng"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+            <div class="modal-title" id="composerModalTitle"><i class="marketing-icon" data-lucide="megaphone" aria-hidden="true"></i><span>Tạo SMS Campaign</span></div>
+            <button class="modal-close" id="closeComposerBtn" aria-label="Đóng"><i class="marketing-icon" data-lucide="x" aria-hidden="true"></i></button>
           </div>
           <div class="modal-body">
 
@@ -8457,10 +8464,10 @@
               <div class="sms-composer">
                 <div class="sms-toolbar" id="tagToolbar">
                   <span style="font-size:11px;color:var(--text-dim);">Chèn:</span>
-                  <button class="tag-btn" data-tag="{TenKhach}"><i class="bi bi-person" aria-hidden="true"></i> Tên khách</button>
-                  <button class="tag-btn" data-tag="{TenTiem}"><i class="bi bi-shop" aria-hidden="true"></i> Tên tiệm</button>
-                  <button class="tag-btn" data-tag="{Link}"><i class="bi bi-link-45deg" aria-hidden="true"></i> Link offer</button>
-                  <button class="tag-btn" data-tag="{SoDT}"><i class="bi bi-telephone" aria-hidden="true"></i> Số điện thoại</button>
+                  <button class="tag-btn" data-tag="{TenKhach}"><i class="marketing-icon is-compact" data-lucide="user" aria-hidden="true"></i><span>Tên khách</span></button>
+                  <button class="tag-btn" data-tag="{TenTiem}"><i class="marketing-icon is-compact" data-lucide="store" aria-hidden="true"></i><span>Tên tiệm</span></button>
+                  <button class="tag-btn" data-tag="{Link}"><i class="marketing-icon is-compact" data-lucide="link" aria-hidden="true"></i><span>Link offer</span></button>
+                  <button class="tag-btn" data-tag="{SoDT}"><i class="marketing-icon is-compact" data-lucide="phone" aria-hidden="true"></i><span>Số điện thoại</span></button>
                 </div>
                 <textarea class="sms-textarea" id="smsText" placeholder="Soạn tin nhắn..."></textarea>
                 <div class="sms-footer">
@@ -8471,7 +8478,7 @@
 
               <!-- PHONE PREVIEW -->
               <div class="sms-preview">
-                <div class="sms-preview-label"><i class="bi bi-phone" aria-hidden="true"></i> Preview trên điện thoại khách</div>
+                <div class="sms-preview-label"><i class="marketing-icon is-compact" data-lucide="smartphone" aria-hidden="true"></i><span>Preview trên điện thoại khách</span></div>
                 <div class="sms-bubble" id="smsBubble"><span class="sms-preview-empty">Tin nhắn sẽ hiển thị ở đây...</span></div>
               </div>
             </div>
@@ -8485,7 +8492,7 @@
                   <option value="comeback">Comeback Offer July (nexora.ai/btcnailbar/comeback-offer-july)</option>
                   <option value="birthday">Birthday Special (nexora.ai/btcnailbar/birthday-july)</option>
                 </select>
-                <a class="btn-outline" id="createLpBtn" href="nexora-sms-dashboard.html?view=landingpage" target="_blank" rel="noopener"><i class="bi bi-plus-lg" aria-hidden="true"></i> Tạo trang</a>
+                <a class="btn-outline" id="createLpBtn" href="nexora-sms-dashboard.html?view=landingpage" target="_blank" rel="noopener"><i class="marketing-icon is-compact" data-lucide="plus" aria-hidden="true"></i><span>Tạo trang</span></a>
               </div>
             </div>
 
@@ -8494,15 +8501,15 @@
               <div class="field-label">Bước 5 — Lịch gửi</div>
               <div class="schedule-options" id="scheduleOptions">
                 <button class="schedule-opt selected" data-mode="now">
-                  <span class="schedule-opt-icon"><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i></span>
+                  <span class="schedule-opt-icon"><i class="marketing-icon" data-lucide="zap" aria-hidden="true"></i></span>
                   <span class="schedule-opt-label">Gửi ngay</span>
                 </button>
                 <button class="schedule-opt" data-mode="schedule">
-                  <span class="schedule-opt-icon"><i class="bi bi-clock" aria-hidden="true"></i></span>
+                  <span class="schedule-opt-icon"><i class="marketing-icon" data-lucide="clock" aria-hidden="true"></i></span>
                   <span class="schedule-opt-label">Hẹn giờ</span>
                 </button>
                 <button class="schedule-opt" data-mode="auto">
-                  <span class="schedule-opt-icon"><i class="bi bi-robot" aria-hidden="true"></i></span>
+                  <span class="schedule-opt-icon"><i class="marketing-icon" data-lucide="refresh-cw" aria-hidden="true"></i></span>
                   <span class="schedule-opt-label">Tự động</span>
                 </button>
               </div>
@@ -8514,7 +8521,7 @@
 
             <!-- CONFIRM STEP -->
             <div class="confirm-box" id="confirmBox">
-              <div class="confirm-title"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Xác nhận trước khi gửi</div>
+              <div class="confirm-title"><i class="marketing-icon is-compact" data-lucide="alert-triangle" aria-hidden="true"></i><span>Xác nhận trước khi gửi</span></div>
               <div class="confirm-detail" id="confirmDetail"></div>
             </div>
 
@@ -8527,18 +8534,18 @@
             </div>
             <div style="display:flex;gap:10px;">
               <button class="btn-outline" id="cancelComposerBtn">Hủy</button>
-              <button class="btn-primary" id="sendCampaignBtn"><i class="bi bi-send" aria-hidden="true"></i> Gửi Campaign</button>
+              <button class="btn-primary" id="sendCampaignBtn"><i class="marketing-icon" data-lucide="send" aria-hidden="true"></i><span>Gửi Campaign</span></button>
             </div>
           </div>
         </div>
       </div>
-      <div class="success-banner" id="successBanner" role="status" aria-live="polite" aria-atomic="true"><span class="success-icon"><i class="bi bi-check-circle-fill" aria-hidden="true"></i></span><span class="success-text" id="successText"></span></div>
+      <div class="success-banner" id="successBanner" role="status" aria-live="polite" aria-atomic="true"><span class="success-icon"><i class="marketing-icon" data-lucide="check-circle" aria-hidden="true"></i></span><span class="success-text" id="successText"></span></div>
     </div>
 
     <div class="kiosk-overlay" id="kioskOverlay" role="dialog" aria-modal="true" aria-labelledby="kioskTitle" aria-hidden="true">
       <div class="kiosk-bar">
-        <span class="kiosk-hint" id="kioskTitle">🖥 Chế độ Kiosk — đặt tablet tại quầy, form tự reset sau mỗi khách</span>
-        <button class="booking-secondary-button" type="button" id="kioskExit">✕ Thoát Kiosk</button>
+        <span class="kiosk-hint" id="kioskTitle"><i class="marketing-icon" data-lucide="tablet" aria-hidden="true"></i><span>Chế độ Kiosk — đặt tablet tại quầy, form tự reset sau mỗi khách</span></span>
+        <button class="booking-secondary-button" type="button" id="kioskExit"><i class="marketing-icon" data-lucide="x" aria-hidden="true"></i><span>Thoát Kiosk</span></button>
       </div>
       <iframe id="kioskIframe" title="Kiosk đăng ký nhận ưu đãi"></iframe>
     </div>
@@ -10696,20 +10703,26 @@ function getBookingCardCallStart(item) {
   <!-- ✦ SMS Campaign composer logic (ported from nexora-sms-dashboard.html) -->
   <script>
     (function () {
+      window.refreshBookingMarketingIcons = function() {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      };
+      const refreshBookingMarketingIcons = window.refreshBookingMarketingIcons;
       const PRICE_PER_SMS = 0.025; // $ mỗi tin (1 segment)
 
       const SEGMENTS = [
-        { id: 'new',      icon: '<i class="bi bi-stars" aria-hidden="true"></i>', name: 'Khách Mới',           shortName: 'Khách Mới', count: 234, accent: 'var(--cyan)',   badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
+        { id: 'new',      icon: 'user-plus', name: 'Khách Mới',           shortName: 'Khách Mới', count: 234, accent: 'var(--cyan)',   badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
           desc: 'Gọi lần đầu, chưa quay lại. Welcome + offer để chốt lần 2.' },
-        { id: 'day15',    icon: '<i class="bi bi-calendar-event" aria-hidden="true"></i>', name: '15 Ngày Chưa Ghé',    shortName: '15 Ngày',   count: 187, accent: 'var(--green)',  badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
+        { id: 'day15',    icon: 'calendar', name: '15 Ngày Chưa Ghé',    shortName: '15 Ngày',   count: 187, accent: 'var(--green)',  badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
           desc: 'Nhắc nhở nhẹ nhàng — móng cần touch up chưa?' },
-        { id: 'day30',    icon: '<i class="bi bi-clock-history" aria-hidden="true"></i>', name: '30 Ngày Chưa Ghé',    shortName: '30 Ngày',   count: 312, accent: 'var(--purple)', badge: 'scheduled', badgeText: 'Hẹn giờ',  countLabel: 'khách',
+        { id: 'day30',    icon: 'clock', name: '30 Ngày Chưa Ghé',    shortName: '30 Ngày',   count: 312, accent: 'var(--purple)', badge: 'scheduled', badgeText: 'Hẹn giờ',  countLabel: 'khách',
           desc: 'Lâu không gặp — gửi offer hấp dẫn để kéo về.' },
-        { id: 'day60',    icon: '<i class="bi bi-fire" aria-hidden="true"></i>', name: '60 Ngày Inactive',    shortName: '60 Ngày',   count: 156, accent: 'var(--orange)', badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
+        { id: 'day60',    icon: 'refresh-cw', name: '60 Ngày Inactive',    shortName: '60 Ngày',   count: 156, accent: 'var(--orange)', badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
           desc: 'Sắp mất khách — win-back offer mạnh nhất.' },
-        { id: 'vip',      icon: '<i class="bi bi-gem" aria-hidden="true"></i>', name: 'Khách VIP',           shortName: 'VIP',       count: 89,  accent: 'var(--pink)',   badge: 'sent',      badgeText: 'Đã gửi',   countLabel: 'khách',
+        { id: 'vip',      icon: 'star', name: 'Khách VIP',           shortName: 'VIP',       count: 89,  accent: 'var(--pink)',   badge: 'sent',      badgeText: 'Đã gửi',   countLabel: 'khách',
           desc: 'Top spenders — priority booking, exclusive offers.' },
-        { id: 'birthday', icon: '<i class="bi bi-gift" aria-hidden="true"></i>', name: 'Sinh Nhật Tháng Này', shortName: 'Sinh Nhật', count: 42,  accent: 'linear-gradient(90deg, var(--pink), var(--orange))', badge: 'scheduled', badgeText: 'Auto', countLabel: 'khách tháng 7',
+        { id: 'birthday', icon: 'gift', name: 'Sinh Nhật Tháng Này', shortName: 'Sinh Nhật', count: 42,  accent: 'linear-gradient(90deg, var(--pink), var(--orange))', badge: 'scheduled', badgeText: 'Auto', countLabel: 'khách tháng 7',
           desc: 'Gửi tự động — tặng free nail art hoặc discount.' }
       ];
 
@@ -10831,34 +10844,49 @@ function getBookingCardCallStart(item) {
       function renderSegmentButtons() {
         $('segmentGrid').innerHTML = SEGMENTS.map(s => `
           <button class="segment-btn" data-segment="${s.id}" id="seg-${s.id}">
-            <span class="segment-btn-icon">${s.icon}</span>
+            <span class="segment-btn-icon"><i class="marketing-icon" data-lucide="${s.icon}" aria-hidden="true"></i></span>
             <span class="segment-btn-name">${escapeHtml(s.shortName)}</span>
             <span class="segment-btn-count">${s.count} khách</span>
           </button>
         `).join('');
+        refreshBookingMarketingIcons();
       }
 
       function renderSmsCampaignCards() {
         const grid = document.querySelector('[data-sms-campaign-grid]');
         if (!grid) return;
-        grid.innerHTML = SEGMENTS.map(function(s) {
-          return '<button class="sms-campaign-card" type="button" data-sms-segment="' + s.id + '" style="--card-accent:' + s.accent + '">' +
-            '<span class="sms-campaign-icon">' + s.icon + '</span>' +
-            '<span class="sms-campaign-name">' + escapeHtml(s.name) + '</span>' +
-            '<span class="sms-campaign-desc">' + escapeHtml(s.desc) + '</span>' +
-            '<span class="sms-campaign-meta"><span><span class="sms-campaign-count">' + s.count + '</span><span class="sms-campaign-count-label">' + escapeHtml(s.countLabel) + '</span></span>' +
-            '<span class="sms-campaign-badge">' + escapeHtml(s.badgeText) + '</span></span></button>';
-        }).join('');
+        grid.innerHTML = SEGMENTS.map(s => `
+          <button class="sms-campaign-card" type="button" data-sms-segment="${s.id}" style="--card-accent:${s.accent}">
+            <span class="sms-campaign-icon"><i class="marketing-icon" data-lucide="${s.icon}" aria-hidden="true"></i></span>
+            <span class="sms-campaign-copy">
+              <span class="sms-campaign-name">${escapeHtml(s.name)}</span>
+              <span class="sms-campaign-desc">${escapeHtml(s.desc)}</span>
+            </span>
+            <span class="sms-campaign-meta">
+              <span class="sms-campaign-count-wrap"><span class="sms-campaign-count">${s.count}</span><span class="sms-campaign-count-label">${escapeHtml(s.countLabel)}</span></span>
+              <span class="sms-campaign-badge">${escapeHtml(s.badgeText)}</span>
+            </span>
+          </button>
+        `).join('');
+        refreshBookingMarketingIcons();
       }
 
       function renderTemplates(segId) {
         const list = TEMPLATES[segId] || [];
         $('templateList').innerHTML = list.map((t, i) => `
           <button class="template-item" data-index="${i}">
-            <div class="template-item-title"><i class="bi bi-chat-left-text" aria-hidden="true"></i> ${escapeHtml(t.title.replace(/^\S+\s+/, ''))}</div>
+            <div class="template-item-title"><i class="marketing-icon is-compact" data-lucide="message-square" aria-hidden="true"></i><span>${escapeHtml(t.title.replace(/^\S+\s+/, ''))}</span></div>
             <div class="template-item-text">${escapeHtml(t.text)}</div>
           </button>
         `).join('');
+        refreshBookingMarketingIcons();
+      }
+
+      function setSendCampaignButton(confirming) {
+        $('sendCampaignBtn').innerHTML = confirming
+          ? '<i class="marketing-icon" data-lucide="check-circle" aria-hidden="true"></i><span>Xác nhận gửi</span>'
+          : '<i class="marketing-icon" data-lucide="send" aria-hidden="true"></i><span>Gửi Campaign</span>';
+        refreshBookingMarketingIcons();
       }
 
       /* ============================================================
@@ -10870,7 +10898,7 @@ function getBookingCardCallStart(item) {
         state.segment = seg;
         state.confirming = false;
         $('confirmBox').classList.remove('show');
-        $('sendCampaignBtn').innerHTML = '<i class="bi bi-send" aria-hidden="true"></i> Gửi Campaign';
+        setSendCampaignButton(false);
 
         document.querySelectorAll('.segment-btn').forEach(b => b.classList.toggle('selected', b.dataset.segment === seg.id));
         renderTemplates(seg.id);
@@ -10890,7 +10918,7 @@ function getBookingCardCallStart(item) {
         setComposerBackgroundInert(false);
         state.confirming = false;
         $('confirmBox').classList.remove('show');
-        $('sendCampaignBtn').innerHTML = '<i class="bi bi-send" aria-hidden="true"></i> Gửi Campaign';
+        setSendCampaignButton(false);
         if (composerOpener && typeof composerOpener.focus === 'function') composerOpener.focus();
         composerOpener = null;
       }
@@ -10915,7 +10943,7 @@ function getBookingCardCallStart(item) {
         if (state.confirming) {
           state.confirming = false;
           $('confirmBox').classList.remove('show');
-          $('sendCampaignBtn').innerHTML = '<i class="bi bi-send" aria-hidden="true"></i> Gửi Campaign';
+          setSendCampaignButton(false);
         }
       }
 
@@ -10992,7 +11020,7 @@ function getBookingCardCallStart(item) {
             `Lịch: <strong>${when}</strong>`;
           $('confirmBox').classList.add('show');
           $('confirmBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          $('sendCampaignBtn').innerHTML = '<i class="bi bi-check-lg" aria-hidden="true"></i> Xác nhận gửi';
+          setSendCampaignButton(true);
           return;
         }
 
@@ -11089,6 +11117,7 @@ function getBookingCardCallStart(item) {
       const byId = function(id) { return document.getElementById(id); };
       const panel = byId('panel-qr-codes');
       if (!panel) return;
+      const refreshBookingMarketingIcons = window.refreshBookingMarketingIcons || function() {};
 
       function escapeQrHtml(value) {
         return String(value).replace(/[&<>"']/g, function(char) {
@@ -11127,7 +11156,8 @@ function getBookingCardCallStart(item) {
         const box = byId('qrCanvas');
         box.innerHTML = '';
         if (typeof QRCode === 'undefined') {
-          box.innerHTML = '<div class="qr-fallback">⚠️ Không tải được thư viện QR (cần mạng). Link vẫn hoạt động: ' + escapeQrHtml(qrUrl()) + '</div>';
+          box.innerHTML = '<div class="qr-fallback marketing-status"><i class="marketing-icon is-compact" data-lucide="alert-triangle" aria-hidden="true"></i><span>Không tải được thư viện QR (cần mạng). Link vẫn hoạt động: ' + escapeQrHtml(qrUrl()) + '</span></div>';
+          refreshBookingMarketingIcons();
           return;
         }
         qrInstance = new QRCode(box, {
@@ -11158,26 +11188,32 @@ function getBookingCardCallStart(item) {
         const raw = byId('verifyInput').value.trim().toUpperCase();
         if (!raw) {
           box.className = 'verify-result show bad';
-          box.innerHTML = '⚠️ Vui lòng nhập promotion code để kiểm tra.';
+          box.innerHTML = '<span class="marketing-status"><i class="marketing-icon is-compact" data-lucide="alert-triangle" aria-hidden="true"></i><span>Vui lòng nhập promotion code để kiểm tra.</span></span>';
+          refreshBookingMarketingIcons();
           return;
         }
         const lead = QR_LEADS.find(l => l.code.toUpperCase() === raw);
         if (!lead) {
           box.className = 'verify-result show bad';
-          box.innerHTML = `❌ Code <strong style="font-family:monospace;">${escapeQrHtml(raw)}</strong> không tồn tại. Kiểm tra lại chính tả hoặc hỏi khách xem SMS gốc.`;
+          box.innerHTML = `<span class="marketing-status"><i class="marketing-icon is-compact" data-lucide="x-circle" aria-hidden="true"></i><span>Code <strong style="font-family:monospace;">${escapeQrHtml(raw)}</strong> không tồn tại. Kiểm tra lại chính tả hoặc hỏi khách xem SMS gốc.</span></span>`;
+          refreshBookingMarketingIcons();
           return;
         }
         const promo = QR_PROMOS.find(p => lead.code.toUpperCase().startsWith(p.codePrefix)) || qrState.promo;
         if (lead.status === 'Đã dùng code') {
           box.className = 'verify-result show used';
-          box.innerHTML = `⚠️ Code này <strong>đã được dùng</strong>${lead.usedAt ? ' lúc ' + escapeQrHtml(lead.usedAt) : ''} — không áp dụng lại.<br>Khách: <strong>${escapeQrHtml(lead.name)}</strong> • ${lead.phone}`;
+          box.innerHTML = `<span class="marketing-status"><i class="marketing-icon is-compact" data-lucide="alert-triangle" aria-hidden="true"></i><span>Code này <strong>đã được dùng</strong>${lead.usedAt ? ' lúc ' + escapeQrHtml(lead.usedAt) : ''} — không áp dụng lại.<br>Khách: <strong>${escapeQrHtml(lead.name)}</strong> • ${lead.phone}</span></span>`;
+          refreshBookingMarketingIcons();
           return;
         }
         box.className = 'verify-result show ok';
         box.innerHTML = `
-          <div class="verify-name">✅ ${escapeQrHtml(lead.name)}</div>
-          <div class="verify-meta">${lead.phone} • ${escapeQrHtml(promo.label)} • Nhận code: ${escapeQrHtml(lead.time)}</div>
-          <button class="booking-primary-button" type="button" id="markUsedBtn" data-code="${escapeQrHtml(lead.code)}">✔ Áp dụng & đánh dấu đã dùng</button>`;
+          <div class="marketing-status"><i class="marketing-icon is-compact" data-lucide="check-circle" aria-hidden="true"></i><div>
+            <div class="verify-name">${escapeQrHtml(lead.name)}</div>
+            <div class="verify-meta">${lead.phone} • ${escapeQrHtml(promo.label)} • Nhận code: ${escapeQrHtml(lead.time)}</div>
+            <button class="booking-primary-button" type="button" id="markUsedBtn" data-code="${escapeQrHtml(lead.code)}"><i class="marketing-icon is-compact" data-lucide="check" aria-hidden="true"></i><span>Áp dụng & đánh dấu đã dùng</span></button>
+          </div></div>`;
+        refreshBookingMarketingIcons();
       }
 
       function markCodeUsed(code) {
@@ -11188,7 +11224,8 @@ function getBookingCardCallStart(item) {
         renderQrLeads();
         const box = byId('verifyResult');
         box.className = 'verify-result show ok';
-        box.innerHTML = `✅ Đã áp dụng khuyến mãi cho <strong>${escapeQrHtml(lead.name)}</strong>. Code khóa lại — không dùng được lần 2.`;
+        box.innerHTML = `<span class="marketing-status"><i class="marketing-icon is-compact" data-lucide="check-circle" aria-hidden="true"></i><span>Đã áp dụng khuyến mãi cho <strong>${escapeQrHtml(lead.name)}</strong>. Code khóa lại — không dùng được lần 2.</span></span>`;
+        refreshBookingMarketingIcons();
         byId('verifyInput').value = '';
       }
 
@@ -11475,7 +11512,8 @@ function getBookingCardCallStart(item) {
         const guide = byId('qrGuide');
         const hidden = guide.hidden;
         guide.hidden = !hidden;
-        this.textContent = hidden ? '📖 Ẩn hướng dẫn' : '📖 Hướng dẫn';
+        this.innerHTML = '<i class="marketing-icon" data-lucide="book-open" aria-hidden="true"></i><span>' + (hidden ? 'Ẩn hướng dẫn' : 'Hướng dẫn') + '</span>';
+        refreshBookingMarketingIcons();
       });
       byId('verifyBtn').addEventListener('click', verifyCode);
       byId('verifyInput').addEventListener('keydown', function(event) { if (event.key === 'Enter') verifyCode(); });
@@ -11519,7 +11557,7 @@ function getBookingCardCallStart(item) {
         closeKiosk();
       });
       byId('publishQrBtn').addEventListener('click', function() {
-        alert('🚀 QR đã publish!\n\n' + byId('qrName').value + '\nKhuyến mãi: ' + qrState.promo.label + '\nLink: https://' + qrUrl() + '\n\nTải PNG và in đặt tại quầy. Leads sẽ đổ về tab Customers.');
+        alert('QR đã publish!\n\n' + byId('qrName').value + '\nKhuyến mãi: ' + qrState.promo.label + '\nLink: https://' + qrUrl() + '\n\nTải PNG và in đặt tại quầy. Leads sẽ đổ về tab Customers.');
       });
 
       renderQrPromoOptions();

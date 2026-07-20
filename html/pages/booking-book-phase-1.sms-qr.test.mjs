@@ -51,6 +51,54 @@ test('registers SMS Campaigns and QR Codes in both Booking Hub navigation surfac
   assert.match(html, /qrcodejs\/1\.0\.0\/qrcode\.min\.js/);
 });
 
+test('lays out each SMS campaign icon and text as separate card columns', () => {
+  const html = source();
+
+  assert.match(
+    html,
+    /#panel-sms-campaigns \.sms-campaign-card \{[^}]*display:grid;[^}]*grid-template-columns:40px minmax\(0,1fr\);/s
+  );
+  assert.match(html, /#panel-sms-campaigns \.sms-campaign-icon \{[^}]*grid-column:1;[^}]*grid-row:1;/s);
+  assert.match(html, /#panel-sms-campaigns \.sms-campaign-copy \{[^}]*grid-column:2;[^}]*min-width:0;/s);
+  assert.match(html, /#panel-sms-campaigns \.sms-campaign-meta \{[^}]*grid-column:1\s*\/\s*-1;/s);
+  assert.match(
+    html,
+    /class="sms-campaign-icon"[\s\S]*?data-lucide=[\s\S]*?class="sms-campaign-copy"[\s\S]*?class="sms-campaign-name"[\s\S]*?class="sms-campaign-desc"[\s\S]*?class="sms-campaign-meta"/
+  );
+});
+
+test('uses Lucide for SMS and QR interface icons while preserving marketing emoji', () => {
+  const html = source();
+
+  assert.match(html, /data-tab-target="sms-campaigns"[^>]*>[\s\S]*?data-lucide="message-square"[\s\S]*?<span>SMS Campaigns<\/span>/);
+  assert.match(html, /data-tab-target="qr-codes"[^>]*>[\s\S]*?data-lucide="qr-code"[\s\S]*?<span>QR Codes<\/span>/);
+  assert.match(html, /<h2 class="marketing-icon-label"><i class="marketing-icon" data-lucide="message-square"[^>]*><\/i><span>SMS Campaigns<\/span><\/h2>/);
+  assert.match(html, /<h2 class="marketing-icon-label"><i class="marketing-icon" data-lucide="qr-code"[^>]*><\/i><span>QR Codes<\/span><\/h2>/);
+
+  for (const [id, icon] of [
+    ['qrGuideBtn', 'book-open'],
+    ['publishQrBtn', 'upload-cloud'],
+    ['qrDownloadBtn', 'download'],
+    ['qrPrintBtn', 'printer'],
+    ['kioskBtn', 'tablet'],
+    ['verifyBtn', 'search'],
+    ['kioskExit', 'x']
+  ]) {
+    assert.match(html, new RegExp(`id="${id}"[^>]*>[\\s\\S]*?data-lucide="${icon}"`));
+  }
+
+  for (const icon of ['user-plus', 'calendar', 'clock', 'refresh-cw', 'star', 'gift']) {
+    assert.match(html, new RegExp(`icon: '${icon}'`));
+  }
+  assert.match(html, /window\.refreshBookingMarketingIcons\s*=\s*function\s*\(\)/);
+  assert.match(html, /data-lucide="\$\{s\.icon\}"/);
+  assert.match(html, /refreshBookingMarketingIcons\(\);/);
+  assert.doesNotMatch(html, /id="(?:qrGuideBtn|publishQrBtn|qrDownloadBtn|qrPrintBtn|kioskBtn|verifyBtn|kioskExit)"[^>]*>[^<]*(?:📖|🚀|⬇️|🖨|🖥|🔍|✕)/);
+
+  assert.match(html, /label: '💅 Giảm 20% toàn bộ dịch vụ'/);
+  assert.match(html, /title: '🌟 Welcome Back'/);
+});
+
 test('keeps shared tab and query-string synchronization for new targets', () => {
   const html = source();
   assert.match(html, /document\.querySelectorAll\('\[data-tab-target\]'\)/);
