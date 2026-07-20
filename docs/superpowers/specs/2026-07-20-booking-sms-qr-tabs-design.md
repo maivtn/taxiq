@@ -2,7 +2,7 @@
 
 ## Goal
 
-Add `SMS Campaigns` and `QR Codes` as first-class Booking Hub tabs in `html/pages/booking-book-phase-1.html`. Port their useful content and demo interactions from `html/pages/nexora-sms-dashboard.html`, while matching the existing Booking Book visual system and navigation behavior.
+Add `SMS Campaigns` and `QR Codes` as first-class Booking Hub tabs in `html/pages/booking-book-phase-1.html`. Port the complete user-visible content and demo interactions belonging to those two views from `html/pages/nexora-sms-dashboard.html`, while matching the existing Booking Book visual system and navigation behavior.
 
 ## Scope
 
@@ -10,14 +10,14 @@ The change will:
 
 - Add both entries to the expanded Booking Hub sidebar submenu.
 - Add both entries to the Booking Book page-tab bar.
-- Add one native tab panel for SMS Campaigns and one for QR Codes.
+- Add one native tab panel for SMS Campaigns and one for QR Codes, preserving every section, control, helper message, warning, table field, preview, and action from the corresponding source views.
 - Preserve Booking Book as the default tab.
 - Support direct tab URLs using `?tab=sms-campaigns` and `?tab=qr-codes`.
-- Reuse the SMS campaign composer already present in the booking page.
-- Port the QR demo data and interactions needed by the new QR panel.
+- Reuse the complete SMS campaign composer already present in the booking page and connect every source SMS entry point to it.
+- Port all QR demo data and interactions used by the source QR view.
 - Keep all existing Booking Book, Customers, Call Log, Plans, and Salon Settings behavior unchanged.
 
-The change will not refactor the standalone SMS dashboard, introduce backend persistence, send real SMS messages, or publish real QR campaigns.
+"Complete content" is scoped to the source page's `#view-sms` and `#view-qrcodes` views plus the SMS composer opened by the SMS view. The standalone dashboard shell and unrelated Dashboard, Landing Pages, Customers, Call Log, Booking, POS, import, and Settings views are not part of these two tabs. The change will not refactor the standalone SMS dashboard, introduce backend persistence, send real SMS messages, or publish real QR campaigns.
 
 ## Navigation and Information Architecture
 
@@ -35,7 +35,7 @@ Both navigation surfaces will use the existing `data-tab-target` mechanism. Each
 
 ## SMS Campaigns Panel
 
-The SMS panel will adapt the corresponding dashboard view and contain:
+The SMS panel will port the complete corresponding dashboard view and contain:
 
 - A heading, short description, SMS credit summary, and `Create New Campaign` action.
 - Four KPI cards for total customers, monthly SMS volume, returning customers, and SMS-attributed revenue.
@@ -43,11 +43,11 @@ The SMS panel will adapt the corresponding dashboard view and contain:
 - Segment-card actions that open the existing composer with the selected segment.
 - The primary action that opens the composer with the default new-customer segment.
 
-The existing modal remains the single composer implementation. The panel will not duplicate campaign composition state or markup.
+All labels, values, badges, segment descriptions, and helper copy from the source SMS view will remain present. The existing modal remains the single, complete composer implementation. The panel will not duplicate campaign composition state or markup.
 
 ## QR Codes Panel
 
-The QR panel will adapt the QR Codes view and contain:
+The QR panel will port the complete QR Codes view and contain:
 
 - A collapsible three-phase setup and operations guide.
 - Campaign name, promotion selection, form title, and form-description fields.
@@ -58,7 +58,7 @@ The QR panel will adapt the QR Codes view and contain:
 - A table of QR-acquired leads.
 - A responsive phone/web preview of the customer scan form.
 
-The port uses local demo data only. The generated QR points to the demo URL shown by the panel. If the QR generation library is unavailable, the UI shows a readable fallback containing the link and leaves the remaining panel usable.
+No guide step, operational warning, consent copy, configuration field, link action, verification state, lead-table column, or preview behavior from the source QR view will be intentionally omitted. The port uses local demo data only. The generated QR points to the demo URL shown by the panel. If the QR generation library is unavailable, the UI shows a readable fallback containing the link and leaves the remaining panel usable.
 
 ## Visual Design
 
@@ -71,7 +71,7 @@ The new panels will use the Booking Book design tokens and patterns:
 - Desktop grids that collapse to one column on narrow screens; wide tables remain horizontally scrollable.
 - Compact top-tab behavior consistent with the existing mobile layout.
 
-The standalone dashboard's dark theme and standalone sidebar will not be copied.
+The standalone dashboard's dark theme and standalone sidebar will not be copied. Content parity applies to information and behavior, while visual presentation is deliberately rewritten to match the current Booking Book page.
 
 ## Data and Interaction Flow
 
@@ -107,6 +107,7 @@ A focused Node test file will inspect the booking HTML and verify:
 - Each target has a matching panel and accessible tab relationship.
 - The approved SMS KPI, segment, composer-entry, and credit content is present.
 - The QR guide, configuration, consent, link/QR actions, verification, leads, and preview content is present.
+- Every source section and action belonging to `#view-sms` and `#view-qrcodes` has a corresponding element or behavior in the booking page.
 - Navigation uses the existing shared tab activation and URL behavior.
 - SMS actions call the existing composer API.
 - QR initialization and QR-library fallback hooks are present.
@@ -117,6 +118,7 @@ The test must be written and observed failing before production HTML changes. Af
 
 - SMS Campaigns and QR Codes appear in both requested navigation locations.
 - Clicking either location activates the same corresponding panel and URL state.
+- All content and demo interactions from the two source views are present; none are replaced by summaries or placeholders.
 - Both panels visually match the current Booking Book page on desktop and mobile.
 - SMS segment and create actions open the working existing composer.
 - QR configuration, preview, generation fallback, verification, download/print/kiosk, and guide controls work as local demos.
