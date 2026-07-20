@@ -40,11 +40,12 @@ test('renders one Booking Book-style page tab for every Community submenu', () =
 
 test('keeps Feed active by default and synchronizes submenu and page tabs', () => {
   const html = source();
+  const runtime = readFileSync(new URL('../assets/community-page.js', import.meta.url), 'utf8');
   assert.match(html, /class="nav-subitem is-active"[^>]*data-tab-target="feed"[^>]*aria-controls="panel-feed"/);
   assert.match(html, /class="page-tab is-active"[^>]*aria-selected="true"[^>]*data-tab-target="feed"/);
   assert.match(html, /class="tab-panel is-active"[^>]*id="panel-feed"[^>]*data-tab-panel="feed"/);
-  assert.match(html, /document\.querySelectorAll\('\[data-tab-target\]'\)/);
-  assert.match(html, /panel\.hidden = !isActive/);
+  assert.match(runtime, /document\.querySelectorAll\('\[data-tab-target\]'\)/);
+  assert.match(runtime, /panels\[index\]\.hidden = !panelActive/);
 });
 
 test('adapts the salon Owner side of the AI Matching mockup', () => {
@@ -67,4 +68,16 @@ test('keeps Owner Jobs action buttons sized to their content', () => {
   assert.equal((html.match(/class="owner-job-actions"/g) || []).length, 2);
   assert.match(html, /\.owner-job-actions\s*\{[\s\S]*?display:\s*flex;/);
   assert.match(html, /\.owner-action\s*\{[\s\S]*?width:\s*fit-content;[\s\S]*?flex:\s*0 0 auto;/);
+});
+
+test('loads the page-scoped Community assets and renders the owner Feed regions', () => {
+  const html = source();
+  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/community-page\.css">/);
+  assert.match(html, /<script src="\.\.\/assets\/community-page\.js"><\/script>/);
+  assert.match(html, /data-feed-composer/);
+  assert.match(html, /data-feed-audience/);
+  assert.match(html, /data-feed-filter="announcements"/);
+  assert.match(html, /data-feed-list/);
+  assert.match(html, /Needs your attention/);
+  assert.match(html, /Community insights/);
 });

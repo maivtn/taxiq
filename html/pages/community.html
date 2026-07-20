@@ -6657,6 +6657,7 @@
     }
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/community-page.css">
 </head>
 <body>
   <div class="shell">
@@ -6869,11 +6870,31 @@
 
           <div class="tab-content">
             <section class="tab-panel is-active" id="panel-feed" data-tab-panel="feed" role="tabpanel" aria-label="Community Feed">
-              <div class="placeholder-panel">
-                <div>
-                  <h2>Feed</h2>
-                  <p>Follow updates, conversations, and highlights from the Nexora community.</p>
+              <div class="community-panel-head">
+                <div><span class="community-eyebrow">Owner community</span><h2>Feed</h2><p>Stay on top of conversations across every salon group.</p></div>
+                <button class="community-primary" type="button" data-focus-feed-composer><i data-lucide="square-pen" aria-hidden="true"></i>Create post</button>
+              </div>
+              <div class="community-layout community-layout-feed">
+                <div class="community-main-stack">
+                  <form class="feed-composer community-card" data-feed-composer>
+                    <label for="community-post-body">Share an update</label>
+                    <textarea id="community-post-body" rows="3" placeholder="Share an announcement, question, or update..."></textarea>
+                    <div class="feed-composer-actions">
+                      <select aria-label="Post audience" data-feed-audience><option value="all">All groups</option><option value="staff">Staff groups</option><option value="customer">Customer groups</option></select>
+                      <button type="button" data-demo-attachment="photo">Photo</button><button type="button" data-demo-attachment="file">File</button><button type="button" data-demo-attachment="poll">Poll</button>
+                      <button class="community-primary" type="submit">Post</button>
+                    </div>
+                    <p class="community-field-error" data-feed-error aria-live="polite"></p>
+                  </form>
+                  <div class="community-filter-row" aria-label="Feed filters">
+                    <button class="is-active" type="button" data-feed-filter="all">All</button><button type="button" data-feed-filter="announcements">Announcements</button><button type="button" data-feed-filter="staff">Staff</button><button type="button" data-feed-filter="customer">Customers</button><button type="button" data-feed-filter="saved">Saved</button>
+                  </div>
+                  <div class="feed-list" data-feed-list></div>
                 </div>
+                <aside class="community-side-stack">
+                  <section class="community-card attention-card"><h3>Needs your attention</h3><button type="button"><strong>3</strong><span>Pending join requests</span></button><button type="button"><strong>2</strong><span>Customer questions</span></button><button type="button"><strong>1</strong><span>Reported message</span></button></section>
+                  <section class="community-card insight-card"><h3>Community insights</h3><dl><div><dt>Active members</dt><dd>86</dd></div><div><dt>Engagement</dt><dd>+18%</dd></div><div><dt>Top group</dt><dd>VIP Nail Club</dd></div><div><dt>Avg. response</dt><dd>24 min</dd></div></dl></section>
+                </aside>
               </div>
             </section>
 
@@ -6994,26 +7015,6 @@
       });
     });
 
-    function activateCommunityTab(target) {
-      document.querySelectorAll('[data-tab-target]').forEach(function (tab) {
-        var isActive = tab.dataset.tabTarget === target;
-        tab.classList.toggle('is-active', isActive);
-        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
-      });
-      document.querySelectorAll('[data-tab-panel]').forEach(function (panel) {
-        var isActive = panel.dataset.tabPanel === target;
-        panel.classList.toggle('is-active', isActive);
-        panel.hidden = !isActive;
-      });
-    }
-
-    document.querySelectorAll('[data-tab-target]').forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        activateCommunityTab(tab.dataset.tabTarget);
-        setDrawer(false);
-      });
-    });
-
     var jobsNoticeTimer = 0;
     function showJobsNotice(message) {
       var oldNotice = document.querySelector("[data-owner-jobs-notice]");
@@ -7056,6 +7057,7 @@
     backdrop.addEventListener("click", function () { setDrawer(false); });
   </script>
 
+  <script src="../assets/community-page.js"></script>
   <script>
     var communityTab = 'feed';
     try {
