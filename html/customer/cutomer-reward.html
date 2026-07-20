@@ -288,6 +288,8 @@
         </section>
         <section class="app-screen hidden" id="wallet" data-ready="true" data-module="wallet" aria-labelledby="wallet-title">
           <div class="mb-5 flex items-end justify-between gap-4"><div><p class="eyebrow" data-en="Your rewards" data-vi="Phần thưởng của bạn">Phần thưởng của bạn</p><h1 id="wallet-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Points wallet" data-vi="Ví điểm">Ví điểm</h1><p class="mt-1 text-sm text-app-muted" data-en="Each business keeps its own point balance." data-vi="Điểm được tách riêng theo từng doanh nghiệp.">Điểm được tách riêng theo từng doanh nghiệp.</p></div><button type="button" class="app-button-secondary hidden sm:inline-flex" data-action="navigate" data-target="history"><i data-lucide="history" class="size-4" aria-hidden="true"></i><span data-en="History" data-vi="Lịch sử">Lịch sử</span></button></div>
+          <div id="wallet-loading" class="hidden space-y-3" aria-live="polite" aria-hidden="true"><span class="sr-only" data-en="Loading wallet" data-vi="Đang tải ví điểm">Đang tải ví điểm</span><div class="h-28 animate-pulse rounded-3xl bg-white/10"></div><div class="grid grid-cols-3 gap-3"><div class="h-20 animate-pulse rounded-2xl bg-white/10"></div><div class="h-20 animate-pulse rounded-2xl bg-white/10"></div><div class="h-20 animate-pulse rounded-2xl bg-white/10"></div></div></div>
+          <div id="wallet-error" class="hidden app-card border-app-red/40" role="alert"><strong data-en="Wallet could not load" data-vi="Không tải được ví điểm">Không tải được ví điểm</strong><p class="mt-1 text-sm text-app-muted" data-en="Your saved data is unchanged." data-vi="Dữ liệu đã lưu của bạn không thay đổi.">Dữ liệu đã lưu của bạn không thay đổi.</p><button type="button" class="app-button-secondary mt-3" data-action="retry-wallet" data-en="Try again" data-vi="Thử lại">Thử lại</button></div>
           <div class="relative mb-4 overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_90%_10%,rgba(34,211,238,.24),transparent_38%),linear-gradient(135deg,#6d2bf0,#4a23d9_48%,#0757cf)] p-5 shadow-2xl shadow-app-purple/20 sm:p-6">
             <div class="relative z-10 flex items-start justify-between gap-4">
               <div>
@@ -302,6 +304,13 @@
             <div class="relative z-10 mt-5 h-2 overflow-hidden rounded-full bg-black/25"><span id="wallet-tier-progress" data-tier-progress class="block h-full rounded-full bg-gradient-to-r from-app-cyan to-white transition-[width] duration-500" style="width:0%" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></span></div>
             <p id="wallet-tier-gap" data-tier-gap class="relative z-10 mt-2 text-xs font-bold text-white/75"></p>
           </div>
+          <div id="wallet-balance-summary" class="mb-4 grid grid-cols-3 gap-2 sm:gap-4">
+            <article class="metric-card"><span class="block text-[10px] font-extrabold uppercase tracking-wide text-app-muted sm:text-xs" data-en="Available" data-vi="Khả dụng">Khả dụng</span><strong id="wallet-available" class="mt-1 block text-lg font-black text-app-cyan sm:text-2xl">0</strong><small class="text-[10px] text-app-muted" data-en="Can redeem" data-vi="Có thể đổi">Có thể đổi</small></article>
+            <article class="metric-card"><span class="block text-[10px] font-extrabold uppercase tracking-wide text-app-muted sm:text-xs" data-en="Pending" data-vi="Đang chờ">Đang chờ</span><strong id="wallet-pending" class="mt-1 block text-lg font-black text-app-gold sm:text-2xl">0</strong><small class="text-[10px] text-app-muted" data-en="Not redeemable" data-vi="Chưa thể đổi">Chưa thể đổi</small></article>
+            <article class="metric-card"><span class="block text-[10px] font-extrabold uppercase tracking-wide text-app-muted sm:text-xs" data-en="Lifetime" data-vi="Tích lũy">Tích lũy</span><strong id="wallet-lifetime" class="mt-1 block text-lg font-black sm:text-2xl">0</strong><small class="text-[10px] text-app-muted" data-en="Tier progress" data-vi="Tính hạng">Tính hạng</small></article>
+          </div>
+          <p id="wallet-updated-at" class="mb-4 text-right text-[11px] text-app-muted"></p>
+          <div id="wallet-empty" class="hidden app-card text-center"><strong data-en="No point activity yet" data-vi="Chưa có hoạt động điểm">Chưa có hoạt động điểm</strong></div>
           <div id="wallet-business-list" class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3"></div>
           <div class="mt-6 grid gap-4 lg:grid-cols-[1fr_320px]"><article class="app-card"><div class="flex items-center justify-between"><h2 class="section-title" data-en="Recent point activity" data-vi="Hoạt động điểm gần đây">Hoạt động điểm gần đây</h2><button type="button" class="text-xs font-bold text-app-cyan" data-action="navigate" data-target="history" data-en="Full history" data-vi="Toàn bộ lịch sử">Toàn bộ lịch sử</button></div><div id="wallet-activity-list" class="mt-4 divide-y divide-app-line"></div></article><aside class="app-card flex h-fit items-start gap-3 border-app-gold/20 bg-app-gold/[.05]"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-5" aria-hidden="true"></i></span><div class="min-w-0 flex-1"><h2 class="font-black" data-en="Points expiry" data-vi="Điểm sắp hết hạn">Điểm sắp hết hạn</h2><p id="wallet-expiry-copy" class="mt-1 text-sm leading-6 text-app-muted"></p></div></aside></div>
         </section>
@@ -312,10 +321,10 @@
           <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-balance-available="bitcoin-nail-bar" data-en="2,450 points available" data-vi="Có thể dùng 2.450 điểm">Có thể dùng 2.450 điểm</p><h1 id="rewards-title" class="text-2xl font-black" data-en="Choose a reward" data-vi="Chọn phần thưởng">Chọn phần thưởng</h1></div></div><div class="mb-4 app-tabs"><button class="app-tab" type="button" aria-pressed="true" data-reward-tab="explore" data-en="Explore" data-vi="Khám phá">Khám phá</button><button class="app-tab" type="button" aria-pressed="false" data-reward-tab="redeemed" data-en="Available" data-vi="Khả dụng">Khả dụng</button><button class="app-tab" type="button" aria-pressed="false" data-reward-tab="used" data-en="Used" data-vi="Đã dùng">Đã dùng</button></div><div id="reward-list" class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3"></div><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Points apply to services only — never cash out. Each business sets its own reward prices; NEXORA only keeps the ledger." data-vi="Điểm chỉ dùng cho dịch vụ — không đổi tiền mặt. Mỗi doanh nghiệp tự đặt giá thưởng; NEXORA chỉ lưu sổ cái.">Điểm chỉ dùng cho dịch vụ — không đổi tiền mặt. Mỗi doanh nghiệp tự đặt giá thưởng; NEXORA chỉ lưu sổ cái.</p>
         </section>
         <section class="app-screen hidden" id="redeem" data-ready="true" data-module="wallet" aria-labelledby="redeem-title">
-          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="rewards" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Confirm redemption" data-vi="Xác nhận đổi điểm">Xác nhận đổi điểm</p><h1 id="redeem-title" class="text-2xl font-black" data-en="Redeem reward" data-vi="Đổi phần thưởng">Đổi phần thưởng</h1></div></div><div class="app-card"><div class="flex items-start gap-4"><span class="grid size-14 place-items-center rounded-2xl bg-app-pink/10 text-app-pink"><i data-lucide="gift" class="size-7" aria-hidden="true"></i></span><div><h2 id="reward-title" class="text-xl font-black">Nâng cấp sơn gel</h2><p id="reward-business" class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar</p></div></div><dl class="mt-6 space-y-4 rounded-2xl bg-app-panel p-4"><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Reward cost" data-vi="Điểm đổi quà">Điểm đổi quà</dt><dd id="reward-cost" class="font-black">800 điểm</dd></div><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Current balance" data-vi="Số dư hiện tại">Số dư hiện tại</dt><dd id="reward-balance" data-balance-with-unit="bitcoin-nail-bar" class="font-black">2.450 điểm</dd></div><div class="flex justify-between gap-4 border-t border-app-line pt-4 text-sm"><dt class="font-bold" data-en="Balance after" data-vi="Số dư còn lại">Số dư còn lại</dt><dd id="reward-after" class="font-black text-app-cyan">1.650 điểm</dd></div></dl><p class="mt-4 text-xs leading-5 text-app-muted" data-en="This action cannot be undone." data-vi="Không thể hoàn tác thao tác này.">Không thể hoàn tác thao tác này.</p><button class="app-button mt-5 w-full" type="button" data-action="confirm-reward"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Use points now" data-vi="Dùng điểm ngay">Dùng điểm ngay</span></button></div></div>
+          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="rewards" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Confirm redemption" data-vi="Xác nhận đổi điểm">Xác nhận đổi điểm</p><h1 id="redeem-title" class="text-2xl font-black" data-en="Redeem reward" data-vi="Đổi phần thưởng">Đổi phần thưởng</h1></div></div><div class="app-card"><div class="flex items-start gap-4"><span class="grid size-14 place-items-center rounded-2xl bg-app-pink/10 text-app-pink"><i data-lucide="gift" class="size-7" aria-hidden="true"></i></span><div><h2 id="reward-title" class="text-xl font-black">Nâng cấp sơn gel</h2><p id="reward-business" class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar</p><p id="reward-customer" class="mt-1 text-xs font-bold text-app-cyan">Jessica Nguyen</p></div></div><div class="mt-4 rounded-2xl border border-app-line bg-app-panel p-4 text-sm"><p id="reward-description" class="font-bold"></p><p id="reward-conditions" class="mt-2 leading-6 text-app-muted"></p><p id="reward-location" class="mt-2 text-xs text-app-cyan"></p><p id="reward-limits" class="mt-2 text-xs text-app-muted"></p></div><dl class="mt-6 space-y-4 rounded-2xl bg-app-panel p-4"><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Reward cost" data-vi="Điểm đổi quà">Điểm đổi quà</dt><dd id="reward-cost" class="font-black">800 điểm</dd></div><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Available before" data-vi="Khả dụng trước khi đổi">Khả dụng trước khi đổi</dt><dd id="reward-balance" data-balance-with-unit="bitcoin-nail-bar" class="font-black">2.450 điểm</dd></div><div class="flex justify-between gap-4 border-t border-app-line pt-4 text-sm"><dt class="font-bold" data-en="Available after" data-vi="Khả dụng sau khi đổi">Khả dụng sau khi đổi</dt><dd id="reward-after" class="font-black text-app-cyan">1.650 điểm</dd></div></dl><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Points are deducted when the reward is issued." data-vi="Điểm được trừ khi phần thưởng được phát hành.">Điểm được trừ khi phần thưởng được phát hành.</p><p id="reward-flow-status" class="mt-3 text-sm font-bold text-app-cyan" aria-live="polite"></p><p id="reward-flow-error" class="mt-3 hidden text-sm font-bold text-app-red" role="alert"></p><button id="reward-confirm-button" class="app-button mt-5 w-full" type="button" data-action="confirm-reward"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Use points now" data-vi="Dùng điểm ngay">Dùng điểm ngay</span></button></div></div>
         </section>
         <section class="app-screen hidden" id="redeemdone" data-ready="true" data-module="wallet" aria-labelledby="redeemdone-title">
-          <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-10" aria-hidden="true"></i></span><h1 id="redeemdone-title" class="mt-6 text-3xl font-black" data-en="Reward ready" data-vi="Phần thưởng đã sẵn sàng">Phần thưởng đã sẵn sàng</h1><p id="redeemdone-business-copy" class="mt-3 text-sm leading-6 text-app-muted"></p><div class="app-card mt-6"><p class="eyebrow" data-en="Redemption code" data-vi="Mã đổi quà">Mã đổi quà</p><strong id="reward-done-code" class="mt-3 block text-3xl tracking-[.22em] text-app-cyan"></strong><div class="my-5 border-t border-dashed border-app-line"></div><div class="flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Reward" data-vi="Phần thưởng">Phần thưởng</span><strong id="reward-done-title"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Points used" data-vi="Điểm đã dùng">Điểm đã dùng</span><strong id="reward-done-cost"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-muted" data-en="Status" data-vi="Trạng thái">Trạng thái</span><strong id="reward-done-status"></strong></div></div><button class="app-button-secondary mt-4 w-full" type="button" data-action="show-reward-qr" data-en="Show QR code" data-vi="Hiện mã QR">Hiện mã QR</button><button class="app-button mt-3 w-full" type="button" data-action="navigate" data-target="wallet" data-en="Back to wallet" data-vi="Về ví điểm">Về ví điểm</button></div></div>
+          <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-10" aria-hidden="true"></i></span><h1 id="redeemdone-title" class="mt-6 text-3xl font-black" data-en="Reward issued" data-vi="Đã phát hành phần thưởng">Đã phát hành phần thưởng</h1><p id="redeemdone-business-copy" class="mt-3 text-sm leading-6 text-app-muted"></p><div class="app-card mt-6"><p class="eyebrow" data-en="Instrument code" data-vi="Mã phần thưởng">Mã phần thưởng</p><strong id="reward-done-code" class="mt-3 block text-3xl tracking-[.12em] text-app-cyan"></strong><div class="my-5 border-t border-dashed border-app-line"></div><div class="flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Reward" data-vi="Phần thưởng">Phần thưởng</span><strong id="reward-done-title"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Points used" data-vi="Điểm đã dùng">Điểm đã dùng</span><strong id="reward-done-cost"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Status" data-vi="Trạng thái">Trạng thái</span><strong id="reward-done-status"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Issued" data-vi="Phát hành">Phát hành</span><strong id="reward-done-issued-at"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Expires" data-vi="Hết hạn">Hết hạn</span><strong id="reward-done-expires-at"></strong></div><div id="reward-done-remaining-row" class="mt-3 hidden flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Gift Card balance" data-vi="Số dư Gift Card">Số dư Gift Card</span><strong id="reward-done-remaining" class="text-app-gold"></strong></div></div><button class="app-button-secondary mt-4 w-full" type="button" data-action="show-reward-qr" data-en="Show QR code" data-vi="Hiện mã QR">Hiện mã QR</button><button class="app-button mt-3 w-full" type="button" data-action="navigate" data-target="wallet" data-en="Back to wallet" data-vi="Về ví điểm">Về ví điểm</button></div></div>
         </section>
         <section class="app-screen hidden" id="scan" data-ready="true" data-module="scan" aria-labelledby="scan-title">
           <div class="mx-auto max-w-2xl"><div id="scan-intro" class="text-center"><p class="eyebrow" data-en="NEXORA Touch" data-vi="NEXORA Touch">NEXORA Touch</p><h1 id="scan-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Scan to check in, tip or pay" data-vi="Quét để check-in, tip hoặc thanh toán">Quét để check-in, tip hoặc thanh toán</h1><p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-app-muted" data-en="This prototype simulates reading a NEXORA QR, then lets you choose the right action." data-vi="Bản mẫu mô phỏng đọc mã NEXORA, sau đó cho bạn chọn đúng thao tác.">Bản mẫu mô phỏng đọc mã NEXORA, sau đó cho bạn chọn đúng thao tác.</p></div>
@@ -6102,9 +6111,6 @@
       storage.setItem(STORAGE_KEY, JSON.stringify(appState));
     }
 
-    // Demo build: every page reload starts from a clean seeded state, so the prototype always
-    // shows the same data. Clearing the key makes loadState() fall through to a fresh default.
-    try { window.localStorage.removeItem(STORAGE_KEY); } catch {}
     let state = loadState();
     let pendingProofImageDataUrl = '';
     let renderedScanPaymentIdentity = null;
@@ -9350,7 +9356,8 @@
     const COPY = {
       vi: {
         scanSignedOutCustomer: 'Chưa đăng nhập', scanPrivateSummary: 'Đăng nhập để xem',
-        points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', noExpiry: 'Chưa có điểm sắp hết hạn.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', rewardReadyStatus: 'Sẵn sàng', rewardUsedStatus: 'Đã dùng', showCode: 'Hiện mã', rewardRedeemedEmpty: 'Chưa có phần thưởng nào khả dụng. Hãy xem tab Khám phá.', rewardUsedEmpty: 'Chưa có phần thưởng nào được dùng tại tiệm.', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
+        points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', noExpiry: 'Chưa có điểm sắp hết hạn.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', rewardReadyStatus: 'Sẵn sàng', rewardIssuedStatus: 'Đã phát hành', rewardUsedStatus: 'Đã dùng', rewardExpiredStatus: 'Hết hạn', rewardVoidedStatus: 'Đã hủy — hoàn điểm', rewardReversedStatus: 'Đã thu hồi', showCode: 'Hiện mã', rewardRedeemedEmpty: 'Chưa có phần thưởng nào khả dụng. Hãy xem tab Khám phá.', rewardUsedEmpty: 'Chưa có phần thưởng nào được dùng tại tiệm.', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
+        pointsSettled: 'Điểm đã khả dụng', refundReversal: 'Thu hồi điểm do hoàn tiền', voidRestoration: 'Hoàn điểm do hủy phần thưởng', rewardVoided: 'Phần thưởng đã hủy', giftCardUsed: 'Đã dùng Gift Card', rewardExpired: 'Phần thưởng hết hạn',
         paymentSent: 'Đã gửi ${amount} cho tiệm', paymentConfirmedTitle: 'Đã xác nhận thanh toán', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu', saveOffer: 'Lưu ưu đãi', view: 'Xem', rebook: 'Đặt lại', tip: 'Gửi tip', delete: 'Xóa', followingTech: 'Đang theo dõi thợ', followTech: 'Theo dõi thợ', removeWish: 'Xóa mong muốn', favorite: 'Đã yêu thích', addFavorite: 'Thêm yêu thích', recentVisit: 'Lượt ghé gần đây',
         offerSaved: 'Đã lưu ưu đãi', offerRemoved: 'Đã bỏ lưu ưu đãi', offerSaveFailed: 'Ưu đãi không hợp lệ.', offerPeriod: 'Thời gian áp dụng', offerLocation: 'Địa điểm áp dụng', offerTerms: 'Quy định', offerUnavailable: 'Không mở được ưu đãi này. Vui lòng thử lại.', wishRequired: 'Hãy nhập mong muốn', wishDuplicate: 'Mong muốn này đã tồn tại.', wishShared: 'Đã gửi mong muốn ẩn danh',
         lookServiceRequired: 'Hãy nhập tên dịch vụ', lookRequired: 'Hãy nhập ảnh, dịch vụ, màu hoặc ghi chú.', lookSaveFailed: 'Không thể lưu kiểu. Vui lòng thử lại.', lookPhotoQuota: 'Bộ nhớ ảnh đã đầy; đã lưu thông tin kiểu không kèm ảnh.', lookSaved: 'Đã lưu kiểu mới', lookUpdated: 'Đã cập nhật kiểu', lookNotFound: 'Không tìm thấy kiểu này.', noLookNote: 'Không có ghi chú.',
@@ -9397,7 +9404,8 @@
       },
       en: {
         scanSignedOutCustomer: 'Signed out', scanPrivateSummary: 'Sign in to view',
-        points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', noExpiry: 'No points expiring soon.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', rewardReadyStatus: 'Ready', rewardUsedStatus: 'Used', showCode: 'Show code', rewardRedeemedEmpty: 'No reward is available to use yet. Check the Explore tab.', rewardUsedEmpty: 'No reward has been used at a salon yet.', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
+        points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', noExpiry: 'No points expiring soon.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', rewardReadyStatus: 'Ready', rewardIssuedStatus: 'Issued', rewardUsedStatus: 'Used', rewardExpiredStatus: 'Expired', rewardVoidedStatus: 'Voided — points restored', rewardReversedStatus: 'Reversed', showCode: 'Show code', rewardRedeemedEmpty: 'No reward is available to use yet. Check the Explore tab.', rewardUsedEmpty: 'No reward has been used at a salon yet.', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
+        pointsSettled: 'Points became available', refundReversal: 'Points reversed after refund', voidRestoration: 'Points restored after reward void', rewardVoided: 'Reward voided', giftCardUsed: 'Gift Card used', rewardExpired: 'Reward expired',
         paymentSent: '${amount} sent to the salon', paymentConfirmedTitle: 'Payment Confirmed', insufficientPoints: 'Not enough points', saved: 'Saved', saveOffer: 'Save offer', view: 'View', rebook: 'Rebook', tip: 'Tip', delete: 'Delete', followingTech: 'Following tech', followTech: 'Follow tech', removeWish: 'Remove wish', favorite: 'Favorite', addFavorite: 'Add favorite', recentVisit: 'Recent visit',
         offerSaved: 'Offer saved', offerRemoved: 'Offer removed', offerSaveFailed: 'Invalid offer.', offerPeriod: 'When it runs', offerLocation: 'Where it applies', offerTerms: 'Terms', offerUnavailable: 'Could not open this offer. Please try again.', wishRequired: 'Enter a wish first', wishDuplicate: 'This wish already exists.', wishShared: 'Anonymous wish shared',
         lookServiceRequired: 'Enter a service name', lookRequired: 'Add a photo, service, color or note.', lookSaveFailed: 'Could not save this look.', lookPhotoQuota: 'Image storage is full; look details were saved without the photo.', lookSaved: 'New look saved', lookUpdated: 'Look updated', lookNotFound: 'That look no longer exists.', noLookNote: 'No note.',
@@ -10770,12 +10778,32 @@
     };
 
     function renderRewardPreview(reward) {
-      const balance = getBusinessBalance(state, reward.sourceBusinessId).points;
+      const balance = getBusinessBalance(state, reward.sourceBusinessId).available;
+      const language = state.profile.language === 'en' ? 'en' : 'vi';
+      const locationNames = reward.eligibleLocationIds
+        .map((locationId) => getValidBusiness(state, locationId)?.name)
+        .filter(Boolean);
       document.getElementById('reward-title').textContent = reward.title[state.profile.language] ?? reward.title.vi;
       document.getElementById('reward-business').textContent = getValidBusiness(state, reward.acceptingBusinessId)?.name ?? t('unknownBusiness');
+      document.getElementById('reward-customer').textContent = state.profile.name;
+      document.getElementById('reward-description').textContent = reward.description[language] ?? reward.description.vi;
+      document.getElementById('reward-conditions').textContent = reward.conditions[language] ?? reward.conditions.vi;
+      document.getElementById('reward-location').textContent = language === 'en'
+        ? `Valid at: ${locationNames.join(', ') || t('unknownBusiness')}`
+        : `Áp dụng tại: ${locationNames.join(', ') || t('unknownBusiness')}`;
+      document.getElementById('reward-limits').textContent = language === 'en'
+        ? `${reward.stackingRule === 'stackable' ? 'Stackable' : 'Not stackable'} · Valid for ${reward.validityDays} days · Limit ${reward.perCustomerLimit} per customer`
+        : `${reward.stackingRule === 'stackable' ? 'Được cộng dồn' : 'Không cộng dồn'} · Có hiệu lực ${reward.validityDays} ngày · Tối đa ${reward.perCustomerLimit} lần/khách`;
       document.getElementById('reward-cost').textContent = formatPoints(reward.cost);
       document.getElementById('reward-balance').textContent = formatPoints(balance);
       document.getElementById('reward-after').textContent = formatPoints(balance - reward.cost);
+      const status = document.getElementById('reward-flow-status');
+      const error = document.getElementById('reward-flow-error');
+      if (status) status.textContent = '';
+      if (error) {
+        error.textContent = '';
+        error.classList.add('hidden');
+      }
     }
 
     function getReceiptRedemption(appState = state) {
@@ -10784,13 +10812,17 @@
       const redemption = Array.isArray(appState.redemptions)
         ? appState.redemptions.find((item) => isRecord(item) && item.id === redemptionId.trim())
         : null;
-      return redemption && isValidPersistedRedemption(appState, redemption) ? redemption : null;
+      return redemption && redemption.status === 'issued' && isValidPersistedRedemption(appState, redemption)
+        ? redemption
+        : null;
     }
 
     function renderRewardReceipt() {
       const redemption = getReceiptRedemption();
       if (!redemption) return;
-      const reward = getRewardDefinition(redemption.rewardKey);
+      const reward = isRecord(redemption.catalogSnapshot)
+        ? redemption.catalogSnapshot
+        : getRewardDefinition(redemption.rewardKey);
       if (!reward) return;
       const business = getValidBusiness(state, redemption.acceptingBusinessId);
       const title = document.getElementById('reward-done-title');
@@ -10798,10 +10830,30 @@
       const code = document.getElementById('reward-done-code');
       const status = document.getElementById('reward-done-status');
       const copy = document.getElementById('redeemdone-business-copy');
+      const issuedAt = document.getElementById('reward-done-issued-at');
+      const expiresAt = document.getElementById('reward-done-expires-at');
+      const remainingRow = document.getElementById('reward-done-remaining-row');
+      const remaining = document.getElementById('reward-done-remaining');
+      const locale = state.profile.language === 'en' ? 'en-US' : 'vi-VN';
+      const formatLifecycleDate = (value) => {
+        const date = new Date(value);
+        return Number.isFinite(date.getTime())
+          ? date.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' })
+          : t('dateUnavailable');
+      };
       if (title) title.textContent = reward.title[state.profile.language] ?? reward.title.vi;
-      if (cost) cost.textContent = formatPoints(redemption.cost);
-      if (code) code.textContent = redemption.qrPayload;
-      if (status) status.textContent = t('rewardReadyStatus');
+      if (cost) cost.textContent = formatPoints(redemption.pointsSpent ?? redemption.cost);
+      if (code) code.textContent = redemption.code;
+      if (status) status.textContent = t('rewardIssuedStatus');
+      if (issuedAt) issuedAt.textContent = formatLifecycleDate(redemption.issuedAt);
+      if (expiresAt) expiresAt.textContent = formatLifecycleDate(redemption.expiresAt);
+      const hasStoredValue = reward.type === 'gift_card'
+        && Number.isSafeInteger(redemption.remainingValueCents)
+        && redemption.remainingValueCents >= 0;
+      if (remainingRow) remainingRow.classList.toggle('hidden', !hasStoredValue);
+      if (remaining) remaining.textContent = hasStoredValue
+        ? `$${(redemption.remainingValueCents / 100).toFixed(2)}`
+        : '';
       if (copy) copy.textContent = state.profile.language === 'en'
         ? `Show this code to ${business?.name ?? t('unknownBusiness')} staff.`
         : `Đưa mã này cho nhân viên ${business?.name ?? t('unknownBusiness')}.`;
@@ -10884,6 +10936,31 @@
         return redemption;
       });
       if (!result.ok) {
+        if (result.code === 'stale_balance') {
+          commitState((draft) => {
+            const pendingAttempt = draft.ui.pendingContext.rewardAttempt;
+            if (isRecord(pendingAttempt)) pendingAttempt.expectedBalanceVersion = result.currentVersion;
+            return { ok: true };
+          });
+          const currentReward = getRewardDefinition(attempt.rewardKey);
+          if (currentReward) renderRewardPreview(currentReward);
+        }
+        const flowStatus = document.getElementById('reward-flow-status');
+        const flowError = document.getElementById('reward-flow-error');
+        if (flowStatus) flowStatus.textContent = '';
+        if (flowError) {
+          const messages = state.profile.language === 'en'
+            ? {
+                stale_balance: 'Your available balance changed. Review the updated amount, then confirm again.',
+                insufficient_points: 'There are not enough available points for this reward.'
+              }
+            : {
+                stale_balance: 'Số dư đã thay đổi. Hãy kiểm tra số mới rồi xác nhận lại.',
+                insufficient_points: 'Số điểm khả dụng không đủ để đổi phần thưởng này.'
+              };
+          flowError.textContent = messages[result.code] ?? t('rewardRedeemFailed');
+          flowError.classList.remove('hidden');
+        }
         if (navigate) {
           const errorKeys = {
             not_same_alliance: 'allianceRequired',
@@ -12981,13 +13058,33 @@
       renderLedger();
       navigateTo('history');
     });
+    registerAction('retry-wallet', () => {
+      setWalletViewState('loading');
+      try {
+        renderBalances();
+        setWalletViewState('ready');
+        return { ok: true };
+      } catch (error) {
+        setWalletViewState('error');
+        return { ok: false, code: 'wallet_render_failed', error };
+      }
+    });
     registerAction('open-reward', (control) => openReward(control.dataset.rewardKey));
     registerAction('confirm-reward', (control) => {
       control.disabled = true;
+      control.setAttribute('aria-busy', 'true');
+      const status = document.getElementById('reward-flow-status');
+      const error = document.getElementById('reward-flow-error');
+      if (status) status.textContent = state.profile.language === 'en' ? 'Issuing reward…' : 'Đang phát hành phần thưởng…';
+      if (error) {
+        error.textContent = '';
+        error.classList.add('hidden');
+      }
       try {
         return confirmReward();
       } finally {
         control.disabled = false;
+        control.removeAttribute('aria-busy');
       }
     });
     registerAction('show-reward-qr', (control) => {
@@ -14023,7 +14120,7 @@
       const gaps = document.querySelectorAll('[data-tier-gap]');
       if (!labels.length && !bars.length && !gaps.length) return;
       const language = state.profile.language === 'en' ? 'en' : 'vi';
-      const status = getPointTierStatus(getBusinessBalance(state, BUSINESS_ID).points);
+      const status = getPointTierStatus(getBusinessBalance(state, BUSINESS_ID).lifetime);
       labels.forEach((label) => { label.textContent = status.current[language]; });
       bars.forEach((bar) => {
         bar.style.width = `${status.progress}%`;
@@ -14037,18 +14134,49 @@
       gaps.forEach((gap) => { gap.textContent = gapCopy; });
     }
 
+    function setWalletViewState(view) {
+      const loading = document.getElementById('wallet-loading');
+      const error = document.getElementById('wallet-error');
+      const isLoading = view === 'loading';
+      const isError = view === 'error';
+      if (loading) {
+        loading.classList.toggle('hidden', !isLoading);
+        loading.setAttribute('aria-hidden', String(!isLoading));
+      }
+      if (error) error.classList.toggle('hidden', !isError);
+    }
+
     function renderBalances() {
+      setWalletViewState('ready');
+      const primaryBalance = getBusinessBalance(state, BUSINESS_ID);
+      const available = document.getElementById('wallet-available');
+      const pending = document.getElementById('wallet-pending');
+      const lifetime = document.getElementById('wallet-lifetime');
+      const updatedAt = document.getElementById('wallet-updated-at');
+      if (available) available.textContent = formatPointNumber(primaryBalance.available);
+      if (pending) pending.textContent = formatPointNumber(primaryBalance.pending);
+      if (lifetime) lifetime.textContent = formatPointNumber(primaryBalance.lifetime);
+      if (updatedAt) {
+        const updatedDate = new Date(primaryBalance.updatedAt);
+        const locale = state.profile.language === 'en' ? 'en-US' : 'vi-VN';
+        const dateLabel = Number.isFinite(updatedDate.getTime())
+          ? updatedDate.toLocaleString(locale, { dateStyle: 'short', timeStyle: 'short' })
+          : t('dateUnavailable');
+        updatedAt.textContent = state.profile.language === 'en'
+          ? `Updated ${dateLabel}`
+          : `Cập nhật ${dateLabel}`;
+      }
       document.querySelectorAll('[data-balance-points]').forEach((element) => {
-        element.textContent = formatPointNumber(getBusinessBalance(state, element.dataset.balancePoints).points);
+        element.textContent = formatPointNumber(getBusinessBalance(state, element.dataset.balancePoints).available);
       });
       document.querySelectorAll('[data-balance-business]').forEach((element) => {
-        element.textContent = formatPointNumber(getBusinessBalance(state, element.dataset.balanceBusiness).points);
+        element.textContent = formatPointNumber(getBusinessBalance(state, element.dataset.balanceBusiness).available);
       });
       document.querySelectorAll('[data-balance-with-unit]').forEach((element) => {
-        element.textContent = formatPoints(getBusinessBalance(state, element.dataset.balanceWithUnit).points);
+        element.textContent = formatPoints(getBusinessBalance(state, element.dataset.balanceWithUnit).available);
       });
       document.querySelectorAll('[data-balance-available]').forEach((element) => {
-        const points = getBusinessBalance(state, element.dataset.balanceAvailable).points;
+        const points = getBusinessBalance(state, element.dataset.balanceAvailable).available;
         element.textContent = t('availablePoints', { points: formatPoints(points) });
       });
       const list = document.getElementById('wallet-business-list');
@@ -14059,7 +14187,7 @@
           ? state.ledger.filter(isRecord).map((entry) => entry.businessId)
           : []);
         const cards = Object.entries(state.businesses).filter(([businessId, business]) => isRecord(business)
-          && (getBusinessBalance(state, businessId).points > 0 || ledgered.has(businessId))).map(([businessId, business]) => {
+          && (getBusinessBalance(state, businessId).available > 0 || ledgered.has(businessId))).map(([businessId, business]) => {
         const card = document.createElement('article');
         card.className = 'app-card flex flex-wrap items-center gap-x-3 gap-y-2 p-3 sm:gap-y-4 sm:p-4';
         const name = document.createElement('h2');
@@ -14067,7 +14195,7 @@
         name.textContent = business.name;
         const points = document.createElement('strong');
         points.className = 'mr-auto text-xl font-black sm:text-3xl';
-        points.textContent = formatPoints(getBusinessBalance(state, businessId).points);
+        points.textContent = formatPoints(getBusinessBalance(state, businessId).available);
         const history = document.createElement('button');
         history.type = 'button';
         history.className = 'flex w-fit items-center gap-1.5 rounded-lg border border-[#252c51] bg-[#0d1024] px-2.5 py-1 text-[11px] font-bold text-[#f7f7ff] transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22d3ee] sm:px-3 sm:py-1.5 sm:text-xs';
@@ -14079,6 +14207,15 @@
         });
         list.replaceChildren(...cards);
       }
+      const empty = document.getElementById('wallet-empty');
+      if (empty) {
+        const hasActivity = Array.isArray(state.ledger) && state.ledger.some((entry) => isRecord(entry));
+        empty.classList.toggle('hidden', hasActivity || Object.values(state.balances ?? {}).some((balance) => (
+          getBusinessBalance({ balances: { balance } }, 'balance').available > 0
+          || getBusinessBalance({ balances: { balance } }, 'balance').pending > 0
+          || getBusinessBalance({ balances: { balance } }, 'balance').lifetime > 0
+        )));
+      }
       renderRecentLedgerList('wallet-activity-list');
       renderWalletExpiry();
       renderPointsTier();
@@ -14086,7 +14223,9 @@
 
     const LEDGER_LABEL_KEYS = {
       visit: 'visitPoints', welcome: 'welcomeGift', redeem: 'rewardRedeemed', feedback: 'privateFeedback',
-      tip_bonus: 'tipBonus', visit_spend: 'paymentPoints', directpay_bonus: 'directPayBonus', booking_bonus: 'bookingBonus'
+      tip_bonus: 'tipBonus', visit_spend: 'paymentPoints', directpay_bonus: 'directPayBonus', booking_bonus: 'bookingBonus',
+      points_settled: 'pointsSettled', refund_reversal: 'refundReversal', void_restoration: 'voidRestoration',
+      reward_voided: 'rewardVoided', gift_card_used: 'giftCardUsed', reward_expired: 'rewardExpired'
     };
 
     function renderLedger() {
@@ -14116,7 +14255,14 @@
         const businessName = state.businesses[entry.businessId]?.name ?? t('unknownBusiness');
         const date = new Date(entry.createdAt);
         const dateLabel = Number.isFinite(date.getTime()) ? date.toLocaleDateString(locale) : t('dateUnavailable');
-        metadata.textContent = `${businessName} · ${dateLabel}`;
+        const details = [businessName, dateLabel];
+        if (typeof entry.reason === 'string' && entry.reason.trim()) details.push(entry.reason.trim());
+        if (typeof entry.reversalOf === 'string' && entry.reversalOf.trim()) {
+          details.push(state.profile.language === 'en'
+            ? `Reverses ${entry.reversalOf.trim()}`
+            : `Đảo giao dịch ${entry.reversalOf.trim()}`);
+        }
+        metadata.textContent = details.join(' · ');
         detail.append(title, metadata);
         const delta = document.createElement('strong');
         delta.className = entry.pointsDelta >= 0 ? 'text-app-green' : 'text-app-red';
@@ -14145,10 +14291,8 @@
       return { disabled: true, labelKey: labelKeys[result.code] ?? 'rewardUnavailable', variables: {} };
     }
 
-    // A redemption is spent the moment a check-in carries it — nothing ever rewrites its 'ready'
-    // status — so "used" is derived from the check-in list, not read off the redemption.
     function isSpentRedemption(appState, redemption) {
-      return appState.guestCheckins.some((checkin) => isRecord(checkin)
+      return redemption.status !== 'issued' || appState.guestCheckins.some((checkin) => isRecord(checkin)
         && checkin.rewardRedemptionId === redemption.id);
     }
 
@@ -14159,7 +14303,14 @@
     }
 
     function renderRedemptionCard(redemption, spent) {
-      const reward = getRewardDefinition(redemption.rewardKey);
+      const reward = isRecord(redemption.catalogSnapshot)
+        ? redemption.catalogSnapshot
+        : getRewardDefinition(redemption.rewardKey);
+      const usedByCheckin = state.guestCheckins.some((checkin) => isRecord(checkin)
+        && checkin.rewardRedemptionId === redemption.id);
+      const lifecycleStatus = redemption.status === 'issued' && usedByCheckin
+        ? 'redeemed'
+        : redemption.status;
       const card = document.createElement('article');
       card.className = 'app-card reward-card';
       card.dataset.redemptionId = redemption.id;
@@ -14177,10 +14328,16 @@
       footer.className = 'reward-card-footer';
       const status = document.createElement('span');
       status.className = `reward-card-cost font-black ${spent ? 'text-app-muted' : 'text-app-green'}`;
-      status.textContent = spent ? t('rewardUsedStatus') : t('rewardReadyStatus');
+      const statusKeys = {
+        issued: 'rewardIssuedStatus',
+        redeemed: 'rewardUsedStatus',
+        expired: 'rewardExpiredStatus',
+        voided: 'rewardVoidedStatus',
+        reversed: 'rewardReversedStatus'
+      };
+      status.textContent = t(statusKeys[lifecycleStatus] ?? 'rewardUsedStatus');
       footer.append(status);
-      // Only an unspent code is still worth showing to staff.
-      if (!spent) {
+      if (lifecycleStatus === 'issued') {
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'app-button-secondary reward-card-cta';
@@ -14220,12 +14377,32 @@
         const availability = rewardAvailability(reward);
         const card = document.createElement('article');
         card.className = 'app-card reward-card';
+        card.dataset.rewardKey = reward.key;
+        card.dataset.rewardType = reward.type;
         const title = document.createElement('h2');
         title.className = 'reward-card-title';
         title.textContent = reward.title[state.profile.language] ?? reward.title.vi;
+        const type = document.createElement('span');
+        type.className = 'w-fit rounded-full bg-app-purple/10 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-app-purple';
+        const typeLabels = state.profile.language === 'en'
+          ? {
+              gift_card: 'Gift Card', dollar_discount: 'Fixed discount', percent_discount: 'Percent off',
+              free_service: 'Free service', free_product: 'Free product'
+            }
+          : {
+              gift_card: 'Gift Card', dollar_discount: 'Giảm cố định', percent_discount: 'Giảm theo %',
+              free_service: 'Dịch vụ miễn phí', free_product: 'Sản phẩm miễn phí'
+            };
+        type.textContent = typeLabels[reward.type] ?? reward.type;
+        const description = document.createElement('p');
+        description.className = 'text-xs leading-5 text-app-muted';
+        description.textContent = reward.description[state.profile.language] ?? reward.description.vi;
         const business = document.createElement('p');
         business.className = 'reward-card-meta';
         business.textContent = getValidBusiness(state, reward.acceptingBusinessId)?.name ?? t('unknownBusiness');
+        const conditions = document.createElement('p');
+        conditions.className = 'text-[11px] leading-5 text-app-muted';
+        conditions.textContent = reward.conditions[state.profile.language] ?? reward.conditions.vi;
         const footer = document.createElement('div');
         footer.className = 'reward-card-footer';
         const cost = document.createElement('strong');
@@ -14240,7 +14417,7 @@
         button.disabled = availability.disabled;
         if (availability.disabled) button.setAttribute('aria-disabled', 'true');
         footer.append(cost, button);
-        card.append(title, business, footer);
+        card.append(title, type, description, business, conditions, footer);
         return card;
       });
       list.replaceChildren(...cards);

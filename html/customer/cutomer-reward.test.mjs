@@ -422,6 +422,34 @@ test('reverses earned points proportionally with an append-only linked transacti
   assert.equal(JSON.stringify(state.ledger.find((entry) => entry.id === original.id)), JSON.stringify(original));
 });
 
+test('renders distinct wallet balances and accessible loading error states', () => {
+  const source = html();
+  assert.match(source, /id="wallet-available"/);
+  assert.match(source, /id="wallet-pending"/);
+  assert.match(source, /id="wallet-lifetime"/);
+  assert.match(source, /id="wallet-loading"[^>]*aria-live="polite"/);
+  assert.match(source, /id="wallet-error"[^>]*role="alert"/);
+  assert.match(source, /id="wallet-updated-at"/);
+  assert.match(source, /function setWalletViewState\(/);
+  assert.match(source, /registerAction\('retry-wallet'/);
+});
+
+test('reward review identifies the customer conditions location and exact balance change', () => {
+  const source = html();
+  for (const id of ['reward-customer', 'reward-conditions', 'reward-location', 'reward-balance', 'reward-after']) {
+    assert.match(source, new RegExp(`id="${id}"`));
+  }
+  assert.match(source, /id="reward-flow-status"[^>]*aria-live="polite"/);
+  assert.match(source, /id="reward-flow-error"[^>]*role="alert"/);
+});
+
+test('reward receipt exposes lifecycle expiry and gift card remaining value', () => {
+  const source = html();
+  for (const id of ['reward-done-status', 'reward-done-issued-at', 'reward-done-expires-at', 'reward-done-remaining']) {
+    assert.match(source, new RegExp(`id="${id}"`));
+  }
+});
+
 test('migrates customer journey collections into schema v3 without changing the storage key', () => {
   const { api } = testApi();
   const migrated = api.migrateState({
@@ -2909,9 +2937,12 @@ test('persists and renders the actual redemption receipt context', () => {
   assert.equal(redeemed.ok, true);
   const redemption = redeemed.redemption;
   assert.equal(vm.runInContext('state.ui.pendingContext.redemptionId', loaded.context), redemption.id);
-  assert.equal(document.getElementById('reward-done-code').textContent, redemption.qrPayload);
+  assert.equal(document.getElementById('reward-done-code').textContent, redemption.code);
   assert.equal(document.getElementById('reward-done-title').textContent, 'Giảm $5 dịch vụ');
-  assert.equal(document.getElementById('reward-done-status').textContent, 'Sẵn sàng');
+  assert.equal(document.getElementById('reward-done-status').textContent, 'Đã phát hành');
+  assert.notEqual(document.getElementById('reward-done-issued-at').textContent, '');
+  assert.notEqual(document.getElementById('reward-done-expires-at').textContent, '');
+  assert.equal(document.getElementById('reward-done-remaining-row').classList.contains('hidden'), true);
   loaded.context.navigateTo('redeemdone', { focus: false });
   const persisted = loaded.api.loadState(loaded.storage);
   assert.equal(persisted.ui.pendingContext.redemptionId, redemption.id);
@@ -2919,7 +2950,69 @@ test('persists and renders the actual redemption receipt context', () => {
   const restoredDocument = createDocumentStub();
   const restored = testApi({ [loaded.api.STORAGE_KEY]: JSON.stringify(persisted) }, { document: restoredDocument, skipInit: false });
   assert.equal(vm.runInContext('state.ui.activeScreen', restored.context), 'redeemdone');
-  assert.equal(restoredDocument.getElementById('reward-done-code').textContent, redemption.qrPayload);
+  assert.equal(restoredDocument.getElementById('reward-done-code').textContent, redemption.code);
+});
+
+test('renders the remaining stored value for an issued gift card', () => {
+  let uuidCalls = 0;
+  const document = createDocumentStub();
+  const loaded = testApi({}, {
+    document,
+    skipInit: false,
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+
+  loaded.context.openReward('gift5', false);
+  const issued = loaded.api.confirmReward(false);
+
+  assert.equal(issued.ok, true);
+  assert.equal(document.getElementById('reward-done-remaining-row').classList.contains('hidden'), false);
+  assert.equal(document.getElementById('reward-done-remaining').textContent, '$5.00');
+});
+
+test('shows a stale wallet error and requires a fresh reward confirmation', () => {
+  const document = createDocumentStub();
+  const loaded = testApi({}, { document, skipInit: false });
+  loaded.context.openReward('credit5', false);
+  vm.runInContext(`
+    state.balances['bitcoin-nail-bar'].available += 25;
+    state.balances['bitcoin-nail-bar'].points += 25;
+    state.balances['bitcoin-nail-bar'].version += 1;
+  `, loaded.context);
+
+  const result = loaded.api.confirmReward(false);
+
+  assert.equal(result.code, 'stale_balance');
+  assert.match(document.getElementById('reward-flow-error').textContent, /Số dư đã thay đổi/);
+  assert.equal(document.getElementById('reward-flow-error').classList.contains('hidden'), false);
+  assert.equal(document.getElementById('reward-balance').textContent, '2.475 điểm');
+  assert.equal(
+    vm.runInContext('state.ui.pendingContext.rewardAttempt.expectedBalanceVersion', loaded.context),
+    vm.runInContext("state.balances['bitcoin-nail-bar'].version", loaded.context)
+  );
+});
+
+test('renders loyalty lifecycle labels and reasons in points history', () => {
+  let uuidCalls = 0;
+  const document = createDocumentStub();
+  const loaded = testApi({}, {
+    document,
+    skipInit: false,
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  loaded.context.openReward('credit5', false);
+  const issued = loaded.api.confirmReward(false);
+
+  const voided = vm.runInContext(
+    `voidRewardInstrument(state, '${issued.redemption.id}', { restorePoints: true, reason: 'QA manager void' }, Date.now() + 1000)`,
+    loaded.context
+  );
+  vm.runInContext('renderLedger()', loaded.context);
+
+  assert.equal(voided.ok, true);
+  const newest = document.getElementById('ledger-list').children[0];
+  assert.equal(newest.children[0].children[0].textContent, 'Hoàn điểm do hủy phần thưởng');
+  assert.match(newest.children[0].children[1].textContent, /QA manager void/);
 });
 
 test('rejects persisted receipts with invalid status and restores rewards safely', () => {
@@ -3267,7 +3360,8 @@ test('canonicalizes persisted business identity and keeps wallet and reward vali
   assert.equal(firstHistoryButton.dataset.businessId, 'bitcoin-nail-bar');
 
   vm.runInContext("state.businesses['golden-glow-spa'].id = 'spoofed-runtime'; renderRewards()", context);
-  const glowButton = document.getElementById('reward-list').children[3].children.at(-1).children.at(-1);
+  const glowCard = document.getElementById('reward-list').children.find((card) => card.dataset.rewardKey === 'glow');
+  const glowButton = glowCard.children.at(-1).children.at(-1);
   assert.equal(glowButton.disabled, true);
   assert.equal(vm.runInContext("redeemReward(state, 'glow', 'spoofed-runtime-attempt', 1000).code", context), 'unknown_business');
 });
@@ -3928,6 +4022,17 @@ test('initializes the browser with defined entry-point dependencies', () => {
   }
 });
 
+test('preserves and loads saved customer state during browser startup', () => {
+  const document = createDocumentStub();
+  const storageKey = 'nexora.customer.prototype.v1';
+  const persisted = JSON.stringify({ balances: { 'bitcoin-nail-bar': { points: 2475 } } });
+
+  const { context, storage } = testApi({ [storageKey]: persisted }, { skipInit: false, document });
+
+  assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].available", context), 2475);
+  assert.equal(storage.getItem(storageKey), persisted);
+});
+
 test('applies persisted English during bootstrap without saving state again', () => {
   const localized = createStubElement({ dataset: { vi: 'Xin chào', en: 'Hello' }, textContent: 'Xin chào' });
   const placeholder = createStubElement({ dataset: { viPh: 'Tìm kiếm', enPh: 'Search' }, placeholder: 'Tìm kiếm' });
@@ -4155,9 +4260,18 @@ test('renders persisted balances across home wallet and rewards hooks', () => {
   assert.equal(points.textContent, '2.475');
   assert.equal(withUnit.textContent, '2.475 điểm');
   assert.equal(available.textContent, 'Có thể dùng 2.475 điểm');
+  assert.equal(document.getElementById('wallet-available').textContent, '2.475');
+  assert.equal(document.getElementById('wallet-pending').textContent, '0');
+  assert.equal(document.getElementById('wallet-lifetime').textContent, '2.475');
+  assert.notEqual(document.getElementById('wallet-updated-at').textContent, '');
   context.openReward('credit5', false);
   assert.equal(document.getElementById('reward-balance').textContent, '2.475 điểm');
   assert.equal(document.getElementById('reward-after').textContent, '1.975 điểm');
+  assert.equal(document.getElementById('reward-customer').textContent, 'Jessica Nguyen');
+  assert.equal(document.getElementById('reward-description').textContent, 'Giảm cố định $5 cho dịch vụ đủ điều kiện.');
+  assert.match(document.getElementById('reward-conditions').textContent, /Hóa đơn dịch vụ từ \$20/);
+  assert.match(document.getElementById('reward-location').textContent, /Bitcoin Nail Bar/);
+  assert.match(document.getElementById('reward-limits').textContent, /Không cộng dồn.*90 ngày/);
 
   const source = html();
   assert.ok((source.match(/data-balance-points=/g) || []).length >= 1);
@@ -4186,7 +4300,15 @@ test('renders every business-aware reward without unsafe state HTML', () => {
   const rewardCards = document.getElementById('reward-list').children;
   assert.equal(walletCards.length, 4, 'businesses with no balance and no ledger entry stay hidden');
   assert.equal(walletCards[0].children[0].textContent, '<img src=x onerror=alert(1)>');
-  assert.equal(rewardCards.length, 11);
+  assert.equal(rewardCards.length, 13);
+  const giftCard = rewardCards.find((card) => card.dataset.rewardKey === 'gift5');
+  const percentCard = rewardCards.find((card) => card.dataset.rewardKey === 'voucher25');
+  const productCard = rewardCards.find((card) => card.dataset.rewardKey === 'productOil');
+  assert.equal(giftCard.dataset.rewardType, 'gift_card');
+  assert.equal(giftCard.children[1].textContent, 'Gift Card');
+  assert.match(giftCard.children[2].textContent, /Giá trị lưu trữ/);
+  assert.equal(percentCard.children[1].textContent, 'Giảm theo %');
+  assert.equal(productCard.children[1].textContent, 'Sản phẩm miễn phí');
   const gelButton = rewardCards.at(-1).children.at(-1).children.at(-1);
   assert.equal(gelButton.disabled, true);
   assert.equal(gelButton.textContent, 'Cần thêm 50');
@@ -4195,8 +4317,8 @@ test('renders every business-aware reward without unsafe state HTML', () => {
   assert.doesNotMatch(source, /data-signature-reward-cta/);
   assert.match(source, /<div id="wallet-business-list" class="[^"]*"><\/div>/);
   assert.match(source, /const REWARDS\s*=\s*\{/);
-  for (const key of ['credit5', 'freepedi', 'voucher25', 'glow', 'moon', 'bistro', 'gel']) {
-    assert.match(source, new RegExp(`${key}: \\{ key: '${key}'`));
+  for (const key of ['credit5', 'gift5', 'freepedi', 'voucher25', 'glow', 'moon', 'bistro', 'productOil', 'gel']) {
+    assert.match(source, new RegExp(`${key}: \\{[\\s\\S]*?key: '${key}'`));
   }
   for (const [start, end] of [
     ['renderBalances', 'LEDGER_LABEL_KEYS'],
@@ -10939,7 +11061,7 @@ test('splits rewards into explore, redeemed and used tabs', () => {
 
   // Explore keeps the purchasable catalog and marks itself pressed.
   assert.equal(vm.runInContext('state.ui.rewardTab', context), 'explore');
-  assert.equal(list.children.length, 11);
+  assert.equal(list.children.length, 13);
   assert.deepEqual(tabs.map((tab) => tab.attributes['aria-pressed']), ['true', 'false', 'false']);
 
   clickTab(tabs[1]);
@@ -10947,7 +11069,7 @@ test('splits rewards into explore, redeemed and used tabs', () => {
   assert.deepEqual(tabs.map((tab) => tab.attributes['aria-pressed']), ['false', 'true', 'false']);
   const readyIds = list.children.map((card) => card.dataset.redemptionId);
   assert.ok(readyIds.length > 0);
-  for (const card of list.children) assert.equal(card.children.at(-1).children[0].textContent, 'Sẵn sàng');
+  for (const card of list.children) assert.equal(card.children.at(-1).children[0].textContent, 'Đã phát hành');
 
   clickTab(tabs[2]);
   assert.equal(vm.runInContext('state.ui.rewardTab', context), 'used');
@@ -10959,8 +11081,15 @@ test('splits rewards into explore, redeemed and used tabs', () => {
   vm.runInContext(`state.guestCheckins.push({ id: 'checkin-tab-probe', rewardRedemptionId: '${moved}' }); renderRewards()`, context);
   assert.ok(list.children.some((card) => card.dataset.redemptionId === moved));
   assert.equal(list.children.at(0).children.at(-1).children[0].textContent, 'Đã dùng');
+
+  const expired = readyIds[1];
+  vm.runInContext(`state.redemptions.find((row) => row.id === '${expired}').status = 'expired'; renderRewards()`, context);
+  const expiredCard = list.children.find((card) => card.dataset.redemptionId === expired);
+  assert.ok(expiredCard);
+  assert.equal(expiredCard.children.at(-1).children[0].textContent, 'Hết hạn');
   clickTab(tabs[1]);
   assert.equal(list.children.some((card) => card.dataset.redemptionId === moved), false);
+  assert.equal(list.children.some((card) => card.dataset.redemptionId === expired), false);
 });
 
 test('a single tip recipient hides the split group, forces equal mode and relabels the amount', () => {
