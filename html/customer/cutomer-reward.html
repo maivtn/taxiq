@@ -9109,6 +9109,244 @@
         now
       });
     }
+
+    function createUniqueLoyaltyEventId(appState, prefix) {
+      const generated = createDomainId(prefix);
+      if (!generated.ok) return generated;
+      const occupied = Array.isArray(appState?.ledger)
+        && appState.ledger.some((entry) => isRecord(entry)
+          && typeof entry.id === 'string'
+          && entry.id.toLowerCase() === generated.value.toLowerCase());
+      return occupied ? { ok: false, code: 'id_collision' } : generated;
+    }
+
+    function settlePendingPoints(appState, businessId, amount, reason, now = Date.now()) {
+      if (!isRecord(appState) || !Array.isArray(appState.ledger)) return { ok: false, code: 'invalid_state' };
+      if (!getValidBusiness(appState, businessId)) return { ok: false, code: 'unknown_business' };
+      if (!Number.isSafeInteger(amount) || amount <= 0) return { ok: false, code: 'invalid_amount' };
+      const normalizedReason = normalizedRequiredText(reason);
+      if (!normalizedReason) return { ok: false, code: 'reason_required' };
+      const storedBalance = validateStoredBalance(appState, businessId);
+      if (!storedBalance.ok) return storedBalance;
+      const balance = storedBalance.balance;
+      if (balance.pending < amount) return { ok: false, code: 'insufficient_pending_points' };
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const ledgerId = createUniqueLoyaltyEventId(appState, 'ledger-settle');
+      if (!ledgerId.ok) return ledgerId;
+      const nextBalance = {
+        ...balance,
+        available: balance.available + amount,
+        points: balance.available + amount,
+        pending: balance.pending - amount,
+        version: balance.version + 1,
+        updatedAt: timestamp.value
+      };
+      const ledger = {
+        id: ledgerId.value,
+        businessId,
+        type: 'points_settled',
+        pointsDelta: amount,
+        balanceBefore: balance.available,
+        balanceAfter: nextBalance.available,
+        refType: 'pending_points',
+        refId: ledgerId.value,
+        reason: normalizedReason,
+        reversalOf: null,
+        createdAt: timestamp.value
+      };
+      appState.balances = { ...appState.balances, [businessId]: nextBalance };
+      appState.ledger = [ledger, ...appState.ledger];
+      return { ok: true, balance: nextBalance, ledger };
+    }
+
+    function reversePointTransaction(appState, transactionId, amount, reason, now = Date.now()) {
+      if (!isRecord(appState) || !Array.isArray(appState.ledger)) return { ok: false, code: 'invalid_state' };
+      const matches = appState.ledger.filter((entry) => isRecord(entry) && entry.id === transactionId);
+      if (matches.length !== 1 || !Number.isSafeInteger(matches[0].pointsDelta) || matches[0].pointsDelta <= 0) {
+        return { ok: false, code: 'transaction_not_reversible' };
+      }
+      if (!Number.isSafeInteger(amount) || amount <= 0) return { ok: false, code: 'invalid_amount' };
+      const original = matches[0];
+      const alreadyReversed = appState.ledger
+        .filter((entry) => entry.reversalOf === original.id && Number.isSafeInteger(entry.pointsDelta) && entry.pointsDelta < 0)
+        .reduce((total, entry) => total + Math.abs(entry.pointsDelta), 0);
+      if (alreadyReversed + amount > original.pointsDelta) return { ok: false, code: 'amount_exceeds_reversible' };
+      const normalizedReason = normalizedRequiredText(reason);
+      if (!normalizedReason) return { ok: false, code: 'reason_required' };
+      const storedBalance = validateStoredBalance(appState, original.businessId);
+      if (!storedBalance.ok) return storedBalance;
+      const balance = storedBalance.balance;
+      if (balance.available < amount) return { ok: false, code: 'insufficient_points_for_reversal' };
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const ledgerId = createUniqueLoyaltyEventId(appState, 'ledger-refund');
+      if (!ledgerId.ok) return ledgerId;
+      const nextBalance = {
+        ...balance,
+        available: balance.available - amount,
+        points: balance.available - amount,
+        lifetime: Math.max(0, balance.lifetime - amount),
+        version: balance.version + 1,
+        updatedAt: timestamp.value
+      };
+      const ledger = {
+        id: ledgerId.value,
+        businessId: original.businessId,
+        type: 'refund_reversal',
+        pointsDelta: -amount,
+        balanceBefore: balance.available,
+        balanceAfter: nextBalance.available,
+        refType: 'refund',
+        refId: original.id,
+        reason: normalizedReason,
+        reversalOf: original.id,
+        createdAt: timestamp.value
+      };
+      appState.balances = { ...appState.balances, [original.businessId]: nextBalance };
+      appState.ledger = [ledger, ...appState.ledger];
+      return { ok: true, balance: nextBalance, ledger, original };
+    }
+
+    function voidRewardInstrument(appState, instrumentId, options = {}, now = Date.now()) {
+      if (!isRecord(appState) || !Array.isArray(appState.redemptions) || !Array.isArray(appState.ledger)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const matches = appState.redemptions.filter((instrument) => isRecord(instrument) && instrument.id === instrumentId);
+      if (matches.length !== 1 || !isValidPersistedRedemption(appState, matches[0])) return { ok: false, code: 'instrument_not_found' };
+      const instrument = matches[0];
+      if (instrument.status !== 'issued' || isSpentRedemption(appState, instrument)) return { ok: false, code: 'instrument_not_unused' };
+      const normalizedReason = normalizedRequiredText(options.reason);
+      if (!normalizedReason) return { ok: false, code: 'reason_required' };
+      const originalDebit = appState.ledger.filter((entry) => isRecord(entry)
+        && entry.type === 'redeem' && entry.refId === instrument.id);
+      if (originalDebit.length !== 1 || !isRedemptionLedgerPair(instrument, originalDebit[0])) return { ok: false, code: 'invalid_state' };
+      const restorePoints = options.restorePoints === true;
+      const storedBalance = validateStoredBalance(appState, instrument.sourceBusinessId);
+      if (!storedBalance.ok) return storedBalance;
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const ledgerId = createUniqueLoyaltyEventId(appState, 'ledger-void');
+      if (!ledgerId.ok) return ledgerId;
+      const balance = storedBalance.balance;
+      const nextAvailable = balance.available + (restorePoints ? instrument.pointsSpent : 0);
+      const nextBalance = {
+        ...balance,
+        available: nextAvailable,
+        points: nextAvailable,
+        version: balance.version + (restorePoints ? 1 : 0),
+        updatedAt: restorePoints ? timestamp.value : balance.updatedAt
+      };
+      const nextInstrument = { ...instrument, status: 'voided', voidedAt: timestamp.value };
+      const ledger = {
+        id: ledgerId.value,
+        businessId: instrument.sourceBusinessId,
+        type: restorePoints ? 'void_restoration' : 'reward_voided',
+        pointsDelta: restorePoints ? instrument.pointsSpent : 0,
+        balanceBefore: balance.available,
+        balanceAfter: nextAvailable,
+        refType: 'reward_instrument',
+        refId: instrument.id,
+        reason: normalizedReason,
+        reversalOf: originalDebit[0].id,
+        createdAt: timestamp.value
+      };
+      appState.balances = { ...appState.balances, [instrument.sourceBusinessId]: nextBalance };
+      appState.redemptions = appState.redemptions.map((row) => row === instrument ? nextInstrument : row);
+      appState.ledger = [ledger, ...appState.ledger];
+      return { ok: true, balance: nextBalance, instrument: nextInstrument, ledger };
+    }
+
+    function consumeGiftCard(appState, instrumentId, amountCents, locationId, now = Date.now()) {
+      if (!isRecord(appState) || !Array.isArray(appState.redemptions) || !Array.isArray(appState.ledger)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const matches = appState.redemptions.filter((instrument) => isRecord(instrument) && instrument.id === instrumentId);
+      if (matches.length !== 1 || !isValidPersistedRedemption(appState, matches[0])) return { ok: false, code: 'instrument_not_found' };
+      const instrument = matches[0];
+      if (instrument.status !== 'issued' || instrument.catalogSnapshot.type !== 'gift_card') return { ok: false, code: 'not_usable_gift_card' };
+      if (!instrument.eligibleLocationIds.includes(locationId)) {
+        return { ok: false, code: 'wrong_location', eligibleLocationIds: [...instrument.eligibleLocationIds] };
+      }
+      if (!Number.isSafeInteger(amountCents) || amountCents <= 0) return { ok: false, code: 'invalid_amount' };
+      if (!Number.isSafeInteger(instrument.remainingValueCents) || amountCents > instrument.remainingValueCents) {
+        return { ok: false, code: 'amount_exceeds_remaining' };
+      }
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const ledgerId = createUniqueLoyaltyEventId(appState, 'ledger-gift');
+      if (!ledgerId.ok) return ledgerId;
+      const remainingValueCents = instrument.remainingValueCents - amountCents;
+      const nextInstrument = {
+        ...instrument,
+        remainingValueCents,
+        status: remainingValueCents === 0 ? 'redeemed' : 'issued',
+        redeemedAt: remainingValueCents === 0 ? timestamp.value : null
+      };
+      const ledger = {
+        id: ledgerId.value,
+        businessId: instrument.sourceBusinessId,
+        type: 'gift_card_used',
+        pointsDelta: 0,
+        balanceBefore: getBusinessBalance(appState, instrument.sourceBusinessId).available,
+        balanceAfter: getBusinessBalance(appState, instrument.sourceBusinessId).available,
+        refType: 'reward_instrument',
+        refId: instrument.id,
+        reason: `used_${amountCents}_cents`,
+        reversalOf: null,
+        amountCents,
+        remainingValueCents,
+        createdAt: timestamp.value
+      };
+      appState.redemptions = appState.redemptions.map((row) => row === instrument ? nextInstrument : row);
+      appState.ledger = [ledger, ...appState.ledger];
+      return { ok: true, instrument: nextInstrument, ledger };
+    }
+
+    function expireRewardInstruments(appState, now = Date.now()) {
+      if (!isRecord(appState) || !Array.isArray(appState.redemptions) || !Array.isArray(appState.ledger)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const expiring = appState.redemptions.filter((instrument) => isValidPersistedRedemption(appState, instrument)
+        && instrument.status === 'issued'
+        && Date.parse(instrument.expiresAt) <= now);
+      if (expiring.length === 0) return { ok: true, expired: [], idempotent: true };
+      const events = [];
+      for (let index = 0; index < expiring.length; index += 1) {
+        const ledgerId = createUniqueLoyaltyEventId(
+          { ...appState, ledger: [...appState.ledger, ...events] },
+          `ledger-expire-${index + 1}`
+        );
+        if (!ledgerId.ok) return ledgerId;
+        const balance = getBusinessBalance(appState, expiring[index].sourceBusinessId).available;
+        events.push({
+          id: ledgerId.value,
+          businessId: expiring[index].sourceBusinessId,
+          type: 'reward_expired',
+          pointsDelta: 0,
+          balanceBefore: balance,
+          balanceAfter: balance,
+          refType: 'reward_instrument',
+          refId: expiring[index].id,
+          reason: 'instrument_expired_no_point_return',
+          reversalOf: null,
+          createdAt: timestamp.value
+        });
+      }
+      const expiredIds = new Set(expiring.map((instrument) => instrument.id));
+      appState.redemptions = appState.redemptions.map((instrument) => expiredIds.has(instrument.id)
+        ? { ...instrument, status: 'expired', expiredAt: timestamp.value }
+        : instrument);
+      appState.ledger = [...events, ...appState.ledger];
+      return {
+        ok: true,
+        expired: appState.redemptions.filter((instrument) => expiredIds.has(instrument.id)),
+        events,
+        idempotent: false
+      };
+    }
     const COPY = {
       vi: {
         scanSignedOutCustomer: 'Chưa đăng nhập', scanPrivateSummary: 'Đăng nhập để xem',
@@ -15396,6 +15634,11 @@
       issueReward,
       isValidRewardInstrument,
       redeemReward,
+      settlePendingPoints,
+      reversePointTransaction,
+      voidRewardInstrument,
+      consumeGiftCard,
+      expireRewardInstruments,
       normalizeUsPhone,
       requestOtp,
       verifyOtp,

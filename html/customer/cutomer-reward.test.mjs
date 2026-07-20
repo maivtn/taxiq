@@ -351,6 +351,77 @@ test('atomically issues a catalog snapshot and returns it for duplicate confirma
   assert.equal(state.balances['bitcoin-nail-bar'].version, 2);
 });
 
+test('settles pending points into available without double counting lifetime', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const before = structuredClone(state.balances['bitcoin-nail-bar']);
+  const result = api.settlePendingPoints(
+    state, 'bitcoin-nail-bar', 40, 'payment verified', Date.parse('2026-07-20T11:00:00.000Z')
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.balance.pending, before.pending - 40);
+  assert.equal(result.balance.available, before.available + 40);
+  assert.equal(result.balance.lifetime, before.lifetime);
+  assert.equal(result.ledger.type, 'points_settled');
+});
+
+test('voids one unused instrument and restores points through a linked event', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const issued = api.redeemReward(state, 'credit5', 'void-me').instrument;
+  const originalDebit = state.ledger.find((entry) => entry.refType === 'redemption' && entry.refId === issued.id);
+  const availableAfterIssuance = state.balances['bitcoin-nail-bar'].available;
+  const result = api.voidRewardInstrument(
+    state, issued.id, { restorePoints: true, reason: 'Manager correction' }, Date.parse('2026-07-20T12:00:00.000Z')
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.instrument.status, 'voided');
+  assert.equal(result.ledger.reversalOf, originalDebit.id);
+  assert.equal(result.ledger.pointsDelta, issued.pointsSpent);
+  assert.equal(state.balances['bitcoin-nail-bar'].available, availableAfterIssuance + issued.pointsSpent);
+});
+
+test('partially consumes gift card value without converting it back to points', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const issued = api.redeemReward(state, 'gift5', 'gift-use').instrument;
+  const availableAfterIssuance = state.balances['bitcoin-nail-bar'].available;
+  const result = api.consumeGiftCard(
+    state, issued.id, 200, 'bitcoin-nail-bar', Date.parse('2026-07-20T12:00:00.000Z')
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.instrument.remainingValueCents, 300);
+  assert.equal(result.instrument.status, 'issued');
+  assert.equal(state.balances['bitcoin-nail-bar'].available, availableAfterIssuance);
+});
+
+test('expires an issued instrument without returning points', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const issued = api.redeemReward(state, 'credit5', 'expire-me', Date.parse('2026-01-01T00:00:00.000Z')).instrument;
+  const available = state.balances['bitcoin-nail-bar'].available;
+  const result = api.expireRewardInstruments(state, Date.parse('2027-01-01T00:00:00.000Z'));
+  assert.equal(result.ok, true);
+  assert.equal(state.redemptions.find((row) => row.id === issued.id).status, 'expired');
+  assert.equal(state.balances['bitcoin-nail-bar'].available, available);
+});
+
+test('reverses earned points proportionally with an append-only linked transaction', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const original = structuredClone(state.ledger.find((entry) => entry.id === 'led-visit-1'));
+  const before = state.balances['bitcoin-nail-bar'];
+  const result = api.reversePointTransaction(
+    state, original.id, 60, 'Partial refund 50%', Date.parse('2026-07-20T13:00:00.000Z')
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.ledger.pointsDelta, -60);
+  assert.equal(result.ledger.reversalOf, original.id);
+  assert.equal(state.balances['bitcoin-nail-bar'].available, before.available - 60);
+  assert.equal(state.balances['bitcoin-nail-bar'].lifetime, before.lifetime - 60);
+  assert.equal(JSON.stringify(state.ledger.find((entry) => entry.id === original.id)), JSON.stringify(original));
+});
+
 test('migrates customer journey collections into schema v3 without changing the storage key', () => {
   const { api } = testApi();
   const migrated = api.migrateState({
