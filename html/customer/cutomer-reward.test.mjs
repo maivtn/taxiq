@@ -5,6 +5,17 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
+function contrastRatio(foreground, background) {
+  const luminance = (hex) => {
+    const channels = hex.match(/[0-9a-f]{2}/gi).map((value) => Number.parseInt(value, 16) / 255);
+    const linear = channels.map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+  };
+  const first = luminance(foreground);
+  const second = luminance(background);
+  return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+}
+
 function createMemoryStorage(seed = {}) {
   const values = new Map(Object.entries(seed));
   return {
@@ -518,7 +529,36 @@ test('runs every loyalty Demo QA scenario through append-only lifecycle changes'
   assert.equal(expired.balances['bitcoin-nail-bar'].available, expireAvailable);
 });
 
-test('migrates customer journey collections into schema v3 without changing the storage key', () => {
+test('defaults every new loyalty state label to Vietnamese without mixed copy', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  assert.equal(state.profile.language, 'vi');
+  assert.match(html(), /<html lang="vi">/);
+  for (const key of [
+    'availableBalance', 'pendingBalance', 'lifetimeBalance',
+    'giftCardType', 'dollarDiscountType', 'percentDiscountType', 'freeServiceType', 'freeProductType',
+    'rewardPaused', 'rewardOutOfStock', 'rewardLimitReached', 'rewardWrongLocation',
+    'rewardSubmitting', 'staleBalance', 'rewardIssueFailed',
+    'pointsSettled', 'refundReversal', 'voidRestoration', 'rewardExpired',
+    'demoSettlePending', 'demoTogglePause', 'demoMakeStale', 'demoPartialRefund',
+    'demoVoidRestore', 'demoConsumeGiftCard', 'demoExpireInstruments'
+  ]) {
+    assert.equal(typeof api.COPY.vi[key], 'string', `missing Vietnamese copy: ${key}`);
+    assert.equal(typeof api.COPY.en[key], 'string', `missing English copy: ${key}`);
+  }
+});
+
+test('loyalty controls expose status text keyboard focus and AA color pairs', () => {
+  const source = html();
+  assert.match(source, /aria-busy/);
+  assert.match(source, /role="alert"/);
+  assert.match(source, /focus-visible:outline/);
+  assert.match(source, /id="loyalty-demo-result"[^>]*aria-live="polite"/);
+  assert.ok(contrastRatio('#f7f7ff', '#0d1024') >= 4.5);
+  assert.ok(contrastRatio('#9da6c9', '#0d1024') >= 4.5);
+});
+
+test('migrates customer journey collections into schema v4 without changing the storage key', () => {
   const { api } = testApi();
   const migrated = api.migrateState({
     schemaVersion: 1,
@@ -533,7 +573,7 @@ test('migrates customer journey collections into schema v3 without changing the 
   });
 
   assert.equal(api.STORAGE_KEY, 'nexora.customer.prototype.v1');
-  assert.equal(migrated.schemaVersion, 3);
+  assert.equal(migrated.schemaVersion, 4);
   assert.equal(migrated.guestCheckins.length, 1);
   assert.deepEqual(migrated.checkoutDrafts, []);
   assert.deepEqual(migrated.paymentProofs, []);
@@ -805,7 +845,13 @@ test('migrates valid JSON with malformed fields into the known state schema', ()
 
   const migrated = api.loadState(storage);
   assert.equal(JSON.stringify(migrated.profile), JSON.stringify(defaults.profile));
-  assert.equal(JSON.stringify(migrated.balances), JSON.stringify(defaults.balances));
+  for (const businessId of Object.keys(defaults.balances)) {
+    const { updatedAt: migratedAt, ...migratedBalance } = migrated.balances[businessId];
+    const { updatedAt: defaultAt, ...defaultBalance } = defaults.balances[businessId];
+    assert.equal(JSON.stringify(migratedBalance), JSON.stringify(defaultBalance));
+    assert.equal(Number.isFinite(Date.parse(migratedAt)), true);
+    assert.equal(Number.isFinite(Date.parse(defaultAt)), true);
+  }
   assert.equal(JSON.stringify(migrated.session), JSON.stringify(defaults.session));
   assert.equal(JSON.stringify(migrated.wishes), JSON.stringify(defaults.wishes));
   assert.equal(migrated.preferences.nearbyDeals, defaults.preferences.nearbyDeals);
@@ -3373,7 +3419,7 @@ test('restores a persisted redeem screen and preview without writing storage or 
   assert.equal(home.classList.contains('hidden'), true);
   assert.equal(redeem.classList.contains('hidden'), false);
   assert.equal(redeem.classList.contains('is-active'), true);
-  assert.equal(document.getElementById('reward-title').textContent, 'Tín dụng dịch vụ $5');
+  assert.equal(document.getElementById('reward-title').textContent, 'Giảm $5 dịch vụ');
   assert.equal(document.getElementById('reward-cost').textContent, '500 điểm');
   assert.equal(document.getElementById('reward-after').textContent, '1.950 điểm');
   assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt.idempotencyKey', context), 'persisted-reward-attempt');

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -5815,6 +5815,8 @@
     function normalizePointBalance(raw, fallback = {}, now = Date.now()) {
       const source = isRecord(raw) ? raw : {};
       const base = isRecord(fallback) ? fallback : {};
+      const hasBalanceAmount = Object.prototype.hasOwnProperty.call(source, 'points')
+        || Object.prototype.hasOwnProperty.call(source, 'available');
       const nonNegative = (candidate, fallbackValue = 0) => Number.isSafeInteger(candidate) && candidate >= 0
         ? candidate
         : fallbackValue;
@@ -5825,13 +5827,18 @@
         source.points,
         nonNegative(source.available, nonNegative(base.points, nonNegative(base.available, 0)))
       );
-      const pending = nonNegative(source.pending, 0);
-      const lifetime = nonNegative(source.lifetime, available);
+      const pending = nonNegative(source.pending, hasBalanceAmount ? 0 : nonNegative(base.pending, 0));
+      const lifetime = nonNegative(
+        source.lifetime,
+        hasBalanceAmount ? available : nonNegative(base.lifetime, available)
+      );
       const credits = nonNegative(source.credits, nonNegative(base.credits, 0));
-      const version = positive(source.version, 1);
+      const version = positive(source.version, positive(base.version, 1));
       const timestamp = typeof source.updatedAt === 'string' && Number.isFinite(Date.parse(source.updatedAt))
         ? source.updatedAt
-        : new Date(now).toISOString();
+        : typeof base.updatedAt === 'string' && Number.isFinite(Date.parse(base.updatedAt))
+          ? base.updatedAt
+          : new Date(now).toISOString();
       const sourceExpiry = source.expiringPoints;
       const validSourceExpiry = isRecord(sourceExpiry)
         && Number.isSafeInteger(sourceExpiry.amount)
@@ -5841,7 +5848,7 @@
       const expiringPoints = sourceExpiry === null
         ? null
         : validSourceExpiry
-          ? structuredClone(sourceExpiry)
+          ? { amount: sourceExpiry.amount, date: sourceExpiry.date }
           : source.expiringPoints !== undefined
             ? null
             : structuredClone(base.expiringPoints ?? null);
@@ -9491,6 +9498,12 @@
         scanSignedOutCustomer: 'Chưa đăng nhập', scanPrivateSummary: 'Đăng nhập để xem',
         points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', noExpiry: 'Chưa có điểm sắp hết hạn.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', rewardReadyStatus: 'Sẵn sàng', rewardIssuedStatus: 'Đã phát hành', rewardUsedStatus: 'Đã dùng', rewardExpiredStatus: 'Hết hạn', rewardVoidedStatus: 'Đã hủy — hoàn điểm', rewardReversedStatus: 'Đã thu hồi', showCode: 'Hiện mã', rewardRedeemedEmpty: 'Chưa có phần thưởng nào khả dụng. Hãy xem tab Khám phá.', rewardUsedEmpty: 'Chưa có phần thưởng nào được dùng tại tiệm.', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
         pointsSettled: 'Điểm đã khả dụng', refundReversal: 'Thu hồi điểm do hoàn tiền', voidRestoration: 'Hoàn điểm do hủy phần thưởng', rewardVoided: 'Phần thưởng đã hủy', giftCardUsed: 'Đã dùng Gift Card', rewardExpired: 'Phần thưởng hết hạn',
+        availableBalance: 'Khả dụng', pendingBalance: 'Đang chờ', lifetimeBalance: 'Tích lũy',
+        giftCardType: 'Gift Card', dollarDiscountType: 'Giảm cố định', percentDiscountType: 'Giảm theo %', freeServiceType: 'Dịch vụ miễn phí', freeProductType: 'Sản phẩm miễn phí',
+        rewardPaused: 'Reward đang tạm dừng', rewardOutOfStock: 'Reward đã hết', rewardLimitReached: 'Đã đạt giới hạn đổi', rewardWrongLocation: 'Không áp dụng tại địa điểm này',
+        rewardSubmitting: 'Đang phát hành phần thưởng…', staleBalance: 'Số dư đã thay đổi. Hãy kiểm tra số mới rồi xác nhận lại.', rewardIssueFailed: 'Không thể phát hành phần thưởng.', insufficientAvailable: 'Số điểm khả dụng không đủ để đổi phần thưởng này.',
+        demoSettlePending: 'Chuyển điểm đang chờ', demoTogglePause: 'Pause/unpause reward $5', demoMakeStale: 'Tạo stale balance', demoPartialRefund: 'Hoàn tiền một phần', demoVoidRestore: 'Hủy reward và hoàn điểm', demoConsumeGiftCard: 'Dùng $2 Gift Card', demoExpireInstruments: 'Cho reward hết hạn',
+        walletUpdated: 'Cập nhật {date}', demoSettleDone: 'Đã chuyển điểm đang chờ sang Khả dụng.', demoPauseDone: 'Đã đổi trạng thái reward.', demoStaleDone: 'Đã thay đổi phiên bản số dư.', demoRefundDone: 'Đã tạo giao dịch thu hồi điểm do hoàn tiền một phần.', demoVoidDone: 'Đã hủy reward chưa dùng và hoàn điểm.', demoGiftDone: 'Đã dùng một phần giá trị Gift Card.', demoExpireDone: 'Đã cho {count} reward hết hạn.', demoFailed: 'Không chạy được mô phỏng ({code}).',
         paymentSent: 'Đã gửi ${amount} cho tiệm', paymentConfirmedTitle: 'Đã xác nhận thanh toán', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu', saveOffer: 'Lưu ưu đãi', view: 'Xem', rebook: 'Đặt lại', tip: 'Gửi tip', delete: 'Xóa', followingTech: 'Đang theo dõi thợ', followTech: 'Theo dõi thợ', removeWish: 'Xóa mong muốn', favorite: 'Đã yêu thích', addFavorite: 'Thêm yêu thích', recentVisit: 'Lượt ghé gần đây',
         offerSaved: 'Đã lưu ưu đãi', offerRemoved: 'Đã bỏ lưu ưu đãi', offerSaveFailed: 'Ưu đãi không hợp lệ.', offerPeriod: 'Thời gian áp dụng', offerLocation: 'Địa điểm áp dụng', offerTerms: 'Quy định', offerUnavailable: 'Không mở được ưu đãi này. Vui lòng thử lại.', wishRequired: 'Hãy nhập mong muốn', wishDuplicate: 'Mong muốn này đã tồn tại.', wishShared: 'Đã gửi mong muốn ẩn danh',
         lookServiceRequired: 'Hãy nhập tên dịch vụ', lookRequired: 'Hãy nhập ảnh, dịch vụ, màu hoặc ghi chú.', lookSaveFailed: 'Không thể lưu kiểu. Vui lòng thử lại.', lookPhotoQuota: 'Bộ nhớ ảnh đã đầy; đã lưu thông tin kiểu không kèm ảnh.', lookSaved: 'Đã lưu kiểu mới', lookUpdated: 'Đã cập nhật kiểu', lookNotFound: 'Không tìm thấy kiểu này.', noLookNote: 'Không có ghi chú.',
@@ -9539,6 +9552,12 @@
         scanSignedOutCustomer: 'Signed out', scanPrivateSummary: 'Sign in to view',
         points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', noExpiry: 'No points expiring soon.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', rewardReadyStatus: 'Ready', rewardIssuedStatus: 'Issued', rewardUsedStatus: 'Used', rewardExpiredStatus: 'Expired', rewardVoidedStatus: 'Voided — points restored', rewardReversedStatus: 'Reversed', showCode: 'Show code', rewardRedeemedEmpty: 'No reward is available to use yet. Check the Explore tab.', rewardUsedEmpty: 'No reward has been used at a salon yet.', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
         pointsSettled: 'Points became available', refundReversal: 'Points reversed after refund', voidRestoration: 'Points restored after reward void', rewardVoided: 'Reward voided', giftCardUsed: 'Gift Card used', rewardExpired: 'Reward expired',
+        availableBalance: 'Available', pendingBalance: 'Pending', lifetimeBalance: 'Lifetime',
+        giftCardType: 'Gift Card', dollarDiscountType: 'Fixed discount', percentDiscountType: 'Percent off', freeServiceType: 'Free service', freeProductType: 'Free product',
+        rewardPaused: 'Reward paused', rewardOutOfStock: 'Reward out of stock', rewardLimitReached: 'Redemption limit reached', rewardWrongLocation: 'Not valid at this location',
+        rewardSubmitting: 'Issuing reward…', staleBalance: 'Your available balance changed. Review the updated amount, then confirm again.', rewardIssueFailed: 'Could not issue the reward.', insufficientAvailable: 'There are not enough available points for this reward.',
+        demoSettlePending: 'Settle pending points', demoTogglePause: 'Pause/unpause $5 reward', demoMakeStale: 'Make balance stale', demoPartialRefund: 'Partial refund', demoVoidRestore: 'Void and restore points', demoConsumeGiftCard: 'Use $2 Gift Card', demoExpireInstruments: 'Expire issued rewards',
+        walletUpdated: 'Updated {date}', demoSettleDone: 'Pending points moved to Available.', demoPauseDone: 'Reward status changed.', demoStaleDone: 'Balance version changed.', demoRefundDone: 'Partial refund reversal created.', demoVoidDone: 'Unused reward voided and points restored.', demoGiftDone: 'Gift Card stored value was partially used.', demoExpireDone: '{count} reward(s) expired.', demoFailed: 'Demo could not run ({code}).',
         paymentSent: '${amount} sent to the salon', paymentConfirmedTitle: 'Payment Confirmed', insufficientPoints: 'Not enough points', saved: 'Saved', saveOffer: 'Save offer', view: 'View', rebook: 'Rebook', tip: 'Tip', delete: 'Delete', followingTech: 'Following tech', followTech: 'Follow tech', removeWish: 'Remove wish', favorite: 'Favorite', addFavorite: 'Add favorite', recentVisit: 'Recent visit',
         offerSaved: 'Offer saved', offerRemoved: 'Offer removed', offerSaveFailed: 'Invalid offer.', offerPeriod: 'When it runs', offerLocation: 'Where it applies', offerTerms: 'Terms', offerUnavailable: 'Could not open this offer. Please try again.', wishRequired: 'Enter a wish first', wishDuplicate: 'This wish already exists.', wishShared: 'Anonymous wish shared',
         lookServiceRequired: 'Enter a service name', lookRequired: 'Add a photo, service, color or note.', lookSaveFailed: 'Could not save this look.', lookPhotoQuota: 'Image storage is full; look details were saved without the photo.', lookSaved: 'New look saved', lookUpdated: 'Look updated', lookNotFound: 'That look no longer exists.', noLookNote: 'No note.',
@@ -11082,16 +11101,11 @@
         const flowError = document.getElementById('reward-flow-error');
         if (flowStatus) flowStatus.textContent = '';
         if (flowError) {
-          const messages = state.profile.language === 'en'
-            ? {
-                stale_balance: 'Your available balance changed. Review the updated amount, then confirm again.',
-                insufficient_points: 'There are not enough available points for this reward.'
-              }
-            : {
-                stale_balance: 'Số dư đã thay đổi. Hãy kiểm tra số mới rồi xác nhận lại.',
-                insufficient_points: 'Số điểm khả dụng không đủ để đổi phần thưởng này.'
-              };
-          flowError.textContent = messages[result.code] ?? t('rewardRedeemFailed');
+          const messageKeys = {
+            stale_balance: 'staleBalance',
+            insufficient_points: 'insufficientAvailable'
+          };
+          flowError.textContent = t(messageKeys[result.code] ?? 'rewardIssueFailed');
           flowError.classList.remove('hidden');
         }
         if (navigate) {
@@ -13207,34 +13221,22 @@
       const result = commitState((draft) => runLoyaltyDemoAction(draft, action, {}, Date.now()));
       const resultCopy = document.getElementById('loyalty-demo-result');
       if (!result.ok) {
-        const message = state.profile.language === 'en'
-          ? `Demo could not run (${result.code}).`
-          : `Không chạy được mô phỏng (${result.code}).`;
+        const message = t('demoFailed', { code: result.code });
         if (resultCopy) resultCopy.textContent = message;
         showToast(message, 'error');
         return result;
       }
       renderApp();
-      const labels = state.profile.language === 'en'
-        ? {
-            settle_pending: 'Pending points moved to Available.',
-            toggle_pause: `Reward is now ${result.status}.`,
-            make_stale: 'Balance version changed.',
-            partial_refund: 'Partial refund reversal created.',
-            void_restore: 'Unused reward voided and points restored.',
-            consume_gift_card: 'Gift Card stored value was partially used.',
-            expire_instruments: `${result.expired?.length ?? 0} reward(s) expired.`
-          }
-        : {
-            settle_pending: 'Đã chuyển điểm đang chờ sang Khả dụng.',
-            toggle_pause: `Reward hiện ở trạng thái ${result.status}.`,
-            make_stale: 'Đã thay đổi phiên bản số dư.',
-            partial_refund: 'Đã tạo giao dịch thu hồi điểm do hoàn tiền một phần.',
-            void_restore: 'Đã hủy reward chưa dùng và hoàn điểm.',
-            consume_gift_card: 'Đã dùng một phần giá trị Gift Card.',
-            expire_instruments: `Đã cho ${result.expired?.length ?? 0} reward hết hạn.`
-          };
-      const message = labels[action] ?? (state.profile.language === 'en' ? 'Demo completed.' : 'Đã chạy mô phỏng.');
+      const messageKeys = {
+        settle_pending: 'demoSettleDone',
+        toggle_pause: 'demoPauseDone',
+        make_stale: 'demoStaleDone',
+        partial_refund: 'demoRefundDone',
+        void_restore: 'demoVoidDone',
+        consume_gift_card: 'demoGiftDone',
+        expire_instruments: 'demoExpireDone'
+      };
+      const message = t(messageKeys[action] ?? 'demoPauseDone', { count: result.expired?.length ?? 0 });
       const refreshedCopy = document.getElementById('loyalty-demo-result');
       if (refreshedCopy) refreshedCopy.textContent = message;
       showToast(message);
@@ -13246,7 +13248,7 @@
       control.setAttribute('aria-busy', 'true');
       const status = document.getElementById('reward-flow-status');
       const error = document.getElementById('reward-flow-error');
-      if (status) status.textContent = state.profile.language === 'en' ? 'Issuing reward…' : 'Đang phát hành phần thưởng…';
+      if (status) status.textContent = t('rewardSubmitting');
       if (error) {
         error.textContent = '';
         error.classList.add('hidden');
@@ -14333,9 +14335,7 @@
         const dateLabel = Number.isFinite(updatedDate.getTime())
           ? updatedDate.toLocaleString(locale, { dateStyle: 'short', timeStyle: 'short' })
           : t('dateUnavailable');
-        updatedAt.textContent = state.profile.language === 'en'
-          ? `Updated ${dateLabel}`
-          : `Cập nhật ${dateLabel}`;
+        updatedAt.textContent = t('walletUpdated', { date: dateLabel });
       }
       document.querySelectorAll('[data-balance-points]').forEach((element) => {
         element.textContent = formatPointNumber(getBusinessBalance(state, element.dataset.balancePoints).available);
@@ -14556,16 +14556,11 @@
         title.textContent = reward.title[state.profile.language] ?? reward.title.vi;
         const type = document.createElement('span');
         type.className = 'w-fit rounded-full bg-app-purple/10 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-app-purple';
-        const typeLabels = state.profile.language === 'en'
-          ? {
-              gift_card: 'Gift Card', dollar_discount: 'Fixed discount', percent_discount: 'Percent off',
-              free_service: 'Free service', free_product: 'Free product'
-            }
-          : {
-              gift_card: 'Gift Card', dollar_discount: 'Giảm cố định', percent_discount: 'Giảm theo %',
-              free_service: 'Dịch vụ miễn phí', free_product: 'Sản phẩm miễn phí'
-            };
-        type.textContent = typeLabels[reward.type] ?? reward.type;
+        const typeKeys = {
+          gift_card: 'giftCardType', dollar_discount: 'dollarDiscountType', percent_discount: 'percentDiscountType',
+          free_service: 'freeServiceType', free_product: 'freeProductType'
+        };
+        type.textContent = t(typeKeys[reward.type] ?? 'rewardUnavailable');
         const description = document.createElement('p');
         description.className = 'text-xs leading-5 text-app-muted';
         description.textContent = reward.description[state.profile.language] ?? reward.description.vi;
