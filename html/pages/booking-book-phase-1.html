@@ -3872,6 +3872,14 @@
       vertical-align: middle;
     }
 
+    /* Appointments Overview: hide Time and Duration columns */
+    .booking-table[data-booking-table] th:nth-child(1),
+    .booking-table[data-booking-table] td:nth-child(1),
+    .booking-table[data-booking-table] th:nth-child(6),
+    .booking-table[data-booking-table] td:nth-child(6) {
+      display: none;
+    }
+
     .booking-table-row {
       transition: background 0.2s, opacity 0.2s;
     }
@@ -5943,6 +5951,13 @@
       .call-table td:nth-child(5)::before { content: "Duration"; }
       .call-table td:nth-child(6)::before { content: "Notes"; }
       .call-table td:nth-child(7)::before { content: "Action"; }
+
+      .booking-table[data-booking-table] td:nth-child(2)::before { content: "Customer"; }
+      .booking-table[data-booking-table] td:nth-child(3)::before { content: "Service"; }
+      .booking-table[data-booking-table] td:nth-child(4)::before { content: "Technician"; }
+      .booking-table[data-booking-table] td:nth-child(5)::before { content: "Appointment"; }
+      .booking-table[data-booking-table] td:nth-child(7)::before { content: "Status"; }
+      .booking-table[data-booking-table] td:nth-child(8)::before { content: "Action"; }
 
       /* Chips stay auto-width (never stretch full-width) on mobile */
       .booking-status-chips {
