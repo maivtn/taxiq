@@ -5,6 +5,17 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
+function contrastRatio(foreground, background) {
+  const luminance = (hex) => {
+    const channels = hex.match(/[0-9a-f]{2}/gi).map((value) => Number.parseInt(value, 16) / 255);
+    const linear = channels.map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+  };
+  const first = luminance(foreground);
+  const second = luminance(background);
+  return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+}
+
 function createMemoryStorage(seed = {}) {
   const values = new Map(Object.entries(seed));
   return {
@@ -249,18 +260,305 @@ function customerJourneyFixture() {
   };
 }
 
-test('creates versioned Vietnamese demo state with per-business balances', () => {
+test('creates schema v4 wallets with distinct available pending and lifetime balances', () => {
   const { api } = testApi();
   const state = api.createDefaultState();
-  assert.equal(state.schemaVersion, 3);
+  assert.equal(state.schemaVersion, 4);
   assert.equal(state.profile.language, 'vi');
-  assert.equal(state.balances['bitcoin-nail-bar'].points, 2450);
+  const wallet = state.balances['bitcoin-nail-bar'];
+  assert.deepEqual(
+    { available: wallet.available, pending: wallet.pending, lifetime: wallet.lifetime },
+    { available: 2450, pending: 120, lifetime: 4270 }
+  );
+  assert.equal(wallet.points, wallet.available);
+  assert.equal(wallet.version, 1);
+  assert.match(wallet.updatedAt, /^\d{4}-\d{2}-\d{2}T/);
   assert.equal(state.balances['golden-glow-spa'].points, 600);
   assert.equal(state.balances['moon-coffee'].points, 120);
   assert.equal('pointBalance' in state, false);
 });
 
-test('migrates customer journey collections into schema v3 without changing the storage key', () => {
+test('migrates a legacy points balance without changing spendable value', () => {
+  const { api } = testApi();
+  const migrated = api.migrateState({
+    schemaVersion: 3,
+    profile: { language: 'vi' },
+    balances: {
+      'bitcoin-nail-bar': { points: 730, credits: 0, expiringPoints: null }
+    }
+  });
+  const wallet = migrated.balances['bitcoin-nail-bar'];
+  assert.equal(wallet.available, 730);
+  assert.equal(wallet.points, 730);
+  assert.equal(wallet.pending, 0);
+  assert.equal(wallet.lifetime, 730);
+  assert.equal(wallet.version, 1);
+});
+
+test('defines all five customer reward types with required semantics', () => {
+  const { api } = testApi();
+  const rewards = Object.values(api.REWARDS).filter(api.isPurchasableReward);
+  assert.deepEqual(new Set(rewards.map((reward) => reward.type)), new Set([
+    'gift_card', 'dollar_discount', 'percent_discount', 'free_service', 'free_product'
+  ]));
+  rewards.forEach((reward) => assert.equal(api.validateRewardDefinition(reward).ok, true));
+  assert.ok(rewards.find((reward) => reward.type === 'percent_discount').maximumDiscountCents > 0);
+  assert.ok(rewards.find((reward) => reward.type === 'free_product').linkedItemId);
+});
+
+test('uses available points only and reports paused stock limit and location failures', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  state.balances['bitcoin-nail-bar'] = {
+    ...state.balances['bitcoin-nail-bar'], available: 100, points: 100, pending: 5000
+  };
+  assert.equal(api.getRewardEligibility(state, api.REWARDS.credit5, 'bitcoin-nail-bar').code, 'insufficient_points');
+  assert.equal(api.getRewardEligibility(state, { ...api.REWARDS.credit5, status: 'paused' }, 'bitcoin-nail-bar').code, 'reward_paused');
+  assert.equal(api.getRewardEligibility(state, { ...api.REWARDS.credit5, stock: 0 }, 'bitcoin-nail-bar').code, 'out_of_stock');
+  assert.equal(api.getRewardEligibility(state, api.REWARDS.credit5, 'moon-coffee').code, 'wrong_location');
+  state.redemptions.push({
+    ...state.redemptions[0], id: 'limit-reward', idempotencyKey: 'limit-attempt',
+    rewardKey: 'credit5', customerId: state.profile.id, status: 'issued'
+  });
+  assert.equal(api.getRewardEligibility(
+    state,
+    { ...api.REWARDS.credit5, perCustomerLimit: 1 },
+    'bitcoin-nail-bar'
+  ).code, 'limit_reached');
+});
+
+test('stops stale issuance without mutating wallet ledger or instruments', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const wallet = state.balances['bitcoin-nail-bar'];
+  const before = JSON.stringify({ balances: state.balances, ledger: state.ledger, redemptions: state.redemptions });
+  const result = api.issueReward(state, {
+    rewardKey: 'credit5', idempotencyKey: 'attempt-stale',
+    expectedBalanceVersion: wallet.version - 1,
+    issuingLocationId: 'bitcoin-nail-bar', now: Date.parse('2026-07-20T10:00:00.000Z')
+  });
+  assert.equal(result.code, 'stale_balance');
+  assert.equal(JSON.stringify({ balances: state.balances, ledger: state.ledger, redemptions: state.redemptions }), before);
+});
+
+test('atomically issues a catalog snapshot and returns it for duplicate confirmation', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const request = {
+    rewardKey: 'credit5', idempotencyKey: 'attempt-1',
+    expectedBalanceVersion: state.balances['bitcoin-nail-bar'].version,
+    issuingLocationId: 'bitcoin-nail-bar', now: Date.parse('2026-07-20T10:00:00.000Z')
+  };
+  const first = api.issueReward(state, request);
+  const second = api.issueReward(state, request);
+  assert.equal(first.ok, true);
+  assert.equal(first.instrument.status, 'issued');
+  assert.equal(first.instrument.catalogSnapshot.type, 'dollar_discount');
+  assert.match(first.instrument.code, /^NT-/);
+  assert.equal(first.instrument.pointsSpent, 500);
+  assert.equal(second.instrument.id, first.instrument.id);
+  assert.equal(second.idempotent, true);
+  assert.equal(state.balances['bitcoin-nail-bar'].available, 1950);
+  assert.equal(state.balances['bitcoin-nail-bar'].version, 2);
+});
+
+test('settles pending points into available without double counting lifetime', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const before = structuredClone(state.balances['bitcoin-nail-bar']);
+  const result = api.settlePendingPoints(
+    state, 'bitcoin-nail-bar', 40, 'payment verified', Date.parse('2026-07-20T11:00:00.000Z')
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.balance.pending, before.pending - 40);
+  assert.equal(result.balance.available, before.available + 40);
+  assert.equal(result.balance.lifetime, before.lifetime);
+  assert.equal(result.ledger.type, 'points_settled');
+});
+
+test('voids one unused instrument and restores points through a linked event', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const issued = api.redeemReward(state, 'credit5', 'void-me').instrument;
+  const originalDebit = state.ledger.find((entry) => entry.refType === 'redemption' && entry.refId === issued.id);
+  const availableAfterIssuance = state.balances['bitcoin-nail-bar'].available;
+  const result = api.voidRewardInstrument(
+    state, issued.id, { restorePoints: true, reason: 'Manager correction' }, Date.parse('2026-07-20T12:00:00.000Z')
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.instrument.status, 'voided');
+  assert.equal(result.ledger.reversalOf, originalDebit.id);
+  assert.equal(result.ledger.pointsDelta, issued.pointsSpent);
+  assert.equal(state.balances['bitcoin-nail-bar'].available, availableAfterIssuance + issued.pointsSpent);
+});
+
+test('partially consumes gift card value without converting it back to points', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const issued = api.redeemReward(state, 'gift5', 'gift-use').instrument;
+  const availableAfterIssuance = state.balances['bitcoin-nail-bar'].available;
+  const result = api.consumeGiftCard(
+    state, issued.id, 200, 'bitcoin-nail-bar', Date.parse('2026-07-20T12:00:00.000Z')
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.instrument.remainingValueCents, 300);
+  assert.equal(result.instrument.status, 'issued');
+  assert.equal(state.balances['bitcoin-nail-bar'].available, availableAfterIssuance);
+});
+
+test('expires an issued instrument without returning points', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const issued = api.redeemReward(state, 'credit5', 'expire-me', Date.parse('2026-01-01T00:00:00.000Z')).instrument;
+  const available = state.balances['bitcoin-nail-bar'].available;
+  const result = api.expireRewardInstruments(state, Date.parse('2027-01-01T00:00:00.000Z'));
+  assert.equal(result.ok, true);
+  assert.equal(state.redemptions.find((row) => row.id === issued.id).status, 'expired');
+  assert.equal(state.balances['bitcoin-nail-bar'].available, available);
+});
+
+test('reverses earned points proportionally with an append-only linked transaction', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const original = structuredClone(state.ledger.find((entry) => entry.id === 'led-visit-1'));
+  const before = state.balances['bitcoin-nail-bar'];
+  const result = api.reversePointTransaction(
+    state, original.id, 60, 'Partial refund 50%', Date.parse('2026-07-20T13:00:00.000Z')
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.ledger.pointsDelta, -60);
+  assert.equal(result.ledger.reversalOf, original.id);
+  assert.equal(state.balances['bitcoin-nail-bar'].available, before.available - 60);
+  assert.equal(state.balances['bitcoin-nail-bar'].lifetime, before.lifetime - 60);
+  assert.equal(JSON.stringify(state.ledger.find((entry) => entry.id === original.id)), JSON.stringify(original));
+});
+
+test('renders distinct wallet balances and accessible loading error states', () => {
+  const source = html();
+  assert.match(source, /id="wallet-available"/);
+  assert.match(source, /id="wallet-pending"/);
+  assert.match(source, /id="wallet-lifetime"/);
+  assert.match(source, /id="wallet-loading"[^>]*aria-live="polite"/);
+  assert.match(source, /id="wallet-error"[^>]*role="alert"/);
+  assert.match(source, /id="wallet-updated-at"/);
+  assert.match(source, /function setWalletViewState\(/);
+  assert.match(source, /registerAction\('retry-wallet'/);
+});
+
+test('reward review identifies the customer conditions location and exact balance change', () => {
+  const source = html();
+  for (const id of ['reward-customer', 'reward-conditions', 'reward-location', 'reward-balance', 'reward-after']) {
+    assert.match(source, new RegExp(`id="${id}"`));
+  }
+  assert.match(source, /id="reward-flow-status"[^>]*aria-live="polite"/);
+  assert.match(source, /id="reward-flow-error"[^>]*role="alert"/);
+});
+
+test('reward receipt exposes lifecycle expiry and gift card remaining value', () => {
+  const source = html();
+  for (const id of ['reward-done-status', 'reward-done-issued-at', 'reward-done-expires-at', 'reward-done-remaining']) {
+    assert.match(source, new RegExp(`id="${id}"`));
+  }
+});
+
+test('labels loyalty simulation controls as Demo QA and not production', () => {
+  const source = html();
+  assert.match(source, /id="loyalty-demo-panel"/);
+  assert.match(source, /Demo\/QA — không thuộc production/);
+  for (const action of ['settle_pending', 'toggle_pause', 'make_stale', 'partial_refund', 'void_restore', 'consume_gift_card', 'expire_instruments']) {
+    assert.match(source, new RegExp(`data-loyalty-demo="${action}"`));
+  }
+});
+
+test('routes Demo QA actions through loyalty domain functions', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  const before = state.balances['bitcoin-nail-bar'].available;
+
+  const result = api.runLoyaltyDemoAction(state, 'settle_pending', {
+    businessId: 'bitcoin-nail-bar', amount: 20
+  }, Date.parse('2026-07-20T12:00:00Z'));
+
+  assert.equal(result.ok, true);
+  assert.equal(state.balances['bitcoin-nail-bar'].available, before + 20);
+});
+
+test('runs every loyalty Demo QA scenario through append-only lifecycle changes', () => {
+  let uuidCalls = 0;
+  const { api } = testApi({}, {
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  const now = Date.parse('2026-07-20T12:00:00Z');
+
+  const paused = api.createDefaultState();
+  assert.equal(api.runLoyaltyDemoAction(paused, 'toggle_pause', {}, now).status, 'paused');
+  assert.equal(paused.ui.loyaltyDemo.catalogStatus.credit5, 'paused');
+  assert.equal(api.runLoyaltyDemoAction(paused, 'toggle_pause', {}, now + 1).status, 'active');
+
+  const stale = api.createDefaultState();
+  const staleVersion = stale.balances['bitcoin-nail-bar'].version;
+  assert.equal(api.runLoyaltyDemoAction(stale, 'make_stale', {}, now).ok, true);
+  assert.equal(stale.balances['bitcoin-nail-bar'].version, staleVersion + 1);
+
+  const refunded = api.createDefaultState();
+  const refund = api.runLoyaltyDemoAction(refunded, 'partial_refund', {}, now);
+  assert.equal(refund.ok, true);
+  assert.equal(refund.ledger.type, 'refund_reversal');
+  assert.equal(refund.ledger.reversalOf, 'led-visit-1');
+
+  const voided = api.createDefaultState();
+  const voidAvailable = voided.balances['bitcoin-nail-bar'].available;
+  const voidResult = api.runLoyaltyDemoAction(voided, 'void_restore', {}, now);
+  assert.equal(voidResult.ok, true);
+  assert.equal(voidResult.instrument.status, 'voided');
+  assert.equal(voided.balances['bitcoin-nail-bar'].available, voidAvailable + voidResult.instrument.pointsSpent);
+
+  const gift = api.createDefaultState();
+  const giftAvailable = gift.balances['bitcoin-nail-bar'].available;
+  const giftResult = api.runLoyaltyDemoAction(gift, 'consume_gift_card', {}, now);
+  assert.equal(giftResult.ok, true);
+  assert.equal(giftResult.instrument.remainingValueCents, 300);
+  assert.equal(gift.balances['bitcoin-nail-bar'].available, giftAvailable - 500);
+  assert.equal(giftResult.ledger.type, 'gift_card_used');
+
+  const expired = api.createDefaultState();
+  const expireAvailable = expired.balances['bitcoin-nail-bar'].available;
+  const expireResult = api.runLoyaltyDemoAction(expired, 'expire_instruments', {}, now);
+  assert.equal(expireResult.ok, true);
+  assert.ok(expireResult.expired.length > 0);
+  assert.equal(expired.balances['bitcoin-nail-bar'].available, expireAvailable);
+});
+
+test('defaults every new loyalty state label to Vietnamese without mixed copy', () => {
+  const { api } = testApi();
+  const state = api.createDefaultState();
+  assert.equal(state.profile.language, 'vi');
+  assert.match(html(), /<html lang="vi">/);
+  for (const key of [
+    'availableBalance', 'pendingBalance', 'lifetimeBalance',
+    'giftCardType', 'dollarDiscountType', 'percentDiscountType', 'freeServiceType', 'freeProductType',
+    'rewardPaused', 'rewardOutOfStock', 'rewardLimitReached', 'rewardWrongLocation',
+    'rewardSubmitting', 'staleBalance', 'rewardIssueFailed',
+    'pointsSettled', 'refundReversal', 'voidRestoration', 'rewardExpired',
+    'demoSettlePending', 'demoTogglePause', 'demoMakeStale', 'demoPartialRefund',
+    'demoVoidRestore', 'demoConsumeGiftCard', 'demoExpireInstruments'
+  ]) {
+    assert.equal(typeof api.COPY.vi[key], 'string', `missing Vietnamese copy: ${key}`);
+    assert.equal(typeof api.COPY.en[key], 'string', `missing English copy: ${key}`);
+  }
+});
+
+test('loyalty controls expose status text keyboard focus and AA color pairs', () => {
+  const source = html();
+  assert.match(source, /aria-busy/);
+  assert.match(source, /role="alert"/);
+  assert.match(source, /focus-visible:outline/);
+  assert.match(source, /id="loyalty-demo-result"[^>]*aria-live="polite"/);
+  assert.ok(contrastRatio('#f7f7ff', '#0d1024') >= 4.5);
+  assert.ok(contrastRatio('#9da6c9', '#0d1024') >= 4.5);
+});
+
+test('migrates customer journey collections into schema v4 without changing the storage key', () => {
   const { api } = testApi();
   const migrated = api.migrateState({
     schemaVersion: 1,
@@ -275,7 +573,7 @@ test('migrates customer journey collections into schema v3 without changing the 
   });
 
   assert.equal(api.STORAGE_KEY, 'nexora.customer.prototype.v1');
-  assert.equal(migrated.schemaVersion, 3);
+  assert.equal(migrated.schemaVersion, 4);
   assert.equal(migrated.guestCheckins.length, 1);
   assert.deepEqual(migrated.checkoutDrafts, []);
   assert.deepEqual(migrated.paymentProofs, []);
@@ -547,7 +845,13 @@ test('migrates valid JSON with malformed fields into the known state schema', ()
 
   const migrated = api.loadState(storage);
   assert.equal(JSON.stringify(migrated.profile), JSON.stringify(defaults.profile));
-  assert.equal(JSON.stringify(migrated.balances), JSON.stringify(defaults.balances));
+  for (const businessId of Object.keys(defaults.balances)) {
+    const { updatedAt: migratedAt, ...migratedBalance } = migrated.balances[businessId];
+    const { updatedAt: defaultAt, ...defaultBalance } = defaults.balances[businessId];
+    assert.equal(JSON.stringify(migratedBalance), JSON.stringify(defaultBalance));
+    assert.equal(Number.isFinite(Date.parse(migratedAt)), true);
+    assert.equal(Number.isFinite(Date.parse(defaultAt)), true);
+  }
   assert.equal(JSON.stringify(migrated.session), JSON.stringify(defaults.session));
   assert.equal(JSON.stringify(migrated.wishes), JSON.stringify(defaults.wishes));
   assert.equal(migrated.preferences.nearbyDeals, defaults.preferences.nearbyDeals);
@@ -2747,9 +3051,12 @@ test('persists and renders the actual redemption receipt context', () => {
   assert.equal(redeemed.ok, true);
   const redemption = redeemed.redemption;
   assert.equal(vm.runInContext('state.ui.pendingContext.redemptionId', loaded.context), redemption.id);
-  assert.equal(document.getElementById('reward-done-code').textContent, redemption.qrPayload);
-  assert.equal(document.getElementById('reward-done-title').textContent, 'Tín dụng dịch vụ $5');
-  assert.equal(document.getElementById('reward-done-status').textContent, 'Sẵn sàng');
+  assert.equal(document.getElementById('reward-done-code').textContent, redemption.code);
+  assert.equal(document.getElementById('reward-done-title').textContent, 'Giảm $5 dịch vụ');
+  assert.equal(document.getElementById('reward-done-status').textContent, 'Đã phát hành');
+  assert.notEqual(document.getElementById('reward-done-issued-at').textContent, '');
+  assert.notEqual(document.getElementById('reward-done-expires-at').textContent, '');
+  assert.equal(document.getElementById('reward-done-remaining-row').classList.contains('hidden'), true);
   loaded.context.navigateTo('redeemdone', { focus: false });
   const persisted = loaded.api.loadState(loaded.storage);
   assert.equal(persisted.ui.pendingContext.redemptionId, redemption.id);
@@ -2757,7 +3064,69 @@ test('persists and renders the actual redemption receipt context', () => {
   const restoredDocument = createDocumentStub();
   const restored = testApi({ [loaded.api.STORAGE_KEY]: JSON.stringify(persisted) }, { document: restoredDocument, skipInit: false });
   assert.equal(vm.runInContext('state.ui.activeScreen', restored.context), 'redeemdone');
-  assert.equal(restoredDocument.getElementById('reward-done-code').textContent, redemption.qrPayload);
+  assert.equal(restoredDocument.getElementById('reward-done-code').textContent, redemption.code);
+});
+
+test('renders the remaining stored value for an issued gift card', () => {
+  let uuidCalls = 0;
+  const document = createDocumentStub();
+  const loaded = testApi({}, {
+    document,
+    skipInit: false,
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+
+  loaded.context.openReward('gift5', false);
+  const issued = loaded.api.confirmReward(false);
+
+  assert.equal(issued.ok, true);
+  assert.equal(document.getElementById('reward-done-remaining-row').classList.contains('hidden'), false);
+  assert.equal(document.getElementById('reward-done-remaining').textContent, '$5.00');
+});
+
+test('shows a stale wallet error and requires a fresh reward confirmation', () => {
+  const document = createDocumentStub();
+  const loaded = testApi({}, { document, skipInit: false });
+  loaded.context.openReward('credit5', false);
+  vm.runInContext(`
+    state.balances['bitcoin-nail-bar'].available += 25;
+    state.balances['bitcoin-nail-bar'].points += 25;
+    state.balances['bitcoin-nail-bar'].version += 1;
+  `, loaded.context);
+
+  const result = loaded.api.confirmReward(false);
+
+  assert.equal(result.code, 'stale_balance');
+  assert.match(document.getElementById('reward-flow-error').textContent, /Số dư đã thay đổi/);
+  assert.equal(document.getElementById('reward-flow-error').classList.contains('hidden'), false);
+  assert.equal(document.getElementById('reward-balance').textContent, '2.475 điểm');
+  assert.equal(
+    vm.runInContext('state.ui.pendingContext.rewardAttempt.expectedBalanceVersion', loaded.context),
+    vm.runInContext("state.balances['bitcoin-nail-bar'].version", loaded.context)
+  );
+});
+
+test('renders loyalty lifecycle labels and reasons in points history', () => {
+  let uuidCalls = 0;
+  const document = createDocumentStub();
+  const loaded = testApi({}, {
+    document,
+    skipInit: false,
+    randomUUID: () => `00000000-0000-4000-8000-${String(++uuidCalls).padStart(12, '0')}`
+  });
+  loaded.context.openReward('credit5', false);
+  const issued = loaded.api.confirmReward(false);
+
+  const voided = vm.runInContext(
+    `voidRewardInstrument(state, '${issued.redemption.id}', { restorePoints: true, reason: 'QA manager void' }, Date.now() + 1000)`,
+    loaded.context
+  );
+  vm.runInContext('renderLedger()', loaded.context);
+
+  assert.equal(voided.ok, true);
+  const newest = document.getElementById('ledger-list').children[0];
+  assert.equal(newest.children[0].children[0].textContent, 'Hoàn điểm do hủy phần thưởng');
+  assert.match(newest.children[0].children[1].textContent, /QA manager void/);
 });
 
 test('rejects persisted receipts with invalid status and restores rewards safely', () => {
@@ -3050,7 +3419,7 @@ test('restores a persisted redeem screen and preview without writing storage or 
   assert.equal(home.classList.contains('hidden'), true);
   assert.equal(redeem.classList.contains('hidden'), false);
   assert.equal(redeem.classList.contains('is-active'), true);
-  assert.equal(document.getElementById('reward-title').textContent, 'Tín dụng dịch vụ $5');
+  assert.equal(document.getElementById('reward-title').textContent, 'Giảm $5 dịch vụ');
   assert.equal(document.getElementById('reward-cost').textContent, '500 điểm');
   assert.equal(document.getElementById('reward-after').textContent, '1.950 điểm');
   assert.equal(vm.runInContext('state.ui.pendingContext.rewardAttempt.idempotencyKey', context), 'persisted-reward-attempt');
@@ -3105,7 +3474,8 @@ test('canonicalizes persisted business identity and keeps wallet and reward vali
   assert.equal(firstHistoryButton.dataset.businessId, 'bitcoin-nail-bar');
 
   vm.runInContext("state.businesses['golden-glow-spa'].id = 'spoofed-runtime'; renderRewards()", context);
-  const glowButton = document.getElementById('reward-list').children[3].children.at(-1).children.at(-1);
+  const glowCard = document.getElementById('reward-list').children.find((card) => card.dataset.rewardKey === 'glow');
+  const glowButton = glowCard.children.at(-1).children.at(-1);
   assert.equal(glowButton.disabled, true);
   assert.equal(vm.runInContext("redeemReward(state, 'glow', 'spoofed-runtime-attempt', 1000).code", context), 'unknown_business');
 });
@@ -3766,6 +4136,17 @@ test('initializes the browser with defined entry-point dependencies', () => {
   }
 });
 
+test('preserves and loads saved customer state during browser startup', () => {
+  const document = createDocumentStub();
+  const storageKey = 'nexora.customer.prototype.v1';
+  const persisted = JSON.stringify({ balances: { 'bitcoin-nail-bar': { points: 2475 } } });
+
+  const { context, storage } = testApi({ [storageKey]: persisted }, { skipInit: false, document });
+
+  assert.equal(vm.runInContext("state.balances['bitcoin-nail-bar'].available", context), 2475);
+  assert.equal(storage.getItem(storageKey), persisted);
+});
+
 test('applies persisted English during bootstrap without saving state again', () => {
   const localized = createStubElement({ dataset: { vi: 'Xin chào', en: 'Hello' }, textContent: 'Xin chào' });
   const placeholder = createStubElement({ dataset: { viPh: 'Tìm kiếm', enPh: 'Search' }, placeholder: 'Tìm kiếm' });
@@ -3993,9 +4374,18 @@ test('renders persisted balances across home wallet and rewards hooks', () => {
   assert.equal(points.textContent, '2.475');
   assert.equal(withUnit.textContent, '2.475 điểm');
   assert.equal(available.textContent, 'Có thể dùng 2.475 điểm');
+  assert.equal(document.getElementById('wallet-available').textContent, '2.475');
+  assert.equal(document.getElementById('wallet-pending').textContent, '0');
+  assert.equal(document.getElementById('wallet-lifetime').textContent, '2.475');
+  assert.notEqual(document.getElementById('wallet-updated-at').textContent, '');
   context.openReward('credit5', false);
   assert.equal(document.getElementById('reward-balance').textContent, '2.475 điểm');
   assert.equal(document.getElementById('reward-after').textContent, '1.975 điểm');
+  assert.equal(document.getElementById('reward-customer').textContent, 'Jessica Nguyen');
+  assert.equal(document.getElementById('reward-description').textContent, 'Giảm cố định $5 cho dịch vụ đủ điều kiện.');
+  assert.match(document.getElementById('reward-conditions').textContent, /Hóa đơn dịch vụ từ \$20/);
+  assert.match(document.getElementById('reward-location').textContent, /Bitcoin Nail Bar/);
+  assert.match(document.getElementById('reward-limits').textContent, /Không cộng dồn.*90 ngày/);
 
   const source = html();
   assert.ok((source.match(/data-balance-points=/g) || []).length >= 1);
@@ -4024,7 +4414,15 @@ test('renders every business-aware reward without unsafe state HTML', () => {
   const rewardCards = document.getElementById('reward-list').children;
   assert.equal(walletCards.length, 4, 'businesses with no balance and no ledger entry stay hidden');
   assert.equal(walletCards[0].children[0].textContent, '<img src=x onerror=alert(1)>');
-  assert.equal(rewardCards.length, 11);
+  assert.equal(rewardCards.length, 13);
+  const giftCard = rewardCards.find((card) => card.dataset.rewardKey === 'gift5');
+  const percentCard = rewardCards.find((card) => card.dataset.rewardKey === 'voucher25');
+  const productCard = rewardCards.find((card) => card.dataset.rewardKey === 'productOil');
+  assert.equal(giftCard.dataset.rewardType, 'gift_card');
+  assert.equal(giftCard.children[1].textContent, 'Gift Card');
+  assert.match(giftCard.children[2].textContent, /Giá trị lưu trữ/);
+  assert.equal(percentCard.children[1].textContent, 'Giảm theo %');
+  assert.equal(productCard.children[1].textContent, 'Sản phẩm miễn phí');
   const gelButton = rewardCards.at(-1).children.at(-1).children.at(-1);
   assert.equal(gelButton.disabled, true);
   assert.equal(gelButton.textContent, 'Cần thêm 50');
@@ -4033,8 +4431,8 @@ test('renders every business-aware reward without unsafe state HTML', () => {
   assert.doesNotMatch(source, /data-signature-reward-cta/);
   assert.match(source, /<div id="wallet-business-list" class="[^"]*"><\/div>/);
   assert.match(source, /const REWARDS\s*=\s*\{/);
-  for (const key of ['credit5', 'freepedi', 'voucher25', 'glow', 'moon', 'bistro', 'gel']) {
-    assert.match(source, new RegExp(`${key}: \\{ key: '${key}'`));
+  for (const key of ['credit5', 'gift5', 'freepedi', 'voucher25', 'glow', 'moon', 'bistro', 'productOil', 'gel']) {
+    assert.match(source, new RegExp(`${key}: \\{[\\s\\S]*?key: '${key}'`));
   }
   for (const [start, end] of [
     ['renderBalances', 'LEDGER_LABEL_KEYS'],
@@ -10777,7 +11175,7 @@ test('splits rewards into explore, redeemed and used tabs', () => {
 
   // Explore keeps the purchasable catalog and marks itself pressed.
   assert.equal(vm.runInContext('state.ui.rewardTab', context), 'explore');
-  assert.equal(list.children.length, 11);
+  assert.equal(list.children.length, 13);
   assert.deepEqual(tabs.map((tab) => tab.attributes['aria-pressed']), ['true', 'false', 'false']);
 
   clickTab(tabs[1]);
@@ -10785,7 +11183,7 @@ test('splits rewards into explore, redeemed and used tabs', () => {
   assert.deepEqual(tabs.map((tab) => tab.attributes['aria-pressed']), ['false', 'true', 'false']);
   const readyIds = list.children.map((card) => card.dataset.redemptionId);
   assert.ok(readyIds.length > 0);
-  for (const card of list.children) assert.equal(card.children.at(-1).children[0].textContent, 'Sẵn sàng');
+  for (const card of list.children) assert.equal(card.children.at(-1).children[0].textContent, 'Đã phát hành');
 
   clickTab(tabs[2]);
   assert.equal(vm.runInContext('state.ui.rewardTab', context), 'used');
@@ -10797,8 +11195,15 @@ test('splits rewards into explore, redeemed and used tabs', () => {
   vm.runInContext(`state.guestCheckins.push({ id: 'checkin-tab-probe', rewardRedemptionId: '${moved}' }); renderRewards()`, context);
   assert.ok(list.children.some((card) => card.dataset.redemptionId === moved));
   assert.equal(list.children.at(0).children.at(-1).children[0].textContent, 'Đã dùng');
+
+  const expired = readyIds[1];
+  vm.runInContext(`state.redemptions.find((row) => row.id === '${expired}').status = 'expired'; renderRewards()`, context);
+  const expiredCard = list.children.find((card) => card.dataset.redemptionId === expired);
+  assert.ok(expiredCard);
+  assert.equal(expiredCard.children.at(-1).children[0].textContent, 'Hết hạn');
   clickTab(tabs[1]);
   assert.equal(list.children.some((card) => card.dataset.redemptionId === moved), false);
+  assert.equal(list.children.some((card) => card.dataset.redemptionId === expired), false);
 });
 
 test('a single tip recipient hides the split group, forces equal mode and relabels the amount', () => {

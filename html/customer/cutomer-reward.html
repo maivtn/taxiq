@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -288,6 +288,8 @@
         </section>
         <section class="app-screen hidden" id="wallet" data-ready="true" data-module="wallet" aria-labelledby="wallet-title">
           <div class="mb-5 flex items-end justify-between gap-4"><div><p class="eyebrow" data-en="Your rewards" data-vi="Phần thưởng của bạn">Phần thưởng của bạn</p><h1 id="wallet-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Points wallet" data-vi="Ví điểm">Ví điểm</h1><p class="mt-1 text-sm text-app-muted" data-en="Each business keeps its own point balance." data-vi="Điểm được tách riêng theo từng doanh nghiệp.">Điểm được tách riêng theo từng doanh nghiệp.</p></div><button type="button" class="app-button-secondary hidden sm:inline-flex" data-action="navigate" data-target="history"><i data-lucide="history" class="size-4" aria-hidden="true"></i><span data-en="History" data-vi="Lịch sử">Lịch sử</span></button></div>
+          <div id="wallet-loading" class="hidden space-y-3" aria-live="polite" aria-hidden="true"><span class="sr-only" data-en="Loading wallet" data-vi="Đang tải ví điểm">Đang tải ví điểm</span><div class="h-28 animate-pulse rounded-3xl bg-white/10"></div><div class="grid grid-cols-3 gap-3"><div class="h-20 animate-pulse rounded-2xl bg-white/10"></div><div class="h-20 animate-pulse rounded-2xl bg-white/10"></div><div class="h-20 animate-pulse rounded-2xl bg-white/10"></div></div></div>
+          <div id="wallet-error" class="hidden app-card border-app-red/40" role="alert"><strong data-en="Wallet could not load" data-vi="Không tải được ví điểm">Không tải được ví điểm</strong><p class="mt-1 text-sm text-app-muted" data-en="Your saved data is unchanged." data-vi="Dữ liệu đã lưu của bạn không thay đổi.">Dữ liệu đã lưu của bạn không thay đổi.</p><button type="button" class="app-button-secondary mt-3" data-action="retry-wallet" data-en="Try again" data-vi="Thử lại">Thử lại</button></div>
           <div class="relative mb-4 overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_90%_10%,rgba(34,211,238,.24),transparent_38%),linear-gradient(135deg,#6d2bf0,#4a23d9_48%,#0757cf)] p-5 shadow-2xl shadow-app-purple/20 sm:p-6">
             <div class="relative z-10 flex items-start justify-between gap-4">
               <div>
@@ -302,8 +304,29 @@
             <div class="relative z-10 mt-5 h-2 overflow-hidden rounded-full bg-black/25"><span id="wallet-tier-progress" data-tier-progress class="block h-full rounded-full bg-gradient-to-r from-app-cyan to-white transition-[width] duration-500" style="width:0%" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></span></div>
             <p id="wallet-tier-gap" data-tier-gap class="relative z-10 mt-2 text-xs font-bold text-white/75"></p>
           </div>
+          <div id="wallet-balance-summary" class="mb-4 grid grid-cols-3 gap-2 sm:gap-4">
+            <article class="metric-card"><span class="block text-[10px] font-extrabold uppercase tracking-wide text-app-muted sm:text-xs" data-en="Available" data-vi="Khả dụng">Khả dụng</span><strong id="wallet-available" class="mt-1 block text-lg font-black text-app-cyan sm:text-2xl">0</strong><small class="text-[10px] text-app-muted" data-en="Can redeem" data-vi="Có thể đổi">Có thể đổi</small></article>
+            <article class="metric-card"><span class="block text-[10px] font-extrabold uppercase tracking-wide text-app-muted sm:text-xs" data-en="Pending" data-vi="Đang chờ">Đang chờ</span><strong id="wallet-pending" class="mt-1 block text-lg font-black text-app-gold sm:text-2xl">0</strong><small class="text-[10px] text-app-muted" data-en="Not redeemable" data-vi="Chưa thể đổi">Chưa thể đổi</small></article>
+            <article class="metric-card"><span class="block text-[10px] font-extrabold uppercase tracking-wide text-app-muted sm:text-xs" data-en="Lifetime" data-vi="Tích lũy">Tích lũy</span><strong id="wallet-lifetime" class="mt-1 block text-lg font-black sm:text-2xl">0</strong><small class="text-[10px] text-app-muted" data-en="Tier progress" data-vi="Tính hạng">Tính hạng</small></article>
+          </div>
+          <p id="wallet-updated-at" class="mb-4 text-right text-[11px] text-app-muted"></p>
+          <div id="wallet-empty" class="hidden app-card text-center"><strong data-en="No point activity yet" data-vi="Chưa có hoạt động điểm">Chưa có hoạt động điểm</strong></div>
           <div id="wallet-business-list" class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3"></div>
           <div class="mt-6 grid gap-4 lg:grid-cols-[1fr_320px]"><article class="app-card"><div class="flex items-center justify-between"><h2 class="section-title" data-en="Recent point activity" data-vi="Hoạt động điểm gần đây">Hoạt động điểm gần đây</h2><button type="button" class="text-xs font-bold text-app-cyan" data-action="navigate" data-target="history" data-en="Full history" data-vi="Toàn bộ lịch sử">Toàn bộ lịch sử</button></div><div id="wallet-activity-list" class="mt-4 divide-y divide-app-line"></div></article><aside class="app-card flex h-fit items-start gap-3 border-app-gold/20 bg-app-gold/[.05]"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-app-gold/10 text-app-gold"><i data-lucide="clock-3" class="size-5" aria-hidden="true"></i></span><div class="min-w-0 flex-1"><h2 class="font-black" data-en="Points expiry" data-vi="Điểm sắp hết hạn">Điểm sắp hết hạn</h2><p id="wallet-expiry-copy" class="mt-1 text-sm leading-6 text-app-muted"></p></div></aside></div>
+          <details id="loyalty-demo-panel" class="app-card mt-6 border-dashed border-app-gold/40">
+            <summary class="min-h-11 cursor-pointer py-2 text-sm font-black text-app-gold" data-en="Demo/QA — not production" data-vi="Demo/QA — không thuộc production">Demo/QA — không thuộc production</summary>
+            <p class="mt-2 text-xs leading-5 text-app-muted" data-en="These controls simulate business events for product review and QA." data-vi="Các nút này mô phỏng sự kiện nghiệp vụ để PO và QA kiểm tra.">Các nút này mô phỏng sự kiện nghiệp vụ để PO và QA kiểm tra.</p>
+            <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="settle_pending" data-en="Settle pending points" data-vi="Chuyển điểm đang chờ">Chuyển điểm đang chờ</button>
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="toggle_pause" data-en="Pause/unpause $5 reward" data-vi="Pause/unpause reward $5">Pause/unpause reward $5</button>
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="make_stale" data-en="Make balance stale" data-vi="Tạo stale balance">Tạo stale balance</button>
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="partial_refund" data-en="Partial refund" data-vi="Hoàn tiền một phần">Hoàn tiền một phần</button>
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="void_restore" data-en="Void and restore points" data-vi="Hủy reward và hoàn điểm">Hủy reward và hoàn điểm</button>
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="consume_gift_card" data-en="Use $2 Gift Card" data-vi="Dùng $2 Gift Card">Dùng $2 Gift Card</button>
+              <button class="app-button-secondary" type="button" data-action="loyalty-demo" data-loyalty-demo="expire_instruments" data-en="Expire issued rewards" data-vi="Cho reward hết hạn">Cho reward hết hạn</button>
+            </div>
+            <p id="loyalty-demo-result" class="mt-3 text-xs font-bold text-app-cyan" aria-live="polite"></p>
+          </details>
         </section>
         <section class="app-screen hidden" id="history" data-ready="true" data-module="wallet" aria-labelledby="history-title">
           <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Every point accounted for" data-vi="Minh bạch từng điểm">Minh bạch từng điểm</p><h1 id="history-title" class="text-2xl font-black" data-en="Points history" data-vi="Lịch sử điểm">Lịch sử điểm</h1></div></div><div id="ledger-list" class="space-y-3"></div>
@@ -312,10 +335,10 @@
           <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="wallet" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-balance-available="bitcoin-nail-bar" data-en="2,450 points available" data-vi="Có thể dùng 2.450 điểm">Có thể dùng 2.450 điểm</p><h1 id="rewards-title" class="text-2xl font-black" data-en="Choose a reward" data-vi="Chọn phần thưởng">Chọn phần thưởng</h1></div></div><div class="mb-4 app-tabs"><button class="app-tab" type="button" aria-pressed="true" data-reward-tab="explore" data-en="Explore" data-vi="Khám phá">Khám phá</button><button class="app-tab" type="button" aria-pressed="false" data-reward-tab="redeemed" data-en="Available" data-vi="Khả dụng">Khả dụng</button><button class="app-tab" type="button" aria-pressed="false" data-reward-tab="used" data-en="Used" data-vi="Đã dùng">Đã dùng</button></div><div id="reward-list" class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3"></div><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Points apply to services only — never cash out. Each business sets its own reward prices; NEXORA only keeps the ledger." data-vi="Điểm chỉ dùng cho dịch vụ — không đổi tiền mặt. Mỗi doanh nghiệp tự đặt giá thưởng; NEXORA chỉ lưu sổ cái.">Điểm chỉ dùng cho dịch vụ — không đổi tiền mặt. Mỗi doanh nghiệp tự đặt giá thưởng; NEXORA chỉ lưu sổ cái.</p>
         </section>
         <section class="app-screen hidden" id="redeem" data-ready="true" data-module="wallet" aria-labelledby="redeem-title">
-          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="rewards" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Confirm redemption" data-vi="Xác nhận đổi điểm">Xác nhận đổi điểm</p><h1 id="redeem-title" class="text-2xl font-black" data-en="Redeem reward" data-vi="Đổi phần thưởng">Đổi phần thưởng</h1></div></div><div class="app-card"><div class="flex items-start gap-4"><span class="grid size-14 place-items-center rounded-2xl bg-app-pink/10 text-app-pink"><i data-lucide="gift" class="size-7" aria-hidden="true"></i></span><div><h2 id="reward-title" class="text-xl font-black">Nâng cấp sơn gel</h2><p id="reward-business" class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar</p></div></div><dl class="mt-6 space-y-4 rounded-2xl bg-app-panel p-4"><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Reward cost" data-vi="Điểm đổi quà">Điểm đổi quà</dt><dd id="reward-cost" class="font-black">800 điểm</dd></div><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Current balance" data-vi="Số dư hiện tại">Số dư hiện tại</dt><dd id="reward-balance" data-balance-with-unit="bitcoin-nail-bar" class="font-black">2.450 điểm</dd></div><div class="flex justify-between gap-4 border-t border-app-line pt-4 text-sm"><dt class="font-bold" data-en="Balance after" data-vi="Số dư còn lại">Số dư còn lại</dt><dd id="reward-after" class="font-black text-app-cyan">1.650 điểm</dd></div></dl><p class="mt-4 text-xs leading-5 text-app-muted" data-en="This action cannot be undone." data-vi="Không thể hoàn tác thao tác này.">Không thể hoàn tác thao tác này.</p><button class="app-button mt-5 w-full" type="button" data-action="confirm-reward"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Use points now" data-vi="Dùng điểm ngay">Dùng điểm ngay</span></button></div></div>
+          <div class="mx-auto max-w-2xl"><div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="rewards" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Confirm redemption" data-vi="Xác nhận đổi điểm">Xác nhận đổi điểm</p><h1 id="redeem-title" class="text-2xl font-black" data-en="Redeem reward" data-vi="Đổi phần thưởng">Đổi phần thưởng</h1></div></div><div class="app-card"><div class="flex items-start gap-4"><span class="grid size-14 place-items-center rounded-2xl bg-app-pink/10 text-app-pink"><i data-lucide="gift" class="size-7" aria-hidden="true"></i></span><div><h2 id="reward-title" class="text-xl font-black">Nâng cấp sơn gel</h2><p id="reward-business" class="mt-1 text-sm text-app-muted">Bitcoin Nail Bar</p><p id="reward-customer" class="mt-1 text-xs font-bold text-app-cyan">Jessica Nguyen</p></div></div><div class="mt-4 rounded-2xl border border-app-line bg-app-panel p-4 text-sm"><p id="reward-description" class="font-bold"></p><p id="reward-conditions" class="mt-2 leading-6 text-app-muted"></p><p id="reward-location" class="mt-2 text-xs text-app-cyan"></p><p id="reward-limits" class="mt-2 text-xs text-app-muted"></p></div><dl class="mt-6 space-y-4 rounded-2xl bg-app-panel p-4"><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Reward cost" data-vi="Điểm đổi quà">Điểm đổi quà</dt><dd id="reward-cost" class="font-black">800 điểm</dd></div><div class="flex justify-between gap-4 text-sm"><dt class="text-app-muted" data-en="Available before" data-vi="Khả dụng trước khi đổi">Khả dụng trước khi đổi</dt><dd id="reward-balance" data-balance-with-unit="bitcoin-nail-bar" class="font-black">2.450 điểm</dd></div><div class="flex justify-between gap-4 border-t border-app-line pt-4 text-sm"><dt class="font-bold" data-en="Available after" data-vi="Khả dụng sau khi đổi">Khả dụng sau khi đổi</dt><dd id="reward-after" class="font-black text-app-cyan">1.650 điểm</dd></div></dl><p class="mt-4 text-xs leading-5 text-app-muted" data-en="Points are deducted when the reward is issued." data-vi="Điểm được trừ khi phần thưởng được phát hành.">Điểm được trừ khi phần thưởng được phát hành.</p><p id="reward-flow-status" class="mt-3 text-sm font-bold text-app-cyan" aria-live="polite"></p><p id="reward-flow-error" class="mt-3 hidden text-sm font-bold text-app-red" role="alert"></p><button id="reward-confirm-button" class="app-button mt-5 w-full" type="button" data-action="confirm-reward"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Use points now" data-vi="Dùng điểm ngay">Dùng điểm ngay</span></button></div></div>
         </section>
         <section class="app-screen hidden" id="redeemdone" data-ready="true" data-module="wallet" aria-labelledby="redeemdone-title">
-          <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-10" aria-hidden="true"></i></span><h1 id="redeemdone-title" class="mt-6 text-3xl font-black" data-en="Reward ready" data-vi="Phần thưởng đã sẵn sàng">Phần thưởng đã sẵn sàng</h1><p id="redeemdone-business-copy" class="mt-3 text-sm leading-6 text-app-muted"></p><div class="app-card mt-6"><p class="eyebrow" data-en="Redemption code" data-vi="Mã đổi quà">Mã đổi quà</p><strong id="reward-done-code" class="mt-3 block text-3xl tracking-[.22em] text-app-cyan"></strong><div class="my-5 border-t border-dashed border-app-line"></div><div class="flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Reward" data-vi="Phần thưởng">Phần thưởng</span><strong id="reward-done-title"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Points used" data-vi="Điểm đã dùng">Điểm đã dùng</span><strong id="reward-done-cost"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-muted" data-en="Status" data-vi="Trạng thái">Trạng thái</span><strong id="reward-done-status"></strong></div></div><button class="app-button-secondary mt-4 w-full" type="button" data-action="show-reward-qr" data-en="Show QR code" data-vi="Hiện mã QR">Hiện mã QR</button><button class="app-button mt-3 w-full" type="button" data-action="navigate" data-target="wallet" data-en="Back to wallet" data-vi="Về ví điểm">Về ví điểm</button></div></div>
+          <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="badge-check" class="size-10" aria-hidden="true"></i></span><h1 id="redeemdone-title" class="mt-6 text-3xl font-black" data-en="Reward issued" data-vi="Đã phát hành phần thưởng">Đã phát hành phần thưởng</h1><p id="redeemdone-business-copy" class="mt-3 text-sm leading-6 text-app-muted"></p><div class="app-card mt-6"><p class="eyebrow" data-en="Instrument code" data-vi="Mã phần thưởng">Mã phần thưởng</p><strong id="reward-done-code" class="mt-3 block text-3xl tracking-[.12em] text-app-cyan"></strong><div class="my-5 border-t border-dashed border-app-line"></div><div class="flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Reward" data-vi="Phần thưởng">Phần thưởng</span><strong id="reward-done-title"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Points used" data-vi="Điểm đã dùng">Điểm đã dùng</span><strong id="reward-done-cost"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Status" data-vi="Trạng thái">Trạng thái</span><strong id="reward-done-status"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Issued" data-vi="Phát hành">Phát hành</span><strong id="reward-done-issued-at"></strong></div><div class="mt-3 flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Expires" data-vi="Hết hạn">Hết hạn</span><strong id="reward-done-expires-at"></strong></div><div id="reward-done-remaining-row" class="mt-3 hidden flex justify-between gap-4 text-left text-sm"><span class="text-app-muted" data-en="Gift Card balance" data-vi="Số dư Gift Card">Số dư Gift Card</span><strong id="reward-done-remaining" class="text-app-gold"></strong></div></div><button class="app-button-secondary mt-4 w-full" type="button" data-action="show-reward-qr" data-en="Show QR code" data-vi="Hiện mã QR">Hiện mã QR</button><button class="app-button mt-3 w-full" type="button" data-action="navigate" data-target="wallet" data-en="Back to wallet" data-vi="Về ví điểm">Về ví điểm</button></div></div>
         </section>
         <section class="app-screen hidden" id="scan" data-ready="true" data-module="scan" aria-labelledby="scan-title">
           <div class="mx-auto max-w-2xl"><div id="scan-intro" class="text-center"><p class="eyebrow" data-en="NEXORA Touch" data-vi="NEXORA Touch">NEXORA Touch</p><h1 id="scan-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Scan to check in, tip or pay" data-vi="Quét để check-in, tip hoặc thanh toán">Quét để check-in, tip hoặc thanh toán</h1><p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-app-muted" data-en="This prototype simulates reading a NEXORA QR, then lets you choose the right action." data-vi="Bản mẫu mô phỏng đọc mã NEXORA, sau đó cho bạn chọn đúng thao tác.">Bản mẫu mô phỏng đọc mã NEXORA, sau đó cho bạn chọn đúng thao tác.</p></div>
@@ -652,7 +675,7 @@
     // Must track OPS_SCHEMA_VERSION in customer-salon-operations.html: this app both reads that
     // snapshot and appends its own ticket to it.
     const OPERATIONS_SCHEMA_VERSION = 1;
-    const SCHEMA_VERSION = 3;
+    const SCHEMA_VERSION = 4;
     const BUSINESS_ID = 'bitcoin-nail-bar';
     const FIXED_SCAN_DEMO = Object.freeze({
       businessId: BUSINESS_ID,
@@ -976,21 +999,149 @@
     const OFFER_IDS = new Set(OFFERS.map((offer) => offer.id));
     const LOOK_PHOTO_MAX_LENGTH = 1_500_000;
     const REWARDS = {
-      credit5: { key: 'credit5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'service_credit', cost: 500, title: { vi: 'Tín dụng dịch vụ $5', en: '$5 service credit' } },
-      freepedi: { key: 'freepedi', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 1000, title: { vi: 'Pedicure cơ bản miễn phí', en: 'Free classic pedicure' } },
-      voucher25: { key: 'voucher25', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'percent_code', cost: 800, title: { vi: 'Giảm 25% dịch vụ', en: '25% off any service' } },
-      glow: { key: 'glow', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'service_credit', cost: 800, title: { vi: 'Tín dụng $10 tại Golden Glow', en: '$10 Golden Glow credit' } },
-      moon: { key: 'moon', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'moon-coffee', type: 'free_service', cost: 600, title: { vi: 'Đồ uống miễn phí', en: 'Free drink' } },
-      bistro: { key: 'bistro', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa', type: 'percent_code', cost: 450, title: { vi: 'Giảm 10% dịch vụ', en: '10% off service' } },
-      credit10: { key: 'credit10', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'service_credit', cost: 900, title: { vi: 'Tín dụng dịch vụ $10', en: '$10 service credit' } },
-      voucher15: { key: 'voucher15', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'percent_code', cost: 400, title: { vi: 'Giảm 15% dịch vụ', en: '15% off any service' } },
-      freedip: { key: 'freedip', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 1800, title: { vi: 'Nhúng bột Dip miễn phí', en: 'Free dip powder' } },
-      naildesign: { key: 'naildesign', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 1200, title: { vi: 'Vẽ móng nghệ thuật miễn phí', en: 'Free nail art design' } },
+      credit5: {
+        key: 'credit5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'dollar_discount', cost: 500, valueCents: 500,
+        title: { vi: 'Giảm $5 dịch vụ', en: '$5 service discount' },
+        description: { vi: 'Giảm cố định $5 cho dịch vụ đủ điều kiện.', en: '$5 off an eligible service.' },
+        conditions: { vi: 'Hóa đơn dịch vụ từ $20; dùng một lần.', en: '$20 service minimum; one-time use.' },
+        minimumSpendCents: 2000, maximumDiscountCents: null, linkedItemId: null,
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 90, perCustomerLimit: 3, stock: 50
+      },
+      gift5: {
+        key: 'gift5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'gift_card', cost: 500, valueCents: 500,
+        title: { vi: 'Gift Card $5', en: '$5 Gift Card' },
+        description: { vi: 'Giá trị lưu trữ dùng dần cho dịch vụ.', en: 'Stored value for eligible services.' },
+        conditions: { vi: 'Không đổi lại thành điểm hoặc tiền mặt.', en: 'Cannot be converted back to points or cash.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: null,
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 180, perCustomerLimit: 2, stock: 50
+      },
+      freepedi: {
+        key: 'freepedi', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'free_service', cost: 1000, valueCents: 3500,
+        title: { vi: 'Pedicure cơ bản miễn phí', en: 'Free classic pedicure' },
+        description: { vi: 'Một dịch vụ pedicure cơ bản.', en: 'One classic pedicure service.' },
+        conditions: { vi: 'Đặt lịch trước; không gồm add-on.', en: 'Appointment required; add-ons excluded.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: 'classic-pedicure',
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 60, perCustomerLimit: 2, stock: 20
+      },
+      voucher25: {
+        key: 'voucher25', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'percent_discount', cost: 800, valuePercent: 25,
+        title: { vi: 'Giảm 25% dịch vụ', en: '25% off any service' },
+        description: { vi: 'Giảm 25% cho một dịch vụ.', en: '25% off one service.' },
+        conditions: { vi: 'Tối đa $20; hóa đơn từ $30.', en: '$20 maximum; $30 minimum spend.' },
+        minimumSpendCents: 3000, maximumDiscountCents: 2000, linkedItemId: null,
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 45, perCustomerLimit: 2, stock: 30
+      },
+      glow: {
+        key: 'glow', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa',
+        type: 'dollar_discount', cost: 800, valueCents: 1000,
+        title: { vi: 'Giảm $10 tại Golden Glow', en: '$10 off at Golden Glow' },
+        description: { vi: 'Giảm $10 cho dịch vụ spa đủ điều kiện.', en: '$10 off an eligible spa service.' },
+        conditions: { vi: 'Hóa đơn từ $40.', en: '$40 minimum spend.' },
+        minimumSpendCents: 4000, maximumDiscountCents: null, linkedItemId: null,
+        eligibleLocationIds: ['golden-glow-spa'], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 60, perCustomerLimit: 2, stock: 20
+      },
+      moon: {
+        key: 'moon', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'moon-coffee',
+        type: 'free_service', cost: 600, valueCents: 800,
+        title: { vi: 'Đồ uống miễn phí', en: 'Free drink' },
+        description: { vi: 'Một đồ uống đặc trưng.', en: 'One signature drink.' },
+        conditions: { vi: 'Không gồm topping bổ sung.', en: 'Extra toppings excluded.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: 'signature-drink',
+        eligibleLocationIds: ['moon-coffee'], stackingRule: 'stackable', status: 'active',
+        validityDays: 30, perCustomerLimit: 3, stock: 40
+      },
+      bistro: {
+        key: 'bistro', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: 'golden-glow-spa',
+        type: 'percent_discount', cost: 450, valuePercent: 10,
+        title: { vi: 'Giảm 10% dịch vụ', en: '10% off service' },
+        description: { vi: 'Giảm 10% tại Golden Glow.', en: '10% off at Golden Glow.' },
+        conditions: { vi: 'Tối đa $15.', en: '$15 maximum discount.' },
+        minimumSpendCents: 0, maximumDiscountCents: 1500, linkedItemId: null,
+        eligibleLocationIds: ['golden-glow-spa'], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 45, perCustomerLimit: 2, stock: 25
+      },
+      credit10: {
+        key: 'credit10', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'dollar_discount', cost: 900, valueCents: 1000,
+        title: { vi: 'Giảm $10 dịch vụ', en: '$10 service discount' },
+        description: { vi: 'Giảm cố định $10.', en: '$10 fixed discount.' },
+        conditions: { vi: 'Hóa đơn từ $35.', en: '$35 minimum spend.' },
+        minimumSpendCents: 3500, maximumDiscountCents: null, linkedItemId: null,
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 60, perCustomerLimit: 2, stock: 30
+      },
+      voucher15: {
+        key: 'voucher15', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'percent_discount', cost: 400, valuePercent: 15,
+        title: { vi: 'Giảm 15% dịch vụ', en: '15% off any service' },
+        description: { vi: 'Giảm 15% cho một dịch vụ.', en: '15% off one service.' },
+        conditions: { vi: 'Tối đa $12.', en: '$12 maximum discount.' },
+        minimumSpendCents: 2000, maximumDiscountCents: 1200, linkedItemId: null,
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 45, perCustomerLimit: 2, stock: 40
+      },
+      freedip: {
+        key: 'freedip', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'free_service', cost: 1800, valueCents: 5500,
+        title: { vi: 'Nhúng bột Dip miễn phí', en: 'Free dip powder' },
+        description: { vi: 'Một dịch vụ Dip Powder.', en: 'One Dip Powder service.' },
+        conditions: { vi: 'Không gồm tháo bột hoặc nail art.', en: 'Removal and nail art excluded.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: 'dip-powder',
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 60, perCustomerLimit: 1, stock: 15
+      },
+      naildesign: {
+        key: 'naildesign', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'free_service', cost: 1200, valueCents: 2000,
+        title: { vi: 'Vẽ móng nghệ thuật miễn phí', en: 'Free nail art design' },
+        description: { vi: 'Một add-on nail art cơ bản.', en: 'One basic nail-art add-on.' },
+        conditions: { vi: 'Tối đa hai móng.', en: 'Up to two nails.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: 'nail-art-design',
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'stackable', status: 'active',
+        validityDays: 45, perCustomerLimit: 2, stock: 25
+      },
+      productOil: {
+        key: 'productOil', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'free_product', cost: 1100, valueCents: 1800,
+        title: { vi: 'Dầu dưỡng biểu bì miễn phí', en: 'Free cuticle oil' },
+        description: { vi: 'Một chai dầu dưỡng biểu bì.', en: 'One bottle of cuticle oil.' },
+        conditions: { vi: 'Tùy tồn kho tại tiệm.', en: 'Subject to in-store inventory.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: 'sku-cuticle-oil',
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 30, perCustomerLimit: 1, stock: 12
+      },
       // Granted, never bought: the guest earns this by referring a friend, so it costs 0 points and
       // is deliberately kept out of the redeem-with-points catalog (see isPurchasableReward).
-      referral5: { key: 'referral5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'service_credit', cost: 0, title: { vi: 'Giới thiệu bạn bè — nhận $5', en: 'Refer friends — earn $5' } },
+      referral5: {
+        key: 'referral5', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'dollar_discount', cost: 0, valueCents: 500,
+        title: { vi: 'Giới thiệu bạn bè — nhận $5', en: 'Refer friends — earn $5' },
+        description: { vi: 'Quà giới thiệu đã được cấp.', en: 'Granted referral reward.' },
+        conditions: { vi: 'Dùng một lần.', en: 'One-time use.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: null,
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'not_stackable', status: 'active',
+        validityDays: 90, perCustomerLimit: 10, stock: null
+      },
       // Keep the priciest reward last: it is the one that must read as unaffordable at 2,450 pts.
-      gel: { key: 'gel', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID, type: 'free_service', cost: 2500, title: { vi: 'Nâng cấp sơn gel', en: 'Gel polish upgrade' } }
+      gel: {
+        key: 'gel', sourceBusinessId: BUSINESS_ID, acceptingBusinessId: BUSINESS_ID,
+        type: 'free_service', cost: 2500, valueCents: 2000,
+        title: { vi: 'Nâng cấp sơn gel', en: 'Gel polish upgrade' },
+        description: { vi: 'Nâng cấp sơn gel cho một dịch vụ.', en: 'Gel-polish upgrade for one service.' },
+        conditions: { vi: 'Phải dùng cùng dịch vụ manicure hoặc pedicure.', en: 'Must accompany a manicure or pedicure.' },
+        minimumSpendCents: 0, maximumDiscountCents: null, linkedItemId: 'gel-polish-upgrade',
+        eligibleLocationIds: [BUSINESS_ID], stackingRule: 'stackable', status: 'active',
+        validityDays: 60, perCustomerLimit: 1, stock: 20
+      }
     };
 
     // The rewards screen splits into what you can still buy, what you already bought and have not
@@ -1007,8 +1158,65 @@
       return Number.isSafeInteger(reward?.cost) && reward.cost > 0;
     }
 
-    function getRewardDefinition(key) {
-      return Object.prototype.hasOwnProperty.call(REWARDS, key) ? REWARDS[key] : null;
+    const REWARD_TYPES = new Set(['gift_card', 'dollar_discount', 'percent_discount', 'free_service', 'free_product']);
+
+    function validateRewardDefinition(reward) {
+      if (!isRecord(reward) || typeof reward.key !== 'string' || !reward.key.trim()) return { ok: false, code: 'invalid_reward' };
+      if (!REWARD_TYPES.has(reward.type)) return { ok: false, code: 'invalid_reward_type' };
+      if (!Number.isSafeInteger(reward.cost) || reward.cost <= 0) return { ok: false, code: 'invalid_reward_cost' };
+      if (!isRecord(reward.title) || typeof reward.title.vi !== 'string' || typeof reward.title.en !== 'string') return { ok: false, code: 'invalid_reward_title' };
+      if (!isRecord(reward.description) || typeof reward.description.vi !== 'string' || typeof reward.description.en !== 'string') return { ok: false, code: 'invalid_reward_description' };
+      if (!isRecord(reward.conditions) || typeof reward.conditions.vi !== 'string' || typeof reward.conditions.en !== 'string') return { ok: false, code: 'invalid_reward_conditions' };
+      if (!['active', 'paused'].includes(reward.status)) return { ok: false, code: 'invalid_reward_status' };
+      if (!['stackable', 'not_stackable'].includes(reward.stackingRule)) return { ok: false, code: 'invalid_stacking_rule' };
+      if (!Array.isArray(reward.eligibleLocationIds) || reward.eligibleLocationIds.length === 0
+        || reward.eligibleLocationIds.some((id) => typeof id !== 'string' || !id.trim())) return { ok: false, code: 'invalid_reward_locations' };
+      if (!Number.isSafeInteger(reward.validityDays) || reward.validityDays <= 0) return { ok: false, code: 'invalid_reward_validity' };
+      if (!Number.isSafeInteger(reward.perCustomerLimit) || reward.perCustomerLimit <= 0) return { ok: false, code: 'invalid_reward_limit' };
+      if (reward.stock !== null && (!Number.isSafeInteger(reward.stock) || reward.stock < 0)) return { ok: false, code: 'invalid_reward_stock' };
+      if (!Number.isSafeInteger(reward.minimumSpendCents) || reward.minimumSpendCents < 0) return { ok: false, code: 'invalid_minimum_spend' };
+      if (reward.type === 'percent_discount'
+        && (!Number.isSafeInteger(reward.valuePercent) || reward.valuePercent <= 0 || reward.valuePercent > 100
+          || !Number.isSafeInteger(reward.maximumDiscountCents) || reward.maximumDiscountCents <= 0)) {
+        return { ok: false, code: 'maximum_discount_required' };
+      }
+      if (['gift_card', 'dollar_discount'].includes(reward.type)
+        && (!Number.isSafeInteger(reward.valueCents) || reward.valueCents <= 0)) return { ok: false, code: 'invalid_reward_value' };
+      if (['free_service', 'free_product'].includes(reward.type)
+        && (typeof reward.linkedItemId !== 'string' || !reward.linkedItemId.trim())) return { ok: false, code: 'linked_item_required' };
+      return { ok: true };
+    }
+
+    function getRewardEligibility(appState, reward, locationId = reward?.acceptingBusinessId) {
+      const definition = validateRewardDefinition(reward);
+      if (!definition.ok) return { eligible: false, code: definition.code };
+      const businesses = validateRewardBusinesses(appState, reward);
+      if (!businesses.ok) return { eligible: false, code: businesses.code };
+      if (reward.status !== 'active') return { eligible: false, code: 'reward_paused' };
+      if (reward.stock === 0) return { eligible: false, code: 'out_of_stock' };
+      if (!reward.eligibleLocationIds.includes(locationId)) {
+        return { eligible: false, code: 'wrong_location', eligibleLocationIds: [...reward.eligibleLocationIds] };
+      }
+      const customerId = appState?.profile?.id;
+      const issuedCount = Array.isArray(appState?.redemptions)
+        ? appState.redemptions.filter((instrument) => isRecord(instrument)
+          && instrument.rewardKey === reward.key
+          && instrument.customerId === customerId
+          && ['ready', 'issued', 'redeemed'].includes(instrument.status)).length
+        : 0;
+      if (issuedCount >= reward.perCustomerLimit) return { eligible: false, code: 'limit_reached' };
+      const available = getBusinessBalance(appState, reward.sourceBusinessId).available;
+      const missingPoints = Math.max(0, reward.cost - available);
+      return missingPoints > 0
+        ? { eligible: false, code: 'insufficient_points', missingPoints }
+        : { eligible: true, code: 'eligible', missingPoints: 0 };
+    }
+
+    function getRewardDefinition(key, appState = null) {
+      const reward = Object.prototype.hasOwnProperty.call(REWARDS, key) ? REWARDS[key] : null;
+      if (!reward) return null;
+      const override = appState?.ui?.loyaltyDemo?.catalogStatus?.[key];
+      return ['active', 'paused'].includes(override) ? { ...reward, status: override } : reward;
     }
 
     function getGuestServiceDefinition(businessId, serviceKey) {
@@ -1706,7 +1914,7 @@
       if (kind === 'redemption') {
         const matches = appState.redemptions.filter((row) => isRecord(row) && row.id === reference);
         const redemption = matches.length === 1 ? matches[0] : null;
-        if (!redemption || redemption.status !== 'ready'
+        if (!redemption || !['ready', 'issued'].includes(redemption.status)
           || redemption.acceptingBusinessId !== businessId) {
           return { ok: false, code: 'invalid_reward' };
         }
@@ -1744,7 +1952,8 @@
     }
 
     function createDefaultState() {
-      return {
+      const walletUpdatedAt = new Date().toISOString();
+      const defaultState = {
         schemaVersion: SCHEMA_VERSION,
         updatedAt: new Date().toISOString(),
         session: {
@@ -1760,7 +1969,7 @@
           name: 'Jessica Nguyen',
           phone: '8325550148',
           avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80',
-          language: 'en',
+          language: 'vi',
           referralCode: 'JESSICA50',
           paymentMethods: ['Zelle', 'Venmo']
         },
@@ -1818,13 +2027,13 @@
           'staff-spa-linh': { id: 'staff-spa-linh', name: 'Linh', role: 'Spa Therapist', businessId: 'golden-glow-spa', methods: ['Zelle', 'Venmo'], followNotifyOptIn: false }
         },
         balances: {
-          'bitcoin-nail-bar': { points: 2450, credits: 0, expiringPoints: null },
-          'golden-glow-spa': { points: 600, credits: 0, expiringPoints: null },
-          'moon-coffee': { points: 120, credits: 0, expiringPoints: { amount: 80, date: '2026-08-30' } },
-          'sunset-hair-lounge': { points: 300, credits: 0, expiringPoints: null },
-          'lotus-nail-spa': { points: 0, credits: 0, expiringPoints: null },
-          'orchid-beauty-bar': { points: 0, credits: 0, expiringPoints: null },
-          'velvet-lash-studio': { points: 0, credits: 0, expiringPoints: null }
+          'bitcoin-nail-bar': { available: 2450, pending: 120, lifetime: 4270, points: 2450, credits: 0, expiringPoints: null, version: 1, updatedAt: walletUpdatedAt },
+          'golden-glow-spa': { available: 600, pending: 0, lifetime: 980, points: 600, credits: 0, expiringPoints: null, version: 1, updatedAt: walletUpdatedAt },
+          'moon-coffee': { available: 120, pending: 20, lifetime: 460, points: 120, credits: 0, expiringPoints: { amount: 80, date: '2026-08-30' }, version: 1, updatedAt: walletUpdatedAt },
+          'sunset-hair-lounge': { available: 300, pending: 0, lifetime: 560, points: 300, credits: 0, expiringPoints: null, version: 1, updatedAt: walletUpdatedAt },
+          'lotus-nail-spa': { available: 0, pending: 0, lifetime: 0, points: 0, credits: 0, expiringPoints: null, version: 1, updatedAt: walletUpdatedAt },
+          'orchid-beauty-bar': { available: 0, pending: 0, lifetime: 0, points: 0, credits: 0, expiringPoints: null, version: 1, updatedAt: walletUpdatedAt },
+          'velvet-lash-studio': { available: 0, pending: 0, lifetime: 0, points: 0, credits: 0, expiringPoints: null, version: 1, updatedAt: walletUpdatedAt }
         },
         ledger: [
           { id: 'led-visit-1', businessId: BUSINESS_ID, type: 'visit', pointsDelta: 120, refType: 'visit', refId: 'visit-1001', createdAt: '2026-07-14T10:42:00.000Z' },
@@ -1950,10 +2159,15 @@
             tipScanReplayFingerprint: null, tipDoneView: null, reviewMode: null,
             guestCheckinId: null, checkoutDraftId: null, paymentProofId: null, paydoneKind: null
           },
+          loyaltyDemo: { catalogStatus: {} },
           bookingDraft: { businessId: BUSINESS_ID, service: 'Gel manicure', staff: 'Anna', day: 'Thu 16 Jul', time: '2:00 PM', note: '' },
           overlay: null, pushPromptCount: 0, introSeen: false
         }
       };
+      defaultState.redemptions = defaultState.redemptions
+        .map((instrument) => normalizePersistedRedemption(instrument, defaultState))
+        .filter(Boolean);
+      return defaultState;
     }
 
     function isRecord(value) {
@@ -2057,17 +2271,19 @@
     }
 
     function isRedemptionLedgerPair(redemption, entry) {
+      const pointsSpent = redemption.pointsSpent ?? redemption.cost;
       return entry.type === 'redeem'
         && entry.refType === 'redemption'
         && entry.refId === redemption.id
         && entry.businessId === redemption.sourceBusinessId
-        && entry.pointsDelta === -redemption.cost;
+        && entry.pointsDelta === -pointsSpent;
     }
 
     function redemptionSortKey(redemption) {
       return JSON.stringify([
         redemption.id, redemption.idempotencyKey, redemption.rewardKey, redemption.sourceBusinessId,
-        redemption.acceptingBusinessId, redemption.cost, redemption.status, redemption.createdAt,
+        redemption.acceptingBusinessId, redemption.pointsSpent ?? redemption.cost, redemption.status,
+        redemption.issuedAt ?? redemption.createdAt,
         typeof redemption.qrPayload === 'string' ? redemption.qrPayload : ''
       ]);
     }
@@ -2078,18 +2294,56 @@
       ]);
     }
 
-    function normalizePersistedRedemption(redemption) {
+    function normalizePersistedRedemption(redemption, appState = null) {
       if (!isRecord(redemption)
+        || typeof redemption.id !== 'string'
         || typeof redemption.idempotencyKey !== 'string'
         || typeof redemption.rewardKey !== 'string') return null;
+      const id = redemption.id.trim();
       const idempotencyKey = redemption.idempotencyKey.trim();
       const rewardKey = redemption.rewardKey.trim();
-      if (!idempotencyKey || !rewardKey) return null;
+      const reward = getRewardDefinition(rewardKey, appState);
+      if (!id || !idempotencyKey || !rewardKey || !reward) return null;
+      const pointsSpent = redemption.pointsSpent ?? redemption.cost;
+      const issuedAt = redemption.issuedAt ?? redemption.createdAt;
+      const issuedMilliseconds = Date.parse(issuedAt);
+      const expiresAt = validStoredTimestamp(redemption.expiresAt)
+        ? redemption.expiresAt
+        : Number.isFinite(issuedMilliseconds)
+          ? new Date(issuedMilliseconds + reward.validityDays * 86400000).toISOString()
+          : '';
+      const status = redemption.status === 'ready' ? 'issued' : redemption.status;
+      const customerId = typeof redemption.customerId === 'string' && redemption.customerId.trim()
+        ? redemption.customerId.trim()
+        : appState?.profile?.id;
+      const instrumentCode = typeof redemption.code === 'string' && /^NT-[A-Z0-9]+$/.test(redemption.code)
+        ? redemption.code
+        : `NT-${id.replace(/^red-/, '').replace(/[^a-z0-9]/gi, '').slice(0, 8).toUpperCase()}`;
       return {
         ...redemption,
+        id,
         idempotencyKey,
         rewardKey,
-        qrPayload: `NEXORA:${rewardKey}:${idempotencyKey}`
+        catalogSnapshot: isRecord(redemption.catalogSnapshot)
+          ? structuredClone(redemption.catalogSnapshot)
+          : snapshotRewardDefinition(reward),
+        customerId,
+        issuingLocationId: typeof redemption.issuingLocationId === 'string' && redemption.issuingLocationId.trim()
+          ? redemption.issuingLocationId.trim()
+          : redemption.acceptingBusinessId,
+        eligibleLocationIds: Array.isArray(redemption.eligibleLocationIds)
+          ? redemption.eligibleLocationIds.filter((locationId) => typeof locationId === 'string' && locationId.trim())
+          : [...reward.eligibleLocationIds],
+        pointsSpent,
+        cost: pointsSpent,
+        status,
+        code: instrumentCode,
+        qrPayload: `NEXORA:${rewardKey}:${idempotencyKey}`,
+        initialValueCents: redemption.initialValueCents ?? (reward.type === 'gift_card' ? reward.valueCents : null),
+        remainingValueCents: redemption.remainingValueCents ?? (reward.type === 'gift_card' ? reward.valueCents : null),
+        issuedAt,
+        createdAt: issuedAt,
+        expiresAt
       };
     }
 
@@ -2218,17 +2472,19 @@
 
     function normalizePersistedRedemptions(appState) {
       appState.redemptions = appState.redemptions
-        .map(normalizePersistedRedemption)
+        .map((redemption) => normalizePersistedRedemption(redemption, appState))
         .filter(Boolean);
     }
 
     function hasCurrentRewardMetadata(redemption) {
       const reward = getRewardDefinition(redemption.rewardKey);
-      return Boolean(reward)
-        && redemption.rewardKey === reward.key
-        && redemption.sourceBusinessId === reward.sourceBusinessId
-        && redemption.acceptingBusinessId === reward.acceptingBusinessId
-        && redemption.cost === reward.cost
+      const snapshot = redemption.catalogSnapshot;
+      return Boolean(reward && isRecord(snapshot))
+        && redemption.rewardKey === snapshot.key
+        && redemption.sourceBusinessId === snapshot.sourceBusinessId
+        && redemption.acceptingBusinessId === snapshot.acceptingBusinessId
+        && redemption.pointsSpent === snapshot.cost
+        && redemption.cost === redemption.pointsSpent
         && redemption.qrPayload === `NEXORA:${reward.key}:${redemption.idempotencyKey}`;
     }
 
@@ -2243,8 +2499,18 @@
         && typeof redemption.rewardKey === 'string'
         && redemption.rewardKey === redemption.rewardKey.trim()
         && redemption.rewardKey.length > 0
-        && redemption.status === 'ready'
-        && validStoredTimestamp(redemption.createdAt)
+        && typeof redemption.customerId === 'string'
+        && redemption.customerId.length > 0
+        && ['issued', 'redeemed', 'expired', 'voided', 'reversed'].includes(redemption.status)
+        && Number.isSafeInteger(redemption.pointsSpent)
+        && redemption.pointsSpent >= 0
+        && validStoredTimestamp(redemption.issuedAt)
+        && redemption.createdAt === redemption.issuedAt
+        && validStoredTimestamp(redemption.expiresAt)
+        && typeof redemption.code === 'string'
+        && /^NT-[A-Z0-9]+$/.test(redemption.code)
+        && Array.isArray(redemption.eligibleLocationIds)
+        && redemption.eligibleLocationIds.length > 0
         && hasCurrentRewardMetadata(redemption)
         && validateRewardBusinesses(appState, redemption).ok;
     }
@@ -2298,7 +2564,7 @@
         redemption.idempotencyKey === attempt.idempotencyKey
       ));
       const normalizedClaim = rawClaims.length === 1
-        ? normalizePersistedRedemption(rawClaims[0].redemption)
+        ? normalizePersistedRedemption(rawClaims[0].redemption, appState)
         : null;
       const validBinding = rawClaims.length === 0
         ? surviving.length === 0
@@ -5447,6 +5713,13 @@
           value: valid ? {
             rewardKey: incomingValue.rewardKey.trim(),
             idempotencyKey: incomingValue.idempotencyKey.trim(),
+            expectedBalanceVersion: Number.isSafeInteger(incomingValue.expectedBalanceVersion)
+              && incomingValue.expectedBalanceVersion > 0
+              ? incomingValue.expectedBalanceVersion
+              : null,
+            issuingLocationId: typeof incomingValue.issuingLocationId === 'string'
+              ? incomingValue.issuingLocationId.trim() || null
+              : null,
             completed: incomingValue.completed
           } : structuredClone(defaultValue)
         };
@@ -5539,6 +5812,58 @@
       }
     }
 
+    function normalizePointBalance(raw, fallback = {}, now = Date.now()) {
+      const source = isRecord(raw) ? raw : {};
+      const base = isRecord(fallback) ? fallback : {};
+      const hasBalanceAmount = Object.prototype.hasOwnProperty.call(source, 'points')
+        || Object.prototype.hasOwnProperty.call(source, 'available');
+      const nonNegative = (candidate, fallbackValue = 0) => Number.isSafeInteger(candidate) && candidate >= 0
+        ? candidate
+        : fallbackValue;
+      const positive = (candidate, fallbackValue = 1) => Number.isSafeInteger(candidate) && candidate > 0
+        ? candidate
+        : fallbackValue;
+      const available = nonNegative(
+        source.points,
+        nonNegative(source.available, nonNegative(base.points, nonNegative(base.available, 0)))
+      );
+      const pending = nonNegative(source.pending, hasBalanceAmount ? 0 : nonNegative(base.pending, 0));
+      const lifetime = nonNegative(
+        source.lifetime,
+        hasBalanceAmount ? available : nonNegative(base.lifetime, available)
+      );
+      const credits = nonNegative(source.credits, nonNegative(base.credits, 0));
+      const version = positive(source.version, positive(base.version, 1));
+      const timestamp = typeof source.updatedAt === 'string' && Number.isFinite(Date.parse(source.updatedAt))
+        ? source.updatedAt
+        : typeof base.updatedAt === 'string' && Number.isFinite(Date.parse(base.updatedAt))
+          ? base.updatedAt
+          : new Date(now).toISOString();
+      const sourceExpiry = source.expiringPoints;
+      const validSourceExpiry = isRecord(sourceExpiry)
+        && Number.isSafeInteger(sourceExpiry.amount)
+        && sourceExpiry.amount >= 0
+        && typeof sourceExpiry.date === 'string'
+        && validExpiryDate(sourceExpiry.date);
+      const expiringPoints = sourceExpiry === null
+        ? null
+        : validSourceExpiry
+          ? { amount: sourceExpiry.amount, date: sourceExpiry.date }
+          : source.expiringPoints !== undefined
+            ? null
+            : structuredClone(base.expiringPoints ?? null);
+      return {
+        available,
+        pending,
+        lifetime,
+        points: available,
+        credits,
+        expiringPoints,
+        version,
+        updatedAt: timestamp
+      };
+    }
+
     function migrateState(value) {
       const defaults = createDefaultState();
       if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
@@ -5554,12 +5879,25 @@
       const migrated = mergeRecord(defaults, value);
       migrated.schemaVersion = SCHEMA_VERSION;
       migrated.updatedAt = new Date().toISOString();
+      const rawBalances = isRecord(value.balances) ? value.balances : {};
+      Object.entries(defaults.balances).forEach(([businessId, fallback]) => {
+        migrated.balances[businessId] = normalizePointBalance(rawBalances[businessId], fallback);
+      });
       if (!['vi', 'en'].includes(migrated.profile.language)) migrated.profile.language = defaults.profile.language;
       if (!['all', 'nails', 'spa', 'salon'].includes(migrated.ui.exploreFilter)) migrated.ui.exploreFilter = defaults.ui.exploreFilter;
       if (!['all', 'saved', 'unsaved', 'beauty', 'food'].includes(migrated.ui.offerFilter)) migrated.ui.offerFilter = defaults.ui.offerFilter;
       if (!REWARD_TABS.includes(migrated.ui.rewardTab)) migrated.ui.rewardTab = defaults.ui.rewardTab;
       if (!LOOK_SORTS.includes(migrated.ui.lookSort)) migrated.ui.lookSort = defaults.ui.lookSort;
       if (typeof migrated.ui.lookQuery !== 'string') migrated.ui.lookQuery = defaults.ui.lookQuery;
+      const rawCatalogStatus = isRecord(value.ui?.loyaltyDemo?.catalogStatus)
+        ? value.ui.loyaltyDemo.catalogStatus
+        : {};
+      migrated.ui.loyaltyDemo = { catalogStatus: {} };
+      Object.keys(REWARDS).forEach((rewardKey) => {
+        if (['active', 'paused'].includes(rawCatalogStatus[rewardKey])) {
+          migrated.ui.loyaltyDemo.catalogStatus[rewardKey] = rawCatalogStatus[rewardKey];
+        }
+      });
       migrated.consents = migrated.consents.map((consent) => consent.scope === 'network'
         ? { ...consent, scope: 'networkOffers' }
         : consent);
@@ -5737,6 +6075,18 @@
         .map((item) => normalizePersistedFeedback(migrated, item))
         .filter(Boolean);
       const pendingAttempt = migrated.ui.pendingContext.rewardAttempt;
+      if (isRecord(pendingAttempt)) {
+        const pendingReward = getRewardDefinition(pendingAttempt.rewardKey);
+        const pendingBalance = pendingReward
+          ? getBusinessBalance(migrated, pendingReward.sourceBusinessId)
+          : null;
+        if (!Number.isSafeInteger(pendingAttempt.expectedBalanceVersion)) {
+          pendingAttempt.expectedBalanceVersion = pendingBalance?.version ?? null;
+        }
+        if (!pendingAttempt.issuingLocationId && pendingReward) {
+          pendingAttempt.issuingLocationId = pendingReward.acceptingBusinessId;
+        }
+      }
       const rawPendingClaims = isRecord(pendingAttempt) && Array.isArray(value.redemptions)
         ? rawRedemptionClaims.filter((claim) => claim.idempotencyKey === pendingAttempt.idempotencyKey)
         : [];
@@ -5795,9 +6145,6 @@
       storage.setItem(STORAGE_KEY, JSON.stringify(appState));
     }
 
-    // Demo build: every page reload starts from a clean seeded state, so the prototype always
-    // shows the same data. Clearing the key makes loadState() fall through to a fresh default.
-    try { window.localStorage.removeItem(STORAGE_KEY); } catch {}
     let state = loadState();
     let pendingProofImageDataUrl = '';
     let renderedScanPaymentIdentity = null;
@@ -6044,9 +6391,11 @@
     ];
     function getBusinessBalance(appState, businessId) {
       const balance = isRecord(appState?.balances) ? appState.balances[businessId] : null;
-      return isRecord(balance) && Number.isFinite(balance.points) && balance.points >= 0
-        ? balance
-        : { points: 0, credits: 0, expiringPoints: null };
+      const points = balance?.points ?? balance?.available;
+      return isRecord(balance)
+        && Number.isSafeInteger(points) && points >= 0
+        ? normalizePointBalance({ ...balance, available: points, points }, balance)
+        : normalizePointBalance({}, {});
     }
 
     function validateStoredBalance(appState, businessId) {
@@ -6060,14 +6409,17 @@
           && typeof expiringPoints.date === 'string'
           && validExpiryDate(expiringPoints.date));
       if (!isRecord(balance)
-        || typeof balance.points !== 'number'
-        || !Number.isFinite(balance.points)
-        || balance.points < 0
+        || typeof (balance.available ?? balance.points) !== 'number'
+        || !Number.isFinite(balance.available ?? balance.points)
+        || (balance.available ?? balance.points) < 0
+        || (balance.points !== undefined && (!Number.isFinite(balance.points) || balance.points < 0))
+        || (balance.available !== undefined && (!Number.isFinite(balance.available) || balance.available < 0))
         || typeof balance.credits !== 'number'
         || !Number.isFinite(balance.credits)
         || balance.credits < 0
         || !validExpiring) return { ok: false, code: 'invalid_balance' };
-      return { ok: true, balance };
+      const points = balance.points ?? balance.available;
+      return { ok: true, balance: normalizePointBalance({ ...balance, available: points, points }, balance) };
     }
 
     function getValidBusiness(appState, businessId) {
@@ -8639,22 +8991,65 @@
       return { ok: true, feedback, points: 15 };
     }
 
-    function redeemReward(appState, rewardKey, idempotencyKey, now = Date.now()) {
-      if (!isRecord(appState) || !isRecord(appState.businesses) || !isRecord(appState.balances)
+    function snapshotRewardDefinition(reward) {
+      return structuredClone({
+        key: reward.key,
+        sourceBusinessId: reward.sourceBusinessId,
+        acceptingBusinessId: reward.acceptingBusinessId,
+        type: reward.type,
+        title: reward.title,
+        description: reward.description,
+        conditions: reward.conditions,
+        cost: reward.cost,
+        valueCents: reward.valueCents ?? null,
+        valuePercent: reward.valuePercent ?? null,
+        minimumSpendCents: reward.minimumSpendCents,
+        maximumDiscountCents: reward.maximumDiscountCents,
+        linkedItemId: reward.linkedItemId,
+        eligibleLocationIds: reward.eligibleLocationIds,
+        stackingRule: reward.stackingRule,
+        validityDays: reward.validityDays
+      });
+    }
+
+    function isValidRewardInstrument(appState, instrument) {
+      if (!isRecord(instrument)
+        || typeof instrument.id !== 'string' || !instrument.id.trim()
+        || typeof instrument.idempotencyKey !== 'string' || instrument.idempotencyKey !== instrument.idempotencyKey.trim()
+        || typeof instrument.rewardKey !== 'string' || !instrument.rewardKey.trim()
+        || typeof instrument.customerId !== 'string' || !instrument.customerId.trim()
+        || instrument.status !== 'issued'
+        || !Number.isSafeInteger(instrument.pointsSpent) || instrument.pointsSpent <= 0
+        || instrument.cost !== instrument.pointsSpent
+        || !isRecord(instrument.catalogSnapshot)
+        || instrument.catalogSnapshot.key !== instrument.rewardKey
+        || instrument.catalogSnapshot.cost !== instrument.pointsSpent
+        || !validStoredTimestamp(instrument.issuedAt)
+        || instrument.createdAt !== instrument.issuedAt
+        || !validStoredTimestamp(instrument.expiresAt)
+        || typeof instrument.code !== 'string' || !/^NT-[A-Z0-9]+$/.test(instrument.code)
+        || instrument.qrPayload !== `NEXORA:${instrument.rewardKey}:${instrument.idempotencyKey}`
+        || !Array.isArray(instrument.eligibleLocationIds)
+        || instrument.eligibleLocationIds.length === 0) return false;
+      return validateRewardBusinesses(appState, instrument).ok;
+    }
+
+    function issueReward(appState, request) {
+      if (!isRecord(appState) || !isRecord(request) || !isRecord(appState.balances)
         || !Array.isArray(appState.redemptions) || !Array.isArray(appState.ledger)) {
         return { ok: false, code: 'invalid_state' };
       }
-      const normalizedRewardKey = typeof rewardKey === 'string' ? rewardKey.trim() : '';
-      const normalizedIdempotencyKey = typeof idempotencyKey === 'string' ? idempotencyKey.trim() : '';
-      if (!normalizedIdempotencyKey) return { ok: false, code: 'invalid_idempotency_key' };
+      const rewardKey = typeof request.rewardKey === 'string' ? request.rewardKey.trim() : '';
+      const idempotencyKey = typeof request.idempotencyKey === 'string' ? request.idempotencyKey.trim() : '';
+      if (!idempotencyKey) return { ok: false, code: 'invalid_idempotency_key' };
       const existing = appState.redemptions.filter((item) => isRecord(item)
         && typeof item.idempotencyKey === 'string'
-        && item.idempotencyKey.trim() === normalizedIdempotencyKey);
+        && item.idempotencyKey.trim() === idempotencyKey);
       if (existing.length) {
-        if (existing.some((item) => typeof item.rewardKey !== 'string' || item.rewardKey.trim() !== normalizedRewardKey)) {
+        if (existing.some((item) => typeof item.rewardKey !== 'string' || item.rewardKey.trim() !== rewardKey)) {
           return { ok: false, code: 'idempotency_conflict' };
         }
-        if (existing.length !== 1 || !isValidPersistedRedemption(appState, existing[0])) {
+        if (existing.length !== 1 || !isValidRewardInstrument(appState, existing[0])) {
           return { ok: false, code: 'invalid_state' };
         }
         const linkedLedger = appState.ledger.filter((entry) => isRecord(entry)
@@ -8663,58 +9058,452 @@
         if (linkedLedger.length !== 1 || !isRedemptionLedgerPair(existing[0], linkedLedger[0])) {
           return { ok: false, code: 'invalid_state' };
         }
-        return { ok: true, redemption: existing[0], idempotent: true };
+        return { ok: true, instrument: existing[0], redemption: existing[0], idempotent: true };
       }
-      const reward = getRewardDefinition(normalizedRewardKey);
+      const reward = getRewardDefinition(rewardKey, appState);
       if (!reward) return { ok: false, code: 'unknown_reward' };
-      if (!Number.isFinite(reward.cost) || reward.cost <= 0) return { ok: false, code: 'invalid_reward' };
-      const businessValidation = validateRewardBusinesses(appState, reward);
-      if (!businessValidation.ok) return businessValidation;
+      const issuingLocationId = typeof request.issuingLocationId === 'string'
+        ? request.issuingLocationId.trim()
+        : '';
+      const eligibility = getRewardEligibility(appState, reward, issuingLocationId);
+      if (!eligibility.eligible) {
+        return {
+          ok: false,
+          code: eligibility.code,
+          missing: eligibility.missingPoints,
+          eligibleLocationIds: eligibility.eligibleLocationIds
+        };
+      }
       const storedBalance = validateStoredBalance(appState, reward.sourceBusinessId);
       if (!storedBalance.ok) return storedBalance;
       const balance = storedBalance.balance;
-      if (balance.points < reward.cost) {
-        return { ok: false, code: 'insufficient_points', missing: reward.cost - balance.points };
+      if (!Number.isSafeInteger(request.expectedBalanceVersion)
+        || request.expectedBalanceVersion !== balance.version) {
+        return { ok: false, code: 'stale_balance', currentBalance: balance.available, currentVersion: balance.version };
       }
-      const timestamp = domainTimestamp(now);
+      const timestamp = domainTimestamp(request.now ?? Date.now());
       if (!timestamp.ok) return timestamp;
-      const redemptionId = createDomainId('red');
-      if (!redemptionId.ok) return redemptionId;
+      const expiryTimestamp = domainTimestamp(Date.parse(timestamp.value) + reward.validityDays * 86400000);
+      if (!expiryTimestamp.ok) return expiryTimestamp;
+      const instrumentId = createDomainId('red');
+      if (!instrumentId.ok) return instrumentId;
       const ledgerId = createDomainId('ledger');
       if (!ledgerId.ok) return ledgerId;
-      const redemption = {
-        id: redemptionId.value,
-        idempotencyKey: normalizedIdempotencyKey,
+      const nextAvailable = balance.available - reward.cost;
+      const nextBalance = {
+        ...balance,
+        available: nextAvailable,
+        points: nextAvailable,
+        version: balance.version + 1,
+        updatedAt: timestamp.value
+      };
+      const instrumentCode = `NT-${instrumentId.value.replace(/^red-/, '').replace(/-/g, '').slice(0, 8).toUpperCase()}`;
+      const instrument = {
+        id: instrumentId.value,
+        idempotencyKey,
         rewardKey: reward.key,
+        catalogSnapshot: snapshotRewardDefinition(reward),
+        customerId: appState.profile.id,
         sourceBusinessId: reward.sourceBusinessId,
         acceptingBusinessId: reward.acceptingBusinessId,
+        issuingLocationId,
+        eligibleLocationIds: [...reward.eligibleLocationIds],
+        pointsSpent: reward.cost,
         cost: reward.cost,
-        status: 'ready',
-        qrPayload: `NEXORA:${reward.key}:${normalizedIdempotencyKey}`,
-        createdAt: timestamp.value
+        status: 'issued',
+        code: instrumentCode,
+        qrPayload: `NEXORA:${reward.key}:${idempotencyKey}`,
+        initialValueCents: reward.type === 'gift_card' ? reward.valueCents : null,
+        remainingValueCents: reward.type === 'gift_card' ? reward.valueCents : null,
+        issuedAt: timestamp.value,
+        createdAt: timestamp.value,
+        expiresAt: expiryTimestamp.value
       };
       const ledgerEntry = {
         id: ledgerId.value,
         businessId: reward.sourceBusinessId,
         type: 'redeem',
         pointsDelta: -reward.cost,
+        balanceBefore: balance.available,
+        balanceAfter: nextAvailable,
         refType: 'redemption',
-        refId: redemption.id,
+        refId: instrument.id,
+        reason: 'reward_issued',
+        reversalOf: null,
         createdAt: timestamp.value
       };
-      const nextBalance = { ...balance, points: balance.points - reward.cost };
-      const nextBalances = { ...appState.balances, [reward.sourceBusinessId]: nextBalance };
-      const nextRedemptions = [...appState.redemptions, redemption];
-      const nextLedger = [ledgerEntry, ...appState.ledger];
-      appState.balances = nextBalances;
-      appState.redemptions = nextRedemptions;
-      appState.ledger = nextLedger;
-      return { ok: true, redemption, idempotent: false };
+      appState.balances = { ...appState.balances, [reward.sourceBusinessId]: nextBalance };
+      appState.redemptions = [...appState.redemptions, instrument];
+      appState.ledger = [ledgerEntry, ...appState.ledger];
+      return { ok: true, instrument, redemption: instrument, idempotent: false };
+    }
+
+    function redeemReward(appState, rewardKey, idempotencyKey, now = Date.now()) {
+      const reward = getRewardDefinition(typeof rewardKey === 'string' ? rewardKey.trim() : '', appState);
+      const balance = reward ? getBusinessBalance(appState, reward.sourceBusinessId) : null;
+      return issueReward(appState, {
+        rewardKey,
+        idempotencyKey,
+        expectedBalanceVersion: balance?.version,
+        issuingLocationId: reward?.acceptingBusinessId,
+        now
+      });
+    }
+
+    function createUniqueLoyaltyEventId(appState, prefix) {
+      const generated = createDomainId(prefix);
+      if (!generated.ok) return generated;
+      const occupied = Array.isArray(appState?.ledger)
+        && appState.ledger.some((entry) => isRecord(entry)
+          && typeof entry.id === 'string'
+          && entry.id.toLowerCase() === generated.value.toLowerCase());
+      return occupied ? { ok: false, code: 'id_collision' } : generated;
+    }
+
+    function settlePendingPoints(appState, businessId, amount, reason, now = Date.now()) {
+      if (!isRecord(appState) || !Array.isArray(appState.ledger)) return { ok: false, code: 'invalid_state' };
+      if (!getValidBusiness(appState, businessId)) return { ok: false, code: 'unknown_business' };
+      if (!Number.isSafeInteger(amount) || amount <= 0) return { ok: false, code: 'invalid_amount' };
+      const normalizedReason = normalizedRequiredText(reason);
+      if (!normalizedReason) return { ok: false, code: 'reason_required' };
+      const storedBalance = validateStoredBalance(appState, businessId);
+      if (!storedBalance.ok) return storedBalance;
+      const balance = storedBalance.balance;
+      if (balance.pending < amount) return { ok: false, code: 'insufficient_pending_points' };
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const ledgerId = createUniqueLoyaltyEventId(appState, 'ledger-settle');
+      if (!ledgerId.ok) return ledgerId;
+      const nextBalance = {
+        ...balance,
+        available: balance.available + amount,
+        points: balance.available + amount,
+        pending: balance.pending - amount,
+        version: balance.version + 1,
+        updatedAt: timestamp.value
+      };
+      const ledger = {
+        id: ledgerId.value,
+        businessId,
+        type: 'points_settled',
+        pointsDelta: amount,
+        balanceBefore: balance.available,
+        balanceAfter: nextBalance.available,
+        refType: 'pending_points',
+        refId: ledgerId.value,
+        reason: normalizedReason,
+        reversalOf: null,
+        createdAt: timestamp.value
+      };
+      appState.balances = { ...appState.balances, [businessId]: nextBalance };
+      appState.ledger = [ledger, ...appState.ledger];
+      return { ok: true, balance: nextBalance, ledger };
+    }
+
+    function reversePointTransaction(appState, transactionId, amount, reason, now = Date.now()) {
+      if (!isRecord(appState) || !Array.isArray(appState.ledger)) return { ok: false, code: 'invalid_state' };
+      const matches = appState.ledger.filter((entry) => isRecord(entry) && entry.id === transactionId);
+      if (matches.length !== 1 || !Number.isSafeInteger(matches[0].pointsDelta) || matches[0].pointsDelta <= 0) {
+        return { ok: false, code: 'transaction_not_reversible' };
+      }
+      if (!Number.isSafeInteger(amount) || amount <= 0) return { ok: false, code: 'invalid_amount' };
+      const original = matches[0];
+      const alreadyReversed = appState.ledger
+        .filter((entry) => entry.reversalOf === original.id && Number.isSafeInteger(entry.pointsDelta) && entry.pointsDelta < 0)
+        .reduce((total, entry) => total + Math.abs(entry.pointsDelta), 0);
+      if (alreadyReversed + amount > original.pointsDelta) return { ok: false, code: 'amount_exceeds_reversible' };
+      const normalizedReason = normalizedRequiredText(reason);
+      if (!normalizedReason) return { ok: false, code: 'reason_required' };
+      const storedBalance = validateStoredBalance(appState, original.businessId);
+      if (!storedBalance.ok) return storedBalance;
+      const balance = storedBalance.balance;
+      if (balance.available < amount) return { ok: false, code: 'insufficient_points_for_reversal' };
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const ledgerId = createUniqueLoyaltyEventId(appState, 'ledger-refund');
+      if (!ledgerId.ok) return ledgerId;
+      const nextBalance = {
+        ...balance,
+        available: balance.available - amount,
+        points: balance.available - amount,
+        lifetime: Math.max(0, balance.lifetime - amount),
+        version: balance.version + 1,
+        updatedAt: timestamp.value
+      };
+      const ledger = {
+        id: ledgerId.value,
+        businessId: original.businessId,
+        type: 'refund_reversal',
+        pointsDelta: -amount,
+        balanceBefore: balance.available,
+        balanceAfter: nextBalance.available,
+        refType: 'refund',
+        refId: original.id,
+        reason: normalizedReason,
+        reversalOf: original.id,
+        createdAt: timestamp.value
+      };
+      appState.balances = { ...appState.balances, [original.businessId]: nextBalance };
+      appState.ledger = [ledger, ...appState.ledger];
+      return { ok: true, balance: nextBalance, ledger, original };
+    }
+
+    function voidRewardInstrument(appState, instrumentId, options = {}, now = Date.now()) {
+      if (!isRecord(appState) || !Array.isArray(appState.redemptions) || !Array.isArray(appState.ledger)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const matches = appState.redemptions.filter((instrument) => isRecord(instrument) && instrument.id === instrumentId);
+      if (matches.length !== 1 || !isValidPersistedRedemption(appState, matches[0])) return { ok: false, code: 'instrument_not_found' };
+      const instrument = matches[0];
+      if (instrument.status !== 'issued' || isSpentRedemption(appState, instrument)) return { ok: false, code: 'instrument_not_unused' };
+      const normalizedReason = normalizedRequiredText(options.reason);
+      if (!normalizedReason) return { ok: false, code: 'reason_required' };
+      const originalDebit = appState.ledger.filter((entry) => isRecord(entry)
+        && entry.type === 'redeem' && entry.refId === instrument.id);
+      if (originalDebit.length !== 1 || !isRedemptionLedgerPair(instrument, originalDebit[0])) return { ok: false, code: 'invalid_state' };
+      const restorePoints = options.restorePoints === true;
+      const storedBalance = validateStoredBalance(appState, instrument.sourceBusinessId);
+      if (!storedBalance.ok) return storedBalance;
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const ledgerId = createUniqueLoyaltyEventId(appState, 'ledger-void');
+      if (!ledgerId.ok) return ledgerId;
+      const balance = storedBalance.balance;
+      const nextAvailable = balance.available + (restorePoints ? instrument.pointsSpent : 0);
+      const nextBalance = {
+        ...balance,
+        available: nextAvailable,
+        points: nextAvailable,
+        version: balance.version + (restorePoints ? 1 : 0),
+        updatedAt: restorePoints ? timestamp.value : balance.updatedAt
+      };
+      const nextInstrument = { ...instrument, status: 'voided', voidedAt: timestamp.value };
+      const ledger = {
+        id: ledgerId.value,
+        businessId: instrument.sourceBusinessId,
+        type: restorePoints ? 'void_restoration' : 'reward_voided',
+        pointsDelta: restorePoints ? instrument.pointsSpent : 0,
+        balanceBefore: balance.available,
+        balanceAfter: nextAvailable,
+        refType: 'reward_instrument',
+        refId: instrument.id,
+        reason: normalizedReason,
+        reversalOf: originalDebit[0].id,
+        createdAt: timestamp.value
+      };
+      appState.balances = { ...appState.balances, [instrument.sourceBusinessId]: nextBalance };
+      appState.redemptions = appState.redemptions.map((row) => row === instrument ? nextInstrument : row);
+      appState.ledger = [ledger, ...appState.ledger];
+      return { ok: true, balance: nextBalance, instrument: nextInstrument, ledger };
+    }
+
+    function consumeGiftCard(appState, instrumentId, amountCents, locationId, now = Date.now()) {
+      if (!isRecord(appState) || !Array.isArray(appState.redemptions) || !Array.isArray(appState.ledger)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const matches = appState.redemptions.filter((instrument) => isRecord(instrument) && instrument.id === instrumentId);
+      if (matches.length !== 1 || !isValidPersistedRedemption(appState, matches[0])) return { ok: false, code: 'instrument_not_found' };
+      const instrument = matches[0];
+      if (instrument.status !== 'issued' || instrument.catalogSnapshot.type !== 'gift_card') return { ok: false, code: 'not_usable_gift_card' };
+      if (!instrument.eligibleLocationIds.includes(locationId)) {
+        return { ok: false, code: 'wrong_location', eligibleLocationIds: [...instrument.eligibleLocationIds] };
+      }
+      if (!Number.isSafeInteger(amountCents) || amountCents <= 0) return { ok: false, code: 'invalid_amount' };
+      if (!Number.isSafeInteger(instrument.remainingValueCents) || amountCents > instrument.remainingValueCents) {
+        return { ok: false, code: 'amount_exceeds_remaining' };
+      }
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const ledgerId = createUniqueLoyaltyEventId(appState, 'ledger-gift');
+      if (!ledgerId.ok) return ledgerId;
+      const remainingValueCents = instrument.remainingValueCents - amountCents;
+      const nextInstrument = {
+        ...instrument,
+        remainingValueCents,
+        status: remainingValueCents === 0 ? 'redeemed' : 'issued',
+        redeemedAt: remainingValueCents === 0 ? timestamp.value : null
+      };
+      const ledger = {
+        id: ledgerId.value,
+        businessId: instrument.sourceBusinessId,
+        type: 'gift_card_used',
+        pointsDelta: 0,
+        balanceBefore: getBusinessBalance(appState, instrument.sourceBusinessId).available,
+        balanceAfter: getBusinessBalance(appState, instrument.sourceBusinessId).available,
+        refType: 'reward_instrument',
+        refId: instrument.id,
+        reason: `used_${amountCents}_cents`,
+        reversalOf: null,
+        amountCents,
+        remainingValueCents,
+        createdAt: timestamp.value
+      };
+      appState.redemptions = appState.redemptions.map((row) => row === instrument ? nextInstrument : row);
+      appState.ledger = [ledger, ...appState.ledger];
+      return { ok: true, instrument: nextInstrument, ledger };
+    }
+
+    function expireRewardInstruments(appState, now = Date.now()) {
+      if (!isRecord(appState) || !Array.isArray(appState.redemptions) || !Array.isArray(appState.ledger)) {
+        return { ok: false, code: 'invalid_state' };
+      }
+      const timestamp = domainTimestamp(now);
+      if (!timestamp.ok) return timestamp;
+      const expiring = appState.redemptions.filter((instrument) => isValidPersistedRedemption(appState, instrument)
+        && instrument.status === 'issued'
+        && Date.parse(instrument.expiresAt) <= now);
+      if (expiring.length === 0) return { ok: true, expired: [], idempotent: true };
+      const events = [];
+      for (let index = 0; index < expiring.length; index += 1) {
+        const ledgerId = createUniqueLoyaltyEventId(
+          { ...appState, ledger: [...appState.ledger, ...events] },
+          `ledger-expire-${index + 1}`
+        );
+        if (!ledgerId.ok) return ledgerId;
+        const balance = getBusinessBalance(appState, expiring[index].sourceBusinessId).available;
+        events.push({
+          id: ledgerId.value,
+          businessId: expiring[index].sourceBusinessId,
+          type: 'reward_expired',
+          pointsDelta: 0,
+          balanceBefore: balance,
+          balanceAfter: balance,
+          refType: 'reward_instrument',
+          refId: expiring[index].id,
+          reason: 'instrument_expired_no_point_return',
+          reversalOf: null,
+          createdAt: timestamp.value
+        });
+      }
+      const expiredIds = new Set(expiring.map((instrument) => instrument.id));
+      appState.redemptions = appState.redemptions.map((instrument) => expiredIds.has(instrument.id)
+        ? { ...instrument, status: 'expired', expiredAt: timestamp.value }
+        : instrument);
+      appState.ledger = [...events, ...appState.ledger];
+      return {
+        ok: true,
+        expired: appState.redemptions.filter((instrument) => expiredIds.has(instrument.id)),
+        events,
+        idempotent: false
+      };
+    }
+
+    function runLoyaltyDemoAction(appState, action, payload = {}, now = Date.now()) {
+      if (!isRecord(appState) || !isRecord(payload)) return { ok: false, code: 'invalid_state' };
+      const businessId = typeof payload.businessId === 'string' ? payload.businessId : BUSINESS_ID;
+      if (action === 'settle_pending') {
+        const balance = getBusinessBalance(appState, businessId);
+        const requested = Number.isSafeInteger(payload.amount) && payload.amount > 0 ? payload.amount : 20;
+        return settlePendingPoints(appState, businessId, Math.min(requested, balance.pending), 'Demo/QA settle pending', now);
+      }
+      if (action === 'toggle_pause') {
+        const rewardKey = typeof payload.rewardKey === 'string' ? payload.rewardKey : 'credit5';
+        const reward = getRewardDefinition(rewardKey, appState);
+        if (!reward || !isRecord(appState.ui?.loyaltyDemo?.catalogStatus)) {
+          return { ok: false, code: 'invalid_demo_catalog' };
+        }
+        const status = reward.status === 'paused' ? 'active' : 'paused';
+        appState.ui.loyaltyDemo.catalogStatus[rewardKey] = status;
+        return { ok: true, action, rewardKey, status };
+      }
+      if (action === 'make_stale') {
+        const stored = validateStoredBalance(appState, businessId);
+        if (!stored.ok) return stored;
+        const timestamp = domainTimestamp(now);
+        if (!timestamp.ok) return timestamp;
+        const nextBalance = {
+          ...stored.balance,
+          version: stored.balance.version + 1,
+          updatedAt: timestamp.value
+        };
+        appState.balances = { ...appState.balances, [businessId]: nextBalance };
+        return { ok: true, action, balance: nextBalance };
+      }
+      if (action === 'partial_refund') {
+        const transactionId = typeof payload.transactionId === 'string' ? payload.transactionId : 'led-visit-1';
+        const original = appState.ledger.find((entry) => isRecord(entry) && entry.id === transactionId);
+        if (!original || !Number.isSafeInteger(original.pointsDelta) || original.pointsDelta <= 0) {
+          return { ok: false, code: 'transaction_not_reversible' };
+        }
+        const reversed = appState.ledger
+          .filter((entry) => entry.reversalOf === transactionId && Number.isSafeInteger(entry.pointsDelta) && entry.pointsDelta < 0)
+          .reduce((total, entry) => total + Math.abs(entry.pointsDelta), 0);
+        const remaining = original.pointsDelta - reversed;
+        const requested = Number.isSafeInteger(payload.amount) && payload.amount > 0 ? payload.amount : 60;
+        if (remaining <= 0) return { ok: false, code: 'already_fully_reversed' };
+        return reversePointTransaction(
+          appState, transactionId, Math.min(requested, remaining), 'Demo/QA partial refund', now
+        );
+      }
+      if (action === 'void_restore') {
+        let instrument = appState.redemptions.find((row) => isRecord(row)
+          && row.status === 'issued' && row.pointsSpent > 0 && row.catalogSnapshot?.type !== 'gift_card');
+        if (!instrument) {
+          const reward = getRewardDefinition('credit5', appState);
+          if (!reward) return { ok: false, code: 'unknown_reward' };
+          const balance = getBusinessBalance(appState, reward.sourceBusinessId);
+          const issued = issueReward(appState, {
+            rewardKey: reward.key,
+            idempotencyKey: `demo-void-${now}`,
+            expectedBalanceVersion: balance.version,
+            issuingLocationId: reward.acceptingBusinessId,
+            now
+          });
+          if (!issued.ok) return issued;
+          instrument = issued.redemption;
+        }
+        return voidRewardInstrument(
+          appState, instrument.id, { restorePoints: true, reason: 'Demo/QA manager void' }, now + 1
+        );
+      }
+      if (action === 'consume_gift_card') {
+        let instrument = appState.redemptions.find((row) => isRecord(row)
+          && row.status === 'issued' && row.catalogSnapshot?.type === 'gift_card'
+          && Number.isSafeInteger(row.remainingValueCents) && row.remainingValueCents > 0);
+        if (!instrument) {
+          const reward = getRewardDefinition('gift5', appState);
+          if (!reward) return { ok: false, code: 'unknown_reward' };
+          const balance = getBusinessBalance(appState, reward.sourceBusinessId);
+          const issued = issueReward(appState, {
+            rewardKey: reward.key,
+            idempotencyKey: `demo-gift-${now}`,
+            expectedBalanceVersion: balance.version,
+            issuingLocationId: reward.acceptingBusinessId,
+            now
+          });
+          if (!issued.ok) return issued;
+          instrument = issued.redemption;
+        }
+        const requested = Number.isSafeInteger(payload.amountCents) && payload.amountCents > 0
+          ? payload.amountCents
+          : 200;
+        return consumeGiftCard(
+          appState,
+          instrument.id,
+          Math.min(requested, instrument.remainingValueCents),
+          instrument.issuingLocationId,
+          now + 1
+        );
+      }
+      if (action === 'expire_instruments') {
+        const issued = appState.redemptions.filter((row) => isRecord(row) && row.status === 'issued');
+        if (issued.length === 0) return { ok: false, code: 'no_issued_instrument' };
+        const future = Math.max(now, ...issued.map((row) => Date.parse(row.expiresAt) + 1));
+        return expireRewardInstruments(appState, future);
+      }
+      return { ok: false, code: 'unknown_demo_action' };
     }
     const COPY = {
       vi: {
         scanSignedOutCustomer: 'Chưa đăng nhập', scanPrivateSummary: 'Đăng nhập để xem',
-        points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', noExpiry: 'Chưa có điểm sắp hết hạn.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', rewardReadyStatus: 'Sẵn sàng', rewardUsedStatus: 'Đã dùng', showCode: 'Hiện mã', rewardRedeemedEmpty: 'Chưa có phần thưởng nào khả dụng. Hãy xem tab Khám phá.', rewardUsedEmpty: 'Chưa có phần thưởng nào được dùng tại tiệm.', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
+        points: 'điểm', availablePoints: 'Có thể dùng {points}', history: 'Lịch sử', redeem: 'Đổi quà', differentAlliance: 'Khác liên minh', morePointsNeeded: 'Cần thêm {points}', unknownBusiness: 'Doanh nghiệp không xác định', ledgerEmpty: 'Chưa có giao dịch điểm cho doanh nghiệp này.', noExpiry: 'Chưa có điểm sắp hết hạn.', dateUnavailable: 'Ngày không xác định', rewardUnavailable: 'Không thể mở phần thưởng. Vui lòng thử lại.', noPendingReward: 'Phiên đổi quà không còn hiệu lực. Hãy chọn lại phần thưởng.', rewardRedeemFailed: 'Không thể đổi phần thưởng. Vui lòng thử lại.', allianceRequired: 'Hai doanh nghiệp không cùng liên minh.', visitPoints: 'Điểm ghé tiệm', welcomeGift: 'Quà chào mừng', rewardRedeemed: 'Đổi phần thưởng', rewardReadyStatus: 'Sẵn sàng', rewardIssuedStatus: 'Đã phát hành', rewardUsedStatus: 'Đã dùng', rewardExpiredStatus: 'Hết hạn', rewardVoidedStatus: 'Đã hủy — hoàn điểm', rewardReversedStatus: 'Đã thu hồi', showCode: 'Hiện mã', rewardRedeemedEmpty: 'Chưa có phần thưởng nào khả dụng. Hãy xem tab Khám phá.', rewardUsedEmpty: 'Chưa có phần thưởng nào được dùng tại tiệm.', privateFeedback: 'Phản hồi riêng', tipBonus: 'Thưởng tip', paymentPoints: 'Điểm thanh toán', directPayBonus: 'Thưởng thanh toán trực tiếp', bookingBonus: 'Thưởng đặt lịch', pointActivity: 'Hoạt động điểm', scanRecognized: 'Đã nhận diện mã NEXORA', continueTip: 'Tiếp tục với ${amount}',
+        pointsSettled: 'Điểm đã khả dụng', refundReversal: 'Thu hồi điểm do hoàn tiền', voidRestoration: 'Hoàn điểm do hủy phần thưởng', rewardVoided: 'Phần thưởng đã hủy', giftCardUsed: 'Đã dùng Gift Card', rewardExpired: 'Phần thưởng hết hạn',
+        availableBalance: 'Khả dụng', pendingBalance: 'Đang chờ', lifetimeBalance: 'Tích lũy',
+        giftCardType: 'Gift Card', dollarDiscountType: 'Giảm cố định', percentDiscountType: 'Giảm theo %', freeServiceType: 'Dịch vụ miễn phí', freeProductType: 'Sản phẩm miễn phí',
+        rewardPaused: 'Reward đang tạm dừng', rewardOutOfStock: 'Reward đã hết', rewardLimitReached: 'Đã đạt giới hạn đổi', rewardWrongLocation: 'Không áp dụng tại địa điểm này',
+        rewardSubmitting: 'Đang phát hành phần thưởng…', staleBalance: 'Số dư đã thay đổi. Hãy kiểm tra số mới rồi xác nhận lại.', rewardIssueFailed: 'Không thể phát hành phần thưởng.', insufficientAvailable: 'Số điểm khả dụng không đủ để đổi phần thưởng này.',
+        demoSettlePending: 'Chuyển điểm đang chờ', demoTogglePause: 'Pause/unpause reward $5', demoMakeStale: 'Tạo stale balance', demoPartialRefund: 'Hoàn tiền một phần', demoVoidRestore: 'Hủy reward và hoàn điểm', demoConsumeGiftCard: 'Dùng $2 Gift Card', demoExpireInstruments: 'Cho reward hết hạn',
+        walletUpdated: 'Cập nhật {date}', demoSettleDone: 'Đã chuyển điểm đang chờ sang Khả dụng.', demoPauseDone: 'Đã đổi trạng thái reward.', demoStaleDone: 'Đã thay đổi phiên bản số dư.', demoRefundDone: 'Đã tạo giao dịch thu hồi điểm do hoàn tiền một phần.', demoVoidDone: 'Đã hủy reward chưa dùng và hoàn điểm.', demoGiftDone: 'Đã dùng một phần giá trị Gift Card.', demoExpireDone: 'Đã cho {count} reward hết hạn.', demoFailed: 'Không chạy được mô phỏng ({code}).',
         paymentSent: 'Đã gửi ${amount} cho tiệm', paymentConfirmedTitle: 'Đã xác nhận thanh toán', insufficientPoints: 'Bạn chưa đủ điểm', saved: 'Đã lưu', saveOffer: 'Lưu ưu đãi', view: 'Xem', rebook: 'Đặt lại', tip: 'Gửi tip', delete: 'Xóa', followingTech: 'Đang theo dõi thợ', followTech: 'Theo dõi thợ', removeWish: 'Xóa mong muốn', favorite: 'Đã yêu thích', addFavorite: 'Thêm yêu thích', recentVisit: 'Lượt ghé gần đây',
         offerSaved: 'Đã lưu ưu đãi', offerRemoved: 'Đã bỏ lưu ưu đãi', offerSaveFailed: 'Ưu đãi không hợp lệ.', offerPeriod: 'Thời gian áp dụng', offerLocation: 'Địa điểm áp dụng', offerTerms: 'Quy định', offerUnavailable: 'Không mở được ưu đãi này. Vui lòng thử lại.', wishRequired: 'Hãy nhập mong muốn', wishDuplicate: 'Mong muốn này đã tồn tại.', wishShared: 'Đã gửi mong muốn ẩn danh',
         lookServiceRequired: 'Hãy nhập tên dịch vụ', lookRequired: 'Hãy nhập ảnh, dịch vụ, màu hoặc ghi chú.', lookSaveFailed: 'Không thể lưu kiểu. Vui lòng thử lại.', lookPhotoQuota: 'Bộ nhớ ảnh đã đầy; đã lưu thông tin kiểu không kèm ảnh.', lookSaved: 'Đã lưu kiểu mới', lookUpdated: 'Đã cập nhật kiểu', lookNotFound: 'Không tìm thấy kiểu này.', noLookNote: 'Không có ghi chú.',
@@ -8761,7 +9550,14 @@
       },
       en: {
         scanSignedOutCustomer: 'Signed out', scanPrivateSummary: 'Sign in to view',
-        points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', noExpiry: 'No points expiring soon.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', rewardReadyStatus: 'Ready', rewardUsedStatus: 'Used', showCode: 'Show code', rewardRedeemedEmpty: 'No reward is available to use yet. Check the Explore tab.', rewardUsedEmpty: 'No reward has been used at a salon yet.', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
+        points: 'points', availablePoints: '{points} available', history: 'History', redeem: 'Redeem', differentAlliance: 'Different alliance', morePointsNeeded: '{points} more', unknownBusiness: 'Unknown business', ledgerEmpty: 'No point activity for this business yet.', noExpiry: 'No points expiring soon.', dateUnavailable: 'Date unavailable', rewardUnavailable: 'Could not open this reward. Please try again.', noPendingReward: 'This redemption attempt expired. Choose the reward again.', rewardRedeemFailed: 'Could not redeem this reward. Please try again.', allianceRequired: 'The businesses are not in the same alliance.', visitPoints: 'Visit points', welcomeGift: 'Welcome gift', rewardRedeemed: 'Reward redeemed', rewardReadyStatus: 'Ready', rewardIssuedStatus: 'Issued', rewardUsedStatus: 'Used', rewardExpiredStatus: 'Expired', rewardVoidedStatus: 'Voided — points restored', rewardReversedStatus: 'Reversed', showCode: 'Show code', rewardRedeemedEmpty: 'No reward is available to use yet. Check the Explore tab.', rewardUsedEmpty: 'No reward has been used at a salon yet.', privateFeedback: 'Private feedback', tipBonus: 'Tip bonus', paymentPoints: 'Payment points', directPayBonus: 'Direct-pay bonus', bookingBonus: 'Booking bonus', pointActivity: 'Point activity', scanRecognized: 'NEXORA code detected', continueTip: 'Continue with ${amount}',
+        pointsSettled: 'Points became available', refundReversal: 'Points reversed after refund', voidRestoration: 'Points restored after reward void', rewardVoided: 'Reward voided', giftCardUsed: 'Gift Card used', rewardExpired: 'Reward expired',
+        availableBalance: 'Available', pendingBalance: 'Pending', lifetimeBalance: 'Lifetime',
+        giftCardType: 'Gift Card', dollarDiscountType: 'Fixed discount', percentDiscountType: 'Percent off', freeServiceType: 'Free service', freeProductType: 'Free product',
+        rewardPaused: 'Reward paused', rewardOutOfStock: 'Reward out of stock', rewardLimitReached: 'Redemption limit reached', rewardWrongLocation: 'Not valid at this location',
+        rewardSubmitting: 'Issuing reward…', staleBalance: 'Your available balance changed. Review the updated amount, then confirm again.', rewardIssueFailed: 'Could not issue the reward.', insufficientAvailable: 'There are not enough available points for this reward.',
+        demoSettlePending: 'Settle pending points', demoTogglePause: 'Pause/unpause $5 reward', demoMakeStale: 'Make balance stale', demoPartialRefund: 'Partial refund', demoVoidRestore: 'Void and restore points', demoConsumeGiftCard: 'Use $2 Gift Card', demoExpireInstruments: 'Expire issued rewards',
+        walletUpdated: 'Updated {date}', demoSettleDone: 'Pending points moved to Available.', demoPauseDone: 'Reward status changed.', demoStaleDone: 'Balance version changed.', demoRefundDone: 'Partial refund reversal created.', demoVoidDone: 'Unused reward voided and points restored.', demoGiftDone: 'Gift Card stored value was partially used.', demoExpireDone: '{count} reward(s) expired.', demoFailed: 'Demo could not run ({code}).',
         paymentSent: '${amount} sent to the salon', paymentConfirmedTitle: 'Payment Confirmed', insufficientPoints: 'Not enough points', saved: 'Saved', saveOffer: 'Save offer', view: 'View', rebook: 'Rebook', tip: 'Tip', delete: 'Delete', followingTech: 'Following tech', followTech: 'Follow tech', removeWish: 'Remove wish', favorite: 'Favorite', addFavorite: 'Add favorite', recentVisit: 'Recent visit',
         offerSaved: 'Offer saved', offerRemoved: 'Offer removed', offerSaveFailed: 'Invalid offer.', offerPeriod: 'When it runs', offerLocation: 'Where it applies', offerTerms: 'Terms', offerUnavailable: 'Could not open this offer. Please try again.', wishRequired: 'Enter a wish first', wishDuplicate: 'This wish already exists.', wishShared: 'Anonymous wish shared',
         lookServiceRequired: 'Enter a service name', lookRequired: 'Add a photo, service, color or note.', lookSaveFailed: 'Could not save this look.', lookPhotoQuota: 'Image storage is full; look details were saved without the photo.', lookSaved: 'New look saved', lookUpdated: 'Look updated', lookNotFound: 'That look no longer exists.', noLookNote: 'No note.',
@@ -9047,7 +9843,7 @@
         return { ready: [], affordable: [], points: 0 };
       }
       const ready = appState.redemptions.filter((redemption) => isRecord(redemption)
-        && redemption.status === 'ready'
+        && ['ready', 'issued'].includes(redemption.status)
         && redemption.acceptingBusinessId === businessId
         && !appState.guestCheckins.some((checkin) => isRecord(checkin)
           && checkin.rewardRedemptionId === redemption.id));
@@ -10134,12 +10930,32 @@
     };
 
     function renderRewardPreview(reward) {
-      const balance = getBusinessBalance(state, reward.sourceBusinessId).points;
+      const balance = getBusinessBalance(state, reward.sourceBusinessId).available;
+      const language = state.profile.language === 'en' ? 'en' : 'vi';
+      const locationNames = reward.eligibleLocationIds
+        .map((locationId) => getValidBusiness(state, locationId)?.name)
+        .filter(Boolean);
       document.getElementById('reward-title').textContent = reward.title[state.profile.language] ?? reward.title.vi;
       document.getElementById('reward-business').textContent = getValidBusiness(state, reward.acceptingBusinessId)?.name ?? t('unknownBusiness');
+      document.getElementById('reward-customer').textContent = state.profile.name;
+      document.getElementById('reward-description').textContent = reward.description[language] ?? reward.description.vi;
+      document.getElementById('reward-conditions').textContent = reward.conditions[language] ?? reward.conditions.vi;
+      document.getElementById('reward-location').textContent = language === 'en'
+        ? `Valid at: ${locationNames.join(', ') || t('unknownBusiness')}`
+        : `Áp dụng tại: ${locationNames.join(', ') || t('unknownBusiness')}`;
+      document.getElementById('reward-limits').textContent = language === 'en'
+        ? `${reward.stackingRule === 'stackable' ? 'Stackable' : 'Not stackable'} · Valid for ${reward.validityDays} days · Limit ${reward.perCustomerLimit} per customer`
+        : `${reward.stackingRule === 'stackable' ? 'Được cộng dồn' : 'Không cộng dồn'} · Có hiệu lực ${reward.validityDays} ngày · Tối đa ${reward.perCustomerLimit} lần/khách`;
       document.getElementById('reward-cost').textContent = formatPoints(reward.cost);
       document.getElementById('reward-balance').textContent = formatPoints(balance);
       document.getElementById('reward-after').textContent = formatPoints(balance - reward.cost);
+      const status = document.getElementById('reward-flow-status');
+      const error = document.getElementById('reward-flow-error');
+      if (status) status.textContent = '';
+      if (error) {
+        error.textContent = '';
+        error.classList.add('hidden');
+      }
     }
 
     function getReceiptRedemption(appState = state) {
@@ -10148,13 +10964,17 @@
       const redemption = Array.isArray(appState.redemptions)
         ? appState.redemptions.find((item) => isRecord(item) && item.id === redemptionId.trim())
         : null;
-      return redemption && isValidPersistedRedemption(appState, redemption) ? redemption : null;
+      return redemption && redemption.status === 'issued' && isValidPersistedRedemption(appState, redemption)
+        ? redemption
+        : null;
     }
 
     function renderRewardReceipt() {
       const redemption = getReceiptRedemption();
       if (!redemption) return;
-      const reward = getRewardDefinition(redemption.rewardKey);
+      const reward = isRecord(redemption.catalogSnapshot)
+        ? redemption.catalogSnapshot
+        : getRewardDefinition(redemption.rewardKey);
       if (!reward) return;
       const business = getValidBusiness(state, redemption.acceptingBusinessId);
       const title = document.getElementById('reward-done-title');
@@ -10162,10 +10982,30 @@
       const code = document.getElementById('reward-done-code');
       const status = document.getElementById('reward-done-status');
       const copy = document.getElementById('redeemdone-business-copy');
+      const issuedAt = document.getElementById('reward-done-issued-at');
+      const expiresAt = document.getElementById('reward-done-expires-at');
+      const remainingRow = document.getElementById('reward-done-remaining-row');
+      const remaining = document.getElementById('reward-done-remaining');
+      const locale = state.profile.language === 'en' ? 'en-US' : 'vi-VN';
+      const formatLifecycleDate = (value) => {
+        const date = new Date(value);
+        return Number.isFinite(date.getTime())
+          ? date.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' })
+          : t('dateUnavailable');
+      };
       if (title) title.textContent = reward.title[state.profile.language] ?? reward.title.vi;
-      if (cost) cost.textContent = formatPoints(redemption.cost);
-      if (code) code.textContent = redemption.qrPayload;
-      if (status) status.textContent = t('rewardReadyStatus');
+      if (cost) cost.textContent = formatPoints(redemption.pointsSpent ?? redemption.cost);
+      if (code) code.textContent = redemption.code;
+      if (status) status.textContent = t('rewardIssuedStatus');
+      if (issuedAt) issuedAt.textContent = formatLifecycleDate(redemption.issuedAt);
+      if (expiresAt) expiresAt.textContent = formatLifecycleDate(redemption.expiresAt);
+      const hasStoredValue = reward.type === 'gift_card'
+        && Number.isSafeInteger(redemption.remainingValueCents)
+        && redemption.remainingValueCents >= 0;
+      if (remainingRow) remainingRow.classList.toggle('hidden', !hasStoredValue);
+      if (remaining) remaining.textContent = hasStoredValue
+        ? `$${(redemption.remainingValueCents / 100).toFixed(2)}`
+        : '';
       if (copy) copy.textContent = state.profile.language === 'en'
         ? `Show this code to ${business?.name ?? t('unknownBusiness')} staff.`
         : `Đưa mã này cho nhân viên ${business?.name ?? t('unknownBusiness')}.`;
@@ -10178,15 +11018,18 @@
         || typeof attempt.rewardKey !== 'string'
         || typeof attempt.idempotencyKey !== 'string'
         || !attempt.idempotencyKey.trim()
+        || !Number.isSafeInteger(attempt.expectedBalanceVersion)
+        || typeof attempt.issuingLocationId !== 'string'
+        || !attempt.issuingLocationId.trim()
         || appState.ui.currentRewardKey !== attempt.rewardKey) return { ok: false, code: 'invalid_reward_attempt' };
-      const reward = getRewardDefinition(attempt.rewardKey);
+      const reward = getRewardDefinition(attempt.rewardKey, appState);
       if (!reward) return { ok: false, code: 'unknown_reward' };
       const businesses = validateRewardBusinesses(appState, reward);
       return businesses.ok ? { ok: true, attempt, reward } : businesses;
     }
 
     function openReward(key, navigate = true) {
-      const reward = getRewardDefinition(key);
+      const reward = getRewardDefinition(key, state);
       const businesses = reward ? validateRewardBusinesses(state, reward) : { ok: false, code: 'unknown_reward' };
       if (!reward || !businesses.ok) {
         if (navigate) showToast(t('rewardUnavailable'), 'error');
@@ -10207,11 +11050,14 @@
         idempotencyKey = attemptId.value;
       }
       commitState((draft) => {
+        const balance = getBusinessBalance(draft, reward.sourceBusinessId);
         draft.ui.currentRewardKey = reward.key;
         draft.ui.pendingContext.redemptionId = null;
         draft.ui.pendingContext.rewardAttempt = {
           rewardKey: reward.key,
           idempotencyKey,
+          expectedBalanceVersion: balance.version,
+          issuingLocationId: reward.acceptingBusinessId,
           completed: false
         };
       });
@@ -10228,7 +11074,13 @@
         return result;
       }
       const result = commitState((draft) => {
-        const redemption = redeemReward(draft, attempt.rewardKey, attempt.idempotencyKey);
+        const redemption = issueReward(draft, {
+          rewardKey: attempt.rewardKey,
+          idempotencyKey: attempt.idempotencyKey,
+          expectedBalanceVersion: attempt.expectedBalanceVersion,
+          issuingLocationId: attempt.issuingLocationId,
+          now: Date.now()
+        });
         if (redemption.ok) {
           draft.ui.pendingContext.rewardAttempt.completed = true;
           draft.ui.pendingContext.redemptionId = redemption.redemption.id;
@@ -10236,6 +11088,26 @@
         return redemption;
       });
       if (!result.ok) {
+        if (result.code === 'stale_balance') {
+          commitState((draft) => {
+            const pendingAttempt = draft.ui.pendingContext.rewardAttempt;
+            if (isRecord(pendingAttempt)) pendingAttempt.expectedBalanceVersion = result.currentVersion;
+            return { ok: true };
+          });
+          const currentReward = getRewardDefinition(attempt.rewardKey, state);
+          if (currentReward) renderRewardPreview(currentReward);
+        }
+        const flowStatus = document.getElementById('reward-flow-status');
+        const flowError = document.getElementById('reward-flow-error');
+        if (flowStatus) flowStatus.textContent = '';
+        if (flowError) {
+          const messageKeys = {
+            stale_balance: 'staleBalance',
+            insufficient_points: 'insufficientAvailable'
+          };
+          flowError.textContent = t(messageKeys[result.code] ?? 'rewardIssueFailed');
+          flowError.classList.remove('hidden');
+        }
         if (navigate) {
           const errorKeys = {
             not_same_alliance: 'allianceRequired',
@@ -10248,7 +11120,7 @@
         }
         return result;
       }
-      const reward = getRewardDefinition(result.redemption.rewardKey);
+      const reward = getRewardDefinition(result.redemption.rewardKey, state);
       if (!reward) return { ok: false, code: 'unknown_reward' };
       renderRewardReceipt();
       if (navigate) {
@@ -12333,13 +13205,59 @@
       renderLedger();
       navigateTo('history');
     });
+    registerAction('retry-wallet', () => {
+      setWalletViewState('loading');
+      try {
+        renderBalances();
+        setWalletViewState('ready');
+        return { ok: true };
+      } catch (error) {
+        setWalletViewState('error');
+        return { ok: false, code: 'wallet_render_failed', error };
+      }
+    });
+    registerAction('loyalty-demo', (control) => {
+      const action = control.dataset.loyaltyDemo;
+      const result = commitState((draft) => runLoyaltyDemoAction(draft, action, {}, Date.now()));
+      const resultCopy = document.getElementById('loyalty-demo-result');
+      if (!result.ok) {
+        const message = t('demoFailed', { code: result.code });
+        if (resultCopy) resultCopy.textContent = message;
+        showToast(message, 'error');
+        return result;
+      }
+      renderApp();
+      const messageKeys = {
+        settle_pending: 'demoSettleDone',
+        toggle_pause: 'demoPauseDone',
+        make_stale: 'demoStaleDone',
+        partial_refund: 'demoRefundDone',
+        void_restore: 'demoVoidDone',
+        consume_gift_card: 'demoGiftDone',
+        expire_instruments: 'demoExpireDone'
+      };
+      const message = t(messageKeys[action] ?? 'demoPauseDone', { count: result.expired?.length ?? 0 });
+      const refreshedCopy = document.getElementById('loyalty-demo-result');
+      if (refreshedCopy) refreshedCopy.textContent = message;
+      showToast(message);
+      return result;
+    });
     registerAction('open-reward', (control) => openReward(control.dataset.rewardKey));
     registerAction('confirm-reward', (control) => {
       control.disabled = true;
+      control.setAttribute('aria-busy', 'true');
+      const status = document.getElementById('reward-flow-status');
+      const error = document.getElementById('reward-flow-error');
+      if (status) status.textContent = t('rewardSubmitting');
+      if (error) {
+        error.textContent = '';
+        error.classList.add('hidden');
+      }
       try {
         return confirmReward();
       } finally {
         control.disabled = false;
+        control.removeAttribute('aria-busy');
       }
     });
     registerAction('show-reward-qr', (control) => {
@@ -13375,7 +14293,7 @@
       const gaps = document.querySelectorAll('[data-tier-gap]');
       if (!labels.length && !bars.length && !gaps.length) return;
       const language = state.profile.language === 'en' ? 'en' : 'vi';
-      const status = getPointTierStatus(getBusinessBalance(state, BUSINESS_ID).points);
+      const status = getPointTierStatus(getBusinessBalance(state, BUSINESS_ID).lifetime);
       labels.forEach((label) => { label.textContent = status.current[language]; });
       bars.forEach((bar) => {
         bar.style.width = `${status.progress}%`;
@@ -13389,18 +14307,47 @@
       gaps.forEach((gap) => { gap.textContent = gapCopy; });
     }
 
+    function setWalletViewState(view) {
+      const loading = document.getElementById('wallet-loading');
+      const error = document.getElementById('wallet-error');
+      const isLoading = view === 'loading';
+      const isError = view === 'error';
+      if (loading) {
+        loading.classList.toggle('hidden', !isLoading);
+        loading.setAttribute('aria-hidden', String(!isLoading));
+      }
+      if (error) error.classList.toggle('hidden', !isError);
+    }
+
     function renderBalances() {
+      setWalletViewState('ready');
+      const primaryBalance = getBusinessBalance(state, BUSINESS_ID);
+      const available = document.getElementById('wallet-available');
+      const pending = document.getElementById('wallet-pending');
+      const lifetime = document.getElementById('wallet-lifetime');
+      const updatedAt = document.getElementById('wallet-updated-at');
+      if (available) available.textContent = formatPointNumber(primaryBalance.available);
+      if (pending) pending.textContent = formatPointNumber(primaryBalance.pending);
+      if (lifetime) lifetime.textContent = formatPointNumber(primaryBalance.lifetime);
+      if (updatedAt) {
+        const updatedDate = new Date(primaryBalance.updatedAt);
+        const locale = state.profile.language === 'en' ? 'en-US' : 'vi-VN';
+        const dateLabel = Number.isFinite(updatedDate.getTime())
+          ? updatedDate.toLocaleString(locale, { dateStyle: 'short', timeStyle: 'short' })
+          : t('dateUnavailable');
+        updatedAt.textContent = t('walletUpdated', { date: dateLabel });
+      }
       document.querySelectorAll('[data-balance-points]').forEach((element) => {
-        element.textContent = formatPointNumber(getBusinessBalance(state, element.dataset.balancePoints).points);
+        element.textContent = formatPointNumber(getBusinessBalance(state, element.dataset.balancePoints).available);
       });
       document.querySelectorAll('[data-balance-business]').forEach((element) => {
-        element.textContent = formatPointNumber(getBusinessBalance(state, element.dataset.balanceBusiness).points);
+        element.textContent = formatPointNumber(getBusinessBalance(state, element.dataset.balanceBusiness).available);
       });
       document.querySelectorAll('[data-balance-with-unit]').forEach((element) => {
-        element.textContent = formatPoints(getBusinessBalance(state, element.dataset.balanceWithUnit).points);
+        element.textContent = formatPoints(getBusinessBalance(state, element.dataset.balanceWithUnit).available);
       });
       document.querySelectorAll('[data-balance-available]').forEach((element) => {
-        const points = getBusinessBalance(state, element.dataset.balanceAvailable).points;
+        const points = getBusinessBalance(state, element.dataset.balanceAvailable).available;
         element.textContent = t('availablePoints', { points: formatPoints(points) });
       });
       const list = document.getElementById('wallet-business-list');
@@ -13411,7 +14358,7 @@
           ? state.ledger.filter(isRecord).map((entry) => entry.businessId)
           : []);
         const cards = Object.entries(state.businesses).filter(([businessId, business]) => isRecord(business)
-          && (getBusinessBalance(state, businessId).points > 0 || ledgered.has(businessId))).map(([businessId, business]) => {
+          && (getBusinessBalance(state, businessId).available > 0 || ledgered.has(businessId))).map(([businessId, business]) => {
         const card = document.createElement('article');
         card.className = 'app-card flex flex-wrap items-center gap-x-3 gap-y-2 p-3 sm:gap-y-4 sm:p-4';
         const name = document.createElement('h2');
@@ -13419,7 +14366,7 @@
         name.textContent = business.name;
         const points = document.createElement('strong');
         points.className = 'mr-auto text-xl font-black sm:text-3xl';
-        points.textContent = formatPoints(getBusinessBalance(state, businessId).points);
+        points.textContent = formatPoints(getBusinessBalance(state, businessId).available);
         const history = document.createElement('button');
         history.type = 'button';
         history.className = 'flex w-fit items-center gap-1.5 rounded-lg border border-[#252c51] bg-[#0d1024] px-2.5 py-1 text-[11px] font-bold text-[#f7f7ff] transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22d3ee] sm:px-3 sm:py-1.5 sm:text-xs';
@@ -13431,6 +14378,15 @@
         });
         list.replaceChildren(...cards);
       }
+      const empty = document.getElementById('wallet-empty');
+      if (empty) {
+        const hasActivity = Array.isArray(state.ledger) && state.ledger.some((entry) => isRecord(entry));
+        empty.classList.toggle('hidden', hasActivity || Object.values(state.balances ?? {}).some((balance) => (
+          getBusinessBalance({ balances: { balance } }, 'balance').available > 0
+          || getBusinessBalance({ balances: { balance } }, 'balance').pending > 0
+          || getBusinessBalance({ balances: { balance } }, 'balance').lifetime > 0
+        )));
+      }
       renderRecentLedgerList('wallet-activity-list');
       renderWalletExpiry();
       renderPointsTier();
@@ -13438,7 +14394,9 @@
 
     const LEDGER_LABEL_KEYS = {
       visit: 'visitPoints', welcome: 'welcomeGift', redeem: 'rewardRedeemed', feedback: 'privateFeedback',
-      tip_bonus: 'tipBonus', visit_spend: 'paymentPoints', directpay_bonus: 'directPayBonus', booking_bonus: 'bookingBonus'
+      tip_bonus: 'tipBonus', visit_spend: 'paymentPoints', directpay_bonus: 'directPayBonus', booking_bonus: 'bookingBonus',
+      points_settled: 'pointsSettled', refund_reversal: 'refundReversal', void_restoration: 'voidRestoration',
+      reward_voided: 'rewardVoided', gift_card_used: 'giftCardUsed', reward_expired: 'rewardExpired'
     };
 
     function renderLedger() {
@@ -13468,7 +14426,14 @@
         const businessName = state.businesses[entry.businessId]?.name ?? t('unknownBusiness');
         const date = new Date(entry.createdAt);
         const dateLabel = Number.isFinite(date.getTime()) ? date.toLocaleDateString(locale) : t('dateUnavailable');
-        metadata.textContent = `${businessName} · ${dateLabel}`;
+        const details = [businessName, dateLabel];
+        if (typeof entry.reason === 'string' && entry.reason.trim()) details.push(entry.reason.trim());
+        if (typeof entry.reversalOf === 'string' && entry.reversalOf.trim()) {
+          details.push(state.profile.language === 'en'
+            ? `Reverses ${entry.reversalOf.trim()}`
+            : `Đảo giao dịch ${entry.reversalOf.trim()}`);
+        }
+        metadata.textContent = details.join(' · ');
         detail.append(title, metadata);
         const delta = document.createElement('strong');
         delta.className = entry.pointsDelta >= 0 ? 'text-app-green' : 'text-app-red';
@@ -13480,21 +14445,25 @@
     }
 
     function rewardAvailability(reward) {
-      const businesses = validateRewardBusinesses(state, reward);
-      if (!businesses.ok) {
-        const labelKey = businesses.code === 'unknown_business' ? 'rewardUnavailable' : 'differentAlliance';
-        return { disabled: true, labelKey };
+      const result = getRewardEligibility(state, reward, reward.acceptingBusinessId);
+      if (result.eligible) return { disabled: false, labelKey: 'redeem', variables: {} };
+      if (result.code === 'insufficient_points') {
+        return { disabled: true, labelKey: 'morePointsNeeded', variables: { points: formatPoints(result.missingPoints, false) } };
       }
-      const missing = Math.max(0, reward.cost - getBusinessBalance(state, reward.sourceBusinessId).points);
-      return missing > 0
-        ? { disabled: true, labelKey: 'morePointsNeeded', variables: { points: formatPoints(missing, false) } }
-        : { disabled: false, labelKey: 'redeem', variables: {} };
+      const labelKeys = {
+        unknown_business: 'rewardUnavailable',
+        invalid_alliance: 'differentAlliance',
+        not_same_alliance: 'differentAlliance',
+        reward_paused: 'rewardPaused',
+        out_of_stock: 'rewardOutOfStock',
+        limit_reached: 'rewardLimitReached',
+        wrong_location: 'rewardWrongLocation'
+      };
+      return { disabled: true, labelKey: labelKeys[result.code] ?? 'rewardUnavailable', variables: {} };
     }
 
-    // A redemption is spent the moment a check-in carries it — nothing ever rewrites its 'ready'
-    // status — so "used" is derived from the check-in list, not read off the redemption.
     function isSpentRedemption(appState, redemption) {
-      return appState.guestCheckins.some((checkin) => isRecord(checkin)
+      return redemption.status !== 'issued' || appState.guestCheckins.some((checkin) => isRecord(checkin)
         && checkin.rewardRedemptionId === redemption.id);
     }
 
@@ -13505,7 +14474,14 @@
     }
 
     function renderRedemptionCard(redemption, spent) {
-      const reward = getRewardDefinition(redemption.rewardKey);
+      const reward = isRecord(redemption.catalogSnapshot)
+        ? redemption.catalogSnapshot
+        : getRewardDefinition(redemption.rewardKey);
+      const usedByCheckin = state.guestCheckins.some((checkin) => isRecord(checkin)
+        && checkin.rewardRedemptionId === redemption.id);
+      const lifecycleStatus = redemption.status === 'issued' && usedByCheckin
+        ? 'redeemed'
+        : redemption.status;
       const card = document.createElement('article');
       card.className = 'app-card reward-card';
       card.dataset.redemptionId = redemption.id;
@@ -13523,10 +14499,16 @@
       footer.className = 'reward-card-footer';
       const status = document.createElement('span');
       status.className = `reward-card-cost font-black ${spent ? 'text-app-muted' : 'text-app-green'}`;
-      status.textContent = spent ? t('rewardUsedStatus') : t('rewardReadyStatus');
+      const statusKeys = {
+        issued: 'rewardIssuedStatus',
+        redeemed: 'rewardUsedStatus',
+        expired: 'rewardExpiredStatus',
+        voided: 'rewardVoidedStatus',
+        reversed: 'rewardReversedStatus'
+      };
+      status.textContent = t(statusKeys[lifecycleStatus] ?? 'rewardUsedStatus');
       footer.append(status);
-      // Only an unspent code is still worth showing to staff.
-      if (!spent) {
+      if (lifecycleStatus === 'issued') {
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'app-button-secondary reward-card-cta';
@@ -13562,16 +14544,32 @@
         return;
       }
       // Granted rewards are earned, not bought, so this catalog does not offer them.
-      const cards = Object.values(REWARDS).filter(isPurchasableReward).map((reward) => {
+      const cards = Object.values(REWARDS).filter(isPurchasableReward).map((baseReward) => {
+        const reward = getRewardDefinition(baseReward.key, state);
         const availability = rewardAvailability(reward);
         const card = document.createElement('article');
         card.className = 'app-card reward-card';
+        card.dataset.rewardKey = reward.key;
+        card.dataset.rewardType = reward.type;
         const title = document.createElement('h2');
         title.className = 'reward-card-title';
         title.textContent = reward.title[state.profile.language] ?? reward.title.vi;
+        const type = document.createElement('span');
+        type.className = 'w-fit rounded-full bg-app-purple/10 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-app-purple';
+        const typeKeys = {
+          gift_card: 'giftCardType', dollar_discount: 'dollarDiscountType', percent_discount: 'percentDiscountType',
+          free_service: 'freeServiceType', free_product: 'freeProductType'
+        };
+        type.textContent = t(typeKeys[reward.type] ?? 'rewardUnavailable');
+        const description = document.createElement('p');
+        description.className = 'text-xs leading-5 text-app-muted';
+        description.textContent = reward.description[state.profile.language] ?? reward.description.vi;
         const business = document.createElement('p');
         business.className = 'reward-card-meta';
         business.textContent = getValidBusiness(state, reward.acceptingBusinessId)?.name ?? t('unknownBusiness');
+        const conditions = document.createElement('p');
+        conditions.className = 'text-[11px] leading-5 text-app-muted';
+        conditions.textContent = reward.conditions[state.profile.language] ?? reward.conditions.vi;
         const footer = document.createElement('div');
         footer.className = 'reward-card-footer';
         const cost = document.createElement('strong');
@@ -13586,7 +14584,7 @@
         button.disabled = availability.disabled;
         if (availability.disabled) button.setAttribute('aria-disabled', 'true');
         footer.append(cost, button);
-        card.append(title, business, footer);
+        card.append(title, type, description, business, conditions, footer);
         return card;
       });
       list.replaceChildren(...cards);
@@ -14912,6 +15910,11 @@
     window.NEXORA_TEST_API = {
       STORAGE_KEY,
       OPERATIONS_STORAGE_KEY,
+      REWARDS,
+      COPY,
+      isPurchasableReward,
+      validateRewardDefinition,
+      getRewardEligibility,
       createDefaultState,
       migrateState,
       loadState,
@@ -14972,7 +15975,15 @@
       createBookingRequest,
       confirmBookingRequest,
       submitFeedback,
+      issueReward,
+      isValidRewardInstrument,
       redeemReward,
+      settlePendingPoints,
+      reversePointTransaction,
+      voidRewardInstrument,
+      consumeGiftCard,
+      expireRewardInstruments,
+      runLoyaltyDemoAction,
       normalizeUsPhone,
       requestOtp,
       verifyOtp,
