@@ -249,15 +249,39 @@ function customerJourneyFixture() {
   };
 }
 
-test('creates versioned Vietnamese demo state with per-business balances', () => {
+test('creates schema v4 wallets with distinct available pending and lifetime balances', () => {
   const { api } = testApi();
   const state = api.createDefaultState();
-  assert.equal(state.schemaVersion, 3);
+  assert.equal(state.schemaVersion, 4);
   assert.equal(state.profile.language, 'vi');
-  assert.equal(state.balances['bitcoin-nail-bar'].points, 2450);
+  const wallet = state.balances['bitcoin-nail-bar'];
+  assert.deepEqual(
+    { available: wallet.available, pending: wallet.pending, lifetime: wallet.lifetime },
+    { available: 2450, pending: 120, lifetime: 4270 }
+  );
+  assert.equal(wallet.points, wallet.available);
+  assert.equal(wallet.version, 1);
+  assert.match(wallet.updatedAt, /^\d{4}-\d{2}-\d{2}T/);
   assert.equal(state.balances['golden-glow-spa'].points, 600);
   assert.equal(state.balances['moon-coffee'].points, 120);
   assert.equal('pointBalance' in state, false);
+});
+
+test('migrates a legacy points balance without changing spendable value', () => {
+  const { api } = testApi();
+  const migrated = api.migrateState({
+    schemaVersion: 3,
+    profile: { language: 'vi' },
+    balances: {
+      'bitcoin-nail-bar': { points: 730, credits: 0, expiringPoints: null }
+    }
+  });
+  const wallet = migrated.balances['bitcoin-nail-bar'];
+  assert.equal(wallet.available, 730);
+  assert.equal(wallet.points, 730);
+  assert.equal(wallet.pending, 0);
+  assert.equal(wallet.lifetime, 730);
+  assert.equal(wallet.version, 1);
 });
 
 test('migrates customer journey collections into schema v3 without changing the storage key', () => {

@@ -652,7 +652,7 @@
     // Must track OPS_SCHEMA_VERSION in customer-salon-operations.html: this app both reads that
     // snapshot and appends its own ticket to it.
     const OPERATIONS_SCHEMA_VERSION = 1;
-    const SCHEMA_VERSION = 3;
+    const SCHEMA_VERSION = 4;
     const BUSINESS_ID = 'bitcoin-nail-bar';
     const FIXED_SCAN_DEMO = Object.freeze({
       businessId: BUSINESS_ID,
@@ -1744,6 +1744,7 @@
     }
 
     function createDefaultState() {
+      const walletUpdatedAt = new Date().toISOString();
       return {
         schemaVersion: SCHEMA_VERSION,
         updatedAt: new Date().toISOString(),
@@ -1760,7 +1761,7 @@
           name: 'Jessica Nguyen',
           phone: '8325550148',
           avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80',
-          language: 'en',
+          language: 'vi',
           referralCode: 'JESSICA50',
           paymentMethods: ['Zelle', 'Venmo']
         },
@@ -1818,13 +1819,13 @@
           'staff-spa-linh': { id: 'staff-spa-linh', name: 'Linh', role: 'Spa Therapist', businessId: 'golden-glow-spa', methods: ['Zelle', 'Venmo'], followNotifyOptIn: false }
         },
         balances: {
-          'bitcoin-nail-bar': { points: 2450, credits: 0, expiringPoints: null },
-          'golden-glow-spa': { points: 600, credits: 0, expiringPoints: null },
-          'moon-coffee': { points: 120, credits: 0, expiringPoints: { amount: 80, date: '2026-08-30' } },
-          'sunset-hair-lounge': { points: 300, credits: 0, expiringPoints: null },
-          'lotus-nail-spa': { points: 0, credits: 0, expiringPoints: null },
-          'orchid-beauty-bar': { points: 0, credits: 0, expiringPoints: null },
-          'velvet-lash-studio': { points: 0, credits: 0, expiringPoints: null }
+          'bitcoin-nail-bar': { available: 2450, pending: 120, lifetime: 4270, points: 2450, credits: 0, expiringPoints: null, version: 1, updatedAt: walletUpdatedAt },
+          'golden-glow-spa': { available: 600, pending: 0, lifetime: 980, points: 600, credits: 0, expiringPoints: null, version: 1, updatedAt: walletUpdatedAt },
+          'moon-coffee': { available: 120, pending: 20, lifetime: 460, points: 120, credits: 0, expiringPoints: { amount: 80, date: '2026-08-30' }, version: 1, updatedAt: walletUpdatedAt },
+          'sunset-hair-lounge': { available: 300, pending: 0, lifetime: 560, points: 300, credits: 0, expiringPoints: null, version: 1, updatedAt: walletUpdatedAt },
+          'lotus-nail-spa': { available: 0, pending: 0, lifetime: 0, points: 0, credits: 0, expiringPoints: null, version: 1, updatedAt: walletUpdatedAt },
+          'orchid-beauty-bar': { available: 0, pending: 0, lifetime: 0, points: 0, credits: 0, expiringPoints: null, version: 1, updatedAt: walletUpdatedAt },
+          'velvet-lash-studio': { available: 0, pending: 0, lifetime: 0, points: 0, credits: 0, expiringPoints: null, version: 1, updatedAt: walletUpdatedAt }
         },
         ledger: [
           { id: 'led-visit-1', businessId: BUSINESS_ID, type: 'visit', pointsDelta: 120, refType: 'visit', refId: 'visit-1001', createdAt: '2026-07-14T10:42:00.000Z' },
@@ -5539,6 +5540,51 @@
       }
     }
 
+    function normalizePointBalance(raw, fallback = {}, now = Date.now()) {
+      const source = isRecord(raw) ? raw : {};
+      const base = isRecord(fallback) ? fallback : {};
+      const nonNegative = (candidate, fallbackValue = 0) => Number.isSafeInteger(candidate) && candidate >= 0
+        ? candidate
+        : fallbackValue;
+      const positive = (candidate, fallbackValue = 1) => Number.isSafeInteger(candidate) && candidate > 0
+        ? candidate
+        : fallbackValue;
+      const available = nonNegative(
+        source.points,
+        nonNegative(source.available, nonNegative(base.points, nonNegative(base.available, 0)))
+      );
+      const pending = nonNegative(source.pending, 0);
+      const lifetime = nonNegative(source.lifetime, available);
+      const credits = nonNegative(source.credits, nonNegative(base.credits, 0));
+      const version = positive(source.version, 1);
+      const timestamp = typeof source.updatedAt === 'string' && Number.isFinite(Date.parse(source.updatedAt))
+        ? source.updatedAt
+        : new Date(now).toISOString();
+      const sourceExpiry = source.expiringPoints;
+      const validSourceExpiry = isRecord(sourceExpiry)
+        && Number.isSafeInteger(sourceExpiry.amount)
+        && sourceExpiry.amount >= 0
+        && typeof sourceExpiry.date === 'string'
+        && validExpiryDate(sourceExpiry.date);
+      const expiringPoints = sourceExpiry === null
+        ? null
+        : validSourceExpiry
+          ? structuredClone(sourceExpiry)
+          : source.expiringPoints !== undefined
+            ? null
+            : structuredClone(base.expiringPoints ?? null);
+      return {
+        available,
+        pending,
+        lifetime,
+        points: available,
+        credits,
+        expiringPoints,
+        version,
+        updatedAt: timestamp
+      };
+    }
+
     function migrateState(value) {
       const defaults = createDefaultState();
       if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
@@ -5554,6 +5600,10 @@
       const migrated = mergeRecord(defaults, value);
       migrated.schemaVersion = SCHEMA_VERSION;
       migrated.updatedAt = new Date().toISOString();
+      const rawBalances = isRecord(value.balances) ? value.balances : {};
+      Object.entries(defaults.balances).forEach(([businessId, fallback]) => {
+        migrated.balances[businessId] = normalizePointBalance(rawBalances[businessId], fallback);
+      });
       if (!['vi', 'en'].includes(migrated.profile.language)) migrated.profile.language = defaults.profile.language;
       if (!['all', 'nails', 'spa', 'salon'].includes(migrated.ui.exploreFilter)) migrated.ui.exploreFilter = defaults.ui.exploreFilter;
       if (!['all', 'saved', 'unsaved', 'beauty', 'food'].includes(migrated.ui.offerFilter)) migrated.ui.offerFilter = defaults.ui.offerFilter;
@@ -6044,9 +6094,11 @@
     ];
     function getBusinessBalance(appState, businessId) {
       const balance = isRecord(appState?.balances) ? appState.balances[businessId] : null;
-      return isRecord(balance) && Number.isFinite(balance.points) && balance.points >= 0
-        ? balance
-        : { points: 0, credits: 0, expiringPoints: null };
+      const points = balance?.points ?? balance?.available;
+      return isRecord(balance)
+        && Number.isSafeInteger(points) && points >= 0
+        ? normalizePointBalance({ ...balance, available: points, points }, balance)
+        : normalizePointBalance({}, {});
     }
 
     function validateStoredBalance(appState, businessId) {
@@ -6060,14 +6112,17 @@
           && typeof expiringPoints.date === 'string'
           && validExpiryDate(expiringPoints.date));
       if (!isRecord(balance)
-        || typeof balance.points !== 'number'
-        || !Number.isFinite(balance.points)
-        || balance.points < 0
+        || typeof (balance.available ?? balance.points) !== 'number'
+        || !Number.isFinite(balance.available ?? balance.points)
+        || (balance.available ?? balance.points) < 0
+        || (balance.points !== undefined && (!Number.isFinite(balance.points) || balance.points < 0))
+        || (balance.available !== undefined && (!Number.isFinite(balance.available) || balance.available < 0))
         || typeof balance.credits !== 'number'
         || !Number.isFinite(balance.credits)
         || balance.credits < 0
         || !validExpiring) return { ok: false, code: 'invalid_balance' };
-      return { ok: true, balance };
+      const points = balance.points ?? balance.available;
+      return { ok: true, balance: normalizePointBalance({ ...balance, available: points, points }, balance) };
     }
 
     function getValidBusiness(appState, businessId) {
