@@ -58,6 +58,14 @@ test('keeps fieldset legends within valid phrasing content', () => {
   legends.forEach((legend) => assert.doesNotMatch(legend, /<h[1-6]\b/i));
 });
 
+test('renders the clear-form action as a Reset text button', () => {
+  const html = source();
+  const button = html.match(/<button\b[^>]*id="clear-form"[^>]*>([\s\S]*?)<\/button>/);
+  assert.ok(button, 'clear-form button must exist');
+  assert.equal(button[1].replace(/<[^>]+>/g, '').trim(), 'Reset');
+  assert.doesNotMatch(button[0], /\bbutton-icon\b/);
+});
+
 function api() {
   const html = source();
   const script = html.match(/<script id="w9-form-script">([\s\S]*?)<\/script>/)?.[1];
