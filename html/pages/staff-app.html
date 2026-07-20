@@ -1659,10 +1659,10 @@
               <h3 class="text-[15px] font-semibold">Jobs</h3>
               <button type="button" class="grid h-9 w-9 place-items-center rounded-lg text-nexoraSubtle" aria-label="Jobs help"><i data-lucide="circle-help" class="h-4 w-4"></i></button>
             </header>
-            <div class="grid grid-cols-3 border-b border-nailBlush bg-white" role="tablist" aria-label="Jobs views">
-              <button type="button" id="job-tab-matches" role="tab" aria-selected="true" aria-controls="job-panel-matches" data-job-tab="matches">Matches</button>
-              <button type="button" id="job-tab-profile" role="tab" aria-selected="false" aria-controls="job-panel-profile" data-job-tab="profile">My Job Profile</button>
-              <button type="button" id="job-tab-activity" role="tab" aria-selected="false" aria-controls="job-panel-activity" data-job-tab="activity">Activity</button>
+            <div class="sticky top-[58px] z-20 grid grid-cols-3 border-b border-nailBlush bg-white/95 px-3 text-center backdrop-blur-xl" role="tablist" aria-label="Jobs views">
+              <button type="button" id="job-tab-matches" role="tab" aria-selected="true" aria-controls="job-panel-matches" data-job-tab="matches" class="border-b-2 border-nexoraBrand py-3 text-[11px] font-semibold text-nexoraBrandDark transition-colors duration-150 hover:text-nexoraBrandDark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nexoraBrand/40">Matches</button>
+              <button type="button" id="job-tab-profile" role="tab" aria-selected="false" aria-controls="job-panel-profile" data-job-tab="profile" class="border-b-2 border-transparent py-3 text-[11px] font-semibold text-nexoraMuted transition-colors duration-150 hover:text-nexoraBrandDark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nexoraBrand/40">My Job Profile</button>
+              <button type="button" id="job-tab-activity" role="tab" aria-selected="false" aria-controls="job-panel-activity" data-job-tab="activity" class="border-b-2 border-transparent py-3 text-[11px] font-semibold text-nexoraMuted transition-colors duration-150 hover:text-nexoraBrandDark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nexoraBrand/40">Activity</button>
             </div>
             <section id="job-panel-matches" class="space-y-3 px-3 py-4" role="tabpanel" aria-labelledby="job-tab-matches" data-job-panel="matches">
               <div class="rounded-lg border border-nexoraSuccess/20 bg-nexoraSuccess/10 p-3 text-[11px] font-semibold leading-4 text-nexoraSuccess">
@@ -2382,7 +2382,9 @@
             const selected = tab.dataset.jobTab === state.view;
             tab.setAttribute('aria-selected', String(selected));
             tab.classList.toggle('text-nexoraBrandDark', selected);
+            tab.classList.toggle('text-nexoraMuted', !selected);
             tab.classList.toggle('border-nexoraBrand', selected);
+            tab.classList.toggle('border-transparent', !selected);
           });
           root.querySelectorAll('[data-job-panel]').forEach((panel) => {
             panel.classList.toggle('hidden', panel.dataset.jobPanel !== state.view);

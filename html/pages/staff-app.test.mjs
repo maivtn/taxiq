@@ -43,6 +43,24 @@ test('contains the complete three-view Jobs contract', () => {
   }
 });
 
+test('styles Jobs tabs with the same underline pattern as Community', () => {
+  const html = source();
+  assert.match(
+    html,
+    /class="sticky top-\[58px\] z-20 grid grid-cols-3 border-b border-nailBlush bg-white\/95 px-3 text-center backdrop-blur-xl" role="tablist" aria-label="Jobs views"/,
+  );
+  assert.match(
+    html,
+    /data-job-tab="matches"[^>]*class="[^"]*border-b-2 border-nexoraBrand[^"]*py-3[^"]*text-\[11px\][^"]*font-semibold[^"]*text-nexoraBrandDark/,
+  );
+  assert.match(
+    html,
+    /data-job-tab="profile"[^>]*class="[^"]*border-b-2 border-transparent[^"]*py-3[^"]*text-\[11px\][^"]*font-semibold[^"]*text-nexoraMuted/,
+  );
+  assert.match(html, /tab\.classList\.toggle\('border-transparent', !selected\)/);
+  assert.match(html, /tab\.classList\.toggle\('text-nexoraMuted', !selected\)/);
+});
+
 test('renders job profile, activity, consent, and guardrail content', () => {
   const html = source();
   for (const field of ['skills', 'experience', 'license', 'radius', 'compensation', 'schedule']) {
