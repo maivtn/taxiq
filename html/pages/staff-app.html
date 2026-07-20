@@ -2259,6 +2259,7 @@
     (() => {
       const VALID_VIEWS = new Set(['matches', 'profile', 'activity']);
       const VALID_PROFILE_STATUSES = new Set(['active', 'paused', 'deleted']);
+      const REPORTABLE_MATCH_STATUSES = new Set(['available', 'interested', 'dismissed']);
       const DIALOG_CLOSING_ACTIONS = new Set([
         'submit-report',
         'confirm-delete',
@@ -2288,26 +2289,35 @@
         if (action.type === 'dismiss' && next.matches[action.matchId] === 'available') {
           next.matches[action.matchId] = 'dismissed';
         }
-        if (action.type === 'open-report' && next.matches[action.matchId]) {
+        if (action.type === 'open-report' && REPORTABLE_MATCH_STATUSES.has(next.matches[action.matchId])) {
           next.dialog = 'report';
           next.reportMatchId = action.matchId;
         }
-        if (action.type === 'report' && next.matches[action.matchId]) {
+        if (action.type === 'report' && REPORTABLE_MATCH_STATUSES.has(next.matches[action.matchId])) {
           next.matches[action.matchId] = 'reported';
           next.dialog = null;
           next.reportMatchId = null;
         }
-        if (action.type === 'profile-status' && VALID_PROFILE_STATUSES.has(action.status)) {
+        if (action.type === 'profile-status'
+            && next.profileStatus !== 'deleted'
+            && VALID_PROFILE_STATUSES.has(action.status)) {
           next.profileStatus = action.status;
           next.dialog = null;
+          if (action.status === 'deleted') {
+            Object.keys(next.matches).forEach((matchId) => {
+              next.matches[matchId] = 'deleted';
+            });
+          }
         }
-        if (action.type === 'open-contact') next.dialog = 'contact';
-        if (action.type === 'open-delete') next.dialog = 'delete';
+        if (action.type === 'open-contact' && next.contactStatus === 'requested') next.dialog = 'contact';
+        if (action.type === 'open-delete' && next.profileStatus !== 'deleted') next.dialog = 'delete';
         if (action.type === 'close-dialog') {
           next.dialog = null;
           next.reportMatchId = null;
         }
-        if (action.type === 'contact-decision' && ['shared', 'declined'].includes(action.decision)) {
+        if (action.type === 'contact-decision'
+            && next.contactStatus === 'requested'
+            && ['shared', 'declined'].includes(action.decision)) {
           next.contactStatus = action.decision;
           next.identityRevealed = action.decision === 'shared';
           next.dialog = null;
@@ -2346,10 +2356,13 @@
           root.querySelectorAll('[data-job-match]').forEach((card) => {
             const status = state.matches[card.dataset.jobMatch];
             card.dataset.jobMatchStatus = status;
-            card.classList.toggle('hidden', status === 'reported');
+            card.classList.toggle('hidden', ['reported', 'deleted'].includes(status));
             card.classList.toggle('opacity-50', status === 'dismissed');
-            card.querySelectorAll('[data-job-action="interest"], [data-job-action="dismiss"], [data-job-action="report"]').forEach((button) => {
+            card.querySelectorAll('[data-job-action="interest"], [data-job-action="dismiss"]').forEach((button) => {
               button.disabled = status !== 'available';
+            });
+            card.querySelectorAll('[data-job-action="report"]').forEach((button) => {
+              button.disabled = false;
             });
             const label = card.querySelector('[data-job-match-status]');
             if (label) label.textContent = status === 'available' ? '' : status;
@@ -2359,6 +2372,9 @@
           });
           root.querySelector('[data-job-profile-current]').textContent = state.profileStatus;
           root.querySelector('[data-job-contact-current]').textContent = state.contactStatus;
+          root.querySelectorAll('[data-job-action="open-contact"]').forEach((button) => {
+            button.disabled = state.contactStatus !== 'requested';
+          });
           root.querySelectorAll('[data-job-dialog]').forEach((dialog) => {
             dialog.classList.toggle('hidden', dialog.dataset.jobDialog !== state.dialog);
             dialog.classList.toggle('flex', dialog.dataset.jobDialog === state.dialog);

@@ -97,6 +97,7 @@ function classList() {
 
 function createJobsHarness() {
   let clickHandler;
+  let matchCards;
   const document = {
     activeElement: null,
     querySelectorAll: () => [root]
@@ -107,17 +108,47 @@ function createJobsHarness() {
     setAttribute() {},
     focus() { document.activeElement = this; }
   };
-  const matchButtons = {
-    rose: [{ disabled: false }, { disabled: false }, { disabled: false }],
-    golden: [{ disabled: false }, { disabled: false }, { disabled: false }]
-  };
-  const matchCards = ['rose', 'golden'].map((matchId) => ({
-    dataset: { jobMatch: matchId },
-    classList: classList(),
-    statusLabel: { textContent: '' },
-    querySelectorAll: () => matchButtons[matchId],
-    querySelector() { return this.statusLabel; }
-  }));
+  const createControl = (action, matchId) => ({
+    dataset: { jobAction: action, jobMatchId: matchId },
+    disabled: false,
+    focusCount: 0,
+    focus() {
+      this.focusCount += 1;
+      const card = matchId
+        ? matchCards.find((candidate) => candidate.dataset.jobMatch === matchId)
+        : null;
+      if (!this.disabled && !card?.classList.contains('hidden')) document.activeElement = this;
+    },
+    closest(selector) {
+      if (selector === '[data-job-tab]') return null;
+      if (selector === '[data-job-action]') return this;
+      return null;
+    }
+  });
+  matchCards = ['rose', 'golden'].map((matchId) => {
+    const controls = ['interest', 'dismiss', 'report'].map((action) => createControl(action, matchId));
+    return {
+      dataset: { jobMatch: matchId },
+      classList: classList(),
+      controls,
+      statusLabel: { textContent: '' },
+      querySelectorAll(selector) {
+        return controls.filter((control) => selector.includes(`[data-job-action="${control.dataset.jobAction}"]`));
+      },
+      querySelector() { return this.statusLabel; }
+    };
+  });
+  const contactReview = createControl('open-contact');
+  const profileControls = [
+    ['profile-active', 'active'],
+    ['profile-paused', 'paused'],
+    ['open-delete', 'deleted']
+  ].map(([action, status]) => {
+    const control = createControl(action);
+    control.dataset.jobProfileStatus = status;
+    control.setAttribute = () => {};
+    return control;
+  });
   const dialogs = ['report', 'contact', 'delete'].map((name) => ({
     dataset: { jobDialog: name },
     classList: classList()
@@ -138,6 +169,8 @@ function createJobsHarness() {
       if (selector === '[data-job-tab]') return [matchesTab];
       if (selector === '[data-job-match]') return matchCards;
       if (selector === '[data-job-dialog]') return dialogs;
+      if (selector === '[data-job-profile-status]') return profileControls;
+      if (selector === '[data-job-action="open-contact"]') return [contactReview];
       return [];
     }
   };
@@ -153,26 +186,24 @@ function createJobsHarness() {
     card(matchId) {
       return matchCards.find((card) => card.dataset.jobMatch === matchId);
     },
+    button(matchId, action) {
+      return this.card(matchId).controls.find((control) => control.dataset.jobAction === action);
+    },
+    contactReview,
+    dialog(name) {
+      return dialogs.find((dialog) => dialog.dataset.jobDialog === name);
+    },
     activeElement() { return document.activeElement; },
     matchesTab,
     click(action, matchId) {
-      const control = {
-        dataset: { jobAction: action, jobMatchId: matchId },
-        focusCount: 0,
-        focus() {
-          this.focusCount += 1;
-          const card = matchId
-            ? matchCards.find((candidate) => candidate.dataset.jobMatch === matchId)
-            : null;
-          if (!card?.classList.contains('hidden')) document.activeElement = this;
-        },
-        closest(selector) {
-          if (selector === '[data-job-tab]') return null;
-          if (selector === '[data-job-action]') return this;
-          return null;
-        }
-      };
+      const control = matchId
+        ? this.button(matchId, action)
+        : action === 'open-contact'
+          ? contactReview
+          : profileControls.find((candidate) => candidate.dataset.jobAction === action)
+            || createControl(action);
       document.activeElement = control;
+      if (control.disabled) return control;
       clickHandler({ target: control });
       return control;
     }
@@ -252,4 +283,77 @@ test('moves focus to the visible Matches tab when reporting hides the trigger', 
   jobs.click('submit-report');
 
   assert.equal(jobs.activeElement(), jobs.matchesTab);
+});
+
+test('makes profile deletion destructive and terminal', () => {
+  const jobs = jobsApi();
+  let state = jobs.reduceJobsState(jobs.createJobsState(), { type: 'profile-status', status: 'deleted' });
+  assert.equal(state.profileStatus, 'deleted');
+  assert.equal(state.matches.rose, 'deleted');
+  assert.equal(state.matches.golden, 'deleted');
+
+  state = jobs.reduceJobsState(state, { type: 'profile-status', status: 'active' });
+  assert.equal(state.profileStatus, 'deleted');
+  assert.equal(state.matches.rose, 'deleted');
+  state = jobs.reduceJobsState(state, { type: 'profile-status', status: 'paused' });
+  assert.equal(state.profileStatus, 'deleted');
+  assert.equal(state.matches.golden, 'deleted');
+});
+
+test('hides deleted matches and does not restore them after profile activation', () => {
+  const jobs = createJobsHarness();
+  jobs.click('open-delete');
+  jobs.click('confirm-delete');
+  assert.equal(jobs.card('rose').classList.contains('hidden'), true);
+  assert.equal(jobs.card('golden').classList.contains('hidden'), true);
+
+  jobs.click('profile-active');
+  assert.equal(jobs.card('rose').classList.contains('hidden'), true);
+  assert.equal(jobs.card('golden').classList.contains('hidden'), true);
+});
+
+test('makes shared and declined contact decisions terminal for the request', () => {
+  const jobs = jobsApi();
+  let state = jobs.reduceJobsState(jobs.createJobsState(), { type: 'contact-decision', decision: 'shared' });
+  state = jobs.reduceJobsState(state, { type: 'contact-decision', decision: 'declined' });
+  assert.equal(state.contactStatus, 'shared');
+  assert.equal(state.identityRevealed, true);
+  state = jobs.reduceJobsState(state, { type: 'open-contact' });
+  assert.equal(state.dialog, null);
+
+  state = jobs.reduceJobsState(jobs.createJobsState(), { type: 'contact-decision', decision: 'declined' });
+  state = jobs.reduceJobsState(state, { type: 'contact-decision', decision: 'shared' });
+  assert.equal(state.contactStatus, 'declined');
+  assert.equal(state.identityRevealed, false);
+  state = jobs.reduceJobsState(state, { type: 'open-contact' });
+  assert.equal(state.dialog, null);
+});
+
+test('disables Contact Review after either terminal decision', () => {
+  for (const decision of ['share-contact', 'decline-contact']) {
+    const jobs = createJobsHarness();
+    jobs.click('open-contact');
+    jobs.click(decision);
+    assert.equal(jobs.contactReview.disabled, true);
+    jobs.click('open-contact');
+    assert.equal(jobs.dialog('contact').classList.contains('hidden'), true);
+  }
+});
+
+test('keeps rendered Report controls enabled after interest and dismiss', () => {
+  const jobs = createJobsHarness();
+  jobs.click('interest', 'rose');
+  assert.equal(jobs.button('rose', 'interest').disabled, true);
+  assert.equal(jobs.button('rose', 'dismiss').disabled, true);
+  assert.equal(jobs.button('rose', 'report').disabled, false);
+  jobs.click('report', 'rose');
+  assert.equal(jobs.dialog('report').classList.contains('hidden'), false);
+  jobs.click('close-dialog');
+
+  jobs.click('dismiss', 'golden');
+  assert.equal(jobs.button('golden', 'interest').disabled, true);
+  assert.equal(jobs.button('golden', 'dismiss').disabled, true);
+  assert.equal(jobs.button('golden', 'report').disabled, false);
+  jobs.click('report', 'golden');
+  assert.equal(jobs.dialog('report').classList.contains('hidden'), false);
 });
