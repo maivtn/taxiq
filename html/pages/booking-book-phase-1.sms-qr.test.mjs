@@ -4,6 +4,8 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const BOOKING_URL = new URL('./booking-book-phase-1.html', import.meta.url);
 const SHELL_URL = new URL('../assets/nexora-shell.js', import.meta.url);
+const SMS_DASHBOARD_URL = new URL('./nexora-sms-dashboard.html', import.meta.url);
+const BRAND_LOGO_URL = new URL('../assets/nexora-logo.svg', import.meta.url);
 
 function source() {
   assert.ok(existsSync(BOOKING_URL), 'booking-book-phase-1.html must exist');
@@ -13,6 +15,11 @@ function source() {
 function shellSource() {
   assert.ok(existsSync(SHELL_URL), 'nexora-shell.js must exist');
   return readFileSync(SHELL_URL, 'utf8');
+}
+
+function smsDashboardSource() {
+  assert.ok(existsSync(SMS_DASHBOARD_URL), 'nexora-sms-dashboard.html must exist');
+  return readFileSync(SMS_DASHBOARD_URL, 'utf8');
 }
 
 test('registers SMS Campaigns and QR Codes in both Booking Hub navigation surfaces', () => {
@@ -53,6 +60,31 @@ test('ports the complete SMS Campaigns view and reuses the composer', () => {
   assert.match(html, /function renderSmsCampaignCards\(\)/);
   assert.match(html, /window\.openSmsCampaignComposer/);
   assert.match(html, /openComposer\(btn\.dataset\.smsSegment\)/);
+});
+
+test('opens the real landing page builder instead of silently closing the SMS composer', () => {
+  const html = source();
+  const dashboard = smsDashboardSource();
+
+  assert.match(
+    html,
+    /<a[^>]*id="createLpBtn"[^>]*href="nexora-sms-dashboard\.html\?view=landingpage"[^>]*target="_blank"[^>]*rel="noopener"[^>]*>/
+  );
+  assert.doesNotMatch(html, /createLpBtn[^\n]*addEventListener\('click', closeComposer\)/);
+  assert.match(html, /#nx-campaign-root \.btn-outline\s*\{[^}]*display:\s*inline-flex;[^}]*text-decoration:\s*none;/s);
+  assert.match(dashboard, /new URLSearchParams\(window\.location\.search\)\.get\('view'\)/);
+  assert.match(dashboard, /showView\(initialView\)/);
+});
+
+test('uses a checked-in mobile brand logo instead of a missing public asset', () => {
+  const html = source();
+  const shell = shellSource();
+
+  assert.ok(existsSync(BRAND_LOGO_URL), 'mobile brand logo must exist');
+  assert.match(html, /class="brand-logo" src="\.\.\/assets\/nexora-logo\.svg"/);
+  assert.match(shell, /class="brand-logo" src="\.\.\/assets\/nexora-logo\.svg"/);
+  assert.doesNotMatch(html, /public\/assets\/nexora-logo\.png/);
+  assert.doesNotMatch(shell, /public\/assets\/nexora-logo\.png/);
 });
 
 test('ports every QR Codes section and its kiosk surface', () => {

@@ -175,7 +175,7 @@
       '<button class="icon-button" type="button" aria-label="Open navigation menu" data-shell-drawer-open>' +
         '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>' +
       '</button>' +
-      '<img class="brand-logo" src="../../public/assets/nexora-logo.png" alt="Nexora Logo">' +
+      '<img class="brand-logo" src="../assets/nexora-logo.svg" alt="Nexora Logo">' +
     '</div>' +
     '<label class="search">' +
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 21-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>' +

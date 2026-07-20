@@ -3195,6 +3195,8 @@ updateCost();
 renderLpTemplates();
 renderLpPages();
 updateLpPreview();
+const initialView = new URLSearchParams(window.location.search).get('view');
+if (initialView && document.getElementById('view-' + initialView)) showView(initialView);
 </script>
 </body>
 </html>

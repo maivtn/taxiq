@@ -4314,6 +4314,9 @@
     #nx-campaign-root .btn-primary:hover { background: var(--nx-brand-dark); transform: translateY(-1px); }
     #nx-campaign-root .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; transform: none; }
     #nx-campaign-root .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border: 1px solid var(--nexora-border);
       border-radius: 8px;
       background: #fff;
@@ -4323,6 +4326,7 @@
       font-weight: 800;
       cursor: pointer;
       font-family: inherit;
+      text-decoration: none;
       transition: all 0.15s;
     }
     #nx-campaign-root .btn-outline:hover { border-color: var(--nx-brand); }
@@ -6660,7 +6664,7 @@
               <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
             </svg>
           </button>
-          <img class="brand-logo" src="../../public/assets/nexora-logo.png" alt="Nexora Logo">
+          <img class="brand-logo" src="../assets/nexora-logo.svg" alt="Nexora Logo">
         </div>
 
         <label class="search">
@@ -8481,7 +8485,7 @@
                   <option value="comeback">Comeback Offer July (nexora.ai/btcnailbar/comeback-offer-july)</option>
                   <option value="birthday">Birthday Special (nexora.ai/btcnailbar/birthday-july)</option>
                 </select>
-                <button class="btn-outline" id="createLpBtn"><i class="bi bi-plus-lg" aria-hidden="true"></i> Tạo trang</button>
+                <a class="btn-outline" id="createLpBtn" href="nexora-sms-dashboard.html?view=landingpage" target="_blank" rel="noopener"><i class="bi bi-plus-lg" aria-hidden="true"></i> Tạo trang</a>
               </div>
             </div>
 
@@ -10982,8 +10986,6 @@ function getBookingCardCallStart(item) {
         $('timeInputRow').style.display = state.scheduleMode === 'schedule' ? 'grid' : 'none';
       });
       $('sendCampaignBtn').addEventListener('click', sendCampaign);
-      var _lp = $('createLpBtn'); if (_lp) _lp.addEventListener('click', closeComposer);
-
       document.querySelectorAll('[data-sms-campaign-new]').forEach(function(btn) {
         btn.addEventListener('click', function() { openComposer('new'); });
       });
