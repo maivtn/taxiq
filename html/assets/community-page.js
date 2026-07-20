@@ -63,6 +63,15 @@
     ],
     courseFilter: 'all',
     activeShareCourseId: '',
+    events: [
+      { id:'event-gel-x-workshop', title:'Gel-X Quality Workshop', description:'Hands-on quality standards and troubleshooting for the salon team.', type:'staff-training', start:'2026-08-12T10:00', end:'2026-08-12T11:30', mode:'in-person', location:'Nexora Touch training area', audience:'staff-main', capacity:18, rsvp:'going', rsvpRequired:true, reminder:true, rsvpTotals:{ going:11, maybe:2, declined:1 }, attendees:['Mia Tran', 'Linh Nguyen', 'Sophie Carter'] },
+      { id:'event-vip-summer-preview', title:'VIP Summer Color Preview', description:'Give VIP customers an early look at the newest summer colors.', type:'customer-event', start:'2026-08-20T18:00', end:'2026-08-20T20:00', mode:'in-person', location:'Nexora Touch main salon', audience:'vip-club', capacity:30, rsvp:'maybe', rsvpRequired:true, reminder:true, rsvpTotals:{ going:19, maybe:6, declined:2 }, attendees:['Maya Lewis', 'Noah Williams'] },
+      { id:'event-school-promotion', title:'Back-to-School Promotion Launch', description:'Coordinate the campaign launch and weekend service offer.', type:'promotion', start:'2026-08-28T09:00', end:'2026-08-28T10:00', mode:'online', location:'', audience:'weekend-promos', capacity:24, rsvp:'maybe', rsvpRequired:true, reminder:true, rsvpTotals:{ going:14, maybe:4, declined:0 }, attendees:['Mia Tran', 'Maya Lewis'] },
+      { id:'event-owner-meetup', title:'Local Salon Owners Meetup', description:'Exchange practical ideas with nearby salon owners and educators.', type:'industry', start:'2026-09-10T17:30', end:'2026-09-10T19:00', mode:'in-person', location:'Downtown Beauty Collective', audience:'staff-main', capacity:40, rsvp:'declined', rsvpRequired:true, reminder:false, rsvpTotals:{ going:22, maybe:5, declined:3 }, attendees:['Linh Nguyen'] }
+    ],
+    eventFilter: 'all',
+    eventView: 'list',
+    activeEventId: 'event-gel-x-workshop',
     candidates: [
       { id:'a7', skills:['Gel-X', 'Design'], distance:4, availability:['weekends'], compensation:'split-6-4', stage:'matched', saved:false },
       { id:'c2', skills:['Gel-X', 'Pedicure'], distance:8, availability:['weekdays'], compensation:'weekly-guarantee', stage:'matched', saved:false }
@@ -100,6 +109,14 @@
     var index;
     for (index = 0; index < state.courses.length; index += 1) {
       if (state.courses[index].id === courseId) return state.courses[index];
+    }
+    return null;
+  }
+
+  function findEvent(eventId) {
+    var index;
+    for (index = 0; index < state.events.length; index += 1) {
+      if (state.events[index].id === eventId) return state.events[index];
     }
     return null;
   }
@@ -425,6 +442,106 @@
     return { ok: true, course: course, group: group, post: post };
   }
 
+  function filterEvents(type) {
+    var selected = type || 'all';
+    return state.events.filter(function (event) {
+      return selected === 'all' || event.type === selected;
+    }).sort(function (first, second) {
+      return new Date(first.start).getTime() - new Date(second.start).getTime();
+    });
+  }
+
+  function createEvent(input) {
+    var details = input || {};
+    var title = String(details.title || '').replace(/^\s+|\s+$/g, '');
+    var types = ['staff-training', 'customer-event', 'promotion', 'industry'];
+    var startDate;
+    var endDate;
+    var capacity;
+    var id;
+    var suffix = 1;
+    var event;
+    if (!title) return { ok:false, error:'Enter an event title.' };
+    if (types.indexOf(details.type) === -1) return { ok:false, error:'Choose a valid event type.' };
+    startDate = new Date(details.start);
+    if (!details.start || isNaN(startDate.getTime()) || startDate <= new Date()) return { ok:false, error:'Choose a future start time.' };
+    endDate = new Date(details.end);
+    if (!details.end || isNaN(endDate.getTime()) || endDate <= startDate) return { ok:false, error:'End time must be after start time.' };
+    capacity = Number(details.capacity);
+    if (isNaN(capacity) || capacity < 1) return { ok:false, error:'Capacity must be at least one.' };
+    if (!state.groups.some(function (group) { return group.id === details.audience; })) return { ok:false, error:'Choose an existing audience group.' };
+    id = 'event-' + new Date().getTime();
+    while (findEvent(id)) {
+      id = 'event-' + new Date().getTime() + '-' + suffix;
+      suffix += 1;
+    }
+    event = {
+      id:id,
+      title:title,
+      description:String(details.description || '').replace(/^\s+|\s+$/g, ''),
+      type:details.type,
+      start:details.start,
+      end:details.end,
+      mode:details.mode || 'in-person',
+      location:String(details.location || '').replace(/^\s+|\s+$/g, ''),
+      audience:details.audience,
+      capacity:capacity,
+      rsvp:'maybe',
+      rsvpRequired:details.rsvpRequired !== false,
+      reminder:details.reminder !== false,
+      rsvpTotals:{ going:0, maybe:1, declined:0 },
+      attendees:[]
+    };
+    state.events.unshift(event);
+    state.activeEventId = event.id;
+    renderEvents();
+    return { ok:true, event:event };
+  }
+
+  function setEventRsvp(eventId, status) {
+    var event = findEvent(eventId);
+    var allowed = ['going', 'maybe', 'declined'];
+    var previous;
+    if (!event) return { ok:false, error:'Event not found.' };
+    if (allowed.indexOf(status) === -1) return { ok:false, error:'Choose going, maybe, or declined.' };
+    if (!event.rsvpTotals) event.rsvpTotals = { going:0, maybe:0, declined:0 };
+    previous = event.rsvp;
+    if (previous !== status) {
+      if (allowed.indexOf(previous) !== -1 && event.rsvpTotals[previous] > 0) event.rsvpTotals[previous] -= 1;
+      event.rsvpTotals[status] += 1;
+      event.rsvp = status;
+    }
+    state.activeEventId = event.id;
+    renderEvents();
+    return { ok:true, event:event };
+  }
+
+  function announceEvent(eventId, groupId) {
+    var event = findEvent(eventId);
+    var group = findGroup(groupId);
+    var post;
+    if (!event) return { ok:false, error:'Event not found.' };
+    if (!group) return { ok:false, error:'Group not found.' };
+    post = {
+      id:'feed-event-' + (state.posts.length + 1) + '-' + new Date().getTime(),
+      kind:'announcement',
+      audience:group.type === 'staff' ? 'staff' : (group.type === 'customer' ? 'customer' : 'all'),
+      groupId:group.id,
+      author:'Nexora Touch',
+      role:'Owner',
+      group:group.name,
+      time:'Just now',
+      body:'Event announcement: ' + event.title + ' on ' + formatEventDate(event.start) + '.',
+      reactions:{},
+      comments:[],
+      saved:false,
+      pinned:false
+    };
+    state.posts.unshift(post);
+    renderFeed();
+    return { ok:true, event:event, group:group, post:post };
+  }
+
   function filterCandidates(filters) {
     var selected = filters || {};
     var skill = selected.skill || 'all';
@@ -573,6 +690,111 @@
     courses = filterCourses(state.courseFilter);
     grid.innerHTML = courses.map(renderCourseCard).join('') || '<p class="community-empty-state">No courses match this filter yet.</p>';
     if (saved) saved.innerHTML = state.courses.filter(function (course) { return course.saved; }).map(function (course) { return '<button type="button" data-course-continue="' + escapeHtml(course.id) + '">' + escapeHtml(course.title) + '</button>'; }).join('') || '<p>No saved resources yet.</p>';
+  }
+
+  function eventTypeLabel(type) {
+    var labels = { 'staff-training':'Staff Training', 'customer-event':'Customer Event', promotion:'Promotion', industry:'Industry' };
+    return labels[type] || type;
+  }
+
+  function formatEventDate(value) {
+    var date = new Date(value);
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    if (isNaN(date.getTime())) return '';
+    return months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
+  }
+
+  function formatEventTime(value) {
+    var date = new Date(value);
+    var hours;
+    var minutes;
+    var period;
+    if (isNaN(date.getTime())) return '';
+    hours = date.getHours();
+    minutes = date.getMinutes();
+    period = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + period;
+  }
+
+  function renderEventCard(event) {
+    var group = findGroup(event.audience) || { name:'Unknown group' };
+    var totals = event.rsvpTotals || { going:0, maybe:0, declined:0 };
+    var place = event.mode === 'online' ? 'Online' : (event.location || 'Location to be confirmed');
+    return '<article class="event-card community-card' + (event.id === state.activeEventId ? ' is-selected' : '') + '" data-event-id="' + escapeHtml(event.id) + '">' +
+      '<header><div><span class="event-type is-' + escapeHtml(event.type) + '">' + escapeHtml(eventTypeLabel(event.type)) + '</span><h3>' + escapeHtml(event.title) + '</h3></div><strong>' + escapeHtml(formatEventDate(event.start)) + '</strong></header>' +
+      '<p>' + escapeHtml(event.description) + '</p><dl><div><dt>Time</dt><dd>' + escapeHtml(formatEventTime(event.start)) + '–' + escapeHtml(formatEventTime(event.end)) + '</dd></div><div><dt>Host</dt><dd>Nexora Touch</dd></div><div><dt>Location</dt><dd>' + escapeHtml(place) + '</dd></div><div><dt>Group</dt><dd>' + escapeHtml(group.name) + '</dd></div><div><dt>Capacity</dt><dd>' + event.capacity + '</dd></div><div><dt>RSVP totals</dt><dd>' + totals.going + ' going · ' + totals.maybe + ' maybe</dd></div></dl>' +
+      '<footer><span class="event-reminder">Reminder ' + (event.reminder ? 'on' : 'off') + '</span><button type="button" data-event-select="' + escapeHtml(event.id) + '">View details</button></footer></article>';
+  }
+
+  function renderEventDetail(event) {
+    var detail = document.querySelector('[data-event-detail]');
+    var group;
+    var totals;
+    var attendees;
+    if (!detail) return;
+    if (!event) {
+      detail.innerHTML = '<h3>Event details</h3><p>Select an event to view RSVP, Attendees, Linked group, and Reminder status.</p>';
+      return;
+    }
+    group = findGroup(event.audience) || { id:'', name:'Unknown group' };
+    totals = event.rsvpTotals || { going:0, maybe:0, declined:0 };
+    attendees = event.attendees && event.attendees.length ? event.attendees.map(function (name) { return '<li>' + escapeHtml(name) + '</li>'; }).join('') : '<li>No attendees listed yet.</li>';
+    detail.innerHTML = '<span class="event-type is-' + escapeHtml(event.type) + '">' + escapeHtml(eventTypeLabel(event.type)) + '</span><h3>' + escapeHtml(event.title) + '</h3><p>' + escapeHtml(formatEventDate(event.start)) + ' · ' + escapeHtml(formatEventTime(event.start)) + '</p>' +
+      '<dl><div><dt>Linked group</dt><dd>' + escapeHtml(group.name) + '</dd></div><div><dt>Reminder</dt><dd>' + (event.reminder ? 'Scheduled' : 'Off') + '</dd></div><div><dt>Capacity</dt><dd>' + event.capacity + '</dd></div></dl>' +
+      '<h4>RSVP</h4><div class="event-rsvp-actions"><button type="button" class="' + (event.rsvp === 'going' ? 'is-active' : '') + '" data-event-rsvp="going" data-event-id="' + escapeHtml(event.id) + '">Going ' + totals.going + '</button><button type="button" class="' + (event.rsvp === 'maybe' ? 'is-active' : '') + '" data-event-rsvp="maybe" data-event-id="' + escapeHtml(event.id) + '">Maybe ' + totals.maybe + '</button><button type="button" class="' + (event.rsvp === 'declined' ? 'is-active' : '') + '" data-event-rsvp="declined" data-event-id="' + escapeHtml(event.id) + '">Declined ' + totals.declined + '</button></div>' +
+      '<h4>Attendees</h4><ul class="event-attendees">' + attendees + '</ul><button class="event-announce" type="button" data-event-announce="' + escapeHtml(group.id) + '" data-event-id="' + escapeHtml(event.id) + '">Announce to linked group</button>';
+  }
+
+  function renderEventCalendar(events) {
+    var groups = {};
+    var dates = [];
+    var index;
+    var key;
+    for (index = 0; index < events.length; index += 1) {
+      key = String(events[index].start).split('T')[0];
+      if (!groups[key]) {
+        groups[key] = [];
+        dates.push(key);
+      }
+      groups[key].push(events[index]);
+    }
+    dates.sort();
+    return dates.map(function (date) {
+      return '<section class="event-calendar-day"><header><strong>' + escapeHtml(formatEventDate(date + 'T12:00')) + '</strong></header><div>' + groups[date].map(function (event) {
+        return '<button type="button" data-event-select="' + escapeHtml(event.id) + '"><span>' + escapeHtml(formatEventTime(event.start)) + '</span><strong>' + escapeHtml(event.title) + '</strong><small>' + escapeHtml(eventTypeLabel(event.type)) + '</small></button>';
+      }).join('') + '</div></section>';
+    }).join('') || '<p class="community-empty-state">No events match this filter yet.</p>';
+  }
+
+  function updateEventControls() {
+    var filters = document.querySelectorAll('[data-event-filter]');
+    var views = document.querySelectorAll('[data-event-view]');
+    var index;
+    for (index = 0; index < filters.length; index += 1) filters[index].classList.toggle('is-active', filters[index].getAttribute('data-event-filter') === state.eventFilter);
+    for (index = 0; index < views.length; index += 1) views[index].classList.toggle('is-active', views[index].getAttribute('data-event-view') === state.eventView);
+  }
+
+  function renderEvents() {
+    var list = document.querySelector('[data-event-list]');
+    var calendar = document.querySelector('[data-event-calendar]');
+    var events;
+    var active;
+    if (!list || !calendar) return;
+    events = filterEvents(state.eventFilter);
+    active = findEvent(state.activeEventId);
+    if (!active || events.indexOf(active) === -1) {
+      active = events.length ? events[0] : null;
+      state.activeEventId = active ? active.id : '';
+    }
+    list.className = 'event-list';
+    calendar.className = 'event-calendar';
+    list.hidden = state.eventView !== 'list';
+    calendar.hidden = state.eventView !== 'calendar';
+    list.innerHTML = events.map(renderEventCard).join('') || '<p class="community-empty-state">No events match this filter yet.</p>';
+    calendar.innerHTML = renderEventCalendar(events);
+    renderEventDetail(active);
+    updateEventControls();
   }
 
   function renderJobs() {
@@ -764,6 +986,22 @@
     var title = document.querySelector('[name="jobTitle"]');
     var error = document.querySelector('[data-job-form-error]');
     if (!dialog) return;
+    dialog.hidden = !open;
+    if (error) error.textContent = '';
+    if (open && title) title.focus();
+  }
+
+  function setCreateEventDialog(open) {
+    var dialog = document.querySelector('[data-create-event-dialog]');
+    var title = document.querySelector('[name="eventTitle"]');
+    var options = document.querySelector('[data-event-group-options]');
+    var error = document.querySelector('[data-event-form-error]');
+    if (!dialog) return;
+    if (open && options) {
+      options.innerHTML = state.groups.filter(function (group) { return !group.archived; }).map(function (group) {
+        return '<option value="' + escapeHtml(group.id) + '">' + escapeHtml(group.name) + '</option>';
+      }).join('');
+    }
     dialog.hidden = !open;
     if (error) error.textContent = '';
     if (open && title) title.focus();
@@ -1162,6 +1400,74 @@
     });
   }
 
+  function bindEventControls() {
+    var panel = document.querySelector('#panel-events');
+    if (!panel) return;
+    panel.addEventListener('click', function (event) {
+      var target = event.target;
+      var filter = closestWithAttribute(target, 'data-event-filter');
+      var view = closestWithAttribute(target, 'data-event-view');
+      var select = closestWithAttribute(target, 'data-event-select');
+      var rsvp = closestWithAttribute(target, 'data-event-rsvp');
+      var announce = closestWithAttribute(target, 'data-event-announce');
+      var create = closestWithAttribute(target, 'data-create-event-open');
+      var close = closestWithAttribute(target, 'data-dialog-close');
+      var result;
+      if (filter) {
+        state.eventFilter = filter.getAttribute('data-event-filter');
+        renderEvents();
+      } else if (view) {
+        state.eventView = view.getAttribute('data-event-view');
+        renderEvents();
+      } else if (select) {
+        state.activeEventId = select.getAttribute('data-event-select');
+        renderEvents();
+      } else if (rsvp) {
+        result = setEventRsvp(rsvp.getAttribute('data-event-id'), rsvp.getAttribute('data-event-rsvp'));
+        if (!result.ok) showCommunityNotice(result.error);
+        else showCommunityNotice('RSVP updated to ' + result.event.rsvp + '.');
+      } else if (announce) {
+        result = announceEvent(announce.getAttribute('data-event-id'), announce.getAttribute('data-event-announce'));
+        if (!result.ok) showCommunityNotice(result.error);
+        else showCommunityNotice('Event announced to ' + result.group.name + '.');
+      } else if (create) {
+        setCreateEventDialog(true);
+      } else if (close) {
+        setCreateEventDialog(false);
+      }
+    });
+
+    panel.addEventListener('submit', function (event) {
+      var form = event.target;
+      var result;
+      var error;
+      if (!form || !form.getAttribute || form.getAttribute('data-create-event-form') === null) return;
+      event.preventDefault();
+      result = createEvent({
+        title:form.querySelector('[name="eventTitle"]').value,
+        description:form.querySelector('[name="eventDescription"]').value,
+        type:form.querySelector('[name="eventType"]').value,
+        start:form.querySelector('[name="eventStart"]').value,
+        end:form.querySelector('[name="eventEnd"]').value,
+        mode:form.querySelector('[name="eventMode"]').value,
+        location:form.querySelector('[name="eventLocation"]').value,
+        audience:form.querySelector('[name="eventAudience"]').value,
+        capacity:form.querySelector('[name="eventCapacity"]').value,
+        rsvpRequired:form.querySelector('[name="eventRsvp"]').checked,
+        reminder:form.querySelector('[name="eventReminder"]').checked
+      });
+      error = form.querySelector('[data-event-form-error]');
+      if (error) error.textContent = result.ok ? '' : result.error;
+      if (result.ok) {
+        state.eventFilter = 'all';
+        if (typeof form.reset === 'function') form.reset();
+        setCreateEventDialog(false);
+        renderEvents();
+        showCommunityNotice('Event created.');
+      }
+    });
+  }
+
   function updateFilterButtons() {
     var buttons = document.querySelectorAll('[data-feed-filter]');
     var index;
@@ -1186,6 +1492,10 @@
     moveCandidate: moveCandidate,
     toggleSavedCandidate: toggleSavedCandidate,
     validateJobPost: validateJobPost,
+    filterEvents: filterEvents,
+    createEvent: createEvent,
+    setEventRsvp: setEventRsvp,
+    announceEvent: announceEvent,
     groupDefaults: groupDefaults,
     filterGroups: filterGroups,
     createGroup: createGroup,
@@ -1201,6 +1511,7 @@
     renderGroupChat: renderGroupChat,
     renderCourses: renderCourses,
     renderJobs: renderJobs,
+    renderEvents: renderEvents,
     activateTab: activateCommunityTab
   };
   window.activateCommunityTab = activateCommunityTab;
@@ -1210,9 +1521,11 @@
   bindGroupControls();
   bindLearningControls();
   bindJobControls();
+  bindEventControls();
   renderFeed();
   renderGroups();
   renderGroupWorkspace();
   renderCourses();
   renderJobs();
+  renderEvents();
 }());

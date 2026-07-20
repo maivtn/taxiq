@@ -118,3 +118,12 @@ test('adds owner job metrics, filters, pipeline, and management actions', () => 
   for (const filter of ['skill', 'distance', 'availability', 'compensation']) assert.match(html, new RegExp(`data-candidate-filter="${filter}"`));
   assert.match(html, /data-create-job-dialog/);
 });
+
+test('renders event views, filters, RSVP details, and creation controls', () => {
+  const html = source();
+  for (const copy of ['Create Event', 'List', 'Calendar', 'RSVP', 'Attendees', 'Linked group', 'Reminder']) assert.match(html, new RegExp(copy));
+  for (const type of ['all', 'staff-training', 'customer-event', 'promotion', 'industry']) assert.match(html, new RegExp(`data-event-filter="${type}"`));
+  assert.match(html, /data-event-list/);
+  assert.match(html, /data-event-calendar/);
+  for (const name of ['eventTitle', 'eventDescription', 'eventType', 'eventStart', 'eventEnd', 'eventMode', 'eventLocation', 'eventAudience', 'eventCapacity', 'eventRsvp', 'eventReminder']) assert.match(html, new RegExp(`name="${name}"`));
+});

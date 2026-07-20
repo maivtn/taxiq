@@ -371,4 +371,44 @@ test('validates owner job posts before publishing', () => {
   assert.equal(api.validateJobPost({ jobTitle: 'Nail Tech', jobSkills: 'Gel-X', jobDistance: 10 }).ok, true);
 });
 
+test('creates, filters, RSVPs, and announces salon events', () => {
+  const api = loadApi();
+  assert.ok(api.filterEvents('staff-training').every((event) => event.type === 'staff-training'));
+  assert.equal(api.createEvent({ title: '', start: '2026-08-12T10:00' }).ok, false);
+  assert.equal(api.createEvent({ title: 'Past event', type: 'customer-event', start: '2000-01-01T18:00', end: '2000-01-01T20:00', audience: 'vip-club', capacity: 30 }).ok, false);
+  const created = api.createEvent({ title: 'Fall VIP Preview', type: 'customer-event', start: '2099-09-05T18:00', end: '2099-09-05T20:00', audience: 'vip-club', capacity: 30 });
+  assert.equal(created.ok, true);
+  assert.equal(api.setEventRsvp(created.event.id, 'going').ok, true);
+  assert.equal(api.setEventRsvp(created.event.id, 'unknown').ok, false);
+  assert.equal(api.announceEvent(created.event.id, 'vip-club').ok, true);
+});
+
+test('seeds every salon event type and validates event creation fields in order', () => {
+  const api = loadApi();
+  assert.deepEqual(
+    [...new Set(api.state.events.map((event) => event.type))].sort(),
+    ['customer-event', 'industry', 'promotion', 'staff-training']
+  );
+  assert.equal(api.createEvent({ title: 'Bad type', type: 'party' }).error, 'Choose a valid event type.');
+  assert.equal(api.createEvent({ title: 'No start', type: 'industry' }).error, 'Choose a future start time.');
+  assert.equal(api.createEvent({ title: 'Bad end', type: 'industry', start: '2099-08-12T10:00', end: '2099-08-12T09:00' }).error, 'End time must be after start time.');
+  assert.equal(api.createEvent({ title: 'Bad capacity', type: 'industry', start: '2099-08-12T10:00', end: '2099-08-12T11:00', capacity: 0 }).error, 'Capacity must be at least one.');
+  assert.equal(api.createEvent({ title: 'Missing capacity', type: 'industry', start: '2099-08-12T10:00', end: '2099-08-12T11:00', audience: 'staff-main' }).error, 'Capacity must be at least one.');
+  assert.equal(api.createEvent({ title: 'Bad group', type: 'industry', start: '2099-08-12T10:00', end: '2099-08-12T11:00', capacity: 10, audience: 'missing' }).error, 'Choose an existing audience group.');
+});
+
+test('keeps RSVP and Feed announcements scoped to known events and groups', () => {
+  const api = loadApi();
+  const event = api.state.events[0];
+  const beforePosts = api.state.posts.length;
+  assert.equal(api.setEventRsvp('missing', 'going').ok, false);
+  assert.equal(api.announceEvent('missing', event.audience).ok, false);
+  assert.equal(api.announceEvent(event.id, 'missing').ok, false);
+  const announced = api.announceEvent(event.id, event.audience);
+  assert.equal(announced.ok, true);
+  assert.equal(api.state.posts.length, beforePosts + 1);
+  assert.equal(announced.post.kind, 'announcement');
+  assert.equal(announced.post.groupId, event.audience);
+});
+
 export { loadApi };

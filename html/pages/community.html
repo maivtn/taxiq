@@ -7064,12 +7064,10 @@
             </section>
 
             <section class="tab-panel" id="panel-events" data-tab-panel="events" role="tabpanel" aria-label="Community Events" hidden>
-              <div class="placeholder-panel">
-                <div>
-                  <h2>Events</h2>
-                  <p>See upcoming community events, meetups, and professional sessions.</p>
-                </div>
-              </div>
+              <div class="community-panel-head"><div><span class="community-eyebrow">Salon calendar</span><h2>Events</h2><p>Plan training, customer experiences, promotions, and networking.</p></div><button class="community-primary" type="button" data-create-event-open>Create Event</button></div>
+              <div class="event-toolbar"><div class="community-filter-row"><button class="is-active" type="button" data-event-filter="all">All</button><button type="button" data-event-filter="staff-training">Staff Training</button><button type="button" data-event-filter="customer-event">Customer Event</button><button type="button" data-event-filter="promotion">Promotion</button><button type="button" data-event-filter="industry">Industry</button></div><div class="event-view-switch"><button class="is-active" type="button" data-event-view="list">List</button><button type="button" data-event-view="calendar">Calendar</button></div></div>
+              <div class="event-layout"><div data-event-list></div><div data-event-calendar hidden></div><aside class="community-card event-detail" data-event-detail><h3>Event details</h3><p>Select an event to view RSVP, Attendees, Linked group, and Reminder status.</p></aside></div>
+              <div class="community-dialog-backdrop" data-create-event-dialog hidden><section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="create-event-title"><header><h2 id="create-event-title">Create Event</h2><button type="button" aria-label="Close Create Event" data-dialog-close>×</button></header><form data-create-event-form><label>Title<input name="eventTitle" required></label><label>Description<textarea name="eventDescription"></textarea></label><label>Type<select name="eventType"><option value="staff-training">Staff Training</option><option value="customer-event">Customer Event</option><option value="promotion">Promotion</option><option value="industry">Industry</option></select></label><label>Starts<input name="eventStart" type="datetime-local" required></label><label>Ends<input name="eventEnd" type="datetime-local" required></label><label>Mode<select name="eventMode"><option value="in-person">In person</option><option value="online">Online</option></select></label><label>Location<input name="eventLocation"></label><label>Audience<select name="eventAudience" data-event-group-options></select></label><label>Capacity<input name="eventCapacity" type="number" min="1" value="20"></label><label class="event-check"><input name="eventRsvp" type="checkbox" checked> RSVP required</label><label class="event-check"><input name="eventReminder" type="checkbox" checked> Send reminder</label><p class="community-field-error" data-event-form-error aria-live="polite"></p><footer><button type="button" data-dialog-close>Cancel</button><button class="community-primary" type="submit">Create Event</button></footer></form></section></div>
             </section>
           </div>
         </section>
