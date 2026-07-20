@@ -46,3 +46,22 @@ test('ports the complete SMS Campaigns view and reuses the composer', () => {
   assert.match(html, /window\.openSmsCampaignComposer/);
   assert.match(html, /openComposer\(btn\.dataset\.smsSegment\)/);
 });
+
+test('ports every QR Codes section and its kiosk surface', () => {
+  const html = source();
+  for (const id of [
+    'qrGuideBtn', 'publishQrBtn', 'qrGuide', 'qrName', 'qrPromo',
+    'qrFormTitle', 'qrQuestion', 'qrSlug', 'qrLinkPreview', 'qrCanvas',
+    'qrDownloadBtn', 'qrPrintBtn', 'kioskBtn', 'verifyInput', 'verifyBtn',
+    'verifyResult', 'qrLeadsBody', 'qrPreviewUrl', 'qrIframe',
+    'kioskOverlay', 'kioskExit', 'kioskIframe'
+  ]) assert.match(html, new RegExp(`id="${id}"`), `missing #${id}`);
+
+  for (const copy of [
+    'Khách scan → điền tên + SĐT → nhận mã qua SMS → AI voice chào đúng tên khi gọi',
+    'Bước 1 — Chủ tiệm setup', 'Bước 2 — Khách scan', 'Bước 3 — Nhân viên tại quầy',
+    '3 lỗi hay gặp', 'Chương trình khuyến mãi', 'Form khách điền',
+    'Checkbox đồng ý nhận SMS', 'Link & Mã QR', 'Verify code tại quầy',
+    'Leads đã thu từ QR này', 'Promotion Code', 'Chế độ Kiosk'
+  ]) assert.ok(html.includes(copy), `missing QR copy: ${copy}`);
+});
