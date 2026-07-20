@@ -2255,6 +2255,158 @@
     </div>
   </template>
 
+  <script id="staff-jobs-script">
+    (() => {
+      const VALID_VIEWS = new Set(['matches', 'profile', 'activity']);
+      const VALID_PROFILE_STATUSES = new Set(['active', 'paused', 'deleted']);
+      const DIALOG_CLOSING_ACTIONS = new Set([
+        'submit-report',
+        'confirm-delete',
+        'share-contact',
+        'decline-contact',
+        'close-dialog'
+      ]);
+
+      function createJobsState() {
+        return {
+          view: 'matches',
+          profileStatus: 'active',
+          contactStatus: 'requested',
+          identityRevealed: false,
+          dialog: null,
+          reportMatchId: null,
+          matches: { rose: 'available', golden: 'available' }
+        };
+      }
+
+      function reduceJobsState(state, action) {
+        const next = structuredClone(state);
+        if (action.type === 'view' && VALID_VIEWS.has(action.view)) next.view = action.view;
+        if (action.type === 'interest' && next.matches[action.matchId] === 'available') {
+          next.matches[action.matchId] = 'interested';
+        }
+        if (action.type === 'dismiss' && next.matches[action.matchId] === 'available') {
+          next.matches[action.matchId] = 'dismissed';
+        }
+        if (action.type === 'open-report' && next.matches[action.matchId]) {
+          next.dialog = 'report';
+          next.reportMatchId = action.matchId;
+        }
+        if (action.type === 'report' && next.matches[action.matchId]) {
+          next.matches[action.matchId] = 'reported';
+          next.dialog = null;
+          next.reportMatchId = null;
+        }
+        if (action.type === 'profile-status' && VALID_PROFILE_STATUSES.has(action.status)) {
+          next.profileStatus = action.status;
+          next.dialog = null;
+        }
+        if (action.type === 'open-contact') next.dialog = 'contact';
+        if (action.type === 'open-delete') next.dialog = 'delete';
+        if (action.type === 'close-dialog') {
+          next.dialog = null;
+          next.reportMatchId = null;
+        }
+        if (action.type === 'contact-decision' && ['shared', 'declined'].includes(action.decision)) {
+          next.contactStatus = action.decision;
+          next.identityRevealed = action.decision === 'shared';
+          next.dialog = null;
+        }
+        return next;
+      }
+
+      window.NEXORA_STAFF_JOBS_TEST_API = { createJobsState, reduceJobsState };
+      if (window.NEXORA_STAFF_JOBS_SKIP_INIT) return;
+
+      document.querySelectorAll('[data-jobs-root]').forEach(initJobsUI);
+
+      function initJobsUI(root) {
+        let state = createJobsState();
+        let dialogTrigger = null;
+        const notice = root.querySelector('[data-jobs-notice]');
+        let noticeTimer = 0;
+
+        const showNotice = (message) => {
+          notice.textContent = message;
+          notice.classList.remove('hidden');
+          window.clearTimeout(noticeTimer);
+          noticeTimer = window.setTimeout(() => notice.classList.add('hidden'), 2600);
+        };
+
+        const render = () => {
+          root.querySelectorAll('[data-job-tab]').forEach((tab) => {
+            const selected = tab.dataset.jobTab === state.view;
+            tab.setAttribute('aria-selected', String(selected));
+            tab.classList.toggle('text-nexoraBrandDark', selected);
+            tab.classList.toggle('border-nexoraBrand', selected);
+          });
+          root.querySelectorAll('[data-job-panel]').forEach((panel) => {
+            panel.classList.toggle('hidden', panel.dataset.jobPanel !== state.view);
+          });
+          root.querySelectorAll('[data-job-match]').forEach((card) => {
+            const status = state.matches[card.dataset.jobMatch];
+            card.dataset.jobMatchStatus = status;
+            card.classList.toggle('hidden', status === 'reported');
+            card.classList.toggle('opacity-50', status === 'dismissed');
+            card.querySelectorAll('[data-job-action="interest"], [data-job-action="dismiss"], [data-job-action="report"]').forEach((button) => {
+              button.disabled = status !== 'available';
+            });
+            const label = card.querySelector('[data-job-match-status]');
+            if (label) label.textContent = status === 'available' ? '' : status;
+          });
+          root.querySelectorAll('[data-job-profile-status]').forEach((button) => {
+            button.setAttribute('aria-pressed', String(button.dataset.jobProfileStatus === state.profileStatus));
+          });
+          root.querySelector('[data-job-profile-current]').textContent = state.profileStatus;
+          root.querySelector('[data-job-contact-current]').textContent = state.contactStatus;
+          root.querySelectorAll('[data-job-dialog]').forEach((dialog) => {
+            dialog.classList.toggle('hidden', dialog.dataset.jobDialog !== state.dialog);
+            dialog.classList.toggle('flex', dialog.dataset.jobDialog === state.dialog);
+          });
+        };
+
+        const dispatch = (action, message = '') => {
+          state = reduceJobsState(state, action);
+          render();
+          if (message) showNotice(message);
+        };
+
+        root.addEventListener('click', (event) => {
+          const tab = event.target.closest('[data-job-tab]');
+          if (tab) return dispatch({ type: 'view', view: tab.dataset.jobTab });
+          const control = event.target.closest('[data-job-action]');
+          if (!control) return;
+          const matchId = control.dataset.jobMatchId;
+          const action = control.dataset.jobAction;
+          if (action === 'interest') dispatch({ type: 'interest', matchId }, 'Anonymous profile sent.');
+          if (action === 'dismiss') dispatch({ type: 'dismiss', matchId }, 'Match dismissed. Future suggestions will improve.');
+          if (action === 'report') {
+            dialogTrigger = control;
+            dispatch({ type: 'open-report', matchId });
+          }
+          if (action === 'submit-report') dispatch({ type: 'report', matchId: state.reportMatchId }, 'Reported and hidden for review.');
+          if (action === 'profile-active') dispatch({ type: 'profile-status', status: 'active' }, 'Job profile is active.');
+          if (action === 'profile-paused') dispatch({ type: 'profile-status', status: 'paused' }, 'Matching is paused.');
+          if (action === 'open-delete' || action === 'open-contact') {
+            dialogTrigger = control;
+            dispatch({ type: action });
+          }
+          if (action === 'confirm-delete') dispatch({ type: 'profile-status', status: 'deleted' }, 'Job profile deleted.');
+          if (action === 'share-contact') dispatch({ type: 'contact-decision', decision: 'shared' }, 'Contact shared. You can talk directly now.');
+          if (action === 'decline-contact') dispatch({ type: 'contact-decision', decision: 'declined' }, 'Declined. The salon learns nothing about your identity.');
+          if (action === 'close-dialog') dispatch({ type: 'close-dialog' });
+          if (action === 'save-profile') showNotice('Job profile saved for this demo.');
+          if (DIALOG_CLOSING_ACTIONS.has(action)) {
+            dialogTrigger?.focus();
+            dialogTrigger = null;
+          }
+        });
+
+        render();
+      }
+    })();
+  </script>
+
   <script>
     function renderLucideIcons() {
       if (window.lucide && typeof window.lucide.createIcons === 'function') {
