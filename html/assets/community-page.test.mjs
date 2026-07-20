@@ -6,30 +6,131 @@ import vm from 'node:vm';
 const SCRIPT_URL = new URL('./community-page.js', import.meta.url);
 
 function loadApi(overrides = {}) {
-  const document = {
+  const document = overrides.document || {
     readyState: 'loading',
     addEventListener() {},
     querySelector() { return null; },
     querySelectorAll() { return []; },
     body: { appendChild() {} }
   };
+  const testSetTimeout = overrides.setTimeout || setTimeout;
+  const testClearTimeout = overrides.clearTimeout || clearTimeout;
   const window = {
     document,
     location: { search: '' },
-    setTimeout,
-    clearTimeout
+    setTimeout: testSetTimeout,
+    clearTimeout: testClearTimeout
   };
   const context = {
     window,
     document,
     URLSearchParams,
-    setTimeout,
-    clearTimeout,
+    setTimeout: testSetTimeout,
+    clearTimeout: testClearTimeout,
     console
   };
   if (overrides.Date) context.Date = overrides.Date;
   vm.runInNewContext(readFileSync(SCRIPT_URL, 'utf8'), context);
   return window.NEXORA_COMMUNITY;
+}
+
+function fakeElement(attributes = {}, selectorMap = {}) {
+  const listeners = {};
+  const classes = new Set();
+  return {
+    attributes: { ...attributes },
+    selectorMap,
+    listeners,
+    parentNode: null,
+    hidden: false,
+    value: '',
+    textContent: '',
+    innerHTML: '',
+    classList: {
+      add(name) { classes.add(name); },
+      remove(name) { classes.delete(name); },
+      contains(name) { return classes.has(name); },
+      toggle(name, force) {
+        const enabled = force === undefined ? !classes.has(name) : Boolean(force);
+        if (enabled) classes.add(name);
+        else classes.delete(name);
+        return enabled;
+      }
+    },
+    getAttribute(name) {
+      return Object.prototype.hasOwnProperty.call(this.attributes, name) ? this.attributes[name] : null;
+    },
+    setAttribute(name, value) { this.attributes[name] = String(value); },
+    addEventListener(type, listener) {
+      if (!listeners[type]) listeners[type] = [];
+      listeners[type].push(listener);
+    },
+    querySelector(selector) { return this.selectorMap[selector] || null; },
+    focus() { this.focused = true; }
+  };
+}
+
+function createGroupDom() {
+  const elements = {
+    list: fakeElement(),
+    chat: fakeElement(),
+    messageList: fakeElement(),
+    activeName: fakeElement(),
+    activePrivacy: fakeElement(),
+    activeMembers: fakeElement(),
+    memberRail: fakeElement(),
+    memberList: fakeElement(),
+    joins: fakeElement(),
+    pinned: fakeElement(),
+    threadPanel: fakeElement(),
+    threadMessages: fakeElement()
+  };
+  elements.chat.hidden = true;
+  elements.threadPanel.hidden = true;
+  const panel = fakeElement({ id: 'panel-groups' });
+  const selectorMap = {
+    '#panel-groups': panel,
+    '[data-group-list-view]': elements.list,
+    '[data-group-chat-view]': elements.chat,
+    '[data-message-list]': elements.messageList,
+    '[data-active-group-name]': elements.activeName,
+    '[data-active-group-privacy]': elements.activePrivacy,
+    '[data-active-group-members]': elements.activeMembers,
+    '[data-group-member-rail]': elements.memberRail,
+    '[data-member-list]': elements.memberList,
+    '[data-join-requests]': elements.joins,
+    '[data-pinned-messages]': elements.pinned,
+    '[data-group-thread-panel]': elements.threadPanel,
+    '[data-thread-messages]': elements.threadMessages
+  };
+  const documentListeners = {};
+  const body = {
+    appendChild(node) { node.parentNode = body; },
+    removeChild(node) { node.parentNode = null; }
+  };
+  const document = {
+    readyState: 'loading',
+    body,
+    createElement() { return fakeElement(); },
+    addEventListener(type, listener) {
+      if (!documentListeners[type]) documentListeners[type] = [];
+      documentListeners[type].push(listener);
+    },
+    querySelector(selector) { return selectorMap[selector] || null; },
+    querySelectorAll() { return []; }
+  };
+  panel.parentNode = document;
+
+  function fire(type, target) {
+    const handlers = panel.listeners[type] || [];
+    assert.ok(handlers.length, `panel must delegate ${type} events`);
+    if (!target.parentNode) target.parentNode = panel;
+    const event = { target, defaultPrevented: false, preventDefault() { this.defaultPrevented = true; } };
+    handlers.forEach((handler) => handler(event));
+    return event;
+  }
+
+  return { document, elements, panel, fire };
 }
 
 test('adds and filters owner Feed posts', () => {
@@ -125,6 +226,120 @@ test('validates reactions and owner moderation within the selected group', () =>
   assert.equal(api.moderateMessage('staff-main', 'staff-message-3', 'delete').ok, true);
   assert.equal(api.state.messages['staff-main'].some((message) => message.id === 'staff-message-3'), false);
   assert.equal(api.state.messages['vip-club'].length, 2);
+});
+
+test('keeps membership and role changes isolated per group', () => {
+  const api = loadApi();
+  assert.ok(Array.isArray(api.state.members['staff-main']));
+  assert.ok(Array.isArray(api.state.members['vip-club']));
+  const staffSophie = api.state.members['staff-main'].find((member) => member.id === 'member-sophie');
+  const vipSophie = api.state.members['vip-club'].find((member) => member.id === 'member-sophie');
+  assert.notEqual(staffSophie, vipSophie);
+  assert.equal(api.setMemberRole('staff-main', 'member-sophie', 'admin').ok, true);
+  assert.equal(staffSophie.role, 'admin');
+  assert.equal(vipSophie.role, 'member');
+  assert.equal(api.setMemberRole('vip-club', 'member-linh', 'moderator').ok, false);
+
+  const created = api.createGroup({ name: 'Solo owners', type: 'staff' });
+  assert.equal(created.ok, true);
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(api.state.members[created.group.id])),
+    [{ id: 'owner-nexora', name: 'Nexora Touch', role: 'owner', status: 'online' }]
+  );
+  assert.deepEqual(JSON.parse(JSON.stringify(api.state.messages[created.group.id])), []);
+});
+
+test('delegates group list, detail, thread, members, and back navigation', () => {
+  const dom = createGroupDom();
+  const api = loadApi({ document: dom.document, setTimeout() { return 1; }, clearTimeout() {} });
+  dom.fire('click', fakeElement({ 'data-group-open': 'staff-main' }));
+  assert.equal(api.state.activeGroupId, 'staff-main');
+  assert.equal(dom.elements.list.hidden, true);
+  assert.equal(dom.elements.chat.hidden, false);
+  assert.match(dom.elements.memberList.innerHTML, /Linh Nguyen/);
+  assert.doesNotMatch(dom.elements.memberList.innerHTML, /Maya Lewis/);
+
+  dom.fire('click', fakeElement({ 'data-thread-open': 'staff-message-1' }));
+  assert.equal(api.state.activeThreadId, 'staff-message-1');
+  assert.equal(dom.elements.threadPanel.hidden, false);
+  assert.equal(dom.elements.memberRail.hidden, true);
+
+  dom.fire('click', fakeElement({ 'data-thread-close': '' }));
+  assert.equal(api.state.activeThreadId, '');
+  assert.equal(dom.elements.threadPanel.hidden, true);
+  assert.equal(dom.elements.memberRail.hidden, false);
+
+  dom.fire('click', fakeElement({ 'data-members-open': '' }));
+  assert.equal(dom.elements.memberRail.classList.contains('is-mobile-open'), true);
+  dom.fire('click', fakeElement({ 'data-groups-back': '' }));
+  dom.fire('click', fakeElement({ 'data-group-open': 'vip-club' }));
+  assert.match(dom.elements.memberList.innerHTML, /Maya Lewis/);
+  assert.doesNotMatch(dom.elements.memberList.innerHTML, /Linh Nguyen/);
+  dom.fire('click', fakeElement({ 'data-groups-back': '' }));
+  assert.equal(api.state.activeGroupId, '');
+  assert.equal(dom.elements.list.hidden, false);
+  assert.equal(dom.elements.chat.hidden, true);
+});
+
+test('delegates composer, reply, reaction, moderation, and role-change actions', () => {
+  const dom = createGroupDom();
+  const api = loadApi({ document: dom.document, setTimeout() { return 1; }, clearTimeout() {} });
+  dom.fire('click', fakeElement({ 'data-group-open': 'staff-main' }));
+
+  const messageInput = fakeElement();
+  const messageError = fakeElement();
+  messageInput.value = '  Delegated message  ';
+  const composer = fakeElement(
+    { 'data-message-composer': '' },
+    { '[data-message-input]': messageInput, '[data-message-error]': messageError }
+  );
+  const beforeMessages = api.state.messages['staff-main'].length;
+  assert.equal(dom.fire('submit', composer).defaultPrevented, true);
+  assert.equal(api.state.messages['staff-main'].length, beforeMessages + 1);
+  assert.equal(api.state.messages['staff-main'].at(-1).body, 'Delegated message');
+  assert.equal(messageInput.value, '');
+
+  dom.fire('click', fakeElement({ 'data-thread-open': 'staff-message-1' }));
+  const threadInput = fakeElement();
+  const threadError = fakeElement();
+  threadInput.value = '  Delegated reply  ';
+  const threadForm = fakeElement(
+    { 'data-thread-form': '' },
+    { '[data-thread-input]': threadInput, '[data-thread-error]': threadError }
+  );
+  const threadMessage = api.state.messages['staff-main'].find((message) => message.id === 'staff-message-1');
+  const beforeReplies = threadMessage.replies.length;
+  dom.fire('submit', threadForm);
+  assert.equal(threadMessage.replies.length, beforeReplies + 1);
+  assert.equal(threadMessage.replies.at(-1).body, 'Delegated reply');
+
+  const beforeReaction = threadMessage.reactions['👍'];
+  dom.fire('click', fakeElement({ 'data-message-id': 'staff-message-1', 'data-message-reaction': '👍' }));
+  assert.equal(threadMessage.reactions['👍'], beforeReaction + 1);
+  const moderated = api.state.messages['staff-main'].find((message) => message.id === 'staff-message-2');
+  dom.fire('click', fakeElement({ 'data-message-id': 'staff-message-2', 'data-message-moderation': 'pin' }));
+  assert.equal(moderated.pinned, true);
+
+  const roleSelect = fakeElement({ 'data-member-role': 'member-sophie' });
+  roleSelect.value = 'admin';
+  dom.fire('change', roleSelect);
+  assert.equal(api.state.members['staff-main'].find((member) => member.id === 'member-sophie').role, 'admin');
+  assert.equal(api.state.members['vip-club'].find((member) => member.id === 'member-sophie').role, 'member');
+});
+
+test('escapes user messages and thread replies in rendered markup', () => {
+  const dom = createGroupDom();
+  const api = loadApi({ document: dom.document, setTimeout() { return 1; }, clearTimeout() {} });
+  api.openGroup('staff-main');
+  const sent = api.sendMessage('staff-main', '<img src=x onerror=alert(1)>');
+  api.addThreadReply('staff-main', sent.message.id, '<script>alert(1)</script>');
+  api.state.activeThreadId = sent.message.id;
+  api.renderGroupChat();
+
+  assert.match(dom.elements.messageList.innerHTML, /&lt;img src=x onerror=alert\(1\)&gt;/);
+  assert.doesNotMatch(dom.elements.messageList.innerHTML, /<img/);
+  assert.match(dom.elements.threadMessages.innerHTML, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.doesNotMatch(dom.elements.threadMessages.innerHTML, /<script>/);
 });
 
 export { loadApi };

@@ -18,12 +18,30 @@
     activeGroupId: '',
     activeThreadId: '',
     memberDrawerOpen: false,
-    members: [
-      { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online' },
-      { id:'admin-mia', name:'Mia Tran', role:'admin', status:'online' },
-      { id:'member-linh', name:'Linh Nguyen', role:'moderator', status:'away' },
-      { id:'member-sophie', name:'Sophie Carter', role:'member', status:'offline' }
-    ],
+    members: {
+      'staff-main': [
+        { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online' },
+        { id:'admin-mia', name:'Mia Tran', role:'admin', status:'online' },
+        { id:'member-linh', name:'Linh Nguyen', role:'moderator', status:'away' },
+        { id:'member-sophie', name:'Sophie Carter', role:'member', status:'offline' }
+      ],
+      'vip-club': [
+        { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online' },
+        { id:'vip-maya', name:'Maya Lewis', role:'moderator', status:'online' },
+        { id:'member-sophie', name:'Sophie Carter', role:'member', status:'offline' },
+        { id:'vip-noah', name:'Noah Williams', role:'member', status:'away' }
+      ],
+      'weekend-promos': [
+        { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online' },
+        { id:'admin-mia', name:'Mia Tran', role:'admin', status:'online' },
+        { id:'vip-maya', name:'Maya Lewis', role:'member', status:'online' }
+      ],
+      'new-hire': [
+        { id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online' },
+        { id:'member-linh', name:'Linh Nguyen', role:'moderator', status:'away' },
+        { id:'new-emily', name:'Emily Pham', role:'member', status:'online' }
+      ]
+    },
     messages: {
       'staff-main': [
         { id:'staff-message-1', authorId:'owner-nexora', body:'Friday coverage is the priority this week. Please confirm your hours.', time:'9:05 AM', pinned:true, reactions:{ '👍':3 }, replies:[{ id:'reply-1', authorId:'admin-mia', body:'Front desk is covered until 6 PM.', time:'9:12 AM' },{ id:'reply-2', authorId:'member-linh', body:'I can cover the closing shift.', time:'9:18 AM' }] },
@@ -109,6 +127,8 @@
       description: String(details.description == null ? '' : details.description).replace(/^\s+|\s+$/g, '')
     };
     state.groups.push(group);
+    state.members[group.id] = [{ id:'owner-nexora', name:'Nexora Touch', role:'owner', status:'online' }];
+    state.messages[group.id] = [];
     return { ok: true, group: group };
   }
 
@@ -137,10 +157,11 @@
     return { ok: true, group: group };
   }
 
-  function findMember(memberId) {
+  function findMember(groupId, memberId) {
+    var members = state.members[groupId] || [];
     var index;
-    for (index = 0; index < state.members.length; index += 1) {
-      if (state.members[index].id === memberId) return state.members[index];
+    for (index = 0; index < members.length; index += 1) {
+      if (members[index].id === memberId) return members[index];
     }
     return null;
   }
@@ -210,7 +231,7 @@
     var group = findGroup(groupId);
     var member;
     if (!group) return { ok: false, error: 'Group not found.' };
-    member = findMember(memberId);
+    member = findMember(groupId, memberId);
     if (!member) return { ok: false, error: 'Member not found.' };
     if (['admin', 'moderator', 'member'].indexOf(role) === -1) return { ok: false, error: 'Choose admin, moderator, or member.' };
     member.role = role;
@@ -418,7 +439,7 @@
   }
 
   function renderMessage(message) {
-    var author = findMember(message.authorId) || { name: 'Community member', role: 'member' };
+    var author = findMember(state.activeGroupId, message.authorId) || { name: 'Community member', role: 'member' };
     return '<article class="group-message" data-message-id="' + escapeHtml(message.id) + '">' +
       '<header><span class="group-message-avatar">' + escapeHtml(author.name.slice(0, 2).toUpperCase()) + '</span><div><strong>' + escapeHtml(author.name) + '</strong><span>' + escapeHtml(author.role) + ' · ' + escapeHtml(message.time) + '</span></div>' + (message.pinned ? '<span class="message-pinned">Pinned</span>' : '') + '</header>' +
       '<p>' + escapeHtml(message.body) + '</p>' +
@@ -433,6 +454,7 @@
     var messages = state.messages[state.activeGroupId] || [];
     var roles = ['owner', 'admin', 'moderator', 'member'];
     var labels = { owner:'Owner', admin:'Admins', moderator:'Moderators', member:'Members' };
+    var groupMembers = state.members[state.activeGroupId] || [];
     var html = '';
     var roleIndex;
     var memberIndex;
@@ -441,8 +463,8 @@
     if (!list) return;
     for (roleIndex = 0; roleIndex < roles.length; roleIndex += 1) {
       html += '<section class="member-role-group"><h4>' + labels[roles[roleIndex]] + '</h4>';
-      for (memberIndex = 0; memberIndex < state.members.length; memberIndex += 1) {
-        member = state.members[memberIndex];
+      for (memberIndex = 0; memberIndex < groupMembers.length; memberIndex += 1) {
+        member = groupMembers[memberIndex];
         if (member.role === roles[roleIndex]) {
           html += '<div class="group-member"><span class="member-status is-' + escapeHtml(member.status) + '" aria-label="' + escapeHtml(member.status) + '"></span><span><strong>' + escapeHtml(member.name) + '</strong><small>' + escapeHtml(member.status) + '</small></span>';
           if (member.role === 'owner') {
@@ -488,10 +510,10 @@
     panel.hidden = false;
     panel.classList.add('is-mobile-open');
     memberRail.hidden = true;
-    author = findMember(message.authorId) || { name: 'Community member' };
+    author = findMember(state.activeGroupId, message.authorId) || { name: 'Community member' };
     html = '<article class="thread-message is-parent"><strong>' + escapeHtml(author.name) + '</strong><p>' + escapeHtml(message.body) + '</p><span>' + escapeHtml(message.time) + '</span></article>';
     for (index = 0; index < message.replies.length; index += 1) {
-      author = findMember(message.replies[index].authorId) || { name: 'Community member' };
+      author = findMember(state.activeGroupId, message.replies[index].authorId) || { name: 'Community member' };
       html += '<article class="thread-message"><strong>' + escapeHtml(author.name) + '</strong><p>' + escapeHtml(message.replies[index].body) + '</p><span>' + escapeHtml(message.replies[index].time) + '</span></article>';
     }
     messages.innerHTML = html;
