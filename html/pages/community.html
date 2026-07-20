@@ -6983,8 +6983,13 @@
               <h1 class="page-title">Owner Jobs</h1>
               <p class="page-description">Find nail techs who match your open role while protecting candidate identity.</p>
             </div>
-            <span class="owner-ai-badge"><i data-lucide="sparkles" aria-hidden="true"></i> AI Matching</span>
+            <div class="owner-jobs-heading-actions">
+              <span class="owner-ai-badge"><i data-lucide="sparkles" aria-hidden="true"></i> AI Matching</span>
+              <button class="community-primary" type="button" data-create-job-open>Create Job Post</button>
+            </div>
           </div>
+
+          <div class="job-metric-grid"><article><span>Active Posts</span><strong>1</strong></article><article><span>New Matches</span><strong>4</strong></article><article><span>Contact Requests</span><strong>2</strong></article><article><span>Interviews</span><strong>1</strong></article></div>
 
           <article class="owner-demand-card">
             <span class="owner-demand-icon"><i data-lucide="users-round" aria-hidden="true"></i></span>
@@ -7004,6 +7009,8 @@
             <span class="owner-ai-badge">2 matches</span>
           </div>
 
+          <div class="job-filter-row"><select data-candidate-filter="skill" aria-label="Filter by skill"><option value="all">All skills</option><option value="Gel-X">Gel-X</option><option value="Design">Design</option><option value="Pedicure">Pedicure</option></select><select data-candidate-filter="distance" aria-label="Filter by distance"><option value="all">Any distance</option><option value="5">Within 5 miles</option><option value="10">Within 10 miles</option></select><select data-candidate-filter="availability" aria-label="Filter by availability"><option value="all">Any availability</option><option value="weekdays">Weekdays</option><option value="weekends">Weekends</option></select><select data-candidate-filter="compensation" aria-label="Filter by compensation"><option value="all">Any compensation</option><option value="split-6-4">Split 6/4</option><option value="weekly-guarantee">Weekly guarantee</option></select></div>
+
           <div class="owner-candidate-grid">
             <article class="owner-candidate-card" data-owner-candidate="a7">
               <div class="owner-candidate-head">
@@ -7019,6 +7026,8 @@
               <p class="owner-why"><strong>Why:</strong> Both required skills match, compensation expectation equals your offer, and availability covers your busiest hours.</p>
               <div class="owner-job-actions">
                 <button class="owner-action is-primary" type="button" data-owner-job-action="request-contact">Request contact</button>
+                <button class="owner-action is-secondary" type="button" data-owner-job-action="save">Save Candidate</button>
+                <button class="owner-action is-secondary" type="button" data-owner-job-action="share">Share with manager</button>
                 <button class="owner-action is-secondary" type="button" data-owner-job-action="dismiss">Dismiss</button>
               </div>
             </article>
@@ -7037,15 +7046,21 @@
               <p class="owner-why"><strong>Why:</strong> Gel-X matches, but no design skill is listed and this tech expects a weekly guarantee your post does not offer.</p>
               <div class="owner-job-actions">
                 <button class="owner-action is-primary" type="button" data-owner-job-action="request-contact">Request contact</button>
+                <button class="owner-action is-secondary" type="button" data-owner-job-action="save">Save Candidate</button>
+                <button class="owner-action is-secondary" type="button" data-owner-job-action="share">Share with manager</button>
                 <button class="owner-action is-secondary" type="button" data-owner-job-action="dismiss">Dismiss</button>
               </div>
             </article>
           </div>
 
+          <div class="job-pipeline" data-job-pipeline><article><span>Matched</span><strong data-stage-count="matched">2</strong></article><article><span>Contact Requested</span><strong data-stage-count="contact-requested">0</strong></article><article><span>Interviewing</span><strong data-stage-count="interviewing">0</strong></article><article><span>Closed</span><strong data-stage-count="closed">0</strong></article></div>
+
           <aside class="owner-guardrail">
             <strong>Privacy and hiring guardrails</strong>
             <p>AI ranks anonymous tech profiles; you never see identity from a suggestion alone. Contact is a two-way door: the tech must approve before you see any name or phone number. NEXORA is a connection board and does not hire, pay, recruit, or advise on 1099/W-2 terms.</p>
           </aside>
+
+          <div class="community-dialog-backdrop" data-create-job-dialog hidden><section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="create-job-title"><header><h2 id="create-job-title">Create Job Post</h2><button type="button" aria-label="Close Create Job Post" data-dialog-close>×</button></header><form data-create-job-form><label>Role title<input name="jobTitle" required></label><label>Required skills<input name="jobSkills" required></label><label>Maximum distance<input name="jobDistance" type="number" min="1" value="10"></label><label>Availability<input name="jobAvailability"></label><label>Compensation preference<select name="jobCompensation"><option value="split-6-4">Split 6/4</option><option value="weekly-guarantee">Weekly guarantee</option></select></label><p class="community-field-error" data-job-form-error aria-live="polite"></p><footer><button type="button" data-dialog-close>Cancel</button><button class="community-primary" type="submit">Publish post</button></footer></form></section></div>
             </section>
 
             <section class="tab-panel" id="panel-events" data-tab-panel="events" role="tabpanel" aria-label="Community Events" hidden>
@@ -7073,33 +7088,6 @@
         var collapsed = subnav.classList.toggle("is-collapsed");
         toggle.classList.toggle("is-expanded", !collapsed);
         toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
-      });
-    });
-
-    var jobsNoticeTimer = 0;
-    function showJobsNotice(message) {
-      var oldNotice = document.querySelector("[data-owner-jobs-notice]");
-      if (oldNotice) oldNotice.remove();
-      var notice = document.createElement("div");
-      notice.className = "owner-jobs-notice";
-      notice.dataset.ownerJobsNotice = "";
-      notice.setAttribute("role", "status");
-      notice.textContent = message;
-      document.body.appendChild(notice);
-      window.clearTimeout(jobsNoticeTimer);
-      jobsNoticeTimer = window.setTimeout(function () { notice.remove(); }, 2600);
-    }
-
-    document.querySelectorAll("[data-owner-job-action]").forEach(function (button) {
-      button.addEventListener("click", function () {
-        if (button.dataset.ownerJobAction === "request-contact") {
-          showJobsNotice("Request sent. The tech decides whether to reveal their contact.");
-          return;
-        }
-        var candidate = button.closest("[data-owner-candidate]");
-        if (candidate) candidate.classList.add("is-dismissed");
-        button.disabled = true;
-        showJobsNotice("Candidate dismissed. AI will use this feedback to improve matches.");
       });
     });
 

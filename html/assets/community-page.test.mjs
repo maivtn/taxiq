@@ -354,4 +354,21 @@ test('escapes user messages and thread replies in rendered markup', () => {
   assert.doesNotMatch(dom.elements.threadMessages.innerHTML, /<script>/);
 });
 
+test('filters and moves privacy-protected candidates through the owner pipeline', () => {
+  const api = loadApi();
+  assert.equal(api.filterCandidates({ skill: 'Gel-X', maxDistance: 5 })[0].id, 'a7');
+  assert.equal(api.moveCandidate('a7', 'contact-requested').ok, true);
+  assert.equal(api.moveCandidate('a7', 'interviewing').ok, true);
+  assert.equal(api.moveCandidate('a7', 'unknown').ok, false);
+  assert.equal(api.toggleSavedCandidate('a7').candidate.saved, true);
+});
+
+test('validates owner job posts before publishing', () => {
+  const api = loadApi();
+  assert.equal(api.validateJobPost({ jobTitle: '', jobSkills: 'Gel-X', jobDistance: 10 }).ok, false);
+  assert.equal(api.validateJobPost({ jobTitle: 'Nail Tech', jobSkills: '', jobDistance: 10 }).ok, false);
+  assert.equal(api.validateJobPost({ jobTitle: 'Nail Tech', jobSkills: 'Gel-X', jobDistance: 0 }).ok, false);
+  assert.equal(api.validateJobPost({ jobTitle: 'Nail Tech', jobSkills: 'Gel-X', jobDistance: 10 }).ok, true);
+});
+
 export { loadApi };

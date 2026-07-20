@@ -63,6 +63,11 @@
     ],
     courseFilter: 'all',
     activeShareCourseId: '',
+    candidates: [
+      { id:'a7', skills:['Gel-X', 'Design'], distance:4, availability:['weekends'], compensation:'split-6-4', stage:'matched', saved:false },
+      { id:'c2', skills:['Gel-X', 'Pedicure'], distance:8, availability:['weekdays'], compensation:'weekly-guarantee', stage:'matched', saved:false }
+    ],
+    candidateFilters: { skill:'all', maxDistance:'all', availability:'all', compensation:'all' },
     noticeTimer: 0
   };
 
@@ -95,6 +100,14 @@
     var index;
     for (index = 0; index < state.courses.length; index += 1) {
       if (state.courses[index].id === courseId) return state.courses[index];
+    }
+    return null;
+  }
+
+  function findCandidate(candidateId) {
+    var index;
+    for (index = 0; index < state.candidates.length; index += 1) {
+      if (state.candidates[index].id === candidateId) return state.candidates[index];
     }
     return null;
   }
@@ -412,6 +425,56 @@
     return { ok: true, course: course, group: group, post: post };
   }
 
+  function filterCandidates(filters) {
+    var selected = filters || {};
+    var skill = selected.skill || 'all';
+    var availability = selected.availability || 'all';
+    var compensation = selected.compensation || 'all';
+    var rawDistance = selected.maxDistance == null ? selected.distance : selected.maxDistance;
+    var maxDistance = rawDistance == null || rawDistance === 'all' || rawDistance === '' ? null : Number(rawDistance);
+    return state.candidates.filter(function (candidate) {
+      var matchesSkill = skill === 'all' || candidate.skills.indexOf(skill) !== -1;
+      var matchesDistance = maxDistance === null || (!isNaN(maxDistance) && candidate.distance <= maxDistance);
+      var matchesAvailability = availability === 'all' || candidate.availability.indexOf(availability) !== -1;
+      var matchesCompensation = compensation === 'all' || candidate.compensation === compensation;
+      return matchesSkill && matchesDistance && matchesAvailability && matchesCompensation;
+    });
+  }
+
+  function moveCandidate(candidateId, stage) {
+    var allowed = ['matched', 'contact-requested', 'interviewing', 'closed'];
+    var candidate = null;
+    state.candidates.some(function (item) {
+      if (item.id !== candidateId) return false;
+      candidate = item;
+      return true;
+    });
+    if (!candidate) return { ok:false, error:'Candidate not found.' };
+    if (allowed.indexOf(stage) === -1) return { ok:false, error:'Choose a valid hiring stage.' };
+    candidate.stage = stage;
+    renderJobs();
+    return { ok:true, candidate:candidate };
+  }
+
+  function toggleSavedCandidate(candidateId) {
+    var candidate = findCandidate(candidateId);
+    if (!candidate) return { ok:false, error:'Candidate not found.' };
+    candidate.saved = !candidate.saved;
+    renderJobs();
+    return { ok:true, candidate:candidate };
+  }
+
+  function validateJobPost(input) {
+    var details = input || {};
+    var title = String(details.jobTitle == null ? '' : details.jobTitle).replace(/^\s+|\s+$/g, '');
+    var skills = String(details.jobSkills == null ? '' : details.jobSkills).replace(/^\s+|\s+$/g, '');
+    var distance = Number(details.jobDistance);
+    if (!title) return { ok:false, error:'Enter a role title.' };
+    if (!skills) return { ok:false, error:'Enter at least one required skill.' };
+    if (isNaN(distance) || distance < 1) return { ok:false, error:'Enter a maximum distance of at least 1 mile.' };
+    return { ok:true, job:{ title:title, skills:skills, distance:distance, availability:details.jobAvailability || '', compensation:details.jobCompensation || 'split-6-4' } };
+  }
+
   function showCommunityNotice(message) {
     var oldNotice = document.querySelector('[data-community-notice]');
     var notice;
@@ -510,6 +573,31 @@
     courses = filterCourses(state.courseFilter);
     grid.innerHTML = courses.map(renderCourseCard).join('') || '<p class="community-empty-state">No courses match this filter yet.</p>';
     if (saved) saved.innerHTML = state.courses.filter(function (course) { return course.saved; }).map(function (course) { return '<button type="button" data-course-continue="' + escapeHtml(course.id) + '">' + escapeHtml(course.title) + '</button>'; }).join('') || '<p>No saved resources yet.</p>';
+  }
+
+  function renderJobs() {
+    var cards = document.querySelectorAll('[data-owner-candidate]');
+    var visible = filterCandidates(state.candidateFilters);
+    var stages = ['matched', 'contact-requested', 'interviewing', 'closed'];
+    var index;
+    var candidate;
+    var save;
+    var count;
+    for (index = 0; index < cards.length; index += 1) {
+      candidate = findCandidate(cards[index].getAttribute('data-owner-candidate'));
+      if (!candidate) continue;
+      cards[index].hidden = !visible.some(function (item) { return item.id === candidate.id; });
+      cards[index].classList.toggle('is-dismissed', candidate.stage === 'closed');
+      save = cards[index].querySelector('[data-owner-job-action="save"]');
+      if (save) {
+        save.textContent = candidate.saved ? 'Candidate Saved' : 'Save Candidate';
+        save.classList.toggle('is-saved', candidate.saved);
+      }
+    }
+    for (index = 0; index < stages.length; index += 1) {
+      count = document.querySelector('[data-stage-count="' + stages[index] + '"]');
+      if (count) count.textContent = state.candidates.filter(function (item) { return item.stage === stages[index]; }).length;
+    }
   }
 
   function renderMessageReactions(message) {
@@ -669,6 +757,16 @@
     if (!dialog) return;
     dialog.hidden = !open;
     if (open && name) name.focus();
+  }
+
+  function setCreateJobDialog(open) {
+    var dialog = document.querySelector('[data-create-job-dialog]');
+    var title = document.querySelector('[name="jobTitle"]');
+    var error = document.querySelector('[data-job-form-error]');
+    if (!dialog) return;
+    dialog.hidden = !open;
+    if (error) error.textContent = '';
+    if (open && title) title.focus();
   }
 
   function updateMixedPrivacyConfirmation() {
@@ -983,6 +1081,87 @@
     });
   }
 
+  function bindJobControls() {
+    var panel = document.querySelector('#panel-jobs');
+    if (!panel) return;
+    panel.addEventListener('click', function (event) {
+      var target = event.target;
+      var create = closestWithAttribute(target, 'data-create-job-open');
+      var close = closestWithAttribute(target, 'data-dialog-close');
+      var action = closestWithAttribute(target, 'data-owner-job-action');
+      var card;
+      var candidateId;
+      var actionName;
+      var result;
+      if (create) {
+        setCreateJobDialog(true);
+        return;
+      }
+      if (close) {
+        setCreateJobDialog(false);
+        return;
+      }
+      if (!action) return;
+      card = closestWithAttribute(action, 'data-owner-candidate');
+      candidateId = card ? card.getAttribute('data-owner-candidate') : '';
+      actionName = action.getAttribute('data-owner-job-action');
+      if (actionName === 'request-contact') {
+        result = moveCandidate(candidateId, 'contact-requested');
+        if (!result.ok) showCommunityNotice(result.error);
+        else {
+          action.disabled = true;
+          action.textContent = 'Contact requested';
+          showCommunityNotice('Request sent. The tech decides whether to reveal their contact.');
+        }
+      } else if (actionName === 'save') {
+        result = toggleSavedCandidate(candidateId);
+        if (!result.ok) showCommunityNotice(result.error);
+        else showCommunityNotice(result.candidate.saved ? 'Candidate saved for this session.' : 'Candidate removed from saved.');
+      } else if (actionName === 'share') {
+        showCommunityNotice('Anonymous candidate summary shared with your manager for this session.');
+      } else if (actionName === 'dismiss') {
+        result = moveCandidate(candidateId, 'closed');
+        if (!result.ok) showCommunityNotice(result.error);
+        else {
+          action.disabled = true;
+          showCommunityNotice('Candidate dismissed. AI will use this feedback to improve matches.');
+        }
+      }
+    });
+
+    panel.addEventListener('change', function (event) {
+      var filter = closestWithAttribute(event.target, 'data-candidate-filter');
+      var name;
+      if (!filter) return;
+      name = filter.getAttribute('data-candidate-filter');
+      if (name === 'distance') state.candidateFilters.maxDistance = filter.value;
+      else state.candidateFilters[name] = filter.value;
+      renderJobs();
+    });
+
+    panel.addEventListener('submit', function (event) {
+      var form = event.target;
+      var result;
+      var error;
+      if (!form || !form.getAttribute || form.getAttribute('data-create-job-form') === null) return;
+      event.preventDefault();
+      result = validateJobPost({
+        jobTitle: form.querySelector('[name="jobTitle"]').value,
+        jobSkills: form.querySelector('[name="jobSkills"]').value,
+        jobDistance: form.querySelector('[name="jobDistance"]').value,
+        jobAvailability: form.querySelector('[name="jobAvailability"]').value,
+        jobCompensation: form.querySelector('[name="jobCompensation"]').value
+      });
+      error = form.querySelector('[data-job-form-error]');
+      if (error) error.textContent = result.ok ? '' : result.error;
+      if (result.ok) {
+        if (typeof form.reset === 'function') form.reset();
+        setCreateJobDialog(false);
+        showCommunityNotice('Job post published for this session.');
+      }
+    });
+  }
+
   function updateFilterButtons() {
     var buttons = document.querySelectorAll('[data-feed-filter]');
     var index;
@@ -1003,6 +1182,10 @@
     toggleSavedCourse: toggleSavedCourse,
     setCourseProgress: setCourseProgress,
     shareCourse: shareCourse,
+    filterCandidates: filterCandidates,
+    moveCandidate: moveCandidate,
+    toggleSavedCandidate: toggleSavedCandidate,
+    validateJobPost: validateJobPost,
     groupDefaults: groupDefaults,
     filterGroups: filterGroups,
     createGroup: createGroup,
@@ -1017,6 +1200,7 @@
     renderGroups: renderGroups,
     renderGroupChat: renderGroupChat,
     renderCourses: renderCourses,
+    renderJobs: renderJobs,
     activateTab: activateCommunityTab
   };
   window.activateCommunityTab = activateCommunityTab;
@@ -1025,8 +1209,10 @@
   bindFeedControls();
   bindGroupControls();
   bindLearningControls();
+  bindJobControls();
   renderFeed();
   renderGroups();
   renderGroupWorkspace();
   renderCourses();
+  renderJobs();
 }());

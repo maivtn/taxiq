@@ -111,3 +111,10 @@ test('renders owner Learning recommendations, progress, workshop, and sharing', 
   assert.match(html, /data-course-grid/);
   assert.match(html, /data-share-course-dialog/);
 });
+
+test('adds owner job metrics, filters, pipeline, and management actions', () => {
+  const html = source();
+  for (const copy of ['Create Job Post', 'Active Posts', 'New Matches', 'Contact Requests', 'Interviews', 'Matched', 'Contact Requested', 'Interviewing', 'Closed', 'Save Candidate', 'Share with manager']) assert.match(html, new RegExp(copy));
+  for (const filter of ['skill', 'distance', 'availability', 'compensation']) assert.match(html, new RegExp(`data-candidate-filter="${filter}"`));
+  assert.match(html, /data-create-job-dialog/);
+});
