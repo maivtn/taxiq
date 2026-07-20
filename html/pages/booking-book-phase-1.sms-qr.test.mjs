@@ -164,6 +164,16 @@ test('keeps booking controls free of a containing surface', () => {
   assert.doesNotMatch(controlsRule, /\bpadding\s*:/);
 });
 
+test('places appointment status chips below the search filters', () => {
+  const html = source();
+  const controlsIndex = html.indexOf('<div class="booking-controls" aria-label="Booking filters">');
+  const chipsIndex = html.indexOf('<div class="booking-status-chips" data-booking-status-chips');
+  const tableIndex = html.indexOf('<div class="booking-table-wrap" data-booking-view-panel="table">');
+
+  assert.ok(controlsIndex > -1 && chipsIndex > controlsIndex);
+  assert.ok(tableIndex > chipsIndex);
+});
+
 test('keeps inline scripts valid when Live Server injects its reload client', () => {
   const liveReloadClient = '<script>window.__liveReloadReady = true;</script>';
   const servedHtml = source().replace(/<\/body>/i, `${liveReloadClient}\n</body>`);
