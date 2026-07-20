@@ -155,6 +155,30 @@ test('offers separate Print and Download PDF completion actions', () => {
   assert.match(html, /id="download-pdf"[^>]*>Download PDF<\/button>/);
 });
 
+test('keeps handwritten ink in print while hiding signature actions', () => {
+  const html = source();
+  const printStart = html.indexOf('@media print');
+  const printBlock = html.slice(printStart, html.indexOf('</style>', printStart));
+  assert.match(printBlock, /\.signature-placeholder[^}]*display:\s*none/);
+  assert.match(printBlock, /\.signature-actions[^}]*display:\s*none/);
+  assert.match(printBlock, /\.signature-canvas[^}]*height:/);
+  assert.match(printBlock, /\.signature-pad[^}]*border-bottom:\s*1px solid #000/);
+  assert.match(printBlock, /#signature-date[^}]*display:\s*none/);
+  assert.match(printBlock, /\.signature-date-print[^}]*display:\s*block/);
+  assert.match(html, /id="signature-date-print"/);
+  assert.match(html, /function syncPrintedSignatureDate\(\)[\s\S]*formatUsDate/);
+});
+
+test('draws the handwritten signature into the downloaded PDF canvas', () => {
+  const html = source();
+  assert.match(html, /function renderPdfCanvas\(values, signatureSource\)/);
+  assert.match(html, /function drawSignatureBlock\(signatureSource, signerName, signatureDate\)/);
+  assert.match(html, /context\.drawImage\(signatureSource/);
+  assert.match(html, /"\/s\/ " \+ stringValue\(signerName\)/);
+  assert.match(html, /renderPdfCanvas\(values, signatureSource\)/);
+  assert.match(html, /downloadW9Pdf\(readValues\(\), signatureCanvas\)/);
+});
+
 test('wires Download PDF to a self-contained canvas and PDF blob flow', () => {
   const html = source();
   assert.match(html, /byId\("download-pdf"\)\.addEventListener\("click"/);
