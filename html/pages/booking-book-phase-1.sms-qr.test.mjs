@@ -174,6 +174,22 @@ test('places appointment status chips below the search filters', () => {
   assert.ok(tableIndex > chipsIndex);
 });
 
+test('provides a selectable SMS credits checkout beside the credits pill', () => {
+  const html = source();
+
+  assert.match(html, /data-sms-credit-buy/);
+  assert.match(html, /data-sms-credit-modal/);
+  assert.match(html, /data-sms-credit-package-list/);
+  assert.match(html, /data-sms-credit-payment-list/);
+  assert.match(html, /credits:\s*500,\s*price:\s*25/);
+  assert.match(html, /credits:\s*1500,\s*price:\s*60/);
+  assert.match(html, /credits:\s*3000,\s*price:\s*99/);
+  assert.match(html, /credits:\s*6000,\s*price:\s*175/);
+  assert.match(html, /function openSmsCreditModal\(\)/);
+  assert.match(html, /function confirmSmsCreditPurchase\(\)/);
+  assert.match(html, /updateCredits\(state\.credits \+ selectedPackage\.credits\)/);
+});
+
 test('keeps inline scripts valid when Live Server injects its reload client', () => {
   const liveReloadClient = '<script>window.__liveReloadReady = true;</script>';
   const servedHtml = source().replace(/<\/body>/i, `${liveReloadClient}\n</body>`);

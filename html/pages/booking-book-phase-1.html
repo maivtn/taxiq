@@ -4509,6 +4509,70 @@
     #panel-sms-campaigns .sms-credit-pill span { color:var(--nexora-subtle); font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
     #panel-sms-campaigns .sms-credit-pill strong { grid-row:1 / 3; grid-column:2; align-self:center; color:var(--nexora-brand); font-size:20px; }
     #panel-sms-campaigns .sms-credit-pill small { color:var(--nexora-muted); font-size:10px; }
+    #panel-sms-campaigns .sms-credit-buy-button {
+      align-self:stretch;
+      min-width:138px;
+      border:0;
+      background:linear-gradient(135deg,#f59e0b,#ea580c);
+      padding:10px 16px;
+      color:#fff;
+      font-size:12px;
+      white-space:nowrap;
+      box-shadow:0 10px 22px rgba(234,88,12,.24);
+    }
+    #panel-sms-campaigns .sms-credit-buy-button .marketing-icon { color:#fff; }
+    #panel-sms-campaigns .sms-credit-buy-button:hover {
+      background:linear-gradient(135deg,#fbbf24,#f97316);
+      box-shadow:0 12px 26px rgba(234,88,12,.32);
+    }
+    #panel-sms-campaigns .sms-credit-buy-button:focus-visible {
+      outline:3px solid rgba(245,158,11,.28);
+      outline-offset:2px;
+    }
+    #nx-campaign-root .sms-credit-modal { position:fixed; inset:0; z-index:150; display:grid; place-items:center; padding:18px; background:rgba(8,31,73,.48); backdrop-filter:blur(8px); }
+    #nx-campaign-root .sms-credit-modal[hidden] { display:none; }
+    #nx-campaign-root .sms-credit-dialog { display:flex; width:min(100%,720px); max-height:min(90vh,760px); flex-direction:column; overflow:hidden; border:1px solid var(--nexora-border); border-radius:16px; background:#fff; box-shadow:0 28px 80px rgba(8,31,73,.28); }
+    #nx-campaign-root .sms-credit-modal-head { display:flex; flex:0 0 auto; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid var(--nexora-rule); background:linear-gradient(180deg,#fff,#f8fbff); padding:17px 20px; }
+    #nx-campaign-root .sms-credit-modal-title { display:flex; align-items:center; gap:9px; color:var(--nexora-text); font-size:17px; font-weight:900; }
+    #nx-campaign-root .sms-credit-modal-title .marketing-icon { color:var(--nexora-brand); }
+    #nx-campaign-root .sms-credit-modal-sub { margin-top:4px; color:var(--nexora-muted); font-size:12px; font-weight:600; }
+    #nx-campaign-root .sms-credit-close { display:grid; width:34px; height:34px; flex:0 0 34px; place-items:center; border:1px solid var(--nexora-border); border-radius:50%; background:#fff; color:var(--nexora-muted); cursor:pointer; transition:.18s ease; }
+    #nx-campaign-root .sms-credit-close:hover { border-color:rgba(70,72,216,.35); background:var(--nexora-surface-muted); color:var(--nexora-text); }
+    #nx-campaign-root .sms-credit-modal-body { overflow-y:auto; background:#f8fafc; padding:18px 20px 20px; }
+    #nx-campaign-root .sms-credit-section + .sms-credit-section { margin-top:22px; }
+    #nx-campaign-root .sms-credit-section-label { margin-bottom:10px; color:var(--nexora-subtle); font-size:10px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+    #nx-campaign-root .sms-credit-package-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    #nx-campaign-root .sms-credit-package { position:relative; min-width:0; border:1px solid var(--nexora-border); border-radius:12px; background:#fff; padding:13px; color:var(--nexora-text); text-align:left; cursor:pointer; transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+    #nx-campaign-root .sms-credit-package:hover { border-color:rgba(70,72,216,.45); transform:translateY(-1px); }
+    #nx-campaign-root .sms-credit-package.is-selected { border-color:var(--nexora-brand); background:rgba(70,72,216,.055); box-shadow:0 8px 18px rgba(70,72,216,.12); }
+    #nx-campaign-root .sms-credit-package.is-featured::after { position:absolute; top:9px; right:10px; border-radius:999px; background:var(--nexora-brand); padding:3px 6px; color:#fff; content:'Best value'; font-size:8px; font-weight:900; letter-spacing:.04em; text-transform:uppercase; }
+    #nx-campaign-root .sms-credit-package-name { display:block; color:var(--nexora-muted); font-size:10px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
+    #nx-campaign-root .sms-credit-package-amount { display:block; margin-top:5px; color:var(--nexora-text); font-size:21px; font-weight:900; line-height:1.1; }
+    #nx-campaign-root .sms-credit-package-price { display:block; margin-top:6px; color:var(--nexora-brand); font-size:14px; font-weight:900; }
+    #nx-campaign-root .sms-credit-package-note { display:block; margin-top:4px; color:var(--nexora-subtle); font-size:10px; font-weight:600; }
+    #nx-campaign-root .sms-credit-payment-list { display:grid; gap:8px; }
+    #nx-campaign-root .sms-credit-payment { display:flex; width:100%; align-items:center; justify-content:space-between; gap:12px; border:1px solid var(--nexora-border); border-radius:11px; background:#fff; padding:8px 11px; color:var(--nexora-text); text-align:left; cursor:pointer; transition:.18s ease; }
+    #nx-campaign-root .sms-credit-payment:hover { border-color:rgba(70,72,216,.45); }
+    #nx-campaign-root .sms-credit-payment.is-selected { border-color:var(--nexora-brand); background:rgba(70,72,216,.065); box-shadow:0 5px 12px rgba(70,72,216,.08); }
+    #nx-campaign-root .sms-credit-payment-main { display:flex; min-width:0; align-items:center; gap:9px; }
+    #nx-campaign-root .sms-credit-radio { display:grid; width:15px; height:15px; flex:0 0 15px; place-items:center; border:2px solid #cbd5e1; border-radius:50%; }
+    #nx-campaign-root .sms-credit-payment.is-selected .sms-credit-radio { border-color:var(--nexora-brand); }
+    #nx-campaign-root .sms-credit-payment.is-selected .sms-credit-radio::after { width:7px; height:7px; border-radius:50%; background:var(--nexora-brand); content:''; }
+    #nx-campaign-root .sms-credit-token { display:grid; width:26px; height:26px; flex:0 0 26px; place-items:center; border:1px solid rgba(15,23,42,.08); border-radius:50%; background:#fff; color:#fff; font-size:8px; font-weight:900; }
+    #nx-campaign-root .sms-credit-token.is-usdv { background:#4239b7; } #nx-campaign-root .sms-credit-token.is-usdt { background:#26a17b; } #nx-campaign-root .sms-credit-token.is-usd { background:#16a34a; } #nx-campaign-root .sms-credit-token.is-btc { background:#f7931a; } #nx-campaign-root .sms-credit-token.is-vnd { background:#d97706; }
+    #nx-campaign-root .sms-credit-payment-name { font-size:12px; font-weight:800; }
+    #nx-campaign-root .sms-credit-payment-balance { flex:0 0 auto; color:var(--nexora-muted); text-align:right; }
+    #nx-campaign-root .sms-credit-payment-balance span { display:block; color:var(--nexora-subtle); font-size:8px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
+    #nx-campaign-root .sms-credit-payment-balance strong { display:block; margin-top:2px; color:var(--nexora-text); font-size:11px; font-weight:900; }
+    #nx-campaign-root .sms-credit-invoice { border:1px solid var(--nexora-border); border-radius:12px; background:#fff; padding:13px; }
+    #nx-campaign-root .sms-credit-invoice-row { display:flex; align-items:center; justify-content:space-between; gap:12px; color:var(--nexora-muted); font-size:12px; font-weight:600; }
+    #nx-campaign-root .sms-credit-invoice-row + .sms-credit-invoice-row { margin-top:8px; }
+    #nx-campaign-root .sms-credit-invoice-row strong { color:var(--nexora-text); font-weight:900; }
+    #nx-campaign-root .sms-credit-invoice-total { margin-top:10px; border-top:1px solid var(--nexora-rule); padding-top:10px; color:var(--nexora-text); font-size:14px; font-weight:900; }
+    #nx-campaign-root .sms-credit-invoice-total strong { color:var(--nexora-brand); font-size:16px; }
+    #nx-campaign-root .sms-credit-modal-foot { display:flex; flex:0 0 auto; align-items:center; gap:10px; border-top:1px solid var(--nexora-rule); background:#fff; padding:14px 20px; }
+    #nx-campaign-root .sms-credit-modal-foot .btn-outline { flex:1; color:var(--nexora-muted); }
+    #nx-campaign-root .sms-credit-modal-foot .btn-primary { flex:2; justify-content:center; }
     #panel-sms-campaigns .sms-campaign-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:24px; }
     #panel-sms-campaigns .sms-stat-card,
     #panel-sms-campaigns .sms-campaign-card { position:relative; overflow:hidden; border:1px solid var(--nexora-border); border-radius:12px; background:#fff; box-shadow:var(--nexora-card-shadow); }
@@ -8412,6 +8476,7 @@
                     <strong data-sms-credits>847</strong>
                     <small data-sms-credits-usd>≈ $21.18 remaining</small>
                   </div>
+                  <button class="booking-secondary-button sms-credit-buy-button" type="button" data-sms-credit-buy><i class="marketing-icon" data-lucide="wallet-cards" aria-hidden="true"></i><span>Buy Credits</span></button>
                   <button class="booking-primary-button" type="button" data-sms-campaign-new><i class="marketing-icon" data-lucide="sparkles" aria-hidden="true"></i><span>Tạo Campaign Mới</span></button>
                 </div>
               </div>
@@ -8709,6 +8774,38 @@
               <button class="btn-outline" id="cancelComposerBtn">Hủy</button>
               <button class="btn-primary" id="sendCampaignBtn"><i class="marketing-icon" data-lucide="send" aria-hidden="true"></i><span>Gửi Campaign</span></button>
             </div>
+          </div>
+        </div>
+      </div>
+      <div class="sms-credit-modal" data-sms-credit-modal hidden>
+        <div class="sms-credit-dialog" role="dialog" aria-modal="true" aria-labelledby="sms-credit-modal-title" aria-describedby="sms-credit-modal-description">
+          <div class="sms-credit-modal-head">
+            <div>
+              <div class="sms-credit-modal-title" id="sms-credit-modal-title"><i class="marketing-icon" data-lucide="wallet-cards" aria-hidden="true"></i><span>Mua SMS Credits</span></div>
+              <div class="sms-credit-modal-sub" id="sms-credit-modal-description">Chọn gói SMS phù hợp, sau đó thanh toán bằng ví của bạn.</div>
+            </div>
+            <button class="sms-credit-close" type="button" data-sms-credit-close aria-label="Đóng mua SMS credits"><i class="marketing-icon is-compact" data-lucide="x" aria-hidden="true"></i></button>
+          </div>
+          <div class="sms-credit-modal-body">
+            <section class="sms-credit-section" aria-labelledby="sms-credit-package-title">
+              <div class="sms-credit-section-label" id="sms-credit-package-title">Chọn gói SMS</div>
+              <div class="sms-credit-package-grid" data-sms-credit-package-list></div>
+            </section>
+            <section class="sms-credit-section" aria-labelledby="sms-credit-payment-title">
+              <div class="sms-credit-section-label" id="sms-credit-payment-title">Phương thức thanh toán</div>
+              <div class="sms-credit-payment-list" data-sms-credit-payment-list></div>
+            </section>
+            <section class="sms-credit-section sms-credit-invoice" aria-labelledby="sms-credit-invoice-title">
+              <div class="sms-credit-section-label" id="sms-credit-invoice-title">Tóm tắt hoá đơn</div>
+              <div class="sms-credit-invoice-row"><span>Gói SMS:</span><strong data-sms-credit-invoice-package></strong></div>
+              <div class="sms-credit-invoice-row"><span>Phương thức:</span><strong data-sms-credit-invoice-payment></strong></div>
+              <div class="sms-credit-invoice-row sms-credit-invoice-total"><span>Tổng thanh toán:</span><strong data-sms-credit-invoice-total></strong></div>
+            </section>
+            <div class="sr-only" aria-live="polite" data-sms-credit-checkout-status></div>
+          </div>
+          <div class="sms-credit-modal-foot">
+            <button class="btn-outline" type="button" data-sms-credit-close>Huỷ</button>
+            <button class="btn-primary" type="button" data-sms-credit-confirm><i class="marketing-icon is-compact" data-lucide="shield-check" aria-hidden="true"></i><span>Xác nhận thanh toán</span></button>
           </div>
         </div>
       </div>
@@ -11084,6 +11181,21 @@ function getBookingCardCallStart(item) {
           desc: 'Gửi tự động — tặng free nail art hoặc discount.' }
       ];
 
+      const SMS_CREDIT_PACKAGES = [
+        { id: 'sms-500', credits: 500, price: 25, name: 'Starter', note: 'Phù hợp để thử campaign' },
+        { id: 'sms-1500', credits: 1500, price: 60, name: 'Growth', note: 'Cho các campaign định kỳ' },
+        { id: 'sms-3000', credits: 3000, price: 99, name: 'Business', note: 'Mở rộng tệp khách hàng' },
+        { id: 'sms-6000', credits: 6000, price: 175, name: 'Scale', note: 'Tiết kiệm nhất', featured: true }
+      ];
+
+      const SMS_CREDIT_PAYMENT_METHODS = [
+        { id: 'USDV', label: 'USDV', balance: '$79,000.00', token: 'V', tokenClass: 'is-usdv' },
+        { id: 'USDT', label: 'USDT', balance: '$79,000.00', token: 'T', tokenClass: 'is-usdt' },
+        { id: 'USD', label: 'USD', balance: '$79,000.00', token: '$', tokenClass: 'is-usd' },
+        { id: 'BTC', label: 'BTC', balance: '100,000.25', token: '₿', tokenClass: 'is-btc' },
+        { id: 'VND', label: 'VND', balance: '$50,000,000.00', token: '₫', tokenClass: 'is-vnd' }
+      ];
+
       const TEMPLATES = {
         new: [
           { title: '🌟 Welcome Back', text: 'Xin chào {TenKhach}! Cảm ơn đã ghé {TenTiem}. Book lại hôm nay và nhận 15% OFF cho lần tiếp theo! {Link}' },
@@ -11134,6 +11246,9 @@ function getBookingCardCallStart(item) {
       const $ = id => document.getElementById(id);
       let composerOpener = null;
       let composerBackgroundStates = [];
+      let smsCreditModalOpener = null;
+      let smsCreditPackageId = SMS_CREDIT_PACKAGES[0].id;
+      let smsCreditPaymentId = SMS_CREDIT_PAYMENT_METHODS[0].id;
 
       function composerFocusables() {
         return Array.prototype.filter.call(
@@ -11344,6 +11459,114 @@ function getBookingCardCallStart(item) {
         });
       }
 
+      function getSelectedSmsCreditPackage() {
+        return SMS_CREDIT_PACKAGES.find(function(pkg) { return pkg.id === smsCreditPackageId; }) || SMS_CREDIT_PACKAGES[0];
+      }
+
+      function getSelectedSmsCreditPayment() {
+        return SMS_CREDIT_PAYMENT_METHODS.find(function(method) { return method.id === smsCreditPaymentId; }) || SMS_CREDIT_PAYMENT_METHODS[0];
+      }
+
+      function renderSmsCreditPackages() {
+        var target = document.querySelector('[data-sms-credit-package-list]');
+        if (!target) return;
+
+        target.innerHTML = SMS_CREDIT_PACKAGES.map(function(pkg) {
+          var selected = pkg.id === smsCreditPackageId;
+          return '<button class="sms-credit-package' + (selected ? ' is-selected' : '') + (pkg.featured ? ' is-featured' : '') + '" type="button" data-sms-credit-package="' + pkg.id + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
+            '<span class="sms-credit-package-name">' + pkg.name + '</span>' +
+            '<span class="sms-credit-package-amount">' + pkg.credits.toLocaleString() + ' SMS</span>' +
+            '<span class="sms-credit-package-price">$' + pkg.price.toFixed(2) + '</span>' +
+            '<span class="sms-credit-package-note">' + pkg.note + '</span>' +
+          '</button>';
+        }).join('');
+      }
+
+      function renderSmsCreditPayments() {
+        var target = document.querySelector('[data-sms-credit-payment-list]');
+        if (!target) return;
+
+        target.innerHTML = SMS_CREDIT_PAYMENT_METHODS.map(function(method) {
+          var selected = method.id === smsCreditPaymentId;
+          return '<button class="sms-credit-payment' + (selected ? ' is-selected' : '') + '" type="button" data-sms-credit-payment="' + method.id + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
+            '<span class="sms-credit-payment-main">' +
+              '<span class="sms-credit-radio" aria-hidden="true"></span>' +
+              '<span class="sms-credit-token ' + method.tokenClass + '" aria-hidden="true">' + method.token + '</span>' +
+              '<span class="sms-credit-payment-name">' + method.label + '</span>' +
+            '</span>' +
+            '<span class="sms-credit-payment-balance"><span>Số dư</span><strong>' + method.balance + '</strong></span>' +
+          '</button>';
+        }).join('');
+      }
+
+      function renderSmsCreditInvoice() {
+        var selectedPackage = getSelectedSmsCreditPackage();
+        var selectedPayment = getSelectedSmsCreditPayment();
+        var packageTarget = document.querySelector('[data-sms-credit-invoice-package]');
+        var paymentTarget = document.querySelector('[data-sms-credit-invoice-payment]');
+        var totalTarget = document.querySelector('[data-sms-credit-invoice-total]');
+        var statusTarget = document.querySelector('[data-sms-credit-checkout-status]');
+
+        if (packageTarget) packageTarget.textContent = selectedPackage.credits.toLocaleString() + ' SMS';
+        if (paymentTarget) paymentTarget.textContent = selectedPayment.label;
+        if (totalTarget) totalTarget.textContent = '$' + selectedPackage.price.toFixed(2);
+        if (statusTarget) statusTarget.textContent = selectedPackage.credits.toLocaleString() + ' SMS, thanh toán bằng ' + selectedPayment.label + '.';
+      }
+
+      function renderSmsCreditModal() {
+        renderSmsCreditPackages();
+        renderSmsCreditPayments();
+        renderSmsCreditInvoice();
+        refreshBookingMarketingIcons();
+      }
+
+      function openSmsCreditModal() {
+        var modal = document.querySelector('[data-sms-credit-modal]');
+        if (!modal) return;
+        smsCreditModalOpener = document.activeElement;
+        renderSmsCreditModal();
+        modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        var closeButton = modal.querySelector('[data-sms-credit-close]');
+        if (closeButton) closeButton.focus();
+      }
+
+      function closeSmsCreditModal() {
+        var modal = document.querySelector('[data-sms-credit-modal]');
+        if (!modal || modal.hidden) return;
+        modal.hidden = true;
+        document.body.style.overflow = '';
+        if (smsCreditModalOpener && typeof smsCreditModalOpener.focus === 'function') smsCreditModalOpener.focus();
+        smsCreditModalOpener = null;
+      }
+
+      function setSmsCreditPackage(packageId) {
+        if (!SMS_CREDIT_PACKAGES.some(function(pkg) { return pkg.id === packageId; })) return;
+        smsCreditPackageId = packageId;
+        renderSmsCreditModal();
+      }
+
+      function setSmsCreditPayment(paymentId) {
+        if (!SMS_CREDIT_PAYMENT_METHODS.some(function(method) { return method.id === paymentId; })) return;
+        smsCreditPaymentId = paymentId;
+        renderSmsCreditModal();
+      }
+
+      function showSmsCreditPurchaseSuccess(selectedPackage, selectedPayment) {
+        $('successText').textContent = 'Đã thêm ' + selectedPackage.credits.toLocaleString() + ' SMS credits qua ' + selectedPayment.label + '.';
+        $('successBanner').classList.add('show');
+        clearTimeout(showSmsCreditPurchaseSuccess._timer);
+        showSmsCreditPurchaseSuccess._timer = setTimeout(function() { $('successBanner').classList.remove('show'); }, 6000);
+      }
+
+      function confirmSmsCreditPurchase() {
+        var selectedPackage = getSelectedSmsCreditPackage();
+        var selectedPayment = getSelectedSmsCreditPayment();
+        updateCredits(state.credits + selectedPackage.credits);
+        closeSmsCreditModal();
+        showSmsCreditPurchaseSuccess(selectedPackage, selectedPayment);
+      }
+
       function sendCampaign() {
         const text = $('smsText').value.trim();
         if (!text) { alert('Vui lòng soạn nội dung SMS trước.'); return; }
@@ -11401,6 +11624,31 @@ function getBookingCardCallStart(item) {
       $('closeComposerBtn').addEventListener('click', closeComposer);
       $('cancelComposerBtn').addEventListener('click', closeComposer);
       $('composerModal').addEventListener('click', function (e) { if (e.target === e.currentTarget) closeComposer(); });
+      document.querySelectorAll('[data-sms-credit-buy]').forEach(function(button) {
+        button.addEventListener('click', openSmsCreditModal);
+      });
+      var smsCreditModal = document.querySelector('[data-sms-credit-modal]');
+      if (smsCreditModal) smsCreditModal.addEventListener('click', function(event) {
+        if (event.target === smsCreditModal) {
+          closeSmsCreditModal();
+          return;
+        }
+        if (event.target.closest('[data-sms-credit-close]')) {
+          closeSmsCreditModal();
+          return;
+        }
+        var packageButton = event.target.closest('[data-sms-credit-package]');
+        if (packageButton) {
+          setSmsCreditPackage(packageButton.dataset.smsCreditPackage);
+          return;
+        }
+        var paymentButton = event.target.closest('[data-sms-credit-payment]');
+        if (paymentButton) {
+          setSmsCreditPayment(paymentButton.dataset.smsCreditPayment);
+          return;
+        }
+        if (event.target.closest('[data-sms-credit-confirm]')) confirmSmsCreditPurchase();
+      });
       document.addEventListener('keydown', function (event) {
         const overlay = $('composerModal');
         if (!overlay.classList.contains('open')) return;
@@ -11424,6 +11672,12 @@ function getBookingCardCallStart(item) {
           event.preventDefault();
           first.focus();
         }
+      });
+      document.addEventListener('keydown', function(event) {
+        var modal = document.querySelector('[data-sms-credit-modal]');
+        if (!modal || modal.hidden || event.key !== 'Escape') return;
+        event.preventDefault();
+        closeSmsCreditModal();
       });
       $('segmentGrid').addEventListener('click', function (e) {
         var btn = e.target.closest('.segment-btn'); if (!btn) return;
