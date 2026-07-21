@@ -4657,8 +4657,7 @@
     #nx-campaign-root .sms-credit-radio { display:grid; width:15px; height:15px; flex:0 0 15px; place-items:center; border:2px solid #cbd5e1; border-radius:50%; }
     #nx-campaign-root .sms-credit-payment.is-selected .sms-credit-radio { border-color:var(--nexora-brand); }
     #nx-campaign-root .sms-credit-payment.is-selected .sms-credit-radio::after { width:7px; height:7px; border-radius:50%; background:var(--nexora-brand); content:''; }
-    #nx-campaign-root .sms-credit-token { display:grid; width:26px; height:26px; flex:0 0 26px; place-items:center; border:1px solid rgba(15,23,42,.08); border-radius:50%; background:#fff; color:#fff; font-size:8px; font-weight:900; }
-    #nx-campaign-root .sms-credit-token.is-usdv { background:#4239b7; } #nx-campaign-root .sms-credit-token.is-usdt { background:#26a17b; } #nx-campaign-root .sms-credit-token.is-usd { background:#16a34a; } #nx-campaign-root .sms-credit-token.is-btc { background:#f7931a; } #nx-campaign-root .sms-credit-token.is-vnd { background:#d97706; }
+    #nx-campaign-root .sms-credit-token { display:block; width:28px; height:28px; flex:0 0 28px; border:1px solid rgba(15,23,42,.08); border-radius:50%; background:#fff; object-fit:contain; padding:1px; }
     #nx-campaign-root .sms-credit-payment-name { font-size:12px; font-weight:800; }
     #nx-campaign-root .sms-credit-payment-balance { flex:0 0 auto; color:var(--nexora-muted); text-align:right; }
     #nx-campaign-root .sms-credit-payment-balance span { display:block; color:var(--nexora-subtle); font-size:8px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
@@ -11294,11 +11293,11 @@ function getBookingCardCallStart(item) {
       ];
 
       const SMS_CREDIT_PAYMENT_METHODS = [
-        { id: 'USDV', label: 'USDV', balance: '$79,000.00', token: 'V', tokenClass: 'is-usdv' },
-        { id: 'USDT', label: 'USDT', balance: '$79,000.00', token: 'T', tokenClass: 'is-usdt' },
-        { id: 'USD', label: 'USD', balance: '$79,000.00', token: '$', tokenClass: 'is-usd' },
-        { id: 'BTC', label: 'BTC', balance: '100,000.25', token: '₿', tokenClass: 'is-btc' },
-        { id: 'VND', label: 'VND', balance: '$50,000,000.00', token: '₫', tokenClass: 'is-vnd' }
+        { id: 'USDV', label: 'USDV', balance: '$79,000.00', asset: 'assets/usdv.png' },
+        { id: 'USDT', label: 'USDT', balance: '$79,000.00', asset: 'assets/usdt.png' },
+        { id: 'USD', label: 'USD', balance: '$79,000.00', asset: 'assets/usd.png' },
+        { id: 'BTC', label: 'BTC', balance: '100,000.25', asset: 'assets/btc.png' },
+        { id: 'VND', label: 'VND', balance: '$50,000,000.00', asset: 'assets/vnd.png' }
       ];
 
       const TEMPLATES = {
@@ -11596,7 +11595,7 @@ function getBookingCardCallStart(item) {
           return '<button class="sms-credit-payment' + (selected ? ' is-selected' : '') + '" type="button" data-sms-credit-payment="' + method.id + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
             '<span class="sms-credit-payment-main">' +
               '<span class="sms-credit-radio" aria-hidden="true"></span>' +
-              '<span class="sms-credit-token ' + method.tokenClass + '" aria-hidden="true">' + method.token + '</span>' +
+              '<img class="sms-credit-token" src="' + method.asset + '" alt="" aria-hidden="true">' +
               '<span class="sms-credit-payment-name">' + method.label + '</span>' +
             '</span>' +
             '<span class="sms-credit-payment-balance"><span>Số dư</span><strong>' + method.balance + '</strong></span>' +
@@ -11843,12 +11842,16 @@ function getBookingCardCallStart(item) {
       }
 
       const QR_PROMOS = [
-        { id: 'promo20',  label: '💅 Giảm 20% toàn bộ dịch vụ',        codePrefix: 'NAIL20' },
-        { id: 'freeart',  label: '🎨 Free nail art khi làm full set',   codePrefix: 'FREEART' },
-        { id: 'combo25',  label: '✨ Combo mani + pedi giảm 25%',       codePrefix: 'COMBO25' },
-        { id: 'refer10',  label: '👯 Giới thiệu bạn — cả 2 giảm $10',   codePrefix: 'REF10' },
-        { id: 'gel15',    label: '💎 Gel-X giảm 15% lần đầu',           codePrefix: 'GELX15' }
+        { id: 'promo20',  label: '💅 Giảm 20% toàn bộ dịch vụ',        labelEn: '💅 20% Off All Services',            codePrefix: 'NAIL20' },
+        { id: 'freeart',  label: '🎨 Free nail art khi làm full set',   labelEn: '🎨 Free Nail Art with Full Set',      codePrefix: 'FREEART' },
+        { id: 'combo25',  label: '✨ Combo mani + pedi giảm 25%',       labelEn: '✨ Mani + Pedi Combo — 25% Off',       codePrefix: 'COMBO25' },
+        { id: 'refer10',  label: '👯 Giới thiệu bạn — cả 2 giảm $10',   labelEn: '👯 Refer a Friend — $10 Off for Both', codePrefix: 'REF10' },
+        { id: 'gel15',    label: '💎 Gel-X giảm 15% lần đầu',           labelEn: '💎 15% Off Gel-X First Visit',         codePrefix: 'GELX15' }
       ];
+
+      function getQrPromoLabel(promo, language) {
+        return language === 'en' ? (promo.labelEn || promo.label) : promo.label;
+      }
 
       const QR_LEADS = [
         { time: 'Hôm nay 15:20', name: 'Hằng Phạm',    phone: '(281) 774-3358', code: 'NAIL20-8Q2F', status: 'Đã dùng code' },
@@ -11995,7 +11998,7 @@ function getBookingCardCallStart(item) {
           </div>
           <div class="card">
             <h1>${title}</h1>
-            <div class="promo">${escapeQrHtml(promo.label)}</div>
+            <div class="promo" id="tPromo">${escapeQrHtml(getQrPromoLabel(promo, 'vi'))}</div>
             <div class="cond">${question}</div>
             <div id="frm">
               <label id="tNm" for="nm">Tên của bạn</label>
@@ -12039,6 +12042,7 @@ function getBookingCardCallStart(item) {
             <div class="footer">Bitcoin Nail Bar • 832-786-5576<br>Powered by NEXORA TOUCH</div>
           </div>
           <scr` + `ipt>
+            var PROMO_LABELS=${JSON.stringify({ vi: promo.label, en: promo.labelEn || promo.label })};
             var I18N={
               vi:{nm:'Tên của bạn',ph:'Số điện thoại',cs:'Tôi đồng ý nhận tin nhắn từ Bitcoin Nail Bar. Tần suất thay đổi. Reply STOP để hủy, HELP để được hỗ trợ. Có thể tính phí tin nhắn & dữ liệu.',go:'📩 Nhận Promotion Code qua SMS',ok:'Promotion code đã gửi qua SMS!',show:'Đưa code này cho nhân viên khi thanh toán 💅',pNm:'VD: Linh Trần',e1:'Vui lòng điền tên và số điện thoại.',e2:'Số điện thoại chưa đủ 10 số.',e3:'Vui lòng đồng ý nhận tin nhắn để nhận code.',bk:'📅 Đặt lịch giữ chỗ luôn',sv:'Dịch vụ',dt:'Ngày',tm:'Giờ',bkgo:'✅ Xác nhận đặt lịch',bok:'📅 Đã đặt lịch! SMS xác nhận đã gửi — hẹn gặp bạn 💅',e4:'Vui lòng chọn ngày và giờ.'},
               en:{nm:'Your name',ph:'Phone number',cs:'I agree to receive text messages from Bitcoin Nail Bar. Message frequency varies. Reply STOP to cancel, HELP for help. Msg & data rates may apply.',go:'📩 Text Me My Promotion Code',ok:'Promotion code sent via SMS!',show:'Show this code to our staff at checkout 💅',pNm:'e.g. Jessica Smith',e1:'Please enter your name and phone number.',e2:'Phone number must be 10 digits.',e3:'Please agree to receive messages to get your code.',bk:'📅 Book an appointment now',sv:'Service',dt:'Date',tm:'Time',bkgo:'✅ Confirm booking',bok:'📅 Booked! Confirmation text sent — see you soon 💅',e4:'Please pick a date and time.'}
@@ -12054,6 +12058,7 @@ function getBookingCardCallStart(item) {
             }
             function setLang(l){
               L=l; var t=I18N[l];
+              g('tPromo').textContent=PROMO_LABELS[l] || PROMO_LABELS.vi;
               g('tNm').textContent=t.nm; g('tPh').textContent=t.ph; g('tCs').textContent=t.cs;
               g('go').textContent=t.go; g('tOk').textContent=t.ok; g('tShow').textContent=t.show;
               g('nm').placeholder=t.pNm;
