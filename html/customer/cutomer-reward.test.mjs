@@ -4321,6 +4321,29 @@ test('keeps wallet business labels and point values compact in the mobile shell'
   assert.match(source, /body\.mobile-app-shell #wallet-business-list \.wallet-business-points\s*\{[\s\S]*font-size:\s*1rem/);
 });
 
+test('keeps home quick action cards at 80 percent height in the mobile shell', () => {
+  const source = html();
+  assert.equal((source.match(/class="quick-action-card/g) || []).length, 5);
+  assert.match(source, /body\.mobile-app-shell \.quick-action-card\s*\{[\s\S]*min-height:\s*4\.8rem/);
+});
+
+test('uses Swiper autoplay for the home redeem strip with a scroll fallback', () => {
+  const source = html();
+  assert.match(source, /swiper@12\/swiper-bundle\.min\.css/);
+  assert.match(source, /swiper@12\/swiper-bundle\.min\.js/);
+  assert.match(source, /id="redeem-now-slider"[^>]*class="[^"]*\bswiper\b/);
+  assert.match(source, /id="redeem-now-strip"[^>]*class="[^"]*\bswiper-wrapper\b/);
+  assert.match(source, /function refreshRedeemNowSwiper\(\)/);
+  assert.match(source, /typeof window\.Swiper !== 'function'/);
+  assert.match(source, /card\.className = 'swiper-slide app-card/);
+  assert.match(source, /card\.className = 'swiper-slide app-card flex min-h-16 w-\[190px\] shrink-0 items-center gap-2 p-3/);
+  assert.match(source, /body\.mobile-app-shell \.redeem-now-slider \.swiper-slide\s*\{[\s\S]*display:\s*flex[\s\S]*align-items:\s*center/);
+  assert.match(source, /allowTouchMove:\s*true/);
+  assert.match(source, /touchStartPreventDefault:\s*false/);
+  assert.match(source, /slidesPerView:\s*'auto'/);
+  assert.match(source, /autoplay:\s*\{[\s\S]*delay:\s*3000[\s\S]*disableOnInteraction:\s*false/);
+});
+
 test('defines shared visual components and completes five root screens', () => {
   const source = html();
   for (const className of ['app-card', 'app-button', 'app-input', 'app-chip']) {

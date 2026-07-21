@@ -9,6 +9,8 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
   <style type="text/tailwindcss">
     @theme {
       --color-app-bg: #070816;
@@ -138,6 +140,37 @@
       line-height: 1.5rem !important;
     }
 
+    body.mobile-app-shell .quick-action-card {
+      min-height: 4.8rem !important;
+      padding: 0.75rem !important;
+      gap: 0.4rem !important;
+    }
+
+    body.mobile-app-shell .redeem-now-slider:not(.swiper-initialized) {
+      overflow-x: auto !important;
+    }
+
+    body.mobile-app-shell .redeem-now-slider .swiper-wrapper {
+      align-items: stretch;
+    }
+
+    body.mobile-app-shell .redeem-now-slider.swiper-initialized .swiper-wrapper {
+      cursor: grab;
+    }
+
+    body.mobile-app-shell .redeem-now-slider.swiper-initialized .swiper-wrapper:active {
+      cursor: grabbing;
+    }
+
+    body.mobile-app-shell .redeem-now-slider .swiper-slide {
+      display: flex;
+      align-items: center;
+      width: 190px;
+      max-width: 190px;
+      flex-shrink: 0;
+      height: auto;
+    }
+
     @media (min-width: 640px) {
       body.mobile-app-shell {
         background: #02030a;
@@ -249,15 +282,17 @@
           </div>
 
           <div class="mt-6"><div class="mb-3 flex items-center justify-between"><h2 class="section-title flex items-center gap-2"><i data-lucide="gift" class="size-5 text-app-pink" aria-hidden="true"></i><span data-en="Redeem now with your points" data-vi="Đổi ngay bằng điểm của bạn">Redeem now with your points</span></h2><button type="button" class="text-xs font-bold text-app-pink" data-action="navigate" data-target="rewards" data-en="All" data-vi="Tất cả">All</button></div>
-            <div id="redeem-now-strip" class="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0"></div>
+            <div id="redeem-now-slider" class="swiper redeem-now-slider -mx-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+              <div id="redeem-now-strip" class="swiper-wrapper"></div>
+            </div>
           </div>
 
           <div class="mt-6"><div class="mb-3 flex items-center justify-between"><h2 class="section-title" data-en="Quick actions" data-vi="Thao tác nhanh">Quick actions</h2><button type="button" class="text-xs font-bold text-app-pink" data-action="navigate" data-target="allmenu" data-en="View all" data-vi="Xem tất cả">View all</button></div><div class="grid grid-cols-5 gap-3">
-            <button type="button" class="app-card flex min-h-24 flex-col items-center justify-center gap-2 text-center transition hover:-translate-y-0.5 hover:border-app-purple" data-action="navigate" data-target="rewards"><i data-lucide="gift" class="size-5 text-app-pink" aria-hidden="true"></i><span class="text-xs font-bold" data-en="Rewards" data-vi="Phần thưởng">Rewards</span></button>
-            <button type="button" class="app-card flex min-h-24 flex-col items-center justify-center gap-2 text-center transition hover:-translate-y-0.5 hover:border-app-cyan" data-action="navigate" data-target="looks"><i data-lucide="images" class="size-5 text-app-cyan" aria-hidden="true"></i><span class="text-xs font-bold" data-en="My Looks" data-vi="Kiểu của tôi">My Looks</span></button>
-            <button type="button" class="app-card flex min-h-24 flex-col items-center justify-center gap-2 text-center transition hover:-translate-y-0.5 hover:border-app-green" data-action="navigate" data-target="tip" data-business-id="bitcoin-nail-bar"><i data-lucide="badge-dollar-sign" class="size-5 text-app-green" aria-hidden="true"></i><span class="text-xs font-bold" data-en="Tips" data-vi="Tip">Tips</span></button>
-            <button type="button" class="app-card flex min-h-24 flex-col items-center justify-center gap-2 text-center transition hover:-translate-y-0.5 hover:border-app-gold" data-action="navigate" data-target="offers"><i data-lucide="badge-percent" class="size-5 text-app-gold" aria-hidden="true"></i><span class="text-xs font-bold" data-en="Offers" data-vi="Ưu đãi">Offers</span></button>
-            <button type="button" class="app-card flex min-h-24 flex-col items-center justify-center gap-2 text-center transition hover:-translate-y-0.5 hover:border-app-purple" data-action="navigate" data-target="activity"><i data-lucide="message-square-more" class="size-5 text-app-purple" aria-hidden="true"></i><span class="text-xs font-bold" data-en="Messages" data-vi="Tin nhắn">Messages</span></button>
+            <button type="button" class="quick-action-card app-card flex min-h-24 flex-col items-center justify-center gap-2 text-center transition hover:-translate-y-0.5 hover:border-app-purple" data-action="navigate" data-target="rewards"><i data-lucide="gift" class="size-5 text-app-pink" aria-hidden="true"></i><span class="text-xs font-bold" data-en="Rewards" data-vi="Phần thưởng">Rewards</span></button>
+            <button type="button" class="quick-action-card app-card flex min-h-24 flex-col items-center justify-center gap-2 text-center transition hover:-translate-y-0.5 hover:border-app-cyan" data-action="navigate" data-target="looks"><i data-lucide="images" class="size-5 text-app-cyan" aria-hidden="true"></i><span class="text-xs font-bold" data-en="My Looks" data-vi="Kiểu của tôi">My Looks</span></button>
+            <button type="button" class="quick-action-card app-card flex min-h-24 flex-col items-center justify-center gap-2 text-center transition hover:-translate-y-0.5 hover:border-app-green" data-action="navigate" data-target="tip" data-business-id="bitcoin-nail-bar"><i data-lucide="badge-dollar-sign" class="size-5 text-app-green" aria-hidden="true"></i><span class="text-xs font-bold" data-en="Tips" data-vi="Tip">Tips</span></button>
+            <button type="button" class="quick-action-card app-card flex min-h-24 flex-col items-center justify-center gap-2 text-center transition hover:-translate-y-0.5 hover:border-app-gold" data-action="navigate" data-target="offers"><i data-lucide="badge-percent" class="size-5 text-app-gold" aria-hidden="true"></i><span class="text-xs font-bold" data-en="Offers" data-vi="Ưu đãi">Offers</span></button>
+            <button type="button" class="quick-action-card app-card flex min-h-24 flex-col items-center justify-center gap-2 text-center transition hover:-translate-y-0.5 hover:border-app-purple" data-action="navigate" data-target="activity"><i data-lucide="message-square-more" class="size-5 text-app-purple" aria-hidden="true"></i><span class="text-xs font-bold" data-en="Messages" data-vi="Tin nhắn">Messages</span></button>
           </div></div>
 
           <div class="mt-6 grid gap-4 lg:grid-cols-2">
@@ -14240,6 +14275,38 @@
 
     // Lucide glyph per reward type for the home "Redeem now" strip; locked rewards use 'lock'.
     const REDEEM_STRIP_ICONS = { service_credit: 'wallet', free_service: 'gift', percent_code: 'badge-percent' };
+    let redeemNowSwiper = null;
+
+    function refreshRedeemNowSwiper() {
+      const slider = document.getElementById('redeem-now-slider');
+      if (!slider) return;
+      if (redeemNowSwiper) {
+        redeemNowSwiper.destroy(true, true);
+        redeemNowSwiper = null;
+      }
+      slider.classList.remove('swiper-initialized');
+      if (typeof window.Swiper !== 'function') return;
+      const slideCount = slider.querySelectorAll('.swiper-slide').length;
+      redeemNowSwiper = new window.Swiper(slider, {
+        slidesPerView: 'auto',
+        slidesPerGroup: 1,
+        spaceBetween: 12,
+        loop: slideCount > 1,
+        loopedSlides: slideCount > 1 ? slideCount : undefined,
+        speed: 650,
+        grabCursor: true,
+        allowTouchMove: true,
+        simulateTouch: true,
+        touchStartPreventDefault: false,
+        watchOverflow: true,
+        keyboard: { enabled: true },
+        autoplay: {
+          delay: 3000,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true
+        }
+      });
+    }
 
     // The home "Redeem now" strip mirrors the rewards catalog: purchasable rewards, cheapest first,
     // so affordable options lead and the priciest (still-locked) reward trails. Each card reuses the
@@ -14255,7 +14322,7 @@
         const availability = rewardAvailability(reward);
         const card = document.createElement('button');
         card.type = 'button';
-        card.className = 'app-card flex min-h-20 w-[190px] shrink-0 items-center gap-3 text-left transition hover:-translate-y-0.5 hover:border-app-purple';
+        card.className = 'swiper-slide app-card flex min-h-16 w-[190px] shrink-0 items-center gap-2 p-3 text-left transition hover:-translate-y-0.5 hover:border-app-purple';
         if (availability.disabled) {
           card.dataset.action = 'navigate';
           card.dataset.target = 'rewards';
@@ -14265,7 +14332,7 @@
           card.dataset.rewardKey = reward.key;
         }
         const icon = document.createElement('span');
-        icon.className = 'grid size-10 shrink-0 place-items-center rounded-xl bg-app-purple/10 text-app-pink';
+        icon.className = 'grid size-8 shrink-0 place-items-center rounded-lg bg-app-purple/10 text-app-pink';
         icon.setAttribute('aria-hidden', 'true');
         const glyph = document.createElement('i');
         glyph.className = 'size-5';
@@ -14287,6 +14354,7 @@
         card.append(icon, body);
         return card;
       }));
+      refreshRedeemNowSwiper();
     }
 
     function sortedLedgerEntries() {
