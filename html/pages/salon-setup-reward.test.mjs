@@ -161,6 +161,13 @@ test('shows anonymous demand and reviewable AI offer suggestions', () => {
   assert.match(panel[0], /data-ai-offer-dismiss/);
 });
 
+test('lays out suggested offers in responsive multi-card rows', () => {
+  const html = source();
+  assert.match(html, /.ai-offers \.ai-suggestion-list \{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(html, /@media \(min-width:\s*1200px\)[\s\S]*?\.ai-offers \.ai-suggestion-list \{[^}]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(html, /@media \(max-width:\s*800px\)[\s\S]*?\.ai-offers \.ai-suggestion-list \{[^}]*grid-template-columns:\s*1fr/);
+});
+
 test('provides an AI offer editor and publish interaction hooks', () => {
   const html = source();
   assert.match(html, /data-ai-offer-dialog hidden/);

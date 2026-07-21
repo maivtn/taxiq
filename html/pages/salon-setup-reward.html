@@ -776,7 +776,7 @@
     .ai-offers .ai-section-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
     .ai-offers .ai-section-title h3 { font-size: 18px; line-height: 1.35; }
     .ai-offers .ai-section-title p { margin-top: 5px; }
-    .ai-offers .ai-suggestion-list { display: grid; gap: 13px; }
+    .ai-offers .ai-suggestion-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
     .ai-offers .ai-suggestion-card { border: 1px solid var(--ai-line); border-left: 4px solid var(--ai-purple); border-radius: 16px; background: #fff; padding: 17px; transition: opacity .2s, filter .2s, border-color .2s; }
     .ai-offers .ai-suggestion-card.is-dismissed { opacity: .48; filter: grayscale(.45); }
     .ai-offers .ai-suggestion-card.is-published { border-color: rgba(21, 154, 104, .4); border-left-color: var(--ai-green); }
@@ -846,7 +846,8 @@
     .ai-offer-dialog .ai-offer-dialog-body select { width: 100%; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 10px 11px; color: var(--nexora-text); font-size: 13px; }
     .ai-offer-dialog .ai-offer-dialog-body textarea { min-height: 75px; resize: vertical; }
     .ai-offer-dialog .ai-offer-dialog-foot { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--nexora-border); background: var(--nexora-surface-muted); padding: 14px 20px; }
-    @media (max-width: 800px) { .ai-offers .ai-demand-grid { grid-template-columns: 1fr; } .ai-offers .ai-demand-card p { min-height: 0; } }
+    @media (min-width: 1200px) { .ai-offers .ai-suggestion-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 800px) { .ai-offers .ai-demand-grid, .ai-offers .ai-suggestion-list { grid-template-columns: 1fr; } .ai-offers .ai-demand-card p { min-height: 0; } }
     @media (max-width: 560px) { .ai-offers .ai-offers-heading, .ai-offers .ai-section-title { flex-direction: column; } .ai-offers .ai-ai-badge { align-self: flex-start; } .ai-offers .ai-suggestion-head { flex-direction: column; } .ai-offers .ai-confidence { align-self: flex-start; } .ai-offer-manager-toolbar { align-items: stretch; flex-direction: column; } .ai-offer-search { min-width: 100%; } .ai-managed-offer-card { grid-template-columns: auto minmax(0, 1fr); } .ai-managed-offer-actions { grid-column: 2; justify-content: flex-start; } .ai-offer-dialog { align-items: end; padding: 10px; } .ai-offer-dialog .ai-offer-dialog-card { max-height: 92vh; overflow-y: auto; } .ai-offer-dialog .ai-offer-dialog-body .form2 { grid-template-columns: 1fr; } }
 
     /* Nexora Rewards prototype content (scoped under .reward-proto) */
