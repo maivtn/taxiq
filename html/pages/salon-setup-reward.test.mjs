@@ -51,6 +51,17 @@ test('keeps the existing reward builder inside Reward Catalog', () => {
   assert.match(html, /activateMainTab\('reward-catalog'\)/);
 });
 
+test('keeps points-earning Bonus Points out of the Reward Catalog picker', () => {
+  const html = source();
+  const rewardCatalog = html.match(/id="panel-reward-catalog"[\s\S]*?(?=\n            <section class="tab-panel" id="panel-customers")/);
+  assert.ok(rewardCatalog, 'missing Reward Catalog panel');
+  assert.match(rewardCatalog[0], /data-reward-type[^>]*data-reward-value="\$5"/);
+  assert.match(rewardCatalog[0], /data-reward-type[^>]*data-reward-value="15%"/);
+  assert.match(rewardCatalog[0], /data-reward-type[^>]*data-reward-value="Free add-on"/);
+  assert.doesNotMatch(rewardCatalog[0], /<b>Bonus Points<\/b>/);
+  assert.match(html, /<h3>Bonus events<\/h3>/);
+});
+
 test('renders and updates the Redemptions and return revenue chart', () => {
   const html = source();
   assert.match(html, /<select[^>]*data-loyalty-analytics-range[^>]*aria-label="Analytics date range"/);
