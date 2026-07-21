@@ -3683,7 +3683,56 @@
     .booking-calendar-event-name { overflow: hidden; font-size: 11px; font-weight: 900; letter-spacing: -.015em; text-overflow: ellipsis; white-space: nowrap; }
     .booking-calendar-event-service { overflow: hidden; margin-top: 2px; font-size: 9.5px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
     .booking-calendar-event-meta { margin-top: 4px; font-size: 8.5px; font-weight: 700; opacity: .72; }
-    @media (max-width: 720px) { .booking-calendar-head { align-items: flex-start; flex-direction: column; } .booking-calendar-nav { width: 100%; justify-content: space-between; } .booking-view-button { padding: 0 8px; } }
+    @media (max-width: 720px) {
+      .booking-calendar-head {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 11px 12px;
+      }
+
+      .booking-calendar-title { font-size: 13px; }
+      .booking-calendar-subtitle { font-size: 10px; }
+
+      .booking-calendar-nav {
+        display: grid;
+        width: 100%;
+        grid-template-columns: 34px minmax(0, 1fr) auto 34px;
+        gap: 5px;
+        align-items: center;
+      }
+
+      .booking-calendar-nav-label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .booking-calendar-nav .booking-mini-button {
+        min-width: 0;
+        padding: 0 7px;
+      }
+
+      .booking-calendar-scroll {
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      [data-booking-team-calendar] { min-width: 600px; }
+      .booking-view-button { padding: 0 8px; }
+      .booking-team-calendar .calendar_default_colheader_inner { font-size: 10px; }
+      .booking-team-calendar .calendar_default_rowheader_inner { font-size: 10px; }
+      .booking-calendar-event-name { font-size: 10px; }
+      .booking-calendar-event-service { font-size: 9px; }
+      .booking-calendar-event-meta { font-size: 8px; }
+    }
+
+    @media (max-width: 420px) {
+      [data-booking-team-calendar] { min-width: 560px; }
+      .booking-calendar-event-meta { display: none; }
+    }
 
     .booking-date {
       display: flex;
