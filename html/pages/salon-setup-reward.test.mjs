@@ -13,12 +13,13 @@ const sections = [
   ['overview', 'Overview', 'Overview'],
   ['earn-rules', 'Earn Rules', 'Earn Rules'],
   ['reward-catalog', 'Reward Catalog', 'Reward Catalog'],
+  ['ai-offers', 'AI Offers', 'AI Offers'],
   ['customers', 'Customers', 'Customers'],
   ['loyalty-activity', 'Activity', 'Loyalty Activity'],
   ['analytics', 'Analytics', 'Analytics']
 ];
 
-test('uses six synchronized loyalty management tabs and submenu items', () => {
+test('uses seven synchronized loyalty management tabs and submenu items', () => {
   const html = source();
   assert.match(html, /<title>Nexora Touch - Rewards<\/title>/);
   for (const [target, tabLabel, submenuLabel] of sections) {
@@ -55,11 +56,76 @@ test('keeps points-earning Bonus Points out of the Reward Catalog picker', () =>
   const html = source();
   const rewardCatalog = html.match(/id="panel-reward-catalog"[\s\S]*?(?=\n            <section class="tab-panel" id="panel-customers")/);
   assert.ok(rewardCatalog, 'missing Reward Catalog panel');
-  assert.match(rewardCatalog[0], /data-reward-type[^>]*data-reward-value="\$5"/);
-  assert.match(rewardCatalog[0], /data-reward-type[^>]*data-reward-value="15%"/);
-  assert.match(rewardCatalog[0], /data-reward-type[^>]*data-reward-value="Free add-on"/);
+  assert.match(rewardCatalog[0], /data-reward-type[^>]*data-reward-value="\$5\.00"/);
+  assert.match(rewardCatalog[0], /data-reward-type[^>]*data-reward-value="15% off"/);
+  assert.match(rewardCatalog[0], /data-reward-type[^>]*data-reward-value="Free Gel Add-on"/);
   assert.doesNotMatch(rewardCatalog[0], /<b>Bonus Points<\/b>/);
   assert.match(html, /<h3>Bonus events<\/h3>/);
+});
+
+test('keeps Create Reward focused on points redemption', () => {
+  const html = source();
+  const rewardCatalog = html.match(/id="panel-reward-catalog"[\s\S]*?(?=\n            <section class="tab-panel" id="panel-ai-offers")/);
+  assert.ok(rewardCatalog, 'missing Reward Catalog panel');
+  for (const type of ['gift_card', 'dollar_discount', 'percent_discount', 'free_service', 'free_product']) {
+    assert.match(rewardCatalog[0], new RegExp(`data-reward-type-key="${type}"`));
+  }
+  assert.match(rewardCatalog[0], /data-reward-points-input/);
+  assert.match(rewardCatalog[0], /data-reward-minimum-spend-input/);
+  assert.match(rewardCatalog[0], /data-reward-maximum-discount-input/);
+  assert.doesNotMatch(rewardCatalog[0], /After Verified Review|After Tip|After Visit|After Referral/);
+  assert.doesNotMatch(rewardCatalog[0], /Review Window|SMS Guest Fallback|Push Notification/);
+});
+
+test('persists redemption settings when creating reward cards', () => {
+  const html = source();
+  assert.match(html, /function getRewardDraft\(\)[\s\S]*?pointsCost:/);
+  assert.match(html, /function getRewardDraft\(\)[\s\S]*?minimumSpend:/);
+  assert.match(html, /function getRewardDraft\(\)[\s\S]*?maximumDiscount:/);
+  assert.match(html, /function getRewardDraft\(\)[\s\S]*?eligibleServices:/);
+  assert.match(html, /function getRewardDraft\(\)[\s\S]*?validLocations:/);
+  assert.match(html, /function programInnerHTML\(dateLabel, draft\)/);
+  assert.match(html, /var rewardTypeCards = document\.querySelectorAll\('\[data-reward-builder\] \[data-reward-type\]'\)/);
+  assert.match(html, /var defaultType = document\.querySelector\('\[data-reward-builder\] \[data-reward-type-key="gift_card"\]'\)/);
+  assert.match(html, /data-reward-points/);
+  assert.match(html, /data-reward-minimum-spend/);
+});
+
+test('adds AI Offers as a separate loyalty management tab', () => {
+  const html = source();
+  assert.match(html, /data-nav-subitem-target="ai-offers"[^>]*>AI Offers<\/button>/);
+  assert.match(html, /class="page-tab[^"]*"[^>]*data-tab-target="ai-offers"[\s\S]*?<span>AI Offers<\/span>/);
+  assert.match(html, /id="panel-ai-offers"[^>]*data-tab-panel="ai-offers"/);
+  assert.match(html, /id="panel-reward-catalog"[^>]*data-tab-panel="reward-catalog"/);
+});
+
+test('shows anonymous demand and reviewable AI offer suggestions', () => {
+  const html = source();
+  const panel = html.match(/id="panel-ai-offers"[\s\S]*?(?=\n            <section class="tab-panel" id="panel-customers")/);
+  assert.ok(panel, 'missing AI Offers panel');
+  assert.match(panel[0], /Customer demand near you/);
+  assert.match(panel[0], /12[\s\S]*pedicure deal/);
+  assert.match(panel[0], /7[\s\S]*Gel-X under \$60/);
+  assert.match(panel[0], /data-ai-offer-card="pedi"/);
+  assert.match(panel[0], /data-ai-offer-card="gelx"/);
+  assert.match(panel[0], /AI only suggests/);
+  assert.match(panel[0], /Customer identity is never revealed/);
+  assert.match(panel[0], /data-ai-offer-review/);
+  assert.match(panel[0], /data-ai-offer-dismiss/);
+});
+
+test('provides an AI offer editor and publish interaction hooks', () => {
+  const html = source();
+  assert.match(html, /data-ai-offer-dialog hidden/);
+  assert.match(html, /data-ai-offer-field="title"/);
+  assert.match(html, /data-ai-offer-field="value"/);
+  assert.match(html, /data-ai-offer-field="schedule"/);
+  assert.match(html, /data-ai-offer-publish/);
+  assert.match(html, /function openAiOfferEditor\(offerId\)/);
+  assert.match(html, /function dismissAiOffer\(offerId\)/);
+  assert.match(html, /function publishAiOffer\(event\)/);
+  assert.match(html, /data-ai-offer-review/);
+  assert.match(html, /data-ai-offer-dismiss/);
 });
 
 test('renders and updates the Redemptions and return revenue chart', () => {

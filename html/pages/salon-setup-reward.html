@@ -745,6 +745,78 @@
       display: block;
     }
 
+    /* AI Offer Suggestions — owner-facing, separate from points redemption */
+    .ai-offers {
+      --ai-purple: #7048f4;
+      --ai-purple-soft: #f3efff;
+      --ai-green: #159a68;
+      --ai-green-soft: #eaf8f2;
+      --ai-gold: #b87900;
+      --ai-gold-soft: #fff5dc;
+      --ai-line: #e6eaf2;
+      color: #101828;
+    }
+
+    .ai-offers[hidden] { display: none; }
+    .ai-offers .ai-offers-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    .ai-offers .ai-eyebrow { display: inline-flex; align-items: center; gap: 6px; color: var(--ai-purple); font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+    .ai-offers .ai-eyebrow::before { content: '✦'; font-size: 14px; }
+    .ai-offers .ai-offers-heading h2 { margin: 4px 0 0; font-size: 22px; line-height: 1.25; }
+    .ai-offers .ai-offers-heading p { max-width: 720px; margin: 7px 0 0; }
+    .ai-offers .ai-ai-badge { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; border: 1px solid rgba(112, 72, 244, .22); border-radius: 999px; background: var(--ai-purple-soft); padding: 7px 11px; color: var(--ai-purple); font-size: 11px; font-weight: 900; }
+    .ai-offers .ai-demo-note { margin-bottom: 16px; border: 1px dashed #e7c979; border-radius: 12px; background: var(--ai-gold-soft); padding: 11px 13px; color: #7b5600; font-size: 12px; line-height: 1.5; }
+    .ai-offers .ai-demand-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .ai-offers .ai-demand-card { min-width: 0; border: 1px solid var(--ai-line); border-radius: 16px; background: #fff; padding: 15px; box-shadow: 0 2px 8px rgba(15, 23, 42, .05); }
+    .ai-offers .ai-demand-card .ai-demand-number { color: var(--ai-purple); font-size: 25px; font-weight: 950; line-height: 1; }
+    .ai-offers .ai-demand-card strong { display: block; margin-top: 7px; font-size: 13px; line-height: 1.35; }
+    .ai-offers .ai-demand-card p { min-height: 36px; margin: 6px 0 0; color: #667085; font-size: 11px; line-height: 1.5; }
+    .ai-offers .ai-trend { display: inline-flex; margin-top: 8px; border-radius: 999px; background: var(--ai-green-soft); padding: 4px 8px; color: var(--ai-green); font-size: 10px; font-weight: 900; }
+    .ai-offers .ai-section-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .ai-offers .ai-section-title h3 { font-size: 18px; line-height: 1.35; }
+    .ai-offers .ai-section-title p { margin-top: 5px; }
+    .ai-offers .ai-suggestion-list { display: grid; gap: 13px; }
+    .ai-offers .ai-suggestion-card { border: 1px solid var(--ai-line); border-left: 4px solid var(--ai-purple); border-radius: 16px; background: #fff; padding: 17px; transition: opacity .2s, filter .2s, border-color .2s; }
+    .ai-offers .ai-suggestion-card.is-dismissed { opacity: .48; filter: grayscale(.45); }
+    .ai-offers .ai-suggestion-card.is-published { border-color: rgba(21, 154, 104, .4); border-left-color: var(--ai-green); }
+    .ai-offers .ai-suggestion-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .ai-offers .ai-suggestion-head h4 { margin: 0; font-size: 15px; line-height: 1.4; }
+    .ai-offers .ai-confidence { flex-shrink: 0; border-radius: 999px; background: var(--ai-green-soft); padding: 5px 9px; color: var(--ai-green); font-size: 10px; font-weight: 900; white-space: nowrap; }
+    .ai-offers .ai-confidence.is-medium { background: var(--ai-gold-soft); color: var(--ai-gold); }
+    .ai-offers .ai-why { margin: 9px 0 11px; color: #667085; font-size: 12px; line-height: 1.6; }
+    .ai-offers .ai-why strong { color: #101828; }
+    .ai-offers .ai-estimates { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 13px; }
+    .ai-offers .ai-estimate { color: #667085; font-size: 11px; }
+    .ai-offers .ai-estimate strong { display: block; color: #101828; font-size: 15px; }
+    .ai-offers .ai-action-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .ai-offers .ai-action { min-height: 38px; border: 1px solid var(--ai-line); border-radius: 10px; background: #fff; padding: 8px 12px; color: #667085; font-size: 12px; font-weight: 900; }
+    .ai-offers .ai-action.is-primary { border-color: var(--ai-purple); background: var(--ai-purple); color: #fff; }
+    .ai-offers .ai-action:hover { border-color: var(--ai-purple); color: var(--ai-purple); }
+    .ai-offers .ai-action.is-primary:hover { color: #fff; }
+    .ai-offers .ai-action:disabled { cursor: not-allowed; opacity: .55; }
+    .ai-offers .ai-card-status { margin-top: 10px; color: var(--ai-green); font-size: 11px; font-weight: 800; }
+    .ai-offers .ai-guardrail { margin-top: 16px; border: 1px solid rgba(112, 72, 244, .2); border-radius: 16px; background: linear-gradient(135deg, #fff, var(--ai-purple-soft)); padding: 15px 16px; }
+    .ai-offers .ai-guardrail strong { display: block; margin-bottom: 6px; color: var(--ai-purple); font-size: 13px; }
+    .ai-offers .ai-guardrail ul { margin: 0; padding-left: 19px; color: #667085; font-size: 12px; line-height: 1.6; }
+    .ai-offers .ai-guardrail li + li { margin-top: 4px; }
+    .ai-offer-dialog[hidden] { display: none; }
+    .ai-offer-dialog { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; overflow-y: auto; background: rgba(8, 16, 34, .52); padding: 20px; }
+    .ai-offer-dialog .ai-offer-dialog-card { width: min(560px, 100%); border: 1px solid var(--nexora-border); border-radius: 18px; background: #fff; box-shadow: 0 24px 64px rgba(8, 16, 34, .3); }
+    .ai-offer-dialog .ai-offer-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--nexora-border); padding: 18px 20px; }
+    .ai-offer-dialog h3 { margin: 0; color: var(--nexora-text); font-size: 17px; }
+    .ai-offer-dialog .ai-offer-dialog-head p { margin: 5px 0 0; color: var(--nexora-muted); font-size: 12px; line-height: 1.5; }
+    .ai-offer-dialog .ai-offer-close { display: inline-grid; width: 32px; height: 32px; place-items: center; border: 1px solid var(--nexora-border); border-radius: 9px; background: #fff; color: var(--nexora-muted); font-size: 20px; line-height: 1; }
+    .ai-offer-dialog .ai-offer-dialog-body { display: grid; gap: 13px; padding: 20px; }
+    .ai-offer-dialog .ai-offer-dialog-body .form2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+    .ai-offer-dialog .ai-offer-dialog-body .field { display: flex; flex-direction: column; gap: 6px; }
+    .ai-offer-dialog .ai-offer-dialog-body .field label { color: #4b5568; font-size: 12px; font-weight: 900; }
+    .ai-offer-dialog .ai-offer-dialog-body input,
+    .ai-offer-dialog .ai-offer-dialog-body textarea,
+    .ai-offer-dialog .ai-offer-dialog-body select { width: 100%; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 10px 11px; color: var(--nexora-text); font-size: 13px; }
+    .ai-offer-dialog .ai-offer-dialog-body textarea { min-height: 75px; resize: vertical; }
+    .ai-offer-dialog .ai-offer-dialog-foot { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--nexora-border); background: var(--nexora-surface-muted); padding: 14px 20px; }
+    @media (max-width: 800px) { .ai-offers .ai-demand-grid { grid-template-columns: 1fr; } .ai-offers .ai-demand-card p { min-height: 0; } }
+    @media (max-width: 560px) { .ai-offers .ai-offers-heading, .ai-offers .ai-section-title { flex-direction: column; } .ai-offers .ai-ai-badge { align-self: flex-start; } .ai-offers .ai-suggestion-head { flex-direction: column; } .ai-offers .ai-confidence { align-self: flex-start; } .ai-offer-dialog { align-items: end; padding: 10px; } .ai-offer-dialog .ai-offer-dialog-card { max-height: 92vh; overflow-y: auto; } .ai-offer-dialog .ai-offer-dialog-body .form2 { grid-template-columns: 1fr; } }
+
     /* Nexora Rewards prototype content (scoped under .reward-proto) */
     .reward-proto {
       --bg: #f5f7fb;
@@ -6621,6 +6693,7 @@
             <button class="nav-subitem is-active" type="button" data-nav-subitem-target="overview">Overview</button>
             <button class="nav-subitem" type="button" data-nav-subitem-target="earn-rules">Earn Rules</button>
             <button class="nav-subitem" type="button" data-nav-subitem-target="reward-catalog">Reward Catalog</button>
+            <button class="nav-subitem" type="button" data-nav-subitem-target="ai-offers">AI Offers</button>
             <button class="nav-subitem" type="button" data-nav-subitem-target="customers">Customers</button>
             <button class="nav-subitem" type="button" data-nav-subitem-target="loyalty-activity">Loyalty Activity</button>
             <button class="nav-subitem" type="button" data-nav-subitem-target="analytics">Analytics</button>
@@ -6700,6 +6773,10 @@
               <button class="page-tab" type="button" role="tab" data-tab-target="reward-catalog" aria-selected="false" aria-controls="panel-reward-catalog">
                 <span class="page-tab-icon"><i class="bi bi-gift" aria-hidden="true"></i></span>
                 <span>Reward Catalog</span>
+              </button>
+              <button class="page-tab" type="button" role="tab" data-tab-target="ai-offers" aria-selected="false" aria-controls="panel-ai-offers">
+                <span class="page-tab-icon"><i class="bi bi-stars" aria-hidden="true"></i></span>
+                <span>AI Offers</span>
               </button>
               <button class="page-tab" type="button" role="tab" data-tab-target="customers" aria-selected="false" aria-controls="panel-customers">
                 <span class="page-tab-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
@@ -6796,12 +6873,12 @@
                     <button class="filter-chip" type="button" data-reward-filter="paused">Paused <span data-filter-count="paused">1</span></button>
                   </div>
                   <div class="loyalty-catalog-grid" data-programs-list>
-                    <article class="program loyalty-reward-card" data-status="active" data-reward-name="Free Gel Add-on" data-reward-value="Gel add-on" data-reward-trigger="Points redemption" data-reward-type="Free Add-on" data-reward-expiry="30 days"><div class="title"><span class="loyalty-reward-icon"><i class="bi bi-stars"></i></span><span class="chip g" data-status-chip>Active</span></div><small class="muted">Free Service</small><h3>Free Gel Add-on</h3><strong class="loyalty-points">1,500 pts</strong><p class="muted">Valid 30 days · All nail services</p><div class="program-meta" data-program-meta>118 redeemed</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view>View</button><button class="prog-btn" type="button" data-program-edit>Edit</button><button class="prog-btn" type="button" data-program-pause>Pause</button></div></article>
-                    <article class="program loyalty-reward-card" data-status="active" data-reward-name="$5 Gift Card" data-reward-value="$5.00" data-reward-trigger="Points redemption" data-reward-type="Dollar Credit" data-reward-expiry="12 months"><div class="title"><span class="loyalty-reward-icon"><i class="bi bi-credit-card"></i></span><span class="chip g" data-status-chip>Active</span></div><small class="muted">Gift Card</small><h3>$5 Gift Card</h3><strong class="loyalty-points">500 pts</strong><p class="muted">No minimum spend · Valid 12 months</p><div class="program-meta" data-program-meta>184 redeemed</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view>View</button><button class="prog-btn" type="button" data-program-edit>Edit</button><button class="prog-btn" type="button" data-program-pause>Pause</button></div></article>
-                    <article class="program loyalty-reward-card" data-status="active" data-reward-name="$10 Come Back" data-reward-value="$10 off" data-reward-trigger="Points redemption" data-reward-type="Dollar Credit" data-reward-expiry="30 days"><div class="title"><span class="loyalty-reward-icon"><i class="bi bi-currency-dollar"></i></span><span class="chip g" data-status-chip>Active</span></div><small class="muted">Dollar Discount</small><h3>$10 Come Back</h3><strong class="loyalty-points">900 pts</strong><p class="muted">$40 minimum · Valid 30 days</p><div class="program-meta" data-program-meta>96 redeemed</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view>View</button><button class="prog-btn" type="button" data-program-edit>Edit</button><button class="prog-btn" type="button" data-program-pause>Pause</button></div></article>
-                    <article class="program loyalty-reward-card is-off" data-status="paused" data-reward-name="15% Off" data-reward-value="15% · max $20" data-reward-trigger="Points redemption" data-reward-type="Percent Off" data-reward-expiry="30 days"><div class="title"><span class="loyalty-reward-icon"><i class="bi bi-percent"></i></span><span class="chip paused" data-status-chip>Paused</span></div><small class="muted">Percent Discount</small><h3>15% Off</h3><strong class="loyalty-points">1,200 pts</strong><p class="muted">$50 minimum · Valid 30 days</p><div class="program-meta" data-program-meta>72 redeemed</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view>View</button><button class="prog-btn" type="button" data-program-edit>Edit</button><button class="prog-btn" type="button" data-program-pause>Resume</button></div></article>
-                    <article class="program loyalty-reward-card" data-status="active" data-reward-name="Free Manicure" data-reward-value="Classic manicure" data-reward-trigger="Points redemption" data-reward-type="Free Add-on" data-reward-expiry="45 days"><div class="title"><span class="loyalty-reward-icon"><i class="bi bi-gem"></i></span><span class="chip g" data-status-chip>Active</span></div><small class="muted">Free Service</small><h3>Free Manicure</h3><strong class="loyalty-points">2,000 pts</strong><p class="muted">Valid 45 days · Select services</p><div class="program-meta" data-program-meta>51 redeemed</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view>View</button><button class="prog-btn" type="button" data-program-edit>Edit</button><button class="prog-btn" type="button" data-program-pause>Pause</button></div></article>
-                    <article class="program loyalty-reward-card" data-status="active" data-reward-name="Cuticle Oil" data-reward-value="1 retail item" data-reward-trigger="Points redemption" data-reward-type="Free Add-on" data-reward-expiry="While supplies last"><div class="title"><span class="loyalty-reward-icon"><i class="bi bi-droplet"></i></span><span class="chip g" data-status-chip>Active</span></div><small class="muted">Free Product</small><h3>Cuticle Oil</h3><strong class="loyalty-points">1,100 pts</strong><p class="muted">While supplies last</p><div class="program-meta" data-program-meta>43 redeemed</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view>View</button><button class="prog-btn" type="button" data-program-edit>Edit</button><button class="prog-btn" type="button" data-program-pause>Pause</button></div></article>
+                    <article class="program loyalty-reward-card" data-status="active" data-reward-name="Free Gel Add-on" data-reward-value="Gel add-on" data-reward-type="Free Service" data-reward-type-key="free_service" data-reward-points="1500" data-reward-description="Free Gel add-on service" data-reward-minimum-spend="$0" data-reward-maximum-discount="" data-reward-eligible-services="All services" data-reward-valid-locations="Bitcoin Nail Bar" data-reward-usage-limit="1" data-reward-expiry="30 days"><div class="title"><span class="loyalty-reward-icon"><i class="bi bi-stars"></i></span><span class="chip g" data-status-chip>Active</span></div><small class="muted">Free Service</small><h3>Free Gel Add-on</h3><strong class="loyalty-points">1,500 pts</strong><p class="muted">Valid 30 days · All nail services</p><div class="program-meta" data-program-meta>118 redeemed</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view>View</button><button class="prog-btn" type="button" data-program-edit>Edit</button><button class="prog-btn" type="button" data-program-pause>Pause</button></div></article>
+                    <article class="program loyalty-reward-card" data-status="active" data-reward-name="$5 Gift Card" data-reward-value="$5.00" data-reward-type="Gift Card" data-reward-type-key="gift_card" data-reward-points="500" data-reward-description="$5 stored-value gift card" data-reward-minimum-spend="$0" data-reward-maximum-discount="" data-reward-eligible-services="All services" data-reward-valid-locations="Bitcoin Nail Bar" data-reward-usage-limit="1" data-reward-expiry="12 months"><div class="title"><span class="loyalty-reward-icon"><i class="bi bi-credit-card"></i></span><span class="chip g" data-status-chip>Active</span></div><small class="muted">Gift Card</small><h3>$5 Gift Card</h3><strong class="loyalty-points">500 pts</strong><p class="muted">No minimum spend · Valid 12 months</p><div class="program-meta" data-program-meta>184 redeemed</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view>View</button><button class="prog-btn" type="button" data-program-edit>Edit</button><button class="prog-btn" type="button" data-program-pause>Pause</button></div></article>
+                    <article class="program loyalty-reward-card" data-status="active" data-reward-name="$10 Come Back" data-reward-value="$10 off" data-reward-type="Dollar Discount" data-reward-type-key="dollar_discount" data-reward-points="900" data-reward-description="$10 off a future visit" data-reward-minimum-spend="$40" data-reward-maximum-discount="" data-reward-eligible-services="All services" data-reward-valid-locations="Bitcoin Nail Bar" data-reward-usage-limit="1" data-reward-expiry="30 days"><div class="title"><span class="loyalty-reward-icon"><i class="bi bi-currency-dollar"></i></span><span class="chip g" data-status-chip>Active</span></div><small class="muted">Dollar Discount</small><h3>$10 Come Back</h3><strong class="loyalty-points">900 pts</strong><p class="muted">$40 minimum · Valid 30 days</p><div class="program-meta" data-program-meta>96 redeemed</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view>View</button><button class="prog-btn" type="button" data-program-edit>Edit</button><button class="prog-btn" type="button" data-program-pause>Pause</button></div></article>
+                    <article class="program loyalty-reward-card is-off" data-status="paused" data-reward-name="15% Off" data-reward-value="15% off" data-reward-type="Percent Discount" data-reward-type-key="percent_discount" data-reward-points="1200" data-reward-description="15% off, maximum $20" data-reward-minimum-spend="$50" data-reward-maximum-discount="$20" data-reward-eligible-services="All services" data-reward-valid-locations="Bitcoin Nail Bar" data-reward-usage-limit="1" data-reward-expiry="30 days"><div class="title"><span class="loyalty-reward-icon"><i class="bi bi-percent"></i></span><span class="chip paused" data-status-chip>Paused</span></div><small class="muted">Percent Discount</small><h3>15% Off</h3><strong class="loyalty-points">1,200 pts</strong><p class="muted">$50 minimum · Valid 30 days</p><div class="program-meta" data-program-meta>72 redeemed</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view>View</button><button class="prog-btn" type="button" data-program-edit>Edit</button><button class="prog-btn" type="button" data-program-pause>Resume</button></div></article>
+                    <article class="program loyalty-reward-card" data-status="active" data-reward-name="Free Manicure" data-reward-value="Classic manicure" data-reward-type="Free Service" data-reward-type-key="free_service" data-reward-points="2000" data-reward-description="Classic manicure service" data-reward-minimum-spend="$0" data-reward-maximum-discount="" data-reward-eligible-services="Selected services" data-reward-valid-locations="Bitcoin Nail Bar" data-reward-usage-limit="1" data-reward-expiry="45 days"><div class="title"><span class="loyalty-reward-icon"><i class="bi bi-gem"></i></span><span class="chip g" data-status-chip>Active</span></div><small class="muted">Free Service</small><h3>Free Manicure</h3><strong class="loyalty-points">2,000 pts</strong><p class="muted">Valid 45 days · Select services</p><div class="program-meta" data-program-meta>51 redeemed</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view>View</button><button class="prog-btn" type="button" data-program-edit>Edit</button><button class="prog-btn" type="button" data-program-pause>Pause</button></div></article>
+                    <article class="program loyalty-reward-card" data-status="active" data-reward-name="Cuticle Oil" data-reward-value="Cuticle Oil" data-reward-type="Free Product" data-reward-type-key="free_product" data-reward-points="1100" data-reward-description="One Cuticle Oil retail item" data-reward-minimum-spend="$0" data-reward-maximum-discount="" data-reward-eligible-services="Retail products" data-reward-valid-locations="Bitcoin Nail Bar" data-reward-usage-limit="1" data-reward-expiry="While supplies last"><div class="title"><span class="loyalty-reward-icon"><i class="bi bi-droplet"></i></span><span class="chip g" data-status-chip>Active</span></div><small class="muted">Free Product</small><h3>Cuticle Oil</h3><strong class="loyalty-points">1,100 pts</strong><p class="muted">While supplies last</p><div class="program-meta" data-program-meta>43 redeemed</div><div class="program-buttons"><button class="prog-btn" type="button" data-program-view>View</button><button class="prog-btn" type="button" data-program-edit>Edit</button><button class="prog-btn" type="button" data-program-pause>Pause</button></div></article>
                   </div>
                 </div>
                 <div data-reward-builder hidden>
@@ -6811,9 +6888,9 @@
                   <div class="reward-steps" data-reward-steps>
                     <button class="reward-step is-active" type="button" data-step-go="1"><span class="reward-step-num">1</span><span class="reward-step-label">Reward</span></button>
                     <span class="reward-step-bar"></span>
-                    <button class="reward-step" type="button" data-step-go="2"><span class="reward-step-num">2</span><span class="reward-step-label">Rules</span></button>
+                    <button class="reward-step" type="button" data-step-go="2"><span class="reward-step-num">2</span><span class="reward-step-label">Redemption Rules</span></button>
                     <span class="reward-step-bar"></span>
-                    <button class="reward-step" type="button" data-step-go="3"><span class="reward-step-num">3</span><span class="reward-step-label">Audience &amp; Delivery</span></button>
+                    <button class="reward-step" type="button" data-step-go="3"><span class="reward-step-num">3</span><span class="reward-step-label">Availability &amp; Limits</span></button>
                   </div>
 
                   <!-- Step 1: Reward -->
@@ -6822,73 +6899,68 @@
                       <div class="card">
                         <div class="title"><h3>Reward Details</h3><span class="chip">Step 1</span></div>
                         <div class="grid g2 reward-types">
-                          <div class="rewardType active" role="button" tabindex="0" data-reward-type data-reward-value="$5" data-reward-title="Earn $5 Reward"><b>Dollar Credit</b><p class="muted">$5, $10 or custom</p></div>
-                          <div class="rewardType" role="button" tabindex="0" data-reward-type data-reward-value="15%" data-reward-title="15% Off Reward"><b>Percent Off</b><p class="muted">10%, 15%, 20%</p></div>
-                          <div class="rewardType" role="button" tabindex="0" data-reward-type data-reward-value="Free add-on" data-reward-title="Free Add-on Reward"><b>Free Add-on</b><p class="muted">Gel, French, design</p></div>
+                          <div class="rewardType active" role="button" tabindex="0" aria-pressed="true" data-reward-type data-reward-type-key="gift_card" data-reward-value="$5.00" data-reward-points="500" data-reward-title="$5 Gift Card"><b>Gift Card</b><p class="muted">Stored value reward</p></div>
+                          <div class="rewardType" role="button" tabindex="0" aria-pressed="false" data-reward-type data-reward-type-key="dollar_discount" data-reward-value="$10 off" data-reward-points="900" data-reward-title="$10 Off"><b>Dollar Discount</b><p class="muted">Fixed discount</p></div>
+                          <div class="rewardType" role="button" tabindex="0" aria-pressed="false" data-reward-type data-reward-type-key="percent_discount" data-reward-value="15% off" data-reward-points="1200" data-reward-title="15% Off"><b>Percent Discount</b><p class="muted">Requires a maximum discount</p></div>
+                          <div class="rewardType" role="button" tabindex="0" aria-pressed="false" data-reward-type data-reward-type-key="free_service" data-reward-value="Free Gel Add-on" data-reward-points="1500" data-reward-title="Free Gel Add-on"><b>Free Service</b><p class="muted">Linked salon service</p></div>
+                          <div class="rewardType" role="button" tabindex="0" aria-pressed="false" data-reward-type data-reward-type-key="free_product" data-reward-value="Cuticle Oil" data-reward-points="1100" data-reward-title="Cuticle Oil"><b>Free Product</b><p class="muted">Linked retail SKU</p></div>
                         </div>
                         <div style="height:12px"></div>
                         <div class="form2">
-                          <div class="field"><label>Reward Name</label><input value="Review &amp; Earn $5" data-reward-name-input></div>
-                          <div class="field"><label>Reward Value</label><input value="$5" data-reward-value-input></div>
-                          <div class="field"><label>Trigger</label><select data-reward-trigger-select><option>After Verified Review</option><option>After Tip</option><option>After Visit</option><option>After Referral</option></select></div>
-                          <div class="field"><label>Applies To</label><select><option>All Services</option><option>Selected Services</option><option>Minimum Spend</option></select></div>
-                          <div class="field"><label>Expiration</label><input value="30 days" data-reward-expiry-input></div>
-                          <div class="field"><label>Usage Limit</label><input value="1 per customer"></div>
+                          <div class="field"><label>Reward Name</label><input value="$5 Gift Card" data-reward-name-input></div>
+                          <div class="field"><label>Points Cost</label><input type="number" min="1" step="1" value="500" data-reward-points-input></div>
+                          <div class="field"><label>Description</label><input value="$5 stored-value gift card" data-reward-description-input></div>
+                          <div class="field"><label>Reward Value / Linked Item</label><input value="$5.00" data-reward-value-input></div>
+                          <div class="field"><label>Expiration</label><input value="12 months" data-reward-expiry-input></div>
                         </div>
                       </div>
                       <div class="card" style="background:linear-gradient(135deg,#10172e,#573b9c);color:#fff">
-                        <span class="chip g">Bitcoin Nail Bar</span>
-                        <h2 style="font-size:30px" data-preview-title>Review &amp; Earn $5</h2>
-                        <p style="color:#ccd3e5">Reward customers with <b data-preview-value>$5</b> — applied on their next visit.</p>
-                        <div class="line"><span>Expires</span><b data-preview-expiry>30 days</b></div>
-                        <div class="line"><span>Minimum spend</span><b>$25</b></div>
-                        <div class="line"><span>Use</span><b>Next visit</b></div>
+                        <span class="chip g" data-preview-type>Gift Card · Reward Catalog</span>
+                        <h2 style="font-size:30px" data-preview-title>$5 Gift Card</h2>
+                        <p style="color:#ccd3e5">Redeem <b data-preview-points>500 points</b> for <b data-preview-value>$5.00</b>.</p>
+                        <div class="line"><span>Expires</span><b data-preview-expiry>12 months</b></div>
+                        <div class="line"><span>Minimum spend</span><b data-preview-minimum-spend>No minimum</b></div>
+                        <div class="line"><span>Maximum discount</span><b data-preview-maximum-discount>—</b></div>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Step 2: Rules -->
+                  <!-- Step 2: Redemption Rules -->
                   <div class="reward-wizard-step" data-wizard-step="2">
                     <div class="grid g2">
                       <div class="card">
-                        <div class="title"><h3>Qualification Rules</h3><span class="chip">Triggers</span></div>
-                        <div class="line"><span>Trigger</span><select><option>Verified review</option><option>Tip received</option><option>Visit completed</option><option>Referral</option></select></div>
-                        <div class="line"><span>Ticket status</span><select><option>Paid &amp; Closed</option><option>Any status</option></select></div>
-                        <div class="line"><span>Minimum Spend</span><input value="$25"></div>
-                        <div class="line"><span>Review Window</span><input value="7 days"></div>
-                        <div class="line"><span>Exclusions</span><input value="Refunded / disputed"></div>
-                        <button class="btn o" style="margin-top:12px" type="button" data-add-rule>+ Add Rule</button>
+                        <div class="title"><h3>Redemption Rules</h3><span class="chip">Conditions</span></div>
+                        <div class="line"><span>Minimum spend</span><input value="$0" data-reward-minimum-spend-input></div>
+                        <div class="line"><span>Maximum discount</span><input value="" placeholder="Required for percent discounts" data-reward-maximum-discount-input></div>
+                        <div class="line"><span>Eligible services</span><select data-reward-eligible-services-select><option>All services</option><option>Selected services</option><option>Service add-ons only</option></select></div>
+                        <div class="line"><span>Valid locations</span><select data-reward-valid-locations-select><option>Bitcoin Nail Bar</option><option>All locations</option></select></div>
                       </div>
                       <div class="card soft">
                         <div class="title"><h3>Usage Rules</h3><span class="chip">Redemption</span></div>
-                        <div class="line"><span>Combine promotions</span><label class="switch"><input type="checkbox"><span class="switch-track"></span></label></div>
-                        <div class="line"><span>Use with membership</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
-                        <div class="line"><span>Minimum purchase</span><input value="$25"></div>
-                        <div class="line"><span>Valid locations</span><select><option>Bitcoin Nail Bar</option><option>All Locations</option></select></div>
-                        <div class="line"><span>Auto apply</span><select><option>Ask customer</option><option>Apply automatically</option><option>Manual</option></select></div>
+                        <div class="line"><span>Combine promotions</span><label class="switch"><input type="checkbox" data-reward-stack-input><span class="switch-track"></span></label></div>
+                        <div class="line"><span>Use with membership</span><label class="switch"><input type="checkbox" checked data-reward-membership-input><span class="switch-track"></span></label></div>
+                        <div class="line"><span>Customer limit</span><input value="1" data-reward-usage-limit-rules-input></div>
+                        <div class="line"><span>Issued reward validity</span><select data-reward-validity-select><option>Use before expiration</option><option>30 days after issue</option><option>60 days after issue</option></select></div>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Step 3: Audience & Delivery -->
+                  <!-- Step 3: Availability & Limits -->
                   <div class="reward-wizard-step" data-wizard-step="3">
                     <div class="grid g2">
                       <div class="card">
-                        <div class="title"><h3>Audience</h3><span class="chip">Targeting</span></div>
+                        <div class="title"><h3>Availability</h3><span class="chip">Visibility</span></div>
                         <div class="form2">
-                          <div class="field"><label>Segment</label><select><option>All Customers</option><option>New Customers</option><option>VIP</option><option>Inactive 30+ Days</option><option>Customers Who Reviewed</option></select></div>
-                          <div class="field"><label>Location</label><select><option>Bitcoin Nail Bar</option><option>All Locations</option></select></div>
-                          <div class="field"><label>Delivery</label><select><option>Immediately</option><option>Next Morning</option><option>Custom</option></select></div>
-                          <div class="field"><label>Language</label><select><option>Auto</option><option>English</option><option>Vietnamese</option></select></div>
+                          <div class="field"><label>Customer segment</label><select data-reward-audience-select><option>All Customers</option><option>New Customers</option><option>VIP</option><option>Inactive 30+ Days</option></select></div>
+                          <div class="field"><label>Status</label><select data-reward-status-select><option value="active">Active</option><option value="paused">Paused</option></select></div>
                         </div>
-                        <p class="muted">App users receive in-app reward. Guests receive SMS reward link.</p>
+                        <p class="muted">Active catalog rewards appear in customer wallets when the customer has enough Available Points.</p>
                       </div>
                       <div class="card soft">
-                        <div class="title"><h3>Channels</h3><span class="chip">Delivery</span></div>
-                        <div class="line"><span>Nexora App</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
-                        <div class="line"><span>Push Notification</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
-                        <div class="line"><span>SMS Guest Fallback</span><label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label></div>
-                        <div class="line"><span>Email</span><label class="switch"><input type="checkbox"><span class="switch-track"></span></label></div>
+                        <div class="title"><h3>Quantity &amp; Budget</h3><span class="chip">Limits</span></div>
+                        <div class="line"><span>Quantity limit</span><input value="Unlimited" data-reward-quantity-limit-input></div>
+                        <div class="line"><span>Budget limit</span><input value="Unlimited" data-reward-budget-limit-input></div>
+                        <div class="loyalty-note">Pausing stops new issuance. Rewards already issued remain valid until their own expiration.</div>
                       </div>
                     </div>
                   </div>
@@ -6903,6 +6975,127 @@
                   </div>
                 </div>
               </div>
+              </div>
+            </section>
+
+            <section class="tab-panel" id="panel-ai-offers" data-tab-panel="ai-offers" role="tabpanel" aria-label="AI Offers panel" hidden>
+              <div class="reward-proto ai-offers">
+                <div class="ai-offers-heading">
+                  <div>
+                    <span class="ai-eyebrow">AI-powered marketing</span>
+                    <h2>AI Offer Suggestions</h2>
+                    <p class="muted">Turn anonymous customer demand and quiet hours into offers you can review, edit, and publish.</p>
+                  </div>
+                  <span class="ai-ai-badge"><i class="bi bi-stars" aria-hidden="true"></i> AI suggestions</span>
+                </div>
+
+                <div class="ai-demo-note"><strong>Demo data:</strong> these insights are grouped and anonymous. AI can prepare a draft, but nothing is published until you confirm it.</div>
+
+                <div class="ai-section-title">
+                  <div>
+                    <h3>Customer demand near you</h3>
+                    <p class="muted">What nearby customers are wishing for right now, grouped by meaning and kept anonymous.</p>
+                  </div>
+                </div>
+                <div class="ai-demand-grid" aria-label="Anonymous customer demand">
+                  <article class="ai-demand-card">
+                    <div class="ai-demand-number">12</div>
+                    <strong>waiting for a pedicure deal</strong>
+                    <p>Wishes such as “pedi combo” and “pedicure discount” matched by meaning, not exact words.</p>
+                    <span class="ai-trend">▲ +4 this week</span>
+                  </article>
+                  <article class="ai-demand-card">
+                    <div class="ai-demand-number">7</div>
+                    <strong>looking for Gel-X under $60</strong>
+                    <p>A price-sensitive group whose anonymous wishes mention a budget cap.</p>
+                    <span class="ai-trend">▲ +2 this week</span>
+                  </article>
+                  <article class="ai-demand-card">
+                    <div class="ai-demand-number">5</div>
+                    <strong>asking about weekday openings</strong>
+                    <p>Matches your quietest hours: Tuesday–Thursday, 10:00 AM–2:00 PM.</p>
+                    <span class="ai-trend">— steady</span>
+                  </article>
+                </div>
+
+                <div class="ai-section-title">
+                  <div>
+                    <h3>Suggested offers</h3>
+                    <p class="muted">AI only suggests — review the final price, discount, and schedule before publishing.</p>
+                  </div>
+                  <span class="chip" data-ai-offer-count>2 suggestions</span>
+                </div>
+
+                <div class="ai-suggestion-list">
+                  <article class="ai-suggestion-card" data-ai-offer-card="pedi">
+                    <div class="ai-suggestion-head">
+                      <h4>Weekday Pedi Combo — 20% OFF (Tue–Thu, 10am–2pm)</h4>
+                      <span class="ai-confidence">High confidence · 92%</span>
+                    </div>
+                    <p class="ai-why"><strong>Why:</strong> 12 anonymous customers nearby are wishing for a pedicure deal, and Tuesday–Thursday 10am–2pm are your quietest hours.</p>
+                    <div class="ai-estimates">
+                      <span class="ai-estimate"><strong>8–12</strong>est. redemptions / month</span>
+                      <span class="ai-estimate"><strong>~$38</strong>avg. ticket after discount</span>
+                    </div>
+                    <div class="ai-action-row">
+                      <button class="ai-action is-primary" type="button" data-ai-offer-review data-ai-offer-id="pedi">Review &amp; create this offer</button>
+                      <button class="ai-action" type="button" data-ai-offer-dismiss data-ai-offer-id="pedi">Dismiss</button>
+                    </div>
+                    <div class="ai-card-status" data-ai-offer-status hidden role="status" aria-live="polite"></div>
+                  </article>
+
+                  <article class="ai-suggestion-card" data-ai-offer-card="gelx">
+                    <div class="ai-suggestion-head">
+                      <h4>Gel-X New Set — $55 intro price (any day)</h4>
+                      <span class="ai-confidence is-medium">Medium confidence · 74%</span>
+                    </div>
+                    <p class="ai-why"><strong>Why:</strong> 7 anonymous customers nearby want Gel-X under $60. Your current price is $68, so a $55 intro offer clears their budget cap.</p>
+                    <div class="ai-estimates">
+                      <span class="ai-estimate"><strong>4–7</strong>est. redemptions / month</span>
+                      <span class="ai-estimate"><strong>~62%</strong>est. return within 60 days</span>
+                    </div>
+                    <div class="ai-action-row">
+                      <button class="ai-action is-primary" type="button" data-ai-offer-review data-ai-offer-id="gelx">Review &amp; create this offer</button>
+                      <button class="ai-action" type="button" data-ai-offer-dismiss data-ai-offer-id="gelx">Dismiss</button>
+                    </div>
+                    <div class="ai-card-status" data-ai-offer-status hidden role="status" aria-live="polite"></div>
+                  </article>
+                </div>
+
+                <aside class="ai-guardrail">
+                  <strong>How this works — and what AI will never do</strong>
+                  <ul>
+                    <li>AI only suggests. Every offer requires your review and confirmation before it goes live.</li>
+                    <li>Customer identity is never revealed. You see counts and grouped wishes only — never names, phone numbers, or profiles.</li>
+                    <li>Matching customers receive limited AI-match notifications. They can mute suggestions anytime.</li>
+                    <li>Estimates are projections from local demand, not guarantees.</li>
+                  </ul>
+                </aside>
+              </div>
+
+              <div class="ai-offer-dialog" data-ai-offer-dialog hidden role="dialog" aria-modal="true" aria-labelledby="ai-offer-dialog-title">
+                <form class="ai-offer-dialog-card" data-ai-offer-form>
+                  <div class="ai-offer-dialog-head">
+                    <div>
+                      <h3 id="ai-offer-dialog-title">Review AI offer</h3>
+                      <p data-ai-offer-editor-context>AI draft is pre-filled from anonymous demand and your quiet hours.</p>
+                    </div>
+                    <button class="ai-offer-close" type="button" data-ai-offer-close aria-label="Close offer editor">×</button>
+                  </div>
+                  <div class="ai-offer-dialog-body">
+                    <div class="field"><label for="ai-offer-title">Offer title</label><input id="ai-offer-title" type="text" data-ai-offer-field="title" required></div>
+                    <div class="form2">
+                      <div class="field"><label for="ai-offer-value">Price or discount</label><input id="ai-offer-value" type="text" data-ai-offer-field="value" required></div>
+                      <div class="field"><label for="ai-offer-schedule">Schedule</label><input id="ai-offer-schedule" type="text" data-ai-offer-field="schedule" required></div>
+                    </div>
+                    <div class="field"><label for="ai-offer-description">Customer-facing details</label><textarea id="ai-offer-description" data-ai-offer-field="description"></textarea></div>
+                    <p class="muted">Publishing this offer makes it available to matching customers. Their identities remain hidden from your dashboard.</p>
+                  </div>
+                  <div class="ai-offer-dialog-foot">
+                    <button class="btn o" type="button" data-ai-offer-close>Cancel</button>
+                    <button class="btn p" type="submit" data-ai-offer-publish>Save &amp; publish offer</button>
+                  </div>
+                </form>
               </div>
             </section>
 
@@ -8969,6 +9162,134 @@
       }, 2600);
     }
 
+    var AI_OFFER_DRAFTS = {
+      pedi: {
+        title: 'Weekday Pedi Combo — 20% OFF',
+        value: '20% OFF',
+        schedule: 'Tue–Thu, 10am–2pm',
+        description: 'A weekday pedicure combo for customers looking for a limited-time deal.'
+      },
+      gelx: {
+        title: 'Gel-X New Set — $55 intro price',
+        value: '$55 intro price',
+        schedule: 'Any day',
+        description: 'Introductory Gel-X pricing for new sets. Limited availability based on salon capacity.'
+      }
+    };
+    var activeAiOfferId = null;
+
+    function findAiOfferCard(offerId) {
+      var cards = Array.from(document.querySelectorAll('[data-ai-offer-card]'));
+      return cards.find(function(card) { return card.dataset.aiOfferCard === offerId; }) || null;
+    }
+
+    function setAiOfferField(name, value) {
+      var field = document.querySelector('[data-ai-offer-field="' + name + '"]');
+      if (field) field.value = value || '';
+    }
+
+    function getAiOfferField(name) {
+      var field = document.querySelector('[data-ai-offer-field="' + name + '"]');
+      return field ? field.value.trim() : '';
+    }
+
+    function updateAiOfferCount() {
+      var count = document.querySelector('[data-ai-offer-count]');
+      if (!count) return;
+      var remaining = Array.from(document.querySelectorAll('[data-ai-offer-card]')).filter(function(card) {
+        return !card.classList.contains('is-dismissed') && !card.classList.contains('is-published');
+      }).length;
+      count.textContent = remaining + (remaining === 1 ? ' suggestion' : ' suggestions');
+    }
+
+    function openAiOfferEditor(offerId) {
+      var draft = AI_OFFER_DRAFTS[offerId];
+      var dialog = document.querySelector('[data-ai-offer-dialog]');
+      if (!draft || !dialog) return;
+      activeAiOfferId = offerId;
+      setAiOfferField('title', draft.title);
+      setAiOfferField('value', draft.value);
+      setAiOfferField('schedule', draft.schedule);
+      setAiOfferField('description', draft.description);
+      dialog.hidden = false;
+      var title = document.querySelector('[data-ai-offer-field="title"]');
+      if (title) title.focus();
+    }
+
+    function closeAiOfferEditor() {
+      var dialog = document.querySelector('[data-ai-offer-dialog]');
+      if (dialog) dialog.hidden = true;
+      activeAiOfferId = null;
+    }
+
+    function dismissAiOffer(offerId) {
+      var card = findAiOfferCard(offerId);
+      if (!card || card.classList.contains('is-published')) return;
+      card.classList.add('is-dismissed');
+      card.querySelectorAll('[data-ai-offer-review], [data-ai-offer-dismiss]').forEach(function(button) {
+        button.disabled = true;
+      });
+      var status = card.querySelector('[data-ai-offer-status]');
+      if (status) {
+        status.hidden = false;
+        status.textContent = 'Suggestion dismissed. AI will learn from this feedback.';
+      }
+      updateAiOfferCount();
+      showRewardToast('Suggestion dismissed. AI will learn from this feedback.');
+    }
+
+    function publishAiOffer(event) {
+      if (event) event.preventDefault();
+      var title = getAiOfferField('title');
+      var value = getAiOfferField('value');
+      var schedule = getAiOfferField('schedule');
+      if (!title || !value || !schedule) {
+        showRewardToast('Please complete the offer title, price or discount, and schedule.');
+        return;
+      }
+      var card = findAiOfferCard(activeAiOfferId);
+      if (card) {
+        card.classList.add('is-published');
+        card.querySelectorAll('[data-ai-offer-review], [data-ai-offer-dismiss]').forEach(function(button) {
+          button.disabled = true;
+        });
+        var status = card.querySelector('[data-ai-offer-status]');
+        if (status) {
+          status.hidden = false;
+          status.textContent = 'Published in demo. Matching customers can now receive a limited notification.';
+        }
+      }
+      updateAiOfferCount();
+      closeAiOfferEditor();
+      showRewardToast('Offer published in demo: ' + title + '.');
+    }
+
+    document.querySelectorAll('[data-ai-offer-review]').forEach(function(button) {
+      button.addEventListener('click', function() { openAiOfferEditor(button.dataset.aiOfferId); });
+    });
+
+    document.querySelectorAll('[data-ai-offer-dismiss]').forEach(function(button) {
+      button.addEventListener('click', function() { dismissAiOffer(button.dataset.aiOfferId); });
+    });
+
+    document.querySelectorAll('[data-ai-offer-close]').forEach(function(button) {
+      button.addEventListener('click', closeAiOfferEditor);
+    });
+
+    var aiOfferForm = document.querySelector('[data-ai-offer-form]');
+    if (aiOfferForm) aiOfferForm.addEventListener('submit', publishAiOffer);
+
+    var aiOfferDialog = document.querySelector('[data-ai-offer-dialog]');
+    if (aiOfferDialog) {
+      aiOfferDialog.addEventListener('click', function(event) {
+        if (event.target === aiOfferDialog) closeAiOfferEditor();
+      });
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape' && aiOfferDialog && !aiOfferDialog.hidden) closeAiOfferEditor();
+    });
+
     function showRewardBuilder(open) {
       var catalog = document.querySelector('[data-reward-catalog-view]');
       var builder = document.querySelector('[data-reward-builder]');
@@ -9160,18 +9481,43 @@
     }
 
     // Reward tab interactions
-    var rewardTypeCards = document.querySelectorAll('[data-reward-type]');
+      var rewardTypeCards = document.querySelectorAll('[data-reward-builder] [data-reward-type]');
     var rewardNameInput = document.querySelector('[data-reward-name-input]');
+    var rewardDescriptionInput = document.querySelector('[data-reward-description-input]');
+    var rewardPointsInput = document.querySelector('[data-reward-points-input]');
     var rewardValueInput = document.querySelector('[data-reward-value-input]');
     var rewardExpiryInput = document.querySelector('[data-reward-expiry-input]');
+    var rewardMinimumSpendInput = document.querySelector('[data-reward-minimum-spend-input]');
+    var rewardMaximumDiscountInput = document.querySelector('[data-reward-maximum-discount-input]');
+    var rewardEligibleServicesSelect = document.querySelector('[data-reward-eligible-services-select]');
+    var rewardValidLocationsSelect = document.querySelector('[data-reward-valid-locations-select]');
+    var rewardStackInput = document.querySelector('[data-reward-stack-input]');
+    var rewardMembershipInput = document.querySelector('[data-reward-membership-input]');
+    var rewardUsageLimitInput = document.querySelector('[data-reward-usage-limit-input]');
+    var rewardUsageLimitRulesInput = document.querySelector('[data-reward-usage-limit-rules-input]');
+    var rewardValiditySelect = document.querySelector('[data-reward-validity-select]');
+    var rewardAudienceSelect = document.querySelector('[data-reward-audience-select]');
+    var rewardStatusSelect = document.querySelector('[data-reward-status-select]');
+    var rewardQuantityLimitInput = document.querySelector('[data-reward-quantity-limit-input]');
+    var rewardBudgetLimitInput = document.querySelector('[data-reward-budget-limit-input]');
+    var previewType = document.querySelector('[data-preview-type]');
     var previewTitle = document.querySelector('[data-preview-title]');
+    var previewPoints = document.querySelector('[data-preview-points]');
     var previewValue = document.querySelector('[data-preview-value]');
     var previewExpiry = document.querySelector('[data-preview-expiry]');
+    var previewMinimumSpend = document.querySelector('[data-preview-minimum-spend]');
+    var previewMaximumDiscount = document.querySelector('[data-preview-maximum-discount]');
 
     function updateRewardPreview() {
+        var activeType = document.querySelector('[data-reward-builder] [data-reward-type].active');
+      var typeLabel = activeType && activeType.querySelector('b') ? activeType.querySelector('b').textContent : 'Reward';
+      if (previewType) previewType.textContent = typeLabel + ' · Reward Catalog';
       if (previewTitle && rewardNameInput) previewTitle.textContent = rewardNameInput.value.trim() || 'New Reward';
+      if (previewPoints && rewardPointsInput) previewPoints.textContent = (rewardPointsInput.value.trim() || '—') + ' points';
       if (previewValue && rewardValueInput) previewValue.textContent = rewardValueInput.value.trim() || '—';
       if (previewExpiry && rewardExpiryInput) previewExpiry.textContent = rewardExpiryInput.value.trim() || '—';
+      if (previewMinimumSpend && rewardMinimumSpendInput) previewMinimumSpend.textContent = rewardMinimumSpendInput.value.trim() || 'No minimum';
+      if (previewMaximumDiscount && rewardMaximumDiscountInput) previewMaximumDiscount.textContent = rewardMaximumDiscountInput.value.trim() || '—';
     }
 
     function selectRewardType(card) {
@@ -9181,6 +9527,8 @@
       });
       if (rewardValueInput && card.dataset.rewardValue) rewardValueInput.value = card.dataset.rewardValue;
       if (rewardNameInput && card.dataset.rewardTitle) rewardNameInput.value = card.dataset.rewardTitle;
+      if (rewardPointsInput && card.dataset.rewardPoints) rewardPointsInput.value = card.dataset.rewardPoints;
+      if (rewardDescriptionInput && card.dataset.rewardTitle) rewardDescriptionInput.value = card.dataset.rewardTitle + ' reward';
       updateRewardPreview();
     }
 
@@ -9194,12 +9542,19 @@
       });
     });
 
-    [rewardNameInput, rewardValueInput, rewardExpiryInput].forEach(function(el) {
+    [rewardNameInput, rewardDescriptionInput, rewardPointsInput, rewardValueInput, rewardExpiryInput,
+      rewardMinimumSpendInput, rewardMaximumDiscountInput, rewardUsageLimitInput, rewardUsageLimitRulesInput,
+      rewardQuantityLimitInput, rewardBudgetLimitInput].forEach(function(el) {
       if (!el) return;
       el.addEventListener('input', function() {
         el.classList.remove('invalid');
         updateRewardPreview();
       });
+    });
+
+    [rewardEligibleServicesSelect, rewardValidLocationsSelect, rewardValiditySelect, rewardAudienceSelect, rewardStatusSelect,
+      rewardStackInput, rewardMembershipInput].forEach(function(el) {
+      if (el) el.addEventListener('change', updateRewardPreview);
     });
 
     var WIZARD_STEPS = 3;
@@ -9233,12 +9588,32 @@
 
     function validateRewardStep1() {
       var valid = true;
-      [rewardNameInput, rewardValueInput].forEach(function(inp) {
+      [rewardNameInput, rewardValueInput, rewardPointsInput].forEach(function(inp) {
         if (!inp) return;
         if (!inp.value.trim()) { inp.classList.add('invalid'); valid = false; }
         else inp.classList.remove('invalid');
       });
-      if (!valid) showRewardToast('Please enter a reward name and value first.');
+      if (rewardPointsInput && (!Number.isInteger(Number(rewardPointsInput.value)) || Number(rewardPointsInput.value) <= 0)) {
+        rewardPointsInput.classList.add('invalid');
+        valid = false;
+      }
+      if (!valid) showRewardToast('Please enter a reward name, value, and valid points cost first.');
+      return valid;
+    }
+
+    function validateRewardRules() {
+        var activeType = document.querySelector('[data-reward-builder] [data-reward-type].active');
+      var typeKey = activeType ? activeType.dataset.rewardTypeKey : '';
+      var valid = true;
+      if (rewardMinimumSpendInput && !rewardMinimumSpendInput.value.trim()) {
+        rewardMinimumSpendInput.classList.add('invalid');
+        valid = false;
+      }
+      if (typeKey === 'percent_discount' && rewardMaximumDiscountInput && !rewardMaximumDiscountInput.value.trim()) {
+        rewardMaximumDiscountInput.classList.add('invalid');
+        valid = false;
+      }
+      if (!valid) showRewardToast('Please complete the redemption rules before publishing.');
       return valid;
     }
 
@@ -9286,17 +9661,44 @@
 
     function getRewardDraft() {
       var nameInput = document.querySelector('[data-reward-name-input]');
+      var descriptionInput = document.querySelector('[data-reward-description-input]');
+      var pointsInput = document.querySelector('[data-reward-points-input]');
       var valueInput = document.querySelector('[data-reward-value-input]');
-      var triggerSelect = document.querySelector('[data-reward-trigger-select]');
       var expiryInput = document.querySelector('[data-reward-expiry-input]');
-      var activeType = document.querySelector('[data-reward-type].active');
+      var minimumSpendInput = document.querySelector('[data-reward-minimum-spend-input]');
+      var maximumDiscountInput = document.querySelector('[data-reward-maximum-discount-input]');
+      var eligibleServicesSelect = document.querySelector('[data-reward-eligible-services-select]');
+      var validLocationsSelect = document.querySelector('[data-reward-valid-locations-select]');
+      var stackInput = document.querySelector('[data-reward-stack-input]');
+      var membershipInput = document.querySelector('[data-reward-membership-input]');
+      var usageLimitInput = document.querySelector('[data-reward-usage-limit-input]') || document.querySelector('[data-reward-usage-limit-rules-input]');
+      var validitySelect = document.querySelector('[data-reward-validity-select]');
+      var audienceSelect = document.querySelector('[data-reward-audience-select]');
+      var statusSelect = document.querySelector('[data-reward-status-select]');
+      var quantityLimitInput = document.querySelector('[data-reward-quantity-limit-input]');
+      var budgetLimitInput = document.querySelector('[data-reward-budget-limit-input]');
+        var activeType = document.querySelector('[data-reward-builder] [data-reward-type].active');
       var typeLabel = activeType && activeType.querySelector('b') ? activeType.querySelector('b').textContent : '';
       return {
         name: (nameInput && nameInput.value.trim()) || 'Untitled Reward',
+        description: (descriptionInput && descriptionInput.value.trim()) || '',
+        pointsCost: (pointsInput && pointsInput.value.trim()) || '',
         value: (valueInput && valueInput.value.trim()) || '',
-        trigger: (triggerSelect && triggerSelect.value) || '',
         type: typeLabel,
-        expiry: (expiryInput && expiryInput.value.trim()) || '30 days'
+        typeKey: (activeType && activeType.dataset.rewardTypeKey) || '',
+        expiry: (expiryInput && expiryInput.value.trim()) || '30 days',
+        minimumSpend: (minimumSpendInput && minimumSpendInput.value.trim()) || '$0',
+        maximumDiscount: (maximumDiscountInput && maximumDiscountInput.value.trim()) || '',
+        eligibleServices: (eligibleServicesSelect && eligibleServicesSelect.value) || 'All services',
+        validLocations: (validLocationsSelect && validLocationsSelect.value) || 'Bitcoin Nail Bar',
+        stackable: !!(stackInput && stackInput.checked),
+        membershipEligible: !(membershipInput && !membershipInput.checked),
+        usageLimit: (usageLimitInput && usageLimitInput.value.trim()) || '1',
+        validity: (validitySelect && validitySelect.value) || 'Use before expiration',
+        audience: (audienceSelect && audienceSelect.value) || 'All Customers',
+        status: (statusSelect && statusSelect.value) || 'active',
+        quantityLimit: (quantityLimitInput && quantityLimitInput.value.trim()) || 'Unlimited',
+        budgetLimit: (budgetLimitInput && budgetLimitInput.value.trim()) || 'Unlimited'
       };
     }
 
@@ -9313,9 +9715,12 @@
       });
     }
 
-    function programInnerHTML(dateLabel) {
-      return '<div class="title"><h3></h3><span class="chip g" data-status-chip>Active</span></div>' +
-        '<p class="muted"></p>' +
+    function programInnerHTML(dateLabel, draft) {
+      return '<div class="title"><span class="loyalty-reward-icon"><i class="bi bi-gift" aria-hidden="true"></i></span><span class="chip g" data-status-chip>Active</span></div>' +
+        '<small class="muted" data-program-type></small>' +
+        '<h3></h3>' +
+        '<strong class="loyalty-points" data-program-points></strong>' +
+        '<p class="muted" data-program-subtitle></p>' +
         '<div class="program-meta" data-program-meta><i class="bi bi-clock-history" aria-hidden="true"></i> ' + dateLabel + '</div>' +
         '<div class="program-buttons">' +
         '<button class="prog-btn" type="button" data-program-view><i class="bi bi-eye" aria-hidden="true"></i> View</button>' +
@@ -9349,8 +9754,30 @@
       updateWizardNav();
     }
 
+    function resetRewardForm() {
+      var defaultType = document.querySelector('[data-reward-builder] [data-reward-type-key="gift_card"]') || rewardTypeCards[0];
+      if (defaultType) selectRewardType(defaultType);
+      if (rewardDescriptionInput) rewardDescriptionInput.value = '$5 stored-value gift card';
+      if (rewardExpiryInput) rewardExpiryInput.value = '12 months';
+      if (rewardMinimumSpendInput) rewardMinimumSpendInput.value = '$0';
+      if (rewardMaximumDiscountInput) rewardMaximumDiscountInput.value = '';
+      if (rewardEligibleServicesSelect) rewardEligibleServicesSelect.value = 'All services';
+      if (rewardValidLocationsSelect) rewardValidLocationsSelect.value = 'Bitcoin Nail Bar';
+      if (rewardStackInput) rewardStackInput.checked = false;
+      if (rewardMembershipInput) rewardMembershipInput.checked = true;
+      if (rewardUsageLimitInput) rewardUsageLimitInput.value = '1';
+      if (rewardUsageLimitRulesInput) rewardUsageLimitRulesInput.value = '1';
+      if (rewardValiditySelect) rewardValiditySelect.value = 'Use before expiration';
+      if (rewardAudienceSelect) rewardAudienceSelect.value = 'All Customers';
+      if (rewardStatusSelect) rewardStatusSelect.value = 'active';
+      if (rewardQuantityLimitInput) rewardQuantityLimitInput.value = 'Unlimited';
+      if (rewardBudgetLimitInput) rewardBudgetLimitInput.value = 'Unlimited';
+      updateRewardPreview();
+    }
+
     function resetCreateMode() {
       editingProgram = null;
+      resetRewardForm();
       setWizardStep(1);
       setCreateMode(false);
     }
@@ -9358,8 +9785,49 @@
     function programSubtitle(draft) {
       var parts = [];
       if (draft.value) parts.push(draft.value);
-      if (draft.trigger) parts.push(draft.trigger);
+      if (draft.minimumSpend && draft.minimumSpend !== '$0') parts.push(draft.minimumSpend + ' minimum');
+      if (draft.expiry) parts.push('Valid ' + draft.expiry);
       return parts.join(' · ') || 'Custom reward';
+    }
+
+    function applyDraftToProgram(program, draft) {
+      program.dataset.rewardName = draft.name;
+      program.dataset.rewardValue = draft.value;
+      program.dataset.rewardType = draft.type;
+      program.dataset.rewardTypeKey = draft.typeKey;
+      program.dataset.rewardPoints = draft.pointsCost;
+      program.dataset.rewardDescription = draft.description;
+      program.dataset.rewardExpiry = draft.expiry;
+      program.dataset.rewardMinimumSpend = draft.minimumSpend;
+      program.dataset.rewardMaximumDiscount = draft.maximumDiscount;
+      program.dataset.rewardEligibleServices = draft.eligibleServices;
+      program.dataset.rewardValidLocations = draft.validLocations;
+      program.dataset.rewardStackable = String(draft.stackable);
+      program.dataset.rewardMembershipEligible = String(draft.membershipEligible);
+      program.dataset.rewardUsageLimit = draft.usageLimit;
+      program.dataset.rewardValidity = draft.validity;
+      program.dataset.rewardAudience = draft.audience;
+      program.dataset.rewardQuantityLimit = draft.quantityLimit;
+      program.dataset.rewardBudgetLimit = draft.budgetLimit;
+      program.dataset.status = draft.status;
+    }
+
+    function renderProgramFromDraft(program, draft) {
+      var heading = program.querySelector('h3');
+      var type = program.querySelector('[data-program-type]') || program.querySelector('small.muted');
+      var points = program.querySelector('[data-program-points]') || program.querySelector('.loyalty-points');
+      var subtitle = program.querySelector('[data-program-subtitle]') || program.querySelector('p');
+      if (heading) heading.textContent = draft.name;
+      if (type) type.textContent = draft.type;
+      if (points) points.textContent = draft.pointsCost + ' pts';
+      if (subtitle) subtitle.textContent = programSubtitle(draft);
+      applyDraftToProgram(program, draft);
+      program.classList.toggle('is-off', draft.status === 'paused');
+      var statusChip = program.querySelector('[data-status-chip]');
+      if (statusChip) {
+        statusChip.textContent = draft.status === 'paused' ? 'Paused' : 'Active';
+        statusChip.className = 'chip ' + (draft.status === 'paused' ? 'paused' : 'g');
+      }
     }
 
     function applyRewardFilter(filter) {
@@ -9378,30 +9846,15 @@
       if (!list) return;
       var program = document.createElement('div');
       program.className = 'program loyalty-reward-card';
-      program.dataset.status = 'active';
-      program.dataset.rewardName = draft.name;
-      program.dataset.rewardValue = draft.value;
-      program.dataset.rewardTrigger = draft.trigger;
-      program.dataset.rewardType = draft.type;
-      program.dataset.rewardExpiry = draft.expiry;
-      program.innerHTML = programInnerHTML('Created ' + formatToday());
-      program.querySelector('h3').textContent = draft.name;
-      program.querySelector('p').textContent = programSubtitle(draft);
+      program.innerHTML = programInnerHTML('Created ' + formatToday(), draft);
+      renderProgramFromDraft(program, draft);
       list.appendChild(program);
       updateFilterCounts();
       applyRewardFilter(currentRewardFilter);
     }
 
     function updateProgramFromDraft(program, draft) {
-      var heading = program.querySelector('h3');
-      var subtitle = program.querySelector('p');
-      if (heading) heading.textContent = draft.name;
-      if (subtitle) subtitle.textContent = programSubtitle(draft);
-      program.dataset.rewardName = draft.name;
-      program.dataset.rewardValue = draft.value;
-      program.dataset.rewardTrigger = draft.trigger;
-      program.dataset.rewardType = draft.type;
-      program.dataset.rewardExpiry = draft.expiry;
+      renderProgramFromDraft(program, draft);
       var meta = program.querySelector('[data-program-meta]');
       if (meta) meta.innerHTML = '<i class="bi bi-clock-history" aria-hidden="true"></i> Updated ' + formatToday();
     }
@@ -9409,23 +9862,48 @@
     function startEditProgram(program) {
       editingProgram = program;
       var nameInput = document.querySelector('[data-reward-name-input]');
+      var descriptionInput = document.querySelector('[data-reward-description-input]');
+      var pointsInput = document.querySelector('[data-reward-points-input]');
       var valueInput = document.querySelector('[data-reward-value-input]');
-      var triggerSelect = document.querySelector('[data-reward-trigger-select]');
       var heading = program.querySelector('h3');
       if (nameInput) nameInput.value = program.dataset.rewardName || (heading ? heading.textContent : '');
+      if (descriptionInput) descriptionInput.value = program.dataset.rewardDescription || '';
+      if (pointsInput) pointsInput.value = program.dataset.rewardPoints || '';
       if (valueInput) valueInput.value = program.dataset.rewardValue || '';
-      if (triggerSelect && program.dataset.rewardTrigger) triggerSelect.value = program.dataset.rewardTrigger;
       var expiryInput = document.querySelector('[data-reward-expiry-input]');
       if (expiryInput && program.dataset.rewardExpiry) expiryInput.value = program.dataset.rewardExpiry;
-      var type = program.dataset.rewardType;
-      if (type) {
-        document.querySelectorAll('[data-reward-type]').forEach(function(card) {
-          var label = card.querySelector('b');
-          var on = !!(label && label.textContent === type);
-          card.classList.toggle('active', on);
-          card.setAttribute('aria-pressed', on ? 'true' : 'false');
-        });
-      }
+      var minimumSpendInput = document.querySelector('[data-reward-minimum-spend-input]');
+      var maximumDiscountInput = document.querySelector('[data-reward-maximum-discount-input]');
+      var eligibleServicesSelect = document.querySelector('[data-reward-eligible-services-select]');
+      var validLocationsSelect = document.querySelector('[data-reward-valid-locations-select]');
+      var usageLimitInput = document.querySelector('[data-reward-usage-limit-input]');
+      var usageLimitRulesInput = document.querySelector('[data-reward-usage-limit-rules-input]');
+      var stackInput = document.querySelector('[data-reward-stack-input]');
+      var membershipInput = document.querySelector('[data-reward-membership-input]');
+      var validitySelect = document.querySelector('[data-reward-validity-select]');
+      var audienceSelect = document.querySelector('[data-reward-audience-select]');
+      var statusSelect = document.querySelector('[data-reward-status-select]');
+      var quantityLimitInput = document.querySelector('[data-reward-quantity-limit-input]');
+      var budgetLimitInput = document.querySelector('[data-reward-budget-limit-input]');
+      if (minimumSpendInput) minimumSpendInput.value = program.dataset.rewardMinimumSpend || '$0';
+      if (maximumDiscountInput) maximumDiscountInput.value = program.dataset.rewardMaximumDiscount || '';
+      if (eligibleServicesSelect) eligibleServicesSelect.value = program.dataset.rewardEligibleServices || 'All services';
+      if (validLocationsSelect) validLocationsSelect.value = program.dataset.rewardValidLocations || 'Bitcoin Nail Bar';
+      if (usageLimitInput) usageLimitInput.value = program.dataset.rewardUsageLimit || '1';
+      if (usageLimitRulesInput) usageLimitRulesInput.value = program.dataset.rewardUsageLimit || '1';
+      if (stackInput) stackInput.checked = program.dataset.rewardStackable === 'true';
+      if (membershipInput) membershipInput.checked = program.dataset.rewardMembershipEligible !== 'false';
+      if (validitySelect) validitySelect.value = program.dataset.rewardValidity || 'Use before expiration';
+      if (audienceSelect) audienceSelect.value = program.dataset.rewardAudience || 'All Customers';
+      if (statusSelect) statusSelect.value = program.dataset.status || 'active';
+      if (quantityLimitInput) quantityLimitInput.value = program.dataset.rewardQuantityLimit || 'Unlimited';
+      if (budgetLimitInput) budgetLimitInput.value = program.dataset.rewardBudgetLimit || 'Unlimited';
+      var typeKey = program.dataset.rewardTypeKey;
+        document.querySelectorAll('[data-reward-builder] [data-reward-type]').forEach(function(card) {
+        var on = !!(typeKey && card.dataset.rewardTypeKey === typeKey);
+        card.classList.toggle('active', on);
+        card.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
       updateRewardPreview();
       setWizardStep(1);
       setCreateMode(true);
@@ -9450,22 +9928,30 @@
       applyRewardFilter(currentRewardFilter);
     }
 
-    function buildRewardCardHTML(name, value, expiry) {
+    function buildRewardCardHTML(program) {
+      var name = program.dataset.rewardName || 'Reward';
+      var type = program.dataset.rewardType || 'Reward';
+      var points = program.dataset.rewardPoints || '—';
+      var value = program.dataset.rewardValue || '—';
+      var expiry = program.dataset.rewardExpiry || '30 days';
+      var minimumSpend = program.dataset.rewardMinimumSpend || '$0';
+      var maximumDiscount = program.dataset.rewardMaximumDiscount || '—';
+      var description = program.dataset.rewardDescription || '';
       return '<div class="reward-proto" style="text-align:left">' +
         '<div class="card" style="background:linear-gradient(135deg,#10172e,#573b9c);color:#fff">' +
-        '<span class="chip g">Bitcoin Nail Bar</span>' +
+        '<span class="chip g">' + escapeHtml(type) + ' · Reward Catalog</span>' +
         '<h2 style="font-size:30px">' + escapeHtml(name || 'Reward') + '</h2>' +
-        '<p style="color:#ccd3e5">Reward customers with <b>' + escapeHtml(value || '—') + '</b> — applied on their next visit.</p>' +
+        '<p style="color:#ccd3e5">Redeem <b>' + escapeHtml(points) + ' points</b> for <b>' + escapeHtml(value || '—') + '</b>. ' + escapeHtml(description) + '</p>' +
         '<div class="line"><span>Expires</span><b>' + escapeHtml(expiry || '30 days') + '</b></div>' +
-        '<div class="line"><span>Minimum spend</span><b>$25</b></div>' +
-        '<div class="line"><span>Use</span><b>Next visit</b></div>' +
+        '<div class="line"><span>Minimum spend</span><b>' + escapeHtml(minimumSpend === '$0' ? 'No minimum' : minimumSpend) + '</b></div>' +
+        '<div class="line"><span>Maximum discount</span><b>' + escapeHtml(maximumDiscount) + '</b></div>' +
         '</div></div>';
     }
 
     function viewProgram(program) {
       if (typeof Swal === 'undefined') return;
       Swal.fire({
-        html: buildRewardCardHTML(program.dataset.rewardName, program.dataset.rewardValue, program.dataset.rewardExpiry),
+        html: buildRewardCardHTML(program),
         showConfirmButton: true,
         confirmButtonText: 'Close',
         width: 460
@@ -9509,6 +9995,7 @@
     }
 
     function confirmAndCreateReward() {
+      if (!validateRewardStep1() || !validateRewardRules()) return;
       var editing = !!editingProgram;
       if (typeof Swal === 'undefined') { finalizeReward(); return; }
       Swal.fire({
