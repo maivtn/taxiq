@@ -3629,6 +3629,63 @@
       margin-bottom: 14px;
     }
 
+    .booking-daybar-actions {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .booking-filter-wrap {
+      position: relative;
+    }
+
+    .booking-filter-toggle {
+      min-height: 34px;
+      white-space: nowrap;
+    }
+
+    .booking-filter-toggle[aria-expanded="true"] {
+      border-color: rgba(70, 72, 216, 0.32);
+      background: color-mix(in srgb, var(--nexora-brand) 9%, white);
+      color: var(--nexora-brand);
+    }
+
+    .booking-filter-popover {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 35;
+      width: min(470px, calc(100vw - 40px));
+      border: 1px solid var(--nexora-border);
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px;
+      box-shadow: 0 18px 45px rgba(8, 31, 73, 0.16);
+    }
+
+    .booking-filter-popover[hidden] {
+      display: none;
+    }
+
+    .booking-filter-popover-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .booking-filter-popover .booking-controls {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-bottom: 12px;
+    }
+
     .booking-view-switch {
       display: inline-flex;
       flex-shrink: 0;
@@ -6043,6 +6100,11 @@
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
       }
 
+      .booking-filter-popover .booking-controls {
+        display: flex;
+        flex-direction: column;
+      }
+
       .booking-controls .booking-control-field:nth-child(1) {
         grid-column: 1 / 2;
       }
@@ -7305,36 +7367,44 @@
                         </span>
                         <span>Appointments Overview</span>
                       </div>
-                      <div class="booking-view-switch" role="group" aria-label="Booking view mode">
-                        <button class="booking-view-button" type="button" data-booking-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
-                        <button class="booking-view-button" type="button" data-booking-view-target="card" aria-pressed="false"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
-                        <button class="booking-view-button" type="button" data-booking-view-target="calendar" aria-pressed="false"><i class="bi bi-calendar3" aria-hidden="true"></i>Calendar</button>
-                      </div>
-                    </div>
+                      <div class="booking-daybar-actions">
+                        <div class="booking-view-switch" role="group" aria-label="Booking view mode">
+                          <button class="booking-view-button" type="button" data-booking-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
+                          <button class="booking-view-button" type="button" data-booking-view-target="card" aria-pressed="false"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
+                          <button class="booking-view-button" type="button" data-booking-view-target="calendar" aria-pressed="false"><i class="bi bi-calendar3" aria-hidden="true"></i>Calendar</button>
+                        </div>
+                        <div class="booking-filter-wrap">
+                          <button class="booking-secondary-button booking-filter-toggle" type="button" data-booking-filter-toggle="booking" aria-controls="booking-filter-menu" aria-expanded="false"><i class="bi bi-funnel" aria-hidden="true"></i>Filter</button>
+                          <div class="booking-filter-popover" id="booking-filter-menu" data-booking-filter-menu="booking" hidden>
+                            <div class="booking-filter-popover-head"><span>Filter appointments</span></div>
+                            <div class="booking-controls" aria-label="Booking filters">
+                              <label class="booking-control-field">
+                                <span class="booking-control-label">Search by</span>
+                                <select class="booking-select" data-booking-search-field>
+                                  <option value="name">Name</option>
+                                  <option value="phone">Phone</option>
+                                  <option value="email">Email</option>
+                                  <option value="service">Service</option>
+                                </select>
+                              </label>
+                              <label class="booking-control-field">
+                                <span class="booking-control-label">Keyword</span>
+                                <input class="booking-input" type="search" placeholder="Enter customer name" data-booking-search-input>
+                              </label>
+                              <label class="booking-control-field">
+                                <span class="booking-control-label">Date from</span>
+                                <input class="booking-input" type="text" placeholder="Select date" data-booking-date-from>
+                              </label>
+                              <label class="booking-control-field">
+                                <span class="booking-control-label">Date to</span>
+                                <input class="booking-input" type="text" placeholder="Select date" data-booking-date-to>
+                              </label>
+                              <button class="booking-mini-button booking-clear-button" type="button" data-booking-clear-filters>Clear</button>
+                            </div>
 
-                    <div class="booking-controls" aria-label="Booking filters">
-                      <label class="booking-control-field">
-                        <span class="booking-control-label">Search by</span>
-                        <select class="booking-select" data-booking-search-field>
-                          <option value="name">Name</option>
-                          <option value="phone">Phone</option>
-                          <option value="email">Email</option>
-                          <option value="service">Service</option>
-                        </select>
-                      </label>
-                      <label class="booking-control-field">
-                        <span class="booking-control-label">Keyword</span>
-                        <input class="booking-input" type="search" placeholder="Enter customer name" data-booking-search-input>
-                      </label>
-                      <label class="booking-control-field">
-                        <span class="booking-control-label">Date from</span>
-                        <input class="booking-input" type="text" placeholder="Select date" data-booking-date-from>
-                      </label>
-                      <label class="booking-control-field">
-                        <span class="booking-control-label">Date to</span>
-                        <input class="booking-input" type="text" placeholder="Select date" data-booking-date-to>
-                      </label>
-                      <button class="booking-mini-button booking-clear-button" type="button" data-booking-clear-filters>Clear</button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     <div class="booking-status-chips" data-booking-status-chips role="group" aria-label="Filter appointments by status">
@@ -8498,14 +8568,22 @@
                       <span class="booking-action-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
                       <span>Customer list</span>
                     </div>
-                    <span class="cust-count" data-cust-count></span>
-                  </div>
+                    <div class="booking-daybar-actions">
+                      <span class="cust-count" data-cust-count></span>
+                      <div class="booking-filter-wrap">
+                        <button class="booking-secondary-button booking-filter-toggle" type="button" data-booking-filter-toggle="customers" aria-controls="customers-filter-menu" aria-expanded="false"><i class="bi bi-funnel" aria-hidden="true"></i>Filter</button>
+                        <div class="booking-filter-popover" id="customers-filter-menu" data-booking-filter-menu="customers" hidden>
+                          <div class="booking-filter-popover-head"><span>Filter customers</span></div>
+                          <div class="booking-controls" aria-label="Customer filters">
+                            <label class="booking-control-field" style="grid-column: 1 / -1;">
+                              <span class="booking-control-label">Search</span>
+                              <input class="booking-input" type="search" placeholder="Search by name or phone number..." data-cust-search>
+                            </label>
+                          </div>
 
-                  <div class="booking-controls" aria-label="Customer filters">
-                    <label class="booking-control-field" style="grid-column: 1 / -1;">
-                      <span class="booking-control-label">Search</span>
-                      <input class="booking-input" type="search" placeholder="Search by name or phone number..." data-cust-search>
-                    </label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <div class="booking-status-chips" data-cust-seg-filter role="group" aria-label="Filter by customer group"></div>
@@ -8539,14 +8617,22 @@
                       <span class="booking-action-icon"><i class="bi bi-telephone" aria-hidden="true"></i></span>
                       <span>Call log</span>
                     </div>
-                    <span class="cust-count" data-call-count></span>
-                  </div>
+                    <div class="booking-daybar-actions">
+                      <span class="cust-count" data-call-count></span>
+                      <div class="booking-filter-wrap">
+                        <button class="booking-secondary-button booking-filter-toggle" type="button" data-booking-filter-toggle="calllog" aria-controls="calllog-filter-menu" aria-expanded="false"><i class="bi bi-funnel" aria-hidden="true"></i>Filter</button>
+                        <div class="booking-filter-popover" id="calllog-filter-menu" data-booking-filter-menu="calllog" hidden>
+                          <div class="booking-filter-popover-head"><span>Filter calls</span></div>
+                          <div class="booking-controls" aria-label="Call log filters">
+                            <label class="booking-control-field" style="grid-column: 1 / -1;">
+                              <span class="booking-control-label">Search</span>
+                              <input class="booking-input" type="search" placeholder="Search by caller or phone number..." data-call-search>
+                            </label>
+                          </div>
 
-                  <div class="booking-controls" aria-label="Call log filters">
-                    <label class="booking-control-field" style="grid-column: 1 / -1;">
-                      <span class="booking-control-label">Search</span>
-                      <input class="booking-input" type="search" placeholder="Search by caller or phone number..." data-call-search>
-                    </label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <div class="booking-status-chips" data-call-status-filter role="group" aria-label="Filter by call status"></div>
@@ -9103,6 +9189,7 @@
       'noshow': 'is-noshow'
     };
     var bookingStatusFilter = 'all';
+    var bookingFilterOpen = null;
     var bookingDateFromPicker = null;
     var bookingDateToPicker = null;
     var bookingTeamCalendar = null;
@@ -9183,6 +9270,7 @@
 
     function activateMainTab(target, options) {
       var activeTarget = getValidMainTab(target);
+      setBookingFilterOpen(null);
 
       document.querySelectorAll('[data-tab-target]').forEach(function(tab) {
         var isActive = tab.dataset.tabTarget === activeTarget;
@@ -9293,6 +9381,21 @@
       var isValid = status === 'all' || BOOKING_STATUS_CLASS[status];
       bookingStatusFilter = isValid ? status : 'all';
       filterBookingItems();
+    }
+
+    function setBookingFilterOpen(scope) {
+      bookingFilterOpen = scope || null;
+
+      document.querySelectorAll('[data-booking-filter-menu]').forEach(function(menu) {
+        var isOpen = bookingFilterOpen && menu.dataset.bookingFilterMenu === bookingFilterOpen;
+        menu.hidden = !isOpen;
+      });
+
+      document.querySelectorAll('[data-booking-filter-toggle]').forEach(function(toggle) {
+        var isOpen = bookingFilterOpen && toggle.dataset.bookingFilterToggle === bookingFilterOpen;
+        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        toggle.classList.toggle('is-active', isOpen);
+      });
     }
 
     function bookingCalendarPad(value) { return String(value).padStart(2, '0'); }
@@ -10650,6 +10753,17 @@ function getBookingCardCallStart(item) {
     });
 
     document.addEventListener('click', function(event) {
+      var bookingFilterToggle = event.target.closest('[data-booking-filter-toggle]');
+      if (bookingFilterToggle) {
+        var filterScope = bookingFilterToggle.dataset.bookingFilterToggle;
+        setBookingFilterOpen(bookingFilterOpen === filterScope ? null : filterScope);
+        return;
+      }
+
+      if (!event.target.closest('[data-booking-filter-menu]')) {
+        setBookingFilterOpen(null);
+      }
+
       var bookingAction = event.target.closest('[data-booking-action]');
       if (bookingAction) {
         var item = findBookingItemFromAction(bookingAction);
@@ -10809,6 +10923,11 @@ function getBookingCardCallStart(item) {
       var techModal = document.querySelector('[data-tech-modal]');
       var bookingDetailModal = document.querySelector('[data-booking-detail-modal]');
       var techSelectMenu = document.querySelector('[data-tech-select-menu]');
+
+      if (event.key === 'Escape' && bookingFilterOpen) {
+        setBookingFilterOpen(null);
+        return;
+      }
 
       if (event.key === 'Escape' && techSelectMenu && !techSelectMenu.hidden) {
         setTechSelectOpen(false);

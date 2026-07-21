@@ -174,6 +174,41 @@ test('places appointment status chips below the search filters', () => {
   assert.ok(tableIndex > chipsIndex);
 });
 
+test('keeps status chips outside the filter dropdown and directly above each table', () => {
+  const html = source();
+
+  assert.match(
+    html,
+    /data-booking-clear-filters>Clear<\/button>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="booking-status-chips" data-booking-status-chips/
+  );
+  assert.match(
+    html,
+    /data-cust-search>\s*<\/label>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="booking-status-chips" data-cust-seg-filter/
+  );
+  assert.match(
+    html,
+    /data-call-search>\s*<\/label>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="booking-status-chips" data-call-status-filter/
+  );
+});
+
+test('puts booking filters behind right-aligned dropdown triggers', () => {
+  const html = source();
+
+  for (const [scope, menuId] of [
+    ['booking', 'booking-filter-menu'],
+    ['customers', 'customers-filter-menu'],
+    ['calllog', 'calllog-filter-menu']
+  ]) {
+    assert.match(html, new RegExp(`data-booking-filter-toggle="${scope}"[^>]*aria-controls="${menuId}"[^>]*aria-expanded="false"`));
+    assert.match(html, new RegExp(`id="${menuId}"[^>]*data-booking-filter-menu="${scope}"[^>]*hidden`));
+  }
+
+  assert.match(html, /class="booking-filter-popover"/);
+  assert.match(html, /function setBookingFilterOpen\(/);
+  assert.match(html, /document\.addEventListener\('click', function\(event\) \{[\s\S]*?data-booking-filter-toggle/);
+  assert.match(html, /event\.key === 'Escape'[\s\S]*?setBookingFilterOpen\(null\)/);
+});
+
 test('provides a selectable SMS credits checkout beside the credits pill', () => {
   const html = source();
 
