@@ -4649,6 +4649,8 @@
     #nx-campaign-root .sms-credit-package-amount { display:block; margin-top:5px; color:var(--nexora-text); font-size:21px; font-weight:900; line-height:1.1; }
     #nx-campaign-root .sms-credit-package-price { display:block; margin-top:6px; color:var(--nexora-brand); font-size:14px; font-weight:900; }
     #nx-campaign-root .sms-credit-package-note { display:block; margin-top:4px; color:var(--nexora-subtle); font-size:10px; font-weight:600; }
+    #nx-campaign-root .sms-credit-package-check { position:absolute; right:11px; bottom:10px; display:grid; width:20px; height:20px; place-items:center; border:1px solid var(--nexora-border); border-radius:50%; background:#fff; color:transparent; font-size:12px; font-weight:900; opacity:.75; transition:background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease; }
+    #nx-campaign-root .sms-credit-package.is-selected .sms-credit-package-check { border-color:var(--nexora-brand); background:var(--nexora-brand); color:#fff; opacity:1; transform:scale(1.05); }
     #nx-campaign-root .sms-credit-payment-list { display:grid; gap:8px; }
     #nx-campaign-root .sms-credit-payment { display:flex; width:100%; align-items:center; justify-content:space-between; gap:12px; border:1px solid var(--nexora-border); border-radius:11px; background:#fff; padding:8px 11px; color:var(--nexora-text); text-align:left; cursor:pointer; transition:.18s ease; }
     #nx-campaign-root .sms-credit-payment:hover { border-color:rgba(70,72,216,.45); }
@@ -11578,6 +11580,7 @@ function getBookingCardCallStart(item) {
         target.innerHTML = SMS_CREDIT_PACKAGES.map(function(pkg) {
           var selected = pkg.id === smsCreditPackageId;
           return '<button class="sms-credit-package' + (selected ? ' is-selected' : '') + (pkg.featured ? ' is-featured' : '') + '" type="button" data-sms-credit-package="' + pkg.id + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
+            '<span class="sms-credit-package-check" aria-hidden="true">✓</span>' +
             '<span class="sms-credit-package-name">' + pkg.name + '</span>' +
             '<span class="sms-credit-package-amount">' + pkg.credits.toLocaleString() + ' SMS</span>' +
             '<span class="sms-credit-package-price">$' + pkg.price.toFixed(2) + '</span>' +
