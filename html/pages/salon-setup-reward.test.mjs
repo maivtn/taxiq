@@ -123,6 +123,21 @@ test('keeps the second confirmation modal as a compact summary', () => {
   assert.match(html, /html: buildRewardConfirmationHTML\(draft\)/);
 });
 
+test('keeps reward type cards compact and visibly selected', () => {
+  const html = source();
+  assert.match(html, /\.reward-proto \.rewardType \{[^}]*min-height: 62px[^}]*padding: 9px 38px 9px 12px/);
+  assert.match(html, /\.reward-proto \.rewardType::after \{[^}]*content: '✓'/);
+  assert.match(html, /\.reward-proto \.rewardType\.active::after \{[^}]*opacity: 1/);
+});
+
+test('uses consistent top-aligned labels for reward settings', () => {
+  const html = source();
+  assert.match(html, /class="form2 reward-setting-fields"[\s\S]*?<label>Eligible services<\/label>/);
+  assert.match(html, /class="form2 reward-setting-fields"[\s\S]*?<label>Quantity limit<\/label>/);
+  assert.match(html, /class="reward-switch-row"><label class="switch"[\s\S]*?data-reward-stack-input[\s\S]*?<\/label><span>Combine promotions<\/span>/);
+  assert.match(html, /class="reward-switch-row"><label class="switch"[\s\S]*?data-reward-membership-input[\s\S]*?<\/label><span>Use with membership<\/span>/);
+});
+
 test('adds AI Offers as a separate loyalty management tab', () => {
   const html = source();
   assert.match(html, /data-nav-subitem-target="ai-offers"[^>]*>AI Offers<\/button>/);
@@ -158,6 +173,56 @@ test('provides an AI offer editor and publish interaction hooks', () => {
   assert.match(html, /function publishAiOffer\(event\)/);
   assert.match(html, /data-ai-offer-review/);
   assert.match(html, /data-ai-offer-dismiss/);
+});
+
+test('provides a managed offer list with filters and offer actions', () => {
+  const html = source();
+  const panel = html.match(/id="panel-ai-offers"[\s\S]*?(?=\n            <section class="tab-panel" id="panel-customers")/);
+  assert.ok(panel, 'missing AI Offers panel');
+  assert.match(panel[0], /data-ai-offer-manager/);
+  assert.match(panel[0], /data-ai-managed-offer-list/);
+  assert.match(panel[0], /data-ai-managed-offer/);
+  assert.match(panel[0], /data-ai-offer-manager-filter="all"/);
+  assert.match(panel[0], /data-ai-offer-manager-filter="active"/);
+  assert.match(panel[0], /data-ai-offer-manager-filter="paused"/);
+  assert.match(panel[0], /data-ai-offer-manager-search/);
+  assert.match(panel[0], /data-ai-managed-edit/);
+  assert.match(panel[0], /data-ai-managed-toggle/);
+  assert.match(panel[0], /data-ai-managed-delete/);
+  assert.match(panel[0], /data-ai-offer-create/);
+  assert.match(html, /function renderAiManagedOffers\(\)/);
+  assert.match(html, /function openManagedOfferEditor\(card\)/);
+  assert.match(html, /function createManagedOfferFromDraft\(draft\)/);
+});
+
+test('syncs published AI offers into the managed offer list', () => {
+  const html = source();
+  assert.match(html, /function publishAiOffer\(event\)[\s\S]*?createManagedOfferFromDraft\(\{/);
+  assert.match(html, /function updateManagedOfferCard\(card, draft\)/);
+  assert.match(html, /function setManagedOfferStatus\(card, status\)/);
+  assert.match(html, /function deleteManagedOffer\(card\)/);
+});
+
+test('uses date range and time window controls for AI offer schedules', () => {
+  const html = source();
+  const panel = html.match(/id="panel-ai-offers"[\s\S]*?(?=\n            <section class="tab-panel" id="panel-customers")/);
+  assert.ok(panel, 'missing AI Offers panel');
+  for (const field of ['start-date', 'end-date', 'start-time', 'end-time']) {
+    assert.match(panel[0], new RegExp(`data-ai-offer-field="${field}"`));
+  }
+  assert.match(html, /type="text"[^>]*data-ai-offer-field="start-date"/);
+  assert.match(html, /type="text"[^>]*data-ai-offer-field="end-date"/);
+  assert.match(html, /type="text"[^>]*data-ai-offer-field="start-time"/);
+  assert.match(html, /type="text"[^>]*data-ai-offer-field="end-time"/);
+  assert.match(html, /flatpickr@4\.6\.13\/dist\/flatpickr\.min\.css/);
+  assert.match(html, /flatpickr@4\.6\.13\/dist\/flatpickr\.min\.js/);
+  assert.match(html, /function initAiOfferSchedulePickers\(\)/);
+  assert.match(html, /flatpickr\(startDateInput, aiOfferDatePickerConfig\)/);
+  assert.match(html, /flatpickr\(startTimeInput, aiOfferTimePickerConfig\)/);
+  assert.match(html, /function getAiOfferSchedule\(\)/);
+  assert.match(html, /function formatOfferSchedule\(/);
+  assert.match(html, /function validateAiOfferSchedule\(/);
+  assert.match(html, /validateAiOfferSchedule\(schedule\)/);
 });
 
 test('renders and updates the Redemptions and return revenue chart', () => {

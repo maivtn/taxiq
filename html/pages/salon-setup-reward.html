@@ -8,7 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
   <style>
     :root {
       --luxury-gold: #d4af37;
@@ -794,6 +796,36 @@
     .ai-offers .ai-action.is-primary:hover { color: #fff; }
     .ai-offers .ai-action:disabled { cursor: not-allowed; opacity: .55; }
     .ai-offers .ai-card-status { margin-top: 10px; color: var(--ai-green); font-size: 11px; font-weight: 800; }
+    .ai-offer-manager { margin-top: 28px; border: 1px solid var(--ai-line); border-radius: 16px; background: #fff; padding: 16px; }
+    .ai-offer-manager .ai-section-title { margin-bottom: 14px; }
+    .ai-offer-manager .ai-section-title h3 { margin: 0; }
+    .ai-offer-manager-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .ai-offer-manager-filters { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ai-offer-manager-filter { border: 1px solid var(--ai-line); border-radius: 999px; background: #fff; padding: 6px 10px; color: #667085; font-size: 11px; font-weight: 900; }
+    .ai-offer-manager-filter.is-active { border-color: rgba(112, 72, 244, .28); background: var(--ai-purple-soft); color: var(--ai-purple); }
+    .ai-offer-manager-filter [data-ai-offer-manager-count]::before { content: '('; }
+    .ai-offer-manager-filter [data-ai-offer-manager-count]::after { content: ')'; }
+    .ai-offer-search { display: flex; min-width: min(100%, 240px); align-items: center; gap: 7px; border: 1px solid var(--ai-line); border-radius: 10px; background: #fff; padding: 7px 10px; color: #98a2b3; }
+    .ai-offer-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #101828; font-size: 12px; }
+    .ai-managed-offer-list { display: grid; gap: 8px; }
+    .ai-managed-offer-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 11px; align-items: center; border: 1px solid var(--ai-line); border-radius: 12px; background: #fff; padding: 11px; }
+    .ai-managed-offer-card[hidden],
+    .ai-offer-manager-empty[hidden] { display: none; }
+    .ai-managed-offer-card.is-paused { background: #fbfcfe; opacity: .72; }
+    .ai-managed-offer-icon { display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; border-radius: 10px; background: var(--ai-purple-soft); color: var(--ai-purple); font-size: 15px; }
+    .ai-managed-offer-card.is-paused .ai-managed-offer-icon { background: #f1f3f6; color: #667085; }
+    .ai-managed-offer-content { min-width: 0; }
+    .ai-managed-offer-head { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .ai-managed-offer-head h4 { overflow: hidden; margin: 0; color: #101828; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+    .ai-managed-offer-status { flex-shrink: 0; border-radius: 999px; padding: 4px 7px; color: var(--ai-green); background: var(--ai-green-soft); font-size: 9px; font-weight: 900; }
+    .ai-managed-offer-status.is-paused { color: #667085; background: #f1f3f6; }
+    .ai-managed-offer-summary { margin: 4px 0 0; color: #667085; font-size: 11px; line-height: 1.4; }
+    .ai-managed-offer-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; color: #98a2b3; font-size: 10px; font-weight: 700; }
+    .ai-managed-offer-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+    .ai-managed-action { border: 1px solid var(--ai-line); border-radius: 8px; background: #fff; padding: 6px 9px; color: #667085; font-size: 10px; font-weight: 900; }
+    .ai-managed-action:hover { border-color: var(--ai-purple); color: var(--ai-purple); }
+    .ai-managed-action.is-danger:hover { border-color: #e11d48; color: #e11d48; }
+    .ai-offer-manager-empty { margin: 0; border: 1px dashed var(--ai-line); border-radius: 10px; padding: 14px; color: #667085; font-size: 12px; text-align: center; }
     .ai-offers .ai-guardrail { margin-top: 16px; border: 1px solid rgba(112, 72, 244, .2); border-radius: 16px; background: linear-gradient(135deg, #fff, var(--ai-purple-soft)); padding: 15px 16px; }
     .ai-offers .ai-guardrail strong { display: block; margin-bottom: 6px; color: var(--ai-purple); font-size: 13px; }
     .ai-offers .ai-guardrail ul { margin: 0; padding-left: 19px; color: #667085; font-size: 12px; line-height: 1.6; }
@@ -815,7 +847,7 @@
     .ai-offer-dialog .ai-offer-dialog-body textarea { min-height: 75px; resize: vertical; }
     .ai-offer-dialog .ai-offer-dialog-foot { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--nexora-border); background: var(--nexora-surface-muted); padding: 14px 20px; }
     @media (max-width: 800px) { .ai-offers .ai-demand-grid { grid-template-columns: 1fr; } .ai-offers .ai-demand-card p { min-height: 0; } }
-    @media (max-width: 560px) { .ai-offers .ai-offers-heading, .ai-offers .ai-section-title { flex-direction: column; } .ai-offers .ai-ai-badge { align-self: flex-start; } .ai-offers .ai-suggestion-head { flex-direction: column; } .ai-offers .ai-confidence { align-self: flex-start; } .ai-offer-dialog { align-items: end; padding: 10px; } .ai-offer-dialog .ai-offer-dialog-card { max-height: 92vh; overflow-y: auto; } .ai-offer-dialog .ai-offer-dialog-body .form2 { grid-template-columns: 1fr; } }
+    @media (max-width: 560px) { .ai-offers .ai-offers-heading, .ai-offers .ai-section-title { flex-direction: column; } .ai-offers .ai-ai-badge { align-self: flex-start; } .ai-offers .ai-suggestion-head { flex-direction: column; } .ai-offers .ai-confidence { align-self: flex-start; } .ai-offer-manager-toolbar { align-items: stretch; flex-direction: column; } .ai-offer-search { min-width: 100%; } .ai-managed-offer-card { grid-template-columns: auto minmax(0, 1fr); } .ai-managed-offer-actions { grid-column: 2; justify-content: flex-start; } .ai-offer-dialog { align-items: end; padding: 10px; } .ai-offer-dialog .ai-offer-dialog-card { max-height: 92vh; overflow-y: auto; } .ai-offer-dialog .ai-offer-dialog-body .form2 { grid-template-columns: 1fr; } }
 
     /* Nexora Rewards prototype content (scoped under .reward-proto) */
     .reward-proto {
@@ -858,10 +890,13 @@
     .reward-proto .field select,
     .reward-proto .field textarea { border: 1px solid var(--line); border-radius: 13px; padding: 11px 12px; background: #fff; font: inherit; color: var(--ink); }
     .reward-proto .form2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
-    .reward-proto .rewardType { border: 1px solid var(--line); border-radius: 16px; padding: 13px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s; }
+    .reward-proto .rewardType { position: relative; display: flex; min-height: 62px; flex-direction: column; justify-content: center; border: 1px solid var(--line); border-radius: 16px; padding: 9px 38px 9px 12px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s; }
+    .reward-proto .rewardType p { margin: 3px 0 0; }
     .reward-proto .rewardType:hover { border-color: var(--p); transform: translateY(-1px); }
     .reward-proto .rewardType:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; }
-    .reward-proto .rewardType.active { border-color: var(--p); box-shadow: 0 0 0 3px #7048f414; }
+    .reward-proto .rewardType.active { border-color: var(--p); background: #fcfbff; box-shadow: 0 0 0 3px #7048f414; }
+    .reward-proto .rewardType::after { position: absolute; top: 10px; right: 10px; display: grid; width: 20px; height: 20px; place-items: center; border-radius: 50%; background: var(--p); color: #fff; content: '✓'; font-size: 12px; font-weight: 900; line-height: 1; opacity: 0; transform: scale(.75); transition: opacity 0.15s, transform 0.15s; }
+    .reward-proto .rewardType.active::after { opacity: 1; transform: scale(1); }
     .reward-proto .program { border: 1px solid var(--line); border-radius: 15px; padding: 12px; margin-bottom: 9px; transition: opacity 0.2s; }
     .reward-proto .program-actions { display: inline-flex; align-items: center; gap: 8px; }
     .reward-proto .program-edit { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex-shrink: 0; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--muted); cursor: pointer; font-size: 14px; transition: color 0.15s, border-color 0.15s; }
@@ -928,6 +963,8 @@
     .reward-proto .reward-disclosure[open] summary::after { content: '−'; }
     .reward-proto .reward-disclosure-body { border-top: 1px solid var(--line); padding: 0 16px 16px; }
     .reward-proto .reward-contextual-row[hidden] { display: none; }
+    .reward-proto .reward-switch-row { display: flex; min-height: 40px; align-items: center; justify-content: flex-start; gap: 8px; border-bottom: 1px dashed var(--line); padding: 7px 0; }
+    .reward-proto .reward-switch-row:last-child { border-bottom: 0; }
     @media (max-width: 800px) {
       .reward-proto .reward-create-layout { grid-template-columns: 1fr; }
       .reward-proto .reward-create-preview { position: static; }
@@ -6901,22 +6938,24 @@
                           <div class="field"><label data-reward-value-label>Reward Value / Linked Item</label><input value="$5.00" data-reward-value-input></div>
                           <div class="field"><label>Expiration</label><input value="12 months" data-reward-expiry-input></div>
                         </div>
-                        <div class="grid g2 reward-contextual-rules" style="margin-top:12px">
-                          <div class="line reward-contextual-row" data-reward-contextual="minimum-spend"><span>Minimum spend</span><input value="$0" data-reward-minimum-spend-input></div>
-                          <div class="line reward-contextual-row" data-reward-contextual="maximum-discount" hidden><span>Maximum discount</span><input value="" placeholder="Required for percent discounts" data-reward-maximum-discount-input></div>
+                        <div class="form2 reward-contextual-rules" style="margin-top:12px">
+                          <div class="field reward-contextual-row" data-reward-contextual="minimum-spend"><label>Minimum spend</label><input value="$0" data-reward-minimum-spend-input></div>
+                          <div class="field reward-contextual-row" data-reward-contextual="maximum-discount" hidden><label>Maximum discount</label><input value="" placeholder="Required for percent discounts" data-reward-maximum-discount-input></div>
                         </div>
                       </section>
 
                       <details class="reward-disclosure" data-reward-advanced="redemption">
                         <summary>More redemption rules</summary>
                         <div class="reward-disclosure-body">
-                          <div class="grid g2">
-                            <div class="line"><span>Eligible services</span><select data-reward-eligible-services-select><option>All services</option><option>Selected services</option><option>Service add-ons only</option></select></div>
-                            <div class="line"><span>Valid locations</span><select data-reward-valid-locations-select><option>Bitcoin Nail Bar</option><option>All locations</option></select></div>
-                            <div class="line"><span>Combine promotions</span><label class="switch"><input type="checkbox" data-reward-stack-input><span class="switch-track"></span></label></div>
-                            <div class="line"><span>Use with membership</span><label class="switch"><input type="checkbox" checked data-reward-membership-input><span class="switch-track"></span></label></div>
-                            <div class="line"><span>Customer limit</span><input value="1" data-reward-usage-limit-rules-input></div>
-                            <div class="line"><span>Issued reward validity</span><select data-reward-validity-select><option>Use before expiration</option><option>30 days after issue</option><option>60 days after issue</option></select></div>
+                          <div class="form2 reward-setting-fields">
+                            <div class="field"><label>Eligible services</label><select data-reward-eligible-services-select><option>All services</option><option>Selected services</option><option>Service add-ons only</option></select></div>
+                            <div class="field"><label>Valid locations</label><select data-reward-valid-locations-select><option>Bitcoin Nail Bar</option><option>All locations</option></select></div>
+                            <div class="field"><label>Customer limit</label><input value="1" data-reward-usage-limit-rules-input></div>
+                            <div class="field"><label>Issued reward validity</label><select data-reward-validity-select><option>Use before expiration</option><option>30 days after issue</option><option>60 days after issue</option></select></div>
+                          </div>
+                          <div class="grid g2 reward-setting-switches" style="margin-top:12px">
+                            <div class="reward-switch-row"><label class="switch"><input type="checkbox" data-reward-stack-input><span class="switch-track"></span></label><span>Combine promotions</span></div>
+                            <div class="reward-switch-row"><label class="switch"><input type="checkbox" checked data-reward-membership-input><span class="switch-track"></span></label><span>Use with membership</span></div>
                           </div>
                         </div>
                       </details>
@@ -6924,13 +6963,11 @@
                       <details class="reward-disclosure" data-reward-advanced="availability">
                         <summary>Availability &amp; limits</summary>
                         <div class="reward-disclosure-body">
-                          <div class="form2">
+                          <div class="form2 reward-setting-fields">
                             <div class="field"><label>Customer segment</label><select data-reward-audience-select><option>All Customers</option><option>New Customers</option><option>VIP</option><option>Inactive 30+ Days</option></select></div>
                             <div class="field"><label>Status</label><select data-reward-status-select><option value="active">Active</option><option value="paused">Paused</option></select></div>
-                          </div>
-                          <div class="grid g2" style="margin-top:12px">
-                            <div class="line"><span>Quantity limit</span><input value="Unlimited" data-reward-quantity-limit-input></div>
-                            <div class="line"><span>Budget limit</span><input value="Unlimited" data-reward-budget-limit-input></div>
+                            <div class="field"><label>Quantity limit</label><input value="Unlimited" data-reward-quantity-limit-input></div>
+                            <div class="field"><label>Budget limit</label><input value="Unlimited" data-reward-budget-limit-input></div>
                           </div>
                           <p class="muted">Active catalog rewards appear in customer wallets when the customer has enough Available Points. Pausing stops new issuance; rewards already issued remain valid until their own expiration.</p>
                         </div>
@@ -7039,6 +7076,56 @@
                   </article>
                 </div>
 
+                <section class="ai-offer-manager" data-ai-offer-manager aria-labelledby="ai-offer-manager-title">
+                  <div class="ai-section-title">
+                    <div>
+                      <h3 id="ai-offer-manager-title">Manage offers</h3>
+                      <p class="muted">Review live offers, update their details, and control availability.</p>
+                    </div>
+                    <button class="btn p" type="button" data-ai-offer-create><i class="bi bi-plus-lg" aria-hidden="true"></i> Create offer</button>
+                  </div>
+
+                  <div class="ai-offer-manager-toolbar">
+                    <div class="ai-offer-manager-filters" role="tablist" aria-label="Offer status filters">
+                      <button class="ai-offer-manager-filter is-active" type="button" role="tab" aria-selected="true" data-ai-offer-manager-filter="all">All <span data-ai-offer-manager-count="all">3</span></button>
+                      <button class="ai-offer-manager-filter" type="button" role="tab" aria-selected="false" data-ai-offer-manager-filter="active">Active <span data-ai-offer-manager-count="active">2</span></button>
+                      <button class="ai-offer-manager-filter" type="button" role="tab" aria-selected="false" data-ai-offer-manager-filter="paused">Paused <span data-ai-offer-manager-count="paused">1</span></button>
+                    </div>
+                    <label class="ai-offer-search"><i class="bi bi-search" aria-hidden="true"></i><span class="sr-only">Search offers</span><input type="search" placeholder="Search offers" data-ai-offer-manager-search></label>
+                  </div>
+
+                  <div class="ai-managed-offer-list" data-ai-managed-offer-list>
+                    <article class="ai-managed-offer-card" data-ai-managed-offer data-ai-managed-offer-id="weekday-pedi-live" data-status="active" data-offer-title="Weekday Pedi Combo" data-offer-value="20% OFF" data-offer-schedule="Jul 21 – Aug 31, 2026 · 10:00 AM–2:00 PM" data-offer-start-date="2026-07-21" data-offer-end-date="2026-08-31" data-offer-start-time="10:00" data-offer-end-time="14:00" data-offer-description="A weekday pedicure combo for customers looking for a limited-time deal." data-offer-used="18 used" data-offer-expiry="Expires Aug 31, 2026" data-offer-channel="In-app · SMS">
+                      <span class="ai-managed-offer-icon"><i class="bi bi-megaphone" aria-hidden="true"></i></span>
+                      <div class="ai-managed-offer-content">
+                        <div class="ai-managed-offer-head"><h4 data-ai-managed-title>Weekday Pedi Combo</h4><span class="ai-managed-offer-status" data-ai-managed-status>Active</span></div>
+                        <p class="ai-managed-offer-summary"><span data-ai-managed-value>20% OFF</span> · <span data-ai-managed-schedule>Jul 21 – Aug 31, 2026 · 10:00 AM–2:00 PM</span></p>
+                        <div class="ai-managed-offer-meta"><span data-ai-managed-used>18 used</span><span data-ai-managed-expiry>Expires Aug 31, 2026</span><span data-ai-managed-channel>In-app · SMS</span></div>
+                      </div>
+                      <div class="ai-managed-offer-actions"><button class="ai-managed-action" type="button" data-ai-managed-edit>Edit</button><button class="ai-managed-action" type="button" data-ai-managed-toggle>Pause</button><button class="ai-managed-action is-danger" type="button" data-ai-managed-delete>Delete</button></div>
+                    </article>
+                    <article class="ai-managed-offer-card" data-ai-managed-offer data-ai-managed-offer-id="gelx-live" data-status="active" data-offer-title="Gel-X New Set" data-offer-value="$55 intro price" data-offer-schedule="Jul 21 – Sep 15, 2026 · 9:00 AM–8:00 PM" data-offer-start-date="2026-07-21" data-offer-end-date="2026-09-15" data-offer-start-time="09:00" data-offer-end-time="20:00" data-offer-description="Introductory Gel-X pricing for new sets." data-offer-used="9 used" data-offer-expiry="Expires Sep 15, 2026" data-offer-channel="In-app">
+                      <span class="ai-managed-offer-icon"><i class="bi bi-stars" aria-hidden="true"></i></span>
+                      <div class="ai-managed-offer-content">
+                        <div class="ai-managed-offer-head"><h4 data-ai-managed-title>Gel-X New Set</h4><span class="ai-managed-offer-status" data-ai-managed-status>Active</span></div>
+                        <p class="ai-managed-offer-summary"><span data-ai-managed-value>$55 intro price</span> · <span data-ai-managed-schedule>Jul 21 – Sep 15, 2026 · 9:00 AM–8:00 PM</span></p>
+                        <div class="ai-managed-offer-meta"><span data-ai-managed-used>9 used</span><span data-ai-managed-expiry>Expires Sep 15, 2026</span><span data-ai-managed-channel>In-app</span></div>
+                      </div>
+                      <div class="ai-managed-offer-actions"><button class="ai-managed-action" type="button" data-ai-managed-edit>Edit</button><button class="ai-managed-action" type="button" data-ai-managed-toggle>Pause</button><button class="ai-managed-action is-danger" type="button" data-ai-managed-delete>Delete</button></div>
+                    </article>
+                    <article class="ai-managed-offer-card is-paused" data-ai-managed-offer data-ai-managed-offer-id="first-visit-live" data-status="paused" data-offer-title="First Visit $10 Off" data-offer-value="$10 OFF" data-offer-schedule="Jul 21 – Dec 31, 2026 · 9:00 AM–8:00 PM" data-offer-start-date="2026-07-21" data-offer-end-date="2026-12-31" data-offer-start-time="09:00" data-offer-end-time="20:00" data-offer-description="A welcome offer for new customers." data-offer-used="42 used" data-offer-expiry="Expires Dec 31, 2026" data-offer-channel="In-app · SMS">
+                      <span class="ai-managed-offer-icon"><i class="bi bi-ticket-perforated" aria-hidden="true"></i></span>
+                      <div class="ai-managed-offer-content">
+                        <div class="ai-managed-offer-head"><h4 data-ai-managed-title>First Visit $10 Off</h4><span class="ai-managed-offer-status is-paused" data-ai-managed-status>Paused</span></div>
+                        <p class="ai-managed-offer-summary"><span data-ai-managed-value>$10 OFF</span> · <span data-ai-managed-schedule>Jul 21 – Dec 31, 2026 · 9:00 AM–8:00 PM</span></p>
+                        <div class="ai-managed-offer-meta"><span data-ai-managed-used>42 used</span><span data-ai-managed-expiry>Expires Dec 31, 2026</span><span data-ai-managed-channel>In-app · SMS</span></div>
+                      </div>
+                      <div class="ai-managed-offer-actions"><button class="ai-managed-action" type="button" data-ai-managed-edit>Edit</button><button class="ai-managed-action" type="button" data-ai-managed-toggle>Resume</button><button class="ai-managed-action is-danger" type="button" data-ai-managed-delete>Delete</button></div>
+                    </article>
+                  </div>
+                  <p class="ai-offer-manager-empty" data-ai-offer-manager-empty hidden>No offers match this filter.</p>
+                </section>
+
                 <aside class="ai-guardrail">
                   <strong>How this works — and what AI will never do</strong>
                   <ul>
@@ -7060,10 +7147,14 @@
                   </div>
                   <div class="ai-offer-dialog-body">
                     <div class="field"><label for="ai-offer-title">Offer title</label><input id="ai-offer-title" type="text" data-ai-offer-field="title" required></div>
-                    <div class="form2">
-                      <div class="field"><label for="ai-offer-value">Price or discount</label><input id="ai-offer-value" type="text" data-ai-offer-field="value" required></div>
-                      <div class="field"><label for="ai-offer-schedule">Schedule</label><input id="ai-offer-schedule" type="text" data-ai-offer-field="schedule" required></div>
+                    <div class="field"><label for="ai-offer-value">Price or discount</label><input id="ai-offer-value" type="text" data-ai-offer-field="value" required></div>
+                    <div class="form2 ai-offer-schedule-grid">
+                      <div class="field"><label for="ai-offer-start-date">Start date</label><input id="ai-offer-start-date" type="text" placeholder="Select date" autocomplete="off" data-ai-offer-field="start-date" required></div>
+                      <div class="field"><label for="ai-offer-end-date">End date</label><input id="ai-offer-end-date" type="text" placeholder="Select date" autocomplete="off" data-ai-offer-field="end-date" required></div>
+                      <div class="field"><label for="ai-offer-start-time">Start time</label><input id="ai-offer-start-time" type="text" placeholder="Select time" autocomplete="off" data-ai-offer-field="start-time" required></div>
+                      <div class="field"><label for="ai-offer-end-time">End time</label><input id="ai-offer-end-time" type="text" placeholder="Select time" autocomplete="off" data-ai-offer-field="end-time" required></div>
                     </div>
+                    <input id="ai-offer-schedule" type="hidden" data-ai-offer-field="schedule">
                     <div class="field"><label for="ai-offer-description">Customer-facing details</label><textarea id="ai-offer-description" data-ai-offer-field="description"></textarea></div>
                     <p class="muted">Publishing this offer makes it available to matching customers. Their identities remain hidden from your dashboard.</p>
                   </div>
@@ -9143,17 +9234,27 @@
       pedi: {
         title: 'Weekday Pedi Combo — 20% OFF',
         value: '20% OFF',
-        schedule: 'Tue–Thu, 10am–2pm',
+        startDate: '2026-07-21',
+        endDate: '2026-08-31',
+        startTime: '10:00',
+        endTime: '14:00',
         description: 'A weekday pedicure combo for customers looking for a limited-time deal.'
       },
       gelx: {
         title: 'Gel-X New Set — $55 intro price',
         value: '$55 intro price',
-        schedule: 'Any day',
+        startDate: '2026-07-21',
+        endDate: '2026-09-15',
+        startTime: '09:00',
+        endTime: '20:00',
         description: 'Introductory Gel-X pricing for new sets. Limited availability based on salon capacity.'
       }
     };
     var activeAiOfferId = null;
+    var activeAiOfferMode = 'suggestion';
+    var currentAiOfferManagerFilter = 'all';
+    var currentAiOfferManagerSearch = '';
+    var aiOfferSchedulePickers = {};
 
     function findAiOfferCard(offerId) {
       var cards = Array.from(document.querySelectorAll('[data-ai-offer-card]'));
@@ -9163,11 +9264,262 @@
     function setAiOfferField(name, value) {
       var field = document.querySelector('[data-ai-offer-field="' + name + '"]');
       if (field) field.value = value || '';
+      if (aiOfferSchedulePickers[name]) aiOfferSchedulePickers[name].setDate(value || '', false);
     }
 
     function getAiOfferField(name) {
       var field = document.querySelector('[data-ai-offer-field="' + name + '"]');
       return field ? field.value.trim() : '';
+    }
+
+    function formatOfferDate(value, includeYear) {
+      var parts = String(value || '').split('-').map(Number);
+      if (parts.length !== 3 || parts.some(function(part) { return !part; })) return value || '';
+      return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: includeYear ? 'numeric' : undefined
+      });
+    }
+
+    function formatOfferTime(value) {
+      var parts = String(value || '').split(':').map(Number);
+      if (parts.length < 2 || parts.some(function(part) { return isNaN(part); })) return value || '';
+      var hour = parts[0] % 12 || 12;
+      return hour + ':' + String(parts[1]).padStart(2, '0') + ' ' + (parts[0] >= 12 ? 'PM' : 'AM');
+    }
+
+    function formatOfferSchedule(startDate, endDate, startTime, endTime) {
+      var dateLabel = '';
+      if (startDate && endDate) {
+        var startParts = startDate.split('-');
+        var endParts = endDate.split('-');
+        var sameYear = startParts[0] === endParts[0];
+        dateLabel = startDate === endDate
+          ? formatOfferDate(startDate, true)
+          : formatOfferDate(startDate, !sameYear) + ' – ' + formatOfferDate(endDate, true);
+      } else {
+        dateLabel = startDate ? formatOfferDate(startDate, true) : '';
+      }
+      var timeLabel = startTime && endTime ? formatOfferTime(startTime) + '–' + formatOfferTime(endTime) : '';
+      return [dateLabel, timeLabel].filter(Boolean).join(' · ');
+    }
+
+    function getAiOfferSchedule() {
+      var schedule = {
+        startDate: getAiOfferField('start-date'),
+        endDate: getAiOfferField('end-date'),
+        startTime: getAiOfferField('start-time'),
+        endTime: getAiOfferField('end-time')
+      };
+      schedule.summary = formatOfferSchedule(schedule.startDate, schedule.endDate, schedule.startTime, schedule.endTime);
+      return schedule;
+    }
+
+    function setAiOfferScheduleFields(schedule) {
+      schedule = schedule || {};
+      setAiOfferField('start-date', schedule.startDate);
+      setAiOfferField('end-date', schedule.endDate);
+      setAiOfferField('start-time', schedule.startTime);
+      setAiOfferField('end-time', schedule.endTime);
+      setAiOfferField('schedule', schedule.summary || formatOfferSchedule(schedule.startDate, schedule.endDate, schedule.startTime, schedule.endTime));
+    }
+
+    function syncAiOfferScheduleSummary() {
+      var schedule = getAiOfferSchedule();
+      setAiOfferField('schedule', schedule.summary);
+    }
+
+    function initAiOfferSchedulePickers() {
+      var startDateInput = document.querySelector('[data-ai-offer-field="start-date"]');
+      var endDateInput = document.querySelector('[data-ai-offer-field="end-date"]');
+      var startTimeInput = document.querySelector('[data-ai-offer-field="start-time"]');
+      var endTimeInput = document.querySelector('[data-ai-offer-field="end-time"]');
+      if (!startDateInput || !endDateInput || !startTimeInput || !endTimeInput) return;
+
+      var aiOfferDatePickerConfig = {
+        altInput: true,
+        altFormat: 'M j, Y',
+        dateFormat: 'Y-m-d',
+        altInputClass: 'ai-offer-picker-input',
+        disableMobile: true,
+        onChange: syncAiOfferScheduleSummary
+      };
+      var aiOfferTimePickerConfig = {
+        altInput: true,
+        altFormat: 'h:i K',
+        dateFormat: 'H:i',
+        altInputClass: 'ai-offer-picker-input',
+        enableTime: true,
+        noCalendar: true,
+        time_24hr: false,
+        disableMobile: true,
+        onChange: syncAiOfferScheduleSummary
+      };
+
+      if (window.flatpickr) {
+        aiOfferSchedulePickers['start-date'] = flatpickr(startDateInput, aiOfferDatePickerConfig);
+        aiOfferSchedulePickers['end-date'] = flatpickr(endDateInput, aiOfferDatePickerConfig);
+        aiOfferSchedulePickers['start-time'] = flatpickr(startTimeInput, aiOfferTimePickerConfig);
+        aiOfferSchedulePickers['end-time'] = flatpickr(endTimeInput, aiOfferTimePickerConfig);
+      } else {
+        [startDateInput, endDateInput, startTimeInput, endTimeInput].forEach(function(input) {
+          input.addEventListener('input', syncAiOfferScheduleSummary);
+        });
+      }
+    }
+
+    function validateAiOfferSchedule(schedule) {
+      if (!schedule.startDate || !schedule.endDate || !schedule.startTime || !schedule.endTime) {
+        showRewardToast('Please choose the offer dates and daily time window.');
+        return false;
+      }
+      if (schedule.endDate < schedule.startDate) {
+        showRewardToast('End date must be on or after the start date.');
+        return false;
+      }
+      if (schedule.startDate === schedule.endDate && schedule.endTime <= schedule.startTime) {
+        showRewardToast('End time must be later than the start time.');
+        return false;
+      }
+      return true;
+    }
+
+    function findManagedOfferCard(offerId) {
+      var cards = Array.from(document.querySelectorAll('[data-ai-managed-offer]'));
+      return cards.find(function(card) { return card.dataset.aiManagedOfferId === offerId; }) || null;
+    }
+
+    function setAiOfferDialogMode(mode) {
+      var title = document.querySelector('#ai-offer-dialog-title');
+      var context = document.querySelector('[data-ai-offer-editor-context]');
+      var submit = document.querySelector('[data-ai-offer-publish]');
+      var copy = {
+        suggestion: { title: 'Review AI offer', context: 'AI draft is pre-filled from anonymous demand and your quiet hours.', submit: 'Save & publish offer' },
+        'managed-edit': { title: 'Edit offer', context: 'Update the details shown to customers. Changes apply to this offer.', submit: 'Save changes' },
+        'managed-create': { title: 'Create offer', context: 'Add a new offer for customers and choose when it is available.', submit: 'Create offer' }
+      }[mode] || null;
+      if (title && copy) title.textContent = copy.title;
+      if (context && copy) context.textContent = copy.context;
+      if (submit && copy) submit.textContent = copy.submit;
+    }
+
+    function updateManagedOfferCard(card, draft) {
+      if (!card || !draft) return;
+      var schedule = draft.schedule || formatOfferSchedule(draft.startDate, draft.endDate, draft.startTime, draft.endTime);
+      card.dataset.offerTitle = draft.title;
+      card.dataset.offerValue = draft.value;
+      card.dataset.offerSchedule = schedule;
+      card.dataset.offerStartDate = draft.startDate || '';
+      card.dataset.offerEndDate = draft.endDate || '';
+      card.dataset.offerStartTime = draft.startTime || '';
+      card.dataset.offerEndTime = draft.endTime || '';
+      card.dataset.offerDescription = draft.description;
+      var title = card.querySelector('[data-ai-managed-title]');
+      var value = card.querySelector('[data-ai-managed-value]');
+      var scheduleEl = card.querySelector('[data-ai-managed-schedule]');
+      if (title) title.textContent = draft.title;
+      if (value) value.textContent = draft.value;
+      if (scheduleEl) scheduleEl.textContent = card.dataset.offerSchedule;
+    }
+
+    function createManagedOfferFromDraft(draft) {
+      var list = document.querySelector('[data-ai-managed-offer-list]');
+      if (!list || !draft) return null;
+      var existing = draft.sourceId
+        ? Array.from(list.querySelectorAll('[data-ai-managed-offer]')).find(function(card) {
+          return card.dataset.aiManagedOfferSource === draft.sourceId;
+        })
+        : null;
+      if (existing) {
+        updateManagedOfferCard(existing, draft);
+        setManagedOfferStatus(existing, 'active');
+        return existing;
+      }
+
+      var id = draft.sourceId ? 'ai-' + draft.sourceId : 'custom-' + Date.now();
+      var schedule = draft.schedule || formatOfferSchedule(draft.startDate, draft.endDate, draft.startTime, draft.endTime);
+      var card = document.createElement('article');
+      card.className = 'ai-managed-offer-card';
+      card.dataset.aiManagedOffer = '';
+      card.dataset.aiManagedOfferId = id;
+      card.dataset.aiManagedOfferSource = draft.sourceId || '';
+      card.dataset.status = 'active';
+      card.dataset.offerTitle = draft.title;
+      card.dataset.offerValue = draft.value;
+      card.dataset.offerSchedule = schedule;
+      card.dataset.offerStartDate = draft.startDate || '';
+      card.dataset.offerEndDate = draft.endDate || '';
+      card.dataset.offerStartTime = draft.startTime || '';
+      card.dataset.offerEndTime = draft.endTime || '';
+      card.dataset.offerDescription = draft.description;
+      card.dataset.offerUsed = '0 used';
+      card.dataset.offerExpiry = 'Set expiry';
+      card.dataset.offerChannel = 'In-app';
+      card.innerHTML = '<span class="ai-managed-offer-icon"><i class="bi bi-megaphone" aria-hidden="true"></i></span>' +
+        '<div class="ai-managed-offer-content">' +
+          '<div class="ai-managed-offer-head"><h4 data-ai-managed-title></h4><span class="ai-managed-offer-status" data-ai-managed-status>Active</span></div>' +
+          '<p class="ai-managed-offer-summary"><span data-ai-managed-value></span> · <span data-ai-managed-schedule></span></p>' +
+          '<div class="ai-managed-offer-meta"><span data-ai-managed-used>0 used</span><span data-ai-managed-expiry>Set expiry</span><span data-ai-managed-channel>In-app</span></div>' +
+        '</div>' +
+        '<div class="ai-managed-offer-actions"><button class="ai-managed-action" type="button" data-ai-managed-edit>Edit</button><button class="ai-managed-action" type="button" data-ai-managed-toggle>Pause</button><button class="ai-managed-action is-danger" type="button" data-ai-managed-delete>Delete</button></div>';
+      list.appendChild(card);
+      updateManagedOfferCard(card, draft);
+      renderAiManagedOffers();
+      return card;
+    }
+
+    function setManagedOfferStatus(card, status) {
+      if (!card) return;
+      var isPaused = status === 'paused';
+      card.dataset.status = isPaused ? 'paused' : 'active';
+      card.classList.toggle('is-paused', isPaused);
+      var statusEl = card.querySelector('[data-ai-managed-status]');
+      if (statusEl) {
+        statusEl.textContent = isPaused ? 'Paused' : 'Active';
+        statusEl.classList.toggle('is-paused', isPaused);
+      }
+      var toggle = card.querySelector('[data-ai-managed-toggle]');
+      if (toggle) toggle.textContent = isPaused ? 'Resume' : 'Pause';
+      renderAiManagedOffers();
+    }
+
+    function deleteManagedOffer(card) {
+      if (!card) return;
+      var name = card.dataset.offerTitle || 'Offer';
+      card.remove();
+      renderAiManagedOffers();
+      showRewardToast('Offer deleted: ' + name + '.');
+    }
+
+    function renderAiManagedOffers() {
+      var cards = Array.from(document.querySelectorAll('[data-ai-managed-offer]'));
+      var counts = { all: cards.length, active: 0, paused: 0 };
+      cards.forEach(function(card) {
+        var status = card.dataset.status === 'paused' ? 'paused' : 'active';
+        counts[status] += 1;
+      });
+      Object.keys(counts).forEach(function(filter) {
+        var count = document.querySelector('[data-ai-offer-manager-count="' + filter + '"]');
+        if (count) count.textContent = counts[filter];
+      });
+      var query = currentAiOfferManagerSearch.toLowerCase();
+      var visible = 0;
+      cards.forEach(function(card) {
+        var status = card.dataset.status === 'paused' ? 'paused' : 'active';
+        var haystack = [card.dataset.offerTitle, card.dataset.offerValue, card.dataset.offerSchedule].join(' ').toLowerCase();
+        var matches = (currentAiOfferManagerFilter === 'all' || currentAiOfferManagerFilter === status) && (!query || haystack.indexOf(query) >= 0);
+        card.hidden = !matches;
+        if (matches) visible += 1;
+      });
+      document.querySelectorAll('[data-ai-offer-manager-filter]').forEach(function(button) {
+        var selected = button.dataset.aiOfferManagerFilter === currentAiOfferManagerFilter;
+        button.classList.toggle('is-active', selected);
+        button.setAttribute('aria-selected', selected ? 'true' : 'false');
+      });
+      var empty = document.querySelector('[data-ai-offer-manager-empty]');
+      if (empty) {
+        empty.hidden = visible > 0;
+        empty.textContent = query ? 'No offers match your search.' : 'No offers match this filter.';
+      }
     }
 
     function updateAiOfferCount() {
@@ -9184,10 +9536,48 @@
       var dialog = document.querySelector('[data-ai-offer-dialog]');
       if (!draft || !dialog) return;
       activeAiOfferId = offerId;
+      activeAiOfferMode = 'suggestion';
+      setAiOfferDialogMode('suggestion');
       setAiOfferField('title', draft.title);
       setAiOfferField('value', draft.value);
-      setAiOfferField('schedule', draft.schedule);
+      setAiOfferScheduleFields(draft);
       setAiOfferField('description', draft.description);
+      dialog.hidden = false;
+      var title = document.querySelector('[data-ai-offer-field="title"]');
+      if (title) title.focus();
+    }
+
+    function openManagedOfferEditor(card) {
+      var dialog = document.querySelector('[data-ai-offer-dialog]');
+      if (!card || !dialog) return;
+      activeAiOfferId = card.dataset.aiManagedOfferId;
+      activeAiOfferMode = 'managed-edit';
+      setAiOfferDialogMode('managed-edit');
+      setAiOfferField('title', card.dataset.offerTitle);
+      setAiOfferField('value', card.dataset.offerValue);
+      setAiOfferScheduleFields({
+        startDate: card.dataset.offerStartDate,
+        endDate: card.dataset.offerEndDate,
+        startTime: card.dataset.offerStartTime,
+        endTime: card.dataset.offerEndTime,
+        summary: card.dataset.offerSchedule
+      });
+      setAiOfferField('description', card.dataset.offerDescription);
+      dialog.hidden = false;
+      var title = document.querySelector('[data-ai-offer-field="title"]');
+      if (title) title.focus();
+    }
+
+    function openManagedOfferCreator() {
+      var dialog = document.querySelector('[data-ai-offer-dialog]');
+      if (!dialog) return;
+      activeAiOfferId = null;
+      activeAiOfferMode = 'managed-create';
+      setAiOfferDialogMode('managed-create');
+      setAiOfferField('title', '');
+      setAiOfferField('value', '');
+      setAiOfferScheduleFields({});
+      setAiOfferField('description', '');
       dialog.hidden = false;
       var title = document.querySelector('[data-ai-offer-field="title"]');
       if (title) title.focus();
@@ -9197,6 +9587,7 @@
       var dialog = document.querySelector('[data-ai-offer-dialog]');
       if (dialog) dialog.hidden = true;
       activeAiOfferId = null;
+      activeAiOfferMode = 'suggestion';
     }
 
     function dismissAiOffer(offerId) {
@@ -9219,11 +9610,31 @@
       if (event) event.preventDefault();
       var title = getAiOfferField('title');
       var value = getAiOfferField('value');
-      var schedule = getAiOfferField('schedule');
-      if (!title || !value || !schedule) {
-        showRewardToast('Please complete the offer title, price or discount, and schedule.');
+      var schedule = getAiOfferSchedule();
+      var description = getAiOfferField('description');
+      if (!title || !value) {
+        showRewardToast('Please complete the offer title and price or discount.');
         return;
       }
+      if (!validateAiOfferSchedule(schedule)) {
+        return;
+      }
+      setAiOfferField('schedule', schedule.summary);
+      if (activeAiOfferMode === 'managed-edit') {
+        var managedCard = findManagedOfferCard(activeAiOfferId);
+        updateManagedOfferCard(managedCard, { title: title, value: value, schedule: schedule.summary, startDate: schedule.startDate, endDate: schedule.endDate, startTime: schedule.startTime, endTime: schedule.endTime, description: description });
+        closeAiOfferEditor();
+        showRewardToast('Offer updated: ' + title + '.');
+        return;
+      }
+
+      if (activeAiOfferMode === 'managed-create') {
+        createManagedOfferFromDraft({ title: title, value: value, schedule: schedule.summary, startDate: schedule.startDate, endDate: schedule.endDate, startTime: schedule.startTime, endTime: schedule.endTime, description: description });
+        closeAiOfferEditor();
+        showRewardToast('Offer created: ' + title + '.');
+        return;
+      }
+
       var card = findAiOfferCard(activeAiOfferId);
       if (card) {
         card.classList.add('is-published');
@@ -9236,6 +9647,17 @@
           status.textContent = 'Published in demo. Matching customers can now receive a limited notification.';
         }
       }
+      createManagedOfferFromDraft({
+        title: title,
+        value: value,
+        schedule: schedule.summary,
+        startDate: schedule.startDate,
+        endDate: schedule.endDate,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+        description: description,
+        sourceId: activeAiOfferId
+      });
       updateAiOfferCount();
       closeAiOfferEditor();
       showRewardToast('Offer published in demo: ' + title + '.');
@@ -9266,6 +9688,42 @@
     document.addEventListener('keydown', function(event) {
       if (event.key === 'Escape' && aiOfferDialog && !aiOfferDialog.hidden) closeAiOfferEditor();
     });
+
+    document.querySelectorAll('[data-ai-offer-create]').forEach(function(button) {
+      button.addEventListener('click', openManagedOfferCreator);
+    });
+
+    document.querySelectorAll('[data-ai-offer-manager-filter]').forEach(function(button) {
+      button.addEventListener('click', function() {
+        currentAiOfferManagerFilter = button.dataset.aiOfferManagerFilter || 'all';
+        renderAiManagedOffers();
+      });
+    });
+
+    var aiOfferManagerSearch = document.querySelector('[data-ai-offer-manager-search]');
+    if (aiOfferManagerSearch) {
+      aiOfferManagerSearch.addEventListener('input', function() {
+        currentAiOfferManagerSearch = aiOfferManagerSearch.value.trim();
+        renderAiManagedOffers();
+      });
+    }
+
+    var aiManagedOfferList = document.querySelector('[data-ai-managed-offer-list]');
+    if (aiManagedOfferList) {
+      aiManagedOfferList.addEventListener('click', function(event) {
+        var card = event.target.closest('[data-ai-managed-offer]');
+        if (!card) return;
+        if (event.target.closest('[data-ai-managed-edit]')) { openManagedOfferEditor(card); return; }
+        if (event.target.closest('[data-ai-managed-toggle]')) {
+          setManagedOfferStatus(card, card.dataset.status === 'paused' ? 'active' : 'paused');
+          showRewardToast((card.dataset.status === 'paused' ? 'Offer paused: ' : 'Offer resumed: ') + (card.dataset.offerTitle || 'Offer') + '.');
+          return;
+        }
+        if (event.target.closest('[data-ai-managed-delete]')) deleteManagedOffer(card);
+      });
+    }
+
+    renderAiManagedOffers();
 
     function showRewardBuilder(open) {
       var catalog = document.querySelector('[data-reward-catalog-view]');
@@ -9955,6 +10413,7 @@
       });
     }
 
+    initAiOfferSchedulePickers();
     updateFilterCounts();
     updateRewardPreview();
     activateMainTabFromUrl();
