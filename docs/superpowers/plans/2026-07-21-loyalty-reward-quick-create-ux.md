@@ -51,7 +51,7 @@ test('keeps the second confirmation modal as a compact summary', () => {
   assert.match(html, /function buildRewardConfirmationHTML\(draft\)/);
   assert.match(html, /Back &amp; edit|Back & edit/);
   assert.match(html, /confirmButtonText: editing \? 'Save changes' : 'Confirm & create'/);
-  assert.match(html, /buildRewardConfirmationHTML\(getRewardDraft\(\)\)/);
+  assert.match(html, /html: buildRewardConfirmationHTML\(draft\)/);
 });
 ```
 
