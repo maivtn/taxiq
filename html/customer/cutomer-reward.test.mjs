@@ -4303,6 +4303,16 @@ test('provides mobile bottom navigation and desktop sidebar', () => {
   assert.match(source, /function navigateTo\(screenId/);
 });
 
+test('keeps the customer reward page inside a mobile app shell at every viewport width', () => {
+  const source = html();
+  assert.match(source, /<body[^>]*class="[^"]*mobile-app-shell/);
+  assert.match(source, /body\.mobile-app-shell #app-shell\s*\{[\s\S]*display:\s*block\s*!important;[\s\S]*width:\s*min\(100%,\s*393px\)/);
+  assert.match(source, /body\.mobile-app-shell #desktop-sidebar\s*\{[\s\S]*display:\s*none\s*!important/);
+  assert.match(source, /body\.mobile-app-shell #mobile-header\s*\{[\s\S]*display:\s*block\s*!important/);
+  assert.match(source, /body\.mobile-app-shell #mobile-nav\s*\{[\s\S]*display:\s*grid\s*!important/);
+  assert.match(source, /body\.mobile-app-shell[^\n]*\[class\*="sm:grid-cols-"\]/);
+});
+
 test('defines shared visual components and completes five root screens', () => {
   const source = html();
   for (const className of ['app-card', 'app-button', 'app-input', 'app-chip']) {

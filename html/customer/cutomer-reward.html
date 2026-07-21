@@ -83,8 +83,95 @@
       body.is-printing-ticket #checkin-ticket .app-card { border: 1px solid #999 !important; }
     }
   </style>
+  <style>
+    /* This route is a customer app showcase, so it stays phone-sized even when opened on desktop. */
+    body.mobile-app-shell {
+      overflow-x: hidden;
+    }
+
+    body.mobile-app-shell #app-shell {
+      display: block !important;
+      width: min(100%, 393px);
+      max-width: 393px;
+      min-height: 100dvh;
+      margin-inline: auto;
+      overflow-x: clip;
+      background: #070816;
+    }
+
+    body.mobile-app-shell #desktop-sidebar {
+      display: none !important;
+    }
+
+    body.mobile-app-shell #mobile-header {
+      display: block !important;
+    }
+
+    body.mobile-app-shell #screen-region {
+      max-width: none !important;
+      padding-inline: 1rem !important;
+      padding-bottom: calc(6.75rem + env(safe-area-inset-bottom)) !important;
+      padding-top: 1.25rem !important;
+    }
+
+    body.mobile-app-shell #mobile-nav {
+      display: grid !important;
+      left: 50% !important;
+      right: auto !important;
+      width: min(100%, 393px);
+      transform: translateX(-50%);
+    }
+
+    body.mobile-app-shell #toast-region {
+      bottom: 6rem !important;
+      left: 1rem !important;
+      right: 1rem !important;
+    }
+
+    @media (min-width: 640px) {
+      body.mobile-app-shell {
+        background: #02030a;
+      }
+
+      body.mobile-app-shell #app-shell {
+        box-shadow: 0 0 0 1px rgba(37, 44, 81, .8), 0 24px 80px rgba(0, 0, 0, .45);
+      }
+
+      /* Tailwind's responsive utilities use the browser viewport. Re-apply the phone defaults
+         inside this centered shell so a desktop preview does not accidentally become tablet UI. */
+      body.mobile-app-shell [class*="sm:grid-cols-"],
+      body.mobile-app-shell [class*="md:grid-cols-"],
+      body.mobile-app-shell [class*="lg:grid-cols-"],
+      body.mobile-app-shell [class*="xl:grid-cols-"] {
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+
+      body.mobile-app-shell [class~="grid-cols-2"] {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+
+      body.mobile-app-shell [class~="grid-cols-3"] {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      }
+
+      body.mobile-app-shell [class~="grid-cols-5"] {
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+      }
+
+      body.mobile-app-shell [class*="sm:flex-row"],
+      body.mobile-app-shell [class*="md:flex-row"],
+      body.mobile-app-shell [class*="lg:flex-row"],
+      body.mobile-app-shell [class*="xl:flex-row"] {
+        flex-direction: column !important;
+      }
+
+      body.mobile-app-shell [class~="hidden"][class~="lg:inline-grid"] {
+        display: none !important;
+      }
+    }
+  </style>
 </head>
-<body>
+<body class="mobile-app-shell">
   <template id="referral-copy-contract"><p data-en="Your friend receives points from the first business they check in at. Your 50-point reward is funded by that business and released after their first paid visit." data-vi="Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Phần thưởng 50 điểm của bạn do doanh nghiệp đó tài trợ và chỉ được cộng sau lượt ghé có thanh toán đầu tiên.">Bạn bè nhận điểm từ doanh nghiệp đầu tiên họ check-in. Phần thưởng 50 điểm của bạn do doanh nghiệp đó tài trợ và chỉ được cộng sau lượt ghé có thanh toán đầu tiên.</p></template>
   <div id="app-shell" class="min-h-dvh lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
     <aside id="desktop-sidebar" class="hidden min-h-dvh border-r border-app-line bg-app-panel lg:sticky lg:top-0 lg:flex lg:flex-col">
