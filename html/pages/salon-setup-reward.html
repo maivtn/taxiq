@@ -921,6 +921,13 @@
     .reward-proto .reward-create-form { display: grid; gap: 14px; }
     .reward-proto .reward-create-preview { position: sticky; top: 16px; }
     .reward-proto .reward-create-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    .reward-proto .reward-disclosure { border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+    .reward-proto .reward-disclosure summary { cursor: pointer; list-style: none; padding: 14px 16px; font-weight: 900; }
+    .reward-proto .reward-disclosure summary::-webkit-details-marker { display: none; }
+    .reward-proto .reward-disclosure summary::after { content: '+'; float: right; color: var(--muted); font-size: 20px; line-height: 1; }
+    .reward-proto .reward-disclosure[open] summary::after { content: '−'; }
+    .reward-proto .reward-disclosure-body { border-top: 1px solid var(--line); padding: 0 16px 16px; }
+    .reward-proto .reward-contextual-row[hidden] { display: none; }
     @media (max-width: 800px) {
       .reward-proto .reward-create-layout { grid-template-columns: 1fr; }
       .reward-proto .reward-create-preview { position: static; }
@@ -6891,42 +6898,43 @@
                           <div class="field"><label>Reward Name</label><input value="$5 Gift Card" data-reward-name-input></div>
                           <div class="field"><label>Points Cost</label><input type="number" min="1" step="1" value="500" data-reward-points-input></div>
                           <div class="field"><label>Description</label><input value="$5 stored-value gift card" data-reward-description-input></div>
-                          <div class="field"><label>Reward Value / Linked Item</label><input value="$5.00" data-reward-value-input></div>
+                          <div class="field"><label data-reward-value-label>Reward Value / Linked Item</label><input value="$5.00" data-reward-value-input></div>
                           <div class="field"><label>Expiration</label><input value="12 months" data-reward-expiry-input></div>
+                        </div>
+                        <div class="grid g2 reward-contextual-rules" style="margin-top:12px">
+                          <div class="line reward-contextual-row" data-reward-contextual="minimum-spend"><span>Minimum spend</span><input value="$0" data-reward-minimum-spend-input></div>
+                          <div class="line reward-contextual-row" data-reward-contextual="maximum-discount" hidden><span>Maximum discount</span><input value="" placeholder="Required for percent discounts" data-reward-maximum-discount-input></div>
                         </div>
                       </section>
 
-                      <section class="card" data-reward-section="redemption">
-                        <div class="title"><h3>Redemption Rules</h3><span class="chip">Conditions</span></div>
-                        <div class="grid g2">
-                          <div>
-                            <div class="line"><span>Minimum spend</span><input value="$0" data-reward-minimum-spend-input></div>
-                            <div class="line"><span>Maximum discount</span><input value="" placeholder="Required for percent discounts" data-reward-maximum-discount-input></div>
+                      <details class="reward-disclosure" data-reward-advanced="redemption">
+                        <summary>More redemption rules</summary>
+                        <div class="reward-disclosure-body">
+                          <div class="grid g2">
                             <div class="line"><span>Eligible services</span><select data-reward-eligible-services-select><option>All services</option><option>Selected services</option><option>Service add-ons only</option></select></div>
                             <div class="line"><span>Valid locations</span><select data-reward-valid-locations-select><option>Bitcoin Nail Bar</option><option>All locations</option></select></div>
-                          </div>
-                          <div class="card soft">
-                            <div class="title"><h3>Usage Rules</h3><span class="chip">Redemption</span></div>
                             <div class="line"><span>Combine promotions</span><label class="switch"><input type="checkbox" data-reward-stack-input><span class="switch-track"></span></label></div>
                             <div class="line"><span>Use with membership</span><label class="switch"><input type="checkbox" checked data-reward-membership-input><span class="switch-track"></span></label></div>
                             <div class="line"><span>Customer limit</span><input value="1" data-reward-usage-limit-rules-input></div>
                             <div class="line"><span>Issued reward validity</span><select data-reward-validity-select><option>Use before expiration</option><option>30 days after issue</option><option>60 days after issue</option></select></div>
                           </div>
                         </div>
-                      </section>
+                      </details>
 
-                      <section class="card" data-reward-section="availability">
-                        <div class="title"><h3>Availability &amp; Limits</h3><span class="chip">Visibility</span></div>
-                        <div class="form2">
-                          <div class="field"><label>Customer segment</label><select data-reward-audience-select><option>All Customers</option><option>New Customers</option><option>VIP</option><option>Inactive 30+ Days</option></select></div>
-                          <div class="field"><label>Status</label><select data-reward-status-select><option value="active">Active</option><option value="paused">Paused</option></select></div>
+                      <details class="reward-disclosure" data-reward-advanced="availability">
+                        <summary>Availability &amp; limits</summary>
+                        <div class="reward-disclosure-body">
+                          <div class="form2">
+                            <div class="field"><label>Customer segment</label><select data-reward-audience-select><option>All Customers</option><option>New Customers</option><option>VIP</option><option>Inactive 30+ Days</option></select></div>
+                            <div class="field"><label>Status</label><select data-reward-status-select><option value="active">Active</option><option value="paused">Paused</option></select></div>
+                          </div>
+                          <div class="grid g2" style="margin-top:12px">
+                            <div class="line"><span>Quantity limit</span><input value="Unlimited" data-reward-quantity-limit-input></div>
+                            <div class="line"><span>Budget limit</span><input value="Unlimited" data-reward-budget-limit-input></div>
+                          </div>
+                          <p class="muted">Active catalog rewards appear in customer wallets when the customer has enough Available Points. Pausing stops new issuance; rewards already issued remain valid until their own expiration.</p>
                         </div>
-                        <div class="grid g2" style="margin-top:12px">
-                          <div class="line"><span>Quantity limit</span><input value="Unlimited" data-reward-quantity-limit-input></div>
-                          <div class="line"><span>Budget limit</span><input value="Unlimited" data-reward-budget-limit-input></div>
-                        </div>
-                        <p class="muted">Active catalog rewards appear in customer wallets when the customer has enough Available Points. Pausing stops new issuance; rewards already issued remain valid until their own expiration.</p>
-                      </section>
+                      </details>
 
                       <div class="reward-create-actions">
                         <button class="btn g" type="button" data-publish-reward>Publish Reward</button>
@@ -7040,7 +7048,6 @@
                     <li>Estimates are projections from local demand, not guarantees.</li>
                   </ul>
                 </aside>
-              </div>
 
               <div class="ai-offer-dialog" data-ai-offer-dialog hidden role="dialog" aria-modal="true" aria-labelledby="ai-offer-dialog-title">
                 <form class="ai-offer-dialog-card" data-ai-offer-form>
@@ -7065,6 +7072,7 @@
                     <button class="btn p" type="submit" data-ai-offer-publish>Save &amp; publish offer</button>
                   </div>
                 </form>
+              </div>
               </div>
             </section>
 
@@ -9477,6 +9485,19 @@
     var previewMinimumSpend = document.querySelector('[data-preview-minimum-spend]');
     var previewMaximumDiscount = document.querySelector('[data-preview-maximum-discount]');
 
+    function updateRewardContext() {
+      var activeType = document.querySelector('[data-reward-builder] [data-reward-type].active');
+      var typeKey = activeType ? activeType.dataset.rewardTypeKey : '';
+      var minimumRow = document.querySelector('[data-reward-contextual="minimum-spend"]');
+      var maximumRow = document.querySelector('[data-reward-contextual="maximum-discount"]');
+      var valueLabel = document.querySelector('[data-reward-value-label]');
+      if (minimumRow) minimumRow.hidden = typeKey !== 'dollar_discount' && typeKey !== 'percent_discount';
+      if (maximumRow) maximumRow.hidden = typeKey !== 'percent_discount';
+      if (valueLabel) valueLabel.textContent = typeKey === 'free_service'
+        ? 'Linked service'
+        : typeKey === 'free_product' ? 'Linked product' : 'Reward Value / Linked Item';
+    }
+
     function updateRewardPreview() {
         var activeType = document.querySelector('[data-reward-builder] [data-reward-type].active');
       var typeLabel = activeType && activeType.querySelector('b') ? activeType.querySelector('b').textContent : 'Reward';
@@ -9487,6 +9508,7 @@
       if (previewExpiry && rewardExpiryInput) previewExpiry.textContent = rewardExpiryInput.value.trim() || '—';
       if (previewMinimumSpend && rewardMinimumSpendInput) previewMinimumSpend.textContent = rewardMinimumSpendInput.value.trim() || 'No minimum';
       if (previewMaximumDiscount && rewardMaximumDiscountInput) previewMaximumDiscount.textContent = rewardMaximumDiscountInput.value.trim() || '—';
+      updateRewardContext();
     }
 
     function selectRewardType(card) {
@@ -9870,10 +9892,22 @@
       });
     }
 
-    function buildPreviewHTML() {
-      var titleEl = document.querySelector('[data-preview-title]');
-      var card = titleEl ? titleEl.closest('.card') : null;
-      return '<div class="reward-proto" style="text-align:left">' + (card ? card.outerHTML : '') + '</div>';
+    function buildRewardConfirmationHTML(draft) {
+      var rows = [
+        ['Type', draft.type],
+        ['Points cost', draft.pointsCost + ' points'],
+        ['Value', draft.value],
+        ['Expires', draft.expiry]
+      ];
+      if (draft.minimumSpend && draft.minimumSpend !== '$0') rows.push(['Minimum spend', draft.minimumSpend]);
+      if (draft.maximumDiscount) rows.push(['Maximum discount', draft.maximumDiscount]);
+      return '<div class="reward-proto reward-confirm-summary" style="text-align:left">' +
+        '<h3>' + escapeHtml(draft.name) + '</h3>' +
+        '<p class="muted">Ready to publish in Reward Catalog</p>' +
+        rows.map(function(row) {
+          return '<div class="line"><span>' + escapeHtml(row[0]) + '</span><b>' + escapeHtml(row[1]) + '</b></div>';
+        }).join('') +
+        '</div>';
     }
 
     function finalizeReward() {
@@ -9897,17 +9931,18 @@
 
     function confirmAndCreateReward() {
       if (!validateRewardForm()) return;
+      var draft = getRewardDraft();
       var editing = !!editingProgram;
       if (typeof Swal === 'undefined') { finalizeReward(); return; }
       Swal.fire({
         title: editing ? 'Save changes to this reward?' : 'Create this reward?',
-        html: buildPreviewHTML(),
+        html: buildRewardConfirmationHTML(draft),
         showCancelButton: true,
         confirmButtonText: editing ? 'Save changes' : 'Confirm & create',
-        cancelButtonText: 'Cancel',
+        cancelButtonText: 'Back & edit',
         confirmButtonColor: '#7048f4',
         cancelButtonColor: '#98a2b3',
-        width: 480
+        width: 440
       }).then(function(result) {
         if (result && result.isConfirmed) finalizeReward();
       });
@@ -9921,6 +9956,7 @@
     }
 
     updateFilterCounts();
+    updateRewardPreview();
     activateMainTabFromUrl();
   </script>
 

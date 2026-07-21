@@ -95,12 +95,32 @@ test('uses a single-screen Create Reward form', () => {
   const html = source();
   assert.match(html, /data-reward-form/);
   assert.match(html, /data-reward-section="details"/);
-  assert.match(html, /data-reward-section="redemption"/);
-  assert.match(html, /data-reward-section="availability"/);
+  assert.match(html, /data-reward-advanced="redemption"/);
+  assert.match(html, /data-reward-advanced="availability"/);
   assert.match(html, /data-reward-preview/);
   assert.match(html, /<button class="btn g" type="button" data-publish-reward>Publish Reward<\/button>/);
   assert.doesNotMatch(html, /data-reward-steps|data-wizard-step|data-wizard-next|data-wizard-back|data-wizard-save/);
   assert.doesNotMatch(html, />3 steps<|>Continue <|>Back<\/button>/);
+});
+
+test('uses progressive disclosure for advanced reward settings', () => {
+  const html = source();
+  assert.match(html, /<details class="reward-disclosure" data-reward-advanced="redemption">/);
+  assert.match(html, /<summary>More redemption rules<\/summary>/);
+  assert.match(html, /<details class="reward-disclosure" data-reward-advanced="availability">/);
+  assert.match(html, /<summary>Availability &amp; limits<\/summary>/);
+  assert.doesNotMatch(html, /data-reward-advanced="redemption" open|data-reward-advanced="availability" open/);
+  assert.match(html, /data-reward-contextual="minimum-spend"/);
+  assert.match(html, /data-reward-contextual="maximum-discount"/);
+  assert.match(html, /function updateRewardContext\(\)/);
+});
+
+test('keeps the second confirmation modal as a compact summary', () => {
+  const html = source();
+  assert.match(html, /function buildRewardConfirmationHTML\(draft\)/);
+  assert.match(html, /Back &amp; edit|Back & edit/);
+  assert.match(html, /confirmButtonText: editing \? 'Save changes' : 'Confirm & create'/);
+  assert.match(html, /html: buildRewardConfirmationHTML\(draft\)/);
 });
 
 test('adds AI Offers as a separate loyalty management tab', () => {
