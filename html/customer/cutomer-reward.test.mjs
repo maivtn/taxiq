@@ -4313,6 +4313,14 @@ test('keeps the customer reward page inside a mobile app shell at every viewport
   assert.match(source, /body\.mobile-app-shell[^\n]*\[class\*="sm:grid-cols-"\]/);
 });
 
+test('keeps wallet business labels and point values compact in the mobile shell', () => {
+  const source = html();
+  assert.match(source, /wallet-business-name/);
+  assert.match(source, /wallet-business-points/);
+  assert.match(source, /body\.mobile-app-shell #wallet-business-list \.wallet-business-name\s*\{[\s\S]*font-size:\s*0\.875rem/);
+  assert.match(source, /body\.mobile-app-shell #wallet-business-list \.wallet-business-points\s*\{[\s\S]*font-size:\s*1rem/);
+});
+
 test('defines shared visual components and completes five root screens', () => {
   const source = html();
   for (const className of ['app-card', 'app-button', 'app-input', 'app-chip']) {
