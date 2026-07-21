@@ -91,6 +91,18 @@ test('persists redemption settings when creating reward cards', () => {
   assert.match(html, /data-reward-minimum-spend/);
 });
 
+test('uses a single-screen Create Reward form', () => {
+  const html = source();
+  assert.match(html, /data-reward-form/);
+  assert.match(html, /data-reward-section="details"/);
+  assert.match(html, /data-reward-section="redemption"/);
+  assert.match(html, /data-reward-section="availability"/);
+  assert.match(html, /data-reward-preview/);
+  assert.match(html, /<button class="btn g" type="button" data-publish-reward>Publish Reward<\/button>/);
+  assert.doesNotMatch(html, /data-reward-steps|data-wizard-step|data-wizard-next|data-wizard-back|data-wizard-save/);
+  assert.doesNotMatch(html, />3 steps<|>Continue <|>Back<\/button>/);
+});
+
 test('adds AI Offers as a separate loyalty management tab', () => {
   const html = source();
   assert.match(html, /data-nav-subitem-target="ai-offers"[^>]*>AI Offers<\/button>/);

@@ -916,24 +916,14 @@
     }
     .reward-proto .reward-split { grid-template-columns: 7fr 5fr; }
 
-    /* multi-step reward wizard */
-    .reward-proto .reward-steps { display: flex; align-items: center; gap: 8px; margin: 4px 0 18px; }
-    .reward-proto .reward-step { display: inline-flex; align-items: center; gap: 9px; border: 0; background: transparent; padding: 4px; cursor: pointer; font: inherit; color: var(--muted); }
-    .reward-proto .reward-step-num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: #edf1f7; color: #667085; font-weight: 900; font-size: 14px; flex-shrink: 0; transition: background 0.2s, color 0.2s; }
-    .reward-proto .reward-step-label { font-weight: 800; font-size: 14px; white-space: nowrap; }
-    .reward-proto .reward-step.is-active .reward-step-num { background: linear-gradient(135deg, var(--p), var(--p2)); color: #fff; }
-    .reward-proto .reward-step.is-active .reward-step-label { color: var(--ink); }
-    .reward-proto .reward-step.is-done .reward-step-num { background: var(--green); color: #fff; }
-    .reward-proto .reward-step-bar { flex: 1; height: 2px; background: var(--line); border-radius: 2px; min-width: 14px; }
-    .reward-proto .reward-wizard-step { display: none; }
-    .reward-proto .reward-wizard-step.is-active { display: block; animation: rewardStepFade 0.2s ease; }
-    @keyframes rewardStepFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-    .reward-proto .reward-wizard-nav { display: flex; align-items: center; gap: 10px; margin-top: 18px; }
-    .reward-proto .reward-wizard-nav .spacer { flex: 1; }
-    .reward-proto .reward-wizard-nav .btn { display: inline-flex; align-items: center; gap: 6px; }
-    @media (max-width: 640px) {
-      .reward-proto .reward-step-label { display: none; }
-      .reward-proto .reward-step.is-active .reward-step-label { display: inline; font-size: 13px; }
+    /* single-screen reward builder */
+    .reward-proto .reward-create-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr); gap: 14px; align-items: start; }
+    .reward-proto .reward-create-form { display: grid; gap: 14px; }
+    .reward-proto .reward-create-preview { position: sticky; top: 16px; }
+    .reward-proto .reward-create-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    @media (max-width: 800px) {
+      .reward-proto .reward-create-layout { grid-template-columns: 1fr; }
+      .reward-proto .reward-create-preview { position: static; }
     }
 
     /* SweetAlert2 styled to match this site */
@@ -6884,20 +6874,11 @@
                 <div data-reward-builder hidden>
                   <div class="loyalty-builder-back"><button class="btn o" type="button" data-close-reward-builder><i class="bi bi-arrow-left"></i> Back to catalog</button></div>
                 <div class="card">
-                  <div class="title"><h3 data-create-title>Create Reward</h3><span class="chip" data-create-step>3 steps</span></div>
-                  <div class="reward-steps" data-reward-steps>
-                    <button class="reward-step is-active" type="button" data-step-go="1"><span class="reward-step-num">1</span><span class="reward-step-label">Reward</span></button>
-                    <span class="reward-step-bar"></span>
-                    <button class="reward-step" type="button" data-step-go="2"><span class="reward-step-num">2</span><span class="reward-step-label">Redemption Rules</span></button>
-                    <span class="reward-step-bar"></span>
-                    <button class="reward-step" type="button" data-step-go="3"><span class="reward-step-num">3</span><span class="reward-step-label">Availability &amp; Limits</span></button>
-                  </div>
-
-                  <!-- Step 1: Reward -->
-                  <div class="reward-wizard-step is-active" data-wizard-step="1">
-                    <div class="grid g2">
-                      <div class="card">
-                        <div class="title"><h3>Reward Details</h3><span class="chip">Step 1</span></div>
+                  <div class="title"><h3 data-create-title>Create Reward</h3><span class="chip" data-create-step>Reward Catalog</span></div>
+                  <div class="reward-create-layout" data-reward-form>
+                    <div class="reward-create-form">
+                      <section class="card" data-reward-section="details">
+                        <div class="title"><h3>Reward Details</h3><span class="chip">Core</span></div>
                         <div class="grid g2 reward-types">
                           <div class="rewardType active" role="button" tabindex="0" aria-pressed="true" data-reward-type data-reward-type-key="gift_card" data-reward-value="$5.00" data-reward-points="500" data-reward-title="$5 Gift Card"><b>Gift Card</b><p class="muted">Stored value reward</p></div>
                           <div class="rewardType" role="button" tabindex="0" aria-pressed="false" data-reward-type data-reward-type-key="dollar_discount" data-reward-value="$10 off" data-reward-points="900" data-reward-title="$10 Off"><b>Dollar Discount</b><p class="muted">Fixed discount</p></div>
@@ -6913,65 +6894,53 @@
                           <div class="field"><label>Reward Value / Linked Item</label><input value="$5.00" data-reward-value-input></div>
                           <div class="field"><label>Expiration</label><input value="12 months" data-reward-expiry-input></div>
                         </div>
-                      </div>
-                      <div class="card" style="background:linear-gradient(135deg,#10172e,#573b9c);color:#fff">
-                        <span class="chip g" data-preview-type>Gift Card · Reward Catalog</span>
-                        <h2 style="font-size:30px" data-preview-title>$5 Gift Card</h2>
-                        <p style="color:#ccd3e5">Redeem <b data-preview-points>500 points</b> for <b data-preview-value>$5.00</b>.</p>
-                        <div class="line"><span>Expires</span><b data-preview-expiry>12 months</b></div>
-                        <div class="line"><span>Minimum spend</span><b data-preview-minimum-spend>No minimum</b></div>
-                        <div class="line"><span>Maximum discount</span><b data-preview-maximum-discount>—</b></div>
-                      </div>
-                    </div>
-                  </div>
+                      </section>
 
-                  <!-- Step 2: Redemption Rules -->
-                  <div class="reward-wizard-step" data-wizard-step="2">
-                    <div class="grid g2">
-                      <div class="card">
+                      <section class="card" data-reward-section="redemption">
                         <div class="title"><h3>Redemption Rules</h3><span class="chip">Conditions</span></div>
-                        <div class="line"><span>Minimum spend</span><input value="$0" data-reward-minimum-spend-input></div>
-                        <div class="line"><span>Maximum discount</span><input value="" placeholder="Required for percent discounts" data-reward-maximum-discount-input></div>
-                        <div class="line"><span>Eligible services</span><select data-reward-eligible-services-select><option>All services</option><option>Selected services</option><option>Service add-ons only</option></select></div>
-                        <div class="line"><span>Valid locations</span><select data-reward-valid-locations-select><option>Bitcoin Nail Bar</option><option>All locations</option></select></div>
-                      </div>
-                      <div class="card soft">
-                        <div class="title"><h3>Usage Rules</h3><span class="chip">Redemption</span></div>
-                        <div class="line"><span>Combine promotions</span><label class="switch"><input type="checkbox" data-reward-stack-input><span class="switch-track"></span></label></div>
-                        <div class="line"><span>Use with membership</span><label class="switch"><input type="checkbox" checked data-reward-membership-input><span class="switch-track"></span></label></div>
-                        <div class="line"><span>Customer limit</span><input value="1" data-reward-usage-limit-rules-input></div>
-                        <div class="line"><span>Issued reward validity</span><select data-reward-validity-select><option>Use before expiration</option><option>30 days after issue</option><option>60 days after issue</option></select></div>
-                      </div>
-                    </div>
-                  </div>
+                        <div class="grid g2">
+                          <div>
+                            <div class="line"><span>Minimum spend</span><input value="$0" data-reward-minimum-spend-input></div>
+                            <div class="line"><span>Maximum discount</span><input value="" placeholder="Required for percent discounts" data-reward-maximum-discount-input></div>
+                            <div class="line"><span>Eligible services</span><select data-reward-eligible-services-select><option>All services</option><option>Selected services</option><option>Service add-ons only</option></select></div>
+                            <div class="line"><span>Valid locations</span><select data-reward-valid-locations-select><option>Bitcoin Nail Bar</option><option>All locations</option></select></div>
+                          </div>
+                          <div class="card soft">
+                            <div class="title"><h3>Usage Rules</h3><span class="chip">Redemption</span></div>
+                            <div class="line"><span>Combine promotions</span><label class="switch"><input type="checkbox" data-reward-stack-input><span class="switch-track"></span></label></div>
+                            <div class="line"><span>Use with membership</span><label class="switch"><input type="checkbox" checked data-reward-membership-input><span class="switch-track"></span></label></div>
+                            <div class="line"><span>Customer limit</span><input value="1" data-reward-usage-limit-rules-input></div>
+                            <div class="line"><span>Issued reward validity</span><select data-reward-validity-select><option>Use before expiration</option><option>30 days after issue</option><option>60 days after issue</option></select></div>
+                          </div>
+                        </div>
+                      </section>
 
-                  <!-- Step 3: Availability & Limits -->
-                  <div class="reward-wizard-step" data-wizard-step="3">
-                    <div class="grid g2">
-                      <div class="card">
-                        <div class="title"><h3>Availability</h3><span class="chip">Visibility</span></div>
+                      <section class="card" data-reward-section="availability">
+                        <div class="title"><h3>Availability &amp; Limits</h3><span class="chip">Visibility</span></div>
                         <div class="form2">
                           <div class="field"><label>Customer segment</label><select data-reward-audience-select><option>All Customers</option><option>New Customers</option><option>VIP</option><option>Inactive 30+ Days</option></select></div>
                           <div class="field"><label>Status</label><select data-reward-status-select><option value="active">Active</option><option value="paused">Paused</option></select></div>
                         </div>
-                        <p class="muted">Active catalog rewards appear in customer wallets when the customer has enough Available Points.</p>
-                      </div>
-                      <div class="card soft">
-                        <div class="title"><h3>Quantity &amp; Budget</h3><span class="chip">Limits</span></div>
-                        <div class="line"><span>Quantity limit</span><input value="Unlimited" data-reward-quantity-limit-input></div>
-                        <div class="line"><span>Budget limit</span><input value="Unlimited" data-reward-budget-limit-input></div>
-                        <div class="loyalty-note">Pausing stops new issuance. Rewards already issued remain valid until their own expiration.</div>
+                        <div class="grid g2" style="margin-top:12px">
+                          <div class="line"><span>Quantity limit</span><input value="Unlimited" data-reward-quantity-limit-input></div>
+                          <div class="line"><span>Budget limit</span><input value="Unlimited" data-reward-budget-limit-input></div>
+                        </div>
+                        <p class="muted">Active catalog rewards appear in customer wallets when the customer has enough Available Points. Pausing stops new issuance; rewards already issued remain valid until their own expiration.</p>
+                      </section>
+
+                      <div class="reward-create-actions">
+                        <button class="btn g" type="button" data-publish-reward>Publish Reward</button>
                       </div>
                     </div>
-                  </div>
 
-                  <!-- Wizard navigation -->
-                  <div class="reward-wizard-nav">
-                    <button class="btn o" type="button" data-wizard-back hidden><i class="bi bi-arrow-left" aria-hidden="true"></i> Back</button>
-                    <span class="spacer"></span>
-                    <button class="btn o" type="button" data-wizard-save hidden>Save Changes</button>
-                    <button class="btn p" type="button" data-wizard-next>Continue <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
-                    <button class="btn g" type="button" data-publish-reward hidden>Publish Reward</button>
+                    <aside class="card reward-create-preview" data-reward-preview style="background:linear-gradient(135deg,#10172e,#573b9c);color:#fff">
+                      <span class="chip g" data-preview-type>Gift Card · Reward Catalog</span>
+                      <h2 style="font-size:30px" data-preview-title>$5 Gift Card</h2>
+                      <p style="color:#ccd3e5">Redeem <b data-preview-points>500 points</b> for <b data-preview-value>$5.00</b>.</p>
+                      <div class="line"><span>Expires</span><b data-preview-expiry>12 months</b></div>
+                      <div class="line"><span>Minimum spend</span><b data-preview-minimum-spend>No minimum</b></div>
+                      <div class="line"><span>Maximum discount</span><b data-preview-maximum-discount>—</b></div>
+                    </aside>
                   </div>
                 </div>
               </div>
@@ -9557,35 +9526,6 @@
       if (el) el.addEventListener('change', updateRewardPreview);
     });
 
-    var WIZARD_STEPS = 3;
-    var currentWizardStep = 1;
-
-    function updateWizardNav() {
-      var editing = !!editingProgram;
-      var isLast = currentWizardStep === WIZARD_STEPS;
-      var backBtn = document.querySelector('[data-wizard-back]');
-      var nextBtn = document.querySelector('[data-wizard-next]');
-      var pubBtn = document.querySelector('[data-publish-reward]');
-      var saveBtn = document.querySelector('[data-wizard-save]');
-      if (backBtn) backBtn.hidden = currentWizardStep === 1;
-      if (nextBtn) nextBtn.hidden = isLast;
-      if (pubBtn) { pubBtn.hidden = !isLast; pubBtn.textContent = editing ? 'Save Changes' : 'Publish Reward'; }
-      if (saveBtn) saveBtn.hidden = !(editing && !isLast);
-    }
-
-    function setWizardStep(step) {
-      currentWizardStep = Math.min(WIZARD_STEPS, Math.max(1, step));
-      document.querySelectorAll('[data-wizard-step]').forEach(function(panel) {
-        panel.classList.toggle('is-active', Number(panel.dataset.wizardStep) === currentWizardStep);
-      });
-      document.querySelectorAll('[data-step-go]').forEach(function(pill) {
-        var n = Number(pill.dataset.stepGo);
-        pill.classList.toggle('is-active', n === currentWizardStep);
-        pill.classList.toggle('is-done', n < currentWizardStep);
-      });
-      updateWizardNav();
-    }
-
     function validateRewardStep1() {
       var valid = true;
       [rewardNameInput, rewardValueInput, rewardPointsInput].forEach(function(inp) {
@@ -9617,46 +9557,8 @@
       return valid;
     }
 
-    var wizardNext = document.querySelector('[data-wizard-next]');
-    if (wizardNext) {
-      wizardNext.addEventListener('click', function() {
-        if (currentWizardStep === 1 && !validateRewardStep1()) return;
-        setWizardStep(currentWizardStep + 1);
-      });
-    }
-
-    var wizardBack = document.querySelector('[data-wizard-back]');
-    if (wizardBack) {
-      wizardBack.addEventListener('click', function() {
-        setWizardStep(currentWizardStep - 1);
-      });
-    }
-
-    document.querySelectorAll('[data-step-go]').forEach(function(pill) {
-      pill.addEventListener('click', function() {
-        var target = Number(pill.dataset.stepGo);
-        if (target > 1 && currentWizardStep === 1 && !validateRewardStep1()) return;
-        setWizardStep(target);
-      });
-    });
-
-    var wizardSave = document.querySelector('[data-wizard-save]');
-    if (wizardSave) {
-      wizardSave.addEventListener('click', function() {
-        confirmAndCreateReward();
-      });
-    }
-
-    var addRuleButton = document.querySelector('[data-add-rule]');
-    if (addRuleButton) {
-      addRuleButton.addEventListener('click', function() {
-        var line = document.createElement('div');
-        line.className = 'line';
-        line.innerHTML = '<input placeholder="Rule name" style="flex:1;min-width:0;text-align:left"><input placeholder="Value">';
-        addRuleButton.parentNode.insertBefore(line, addRuleButton);
-        var first = line.querySelector('input');
-        if (first) first.focus();
-      });
+    function validateRewardForm() {
+      return validateRewardStep1() && validateRewardRules();
     }
 
     function getRewardDraft() {
@@ -9749,9 +9651,10 @@
     function setCreateMode(editing) {
       var titleEl = document.querySelector('[data-create-title]');
       var stepEl = document.querySelector('[data-create-step]');
+      var publishButton = document.querySelector('[data-publish-reward]');
       if (titleEl) titleEl.textContent = editing ? 'Edit Reward' : 'Create Reward';
-      if (stepEl) stepEl.textContent = editing ? 'Editing' : '3 steps';
-      updateWizardNav();
+      if (stepEl) stepEl.textContent = editing ? 'Editing' : 'Reward Catalog';
+      if (publishButton) publishButton.textContent = editing ? 'Save Changes' : 'Publish Reward';
     }
 
     function resetRewardForm() {
@@ -9778,7 +9681,6 @@
     function resetCreateMode() {
       editingProgram = null;
       resetRewardForm();
-      setWizardStep(1);
       setCreateMode(false);
     }
 
@@ -9905,7 +9807,6 @@
         card.setAttribute('aria-pressed', on ? 'true' : 'false');
       });
       updateRewardPreview();
-      setWizardStep(1);
       setCreateMode(true);
       activateMainTab('reward-catalog');
       showRewardBuilder(true);
@@ -9995,7 +9896,7 @@
     }
 
     function confirmAndCreateReward() {
-      if (!validateRewardStep1() || !validateRewardRules()) return;
+      if (!validateRewardForm()) return;
       var editing = !!editingProgram;
       if (typeof Swal === 'undefined') { finalizeReward(); return; }
       Swal.fire({
@@ -10020,7 +9921,6 @@
     }
 
     updateFilterCounts();
-    setWizardStep(1);
     activateMainTabFromUrl();
   </script>
 
