@@ -79,17 +79,17 @@
     .consent span { color: var(--muted); font-size: 12px; line-height: 1.55; }
     .consent strong { display: block; margin-bottom: 2px; color: var(--ink); font-size: 13px; }
 
-    .service-grid, .staff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-    .choice-card { position: relative; display: flex; min-height: 116px; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 12px; border: 1px solid var(--line); border-radius: 16px; color: var(--ink); background: linear-gradient(145deg, #fff, #fdfbff); text-align: left; transition: border-color .18s, box-shadow .18s, transform .18s, background .18s; }
+    .service-grid, .staff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+    .choice-card { position: relative; display: flex; min-height: 96px; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 9px; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); background: linear-gradient(145deg, #fff, #fdfbff); text-align: left; transition: border-color .18s, box-shadow .18s, transform .18s, background .18s; }
     .choice-card:hover:not(:disabled) { border-color: #edacd0; transform: translateY(-1px); }
-    .choice-card[aria-pressed="true"] { border: 2px solid var(--pink); padding: 11px; background: linear-gradient(145deg, #fff5fb, #fcf1ff); box-shadow: 0 9px 22px rgba(247, 53, 152, .12); }
-    .choice-card[aria-pressed="true"]::after { position: absolute; top: 11px; right: 12px; display: grid; place-items: center; width: 21px; height: 21px; border-radius: 50%; color: white; background: var(--pink); content: "✓"; font-size: 13px; font-weight: 900; }
+    .choice-card[aria-pressed="true"] { border: 2px solid var(--pink); padding: 8px; background: linear-gradient(145deg, #fff5fb, #fcf1ff); box-shadow: 0 7px 16px rgba(247, 53, 152, .12); }
+    .choice-card[aria-pressed="true"]::after { position: absolute; top: 7px; right: 8px; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; color: white; background: var(--pink); content: "✓"; font-size: 11px; font-weight: 900; }
     .choice-card:disabled { border-color: #efedf5; color: #aaa8b8; background: #fafafd; }
-    .choice-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; background: #f8eafe; font-size: 18px; }
+    .choice-icon { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: #f8eafe; font-size: 15px; }
     .choice-card:disabled .choice-icon { filter: grayscale(1); opacity: .55; }
-    .choice-title { display: block; margin-top: 8px; font-size: 14px; font-weight: 850; letter-spacing: -.01em; }
-    .choice-detail { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; color: var(--muted); font-size: 11px; }
-    .choice-price { color: var(--pink-dark); font-size: 14px; font-weight: 850; }
+    .choice-title { display: block; margin-top: 5px; font-size: 12.5px; font-weight: 850; letter-spacing: -.01em; line-height: 1.2; }
+    .choice-detail { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 6px; margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .choice-price { color: var(--pink-dark); font-size: 13px; font-weight: 850; }
     .selection-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding: 10px 12px; border-radius: 14px; color: var(--muted); background: #f8f5ff; font-size: 12px; }
     .selection-summary strong { color: var(--ink); font-size: 14px; }
     .section-divider { height: 1px; margin: 20px 0; background: var(--line); }
@@ -167,14 +167,14 @@
       .intro-note { gap: 12px; margin-top: 18px; padding: 14px; }
       .returning-banner { margin-top: 14px; padding: 14px 16px; }
       .consent { gap: 12px; margin-top: 17px; padding: 14px; }
-      .service-grid, .staff-grid { gap: 10px; }
+      .service-grid, .staff-grid { gap: 6px; }
       .service-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .choice-card { min-height: 130px; padding: 15px; border-radius: 18px; }
-      .choice-card[aria-pressed="true"] { padding: 14px; }
-      .choice-icon { width: 38px; height: 38px; border-radius: 13px; font-size: 20px; }
-      .choice-title { margin-top: 11px; }
-      .choice-detail { margin-top: 5px; }
-      .selection-summary { margin-top: 14px; padding: 12px 14px; }
+      .choice-card { min-height: 96px; padding: 9px; border-radius: 13px; }
+      .choice-card[aria-pressed="true"] { padding: 8px; }
+      .choice-icon { width: 28px; height: 28px; border-radius: 9px; font-size: 15px; }
+      .choice-title { margin-top: 5px; }
+      .choice-detail { margin-top: 3px; }
+      .selection-summary { margin-top: 10px; padding: 10px 12px; }
       .section-divider { margin: 24px 0; }
       .section-copy { margin-bottom: 13px; }
       .date-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
@@ -190,6 +190,10 @@
       .action-row { gap: 10px; margin-top: 22px; }
       .sticky-action { position: static; margin-top: 20px; padding: 0; border: 0; background: transparent; backdrop-filter: none; }
       .sticky-action .primary-button { width: auto; }
+    }
+
+    @media (min-width: 760px) {
+      .service-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
   </style>
 </head>
@@ -274,6 +278,48 @@
           </button>
           <button class="choice-card" type="button" data-service-id="waxing" aria-pressed="false">
             <span class="choice-icon" aria-hidden="true">🕯️</span><span class="choice-title">Waxing</span><span class="choice-detail"><span>30 phút</span><strong class="choice-price">$25</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="classic" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">💗</span><span class="choice-title">Classic Manicure</span><span class="choice-detail"><span>30 phút</span><strong class="choice-price">$30</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="spa-pedi" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">🫧</span><span class="choice-title">Spa Pedicure</span><span class="choice-detail"><span>75 phút</span><strong class="choice-price">$70</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="gel-x" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">✨</span><span class="choice-title">Gel-X Full Set</span><span class="choice-detail"><span>100 phút</span><strong class="choice-price">$85</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="builder-gel" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">🪄</span><span class="choice-title">Builder Gel</span><span class="choice-detail"><span>75 phút</span><strong class="choice-price">$65</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="french-tip" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">🤍</span><span class="choice-title">French Tip</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$15</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="nail-art" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">🎨</span><span class="choice-title">Nail Art</span><span class="choice-detail"><span>25 phút</span><strong class="choice-price">$20</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="chrome" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">🌟</span><span class="choice-title">Chrome Finish</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$20</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="paraffin" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">🧴</span><span class="choice-title">Paraffin Treatment</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$18</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="acrylic-soak" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">🧼</span><span class="choice-title">Acrylic Soak-off</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$15</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="gel-removal" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">🫧</span><span class="choice-title">Gel Polish Removal</span><span class="choice-detail"><span>15 phút</span><strong class="choice-price">$10</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="eyebrow-wax" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">👁️</span><span class="choice-title">Eyebrow Wax</span><span class="choice-detail"><span>15 phút</span><strong class="choice-price">$15</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="lip-wax" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">💋</span><span class="choice-title">Lip Wax</span><span class="choice-detail"><span>10 phút</span><strong class="choice-price">$10</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="kids-mani" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">🌈</span><span class="choice-title">Kids Manicure</span><span class="choice-detail"><span>25 phút</span><strong class="choice-price">$25</strong></span>
+          </button>
+          <button class="choice-card" type="button" data-service-id="kids-pedi" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">🌼</span><span class="choice-title">Kids Pedicure</span><span class="choice-detail"><span>35 phút</span><strong class="choice-price">$35</strong></span>
           </button>
         </div>
         <div class="selection-summary" aria-live="polite"><span id="service-count">Chưa chọn dịch vụ</span><strong id="service-total">$0</strong></div>
@@ -392,13 +438,27 @@
         { id: 'acrylic', name: 'Acrylic Full Set', priceCents: 7500, durationMinutes: 90 },
         { id: 'fill', name: 'Acrylic Fill-in', priceCents: 5500, durationMinutes: 60 },
         { id: 'dipping', name: 'Dipping Nail', priceCents: 5000, durationMinutes: 50 },
-        { id: 'waxing', name: 'Waxing', priceCents: 2500, durationMinutes: 30 }
+        { id: 'waxing', name: 'Waxing', priceCents: 2500, durationMinutes: 30 },
+        { id: 'classic', name: 'Classic Manicure', priceCents: 3000, durationMinutes: 30 },
+        { id: 'spa-pedi', name: 'Spa Pedicure', priceCents: 7000, durationMinutes: 75 },
+        { id: 'gel-x', name: 'Gel-X Full Set', priceCents: 8500, durationMinutes: 100 },
+        { id: 'builder-gel', name: 'Builder Gel', priceCents: 6500, durationMinutes: 75 },
+        { id: 'french-tip', name: 'French Tip', priceCents: 1500, durationMinutes: 20 },
+        { id: 'nail-art', name: 'Nail Art', priceCents: 2000, durationMinutes: 25 },
+        { id: 'chrome', name: 'Chrome Finish', priceCents: 2000, durationMinutes: 20 },
+        { id: 'paraffin', name: 'Paraffin Treatment', priceCents: 1800, durationMinutes: 20 },
+        { id: 'acrylic-soak', name: 'Acrylic Soak-off', priceCents: 1500, durationMinutes: 20 },
+        { id: 'gel-removal', name: 'Gel Polish Removal', priceCents: 1000, durationMinutes: 15 },
+        { id: 'eyebrow-wax', name: 'Eyebrow Wax', priceCents: 1500, durationMinutes: 15 },
+        { id: 'lip-wax', name: 'Lip Wax', priceCents: 1000, durationMinutes: 10 },
+        { id: 'kids-mani', name: 'Kids Manicure', priceCents: 2500, durationMinutes: 25 },
+        { id: 'kids-pedi', name: 'Kids Pedicure', priceCents: 3500, durationMinutes: 35 }
       ];
       const STAFF = [
         { id: 'any', name: 'Bất kỳ chuyên viên nào', available: true, status: 'Sắp xếp sớm nhất', specialties: SERVICES.map((service) => service.id) },
-        { id: 'tina', name: 'Tina', available: true, status: 'Còn lịch trống', specialties: ['gel', 'pedi', 'acrylic', 'fill', 'dipping'] },
-        { id: 'helen', name: 'Helen', available: true, status: 'Còn lịch trống', specialties: ['gel', 'pedi', 'fill', 'waxing'] },
-        { id: 'andy', name: 'Andy', available: true, status: 'Còn lịch trống', specialties: ['gel', 'pedi', 'acrylic', 'fill', 'dipping', 'waxing'] },
+        { id: 'tina', name: 'Tina', available: true, status: 'Còn lịch trống', specialties: ['gel', 'pedi', 'acrylic', 'fill', 'dipping', 'classic', 'spa-pedi', 'gel-x', 'builder-gel', 'french-tip', 'nail-art', 'chrome'] },
+        { id: 'helen', name: 'Helen', available: true, status: 'Còn lịch trống', specialties: ['gel', 'pedi', 'fill', 'waxing', 'classic', 'spa-pedi', 'paraffin', 'eyebrow-wax', 'lip-wax', 'kids-mani', 'kids-pedi'] },
+        { id: 'andy', name: 'Andy', available: true, status: 'Còn lịch trống', specialties: SERVICES.map((service) => service.id) },
         { id: 'kim', name: 'Kim', available: false, status: 'Hiện chưa có lịch trống', specialties: SERVICES.map((service) => service.id) }
       ];
       const DATES = [
