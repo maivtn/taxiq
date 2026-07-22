@@ -123,7 +123,11 @@
     .staff-card:disabled .staff-status { color: #b6b4c1; }
     .staff-card[data-staff-id="any"] { background: linear-gradient(145deg, #fff9fd, #f7f1ff); }
 
-    .action-row { display: flex; gap: 8px; margin-top: 16px; }
+    .action-row { position: fixed; z-index: 5; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 8px; margin: 0; padding: 10px max(14px, calc((100vw - 752px) / 2)); border-top: 1px solid rgba(226, 220, 241, .95); background: rgba(250, 248, 255, .88); backdrop-filter: blur(16px); }
+    .action-row > button { width: 100%; min-width: 0; }
+    .action-row .primary-button { padding-right: 12px; padding-left: 12px; }
+    .action-row .secondary-button { min-width: 0; padding-right: 10px; padding-left: 10px; }
+    .step-panel[data-step-panel='2'], .step-panel[data-step-panel='3'] { padding-bottom: 90px; }
     .primary-button, .secondary-button { min-height: 52px; border-radius: 16px; font-size: 14px; font-weight: 850; transition: transform .18s, box-shadow .18s, opacity .18s; }
     .primary-button { flex: 1; padding: 0 24px; border: 0; color: white; background: linear-gradient(110deg, #d942e3 0%, #f03da0 46%, #6f61f3 100%); box-shadow: 0 12px 22px rgba(166, 66, 207, .22); }
     .primary-button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 15px 26px rgba(166, 66, 207, .29); }
@@ -188,7 +192,11 @@
       .staff-card .choice-icon { width: 28px; height: 28px; font-size: 16px; }
       .staff-card .choice-title { margin-top: 3px; }
       .staff-status { margin-top: 2px; }
-      .action-row { gap: 10px; margin-top: 22px; }
+      .action-row { position: static; display: flex; gap: 10px; margin-top: 22px; padding: 0; border-top: 0; background: transparent; backdrop-filter: none; }
+      .action-row > button { width: auto; }
+      .action-row .primary-button { padding-right: 24px; padding-left: 24px; }
+      .action-row .secondary-button { min-width: 112px; padding-right: 18px; padding-left: 18px; }
+      .step-panel[data-step-panel='2'], .step-panel[data-step-panel='3'] { padding-bottom: 28px; }
       .sticky-action { position: static; margin-top: 20px; padding: 0; border: 0; background: transparent; backdrop-filter: none; }
       .sticky-action .primary-button { width: auto; }
     }
