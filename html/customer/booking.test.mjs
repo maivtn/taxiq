@@ -249,6 +249,11 @@ test('keeps the review total close to the review rows', () => {
   assert.match(reviewTotalStyle, /padding-top: 8px/);
 });
 
+test('separates review details from the total with a dashed divider', () => {
+  const reviewTotalStyle = SOURCE.match(/\.review-total \{([^}]*)\}/)?.[1] || '';
+  assert.match(reviewTotalStyle, /border-top: 1px dashed/);
+});
+
 test('groups review details and total in an attractive summary card', () => {
   const confirmationStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
   const summaryStyle = SOURCE.match(/\.review-summary \{([^}]*)\}/)?.[1] || '';
