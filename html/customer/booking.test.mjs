@@ -245,13 +245,17 @@ test('keeps confirmation review rows compact for scanning', () => {
 
 test('keeps the review total close to the review rows', () => {
   const reviewTotalStyle = SOURCE.match(/\.review-total \{([^}]*)\}/)?.[1] || '';
-  assert.match(reviewTotalStyle, /margin: 4px 12px 0/);
+  assert.match(reviewTotalStyle, /margin: 0 12px/);
   assert.match(reviewTotalStyle, /padding-top: 8px/);
 });
 
 test('separates review details from the total with a dashed divider', () => {
+  const confirmationStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
+  const reviewDividerStyle = SOURCE.match(/\.review-divider \{([^}]*)\}/)?.[1] || '';
   const reviewTotalStyle = SOURCE.match(/\.review-total \{([^}]*)\}/)?.[1] || '';
-  assert.match(reviewTotalStyle, /border-top: 1px dashed/);
+  assert.match(confirmationStep, /<\/dl>\s*<div class="review-divider" aria-hidden="true"><\/div>\s*<div class="review-total">/);
+  assert.match(reviewDividerStyle, /border-top: 1px dashed/);
+  assert.doesNotMatch(reviewTotalStyle, /border-top/);
 });
 
 test('groups review details and total in an attractive summary card', () => {

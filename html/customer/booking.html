@@ -148,7 +148,8 @@
     .review-row dd { max-width: 65%; margin: 0; font-weight: 800; text-align: right; }
     .review-service-chips { display: flex; max-width: 70%; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
     .service-chip { display: inline-flex; align-items: center; padding: 6px 9px; border: 1px solid #e1d8f3; border-radius: 999px; color: var(--purple); background: #faf8ff; font-size: 12px; font-weight: 800; line-height: 1.2; }
-    .review-total { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin: 4px 12px 0; padding-top: 8px; border-top: 1px dashed #ded6ef; }
+    .review-divider { margin: 4px 12px 0; border-top: 1px dashed #ded6ef; }
+    .review-total { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin: 0 12px; padding-top: 8px; }
     .review-total span { color: var(--muted); font-size: 14px; }
     .review-total strong { color: var(--pink-dark); font-size: 27px; letter-spacing: -.04em; }
 
@@ -362,6 +363,7 @@
             <div class="review-row"><dt>Chuyên viên</dt><dd id="review-staff"></dd></div>
             <div class="review-row"><dt>Ngày &amp; giờ</dt><dd id="review-slot"></dd></div>
           </dl>
+          <div class="review-divider" aria-hidden="true"></div>
           <div class="review-total"><span>Tổng dự kiến</span><strong id="review-total">$0</strong></div>
         </div>
         <label class="form-field" for="booking-note"><span>Ghi chú để tiệm phục vụ tốt hơn</span><textarea class="textarea" id="booking-note" placeholder="Ví dụ: Quý khách có mong muốn đặc biệt về màu sơn…"></textarea></label>
