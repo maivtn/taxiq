@@ -140,6 +140,7 @@
     .sticky-action { position: fixed; z-index: 5; right: 0; bottom: 0; left: 0; display: flex; justify-content: center; padding: 10px max(14px, calc((100vw - 752px) / 2)); border-top: 1px solid rgba(226, 220, 241, .95); background: rgba(250, 248, 255, .88); backdrop-filter: blur(16px); }
     .sticky-action .primary-button { width: 100%; min-height: 54px; flex: 0 1 260px; }
 
+    .review-summary { margin: 0 0 14px; padding: 10px 12px 12px; border: 1px solid rgba(226, 220, 241, .9); border-radius: 18px; background: linear-gradient(145deg, rgba(255, 255, 255, .98), #faf8ff); box-shadow: 0 12px 26px rgba(108, 77, 153, .08); }
     .review-list { display: grid; gap: 4px; margin: 0; }
     .review-row { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; font-size: 14px; }
     .review-row:nth-child(even) { background: #faf8ff; }
@@ -147,7 +148,7 @@
     .review-row dd { max-width: 65%; margin: 0; font-weight: 800; text-align: right; }
     .review-service-chips { display: flex; max-width: 70%; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
     .service-chip { display: inline-flex; align-items: center; padding: 6px 9px; border: 1px solid #e1d8f3; border-radius: 999px; color: var(--purple); background: #faf8ff; font-size: 12px; font-weight: 800; line-height: 1.2; }
-    .review-total { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin: 4px 0 24px; padding-top: 8px; }
+    .review-total { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin: 4px 6px 0; padding-top: 8px; }
     .review-total span { color: var(--muted); font-size: 14px; }
     .review-total strong { color: var(--pink-dark); font-size: 27px; letter-spacing: -.04em; }
 
@@ -353,14 +354,16 @@
           </div>
         </div>
 
-        <dl class="review-list">
-          <div class="review-row" id="review-customer-name-row" hidden><dt>Tên khách hàng</dt><dd id="review-customer-name"></dd></div>
-          <div class="review-row"><dt>Số điện thoại</dt><dd id="review-customer"></dd></div>
-          <div class="review-row"><dt>Dịch vụ</dt><dd class="review-service-chips" id="review-services"></dd></div>
-          <div class="review-row"><dt>Chuyên viên</dt><dd id="review-staff"></dd></div>
-          <div class="review-row"><dt>Ngày &amp; giờ</dt><dd id="review-slot"></dd></div>
-        </dl>
-        <div class="review-total"><span>Tổng dự kiến</span><strong id="review-total">$0</strong></div>
+        <div class="review-summary">
+          <dl class="review-list">
+            <div class="review-row" id="review-customer-name-row" hidden><dt>Tên khách hàng</dt><dd id="review-customer-name"></dd></div>
+            <div class="review-row"><dt>Số điện thoại</dt><dd id="review-customer"></dd></div>
+            <div class="review-row"><dt>Dịch vụ</dt><dd class="review-service-chips" id="review-services"></dd></div>
+            <div class="review-row"><dt>Chuyên viên</dt><dd id="review-staff"></dd></div>
+            <div class="review-row"><dt>Ngày &amp; giờ</dt><dd id="review-slot"></dd></div>
+          </dl>
+          <div class="review-total"><span>Tổng dự kiến</span><strong id="review-total">$0</strong></div>
+        </div>
         <label class="form-field" for="booking-note"><span>Ghi chú để tiệm phục vụ tốt hơn</span><textarea class="textarea" id="booking-note" placeholder="Ví dụ: Quý khách có mong muốn đặc biệt về màu sơn…"></textarea></label>
         <p class="field-error" id="review-error" role="alert"></p>
 

@@ -245,8 +245,20 @@ test('keeps confirmation review rows compact for scanning', () => {
 
 test('keeps the review total close to the review rows', () => {
   const reviewTotalStyle = SOURCE.match(/\.review-total \{([^}]*)\}/)?.[1] || '';
-  assert.match(reviewTotalStyle, /margin: 4px 0 24px/);
+  assert.match(reviewTotalStyle, /margin: 4px 6px 0/);
   assert.match(reviewTotalStyle, /padding-top: 8px/);
+});
+
+test('groups review details and total in an attractive summary card', () => {
+  const confirmationStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
+  const summaryStyle = SOURCE.match(/\.review-summary \{([^}]*)\}/)?.[1] || '';
+  assert.match(confirmationStep, /<div class="review-summary">[\s\S]*<dl class="review-list">[\s\S]*<\/dl>[\s\S]*<div class="review-total">[\s\S]*<\/div>\s*<\/div>/);
+  assert.match(summaryStyle, /margin: 0 0 14px/);
+  assert.match(summaryStyle, /padding: 10px 12px 12px/);
+  assert.match(summaryStyle, /border: 1px solid/);
+  assert.match(summaryStyle, /border-radius: 18px/);
+  assert.match(summaryStyle, /linear-gradient/);
+  assert.match(summaryStyle, /box-shadow:/);
 });
 
 test('adds a subtle background to even confirmation review rows', () => {
