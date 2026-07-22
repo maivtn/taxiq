@@ -137,6 +137,8 @@
     .review-row { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid #f0edf7; font-size: 13px; }
     .review-row dt { color: var(--muted); }
     .review-row dd { max-width: 65%; margin: 0; font-weight: 800; text-align: right; }
+    .review-service-chips { display: flex; max-width: 70%; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+    .service-chip { display: inline-flex; align-items: center; padding: 6px 9px; border: 1px solid #e1d8f3; border-radius: 999px; color: var(--purple); background: #faf8ff; font-size: 11px; font-weight: 800; line-height: 1.2; }
     .review-total { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding-top: 18px; }
     .review-total span { color: var(--muted); font-size: 13px; }
     .review-total strong { color: var(--pink-dark); font-size: 27px; letter-spacing: -.04em; }
@@ -374,7 +376,7 @@
 
         <dl class="review-list">
           <div class="review-row"><dt>Số điện thoại</dt><dd id="review-customer"></dd></div>
-          <div class="review-row"><dt>Dịch vụ</dt><dd id="review-services"></dd></div>
+          <div class="review-row"><dt>Dịch vụ</dt><dd class="review-service-chips" id="review-services"></dd></div>
           <div class="review-row"><dt>Thời lượng</dt><dd id="review-duration"></dd></div>
           <div class="review-row"><dt>Chuyên viên</dt><dd id="review-staff"></dd></div>
           <div class="review-row"><dt>Ngày &amp; giờ</dt><dd id="review-slot"></dd></div>
@@ -708,7 +710,15 @@
         const names = state.selectedServiceIds.map((id) => serviceById(id)?.name).filter(Boolean);
         const customerPhone = formatPhone(state.customer.phone) || '—';
         setText('#review-customer', state.customer.name ? `${state.customer.name} · ${customerPhone}` : customerPhone);
-        setText('#review-services', names.join(' + ') || '—');
+        const reviewServices = $('#review-services');
+        if (reviewServices) {
+          reviewServices.replaceChildren(...(names.length ? names.map((name) => {
+            const chip = document.createElement('span');
+            chip.className = 'service-chip';
+            chip.textContent = name;
+            return chip;
+          }) : [document.createTextNode('—')]));
+        }
         setText('#review-duration', minutes(total.durationMinutes));
         setText('#review-staff', staffById(state.selectedStaffId)?.name || 'Bất kỳ chuyên viên nào');
         setText('#review-slot', formatBookingSlot(state.selectedDate, state.selectedTime));
