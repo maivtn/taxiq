@@ -35,7 +35,7 @@
 
     .page-shell { width: min(100% - 20px, 780px); margin: 0 auto; padding: 12px 0 96px; }
     .brand-card, .app-card { background: var(--surface); border: 1px solid rgba(226, 220, 241, .9); border-radius: var(--radius); box-shadow: var(--shadow); }
-    .brand-card { padding: 20px 15px 17px; border: 0; border-radius: 0; background: transparent; box-shadow: none; text-align: center; }
+    .brand-card { border: 0; border-radius: 0; background: transparent; box-shadow: none; text-align: center; }
     .brand-icon { display: grid; place-items: center; width: 72px; height: 72px; margin: 0 auto 14px; border-radius: 24px; background: linear-gradient(145deg, #fff0f9, #f0eaff); box-shadow: 0 12px 28px rgba(173, 99, 194, .16); font-size: 34px; }
     .brand-kicker { margin: 0 0 7px; color: var(--pink-dark); font-size: 11px; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
     .brand-card h1 { margin: 0; font-size: clamp(23px, 5vw, 30px); line-height: 1.1; letter-spacing: -.04em; }
@@ -160,7 +160,6 @@
 
     @media (min-width: 640px) {
       .page-shell { width: min(100% - 28px, 780px); padding: 34px 0 112px; }
-      .brand-card { padding: 28px 30px 24px; }
       .stepper { gap: 8px; margin: 18px 0; padding: 12px 0; }
       .stepper::before { top: 24px; }
       .step { display: block; font-size: 11px; }
