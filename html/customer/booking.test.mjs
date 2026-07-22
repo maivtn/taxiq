@@ -245,7 +245,7 @@ test('keeps confirmation review rows compact for scanning', () => {
 
 test('keeps the review total close to the review rows', () => {
   const reviewTotalStyle = SOURCE.match(/\.review-total \{([^}]*)\}/)?.[1] || '';
-  assert.match(reviewTotalStyle, /margin: 0 12px/);
+  assert.match(reviewTotalStyle, /margin: 0;/);
   assert.match(reviewTotalStyle, /padding-top: 8px/);
 });
 
@@ -254,7 +254,9 @@ test('separates review details from the total with a dashed divider', () => {
   const reviewDividerStyle = SOURCE.match(/\.review-divider \{([^}]*)\}/)?.[1] || '';
   const reviewTotalStyle = SOURCE.match(/\.review-total \{([^}]*)\}/)?.[1] || '';
   assert.match(confirmationStep, /<\/dl>\s*<div class="review-divider" aria-hidden="true"><\/div>\s*<div class="review-total">/);
+  assert.match(reviewDividerStyle, /margin: 4px 0 0/);
   assert.match(reviewDividerStyle, /border-top: 1px dashed/);
+  assert.match(reviewTotalStyle, /margin: 0;/);
   assert.doesNotMatch(reviewTotalStyle, /border-top/);
 });
 
