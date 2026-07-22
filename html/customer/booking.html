@@ -114,12 +114,12 @@
     .time-option { min-height: 44px; font-size: 13px; font-weight: 800; }
 
     .staff-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .staff-card { min-height: 120px; align-items: center; text-align: center; }
+    .staff-card { min-height: 72px; align-items: center; padding: 7px; text-align: center; }
     .staff-card:last-child { grid-column: span 2; }
     .staff-card::after { right: 10px; }
-    .staff-card .choice-icon { width: 40px; height: 40px; border-radius: 50%; font-size: 20px; }
-    .staff-card .choice-title { margin-top: 7px; }
-    .staff-status { display: block; margin-top: 4px; color: var(--green); font-size: 11px; font-weight: 750; }
+    .staff-card .choice-icon { width: 28px; height: 28px; border-radius: 50%; font-size: 16px; }
+    .staff-card .choice-title { margin-top: 3px; font-size: 12px; }
+    .staff-status { display: block; margin-top: 2px; color: var(--green); font-size: 10px; font-weight: 750; }
     .staff-status.busy { color: var(--orange); }
     .staff-status.unavailable { color: #b6b4c1; }
     .staff-card:disabled .staff-status { color: #b6b4c1; }
@@ -190,11 +190,11 @@
       .time-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
       .time-option { min-height: 46px; }
       .staff-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .staff-card { min-height: 138px; }
+      .staff-card { min-height: 72px; padding: 7px; }
       .staff-card:last-child { grid-column: auto; }
-      .staff-card .choice-icon { width: 43px; height: 43px; font-size: 21px; }
-      .staff-card .choice-title { margin-top: 8px; }
-      .staff-status { margin-top: 5px; }
+      .staff-card .choice-icon { width: 28px; height: 28px; font-size: 16px; }
+      .staff-card .choice-title { margin-top: 3px; }
+      .staff-status { margin-top: 2px; }
       .action-row { gap: 10px; margin-top: 22px; }
       .sticky-action { position: static; margin-top: 20px; padding: 0; border: 0; background: transparent; backdrop-filter: none; }
       .sticky-action .primary-button { width: auto; }
