@@ -140,9 +140,6 @@
     .review-total { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding-top: 18px; }
     .review-total span { color: var(--muted); font-size: 13px; }
     .review-total strong { color: var(--pink-dark); font-size: 27px; letter-spacing: -.04em; }
-    .review-consent { display: flex; gap: 8px; align-items: center; margin: 16px 0 0; color: var(--muted); font-size: 12px; }
-    .review-consent strong { color: var(--green); }
-    .review-consent + .form-field { margin-top: 26px; }
 
     .success-card { padding: 28px 22px; text-align: center; }
     .success-icon { display: grid; place-items: center; width: 76px; height: 76px; margin: 0 auto 17px; border-radius: 26px; color: var(--green); background: #eafaf3; font-size: 37px; }
@@ -389,7 +386,6 @@
           <div class="review-row"><dt>Ngày &amp; giờ</dt><dd id="review-slot"></dd></div>
         </dl>
         <div class="review-total"><span>Tổng dự kiến</span><strong id="review-total">$0</strong></div>
-        <p class="review-consent" id="review-consent"><span aria-hidden="true">○</span> Quý khách không đăng ký nhận thông báo SMS</p>
         <label class="form-field" for="booking-note"><span>Ghi chú để tiệm phục vụ tốt hơn <span class="field-hint">Không bắt buộc</span></span><textarea class="textarea" id="booking-note" placeholder="Ví dụ: Quý khách có mong muốn đặc biệt về màu sơn…"></textarea></label>
         <p class="field-error" id="review-error" role="alert"></p>
 
@@ -716,8 +712,6 @@
         setText('#review-staff', staffById(state.selectedStaffId)?.name || 'Bất kỳ chuyên viên nào');
         setText('#review-slot', formatBookingSlot(state.selectedDate, state.selectedTime));
         setText('#review-total', money(total.totalCents));
-        const consent = $('#review-consent');
-        if (consent) consent.innerHTML = state.customer.smsOptIn ? '<span aria-hidden="true">✓</span> <strong>Quý khách đã đăng ký nhận thông báo SMS</strong>' : '<span aria-hidden="true">○</span> Quý khách không đăng ký nhận thông báo SMS';
         const note = $('#booking-note');
         if (note && note.value !== state.note) note.value = state.note;
       }
