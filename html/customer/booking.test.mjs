@@ -98,33 +98,121 @@ test('page includes booking controls and removes check-in copy', () => {
   assert.doesNotMatch(SOURCE, /Check me in/i);
 });
 
-test('combines service, date, time, and technician selection into the same step', () => {
-  const serviceStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
-  const reviewStep = SOURCE.match(/data-step-panel="3"[\s\S]*?<\/section>/)?.[0] || '';
-  assert.match(serviceStep, /Dịch vụ &amp; lịch hẹn/);
-  assert.match(serviceStep, /data-service-id="gel"/);
-  assert.match(serviceStep, /data-staff-id="any"/);
-  assert.match(serviceStep, /data-booking-date/);
-  assert.match(serviceStep, /data-booking-time/);
-  assert.match(reviewStep, /review-customer/);
-  assert.doesNotMatch(SOURCE, /data-step-panel="5"/);
+test('keeps booking data in memory only', () => {
+  assert.doesNotMatch(SOURCE, /localStorage/);
+  assert.doesNotMatch(SOURCE, /BOOKING_STORAGE_KEY|readState|persistState|clearState/);
 });
 
-test('keeps brand header and progress steps frameless', () => {
+test('allows booking dates beyond the previous seven-day window', () => {
+  const api = getApi();
+  const result = api.validateBookingDraft({
+    customer: { phone: '8325550198', name: '' },
+    selectedServiceIds: ['gel'],
+    selectedStaffId: 'any',
+    selectedDate: '2099-01-15',
+    selectedTime: '14:00'
+  }, { ...catalog, slots: [] });
+  assert.equal(result.ok, true);
+});
+
+test('removes the fixed seven-day date picker limit', () => {
+  assert.doesNotMatch(SOURCE, /Array\.from\(\{ length: 7/);
+  assert.doesNotMatch(SOURCE, /maxDate:|dateOptions\.max/);
+  assert.match(SOURCE, /minDate: defaultBookingDate/);
+});
+
+test('hides optional SMS consent and returning-customer helper from step 1', () => {
+  const stepOne = SOURCE.match(/data-step-panel="1"[\s\S]*?<\/section>/)?.[0] || '';
+  assert.doesNotMatch(stepOne, /id="sms-opt-in"/);
+  assert.doesNotMatch(stepOne, /id="phone-helper"/);
+  assert.doesNotMatch(stepOne, /Quý khách đã từng sử dụng dịch vụ tại tiệm/);
+});
+
+test('combines customer details and service selection into step 1', () => {
+  const stepOne = SOURCE.match(/data-step-panel="1"[\s\S]*?<\/section>/)?.[0] || '';
+  const confirmationStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
+  assert.match(stepOne, /Vui lòng nhập số điện thoại/);
+  assert.match(stepOne, /Quý khách muốn sử dụng dịch vụ nào\?/);
+  assert.match(stepOne, /data-service-id="gel"/);
+  assert.match(stepOne, /data-staff-id="any"/);
+  assert.match(stepOne, /data-booking-date/);
+  assert.match(stepOne, /data-booking-time/);
+  assert.match(confirmationStep, /Xác nhận thông tin đặt lịch/);
+  assert.match(confirmationStep, /review-customer/);
+  assert.doesNotMatch(SOURCE, /data-step-indicator="3"/);
+  assert.doesNotMatch(SOURCE, /data-step-panel="4"/);
+});
+
+test('removes the redundant service step label', () => {
+  const stepOne = SOURCE.match(/data-step-panel="1"[\s\S]*?<\/section>/)?.[0] || '';
+  assert.doesNotMatch(stepOne, /Bước 1 · Dịch vụ &amp; lịch hẹn/);
+  assert.match(stepOne, /Quý khách muốn sử dụng dịch vụ nào\?/);
+});
+
+test('removes the step 1 information label', () => {
+  const stepOne = SOURCE.match(/data-step-panel="1"[\s\S]*?<\/section>/)?.[0] || '';
+  assert.doesNotMatch(stepOne, /Bước 1 · Thông tin &amp; lịch hẹn/);
+  assert.match(stepOne, /Vui lòng nhập số điện thoại/);
+});
+
+test('removes the step 2 confirmation label', () => {
+  const confirmationStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
+  assert.doesNotMatch(confirmationStep, /Bước 2 · Xác nhận/);
+  assert.match(confirmationStep, /Xác nhận thông tin đặt lịch/);
+});
+
+test('removes the booking stepper', () => {
+  assert.doesNotMatch(SOURCE, /<nav class="stepper"/);
+  assert.doesNotMatch(SOURCE, /data-step-indicator=/);
+  assert.doesNotMatch(SOURCE, /\.stepper\s*\{/);
+});
+
+test('labels and centers the step 1 continue button', () => {
+  const stepOne = SOURCE.match(/data-step-panel="1"[\s\S]*?<\/section>/)?.[0] || '';
+  assert.match(stepOne, /data-next-step="2">Tiếp tục/);
+  assert.doesNotMatch(stepOne, /Xem lại thông tin/);
+  assert.match(SOURCE, /\.sticky-action\s*\{[^}]*display: flex/);
+  assert.match(SOURCE, /\.sticky-action\s*\{[^}]*justify-content: center/);
+});
+
+test('removes the section divider from step 1', () => {
+  assert.doesNotMatch(SOURCE, /section-divider/);
+});
+
+test('keeps the brand header frameless', () => {
   const brandStyle = SOURCE.match(/\.brand-card \{([^}]*)\}/)?.[1] || '';
-  const stepperStyle = SOURCE.match(/\.stepper \{([^}]*)\}/)?.[1] || '';
 
   assert.match(brandStyle, /background: transparent/);
   assert.match(brandStyle, /border: 0/);
   assert.match(brandStyle, /box-shadow: none/);
-  assert.match(stepperStyle, /background: transparent/);
-  assert.match(stepperStyle, /border: 0/);
-  assert.match(stepperStyle, /box-shadow: none/);
+  assert.match(brandStyle, /padding-bottom: 16px/);
 });
 
 test('removes decorative card emoji icons from section headers', () => {
   assert.doesNotMatch(SOURCE, /class="card-emoji"/);
   assert.doesNotMatch(SOURCE, /\.card-emoji\s*\{/);
+});
+
+test('renders choice icons as visible text avatars', () => {
+  const icons = [...SOURCE.matchAll(/<span class="choice-icon" aria-hidden="true">([^<]+)<\/span>/g)].map((match) => match[1]);
+  assert.equal(icons.length, 6);
+  assert.equal(icons.filter((icon) => /^[A-Z]{1,3}$/.test(icon)).length, 5);
+});
+
+test('keeps choice icons only on staff cards', () => {
+  const serviceGrid = SOURCE.match(/<div class="service-grid" id="service-options">([\s\S]*?)<\/div>\s*<div class="selection-summary"[^>]*>/)?.[1] || '';
+  const staffGrid = SOURCE.match(/<div class="staff-grid" id="staff-options">([\s\S]*?)<\/div>\s*<p class="field-error" id="staff-error"/)?.[1] || '';
+  assert.doesNotMatch(serviceGrid, /choice-icon/);
+  assert.equal([...staffGrid.matchAll(/<span class="choice-icon" aria-hidden="true">([^<]+)<\/span>/g)].length, 6);
+});
+
+test('uses an icon for the any-staff option', () => {
+  const anyStaff = SOURCE.match(/<button class="choice-card staff-card"[^>]*data-staff-id="any"[^>]*>[\s\S]*?<\/button>/)?.[0] || '';
+  assert.match(anyStaff, /<span class="choice-icon" aria-hidden="true">✨<\/span>/);
+});
+
+test('adds a small gap before service selection', () => {
+  assert.match(SOURCE, /#returning-customer\s*\+\s*\.card-heading\s*\{[^}]*margin-top: 16px/);
 });
 
 test('uses compact mobile-first spacing as the base layout', () => {

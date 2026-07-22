@@ -37,21 +37,11 @@
 
     .page-shell { width: min(100% - 20px, 780px); margin: 0 auto; padding: 12px 0 96px; }
     .brand-card, .app-card { background: var(--surface); border: 1px solid rgba(226, 220, 241, .9); border-radius: var(--radius); box-shadow: var(--shadow); }
-    .brand-card { border: 0; border-radius: 0; background: transparent; box-shadow: none; text-align: center; }
+    .brand-card { border: 0; border-radius: 0; background: transparent; box-shadow: none; padding-bottom: 16px; text-align: center; }
     .brand-icon { display: grid; place-items: center; width: 72px; height: 72px; margin: 0 auto 14px; border-radius: 24px; background: linear-gradient(145deg, #fff0f9, #f0eaff); box-shadow: 0 12px 28px rgba(173, 99, 194, .16); font-size: 34px; }
     .brand-kicker { margin: 0 0 7px; color: var(--pink-dark); font-size: 11px; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
     .brand-card h1 { margin: 0; font-size: clamp(23px, 5vw, 30px); line-height: 1.1; letter-spacing: 0; }
     .brand-card p { margin: 8px auto 0; max-width: 460px; color: var(--muted); font-size: 14px; line-height: 1.5; }
-
-    .stepper { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin: 12px 0; padding: 10px 7px; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
-    .stepper::before { position: absolute; top: 21px; right: 16.666%; left: 16.666%; height: 1px; background: var(--line); content: ""; }
-    .step { position: relative; z-index: 1; display: block; min-width: 0; color: var(--soft-muted); font-size: 9px; font-weight: 800; text-align: center; }
-    .step-number { position: relative; z-index: 1; display: grid; margin: 0 auto 4px; place-items: center; width: 22px; height: 22px; border: 1px solid var(--line); border-radius: 50%; background: white; font-size: 10px; }
-    .step-label { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .step[aria-current="step"] { color: var(--ink); }
-    .step[aria-current="step"] .step-number { border-color: var(--pink); color: white; background: linear-gradient(135deg, var(--pink), var(--purple)); box-shadow: 0 6px 14px rgba(247, 53, 152, .22); }
-    .step.is-complete { color: var(--purple); }
-    .step.is-complete .step-number { border-color: #dcd4ff; color: var(--purple); background: #f0edff; }
 
     .app-card { padding: 17px; border-radius: 22px; }
     .step-panel { animation: rise .22s ease-out; }
@@ -74,15 +64,8 @@
     .input[readonly] { color: var(--purple); background: #f2efff; }
     .textarea { min-height: 90px; padding: 13px 15px; resize: vertical; font-size: 14px; line-height: 1.5; }
     .field-error { min-height: 0; margin: 4px 0 0; color: #c62a69; font-size: 12px; font-weight: 650; }
-    .intro-note { display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; padding: 12px; border: 1px solid #eee8fb; border-radius: 16px; background: #fbf9ff; color: var(--muted); font-size: 12px; line-height: 1.5; }
-    .intro-note strong { color: var(--ink); }
-    .intro-note-icon { flex: 0 0 auto; font-size: 17px; }
     .returning-banner { margin-top: 12px; padding: 12px 14px; border: 1px solid #d8f1e7; border-radius: 16px; color: #137953; background: #f0fcf7; font-size: 13px; font-weight: 750; }
-
-    .consent { display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: #fbfaff; cursor: pointer; }
-    .consent input { flex: 0 0 auto; width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--pink); }
-    .consent span { color: var(--muted); font-size: 12px; line-height: 1.55; }
-    .consent strong { display: block; margin-bottom: 2px; color: var(--ink); font-size: 13px; }
+    #returning-customer + .card-heading { margin-top: 16px; }
 
     .service-grid, .staff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
     .choice-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 9px; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); background: linear-gradient(145deg, #fff, #fdfbff); text-align: left; transition: border-color .18s, box-shadow .18s, transform .18s, background .18s; }
@@ -90,21 +73,19 @@
     .choice-card[aria-pressed="true"] { border: 2px solid var(--pink); padding: 8px; background: linear-gradient(145deg, #fff5fb, #fcf1ff); box-shadow: 0 7px 16px rgba(247, 53, 152, .12); }
     .choice-card[aria-pressed="true"]::after { position: absolute; top: 7px; right: 8px; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; color: white; background: var(--pink); content: "✓"; font-size: 11px; font-weight: 900; }
     .choice-card:disabled { border-color: #efedf5; color: #aaa8b8; background: #fafafd; }
-    .choice-icon { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: #f8eafe; font-size: 15px; }
+    .choice-icon { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: var(--purple); background: #f8eafe; font-size: 11px; font-weight: 850; letter-spacing: .02em; }
     .choice-card:disabled .choice-icon { filter: grayscale(1); opacity: .55; }
     .choice-title { display: block; margin-top: 5px; font-size: 12.5px; font-weight: 850; letter-spacing: -.01em; line-height: 1.2; }
     .choice-detail { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 6px; margin-top: 3px; color: var(--muted); font-size: 10px; }
     .choice-price { color: var(--pink-dark); font-size: 13px; font-weight: 850; }
     .service-grid .choice-card { justify-content: flex-start; gap: 2px; padding: 6px 8px; }
     .service-grid .choice-card[aria-pressed="true"] { padding: 5px 7px; }
-    .service-grid .choice-icon { display: none; }
     .service-grid .choice-title { margin-top: 0; }
     .service-grid .choice-detail { width: auto; justify-content: flex-start; gap: 8px; margin-top: 0; }
     .service-grid .choice-price { order: -1; }
     .service-grid .choice-price::after { content: "·"; margin-left: 8px; color: var(--soft-muted); }
     .selection-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding: 10px 12px; border-radius: 14px; color: var(--muted); background: #f8f5ff; font-size: 12px; }
     .selection-summary strong { color: var(--ink); font-size: 14px; }
-    .section-divider { height: 1px; margin: 20px 0; background: var(--line); }
     .section-title { margin: 20px 0 6px; font-size: 14px; font-weight: 850; letter-spacing: 0; }
     .section-copy { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
 
@@ -134,7 +115,7 @@
     .staff-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
     .staff-card { min-height: 72px; align-items: center; padding: 7px; text-align: center; }
     .staff-card::after { right: 10px; }
-    .staff-card .choice-icon { width: 28px; height: 28px; border-radius: 50%; font-size: 16px; }
+    .staff-card .choice-icon { width: 28px; height: 28px; border-radius: 50%; font-size: 11px; }
     .staff-card .choice-title { margin-top: 3px; font-size: 12px; }
     .staff-status { display: block; margin-top: 2px; color: var(--green); font-size: 10px; font-weight: 750; }
     .staff-status.busy { color: var(--orange); }
@@ -146,7 +127,7 @@
     .action-row > button { width: 100%; min-width: 0; }
     .action-row .primary-button { padding-right: 12px; padding-left: 12px; }
     .action-row .secondary-button { min-width: 0; padding-right: 10px; padding-left: 10px; }
-    .step-panel[data-step-panel='2'], .step-panel[data-step-panel='3'] { padding-bottom: 90px; }
+    .step-panel[data-step-panel='1'], .step-panel[data-step-panel='2'] { padding-bottom: 90px; }
     .primary-button, .secondary-button { min-height: 52px; border-radius: 16px; font-size: 14px; font-weight: 850; transition: transform .18s, box-shadow .18s, opacity .18s; }
     .primary-button { flex: 1; padding: 0 24px; border: 0; color: white; background: linear-gradient(110deg, #d942e3 0%, #f03da0 46%, #6f61f3 100%); box-shadow: 0 12px 22px rgba(166, 66, 207, .22); }
     .primary-button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 15px 26px rgba(166, 66, 207, .29); }
@@ -155,8 +136,8 @@
     .secondary-button:hover { border-color: #d4c6ed; background: #fcfaff; }
     .button-arrow { margin-left: 4px; font-size: 17px; vertical-align: -1px; }
     .button-helper { margin: 10px 0 0; color: var(--muted); font-size: 11px; text-align: center; }
-    .sticky-action { position: fixed; z-index: 5; right: 0; bottom: 0; left: 0; padding: 10px max(14px, calc((100vw - 752px) / 2)); border-top: 1px solid rgba(226, 220, 241, .95); background: rgba(250, 248, 255, .88); backdrop-filter: blur(16px); }
-    .sticky-action .primary-button { width: 100%; min-height: 54px; }
+    .sticky-action { position: fixed; z-index: 5; right: 0; bottom: 0; left: 0; display: flex; justify-content: center; padding: 10px max(14px, calc((100vw - 752px) / 2)); border-top: 1px solid rgba(226, 220, 241, .95); background: rgba(250, 248, 255, .88); backdrop-filter: blur(16px); }
+    .sticky-action .primary-button { width: 100%; min-height: 54px; flex: 0 1 260px; }
 
     .review-list { display: grid; gap: 10px; margin: 0; }
     .review-row { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid #f0edf7; font-size: 13px; }
@@ -183,41 +164,33 @@
 
     @media (min-width: 640px) {
       .page-shell { width: min(100% - 28px, 780px); padding: 34px 0 112px; }
-      .stepper { gap: 8px; margin: 18px 0; padding: 12px 0; }
-      .stepper::before { top: 24px; }
-      .step { display: block; font-size: 11px; }
-      .step-number { margin: 0 auto 4px; width: 25px; height: 25px; font-size: 11px; }
-      .step-label { display: block; }
       .app-card { padding: 28px; border-radius: var(--radius); }
       .card-heading { gap: 16px; margin-bottom: 18px; }
       .card-heading p { margin-top: 7px; font-size: 13px; }
       .form-field { margin-top: 16px; }
       .form-field > span { margin-bottom: 8px; }
-      .intro-note { gap: 12px; margin-top: 18px; padding: 14px; }
       .returning-banner { margin-top: 14px; padding: 14px 16px; }
-      .consent { gap: 12px; margin-top: 17px; padding: 14px; }
       .service-grid, .staff-grid { gap: 6px; }
       .service-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .choice-card { padding: 9px; border-radius: 13px; }
       .choice-card[aria-pressed="true"] { padding: 8px; }
-      .choice-icon { width: 28px; height: 28px; border-radius: 9px; font-size: 15px; }
+      .choice-icon { width: 28px; height: 28px; border-radius: 50%; font-size: 11px; }
       .choice-title { margin-top: 5px; }
       .choice-detail { margin-top: 3px; }
       .selection-summary { margin-top: 10px; padding: 10px 12px; }
-      .section-divider { margin: 24px 0; }
       .section-copy { margin-bottom: 13px; }
       .staff-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .staff-card { min-height: 72px; padding: 7px; }
-      .staff-card .choice-icon { width: 28px; height: 28px; font-size: 16px; }
+      .staff-card .choice-icon { width: 28px; height: 28px; font-size: 11px; }
       .staff-card .choice-title { margin-top: 3px; }
       .staff-status { margin-top: 2px; }
       .action-row { position: static; display: flex; gap: 10px; margin-top: 22px; padding: 0; border-top: 0; background: transparent; backdrop-filter: none; }
       .action-row > button { width: auto; }
       .action-row .primary-button { padding-right: 24px; padding-left: 24px; }
       .action-row .secondary-button { min-width: 112px; padding-right: 18px; padding-left: 18px; }
-      .step-panel[data-step-panel='2'], .step-panel[data-step-panel='3'] { padding-bottom: 28px; }
+      .step-panel[data-step-panel='1'], .step-panel[data-step-panel='2'] { padding-bottom: 28px; }
       .sticky-action { position: static; margin-top: 20px; padding: 0; border: 0; background: transparent; backdrop-filter: none; }
-      .sticky-action .primary-button { width: auto; }
+      .sticky-action .primary-button { width: 100%; }
     }
 
     @media (min-width: 760px) {
@@ -234,17 +207,10 @@
       <h1>Bitcoin Nail Bar</h1>
     </header>
 
-    <nav class="stepper" aria-label="Tiến trình đặt lịch">
-      <div class="step" data-step-indicator="1" aria-current="step"><span class="step-number">1</span><span class="step-label">Thông tin</span></div>
-      <div class="step" data-step-indicator="2"><span class="step-number">2</span><span class="step-label">Dịch vụ &amp; lịch hẹn</span></div>
-      <div class="step" data-step-indicator="3"><span class="step-number">3</span><span class="step-label">Xác nhận</span></div>
-    </nav>
-
     <main id="booking-app">
       <section class="step-panel app-card" data-step-panel="1">
         <div class="card-heading">
           <div>
-            <p class="eyebrow">Bước 1 · Khách hàng</p>
             <h2>Vui lòng nhập số điện thoại</h2>
           </div>
         </div>
@@ -252,7 +218,7 @@
         <div class="customer-fields" id="customer-fields">
           <label class="form-field" id="booking-phone-field" for="booking-phone">
             <span>Số điện thoại</span>
-            <input class="input" id="booking-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(832) 555-0198" aria-describedby="phone-error phone-helper">
+            <input class="input" id="booking-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(832) 555-0198" aria-describedby="phone-error">
             <p class="field-error" id="phone-error" role="alert"></p>
           </label>
 
@@ -263,91 +229,74 @@
           </label>
         </div>
 
-        <label class="consent" for="sms-opt-in">
-          <input id="sms-opt-in" type="checkbox">
-          <span><strong>Đăng ký nhận thông báo lịch hẹn</strong>Nhận tin nhắn xác nhận, nhắc lịch và thông tin ưu đãi từ Bitcoin Nail Bar.</span>
-        </label>
-
-        <div class="intro-note" id="phone-helper">
-          <span class="intro-note-icon" aria-hidden="true">💜</span>
-          <span><strong>Quý khách đã từng sử dụng dịch vụ tại tiệm?</strong><br>Vui lòng nhập số điện thoại để hệ thống tra cứu nhanh thông tin khách hàng.</span>
-        </div>
-
         <div class="returning-banner" id="returning-customer" hidden aria-live="polite"></div>
 
-        <div class="sticky-action">
-          <button class="primary-button" type="button" data-action="next" data-next-step="2">Tiếp tục <span class="button-arrow" aria-hidden="true">→</span></button>
-        </div>
-      </section>
-
-      <section class="step-panel app-card" data-step-panel="2" hidden>
         <div class="card-heading">
           <div>
-            <p class="eyebrow">Bước 2 · Dịch vụ &amp; lịch hẹn</p>
             <h2>Quý khách muốn sử dụng dịch vụ nào?</h2>
           </div>
         </div>
 
         <div class="service-grid" id="service-options">
           <button class="choice-card" type="button" data-service-id="gel" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">💅</span><span class="choice-title">Gel Manicure</span><span class="choice-detail"><span>45 phút</span><strong class="choice-price">$45</strong></span>
+            <span class="choice-title">Gel Manicure</span><span class="choice-detail"><span>45 phút</span><strong class="choice-price">$45</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="pedi" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🦶</span><span class="choice-title">Signature Pedicure</span><span class="choice-detail"><span>60 phút</span><strong class="choice-price">$55</strong></span>
+            <span class="choice-title">Signature Pedicure</span><span class="choice-detail"><span>60 phút</span><strong class="choice-price">$55</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="acrylic" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">✨</span><span class="choice-title">Acrylic Full Set</span><span class="choice-detail"><span>90 phút</span><strong class="choice-price">$75</strong></span>
+            <span class="choice-title">Acrylic Full Set</span><span class="choice-detail"><span>90 phút</span><strong class="choice-price">$75</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="fill" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🔄</span><span class="choice-title">Acrylic Fill-in</span><span class="choice-detail"><span>60 phút</span><strong class="choice-price">$55</strong></span>
+            <span class="choice-title">Acrylic Fill-in</span><span class="choice-detail"><span>60 phút</span><strong class="choice-price">$55</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="dipping" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🌸</span><span class="choice-title">Dipping Nail</span><span class="choice-detail"><span>50 phút</span><strong class="choice-price">$50</strong></span>
+            <span class="choice-title">Dipping Nail</span><span class="choice-detail"><span>50 phút</span><strong class="choice-price">$50</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="waxing" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🕯️</span><span class="choice-title">Waxing</span><span class="choice-detail"><span>30 phút</span><strong class="choice-price">$25</strong></span>
+            <span class="choice-title">Waxing</span><span class="choice-detail"><span>30 phút</span><strong class="choice-price">$25</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="classic" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">💗</span><span class="choice-title">Classic Manicure</span><span class="choice-detail"><span>30 phút</span><strong class="choice-price">$30</strong></span>
+            <span class="choice-title">Classic Manicure</span><span class="choice-detail"><span>30 phút</span><strong class="choice-price">$30</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="spa-pedi" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🫧</span><span class="choice-title">Spa Pedicure</span><span class="choice-detail"><span>75 phút</span><strong class="choice-price">$70</strong></span>
+            <span class="choice-title">Spa Pedicure</span><span class="choice-detail"><span>75 phút</span><strong class="choice-price">$70</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="gel-x" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">✨</span><span class="choice-title">Gel-X Full Set</span><span class="choice-detail"><span>100 phút</span><strong class="choice-price">$85</strong></span>
+            <span class="choice-title">Gel-X Full Set</span><span class="choice-detail"><span>100 phút</span><strong class="choice-price">$85</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="builder-gel" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🪄</span><span class="choice-title">Builder Gel</span><span class="choice-detail"><span>75 phút</span><strong class="choice-price">$65</strong></span>
+            <span class="choice-title">Builder Gel</span><span class="choice-detail"><span>75 phút</span><strong class="choice-price">$65</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="french-tip" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🤍</span><span class="choice-title">French Tip</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$15</strong></span>
+            <span class="choice-title">French Tip</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$15</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="nail-art" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🎨</span><span class="choice-title">Nail Art</span><span class="choice-detail"><span>25 phút</span><strong class="choice-price">$20</strong></span>
+            <span class="choice-title">Nail Art</span><span class="choice-detail"><span>25 phút</span><strong class="choice-price">$20</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="chrome" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🌟</span><span class="choice-title">Chrome Finish</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$20</strong></span>
+            <span class="choice-title">Chrome Finish</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$20</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="paraffin" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🧴</span><span class="choice-title">Paraffin Treatment</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$18</strong></span>
+            <span class="choice-title">Paraffin Treatment</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$18</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="acrylic-soak" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🧼</span><span class="choice-title">Acrylic Soak-off</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$15</strong></span>
+            <span class="choice-title">Acrylic Soak-off</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$15</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="gel-removal" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🫧</span><span class="choice-title">Gel Polish Removal</span><span class="choice-detail"><span>15 phút</span><strong class="choice-price">$10</strong></span>
+            <span class="choice-title">Gel Polish Removal</span><span class="choice-detail"><span>15 phút</span><strong class="choice-price">$10</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="eyebrow-wax" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">👁️</span><span class="choice-title">Eyebrow Wax</span><span class="choice-detail"><span>15 phút</span><strong class="choice-price">$15</strong></span>
+            <span class="choice-title">Eyebrow Wax</span><span class="choice-detail"><span>15 phút</span><strong class="choice-price">$15</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="lip-wax" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">💋</span><span class="choice-title">Lip Wax</span><span class="choice-detail"><span>10 phút</span><strong class="choice-price">$10</strong></span>
+            <span class="choice-title">Lip Wax</span><span class="choice-detail"><span>10 phút</span><strong class="choice-price">$10</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="kids-mani" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🌈</span><span class="choice-title">Kids Manicure</span><span class="choice-detail"><span>25 phút</span><strong class="choice-price">$25</strong></span>
+            <span class="choice-title">Kids Manicure</span><span class="choice-detail"><span>25 phút</span><strong class="choice-price">$25</strong></span>
           </button>
           <button class="choice-card" type="button" data-service-id="kids-pedi" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">🌼</span><span class="choice-title">Kids Pedicure</span><span class="choice-detail"><span>35 phút</span><strong class="choice-price">$35</strong></span>
+            <span class="choice-title">Kids Pedicure</span><span class="choice-detail"><span>35 phút</span><strong class="choice-price">$35</strong></span>
           </button>
         </div>
         <div class="selection-summary" aria-live="polite"><span id="service-count">Chưa chọn dịch vụ</span><strong id="service-total">$0</strong></div>
@@ -359,19 +308,19 @@
             <span class="choice-icon" aria-hidden="true">✨</span><span class="choice-title">Bất kỳ chuyên viên nào</span><span class="staff-status">Sắp xếp sớm nhất</span>
           </button>
           <button class="choice-card staff-card" type="button" data-staff-id="tina" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">👩🏻</span><span class="choice-title">Tina</span><span class="staff-status">Còn lịch trống</span>
+            <span class="choice-icon" aria-hidden="true">TN</span><span class="choice-title">Tina</span><span class="staff-status">Còn lịch trống</span>
           </button>
           <button class="choice-card staff-card" type="button" data-staff-id="helen" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">👩🏼</span><span class="choice-title">Helen</span><span class="staff-status">Còn lịch trống</span>
+            <span class="choice-icon" aria-hidden="true">HE</span><span class="choice-title">Helen</span><span class="staff-status">Còn lịch trống</span>
           </button>
           <button class="choice-card staff-card" type="button" data-staff-id="andy" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">👨🏻</span><span class="choice-title">Andy</span><span class="staff-status">Còn lịch trống</span>
+            <span class="choice-icon" aria-hidden="true">AN</span><span class="choice-title">Andy</span><span class="staff-status">Còn lịch trống</span>
           </button>
           <button class="choice-card staff-card" type="button" data-staff-id="maria" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">👩🏽</span><span class="choice-title">Maria</span><span class="staff-status">Còn lịch trống</span>
+            <span class="choice-icon" aria-hidden="true">MA</span><span class="choice-title">Maria</span><span class="staff-status">Còn lịch trống</span>
           </button>
           <button class="choice-card staff-card" type="button" data-staff-id="kim" aria-pressed="false" disabled>
-            <span class="choice-icon" aria-hidden="true">👩🏼‍🦳</span><span class="choice-title">Kim</span><span class="staff-status unavailable">Hiện chưa có lịch trống</span>
+            <span class="choice-icon" aria-hidden="true">KI</span><span class="choice-title">Kim</span><span class="staff-status unavailable">Hiện chưa có lịch trống</span>
           </button>
         </div>
         <p class="field-error" id="staff-error" role="alert"></p>
@@ -389,16 +338,14 @@
         <p class="field-error" id="date-error" role="alert"></p>
         <p class="field-error" id="time-error" role="alert"></p>
 
-        <div class="action-row">
-          <button class="secondary-button" type="button" data-action="back" data-back-step="1">← Quay lại</button>
-          <button class="primary-button" type="button" data-action="next" data-next-step="3">Xem lại thông tin <span class="button-arrow" aria-hidden="true">→</span></button>
+        <div class="sticky-action">
+          <button class="primary-button" type="button" data-action="next" data-next-step="2">Tiếp tục <span class="button-arrow" aria-hidden="true">→</span></button>
         </div>
       </section>
 
-      <section class="step-panel app-card" data-step-panel="3" hidden>
+      <section class="step-panel app-card" data-step-panel="2" hidden>
         <div class="card-heading">
           <div>
-            <p class="eyebrow">Bước 3 · Xác nhận</p>
             <h2>Xác nhận thông tin đặt lịch</h2>
             <p>Vui lòng kiểm tra lại thông tin trước khi gửi yêu cầu. Tiệm sẽ phản hồi và xác nhận lịch hẹn trong thời gian sớm nhất.</p>
           </div>
@@ -415,12 +362,12 @@
         <p class="field-error" id="review-error" role="alert"></p>
 
         <div class="action-row">
-          <button class="secondary-button" type="button" data-action="back" data-back-step="2">← Chỉnh sửa</button>
+          <button class="secondary-button" type="button" data-action="back" data-back-step="1">← Chỉnh sửa</button>
           <button class="primary-button" type="button" data-action="submit-booking">✓ Gửi yêu cầu đặt lịch</button>
         </div>
       </section>
 
-      <section class="step-panel app-card success-card" data-step-panel="4" hidden>
+      <section class="step-panel app-card success-card" data-step-panel="3" hidden>
         <div class="success-icon" aria-hidden="true">✓</div>
         <h2>Yêu cầu đặt lịch đã được gửi</h2>
         <p>Bitcoin Nail Bar sẽ gửi xác nhận qua tin nhắn hoặc liên hệ với quý khách trong thời gian sớm nhất.</p>
@@ -444,7 +391,6 @@
     (() => {
       'use strict';
 
-      const BOOKING_STORAGE_KEY = 'nexora.customer.booking.page.v1';
       const CUSTOMERS = [
         { phone: '8325550198', name: 'Mary Smith' },
         { phone: '7135550142', name: 'Jessica Nguyen' }
@@ -486,14 +432,8 @@
       defaultSlot.setMinutes(defaultSlot.getMinutes() + 30);
       const defaultBookingDate = localDateIso(defaultSlot);
       const defaultBookingTime = `${pad(defaultSlot.getHours())}:${pad(defaultSlot.getMinutes())}`;
-      const DATES = Array.from({ length: 7 }, (_, index) => {
-        const date = new Date(now);
-        date.setHours(12, 0, 0, 0);
-        date.setDate(date.getDate() + index);
-        return localDateIso(date);
-      });
       const TIMES = [...new Set(['10:00', '11:30', '13:00', '14:00', '15:30', '17:00', defaultBookingTime])].sort();
-      const CATALOG = { services: SERVICES, staff: STAFF, slots: DATES.flatMap((date) => TIMES.map((time) => ({ date, time }))) };
+      const CATALOG = { services: SERVICES, staff: STAFF, slots: [] };
 
       function normalizePhone(value) {
         const digits = String(value ?? '').replace(/\D/g, '');
@@ -514,6 +454,18 @@
         return current;
       }
 
+      function isBookableDate(value) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ''))) return false;
+        const date = new Date(`${value}T12:00:00`);
+        return !Number.isNaN(date.getTime()) && localDateIso(date) === value && value >= defaultBookingDate;
+      }
+
+      function hasAvailableSlot(date, time, catalog) {
+        const configuredSlots = Array.isArray(catalog?.slots) ? catalog.slots : [];
+        if (configuredSlots.length) return configuredSlots.some((slot) => slot.date === date && slot.time === time);
+        return isBookableDate(date) && TIMES.includes(time);
+      }
+
       function calculateBookingTotal(serviceIds, services = SERVICES) {
         const selected = Array.isArray(serviceIds) ? serviceIds : [];
         return selected.reduce((summary, id) => {
@@ -532,11 +484,11 @@
         const phone = normalizePhone(customer.phone);
             const serviceIds = Array.isArray(draft?.selectedServiceIds) ? draft.selectedServiceIds : [];
         const staff = catalog.staff.find((candidate) => candidate.id === draft?.selectedStaffId);
-        const slot = catalog.slots.find((candidate) => candidate.date === draft?.selectedDate && candidate.time === draft?.selectedTime);
+        const slotAvailable = hasAvailableSlot(draft?.selectedDate, draft?.selectedTime, catalog);
         if (phone.length !== 10) errors.push('phone');
             if (!serviceIds.length || serviceIds.some((id) => !catalog.services.some((service) => service.id === id))) errors.push('services');
         if (!staff || !staff.available) errors.push('staff');
-        if (!slot) errors.push('slot');
+        if (!slotAvailable) errors.push('slot');
         return { ok: errors.length === 0, errors };
       }
 
@@ -567,13 +519,9 @@
         };
       }
 
-      const api = { BOOKING_STORAGE_KEY, normalizePhone, findCustomerByPhone, toggleSelection, calculateBookingTotal, validateBookingDraft, createBookingRequest, parseBookingTime };
+      const api = { normalizePhone, findCustomerByPhone, toggleSelection, calculateBookingTotal, validateBookingDraft, createBookingRequest, parseBookingTime };
       if (typeof window !== 'undefined') window.NEXORA_BOOKING_TEST_API = api;
       if (typeof window === 'undefined' || window.NEXORA_BOOKING_SKIP_INIT) return;
-
-      const storage = (() => {
-        try { return window.localStorage; } catch { return null; }
-      })();
 
       function defaultState() {
         return {
@@ -583,37 +531,7 @@
         };
       }
 
-      function readState() {
-        const fallback = defaultState();
-        if (!storage) return fallback;
-        try {
-          const parsed = JSON.parse(storage.getItem(BOOKING_STORAGE_KEY) || 'null');
-          if (!parsed || typeof parsed !== 'object') return fallback;
-          return {
-            ...fallback,
-            ...parsed,
-            step: Number.isInteger(parsed.step) && parsed.step >= 1 && parsed.step <= 4 ? parsed.step : 1,
-            customer: { ...fallback.customer, ...(parsed.customer || {}) },
-            selectedServiceIds: Array.isArray(parsed.selectedServiceIds) ? parsed.selectedServiceIds : [],
-            selectedStaffId: STAFF.some((staff) => staff.id === parsed.selectedStaffId) ? parsed.selectedStaffId : 'any',
-            selectedDate: DATES.includes(parsed.selectedDate) ? parsed.selectedDate : defaultBookingDate,
-            selectedTime: TIMES.includes(parsed.selectedTime) ? parsed.selectedTime : defaultBookingTime,
-            note: typeof parsed.note === 'string' ? parsed.note : ''
-          };
-        } catch { return fallback; }
-      }
-
-      function persistState(current) {
-        if (!storage) return;
-        try { storage.setItem(BOOKING_STORAGE_KEY, JSON.stringify(current)); } catch { /* keep the in-memory flow usable */ }
-      }
-
-      function clearState() {
-        if (!storage) return;
-        try { storage.removeItem(BOOKING_STORAGE_KEY); } catch { /* nothing to recover */ }
-      }
-
-      let state = readState();
+      let state = defaultState();
       const $ = (selector) => document.querySelector(selector);
       const $$ = (selector) => [...document.querySelectorAll(selector)];
       const money = (cents) => `$${(cents / 100).toFixed(0)}`;
@@ -633,20 +551,17 @@
               dateFormat: 'Y-m-d',
               altInputClass: 'booking-select',
               disableMobile: true,
-              minDate: DATES[0],
-              maxDate: DATES[DATES.length - 1],
+              minDate: defaultBookingDate,
               defaultDate: state.selectedDate,
               onChange: (selectedDates, dateString) => {
                 if (!dateString) return;
                 state.selectedDate = dateString;
-                persistState(state);
                 renderSelections();
               }
             });
           } else {
             dateOptions.type = 'date';
-            dateOptions.min = DATES[0];
-            dateOptions.max = DATES[DATES.length - 1];
+            dateOptions.min = defaultBookingDate;
             dateOptions.value = state.selectedDate;
           }
         }
@@ -665,7 +580,6 @@
               const selectedTime = parseBookingTime(timeOptions.value);
               if (!selectedTime) return;
               state.selectedTime = selectedTime;
-              persistState(state);
               renderSelections();
             });
           } else {
@@ -753,7 +667,6 @@
         }
         renderCustomer();
         renderActionStates();
-        persistState(state);
       }
 
       function renderCustomer() {
@@ -847,12 +760,6 @@
 
       function renderSteps() {
         $$('[data-step-panel]').forEach((panel) => { panel.hidden = Number(panel.dataset.stepPanel) !== state.step; });
-        $$('[data-step-indicator]').forEach((indicator) => {
-          const step = Number(indicator.dataset.stepIndicator);
-          indicator.classList.toggle('is-complete', step < state.step);
-          if (step === state.step) indicator.setAttribute('aria-current', 'step');
-          else indicator.removeAttribute('aria-current');
-        });
         renderCustomer();
         renderSelections();
         renderReview();
@@ -863,7 +770,7 @@
       function renderActionStates() {
         $$('[data-action="next"]').forEach((button) => {
           const nextStep = Number(button.dataset.nextStep);
-          const requiredStep = Math.min(nextStep - 1, 2);
+          const requiredStep = Math.min(nextStep - 1, 1);
           button.disabled = validateForStep(requiredStep).length > 0;
         });
         const submit = $('[data-action="submit-booking"]');
@@ -882,27 +789,19 @@
       }
 
       function validateForStep(step) {
-        const customerErrors = [];
-        if (normalizePhone(state.customer.phone).length !== 10) customerErrors.push('phone');
-        if (step === 1) return customerErrors;
-        if (step === 2) return [...customerErrors, ...validateBookingDraft(state, CATALOG).errors.filter((error) => error !== 'phone')];
-        return validateBookingDraft(state, CATALOG).errors;
+        return step === 1 ? validateBookingDraft(state, CATALOG).errors : [];
       }
 
       function goToStep(nextStep) {
-        const currentErrors = validateForStep(Math.min(nextStep - 1, 2));
+        const currentErrors = nextStep === 2 ? validateForStep(1) : [];
         if (currentErrors.length) {
           showValidation(currentErrors);
-          const firstError = currentErrors[0];
-          if (firstError === 'phone') state.step = 1;
-          else state.step = 2;
-          persistState(state);
+          state.step = 1;
           renderSteps();
           return false;
         }
         state.step = nextStep;
         setError('#review-error', '');
-        persistState(state);
         renderSteps();
         window.scrollTo?.({ top: 0, behavior: 'smooth' });
         return true;
@@ -912,7 +811,6 @@
         if (!SERVICES.some((service) => service.id === id)) return;
         state.selectedServiceIds = toggleSelection(state.selectedServiceIds, id);
         if (state.selectedStaffId && !isStaffAvailable(staffById(state.selectedStaffId))) state.selectedStaffId = '';
-        persistState(state);
         renderSelections();
       }
 
@@ -920,9 +818,7 @@
         const errors = validateBookingDraft(state, CATALOG).errors;
         if (errors.length) {
           showValidation(errors);
-          const first = errors[0];
-              state.step = first === 'phone' ? 1 : 2;
-          persistState(state);
+          state.step = 1;
           renderSteps();
           return;
         }
@@ -932,8 +828,7 @@
         const result = createBookingRequest(state, CATALOG, new Date().toISOString(), id);
         if (!result.ok) { showValidation(result.errors); return; }
         state.booking = result.booking;
-        state.step = 4;
-        persistState(state);
+        state.step = 3;
         renderSteps();
             setText('#booking-status', `Yêu cầu đặt lịch ${result.booking.id} đã được gửi.`);
         window.scrollTo?.({ top: 0, behavior: 'smooth' });
@@ -943,29 +838,24 @@
         if (event.target.id === 'booking-phone') updateCustomerFromPhone();
         if (event.target.id === 'booking-name' && !state.customer.isReturning) {
           state.customer.name = event.target.value;
-          persistState(state);
           renderActionStates();
         }
         if (event.target.id === 'booking-note') {
           state.note = event.target.value;
-          persistState(state);
         }
       });
 
       document.addEventListener('change', (event) => {
         if (event.target.id === 'sms-opt-in') {
           state.customer.smsOptIn = Boolean(event.target.checked);
-          persistState(state);
           renderReview();
         }
         if (event.target.id === 'date-options') {
           state.selectedDate = event.target.value;
-          persistState(state);
           renderSelections();
         }
         if (event.target.id === 'time-options') {
           state.selectedTime = event.target.value;
-          persistState(state);
           renderSelections();
         }
       });
@@ -977,18 +867,19 @@
         const time = event.target.closest?.('[data-booking-time]');
         const action = event.target.closest?.('[data-action]');
         if (service) chooseService(service.dataset.serviceId);
-        if (staff && !staff.disabled) { state.selectedStaffId = staff.dataset.staffId; persistState(state); renderSelections(); }
-        if (date) { state.selectedDate = date.dataset.bookingDate; persistState(state); renderSelections(); }
-        if (time) { state.selectedTime = time.dataset.bookingTime; persistState(state); renderSelections(); }
+        if (staff && !staff.disabled) { state.selectedStaffId = staff.dataset.staffId; renderSelections(); }
+        if (date) { state.selectedDate = date.dataset.bookingDate; renderSelections(); }
+        if (time) { state.selectedTime = time.dataset.bookingTime; renderSelections(); }
         if (!action) return;
         if (action.dataset.action === 'next') goToStep(Number(action.dataset.nextStep));
-        if (action.dataset.action === 'back') { state.step = Number(action.dataset.backStep); persistState(state); renderSteps(); }
+        if (action.dataset.action === 'back') { state.step = Number(action.dataset.backStep); renderSteps(); }
         if (action.dataset.action === 'submit-booking') submitBooking();
-        if (action.dataset.action === 'new-booking') { clearState(); state = defaultState(); renderSteps(); }
+        if (action.dataset.action === 'new-booking') { state = defaultState(); renderSteps(); }
       });
 
       renderSlotOptions();
-      $('#sms-opt-in').checked = Boolean(state.customer.smsOptIn);
+      const smsOptIn = $('#sms-opt-in');
+      if (smsOptIn) smsOptIn.checked = Boolean(state.customer.smsOptIn);
       renderSteps();
     })();
   </script>
