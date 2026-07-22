@@ -219,14 +219,14 @@
     }
 
     .vmm-balance {
-      font-size: clamp(34px, 5vw, 58px);
+      font-size: clamp(28px, 3.5vw, 44px);
       font-weight: 900;
       letter-spacing: -.05em;
       line-height: 1;
     }
 
     .vmm-balance span {
-      font-size: 17px;
+      font-size: 15px;
       color: #4d668b;
       letter-spacing: 0;
       margin-left: 5px;
@@ -359,6 +359,14 @@
       margin: 5px 0 0;
       color: var(--vmm-muted);
       font-size: 13px;
+    }
+
+    .vmm-program-head-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .vmm-campaign-banner {
@@ -893,6 +901,11 @@
         flex-direction: column;
       }
 
+      .vmm-program-head-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
       .vmm-date-pill {
         white-space: normal;
       }
@@ -1038,8 +1051,11 @@
               <h2>Chọn cấp ký gửi</h2>
               <p>Các cấp được sắp xếp từ nhỏ đến lớn. Cấp không đủ số dư sẽ tự động bị khóa.</p>
             </div>
-            <div class="vmm-token-pill">
-              Số dư: <strong id="programBalance">300.000.000 VMM</strong>
+            <div class="vmm-program-head-actions">
+              <div class="vmm-token-pill">
+                Số dư: <strong id="programBalance">300.000.000 VMM</strong>
+              </div>
+              <button class="vmm-btn vmm-btn-more" type="button" data-get-more-vmm>Get more VMM</button>
             </div>
           </div>
 
