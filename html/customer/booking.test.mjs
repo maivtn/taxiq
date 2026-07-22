@@ -125,3 +125,12 @@ test('removes decorative card emoji icons from section headers', () => {
   assert.doesNotMatch(SOURCE, /class="card-emoji"/);
   assert.doesNotMatch(SOURCE, /\.card-emoji\s*\{/);
 });
+
+test('uses compact mobile-first spacing as the base layout', () => {
+  const baseStyles = SOURCE.split('@media (min-width: 640px)')[0];
+  assert.doesNotMatch(SOURCE, /@media \(max-width: 430px\)/);
+  assert.match(baseStyles, /\.field-error \{[^}]*min-height: 0/);
+  assert.match(baseStyles, /\.form-field \{[^}]*margin-top: 12px/);
+  assert.match(baseStyles, /\.app-card \{[^}]*padding: 17px/);
+  assert.match(baseStyles, /\.staff-grid \{[^}]*grid-template-columns: repeat\(2/);
+});
