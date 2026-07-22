@@ -219,6 +219,12 @@ test('uses an icon for the any-staff option', () => {
   assert.match(anyStaff, /<span class="choice-icon" aria-hidden="true">✨<\/span>/);
 });
 
+test('uses a thin border for active choice cards', () => {
+  const activeChoiceStyle = SOURCE.match(/\.choice-card\[aria-pressed="true"\] \{([^}]*)\}/)?.[1] || '';
+  assert.match(activeChoiceStyle, /border: 1px solid var\(--pink\)/);
+  assert.doesNotMatch(activeChoiceStyle, /border: 2px/);
+});
+
 test('removes divider borders from confirmation review rows', () => {
   const reviewRowStyle = SOURCE.match(/\.review-row \{([^}]*)\}/)?.[1] || '';
   assert.doesNotMatch(reviewRowStyle, /border-bottom/);
