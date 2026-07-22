@@ -246,7 +246,7 @@ test('keeps confirmation review rows compact for scanning', () => {
 test('keeps the review total close to the review rows', () => {
   const reviewTotalStyle = SOURCE.match(/\.review-total \{([^}]*)\}/)?.[1] || '';
   assert.match(reviewTotalStyle, /margin: 0;/);
-  assert.match(reviewTotalStyle, /padding-top: 8px/);
+  assert.match(reviewTotalStyle, /padding: 8px 12px 0/);
 });
 
 test('separates review details from the total with a dashed divider', () => {
