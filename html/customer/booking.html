@@ -376,7 +376,6 @@
         <dl class="review-list">
           <div class="review-row"><dt>Số điện thoại</dt><dd id="review-customer"></dd></div>
           <div class="review-row"><dt>Dịch vụ</dt><dd class="review-service-chips" id="review-services"></dd></div>
-          <div class="review-row"><dt>Thời lượng</dt><dd id="review-duration"></dd></div>
           <div class="review-row"><dt>Chuyên viên</dt><dd id="review-staff"></dd></div>
           <div class="review-row"><dt>Ngày &amp; giờ</dt><dd id="review-slot"></dd></div>
         </dl>
@@ -718,7 +717,6 @@
             return chip;
           }) : [document.createTextNode('—')]));
         }
-        setText('#review-duration', minutes(total.durationMinutes));
         setText('#review-staff', staffById(state.selectedStaffId)?.name || 'Bất kỳ chuyên viên nào');
         setText('#review-slot', formatBookingSlot(state.selectedDate, state.selectedTime));
         setText('#review-total', money(total.totalCents));
