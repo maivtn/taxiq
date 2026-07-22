@@ -4750,15 +4750,15 @@
     #panel-sms-campaigns .sms-stat-card.orange { --card-accent:var(--nexora-warning); }
     #panel-sms-campaigns .marketing-section-heading h3 { margin:0 0 12px; font-size:14px; }
     #panel-sms-campaigns .sms-campaign-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
-    #panel-sms-campaigns .sms-campaign-card { display:grid; grid-template-columns:40px minmax(0,1fr); column-gap:12px; row-gap:14px; width:100%; padding:17px; color:var(--nexora-text); text-align:left; transition:.2s ease; }
+    #panel-sms-campaigns .sms-campaign-card { display:grid; grid-template-columns:34px minmax(0,1fr); column-gap:8px; row-gap:10px; width:100%; padding:12px; color:var(--nexora-text); text-align:left; transition:.2s ease; }
     #panel-sms-campaigns .sms-campaign-card:hover { border-color:rgba(70,72,216,.5); transform:translateY(-2px); }
-    #panel-sms-campaigns .sms-campaign-icon { display:flex; grid-column:1; grid-row:1; width:40px; height:40px; align-items:center; justify-content:center; border-radius:10px; background:rgba(70,72,216,.09); color:var(--nexora-brand); }
+    #panel-sms-campaigns .sms-campaign-icon { display:flex; grid-column:1; grid-row:1; width:34px; height:34px; align-items:center; justify-content:center; border-radius:9px; background:rgba(70,72,216,.09); color:var(--nexora-brand); }
     #panel-sms-campaigns .sms-campaign-copy { grid-column:2; min-width:0; align-self:start; }
-    #panel-sms-campaigns .sms-campaign-name { display:block; font-size:14px; font-weight:800; line-height:1.3; }
-    #panel-sms-campaigns .sms-campaign-desc { display:block; margin-top:4px; color:var(--nexora-muted); font-size:11px; line-height:1.55; }
-    #panel-sms-campaigns .sms-campaign-meta { display:flex; grid-column:1 / -1; justify-content:space-between; align-items:end; gap:10px; padding-top:12px; border-top:1px solid var(--nexora-rule); }
+    #panel-sms-campaigns .sms-campaign-name { display:block; font-size:13px; font-weight:800; line-height:1.25; }
+    #panel-sms-campaigns .sms-campaign-desc { display:block; margin-top:3px; color:var(--nexora-muted); font-size:10px; line-height:1.4; }
+    #panel-sms-campaigns .sms-campaign-meta { display:flex; grid-column:1 / -1; justify-content:space-between; align-items:end; gap:8px; padding-top:8px; border-top:1px solid var(--nexora-rule); }
     #panel-sms-campaigns .sms-campaign-count-wrap { display:flex; align-items:baseline; gap:4px; }
-    #panel-sms-campaigns .sms-campaign-count { color:#0891b2; font-size:19px; font-weight:800; }
+    #panel-sms-campaigns .sms-campaign-count { color:#0891b2; font-size:17px; font-weight:800; }
     #panel-sms-campaigns .sms-campaign-count-label { color:var(--nexora-subtle); font-size:9px; }
     #panel-sms-campaigns .sms-campaign-badge { border-radius:999px; background:var(--nexora-surface-muted); padding:4px 8px; color:var(--nexora-muted); font-size:9px; font-weight:800; }
     #panel-sms-campaigns .sms-campaign-history { margin-top:24px; overflow:hidden; border:1px solid var(--nexora-border); border-radius:12px; background:#fff; box-shadow:var(--nexora-card-shadow); }
@@ -4781,9 +4781,10 @@
     #panel-sms-campaigns .sms-campaign-status.is-active { background:rgba(142,77,248,.1); color:var(--nexora-violet); }
     #panel-sms-campaigns .sms-campaign-status.is-cancelled { background:rgba(122,130,150,.14); color:var(--nexora-muted); }
     #panel-sms-campaigns .sms-campaign-actions { display:flex; align-items:center; gap:10px; white-space:nowrap; }
-    #panel-sms-campaigns .sms-campaign-action { border:0; background:transparent; padding:3px 0; color:var(--nexora-brand); font-size:10px; font-weight:700; text-decoration:underline; }
-    #panel-sms-campaigns .sms-campaign-action:hover { color:var(--nexora-brand-dark); }
-    #panel-sms-campaigns .sms-campaign-action.is-danger { color:#c24141; }
+    #panel-sms-campaigns .sms-campaign-action { display:inline-flex; min-height:30px; align-items:center; justify-content:center; border:1px solid var(--nexora-border); border-radius:7px; background:#fff; padding:6px 10px; color:var(--nexora-brand); font-size:10px; font-weight:700; text-decoration:none; transition:background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease; }
+    #panel-sms-campaigns .sms-campaign-action:hover { border-color:rgba(70,72,216,.4); background:rgba(70,72,216,.06); color:var(--nexora-brand-dark); transform:translateY(-1px); }
+    #panel-sms-campaigns .sms-campaign-action.is-danger { border-color:rgba(194,65,65,.25); background:#fff8f8; color:#c24141; }
+    #panel-sms-campaigns .sms-campaign-action.is-danger:hover { border-color:rgba(194,65,65,.45); background:#fff0f0; color:#a83232; }
     #panel-sms-campaigns .sms-campaign-empty { padding:24px 16px !important; color:var(--nexora-subtle); text-align:center; }
     #panel-qr-codes .qr-head-actions { display:flex; flex-wrap:wrap; gap:8px; }
     #panel-qr-codes .guide-panel,
@@ -11530,6 +11531,62 @@ function getBookingCardCallStart(item) {
           landingPage: '',
           scheduleDate: '',
           scheduleTime: '10:00'
+        },
+        {
+          id: 'demo-win-back-60-days',
+          name: 'Win-Back 60 Days',
+          audience: '60 Days Inactive',
+          segmentId: 'day60',
+          mode: 'Now',
+          status: 'Sent',
+          sent: 156,
+          failed: 7,
+          message: 'Win-back offer for inactive customers',
+          landingPage: 'comeback',
+          scheduleDate: '',
+          scheduleTime: '10:00'
+        },
+        {
+          id: 'demo-vip-summer-priority',
+          name: 'VIP Summer Priority',
+          audience: 'VIP Customers',
+          segmentId: 'vip',
+          mode: 'Scheduled',
+          status: 'Scheduled',
+          sent: 0,
+          failed: 0,
+          message: 'Exclusive summer priority booking for VIP customers',
+          landingPage: '',
+          scheduleDate: '2026-07-28',
+          scheduleTime: '10:00'
+        },
+        {
+          id: 'demo-birthday-june',
+          name: 'Birthday June',
+          audience: 'Birthday This Month',
+          segmentId: 'birthday',
+          mode: 'Automated',
+          status: 'Active',
+          sent: 42,
+          failed: 1,
+          message: 'Birthday offer for customers this month',
+          landingPage: 'birthday',
+          scheduleDate: '',
+          scheduleTime: '10:00'
+        },
+        {
+          id: 'demo-touch-up-15-days',
+          name: 'Touch Up 15 Days',
+          audience: '15 Days No Visit',
+          segmentId: 'day15',
+          mode: 'Now',
+          status: 'Sent',
+          sent: 187,
+          failed: 3,
+          message: 'Touch-up reminder for returning customers',
+          landingPage: '',
+          scheduleDate: '',
+          scheduleTime: '10:00'
         }
       ];
 
@@ -11635,6 +11692,97 @@ function getBookingCardCallStart(item) {
         refreshBookingMarketingIcons();
       }
 
+      function smsCampaignStatusClass(status) {
+        return status === 'Sent' ? 'is-sent'
+          : status === 'Scheduled' ? 'is-scheduled'
+            : status === 'Active' ? 'is-active' : 'is-cancelled';
+      }
+
+      function smsCampaignModeLabel(mode) {
+        return mode === 'schedule' ? 'Scheduled' : mode === 'auto' ? 'Automated' : 'Now';
+      }
+
+      function smsCampaignStatusLabel(mode) {
+        return mode === 'schedule' ? 'Scheduled' : mode === 'auto' ? 'Active' : 'Sent';
+      }
+
+      function createSmsCampaignRecord() {
+        const info = smsInfo($('smsText').value);
+        const totalSms = state.segment.count * Math.max(info.parts, 1);
+        const mode = state.scheduleMode;
+        return {
+          id: 'sms-campaign-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+          name: state.segment.name,
+          audience: state.segment.name,
+          segmentId: state.segment.id,
+          mode: smsCampaignModeLabel(mode),
+          status: smsCampaignStatusLabel(mode),
+          sent: mode === 'now' ? totalSms : 0,
+          failed: 0,
+          message: $('smsText').value,
+          landingPage: $('lpSelect').value,
+          scheduleDate: $('schedDate').value,
+          scheduleTime: $('schedTime').value
+        };
+      }
+
+      function renderSmsCampaignList() {
+        const list = document.querySelector('[data-sms-campaign-list]');
+        if (!list) return;
+        if (!smsCampaigns.length) {
+          list.innerHTML = '<tr><td class="sms-campaign-empty" colspan="7">Chưa có campaign nào được tạo.</td></tr>';
+          return;
+        }
+
+        list.innerHTML = smsCampaigns.map(function(campaign) {
+          const canManage = campaign.status === 'Scheduled' || campaign.status === 'Active';
+          const actionButtons = [
+            canManage ? '<button class="sms-campaign-action" type="button" data-sms-campaign-action="edit" data-sms-campaign-id="' + escapeHtml(campaign.id) + '" aria-label="Edit ' + escapeHtml(campaign.name) + '">Edit</button>' : '',
+            canManage ? '<button class="sms-campaign-action" type="button" data-sms-campaign-action="cancel" data-sms-campaign-id="' + escapeHtml(campaign.id) + '" aria-label="Cancel ' + escapeHtml(campaign.name) + '">Cancel</button>' : '',
+            '<button class="sms-campaign-action is-danger" type="button" data-sms-campaign-action="delete" data-sms-campaign-id="' + escapeHtml(campaign.id) + '" aria-label="Delete ' + escapeHtml(campaign.name) + '">Delete</button>'
+          ].join('');
+          return '<tr>' +
+            '<td>' + escapeHtml(campaign.name) + '</td>' +
+            '<td>' + escapeHtml(campaign.audience) + '</td>' +
+            '<td>' + escapeHtml(campaign.mode) + '</td>' +
+            '<td><span class="sms-campaign-status ' + smsCampaignStatusClass(campaign.status) + '">' + escapeHtml(campaign.status) + '</span></td>' +
+            '<td>' + Number(campaign.sent || 0).toLocaleString() + '</td>' +
+            '<td>' + Number(campaign.failed || 0).toLocaleString() + '</td>' +
+            '<td><div class="sms-campaign-actions">' + actionButtons + '</div></td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      function openSmsCampaignEditor(campaign) {
+        editingSmsCampaignId = campaign.id;
+        openComposer(campaign.segmentId || 'new', campaign);
+      }
+
+      function handleSmsCampaignAction(event) {
+        const actionButton = event.target.closest('[data-sms-campaign-action]');
+        if (!actionButton) return;
+        const campaign = smsCampaigns.find(function(item) { return item.id === actionButton.dataset.smsCampaignId; });
+        if (!campaign) return;
+        const action = actionButton.dataset.smsCampaignAction;
+
+        if (action === 'edit') {
+          openSmsCampaignEditor(campaign);
+          return;
+        }
+        if (action === 'cancel' && (campaign.status === 'Scheduled' || campaign.status === 'Active')) {
+          if (!window.confirm('Cancel campaign "' + campaign.name + '"?')) return;
+          campaign.status = 'Cancelled';
+          renderSmsCampaignList();
+          return;
+        }
+        if (action === 'delete') {
+          if (!window.confirm('Delete campaign "' + campaign.name + '"?')) return;
+          const index = smsCampaigns.indexOf(campaign);
+          if (index >= 0) smsCampaigns.splice(index, 1);
+          renderSmsCampaignList();
+        }
+      }
+
       function renderTemplates(segId) {
         const list = TEMPLATES[segId] || [];
         $('templateList').innerHTML = list.map((t, i) => `
@@ -11658,14 +11806,35 @@ function getBookingCardCallStart(item) {
          ============================================================ */
       function openComposer(segId) {
         const overlay = $('composerModal');
+        const campaign = arguments[1] || null;
         const seg = SEGMENTS.find(s => s.id === segId) || SEGMENTS[0];
+        if (!campaign) editingSmsCampaignId = null;
         state.segment = seg;
+        state.scheduleMode = campaign
+          ? campaign.mode === 'Scheduled' ? 'schedule' : campaign.mode === 'Automated' ? 'auto' : 'now'
+          : 'now';
         state.confirming = false;
         $('confirmBox').classList.remove('show');
         setSendCampaignButton(false);
 
         document.querySelectorAll('.segment-btn').forEach(b => b.classList.toggle('selected', b.dataset.segment === seg.id));
         renderTemplates(seg.id);
+        if (campaign) {
+          $('smsText').value = campaign.message || '';
+          $('lpSelect').value = campaign.landingPage || '';
+          $('schedDate').value = campaign.scheduleDate || '';
+          $('schedTime').value = campaign.scheduleTime || '10:00';
+        } else {
+          $('smsText').value = '';
+          $('lpSelect').value = '';
+          $('schedDate').value = '';
+          $('schedTime').value = '10:00';
+        }
+        document.querySelectorAll('.schedule-opt').forEach(function(button) {
+          button.classList.toggle('selected', button.dataset.mode === state.scheduleMode);
+        });
+        $('timeInputRow').style.display = state.scheduleMode === 'schedule' ? 'grid' : 'none';
+        updateCharCount();
         updateCost();
         composerOpener = document.activeElement;
         setComposerBackgroundInert(true);
@@ -11683,6 +11852,7 @@ function getBookingCardCallStart(item) {
         state.confirming = false;
         $('confirmBox').classList.remove('show');
         setSendCampaignButton(false);
+        editingSmsCampaignId = null;
         if (composerOpener && typeof composerOpener.focus === 'function') composerOpener.focus();
         composerOpener = null;
       }
@@ -11874,8 +12044,12 @@ function getBookingCardCallStart(item) {
 
         const info = smsInfo(text);
         const totalSms = state.segment.count * info.parts;
+        const editingCampaign = editingSmsCampaignId
+          ? smsCampaigns.find(function(campaign) { return campaign.id === editingSmsCampaignId; })
+          : null;
+        const willChargeCredits = !editingCampaign || state.scheduleMode === 'now';
 
-        if (state.credits < totalSms) {
+        if (willChargeCredits && state.credits < totalSms) {
           alert(`Không đủ credits: cần ${totalSms}, còn ${state.credits}. Vui lòng mua thêm.`);
           return;
         }
@@ -11898,10 +12072,19 @@ function getBookingCardCallStart(item) {
         }
 
         // Đã xác nhận → gửi
-        updateCredits(state.credits - totalSms);
+        if (willChargeCredits) updateCredits(state.credits - totalSms);
+        if (editingCampaign) {
+          const record = createSmsCampaignRecord();
+          Object.assign(editingCampaign, record, { id: editingCampaign.id, name: editingCampaign.name });
+        } else {
+          smsCampaigns.unshift(createSmsCampaignRecord());
+        }
+        renderSmsCampaignList();
         closeComposer();
 
-        const msg = state.scheduleMode === 'now'
+        const msg = editingCampaign
+          ? `Đã cập nhật campaign ${editingCampaign.name}.`
+          : state.scheduleMode === 'now'
           ? `Đã gửi ${totalSms} SMS đến ${state.segment.count} khách (${state.segment.name}).`
           : state.scheduleMode === 'schedule'
             ? `Đã lên lịch ${totalSms} SMS — gửi ${$('schedDate').value} lúc ${$('schedTime').value}.`
@@ -12006,9 +12189,12 @@ function getBookingCardCallStart(item) {
         const btn = event.target.closest('[data-sms-segment]');
         if (btn) openComposer(btn.dataset.smsSegment);
       });
+      const smsCampaignList = document.querySelector('[data-sms-campaign-list]');
+      if (smsCampaignList) smsCampaignList.addEventListener('click', handleSmsCampaignAction);
 
       renderSegmentButtons();
       renderSmsCampaignCards();
+      renderSmsCampaignList();
       updateCredits(state.credits);
       $('schedDate').min = new Date().toISOString().slice(0, 10);
       window.openSmsCampaignComposer = function (opts) { openComposer((opts && opts.segment) || 'new'); };

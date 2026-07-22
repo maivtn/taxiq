@@ -56,7 +56,7 @@ test('lays out each SMS campaign icon and text as separate card columns', () => 
 
   assert.match(
     html,
-    /#panel-sms-campaigns \.sms-campaign-card \{[^}]*display:grid;[^}]*grid-template-columns:40px minmax\(0,1fr\);/s
+    /#panel-sms-campaigns \.sms-campaign-card \{[^}]*display:grid;[^}]*grid-template-columns:34px minmax\(0,1fr\);/s
   );
   assert.match(html, /#panel-sms-campaigns \.sms-campaign-icon \{[^}]*grid-column:1;[^}]*grid-row:1;/s);
   assert.match(html, /#panel-sms-campaigns \.sms-campaign-copy \{[^}]*grid-column:2;[^}]*min-width:0;/s);
@@ -448,4 +448,41 @@ test('seeds and manages SMS campaign records without adding a campaign-name fiel
   assert.match(html, /campaign\.status = 'Cancelled'/);
   assert.match(html, /window\.confirm\(/);
   assert.match(html, /renderSmsCampaignList\(\);/);
+});
+
+test('styles SMS campaign actions as compact buttons', () => {
+  const html = source();
+  const actionRule = html.match(/#panel-sms-campaigns \.sms-campaign-action\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(actionRule, /display:inline-flex/);
+  assert.match(actionRule, /border:1px solid/);
+  assert.match(actionRule, /border-radius:/);
+  assert.match(actionRule, /background:/);
+  assert.doesNotMatch(actionRule, /text-decoration:underline/);
+  assert.match(html, /#panel-sms-campaigns \.sms-campaign-action\.is-danger\s*\{[^}]*background:/);
+});
+
+test('provides a populated SMS campaign demo dataset', () => {
+  const html = source();
+
+  for (const campaign of ['Win-Back 60 Days', 'VIP Summer Priority', 'Birthday June', 'Touch Up 15 Days']) {
+    assert.match(html, new RegExp(`name: '${campaign}'`), `missing demo campaign: ${campaign}`);
+  }
+  assert.match(html, /status: 'Sent'/);
+  assert.match(html, /status: 'Scheduled'/);
+  assert.match(html, /status: 'Active'/);
+});
+
+test('keeps SMS segment cards compact while preserving their content', () => {
+  const html = source();
+  const cardRule = html.match(/#panel-sms-campaigns \.sms-campaign-card\s*\{\s*display:grid;([^}]*)\}/)?.[1] || '';
+  const iconRule = html.match(/#panel-sms-campaigns \.sms-campaign-icon\s*\{([^}]*)\}/)?.[1] || '';
+  const metaRule = html.match(/#panel-sms-campaigns \.sms-campaign-meta\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(cardRule, /grid-template-columns:34px minmax\(0,1fr\)/);
+  assert.match(cardRule, /row-gap:10px/);
+  assert.match(cardRule, /padding:12px/);
+  assert.match(iconRule, /width:34px/);
+  assert.match(iconRule, /height:34px/);
+  assert.match(metaRule, /padding-top:8px/);
 });
