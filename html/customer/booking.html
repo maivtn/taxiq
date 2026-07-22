@@ -354,6 +354,7 @@
         </div>
 
         <dl class="review-list">
+          <div class="review-row" id="review-customer-name-row" hidden><dt>Tên khách hàng</dt><dd id="review-customer-name"></dd></div>
           <div class="review-row"><dt>Số điện thoại</dt><dd id="review-customer"></dd></div>
           <div class="review-row"><dt>Dịch vụ</dt><dd class="review-service-chips" id="review-services"></dd></div>
           <div class="review-row"><dt>Chuyên viên</dt><dd id="review-staff"></dd></div>
@@ -724,7 +725,11 @@
         const total = calculateBookingTotal(state.selectedServiceIds, SERVICES);
         const names = state.selectedServiceIds.map((id) => serviceById(id)?.name).filter(Boolean);
         const customerPhone = formatPhone(state.customer.phone) || '—';
-        setText('#review-customer', state.customer.name ? `${state.customer.name} · ${customerPhone}` : customerPhone);
+        const customerName = String(state.customer.name || '').trim();
+        const customerNameRow = $('#review-customer-name-row');
+        if (customerNameRow) customerNameRow.hidden = !customerName;
+        setText('#review-customer-name', customerName);
+        setText('#review-customer', customerPhone);
         const reviewServices = $('#review-services');
         if (reviewServices) {
           reviewServices.replaceChildren(...(names.length ? names.map((name) => {

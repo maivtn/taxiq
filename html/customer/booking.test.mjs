@@ -143,6 +143,14 @@ test('combines customer details and service selection into step 1', () => {
   assert.doesNotMatch(SOURCE, /data-step-panel="4"/);
 });
 
+test('shows a separate customer name row only when a name is available', () => {
+  const confirmationStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
+  assert.match(confirmationStep, /<div class="review-row" id="review-customer-name-row" hidden>\s*<dt>Tên khách hàng<\/dt>\s*<dd id="review-customer-name"><\/dd>/);
+  assert.match(SOURCE, /customerNameRow\.hidden = !customerName/);
+  assert.match(SOURCE, /setText\('#review-customer-name', customerName\)/);
+  assert.match(SOURCE, /setText\('#review-customer', customerPhone\)/);
+});
+
 test('removes the redundant service step label', () => {
   const stepOne = SOURCE.match(/data-step-panel="1"[\s\S]*?<\/section>/)?.[0] || '';
   assert.doesNotMatch(stepOne, /Bước 1 · Dịch vụ &amp; lịch hẹn/);
