@@ -230,7 +230,9 @@ test('keeps confirmation review rows compact for scanning', () => {
 });
 
 test('adds a subtle background to even confirmation review rows', () => {
-  assert.match(SOURCE, /\.review-row:nth-child\(even\)\s*\{[^}]*background: #faf8ff/);
+  const evenReviewRowStyle = SOURCE.match(/\.review-row:nth-child\(even\)\s*\{([^}]*)\}/)?.[1] || '';
+  assert.match(evenReviewRowStyle, /background: #faf8ff/);
+  assert.doesNotMatch(evenReviewRowStyle, /border-radius/);
 });
 
 test('adds a small gap before service selection', () => {
