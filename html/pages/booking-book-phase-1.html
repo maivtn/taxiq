@@ -3722,8 +3722,10 @@
     .booking-calendar-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 14px; border-bottom: 1px solid var(--nexora-border); background: linear-gradient(180deg, #fff, #fafbff); }
     .booking-calendar-title { color: var(--nexora-text); font-size: 14px; font-weight: 900; }
     .booking-calendar-subtitle { margin-top: 3px; color: var(--nexora-subtle); font-size: 11px; font-weight: 700; }
+    .booking-calendar-head-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
     .booking-calendar-nav { display: inline-flex; align-items: center; gap: 6px; }
     .booking-calendar-nav-label { min-width: 124px; color: var(--nexora-text); font-size: 12px; font-weight: 800; text-align: center; }
+    .booking-calendar-add-button { min-height: 34px; padding: 0 11px; }
     .booking-calendar-scroll { overflow: auto; }
     [data-booking-team-calendar] { min-width: 660px; }
     .booking-calendar-empty { display: grid; min-height: 420px; place-items: center; padding: 28px; color: var(--nexora-muted); font-size: 13px; font-weight: 700; text-align: center; }
@@ -3740,12 +3742,20 @@
     .booking-calendar-event-name { overflow: hidden; font-size: 11px; font-weight: 900; letter-spacing: -.015em; text-overflow: ellipsis; white-space: nowrap; }
     .booking-calendar-event-service { overflow: hidden; margin-top: 2px; font-size: 9.5px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
     .booking-calendar-event-meta { margin-top: 4px; font-size: 8.5px; font-weight: 700; opacity: .72; }
+    .booking-team-calendar .booking-cell-add { position: absolute; inset: 0; display: grid; place-items: center; color: #5e63dc; font-size: 12px; font-weight: 700; line-height: 1; opacity: .07; pointer-events: none; transition: opacity .15s ease; }
+    .booking-team-calendar .booking-cell-add > span { display: grid; width: 18px; height: 18px; place-items: center; border-radius: 999px; transition: background .15s ease, box-shadow .15s ease, transform .15s ease; }
+    .booking-team-calendar .calendar_default_cell:hover .booking-cell-add { opacity: 1; }
+    .booking-team-calendar .calendar_default_cell:hover .booking-cell-add > span { background: #eef0ff; box-shadow: 0 3px 9px rgba(70, 72, 216, .18); transform: scale(1.08); }
     @media (max-width: 720px) {
       .booking-calendar-head {
         align-items: stretch;
         flex-direction: column;
         padding: 11px 12px;
       }
+
+      .booking-calendar-head-actions { align-items: stretch; flex-direction: column; }
+
+      .booking-calendar-add-button { width: 100%; }
 
       .booking-calendar-title { font-size: 13px; }
       .booking-calendar-subtitle { font-size: 10px; }
@@ -3789,6 +3799,72 @@
     @media (max-width: 420px) {
       [data-booking-team-calendar] { min-width: 560px; }
       .booking-calendar-event-meta { display: none; }
+    }
+
+    .booking-create-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 135;
+      display: grid;
+      place-items: center;
+      background: rgba(8, 31, 73, 0.42);
+      padding: 18px;
+      backdrop-filter: blur(8px);
+    }
+
+    .booking-create-modal[hidden] { display: none; }
+
+    .booking-create-dialog {
+      display: flex;
+      width: min(100%, 680px);
+      max-height: min(88vh, 760px);
+      overflow: hidden;
+      flex-direction: column;
+      border: 1px solid var(--nexora-border);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 28px 80px rgba(8, 31, 73, 0.24);
+    }
+
+    .booking-create-head,
+    .booking-create-actions {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--nexora-border);
+      background: linear-gradient(180deg, #fff, #f8fbff);
+      padding: 16px 18px;
+    }
+
+    .booking-create-actions {
+      justify-content: flex-end;
+      border-top: 1px solid var(--nexora-border);
+      border-bottom: 0;
+      background: #fff;
+    }
+
+    .booking-create-title { color: var(--nexora-text); font-size: 16px; font-weight: 800; }
+    .booking-create-sub { margin-top: 3px; color: var(--nexora-muted); font-size: 12px; font-weight: 500; line-height: 1.45; }
+    .booking-create-body { display: grid; gap: 14px; overflow: auto; background: #f7f9fc; padding: 16px; }
+    .booking-create-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .booking-create-field { display: grid; min-width: 0; gap: 6px; }
+    .booking-create-field.is-full { grid-column: 1 / -1; }
+    .booking-create-label { color: var(--nexora-subtle); font-size: 10px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
+    .booking-create-field textarea.booking-input { height: 78px; padding: 10px 11px; resize: vertical; }
+    .booking-create-error { min-height: 18px; border-radius: 8px; color: #b91c1c; font-size: 11px; font-weight: 700; line-height: 1.5; }
+    .booking-create-actions .booking-primary-button,
+    .booking-create-actions .booking-secondary-button { min-height: 38px; }
+
+    @media (max-width: 600px) {
+      .booking-create-modal { align-items: end; padding: 0; }
+      .booking-create-dialog { width: 100%; max-height: 94vh; border-radius: 14px 14px 0 0; }
+      .booking-create-grid { grid-template-columns: 1fr; }
+      .booking-create-field.is-full { grid-column: auto; }
+      .booking-create-actions { flex-wrap: wrap; }
+      .booking-create-actions .booking-secondary-button,
+      .booking-create-actions .booking-primary-button { flex: 1; }
     }
 
     .booking-date {
@@ -7694,11 +7770,14 @@
                             <div class="booking-calendar-title">Team calendar</div>
                             <div class="booking-calendar-subtitle">Appointments grouped by technician</div>
                           </div>
-                          <div class="booking-calendar-nav" aria-label="Calendar date controls">
-                            <button class="booking-mini-button" type="button" data-booking-calendar-prev aria-label="Previous day"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
-                            <span class="booking-calendar-nav-label" data-booking-calendar-date></span>
-                            <button class="booking-mini-button" type="button" data-booking-calendar-today>Today</button>
-                            <button class="booking-mini-button" type="button" data-booking-calendar-next aria-label="Next day"><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+                          <div class="booking-calendar-head-actions">
+                            <button class="booking-primary-button booking-calendar-add-button" type="button" data-booking-calendar-add><i class="bi bi-plus-lg" aria-hidden="true"></i>New appointment</button>
+                            <div class="booking-calendar-nav" aria-label="Calendar date controls">
+                              <button class="booking-mini-button" type="button" data-booking-calendar-prev aria-label="Previous day"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
+                              <span class="booking-calendar-nav-label" data-booking-calendar-date></span>
+                              <button class="booking-mini-button" type="button" data-booking-calendar-today>Today</button>
+                              <button class="booking-mini-button" type="button" data-booking-calendar-next aria-label="Next day"><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+                            </div>
                           </div>
                         </div>
                         <div class="booking-calendar-scroll"><div data-booking-team-calendar aria-label="Team booking calendar"></div></div>
@@ -7767,6 +7846,76 @@
                     <div class="booking-detail-actions">
                       <div class="booking-detail-action-list" data-booking-detail-actions></div>
                       <button class="booking-secondary-button" type="button" data-booking-detail-close>Close</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="booking-create-modal" data-booking-create-modal hidden>
+                  <div class="booking-create-dialog" role="dialog" aria-modal="true" aria-labelledby="booking-create-title">
+                    <div class="booking-create-head">
+                      <div>
+                        <div class="booking-create-title" id="booking-create-title"><i class="bi bi-plus-circle" aria-hidden="true"></i> New appointment</div>
+                        <div class="booking-create-sub">Create a booking from an open calendar slot.</div>
+                      </div>
+                      <button class="booking-detail-close" type="button" data-booking-create-close aria-label="Close new appointment form"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="booking-create-body">
+                      <div class="booking-create-grid">
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Customer name *</span>
+                          <input class="booking-input" type="text" maxlength="60" data-booking-create-field="name" placeholder="Enter customer name" autocomplete="name">
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Phone</span>
+                          <input class="booking-input" type="tel" maxlength="20" data-booking-create-field="phone" placeholder="(555) 555-5555" autocomplete="tel">
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Service *</span>
+                          <select class="booking-select" data-booking-create-field="service"></select>
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Technician</span>
+                          <select class="booking-select" data-booking-create-field="tech"></select>
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Date *</span>
+                          <input class="booking-input" type="date" data-booking-create-field="date">
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Start time *</span>
+                          <input class="booking-input" type="time" step="900" data-booking-create-field="time">
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Duration</span>
+                          <select class="booking-select" data-booking-create-field="duration">
+                            <option value="15">15 minutes</option>
+                            <option value="30">30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60" selected>60 minutes</option>
+                            <option value="75">75 minutes</option>
+                            <option value="90">90 minutes</option>
+                            <option value="120">120 minutes</option>
+                          </select>
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Status</span>
+                          <select class="booking-select" data-booking-create-field="status">
+                            <option value="new" selected>New</option>
+                            <option value="sms-sent">SMS Sent</option>
+                            <option value="done">Completed</option>
+                            <option value="noshow">No-show</option>
+                          </select>
+                        </label>
+                        <label class="booking-create-field is-full">
+                          <span class="booking-create-label">Internal note</span>
+                          <textarea class="booking-input" maxlength="240" data-booking-create-field="note" placeholder="Optional staff note"></textarea>
+                        </label>
+                      </div>
+                      <div class="booking-create-error" data-booking-create-error role="alert" aria-live="polite"></div>
+                    </div>
+                    <div class="booking-create-actions">
+                      <button class="booking-secondary-button" type="button" data-booking-create-close>Cancel</button>
+                      <button class="booking-primary-button" type="button" data-booking-create-save><i class="bi bi-check-lg" aria-hidden="true"></i>Save appointment</button>
                     </div>
                   </div>
                 </div>
@@ -9235,6 +9384,17 @@
     var bookingDateToPicker = null;
     var bookingTeamCalendar = null;
     var bookingCalendarDate = BOOKING_TODAY_DATE;
+    var BOOKING_CALENDAR_SERVICE_OPTIONS = [
+      { name: 'Gel Manicure', duration: 60 },
+      { name: 'Classic Manicure', duration: 45 },
+      { name: 'Pedicure', duration: 60 },
+      { name: 'Pedicure Gel Polish', duration: 75 },
+      { name: 'Full Set Acrylic', duration: 90 },
+      { name: 'Dip Powder', duration: 75 },
+      { name: 'Nail Art', duration: 30 },
+      { name: 'Waxing', duration: 30 },
+      { name: 'Eyelash', duration: 60 }
+    ];
     var BOOKING_CALENDAR_COLORS = [
       { bg: '#ebe6ff', border: '#7456e9', text: '#272343' },
       { bg: '#e0f3f8', border: '#2b96ba', text: '#173a47' },
@@ -9244,6 +9404,14 @@
     ];
     var BOOKING_CALENDAR_TECHNICIANS = ['Lan T.', 'Kim N.', 'Linda', 'Mai P.', 'Andy', 'Tina', 'Helen', 'Vy'];
     var BOOKING_CALENDAR_SERVICE_DURATIONS = {
+      'Gel Manicure': 60,
+      'Classic Manicure': 45,
+      'Pedicure': 60,
+      'Full Set Acrylic': 90,
+      'Dip Powder': 75,
+      'Nail Art': 30,
+      'Waxing': 30,
+      'Eyelash': 60,
       'Pedicure Gel Polish': 75,
       'Gel Manicure Nail Art': 60,
       'Gel Full Set Removal': 90,
@@ -9459,7 +9627,13 @@
       BOOKING_CALENDAR_TECHNICIANS.forEach(function(tech) {
         columns.push({ id: tech, name: tech, toolTip: tech });
       });
+      columns.push({ id: 'unassigned', name: 'Anyone', toolTip: 'Unassigned appointment' });
       return columns;
+    }
+
+    function bookingCalendarResourceTech(resource) {
+      var value = String(resource || '').trim();
+      return !value || value.toLowerCase() === 'unassigned' || value.toLowerCase() === 'anyone' ? 'unassigned' : value;
     }
 
     function bookingCalendarColor(tech, columns) {
@@ -9483,7 +9657,7 @@
 
     function bookingCalendarDurationMinutes(item) {
       var service = (item.dataset.bookingService || '').trim();
-      return BOOKING_CALENDAR_SERVICE_DURATIONS[service] || 60;
+      return +(item.dataset.bookingDuration || BOOKING_CALENDAR_SERVICE_DURATIONS[service] || 60);
     }
 
     function bookingCalendarEnd(start, minutes) {
@@ -9493,7 +9667,7 @@
     }
 
     function bookingCalendarEvent(item, columns) {
-      var tech = (item.dataset.bookingTech || '').trim() || 'unassigned';
+      var tech = bookingCalendarResourceTech(item.dataset.bookingTech);
       var color = bookingCalendarColor(tech, columns);
       var start = bookingCalendarAppointmentStart(item);
       var minutes = bookingCalendarDurationMinutes(item);
@@ -9536,6 +9710,206 @@
       updateBookingCalendarDateLabel();
     }
 
+    function bookingCalendarDayPilotTime(value) {
+      if (value && value.toStringSortable) return value.toStringSortable();
+      if (value && value.toString) return value.toString('yyyy-MM-ddTHH:mm:ss');
+      return String(value || '');
+    }
+
+    function bookingCalendarInputDate(date) {
+      return formatBookingCalendarDate(date);
+    }
+
+    function bookingCalendarInputTime(date) {
+      return bookingCalendarPad(date.getHours()) + ':' + bookingCalendarPad(date.getMinutes());
+    }
+
+    function bookingCalendarDisplayTime(date) {
+      return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+    }
+
+    function bookingCalendarDisplayDate(date) {
+      return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    }
+
+    function bookingCalendarDurationLabel(minutes) {
+      var hours = Math.floor(minutes / 60);
+      var rest = minutes % 60;
+      return hours + ':' + bookingCalendarPad(rest);
+    }
+
+    function bookingCreateField(name) {
+      return document.querySelector('[data-booking-create-field="' + name + '"]');
+    }
+
+    function setBookingCreateError(message) {
+      var error = document.querySelector('[data-booking-create-error]');
+      if (error) error.textContent = message || '';
+    }
+
+    function populateBookingCreateForm() {
+      var service = bookingCreateField('service');
+      if (service) {
+        service.innerHTML = '<option value="">Select a service</option>' + BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
+          return '<option value="' + escapeHtml(option.name) + '" data-duration="' + option.duration + '">' + escapeHtml(option.name) + ' · ' + option.duration + ' min</option>';
+        }).join('');
+      }
+
+      var tech = bookingCreateField('tech');
+      if (tech) {
+        tech.innerHTML = '<option value="unassigned">Anyone / Unassigned</option>' + BOOKING_CALENDAR_TECHNICIANS.map(function(name) {
+          return '<option value="' + escapeHtml(name) + '">' + escapeHtml(name) + '</option>';
+        }).join('');
+      }
+    }
+
+    function openBookingCreateModal(start, end, tech) {
+      var modal = document.querySelector('[data-booking-create-modal]');
+      if (!modal) return;
+
+      var startDate = start instanceof Date && Number.isFinite(start.getTime()) ? new Date(start) : new Date(bookingCalendarDate + 'T10:00:00');
+      var endDate = end instanceof Date && Number.isFinite(end.getTime()) ? new Date(end) : new Date(startDate.getTime() + 60 * 60000);
+      var duration = Math.max(15, Math.round((endDate - startDate) / 60000));
+      var durationField = bookingCreateField('duration');
+      var durationOptions = durationField ? Array.from(durationField.options).map(function(option) { return +option.value; }) : [];
+      if (durationOptions.indexOf(duration) === -1) duration = durationOptions.reduce(function(closest, option) {
+        return Math.abs(option - duration) < Math.abs(closest - duration) ? option : closest;
+      }, 60);
+
+      populateBookingCreateForm();
+      var name = bookingCreateField('name');
+      var phone = bookingCreateField('phone');
+      var service = bookingCreateField('service');
+      var techField = bookingCreateField('tech');
+      var date = bookingCreateField('date');
+      var time = bookingCreateField('time');
+      var status = bookingCreateField('status');
+      var note = bookingCreateField('note');
+      if (name) name.value = '';
+      if (phone) phone.value = '';
+      if (service) service.value = '';
+      if (techField) techField.value = bookingCalendarResourceTech(tech);
+      if (date) date.value = bookingCalendarInputDate(startDate);
+      if (time) time.value = bookingCalendarInputTime(startDate);
+      if (durationField) durationField.value = String(duration);
+      if (status) status.value = 'new';
+      if (note) note.value = '';
+      setBookingCreateError('');
+
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      if (name) name.focus();
+    }
+
+    function closeBookingCreateModal() {
+      var modal = document.querySelector('[data-booking-create-modal]');
+      if (!modal) return;
+      modal.hidden = true;
+      document.body.style.overflow = '';
+      if (bookingTeamCalendar) bookingTeamCalendar.clearSelection();
+    }
+
+    function bookingCalendarHasConflict(start, end, tech) {
+      var normalizedTech = bookingCalendarResourceTech(tech);
+      if (normalizedTech === 'unassigned') return false;
+
+      return bookingCalendarRows().some(function(item) {
+        if (bookingCalendarResourceTech(item.dataset.bookingTech) !== normalizedTech) return false;
+        var itemStart = new Date(bookingCalendarAppointmentStart(item));
+        var itemEnd = new Date(bookingCalendarEnd(bookingCalendarAppointmentStart(item), bookingCalendarDurationMinutes(item)));
+        return start < itemEnd && end > itemStart;
+      });
+    }
+
+    function bookingCalendarStatusClass(status) {
+      return BOOKING_STATUS_CLASS[status] || BOOKING_STATUS_CLASS.new;
+    }
+
+    function bookingCalendarStatusMarkup(status) {
+      var labels = { 'new': 'New', 'sms-sent': 'SMS Sent', 'done': 'Completed', 'noshow': 'No-show' };
+      var classes = { 'new': 'booking-status-new', 'sms-sent': 'booking-status-sms', 'done': 'booking-status-done', 'noshow': 'booking-status-noshow' };
+      var value = labels[status] ? status : 'new';
+      return '<span class="badge booking-status ' + classes[value] + '">' + labels[value] + '</span>';
+    }
+
+    function createBookingTableRow(data) {
+      var status = BOOKING_STATUS_CLASS[data.status] ? data.status : 'new';
+      var tech = bookingCalendarResourceTech(data.tech);
+      var techLabel = tech === 'unassigned' ? 'Unassigned' : tech;
+      var start = new Date(data.date + 'T' + data.time + ':00');
+      var timeLabel = bookingCalendarDisplayTime(start);
+      var dateLabel = bookingCalendarDisplayDate(start);
+      var phoneLabel = formatBookingPhone(data.phone);
+      return '<tr class="booking-table-row ' + bookingCalendarStatusClass(status) + '" data-booking-item data-booking-id="' + escapeHtml(data.id) + '" data-booking-name="' + escapeHtml(data.name) + '" data-booking-phone="' + escapeHtml(data.phone) + '" data-booking-email="" data-booking-service="' + escapeHtml(data.service) + '" data-booking-tech="' + escapeHtml(techLabel) + '" data-booking-date="' + escapeHtml(data.date) + '" data-booking-duration="' + data.duration + '" data-booking-note="' + escapeHtml(data.note || '') + '">' +
+        '<td><div class="booking-time-block"><div class="booking-time-main booking-callstart-main">' + escapeHtml(timeLabel) + '</div><div class="booking-time-date booking-callstart-date">' + escapeHtml(dateLabel) + '</div></div></td>' +
+        '<td><div class="booking-customer"><div class="booking-customer-name">' + escapeHtml(data.name) + ' <span class="badge badge-soft">Front desk</span></div><div class="booking-customer-meta">' + escapeHtml(phoneLabel) + '</div></div></td>' +
+        '<td><div class="booking-service"><div class="booking-service-list"><span class="booking-service-chip">' + escapeHtml(data.service) + '</span></div></div></td>' +
+        '<td><div class="booking-tech"><span class="booking-tech-name">' + escapeHtml(techLabel) + '</span></div></td>' +
+        '<td><div class="booking-time-block"><div class="booking-time-main">' + escapeHtml(timeLabel) + '</div><div class="booking-time-date">' + escapeHtml(dateLabel) + '</div></div></td>' +
+        '<td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">' + bookingCalendarDurationLabel(data.duration) + '</span></span></td>' +
+        '<td class="booking-status-cell">' + bookingCalendarStatusMarkup(status) + '</td>' +
+        '<td><div class="booking-actions"></div></td>' +
+        '</tr>';
+    }
+
+    function saveBookingFromCalendar() {
+      var get = function(name) {
+        var field = bookingCreateField(name);
+        return field ? field.value : '';
+      };
+      var name = get('name').trim();
+      var service = get('service').trim();
+      var date = get('date');
+      var time = get('time');
+      var phone = get('phone').trim();
+      var tech = bookingCalendarResourceTech(get('tech'));
+      var duration = +get('duration') || 60;
+      var status = get('status') || 'new';
+      var note = get('note').trim();
+
+      if (!name) { setBookingCreateError('Enter the customer name.'); return; }
+      if (!service) { setBookingCreateError('Select a service.'); return; }
+      if (!date || !time) { setBookingCreateError('Pick a valid date and start time.'); return; }
+
+      var start = new Date(date + 'T' + time + ':00');
+      if (!Number.isFinite(start.getTime())) { setBookingCreateError('Pick a valid date and start time.'); return; }
+      var end = new Date(start.getTime() + duration * 60000);
+      if (bookingCalendarHasConflict(start, end, tech)) {
+        setBookingCreateError(tech + ' already has an overlapping appointment. Change the time or technician.');
+        return;
+      }
+
+      var id = 'booking-frontdesk-' + Date.now();
+      var tbody = document.querySelector('[data-booking-table] tbody');
+      if (!tbody) return;
+      tbody.insertAdjacentHTML('beforeend', createBookingTableRow({
+        id: id,
+        name: name,
+        phone: phone,
+        service: service,
+        tech: tech,
+        date: date,
+        time: time,
+        duration: duration,
+        status: status,
+        note: note
+      }));
+
+      var item = findBookingItemById(id);
+      if (item) {
+        var actions = item.querySelector('.booking-actions');
+        if (actions) actions.innerHTML = renderBookingActionButtons(item);
+      }
+
+      bookingCalendarDate = date;
+      closeBookingCreateModal();
+      filterBookingItems();
+      renderBookingCalendar();
+      if (window.Swal) {
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Appointment created', text: name, showConfirmButton: false, timer: 2200 });
+      }
+    }
+
     function initBookingCalendar() {
       var el = document.querySelector('[data-booking-team-calendar]');
       if (!el || bookingTeamCalendar) return;
@@ -9555,9 +9929,17 @@
         hourWidth: 64,
         headerHeight: 44,
         timeFormat: 'Clock12Hours',
+        onBeforeCellRender: function(args) {
+          args.cell.properties.html = '<span class="booking-cell-add" aria-hidden="true"><span>+</span></span>';
+        },
         eventMoveHandling: 'Disabled',
         eventResizeHandling: 'Disabled',
-        timeRangeSelectedHandling: 'Disabled',
+        timeRangeSelectedHandling: 'Enabled',
+        onTimeRangeSelected: function(args) {
+          var start = new Date(bookingCalendarDayPilotTime(args.start));
+          var end = new Date(bookingCalendarDayPilotTime(args.end));
+          openBookingCreateModal(start, end, bookingCalendarResourceTech(args.resource));
+        },
         onEventClick: function(args) { openBookingDetailModal(findBookingItemById(args.e.id())); }
       });
       bookingTeamCalendar.init();
@@ -10784,6 +11166,10 @@ function getBookingCardCallStart(item) {
     var bookingCalendarPrev = document.querySelector('[data-booking-calendar-prev]');
     var bookingCalendarNext = document.querySelector('[data-booking-calendar-next]');
     var bookingCalendarToday = document.querySelector('[data-booking-calendar-today]');
+    var bookingCalendarAdd = document.querySelector('[data-booking-calendar-add]');
+    if (bookingCalendarAdd) bookingCalendarAdd.addEventListener('click', function() {
+      openBookingCreateModal(null, null, 'unassigned');
+    });
     if (bookingCalendarPrev) bookingCalendarPrev.addEventListener('click', function() {
       var previous = new Date(bookingCalendarDate + 'T12:00:00'); previous.setDate(previous.getDate() - 1);
       setBookingCalendarDate(previous);
@@ -10796,6 +11182,17 @@ function getBookingCardCallStart(item) {
       setBookingCalendarDate(new Date(BOOKING_TODAY_DATE + 'T12:00:00'));
     });
 
+    var bookingCreateSave = document.querySelector('[data-booking-create-save]');
+    if (bookingCreateSave) bookingCreateSave.addEventListener('click', saveBookingFromCalendar);
+    var bookingCreateService = bookingCreateField('service');
+    if (bookingCreateService) bookingCreateService.addEventListener('change', function() {
+      var selected = bookingCreateService.options[bookingCreateService.selectedIndex];
+      var duration = bookingCreateField('duration');
+      if (selected && selected.dataset.duration && duration && Array.from(duration.options).some(function(option) { return option.value === selected.dataset.duration; })) {
+        duration.value = selected.dataset.duration;
+      }
+    });
+
     document.addEventListener('click', function(event) {
       var bookingFilterToggle = event.target.closest('[data-booking-filter-toggle]');
       if (bookingFilterToggle) {
@@ -10806,6 +11203,11 @@ function getBookingCardCallStart(item) {
 
       if (!event.target.closest('[data-booking-filter-menu]')) {
         setBookingFilterOpen(null);
+      }
+
+      if (event.target.matches('[data-booking-create-modal]')) {
+        closeBookingCreateModal();
+        return;
       }
 
       var bookingAction = event.target.closest('[data-booking-action]');
@@ -10863,6 +11265,12 @@ function getBookingCardCallStart(item) {
       var bookingDetailClose = event.target.closest('[data-booking-detail-close]');
       if (bookingDetailClose || event.target.matches('[data-booking-detail-modal]')) {
         closeBookingDetailModal();
+        return;
+      }
+
+      var bookingCreateClose = event.target.closest('[data-booking-create-close]');
+      if (bookingCreateClose) {
+        closeBookingCreateModal();
         return;
       }
 
@@ -10966,6 +11374,7 @@ function getBookingCardCallStart(item) {
       var modal = document.querySelector('[data-offer-modal]');
       var techModal = document.querySelector('[data-tech-modal]');
       var bookingDetailModal = document.querySelector('[data-booking-detail-modal]');
+      var bookingCreateModal = document.querySelector('[data-booking-create-modal]');
       var techSelectMenu = document.querySelector('[data-tech-select-menu]');
 
       if (event.key === 'Escape' && bookingFilterOpen) {
@@ -10980,6 +11389,11 @@ function getBookingCardCallStart(item) {
 
       if (event.key === 'Escape' && bookingDetailModal && !bookingDetailModal.hidden) {
         closeBookingDetailModal();
+        return;
+      }
+
+      if (event.key === 'Escape' && bookingCreateModal && !bookingCreateModal.hidden) {
+        closeBookingCreateModal();
         return;
       }
 
