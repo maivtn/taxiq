@@ -360,11 +360,11 @@
         <div class="booking-select-grid">
           <label class="booking-select-field" for="date-options">
             <span>Ngày hẹn</span>
-            <select class="booking-select" id="date-options" data-booking-date-select aria-label="Ngày hẹn"></select>
+            <input class="booking-select" id="date-options" type="date" data-booking-date-select aria-label="Ngày hẹn">
           </label>
           <label class="booking-select-field" for="time-options">
             <span>Giờ hẹn</span>
-            <select class="booking-select" id="time-options" data-booking-time-select aria-label="Giờ hẹn"></select>
+            <input class="booking-select" id="time-options" type="time" step="900" data-booking-time-select aria-label="Giờ hẹn">
           </label>
         </div>
         <p class="field-error" id="date-error" role="alert"></p>
@@ -602,12 +602,12 @@
         const dateOptions = $('#date-options');
         const timeOptions = $('#time-options');
         if (dateOptions) {
-          dateOptions.innerHTML = DATES.map((date) => {
-            return `<option value="${date}">${formatBookingDate(date)}</option>`;
-          }).join('');
+          dateOptions.min = DATES[0];
+          dateOptions.max = DATES[DATES.length - 1];
+          dateOptions.value = state.selectedDate;
         }
         if (timeOptions) {
-          timeOptions.innerHTML = TIMES.map((time) => `<option value="${time}">${formatBookingTime(time)}</option>`).join('');
+          timeOptions.value = state.selectedTime;
         }
       }
 
