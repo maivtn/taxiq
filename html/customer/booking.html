@@ -452,15 +452,17 @@
       const pad = (value) => String(value).padStart(2, '0');
       const localDateIso = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
       const now = new Date();
-      const todayIso = localDateIso(now);
-      const currentTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const defaultSlot = new Date(now);
+      defaultSlot.setMinutes(defaultSlot.getMinutes() + 30);
+      const defaultBookingDate = localDateIso(defaultSlot);
+      const defaultBookingTime = `${pad(defaultSlot.getHours())}:${pad(defaultSlot.getMinutes())}`;
       const DATES = Array.from({ length: 7 }, (_, index) => {
         const date = new Date(now);
         date.setHours(12, 0, 0, 0);
         date.setDate(date.getDate() + index);
         return localDateIso(date);
       });
-      const TIMES = [...new Set(['10:00', '11:30', '13:00', '14:00', '15:30', '17:00', currentTime])].sort();
+      const TIMES = [...new Set(['10:00', '11:30', '13:00', '14:00', '15:30', '17:00', defaultBookingTime])].sort();
       const CATALOG = { services: SERVICES, staff: STAFF, slots: DATES.flatMap((date) => TIMES.map((time) => ({ date, time }))) };
 
       function normalizePhone(value) {
@@ -547,7 +549,7 @@
         return {
           step: 1,
           customer: { phone: '', name: '', isReturning: false, smsOptIn: false },
-          selectedServiceIds: [], selectedStaffId: 'any', selectedDate: todayIso, selectedTime: currentTime, note: '', booking: null
+          selectedServiceIds: [], selectedStaffId: 'any', selectedDate: defaultBookingDate, selectedTime: defaultBookingTime, note: '', booking: null
         };
       }
 
@@ -564,8 +566,8 @@
             customer: { ...fallback.customer, ...(parsed.customer || {}) },
             selectedServiceIds: Array.isArray(parsed.selectedServiceIds) ? parsed.selectedServiceIds : [],
             selectedStaffId: STAFF.some((staff) => staff.id === parsed.selectedStaffId) ? parsed.selectedStaffId : 'any',
-            selectedDate: DATES.includes(parsed.selectedDate) ? parsed.selectedDate : todayIso,
-            selectedTime: TIMES.includes(parsed.selectedTime) ? parsed.selectedTime : currentTime,
+            selectedDate: DATES.includes(parsed.selectedDate) ? parsed.selectedDate : defaultBookingDate,
+            selectedTime: TIMES.includes(parsed.selectedTime) ? parsed.selectedTime : defaultBookingTime,
             note: typeof parsed.note === 'string' ? parsed.note : ''
           };
         } catch { return fallback; }
