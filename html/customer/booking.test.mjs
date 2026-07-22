@@ -216,6 +216,12 @@ test('removes divider borders from confirmation review rows', () => {
   assert.doesNotMatch(reviewRowStyle, /border-bottom/);
 });
 
+test('uses readable text sizes in the confirmation content', () => {
+  assert.match(SOURCE, /\.step-panel\[data-step-panel='2'\] \.card-heading p\s*\{[^}]*font-size: 14px/);
+  assert.match(SOURCE, /\.review-row \{[^}]*font-size: 14px/);
+  assert.match(SOURCE, /\.service-chip \{[^}]*font-size: 12px/);
+});
+
 test('adds a small gap before service selection', () => {
   assert.match(SOURCE, /#returning-customer\s*\+\s*\.card-heading\s*\{[^}]*margin-top: 16px/);
 });
