@@ -7552,6 +7552,71 @@ test('VLinkPay guide mirrors the reference wallet QR and USDV instructions', () 
   assert.match(document.getElementById('tip-transfer-instruction').textContent, /PayPal/);
 });
 
+test('tip guide shows the payout account holder name except for VLinkPay', () => {
+  const holderRow = createStubElement({ id: 'tip-payout-holder-row', classNames: ['hidden'] });
+  const holderName = createStubElement({ id: 'tip-payout-holder-name' });
+  const document = createDocumentStub({ extraElements: [holderRow, holderName] });
+  const { context } = testApi({}, { document });
+  vm.runInContext(`createTipDraft(state, {
+    businessId: 'bitcoin-nail-bar', entryType: 'menu', preferredStaffId: 'staff-anna'
+  });`, context);
+  const selectMethod = vm.runInContext("ACTIONS.get('select-tip-batch-method')", context);
+
+  assert.equal(selectMethod({ dataset: { method: 'Zelle' } }).ok, true);
+  assert.equal(holderRow.classList.contains('hidden'), false);
+  assert.equal(holderName.textContent, 'Anna');
+
+  assert.equal(selectMethod({ dataset: { method: 'VLinkPay' } }).ok, true);
+  assert.equal(holderRow.classList.contains('hidden'), true);
+  assert.equal(holderName.textContent, '');
+});
+
+test('direct payment guide shows the payout account holder name except for VLinkPay', () => {
+  const holderRow = createStubElement({ id: 'direct-pay-payout-holder-row', classNames: ['hidden'] });
+  const holderName = createStubElement({ id: 'direct-pay-payout-holder-name' });
+  const document = createDocumentStub({ extraElements: [holderRow, holderName] });
+  const { context } = testApi({}, { document });
+  assert.equal(vm.runInContext(`createDirectPayDraft(state, {
+    businessId: 'bitcoin-nail-bar', amountCents: 5500
+  }).ok`, context), true);
+
+  vm.runInContext('renderDirectPayGuide()', context);
+  assert.equal(holderRow.classList.contains('hidden'), false);
+  assert.equal(holderName.textContent, 'Bitcoin Nail Bar');
+
+  vm.runInContext("state.ui.directPayDraft.method = 'VLinkPay'; renderDirectPayGuide()", context);
+  assert.equal(holderRow.classList.contains('hidden'), true);
+  assert.equal(holderName.textContent, '');
+});
+
+test('tip guide copies the account holder name', async () => {
+  const holderName = createStubElement({ id: 'tip-payout-holder-name', textContent: 'Anna' });
+  const document = createDocumentStub({ extraElements: [holderName] });
+  const copied = [];
+  const { context } = testApi({}, {
+    document,
+    navigator: { clipboard: { writeText: async (value) => { copied.push(value); } } }
+  });
+
+  const result = await vm.runInContext("ACTIONS.get('copy-tip-payout-holder')()", context);
+  assert.equal(result.ok, true);
+  assert.deepEqual(copied, ['Anna']);
+});
+
+test('direct payment guide copies the account holder name', async () => {
+  const holderName = createStubElement({ id: 'direct-pay-payout-holder-name', textContent: 'Bitcoin Nail Bar' });
+  const document = createDocumentStub({ extraElements: [holderName] });
+  const copied = [];
+  const { context } = testApi({}, {
+    document,
+    navigator: { clipboard: { writeText: async (value) => { copied.push(value); } } }
+  });
+
+  const result = await vm.runInContext("ACTIONS.get('copy-direct-pay-payout-holder')()", context);
+  assert.equal(result.ok, true);
+  assert.deepEqual(copied, ['Bitcoin Nail Bar']);
+});
+
 test('reference tip payment methods render all six branded controls', () => {
   const methodList = createStubElement({ id: 'tip-batch-method-list' });
   const document = createDocumentStub({ extraElements: [methodList] });
