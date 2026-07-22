@@ -229,7 +229,7 @@
             <p class="field-error" id="phone-error" role="alert"></p>
           </label>
 
-          <label class="form-field" id="booking-name-field" for="booking-name" hidden>
+          <label class="form-field" id="booking-name-field" for="booking-name">
             <span>Họ và tên</span>
             <input class="input" id="booking-name" type="text" autocomplete="name" placeholder="Ví dụ: Mary Smith" aria-describedby="name-error">
             <p class="field-error" id="name-error" role="alert"></p>
@@ -673,7 +673,7 @@
         const banner = $('#returning-customer');
         const customer = state.customer || {};
         const hasName = normalizePhone(customer.phone).length === 10;
-        if (field) field.hidden = !hasName;
+        if (field) field.hidden = false;
         if (customerFields) customerFields.classList.toggle('has-name', hasName);
         if (nameInput) {
           nameInput.value = customer.name || '';
