@@ -140,3 +140,20 @@ test('keeps the staff list synchronized before service selection', () => {
   assert.doesNotMatch(SOURCE, /\.staff-card:last-child/);
   assert.match(SOURCE, /if \(state\.selectedServiceIds\.length === 0\) return true;/);
 });
+
+test('uses a compact three-column time picker library instead of TOAST UI', () => {
+  assert.match(SOURCE, /E-Kohei\/timepicker/);
+  assert.match(SOURCE, /timepicker\.css/);
+  assert.match(SOURCE, /timepicker\.js/);
+  assert.doesNotMatch(SOURCE, /tui\.time-picker|tui-time-picker/);
+  assert.match(SOURCE, /id="time-options" type="text"/);
+  assert.doesNotMatch(SOURCE, /id="time-picker-container"/);
+});
+
+test('converts the library 12-hour value to the booking 24-hour value', () => {
+  const api = getApi();
+  assert.equal(api.parseBookingTime('3:45 PM'), '15:45');
+  assert.equal(api.parseBookingTime('12:05 AM'), '00:05');
+  assert.equal(api.parseBookingTime('12:30 PM'), '12:30');
+  assert.equal(api.parseBookingTime('invalid'), '');
+});

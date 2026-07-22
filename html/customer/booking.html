@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f5efff">
   <title>Đặt lịch · Bitcoin Nail Bar</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
-  <link rel="stylesheet" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/E-Kohei/timepicker@aa16c431e7907dd1fb9f43550208bf4becda6d91/timepicker.css">
   <style>
     :root {
       --ink: #1d1b3a;
@@ -117,17 +117,19 @@
     .flatpickr-day.selected, .flatpickr-day.selected:hover { border-color: var(--purple); background: var(--purple); }
     .flatpickr-day.today { border-color: var(--pink); color: var(--pink-dark); }
     .flatpickr-time input { color: var(--ink); font-weight: 750; }
-    .time-picker-inline { display: flex; width: 180px; max-width: 100%; min-height: 48px; align-items: center; overflow: visible; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
-    .time-picker-inline .tui-timepicker { position: static; width: 100%; padding: 0; border: 0; background: transparent; font-weight: 700; }
-    .time-picker-inline .tui-timepicker-row { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 4px; }
-    .time-picker-inline .tui-timepicker-column { display: block; }
-    .time-picker-inline .tui-timepicker-selectbox { min-width: 0; padding-left: 0; }
-    .time-picker-inline .tui-timepicker-colon { display: none; }
-    .time-picker-inline .tui-timepicker-select { width: 52px; height: 28px; padding: 4px 3px; font-size: 12px; }
-    @media (max-width: 639px) {
-      .time-picker-inline { width: 100%; }
-      .time-picker-inline .tui-timepicker-select { width: calc((100% - 16px) / 3); }
-    }
+    .time-picker-input { text-transform: uppercase; }
+    .my-timepicker-div { position: absolute; z-index: 30; width: min(19.2rem, calc(100vw - 28px)) !important; padding: 6px !important; border: 1px solid var(--line) !important; border-radius: 10px !important; background: #fff !important; box-shadow: 0 18px 40px rgba(108, 77, 153, .2); font-family: inherit; }
+    .my-timepicker-div > .row { margin: 0 !important; }
+    .my-timepicker-div > .row:first-child { display: none; }
+    .my-timepicker-div > .row:nth-child(2) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 42px; gap: 4px; align-items: stretch; }
+    .my-timepicker-div > .row:nth-child(3) { display: flex; justify-content: flex-end; gap: 4px; margin-top: 5px !important; }
+    .my-timepicker-div [class*="col-"] { width: auto; min-width: 0; padding: 0; }
+    .my-timepicker-div select { display: block; width: 100%; height: 160px; min-width: 0; padding: 2px; border: 1px solid #d9d7e3; border-radius: 5px; color: var(--ink); background: #fff; font: 700 12px/1.45 inherit; }
+    .my-timepicker-div option { padding: 3px 5px; }
+    .my-timepicker-div .ampm-button { width: 100%; height: 36px; margin: 0; padding: 0; border: 1px solid #d9d7e3; border-radius: 5px; color: var(--ink); background: #e5e5e7; font-size: 12px; font-weight: 850; text-transform: uppercase; }
+    .my-timepicker-div .ok-button, .my-timepicker-div .cancel-button { width: 28px; height: 24px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: #fff; font-size: 12px; line-height: 1; }
+    .my-timepicker-div .ok-button { color: #137953; }
+    .my-timepicker-div .cancel-button { color: #a34d75; }
 
     .staff-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
     .staff-card { min-height: 72px; align-items: center; padding: 7px; text-align: center; }
@@ -381,8 +383,7 @@
           </label>
           <label class="booking-select-field">
             <span>Giờ hẹn</span>
-            <div class="time-picker-inline" id="time-picker-container"></div>
-            <input id="time-options" type="hidden" data-booking-time-select aria-label="Giờ hẹn">
+            <input class="booking-select time-picker-input" id="time-options" type="text" placeholder="3:30 PM" autocomplete="off" data-booking-time-select aria-label="Giờ hẹn">
           </label>
         </div>
         <p class="field-error" id="date-error" role="alert"></p>
@@ -437,7 +438,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
-  <script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/E-Kohei/timepicker@aa16c431e7907dd1fb9f43550208bf4becda6d91/timepicker.js"></script>
   <script id="booking-app-script">
     (() => {
       'use strict';
@@ -565,7 +567,7 @@
         };
       }
 
-      const api = { BOOKING_STORAGE_KEY, normalizePhone, findCustomerByPhone, toggleSelection, calculateBookingTotal, validateBookingDraft, createBookingRequest };
+      const api = { BOOKING_STORAGE_KEY, normalizePhone, findCustomerByPhone, toggleSelection, calculateBookingTotal, validateBookingDraft, createBookingRequest, parseBookingTime };
       if (typeof window !== 'undefined') window.NEXORA_BOOKING_TEST_API = api;
       if (typeof window === 'undefined' || window.NEXORA_BOOKING_SKIP_INIT) return;
 
@@ -649,21 +651,21 @@
           }
         }
         if (timeOptions) {
-          const timePickerLibrary = typeof window !== 'undefined' && window.tui && typeof window.tui.TimePicker === 'function';
+          const timePickerLibrary = typeof window !== 'undefined' && window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.timepicker === 'function';
           if (timePickerLibrary) {
-            const [initialHour, initialMinute] = state.selectedTime.split(':').map(Number);
-            timePicker = new window.tui.TimePicker('#time-picker-container', {
-              initialHour,
-              initialMinute,
-              inputType: 'selectbox',
-              minuteStep: 1,
-              showMeridiem: true,
-              usageStatistics: false
+            timePicker = window.jQuery(timeOptions).timepicker({
+              use12HourClock: true,
+              timeFormat: '%g:%i %A',
+              minStep: 1,
+              selectSize: 8,
+              selectOnBlur: true
             });
-            timePicker.on('change', ({ hour, minute }) => {
-              state.selectedTime = `${pad(hour)}:${pad(minute)}`;
+            timeOptions.value = formatBookingTime(state.selectedTime);
+            timePicker.on('change.bookingTimePicker', () => {
+              const selectedTime = parseBookingTime(timeOptions.value);
+              if (!selectedTime) return;
+              state.selectedTime = selectedTime;
               persistState(state);
-              timeOptions.value = formatBookingTime(state.selectedTime);
               renderSelections();
             });
           } else {
@@ -708,6 +710,19 @@
         const suffix = hours >= 12 ? 'PM' : 'AM';
         const displayHour = hours % 12 || 12;
         return `${displayHour}:${String(minutes).padStart(2, '0')} ${suffix}`;
+      }
+
+      function parseBookingTime(value) {
+        const input = String(value ?? '').trim();
+        const twelveHour = input.match(/^(\d{1,2}):([0-5]\d)\s*(AM|PM)$/i);
+        if (twelveHour) {
+          const hour = Number(twelveHour[1]);
+          if (hour < 1 || hour > 12) return '';
+          const normalizedHour = hour % 12 + (twelveHour[3].toUpperCase() === 'PM' ? 12 : 0);
+          return `${pad(normalizedHour)}:${twelveHour[2]}`;
+        }
+        const twentyFourHour = input.match(/^([01]\d|2[0-3]):([0-5]\d)$/);
+        return twentyFourHour ? `${twentyFourHour[1]}:${twentyFourHour[2]}` : '';
       }
 
       function formatBookingSlot(date, time) {
@@ -769,11 +784,7 @@
           else dateOptions.value = state.selectedDate;
         }
         if (timeOptions) {
-          if (timePicker) {
-            const [hours, minutes] = state.selectedTime.split(':').map(Number);
-            timePicker.setTime(hours, minutes, true);
-            timeOptions.value = formatBookingTime(state.selectedTime);
-          } else timeOptions.value = state.selectedTime;
+          timeOptions.value = timePicker ? formatBookingTime(state.selectedTime) : state.selectedTime;
         }
         $$('[data-staff-id]').forEach((button) => {
           const staff = staffById(button.dataset.staffId);

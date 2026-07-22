@@ -1537,889 +1537,6 @@
         min-height: 0;
       }
     }
-
-    /* Reference layout: compact holding form, full-width history table, and detail modal. */
-    #vmm-program-root {
-      --vmm-reference-blue: #2f6fe0;
-      --vmm-reference-blue-dark: #1f5ac9;
-      --vmm-reference-soft-blue: #e6f1ff;
-      --vmm-reference-border: #d9e1ea;
-      --vmm-reference-heading: #1f2d43;
-      background: #ffffff;
-    }
-
-    #vmm-program-root .vmm-shell {
-      max-width: 1280px;
-      padding: 0;
-    }
-
-    #vmm-program-root .vmm-tabs {
-      display: flex;
-      gap: 8px;
-      padding: 6px;
-      margin: 0 0 22px;
-      width: fit-content;
-      max-width: 100%;
-      background: #eef2f7;
-      border: 1px solid var(--vmm-line);
-      border-radius: 16px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    #vmm-program-root .vmm-tab {
-      border: 0;
-      color: var(--vmm-muted);
-      background: transparent;
-      padding: 11px 16px;
-      border-radius: 12px;
-      font-size: inherit;
-      font-weight: 800;
-      letter-spacing: normal;
-      text-transform: none;
-      white-space: nowrap;
-      transition: .2s ease;
-    }
-
-    #vmm-program-root .vmm-tab:hover {
-      color: var(--vmm-text);
-      background: rgba(255,255,255,.9);
-    }
-
-    #vmm-program-root .vmm-tab.is-active {
-      color: #1e2d48;
-      background: #ffffff;
-      box-shadow: 0 8px 18px rgba(46,70,105,.2);
-    }
-
-    #vmm-program-root .vmm-panel[data-panel="program"] {
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-    #vmm-program-root .vmm-buy-form {
-      padding: 2px 0 28px;
-    }
-
-    #vmm-program-root .vmm-form-row-head,
-    #vmm-program-root .vmm-form-meta,
-    #vmm-program-root .vmm-form-field-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    #vmm-program-root .vmm-form-row-head,
-    #vmm-program-root .vmm-form-field-head {
-      color: var(--vmm-reference-heading);
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    #vmm-program-root .vmm-form-field {
-      margin-top: 20px;
-    }
-
-    #vmm-program-root .vmm-form-link {
-      color: var(--vmm-reference-blue);
-      font-size: 13px;
-      font-weight: 900;
-      text-decoration: none;
-    }
-
-    #vmm-program-root .vmm-form-link:hover {
-      text-decoration: underline;
-    }
-
-    #vmm-program-root .vmm-select-control {
-      width: 100%;
-      min-height: 48px;
-      margin-top: 7px;
-      border: 1px solid var(--vmm-reference-border);
-      border-radius: 9px;
-      background-color: #ffffff;
-    }
-
-    #vmm-program-root .vmm-form-meta {
-      align-items: flex-start;
-      margin-top: 6px;
-      color: #667386;
-      font-size: 12px;
-    }
-
-    #vmm-program-root .vmm-form-meta-left,
-    #vmm-program-root .vmm-form-meta-right {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    #vmm-program-root .vmm-form-meta-right {
-      text-align: right;
-    }
-
-    #vmm-program-root .vmm-form-error {
-      color: #bd4747;
-    }
-
-    #vmm-program-root .vmm-select-control {
-      color: var(--vmm-reference-heading);
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    #vmm-program-root .vmm-field-help {
-      margin: 5px 0 0;
-      color: #667386;
-      font-size: 12px;
-    }
-
-    #vmm-program-root .vmm-benefits-label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-bottom: 8px;
-      color: var(--vmm-reference-heading);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    #vmm-program-root .vmm-info-icon {
-      width: 18px;
-      height: 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid #9aa9ba;
-      border-radius: 50%;
-      color: #667386;
-      font-size: 11px;
-      font-weight: 900;
-    }
-
-    #vmm-program-root .vmm-reward-banner {
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 52px;
-      padding: 10px 46px 10px 14px;
-      border-radius: 9px;
-      color: var(--vmm-reference-blue);
-      background: var(--vmm-reference-soft-blue);
-      font-size: 14px;
-      font-weight: 900;
-      text-align: center;
-    }
-
-    #vmm-program-root .vmm-reward-banner::after {
-      content: "";
-      position: absolute;
-      right: -8px;
-      top: -22px;
-      width: 78px;
-      height: 100px;
-      opacity: .55;
-      background:
-        linear-gradient(135deg, transparent 18%, #b8d7ff 18% 30%, transparent 30% 46%, #9ed7e8 46% 58%, transparent 58%),
-        linear-gradient(45deg, transparent 18%, #c6dcff 18% 33%, transparent 33% 52%, #acd9ee 52% 68%, transparent 68%);
-      transform: rotate(12deg);
-    }
-
-    #vmm-program-root .vmm-buy-confirmation {
-      margin-top: 24px;
-      text-align: center;
-    }
-
-    #vmm-program-root .vmm-buy-confirmation-summary {
-      margin: 0 0 14px;
-      color: #667386;
-      font-size: 12px;
-    }
-
-    #vmm-program-root .vmm-buy-confirmation-summary strong {
-      color: var(--vmm-reference-heading);
-    }
-
-    #vmm-program-root .vmm-buy-confirmation .vmm-terms-check {
-      justify-content: center;
-      margin: 10px auto 0;
-      color: #667386;
-      font-size: 12px;
-      text-align: left;
-    }
-
-    #vmm-program-root .vmm-buy-confirmation .vmm-action-row {
-      margin-top: 0;
-    }
-
-    #vmm-program-root .vmm-buy-confirmation .vmm-btn-primary {
-      width: 100%;
-      min-height: 46px;
-      border-color: #82b2f4;
-      background: #94bdf2;
-      box-shadow: none;
-    }
-
-    #vmm-program-root .vmm-buy-confirmation .vmm-btn-primary:not(:disabled) {
-      background: linear-gradient(135deg, #3f78ed, #2b60d6);
-      box-shadow: 0 10px 22px rgba(43,96,214,.2);
-    }
-
-    #vmm-program-root .vmm-history-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    #vmm-program-root .vmm-history-switch {
-      display: inline-flex;
-      padding: 3px;
-      border: 1px solid var(--vmm-reference-border);
-      border-radius: 12px;
-      background: #f5f8fc;
-    }
-
-    #vmm-program-root .vmm-history-switch button {
-      min-height: 38px;
-      padding: 0 18px;
-      border: 0;
-      border-radius: 9px;
-      color: #667386;
-      background: transparent;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-
-    #vmm-program-root .vmm-history-switch button.is-active {
-      color: var(--vmm-reference-heading);
-      background: #ffffff;
-      box-shadow: 0 3px 10px rgba(44,67,98,.12);
-    }
-
-    #vmm-program-root .vmm-create-button {
-      min-height: 42px;
-      padding: 0 18px;
-      border: 1px solid var(--vmm-reference-blue-dark);
-      border-radius: 11px;
-      color: #ffffff;
-      background: linear-gradient(135deg, #3a79eb, #205bd0);
-      box-shadow: 0 10px 20px rgba(44,99,211,.2);
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-
-    #vmm-program-root .vmm-history-table-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--vmm-reference-border);
-      border-radius: 0;
-      background: #ffffff;
-    }
-
-    #vmm-program-root .vmm-history-table {
-      width: 100%;
-      min-width: 850px;
-      border-collapse: collapse;
-      color: #5e6d81;
-      font-size: 12px;
-    }
-
-    #vmm-program-root .vmm-history-table th,
-    #vmm-program-root .vmm-history-table td {
-      padding: 15px 18px;
-      border-bottom: 1px solid #e0e5eb;
-      text-align: left;
-      white-space: nowrap;
-    }
-
-    #vmm-program-root .vmm-history-table th {
-      color: #55657a;
-      background: #fbfcfe;
-      font-size: 11px;
-      font-weight: 900;
-    }
-
-    #vmm-program-root .vmm-history-table td strong {
-      color: #53647a;
-      font-weight: 900;
-    }
-
-    #vmm-program-root .vmm-table-date,
-    #vmm-program-root .vmm-table-time {
-      display: block;
-    }
-
-    #vmm-program-root .vmm-table-date {
-      color: #53647a;
-    }
-
-    #vmm-program-root .vmm-table-time {
-      margin-top: 3px;
-      color: #667386;
-      font-size: 11px;
-      text-transform: lowercase;
-    }
-
-    #vmm-program-root .vmm-history-table td.vmm-table-value strong {
-      color: var(--vmm-green);
-    }
-
-    #vmm-program-root .vmm-history-table tbody tr:last-child td {
-      border-bottom: 0;
-    }
-
-    #vmm-program-root .vmm-table-status {
-      display: inline-flex;
-      padding: 4px 9px;
-      border-radius: 999px;
-      color: #3f9a56;
-      background: #e5f7e7;
-      font-size: 10px;
-      font-weight: 900;
-    }
-
-    #vmm-program-root .vmm-table-status-active {
-      color: var(--vmm-reference-blue);
-      background: #e7f0ff;
-    }
-
-    #vmm-program-root .vmm-table-view {
-      border: 0;
-      padding: 0;
-      color: var(--vmm-reference-blue);
-      background: transparent;
-      font-size: 12px;
-      font-weight: 900;
-      text-decoration: none;
-    }
-
-    #vmm-program-root .vmm-table-view:hover {
-      color: var(--vmm-reference-blue-dark);
-      text-decoration: none;
-    }
-
-    #vmm-program-root .vmm-history-table .vmm-empty-row td {
-      padding: 34px 18px;
-      color: #667386;
-      text-align: center;
-    }
-
-    #vmm-program-root .vmm-holding-modal {
-      width: min(460px, 100%);
-      border-radius: 23px;
-    }
-
-    #vmm-program-root .vmm-holding-modal .vmm-modal-head {
-      position: relative;
-      justify-content: center;
-      padding: 23px 56px;
-      border-bottom: 0;
-    }
-
-    #vmm-program-root .vmm-holding-modal .vmm-modal-head h3 {
-      color: #55657a;
-      font-size: 17px;
-    }
-
-    #vmm-program-root .vmm-holding-modal .vmm-close {
-      position: absolute;
-      top: 15px;
-      right: 16px;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      color: #667386;
-      background: #f2f5f8;
-      font-size: 18px;
-    }
-
-    #vmm-program-root .vmm-detail-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    #vmm-program-root .vmm-detail-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 18px;
-      padding: 8px 0;
-      color: #667386;
-      font-size: 13px;
-    }
-
-    #vmm-program-root .vmm-detail-row strong {
-      color: #53647a;
-      text-align: right;
-    }
-
-    #vmm-program-root .vmm-detail-value-stack {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 1px;
-    }
-
-    #vmm-program-root .vmm-detail-value-stack small {
-      color: #667386;
-      font-size: 12px;
-      font-weight: 500;
-      line-height: 1.25;
-    }
-
-    #vmm-program-root .vmm-detail-divider {
-      height: 1px;
-      margin: 4px 0;
-      background: #e1e6ec;
-    }
-
-    #vmm-program-root .vmm-detail-benefits {
-      margin-top: 8px;
-      color: #667386;
-      font-size: 13px;
-    }
-
-    #vmm-program-root .vmm-detail-benefits strong {
-      display: block;
-      margin: 8px 0;
-      color: #667386;
-      font-weight: 500;
-    }
-
-    #vmm-program-root .vmm-detail-banner {
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 52px;
-      border-radius: 8px;
-      color: var(--vmm-reference-blue);
-      background: var(--vmm-reference-soft-blue);
-      font-size: 14px;
-      font-weight: 900;
-      text-align: center;
-    }
-
-    #vmm-program-root .vmm-detail-banner::after {
-      content: "";
-      position: absolute;
-      right: -8px;
-      top: -22px;
-      width: 78px;
-      height: 100px;
-      opacity: .55;
-      background:
-        linear-gradient(135deg, transparent 18%, #b8d7ff 18% 30%, transparent 30% 46%, #9ed7e8 46% 58%, transparent 58%),
-        linear-gradient(45deg, transparent 18%, #c6dcff 18% 33%, transparent 33% 52%, #acd9ee 52% 68%, transparent 68%);
-      transform: rotate(12deg);
-    }
-
-    #vmm-program-root .vmm-holding-modal .vmm-modal-foot {
-      padding: 12px 16px 16px;
-      border-top: 0;
-    }
-
-    #vmm-program-root .vmm-holding-modal .vmm-modal-foot .vmm-btn {
-      width: 100%;
-      min-height: 42px;
-      color: #4f5f73;
-      background: #ffffff;
-      border: 1px solid #cbd4df;
-      box-shadow: none;
-    }
-
-    @media (max-width: 700px) {
-      #vmm-program-root .vmm-shell {
-        padding: 0 12px;
-      }
-
-      #vmm-program-root .vmm-tabs {
-        margin-left: -4px;
-        margin-right: -4px;
-        gap: 4px;
-        padding: 4px;
-        margin-bottom: 12px;
-      }
-
-      #vmm-program-root .vmm-tab {
-        padding: 8px 10px;
-        font-size: 12px;
-      }
-
-      #vmm-program-root .vmm-history-toolbar {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      #vmm-program-root .vmm-history-switch,
-      #vmm-program-root .vmm-create-button {
-        width: 100%;
-      }
-
-      #vmm-program-root .vmm-history-switch button {
-        flex: 1 1 0;
-      }
-
-      #vmm-program-root .vmm-detail-row {
-        font-size: 12px;
-      }
-    }
-
-    #vmm-program-root .vmm-conversion-modal {
-      width: min(620px, 100%);
-      border-radius: 18px;
-    }
-
-    #vmm-program-root .vmm-conversion-modal .vmm-modal-head {
-      padding: 18px 32px;
-    }
-
-    #vmm-program-root .vmm-conversion-reference-body {
-      padding: 25px 32px 8px;
-      color: var(--vmm-text);
-    }
-
-    #vmm-program-root .vmm-conversion-reference-body .vmm-conversion-label {
-      margin-bottom: 9px;
-      color: #1f2d43;
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    #vmm-program-root .vmm-amount-control {
-      display: flex;
-      align-items: center;
-      min-height: 56px;
-      overflow: hidden;
-      border: 1px solid #cbd3dd;
-      border-radius: 12px;
-      background: #ffffff;
-    }
-
-    #vmm-program-root .vmm-amount-control .vmm-conversion-input {
-      flex: 1 1 auto;
-      width: 100%;
-      min-height: 54px;
-      padding: 0 14px;
-      border: 0;
-      border-radius: 0;
-      color: #1f2d43;
-      font-size: 17px;
-      font-weight: 700;
-      outline: none;
-    }
-
-    #vmm-program-root .vmm-amount-control:focus-within {
-      border-color: var(--vmm-reference-blue);
-      box-shadow: 0 0 0 3px rgba(47,111,224,.12);
-    }
-
-    #vmm-program-root .vmm-asset-select {
-      width: 116px;
-      min-height: 54px;
-      padding: 0 13px;
-      border: 0;
-      border-left: 1px solid #e1e6ec;
-      color: #1f2d43;
-      background-color: #ffffff;
-      font-size: 16px;
-      font-weight: 900;
-      outline: none;
-    }
-
-    #vmm-program-root .vmm-conversion-preview {
-      min-height: 20px;
-      margin: 13px 0 0;
-      color: #667386;
-      font-size: 15px;
-    }
-
-    #vmm-program-root .vmm-conversion-preview strong {
-      color: #53647a;
-      font-weight: 900;
-    }
-
-    #vmm-program-root .vmm-conversion-preview > span {
-      margin-left: 5px;
-      color: #667386;
-    }
-
-    #vmm-program-root .vmm-method-head {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 30px;
-      color: #1f2d43;
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    #vmm-program-root .vmm-method-caret {
-      color: var(--vmm-reference-blue);
-      font-size: 22px;
-      line-height: .8;
-    }
-
-    #vmm-program-root .vmm-method-option {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 18px;
-      color: #1f2d43;
-      font-size: 16px;
-    }
-
-    #vmm-program-root .vmm-method-option input {
-      width: 18px;
-      height: 18px;
-      margin: 0;
-      accent-color: var(--vmm-reference-blue);
-    }
-
-    #vmm-program-root .vmm-method-token-icon {
-      width: 24px;
-      height: 24px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      color: #ffffff;
-      background: #22a83a;
-      font-size: 15px;
-      font-weight: 900;
-      box-shadow: inset 0 0 0 2px rgba(255,255,255,.35);
-    }
-
-    #vmm-program-root .vmm-method-available {
-      margin-left: auto;
-      color: #1f2d43;
-      font-size: 15px;
-    }
-
-    #vmm-program-root .vmm-method-available strong {
-      font-weight: 900;
-    }
-
-    #vmm-program-root .vmm-conversion-divider {
-      height: 1px;
-      margin: 26px 0 18px;
-      background: #dce3eb;
-    }
-
-    #vmm-program-root .vmm-conversion-detail-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 9px 0;
-      color: #667386;
-      font-size: 15px;
-    }
-
-    #vmm-program-root .vmm-conversion-detail-row strong {
-      color: #53647a;
-      font-weight: 500;
-    }
-
-    #vmm-program-root .vmm-conversion-total-row {
-      margin-top: 4px;
-      color: #1f2d43;
-      font-weight: 900;
-    }
-
-    #vmm-program-root .vmm-conversion-total-row strong {
-      color: #1f2d43;
-      font-size: 18px;
-      font-weight: 900;
-    }
-
-    #vmm-program-root .vmm-conversion-reference-body .vmm-conversion-validation {
-      min-height: 0;
-      margin: 7px 0 0;
-      font-size: 12px;
-    }
-
-    #vmm-program-root .vmm-conversion-modal .vmm-modal-foot {
-      padding: 15px 32px 28px;
-      border-top: 0;
-      justify-content: flex-start;
-    }
-
-    #vmm-program-root .vmm-conversion-modal .vmm-modal-foot .vmm-btn {
-      width: min(600px, 100%);
-      min-height: 48px;
-      border-radius: 12px;
-      font-size: 16px;
-    }
-
-    @media (max-width: 700px) {
-      #vmm-program-root .vmm-conversion-modal .vmm-modal-head,
-      #vmm-program-root .vmm-conversion-reference-body {
-        padding-left: 18px;
-        padding-right: 18px;
-      }
-
-      #vmm-program-root .vmm-conversion-modal .vmm-modal-foot {
-        padding: 12px 18px 20px;
-      }
-
-      #vmm-program-root .vmm-method-available {
-        font-size: 12px;
-      }
-    }
-
-    /* Keep the redesigned screens on one compact, readable type scale. */
-    #vmm-program-root .vmm-buy-form,
-    #vmm-program-root .vmm-history-panel,
-    #vmm-program-root .vmm-conversion-modal,
-    #vmm-program-root .vmm-holding-modal {
-      font-size: 14px;
-    }
-
-    #vmm-program-root select {
-      font: inherit;
-    }
-
-    #vmm-program-root .form-select.vmm-select-control {
-      min-height: 48px;
-      padding: .75rem 2.25rem .75rem .75rem;
-      border: 1px solid var(--vmm-reference-border);
-      border-radius: .5rem;
-      background-color: #ffffff;
-    }
-
-    #vmm-program-root .form-control.mt-2 {
-      min-height: 48px;
-    }
-
-    #vmm-program-root .form-control:focus,
-    #vmm-program-root .form-select:focus {
-      border-color: var(--vmm-reference-blue);
-      box-shadow: 0 0 0 .2rem rgba(47,111,224,.15);
-    }
-
-    #vmm-program-root .vmm-terms-check,
-    #vmm-program-root .vmm-method-option {
-      padding-left: 0;
-    }
-
-    #vmm-program-root .vmm-terms-check .form-check-input,
-    #vmm-program-root .vmm-method-option .form-check-input {
-      margin-left: 0;
-    }
-
-    #vmm-program-root .vmm-form-row-head,
-    #vmm-program-root .vmm-form-field-head,
-    #vmm-program-root .vmm-conversion-reference-body .vmm-conversion-label,
-    #vmm-program-root .vmm-method-head {
-      font-size: 14px;
-    }
-
-    #vmm-program-root .vmm-form-link,
-    #vmm-program-root .vmm-select-control,
-    #vmm-program-root .vmm-amount-control .vmm-conversion-input,
-    #vmm-program-root .vmm-asset-select,
-    #vmm-program-root .vmm-method-option,
-    #vmm-program-root .vmm-method-available {
-      font-size: 14px;
-    }
-
-    #vmm-program-root .vmm-form-meta,
-    #vmm-program-root .vmm-field-help,
-    #vmm-program-root .vmm-benefits-label,
-    #vmm-program-root .vmm-conversion-preview,
-    #vmm-program-root .vmm-conversion-detail-row,
-    #vmm-program-root .vmm-detail-row {
-      font-size: 13px;
-    }
-
-    #vmm-program-root .vmm-reward-banner,
-    #vmm-program-root .vmm-conversion-modal .vmm-modal-foot .vmm-btn {
-      font-size: 14px;
-    }
-
-    #vmm-program-root .vmm-table-view {
-      font-size: 12px;
-    }
-
-    #vmm-program-root .vmm-table-status {
-      font-size: 11px;
-    }
-
-    #vmm-program-root .vmm-history-table {
-      font-size: 13px;
-    }
-
-    #vmm-program-root .vmm-history-table th {
-      font-size: 12px;
-    }
-
-    #vmm-program-root .vmm-table-time,
-    #vmm-program-root .vmm-conversion-reference-body .vmm-conversion-validation {
-      font-size: 12px;
-    }
-
-    #vmm-program-root .vmm-conversion-total-row strong {
-      font-size: 16px;
-    }
-
-    #vmm-program-root .vmm-holding-modal .vmm-modal-head h3,
-    #vmm-program-root .vmm-conversion-modal .vmm-modal-head h3 {
-      font-size: 16px;
-    }
-
-    /* Match the reference hierarchy: medium labels, regular supporting text, restrained actions. */
-    #vmm-program-root .vmm-form-row-head,
-    #vmm-program-root .vmm-form-field-head,
-    #vmm-program-root .vmm-benefits-label,
-    #vmm-program-root .vmm-method-head,
-    #vmm-program-root .vmm-conversion-reference-body .vmm-conversion-label {
-      font-weight: 600;
-    }
-
-    #vmm-program-root .vmm-form-link,
-    #vmm-program-root .vmm-select-control,
-    #vmm-program-root .vmm-asset-select {
-      font-weight: 600;
-    }
-
-    #vmm-program-root .vmm-form-meta,
-    #vmm-program-root .vmm-field-help,
-    #vmm-program-root .vmm-conversion-preview,
-    #vmm-program-root .vmm-terms-check,
-    #vmm-program-root .vmm-method-option,
-    #vmm-program-root .vmm-conversion-detail-row,
-    #vmm-program-root .vmm-detail-row {
-      font-weight: 400;
-    }
-
-    #vmm-program-root .vmm-form-meta strong,
-    #vmm-program-root .vmm-method-option strong,
-    #vmm-program-root .vmm-conversion-total-row strong,
-    #vmm-program-root .vmm-terms-check strong {
-      font-weight: 600;
-    }
-
-    #vmm-program-root .vmm-reward-banner {
-      font-weight: 600;
-    }
-
-    #vmm-program-root .vmm-buy-confirmation .vmm-btn {
-      font-weight: 400;
-    }
-
-    #vmm-program-root .vmm-buy-confirmation .vmm-terms-check button {
-      font-weight: 400;
-    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -2431,155 +1548,202 @@
     The body style above is only for standalone preview.
   -->
   <section id="vmm-program-root">
-    <div class="container">
+    <div class="vmm-shell container">
       <div class="vmm-tabs" role="tablist" aria-label="VMM tabs">
-        <button class="btn vmm-tab is-active" data-tab="program" role="tab">Mua</button>
-        <button class="btn vmm-tab" data-tab="history" role="tab">Lịch sử</button>
+        <button class="vmm-tab is-active" data-tab="overview" role="tab">Tổng quan</button>
+        <button class="vmm-tab" data-tab="program" role="tab">Ký gửi 3 năm</button>
+        <button class="vmm-tab" data-tab="history" role="tab">Lịch sử</button>
+      </div>
+
+      <!-- TAB: OVERVIEW -->
+      <div class="vmm-panel is-active" data-panel="overview">
+        <div class="vmm-overview-head">
+          <div class="vmm-hero-copy">
+            <div class="vmm-kicker">VMM 3-Year Program</div>
+            <h1 class="vmm-hero-title">Quản lý các gói VMM của bạn</h1>
+            <p>Theo dõi gói đang hoạt động, quyền lợi VMM IOU và chọn hành động tiếp theo.</p>
+          </div>
+
+          <div class="vmm-hero-actions">
+            <button class="vmm-btn vmm-btn-primary" data-go-program>
+              Ký gửi VMM 3 năm
+            </button>
+          </div>
+        </div>
+
+        <div class="vmm-overview-grid row g-1 g-md-3">
+          <div class="vmm-stat-column col-4">
+            <article class="vmm-card vmm-stat-card h-100">
+              <div class="vmm-stat-head">
+                <span>Gói đang tham gia</span>
+              </div>
+              <div class="vmm-stat-value">1 <small>gói</small></div>
+            </article>
+          </div>
+
+          <div class="vmm-stat-column col-4">
+            <article class="vmm-card vmm-stat-card h-100">
+              <div class="vmm-stat-head">
+                <span>VMM đang ký gửi</span>
+              </div>
+              <div class="vmm-stat-value" id="overviewLocked">100.000.000 <small>VMM</small></div>
+            </article>
+          </div>
+
+          <div class="vmm-stat-column col-4">
+            <article class="vmm-card vmm-stat-card h-100">
+              <div class="vmm-stat-head">
+                <span>VMM IOU đã nhận</span>
+              </div>
+              <div class="vmm-stat-value" id="overviewReward">1.000.000 <small>VMM IOU</small></div>
+            </article>
+          </div>
+        </div>
+
+        <div class="vmm-section">
+          <article class="vmm-card vmm-campaign-banner">
+            <div>
+              <strong>Đổi USDV sang VMM không giới hạn theo gói</strong>
+              <p>Áp dụng từ Aug 07, 2026 đến hết Aug 31, 2026 để thành viên chuẩn bị VMM trước khi tham gia chương trình ký gửi 3 năm.</p>
+              <button class="vmm-btn vmm-btn-secondary vmm-campaign-button" type="button" data-open-program>
+                Xem chương trình
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <div class="vmm-section">
+          <div class="vmm-section-head vmm-active-program-head">
+            <div>
+              <h2>Gói đang hoạt động</h2>
+            </div>
+            <span class="vmm-status">Đang hoạt động</span>
+          </div>
+
+          <div class="vmm-program-list d-flex flex-column gap-2 gap-md-3">
+            <div class="vmm-program-card row gx-2 gx-md-3 gy-0 align-items-center m-0">
+              <div class="vmm-program-meta col-12 col-md">
+                <strong>Ký gửi 100.000.000 VMM</strong>
+                <span>Bắt đầu Sep 01, 2026 · Hoàn tất dự kiến Sep 01, 2029</span>
+              </div>
+              <div class="col-12 col-md-auto text-md-end mt-1 mt-md-0">
+                <strong style="display:block;margin-bottom:6px">+1.000.000 VMM IOU</strong>
+                <span style="color:var(--vmm-muted);font-size:12px">Mã: VMM-3Y-100M</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- TAB: PROGRAM -->
-      <div class="vmm-panel is-active" data-panel="program">
-        <div class="vmm-buy-form">
-          <div class="vmm-form-row-head">
-            <span>Type</span>
-            <span class="vmm-form-link">Get More VMM</span>
-          </div>
-
-          <div class="form-control mt-2 d-flex align-items-center gap-2" role="textbox" aria-readonly="true">
-            <img src="https://raw.githubusercontent.com/vlink-group/VlinkPay/refs/heads/main/icon/assets/VMMV2.png" alt="VMM" width="24" height="24" class="rounded-circle" />
-            <span>VMM</span>
-          </div>
-
-          <div class="vmm-form-meta">
-            <div class="vmm-form-meta-left">
-              <span>VMM</span>
-              <span class="vmm-form-error" id="typeValidation" hidden>Your VMM quantity is insufficient</span>
+      <div class="vmm-panel" data-panel="program">
+        <section>
+          <div class="vmm-section-head">
+            <div>
+              <h2>Chọn cấp ký gửi</h2>
+              <p>Các cấp được sắp xếp từ nhỏ đến lớn. Cấp không đủ số dư sẽ tự động bị khóa.</p>
             </div>
-            <div class="vmm-form-meta-right">
-              <span>Quantity: <strong id="packageQuantity">0</strong></span>
-              <span>Available: <strong id="programBalance">300.000.000 VMM</strong></span>
+            <div class="vmm-program-head-actions row gx-2 gy-0 align-items-center m-0">
+              <div class="vmm-token-pill col-auto">
+                Số dư: <strong id="programBalance">300.000.000 VMM</strong>
+              </div>
+              <a class="vmm-action-link col-auto" href="#convert" data-get-more-vmm>Get more VMM</a>
             </div>
           </div>
 
-          <div class="vmm-form-field">
-            <div class="vmm-form-field-head">
-              <span>Value <b class="text-danger">*</b></span>
-              <span>Select Package</span>
+          <div class="vmm-tier-grid row g-2 g-md-3" id="tierGrid"></div>
+        </section>
+
+        <div class="vmm-review row g-2 g-md-3" id="reviewArea" hidden>
+          <div class="col-12 col-lg-6">
+            <article class="vmm-card vmm-review-card">
+            <h3>Thông tin ký gửi</h3>
+            <div class="vmm-review-row">
+              <span>Số lượng ký gửi</span>
+              <strong id="reviewAmount">—</strong>
             </div>
-            <div id="tierGrid"></div>
-            <p class="vmm-field-help" id="packageSummary">—</p>
+            <div class="vmm-review-row">
+              <span>Thời hạn</span>
+              <strong>3 năm</strong>
+            </div>
+            <div class="vmm-review-row">
+              <span>Ngày bắt đầu</span>
+              <strong>Sep 01, 2026</strong>
+            </div>
+            <div class="vmm-review-row">
+              <span>Ngày hoàn tất dự kiến</span>
+              <strong>Sep 01, 2029</strong>
+            </div>
+            <div class="vmm-review-row">
+              <span>Số dư còn lại</span>
+              <strong id="reviewRemaining">—</strong>
+            </div>
+            </article>
           </div>
 
-          <div class="vmm-form-field">
-            <div class="vmm-form-field-head">
-              <span>Period <b class="text-danger">*</b></span>
-            </div>
-            <select class="form-select vmm-select-control" id="periodSelect" aria-label="Holding period">
-              <option value="3-years">3 Years</option>
-            </select>
-          </div>
+          <div class="col-12 col-lg-6">
+            <article class="vmm-card vmm-review-card">
+              <div class="vmm-reward-box">
+                <span>VMM IOU được tặng</span>
+                <strong id="reviewReward">—</strong>
+              </div>
 
-          <div class="vmm-form-field">
-            <div class="vmm-benefits-label">
-              <span>Số VMM IOU được tặng</span>
-              <span class="vmm-info-icon" title="VMM 3-Year Program benefit">i</span>
-            </div>
-            <div class="vmm-reward-banner" id="rewardBannerValue">—</div>
-          </div>
+              <label class="vmm-terms-check">
+                <input type="checkbox" id="acceptTerms" />
+                <span>
+                  Tôi đã đọc và đồng ý với
+                  <button type="button" data-open-terms>Điều khoản & Điều kiện</button>.
+                </span>
+              </label>
 
-          <div class="vmm-buy-confirmation" id="reviewArea" hidden>
-            <div class="vmm-action-row">
-              <button class="btn btn-primary vmm-btn vmm-btn-primary" id="confirmDeposit" disabled>Confirm Holding</button>
-            </div>
-
-            <div class="form-check vmm-terms-check">
-              <input class="form-check-input" type="checkbox" id="acceptTerms" />
-              <span>
-                By clicking <strong>Confirm Holding</strong>, you confirm that you have
-                read and agreed to our <button class="btn btn-link p-0" type="button" data-open-terms>Holding Agreement</button>.
-              </span>
-            </div>
+              <div class="vmm-action-row">
+                <button class="vmm-btn vmm-btn-primary" id="confirmDeposit" disabled>Xác nhận ký gửi</button>
+              </div>
+            </article>
           </div>
         </div>
       </div>
 
       <!-- TAB: HISTORY -->
       <div class="vmm-panel" data-panel="history">
-        <div class="vmm-history-toolbar">
-          <button class="btn btn-primary vmm-create-button" type="button" data-go-program>+&nbsp; Create Holding Package</button>
-        </div>
+        <section>
+          <div class="vmm-section-head">
+            <div>
+              <h2>Lịch sử VMM</h2>
+              <p>Các giao dịch ký gửi và phần thưởng gần đây.</p>
+            </div>
+          </div>
 
-        <div class="vmm-history-table-wrap">
-          <table class="table align-middle mb-0 vmm-history-table">
-            <thead>
-              <tr>
-                <th>Holding ID</th>
-                <th>Date</th>
-                <th>Period</th>
-                <th>Value</th>
-                <th>Status</th>
-                <th>Release Date</th>
-                <th>View</th>
-              </tr>
-            </thead>
-            <tbody id="historyList">
-              <tr>
-                <td><strong>#145</strong></td>
-                <td><span class="vmm-table-date">Sep 01, 2026</span><span class="vmm-table-time">09:00 am</span></td>
-                <td>3 Years</td>
-                <td class="vmm-table-value"><strong>100.000.000 VMM</strong></td>
-                <td><span class="vmm-table-status vmm-table-status-active">Active</span></td>
-                <td>Sep 01, 2029</td>
-                <td>
-                  <button class="btn btn-link p-0 vmm-table-view" type="button" data-view-history
-                    data-holding-id="#145" data-holding-date="Sep 01, 2026, 09:00 AM"
-                    data-holding-period="3 Years" data-holding-value="100.000.000 VMM"
-                    data-holding-rate="0.000633" data-holding-request="$300"
-                    data-holding-status="Active" data-holding-release="Sep 01, 2029"
-                    data-holding-start="Sep 01, 2026" data-holding-reward="1.000.000 VMM IOU">
-                    <i class="bi bi-eye" aria-hidden="true"></i> View
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>#126</strong></td>
-                <td><span class="vmm-table-date">Aug 20, 2026</span><span class="vmm-table-time">10:15 am</span></td>
-                <td>3 Years</td>
-                <td class="vmm-table-value"><strong>50.000.000 VMM</strong></td>
-                <td><span class="vmm-table-status">Completed</span></td>
-                <td>Aug 20, 2029</td>
-                <td>
-                  <button class="btn btn-link p-0 vmm-table-view" type="button" data-view-history
-                    data-holding-id="#126" data-holding-date="Aug 20, 2026, 10:15 AM"
-                    data-holding-period="3 Years" data-holding-value="50.000.000 VMM"
-                    data-holding-rate="0.000633" data-holding-request="$300"
-                    data-holding-status="Completed" data-holding-release="Aug 20, 2029"
-                    data-holding-start="Aug 20, 2026" data-holding-reward="100.000 VMM IOU">
-                    <i class="bi bi-eye" aria-hidden="true"></i> View
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>#124</strong></td>
-                <td><span class="vmm-table-date">Aug 07, 2026</span><span class="vmm-table-time">08:30 am</span></td>
-                <td>3 Years</td>
-                <td class="vmm-table-value"><strong>20.000.000 VMM</strong></td>
-                <td><span class="vmm-table-status">Completed</span></td>
-                <td>Aug 07, 2029</td>
-                <td>
-                  <button class="btn btn-link p-0 vmm-table-view" type="button" data-view-history
-                    data-holding-id="#124" data-holding-date="Aug 07, 2026, 08:30 AM"
-                    data-holding-period="3 Years" data-holding-value="20.000.000 VMM"
-                    data-holding-rate="0.000633" data-holding-request="$300"
-                    data-holding-status="Completed" data-holding-release="Aug 07, 2029"
-                    data-holding-start="Aug 07, 2026" data-holding-reward="25.000 VMM IOU">
-                    <i class="bi bi-eye" aria-hidden="true"></i> View
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+          <div class="vmm-history-list d-flex flex-column gap-2 gap-md-3" id="historyList">
+            <div class="vmm-history-item row gx-2 gx-md-3 gy-0 align-items-center m-0">
+              <div class="vmm-history-main col-12 col-md">
+                <div class="vmm-history-icon vmm-history-icon-active d-flex align-items-center justify-content-center flex-shrink-0"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></div>
+                <div class="vmm-history-copy">
+                  <strong>Ký gửi VMM 3 năm</strong>
+                  <span>Sep 01, 2026 · VMM-3Y-100M</span>
+                </div>
+              </div>
+              <div class="vmm-history-value col-12 col-md-auto text-md-end mt-1 mt-md-0">
+                <strong>-100.000.000 VMM</strong>
+                <span class="vmm-history-status vmm-history-status-active badge rounded-pill">Đang hoạt động</span>
+              </div>
+            </div>
+
+            <div class="vmm-history-item row gx-2 gx-md-3 gy-0 align-items-center m-0">
+              <div class="vmm-history-main col-12 col-md">
+                <div class="vmm-history-icon vmm-history-icon-complete d-flex align-items-center justify-content-center flex-shrink-0"><i class="bi bi-gift-fill" aria-hidden="true"></i></div>
+                <div class="vmm-history-copy">
+                  <strong>Nhận thưởng VMM IOU</strong>
+                  <span>Sep 01, 2026 · Reward</span>
+                </div>
+              </div>
+              <div class="vmm-history-value col-12 col-md-auto text-md-end mt-1 mt-md-0">
+                <strong style="color:var(--vmm-green)">+1.000.000 VMM IOU</strong>
+                <span class="vmm-history-status vmm-history-status-complete badge rounded-pill">Hoàn tất</span>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
 
@@ -2592,7 +1756,7 @@
             <h3 id="programTitle">📢 THÔNG BÁO CHƯƠNG TRÌNH VMM 2026</h3>
             <p class="vmm-program-modal-subtitle">Giai đoạn đặc biệt trong tháng 8</p>
           </div>
-          <button class="btn btn-light vmm-close p-0" type="button" data-close-program aria-label="Đóng">×</button>
+          <button class="vmm-close" type="button" data-close-program aria-label="Đóng">×</button>
         </div>
 
         <div class="vmm-modal-body vmm-program-body">
@@ -2611,7 +1775,7 @@
             <p>Thành viên có thể ký gửi VMM theo lộ trình <b>3 năm</b> và nhận thêm VMM IOU theo cấp độ tham gia.</p>
 
             <div class="vmm-program-table-wrap">
-          <table class="table align-middle mb-0 vmm-program-table">
+              <table class="vmm-program-table">
                 <thead>
                   <tr>
                     <th>Số lượng VMM ký gửi</th>
@@ -2635,7 +1799,7 @@
         </div>
 
         <div class="vmm-modal-foot">
-          <button class="btn btn-primary vmm-btn vmm-btn-primary" type="button" data-close-program>Đã hiểu</button>
+          <button class="vmm-btn vmm-btn-primary" type="button" data-close-program>Đã hiểu</button>
         </div>
       </section>
     </div>
@@ -2645,7 +1809,7 @@
       <section class="vmm-modal" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
         <div class="vmm-modal-head">
           <h3 id="termsTitle">Điều khoản & Điều kiện</h3>
-          <button class="btn btn-light vmm-close p-0" type="button" data-close-terms aria-label="Đóng">×</button>
+          <button class="vmm-close" type="button" data-close-terms aria-label="Đóng">×</button>
         </div>
 
         <div class="vmm-modal-body">
@@ -2663,123 +1827,73 @@
         </div>
 
         <div class="vmm-modal-foot">
-          <button class="btn btn-primary vmm-btn vmm-btn-primary" type="button" data-close-terms>Đã hiểu</button>
-        </div>
-      </section>
-    </div>
-
-    <!-- Holding detail modal -->
-    <div class="vmm-modal-backdrop" id="holdingDetailModal" aria-hidden="true">
-      <section class="vmm-modal vmm-holding-modal" role="dialog" aria-modal="true" aria-labelledby="holdingDetailTitle">
-        <div class="vmm-modal-head">
-          <h3 id="holdingDetailTitle">Holding Details</h3>
-          <button class="btn btn-light vmm-close p-0" type="button" data-close-holding aria-label="Close">×</button>
-        </div>
-
-        <div class="vmm-modal-body">
-          <div class="vmm-detail-list">
-            <div class="vmm-detail-row">
-              <span>Top-up Quantity</span>
-              <strong class="vmm-detail-value-stack">
-                <span id="detailQuantity">—</span>
-                <small id="detailQuantityRate">@ 0.000633</small>
-              </strong>
-            </div>
-            <div class="vmm-detail-row">
-              <span>Request</span>
-              <strong><span id="detailRequest">$300</span> request</strong>
-            </div>
-            <div class="vmm-detail-row">
-              <span>Period</span>
-              <strong id="detailPeriod">—</strong>
-            </div>
-            <div class="vmm-detail-row">
-              <span>Status</span>
-              <strong><span class="vmm-table-status" id="detailStatus">—</span></strong>
-            </div>
-            <div class="vmm-detail-divider"></div>
-            <div class="vmm-detail-row">
-              <span>Holding ID</span>
-              <strong id="detailHoldingId">—</strong>
-            </div>
-            <div class="vmm-detail-row">
-              <span>Start Date</span>
-              <strong id="detailStartDate">—</strong>
-            </div>
-            <div class="vmm-detail-row">
-              <span>Release Date</span>
-              <strong id="detailReleaseDate">—</strong>
-            </div>
-          </div>
-
-          <div class="vmm-detail-benefits">
-            <span>Số VMM IOU được tặng <span class="vmm-info-icon">i</span></span>
-            <strong>You have saved a total of:</strong>
-            <div class="vmm-detail-banner" id="detailReward">—</div>
-          </div>
-        </div>
-
-        <div class="vmm-modal-foot">
-          <button class="btn btn-outline-secondary vmm-btn" type="button" data-close-holding>Close</button>
+          <button class="vmm-btn vmm-btn-primary" type="button" data-close-terms>Đã hiểu</button>
         </div>
       </section>
     </div>
 
     <!-- USDV to VMM conversion modal -->
     <div class="vmm-modal-backdrop" id="convertModal" aria-hidden="true">
-      <section class="vmm-modal vmm-conversion-modal" role="dialog" aria-modal="true" aria-labelledby="convertTitle">
+      <section class="vmm-modal" role="dialog" aria-modal="true" aria-labelledby="convertTitle">
         <div class="vmm-modal-head">
           <h3 id="convertTitle">Đổi USDV sang VMM</h3>
-          <button class="btn btn-light vmm-close p-0" type="button" data-close-convert aria-label="Đóng">×</button>
+          <button class="vmm-close" type="button" data-close-convert aria-label="Đóng">×</button>
         </div>
 
-        <div class="vmm-modal-body vmm-conversion-reference-body">
-          <div class="vmm-conversion-field">
-            <label class="form-label vmm-conversion-label" for="convertAmount">Enter Amount <b class="text-danger">*</b></label>
-            <div class="input-group vmm-amount-control">
-              <input class="form-control vmm-conversion-input" id="convertAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="100" />
-              <select class="form-select vmm-asset-select" id="conversionAsset" aria-label="Conversion asset">
-                <option value="usdv">USD</option>
-                <option value="vmm">VMM</option>
-              </select>
+        <div class="vmm-modal-body">
+          <div class="vmm-conversion-summary row g-2 g-md-3">
+            <div class="col-12 col-md-6">
+              <div class="vmm-conversion-stat h-100">
+                <span>Số dư USDV khả dụng</span>
+                <strong id="usdvBalance">0 USDV</strong>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="vmm-conversion-stat h-100">
+                <span>Tỷ giá chương trình</span>
+                <strong id="conversionRate">1 VMM = 0.00229 USDV</strong>
+              </div>
             </div>
           </div>
 
-          <p class="vmm-conversion-preview" id="conversionPreview"><strong id="confirmVmmAmount">—</strong> VMM <span>@ <span id="conversionRate">0.00229</span></span></p>
-          <input id="convertVmmAmount" type="hidden" />
+          <div class="vmm-conversion-inputs row g-2 g-md-3">
+            <div class="vmm-conversion-field col-12 col-md-6">
+              <label class="vmm-conversion-label" for="convertAmount">Số USDV muốn đổi</label>
+              <input class="vmm-conversion-input" id="convertAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="Nhập số USDV" />
+            </div>
+            <div class="vmm-conversion-field col-12 col-md-6">
+              <label class="vmm-conversion-label" for="convertVmmAmount">Số VMM nhận được</label>
+              <input class="vmm-conversion-input" id="convertVmmAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="Nhập số VMM" />
+            </div>
+          </div>
+          <p class="vmm-conversion-help">Áp dụng từ Aug 07, 2026 – Aug 31, 2026.</p>
           <p class="vmm-conversion-validation" id="convertValidation" role="alert"></p>
-          <div id="conversionConfirmation" hidden></div>
 
-          <div class="vmm-method-head">
-            <span>Select Method</span>
-            <span class="vmm-method-caret" aria-hidden="true">⌃</span>
-          </div>
-
-          <label class="form-check vmm-method-option">
-            <input class="form-check-input" type="radio" name="vmm-conversion-method" value="usdv" checked />
-            <span class="vmm-method-token-icon" aria-hidden="true">$</span>
-            <strong>USDV</strong>
-            <span class="vmm-method-available">Available: <strong id="usdvBalance">0 USDV</strong></span>
-          </label>
-
-          <div class="vmm-conversion-divider"></div>
-
-          <div class="vmm-conversion-detail-row">
-            <span>Slippage Tolerance <span class="vmm-info-icon">i</span></span>
-            <strong>3%</strong>
-          </div>
-          <div class="vmm-conversion-detail-row">
-            <span>Service Fee <span class="vmm-info-icon">i</span></span>
-            <strong>Free</strong>
-          </div>
-          <div class="vmm-conversion-detail-row vmm-conversion-total-row">
-            <span>Total Value</span>
-            <strong id="confirmUsdvAmount">$0</strong>
+          <div class="vmm-conversion-confirmation" id="conversionConfirmation" hidden>
+            <div class="vmm-conversion-confirmation-head">
+              <span>Xác nhận thông tin</span>
+              <span class="vmm-conversion-confirmation-status">Sẵn sàng</span>
+            </div>
+            <div class="row g-2">
+              <div class="col-12 col-sm-6">
+                <div class="vmm-conversion-confirmation-item h-100">
+                  <span>Số USDV quy đổi</span>
+                  <strong id="confirmUsdvAmount">—</strong>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="vmm-conversion-confirmation-item h-100">
+                  <span>Số VMM nhận</span>
+                  <strong id="confirmVmmAmount">—</strong>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="vmm-modal-foot">
-          <button class="btn btn-primary vmm-btn vmm-btn-primary" type="button" id="confirmConversion" disabled>Confirm &amp; Receive</button>
+          <button class="vmm-btn vmm-btn-ghost" type="button" id="cancelConversion" data-close-convert>Hủy</button>
+          <button class="vmm-btn vmm-btn-more" type="button" id="confirmConversion" disabled>Xác nhận đổi</button>
         </div>
       </section>
     </div>
@@ -2818,29 +1932,15 @@
       const tabButtons = [...root.querySelectorAll('.vmm-tab')];
       const panels = [...root.querySelectorAll('.vmm-panel')];
       const tierGrid = root.querySelector('#tierGrid');
-      const packageQuantity = root.querySelector('#packageQuantity');
-      const packageSummary = root.querySelector('#packageSummary');
-      const typeValidation = root.querySelector('#typeValidation');
       const reviewArea = root.querySelector('#reviewArea');
       const acceptTerms = root.querySelector('#acceptTerms');
       const confirmDeposit = root.querySelector('#confirmDeposit');
       const programModal = root.querySelector('#programModal');
       const termsModal = root.querySelector('#termsModal');
-      const holdingDetailModal = root.querySelector('#holdingDetailModal');
-      const detailQuantity = root.querySelector('#detailQuantity');
-      const detailRequest = root.querySelector('#detailRequest');
-      const detailPeriod = root.querySelector('#detailPeriod');
-      const detailStatus = root.querySelector('#detailStatus');
-      const detailHoldingId = root.querySelector('#detailHoldingId');
-      const detailStartDate = root.querySelector('#detailStartDate');
-      const detailReleaseDate = root.querySelector('#detailReleaseDate');
-      const detailReward = root.querySelector('#detailReward');
-      const detailQuantityRate = root.querySelector('#detailQuantityRate');
       const convertModal = root.querySelector('#convertModal');
       const usdvBalanceLabel = root.querySelector('#usdvBalance');
       const convertAmount = root.querySelector('#convertAmount');
       const convertVmmAmount = root.querySelector('#convertVmmAmount');
-      const conversionAsset = root.querySelector('#conversionAsset');
       const convertValidation = root.querySelector('#convertValidation');
       const conversionConfirmation = root.querySelector('#conversionConfirmation');
       const confirmUsdvAmount = root.querySelector('#confirmUsdvAmount');
@@ -2859,11 +1959,11 @@
 
       function getTabFromUrl() {
         const tabFromHash = window.location.hash.replace(/^#/, '');
-        return tabNames.has(tabFromHash) ? tabFromHash : 'program';
+        return tabNames.has(tabFromHash) ? tabFromHash : 'overview';
       }
 
       function activateTab(name, updateUrl = true) {
-        const activeTab = tabNames.has(name) ? name : 'program';
+        const activeTab = tabNames.has(name) ? name : 'overview';
 
         tabButtons.forEach(button => {
           button.classList.toggle('is-active', button.dataset.tab === activeTab);
@@ -2879,10 +1979,9 @@
       }
 
       function updateBalances() {
-        packageQuantity.textContent = fmt(walletBalance);
+        root.querySelector('#overviewLocked').innerHTML = `${fmt(lockedBalance)} <small>VMM</small>`;
+        root.querySelector('#overviewReward').innerHTML = `${fmt(rewardBalance)} <small>VMM IOU</small>`;
         root.querySelector('#programBalance').textContent = `${fmt(walletBalance)} VMM`;
-        typeValidation.hidden = !(selectedTier && selectedTier.amount > walletBalance);
-        confirmDeposit.disabled = !acceptTerms.checked || Boolean(selectedTier && selectedTier.amount > walletBalance);
       }
 
       function formatConversionAmount(value) {
@@ -2934,15 +2033,14 @@
         }
 
         input.setSelectionRange(formattedCursor, formattedCursor);
-        updateConversionPreview();
+        updateConversionPreview(source);
       }
 
       function renderConversionState() {
         usdvBalanceLabel.textContent = `${formatConversionAmount(usdvBalance)} USDV`;
-        conversionAsset.value = 'usdv';
         convertValidation.textContent = '';
         conversionConfirmation.hidden = true;
-        confirmUsdvAmount.textContent = '$0';
+        confirmUsdvAmount.textContent = '—';
         confirmVmmAmount.textContent = '—';
         convertAmount.value = '';
         convertVmmAmount.value = '';
@@ -2963,24 +2061,23 @@
         document.body.style.overflow = '';
       }
 
-      function updateConversionPreview() {
-        const source = conversionAsset.value;
+      function updateConversionPreview(source) {
+        const sourceInput = source === 'vmm' ? convertVmmAmount : convertAmount;
+        const targetInput = source === 'vmm' ? convertAmount : convertVmmAmount;
         const sourceUnit = source === 'vmm' ? 'VMM' : 'USDV';
-        const sourceValue = convertAmount.value.trim();
+        const sourceValue = sourceInput.value.trim();
         const sourceAmount = parseConversionAmount(sourceValue);
 
         if (!sourceValue) {
-          convertVmmAmount.value = '';
+          targetInput.value = '';
           convertValidation.textContent = '';
           conversionConfirmation.hidden = true;
-          confirmUsdvAmount.textContent = '$0';
-          confirmVmmAmount.textContent = '—';
           confirmConversion.disabled = true;
           return;
         }
 
         if (!Number.isFinite(sourceAmount) || sourceAmount <= 0) {
-          convertVmmAmount.value = '';
+          targetInput.value = '';
           convertValidation.textContent = `Nhập số ${sourceUnit} lớn hơn 0.`;
           conversionConfirmation.hidden = true;
           confirmConversion.disabled = true;
@@ -2994,7 +2091,7 @@
           ? sourceAmount
           : sourceAmount / conversionRate;
 
-        convertVmmAmount.value = formatConversionInput(String(vmmAmount));
+        targetInput.value = formatConversionInput(String(source === 'vmm' ? usdvAmount : vmmAmount));
 
         if (usdvAmount > usdvBalance) {
           convertValidation.textContent = 'Số dư USDV không đủ.';
@@ -3004,34 +2101,48 @@
         }
 
         convertValidation.textContent = '';
-        confirmUsdvAmount.textContent = `$${formatConversionAmount(usdvAmount)}`;
-        confirmVmmAmount.textContent = formatConversionAmount(vmmAmount);
+        confirmUsdvAmount.textContent = `${formatConversionAmount(usdvAmount)} USDV`;
+        confirmVmmAmount.textContent = `${formatConversionAmount(vmmAmount)} VMM`;
         conversionConfirmation.hidden = false;
         confirmConversion.disabled = false;
       }
 
       function renderTiers() {
-        tierGrid.innerHTML = `
-          <select class="form-select vmm-select-control" id="tierSelect" aria-label="Select package">
-            <option value="">Select package</option>
-          </select>
-        `;
-
-        const tierSelect = root.querySelector('#tierSelect');
+        tierGrid.innerHTML = '';
 
         tiers.forEach(tier => {
-          const option = document.createElement('option');
-          option.value = tier.level;
-          option.textContent = `${fmt(tier.amount)} VMM`;
-          option.selected = Boolean(selectedTier && selectedTier.level === tier.level);
-          tierSelect.appendChild(option);
+          const disabled = tier.amount > walletBalance;
+          const selected = selectedTier && selectedTier.level === tier.level;
+
+          const column = document.createElement('div');
+          column.className = 'col-6 col-lg-4';
+
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = `vmm-tier h-100 w-100${selected ? ' is-selected' : ''}`;
+          button.disabled = disabled;
+
+          button.innerHTML = `
+            <span class="vmm-tier-check" aria-hidden="true">✓</span>
+            <div class="vmm-tier-amount">${fmt(tier.amount)}</div>
+            <div class="vmm-tier-unit">VMM ký gửi · 3 năm</div>
+            <div class="vmm-tier-reward">
+              Được tặng
+              <strong>${fmt(tier.reward)} VMM IOU</strong>
+            </div>
+            <div class="vmm-tier-note">Số dư VMM chưa đủ</div>
+          `;
+
+          button.addEventListener('click', () => {
+            selectedTier = tier;
+            renderTiers();
+            showReview();
+          });
+
+          column.appendChild(button);
+          tierGrid.appendChild(column);
         });
 
-        tierSelect.addEventListener('change', () => {
-          selectedTier = tiers.find(tier => tier.level === Number(tierSelect.value)) || null;
-          showReview();
-          updateBalances();
-        });
       }
 
       function showReview() {
@@ -3041,8 +2152,9 @@
         }
 
         reviewArea.hidden = false;
-        packageSummary.textContent = `${fmt(selectedTier.amount)} VMM · Reward ${fmt(selectedTier.reward)} VMM IOU`;
-        root.querySelector('#rewardBannerValue').textContent = `${fmt(selectedTier.reward)} VMM IOU`;
+        root.querySelector('#reviewAmount').textContent = `${fmt(selectedTier.amount)} VMM`;
+        root.querySelector('#reviewRemaining').textContent = `${fmt(walletBalance - selectedTier.amount)} VMM`;
+        root.querySelector('#reviewReward').textContent = `${fmt(selectedTier.reward)} VMM IOU`;
         acceptTerms.checked = false;
         confirmDeposit.disabled = true;
       }
@@ -3050,12 +2162,9 @@
       function clearCurrentSelection() {
         selectedTier = null;
         reviewArea.hidden = true;
-        packageSummary.textContent = '—';
-        root.querySelector('#rewardBannerValue').textContent = '—';
         acceptTerms.checked = false;
         confirmDeposit.disabled = true;
         renderTiers();
-        updateBalances();
       }
 
       function openTerms() {
@@ -3082,106 +2191,76 @@
         document.body.style.overflow = '';
       }
 
-      function openHoldingDetail(button) {
-        const data = button.dataset;
-
-        detailQuantity.textContent = data.holdingValue || '—';
-        detailQuantityRate.textContent = `@ ${data.holdingRate || '0.000633'}`;
-        detailRequest.textContent = data.holdingRequest || '$300';
-        detailPeriod.textContent = data.holdingPeriod || '—';
-        detailStatus.textContent = data.holdingStatus || '—';
-        detailStatus.classList.toggle('vmm-table-status-active', data.holdingStatus === 'Active');
-        detailHoldingId.textContent = data.holdingId || '—';
-        detailStartDate.textContent = data.holdingStart || '—';
-        detailReleaseDate.textContent = data.holdingRelease || '—';
-        detailReward.textContent = data.holdingReward || '—';
-
-        holdingDetailModal.classList.add('is-open');
-        holdingDetailModal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-      }
-
-      function closeHoldingDetail() {
-        holdingDetailModal.classList.remove('is-open');
-        holdingDetailModal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-      }
-
       function addHistoryItem(tier, transactionCode) {
-        const item = document.createElement('tr');
-        const holdingId = `#${String(Date.now()).slice(-3)}`;
+        const item = document.createElement('div');
+        item.className = 'vmm-history-item row gx-2 gx-md-3 gy-0 align-items-center m-0';
         item.innerHTML = `
-          <td><strong>${holdingId}</strong></td>
-          <td><span class="vmm-table-date">${formatDate('2026-09-01')}</span><span class="vmm-table-time">09:00 am</span></td>
-          <td>3 Years</td>
-          <td class="vmm-table-value"><strong>${fmt(tier.amount)} VMM</strong></td>
-          <td><span class="vmm-table-status vmm-table-status-active">Active</span></td>
-          <td>Sep 01, 2029</td>
-          <td>
-            <button class="btn btn-link p-0 vmm-table-view" type="button" data-view-history
-              data-holding-id="${holdingId}" data-holding-date="Sep 01, 2026, 09:00 AM"
-              data-holding-period="3 Years" data-holding-value="${fmt(tier.amount)} VMM"
-              data-holding-rate="0.000633" data-holding-request="$300"
-              data-holding-status="Active" data-holding-release="Sep 01, 2029"
-              data-holding-start="Sep 01, 2026" data-holding-reward="${fmt(tier.reward)} VMM IOU">
-              <i class="bi bi-eye" aria-hidden="true"></i> View
-            </button>
-          </td>
+          <div class="vmm-history-main col-12 col-md">
+            <div class="vmm-history-icon vmm-history-icon-active d-flex align-items-center justify-content-center flex-shrink-0"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></div>
+            <div class="vmm-history-copy">
+              <strong>Ký gửi VMM 3 năm</strong>
+              <span>${formatDate('2026-09-01')} · ${transactionCode}</span>
+            </div>
+          </div>
+          <div class="vmm-history-value col-12 col-md-auto text-md-end mt-1 mt-md-0">
+            <strong>-${fmt(tier.amount)} VMM</strong>
+            <span class="vmm-history-status vmm-history-status-active badge rounded-pill">Đang hoạt động</span>
+          </div>
         `;
 
-        item.querySelector('[data-view-history]').addEventListener('click', event => openHoldingDetail(event.currentTarget));
         root.querySelector('#historyList').prepend(item);
       }
 
       function addConversionHistoryItem(amount, vmmAmount, transactionCode) {
-        const item = document.createElement('tr');
+        const item = document.createElement('div');
+        item.className = 'vmm-history-item row gx-2 gx-md-3 gy-0 align-items-center m-0';
         item.innerHTML = `
-          <td><strong>—</strong></td>
-          <td><span class="vmm-table-date">${formatDate('2026-08-07')}</span><span class="vmm-table-time">—</span></td>
-          <td>—</td>
-          <td class="vmm-table-value"><strong>+${formatConversionAmount(vmmAmount)} VMM</strong></td>
-          <td><span class="vmm-table-status">Completed</span></td>
-          <td>—</td>
-          <td>—</td>
+          <div class="vmm-history-main col-12 col-md">
+            <div class="vmm-history-icon vmm-history-icon-complete d-flex align-items-center justify-content-center flex-shrink-0"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></div>
+            <div class="vmm-history-copy">
+              <strong>Đổi USDV sang VMM</strong>
+              <span>${formatDate('2026-08-07')} · ${transactionCode}</span>
+            </div>
+          </div>
+          <div class="vmm-history-value col-12 col-md-auto text-md-end mt-1 mt-md-0">
+            <strong style="color:var(--vmm-green)">+${formatConversionAmount(vmmAmount)} VMM</strong>
+            <span><span class="vmm-history-status vmm-history-status-complete badge rounded-pill">Hoàn tất</span> · -${formatConversionAmount(amount)} USDV</span>
+          </div>
         `;
 
         root.querySelector('#historyList').prepend(item);
       }
 
       function addRewardHistoryItem(reward, transactionCode) {
-        const item = document.createElement('tr');
+        const item = document.createElement('div');
+        item.className = 'vmm-history-item row gx-2 gx-md-3 gy-0 align-items-center m-0';
         item.innerHTML = `
-          <td><strong>—</strong></td>
-          <td><span class="vmm-table-date">${formatDate('2026-09-01')}</span><span class="vmm-table-time">—</span></td>
-          <td>Distribution</td>
-          <td class="vmm-table-value"><strong>+${fmt(reward)} VMM IOU</strong></td>
-          <td><span class="vmm-table-status">Completed</span></td>
-          <td>—</td>
-          <td>—</td>
+          <div class="vmm-history-main col-12 col-md">
+            <div class="vmm-history-icon vmm-history-icon-complete d-flex align-items-center justify-content-center flex-shrink-0"><i class="bi bi-gift-fill" aria-hidden="true"></i></div>
+            <div class="vmm-history-copy">
+              <strong>Nhận thưởng VMM IOU</strong>
+              <span>${formatDate('2026-09-01')} · ${transactionCode} · Reward</span>
+            </div>
+          </div>
+          <div class="vmm-history-value col-12 col-md-auto text-md-end mt-1 mt-md-0">
+            <strong style="color:var(--vmm-green)">+${fmt(reward)} VMM IOU</strong>
+            <span class="vmm-history-status vmm-history-status-complete badge rounded-pill">Hoàn tất</span>
+          </div>
         `;
 
         root.querySelector('#historyList').prepend(item);
       }
 
       function completeConversion() {
-        const source = conversionAsset.value;
-        const sourceAmount = parseConversionAmount(convertAmount.value);
-        if (!Number.isFinite(sourceAmount) || sourceAmount <= 0) return;
+        const amount = parseConversionAmount(convertAmount.value);
+        if (!Number.isFinite(amount) || amount <= 0 || amount > usdvBalance) return;
 
-        const usdvAmount = source === 'vmm'
-          ? sourceAmount * conversionRate
-          : sourceAmount;
-        const vmmAmount = source === 'vmm'
-          ? sourceAmount
-          : sourceAmount / conversionRate;
-
-        if (usdvAmount > usdvBalance) return;
-
+        const vmmAmount = amount / conversionRate;
         const code = `USDV-VMM-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
-        usdvBalance -= usdvAmount;
+        usdvBalance -= amount;
         walletBalance += vmmAmount;
-        addConversionHistoryItem(usdvAmount, vmmAmount, code);
+        addConversionHistoryItem(amount, vmmAmount, code);
         updateBalances();
         closeConversion();
 
@@ -3232,14 +2311,14 @@
             customClass: successAlertClass
           }).then(result => {
             if (result.isDenied) activateTab('history');
-            else activateTab('program');
+            else activateTab('overview');
           });
         } else {
           window.alert(`${successMessage}\nMã giao dịch: ${code}`);
         }
 
         clearCurrentSelection();
-        activateTab('program');
+        activateTab('overview');
       }
 
       tabButtons.forEach(button => {
@@ -3253,6 +2332,13 @@
         button.addEventListener('click', () => activateTab('program'));
       });
 
+      root.querySelectorAll('[data-get-more-vmm]').forEach(link => {
+        link.addEventListener('click', event => {
+          event.preventDefault();
+          openConversion();
+        });
+      });
+
       root.querySelectorAll('[data-open-terms]').forEach(button => {
         button.addEventListener('click', openTerms);
       });
@@ -3263,18 +2349,6 @@
 
       root.querySelectorAll('[data-close-terms]').forEach(button => {
         button.addEventListener('click', closeTerms);
-      });
-
-      root.querySelectorAll('[data-view-history]').forEach(button => {
-        button.addEventListener('click', event => openHoldingDetail(event.currentTarget));
-      });
-
-      root.querySelectorAll('[data-close-holding]').forEach(button => {
-        button.addEventListener('click', closeHoldingDetail);
-      });
-
-      holdingDetailModal.addEventListener('click', event => {
-        if (event.target === holdingDetailModal) closeHoldingDetail();
       });
 
       termsModal.addEventListener('click', event => {
@@ -3298,15 +2372,11 @@
       });
 
       acceptTerms.addEventListener('change', () => {
-        confirmDeposit.disabled = !acceptTerms.checked || Boolean(selectedTier && selectedTier.amount > walletBalance);
+        confirmDeposit.disabled = !acceptTerms.checked;
       });
 
-      convertAmount.addEventListener('input', () => maskConversionInput(convertAmount));
-      conversionAsset.addEventListener('change', () => {
-        convertAmount.value = '';
-        updateConversionPreview();
-        convertAmount.focus();
-      });
+      convertAmount.addEventListener('input', () => maskConversionInput(convertAmount, 'usdv'));
+      convertVmmAmount.addEventListener('input', () => maskConversionInput(convertVmmAmount, 'vmm'));
       confirmDeposit.addEventListener('click', completeDeposit);
       confirmConversion.addEventListener('click', completeConversion);
 
@@ -3314,7 +2384,6 @@
         if (event.key === 'Escape') {
           if (programModal.classList.contains('is-open')) closeProgram();
           if (termsModal.classList.contains('is-open')) closeTerms();
-          if (holdingDetailModal.classList.contains('is-open')) closeHoldingDetail();
           if (convertModal.classList.contains('is-open')) closeConversion();
         }
       });
