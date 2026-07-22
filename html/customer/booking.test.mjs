@@ -243,6 +243,12 @@ test('keeps confirmation review rows compact for scanning', () => {
   assert.match(reviewRowStyle, /padding: 8px 0/);
 });
 
+test('keeps the review total close to the review rows', () => {
+  const reviewTotalStyle = SOURCE.match(/\.review-total \{([^}]*)\}/)?.[1] || '';
+  assert.match(reviewTotalStyle, /margin: 4px 0 24px/);
+  assert.match(reviewTotalStyle, /padding-top: 8px/);
+});
+
 test('adds a subtle background to even confirmation review rows', () => {
   const evenReviewRowStyle = SOURCE.match(/\.review-row:nth-child\(even\)\s*\{([^}]*)\}/)?.[1] || '';
   assert.match(evenReviewRowStyle, /background: #faf8ff/);
