@@ -117,15 +117,17 @@
     .flatpickr-day.selected, .flatpickr-day.selected:hover { border-color: var(--purple); background: var(--purple); }
     .flatpickr-day.today { border-color: var(--pink); color: var(--pink-dark); }
     .flatpickr-time input { color: var(--ink); font-weight: 750; }
-    .time-picker-wrap { position: relative; }
-    .time-picker-popover { position: absolute; z-index: 30; top: calc(100% + 4px); right: 0; width: 180px; max-width: calc(100vw - 24px); padding: 0; border: 1px solid #aaa; border-radius: 0; background: #fff; box-shadow: 0 8px 18px rgba(31, 28, 58, .16); }
-    .time-picker-popover[hidden] { display: none; }
-    .time-picker-popover .tui-timepicker { position: static; width: 100%; padding: 0; border: 0; font-weight: 700; }
-    .time-picker-popover .tui-timepicker-row { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 4px; }
-    .time-picker-popover .tui-timepicker-column { display: block; }
-    .time-picker-popover .tui-timepicker-selectbox { min-width: 0; padding-left: 0; }
-    .time-picker-popover .tui-timepicker-colon { display: none; }
-    .time-picker-popover .tui-timepicker-select { width: 52px; height: 28px; padding: 4px 3px; font-size: 12px; }
+    .time-picker-inline { display: flex; width: 180px; max-width: 100%; min-height: 48px; align-items: center; overflow: visible; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+    .time-picker-inline .tui-timepicker { position: static; width: 100%; padding: 0; border: 0; background: transparent; font-weight: 700; }
+    .time-picker-inline .tui-timepicker-row { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 4px; }
+    .time-picker-inline .tui-timepicker-column { display: block; }
+    .time-picker-inline .tui-timepicker-selectbox { min-width: 0; padding-left: 0; }
+    .time-picker-inline .tui-timepicker-colon { display: none; }
+    .time-picker-inline .tui-timepicker-select { width: 52px; height: 28px; padding: 4px 3px; font-size: 12px; }
+    @media (max-width: 639px) {
+      .time-picker-inline { width: 100%; }
+      .time-picker-inline .tui-timepicker-select { width: calc((100% - 16px) / 3); }
+    }
 
     .staff-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
     .staff-card { min-height: 72px; align-items: center; padding: 7px; text-align: center; }
@@ -377,14 +379,10 @@
             <span>Ngày hẹn</span>
             <input class="booking-select" id="date-options" type="text" placeholder="Jun 20, 2026" autocomplete="off" data-booking-date-select aria-label="Ngày hẹn">
           </label>
-          <label class="booking-select-field" for="time-options">
+          <label class="booking-select-field">
             <span>Giờ hẹn</span>
-            <div class="time-picker-wrap" id="time-picker-wrap">
-              <input class="booking-select" id="time-options" type="text" placeholder="3:30 PM" autocomplete="off" readonly data-booking-time-select aria-label="Giờ hẹn" aria-haspopup="dialog" aria-controls="time-picker-popover">
-              <div class="time-picker-popover" id="time-picker-popover" hidden>
-                <div id="time-picker-container"></div>
-              </div>
-            </div>
+            <div class="time-picker-inline" id="time-picker-container"></div>
+            <input id="time-options" type="hidden" data-booking-time-select aria-label="Giờ hẹn">
           </label>
         </div>
         <p class="field-error" id="date-error" role="alert"></p>
@@ -625,8 +623,6 @@
       function renderSlotOptions() {
         const dateOptions = $('#date-options');
         const timeOptions = $('#time-options');
-        const timePickerWrap = $('#time-picker-wrap');
-        const timePickerPopover = $('#time-picker-popover');
         if (dateOptions) {
           if (typeof window !== 'undefined' && typeof window.flatpickr === 'function') {
             datePicker = window.flatpickr(dateOptions, {
@@ -670,24 +666,10 @@
               timeOptions.value = formatBookingTime(state.selectedTime);
               renderSelections();
             });
-            const openTimePicker = () => {
-              timePickerPopover.hidden = false;
-              timeOptions.setAttribute('aria-expanded', 'true');
-              timePicker.show();
-            };
-            const closeTimePicker = () => {
-              timePickerPopover.hidden = true;
-              timeOptions.setAttribute('aria-expanded', 'false');
-              timePicker.hide();
-            };
-            timeOptions.addEventListener('click', openTimePicker);
-            document.addEventListener('click', (event) => {
-              if (timePickerWrap && !timePickerWrap.contains(event.target)) closeTimePicker();
-            });
-            closeTimePicker();
           } else {
             timeOptions.readOnly = false;
             timeOptions.type = 'time';
+            timeOptions.className = 'booking-select';
             timeOptions.step = '900';
             timeOptions.value = state.selectedTime;
           }
