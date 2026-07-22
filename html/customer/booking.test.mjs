@@ -222,6 +222,13 @@ test('uses readable text sizes in the confirmation content', () => {
   assert.match(SOURCE, /\.service-chip \{[^}]*font-size: 12px/);
 });
 
+test('keeps confirmation review rows compact for scanning', () => {
+  const reviewListStyle = SOURCE.match(/\.review-list \{([^}]*)\}/)?.[1] || '';
+  const reviewRowStyle = SOURCE.match(/\.review-row \{([^}]*)\}/)?.[1] || '';
+  assert.match(reviewListStyle, /gap: 4px/);
+  assert.match(reviewRowStyle, /padding: 8px 0/);
+});
+
 test('adds a small gap before service selection', () => {
   assert.match(SOURCE, /#returning-customer\s*\+\s*\.card-heading\s*\{[^}]*margin-top: 16px/);
 });
