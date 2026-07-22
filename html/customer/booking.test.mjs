@@ -229,6 +229,10 @@ test('keeps confirmation review rows compact for scanning', () => {
   assert.match(reviewRowStyle, /padding: 8px 0/);
 });
 
+test('adds a subtle background to even confirmation review rows', () => {
+  assert.match(SOURCE, /\.review-row:nth-child\(even\)\s*\{[^}]*background: #faf8ff/);
+});
+
 test('adds a small gap before service selection', () => {
   assert.match(SOURCE, /#returning-customer\s*\+\s*\.card-heading\s*\{[^}]*margin-top: 16px/);
 });
