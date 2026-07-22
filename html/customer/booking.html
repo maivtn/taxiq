@@ -115,7 +115,6 @@
 
     .staff-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
     .staff-card { min-height: 72px; align-items: center; padding: 7px; text-align: center; }
-    .staff-card:last-child { grid-column: span 2; }
     .staff-card::after { right: 10px; }
     .staff-card .choice-icon { width: 28px; height: 28px; border-radius: 50%; font-size: 16px; }
     .staff-card .choice-title { margin-top: 3px; font-size: 12px; }
@@ -187,7 +186,6 @@
       .section-copy { margin-bottom: 13px; }
       .staff-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .staff-card { min-height: 72px; padding: 7px; }
-      .staff-card:last-child { grid-column: auto; }
       .staff-card .choice-icon { width: 28px; height: 28px; font-size: 16px; }
       .staff-card .choice-title { margin-top: 3px; }
       .staff-status { margin-top: 2px; }
@@ -614,6 +612,7 @@
       function isStaffAvailable(staff) {
         if (!staff?.available) return false;
         if (staff.id === 'any') return true;
+        if (state.selectedServiceIds.length === 0) return true;
         return state.selectedServiceIds.length > 0 && state.selectedServiceIds.every((id) => staff.specialties.includes(id));
       }
 

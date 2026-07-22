@@ -135,3 +135,8 @@ test('uses compact mobile-first spacing as the base layout', () => {
   assert.match(baseStyles, /\.app-card \{[^}]*padding: 17px/);
   assert.match(baseStyles, /\.staff-grid \{[^}]*grid-template-columns: repeat\(2/);
 });
+
+test('keeps the staff list synchronized before service selection', () => {
+  assert.doesNotMatch(SOURCE, /\.staff-card:last-child/);
+  assert.match(SOURCE, /if \(state\.selectedServiceIds\.length === 0\) return true;/);
+});
