@@ -62,6 +62,9 @@
     .form-field { display: block; margin-top: 12px; }
     .form-field:first-of-type { margin-top: 0; }
     .form-field > span { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; font-size: 14px; font-weight: 850; }
+    .customer-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .customer-fields .form-field { margin-top: 0; }
+    .customer-fields:not(.has-name) #booking-phone-field { grid-column: 1 / -1; }
     .field-hint { color: var(--soft-muted); font-size: 11px; font-weight: 650; }
     .input, .textarea { display: block; width: 100%; border: 1px solid var(--line); border-radius: 15px; color: var(--ink); background: #fff; transition: border-color .18s, box-shadow .18s, background .18s; }
     .input { min-height: 54px; padding: 0 16px; font-size: 16px; font-weight: 700; }
@@ -196,6 +199,7 @@
     @media (min-width: 760px) {
       .service-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
+
   </style>
 </head>
 <body>
@@ -222,21 +226,23 @@
           </div>
         </div>
 
-        <label class="form-field" for="booking-phone">
-          <span>Số điện thoại</span>
-          <input class="input" id="booking-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(832) 555-0198" aria-describedby="phone-error phone-helper">
-          <p class="field-error" id="phone-error" role="alert"></p>
-        </label>
+        <div class="customer-fields" id="customer-fields">
+          <label class="form-field" id="booking-phone-field" for="booking-phone">
+            <span>Số điện thoại</span>
+            <input class="input" id="booking-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(832) 555-0198" aria-describedby="phone-error phone-helper">
+            <p class="field-error" id="phone-error" role="alert"></p>
+          </label>
+
+          <label class="form-field" id="booking-name-field" for="booking-name" hidden>
+            <span>Họ và tên</span>
+            <input class="input" id="booking-name" type="text" autocomplete="name" placeholder="Ví dụ: Mary Smith" aria-describedby="name-error">
+            <p class="field-error" id="name-error" role="alert"></p>
+          </label>
+        </div>
 
         <label class="consent" for="sms-opt-in">
           <input id="sms-opt-in" type="checkbox">
           <span><strong>Đăng ký nhận thông báo lịch hẹn</strong>Nhận tin nhắn xác nhận, nhắc lịch và thông tin ưu đãi từ Bitcoin Nail Bar.</span>
-        </label>
-
-        <label class="form-field" id="booking-name-field" for="booking-name" hidden>
-          <span>Họ và tên</span>
-          <input class="input" id="booking-name" type="text" autocomplete="name" placeholder="Ví dụ: Mary Smith" aria-describedby="name-error">
-          <p class="field-error" id="name-error" role="alert"></p>
         </label>
 
         <div class="intro-note" id="phone-helper">
@@ -665,10 +671,13 @@
 
       function renderCustomer() {
         const field = $('#booking-name-field');
+        const customerFields = $('#customer-fields');
         const nameInput = $('#booking-name');
         const banner = $('#returning-customer');
         const customer = state.customer || {};
-        if (field) field.hidden = normalizePhone(customer.phone).length !== 10;
+        const hasName = normalizePhone(customer.phone).length === 10;
+        if (field) field.hidden = !hasName;
+        if (customerFields) customerFields.classList.toggle('has-name', hasName);
         if (nameInput) {
           nameInput.value = customer.name || '';
           nameInput.readOnly = Boolean(customer.isReturning);
