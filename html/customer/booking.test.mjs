@@ -120,3 +120,8 @@ test('keeps brand header and progress steps frameless', () => {
   assert.match(stepperStyle, /border: 0/);
   assert.match(stepperStyle, /box-shadow: none/);
 });
+
+test('removes decorative card emoji icons from section headers', () => {
+  assert.doesNotMatch(SOURCE, /class="card-emoji"/);
+  assert.doesNotMatch(SOURCE, /\.card-emoji\s*\{/);
+});
