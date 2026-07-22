@@ -103,15 +103,11 @@
     .section-title { margin: 0 0 4px; font-size: 16px; letter-spacing: -.02em; }
     .section-copy { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
 
-    .date-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-    .date-option, .time-option { min-height: 52px; border: 1px solid var(--line); border-radius: 15px; color: var(--ink); background: #fff; transition: .18s ease; }
-    .date-option:hover, .time-option:hover { border-color: #ddaed6; }
-    .date-option[aria-pressed="true"], .time-option[aria-pressed="true"] { border: 2px solid var(--pink); color: var(--pink-dark); background: #fff2f9; box-shadow: 0 8px 16px rgba(247, 53, 152, .1); }
-    .date-day { display: block; color: var(--muted); font-size: 10px; font-weight: 750; }
-    .date-number { display: block; margin-top: 2px; font-size: 17px; font-weight: 850; }
-    .date-option[aria-pressed="true"] .date-day { color: var(--pink-dark); }
-    .time-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-    .time-option { min-height: 44px; font-size: 13px; font-weight: 800; }
+    .booking-select-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 8px; }
+    .booking-select-field { display: grid; gap: 6px; min-width: 0; }
+    .booking-select-field > span { color: var(--muted); font-size: 11px; font-weight: 800; }
+    .booking-select { width: 100%; min-height: 48px; padding: 0 12px; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); background: #fff; font-size: 13px; font-weight: 750; }
+    .booking-select:focus { border-color: #cfbaf0; box-shadow: 0 0 0 4px rgba(113, 98, 242, .08); outline: none; }
 
     .staff-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .staff-card { min-height: 72px; align-items: center; padding: 7px; text-align: center; }
@@ -185,10 +181,6 @@
       .selection-summary { margin-top: 10px; padding: 10px 12px; }
       .section-divider { margin: 24px 0; }
       .section-copy { margin-bottom: 13px; }
-      .date-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
-      .date-option, .time-option { min-height: 58px; }
-      .time-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
-      .time-option { min-height: 46px; }
       .staff-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .staff-card { min-height: 72px; padding: 7px; }
       .staff-card:last-child { grid-column: auto; }
@@ -359,29 +351,19 @@
         <p class="field-error" id="staff-error" role="alert"></p>
 
         <div class="section-divider"></div>
-        <h3 class="section-title">Ngày hẹn mong muốn</h3>
-        <p class="section-copy">Vui lòng lựa chọn ngày phù hợp. Giờ hiển thị theo múi giờ của tiệm.</p>
-        <div class="date-grid" id="date-options">
-          <button class="date-option" type="button" data-booking-date="2026-07-23" aria-pressed="false"><span class="date-day">T5</span><span class="date-number">23</span></button>
-          <button class="date-option" type="button" data-booking-date="2026-07-24" aria-pressed="false"><span class="date-day">T6</span><span class="date-number">24</span></button>
-          <button class="date-option" type="button" data-booking-date="2026-07-25" aria-pressed="false"><span class="date-day">T7</span><span class="date-number">25</span></button>
-          <button class="date-option" type="button" data-booking-date="2026-07-26" aria-pressed="false"><span class="date-day">CN</span><span class="date-number">26</span></button>
-          <button class="date-option" type="button" data-booking-date="2026-07-27" aria-pressed="false"><span class="date-day">T2</span><span class="date-number">27</span></button>
-          <button class="date-option" type="button" data-booking-date="2026-07-28" aria-pressed="false"><span class="date-day">T3</span><span class="date-number">28</span></button>
-          <button class="date-option" type="button" data-booking-date="2026-07-29" aria-pressed="false"><span class="date-day">T4</span><span class="date-number">29</span></button>
+        <h3 class="section-title">Ngày &amp; giờ hẹn</h3>
+        <p class="section-copy">Chọn ngày và giờ phù hợp. Thời gian hiển thị theo múi giờ của tiệm.</p>
+        <div class="booking-select-grid">
+          <label class="booking-select-field" for="date-options">
+            <span>Ngày hẹn</span>
+            <select class="booking-select" id="date-options" data-booking-date-select aria-label="Ngày hẹn"></select>
+          </label>
+          <label class="booking-select-field" for="time-options">
+            <span>Giờ còn trống</span>
+            <select class="booking-select" id="time-options" data-booking-time-select aria-label="Giờ còn trống"></select>
+          </label>
         </div>
         <p class="field-error" id="date-error" role="alert"></p>
-
-        <h3 class="section-title">Giờ còn trống</h3>
-        <p class="section-copy">Thời lượng dự kiến được tính dựa trên các dịch vụ đã chọn.</p>
-        <div class="time-grid" id="time-options">
-          <button class="time-option" type="button" data-booking-time="10:00" aria-pressed="false">10:00</button>
-          <button class="time-option" type="button" data-booking-time="11:30" aria-pressed="false">11:30</button>
-          <button class="time-option" type="button" data-booking-time="13:00" aria-pressed="false">13:00</button>
-          <button class="time-option" type="button" data-booking-time="14:00" aria-pressed="false">14:00</button>
-          <button class="time-option" type="button" data-booking-time="15:30" aria-pressed="false">15:30</button>
-          <button class="time-option" type="button" data-booking-time="17:00" aria-pressed="false">17:00</button>
-        </div>
         <p class="field-error" id="time-error" role="alert"></p>
 
         <div class="action-row">
@@ -612,19 +594,16 @@
       const minutes = (value) => `${value} phút`;
       const serviceById = (id) => SERVICES.find((service) => service.id === id);
       const staffById = (id) => STAFF.find((staff) => staff.id === id);
-      const weekdayLabels = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-
       function renderSlotOptions() {
         const dateOptions = $('#date-options');
         const timeOptions = $('#time-options');
         if (dateOptions) {
           dateOptions.innerHTML = DATES.map((date) => {
-            const dateValue = new Date(`${date}T12:00:00`);
-            return `<button class="date-option" type="button" data-booking-date="${date}" aria-pressed="false"><span class="date-day">${weekdayLabels[dateValue.getDay()]}</span><span class="date-number">${dateValue.getDate()}</span></button>`;
+            return `<option value="${date}">${formatBookingDate(date)}</option>`;
           }).join('');
         }
         if (timeOptions) {
-          timeOptions.innerHTML = TIMES.map((time) => `<button class="time-option" type="button" data-booking-time="${time}" aria-pressed="false">${time}</button>`).join('');
+          timeOptions.innerHTML = TIMES.map((time) => `<option value="${time}">${time}</option>`).join('');
         }
       }
 
@@ -648,12 +627,16 @@
         return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
       }
 
+      function formatBookingDate(date) {
+        return new Intl.DateTimeFormat('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric'
+        }).format(new Date(`${date}T12:00:00`));
+      }
+
       function formatBookingSlot(date, time) {
         if (!date || !time) return '—';
         const value = new Date(`${date}T${time}:00`);
-        const dateLabel = new Intl.DateTimeFormat('en-US', {
-          month: 'short', day: 'numeric', year: 'numeric'
-        }).format(value);
+        const dateLabel = formatBookingDate(date);
         const timeLabel = new Intl.DateTimeFormat('en-US', {
           hour: 'numeric', minute: '2-digit', hour12: true
         }).format(value);
@@ -700,8 +683,10 @@
           const selected = state.selectedServiceIds.includes(button.dataset.serviceId);
           button.setAttribute('aria-pressed', String(selected));
         });
-        $$('[data-booking-date]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.bookingDate === state.selectedDate)));
-        $$('[data-booking-time]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.bookingTime === state.selectedTime)));
+        const dateOptions = $('#date-options');
+        const timeOptions = $('#time-options');
+        if (dateOptions) dateOptions.value = state.selectedDate;
+        if (timeOptions) timeOptions.value = state.selectedTime;
         $$('[data-staff-id]').forEach((button) => {
           const staff = staffById(button.dataset.staffId);
           const available = isStaffAvailable(staff);
@@ -860,6 +845,16 @@
           state.customer.smsOptIn = Boolean(event.target.checked);
           persistState(state);
           renderReview();
+        }
+        if (event.target.id === 'date-options') {
+          state.selectedDate = event.target.value;
+          persistState(state);
+          renderSelections();
+        }
+        if (event.target.id === 'time-options') {
+          state.selectedTime = event.target.value;
+          persistState(state);
+          renderSelections();
         }
       });
 
