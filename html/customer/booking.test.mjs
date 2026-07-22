@@ -211,6 +211,11 @@ test('uses an icon for the any-staff option', () => {
   assert.match(anyStaff, /<span class="choice-icon" aria-hidden="true">✨<\/span>/);
 });
 
+test('removes divider borders from confirmation review rows', () => {
+  const reviewRowStyle = SOURCE.match(/\.review-row \{([^}]*)\}/)?.[1] || '';
+  assert.doesNotMatch(reviewRowStyle, /border-bottom/);
+});
+
 test('adds a small gap before service selection', () => {
   assert.match(SOURCE, /#returning-customer\s*\+\s*\.card-heading\s*\{[^}]*margin-top: 16px/);
 });
