@@ -80,7 +80,7 @@
     .consent strong { display: block; margin-bottom: 2px; color: var(--ink); font-size: 13px; }
 
     .service-grid, .staff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
-    .choice-card { position: relative; display: flex; min-height: 96px; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 9px; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); background: linear-gradient(145deg, #fff, #fdfbff); text-align: left; transition: border-color .18s, box-shadow .18s, transform .18s, background .18s; }
+    .choice-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 9px; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); background: linear-gradient(145deg, #fff, #fdfbff); text-align: left; transition: border-color .18s, box-shadow .18s, transform .18s, background .18s; }
     .choice-card:hover:not(:disabled) { border-color: #edacd0; transform: translateY(-1px); }
     .choice-card[aria-pressed="true"] { border: 2px solid var(--pink); padding: 8px; background: linear-gradient(145deg, #fff5fb, #fcf1ff); box-shadow: 0 7px 16px rgba(247, 53, 152, .12); }
     .choice-card[aria-pressed="true"]::after { position: absolute; top: 7px; right: 8px; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; color: white; background: var(--pink); content: "✓"; font-size: 11px; font-weight: 900; }
@@ -90,7 +90,7 @@
     .choice-title { display: block; margin-top: 5px; font-size: 12.5px; font-weight: 850; letter-spacing: -.01em; line-height: 1.2; }
     .choice-detail { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 6px; margin-top: 3px; color: var(--muted); font-size: 10px; }
     .choice-price { color: var(--pink-dark); font-size: 13px; font-weight: 850; }
-    .service-grid .choice-card { min-height: 62px; justify-content: flex-start; gap: 2px; padding: 6px 8px; }
+    .service-grid .choice-card { justify-content: flex-start; gap: 2px; padding: 6px 8px; }
     .service-grid .choice-card[aria-pressed="true"] { padding: 5px 7px; }
     .service-grid .choice-icon { display: none; }
     .service-grid .choice-title { margin-top: 0; }
@@ -175,7 +175,7 @@
       .consent { gap: 12px; margin-top: 17px; padding: 14px; }
       .service-grid, .staff-grid { gap: 6px; }
       .service-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .choice-card { min-height: 96px; padding: 9px; border-radius: 13px; }
+      .choice-card { padding: 9px; border-radius: 13px; }
       .choice-card[aria-pressed="true"] { padding: 8px; }
       .choice-icon { width: 28px; height: 28px; border-radius: 9px; font-size: 15px; }
       .choice-title { margin-top: 5px; }
