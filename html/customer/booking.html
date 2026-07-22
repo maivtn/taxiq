@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5efff">
   <title>Đặt lịch · Bitcoin Nail Bar</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
   <style>
     :root {
       --ink: #1d1b3a;
@@ -111,6 +112,10 @@
     .booking-select-field > span { color: var(--ink); font-size: 14px; font-weight: 850; letter-spacing: 0; }
     .booking-select { width: 100%; min-height: 48px; padding: 0 12px; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); background: #fff; font-size: 13px; font-weight: 750; }
     .booking-select:focus { border-color: #cfbaf0; box-shadow: 0 0 0 4px rgba(113, 98, 242, .08); outline: none; }
+    .flatpickr-calendar { border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 18px 40px rgba(108, 77, 153, .18); font-family: inherit; }
+    .flatpickr-day.selected, .flatpickr-day.selected:hover { border-color: var(--purple); background: var(--purple); }
+    .flatpickr-day.today { border-color: var(--pink); color: var(--pink-dark); }
+    .flatpickr-time input { color: var(--ink); font-weight: 750; }
 
     .staff-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
     .staff-card { min-height: 72px; align-items: center; padding: 7px; text-align: center; }
@@ -360,11 +365,11 @@
         <div class="booking-select-grid">
           <label class="booking-select-field" for="date-options">
             <span>Ngày hẹn</span>
-            <input class="booking-select" id="date-options" type="date" data-booking-date-select aria-label="Ngày hẹn">
+            <input class="booking-select" id="date-options" type="text" placeholder="Jun 20, 2026" autocomplete="off" data-booking-date-select aria-label="Ngày hẹn">
           </label>
           <label class="booking-select-field" for="time-options">
             <span>Giờ hẹn</span>
-            <input class="booking-select" id="time-options" type="time" step="900" data-booking-time-select aria-label="Giờ hẹn">
+            <input class="booking-select" id="time-options" type="text" placeholder="3:30 PM" autocomplete="off" data-booking-time-select aria-label="Giờ hẹn">
           </label>
         </div>
         <p class="field-error" id="date-error" role="alert"></p>
@@ -418,6 +423,7 @@
     <p class="screen-reader" id="booking-status" role="status" aria-live="polite"></p>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
   <script id="booking-app-script">
     (() => {
       'use strict';
@@ -598,16 +604,61 @@
       const minutes = (value) => `${value} phút`;
       const serviceById = (id) => SERVICES.find((service) => service.id === id);
       const staffById = (id) => STAFF.find((staff) => staff.id === id);
+      let datePicker = null;
+      let timePicker = null;
       function renderSlotOptions() {
         const dateOptions = $('#date-options');
         const timeOptions = $('#time-options');
         if (dateOptions) {
-          dateOptions.min = DATES[0];
-          dateOptions.max = DATES[DATES.length - 1];
-          dateOptions.value = state.selectedDate;
+          if (typeof window !== 'undefined' && typeof window.flatpickr === 'function') {
+            datePicker = window.flatpickr(dateOptions, {
+              altInput: true,
+              altFormat: 'M j, Y',
+              dateFormat: 'Y-m-d',
+              altInputClass: 'booking-select',
+              disableMobile: true,
+              minDate: DATES[0],
+              maxDate: DATES[DATES.length - 1],
+              defaultDate: state.selectedDate,
+              onChange: (selectedDates, dateString) => {
+                if (!dateString) return;
+                state.selectedDate = dateString;
+                persistState(state);
+                renderSelections();
+              }
+            });
+          } else {
+            dateOptions.type = 'date';
+            dateOptions.min = DATES[0];
+            dateOptions.max = DATES[DATES.length - 1];
+            dateOptions.value = state.selectedDate;
+          }
         }
         if (timeOptions) {
-          timeOptions.value = state.selectedTime;
+          if (typeof window !== 'undefined' && typeof window.flatpickr === 'function') {
+            timePicker = window.flatpickr(timeOptions, {
+              altInput: true,
+              altFormat: 'h:i K',
+              dateFormat: 'H:i',
+              altInputClass: 'booking-select',
+              disableMobile: true,
+              enableTime: true,
+              noCalendar: true,
+              time_24hr: false,
+              minuteIncrement: 15,
+              defaultDate: state.selectedTime,
+              onChange: (selectedDates, timeString) => {
+                if (!timeString) return;
+                state.selectedTime = timeString;
+                persistState(state);
+                renderSelections();
+              }
+            });
+          } else {
+            timeOptions.type = 'time';
+            timeOptions.step = '900';
+            timeOptions.value = state.selectedTime;
+          }
         }
       }
 
@@ -699,8 +750,14 @@
         });
         const dateOptions = $('#date-options');
         const timeOptions = $('#time-options');
-        if (dateOptions) dateOptions.value = state.selectedDate;
-        if (timeOptions) timeOptions.value = state.selectedTime;
+        if (dateOptions) {
+          if (datePicker) datePicker.setDate(state.selectedDate, false);
+          else dateOptions.value = state.selectedDate;
+        }
+        if (timeOptions) {
+          if (timePicker) timePicker.setDate(state.selectedTime, false);
+          else timeOptions.value = state.selectedTime;
+        }
         $$('[data-staff-id]').forEach((button) => {
           const staff = staffById(button.dataset.staffId);
           const available = isStaffAvailable(staff);
