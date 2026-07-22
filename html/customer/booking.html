@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#f5efff">
   <title>Đặt lịch · Bitcoin Nail Bar</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.min.css">
   <style>
     :root {
       --ink: #1d1b3a;
@@ -116,6 +117,11 @@
     .flatpickr-day.selected, .flatpickr-day.selected:hover { border-color: var(--purple); background: var(--purple); }
     .flatpickr-day.today { border-color: var(--pink); color: var(--pink-dark); }
     .flatpickr-time input { color: var(--ink); font-weight: 750; }
+    .time-picker-wrap { position: relative; }
+    .time-picker-popover { position: absolute; z-index: 30; top: calc(100% + 7px); right: 0; width: min(100%, 290px); padding: 8px; border: 1px solid var(--line); border-radius: 14px; background: #fff; box-shadow: 0 18px 40px rgba(108, 77, 153, .18); }
+    .time-picker-popover[hidden] { display: none; }
+    .time-picker-popover .tui-timepicker { width: 100%; }
+    .time-picker-popover .tui-timepicker-selectbox { min-width: 0; }
 
     .staff-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
     .staff-card { min-height: 72px; align-items: center; padding: 7px; text-align: center; }
@@ -369,7 +375,12 @@
           </label>
           <label class="booking-select-field" for="time-options">
             <span>Giờ hẹn</span>
-            <input class="booking-select" id="time-options" type="text" placeholder="3:30 PM" autocomplete="off" data-booking-time-select aria-label="Giờ hẹn">
+            <div class="time-picker-wrap" id="time-picker-wrap">
+              <input class="booking-select" id="time-options" type="text" placeholder="3:30 PM" autocomplete="off" readonly data-booking-time-select aria-label="Giờ hẹn" aria-haspopup="dialog" aria-controls="time-picker-popover">
+              <div class="time-picker-popover" id="time-picker-popover" hidden>
+                <div id="time-picker-container"></div>
+              </div>
+            </div>
           </label>
         </div>
         <p class="field-error" id="date-error" role="alert"></p>
@@ -424,6 +435,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+  <script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.min.js"></script>
   <script id="booking-app-script">
     (() => {
       'use strict';
@@ -609,6 +621,8 @@
       function renderSlotOptions() {
         const dateOptions = $('#date-options');
         const timeOptions = $('#time-options');
+        const timePickerWrap = $('#time-picker-wrap');
+        const timePickerPopover = $('#time-picker-popover');
         if (dateOptions) {
           if (typeof window !== 'undefined' && typeof window.flatpickr === 'function') {
             datePicker = window.flatpickr(dateOptions, {
@@ -635,26 +649,40 @@
           }
         }
         if (timeOptions) {
-          if (typeof window !== 'undefined' && typeof window.flatpickr === 'function') {
-            timePicker = window.flatpickr(timeOptions, {
-              altInput: true,
-              altFormat: 'h:i K',
-              dateFormat: 'H:i',
-              altInputClass: 'booking-select',
-              disableMobile: true,
-              enableTime: true,
-              noCalendar: true,
-              time_24hr: false,
-              minuteIncrement: 15,
-              defaultDate: state.selectedTime,
-              onChange: (selectedDates, timeString) => {
-                if (!timeString) return;
-                state.selectedTime = timeString;
-                persistState(state);
-                renderSelections();
-              }
+          const timePickerLibrary = typeof window !== 'undefined' && window.tui && typeof window.tui.TimePicker === 'function';
+          if (timePickerLibrary) {
+            const [initialHour, initialMinute] = state.selectedTime.split(':').map(Number);
+            timePicker = new window.tui.TimePicker('#time-picker-container', {
+              initialHour,
+              initialMinute,
+              inputType: 'selectbox',
+              minuteStep: 1,
+              showMeridiem: true,
+              usageStatistics: false
             });
+            timePicker.on('change', ({ hour, minute }) => {
+              state.selectedTime = `${pad(hour)}:${pad(minute)}`;
+              persistState(state);
+              timeOptions.value = formatBookingTime(state.selectedTime);
+              renderSelections();
+            });
+            const openTimePicker = () => {
+              timePickerPopover.hidden = false;
+              timeOptions.setAttribute('aria-expanded', 'true');
+              timePicker.show();
+            };
+            const closeTimePicker = () => {
+              timePickerPopover.hidden = true;
+              timeOptions.setAttribute('aria-expanded', 'false');
+              timePicker.hide();
+            };
+            timeOptions.addEventListener('click', openTimePicker);
+            document.addEventListener('click', (event) => {
+              if (timePickerWrap && !timePickerWrap.contains(event.target)) closeTimePicker();
+            });
+            closeTimePicker();
           } else {
+            timeOptions.readOnly = false;
             timeOptions.type = 'time';
             timeOptions.step = '900';
             timeOptions.value = state.selectedTime;
@@ -755,8 +783,11 @@
           else dateOptions.value = state.selectedDate;
         }
         if (timeOptions) {
-          if (timePicker) timePicker.setDate(state.selectedTime, false);
-          else timeOptions.value = state.selectedTime;
+          if (timePicker) {
+            const [hours, minutes] = state.selectedTime.split(':').map(Number);
+            timePicker.setTime(hours, minutes, true);
+            timeOptions.value = formatBookingTime(state.selectedTime);
+          } else timeOptions.value = state.selectedTime;
         }
         $$('[data-staff-id]').forEach((button) => {
           const staff = staffById(button.dataset.staffId);
