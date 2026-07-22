@@ -1,0 +1,1553 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VMM Program Embed Prototype</title>
+
+  <style>
+    /* Scoped styles for embedding into an existing page */
+    #vmm-program-root,
+    #vmm-program-root * {
+      box-sizing: border-box;
+    }
+
+    #vmm-program-root {
+      --vmm-bg: #eef3f9;
+      --vmm-surface: #ffffff;
+      --vmm-surface-2: #f1f5fa;
+      --vmm-surface-3: #e6edf5;
+      --vmm-line: #c8d4e3;
+      --vmm-text: #223755;
+      --vmm-muted: #62718a;
+      --vmm-purple: #2b60d6;
+      --vmm-pink: #4d82e3;
+      --vmm-blue: #2b60d6;
+      --vmm-green: #078e45;
+      --vmm-yellow: #c88200;
+      --vmm-danger: #bd4747;
+      --vmm-shadow: 0 16px 40px rgba(42,70,110,.12);
+
+      width: 100%;
+      color: var(--vmm-text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(74,127,226,.12), transparent 32%),
+        radial-gradient(circle at 100% 0%, rgba(173,205,255,.25), transparent 28%),
+        var(--vmm-bg);
+      border-radius: 24px;
+      overflow: hidden;
+      min-height: 760px;
+    }
+
+    #vmm-program-root button,
+    #vmm-program-root input {
+      font: inherit;
+    }
+
+    #vmm-program-root button {
+      cursor: pointer;
+    }
+
+    .vmm-shell {
+      width: 100%;
+      padding: 28px;
+    }
+
+    .vmm-page-head {
+      margin-bottom: 22px;
+    }
+
+    .vmm-page-head h1 {
+      margin: 0;
+      font-size: clamp(28px, 3vw, 42px);
+      letter-spacing: -.04em;
+      line-height: 1.08;
+    }
+
+    .vmm-page-head p {
+      margin: 10px 0 0;
+      color: var(--vmm-muted);
+      font-size: 14px;
+    }
+
+    .vmm-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 6px;
+      margin-bottom: 22px;
+      width: fit-content;
+      max-width: 100%;
+      background: rgba(215,225,238,.9);
+      border: 1px solid var(--vmm-line);
+      border-radius: 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .vmm-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .vmm-tab {
+      border: 0;
+      color: var(--vmm-muted);
+      background: transparent;
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: .2s ease;
+    }
+
+    .vmm-tab:hover {
+      color: var(--vmm-text);
+      background: rgba(255,255,255,.9);
+    }
+
+    .vmm-tab.is-active {
+      color: #1e2d48;
+      background: #ffffff;
+      box-shadow: 0 8px 18px rgba(46,70,105,.2);
+    }
+
+    .vmm-panel {
+      display: none;
+    }
+
+    .vmm-panel.is-active {
+      display: block;
+    }
+
+    .vmm-overview-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(320px, .75fr);
+      gap: 18px;
+    }
+
+    .vmm-card {
+      border: 1px solid var(--vmm-line);
+      border-radius: 20px;
+      background: var(--vmm-surface);
+      box-shadow: var(--vmm-shadow);
+    }
+
+    .vmm-hero {
+      min-height: 250px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, #e6f0ff, #f7faff),
+        var(--vmm-surface);
+    }
+
+    .vmm-hero::before {
+      content: "";
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      top: -170px;
+      right: -100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(91,143,235,.27), transparent 68%);
+    }
+
+    .vmm-hero::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      bottom: -170px;
+      left: 18%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(174,207,255,.42), transparent 68%);
+    }
+
+    .vmm-hero-top,
+    .vmm-hero-actions,
+    .vmm-balance-block {
+      position: relative;
+      z-index: 2;
+    }
+
+    .vmm-hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .vmm-kicker {
+      color: #4d668b;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-weight: 900;
+    }
+
+    .vmm-token-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #2b4e80;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: #e6effd;
+      border: 1px solid #c3d5ed;
+      font-size: 12px;
+      font-weight: 800;
+      backdrop-filter: blur(12px);
+    }
+
+    .vmm-token-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--vmm-blue);
+      box-shadow: 0 0 0 4px rgba(47,100,220,.12);
+    }
+
+    .vmm-balance-block {
+      margin-top: 26px;
+    }
+
+    .vmm-balance-label {
+      color: var(--vmm-muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .vmm-balance {
+      font-size: clamp(34px, 5vw, 58px);
+      font-weight: 900;
+      letter-spacing: -.05em;
+      line-height: 1;
+    }
+
+    .vmm-balance span {
+      font-size: 17px;
+      color: #4d668b;
+      letter-spacing: 0;
+      margin-left: 5px;
+    }
+
+    .vmm-hero-actions {
+      margin-top: 28px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .vmm-btn {
+      border: 0;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 12px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: transform .18s ease, opacity .18s ease, background .18s ease;
+    }
+
+    .vmm-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .vmm-btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, #2f67d8, #2458c8);
+      box-shadow: 0 12px 28px rgba(36,88,200,.32);
+    }
+
+    .vmm-btn-secondary {
+      color: #2b4e80;
+      background: #ffffff;
+      border: 1px solid #b9cce5;
+      box-shadow: 0 2px 5px rgba(42,70,110,.04);
+    }
+
+    .vmm-btn-more {
+      color: #ffffff;
+      background: linear-gradient(135deg, #4b7fe0, #356bd5);
+      border: 1px solid #356bd5;
+      box-shadow: 0 8px 18px rgba(53,107,213,.26);
+    }
+
+    .vmm-btn-ghost {
+      color: var(--vmm-muted);
+      background: #ffffff;
+      border: 1px solid var(--vmm-line);
+    }
+
+    .vmm-btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .vmm-side-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .vmm-stat-card {
+      padding: 22px;
+      min-height: 116px;
+    }
+
+    .vmm-stat-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--vmm-muted);
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .vmm-stat-value {
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+    }
+
+    .vmm-stat-value small {
+      font-size: 12px;
+      color: var(--vmm-muted);
+      margin-left: 4px;
+      font-weight: 700;
+    }
+
+    .vmm-accent-pink {
+      background:
+        linear-gradient(135deg, rgba(195,220,255,.82), rgba(242,247,255,.98)),
+        var(--vmm-surface);
+    }
+
+    .vmm-accent-blue {
+      background:
+        linear-gradient(135deg, rgba(206,237,218,.9), rgba(246,253,248,.98)),
+        var(--vmm-surface);
+    }
+
+    .vmm-section {
+      margin-top: 18px;
+    }
+
+    .vmm-section-card {
+      padding: 22px;
+    }
+
+    .vmm-section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .vmm-section-head h2,
+    .vmm-section-head h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .vmm-section-head p {
+      margin: 5px 0 0;
+      color: var(--vmm-muted);
+      font-size: 13px;
+    }
+
+    .vmm-campaign-banner {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      background: linear-gradient(135deg, #e7f1ff, #f5f9ff);
+    }
+
+    .vmm-campaign-banner strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .vmm-campaign-banner p {
+      margin: 0;
+      color: var(--vmm-muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .vmm-date-pill {
+      flex: 0 0 auto;
+      padding: 11px 14px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #c3d2e4;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .vmm-program-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 18px 0;
+      border-top: 1px solid var(--vmm-line);
+    }
+
+    .vmm-program-card:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .vmm-program-meta strong,
+    .vmm-program-meta span {
+      display: block;
+    }
+
+    .vmm-program-meta strong {
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .vmm-program-meta span {
+      color: var(--vmm-muted);
+      font-size: 12px;
+    }
+
+    .vmm-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      color: #087a3d;
+      background: #dff4e8;
+      border: 1px solid #a9dfbe;
+    }
+
+    .vmm-status::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--vmm-green);
+      box-shadow: 0 0 0 4px rgba(11,159,77,.12);
+    }
+
+    .vmm-tier-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .vmm-tier {
+      min-height: 176px;
+      padding: 18px;
+      border-radius: 18px;
+      text-align: left;
+      color: var(--vmm-text);
+      background: linear-gradient(180deg, #ffffff, #f3f8ff);
+      border: 1px solid var(--vmm-line);
+      position: relative;
+      overflow: hidden;
+      transition: .18s ease;
+    }
+
+    .vmm-tier:hover:not(:disabled) {
+      transform: translateY(-3px);
+      border-color: rgba(47,100,220,.55);
+      box-shadow: 0 18px 34px rgba(48,76,117,.18);
+    }
+
+    .vmm-tier.is-selected {
+      border-color: rgba(47,100,220,.7);
+      box-shadow: 0 0 0 3px rgba(47,100,220,.18), 0 20px 38px rgba(48,76,117,.2);
+      background:
+        linear-gradient(135deg, rgba(211,229,255,.96), rgba(241,247,255,1)),
+        var(--vmm-surface);
+    }
+
+    .vmm-tier-check {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border: 1.5px solid #aebfd4;
+      border-radius: 7px;
+      color: transparent;
+      background: #ffffff;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+      transition: .18s ease;
+      pointer-events: none;
+    }
+
+    .vmm-tier.is-selected .vmm-tier-check {
+      color: #ffffff;
+      border-color: var(--vmm-blue);
+      background: var(--vmm-blue);
+      box-shadow: 0 4px 10px rgba(47,100,220,.24);
+    }
+
+    .vmm-tier:disabled {
+      opacity: .38;
+      cursor: not-allowed;
+    }
+
+    .vmm-tier-badge {
+      display: inline-flex;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: #45668f;
+      background: #e2eefc;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .vmm-tier-amount {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -.04em;
+      margin-top: 16px;
+    }
+
+    .vmm-tier-unit {
+      color: var(--vmm-muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .vmm-tier-reward {
+      margin-top: 22px;
+      color: var(--vmm-muted);
+      font-size: 12px;
+    }
+
+    .vmm-tier-reward strong {
+      display: block;
+      color: var(--vmm-text);
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .vmm-tier-note {
+      margin-top: 8px;
+      color: var(--vmm-danger);
+      font-size: 11px;
+      display: none;
+    }
+
+    .vmm-tier:disabled .vmm-tier-note {
+      display: block;
+    }
+
+    .vmm-review {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .vmm-review-card {
+      padding: 20px;
+    }
+
+    .vmm-review-card h3 {
+      margin: 0 0 15px;
+      font-size: 16px;
+    }
+
+    .vmm-review-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0;
+      border-top: 1px solid var(--vmm-line);
+      font-size: 13px;
+    }
+
+    .vmm-review-row:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .vmm-review-row span {
+      color: var(--vmm-muted);
+    }
+
+    .vmm-review-row strong {
+      text-align: right;
+    }
+
+    .vmm-reward-box {
+      padding: 18px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #dceaff, #eef5ff);
+      border: 1px solid #bdd2ef;
+      margin-bottom: 14px;
+    }
+
+    .vmm-reward-box span {
+      color: #4d668b;
+      font-size: 12px;
+    }
+
+    .vmm-reward-box strong {
+      display: block;
+      font-size: 28px;
+      margin-top: 6px;
+      letter-spacing: -.04em;
+    }
+
+    .vmm-terms-check {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: 16px;
+      color: var(--vmm-muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .vmm-terms-check input {
+      margin-top: 3px;
+      accent-color: var(--vmm-blue);
+    }
+
+    .vmm-terms-check button {
+      border: 0;
+      padding: 0;
+      color: #2f64dc;
+      background: transparent;
+      font-weight: 800;
+    }
+
+    .vmm-action-row {
+      margin-top: 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .vmm-history-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .vmm-history-item {
+      padding: 16px 18px;
+      border: 1px solid var(--vmm-line);
+      border-radius: 16px;
+      background: #ffffff;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .vmm-history-main {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .vmm-history-icon {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #e6efff, #f3f7ff);
+      font-weight: 900;
+    }
+
+    .vmm-history-copy strong,
+    .vmm-history-copy span {
+      display: block;
+    }
+
+    .vmm-history-copy strong {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .vmm-history-copy span,
+    .vmm-history-value span {
+      color: var(--vmm-muted);
+      font-size: 12px;
+    }
+
+    .vmm-history-value {
+      text-align: right;
+    }
+
+    .vmm-history-value strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .vmm-empty {
+      padding: 34px;
+      text-align: center;
+      color: var(--vmm-muted);
+      border: 1px dashed var(--vmm-line);
+      border-radius: 16px;
+    }
+
+    .vmm-modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      padding: 20px;
+      background: rgba(22,42,74,.38);
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vmm-modal-backdrop.is-open {
+      display: flex;
+    }
+
+    .vmm-modal {
+      width: min(620px, 100%);
+      max-height: 88vh;
+      overflow: auto;
+      border: 1px solid var(--vmm-line);
+      border-radius: 22px;
+      background: linear-gradient(180deg, #ffffff, #f7faff);
+      box-shadow: 0 30px 80px rgba(29,58,100,.22);
+    }
+
+    .vmm-modal-head,
+    .vmm-modal-foot {
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .vmm-modal-head {
+      border-bottom: 1px solid var(--vmm-line);
+    }
+
+    .vmm-modal-head h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .vmm-close {
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 10px;
+      color: #36547e;
+      background: #edf3fa;
+      font-size: 20px;
+    }
+
+    .vmm-modal-body {
+      padding: 20px;
+      color: var(--vmm-muted);
+      line-height: 1.65;
+      font-size: 13px;
+    }
+
+    .vmm-modal-body h4 {
+      color: var(--vmm-text);
+      margin: 18px 0 6px;
+    }
+
+    .vmm-modal-body h4:first-child {
+      margin-top: 0;
+    }
+
+    .vmm-modal-foot {
+      border-top: 1px solid var(--vmm-line);
+      justify-content: flex-end;
+    }
+
+    .vmm-conversion-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .vmm-conversion-stat,
+    .vmm-conversion-preview {
+      padding: 14px;
+      border: 1px solid var(--vmm-line);
+      border-radius: 14px;
+      background: #f1f6fd;
+    }
+
+    .vmm-conversion-stat span,
+    .vmm-conversion-preview span {
+      display: block;
+      color: var(--vmm-muted);
+      font-size: 12px;
+    }
+
+    .vmm-conversion-stat strong,
+    .vmm-conversion-preview strong {
+      display: block;
+      margin-top: 5px;
+      color: var(--vmm-text);
+      font-size: 17px;
+    }
+
+    .vmm-conversion-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--vmm-text);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .vmm-conversion-input {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 13px;
+      border: 1px solid #b9cce5;
+      border-radius: 11px;
+      color: var(--vmm-text);
+      background: #ffffff;
+      outline: none;
+    }
+
+    .vmm-conversion-input:focus {
+      border-color: var(--vmm-blue);
+      box-shadow: 0 0 0 3px rgba(47,100,220,.12);
+    }
+
+    .vmm-conversion-help {
+      margin: 7px 0 0;
+      color: var(--vmm-muted);
+      font-size: 12px;
+    }
+
+    .vmm-conversion-validation {
+      min-height: 18px;
+      margin: 7px 0 0;
+      color: var(--vmm-danger);
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .vmm-overview-grid,
+      .vmm-review {
+        grid-template-columns: 1fr;
+      }
+
+      .vmm-tier-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .vmm-shell {
+        padding: 18px;
+      }
+
+      .vmm-tabs {
+        margin-left: -4px;
+        margin-right: -4px;
+      }
+
+      .vmm-tier-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .vmm-hero-top,
+      .vmm-section-head,
+      .vmm-campaign-banner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .vmm-date-pill {
+        white-space: normal;
+      }
+
+      .vmm-history-item {
+        grid-template-columns: 1fr;
+      }
+
+      .vmm-history-value {
+        text-align: left;
+        padding-left: 54px;
+      }
+
+      .vmm-btn {
+        width: 100%;
+      }
+
+      .vmm-action-row {
+        flex-direction: column-reverse;
+      }
+
+      .vmm-program-card {
+        grid-template-columns: 1fr;
+      }
+
+      .vmm-conversion-summary {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body style="margin:0;background:#eef3f9;padding:24px;">
+  <!--
+    EMBED NOTE:
+    Copy the section #vmm-program-root into the target web page.
+    The body style above is only for standalone preview.
+  -->
+  <section id="vmm-program-root">
+    <div class="vmm-shell">
+      <div class="vmm-page-head">
+        <h1>Ví VMM</h1>
+        <p>Quản lý số dư, chương trình ký gửi 3 năm và lịch sử giao dịch.</p>
+      </div>
+
+      <div class="vmm-tabs" role="tablist" aria-label="VMM tabs">
+        <button class="vmm-tab is-active" data-tab="overview" role="tab">Tổng quan</button>
+        <button class="vmm-tab" data-tab="program" role="tab">Ký gửi 3 năm</button>
+        <button class="vmm-tab" data-tab="history" role="tab">Lịch sử</button>
+      </div>
+
+      <!-- TAB: OVERVIEW -->
+      <div class="vmm-panel is-active" data-panel="overview">
+        <div class="vmm-overview-grid">
+          <article class="vmm-card vmm-hero">
+            <div class="vmm-hero-top">
+              <div>
+                <div class="vmm-kicker">VMM Wallet Balance</div>
+              </div>
+              <div class="vmm-token-pill">
+                <span class="vmm-token-dot"></span>
+                VMM
+              </div>
+            </div>
+
+            <div class="vmm-balance-block">
+              <div class="vmm-balance-label">Số dư khả dụng</div>
+              <div class="vmm-balance" id="overviewBalance">300.000.000 <span>VMM</span></div>
+            </div>
+
+            <div class="vmm-hero-actions">
+              <button class="vmm-btn vmm-btn-primary" data-go-program>
+                Ký gửi VMM 3 năm
+              </button>
+              <button class="vmm-btn vmm-btn-more" type="button" data-get-more-vmm>
+                Get more VMM
+              </button>
+              <button class="vmm-btn vmm-btn-secondary" data-open-terms>
+                Xem chương trình
+              </button>
+            </div>
+          </article>
+
+          <div class="vmm-side-stack">
+            <article class="vmm-card vmm-stat-card vmm-accent-pink">
+              <div class="vmm-stat-head">
+                <span>VMM đang ký gửi</span>
+                <span>Locked</span>
+              </div>
+              <div class="vmm-stat-value" id="overviewLocked">100.000.000 <small>VMM</small></div>
+            </article>
+
+            <article class="vmm-card vmm-stat-card vmm-accent-blue">
+              <div class="vmm-stat-head">
+                <span>VMM IOU đã nhận</span>
+                <span>Reward</span>
+              </div>
+              <div class="vmm-stat-value" id="overviewReward">1.000.000 <small>VMM IOU</small></div>
+            </article>
+          </div>
+        </div>
+
+        <div class="vmm-section">
+          <article class="vmm-card vmm-campaign-banner">
+            <div>
+              <strong>Đổi USDV sang VMM không giới hạn theo gói</strong>
+              <p>Áp dụng từ Aug 07, 2026 đến hết Aug 31, 2026 để thành viên chuẩn bị VMM trước khi tham gia chương trình ký gửi 3 năm.</p>
+            </div>
+            <div class="vmm-date-pill">Aug 07, 2026 – Aug 31, 2026</div>
+          </article>
+        </div>
+
+        <div class="vmm-section">
+          <article class="vmm-card vmm-section-card">
+            <div class="vmm-section-head">
+              <div>
+                <h2>Chương trình đang hoạt động</h2>
+                <p>Theo dõi các giao dịch ký gửi hiện tại.</p>
+              </div>
+              <span class="vmm-status">Đang hoạt động</span>
+            </div>
+
+            <div class="vmm-program-card">
+              <div class="vmm-program-meta">
+                <strong>Ký gửi 100.000.000 VMM</strong>
+                <span>Bắt đầu Sep 01, 2026 · Hoàn tất dự kiến Sep 01, 2029</span>
+              </div>
+              <div style="text-align:right">
+                <strong style="display:block;margin-bottom:6px">+1.000.000 VMM IOU</strong>
+                <span style="color:var(--vmm-muted);font-size:12px">Mã: VMM-3Y-100M</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- TAB: PROGRAM -->
+      <div class="vmm-panel" data-panel="program">
+        <article class="vmm-card vmm-section-card">
+          <div class="vmm-section-head">
+            <div>
+              <h2>Chọn cấp ký gửi</h2>
+              <p>Các cấp được sắp xếp từ nhỏ đến lớn. Cấp không đủ số dư sẽ tự động bị khóa.</p>
+            </div>
+            <div class="vmm-token-pill">
+              Số dư: <strong id="programBalance">300.000.000 VMM</strong>
+            </div>
+          </div>
+
+          <div class="vmm-tier-grid" id="tierGrid"></div>
+        </article>
+
+        <div class="vmm-review" id="reviewArea" hidden>
+          <article class="vmm-card vmm-review-card">
+            <h3>Thông tin ký gửi</h3>
+            <div class="vmm-review-row">
+              <span>Số lượng ký gửi</span>
+              <strong id="reviewAmount">—</strong>
+            </div>
+            <div class="vmm-review-row">
+              <span>Thời hạn</span>
+              <strong>3 năm</strong>
+            </div>
+            <div class="vmm-review-row">
+              <span>Ngày bắt đầu</span>
+              <strong>Sep 01, 2026</strong>
+            </div>
+            <div class="vmm-review-row">
+              <span>Ngày hoàn tất dự kiến</span>
+              <strong>Sep 01, 2029</strong>
+            </div>
+            <div class="vmm-review-row">
+              <span>Số dư còn lại</span>
+              <strong id="reviewRemaining">—</strong>
+            </div>
+          </article>
+
+          <article class="vmm-card vmm-review-card">
+            <div class="vmm-reward-box">
+              <span>VMM IOU được tặng</span>
+              <strong id="reviewReward">—</strong>
+            </div>
+
+            <div class="vmm-review-row">
+              <span>Hình thức</span>
+              <strong>Ký gửi cố định</strong>
+            </div>
+            <div class="vmm-review-row">
+              <span>Trạng thái sau xác nhận</span>
+              <strong>Đang hoạt động</strong>
+            </div>
+
+            <label class="vmm-terms-check">
+              <input type="checkbox" id="acceptTerms" />
+              <span>
+                Tôi đã đọc và đồng ý với
+                <button type="button" data-open-terms>Điều khoản & Điều kiện</button>.
+              </span>
+            </label>
+
+            <div class="vmm-action-row">
+              <button class="vmm-btn vmm-btn-ghost" id="clearSelection">Chọn lại</button>
+              <button class="vmm-btn vmm-btn-primary" id="confirmDeposit" disabled>Xác nhận ký gửi</button>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- TAB: HISTORY -->
+      <div class="vmm-panel" data-panel="history">
+        <article class="vmm-card vmm-section-card">
+          <div class="vmm-section-head">
+            <div>
+              <h2>Lịch sử VMM</h2>
+              <p>Các giao dịch ký gửi và phần thưởng gần đây.</p>
+            </div>
+          </div>
+
+          <div class="vmm-history-list" id="historyList">
+            <div class="vmm-history-item">
+              <div class="vmm-history-main">
+                <div class="vmm-history-icon">↗</div>
+                <div class="vmm-history-copy">
+                  <strong>Ký gửi VMM 3 năm</strong>
+                  <span>Sep 01, 2026 · VMM-3Y-100M</span>
+                </div>
+              </div>
+              <div class="vmm-history-value">
+                <strong>-100.000.000 VMM</strong>
+                <span>Đang hoạt động</span>
+              </div>
+            </div>
+
+            <div class="vmm-history-item">
+              <div class="vmm-history-main">
+                <div class="vmm-history-icon">＋</div>
+                <div class="vmm-history-copy">
+                  <strong>Nhận thưởng VMM IOU</strong>
+                  <span>Sep 01, 2026 · Reward</span>
+                </div>
+              </div>
+              <div class="vmm-history-value">
+                <strong style="color:var(--vmm-green)">+1.000.000 VMM IOU</strong>
+                <span>Hoàn tất</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- Terms modal -->
+    <div class="vmm-modal-backdrop" id="termsModal" aria-hidden="true">
+      <section class="vmm-modal" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+        <div class="vmm-modal-head">
+          <h3 id="termsTitle">Điều khoản & Điều kiện</h3>
+          <button class="vmm-close" type="button" data-close-terms aria-label="Đóng">×</button>
+        </div>
+
+        <div class="vmm-modal-body">
+          <h4>1. Điều kiện tham gia</h4>
+          <p>Thành viên cần có đủ số dư VMM khả dụng và chọn đúng một trong các cấp chương trình được công bố.</p>
+
+          <h4>2. Thời hạn</h4>
+          <p>Thời hạn ký gửi là 3 năm kể từ thời điểm giao dịch được hệ thống xác nhận thành công.</p>
+
+          <h4>3. VMM IOU</h4>
+          <p>VMM IOU được ghi nhận theo cấp ký gửi tương ứng. Chính sách sử dụng và quy đổi sẽ được công bố trong điều khoản chính thức.</p>
+
+          <h4>4. Rút trước hạn</h4>
+          <p>Nội dung xử lý rút trước hạn đang là placeholder và cần được Product Owner phê duyệt trước khi triển khai production.</p>
+        </div>
+
+        <div class="vmm-modal-foot">
+          <button class="vmm-btn vmm-btn-primary" type="button" data-close-terms>Đã hiểu</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- USDV to VMM conversion modal -->
+    <div class="vmm-modal-backdrop" id="convertModal" aria-hidden="true">
+      <section class="vmm-modal" role="dialog" aria-modal="true" aria-labelledby="convertTitle">
+        <div class="vmm-modal-head">
+          <h3 id="convertTitle">Đổi USDV sang VMM</h3>
+          <button class="vmm-close" type="button" data-close-convert aria-label="Đóng">×</button>
+        </div>
+
+        <div class="vmm-modal-body">
+          <div class="vmm-conversion-summary">
+            <div class="vmm-conversion-stat">
+              <span>Số dư USDV khả dụng</span>
+              <strong id="usdvBalance">0 USDV</strong>
+            </div>
+            <div class="vmm-conversion-stat">
+              <span>Tỷ giá chương trình</span>
+              <strong id="conversionRate">1 VMM = 0.00229 USDV</strong>
+            </div>
+          </div>
+
+          <label class="vmm-conversion-label" for="convertAmount">Số USDV muốn đổi</label>
+          <input class="vmm-conversion-input" id="convertAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Nhập số USDV" />
+          <p class="vmm-conversion-help">Áp dụng từ Aug 07, 2026 – Aug 31, 2026.</p>
+          <p class="vmm-conversion-validation" id="convertValidation" role="alert"></p>
+
+          <div class="vmm-conversion-preview">
+            <span>VMM dự kiến nhận</span>
+            <strong id="convertPreview">0 VMM</strong>
+          </div>
+        </div>
+
+        <div class="vmm-modal-foot">
+          <button class="vmm-btn vmm-btn-ghost" type="button" id="cancelConversion" data-close-convert>Hủy</button>
+          <button class="vmm-btn vmm-btn-more" type="button" id="confirmConversion" disabled>Xác nhận đổi</button>
+        </div>
+      </section>
+    </div>
+
+  </section>
+
+  <script>
+    (() => {
+      const root = document.getElementById('vmm-program-root');
+      if (!root) return;
+
+      const tiers = [
+        { level: 1, amount: 10000000, reward: 10000 },
+        { level: 2, amount: 20000000, reward: 25000 },
+        { level: 3, amount: 50000000, reward: 100000 },
+        { level: 4, amount: 100000000, reward: 1000000 },
+        { level: 5, amount: 250000000, reward: 2500000 },
+        { level: 6, amount: 500000000, reward: 10000000 }
+      ];
+
+      let walletBalance = 300000000;
+      let lockedBalance = 100000000;
+      let rewardBalance = 1000000;
+      let usdvBalance = 1000000;
+      const conversionRate = 0.00229;
+      let selectedTier = null;
+
+      const fmt = value => new Intl.NumberFormat('vi-VN').format(value);
+      const formatDate = isoDate => new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        timeZone: 'UTC'
+      }).format(new Date(`${isoDate}T00:00:00Z`));
+
+      const tabButtons = [...root.querySelectorAll('.vmm-tab')];
+      const panels = [...root.querySelectorAll('.vmm-panel')];
+      const tierGrid = root.querySelector('#tierGrid');
+      const reviewArea = root.querySelector('#reviewArea');
+      const acceptTerms = root.querySelector('#acceptTerms');
+      const confirmDeposit = root.querySelector('#confirmDeposit');
+      const clearSelection = root.querySelector('#clearSelection');
+      const termsModal = root.querySelector('#termsModal');
+      const convertModal = root.querySelector('#convertModal');
+      const usdvBalanceLabel = root.querySelector('#usdvBalance');
+      const convertAmount = root.querySelector('#convertAmount');
+      const convertPreview = root.querySelector('#convertPreview');
+      const convertValidation = root.querySelector('#convertValidation');
+      const confirmConversion = root.querySelector('#confirmConversion');
+
+      function activateTab(name) {
+        tabButtons.forEach(button => {
+          button.classList.toggle('is-active', button.dataset.tab === name);
+        });
+
+        panels.forEach(panel => {
+          panel.classList.toggle('is-active', panel.dataset.panel === name);
+        });
+      }
+
+      function updateBalances() {
+        root.querySelector('#overviewBalance').innerHTML = `${fmt(walletBalance)} <span>VMM</span>`;
+        root.querySelector('#overviewLocked').innerHTML = `${fmt(lockedBalance)} <small>VMM</small>`;
+        root.querySelector('#overviewReward').innerHTML = `${fmt(rewardBalance)} <small>VMM IOU</small>`;
+        root.querySelector('#programBalance').textContent = `${fmt(walletBalance)} VMM`;
+      }
+
+      function formatConversionAmount(value) {
+        return new Intl.NumberFormat('en-US', {
+          maximumFractionDigits: 2
+        }).format(value);
+      }
+
+      function renderConversionState() {
+        usdvBalanceLabel.textContent = `${formatConversionAmount(usdvBalance)} USDV`;
+        convertPreview.textContent = '0 VMM';
+        convertValidation.textContent = '';
+        convertAmount.value = '';
+        confirmConversion.disabled = true;
+      }
+
+      function openConversion() {
+        renderConversionState();
+        convertModal.classList.add('is-open');
+        convertModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        convertAmount.focus();
+      }
+
+      function closeConversion() {
+        convertModal.classList.remove('is-open');
+        convertModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      function updateConversionPreview() {
+        const amount = Number(convertAmount.value);
+        const valid = Number.isFinite(amount) && amount > 0 && amount <= usdvBalance;
+
+        if (!convertAmount.value || !Number.isFinite(amount) || amount <= 0) {
+          convertValidation.textContent = 'Nhập số USDV lớn hơn 0.';
+          convertPreview.textContent = '0 VMM';
+          confirmConversion.disabled = true;
+          return;
+        }
+
+        if (amount > usdvBalance) {
+          convertValidation.textContent = 'Số dư USDV không đủ.';
+          convertPreview.textContent = '0 VMM';
+          confirmConversion.disabled = true;
+          return;
+        }
+
+        const vmmAmount = amount / conversionRate;
+        convertValidation.textContent = '';
+        convertPreview.textContent = `${formatConversionAmount(vmmAmount)} VMM`;
+        confirmConversion.disabled = !valid;
+      }
+
+      function renderTiers() {
+        tierGrid.innerHTML = '';
+
+        tiers.forEach(tier => {
+          const disabled = tier.amount > walletBalance;
+          const selected = selectedTier && selectedTier.level === tier.level;
+
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = `vmm-tier${selected ? ' is-selected' : ''}`;
+          button.disabled = disabled;
+
+          button.innerHTML = `
+            <span class="vmm-tier-badge">Cấp ${tier.level}</span>
+            <span class="vmm-tier-check" aria-hidden="true">✓</span>
+            <div class="vmm-tier-amount">${fmt(tier.amount)}</div>
+            <div class="vmm-tier-unit">VMM ký gửi</div>
+            <div class="vmm-tier-reward">
+              Được tặng
+              <strong>${fmt(tier.reward)} VMM IOU</strong>
+            </div>
+            <div class="vmm-tier-note">Số dư VMM chưa đủ</div>
+          `;
+
+          button.addEventListener('click', () => {
+            selectedTier = tier;
+            renderTiers();
+            showReview();
+          });
+
+          tierGrid.appendChild(button);
+        });
+      }
+
+      function showReview() {
+        if (!selectedTier) {
+          reviewArea.hidden = true;
+          return;
+        }
+
+        reviewArea.hidden = false;
+        root.querySelector('#reviewAmount').textContent = `${fmt(selectedTier.amount)} VMM`;
+        root.querySelector('#reviewRemaining').textContent = `${fmt(walletBalance - selectedTier.amount)} VMM`;
+        root.querySelector('#reviewReward').textContent = `${fmt(selectedTier.reward)} VMM IOU`;
+        acceptTerms.checked = false;
+        confirmDeposit.disabled = true;
+
+        reviewArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function clearCurrentSelection() {
+        selectedTier = null;
+        reviewArea.hidden = true;
+        acceptTerms.checked = false;
+        confirmDeposit.disabled = true;
+        renderTiers();
+      }
+
+      function openTerms() {
+        termsModal.classList.add('is-open');
+        termsModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeTerms() {
+        termsModal.classList.remove('is-open');
+        termsModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      function addHistoryItem(tier, transactionCode) {
+        const item = document.createElement('div');
+        item.className = 'vmm-history-item';
+        item.innerHTML = `
+          <div class="vmm-history-main">
+            <div class="vmm-history-icon">↗</div>
+            <div class="vmm-history-copy">
+              <strong>Ký gửi VMM 3 năm</strong>
+              <span>${formatDate('2026-09-01')} · ${transactionCode}</span>
+            </div>
+          </div>
+          <div class="vmm-history-value">
+            <strong>-${fmt(tier.amount)} VMM</strong>
+            <span>Đang hoạt động</span>
+          </div>
+        `;
+
+        root.querySelector('#historyList').prepend(item);
+      }
+
+      function addConversionHistoryItem(amount, vmmAmount, transactionCode) {
+        const item = document.createElement('div');
+        item.className = 'vmm-history-item';
+        item.innerHTML = `
+          <div class="vmm-history-main">
+            <div class="vmm-history-icon">↗</div>
+            <div class="vmm-history-copy">
+              <strong>Đổi USDV sang VMM</strong>
+              <span>${formatDate('2026-08-07')} · ${transactionCode}</span>
+            </div>
+          </div>
+          <div class="vmm-history-value">
+            <strong style="color:var(--vmm-green)">+${formatConversionAmount(vmmAmount)} VMM</strong>
+            <span>Hoàn tất · -${formatConversionAmount(amount)} USDV</span>
+          </div>
+        `;
+
+        root.querySelector('#historyList').prepend(item);
+      }
+
+      function completeConversion() {
+        const amount = Number(convertAmount.value);
+        if (!Number.isFinite(amount) || amount <= 0 || amount > usdvBalance) return;
+
+        const vmmAmount = amount / conversionRate;
+        const code = `USDV-VMM-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+
+        usdvBalance -= amount;
+        walletBalance += vmmAmount;
+        addConversionHistoryItem(amount, vmmAmount, code);
+        updateBalances();
+        closeConversion();
+
+        if (window.Swal && typeof window.Swal.fire === 'function') {
+          window.Swal.fire({
+            icon: 'success',
+            title: 'Đổi VMM thành công',
+            html: `${formatConversionAmount(vmmAmount)} VMM đã được cộng vào ví.<br><strong>Mã giao dịch: ${code}</strong>`,
+            confirmButtonText: 'Đóng',
+            showCloseButton: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            customClass: { confirmButton: 'vmm-swal-confirm' }
+          });
+        } else {
+          window.alert(`${formatConversionAmount(vmmAmount)} VMM đã được cộng vào ví.\nMã giao dịch: ${code}`);
+        }
+
+        renderConversionState();
+      }
+
+      function completeDeposit() {
+        if (!selectedTier || !acceptTerms.checked || selectedTier.amount > walletBalance) return;
+
+        walletBalance -= selectedTier.amount;
+        lockedBalance += selectedTier.amount;
+        rewardBalance += selectedTier.reward;
+
+        const code = `VMM-3Y-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+        addHistoryItem(selectedTier, code);
+        updateBalances();
+
+        const successMessage =
+          `${fmt(selectedTier.amount)} VMM đã được ký gửi. Bạn nhận ${fmt(selectedTier.reward)} VMM IOU.`;
+
+        if (window.Swal && typeof window.Swal.fire === 'function') {
+          window.Swal.fire({
+            icon: 'success',
+            title: 'Ký gửi thành công',
+            html: `${successMessage}<br><strong>Mã giao dịch: ${code}</strong>`,
+            confirmButtonText: 'Đóng',
+            showCloseButton: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            customClass: {
+              confirmButton: 'vmm-swal-confirm'
+            }
+          });
+        } else {
+          window.alert(`${successMessage}\nMã giao dịch: ${code}`);
+        }
+
+        clearCurrentSelection();
+        activateTab('overview');
+      }
+
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => activateTab(button.dataset.tab));
+      });
+
+      root.querySelectorAll('[data-go-program]').forEach(button => {
+        button.addEventListener('click', () => activateTab('program'));
+      });
+
+      root.querySelectorAll('[data-get-more-vmm]').forEach(button => {
+        button.addEventListener('click', openConversion);
+      });
+
+      root.querySelectorAll('[data-open-terms]').forEach(button => {
+        button.addEventListener('click', openTerms);
+      });
+
+      root.querySelectorAll('[data-close-terms]').forEach(button => {
+        button.addEventListener('click', closeTerms);
+      });
+
+      termsModal.addEventListener('click', event => {
+        if (event.target === termsModal) closeTerms();
+      });
+
+      root.querySelectorAll('[data-close-convert]').forEach(button => {
+        button.addEventListener('click', closeConversion);
+      });
+
+      convertModal.addEventListener('click', event => {
+        if (event.target === convertModal) closeConversion();
+      });
+
+      acceptTerms.addEventListener('change', () => {
+        confirmDeposit.disabled = !acceptTerms.checked;
+      });
+
+      convertAmount.addEventListener('input', updateConversionPreview);
+      clearSelection.addEventListener('click', clearCurrentSelection);
+      confirmDeposit.addEventListener('click', completeDeposit);
+      confirmConversion.addEventListener('click', completeConversion);
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          if (termsModal.classList.contains('is-open')) closeTerms();
+          if (convertModal.classList.contains('is-open')) closeConversion();
+        }
+      });
+
+      renderConversionState();
+      updateBalances();
+      renderTiers();
+    })();
+  </script>
+</body>
+</html>
