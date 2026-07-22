@@ -165,8 +165,8 @@
     }
 
     .vmm-hero-top,
-    .vmm-hero-actions,
-    .vmm-balance-block {
+    .vmm-hero-copy,
+    .vmm-hero-actions {
       position: relative;
       z-index: 2;
     }
@@ -184,6 +184,22 @@
       text-transform: uppercase;
       letter-spacing: .12em;
       font-weight: 900;
+    }
+
+    .vmm-hero-title {
+      margin: 12px 0 8px;
+      color: #1e2d48;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.1;
+      letter-spacing: -.035em;
+    }
+
+    .vmm-hero-copy p {
+      max-width: 520px;
+      margin: 0;
+      color: var(--vmm-muted);
+      font-size: 14px;
+      line-height: 1.6;
     }
 
     .vmm-token-pill {
@@ -208,32 +224,8 @@
       box-shadow: 0 0 0 4px rgba(47,100,220,.12);
     }
 
-    .vmm-balance-block {
-      margin-top: 26px;
-    }
-
-    .vmm-balance-label {
-      color: var(--vmm-muted);
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    .vmm-balance {
-      font-size: clamp(28px, 3.5vw, 44px);
-      font-weight: 900;
-      letter-spacing: -.05em;
-      line-height: 1;
-    }
-
-    .vmm-balance span {
-      font-size: 15px;
-      color: #4d668b;
-      letter-spacing: 0;
-      margin-left: 5px;
-    }
-
     .vmm-hero-actions {
-      margin-top: 28px;
+      margin-top: 24px;
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
@@ -319,6 +311,12 @@
       color: var(--vmm-muted);
       margin-left: 4px;
       font-weight: 700;
+    }
+
+    .vmm-accent-green {
+      background:
+        linear-gradient(135deg, rgba(210,242,225,.96), rgba(247,253,249,.98)),
+        var(--vmm-surface);
     }
 
     .vmm-accent-pink {
@@ -964,7 +962,7 @@
           <article class="vmm-card vmm-hero">
             <div class="vmm-hero-top">
               <div>
-                <div class="vmm-kicker">VMM Wallet Balance</div>
+                <div class="vmm-kicker">VMM 3-Year Program</div>
               </div>
               <div class="vmm-token-pill">
                 <span class="vmm-token-dot"></span>
@@ -972,9 +970,9 @@
               </div>
             </div>
 
-            <div class="vmm-balance-block">
-              <div class="vmm-balance-label">Số dư khả dụng</div>
-              <div class="vmm-balance" id="overviewBalance">300.000.000 <span>VMM</span></div>
+            <div class="vmm-hero-copy">
+              <h1 class="vmm-hero-title">Quản lý các gói VMM của bạn</h1>
+              <p>Theo dõi gói đang hoạt động, quyền lợi VMM IOU và chọn hành động tiếp theo.</p>
             </div>
 
             <div class="vmm-hero-actions">
@@ -991,6 +989,14 @@
           </article>
 
           <div class="vmm-side-stack">
+            <article class="vmm-card vmm-stat-card vmm-accent-green">
+              <div class="vmm-stat-head">
+                <span>Gói đang tham gia</span>
+                <span>Active</span>
+              </div>
+              <div class="vmm-stat-value">1 <small>gói</small></div>
+            </article>
+
             <article class="vmm-card vmm-stat-card vmm-accent-pink">
               <div class="vmm-stat-head">
                 <span>VMM đang ký gửi</span>
@@ -1289,7 +1295,6 @@
       }
 
       function updateBalances() {
-        root.querySelector('#overviewBalance').innerHTML = `${fmt(walletBalance)} <span>VMM</span>`;
         root.querySelector('#overviewLocked').innerHTML = `${fmt(lockedBalance)} <small>VMM</small>`;
         root.querySelector('#overviewReward').innerHTML = `${fmt(rewardBalance)} <small>VMM IOU</small>`;
         root.querySelector('#programBalance').textContent = `${fmt(walletBalance)} VMM`;
