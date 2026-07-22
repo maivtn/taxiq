@@ -7726,7 +7726,7 @@
                         <div class="booking-detail-info-item">
                           <span class="booking-detail-info-icon"><i class="bi bi-clock" aria-hidden="true"></i></span>
                           <div>
-                            <div class="booking-detail-label">Time</div>
+                            <div class="booking-detail-label">Appointment</div>
                             <div class="booking-detail-value" data-booking-detail-time></div>
                           </div>
                         </div>
@@ -9544,6 +9544,9 @@
         button.classList.toggle('is-active', isActive);
         button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
       });
+
+      var statusChips = panel.querySelector('[data-booking-status-chips]');
+      if (statusChips) statusChips.hidden = nextMode === 'calendar';
 
       if (nextMode === 'calendar') { initBookingCalendar(); renderBookingCalendar(); }
     }
