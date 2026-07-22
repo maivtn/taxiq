@@ -89,7 +89,8 @@ test('page includes booking controls and removes check-in copy', () => {
   assert.match(SOURCE, /data-booking-date/);
   assert.match(SOURCE, /data-booking-time/);
   assert.match(SOURCE, /Booking|Đặt lịch/);
-  assert.match(SOURCE, /Họ và tên[\s\S]*Không bắt buộc/);
+  assert.match(SOURCE, /Họ và tên/);
+  assert.doesNotMatch(SOURCE, /Không bắt buộc/);
   assert.doesNotMatch(SOURCE, /Tùy chọn, bạn có thể bỏ qua/);
   assert.match(SOURCE, /Vui lòng nhập số điện thoại/);
   assert.match(SOURCE, /Quý khách/);

@@ -241,7 +241,7 @@
         <div class="returning-banner" id="returning-customer" hidden aria-live="polite"></div>
 
         <label class="form-field" id="booking-name-field" for="booking-name" hidden>
-          <span>Họ và tên <span class="field-hint" id="name-hint">Không bắt buộc</span></span>
+          <span>Họ và tên</span>
           <input class="input" id="booking-name" type="text" autocomplete="name" placeholder="Ví dụ: Mary Smith" aria-describedby="name-error">
           <p class="field-error" id="name-error" role="alert"></p>
         </label>
@@ -382,7 +382,7 @@
           <div class="review-row"><dt>Ngày &amp; giờ</dt><dd id="review-slot"></dd></div>
         </dl>
         <div class="review-total"><span>Tổng dự kiến</span><strong id="review-total">$0</strong></div>
-        <label class="form-field" for="booking-note"><span>Ghi chú để tiệm phục vụ tốt hơn <span class="field-hint">Không bắt buộc</span></span><textarea class="textarea" id="booking-note" placeholder="Ví dụ: Quý khách có mong muốn đặc biệt về màu sơn…"></textarea></label>
+        <label class="form-field" for="booking-note"><span>Ghi chú để tiệm phục vụ tốt hơn</span><textarea class="textarea" id="booking-note" placeholder="Ví dụ: Quý khách có mong muốn đặc biệt về màu sơn…"></textarea></label>
         <p class="field-error" id="review-error" role="alert"></p>
 
         <div class="action-row">
@@ -674,7 +674,6 @@
           nameInput.readOnly = Boolean(customer.isReturning);
         }
         if (banner) banner.hidden = !customer.isReturning;
-        setText('#name-hint', customer.isReturning ? 'Đã nhận diện khách quen' : 'Không bắt buộc');
       }
 
       function renderSelections() {
