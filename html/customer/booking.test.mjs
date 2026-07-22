@@ -108,3 +108,15 @@ test('combines service, date, time, and technician selection into the same step'
   assert.match(reviewStep, /review-customer/);
   assert.doesNotMatch(SOURCE, /data-step-panel="5"/);
 });
+
+test('keeps brand header and progress steps frameless', () => {
+  const brandStyle = SOURCE.match(/\.brand-card \{([^}]*)\}/)?.[1] || '';
+  const stepperStyle = SOURCE.match(/\.stepper \{([^}]*)\}/)?.[1] || '';
+
+  assert.match(brandStyle, /background: transparent/);
+  assert.match(brandStyle, /border: 0/);
+  assert.match(brandStyle, /box-shadow: none/);
+  assert.match(stepperStyle, /background: transparent/);
+  assert.match(stepperStyle, /border: 0/);
+  assert.match(stepperStyle, /box-shadow: none/);
+});
