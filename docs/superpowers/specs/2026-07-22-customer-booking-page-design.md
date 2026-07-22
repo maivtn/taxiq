@@ -12,12 +12,12 @@ Tạo một trang booking độc lập cho khách đặt nhiều dịch vụ t�
 
 1. Khách nhập số điện thoại ở bước đầu.
 2. Nếu số điện thoại khớp khách quen trong dữ liệu demo, page tự điền tên và hiển thị lời chào nhận diện khách.
-3. Nếu là khách mới, page yêu cầu nhập tên.
+3. Nếu là khách mới, page cho phép nhập tên nhưng không bắt buộc.
 4. Checkbox nhận thông báo SMS là tùy chọn và mặc định bỏ chọn.
 5. Khách chọn một hoặc nhiều dịch vụ; mỗi service có giá và thời lượng demo.
 6. Khách chọn “Bất kỳ thợ nào” hoặc một thợ cụ thể. Chỉ các thợ phù hợp với dịch vụ đã chọn mới được chọn; trạng thái busy/unavailable được hiển thị bằng text.
 7. Khách chọn ngày và giờ còn trống.
-8. CTA booking chỉ bật khi phone hợp lệ, có tên hợp lệ, có ít nhất một service, đã chọn thợ và ngày/giờ.
+8. CTA booking chỉ bật khi phone hợp lệ, có ít nhất một service, đã chọn thợ và ngày/giờ; tên khách mới có thể để trống.
 9. Bước review hiển thị toàn bộ dịch vụ, tổng giá, tổng thời lượng, thợ, ngày/giờ, tên khách và lựa chọn thông báo.
 10. Gửi booking lưu request vào `localStorage` và hiển thị màn hình thành công với mã booking. Đây là booking request demo, không tích hợp backend/SMS thật.
 11. Reload giữ draft hiện tại; reset draft xóa draft và request demo của flow này.
@@ -62,7 +62,7 @@ Pure functions exposed through `window.NEXORA_BOOKING_TEST_API` when `window.NEX
 ## Error handling
 
 - Phone không đủ 10 chữ số: hiển thị lỗi ngay dưới input.
-- Khách mới để trống tên: không cho qua bước tiếp theo.
+- Tên khách mới để trống: vẫn cho qua bước tiếp theo và lưu tên rỗng trong booking request.
 - Không có service hoặc không có slot: CTA disabled và có helper text.
 - Nếu localStorage lỗi/JSON hỏng: dùng state mặc định, không làm page crash.
 - Nếu booking tạo trùng ID trong storage: giữ request cũ và tạo ID mới trong lần submit tiếp theo.

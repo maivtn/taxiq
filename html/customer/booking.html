@@ -216,14 +216,14 @@
         <div class="returning-banner" id="returning-customer" hidden aria-live="polite"></div>
 
         <label class="form-field" id="booking-name-field" for="booking-name" hidden>
-          <span>Tên của bạn <span class="field-hint" id="name-hint">Khách mới</span></span>
+          <span>Tên của bạn <span class="field-hint" id="name-hint">Không bắt buộc</span></span>
           <input class="input" id="booking-name" type="text" autocomplete="name" placeholder="Ví dụ: Mary Smith" aria-describedby="name-error">
           <p class="field-error" id="name-error" role="alert"></p>
         </label>
 
         <label class="consent" for="sms-opt-in">
           <input id="sms-opt-in" type="checkbox">
-          <span><strong>Nhận thông báo booking</strong>Nhận tin nhắn xác nhận, nhắc lịch và ưu đãi từ Bitcoin Nail Bar. Tùy chọn, bạn có thể bỏ qua.</span>
+          <span><strong>Nhận thông báo booking</strong>Nhận tin nhắn xác nhận, nhắc lịch và ưu đãi từ Bitcoin Nail Bar.</span>
         </label>
 
         <div class="sticky-action">
@@ -428,13 +428,11 @@
         const errors = [];
         const customer = draft?.customer || {};
         const phone = normalizePhone(customer.phone);
-        const name = String(customer.name || '').trim();
-        const serviceIds = Array.isArray(draft?.selectedServiceIds) ? draft.selectedServiceIds : [];
+            const serviceIds = Array.isArray(draft?.selectedServiceIds) ? draft.selectedServiceIds : [];
         const staff = catalog.staff.find((candidate) => candidate.id === draft?.selectedStaffId);
         const slot = catalog.slots.find((candidate) => candidate.date === draft?.selectedDate && candidate.time === draft?.selectedTime);
         if (phone.length !== 10) errors.push('phone');
-        if (name.length < 2) errors.push('name');
-        if (!serviceIds.length || serviceIds.some((id) => !catalog.services.some((service) => service.id === id))) errors.push('services');
+            if (!serviceIds.length || serviceIds.some((id) => !catalog.services.some((service) => service.id === id))) errors.push('services');
         if (!staff || !staff.available) errors.push('staff');
         if (!slot) errors.push('slot');
         return { ok: errors.length === 0, errors };
@@ -570,7 +568,7 @@
           nameInput.readOnly = Boolean(customer.isReturning);
         }
         if (banner) banner.hidden = !customer.isReturning;
-        setText('#name-hint', customer.isReturning ? 'Đã nhận diện khách quen' : 'Khách mới');
+        setText('#name-hint', customer.isReturning ? 'Đã nhận diện khách quen' : 'Không bắt buộc');
       }
 
       function renderSelections() {
@@ -652,7 +650,7 @@
 
       function showValidation(errors) {
         setError('#phone-error', errors.includes('phone') ? 'Vui lòng nhập đủ 10 số điện thoại.' : '');
-        setError('#name-error', errors.includes('name') ? 'Vui lòng nhập tên để tiệm biết mình đang đón ai.' : '');
+        setError('#name-error', '');
         setError('#service-error', errors.includes('services') ? 'Hãy chọn ít nhất một dịch vụ.' : '');
         setError('#staff-error', errors.includes('staff') ? 'Hãy chọn một thợ đang phù hợp với dịch vụ.' : '');
         setError('#date-error', errors.includes('slot') && !state.selectedDate ? 'Hãy chọn ngày bạn muốn đến.' : '');
@@ -664,7 +662,6 @@
       function validateForStep(step) {
         const customerErrors = [];
         if (normalizePhone(state.customer.phone).length !== 10) customerErrors.push('phone');
-        if (String(state.customer.name || '').trim().length < 2) customerErrors.push('name');
         if (step === 1) return customerErrors;
         if (step === 2) return [...customerErrors, ...validateBookingDraft(state, CATALOG).errors.filter((error) => !['phone', 'name'].includes(error))];
         return validateBookingDraft(state, CATALOG).errors;
@@ -675,7 +672,7 @@
         if (currentErrors.length) {
           showValidation(currentErrors);
           const firstError = currentErrors[0];
-          if (firstError === 'phone' || firstError === 'name') state.step = 1;
+          if (firstError === 'phone') state.step = 1;
           else state.step = 2;
           persistState(state);
           renderSteps();
@@ -702,7 +699,7 @@
         if (errors.length) {
           showValidation(errors);
           const first = errors[0];
-          state.step = ['phone', 'name'].includes(first) ? 1 : 2;
+              state.step = first === 'phone' ? 1 : 2;
           persistState(state);
           renderSteps();
           return;

@@ -14,7 +14,8 @@
 - Use `BOOKING_STORAGE_KEY = 'nexora.customer.booking.page.v1'` for persistence.
 - The page must support one or more services and must not use the old “Check me in” CTA.
 - “Bất kỳ thợ nào” is a valid technician selection; busy/unavailable technicians remain visibly disabled.
-- SMS notification consent is optional and defaults to `false`.
+- SMS notification consent is optional, defaults to `false`, and is shown without extra opt-out copy.
+- New customers may leave the name field blank; only the phone number is required for customer identity.
 - Do not add backend/API, OTP, payment, realtime availability, or integration with `cutomer-reward.html`.
 - Run tests and `git diff --check` before claiming completion.
 

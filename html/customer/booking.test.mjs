@@ -57,7 +57,15 @@ test('rejects an incomplete booking draft', () => {
     customer: { phone: '123', name: '' }, selectedServiceIds: [], selectedStaffId: '', selectedDate: '', selectedTime: ''
   }, catalog);
   assert.equal(result.ok, false);
-  assert.deepEqual(plain(result.errors), ['phone', 'name', 'services', 'staff', 'slot']);
+  assert.deepEqual(plain(result.errors), ['phone', 'services', 'staff', 'slot']);
+});
+
+test('allows a new customer to continue without entering a name', () => {
+  const api = getApi();
+  const result = api.validateBookingDraft({
+    customer: { phone: '8325550198', name: '' }, selectedServiceIds: ['gel'], selectedStaffId: 'any', selectedDate: '2026-07-24', selectedTime: '14:00'
+  }, catalog);
+  assert.equal(result.ok, true);
 });
 
 test('creates a canonical booking request with consent and service summary', () => {
@@ -81,6 +89,8 @@ test('page includes booking controls and removes check-in copy', () => {
   assert.match(SOURCE, /data-booking-date/);
   assert.match(SOURCE, /data-booking-time/);
   assert.match(SOURCE, /Booking|Đặt lịch/);
+  assert.match(SOURCE, /Tên của bạn[\s\S]*Không bắt buộc/);
+  assert.doesNotMatch(SOURCE, /Tùy chọn, bạn có thể bỏ qua/);
   assert.doesNotMatch(SOURCE, /Check me in/i);
 });
 
