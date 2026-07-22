@@ -90,6 +90,11 @@
     .choice-title { display: block; margin-top: 5px; font-size: 12.5px; font-weight: 850; letter-spacing: -.01em; line-height: 1.2; }
     .choice-detail { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 6px; margin-top: 3px; color: var(--muted); font-size: 10px; }
     .choice-price { color: var(--pink-dark); font-size: 13px; font-weight: 850; }
+    .service-grid .choice-card { min-height: 62px; justify-content: flex-start; gap: 2px; padding: 6px 8px; }
+    .service-grid .choice-card[aria-pressed="true"] { padding: 5px 7px; }
+    .service-grid .choice-icon { display: none; }
+    .service-grid .choice-title { margin-top: 0; }
+    .service-grid .choice-detail { margin-top: 0; }
     .selection-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding: 10px 12px; border-radius: 14px; color: var(--muted); background: #f8f5ff; font-size: 12px; }
     .selection-summary strong { color: var(--ink); font-size: 14px; }
     .section-divider { height: 1px; margin: 20px 0; background: var(--line); }
@@ -139,6 +144,7 @@
     .review-total strong { color: var(--pink-dark); font-size: 27px; letter-spacing: -.04em; }
     .review-consent { display: flex; gap: 8px; align-items: center; margin: 16px 0 0; color: var(--muted); font-size: 12px; }
     .review-consent strong { color: var(--green); }
+    .review-consent + .form-field { margin-top: 26px; }
 
     .success-card { padding: 28px 22px; text-align: center; }
     .success-icon { display: grid; place-items: center; width: 76px; height: 76px; margin: 0 auto 17px; border-radius: 26px; color: var(--green); background: #eafaf3; font-size: 37px; }
@@ -341,6 +347,9 @@
           <button class="choice-card staff-card" type="button" data-staff-id="andy" aria-pressed="false">
             <span class="choice-icon" aria-hidden="true">👨🏻</span><span class="choice-title">Andy</span><span class="staff-status">Còn lịch trống</span>
           </button>
+          <button class="choice-card staff-card" type="button" data-staff-id="maria" aria-pressed="false">
+            <span class="choice-icon" aria-hidden="true">👩🏽</span><span class="choice-title">Maria</span><span class="staff-status">Còn lịch trống</span>
+          </button>
           <button class="choice-card staff-card" type="button" data-staff-id="kim" aria-pressed="false" disabled>
             <span class="choice-icon" aria-hidden="true">👩🏼‍🦳</span><span class="choice-title">Kim</span><span class="staff-status unavailable">Hiện chưa có lịch trống</span>
           </button>
@@ -397,7 +406,7 @@
         </dl>
         <div class="review-total"><span>Tổng dự kiến</span><strong id="review-total">$0</strong></div>
         <p class="review-consent" id="review-consent"><span aria-hidden="true">○</span> Quý khách không đăng ký nhận thông báo SMS</p>
-        <label class="form-field" for="booking-note"><span>Ghi chú gửi đến tiệm <span class="field-hint">Không bắt buộc</span></span><textarea class="textarea" id="booking-note" placeholder="Ví dụ: Quý khách có mong muốn đặc biệt về màu sơn…"></textarea></label>
+        <label class="form-field" for="booking-note"><span>Ghi chú để tiệm phục vụ tốt hơn <span class="field-hint">Không bắt buộc</span></span><textarea class="textarea" id="booking-note" placeholder="Ví dụ: Quý khách có mong muốn đặc biệt về màu sơn…"></textarea></label>
         <p class="field-error" id="review-error" role="alert"></p>
 
         <div class="action-row">
@@ -459,12 +468,21 @@
         { id: 'tina', name: 'Tina', available: true, status: 'Còn lịch trống', specialties: ['gel', 'pedi', 'acrylic', 'fill', 'dipping', 'classic', 'spa-pedi', 'gel-x', 'builder-gel', 'french-tip', 'nail-art', 'chrome'] },
         { id: 'helen', name: 'Helen', available: true, status: 'Còn lịch trống', specialties: ['gel', 'pedi', 'fill', 'waxing', 'classic', 'spa-pedi', 'paraffin', 'eyebrow-wax', 'lip-wax', 'kids-mani', 'kids-pedi'] },
         { id: 'andy', name: 'Andy', available: true, status: 'Còn lịch trống', specialties: SERVICES.map((service) => service.id) },
+        { id: 'maria', name: 'Maria', available: true, status: 'Còn lịch trống', specialties: ['gel', 'pedi', 'acrylic', 'fill', 'dipping', 'classic', 'spa-pedi', 'builder-gel', 'french-tip', 'nail-art', 'paraffin', 'kids-mani', 'kids-pedi'] },
         { id: 'kim', name: 'Kim', available: false, status: 'Hiện chưa có lịch trống', specialties: SERVICES.map((service) => service.id) }
       ];
-      const DATES = [
-        '2026-07-23', '2026-07-24', '2026-07-25', '2026-07-26', '2026-07-27', '2026-07-28', '2026-07-29'
-      ];
-      const TIMES = ['10:00', '11:30', '13:00', '14:00', '15:30', '17:00'];
+      const pad = (value) => String(value).padStart(2, '0');
+      const localDateIso = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+      const now = new Date();
+      const todayIso = localDateIso(now);
+      const currentTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const DATES = Array.from({ length: 7 }, (_, index) => {
+        const date = new Date(now);
+        date.setHours(12, 0, 0, 0);
+        date.setDate(date.getDate() + index);
+        return localDateIso(date);
+      });
+      const TIMES = [...new Set(['10:00', '11:30', '13:00', '14:00', '15:30', '17:00', currentTime])].sort();
       const CATALOG = { services: SERVICES, staff: STAFF, slots: DATES.flatMap((date) => TIMES.map((time) => ({ date, time }))) };
 
       function normalizePhone(value) {
@@ -551,7 +569,7 @@
         return {
           step: 1,
           customer: { phone: '', name: '', isReturning: false, smsOptIn: false },
-          selectedServiceIds: [], selectedStaffId: '', selectedDate: '', selectedTime: '', note: '', booking: null
+          selectedServiceIds: [], selectedStaffId: 'any', selectedDate: todayIso, selectedTime: currentTime, note: '', booking: null
         };
       }
 
@@ -567,6 +585,9 @@
             step: Number.isInteger(parsed.step) && parsed.step >= 1 && parsed.step <= 4 ? parsed.step : 1,
             customer: { ...fallback.customer, ...(parsed.customer || {}) },
             selectedServiceIds: Array.isArray(parsed.selectedServiceIds) ? parsed.selectedServiceIds : [],
+            selectedStaffId: STAFF.some((staff) => staff.id === parsed.selectedStaffId) ? parsed.selectedStaffId : 'any',
+            selectedDate: DATES.includes(parsed.selectedDate) ? parsed.selectedDate : todayIso,
+            selectedTime: TIMES.includes(parsed.selectedTime) ? parsed.selectedTime : currentTime,
             note: typeof parsed.note === 'string' ? parsed.note : ''
           };
         } catch { return fallback; }
@@ -589,6 +610,21 @@
       const minutes = (value) => `${value} phút`;
       const serviceById = (id) => SERVICES.find((service) => service.id === id);
       const staffById = (id) => STAFF.find((staff) => staff.id === id);
+      const weekdayLabels = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+
+      function renderSlotOptions() {
+        const dateOptions = $('#date-options');
+        const timeOptions = $('#time-options');
+        if (dateOptions) {
+          dateOptions.innerHTML = DATES.map((date) => {
+            const dateValue = new Date(`${date}T12:00:00`);
+            return `<button class="date-option" type="button" data-booking-date="${date}" aria-pressed="false"><span class="date-day">${weekdayLabels[dateValue.getDay()]}</span><span class="date-number">${dateValue.getDate()}</span></button>`;
+          }).join('');
+        }
+        if (timeOptions) {
+          timeOptions.innerHTML = TIMES.map((time) => `<button class="time-option" type="button" data-booking-time="${time}" aria-pressed="false">${time}</button>`).join('');
+        }
+      }
 
       function setText(selector, value) {
         const element = $(selector);
@@ -608,6 +644,18 @@
         if (digits.length <= 3) return digits;
         if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
         return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+      }
+
+      function formatBookingSlot(date, time) {
+        if (!date || !time) return '—';
+        const value = new Date(`${date}T${time}:00`);
+        const dateLabel = new Intl.DateTimeFormat('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric'
+        }).format(value);
+        const timeLabel = new Intl.DateTimeFormat('en-US', {
+          hour: 'numeric', minute: '2-digit', hour12: true
+        }).format(value);
+        return `${dateLabel} · ${timeLabel}`;
       }
 
       function updateCustomerFromPhone() {
@@ -679,7 +727,7 @@
         setText('#review-services', names.join(' + ') || '—');
         setText('#review-duration', minutes(total.durationMinutes));
         setText('#review-staff', staffById(state.selectedStaffId)?.name || 'Bất kỳ chuyên viên nào');
-        setText('#review-slot', state.selectedDate && state.selectedTime ? `${state.selectedDate} · ${state.selectedTime}` : '—');
+        setText('#review-slot', formatBookingSlot(state.selectedDate, state.selectedTime));
         setText('#review-total', money(total.totalCents));
         const consent = $('#review-consent');
         if (consent) consent.innerHTML = state.customer.smsOptIn ? '<span aria-hidden="true">✓</span> <strong>Quý khách đã đăng ký nhận thông báo SMS</strong>' : '<span aria-hidden="true">○</span> Quý khách không đăng ký nhận thông báo SMS';
@@ -692,7 +740,7 @@
         if (!booking) return;
         const names = booking.serviceIds.map((id) => serviceById(id)?.name).filter(Boolean);
         setText('#success-code', booking.id.toUpperCase());
-        setText('#success-slot', `${booking.date} · ${booking.time}`);
+        setText('#success-slot', formatBookingSlot(booking.date, booking.time));
         setText('#success-staff', staffById(booking.staffId)?.name || 'Bất kỳ chuyên viên nào');
         setText('#success-services', names.join(' + '));
         setText('#success-total', money(booking.totalCents));
@@ -830,6 +878,7 @@
         if (action.dataset.action === 'new-booking') { clearState(); state = defaultState(); renderSteps(); }
       });
 
+      renderSlotOptions();
       $('#sms-opt-in').checked = Boolean(state.customer.smsOptIn);
       renderSteps();
     })();
