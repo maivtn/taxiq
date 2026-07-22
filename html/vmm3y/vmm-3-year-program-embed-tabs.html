@@ -450,6 +450,12 @@
       gap: 14px;
     }
 
+    .vmm-tier-actions {
+      margin-top: 18px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
     .vmm-tier {
       min-height: 176px;
       padding: 18px;
@@ -1038,6 +1044,10 @@
           </div>
 
           <div class="vmm-tier-grid" id="tierGrid"></div>
+
+          <div class="vmm-tier-actions">
+            <button class="vmm-btn vmm-btn-primary" id="continueDeposit" type="button" disabled>Tiếp tục</button>
+          </div>
         </article>
 
         <div class="vmm-review" id="reviewArea" hidden>
@@ -1242,6 +1252,7 @@
       const reviewArea = root.querySelector('#reviewArea');
       const acceptTerms = root.querySelector('#acceptTerms');
       const confirmDeposit = root.querySelector('#confirmDeposit');
+      const continueDeposit = root.querySelector('#continueDeposit');
       const clearSelection = root.querySelector('#clearSelection');
       const termsModal = root.querySelector('#termsModal');
       const convertModal = root.querySelector('#convertModal');
@@ -1336,7 +1347,7 @@
             <span class="vmm-tier-badge">Cấp ${tier.level}</span>
             <span class="vmm-tier-check" aria-hidden="true">✓</span>
             <div class="vmm-tier-amount">${fmt(tier.amount)}</div>
-            <div class="vmm-tier-unit">VMM ký gửi</div>
+            <div class="vmm-tier-unit">VMM ký gửi · 3 năm</div>
             <div class="vmm-tier-reward">
               Được tặng
               <strong>${fmt(tier.reward)} VMM IOU</strong>
@@ -1347,20 +1358,23 @@
           button.addEventListener('click', () => {
             selectedTier = tier;
             renderTiers();
-            showReview();
           });
 
           tierGrid.appendChild(button);
         });
+
+        continueDeposit.disabled = !selectedTier;
       }
 
       function showReview() {
         if (!selectedTier) {
           reviewArea.hidden = true;
+          continueDeposit.disabled = true;
           return;
         }
 
         reviewArea.hidden = false;
+        continueDeposit.disabled = false;
         root.querySelector('#reviewAmount').textContent = `${fmt(selectedTier.amount)} VMM`;
         root.querySelector('#reviewRemaining').textContent = `${fmt(walletBalance - selectedTier.amount)} VMM`;
         root.querySelector('#reviewReward').textContent = `${fmt(selectedTier.reward)} VMM IOU`;
@@ -1373,6 +1387,7 @@
       function clearCurrentSelection() {
         selectedTier = null;
         reviewArea.hidden = true;
+        continueDeposit.disabled = true;
         acceptTerms.checked = false;
         confirmDeposit.disabled = true;
         renderTiers();
@@ -1430,6 +1445,26 @@
         root.querySelector('#historyList').prepend(item);
       }
 
+      function addRewardHistoryItem(reward, transactionCode) {
+        const item = document.createElement('div');
+        item.className = 'vmm-history-item';
+        item.innerHTML = `
+          <div class="vmm-history-main">
+            <div class="vmm-history-icon">＋</div>
+            <div class="vmm-history-copy">
+              <strong>Nhận thưởng VMM IOU</strong>
+              <span>${formatDate('2026-09-01')} · ${transactionCode} · Reward</span>
+            </div>
+          </div>
+          <div class="vmm-history-value">
+            <strong style="color:var(--vmm-green)">+${fmt(reward)} VMM IOU</strong>
+            <span>Hoàn tất</span>
+          </div>
+        `;
+
+        root.querySelector('#historyList').prepend(item);
+      }
+
       function completeConversion() {
         const amount = Number(convertAmount.value);
         if (!Number.isFinite(amount) || amount <= 0 || amount > usdvBalance) return;
@@ -1470,6 +1505,7 @@
 
         const code = `VMM-3Y-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
         addHistoryItem(selectedTier, code);
+        addRewardHistoryItem(selectedTier.reward, code);
         updateBalances();
 
         const successMessage =
@@ -1479,14 +1515,19 @@
           window.Swal.fire({
             icon: 'success',
             title: 'Ký gửi thành công',
-            html: `${successMessage}<br><strong>Mã giao dịch: ${code}</strong>`,
-            confirmButtonText: 'Đóng',
+            html: `${successMessage}<br>Ngày bắt đầu: Sep 01, 2026<br>Hoàn tất dự kiến: Sep 01, 2029<br><strong>Mã giao dịch: ${code}</strong>`,
+            confirmButtonText: 'Xem Ví VMM',
+            showDenyButton: true,
+            denyButtonText: 'Xem chi tiết ký gửi',
             showCloseButton: true,
             allowOutsideClick: false,
             allowEscapeKey: false,
             customClass: {
               confirmButton: 'vmm-swal-confirm'
             }
+          }).then(result => {
+            if (result.isDenied) activateTab('history');
+            else activateTab('overview');
           });
         } else {
           window.alert(`${successMessage}\nMã giao dịch: ${code}`);
@@ -1534,6 +1575,7 @@
 
       convertAmount.addEventListener('input', updateConversionPreview);
       clearSelection.addEventListener('click', clearCurrentSelection);
+      continueDeposit.addEventListener('click', showReview);
       confirmDeposit.addEventListener('click', completeDeposit);
       confirmConversion.addEventListener('click', completeConversion);
 
