@@ -4761,6 +4761,30 @@
     #panel-sms-campaigns .sms-campaign-count { color:#0891b2; font-size:19px; font-weight:800; }
     #panel-sms-campaigns .sms-campaign-count-label { color:var(--nexora-subtle); font-size:9px; }
     #panel-sms-campaigns .sms-campaign-badge { border-radius:999px; background:var(--nexora-surface-muted); padding:4px 8px; color:var(--nexora-muted); font-size:9px; font-weight:800; }
+    #panel-sms-campaigns .sms-campaign-history { margin-top:24px; overflow:hidden; border:1px solid var(--nexora-border); border-radius:12px; background:#fff; box-shadow:var(--nexora-card-shadow); }
+    #panel-sms-campaigns .sms-campaign-history .marketing-section-heading { margin:0; border-bottom:1px solid var(--nexora-rule); padding:16px 18px 4px; }
+    #panel-sms-campaigns .sms-campaign-history .marketing-section-heading h3 { margin:0 0 12px; }
+    #panel-sms-campaigns .sms-campaign-table-wrap { overflow-x:auto; }
+    #panel-sms-campaigns .sms-campaign-table { width:100%; min-width:760px; border-collapse:collapse; color:var(--nexora-text); font-size:11px; }
+    #panel-sms-campaigns .sms-campaign-table th { background:#fbfdff; color:var(--nexora-subtle); font-size:9px; font-weight:800; letter-spacing:.04em; text-align:left; text-transform:uppercase; white-space:nowrap; }
+    #panel-sms-campaigns .sms-campaign-table th,
+    #panel-sms-campaigns .sms-campaign-table td { border-bottom:1px solid var(--nexora-rule); padding:13px 16px; vertical-align:middle; }
+    #panel-sms-campaigns .sms-campaign-table tbody tr:last-child td { border-bottom:0; }
+    #panel-sms-campaigns .sms-campaign-table tbody tr:hover { background:#fbfdff; }
+    #panel-sms-campaigns .sms-campaign-table td:first-child { min-width:160px; font-weight:800; }
+    #panel-sms-campaigns .sms-campaign-table td:nth-child(2) { min-width:150px; color:var(--nexora-muted); }
+    #panel-sms-campaigns .sms-campaign-table td:nth-child(5),
+    #panel-sms-campaigns .sms-campaign-table td:nth-child(6) { color:var(--nexora-muted); font-variant-numeric:tabular-nums; }
+    #panel-sms-campaigns .sms-campaign-status { display:inline-flex; align-items:center; border-radius:999px; padding:4px 8px; font-size:9px; font-weight:800; white-space:nowrap; }
+    #panel-sms-campaigns .sms-campaign-status.is-sent { background:rgba(0,184,115,.1); color:var(--nexora-success); }
+    #panel-sms-campaigns .sms-campaign-status.is-scheduled { background:rgba(43,89,255,.1); color:var(--nexora-electric); }
+    #panel-sms-campaigns .sms-campaign-status.is-active { background:rgba(142,77,248,.1); color:var(--nexora-violet); }
+    #panel-sms-campaigns .sms-campaign-status.is-cancelled { background:rgba(122,130,150,.14); color:var(--nexora-muted); }
+    #panel-sms-campaigns .sms-campaign-actions { display:flex; align-items:center; gap:10px; white-space:nowrap; }
+    #panel-sms-campaigns .sms-campaign-action { border:0; background:transparent; padding:3px 0; color:var(--nexora-brand); font-size:10px; font-weight:700; text-decoration:underline; }
+    #panel-sms-campaigns .sms-campaign-action:hover { color:var(--nexora-brand-dark); }
+    #panel-sms-campaigns .sms-campaign-action.is-danger { color:#c24141; }
+    #panel-sms-campaigns .sms-campaign-empty { padding:24px 16px !important; color:var(--nexora-subtle); text-align:center; }
     #panel-qr-codes .qr-head-actions { display:flex; flex-wrap:wrap; gap:8px; }
     #panel-qr-codes .guide-panel,
     #panel-qr-codes .qr-section { border:1px solid var(--nexora-border); border-radius:12px; background:#fff; padding:18px; box-shadow:var(--nexora-card-shadow); }
@@ -4813,7 +4837,7 @@
     @media (max-width:980px) { #panel-qr-codes .guide-cols, #panel-qr-codes .qr-builder { grid-template-columns:1fr; } #panel-qr-codes .qr-preview { position:static; } }
     @media (max-width:767px) { #panel-qr-codes .qr-leads-table td:nth-child(1)::before { content:"Thời gian"; } #panel-qr-codes .qr-leads-table td:nth-child(2)::before { content:"Tên khách"; } #panel-qr-codes .qr-leads-table td:nth-child(3)::before { content:"Điện thoại"; } #panel-qr-codes .qr-leads-table td:nth-child(4)::before { content:"Promotion Code"; } #panel-qr-codes .qr-leads-table td:nth-child(5)::before { content:"Trạng thái"; } }
     @media (max-width:600px) { #panel-qr-codes .marketing-panel-head { flex-direction:column; } #panel-qr-codes .qr-head-actions, #panel-qr-codes .qr-head-actions button { width:100%; } #panel-qr-codes .verify-row { flex-direction:column; } }
-    @media (max-width:600px) { #panel-sms-campaigns .marketing-panel-head { flex-direction:column; } #panel-sms-campaigns .marketing-panel-actions { width:100%; flex-direction:column; } #panel-sms-campaigns .sms-campaign-stats, #panel-sms-campaigns .sms-campaign-grid { grid-template-columns:1fr; } }
+    @media (max-width:600px) { #panel-sms-campaigns .marketing-panel-head { flex-direction:column; } #panel-sms-campaigns .marketing-panel-actions { width:100%; flex-direction:column; } #panel-sms-campaigns .sms-campaign-stats, #panel-sms-campaigns .sms-campaign-grid { grid-template-columns:1fr; } #panel-sms-campaigns .sms-campaign-table th, #panel-sms-campaigns .sms-campaign-table td { padding:12px; } }
     @media (max-width: 640px) {
       #nx-campaign-root .segment-grid { grid-template-columns: repeat(2, 1fr); }
       #nx-campaign-root .schedule-options { flex-direction: column; }
@@ -8682,6 +8706,27 @@
                 <h3>Nhóm khách — Chọn để gửi campaign</h3>
               </div>
               <div class="sms-campaign-grid" data-sms-campaign-grid></div>
+              <section class="sms-campaign-history" aria-labelledby="smsCampaignHistoryTitle">
+                <div class="marketing-section-heading">
+                  <h3 id="smsCampaignHistoryTitle">Campaigns</h3>
+                </div>
+                <div class="sms-campaign-table-wrap">
+                  <table class="sms-campaign-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Audience</th>
+                        <th scope="col">Mode</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Sent</th>
+                        <th scope="col">Failed</th>
+                        <th scope="col">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody data-sms-campaign-list></tbody>
+                  </table>
+                </div>
+              </section>
             </section>
             <section class="tab-panel" id="panel-qr-codes" data-tab-panel="qr-codes" role="tabpanel" aria-label="QR Codes panel">
               <div class="marketing-panel-head">
@@ -11471,12 +11516,30 @@ function getBookingCardCallStart(item) {
         features: { showPhone: true, showBook: true, showCountdown: true, showReviews: false }
       };
 
+      const smsCampaigns = [
+        {
+          id: 'seed-bitcoin-nail-bar',
+          name: 'Bitcoin Nail Bar',
+          audience: '15 Days No Visit',
+          segmentId: 'day15',
+          mode: 'Scheduled',
+          status: 'Scheduled',
+          sent: 0,
+          failed: 0,
+          message: '',
+          landingPage: '',
+          scheduleDate: '',
+          scheduleTime: '10:00'
+        }
+      ];
+
       const $ = id => document.getElementById(id);
       let composerOpener = null;
       let composerBackgroundStates = [];
       let smsCreditModalOpener = null;
       let smsCreditPackageId = SMS_CREDIT_PACKAGES[0].id;
       let smsCreditPaymentId = SMS_CREDIT_PAYMENT_METHODS[0].id;
+      let editingSmsCampaignId = null;
 
       function composerFocusables() {
         return Array.prototype.filter.call(

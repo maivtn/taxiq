@@ -419,3 +419,33 @@ test('contains forward and reverse Tab focus inside the generated kiosk form', (
   assert.match(html, /event\.source !== parent[\s\S]*event\.data\.type !== 'nexora-kiosk-focus'[\s\S]*event\.data\.edge === 'last'/);
   assert.match(html, /byId\('kioskExit'\)\.addEventListener\('keydown',[\s\S]*event\.key !== 'Tab'[\s\S]*nexora-kiosk-focus[\s\S]*event\.shiftKey \? 'last' : 'first'/);
 });
+
+test('adds a campaign-management table below the SMS segment cards', () => {
+  const html = source();
+
+  assert.match(html, /class="sms-campaign-history"[^>]*aria-labelledby="smsCampaignHistoryTitle"/);
+  assert.match(html, /id="smsCampaignHistoryTitle">Campaigns<\/h3>/);
+  assert.match(html, /class="sms-campaign-table-wrap"[\s\S]*<table class="sms-campaign-table">/);
+  for (const header of ['Name', 'Audience', 'Mode', 'Status', 'Sent', 'Failed', 'Actions']) {
+    assert.match(html, new RegExp(`<th[^>]*>${header}<\\/th>`), `missing campaign table header: ${header}`);
+  }
+  assert.match(html, /<tbody data-sms-campaign-list><\/tbody>/);
+});
+
+test('seeds and manages SMS campaign records without adding a campaign-name field', () => {
+  const html = source();
+
+  assert.match(html, /const smsCampaigns = \[[\s\S]*name: 'Bitcoin Nail Bar'[\s\S]*audience: '15 Days No Visit'[\s\S]*mode: 'Scheduled'[\s\S]*status: 'Scheduled'[\s\S]*sent: 0[\s\S]*failed: 0/);
+  assert.doesNotMatch(html, /id="campaignName"/);
+  for (const fn of ['renderSmsCampaignList', 'createSmsCampaignRecord', 'openSmsCampaignEditor', 'handleSmsCampaignAction']) {
+    assert.match(html, new RegExp(`function ${fn}\\(`), `missing ${fn}`);
+  }
+  for (const action of ['edit', 'cancel', 'delete']) {
+    assert.match(html, new RegExp(`data-sms-campaign-action="${action}"`), `missing ${action} action`);
+  }
+  assert.match(html, /smsCampaigns\.unshift\(createSmsCampaignRecord\(/);
+  assert.match(html, /editingSmsCampaignId/);
+  assert.match(html, /campaign\.status = 'Cancelled'/);
+  assert.match(html, /window\.confirm\(/);
+  assert.match(html, /renderSmsCampaignList\(\);/);
+});

@@ -1748,7 +1748,7 @@
       margin: 10px auto 0;
       color: #667386;
       font-size: 12px;
-      text-align: left;
+      text-align: center;
     }
 
     #vmm-program-root .vmm-buy-confirmation .vmm-action-row {
@@ -2492,8 +2492,7 @@
               <button class="btn btn-primary vmm-btn vmm-btn-primary" id="confirmDeposit" disabled>Confirm Holding</button>
             </div>
 
-            <div class="form-check vmm-terms-check">
-              <input class="form-check-input" type="checkbox" id="acceptTerms" />
+            <div class="vmm-terms-check">
               <span>
                 By clicking <strong>Confirm Holding</strong>, you confirm that you have
                 read and agreed to our <button class="btn btn-link p-0" type="button" data-open-terms>Holding Agreement</button>.
@@ -2822,7 +2821,6 @@
       const packageSummary = root.querySelector('#packageSummary');
       const typeValidation = root.querySelector('#typeValidation');
       const reviewArea = root.querySelector('#reviewArea');
-      const acceptTerms = root.querySelector('#acceptTerms');
       const confirmDeposit = root.querySelector('#confirmDeposit');
       const programModal = root.querySelector('#programModal');
       const termsModal = root.querySelector('#termsModal');
@@ -2882,7 +2880,7 @@
         packageQuantity.textContent = fmt(walletBalance);
         root.querySelector('#programBalance').textContent = `${fmt(walletBalance)} VMM`;
         typeValidation.hidden = !(selectedTier && selectedTier.amount > walletBalance);
-        confirmDeposit.disabled = !acceptTerms.checked || Boolean(selectedTier && selectedTier.amount > walletBalance);
+        confirmDeposit.disabled = Boolean(selectedTier && selectedTier.amount > walletBalance);
       }
 
       function formatConversionAmount(value) {
@@ -3043,8 +3041,7 @@
         reviewArea.hidden = false;
         packageSummary.textContent = `${fmt(selectedTier.amount)} VMM · Reward ${fmt(selectedTier.reward)} VMM IOU`;
         root.querySelector('#rewardBannerValue').textContent = `${fmt(selectedTier.reward)} VMM IOU`;
-        acceptTerms.checked = false;
-        confirmDeposit.disabled = true;
+        confirmDeposit.disabled = Boolean(selectedTier.amount > walletBalance);
       }
 
       function clearCurrentSelection() {
@@ -3052,7 +3049,6 @@
         reviewArea.hidden = true;
         packageSummary.textContent = '—';
         root.querySelector('#rewardBannerValue').textContent = '—';
-        acceptTerms.checked = false;
         confirmDeposit.disabled = true;
         renderTiers();
         updateBalances();
@@ -3204,7 +3200,7 @@
       }
 
       function completeDeposit() {
-        if (!selectedTier || !acceptTerms.checked || selectedTier.amount > walletBalance) return;
+        if (!selectedTier || selectedTier.amount > walletBalance) return;
 
         walletBalance -= selectedTier.amount;
         lockedBalance += selectedTier.amount;
@@ -3295,10 +3291,6 @@
 
       convertModal.addEventListener('click', event => {
         if (event.target === convertModal) closeConversion();
-      });
-
-      acceptTerms.addEventListener('change', () => {
-        confirmDeposit.disabled = !acceptTerms.checked || Boolean(selectedTier && selectedTier.amount > walletBalance);
       });
 
       convertAmount.addEventListener('input', () => maskConversionInput(convertAmount));
