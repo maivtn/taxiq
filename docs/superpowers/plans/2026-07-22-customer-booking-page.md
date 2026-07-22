@@ -133,7 +133,7 @@ Expected: FAIL because `html/customer/booking.html` is empty and the booking run
 
 - [ ] **Step 1: Add page shell and data catalog**
 
-Create semantic HTML with a lavender background, top brand card, four-step progress indicator, `section` containers for the phone, services, date/technician, review, and success states. Include the exact IDs/data attributes used by the test and use catalog data for demo customer `8325550198 → Mary Smith`, services `gel` and `pedi`, “Bất kỳ thợ nào”, Tina, Helen, Andy, Kim, and a seven-day slot list.
+Create semantic HTML with a lavender background, top brand card, three-step progress indicator, and `section` containers for the phone, combined service/date/time/technician selection, review, and success states. Include the exact IDs/data attributes used by the test and use catalog data for demo customer `8325550198 → Mary Smith`, services `gel` and `pedi`, “Bất kỳ thợ nào”, Tina, Helen, Andy, Kim, and a seven-day slot list.
 
 - [ ] **Step 2: Add pure state functions before DOM wiring**
 

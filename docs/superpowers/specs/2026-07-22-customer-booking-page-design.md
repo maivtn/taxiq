@@ -26,7 +26,7 @@ Tạo một trang booking độc lập cho khách đặt nhiều dịch vụ t�
 
 - Nền gradient lavender rất nhạt, card trắng bo góc lớn, border và shadow nhẹ.
 - Header có icon móng tay, tên tiệm, mô tả ngắn.
-- Step indicator 1–4 cho Phone & info, Services, Date & tech, Review.
+- Step indicator 1–3 cho Phone & info, Services + date/time + technician, Review; màn hình success là trạng thái sau khi gửi.
 - Service cards dùng grid responsive; selected state viền pink và nền pink nhạt.
 - Technician cards có avatar initials/emoji, nhãn available/busy và lựa chọn “Bất kỳ thợ nào”.
 - Ngày/giờ dùng chip/card dễ bấm trên mobile.
@@ -39,7 +39,7 @@ Page standalone dùng `BOOKING_STORAGE_KEY = 'nexora.customer.booking.page.v1'` 
 
 ```js
 {
-  step: 1 | 2 | 3 | 4 | 5,
+  step: 1 | 2 | 3 | 4,
   customer: { phone: string, name: string, isReturning: boolean, smsOptIn: boolean },
   selectedServiceIds: string[],
   selectedStaffId: string,

@@ -83,3 +83,15 @@ test('page includes booking controls and removes check-in copy', () => {
   assert.match(SOURCE, /Booking|Đặt lịch/);
   assert.doesNotMatch(SOURCE, /Check me in/i);
 });
+
+test('combines service, date, time, and technician selection into the same step', () => {
+  const serviceStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
+  const reviewStep = SOURCE.match(/data-step-panel="3"[\s\S]*?<\/section>/)?.[0] || '';
+  assert.match(serviceStep, /Dịch vụ &amp; thợ/);
+  assert.match(serviceStep, /data-service-id="gel"/);
+  assert.match(serviceStep, /data-staff-id="any"/);
+  assert.match(serviceStep, /data-booking-date/);
+  assert.match(serviceStep, /data-booking-time/);
+  assert.match(reviewStep, /review-customer/);
+  assert.doesNotMatch(SOURCE, /data-step-panel="5"/);
+});
