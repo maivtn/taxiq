@@ -4811,6 +4811,26 @@
     #nx-campaign-root .sms-credit-payment-balance { flex:0 0 auto; color:var(--nexora-muted); text-align:right; }
     #nx-campaign-root .sms-credit-payment-balance span { display:block; color:var(--nexora-subtle); font-size:12px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
     #nx-campaign-root .sms-credit-payment-balance strong { display:block; margin-top:2px; color:var(--nexora-text); font-size:12px; font-weight:900; }
+    #nx-campaign-root .sms-credit-card-form { margin-top:12px; border:1px solid #f97316; border-radius:9px; background:#fff; padding:12px; }
+    #nx-campaign-root .sms-credit-card-form[hidden] { display:none; }
+    #nx-campaign-root .sms-credit-card-form-head { display:flex; align-items:center; gap:7px; color:var(--nexora-text); font-size:14px; font-weight:800; }
+    #nx-campaign-root .sms-credit-card-form-head .marketing-icon { color:#64748b; }
+    #nx-campaign-root .sms-credit-card-required-note { margin-top:12px; color:var(--nexora-muted); font-size:12px; }
+    #nx-campaign-root .sms-credit-card-required-note strong,
+    #nx-campaign-root .sms-credit-card-label span { color:#dc2626; }
+    #nx-campaign-root .sms-credit-card-fields { display:grid; gap:11px; margin-top:12px; }
+    #nx-campaign-root .sms-credit-card-field { display:grid; gap:6px; min-width:0; }
+    #nx-campaign-root .sms-credit-card-label { color:#273244; font-size:12px; font-weight:800; }
+    #nx-campaign-root .sms-credit-card-input,
+    #nx-campaign-root .sms-credit-card-select { width:100%; min-height:35px; border:1px solid #d8dee8; border-radius:8px; background:#fff; padding:8px 10px; color:var(--nexora-text); font-size:12px; outline:0; }
+    #nx-campaign-root .sms-credit-card-input:focus,
+    #nx-campaign-root .sms-credit-card-select:focus { border-color:var(--nexora-brand); box-shadow:0 0 0 3px rgba(70,72,216,.1); }
+    #nx-campaign-root .sms-credit-card-input::placeholder { color:#94a3b8; }
+    #nx-campaign-root .sms-credit-card-input-wrap { position:relative; }
+    #nx-campaign-root .sms-credit-card-input-wrap .marketing-icon { position:absolute; top:50%; left:10px; width:17px; height:17px; transform:translateY(-50%); color:#64748b; pointer-events:none; }
+    #nx-campaign-root .sms-credit-card-input-wrap .sms-credit-card-input { padding-left:34px; }
+    #nx-campaign-root .sms-credit-card-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    #nx-campaign-root .sms-credit-card-error { min-height:16px; color:#b91c1c; font-size:12px; font-weight:700; }
     #nx-campaign-root .sms-credit-invoice { border:1px solid var(--nexora-border); border-radius:12px; background:#fff; padding:13px; }
     #nx-campaign-root .sms-credit-invoice-row { display:flex; align-items:center; justify-content:space-between; gap:12px; color:var(--nexora-muted); font-size:12px; font-weight:600; }
     #nx-campaign-root .sms-credit-invoice-row + .sms-credit-invoice-row { margin-top:8px; }
@@ -4820,6 +4840,9 @@
     #nx-campaign-root .sms-credit-modal-foot { display:flex; flex:0 0 auto; align-items:center; gap:10px; border-top:1px solid var(--nexora-rule); background:#fff; padding:14px 20px; }
     #nx-campaign-root .sms-credit-modal-foot .btn-outline { flex:1; color:var(--nexora-muted); }
     #nx-campaign-root .sms-credit-modal-foot .btn-primary { flex:2; justify-content:center; }
+    @media (max-width:560px) {
+      #nx-campaign-root .sms-credit-card-row { grid-template-columns:1fr; }
+    }
     #nx-campaign-root .sms-recipients-modal { position:fixed; inset:0; z-index:155; display:grid; place-items:center; padding:18px; background:rgba(8,31,73,.48); backdrop-filter:blur(8px); }
     #nx-campaign-root .sms-recipients-modal[hidden] { display:none; }
     #nx-campaign-root .sms-recipients-dialog { display:flex; width:min(100%,720px); max-height:min(90vh,680px); flex-direction:column; overflow:hidden; border:1px solid var(--nexora-border); border-radius:16px; background:#fff; box-shadow:0 28px 80px rgba(8,31,73,.28); }
@@ -9250,7 +9273,7 @@
           <div class="sms-credit-modal-head">
             <div>
               <div class="sms-credit-modal-title" id="sms-credit-modal-title"><i class="marketing-icon" data-lucide="wallet-cards" aria-hidden="true"></i><span>Mua SMS Credits</span></div>
-              <div class="sms-credit-modal-sub" id="sms-credit-modal-description">Chọn gói SMS phù hợp, sau đó thanh toán bằng ví của bạn.</div>
+              <div class="sms-credit-modal-sub" id="sms-credit-modal-description">Chọn gói SMS phù hợp, sau đó thanh toán bằng ví hoặc thẻ của bạn.</div>
             </div>
             <button class="sms-credit-close" type="button" data-sms-credit-close aria-label="Đóng mua SMS credits"><i class="marketing-icon is-compact" data-lucide="x" aria-hidden="true"></i></button>
           </div>
@@ -9262,6 +9285,64 @@
             <section class="sms-credit-section" aria-labelledby="sms-credit-payment-title">
               <div class="sms-credit-section-label" id="sms-credit-payment-title">Phương thức thanh toán</div>
               <div class="sms-credit-payment-list" data-sms-credit-payment-list></div>
+              <div class="sms-credit-card-form" data-sms-credit-card-form hidden>
+                <div class="sms-credit-card-form-head"><i class="marketing-icon" data-lucide="credit-card" aria-hidden="true"></i><span>Credit or Debit Card</span></div>
+                <div class="sms-credit-card-required-note"><strong>*</strong> required</div>
+                <div class="sms-credit-card-fields">
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Cardholder name <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="cc-name" placeholder="Name on card" data-sms-credit-card-field="name" data-sms-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Card number <span>*</span></span>
+                      <span class="sms-credit-card-input-wrap">
+                        <i class="marketing-icon" data-lucide="credit-card" aria-hidden="true"></i>
+                        <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="1234 1234 1234 1234" data-sms-credit-card-field="number" data-sms-credit-card-required>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Expiration Date <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/YY" data-sms-credit-card-field="expiry" data-sms-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Security Code <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="CVC" data-sms-credit-card-field="cvc" data-sms-credit-card-required>
+                    </label>
+                  </div>
+                  <label class="sms-credit-card-field">
+                    <span class="sms-credit-card-label">Address line 1 <span>*</span></span>
+                    <input class="sms-credit-card-input" type="text" autocomplete="address-line1" placeholder="Street address" data-sms-credit-card-field="address1" data-sms-credit-card-required>
+                  </label>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">City <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="address-level2" placeholder="City" data-sms-credit-card-field="city" data-sms-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">State <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="address-level1" placeholder="State" data-sms-credit-card-field="state" data-sms-credit-card-required>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Zip code <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="Zip code" data-sms-credit-card-field="zip" data-sms-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Country <span>*</span></span>
+                      <select class="sms-credit-card-select" autocomplete="country" data-sms-credit-card-field="country" data-sms-credit-card-required>
+                        <option value="US" selected>United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="MX">Mexico</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-error" data-sms-credit-card-error role="alert" aria-live="polite"></div>
+                </div>
+              </div>
             </section>
             <section class="sms-credit-section sms-credit-invoice" aria-labelledby="sms-credit-invoice-title">
               <div class="sms-credit-section-label" id="sms-credit-invoice-title">Tóm tắt hoá đơn</div>
@@ -12070,7 +12151,8 @@ function getBookingCardCallStart(item) {
         { id: 'USDT', label: 'USDT', balance: '$79,000.00', asset: 'assets/usdt.png' },
         { id: 'USD', label: 'USD', balance: '$79,000.00', asset: 'assets/usd.png' },
         { id: 'BTC', label: 'BTC', balance: '100,000.25', asset: 'assets/btc.png' },
-        { id: 'VND', label: 'VND', balance: '$50,000,000.00', asset: 'assets/vnd.png' }
+        { id: 'VND', label: 'VND', balance: '$50,000,000.00', asset: 'assets/vnd.png' },
+        { id: 'CARD', label: 'Credit or Debit Card' }
       ];
 
       const TEMPLATES = {
@@ -12662,15 +12744,50 @@ function getBookingCardCallStart(item) {
 
         target.innerHTML = SMS_CREDIT_PAYMENT_METHODS.map(function(method) {
           var selected = method.id === smsCreditPaymentId;
+          var paymentAsset = method.id === 'CARD'
+            ? '<i class="marketing-icon sms-credit-card-method-icon" data-lucide="credit-card" aria-hidden="true"></i>'
+            : '<img class="sms-credit-token" src="' + method.asset + '" alt="" aria-hidden="true">';
+          var paymentBalance = method.id === 'CARD' ? '' : '<span class="sms-credit-payment-balance"><span>Số dư</span><strong>' + method.balance + '</strong></span>';
           return '<button class="sms-credit-payment' + (selected ? ' is-selected' : '') + '" type="button" data-sms-credit-payment="' + method.id + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
             '<span class="sms-credit-payment-main">' +
               '<span class="sms-credit-radio" aria-hidden="true"></span>' +
-              '<img class="sms-credit-token" src="' + method.asset + '" alt="" aria-hidden="true">' +
+              paymentAsset +
               '<span class="sms-credit-payment-name">' + method.label + '</span>' +
             '</span>' +
-            '<span class="sms-credit-payment-balance"><span>Số dư</span><strong>' + method.balance + '</strong></span>' +
+            paymentBalance +
           '</button>';
         }).join('');
+      }
+
+      function renderSmsCreditCardForm() {
+        var form = document.querySelector('[data-sms-credit-card-form]');
+        if (!form) return;
+        var isCard = getSelectedSmsCreditPayment().id === 'CARD';
+        form.hidden = !isCard;
+        if (!isCard) {
+          var error = form.querySelector('[data-sms-credit-card-error]');
+          if (error) error.textContent = '';
+        }
+      }
+
+      function validateSmsCreditCardForm() {
+        var form = document.querySelector('[data-sms-credit-card-form]');
+        if (!form || form.hidden) return true;
+
+        var firstMissing = null;
+        form.querySelectorAll('[data-sms-credit-card-required]').forEach(function(field) {
+          field.removeAttribute('aria-invalid');
+          if (!firstMissing && !field.value.trim()) firstMissing = field;
+        });
+        var error = form.querySelector('[data-sms-credit-card-error]');
+        if (firstMissing) {
+          firstMissing.setAttribute('aria-invalid', 'true');
+          if (error) error.textContent = 'Please complete all required card details.';
+          firstMissing.focus();
+          return false;
+        }
+        if (error) error.textContent = '';
+        return true;
       }
 
       function renderSmsCreditInvoice() {
@@ -12690,6 +12807,7 @@ function getBookingCardCallStart(item) {
       function renderSmsCreditModal() {
         renderSmsCreditPackages();
         renderSmsCreditPayments();
+        renderSmsCreditCardForm();
         renderSmsCreditInvoice();
         refreshBookingMarketingIcons();
       }
@@ -12736,6 +12854,7 @@ function getBookingCardCallStart(item) {
       function confirmSmsCreditPurchase() {
         var selectedPackage = getSelectedSmsCreditPackage();
         var selectedPayment = getSelectedSmsCreditPayment();
+        if (selectedPayment.id === 'CARD' && !validateSmsCreditCardForm()) return;
         updateCredits(state.credits + selectedPackage.credits);
         closeSmsCreditModal();
         showSmsCreditPurchaseSuccess(selectedPackage, selectedPayment);
@@ -12813,6 +12932,16 @@ function getBookingCardCallStart(item) {
       $('composerModal').addEventListener('click', function (e) { if (e.target === e.currentTarget) closeComposer(); });
       document.querySelectorAll('[data-sms-credit-buy]').forEach(function(button) {
         button.addEventListener('click', openSmsCreditModal);
+      });
+      var smsCreditCardNumber = document.querySelector('[data-sms-credit-card-field="number"]');
+      if (smsCreditCardNumber) smsCreditCardNumber.addEventListener('input', function() {
+        var digits = this.value.replace(/\D/g, '').slice(0, 16);
+        this.value = digits.replace(/(.{4})/g, '$1 ').trim();
+      });
+      var smsCreditCardExpiry = document.querySelector('[data-sms-credit-card-field="expiry"]');
+      if (smsCreditCardExpiry) smsCreditCardExpiry.addEventListener('input', function() {
+        var digits = this.value.replace(/\D/g, '').slice(0, 4);
+        this.value = digits.length > 2 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
       });
       var smsCreditModal = document.querySelector('[data-sms-credit-modal]');
       if (smsCreditModal) smsCreditModal.addEventListener('click', function(event) {
