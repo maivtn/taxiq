@@ -218,6 +218,16 @@ test('uses the shared phone mask for New appointment phone', () => {
   assert.match(html, /function initPhoneMasks\(\)/);
 });
 
+test('uses a calendar-plus icon for the New appointment dialog title', () => {
+  const html = source();
+
+  assert.match(
+    html,
+    /<div class="booking-create-title" id="booking-create-title"><i class="bi bi-calendar-plus" aria-hidden="true"><\/i> New appointment<\/div>/
+  );
+  assert.doesNotMatch(html, /booking-create-title"><i class="bi bi-plus-circle"/);
+});
+
 test('shows the default +1 country code before New appointment phone', () => {
   const html = source();
 
