@@ -48,4 +48,7 @@ test('defines the selected-package review group and dynamic value hooks', () => 
   assert.match(html, /reviewEndDate\.textContent\s*=\s*'Aug 20, 2029'/);
   assert.match(html, /\.vmm-package-review-row\s*\{/);
   assert.match(html, /justify-content:\s*space-between/);
+  assert.match(html, /\.vmm-package-review-rows\s*\{[\s\S]*?gap:\s*2px;/);
+  assert.match(html, /\.vmm-package-review-row\s*\{[\s\S]*?min-height:\s*0;[\s\S]*?padding:\s*5px 0;[\s\S]*?border-bottom:\s*0;/);
+  assert.doesNotMatch(html, /\.vmm-package-review-row:last-child/);
 });
