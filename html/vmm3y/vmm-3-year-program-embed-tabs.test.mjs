@@ -51,4 +51,6 @@ test('defines the selected-package review group and dynamic value hooks', () => 
   assert.match(html, /\.vmm-package-review-rows\s*\{[\s\S]*?gap:\s*2px;/);
   assert.match(html, /\.vmm-package-review-row\s*\{[\s\S]*?min-height:\s*0;[\s\S]*?padding:\s*5px 0;[\s\S]*?border-bottom:\s*0;/);
   assert.doesNotMatch(html, /\.vmm-package-review-row:last-child/);
+  assert.match(html, /\.vmm-package-review-label\s*\{[^}]*font-size:\s*13px;[^}]*font-weight:\s*500;[^}]*\}/);
+  assert.match(html, /\.vmm-package-review-value\s*\{[^}]*font-size:\s*14px;[^}]*font-weight:\s*700;[^}]*\}/);
 });
