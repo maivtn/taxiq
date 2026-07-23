@@ -118,7 +118,7 @@ test('allows booking dates beyond the previous seven-day window', () => {
 test('removes the fixed seven-day date picker limit', () => {
   assert.doesNotMatch(SOURCE, /Array\.from\(\{ length: 7/);
   assert.doesNotMatch(SOURCE, /maxDate:|dateOptions\.max/);
-  assert.match(SOURCE, /minDate: defaultBookingDate/);
+  assert.match(SOURCE, /dateOptions\.min = defaultBookingDate/);
 });
 
 test('hides optional SMS consent and returning-customer helper from step 1', () => {
@@ -297,17 +297,18 @@ test('keeps the staff list synchronized before service selection', () => {
   assert.match(SOURCE, /if \(state\.selectedServiceIds\.length === 0\) return true;/);
 });
 
-test('uses a compact three-column time picker library instead of TOAST UI', () => {
-  assert.match(SOURCE, /E-Kohei\/timepicker/);
-  assert.match(SOURCE, /timepicker\.css/);
-  assert.match(SOURCE, /timepicker\.js/);
-  assert.doesNotMatch(SOURCE, /tui\.time-picker|tui-time-picker/);
-  assert.match(SOURCE, /id="time-options" type="text"/);
-  assert.doesNotMatch(SOURCE, /id="time-picker-container"/);
+test('uses native date and time inputs without picker libraries', () => {
+  assert.match(SOURCE, /id="date-options" type="date"/);
+  assert.match(SOURCE, /id="time-options" type="time"/);
+  assert.match(SOURCE, /timeOptions\.step = '900'/);
+  assert.doesNotMatch(SOURCE, /flatpickr/i);
+  assert.doesNotMatch(SOURCE, /timepicker/i);
+  assert.doesNotMatch(SOURCE, /jquery/i);
 });
 
-test('converts the library 12-hour value to the booking 24-hour value', () => {
+test('normalizes native and 12-hour booking time values', () => {
   const api = getApi();
+  assert.equal(api.parseBookingTime('15:30'), '15:30');
   assert.equal(api.parseBookingTime('3:45 PM'), '15:45');
   assert.equal(api.parseBookingTime('12:05 AM'), '00:05');
   assert.equal(api.parseBookingTime('12:30 PM'), '12:30');

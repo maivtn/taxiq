@@ -3853,6 +3853,11 @@
     .booking-create-field.is-full { grid-column: 1 / -1; }
     .booking-create-label { color: var(--nexora-subtle); font-size: 10px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
     .booking-create-field textarea.booking-input { height: 78px; padding: 10px 11px; resize: vertical; }
+    .booking-service-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .booking-service-chip-button { border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 6px 9px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; line-height: 1.25; text-align: left; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+    .booking-service-chip-button:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
+    .booking-service-chip-button.is-selected { border-color: transparent; background: var(--nexora-brand); color: #fff; }
+    .booking-create-hint { color: var(--nexora-muted); font-size: 10px; font-weight: 600; letter-spacing: 0; text-transform: none; }
     .booking-create-error { min-height: 18px; border-radius: 8px; color: #b91c1c; font-size: 11px; font-weight: 700; line-height: 1.5; }
     .booking-create-actions .booking-primary-button,
     .booking-create-actions .booking-secondary-button { min-height: 38px; }
@@ -7862,40 +7867,20 @@
                     <div class="booking-create-body">
                       <div class="booking-create-grid">
                         <label class="booking-create-field">
+                          <span class="booking-create-label">Phone *</span>
+                          <input class="booking-input" type="tel" maxlength="20" data-booking-create-field="phone" data-phone-mask placeholder="(555) 555-5555" autocomplete="tel" required>
+                        </label>
+                        <label class="booking-create-field">
                           <span class="booking-create-label">Customer name *</span>
                           <input class="booking-input" type="text" maxlength="60" data-booking-create-field="name" placeholder="Enter customer name" autocomplete="name">
                         </label>
-                        <label class="booking-create-field">
-                          <span class="booking-create-label">Phone</span>
-                          <input class="booking-input" type="tel" maxlength="20" data-booking-create-field="phone" placeholder="(555) 555-5555" autocomplete="tel">
-                        </label>
-                        <label class="booking-create-field">
-                          <span class="booking-create-label">Service *</span>
-                          <select class="booking-select" data-booking-create-field="service"></select>
+                        <label class="booking-create-field is-full">
+                          <span class="booking-create-label">Services * <span class="booking-create-hint">Tap to pick several</span></span>
+                          <div class="booking-service-chips" data-booking-create-field="service" role="group" aria-label="Select one or more services"></div>
                         </label>
                         <label class="booking-create-field">
                           <span class="booking-create-label">Technician</span>
                           <select class="booking-select" data-booking-create-field="tech"></select>
-                        </label>
-                        <label class="booking-create-field">
-                          <span class="booking-create-label">Date *</span>
-                          <input class="booking-input" type="date" data-booking-create-field="date">
-                        </label>
-                        <label class="booking-create-field">
-                          <span class="booking-create-label">Start time *</span>
-                          <input class="booking-input" type="time" step="900" data-booking-create-field="time">
-                        </label>
-                        <label class="booking-create-field">
-                          <span class="booking-create-label">Duration</span>
-                          <select class="booking-select" data-booking-create-field="duration">
-                            <option value="15">15 minutes</option>
-                            <option value="30">30 minutes</option>
-                            <option value="45">45 minutes</option>
-                            <option value="60" selected>60 minutes</option>
-                            <option value="75">75 minutes</option>
-                            <option value="90">90 minutes</option>
-                            <option value="120">120 minutes</option>
-                          </select>
                         </label>
                         <label class="booking-create-field">
                           <span class="booking-create-label">Status</span>
@@ -7905,6 +7890,14 @@
                             <option value="done">Completed</option>
                             <option value="noshow">No-show</option>
                           </select>
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Date *</span>
+                          <input class="booking-input" type="date" data-booking-create-field="date">
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Start time *</span>
+                          <input class="booking-input" type="time" step="900" data-booking-create-field="time">
                         </label>
                         <label class="booking-create-field is-full">
                           <span class="booking-create-label">Internal note</span>
@@ -9671,7 +9664,7 @@
       var color = bookingCalendarColor(tech, columns);
       var start = bookingCalendarAppointmentStart(item);
       var minutes = bookingCalendarDurationMinutes(item);
-      var service = item.dataset.bookingService || 'Service to confirm';
+      var service = getBookingServiceText(item) || 'Service to confirm';
       var status = getBookingStatusText(item);
       return {
         id: item.dataset.bookingId,
@@ -9747,11 +9740,36 @@
       if (error) error.textContent = message || '';
     }
 
+    function setBookingCreateServiceSelected(button, selected) {
+      if (!button) return;
+      button.classList.toggle('is-selected', selected);
+      button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    }
+
+    function getBookingCreateServices() {
+      var field = bookingCreateField('service');
+      if (!field) return [];
+
+      return Array.from(field.querySelectorAll('[data-booking-create-service].is-selected')).map(function(button) {
+        return button.dataset.bookingCreateService || '';
+      }).filter(Boolean);
+    }
+
+    function bookingServiceDurationMinutes(services) {
+      return (services || []).reduce(function(total, serviceName) {
+        var option = BOOKING_CALENDAR_SERVICE_OPTIONS.find(function(service) {
+          return service.name === serviceName;
+        });
+        var duration = option ? +option.duration : +(BOOKING_CALENDAR_SERVICE_DURATIONS[serviceName] || 0);
+        return total + (duration || 60);
+      }, 0);
+    }
+
     function populateBookingCreateForm() {
       var service = bookingCreateField('service');
       if (service) {
-        service.innerHTML = '<option value="">Select a service</option>' + BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
-          return '<option value="' + escapeHtml(option.name) + '" data-duration="' + option.duration + '">' + escapeHtml(option.name) + ' · ' + option.duration + ' min</option>';
+        service.innerHTML = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
+          return '<button class="booking-service-chip-button" type="button" data-booking-create-service="' + escapeHtml(option.name) + '" data-duration="' + option.duration + '" aria-pressed="false">' + escapeHtml(option.name) + ' · ' + option.duration + ' min</button>';
         }).join('');
       }
 
@@ -9768,13 +9786,6 @@
       if (!modal) return;
 
       var startDate = start instanceof Date && Number.isFinite(start.getTime()) ? new Date(start) : new Date(bookingCalendarDate + 'T10:00:00');
-      var endDate = end instanceof Date && Number.isFinite(end.getTime()) ? new Date(end) : new Date(startDate.getTime() + 60 * 60000);
-      var duration = Math.max(15, Math.round((endDate - startDate) / 60000));
-      var durationField = bookingCreateField('duration');
-      var durationOptions = durationField ? Array.from(durationField.options).map(function(option) { return +option.value; }) : [];
-      if (durationOptions.indexOf(duration) === -1) duration = durationOptions.reduce(function(closest, option) {
-        return Math.abs(option - duration) < Math.abs(closest - duration) ? option : closest;
-      }, 60);
 
       populateBookingCreateForm();
       var name = bookingCreateField('name');
@@ -9787,11 +9798,12 @@
       var note = bookingCreateField('note');
       if (name) name.value = '';
       if (phone) phone.value = '';
-      if (service) service.value = '';
+      if (service) service.querySelectorAll('[data-booking-create-service]').forEach(function(button) {
+        setBookingCreateServiceSelected(button, false);
+      });
       if (techField) techField.value = bookingCalendarResourceTech(tech);
       if (date) date.value = bookingCalendarInputDate(startDate);
       if (time) time.value = bookingCalendarInputTime(startDate);
-      if (durationField) durationField.value = String(duration);
       if (status) status.value = 'new';
       if (note) note.value = '';
       setBookingCreateError('');
@@ -9836,14 +9848,20 @@
       var status = BOOKING_STATUS_CLASS[data.status] ? data.status : 'new';
       var tech = bookingCalendarResourceTech(data.tech);
       var techLabel = tech === 'unassigned' ? 'Unassigned' : tech;
+      var services = (Array.isArray(data.services) ? data.services : [data.service]).map(function(service) {
+        return String(service || '').trim();
+      }).filter(Boolean);
+      var serviceLabel = services.join(' ');
       var start = new Date(data.date + 'T' + data.time + ':00');
       var timeLabel = bookingCalendarDisplayTime(start);
       var dateLabel = bookingCalendarDisplayDate(start);
       var phoneLabel = formatBookingPhone(data.phone);
-      return '<tr class="booking-table-row ' + bookingCalendarStatusClass(status) + '" data-booking-item data-booking-id="' + escapeHtml(data.id) + '" data-booking-name="' + escapeHtml(data.name) + '" data-booking-phone="' + escapeHtml(data.phone) + '" data-booking-email="" data-booking-service="' + escapeHtml(data.service) + '" data-booking-tech="' + escapeHtml(techLabel) + '" data-booking-date="' + escapeHtml(data.date) + '" data-booking-duration="' + data.duration + '" data-booking-note="' + escapeHtml(data.note || '') + '">' +
+      return '<tr class="booking-table-row ' + bookingCalendarStatusClass(status) + '" data-booking-item data-booking-id="' + escapeHtml(data.id) + '" data-booking-name="' + escapeHtml(data.name) + '" data-booking-phone="' + escapeHtml(data.phone) + '" data-booking-email="" data-booking-service="' + escapeHtml(serviceLabel) + '" data-booking-tech="' + escapeHtml(techLabel) + '" data-booking-date="' + escapeHtml(data.date) + '" data-booking-duration="' + data.duration + '" data-booking-note="' + escapeHtml(data.note || '') + '">' +
         '<td><div class="booking-time-block"><div class="booking-time-main booking-callstart-main">' + escapeHtml(timeLabel) + '</div><div class="booking-time-date booking-callstart-date">' + escapeHtml(dateLabel) + '</div></div></td>' +
         '<td><div class="booking-customer"><div class="booking-customer-name">' + escapeHtml(data.name) + ' <span class="badge badge-soft">Front desk</span></div><div class="booking-customer-meta">' + escapeHtml(phoneLabel) + '</div></div></td>' +
-        '<td><div class="booking-service"><div class="booking-service-list"><span class="booking-service-chip">' + escapeHtml(data.service) + '</span></div></div></td>' +
+        '<td><div class="booking-service"><div class="booking-service-list">' + services.map(function(service) {
+          return '<span class="booking-service-chip">' + escapeHtml(service) + '</span>';
+        }).join('') + '</div></div></td>' +
         '<td><div class="booking-tech"><span class="booking-tech-name">' + escapeHtml(techLabel) + '</span></div></td>' +
         '<td><div class="booking-time-block"><div class="booking-time-main">' + escapeHtml(timeLabel) + '</div><div class="booking-time-date">' + escapeHtml(dateLabel) + '</div></div></td>' +
         '<td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">' + bookingCalendarDurationLabel(data.duration) + '</span></span></td>' +
@@ -9858,17 +9876,19 @@
         return field ? field.value : '';
       };
       var name = get('name').trim();
-      var service = get('service').trim();
+      var services = getBookingCreateServices();
+      var service = services.join(' ');
       var date = get('date');
       var time = get('time');
       var phone = get('phone').trim();
       var tech = bookingCalendarResourceTech(get('tech'));
-      var duration = +get('duration') || 60;
+      var duration = bookingServiceDurationMinutes(services) || 60;
       var status = get('status') || 'new';
       var note = get('note').trim();
 
+      if (!phone) { setBookingCreateError('Enter the phone number.'); return; }
       if (!name) { setBookingCreateError('Enter the customer name.'); return; }
-      if (!service) { setBookingCreateError('Select a service.'); return; }
+      if (!services.length) { setBookingCreateError('Select at least one service.'); return; }
       if (!date || !time) { setBookingCreateError('Pick a valid date and start time.'); return; }
 
       var start = new Date(date + 'T' + time + ':00');
@@ -9887,6 +9907,7 @@
         name: name,
         phone: phone,
         service: service,
+        services: services,
         tech: tech,
         date: date,
         time: time,
@@ -11184,16 +11205,18 @@ function getBookingCardCallStart(item) {
 
     var bookingCreateSave = document.querySelector('[data-booking-create-save]');
     if (bookingCreateSave) bookingCreateSave.addEventListener('click', saveBookingFromCalendar);
-    var bookingCreateService = bookingCreateField('service');
-    if (bookingCreateService) bookingCreateService.addEventListener('change', function() {
-      var selected = bookingCreateService.options[bookingCreateService.selectedIndex];
-      var duration = bookingCreateField('duration');
-      if (selected && selected.dataset.duration && duration && Array.from(duration.options).some(function(option) { return option.value === selected.dataset.duration; })) {
-        duration.value = selected.dataset.duration;
-      }
-    });
 
     document.addEventListener('click', function(event) {
+      var bookingServiceChip = event.target.closest('[data-booking-create-service]');
+      if (bookingServiceChip) {
+        var bookingServiceField = bookingCreateField('service');
+        if (bookingServiceField && bookingServiceField.contains(bookingServiceChip)) {
+          setBookingCreateServiceSelected(bookingServiceChip, !bookingServiceChip.classList.contains('is-selected'));
+          setBookingCreateError('');
+        }
+        return;
+      }
+
       var bookingFilterToggle = event.target.closest('[data-booking-filter-toggle]');
       if (bookingFilterToggle) {
         var filterScope = bookingFilterToggle.dataset.bookingFilterToggle;
@@ -11203,11 +11226,6 @@ function getBookingCardCallStart(item) {
 
       if (!event.target.closest('[data-booking-filter-menu]')) {
         setBookingFilterOpen(null);
-      }
-
-      if (event.target.matches('[data-booking-create-modal]')) {
-        closeBookingCreateModal();
-        return;
       }
 
       var bookingAction = event.target.closest('[data-booking-action]');

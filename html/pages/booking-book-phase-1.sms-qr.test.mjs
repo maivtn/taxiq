@@ -121,6 +121,66 @@ test('adds a POS-style resource calendar to the booking view switch', () => {
   assert.match(html, /function bookingCalendarEvent\(/);
 });
 
+test('allows New appointment to select multiple services and keeps their total duration', () => {
+  const html = source();
+
+  assert.match(html, /class="booking-service-chips"[^>]*data-booking-create-field="service"/);
+  assert.match(html, /data-booking-create-service/);
+  assert.match(html, /function getBookingCreateServices\(\)/);
+  assert.match(html, /is-selected/);
+  assert.match(html, /function bookingServiceDurationMinutes\(services\)/);
+  assert.match(html, /\.reduce\(function\(total/);
+  assert.match(html, /services: services/);
+  assert.match(html, /services\.map\(/);
+  assert.match(html, /services\.join\(' '\)/);
+});
+
+test('makes the New appointment services picker span the full form width', () => {
+  const html = source();
+
+  assert.match(html, /<label class="booking-create-field is-full">[\s\S]*?data-booking-create-field="service"/);
+});
+
+test('removes the manual duration selector from New appointment', () => {
+  const html = source();
+
+  assert.doesNotMatch(html, /<select class="booking-select" data-booking-create-field="duration">/);
+  assert.doesNotMatch(html, /bookingCreateField\('duration'\)/);
+  assert.doesNotMatch(html, /syncBookingCreateDuration/);
+  assert.match(html, /var duration = bookingServiceDurationMinutes\(services\) \|\| 60;/);
+});
+
+test('keeps technician and status together before the date and time fields', () => {
+  const html = source();
+  const fields = ['tech', 'status', 'date', 'time'].map((field) => html.indexOf(`data-booking-create-field="${field}"`));
+
+  assert.ok(fields.every((index) => index >= 0));
+  assert.ok(fields[0] < fields[1] && fields[1] < fields[2] && fields[2] < fields[3]);
+});
+
+test('puts required phone before customer name in New appointment', () => {
+  const html = source();
+  const phoneIndex = html.indexOf('data-booking-create-field="phone"');
+  const nameIndex = html.indexOf('data-booking-create-field="name"');
+
+  assert.ok(phoneIndex >= 0 && nameIndex >= 0 && phoneIndex < nameIndex);
+  assert.match(html, /<span class="booking-create-label">Phone \*<\/span>[\s\S]*?data-booking-create-field="phone"[^>]*required/);
+  assert.match(html, /if \(!phone\) \{ setBookingCreateError\('Enter the phone number\.'\); return; \}/);
+});
+
+test('uses the shared phone mask for New appointment phone', () => {
+  const html = source();
+
+  assert.match(html, /data-booking-create-field="phone"[^>]*data-phone-mask/);
+  assert.match(html, /function initPhoneMasks\(\)/);
+});
+
+test('does not close New appointment when clicking outside the dialog', () => {
+  const html = source();
+
+  assert.doesNotMatch(html, /if \(event\.target\.matches\('\[data-booking-create-modal\]'\)\) \{[\s\S]*?closeBookingCreateModal\(\);/);
+});
+
 test('provides the table booking actions from Appointment details', () => {
   const html = source();
 
