@@ -3645,6 +3645,7 @@
     }
 
     .booking-filter-toggle {
+      height: 36px;
       min-height: 34px;
       white-space: nowrap;
     }
@@ -3692,15 +3693,18 @@
       display: inline-flex;
       flex-shrink: 0;
       gap: 4px;
+      height: 36px;
+      align-items: center;
       border: 1px solid var(--nexora-border);
       border-radius: 10px;
       background: var(--nexora-surface-muted);
-      padding: 4px;
+      padding: 3px;
     }
 
     .booking-view-button {
       display: inline-flex;
-      min-height: 32px;
+      height: 28px;
+      min-height: 28px;
       align-items: center;
       gap: 6px;
       border: 0;
@@ -3727,7 +3731,7 @@
     .booking-calendar-head-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
     .booking-calendar-nav { display: inline-flex; align-items: center; gap: 6px; }
     .booking-calendar-nav-label { min-width: 124px; color: var(--nexora-text); font-size: 12px; font-weight: 800; text-align: center; }
-    .booking-calendar-add-button { min-height: 34px; padding: 0 11px; }
+    .booking-overview-add-button { height: 36px; min-height: 36px; padding: 6px 10px; font-size: 11px; }
     .booking-calendar-scroll { overflow: auto; }
     [data-booking-team-calendar] { min-width: 660px; }
     .booking-calendar-empty { display: grid; min-height: 420px; place-items: center; padding: 28px; color: var(--nexora-muted); font-size: 13px; font-weight: 700; text-align: center; }
@@ -3756,8 +3760,6 @@
       }
 
       .booking-calendar-head-actions { align-items: stretch; flex-direction: column; }
-
-      .booking-calendar-add-button { width: 100%; }
 
       .booking-calendar-title { font-size: 13px; }
       .booking-calendar-subtitle { font-size: 10px; }
@@ -3857,8 +3859,13 @@
     .booking-create-field textarea.booking-input { height: 78px; padding: 10px 11px; resize: vertical; }
     .booking-service-chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .booking-service-chip-button { border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 6px 9px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; line-height: 1.25; text-align: left; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+    .booking-service-duration { font-weight: 400; }
     .booking-service-chip-button:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
     .booking-service-chip-button.is-selected { border-color: transparent; background: var(--nexora-brand); color: #fff; }
+    .booking-service-summary { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
+    .booking-service-summary-item { color: var(--nexora-muted); font-size: 11px; font-weight: 700; }
+    .booking-service-summary-label { color: inherit; }
+    .booking-service-summary-value { color: var(--nexora-text); font-size: 12px; font-weight: 800; white-space: nowrap; }
     .booking-create-hint { color: var(--nexora-muted); font-size: 10px; font-weight: 600; letter-spacing: 0; text-transform: none; }
     .booking-create-error { min-height: 18px; border-radius: 8px; color: #b91c1c; font-size: 11px; font-weight: 700; line-height: 1.5; }
     .booking-create-actions .booking-primary-button,
@@ -7509,6 +7516,7 @@
                         <span>Appointments Overview</span>
                       </div>
                       <div class="booking-daybar-actions">
+                        <button class="booking-primary-button booking-overview-add-button" type="button" data-booking-calendar-add><i class="bi bi-plus-lg" aria-hidden="true"></i>New appointment</button>
                         <div class="booking-view-switch" role="group" aria-label="Booking view mode">
                           <button class="booking-view-button" type="button" data-booking-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
                           <button class="booking-view-button" type="button" data-booking-view-target="card" aria-pressed="false"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
@@ -7816,7 +7824,6 @@
                             <div class="booking-calendar-subtitle">Appointments grouped by technician</div>
                           </div>
                           <div class="booking-calendar-head-actions">
-                            <button class="booking-primary-button booking-calendar-add-button" type="button" data-booking-calendar-add><i class="bi bi-plus-lg" aria-hidden="true"></i>New appointment</button>
                             <div class="booking-calendar-nav" aria-label="Calendar date controls">
                               <button class="booking-mini-button" type="button" data-booking-calendar-prev aria-label="Previous day"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
                               <span class="booking-calendar-nav-label" data-booking-calendar-date></span>
@@ -7920,6 +7927,16 @@
                         <label class="booking-create-field is-full">
                           <span class="booking-create-label">Services * <span class="booking-create-hint">Tap to pick several</span></span>
                           <div class="booking-service-chips" data-booking-create-field="service" role="group" aria-label="Select one or more services"></div>
+                          <div class="booking-service-summary" aria-live="polite">
+                            <span class="booking-service-summary-item">
+                              <span class="booking-service-summary-label">Total price:</span>
+                              <strong class="booking-service-summary-value" data-booking-create-total-price>$0</strong>
+                            </span>
+                            <span class="booking-service-summary-item">
+                              <span class="booking-service-summary-label">Total time:</span>
+                              <strong class="booking-service-summary-value" data-booking-create-total-duration>0 min</strong>
+                            </span>
+                          </div>
                         </label>
                         <label class="booking-create-field">
                           <span class="booking-create-label">Technician</span>
@@ -9461,15 +9478,15 @@
     var bookingTeamCalendar = null;
     var bookingCalendarDate = BOOKING_TODAY_DATE;
     var BOOKING_CALENDAR_SERVICE_OPTIONS = [
-      { name: 'Gel Manicure', duration: 60 },
-      { name: 'Classic Manicure', duration: 45 },
-      { name: 'Pedicure', duration: 60 },
-      { name: 'Pedicure Gel Polish', duration: 75 },
-      { name: 'Full Set Acrylic', duration: 90 },
-      { name: 'Dip Powder', duration: 75 },
-      { name: 'Nail Art', duration: 30 },
-      { name: 'Waxing', duration: 30 },
-      { name: 'Eyelash', duration: 60 }
+      { name: 'Gel Manicure', price: 35, duration: 60 },
+      { name: 'Classic Manicure', price: 22, duration: 45 },
+      { name: 'Pedicure', price: 30, duration: 60 },
+      { name: 'Pedicure Gel Polish', price: 65, duration: 75 },
+      { name: 'Full Set Acrylic', price: 45, duration: 90 },
+      { name: 'Dip Powder', price: 40, duration: 75 },
+      { name: 'Nail Art', price: 5, duration: 30 },
+      { name: 'Waxing', price: 25, duration: 30 },
+      { name: 'Eyelash', price: 45, duration: 60 }
     ];
     var BOOKING_CALENDAR_COLORS = [
       { bg: '#ebe6ff', border: '#7456e9', text: '#272343' },
@@ -9848,11 +9865,30 @@
       }, 0);
     }
 
+    function bookingServicePriceTotal(services) {
+      return (services || []).reduce(function(total, serviceName) {
+        var option = BOOKING_CALENDAR_SERVICE_OPTIONS.find(function(service) {
+          return service.name === serviceName;
+        });
+        return total + (option ? +option.price : 0);
+      }, 0);
+    }
+
+    function updateBookingCreateServiceSummary() {
+      var services = getBookingCreateServices();
+      var totalPrice = bookingServicePriceTotal(services);
+      var totalDuration = bookingServiceDurationMinutes(services);
+      var price = document.querySelector('[data-booking-create-total-price]');
+      var duration = document.querySelector('[data-booking-create-total-duration]');
+      if (price) price.textContent = '$' + totalPrice;
+      if (duration) duration.textContent = totalDuration + ' min';
+    }
+
     function populateBookingCreateForm() {
       var service = bookingCreateField('service');
       if (service) {
         service.innerHTML = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
-          return '<button class="booking-service-chip-button" type="button" data-booking-create-service="' + escapeHtml(option.name) + '" data-duration="' + option.duration + '" aria-pressed="false">' + escapeHtml(option.name) + ' · ' + option.duration + ' min</button>';
+          return '<button class="booking-service-chip-button" type="button" data-booking-create-service="' + escapeHtml(option.name) + '" data-duration="' + option.duration + '" aria-pressed="false">' + escapeHtml(option.name) + ' · $' + option.price + ' · <span class="booking-service-duration">' + option.duration + ' min</span></button>';
         }).join('');
       }
 
@@ -9862,6 +9898,7 @@
           return '<option value="' + escapeHtml(name) + '">' + escapeHtml(name) + '</option>';
         }).join('');
       }
+      updateBookingCreateServiceSummary();
     }
 
     function openBookingCreateModal(start, end, tech) {
@@ -11295,6 +11332,7 @@ function getBookingCardCallStart(item) {
         var bookingServiceField = bookingCreateField('service');
         if (bookingServiceField && bookingServiceField.contains(bookingServiceChip)) {
           setBookingCreateServiceSelected(bookingServiceChip, !bookingServiceChip.classList.contains('is-selected'));
+          updateBookingCreateServiceSummary();
           setBookingCreateError('');
         }
         return;

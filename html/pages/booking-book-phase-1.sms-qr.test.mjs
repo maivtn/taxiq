@@ -135,6 +135,49 @@ test('allows New appointment to select multiple services and keeps their total d
   assert.match(html, /services\.join\(' '\)/);
 });
 
+test('shows service price between name and duration in New appointment', () => {
+  const html = source();
+
+  assert.match(html, /BOOKING_CALENDAR_SERVICE_OPTIONS = \[[\s\S]*?\{ name: 'Gel Manicure', price: 35, duration: 60 \}/);
+  assert.match(
+    html,
+    /escapeHtml\(option\.name\) \+ ' · \$' \+ option\.price \+ ' · <span class="booking-service-duration">' \+ option\.duration \+ ' min<\/span><\/button>'/
+  );
+});
+
+test('uses regular weight for service duration in New appointment', () => {
+  const html = source();
+
+  assert.match(html, /\.booking-service-duration\s*\{[^}]*font-weight:\s*400;/);
+  assert.match(
+    html,
+    /option\.price \+ ' · <span class="booking-service-duration">' \+ option\.duration \+ ' min<\/span><\/button>'/
+  );
+});
+
+test('shows total price and total time below New appointment services', () => {
+  const html = source();
+
+  assert.match(html, /data-booking-create-field="service"[\s\S]*class="booking-service-summary"/);
+  assert.match(html, /data-booking-create-total-price>\$0<\/strong>/);
+  assert.match(html, /data-booking-create-total-duration>0 min<\/strong>/);
+  assert.match(html, /function bookingServicePriceTotal\(services\)/);
+  assert.match(html, /function updateBookingCreateServiceSummary\(\)/);
+  assert.match(html, /updateBookingCreateServiceSummary\(\);/);
+});
+
+test('renders service totals as text instead of input-like controls', () => {
+  const html = source();
+  const summaryItemRule = html.match(/\.booking-service-summary-item\s*\{([^}]*)\}/)?.[1] || '';
+  const summaryMarkup = html.match(/<div class="booking-service-summary"[\s\S]*?<\/div>\s*<\/label>/)?.[0] || '';
+
+  assert.doesNotMatch(summaryItemRule, /\bborder\s*:/);
+  assert.doesNotMatch(summaryItemRule, /\bbackground\s*:/);
+  assert.match(html, /<span class="booking-service-summary-label">Total price:<\/span>\s*<strong[^>]*data-booking-create-total-price>\$0<\/strong>/);
+  assert.match(html, /<span class="booking-service-summary-label">Total time:<\/span>\s*<strong[^>]*data-booking-create-total-duration>0 min<\/strong>/);
+  assert.doesNotMatch(summaryMarkup, /<input\b/);
+});
+
 test('makes the New appointment services picker span the full form width', () => {
   const html = source();
 
@@ -182,6 +225,29 @@ test('shows the default +1 country code before New appointment phone', () => {
     html,
     /<span class="phone-input-shell">\s*<select class="phone-country-select" aria-label="Country code"><option value="\+1" selected>\+1<\/option>[\s\S]*?<input class="booking-input phone-mask-input"[^>]*data-booking-create-field="phone"/
   );
+});
+
+test('places New appointment before the booking view switch', () => {
+  const html = source();
+
+  assert.match(
+    html,
+    /<div class="booking-daybar-actions">\s*<button class="booking-primary-button booking-overview-add-button"[^>]*data-booking-calendar-add[^>]*>[^<]*<i class="bi bi-plus-lg"[^>]*><\/i>New appointment<\/button>\s*<div class="booking-view-switch"/
+  );
+  const dateBlock = html.match(/<div class="booking-date">([\s\S]*?)<\/div>\s*<div class="booking-daybar-actions">/)?.[1] || '';
+  assert.doesNotMatch(dateBlock, /data-booking-calendar-add/);
+  assert.doesNotMatch(html, /booking-calendar-head-actions">\s*<button[^>]*data-booking-calendar-add/);
+});
+
+test('keeps New appointment, view switch, and Filter at the same height', () => {
+  const html = source();
+  const filterRule = html.match(/\.booking-filter-toggle\s*\{([^}]*)\}/)?.[1] || '';
+  const switchRule = html.match(/\.booking-view-switch\s*\{([^}]*)\}/)?.[1] || '';
+  const addRule = html.match(/\.booking-overview-add-button\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(filterRule, /height:\s*36px/);
+  assert.match(switchRule, /height:\s*36px/);
+  assert.match(addRule, /height:\s*36px/);
 });
 
 test('does not close New appointment when clicking outside the dialog', () => {
