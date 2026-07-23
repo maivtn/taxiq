@@ -10047,7 +10047,15 @@
       filterBookingItems();
       renderBookingCalendar();
       if (window.Swal) {
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Appointment created', text: name, showConfirmButton: false, timer: 2200 });
+        Swal.fire({
+          icon: 'success',
+          title: 'Appointment created',
+          text: name,
+          confirmButtonText: 'Close',
+          showConfirmButton: true,
+          allowOutsideClick: false,
+          allowEscapeKey: false
+        });
       }
     }
 

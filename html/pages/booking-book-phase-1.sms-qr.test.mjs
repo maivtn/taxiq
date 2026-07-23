@@ -239,6 +239,19 @@ test('places New appointment before the booking view switch', () => {
   assert.doesNotMatch(html, /booking-calendar-head-actions">\s*<button[^>]*data-booking-calendar-add/);
 });
 
+test('shows a manually closable success alert after saving an appointment', () => {
+  const html = source();
+  const saveHandler = html.match(/function saveBookingFromCalendar\(\)\s*\{([\s\S]*?)\n    \}\n\n    function initBookingCalendar/)?.[1] || '';
+
+  assert.match(saveHandler, /Swal\.fire\(\{/);
+  assert.match(saveHandler, /title:\s*'Appointment created'/);
+  assert.match(saveHandler, /confirmButtonText:\s*'Close'/);
+  assert.match(saveHandler, /showConfirmButton:\s*true/);
+  assert.match(saveHandler, /allowOutsideClick:\s*false/);
+  assert.match(saveHandler, /allowEscapeKey:\s*false/);
+  assert.doesNotMatch(saveHandler, /timer:/);
+});
+
 test('keeps New appointment, view switch, and Filter at the same height', () => {
   const html = source();
   const filterRule = html.match(/\.booking-filter-toggle\s*\{([^}]*)\}/)?.[1] || '';
