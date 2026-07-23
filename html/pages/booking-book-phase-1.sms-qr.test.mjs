@@ -175,6 +175,15 @@ test('uses the shared phone mask for New appointment phone', () => {
   assert.match(html, /function initPhoneMasks\(\)/);
 });
 
+test('shows the default +1 country code before New appointment phone', () => {
+  const html = source();
+
+  assert.match(
+    html,
+    /<span class="phone-input-shell">\s*<select class="phone-country-select" aria-label="Country code"><option value="\+1" selected>\+1<\/option>[\s\S]*?<input class="booking-input phone-mask-input"[^>]*data-booking-create-field="phone"/
+  );
+});
+
 test('does not close New appointment when clicking outside the dialog', () => {
   const html = source();
 

@@ -2311,7 +2311,8 @@
 
     .phone-mask-input,
     .phone-input-shell .settings-input,
-    .phone-input-shell .trial-input {
+    .phone-input-shell .trial-input,
+    .phone-input-shell .booking-input {
       flex: 1;
       min-width: 0;
       min-height: auto;
@@ -2323,7 +2324,8 @@
     }
 
     .phone-input-shell .settings-input:focus,
-    .phone-input-shell .trial-input:focus {
+    .phone-input-shell .trial-input:focus,
+    .phone-input-shell .booking-input:focus {
       border-color: transparent;
       box-shadow: none;
     }
@@ -7906,7 +7908,10 @@
                       <div class="booking-create-grid">
                         <label class="booking-create-field">
                           <span class="booking-create-label">Phone *</span>
-                          <input class="booking-input" type="tel" maxlength="20" data-booking-create-field="phone" data-phone-mask placeholder="(555) 555-5555" autocomplete="tel" required>
+                          <span class="phone-input-shell">
+                            <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
+                            <input class="booking-input phone-mask-input" type="tel" maxlength="20" data-booking-create-field="phone" data-phone-mask placeholder="(555) 555-5555" inputmode="numeric" autocomplete="tel-national" required>
+                          </span>
                         </label>
                         <label class="booking-create-field">
                           <span class="booking-create-label">Customer name *</span>
