@@ -475,6 +475,26 @@ test('keeps technician card footers at a fixed height', () => {
   assert.match(footerRule, /min-height:\s*42px/);
 });
 
+test('provides twenty technician services with a Check all option', () => {
+  const html = source();
+  const serviceChecks = html.match(/data-tech-service="[^"]+"/g) || [];
+
+  assert.equal(serviceChecks.length, 20);
+  assert.match(html, /data-tech-service-all>Check all/);
+  assert.match(html, /function syncTechServiceCheckAll\(\)/);
+  assert.match(html, /event\.target\.matches\('\[data-tech-service-all\]'\)/);
+  assert.match(html, /event\.target\.matches\('\[data-tech-service\]'\)/);
+});
+
+test('gives Kim Nguyen all technician services', () => {
+  const html = source();
+  const kimCard = html.match(/<article class="tech-card" data-tech-id="kim">([\s\S]*?)<\/article>/)?.[1] || '';
+  const kimChoice = html.match(/data-tech-choice="kim"[^>]*data-services="([^"]+)"/)?.[1] || '';
+
+  assert.equal((kimCard.match(/class="badge badge-plan"/g) || []).length, 20);
+  assert.equal(kimChoice.split(',').length, 20);
+});
+
 test('keeps inline scripts valid when Live Server injects its reload client', () => {
   const liveReloadClient = '<script>window.__liveReloadReady = true;</script>';
   const servedHtml = source().replace(/<\/body>/i, `${liveReloadClient}\n</body>`);

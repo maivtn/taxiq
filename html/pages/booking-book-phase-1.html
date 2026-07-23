@@ -5745,6 +5745,13 @@
       color: var(--nexora-text);
     }
 
+    .tech-service-check.is-all {
+      grid-column: 1 / -1;
+      border-color: rgba(70, 72, 216, 0.28);
+      background: color-mix(in srgb, var(--nexora-brand) 5%, white);
+      font-weight: 900;
+    }
+
     .tech-schedule {
       display: grid;
       grid-template-columns: 1fr;
@@ -8066,6 +8073,23 @@
                       <span class="badge badge-plan">Gel</span>
                       <span class="badge badge-plan">Full Set</span>
                       <span class="badge badge-plan">Dip</span>
+                      <span class="badge badge-plan">Pedicure</span>
+                      <span class="badge badge-plan">Nail Art</span>
+                      <span class="badge badge-plan">Acrylic</span>
+                      <span class="badge badge-plan">Waxing</span>
+                      <span class="badge badge-plan">Eyelash</span>
+                      <span class="badge badge-plan">Gel Manicure</span>
+                      <span class="badge badge-plan">Classic Manicure</span>
+                      <span class="badge badge-plan">Manicure</span>
+                      <span class="badge badge-plan">Pedicure Gel</span>
+                      <span class="badge badge-plan">Acrylic Fill</span>
+                      <span class="badge badge-plan">Builder Gel</span>
+                      <span class="badge badge-plan">French Tip</span>
+                      <span class="badge badge-plan">Chrome</span>
+                      <span class="badge badge-plan">Ombre</span>
+                      <span class="badge badge-plan">Kids Manicure</span>
+                      <span class="badge badge-plan">Kids Pedicure</span>
+                      <span class="badge badge-plan">Soak Off</span>
                     </div>
                   </article>
 
@@ -8142,7 +8166,7 @@
                             </label>
                             <div class="tech-select-menu" id="tech-select-menu" data-tech-select-menu hidden>
                               <div class="tech-choice-grid" role="listbox" aria-label="Technician list">
-                                <button class="tech-choice-card is-active" type="button" role="option" data-tech-choice="kim" data-name="Kim Nguyen" data-phone="832-555-0161" data-email="kim@nexoratouch.com" data-services="Gel, Full Set, Dip" data-schedule="mon=09:00-18:00;tue=09:00-18:00;wed=09:00-18:00;thu=10:00-19:00;fri=09:00-18:00">
+                                <button class="tech-choice-card is-active" type="button" role="option" data-tech-choice="kim" data-name="Kim Nguyen" data-phone="832-555-0161" data-email="kim@nexoratouch.com" data-services="Gel, Full Set, Dip, Pedicure, Nail Art, Acrylic, Waxing, Eyelash, Gel Manicure, Classic Manicure, Manicure, Pedicure Gel, Acrylic Fill, Builder Gel, French Tip, Chrome, Ombre, Kids Manicure, Kids Pedicure, Soak Off" data-schedule="mon=09:00-18:00;tue=09:00-18:00;wed=09:00-18:00;thu=10:00-19:00;fri=09:00-18:00">
                                   <span class="tech-avatar">K</span>
                                   <span><span class="tech-choice-name">Kim Nguyen</span><span class="tech-choice-meta">kim@nexoratouch.com · 832-555-0161</span></span>
                                 </button>
@@ -8177,6 +8201,7 @@
                           <div class="settings-field">
                             <span class="settings-label">Services</span>
                             <div class="tech-service-checks" data-tech-field="services">
+                              <label class="tech-service-check is-all"><input type="checkbox" data-tech-service-all>Check all</label>
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Gel" value="Gel">Gel</label>
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Full Set" value="Full Set">Full Set</label>
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Dip" value="Dip">Dip</label>
@@ -8185,6 +8210,18 @@
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Acrylic" value="Acrylic">Acrylic</label>
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Waxing" value="Waxing">Waxing</label>
                               <label class="tech-service-check"><input type="checkbox" data-tech-service="Eyelash" value="Eyelash">Eyelash</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Gel Manicure" value="Gel Manicure">Gel Manicure</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Classic Manicure" value="Classic Manicure">Classic Manicure</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Manicure" value="Manicure">Manicure</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Pedicure Gel" value="Pedicure Gel">Pedicure Gel</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Acrylic Fill" value="Acrylic Fill">Acrylic Fill</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Builder Gel" value="Builder Gel">Builder Gel</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="French Tip" value="French Tip">French Tip</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Chrome" value="Chrome">Chrome</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Ombre" value="Ombre">Ombre</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Kids Manicure" value="Kids Manicure">Kids Manicure</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Kids Pedicure" value="Kids Pedicure">Kids Pedicure</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Soak Off" value="Soak Off">Soak Off</label>
                             </div>
                           </div>
                         </div>
@@ -10772,6 +10809,7 @@ function getBookingCardCallStart(item) {
         document.querySelectorAll('[data-tech-service]').forEach(function(option) {
           option.checked = selectedServices.indexOf(option.value.toLowerCase()) !== -1;
         });
+        syncTechServiceCheckAll();
         return;
       }
 
@@ -10786,6 +10824,15 @@ function getBookingCardCallStart(item) {
       } else if (field) {
         field.value = value || '';
       }
+    }
+
+    function syncTechServiceCheckAll() {
+      var services = Array.from(document.querySelectorAll('[data-tech-service]'));
+      var checkAll = document.querySelector('[data-tech-service-all]');
+      if (!checkAll) return;
+      var checkedCount = services.filter(function(option) { return option.checked; }).length;
+      checkAll.checked = services.length > 0 && checkedCount === services.length;
+      checkAll.indeterminate = checkedCount > 0 && checkedCount < services.length;
     }
 
     function getTechField(name) {
@@ -11526,6 +11573,17 @@ function getBookingCardCallStart(item) {
       dayOff.addEventListener('change', function() {
         syncTechDayOffRow(dayOff);
       });
+    });
+
+    document.addEventListener('change', function(event) {
+      if (event.target.matches('[data-tech-service-all]')) {
+        document.querySelectorAll('[data-tech-service]').forEach(function(option) {
+          option.checked = event.target.checked;
+        });
+        syncTechServiceCheckAll();
+      } else if (event.target.matches('[data-tech-service]')) {
+        syncTechServiceCheckAll();
+      }
     });
 
     document.querySelectorAll('[data-booking-view-target]').forEach(function(button) {
