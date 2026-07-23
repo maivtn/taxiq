@@ -464,7 +464,7 @@
           </div>
           <p class="page-description">Bitcoin Nail Bar · Houston, TX — run the front desk: time clock, salon management, SMS marketing, and appointments.</p>
           <div class="page-tabs" role="tablist" aria-label="POS sections">
-            <button class="page-tab is-active" type="button" role="tab" data-pos-tab="dispatch"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Dispatch</button>
+            <button class="page-tab is-active" type="button" role="tab" data-pos-tab="dispatch"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Operations</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="clock"><i class="bi bi-clock-history" aria-hidden="true"></i> Time Clock</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="management"><i class="bi bi-building-gear" aria-hidden="true"></i> Management</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="sms"><i class="bi bi-chat-dots" aria-hidden="true"></i> SMS</button>
@@ -473,7 +473,7 @@
         </div>
 
         <!-- ══════════ 🪑 DISPATCH — QUEUE & TECH ASSIGNMENT (S2) ══════════ -->
-        <section class="pos-panel is-active" data-pos-panel="dispatch" aria-label="Dispatch">
+        <section class="pos-panel is-active" data-pos-panel="dispatch" aria-label="Operations">
           <div class="pos-stack">
             <div class="disp-stats">
               <div class="disp-stat" style="--accent:var(--nexora-warning)"><div class="disp-num" data-fs-wait>0</div><div class="disp-lbl"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Waiting</div></div>
@@ -777,7 +777,7 @@
 
       /* ═══════════ shared state (ported from the prototype) ═══════════ */
       var ROLE_LBL = { owner: 'Owner', manager: 'Manager', frontdesk: 'Front Desk', tech: 'Technician' };
-      var ROLE_ACCESS = { owner: 'All screens', manager: 'All except Affiliate config', frontdesk: 'Dispatch · Register · Appointments · Time Clock', tech: 'Staff App · Time Clock' };
+      var ROLE_ACCESS = { owner: 'All screens', manager: 'All except Affiliate config', frontdesk: 'Operations · Register · Appointments · Time Clock', tech: 'Staff App · Time Clock' };
 
       var STAFF = [
         { id: 'owner', name: 'Brian', ava: '👑', role: 'owner' },
