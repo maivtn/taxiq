@@ -10,13 +10,13 @@
 | Version | Date | Changes |
 | :--- | :--- | :--- |
 | 1.0 | 22/07/2026 | Tạo tài liệu nghiệp vụ ban đầu dựa trên nội dung chương trình đã thống nhất. |
-| 1.0 | 23/07/2026 | Đồng bộ ngày mở chương trình Aug 20, 2026; giữ luồng demo Terms/History/Detail theo UI hiện tại. |
+| 1.0 | 23/07/2026 | Đồng bộ ngày mở chương trình Sep 01, 2026; giữ luồng demo Terms/History/Detail theo UI hiện tại. |
 
 ---
 
 ## Overview
 
-> Chương trình cho phép thành viên truy cập từ **Ví VMM**, chọn một gói **Ký gửi VMM 3 năm** và nhận số lượng **VMM IOU** cố định theo gói. Trong giai đoạn tháng 8/2026, thành viên được đổi **USDV sang VMM không bị giới hạn theo gói** từ **07/08/2026 đến hết 31/08/2026**; chương trình ký gửi chính thức bắt đầu từ **20/08/2026**.
+> Chương trình cho phép thành viên truy cập từ **Ví VMM**, chọn một gói **Ký gửi VMM 3 năm** và nhận số lượng **VMM IOU** cố định theo gói. Trong giai đoạn tháng 8/2026, thành viên được đổi **USDV sang VMM không bị giới hạn theo gói** từ **07/08/2026 đến hết 31/08/2026**; chương trình ký gửi chính thức bắt đầu từ **01/09/2026**.
 
 ### Business Value
 
@@ -56,7 +56,7 @@
 | VMM IOU | Quyền lợi được tặng theo đúng gói VMM mà thành viên ký gửi thành công. |
 | Gói ký gửi | Một mức VMM cố định trong bảng chương trình; mỗi mức có số VMM IOU tương ứng. |
 | Giai đoạn chuyển đổi đặc biệt | Thời gian 07/08/2026–31/08/2026, thành viên được đổi USDV sang VMM không bị giới hạn theo gói. |
-| Ngày mở chương trình | Ngày 20/08/2026, thành viên bắt đầu được xác nhận ký gửi VMM 3 năm. |
+| Ngày mở chương trình | Ngày 01/09/2026, thành viên bắt đầu được xác nhận ký gửi VMM 3 năm. |
 
 ---
 
@@ -76,9 +76,9 @@
 | Giai đoạn | Thời gian | Nội dung đã chốt |
 | :--- | :--- | :--- |
 | Chuẩn bị VMM | 07/08/2026–31/08/2026 | Thành viên được đổi USDV sang VMM không bị giới hạn theo gói. |
-| Ký gửi VMM 3 năm | Từ 20/08/2026 | Thành viên vào Ví VMM, chọn gói ký gửi và nhận VMM IOU theo bảng quyền lợi. |
+| Ký gửi VMM 3 năm | Từ 01/09/2026 | Thành viên vào Ví VMM, chọn gói ký gửi và nhận VMM IOU theo bảng quyền lợi. |
 
-> 💡 **Important:** Việc đổi USDV sang VMM trong tháng 8 không tự động tạo gói ký gửi. Thành viên phải chủ động tham gia chương trình từ ngày 20/08/2026.
+> 💡 **Important:** Việc đổi USDV sang VMM trong tháng 8 không tự động tạo gói ký gửi. Thành viên phải chủ động tham gia chương trình từ ngày 01/09/2026.
 
 ---
 
@@ -154,7 +154,7 @@ flowchart TD
 | Step | Who | Action | System Response | Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Thành viên | Mở Ví VMM. | Hiển thị số dư VMM và nút **Ký gửi VMM 3 năm**. | Trước ngày mở, nút có thể dẫn đến màn hình giới thiệu/countdown. |
-| 2 | Thành viên | Chọn **Ký gửi VMM 3 năm**. | Kiểm tra chương trình đã mở hay chưa. | Chỉ cho xác nhận từ 20/08/2026. |
+| 2 | Thành viên | Chọn **Ký gửi VMM 3 năm**. | Kiểm tra chương trình đã mở hay chưa. | Chỉ cho xác nhận từ 01/09/2026. |
 | 3 | Hệ thống | Tải danh sách gói. | Hiển thị 6 gói từ 10 triệu đến 500 triệu VMM. | Luôn sắp xếp tăng dần. |
 | 4 | Thành viên | Chọn một gói. | Làm nổi bật gói đã chọn và hiển thị VMM IOU tương ứng. | Một giao dịch chỉ chọn một gói. |
 | 5 | Hệ thống | Hiển thị review sau khi chọn gói. | Hiển thị thông tin trước xác nhận. | Chưa ghi nhận ký gửi ở bước này. |
@@ -251,7 +251,7 @@ flowchart TD
 | :--- | :--- | :--- |
 | Ngày bắt đầu đổi USDV → VMM đặc biệt | 07/08/2026 | Đã chốt |
 | Ngày kết thúc đổi USDV → VMM đặc biệt | 31/08/2026 | Đã chốt |
-| Ngày bắt đầu ký gửi VMM 3 năm | 20/08/2026 | Đã chốt |
+| Ngày bắt đầu ký gửi VMM 3 năm | 01/09/2026 | Đã chốt |
 | Thời hạn ký gửi | 3 năm | Đã chốt |
 | Danh sách gói | 10M, 20M, 50M, 100M, 250M, 500M VMM | Đã chốt |
 | Quyền lợi từng gói | Theo bảng Deposit Packages | Đã chốt |
@@ -300,7 +300,7 @@ stateDiagram-v2
 ### Confirmed Rules
 
 - **Rule 1:** Giai đoạn đổi USDV sang VMM không bị giới hạn theo gói áp dụng từ **07/08/2026 đến hết 31/08/2026**.
-- **Rule 2:** Chương trình ký gửi VMM 3 năm bắt đầu từ **20/08/2026**.
+- **Rule 2:** Chương trình ký gửi VMM 3 năm bắt đầu từ **01/09/2026**.
 - **Rule 3:** Thành viên bắt đầu luồng từ **Ví VMM** và chọn **Ký gửi VMM 3 năm**.
 - **Rule 4:** Các gói phải hiển thị theo thứ tự: **10 triệu, 20 triệu, 50 triệu, 100 triệu, 250 triệu, 500 triệu VMM**.
 - **Rule 5:** VMM IOU được tặng theo đúng bảng quyền lợi của gói đã chọn.
@@ -325,7 +325,7 @@ stateDiagram-v2
 | :--- | :--- | :--- |
 | Mở chương trình đổi trước 07/08/2026 | Hiển thị ngày bắt đầu; chưa áp dụng quyền đặc biệt. | Hệ thống |
 | Xác nhận đổi sau 31/08/2026 | Không áp dụng quyền “không giới hạn theo gói”; chuyển sang chính sách thông thường. | Hệ thống |
-| Mở ký gửi trước 20/08/2026 | Hiển thị ngày chương trình bắt đầu; không cho xác nhận. | Hệ thống |
+| Mở ký gửi trước 01/09/2026 | Hiển thị ngày chương trình bắt đầu; không cho xác nhận. | Hệ thống |
 | Số dư VMM thấp hơn gói nhỏ nhất | Khóa nút xác nhận; hiển thị số dư chưa đủ. | Hệ thống |
 | Số dư đủ khi chọn nhưng không đủ khi xác nhận | Dừng giao dịch và yêu cầu thành viên chọn lại. | Hệ thống |
 | Thành viên bấm xác nhận nhiều lần | Chỉ xử lý một yêu cầu; các yêu cầu trùng bị chặn. | Hệ thống |
@@ -361,7 +361,7 @@ stateDiagram-v2
 - Ngày hoàn tất dự kiến.
 - Số dư VMM dự kiến còn lại.
 - Liên kết mở Terms & Conditions.
-- Ngày hiển thị theo format hệ thống: `MMM d, yyyy`, ví dụ `Aug 20, 2026`.
+- Ngày hiển thị theo format hệ thống: `MMM dd, yyyy`, ví dụ `Sep 01, 2026`.
 - Nút **Xác nhận ký gửi**.
 
 ### Màn hình Thành công
@@ -379,8 +379,8 @@ stateDiagram-v2
 ## Acceptance Criteria
 
 1. Trong giai đoạn 07/08/2026–31/08/2026, giao diện hiển thị đúng thông báo đổi USDV sang VMM không bị giới hạn theo gói.
-2. Trước 20/08/2026, thành viên không thể xác nhận ký gửi VMM 3 năm.
-3. Từ 20/08/2026, thành viên có thể mở danh sách gói từ Ví VMM.
+2. Trước 01/09/2026, thành viên không thể xác nhận ký gửi VMM 3 năm.
+3. Từ 01/09/2026, thành viên có thể mở danh sách gói từ Ví VMM.
 4. Sáu gói luôn hiển thị đúng thứ tự từ 10 triệu đến 500 triệu VMM.
 5. VMM IOU hiển thị đúng theo bảng quyền lợi.
 6. Nút xác nhận bị khóa khi số dư khả dụng không đủ.
@@ -415,7 +415,7 @@ stateDiagram-v2
 A: Từ ngày 07/08/2026 đến hết ngày 31/08/2026.
 
 **Q: Khi nào chương trình ký gửi VMM 3 năm bắt đầu?**  
-A: Từ ngày 20/08/2026.
+A: Từ ngày 01/09/2026.
 
 **Q: Tôi tham gia chương trình ở đâu?**  
 A: Thành viên vào Ví VMM và chọn **Ký gửi VMM 3 năm**.
@@ -424,7 +424,7 @@ A: Thành viên vào Ví VMM và chọn **Ký gửi VMM 3 năm**.
 A: Từ nhỏ đến lớn: 10 triệu, 20 triệu, 50 triệu, 100 triệu, 250 triệu và 500 triệu VMM.
 
 **Q: Đổi USDV sang VMM trong tháng 8 có tự động ký gửi không?**  
-A: Không. Thành viên phải chủ động chọn một gói ký gửi từ ngày 20/08/2026.
+A: Không. Thành viên phải chủ động chọn một gói ký gửi từ ngày 01/09/2026.
 
 **Q: Ký gửi 100 triệu VMM được tặng bao nhiêu VMM IOU?**  
 A: 1.000.000 VMM IOU.

@@ -44,12 +44,13 @@ test('defines the selected-package review group and dynamic value hooks', () => 
   assert.doesNotMatch(reviewBlock, /<ul\b|<ol\b|<li\b/);
   assert.doesNotMatch(html, /class="vmm-package-review-grid"/);
   assert.doesNotMatch(html, /class="vmm-package-review-item"/);
-  assert.match(html, /id="reviewStartDate">Aug 20, 2026<\/strong>/);
-  assert.match(html, /id="reviewEndDate">Aug 20, 2029<\/strong>/);
+  assert.match(html, /id="reviewStartDate">Sep 01, 2026<\/strong>/);
+  assert.match(html, /id="reviewEndDate">Sep 01, 2029<\/strong>/);
   assert.match(html, /reviewStartDate\.textContent\s*=\s*programStartLabel/);
   assert.match(html, /reviewEndDate\.textContent\s*=\s*programReleaseLabel/);
-  assert.match(html, /const PROGRAM_START_DATE\s*=\s*'2026-08-20'/);
-  assert.match(html, /const PROGRAM_RELEASE_DATE\s*=\s*'2029-08-20'/);
+  assert.match(html, /const PROGRAM_START_DATE\s*=\s*'2026-09-01'/);
+  assert.match(html, /const PROGRAM_RELEASE_DATE\s*=\s*'2029-09-01'/);
+  assert.match(html, /day:\s*'2-digit'/);
   assert.match(html, /confirmDeposit\.disabled\s*=\s*!isProgramOpen\(\)\s*\|\|/);
   assert.match(html, /if \(!selectedTier \|\| !isProgramOpen\(\)/);
   assert.match(html, /<th>Transaction Code<\/th>/);
