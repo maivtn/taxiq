@@ -465,6 +465,16 @@ test('places technician services below the card footer', () => {
   assert.match(html, /<div class="tech-card-footer">[\s\S]*?'<div class="tech-services">' \+ renderTechBadges/);
 });
 
+test('keeps technician card footers at a fixed height', () => {
+  const html = source();
+  const techCardRule = html.match(/\.tech-card\s*\{([^}]*)\}/)?.[1] || '';
+  const footerRule = html.match(/\.tech-card-footer\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(techCardRule, /align-content:\s*start/);
+  assert.match(footerRule, /height:\s*42px/);
+  assert.match(footerRule, /min-height:\s*42px/);
+});
+
 test('keeps inline scripts valid when Live Server injects its reload client', () => {
   const liveReloadClient = '<script>window.__liveReloadReady = true;</script>';
   const servedHtml = source().replace(/<\/body>/i, `${liveReloadClient}\n</body>`);

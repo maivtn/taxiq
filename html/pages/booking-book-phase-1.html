@@ -5247,6 +5247,7 @@
 
     .tech-card {
       display: grid;
+      align-content: start;
       gap: 9px;
       flex: 0 1 280px;
       width: 280px;
@@ -5365,6 +5366,8 @@
 
     .tech-card-footer {
       display: flex;
+      height: 42px;
+      min-height: 42px;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
@@ -5372,6 +5375,7 @@
       border-radius: 10px;
       background: var(--nexora-canvas);
       padding: 6px 7px;
+      box-sizing: border-box;
     }
 
     .tech-card-actions {
