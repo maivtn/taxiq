@@ -163,10 +163,6 @@
     .pos-people { display: inline-flex; align-items: center; gap: 10px; }
     .pos-section-title { margin: 22px 0 12px; font-size: 12px; font-weight: 800; color: var(--nexora-subtle); text-transform: uppercase; letter-spacing: .05em; }
 
-    /* ── spec note ── */
-    .spec-note { margin-top: 14px; border: 1px dashed rgba(70, 72, 216, .32); background: #f5f6ff; border-radius: 12px; padding: 12px 14px; font-size: 11.5px; font-weight: 500; line-height: 1.7; color: var(--nexora-muted); }
-    .spec-note b { color: var(--nexora-brand); }
-
     /* ── cycle / pill toggle cells ── */
     .cyc { display: inline-flex; align-items: center; justify-content: center; min-width: 38px; height: 30px; padding: 0 8px; border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; font-size: 12px; font-weight: 800; color: var(--nexora-subtle); }
     .cyc[data-on="1"] { border-color: var(--nexora-success); color: var(--nexora-success); background: #e7f8f0; }
@@ -511,19 +507,16 @@
             <div class="pos-card panel-violet" data-ciq-panel hidden>
               <div class="pos-card-head"><h3><i class="bi bi-inbox-fill" aria-hidden="true"></i> Check-in from the Nexora App / QR — waiting on the front desk (<span data-ciq-count>0</span>)</h3></div>
               <div data-ciq-list></div>
-              <div class="spec-note"><b>📐 SPEC — Check-in request:</b> Three doors feed the same queue: (1) the Nexora App — a known guest, identified by their account; (2) a QR that opens the web check-in with no app install — new guests; (3) the kiosk or the front desk. App and QR create a <b>request</b> — the front desk taps ✓ to accept (into the queue, keeping the requested tech and any promo/reward already chosen) or ✕ to decline (the app tells the guest why: fully booked, tech off…). Once confirmed, the guest's app switches to the Live Ticket.</div>
             </div>
 
             <div class="pos-card panel-amber" data-arq-panel hidden>
               <div class="pos-card-head"><h3><i class="bi bi-shield-lock" aria-hidden="true"></i> Tech access requests — waiting on front desk / manager (<span data-arq-count>0</span>)</h3></div>
               <div data-arq-list></div>
-              <div class="spec-note"><b>📐 SPEC — Access request:</b> A tech scans the QR on a guest's ticket in the Staff App. If the ticket is already theirs it opens straight to the work ticket. Someone else's ticket — or an unassigned one — is blocked, with a "Request access" button that lands here together with a <b>skill check</b>. Approving assigns or reassigns the tech and writes it to the ticket's audit log; if they lack the skill the override must be justified (production requires a manager PIN). Declining reports back to the Staff App. This is what stops techs from jumping tickets to grab guests.</div>
             </div>
 
             <div class="pos-card panel-blue" data-eta-panel hidden>
               <div class="pos-card-head"><h3><i class="bi bi-calendar-event" aria-hidden="true"></i> Today's bookings &amp; ETA — guests on the way (<span data-eta-count>0</span>)</h3></div>
               <div data-eta-list></div>
-              <div class="spec-note"><b>📐 SPEC — Booking &amp; ETA (#79):</b> Solves "the guest has an appointment but nobody knows when they'll show". The guest taps <b>🚗 On my way</b> in the app and the salon sees a live ETA here, in lanes: <b>Booked → On the way → Arrived → Checked in</b>. Privacy has two levels: by default only the <b>ETA</b> is shared; the guest can opt into <b>📍 Share live trip</b> for an Uber-style view. Live trip location only runs in the foreground while moving (no permanent background permission — easier App Store review, kinder to the battery), updates every 30–60s over websocket, and shuts off on the arrival geofence or after 60 minutes. Guests without the app get an SMS at T-60 with a web link that does the same thing. Production adds a geofence that detects arrival automatically plus AI prep that holds the requested tech and readies the chair.</div>
             </div>
 
             <div class="disp-grid">
@@ -545,9 +538,6 @@
               </div>
             </div>
 
-            <div class="spec-note">
-              <b>📐 SPEC S2 — Dispatch (floor):</b> Guests enter the queue from the kiosk, the front desk by hand, or an online booking (auto-surfaced 15 minutes before the slot). Statuses run <b>waiting → in-service → ready-to-pay → paid</b> — when the tech taps ✋ Done the guest moves to "ready to pay" and the tech is freed to take the next guest immediately (waiting to pay over 5 minutes turns the chip red). <b>Two-tap assign:</b> tap the guest card and the free techs become assign buttons. <b>▶</b> is the one-tap version: the requested tech if they are free, otherwise the tech with the fewest turns (fair rotation, marked 🎯 Next up). In-service cards get a <b>⇄</b> to swap techs without counting an extra turn. <b>🧰 Skill match:</b> selecting a guest scores every tech (the service's required skill weighs heaviest, plus turn fairness and an explicit request); assigning a tech who lacks the skill is blocked with a warning and needs a second tap to override, which is written to the ticket's audit log (production requires a manager PIN). Skills are configured in Management. Wait timers run on each card and a wait over 20 minutes turns the card red. The board refreshes every 30 seconds and syncs across devices over websocket.
-            </div>
           </div>
         </section>
 
@@ -611,9 +601,6 @@
               </div>
             </div>
 
-            <div class="spec-note">
-              <b>📐 SPEC S14 — QR time clock:</b> The POS shows a QR carrying a token that <b>rotates every 15 seconds and is single-use</b>. The server verifies TTL + single-use, so the timestamp cannot be forged from the POS. On clock-in the system <b>orders turns by clock-in time</b> (the owner can switch the rule to appointment-based or rotation) and <b>pushes a notification</b> (FCM/APNs) with the clock-in time, turn position, and Station #. Each tech owns a fixed Station # — editable right in the table. A missed clock-out auto-closes and is flagged for owner approval. 📟 Beeper numbers are handed out in arrival order and reset at midnight.
-            </div>
           </div>
         </section>
 
@@ -649,9 +636,6 @@
             <div class="pos-section-title">Nhóm khách — chọn để gửi campaign</div>
             <div class="camp-grid" data-camp-grid></div>
 
-            <div class="spec-note">
-              <b>📐 SPEC S21 — SMS &amp; Marketing (#94):</b> In production this is not a separate app — the SMS engine is a module on the same backend sharing the POS customer database, so segments are computed live off the ledger instead of being entered twice. POS events (bill closed, rebook, refund, gift card, booking) fire webhooks that trigger journeys. Access is limited to owner/manager; front desk and techs never see this tab. Sending is gated on TCPA consent — a guest who never opted in is blocked automatically, and every message carries the STOP footer.
-            </div>
           </div>
 
           <!-- Campaign composer -->
@@ -775,9 +759,6 @@
                 <div class="ap-calendar-scroll"><div data-ap-calendar aria-label="Team appointment calendar"></div></div>
               </div>
               <div class="pos-card soft" data-ap-panel></div>
-            </div>
-            <div class="spec-note">
-              <b>📐 SPEC S12 — Staff appointments:</b> Same bookings as the public web booking (S11) and kiosk (S3), presented as a team schedule: time is the left axis and each technician is a column. Front desk can select an empty slot, drag to reschedule between technicians, resize duration, filter staff, or use the booking form. The prototype prevents overlapping appointments for the same technician; production repeats that check server-side and sends SMS on create, edit, or cancel.
             </div>
           </div>
         </section>
@@ -1739,7 +1720,6 @@
             return '<option value="' + p[0] + '"' + (MATCH_RULES.override === p[0] ? ' selected' : '') + '>' + p[1] + '</option>';
           }).join('') + '</select></label>' +
           '</div>' +
-          '<div class="spec-note"><b>📐 SPEC 🧾⚙️ — Service-skill &amp; match rules:</b> The mapping is stored per menu group (production: per item, with a standard duration for scheduling). Changing this table takes effect immediately — the kiosk greys out techs missing the skill, dispatch re-scores, and the Staff App shows a red banner. Weights are per salon and every change is audited; ship a default preset plus a "restore defaults" button. Recommended override mode is <b>Manager PIN</b> — "reason required" degrades into people typing "ok". The eligible-techs column turns red when a group has no qualified tech left (hire or train, urgently).</div>' +
           '</div>';
       }
 
@@ -1767,7 +1747,6 @@
           }).join('') +
           '</tbody></table></div>' +
           '<div class="pos-hint">🔒 Owner notes never leave this screen (complaints, sensitive history). 👥 Staff notes appear on the guest card in dispatch, checkout, and the Staff App. 📱 Guest notes show in the customer app and on the receipt. Type a note then click away to save.</div>' +
-          '<div class="spec-note"><b>📐 SPEC 🏷️ — Customer profiles:</b> Tags and notes are stored per customer server-side with read access enforced by role (owner notes only come back from the API on an owner token — not merely hidden in the UI). A "prefers &lt;tech&gt;" tag adds +' + MATCH_RULES.wPref + ' match points in dispatch. Every note edit is audited (who, when). Production also allows free-form tags beyond the library and shows a red checkout warning when a guest tagged "Confirm Price Before Add-on" has an unconfirmed add-on on the bill.</div>' +
           '</div>';
       }
 
@@ -1872,7 +1851,6 @@
           }).join('') +
           '</tbody></table></div>' +
           '<div class="pos-hint">📥 Input = service $ the tech produced (from the ledger, each item tagged to its tech). Three states: ✅ past target → standard split · 🟠 below target but production &gt; guarantee → salon still positive, thinner % · 🔴 production &lt; guarantee → salon pays the difference. "Guarantee + split over target": tech takes the guarantee + (production − target) × split %.</div>' +
-          '<div class="spec-note"><b>📐 SPEC 💼 — Configurable pay models:</b> The model is stored per tech; changing the model or rate is audited and only applies from the <b>next pay period</b> (never retroactively mid-week). Projections use the current week run-rate; production adds a scenario slider (if the tech produces $X more, what does the salon keep?). The 🔴 alert should notify the owner mid-week, not wait for Sunday. Out-of-pocket top-ups post to the payroll expense ledger so the monthly P&amp;L stays accurate.</div>' +
           '</div>';
       }
 
@@ -1898,7 +1876,6 @@
               '</tr>';
           }).join('') +
           '</tbody></table></div>' +
-          '<div class="spec-note"><b>📐 SPEC 💎 — Smart Commission:</b> Bonuses are computed only from <b>measurable</b> ledger facts: expert skills (🧰 table), rating (post-ticket SMS review), upsell rate (bills with an add-on), steady guests (production: rebook rate; demo: bills per week). Turning it on or changing thresholds applies <b>from the next pay period</b>, never retroactively, and is audited. The effective % flows straight into 💼 pay models and 💸 payouts (techPayWeek reads effComm). The 🧢 cap keeps stacked bonuses from running away with labor cost — the owner reviews Δ weekly pay before switching it on for real. The scorecard should also appear in the Staff App so techs know what raises their %.</div>' +
           '</div>';
       }
 
@@ -1941,7 +1918,6 @@
           }).join('') +
           '</tbody></table></div>' +
           '<div class="pos-hint">Demo: "Pay" flips the status and stamps the time. A missing method holds the money — it is never lost; set the method and pay as normal.</div>' +
-          '<div class="spec-note"><b>📐 SPEC 💸 — Payout Center:</b> The pay period is configurable (weekly / bi-weekly). The amount = techPayWeek + 100% of tips, locked from the ledger — <b>not</b> hand-editable here (change the % in the pay table, which is audited). "Pay" over VLinkPay is an instant API payout with a stored transaction ID; Zelle/cash is marked manually with who tapped it and when. No method → hold the money and nudge the tech to set one up in the Staff App. Export CSV for the accountant, and flag 1099 contractor vs W-2 employee per tech since it changes withholding.</div>' +
           '</div>';
       }
 
@@ -1968,7 +1944,6 @@
           '<button class="pos-btn pos-btn-primary pos-btn-sm" data-mg-stadd><i class="bi bi-plus-lg"></i> Create account</button>' +
           '<span class="pos-muted" style="font-size:11.5px">Techs (with pay and turns) are added from ➕ Add tech in the pay table above.</span>' +
           '</div>' +
-          '<div class="spec-note"><b>📐 SPEC 👥 — Staff accounts (#92):</b> Creating an account = name + role + a per-user PIN (production: hashed, never a shared 1234 like this demo; 3 wrong tries locks for 5 minutes and alerts the owner). A role change applies from the next login, is audited (who changed it, old→new), and notifies the owner. Moving a tech to front desk does <b>not</b> remove them from payroll or turns — pay and tax history stay intact, only permissions change. Leaving = deactivate, never delete. Only the owner can change roles; managers can view but not edit. Reset PIN texts a temporary PIN to the employee and forces a change on first login.</div>' +
           '</div>';
       }
 
@@ -1985,7 +1960,6 @@
             }).join('') + '</tr>';
           }).join('') +
           '</tbody></table></div>' +
-          '<div class="spec-note"><b>📐 SPEC 🔐 — Permissions:</b> Enforce <b>server-side from the role on the JWT/session</b> — the UI is display only, and hiding a button is not security. "Limited" needs a precise definition per permission (e.g. Manager sees payroll totals but not each tech\'s %; Front Desk can refund under $X, above that needs an owner PIN). Every matrix change is audited (who, when, which permission, old→new) and notifies the owner. Roles bind to the PIN accounts on the login screen; the Accountant role is read-only reports and CSV export with no operational access.</div>' +
           '</div>';
       }
 
