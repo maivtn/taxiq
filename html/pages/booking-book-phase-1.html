@@ -5340,9 +5340,13 @@
 
     .tech-services {
       display: flex;
+      max-height: 128px;
+      overflow-y: auto;
       flex-wrap: wrap;
+      align-content: flex-start;
       gap: 6px;
       margin-bottom: 0;
+      padding-right: 3px;
     }
 
     .tech-services .badge {
@@ -8046,18 +8050,18 @@
                       </div>
                       <button class="toggle-pill is-on" type="button" aria-label="Toggle Kim SMS notify"></button>
                     </div>
-                    <div class="tech-services">
-                      <span class="badge badge-plan">Gel</span>
-                      <span class="badge badge-plan">Full Set</span>
-                      <span class="badge badge-plan">Dip</span>
-                    </div>
                     <div class="tech-card-footer">
                       <div class="tech-stats">
                         <div class="tech-stat"><strong>3</strong><span>Clients today</span></div>
                       </div>
                       <div class="tech-card-actions">
-                        <button class="booking-secondary-button" type="button" data-tech-detail-open="kim" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View Details</span></button>
+                        <button class="booking-secondary-button" type="button" data-tech-detail-open="kim" aria-label="Edit" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i><span class="booking-mini-label">Edit</span></button>
                       </div>
+                    </div>
+                    <div class="tech-services">
+                      <span class="badge badge-plan">Gel</span>
+                      <span class="badge badge-plan">Full Set</span>
+                      <span class="badge badge-plan">Dip</span>
                     </div>
                   </article>
 
@@ -8070,18 +8074,18 @@
                       </div>
                       <button class="toggle-pill is-on" type="button" aria-label="Toggle Lan SMS notify"></button>
                     </div>
-                    <div class="tech-services">
-                      <span class="badge badge-plan">Pedicure</span>
-                      <span class="badge badge-plan">Gel</span>
-                      <span class="badge badge-plan">Nail Art</span>
-                    </div>
                     <div class="tech-card-footer">
                       <div class="tech-stats">
                         <div class="tech-stat"><strong>2</strong><span>Clients today</span></div>
                       </div>
                       <div class="tech-card-actions">
-                        <button class="booking-secondary-button" type="button" data-tech-detail-open="lan" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View Details</span></button>
+                        <button class="booking-secondary-button" type="button" data-tech-detail-open="lan" aria-label="Edit" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i><span class="booking-mini-label">Edit</span></button>
                       </div>
+                    </div>
+                    <div class="tech-services">
+                      <span class="badge badge-plan">Pedicure</span>
+                      <span class="badge badge-plan">Gel</span>
+                      <span class="badge badge-plan">Nail Art</span>
                     </div>
                   </article>
 
@@ -8094,18 +8098,18 @@
                       </div>
                       <button class="toggle-pill is-on" type="button" aria-label="Toggle Mai SMS notify"></button>
                     </div>
-                    <div class="tech-services">
-                      <span class="badge badge-plan">Acrylic</span>
-                      <span class="badge badge-plan">Dip</span>
-                      <span class="badge badge-plan">Pedicure</span>
-                    </div>
                     <div class="tech-card-footer">
                       <div class="tech-stats">
                         <div class="tech-stat"><strong>2</strong><span>Clients today</span></div>
                       </div>
                       <div class="tech-card-actions">
-                        <button class="booking-secondary-button" type="button" data-tech-detail-open="mai" aria-label="View Details" title="View Details"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View Details</span></button>
+                        <button class="booking-secondary-button" type="button" data-tech-detail-open="mai" aria-label="Edit" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i><span class="booking-mini-label">Edit</span></button>
                       </div>
+                    </div>
+                    <div class="tech-services">
+                      <span class="badge badge-plan">Acrylic</span>
+                      <span class="badge badge-plan">Dip</span>
+                      <span class="badge badge-plan">Pedicure</span>
                     </div>
                   </article>
                 </div>
@@ -8398,7 +8402,7 @@
                       <div class="plan-feature"><span class="plan-check">✓</span><span>Everything in Pro</span></div>
                       <div class="plan-aio">AIO MAX - 100 FAQ + local pages + competitor tracking + attribution</div>
                       <div class="plan-feature"><span class="plan-check">✓</span><span>Staff Dashboard + TAX IQ</span></div>
-                      <div class="plan-feature"><span class="plan-check">✓</span><span>2,000 min · 2,000 SMS · 3 numbers</span></div>
+                      <div class="plan-feature"><span class="plan-check">✓</span><span>2,000 min · 2,000 SMS</span></div>
                       <div class="plan-feature"><span class="plan-check">✓</span><span>Email marketing + Win-back</span></div>
                     </div>
                     <button class="plan-select-button" type="button" data-plan-select="Elite">Choose Elite</button>
@@ -9355,6 +9359,92 @@
           <div class="sms-credit-modal-foot">
             <button class="btn-outline" type="button" data-sms-credit-close>Huỷ</button>
             <button class="btn-primary" type="button" data-sms-credit-confirm><i class="marketing-icon is-compact" data-lucide="shield-check" aria-hidden="true"></i><span>Xác nhận thanh toán</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="sms-credit-modal plan-payment-modal" data-plan-payment-modal hidden>
+        <div class="sms-credit-dialog" role="dialog" aria-modal="true" aria-labelledby="plan-payment-modal-title" aria-describedby="plan-payment-modal-description">
+          <div class="sms-credit-modal-head">
+            <div>
+              <div class="sms-credit-modal-title" id="plan-payment-modal-title"><i class="marketing-icon" data-lucide="sparkles" aria-hidden="true"></i><span data-plan-payment-title>Choose Elite</span></div>
+              <div class="sms-credit-modal-sub" id="plan-payment-modal-description">Chọn phương thức thanh toán và xem tóm tắt hoá đơn.</div>
+            </div>
+            <button class="sms-credit-close" type="button" data-plan-payment-close aria-label="Đóng thanh toán Elite"><i class="marketing-icon is-compact" data-lucide="x" aria-hidden="true"></i></button>
+          </div>
+          <div class="sms-credit-modal-body">
+            <section class="sms-credit-section" aria-labelledby="plan-payment-method-title">
+              <div class="sms-credit-section-label" id="plan-payment-method-title">Phương thức thanh toán</div>
+              <div class="sms-credit-payment-list" data-plan-payment-list></div>
+              <div class="sms-credit-card-form" data-plan-card-form hidden>
+                <div class="sms-credit-card-form-head"><i class="marketing-icon" data-lucide="credit-card" aria-hidden="true"></i><span>Credit or Debit Card</span></div>
+                <div class="sms-credit-card-required-note"><strong>*</strong> required</div>
+                <div class="sms-credit-card-fields">
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Cardholder name <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="cc-name" placeholder="Name on card" data-plan-card-field="name" data-plan-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Card number <span>*</span></span>
+                      <span class="sms-credit-card-input-wrap">
+                        <i class="marketing-icon" data-lucide="credit-card" aria-hidden="true"></i>
+                        <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="1234 1234 1234 1234" data-plan-card-field="number" data-plan-card-required>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Expiration Date <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/YY" data-plan-card-field="expiry" data-plan-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Security Code <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="CVC" data-plan-card-field="cvc" data-plan-card-required>
+                    </label>
+                  </div>
+                  <label class="sms-credit-card-field">
+                    <span class="sms-credit-card-label">Address line 1 <span>*</span></span>
+                    <input class="sms-credit-card-input" type="text" autocomplete="address-line1" placeholder="Street address" data-plan-card-field="address1" data-plan-card-required>
+                  </label>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">City <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="address-level2" placeholder="City" data-plan-card-field="city" data-plan-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">State <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="address-level1" placeholder="State" data-plan-card-field="state" data-plan-card-required>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Zip code <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="Zip code" data-plan-card-field="zip" data-plan-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Country <span>*</span></span>
+                      <select class="sms-credit-card-select" autocomplete="country" data-plan-card-field="country" data-plan-card-required>
+                        <option value="US" selected>United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="MX">Mexico</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-error" data-plan-card-error role="alert" aria-live="polite"></div>
+                </div>
+              </div>
+            </section>
+            <section class="sms-credit-section sms-credit-invoice" aria-labelledby="plan-payment-invoice-title">
+              <div class="sms-credit-section-label" id="plan-payment-invoice-title">Tóm tắt hoá đơn</div>
+              <div class="sms-credit-invoice-row"><span>Gói:</span><strong data-plan-invoice-plan>Elite</strong></div>
+              <div class="sms-credit-invoice-row"><span>Phương thức:</span><strong data-plan-invoice-payment></strong></div>
+              <div class="sms-credit-invoice-row sms-credit-invoice-total"><span>Tổng thanh toán:</span><strong data-plan-invoice-total>$349/mo</strong></div>
+            </section>
+            <div class="sr-only" aria-live="polite" data-plan-payment-status></div>
+          </div>
+          <div class="sms-credit-modal-foot">
+            <button class="btn-outline" type="button" data-plan-payment-close>Huỷ</button>
+            <button class="btn-primary" type="button" data-plan-payment-confirm><i class="marketing-icon is-compact" data-lucide="shield-check" aria-hidden="true"></i><span data-plan-payment-confirm-label>Confirm Elite</span></button>
           </div>
         </div>
       </div>
@@ -10862,12 +10952,12 @@ function getBookingCardCallStart(item) {
           '</div>' +
           '<button class="toggle-pill is-on" type="button" aria-label="Toggle tech SMS notify"></button>' +
         '</div>' +
-        '<div class="tech-services">' + renderTechBadges(data.services) + '</div>' +
         '<div class="tech-card-footer">' +
           '<div class="tech-stats">' +
             '<div class="tech-stat"><strong>0</strong><span>Clients today</span></div>' +
           '</div>' +
-        '</div>';
+        '</div>' +
+        '<div class="tech-services">' + renderTechBadges(data.services) + '</div>';
       return card;
     }
 
@@ -11701,6 +11791,11 @@ function getBookingCardCallStart(item) {
           return;
         }
 
+        if ((button.dataset.planSelect === 'Starter' || button.dataset.planSelect === 'Elite') && typeof window.openServicePlanPaymentModal === 'function') {
+          window.openServicePlanPaymentModal(button.dataset.planSelect);
+          return;
+        }
+
         selectServicePlan(button.dataset.planSelect);
       });
     });
@@ -12303,6 +12398,9 @@ function getBookingCardCallStart(item) {
       let smsCreditModalOpener = null;
       let smsCreditPackageId = SMS_CREDIT_PACKAGES[0].id;
       let smsCreditPaymentId = SMS_CREDIT_PAYMENT_METHODS[0].id;
+      let planPaymentModalOpener = null;
+      let planPaymentId = SMS_CREDIT_PAYMENT_METHODS[0].id;
+      let planPaymentPlan = 'Elite';
       let editingSmsCampaignId = null;
       let smsRecipientsModalOpener = null;
       let smsRecipientsPreviousOverflow = '';
@@ -12738,17 +12836,14 @@ function getBookingCardCallStart(item) {
         }).join('');
       }
 
-      function renderSmsCreditPayments() {
-        var target = document.querySelector('[data-sms-credit-payment-list]');
-        if (!target) return;
-
+      function renderSmsCreditPaymentOptions(target, selectedId, dataAttribute) {
         target.innerHTML = SMS_CREDIT_PAYMENT_METHODS.map(function(method) {
-          var selected = method.id === smsCreditPaymentId;
+          var selected = method.id === selectedId;
           var paymentAsset = method.id === 'CARD'
             ? '<i class="marketing-icon sms-credit-card-method-icon" data-lucide="credit-card" aria-hidden="true"></i>'
             : '<img class="sms-credit-token" src="' + method.asset + '" alt="" aria-hidden="true">';
           var paymentBalance = method.id === 'CARD' ? '' : '<span class="sms-credit-payment-balance"><span>Số dư</span><strong>' + method.balance + '</strong></span>';
-          return '<button class="sms-credit-payment' + (selected ? ' is-selected' : '') + '" type="button" data-sms-credit-payment="' + method.id + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
+          return '<button class="sms-credit-payment' + (selected ? ' is-selected' : '') + '" type="button" ' + dataAttribute + '="' + method.id + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
             '<span class="sms-credit-payment-main">' +
               '<span class="sms-credit-radio" aria-hidden="true"></span>' +
               paymentAsset +
@@ -12757,6 +12852,12 @@ function getBookingCardCallStart(item) {
             paymentBalance +
           '</button>';
         }).join('');
+      }
+
+      function renderSmsCreditPayments() {
+        var target = document.querySelector('[data-sms-credit-payment-list]');
+        if (!target) return;
+        renderSmsCreditPaymentOptions(target, smsCreditPaymentId, 'data-sms-credit-payment');
       }
 
       function renderSmsCreditCardForm() {
@@ -12788,6 +12889,87 @@ function getBookingCardCallStart(item) {
         }
         if (error) error.textContent = '';
         return true;
+      }
+
+      function renderServicePlanPayment() {
+        var target = document.querySelector('[data-plan-payment-list]');
+        var title = document.querySelector('[data-plan-payment-title]');
+        var invoicePlan = document.querySelector('[data-plan-invoice-plan]');
+        var invoicePayment = document.querySelector('[data-plan-invoice-payment]');
+        var invoiceTotal = document.querySelector('[data-plan-invoice-total]');
+        var confirmLabel = document.querySelector('[data-plan-payment-confirm-label]');
+        var status = document.querySelector('[data-plan-payment-status]');
+        var planPrice = planPaymentPlan === 'Starter' ? 99 : 349;
+        if (target) renderSmsCreditPaymentOptions(target, planPaymentId, 'data-plan-payment');
+        var selectedPayment = SMS_CREDIT_PAYMENT_METHODS.find(function(method) { return method.id === planPaymentId; }) || SMS_CREDIT_PAYMENT_METHODS[0];
+        if (title) title.textContent = 'Choose ' + planPaymentPlan;
+        if (invoicePlan) invoicePlan.textContent = planPaymentPlan;
+        if (invoicePayment) invoicePayment.textContent = selectedPayment.label;
+        if (invoiceTotal) invoiceTotal.textContent = '$' + planPrice + '/mo';
+        if (confirmLabel) confirmLabel.textContent = 'Confirm ' + planPaymentPlan;
+        if (status) status.textContent = planPaymentPlan + ', thanh toán bằng ' + selectedPayment.label + '.';
+        var cardForm = document.querySelector('[data-plan-card-form]');
+        if (cardForm) cardForm.hidden = selectedPayment.id !== 'CARD';
+        if (selectedPayment.id !== 'CARD') {
+          var error = document.querySelector('[data-plan-card-error]');
+          if (error) error.textContent = '';
+        }
+      }
+
+      function validateElitePlanCardForm() {
+        var form = document.querySelector('[data-plan-card-form]');
+        if (!form || form.hidden) return true;
+
+        var firstMissing = null;
+        form.querySelectorAll('[data-plan-card-required]').forEach(function(field) {
+          field.removeAttribute('aria-invalid');
+          if (!firstMissing && !field.value.trim()) firstMissing = field;
+        });
+        var error = form.querySelector('[data-plan-card-error]');
+        if (firstMissing) {
+          firstMissing.setAttribute('aria-invalid', 'true');
+          if (error) error.textContent = 'Please complete all required card details.';
+          firstMissing.focus();
+          return false;
+        }
+        if (error) error.textContent = '';
+        return true;
+      }
+
+      function openServicePlanPaymentModal(plan) {
+        var modal = document.querySelector('[data-plan-payment-modal]');
+        if (!modal || (plan !== 'Starter' && plan !== 'Elite')) return;
+        planPaymentModalOpener = document.activeElement;
+        planPaymentPlan = plan;
+        planPaymentId = SMS_CREDIT_PAYMENT_METHODS[0].id;
+        renderServicePlanPayment();
+        refreshBookingMarketingIcons();
+        modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        var closeButton = modal.querySelector('[data-plan-payment-close]');
+        if (closeButton) closeButton.focus();
+      }
+      window.openServicePlanPaymentModal = openServicePlanPaymentModal;
+
+      function closeServicePlanPaymentModal() {
+        var modal = document.querySelector('[data-plan-payment-modal]');
+        if (!modal || modal.hidden) return;
+        modal.hidden = true;
+        document.body.style.overflow = '';
+        if (planPaymentModalOpener && typeof planPaymentModalOpener.focus === 'function') planPaymentModalOpener.focus();
+        planPaymentModalOpener = null;
+      }
+
+      function confirmServicePlanPayment() {
+        var selectedPayment = SMS_CREDIT_PAYMENT_METHODS.find(function(method) { return method.id === planPaymentId; }) || SMS_CREDIT_PAYMENT_METHODS[0];
+        if (selectedPayment.id === 'CARD' && !validateElitePlanCardForm()) return;
+        var planPrice = planPaymentPlan === 'Starter' ? 99 : 349;
+        selectServicePlan(planPaymentPlan);
+        closeServicePlanPaymentModal();
+        $('successText').textContent = planPaymentPlan + ' plan selected — $' + planPrice + '/mo via ' + selectedPayment.label + '.';
+        $('successBanner').classList.add('show');
+        clearTimeout(confirmServicePlanPayment._timer);
+        confirmServicePlanPayment._timer = setTimeout(function() { $('successBanner').classList.remove('show'); }, 6000);
       }
 
       function renderSmsCreditInvoice() {
@@ -12943,6 +13125,16 @@ function getBookingCardCallStart(item) {
         var digits = this.value.replace(/\D/g, '').slice(0, 4);
         this.value = digits.length > 2 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
       });
+      var planCardNumber = document.querySelector('[data-plan-card-field="number"]');
+      if (planCardNumber) planCardNumber.addEventListener('input', function() {
+        var digits = this.value.replace(/\D/g, '').slice(0, 16);
+        this.value = digits.replace(/(.{4})/g, '$1 ').trim();
+      });
+      var planCardExpiry = document.querySelector('[data-plan-card-field="expiry"]');
+      if (planCardExpiry) planCardExpiry.addEventListener('input', function() {
+        var digits = this.value.replace(/\D/g, '').slice(0, 4);
+        this.value = digits.length > 2 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
+      });
       var smsCreditModal = document.querySelector('[data-sms-credit-modal]');
       if (smsCreditModal) smsCreditModal.addEventListener('click', function(event) {
         if (event.target === smsCreditModal) {
@@ -12964,6 +13156,21 @@ function getBookingCardCallStart(item) {
           return;
         }
         if (event.target.closest('[data-sms-credit-confirm]')) confirmSmsCreditPurchase();
+      });
+      var planPaymentModal = document.querySelector('[data-plan-payment-modal]');
+      if (planPaymentModal) planPaymentModal.addEventListener('click', function(event) {
+        if (event.target === planPaymentModal || event.target.closest('[data-plan-payment-close]')) {
+          closeServicePlanPaymentModal();
+          return;
+        }
+        var paymentButton = event.target.closest('[data-plan-payment]');
+        if (paymentButton) {
+          planPaymentId = paymentButton.dataset.planPayment;
+          renderServicePlanPayment();
+          refreshBookingMarketingIcons();
+          return;
+        }
+        if (event.target.closest('[data-plan-payment-confirm]')) confirmServicePlanPayment();
       });
       var smsRecipientsModal = document.querySelector('[data-sms-recipients-modal]');
       if (smsRecipientsModal) smsRecipientsModal.addEventListener('click', function(event) {
@@ -13008,6 +13215,12 @@ function getBookingCardCallStart(item) {
         if (!modal || modal.hidden || event.key !== 'Escape') return;
         event.preventDefault();
         closeSmsCreditModal();
+      });
+      document.addEventListener('keydown', function(event) {
+        var modal = document.querySelector('[data-plan-payment-modal]');
+        if (!modal || modal.hidden || event.key !== 'Escape') return;
+        event.preventDefault();
+        closeServicePlanPaymentModal();
       });
       document.addEventListener('keydown', function(event) {
         var modal = document.querySelector('[data-sms-recipients-modal]');

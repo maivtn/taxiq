@@ -405,6 +405,66 @@ test('provides a selectable SMS credits checkout beside the credits pill', () =>
   assert.match(html, /updateCredits\(state\.credits \+ selectedPackage\.credits\)/);
 });
 
+test('opens an Elite payment modal with payment method and invoice only', () => {
+  const html = source();
+
+  assert.match(html, /data-plan-payment-modal/);
+  assert.match(html, /data-plan-payment-list/);
+  assert.match(html, /data-plan-payment-title/);
+  assert.match(html, /data-plan-invoice-plan>Elite<\/strong>/);
+  assert.match(html, /data-plan-invoice-payment/);
+  assert.match(html, /data-plan-invoice-total>\$349\/mo<\/strong>/);
+  assert.doesNotMatch(html, /data-plan-package-list/);
+  assert.match(html, /function openServicePlanPaymentModal\(plan\)/);
+  assert.match(html, /function confirmServicePlanPayment\(\)/);
+  assert.match(html, /button\.dataset\.planSelect === 'Starter' \|\| button\.dataset\.planSelect === 'Elite'[\s\S]*?openServicePlanPaymentModal/);
+  assert.match(html, /data-plan-card-form hidden/);
+});
+
+test('uses the same payment modal for Starter with the Starter invoice amount', () => {
+  const html = source();
+
+  assert.match(html, /data-plan-select="Starter"/);
+  assert.match(html, /planPaymentPlan === 'Starter' \? 99 : 349/);
+  assert.match(html, /invoiceTotal\.textContent = '\$' \+ planPrice \+ '\/mo'/);
+  assert.match(html, /selectServicePlan\(planPaymentPlan\)/);
+});
+
+test('removes the extra number allowance from the Elite plan', () => {
+  const html = source();
+
+  assert.match(html, /2,000 min · 2,000 SMS/);
+  assert.doesNotMatch(html, /2,000 min · 2,000 SMS · 3 numbers/);
+});
+
+test('labels technician card actions as Edit', () => {
+  const html = source();
+
+  for (const id of ['kim', 'lan', 'mai']) {
+    assert.match(html, new RegExp(`data-tech-detail-open="${id}"[^>]*aria-label="Edit"[^>]*title="Edit"[\\s\\S]*?bi-pencil[\\s\\S]*?booking-mini-label">Edit<`));
+  }
+  assert.doesNotMatch(html, /data-tech-detail-open="(?:kim|lan|mai)"[^>]*View Details/);
+});
+
+test('limits technician service badges and enables scrolling for long lists', () => {
+  const html = source();
+  const techServicesRule = html.match(/\.tech-services\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(techServicesRule, /max-height:\s*128px/);
+  assert.match(techServicesRule, /overflow-y:\s*auto/);
+});
+
+test('places technician services below the card footer', () => {
+  const html = source();
+  const kimCard = html.match(/<article class="tech-card" data-tech-id="kim">([\s\S]*?)<\/article>/)?.[1] || '';
+  const footerIndex = kimCard.indexOf('tech-card-footer');
+  const servicesIndex = kimCard.indexOf('tech-services');
+
+  assert.ok(footerIndex >= 0 && servicesIndex >= 0);
+  assert.ok(footerIndex < servicesIndex);
+  assert.match(html, /<div class="tech-card-footer">[\s\S]*?'<div class="tech-services">' \+ renderTechBadges/);
+});
+
 test('keeps inline scripts valid when Live Server injects its reload client', () => {
   const liveReloadClient = '<script>window.__liveReloadReady = true;</script>';
   const servedHtml = source().replace(/<\/body>/i, `${liveReloadClient}\n</body>`);
