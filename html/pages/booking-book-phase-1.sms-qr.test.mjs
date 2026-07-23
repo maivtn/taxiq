@@ -390,6 +390,7 @@ test('provides a selectable SMS credits checkout beside the credits pill', () =>
   assert.match(html, /data-sms-credit-card-field="city"/);
   assert.match(html, /data-sms-credit-card-field="state"/);
   assert.match(html, /data-sms-credit-card-field="zip"/);
+  assert.equal((html.match(/<option value="VN">Vietnam<\/option>/g) || []).length, 2);
   assert.match(html, /<div class="sms-credit-card-row">\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="name"[\s\S]*?<\/label>\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="number"/);
   assert.match(html, /<div class="sms-credit-card-row">\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="city"[\s\S]*?<\/label>\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="state"/);
   assert.match(html, /<div class="sms-credit-card-row">\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="zip"[\s\S]*?<\/label>\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="country"/);
