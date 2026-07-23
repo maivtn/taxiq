@@ -510,6 +510,31 @@ test('seeds and manages SMS campaign records without adding a campaign-name fiel
   assert.match(html, /renderSmsCampaignList\(\);/);
 });
 
+test('adds a View action and recipient modal for SMS campaigns', () => {
+  const html = source();
+
+  assert.match(html, /data-sms-campaign-action="view"/);
+  assert.match(html, /data-sms-recipients-modal/);
+  for (const label of ['Campaign recipients', 'Customer', 'Phone', 'Status', 'Segments', 'Sent at']) {
+    assert.match(html, new RegExp(`>${label}<`), `missing recipient modal label: ${label}`);
+  }
+  for (const fn of ['renderSmsCampaignRecipients', 'openSmsCampaignRecipients', 'closeSmsCampaignRecipients']) {
+    assert.match(html, new RegExp(`function ${fn}\\(`), `missing ${fn}`);
+  }
+  assert.match(html, /campaign\.recipients/);
+  assert.match(html, /data-sms-recipient-filter/);
+  assert.match(html, /if \(action === 'view'\)[\s\S]*openSmsCampaignRecipients\(campaign\)/);
+});
+
+test('formats SMS recipient sent times like Appointments Overview', () => {
+  const html = source();
+
+  assert.match(html, /function formatSmsRecipientSentAt\(value\)/);
+  assert.match(html, /toLocaleDateString\('en-US', \{ month: 'short', day: '2-digit', year: 'numeric' \}\)/);
+  assert.match(html, /toLocaleTimeString\('en-US', \{ hour: 'numeric', minute: '2-digit' \}\)\.toLowerCase\(\)/);
+  assert.match(html, /formatSmsRecipientSentAt\(recipient\.sentAt\)/);
+});
+
 test('styles SMS campaign actions as compact buttons', () => {
   const html = source();
   const actionRule = html.match(/#panel-sms-campaigns \.sms-campaign-action\s*\{([^}]*)\}/)?.[1] || '';
@@ -520,6 +545,53 @@ test('styles SMS campaign actions as compact buttons', () => {
   assert.match(actionRule, /background:/);
   assert.doesNotMatch(actionRule, /text-decoration:underline/);
   assert.match(html, /#panel-sms-campaigns \.sms-campaign-action\.is-danger\s*\{[^}]*background:/);
+});
+
+test('uses a distinct color for each SMS campaign action', () => {
+  const html = source();
+  const expectedColors = {
+    view: 'var(--nexora-electric)',
+    edit: 'var(--nexora-violet)',
+    cancel: '#d97706',
+    delete: '#c24141'
+  };
+
+  for (const [action, color] of Object.entries(expectedColors)) {
+    const selector = `#panel-sms-campaigns \\.sms-campaign-action\\[data-sms-campaign-action="${action}"\\]`;
+    const rule = html.match(new RegExp(`${selector}\\s*\\{([^}]*)\\}`))?.[1] || '';
+    assert.match(rule, /background:/, `missing background for ${action}`);
+    assert.ok(rule.includes(`color:${color}`), `missing color for ${action}`);
+  }
+});
+
+test('keeps SMS Campaign typography at or above 12px', () => {
+  const html = source();
+  const styleBlocks = html.match(/<style>[\s\S]*?<\/style>/gi) || [];
+  const relevantRules = styleBlocks
+    .join('\n')
+    .match(/[^{}]*(?:#panel-sms-campaigns|#nx-campaign-root)[^{}]*\{[^}]*\}/g) || [];
+  const undersizedRules = relevantRules.filter((rule) => {
+    return Array.from(rule.matchAll(/font-size:\s*(\d+)px/g)).some((match) => Number(match[1]) < 12);
+  });
+
+  assert.deepEqual(undersizedRules, [], 'SMS Campaigns contains text smaller than 12px');
+  assert.doesNotMatch(html, /<span style="font-size:11px;color:var\(--text-dim\);">Chèn:/);
+});
+
+test('keeps QR Codes typography at or above 12px', () => {
+  const html = source();
+  const styleBlocks = html.match(/<style>[\s\S]*?<\/style>/gi) || [];
+  const relevantRules = styleBlocks
+    .join('\n')
+    .match(/[^{}]*#panel-qr-codes[^{}]*\{[^}]*\}/g) || [];
+  const undersizedRules = relevantRules.filter((rule) => {
+    return Array.from(rule.matchAll(/font-size:\s*(\d+)px/g)).some((match) => Number(match[1]) < 12);
+  });
+
+  assert.deepEqual(undersizedRules, [], 'QR Codes contains text smaller than 12px');
+  for (const selector of ['\\.logo', 'label', '\\.consent', '\\.footer']) {
+    assert.doesNotMatch(html, new RegExp(`${selector}\\{font-size:(?:[0-9]|1[01])px`), `QR preview contains text smaller than 12px in ${selector}`);
+  }
 });
 
 test('provides a populated SMS campaign demo dataset', () => {
