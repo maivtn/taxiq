@@ -9,7 +9,6 @@ test('defines the selected-package review group and dynamic value hooks', () => 
   const html = readFileSync(pagePath, 'utf8');
 
   for (const label of [
-    'Sau khi chọn cấp, hệ thống hiển thị:',
     'Số VMM ký gửi',
     'VMM IOU được tặng',
     'Thời hạn',
@@ -35,4 +34,16 @@ test('defines the selected-package review group and dynamic value hooks', () => 
 
   assert.match(html, /function renderPackageReview\(\)/);
   assert.match(html, /reviewRemainingBalance\.textContent\s*=.*walletBalance.*selectedTier\.amount/);
+
+  const reviewBlock = html.match(/<div class="vmm-package-review"[\s\S]*?<div class="vmm-action-row">/)?.[0] || '';
+  assert.ok(reviewBlock, 'review block must exist');
+  assert.match(html, /class="vmm-package-review-grid"/);
+  assert.equal((html.match(/class="vmm-package-review-item"/g) || []).length, 6);
+  assert.doesNotMatch(reviewBlock, /<ul\b|<ol\b|<li\b/);
+  assert.match(html, /id="reviewStartDate">Aug 20, 2026<\/strong>/);
+  assert.match(html, /id="reviewEndDate">Aug 20, 2029<\/strong>/);
+  assert.match(html, /reviewStartDate\.textContent\s*=\s*'Aug 20, 2026'/);
+  assert.match(html, /reviewEndDate\.textContent\s*=\s*'Aug 20, 2029'/);
+  assert.match(html, /\.vmm-package-review-grid\s*\{/);
+  assert.match(html, /grid-template-columns:\s*repeat\(2,/);
 });

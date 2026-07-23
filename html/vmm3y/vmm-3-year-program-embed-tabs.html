@@ -1778,61 +1778,43 @@
       text-align: left;
     }
 
-    #vmm-program-root .vmm-package-review-title {
-      margin: 0 0 8px;
+    #vmm-program-root .vmm-package-review-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    #vmm-program-root .vmm-package-review-item {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      min-height: 64px;
+      padding: 12px 13px;
+      border: 1px solid #e5ebf3;
+      border-radius: 10px;
+      background: #ffffff;
+    }
+
+    #vmm-program-root .vmm-package-review-label {
+      color: #7b8899;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    #vmm-program-root .vmm-package-review-value {
       color: var(--vmm-reference-heading);
       font-size: 13px;
       font-weight: 900;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
     }
 
-    #vmm-program-root .vmm-package-review-list {
-      margin: 0;
-      padding-left: 18px;
-      color: #667386;
-      font-size: 12px;
-    }
-
-    #vmm-program-root .vmm-package-review-list li {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 4px 0;
-    }
-
-    #vmm-program-root .vmm-package-review-list li::marker {
-      color: var(--vmm-reference-blue);
-    }
-
-    #vmm-program-root .vmm-package-review-list strong {
-      color: var(--vmm-reference-heading);
-      font-weight: 800;
-      text-align: right;
-    }
-
-    #vmm-program-root .vmm-package-review-terms {
-      align-items: center;
-    }
-
-    #vmm-program-root .vmm-package-review-terms button {
-      padding: 0;
-      color: var(--vmm-reference-blue);
-      font-size: 12px;
-      font-weight: 800;
-      text-decoration: none;
-    }
-
-    #vmm-program-root .vmm-package-review-terms button:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 420px) {
-      #vmm-program-root .vmm-package-review-list li {
-        align-items: flex-start;
-      }
-
-      #vmm-program-root .vmm-package-review-list strong {
-        max-width: 58%;
+    @media (max-width: 520px) {
+      #vmm-program-root .vmm-package-review-grid {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -2557,14 +2539,32 @@
 
           <div class="vmm-buy-confirmation" id="reviewArea" hidden>
             <div class="vmm-package-review" aria-live="polite">
-              <ul class="vmm-package-review-list">
-                <li><span>Số VMM ký gửi</span><strong id="reviewDepositAmount">—</strong></li>
-                <li><span>VMM IOU được tặng</span><strong id="reviewRewardAmount">—</strong></li>
-                <li><span>Thời hạn</span><strong id="reviewPeriod">3 năm</strong></li>
-                <li><span>Ngày bắt đầu</span><strong id="reviewStartDate">01/09/2026</strong></li>
-                <li><span>Ngày hoàn tất dự kiến</span><strong id="reviewEndDate">01/09/2029</strong></li>
-                <li><span>Số dư VMM còn lại</span><strong id="reviewRemainingBalance">—</strong></li>
-              </ul>
+              <div class="vmm-package-review-grid">
+                <div class="vmm-package-review-item">
+                  <span class="vmm-package-review-label">Số VMM ký gửi</span>
+                  <strong class="vmm-package-review-value" id="reviewDepositAmount">—</strong>
+                </div>
+                <div class="vmm-package-review-item">
+                  <span class="vmm-package-review-label">VMM IOU được tặng</span>
+                  <strong class="vmm-package-review-value" id="reviewRewardAmount">—</strong>
+                </div>
+                <div class="vmm-package-review-item">
+                  <span class="vmm-package-review-label">Thời hạn</span>
+                  <strong class="vmm-package-review-value" id="reviewPeriod">3 năm</strong>
+                </div>
+                <div class="vmm-package-review-item">
+                  <span class="vmm-package-review-label">Ngày bắt đầu</span>
+                  <strong class="vmm-package-review-value" id="reviewStartDate">Aug 20, 2026</strong>
+                </div>
+                <div class="vmm-package-review-item">
+                  <span class="vmm-package-review-label">Ngày hoàn tất dự kiến</span>
+                  <strong class="vmm-package-review-value" id="reviewEndDate">Aug 20, 2029</strong>
+                </div>
+                <div class="vmm-package-review-item">
+                  <span class="vmm-package-review-label">Số dư VMM còn lại</span>
+                  <strong class="vmm-package-review-value" id="reviewRemainingBalance">—</strong>
+                </div>
+              </div>
             </div>
 
             <div class="vmm-action-row">
@@ -2972,8 +2972,8 @@
         reviewDepositAmount.textContent = `${fmt(selectedTier.amount)} VMM`;
         reviewRewardAmount.textContent = `${fmt(selectedTier.reward)} VMM IOU`;
         reviewPeriod.textContent = '3 năm';
-        reviewStartDate.textContent = '01/09/2026';
-        reviewEndDate.textContent = '01/09/2029';
+        reviewStartDate.textContent = 'Aug 20, 2026';
+        reviewEndDate.textContent = 'Aug 20, 2029';
         reviewRemainingBalance.textContent = `${fmt(walletBalance - selectedTier.amount)} VMM`;
         confirmDeposit.disabled = selectedTier.amount > walletBalance;
       }

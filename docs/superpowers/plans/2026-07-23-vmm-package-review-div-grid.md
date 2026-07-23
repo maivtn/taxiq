@@ -35,9 +35,11 @@ Add these assertions after the existing dynamic-hook assertions:
 ```js
 assert.match(html, /class="vmm-package-review-grid"/);
 assert.equal((html.match(/class="vmm-package-review-item"/g) || []).length, 6);
-assert.doesNotMatch(html, /<ul\b|<ol\b|<li\b/);
-assert.match(html, /id="reviewStartDate">Aug 20, 2026</n);
-assert.match(html, /id="reviewEndDate">Aug 20, 2029</n);
+const reviewBlock = html.match(/<div class="vmm-package-review"[\s\S]*?<div class="vmm-action-row">/)?.[0] || '';
+assert.ok(reviewBlock, 'review block must exist');
+assert.doesNotMatch(reviewBlock, /<ul\b|<ol\b|<li\b/);
+assert.match(html, /id="reviewStartDate">Aug 20, 2026<\/strong>/);
+assert.match(html, /id="reviewEndDate">Aug 20, 2029<\/strong>/);
 assert.match(html, /\.vmm-package-review-grid\s*\{/);
 assert.match(html, /grid-template-columns:\s*repeat\(2,/);
 ```
