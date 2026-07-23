@@ -252,6 +252,19 @@ test('shows a manually closable success alert after saving an appointment', () =
   assert.doesNotMatch(saveHandler, /timer:/);
 });
 
+test('includes saved appointment details in the success alert', () => {
+  const html = source();
+  const saveHandler = html.match(/function saveBookingFromCalendar\(\)\s*\{([\s\S]*?)\n    \}\n\n    function initBookingCalendar/)?.[1] || '';
+
+  assert.match(saveHandler, /html:\s*bookingSuccessHtml/);
+  for (const label of ['Customer', 'Phone', 'Services', 'Date', 'Time', 'Duration', 'Technician', 'Status']) {
+    assert.match(saveHandler, new RegExp('>' + label + '<'), `missing ${label} in save confirmation`);
+  }
+  assert.match(saveHandler, /bookingCalendarDisplayDate\(start\)/);
+  assert.match(saveHandler, /bookingCalendarDisplayTime\(start\)/);
+  assert.match(saveHandler, /\+\s*duration\s*\+\s*' min/);
+});
+
 test('keeps New appointment, view switch, and Filter at the same height', () => {
   const html = source();
   const filterRule = html.match(/\.booking-filter-toggle\s*\{([^}]*)\}/)?.[1] || '';

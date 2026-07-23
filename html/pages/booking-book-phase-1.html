@@ -6997,6 +6997,39 @@
       color: var(--nexora-muted) !important;
     }
 
+    .booking-save-summary {
+      display: grid;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .booking-save-summary-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--nexora-rule);
+      padding-bottom: 6px;
+    }
+
+    .booking-save-summary-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .booking-save-summary-label {
+      color: var(--nexora-subtle);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .booking-save-summary-value {
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: right;
+    }
+
     .swal2-actions {
       gap: 10px !important;
     }
@@ -10047,10 +10080,24 @@
       filterBookingItems();
       renderBookingCalendar();
       if (window.Swal) {
+        var techLabel = tech === 'unassigned' ? 'Anyone / Unassigned' : tech;
+        var statusLabels = { 'new': 'New', 'sms-sent': 'SMS Sent', 'done': 'Completed', 'noshow': 'No-show' };
+        var bookingSuccessHtml = [
+          '<div class="booking-save-summary">',
+          '<div class="booking-save-summary-row"><span class="booking-save-summary-label">Customer</span><strong class="booking-save-summary-value">' + escapeHtml(name) + '</strong></div>',
+          '<div class="booking-save-summary-row"><span class="booking-save-summary-label">Phone</span><strong class="booking-save-summary-value">' + escapeHtml(formatBookingPhone(phone)) + '</strong></div>',
+          '<div class="booking-save-summary-row"><span class="booking-save-summary-label">Services</span><strong class="booking-save-summary-value">' + escapeHtml(services.join(', ')) + '</strong></div>',
+          '<div class="booking-save-summary-row"><span class="booking-save-summary-label">Date</span><strong class="booking-save-summary-value">' + escapeHtml(bookingCalendarDisplayDate(start)) + '</strong></div>',
+          '<div class="booking-save-summary-row"><span class="booking-save-summary-label">Time</span><strong class="booking-save-summary-value">' + escapeHtml(bookingCalendarDisplayTime(start)) + '</strong></div>',
+          '<div class="booking-save-summary-row"><span class="booking-save-summary-label">Duration</span><strong class="booking-save-summary-value">' + duration + ' min</strong></div>',
+          '<div class="booking-save-summary-row"><span class="booking-save-summary-label">Technician</span><strong class="booking-save-summary-value">' + escapeHtml(techLabel) + '</strong></div>',
+          '<div class="booking-save-summary-row"><span class="booking-save-summary-label">Status</span><strong class="booking-save-summary-value">' + escapeHtml(statusLabels[status] || status) + '</strong></div>',
+          '</div>'
+        ].join('');
         Swal.fire({
           icon: 'success',
           title: 'Appointment created',
-          text: name,
+          html: bookingSuccessHtml,
           confirmButtonText: 'Close',
           showConfirmButton: true,
           allowOutsideClick: false,
