@@ -1923,6 +1923,12 @@
       text-transform: lowercase;
     }
 
+    #vmm-program-root .vmm-table-code {
+      color: #53647a;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
     #vmm-program-root .vmm-history-table td.vmm-table-value strong {
       color: var(--vmm-green);
     }
@@ -2509,6 +2515,7 @@
             <div class="vmm-form-meta-left">
               <span>VMM</span>
               <span class="vmm-form-error" id="typeValidation" hidden>Your VMM quantity is insufficient</span>
+              <span class="vmm-form-error" id="programValidation" hidden>Chương trình bắt đầu từ Aug 20, 2026</span>
             </div>
             <div class="vmm-form-meta-right">
               <span>Quantity: <strong id="packageQuantity">0</strong></span>
@@ -2522,7 +2529,6 @@
               <span>Select Package</span>
             </div>
             <div id="tierGrid"></div>
-            <p class="vmm-field-help" id="packageSummary">—</p>
           </div>
 
           <div class="vmm-form-field">
@@ -2597,6 +2603,7 @@
             <thead>
               <tr>
                 <th>Holding ID</th>
+                <th>Transaction Code</th>
                 <th>Date</th>
                 <th>Period</th>
                 <th>Value</th>
@@ -2608,24 +2615,26 @@
             <tbody id="historyList">
               <tr>
                 <td><strong>#145</strong></td>
-                <td><span class="vmm-table-date">Sep 01, 2026</span><span class="vmm-table-time">09:00 am</span></td>
+                <td><code class="vmm-table-code">VMM-3Y-145A1F</code></td>
+                <td><span class="vmm-table-date">Aug 20, 2026</span><span class="vmm-table-time">09:00 am</span></td>
                 <td>3 Years</td>
                 <td class="vmm-table-value"><strong>100.000.000 VMM</strong></td>
                 <td><span class="vmm-table-status vmm-table-status-active">Active</span></td>
-                <td>Sep 01, 2029</td>
+                <td>Aug 20, 2029</td>
                 <td>
                   <button class="btn btn-link p-0 vmm-table-view" type="button" data-view-history
-                    data-holding-id="#145" data-holding-date="Sep 01, 2026, 09:00 AM"
+                    data-holding-id="#145" data-holding-date="Aug 20, 2026, 09:00 AM"
                     data-holding-period="3 Years" data-holding-value="100.000.000 VMM"
                     data-holding-rate="0.000633" data-holding-request="$300"
-                    data-holding-status="Active" data-holding-release="Sep 01, 2029"
-                    data-holding-start="Sep 01, 2026" data-holding-reward="1.000.000 VMM IOU">
+                    data-holding-status="Active" data-holding-release="Aug 20, 2029"
+                    data-holding-start="Aug 20, 2026" data-holding-reward="1.000.000 VMM IOU">
                     <i class="bi bi-eye" aria-hidden="true"></i> View
                   </button>
                 </td>
               </tr>
               <tr>
                 <td><strong>#126</strong></td>
+                <td><code class="vmm-table-code">VMM-3Y-126B2C</code></td>
                 <td><span class="vmm-table-date">Aug 20, 2026</span><span class="vmm-table-time">10:15 am</span></td>
                 <td>3 Years</td>
                 <td class="vmm-table-value"><strong>50.000.000 VMM</strong></td>
@@ -2644,18 +2653,19 @@
               </tr>
               <tr>
                 <td><strong>#124</strong></td>
-                <td><span class="vmm-table-date">Aug 07, 2026</span><span class="vmm-table-time">08:30 am</span></td>
+                <td><code class="vmm-table-code">VMM-3Y-124C3D</code></td>
+                <td><span class="vmm-table-date">Aug 20, 2026</span><span class="vmm-table-time">08:30 am</span></td>
                 <td>3 Years</td>
                 <td class="vmm-table-value"><strong>20.000.000 VMM</strong></td>
                 <td><span class="vmm-table-status">Completed</span></td>
-                <td>Aug 07, 2029</td>
+                <td>Aug 20, 2029</td>
                 <td>
                   <button class="btn btn-link p-0 vmm-table-view" type="button" data-view-history
-                    data-holding-id="#124" data-holding-date="Aug 07, 2026, 08:30 AM"
+                    data-holding-id="#124" data-holding-date="Aug 20, 2026, 08:30 AM"
                     data-holding-period="3 Years" data-holding-value="20.000.000 VMM"
                     data-holding-rate="0.000633" data-holding-request="$300"
-                    data-holding-status="Completed" data-holding-release="Aug 07, 2029"
-                    data-holding-start="Aug 07, 2026" data-holding-reward="25.000 VMM IOU">
+                    data-holding-status="Completed" data-holding-release="Aug 20, 2029"
+                    data-holding-start="Aug 20, 2026" data-holding-reward="25.000 VMM IOU">
                     <i class="bi bi-eye" aria-hidden="true"></i> View
                   </button>
                 </td>
@@ -2690,7 +2700,7 @@
           </div>
 
           <div class="vmm-program-section">
-            <h4>Chính thức từ ngày 01/09/2026</h4>
+            <h4>Chính thức từ ngày Aug 20, 2026</h4>
             <p>Thành viên có thể ký gửi VMM theo lộ trình <b>3 năm</b> và nhận thêm VMM IOU theo cấp độ tham gia.</p>
 
             <div class="vmm-program-table-wrap">
@@ -2883,6 +2893,9 @@
         { level: 6, amount: 500000000, reward: 10000000 }
       ];
 
+      const PROGRAM_START_DATE = '2026-08-20';
+      const PROGRAM_RELEASE_DATE = '2029-08-20';
+
       let walletBalance = 300000000;
       let lockedBalance = 100000000;
       let rewardBalance = 1000000;
@@ -2897,13 +2910,16 @@
         year: 'numeric',
         timeZone: 'UTC'
       }).format(new Date(`${isoDate}T00:00:00Z`));
+      const programStartLabel = formatDate(PROGRAM_START_DATE);
+      const programReleaseLabel = formatDate(PROGRAM_RELEASE_DATE);
+      const isProgramOpen = () => new Date() >= new Date(`${PROGRAM_START_DATE}T00:00:00`);
 
       const tabButtons = [...root.querySelectorAll('.vmm-tab')];
       const panels = [...root.querySelectorAll('.vmm-panel')];
       const tierGrid = root.querySelector('#tierGrid');
       const packageQuantity = root.querySelector('#packageQuantity');
-      const packageSummary = root.querySelector('#packageSummary');
       const typeValidation = root.querySelector('#typeValidation');
+      const programValidation = root.querySelector('#programValidation');
       const reviewArea = root.querySelector('#reviewArea');
       const confirmDeposit = root.querySelector('#confirmDeposit');
       const reviewDepositAmount = root.querySelector('#reviewDepositAmount');
@@ -2977,16 +2993,17 @@
         reviewDepositAmount.textContent = `${fmt(selectedTier.amount)} VMM`;
         reviewRewardAmount.textContent = `${fmt(selectedTier.reward)} VMM IOU`;
         reviewPeriod.textContent = '3 năm';
-        reviewStartDate.textContent = 'Aug 20, 2026';
-        reviewEndDate.textContent = 'Aug 20, 2029';
+        reviewStartDate.textContent = programStartLabel;
+        reviewEndDate.textContent = programReleaseLabel;
         reviewRemainingBalance.textContent = `${fmt(walletBalance - selectedTier.amount)} VMM`;
-        confirmDeposit.disabled = selectedTier.amount > walletBalance;
+        confirmDeposit.disabled = !isProgramOpen() || selectedTier.amount > walletBalance;
       }
 
       function updateBalances() {
         packageQuantity.textContent = fmt(walletBalance);
         root.querySelector('#programBalance').textContent = `${fmt(walletBalance)} VMM`;
         typeValidation.hidden = !(selectedTier && selectedTier.amount > walletBalance);
+        programValidation.hidden = isProgramOpen();
         renderPackageReview();
       }
 
@@ -3141,13 +3158,11 @@
 
       function showReview() {
         if (!selectedTier) {
-          packageSummary.textContent = '—';
           root.querySelector('#rewardBannerValue').textContent = '—';
           renderPackageReview();
           return;
         }
 
-        packageSummary.textContent = `${fmt(selectedTier.amount)} VMM · Reward ${fmt(selectedTier.reward)} VMM IOU`;
         root.querySelector('#rewardBannerValue').textContent = `${fmt(selectedTier.reward)} VMM IOU`;
         renderPackageReview();
       }
@@ -3155,7 +3170,6 @@
       function clearCurrentSelection() {
         selectedTier = null;
         reviewArea.hidden = true;
-        packageSummary.textContent = '—';
         root.querySelector('#rewardBannerValue').textContent = '—';
         confirmDeposit.disabled = true;
         renderTiers();
@@ -3216,18 +3230,19 @@
         const holdingId = `#${String(Date.now()).slice(-3)}`;
         item.innerHTML = `
           <td><strong>${holdingId}</strong></td>
-          <td><span class="vmm-table-date">${formatDate('2026-09-01')}</span><span class="vmm-table-time">09:00 am</span></td>
+          <td><code class="vmm-table-code">${transactionCode}</code></td>
+          <td><span class="vmm-table-date">${programStartLabel}</span><span class="vmm-table-time">09:00 am</span></td>
           <td>3 Years</td>
           <td class="vmm-table-value"><strong>${fmt(tier.amount)} VMM</strong></td>
           <td><span class="vmm-table-status vmm-table-status-active">Active</span></td>
-          <td>Sep 01, 2029</td>
+          <td>${programReleaseLabel}</td>
           <td>
             <button class="btn btn-link p-0 vmm-table-view" type="button" data-view-history
-              data-holding-id="${holdingId}" data-holding-date="Sep 01, 2026, 09:00 AM"
+              data-holding-id="${holdingId}" data-holding-date="${programStartLabel}, 09:00 AM"
               data-holding-period="3 Years" data-holding-value="${fmt(tier.amount)} VMM"
               data-holding-rate="0.000633" data-holding-request="$300"
-              data-holding-status="Active" data-holding-release="Sep 01, 2029"
-              data-holding-start="Sep 01, 2026" data-holding-reward="${fmt(tier.reward)} VMM IOU">
+              data-holding-status="Active" data-holding-release="${programReleaseLabel}"
+              data-holding-start="${programStartLabel}" data-holding-reward="${fmt(tier.reward)} VMM IOU">
               <i class="bi bi-eye" aria-hidden="true"></i> View
             </button>
           </td>
@@ -3235,12 +3250,14 @@
 
         item.querySelector('[data-view-history]').addEventListener('click', event => openHoldingDetail(event.currentTarget));
         root.querySelector('#historyList').prepend(item);
+        return item;
       }
 
       function addConversionHistoryItem(amount, vmmAmount, transactionCode) {
         const item = document.createElement('tr');
         item.innerHTML = `
           <td><strong>—</strong></td>
+          <td><code class="vmm-table-code">${transactionCode}</code></td>
           <td><span class="vmm-table-date">${formatDate('2026-08-07')}</span><span class="vmm-table-time">—</span></td>
           <td>—</td>
           <td class="vmm-table-value"><strong>+${formatConversionAmount(vmmAmount)} VMM</strong></td>
@@ -3256,7 +3273,8 @@
         const item = document.createElement('tr');
         item.innerHTML = `
           <td><strong>—</strong></td>
-          <td><span class="vmm-table-date">${formatDate('2026-09-01')}</span><span class="vmm-table-time">—</span></td>
+          <td><code class="vmm-table-code">${transactionCode}</code></td>
+          <td><span class="vmm-table-date">${programStartLabel}</span><span class="vmm-table-time">—</span></td>
           <td>Distribution</td>
           <td class="vmm-table-value"><strong>+${fmt(reward)} VMM IOU</strong></td>
           <td><span class="vmm-table-status">Completed</span></td>
@@ -3308,14 +3326,14 @@
       }
 
       function completeDeposit() {
-        if (!selectedTier || selectedTier.amount > walletBalance) return;
+        if (!selectedTier || !isProgramOpen() || selectedTier.amount > walletBalance) return;
 
         walletBalance -= selectedTier.amount;
         lockedBalance += selectedTier.amount;
         rewardBalance += selectedTier.reward;
 
         const code = `VMM-3Y-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-        addHistoryItem(selectedTier, code);
+        const historyItem = addHistoryItem(selectedTier, code);
         addRewardHistoryItem(selectedTier.reward, code);
         updateBalances();
 
@@ -3326,7 +3344,7 @@
           window.Swal.fire({
             icon: 'success',
             title: 'Ký gửi thành công',
-            html: `${successMessage}<br>Ngày bắt đầu: Sep 01, 2026<br>Hoàn tất dự kiến: Sep 01, 2029<br><strong>Mã giao dịch: ${code}</strong>`,
+            html: `${successMessage}<br>Ngày bắt đầu: ${programStartLabel}<br>Hoàn tất dự kiến: ${programReleaseLabel}<br><strong>Mã giao dịch: ${code}</strong>`,
             confirmButtonText: 'Xem Ví VMM',
             showDenyButton: true,
             denyButtonText: 'Xem chi tiết ký gửi',
@@ -3335,8 +3353,11 @@
             allowEscapeKey: false,
             customClass: successAlertClass
           }).then(result => {
-            if (result.isDenied) activateTab('history');
-            else activateTab('program');
+            if (result.isDenied) {
+              activateTab('history');
+              const detailButton = historyItem.querySelector('[data-view-history]');
+              if (detailButton) openHoldingDetail(detailButton);
+            } else activateTab('program');
           });
         } else {
           window.alert(`${successMessage}\nMã giao dịch: ${code}`);

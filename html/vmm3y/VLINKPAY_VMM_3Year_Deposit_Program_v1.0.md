@@ -1,7 +1,7 @@
 # Chương trình Ký gửi VMM 3 năm và Tặng VMM IOU
 
 **Version:** 1.0  
-**Last Updated:** 22/07/2026  
+**Last Updated:** 23/07/2026
 **Audience:** Product Owner, Business Analyst, UX/UI, Development, QA, Customer Support  
 **Status:** Draft
 
@@ -10,12 +10,13 @@
 | Version | Date | Changes |
 | :--- | :--- | :--- |
 | 1.0 | 22/07/2026 | Tạo tài liệu nghiệp vụ ban đầu dựa trên nội dung chương trình đã thống nhất. |
+| 1.0 | 23/07/2026 | Đồng bộ ngày mở chương trình Aug 20, 2026; giữ luồng demo Terms/History/Detail theo UI hiện tại. |
 
 ---
 
 ## Overview
 
-> Chương trình cho phép thành viên truy cập từ **Ví VMM**, chọn một gói **Ký gửi VMM 3 năm** và nhận số lượng **VMM IOU** cố định theo gói. Trước khi chương trình ký gửi chính thức bắt đầu ngày **01/09/2026**, thành viên được đổi **USDV sang VMM không bị giới hạn theo gói** trong thời gian từ **07/08/2026 đến hết 31/08/2026**.
+> Chương trình cho phép thành viên truy cập từ **Ví VMM**, chọn một gói **Ký gửi VMM 3 năm** và nhận số lượng **VMM IOU** cố định theo gói. Trong giai đoạn tháng 8/2026, thành viên được đổi **USDV sang VMM không bị giới hạn theo gói** từ **07/08/2026 đến hết 31/08/2026**; chương trình ký gửi chính thức bắt đầu từ **20/08/2026**.
 
 ### Business Value
 
@@ -30,8 +31,8 @@
 - Thông báo giai đoạn đổi USDV sang VMM trong tháng 8/2026.
 - Luồng vào Ví VMM và chọn **Ký gửi VMM 3 năm**.
 - Hiển thị 6 gói theo thứ tự từ nhỏ đến lớn.
-- Kiểm tra số dư VMM và vô hiệu hóa gói không đủ điều kiện.
-- Review thông tin, đồng ý Terms & Conditions và xác nhận ký gửi.
+- Kiểm tra số dư VMM trước khi xác nhận.
+- Review thông tin, mở Terms & Conditions và xác nhận ký gửi.
 - Ghi nhận VMM IOU theo đúng gói đã chọn.
 - Hiển thị kết quả và lịch sử giao dịch.
 
@@ -55,7 +56,7 @@
 | VMM IOU | Quyền lợi được tặng theo đúng gói VMM mà thành viên ký gửi thành công. |
 | Gói ký gửi | Một mức VMM cố định trong bảng chương trình; mỗi mức có số VMM IOU tương ứng. |
 | Giai đoạn chuyển đổi đặc biệt | Thời gian 07/08/2026–31/08/2026, thành viên được đổi USDV sang VMM không bị giới hạn theo gói. |
-| Ngày mở chương trình | Ngày 01/09/2026, thành viên bắt đầu được xác nhận ký gửi VMM 3 năm. |
+| Ngày mở chương trình | Ngày 20/08/2026, thành viên bắt đầu được xác nhận ký gửi VMM 3 năm. |
 
 ---
 
@@ -75,9 +76,9 @@
 | Giai đoạn | Thời gian | Nội dung đã chốt |
 | :--- | :--- | :--- |
 | Chuẩn bị VMM | 07/08/2026–31/08/2026 | Thành viên được đổi USDV sang VMM không bị giới hạn theo gói. |
-| Ký gửi VMM 3 năm | Từ 01/09/2026 | Thành viên vào Ví VMM, chọn gói ký gửi và nhận VMM IOU theo bảng quyền lợi. |
+| Ký gửi VMM 3 năm | Từ 20/08/2026 | Thành viên vào Ví VMM, chọn gói ký gửi và nhận VMM IOU theo bảng quyền lợi. |
 
-> 💡 **Important:** Việc đổi USDV sang VMM trong tháng 8 không tự động tạo gói ký gửi. Thành viên phải chủ động tham gia chương trình từ ngày 01/09/2026.
+> 💡 **Important:** Việc đổi USDV sang VMM trong tháng 8 không tự động tạo gói ký gửi. Thành viên phải chủ động tham gia chương trình từ ngày 20/08/2026.
 
 ---
 
@@ -147,17 +148,16 @@ flowchart TD
 
 - **As a** Thành viên, **I want to** truy cập chương trình trực tiếp từ Ví VMM, **so that** tôi dễ tìm đúng chức năng.
 - **As a** Thành viên, **I want to** xem các gói từ nhỏ đến lớn, **so that** tôi dễ so sánh.
-- **As a** Thành viên, **I want to** biết gói nào không đủ số dư, **so that** tôi không chọn một gói không thể tham gia.
+- **As a** Thành viên, **I want to** xem số dư khả dụng, **so that** tôi biết khả năng tham gia trước khi xác nhận.
 - **As a** Thành viên, **I want to** thấy chính xác VMM IOU được tặng, **so that** tôi hiểu quyền lợi trước khi xác nhận.
 
 | Step | Who | Action | System Response | Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Thành viên | Mở Ví VMM. | Hiển thị số dư VMM và nút **Ký gửi VMM 3 năm**. | Trước ngày mở, nút có thể dẫn đến màn hình giới thiệu/countdown. |
-| 2 | Thành viên | Chọn **Ký gửi VMM 3 năm**. | Kiểm tra chương trình đã mở hay chưa. | Chỉ cho xác nhận từ 01/09/2026. |
+| 2 | Thành viên | Chọn **Ký gửi VMM 3 năm**. | Kiểm tra chương trình đã mở hay chưa. | Chỉ cho xác nhận từ 20/08/2026. |
 | 3 | Hệ thống | Tải danh sách gói. | Hiển thị 6 gói từ 10 triệu đến 500 triệu VMM. | Luôn sắp xếp tăng dần. |
-| 4 | Hệ thống | So sánh từng gói với số dư khả dụng. | Gói đủ số dư được phép chọn; gói không đủ số dư bị disabled. | Hiển thị “Số dư VMM chưa đủ”. |
-| 5 | Thành viên | Chọn một gói. | Làm nổi bật gói đã chọn và hiển thị VMM IOU tương ứng. | Một giao dịch chỉ chọn một gói. |
-| 6 | Thành viên | Chọn tiếp tục. | Mở màn hình review. | Chưa ghi nhận ký gửi ở bước này. |
+| 4 | Thành viên | Chọn một gói. | Làm nổi bật gói đã chọn và hiển thị VMM IOU tương ứng. | Một giao dịch chỉ chọn một gói. |
+| 5 | Hệ thống | Hiển thị review sau khi chọn gói. | Hiển thị thông tin trước xác nhận. | Chưa ghi nhận ký gửi ở bước này. |
 
 ```mermaid
 flowchart TD
@@ -165,12 +165,9 @@ flowchart TD
     B --> C{Chương trình đã mở?}
     C -- Không --> D[Hiển thị ngày bắt đầu]
     C -- Có --> E[Hiển thị 6 gói]
-    E --> F[Kiểm tra số dư]
-    F --> G{Gói đủ điều kiện?}
-    G -- Không --> H[Vô hiệu hóa gói]
-    G -- Có --> I[Cho phép chọn gói]
-    I --> J[Hiển thị VMM IOU]
-    J --> K([Chuyển đến review])
+    E --> F[Chọn gói]
+    F --> G[Hiển thị VMM IOU]
+    G --> H([Chuyển đến review])
 ```
 
 ---
@@ -184,31 +181,27 @@ flowchart TD
 **User Stories:**
 
 - **As a** Thành viên, **I want to** xem lại số VMM, thời hạn và VMM IOU, **so that** tôi hiểu đầy đủ giao dịch trước khi xác nhận.
-- **As a** Thành viên, **I want to** đọc và đồng ý Terms & Conditions, **so that** việc tham gia được xác nhận minh bạch.
+- **As a** Thành viên, **I want to** đọc Terms & Conditions, **so that** tôi hiểu điều kiện tham gia.
 - **As a** Thành viên, **I want to** nhận mã giao dịch và kết quả thành công, **so that** tôi có thể tra cứu về sau.
 
 | Step | Who | Action | System Response | Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Hệ thống | Hiển thị màn hình review. | Hiển thị gói, VMM ký gửi, VMM IOU, thời hạn 3 năm, ngày bắt đầu và ngày hoàn tất dự kiến. | Số dư còn lại nên được hiển thị. |
 | 2 | Thành viên | Mở Terms & Conditions. | Hiển thị tài liệu điều khoản chính thức. | Nội dung được xây dựng ở tài liệu riêng. |
-| 3 | Thành viên | Đồng ý Terms & Conditions. | Kích hoạt nút **Xác nhận ký gửi**. | Không cho xác nhận nếu chưa đồng ý. |
-| 4 | Thành viên | Xác nhận ký gửi. | Kiểm tra lại thời gian chương trình, số dư và gói. | Tránh số dư thay đổi sau bước chọn. |
-| 5 | Hệ thống | Xử lý giao dịch. | 💰 Ghi nhận số VMM vào gói ký gửi và ghi nhận VMM IOU theo bảng chương trình. | Thời điểm ghi nhận là lúc giao dịch thành công. |
-| 6 | Hệ thống | Hoàn tất giao dịch. | Hiển thị trạng thái thành công, mã giao dịch và thông tin gói. | Cập nhật Ví VMM và lịch sử. |
+| 3 | Thành viên | Xác nhận ký gửi. | Kiểm tra lại thời gian chương trình, số dư và gói. | Tránh số dư thay đổi sau bước chọn. |
+| 4 | Hệ thống | Xử lý giao dịch. | 💰 Ghi nhận số VMM vào gói ký gửi và ghi nhận VMM IOU theo bảng chương trình. | Thời điểm ghi nhận là lúc giao dịch thành công. |
+| 5 | Hệ thống | Hoàn tất giao dịch. | Hiển thị trạng thái thành công, mã giao dịch và thông tin gói. | Cập nhật Ví VMM và lịch sử. |
 
 ```mermaid
 flowchart TD
     A([Gói đã được chọn]) --> B[Hiển thị review]
     B --> C[Đọc điều khoản]
-    C --> D{Đã đồng ý?}
-    D -- Không --> E[Khóa nút xác nhận]
-    D -- Có --> F[Cho phép xác nhận]
-    F --> G[Kiểm tra lại giao dịch]
-    G --> H{Giao dịch hợp lệ?}
-    H -- Không --> I[Thông báo lỗi]
-    H -- Có --> J[💰 Ghi nhận VMM ký gửi]
-    J --> K[Ghi nhận VMM IOU]
-    K --> L([Ký gửi thành công])
+    C --> D[Kiểm tra lại giao dịch]
+    D --> E{Giao dịch hợp lệ?}
+    E -- Không --> F[Thông báo lỗi]
+    E -- Có --> G[💰 Ghi nhận VMM ký gửi]
+    G --> H[Ghi nhận VMM IOU]
+    H --> I([Ký gửi thành công])
 ```
 
 ---
@@ -222,13 +215,13 @@ flowchart TD
 **User Stories:**
 
 - **As a** Thành viên, **I want to** xem gói đang hoạt động, **so that** tôi theo dõi số VMM, VMM IOU và ngày hoàn tất.
-- **As a** Customer Support, **I want to** tra cứu mã giao dịch, **so that** tôi có thể hỗ trợ thành viên khi có sự cố.
+- **As a** Customer Support, **I want to** tra cứu giao dịch trong lịch sử, **so that** tôi có thể hỗ trợ thành viên khi có sự cố.
 
 | Step | Who | Action | System Response | Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Thành viên | Mở Ví VMM. | Hiển thị tổng VMM khả dụng, tổng VMM đang ký gửi và VMM IOU. | Cách tổng hợp VMM IOU theo wallet hiện hành: TBD. |
 | 2 | Thành viên | Mở danh sách ký gửi. | Hiển thị các giao dịch ký gửi. | Đề xuất sắp xếp mới nhất trước. |
-| 3 | Thành viên | Chọn một giao dịch. | Hiển thị gói, trạng thái, ngày bắt đầu, ngày hoàn tất và mã giao dịch. | Có thể hiển thị thời gian còn lại. |
+| 3 | Thành viên | Chọn một giao dịch. | Hiển thị gói, trạng thái, ngày bắt đầu và ngày hoàn tất. | Có thể hiển thị thời gian còn lại. |
 
 ```mermaid
 flowchart TD
@@ -258,7 +251,7 @@ flowchart TD
 | :--- | :--- | :--- |
 | Ngày bắt đầu đổi USDV → VMM đặc biệt | 07/08/2026 | Đã chốt |
 | Ngày kết thúc đổi USDV → VMM đặc biệt | 31/08/2026 | Đã chốt |
-| Ngày bắt đầu ký gửi VMM 3 năm | 01/09/2026 | Đã chốt |
+| Ngày bắt đầu ký gửi VMM 3 năm | 20/08/2026 | Đã chốt |
 | Thời hạn ký gửi | 3 năm | Đã chốt |
 | Danh sách gói | 10M, 20M, 50M, 100M, 250M, 500M VMM | Đã chốt |
 | Quyền lợi từng gói | Theo bảng Deposit Packages | Đã chốt |
@@ -307,7 +300,7 @@ stateDiagram-v2
 ### Confirmed Rules
 
 - **Rule 1:** Giai đoạn đổi USDV sang VMM không bị giới hạn theo gói áp dụng từ **07/08/2026 đến hết 31/08/2026**.
-- **Rule 2:** Chương trình ký gửi VMM 3 năm bắt đầu từ **01/09/2026**.
+- **Rule 2:** Chương trình ký gửi VMM 3 năm bắt đầu từ **20/08/2026**.
 - **Rule 3:** Thành viên bắt đầu luồng từ **Ví VMM** và chọn **Ký gửi VMM 3 năm**.
 - **Rule 4:** Các gói phải hiển thị theo thứ tự: **10 triệu, 20 triệu, 50 triệu, 100 triệu, 250 triệu, 500 triệu VMM**.
 - **Rule 5:** VMM IOU được tặng theo đúng bảng quyền lợi của gói đã chọn.
@@ -317,9 +310,7 @@ stateDiagram-v2
 ### Proposed Implementation Rules — PO cần xác nhận
 
 - **Rule P1:** Một giao dịch chỉ được chọn một gói; khả năng tham gia nhiều giao dịch/gói đồng thời là TBD.
-- **Rule P2:** Gói lớn hơn số dư VMM khả dụng bị disabled và hiển thị **Số dư VMM chưa đủ**.
 - **Rule P3:** Hệ thống kiểm tra lại số dư ngay trước khi xử lý giao dịch.
-- **Rule P4:** Thành viên phải đồng ý Terms & Conditions trước khi xác nhận.
 - **Rule P5:** Giao dịch thất bại không được làm thay đổi số dư hoặc tạo gói đang hoạt động.
 - **Rule P6:** Mỗi giao dịch thành công có mã giao dịch duy nhất và được ghi trong lịch sử Ví VMM.
 - **Rule P7:** Hệ thống phải ngăn xử lý trùng khi thành viên bấm xác nhận nhiều lần.
@@ -334,10 +325,9 @@ stateDiagram-v2
 | :--- | :--- | :--- |
 | Mở chương trình đổi trước 07/08/2026 | Hiển thị ngày bắt đầu; chưa áp dụng quyền đặc biệt. | Hệ thống |
 | Xác nhận đổi sau 31/08/2026 | Không áp dụng quyền “không giới hạn theo gói”; chuyển sang chính sách thông thường. | Hệ thống |
-| Mở ký gửi trước 01/09/2026 | Hiển thị ngày chương trình bắt đầu; không cho xác nhận. | Hệ thống |
-| Số dư VMM thấp hơn gói nhỏ nhất | Tất cả gói bị disabled; hiển thị số dư chưa đủ. | Hệ thống |
+| Mở ký gửi trước 20/08/2026 | Hiển thị ngày chương trình bắt đầu; không cho xác nhận. | Hệ thống |
+| Số dư VMM thấp hơn gói nhỏ nhất | Khóa nút xác nhận; hiển thị số dư chưa đủ. | Hệ thống |
 | Số dư đủ khi chọn nhưng không đủ khi xác nhận | Dừng giao dịch và yêu cầu thành viên chọn lại. | Hệ thống |
-| Terms & Conditions chưa sẵn sàng | Không cho phép xác nhận ký gửi. | Product/Admin |
 | Thành viên bấm xác nhận nhiều lần | Chỉ xử lý một yêu cầu; các yêu cầu trùng bị chặn. | Hệ thống |
 | Mất mạng sau khi xác nhận | Khi mở lại, tra cứu trạng thái giao dịch thay vì tạo giao dịch mới. | Hệ thống / Support |
 | VMM đã được ghi nhận nhưng VMM IOU chưa hiển thị | Đánh dấu cần đối soát và cho Support tra cứu bằng mã giao dịch. | Support / Admin |
@@ -359,10 +349,8 @@ stateDiagram-v2
 
 - Hiển thị 6 gói từ nhỏ đến lớn.
 - Mỗi gói hiển thị: số VMM ký gửi, thời hạn 3 năm và VMM IOU được tặng.
-- Gói đủ số dư có thể chọn.
-- Gói không đủ số dư ở trạng thái disabled và có lý do.
 - Gói được chọn có trạng thái selected rõ ràng.
-- Nút **Tiếp tục** chỉ bật khi đã chọn một gói hợp lệ.
+- Sau khi chọn gói, hiển thị trực tiếp màn hình review.
 
 ### Màn hình Review
 
@@ -373,7 +361,7 @@ stateDiagram-v2
 - Ngày hoàn tất dự kiến.
 - Số dư VMM dự kiến còn lại.
 - Liên kết mở Terms & Conditions.
-- Checkbox đồng ý điều khoản.
+- Ngày hiển thị theo format hệ thống: `MMM d, yyyy`, ví dụ `Aug 20, 2026`.
 - Nút **Xác nhận ký gửi**.
 
 ### Màn hình Thành công
@@ -391,17 +379,16 @@ stateDiagram-v2
 ## Acceptance Criteria
 
 1. Trong giai đoạn 07/08/2026–31/08/2026, giao diện hiển thị đúng thông báo đổi USDV sang VMM không bị giới hạn theo gói.
-2. Trước 01/09/2026, thành viên không thể xác nhận ký gửi VMM 3 năm.
-3. Từ 01/09/2026, thành viên có thể mở danh sách gói từ Ví VMM.
+2. Trước 20/08/2026, thành viên không thể xác nhận ký gửi VMM 3 năm.
+3. Từ 20/08/2026, thành viên có thể mở danh sách gói từ Ví VMM.
 4. Sáu gói luôn hiển thị đúng thứ tự từ 10 triệu đến 500 triệu VMM.
 5. VMM IOU hiển thị đúng theo bảng quyền lợi.
-6. Gói vượt quá số dư khả dụng không thể được chọn.
+6. Nút xác nhận bị khóa khi số dư khả dụng không đủ.
 7. Màn hình review hiển thị đúng gói, số VMM, VMM IOU và thời hạn.
-8. Nút xác nhận bị khóa khi chưa đồng ý Terms & Conditions.
-9. Khi giao dịch thành công, hệ thống tạo một giao dịch ký gửi và ghi nhận VMM IOU tương ứng.
-10. Khi giao dịch thất bại, không tạo gói đang hoạt động và không để số dư ở trạng thái không nhất quán.
-11. Giao dịch thành công có mã giao dịch duy nhất và có thể tra cứu trong lịch sử.
-12. Ví VMM hiển thị giao dịch vừa tạo cùng trạng thái và ngày hoàn tất dự kiến.
+8. Khi giao dịch thành công, hệ thống tạo một giao dịch ký gửi và ghi nhận VMM IOU tương ứng.
+9. Khi giao dịch thất bại, không tạo gói đang hoạt động và không để số dư ở trạng thái không nhất quán.
+10. Giao dịch thành công có mã giao dịch duy nhất và hiển thị trong lịch sử.
+11. Ví VMM hiển thị giao dịch vừa tạo cùng trạng thái và ngày hoàn tất dự kiến.
 
 ---
 
@@ -428,7 +415,7 @@ stateDiagram-v2
 A: Từ ngày 07/08/2026 đến hết ngày 31/08/2026.
 
 **Q: Khi nào chương trình ký gửi VMM 3 năm bắt đầu?**  
-A: Từ ngày 01/09/2026.
+A: Từ ngày 20/08/2026.
 
 **Q: Tôi tham gia chương trình ở đâu?**  
 A: Thành viên vào Ví VMM và chọn **Ký gửi VMM 3 năm**.
@@ -437,7 +424,7 @@ A: Thành viên vào Ví VMM và chọn **Ký gửi VMM 3 năm**.
 A: Từ nhỏ đến lớn: 10 triệu, 20 triệu, 50 triệu, 100 triệu, 250 triệu và 500 triệu VMM.
 
 **Q: Đổi USDV sang VMM trong tháng 8 có tự động ký gửi không?**  
-A: Không. Thành viên phải chủ động chọn một gói ký gửi từ ngày 01/09/2026.
+A: Không. Thành viên phải chủ động chọn một gói ký gửi từ ngày 20/08/2026.
 
 **Q: Ký gửi 100 triệu VMM được tặng bao nhiêu VMM IOU?**  
 A: 1.000.000 VMM IOU.

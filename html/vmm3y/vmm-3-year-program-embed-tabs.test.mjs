@@ -34,6 +34,8 @@ test('defines the selected-package review group and dynamic value hooks', () => 
 
   assert.match(html, /function renderPackageReview\(\)/);
   assert.match(html, /reviewRemainingBalance\.textContent\s*=.*walletBalance.*selectedTier\.amount/);
+  assert.doesNotMatch(html, /id="packageSummary"/);
+  assert.doesNotMatch(html, /packageSummary/);
 
   const reviewBlock = html.match(/<div class="vmm-package-review"[\s\S]*?<div class="vmm-action-row">/)?.[0] || '';
   assert.ok(reviewBlock, 'review block must exist');
@@ -44,8 +46,15 @@ test('defines the selected-package review group and dynamic value hooks', () => 
   assert.doesNotMatch(html, /class="vmm-package-review-item"/);
   assert.match(html, /id="reviewStartDate">Aug 20, 2026<\/strong>/);
   assert.match(html, /id="reviewEndDate">Aug 20, 2029<\/strong>/);
-  assert.match(html, /reviewStartDate\.textContent\s*=\s*'Aug 20, 2026'/);
-  assert.match(html, /reviewEndDate\.textContent\s*=\s*'Aug 20, 2029'/);
+  assert.match(html, /reviewStartDate\.textContent\s*=\s*programStartLabel/);
+  assert.match(html, /reviewEndDate\.textContent\s*=\s*programReleaseLabel/);
+  assert.match(html, /const PROGRAM_START_DATE\s*=\s*'2026-08-20'/);
+  assert.match(html, /const PROGRAM_RELEASE_DATE\s*=\s*'2029-08-20'/);
+  assert.match(html, /confirmDeposit\.disabled\s*=\s*!isProgramOpen\(\)\s*\|\|/);
+  assert.match(html, /if \(!selectedTier \|\| !isProgramOpen\(\)/);
+  assert.match(html, /<th>Transaction Code<\/th>/);
+  assert.match(html, /<code class="vmm-table-code">\$\{transactionCode\}<\/code>/);
+  assert.match(html, /if \(result\.isDenied\)[\s\S]*openHoldingDetail\(detailButton\)/);
   assert.match(html, /\.vmm-package-review-row\s*\{/);
   assert.match(html, /justify-content:\s*space-between/);
   assert.match(html, /\.vmm-package-review-rows\s*\{[\s\S]*?gap:\s*2px;/);
