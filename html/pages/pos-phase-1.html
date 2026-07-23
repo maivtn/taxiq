@@ -202,11 +202,6 @@
     .disp-grid { display: grid; grid-template-columns: 1.45fr 1fr; gap: 14px; align-items: start; }
     @media (max-width: 1100px) { .disp-grid { grid-template-columns: 1fr; } }
 
-    .flow-strip { border: 1px dashed rgba(70, 72, 216, .3); background: #f5f6ff; border-radius: 12px; padding: 12px 14px; font-size: 11.5px; font-weight: 700; color: var(--nexora-muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .fc-step { background: #fff; border: 1px solid var(--nexora-border); border-radius: 999px; padding: 4px 10px; color: var(--nexora-text); }
-    .fc-arr { color: var(--nexora-subtle); }
-    .fc-alt { flex-basis: 100%; margin-top: 6px; font-size: 11px; font-weight: 500; color: var(--nexora-subtle); line-height: 1.7; }
-
     .panel-violet { border-color: rgba(142, 77, 248, .45); }
     .panel-amber { border-color: rgba(245, 158, 11, .5); }
     .panel-blue { border-color: rgba(43, 89, 255, .4); }
@@ -417,12 +412,10 @@
     /* keep headings in normal inline flow so an inline (count) badge stays put — align the icon, don't flex the row */
     .pos-card-head h3 i { font-size: 15px; color: var(--nexora-brand); margin-right: 6px; vertical-align: -1px; }
     .pos-kpi-label i { font-size: 13px; color: var(--nexora-brand); margin-right: 5px; vertical-align: -1px; }
-    .pos-btn i, .pos-chip i, .tag-btn i, .pill i, .fc-step i, .feed-line i, .wl-name i, .wl-meta i, .tech-sub i, .next-chip i, .pick-arrow i, .sel-hint i, .warn-row i, .cust-usual i, .cust-note i, .cust-pkg i, .pos-hint i, .pos-inline-lbl i, .ap-warn i, .confirm-title i, .sms-preview-lbl i, .pos-section-title i { line-height: 1; }
+    .pos-btn i, .pos-chip i, .tag-btn i, .pill i, .feed-line i, .wl-name i, .wl-meta i, .tech-sub i, .next-chip i, .pick-arrow i, .sel-hint i, .warn-row i, .cust-usual i, .cust-note i, .cust-pkg i, .pos-hint i, .pos-inline-lbl i, .ap-warn i, .confirm-title i, .sms-preview-lbl i, .pos-section-title i { line-height: 1; }
     .pos-table th i, .pos-table td i { line-height: 1; }
     .seg-btn-icon, .sched-opt-icon, .camp-icon { line-height: 1; color: var(--nexora-brand); }
     .pos-icon-btn i, .x-btn i { font-size: 13px; line-height: 1; }
-    .flow-strip > b i { margin-right: 4px; }
-
     /* ── mobile pass ── */
     @media (max-width: 640px) {
       .content { padding: 14px 12px 88px; }
@@ -488,20 +481,6 @@
               <div class="disp-stat" style="--accent:var(--nexora-electric)"><div class="disp-num" data-fs-ready>0</div><div class="disp-lbl"><i class="bi bi-cash-coin" aria-hidden="true"></i> Ready to pay</div></div>
               <div class="disp-stat" style="--accent:var(--nexora-brand)"><div class="disp-num" data-fs-done>0</div><div class="disp-lbl"><i class="bi bi-receipt" aria-hidden="true"></i> Tickets today</div></div>
               <div class="disp-stat" style="--accent:var(--nexora-success)"><div class="disp-num" data-fs-rev>$0</div><div class="disp-lbl"><i class="bi bi-cash-stack" aria-hidden="true"></i> Revenue today</div></div>
-            </div>
-
-            <div class="flow-strip">
-              <b style="color:var(--nexora-brand)"><i class="bi bi-diagram-3" aria-hidden="true"></i>CHECK-IN → ASSIGNMENT:</b>
-              <span class="fc-step"><i class="bi bi-display" aria-hidden="true"></i> Kiosk / <i class="bi bi-phone" aria-hidden="true"></i> App / <i class="bi bi-globe" aria-hidden="true"></i> QR web</span><span class="fc-arr">→</span>
-              <span class="fc-step"><i class="bi bi-inbox-fill" aria-hidden="true"></i> Front desk confirms</span><span class="fc-arr">→</span>
-              <span class="fc-step"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Queue</span><span class="fc-arr">→</span>
-              <span class="fc-step"><i class="bi bi-hand-index" aria-hidden="true"></i> Assign: <i class="bi bi-play-fill" aria-hidden="true"></i> one tap / two taps / <i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> page</span><span class="fc-arr">→</span>
-              <span class="fc-step"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> Beep the tech</span><span class="fc-arr">→</span>
-              <span class="fc-step"><i class="bi bi-chat-quote" aria-hidden="true"></i> Confirm the service with the guest</span><span class="fc-arr">→</span>
-              <span class="fc-step"><i class="bi bi-play-fill" aria-hidden="true"></i> In service</span><span class="fc-arr">→</span>
-              <span class="fc-step"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Done</span><span class="fc-arr">→</span>
-              <span class="fc-step"><i class="bi bi-cash-coin" aria-hidden="true"></i> Checkout</span>
-              <span class="fc-alt">The kiosk and the front desk drop guests straight into the queue with no confirmation step · online bookings surface 15 minutes before their slot · techs tap ✓ Accept / ▶ / ✅ themselves in the Staff App and the POS syncs in realtime.</span>
             </div>
 
             <div class="pos-card panel-violet" data-ciq-panel hidden>
