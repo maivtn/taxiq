@@ -25,46 +25,73 @@
 
 .package-tabs {
   display: flex;
-  align-items: flex-end;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-top: 20px;
-  border-bottom: 1px solid var(--nexora-border);
 }
 
 .package-tab {
   display: inline-flex;
   min-height: 44px;
   align-items: center;
-  border: 0;
-  border-radius: 10px 10px 0 0;
-  background: transparent;
-  padding: 0 16px;
+  gap: 10px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 12px;
+  background: var(--nexora-surface);
+  padding: 8px 14px 8px 10px;
   color: var(--nexora-muted);
   font-size: 13px;
   font-weight: 800;
+  box-shadow: var(--nexora-card-shadow);
   white-space: nowrap;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .package-tab:hover {
-  background: var(--nexora-surface);
+  border-color: rgba(70, 72, 216, 0.35);
+  background: #fff;
   color: var(--nexora-text);
+  transform: translateY(-1px);
 }
 
 .package-tab.is-active {
-  background: var(--nexora-surface);
+  border-color: transparent;
+  background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet));
+  color: #fff;
+  box-shadow: 0 12px 26px rgba(43, 89, 255, 0.22);
+}
+
+.package-tab-icon {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--nexora-surface-muted);
   color: var(--nexora-brand);
-  box-shadow: var(--nexora-card-shadow);
+}
+
+.package-tab.is-active .package-tab-icon {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.package-tab-icon svg {
+  width: 17px;
+  height: 17px;
 }
 
 .package-panel {
   min-height: 0;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .package-tabs {
     overflow-x: auto;
+    flex-wrap: nowrap;
   }
 
   .package-tab {

@@ -49,6 +49,16 @@ test('loads package-specific presentation styles', () => {
   assert.match(css, /\.package-tab\.is-active/);
 });
 
+test('matches the Booking Hub tab treatment', () => {
+  const html = source();
+  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
+  assert.equal((html.match(/class="package-tab-icon"/g) || []).length, 3);
+  assert.match(css, /\.package-tab\s*\{[\s\S]*?border:\s*1px\s+solid\s+var\(--nexora-border\)/);
+  assert.match(css, /\.package-tab\s*\{[\s\S]*?border-radius:\s*12px/);
+  assert.match(css, /\.package-tab-icon\s*\{[\s\S]*?width:\s*28px[\s\S]*?height:\s*28px/);
+  assert.match(css, /\.package-tab\.is-active\s*\{[\s\S]*?linear-gradient\(90deg,\s*var\(--nexora-electric\),\s*var\(--nexora-violet\)\)/);
+});
+
 test('applies the Inter font through the shared shell', () => {
   const shellCss = readFileSync(SHELL_CSS_URL, 'utf8');
   assert.match(shellCss, /html,\s*body\s*\{[\s\S]*?font-family:\s*["']Inter["']/);
