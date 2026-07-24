@@ -77,6 +77,13 @@ test('contains responsive review styles with visible focus treatment', () => {
   assert.match(css, /\.review-technician-layout/);
 });
 
+test('keeps search and filter controls at the same toolbar height', () => {
+  const css = readFileSync(CSS_URL, 'utf8');
+  assert.match(css, /\.review-toolbar\s*\{[\s\S]*?align-items:\s*end/);
+  assert.match(css, /\.review-search-field\s*\{[\s\S]*?align-self:\s*end/);
+  assert.match(css, /\.review-search-field input,\s*\.review-filter-field select\s*\{[\s\S]*?height:\s*42px/);
+});
+
 test('defines the three review sources and technician-only scope', () => {
   const runtime = readFileSync(JS_URL, 'utf8');
   for (const source of ['nexora', 'google', 'yelp']) assert.match(runtime, new RegExp(`source:\\s*'${source}'`));
