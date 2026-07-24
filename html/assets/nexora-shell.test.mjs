@@ -57,6 +57,11 @@ test('links and activates Reviews on the native Review page', () => {
   assert.match(html, /<a class="nav-item is-active" href="nexora-review\.html">[\s\S]*?<span>Reviews<\/span>/);
 });
 
+test('links and activates Package Management on the native Packages page', () => {
+  const html = renderSidebar('packages', '');
+  assert.match(html, /<a class="nav-item is-active" href="nexora-packages\.html">[\s\S]*?<span>Quản lý gói<\/span>/);
+});
+
 test('links every Reward submenu from pages that share the sidebar', () => {
   const html = renderSidebar('booking', 'booking');
   for (const [tab, label] of rewardItems) {

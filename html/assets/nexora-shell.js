@@ -6,7 +6,7 @@
 
    Per-page config (set BEFORE this script runs):
      window.NEXORA_SHELL = {
-       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review',
+       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'packages',
                                            // which functional group is native
        activeTab:  '<tabId>',              // initial highlighted sub-item
        onNavigate: function (tabId) {}     // optional; defaults to window.activateMainTab
@@ -25,7 +25,8 @@
     community: 'community.html',
     reward: 'salon-setup-reward.html',
     pos: 'pos-phase-1.html',
-    review: 'nexora-review.html'
+    review: 'nexora-review.html',
+    packages: 'nexora-packages.html'
   };
 
   // Single source of truth for the whole sidebar.
@@ -45,6 +46,7 @@
       { label: 'Direct Savings' }
     ] },
     { type: 'item', label: 'Reviews', icon: 'star', page: 'review' },
+    { type: 'item', label: 'Quản lý gói', icon: 'package', page: 'packages' },
     { type: 'group', key: 'stations', label: 'Stations & QR Codes', icon: 'qr-code', items: [
       { label: 'QR Stations' }
     ] },
