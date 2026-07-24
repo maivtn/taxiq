@@ -17,7 +17,7 @@ test('creates the Nexora Review page from the shared merchant shell', () => {
   assert.match(html, /<aside class="sidebar"/);
   assert.match(html, /<header class="header">/);
   assert.match(html, /<main class="content" aria-label="Reviews content">/);
-  assert.match(html, /<h1 class="page-title">Reviews<\/h1>/);
+  assert.match(html, /<h1[^>]*class="page-title"[^>]*>Reviews<\/h1>/);
   assert.match(html, /activePage:\s*'review'/);
 });
 

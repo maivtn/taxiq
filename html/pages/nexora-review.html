@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - Reviews</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/nexora-review.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content" aria-label="Reviews content">
+        <section class="review-page" aria-labelledby="reviews-title">
+          <div class="page-heading review-heading">
+            <div>
+              <p class="review-eyebrow">Customer experience</p>
+              <h1 class="page-title" id="reviews-title">Reviews</h1>
+              <p class="page-description">See what customers are saying about your salon and nail artists.</p>
+            </div>
+            <div class="review-business-chip" data-business-summary></div>
+          </div>
+
+          <section class="review-toolbar" aria-label="Review filters">
+            <label class="review-search-field">
+              <span class="sr-only">Search reviews</span>
+              <i data-lucide="search" aria-hidden="true"></i>
+              <input type="search" data-review-search placeholder="Search customer or review...">
+            </label>
+
+            <label class="review-filter-field">
+              <span>Period</span>
+              <select data-period-filter aria-label="Review period">
+                <option value="30">Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="365">This year</option>
+              </select>
+            </label>
+
+            <label class="review-filter-field">
+              <span>Rating</span>
+              <select data-rating-filter aria-label="Review rating">
+                <option value="all">All ratings</option>
+                <option value="5">5 stars</option>
+                <option value="4">4 stars</option>
+                <option value="3">3 stars</option>
+                <option value="2">2 stars</option>
+                <option value="1">1 star</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="review-summary-grid" aria-label="Store review summary">
+            <article class="review-summary-card review-summary-score" data-summary-card></article>
+            <article class="review-summary-card review-summary-distribution" data-summary-distribution></article>
+            <article class="review-summary-card review-summary-trend" data-summary-trend></article>
+          </section>
+
+          <section class="review-source-grid" aria-label="Review sources" data-source-grid></section>
+
+          <section class="review-workspace" aria-labelledby="review-workspace-title">
+            <div class="review-workspace-head">
+              <div>
+                <p class="review-eyebrow">Feedback inbox</p>
+                <h2 id="review-workspace-title">Customer reviews</h2>
+              </div>
+              <p class="review-result-count" data-review-count aria-live="polite"></p>
+            </div>
+
+            <div class="review-tabs" role="tablist" aria-label="Review views">
+              <button id="store-review-tab" class="review-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="store-review-panel" data-review-tab="store" tabindex="0">Store reviews</button>
+              <button id="technician-review-tab" class="review-tab" type="button" role="tab" aria-selected="false" aria-controls="technician-review-panel" data-review-tab="technician" tabindex="-1">Technician reviews</button>
+            </div>
+
+            <div id="store-review-panel" class="review-tab-panel is-active" role="tabpanel" aria-labelledby="store-review-tab" data-review-panel="store">
+              <div class="review-list" data-review-list></div>
+            </div>
+
+            <div id="technician-review-panel" class="review-tab-panel" role="tabpanel" aria-labelledby="technician-review-tab" data-review-panel="technician" hidden>
+              <div class="review-technician-layout">
+                <aside class="review-technician-list" aria-label="Technicians" data-technician-list></aside>
+                <div class="review-list" data-technician-review-list></div>
+              </div>
+            </div>
+
+            <div class="review-empty" data-review-empty role="status" aria-live="polite" hidden>
+              <i data-lucide="message-circle-off" aria-hidden="true"></i>
+              <strong>No reviews match these filters</strong>
+              <span>Try a different source, period, rating, or search term.</span>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="../assets/nexora-review.js"></script>
+  <script>
+    window.NEXORA_SHELL = { activePage: 'review' };
+  </script>
+  <script src="../assets/nexora-shell.js"></script>
+</body>
+</html>
