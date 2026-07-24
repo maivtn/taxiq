@@ -27,7 +27,7 @@ test('renders store source cards and review workspace controls', () => {
   const page = html + runtime;
   assert.match(page, /data-review-source/);
   for (const sourceName of ['nexora', 'google', 'yelp']) {
-    assert.match(page, new RegExp(`source:\s*'${sourceName}'`));
+    assert.match(page, new RegExp(`source:\\s*'${sourceName}'`));
   }
   for (const tab of ['store', 'technician']) {
     assert.match(page, new RegExp(`data-review-tab="${tab}"`));
@@ -78,7 +78,7 @@ test('contains responsive review styles with visible focus treatment', () => {
 
 test('defines the three review sources and technician-only scope', () => {
   const runtime = readFileSync(JS_URL, 'utf8');
-  for (const source of ['nexora', 'google', 'yelp']) assert.match(runtime, new RegExp(`source:\s*'${source}'`));
+  for (const source of ['nexora', 'google', 'yelp']) assert.match(runtime, new RegExp(`source:\\s*'${source}'`));
   assert.match(runtime, /source === 'nexora'/);
   assert.match(runtime, /technicianId/);
   assert.match(runtime, /REFERENCE_DATE/);
