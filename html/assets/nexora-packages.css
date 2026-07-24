@@ -1,0 +1,73 @@
+.package-page {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.package-heading {
+  margin-bottom: 24px;
+}
+
+.package-page .page-title {
+  margin: 0;
+  color: var(--nexora-text);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 32px;
+}
+
+.package-page .page-description {
+  margin: 8px 0 0;
+  color: var(--nexora-muted);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.package-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+  border-bottom: 1px solid var(--nexora-border);
+}
+
+.package-tab {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  border: 0;
+  border-radius: 10px 10px 0 0;
+  background: transparent;
+  padding: 0 16px;
+  color: var(--nexora-muted);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.package-tab:hover {
+  background: var(--nexora-surface);
+  color: var(--nexora-text);
+}
+
+.package-tab.is-active {
+  background: var(--nexora-surface);
+  color: var(--nexora-brand);
+  box-shadow: var(--nexora-card-shadow);
+}
+
+.package-panel {
+  min-height: 0;
+}
+
+@media (max-width: 640px) {
+  .package-tabs {
+    overflow-x: auto;
+  }
+
+  .package-tab {
+    flex: 0 0 auto;
+  }
+}

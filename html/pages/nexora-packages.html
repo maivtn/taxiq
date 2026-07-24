@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/nexora-packages.css">
 </head>
 <body>
   <div class="shell">
@@ -15,7 +16,24 @@
 
     <div class="app-area">
       <header class="header"></header>
-      <main class="content" aria-label="Package management content"></main>
+      <main class="content" aria-label="Package management content">
+        <section class="package-page" aria-labelledby="package-page-title">
+          <div class="page-heading package-heading">
+            <h1 class="page-title" id="package-page-title">Quản lý gói</h1>
+            <p class="page-description">Quản lý các gói NEXORA, Voice và SMS cho salon.</p>
+
+            <div class="package-tabs" role="tablist" aria-label="Package management tabs">
+              <button id="package-tab-nexora" class="package-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="package-panel-nexora" data-package-tab="nexora">NEXORA Package</button>
+              <button id="package-tab-voice" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-voice" data-package-tab="voice" tabindex="-1">Voice + SMS</button>
+              <button id="package-tab-sms" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-sms" data-package-tab="sms" tabindex="-1">SMS Credit</button>
+            </div>
+          </div>
+
+          <section id="package-panel-nexora" class="package-panel" role="tabpanel" aria-labelledby="package-tab-nexora" data-package-panel="nexora"></section>
+          <section id="package-panel-voice" class="package-panel" role="tabpanel" aria-labelledby="package-tab-voice" data-package-panel="voice" hidden></section>
+          <section id="package-panel-sms" class="package-panel" role="tabpanel" aria-labelledby="package-tab-sms" data-package-panel="sms" hidden></section>
+        </section>
+      </main>
     </div>
   </div>
 
