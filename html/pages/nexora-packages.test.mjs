@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
 const PAGE_URL = new URL('./nexora-packages.html', import.meta.url);
+const SHELL_CSS_URL = new URL('../assets/nexora-shell.css', import.meta.url);
 
 function source() {
   assert.ok(existsSync(PAGE_URL), 'nexora-packages.html must exist');
@@ -25,4 +26,9 @@ test('keeps package content intentionally empty', () => {
   assert.ok(main, 'package content frame must exist');
   assert.equal(main[1].trim(), '', 'package content must stay empty for now');
   assert.doesNotMatch(html, /package-card|package-filter|data-package|Package data/i);
+});
+
+test('applies the Inter font through the shared shell', () => {
+  const shellCss = readFileSync(SHELL_CSS_URL, 'utf8');
+  assert.match(shellCss, /html,\s*body\s*\{[\s\S]*?font-family:\s*["']Inter["']/);
 });
