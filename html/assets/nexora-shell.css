@@ -385,6 +385,11 @@
   min-height: 100vh;
 }
 
+.content {
+  min-height: calc(100vh - 64px);
+  padding: 16px 16px 96px;
+}
+
 .header {
   position: sticky;
   top: 0;
@@ -583,6 +588,10 @@
   .profile-copy {
     display: block;
   }
+
+  .content {
+    padding: 24px 24px 96px;
+  }
 }
 
 /* below desktop: sidebar becomes a slide-in drawer opened from the header */
@@ -615,6 +624,10 @@
 
   .header {
     padding: 0 28px;
+  }
+
+  .content {
+    padding: 28px;
   }
 
   .nexora-shell-backdrop {

@@ -110,3 +110,10 @@ test('keeps the fixed sidebar width aligned with the desktop content offset', ()
   assert.match(shellCss, /\*,\s*\*::before,\s*\*::after\s*\{[\s\S]*?box-sizing:\s*border-box/);
   assert.match(shellCss, /@media\s*\(min-width:\s*1024px\)[\s\S]*?\.app-area\s*\{[\s\S]*?padding-left:\s*288px/);
 });
+
+test('matches booking shell content spacing across responsive breakpoints', () => {
+  const shellCss = readFileSync(SHELL_CSS_URL, 'utf8');
+  assert.match(shellCss, /\.content\s*\{[\s\S]*?min-height:\s*calc\(100vh\s*-\s*64px\)[\s\S]*?padding:\s*16px\s+16px\s+96px/);
+  assert.match(shellCss, /@media\s*\(min-width:\s*640px\)[\s\S]*?\.content\s*\{[\s\S]*?padding:\s*24px\s+24px\s+96px/);
+  assert.match(shellCss, /@media\s*\(min-width:\s*1024px\)[\s\S]*?\.content\s*\{[\s\S]*?padding:\s*28px/);
+});
