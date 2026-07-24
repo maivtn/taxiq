@@ -20,24 +20,304 @@
         <section class="package-page" aria-labelledby="package-page-title">
           <div class="page-heading package-heading">
             <h1 class="page-title" id="package-page-title">Quản lý gói</h1>
-            <p class="page-description">Quản lý các gói NEXORA và Voice + SMS cho salon.</p>
+            <p class="page-description">Quản lý các gói NEXORA và AI Voice Plans cho salon.</p>
 
             <div class="package-tabs" role="tablist" aria-label="Package management tabs">
-              <button id="package-tab-nexora" class="package-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="package-panel-nexora" data-package-tab="nexora"><span class="package-tab-icon"><i data-lucide="package" aria-hidden="true"></i></span><span>NEXORA Package</span></button>
-              <button id="package-tab-voice" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-voice" data-package-tab="voice" tabindex="-1"><span class="package-tab-icon"><i data-lucide="phone" aria-hidden="true"></i></span><span>Voice + SMS</span></button>
+              <button id="package-tab-overview" class="package-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="package-panel-overview" data-package-tab="overview"><span class="package-tab-icon"><i data-lucide="layout-dashboard" aria-hidden="true"></i></span><span>Overview</span></button>
+              <button id="package-tab-nexora" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-nexora" data-package-tab="nexora" tabindex="-1"><span class="package-tab-icon"><i data-lucide="package" aria-hidden="true"></i></span><span>Subscriptions</span></button>
+              <button id="package-tab-voice" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-voice" data-package-tab="voice" tabindex="-1"><span class="package-tab-icon"><i data-lucide="phone" aria-hidden="true"></i></span><span>AI Voice Plans</span></button>
+              <button id="package-tab-history" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-history" data-package-tab="history" tabindex="-1"><span class="package-tab-icon"><i data-lucide="receipt" aria-hidden="true"></i></span><span>Lịch sử mua gói</span></button>
             </div>
           </div>
 
-          <section id="package-panel-nexora" class="package-panel" role="tabpanel" aria-labelledby="package-tab-nexora" data-package-panel="nexora"></section>
-          <section id="package-panel-voice" class="package-panel" role="tabpanel" aria-labelledby="package-tab-voice" data-package-panel="voice" hidden></section>
+          <section id="package-panel-overview" class="package-panel" role="tabpanel" aria-labelledby="package-tab-overview" data-package-panel="overview" data-package-overview></section>
+          <section id="package-panel-nexora" class="package-panel" role="tabpanel" aria-labelledby="package-tab-nexora" data-package-panel="nexora" hidden>
+            <div class="nexora-package-content package-plan-content">
+              <div class="nexora-package-heading">
+                <div>
+                  <span class="package-overview-kicker">NEXORA platform</span>
+                  <h2>Choose the right plan for your salon</h2>
+                  <p>Start with the essentials and unlock more growth tools as your team grows.</p>
+                </div>
+                <span class="nexora-package-note">Upgrade anytime</span>
+              </div>
+
+              <div class="nexora-plan-grid">
+                <article class="nexora-plan-card" data-nexora-plan="starter">
+                  <div class="nexora-plan-card-head">
+                    <div>
+                      <h3>Starter Pack</h3>
+                      <p>Perfect for micro booths and independent practitioners.</p>
+                    </div>
+                  </div>
+                  <div class="nexora-plan-price">$29 <span>/ mo</span></div>
+                  <ul class="nexora-plan-features">
+                    <li><span class="nexora-plan-check">✓</span>Branded tabletop QR placements</li>
+                    <li><span class="nexora-plan-check">✓</span>Instant peer tip direct routing</li>
+                    <li><span class="nexora-plan-check">✓</span>Google review automated channels</li>
+                    <li><span class="nexora-plan-check">✓</span>Basic monthly transactional reviews</li>
+                  </ul>
+                  <button class="nexora-plan-action" type="button" data-nexora-select="Starter">Get Started Now</button>
+                </article>
+
+                <article class="nexora-plan-card is-recommended" data-nexora-plan="pro">
+                  <div class="nexora-plan-recommendation">Recommended for salons</div>
+                  <div class="nexora-plan-card-head">
+                    <div>
+                      <h3>Professional Pro</h3>
+                      <p>Brilliant choice for growing teams and local boutique hubs.</p>
+                    </div>
+                  </div>
+                  <div class="nexora-plan-price">$79 <span>/ mo</span></div>
+                  <ul class="nexora-plan-features">
+                    <li><span class="nexora-plan-check">✓</span>Includes every Starter plan feature</li>
+                    <li><span class="nexora-plan-check">✓</span>Custom technician roster logins</li>
+                    <li><span class="nexora-plan-check">✓</span>Automatic direct tip processing pipelines</li>
+                    <li><span class="nexora-plan-check">✓</span>Adjustable B2B rewards rules panel</li>
+                    <li><span class="nexora-plan-check">✓</span>Client profile classification tool</li>
+                  </ul>
+                  <button class="nexora-plan-action is-primary" type="button" data-nexora-select="Pro">Select Pro Tier</button>
+                </article>
+
+                <article class="nexora-plan-card" data-nexora-plan="enterprise">
+                  <div class="nexora-plan-card-head">
+                    <div>
+                      <h3>Enterprise Group</h3>
+                      <p>Tailored for prominent multi-location boutique franchises.</p>
+                    </div>
+                  </div>
+                  <div class="nexora-plan-price is-custom">Custom <span>Scale</span></div>
+                  <ul class="nexora-plan-features">
+                    <li><span class="nexora-plan-check">✓</span>Full multi-location organizational dashboards</li>
+                    <li><span class="nexora-plan-check">✓</span>Direct API checkout point-of-sale syncs</li>
+                    <li><span class="nexora-plan-check">✓</span>Premium solid brass NFC station plaques</li>
+                    <li><span class="nexora-plan-check">✓</span>24/7 dedicated enterprise success managers</li>
+                  </ul>
+                  <button class="nexora-plan-action is-dark" type="button" data-nexora-select="Enterprise">Contact Success Sales</button>
+                </article>
+              </div>
+
+              <section class="nexora-compare-section" aria-labelledby="nexora-compare-title">
+                <div class="nexora-compare-heading">
+                  <div>
+                    <span class="package-overview-kicker">Plan comparison</span>
+                    <h2 id="nexora-compare-title">Compare Plans</h2>
+                  </div>
+                  <span class="nexora-package-note">Built for every stage</span>
+                </div>
+                <div class="nexora-compare-table-wrap">
+                  <table class="nexora-compare-table">
+                    <caption class="visually-hidden">NEXORA plan feature comparison</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Feature</th>
+                        <th scope="col">Starter</th>
+                        <th class="is-highlighted" scope="col">Pro</th>
+                        <th scope="col">Enterprise</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><th scope="row">Monthly price</th><td>$29</td><td class="is-highlighted">$79</td><td>Custom</td></tr>
+                      <tr><th scope="row">Active staff</th><td>Unlimited</td><td class="is-highlighted">Unlimited</td><td>Unlimited</td></tr>
+                      <tr><th scope="row">Quick business identity check</th><td>—</td><td class="is-highlighted">—</td><td>—</td></tr>
+                      <tr><th scope="row">QR code tipping</th><td>Branded</td><td class="is-highlighted">Branded</td><td>Premium NFC</td></tr>
+                      <tr><th scope="row">Direct staff tips</th><td class="is-supported">✓</td><td class="is-highlighted is-supported">✓</td><td class="is-supported">✓</td></tr>
+                      <tr><th scope="row">Google reviews</th><td class="is-supported">✓</td><td class="is-highlighted is-supported">✓</td><td class="is-supported">✓</td></tr>
+                      <tr><th scope="row">Staff accounts</th><td>—</td><td class="is-highlighted is-supported">✓</td><td class="is-supported">✓</td></tr>
+                      <tr><th scope="row">Customer rewards</th><td>—</td><td class="is-highlighted is-supported">✓</td><td class="is-supported">✓</td></tr>
+                      <tr><th scope="row">Neighbor co-op</th><td>—</td><td class="is-highlighted is-supported">✓</td><td class="is-supported">✓</td></tr>
+                      <tr><th scope="row">Multi-location</th><td>—</td><td class="is-highlighted">—</td><td class="is-supported">✓</td></tr>
+                      <tr><th scope="row">POS sync</th><td>—</td><td class="is-highlighted">—</td><td class="is-supported">✓</td></tr>
+                      <tr><th scope="row">Support</th><td>Email</td><td class="is-highlighted">Priority</td><td>24/7 dedicated</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          </section>
+          <section id="package-panel-voice" class="package-panel" role="tabpanel" aria-labelledby="package-tab-voice" data-package-panel="voice" hidden>
+            <div class="package-plan-content">
+              <div class="plans-hero">
+                Founding Salon Offer - only 7 Founding spots left · Price locked for 12 months
+              </div>
+
+              <div class="plans-grid package-plan-grid">
+                <article class="service-plan-card" data-plan-card="starter">
+                  <div class="plan-rec" aria-hidden="true"></div>
+                  <div class="service-plan-name">Starter</div>
+                  <div class="service-plan-price">$99<span>/mo</span></div>
+                  <div class="service-plan-cross">$149/mo</div>
+                  <div class="plan-features">
+                    <div class="plan-feature"><span class="plan-check">✓</span><span>AI Voice 24/7</span></div>
+                    <div class="plan-feature"><span class="plan-check">✓</span><span>Missed-call SMS</span></div>
+                    <div class="plan-feature"><span class="plan-check">✓</span><span>500 min · 500 SMS</span></div>
+                    <div class="plan-feature"><span class="plan-check muted">—</span><span>Dashboard in Pro</span></div>
+                    <div class="plan-feature"><span class="plan-check muted">—</span><span>Google Review in Pro</span></div>
+                  </div>
+                  <button class="plan-select-button" type="button" data-plan-select="Starter">Choose Starter</button>
+                </article>
+
+                <article class="service-plan-card is-recommended" data-plan-card="pro">
+                  <div class="plan-rec">Recommended</div>
+                  <div class="service-plan-name">Pro</div>
+                  <div class="service-plan-price">$199<span>/mo</span></div>
+                  <div class="service-plan-cross">$299/mo</div>
+                  <div class="plan-features">
+                    <div class="plan-feature"><span class="plan-check">✓</span><span>AI Voice + SMS Campaigns</span></div>
+                    <div class="plan-feature"><span class="plan-check">✓</span><span>Owner Dashboard</span></div>
+                    <div class="plan-feature"><span class="plan-check">✓</span><span>Auto Google Review</span></div>
+                    <div class="plan-feature"><span class="plan-check">✓</span><span>Landing Pages + AI Design</span></div>
+                    <div class="plan-feature"><span class="plan-check">✓</span><span>1,000 min · 1,000 SMS</span></div>
+                    <div class="plan-aio">AIO ENGINE - Review Velocity + 30 FAQ + Schema + AI Visibility</div>
+                  </div>
+                  <button class="plan-select-button is-primary" type="button" data-plan-select="Pro">Start 14-Day Free Trial</button>
+                </article>
+
+                <article class="service-plan-card" data-plan-card="elite">
+                  <div class="plan-rec" aria-hidden="true"></div>
+                  <div class="service-plan-name">Elite</div>
+                  <div class="service-plan-price">$349<span>/mo</span></div>
+                  <div class="service-plan-cross">$499/mo</div>
+                  <div class="plan-features">
+                    <div class="plan-feature"><span class="plan-check">✓</span><span>Everything in Pro</span></div>
+                    <div class="plan-aio">AIO MAX - 100 FAQ + local pages + competitor tracking + attribution</div>
+                    <div class="plan-feature"><span class="plan-check">✓</span><span>Staff Dashboard + TAX IQ</span></div>
+                    <div class="plan-feature"><span class="plan-check">✓</span><span>2,000 min · 2,000 SMS</span></div>
+                    <div class="plan-feature"><span class="plan-check">✓</span><span>Email marketing + Win-back</span></div>
+                  </div>
+                  <button class="plan-select-button" type="button" data-plan-select="Elite">Choose Elite</button>
+                </article>
+              </div>
+
+              <article class="roi-panel package-plan-panel">
+                <div class="card-heading">
+                  <h2 class="card-title">ROI Calculator</h2>
+                  <span class="card-meta">Plan value</span>
+                </div>
+                <div class="roi-grid package-roi-grid">
+                  <div class="roi-metric is-loss"><div class="roi-value">$3,200</div><div class="roi-label">Losing/month</div></div>
+                  <div class="roi-metric is-cost"><div class="roi-value">$199</div><div class="roi-label">NEXORA cost</div></div>
+                  <div class="roi-metric is-gain"><div class="roi-value">+$2,200</div><div class="roi-label">Added revenue/month</div></div>
+                </div>
+                <div class="business-sub roi-summary">ROI: <strong class="roi-summary-positive">16x</strong> · Pays for itself in <strong class="roi-summary-cyan">3 days</strong></div>
+              </article>
+
+              <article class="guarantee-panel package-plan-panel">
+                <div class="card-heading">
+                  <h2 class="card-title">No risk to you</h2>
+                  <span class="card-meta">Pilot terms</span>
+                </div>
+                <div class="guarantee-grid package-guarantee-grid">
+                  <div>✓ 14-day free pilot</div>
+                  <div>✓ No credit card required</div>
+                  <div>✓ Set up within 24 hours</div>
+                  <div>✓ Cancel anytime</div>
+                </div>
+              </article>
+            </div>
+          </section>
+          <section id="package-panel-history" class="package-panel" role="tabpanel" aria-labelledby="package-tab-history" data-package-panel="history" data-purchase-history hidden></section>
         </section>
       </main>
     </div>
   </div>
 
+  <div class="package-payment-modal" data-package-payment-modal hidden aria-hidden="true">
+    <div class="package-payment-dialog" role="dialog" aria-modal="true" aria-labelledby="package-payment-modal-title" aria-describedby="package-payment-modal-description">
+      <div class="package-payment-modal-head">
+        <div>
+          <div class="package-payment-modal-title" id="package-payment-modal-title"><i data-lucide="sparkles" aria-hidden="true"></i><span data-package-payment-title>Choose a plan</span></div>
+          <div class="package-payment-modal-sub" id="package-payment-modal-description">Chọn phương thức thanh toán và xem tóm tắt hoá đơn.</div>
+        </div>
+        <button class="package-payment-close" type="button" data-package-payment-close aria-label="Đóng thanh toán"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <div class="package-payment-modal-body">
+        <section class="package-payment-section" aria-labelledby="package-payment-method-title">
+          <div class="package-payment-section-label" id="package-payment-method-title">Phương thức thanh toán</div>
+          <div class="package-payment-list" data-package-payment-list></div>
+          <div class="package-card-form" data-package-card-form hidden>
+            <div class="package-card-form-head"><i data-lucide="credit-card" aria-hidden="true"></i><span>Credit or Debit Card</span></div>
+            <div class="package-card-required-note"><strong>*</strong> required</div>
+            <div class="package-card-fields">
+              <div class="package-card-row">
+                <label class="package-card-field">
+                  <span class="package-card-label">Cardholder name <span>*</span></span>
+                  <input class="package-card-input" type="text" autocomplete="cc-name" placeholder="Name on card" data-package-card-field="name" data-package-card-required>
+                </label>
+                <label class="package-card-field">
+                  <span class="package-card-label">Card number <span>*</span></span>
+                  <input class="package-card-input" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="1234 1234 1234 1234" data-package-card-field="number" data-package-card-required>
+                </label>
+              </div>
+              <div class="package-card-row">
+                <label class="package-card-field">
+                  <span class="package-card-label">Expiration Date <span>*</span></span>
+                  <input class="package-card-input" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/YY" data-package-card-field="expiry" data-package-card-required>
+                </label>
+                <label class="package-card-field">
+                  <span class="package-card-label">Security Code <span>*</span></span>
+                  <input class="package-card-input" type="text" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="CVC" data-package-card-field="cvc" data-package-card-required>
+                </label>
+              </div>
+              <label class="package-card-field">
+                <span class="package-card-label">Address line 1 <span>*</span></span>
+                <input class="package-card-input" type="text" autocomplete="address-line1" placeholder="Street address" data-package-card-field="address1" data-package-card-required>
+              </label>
+              <div class="package-card-row">
+                <label class="package-card-field">
+                  <span class="package-card-label">City <span>*</span></span>
+                  <input class="package-card-input" type="text" autocomplete="address-level2" placeholder="City" data-package-card-field="city" data-package-card-required>
+                </label>
+                <label class="package-card-field">
+                  <span class="package-card-label">State <span>*</span></span>
+                  <input class="package-card-input" type="text" autocomplete="address-level1" placeholder="State" data-package-card-field="state" data-package-card-required>
+                </label>
+              </div>
+              <div class="package-card-row">
+                <label class="package-card-field">
+                  <span class="package-card-label">Zip code <span>*</span></span>
+                  <input class="package-card-input" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="Zip code" data-package-card-field="zip" data-package-card-required>
+                </label>
+                <label class="package-card-field">
+                  <span class="package-card-label">Country <span>*</span></span>
+                  <select class="package-card-select" autocomplete="country" data-package-card-field="country" data-package-card-required>
+                    <option value="US" selected>United States</option>
+                    <option value="CA">Canada</option>
+                    <option value="MX">Mexico</option>
+                    <option value="VN">Vietnam</option>
+                  </select>
+                </label>
+              </div>
+              <div class="package-card-error" data-package-card-error role="alert" aria-live="polite"></div>
+            </div>
+          </div>
+        </section>
+        <section class="package-payment-section package-payment-invoice" aria-labelledby="package-payment-invoice-title">
+          <div class="package-payment-section-label" id="package-payment-invoice-title">Tóm tắt hoá đơn</div>
+          <div class="package-payment-invoice-row"><span>Sản phẩm:</span><strong data-package-invoice-product></strong></div>
+          <div class="package-payment-invoice-row"><span>Gói:</span><strong data-package-invoice-plan></strong></div>
+          <div class="package-payment-invoice-row"><span>Phương thức:</span><strong data-package-invoice-payment></strong></div>
+          <div class="package-payment-invoice-row package-payment-invoice-total"><span>Tổng thanh toán:</span><strong data-package-invoice-total></strong></div>
+        </section>
+        <div class="visually-hidden" aria-live="polite" data-package-payment-status></div>
+      </div>
+      <div class="package-payment-modal-foot">
+        <button class="package-payment-cancel" type="button" data-package-payment-close>Huỷ</button>
+        <button class="package-payment-confirm" type="button" data-package-payment-confirm><i data-lucide="shield-check" aria-hidden="true"></i><span data-package-payment-confirm-label>Confirm plan</span></button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="../assets/nexora-packages.js"></script>
   <script>
-    window.NEXORA_SHELL = { activePage: 'packages' };
+    window.NEXORA_SHELL = {
+      activePage: 'packages',
+      activeTab: 'overview',
+      onNavigate: function (tabId) {
+        if (window.NEXORA_PACKAGE_SELECT_TAB) window.NEXORA_PACKAGE_SELECT_TAB(tabId, { updateURL: true });
+      }
+    };
   </script>
   <script src="../assets/nexora-shell.js"></script>
 </body>

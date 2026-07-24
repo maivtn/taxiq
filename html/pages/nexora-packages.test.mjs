@@ -3,8 +3,10 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
 const PAGE_URL = new URL('./nexora-packages.html', import.meta.url);
+const BOOKING_PAGE_URL = new URL('./booking-book-phase-1.html', import.meta.url);
 const SHELL_CSS_URL = new URL('../assets/nexora-shell.css', import.meta.url);
 const PACKAGE_CSS_URL = new URL('../assets/nexora-packages.css', import.meta.url);
+const PACKAGE_JS_URL = new URL('../assets/nexora-packages.js', import.meta.url);
 
 function source() {
   assert.ok(existsSync(PAGE_URL), 'nexora-packages.html must exist');
@@ -24,21 +26,164 @@ test('creates the empty Package Management page from the shared shell', () => {
 test('adds the package heading and ordered management tabs', () => {
   const html = source();
   assert.match(html, /<h1 class="page-title"[^>]*>Quản lý gói<\/h1>/);
-  assert.match(html, /<p class="page-description"[^>]*>Quản lý các gói NEXORA và Voice \+ SMS cho salon\.<\/p>/);
+  assert.match(html, /<p class="page-description"[^>]*>Quản lý các gói NEXORA và AI Voice Plans cho salon\.<\/p>/);
   const tabs = [...html.matchAll(/data-package-tab="([^"]+)"/g)].map((match) => match[1]);
-  assert.deepEqual(tabs, ['nexora', 'voice']);
+  assert.deepEqual(tabs, ['overview', 'nexora', 'voice', 'history']);
   assert.match(html, /role="tablist"/);
-  assert.match(html, /NEXORA Package/);
-  assert.match(html, /Voice \+ SMS/);
+  assert.match(html, /Overview/);
+  assert.match(html, /<span>Subscriptions<\/span>/);
+  assert.match(html, /<span>AI Voice Plans<\/span>/);
+  assert.doesNotMatch(html, /<span>Voice \+ SMS<\/span>/);
+  assert.match(html, /Lịch sử mua gói/);
   assert.doesNotMatch(html, /SMS Credit/);
+  assert.equal((html.match(/class="package-tab is-active"/g) || []).length, 1);
 });
 
-test('keeps package tab panels empty for the next implementation phase', () => {
+test('synchronizes package tabs with URL state and browser history', () => {
   const html = source();
-  const panels = [...html.matchAll(/<section[^>]*class="package-panel"[^>]*>([\s\S]*?)<\/section>/g)];
-  assert.equal(panels.length, 2, 'each package tab must have an empty panel');
-  for (const panel of panels) assert.equal(panel[1].trim(), '');
-  assert.doesNotMatch(html, /package-card|package-filter|data-package-card|Package data/i);
+  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  assert.match(runtime, /searchParams\.get\('tab'\)/);
+  assert.match(runtime, /pushState/);
+  assert.match(runtime, /addEventListener\('popstate'/);
+  assert.match(runtime, /NEXORA_PACKAGE_SELECT_TAB/);
+  assert.match(html, /onNavigate:\s*function \(tabId\)/);
+  assert.match(html, /NEXORA_PACKAGE_SELECT_TAB\(tabId/);
+});
+
+test('renders the NEXORA plan cards and comparison table', () => {
+  const html = source();
+  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
+  const nexoraPanel = html.match(/<section[^>]*data-package-panel="nexora"[^>]*>([\s\S]*?)<\/section>/)?.[1] || '';
+  assert.match(nexoraPanel, /class="nexora-package-content/);
+  assert.match(nexoraPanel, /data-nexora-plan="starter"/);
+  assert.match(nexoraPanel, /data-nexora-plan="pro"/);
+  assert.match(nexoraPanel, /data-nexora-plan="enterprise"/);
+  assert.equal((nexoraPanel.match(/data-nexora-plan=/g) || []).length, 3);
+  assert.doesNotMatch(nexoraPanel, /Lite Pack \(Free\)/);
+  assert.doesNotMatch(nexoraPanel, /data-nexora-select="Lite"/);
+  assert.match(nexoraPanel, /Professional Pro/);
+  assert.match(nexoraPanel, /Compare Plans/);
+  const compareTable = nexoraPanel.match(/<table class="nexora-compare-table">([\s\S]*?)<\/table>/)?.[1] || '';
+  assert.equal((compareTable.match(/scope="col"/g) || []).length, 4);
+  assert.doesNotMatch(compareTable, />Lite</);
+  assert.match(compareTable, />Starter</);
+  assert.match(compareTable, />Pro</);
+  assert.match(compareTable, />Enterprise</);
+  assert.match(compareTable, /Google reviews/);
+  assert.match(compareTable, /Premium NFC/);
+  assert.match(css, /\.nexora-plan-grid\s*\{/);
+  assert.match(css, /\.nexora-compare-table-wrap\s*\{/);
+  assert.match(css, /\.nexora-compare-table\s*\{/);
+  assert.match(css, /\.nexora-compare-table \.is-highlighted/);
+  assert.match(css, /\.nexora-compare-table caption\s*\{[\s\S]*?position:\s*absolute/);
+  assert.match(css, /@media \(min-width: 1200px\)\s*\{[\s\S]*?\.nexora-plan-grid\s*\{[\s\S]*?grid-template-columns: repeat\(3,/);
+});
+
+test('opens one payment-method modal from NEXORA and AI Voice Plans actions', () => {
+  const html = source();
+  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
+  assert.equal((html.match(/data-nexora-select=/g) || []).length, 3);
+  assert.equal((html.match(/data-plan-select=/g) || []).length, 3);
+  assert.match(html, /data-package-payment-modal/);
+  assert.match(html, /data-package-payment-list/);
+  assert.match(html, /data-package-invoice-plan/);
+  assert.match(html, /data-package-invoice-payment/);
+  assert.match(html, /data-package-invoice-total/);
+  assert.match(runtime, /PACKAGE_PAYMENT_METHODS/);
+  assert.match(runtime, /data-nexora-select/);
+  assert.match(runtime, /data-plan-select/);
+  assert.match(runtime, /openPackagePaymentModal/);
+  assert.match(runtime, /data-package-payment-confirm/);
+  assert.match(css, /\.package-payment-modal\s*\{/);
+  assert.match(css, /\.package-payment-list\s*\{/);
+  assert.match(css, /\.package-payment-invoice\s*\{/);
+});
+
+test('copies the Booking Book Plans content into the Voice + SMS panel', () => {
+  const html = source();
+  const booking = readFileSync(BOOKING_PAGE_URL, 'utf8');
+  const voicePanel = html.match(/<section[^>]*data-package-panel="voice"[^>]*>([\s\S]*?)<\/section>/)?.[1] || '';
+  assert.match(booking, /data-tab-panel="plans"[\s\S]*?service-plan-card/);
+  assert.match(voicePanel, /class="package-plan-content"/);
+  assert.match(voicePanel, /data-plan-card="starter"/);
+  assert.match(voicePanel, /data-plan-card="pro"/);
+  assert.match(voicePanel, /data-plan-card="elite"/);
+  assert.match(voicePanel, /ROI Calculator/);
+  assert.match(voicePanel, /No risk to you/);
+  assert.match(voicePanel, /AI Voice \+ SMS Campaigns/);
+  assert.match(voicePanel, /Start 14-Day Free Trial/);
+});
+
+test('provides the owned-package overview panel and countdown data contract', () => {
+  const html = source();
+  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  assert.match(html, /<script src="\.\.\/assets\/nexora-packages\.js"><\/script>/);
+  assert.match(html, /data-package-panel="overview"/);
+  assert.match(html, /data-package-overview/);
+  assert.match(runtime, /OWNED_PACKAGES/);
+  assert.match(runtime, /activatedAt/);
+  assert.match(runtime, /expiresAt/);
+  assert.match(runtime, /data-countdown/);
+  assert.match(runtime, /function formatCountdown/);
+});
+
+test('keeps mutable package prices out of owned-package overview cards', () => {
+  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  assert.doesNotMatch(runtime, /\n\s+price:\s*['"]/);
+  assert.doesNotMatch(runtime, /escapeHTML\(item\.price\)/);
+});
+
+test('spells out countdown units and gives the remaining-time block a clear visual treatment', () => {
+  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
+  assert.match(runtime, /class="package-countdown-icon"/);
+  assert.doesNotMatch(runtime, /package-countdown-value|data-countdown-value/);
+  assert.match(runtime, /class="package-countdown-units"/);
+  assert.match(runtime, /\['years', 'Years'\]/);
+  assert.match(runtime, /\['months', 'Months'\]/);
+  assert.match(runtime, /\['days', 'Days'\]/);
+  assert.match(runtime, /\['hours', 'Hours'\]/);
+  assert.match(runtime, /\['minutes', 'Minutes'\]/);
+  assert.match(runtime, /\['seconds', 'Seconds'\]/);
+  assert.match(runtime, /function formatCountdownParts/);
+  assert.match(runtime, /days/);
+  assert.match(runtime, /hours/);
+  assert.match(runtime, /minutes/);
+  assert.match(runtime, /seconds/);
+  assert.doesNotMatch(runtime, /`\$\{days\}d/);
+  assert.match(css, /\.package-countdown\s*\{[\s\S]*?border:/);
+  assert.match(css, /\.package-countdown-icon\s*\{/);
+  assert.match(css, /\.package-countdown-units\s*\{/);
+  assert.match(css, /\.package-countdown-unit\s*\{/);
+  assert.match(css, /\.package-countdown-unit strong\s*\{/);
+  assert.doesNotMatch(css, /\.package-countdown-value\s*\{/);
+});
+
+test('provides the package purchase history panel and transaction data contract', () => {
+  const html = source();
+  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
+  assert.match(html, /data-package-panel="history"/);
+  assert.match(html, /data-purchase-history/);
+  assert.match(runtime, /PURCHASE_HISTORY/);
+  assert.match(runtime, /purchasedAt/);
+  assert.match(runtime, /transactionId/);
+  assert.match(runtime, /term: '1 month'/);
+  assert.match(runtime, /validUntil/);
+  assert.match(runtime, /amount/);
+  assert.match(runtime, /status: 'paid'/);
+  assert.match(runtime, /function renderPurchaseHistory/);
+  assert.match(runtime, /<th scope="col">Term<\/th>/);
+  assert.match(runtime, /<th scope="col">Valid Until<\/th>/);
+  assert.match(runtime, /item\.term/);
+  assert.match(runtime, /item\.validUntil/);
+  assert.match(runtime, />Paid</);
+  assert.match(css, /\.package-history/);
+  assert.match(css, /\.package-history-table/);
+  assert.match(css, /\.package-history-term/);
+  assert.match(css, /\.package-history-valid-until/);
+  assert.match(css, /\.package-history-table caption\s*\{[\s\S]*?position:\s*absolute/);
 });
 
 test('loads package-specific presentation styles', () => {
@@ -52,7 +197,7 @@ test('loads package-specific presentation styles', () => {
 test('matches the Booking Hub tab treatment', () => {
   const html = source();
   const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
-  assert.equal((html.match(/class="package-tab-icon"/g) || []).length, 2);
+  assert.equal((html.match(/class="package-tab-icon"/g) || []).length, 4);
   assert.match(css, /\.package-tab\s*\{[\s\S]*?border:\s*1px\s+solid\s+var\(--nexora-border\)/);
   assert.match(css, /\.package-tab\s*\{[\s\S]*?border-radius:\s*12px/);
   assert.match(css, /\.package-tab-icon\s*\{[\s\S]*?width:\s*28px[\s\S]*?height:\s*28px/);

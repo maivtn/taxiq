@@ -15,6 +15,13 @@ const rewardItems = [
   ['analytics', 'Analytics']
 ];
 
+const packageItems = [
+  ['overview', 'Overview'],
+  ['nexora', 'Subscriptions'],
+  ['voice', 'AI Voice Plans'],
+  ['history', 'Lịch sử mua gói']
+];
+
 function classList() {
   return { add() {}, remove() {}, toggle() {}, contains() { return false; } };
 }
@@ -57,9 +64,14 @@ test('links and activates Reviews on the native Review page', () => {
   assert.match(html, /<a class="nav-item is-active" href="nexora-review\.html">[\s\S]*?<span>Reviews<\/span>/);
 });
 
-test('links and activates Package Management on the native Packages page', () => {
-  const html = renderSidebar('packages', '');
-  assert.match(html, /<a class="nav-item is-active" href="nexora-packages\.html">[\s\S]*?<span>Quản lý gói<\/span>/);
+test('renders all four Package Management submenu items on the native Packages page', () => {
+  const html = renderSidebar('packages', 'overview');
+  for (const [tab, label] of packageItems) {
+    const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    assert.match(html, new RegExp(`data-shell-tab="${tab}"[\\s\\S]*?<span>${escapedLabel}<\\/span>`));
+  }
+  assert.match(html, /class="nav-item nav-parent is-expanded"[\s\S]*?<span>Quản lý gói<\/span>/);
+  assert.match(html, /data-nav-subnav[\s\S]*?data-shell-tab="overview"/);
 });
 
 test('links every Reward submenu from pages that share the sidebar', () => {
