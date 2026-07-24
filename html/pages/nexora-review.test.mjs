@@ -96,3 +96,10 @@ test('supports required filters and client-side interaction hooks', () => {
   assert.match(runtime, /addEventListener\('change'/);
   assert.match(runtime, /renderAll\(\)/);
 });
+
+test('loads and applies the Inter font used by the Nexora shell', () => {
+  const html = source();
+  const css = readFileSync(CSS_URL, 'utf8');
+  assert.match(html, /<link href="https:\/\/fonts\.googleapis\.com\/css2\?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">/);
+  assert.match(css, /html,\s*body\s*\{[\s\S]*?font-family:\s*["']Inter["']/);
+});
