@@ -52,6 +52,11 @@ test('renders all Reward submenu buttons on the native Reward page', () => {
   assert.doesNotMatch(html, /data-shell-tab="create-reward"/);
 });
 
+test('links and activates Reviews on the native Review page', () => {
+  const html = renderSidebar('review', '');
+  assert.match(html, /<a class="nav-item is-active" href="nexora-review\.html">[\s\S]*?<span>Reviews<\/span>/);
+});
+
 test('links every Reward submenu from pages that share the sidebar', () => {
   const html = renderSidebar('booking', 'booking');
   for (const [tab, label] of rewardItems) {
