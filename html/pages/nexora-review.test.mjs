@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const PAGE_URL = new URL('./nexora-review.html', import.meta.url);
 const CSS_URL = new URL('../assets/nexora-review.css', import.meta.url);
+const SHELL_CSS_URL = new URL('../assets/nexora-shell.css', import.meta.url);
 const JS_URL = new URL('../assets/nexora-review.js', import.meta.url);
 
 function source() {
@@ -102,4 +103,10 @@ test('loads and applies the Inter font used by the Nexora shell', () => {
   const css = readFileSync(CSS_URL, 'utf8');
   assert.match(html, /<link href="https:\/\/fonts\.googleapis\.com\/css2\?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">/);
   assert.match(css, /html,\s*body\s*\{[\s\S]*?font-family:\s*["']Inter["']/);
+});
+
+test('keeps the fixed sidebar width aligned with the desktop content offset', () => {
+  const shellCss = readFileSync(SHELL_CSS_URL, 'utf8');
+  assert.match(shellCss, /\*,\s*\*::before,\s*\*::after\s*\{[\s\S]*?box-sizing:\s*border-box/);
+  assert.match(shellCss, /@media\s*\(min-width:\s*1024px\)[\s\S]*?\.app-area\s*\{[\s\S]*?padding-left:\s*288px/);
 });

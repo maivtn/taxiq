@@ -5,6 +5,12 @@
    <style> so it governs the shell consistently across pages.
    ========================================================================== */
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   --luxury-gold: #d4af37;
   --brand-cyan: #32d7ff;
