@@ -21,6 +21,11 @@ test('Booking Book imports static rows and renders from the shared store', () =>
   assert.match(SOURCE, /appointmentStore\.subscribe|store\.subscribe/);
 });
 
+test('Booking Book sends SMS through the shared appointment store', () => {
+  assert.match(SOURCE, /function sendBookingSms\(/);
+  assert.match(SOURCE, /bookingAction\.dataset\.bookingAction === 'send-sms'[\s\S]{0,160}sendBookingSms\(item\)/);
+});
+
 test('Booking Book does not append new appointments directly to the table', () => {
   assert.doesNotMatch(SOURCE, /tbody\.insertAdjacentHTML\(['"]beforeend['"]/);
 });

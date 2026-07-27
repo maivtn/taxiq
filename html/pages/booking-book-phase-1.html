@@ -11739,7 +11739,7 @@ function getBookingCardCallStart(item) {
         var item = findBookingItemFromAction(bookingAction);
         var detailModal = bookingAction.closest('[data-booking-detail-modal]');
         if (bookingAction.dataset.bookingAction === 'send-sms') {
-          if (window.openSmsCampaignComposer) window.openSmsCampaignComposer({ segment: 'new' });
+          sendBookingSms(item);
         } else if (bookingAction.dataset.bookingAction === 'done') {
           completeBookingItem(item);
         } else if (bookingAction.dataset.bookingAction === 'noshow') {
