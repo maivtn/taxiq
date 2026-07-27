@@ -64,7 +64,12 @@ test('Booking Book keeps its appointment table, calendar, and action workspace v
 });
 
 test('Booking Book exposes its appointment workspace', () => {
-  assert.doesNotMatch(SOURCE, /<aside[^>]+data-booking-appointment-panel/);
+  assert.match(SOURCE, /<aside class="booking-appointment-panel overview-card" data-booking-appointment-panel/);
   assert.match(SOURCE, /<div class="booking-legacy-appointments" data-booking-legacy-appointments>/);
   assert.match(SOURCE, /booking-appointment-layout/);
+});
+
+test('Booking Book calendar layout includes a right-side appointment detail panel', () => {
+  assert.match(SOURCE, /<div class="booking-appointment-layout">[\s\S]*<div class="booking-appointment-main">[\s\S]*<aside class="booking-appointment-panel overview-card" data-booking-appointment-panel/);
+  assert.match(SOURCE, /data-booking-panel-state="empty"/);
 });
