@@ -11370,6 +11370,25 @@ function getBookingCardCallStart(item) {
       return badges.length ? badges.join(' · ') : '-';
     }
 
+    function bookingSourceNeedsRepair(source) {
+      var normalized = String(source || '').trim().toLowerCase().replace(/[_-]+/g, ' ');
+      return !normalized || normalized === '-' || normalized === 'booking book' || normalized === 'booking book static v1' || normalized === 'front desk';
+    }
+
+    function repairBookingStaticSources(items) {
+      var sourceById = {};
+      (items || []).forEach(function(item) {
+        var source = getBookingSourceText(item);
+        if (source && source !== '-') sourceById[String(item.dataset.bookingId)] = source;
+      });
+
+      appointmentStore.loadAll(null, catalog).forEach(function(record) {
+        var source = sourceById[String(record.id)];
+        if (!source || !bookingSourceNeedsRepair(record.source) || record.source === source) return;
+        appointmentStore.update(record.id, { source: source }, null, catalog);
+      });
+    }
+
     function setBookingDetailSource(item) {
       var target = document.querySelector('[data-booking-detail-source]');
       if (target) target.innerHTML = renderBookingSourceBadges(item);
@@ -12999,6 +13018,7 @@ function getBookingCardCallStart(item) {
     });
     var initialBookingRows = Array.from(document.querySelectorAll('[data-booking-item]'));
     appointmentStore.ensureSource('booking-book-static-v1', initialBookingRows.map(bookingRecordFromItem), null, catalog);
+    repairBookingStaticSources(initialBookingRows);
     renderBookingTechnicianRoster();
     renderBookingStoreRows();
     appointmentStore.subscribe(function() {

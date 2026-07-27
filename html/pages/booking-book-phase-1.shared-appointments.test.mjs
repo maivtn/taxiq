@@ -44,6 +44,14 @@ test('Booking Book marks newly created appointments as manual add', () => {
   assert.match(SOURCE, /source:\s*'manual-add'/);
 });
 
+test('Booking Book repairs generic legacy sources from the original table rows', () => {
+  assert.match(SOURCE, /function bookingSourceNeedsRepair\(/);
+  assert.match(SOURCE, /function repairBookingStaticSources\(/);
+  assert.match(SOURCE, /bookingSourceNeedsRepair\([\s\S]*booking book[\s\S]*front desk/);
+  assert.match(SOURCE, /appointmentStore\.update\(record\.id, \{ source: source \}/);
+  assert.match(SOURCE, /repairBookingStaticSources\(initialBookingRows\)/);
+});
+
 test('Booking Book does not append new appointments directly to the table', () => {
   assert.doesNotMatch(SOURCE, /tbody\.insertAdjacentHTML\(['"]beforeend['"]/);
 });
