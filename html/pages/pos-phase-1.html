@@ -792,37 +792,41 @@
       ];
       var stSeq = 0;
 
-      var SKILLS = ['Pedicure', 'Manicure', 'Gel', 'Dip', 'Acrylic', 'Design', 'Waxing'];
+      var salonData = window.NEXORA_SALON_DATA;
+      var salonCatalog = salonData.loadCatalog();
+      var SKILLS = Array.from(new Set(salonCatalog.services.map(function (service) { return service.requiredSkill; }).filter(Boolean).concat(['Design'])));
       var FIT_TAGS = ['VIP', 'New guest', 'Needs Extra Care', 'Sensitive Skin', 'Prefers Female Tech'];
       var TAG_LIB = ['Needs Extra Care', 'Sensitive Skin', 'Prefers Female Tech', 'Likes Warm Water', 'Confirm Price Before Add-on', 'Allergic to Acrylic'];
 
-      // comm/baoSplit are fractions; guar = weekly guarantee in $
-      var TECHS = [
-        { id: 't1', name: 'Tina', bnum: 1, turns: 3, comm: 0.60, guar: 1000, payModel: 'max', baoSplit: 0.60, vlink: 'VL-20481', skills: ['Pedicure', 'Manicure', 'Gel', 'Dip', 'Acrylic', 'Design'], exp: ['Pedicure', 'Gel', 'Design'], fit: ['VIP'] },
-        { id: 't2', name: 'Kim', bnum: 2, turns: 2, comm: 0.60, guar: 900, payModel: 'max', baoSplit: 0.60, vlink: null, skills: ['Pedicure', 'Manicure', 'Gel', 'Design'], exp: ['Design'], fit: ['Prefers Female Tech'] },
-        { id: 't3', name: 'Helen', bnum: 3, turns: 4, comm: 0.65, guar: 1100, payModel: 'max', baoSplit: 0.65, vlink: 'VL-33772', skills: ['Pedicure', 'Manicure', 'Gel', 'Dip', 'Acrylic', 'Design', 'Waxing'], exp: ['Acrylic', 'Dip', 'Pedicure'], fit: ['VIP', 'Needs Extra Care'] },
-        { id: 't4', name: 'Andy', bnum: 4, turns: 2, comm: 0.60, guar: 900, payModel: 'baoshare', baoSplit: 0.50, vlink: null, skills: ['Pedicure', 'Acrylic', 'Waxing'], exp: ['Acrylic'], fit: [] },
-        { id: 't5', name: 'Vy', bnum: 5, turns: 1, comm: 0.55, guar: 800, payModel: 'max', baoSplit: 0.55, vlink: 'VL-90815', skills: ['Pedicure', 'Manicure', 'Gel'], exp: [], fit: ['New guest'] }
-      ];
+      // Technician and service definitions come from the salon-level catalog.
+      // POS-only payroll fields stay under posProfile so other booking surfaces
+      // can use the same roster without inheriting POS concerns.
+      var TECHS = [];
+      var MENU = [];
+      var SVC_REQ = {};
+      function rebuildSalonCatalogViews() {
+        salonCatalog = salonData.loadCatalog();
+        TECHS = salonCatalog.technicians.filter(function (technician) { return technician.active; }).map(function (technician) {
+          return Object.assign({ bnum: null, turns: 0, comm: 0, guar: 0, payModel: 'max', baoSplit: 0, vlink: null }, technician.posProfile || {}, {
+            id: technician.id,
+            name: technician.name,
+            skills: technician.skills || [],
+            exp: technician.exp || [],
+            fit: technician.fit || []
+          });
+        });
+        MENU = salonCatalog.services.filter(function (service) { return service.active; }).map(function (service) {
+          return { id: service.id, label: service.name, icon: service.icon || '✨' };
+        });
+        SVC_REQ = {};
+        salonCatalog.services.forEach(function (service) { SVC_REQ[service.id] = service.requiredSkill || ''; });
+      }
+      rebuildSalonCatalogViews();
       function techById(id) { for (var i = 0; i < TECHS.length; i++) if (TECHS[i].id === id) return TECHS[i]; return null; }
       function techName(id) { var t = techById(id); return t ? t.name : '—'; }
 
-      // Service groups — the source of truth for the service→skill matrix and the booking chips
-      var MENU = [
-        { id: 'pedi', label: 'Pedicure', icon: '🦶' },
-        { id: 'mani', label: 'Manicure', icon: '🤲' },
-        { id: 'kid', label: "Kid's Menu", icon: '🧒' },
-        { id: 'full', label: 'Acrylic — Full Set', icon: '✨' },
-        { id: 'fill', label: 'Acrylic — Fill-in', icon: '🔁' },
-        { id: 'dip', label: 'Dipping Nail', icon: '🌸' },
-        { id: 'gel', label: 'Gel Service', icon: '💅' },
-        { id: 'wax', label: 'Waxing', icon: '🕯️' },
-        { id: 'addon', label: 'Add-on & Extra', icon: '🎨' }
-      ];
       function catById(id) { for (var i = 0; i < MENU.length; i++) if (MENU[i].id === id) return MENU[i]; return null; }
 
-      // #73 — service group → required skill. The kiosk, dispatch and Staff App all read this table.
-      var SVC_REQ = { pedi: 'Pedicure', mani: 'Manicure', kid: '', full: 'Acrylic', fill: 'Acrylic', dip: 'Dip', gel: 'Gel', wax: 'Waxing', addon: '' };
       // #73 — match weights, read live by the dispatch board
       var MATCH_RULES = { wSkill: 55, wMiss: 15, wTurn: 25, wReq: 15, wPref: 10, wExp: 5, wFit: 5, useTurn: true, override: 'manager' };
 
@@ -1140,7 +1144,7 @@
       /* ── bookings & ETA (📅 🚗) ── */
       function etaRem(e) { return Math.max(0, e.min - Math.floor((Date.now() - e.at) / 60000)); }
       function renderEta() {
-        var items = BOOKINGS.map(function (b, i) { return { b: b, i: i }; }).filter(function (x) { return (x.b.day || 'today') === 'today'; });
+        var items = BOOKINGS.map(function (b) { return { b: b, i: b.id }; }).filter(function (x) { return (x.b.day || 'today') === 'today'; });
         var open = items.filter(function (x) { return !(x.b.eta && x.b.eta.st === 'in'); });
         $('[data-eta-panel]').hidden = !items.length;
         set('[data-eta-count]', open.length);
@@ -1332,11 +1336,15 @@
 
         /* bookings & ETA */
         var eh = e.target.closest('[data-eta-here]');
-        if (eh) { BOOKINGS[+eh.getAttribute('data-eta-here')].eta = { st: 'here' }; renderFloor(); return; }
+        if (eh) {
+          updateAppointmentMetadata(eh.getAttribute('data-eta-here'), { eta: { st: 'here' } });
+          return;
+        }
         var ei = e.target.closest('[data-eta-in]');
         if (ei) {
-          var eb = BOOKINGS[+ei.getAttribute('data-eta-in')];
-          eb.eta = { st: 'in' };
+          var eb = apBookingById(ei.getAttribute('data-eta-in'));
+          if (!eb) return;
+          updateAppointmentMetadata(eb.id, { eta: { st: 'in' } });
           var ew = { id: ++wlSeq, name: eb.name, phone: eb.phone, badge: 'blue', badgeTxt: '📅 ' + eb.time + ' booking', svc: eb.svc,
             at: nowTime(), atMs: Date.now(), status: 'waiting', techId: null, reqTech: eb.techId || null, items: [], log: [], appt: true };
           WAITLIST.push(ew);
@@ -2183,17 +2191,67 @@
 
       /* ═══════════ 📅 APPOINTMENTS ═══════════ */
       var appointmentData = window.NEXORA_APPOINTMENTS_DATA;
-      var BOOKINGS = appointmentData ? appointmentData.createSeedBookings(new Date()) : [];
+      var appointmentStore = window.NEXORA_APPOINTMENTS_STORE;
+      var BOOKINGS = [];
+      function posBookingView(record) {
+        var names = record.serviceNames || [];
+        var serviceLabels = names.map(function (name, index) {
+          var service = salonData.findService(salonCatalog, (record.serviceIds || [])[index] || name);
+          return service ? service.icon + ' ' + service.name : name;
+        });
+        if (!serviceLabels.length) {
+          serviceLabels = (record.serviceIds || []).map(function (id) {
+            var service = salonData.findService(salonCatalog, id);
+            return service ? service.icon + ' ' + service.name : id;
+          });
+        }
+        return Object.assign({}, record, {
+          start: record.startAt,
+          end: record.endAt,
+          name: record.customerName,
+          techId: record.technicianId,
+          svc: serviceLabels.join(' + '),
+          time: record.startAt ? apClock(new Date(record.startAt)) : '',
+          day: apRelativeDay(record.startAt),
+          eta: record.metadata && record.metadata.eta ? record.metadata.eta : null
+        });
+      }
+      function reloadAppointmentSnapshot() {
+        BOOKINGS = appointmentStore.loadAll(null, salonCatalog).filter(function (record) {
+          return record.status !== 'cancelled';
+        }).map(posBookingView);
+      }
+      function updateAppointmentMetadata(id, metadataPatch) {
+        var booking = apBookingById(id);
+        if (!booking) return null;
+        var result = appointmentStore.update(id, { metadata: Object.assign({}, booking.metadata || {}, metadataPatch || {}) }, null, salonCatalog);
+        if (!result.ok) { toast(result.error.message, 'error'); return null; }
+        reloadAppointmentSnapshot();
+        renderFloor();
+        return apBookingById(id);
+      }
+      appointmentStore.ensureSource('pos-seed-v1', appointmentData.createMigrationSeed(new Date()), null, salonCatalog);
+      reloadAppointmentSnapshot();
+      appointmentStore.subscribe(function () {
+        rebuildSalonCatalogViews();
+        reloadAppointmentSnapshot();
+        if (apCalendar) apRefreshCalendar();
+        renderAppt();
+        renderFloor();
+      }, window);
       var AP_COLORS = {
         t1: { bg: '#ebe6ff', border: '#7456e9', text: '#272343' },
         t2: { bg: '#e0f3f8', border: '#2b96ba', text: '#173a47' },
         t3: { bg: '#e5f7f1', border: '#158a69', text: '#163d34' },
         t4: { bg: '#fff1d6', border: '#d97706', text: '#654003' },
         t5: { bg: '#fde7f0', border: '#c24182', text: '#5e203f' },
+        t6: { bg: '#e8f4ff', border: '#2879c7', text: '#1d4267' },
+        t7: { bg: '#f5eaff', border: '#9a50c7', text: '#4c2764' },
+        t8: { bg: '#e9f7df', border: '#5c9e2e', text: '#31591c' },
         unassigned: { bg: '#fff1d6', border: '#d97706', text: '#654003' }
       };
       var AP_STATUS = { pending: 'Pending', confirmed: 'Confirmed', 'checked-in': 'Checked in', completed: 'Completed', 'no-show': 'No show' };
-      var apCalendar = null, apTechFilter = 'all', apSel = null, apMode = null, apDraft = null, apSvc = {}, apWarn = '', apPanelLoading = false, apPanelTimer = null;
+      var apCalendar = null, apTechFilter = 'all', apSel = null, apMode = null, apDraft = null, apSvc = {}, apExternalSvc = [], apWarn = '', apPanelLoading = false, apPanelTimer = null;
       var apCalendarDate = apFormatLocal(new Date()).slice(0, 10);
 
       function apFormatLocal(date) {
@@ -2293,15 +2351,16 @@
       }
       function apResourceToTech(resource) { return resource === 'unassigned' ? null : (resource || null); }
       function apCanPlace(id, start, end, techId) {
-        var candidate = { id: id, techId: techId, start: start, end: end };
-        return !appointmentData || !appointmentData.hasTechConflict(BOOKINGS, candidate, id);
+        var candidate = { technicianId: techId, startAt: start, endAt: end };
+        return !appointmentStore.hasConflict(BOOKINGS, candidate, id);
       }
       function apUpdatePosition(id, start, end, techId) {
         var booking = apBookingById(id); if (!booking) return;
-        booking.techId = techId; booking.start = start; booking.end = end;
-        booking.time = apClock(new Date(start)); booking.day = apRelativeDay(start);
+        var result = appointmentStore.update(id, { technicianId: techId, startAt: start, endAt: end }, null, salonCatalog);
+        if (!result.ok) { toast(result.error.message, 'error'); return; }
+        reloadAppointmentSnapshot();
         renderFloor();
-        if (apMode === 'edit' && String(apSel) === String(booking.id)) apOpenEdit(booking.id);
+        if (apMode === 'edit' && String(apSel) === String(id)) apOpenEdit(id);
         apRefreshCalendar(); apRenderSummary();
         toast('Appointment rescheduled · SMS update sent');
       }
@@ -2408,6 +2467,7 @@
           '<label>Phone</label><input class="pos-input" data-apf="phone" maxlength="14" value="' + esc(apDraft.phone || '') + '">' +
           '<label>Services (tap to pick several)</label><div class="ap-chips">' +
           MENU.map(function (c) { return '<button class="ap-chip' + (apSvc[c.id] ? ' is-on' : '') + '" type="button" data-apsvc="' + c.id + '">' + c.icon + ' ' + esc(c.label) + '</button>'; }).join('') +
+          apExternalSvc.map(function (name) { return '<span class="ap-chip is-external" title="Imported service">↗ ' + esc(name) + '</span>'; }).join('') +
           '</div>' +
           '<label>Tech</label><select class="pos-input" data-apf="tech"><option value="">✨ Unassigned — first available</option>' +
           TECHS.map(function (t) {
@@ -2450,7 +2510,7 @@
         var startDate = start instanceof Date ? new Date(start) : new Date(apCalendarDate + 'T10:00:00');
         if (!(start instanceof Date)) startDate.setHours(10, 0, 0, 0);
         var endDate = end instanceof Date ? new Date(end) : new Date(startDate.getTime() + 60 * 60000);
-        apMode = 'new'; apSel = null; apSvc = {}; apWarn = '';
+        apMode = 'new'; apSel = null; apSvc = {}; apExternalSvc = []; apWarn = '';
         apDraft = { name: '', phone: '', techId: techId || null, date: apFormatLocal(startDate).slice(0, 10), time: apFormatLocal(startDate).slice(11, 16), duration: Math.max(15, Math.round((endDate - startDate) / 60000)), status: 'confirmed', source: 'Front desk' };
         apBeginNewPanelLoad();
       }
@@ -2458,9 +2518,15 @@
         var b = apBookingById(id); if (!b) return;
         apStopPanelLoading();
         var start = new Date(b.start), end = new Date(b.end);
-        apSel = b.id; apMode = 'edit'; apWarn = ''; apSvc = {};
-        (b.serviceIds || []).forEach(function (serviceId) { apSvc[serviceId] = 1; });
+        apSel = b.id; apMode = 'edit'; apWarn = ''; apSvc = {}; apExternalSvc = [];
+        (b.serviceIds || []).forEach(function (serviceId) { if (catById(serviceId)) apSvc[serviceId] = 1; });
         if (!Object.keys(apSvc).length) MENU.forEach(function (c) { if ((b.svc || '').indexOf(c.label) !== -1) apSvc[c.id] = 1; });
+        (b.serviceNames || []).forEach(function (name) {
+          var service = salonData.findService(salonCatalog, name);
+          if (!service || !catById(service.id)) {
+            if (apExternalSvc.indexOf(name) === -1) apExternalSvc.push(name);
+          }
+        });
         apDraft = { name: b.name, phone: b.phone, techId: b.techId || null, date: b.start.slice(0, 10), time: b.start.slice(11, 16), duration: Math.max(15, Math.round((end - start) / 60000)), status: b.status || 'confirmed', source: b.source || 'Front desk' };
         renderApPanel();
       }
@@ -2498,7 +2564,9 @@
           var victim = apBookingById(apSel); if (!victim) return;
           confirmBox('Cancel ' + victim.name + "'s appointment?", 'Production texts the guest and returns the slot to the pool.').then(function (ok) {
             if (!ok) return;
-            var index = apBookingIndex(apSel); if (index >= 0) BOOKINGS.splice(index, 1);
+            var result = appointmentStore.cancel(apSel, null, salonCatalog);
+            if (!result.ok) { toast(result.error.message, 'error'); return; }
+            reloadAppointmentSnapshot();
             apMode = null; apSel = null; apWarn = '';
             if (apCalendar) apRefreshCalendar();
             renderAppt(); renderFloor(); toast('Appointment cancelled · SMS sent', 'info');
@@ -2510,28 +2578,51 @@
           apSync();
           var name = (apDraft.name || '').trim();
           if (!name) { apWarn = '⚠️ Enter the customer name.'; renderApPanel(); return; }
-          if (!Object.keys(apSvc).length) { apWarn = '⚠️ Pick at least one service.'; renderApPanel(); return; }
+          if (!Object.keys(apSvc).length && !apExternalSvc.length) { apWarn = '⚠️ Pick at least one service.'; renderApPanel(); return; }
+          if (!(apDraft.phone || '').trim()) { apWarn = '⚠️ Enter the phone number.'; renderApPanel(); return; }
           if (!apDraft.date || !apDraft.time) { apWarn = '⚠️ Pick a valid date and start time.'; renderApPanel(); return; }
           var start = new Date(apDraft.date + 'T' + apDraft.time + ':00');
           var end = new Date(start.getTime() + apDraft.duration * 60000);
           if (!Number.isFinite(start.getTime())) { apWarn = '⚠️ Pick a valid date and start time.'; renderApPanel(); return; }
           var candidate = { id: apSel, techId: apDraft.techId, start: apFormatLocal(start), end: apFormatLocal(end) };
-          if (appointmentData && appointmentData.hasTechConflict(BOOKINGS, candidate, apSel)) {
+          if (!apCanPlace(apSel, candidate.start, candidate.end, apDraft.techId)) {
             apWarn = '⚠️ ' + techName(apDraft.techId) + ' already has an overlapping appointment. Change the time or technician.';
             renderApPanel(); return;
           }
           var serviceIds = MENU.filter(function (c) { return apSvc[c.id]; }).map(function (c) { return c.id; });
-          var svc = MENU.filter(function (c) { return apSvc[c.id]; }).map(function (c) { return c.icon + ' ' + c.label; }).join(' + ');
+          var serviceNames = MENU.filter(function (c) { return apSvc[c.id]; }).map(function (c) { return c.label; }).concat(apExternalSvc);
           var rec = apMode === 'edit' ? apBookingById(apSel) : null;
-          if (!rec) { rec = { id: 'apt-' + Date.now(), source: 'Front desk', eta: null }; BOOKINGS.push(rec); }
-          rec.name = name; rec.phone = apDraft.phone; rec.techId = apDraft.techId; rec.serviceIds = serviceIds; rec.svc = svc;
-          rec.start = candidate.start; rec.end = candidate.end; rec.time = apClock(start); rec.day = apRelativeDay(candidate.start); rec.status = apDraft.status;
+          var payload = {
+            id: rec ? rec.id : 'apt-' + Date.now(),
+            customerName: name,
+            phone: apDraft.phone,
+            serviceIds: serviceIds,
+            serviceNames: serviceNames,
+            technicianId: apDraft.techId,
+            startAt: candidate.start,
+            endAt: candidate.end,
+            durationMin: apDraft.duration,
+            status: apDraft.status,
+            smsStatus: 'sent',
+            source: rec ? rec.source : 'front-desk',
+            metadata: rec ? (rec.metadata || {}) : {}
+          };
+          var result = rec
+            ? appointmentStore.update(rec.id, payload, null, salonCatalog)
+            : appointmentStore.create(payload, null, salonCatalog);
+          if (!result.ok) {
+            apWarn = '⚠️ ' + result.error.message;
+            renderApPanel();
+            return;
+          }
+          reloadAppointmentSnapshot();
+          var saved = apBookingById(result.record.id);
           apMode = null; apSel = null; apWarn = '';
           apCalendarDate = candidate.start.slice(0, 10);
           if (apCalendar) apCalendar.clearSelection();
           if (apCalendar) apRefreshCalendar();
           renderAppt(); renderFloor();
-          var known = custByPhone(rec.phone);
+          var known = custByPhone(saved.phone);
           toast('Saved · SMS confirmation sent' + (known ? ' to ' + known.name : ''));
           return;
         }

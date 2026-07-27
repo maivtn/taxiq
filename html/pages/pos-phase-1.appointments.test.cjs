@@ -71,3 +71,16 @@ test('appointments page loads shared salon catalog and appointment store', () =>
   assert.match(html, /\.\.\/assets\/salon-data\.js/);
   assert.match(html, /\.\.\/assets\/appointments-store\.js/);
 });
+
+test('POS migrates seed data into the shared appointment store', () => {
+  assert.match(html, /ensureSource\(['"]pos-seed-v1/);
+  assert.match(html, /createMigrationSeed\(/);
+  assert.match(html, /appointmentStore\.(create|upsert|update)|store\.(create|upsert|update)/);
+  assert.match(html, /appointmentStore\.cancel|store\.cancel/);
+  assert.match(html, /appointmentStore\.subscribe|store\.subscribe/);
+});
+
+test('POS has no independent technician or service catalog literals', () => {
+  assert.doesNotMatch(html, /var TECHS = \[\s*{/);
+  assert.doesNotMatch(html, /var MENU = \[\s*{/);
+});

@@ -110,8 +110,15 @@
     });
   }
 
+  function createMigrationSeed(anchorDate) {
+    return createSeedBookings(anchorDate).map(function (booking) {
+      return Object.assign({}, booking, { migrationSource: 'pos-seed-v1' });
+    });
+  }
+
   return {
     createSeedBookings: createSeedBookings,
+    createMigrationSeed: createMigrationSeed,
     formatLocalDateTime: formatLocalDateTime,
     hasTechConflict: hasTechConflict,
   };
