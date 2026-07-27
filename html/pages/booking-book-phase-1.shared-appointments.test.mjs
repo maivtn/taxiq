@@ -132,6 +132,12 @@ test('Booking Book removes decorative icons from imported service names', () => 
   assert.doesNotMatch(SOURCE, /title="Imported service">↗ /);
 });
 
+test('Booking Book sanitizes legacy service labels in table and card details', () => {
+  assert.match(SOURCE, /function getBookingServiceText\([\s\S]*bookingServiceDisplayName\(/);
+  assert.match(SOURCE, /function setBookingDetailServices\([\s\S]*bookingServiceDisplayName\(/);
+  assert.match(SOURCE, /renderBookingCards\([\s\S]*bookingServiceDisplayName\(/);
+});
+
 test('Booking Book calendar supports the same drag and resize actions as POS', () => {
   assert.match(SOURCE, /eventMoveHandling:\s*'Update'/);
   assert.match(SOURCE, /eventResizeHandling:\s*'Update'/);

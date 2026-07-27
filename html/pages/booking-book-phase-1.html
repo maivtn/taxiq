@@ -11145,7 +11145,7 @@ function getBookingCardCallStart(item) {
         var statusBadge = item.querySelector('.booking-status');
         var statusClass = statusBadge ? statusBadge.className : 'badge booking-status';
         var services = Array.from(item.querySelectorAll('.booking-service-chip')).map(function(service) {
-          return '<span class="booking-service-chip">' + escapeHtml(service.textContent.trim()) + '</span>';
+          return '<span class="booking-service-chip">' + escapeHtml(bookingServiceDisplayName(service.textContent.trim())) + '</span>';
         }).join('');
 
         return '<article class="booking-appointment-card" data-booking-card-id="' + escapeHtml(item.dataset.bookingId) + '">' +
@@ -11289,9 +11289,9 @@ function getBookingCardCallStart(item) {
 
     function getBookingServiceText(item) {
       var services = Array.from(item.querySelectorAll('.booking-service-chip')).map(function(service) {
-        return service.textContent.trim();
+        return bookingServiceDisplayName(service.textContent.trim());
       }).filter(Boolean);
-      return services.length ? services.join(', ') : (item.dataset.bookingService || '-');
+      return services.length ? services.join(', ') : bookingServiceDisplayName(item.dataset.bookingService || '-');
     }
 
     function getBookingCustomerInitials(name) {
@@ -11305,7 +11305,7 @@ function getBookingCardCallStart(item) {
       if (!target) return;
 
       var services = Array.from(item.querySelectorAll('.booking-service-chip')).map(function(service) {
-        return service.textContent.trim();
+        return bookingServiceDisplayName(service.textContent.trim());
       }).filter(Boolean);
 
       target.innerHTML = services.map(function(service) {
@@ -11313,7 +11313,7 @@ function getBookingCardCallStart(item) {
       }).join('');
 
       if (!target.innerHTML) {
-        target.textContent = item.dataset.bookingService || '-';
+        target.textContent = bookingServiceDisplayName(item.dataset.bookingService || '-');
       }
     }
 
