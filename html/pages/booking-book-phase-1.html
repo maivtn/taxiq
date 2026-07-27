@@ -3622,6 +3622,60 @@
       gap: 16px;
     }
 
+    .booking-appointment-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .booking-appointment-main,
+    .booking-appointment-panel {
+      min-width: 0;
+    }
+
+    .booking-appointment-panel {
+      position: sticky;
+      top: 18px;
+      min-height: 260px;
+    }
+
+    .booking-appointment-panel [data-booking-panel-state="empty"] {
+      display: grid;
+      min-height: 230px;
+      place-items: center;
+      align-content: center;
+      gap: 8px;
+      padding: 28px 18px;
+      color: var(--nexora-muted);
+      text-align: center;
+    }
+
+    .booking-appointment-panel [data-booking-panel-state="empty"] i {
+      color: var(--nexora-brand);
+      font-size: 28px;
+    }
+
+    .booking-appointment-panel [data-booking-panel-state="empty"] strong {
+      color: var(--nexora-text);
+      font-size: 14px;
+    }
+
+    .booking-appointment-panel [data-booking-panel-state="empty"] span {
+      max-width: 230px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1120px) {
+      .booking-appointment-layout { grid-template-columns: 1fr; }
+      .booking-appointment-panel { position: static; }
+    }
+
+    @media (max-width: 600px) {
+      .booking-appointment-panel { min-height: 0; }
+    }
+
     .booking-daybar {
       display: flex;
       flex-wrap: wrap;
@@ -7571,8 +7625,10 @@
 
                 </div>
 
-                <div class="booking-grid">
-                  <article class="overview-card overview-card-pad">
+                <div class="booking-appointment-layout">
+                  <div class="booking-appointment-main">
+                    <div class="booking-grid">
+                      <article class="overview-card overview-card-pad">
                     <div class="booking-daybar">
                       <div class="booking-date">
                         <span class="booking-action-icon">
@@ -7906,7 +7962,16 @@
                       </div>
                     </div>
                     <div class="booking-empty" data-booking-empty hidden>No matching bookings found.</div>
-                  </article>
+                      </article>
+                    </div>
+                  </div>
+                  <aside class="booking-appointment-panel overview-card" data-booking-appointment-panel aria-label="Appointment editor" aria-live="polite">
+                    <div data-booking-panel-state="empty">
+                      <i class="bi bi-calendar2-week" aria-hidden="true"></i>
+                      <strong>Select an appointment</strong>
+                      <span>Choose a row or calendar event to edit it here.</span>
+                    </div>
+                  </aside>
                 </div>
 
                 <div class="booking-detail-modal" data-booking-detail-modal hidden>

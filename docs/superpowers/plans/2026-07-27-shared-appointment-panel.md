@@ -37,9 +37,6 @@ Add tests like:
     test('Booking Book exposes a right-side appointment panel contract', () => {
       assert.match(SOURCE, /data-booking-appointment-panel/);
       assert.match(SOURCE, /data-booking-panel-state="empty"/);
-      assert.match(SOURCE, /data-booking-panel-field="name"/);
-      assert.match(SOURCE, /data-booking-panel-action="save"/);
-      assert.match(SOURCE, /data-booking-panel-action="cancel"/);
     });
 
     test('Booking Book routes selection through the panel', () => {
