@@ -126,6 +126,12 @@ test('POS appointment details expose the booking source', () => {
   assert.match(html, /function apSourceLabel\(/);
 });
 
+test('POS appointment details render source badges like Booking Book', () => {
+  assert.match(html, /function apSourceBadgesFromText\(/);
+  assert.match(html, /apSourceBadgesFromText\(apDraft\.source/);
+  assert.match(html, /ap-source-list/);
+});
+
 test('POS marks new appointments as front-desk manual additions', () => {
   assert.match(html, /['"]manual-add['"]/);
   assert.match(html, /['"]manual add['"]:\s*'Manual add'/);

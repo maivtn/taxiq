@@ -3951,7 +3951,7 @@
     .booking-panel-meta-label { color: var(--nexora-subtle); font-size: 10px; font-weight: 900; white-space: nowrap; }
     .booking-panel-chip { display: inline-flex; min-width: 0; align-items: center; overflow: hidden; border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
     .booking-panel-chip-status { background: #eaf0ff; color: var(--nexora-brand); }
-    .booking-panel-chip-source { background: #eef1f6; color: var(--nexora-muted); }
+    .booking-panel-source-list { min-width: 0; }
     .booking-panel-form { display: grid; gap: 10px; padding: 0; }
     .booking-panel-field-full { grid-column: 1 / -1; }
     .booking-panel-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -10321,7 +10321,7 @@
       }).join('');
       var meta = editing ? '<div class="booking-panel-meta">' +
         '<span class="booking-panel-meta-item"><span class="booking-panel-meta-label">Status:</span><strong class="booking-panel-chip booking-panel-chip-status">' + escapeHtml(bookingCalendarStatusLabel(bookingPanelDraft.status)) + '</strong></span>' +
-        '<span class="booking-panel-meta-item"><span class="booking-panel-meta-label">Nguồn:</span><strong class="booking-panel-chip booking-panel-chip-source">' + escapeHtml(bookingCalendarSourceLabel(bookingPanelDraft.source || 'booking-book')) + '</strong></span>' +
+        '<span class="booking-panel-meta-item"><span class="booking-panel-meta-label">Nguồn:</span><span class="booking-source-list booking-panel-source-list">' + bookingSourceBadgesFromText(bookingPanelDraft.source || 'booking-book') + '</span></span>' +
         '</div>' : '';
       host.innerHTML = '<div data-booking-panel-state="' + (editing ? 'edit' : 'new') + '" data-booking-panel-select>' +
         '<div class="booking-panel-head"><div><div class="booking-panel-title"><i class="bi ' + (editing ? 'bi-card-text' : 'bi-calendar-plus') + '" aria-hidden="true"></i> ' + (editing ? 'Appointment details' : 'New appointment') + '</div>' + meta + '</div></div>' +

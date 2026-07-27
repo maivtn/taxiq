@@ -44,6 +44,11 @@ test('Booking Book marks newly created appointments as manual add', () => {
   assert.match(SOURCE, /source:\s*'manual-add'/);
 });
 
+test('Booking Book appointment details render source badges like the table', () => {
+  assert.match(SOURCE, /Nguồn:[\s\S]*bookingSourceBadgesFromText\(bookingPanelDraft\.source/);
+  assert.match(SOURCE, /booking-panel-source-list/);
+});
+
 test('Booking Book repairs generic legacy sources from the original table rows', () => {
   assert.match(SOURCE, /function bookingSourceNeedsRepair\(/);
   assert.match(SOURCE, /function repairBookingStaticSources\(/);

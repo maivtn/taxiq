@@ -279,6 +279,15 @@
     .ap-meta-item { display: flex; align-items: center; gap: 5px; min-width: 0; }
     .ap-meta-label { color: var(--nexora-subtle); font-size: 10px; font-weight: 900; white-space: nowrap; }
     .ap-meta-item .pos-chip { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ap-source-list { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; gap: 4px; }
+    .ap-source-list .pos-chip { padding: 4px 8px; font-size: 10px; }
+    .ap-source-voice { background: rgba(50, 215, 255, 0.12); color: #087c99; }
+    .ap-source-lp { background: #e9e9ff; color: var(--nexora-brand); }
+    .ap-source-sms { background: rgba(0, 184, 115, 0.12); color: var(--nexora-success); }
+    .ap-source-qr { background: rgba(142, 77, 248, 0.13); color: var(--nexora-violet); }
+    .ap-source-manual { background: rgba(245, 158, 11, 0.14); color: #b45309; }
+    .ap-source-request { background: #fff4e2; color: var(--nexora-warning); }
+    .ap-source-default { background: #eef1f6; color: var(--nexora-muted); }
     .ap-panel-empty { text-align: center; padding: 34px 10px; line-height: 1.8; }
     .ap-panel-empty i { display: block; margin-bottom: 10px; color: var(--nexora-brand); font-size: 28px; }
     [data-ap-panel].is-loading { overflow: hidden; }
@@ -2357,6 +2366,24 @@
         };
         return labels[normalized] || raw || 'Front desk';
       }
+      function apSourceBadgesFromText(source) {
+        var parts = String(source || '').split(/\s*[·|,]\s*/).map(function (part) {
+          return part.trim();
+        }).filter(Boolean);
+        if (!parts.length) parts = ['front desk'];
+        var sourceClasses = {
+          'voice': 'ap-source-voice',
+          'landing page': 'ap-source-lp',
+          'sms': 'ap-source-sms',
+          'qr': 'ap-source-qr',
+          'manual add': 'ap-source-manual',
+          'request': 'ap-source-request'
+        };
+        return parts.map(function (part) {
+          var normalized = part.toLowerCase().replace(/[_-]+/g, ' ');
+          return '<span class="pos-chip ap-source-badge ' + (sourceClasses[normalized] || 'ap-source-default') + '">' + esc(apSourceLabel(part)) + '</span>';
+        }).join('');
+      }
       function apBookingIndex(id) {
         return BOOKINGS.findIndex(function (b) { return String(b.id) === String(id); });
       }
@@ -2575,7 +2602,7 @@
         p.innerHTML = '<div class="pos-strong" style="font-size:14px">' + (editing ? '<i class="bi bi-card-text" aria-hidden="true"></i> Appointment details' : '<i class="bi bi-plus-lg" aria-hidden="true"></i> New appointment') + '</div>' +
           (editing ? '<div class="ap-form-meta">' +
             '<span class="ap-meta-item" data-ap-meta="status"><span class="ap-meta-label">Status:</span><strong class="pos-chip pos-chip-blue">' + esc(AP_STATUS[apDraft.status] || apDraft.status) + '</strong></span>' +
-            '<span class="ap-meta-item" data-ap-meta="source"><span class="ap-meta-label">Nguồn:</span><strong class="pos-chip pos-chip-gray" data-ap-source>' + esc(apSourceLabel(apDraft.source)) + '</strong></span>' +
+            '<span class="ap-meta-item" data-ap-meta="source"><span class="ap-meta-label">Nguồn:</span><span class="ap-source-list" data-ap-source>' + apSourceBadgesFromText(apDraft.source) + '</span></span>' +
           '</div>' : '') +
           '<div class="ap-form">' +
           '<label>Customer</label><input class="pos-input" data-apf="name" maxlength="40" value="' + esc(apDraft.name || '') + '">' +
