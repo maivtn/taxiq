@@ -115,6 +115,11 @@ test('POS appointment metadata shows explicit status and source labels', () => {
   assert.match(html, /data-ap-meta="source"[\s\S]*?pos-chip/);
 });
 
+test('POS appointment card uses the appointment details title', () => {
+  assert.match(html, /Appointment details/);
+  assert.doesNotMatch(html, /Edit appointment/);
+});
+
 test('POS appointment details expose the booking source', () => {
   assert.match(html, /Nguồn:/);
   assert.match(html, /data-ap-source/);

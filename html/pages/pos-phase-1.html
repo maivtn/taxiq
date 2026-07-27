@@ -2535,7 +2535,7 @@
         }
         var editing = apMode === 'edit';
         var reqList = Object.keys(apSvc).map(function (id) { return SVC_REQ[id]; }).filter(Boolean);
-        p.innerHTML = '<div class="pos-strong" style="font-size:14px">' + (editing ? '<i class="bi bi-pencil-square" aria-hidden="true"></i> Edit appointment' : '<i class="bi bi-plus-lg" aria-hidden="true"></i> New appointment') + '</div>' +
+        p.innerHTML = '<div class="pos-strong" style="font-size:14px">' + (editing ? '<i class="bi bi-card-text" aria-hidden="true"></i> Appointment details' : '<i class="bi bi-plus-lg" aria-hidden="true"></i> New appointment') + '</div>' +
           (editing ? '<div class="ap-form-meta">' +
             '<span class="ap-meta-item" data-ap-meta="status"><span class="ap-meta-label">Status:</span><strong class="pos-chip pos-chip-blue">' + esc(AP_STATUS[apDraft.status] || apDraft.status) + '</strong></span>' +
             '<span class="ap-meta-item" data-ap-meta="source"><span class="ap-meta-label">Nguồn:</span><strong class="pos-chip pos-chip-gray" data-ap-source>' + esc(apSourceLabel(apDraft.source)) + '</strong></span>' +
