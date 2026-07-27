@@ -7010,8 +7010,7 @@
         grid-template-columns: 1fr;
       }
     }
-    /* TEMP HIDE — Follow-up SMS & Send SMS buttons (delete this block to restore) */
-    .booking-sms-action,
+    /* TEMP HIDE — call-log follow-up SMS buttons (booking actions stay available) */
     [data-call-sms],
     .sms-temp-hidden {
       display: none !important;
@@ -9698,6 +9697,8 @@
     </div>
   </div>
 
+  <script src="../assets/salon-data.js"></script>
+  <script src="../assets/appointments-store.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@daypilot/daypilot-lite-javascript@5.9.0/daypilot-javascript.min.js"></script>
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
@@ -9724,17 +9725,10 @@
     var bookingDateToPicker = null;
     var bookingTeamCalendar = null;
     var bookingCalendarDate = BOOKING_TODAY_DATE;
-    var BOOKING_CALENDAR_SERVICE_OPTIONS = [
-      { name: 'Gel Manicure', price: 35, duration: 60 },
-      { name: 'Classic Manicure', price: 22, duration: 45 },
-      { name: 'Pedicure', price: 30, duration: 60 },
-      { name: 'Pedicure Gel Polish', price: 65, duration: 75 },
-      { name: 'Full Set Acrylic', price: 45, duration: 90 },
-      { name: 'Dip Powder', price: 40, duration: 75 },
-      { name: 'Nail Art', price: 5, duration: 30 },
-      { name: 'Waxing', price: 25, duration: 30 },
-      { name: 'Eyelash', price: 45, duration: 60 }
-    ];
+    var salonData = window.NEXORA_SALON_DATA;
+    var appointmentStore = window.NEXORA_APPOINTMENTS_STORE;
+    var catalog = salonData.loadCatalog();
+    var BOOKING_CALENDAR_SERVICE_OPTIONS = null;
     var BOOKING_CALENDAR_COLORS = [
       { bg: '#ebe6ff', border: '#7456e9', text: '#272343' },
       { bg: '#e0f3f8', border: '#2b96ba', text: '#173a47' },
@@ -9742,22 +9736,36 @@
       { bg: '#fff1d6', border: '#d97706', text: '#654003' },
       { bg: '#fde7f0', border: '#c24182', text: '#5e203f' }
     ];
-    var BOOKING_CALENDAR_TECHNICIANS = ['Lan T.', 'Kim N.', 'Linda', 'Mai P.', 'Andy', 'Tina', 'Helen', 'Vy'];
-    var BOOKING_CALENDAR_SERVICE_DURATIONS = {
-      'Gel Manicure': 60,
-      'Classic Manicure': 45,
-      'Pedicure': 60,
-      'Full Set Acrylic': 90,
-      'Dip Powder': 75,
-      'Nail Art': 30,
-      'Waxing': 30,
-      'Eyelash': 60,
-      'Pedicure Gel Polish': 75,
-      'Gel Manicure Nail Art': 60,
-      'Gel Full Set Removal': 90,
-      'Full Set Acrylic French Tip': 90,
-      'Dip Powder Chrome Design': 90
-    };
+    var BOOKING_CALENDAR_TECHNICIANS = null;
+    var BOOKING_CALENDAR_SERVICE_DURATIONS = null;
+
+    function rebuildBookingCatalogViews() {
+      catalog = salonData.loadCatalog();
+      var seenServices = {};
+      BOOKING_CALENDAR_SERVICE_OPTIONS = [];
+      BOOKING_CALENDAR_SERVICE_DURATIONS = {};
+      catalog.services.filter(function(service) { return service.active; }).forEach(function(service) {
+        [service.name].concat(service.aliases || []).forEach(function(label) {
+          if (seenServices[label.toLowerCase()]) return;
+          seenServices[label.toLowerCase()] = true;
+          BOOKING_CALENDAR_SERVICE_OPTIONS.push({ name: label, price: service.price == null ? 0 : service.price, duration: service.durationMin, serviceId: service.id });
+          BOOKING_CALENDAR_SERVICE_DURATIONS[label] = service.durationMin;
+        });
+      });
+      BOOKING_CALENDAR_TECHNICIANS = catalog.technicians.filter(function(technician) { return technician.active; }).map(function(technician) { return technician.id; });
+    }
+
+    function bookingTechByValue(value) {
+      return salonData.findTechnician(catalog, value);
+    }
+
+    function bookingTechName(value) {
+      if (!value || value === 'unassigned' || value === 'Anyone') return 'Unassigned';
+      var technician = bookingTechByValue(value);
+      return technician ? technician.name : String(value);
+    }
+
+    rebuildBookingCatalogViews();
 
     function renderLucideIcons() {
       if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -9957,6 +9965,87 @@
       return formatBookingCalendarDate(date) + 'T' + bookingCalendarPad(date.getHours()) + ':' + bookingCalendarPad(date.getMinutes()) + ':00';
     }
 
+    function parseBookingCalendarTime(label) {
+      var match = String(label || '').match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+      if (!match) return '09:00';
+      var hour = Number(match[1]) % 12;
+      if (String(match[3]).toUpperCase() === 'PM') hour += 12;
+      return String(hour).padStart(2, '0') + ':' + match[2];
+    }
+
+    function statusKeyFromItem(item) {
+      if (item.classList.contains('is-sms-sent')) return 'sms-sent';
+      if (item.classList.contains('is-done')) return 'done';
+      if (item.classList.contains('is-noshow')) return 'noshow';
+      return 'new';
+    }
+
+    function bookingRecordFromItem(item) {
+      var services = Array.from(item.querySelectorAll('.booking-service-chip')).map(function(chip) {
+        return chip.textContent.trim();
+      }).filter(Boolean);
+      var time = item.querySelector('.booking-time-main:not(.booking-callstart-main)');
+      return {
+        id: item.dataset.bookingId,
+        name: item.dataset.bookingName,
+        phone: item.dataset.bookingPhone,
+        email: item.dataset.bookingEmail,
+        services: services.length ? services : [item.dataset.bookingService],
+        tech: item.dataset.bookingTech,
+        date: item.dataset.bookingDate,
+        time: time ? parseBookingCalendarTime(time.textContent) : '09:00',
+        duration: Number(item.dataset.bookingDuration || bookingCalendarDurationMinutes(item)),
+        status: statusKeyFromItem(item),
+        note: item.dataset.bookingNote || '',
+        source: 'booking-book'
+      };
+    }
+
+    function bookingRecordServiceNames(record) {
+      var names = Array.isArray(record.serviceNames) ? record.serviceNames.slice() : [];
+      if (!names.length) names = (record.serviceIds || []).slice();
+      return names.map(function(name, index) {
+        var service = salonData.findService(catalog, (record.serviceIds || [])[index] || name);
+        return service ? service.name : name;
+      }).filter(Boolean);
+    }
+
+    function bookingRecordToRowData(record) {
+      var start = new Date(record.startAt);
+      var names = bookingRecordServiceNames(record);
+      return {
+        id: record.id,
+        name: record.customerName,
+        phone: record.phone,
+        email: record.email,
+        service: names.join(' '),
+        services: names,
+        tech: record.technicianId || 'unassigned',
+        techName: record.technicianName || '',
+        date: record.startAt.slice(0, 10),
+        time: record.startAt.slice(11, 16),
+        duration: record.durationMin,
+        status: appointmentStore.mapCanonicalToBookingStatus(record),
+        note: record.note || '',
+        source: record.source || 'booking-book'
+      };
+    }
+
+    function renderBookingStoreRows() {
+      var tbody = document.querySelector('[data-booking-table] tbody');
+      if (!tbody) return;
+      var records = appointmentStore.loadAll(null, catalog).filter(function(record) {
+        return record.status !== 'cancelled' && record.startAt && record.endAt;
+      }).sort(function(a, b) { return String(a.startAt).localeCompare(String(b.startAt)); });
+      tbody.innerHTML = records.map(function(record) {
+        return createBookingTableRow(bookingRecordToRowData(record));
+      }).join('');
+      tbody.querySelectorAll('[data-booking-item]').forEach(function(item) {
+        var actions = item.querySelector('.booking-actions');
+        if (actions) actions.innerHTML = renderBookingActionButtons(item);
+      });
+    }
+
     function bookingCalendarRows() {
       var panel = document.getElementById('booking-subpanel-today');
       return panel ? Array.from(panel.querySelectorAll('[data-booking-item]')) : [];
@@ -9965,7 +10054,7 @@
     function bookingCalendarColumns() {
       var columns = [];
       BOOKING_CALENDAR_TECHNICIANS.forEach(function(tech) {
-        columns.push({ id: tech, name: tech, toolTip: tech });
+        columns.push({ id: tech, name: bookingTechName(tech), toolTip: bookingTechName(tech) });
       });
       columns.push({ id: 'unassigned', name: 'Anyone', toolTip: 'Unassigned appointment' });
       return columns;
@@ -10141,8 +10230,8 @@
 
       var tech = bookingCreateField('tech');
       if (tech) {
-        tech.innerHTML = '<option value="unassigned">Anyone / Unassigned</option>' + BOOKING_CALENDAR_TECHNICIANS.map(function(name) {
-          return '<option value="' + escapeHtml(name) + '">' + escapeHtml(name) + '</option>';
+        tech.innerHTML = '<option value="unassigned">Anyone / Unassigned</option>' + BOOKING_CALENDAR_TECHNICIANS.map(function(id) {
+          return '<option value="' + escapeHtml(id) + '">' + escapeHtml(bookingTechName(id)) + '</option>';
         }).join('');
       }
       updateBookingCreateServiceSummary();
@@ -10191,13 +10280,11 @@
     function bookingCalendarHasConflict(start, end, tech) {
       var normalizedTech = bookingCalendarResourceTech(tech);
       if (normalizedTech === 'unassigned') return false;
-
-      return bookingCalendarRows().some(function(item) {
-        if (bookingCalendarResourceTech(item.dataset.bookingTech) !== normalizedTech) return false;
-        var itemStart = new Date(bookingCalendarAppointmentStart(item));
-        var itemEnd = new Date(bookingCalendarEnd(bookingCalendarAppointmentStart(item), bookingCalendarDurationMinutes(item)));
-        return start < itemEnd && end > itemStart;
-      });
+      return appointmentStore.hasConflict(
+        appointmentStore.loadAll(null, catalog),
+        { technicianId: normalizedTech, startAt: formatBookingCalendarDateTime(start), endAt: formatBookingCalendarDateTime(end) },
+        null
+      );
     }
 
     function bookingCalendarStatusClass(status) {
@@ -10214,7 +10301,7 @@
     function createBookingTableRow(data) {
       var status = BOOKING_STATUS_CLASS[data.status] ? data.status : 'new';
       var tech = bookingCalendarResourceTech(data.tech);
-      var techLabel = tech === 'unassigned' ? 'Unassigned' : tech;
+      var techLabel = data.techName || bookingTechName(tech);
       var services = (Array.isArray(data.services) ? data.services : [data.service]).map(function(service) {
         return String(service || '').trim();
       }).filter(Boolean);
@@ -10223,7 +10310,7 @@
       var timeLabel = bookingCalendarDisplayTime(start);
       var dateLabel = bookingCalendarDisplayDate(start);
       var phoneLabel = formatBookingPhone(data.phone);
-      return '<tr class="booking-table-row ' + bookingCalendarStatusClass(status) + '" data-booking-item data-booking-id="' + escapeHtml(data.id) + '" data-booking-name="' + escapeHtml(data.name) + '" data-booking-phone="' + escapeHtml(data.phone) + '" data-booking-email="" data-booking-service="' + escapeHtml(serviceLabel) + '" data-booking-tech="' + escapeHtml(techLabel) + '" data-booking-date="' + escapeHtml(data.date) + '" data-booking-duration="' + data.duration + '" data-booking-note="' + escapeHtml(data.note || '') + '">' +
+      return '<tr class="booking-table-row ' + bookingCalendarStatusClass(status) + '" data-booking-item data-booking-id="' + escapeHtml(data.id) + '" data-booking-name="' + escapeHtml(data.name) + '" data-booking-phone="' + escapeHtml(data.phone) + '" data-booking-email="' + escapeHtml(data.email || '') + '" data-booking-service="' + escapeHtml(serviceLabel) + '" data-booking-tech="' + escapeHtml(tech) + '" data-booking-date="' + escapeHtml(data.date) + '" data-booking-duration="' + data.duration + '" data-booking-note="' + escapeHtml(data.note || '') + '">' +
         '<td><div class="booking-time-block"><div class="booking-time-main booking-callstart-main">' + escapeHtml(timeLabel) + '</div><div class="booking-time-date booking-callstart-date">' + escapeHtml(dateLabel) + '</div></div></td>' +
         '<td><div class="booking-customer"><div class="booking-customer-name">' + escapeHtml(data.name) + ' <span class="badge badge-soft">Front desk</span></div><div class="booking-customer-meta">' + escapeHtml(phoneLabel) + '</div></div></td>' +
         '<td><div class="booking-service"><div class="booking-service-list">' + services.map(function(service) {
@@ -10266,35 +10353,28 @@
         return;
       }
 
-      var id = 'booking-frontdesk-' + Date.now();
-      var tbody = document.querySelector('[data-booking-table] tbody');
-      if (!tbody) return;
-      tbody.insertAdjacentHTML('beforeend', createBookingTableRow({
-        id: id,
+      var result = appointmentStore.create({
+        id: 'booking-frontdesk-' + Date.now(),
         name: name,
         phone: phone,
-        service: service,
         services: services,
         tech: tech,
         date: date,
         time: time,
         duration: duration,
         status: status,
-        note: note
-      }));
-
-      var item = findBookingItemById(id);
-      if (item) {
-        var actions = item.querySelector('.booking-actions');
-        if (actions) actions.innerHTML = renderBookingActionButtons(item);
-      }
+        note: note,
+        source: 'booking-book'
+      }, null, catalog);
+      if (!result.ok) { setBookingCreateError(result.error.message); return; }
 
       bookingCalendarDate = date;
       closeBookingCreateModal();
+      renderBookingStoreRows();
       filterBookingItems();
       renderBookingCalendar();
       if (window.Swal) {
-        var techLabel = tech === 'unassigned' ? 'Anyone / Unassigned' : tech;
+        var techLabel = tech === 'unassigned' ? 'Anyone / Unassigned' : bookingTechName(tech);
         var statusLabels = { 'new': 'New', 'sms-sent': 'SMS Sent', 'done': 'Completed', 'noshow': 'No-show' };
         var bookingSuccessHtml = [
           '<div class="booking-save-summary">',
@@ -10488,7 +10568,7 @@ function getBookingCardCallStart(item) {
           '<div class="booking-service-list">' + services + '</div>' +
           '<div class="booking-card-info-list">' +
             '<div class="booking-card-info-row"><span class="booking-card-label">Time</span><span class="booking-card-value">' + escapeHtml(getBookingCardCallStart(item)) + '</span></div>' +
-            '<div class="booking-card-info-row"><span class="booking-card-label">Technician</span><span class="booking-card-value">' + escapeHtml(item.dataset.bookingTech || '-') + '</span></div>' +
+            '<div class="booking-card-info-row"><span class="booking-card-label">Technician</span><span class="booking-card-value">' + escapeHtml(bookingTechName(item.dataset.bookingTech)) + '</span></div>' +
             '<div class="booking-card-info-row"><span class="booking-card-label">Appointment</span><span class="booking-card-value">' + escapeHtml(getBookingCardTimeText(item)) + '</span></div>' +
             '<div class="booking-card-info-row"><span class="booking-card-label">Duration</span><span class="booking-card-value">' + escapeHtml(getBookingCardDuration(item)) + '</span></div>' +
             '<div class="booking-card-info-row"><span class="booking-card-label">Source</span><span class="booking-card-value booking-source-list">' + renderBookingSourceBadges(item) + '</span></div>' +
@@ -10506,42 +10586,18 @@ function getBookingCardCallStart(item) {
 
     function setBookingStatus(item, status) {
       if (!item) return;
-      var statusCell = item.querySelector('.booking-status-cell');
-      var actions = item.querySelector('.booking-actions');
-
-      item.classList.remove('is-new', 'is-sms-sent', 'is-done', 'is-noshow');
-
-      if (status === 'sms-sent') {
-        item.classList.add('is-sms-sent');
-        if (statusCell) {
-          statusCell.innerHTML = '<span class="badge booking-status booking-status-sms">SMS Sent</span>';
-        }
-      } else if (status === 'done') {
-        item.classList.add('is-done');
-        if (statusCell) {
-          statusCell.innerHTML = '<span class="badge booking-status booking-status-done">Completed</span>';
-        }
-      } else if (status === 'noshow') {
-        item.classList.add('is-noshow');
-        if (statusCell) {
-          statusCell.innerHTML = '<span class="badge booking-status booking-status-noshow">No-show</span>';
-        }
-      } else {
-        item.classList.add('is-new');
-        if (statusCell) {
-          statusCell.innerHTML = '<span class="badge booking-status booking-status-new">New</span>';
-        }
-      }
-
-      if (actions) {
-        actions.innerHTML = renderBookingActionButtons(item);
-      }
-
+      var result = appointmentStore.update(item.dataset.bookingId, appointmentStore.mapBookingStatus(status), null, catalog);
+      if (!result.ok) { setBookingCreateError(result.error.message); return; }
+      renderBookingStoreRows();
       filterBookingItems();
     }
 
     function sendBookingSms(item) {
-      setBookingStatus(item, 'sms-sent');
+      if (!item) return;
+      var result = appointmentStore.update(item.dataset.bookingId, { smsStatus: 'sent' }, null, catalog);
+      if (!result.ok) { setBookingCreateError(result.error.message); return; }
+      renderBookingStoreRows();
+      filterBookingItems();
     }
 
     function completeBookingItem(item) {
@@ -10717,7 +10773,7 @@ function getBookingCardCallStart(item) {
       setBookingDetailText('[data-booking-detail-email]', item.dataset.bookingEmail);
       setBookingDetailSource(item);
       setBookingDetailServices(item);
-      setBookingDetailText('[data-booking-detail-tech]', item.dataset.bookingTech);
+      setBookingDetailText('[data-booking-detail-tech]', bookingTechName(item.dataset.bookingTech));
       setBookingDetailText('[data-booking-detail-status]', status ? status.textContent.trim() : '-');
       setBookingDetailText('[data-booking-detail-time]', getBookingCardTimeText(item));
       setBookingDetailText('[data-booking-detail-note]', item.dataset.bookingNote);
@@ -10967,7 +11023,8 @@ function getBookingCardCallStart(item) {
     }
 
     function renderTechBadges(services) {
-      return (services || 'Gel').split(',').map(function(service) {
+      var list = Array.isArray(services) ? services : String(services || 'Gel').split(',');
+      return list.map(function(service) {
         return service.trim();
       }).filter(Boolean).map(function(service) {
         return '<span class="badge badge-plan">' + escapeHtml(service) + '</span>';
@@ -10996,6 +11053,7 @@ function getBookingCardCallStart(item) {
       card.dataset.techId = data.id || ('tech-' + Date.now());
       card.dataset.email = data.email || '';
       card.dataset.schedule = data.schedule || '';
+      card.dataset.services = Array.isArray(data.services) ? data.services.join(', ') : (data.services || '');
       card.innerHTML = '' +
         '<div class="tech-top">' +
           '<div class="tech-avatar">' + escapeHtml(initial) + '</div>' +
@@ -11009,37 +11067,74 @@ function getBookingCardCallStart(item) {
           '<div class="tech-stats">' +
             '<div class="tech-stat"><strong>0</strong><span>Clients today</span></div>' +
           '</div>' +
+          '<div class="tech-card-actions"><button class="booking-secondary-button" type="button" data-tech-detail-open="' + escapeHtml(card.dataset.techId) + '" aria-label="Edit" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i><span class="booking-mini-label">Edit</span></button></div>' +
         '</div>' +
         '<div class="tech-services">' + renderTechBadges(data.services) + '</div>';
       return card;
     }
 
+    function renderBookingTechnicianRoster() {
+      var activeTechnicians = catalog.technicians.filter(function(technician) { return technician.active; });
+      var choices = document.querySelector('.tech-choice-grid');
+      if (choices) {
+        choices.innerHTML = activeTechnicians.map(function(technician) {
+          var services = technician.services && technician.services.length ? technician.services : technician.skills;
+          return '<button class="tech-choice-card" type="button" role="option" data-tech-choice="' + escapeHtml(technician.id) + '" data-name="' + escapeHtml(technician.name) + '" data-phone="' + escapeHtml(technician.phone) + '" data-email="' + escapeHtml(technician.email) + '" data-services="' + escapeHtml(services.join(', ')) + '" data-schedule="' + escapeHtml(technician.schedule) + '">' +
+            '<span class="tech-avatar">' + escapeHtml((technician.name || 'T').charAt(0).toUpperCase()) + '</span>' +
+            '<span><span class="tech-choice-name">' + escapeHtml(technician.name) + '</span><span class="tech-choice-meta">' + escapeHtml([technician.email, technician.phone].filter(Boolean).join(' · ') || services.join(' · ')) + '</span></span>' +
+          '</button>';
+        }).join('');
+      }
+      var grid = document.querySelector('.tech-grid');
+      if (grid) {
+        grid.innerHTML = '';
+        activeTechnicians.forEach(function(technician) {
+          var services = technician.services && technician.services.length ? technician.services : technician.skills;
+          grid.appendChild(createTechCard({
+            id: technician.id,
+            name: technician.name,
+            phone: technician.phone,
+            email: technician.email,
+            schedule: technician.schedule,
+            services: services
+          }));
+        });
+      }
+    }
+
     function saveTechModal() {
       var modal = document.querySelector('[data-tech-modal]');
-      var grid = document.querySelector('.tech-grid');
       var active = document.querySelector('.tech-choice-card.is-active');
+      var mode = modal ? modal.dataset.techMode : 'edit';
+      var id = mode === 'create' ? 'tech-' + Date.now() : (active ? active.dataset.techChoice : '');
       var data = {
+        id: id,
         name: getTechField('name') || 'New technician',
-        phone: getTechField('phone') || 'No phone yet',
+        phone: getTechField('phone'),
         email: getTechField('email'),
         services: getTechField('services') || 'Gel',
         schedule: getTechField('schedule')
       };
 
-      if (modal && modal.dataset.techMode === 'create' && grid) {
-        grid.appendChild(createTechCard(data));
-      } else if (active && active.hasAttribute('data-tech-choice')) {
-        active.dataset.name = data.name;
-        active.dataset.phone = data.phone;
-        active.dataset.email = data.email;
-        active.dataset.services = data.services;
-        active.dataset.schedule = data.schedule;
-        var choiceName = active.querySelector('.tech-choice-name');
-        var choiceMeta = active.querySelector('.tech-choice-meta');
-        if (choiceName) choiceName.textContent = data.name;
-        if (choiceMeta) choiceMeta.textContent = [data.email, data.phone].filter(Boolean).join(' · ') || data.services.replace(/,\s*/g, ' · ');
-        updateTechCard(document.querySelector('[data-tech-id="' + active.dataset.techChoice + '"]'), data);
-      }
+      var nextCatalog = salonData.loadCatalog();
+      var existing = id ? salonData.findTechnician(nextCatalog, id) : null;
+      var services = String(data.services || '').split(',').map(function(service) { return service.trim(); }).filter(Boolean);
+      var skills = services.map(function(serviceName) {
+        var service = salonData.findService(nextCatalog, serviceName);
+        return service && service.requiredSkill ? service.requiredSkill : serviceName;
+      });
+      var nextTechnicians = nextCatalog.technicians.filter(function(technician) { return technician.id !== id; });
+      nextTechnicians.push(Object.assign({}, existing || {}, data, {
+        active: true,
+        services: services,
+        skills: Array.from(new Set(skills))
+      }));
+      salonData.saveCatalog(Object.assign({}, nextCatalog, { technicians: nextTechnicians }));
+      catalog = salonData.loadCatalog();
+      rebuildBookingCatalogViews();
+      renderBookingTechnicianRoster();
+      renderBookingStoreRows();
+      filterBookingItems();
 
       setSettingsStatus('Saved technician info: ' + data.name + '.');
       closeTechModal();
@@ -11644,7 +11739,7 @@ function getBookingCardCallStart(item) {
         var item = findBookingItemFromAction(bookingAction);
         var detailModal = bookingAction.closest('[data-booking-detail-modal]');
         if (bookingAction.dataset.bookingAction === 'send-sms') {
-          if (window.openSmsCampaignComposer) window.openSmsCampaignComposer({ segment: 'new' });
+          sendBookingSms(item);
         } else if (bookingAction.dataset.bookingAction === 'done') {
           completeBookingItem(item);
         } else if (bookingAction.dataset.bookingAction === 'noshow') {
@@ -12264,6 +12359,28 @@ function getBookingCardCallStart(item) {
         return;
       }
     });
+    var initialBookingRows = Array.from(document.querySelectorAll('[data-booking-item]'));
+    appointmentStore.ensureSource('booking-book-static-v1', initialBookingRows.map(bookingRecordFromItem), null, catalog);
+    renderBookingTechnicianRoster();
+    renderBookingStoreRows();
+    appointmentStore.subscribe(function() {
+      catalog = salonData.loadCatalog();
+      rebuildBookingCatalogViews();
+      renderBookingTechnicianRoster();
+      renderBookingStoreRows();
+      filterBookingItems();
+      renderBookingCalendar();
+      renderBookingCards();
+    }, window);
+    window.addEventListener('storage', function(event) {
+      if (!event || event.key !== salonData.STORAGE_KEY) return;
+      catalog = salonData.loadCatalog();
+      rebuildBookingCatalogViews();
+      renderBookingTechnicianRoster();
+      renderBookingStoreRows();
+      filterBookingItems();
+      renderBookingCalendar();
+    });
     updateBookingSearchPlaceholder();
     initBookingViewMode();
     updateBookingKpis();
@@ -12271,6 +12388,15 @@ function getBookingCardCallStart(item) {
     renderCallStats();
     renderCalls();
     activateMainTabFromUrl();
+    if (salonData.storageAvailable && !salonData.storageAvailable()) {
+      setTimeout(function() {
+        if (window.Swal) {
+          Swal.fire({ icon: 'info', title: 'Local-only mode', text: 'Local changes are available in this tab; cross-tab sync is unavailable.', timer: 2600, showConfirmButton: false });
+        } else {
+          setSettingsStatus('Local changes are available in this tab; cross-tab sync is unavailable.');
+        }
+      }, 0);
+    }
   </script>
   <!-- ✦ SMS Campaign composer logic (ported from nexora-sms-dashboard.html) -->
   <script>

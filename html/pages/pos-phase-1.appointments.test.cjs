@@ -66,3 +66,33 @@ test('SMS is not exposed as a POS tab because SMS Campaigns lives in Booking Hub
   assert.doesNotMatch(html, /var TABS = \[[^\]]*['"]sms['"]/);
   assert.match(html, /data-pos-tab="appointments"/);
 });
+
+test('appointments page loads shared salon catalog and appointment store', () => {
+  assert.match(html, /\.\.\/assets\/salon-data\.js/);
+  assert.match(html, /\.\.\/assets\/appointments-store\.js/);
+});
+
+test('POS migrates seed data into the shared appointment store', () => {
+  assert.match(html, /ensureSource\(['"]pos-seed-v1/);
+  assert.match(html, /createMigrationSeed\(/);
+  assert.match(html, /appointmentStore\.(create|upsert|update)|store\.(create|upsert|update)/);
+  assert.match(html, /appointmentStore\.cancel|store\.cancel/);
+  assert.match(html, /appointmentStore\.subscribe|store\.subscribe/);
+});
+
+test('POS has no independent technician or service catalog literals', () => {
+  assert.doesNotMatch(html, /var TECHS = \[\s*{/);
+  assert.doesNotMatch(html, /var MENU = \[\s*{/);
+});
+
+test('POS derives appointment resources from the shared active roster', () => {
+  assert.match(html, /salonCatalog\.technicians/);
+  assert.doesNotMatch(html, /var TECHS = \[\s*{/);
+});
+
+test('POS retains salon-scoped storage and unknown-record safeguards', () => {
+  assert.match(html, /NEXORA_APPOINTMENTS_STORE/);
+  assert.match(html, /storage/);
+  assert.match(html, /serviceNames/);
+  assert.match(html, /cancelled/);
+});

@@ -54,3 +54,8 @@ test('hasTechConflict ignores the booking currently being edited and unassigned 
     techId: null, start: '2026-07-20T13:15:00', end: '2026-07-20T14:15:00',
   }), false);
 });
+
+test('seed module exposes a migration fixture provider', () => {
+  assert.equal(typeof require('./pos-appointments-data.js').createSeedBookings, 'function');
+  assert.equal(typeof require('./pos-appointments-data.js').createMigrationSeed, 'function');
+});
