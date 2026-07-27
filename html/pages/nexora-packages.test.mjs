@@ -37,6 +37,8 @@ test('adds the package heading and ordered management tabs', () => {
   const voiceTab = html.match(/<button[^>]*data-package-tab="voice"[\s\S]*?<\/button>/)?.[0] || '';
   assert.match(voiceTab, /data-package-icon="phone-sparkles"/);
   assert.equal((voiceTab.match(/<svg\b/g) || []).length, 1);
+  assert.match(voiceTab, /data-phone-shape="handset"/);
+  assert.doesNotMatch(voiceTab, /<rect\b/);
   assert.doesNotMatch(voiceTab, /data-lucide="(?:phone|sparkles)"/);
   assert.doesNotMatch(html, /<span>Voice \+ SMS<\/span>/);
   assert.match(html, /Purchase History/);
