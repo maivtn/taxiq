@@ -120,6 +120,12 @@ test('Booking Book service chips use the shared name-price-duration format witho
   assert.doesNotMatch(SOURCE, /data-booking-panel-select="service"[\s\S]*option\.icon/);
 });
 
+test('Booking Book removes decorative icons from imported service names', () => {
+  assert.match(SOURCE, /function bookingServiceDisplayName\(/);
+  assert.match(SOURCE, /bookingPanelExternalServices\.push\(displayName\)/);
+  assert.doesNotMatch(SOURCE, /title="Imported service">↗ /);
+});
+
 test('Booking Book calendar supports the same drag and resize actions as POS', () => {
   assert.match(SOURCE, /eventMoveHandling:\s*'Update'/);
   assert.match(SOURCE, /eventResizeHandling:\s*'Update'/);

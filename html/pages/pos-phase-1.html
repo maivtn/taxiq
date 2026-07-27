@@ -2247,12 +2247,12 @@
         var names = record.serviceNames || [];
         var serviceLabels = names.map(function (name, index) {
           var service = salonData.findService(salonCatalog, (record.serviceIds || [])[index] || name);
-          return service ? service.icon + ' ' + service.name : name;
+          return service ? service.name : apServiceDisplayName(name);
         });
         if (!serviceLabels.length) {
           serviceLabels = (record.serviceIds || []).map(function (id) {
             var service = salonData.findService(salonCatalog, id);
-            return service ? service.icon + ' ' + service.name : id;
+            return service ? service.name : apServiceDisplayName(id);
           });
         }
         return Object.assign({}, record, {
@@ -2265,7 +2265,7 @@
           svc: serviceLabels.join(' + '),
           serviceDetails: Array.isArray(record.serviceDetails) ? record.serviceDetails : names.map(function (name, index) {
             var service = salonData.findService(salonCatalog, (record.serviceIds || [])[index] || name);
-            return service ? { id: service.id, name: service.name, price: service.price, durationMin: service.durationMin, icon: service.icon } : { name: name, price: null, durationMin: null, icon: '✨' };
+            return service ? { id: service.id, name: service.name, price: service.price, durationMin: service.durationMin, icon: service.icon } : { name: apServiceDisplayName(name), price: null, durationMin: null, icon: '✨' };
           }),
           time: record.startAt ? apClock(new Date(record.startAt)) : '',
           day: apRelativeDay(record.startAt),
@@ -2371,13 +2371,17 @@
         return apFilteredBookings().filter(function (b) { return b.start.slice(0, 10) === apCalendarDate; });
       }
       function apColor(techId) { return AP_COLORS[techId || 'unassigned'] || AP_COLORS.t1; }
+      function apServiceDisplayName(value) {
+        return String(value == null ? '' : value).replace(/^\s*[^\wÀ-ỹ]+/i, '').trim();
+      }
+
       function apServiceSummary(booking) {
         var details = booking && Array.isArray(booking.serviceDetails) ? booking.serviceDetails : [];
         return details.map(function (detail) {
           var price = detail.price == null ? '' : ' · $' + Number(detail.price).toFixed(2).replace(/\.00$/, '');
           var duration = detail.durationMin ? ' · ' + detail.durationMin + ' min' : '';
-          return String(detail.name || 'Service') + price + duration;
-        }).join(' + ') || booking.svc || 'Service to confirm';
+          return apServiceDisplayName(detail.name || 'Service') + price + duration;
+        }).join(' + ') || apServiceDisplayName(booking.svc || 'Service to confirm');
       }
       function apResourceColumns() {
         var techs = TECHS;
@@ -2578,7 +2582,7 @@
           '<label>Phone</label><input class="pos-input" data-apf="phone" maxlength="14" value="' + esc(apDraft.phone || '') + '">' +
           '<label>Services (tap to pick several)</label><div class="ap-chips">' +
           MENU.map(function (c) { return '<button class="ap-chip' + (apSvc[c.id] ? ' is-on' : '') + '" type="button" data-apsvc="' + c.id + '">' + esc(c.label) + ' · $' + (c.price == null ? '—' : c.price) + ' · ' + c.durationMin + ' min</button>'; }).join('') +
-          apExternalSvc.map(function (name) { return '<span class="ap-chip is-external" title="Imported service">↗ ' + esc(name) + '</span>'; }).join('') +
+          apExternalSvc.map(function (name) { return '<span class="ap-chip is-external" title="Imported service">' + esc(apServiceDisplayName(name)) + '</span>'; }).join('') +
           '</div>' +
           '<label>Tech</label><select class="pos-input" data-apf="tech"><option value="">✨ Unassigned — first available</option>' +
           TECHS.map(function (t) {
@@ -2672,9 +2676,10 @@
         (b.serviceIds || []).forEach(function (serviceId) { if (catById(serviceId)) apSvc[serviceId] = 1; });
         if (!Object.keys(apSvc).length) MENU.forEach(function (c) { if ((b.svc || '').indexOf(c.label) !== -1) apSvc[c.id] = 1; });
         (b.serviceNames || []).forEach(function (name) {
-          var service = salonData.findService(salonCatalog, name);
+          var displayName = apServiceDisplayName(name);
+          var service = salonData.findService(salonCatalog, displayName);
           if (!service || !catById(service.id)) {
-            if (apExternalSvc.indexOf(name) === -1) apExternalSvc.push(name);
+            if (displayName && apExternalSvc.indexOf(displayName) === -1) apExternalSvc.push(displayName);
           }
         });
         apDraft = { name: b.name, phone: b.phone, techId: b.techId || null, date: b.start.slice(0, 10), time: b.start.slice(11, 16), duration: Math.max(15, Math.round((end - start) / 60000)), status: b.status || 'confirmed', source: b.source || 'Front desk', note: b.note || '' };

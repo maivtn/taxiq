@@ -165,4 +165,11 @@ test('POS duration is read-only text derived from selected services', () => {
 test('POS service chips use the shared name-price-duration format without icons', () => {
   assert.match(html, /data-apsvc="' \+ c\.id \+ '"[^>]*>' \+ esc\(c\.label\) \+ ' · \$'/);
   assert.doesNotMatch(html, /data-apsvc="' \+ c\.id \+ '"[^>]*>' \+ c\.icon/);
+  assert.doesNotMatch(html, /return service \? service\.icon \+ ' ' \+ service\.name/);
+});
+
+test('POS removes decorative icons from imported service names', () => {
+  assert.match(html, /function apServiceDisplayName\(/);
+  assert.match(html, /apExternalSvc\.push\(displayName\)/);
+  assert.doesNotMatch(html, /title="Imported service">↗ /);
 });

@@ -32,6 +32,26 @@ test('normalizes a POS seed into canonical local date/time fields', () => {
   assert.deepEqual(record.serviceIds, ['pedi']);
 });
 
+test('normalizes decorative service icons out of service labels', () => {
+  const record = store.normalizeAppointment({
+    id: 'apt-decorated-service', name: 'Linh', phone: '8325550103',
+    svc: '🤲 Manicure + 💅 Gel Service',
+    startAt: '2026-07-20T14:30:00', endAt: '2026-07-20T16:15:00',
+    status: 'confirmed',
+  }, catalog, '2026-07-27T00:00:00.000Z');
+  assert.deepEqual(record.serviceNames, ['Manicure', 'Gel Service']);
+  assert.deepEqual(record.serviceIds, ['mani', 'gel']);
+
+  const legacyRecord = store.normalizeAppointment({
+    id: 'apt-legacy-decorated-service', name: 'Linh', phone: '8325550104',
+    serviceNames: ['↗ 🤲 Manicure', '💅 Gel Service'],
+    startAt: '2026-07-20T14:30:00', endAt: '2026-07-20T16:15:00',
+    status: 'confirmed',
+  }, catalog, '2026-07-27T00:00:00.000Z');
+  assert.deepEqual(legacyRecord.serviceNames, ['Manicure', 'Gel Service']);
+  assert.deepEqual(legacyRecord.serviceIds, ['mani', 'gel']);
+});
+
 test('normalizes shared service details with name, price, and duration', () => {
   const record = store.normalizeAppointment({
     id: 'apt-service-details', name: 'Linh', phone: '8325550100', techId: 't2',

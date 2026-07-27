@@ -78,7 +78,7 @@
   }
 
   function stripServiceIcon(value) {
-    return String(value == null ? '' : value).replace(/^[^\wÀ-ỹ]+\\s*/i, '').trim();
+    return String(value == null ? '' : value).replace(/^\s*[^\wÀ-ỹ]+/i, '').trim();
   }
 
   function splitServiceLabels(value) {
@@ -103,7 +103,7 @@
         sourceNames = splitServiceLabels(input.svc || input.service);
       }
     }
-    sourceNames = uniqueStrings(sourceNames);
+    sourceNames = uniqueStrings(sourceNames.map(stripServiceIcon));
 
     var ids = explicitIds.filter(function (id) { return !!findService(catalog, id); });
     sourceNames.forEach(function (name) {
@@ -128,7 +128,7 @@
       var service = findService(catalog, name);
       var suppliedDetail = supplied.find(function (detail) {
         if (!detail || typeof detail !== 'object') return false;
-        return String(detail.name || detail.label || '').trim().toLowerCase() === String(name).trim().toLowerCase() ||
+        return stripServiceIcon(detail.name || detail.label || '').toLowerCase() === String(name).trim().toLowerCase() ||
           (service && String(detail.id || '').trim() === String(service.id));
       });
       var id = service ? service.id : (suppliedDetail && suppliedDetail.id ? String(suppliedDetail.id) : '');

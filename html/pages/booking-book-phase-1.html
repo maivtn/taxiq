@@ -10155,12 +10155,16 @@
       };
     }
 
+    function bookingServiceDisplayName(value) {
+      return String(value == null ? '' : value).replace(/^\s*[^\wÀ-ỹ]+/i, '').trim();
+    }
+
     function bookingRecordServiceNames(record) {
       var names = Array.isArray(record.serviceNames) ? record.serviceNames.slice() : [];
       if (!names.length) names = (record.serviceIds || []).slice();
       return names.map(function(name, index) {
         var service = salonData.findService(catalog, (record.serviceIds || [])[index] || name);
-        return service ? service.name : name;
+        return bookingServiceDisplayName(service ? service.name : name);
       }).filter(Boolean);
     }
 
@@ -10218,8 +10222,9 @@
       bookingPanelExternalServices = [];
       names.forEach(function(name) {
         var option = bookingPanelServiceOption(name);
+        var displayName = bookingServiceDisplayName(name);
         if (option) bookingPanelServices[option.name] = 1;
-        else if (bookingPanelExternalServices.indexOf(name) === -1) bookingPanelExternalServices.push(name);
+        else if (displayName && bookingPanelExternalServices.indexOf(displayName) === -1) bookingPanelExternalServices.push(displayName);
       });
       return {
         name: record ? record.customerName : '',
@@ -10288,7 +10293,7 @@
           escapeHtml(option.name) + ' · $' + (option.price == null ? '—' : option.price) + ' · <span class="booking-service-duration">' + option.duration + ' min</span></button>';
       }).join('');
       var externalServices = bookingPanelExternalServices.map(function(name) {
-        return '<span class="booking-service-chip is-external" title="Imported service">↗ ' + escapeHtml(name) + '</span>';
+        return '<span class="booking-service-chip is-external" title="Imported service">' + escapeHtml(bookingServiceDisplayName(name)) + '</span>';
       }).join('');
       var requiredSkills = bookingPanelSelectedServiceNames().map(function(name) {
         var option = bookingPanelServiceOption(name);
@@ -10549,7 +10554,7 @@
       return details.map(function(detail) {
         var price = detail.price == null ? '' : ' · $' + Number(detail.price).toFixed(2).replace(/\.00$/, '');
         var duration = detail.durationMin ? ' · ' + detail.durationMin + ' min' : '';
-        return String(detail.name || 'Service') + price + duration;
+        return bookingServiceDisplayName(detail.name || 'Service') + price + duration;
       }).join(' + ') || 'Service to confirm';
     }
 
