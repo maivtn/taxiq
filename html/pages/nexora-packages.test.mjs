@@ -237,6 +237,10 @@ test('loads package-specific presentation styles', () => {
   assert.match(css, /\.package-tabs/);
   assert.match(css, /\.package-tab\.is-active/);
   assert.match(css, /\.visually-hidden\s*\{[\s\S]*?position:\s*absolute[\s\S]*?width:\s*1px[\s\S]*?height:\s*1px/);
+  assert.match(css, /\.swal2-popup\s*\{[\s\S]*?font-family:\s*Inter/);
+  assert.match(css, /\.swal2-popup\s*\{[\s\S]*?border-radius:\s*16px/);
+  assert.match(css, /\.swal2-styled\.swal2-confirm\s*\{[\s\S]*?background:\s*linear-gradient\(90deg/);
+  assert.match(css, /\.swal2-icon\.swal2-info\s*\{[\s\S]*?color:\s*var\(--nexora-brand\)/);
 });
 
 test('matches the Booking Hub tab treatment', () => {

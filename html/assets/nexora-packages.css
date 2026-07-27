@@ -15,6 +15,94 @@
   border: 0;
 }
 
+/* SweetAlert2 follows the Package Management design system. */
+.swal2-container {
+  z-index: 400 !important;
+}
+
+.swal2-popup {
+  width: min(100% - 32px, 440px) !important;
+  border: 1px solid var(--nexora-border) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(180deg, #fff, #f8fbff) !important;
+  padding: 24px 22px 20px !important;
+  font-family: Inter, system-ui, sans-serif !important;
+  box-shadow: 0 28px 80px rgba(8, 31, 73, 0.28) !important;
+}
+
+.swal2-icon {
+  margin: 4px auto 14px !important;
+  border-width: 2px !important;
+}
+
+.swal2-icon.swal2-info {
+  border-color: rgba(70, 72, 216, 0.32) !important;
+  color: var(--nexora-brand) !important;
+}
+
+.swal2-icon.swal2-success {
+  border-color: rgba(0, 184, 115, 0.34) !important;
+  color: var(--nexora-success) !important;
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: var(--nexora-success) !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(0, 184, 115, 0.3) !important;
+}
+
+.swal2-title {
+  margin: 0 !important;
+  color: var(--nexora-text) !important;
+  font-size: 19px !important;
+  font-weight: 900 !important;
+  line-height: 1.25 !important;
+}
+
+.swal2-html-container {
+  margin: 10px 0 0 !important;
+  color: var(--nexora-muted) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.55 !important;
+}
+
+.swal2-actions {
+  gap: 10px !important;
+  margin: 20px auto 0 !important;
+}
+
+.swal2-styled.swal2-confirm {
+  min-height: 40px !important;
+  border-radius: 9px !important;
+  padding: 10px 20px !important;
+  background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet)) !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  box-shadow: 0 10px 22px rgba(70, 72, 216, 0.22) !important;
+}
+
+.swal2-styled.swal2-cancel {
+  min-height: 40px !important;
+  border: 1px solid var(--nexora-border) !important;
+  border-radius: 9px !important;
+  background: #fff !important;
+  color: var(--nexora-muted) !important;
+  padding: 10px 20px !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.swal2-styled:focus {
+  box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.16) !important;
+}
+
+.swal2-timer-progress-bar {
+  background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet)) !important;
+}
+
 .package-heading {
   margin-bottom: 24px;
 }
