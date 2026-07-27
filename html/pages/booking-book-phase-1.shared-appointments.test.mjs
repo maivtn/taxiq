@@ -46,3 +46,22 @@ test('Booking Book retains salon-scoped storage and unknown-record safeguards', 
   assert.match(SOURCE, /serviceNames/);
   assert.match(SOURCE, /cancelled/);
 });
+
+test('Booking Book exposes a right-side appointment panel contract', () => {
+  assert.match(SOURCE, /data-booking-appointment-panel/);
+  assert.match(SOURCE, /data-booking-panel-state="empty"/);
+  assert.match(SOURCE, /data-booking-panel-field="name"/);
+  assert.match(SOURCE, /data-booking-panel-action="save"/);
+  assert.match(SOURCE, /data-booking-panel-action="cancel"/);
+});
+
+test('Booking Book routes appointment selection through the panel', () => {
+  assert.match(SOURCE, /function openBookingAppointmentPanel\(/);
+  assert.match(SOURCE, /data-booking-panel-select/);
+  assert.match(SOURCE, /openBookingAppointmentPanel\(item/);
+});
+
+test('Booking Book has responsive appointment panel layout', () => {
+  assert.match(SOURCE, /booking-appointment-layout/);
+  assert.match(SOURCE, /booking-appointment-panel/);
+});

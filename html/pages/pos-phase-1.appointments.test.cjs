@@ -96,3 +96,11 @@ test('POS retains salon-scoped storage and unknown-record safeguards', () => {
   assert.match(html, /serviceNames/);
   assert.match(html, /cancelled/);
 });
+
+test('POS appointment panel exposes shared operational actions', () => {
+  assert.match(html, /data-ap-panel/);
+  assert.match(html, /data-ap-action="send-sms"/);
+  assert.match(html, /data-ap-action="done"/);
+  assert.match(html, /data-ap-action="noshow"/);
+  assert.match(html, /appointmentStore\.(update|cancel)/);
+});
