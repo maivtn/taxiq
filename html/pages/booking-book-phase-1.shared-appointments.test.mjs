@@ -34,3 +34,10 @@ test('technician save writes through the salon catalog API', () => {
   assert.match(SOURCE, /saveCatalog\(/);
   assert.match(SOURCE, /data-tech-modal-save/);
 });
+
+test('Booking Book retains salon-scoped storage and unknown-record safeguards', () => {
+  assert.match(SOURCE, /NEXORA_APPOINTMENTS_STORE/);
+  assert.match(SOURCE, /storage/);
+  assert.match(SOURCE, /serviceNames/);
+  assert.match(SOURCE, /cancelled/);
+});

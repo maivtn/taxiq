@@ -151,8 +151,13 @@
     return findByValue((catalog && catalog.technicians) || [], value);
   }
 
+  function resolveStorage(storage) {
+    if (storage) return storage;
+    try { return typeof localStorage !== 'undefined' ? localStorage : null; } catch (error) { return null; }
+  }
+
   function loadCatalog(storage) {
-    var target = storage || (typeof localStorage !== 'undefined' ? localStorage : null);
+    var target = resolveStorage(storage);
     if (!target) return cloneCatalog(normalizeCatalog(DEFAULT_CATALOG));
     try {
       var raw = target.getItem(STORAGE_KEY);
@@ -162,10 +167,28 @@
     }
   }
 
+  function storageAvailable(storage) {
+    var target = storage;
+    if (!target) {
+      try { target = typeof localStorage !== 'undefined' ? localStorage : null; } catch (error) { return false; }
+    }
+    if (!target) return false;
+    try {
+      target.getItem(STORAGE_KEY);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   function saveCatalog(catalog, storage) {
     var normalized = normalizeCatalog(catalog);
-    var target = storage || (typeof localStorage !== 'undefined' ? localStorage : null);
-    if (target) target.setItem(STORAGE_KEY, JSON.stringify(normalized));
+    var target = resolveStorage(storage);
+    try {
+      if (target) target.setItem(STORAGE_KEY, JSON.stringify(normalized));
+    } catch (error) {
+      // Keep the normalized in-memory result usable when browser storage is blocked.
+    }
     return cloneCatalog(normalized);
   }
 
@@ -179,5 +202,6 @@
     findTechnician: findTechnician,
     loadCatalog: loadCatalog,
     saveCatalog: saveCatalog,
+    storageAvailable: storageAvailable,
   };
 });

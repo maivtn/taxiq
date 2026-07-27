@@ -14,6 +14,11 @@ function storage(seed = {}) {
 
 const catalog = catalogApi.DEFAULT_CATALOG;
 
+test('appointment storage is scoped to the Bitcoin Nail Bar salon', () => {
+  assert.equal(store.SALON_ID, 'bitcoin-nail-bar-houston');
+  assert.equal(store.STORAGE_KEY, 'nexora:appointments:v1:bitcoin-nail-bar-houston');
+});
+
 test('normalizes a POS seed into canonical local date/time fields', () => {
   const record = store.normalizeAppointment({
     id: 'apt-1', name: 'Linh', phone: '(832) 555-0100', techId: 't2',
@@ -25,6 +30,18 @@ test('normalizes a POS seed into canonical local date/time fields', () => {
   assert.equal(record.technicianId, 't2');
   assert.equal(record.status, 'confirmed');
   assert.deepEqual(record.serviceIds, ['pedi']);
+});
+
+test('retains unknown service names and technician names for forward-compatible rendering', () => {
+  const record = store.normalizeAppointment({
+    id: 'apt-unknown', name: 'Future Guest', phone: '8325550102',
+    serviceNames: ['Builder Gel Deluxe'], technicianName: 'Guest Tech',
+    startAt: '2026-07-20T14:30:00', endAt: '2026-07-20T15:30:00', status: 'confirmed',
+  }, catalog, '2026-07-27T00:00:00.000Z');
+  assert.deepEqual(record.serviceIds, []);
+  assert.deepEqual(record.serviceNames, ['Builder Gel Deluxe']);
+  assert.equal(record.technicianId, null);
+  assert.equal(record.technicianName, 'Guest Tech');
 });
 
 test('maps Booking Book status separately from SMS state', () => {

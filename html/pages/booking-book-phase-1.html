@@ -10022,6 +10022,7 @@
         service: names.join(' '),
         services: names,
         tech: record.technicianId || 'unassigned',
+        techName: record.technicianName || '',
         date: record.startAt.slice(0, 10),
         time: record.startAt.slice(11, 16),
         duration: record.durationMin,
@@ -10301,7 +10302,7 @@
     function createBookingTableRow(data) {
       var status = BOOKING_STATUS_CLASS[data.status] ? data.status : 'new';
       var tech = bookingCalendarResourceTech(data.tech);
-      var techLabel = bookingTechName(tech);
+      var techLabel = data.techName || bookingTechName(tech);
       var services = (Array.isArray(data.services) ? data.services : [data.service]).map(function(service) {
         return String(service || '').trim();
       }).filter(Boolean);
@@ -12388,6 +12389,15 @@ function getBookingCardCallStart(item) {
     renderCallStats();
     renderCalls();
     activateMainTabFromUrl();
+    if (salonData.storageAvailable && !salonData.storageAvailable()) {
+      setTimeout(function() {
+        if (window.Swal) {
+          Swal.fire({ icon: 'info', title: 'Local-only mode', text: 'Local changes are available in this tab; cross-tab sync is unavailable.', timer: 2600, showConfirmButton: false });
+        } else {
+          setSettingsStatus('Local changes are available in this tab; cross-tab sync is unavailable.');
+        }
+      }, 0);
+    }
   </script>
   <!-- ✦ SMS Campaign composer logic (ported from nexora-sms-dashboard.html) -->
   <script>

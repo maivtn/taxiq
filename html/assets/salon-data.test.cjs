@@ -3,11 +3,13 @@ const assert = require('node:assert/strict');
 const {
   SALON_ID,
   DEFAULT_CATALOG,
+  STORAGE_KEY,
   findService,
   findTechnician,
   normalizeCatalog,
   loadCatalog,
   saveCatalog,
+  storageAvailable,
 } = require('./salon-data.js');
 
 function storage(seed = {}) {
@@ -21,6 +23,7 @@ function storage(seed = {}) {
 
 test('default catalog is scoped to one salon with unique services and technicians', () => {
   assert.equal(SALON_ID, 'bitcoin-nail-bar-houston');
+  assert.equal(STORAGE_KEY, 'nexora:salon-data:v1:bitcoin-nail-bar-houston');
   assert.equal(DEFAULT_CATALOG.salon.id, SALON_ID);
   assert.equal(new Set(DEFAULT_CATALOG.services.map((item) => item.id)).size, DEFAULT_CATALOG.services.length);
   assert.equal(new Set(DEFAULT_CATALOG.technicians.map((item) => item.id)).size, DEFAULT_CATALOG.technicians.length);
@@ -84,4 +87,14 @@ test('technician roster changes persist and inactive technicians stay resolvable
   assert.equal(findTechnician(loaded, 't7').active, false);
   assert.deepEqual(loaded.technicians.filter((technician) => technician.active).map((technician) => technician.id).includes('t7'), false);
   assert.equal(catalog.technicians.length, DEFAULT_CATALOG.technicians.length);
+});
+
+test('catalog storage failures fall back without throwing', () => {
+  const blocked = {
+    getItem() { throw new Error('storage blocked'); },
+    setItem() { throw new Error('storage blocked'); },
+  };
+  assert.equal(storageAvailable(blocked), false);
+  assert.equal(loadCatalog(blocked).salon.id, SALON_ID);
+  assert.equal(saveCatalog(DEFAULT_CATALOG, blocked).salon.id, SALON_ID);
 });

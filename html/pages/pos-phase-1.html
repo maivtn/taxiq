@@ -801,8 +801,8 @@
       // Technician and service definitions come from the salon-level catalog.
       // POS-only payroll fields stay under posProfile so other booking surfaces
       // can use the same roster without inheriting POS concerns.
-      var TECHS = [];
-      var MENU = [];
+      var TECHS = null;
+      var MENU = null;
       var SVC_REQ = {};
       function rebuildSalonCatalogViews() {
         salonCatalog = salonData.loadCatalog();
@@ -2246,8 +2246,10 @@
         return Object.assign({}, record, {
           start: record.startAt,
           end: record.endAt,
-          name: record.customerName,
+          name: record.customerName || 'Guest',
+          phone: record.phone || '',
           techId: record.technicianId,
+          techName: record.technicianName || '',
           svc: serviceLabels.join(' + '),
           time: record.startAt ? apClock(new Date(record.startAt)) : '',
           day: apRelativeDay(record.startAt),
@@ -2256,7 +2258,7 @@
       }
       function reloadAppointmentSnapshot() {
         BOOKINGS = appointmentStore.loadAll(null, salonCatalog).filter(function (record) {
-          return record.status !== 'cancelled';
+          return record.status !== 'cancelled' && record.startAt && record.endAt;
         }).map(posBookingView);
       }
       function updateAppointmentMetadata(id, metadataPatch) {
@@ -2972,6 +2974,9 @@
       renderSms();
       renderAppt();
       activateTab(new URL(window.location.href).searchParams.get('tab') || 'dispatch');
+      if (salonData.storageAvailable && !salonData.storageAvailable()) {
+        setTimeout(function () { toast('Local changes are available in this tab; cross-tab sync is unavailable.', 'info'); }, 0);
+      }
 
       // Wait / service / pay timers tick on their own; refresh the board while it is on screen.
       setInterval(function () {

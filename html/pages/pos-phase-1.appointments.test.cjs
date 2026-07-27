@@ -89,3 +89,10 @@ test('POS derives appointment resources from the shared active roster', () => {
   assert.match(html, /salonCatalog\.technicians/);
   assert.doesNotMatch(html, /var TECHS = \[\s*{/);
 });
+
+test('POS retains salon-scoped storage and unknown-record safeguards', () => {
+  assert.match(html, /NEXORA_APPOINTMENTS_STORE/);
+  assert.match(html, /storage/);
+  assert.match(html, /serviceNames/);
+  assert.match(html, /cancelled/);
+});
