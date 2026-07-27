@@ -32,7 +32,12 @@ test('adds the package heading and ordered management tabs', () => {
   assert.match(html, /role="tablist"/);
   assert.match(html, /Overview/);
   assert.match(html, /<span>Subscriptions<\/span>/);
+  assert.match(html, /data-package-tab="nexora"[\s\S]*?data-lucide="gem"/);
   assert.match(html, /<span>AI Voice Plans<\/span>/);
+  const voiceTab = html.match(/<button[^>]*data-package-tab="voice"[\s\S]*?<\/button>/)?.[0] || '';
+  assert.match(voiceTab, /data-package-icon="phone-sparkles"/);
+  assert.equal((voiceTab.match(/<svg\b/g) || []).length, 1);
+  assert.doesNotMatch(voiceTab, /data-lucide="(?:phone|sparkles)"/);
   assert.doesNotMatch(html, /<span>Voice \+ SMS<\/span>/);
   assert.match(html, /Purchase History/);
   assert.doesNotMatch(html, /SMS Credit/);
@@ -98,6 +103,18 @@ test('opens one payment-method modal from NEXORA and AI Voice Plans actions', ()
   assert.match(css, /\.package-payment-modal\s*\{/);
   assert.match(css, /\.package-payment-list\s*\{/);
   assert.match(css, /\.package-payment-invoice\s*\{/);
+});
+
+test('shows a SweetAlert pending message when the Free Trial is submitted twice', () => {
+  const html = source();
+  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  assert.match(html, /sweetalert2@11/);
+  assert.match(runtime, /let freeTrialSubmitted = false/);
+  assert.match(runtime, /function showPendingTrialAlert/);
+  assert.match(runtime, /window\.Swal\.fire/);
+  assert.match(runtime, /details\.trial && freeTrialSubmitted/);
+  assert.match(runtime, /packagePaymentPlan\?\.trial/);
+  assert.match(runtime, /đã được gửi và đang chờ xử lý/i);
 });
 
 test('copies the Booking Book Plans content into the Voice + SMS panel', () => {
@@ -197,7 +214,7 @@ test('loads package-specific presentation styles', () => {
 test('matches the Booking Hub tab treatment', () => {
   const html = source();
   const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
-  assert.equal((html.match(/class="package-tab-icon"/g) || []).length, 4);
+  assert.equal((html.match(/class="package-tab-icon(?: package-tab-icon-dual)?"/g) || []).length, 4);
   assert.match(css, /\.package-tab\s*\{[\s\S]*?border:\s*1px\s+solid\s+var\(--nexora-border\)/);
   assert.match(css, /\.package-tab\s*\{[\s\S]*?border-radius:\s*12px/);
   assert.match(css, /\.package-tab-icon\s*\{[\s\S]*?width:\s*28px[\s\S]*?height:\s*28px/);

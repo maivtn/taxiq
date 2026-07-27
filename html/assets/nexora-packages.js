@@ -82,6 +82,7 @@ const PACKAGE_PLAN_DETAILS = {
   let packagePaymentId = PACKAGE_PAYMENT_METHODS[0].id;
   let packagePaymentModalOpener = null;
   let packagePaymentPreviousOverflow = '';
+  let freeTrialSubmitted = false;
 
   function escapeHTML(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, (character) => ({
@@ -195,9 +196,27 @@ const PACKAGE_PLAN_DETAILS = {
     return detail ? { ...detail, plan, tabId } : null;
   }
 
+  function showPendingTrialAlert() {
+    const message = 'Yêu cầu Free Trial đã được gửi và đang chờ xử lý.';
+    if (window.Swal && typeof window.Swal.fire === 'function') {
+      window.Swal.fire({
+        icon: 'info',
+        title: 'Free Trial đã được submit',
+        text: message,
+        confirmButtonText: 'Đã hiểu'
+      });
+      return;
+    }
+    window.alert(message);
+  }
+
   function openPackagePaymentModal(button) {
     const details = getPackagePlanDetails(button);
     if (!packagePaymentModal || !details) return;
+    if (details.trial && freeTrialSubmitted) {
+      showPendingTrialAlert();
+      return;
+    }
     packagePaymentModalOpener = button;
     packagePaymentPlan = details;
     packagePaymentId = PACKAGE_PAYMENT_METHODS[0].id;
@@ -243,6 +262,7 @@ const PACKAGE_PLAN_DETAILS = {
   function confirmPackagePayment() {
     const selectedPayment = PACKAGE_PAYMENT_METHODS.find((method) => method.id === packagePaymentId) || PACKAGE_PAYMENT_METHODS[0];
     if (selectedPayment.id === 'CARD' && !validatePackageCardForm()) return;
+    if (packagePaymentPlan?.trial) freeTrialSubmitted = true;
     closePackagePaymentModal();
   }
 

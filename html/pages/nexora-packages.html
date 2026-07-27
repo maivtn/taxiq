@@ -24,8 +24,8 @@
 
             <div class="package-tabs" role="tablist" aria-label="Package management tabs">
               <button id="package-tab-overview" class="package-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="package-panel-overview" data-package-tab="overview"><span class="package-tab-icon"><i data-lucide="layout-dashboard" aria-hidden="true"></i></span><span>Overview</span></button>
-              <button id="package-tab-nexora" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-nexora" data-package-tab="nexora" tabindex="-1"><span class="package-tab-icon"><i data-lucide="package" aria-hidden="true"></i></span><span>Subscriptions</span></button>
-              <button id="package-tab-voice" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-voice" data-package-tab="voice" tabindex="-1"><span class="package-tab-icon"><i data-lucide="phone" aria-hidden="true"></i></span><span>AI Voice Plans</span></button>
+              <button id="package-tab-nexora" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-nexora" data-package-tab="nexora" tabindex="-1"><span class="package-tab-icon"><i data-lucide="gem" aria-hidden="true"></i></span><span>Subscriptions</span></button>
+              <button id="package-tab-voice" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-voice" data-package-tab="voice" tabindex="-1"><span class="package-tab-icon package-tab-icon-dual"><svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false" data-package-icon="phone-sparkles"><rect x="5" y="6.5" width="12" height="16" rx="2.25" stroke="currentColor" stroke-width="1.7"></rect><path d="M9 9h4M11 19.5h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path><path d="m22.25 4.5.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2Z" fill="currentColor"></path><path d="m24.5 13 .45 1.2 1.2.45-1.2.45-.45 1.2-.45-1.2-1.2-.45 1.2-.45.45-1.2Z" fill="currentColor"></path></svg></span><span>AI Voice Plans</span></button>
               <button id="package-tab-history" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-history" data-package-tab="history" tabindex="-1"><span class="package-tab-icon"><i data-lucide="receipt" aria-hidden="true"></i></span><span>Purchase History</span></button>
             </div>
           </div>
@@ -309,6 +309,7 @@
   </div>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="../assets/nexora-packages.js"></script>
   <script>
     window.NEXORA_SHELL = {
