@@ -6,7 +6,7 @@ Booking Book keeps its full appointment workspace visible: appointment table, ta
 
 ## Behavior
 
-- The Booking Book handoff card remains as a bridge to `pos-phase-1.html?tab=appointments`, but its copy describes the two views as sharing one appointment store.
+- Booking Book does not render an additional handoff card above the appointment workspace.
 - The existing Booking Book appointment markup is no longer wrapped with the HTML `hidden` attribute.
 - Booking Book continues to read and mutate the shared catalog and appointment store; no independent service or technician catalog is reintroduced.
 - No separate right-side appointment panel is added outside the existing Booking Book workspace.

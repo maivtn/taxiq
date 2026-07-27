@@ -51,11 +51,9 @@ test('Booking Book retains salon-scoped storage and unknown-record safeguards', 
   assert.match(SOURCE, /cancelled/);
 });
 
-test('Booking Book links to the shared POS appointment workspace', () => {
-  assert.match(SOURCE, /data-booking-appointments-handoff/);
-  assert.match(SOURCE, /href="pos-phase-1\.html\?tab=appointments"/);
-  assert.match(SOURCE, /Open POS Appointments/);
-  assert.match(SOURCE, /Shared appointment workspace/);
+test('Booking Book does not render the shared appointment workspace handoff card', () => {
+  assert.doesNotMatch(SOURCE, /data-booking-appointments-handoff/);
+  assert.doesNotMatch(SOURCE, /Shared appointment workspace/);
 });
 
 test('Booking Book keeps its appointment table, calendar, and action workspace visible', () => {
@@ -65,7 +63,7 @@ test('Booking Book keeps its appointment table, calendar, and action workspace v
   assert.match(SOURCE, /data-booking-action=/);
 });
 
-test('Booking Book exposes its appointment workspace alongside the POS link', () => {
+test('Booking Book exposes its appointment workspace', () => {
   assert.doesNotMatch(SOURCE, /<aside[^>]+data-booking-appointment-panel/);
   assert.match(SOURCE, /<div class="booking-legacy-appointments" data-booking-legacy-appointments>/);
   assert.match(SOURCE, /booking-appointment-layout/);
