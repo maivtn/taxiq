@@ -60,3 +60,9 @@ test('legacy date-column FullCalendar integration is removed', () => {
   assert.doesNotMatch(html, /timeGridWeek/);
   assert.doesNotMatch(html, /fullcalendar@7\.0\.0/);
 });
+
+test('SMS is not exposed as a POS tab because SMS Campaigns lives in Booking Hub', () => {
+  assert.doesNotMatch(html, /data-pos-tab="sms"/);
+  assert.doesNotMatch(html, /var TABS = \[[^\]]*['"]sms['"]/);
+  assert.match(html, /data-pos-tab="appointments"/);
+});

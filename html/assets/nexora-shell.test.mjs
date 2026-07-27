@@ -97,3 +97,9 @@ test('links every Reward submenu from pages that share the sidebar', () => {
     assert.match(html, new RegExp(`href="salon-setup-reward.html\\?tab=${tab}"[\\s\\S]*?<span>${label}<\\/span>`));
   }
 });
+
+test('does not render the SMS submenu item under POS', () => {
+  const html = renderSidebar('pos', 'dispatch');
+  assert.doesNotMatch(html, /data-shell-tab="sms"/);
+  assert.match(html, /data-shell-tab="appointments"[\s\S]*?<span>Appointments<\/span>/);
+});

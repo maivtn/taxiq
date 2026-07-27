@@ -83,7 +83,6 @@
       { label: 'Dispatch', tab: 'dispatch' },
       { label: 'Time Clock', tab: 'clock' },
       { label: 'Management', tab: 'management' },
-      { label: 'SMS', tab: 'sms' },
       { label: 'Appointments', tab: 'appointments' }
     ] },
     { type: 'item', label: 'Analytics', icon: 'chart-no-axes-combined' },
