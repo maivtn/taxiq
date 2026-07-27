@@ -3623,6 +3623,10 @@
     }
 
     .booking-appointment-layout {
+      display: block;
+    }
+
+    .booking-appointment-layout[data-booking-view-mode="calendar"] {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 320px;
       gap: 14px;
@@ -3638,6 +3642,10 @@
       position: sticky;
       top: 18px;
       min-height: 260px;
+    }
+
+    .booking-appointment-layout:not([data-booking-view-mode="calendar"]) .booking-appointment-panel {
+      display: none;
     }
 
     .booking-appointment-panel [data-booking-panel-state="empty"] {
@@ -3668,7 +3676,7 @@
     }
 
     @media (max-width: 1120px) {
-      .booking-appointment-layout { grid-template-columns: 1fr; }
+      .booking-appointment-layout[data-booking-view-mode="calendar"] { grid-template-columns: 1fr; }
       .booking-appointment-panel { position: static; }
     }
 
@@ -7657,7 +7665,7 @@
 
                 </div>
 
-                <div class="booking-appointment-layout">
+                <div class="booking-appointment-layout" data-booking-view-mode="table">
                   <div class="booking-appointment-main">
                     <div class="booking-grid">
                       <article class="overview-card overview-card-pad">
@@ -10822,6 +10830,8 @@
 
       var nextMode = mode === 'card' || mode === 'calendar' ? mode : 'table';
       panel.dataset.bookingViewMode = nextMode;
+      var appointmentLayout = panel.querySelector('.booking-appointment-layout');
+      if (appointmentLayout) appointmentLayout.dataset.bookingViewMode = nextMode;
 
       panel.querySelectorAll('[data-booking-view-panel]').forEach(function(viewPanel) {
         viewPanel.hidden = viewPanel.dataset.bookingViewPanel !== nextMode;

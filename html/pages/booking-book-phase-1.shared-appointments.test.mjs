@@ -70,6 +70,13 @@ test('Booking Book exposes its appointment workspace', () => {
 });
 
 test('Booking Book calendar layout includes a right-side appointment detail panel', () => {
-  assert.match(SOURCE, /<div class="booking-appointment-layout">[\s\S]*<div class="booking-appointment-main">[\s\S]*<aside class="booking-appointment-panel overview-card" data-booking-appointment-panel/);
+  assert.match(SOURCE, /<div class="booking-appointment-layout"[^>]*>[\s\S]*<div class="booking-appointment-main">[\s\S]*<aside class="booking-appointment-panel overview-card" data-booking-appointment-panel/);
   assert.match(SOURCE, /data-booking-panel-state="empty"/);
+});
+
+test('Booking Book shows the right detail panel only in calendar mode', () => {
+  assert.match(SOURCE, /booking-appointment-layout[^>]*data-booking-view-mode="table"/);
+  assert.match(SOURCE, /booking-appointment-layout\[data-booking-view-mode="calendar"\]/);
+  assert.match(SOURCE, /booking-appointment-layout:not\(\[data-booking-view-mode="calendar"\]\)[\s\S]*booking-appointment-panel/);
+  assert.match(SOURCE, /appointmentLayout\.dataset\.bookingViewMode\s*=\s*nextMode/);
 });
