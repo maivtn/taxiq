@@ -275,10 +275,10 @@
     .ap-calendar-empty { display: grid; place-items: center; min-height: 540px; padding: 32px; color: var(--nexora-muted); font-size: 13px; font-weight: 700; text-align: center; line-height: 1.7; }
     .ap-form-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 0 8px; }
     .ap-form-grid > div { min-width: 0; }
-    .ap-form-meta { display: flex; align-items: center; gap: 6px; margin: 8px 0 2px; flex-wrap: wrap; }
-    .ap-source-field { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--nexora-border); border-radius: 999px; background: #f8fafc; padding: 3px 7px; }
-    .ap-source-label { color: var(--nexora-subtle); font-size: 9px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
-    .ap-source-field .pos-chip { margin: 0; }
+    .ap-form-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 8px 0 2px; }
+    .ap-meta-item { display: flex; align-items: center; gap: 5px; min-width: 0; }
+    .ap-meta-label { color: var(--nexora-subtle); font-size: 10px; font-weight: 900; white-space: nowrap; }
+    .ap-meta-item .pos-chip { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .ap-panel-empty { text-align: center; padding: 34px 10px; line-height: 1.8; }
     .ap-panel-empty i { display: block; margin-bottom: 10px; color: var(--nexora-brand); font-size: 28px; }
     [data-ap-panel].is-loading { overflow: hidden; }
@@ -294,6 +294,8 @@
     .ap-form .pos-input { width: 100%; }
     .ap-panel-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
     .ap-panel-actions .pos-btn { justify-content: center; min-width: 0; }
+    .ap-action-destructive, .ap-action-close { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--nexora-rule); }
+    .ap-action-destructive .pos-btn, .ap-action-close .pos-btn { width: 100%; justify-content: center; }
     .ap-chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .ap-chip { border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 6px 9px; font-size: 12px; font-weight: 700; color: var(--nexora-muted); }
     .ap-chip.is-on { background: var(--nexora-brand); border-color: transparent; color: #fff; }
@@ -331,6 +333,7 @@
       .ap-filter { width: 100%; }
       .ap-filter .pos-input { flex: 1; min-width: 0; }
       .ap-form-grid { grid-template-columns: 1fr 1fr; }
+      .ap-form-meta { grid-template-columns: 1fr; }
       .ap-panel-actions { grid-template-columns: 1fr; }
     }
 
@@ -2533,7 +2536,10 @@
         var editing = apMode === 'edit';
         var reqList = Object.keys(apSvc).map(function (id) { return SVC_REQ[id]; }).filter(Boolean);
         p.innerHTML = '<div class="pos-strong" style="font-size:14px">' + (editing ? '<i class="bi bi-pencil-square" aria-hidden="true"></i> Edit appointment' : '<i class="bi bi-plus-lg" aria-hidden="true"></i> New appointment') + '</div>' +
-          (editing ? '<div class="ap-form-meta"><span class="pos-chip pos-chip-blue">' + esc(AP_STATUS[apDraft.status] || apDraft.status) + '</span><span class="ap-source-field" data-ap-source><span class="ap-source-label">Booking source</span><strong class="pos-chip pos-chip-gray">' + esc(apSourceLabel(apDraft.source)) + '</strong></span></div>' : '') +
+          (editing ? '<div class="ap-form-meta">' +
+            '<span class="ap-meta-item" data-ap-meta="status"><span class="ap-meta-label">Status:</span><strong class="pos-chip pos-chip-blue">' + esc(AP_STATUS[apDraft.status] || apDraft.status) + '</strong></span>' +
+            '<span class="ap-meta-item" data-ap-meta="source"><span class="ap-meta-label">Nguồn:</span><strong class="pos-chip pos-chip-gray" data-ap-source>' + esc(apSourceLabel(apDraft.source)) + '</strong></span>' +
+          '</div>' : '') +
           '<div class="ap-form">' +
           '<label>Customer</label><input class="pos-input" data-apf="name" maxlength="40" value="' + esc(apDraft.name || '') + '">' +
           '<label>Phone</label><input class="pos-input" data-apf="phone" maxlength="14" value="' + esc(apDraft.phone || '') + '">' +
@@ -2554,13 +2560,13 @@
           Object.keys(AP_STATUS).map(function (s) { return '<option value="' + s + '"' + (apDraft.status === s ? ' selected' : '') + '>' + AP_STATUS[s] + '</option>'; }).join('') + '</select></div></div>' +
           '<div class="ap-warn" data-ap-warn>' + esc(apWarn) + '</div>' +
           '<button class="pos-btn pos-btn-primary" type="button" data-ap-save style="width:100%;justify-content:center"><i class="bi bi-check-lg"></i> Save appointment</button>' +
-          (editing ? '<div class="ap-panel-actions">' +
+          (editing ? '<div class="ap-panel-actions" data-ap-action-group="operational">' +
             '<button class="pos-btn pos-btn-sm pos-btn-primary" type="button" data-ap-action="send-sms"><i class="bi bi-send" aria-hidden="true"></i> Send SMS</button>' +
             '<button class="pos-btn pos-btn-sm pos-btn-success" type="button" data-ap-action="done"><i class="bi bi-check-lg" aria-hidden="true"></i> Done</button>' +
             '<button class="pos-btn pos-btn-sm pos-btn-danger" type="button" data-ap-action="noshow"><i class="bi bi-x-lg" aria-hidden="true"></i> No-show</button>' +
-            '</div>' +
-            '<button class="pos-btn pos-btn-danger" type="button" data-ap-del data-ap-action="cancel" style="width:100%;margin-top:8px;justify-content:center"><i class="bi bi-trash" aria-hidden="true"></i> Cancel this appointment</button>' : '') +
-          '<button class="pos-btn" type="button" data-ap-close style="width:100%;margin-top:8px;justify-content:center">Close</button>' +
+            '</div>' : '') +
+          (editing ? '<div class="ap-action-destructive" data-ap-action-group="destructive"><button class="pos-btn pos-btn-danger" type="button" data-ap-del data-ap-action="cancel"><i class="bi bi-trash" aria-hidden="true"></i> Cancel this appointment</button></div>' : '') +
+          '<div class="ap-action-close"><button class="pos-btn" type="button" data-ap-close>Close</button></div>' +
           '</div>';
       }
 

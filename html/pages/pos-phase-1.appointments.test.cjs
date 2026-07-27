@@ -102,12 +102,21 @@ test('POS appointment panel exposes shared operational actions', () => {
   assert.match(html, /data-ap-action="send-sms"/);
   assert.match(html, /data-ap-action="done"/);
   assert.match(html, /data-ap-action="noshow"/);
+  assert.match(html, /data-ap-action-group="operational"/);
+  assert.match(html, /data-ap-action-group="destructive"/);
   assert.match(html, /appointmentStore\.(update|cancel)/);
   assert.match(html, /function apApplySharedAction\(/);
 });
 
+test('POS appointment metadata shows explicit status and source labels', () => {
+  assert.match(html, /data-ap-meta="status"[\s\S]*?Status:/);
+  assert.match(html, /data-ap-meta="status"[\s\S]*?pos-chip/);
+  assert.match(html, /data-ap-meta="source"[\s\S]*?Nguồn:/);
+  assert.match(html, /data-ap-meta="source"[\s\S]*?pos-chip/);
+});
+
 test('POS appointment details expose the booking source', () => {
-  assert.match(html, /Booking source/);
+  assert.match(html, /Nguồn:/);
   assert.match(html, /data-ap-source/);
   assert.match(html, /function apSourceLabel\(/);
 });

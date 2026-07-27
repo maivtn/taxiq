@@ -28,7 +28,7 @@
 - Consumes: the current POS appointment panel source.
 - Produces: source-level assertions for the explicit metadata labels and layout hooks.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add assertions to the existing action-panel test:
 
@@ -41,7 +41,7 @@ assert.match(html, /data-ap-action-group="operational"/);
 assert.match(html, /data-ap-action-group="destructive"/);
 ```
 
-- [ ] **Step 2: Run the focused test to verify it fails**
+- [x] **Step 2: Run the focused test to verify it fails**
 
 Run:
 
@@ -61,7 +61,7 @@ Expected: FAIL because the current panel has unlabeled status/source markup and 
 - Consumes: `apSourceLabel()`, `AP_STATUS`, and existing `data-ap-action` handlers.
 - Produces: labeled metadata wrappers and presentation hooks consumed by the CSS and regression test.
 
-- [ ] **Step 1: Add focused layout styles**
+- [x] **Step 1: Add focused layout styles**
 
 Add styles next to the existing appointment panel styles:
 
@@ -76,7 +76,7 @@ Add styles next to the existing appointment panel styles:
 
 Keep the existing mobile breakpoint and change the metadata grid to one column below `720px`.
 
-- [ ] **Step 2: Render explicit metadata labels**
+- [x] **Step 2: Render explicit metadata labels**
 
 Replace the edit-mode metadata fragment with:
 
@@ -87,7 +87,7 @@ Replace the edit-mode metadata fragment with:
 '</div>'
 ```
 
-- [ ] **Step 3: Group the actions without changing behavior**
+- [x] **Step 3: Group the actions without changing behavior**
 
 Keep the existing `data-ap-action` values and add wrappers around the same buttons:
 
@@ -114,7 +114,7 @@ Ensure new-appointment mode still renders Save and Close, while edit mode render
 - Modify: `html/pages/pos-phase-1.appointments.test.cjs`
 - Modify: `html/pages/pos-phase-1.html`
 
-- [ ] **Step 1: Run the focused test**
+- [x] **Step 1: Run the focused test**
 
 ```bash
 node --test html/pages/pos-phase-1.appointments.test.cjs
@@ -122,7 +122,7 @@ node --test html/pages/pos-phase-1.appointments.test.cjs
 
 Expected: all POS appointment tests pass.
 
-- [ ] **Step 2: Run the full appointment suite and whitespace check**
+- [x] **Step 2: Run the full appointment suite and whitespace check**
 
 ```bash
 node --test html/assets/salon-data.test.cjs html/assets/appointments-store.test.cjs html/assets/pos-appointments-data.test.cjs html/pages/pos-phase-1.appointments.test.cjs html/pages/booking-book-phase-1.shared-appointments.test.mjs
@@ -131,7 +131,7 @@ git diff --check
 
 Expected: all tests pass and `git diff --check` prints no errors.
 
-- [ ] **Step 3: Commit the implementation**
+- [x] **Step 3: Commit the implementation**
 
 ```bash
 git add html/pages/pos-phase-1.html html/pages/pos-phase-1.appointments.test.cjs
