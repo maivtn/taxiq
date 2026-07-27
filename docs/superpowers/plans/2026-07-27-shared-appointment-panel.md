@@ -50,27 +50,15 @@ Add tests like:
       assert.match(SOURCE, /booking-appointment-panel/);
     });
 
-- [ ] **Step 2: Write the failing POS test**
-
-Add:
-
-    test('POS appointment panel exposes shared operational actions', () => {
-      assert.match(SOURCE, /data-ap-panel/);
-      assert.match(SOURCE, /data-ap-action="send-sms"/);
-      assert.match(SOURCE, /data-ap-action="done"/);
-      assert.match(SOURCE, /data-ap-action="noshow"/);
-      assert.match(SOURCE, /appointmentStore\.(update|cancel)/);
-    });
-
-- [ ] **Step 3: Run tests and confirm the expected red state**
+- [ ] **Step 2: Run the Booking Book contract tests and confirm the expected red state**
 
 Run:
 
-    node --test html/pages/booking-book-phase-1.shared-appointments.test.mjs html/pages/pos-phase-1.appointments.test.cjs
+    node --test html/pages/booking-book-phase-1.shared-appointments.test.mjs
 
-Expected: FAIL because Booking Book has no right-panel contract and POS has no data-ap-action hooks.
+Expected: FAIL because Booking Book has no right-panel contract yet. The POS action contract is added in Task 5 so Booking-only checkpoints remain green.
 
-- [ ] **Step 4: Commit the red tests**
+- [ ] **Step 3: Commit the red tests**
 
     git add html/pages/booking-book-phase-1.shared-appointments.test.mjs html/pages/pos-phase-1.appointments.test.cjs
     git commit -m "test: specify shared appointment panel contracts"

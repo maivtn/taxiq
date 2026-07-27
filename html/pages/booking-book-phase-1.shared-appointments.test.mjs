@@ -62,3 +62,12 @@ test('Booking Book has responsive appointment panel layout', () => {
   assert.match(SOURCE, /booking-appointment-layout/);
   assert.match(SOURCE, /booking-appointment-panel/);
 });
+
+test('Booking Book panel renders canonical appointment fields', () => {
+  assert.match(SOURCE, /var bookingPanelMode = null/);
+  assert.match(SOURCE, /var bookingPanelAppointmentId = null/);
+  assert.match(SOURCE, /function renderBookingAppointmentPanel\(/);
+  assert.match(SOURCE, /data-booking-panel-field="name"/);
+  assert.match(SOURCE, /data-booking-panel-field="services"/);
+  assert.match(SOURCE, /data-booking-panel-action="save"/);
+});
