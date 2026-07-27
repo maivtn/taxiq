@@ -80,3 +80,12 @@ test('Booking Book shows the right detail panel only in calendar mode', () => {
   assert.match(SOURCE, /booking-appointment-layout:not\(\[data-booking-view-mode="calendar"\]\)[\s\S]*booking-appointment-panel/);
   assert.match(SOURCE, /appointmentLayout\.dataset\.bookingViewMode\s*=\s*nextMode/);
 });
+
+test('Booking Book calendar events use the shared appointment fields', () => {
+  assert.match(SOURCE, /function bookingCalendarServiceSummary\(/);
+  assert.match(SOURCE, /bookingCalendarServiceSummary\([\s\S]*serviceDetails/);
+  assert.match(SOURCE, /data-booking-source/);
+  assert.match(SOURCE, /bookingCalendarEvent[\s\S]*bookingCalendarServiceSummary/);
+  assert.match(SOURCE, /bookingCalendarEvent[\s\S]*booking\.phone/);
+  assert.match(SOURCE, /bookingCalendarEvent[\s\S]*booking\.note/);
+});

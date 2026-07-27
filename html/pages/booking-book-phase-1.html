@@ -10245,7 +10245,7 @@
       ].map(function(status) {
         return '<option value="' + status.id + '"' + (bookingPanelDraft.status === status.id ? ' selected' : '') + '>' + status.label + '</option>';
       }).join('');
-      var meta = editing ? '<div class="booking-panel-meta"><span class="badge badge-soft">' + escapeHtml(bookingPanelDraft.source || 'booking-book') + '</span></div>' : '';
+      var meta = editing ? '<div class="booking-panel-meta"><span class="badge badge-soft">Status: ' + escapeHtml(bookingCalendarStatusLabel(bookingPanelDraft.status)) + '</span><span class="badge badge-soft">Nguồn: ' + escapeHtml(bookingCalendarSourceLabel(bookingPanelDraft.source || 'booking-book')) + '</span></div>' : '';
       host.innerHTML = '<div data-booking-panel-state="' + (editing ? 'edit' : 'new') + '" data-booking-panel-select>' +
         '<div class="booking-panel-head"><div><div class="booking-panel-title"><i class="bi ' + (editing ? 'bi-pencil-square' : 'bi-calendar-plus') + '" aria-hidden="true"></i> ' + (editing ? 'Edit appointment' : 'New appointment') + '</div>' + meta + '</div>' +
         '<button class="booking-detail-close" type="button" data-booking-panel-action="close" aria-label="Close appointment panel"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>' +
@@ -10472,6 +10472,43 @@
       return +(item.dataset.bookingDuration || BOOKING_CALENDAR_SERVICE_DURATIONS[service] || 60);
     }
 
+    function bookingCalendarServiceSummary(record) {
+      var details = record && Array.isArray(record.serviceDetails) ? record.serviceDetails : [];
+      if (!details.length && record) {
+        details = bookingRecordServiceNames(record).map(function(name) {
+          var service = salonData.findService(catalog, name);
+          return service ? { name: service.name, price: service.price, durationMin: service.durationMin } : { name: name };
+        });
+      }
+      return details.map(function(detail) {
+        var price = detail.price == null ? '' : ' · $' + Number(detail.price).toFixed(2).replace(/\.00$/, '');
+        var duration = detail.durationMin ? ' · ' + detail.durationMin + ' min' : '';
+        return String(detail.name || 'Service') + price + duration;
+      }).join(' + ') || 'Service to confirm';
+    }
+
+    function bookingCalendarStatusLabel(status) {
+      return { 'new': 'New', 'sms-sent': 'SMS Sent', 'done': 'Completed', 'noshow': 'No-show' }[status] || 'New';
+    }
+
+    function bookingCalendarSourceLabel(source) {
+      var raw = String(source || '').trim();
+      var normalized = raw.toLowerCase().replace(/[_-]+/g, ' ');
+      return {
+        'booking book': 'Booking Book',
+        'manual add': 'Manual add',
+        'front desk': 'Front desk',
+        'online': 'Online',
+        'mobile app': 'Mobile app',
+        'phone': 'Phone',
+        'walk in request': 'Walk-in',
+        'landing page': 'Landing Page',
+        'voice': 'Voice',
+        'sms': 'SMS',
+        'qr': 'QR'
+      }[normalized] || raw || 'Front desk';
+    }
+
     function bookingCalendarEnd(start, minutes) {
       var end = new Date(start);
       end.setMinutes(end.getMinutes() + minutes);
@@ -10479,15 +10516,41 @@
     }
 
     function bookingCalendarEvent(item, columns) {
+      var booking = bookingPanelRecordById(item.dataset.bookingId) || {
+        customerName: item.dataset.bookingName || 'Guest',
+        phone: item.dataset.bookingPhone || '',
+        source: item.dataset.bookingSource || 'booking-book',
+        note: item.dataset.bookingNote || '',
+        technicianName: bookingTechName(item.dataset.bookingTech),
+        serviceNames: [getBookingServiceText(item)]
+      };
       var tech = bookingCalendarResourceTech(item.dataset.bookingTech);
       var color = bookingCalendarColor(tech, columns);
       var start = bookingCalendarAppointmentStart(item);
       var minutes = bookingCalendarDurationMinutes(item);
-      var service = getBookingServiceText(item) || 'Service to confirm';
+      var service = bookingCalendarServiceSummary(booking);
       var status = getBookingStatusText(item);
+      var source = bookingCalendarSourceLabel(booking.source || item.dataset.bookingSource || 'booking-book');
+      var phone = booking.phone || item.dataset.bookingPhone || '';
+      var note = booking.note || item.dataset.bookingNote || '';
+      var techLabel = booking.technicianName || bookingTechName(tech);
+      var dateLabel = bookingCalendarDisplayDate(new Date(start));
+      var timeLabel = bookingCalendarDisplayTime(new Date(start));
+      var tooltip = [
+        booking.customerName || item.dataset.bookingName || 'Guest',
+        phone ? 'Phone: ' + phone : '',
+        service,
+        'Tech: ' + techLabel,
+        'Date: ' + dateLabel,
+        'Time: ' + timeLabel,
+        'Duration: ' + minutes + ' min',
+        'Status: ' + bookingCalendarStatusLabel(status),
+        'Nguồn: ' + source,
+        note ? 'Note: ' + note : ''
+      ].filter(Boolean).join(' · ');
       return {
         id: item.dataset.bookingId,
-        text: item.dataset.bookingName || 'Guest',
+        text: booking.customerName || item.dataset.bookingName || 'Guest',
         start: start,
         end: bookingCalendarEnd(start, minutes),
         resource: tech,
@@ -10498,10 +10561,10 @@
         borderRadius: 10,
         padding: 8,
         cssClass: 'booking-calendar-event',
-        html: '<div class="booking-calendar-event"><div class="booking-calendar-event-name">' + escapeHtml(item.dataset.bookingName || 'Guest') + '</div>' +
+        html: '<div class="booking-calendar-event"><div class="booking-calendar-event-name">' + escapeHtml(booking.customerName || item.dataset.bookingName || 'Guest') + '</div>' +
           '<div class="booking-calendar-event-service">' + escapeHtml(service) + '</div>' +
-          '<div class="booking-calendar-event-meta">' + minutes + ' min · ' + escapeHtml(status) + '</div></div>',
-        toolTip: (item.dataset.bookingName || 'Guest') + ' · ' + service
+          '<div class="booking-calendar-event-meta">' + escapeHtml(bookingCalendarStatusLabel(status)) + ' · ' + escapeHtml(source) + '</div></div>',
+        toolTip: tooltip
       };
     }
 
@@ -10693,9 +10756,10 @@
       var timeLabel = bookingCalendarDisplayTime(start);
       var dateLabel = bookingCalendarDisplayDate(start);
       var phoneLabel = formatBookingPhone(data.phone);
-      return '<tr class="booking-table-row ' + bookingCalendarStatusClass(status) + '" data-booking-item data-booking-id="' + escapeHtml(data.id) + '" data-booking-name="' + escapeHtml(data.name) + '" data-booking-phone="' + escapeHtml(data.phone) + '" data-booking-email="' + escapeHtml(data.email || '') + '" data-booking-service="' + escapeHtml(serviceLabel) + '" data-booking-tech="' + escapeHtml(tech) + '" data-booking-date="' + escapeHtml(data.date) + '" data-booking-duration="' + data.duration + '" data-booking-note="' + escapeHtml(data.note || '') + '">' +
+      var sourceLabel = bookingCalendarSourceLabel(data.source || 'Front desk');
+      return '<tr class="booking-table-row ' + bookingCalendarStatusClass(status) + '" data-booking-item data-booking-id="' + escapeHtml(data.id) + '" data-booking-name="' + escapeHtml(data.name) + '" data-booking-phone="' + escapeHtml(data.phone) + '" data-booking-email="' + escapeHtml(data.email || '') + '" data-booking-service="' + escapeHtml(serviceLabel) + '" data-booking-tech="' + escapeHtml(tech) + '" data-booking-date="' + escapeHtml(data.date) + '" data-booking-duration="' + data.duration + '" data-booking-source="' + escapeHtml(sourceLabel) + '" data-booking-note="' + escapeHtml(data.note || '') + '">' +
         '<td><div class="booking-time-block"><div class="booking-time-main booking-callstart-main">' + escapeHtml(timeLabel) + '</div><div class="booking-time-date booking-callstart-date">' + escapeHtml(dateLabel) + '</div></div></td>' +
-        '<td><div class="booking-customer"><div class="booking-customer-name">' + escapeHtml(data.name) + ' <span class="badge badge-soft">Front desk</span></div><div class="booking-customer-meta">' + escapeHtml(phoneLabel) + '</div></div></td>' +
+        '<td><div class="booking-customer"><div class="booking-customer-name">' + escapeHtml(data.name) + ' <span class="badge badge-soft">' + escapeHtml(sourceLabel) + '</span></div><div class="booking-customer-meta">' + escapeHtml(phoneLabel) + '</div></div></td>' +
         '<td><div class="booking-service"><div class="booking-service-list">' + services.map(function(service) {
           return '<span class="booking-service-chip">' + escapeHtml(service) + '</span>';
         }).join('') + '</div></div></td>' +

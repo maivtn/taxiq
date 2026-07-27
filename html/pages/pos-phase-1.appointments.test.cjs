@@ -130,3 +130,12 @@ test('POS marks new appointments as front-desk manual additions', () => {
   assert.match(html, /['"]manual-add['"]/);
   assert.match(html, /['"]manual add['"]:\s*'Manual add'/);
 });
+
+test('POS calendar events use the shared appointment fields', () => {
+  assert.match(html, /function apServiceSummary\(/);
+  assert.match(html, /apServiceSummary\([\s\S]*serviceDetails/);
+  assert.match(html, /apEvent[\s\S]*booking\.phone/);
+  assert.match(html, /apEvent[\s\S]*booking\.note/);
+  assert.match(html, /data-apf="note"/);
+  assert.match(html, /note:\s*apDraft\.note/);
+});

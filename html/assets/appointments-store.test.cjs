@@ -32,6 +32,18 @@ test('normalizes a POS seed into canonical local date/time fields', () => {
   assert.deepEqual(record.serviceIds, ['pedi']);
 });
 
+test('normalizes shared service details with name, price, and duration', () => {
+  const record = store.normalizeAppointment({
+    id: 'apt-service-details', name: 'Linh', phone: '8325550100', techId: 't2',
+    serviceIds: ['pedi', 'addon'], startAt: '2026-07-20T14:30:00', endAt: '2026-07-20T15:30:00',
+    status: 'confirmed', source: 'Online',
+  }, catalog, '2026-07-27T00:00:00.000Z');
+  assert.deepEqual(record.serviceDetails, [
+    { id: 'pedi', name: 'Pedicure', price: 30, durationMin: 60, icon: '🦶' },
+    { id: 'addon', name: 'Add-on & Extra', price: 5, durationMin: 30, icon: '🎨' },
+  ]);
+});
+
 test('retains unknown service names and technician names for forward-compatible rendering', () => {
   const record = store.normalizeAppointment({
     id: 'apt-unknown', name: 'Future Guest', phone: '8325550102',

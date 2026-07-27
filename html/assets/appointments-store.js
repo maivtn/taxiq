@@ -95,6 +95,10 @@
         sourceNames = input.services.map(function (service) {
           return service && typeof service === 'object' ? (service.name || service.label || service.id) : service;
         });
+      } else if (Array.isArray(input.serviceDetails)) {
+        sourceNames = input.serviceDetails.map(function (service) {
+          return service && typeof service === 'object' ? (service.name || service.label || service.id) : service;
+        });
       } else {
         sourceNames = splitServiceLabels(input.svc || input.service);
       }
@@ -116,6 +120,30 @@
     }
 
     return { ids: uniqueStrings(ids), names: uniqueStrings(names) };
+  }
+
+  function serviceDetailsPart(input, catalog, parts) {
+    var supplied = Array.isArray(input.serviceDetails) ? input.serviceDetails : [];
+    return parts.names.map(function (name) {
+      var service = findService(catalog, name);
+      var suppliedDetail = supplied.find(function (detail) {
+        if (!detail || typeof detail !== 'object') return false;
+        return String(detail.name || detail.label || '').trim().toLowerCase() === String(name).trim().toLowerCase() ||
+          (service && String(detail.id || '').trim() === String(service.id));
+      });
+      var id = service ? service.id : (suppliedDetail && suppliedDetail.id ? String(suppliedDetail.id) : '');
+      var priceValue = suppliedDetail && suppliedDetail.price != null ? suppliedDetail.price : service && service.price;
+      var durationValue = suppliedDetail && suppliedDetail.durationMin != null ? suppliedDetail.durationMin : service && service.durationMin;
+      var price = priceValue == null || priceValue === '' || !Number.isFinite(Number(priceValue)) ? null : Number(priceValue);
+      var durationMin = durationValue == null || durationValue === '' || !Number.isFinite(Number(durationValue)) ? null : Number(durationValue);
+      return {
+        id: id,
+        name: service ? service.name : String(name),
+        price: price,
+        durationMin: durationMin,
+        icon: service ? service.icon : (suppliedDetail && suppliedDetail.icon ? String(suppliedDetail.icon) : '✨'),
+      };
+    });
   }
 
   function technicianPart(input, catalog) {
@@ -149,6 +177,7 @@
     input = input || {};
     catalog = catalogFor(catalog);
     var parts = serviceParts(Object.assign({}, input, { catalog: catalog }));
+    var serviceDetails = serviceDetailsPart(input, catalog, parts);
     var technician = technicianPart(input, catalog);
     var start = dateFromLocal(input.startAt || input.start || (input.date && input.time ? input.date + 'T' + input.time + ':00' : ''));
     var explicitDuration = Number(input.durationMin || input.duration);
@@ -157,9 +186,8 @@
       explicitDuration = end.time > start.time ? Math.round((end.time - start.time) / 60000) : 0;
     }
     if (!explicitDuration) {
-      explicitDuration = parts.ids.reduce(function (total, id) {
-        var service = findService(catalog, id);
-        return total + (service && Number(service.durationMin) > 0 ? Number(service.durationMin) : 0);
+      explicitDuration = serviceDetails.reduce(function (total, detail) {
+        return total + (detail && Number(detail.durationMin) > 0 ? Number(detail.durationMin) : 0);
       }, 0) || 60;
     }
     if (!end.value && start.value) {
@@ -181,6 +209,7 @@
       email: String(input.email || '').trim(),
       serviceIds: parts.ids,
       serviceNames: parts.names,
+      serviceDetails: serviceDetails,
       technicianId: technician.id,
       technicianName: technician.name,
       startAt: start.value,
