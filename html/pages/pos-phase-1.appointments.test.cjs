@@ -174,9 +174,10 @@ test('POS action cluster follows the Booking action order and groups Close separ
   assert.match(html, /@media \(max-width: 600px\) \{[\s\S]*\.ap-panel-actions \{ grid-template-columns: 1fr; \}/);
 });
 
-test('POS duration is read-only text derived from selected services', () => {
+test('POS hides the duplicate duration field beside status', () => {
   assert.doesNotMatch(html, /<select class="pos-input" data-apf="duration">/);
-  assert.match(html, /class="ap-duration-label" data-apf="duration"/);
+  assert.doesNotMatch(html, /class="ap-duration-label" data-apf="duration"/);
+  assert.match(html, /data-ap-total-duration/);
   assert.match(html, /function apSelectedServiceDuration\(/);
   assert.match(html, /apDraft\.duration = apSelectedServiceDuration\(\)/);
 });

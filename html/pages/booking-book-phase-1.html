@@ -3994,7 +3994,6 @@
     .booking-panel-close .booking-secondary-button { color: var(--nexora-text); }
     .booking-panel-form .booking-create-field { display: grid; gap: 6px; }
     .booking-appointment-panel .booking-create-label { color: var(--nexora-muted); font-size: 11px; font-weight: 800; }
-    .booking-duration-label { display: flex; min-height: 40px; align-items: center; color: var(--nexora-text); font-size: 13px; font-weight: 700; }
     .booking-appointment-panel .booking-input,
     .booking-appointment-panel .booking-select { border-radius: 10px; font-size: 13px; font-weight: 600; }
     .booking-appointment-panel .booking-create-field textarea.booking-input { height: 40px; min-height: 40px; resize: vertical; }
@@ -10368,8 +10367,7 @@
         '<label class="booking-create-field"><span class="booking-create-label">Tech</span><select class="booking-select" data-booking-panel-field="tech">' + techOptions + '</select></label>' +
         '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Date</span><input class="booking-input" type="date" data-booking-panel-field="date" value="' + escapeHtml(bookingPanelDraft.date) + '"></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Start time</span><input class="booking-input" type="time" step="900" data-booking-panel-field="time" value="' + escapeHtml(bookingPanelDraft.time) + '"></label></div>' +
-        '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Duration</span><div class="booking-duration-label" data-booking-panel-field="duration">' + bookingPanelDraft.duration + ' minutes</div></label>' +
-        '<label class="booking-create-field"><span class="booking-create-label">Status</span><select class="booking-select" data-booking-panel-field="status">' + statusOptions + '</select></label></div>' +
+        '<label class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Status</span><select class="booking-select" data-booking-panel-field="status">' + statusOptions + '</select></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Note</span><textarea class="booking-input" maxlength="240" data-booking-panel-field="note">' + escapeHtml(bookingPanelDraft.note || '') + '</textarea></label>' +
         '<div class="booking-create-error" data-booking-panel-warning role="alert" aria-live="polite">' + escapeHtml(bookingPanelWarning) + '</div>' +
         '<button class="booking-primary-button" type="button" data-booking-panel-action="save" style="width:100%;justify-content:center"><i class="bi bi-check-lg" aria-hidden="true"></i>Save appointment</button>' +

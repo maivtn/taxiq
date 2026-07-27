@@ -305,7 +305,6 @@
     @keyframes apPanelShimmer { to { background-position: -120% 0; } }
     .ap-form label { display: block; font-size: 11px; font-weight: 800; color: var(--nexora-muted); text-transform: uppercase; letter-spacing: .04em; margin: 10px 0 4px; }
     .ap-form .pos-input { width: 100%; }
-    .ap-duration-label { display: flex; min-height: 40px; align-items: center; color: var(--nexora-text); font-size: 13px; font-weight: 700; }
     .ap-panel-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
     .ap-panel-actions .pos-btn { justify-content: center; min-width: 0; }
     .ap-action-destructive, .ap-action-close { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--nexora-rule); }
@@ -2627,9 +2626,8 @@
           }).join('') + '</select>' +
           '<div class="ap-form-grid"><div><label>Date</label><input class="pos-input" type="date" data-apf="date" value="' + esc(apDraft.date) + '"></div>' +
           '<div><label>Start time</label><input class="pos-input" type="time" step="900" data-apf="time" value="' + esc(apDraft.time) + '"></div></div>' +
-          '<div class="ap-form-grid"><div><label>Duration</label><div class="ap-duration-label" data-apf="duration">' + apDraft.duration + ' minutes</div></div>' +
-          '<div><label>Status</label><select class="pos-input" data-apf="status">' +
-          Object.keys(AP_STATUS).map(function (s) { return '<option value="' + s + '"' + (apDraft.status === s ? ' selected' : '') + '>' + AP_STATUS[s] + '</option>'; }).join('') + '</select></div></div>' +
+          '<label>Status</label><select class="pos-input" data-apf="status">' +
+          Object.keys(AP_STATUS).map(function (s) { return '<option value="' + s + '"' + (apDraft.status === s ? ' selected' : '') + '>' + AP_STATUS[s] + '</option>'; }).join('') + '</select>' +
           '<label>Note</label><textarea class="pos-input" rows="3" maxlength="240" data-apf="note">' + esc(apDraft.note || '') + '</textarea>' +
           '<div class="ap-warn" data-ap-warn>' + esc(apWarn) + '</div>' +
           '<button class="pos-btn pos-btn-primary" type="button" data-ap-save style="width:100%;justify-content:center"><i class="bi bi-check-lg"></i> Save appointment</button>' +
