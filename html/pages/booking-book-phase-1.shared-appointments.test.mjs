@@ -71,3 +71,12 @@ test('Booking Book panel renders canonical appointment fields', () => {
   assert.match(SOURCE, /data-booking-panel-field="services"/);
   assert.match(SOURCE, /data-booking-panel-action="save"/);
 });
+
+test('Booking Book panel actions write through the shared appointment store', () => {
+  assert.match(SOURCE, /function saveBookingAppointmentPanel\(/);
+  assert.match(SOURCE, /function cancelBookingPanelAppointment\(/);
+  assert.match(SOURCE, /data-booking-panel-action="send-sms"/);
+  assert.match(SOURCE, /appointmentStore\.create\(/);
+  assert.match(SOURCE, /appointmentStore\.update\(/);
+  assert.match(SOURCE, /appointmentStore\.cancel\(/);
+});
