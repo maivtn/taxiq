@@ -10285,7 +10285,7 @@
       var serviceButtons = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
         var selected = Boolean(bookingPanelServices[option.name]);
         return '<button class="booking-service-chip-button' + (selected ? ' is-selected' : '') + '" type="button" data-booking-panel-select="service" data-service-name="' + escapeHtml(option.name) + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
-          escapeHtml(option.icon || '✨') + ' ' + escapeHtml(option.name) + ' · $' + (option.price == null ? '—' : option.price) + ' · <span class="booking-service-duration">' + option.duration + ' min</span></button>';
+          escapeHtml(option.name) + ' · $' + (option.price == null ? '—' : option.price) + ' · <span class="booking-service-duration">' + option.duration + ' min</span></button>';
       }).join('');
       var externalServices = bookingPanelExternalServices.map(function(name) {
         return '<span class="booking-service-chip is-external" title="Imported service">↗ ' + escapeHtml(name) + '</span>';

@@ -2577,7 +2577,7 @@
           '<label>Customer</label><input class="pos-input" data-apf="name" maxlength="40" value="' + esc(apDraft.name || '') + '">' +
           '<label>Phone</label><input class="pos-input" data-apf="phone" maxlength="14" value="' + esc(apDraft.phone || '') + '">' +
           '<label>Services (tap to pick several)</label><div class="ap-chips">' +
-          MENU.map(function (c) { return '<button class="ap-chip' + (apSvc[c.id] ? ' is-on' : '') + '" type="button" data-apsvc="' + c.id + '">' + c.icon + ' ' + esc(c.label) + ' · $' + (c.price == null ? '—' : c.price) + ' · ' + c.durationMin + ' min</button>'; }).join('') +
+          MENU.map(function (c) { return '<button class="ap-chip' + (apSvc[c.id] ? ' is-on' : '') + '" type="button" data-apsvc="' + c.id + '">' + esc(c.label) + ' · $' + (c.price == null ? '—' : c.price) + ' · ' + c.durationMin + ' min</button>'; }).join('') +
           apExternalSvc.map(function (name) { return '<span class="ap-chip is-external" title="Imported service">↗ ' + esc(name) + '</span>'; }).join('') +
           '</div>' +
           '<label>Tech</label><select class="pos-input" data-apf="tech"><option value="">✨ Unassigned — first available</option>' +

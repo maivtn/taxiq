@@ -103,7 +103,7 @@ test('Booking Book calendar uses the shared calendar status and action contract'
 
 test('Booking Book uses the same catalog-driven service chips and panel field order as POS', () => {
   assert.match(SOURCE, /BOOKING_CALENDAR_SERVICE_OPTIONS\.push\([\s\S]*icon: service\.icon[\s\S]*requiredSkill/);
-  assert.match(SOURCE, /escapeHtml\(option\.icon \|\| '✨'\)/);
+  assert.match(SOURCE, /data-booking-panel-select="service"[\s\S]*escapeHtml\(option\.name\) \+ ' · \$'/);
   assert.match(SOURCE, /data-booking-panel-field="tech"[\s\S]*data-booking-panel-field="date"[\s\S]*data-booking-panel-field="duration"[\s\S]*data-booking-panel-field="status"[\s\S]*data-booking-panel-field="note"/);
   assert.match(SOURCE, /t8: \{ bg: '#e9f7df', border: '#5c9e2e', text: '#31591c' \}/);
 });
@@ -113,6 +113,11 @@ test('Booking Book duration is read-only text derived from selected services', (
   assert.match(SOURCE, /class="booking-duration-label" data-booking-panel-field="duration"/);
   assert.match(SOURCE, /function bookingPanelSelectedServiceDuration\(/);
   assert.match(SOURCE, /bookingPanelDraft\.duration = bookingPanelSelectedServiceDuration\(\)/);
+});
+
+test('Booking Book service chips use the shared name-price-duration format without icons', () => {
+  assert.match(SOURCE, /data-booking-panel-select="service"[\s\S]*escapeHtml\(option\.name\) \+ ' · \$'/);
+  assert.doesNotMatch(SOURCE, /data-booking-panel-select="service"[\s\S]*option\.icon/);
 });
 
 test('Booking Book calendar supports the same drag and resize actions as POS', () => {

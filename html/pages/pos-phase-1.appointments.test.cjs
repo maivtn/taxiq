@@ -161,3 +161,8 @@ test('POS duration is read-only text derived from selected services', () => {
   assert.match(html, /function apSelectedServiceDuration\(/);
   assert.match(html, /apDraft\.duration = apSelectedServiceDuration\(\)/);
 });
+
+test('POS service chips use the shared name-price-duration format without icons', () => {
+  assert.match(html, /data-apsvc="' \+ c\.id \+ '"[^>]*>' \+ esc\(c\.label\) \+ ' · \$'/);
+  assert.doesNotMatch(html, /data-apsvc="' \+ c\.id \+ '"[^>]*>' \+ c\.icon/);
+});
