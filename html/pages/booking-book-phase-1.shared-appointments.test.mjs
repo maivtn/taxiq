@@ -81,6 +81,12 @@ test('Booking Book shows the right detail panel only in calendar mode', () => {
   assert.match(SOURCE, /appointmentLayout\.dataset\.bookingViewMode\s*=\s*nextMode/);
 });
 
+test('Booking Book opens the legacy create modal outside calendar mode', () => {
+  assert.match(SOURCE, /function openBookingNewAppointment\(/);
+  assert.match(SOURCE, /openBookingNewAppointment\([\s\S]*nextMode === 'calendar'[\s\S]*openBookingAppointmentPanelForNew[\s\S]*openBookingCreateModal/);
+  assert.match(SOURCE, /bookingCalendarAdd\.addEventListener\('click', function\(\) \{\s*openBookingNewAppointment\(\);/);
+});
+
 test('Booking Book calendar events use the shared appointment fields', () => {
   assert.match(SOURCE, /function bookingCalendarServiceSummary\(/);
   assert.match(SOURCE, /bookingCalendarServiceSummary\([\s\S]*serviceDetails/);

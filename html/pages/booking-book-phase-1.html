@@ -10805,6 +10805,18 @@
       if (bookingTeamCalendar) bookingTeamCalendar.clearSelection();
     }
 
+    function openBookingNewAppointment() {
+      var panel = document.getElementById('booking-subpanel-today');
+      var nextMode = panel && panel.dataset.bookingViewMode ? panel.dataset.bookingViewMode : 'table';
+      if (nextMode === 'calendar') {
+        closeBookingCreateModal();
+        openBookingAppointmentPanelForNew(null, null, 'unassigned');
+        return;
+      }
+      closeBookingAppointmentPanel();
+      openBookingCreateModal(null, null, 'unassigned');
+    }
+
     function bookingCalendarHasConflict(start, end, tech) {
       var normalizedTech = bookingCalendarResourceTech(tech);
       if (normalizedTech === 'unassigned') return false;
@@ -12271,7 +12283,7 @@ function getBookingCardCallStart(item) {
     var bookingCalendarToday = document.querySelector('[data-booking-calendar-today]');
     var bookingCalendarAdd = document.querySelector('[data-booking-calendar-add]');
     if (bookingCalendarAdd) bookingCalendarAdd.addEventListener('click', function() {
-      openBookingAppointmentPanelForNew(null, null, 'unassigned');
+      openBookingNewAppointment();
     });
     if (bookingCalendarPrev) bookingCalendarPrev.addEventListener('click', function() {
       var previous = new Date(bookingCalendarDate + 'T12:00:00'); previous.setDate(previous.getDate() - 1);
