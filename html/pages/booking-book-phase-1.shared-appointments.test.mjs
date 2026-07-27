@@ -89,3 +89,29 @@ test('Booking Book calendar events use the shared appointment fields', () => {
   assert.match(SOURCE, /bookingCalendarEvent[\s\S]*booking\.phone/);
   assert.match(SOURCE, /bookingCalendarEvent[\s\S]*booking\.note/);
 });
+
+test('Booking Book calendar uses the shared calendar status and action contract', () => {
+  assert.match(SOURCE, /9:00 AM – 7:00 PM · appointments grouped by technician/);
+  assert.match(SOURCE, /'pending': 'Pending'/);
+  assert.match(SOURCE, /'confirmed': 'Confirmed'/);
+  assert.match(SOURCE, /'checked-in': 'Checked in'/);
+  assert.match(SOURCE, /Appointment details/);
+  assert.match(SOURCE, /data-booking-panel-action-group="operational"/);
+  assert.match(SOURCE, /data-booking-panel-action-group="destructive"/);
+  assert.match(SOURCE, /data-booking-panel-action-group="close"/);
+});
+
+test('Booking Book uses the same catalog-driven service chips and panel field order as POS', () => {
+  assert.match(SOURCE, /BOOKING_CALENDAR_SERVICE_OPTIONS\.push\([\s\S]*icon: service\.icon[\s\S]*requiredSkill/);
+  assert.match(SOURCE, /escapeHtml\(option\.icon \|\| '✨'\)/);
+  assert.match(SOURCE, /data-booking-panel-field="tech"[\s\S]*data-booking-panel-field="date"[\s\S]*data-booking-panel-field="duration"[\s\S]*data-booking-panel-field="status"[\s\S]*data-booking-panel-field="note"/);
+  assert.match(SOURCE, /t8: \{ bg: '#e9f7df', border: '#5c9e2e', text: '#31591c' \}/);
+});
+
+test('Booking Book calendar supports the same drag and resize actions as POS', () => {
+  assert.match(SOURCE, /eventMoveHandling:\s*'Update'/);
+  assert.match(SOURCE, /eventResizeHandling:\s*'Update'/);
+  assert.match(SOURCE, /function bookingCalendarApplyMove[\s\S]*appointmentStore\.update/);
+  assert.match(SOURCE, /onEventMoved:[\s\S]*bookingCalendarApplyMove/);
+  assert.match(SOURCE, /onEventResized:[\s\S]*bookingCalendarApplyMove/);
+});

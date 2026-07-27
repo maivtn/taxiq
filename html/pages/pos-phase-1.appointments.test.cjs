@@ -139,3 +139,10 @@ test('POS calendar events use the shared appointment fields', () => {
   assert.match(html, /data-apf="note"/);
   assert.match(html, /note:\s*apDraft\.note/);
 });
+
+test('POS calendar uses the shared calendar header and status contract', () => {
+  assert.match(html, /9:00 AM – 7:00 PM · appointments grouped by technician/);
+  assert.match(html, /AP_STATUS = \{ pending: 'Pending', confirmed: 'Confirmed', 'checked-in': 'Checked in', completed: 'Completed', 'no-show': 'No show' \}/);
+  assert.match(html, /data-ap-action-group="operational"/);
+  assert.match(html, /data-ap-action-group="destructive"/);
+});

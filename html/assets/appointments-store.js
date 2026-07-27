@@ -147,7 +147,8 @@
   }
 
   function technicianPart(input, catalog) {
-    var raw = input.technicianId || input.techId || input.technicianName || input.tech || '';
+    var hasExplicitTechnicianId = Object.prototype.hasOwnProperty.call(input, 'technicianId') && input.technicianId !== undefined;
+    var raw = hasExplicitTechnicianId ? input.technicianId : (input.techId || input.technicianName || input.tech || '');
     if (!raw || String(raw).toLowerCase() === 'unassigned' || String(raw).toLowerCase() === 'anyone') {
       return { id: null, name: '' };
     }

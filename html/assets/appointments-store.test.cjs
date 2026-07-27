@@ -87,6 +87,18 @@ test('conflict detection excludes the edited appointment and ignores unassigned 
   assert.equal(store.hasConflict(records, { technicianId: null, startAt: '2026-07-20T10:30:00', endAt: '2026-07-20T11:30:00' }), false);
 });
 
+test('explicitly unassigning a technician clears the shared technician name', () => {
+  const target = storage();
+  store.upsert({
+    id: 'apt-unassign', name: 'Linh', phone: '8325550100', serviceIds: ['pedi'], techId: 't2',
+    start: '2026-07-20T10:00:00', end: '2026-07-20T11:00:00', status: 'confirmed',
+  }, target, catalog, '2026-07-27T00:00:00.000Z');
+  const result = store.update('apt-unassign', { technicianId: null }, target, catalog, '2026-07-27T00:00:01.000Z');
+  assert.equal(result.ok, true);
+  assert.equal(result.record.technicianId, null);
+  assert.equal(result.record.technicianName, '');
+});
+
 test('cancel keeps the record and changes only its status', () => {
   const target = storage();
   store.upsert({
