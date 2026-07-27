@@ -139,6 +139,12 @@ test('POS appointment details show selected service totals', () => {
   assert.match(html, /function apSelectedServiceTotals\(/);
 });
 
+test('POS appointment card has a structured header with title spacing', () => {
+  assert.match(html, /ap-panel-title-icon/);
+  assert.match(html, /\.ap-panel-title \{[\s\S]*display: flex/);
+  assert.match(html, /\.ap-panel-head \{[\s\S]*border-bottom/);
+});
+
 test('POS marks new appointments as front-desk manual additions', () => {
   assert.match(html, /['"]manual-add['"]/);
   assert.match(html, /['"]manual add['"]:\s*'Manual add'/);

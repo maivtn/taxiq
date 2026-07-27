@@ -56,6 +56,12 @@ test('Booking Book appointment details show selected service totals', () => {
   assert.match(SOURCE, /function bookingPanelSelectedServiceTotals\([\s\S]*bookingServicePriceTotal/);
 });
 
+test('Booking Book appointment card has a structured header with title spacing', () => {
+  assert.match(SOURCE, /booking-panel-title-icon/);
+  assert.match(SOURCE, /\.booking-panel-title \{[\s\S]*display: flex/);
+  assert.match(SOURCE, /\.booking-panel-head \{[\s\S]*border-bottom/);
+});
+
 test('Booking Book repairs generic legacy sources from the original table rows', () => {
   assert.match(SOURCE, /function bookingSourceNeedsRepair\(/);
   assert.match(SOURCE, /function repairBookingStaticSources\(/);

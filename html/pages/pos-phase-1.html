@@ -275,7 +275,11 @@
     .ap-calendar-empty { display: grid; place-items: center; min-height: 540px; padding: 32px; color: var(--nexora-muted); font-size: 13px; font-weight: 700; text-align: center; line-height: 1.7; }
     .ap-form-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 0 8px; }
     .ap-form-grid > div { min-width: 0; }
+    .ap-panel-head { display: grid; gap: 6px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--nexora-rule); }
+    .ap-panel-title { display: flex; align-items: center; gap: 7px; min-height: 24px; color: var(--nexora-text); font-size: 14px; font-weight: 900; line-height: 1.25; }
+    .ap-panel-title-icon { display: inline-flex; width: 22px; height: 22px; flex: 0 0 22px; align-items: center; justify-content: center; border-radius: 6px; background: #eef1ff; color: var(--nexora-brand); font-size: 13px; }
     .ap-form-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 8px 0 2px; }
+    .ap-panel-head .ap-form-meta { margin: 0; }
     .ap-meta-item { display: flex; align-items: center; gap: 5px; min-width: 0; }
     .ap-meta-label { color: var(--nexora-subtle); font-size: 10px; font-weight: 900; white-space: nowrap; }
     .ap-meta-item .pos-chip { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -2604,11 +2608,11 @@
         apDraft.duration = apSelectedServiceDuration();
         var apServiceTotals = apSelectedServiceTotals();
         var reqList = Object.keys(apSvc).map(function (id) { return SVC_REQ[id]; }).filter(Boolean);
-        p.innerHTML = '<div class="pos-strong" style="font-size:14px">' + (editing ? '<i class="bi bi-card-text" aria-hidden="true"></i> Appointment details' : '<i class="bi bi-plus-lg" aria-hidden="true"></i> New appointment') + '</div>' +
+        p.innerHTML = '<div class="ap-panel-head"><div class="ap-panel-title"><i class="bi ' + (editing ? 'bi-card-text' : 'bi-plus-lg') + ' ap-panel-title-icon" aria-hidden="true"></i><span>' + (editing ? 'Appointment details' : 'New appointment') + '</span></div>' +
           (editing ? '<div class="ap-form-meta">' +
             '<span class="ap-meta-item" data-ap-meta="status"><span class="ap-meta-label">Status:</span><strong class="pos-chip pos-chip-blue">' + esc(AP_STATUS[apDraft.status] || apDraft.status) + '</strong></span>' +
             '<span class="ap-meta-item" data-ap-meta="source"><span class="ap-meta-label">Nguồn:</span><span class="ap-source-list" data-ap-source>' + apSourceBadgesFromText(apDraft.source) + '</span></span>' +
-          '</div>' : '') +
+          '</div>' : '') + '</div>' +
           '<div class="ap-form">' +
           '<label>Customer</label><input class="pos-input" data-apf="name" maxlength="40" value="' + esc(apDraft.name || '') + '">' +
           '<label>Phone</label><input class="pos-input" data-apf="phone" maxlength="14" value="' + esc(apDraft.phone || '') + '">' +
