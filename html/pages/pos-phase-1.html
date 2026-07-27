@@ -292,6 +292,7 @@
     @keyframes apPanelShimmer { to { background-position: -120% 0; } }
     .ap-form label { display: block; font-size: 11px; font-weight: 800; color: var(--nexora-muted); text-transform: uppercase; letter-spacing: .04em; margin: 10px 0 4px; }
     .ap-form .pos-input { width: 100%; }
+    .ap-duration-label { display: flex; min-height: 40px; align-items: center; color: var(--nexora-text); font-size: 13px; font-weight: 700; }
     .ap-panel-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
     .ap-panel-actions .pos-btn { justify-content: center; min-width: 0; }
     .ap-action-destructive, .ap-action-close { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--nexora-rule); }
@@ -2565,6 +2566,7 @@
           return;
         }
         var editing = apMode === 'edit';
+        apDraft.duration = apSelectedServiceDuration();
         var reqList = Object.keys(apSvc).map(function (id) { return SVC_REQ[id]; }).filter(Boolean);
         p.innerHTML = '<div class="pos-strong" style="font-size:14px">' + (editing ? '<i class="bi bi-card-text" aria-hidden="true"></i> Appointment details' : '<i class="bi bi-plus-lg" aria-hidden="true"></i> New appointment') + '</div>' +
           (editing ? '<div class="ap-form-meta">' +
@@ -2585,8 +2587,7 @@
           }).join('') + '</select>' +
           '<div class="ap-form-grid"><div><label>Date</label><input class="pos-input" type="date" data-apf="date" value="' + esc(apDraft.date) + '"></div>' +
           '<div><label>Start time</label><input class="pos-input" type="time" step="900" data-apf="time" value="' + esc(apDraft.time) + '"></div></div>' +
-          '<div class="ap-form-grid"><div><label>Duration</label><select class="pos-input" data-apf="duration">' +
-          [30, 45, 60, 75, 90, 120].map(function (m) { return '<option value="' + m + '"' + (+apDraft.duration === m ? ' selected' : '') + '>' + m + ' minutes</option>'; }).join('') + '</select></div>' +
+          '<div class="ap-form-grid"><div><label>Duration</label><div class="ap-duration-label" data-apf="duration">' + apDraft.duration + ' minutes</div></div>' +
           '<div><label>Status</label><select class="pos-input" data-apf="status">' +
           Object.keys(AP_STATUS).map(function (s) { return '<option value="' + s + '"' + (apDraft.status === s ? ' selected' : '') + '>' + AP_STATUS[s] + '</option>'; }).join('') + '</select></div></div>' +
           '<label>Note</label><textarea class="pos-input" rows="3" maxlength="240" data-apf="note">' + esc(apDraft.note || '') + '</textarea>' +
@@ -2637,7 +2638,12 @@
         var f = function (k) { var el = p.querySelector('[data-apf="' + k + '"]'); return el ? el.value : ''; };
         apDraft.name = f('name'); apDraft.phone = f('phone'); apDraft.note = f('note');
         apDraft.techId = f('tech') || null; apDraft.date = f('date'); apDraft.time = f('time');
-        apDraft.duration = +f('duration') || 60; apDraft.status = f('status') || 'confirmed';
+        apDraft.duration = apSelectedServiceDuration(); apDraft.status = f('status') || 'confirmed';
+      }
+      function apSelectedServiceDuration() {
+        var selected = MENU.filter(function (service) { return apSvc[service.id]; });
+        if (!selected.length) return Number(apDraft && apDraft.duration) || 60;
+        return selected.reduce(function (total, service) { return total + (Number(service.durationMin) || 0); }, 0) || 60;
       }
       function apStopPanelLoading() {
         if (apPanelTimer) clearTimeout(apPanelTimer);

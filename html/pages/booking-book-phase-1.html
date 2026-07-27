@@ -3965,6 +3965,7 @@
     .booking-panel-close .booking-secondary-button { color: var(--nexora-text); }
     .booking-panel-form .booking-create-field { display: grid; gap: 6px; }
     .booking-appointment-panel .booking-create-label { color: var(--nexora-muted); font-size: 11px; font-weight: 800; }
+    .booking-duration-label { display: flex; min-height: 40px; align-items: center; color: var(--nexora-text); font-size: 13px; font-weight: 700; }
     .booking-appointment-panel .booking-input,
     .booking-appointment-panel .booking-select { border-radius: 10px; font-size: 13px; font-weight: 600; }
     .booking-appointment-panel .booking-create-field textarea.booking-input { height: 40px; min-height: 40px; resize: vertical; }
@@ -10243,6 +10244,14 @@
       return document.querySelector('[data-booking-panel-field="' + name + '"]');
     }
 
+    function bookingPanelSelectedServiceDuration() {
+      var selected = bookingPanelSelectedServiceNames().map(function(name) {
+        return bookingPanelServiceOption(name);
+      }).filter(Boolean);
+      if (!selected.length) return Number(bookingPanelDraft && bookingPanelDraft.duration) || 60;
+      return selected.reduce(function(total, option) { return total + (Number(option.duration) || 0); }, 0) || 60;
+    }
+
     function bookingPanelSyncDraft() {
       if (!bookingPanelDraft) return;
       var value = function(name) {
@@ -10254,7 +10263,7 @@
       bookingPanelDraft.tech = bookingCalendarResourceTech(value('tech'));
       bookingPanelDraft.date = value('date');
       bookingPanelDraft.time = value('time');
-      bookingPanelDraft.duration = Number(value('duration')) || bookingServiceDurationMinutes(bookingPanelSelectedServiceNames()) || 60;
+      bookingPanelDraft.duration = bookingPanelSelectedServiceDuration();
       bookingPanelDraft.status = value('status') || 'pending';
       bookingPanelDraft.note = value('note').trim();
     }
@@ -10272,6 +10281,7 @@
       }
 
       var editing = bookingPanelMode === 'edit';
+      bookingPanelDraft.duration = bookingPanelSelectedServiceDuration();
       var serviceButtons = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
         var selected = Boolean(bookingPanelServices[option.name]);
         return '<button class="booking-service-chip-button' + (selected ? ' is-selected' : '') + '" type="button" data-booking-panel-select="service" data-service-name="' + escapeHtml(option.name) + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
@@ -10312,7 +10322,7 @@
         '<label class="booking-create-field"><span class="booking-create-label">Tech</span><select class="booking-select" data-booking-panel-field="tech">' + techOptions + '</select></label>' +
         '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Date</span><input class="booking-input" type="date" data-booking-panel-field="date" value="' + escapeHtml(bookingPanelDraft.date) + '"></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Start time</span><input class="booking-input" type="time" step="900" data-booking-panel-field="time" value="' + escapeHtml(bookingPanelDraft.time) + '"></label></div>' +
-        '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Duration</span><select class="booking-select" data-booking-panel-field="duration">' + [30, 45, 60, 75, 90, 120].map(function(minutes) { return '<option value="' + minutes + '"' + (+bookingPanelDraft.duration === minutes ? ' selected' : '') + '>' + minutes + ' minutes</option>'; }).join('') + '</select></label>' +
+        '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Duration</span><div class="booking-duration-label" data-booking-panel-field="duration">' + bookingPanelDraft.duration + ' minutes</div></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Status</span><select class="booking-select" data-booking-panel-field="status">' + statusOptions + '</select></label></div>' +
         '<label class="booking-create-field"><span class="booking-create-label">Note</span><textarea class="booking-input" maxlength="240" data-booking-panel-field="note">' + escapeHtml(bookingPanelDraft.note || '') + '</textarea></label>' +
         '<div class="booking-create-error" data-booking-panel-warning role="alert" aria-live="polite">' + escapeHtml(bookingPanelWarning) + '</div>' +

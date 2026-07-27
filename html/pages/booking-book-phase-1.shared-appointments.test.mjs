@@ -108,6 +108,13 @@ test('Booking Book uses the same catalog-driven service chips and panel field or
   assert.match(SOURCE, /t8: \{ bg: '#e9f7df', border: '#5c9e2e', text: '#31591c' \}/);
 });
 
+test('Booking Book duration is read-only text derived from selected services', () => {
+  assert.doesNotMatch(SOURCE, /<select class="booking-select" data-booking-panel-field="duration">/);
+  assert.match(SOURCE, /class="booking-duration-label" data-booking-panel-field="duration"/);
+  assert.match(SOURCE, /function bookingPanelSelectedServiceDuration\(/);
+  assert.match(SOURCE, /bookingPanelDraft\.duration = bookingPanelSelectedServiceDuration\(\)/);
+});
+
 test('Booking Book calendar supports the same drag and resize actions as POS', () => {
   assert.match(SOURCE, /eventMoveHandling:\s*'Update'/);
   assert.match(SOURCE, /eventResizeHandling:\s*'Update'/);

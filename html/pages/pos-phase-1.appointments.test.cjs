@@ -154,3 +154,10 @@ test('POS action cluster follows the Booking action order and groups Close separ
   assert.match(html, /\.ap-action-destructive, \.ap-action-close \{ margin-top: 8px; padding-top: 8px; border-top: 1px solid var\(--nexora-rule\); \}/);
   assert.match(html, /@media \(max-width: 600px\) \{[\s\S]*\.ap-panel-actions \{ grid-template-columns: 1fr; \}/);
 });
+
+test('POS duration is read-only text derived from selected services', () => {
+  assert.doesNotMatch(html, /<select class="pos-input" data-apf="duration">/);
+  assert.match(html, /class="ap-duration-label" data-apf="duration"/);
+  assert.match(html, /function apSelectedServiceDuration\(/);
+  assert.match(html, /apDraft\.duration = apSelectedServiceDuration\(\)/);
+});
