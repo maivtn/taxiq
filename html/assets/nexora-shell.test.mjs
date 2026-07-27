@@ -64,6 +64,22 @@ test('links and activates Reviews on the native Review page', () => {
   assert.match(html, /<a class="nav-item is-active" href="nexora-review\.html">[\s\S]*?<span>Reviews<\/span>/);
 });
 
+test('renders the Staff sidebar with its staff-only navigation', () => {
+  const html = renderSidebar('staff', 'dashboard');
+  assert.match(html, /class="sidebar-panel staff-profile-panel"/);
+  for (const label of ['Home', 'Dashboard', 'My Workspace', 'My QR', 'My Earnings', 'My Reviews', 'My Salons', 'Tips', 'Transactions', 'Payout Methods', 'Profile', 'Sign out']) {
+    assert.match(html, new RegExp(`>${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<`));
+  }
+  assert.match(html, /data-lucide="briefcase-business"/);
+  assert.match(html, /data-lucide="log-out"/);
+  assert.match(html, /class="nav-item[^"]*is-active[^"]*"[^>]*data-staff-nav="dashboard"/);
+});
+
+test('adds a sign-out icon to the sidebar footer action', () => {
+  const html = renderSidebar('', '');
+  assert.match(html, /class="logout-button"[\s\S]*data-lucide="log-out"[\s\S]*<span>Sign out<\/span><\/button>/);
+});
+
 test('renders all four Package Management submenu items on the native Packages page', () => {
   const html = renderSidebar('packages', 'overview');
   for (const [tab, label] of packageItems) {

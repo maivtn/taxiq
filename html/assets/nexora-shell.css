@@ -396,6 +396,20 @@ select {
   color: #fff;
 }
 
+.logout-icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
 /* ── header shell ──────────────────────────────────────────────────────── */
 .app-area {
   min-height: 100vh;

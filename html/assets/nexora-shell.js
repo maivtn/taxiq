@@ -6,7 +6,7 @@
 
    Per-page config (set BEFORE this script runs):
      window.NEXORA_SHELL = {
-       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'packages',
+       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'packages' | 'staff',
                                            // which functional group is native
        activeTab:  '<tabId>',              // initial highlighted sub-item
        onNavigate: function (tabId) {}     // optional; defaults to window.activateMainTab
@@ -176,7 +176,33 @@
       '<div class="plan-info"><div class="panel-kicker">Current Plan</div><div class="panel-title">Pro Plan</div></div>' +
       '<button class="plan-button" type="button">Manage</button>' +
     '</div>' +
-    '<div class="sidebar-footer"><button class="logout-button" type="button">Sign out</button></div>';
+    '<div class="sidebar-footer"><button class="logout-button" type="button"><span class="logout-icon"><i data-lucide="log-out" aria-hidden="true"></i></span><span>Sign out</span></button></div>';
+
+  var STAFF_SIDEBAR_HTML =
+    '<div class="sidebar-panel staff-profile-panel">' +
+      '<div class="staff-profile-row"><div class="staff-avatar">N2</div><div class="staff-profile-copy">' +
+        '<div class="staff-profile-name">nexora 2</div>' +
+        '<div class="staff-profile-id">Staff ID: NAIE5LMVX</div>' +
+      '</div><i class="staff-profile-chevron" data-lucide="chevron-down" aria-hidden="true"></i></div>' +
+    '</div>' +
+    '<nav class="sidebar-nav staff-sidebar-nav" aria-label="Staff menu">' +
+      '<a class="nav-item staff-nav-item" href="#" data-staff-nav="home">' + iconWrap('home') + '<span>Home</span></a>' +
+      '<a class="nav-item is-active staff-nav-item" href="#" data-staff-nav="dashboard">' + iconWrap('layout-dashboard') + '<span>Dashboard</span></a>' +
+      '<button class="nav-item nav-parent is-expanded staff-nav-item" type="button" data-nav-group aria-expanded="true" aria-controls="staff-subnav-workspace">' +
+        iconWrap('briefcase-business') + '<span>My Workspace</span>' + CARET +
+      '</button>' +
+      '<div class="nav-subnav" id="staff-subnav-workspace" data-nav-subnav><div class="nav-subnav-inner">' +
+        '<a class="nav-subitem" href="#" data-staff-nav="my-qr"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My QR</span></a>' +
+        '<a class="nav-subitem" href="#" data-staff-nav="my-earnings"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Earnings</span></a>' +
+        '<a class="nav-subitem" href="#" data-staff-nav="my-reviews"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Reviews</span></a>' +
+        '<a class="nav-subitem" href="#" data-staff-nav="my-salons"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Salons</span></a>' +
+      '</div></div>' +
+      '<a class="nav-item staff-nav-item" href="#" data-staff-nav="tips">' + iconWrap('circle-dollar-sign') + '<span>Tips</span></a>' +
+      '<a class="nav-item staff-nav-item" href="#" data-staff-nav="transactions">' + iconWrap('receipt') + '<span>Transactions</span></a>' +
+      '<a class="nav-item staff-nav-item" href="#" data-staff-nav="payout-methods">' + iconWrap('chart-no-axes-combined') + '<span>Payout Methods</span></a>' +
+      '<a class="nav-item staff-nav-item" href="#" data-staff-nav="profile">' + iconWrap('settings') + '<span>Profile</span></a>' +
+    '</nav>' +
+    '<div class="sidebar-footer"><button class="logout-button" type="button"><span class="logout-icon"><i data-lucide="log-out" aria-hidden="true"></i></span><span>Sign out</span></button></div>';
 
   var HEADER_HTML =
     '<div class="mobile-brand">' +
@@ -252,7 +278,7 @@
   function init() {
     var sidebar = document.querySelector('aside.sidebar');
     var header = document.querySelector('header.header');
-    if (sidebar) sidebar.innerHTML = SIDEBAR_HTML;
+    if (sidebar) sidebar.innerHTML = activePage === 'staff' ? STAFF_SIDEBAR_HTML : SIDEBAR_HTML;
     if (header) header.innerHTML = HEADER_HTML;
 
     // drawer backdrop (once)
