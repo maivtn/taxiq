@@ -84,3 +84,8 @@ test('POS has no independent technician or service catalog literals', () => {
   assert.doesNotMatch(html, /var TECHS = \[\s*{/);
   assert.doesNotMatch(html, /var MENU = \[\s*{/);
 });
+
+test('POS derives appointment resources from the shared active roster', () => {
+  assert.match(html, /salonCatalog\.technicians/);
+  assert.doesNotMatch(html, /var TECHS = \[\s*{/);
+});

@@ -11023,7 +11023,8 @@ function getBookingCardCallStart(item) {
     }
 
     function renderTechBadges(services) {
-      return (services || 'Gel').split(',').map(function(service) {
+      var list = Array.isArray(services) ? services : String(services || 'Gel').split(',');
+      return list.map(function(service) {
         return service.trim();
       }).filter(Boolean).map(function(service) {
         return '<span class="badge badge-plan">' + escapeHtml(service) + '</span>';
@@ -11052,6 +11053,7 @@ function getBookingCardCallStart(item) {
       card.dataset.techId = data.id || ('tech-' + Date.now());
       card.dataset.email = data.email || '';
       card.dataset.schedule = data.schedule || '';
+      card.dataset.services = Array.isArray(data.services) ? data.services.join(', ') : (data.services || '');
       card.innerHTML = '' +
         '<div class="tech-top">' +
           '<div class="tech-avatar">' + escapeHtml(initial) + '</div>' +
@@ -11065,37 +11067,74 @@ function getBookingCardCallStart(item) {
           '<div class="tech-stats">' +
             '<div class="tech-stat"><strong>0</strong><span>Clients today</span></div>' +
           '</div>' +
+          '<div class="tech-card-actions"><button class="booking-secondary-button" type="button" data-tech-detail-open="' + escapeHtml(card.dataset.techId) + '" aria-label="Edit" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i><span class="booking-mini-label">Edit</span></button></div>' +
         '</div>' +
         '<div class="tech-services">' + renderTechBadges(data.services) + '</div>';
       return card;
     }
 
+    function renderBookingTechnicianRoster() {
+      var activeTechnicians = catalog.technicians.filter(function(technician) { return technician.active; });
+      var choices = document.querySelector('.tech-choice-grid');
+      if (choices) {
+        choices.innerHTML = activeTechnicians.map(function(technician) {
+          var services = technician.services && technician.services.length ? technician.services : technician.skills;
+          return '<button class="tech-choice-card" type="button" role="option" data-tech-choice="' + escapeHtml(technician.id) + '" data-name="' + escapeHtml(technician.name) + '" data-phone="' + escapeHtml(technician.phone) + '" data-email="' + escapeHtml(technician.email) + '" data-services="' + escapeHtml(services.join(', ')) + '" data-schedule="' + escapeHtml(technician.schedule) + '">' +
+            '<span class="tech-avatar">' + escapeHtml((technician.name || 'T').charAt(0).toUpperCase()) + '</span>' +
+            '<span><span class="tech-choice-name">' + escapeHtml(technician.name) + '</span><span class="tech-choice-meta">' + escapeHtml([technician.email, technician.phone].filter(Boolean).join(' · ') || services.join(' · ')) + '</span></span>' +
+          '</button>';
+        }).join('');
+      }
+      var grid = document.querySelector('.tech-grid');
+      if (grid) {
+        grid.innerHTML = '';
+        activeTechnicians.forEach(function(technician) {
+          var services = technician.services && technician.services.length ? technician.services : technician.skills;
+          grid.appendChild(createTechCard({
+            id: technician.id,
+            name: technician.name,
+            phone: technician.phone,
+            email: technician.email,
+            schedule: technician.schedule,
+            services: services
+          }));
+        });
+      }
+    }
+
     function saveTechModal() {
       var modal = document.querySelector('[data-tech-modal]');
-      var grid = document.querySelector('.tech-grid');
       var active = document.querySelector('.tech-choice-card.is-active');
+      var mode = modal ? modal.dataset.techMode : 'edit';
+      var id = mode === 'create' ? 'tech-' + Date.now() : (active ? active.dataset.techChoice : '');
       var data = {
+        id: id,
         name: getTechField('name') || 'New technician',
-        phone: getTechField('phone') || 'No phone yet',
+        phone: getTechField('phone'),
         email: getTechField('email'),
         services: getTechField('services') || 'Gel',
         schedule: getTechField('schedule')
       };
 
-      if (modal && modal.dataset.techMode === 'create' && grid) {
-        grid.appendChild(createTechCard(data));
-      } else if (active && active.hasAttribute('data-tech-choice')) {
-        active.dataset.name = data.name;
-        active.dataset.phone = data.phone;
-        active.dataset.email = data.email;
-        active.dataset.services = data.services;
-        active.dataset.schedule = data.schedule;
-        var choiceName = active.querySelector('.tech-choice-name');
-        var choiceMeta = active.querySelector('.tech-choice-meta');
-        if (choiceName) choiceName.textContent = data.name;
-        if (choiceMeta) choiceMeta.textContent = [data.email, data.phone].filter(Boolean).join(' · ') || data.services.replace(/,\s*/g, ' · ');
-        updateTechCard(document.querySelector('[data-tech-id="' + active.dataset.techChoice + '"]'), data);
-      }
+      var nextCatalog = salonData.loadCatalog();
+      var existing = id ? salonData.findTechnician(nextCatalog, id) : null;
+      var services = String(data.services || '').split(',').map(function(service) { return service.trim(); }).filter(Boolean);
+      var skills = services.map(function(serviceName) {
+        var service = salonData.findService(nextCatalog, serviceName);
+        return service && service.requiredSkill ? service.requiredSkill : serviceName;
+      });
+      var nextTechnicians = nextCatalog.technicians.filter(function(technician) { return technician.id !== id; });
+      nextTechnicians.push(Object.assign({}, existing || {}, data, {
+        active: true,
+        services: services,
+        skills: Array.from(new Set(skills))
+      }));
+      salonData.saveCatalog(Object.assign({}, nextCatalog, { technicians: nextTechnicians }));
+      catalog = salonData.loadCatalog();
+      rebuildBookingCatalogViews();
+      renderBookingTechnicianRoster();
+      renderBookingStoreRows();
+      filterBookingItems();
 
       setSettingsStatus('Saved technician info: ' + data.name + '.');
       closeTechModal();
@@ -12322,15 +12361,26 @@ function getBookingCardCallStart(item) {
     });
     var initialBookingRows = Array.from(document.querySelectorAll('[data-booking-item]'));
     appointmentStore.ensureSource('booking-book-static-v1', initialBookingRows.map(bookingRecordFromItem), null, catalog);
+    renderBookingTechnicianRoster();
     renderBookingStoreRows();
     appointmentStore.subscribe(function() {
       catalog = salonData.loadCatalog();
       rebuildBookingCatalogViews();
+      renderBookingTechnicianRoster();
       renderBookingStoreRows();
       filterBookingItems();
       renderBookingCalendar();
       renderBookingCards();
     }, window);
+    window.addEventListener('storage', function(event) {
+      if (!event || event.key !== salonData.STORAGE_KEY) return;
+      catalog = salonData.loadCatalog();
+      rebuildBookingCatalogViews();
+      renderBookingTechnicianRoster();
+      renderBookingStoreRows();
+      filterBookingItems();
+      renderBookingCalendar();
+    });
     updateBookingSearchPlaceholder();
     initBookingViewMode();
     updateBookingKpis();

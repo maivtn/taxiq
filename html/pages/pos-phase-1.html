@@ -824,6 +824,32 @@
       rebuildSalonCatalogViews();
       function techById(id) { for (var i = 0; i < TECHS.length; i++) if (TECHS[i].id === id) return TECHS[i]; return null; }
       function techName(id) { var t = techById(id); return t ? t.name : '—'; }
+      function savePosTechnician(tech) {
+        if (!tech) return;
+        var nextCatalog = salonData.loadCatalog();
+        var existing = salonData.findTechnician(nextCatalog, tech.id);
+        if (!existing) return;
+        var nextTechnicians = nextCatalog.technicians.map(function(technician) {
+          if (technician.id !== tech.id) return technician;
+          return Object.assign({}, technician, {
+            name: tech.name,
+            skills: tech.skills || [],
+            exp: tech.exp || [],
+            fit: tech.fit || [],
+            posProfile: Object.assign({}, technician.posProfile || {}, {
+              bnum: tech.bnum,
+              turns: tech.turns,
+              comm: tech.comm,
+              guar: tech.guar,
+              payModel: tech.payModel,
+              baoSplit: tech.baoSplit,
+              vlink: tech.vlink
+            })
+          });
+        });
+        salonData.saveCatalog(Object.assign({}, nextCatalog, { technicians: nextTechnicians }));
+        rebuildSalonCatalogViews();
+      }
 
       function catById(id) { for (var i = 0; i < MENU.length; i++) if (MENU[i].id === id) return MENU[i]; return null; }
 
@@ -1991,6 +2017,7 @@
           if (i < 0) t.skills.push(name);                          // — → ✓ Good
           else if (xi < 0) t.exp.push(name);                       // ✓ → ★ Expert
           else { t.skills.splice(i, 1); t.exp.splice(xi, 1); }     // ★ → off
+          savePosTechnician(t);
           renderManagement(); return;
         }
 
@@ -2001,6 +2028,7 @@
           tf.fit = tf.fit || [];
           var fi = tf.fit.indexOf(pf[1]);
           if (fi >= 0) tf.fit.splice(fi, 1); else tf.fit.push(pf[1]);
+          savePosTechnician(tf);
           renderManagement(); return;
         }
 
@@ -2044,7 +2072,7 @@
           var pid = pst.getAttribute('data-mg-paysetup');
           var pr2 = PAYOUT[pid]; if (!pr2) return;
           pr2.method = 'vlink'; pr2.st = 'ready';
-          var tv = techById(pid); if (tv && !tv.vlink) tv.vlink = 'VL-' + Math.floor(10000 + Math.random() * 89999);
+          var tv = techById(pid); if (tv && !tv.vlink) { tv.vlink = 'VL-' + Math.floor(10000 + Math.random() * 89999); savePosTechnician(tv); }
           logAdmin('🔗 Payout method set for ' + techName(pid) + ' → VLinkPay');
           renderManagement(); return;
         }
@@ -2085,7 +2113,10 @@
           var cm = Math.min(100, Math.max(1, parseFloat($('[data-mg-newcomm]').value) || 60)) / 100;
           var gu = Math.max(0, parseFloat($('[data-mg-newguar]').value) || 0);
           var bn = TECHS.reduce(function (m, t) { return Math.max(m, t.bnum || 0); }, 0) + 1;
-          TECHS.push({ id: id, name: nn, bnum: bn, turns: 0, comm: cm, guar: gu, payModel: 'max', baoSplit: cm, vlink: null, skills: [], exp: [], fit: [] });
+          var nextCatalog = salonData.loadCatalog();
+          nextCatalog.technicians.push({ id: id, name: nn, aliases: [], active: true, skills: [], exp: [], fit: [], services: [], posProfile: { bnum: bn, turns: 0, comm: cm, guar: gu, payModel: 'max', baoSplit: cm, vlink: null } });
+          salonData.saveCatalog(nextCatalog);
+          rebuildSalonCatalogViews();
           STAFF.push({ id: id, name: nn, ava: '💅', role: 'tech' });
           CLOCK[id] = [];
           PAYOUT[id] = { st: 'pending', method: null };
@@ -2103,10 +2134,17 @@
           var tfire = techById(fid); if (!tfire) return;
           confirmBox('Deactivate ' + tfire.name + '?', 'Production deactivates the account and keeps payroll history. Their appointments become unassigned.').then(function (ok) {
             if (!ok) return;
-            TECHS.splice(TECHS.indexOf(tfire), 1);
+            var nextCatalog = salonData.loadCatalog();
+            nextCatalog.technicians = nextCatalog.technicians.map(function (technician) {
+              return technician.id === fid ? Object.assign({}, technician, { active: false }) : technician;
+            });
+            salonData.saveCatalog(nextCatalog);
+            BOOKINGS.slice().forEach(function (b) {
+              if (b.techId === fid) appointmentStore.update(b.id, { technicianId: null }, null, nextCatalog);
+            });
+            rebuildSalonCatalogViews();
             var si = STAFF.findIndex(function (s) { return s.id === fid; });
             if (si > -1) STAFF.splice(si, 1);
-            BOOKINGS.forEach(function (b) { if (b.techId === fid) b.techId = null; });
             delete PAYOUT[fid]; delete BEEP[fid];
             logAdmin('🚪 Deactivated ' + tfire.name + ' — payroll history kept, appointments released');
             renderManagement(); renderClock(); renderAppt(); toast(tfire.name + ' deactivated', 'info');
@@ -2124,20 +2162,20 @@
           var t = techById(c.getAttribute('data-mg-comm')); if (!t) return;
           var v = Math.min(100, Math.max(0, parseFloat(c.value) || 0)) / 100;
           if (v !== t.comm) logAdmin('💰 ' + t.name + ' commission ' + Math.round(t.comm * 100) + '% → ' + Math.round(v * 100) + '%');
-          t.comm = v; renderManagement(); return;
+          t.comm = v; savePosTechnician(t); renderManagement(); return;
         }
         var g = e.target.closest('[data-mg-guar]');
         if (g) {
           var tg2 = techById(g.getAttribute('data-mg-guar')); if (!tg2) return;
           var gv = Math.max(0, parseFloat(g.value) || 0);
           if (gv !== tg2.guar) logAdmin('💰 ' + tg2.name + ' weekly guarantee ' + money0(tg2.guar) + ' → ' + money0(gv));
-          tg2.guar = gv; renderManagement(); return;
+          tg2.guar = gv; savePosTechnician(tg2); renderManagement(); return;
         }
         var sp = e.target.closest('[data-mg-split]');
         if (sp) {
           var ts = techById(sp.getAttribute('data-mg-split')); if (!ts) return;
           ts.baoSplit = Math.min(100, Math.max(0, parseFloat(sp.value) || 0)) / 100;
-          renderManagement(); return;
+          savePosTechnician(ts); renderManagement(); return;
         }
         var nt = e.target.closest('[data-mg-note]');
         if (nt) {
@@ -2171,7 +2209,7 @@
         var m = e.target.closest('[data-mg-model]');
         if (m) {
           var tm = techById(m.getAttribute('data-mg-model'));
-          if (tm) { logAdmin('💼 ' + tm.name + ' pay model → ' + PAY_MODELS[m.value] + ' (applies from the next pay period)'); tm.payModel = m.value; }
+          if (tm) { logAdmin('💼 ' + tm.name + ' pay model → ' + PAY_MODELS[m.value] + ' (applies from the next pay period)'); tm.payModel = m.value; savePosTechnician(tm); }
           renderManagement(); return;
         }
         var pf2 = e.target.closest('[data-mg-pref]');
@@ -2239,6 +2277,14 @@
         renderAppt();
         renderFloor();
       }, window);
+      window.addEventListener('storage', function (event) {
+        if (!event || event.key !== salonData.STORAGE_KEY) return;
+        rebuildSalonCatalogViews();
+        renderAppt();
+        renderManagement();
+        renderClock();
+        renderFloor();
+      });
       var AP_COLORS = {
         t1: { bg: '#ebe6ff', border: '#7456e9', text: '#272343' },
         t2: { bg: '#e0f3f8', border: '#2b96ba', text: '#173a47' },

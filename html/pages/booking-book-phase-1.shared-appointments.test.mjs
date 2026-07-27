@@ -29,3 +29,8 @@ test('Booking Book has no independent calendar catalog literals', () => {
   assert.doesNotMatch(SOURCE, /var BOOKING_CALENDAR_SERVICE_OPTIONS = \[\s*{/);
   assert.doesNotMatch(SOURCE, /var BOOKING_CALENDAR_TECHNICIANS = \[/);
 });
+
+test('technician save writes through the salon catalog API', () => {
+  assert.match(SOURCE, /saveCatalog\(/);
+  assert.match(SOURCE, /data-tech-modal-save/);
+});

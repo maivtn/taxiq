@@ -66,3 +66,22 @@ test('saveCatalog writes a normalized clone under the salon-scoped key', () => {
   assert.equal(result.salon.name, 'Saved Salon');
   assert.match(target.getItem('nexora:salon-data:v1:' + SALON_ID), /Saved Salon/);
 });
+
+test('technician roster changes persist and inactive technicians stay resolvable', () => {
+  const target = storage();
+  const catalog = saveCatalog({
+    salon: DEFAULT_CATALOG.salon,
+    services: DEFAULT_CATALOG.services,
+    technicians: DEFAULT_CATALOG.technicians.map((technician) => technician.id === 't8'
+      ? { ...technician, name: 'Mai Updated', phone: '(832) 555-0188' }
+      : technician.id === 't7'
+        ? { ...technician, active: false }
+        : technician),
+  }, target);
+  const loaded = loadCatalog(target);
+  assert.equal(findTechnician(loaded, 't8').name, 'Mai Updated');
+  assert.equal(findTechnician(loaded, 't8').phone, '(832) 555-0188');
+  assert.equal(findTechnician(loaded, 't7').active, false);
+  assert.deepEqual(loaded.technicians.filter((technician) => technician.active).map((technician) => technician.id).includes('t7'), false);
+  assert.equal(catalog.technicians.length, DEFAULT_CATALOG.technicians.length);
+});
