@@ -146,3 +146,11 @@ test('POS calendar uses the shared calendar header and status contract', () => {
   assert.match(html, /data-ap-action-group="operational"/);
   assert.match(html, /data-ap-action-group="destructive"/);
 });
+
+test('POS action cluster follows the Booking action order and groups Close separately', () => {
+  assert.match(html, /data-ap-save[\s\S]*data-ap-action-group="operational"[\s\S]*data-ap-action-group="destructive"[\s\S]*data-ap-action-group="close"/);
+  assert.match(html, /data-ap-action-group="operational"[\s\S]*data-ap-action="send-sms"[\s\S]*data-ap-action="done"[\s\S]*data-ap-action="noshow"/);
+  assert.match(html, /\.ap-panel-actions \{ display: grid; grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(html, /\.ap-action-destructive, \.ap-action-close \{ margin-top: 8px; padding-top: 8px; border-top: 1px solid var\(--nexora-rule\); \}/);
+  assert.match(html, /@media \(max-width: 600px\) \{[\s\S]*\.ap-panel-actions \{ grid-template-columns: 1fr; \}/);
+});

@@ -334,6 +334,8 @@
       .ap-filter .pos-input { flex: 1; min-width: 0; }
       .ap-form-grid { grid-template-columns: 1fr 1fr; }
       .ap-form-meta { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
       .ap-panel-actions { grid-template-columns: 1fr; }
     }
 
@@ -2596,7 +2598,7 @@
             '<button class="pos-btn pos-btn-sm pos-btn-danger" type="button" data-ap-action="noshow"><i class="bi bi-x-lg" aria-hidden="true"></i> No-show</button>' +
             '</div>' : '') +
           (editing ? '<div class="ap-action-destructive" data-ap-action-group="destructive"><button class="pos-btn pos-btn-danger" type="button" data-ap-del data-ap-action="cancel"><i class="bi bi-trash" aria-hidden="true"></i> Cancel this appointment</button></div>' : '') +
-          '<div class="ap-action-close"><button class="pos-btn" type="button" data-ap-close>Close</button></div>' +
+          '<div class="ap-action-close" data-ap-action-group="close"><button class="pos-btn" type="button" data-ap-close>Close</button></div>' +
           '</div>';
       }
 
