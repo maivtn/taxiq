@@ -289,6 +289,8 @@
     @keyframes apPanelShimmer { to { background-position: -120% 0; } }
     .ap-form label { display: block; font-size: 11px; font-weight: 800; color: var(--nexora-muted); text-transform: uppercase; letter-spacing: .04em; margin: 10px 0 4px; }
     .ap-form .pos-input { width: 100%; }
+    .ap-panel-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+    .ap-panel-actions .pos-btn { justify-content: center; min-width: 0; }
     .ap-chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .ap-chip { border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 6px 9px; font-size: 12px; font-weight: 700; color: var(--nexora-muted); }
     .ap-chip.is-on { background: var(--nexora-brand); border-color: transparent; color: #fff; }
@@ -326,6 +328,7 @@
       .ap-filter { width: 100%; }
       .ap-filter .pos-input { flex: 1; min-width: 0; }
       .ap-form-grid { grid-template-columns: 1fr 1fr; }
+      .ap-panel-actions { grid-template-columns: 1fr; }
     }
 
     /* ── sms campaigns ── */
@@ -2530,9 +2533,43 @@
           Object.keys(AP_STATUS).map(function (s) { return '<option value="' + s + '"' + (apDraft.status === s ? ' selected' : '') + '>' + AP_STATUS[s] + '</option>'; }).join('') + '</select></div></div>' +
           '<div class="ap-warn" data-ap-warn>' + esc(apWarn) + '</div>' +
           '<button class="pos-btn pos-btn-primary" type="button" data-ap-save style="width:100%;justify-content:center"><i class="bi bi-check-lg"></i> Save appointment</button>' +
-          (editing ? '<button class="pos-btn pos-btn-danger" type="button" data-ap-del style="width:100%;margin-top:8px;justify-content:center"><i class="bi bi-trash" aria-hidden="true"></i> Cancel this appointment</button>' : '') +
+          (editing ? '<div class="ap-panel-actions">' +
+            '<button class="pos-btn pos-btn-sm pos-btn-primary" type="button" data-ap-action="send-sms"><i class="bi bi-send" aria-hidden="true"></i> Send SMS</button>' +
+            '<button class="pos-btn pos-btn-sm pos-btn-success" type="button" data-ap-action="done"><i class="bi bi-check-lg" aria-hidden="true"></i> Done</button>' +
+            '<button class="pos-btn pos-btn-sm pos-btn-danger" type="button" data-ap-action="noshow"><i class="bi bi-x-lg" aria-hidden="true"></i> No-show</button>' +
+            '</div>' +
+            '<button class="pos-btn pos-btn-danger" type="button" data-ap-del data-ap-action="cancel" style="width:100%;margin-top:8px;justify-content:center"><i class="bi bi-trash" aria-hidden="true"></i> Cancel this appointment</button>' : '') +
           '<button class="pos-btn" type="button" data-ap-close style="width:100%;margin-top:8px;justify-content:center">Close</button>' +
           '</div>';
+      }
+
+      function apApplySharedAction(action) {
+        if (apSel == null) return;
+        var booking = apBookingById(apSel);
+        if (!booking) return;
+        if (action === 'cancel') {
+          confirmBox('Cancel ' + booking.name + "'s appointment?", 'Production texts the guest and returns the slot to the pool.').then(function (ok) {
+            if (!ok) return;
+            var cancelResult = appointmentStore.cancel(apSel, null, salonCatalog);
+            if (!cancelResult.ok) { toast(cancelResult.error.message, 'error'); return; }
+            reloadAppointmentSnapshot();
+            apMode = null; apSel = null; apWarn = '';
+            if (apCalendar) apRefreshCalendar();
+            renderAppt(); renderFloor(); toast('Appointment cancelled · SMS sent', 'info');
+          });
+          return;
+        }
+        var patch = action === 'send-sms' ? { smsStatus: 'sent' }
+          : action === 'done' ? { status: 'completed' }
+            : action === 'noshow' ? { status: 'no-show' } : null;
+        if (!patch) return;
+        var result = appointmentStore.update(apSel, patch, null, salonCatalog);
+        if (!result.ok) { toast(result.error.message, 'error'); return; }
+        reloadAppointmentSnapshot();
+        apOpenEdit(result.record.id);
+        if (apCalendar) apRefreshCalendar();
+        renderFloor();
+        toast(action === 'send-sms' ? 'SMS status updated' : action === 'done' ? 'Appointment completed' : 'Appointment marked no-show');
       }
 
       function apSync() {
@@ -2601,25 +2638,16 @@
           renderApPanel(); return;
         }
 
+        var sharedAction = e.target.closest('[data-ap-action]');
+        if (sharedAction) {
+          apApplySharedAction(sharedAction.getAttribute('data-ap-action'));
+          return;
+        }
+
         if (e.target.closest('[data-ap-close]')) {
           apStopPanelLoading(); apMode = null; apSel = null; apWarn = '';
           if (apCalendar) apCalendar.clearSelection();
           renderAppt(); return;
-        }
-
-        if (e.target.closest('[data-ap-del]')) {
-          if (apSel == null) return;
-          var victim = apBookingById(apSel); if (!victim) return;
-          confirmBox('Cancel ' + victim.name + "'s appointment?", 'Production texts the guest and returns the slot to the pool.').then(function (ok) {
-            if (!ok) return;
-            var result = appointmentStore.cancel(apSel, null, salonCatalog);
-            if (!result.ok) { toast(result.error.message, 'error'); return; }
-            reloadAppointmentSnapshot();
-            apMode = null; apSel = null; apWarn = '';
-            if (apCalendar) apRefreshCalendar();
-            renderAppt(); renderFloor(); toast('Appointment cancelled · SMS sent', 'info');
-          });
-          return;
         }
 
         if (e.target.closest('[data-ap-save]')) {
