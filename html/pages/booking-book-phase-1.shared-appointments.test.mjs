@@ -47,36 +47,14 @@ test('Booking Book retains salon-scoped storage and unknown-record safeguards', 
   assert.match(SOURCE, /cancelled/);
 });
 
-test('Booking Book exposes a right-side appointment panel contract', () => {
-  assert.match(SOURCE, /data-booking-appointment-panel/);
-  assert.match(SOURCE, /data-booking-panel-state="empty"/);
+test('Booking Book hands appointment operations off to the canonical POS screen', () => {
+  assert.match(SOURCE, /data-booking-appointments-handoff/);
+  assert.match(SOURCE, /href="pos-phase-1\.html\?tab=appointments"/);
+  assert.match(SOURCE, /Open POS Appointments/);
 });
 
-test('Booking Book routes appointment selection through the panel', () => {
-  assert.match(SOURCE, /function openBookingAppointmentPanel\(/);
-  assert.match(SOURCE, /data-booking-panel-select/);
-  assert.match(SOURCE, /openBookingAppointmentPanel\(item/);
-});
-
-test('Booking Book has responsive appointment panel layout', () => {
+test('Booking Book does not expose a duplicate appointment editor and hides its legacy workspace', () => {
+  assert.doesNotMatch(SOURCE, /<aside[^>]+data-booking-appointment-panel/);
+  assert.match(SOURCE, /data-booking-legacy-appointments hidden/);
   assert.match(SOURCE, /booking-appointment-layout/);
-  assert.match(SOURCE, /booking-appointment-panel/);
-});
-
-test('Booking Book panel renders canonical appointment fields', () => {
-  assert.match(SOURCE, /var bookingPanelMode = null/);
-  assert.match(SOURCE, /var bookingPanelAppointmentId = null/);
-  assert.match(SOURCE, /function renderBookingAppointmentPanel\(/);
-  assert.match(SOURCE, /data-booking-panel-field="name"/);
-  assert.match(SOURCE, /data-booking-panel-field="services"/);
-  assert.match(SOURCE, /data-booking-panel-action="save"/);
-});
-
-test('Booking Book panel actions write through the shared appointment store', () => {
-  assert.match(SOURCE, /function saveBookingAppointmentPanel\(/);
-  assert.match(SOURCE, /function cancelBookingPanelAppointment\(/);
-  assert.match(SOURCE, /data-booking-panel-action="send-sms"/);
-  assert.match(SOURCE, /appointmentStore\.create\(/);
-  assert.match(SOURCE, /appointmentStore\.update\(/);
-  assert.match(SOURCE, /appointmentStore\.cancel\(/);
 });
