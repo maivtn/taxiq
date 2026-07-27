@@ -26,6 +26,10 @@ test('Booking Book sends SMS through the shared appointment store', () => {
   assert.match(SOURCE, /bookingAction\.dataset\.bookingAction === 'send-sms'[\s\S]{0,160}sendBookingSms\(item\)/);
 });
 
+test('Booking Book preserves the original booking source when importing rows', () => {
+  assert.match(SOURCE, /source:\s*getBookingSourceText\(item\)/);
+});
+
 test('Booking Book does not append new appointments directly to the table', () => {
   assert.doesNotMatch(SOURCE, /tbody\.insertAdjacentHTML\(['"]beforeend['"]/);
 });

@@ -10151,7 +10151,7 @@
         duration: Number(item.dataset.bookingDuration || bookingCalendarDurationMinutes(item)),
         status: statusKeyFromItem(item),
         note: item.dataset.bookingNote || '',
-        source: 'booking-book'
+        source: getBookingSourceText(item)
       };
     }
 

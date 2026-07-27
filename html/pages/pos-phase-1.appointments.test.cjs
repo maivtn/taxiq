@@ -105,3 +105,9 @@ test('POS appointment panel exposes shared operational actions', () => {
   assert.match(html, /appointmentStore\.(update|cancel)/);
   assert.match(html, /function apApplySharedAction\(/);
 });
+
+test('POS appointment details expose the booking source', () => {
+  assert.match(html, /Booking source/);
+  assert.match(html, /data-ap-source/);
+  assert.match(html, /function apSourceLabel\(/);
+});
