@@ -49,6 +49,13 @@ test('Booking Book appointment details render source badges like the table', () 
   assert.match(SOURCE, /booking-panel-source-list/);
 });
 
+test('Booking Book appointment details show selected service totals', () => {
+  assert.match(SOURCE, /appointment-service-summary/);
+  assert.match(SOURCE, /Total price:/);
+  assert.match(SOURCE, /Total time:/);
+  assert.match(SOURCE, /function bookingPanelSelectedServiceTotals\([\s\S]*bookingServicePriceTotal/);
+});
+
 test('Booking Book repairs generic legacy sources from the original table rows', () => {
   assert.match(SOURCE, /function bookingSourceNeedsRepair\(/);
   assert.match(SOURCE, /function repairBookingStaticSources\(/);

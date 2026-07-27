@@ -132,6 +132,13 @@ test('POS appointment details render source badges like Booking Book', () => {
   assert.match(html, /ap-source-list/);
 });
 
+test('POS appointment details show selected service totals', () => {
+  assert.match(html, /appointment-service-summary/);
+  assert.match(html, /Total price:/);
+  assert.match(html, /Total time:/);
+  assert.match(html, /function apSelectedServiceTotals\(/);
+});
+
 test('POS marks new appointments as front-desk manual additions', () => {
   assert.match(html, /['"]manual-add['"]/);
   assert.match(html, /['"]manual add['"]:\s*'Manual add'/);

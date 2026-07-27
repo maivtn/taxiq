@@ -307,6 +307,10 @@
     .ap-action-destructive, .ap-action-close { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--nexora-rule); }
     .ap-action-destructive .pos-btn, .ap-action-close .pos-btn { width: 100%; justify-content: center; }
     .ap-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .appointment-service-summary { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
+    .appointment-service-summary-item { color: var(--nexora-muted); font-size: 11px; font-weight: 700; }
+    .appointment-service-summary-label { color: inherit; }
+    .appointment-service-summary-value { color: var(--nexora-text); font-size: 12px; font-weight: 800; white-space: nowrap; }
     .ap-chip { border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 6px 9px; font-size: 12px; font-weight: 700; color: var(--nexora-muted); }
     .ap-chip.is-on { background: var(--nexora-brand); border-color: transparent; color: #fff; }
     .ap-warn { font-size: 11.5px; font-weight: 700; color: var(--nexora-warning); margin-top: 10px; min-height: 16px; }
@@ -2598,6 +2602,7 @@
         }
         var editing = apMode === 'edit';
         apDraft.duration = apSelectedServiceDuration();
+        var apServiceTotals = apSelectedServiceTotals();
         var reqList = Object.keys(apSvc).map(function (id) { return SVC_REQ[id]; }).filter(Boolean);
         p.innerHTML = '<div class="pos-strong" style="font-size:14px">' + (editing ? '<i class="bi bi-card-text" aria-hidden="true"></i> Appointment details' : '<i class="bi bi-plus-lg" aria-hidden="true"></i> New appointment') + '</div>' +
           (editing ? '<div class="ap-form-meta">' +
@@ -2610,7 +2615,7 @@
           '<label>Services (tap to pick several)</label><div class="ap-chips">' +
           MENU.map(function (c) { return '<button class="ap-chip' + (apSvc[c.id] ? ' is-on' : '') + '" type="button" data-apsvc="' + c.id + '">' + esc(c.label) + ' · $' + (c.price == null ? '—' : c.price) + ' · ' + c.durationMin + ' min</button>'; }).join('') +
           apExternalSvc.map(function (name) { return '<span class="ap-chip is-external" title="Imported service">' + esc(apServiceDisplayName(name)) + '</span>'; }).join('') +
-          '</div>' +
+          '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-ap-total-price>$' + apServiceTotals.price + '</strong></span><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total time:</span> <strong class="appointment-service-summary-value" data-ap-total-duration>' + apServiceTotals.duration + ' min</strong></span></div>' +
           '<label>Tech</label><select class="pos-input" data-apf="tech"><option value="">✨ Unassigned — first available</option>' +
           TECHS.map(function (t) {
             var missing = reqList.filter(function (r) { return (t.skills || []).indexOf(r) === -1; });
@@ -2675,6 +2680,13 @@
         var selected = MENU.filter(function (service) { return apSvc[service.id]; });
         if (!selected.length) return Number(apDraft && apDraft.duration) || 60;
         return selected.reduce(function (total, service) { return total + (Number(service.durationMin) || 0); }, 0) || 60;
+      }
+      function apSelectedServiceTotals() {
+        var selected = MENU.filter(function (service) { return apSvc[service.id]; });
+        return {
+          price: selected.reduce(function (total, service) { return total + (Number(service.price) || 0); }, 0),
+          duration: selected.length ? selected.reduce(function (total, service) { return total + (Number(service.durationMin) || 0); }, 0) : 0
+        };
       }
       function apStopPanelLoading() {
         if (apPanelTimer) clearTimeout(apPanelTimer);

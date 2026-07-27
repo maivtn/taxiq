@@ -3923,10 +3923,14 @@
     .booking-service-duration { font-weight: 400; }
     .booking-service-chip-button:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
     .booking-service-chip-button.is-selected { border-color: transparent; background: var(--nexora-brand); color: #fff; }
-    .booking-service-summary { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
-    .booking-service-summary-item { color: var(--nexora-muted); font-size: 11px; font-weight: 700; }
-    .booking-service-summary-label { color: inherit; }
-    .booking-service-summary-value { color: var(--nexora-text); font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .booking-service-summary,
+    .appointment-service-summary { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
+    .booking-service-summary-item,
+    .appointment-service-summary-item { color: var(--nexora-muted); font-size: 11px; font-weight: 700; }
+    .booking-service-summary-label,
+    .appointment-service-summary-label { color: inherit; }
+    .booking-service-summary-value,
+    .appointment-service-summary-value { color: var(--nexora-text); font-size: 12px; font-weight: 800; white-space: nowrap; }
     .booking-create-hint { color: var(--nexora-muted); font-size: 10px; font-weight: 600; letter-spacing: 0; text-transform: none; }
     .booking-create-error { min-height: 18px; border-radius: 8px; color: #b91c1c; font-size: 11px; font-weight: 700; line-height: 1.5; }
     .booking-create-actions .booking-primary-button,
@@ -10250,16 +10254,22 @@
       }).map(function(option) { return option.name; }).concat(bookingPanelExternalServices);
     }
 
+    function bookingPanelSelectedServiceTotals() {
+      var services = bookingPanelSelectedServiceNames();
+      return {
+        price: bookingServicePriceTotal(services),
+        duration: services.length ? bookingServiceDurationMinutes(services) : 0
+      };
+    }
+
     function bookingPanelField(name) {
       return document.querySelector('[data-booking-panel-field="' + name + '"]');
     }
 
     function bookingPanelSelectedServiceDuration() {
-      var selected = bookingPanelSelectedServiceNames().map(function(name) {
-        return bookingPanelServiceOption(name);
-      }).filter(Boolean);
-      if (!selected.length) return Number(bookingPanelDraft && bookingPanelDraft.duration) || 60;
-      return selected.reduce(function(total, option) { return total + (Number(option.duration) || 0); }, 0) || 60;
+      var services = bookingPanelSelectedServiceNames();
+      if (!services.length) return Number(bookingPanelDraft && bookingPanelDraft.duration) || 60;
+      return bookingServiceDurationMinutes(services) || 60;
     }
 
     function bookingPanelSyncDraft() {
@@ -10292,6 +10302,7 @@
 
       var editing = bookingPanelMode === 'edit';
       bookingPanelDraft.duration = bookingPanelSelectedServiceDuration();
+      var panelServiceTotals = bookingPanelSelectedServiceTotals();
       var serviceButtons = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
         var selected = Boolean(bookingPanelServices[option.name]);
         return '<button class="booking-service-chip-button' + (selected ? ' is-selected' : '') + '" type="button" data-booking-panel-select="service" data-service-name="' + escapeHtml(option.name) + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
@@ -10328,7 +10339,7 @@
         '<div class="booking-panel-form">' +
         '<label class="booking-create-field"><span class="booking-create-label">Customer</span><input class="booking-input" type="text" maxlength="60" data-booking-panel-field="name" value="' + escapeHtml(bookingPanelDraft.name) + '"></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Phone</span><input class="booking-input" type="tel" maxlength="20" data-booking-panel-field="phone" value="' + escapeHtml(bookingPanelDraft.phone) + '"></label>' +
-        '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Services (tap to pick several)</span><div class="booking-service-chips" data-booking-panel-field="services">' + serviceButtons + externalServices + '</div></div>' +
+        '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Services (tap to pick several)</span><div class="booking-service-chips" data-booking-panel-field="services">' + serviceButtons + externalServices + '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-price>$' + panelServiceTotals.price + '</strong></span><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total time:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-duration>' + panelServiceTotals.duration + ' min</strong></span></div></div>' +
         '<label class="booking-create-field"><span class="booking-create-label">Tech</span><select class="booking-select" data-booking-panel-field="tech">' + techOptions + '</select></label>' +
         '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Date</span><input class="booking-input" type="date" data-booking-panel-field="date" value="' + escapeHtml(bookingPanelDraft.date) + '"></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Start time</span><input class="booking-input" type="time" step="900" data-booking-panel-field="time" value="' + escapeHtml(bookingPanelDraft.time) + '"></label></div>' +
