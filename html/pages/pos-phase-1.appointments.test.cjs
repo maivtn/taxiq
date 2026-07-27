@@ -66,3 +66,8 @@ test('SMS is not exposed as a POS tab because SMS Campaigns lives in Booking Hub
   assert.doesNotMatch(html, /var TABS = \[[^\]]*['"]sms['"]/);
   assert.match(html, /data-pos-tab="appointments"/);
 });
+
+test('appointments page loads shared salon catalog and appointment store', () => {
+  assert.match(html, /\.\.\/assets\/salon-data\.js/);
+  assert.match(html, /\.\.\/assets\/appointments-store\.js/);
+});

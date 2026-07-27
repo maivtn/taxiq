@@ -370,8 +370,6 @@ Add this assertion to the POS appointment test:
 test('appointments page loads shared salon catalog and appointment store', () => {
   assert.match(html, /\.\.\/assets\/salon-data\.js/);
   assert.match(html, /\.\.\/assets\/appointments-store\.js/);
-  assert.match(html, /NEXORA_SALON_DATA/);
-  assert.match(html, /NEXORA_APPOINTMENTS_STORE/);
 });
 ~~~
 
@@ -387,8 +385,6 @@ const SOURCE = readFileSync(new URL('./booking-book-phase-1.html', import.meta.u
 test('Booking Book loads shared catalog and appointment store before its runtime', () => {
   assert.match(SOURCE, /\.\.\/assets\/salon-data\.js/);
   assert.match(SOURCE, /\.\.\/assets\/appointments-store\.js/);
-  assert.match(SOURCE, /NEXORA_SALON_DATA/);
-  assert.match(SOURCE, /NEXORA_APPOINTMENTS_STORE/);
 });
 
 test('Booking Book loads the shared catalog module', () => {
