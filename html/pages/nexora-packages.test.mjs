@@ -15,7 +15,7 @@ function source() {
 
 test('creates the empty Package Management page from the shared shell', () => {
   const html = source();
-  assert.match(html, /<title>Nexora Touch - Quản lý gói<\/title>/);
+  assert.match(html, /<title>Nexora Touch - Package Management<\/title>/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
   assert.match(html, /<aside class="sidebar" aria-label="Dashboard sidebar"><\/aside>/);
   assert.match(html, /<header class="header"><\/header>/);
@@ -25,8 +25,8 @@ test('creates the empty Package Management page from the shared shell', () => {
 
 test('adds the package heading and ordered management tabs', () => {
   const html = source();
-  assert.match(html, /<h1 class="page-title"[^>]*>Quản lý gói<\/h1>/);
-  assert.match(html, /<p class="page-description"[^>]*>Quản lý các gói NEXORA và AI Voice Plans cho salon\.<\/p>/);
+  assert.match(html, /<h1 class="page-title"[^>]*>Package Management<\/h1>/);
+  assert.match(html, /<p class="page-description"[^>]*>Manage NEXORA and AI Voice plans for your salon\.<\/p>/);
   const tabs = [...html.matchAll(/data-package-tab="([^"]+)"/g)].map((match) => match[1]);
   assert.deepEqual(tabs, ['overview', 'nexora', 'voice', 'history']);
   assert.match(html, /role="tablist"/);
@@ -34,7 +34,7 @@ test('adds the package heading and ordered management tabs', () => {
   assert.match(html, /<span>Subscriptions<\/span>/);
   assert.match(html, /<span>AI Voice Plans<\/span>/);
   assert.doesNotMatch(html, /<span>Voice \+ SMS<\/span>/);
-  assert.match(html, /Lịch sử mua gói/);
+  assert.match(html, /Purchase History/);
   assert.doesNotMatch(html, /SMS Credit/);
   assert.equal((html.match(/class="package-tab is-active"/g) || []).length, 1);
 });

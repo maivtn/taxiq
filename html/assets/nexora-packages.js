@@ -134,7 +134,7 @@ const PACKAGE_PLAN_DETAILS = {
         : `<img src="${method.asset}" alt="" aria-hidden="true">`;
       const paymentBalance = method.id === 'CARD'
         ? ''
-        : `<span class="package-payment-balance"><span>Số dư</span><strong>${method.balance}</strong></span>`;
+        : `<span class="package-payment-balance"><span>Balance</span><strong>${method.balance}</strong></span>`;
       return `
         <button class="package-payment-option${selected ? ' is-selected' : ''}" type="button" data-package-payment="${method.id}" aria-pressed="${selected}">
           <span class="package-payment-option-main">
@@ -176,8 +176,8 @@ const PACKAGE_PLAN_DETAILS = {
             ? 'Start Free Trial'
             : `Confirm ${packagePaymentPlan.plan}`;
     }
-    if (closeButton) closeButton.setAttribute('aria-label', `Đóng thanh toán ${packagePaymentPlan.plan}`);
-    if (status) status.textContent = `${packagePaymentPlan.plan}, thanh toán bằng ${selectedPayment.label}.`;
+    if (closeButton) closeButton.setAttribute('aria-label', `Close payment for ${packagePaymentPlan.plan}`);
+    if (status) status.textContent = `${packagePaymentPlan.plan}, paid with ${selectedPayment.label}.`;
     if (cardForm) cardForm.hidden = selectedPayment.id !== 'CARD';
     if (selectedPayment.id !== 'CARD') {
       const error = packagePaymentModal.querySelector('[data-package-card-error]');

@@ -19,7 +19,7 @@ const packageItems = [
   ['overview', 'Overview'],
   ['nexora', 'Subscriptions'],
   ['voice', 'AI Voice Plans'],
-  ['history', 'Lịch sử mua gói']
+  ['history', 'Purchase History']
 ];
 
 function classList() {
@@ -87,6 +87,7 @@ test('renders all four Package Management submenu items on the native Packages p
     assert.match(html, new RegExp(`data-shell-tab="${tab}"[\\s\\S]*?<span>${escapedLabel}<\\/span>`));
   }
   assert.match(html, /class="nav-item nav-parent is-expanded"[\s\S]*?<span>Package Management<\/span>/);
+  assert.match(html, /class="nav-item nav-parent is-expanded"[\s\S]*?data-lucide="crown"/);
   assert.match(html, /data-nav-subnav[\s\S]*?data-shell-tab="overview"/);
 });
 

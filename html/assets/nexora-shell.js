@@ -46,11 +46,11 @@
       { label: 'Direct Savings' }
     ] },
     { type: 'item', label: 'Reviews', icon: 'star', page: 'review' },
-    { type: 'group', key: 'packages', label: 'Package Management', icon: 'package', page: 'packages', items: [
+    { type: 'group', key: 'packages', label: 'Package Management', icon: 'crown', page: 'packages', items: [
       { label: 'Overview', tab: 'overview' },
       { label: 'Subscriptions', tab: 'nexora' },
       { label: 'AI Voice Plans', tab: 'voice' },
-      { label: 'Lịch sử mua gói', tab: 'history' }
+      { label: 'Purchase History', tab: 'history' }
     ] },
     { type: 'group', key: 'stations', label: 'Stations & QR Codes', icon: 'qr-code', items: [
       { label: 'QR Stations' }

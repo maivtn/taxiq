@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en-US">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexora Touch - Quản lý gói</title>
+  <title>Nexora Touch - Package Management</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -19,14 +19,14 @@
       <main class="content" aria-label="Package management content">
         <section class="package-page" aria-labelledby="package-page-title">
           <div class="page-heading package-heading">
-            <h1 class="page-title" id="package-page-title">Quản lý gói</h1>
-            <p class="page-description">Quản lý các gói NEXORA và AI Voice Plans cho salon.</p>
+            <h1 class="page-title" id="package-page-title">Package Management</h1>
+            <p class="page-description">Manage NEXORA and AI Voice plans for your salon.</p>
 
             <div class="package-tabs" role="tablist" aria-label="Package management tabs">
               <button id="package-tab-overview" class="package-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="package-panel-overview" data-package-tab="overview"><span class="package-tab-icon"><i data-lucide="layout-dashboard" aria-hidden="true"></i></span><span>Overview</span></button>
               <button id="package-tab-nexora" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-nexora" data-package-tab="nexora" tabindex="-1"><span class="package-tab-icon"><i data-lucide="package" aria-hidden="true"></i></span><span>Subscriptions</span></button>
               <button id="package-tab-voice" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-voice" data-package-tab="voice" tabindex="-1"><span class="package-tab-icon"><i data-lucide="phone" aria-hidden="true"></i></span><span>AI Voice Plans</span></button>
-              <button id="package-tab-history" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-history" data-package-tab="history" tabindex="-1"><span class="package-tab-icon"><i data-lucide="receipt" aria-hidden="true"></i></span><span>Lịch sử mua gói</span></button>
+              <button id="package-tab-history" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-history" data-package-tab="history" tabindex="-1"><span class="package-tab-icon"><i data-lucide="receipt" aria-hidden="true"></i></span><span>Purchase History</span></button>
             </div>
           </div>
 
@@ -227,13 +227,13 @@
       <div class="package-payment-modal-head">
         <div>
           <div class="package-payment-modal-title" id="package-payment-modal-title"><i data-lucide="sparkles" aria-hidden="true"></i><span data-package-payment-title>Choose a plan</span></div>
-          <div class="package-payment-modal-sub" id="package-payment-modal-description">Chọn phương thức thanh toán và xem tóm tắt hoá đơn.</div>
+          <div class="package-payment-modal-sub" id="package-payment-modal-description">Choose a payment method and review your invoice summary.</div>
         </div>
-        <button class="package-payment-close" type="button" data-package-payment-close aria-label="Đóng thanh toán"><i data-lucide="x" aria-hidden="true"></i></button>
+        <button class="package-payment-close" type="button" data-package-payment-close aria-label="Close payment"><i data-lucide="x" aria-hidden="true"></i></button>
       </div>
       <div class="package-payment-modal-body">
         <section class="package-payment-section" aria-labelledby="package-payment-method-title">
-          <div class="package-payment-section-label" id="package-payment-method-title">Phương thức thanh toán</div>
+          <div class="package-payment-section-label" id="package-payment-method-title">Payment method</div>
           <div class="package-payment-list" data-package-payment-list></div>
           <div class="package-card-form" data-package-card-form hidden>
             <div class="package-card-form-head"><i data-lucide="credit-card" aria-hidden="true"></i><span>Credit or Debit Card</span></div>
@@ -293,16 +293,16 @@
           </div>
         </section>
         <section class="package-payment-section package-payment-invoice" aria-labelledby="package-payment-invoice-title">
-          <div class="package-payment-section-label" id="package-payment-invoice-title">Tóm tắt hoá đơn</div>
-          <div class="package-payment-invoice-row"><span>Sản phẩm:</span><strong data-package-invoice-product></strong></div>
-          <div class="package-payment-invoice-row"><span>Gói:</span><strong data-package-invoice-plan></strong></div>
-          <div class="package-payment-invoice-row"><span>Phương thức:</span><strong data-package-invoice-payment></strong></div>
-          <div class="package-payment-invoice-row package-payment-invoice-total"><span>Tổng thanh toán:</span><strong data-package-invoice-total></strong></div>
+          <div class="package-payment-section-label" id="package-payment-invoice-title">Invoice summary</div>
+          <div class="package-payment-invoice-row"><span>Product:</span><strong data-package-invoice-product></strong></div>
+          <div class="package-payment-invoice-row"><span>Plan:</span><strong data-package-invoice-plan></strong></div>
+          <div class="package-payment-invoice-row"><span>Payment method:</span><strong data-package-invoice-payment></strong></div>
+          <div class="package-payment-invoice-row package-payment-invoice-total"><span>Total:</span><strong data-package-invoice-total></strong></div>
         </section>
         <div class="visually-hidden" aria-live="polite" data-package-payment-status></div>
       </div>
       <div class="package-payment-modal-foot">
-        <button class="package-payment-cancel" type="button" data-package-payment-close>Huỷ</button>
+        <button class="package-payment-cancel" type="button" data-package-payment-close>Cancel</button>
         <button class="package-payment-confirm" type="button" data-package-payment-confirm><i data-lucide="shield-check" aria-hidden="true"></i><span data-package-payment-confirm-label>Confirm plan</span></button>
       </div>
     </div>
