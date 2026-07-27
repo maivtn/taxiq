@@ -5352,6 +5352,11 @@
       color: var(--nexora-violet);
     }
 
+    .booking-source-manual {
+      background: rgba(245, 158, 11, 0.14);
+      color: #b45309;
+    }
+
     .tech-intro {
       display: flex;
       flex-wrap: wrap;
@@ -10363,7 +10368,7 @@
       bookingPanelDraft = {
         name: '', phone: '', tech: bookingCalendarResourceTech(tech), date: bookingCalendarInputDate(startDate),
         time: bookingCalendarInputTime(startDate), duration: Math.max(15, Math.round((endDate - startDate) / 60000)),
-        status: 'confirmed', note: '', source: 'booking-book'
+        status: 'confirmed', note: '', source: 'manual-add'
       };
       renderBookingAppointmentPanel();
     }
@@ -10431,7 +10436,7 @@
           durationMin: bookingPanelDraft.duration,
           status: status.status,
           smsStatus: status.smsStatus,
-          source: existing ? existing.source : 'booking-book',
+          source: existing ? existing.source : 'manual-add',
           note: bookingPanelDraft.note,
           metadata: existing ? existing.metadata : {}
         }
@@ -10589,6 +10594,27 @@
         'sms': 'SMS',
         'qr': 'QR'
       }[normalized] || raw || 'Front desk';
+    }
+
+    function bookingSourceBadgesFromText(source) {
+      var parts = String(source || '').split(/\s*[·|,]\s*/).map(function(part) {
+        return part.trim();
+      }).filter(Boolean);
+      if (!parts.length) parts = ['front desk'];
+      var sourceClasses = {
+        'voice': 'booking-source-voice',
+        'landing page': 'booking-source-lp',
+        'sms': 'booking-source-sms',
+        'qr': 'booking-source-qr',
+        'manual add': 'booking-source-manual',
+        'request': 'badge-warning'
+      };
+      return parts.map(function(part) {
+        var normalized = part.toLowerCase().replace(/[_-]+/g, ' ');
+        var label = bookingCalendarSourceLabel(part);
+        var className = sourceClasses[normalized] || 'badge-soft';
+        return '<span class="badge ' + className + '">' + escapeHtml(label) + '</span>';
+      }).join(' ');
     }
 
     function bookingCalendarEnd(start, minutes) {
@@ -10892,10 +10918,10 @@
       var timeLabel = bookingCalendarDisplayTime(start);
       var dateLabel = bookingCalendarDisplayDate(start);
       var phoneLabel = formatBookingPhone(data.phone);
-      var sourceLabel = bookingCalendarSourceLabel(data.source || 'Front desk');
-      return '<tr class="booking-table-row ' + bookingCalendarStatusClass(status) + '" data-booking-item data-booking-id="' + escapeHtml(data.id) + '" data-booking-name="' + escapeHtml(data.name) + '" data-booking-phone="' + escapeHtml(data.phone) + '" data-booking-email="' + escapeHtml(data.email || '') + '" data-booking-service="' + escapeHtml(serviceLabel) + '" data-booking-tech="' + escapeHtml(tech) + '" data-booking-date="' + escapeHtml(data.date) + '" data-booking-duration="' + data.duration + '" data-booking-source="' + escapeHtml(sourceLabel) + '" data-booking-note="' + escapeHtml(data.note || '') + '">' +
+      var sourceValue = data.source || 'front-desk';
+      return '<tr class="booking-table-row ' + bookingCalendarStatusClass(status) + '" data-booking-item data-booking-id="' + escapeHtml(data.id) + '" data-booking-name="' + escapeHtml(data.name) + '" data-booking-phone="' + escapeHtml(data.phone) + '" data-booking-email="' + escapeHtml(data.email || '') + '" data-booking-service="' + escapeHtml(serviceLabel) + '" data-booking-tech="' + escapeHtml(tech) + '" data-booking-date="' + escapeHtml(data.date) + '" data-booking-duration="' + data.duration + '" data-booking-source="' + escapeHtml(sourceValue) + '" data-booking-note="' + escapeHtml(data.note || '') + '">' +
         '<td><div class="booking-time-block"><div class="booking-time-main booking-callstart-main">' + escapeHtml(timeLabel) + '</div><div class="booking-time-date booking-callstart-date">' + escapeHtml(dateLabel) + '</div></div></td>' +
-        '<td><div class="booking-customer"><div class="booking-customer-name">' + escapeHtml(data.name) + ' <span class="badge badge-soft">' + escapeHtml(sourceLabel) + '</span></div><div class="booking-customer-meta">' + escapeHtml(phoneLabel) + '</div></div></td>' +
+        '<td><div class="booking-customer"><div class="booking-customer-name">' + escapeHtml(data.name) + ' ' + bookingSourceBadgesFromText(sourceValue) + '</div><div class="booking-customer-meta">' + escapeHtml(phoneLabel) + '</div></div></td>' +
         '<td><div class="booking-service"><div class="booking-service-list">' + services.map(function(service) {
           return '<span class="booking-service-chip">' + escapeHtml(service) + '</span>';
         }).join('') + '</div></div></td>' +
@@ -10947,7 +10973,7 @@
         duration: duration,
         status: status,
         note: note,
-        source: 'booking-book'
+        source: 'manual-add'
       }, null, catalog);
       if (!result.ok) { setBookingCreateError(result.error.message); return; }
 

@@ -30,6 +30,20 @@ test('Booking Book preserves the original booking source when importing rows', (
   assert.match(SOURCE, /source:\s*getBookingSourceText\(item\)/);
 });
 
+test('Booking Book keeps legacy source badges when table rows are re-rendered', () => {
+  assert.match(SOURCE, /function bookingSourceBadgesFromText\(/);
+  assert.match(SOURCE, /bookingSourceBadgesFromText\([\s\S]*booking-source-voice/);
+  assert.match(SOURCE, /bookingSourceBadgesFromText\([\s\S]*booking-source-lp/);
+  assert.match(SOURCE, /bookingSourceBadgesFromText\([\s\S]*booking-source-sms/);
+  assert.match(SOURCE, /bookingSourceBadgesFromText\([\s\S]*booking-source-qr/);
+  assert.match(SOURCE, /createBookingTableRow\([\s\S]*bookingSourceBadgesFromText/);
+});
+
+test('Booking Book marks newly created appointments as manual add', () => {
+  assert.match(SOURCE, /'manual add': 'Manual add'/);
+  assert.match(SOURCE, /source:\s*'manual-add'/);
+});
+
 test('Booking Book does not append new appointments directly to the table', () => {
   assert.doesNotMatch(SOURCE, /tbody\.insertAdjacentHTML\(['"]beforeend['"]/);
 });
