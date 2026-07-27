@@ -1,5 +1,7 @@
 # Canonical Appointments Screen Design
 
+> Superseded for Booking Book visibility by `2026-07-27-booking-book-appointment-workspace-design.md`: Booking Book now keeps its shared appointment workspace visible alongside POS.
+
 ## Goal
 
 Keep one operational appointment screen for the salon. POS Appointments becomes the canonical calendar, list, editor, and action panel; Booking Book no longer renders a second appointment workspace.
