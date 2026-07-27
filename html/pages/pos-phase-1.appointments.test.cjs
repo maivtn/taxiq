@@ -111,3 +111,8 @@ test('POS appointment details expose the booking source', () => {
   assert.match(html, /data-ap-source/);
   assert.match(html, /function apSourceLabel\(/);
 });
+
+test('POS marks new appointments as front-desk manual additions', () => {
+  assert.match(html, /['"]manual-add['"]/);
+  assert.match(html, /['"]manual add['"]:\s*'Manual add'/);
+});

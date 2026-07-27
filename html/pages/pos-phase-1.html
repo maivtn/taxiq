@@ -2334,6 +2334,7 @@
         var normalized = raw.toLowerCase().replace(/[_-]+/g, ' ');
         var labels = {
           'booking book': 'Booking Book',
+          'manual add': 'Manual add',
           'front desk': 'Front desk',
           'online': 'Online',
           'mobile app': 'Mobile app',
@@ -2616,7 +2617,7 @@
         if (!(start instanceof Date)) startDate.setHours(10, 0, 0, 0);
         var endDate = end instanceof Date ? new Date(end) : new Date(startDate.getTime() + 60 * 60000);
         apMode = 'new'; apSel = null; apSvc = {}; apExternalSvc = []; apWarn = '';
-        apDraft = { name: '', phone: '', techId: techId || null, date: apFormatLocal(startDate).slice(0, 10), time: apFormatLocal(startDate).slice(11, 16), duration: Math.max(15, Math.round((endDate - startDate) / 60000)), status: 'confirmed', source: 'Front desk' };
+        apDraft = { name: '', phone: '', techId: techId || null, date: apFormatLocal(startDate).slice(0, 10), time: apFormatLocal(startDate).slice(11, 16), duration: Math.max(15, Math.round((endDate - startDate) / 60000)), status: 'confirmed', source: 'manual-add' };
         apBeginNewPanelLoad();
       }
       function apOpenEdit(id) {
@@ -2700,7 +2701,7 @@
             durationMin: apDraft.duration,
             status: apDraft.status,
             smsStatus: 'sent',
-            source: rec ? rec.source : 'front-desk',
+            source: rec ? rec.source : 'manual-add',
             metadata: rec ? (rec.metadata || {}) : {}
           };
           var result = rec
