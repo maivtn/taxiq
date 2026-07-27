@@ -76,13 +76,22 @@ const PACKAGE_PLAN_DETAILS = {
   const overview = document.querySelector('[data-package-overview]');
   const purchaseHistory = document.querySelector('[data-purchase-history]');
   const packagePaymentModal = document.querySelector('[data-package-payment-modal]');
+  const packageTrialModal = document.querySelector('[data-package-trial-modal]');
   const defaultTab = 'overview';
   const validTabIds = new Set(tabs.map((tab) => tab.dataset.packageTab));
   let packagePaymentPlan = null;
   let packagePaymentId = PACKAGE_PAYMENT_METHODS[0].id;
   let packagePaymentModalOpener = null;
   let packagePaymentPreviousOverflow = '';
+  let packageTrialModalOpener = null;
+  let packageTrialPreviousOverflow = '';
   let freeTrialSubmitted = false;
+
+  try {
+    freeTrialSubmitted = window.localStorage.getItem('taxiq:nexora-ai-voice-free-trial') === 'submitted';
+  } catch (error) {
+    freeTrialSubmitted = false;
+  }
 
   function escapeHTML(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, (character) => ({
@@ -210,6 +219,92 @@ const PACKAGE_PLAN_DETAILS = {
     window.alert(message);
   }
 
+  function showTrialSubmittedAlert() {
+    const message = 'Thông tin của bạn đã được submit. NEXORA sẽ xử lý và liên hệ trong vòng 24 giờ.';
+    if (window.Swal && typeof window.Swal.fire === 'function') {
+      window.Swal.fire({
+        icon: 'success',
+        title: 'Đã gửi yêu cầu Free Trial',
+        text: message,
+        confirmButtonText: 'Đã hiểu'
+      });
+      return;
+    }
+    window.alert(message);
+  }
+
+  function openPackageTrialModal(button) {
+    const details = getPackagePlanDetails(button);
+    if (!packageTrialModal || !details?.trial) return;
+    if (details.trial && freeTrialSubmitted) {
+      showPendingTrialAlert();
+      return;
+    }
+    packageTrialModalOpener = button;
+    packageTrialPreviousOverflow = document.body.style.overflow;
+    packageTrialModal.hidden = false;
+    packageTrialModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('package-trial-open');
+    document.body.style.overflow = 'hidden';
+    const firstField = packageTrialModal.querySelector('[data-trial-required]');
+    if (firstField) firstField.focus();
+    if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+  }
+
+  function closePackageTrialModal() {
+    if (!packageTrialModal || packageTrialModal.hidden) return;
+    packageTrialModal.hidden = true;
+    packageTrialModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('package-trial-open');
+    document.body.style.overflow = packageTrialPreviousOverflow;
+    if (packageTrialModalOpener && typeof packageTrialModalOpener.focus === 'function') packageTrialModalOpener.focus();
+    packageTrialModalOpener = null;
+  }
+
+  function validatePackageTrialForm() {
+    const form = packageTrialModal?.querySelector('[data-package-trial-form]');
+    if (!form) return false;
+    let firstInvalid = null;
+    form.querySelectorAll('[data-trial-required]').forEach((field) => {
+      field.removeAttribute('aria-invalid');
+      const value = field.value.trim();
+      const invalidEmail = field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      if (!firstInvalid && (!value || invalidEmail)) firstInvalid = field;
+    });
+    const error = form.querySelector('[data-package-trial-error]');
+    if (firstInvalid) {
+      firstInvalid.setAttribute('aria-invalid', 'true');
+      if (error) error.textContent = 'Please complete the required salon, owner, phone, and email fields.';
+      firstInvalid.focus();
+      return false;
+    }
+    const selectedServices = form.querySelectorAll('[data-trial-chip].is-active');
+    if (!selectedServices.length) {
+      if (error) error.textContent = 'Please select at least one salon service.';
+      const firstChip = form.querySelector('[data-trial-chip]');
+      if (firstChip) firstChip.focus();
+      return false;
+    }
+    if (error) error.textContent = '';
+    return true;
+  }
+
+  function submitPackageTrial() {
+    if (freeTrialSubmitted) {
+      showPendingTrialAlert();
+      return;
+    }
+    if (!validatePackageTrialForm()) return;
+    freeTrialSubmitted = true;
+    try {
+      window.localStorage.setItem('taxiq:nexora-ai-voice-free-trial', 'submitted');
+    } catch (error) {
+      // The in-page state still prevents duplicate submissions when storage is unavailable.
+    }
+    closePackageTrialModal();
+    showTrialSubmittedAlert();
+  }
+
   function openPackagePaymentModal(button) {
     const details = getPackagePlanDetails(button);
     if (!packagePaymentModal || !details) return;
@@ -262,7 +357,6 @@ const PACKAGE_PLAN_DETAILS = {
   function confirmPackagePayment() {
     const selectedPayment = PACKAGE_PAYMENT_METHODS.find((method) => method.id === packagePaymentId) || PACKAGE_PAYMENT_METHODS[0];
     if (selectedPayment.id === 'CARD' && !validatePackageCardForm()) return;
-    if (packagePaymentPlan?.trial) freeTrialSubmitted = true;
     closePackagePaymentModal();
   }
 
@@ -446,6 +540,7 @@ const PACKAGE_PLAN_DETAILS = {
   function activateTab(tabId, shouldFocus, shouldUpdateURL) {
     const activeTabId = validTabIds.has(tabId) ? tabId : defaultTab;
     if (packagePaymentModal && !packagePaymentModal.hidden) closePackagePaymentModal();
+    if (packageTrialModal && !packageTrialModal.hidden) closePackageTrialModal();
     tabs.forEach((tab) => {
       const active = tab.dataset.packageTab === activeTabId;
       tab.classList.toggle('is-active', active);
@@ -478,7 +573,14 @@ const PACKAGE_PLAN_DETAILS = {
   });
 
   document.querySelectorAll('[data-nexora-select], [data-plan-select]').forEach((button) => {
-    button.addEventListener('click', () => openPackagePaymentModal(button));
+    button.addEventListener('click', () => {
+      const details = getPackagePlanDetails(button);
+      if (details?.trial) {
+        openPackageTrialModal(button);
+        return;
+      }
+      openPackagePaymentModal(button);
+    });
   });
 
   if (packagePaymentModal) {
@@ -497,10 +599,34 @@ const PACKAGE_PLAN_DETAILS = {
     });
   }
 
+  if (packageTrialModal) {
+    packageTrialModal.addEventListener('click', (event) => {
+      if (event.target === packageTrialModal || event.target.closest('[data-package-trial-close]')) {
+        closePackageTrialModal();
+        return;
+      }
+      const toggle = event.target.closest('[data-trial-chip], [data-trial-day]');
+      if (toggle) {
+        toggle.classList.toggle('is-active');
+        const error = packageTrialModal.querySelector('[data-package-trial-error]');
+        if (error) error.textContent = '';
+      }
+    });
+    const form = packageTrialModal.querySelector('[data-package-trial-form]');
+    if (form) form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      submitPackageTrial();
+    });
+  }
+
   document.addEventListener('keydown', (event) => {
-    if (!packagePaymentModal || packagePaymentModal.hidden || event.key !== 'Escape') return;
+    if (event.key !== 'Escape') return;
     event.preventDefault();
-    closePackagePaymentModal();
+    if (packagePaymentModal && !packagePaymentModal.hidden) {
+      closePackagePaymentModal();
+      return;
+    }
+    if (packageTrialModal && !packageTrialModal.hidden) closePackageTrialModal();
   });
 
   window.NEXORA_PACKAGE_SELECT_TAB = (tabId, options = {}) => {

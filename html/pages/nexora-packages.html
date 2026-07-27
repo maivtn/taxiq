@@ -308,6 +308,103 @@
     </div>
   </div>
 
+  <div class="package-trial-modal" data-package-trial-modal hidden aria-hidden="true">
+    <div class="package-trial-dialog" role="dialog" aria-modal="true" aria-labelledby="package-trial-modal-title" aria-describedby="package-trial-modal-description">
+      <div class="package-trial-head">
+        <div class="package-trial-brand"><i data-lucide="gift" aria-hidden="true"></i><span>14 days free · no card required</span></div>
+        <button class="package-trial-close" type="button" data-package-trial-close aria-label="Close free trial form"><i data-lucide="x" aria-hidden="true"></i></button>
+        <h2 id="package-trial-modal-title">Start your 14-day AI Voice trial</h2>
+        <p id="package-trial-modal-description">Fill in your salon information so the NEXORA team can set everything up within 24 hours.</p>
+      </div>
+
+      <div class="package-trial-benefits" aria-label="Free trial benefits">
+        <span><i data-lucide="check" aria-hidden="true"></i>Done-for-you setup</span>
+        <span><i data-lucide="check" aria-hidden="true"></i>No automatic charges</span>
+        <span><i data-lucide="check" aria-hidden="true"></i>Cancel anytime</span>
+      </div>
+
+      <form class="package-trial-form" data-package-trial-form novalidate>
+        <div class="package-trial-grid">
+          <label class="package-trial-field package-trial-field-wide">
+            <span class="package-trial-label">Salon name <b>*</b></span>
+            <input class="package-trial-input" type="text" autocomplete="organization" placeholder="Bitcoin Nail Bar" data-trial-field="salon" data-trial-required>
+          </label>
+
+          <label class="package-trial-field">
+            <span class="package-trial-label">Owner name <b>*</b></span>
+            <input class="package-trial-input" type="text" autocomplete="name" placeholder="Ashley Carter" data-trial-field="owner" data-trial-required>
+          </label>
+
+          <label class="package-trial-field">
+            <span class="package-trial-label">Phone number <b>*</b></span>
+            <input class="package-trial-input" type="tel" inputmode="tel" autocomplete="tel" placeholder="(123) 456-7890" data-trial-field="phone" data-trial-required>
+          </label>
+
+          <label class="package-trial-field package-trial-field-wide">
+            <span class="package-trial-label">Email <b>*</b></span>
+            <input class="package-trial-input" type="email" autocomplete="email" placeholder="owner@salon.com" data-trial-field="email" data-trial-required>
+            <small>We will send your activation and setup updates here.</small>
+          </label>
+
+          <label class="package-trial-field package-trial-field-wide">
+            <span class="package-trial-label">City / area <em>(optional)</em></span>
+            <input class="package-trial-input" type="text" autocomplete="address-level2" placeholder="Houston, TX" data-trial-field="city">
+          </label>
+
+          <label class="package-trial-field package-trial-field-wide">
+            <span class="package-trial-label">Website <em>(optional)</em></span>
+            <input class="package-trial-input" type="url" autocomplete="url" placeholder="https://your-salon.com" data-trial-field="website">
+          </label>
+
+          <div class="package-trial-field package-trial-field-wide">
+            <span class="package-trial-label">Services your salon offers <b>*</b> <em>(select all that apply)</em></span>
+            <div class="package-trial-chip-list">
+              <button class="package-trial-chip is-active" type="button" data-trial-chip>Gel Manicure</button>
+              <button class="package-trial-chip is-active" type="button" data-trial-chip>Acrylic Full Set</button>
+              <button class="package-trial-chip" type="button" data-trial-chip>Dip Powder</button>
+              <button class="package-trial-chip is-active" type="button" data-trial-chip>Pedicure</button>
+              <button class="package-trial-chip" type="button" data-trial-chip>Pedi + Gel</button>
+              <button class="package-trial-chip" type="button" data-trial-chip>Nail Art</button>
+              <button class="package-trial-chip" type="button" data-trial-chip>Waxing</button>
+              <button class="package-trial-chip" type="button" data-trial-chip>Eyelash</button>
+            </div>
+          </div>
+
+          <div class="package-trial-field package-trial-field-wide">
+            <span class="package-trial-label">Open days</span>
+            <div class="package-trial-day-list">
+              <button class="package-trial-day" type="button" data-trial-day>Sun</button>
+              <button class="package-trial-day is-active" type="button" data-trial-day>Mon</button>
+              <button class="package-trial-day is-active" type="button" data-trial-day>Tue</button>
+              <button class="package-trial-day is-active" type="button" data-trial-day>Wed</button>
+              <button class="package-trial-day is-active" type="button" data-trial-day>Thu</button>
+              <button class="package-trial-day is-active" type="button" data-trial-day>Fri</button>
+              <button class="package-trial-day is-active" type="button" data-trial-day>Sat</button>
+            </div>
+          </div>
+
+          <label class="package-trial-field package-trial-field-wide">
+            <span class="package-trial-label">Biggest challenge <em>(optional)</em></span>
+            <select class="package-trial-input" data-trial-field="challenge">
+              <option value="">Select one</option>
+              <option>Missed calls and lost customers</option>
+              <option>Manual booking and missed appointments</option>
+              <option>Too few Google reviews</option>
+              <option>Want to grow but do not have enough time</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="package-trial-error" data-package-trial-error role="alert" aria-live="polite"></div>
+        <div class="package-trial-foot">
+          <button class="package-trial-cancel" type="button" data-package-trial-close>Cancel</button>
+          <button class="package-trial-submit" type="submit" data-package-trial-submit><i data-lucide="rocket" aria-hidden="true"></i><span>Submit Free Trial</span></button>
+        </div>
+        <p class="package-trial-footer">No credit card required · No automatic charges · By submitting, you agree to let NEXORA contact you by SMS/email.</p>
+      </form>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="../assets/nexora-packages.js"></script>

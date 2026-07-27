@@ -103,3 +103,9 @@ test('does not render the SMS submenu item under POS', () => {
   assert.doesNotMatch(html, /data-shell-tab="sms"/);
   assert.match(html, /data-shell-tab="appointments"[\s\S]*?<span>Appointments<\/span>/);
 });
+
+test('labels the POS dispatch tab as Operations in the sidebar', () => {
+  const html = renderSidebar('pos', 'dispatch');
+  assert.match(html, /data-shell-tab="dispatch"[\s\S]*?<span>Operations<\/span>/);
+  assert.doesNotMatch(html, /data-shell-tab="dispatch"[\s\S]*?<span>Dispatch<\/span>/);
+});

@@ -86,25 +86,35 @@ test('renders the NEXORA plan cards and comparison table', () => {
   assert.match(css, /@media \(min-width: 1200px\)\s*\{[\s\S]*?\.nexora-plan-grid\s*\{[\s\S]*?grid-template-columns: repeat\(3,/);
 });
 
-test('opens one payment-method modal from NEXORA and AI Voice Plans actions', () => {
+test('opens a payment modal for paid plans and a Booking-style form for the AI Voice trial', () => {
   const html = source();
   const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
   const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
   assert.equal((html.match(/data-nexora-select=/g) || []).length, 3);
   assert.equal((html.match(/data-plan-select=/g) || []).length, 3);
   assert.match(html, /data-package-payment-modal/);
+  assert.match(html, /data-package-trial-modal/);
   assert.match(html, /data-package-payment-list/);
   assert.match(html, /data-package-invoice-plan/);
   assert.match(html, /data-package-invoice-payment/);
   assert.match(html, /data-package-invoice-total/);
+  assert.match(html, /data-trial-field="salon"/);
+  assert.match(html, /data-trial-field="owner"/);
+  assert.match(html, /data-trial-field="phone"/);
+  assert.match(html, /data-trial-field="email"/);
+  assert.match(html, /data-package-trial-submit/);
   assert.match(runtime, /PACKAGE_PAYMENT_METHODS/);
   assert.match(runtime, /data-nexora-select/);
   assert.match(runtime, /data-plan-select/);
   assert.match(runtime, /openPackagePaymentModal/);
+  assert.match(runtime, /openPackageTrialModal/);
+  assert.match(runtime, /submitPackageTrial/);
   assert.match(runtime, /data-package-payment-confirm/);
   assert.match(css, /\.package-payment-modal\s*\{/);
   assert.match(css, /\.package-payment-list\s*\{/);
   assert.match(css, /\.package-payment-invoice\s*\{/);
+  assert.match(css, /\.package-trial-modal\s*\{/);
+  assert.match(css, /\.package-trial-grid\s*\{/);
 });
 
 test('shows a SweetAlert pending message when the Free Trial is submitted twice', () => {
@@ -115,8 +125,23 @@ test('shows a SweetAlert pending message when the Free Trial is submitted twice'
   assert.match(runtime, /function showPendingTrialAlert/);
   assert.match(runtime, /window\.Swal\.fire/);
   assert.match(runtime, /details\.trial && freeTrialSubmitted/);
-  assert.match(runtime, /packagePaymentPlan\?\.trial/);
+  assert.match(runtime, /freeTrialSubmitted = true/);
+  assert.match(runtime, /Yêu cầu Free Trial đã được gửi và đang chờ xử lý/i);
   assert.match(runtime, /đã được gửi và đang chờ xử lý/i);
+});
+
+test('validates and submits the Free Trial information form before showing the pending state', () => {
+  const html = source();
+  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  assert.match(html, /data-package-trial-form/);
+  assert.match(html, /data-trial-required/);
+  assert.match(html, /data-trial-chip/);
+  assert.match(html, /data-trial-day/);
+  assert.match(runtime, /validatePackageTrialForm/);
+  assert.match(runtime, /submitPackageTrial/);
+  assert.match(runtime, /freeTrialSubmitted = true/);
+  assert.match(runtime, /showPendingTrialAlert/);
+  assert.match(html, /data-package-trial-submit/);
 });
 
 test('copies the Booking Book Plans content into the Voice + SMS panel', () => {
@@ -211,6 +236,7 @@ test('loads package-specific presentation styles', () => {
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-packages\.css">/);
   assert.match(css, /\.package-tabs/);
   assert.match(css, /\.package-tab\.is-active/);
+  assert.match(css, /\.visually-hidden\s*\{[\s\S]*?position:\s*absolute[\s\S]*?width:\s*1px[\s\S]*?height:\s*1px/);
 });
 
 test('matches the Booking Hub tab treatment', () => {

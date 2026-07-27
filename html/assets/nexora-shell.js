@@ -80,7 +80,7 @@
       { label: 'Analytics', tab: 'analytics' }
     ] },
     { type: 'group', key: 'pos', label: 'POS', icon: 'monitor', page: 'pos', items: [
-      { label: 'Dispatch', tab: 'dispatch' },
+      { label: 'Operations', tab: 'dispatch' },
       { label: 'Time Clock', tab: 'clock' },
       { label: 'Management', tab: 'management' },
       { label: 'Appointments', tab: 'appointments' }
