@@ -46,7 +46,7 @@
       { label: 'Direct Savings' }
     ] },
     { type: 'item', label: 'Reviews', icon: 'star', page: 'review' },
-    { type: 'group', key: 'packages', label: 'Quản lý gói', icon: 'package', page: 'packages', items: [
+    { type: 'group', key: 'packages', label: 'Package Management', icon: 'package', page: 'packages', items: [
       { label: 'Overview', tab: 'overview' },
       { label: 'Subscriptions', tab: 'nexora' },
       { label: 'AI Voice Plans', tab: 'voice' },

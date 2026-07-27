@@ -86,7 +86,7 @@ test('renders all four Package Management submenu items on the native Packages p
     const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     assert.match(html, new RegExp(`data-shell-tab="${tab}"[\\s\\S]*?<span>${escapedLabel}<\\/span>`));
   }
-  assert.match(html, /class="nav-item nav-parent is-expanded"[\s\S]*?<span>Quản lý gói<\/span>/);
+  assert.match(html, /class="nav-item nav-parent is-expanded"[\s\S]*?<span>Package Management<\/span>/);
   assert.match(html, /data-nav-subnav[\s\S]*?data-shell-tab="overview"/);
 });
 
