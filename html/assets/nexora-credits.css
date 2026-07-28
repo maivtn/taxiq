@@ -200,16 +200,18 @@
   white-space: nowrap;
   opacity: 1;
   visibility: visible;
+  transition: background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
 
 .credits-action svg { width: 15px; height: 15px; }
 .credits-action-primary { background: var(--nexora-brand); color: #fff; }
-.credits-action-primary:hover { background: var(--nexora-brand-dark); }
+.credits-action-primary:hover { background: var(--nexora-brand-dark); color: #fff; box-shadow: 0 5px 12px rgba(70,72,216,.22); }
 .credits-action-secondary { border: 1px solid rgba(124,58,237,.25); background: #faf8ff; color: #6d28d9; }
 .credits-action-secondary:hover { border-color: rgba(124,58,237,.5); background: #f4efff; }
 .credits-action:hover,
 .credits-action:focus-visible { opacity: 1; visibility: visible; }
 .credits-action:focus-visible { outline: 3px solid rgba(70,72,216,.2); outline-offset: 2px; }
+.credits-action:active { transform: translateY(1px); }
 
 .credits-history-section { margin-top: 18px; padding: 20px; }
 .credits-section-heading { align-items: center; margin-bottom: 14px; }

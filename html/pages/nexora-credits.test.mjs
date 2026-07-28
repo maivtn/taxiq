@@ -70,6 +70,16 @@ test('keeps credit actions visible while hovering or focusing the card', () => {
   assert.match(css, /\.credits-action(?::hover|:focus-visible)[^{]*\{[\s\S]*?opacity:\s*1;[\s\S]*?visibility:\s*visible;/);
 });
 
+test('keeps the SMS credit action readable on hover', () => {
+  const css = readFileSync(CSS_URL, 'utf8');
+  const actionRule = css.match(/\.credits-action\s*\{([^}]*)\}/)?.[1] || '';
+  const primaryHoverRule = css.match(/\.credits-action-primary:hover\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(actionRule, /transition:/);
+  assert.match(primaryHoverRule, /background:\s*var\(--nexora-brand-dark\)/);
+  assert.match(primaryHoverRule, /color:\s*#fff/);
+});
+
 test('shows Voice usage history per incoming phone number', () => {
   const html = source();
   const runtime = readFileSync(JS_URL, 'utf8');
