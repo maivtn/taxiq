@@ -7,6 +7,14 @@ const SOURCE = readFileSync(new URL('./booking-book-phase-1.html', import.meta.u
 test('Booking Book loads shared catalog and appointment store before its runtime', () => {
   assert.match(SOURCE, /\.\.\/assets\/salon-data\.js/);
   assert.match(SOURCE, /\.\.\/assets\/appointments-store\.js/);
+  assert.match(SOURCE, /\.\.\/assets\/appointment-service-catalog\.js/);
+});
+
+test('Booking Book loads the approved category service JSON for appointment pickers', () => {
+  assert.match(SOURCE, /booking-service-catalog-draft\.json/);
+  assert.match(SOURCE, /appointmentServiceCatalogLoader\.load/);
+  assert.match(SOURCE, /data-booking-service-search/);
+  assert.match(SOURCE, /data-booking-service-category/);
 });
 
 test('Booking Book still uses the shared catalog integration seam', () => {
@@ -115,7 +123,7 @@ test('Booking Book calendar layout includes a right-side appointment detail pane
 });
 
 test('Booking Book shows the right detail panel only in calendar mode', () => {
-  assert.match(SOURCE, /booking-appointment-layout[^>]*data-booking-view-mode="table"/);
+  assert.match(SOURCE, /booking-appointment-layout[^>]*data-booking-view-mode="calendar"/);
   assert.match(SOURCE, /booking-appointment-layout\[data-booking-view-mode="calendar"\]/);
   assert.match(SOURCE, /booking-appointment-layout:not\(\[data-booking-view-mode="calendar"\]\)[\s\S]*booking-appointment-panel/);
   assert.match(SOURCE, /appointmentLayout\.dataset\.bookingViewMode\s*=\s*nextMode/);
@@ -147,12 +155,43 @@ test('Booking Book calendar uses the shared calendar status and action contract'
   assert.match(SOURCE, /data-booking-panel-action-group="close"/);
 });
 
-test('Booking Book uses the same catalog-driven service chips and panel field order as POS', () => {
-  assert.match(SOURCE, /BOOKING_CALENDAR_SERVICE_OPTIONS\.push\([\s\S]*icon: service\.icon[\s\S]*requiredSkill/);
-  assert.match(SOURCE, /data-booking-panel-select="service"[\s\S]*escapeHtml\(option\.name\) \+ ' · \$'/);
-  assert.match(SOURCE, /data-booking-panel-field="tech"[\s\S]*data-booking-panel-field="date"[\s\S]*data-booking-panel-field="status"[\s\S]*data-booking-panel-field="note"/);
+test('Booking Book uses the approved category picker and keeps the panel field order', () => {
+  assert.match(SOURCE, /data-booking-service-search/);
+  assert.match(SOURCE, /data-booking-service-category/);
+  assert.match(SOURCE, /data-booking-panel-ticket-service-search/);
+  assert.match(SOURCE, /data-booking-panel-ticket-tech-search/);
+  assert.match(SOURCE, /data-booking-panel-ticket-add/);
+  assert.match(SOURCE, /data-booking-panel-ticket-remove/);
+  assert.match(SOURCE, /data-booking-create-ticket-service-search/);
+  assert.match(SOURCE, /data-booking-create-ticket-tech-search/);
+  assert.match(SOURCE, /data-booking-create-ticket-add/);
   assert.doesNotMatch(SOURCE, /data-booking-panel-field="duration"/);
   assert.match(SOURCE, /t8: \{ bg: '#e9f7df', border: '#5c9e2e', text: '#31591c' \}/);
+});
+
+test('Booking Book service and technician dropdowns stay hidden until the user types', () => {
+  for (const selector of [
+    'data-booking-panel-ticket-service-results',
+    'data-booking-panel-ticket-tech-results',
+    'data-booking-create-ticket-service-results',
+    'data-booking-create-ticket-tech-results'
+  ]) assert.match(SOURCE, new RegExp(selector + '[^>]*hidden'));
+  assert.match(SOURCE, /function filterBookingPanelTicketServices\([\s\S]*if \(!query\)[\s\S]*results\.hidden = true/);
+  assert.match(SOURCE, /function filterBookingPanelTicketTechs\([\s\S]*if \(!query\)[\s\S]*results\.hidden = true/);
+  assert.match(SOURCE, /function filterBookingCreateTicketServices\([\s\S]*if \(!query\)[\s\S]*results\.hidden = true/);
+  assert.match(SOURCE, /function filterBookingCreateTicketTechs\([\s\S]*if \(!query\)[\s\S]*results\.hidden = true/);
+});
+
+test('Booking Book service and technician search fields use the full picker width', () => {
+  const builderRule = SOURCE.match(/\.booking-ticket-builder-grid\s*\{([^}]*)\}/)?.[1] || '';
+  assert.match(builderRule, /grid-template-columns:\s*1fr/);
+  assert.match(SOURCE, /\.booking-ticket-add\s*\{[^}]*width:\s*100%/);
+});
+
+test('Booking Book opens the booking tab in calendar mode by default', () => {
+  assert.match(SOURCE, /function activateMainTabFromUrl\(\)[\s\S]*activateMainTab\(tab, \{ syncUrl: false \}\)[\s\S]*requestedTab !== tab/);
+  assert.match(SOURCE, /if \(activeTarget === 'booking'\) setBookingViewMode\('calendar'\)/);
+  assert.match(SOURCE, /function initBookingViewMode\(\)[\s\S]*setBookingViewMode\('calendar'\)/);
 });
 
 test('Booking Book hides the duplicate duration field beside status', () => {
@@ -163,9 +202,9 @@ test('Booking Book hides the duplicate duration field beside status', () => {
   assert.match(SOURCE, /bookingPanelDraft\.duration = bookingPanelSelectedServiceDuration\(\)/);
 });
 
-test('Booking Book service chips use the shared name-price-duration format without icons', () => {
-  assert.match(SOURCE, /data-booking-panel-select="service"[\s\S]*escapeHtml\(option\.name\) \+ ' · \$'/);
-  assert.doesNotMatch(SOURCE, /data-booking-panel-select="service"[\s\S]*option\.icon/);
+test('Booking Book service options show name, price, and duration without decorative icons', () => {
+  assert.match(SOURCE, /booking-service-option-name[\s\S]*escapeHtml\(option\.name\)/);
+  assert.match(SOURCE, /booking-service-option-meta[\s\S]*option\.duration \+ ' min/);
 });
 
 test('Booking Book removes decorative icons from imported service names', () => {

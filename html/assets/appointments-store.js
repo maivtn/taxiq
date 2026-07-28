@@ -6,10 +6,15 @@
     try { salonData = require('./salon-data.js'); } catch (error) { salonData = null; }
   }
 
-  var api = factory(salonData);
+  var ticketUtils = root && root.NEXORA_APPOINTMENT_TICKETS;
+  if (!ticketUtils && typeof require === 'function') {
+    try { ticketUtils = require('./appointment-tickets.js'); } catch (error) { ticketUtils = null; }
+  }
+
+  var api = factory(salonData, ticketUtils);
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root) root.NEXORA_APPOINTMENTS_STORE = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (salonData) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (salonData, ticketUtils) {
   'use strict';
 
   var SALON_ID = salonData && salonData.SALON_ID ? salonData.SALON_ID : 'bitcoin-nail-bar-houston';
@@ -91,7 +96,11 @@
     var explicitIds = uniqueStrings(input.serviceIds || []);
     var sourceNames = input.serviceNames;
     if (!Array.isArray(sourceNames)) {
-      if (Array.isArray(input.services)) {
+      if (Array.isArray(input.tickets)) {
+        sourceNames = input.tickets.map(function (ticket) {
+          return ticket && typeof ticket === 'object' ? (ticket.serviceName || ticket.name || ticket.serviceId) : ticket;
+        });
+      } else if (Array.isArray(input.services)) {
         sourceNames = input.services.map(function (service) {
           return service && typeof service === 'object' ? (service.name || service.label || service.id) : service;
         });
@@ -104,6 +113,15 @@
       }
     }
     sourceNames = uniqueStrings(sourceNames.map(stripServiceIcon));
+
+    if (Array.isArray(input.tickets)) {
+      input.tickets.forEach(function (ticket) {
+        var ticketId = ticket && typeof ticket === 'object' ? ticket.serviceId : '';
+        if (ticketId && findService(catalog, ticketId) && explicitIds.indexOf(String(ticketId)) === -1) {
+          explicitIds.push(String(ticketId));
+        }
+      });
+    }
 
     var ids = explicitIds.filter(function (id) { return !!findService(catalog, id); });
     sourceNames.forEach(function (name) {
@@ -174,6 +192,86 @@
     return 'new';
   }
 
+  function ticketCatalog(catalog) {
+    return {
+      services: catalog && Array.isArray(catalog.services) ? catalog.services : [],
+      technicians: catalog && Array.isArray(catalog.technicians) ? catalog.technicians : [],
+    };
+  }
+
+  function rawTicketsFor(input, catalog, parts, serviceDetails, technician) {
+    if (Array.isArray(input.tickets)) {
+      var hasExplicitTechnician = Object.prototype.hasOwnProperty.call(input, 'technicianId') && input.technicianId !== undefined;
+      var ticketTechnicianIds = input.tickets.map(function (ticket) {
+        return ticket && ticket.technicianId ? String(ticket.technicianId) : '';
+      });
+      var sharedTicketTechnician = ticketTechnicianIds.length && ticketTechnicianIds.every(function (id) {
+        return id === ticketTechnicianIds[0];
+      });
+      if (hasExplicitTechnician && sharedTicketTechnician) {
+        return input.tickets.map(function (ticket) {
+          return Object.assign({}, ticket, {
+            technicianId: technician.id,
+            technicianName: technician.name || 'Anyone',
+          });
+        });
+      }
+      return input.tickets;
+    }
+    return parts.names.map(function (name, index) {
+      var detail = serviceDetails[index] || {};
+      return {
+        id: 'ticket-' + (index + 1),
+        serviceId: detail.id || parts.ids[index] || '',
+        serviceName: detail.name || name,
+        price: detail.price,
+        durationMin: detail.durationMin,
+        technicianId: technician.id,
+        technicianName: technician.name || 'Anyone',
+        status: input.status,
+      };
+    });
+  }
+
+  function normalizeTicketSet(input, catalog, parts, serviceDetails, technician, start) {
+    if (!ticketUtils || typeof ticketUtils.normalizeTickets !== 'function') return [];
+    var normalized = ticketUtils.normalizeTickets(
+      rawTicketsFor(input, catalog, parts, serviceDetails, technician),
+      ticketCatalog(catalog)
+    );
+    var hasCompleteTiming = normalized.length && normalized.every(function (ticket) {
+      return ticket.startAt && ticket.endAt;
+    });
+    if (!hasCompleteTiming && start.value && typeof ticketUtils.scheduleTickets === 'function') {
+      normalized = ticketUtils.scheduleTickets(normalized, start.value);
+    }
+    return normalized;
+  }
+
+  function serviceDetailsFromTickets(tickets, catalog, fallback) {
+    if (!tickets.length) return fallback;
+    return tickets.map(function (ticket) {
+      var service = findService(catalog, ticket.serviceId) || findService(catalog, ticket.serviceName);
+      return {
+        id: ticket.serviceId || (service && service.id) || '',
+        name: ticket.serviceName || (service && service.name) || '',
+        price: ticket.price,
+        durationMin: ticket.durationMin,
+        icon: service ? service.icon : '✨',
+      };
+    });
+  }
+
+  function ticketSpan(tickets, start) {
+    if (!tickets.length || !start.value) return 0;
+    var latestEnd = start.time;
+    tickets.forEach(function (ticket) {
+      var end = dateFromLocal(ticket.endAt);
+      if (end.time > latestEnd) latestEnd = end.time;
+    });
+    return latestEnd > start.time ? Math.round((latestEnd - start.time) / 60000) : 0;
+  }
+
   function normalizeAppointment(input, catalog, now) {
     input = input || {};
     catalog = catalogFor(catalog);
@@ -195,6 +293,24 @@
       var calculatedEnd = new Date(start.time + explicitDuration * 60000);
       end = dateFromLocal(calculatedEnd);
     }
+    var tickets = normalizeTicketSet(input, catalog, parts, serviceDetails, technician, start);
+    serviceDetails = serviceDetailsFromTickets(tickets, catalog, serviceDetails);
+    var scheduledSpan = ticketSpan(tickets, start);
+    if (scheduledSpan) {
+      explicitDuration = scheduledSpan;
+      if (!input.endAt && !input.end && start.value) {
+        end = dateFromLocal(new Date(start.time + scheduledSpan * 60000));
+      }
+    }
+    var ticketParentId = ticketUtils && typeof ticketUtils.parentTechnicianId === 'function'
+      ? ticketUtils.parentTechnicianId(tickets)
+      : null;
+    if (Array.isArray(input.tickets)) {
+      technician = ticketParentId ? {
+        id: ticketParentId,
+        name: tickets[0].technicianName || '',
+      } : { id: null, name: '' };
+    }
     var statusMapping = mapBookingStatus(input.status);
     var status = VALID_STATUSES.indexOf(input.status) >= 0 ? input.status : statusMapping.status;
     var smsStatus = input.smsStatus === 'sent' || statusMapping.smsStatus === 'sent' ? 'sent' : 'not-sent';
@@ -211,6 +327,7 @@
       serviceIds: parts.ids,
       serviceNames: parts.names,
       serviceDetails: serviceDetails,
+      tickets: tickets,
       technicianId: technician.id,
       technicianName: technician.name,
       startAt: start.value,
@@ -241,17 +358,48 @@
   }
 
   function hasConflict(records, candidate, excludeId) {
-    if (!candidate || !candidate.technicianId) return false;
-    var candidateStart = new Date(candidate.startAt || candidate.start).getTime();
-    var candidateEnd = new Date(candidate.endAt || candidate.end).getTime();
-    if (!Number.isFinite(candidateStart) || !Number.isFinite(candidateEnd)) return false;
+    if (!candidate) return false;
+    var candidateIntervals = Array.isArray(candidate.tickets) && candidate.tickets.length
+      ? candidate.tickets.map(function (ticket) {
+        return {
+          technicianId: ticket && ticket.technicianId,
+          start: new Date(ticket && ticket.startAt).getTime(),
+          end: new Date(ticket && ticket.endAt).getTime(),
+        };
+      })
+      : [{
+        technicianId: candidate.technicianId,
+        start: new Date(candidate.startAt || candidate.start).getTime(),
+        end: new Date(candidate.endAt || candidate.end).getTime(),
+      }];
+    candidateIntervals = candidateIntervals.filter(function (interval) {
+      return interval.technicianId && Number.isFinite(interval.start) && Number.isFinite(interval.end);
+    });
+    if (!candidateIntervals.length) return false;
     return records.some(function (record) {
-      if (!record || record.technicianId !== candidate.technicianId) return false;
+      if (!record) return false;
       if (excludeId != null && String(record.id) === String(excludeId)) return false;
       if (record.status === 'cancelled') return false;
-      var start = new Date(record.startAt || record.start).getTime();
-      var end = new Date(record.endAt || record.end).getTime();
-      return Number.isFinite(start) && Number.isFinite(end) && candidateStart < end && candidateEnd > start;
+      var recordIntervals = Array.isArray(record.tickets) && record.tickets.length
+        ? record.tickets.map(function (ticket) {
+          return {
+            technicianId: ticket && ticket.technicianId,
+            start: new Date(ticket && ticket.startAt).getTime(),
+            end: new Date(ticket && ticket.endAt).getTime(),
+          };
+        })
+        : [{
+          technicianId: record.technicianId,
+          start: new Date(record.startAt || record.start).getTime(),
+          end: new Date(record.endAt || record.end).getTime(),
+        }];
+      return candidateIntervals.some(function (candidateInterval) {
+        return recordIntervals.some(function (recordInterval) {
+          return recordInterval.technicianId === candidateInterval.technicianId &&
+            Number.isFinite(recordInterval.start) && Number.isFinite(recordInterval.end) &&
+            candidateInterval.start < recordInterval.end && candidateInterval.end > recordInterval.start;
+        });
+      });
     });
   }
 

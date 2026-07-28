@@ -1,0 +1,516 @@
+{
+  "source": {
+    "url": "https://nailsolutionplus.firebaseapp.com/?storeKey=-OiuBNzy2Knxtk0uDGmn",
+    "storeKey": "-OiuBNzy2Knxtk0uDGmn",
+    "fetchedAt": "2026-07-28T10:18:02Z",
+    "categoryCount": 8,
+    "serviceCount": 76,
+    "note": "Category and service IDs, prices, and durations are sourced from the NailSolution Realtime Database for this store."
+  },
+  "categories": [
+    {
+      "id": "-OiuF8hytB8Y3pc_asRK",
+      "name": "DIP POWDER",
+      "services": [
+        {
+          "id": "-Oiz81A9kJSerQQWJNSL",
+          "name": "DIP PINK & WHITE POWDER",
+          "price": 60,
+          "durationMin": 60
+        },
+        {
+          "id": "-OiuF8hytB8Y3pc_asRL",
+          "name": "DIP POWDER",
+          "price": 52,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oizqx33XhHvoPwXppPG",
+          "name": "DIP POWDER OMBRÉ",
+          "price": 60,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oiz7eBAA6S1A3__tVvQ",
+          "name": "DIP POWDER WITH TIP",
+          "price": 57,
+          "durationMin": 60
+        }
+      ]
+    },
+    {
+      "id": "-OizwrWpnsRnzfl6uwd6",
+      "name": "ADDITIONAL SERVICE",
+      "services": [
+        {
+          "id": "-OmtRisz7jly9SCEm3To",
+          "name": "ACRYLIC GEL COLOR CHANGE",
+          "price": 30,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmtRTvFAsBom_zzcODJ",
+          "name": "ACRYLIC TOE",
+          "price": 10,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmtR_uLeDfiVsIAPO3h",
+          "name": "ACRYLIC TOE REFILL",
+          "price": 5,
+          "durationMin": 60
+        },
+        {
+          "id": "-OpZgvGOU1PNsFqNb0Hh",
+          "name": "CATEYE",
+          "price": 20,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oqfuuih3Jf-6gh7ZDhJ",
+          "name": "CHROME",
+          "price": 20,
+          "durationMin": 15
+        },
+        {
+          "id": "-Oizzr5odzlUyoPYQl5B",
+          "name": "COLLAGEN GLOVES",
+          "price": 10,
+          "durationMin": 60
+        },
+        {
+          "id": "-OizzbDajo2iLPcJoLh6",
+          "name": "COLLAGEN SOCK",
+          "price": 10,
+          "durationMin": 60
+        },
+        {
+          "id": "-Or07geiJveMMFjoAEog",
+          "name": "CUT DOWN",
+          "price": 5,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmtScZiEhaKZpCgD6UX",
+          "name": "CUT DOWN + SHAPE CHANGE",
+          "price": 15,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmtSo1UkGFT74QAy2J3",
+          "name": "CUTICLE TRIM WITH SERVICE",
+          "price": 10,
+          "durationMin": 60
+        },
+        {
+          "id": "-Ot_B_zuBCELg1oXMH8j",
+          "name": "DESIGN",
+          "price": 5,
+          "durationMin": 15
+        },
+        {
+          "id": "-OmtSMfd5iCB4iZRqYAQ",
+          "name": "DIFFERENT SHAPES",
+          "price": 5,
+          "durationMin": 60
+        },
+        {
+          "id": "-OizzUdoQjCpRBM80nbG",
+          "name": "EXTRA MASSAGE",
+          "price": 2,
+          "durationMin": 15
+        },
+        {
+          "id": "-OndYVzZI2wV5zs9gxTr",
+          "name": "FRENCH TIP",
+          "price": 10,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmtSRqULGEauhIviBu7",
+          "name": "LONG LENGTH",
+          "price": 5,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmtT5_BxYtMCM3ay3St",
+          "name": "NAIL REPAIR",
+          "price": 5,
+          "durationMin": 60
+        },
+        {
+          "id": "-OizzwZpHMcyUxY_0PfR",
+          "name": "PARAFFIN WAX",
+          "price": 10,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj-02EU7d40irTIp7oW",
+          "name": "REGULAR POLISH CHANGE HAND",
+          "price": 15,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj-0B3-KUli41LeNN7X",
+          "name": "REGULAR POLISH CHANGE TOES",
+          "price": 15,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj--fIGUqhJumU_JZ4O",
+          "name": "SHELLAC POLISH CHANGE HAND",
+          "price": 30,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj--rCKk1NweGLUGf08",
+          "name": "SHELLAC POLISH CHANGE TOES",
+          "price": 30,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj--UCorMwHUV9s5u5Q",
+          "name": "SHELLAC TAKE OFF WITH SERVICE",
+          "price": 10,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmtSEz6Zyg76JwPW-Cc",
+          "name": "SPECIAL SHAPES",
+          "price": 5,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmtTMvyV2ufG_omnkr9",
+          "name": "TAKE OFF W/O SERVICE",
+          "price": 15,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmtTDdf6w_VxKZw1nHu",
+          "name": "TAKE OFF WITH SERVICE",
+          "price": 10,
+          "durationMin": 60
+        }
+      ]
+    },
+    {
+      "id": "-OmrLHkAOajA9wnmecuZ",
+      "name": "BUILDER GEL/GEL X",
+      "services": [
+        {
+          "id": "-OmrLt0wdsiWsM6C_-TO",
+          "name": "BUILDER GEL FULL SET WITH TIP",
+          "price": 65,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmrLKcorR--PkWkUIS9",
+          "name": "BUILDER GEL NATURAL SET",
+          "price": 60,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmrLaVNr1g2F5GSOTf5",
+          "name": "BUILDER GEL REFILL NATURAL",
+          "price": 50,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmrM9UqQwLbAoIi7BbE",
+          "name": "BUILDER GEL REFILL WITH TIP",
+          "price": 55,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmrMQuc1zavGRo0Hh5_",
+          "name": "FULL SET GEL X",
+          "price": 65,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmrMW4alKU6fQ9JCpI6",
+          "name": "REFILL GEL X",
+          "price": 55,
+          "durationMin": 60
+        }
+      ]
+    },
+    {
+      "id": "-Oizru-Kod5jZ4Oq2FGY",
+      "name": "FULLSET SERVICE",
+      "services": [
+        {
+          "id": "-Oiztf98c0pgwXBfxANf",
+          "name": "FULL SET COLOR POWDER",
+          "price": 55,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmrKWqCRkDttPJU-Oil",
+          "name": "FULL SET OMBRÉ",
+          "price": 65,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oizu4JWSbJRFmCwrHa0",
+          "name": "FULL SET PINK & WHITE",
+          "price": 60,
+          "durationMin": 60
+        },
+        {
+          "id": "-OiztRpAFBEQkbNRR2jG",
+          "name": "FULL SET SHELLAC",
+          "price": 60,
+          "durationMin": 60
+        },
+        {
+          "id": "-OqrGxGJOK8qD2Yx4T7N",
+          "name": "FULL SET WHITE TIP",
+          "price": 55,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmrJJ7uZ7bq0n-J9V9i",
+          "name": "REFILL COLOR POWDER",
+          "price": 50,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj20Q4EAlZvs1IdWKIq",
+          "name": "REFILL OMBRE",
+          "price": 55,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj20dbopWPlM5405cVt",
+          "name": "REFILL PINK & WHITE",
+          "price": 50,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj1goEo7u6x5vzo9uni",
+          "name": "REFILL SHELLAC",
+          "price": 50,
+          "durationMin": 60
+        }
+      ]
+    },
+    {
+      "id": "-OiztD3NdP7hpGOS6_Vq",
+      "name": "KID MENU",
+      "services": [
+        {
+          "id": "-OmrHx6XibYDf7EVRu7N",
+          "name": "ADD GEL",
+          "price": 15,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj-2Qzq9BHSCaeNrYIo",
+          "name": "MANICURE",
+          "price": 15,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj-2L63bVmN4BY0upYS",
+          "name": "PEDICURE",
+          "price": 25,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj-2syTX57yFUYzAEaf",
+          "name": "PRINCESS GEL MANICURE",
+          "price": 30,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj-2bb9ohoMt914Wo7_",
+          "name": "PRINCESS PEDICURE & MANICURE",
+          "price": 40,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj-33-NSfmtGwohuhjV",
+          "name": "REGULAR POLISH ON NAIL",
+          "price": 10,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj-39oF0SdPIVink_1V",
+          "name": "REGULAR POLISH ON TOES",
+          "price": 10,
+          "durationMin": 60
+        }
+      ]
+    },
+    {
+      "id": "-OizraN-hnt-oWL90gIs",
+      "name": "MANICURE SERVICE",
+      "services": [
+        {
+          "id": "-Oj-7mzOE1GQ5I0pMjMi",
+          "name": "CLASSIC MANICURE",
+          "price": 25,
+          "durationMin": 60
+        },
+        {
+          "id": "-OiuF8i-96XIyMRWn_KT",
+          "name": "DELUXE MANICURE",
+          "price": 35,
+          "durationMin": 60
+        },
+        {
+          "id": "-OiuF8hzYIo5oPcoVoPT",
+          "name": "MILK & HONEY MANICURE",
+          "price": 50,
+          "durationMin": 60
+        },
+        {
+          "id": "-OiuF8hzYIo5oPcoVoPS",
+          "name": "SHELLAC MANICURE",
+          "price": 45,
+          "durationMin": 60
+        }
+      ]
+    },
+    {
+      "id": "-Oizr7NZhl77KASeWhxb",
+      "name": "PEDICURE SERVICE",
+      "services": [
+        {
+          "id": "-Oj-4oXTLFZOGjBH4xjb",
+          "name": "BITCOIN 24K GOLD",
+          "price": 99,
+          "durationMin": 75
+        },
+        {
+          "id": "-OiuF8i-96XIyMRWn_KV",
+          "name": "CLASSIC",
+          "price": 40,
+          "durationMin": 30
+        },
+        {
+          "id": "-OqgoxMpcjpdjIxHwgIF",
+          "name": "JELLY PEDICURE",
+          "price": 75,
+          "durationMin": 60
+        },
+        {
+          "id": "-OiuF8i-96XIyMRWn_KW",
+          "name": "MILK & HONEY",
+          "price": 55,
+          "durationMin": 45
+        },
+        {
+          "id": "-Oj-5UdCiu_hegTV_NCV",
+          "name": "PARIS PEARL",
+          "price": 75,
+          "durationMin": 60
+        },
+        {
+          "id": "-OunC5qI1pkf-4V_JjCK",
+          "name": "RASPBERRY MIMOSA",
+          "price": 64,
+          "durationMin": 60
+        },
+        {
+          "id": "-Oj-AFlop75B5LGkeOzM",
+          "name": "SHELLAC POLISH ADD ON",
+          "price": 20,
+          "durationMin": 60
+        }
+      ]
+    },
+    {
+      "id": "-OizsLPUdi3wYV3CkhMD",
+      "name": "WAXING SERVICE",
+      "services": [
+        {
+          "id": "-OmrEb90cawpYEuAWd87",
+          "name": "BACK",
+          "price": 45,
+          "durationMin": 45
+        },
+        {
+          "id": "-OmrEmQ6m5kz8DJjhlnk",
+          "name": "BIKINI",
+          "price": 45,
+          "durationMin": 45
+        },
+        {
+          "id": "-OmrEsSWHsiGfRGkyosR",
+          "name": "BRAZILIAN",
+          "price": 60,
+          "durationMin": 45
+        },
+        {
+          "id": "-OmrDdzWnmjylsFksk_W",
+          "name": "CHIN",
+          "price": 15,
+          "durationMin": 15
+        },
+        {
+          "id": "-Oj-0do9ivI2-o-QJS9B",
+          "name": "EYEBROWS",
+          "price": 15,
+          "durationMin": 15
+        },
+        {
+          "id": "-OmrEBTtST4-FXhjGURA",
+          "name": "FULL ARMS",
+          "price": 40,
+          "durationMin": 30
+        },
+        {
+          "id": "-OmrDo0eSswIDOokfz5S",
+          "name": "FULL FACE",
+          "price": 45,
+          "durationMin": 30
+        },
+        {
+          "id": "-OmrEVmFIRp8N63gKXIG",
+          "name": "FULL LEGS",
+          "price": 60,
+          "durationMin": 30
+        },
+        {
+          "id": "-OmrE4nHxIYom71c_EsA",
+          "name": "HALF ARMS",
+          "price": 25,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmrDYOQeEB5loqsYXdS",
+          "name": "LIP",
+          "price": 10,
+          "durationMin": 15
+        },
+        {
+          "id": "-OmrEKxbDlBwYLTRe1lC",
+          "name": "LOWER LEGS",
+          "price": 45,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmrDj0NqBAfVUUlrp30",
+          "name": "SIDEBURNS",
+          "price": 15,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmrDwGES9WOEBhDVvLc",
+          "name": "UNDERARMS",
+          "price": 25,
+          "durationMin": 60
+        },
+        {
+          "id": "-OmrEQM9fgoq4QExFYYv",
+          "name": "UPPER LEGS",
+          "price": 45,
+          "durationMin": 60
+        }
+      ]
+    }
+  ]
+}

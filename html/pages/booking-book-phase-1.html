@@ -4138,11 +4138,49 @@
     .booking-create-field.is-full { grid-column: 1 / -1; }
     .booking-create-label { color: var(--nexora-subtle); font-size: 10px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
     .booking-create-field textarea.booking-input { height: 78px; padding: 10px 11px; resize: vertical; }
-    .booking-service-chips { display: flex; max-height: 160px; flex-wrap: wrap; gap: 6px; overflow-y: auto; }
-    .booking-service-chip-button { border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 6px 9px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; line-height: 1.25; text-align: left; transition: background 0.2s, border-color 0.2s, color 0.2s; }
-    .booking-service-duration { font-weight: 400; }
+    .booking-service-picker { display: grid; gap: 8px; }
+    .booking-service-search-shell { position: relative; display: flex; align-items: center; }
+    .booking-service-search-shell i { position: absolute; left: 11px; color: var(--nexora-subtle); font-size: 13px; pointer-events: none; }
+    .booking-service-search { width: 100%; height: 36px; border: 1px solid var(--nexora-border); border-radius: 9px; background: #fff; padding: 0 11px 0 31px; color: var(--nexora-text); font-size: 12px; font-weight: 600; }
+    .booking-service-search:focus { outline: 0; border-color: var(--nexora-brand); box-shadow: 0 0 0 2px rgba(70, 72, 216, .12); }
+    .booking-service-categories { display: grid; max-height: 280px; gap: 7px; overflow-y: auto; padding-right: 2px; }
+    .booking-service-category { overflow: hidden; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; }
+    .booking-service-category-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--nexora-rule); background: #f8faff; padding: 8px 10px; cursor: pointer; }
+    .booking-service-category-head::-webkit-details-marker { display: none; }
+    .booking-service-category-head::after { content: '⌄'; color: var(--nexora-subtle); font-size: 14px; font-weight: 900; line-height: 1; transition: transform .2s ease; }
+    .booking-service-category:not([open]) .booking-service-category-head::after { transform: rotate(-90deg); }
+    .booking-service-category-name { color: var(--nexora-text); font-size: 10px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
+    .booking-service-category-count { flex-shrink: 0; border-radius: 999px; background: #e9edff; padding: 2px 7px; color: var(--nexora-brand); font-size: 10px; font-weight: 800; }
+    .booking-service-category-options { display: grid; gap: 6px; padding: 8px; }
+    .booking-service-chips { display: grid; max-height: 160px; gap: 6px; overflow-y: auto; }
+    .booking-service-chip-button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 8px 9px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; line-height: 1.25; text-align: left; transition: background 0.2s, border-color 0.2s, color 0.2s; }
     .booking-service-chip-button:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
     .booking-service-chip-button.is-selected { border-color: transparent; background: var(--nexora-brand); color: #fff; }
+    .booking-service-chip-button[hidden] { display: none; }
+    .booking-service-option-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .booking-service-option-meta { flex-shrink: 0; color: var(--nexora-subtle); font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .booking-service-chip-button.is-selected .booking-service-option-meta { color: rgba(255, 255, 255, .82); }
+    .booking-service-empty { padding: 12px; color: var(--nexora-subtle); font-size: 11px; font-weight: 700; text-align: center; }
+    .booking-ticket-builder-grid { display: grid; grid-template-columns: 1fr; gap: 8px; align-items: end; }
+    .booking-ticket-field { position: relative; display: grid; gap: 5px; min-width: 0; }
+    .booking-ticket-field > label { color: var(--nexora-muted); font-size: 10px; font-weight: 800; }
+    .booking-ticket-dropdown { position: absolute; z-index: 12; top: calc(100% + 4px); left: 0; right: 0; display: grid; max-height: 220px; gap: 4px; overflow-y: auto; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 6px; box-shadow: 0 12px 28px rgba(38, 43, 89, .14); }
+    .booking-ticket-dropdown[hidden] { display: none; }
+    .booking-ticket-dropdown button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid transparent; border-radius: 7px; background: #fff; padding: 8px; color: var(--nexora-muted); font-size: 11px; font-weight: 700; text-align: left; }
+    .booking-ticket-dropdown button:hover, .booking-ticket-dropdown button.is-selected { border-color: var(--nexora-brand); background: #f4f3ff; color: var(--nexora-brand); }
+    .booking-ticket-dropdown button[hidden] { display: none; }
+    .booking-ticket-add { width: 100%; height: 36px; white-space: nowrap; }
+    .booking-ticket-list { display: grid; gap: 6px; margin-top: 9px; }
+    .booking-ticket-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px; border: 1px solid var(--nexora-border); border-radius: 9px; background: #fbfcff; padding: 8px 9px; }
+    .booking-ticket-row-main { display: grid; gap: 2px; min-width: 0; }
+    .booking-ticket-row-main strong { overflow: hidden; color: var(--nexora-text); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .booking-ticket-row-main span, .booking-ticket-row-meta { color: var(--nexora-muted); font-size: 10px; font-weight: 700; }
+    .booking-ticket-row-meta { white-space: nowrap; }
+    .booking-ticket-remove { display: inline-grid; width: 24px; height: 24px; place-items: center; border: 0; border-radius: 6px; background: transparent; color: var(--nexora-subtle); }
+    .booking-ticket-remove:hover { background: #fff0f3; color: #d33d67; }
+    .booking-ticket-empty { border: 1px dashed var(--nexora-border); border-radius: 9px; padding: 10px; color: var(--nexora-subtle); font-size: 10px; font-weight: 700; text-align: center; }
+    @media (max-width: 520px) { .booking-ticket-builder-grid { grid-template-columns: 1fr; } .booking-ticket-add { width: 100%; } }
+    .booking-service-duration { font-weight: 400; }
     .booking-service-summary,
     .appointment-service-summary { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
     .booking-service-summary-item,
@@ -7964,7 +8002,7 @@
 
                 </div>
 
-                <div class="booking-appointment-layout" data-booking-view-mode="table">
+                <div class="booking-appointment-layout" data-booking-view-mode="calendar">
                   <div class="booking-appointment-main">
                     <div class="booking-grid">
                       <article class="overview-card overview-card-pad">
@@ -8399,8 +8437,8 @@
                           <input class="booking-input" type="text" maxlength="60" data-booking-create-field="name" placeholder="Enter customer name" autocomplete="name">
                         </label>
                         <label class="booking-create-field is-full">
-                          <span class="booking-create-label">Services * <span class="booking-create-hint">Tap to pick several</span></span>
-                          <div class="booking-service-chips" data-booking-create-field="service" role="group" aria-label="Select one or more services"></div>
+                          <span class="booking-create-label">Service — Technician *</span>
+                          <div class="booking-create-ticket-host" data-booking-create-ticket-host></div>
                           <div class="booking-service-summary" aria-live="polite">
                             <span class="booking-service-summary-item">
                               <span class="booking-service-summary-label">Total price:</span>
@@ -10196,6 +10234,8 @@
   </div>
 
   <script src="../assets/salon-data.js"></script>
+  <script src="../assets/appointment-service-catalog.js"></script>
+  <script src="../assets/appointment-tickets.js"></script>
   <script src="../assets/appointments-store.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@daypilot/daypilot-lite-javascript@5.9.0/daypilot-javascript.min.js"></script>
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
@@ -10226,8 +10266,12 @@
     var bookingCalendarDate = BOOKING_TODAY_DATE;
     var salonData = window.NEXORA_SALON_DATA;
     var appointmentStore = window.NEXORA_APPOINTMENTS_STORE;
+    var appointmentTicketUtils = window.NEXORA_APPOINTMENT_TICKETS;
+    var appointmentServiceCatalogLoader = window.NEXORA_APPOINTMENT_SERVICE_CATALOG;
+    var appointmentServiceCatalog = null;
+    var APPOINTMENT_SERVICE_CATALOG_URL = '../assets/booking-service-catalog-draft.json';
     var catalog = salonData.loadCatalog();
-    var BOOKING_CALENDAR_SERVICE_OPTIONS = null;
+    var BOOKING_CALENDAR_SERVICE_OPTIONS = [];
     var BOOKING_CALENDAR_COLORS = {
       t1: { bg: '#ebe6ff', border: '#7456e9', text: '#272343' },
       t2: { bg: '#e0f3f8', border: '#2b96ba', text: '#173a47' },
@@ -10246,17 +10290,23 @@
       catalog = salonData.loadCatalog();
       BOOKING_CALENDAR_SERVICE_OPTIONS = [];
       BOOKING_CALENDAR_SERVICE_DURATIONS = {};
-      catalog.services.filter(function(service) { return service.active; }).forEach(function(service) {
+      var serviceSource = appointmentServiceCatalog && appointmentServiceCatalog.services.length
+        ? appointmentServiceCatalog.services
+        : catalog.services.filter(function(service) { return service.active; });
+      serviceSource.forEach(function(service) {
+        var salonService = salonData.findService(catalog, service.id) || salonData.findService(catalog, service.name);
         BOOKING_CALENDAR_SERVICE_OPTIONS.push({
           name: service.name,
           price: service.price,
-          duration: service.durationMin,
+          duration: service.durationMin || 60,
           serviceId: service.id,
           icon: service.icon || '✨',
-          requiredSkill: service.requiredSkill || ''
+          requiredSkill: service.requiredSkill || (salonService ? salonService.requiredSkill : '') || '',
+          categoryId: service.categoryId || 'category-other',
+          categoryName: service.categoryName || service.requiredSkill || 'Other services'
         });
         [service.name].concat(service.aliases || []).forEach(function(label) {
-          BOOKING_CALENDAR_SERVICE_DURATIONS[label] = service.durationMin;
+          BOOKING_CALENDAR_SERVICE_DURATIONS[label] = service.durationMin || 60;
         });
       });
       BOOKING_CALENDAR_TECHNICIANS = catalog.technicians.filter(function(technician) { return technician.active; }).map(function(technician) { return technician.id; });
@@ -10277,6 +10327,19 @@
     }
 
     rebuildBookingCatalogViews();
+
+    function loadBookingAppointmentServiceCatalog() {
+      if (!appointmentServiceCatalogLoader || typeof appointmentServiceCatalogLoader.load !== 'function') return;
+      appointmentServiceCatalogLoader.load(APPOINTMENT_SERVICE_CATALOG_URL).then(function(nextCatalog) {
+        appointmentServiceCatalog = nextCatalog;
+        rebuildBookingCatalogViews();
+        if (bookingPanelMode) renderBookingAppointmentPanel();
+        var createModal = document.querySelector('[data-booking-create-modal]');
+        if (createModal && !createModal.hidden) populateBookingCreateForm();
+      }).catch(function() {
+        // Keep the salon catalog fallback when the JSON is unavailable in file-only previews.
+      });
+    }
 
     function renderLucideIcons() {
       if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -10349,6 +10412,8 @@
       document.querySelectorAll('[data-tab-panel]').forEach(function(panel) {
         panel.classList.toggle('is-active', panel.dataset.tabPanel === activeTarget);
       });
+
+      if (activeTarget === 'booking') setBookingViewMode('calendar');
 
       if (window.NEXORA_SHELL && window.NEXORA_SHELL.setActiveTab) window.NEXORA_SHELL.setActiveTab(activeTarget);
 
@@ -10549,9 +10614,17 @@
     var bookingPanelMode = null;
     var bookingPanelAppointmentId = null;
     var bookingPanelDraft = null;
+    var bookingPanelTickets = [];
+    var bookingPanelSelectedServiceId = '';
+    var bookingPanelSelectedTechId = null;
+    var bookingPanelSelectedTechName = 'Anyone';
     var bookingPanelServices = {};
     var bookingPanelExternalServices = [];
     var bookingPanelWarning = '';
+    var bookingCreateTickets = [];
+    var bookingCreateSelectedServiceId = '';
+    var bookingCreateSelectedTechId = null;
+    var bookingCreateSelectedTechName = 'Anyone';
 
     function bookingPanelRecordById(id) {
       return appointmentStore.loadAll(null, catalog).find(function(record) {
@@ -10572,9 +10645,98 @@
       }) || null;
     }
 
+    function bookingPanelTicketCatalog() {
+      return {
+        services: BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
+          return { id: option.serviceId, name: option.name, price: option.price, durationMin: option.duration };
+        }),
+        technicians: BOOKING_CALENDAR_TECHNICIANS.map(function(id) {
+          var technician = bookingTechByValue(id);
+          return { id: id, name: technician ? technician.name : id };
+        })
+      };
+    }
+
+    function bookingPanelTicketRowsMarkup() {
+      return bookingPanelTickets.map(function(ticket, index) {
+        var price = ticket.price == null ? '—' : '$' + Number(ticket.price).toFixed(2).replace(/\.00$/, '');
+        return '<div class="booking-ticket-row"><div class="booking-ticket-row-main"><strong>' + escapeHtml(ticket.serviceName || 'Service') + '</strong><span>' + escapeHtml(ticket.technicianName || 'Anyone') + '</span></div><div class="booking-ticket-row-meta">' + price + ' · ' + ticket.durationMin + ' min</div><button class="booking-ticket-remove" type="button" data-booking-panel-ticket-remove="' + index + '" aria-label="Remove ' + escapeHtml(ticket.serviceName || 'service') + '"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>';
+      }).join('') || '<div class="booking-ticket-empty">Add one service and assign a technician. Anyone is used by default.</div>';
+    }
+
+    function bookingPanelTicketTotals() {
+      return appointmentTicketUtils && appointmentTicketUtils.ticketTotals
+        ? appointmentTicketUtils.ticketTotals(bookingPanelTickets)
+        : { price: 0, duration: 0 };
+    }
+
+    function bookingPanelTicketPickerMarkup() {
+      var services = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
+        var price = option.price == null ? '—' : option.price;
+        return '<button class="booking-service-chip-button" type="button" data-booking-panel-ticket-service="' + escapeHtml(option.serviceId) + '" data-service-name="' + escapeHtml(option.name) + '" data-category-name="' + escapeHtml(option.categoryName || 'Other services') + '"><span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">$' + price + ' · ' + option.duration + ' min</span></button>';
+      }).join('');
+      var technicians = '<button class="booking-ticket-option is-selected" type="button" data-booking-panel-ticket-tech="" data-tech-name="Anyone"><span>Anyone</span><span class="booking-service-option-meta">No technician assigned</span></button>' +
+        BOOKING_CALENDAR_TECHNICIANS.map(function(id) {
+          return '<button class="booking-ticket-option" type="button" data-booking-panel-ticket-tech="' + escapeHtml(id) + '" data-tech-name="' + escapeHtml(bookingTechName(id)) + '"><span>' + escapeHtml(bookingTechName(id)) + '</span></button>';
+        }).join('');
+      return '<div class="booking-ticket-builder-grid" data-booking-ticket-picker>' +
+        '<div class="booking-ticket-field"><label>Service</label><div class="booking-service-search-shell"><i class="bi bi-search" aria-hidden="true"></i><input class="booking-service-search" type="search" placeholder="Search service..." aria-label="Search service" data-booking-service-search data-booking-panel-ticket-service-search autocomplete="off"><div class="booking-ticket-dropdown" data-booking-panel-ticket-service-results data-booking-service-category hidden>' + services + '<div class="booking-service-empty" data-booking-panel-ticket-empty hidden>No matching services found.</div></div></div></div>' +
+        '<div class="booking-ticket-field"><label>Technician</label><div class="booking-service-search-shell"><i class="bi bi-person-badge" aria-hidden="true"></i><input class="booking-service-search" type="search" value="Anyone" placeholder="Search technician..." aria-label="Search technician" data-booking-panel-ticket-tech-search autocomplete="off"><div class="booking-ticket-dropdown" data-booking-panel-ticket-tech-results hidden>' + technicians + '</div></div></div>' +
+        '<button class="booking-primary-button booking-ticket-add" type="button" data-booking-panel-ticket-add><i class="bi bi-plus-lg" aria-hidden="true"></i>Add</button></div>';
+    }
+
+    function filterBookingPanelTicketServices(input) {
+      var picker = input && input.closest('[data-booking-ticket-picker]');
+      if (!picker) return;
+      var query = String(input.value || '').trim().toLowerCase();
+      var count = 0;
+      picker.querySelectorAll('[data-booking-panel-ticket-service]').forEach(function(button) {
+        var haystack = (button.dataset.serviceName || '') + ' ' + (button.dataset.categoryName || '');
+        var visible = !query || haystack.toLowerCase().indexOf(query) !== -1;
+        button.hidden = !visible;
+        if (visible) count++;
+      });
+      var empty = picker.querySelector('[data-booking-panel-ticket-empty]');
+      var results = picker.querySelector('[data-booking-panel-ticket-service-results]');
+      if (!query) {
+        picker.querySelectorAll('[data-booking-panel-ticket-service]').forEach(function(button) { button.hidden = false; });
+        if (empty) empty.hidden = true;
+        if (results) results.hidden = true;
+        return;
+      }
+      if (empty) empty.hidden = count !== 0;
+      if (results) results.hidden = false;
+    }
+
+    function filterBookingPanelTicketTechs(input) {
+      var picker = input && input.closest('[data-booking-ticket-picker]');
+      var results = picker && picker.querySelector('[data-booking-panel-ticket-tech-results]');
+      if (!results) return;
+      var query = String(input.value || '').trim().toLowerCase();
+      if (!query) {
+        results.querySelectorAll('[data-booking-panel-ticket-tech]').forEach(function(button) { button.hidden = false; });
+        results.hidden = true;
+        return;
+      }
+      results.hidden = false;
+      results.querySelectorAll('[data-booking-panel-ticket-tech]').forEach(function(button) {
+        button.hidden = !query || String(button.dataset.techName || '').toLowerCase().indexOf(query) !== -1;
+      });
+    }
+
     function bookingPanelDraftFromRecord(record) {
       var start = record && record.startAt ? record.startAt : bookingCalendarDate + 'T10:00:00';
       var names = bookingPanelServiceNames(record || {});
+      var rawTickets = record && Array.isArray(record.tickets) && record.tickets.length ? record.tickets : names.map(function(name, index) {
+        var detail = record && record.serviceDetails ? record.serviceDetails[index] : {};
+        return { id: 'ticket-' + (index + 1), serviceId: detail && detail.id, serviceName: name, price: detail && detail.price, durationMin: detail && detail.durationMin, technicianId: record && record.technicianId, technicianName: record && record.technicianName };
+      });
+      bookingPanelTickets = appointmentTicketUtils && appointmentTicketUtils.normalizeTickets
+        ? appointmentTicketUtils.normalizeTickets(rawTickets, bookingPanelTicketCatalog())
+        : rawTickets;
+      bookingPanelSelectedServiceId = '';
+      bookingPanelSelectedTechId = null;
+      bookingPanelSelectedTechName = 'Anyone';
       bookingPanelServices = {};
       bookingPanelExternalServices = [];
       names.forEach(function(name) {
@@ -10603,6 +10765,7 @@
     }
 
     function bookingPanelSelectedServiceTotals() {
+      if (bookingPanelTickets.length) return bookingPanelTicketTotals();
       var services = bookingPanelSelectedServiceNames();
       return {
         price: bookingServicePriceTotal(services),
@@ -10615,9 +10778,69 @@
     }
 
     function bookingPanelSelectedServiceDuration() {
+      if (bookingPanelTickets.length) return bookingPanelTicketTotals().duration || 60;
       var services = bookingPanelSelectedServiceNames();
       if (!services.length) return Number(bookingPanelDraft && bookingPanelDraft.duration) || 60;
       return bookingServiceDurationMinutes(services) || 60;
+    }
+
+    function bookingServicePickerCategories() {
+      var categories = [];
+      BOOKING_CALENDAR_SERVICE_OPTIONS.forEach(function(option) {
+        var category = categories.find(function(item) { return item.id === option.categoryId; });
+        if (!category) {
+          category = { id: option.categoryId, name: option.categoryName || 'Other services', services: [] };
+          categories.push(category);
+        }
+        category.services.push(option);
+      });
+      return categories;
+    }
+
+    function bookingServicePickerMarkup(mode, selectedNames) {
+      var selected = {};
+      (selectedNames || []).forEach(function(name) { selected[String(name).toLowerCase()] = true; });
+      var categories = bookingServicePickerCategories();
+      var buttons = categories.map(function(category) {
+        var serviceButtons = category.services.map(function(option) {
+          var isSelected = Boolean(selected[option.name.toLowerCase()]);
+          var price = option.price == null ? '—' : option.price;
+          var buttonAttributes = mode === 'create'
+            ? 'data-booking-create-service="' + escapeHtml(option.name) + '"'
+            : 'data-booking-panel-select="service" data-service-name="' + escapeHtml(option.name) + '"';
+          return '<button class="booking-service-chip-button' + (isSelected ? ' is-selected' : '') + '" type="button" ' + buttonAttributes + ' data-service-category="' + escapeHtml(category.name) + '" aria-pressed="' + (isSelected ? 'true' : 'false') + '">' +
+            '<span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">$' + price + ' · ' + option.duration + ' min</span></button>';
+        }).join('');
+        var categoryOpen = category.services.some(function(option) { return selected[option.name.toLowerCase()]; });
+        return '<details class="booking-service-category" data-booking-service-category data-category-name="' + escapeHtml(category.name) + '"' + (categoryOpen ? ' open' : '') + '>' +
+          '<summary class="booking-service-category-head"><span class="booking-service-category-name">' + escapeHtml(category.name) + '</span><span class="booking-service-category-count">' + category.services.length + '</span></summary>' +
+          '<div class="booking-service-category-options">' + serviceButtons + '</div></details>';
+      }).join('');
+      return '<div class="booking-service-picker" data-booking-service-picker data-booking-service-picker-mode="' + mode + '">' +
+        '<div class="booking-service-search-shell"><i class="bi bi-search" aria-hidden="true"></i><input class="booking-service-search" type="search" placeholder="Search services..." aria-label="Search services" data-booking-service-search></div>' +
+        '<div class="booking-service-categories" data-booking-service-results>' + buttons + '<div class="booking-service-empty" data-booking-service-empty hidden>No matching services found.</div></div></div>';
+    }
+
+    function filterBookingServicePicker(input) {
+      var picker = input && input.closest('[data-booking-service-picker]');
+      if (!picker) return;
+      var query = String(input.value || '').trim().toLowerCase();
+      var visibleCount = 0;
+      picker.querySelectorAll('[data-booking-service-category]').forEach(function(category) {
+        var categoryName = String(category.dataset.categoryName || '').toLowerCase();
+        var categoryVisible = 0;
+        category.querySelectorAll('[data-booking-create-service], [data-booking-panel-select="service"]').forEach(function(button) {
+          var haystack = (button.dataset.serviceName || button.dataset.bookingCreateService || '') + ' ' + categoryName;
+          var visible = !query || haystack.toLowerCase().indexOf(query) !== -1;
+          button.hidden = !visible;
+          if (visible) categoryVisible++;
+        });
+        category.hidden = categoryVisible === 0;
+        if (query && categoryVisible) category.open = true;
+        visibleCount += categoryVisible;
+      });
+      var empty = picker.querySelector('[data-booking-service-empty]');
+      if (empty) empty.hidden = visibleCount !== 0;
     }
 
     function bookingPanelSyncDraft() {
@@ -10628,7 +10851,7 @@
       };
       bookingPanelDraft.name = value('name').trim();
       bookingPanelDraft.phone = value('phone').trim();
-      bookingPanelDraft.tech = bookingCalendarResourceTech(value('tech'));
+      bookingPanelDraft.tech = 'unassigned';
       bookingPanelDraft.date = value('date');
       bookingPanelDraft.time = value('time');
       bookingPanelDraft.duration = bookingPanelSelectedServiceDuration();
@@ -10651,24 +10874,7 @@
       var editing = bookingPanelMode === 'edit';
       bookingPanelDraft.duration = bookingPanelSelectedServiceDuration();
       var panelServiceTotals = bookingPanelSelectedServiceTotals();
-      var serviceButtons = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
-        var selected = Boolean(bookingPanelServices[option.name]);
-        return '<button class="booking-service-chip-button' + (selected ? ' is-selected' : '') + '" type="button" data-booking-panel-select="service" data-service-name="' + escapeHtml(option.name) + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
-          escapeHtml(option.name) + ' · $' + (option.price == null ? '—' : option.price) + ' · <span class="booking-service-duration">' + option.duration + ' min</span></button>';
-      }).join('');
-      var externalServices = bookingPanelExternalServices.map(function(name) {
-        return '<span class="booking-service-chip is-external" title="Imported service">' + escapeHtml(bookingServiceDisplayName(name)) + '</span>';
-      }).join('');
-      var requiredSkills = bookingPanelSelectedServiceNames().map(function(name) {
-        var option = bookingPanelServiceOption(name);
-        return option && option.requiredSkill ? option.requiredSkill : '';
-      }).filter(function(skill, index, skills) { return skill && skills.indexOf(skill) === index; });
-      var techOptions = '<option value="unassigned"' + (bookingPanelDraft.tech === 'unassigned' ? ' selected' : '') + '>✨ Unassigned — first available</option>' +
-        BOOKING_CALENDAR_TECHNICIANS.map(function(id) {
-          var technician = bookingTechByValue(id);
-          var missing = requiredSkills.filter(function(skill) { return !(technician && (technician.skills || []).indexOf(skill) !== -1); });
-          return '<option value="' + escapeHtml(id) + '"' + (bookingPanelDraft.tech === id ? ' selected' : '') + '>' + escapeHtml(bookingTechName(id)) + (missing.length ? ' — missing ' + escapeHtml(missing.join(', ')) : '') + '</option>';
-        }).join('');
+      var ticketPicker = bookingPanelTicketPickerMarkup();
       var statusOptions = [
         { id: 'pending', label: 'Pending' },
         { id: 'confirmed', label: 'Confirmed' },
@@ -10687,8 +10893,7 @@
         '<div class="booking-panel-form">' +
         '<label class="booking-create-field"><span class="booking-create-label">Customer</span><input class="booking-input" type="text" maxlength="60" data-booking-panel-field="name" value="' + escapeHtml(bookingPanelDraft.name) + '"></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Phone</span><input class="booking-input" type="tel" maxlength="20" data-booking-panel-field="phone" value="' + escapeHtml(bookingPanelDraft.phone) + '"></label>' +
-        '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Services (tap to pick several)</span><div class="booking-service-chips" data-booking-panel-field="services">' + serviceButtons + externalServices + '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-price>$' + panelServiceTotals.price + '</strong></span><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total time:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-duration>' + panelServiceTotals.duration + ' min</strong></span></div></div>' +
-        '<label class="booking-create-field"><span class="booking-create-label">Tech</span><select class="booking-select" data-booking-panel-field="tech">' + techOptions + '</select></label>' +
+        '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Service — Technician</span>' + ticketPicker + '<div class="booking-ticket-list" data-booking-panel-ticket-list>' + bookingPanelTicketRowsMarkup() + '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-price>$' + panelServiceTotals.price + '</strong></span><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total time:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-duration>' + panelServiceTotals.duration + ' min</strong></span></div></div>' +
         '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Date</span><input class="booking-input" type="date" data-booking-panel-field="date" value="' + escapeHtml(bookingPanelDraft.date) + '"></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Start time</span><input class="booking-input" type="time" step="900" data-booking-panel-field="time" value="' + escapeHtml(bookingPanelDraft.time) + '"></label></div>' +
         '<label class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Status</span><select class="booking-select" data-booking-panel-field="status">' + statusOptions + '</select></label>' +
@@ -10721,6 +10926,10 @@
       bookingPanelAppointmentId = null;
       bookingPanelMode = 'new';
       bookingPanelWarning = '';
+      bookingPanelTickets = [];
+      bookingPanelSelectedServiceId = '';
+      bookingPanelSelectedTechId = null;
+      bookingPanelSelectedTechName = 'Anyone';
       bookingPanelServices = {};
       bookingPanelExternalServices = [];
       bookingPanelDraft = {
@@ -10758,40 +10967,45 @@
 
     function bookingPanelCanonicalPayload() {
       bookingPanelSyncDraft();
-      var services = bookingPanelSelectedServiceNames();
+      var services = bookingPanelTickets.map(function(ticket) { return ticket.serviceName; });
       if (!bookingPanelDraft.phone) return { error: 'Enter the phone number.' };
       if (!bookingPanelDraft.name) return { error: 'Enter the customer name.' };
-      if (!services.length) return { error: 'Select at least one service.' };
+      if (!bookingPanelTickets.length) return { error: 'Add at least one service.' };
       if (!bookingPanelDraft.date || !bookingPanelDraft.time) return { error: 'Pick a valid date and start time.' };
 
       var start = new Date(bookingPanelDraft.date + 'T' + bookingPanelDraft.time + ':00');
       if (!Number.isFinite(start.getTime())) return { error: 'Pick a valid date and start time.' };
-      var end = new Date(start.getTime() + bookingPanelDraft.duration * 60000);
+      var scheduledTickets = appointmentTicketUtils && appointmentTicketUtils.scheduleTickets
+        ? appointmentTicketUtils.scheduleTickets(bookingPanelTickets, formatBookingCalendarDateTime(start))
+        : bookingPanelTickets;
+      var end = new Date(start.getTime() + (bookingPanelDraft.duration || 60) * 60000);
+      scheduledTickets.forEach(function(ticket) { var ticketEnd = new Date(ticket.endAt); if (ticketEnd > end) end = ticketEnd; });
       var startAt = formatBookingCalendarDateTime(start);
       var endAt = formatBookingCalendarDateTime(end);
-      var tech = bookingPanelDraft.tech === 'unassigned' ? null : bookingPanelDraft.tech;
-      if (appointmentStore.hasConflict(appointmentStore.loadAll(null, catalog), { technicianId: tech, startAt: startAt, endAt: endAt }, bookingPanelAppointmentId)) {
-        return { error: (tech ? bookingTechName(tech) : 'This technician') + ' already has an overlapping appointment. Change the time or technician.' };
+      var conflict = scheduledTickets.some(function(ticket) {
+        return ticket.technicianId && appointmentStore.hasConflict(appointmentStore.loadAll(null, catalog), { technicianId: ticket.technicianId, startAt: ticket.startAt, endAt: ticket.endAt }, bookingPanelAppointmentId);
+      });
+      if (conflict) {
+        return { error: 'A technician already has an overlapping ticket. Change the time or technician.' };
       }
 
       var status = appointmentStore.mapBookingStatus(bookingPanelDraft.status);
-      var serviceIds = services.map(function(name) {
-        var service = salonData.findService(catalog, name);
-        return service ? service.id : null;
-      }).filter(Boolean);
+      var parentTechId = appointmentTicketUtils && appointmentTicketUtils.parentTechnicianId ? appointmentTicketUtils.parentTechnicianId(scheduledTickets) : null;
       var existing = bookingPanelAppointmentId ? bookingPanelRecordById(bookingPanelAppointmentId) : null;
       return {
         payload: {
           id: existing ? existing.id : 'booking-frontdesk-' + Date.now(),
           customerName: bookingPanelDraft.name,
           phone: bookingPanelDraft.phone,
-          serviceIds: serviceIds,
+          serviceIds: scheduledTickets.map(function(ticket) { return ticket.serviceId; }),
           serviceNames: services,
-          technicianId: tech,
-          technicianName: tech ? bookingTechName(tech) : null,
+          serviceDetails: scheduledTickets.map(function(ticket) { return { id: ticket.serviceId, name: ticket.serviceName, price: ticket.price, durationMin: ticket.durationMin, icon: '✨' }; }),
+          tickets: scheduledTickets,
+          technicianId: parentTechId,
+          technicianName: parentTechId ? bookingTechName(parentTechId) : '',
           startAt: startAt,
           endAt: endAt,
-          durationMin: bookingPanelDraft.duration,
+          durationMin: Math.max(15, Math.round((end - start) / 60000)),
           status: status.status,
           smsStatus: status.smsStatus,
           source: existing ? existing.source : 'manual-add',
@@ -10981,7 +11195,7 @@
       return formatBookingCalendarDateTime(end);
     }
 
-    function bookingCalendarEvent(item, columns) {
+    function bookingCalendarEvent(item, columns, ticket) {
       var booking = bookingPanelRecordById(item.dataset.bookingId) || {
         customerName: item.dataset.bookingName || 'Guest',
         phone: item.dataset.bookingPhone || '',
@@ -10990,16 +11204,16 @@
         technicianName: bookingCalendarTechLabel(item.dataset.bookingTech),
         serviceNames: [getBookingServiceText(item)]
       };
-      var tech = bookingCalendarResourceTech(item.dataset.bookingTech);
+      var tech = bookingCalendarResourceTech(ticket ? ticket.technicianId : item.dataset.bookingTech);
       var color = bookingCalendarColor(tech, columns);
-      var start = bookingCalendarAppointmentStart(item);
-      var minutes = bookingCalendarDurationMinutes(item);
-      var service = bookingCalendarServiceSummary(booking);
+      var start = ticket && ticket.startAt ? ticket.startAt : bookingCalendarAppointmentStart(item);
+      var minutes = ticket && ticket.durationMin ? Number(ticket.durationMin) : bookingCalendarDurationMinutes(item);
+      var service = ticket ? bookingCalendarServiceSummary({ serviceDetails: [{ name: ticket.serviceName, price: ticket.price, durationMin: ticket.durationMin }] }) : bookingCalendarServiceSummary(booking);
       var status = booking.status || getBookingStatusText(item);
       var source = bookingCalendarSourceLabel(booking.source || item.dataset.bookingSource || 'booking-book');
       var phone = booking.phone || item.dataset.bookingPhone || '';
       var note = booking.note || item.dataset.bookingNote || '';
-      var techLabel = booking.technicianName || bookingCalendarTechLabel(tech);
+      var techLabel = ticket ? (ticket.technicianName || bookingCalendarTechLabel(tech)) : (booking.technicianName || bookingCalendarTechLabel(tech));
       var dateLabel = bookingCalendarDisplayDate(new Date(start));
       var timeLabel = bookingCalendarDisplayTime(new Date(start));
       var tooltip = [
@@ -11015,7 +11229,9 @@
         note ? 'Note: ' + note : ''
       ].filter(Boolean).join(' · ');
       return {
-        id: item.dataset.bookingId,
+        id: item.dataset.bookingId + '::' + (ticket ? ticket.id : 'ticket-1'),
+        orderId: item.dataset.bookingId,
+        ticketId: ticket ? ticket.id : 'ticket-1',
         text: booking.customerName || item.dataset.bookingName || 'Guest',
         start: start,
         end: bookingCalendarEnd(start, minutes),
@@ -11044,9 +11260,17 @@
       if (!bookingTeamCalendar) return;
       var rows = bookingCalendarRows();
       var columns = bookingCalendarColumns(rows);
-      var events = rows.filter(function(item) {
+      var events = [];
+      rows.filter(function(item) {
         return !item.hidden && item.dataset.bookingDate === bookingCalendarDate;
-      }).map(function(item) { return bookingCalendarEvent(item, columns); });
+      }).forEach(function(item) {
+        var record = bookingPanelRecordById(item.dataset.bookingId);
+        var tickets = record && Array.isArray(record.tickets) && record.tickets.length ? record.tickets : [null];
+        tickets.forEach(function(ticket) {
+          if (ticket && String(ticket.startAt || '').slice(0, 10) !== bookingCalendarDate) return;
+          events.push(bookingCalendarEvent(item, columns, ticket));
+        });
+      });
       bookingTeamCalendar.update({ startDate: bookingCalendarDate, columns: columns, events: events });
       updateBookingCalendarDateLabel();
     }
@@ -11094,7 +11318,75 @@
       button.setAttribute('aria-pressed', selected ? 'true' : 'false');
     }
 
+    function bookingCreateTicketMarkup() {
+      var services = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
+        var price = option.price == null ? '—' : option.price;
+        return '<button class="booking-service-chip-button" type="button" data-booking-create-ticket-service="' + escapeHtml(option.serviceId) + '" data-service-name="' + escapeHtml(option.name) + '" data-category-name="' + escapeHtml(option.categoryName || 'Other services') + '"><span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">$' + price + ' · ' + option.duration + ' min</span></button>';
+      }).join('');
+      var technicians = '<button class="booking-ticket-option is-selected" type="button" data-booking-create-ticket-tech="" data-tech-name="Anyone"><span>Anyone</span><span class="booking-service-option-meta">No technician assigned</span></button>' + BOOKING_CALENDAR_TECHNICIANS.map(function(id) {
+        return '<button class="booking-ticket-option" type="button" data-booking-create-ticket-tech="' + escapeHtml(id) + '" data-tech-name="' + escapeHtml(bookingTechName(id)) + '"><span>' + escapeHtml(bookingTechName(id)) + '</span></button>';
+      }).join('');
+      var rows = bookingCreateTickets.map(function(ticket, index) {
+        var price = ticket.price == null ? '—' : '$' + Number(ticket.price).toFixed(2).replace(/\.00$/, '');
+        return '<div class="booking-ticket-row"><div class="booking-ticket-row-main"><strong>' + escapeHtml(ticket.serviceName) + '</strong><span>' + escapeHtml(ticket.technicianName || 'Anyone') + '</span></div><div class="booking-ticket-row-meta">' + price + ' · ' + ticket.durationMin + ' min</div><button class="booking-ticket-remove" type="button" data-booking-create-ticket-remove="' + index + '" aria-label="Remove service"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>';
+      }).join('') || '<div class="booking-ticket-empty">Add one service and assign a technician. Anyone is used by default.</div>';
+      return '<div class="booking-ticket-builder-grid" data-booking-create-ticket-picker>' +
+        '<div class="booking-ticket-field"><label>Service</label><div class="booking-service-search-shell"><i class="bi bi-search" aria-hidden="true"></i><input class="booking-service-search" type="search" placeholder="Search service..." data-booking-create-ticket-service-search autocomplete="off"><div class="booking-ticket-dropdown" data-booking-create-ticket-service-results data-booking-service-category hidden>' + services + '<div class="booking-service-empty" data-booking-create-ticket-empty hidden>No matching services found.</div></div></div></div>' +
+        '<div class="booking-ticket-field"><label>Technician</label><div class="booking-service-search-shell"><i class="bi bi-person-badge" aria-hidden="true"></i><input class="booking-service-search" type="search" value="Anyone" placeholder="Search technician..." data-booking-create-ticket-tech-search autocomplete="off"><div class="booking-ticket-dropdown" data-booking-create-ticket-tech-results hidden>' + technicians + '</div></div></div>' +
+        '<button class="booking-primary-button booking-ticket-add" type="button" data-booking-create-ticket-add><i class="bi bi-plus-lg" aria-hidden="true"></i>Add</button></div>' +
+        '<div class="booking-ticket-list" data-booking-create-ticket-list>' + rows + '</div>';
+    }
+
+    function renderBookingCreateTicketPicker() {
+      var host = document.querySelector('[data-booking-create-ticket-host]');
+      if (host) host.innerHTML = bookingCreateTicketMarkup();
+      var totals = appointmentTicketUtils && appointmentTicketUtils.ticketTotals ? appointmentTicketUtils.ticketTotals(bookingCreateTickets) : { price: 0, duration: 0 };
+      var price = document.querySelector('[data-booking-create-total-price]');
+      var duration = document.querySelector('[data-booking-create-total-duration]');
+      if (price) price.textContent = '$' + totals.price;
+      if (duration) duration.textContent = totals.duration + ' min';
+    }
+
+    function filterBookingCreateTicketServices(input) {
+      var picker = input && input.closest('[data-booking-create-ticket-picker]');
+      if (!picker) return;
+      var query = String(input.value || '').trim().toLowerCase();
+      var count = 0;
+      picker.querySelectorAll('[data-booking-create-ticket-service]').forEach(function(button) {
+        var visible = !query || ((button.dataset.serviceName || '') + ' ' + (button.dataset.categoryName || '')).toLowerCase().indexOf(query) !== -1;
+        button.hidden = !visible;
+        if (visible) count++;
+      });
+      var empty = picker.querySelector('[data-booking-create-ticket-empty]');
+      var results = picker.querySelector('[data-booking-create-ticket-service-results]');
+      if (!query) {
+        picker.querySelectorAll('[data-booking-create-ticket-service]').forEach(function(button) { button.hidden = false; });
+        if (empty) empty.hidden = true;
+        if (results) results.hidden = true;
+        return;
+      }
+      if (empty) empty.hidden = count !== 0;
+      if (results) results.hidden = false;
+    }
+
+    function filterBookingCreateTicketTechs(input) {
+      var picker = input && input.closest('[data-booking-create-ticket-picker]');
+      var results = picker && picker.querySelector('[data-booking-create-ticket-tech-results]');
+      if (!results) return;
+      var query = String(input.value || '').trim().toLowerCase();
+      if (!query) {
+        results.querySelectorAll('[data-booking-create-ticket-tech]').forEach(function(button) { button.hidden = false; });
+        results.hidden = true;
+        return;
+      }
+      results.hidden = false;
+      results.querySelectorAll('[data-booking-create-ticket-tech]').forEach(function(button) {
+        button.hidden = !query || String(button.dataset.techName || '').toLowerCase().indexOf(query) !== -1;
+      });
+    }
+
     function getBookingCreateServices() {
+      if (bookingCreateTickets.length) return bookingCreateTickets.map(function(ticket) { return ticket.serviceName; });
       var field = bookingCreateField('service');
       if (!field) return [];
 
@@ -11122,6 +11414,22 @@
       }, 0);
     }
 
+    function bookingServiceIds(services) {
+      return (services || []).map(function(serviceName) {
+        var option = BOOKING_CALENDAR_SERVICE_OPTIONS.find(function(service) { return service.name === serviceName; });
+        return option ? option.serviceId : '';
+      }).filter(Boolean);
+    }
+
+    function bookingServiceDetails(services) {
+      return (services || []).map(function(serviceName) {
+        var option = BOOKING_CALENDAR_SERVICE_OPTIONS.find(function(service) { return service.name === serviceName; });
+        return option
+          ? { id: option.serviceId, name: option.name, price: option.price, durationMin: option.duration, icon: option.icon }
+          : { name: serviceName, price: null, durationMin: null, icon: '✨' };
+      });
+    }
+
     function updateBookingCreateServiceSummary() {
       var services = getBookingCreateServices();
       var totalPrice = bookingServicePriceTotal(services);
@@ -11133,19 +11441,11 @@
     }
 
     function populateBookingCreateForm() {
-      var service = bookingCreateField('service');
-      if (service) {
-        service.innerHTML = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
-          return '<button class="booking-service-chip-button" type="button" data-booking-create-service="' + escapeHtml(option.name) + '" data-duration="' + option.duration + '" aria-pressed="false">' + escapeHtml(option.name) + ' · $' + option.price + ' · <span class="booking-service-duration">' + option.duration + ' min</span></button>';
-        }).join('');
-      }
-
-      var tech = bookingCreateField('tech');
-      if (tech) {
-        tech.innerHTML = '<option value="unassigned">Anyone / Unassigned</option>' + BOOKING_CALENDAR_TECHNICIANS.map(function(id) {
-          return '<option value="' + escapeHtml(id) + '">' + escapeHtml(bookingTechName(id)) + '</option>';
-        }).join('');
-      }
+      bookingCreateTickets = [];
+      bookingCreateSelectedServiceId = '';
+      bookingCreateSelectedTechId = null;
+      bookingCreateSelectedTechName = 'Anyone';
+      renderBookingCreateTicketPicker();
       updateBookingCreateServiceSummary();
     }
 
@@ -11158,7 +11458,6 @@
       populateBookingCreateForm();
       var name = bookingCreateField('name');
       var phone = bookingCreateField('phone');
-      var service = bookingCreateField('service');
       var techField = bookingCreateField('tech');
       var date = bookingCreateField('date');
       var time = bookingCreateField('time');
@@ -11166,9 +11465,6 @@
       var note = bookingCreateField('note');
       if (name) name.value = '';
       if (phone) phone.value = '';
-      if (service) service.querySelectorAll('[data-booking-create-service]').forEach(function(button) {
-        setBookingCreateServiceSelected(button, false);
-      });
       if (techField) techField.value = bookingCalendarResourceTech(tech);
       if (date) date.value = bookingCalendarInputDate(startDate);
       if (time) time.value = bookingCalendarInputTime(startDate);
@@ -11220,23 +11516,70 @@
       );
     }
 
+    function bookingCalendarEventMeta(event) {
+      var data = event && event.data ? event.data : {};
+      if (data.orderId) return { orderId: String(data.orderId), ticketId: String(data.ticketId || '') };
+      var raw = event && typeof event.id === 'function' ? event.id() : String(event || '');
+      var parts = raw.split('::');
+      return { orderId: parts[0], ticketId: parts[1] || '' };
+    }
+
+    function bookingCalendarTicket(record, ticketId) {
+      return record && Array.isArray(record.tickets) ? record.tickets.find(function(ticket) { return String(ticket.id) === String(ticketId); }) : null;
+    }
+
+    function bookingCalendarUpdateTicket(orderId, ticketId, start, end, tech) {
+      var record = bookingPanelRecordById(orderId);
+      var ticket = bookingCalendarTicket(record, ticketId);
+      if (!record || !ticket) return;
+      var nextTickets = record.tickets.map(function(current) {
+        if (String(current.id) !== String(ticketId)) return current;
+        return Object.assign({}, current, { startAt: start, endAt: end, technicianId: tech === 'unassigned' ? null : tech, technicianName: tech === 'unassigned' ? 'Anyone' : bookingTechName(tech) });
+      });
+      var starts = nextTickets.map(function(current) { return new Date(current.startAt).getTime(); }).filter(Number.isFinite);
+      var ends = nextTickets.map(function(current) { return new Date(current.endAt).getTime(); }).filter(Number.isFinite);
+      var orderStart = new Date(Math.min.apply(Math, starts));
+      var orderEnd = new Date(Math.max.apply(Math, ends));
+      var parentTech = appointmentTicketUtils && appointmentTicketUtils.parentTechnicianId ? appointmentTicketUtils.parentTechnicianId(nextTickets) : null;
+      var result = appointmentStore.update(orderId, {
+        tickets: nextTickets,
+        technicianId: parentTech,
+        technicianName: parentTech ? bookingTechName(parentTech) : '',
+        startAt: formatBookingCalendarDateTime(orderStart),
+        endAt: formatBookingCalendarDateTime(orderEnd),
+        durationMin: Math.max(15, Math.round((orderEnd - orderStart) / 60000))
+      }, null, catalog);
+      if (!result.ok) return;
+      renderBookingStoreRows();
+      filterBookingItems();
+      renderBookingCalendar();
+    }
+
     function bookingCalendarValidateMove(args, resize) {
-      var record = bookingPanelRecordById(args.e.id());
+      var meta = bookingCalendarEventMeta(args.e);
+      var record = bookingPanelRecordById(meta.orderId);
       if (!record) { args.preventDefault(); return; }
-      var tech = resize ? (record.technicianId || 'unassigned') : bookingCalendarResourceTech(args.newResource);
+      var ticket = bookingCalendarTicket(record, meta.ticketId);
+      var tech = resize ? (ticket ? (ticket.technicianId || 'unassigned') : (record.technicianId || 'unassigned')) : bookingCalendarResourceTech(args.newResource);
       var start = bookingCalendarDayPilotTime(args.newStart);
       var end = bookingCalendarDayPilotTime(args.newEnd);
-      if (!bookingCalendarCanPlace(record.id, start, end, tech)) {
+      if (!bookingCalendarCanPlace(record.id, start, end, tech === 'unassigned' ? 'unassigned' : tech)) {
         args.preventDefault();
       }
     }
 
     function bookingCalendarApplyMove(args, resize) {
-      var record = bookingPanelRecordById(args.e.id());
+      var meta = bookingCalendarEventMeta(args.e);
+      var record = bookingPanelRecordById(meta.orderId);
       if (!record) return;
-      var tech = resize ? (record.technicianId || 'unassigned') : bookingCalendarResourceTech(args.newResource);
+      var ticket = bookingCalendarTicket(record, meta.ticketId);
+      var tech = resize ? (ticket ? (ticket.technicianId || 'unassigned') : (record.technicianId || 'unassigned')) : bookingCalendarResourceTech(args.newResource);
       var start = bookingCalendarDayPilotTime(args.newStart);
       var end = bookingCalendarDayPilotTime(args.newEnd);
+      if (ticket) {
+        bookingCalendarUpdateTicket(record.id, meta.ticketId, start, end, tech);
+        return;
+      }
       var result = appointmentStore.update(record.id, {
         technicianId: tech === 'unassigned' ? null : tech,
         startAt: start,
@@ -11298,12 +11641,10 @@
       };
       var name = get('name').trim();
       var services = getBookingCreateServices();
-      var service = services.join(' ');
       var date = get('date');
       var time = get('time');
       var phone = get('phone').trim();
-      var tech = bookingCalendarResourceTech(get('tech'));
-      var duration = bookingServiceDurationMinutes(services) || 60;
+      var duration = (appointmentTicketUtils && appointmentTicketUtils.ticketTotals ? appointmentTicketUtils.ticketTotals(bookingCreateTickets).duration : 0) || 60;
       var status = get('status') || 'new';
       var note = get('note').trim();
 
@@ -11314,21 +11655,31 @@
 
       var start = new Date(date + 'T' + time + ':00');
       if (!Number.isFinite(start.getTime())) { setBookingCreateError('Pick a valid date and start time.'); return; }
+      var scheduledTickets = appointmentTicketUtils && appointmentTicketUtils.scheduleTickets ? appointmentTicketUtils.scheduleTickets(bookingCreateTickets, formatBookingCalendarDateTime(start)) : bookingCreateTickets;
       var end = new Date(start.getTime() + duration * 60000);
-      if (bookingCalendarHasConflict(start, end, tech)) {
-        setBookingCreateError(tech + ' already has an overlapping appointment. Change the time or technician.');
+      scheduledTickets.forEach(function(ticket) { var ticketEnd = new Date(ticket.endAt); if (ticketEnd > end) end = ticketEnd; });
+      var conflict = scheduledTickets.some(function(ticket) {
+        return ticket.technicianId && appointmentStore.hasConflict(appointmentStore.loadAll(null, catalog), { technicianId: ticket.technicianId, startAt: ticket.startAt, endAt: ticket.endAt }, null);
+      });
+      if (conflict) {
+        setBookingCreateError('A technician already has an overlapping ticket. Change the time or technician.');
         return;
       }
+      var parentTechId = appointmentTicketUtils && appointmentTicketUtils.parentTechnicianId ? appointmentTicketUtils.parentTechnicianId(scheduledTickets) : null;
 
       var result = appointmentStore.create({
         id: 'booking-frontdesk-' + Date.now(),
-        name: name,
+        customerName: name,
         phone: phone,
-        services: services,
-        tech: tech,
-        date: date,
-        time: time,
-        duration: duration,
+        serviceIds: scheduledTickets.map(function(ticket) { return ticket.serviceId; }),
+        serviceNames: services,
+        serviceDetails: scheduledTickets.map(function(ticket) { return { id: ticket.serviceId, name: ticket.serviceName, price: ticket.price, durationMin: ticket.durationMin, icon: '✨' }; }),
+        tickets: scheduledTickets,
+        technicianId: parentTechId,
+        technicianName: parentTechId ? bookingTechName(parentTechId) : '',
+        startAt: formatBookingCalendarDateTime(start),
+        endAt: formatBookingCalendarDateTime(end),
+        durationMin: Math.max(15, Math.round((end - start) / 60000)),
         status: status,
         note: note,
         source: 'manual-add'
@@ -11341,7 +11692,7 @@
       filterBookingItems();
       renderBookingCalendar();
       if (window.Swal) {
-        var techLabel = tech === 'unassigned' ? 'Anyone / Unassigned' : bookingTechName(tech);
+        var techLabel = parentTechId ? bookingTechName(parentTechId) : 'Anyone';
         var statusLabels = { 'new': 'New', 'sms-sent': 'SMS Sent', 'done': 'Completed', 'noshow': 'No-show' };
         var bookingSuccessHtml = [
           '<div class="booking-save-summary">',
@@ -11397,7 +11748,7 @@
           var end = new Date(bookingCalendarDayPilotTime(args.end));
           openBookingAppointmentPanelForNew(start, end, bookingCalendarResourceTech(args.resource));
         },
-        onEventClick: function(args) { openBookingAppointmentPanel(findBookingItemById(args.e.id())); },
+        onEventClick: function(args) { openBookingAppointmentPanel(findBookingItemById(bookingCalendarEventMeta(args.e).orderId)); },
         onEventMove: function(args) { bookingCalendarValidateMove(args, false); },
         onEventMoved: function(args) { bookingCalendarApplyMove(args, false); },
         onEventResize: function(args) { bookingCalendarValidateMove(args, true); },
@@ -11553,8 +11904,7 @@ function getBookingCardCallStart(item) {
 
     function initBookingViewMode() {
       renderBookingCards();
-      var isMobile = window.matchMedia('(max-width: 767px)').matches;
-      setBookingViewMode(isMobile ? 'card' : 'table');
+      setBookingViewMode('calendar');
     }
 
     function setBookingStatus(item, status) {
@@ -12771,6 +13121,14 @@ function getBookingCardCallStart(item) {
     if (bookingCreateSave) bookingCreateSave.addEventListener('click', saveBookingFromCalendar);
 
     document.addEventListener('click', function(event) {
+      var bookingServiceCategorySummary = event.target.closest('summary.booking-service-category-head');
+      if (bookingServiceCategorySummary) {
+        event.preventDefault();
+        var bookingServiceCategory = bookingServiceCategorySummary.parentElement;
+        bookingServiceCategory.open = !bookingServiceCategory.open;
+        return;
+      }
+
       var bookingServiceChip = event.target.closest('[data-booking-create-service]');
       if (bookingServiceChip) {
         var bookingServiceField = bookingCreateField('service');
@@ -12779,6 +13137,95 @@ function getBookingCardCallStart(item) {
           updateBookingCreateServiceSummary();
           setBookingCreateError('');
         }
+        return;
+      }
+
+      var bookingPanelTicketService = event.target.closest('[data-booking-panel-ticket-service]');
+      if (bookingPanelTicketService) {
+        bookingPanelSelectedServiceId = bookingPanelTicketService.getAttribute('data-booking-panel-ticket-service') || '';
+        var ticketPicker = bookingPanelTicketService.closest('[data-booking-ticket-picker]');
+        var serviceInput = ticketPicker && ticketPicker.querySelector('[data-booking-panel-ticket-service-search]');
+        if (serviceInput) serviceInput.value = bookingPanelTicketService.dataset.serviceName || '';
+        var serviceResults = ticketPicker && ticketPicker.querySelector('[data-booking-panel-ticket-service-results]');
+        if (serviceResults) serviceResults.hidden = true;
+        return;
+      }
+
+      var bookingPanelTicketTech = event.target.closest('[data-booking-panel-ticket-tech]');
+      if (bookingPanelTicketTech) {
+        bookingPanelSelectedTechId = bookingPanelTicketTech.getAttribute('data-booking-panel-ticket-tech') || null;
+        bookingPanelSelectedTechName = bookingPanelTicketTech.dataset.techName || 'Anyone';
+        var techPicker = bookingPanelTicketTech.closest('[data-booking-ticket-picker]');
+        var techInput = techPicker && techPicker.querySelector('[data-booking-panel-ticket-tech-search]');
+        if (techInput) techInput.value = bookingPanelSelectedTechName;
+        if (techPicker) {
+          techPicker.querySelectorAll('[data-booking-panel-ticket-tech]').forEach(function(button) { button.classList.toggle('is-selected', button === bookingPanelTicketTech); });
+          var techResults = techPicker.querySelector('[data-booking-panel-ticket-tech-results]');
+          if (techResults) techResults.hidden = true;
+        }
+        return;
+      }
+
+      if (event.target.closest('[data-booking-panel-ticket-add]')) {
+        var option = BOOKING_CALENDAR_SERVICE_OPTIONS.find(function(service) { return String(service.serviceId) === String(bookingPanelSelectedServiceId); });
+        if (!option) { bookingPanelSetWarning('Search and select a service first.'); return; }
+        if (bookingPanelTickets.some(function(ticket) { return String(ticket.serviceId) === String(option.serviceId); })) { bookingPanelSetWarning('This service is already in the order.'); return; }
+        bookingPanelTickets.push({ id: 'ticket-' + (bookingPanelTickets.length + 1), serviceId: option.serviceId, serviceName: option.name, price: option.price, durationMin: option.duration, technicianId: bookingPanelSelectedTechId, technicianName: bookingPanelSelectedTechName, status: bookingPanelDraft ? bookingPanelDraft.status : 'confirmed' });
+        bookingPanelSelectedServiceId = ''; bookingPanelSelectedTechId = null; bookingPanelSelectedTechName = 'Anyone'; bookingPanelWarning = '';
+        renderBookingAppointmentPanel();
+        return;
+      }
+
+      var removeBookingPanelTicket = event.target.closest('[data-booking-panel-ticket-remove]');
+      if (removeBookingPanelTicket) {
+        bookingPanelTickets.splice(Number(removeBookingPanelTicket.getAttribute('data-booking-panel-ticket-remove')), 1);
+        renderBookingAppointmentPanel();
+        return;
+      }
+
+      var bookingCreateTicketService = event.target.closest('[data-booking-create-ticket-service]');
+      if (bookingCreateTicketService) {
+        bookingCreateSelectedServiceId = bookingCreateTicketService.getAttribute('data-booking-create-ticket-service') || '';
+        var createPicker = bookingCreateTicketService.closest('[data-booking-create-ticket-picker]');
+        var createServiceInput = createPicker && createPicker.querySelector('[data-booking-create-ticket-service-search]');
+        if (createServiceInput) createServiceInput.value = bookingCreateTicketService.dataset.serviceName || '';
+        var createServiceResults = createPicker && createPicker.querySelector('[data-booking-create-ticket-service-results]');
+        if (createServiceResults) createServiceResults.hidden = true;
+        return;
+      }
+
+      var bookingCreateTicketTech = event.target.closest('[data-booking-create-ticket-tech]');
+      if (bookingCreateTicketTech) {
+        bookingCreateSelectedTechId = bookingCreateTicketTech.getAttribute('data-booking-create-ticket-tech') || null;
+        bookingCreateSelectedTechName = bookingCreateTicketTech.dataset.techName || 'Anyone';
+        var createTechPicker = bookingCreateTicketTech.closest('[data-booking-create-ticket-picker]');
+        var createTechInput = createTechPicker && createTechPicker.querySelector('[data-booking-create-ticket-tech-search]');
+        if (createTechInput) createTechInput.value = bookingCreateSelectedTechName;
+        if (createTechPicker) {
+          createTechPicker.querySelectorAll('[data-booking-create-ticket-tech]').forEach(function(button) { button.classList.toggle('is-selected', button === bookingCreateTicketTech); });
+          var createTechResults = createTechPicker.querySelector('[data-booking-create-ticket-tech-results]');
+          if (createTechResults) createTechResults.hidden = true;
+        }
+        return;
+      }
+
+      if (event.target.closest('[data-booking-create-ticket-add]')) {
+        var createOption = BOOKING_CALENDAR_SERVICE_OPTIONS.find(function(service) { return String(service.serviceId) === String(bookingCreateSelectedServiceId); });
+        if (!createOption) { setBookingCreateError('Search and select a service first.'); return; }
+        if (bookingCreateTickets.some(function(ticket) { return String(ticket.serviceId) === String(createOption.serviceId); })) { setBookingCreateError('This service is already in the order.'); return; }
+        bookingCreateTickets.push({ id: 'ticket-' + (bookingCreateTickets.length + 1), serviceId: createOption.serviceId, serviceName: createOption.name, price: createOption.price, durationMin: createOption.duration, technicianId: bookingCreateSelectedTechId, technicianName: bookingCreateSelectedTechName, status: 'confirmed' });
+        bookingCreateSelectedServiceId = ''; bookingCreateSelectedTechId = null; bookingCreateSelectedTechName = 'Anyone';
+        setBookingCreateError('');
+        renderBookingCreateTicketPicker();
+        updateBookingCreateServiceSummary();
+        return;
+      }
+
+      var bookingCreateTicketRemove = event.target.closest('[data-booking-create-ticket-remove]');
+      if (bookingCreateTicketRemove) {
+        bookingCreateTickets.splice(Number(bookingCreateTicketRemove.getAttribute('data-booking-create-ticket-remove')), 1);
+        renderBookingCreateTicketPicker();
+        updateBookingCreateServiceSummary();
         return;
       }
 
@@ -12962,6 +13409,31 @@ function getBookingCardCallStart(item) {
     });
 
     document.addEventListener('input', function(event) {
+      var createTicketServiceSearch = event.target.closest('[data-booking-create-ticket-service-search]');
+      if (createTicketServiceSearch) {
+        filterBookingCreateTicketServices(createTicketServiceSearch);
+        return;
+      }
+      var createTicketTechSearch = event.target.closest('[data-booking-create-ticket-tech-search]');
+      if (createTicketTechSearch) {
+        filterBookingCreateTicketTechs(createTicketTechSearch);
+        return;
+      }
+      var panelTicketServiceSearch = event.target.closest('[data-booking-panel-ticket-service-search]');
+      if (panelTicketServiceSearch) {
+        filterBookingPanelTicketServices(panelTicketServiceSearch);
+        return;
+      }
+      var panelTicketTechSearch = event.target.closest('[data-booking-panel-ticket-tech-search]');
+      if (panelTicketTechSearch) {
+        filterBookingPanelTicketTechs(panelTicketTechSearch);
+        return;
+      }
+      var bookingServiceSearch = event.target.closest('[data-booking-service-search]');
+      if (bookingServiceSearch) {
+        filterBookingServicePicker(bookingServiceSearch);
+        return;
+      }
       var techSearch = event.target.closest('[data-tech-search]');
       if (techSearch) {
         filterTechChoices(techSearch.value);
@@ -12970,6 +13442,26 @@ function getBookingCardCallStart(item) {
     });
 
     document.addEventListener('focusin', function(event) {
+      var createTicketServiceSearch = event.target.closest('[data-booking-create-ticket-service-search]');
+      if (createTicketServiceSearch) {
+        createTicketServiceSearch.select();
+        return;
+      }
+      var createTicketTechSearch = event.target.closest('[data-booking-create-ticket-tech-search]');
+      if (createTicketTechSearch) {
+        createTicketTechSearch.select();
+        return;
+      }
+      var panelTicketServiceSearch = event.target.closest('[data-booking-panel-ticket-service-search]');
+      if (panelTicketServiceSearch) {
+        panelTicketServiceSearch.select();
+        return;
+      }
+      var panelTicketTechSearch = event.target.closest('[data-booking-panel-ticket-tech-search]');
+      if (panelTicketTechSearch) {
+        panelTicketTechSearch.select();
+        return;
+      }
       var techSelectInput = event.target.closest('[data-tech-select-input]');
       if (techSelectInput) {
         setTechSelectOpen(true);
@@ -13496,6 +13988,7 @@ function getBookingCardCallStart(item) {
     renderCallStats();
     renderCalls();
     activateMainTabFromUrl();
+    loadBookingAppointmentServiceCatalog();
     if (salonData.storageAvailable && !salonData.storageAvailable()) {
       setTimeout(function() {
         if (window.Swal) {

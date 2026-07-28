@@ -70,6 +70,14 @@ test('SMS is not exposed as a POS tab because SMS Campaigns lives in Booking Hub
 test('appointments page loads shared salon catalog and appointment store', () => {
   assert.match(html, /\.\.\/assets\/salon-data\.js/);
   assert.match(html, /\.\.\/assets\/appointments-store\.js/);
+  assert.match(html, /\.\.\/assets\/appointment-service-catalog\.js/);
+});
+
+test('POS loads the approved category service JSON for appointment pickers', () => {
+  assert.match(html, /booking-service-catalog-draft\.json/);
+  assert.match(html, /appointmentServiceCatalogLoader\.load/);
+  assert.match(html, /data-ap-service-search/);
+  assert.match(html, /data-ap-service-category/);
 });
 
 test('POS migrates seed data into the shared appointment store', () => {
@@ -182,10 +190,30 @@ test('POS hides the duplicate duration field beside status', () => {
   assert.match(html, /apDraft\.duration = apSelectedServiceDuration\(\)/);
 });
 
-test('POS service chips use the shared name-price-duration format without icons', () => {
-  assert.match(html, /data-apsvc="' \+ c\.id \+ '"[^>]*>' \+ esc\(c\.label\) \+ ' · \$'/);
-  assert.doesNotMatch(html, /data-apsvc="' \+ c\.id \+ '"[^>]*>' \+ c\.icon/);
-  assert.doesNotMatch(html, /return service \? service\.icon \+ ' ' \+ service\.name/);
+test('POS service picker searches service and technician, then adds removable tickets', () => {
+  assert.match(html, /apServicePickerMarkup\(\)/);
+  assert.match(html, /data-ap-service-search/);
+  assert.match(html, /data-ap-service-category/);
+  assert.match(html, /ap-service-option-name[\s\S]*esc\(service\.label\)/);
+  assert.match(html, /ap-service-option-meta[\s\S]*service\.durationMin/);
+  assert.match(html, /data-ap-tech-search/);
+  assert.match(html, /data-ap-ticket-add/);
+  assert.match(html, /data-ap-ticket-remove/);
+  assert.match(html, /appointmentTicketUtils\.ticketTotals/);
+  assert.match(html, /apTicketSelectedTechName = 'Anyone'/);
+});
+
+test('POS service and technician dropdowns stay hidden until the user types', () => {
+  assert.match(html, /data-ap-ticket-service-results[^>]*hidden/);
+  assert.match(html, /data-ap-ticket-tech-results[^>]*hidden/);
+  assert.match(html, /function filterApServicePicker\([\s\S]*if \(!query\)[\s\S]*results\.hidden = true/);
+  assert.match(html, /function filterApTechPicker\([\s\S]*if \(!query\)[\s\S]*results\.hidden = true/);
+});
+
+test('POS service and technician search fields use the full picker width', () => {
+  const builderRule = html.match(/\.ap-ticket-builder-grid\s*\{([^}]*)\}/)?.[1] || '';
+  assert.match(builderRule, /grid-template-columns:\s*1fr/);
+  assert.match(html, /\.ap-ticket-add\s*\{[^}]*width:\s*100%/);
 });
 
 test('POS limits long service pickers and enables vertical scrolling', () => {
@@ -197,6 +225,6 @@ test('POS limits long service pickers and enables vertical scrolling', () => {
 
 test('POS removes decorative icons from imported service names', () => {
   assert.match(html, /function apServiceDisplayName\(/);
-  assert.match(html, /apExternalSvc\.push\(displayName\)/);
+  assert.match(html, /ticket\.serviceName/);
   assert.doesNotMatch(html, /title="Imported service">↗ /);
 });

@@ -73,8 +73,8 @@ test('uses Lucide for SMS and QR interface icons while preserving marketing emoj
 
   assert.match(html, /data-tab-target="sms-campaigns"[^>]*>[\s\S]*?data-lucide="message-square"[\s\S]*?<span>SMS Campaigns<\/span>/);
   assert.match(html, /data-tab-target="qr-codes"[^>]*>[\s\S]*?data-lucide="qr-code"[\s\S]*?<span>QR Codes<\/span>/);
-  assert.match(html, /<h2 class="marketing-icon-label"><i class="marketing-icon" data-lucide="message-square"[^>]*><\/i><span>SMS Campaigns<\/span><\/h2>/);
-  assert.match(html, /<h2 class="marketing-icon-label"><i class="marketing-icon" data-lucide="qr-code"[^>]*><\/i><span>QR Codes<\/span><\/h2>/);
+  assert.match(html, /<span class="page-tab-icon"><i class="marketing-icon" data-lucide="message-square"[^>]*><\/i><\/span>[\s\S]*?<span>SMS Campaigns<\/span>/);
+  assert.match(html, /<span class="page-tab-icon"><i class="marketing-icon" data-lucide="qr-code"[^>]*><\/i><\/span>[\s\S]*?<span>QR Codes<\/span>/);
 
   for (const [id, icon] of [
     ['qrGuideBtn', 'book-open'],
@@ -115,7 +115,7 @@ test('adds a POS-style resource calendar to the booking view switch', () => {
   assert.match(html, /@daypilot\/daypilot-lite-javascript@5\.9\.0\/daypilot-javascript\.min\.js/);
   assert.match(html, /new DayPilot\.Calendar/);
   assert.match(html, /viewType:\s*'Resources'/);
-  assert.match(html, /var BOOKING_CALENDAR_TECHNICIANS = \['Lan T\.', 'Kim N\.', 'Linda', 'Mai P\.', 'Andy', 'Tina', 'Helen', 'Vy'\];/);
+  assert.match(html, /BOOKING_CALENDAR_TECHNICIANS = catalog\.technicians\.filter/);
   assert.match(html, /BOOKING_CALENDAR_TECHNICIANS\.forEach/);
   assert.match(html, /BOOKING_CALENDAR_SERVICE_DURATIONS/);
   assert.match(html, /function renderBookingCalendar\(/);
@@ -137,7 +137,7 @@ test('keeps incoming call durations around two to three minutes', () => {
 test('allows New appointment to select multiple services and keeps their total duration', () => {
   const html = source();
 
-  assert.match(html, /class="booking-service-chips"[^>]*data-booking-create-field="service"/);
+  assert.match(html, /class="booking-create-ticket-host"[^>]*data-booking-create-ticket-host/);
   assert.match(html, /data-booking-create-service/);
   assert.match(html, /function getBookingCreateServices\(\)/);
   assert.match(html, /is-selected/);
@@ -295,27 +295,20 @@ test('does not force a minimum height on business grid inputs', () => {
 test('shows service price between name and duration in New appointment', () => {
   const html = source();
 
-  assert.match(html, /BOOKING_CALENDAR_SERVICE_OPTIONS = \[[\s\S]*?\{ name: 'Gel Manicure', price: 35, duration: 60 \}/);
-  assert.match(
-    html,
-    /escapeHtml\(option\.name\) \+ ' · \$' \+ option\.price \+ ' · <span class="booking-service-duration">' \+ option\.duration \+ ' min<\/span><\/button>'/
-  );
+  assert.match(html, /booking-service-option-name[\s\S]*escapeHtml\(option\.name\)/);
+  assert.match(html, /booking-service-option-meta[\s\S]*\$' \+ price[\s\S]*option\.duration \+ ' min/);
 });
 
 test('uses regular weight for service duration in New appointment', () => {
   const html = source();
 
   assert.match(html, /\.booking-service-duration\s*\{[^}]*font-weight:\s*400;/);
-  assert.match(
-    html,
-    /option\.price \+ ' · <span class="booking-service-duration">' \+ option\.duration \+ ' min<\/span><\/button>'/
-  );
 });
 
 test('shows total price and total time below New appointment services', () => {
   const html = source();
 
-  assert.match(html, /data-booking-create-field="service"[\s\S]*class="booking-service-summary"/);
+  assert.match(html, /data-booking-create-ticket-host[\s\S]*class="booking-service-summary"/);
   assert.match(html, /data-booking-create-total-price>\$0<\/strong>/);
   assert.match(html, /data-booking-create-total-duration>0 min<\/strong>/);
   assert.match(html, /function bookingServicePriceTotal\(services\)/);
@@ -338,7 +331,7 @@ test('renders service totals as text instead of input-like controls', () => {
 test('makes the New appointment services picker span the full form width', () => {
   const html = source();
 
-  assert.match(html, /<label class="booking-create-field is-full">[\s\S]*?data-booking-create-field="service"/);
+  assert.match(html, /<label class="booking-create-field is-full">[\s\S]*?data-booking-create-ticket-host/);
 });
 
 test('removes the manual duration selector from New appointment', () => {
@@ -347,7 +340,7 @@ test('removes the manual duration selector from New appointment', () => {
   assert.doesNotMatch(html, /<select class="booking-select" data-booking-create-field="duration">/);
   assert.doesNotMatch(html, /bookingCreateField\('duration'\)/);
   assert.doesNotMatch(html, /syncBookingCreateDuration/);
-  assert.match(html, /var duration = bookingServiceDurationMinutes\(services\) \|\| 60;/);
+  assert.match(html, /var duration = \(appointmentTicketUtils && appointmentTicketUtils\.ticketTotals \? appointmentTicketUtils\.ticketTotals\(bookingCreateTickets\)\.duration : 0\) \|\| 60;/);
 });
 
 test('keeps technician and status together before the date and time fields', () => {

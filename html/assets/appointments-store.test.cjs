@@ -64,6 +64,42 @@ test('normalizes shared service details with name, price, and duration', () => {
   ]);
 });
 
+test('normalizes multi-technician orders into ticket rows and keeps mixed parent tech unassigned', () => {
+  const record = store.normalizeAppointment({
+    id: 'apt-ticket-order', name: 'Linh', phone: '8325550105',
+    tickets: [
+      { id: 'ticket-a', serviceId: 'pedi', technicianId: 't1' },
+      { id: 'ticket-b', serviceId: 'mani', technicianId: 't2' },
+    ],
+    startAt: '2026-07-20T14:30:00', status: 'confirmed',
+  }, catalog, '2026-07-27T00:00:00.000Z');
+
+  assert.deepEqual(record.tickets.map(ticket => ({
+    id: ticket.id,
+    serviceId: ticket.serviceId,
+    technicianId: ticket.technicianId,
+    startAt: ticket.startAt,
+    endAt: ticket.endAt,
+  })), [
+    { id: 'ticket-a', serviceId: 'pedi', technicianId: 't1', startAt: '2026-07-20T14:30:00', endAt: '2026-07-20T15:30:00' },
+    { id: 'ticket-b', serviceId: 'mani', technicianId: 't2', startAt: '2026-07-20T14:30:00', endAt: '2026-07-20T15:15:00' },
+  ]);
+  assert.equal(record.technicianId, null);
+  assert.equal(record.durationMin, 60);
+});
+
+test('derives a legacy order ticket with Anyone when no technician is assigned', () => {
+  const record = store.normalizeAppointment({
+    id: 'apt-ticket-legacy', name: 'Linh', phone: '8325550106', serviceIds: ['pedi'],
+    startAt: '2026-07-20T14:30:00', endAt: '2026-07-20T15:30:00', status: 'confirmed',
+  }, catalog, '2026-07-27T00:00:00.000Z');
+
+  assert.equal(record.tickets.length, 1);
+  assert.equal(record.tickets[0].serviceId, 'pedi');
+  assert.equal(record.tickets[0].technicianId, null);
+  assert.equal(record.tickets[0].technicianName, 'Anyone');
+});
+
 test('retains unknown service names and technician names for forward-compatible rendering', () => {
   const record = store.normalizeAppointment({
     id: 'apt-unknown', name: 'Future Guest', phone: '8325550102',
@@ -105,6 +141,15 @@ test('conflict detection excludes the edited appointment and ignores unassigned 
   assert.equal(store.hasConflict(records, { technicianId: 't2', startAt: '2026-07-20T10:30:00', endAt: '2026-07-20T11:30:00' }), true);
   assert.equal(store.hasConflict(records, { technicianId: 't2', startAt: '2026-07-20T10:30:00', endAt: '2026-07-20T11:30:00' }, 'existing'), false);
   assert.equal(store.hasConflict(records, { technicianId: null, startAt: '2026-07-20T10:30:00', endAt: '2026-07-20T11:30:00' }), false);
+});
+
+test('conflict detection checks technician lanes inside ticket orders', () => {
+  const records = [{
+    id: 'order-with-tickets',
+    tickets: [{ technicianId: 't2', startAt: '2026-07-20T10:00:00', endAt: '2026-07-20T11:00:00' }],
+  }];
+  assert.equal(store.hasConflict(records, { technicianId: 't2', startAt: '2026-07-20T10:30:00', endAt: '2026-07-20T11:30:00' }), true);
+  assert.equal(store.hasConflict(records, { technicianId: 't3', startAt: '2026-07-20T10:30:00', endAt: '2026-07-20T11:30:00' }), false);
 });
 
 test('explicitly unassigning a technician clears the shared technician name', () => {
