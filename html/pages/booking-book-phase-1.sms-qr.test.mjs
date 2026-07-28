@@ -135,6 +135,14 @@ test('allows New appointment to select multiple services and keeps their total d
   assert.match(html, /services\.join\(' '\)/);
 });
 
+test('limits long service pickers and enables vertical scrolling', () => {
+  const html = source();
+  const servicePickerRule = html.match(/\.booking-service-chips\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(servicePickerRule, /max-height:\s*160px/);
+  assert.match(servicePickerRule, /overflow-y:\s*auto/);
+});
+
 test('shows service price between name and duration in New appointment', () => {
   const html = source();
 

@@ -188,6 +188,13 @@ test('POS service chips use the shared name-price-duration format without icons'
   assert.doesNotMatch(html, /return service \? service\.icon \+ ' ' \+ service\.name/);
 });
 
+test('POS limits long service pickers and enables vertical scrolling', () => {
+  const servicePickerRule = html.match(/\.ap-chips\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(servicePickerRule, /max-height:\s*160px/);
+  assert.match(servicePickerRule, /overflow-y:\s*auto/);
+});
+
 test('POS removes decorative icons from imported service names', () => {
   assert.match(html, /function apServiceDisplayName\(/);
   assert.match(html, /apExternalSvc\.push\(displayName\)/);
