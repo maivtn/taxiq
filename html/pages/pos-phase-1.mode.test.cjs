@@ -36,3 +36,11 @@ test('POS mode UI exposes a labelled badge and keyboard-friendly PIN controls', 
   assert.match(html, /id="pos-mode-pin"[^>]*inputmode="numeric"/);
   assert.match(html, /aria-labelledby="pos-mode-title"/);
 });
+
+test('POS mode submission updates the active badge and validates the selected staff member', () => {
+  assert.match(html, /var activeStaffId = ['"]owner['"]/);
+  assert.match(html, /function getActiveStaff\(\)/);
+  assert.match(html, /modePin\.value !== POS_DEMO_PIN/);
+  assert.match(html, /activeStaffId = selectedStaffId/);
+  assert.match(html, /modeBadge\.textContent = ROLE_LBL\[active\.role\] \+ ['"] · ['"] \+ active\.name/);
+});

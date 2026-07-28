@@ -853,6 +853,10 @@
       /* ═══════════ shared state (ported from the prototype) ═══════════ */
       var ROLE_LBL = { owner: 'Owner', manager: 'Manager', frontdesk: 'Front Desk', tech: 'Technician' };
       var ROLE_ACCESS = { owner: 'All screens', manager: 'All except Affiliate config', frontdesk: 'Operations · Register · Appointments · Time Clock', tech: 'Staff App · Time Clock' };
+      var POS_DEMO_PIN = '1234';
+      var activeStaffId = 'owner';
+      var selectedStaffId = 'owner';
+      var activeTabId = 'dispatch';
 
       var STAFF = [
         { id: 'owner', name: 'Brian', ava: '👑', role: 'owner' },
@@ -865,6 +869,88 @@
         { id: 't5', name: 'Vy', ava: '💅', role: 'tech' }
       ];
       var stSeq = 0;
+
+      function getActiveStaff() {
+        return STAFF.find(function (staff) { return staff.id === activeStaffId; }) || STAFF[0];
+      }
+
+      var modeModal = $('[data-pos-mode-modal]');
+      var modeOpenButton = $('[data-pos-mode-open]');
+      var modePin = $('[data-pos-mode-pin]');
+      var modeError = $('[data-pos-mode-error]');
+
+      function setModeError(message) {
+        modeError.textContent = message || '';
+        modeError.hidden = !message;
+      }
+
+      function updateModeRoleCards(role) {
+        document.querySelectorAll('[data-pos-role]').forEach(function (card) {
+          var selected = card.getAttribute('data-pos-role') === role;
+          card.classList.toggle('is-selected', selected);
+          card.setAttribute('aria-pressed', String(selected));
+        });
+      }
+
+      function selectModeRole(role) {
+        var selected = STAFF.find(function (staff) {
+          return staff.role === role && ['owner', 'manager', 'frontdesk'].indexOf(staff.role) !== -1;
+        });
+        if (!selected) return;
+        selectedStaffId = selected.id;
+        updateModeRoleCards(selected.role);
+        setModeError('');
+      }
+
+      function openModeModal() {
+        selectedStaffId = activeStaffId;
+        updateModeRoleCards(getActiveStaff().role);
+        modePin.value = '';
+        setModeError('');
+        modeModal.classList.add('open');
+        modeModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function () { modePin.focus(); }, 0);
+      }
+
+      function closeModeModal() {
+        modeModal.classList.remove('open');
+        modeModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        setModeError('');
+        if (modeOpenButton) modeOpenButton.focus();
+      }
+
+      function submitModeSwitch() {
+        var selected = STAFF.find(function (staff) { return staff.id === selectedStaffId; });
+        if (!selected) { setModeError('Hãy chọn một tài khoản.'); return; }
+        if (modePin.value !== POS_DEMO_PIN) {
+          setModeError('PIN không đúng. PIN demo là 1234.');
+          modePin.focus();
+          return;
+        }
+        activeStaffId = selectedStaffId;
+        applyPosModeAccess();
+        closeModeModal();
+      }
+
+      function applyPosModeAccess() {
+        var active = getActiveStaff();
+        var isFrontDesk = active.role === 'frontdesk';
+        var managementTab = $('[data-pos-tab="management"]');
+        var managementPanel = $('[data-pos-panel="management"]');
+        var modeBadge = $('[data-pos-mode-badge-text]');
+        if (modeBadge) modeBadge.textContent = ROLE_LBL[active.role] + ' · ' + active.name;
+        if (managementTab) {
+          managementTab.hidden = isFrontDesk;
+          managementTab.setAttribute('aria-hidden', String(isFrontDesk));
+        }
+        if (managementPanel) {
+          managementPanel.hidden = isFrontDesk;
+          managementPanel.setAttribute('aria-hidden', String(isFrontDesk));
+        }
+        if (isFrontDesk && activeTabId === 'management') activateTab('dispatch');
+      }
 
       var salonData = window.NEXORA_SALON_DATA;
       var salonCatalog = salonData.loadCatalog();
@@ -3129,12 +3215,26 @@
         if (e.key === 'Escape' && $('[data-sms-modal]').classList.contains('open')) closeComposer();
       });
 
+      document.addEventListener('click', function (e) {
+        if (e.target.closest('[data-pos-mode-open]')) { openModeModal(); return; }
+        var roleCard = e.target.closest('[data-pos-role]');
+        if (roleCard) { selectModeRole(roleCard.getAttribute('data-pos-role')); return; }
+        if (e.target.closest('[data-pos-mode-submit]')) { submitModeSwitch(); return; }
+        if (e.target.closest('[data-pos-mode-close]') || e.target === modeModal) closeModeModal();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modeModal.classList.contains('open')) closeModeModal();
+        if (e.key === 'Enter' && modeModal.classList.contains('open') && document.activeElement === modePin) submitModeSwitch();
+      });
+
       /* ═══════════ tabs ═══════════ */
       var TABS = ['dispatch', 'clock', 'management', 'appointments'];
       var tabBtns = document.querySelectorAll('[data-pos-tab]');
       var panels = document.querySelectorAll('[data-pos-panel]');
       function activateTab(id) {
+        if (id === 'management' && getActiveStaff().role === 'frontdesk') id = 'dispatch';
         if (TABS.indexOf(id) === -1) id = TABS[0];
+        activeTabId = id;
         tabBtns.forEach(function (t) { t.classList.toggle('is-active', t.getAttribute('data-pos-tab') === id); });
         panels.forEach(function (p) { p.classList.toggle('is-active', p.getAttribute('data-pos-panel') === id); });
         var url = new URL(window.location.href);
@@ -3159,6 +3259,7 @@
       renderManagement();
       renderSms();
       renderAppt();
+      applyPosModeAccess();
       activateTab(new URL(window.location.href).searchParams.get('tab') || 'dispatch');
       if (salonData.storageAvailable && !salonData.storageAvailable()) {
         setTimeout(function () { toast('Local changes are available in this tab; cross-tab sync is unavailable.', 'info'); }, 0);
