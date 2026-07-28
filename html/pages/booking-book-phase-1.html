@@ -2209,12 +2209,44 @@
       row-gap: 12px;
     }
 
+    .settings-location-grid {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: 1fr;
+      column-gap: 10px;
+      row-gap: 10px;
+    }
+
+    .settings-location-grid > .settings-field {
+      min-width: 0;
+      gap: 6px;
+    }
+
+    .settings-location-grid > .settings-field:not(.settings-span-full) {
+      grid-template-rows: 14px 40px;
+    }
+
+    .settings-location-grid > .settings-span-full {
+      grid-column: 1 / -1;
+    }
+
+    .settings-location-grid .settings-label {
+      font-size: 10px;
+    }
+
+    .settings-location-grid .settings-input,
+    .settings-location-grid .settings-select {
+      min-height: 40px;
+      border-radius: 9px;
+      padding: 0 11px;
+    }
+
     .settings-business-grid > .settings-field {
       min-width: 0;
     }
 
     .settings-business-grid > .settings-field:not(.settings-span-full) {
-      grid-template-rows: 16px 46px 16px;
+      grid-template-rows: 16px 46px;
     }
 
     .settings-business-grid .settings-label,
@@ -2225,7 +2257,6 @@
     }
 
     .settings-business-grid .settings-input {
-      min-height: 46px;
       border-radius: 10px;
     }
 
@@ -2239,6 +2270,63 @@
       font-weight: 700;
       letter-spacing: 0.02em;
       text-transform: uppercase;
+    }
+
+    .settings-label-with-tooltip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      white-space: nowrap;
+    }
+
+    .settings-tooltip {
+      position: relative;
+      display: inline-flex;
+    }
+
+    .settings-tooltip-trigger {
+      display: inline-flex;
+      width: 16px;
+      height: 16px;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: var(--nexora-brand);
+      cursor: help;
+    }
+
+    .settings-tooltip-trigger .bi {
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .settings-tooltip-content {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      z-index: 20;
+      display: none;
+      width: min(260px, calc(100vw - 48px));
+      border: 1px solid rgba(70, 72, 216, 0.22);
+      border-radius: 8px;
+      background: var(--nexora-sidebar);
+      padding: 8px 10px;
+      color: #fff;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: normal;
+      line-height: 1.45;
+      text-transform: none;
+      box-shadow: 0 8px 20px rgba(8, 31, 73, 0.18);
+    }
+
+    .settings-tooltip:hover .settings-tooltip-content,
+    .settings-tooltip:focus-within .settings-tooltip-content {
+      display: block;
     }
 
     .settings-input,
@@ -2361,6 +2449,53 @@
     .settings-hours {
       display: grid;
       gap: 8px;
+    }
+
+    .settings-hours-toolbar {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      margin-top: 12px;
+      margin-bottom: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: var(--nexora-canvas);
+    }
+
+    .settings-timezone-field {
+      display: grid;
+      min-width: 220px;
+      flex: 0 1 280px;
+      gap: 4px;
+    }
+
+    .settings-timezone-select {
+      min-height: 36px;
+      border-radius: 9px;
+      padding: 0 10px;
+    }
+
+    .settings-timezone-status {
+      padding-bottom: 9px;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 520px) {
+      .settings-hours-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .settings-timezone-field {
+        min-width: 0;
+      }
+
+      .settings-timezone-status {
+        padding-bottom: 0;
+      }
     }
 
     .settings-hour-row,
@@ -2511,6 +2646,8 @@
     }
 
     .settings-service-list.settings-service-body {
+      max-height: 500px;
+      overflow-y: auto;
       gap: 5px;
       border: 1px solid var(--nexora-border);
       border-radius: 14px;
@@ -6252,6 +6389,7 @@
       }
 
       .settings-field-grid,
+      .settings-location-grid,
       .settings-template-grid,
       .settings-offer-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -8682,36 +8820,78 @@
                         <input class="settings-input" type="text" value="Bitcoin Nail Bar">
                       </label>
                       <label class="settings-field">
-                        <span class="settings-label">Salon phone number</span>
+                        <span class="settings-label settings-label-with-tooltip">
+                          Salon phone number
+                          <span class="settings-tooltip">
+                            <button class="settings-tooltip-trigger" type="button" aria-label="Salon phone number info" aria-describedby="salon-phone-number-help"><i class="bi bi-info-circle" aria-hidden="true"></i></button>
+                            <span class="settings-tooltip-content" id="salon-phone-number-help" role="tooltip">The number customers currently call; it will be forwarded to the AI number.</span>
+                          </span>
+                        </span>
                         <span class="phone-input-shell">
                           <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
                           <input class="settings-input phone-mask-input" type="tel" value="(346) 802-4906" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
                         </span>
-                        <span class="settings-help">The number customers currently call; it will be forwarded to the AI number.</span>
                       </label>
                       <label class="settings-field">
-                        <span class="settings-label">AI answering number</span>
+                        <span class="settings-label settings-label-with-tooltip">
+                          AI answering number
+                          <span class="settings-tooltip">
+                            <button class="settings-tooltip-trigger" type="button" aria-label="AI answering number info" aria-describedby="ai-answering-number-help"><i class="bi bi-info-circle" aria-hidden="true"></i></button>
+                            <span class="settings-tooltip-content" id="ai-answering-number-help" role="tooltip">Provided by NEXORA; AI answers 24/7 on this number.</span>
+                          </span>
+                        </span>
                         <span class="phone-input-shell">
                           <select class="phone-country-select" aria-label="Country code" disabled><option value="+1" selected>+1</option></select>
                           <input class="settings-input phone-mask-input" type="tel" value="(832) 786-5576" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask readonly>
                         </span>
-                        <span class="settings-help">Provided by NEXORA; AI answers 24/7 on this number.</span>
                       </label>
                       <label class="settings-field">
-                        <span class="settings-label">Booking notification number</span>
+                        <span class="settings-label settings-label-with-tooltip">
+                          Booking notification number
+                          <span class="settings-tooltip">
+                            <button class="settings-tooltip-trigger" type="button" aria-label="Booking notification number info" aria-describedby="booking-notification-number-help"><i class="bi bi-info-circle" aria-hidden="true"></i></button>
+                            <span class="settings-tooltip-content" id="booking-notification-number-help" role="tooltip">Gets an SMS when a customer books or texts - can be the owner's or manager's number.</span>
+                          </span>
+                        </span>
                         <span class="phone-input-shell">
                           <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
                           <input class="settings-input phone-mask-input" type="tel" value="" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
                         </span>
-                        <span class="settings-help">Gets an SMS when a customer books or texts - can be the owner's or manager's number.</span>
                       </label>
-                      <label class="settings-field settings-span-full" style="grid-column: 1 / -1;">
-                        <span class="settings-label">Address</span>
-                        <input class="settings-input" type="text" value="9793 Westheimer Rd, Suite A, Houston, TX 77042">
-                      </label>
+                      <div class="settings-location-grid">
+                        <label class="settings-field settings-span-full">
+                          <span class="settings-label">Address *</span>
+                          <input class="settings-input" type="text" value="9793 Westheimer Rd, Suite A" placeholder="Street address" autocomplete="street-address" data-settings-address-field="address">
+                        </label>
+                        <label class="settings-field">
+                          <span class="settings-label">City *</span>
+                          <input class="settings-input" type="text" value="Houston" placeholder="City" autocomplete="address-level2" data-settings-address-field="city">
+                        </label>
+                        <label class="settings-field">
+                          <span class="settings-label">State *</span>
+                          <input class="settings-input" type="text" value="Texas" placeholder="State" autocomplete="address-level1" data-settings-address-field="state">
+                        </label>
+                        <label class="settings-field">
+                          <span class="settings-label">Zip code *</span>
+                          <input class="settings-input" type="text" value="77042" placeholder="Zip code" autocomplete="postal-code" inputmode="numeric" data-settings-address-field="zip">
+                        </label>
+                        <label class="settings-field">
+                          <span class="settings-label">Country *</span>
+                          <select class="settings-select" autocomplete="country" data-settings-address-field="country">
+                            <option value="US" selected>United States</option>
+                            <option value="CA">Canada</option>
+                            <option value="MX">Mexico</option>
+                            <option value="VN">Vietnam</option>
+                          </select>
+                        </label>
+                      </div>
                       <label class="settings-field settings-span-full" style="grid-column: 1 / -1;">
                         <span class="settings-label">Google Review Link</span>
                         <input class="settings-input" type="text" value="g.page/bitcoinnailbar">
+                      </label>
+                      <label class="settings-field settings-span-full" style="grid-column: 1 / -1;">
+                        <span class="settings-label">Website</span>
+                        <input class="settings-input" type="url" value="https://bitcoinnailbar.com" placeholder="https://bitcoinnailbar.com" autocomplete="url" inputmode="url">
                       </label>
                     </div>
                   </article>
@@ -8810,6 +8990,27 @@
                         </div>
                       </div>
                     </div>
+                    <div class="settings-hours-toolbar">
+                      <label class="settings-timezone-field">
+                        <span class="settings-label">Time zone</span>
+                        <select class="settings-select settings-timezone-select" data-settings-timezone data-timezone-auto="true" data-timezone-manual="false" aria-label="Operating hours time zone">
+                          <option value="America/Los_Angeles">America/Los_Angeles</option>
+                          <option value="America/Denver">America/Denver</option>
+                          <option value="America/Chicago" selected>America/Chicago</option>
+                          <option value="America/New_York">America/New_York</option>
+                          <option value="America/Anchorage">America/Anchorage</option>
+                          <option value="Pacific/Honolulu">Pacific/Honolulu</option>
+                          <option value="America/Toronto">America/Toronto</option>
+                          <option value="America/Vancouver">America/Vancouver</option>
+                          <option value="America/Edmonton">America/Edmonton</option>
+                          <option value="America/Winnipeg">America/Winnipeg</option>
+                          <option value="America/Mexico_City">America/Mexico_City</option>
+                          <option value="America/Tijuana">America/Tijuana</option>
+                          <option value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh</option>
+                        </select>
+                      </label>
+                      <span class="settings-timezone-status" data-settings-timezone-status>Auto-detected from salon address</span>
+                    </div>
                   </article>
                 </div>
 
@@ -8846,8 +9047,6 @@
                       <button class="settings-service-suggest" type="button" data-service-suggest-add data-name="Lash Fill" data-price="45" data-duration="60">+ Lash Fill <span>$45</span></button>
                     </div>
                   </div>
-
-                  <div class="settings-service-note-bar">Duration determines when the review SMS is sent (finished + 2h) and the touch-up promo cycle.</div>
 
                   <div class="settings-service-list settings-service-body">
                     <div class="settings-service-header" aria-hidden="true">
@@ -12224,6 +12423,60 @@ function getBookingCardCallStart(item) {
       closeSettingsOfferModal();
     }
 
+    function settingsAddressValue(name) {
+      var field = document.querySelector('[data-settings-address-field="' + name + '"]');
+      return field ? field.value.trim().toUpperCase() : '';
+    }
+
+    function detectSettingsTimeZone() {
+      var country = settingsAddressValue('country');
+      var state = settingsAddressValue('state');
+      var city = settingsAddressValue('city');
+
+      if (country === 'VN') return 'Asia/Ho_Chi_Minh';
+
+      if (country === 'CA') {
+        if (/^(BC|BRITISH COLUMBIA)$/.test(state)) return 'America/Vancouver';
+        if (/^(AB|ALBERTA|SK|SASKATCHEWAN)$/.test(state)) return 'America/Edmonton';
+        if (/^(MB|MANITOBA)$/.test(state)) return 'America/Winnipeg';
+        return 'America/Toronto';
+      }
+
+      if (country === 'MX') {
+        if (/TIJUANA|BAJA CALIFORNIA/.test(city + ' ' + state)) return 'America/Tijuana';
+        return 'America/Mexico_City';
+      }
+
+      var stateTimeZones = [
+        { timeZone: 'America/Los_Angeles', states: ['CA', 'CALIFORNIA', 'NV', 'NEVADA', 'OR', 'OREGON', 'WA', 'WASHINGTON'] },
+        { timeZone: 'America/Denver', states: ['AZ', 'ARIZONA', 'CO', 'COLORADO', 'ID', 'IDAHO', 'MT', 'MONTANA', 'NM', 'NEW MEXICO', 'UT', 'UTAH', 'WY', 'WYOMING'] },
+        { timeZone: 'America/New_York', states: ['CT', 'CONNECTICUT', 'DE', 'DELAWARE', 'FL', 'FLORIDA', 'GA', 'GEORGIA', 'ME', 'MAINE', 'MD', 'MARYLAND', 'MA', 'MASSACHUSETTS', 'NH', 'NEW HAMPSHIRE', 'NJ', 'NEW JERSEY', 'NY', 'NEW YORK', 'NC', 'NORTH CAROLINA', 'OH', 'OHIO', 'PA', 'PENNSYLVANIA', 'RI', 'RHODE ISLAND', 'SC', 'SOUTH CAROLINA', 'VT', 'VERMONT', 'VA', 'VIRGINIA', 'WV', 'WEST VIRGINIA'] },
+        { timeZone: 'America/Chicago', states: ['AL', 'ALABAMA', 'AR', 'ARKANSAS', 'IA', 'IOWA', 'IL', 'ILLINOIS', 'KS', 'KANSAS', 'KY', 'KENTUCKY', 'LA', 'LOUISIANA', 'MN', 'MINNESOTA', 'MS', 'MISSISSIPPI', 'MO', 'MISSOURI', 'NE', 'NEBRASKA', 'ND', 'NORTH DAKOTA', 'OK', 'OKLAHOMA', 'SD', 'SOUTH DAKOTA', 'TN', 'TENNESSEE', 'TX', 'TEXAS', 'WI', 'WISCONSIN'] }
+      ];
+
+      for (var index = 0; index < stateTimeZones.length; index += 1) {
+        if (stateTimeZones[index].states.indexOf(state) !== -1) return stateTimeZones[index].timeZone;
+      }
+
+      return 'America/Chicago';
+    }
+
+    function syncSettingsTimeZoneFromAddress() {
+      var timeZoneSelect = document.querySelector('[data-settings-timezone]');
+      if (!timeZoneSelect || timeZoneSelect.dataset.timezoneManual === 'true') return;
+
+      var detectedTimeZone = detectSettingsTimeZone();
+      var hasOption = Array.from(timeZoneSelect.options).some(function(option) {
+        return option.value === detectedTimeZone;
+      });
+      if (!hasOption) return;
+
+      timeZoneSelect.value = detectedTimeZone;
+      timeZoneSelect.dataset.timezoneAuto = 'true';
+      var status = document.querySelector('[data-settings-timezone-status]');
+      if (status) status.textContent = 'Auto-detected from salon address';
+    }
+
     function syncSettingsHourRow(toggle) {
       var row = toggle.closest('.settings-hour-row');
       if (!row) return;
@@ -12659,6 +12912,23 @@ function getBookingCardCallStart(item) {
         syncSettingsHourRow(toggle);
       });
     });
+
+    document.querySelectorAll('[data-settings-address-field]').forEach(function(field) {
+      field.addEventListener('input', syncSettingsTimeZoneFromAddress);
+      field.addEventListener('change', syncSettingsTimeZoneFromAddress);
+    });
+
+    var settingsTimeZone = document.querySelector('[data-settings-timezone]');
+    if (settingsTimeZone) {
+      settingsTimeZone.addEventListener('change', function() {
+        settingsTimeZone.dataset.timezoneManual = 'true';
+        settingsTimeZone.dataset.timezoneAuto = 'false';
+        var status = document.querySelector('[data-settings-timezone-status]');
+        if (status) status.textContent = 'Manually selected';
+        setSettingsStatus('Operating hours time zone set to ' + settingsTimeZone.options[settingsTimeZone.selectedIndex].text + '.');
+      });
+      syncSettingsTimeZoneFromAddress();
+    }
 
     var trialModal = document.querySelector('[data-trial-modal]');
     if (trialModal) {

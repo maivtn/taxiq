@@ -6,6 +6,7 @@ const BOOKING_URL = new URL('./booking-book-phase-1.html', import.meta.url);
 const SHELL_URL = new URL('../assets/nexora-shell.js', import.meta.url);
 const SMS_DASHBOARD_URL = new URL('./nexora-sms-dashboard.html', import.meta.url);
 const BRAND_LOGO_URL = new URL('../assets/nexora-logo.svg', import.meta.url);
+const CHANGE_ICON_URL = new URL('./change-icon.html', import.meta.url);
 
 function source() {
   assert.ok(existsSync(BOOKING_URL), 'booking-book-phase-1.html must exist');
@@ -141,6 +142,90 @@ test('limits long service pickers and enables vertical scrolling', () => {
 
   assert.match(servicePickerRule, /max-height:\s*160px/);
   assert.match(servicePickerRule, /overflow-y:\s*auto/);
+});
+
+test('adds website and structured salon location fields to Salon Info', () => {
+  const html = source();
+  const salonInfo = html.match(/<div class="settings-card-title"><i class="bi bi-shop"[^>]*><\/i>Salon Info<\/div>[\s\S]*?<\/article>/)?.[0] || '';
+  const websitePosition = salonInfo.indexOf('<span class="settings-label">Website</span>');
+  const reviewLinkPosition = salonInfo.indexOf('<span class="settings-label">Google Review Link</span>');
+
+  assert.match(salonInfo, /<span class="settings-label">Website<\/span>[\s\S]*?<input class="settings-input" type="url"[^>]*autocomplete="url"/);
+  assert.ok(websitePosition > reviewLinkPosition, 'Website should be the last Salon Info field');
+  assert.match(salonInfo, /<span class="settings-label settings-label-with-tooltip">\s*Salon phone number[\s\S]*?<button class="settings-tooltip-trigger" type="button" aria-label="Salon phone number info" aria-describedby="salon-phone-number-help">[\s\S]*bi-info-circle/);
+  assert.match(salonInfo, /<span class="settings-tooltip-content" id="salon-phone-number-help" role="tooltip">The number customers currently call; it will be forwarded to the AI number\.<\/span>/);
+  assert.doesNotMatch(salonInfo, /<span class="settings-help">The number customers currently call/);
+  assert.match(salonInfo, /<span class="settings-label settings-label-with-tooltip">\s*AI answering number[\s\S]*?<button class="settings-tooltip-trigger" type="button" aria-label="AI answering number info" aria-describedby="ai-answering-number-help">[\s\S]*bi-info-circle/);
+  assert.match(salonInfo, /<span class="settings-tooltip-content" id="ai-answering-number-help" role="tooltip">Provided by NEXORA; AI answers 24\/7 on this number\.<\/span>/);
+  assert.doesNotMatch(salonInfo, /<span class="settings-help">Provided by NEXORA; AI answers 24\/7 on this number\.<\/span>/);
+  assert.match(salonInfo, /<span class="settings-label settings-label-with-tooltip">\s*Booking notification number[\s\S]*?<button class="settings-tooltip-trigger" type="button" aria-label="Booking notification number info" aria-describedby="booking-notification-number-help">[\s\S]*bi-info-circle/);
+  assert.match(salonInfo, /<span class="settings-tooltip-content" id="booking-notification-number-help" role="tooltip">Gets an SMS when a customer books or texts - can be the owner's or manager's number\.<\/span>/);
+  assert.doesNotMatch(salonInfo, /<span class="settings-help">Gets an SMS when a customer books or texts - can be the owner's or manager's number\.<\/span>/);
+  assert.match(salonInfo, /<span class="settings-label">Address \*<\/span>[\s\S]*?value="9793 Westheimer Rd, Suite A"/);
+  assert.doesNotMatch(salonInfo, /Address line 1/);
+  for (const label of ['City', 'State', 'Zip code']) {
+    assert.match(salonInfo, new RegExp(`<span class="settings-label">${label} \\*<\\/span>[\\s\\S]*?<input class="settings-input" type="text"`));
+  }
+  assert.match(salonInfo, /<span class="settings-label">Country \*<\/span>[\s\S]*?<select class="settings-select"[^>]*autocomplete="country"[\s\S]*?<option value="US" selected>United States<\/option>/);
+});
+
+test('limits the Services & Pricing list and enables vertical scrolling', () => {
+  const html = source();
+  const serviceListRule = html.match(/\.settings-service-list\.settings-service-body\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(serviceListRule, /max-height:\s*500px/);
+  assert.match(serviceListRule, /overflow-y:\s*auto/);
+});
+
+test('removes the service duration note from settings pages', () => {
+  const durationNote = 'Duration determines when the review SMS is sent (finished + 2h) and the touch-up promo cycle.';
+
+  assert.doesNotMatch(source(), new RegExp(durationNote.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.doesNotMatch(readFileSync(CHANGE_ICON_URL, 'utf8'), new RegExp(durationNote.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+});
+
+test('keeps the Salon Info address group compact', () => {
+  const html = source();
+  const locationGridRule = html.match(/\.settings-location-grid\s*\{([^}]*)\}/)?.[1] || '';
+  const locationFieldRule = html.match(/\.settings-location-grid > \.settings-field\s*\{([^}]*)\}/)?.[1] || '';
+  const locationControlRule = html.match(/\.settings-location-grid \.settings-input,[\s\S]*?\.settings-location-grid \.settings-select\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(html, /<div class="settings-location-grid">[\s\S]*?Address \*[\s\S]*?Country \*/);
+  assert.match(locationGridRule, /row-gap:\s*10px/);
+  assert.match(locationFieldRule, /gap:\s*6px/);
+  assert.match(locationControlRule, /min-height:\s*40px/);
+});
+
+test('adds an editable address-detected time zone to Operating Hours', () => {
+  const html = source();
+  const operatingHours = html.match(/<div class="settings-card-title"><i class="bi bi-clock-history"[^>]*><\/i>Operating Hours<\/div>[\s\S]*?<\/article>/)?.[0] || '';
+  const timezoneOptions = Array.from(operatingHours.matchAll(/<option value="([^"]+)"(?: selected)?>([^<]+)<\/option>/g));
+  const timezoneToolbarRule = html.match(/\.settings-hours-toolbar\s*\{([^}]*)\}/)?.[1] || '';
+  const timezonePosition = operatingHours.indexOf('<div class="settings-hours-toolbar">');
+  const lastHourPosition = operatingHours.lastIndexOf('data-settings-hour-toggle');
+
+  assert.match(operatingHours, /<span class="settings-label">Time zone<\/span>[\s\S]*?<select class="settings-select settings-timezone-select" data-settings-timezone data-timezone-auto="true"/);
+  assert.match(operatingHours, /<option value="America\/Chicago" selected>America\/Chicago<\/option>/);
+  assert.ok(timezoneOptions.length >= 5);
+  timezoneOptions.forEach(([, value, label]) => assert.equal(label, value));
+  assert.ok(timezonePosition > lastHourPosition, 'Time zone should be the last Operating Hours control');
+  assert.match(timezoneToolbarRule, /margin-top:\s*12px/);
+  assert.match(timezoneToolbarRule, /margin-bottom:\s*0/);
+  assert.match(operatingHours, /data-settings-timezone-status>Auto-detected from salon address<\/span>/);
+  assert.match(html, /data-settings-address-field="state"/);
+  assert.match(html, /function detectSettingsTimeZone\(\)/);
+  assert.match(html, /data-timezone-manual/);
+  assert.match(html, /document\.querySelectorAll\('\[data-settings-address-field\]'\)/);
+});
+
+test('does not force a minimum height on business grid inputs', () => {
+  const html = source();
+  const businessFieldRule = html.match(/\.settings-business-grid > \.settings-field:not\(\.settings-span-full\)\s*\{([^}]*)\}/)?.[1] || '';
+  const businessInputRule = html.match(/\.settings-business-grid \.settings-input\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(businessFieldRule, /grid-template-rows:\s*16px 46px\s*;/);
+  assert.doesNotMatch(businessInputRule, /min-height:/);
+  assert.match(businessInputRule, /border-radius:\s*10px/);
 });
 
 test('shows service price between name and duration in New appointment', () => {
