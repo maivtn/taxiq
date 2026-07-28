@@ -230,8 +230,9 @@ test('adds first-call AI SMS controls above Promotion details', () => {
   assert.match(aiVoice, /First-call SMS[\s\S]*?settings-tooltip-trigger[^>]*aria-label="First-call SMS info"[^>]*aria-describedby="first-call-sms-help"/);
   assert.match(aiVoice, /id="first-call-sms-help" role="tooltip">Send a follow-up after a completed AI booking\. AI sends this message only after a new customer calls, books an appointment successfully, and the booking is confirmed\.<\/span>/);
   assert.doesNotMatch(aiVoice, /settings-first-call-sms-title/);
-  assert.match(aiVoice, /SMS message[\s\S]*?settings-tooltip-trigger[^>]*aria-label="SMS message info"[^>]*aria-describedby="first-call-sms-message-help"/);
-  assert.match(aiVoice, /id="first-call-sms-message-help" role="tooltip">Suggested post-booking message — edit it to match your salon's offer\.<\/span>/);
+  assert.doesNotMatch(aiVoice, /<span class="settings-label settings-label-with-tooltip">\s*SMS message[\s\S]*?first-call-sms-message-help/);
+  assert.doesNotMatch(aiVoice, /id="first-call-sms-message-help" role="tooltip"/);
+  assert.match(aiVoice, /<textarea class="settings-textarea" data-settings-first-call-sms-message[^>]*aria-label="SMS message"/);
   assert.doesNotMatch(aiVoice, /settings-first-call-sms-description/);
   assert.doesNotMatch(aiVoice, /settings-first-call-sms-note/);
   assert.match(aiVoice, /data-settings-first-call-sms-message[^>]*>Thanks for booking with Bitcoin Nail Bar!/);
