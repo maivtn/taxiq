@@ -238,6 +238,15 @@ test('adds first-call AI SMS controls above Promotion details', () => {
   assert.match(aiVoice, /Promotion details[\s\S]*?settings-tooltip-trigger[^>]*aria-label="Promotion details info"[^>]*aria-describedby="promotion-details-help"/);
   assert.match(aiVoice, /id="promotion-details-help" role="tooltip">AI Voice reads this offer when a customer asks about promotions\. Tap a suggestion chip to fill in a template, then edit it for your salon\.<\/span>/);
   assert.doesNotMatch(aiVoice, /settings-language-status">AI Voice reads this offer when a customer asks about promotions/);
+  const firstCallHeadRule = html.match(/\.settings-first-call-sms-head\s*\{([^}]*)\}/)?.[1] || '';
+  const firstCallCopyRule = html.match(/\.settings-first-call-sms-copy\s*\{([^}]*)\}/)?.[1] || '';
+  const firstCallTitleRule = html.match(/\.settings-first-call-sms-title\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(firstCallHeadRule, /align-items:\s*center/);
+  assert.match(firstCallCopyRule, /display:\s*flex/);
+  assert.match(firstCallCopyRule, /align-items:\s*center/);
+  assert.match(firstCallTitleRule, /white-space:\s*nowrap/);
+  assert.match(firstCallTitleRule, /text-overflow:\s*ellipsis/);
   assert.match(html, /function syncFirstCallSmsToggle\(/);
 });
 

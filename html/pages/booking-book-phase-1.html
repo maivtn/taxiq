@@ -2192,21 +2192,31 @@
 
     .settings-first-call-sms-head {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 16px;
     }
 
     .settings-first-call-sms-copy {
-      display: grid;
+      display: flex;
+      flex: 1 1 auto;
+      align-items: center;
       min-width: 0;
-      gap: 4px;
+      gap: 8px;
+    }
+
+    .settings-first-call-sms-copy > .settings-label {
+      flex: 0 0 auto;
     }
 
     .settings-first-call-sms-title {
+      min-width: 0;
+      overflow: hidden;
       color: var(--nexora-text);
       font-size: 13px;
       font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .settings-first-call-sms .settings-textarea {
