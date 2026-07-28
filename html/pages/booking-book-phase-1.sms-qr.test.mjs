@@ -227,6 +227,12 @@ test('adds first-call AI SMS controls above Promotion details', () => {
   assert.ok(firstCallPosition !== -1, 'First-call SMS section should exist in AI Voice settings');
   assert.ok(firstCallPosition < promotionPosition, 'First-call SMS should appear above Promotion details');
   assert.match(aiVoice, /data-settings-first-call-sms-toggle[^>]*role="switch"[^>]*aria-checked="true"/);
+  assert.match(aiVoice, /First-call SMS[\s\S]*?settings-tooltip-trigger[^>]*aria-label="First-call SMS info"[^>]*aria-describedby="first-call-sms-help"/);
+  assert.match(aiVoice, /id="first-call-sms-help" role="tooltip">AI sends this message once after a new customer calls the salon for the first time\.<\/span>/);
+  assert.match(aiVoice, /SMS message[\s\S]*?settings-tooltip-trigger[^>]*aria-label="SMS message info"[^>]*aria-describedby="first-call-sms-message-help"/);
+  assert.match(aiVoice, /id="first-call-sms-message-help" role="tooltip">Suggested message — edit it to match your salon\.<\/span>/);
+  assert.doesNotMatch(aiVoice, /settings-first-call-sms-description/);
+  assert.doesNotMatch(aiVoice, /settings-first-call-sms-note/);
   assert.match(aiVoice, /data-settings-first-call-sms-message[^>]*>Thanks for calling Bitcoin Nail Bar!/);
   assert.match(html, /function syncFirstCallSmsToggle\(/);
 });
