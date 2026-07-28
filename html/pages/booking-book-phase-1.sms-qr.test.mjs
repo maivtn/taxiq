@@ -639,6 +639,17 @@ test('ports the complete SMS Campaigns view and reuses the composer', () => {
   assert.match(html, /openComposer\(btn\.dataset\.smsSegment\)/);
 });
 
+test('adds an All audience option to step 1 of the SMS campaign composer', () => {
+  const html = source();
+
+  assert.match(html, /Bước 1 — Chọn nhóm khách[\s\S]*id="segmentGrid"/);
+  assert.match(html, /const COMPOSER_SEGMENTS = \[[\s\S]*id: 'all'[\s\S]*\.\.\.SEGMENTS/);
+  assert.match(html, /id: 'all'[\s\S]*?Gửi campaign đến toàn bộ khách hàng/);
+  assert.match(html, /const TEMPLATES = \{[\s\S]*?all:\s*\[/);
+  assert.match(html, /function renderSegmentButtons\(\)[\s\S]*COMPOSER_SEGMENTS\.map/);
+  assert.match(html, /function openComposer\(segId\)[\s\S]*COMPOSER_SEGMENTS\.find/);
+});
+
 test('provides a complete accessible focus lifecycle for the SMS composer', () => {
   const html = source();
 

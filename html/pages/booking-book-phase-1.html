@@ -13386,6 +13386,12 @@ function getBookingCardCallStart(item) {
           desc: 'Gửi tự động — tặng free nail art hoặc discount.' }
       ];
 
+      const COMPOSER_SEGMENTS = [
+        { id: 'all', icon: 'users', name: 'All', shortName: 'All', count: 1284, accent: 'var(--cyan)', badge: 'ready', badgeText: 'Sẵn sàng', countLabel: 'khách',
+          desc: 'Gửi campaign đến toàn bộ khách hàng.' },
+        ...SEGMENTS
+      ];
+
       const SMS_CREDIT_PACKAGES = [
         { id: 'sms-500', credits: 500, price: 25, name: 'Starter', note: 'Phù hợp để thử campaign' },
         { id: 'sms-1500', credits: 1500, price: 60, name: 'Growth', note: 'Cho các campaign định kỳ' },
@@ -13403,6 +13409,10 @@ function getBookingCardCallStart(item) {
       ];
 
       const TEMPLATES = {
+        all: [
+          { title: '📣 All customers', text: 'Hi {TenKhach}! {TenTiem} có ưu đãi mới dành cho bạn. Đặt lịch hôm nay: {Link}' },
+          { title: '✨ Salon update', text: 'Xin chào {TenKhach}! Ghé {TenTiem} để khám phá dịch vụ và ưu đãi mới nhất nhé: {Link}' }
+        ],
         new: [
           { title: '🌟 Welcome Back', text: 'Xin chào {TenKhach}! Cảm ơn đã ghé {TenTiem}. Book lại hôm nay và nhận 15% OFF cho lần tiếp theo! {Link}' },
           { title: '🎁 First Return Offer', text: 'Hi {TenKhach}! {TenTiem} dành cho bạn ưu đãi đặc biệt — Miễn phí nail art khi làm full set lần này. Đặt lịch: {Link}' }
@@ -13623,7 +13633,7 @@ function getBookingCardCallStart(item) {
       }
 
       function renderSegmentButtons() {
-        $('segmentGrid').innerHTML = SEGMENTS.map(s => `
+        $('segmentGrid').innerHTML = COMPOSER_SEGMENTS.map(s => `
           <button class="segment-btn" data-segment="${s.id}" id="seg-${s.id}">
             <span class="segment-btn-icon"><i class="marketing-icon" data-lucide="${s.icon}" aria-hidden="true"></i></span>
             <span class="segment-btn-name">${escapeHtml(s.shortName)}</span>
@@ -13851,7 +13861,7 @@ function getBookingCardCallStart(item) {
       function openComposer(segId) {
         const overlay = $('composerModal');
         const campaign = arguments[1] || null;
-        const seg = SEGMENTS.find(s => s.id === segId) || SEGMENTS[0];
+        const seg = COMPOSER_SEGMENTS.find(s => s.id === segId) || COMPOSER_SEGMENTS.find(s => s.id === 'new') || COMPOSER_SEGMENTS[0];
         if (!campaign) editingSmsCampaignId = null;
         state.segment = seg;
         state.scheduleMode = campaign
@@ -14382,7 +14392,7 @@ function getBookingCardCallStart(item) {
       });
       $('segmentGrid').addEventListener('click', function (e) {
         var btn = e.target.closest('.segment-btn'); if (!btn) return;
-        var seg = SEGMENTS.find(function (s) { return s.id === btn.dataset.segment; }); if (!seg) return;
+        var seg = COMPOSER_SEGMENTS.find(function (s) { return s.id === btn.dataset.segment; }); if (!seg) return;
         state.segment = seg;
         document.querySelectorAll('.segment-btn').forEach(function (b) { b.classList.toggle('selected', b === btn); });
         renderTemplates(seg.id); updateCost();
