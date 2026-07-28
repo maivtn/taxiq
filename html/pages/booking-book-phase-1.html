@@ -4965,11 +4965,16 @@
       border-top: 1px solid var(--nexora-border);
       background: #fff;
     }
-    #nx-campaign-root .cost-preview { border: 1px solid rgba(43, 89, 255, 0.25); border-radius: 10px; background: rgba(43, 89, 255, 0.06); padding: 10px 16px; }
+    #nx-campaign-root .cost-preview { display:flex; min-width:0; align-items:center; justify-content:space-between; gap:12px; border: 1px solid rgba(43, 89, 255, 0.25); border-radius: 10px; background: rgba(43, 89, 255, 0.06); padding: 10px 16px; }
     #nx-campaign-root .cost-preview.warn { border-color: rgba(220, 38, 38, 0.35); background: rgba(220, 38, 38, 0.07); }
+    #nx-campaign-root .cost-preview-info { min-width:0; }
     #nx-campaign-root .cost-preview-label { color: var(--nexora-muted); font-size: 12px; font-weight: 600; }
     #nx-campaign-root .cost-preview-amount { color: var(--nx-electric); font-size: 16px; font-weight: 800; }
     #nx-campaign-root .cost-preview.warn .cost-preview-amount { color: #dc2626; }
+    #nx-campaign-root .cost-preview-buy-button { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; gap:6px; border:1px solid rgba(220,38,38,.35); border-radius:8px; background:#fff; padding:8px 11px; color:#b91c1c; font-size:12px; font-weight:800; white-space:nowrap; }
+    #nx-campaign-root .cost-preview-buy-button:hover { border-color:#dc2626; background:#fff1f2; }
+    #nx-campaign-root .cost-preview-buy-button:focus-visible { outline:3px solid rgba(220,38,38,.2); outline-offset:2px; }
+    #nx-campaign-root .cost-preview-buy-button[hidden] { display:none; }
     #nx-campaign-root .btn-primary {
       display: inline-flex;
       align-items: center;
@@ -7604,7 +7609,7 @@
       <main class="content" aria-label="Booking Book content">
         <section class="blank-stage">
           <div class="page-heading">
-            <h1 class="page-title">Booking Book</h1>
+            <h1 class="page-title">AI Hub</h1>
             <p class="page-description">Manage salon bookings, appointments, and client scheduling from this workspace.</p>
             <div class="page-tabs" role="tablist" aria-label="Booking Book sections">
               <button class="page-tab is-active" type="button" role="tab" aria-selected="true" data-tab-target="booking" aria-controls="panel-booking">
@@ -9676,8 +9681,13 @@
 
           <div class="modal-footer">
             <div class="cost-preview" id="costBox">
-              <div class="cost-preview-label" id="costLabel">Chi phí ước tính</div>
-              <div class="cost-preview-amount" id="costPreview">—</div>
+              <div class="cost-preview-info">
+                <div class="cost-preview-label" id="costLabel" aria-live="polite">Chi phí ước tính</div>
+                <div class="cost-preview-amount" id="costPreview">—</div>
+              </div>
+              <button class="cost-preview-buy-button" id="costBuyCreditsBtn" type="button" data-sms-credit-buy hidden>
+                <i class="marketing-icon is-compact" data-lucide="wallet-cards" aria-hidden="true"></i><span>Mua thêm credits</span>
+              </button>
             </div>
             <div style="display:flex;gap:10px;">
               <button class="btn-outline" id="cancelComposerBtn">Hủy</button>
@@ -10815,7 +10825,7 @@
       var raw = String(source || '').trim();
       var normalized = raw.toLowerCase().replace(/[_-]+/g, ' ');
       return {
-        'booking book': 'Booking Book',
+        'booking book': 'Booking Hub',
         'manual add': 'Manual add',
         'front desk': 'Front desk',
         'online': 'Online',
@@ -13956,10 +13966,17 @@ function getBookingCardCallStart(item) {
         const totalSms = state.segment.count * parts;
         const cost = (totalSms * PRICE_PER_SMS).toFixed(2);
         const enough = state.credits >= totalSms;
+        const lowCredits = state.credits > 0 && totalSms >= state.credits * 0.8;
+        const needsCreditWarning = lowCredits || !enough;
 
         $('costPreview').textContent = `${state.segment.count} khách × ${parts} tin = ${totalSms} SMS ($${cost})`;
-        $('costLabel').textContent = enough ? 'Chi phí ước tính' : `Không đủ credits (còn ${state.credits})`;
-        $('costBox').classList.toggle('warn', !enough);
+        $('costLabel').textContent = !enough
+          ? `Không đủ credits (còn ${state.credits})`
+          : lowCredits
+            ? `Sắp hết credits (còn ${state.credits})`
+            : 'Chi phí ước tính';
+        $('costBox').classList.toggle('warn', needsCreditWarning);
+        $('costBuyCreditsBtn').hidden = !needsCreditWarning;
         $('sendCampaignBtn').disabled = !enough;
       }
 
@@ -13972,6 +13989,7 @@ function getBookingCardCallStart(item) {
         document.querySelectorAll('[data-sms-credits-usd]').forEach(function(el) {
           el.textContent = `≈ $${(newVal * PRICE_PER_SMS).toFixed(2)} remaining`;
         });
+        updateCost();
       }
 
       function getSelectedSmsCreditPackage() {
@@ -14172,8 +14190,15 @@ function getBookingCardCallStart(item) {
         if (!modal || modal.hidden) return;
         modal.hidden = true;
         document.body.style.overflow = '';
-        if (smsCreditModalOpener && typeof smsCreditModalOpener.focus === 'function') smsCreditModalOpener.focus();
+        var opener = smsCreditModalOpener;
         smsCreditModalOpener = null;
+        if (opener && typeof opener.focus === 'function' && !opener.hidden) {
+          opener.focus();
+          return;
+        }
+        var fallback = document.querySelector('#composerModal:not([aria-hidden="true"]) #smsText')
+          || document.querySelector('[data-sms-credit-buy]:not([hidden])');
+        if (fallback) fallback.focus();
       }
 
       function setSmsCreditPackage(packageId) {

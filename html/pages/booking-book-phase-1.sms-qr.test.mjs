@@ -650,6 +650,18 @@ test('adds an All audience option to step 1 of the SMS campaign composer', () =>
   assert.match(html, /function openComposer\(segId\)[\s\S]*COMPOSER_SEGMENTS\.find/);
 });
 
+test('warns about low SMS credits and offers more credits from the composer cost preview', () => {
+  const html = source();
+
+  assert.match(html, /id="costBuyCreditsBtn"[^>]*data-sms-credit-buy[^>]*hidden/);
+  assert.match(html, /Mua thêm credits/);
+  assert.match(html, /\.cost-preview-buy-button/);
+  assert.match(html, /const lowCredits = state\.credits > 0 && totalSms >= state\.credits \* 0\.8/);
+  assert.match(html, /Sắp hết credits/);
+  assert.match(html, /const needsCreditWarning = lowCredits \|\| !enough/);
+  assert.match(html, /\$\('costBuyCreditsBtn'\)\.hidden = !needsCreditWarning/);
+});
+
 test('provides a complete accessible focus lifecycle for the SMS composer', () => {
   const html = source();
 
