@@ -662,6 +662,16 @@ test('warns about low SMS credits and offers more credits from the composer cost
   assert.match(html, /\$\('costBuyCreditsBtn'\)\.hidden = !needsCreditWarning/);
 });
 
+test('places the SMS credit purchase action below the warning panel', () => {
+  const html = source();
+
+  assert.match(
+    html,
+    /<div class="cost-preview-group">\s*<div class="cost-preview" id="costBox">\s*<div class="cost-preview-info">[\s\S]*?<\/div>\s*<\/div>\s*<button class="cost-preview-buy-button" id="costBuyCreditsBtn"/
+  );
+  assert.match(html, /#nx-campaign-root \.cost-preview-group\s*\{[^}]*display:flex;[^}]*flex-direction:column;/s);
+});
+
 test('provides a complete accessible focus lifecycle for the SMS composer', () => {
   const html = source();
 
