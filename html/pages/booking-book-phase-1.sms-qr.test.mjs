@@ -227,6 +227,7 @@ test('adds first-call AI SMS controls above Promotion details', () => {
   assert.ok(firstCallPosition !== -1, 'First-call SMS section should exist in AI Voice settings');
   assert.ok(firstCallPosition < promotionPosition, 'First-call SMS should appear above Promotion details');
   assert.match(aiVoice, /data-settings-first-call-sms-toggle[^>]*role="switch"[^>]*aria-checked="true"/);
+  assert.match(aiVoice, /<span class="settings-first-call-sms-toggle-label"[^>]*data-settings-first-call-sms-toggle-label[^>]*>On · Auto send<\/span>/);
   assert.match(aiVoice, /First-call SMS[\s\S]*?settings-tooltip-trigger[^>]*aria-label="First-call SMS info"[^>]*aria-describedby="first-call-sms-help"/);
   assert.match(aiVoice, /id="first-call-sms-help" role="tooltip">AI automatically sends this SMS to a customer when they call the salon for the first time\. Turn on to enable automatic sending; turn off to disable it\.<\/span>/);
   assert.doesNotMatch(aiVoice, /first-call-sms-help[\s\S]*completed booking/);
@@ -251,6 +252,7 @@ test('adds first-call AI SMS controls above Promotion details', () => {
   assert.match(tooltipRule, /white-space:\s*normal/);
   assert.match(tooltipRule, /text-align:\s*left/);
   assert.match(html, /function syncFirstCallSmsToggle\(/);
+  assert.match(html, /label\.textContent = enabled \? 'On · Auto send' : 'Off';/);
 });
 
 test('does not force a minimum height on business grid inputs', () => {

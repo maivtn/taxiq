@@ -2208,6 +2208,24 @@
       flex: 0 0 auto;
     }
 
+    .settings-first-call-sms-toggle {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .settings-first-call-sms-toggle-label {
+      color: var(--nexora-success);
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .settings-first-call-sms-toggle-label.is-off {
+      color: var(--nexora-subtle);
+    }
+
     .settings-first-call-sms .settings-textarea {
       min-height: 84px;
     }
@@ -9301,7 +9319,10 @@
                               </span>
                             </span>
                           </div>
-                          <button class="toggle-pill is-on" type="button" data-settings-first-call-sms-toggle role="switch" aria-checked="true" aria-label="Disable first-call SMS"></button>
+                          <div class="settings-first-call-sms-toggle">
+                            <span class="settings-first-call-sms-toggle-label" data-settings-first-call-sms-toggle-label aria-live="polite">On · Auto send</span>
+                            <button class="toggle-pill is-on" type="button" data-settings-first-call-sms-toggle role="switch" aria-checked="true" aria-label="Disable first-call SMS"></button>
+                          </div>
                         </div>
                         <div class="settings-field">
                           <textarea class="settings-textarea" data-settings-first-call-sms-message aria-label="SMS message" maxlength="320">Thanks for booking with Bitcoin Nail Bar! We’re excited to see you. Reply to this text with any questions or to learn about our current promotions.</textarea>
@@ -12345,6 +12366,11 @@ function getBookingCardCallStart(item) {
       var enabled = toggle.classList.contains('is-on');
       toggle.setAttribute('aria-checked', enabled ? 'true' : 'false');
       toggle.setAttribute('aria-label', enabled ? 'Disable first-call SMS' : 'Enable first-call SMS');
+      var label = document.querySelector('[data-settings-first-call-sms-toggle-label]');
+      if (label) {
+        label.textContent = enabled ? 'On · Auto send' : 'Off';
+        label.classList.toggle('is-off', !enabled);
+      }
     }
 
     var settingsLanguageGreetings = {
