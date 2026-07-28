@@ -122,6 +122,18 @@ test('adds a POS-style resource calendar to the booking view switch', () => {
   assert.match(html, /function bookingCalendarEvent\(/);
 });
 
+test('keeps incoming call durations around two to three minutes', () => {
+  const html = source();
+  const callsBlock = html.match(/var CALLS = \[[\s\S]*?\n    \];/)?.[0] || '';
+  const durations = Array.from(
+    callsBlock.matchAll(/status: '(?:booked|answered)'[\s\S]*?dur:\s*(\d+)/g),
+    (match) => Number(match[1])
+  );
+
+  assert.ok(durations.length >= 5, 'Call Log should include answered or booked calls');
+  assert.ok(durations.every((duration) => duration >= 120 && duration <= 180), 'Incoming calls should last about 2–3 minutes');
+});
+
 test('allows New appointment to select multiple services and keeps their total duration', () => {
   const html = source();
 
