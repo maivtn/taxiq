@@ -1,0 +1,63 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
+
+const PAGE_URL = new URL('./nexora-credits.html', import.meta.url);
+const CSS_URL = new URL('../assets/nexora-credits.css', import.meta.url);
+const JS_URL = new URL('../assets/nexora-credits.js', import.meta.url);
+
+function source() {
+  assert.ok(existsSync(PAGE_URL), 'nexora-credits.html must exist');
+  return readFileSync(PAGE_URL, 'utf8');
+}
+
+test('creates the Credits Management page with a return path to SMS Campaigns', () => {
+  const html = source();
+
+  assert.match(html, /<title>Nexora Touch - Credits Management<\/title>/);
+  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
+  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-credits\.css">/);
+  assert.match(html, /<main class="content" aria-label="Credits management content">/);
+  assert.match(html, /href="booking-book-phase-1\.html\?tab=sms-campaigns"[^>]*data-credits-back/);
+  assert.match(html, /data-credits-card="sms"/);
+  assert.match(html, /data-credits-card="voice"/);
+  assert.match(html, /data-credits-history/);
+  assert.match(html, /activePage:\s*'booking'/);
+  assert.match(html, /activeTab:\s*'sms-campaigns'/);
+});
+
+test('exposes SMS purchase and AI Voice plan actions', () => {
+  const html = source();
+
+  assert.match(html, /href="booking-book-phase-1\.html\?tab=sms-campaigns&amp;openCredits=1"/);
+  assert.match(html, /href="nexora-packages\.html\?tab=voice"/);
+});
+
+test('renders both credit balances, progress indicators, and usage history', () => {
+  const html = source();
+  const runtime = readFileSync(JS_URL, 'utf8');
+  const css = readFileSync(CSS_URL, 'utf8');
+
+  assert.match(html, /data-credits-sms-balance/);
+  assert.match(html, /data-credits-sms-progress/);
+  assert.match(html, /data-credits-voice-balance/);
+  assert.match(html, /data-credits-voice-progress/);
+  assert.match(html, /<th scope="col">Product<\/th>/);
+  assert.match(html, /<th scope="col">Activity<\/th>/);
+  assert.match(html, /<th scope="col">Amount<\/th>/);
+  assert.match(html, /<th scope="col">Date<\/th>/);
+  assert.match(html, /<th scope="col">Balance after<\/th>/);
+  assert.match(runtime, /SMS_STARTING_CREDITS\s*=\s*847/);
+  assert.match(runtime, /VOICE_USED_MINUTES\s*=\s*487/);
+  assert.match(runtime, /VOICE_TOTAL_MINUTES\s*=\s*1000/);
+  assert.match(runtime, /taxiq:sms-credits/);
+  assert.match(runtime, /function readSmsCredits\(\)/);
+  assert.match(runtime, /function writeSmsCredits\(value\)/);
+  assert.match(css, /\.credits-balance-grid\s*\{/);
+  assert.match(css, /\.credits-history-scroll\s*\{/);
+  assert.match(css, /@media\s*\(max-width:\s*760px\)/);
+});
+
+test('keeps the Credits Management runtime syntactically valid', () => {
+  assert.doesNotThrow(() => new Function(readFileSync(JS_URL, 'utf8')));
+});

@@ -493,7 +493,7 @@ test('provides a selectable SMS credits checkout beside the credits pill', () =>
   assert.match(html, /data-sms-credit-card-field="city"/);
   assert.match(html, /data-sms-credit-card-field="state"/);
   assert.match(html, /data-sms-credit-card-field="zip"/);
-  assert.equal((html.match(/<option value="VN">Vietnam<\/option>/g) || []).length, 2);
+  assert.equal((html.match(/<option value="VN">Vietnam<\/option>/g) || []).length, 3);
   assert.match(html, /<div class="sms-credit-card-row">\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="name"[\s\S]*?<\/label>\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="number"/);
   assert.match(html, /<div class="sms-credit-card-row">\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="city"[\s\S]*?<\/label>\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="state"/);
   assert.match(html, /<div class="sms-credit-card-row">\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="zip"[\s\S]*?<\/label>\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="country"/);
@@ -648,6 +648,15 @@ test('adds an All audience option to step 1 of the SMS campaign composer', () =>
   assert.match(html, /const TEMPLATES = \{[\s\S]*?all:\s*\[/);
   assert.match(html, /function renderSegmentButtons\(\)[\s\S]*COMPOSER_SEGMENTS\.map/);
   assert.match(html, /function openComposer\(segId\)[\s\S]*COMPOSER_SEGMENTS\.find/);
+});
+
+test('links SMS Credits to the dedicated management page and keeps the purchase modal route', () => {
+  const html = source();
+
+  assert.match(html, /data-sms-credits-management/);
+  assert.match(html, /href="nexora-credits\.html\?from=sms-campaigns"/);
+  assert.match(html, /data-sms-credit-buy/);
+  assert.match(html, /new URLSearchParams\(window\.location\.search\)[\s\S]*?get\('openCredits'\) === '1'[\s\S]*?openSmsCreditModal\(\)/);
 });
 
 test('warns about low SMS credits and offers more credits from the composer cost preview', () => {
