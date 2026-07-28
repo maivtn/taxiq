@@ -61,3 +61,23 @@ test('renders both credit balances, progress indicators, and usage history', () 
 test('keeps the Credits Management runtime syntactically valid', () => {
   assert.doesNotThrow(() => new Function(readFileSync(JS_URL, 'utf8')));
 });
+
+test('keeps credit actions visible while hovering or focusing the card', () => {
+  const css = readFileSync(CSS_URL, 'utf8');
+
+  assert.match(css, /\.credits-card-foot\s*\{[\s\S]*?min-width:\s*0;/);
+  assert.match(css, /\.credits-action\s*\{[\s\S]*?opacity:\s*1;[\s\S]*?visibility:\s*visible;/);
+  assert.match(css, /\.credits-action(?::hover|:focus-visible)[^{]*\{[\s\S]*?opacity:\s*1;[\s\S]*?visibility:\s*visible;/);
+});
+
+test('shows Voice usage history per incoming phone number', () => {
+  const html = source();
+  const runtime = readFileSync(JS_URL, 'utf8');
+  const css = readFileSync(CSS_URL, 'utf8');
+
+  assert.match(html, /<th scope="col">Activity<\/th>/);
+  assert.match(runtime, /phone:\s*'\+1 \(713\) 555-0182'/);
+  assert.match(runtime, /phone:\s*'\+1 \(832\) 555-0104'/);
+  assert.match(runtime, /credits-history-activity/);
+  assert.match(css, /\.credits-history-activity\s*{/);
+});

@@ -160,16 +160,21 @@
 .credits-progress-fill-voice { background: linear-gradient(90deg, #7c3aed, #b26cff); }
 
 .credits-card-foot {
-  display: flex;
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
   margin-top: 22px;
   padding-top: 16px;
   border-top: 1px solid var(--nexora-rule);
 }
 
+.credits-card-foot > span { min-width: 0; }
+
 .credits-action {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -181,6 +186,8 @@
   font-weight: 900;
   text-decoration: none;
   white-space: nowrap;
+  opacity: 1;
+  visibility: visible;
 }
 
 .credits-action svg { width: 15px; height: 15px; }
@@ -188,6 +195,8 @@
 .credits-action-primary:hover { background: var(--nexora-brand-dark); }
 .credits-action-secondary { border: 1px solid rgba(124,58,237,.25); background: #faf8ff; color: #6d28d9; }
 .credits-action-secondary:hover { border-color: rgba(124,58,237,.5); background: #f4efff; }
+.credits-action:hover,
+.credits-action:focus-visible { opacity: 1; visibility: visible; }
 .credits-action:focus-visible { outline: 3px solid rgba(70,72,216,.2); outline-offset: 2px; }
 
 .credits-history-section { margin-top: 18px; padding: 20px; }
@@ -200,6 +209,9 @@
 .credits-product-badge { display: inline-flex; border-radius: 999px; padding: 4px 8px; font-size: 10px; font-weight: 900; }
 .credits-product-badge-sms { background: #edf2ff; color: var(--nexora-brand); }
 .credits-product-badge-voice { background: #f2edff; color: #6d28d9; }
+.credits-history-activity { display: grid; gap: 2px; }
+.credits-history-activity strong { color: var(--nexora-text); font-size: 12px; }
+.credits-history-activity small { color: var(--nexora-subtle); font-size: 10px; font-weight: 700; }
 .credits-amount-negative { color: #b42318; font-weight: 800; }
 
 @media (max-width: 760px) {
@@ -212,6 +224,6 @@
 @media (max-width: 520px) {
   .credits-card,
   .credits-history-section { padding: 16px; }
-  .credits-card-foot { align-items: flex-start; flex-direction: column; }
+  .credits-card-foot { align-items: flex-start; grid-template-columns: 1fr; }
   .credits-action { width: 100%; }
 }
