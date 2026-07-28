@@ -218,14 +218,14 @@ test('adds an editable address-detected time zone to Operating Hours', () => {
   assert.match(html, /document\.querySelectorAll\('\[data-settings-address-field\]'\)/);
 });
 
-test('adds first-call AI SMS controls above Promotion details', () => {
+test('adds first-call AI SMS controls below Promotion details', () => {
   const html = source();
   const aiVoice = html.match(/<div class="settings-card-title"><span class="settings-ai-title-icon"[^>]*>AI[\s\S]*?AI Voice<\/div>[\s\S]*?<\/article>/)?.[0] || '';
   const firstCallPosition = aiVoice.indexOf('First-call SMS');
   const promotionPosition = aiVoice.indexOf('Promotion details');
 
   assert.ok(firstCallPosition !== -1, 'First-call SMS section should exist in AI Voice settings');
-  assert.ok(firstCallPosition < promotionPosition, 'First-call SMS should appear above Promotion details');
+  assert.ok(promotionPosition < firstCallPosition, 'First-call SMS should appear below Promotion details');
   assert.match(aiVoice, /data-settings-first-call-sms-toggle[^>]*role="switch"[^>]*aria-checked="true"/);
   assert.match(aiVoice, /<span class="settings-first-call-sms-toggle-label"[^>]*data-settings-first-call-sms-toggle-label[^>]*>On · Auto send<\/span>/);
   assert.match(aiVoice, /First-call SMS[\s\S]*?settings-tooltip-trigger[^>]*aria-label="First-call SMS info"[^>]*aria-describedby="first-call-sms-help"/);
