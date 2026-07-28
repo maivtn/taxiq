@@ -79,7 +79,7 @@ test('keeps the SMS credit action readable on hover', () => {
   assert.match(actionRule, /transition:/);
   assert.match(primaryRule, /background:\s*var\(--nexora-brand\)\s*!important/);
   assert.match(primaryRule, /color:\s*#fff\s*!important/);
-  assert.match(primaryHoverRule, /background:\s*var\(--nexora-brand-dark\)\s*!important/);
+  assert.match(primaryHoverRule, /background:\s*var\(--nexora-brand-dark,\s*#393bc8\)\s*!important/);
   assert.match(primaryHoverRule, /color:\s*#fff\s*!important/);
   assert.match(css, /\.credits-action-primary span,\s*\.credits-action-primary svg\s*\{[^}]*opacity:\s*1\s*!important/);
 });
