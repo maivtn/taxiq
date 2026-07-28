@@ -235,6 +235,9 @@ test('adds first-call AI SMS controls above Promotion details', () => {
   assert.doesNotMatch(aiVoice, /settings-first-call-sms-description/);
   assert.doesNotMatch(aiVoice, /settings-first-call-sms-note/);
   assert.match(aiVoice, /data-settings-first-call-sms-message[^>]*>Thanks for booking with Bitcoin Nail Bar!/);
+  assert.match(aiVoice, /Promotion details[\s\S]*?settings-tooltip-trigger[^>]*aria-label="Promotion details info"[^>]*aria-describedby="promotion-details-help"/);
+  assert.match(aiVoice, /id="promotion-details-help" role="tooltip">AI Voice reads this offer when a customer asks about promotions\. Tap a suggestion chip to fill in a template, then edit it for your salon\.<\/span>/);
+  assert.doesNotMatch(aiVoice, /settings-language-status">AI Voice reads this offer when a customer asks about promotions/);
   assert.match(html, /function syncFirstCallSmsToggle\(/);
 });
 

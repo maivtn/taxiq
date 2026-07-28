@@ -9298,10 +9298,15 @@
                         </label>
                       </div>
                       <label class="settings-field" style="grid-column: 1 / -1;">
-                        <span class="settings-label">Promotion details</span>
+                        <span class="settings-label settings-label-with-tooltip">
+                          Promotion details
+                          <span class="settings-tooltip">
+                            <button class="settings-tooltip-trigger" type="button" aria-label="Promotion details info" aria-describedby="promotion-details-help"><i class="bi bi-info-circle" aria-hidden="true"></i></button>
+                            <span class="settings-tooltip-content" id="promotion-details-help" role="tooltip">AI Voice reads this offer when a customer asks about promotions. Tap a suggestion chip to fill in a template, then edit it for your salon.</span>
+                          </span>
+                        </span>
                         <textarea class="settings-textarea" data-settings-promo maxlength="1000" style="min-height: 220px;" placeholder="e.g.:&#10;Promotion 1: Reward Yourself&#10;Offer: Free $25 e-gift card.&#10;Eligibility: Book any pedicure service of $55 or more.&#10;Availability: Monday–Saturday, by appointment only.&#10;Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.&#10;General rule: The salon may modify or end any promotion at any time."></textarea>
                         <div class="settings-promo-count"><span data-promo-count>0</span>/1000</div>
-                        <div class="settings-language-status">AI Voice reads this offer when a customer asks about promotions. Tap a suggestion chip to fill in a template, then edit it for your salon.</div>
                         <div class="settings-promo-suggest-row">
                           <button class="settings-promo-suggest" type="button" data-promo-fill="reward-yourself"><i class="bi bi-stars" aria-hidden="true"></i>Suggestion: Reward Yourself</button>
                         </div>
