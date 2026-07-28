@@ -2181,6 +2181,46 @@
       line-height: 1.45;
     }
 
+    .settings-first-call-sms {
+      display: grid;
+      gap: 12px;
+      border: 1px solid rgba(70, 72, 216, 0.18);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(70, 72, 216, 0.06), rgba(50, 215, 255, 0.04));
+      padding: 14px;
+    }
+
+    .settings-first-call-sms-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .settings-first-call-sms-copy {
+      display: grid;
+      min-width: 0;
+      gap: 4px;
+    }
+
+    .settings-first-call-sms-title {
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .settings-first-call-sms-description,
+    .settings-first-call-sms-note {
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .settings-first-call-sms .settings-textarea {
+      min-height: 84px;
+    }
+
     .settings-input-row,
     .settings-actions {
       display: flex;
@@ -9240,6 +9280,21 @@
                         <span class="settings-label">Greeting</span>
                         <textarea class="settings-textarea" data-settings-greeting>Hi! Thanks for calling Bitcoin Nail Bar. I'm your AI assistant — I can help you book an appointment, check pricing, or answer questions. How can I help today?</textarea>
                       </label>
+                      <div class="settings-first-call-sms" style="grid-column: 1 / -1;" data-settings-first-call-sms>
+                        <div class="settings-first-call-sms-head">
+                          <div class="settings-first-call-sms-copy">
+                            <span class="settings-label">First-call SMS</span>
+                            <strong class="settings-first-call-sms-title">Text new customers after their first call</strong>
+                            <span class="settings-first-call-sms-description">AI sends this message once after a new customer calls the salon for the first time.</span>
+                          </div>
+                          <button class="toggle-pill is-on" type="button" data-settings-first-call-sms-toggle role="switch" aria-checked="true" aria-label="Disable first-call SMS"></button>
+                        </div>
+                        <label class="settings-field">
+                          <span class="settings-label">SMS message</span>
+                          <textarea class="settings-textarea" data-settings-first-call-sms-message maxlength="320">Thanks for calling Bitcoin Nail Bar! We’re here to help. Reply to this text to book an appointment or ask a question.</textarea>
+                          <span class="settings-first-call-sms-note">Suggested message — edit it to match your salon.</span>
+                        </label>
+                      </div>
                       <label class="settings-field" style="grid-column: 1 / -1;">
                         <span class="settings-label">Promotion details</span>
                         <textarea class="settings-textarea" data-settings-promo maxlength="1000" style="min-height: 220px;" placeholder="e.g.:&#10;Promotion 1: Reward Yourself&#10;Offer: Free $25 e-gift card.&#10;Eligibility: Book any pedicure service of $55 or more.&#10;Availability: Monday–Saturday, by appointment only.&#10;Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.&#10;General rule: The salon may modify or end any promotion at any time."></textarea>
@@ -12267,6 +12322,14 @@ function getBookingCardCallStart(item) {
       button.setAttribute('aria-label', isCollapsed ? 'Expand this section' : 'Collapse this section');
     }
 
+    function syncFirstCallSmsToggle(toggle) {
+      if (!toggle) return;
+
+      var enabled = toggle.classList.contains('is-on');
+      toggle.setAttribute('aria-checked', enabled ? 'true' : 'false');
+      toggle.setAttribute('aria-label', enabled ? 'Disable first-call SMS' : 'Enable first-call SMS');
+    }
+
     var settingsLanguageGreetings = {
       auto: 'Hi! Thanks for calling Bitcoin Nail Bar. I\'m your bilingual AI assistant — I can help you book an appointment, check pricing, or answer questions in English or Vietnamese. How can I help today?',
       vi: 'Hi! Thanks for calling Bitcoin Nail Bar. I\'m your AI assistant — I can help you book an appointment, check pricing, or answer questions. How can I help today?',
@@ -12975,6 +13038,14 @@ function getBookingCardCallStart(item) {
     document.querySelectorAll('.toggle-pill').forEach(function(toggle) {
       toggle.addEventListener('click', function() {
         toggle.classList.toggle('is-on');
+      });
+    });
+
+    document.querySelectorAll('[data-settings-first-call-sms-toggle]').forEach(function(toggle) {
+      syncFirstCallSmsToggle(toggle);
+      toggle.addEventListener('click', function() {
+        syncFirstCallSmsToggle(toggle);
+        setSettingsStatus('First-call SMS ' + (toggle.classList.contains('is-on') ? 'enabled' : 'disabled') + '.');
       });
     });
 

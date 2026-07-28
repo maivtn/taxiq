@@ -218,6 +218,19 @@ test('adds an editable address-detected time zone to Operating Hours', () => {
   assert.match(html, /document\.querySelectorAll\('\[data-settings-address-field\]'\)/);
 });
 
+test('adds first-call AI SMS controls above Promotion details', () => {
+  const html = source();
+  const aiVoice = html.match(/<div class="settings-card-title"><span class="settings-ai-title-icon"[^>]*>AI[\s\S]*?AI Voice<\/div>[\s\S]*?<\/article>/)?.[0] || '';
+  const firstCallPosition = aiVoice.indexOf('First-call SMS');
+  const promotionPosition = aiVoice.indexOf('Promotion details');
+
+  assert.ok(firstCallPosition !== -1, 'First-call SMS section should exist in AI Voice settings');
+  assert.ok(firstCallPosition < promotionPosition, 'First-call SMS should appear above Promotion details');
+  assert.match(aiVoice, /data-settings-first-call-sms-toggle[^>]*role="switch"[^>]*aria-checked="true"/);
+  assert.match(aiVoice, /data-settings-first-call-sms-message[^>]*>Thanks for calling Bitcoin Nail Bar!/);
+  assert.match(html, /function syncFirstCallSmsToggle\(/);
+});
+
 test('does not force a minimum height on business grid inputs', () => {
   const html = source();
   const businessFieldRule = html.match(/\.settings-business-grid > \.settings-field:not\(\.settings-span-full\)\s*\{([^}]*)\}/)?.[1] || '';
