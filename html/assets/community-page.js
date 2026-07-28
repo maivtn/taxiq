@@ -2217,6 +2217,213 @@
     });
   }
 
+  function bindCommunityWizard() {
+    var backdrop = document.querySelector('[data-community-wizard]');
+    var opener = null;
+    var step = 1;
+    var groupType = 'private';
+    var members = ['Jessica M.', 'Emily T.', 'David L.', 'Sophia N.', 'Michael K.'];
+    var wizardFocusSelector = 'button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[href]';
+    if (!backdrop) return;
+
+    function field(name) {
+      return backdrop.querySelector('[name="' + name + '"]');
+    }
+
+    function value(name, fallback) {
+      var input = field(name);
+      return input && String(input.value || '').trim() ? String(input.value).trim() : fallback;
+    }
+
+    function groupLabel() {
+      return { public: 'Public Group', private: 'Private Group', salon: 'Salon Group' }[groupType] || 'Private Group';
+    }
+
+    function renderReview() {
+      var name = value('communityName', 'Houston Nail Techs');
+      var description = value('communityDescription', 'A community for nail technicians in Houston to share tips, ask questions, learn and grow together.');
+      var category = value('communityCategory', 'Nail Technician');
+      var location = value('communityLocation', 'Houston, Texas, USA');
+      var language = value('communityLanguage', 'English');
+      var review = {
+        '[data-review-name]': name,
+        '[data-review-type]': groupLabel(),
+        '[data-review-category]': category,
+        '[data-review-location]': location,
+        '[data-review-language]': language,
+        '[data-review-members]': members.length + ' members',
+        '[data-review-visibility]': groupType === 'private' ? 'Yes' : 'Yes',
+        '[data-review-description]': description,
+        '[data-created-name]': name,
+        '[data-created-meta]': groupLabel() + ' • ' + members.length + ' invited'
+      };
+      Object.keys(review).forEach(function (selector) {
+        var node = backdrop.querySelector(selector);
+        if (node) node.textContent = review[selector];
+      });
+    }
+
+    function setStep(nextStep, moveFocus) {
+      var views = backdrop.querySelectorAll('[data-wizard-view]');
+      var stepButtons = backdrop.querySelectorAll('[data-wizard-jump]');
+      var progress = nextStep === 6 ? 100 : Math.max(16.666, Math.min(100, nextStep * 16.666));
+      step = Math.max(1, Math.min(6, nextStep));
+      backdrop.setAttribute('data-wizard-step', String(step));
+      views.forEach(function (view) {
+        var active = Number(view.getAttribute('data-wizard-view')) === step;
+        view.hidden = !active;
+      });
+      stepButtons.forEach(function (button) {
+        var active = Number(button.getAttribute('data-wizard-jump')) === step;
+        button.classList.toggle('is-active', active);
+        if (active) button.setAttribute('aria-current', 'step');
+        else button.removeAttribute('aria-current');
+      });
+      backdrop.querySelectorAll('[data-wizard-progress]').forEach(function (bar) {
+        bar.style.width = progress + '%';
+      });
+      if (step === 5 || step === 6) renderReview();
+      if (moveFocus) {
+        var activeView = backdrop.querySelector('[data-wizard-view="' + step + '"]');
+        var target = activeView && (activeView.querySelector('input,select,textarea,button') || activeView.querySelector('h2'));
+        if (target && typeof target.focus === 'function') target.focus();
+      }
+    }
+
+    function validateBasic() {
+      var form = backdrop.querySelector('[data-wizard-basic-form]');
+      var required = form ? form.querySelectorAll('[required]') : [];
+      var valid = true;
+      required.forEach(function (input) {
+        if (!String(input.value || '').trim()) {
+          input.setAttribute('aria-invalid', 'true');
+          valid = false;
+        } else input.removeAttribute('aria-invalid');
+      });
+      if (!valid) {
+        showCommunityNotice('Complete the required community information first.');
+        return false;
+      }
+      return true;
+    }
+
+    function openWizard(button) {
+      opener = button || document.activeElement;
+      groupType = 'private';
+      setStep(1, false);
+      backdrop.hidden = false;
+      document.body.classList.add('community-wizard-open');
+      var first = backdrop.querySelector('[data-wizard-view="1"] input');
+      if (first) first.focus();
+    }
+
+    function closeWizard() {
+      backdrop.hidden = true;
+      document.body.classList.remove('community-wizard-open');
+      if (opener && typeof opener.focus === 'function') opener.focus();
+      opener = null;
+    }
+
+    backdrop.addEventListener('click', function (event) {
+      var target = event.target;
+      var jump = closestWithAttribute(target, 'data-wizard-jump');
+      var group = closestWithAttribute(target, 'data-group-type');
+      var next = closestWithAttribute(target, 'data-wizard-next');
+      var back = closestWithAttribute(target, 'data-wizard-back');
+      var invite = closestWithAttribute(target, 'data-wizard-invite');
+      var close = closestWithAttribute(target, 'data-community-wizard-close');
+      if (target === backdrop) closeWizard();
+      else if (close) closeWizard();
+      else if (jump) {
+        var requested = Number(jump.getAttribute('data-wizard-jump'));
+        if (requested <= step && requested !== 6) setStep(requested, true);
+      } else if (group) {
+        groupType = group.getAttribute('data-group-type') || 'private';
+        backdrop.querySelectorAll('[data-group-type]').forEach(function (option) {
+          var selected = option.getAttribute('data-group-type') === groupType;
+          option.classList.toggle('is-selected', selected);
+          option.setAttribute('aria-checked', selected ? 'true' : 'false');
+        });
+      } else if (next) {
+        if (step === 1 && !validateBasic()) return;
+        if (step < 5) setStep(step + 1, true);
+      } else if (back && step > 1) setStep(step - 1, true);
+      else if (invite) {
+        var name = invite.getAttribute('data-wizard-invite');
+        invite.classList.toggle('is-invited');
+        invite.setAttribute('aria-pressed', invite.classList.contains('is-invited') ? 'true' : 'false');
+        invite.textContent = invite.classList.contains('is-invited') ? 'Invited' : 'Invite';
+        showCommunityNotice((invite.classList.contains('is-invited') ? 'Invited ' : 'Removed ') + name + '.');
+      } else if (closestWithAttribute(target, 'data-wizard-create')) {
+        if (step === 5) {
+          renderReview();
+          setStep(6, true);
+          showCommunityNotice('Community created successfully.');
+        }
+      } else if (closestWithAttribute(target, 'data-wizard-go-community')) {
+        closeWizard();
+        if (typeof window.activateCommunityTab === 'function') window.activateCommunityTab('feed');
+      } else if (closestWithAttribute(target, 'data-wizard-invite-more')) setStep(4, true);
+      else if (closestWithAttribute(target, 'data-wizard-copy-link')) showCommunityNotice('Invite link copied.');
+      else if (closestWithAttribute(target, 'data-wizard-share-qr')) showCommunityNotice('QR code is ready to share.');
+      else if (closestWithAttribute(target, 'data-wizard-cover')) showCommunityNotice('Cover photo picker opened.');
+      else if (closestWithAttribute(target, 'data-wizard-logo-change')) showCommunityNotice('Logo picker opened.');
+      else if (closestWithAttribute(target, 'data-wizard-logo-remove')) showCommunityNotice('Group logo removed.');
+      else if (closestWithAttribute(target, 'data-community-wizard-open')) openWizard(target);
+    });
+
+    backdrop.addEventListener('input', function (event) {
+      if (event.target.matches('[data-wizard-member-search]')) {
+        var query = String(event.target.value || '').toLowerCase();
+        backdrop.querySelectorAll('[data-member-name]').forEach(function (row) {
+          row.hidden = query && row.getAttribute('data-member-name').toLowerCase().indexOf(query) === -1;
+        });
+      }
+      if (event.target.matches('[name="communityName"]')) {
+        var initials = value('communityName', 'HT').split(/\s+/).map(function (part) { return part.charAt(0); }).join('').slice(0, 2).toUpperCase();
+        backdrop.querySelectorAll('.community-group-logo').forEach(function (logo) { logo.textContent = initials || 'HT'; });
+      }
+    });
+
+    backdrop.addEventListener('submit', function (event) {
+      if (event.target.matches('[data-wizard-basic-form]')) {
+        event.preventDefault();
+        if (validateBasic()) setStep(2, true);
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      var focusable;
+      if (backdrop.hidden) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeWizard();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      focusable = backdrop.querySelectorAll(wizardFocusSelector);
+      if (!focusable.length) return;
+      if (event.shiftKey && document.activeElement === focusable[0]) {
+        event.preventDefault();
+        focusable[focusable.length - 1].focus();
+      } else if (!event.shiftKey && document.activeElement === focusable[focusable.length - 1]) {
+        event.preventDefault();
+        focusable[0].focus();
+      }
+    });
+
+    document.querySelectorAll('[data-community-wizard-open]').forEach(function (button) {
+      button.addEventListener('click', function () { openWizard(button); });
+    });
+    document.querySelectorAll('[data-start-community-chat]').forEach(function (button) {
+      button.addEventListener('click', function () { showCommunityNotice('Chat is ready to start.'); });
+    });
+    backdrop.querySelectorAll('[data-wizard-invite]').forEach(function (button) {
+      button.setAttribute('aria-pressed', 'false');
+    });
+    window.NEXORA_COMMUNITY_WIZARD = { open: openWizard, close: closeWizard, setStep: setStep };
+  }
+
   function updateFilterButtons() {
     var buttons = document.querySelectorAll('[data-feed-filter]');
     var index;
@@ -2291,4 +2498,5 @@
   renderCourses();
   renderJobs();
   renderEvents();
+  bindCommunityWizard();
 }());

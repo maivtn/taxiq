@@ -6832,8 +6832,16 @@
       <main class="content" aria-label="Community content">
         <section class="blank-stage">
           <div class="page-heading">
-            <h1 class="page-title">Community</h1>
-            <p class="page-description">Connect, learn, and grow with the Nexora community.</p>
+            <div class="community-heading-row">
+              <div>
+                <h1 class="page-title">Community</h1>
+                <p class="page-description">Connect, learn, and grow with the Nexora community.</p>
+              </div>
+              <div class="community-page-actions">
+                <button class="community-page-action community-page-action-secondary" type="button" data-start-community-chat>Start a Chat</button>
+                <button class="community-page-action community-page-action-primary" type="button" data-community-wizard-open>+ Create Community</button>
+              </div>
+            </div>
             <div class="page-tabs" role="tablist" aria-label="Community sections">
               <button class="page-tab is-active" type="button" role="tab" aria-selected="true" tabindex="0" data-tab-target="feed" aria-controls="panel-feed">
                 <span class="page-tab-icon"><i data-lucide="message-square" aria-hidden="true"></i></span>
@@ -7084,6 +7092,155 @@
   </div>
 
   <div class="community-notice" data-community-notice role="status" aria-live="polite" hidden></div>
+
+  <div class="community-wizard-backdrop" data-community-wizard hidden>
+    <section class="community-wizard" role="dialog" aria-modal="true" aria-labelledby="community-wizard-title" aria-describedby="community-wizard-description">
+      <aside class="community-wizard-sidebar" aria-label="Create Community steps">
+        <div class="community-wizard-brand">
+          <div class="community-wizard-logo" aria-hidden="true">N</div>
+          <div>
+            <strong>Create Community</strong>
+            <span>Nexora Touch Wizard</span>
+          </div>
+        </div>
+        <nav class="community-wizard-steps">
+          <button class="community-wizard-step is-active" type="button" data-wizard-jump="1" aria-current="step">
+            <span class="community-wizard-step-number">1</span><span><strong>Basic Info</strong><small>Thông tin cơ bản</small></span>
+          </button>
+          <button class="community-wizard-step" type="button" data-wizard-jump="2">
+            <span class="community-wizard-step-number">2</span><span><strong>Group Type</strong><small>Chọn loại group</small></span>
+          </button>
+          <button class="community-wizard-step" type="button" data-wizard-jump="3">
+            <span class="community-wizard-step-number">3</span><span><strong>Details &amp; Settings</strong><small>Cài đặt &amp; hình ảnh</small></span>
+          </button>
+          <button class="community-wizard-step" type="button" data-wizard-jump="4">
+            <span class="community-wizard-step-number">4</span><span><strong>Invite Members</strong><small>Mời thành viên</small></span>
+          </button>
+          <button class="community-wizard-step" type="button" data-wizard-jump="5">
+            <span class="community-wizard-step-number">5</span><span><strong>Review &amp; Confirm</strong><small>Xem lại</small></span>
+          </button>
+          <button class="community-wizard-step" type="button" data-wizard-jump="6">
+            <span class="community-wizard-step-number">6</span><span><strong>Created</strong><small>Hoàn tất</small></span>
+          </button>
+        </nav>
+      </aside>
+
+      <div class="community-wizard-main">
+        <button class="community-wizard-close" type="button" aria-label="Close Create Community" data-community-wizard-close>×</button>
+
+        <div class="community-wizard-view" data-wizard-view="1">
+          <div class="community-wizard-heading">
+            <h2 id="community-wizard-title">Basic Info</h2>
+            <p id="community-wizard-description">Tell us about your community.</p>
+          </div>
+          <div class="community-wizard-progress" aria-hidden="true"><span data-wizard-progress></span></div>
+          <form class="community-wizard-form community-wizard-form-basic" data-wizard-basic-form>
+            <label>Community Name *<input name="communityName" value="Houston Nail Techs" required></label>
+            <label>Description *<textarea name="communityDescription" rows="3" required>A community for nail technicians in Houston to share tips, ask questions, learn and grow together.</textarea></label>
+            <label>Category *<select name="communityCategory" required><option>Nail Technician</option><option>Nail Salon Owner</option><option>Beauty Educator</option><option>Customer Community</option></select></label>
+            <label>Tags<input name="communityTags" value="Nail Art, Education, Tips &amp; Tricks"></label>
+            <label>Location<input name="communityLocation" value="Houston, Texas, USA"></label>
+          </form>
+          <div class="community-wizard-footer"><span></span><button class="community-wizard-button community-wizard-button-primary" type="button" data-wizard-next>Next →</button></div>
+        </div>
+
+        <div class="community-wizard-view" data-wizard-view="2" hidden>
+          <div class="community-wizard-heading">
+            <h2>Group Type</h2>
+            <p>Choose who can discover and join this group.</p>
+          </div>
+          <div class="community-wizard-progress" aria-hidden="true"><span data-wizard-progress></span></div>
+          <div class="community-group-options" role="radiogroup" aria-label="Group type">
+            <button class="community-group-option" type="button" role="radio" aria-checked="false" data-group-type="public">
+              <span class="community-group-icon" aria-hidden="true">🌎</span><span><strong>Public Group</strong><small>Anyone can find this group, see content and join.</small></span><span class="community-group-radio" aria-hidden="true"></span>
+            </button>
+            <button class="community-group-option is-selected" type="button" role="radio" aria-checked="true" data-group-type="private">
+              <span class="community-group-icon" aria-hidden="true">🔒</span><span><strong>Private Group</strong><small>Only invited or approved members can join and see content.</small></span><span class="community-group-radio" aria-hidden="true"></span>
+            </button>
+            <button class="community-group-option" type="button" role="radio" aria-checked="false" data-group-type="salon">
+              <span class="community-group-icon" aria-hidden="true">🏪</span><span><strong>Salon Group</strong><small>For salon staff, managers and owner announcements.</small></span><span class="community-group-radio" aria-hidden="true"></span>
+            </button>
+          </div>
+          <div class="community-wizard-footer"><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-back>Back</button><button class="community-wizard-button community-wizard-button-primary" type="button" data-wizard-next>Next →</button></div>
+        </div>
+
+        <div class="community-wizard-view" data-wizard-view="3" hidden>
+          <div class="community-wizard-heading">
+            <h2>Details &amp; Settings</h2>
+            <p>Customize your community identity and rules.</p>
+          </div>
+          <div class="community-wizard-progress" aria-hidden="true"><span data-wizard-progress></span></div>
+          <div class="community-details-grid">
+            <div class="community-cover-column"><div class="community-cover-preview"><span>Cover Photo Preview</span></div><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-cover>Change Cover</button></div>
+            <div class="community-details-fields">
+              <label>Group Logo<div class="community-logo-control"><span class="community-group-logo">HT</span><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-logo-change>Change</button><button class="community-wizard-button community-wizard-button-muted" type="button" data-wizard-logo-remove>Remove</button></div></label>
+              <label>Community Rules<textarea name="communityRules" rows="4">1. Be respectful and kind to everyone
+2. No spam or self-promotion
+3. Keep posts related to nails</textarea></label>
+              <label>Language<select name="communityLanguage"><option>English</option><option>Tiếng Việt</option></select></label>
+            </div>
+          </div>
+          <div class="community-wizard-footer"><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-back>Back</button><button class="community-wizard-button community-wizard-button-primary" type="button" data-wizard-next>Next →</button></div>
+        </div>
+
+        <div class="community-wizard-view" data-wizard-view="4" hidden>
+          <div class="community-wizard-heading">
+            <h2>Invite Members</h2>
+            <p>Invite members now or share later.</p>
+          </div>
+          <div class="community-wizard-progress" aria-hidden="true"><span data-wizard-progress></span></div>
+          <div class="community-invite-content">
+            <label class="community-search-label">Search members<input type="search" placeholder="Search by name, phone or email" data-wizard-member-search></label>
+            <div class="community-member-list" data-wizard-member-list>
+              <div class="community-member-row" data-member-name="Jessica M."><span class="community-member-avatar">J</span><span><strong>Jessica M.</strong><small>@jessicam.</small></span><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-invite="Jessica M.">Invite</button></div>
+              <div class="community-member-row" data-member-name="Emily T."><span class="community-member-avatar">E</span><span><strong>Emily T.</strong><small>@emilyt.</small></span><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-invite="Emily T.">Invite</button></div>
+              <div class="community-member-row" data-member-name="David L."><span class="community-member-avatar">D</span><span><strong>David L.</strong><small>@davidl.</small></span><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-invite="David L.">Invite</button></div>
+              <div class="community-member-row" data-member-name="Sophia N."><span class="community-member-avatar">S</span><span><strong>Sophia N.</strong><small>@sophian.</small></span><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-invite="Sophia N.">Invite</button></div>
+              <div class="community-member-row" data-member-name="Michael K."><span class="community-member-avatar">M</span><span><strong>Michael K.</strong><small>@michaelk.</small></span><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-invite="Michael K.">Invite</button></div>
+            </div>
+            <div class="community-invite-actions"><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-copy-link>Copy Invite Link</button><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-share-qr>Share QR Code</button></div>
+          </div>
+          <div class="community-wizard-footer"><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-back>Back</button><button class="community-wizard-button community-wizard-button-primary" type="button" data-wizard-next>Next →</button></div>
+        </div>
+
+        <div class="community-wizard-view" data-wizard-view="5" hidden>
+          <div class="community-wizard-heading">
+            <h2>Review &amp; Confirm</h2>
+            <p>Review before creating.</p>
+          </div>
+          <div class="community-wizard-progress" aria-hidden="true"><span data-wizard-progress></span></div>
+          <div class="community-review" data-wizard-review>
+            <div><strong>Community Name</strong><span data-review-name>Houston Nail Techs</span></div>
+            <div><strong>Type</strong><span data-review-type>Private Group</span></div>
+            <div><strong>Category</strong><span data-review-category>Nail Technician</span></div>
+            <div><strong>Location</strong><span data-review-location>Houston, Texas, USA</span></div>
+            <div><strong>Language</strong><span data-review-language>English</span></div>
+            <div><strong>Members to Invite</strong><span data-review-members>5 members</span></div>
+            <div><strong>Visibility in Search</strong><span data-review-visibility>Yes</span></div>
+          </div>
+          <div class="community-review-description"><strong>Description</strong><p data-review-description>A community for nail technicians in Houston to share tips, ask questions, learn and grow together.</p></div>
+          <div class="community-wizard-footer"><button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-back>Back</button><button class="community-wizard-button community-wizard-button-primary community-wizard-create" type="button" data-wizard-create>Create Community ✓</button></div>
+        </div>
+
+        <div class="community-wizard-view community-wizard-created" data-wizard-view="6" hidden>
+          <div class="community-wizard-heading">
+            <h2>Created</h2>
+            <p>Your community is ready.</p>
+          </div>
+          <div class="community-wizard-progress" aria-hidden="true"><span data-wizard-progress></span></div>
+          <div class="community-created-content">
+            <div class="community-created-check" aria-hidden="true">✓</div>
+            <h3>Community Created!</h3>
+            <p>Your community is ready to go.</p>
+            <div class="community-created-card"><span class="community-group-logo">HT</span><span><strong data-created-name>Houston Nail Techs</strong><small data-created-meta>Private Group • 5 invited</small></span></div>
+            <button class="community-wizard-button community-wizard-button-primary" type="button" data-wizard-go-community>Go to Community</button>
+            <button class="community-wizard-button community-wizard-button-secondary" type="button" data-wizard-invite-more>Invite More Members</button>
+          </div>
+          <div class="community-wizard-footer community-created-footer"><span></span><button class="community-wizard-button community-wizard-button-primary" type="button" data-wizard-go-community>Go to Community</button></div>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
