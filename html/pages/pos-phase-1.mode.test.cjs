@@ -44,3 +44,7 @@ test('POS mode submission updates the active badge and validates the selected st
   assert.match(html, /activeStaffId = selectedStaffId/);
   assert.match(html, /modeBadge\.textContent = ROLE_LBL\[active\.role\] \+ ['"] · ['"] \+ active\.name/);
 });
+
+test('Front Desk mode keeps Management tab and panel hidden despite display rules', () => {
+  assert.match(html, /\.page-tab\[hidden\],\s*\.pos-panel\[hidden\]\s*\{\s*display:\s*none\s*!important;/);
+});
