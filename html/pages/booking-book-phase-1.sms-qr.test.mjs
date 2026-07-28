@@ -723,6 +723,14 @@ test('links SMS Credits to the dedicated management page and keeps the purchase 
   assert.match(html, /new URLSearchParams\(window\.location\.search\)[\s\S]*?get\('openCredits'\) === '1'[\s\S]*?openSmsCreditModal\(\)/);
 });
 
+test('underlines the SMS Credits management label', () => {
+  const html = source();
+  const labelRule = html.match(/#panel-sms-campaigns \.sms-credit-pill span\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(labelRule, /text-decoration:\s*underline/);
+  assert.match(labelRule, /text-underline-offset:/);
+});
+
 test('warns about low SMS credits and offers more credits from the composer cost preview', () => {
   const html = source();
 
