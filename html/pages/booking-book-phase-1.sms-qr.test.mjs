@@ -228,8 +228,8 @@ test('adds first-call AI SMS controls above Promotion details', () => {
   assert.ok(firstCallPosition < promotionPosition, 'First-call SMS should appear above Promotion details');
   assert.match(aiVoice, /data-settings-first-call-sms-toggle[^>]*role="switch"[^>]*aria-checked="true"/);
   assert.match(aiVoice, /First-call SMS[\s\S]*?settings-tooltip-trigger[^>]*aria-label="First-call SMS info"[^>]*aria-describedby="first-call-sms-help"/);
-  assert.match(aiVoice, /id="first-call-sms-help" role="tooltip">AI sends this message only after a new customer calls, books an appointment successfully, and the booking is confirmed\.<\/span>/);
-  assert.match(aiVoice, /Send a follow-up after a completed AI booking/);
+  assert.match(aiVoice, /id="first-call-sms-help" role="tooltip">Send a follow-up after a completed AI booking\. AI sends this message only after a new customer calls, books an appointment successfully, and the booking is confirmed\.<\/span>/);
+  assert.doesNotMatch(aiVoice, /settings-first-call-sms-title/);
   assert.match(aiVoice, /SMS message[\s\S]*?settings-tooltip-trigger[^>]*aria-label="SMS message info"[^>]*aria-describedby="first-call-sms-message-help"/);
   assert.match(aiVoice, /id="first-call-sms-message-help" role="tooltip">Suggested post-booking message — edit it to match your salon's offer\.<\/span>/);
   assert.doesNotMatch(aiVoice, /settings-first-call-sms-description/);
@@ -240,13 +240,14 @@ test('adds first-call AI SMS controls above Promotion details', () => {
   assert.doesNotMatch(aiVoice, /settings-language-status">AI Voice reads this offer when a customer asks about promotions/);
   const firstCallHeadRule = html.match(/\.settings-first-call-sms-head\s*\{([^}]*)\}/)?.[1] || '';
   const firstCallCopyRule = html.match(/\.settings-first-call-sms-copy\s*\{([^}]*)\}/)?.[1] || '';
-  const firstCallTitleRule = html.match(/\.settings-first-call-sms-title\s*\{([^}]*)\}/)?.[1] || '';
+  const tooltipRule = html.match(/\.settings-tooltip-content\s*\{([^}]*)\}/)?.[1] || '';
 
   assert.match(firstCallHeadRule, /align-items:\s*center/);
   assert.match(firstCallCopyRule, /display:\s*flex/);
   assert.match(firstCallCopyRule, /align-items:\s*center/);
-  assert.match(firstCallTitleRule, /white-space:\s*nowrap/);
-  assert.match(firstCallTitleRule, /text-overflow:\s*ellipsis/);
+  assert.match(tooltipRule, /max-width:/);
+  assert.match(tooltipRule, /white-space:\s*normal/);
+  assert.match(tooltipRule, /text-align:\s*left/);
   assert.match(html, /function syncFirstCallSmsToggle\(/);
 });
 

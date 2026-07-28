@@ -2202,21 +2202,10 @@
       flex: 1 1 auto;
       align-items: center;
       min-width: 0;
-      gap: 8px;
     }
 
     .settings-first-call-sms-copy > .settings-label {
       flex: 0 0 auto;
-    }
-
-    .settings-first-call-sms-title {
-      min-width: 0;
-      overflow: hidden;
-      color: var(--nexora-text);
-      font-size: 13px;
-      font-weight: 900;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     .settings-first-call-sms .settings-textarea {
@@ -2326,6 +2315,7 @@
     .settings-tooltip {
       position: relative;
       display: inline-flex;
+      flex-shrink: 0;
     }
 
     .settings-tooltip-trigger {
@@ -2349,21 +2339,39 @@
     .settings-tooltip-content {
       position: absolute;
       bottom: calc(100% + 8px);
-      left: 0;
+      left: 50%;
       z-index: 20;
       display: none;
-      width: min(260px, calc(100vw - 48px));
-      border: 1px solid rgba(70, 72, 216, 0.22);
-      border-radius: 8px;
-      background: var(--nexora-sidebar);
-      padding: 8px 10px;
+      width: max-content;
+      max-width: min(320px, calc(100vw - 32px));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      background: #0b1220;
+      padding: 10px 12px;
       color: #fff;
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 500;
       letter-spacing: normal;
-      line-height: 1.45;
+      line-height: 1.5;
+      text-align: left;
       text-transform: none;
-      box-shadow: 0 8px 20px rgba(8, 31, 73, 0.18);
+      white-space: normal;
+      overflow-wrap: anywhere;
+      box-shadow: 0 10px 24px rgba(8, 31, 73, 0.24);
+      transform: translateX(-50%);
+    }
+
+    .settings-tooltip-content::after {
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      border-right: 1px solid rgba(255, 255, 255, 0.12);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      background: #0b1220;
+      content: "";
+      transform: translateX(-50%) rotate(45deg);
     }
 
     .settings-tooltip:hover .settings-tooltip-content,
@@ -9289,10 +9297,9 @@
                               First-call SMS
                               <span class="settings-tooltip">
                                 <button class="settings-tooltip-trigger" type="button" aria-label="First-call SMS info" aria-describedby="first-call-sms-help"><i class="bi bi-info-circle" aria-hidden="true"></i></button>
-                                <span class="settings-tooltip-content" id="first-call-sms-help" role="tooltip">AI sends this message only after a new customer calls, books an appointment successfully, and the booking is confirmed.</span>
+                                <span class="settings-tooltip-content" id="first-call-sms-help" role="tooltip">Send a follow-up after a completed AI booking. AI sends this message only after a new customer calls, books an appointment successfully, and the booking is confirmed.</span>
                               </span>
                             </span>
-                            <strong class="settings-first-call-sms-title">Send a follow-up after a completed AI booking</strong>
                           </div>
                           <button class="toggle-pill is-on" type="button" data-settings-first-call-sms-toggle role="switch" aria-checked="true" aria-label="Disable first-call SMS"></button>
                         </div>
