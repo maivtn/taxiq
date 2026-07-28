@@ -255,6 +255,21 @@ test('adds first-call AI SMS controls below Promotion details', () => {
   assert.match(html, /label\.textContent = enabled \? 'On · Auto send' : 'Off';/);
 });
 
+test('wraps promotion suggestion and character count responsively', () => {
+  const html = source();
+  const promoMeta = html.match(/\.settings-promo-meta\s*\{([^}]*)\}/)?.[1] || '';
+  const promoCount = html.match(/\.settings-promo-count\s*\{([^}]*)\}/)?.[1] || '';
+  const promoSuggest = html.match(/\.settings-promo-suggest-row\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(html, /<div class="settings-promo-meta">[\s\S]*?settings-promo-count[\s\S]*?settings-promo-suggest-row[\s\S]*?<\/div>/);
+  assert.match(promoMeta, /display:\s*flex/);
+  assert.match(promoMeta, /flex-wrap:\s*wrap/);
+  assert.match(promoCount, /flex:/);
+  assert.match(promoCount, /order:\s*2/);
+  assert.match(promoSuggest, /flex:/);
+  assert.match(promoSuggest, /flex-wrap:\s*wrap/);
+});
+
 test('does not force a minimum height on business grid inputs', () => {
   const html = source();
   const businessFieldRule = html.match(/\.settings-business-grid > \.settings-field:not\(\.settings-span-full\)\s*\{([^}]*)\}/)?.[1] || '';
