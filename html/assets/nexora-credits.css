@@ -204,8 +204,12 @@
 }
 
 .credits-action svg { width: 15px; height: 15px; }
-.credits-action-primary { background: var(--nexora-brand); color: #fff; }
-.credits-action-primary:hover { background: var(--nexora-brand-dark); color: #fff; box-shadow: 0 5px 12px rgba(70,72,216,.22); }
+.credits-action-primary { background: var(--nexora-brand) !important; color: #fff !important; }
+.credits-action-primary:hover { background: var(--nexora-brand-dark) !important; color: #fff !important; box-shadow: 0 5px 12px rgba(70,72,216,.22); }
+.credits-action-primary:focus-visible,
+.credits-action-primary:active { color: #fff !important; }
+.credits-action-primary span,
+.credits-action-primary svg { color: inherit !important; opacity: 1 !important; visibility: visible !important; }
 .credits-action-secondary { border: 1px solid rgba(124,58,237,.25); background: #faf8ff; color: #6d28d9; }
 .credits-action-secondary:hover { border-color: rgba(124,58,237,.5); background: #f4efff; }
 .credits-action:hover,

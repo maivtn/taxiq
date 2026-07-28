@@ -73,11 +73,15 @@ test('keeps credit actions visible while hovering or focusing the card', () => {
 test('keeps the SMS credit action readable on hover', () => {
   const css = readFileSync(CSS_URL, 'utf8');
   const actionRule = css.match(/\.credits-action\s*\{([^}]*)\}/)?.[1] || '';
+  const primaryRule = css.match(/\.credits-action-primary\s*\{([^}]*)\}/)?.[1] || '';
   const primaryHoverRule = css.match(/\.credits-action-primary:hover\s*\{([^}]*)\}/)?.[1] || '';
 
   assert.match(actionRule, /transition:/);
-  assert.match(primaryHoverRule, /background:\s*var\(--nexora-brand-dark\)/);
-  assert.match(primaryHoverRule, /color:\s*#fff/);
+  assert.match(primaryRule, /background:\s*var\(--nexora-brand\)\s*!important/);
+  assert.match(primaryRule, /color:\s*#fff\s*!important/);
+  assert.match(primaryHoverRule, /background:\s*var\(--nexora-brand-dark\)\s*!important/);
+  assert.match(primaryHoverRule, /color:\s*#fff\s*!important/);
+  assert.match(css, /\.credits-action-primary span,\s*\.credits-action-primary svg\s*\{[^}]*opacity:\s*1\s*!important/);
 });
 
 test('shows Voice usage history per incoming phone number', () => {
