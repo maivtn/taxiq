@@ -81,3 +81,15 @@ test('shows Voice usage history per incoming phone number', () => {
   assert.match(runtime, /credits-history-activity/);
   assert.match(css, /\.credits-history-activity\s*{/);
 });
+
+test('keeps the credits history caption screen-reader only', () => {
+  const html = source();
+  const srOnlyRule = readFileSync(CSS_URL, 'utf8').match(/\.sr-only\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(html, /<caption class="sr-only">Recent SMS and Voice credit usage<\/caption>/);
+  assert.match(srOnlyRule, /position:\s*absolute/);
+  assert.match(srOnlyRule, /width:\s*1px/);
+  assert.match(srOnlyRule, /height:\s*1px/);
+  assert.match(srOnlyRule, /overflow:\s*hidden/);
+  assert.match(srOnlyRule, /white-space:\s*nowrap/);
+});
