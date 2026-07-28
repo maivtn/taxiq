@@ -173,7 +173,7 @@ test('limits the Services & Pricing list and enables vertical scrolling', () => 
   const html = source();
   const serviceListRule = html.match(/\.settings-service-list\.settings-service-body\s*\{([^}]*)\}/)?.[1] || '';
 
-  assert.match(serviceListRule, /max-height:\s*500px/);
+  assert.match(serviceListRule, /max-height:\s*540px/);
   assert.match(serviceListRule, /overflow-y:\s*auto/);
 });
 
