@@ -28,3 +28,11 @@ test('POS mode uses the demo PIN and applies Front Desk management visibility', 
 test('POS rejects direct Management activation for Front Desk mode', () => {
   assert.match(html, /if \(id === ['"]management['"] && getActiveStaff\(\)\.role === ['"]frontdesk['"]\) id = ['"]dispatch['"]/);
 });
+
+test('POS mode UI exposes a labelled badge and keyboard-friendly PIN controls', () => {
+  assert.match(html, /data-pos-mode-badge-text/);
+  assert.match(html, /id="pos-mode-title"/);
+  assert.match(html, /id="pos-mode-pin"[^>]*type="password"/);
+  assert.match(html, /id="pos-mode-pin"[^>]*inputmode="numeric"/);
+  assert.match(html, /aria-labelledby="pos-mode-title"/);
+});
