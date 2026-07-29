@@ -108,7 +108,8 @@ test('links every Reward submenu from pages that share the sidebar', () => {
 test('does not render the SMS submenu item under POS', () => {
   const html = renderSidebar('pos', 'dispatch');
   assert.doesNotMatch(html, /data-shell-tab="sms"/);
-  assert.match(html, /data-shell-tab="appointments"[\s\S]*?<span>Appointments<\/span>/);
+  assert.match(html, /data-shell-tab="booking"[\s\S]*?<span>Booking<\/span>/);
+  assert.doesNotMatch(html, /data-shell-tab="appointments"/);
 });
 
 test('labels the POS dispatch tab as Operations in the sidebar', () => {

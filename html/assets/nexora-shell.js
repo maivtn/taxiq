@@ -84,7 +84,7 @@
       { label: 'Operations', tab: 'dispatch' },
       { label: 'Time Clock', tab: 'clock' },
       { label: 'Management', tab: 'management' },
-      { label: 'Appointments', tab: 'appointments' }
+      { label: 'Booking', tab: 'booking' }
     ] },
     { type: 'item', label: 'Analytics', icon: 'chart-no-axes-combined' },
     { type: 'item', label: 'Settings', icon: 'settings' },
