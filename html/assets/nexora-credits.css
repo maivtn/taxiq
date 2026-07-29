@@ -75,7 +75,9 @@
 
 .credits-voice-warning {
   display: flex;
+  flex-direction: row;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 12px;
   margin-top: 18px;
   border: 1px solid #f0d18a;
@@ -85,11 +87,13 @@
   color: #76520b;
 }
 
+.credits-voice-warning-content { display: flex; min-width: 0; align-items: flex-start; gap: 12px; }
 .credits-voice-warning[hidden] { display: none; }
 .credits-voice-warning-icon { display: grid; flex: 0 0 28px; width: 28px; height: 28px; place-items: center; border-radius: 8px; background: #ffe9a8; color: #a66c00; }
 .credits-voice-warning-icon svg { width: 16px; height: 16px; }
 .credits-voice-warning strong { display: block; color: #624403; font-size: 13px; }
 .credits-voice-warning p { margin: 3px 0 0; color: #8a681e; font-size: 11px; line-height: 1.45; }
+.credits-voice-warning .credits-actions { width: auto; flex: 0 0 auto; align-self: center; margin-top: 2px; }
 
 .credits-card-head {
   display: flex;
@@ -410,6 +414,7 @@
   .credits-card { padding: 10px; }
   .credits-history-section { padding: 14px; }
   .credits-voice-warning { gap: 8px; margin-top: 12px; padding: 10px; }
+  .credits-voice-warning-content { gap: 8px; }
   .credits-voice-warning-icon { flex-basis: 24px; width: 24px; height: 24px; border-radius: 7px; }
   .credits-voice-warning-icon svg { width: 14px; height: 14px; }
   .credits-voice-warning strong { font-size: 11px; }
