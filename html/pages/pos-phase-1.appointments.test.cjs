@@ -5,6 +5,7 @@ const path = require('node:path');
 
 const html = fs.readFileSync(path.join(__dirname, 'pos-phase-1.html'), 'utf8');
 const runtime = fs.readFileSync(path.join(__dirname, '..', 'assets', 'pos-booking-runtime.js'), 'utf8');
+const css = fs.readFileSync(path.join(__dirname, '..', 'assets', 'pos-booking.css'), 'utf8');
 const source = html + '\n' + runtime;
 
 test('POS exposes Booking instead of the legacy Appointments tab', () => {
@@ -28,6 +29,11 @@ test('POS Booking exposes the full Booking Book workspace contract', () => {
     'data-booking-action="detail"',
     'data-booking-action="send-sms"'
   ]) assert.match(source, new RegExp(hook));
+});
+
+test('POS Booking CSS closes shared rules before the Booking workspace rules', () => {
+  assert.match(css, /\.owner-strip\s*\{[\s\S]*?padding:\s*16px;\s*\}\s*\.booking-toolbar\s*\{/);
+  assert.match(css, /\.booking-subtab\s*\{[\s\S]*?border:\s*0;[\s\S]*?\}/);
 });
 
 test('POS Booking loads the shared catalog, ticket, store, and approved service catalog', () => {
