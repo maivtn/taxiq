@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5efff">
   <title>Đặt lịch · Bitcoin Nail Bar</title>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <style>
     :root {
       --ink: #1d1b3a;
@@ -83,6 +84,23 @@
     .service-grid .choice-detail { width: auto; justify-content: flex-start; gap: 8px; margin-top: 0; }
     .service-grid .choice-price { order: -1; }
     .service-grid .choice-price::after { content: "·"; margin-left: 8px; color: var(--soft-muted); }
+    .service-category-list { display: grid; gap: 10px; }
+    .service-category { overflow: hidden; border: 1px solid var(--line); border-radius: 15px; background: #fff; }
+    .service-category > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 12px; color: var(--ink); background: linear-gradient(145deg, #fff, #faf7ff); cursor: pointer; list-style: none; }
+    .service-category > summary::-webkit-details-marker { display: none; }
+    .service-category-chevron { width: 16px; height: 16px; flex: 0 0 auto; color: var(--soft-muted); stroke-width: 2.5; transition: transform .18s ease; }
+    .service-category:not([open]) .service-category-chevron { transform: rotate(-90deg); }
+    .service-category[open] > summary { border-bottom: 1px solid var(--line); }
+    .service-category-name { font-size: 12px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
+    .service-category-count { flex: 0 0 auto; margin-left: auto; padding: 3px 8px; border-radius: 999px; color: var(--purple); background: #f1edff; font-size: 10px; font-weight: 850; }
+    .service-category .service-grid { padding: 8px; }
+    .service-catalog-loading { padding: 16px 12px; border: 1px dashed #d8cceb; border-radius: 14px; color: var(--muted); background: #faf8ff; font-size: 12px; font-weight: 700; text-align: center; }
+    .selected-services { display: grid; gap: 8px; margin-top: 10px; padding: 10px 12px; border: 1px solid #eadff5; border-radius: 14px; background: #fff; }
+    .selected-services-label { color: var(--muted); font-size: 11px; font-weight: 850; }
+    .selected-service-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .selected-service-chip { display: inline-flex; align-items: center; gap: 5px; min-height: 30px; padding: 6px 8px 6px 10px; border: 1px solid #eadcf6; border-radius: 999px; color: var(--ink); background: #fbf8ff; font-size: 11px; font-weight: 800; transition: border-color .18s, background .18s, transform .18s; }
+    .selected-service-chip:hover { border-color: #d8b7ee; background: #f7f0ff; transform: translateY(-1px); }
+    .selected-service-chip svg { width: 14px; height: 14px; color: var(--soft-muted); stroke-width: 2.5; }
     .selection-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding: 10px 12px; border-radius: 14px; color: var(--muted); background: #f8f5ff; font-size: 12px; }
     .selection-summary strong { color: var(--ink); font-size: 14px; }
     .section-title { margin: 20px 0 6px; font-size: 14px; font-weight: 850; letter-spacing: 0; }
@@ -222,67 +240,12 @@
           </div>
         </div>
 
-        <div class="service-grid" id="service-options">
-          <button class="choice-card" type="button" data-service-id="gel" aria-pressed="false">
-            <span class="choice-title">Gel Manicure</span><span class="choice-detail"><span>45 phút</span><strong class="choice-price">$45</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="pedi" aria-pressed="false">
-            <span class="choice-title">Signature Pedicure</span><span class="choice-detail"><span>60 phút</span><strong class="choice-price">$55</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="acrylic" aria-pressed="false">
-            <span class="choice-title">Acrylic Full Set</span><span class="choice-detail"><span>90 phút</span><strong class="choice-price">$75</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="fill" aria-pressed="false">
-            <span class="choice-title">Acrylic Fill-in</span><span class="choice-detail"><span>60 phút</span><strong class="choice-price">$55</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="dipping" aria-pressed="false">
-            <span class="choice-title">Dipping Nail</span><span class="choice-detail"><span>50 phút</span><strong class="choice-price">$50</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="waxing" aria-pressed="false">
-            <span class="choice-title">Waxing</span><span class="choice-detail"><span>30 phút</span><strong class="choice-price">$25</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="classic" aria-pressed="false">
-            <span class="choice-title">Classic Manicure</span><span class="choice-detail"><span>30 phút</span><strong class="choice-price">$30</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="spa-pedi" aria-pressed="false">
-            <span class="choice-title">Spa Pedicure</span><span class="choice-detail"><span>75 phút</span><strong class="choice-price">$70</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="gel-x" aria-pressed="false">
-            <span class="choice-title">Gel-X Full Set</span><span class="choice-detail"><span>100 phút</span><strong class="choice-price">$85</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="builder-gel" aria-pressed="false">
-            <span class="choice-title">Builder Gel</span><span class="choice-detail"><span>75 phút</span><strong class="choice-price">$65</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="french-tip" aria-pressed="false">
-            <span class="choice-title">French Tip</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$15</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="nail-art" aria-pressed="false">
-            <span class="choice-title">Nail Art</span><span class="choice-detail"><span>25 phút</span><strong class="choice-price">$20</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="chrome" aria-pressed="false">
-            <span class="choice-title">Chrome Finish</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$20</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="paraffin" aria-pressed="false">
-            <span class="choice-title">Paraffin Treatment</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$18</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="acrylic-soak" aria-pressed="false">
-            <span class="choice-title">Acrylic Soak-off</span><span class="choice-detail"><span>20 phút</span><strong class="choice-price">$15</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="gel-removal" aria-pressed="false">
-            <span class="choice-title">Gel Polish Removal</span><span class="choice-detail"><span>15 phút</span><strong class="choice-price">$10</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="eyebrow-wax" aria-pressed="false">
-            <span class="choice-title">Eyebrow Wax</span><span class="choice-detail"><span>15 phút</span><strong class="choice-price">$15</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="lip-wax" aria-pressed="false">
-            <span class="choice-title">Lip Wax</span><span class="choice-detail"><span>10 phút</span><strong class="choice-price">$10</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="kids-mani" aria-pressed="false">
-            <span class="choice-title">Kids Manicure</span><span class="choice-detail"><span>25 phút</span><strong class="choice-price">$25</strong></span>
-          </button>
-          <button class="choice-card" type="button" data-service-id="kids-pedi" aria-pressed="false">
-            <span class="choice-title">Kids Pedicure</span><span class="choice-detail"><span>35 phút</span><strong class="choice-price">$35</strong></span>
-          </button>
+        <div class="service-category-list" id="service-options" data-service-catalog aria-live="polite">
+          <div class="service-catalog-loading">Đang tải danh mục dịch vụ…</div>
+        </div>
+        <div class="selected-services" id="selected-services" hidden aria-live="polite">
+          <span class="selected-services-label">Dịch vụ đã chọn</span>
+          <div class="selected-service-chips" id="selected-service-chips"></div>
         </div>
         <div class="selection-summary" aria-live="polite"><span id="service-count">Chưa chọn dịch vụ</span><strong id="service-total">$0</strong></div>
         <p class="field-error" id="service-error" role="alert"></p>
@@ -373,6 +336,7 @@
     <p class="screen-reader" id="booking-status" role="status" aria-live="polite"></p>
   </div>
 
+  <script src="../assets/appointment-service-catalog.js"></script>
   <script id="booking-app-script">
     (() => {
       'use strict';
@@ -381,7 +345,7 @@
         { phone: '8325550198', name: 'Mary Smith' },
         { phone: '7135550142', name: 'Jessica Nguyen' }
       ];
-      const SERVICES = [
+      const LEGACY_SERVICES = [
         { id: 'gel', name: 'Gel Manicure', priceCents: 4500, durationMinutes: 45 },
         { id: 'pedi', name: 'Signature Pedicure', priceCents: 5500, durationMinutes: 60 },
         { id: 'acrylic', name: 'Acrylic Full Set', priceCents: 7500, durationMinutes: 90 },
@@ -403,6 +367,27 @@
         { id: 'kids-mani', name: 'Kids Manicure', priceCents: 2500, durationMinutes: 25 },
         { id: 'kids-pedi', name: 'Kids Pedicure', priceCents: 3500, durationMinutes: 35 }
       ];
+      let SERVICES = LEGACY_SERVICES;
+      const SERVICE_CATALOG_URL = '../assets/booking-service-catalog-draft.json';
+      const LEGACY_SERVICE_CATEGORIES = [
+        { id: 'manicure', name: 'Manicure', serviceIds: ['classic', 'gel', 'builder-gel', 'french-tip', 'nail-art', 'chrome'] },
+        { id: 'pedicure', name: 'Pedicure', serviceIds: ['pedi', 'spa-pedi'] },
+        { id: 'full-set', name: 'Full set', serviceIds: ['acrylic', 'fill', 'dipping', 'gel-x'] },
+        { id: 'waxing-kids', name: 'Waxing & Kids', serviceIds: ['waxing', 'eyebrow-wax', 'lip-wax', 'kids-mani', 'kids-pedi'] },
+        { id: 'add-ons', name: 'Add-ons', serviceIds: ['paraffin', 'acrylic-soak', 'gel-removal'] }
+      ];
+      function legacyServiceCategories() {
+        return LEGACY_SERVICE_CATEGORIES.map((category) => ({
+          id: category.id,
+          name: category.name,
+          services: category.serviceIds.map((id) => SERVICES.find((service) => service.id === id)).filter(Boolean).map((service) => ({
+            ...service,
+            categoryId: category.id,
+            categoryName: category.name
+          }))
+        })).filter((category) => category.services.length);
+      }
+      let SERVICE_CATEGORIES = legacyServiceCategories();
       const STAFF = [
         { id: 'any', name: 'Bất kỳ chuyên viên nào', available: true, status: 'Sắp xếp sớm nhất', specialties: SERVICES.map((service) => service.id) },
         { id: 'tina', name: 'Tina', available: true, status: 'Còn lịch trống', specialties: ['gel', 'pedi', 'acrylic', 'fill', 'dipping', 'classic', 'spa-pedi', 'gel-x', 'builder-gel', 'french-tip', 'nail-art', 'chrome'] },
@@ -420,6 +405,31 @@
       const defaultBookingTime = `${pad(defaultSlot.getHours())}:${pad(defaultSlot.getMinutes())}`;
       const TIMES = [...new Set(['10:00', '11:30', '13:00', '14:00', '15:30', '17:00', defaultBookingTime])].sort();
       const CATALOG = { services: SERVICES, staff: STAFF, slots: [] };
+
+      function applyCustomerServiceCatalog(catalog) {
+        const categories = (Array.isArray(catalog?.categories) ? catalog.categories : []).map((category) => ({
+          id: String(category.id || ''),
+          name: String(category.name || 'Dịch vụ khác').trim() || 'Dịch vụ khác',
+          services: (Array.isArray(category.services) ? category.services : []).map((service) => ({
+            id: String(service.id || ''),
+            name: String(service.name || 'Dịch vụ chưa đặt tên').trim() || 'Dịch vụ chưa đặt tên',
+            priceCents: service.price == null || !Number.isFinite(Number(service.price)) ? 0 : Math.max(0, Math.round(Number(service.price) * 100)),
+            durationMinutes: Number(service.durationMin) > 0 ? Number(service.durationMin) : 60,
+            categoryId: String(category.id || ''),
+            categoryName: String(category.name || 'Dịch vụ khác').trim() || 'Dịch vụ khác'
+          })).filter((service) => service.id)
+        })).filter((category) => category.id && category.services.length);
+        const services = categories.flatMap((category) => category.services);
+        if (!services.length) return false;
+
+        SERVICES = services;
+        SERVICE_CATEGORIES = categories;
+        CATALOG.services = SERVICES;
+        STAFF.forEach((staff) => {
+          if (staff.available) staff.specialties = SERVICES.map((service) => service.id);
+        });
+        return true;
+      }
 
       function normalizePhone(value) {
         const digits = String(value ?? '').replace(/\D/g, '');
@@ -522,8 +532,55 @@
       const $$ = (selector) => [...document.querySelectorAll(selector)];
       const money = (cents) => `$${(cents / 100).toFixed(0)}`;
       const minutes = (value) => `${value} phút`;
+      const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[character]));
       const serviceById = (id) => SERVICES.find((service) => service.id === id);
       const staffById = (id) => STAFF.find((staff) => staff.id === id);
+
+      function renderServiceCatalog(categories = SERVICE_CATEGORIES) {
+        const container = $('#service-options');
+        if (!container) return;
+        container.innerHTML = categories.map((category) => {
+          const services = category.services.map((service) => {
+            const price = Number(service.priceCents) > 0 ? money(service.priceCents) : 'Liên hệ';
+            return `<button class="choice-card" type="button" data-service-id="${escapeHtml(service.id)}" aria-pressed="false">
+              <span class="choice-title">${escapeHtml(service.name)}</span>
+              <span class="choice-detail"><span>${escapeHtml(service.durationMinutes)} phút</span><strong class="choice-price">${escapeHtml(price)}</strong></span>
+            </button>`;
+          }).join('');
+          return `<details class="service-category" data-service-category="${escapeHtml(category.id)}">
+            <summary><span class="service-category-name" data-service-category-name>${escapeHtml(category.name)}</span><span class="service-category-count" data-service-category-count>${category.services.length} dịch vụ</span><i data-lucide="chevron-down" class="service-category-chevron" aria-hidden="true"></i></summary>
+            <div class="service-grid">${services}</div>
+          </details>`;
+        }).join('') || '<div class="service-catalog-loading">Chưa có dịch vụ.</div>';
+        window.lucide?.createIcons();
+      }
+
+      function renderSelectedServices() {
+        const container = $('#selected-services');
+        const chipsContainer = $('#selected-service-chips');
+        if (!container || !chipsContainer) return;
+        const selectedServices = state.selectedServiceIds.map((id) => serviceById(id)).filter(Boolean);
+        container.hidden = selectedServices.length === 0;
+        chipsContainer.innerHTML = selectedServices.map((service) => {
+          const selectedLabel = `${service.categoryName || 'Dịch vụ khác'} - ${service.name}`;
+          return `<button class="selected-service-chip" type="button" data-remove-service-id="${escapeHtml(service.id)}" aria-label="Bỏ chọn ${escapeHtml(selectedLabel)}"><span>${escapeHtml(selectedLabel)}</span><i data-lucide="x" aria-hidden="true"></i></button>`;
+        }).join('');
+        window.lucide?.createIcons();
+      }
+
+      function loadCustomerServiceCatalog() {
+        const loader = window.NEXORA_APPOINTMENT_SERVICE_CATALOG;
+        if (!loader || typeof loader.load !== 'function') return Promise.resolve(false);
+        return loader.load(SERVICE_CATALOG_URL).then((catalog) => {
+          if (!applyCustomerServiceCatalog(catalog)) return false;
+          renderServiceCatalog(SERVICE_CATEGORIES);
+          renderSelections();
+          return true;
+        }).catch(() => false);
+      }
+
       function renderSlotOptions() {
         const dateOptions = $('#date-options');
         const timeOptions = $('#time-options');
@@ -628,6 +685,7 @@
           const selected = state.selectedServiceIds.includes(button.dataset.serviceId);
           button.setAttribute('aria-pressed', String(selected));
         });
+        renderSelectedServices();
         const dateOptions = $('#date-options');
         const timeOptions = $('#time-options');
         if (dateOptions) {
@@ -802,11 +860,13 @@
       });
 
       document.addEventListener('click', (event) => {
+        const removeService = event.target.closest?.('[data-remove-service-id]');
         const service = event.target.closest?.('[data-service-id]');
         const staff = event.target.closest?.('[data-staff-id]');
         const date = event.target.closest?.('[data-booking-date]');
         const time = event.target.closest?.('[data-booking-time]');
         const action = event.target.closest?.('[data-action]');
+        if (removeService) { chooseService(removeService.dataset.removeServiceId); return; }
         if (service) chooseService(service.dataset.serviceId);
         if (staff && !staff.disabled) { state.selectedStaffId = staff.dataset.staffId; renderSelections(); }
         if (date) { state.selectedDate = date.dataset.bookingDate; renderSelections(); }
@@ -821,7 +881,9 @@
       renderSlotOptions();
       const smsOptIn = $('#sms-opt-in');
       if (smsOptIn) smsOptIn.checked = Boolean(state.customer.smsOptIn);
+      renderServiceCatalog(SERVICE_CATEGORIES);
       renderSteps();
+      loadCustomerServiceCatalog();
     })();
   </script>
 </body>

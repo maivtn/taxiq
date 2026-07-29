@@ -84,7 +84,8 @@ test('creates a canonical booking request with consent and service summary', () 
 
 test('page includes booking controls and removes check-in copy', () => {
   assert.match(SOURCE, /id="booking-phone"/);
-  assert.match(SOURCE, /data-service-id="gel"/);
+  assert.match(SOURCE, /id="service-options"[^>]*data-service-catalog/);
+  assert.match(SOURCE, /booking-service-catalog-draft\.json/);
   assert.match(SOURCE, /data-staff-id="any"/);
   assert.match(SOURCE, /data-booking-date/);
   assert.match(SOURCE, /data-booking-time/);
@@ -96,6 +97,31 @@ test('page includes booking controls and removes check-in copy', () => {
   assert.match(SOURCE, /Quý khách/);
   assert.doesNotMatch(SOURCE, /chúng mình|Bạn muốn làm gì hôm nay|Cho chúng mình xin số điện thoại/);
   assert.doesNotMatch(SOURCE, /Check me in/i);
+});
+
+test('renders customer services under visible categories from the shared catalog', () => {
+  assert.match(SOURCE, /unpkg\.com\/lucide@[^/]+\/dist\/umd\/lucide\.min\.js/);
+  assert.match(SOURCE, /appointment-service-catalog\.js/);
+  assert.match(SOURCE, /function renderServiceCatalog\(/);
+  assert.match(SOURCE, /data-service-category/);
+  assert.match(SOURCE, /data-service-category-name/);
+  assert.match(SOURCE, /data-service-category-count/);
+  assert.match(SOURCE, /data-lucide="chevron-down"/);
+  assert.match(SOURCE, /window\.lucide\?\.createIcons\(\)/);
+  assert.doesNotMatch(SOURCE, /content: "⌄"/);
+  assert.doesNotMatch(SOURCE, /data-service-category="\$\{escapeHtml\(category\.id\)\}" open/);
+  assert.match(SOURCE, /SERVICE_CATALOG_URL/);
+});
+
+test('shows selected services as removable chips below the catalog', () => {
+  assert.match(SOURCE, /id="selected-services"/);
+  assert.match(SOURCE, /id="selected-service-chips"/);
+  assert.match(SOURCE, /function renderSelectedServices\(/);
+  assert.match(SOURCE, /data-remove-service-id/);
+  assert.match(SOURCE, /data-lucide="x"/);
+  assert.match(SOURCE, /service\.categoryName \|\| 'Dịch vụ khác'/);
+  assert.match(SOURCE, /selectedLabel = `\$\{service\.categoryName \|\| 'Dịch vụ khác'\} - \$\{service\.name\}`/);
+  assert.match(SOURCE, /closest\?\.\('\[data-remove-service-id\]'\)/);
 });
 
 test('keeps booking data in memory only', () => {
@@ -133,7 +159,7 @@ test('combines customer details and service selection into step 1', () => {
   const confirmationStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
   assert.match(stepOne, /Vui lòng nhập số điện thoại/);
   assert.match(stepOne, /Quý khách muốn sử dụng dịch vụ nào\?/);
-  assert.match(stepOne, /data-service-id="gel"/);
+  assert.match(stepOne, /id="service-options"[^>]*data-service-catalog/);
   assert.match(stepOne, /data-staff-id="any"/);
   assert.match(stepOne, /data-booking-date/);
   assert.match(stepOne, /data-booking-time/);
