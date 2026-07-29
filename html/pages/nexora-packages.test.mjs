@@ -48,6 +48,8 @@ test('adds the package heading and ordered management tabs', () => {
   assert.match(html, /data-credits-card="sms-topup"/);
   assert.match(html, /data-credits-history/);
   assert.match(html, /Purchase History/);
+  assert.match(html, /<th scope="col">Usage<\/th>/);
+  assert.doesNotMatch(html, /<th scope="col">Amount<\/th>/);
   assert.match(html, /SMS Credits/);
   assert.equal((html.match(/class="package-tab is-active"/g) || []).length, 1);
 });
@@ -58,6 +60,7 @@ test('groups purchased Voice and SMS credits and keeps purchase actions outside 
   const planCard = html.match(/data-credits-card="plan"[\s\S]*?<\/article>/)?.[0] || '';
   const topupCard = html.match(/data-credits-card="sms-topup"[\s\S]*?<\/article>/)?.[0] || '';
   const creditsActions = html.match(/<div class="credits-actions"[\s\S]*?<\/div>/)?.[0] || '';
+  const creditsWarning = html.match(/<div class="credits-voice-warning"[\s\S]*?<\/div>/)?.[0] || '';
 
   assert.match(topupCard, /<h2 id="voice-sms-credits-title">Voice and SMS Credits<\/h2>/);
   assert.match(topupCard, /data-credits-voice-topup-balance/);
@@ -67,9 +70,14 @@ test('groups purchased Voice and SMS credits and keeps purchase actions outside 
   assert.match(topupCard, /class="credits-plan-remaining-values"[\s\S]*?data-credits-voice-topup-balance[\s\S]*?credits-plan-remaining-separator[\s\S]*?data-credits-sms-topup-balance/);
   assert.doesNotMatch(topupCard, /credits-topup-balance-grid/);
   assert.match(topupCard, /data-credits-voice-topup-usage[\s\S]*?Voice Credits used[\s\S]*?data-credits-voice-topup-used[\s\S]*?data-credits-voice-topup-progress/);
+  assert.match(topupCard, /data-credits-voice-topup-used>0<\/span>[\s\S]*?data-credits-voice-topup-usage-total>0<\/span>/);
+  assert.match(topupCard, /aria-valuemax="0" aria-valuenow="0"[^>]*data-credits-voice-topup-progress-track[\s\S]*?data-credits-voice-topup-progress style="width:0%"/);
   assert.match(planCard, /data-lucide="phone"[^>]*aria-hidden="true"[\s\S]*?Minutes used/);
   assert.match(topupCard, /data-lucide="phone"[^>]*aria-hidden="true"[\s\S]*?Voice Credits used/);
-  assert.match(creditsRuntime, /setText\('\[data-credits-voice-topup-used\]'[\s\S]*?setProgress\('\[data-credits-voice-topup-progress\]'/);
+  assert.match(creditsRuntime, /const VOICE_TOPUP_USED_MINUTES = 0/);
+  assert.match(creditsRuntime, /const VOICE_TOPUP_TOTAL_MINUTES = 0/);
+  assert.match(creditsRuntime, /setText\('\[data-credits-voice-topup-used\]', formatNumber\(VOICE_TOPUP_USED_MINUTES\)\)/);
+  assert.match(creditsRuntime, /setProgress\('\[data-credits-voice-topup-progress\]', '[^']*', VOICE_TOPUP_USED_MINUTES, VOICE_TOPUP_TOTAL_MINUTES\)/);
   assert.doesNotMatch(topupCard, /Mua SMS credit/);
   assert.match(creditsActions, /<button[^>]*class="credits-action credits-action-secondary"[^>]*data-credits-action="voice-buy"[^>]*type="button"/);
   assert.match(creditsActions, /data-lucide="phone-call"[^>]*aria-hidden="true"[\s\S]*?Mua Voice credit/);
@@ -77,6 +85,8 @@ test('groups purchased Voice and SMS credits and keeps purchase actions outside 
   assert.match(creditsActions, /data-lucide="message-circle"[^>]*aria-hidden="true"[\s\S]*?Mua SMS credit/);
   assert.doesNotMatch(creditsActions, /href="(?:booking-book-phase-1|nexora-packages)\.html/);
   assert.doesNotMatch(creditsActions, /disabled|aria-disabled/);
+  assert.match(creditsWarning, /data-credits-voice-warning/);
+  assert.ok(html.indexOf('class="credits-voice-warning"') < html.indexOf('class="credits-actions"'), 'voice warning should be above purchase actions');
   assert.match(creditsRuntime, /VOICE_TOPUP_STARTING_CREDITS/);
   assert.match(creditsRuntime, /data-credits-voice-topup-balance/);
   assert.match(readFileSync(new URL('../assets/nexora-credits.css', import.meta.url), 'utf8'), /\.credits-actions\s*\{/);

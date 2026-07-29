@@ -282,8 +282,8 @@
                   <div class="credits-topup-usage credits-usage-row credits-usage-row-minutes" data-credits-voice-topup-usage>
                     <div class="credits-usage-icon credits-usage-icon-minutes"><i data-lucide="phone" aria-hidden="true"></i></div>
                     <div class="credits-usage-main">
-                      <div class="credits-usage-heading"><span>Voice Credits used</span><strong><span data-credits-voice-topup-used>620</span> <small>/ <span data-credits-voice-topup-usage-total>1,000</span></small></strong></div>
-                      <div class="credits-usage-progress" role="progressbar" aria-label="Purchased Voice credits used" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="620" data-credits-voice-topup-progress-track><span class="credits-usage-fill credits-usage-fill-minutes" data-credits-voice-topup-progress style="width:62%"></span></div>
+                      <div class="credits-usage-heading"><span>Voice Credits used</span><strong><span data-credits-voice-topup-used>0</span> <small>/ <span data-credits-voice-topup-usage-total>0</span></small></strong></div>
+                      <div class="credits-usage-progress" role="progressbar" aria-label="Purchased Voice credits used" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0" data-credits-voice-topup-progress-track><span class="credits-usage-fill credits-usage-fill-minutes" data-credits-voice-topup-progress style="width:0%"></span></div>
                     </div>
                   </div>
 
@@ -298,17 +298,17 @@
                 </article>
               </div>
 
-              <div class="credits-actions" aria-label="Buy additional credits">
-                <button class="credits-action credits-action-secondary" data-credits-action="voice-buy" type="button"><i data-lucide="phone-call" aria-hidden="true"></i><span>Mua Voice credit</span></button>
-                <button class="credits-action credits-action-secondary" data-credits-action="sms-buy" type="button"><i data-lucide="message-circle" aria-hidden="true"></i><span>Mua SMS credit</span></button>
-              </div>
-
               <div class="credits-voice-warning" data-credits-voice-warning role="status" aria-live="polite" hidden>
                 <div class="credits-voice-warning-icon"><i data-lucide="triangle-alert" aria-hidden="true"></i></div>
                 <div>
                   <strong>AI Voice sắp hết</strong>
                   <p>Bạn chỉ còn <span data-credits-voice-warning-remaining>380</span> phút Voice. Hãy tắt chế độ AI Voice hoặc nâng cấp gói để tránh gián đoạn.</p>
                 </div>
+              </div>
+
+              <div class="credits-actions" aria-label="Buy additional credits">
+                <button class="credits-action credits-action-secondary" data-credits-action="voice-buy" type="button"><i data-lucide="phone-call" aria-hidden="true"></i><span>Mua Voice credit</span></button>
+                <button class="credits-action credits-action-secondary" data-credits-action="sms-buy" type="button"><i data-lucide="message-circle" aria-hidden="true"></i><span>Mua SMS credit</span></button>
               </div>
 
               <section class="credits-history-section" aria-labelledby="credits-history-title">
@@ -332,7 +332,7 @@
                       <tr>
                         <th scope="col">Product</th>
                         <th scope="col">Activity</th>
-                        <th scope="col">Amount</th>
+                        <th scope="col">Usage</th>
                         <th scope="col">Date</th>
                       </tr>
                     </thead>

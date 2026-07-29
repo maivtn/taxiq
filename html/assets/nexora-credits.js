@@ -8,6 +8,8 @@
   const VOICE_USED_MINUTES = 620;
   const VOICE_TOTAL_MINUTES = 1000;
   const VOICE_TOPUP_STARTING_CREDITS = 0;
+  const VOICE_TOPUP_USED_MINUTES = 0;
+  const VOICE_TOPUP_TOTAL_MINUTES = 0;
   const VOICE_LOW_BALANCE_THRESHOLD = 400;
 
   const CREDITS_HISTORY = [
@@ -282,9 +284,9 @@
     setText('[data-credits-voice-total]', formatNumber(VOICE_TOTAL_MINUTES));
     setText('[data-credits-voice-remaining]', formatNumber(voiceRemaining));
     setText('[data-credits-voice-topup-balance]', formatNumber(VOICE_TOPUP_STARTING_CREDITS));
-    setText('[data-credits-voice-topup-used]', formatNumber(VOICE_USED_MINUTES));
-    setText('[data-credits-voice-topup-usage-total]', formatNumber(VOICE_TOTAL_MINUTES));
-    setProgress('[data-credits-voice-topup-progress]', '[data-credits-voice-topup-progress-track]', VOICE_USED_MINUTES, VOICE_TOTAL_MINUTES);
+    setText('[data-credits-voice-topup-used]', formatNumber(VOICE_TOPUP_USED_MINUTES));
+    setText('[data-credits-voice-topup-usage-total]', formatNumber(VOICE_TOPUP_TOTAL_MINUTES));
+    setProgress('[data-credits-voice-topup-progress]', '[data-credits-voice-topup-progress-track]', VOICE_TOPUP_USED_MINUTES, VOICE_TOPUP_TOTAL_MINUTES);
     renderVoiceWarning(voiceRemaining);
     setProgress('[data-credits-voice-progress]', '[data-credits-voice-progress-track]', VOICE_USED_MINUTES, VOICE_TOTAL_MINUTES);
 
