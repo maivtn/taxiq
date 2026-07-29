@@ -61,6 +61,35 @@ test('POS Booking starts in Appointments Table mode and opens Calendar on its su
   assert.match(runtime, /appointmentPanel\.hidden = target !== 'calendar'/);
 });
 
+test('POS Booking View actions open the appointment detail modal', () => {
+  assert.match(runtime, /bookingAction\.dataset\.bookingAction === ['"]detail['"][\s\S]*?openBookingDetailModal\(item\)/);
+});
+
+test('turns the appointment panel into a responsive modal below 1400px', () => {
+  assert.match(html, /data-booking-appointment-backdrop/);
+  assert.match(runtime, /function syncBookingAppointmentPanelPresentation\(/);
+  assert.match(runtime, /booking-appointment-panel-modal-open/);
+  assert.match(runtime, /data-booking-appointment-backdrop/);
+  assert.match(runtime, /event\.key === 'Escape'[\s\S]*closeBookingAppointmentPanel\(\)/);
+  assert.match(css, /@media\s*\(max-width:\s*1399px\)/);
+  assert.match(css, /data-booking-panel-presentation="modal"/);
+  assert.match(css, /\.booking-appointment-backdrop\s*\{/);
+  assert.match(css, /\.booking-appointment-main\s*\{\s*overflow-x:\s*auto/);
+  assert.match(source, /data-booking-panel-action="close"[^>]*aria-label="Close appointment details"/);
+});
+
+test('lays out overview KPIs with flex wrapping instead of CSS grid', () => {
+  const overviewKpisBlock = css.match(/\.overview-kpis\s*\{[^}]*\}/)?.[0] || '';
+  const overviewKpiCardBlock = css.match(/\.overview-kpis\s*>\s*\.kpi-card\s*\{[^}]*\}/)?.[0] || '';
+  const callStatsBlock = css.match(/#panel-calllog \.overview-kpis\[data-call-stats\]\s*\{[^}]*\}/)?.[0] || '';
+
+  assert.match(overviewKpisBlock, /display:\s*flex;/);
+  assert.match(overviewKpisBlock, /flex-wrap:\s*wrap;/);
+  assert.match(overviewKpiCardBlock, /flex:\s*1 1/);
+  assert.doesNotMatch(overviewKpisBlock, /grid-template-columns/);
+  assert.doesNotMatch(callStatsBlock, /grid-template-columns/);
+});
+
 test('POS Booking gives Appointments the full workspace width and reserves a Calendar detail rail', () => {
   assert.match(css, /\.booking-appointment-layout \{[\s\S]*grid-template-columns:\s*1fr/);
   assert.match(css, /\.booking-appointment-layout\[data-booking-layout="calendar"\] \{[\s\S]*grid-template-columns:\s*minmax\(0, 1fr\) 320px/);
@@ -153,12 +182,16 @@ test('POS Booking renders a shared DayPilot resource calendar', () => {
 
 test('POS keeps create actions at the right edge of their action rows', () => {
   const bookingPanel = html.match(/id="booking-subpanel-today"[\s\S]*?id="booking-subpanel-team"/)?.[0] || '';
+  const addOverviewIndex = bookingPanel.indexOf('data-booking-appointments-add');
+  const viewSwitchIndex = bookingPanel.indexOf('data-booking-view-target="table"');
   const addAppointmentIndex = bookingPanel.indexOf('data-booking-calendar-add');
   const filterIndex = bookingPanel.indexOf('data-booking-filter-toggle="booking"');
   const staffRuntime = source.match(/function mgStaffHtml\(\)[\s\S]*?function mgRolesHtml\(\)/)?.[0] || '';
   const createAccountIndex = staffRuntime.indexOf('data-mg-stadd');
   const staffHintIndex = staffRuntime.indexOf('Techs (with pay and turns)');
 
+  assert.ok(addOverviewIndex > viewSwitchIndex, 'POS New appointment should follow the view switch');
+  assert.ok(addOverviewIndex > filterIndex, 'POS New appointment should be the rightmost overview action');
   assert.ok(addAppointmentIndex > filterIndex, 'POS New appointment should be the rightmost booking action');
   assert.ok(createAccountIndex > staffHintIndex, 'POS Create account should be the rightmost staff action');
 });

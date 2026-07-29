@@ -732,10 +732,15 @@
     }
 
     .overview-kpis {
-      display: grid;
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-wrap: wrap;
       gap: 12px;
       margin-bottom: 18px;
+    }
+
+    .overview-kpis > .kpi-card {
+      flex: 1 1 220px;
+      min-width: min(100%, 220px);
     }
 
     .kpi-card {
@@ -4274,10 +4279,6 @@
         line-height: 24px;
       }
 
-      .overview-kpis {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
       .voice-kpis {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -4429,10 +4430,6 @@
         min-height: calc(100vh - 120px);
       }
 
-      .overview-kpis {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
-
       .overview-grid {
         grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
       }
@@ -4562,9 +4559,14 @@
       }
 
       #panel-overview .overview-kpis {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 6px;
         margin-bottom: 12px;
+      }
+
+      #panel-overview .overview-kpis > .kpi-card {
+        flex-basis: calc(25% - 4.5px);
       }
 
       #panel-overview .overview-kpis .kpi-card {
@@ -4858,8 +4860,13 @@
       }
 
       .booking-sub-panel .overview-kpis {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 6px;
+      }
+
+      .booking-sub-panel .overview-kpis > .kpi-card {
+        flex-basis: calc(25% - 4.5px);
       }
 
       .booking-sub-panel .kpi-card {

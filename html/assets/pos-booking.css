@@ -11,20 +11,29 @@
     }
 
     .overview-kpis {
-      display: grid;
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-wrap: wrap;
       gap: 12px;
       margin-bottom: 18px;
     }
 
-    /* Call Log stats: 2 columns on mobile, 4 in one row on larger screens */
+    .overview-kpis > .kpi-card {
+      flex: 1 1 220px;
+      min-width: min(100%, 220px);
+    }
+
+    /* Call Log stats: keep two cards per row on compact screens and four on larger screens. */
     #panel-calllog .overview-kpis[data-call-stats] {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    #panel-calllog .overview-kpis[data-call-stats] > .kpi-card {
+      flex-basis: calc(50% - 6px);
     }
 
     @media (min-width: 768px) {
-      #panel-calllog .overview-kpis[data-call-stats] {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+      #panel-calllog .overview-kpis[data-call-stats] > .kpi-card {
+        flex-basis: calc(25% - 9px);
       }
     }
 
@@ -477,6 +486,8 @@
       min-width: 0;
     }
 
+    .booking-appointment-main { overflow-x: auto; }
+
     .booking-appointment-panel {
       position: sticky;
       top: 18px;
@@ -486,6 +497,9 @@
       padding: 18px;
       box-shadow: none;
     }
+
+    .booking-appointment-backdrop[hidden] { display: none; }
+    body.booking-appointment-panel-modal-open { overflow: hidden; }
 
     .booking-appointment-panel [data-booking-panel-state="empty"] {
       display: grid;
@@ -521,6 +535,41 @@
 
     @media (max-width: 600px) {
       .booking-appointment-panel { min-height: 0; }
+    }
+
+    @media (max-width: 1399px) {
+      .booking-appointment-layout[data-booking-layout="calendar"] { grid-template-columns: 1fr; }
+      .booking-appointment-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 130;
+        background: rgba(8, 31, 73, .42);
+        backdrop-filter: blur(8px);
+      }
+      .booking-appointment-panel[data-booking-panel-presentation="modal"] {
+        position: fixed;
+        z-index: 131;
+        top: 50%;
+        left: 50%;
+        width: min(calc(100vw - 32px), 720px);
+        max-height: calc(100dvh - 32px);
+        overflow-y: auto;
+        transform: translate(-50%, -50%);
+      }
+      .booking-appointment-panel[data-booking-panel-presentation="modal"] .booking-panel-header-close { display: inline-flex; }
+    }
+
+    @media (max-width: 600px) {
+      .booking-appointment-panel[data-booking-panel-presentation="modal"] {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-height: 94dvh;
+        border-radius: 16px 16px 0 0;
+        transform: none;
+      }
     }
 
     .booking-daybar {
@@ -820,9 +869,12 @@
     }
 
     .booking-panel-head > div {
-      width: 100%;
+      flex: 1;
+      width: auto;
       min-width: 0;
     }
+
+    .booking-panel-header-close { display: none; flex-shrink: 0; }
 
     .booking-panel-title {
       display: flex;
@@ -3081,10 +3133,6 @@
         line-height: 24px;
       }
 
-      .overview-kpis {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
       .voice-kpis {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -3227,10 +3275,6 @@
 
       .blank-stage {
         min-height: calc(100vh - 120px);
-      }
-
-      .overview-kpis {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
       .overview-grid {

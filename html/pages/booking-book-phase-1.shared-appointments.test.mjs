@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const SOURCE = readFileSync(new URL('./booking-book-phase-1.html', import.meta.url), 'utf8');
+const APP_SHELL_SOURCE = readFileSync(new URL('./booking-book-src-app-shell.html', import.meta.url), 'utf8');
 
 test('Booking Book loads shared catalog and appointment store before its runtime', () => {
   assert.match(SOURCE, /\.\.\/assets\/salon-data\.js/);
@@ -113,6 +114,17 @@ test('Booking Book keeps Appointments and Calendar subtabs', () => {
   assert.match(SOURCE, /id="booking-subpanel-calendar" data-booking-sub-panel="calendar"/);
 });
 
+test('Booking Book overview KPIs use flex wrapping instead of grid columns', () => {
+  for (const source of [SOURCE, APP_SHELL_SOURCE]) {
+    const overviewKpisBlock = source.match(/\.overview-kpis\s*\{[^}]*\}/)?.[0] || '';
+    assert.match(overviewKpisBlock, /display:\s*flex;/);
+    assert.match(overviewKpisBlock, /flex-wrap:\s*wrap;/);
+    assert.doesNotMatch(overviewKpisBlock, /grid-template-columns/);
+    assert.doesNotMatch(source, /#panel-overview \.overview-kpis\s*\{[^}]*grid-template-columns/);
+    assert.doesNotMatch(source, /\.booking-sub-panel \.overview-kpis\s*\{[^}]*grid-template-columns/);
+  }
+});
+
 test('Booking Book moves team management into Salon Settings', () => {
   assert.match(SOURCE, /data-settings-team-slot/);
   assert.match(SOURCE, /function moveTeamPanelToSettings\(/);
@@ -140,6 +152,21 @@ test('Booking Book keeps one detail panel for appointment and calendar workspace
 test('Booking Book hides the appointment detail panel outside the Calendar subtab', () => {
   assert.match(SOURCE, /data-booking-appointment-panel[^>]*hidden/);
   assert.match(SOURCE, /function activateBookingSubTab\([\s\S]*var appointmentPanel = document\.querySelector\('\[data-booking-appointment-panel\]'\)[\s\S]*appointmentPanel\.hidden = target !== 'calendar'/);
+});
+
+test('Booking Book View actions open the appointment detail modal', () => {
+  assert.match(SOURCE, /bookingAction\.dataset\.bookingAction === 'detail'[\s\S]*?openBookingDetailModal\(item\)/);
+});
+
+test('Booking Book uses a responsive modal detail panel below 1400px', () => {
+  assert.match(SOURCE, /data-booking-appointment-backdrop/);
+  assert.match(SOURCE, /function syncBookingAppointmentPanelPresentation\(/);
+  assert.match(SOURCE, /booking-appointment-panel-modal-open/);
+  assert.match(SOURCE, /event\.key === 'Escape'[\s\S]*closeBookingAppointmentPanel\(\)/);
+  assert.match(SOURCE, /@media\s*\(max-width:\s*1399px\)/);
+  assert.match(SOURCE, /data-booking-panel-presentation="modal"/);
+  assert.match(SOURCE, /\.booking-appointment-main\s*\{\s*overflow-x:\s*auto/);
+  assert.match(SOURCE, /data-booking-panel-action="close"[^>]*aria-label="Close appointment details"/);
 });
 
 test('Booking Book gives Appointments the full workspace width and reserves a rail for Calendar', () => {
