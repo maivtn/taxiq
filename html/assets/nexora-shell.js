@@ -9,6 +9,7 @@
        activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'packages' | 'staff',
                                            // which functional group is native
        activeTab:  '<tabId>',              // initial highlighted sub-item
+       showClearStorage: true,             // optional header action for local development
        onNavigate: function (tabId) {}     // optional; defaults to window.activateMainTab
      };
    Exposes window.NEXORA_SHELL.setActiveTab(tabId) so a page can keep the
@@ -214,7 +215,11 @@
     '<label class="search">' +
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 21-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>' +
       '<input type="search" placeholder="Search tech, station, review...">' +
-    '</label>';
+    '</label>' +
+    (cfg.showClearStorage ?
+      '<div class="header-actions"><button class="shell-clear-storage-button" type="button" data-shell-clear-storage aria-label="Clear local storage">' +
+        '<i data-lucide="trash-2" aria-hidden="true"></i><span>Clear local storage</span>' +
+      '</button></div>' : '');
 
   function navigate(tab) {
     var fn = (typeof cfg.onNavigate === 'function') ? cfg.onNavigate
@@ -273,6 +278,24 @@
     });
     var backdrop = document.querySelector('.nexora-shell-backdrop');
     if (backdrop) backdrop.addEventListener('click', function () { setDrawer(false); });
+
+    // Explicitly confirmed reset for the pages that expose this development action.
+    var clearStorageButton = document.querySelector('.header [data-shell-clear-storage]');
+    if (clearStorageButton) {
+      clearStorageButton.addEventListener('click', function () {
+        if (typeof window.confirm === 'function' && !window.confirm('Clear all local storage for this site?')) return;
+        try {
+          window.localStorage.clear();
+          var label = clearStorageButton.querySelector('span');
+          if (label) label.textContent = 'Storage cleared';
+          clearStorageButton.setAttribute('aria-label', 'Local storage cleared');
+          clearStorageButton.disabled = true;
+        } catch (e) {
+          var errorLabel = clearStorageButton.querySelector('span');
+          if (errorLabel) errorLabel.textContent = 'Unable to clear storage';
+        }
+      });
+    }
   }
 
   function init() {

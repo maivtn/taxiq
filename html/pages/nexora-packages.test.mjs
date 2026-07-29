@@ -44,8 +44,8 @@ test('adds the package heading and ordered management tabs', () => {
   assert.match(html, /<span>Credit Usage<\/span>/);
   assert.match(html, /data-package-panel="credits"[\s\S]*?data-credits-page/);
   assert.doesNotMatch(html, /<div class="credits-heading">/);
-  assert.match(html, /data-credits-card="sms"/);
-  assert.match(html, /data-credits-card="voice"/);
+  assert.match(html, /data-credits-card="plan"/);
+  assert.match(html, /data-credits-card="sms-topup"/);
   assert.match(html, /data-credits-history/);
   assert.match(html, /Purchase History/);
   assert.match(html, /SMS Credits/);

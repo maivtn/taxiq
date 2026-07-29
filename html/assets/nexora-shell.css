@@ -511,6 +511,39 @@ select {
   gap: 10px;
 }
 
+.shell-clear-storage-button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #f0caca;
+  border-radius: 8px;
+  background: #fff7f7;
+  padding: 0 11px;
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.shell-clear-storage-button:hover {
+  border-color: #e9a6a6;
+  background: #ffeded;
+}
+
+.shell-clear-storage-button:disabled {
+  border-color: #c9e8d7;
+  background: #effaf3;
+  color: #16804a;
+  cursor: default;
+}
+
+.shell-clear-storage-button svg {
+  width: 16px;
+  height: 16px;
+}
+
 .language-switcher {
   display: none;
   align-items: center;

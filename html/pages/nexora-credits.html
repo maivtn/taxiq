@@ -32,52 +32,71 @@
           </div>
 
           <div class="credits-balance-grid">
-            <article class="credits-card credits-card-sms" data-credits-card="sms" aria-labelledby="sms-credits-title">
+            <article class="credits-card credits-card-plan" data-credits-card="plan" aria-labelledby="plan-credits-title">
               <div class="credits-card-head">
-                <div class="credits-card-icon credits-card-icon-sms"><i data-lucide="message-square-text" aria-hidden="true"></i></div>
+                <div class="credits-card-icon credits-card-icon-plan"><i data-lucide="crown" aria-hidden="true"></i></div>
                 <div>
-                  <span class="credits-card-kicker">Messaging</span>
-                  <h2 id="sms-credits-title">SMS Credits</h2>
+                  <h2 id="plan-credits-title">Pro</h2>
+                  <p class="credits-plan-subtitle">AI Voice Plan</p>
                 </div>
-                <span class="credits-status is-healthy" data-credits-sms-status>Healthy</span>
+                <span class="credits-reset-action"><i data-lucide="refresh-cw" aria-hidden="true"></i><span>Reset / month</span></span>
               </div>
-              <div class="credits-balance-row">
-                <div>
-                  <span class="credits-label">Available balance</span>
-                  <strong class="credits-balance-value" data-credits-sms-balance>847</strong>
-                  <span class="credits-balance-unit">SMS credits</span>
+
+              <div class="credits-plan-remaining" aria-label="Remaining plan credits">
+                <span class="credits-label">Còn lại</span>
+                <div class="credits-plan-remaining-values">
+                  <strong data-credits-voice-remaining>380</strong><span class="credits-plan-remaining-unit">min</span>
+                  <span class="credits-plan-remaining-separator" aria-hidden="true">·</span>
+                  <strong data-credits-sms-plan-remaining>0</strong><span class="credits-plan-remaining-unit">SMS</span>
                 </div>
-                <div class="credits-balance-meta"><span>Estimated value</span><strong data-credits-sms-value>≈ $21.18</strong></div>
               </div>
-              <div class="credits-progress-block">
-                <div class="credits-progress-top"><span>Remaining balance</span><strong data-credits-sms-progress-label>42.4%</strong></div>
-                <div class="credits-progress-track" role="progressbar" aria-label="SMS credits remaining" aria-valuemin="0" aria-valuemax="2000" aria-valuenow="847"><span class="credits-progress-fill credits-progress-fill-sms" data-credits-sms-progress style="width:42.4%"></span></div>
+
+              <div class="credits-plan-usage">
+                <div class="credits-usage-row credits-usage-row-minutes">
+                  <div class="credits-usage-icon credits-usage-icon-minutes"><i data-lucide="clock-3" aria-hidden="true"></i></div>
+                  <div class="credits-usage-main">
+                    <div class="credits-usage-heading"><span>Minutes used</span><strong><span data-credits-voice-used>620</span> <small>/ <span data-credits-voice-total>1,000</span></small></strong></div>
+                    <div class="credits-usage-progress" role="progressbar" aria-label="Minutes used" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="620" data-credits-voice-progress-track><span class="credits-usage-fill credits-usage-fill-minutes" data-credits-voice-progress style="width:62%"></span></div>
+                  </div>
+                </div>
+
+                <div class="credits-usage-row credits-usage-row-sms">
+                  <div class="credits-usage-icon credits-usage-icon-sms"><i data-lucide="messages-square" aria-hidden="true"></i></div>
+                  <div class="credits-usage-main">
+                    <div class="credits-usage-heading"><span>SMS used</span><strong><span data-credits-sms-plan-used>1,000</span> <small>/ <span data-credits-sms-plan-total>1,000</span></small></strong></div>
+                    <div class="credits-usage-progress" role="progressbar" aria-label="SMS used" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="1000" data-credits-sms-plan-progress-track><span class="credits-usage-fill credits-usage-fill-sms" data-credits-sms-plan-progress style="width:100%"></span></div>
+                  </div>
+                </div>
               </div>
-              <div class="credits-card-foot"><span data-credits-sms-note>Credits are shared with SMS Campaigns.</span><a class="credits-action credits-action-primary" href="booking-book-phase-1.html?tab=sms-campaigns&amp;openCredits=1"><i data-lucide="plus" aria-hidden="true"></i><span>Buy SMS Credits</span></a></div>
+
             </article>
 
-            <article class="credits-card credits-card-voice" data-credits-card="voice" aria-labelledby="voice-credits-title">
+            <article class="credits-card credits-card-topup" data-credits-card="sms-topup" aria-labelledby="sms-credits-title">
               <div class="credits-card-head">
-                <div class="credits-card-icon credits-card-icon-voice"><i data-lucide="phone-call" aria-hidden="true"></i></div>
+                <div class="credits-card-icon credits-card-icon-topup"><i data-lucide="layers-3" aria-hidden="true"></i></div>
                 <div>
-                  <span class="credits-card-kicker">AI receptionist</span>
-                  <h2 id="voice-credits-title">Voice Credits</h2>
+                  <h2 id="sms-credits-title">SMS Credits</h2>
+                  <p class="credits-topup-subtitle">Dùng khi SMS trong gói đã hết</p>
                 </div>
-                <span class="credits-status is-active">Active plan</span>
+                <span class="credits-rollover-badge"><i data-lucide="shield-check" aria-hidden="true"></i><span>Không bị reset</span></span>
               </div>
-              <div class="credits-balance-row">
+
+              <div class="credits-topup-summary">
                 <div>
-                  <span class="credits-label">Remaining minutes</span>
-                  <strong class="credits-balance-value" data-credits-voice-balance>513</strong>
-                  <span class="credits-balance-unit">AI Voice minutes</span>
+                  <span class="credits-label">Còn lại</span>
+                  <strong class="credits-topup-balance" data-credits-sms-topup-balance>450</strong><span class="credits-topup-unit"> SMS</span>
                 </div>
-                <div class="credits-balance-meta"><span>Monthly allowance</span><strong>1,000 min</strong></div>
               </div>
-              <div class="credits-progress-block">
-                <div class="credits-progress-top"><span>Used this billing cycle</span><strong data-credits-voice-progress-label>48.7%</strong></div>
-                <div class="credits-progress-track" role="progressbar" aria-label="AI Voice minutes used" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="487"><span class="credits-progress-fill credits-progress-fill-voice" data-credits-voice-progress style="width:48.7%"></span></div>
+
+              <div class="credits-topup-usage credits-usage-row credits-usage-row-sms" data-credits-sms-topup-usage>
+                <div class="credits-usage-icon credits-usage-icon-sms"><i data-lucide="messages-square" aria-hidden="true"></i></div>
+                <div class="credits-usage-main">
+                  <div class="credits-usage-heading"><span>SMS Credits used</span><strong><span data-credits-sms-topup-used>50</span> <small>/ <span data-credits-sms-topup-usage-total>500</span></small></strong></div>
+                  <div class="credits-usage-progress" role="progressbar" aria-label="Purchased SMS credits used" aria-valuemin="0" aria-valuemax="500" aria-valuenow="50" data-credits-sms-topup-progress-track><span class="credits-usage-fill credits-usage-fill-topup" data-credits-sms-topup-progress style="width:10%"></span></div>
+                </div>
               </div>
-              <div class="credits-card-foot"><span>Top-ups are managed through your voice plan.</span><a class="credits-action credits-action-secondary" href="nexora-packages.html?tab=voice"><i data-lucide="settings-2" aria-hidden="true"></i><span>Manage Voice Plan</span></a></div>
+
+              <div class="credits-card-foot"><a class="credits-action credits-action-primary" href="booking-book-phase-1.html?tab=sms-campaigns&amp;openCredits=1"><i data-lucide="plus" aria-hidden="true"></i><span>Mua SMS credit</span></a></div>
             </article>
           </div>
 
@@ -87,7 +106,13 @@
                 <span class="credits-kicker">Activity</span>
                 <h2 id="credits-history-title">Usage history</h2>
               </div>
-              <span class="credits-section-note">Recent activity across SMS and Voice</span>
+              <div class="credits-history-tools">
+                <div class="credits-history-filters" role="group" aria-label="Filter usage history">
+                  <button class="credits-history-filter is-active" type="button" data-credits-history-filter="all" aria-pressed="true">All</button>
+                  <button class="credits-history-filter" type="button" data-credits-history-filter="sms" aria-pressed="false">SMS</button>
+                  <button class="credits-history-filter" type="button" data-credits-history-filter="voice" aria-pressed="false">Voice</button>
+                </div>
+              </div>
             </div>
             <div class="credits-history-scroll">
               <table class="credits-history-table">
@@ -98,15 +123,14 @@
                     <th scope="col">Activity</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Date</th>
-                    <th scope="col">Balance after</th>
                   </tr>
                 </thead>
                 <tbody data-credits-history>
-                  <tr><td><span class="credits-product-badge credits-product-badge-sms">SMS</span></td><td>All customers campaign</td><td class="credits-amount-negative">−1,284 SMS</td><td>Jul 28, 2026</td><td>847 SMS</td></tr>
-                  <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>+1 (713) 555-0182</strong><small>Incoming call</small></span></td><td class="credits-amount-negative">−18 min</td><td>Jul 28, 2026 · 10:42 AM</td><td>571 min</td></tr>
-                  <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>+1 (832) 555-0104</strong><small>Incoming call</small></span></td><td class="credits-amount-negative">−27 min</td><td>Jul 28, 2026 · 9:18 AM</td><td>544 min</td></tr>
-                  <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>+1 (281) 555-0199</strong><small>Incoming call</small></span></td><td class="credits-amount-negative">−31 min</td><td>Jul 27, 2026 · 5:50 PM</td><td>513 min</td></tr>
-                  <tr><td><span class="credits-product-badge credits-product-badge-sms">SMS</span></td><td>VIP comeback campaign</td><td class="credits-amount-negative">−320 SMS</td><td>Jul 26, 2026</td><td>2,131 SMS</td></tr>
+                  <tr><td><span class="credits-product-badge credits-product-badge-sms">SMS</span></td><td>All customers campaign</td><td class="credits-amount-negative">−1,284 SMS</td><td>Jul 28, 2026</td></tr>
+                  <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>+1 (713) 555-0182</strong><small>Incoming call</small></span></td><td class="credits-amount-negative">−18 min</td><td><span class="credits-history-date">Jul 28, 2026<small>10:42 AM</small></span></td></tr>
+                  <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>+1 (832) 555-0104</strong><small>Incoming call</small></span></td><td class="credits-amount-negative">−27 min</td><td><span class="credits-history-date">Jul 28, 2026<small>9:18 AM</small></span></td></tr>
+                  <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>+1 (281) 555-0199</strong><small>Incoming call</small></span></td><td class="credits-amount-negative">−31 min</td><td><span class="credits-history-date">Jul 27, 2026<small>5:50 PM</small></span></td></tr>
+                  <tr><td><span class="credits-product-badge credits-product-badge-sms">SMS</span></td><td>VIP comeback campaign</td><td class="credits-amount-negative">−320 SMS</td><td>Jul 26, 2026</td></tr>
                 </tbody>
               </table>
             </div>
@@ -119,7 +143,7 @@
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="../assets/nexora-credits.js"></script>
   <script>
-    window.NEXORA_SHELL = { activePage: 'booking', activeTab: 'sms-campaigns' };
+    window.NEXORA_SHELL = { activePage: 'booking', activeTab: 'sms-campaigns', showClearStorage: true };
   </script>
   <script src="../assets/nexora-shell.js"></script>
 </body>

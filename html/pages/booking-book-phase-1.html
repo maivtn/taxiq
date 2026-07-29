@@ -14878,7 +14878,18 @@ function getBookingCardCallStart(item) {
         var selectedPackage = getSelectedSmsCreditPackage();
         var selectedPayment = getSelectedSmsCreditPayment();
         if (selectedPayment.id === 'CARD' && !validateSmsCreditCardForm()) return;
+        if (window.NEXORA_CREDITS && typeof window.NEXORA_CREDITS.addSmsTopupCredits === 'function') {
+          window.NEXORA_CREDITS.addSmsTopupCredits(selectedPackage.credits);
+        }
         updateCredits(state.credits + selectedPackage.credits);
+        if (window.NEXORA_CREDITS && typeof window.NEXORA_CREDITS.recordSmsCreditPurchase === 'function') {
+          window.NEXORA_CREDITS.recordSmsCreditPurchase({
+            credits: selectedPackage.credits,
+            balance: state.credits,
+            packageName: selectedPackage.name,
+            paymentMethod: selectedPayment.label
+          });
+        }
         closeSmsCreditModal();
         showSmsCreditPurchaseSuccess(selectedPackage, selectedPayment);
       }
@@ -14926,6 +14937,10 @@ function getBookingCardCallStart(item) {
         }
 
         // Đã xác nhận → gửi
+        if (willChargeCredits && window.NEXORA_CREDITS && typeof window.NEXORA_CREDITS.consumeSmsCredits === 'function') {
+          const creditCharge = window.NEXORA_CREDITS.consumeSmsCredits(totalSms);
+          if (!creditCharge.success) return;
+        }
         if (willChargeCredits) updateCredits(state.credits - totalSms);
         if (editingCampaign) {
           const record = createSmsCampaignRecord();
