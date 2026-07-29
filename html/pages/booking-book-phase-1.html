@@ -2723,6 +2723,78 @@
       padding: 7px;
     }
 
+    .settings-service-catalog-state {
+      border: 1px dashed var(--nexora-border);
+      border-radius: 10px;
+      padding: 16px;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .settings-service-category {
+      overflow: hidden;
+      border: 1px solid var(--nexora-border);
+      border-radius: 11px;
+      background: #fff;
+    }
+
+    .settings-service-category + .settings-service-category {
+      margin-top: 6px;
+    }
+
+    .settings-service-category-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      list-style: none;
+      cursor: pointer;
+      padding: 10px 11px;
+      background: #f8faff;
+    }
+
+    .settings-service-category-head::-webkit-details-marker {
+      display: none;
+    }
+
+    .settings-service-category-head::after {
+      content: '⌄';
+      color: var(--nexora-subtle);
+      font-size: 14px;
+      font-weight: 900;
+      transition: transform .16s ease;
+    }
+
+    .settings-service-category:not([open]) .settings-service-category-head::after {
+      transform: rotate(-90deg);
+    }
+
+    .settings-service-category-name {
+      color: var(--nexora-text);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .settings-service-category-count {
+      margin-left: auto;
+      border-radius: 999px;
+      background: #e9edff;
+      padding: 2px 7px;
+      color: var(--nexora-brand);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .settings-service-category-body {
+      display: grid;
+      gap: 5px;
+      padding: 7px;
+    }
+
     .settings-service-header {
       display: grid;
       grid-template-columns: 30px minmax(82px, 1fr) 58px 70px 28px;
@@ -6597,7 +6669,7 @@
       }
     }
 
-    @media (min-width: 1024px) {
+    @media (min-width: 1201px) {
       .sidebar {
         display: flex;
       }
@@ -9204,164 +9276,8 @@
                     </div>
                   </div>
 
-                  <div class="settings-service-list settings-service-body">
-                    <div class="settings-service-header" aria-hidden="true">
-                      <span></span>
-                      <span>Service</span>
-                      <span>Price</span>
-                      <span>Duration</span>
-                      <span></span>
-                    </div>
-                    <div class="settings-service-row" data-service-row>
-                      <div class="settings-service-edit-grid">
-                        <span class="settings-service-visual tone-violet" aria-hidden="true">💅</span>
-                        <input class="settings-service-input" type="text" value="Gel Manicure" aria-label="Service name">
-                        <div class="settings-service-input-wrap">
-                          <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="35" aria-label="Service price">
-                        </div>
-                        <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="60" aria-label="Service duration">
-                          <span class="settings-service-suffix">min</span>
-                        </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
-                      </div>
-                    </div>
-                    <div class="settings-service-row" data-service-row>
-                      <div class="settings-service-edit-grid">
-                        <span class="settings-service-visual tone-cyan" aria-hidden="true">🖐️</span>
-                        <input class="settings-service-input" type="text" value="Classic Manicure" aria-label="Service name">
-                        <div class="settings-service-input-wrap">
-                          <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="22" aria-label="Service price">
-                        </div>
-                        <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="45" aria-label="Service duration">
-                          <span class="settings-service-suffix">min</span>
-                        </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
-                      </div>
-                    </div>
-                    <div class="settings-service-row" data-service-row>
-                      <div class="settings-service-edit-grid">
-                        <span class="settings-service-visual tone-rose" aria-hidden="true">💎</span>
-                        <input class="settings-service-input" type="text" value="Full Set Acrylic" aria-label="Service name">
-                        <div class="settings-service-input-wrap">
-                          <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="45" aria-label="Service price">
-                        </div>
-                        <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="90" aria-label="Service duration">
-                          <span class="settings-service-suffix">min</span>
-                        </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
-                      </div>
-                    </div>
-                    <div class="settings-service-row" data-service-row>
-                      <div class="settings-service-edit-grid">
-                        <span class="settings-service-visual tone-sky" aria-hidden="true">✨</span>
-                        <input class="settings-service-input" type="text" value="Dip Powder" aria-label="Service name">
-                        <div class="settings-service-input-wrap">
-                          <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="40" aria-label="Service price">
-                        </div>
-                        <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="75" aria-label="Service duration">
-                          <span class="settings-service-suffix">min</span>
-                        </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
-                      </div>
-                    </div>
-                    <div class="settings-service-row" data-service-row>
-                      <div class="settings-service-edit-grid">
-                        <span class="settings-service-visual tone-amber" aria-hidden="true">🔁</span>
-                        <input class="settings-service-input" type="text" value="Fill-In" aria-label="Service name">
-                        <div class="settings-service-input-wrap">
-                          <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="32" aria-label="Service price">
-                        </div>
-                        <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="60" aria-label="Service duration">
-                          <span class="settings-service-suffix">min</span>
-                        </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
-                      </div>
-                    </div>
-                    <div class="settings-service-row" data-service-row>
-                      <div class="settings-service-edit-grid">
-                        <span class="settings-service-visual tone-emerald" aria-hidden="true">🦶</span>
-                        <input class="settings-service-input" type="text" value="Classic Pedicure" aria-label="Service name">
-                        <div class="settings-service-input-wrap">
-                          <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="30" aria-label="Service price">
-                        </div>
-                        <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="50" aria-label="Service duration">
-                          <span class="settings-service-suffix">min</span>
-                        </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
-                      </div>
-                    </div>
-                    <div class="settings-service-row" data-service-row>
-                      <div class="settings-service-edit-grid">
-                        <span class="settings-service-visual tone-violet" aria-hidden="true">👑</span>
-                        <input class="settings-service-input" type="text" value="Deluxe Pedicure" aria-label="Service name">
-                        <div class="settings-service-input-wrap">
-                          <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="50" aria-label="Service price">
-                        </div>
-                        <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="70" aria-label="Service duration">
-                          <span class="settings-service-suffix">min</span>
-                        </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
-                      </div>
-                    </div>
-                    <div class="settings-service-row" data-service-row>
-                      <div class="settings-service-edit-grid">
-                        <span class="settings-service-visual tone-cyan" aria-hidden="true">🧴</span>
-                        <input class="settings-service-input" type="text" value="Pedicure + Gel Combo" aria-label="Service name">
-                        <div class="settings-service-input-wrap">
-                          <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="65" aria-label="Service price">
-                        </div>
-                        <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="105" aria-label="Service duration">
-                          <span class="settings-service-suffix">min</span>
-                        </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
-                      </div>
-                    </div>
-                    <div class="settings-service-row" data-service-row>
-                      <div class="settings-service-edit-grid">
-                        <span class="settings-service-visual tone-amber" aria-hidden="true">🧸</span>
-                        <input class="settings-service-input" type="text" value="Kid Mani-Pedi" aria-label="Service name">
-                        <div class="settings-service-input-wrap">
-                          <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="25" aria-label="Service price">
-                        </div>
-                        <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="40" aria-label="Service duration">
-                          <span class="settings-service-suffix">min</span>
-                        </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
-                      </div>
-                    </div>
-                    <div class="settings-service-row" data-service-row>
-                      <div class="settings-service-edit-grid">
-                        <span class="settings-service-visual tone-rose" aria-hidden="true">🎨</span>
-                        <input class="settings-service-input" type="text" value="Nail Art (per nail)" aria-label="Service name">
-                        <div class="settings-service-input-wrap">
-                          <span class="settings-service-prefix">$</span>
-                          <input class="settings-service-input price" type="number" value="5" aria-label="Service price">
-                        </div>
-                        <div class="settings-service-input-wrap">
-                          <input class="settings-service-input duration" type="number" value="10" aria-label="Service duration">
-                          <span class="settings-service-suffix">min</span>
-                        </div>
-                        <button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>
-                      </div>
-                    </div>
+                  <div class="settings-service-list settings-service-body" data-settings-service-catalog>
+                    <div class="settings-service-catalog-state" data-settings-service-catalog-state>Loading services…</div>
                   </div>
                 </article>
 
@@ -10361,15 +10277,20 @@
     rebuildBookingCatalogViews();
 
     function loadBookingAppointmentServiceCatalog() {
-      if (!appointmentServiceCatalogLoader || typeof appointmentServiceCatalogLoader.load !== 'function') return;
+      var fallbackCatalog = { services: catalog.services };
+      if (!appointmentServiceCatalogLoader || typeof appointmentServiceCatalogLoader.load !== 'function') {
+        renderSettingsServiceCatalog(fallbackCatalog, true);
+        return;
+      }
       appointmentServiceCatalogLoader.load(APPOINTMENT_SERVICE_CATALOG_URL).then(function(nextCatalog) {
         appointmentServiceCatalog = nextCatalog;
         rebuildBookingCatalogViews();
+        renderSettingsServiceCatalog(nextCatalog, false);
         if (bookingPanelMode) renderBookingAppointmentPanel();
         var createModal = document.querySelector('[data-booking-create-modal]');
         if (createModal && !createModal.hidden) populateBookingCreateForm();
       }).catch(function() {
-        // Keep the salon catalog fallback when the JSON is unavailable in file-only previews.
+        renderSettingsServiceCatalog(fallbackCatalog, true);
       });
     }
 
@@ -12623,6 +12544,74 @@ function getBookingCardCallStart(item) {
       }
     }
 
+    function settingsServiceCategoriesFromCatalog(source) {
+      if (source && Array.isArray(source.categories) && source.categories.length) return source.categories;
+
+      var groups = {};
+      (source && Array.isArray(source.services) ? source.services : []).filter(function(service) {
+        return service && service.active !== false;
+      }).forEach(function(service) {
+        var name = service.requiredSkill || 'Other services';
+        var id = 'fallback-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        if (!groups[id]) groups[id] = { id: id, name: name, services: [] };
+        groups[id].services.push(service);
+      });
+      return Object.keys(groups).map(function(id) { return groups[id]; });
+    }
+
+    function settingsServiceRowMarkup(service, index) {
+      service = service || {};
+      var price = service.price == null ? '' : service.price;
+      var duration = service.durationMin == null ? 60 : service.durationMin;
+      var tone = ['tone-violet', 'tone-cyan', 'tone-rose', 'tone-sky', 'tone-amber', 'tone-emerald'][index % 6];
+      return '<div class="settings-service-row" data-service-row data-service-id="' + escapeHtml(service.id || '') + '">' +
+        '<div class="settings-service-edit-grid">' +
+          '<span class="settings-service-visual ' + tone + '" aria-hidden="true">' + escapeHtml(service.icon || '✨') + '</span>' +
+          '<input class="settings-service-input" type="text" value="' + escapeHtml(service.name || 'Unnamed service') + '" aria-label="Service name">' +
+          '<div class="settings-service-input-wrap"><span class="settings-service-prefix">$</span><input class="settings-service-input price" type="number" value="' + escapeHtml(price) + '" aria-label="Service price"></div>' +
+          '<div class="settings-service-input-wrap"><input class="settings-service-input duration" type="number" value="' + escapeHtml(duration) + '" aria-label="Service duration"><span class="settings-service-suffix">min</span></div>' +
+          '<button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function settingsServiceCategoryMarkup(category, index) {
+      var services = Array.isArray(category.services) ? category.services : [];
+      return '<details class="settings-service-category" data-service-category data-service-category-id="' + escapeHtml(category.id || '') + '"' + (index === 0 ? ' open' : '') + '>' +
+        '<summary class="settings-service-category-head"><span class="settings-service-category-name">' + escapeHtml(category.name || 'Other services') + '</span><span class="settings-service-category-count">' + services.length + '</span></summary>' +
+        '<div class="settings-service-category-body"><div class="settings-service-header" aria-hidden="true"><span></span><span>Service</span><span>Price</span><span>Duration</span><span></span></div>' +
+        services.map(function(service, serviceIndex) { return settingsServiceRowMarkup(service, index + serviceIndex); }).join('') + '</div></details>';
+    }
+
+    function renderSettingsServiceCatalog(source, fallback) {
+      var container = document.querySelector('[data-settings-service-catalog]');
+      if (!container) return;
+      var categories = settingsServiceCategoriesFromCatalog(source);
+      container.innerHTML = categories.length
+        ? categories.map(settingsServiceCategoryMarkup).join('')
+        : '<div class="settings-service-catalog-state">No services available.</div>';
+      if (fallback) setSettingsStatus('Catalog JSON unavailable. Showing salon catalog services.');
+    }
+
+    function settingsEnsureCustomCategory() {
+      var container = document.querySelector('[data-settings-service-catalog]');
+      if (!container) return null;
+
+      var category = container.querySelector('[data-service-category-id="custom-services"]');
+      if (!category) {
+        container.insertAdjacentHTML('beforeend', settingsServiceCategoryMarkup({ id: 'custom-services', name: 'CUSTOM SERVICES', services: [] }, container.querySelectorAll('[data-service-category]').length));
+        category = container.querySelector('[data-service-category-id="custom-services"]');
+      }
+      if (category) category.open = true;
+      return category ? category.querySelector('.settings-service-category-body') : null;
+    }
+
+    function updateSettingsServiceCategoryCount(category) {
+      if (!category) return;
+      var count = category.querySelector('.settings-service-category-count');
+      if (count) count.textContent = category.querySelectorAll('[data-service-row]').length;
+    }
+
     var PROMO_TEMPLATES = {
       'reward-yourself': {
         label: 'Promotion 1: Reward Yourself',
@@ -12662,27 +12651,18 @@ function getBookingCardCallStart(item) {
     }
 
     function addSettingsServiceRow(name, price, duration) {
-      var list = document.querySelector('.settings-service-list');
+      var list = settingsEnsureCustomCategory();
       if (!list) return;
 
-      var row = document.createElement('div');
-      row.className = 'settings-service-row';
-      row.setAttribute('data-service-row', '');
-      row.innerHTML = '' +
-        '<div class="settings-service-edit-grid">' +
-          '<span class="settings-service-visual tone-violet" aria-hidden="true">✨</span>' +
-          '<input class="settings-service-input" type="text" value="' + name + '" aria-label="Service name">' +
-          '<div class="settings-service-input-wrap">' +
-            '<span class="settings-service-prefix">$</span>' +
-            '<input class="settings-service-input price" type="number" value="' + price + '" aria-label="Service price">' +
-          '</div>' +
-          '<div class="settings-service-input-wrap">' +
-            '<input class="settings-service-input duration" type="number" value="' + duration + '" aria-label="Service duration">' +
-            '<span class="settings-service-suffix">min</span>' +
-          '</div>' +
-          '<button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>' +
-        '</div>';
-      list.appendChild(row);
+      var rowIndex = list.querySelectorAll('[data-service-row]').length;
+      list.insertAdjacentHTML('beforeend', settingsServiceRowMarkup({
+        id: 'custom-' + Date.now(),
+        name: name,
+        price: Number(price),
+        durationMin: Number(duration),
+        icon: '✨'
+      }, rowIndex));
+      updateSettingsServiceCategoryCount(list.closest('[data-service-category]'));
       setSettingsStatus('Service added: ' + name + '.');
     }
 
@@ -13433,7 +13413,9 @@ function getBookingCardCallStart(item) {
       var serviceRemove = event.target.closest('[data-service-remove]');
       if (serviceRemove) {
         var serviceRow = serviceRemove.closest('[data-service-row]');
+        var serviceCategory = serviceRow ? serviceRow.closest('[data-service-category]') : null;
         if (serviceRow) serviceRow.remove();
+        updateSettingsServiceCategoryCount(serviceCategory);
         setSettingsStatus('Removed the service from the list.');
       }
 
