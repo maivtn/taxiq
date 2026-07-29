@@ -207,7 +207,7 @@
 
   var HEADER_HTML =
     '<div class="mobile-brand">' +
-      '<button class="icon-button" type="button" aria-label="Open navigation menu" data-shell-drawer-open>' +
+      '<button class="icon-button" type="button" data-shell-drawer-open aria-label="Open navigation menu" aria-controls="nexora-sidebar" aria-expanded="false">' +
         '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>' +
       '</button>' +
       '<img class="brand-logo" src="../assets/nexora-logo.svg" alt="Nexora Logo">' +
@@ -238,8 +238,13 @@
   function setDrawer(open) {
     var sidebar = document.querySelector('aside.sidebar');
     var backdrop = document.querySelector('.nexora-shell-backdrop');
+    var opener = document.querySelector('.header [data-shell-drawer-open]');
     if (sidebar) sidebar.classList.toggle('is-open', open);
     if (backdrop) backdrop.classList.toggle('is-open', open);
+    if (opener) {
+      opener.setAttribute('aria-expanded', open ? 'true' : 'false');
+      opener.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+    }
   }
 
   function wire() {
@@ -278,6 +283,9 @@
     });
     var backdrop = document.querySelector('.nexora-shell-backdrop');
     if (backdrop) backdrop.addEventListener('click', function () { setDrawer(false); });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') setDrawer(false);
+    });
 
     // Explicitly confirmed reset for the pages that expose this development action.
     var clearStorageButton = document.querySelector('.header [data-shell-clear-storage]');
@@ -301,6 +309,7 @@
   function init() {
     var sidebar = document.querySelector('aside.sidebar');
     var header = document.querySelector('header.header');
+    if (sidebar) sidebar.id = 'nexora-sidebar';
     if (sidebar) sidebar.innerHTML = activePage === 'staff' ? STAFF_SIDEBAR_HTML : SIDEBAR_HTML;
     if (header) header.innerHTML = HEADER_HTML;
 

@@ -658,7 +658,7 @@ select {
 }
 
 /* below desktop: sidebar becomes a slide-in drawer opened from the header */
-@media (max-width: 1023px) {
+@media (max-width: 1200px) {
   .sidebar {
     display: flex;
     z-index: 40;
@@ -672,7 +672,7 @@ select {
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1201px) {
   .sidebar {
     display: flex;
   }

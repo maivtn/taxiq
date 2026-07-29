@@ -4,7 +4,16 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const SHELL_URL = new URL('./nexora-shell.js', import.meta.url);
+const SHELL_CSS_URL = new URL('./nexora-shell.css', import.meta.url);
 const shellSource = readFileSync(SHELL_URL, 'utf8');
+const shellCss = readFileSync(SHELL_CSS_URL, 'utf8');
+const INLINE_SHELL_PAGES = [
+  'booking-book-phase-1.html',
+  'booking-book-src-app-shell.html',
+  'community.html',
+  'salon-setup-reward.html',
+  'change-icon.html'
+];
 
 const rewardItems = [
   ['overview', 'Overview'],
@@ -35,6 +44,7 @@ function renderSidebar(activePage, activeTab) {
     readyState: 'complete',
     body: { appendChild(node) { backdrop = node; } },
     createElement() { return { className: '', classList: classList(), addEventListener() {} }; },
+    addEventListener() {},
     querySelector(selector) {
       if (selector === 'aside.sidebar') return sidebar;
       if (selector === 'header.header') return header;
@@ -116,4 +126,25 @@ test('labels the POS dispatch tab as Operations in the sidebar', () => {
   const html = renderSidebar('pos', 'dispatch');
   assert.match(html, /data-shell-tab="dispatch"[\s\S]*?<span>Operations<\/span>/);
   assert.doesNotMatch(html, /data-shell-tab="dispatch"[\s\S]*?<span>Dispatch<\/span>/);
+});
+
+test('keeps the shared sidebar in the drawer state through 1200px', () => {
+  assert.match(shellCss, /@media\s*\(max-width:\s*1200px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?transform:\s*translateX\(-105%\)/);
+  assert.match(shellCss, /@media\s*\(min-width:\s*1201px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
+  assert.match(shellCss, /@media\s*\(min-width:\s*1201px\)[\s\S]*?\.app-area\s*\{[\s\S]*?padding-left:\s*288px/);
+});
+
+test('keeps inline shell pages on the same 1201px desktop breakpoint', () => {
+  for (const file of INLINE_SHELL_PAGES) {
+    const html = readFileSync(new URL(`../pages/${file}`, import.meta.url), 'utf8');
+    assert.doesNotMatch(html, /@media\s*\(min-width:\s*1024px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
+    assert.match(html, /@media\s*\(min-width:\s*1201px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
+  }
+});
+
+test('exposes an accessible hamburger drawer contract', () => {
+  assert.match(shellSource, /data-shell-drawer-open[^>]*aria-label="Open navigation menu"[^>]*aria-controls="nexora-sidebar"[^>]*aria-expanded="false"/);
+  assert.match(shellSource, /sidebar\.id\s*=\s*'nexora-sidebar'/);
+  assert.match(shellSource, /opener\.setAttribute\('aria-expanded', open \? 'true' : 'false'\)/);
+  assert.match(shellSource, /event\.key === 'Escape'[\s\S]*?setDrawer\(false\)/);
 });

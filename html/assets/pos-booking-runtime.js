@@ -152,6 +152,16 @@ var DEFAULT_MAIN_TAB = 'booking';
       document.querySelectorAll('[data-booking-sub-panel]').forEach(function(panel) {
         panel.classList.toggle('is-active', panel.dataset.bookingSubPanel === target);
       });
+
+      var workspace = document.querySelector('[data-booking-appointment-workspace]');
+      if (workspace) workspace.hidden = target === 'team';
+      if (workspace) workspace.dataset.bookingLayout = target === 'calendar' ? 'calendar' : 'appointments';
+      var appointmentPanel = document.querySelector('[data-booking-appointment-panel]');
+      if (appointmentPanel) appointmentPanel.hidden = target !== 'calendar';
+      if (target === 'calendar') {
+        initBookingCalendar();
+        renderBookingCalendar();
+      }
     }
 
     function updateBookingKpis() {
@@ -1185,13 +1195,6 @@ var DEFAULT_MAIN_TAB = 'booking';
     }
 
     function openBookingNewAppointment() {
-      var panel = document.getElementById('booking-subpanel-today');
-      var nextMode = panel && panel.dataset.bookingViewMode ? panel.dataset.bookingViewMode : 'table';
-      if (nextMode === 'calendar') {
-        closeBookingCreateModal();
-        openBookingAppointmentPanelForNew(null, null, 'unassigned');
-        return;
-      }
       closeBookingAppointmentPanel();
       openBookingCreateModal(null, null, 'unassigned');
     }
@@ -1466,10 +1469,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       var panel = document.getElementById('booking-subpanel-today');
       if (!panel) return;
 
-      var nextMode = mode === 'card' || mode === 'calendar' ? mode : 'table';
-      panel.dataset.bookingViewMode = nextMode;
-      var appointmentLayout = panel.querySelector('.booking-appointment-layout');
-      if (appointmentLayout) appointmentLayout.dataset.bookingViewMode = nextMode;
+      var nextMode = mode === 'card' ? 'card' : 'table';
 
       panel.querySelectorAll('[data-booking-view-panel]').forEach(function(viewPanel) {
         viewPanel.hidden = viewPanel.dataset.bookingViewPanel !== nextMode;
@@ -1482,9 +1482,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       });
 
       var statusChips = panel.querySelector('[data-booking-status-chips]');
-      if (statusChips) statusChips.hidden = nextMode === 'calendar';
-
-      if (nextMode === 'calendar') { initBookingCalendar(); renderBookingCalendar(); }
+      if (statusChips) statusChips.hidden = false;
     }
 
     function findBookingItemById(id) {
@@ -1603,7 +1601,7 @@ function getBookingCardCallStart(item) {
 
     function initBookingViewMode() {
       renderBookingCards();
-      setBookingViewMode('calendar');
+      setBookingViewMode('table');
     }
 
     function setBookingStatus(item, status) {
@@ -2775,12 +2773,19 @@ function getBookingCardCallStart(item) {
       });
     });
 
+    var bookingAppointmentsAdd = document.querySelector('[data-booking-appointments-add]');
+    if (bookingAppointmentsAdd) bookingAppointmentsAdd.addEventListener('click', function() {
+      openBookingNewAppointment();
+    });
+
     var bookingCalendarPrev = document.querySelector('[data-booking-calendar-prev]');
     var bookingCalendarNext = document.querySelector('[data-booking-calendar-next]');
     var bookingCalendarToday = document.querySelector('[data-booking-calendar-today]');
     var bookingCalendarAdd = document.querySelector('[data-booking-calendar-add]');
     if (bookingCalendarAdd) bookingCalendarAdd.addEventListener('click', function() {
-      openBookingNewAppointment();
+      closeBookingCreateModal();
+      activateBookingSubTab('calendar');
+      openBookingAppointmentPanelForNew(null, null, 'unassigned');
     });
     if (bookingCalendarPrev) bookingCalendarPrev.addEventListener('click', function() {
       var previous = new Date(bookingCalendarDate + 'T12:00:00'); previous.setDate(previous.getDate() - 1);

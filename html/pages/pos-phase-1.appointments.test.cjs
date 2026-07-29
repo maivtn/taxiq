@@ -17,11 +17,22 @@ test('POS exposes Booking instead of the legacy Appointments tab', () => {
   assert.doesNotMatch(source, /data-pos-panel="appointments"/);
 });
 
+test('POS loads the shared shell stylesheet after workspace overrides', () => {
+  const bookingCssIndex = html.indexOf('../assets/pos-booking.css');
+  const shellCssIndex = html.indexOf('../assets/nexora-shell.css');
+
+  assert.ok(bookingCssIndex >= 0, 'POS Booking stylesheet should be present');
+  assert.ok(shellCssIndex > bookingCssIndex, 'shared shell stylesheet must load last');
+  assert.doesNotMatch(css, /@media\s*\(min-width:\s*1024px\)[\s\S]{0,300}\.app-area/);
+  assert.match(css, /@media\s*\(min-width:\s*1201px\)[\s\S]{0,300}\.app-area/);
+});
+
 test('POS Booking exposes the full Booking Book workspace contract', () => {
   for (const hook of [
     'data-booking-legacy-appointments',
     'data-booking-table',
-    'data-booking-view-target="calendar"',
+    'data-booking-subtab-target="calendar"',
+    'id="booking-subpanel-calendar"',
     'data-booking-filter-toggle="booking"',
     'data-booking-appointment-panel',
     'data-booking-create-modal',
@@ -29,6 +40,31 @@ test('POS Booking exposes the full Booking Book workspace contract', () => {
     'data-booking-action="detail"',
     'data-booking-action="send-sms"'
   ]) assert.match(source, new RegExp(hook));
+});
+
+test('POS Booking keeps Calendar as a subtab and Table/Card as the Appointments modes', () => {
+  assert.match(source, /data-booking-subtab-target="today"[^>]*aria-controls="booking-subpanel-today"/);
+  assert.match(source, /data-booking-subtab-target="calendar"[^>]*aria-controls="booking-subpanel-calendar"/);
+  assert.doesNotMatch(source, /data-booking-subtab-target="team"/);
+  assert.match(source, /id="booking-subpanel-calendar" data-booking-sub-panel="calendar"/);
+  assert.match(source, /data-booking-view-target="table"/);
+  assert.match(source, /data-booking-view-target="card"/);
+  assert.doesNotMatch(source, /data-booking-view-target="calendar"/);
+  assert.doesNotMatch(source, /data-booking-view-panel="calendar"/);
+  assert.match(source, /data-booking-appointment-panel[^>]*hidden/);
+});
+
+test('POS Booking starts in Appointments Table mode and opens Calendar on its subtab', () => {
+  assert.match(runtime, /function activateBookingSubTab\([\s\S]*target === 'calendar'[\s\S]*initBookingCalendar\(\)/);
+  assert.match(runtime, /function initBookingViewMode\([\s\S]*setBookingViewMode\('table'\)/);
+  assert.doesNotMatch(runtime, /setBookingViewMode\('calendar'\)/);
+  assert.match(runtime, /appointmentPanel\.hidden = target !== 'calendar'/);
+});
+
+test('POS Booking gives Appointments the full workspace width and reserves a Calendar detail rail', () => {
+  assert.match(css, /\.booking-appointment-layout \{[\s\S]*grid-template-columns:\s*1fr/);
+  assert.match(css, /\.booking-appointment-layout\[data-booking-layout="calendar"\] \{[\s\S]*grid-template-columns:\s*minmax\(0, 1fr\) 320px/);
+  assert.match(runtime, /workspace\.dataset\.bookingLayout = target === 'calendar' \? 'calendar' : 'appointments'/);
 });
 
 test('POS Booking CSS closes shared rules before the Booking workspace rules', () => {

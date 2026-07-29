@@ -53,7 +53,7 @@
 
     /* ── content ── */
     .content { min-height: calc(100vh - 64px); padding: 16px 16px 96px; }
-    @media (min-width: 1024px) { .content { padding: 28px 28px 96px; } }
+    @media (min-width: 1201px) { .content { padding: 28px 28px 96px; } }
 
     .page-heading { margin-bottom: 20px; }
     .page-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -392,8 +392,8 @@
       .sched-opt { padding: 10px 4px; font-size: 11px; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/pos-booking.css">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
 <body>
   <div class="shell">
@@ -694,21 +694,26 @@
                     </span>
                     <span>Appointments</span>
                   </button>
-                  <button class="booking-subtab" type="button" role="tab" aria-selected="false" data-booking-subtab-target="team" aria-controls="booking-subpanel-team">
+                  <button class="booking-subtab" type="button" role="tab" aria-selected="false" data-booking-subtab-target="calendar" aria-controls="booking-subpanel-calendar">
                     <span class="booking-subtab-icon">
                       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        <path d="M8 2v4"></path>
+                        <path d="M16 2v4"></path>
+                        <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                        <path d="M3 10h18"></path>
+                        <path d="M8 14h.01"></path>
+                        <path d="M12 14h.01"></path>
+                        <path d="M16 14h.01"></path>
                       </svg>
                     </span>
-                    <span>Team</span>
+                    <span>Calendar</span>
                   </button>
                 </div>
                 <div class="sync-note">Every channel lands in one book</div>
               </div>
 
+              <div class="booking-appointment-layout" data-booking-appointment-workspace data-booking-layout="appointments">
+                <div class="booking-appointment-main">
               <div class="booking-sub-panel is-active" id="booking-subpanel-today" data-booking-sub-panel="today">
                 <div class="overview-kpis">
                   <article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-electric);">
@@ -759,8 +764,6 @@
 
                 </div>
 
-                <div class="booking-appointment-layout" data-booking-view-mode="calendar">
-                  <div class="booking-appointment-main">
                     <div class="booking-grid">
                       <article class="overview-card overview-card-pad">
                     <div class="booking-daybar">
@@ -776,10 +779,10 @@
                         <span>Appointments Overview</span>
                       </div>
                       <div class="booking-daybar-actions">
+                        <button class="booking-primary-button booking-overview-add-button" type="button" data-booking-appointments-add><i class="bi bi-plus-lg" aria-hidden="true"></i>New appointment</button>
                         <div class="booking-view-switch" role="group" aria-label="Booking view mode">
                           <button class="booking-view-button" type="button" data-booking-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
                           <button class="booking-view-button" type="button" data-booking-view-target="card" aria-pressed="false"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
-                          <button class="booking-view-button" type="button" data-booking-view-target="calendar" aria-pressed="false"><i class="bi bi-calendar3" aria-hidden="true"></i>Calendar</button>
                         </div>
                         <div class="booking-filter-wrap">
                           <button class="booking-secondary-button booking-filter-toggle" type="button" data-booking-filter-toggle="booking" aria-controls="booking-filter-menu" aria-expanded="false"><i class="bi bi-funnel" aria-hidden="true"></i>Filter</button>
@@ -812,7 +815,6 @@
 
                           </div>
                         </div>
-                        <button class="booking-primary-button booking-overview-add-button" type="button" data-booking-calendar-add><i class="bi bi-plus-lg" aria-hidden="true"></i>New appointment</button>
                       </div>
                     </div>
 
@@ -1076,7 +1078,15 @@
                     <div class="booking-card-panel" data-booking-view-panel="card" hidden>
                       <div class="booking-card-list" data-booking-card-list></div>
                     </div>
-                    <div class="booking-calendar-panel" data-booking-view-panel="calendar" hidden>
+                    <div class="booking-empty" data-booking-empty hidden>No matching bookings found.</div>
+                      </article>
+                    </div>
+                  </div>
+
+              <div class="booking-sub-panel" id="booking-subpanel-calendar" data-booking-sub-panel="calendar">
+                <div class="booking-grid">
+                  <article class="overview-card overview-card-pad">
+                    <div class="booking-calendar-panel">
                       <div class="booking-team-calendar">
                         <div class="booking-calendar-head">
                           <div>
@@ -1084,6 +1094,7 @@
                             <div class="booking-calendar-subtitle">9:00 AM – 7:00 PM · appointments grouped by technician</div>
                           </div>
                           <div class="booking-calendar-head-actions">
+                            <button class="booking-primary-button" type="button" data-booking-calendar-add><i class="bi bi-plus-lg" aria-hidden="true"></i>New appointment</button>
                             <div class="booking-calendar-nav" aria-label="Calendar date controls">
                               <button class="booking-mini-button" type="button" data-booking-calendar-prev aria-label="Previous day"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
                               <span class="booking-calendar-nav-label" data-booking-calendar-date></span>
@@ -1095,11 +1106,11 @@
                         <div class="booking-calendar-scroll"><div data-booking-team-calendar aria-label="Team booking calendar"></div></div>
                       </div>
                     </div>
-                    <div class="booking-empty" data-booking-empty hidden>No matching bookings found.</div>
-                      </article>
-                    </div>
-                  </div>
-                  <aside class="booking-appointment-panel overview-card" data-booking-appointment-panel aria-label="Appointment details">
+                  </article>
+                </div>
+              </div>
+                </div>
+                  <aside class="booking-appointment-panel overview-card" data-booking-appointment-panel aria-label="Appointment details" hidden>
                     <div data-booking-panel-state="empty">
                       <i class="bi bi-calendar2-week" aria-hidden="true"></i>
                       <strong>Select an appointment</strong>
@@ -1241,8 +1252,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-
               <div class="booking-sub-panel" id="booking-subpanel-team" data-booking-sub-panel="team">
                 <div class="tech-intro">
                   <div class="tech-intro-text">A shared technician profile powers customer SMS, QR tips, Reviews and Rewards.</div>

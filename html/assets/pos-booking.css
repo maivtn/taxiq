@@ -462,14 +462,14 @@
     }
 
     .booking-appointment-layout {
-      display: block;
-    }
-
-    .booking-appointment-layout[data-booking-view-mode="calendar"] {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
+      grid-template-columns: 1fr;
       gap: 14px;
       align-items: start;
+    }
+
+    .booking-appointment-layout[data-booking-layout="calendar"] {
+      grid-template-columns: minmax(0, 1fr) 320px;
     }
 
     .booking-appointment-main,
@@ -485,10 +485,6 @@
       background: var(--nexora-surface-muted);
       padding: 18px;
       box-shadow: none;
-    }
-
-    .booking-appointment-layout:not([data-booking-view-mode="calendar"]) .booking-appointment-panel {
-      display: none;
     }
 
     .booking-appointment-panel [data-booking-panel-state="empty"] {
@@ -519,7 +515,7 @@
     }
 
     @media (max-width: 1120px) {
-      .booking-appointment-layout[data-booking-view-mode="calendar"] { grid-template-columns: 1fr; }
+      .booking-appointment-layout { grid-template-columns: 1fr; }
       .booking-appointment-panel { position: static; }
     }
 
@@ -3220,7 +3216,7 @@
       }
     }
 
-    @media (min-width: 1024px) {
+    @media (min-width: 1201px) {
       .sidebar {
         display: flex;
       }
