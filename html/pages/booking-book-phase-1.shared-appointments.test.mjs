@@ -167,6 +167,11 @@ test('Booking Book uses a responsive modal detail panel below 1400px', () => {
   assert.match(SOURCE, /data-booking-panel-presentation="modal"/);
   assert.match(SOURCE, /\.booking-appointment-main\s*\{\s*overflow-x:\s*auto/);
   assert.match(SOURCE, /data-booking-panel-action="close"[^>]*aria-label="Close appointment details"/);
+  const mobileModalBlock = SOURCE.match(/@media\s*\(max-width:\s*600px\)[\s\S]*?\.booking-appointment-panel\[data-booking-panel-presentation="modal"\]\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
+  assert.match(mobileModalBlock, /top:\s*50%;/);
+  assert.match(mobileModalBlock, /left:\s*50%;/);
+  assert.match(mobileModalBlock, /transform:\s*translate\(-50%,\s*-50%\)/);
+  assert.doesNotMatch(mobileModalBlock, /bottom:\s*0;/);
 });
 
 test('Booking Book gives Appointments the full workspace width and reserves a rail for Calendar', () => {

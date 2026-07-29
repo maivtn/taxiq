@@ -76,6 +76,11 @@ test('turns the appointment panel into a responsive modal below 1400px', () => {
   assert.match(css, /\.booking-appointment-backdrop\s*\{/);
   assert.match(css, /\.booking-appointment-main\s*\{\s*overflow-x:\s*auto/);
   assert.match(source, /data-booking-panel-action="close"[^>]*aria-label="Close appointment details"/);
+  const mobileModalBlock = css.match(/@media\s*\(max-width:\s*600px\)[\s\S]*?\.booking-appointment-panel\[data-booking-panel-presentation="modal"\]\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
+  assert.match(mobileModalBlock, /top:\s*50%;/);
+  assert.match(mobileModalBlock, /left:\s*50%;/);
+  assert.match(mobileModalBlock, /transform:\s*translate\(-50%,\s*-50%\)/);
+  assert.doesNotMatch(mobileModalBlock, /bottom:\s*0;/);
 });
 
 test('lays out overview KPIs with flex wrapping instead of CSS grid', () => {

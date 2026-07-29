@@ -4357,14 +4357,14 @@
       }
 
       .booking-appointment-panel[data-booking-panel-presentation="modal"] {
-        top: auto;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        max-height: 94dvh;
-        border-radius: 16px 16px 0 0;
-        transform: none;
+        top: 50%;
+        right: auto;
+        bottom: auto;
+        left: 50%;
+        width: min(calc(100vw - 24px), 720px);
+        max-height: calc(100dvh - 24px);
+        border-radius: 16px;
+        transform: translate(-50%, -50%);
       }
     }
 
