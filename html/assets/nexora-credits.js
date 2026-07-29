@@ -7,6 +7,7 @@
   const SMS_PLAN_ALLOWANCE = 1000;
   const VOICE_USED_MINUTES = 620;
   const VOICE_TOTAL_MINUTES = 1000;
+  const VOICE_LOW_BALANCE_THRESHOLD = 200;
 
   const CREDITS_HISTORY = [
     { product: 'SMS', activity: 'All customers campaign', amount: '−1,284 SMS', date: 'Jul 28, 2026', balance: '847 SMS' },
@@ -196,6 +197,15 @@
     return formattedPercent;
   }
 
+  function renderVoiceWarning(remainingMinutes) {
+    const warning = document.querySelector('[data-credits-voice-warning]');
+    if (!warning) return;
+
+    const normalizedRemaining = Math.max(0, Number(remainingMinutes) || 0);
+    warning.hidden = normalizedRemaining > VOICE_LOW_BALANCE_THRESHOLD;
+    setText('[data-credits-voice-warning-remaining]', formatNumber(normalizedRemaining));
+  }
+
   function readSmsTopupTotal(wallet) {
     const purchasedCredits = readSmsCreditHistory().reduce(function (total, item) {
       const match = String(item.amount || '').match(/\+\s*([\d,]+)/);
@@ -266,9 +276,11 @@
     const smsTopupBalanceTarget = document.querySelector('[data-credits-sms-topup-balance]');
     const smsTopupUsage = document.querySelector('[data-credits-sms-topup-usage]');
 
+    const voiceRemaining = Math.max(0, VOICE_TOTAL_MINUTES - VOICE_USED_MINUTES);
     setText('[data-credits-voice-used]', formatNumber(VOICE_USED_MINUTES));
     setText('[data-credits-voice-total]', formatNumber(VOICE_TOTAL_MINUTES));
-    setText('[data-credits-voice-remaining]', formatNumber(Math.max(0, VOICE_TOTAL_MINUTES - VOICE_USED_MINUTES)));
+    setText('[data-credits-voice-remaining]', formatNumber(voiceRemaining));
+    renderVoiceWarning(voiceRemaining);
     setProgress('[data-credits-voice-progress]', '[data-credits-voice-progress-track]', VOICE_USED_MINUTES, VOICE_TOTAL_MINUTES);
 
     setText('[data-credits-sms-plan-used]', formatNumber(smsPlanUsed));

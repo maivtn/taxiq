@@ -231,6 +231,8 @@ test('renders monthly usage percentages and rollover SMS usage from the wallet',
     '[data-credits-sms-plan-used]',
     '[data-credits-sms-plan-total]',
     '[data-credits-voice-remaining]',
+    '[data-credits-voice-warning]',
+    '[data-credits-voice-warning-remaining]',
     '[data-credits-sms-plan-remaining]',
     '[data-credits-sms-plan-progress]',
     '[data-credits-sms-plan-progress-track]',
@@ -260,6 +262,8 @@ test('renders monthly usage percentages and rollover SMS usage from the wallet',
   assert.equal(targets.get('[data-credits-voice-used]').textContent, '620');
   assert.equal(targets.get('[data-credits-voice-total]').textContent, '1,000');
   assert.equal(targets.get('[data-credits-voice-remaining]').textContent, '380');
+  assert.equal(targets.get('[data-credits-voice-warning]').hidden, true);
+  assert.equal(targets.get('[data-credits-voice-warning-remaining]').textContent, '380');
   assert.equal(targets.get('[data-credits-voice-progress]').style.width, '62%');
   assert.equal(targets.get('[data-credits-sms-plan-used]').textContent, '1,000');
   assert.equal(targets.get('[data-credits-sms-plan-total]').textContent, '1,000');
@@ -339,6 +343,30 @@ test('renders both credit balances, progress indicators, and usage history', () 
   assert.match(css, /\.credits-history-scroll\s*\{/);
   assert.match(css, /\.credits-amount-positive\s*\{/);
   assert.match(css, /@media\s*\(max-width:\s*760px\)/);
+});
+
+test('adds a conditional Voice warning card above Usage history', () => {
+  const html = source();
+  const packages = readFileSync(PACKAGES_URL, 'utf8');
+  const runtime = readFileSync(JS_URL, 'utf8');
+  const css = readFileSync(CSS_URL, 'utf8');
+
+  for (const page of [html, packages]) {
+    const warningIndex = page.indexOf('class="credits-voice-warning"');
+    const historyIndex = page.indexOf('class="credits-history-section"');
+    assert.ok(warningIndex >= 0, 'Voice warning card must exist');
+    assert.ok(warningIndex < historyIndex, 'Voice warning card must appear above Usage history');
+    assert.match(page, /data-credits-voice-warning[^>]*role="status"[^>]*hidden/);
+    assert.match(page, /AI Voice sắp hết/);
+    assert.match(page, /tắt chế độ AI Voice hoặc nâng cấp gói/);
+    assert.match(page, /data-credits-voice-warning-remaining/);
+  }
+
+  assert.match(runtime, /const VOICE_LOW_BALANCE_THRESHOLD\s*=\s*200/);
+  assert.match(runtime, /function renderVoiceWarning\(/);
+  assert.match(runtime, /renderVoiceWarning\(voiceRemaining\)/);
+  assert.match(css, /\.credits-voice-warning\s*\{[\s\S]*?display:\s*flex/);
+  assert.match(css, /\.credits-voice-warning\[hidden\]\s*\{\s*display:\s*none/);
 });
 
 test('filters usage history by All, SMS, and Voice products', () => {

@@ -73,6 +73,24 @@
 .credits-card-plan { border-color: #dbe8ff; }
 .credits-card-topup { border-color: #d8eee2; }
 
+.credits-voice-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 18px;
+  border: 1px solid #f0d18a;
+  border-radius: 14px;
+  background: #fff9e8;
+  padding: 13px 15px;
+  color: #76520b;
+}
+
+.credits-voice-warning[hidden] { display: none; }
+.credits-voice-warning-icon { display: grid; flex: 0 0 28px; width: 28px; height: 28px; place-items: center; border-radius: 8px; background: #ffe9a8; color: #a66c00; }
+.credits-voice-warning-icon svg { width: 16px; height: 16px; }
+.credits-voice-warning strong { display: block; color: #624403; font-size: 13px; }
+.credits-voice-warning p { margin: 3px 0 0; color: #8a681e; font-size: 11px; line-height: 1.45; }
+
 .credits-card-head {
   display: flex;
   align-items: center;
@@ -348,6 +366,11 @@
 @media (max-width: 520px) {
   .credits-card { padding: 10px; }
   .credits-history-section { padding: 14px; }
+  .credits-voice-warning { gap: 8px; margin-top: 12px; padding: 10px; }
+  .credits-voice-warning-icon { flex-basis: 24px; width: 24px; height: 24px; border-radius: 7px; }
+  .credits-voice-warning-icon svg { width: 14px; height: 14px; }
+  .credits-voice-warning strong { font-size: 11px; }
+  .credits-voice-warning p { font-size: 9px; }
   .credits-card-head { gap: 5px; }
   .credits-card-head h2 { font-size: 14px; }
   .credits-plan-subtitle,
