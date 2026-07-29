@@ -48,7 +48,9 @@ test('adds the package heading and ordered management tabs', () => {
   assert.match(html, /data-credits-card="sms-topup"/);
   assert.match(html, /data-credits-history/);
   assert.match(html, /Purchase History/);
-  assert.match(html, /<th scope="col">Usage<\/th>/);
+  assert.match(html, /<th scope="col">Used<\/th>/);
+  assert.doesNotMatch(html, /<th scope="col">Duration<\/th>/);
+  assert.doesNotMatch(html, /<th scope="col">Usage<\/th>/);
   assert.doesNotMatch(html, /<th scope="col">Amount<\/th>/);
   assert.match(html, /SMS Credits/);
   assert.equal((html.match(/class="package-tab is-active"/g) || []).length, 1);
@@ -86,6 +88,8 @@ test('groups purchased Voice and SMS credits and keeps purchase actions outside 
   assert.doesNotMatch(creditsActions, /href="(?:booking-book-phase-1|nexora-packages)\.html/);
   assert.doesNotMatch(creditsActions, /disabled|aria-disabled/);
   assert.match(creditsWarning, /data-credits-voice-warning/);
+  assert.doesNotMatch(html, /Hãy tắt chế độ AI Voice/);
+  assert.match(html, /Nâng cấp gói để tránh gián đoạn\./);
   assert.ok(html.indexOf('class="credits-voice-warning"') < html.indexOf('class="credits-actions"'), 'voice warning should be above purchase actions');
   assert.match(creditsRuntime, /VOICE_TOPUP_STARTING_CREDITS/);
   assert.match(creditsRuntime, /data-credits-voice-topup-balance/);
