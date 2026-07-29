@@ -134,6 +134,12 @@ test('Booking Book hides the appointment detail panel outside the Calendar subta
   assert.match(SOURCE, /function activateBookingSubTab\([\s\S]*var appointmentPanel = document\.querySelector\('\[data-booking-appointment-panel\]'\)[\s\S]*appointmentPanel\.hidden = target !== 'calendar'/);
 });
 
+test('Booking Book gives Appointments the full workspace width and reserves a rail for Calendar', () => {
+  assert.match(SOURCE, /\.booking-appointment-layout \{[\s\S]*grid-template-columns: 1fr/);
+  assert.match(SOURCE, /\.booking-appointment-layout\[data-booking-layout="calendar"\] \{[\s\S]*grid-template-columns: minmax\(0, 1fr\) 320px/);
+  assert.match(SOURCE, /function activateBookingSubTab\([\s\S]*workspace\.dataset\.bookingLayout = target === 'calendar' \? 'calendar' : 'appointments'/);
+});
+
 test('Booking Book keeps Table and Card modes inside Appointments', () => {
   assert.match(SOURCE, /data-booking-view-target="table"/);
   assert.match(SOURCE, /data-booking-view-target="card"/);
