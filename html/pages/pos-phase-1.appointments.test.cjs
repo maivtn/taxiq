@@ -107,6 +107,18 @@ test('POS Booking renders a shared DayPilot resource calendar', () => {
   assert.match(source, /data-booking-team-calendar/);
 });
 
+test('POS keeps create actions at the right edge of their action rows', () => {
+  const bookingPanel = html.match(/id="booking-subpanel-today"[\s\S]*?id="booking-subpanel-team"/)?.[0] || '';
+  const addAppointmentIndex = bookingPanel.indexOf('data-booking-calendar-add');
+  const filterIndex = bookingPanel.indexOf('data-booking-filter-toggle="booking"');
+  const staffRuntime = source.match(/function mgStaffHtml\(\)[\s\S]*?function mgRolesHtml\(\)/)?.[0] || '';
+  const createAccountIndex = staffRuntime.indexOf('data-mg-stadd');
+  const staffHintIndex = staffRuntime.indexOf('Techs (with pay and turns)');
+
+  assert.ok(addAppointmentIndex > filterIndex, 'POS New appointment should be the rightmost booking action');
+  assert.ok(createAccountIndex > staffHintIndex, 'POS Create account should be the rightmost staff action');
+});
+
 test('POS has no independent technician or service catalog literals', () => {
   assert.doesNotMatch(source, /var TECHS = \[\s*{/);
   assert.doesNotMatch(source, /var MENU = \[\s*{/);

@@ -391,14 +391,16 @@ test('shows the default +1 country code before New appointment phone', () => {
 
 test('keeps separate New appointment actions for Appointments and Calendar', () => {
   const html = source();
-
-  assert.match(
-    html,
-    /<div class="booking-daybar-actions">\s*<button class="booking-primary-button booking-overview-add-button"[^>]*data-booking-appointments-add[^>]*>[^<]*<i class="bi bi-plus-lg"[^>]*><\/i>New appointment<\/button>\s*<div class="booking-view-switch"/
-  );
   const appointmentsPanel = html.match(/id="booking-subpanel-today"[\s\S]*?id="booking-subpanel-calendar"/)?.[0] || '';
+  const appointmentsAddIndex = appointmentsPanel.indexOf('data-booking-appointments-add');
+  const appointmentsFilterIndex = appointmentsPanel.indexOf('data-booking-filter-toggle="booking"');
+  const calendarPanel = html.match(/id="booking-subpanel-calendar"[\s\S]*?id="booking-subpanel-team"/)?.[0] || '';
+  const calendarAddIndex = calendarPanel.indexOf('data-booking-calendar-add');
+  const calendarNavIndex = calendarPanel.indexOf('data-booking-calendar-prev');
+
+  assert.ok(appointmentsAddIndex > appointmentsFilterIndex, 'Appointments New appointment should be the rightmost action');
+  assert.ok(calendarAddIndex > calendarNavIndex, 'Calendar New appointment should be the rightmost action');
   assert.doesNotMatch(appointmentsPanel, /data-booking-calendar-add/);
-  assert.match(html, /booking-calendar-head-actions">\s*<button[^>]*data-booking-calendar-add/);
 });
 
 test('shows a manually closable success alert after saving an appointment', () => {
