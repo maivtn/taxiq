@@ -43,6 +43,7 @@ test('adds the package heading and ordered management tabs', () => {
   assert.doesNotMatch(html, /<span>Voice \+ SMS<\/span>/);
   assert.match(html, /<span>Credit Usage<\/span>/);
   assert.match(html, /data-package-panel="credits"[\s\S]*?data-credits-page/);
+  assert.doesNotMatch(html, /<div class="credits-heading">/);
   assert.match(html, /data-credits-card="sms"/);
   assert.match(html, /data-credits-card="voice"/);
   assert.match(html, /data-credits-history/);
@@ -167,9 +168,12 @@ test('copies the Booking Book Plans content into the Voice + SMS panel', () => {
 test('provides the owned-package overview panel and countdown data contract', () => {
   const html = source();
   const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
   assert.match(html, /<script src="\.\.\/assets\/nexora-packages\.js"><\/script>/);
   assert.match(html, /data-package-panel="overview"/);
   assert.match(html, /data-package-overview/);
+  assert.doesNotMatch(runtime, /package-overview-head/);
+  assert.doesNotMatch(css, /\.package-overview-head/);
   assert.match(runtime, /OWNED_PACKAGES/);
   assert.match(runtime, /activatedAt/);
   assert.match(runtime, /expiresAt/);
@@ -223,12 +227,14 @@ test('provides the package purchase history panel and transaction data contract'
   assert.match(runtime, /amount/);
   assert.match(runtime, /status: 'paid'/);
   assert.match(runtime, /function renderPurchaseHistory/);
+  assert.doesNotMatch(runtime, /package-history-head/);
   assert.match(runtime, /<th scope="col">Term<\/th>/);
   assert.match(runtime, /<th scope="col">Valid Until<\/th>/);
   assert.match(runtime, /item\.term/);
   assert.match(runtime, /item\.validUntil/);
   assert.match(runtime, />Paid</);
   assert.match(css, /\.package-history/);
+  assert.doesNotMatch(css, /\.package-history-head/);
   assert.match(css, /\.package-history-table/);
   assert.match(css, /\.package-history-term/);
   assert.match(css, /\.package-history-valid-until/);

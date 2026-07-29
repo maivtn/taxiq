@@ -418,14 +418,6 @@ const PACKAGE_PLAN_DETAILS = {
   function renderOverview() {
     if (!overview) return;
     overview.innerHTML = `
-      <div class="package-overview-head">
-        <div>
-          <span class="package-overview-kicker">Owned packages</span>
-          <h2>Active packages</h2>
-          <p>Track the plans currently active for this salon.</p>
-        </div>
-        <span class="package-overview-count">${OWNED_PACKAGES.length} active</span>
-      </div>
       <div class="package-overview-grid">
         ${OWNED_PACKAGES.map((item) => `
           <article class="package-owned-card" data-owned-package="${escapeHTML(item.id)}">
@@ -470,14 +462,6 @@ const PACKAGE_PLAN_DETAILS = {
   function renderPurchaseHistory() {
     if (!purchaseHistory) return;
     purchaseHistory.innerHTML = `
-      <div class="package-history-head">
-        <div>
-          <span class="package-overview-kicker">Billing records</span>
-          <h2>Purchase history</h2>
-          <p>Review package purchases and payment status for this salon.</p>
-        </div>
-        <span class="package-overview-count">${PURCHASE_HISTORY.length} purchases</span>
-      </div>
       <div class="package-history-table-wrap">
         <table class="package-history-table">
           <caption class="visually-hidden">Package purchase history</caption>

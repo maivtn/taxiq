@@ -188,40 +188,12 @@
   gap: 0;
 }
 
-.package-overview-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
-  border: 1px solid var(--nexora-border);
-  border-radius: 14px;
-  background: linear-gradient(135deg, #ffffff, #f4f6ff);
-  padding: 20px 22px;
-  box-shadow: var(--nexora-card-shadow);
-}
-
 .package-overview-kicker {
   color: var(--nexora-brand);
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-.package-overview-head h2 {
-  margin: 6px 0 0;
-  color: var(--nexora-text);
-  font-size: 20px;
-  font-weight: 900;
-  line-height: 1.2;
-}
-
-.package-overview-head p {
-  margin: 6px 0 0;
-  color: var(--nexora-muted);
-  font-size: 13px;
-  line-height: 1.5;
 }
 
 .package-overview-count {
@@ -452,34 +424,6 @@
   height: 15px;
   flex-shrink: 0;
   color: #00a96b;
-}
-
-.package-history-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
-  border: 1px solid var(--nexora-border);
-  border-radius: 14px;
-  background: linear-gradient(135deg, #ffffff, #f4f6ff);
-  padding: 20px 22px;
-  box-shadow: var(--nexora-card-shadow);
-}
-
-.package-history-head h2 {
-  margin: 6px 0 0;
-  color: var(--nexora-text);
-  font-size: 20px;
-  font-weight: 900;
-  line-height: 1.2;
-}
-
-.package-history-head p {
-  margin: 6px 0 0;
-  color: var(--nexora-muted);
-  font-size: 13px;
-  line-height: 1.5;
 }
 
 .package-history-table-wrap {
@@ -1938,7 +1882,6 @@ body.package-payment-open {
 }
 
 @media (max-width: 640px) {
-  .package-overview-head,
   .package-owned-title-row {
     flex-direction: column;
     align-items: stretch;
@@ -1956,17 +1899,6 @@ body.package-payment-open {
 
   .nexora-plan-card {
     min-height: 0;
-  }
-}
-
-@media (max-width: 767px) {
-  .package-history-head {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .package-history-head .package-overview-count {
-    align-self: flex-start;
   }
 }
 
