@@ -93,6 +93,11 @@ test('POS Booking uses the approved category ticket pickers', () => {
   assert.doesNotMatch(source, /data-booking-panel-field="duration"/);
 });
 
+test('POS Booking labels the appointment time field as Time', () => {
+  assert.match(runtime, /<span class="booking-create-label">Time<\/span><input class="booking-input" type="time"[\s\S]*data-booking-panel-field="time"/);
+  assert.doesNotMatch(runtime, /<span class="booking-create-label">Start time<\/span>/);
+});
+
 test('POS Booking renders a shared DayPilot resource calendar', () => {
   assert.match(source, /@daypilot\/daypilot-lite-javascript@5\.9\.0\/daypilot-javascript\.min\.js/);
   assert.match(source, /new DayPilot\.Calendar/);
