@@ -2755,15 +2755,15 @@
       display: none;
     }
 
-    .settings-service-category-head::after {
-      content: '⌄';
+    .settings-service-category-chevron {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
       color: var(--nexora-subtle);
-      font-size: 14px;
-      font-weight: 900;
       transition: transform .16s ease;
     }
 
-    .settings-service-category:not([open]) .settings-service-category-head::after {
+    .settings-service-category:not([open]) .settings-service-category-chevron {
       transform: rotate(-90deg);
     }
 
@@ -3788,6 +3788,43 @@
       box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.1);
     }
 
+    .trial-input.is-invalid,
+    .trial-select.is-invalid,
+    .trial-input[aria-invalid="true"],
+    .trial-select[aria-invalid="true"] {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    .trial-hours-list .settings-hour-input.is-invalid {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    .trial-file-input {
+      min-height: 46px;
+      padding: 9px 12px;
+      font-size: 12px;
+    }
+
+    .trial-service-price-list {
+      margin-top: 4px;
+      padding-top: 10px;
+      border-top: 1px solid var(--nexora-rule);
+    }
+
+    .trial-file-input::file-selector-button {
+      margin-right: 10px;
+      border: 1px solid rgba(70, 72, 216, 0.2);
+      border-radius: 7px;
+      background: color-mix(in srgb, var(--nexora-brand) 8%, white);
+      padding: 6px 10px;
+      color: var(--nexora-brand);
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
     .trial-note {
       display: inline-flex;
       align-items: center;
@@ -3796,6 +3833,18 @@
       font-size: 10px;
       font-weight: 500;
       line-height: 1.45;
+    }
+
+    .trial-form-error {
+      margin-top: 12px;
+      border: 1px solid rgba(239, 68, 68, 0.24);
+      border-radius: 9px;
+      background: rgba(254, 226, 226, 0.72);
+      padding: 9px 11px;
+      color: #b91c1c;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.4;
     }
 
     .trial-chip-list,
@@ -8129,17 +8178,6 @@
                     </span>
                     <span>Calendar</span>
                   </button>
-                  <button class="booking-subtab" type="button" role="tab" aria-selected="false" data-booking-subtab-target="team" aria-controls="booking-subpanel-team">
-                    <span class="booking-subtab-icon">
-                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                      </svg>
-                    </span>
-                    <span>Team</span>
-                  </button>
                 </div>
                 <div class="sync-note">Every channel lands in one book</div>
               </div>
@@ -9343,6 +9381,16 @@
                   </article>
                 </div>
 
+                <article class="settings-card settings-team-card">
+                  <div class="settings-card-head">
+                    <div>
+                      <div class="settings-card-title"><i class="bi bi-people" aria-hidden="true"></i>Team</div>
+                      <div class="settings-card-sub">Manage technicians, services, schedules, and SMS notifications for your salon.</div>
+                    </div>
+                  </div>
+                  <div data-settings-team-slot></div>
+                </article>
+
                 <div class="settings-two-grid">
                   <article class="settings-card">
                     <div class="settings-card-head">
@@ -9460,12 +9508,16 @@
                   <div class="settings-service-modal-head">
                     <div>
                       <div class="settings-service-modal-title" id="service-modal-title">Add service</div>
-                      <div class="settings-service-modal-sub">Enter the service details to add it to your custom services.</div>
+                      <div class="settings-service-modal-sub">Enter the service details, then choose a category for it.</div>
                     </div>
                     <button class="settings-service-modal-close" type="button" data-service-modal-close aria-label="Close service modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
                   </div>
                   <div class="settings-service-modal-body">
                     <div class="settings-service-modal-grid">
+                      <label class="settings-field settings-service-modal-field-name">
+                        <span class="settings-label">Category</span>
+                        <select class="settings-select" data-service-modal-field="category" aria-label="Service category"></select>
+                      </label>
                       <label class="settings-field settings-service-modal-field-name">
                         <span class="settings-label">Service name</span>
                         <input class="settings-input" type="text" data-service-modal-field="name" placeholder="e.g. Gel-X Extension" autocomplete="off">
@@ -10178,9 +10230,17 @@
 
           <div class="trial-body">
             <div class="trial-grid">
-              <div class="trial-field trial-span-2">
+              <div class="trial-field">
                 <label class="trial-label" for="trial-salon">Salon name <span>*</span></label>
                 <input class="trial-input" id="trial-salon" data-trial-salon type="text" value="Bitcoin Nail Bar" placeholder="Bitcoin Nail Bar">
+              </div>
+
+              <div class="trial-field">
+                <label class="trial-label" for="trial-phone">Salon phone number <span>*</span></label>
+                <div class="phone-input-shell">
+                  <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
+                  <input class="trial-input phone-mask-input" id="trial-phone" data-trial-phone type="tel" value="(346) 802-4906" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
+                </div>
               </div>
 
               <div class="trial-field">
@@ -10189,10 +10249,10 @@
               </div>
 
               <div class="trial-field">
-                <label class="trial-label" for="trial-phone">Phone number <span>*</span></label>
+                <label class="trial-label" for="trial-owner-phone">Owner phone number <span>*</span></label>
                 <div class="phone-input-shell">
-                  <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
-                  <input class="trial-input phone-mask-input" id="trial-phone" data-trial-phone type="tel" value="(346) 802-4906" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
+                  <select class="phone-country-select" aria-label="Owner phone country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
+                  <input class="trial-input phone-mask-input" id="trial-owner-phone" data-trial-owner-phone type="tel" value="(346) 802-4906" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
                 </div>
               </div>
 
@@ -10225,38 +10285,60 @@
                   <button class="trial-chip" type="button" data-trial-chip>Eyelash</button>
                   <button class="trial-chip" type="button" data-trial-chip>Facial</button>
                 </div>
-              </div>
-
-              <div class="trial-field trial-span-2">
-                <div class="trial-label">Open days</div>
-                <div class="trial-day-list">
-                  <button class="trial-day" type="button" data-trial-day>Sun</button>
-                  <button class="trial-day is-active" type="button" data-trial-day>Mon</button>
-                  <button class="trial-day is-active" type="button" data-trial-day>Tue</button>
-                  <button class="trial-day is-active" type="button" data-trial-day>Wed</button>
-                  <button class="trial-day is-active" type="button" data-trial-day>Thu</button>
-                  <button class="trial-day is-active" type="button" data-trial-day>Fri</button>
-                  <button class="trial-day is-active" type="button" data-trial-day>Sat</button>
+                <div class="trial-field trial-service-price-list">
+                  <label class="trial-label" for="trial-price-list">Price list <span class="trial-optional">(optional)</span></label>
+                  <input class="trial-input trial-file-input" id="trial-price-list" data-trial-price-list type="file" accept=".pdf,.png,.jpg,.jpeg,.csv,.xlsx,.xls,application/pdf,image/png,image/jpeg,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+                  <div class="trial-note" data-trial-price-list-name><i class="bi bi-paperclip" aria-hidden="true"></i> <span data-trial-price-list-label>No file selected · PDF, image, or spreadsheet up to 10 MB</span></div>
                 </div>
               </div>
 
               <div class="trial-field trial-span-2">
-                <div class="trial-label">Service hours</div>
-                <div class="trial-time-row">
-                  <select class="trial-select" aria-label="Opening time">
-                    <option>8:00 AM</option>
-                    <option>9:00 AM</option>
-                    <option selected>9:30 AM</option>
-                    <option>10:00 AM</option>
-                  </select>
-                  <span class="trial-time-separator">→</span>
-                  <select class="trial-select" aria-label="Closing time">
-                    <option>6:00 PM</option>
-                    <option selected>7:00 PM</option>
-                    <option>8:00 PM</option>
-                    <option>9:00 PM</option>
-                  </select>
+                <div class="trial-label">Working hours</div>
+                <div class="settings-hours trial-hours-list" data-trial-hours>
+                  <div class="settings-hour-row" data-trial-hour-row="mon">
+                    <label class="settings-hour-toggle"><input type="checkbox" checked data-trial-hour-toggle><span>Mon</span></label>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="7:00 AM" data-trial-hour-start aria-label="Monday open time"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                    <span class="settings-hour-to">to</span>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="9:00 PM" data-trial-hour-end aria-label="Monday close time"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                  </div>
+                  <div class="settings-hour-row" data-trial-hour-row="tue">
+                    <label class="settings-hour-toggle"><input type="checkbox" checked data-trial-hour-toggle><span>Tue</span></label>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="7:00 AM" data-trial-hour-start aria-label="Tuesday open time"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                    <span class="settings-hour-to">to</span>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="9:00 PM" data-trial-hour-end aria-label="Tuesday close time"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                  </div>
+                  <div class="settings-hour-row" data-trial-hour-row="wed">
+                    <label class="settings-hour-toggle"><input type="checkbox" checked data-trial-hour-toggle><span>Wed</span></label>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="7:00 AM" data-trial-hour-start aria-label="Wednesday open time"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                    <span class="settings-hour-to">to</span>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="9:00 PM" data-trial-hour-end aria-label="Wednesday close time"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                  </div>
+                  <div class="settings-hour-row" data-trial-hour-row="thu">
+                    <label class="settings-hour-toggle"><input type="checkbox" checked data-trial-hour-toggle><span>Thu</span></label>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="7:00 AM" data-trial-hour-start aria-label="Thursday open time"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                    <span class="settings-hour-to">to</span>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="9:00 PM" data-trial-hour-end aria-label="Thursday close time"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                  </div>
+                  <div class="settings-hour-row" data-trial-hour-row="fri">
+                    <label class="settings-hour-toggle"><input type="checkbox" checked data-trial-hour-toggle><span>Fri</span></label>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="7:00 AM" data-trial-hour-start aria-label="Friday open time"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                    <span class="settings-hour-to">to</span>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="9:00 PM" data-trial-hour-end aria-label="Friday close time"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                  </div>
+                  <div class="settings-hour-row is-closed" data-trial-hour-row="sat">
+                    <label class="settings-hour-toggle"><input type="checkbox" data-trial-hour-toggle><span>Sat</span></label>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="10:00 AM" data-trial-hour-start aria-label="Saturday open time" disabled><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                    <span class="settings-hour-to">to</span>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="4:00 PM" data-trial-hour-end aria-label="Saturday close time" disabled><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                  </div>
+                  <div class="settings-hour-row is-closed" data-trial-hour-row="sun">
+                    <label class="settings-hour-toggle"><input type="checkbox" data-trial-hour-toggle><span>Sun</span></label>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="9:00 AM" data-trial-hour-start aria-label="Sunday open time" disabled><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                    <span class="settings-hour-to">to</span>
+                    <div class="settings-time-box"><input class="settings-hour-input" type="text" value="7:00 PM" data-trial-hour-end aria-label="Sunday close time" disabled><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+                  </div>
                 </div>
+                <div class="trial-note"><i class="bi bi-clock" aria-hidden="true"></i> Choose open/closed status and hours for each day.</div>
               </div>
 
               <div class="trial-field trial-span-2">
@@ -10278,6 +10360,7 @@
               </div>
             </div>
 
+            <div class="trial-form-error" data-trial-error role="alert" hidden></div>
             <button class="trial-submit" type="button" data-trial-submit><i class="bi bi-rocket-takeoff" aria-hidden="true"></i> Start Your 14-Day Free Trial</button>
             <div class="trial-footer">No credit card required · No automatic charges · By submitting, you agree to let NEXORA contact you by SMS/email</div>
           </div>
@@ -10528,6 +10611,18 @@
       });
     }
 
+    function moveTeamPanelToSettings() {
+      var panel = document.querySelector('[data-booking-sub-panel="team"]');
+      var slot = document.querySelector('[data-settings-team-slot]');
+      if (!panel || !slot || panel.parentNode === slot) return;
+
+      panel.classList.remove('booking-sub-panel');
+      panel.classList.add('settings-team-panel');
+      panel.removeAttribute('data-booking-sub-panel');
+      panel.id = 'settings-team-panel';
+      slot.appendChild(panel);
+    }
+
     function activateBookingSubTab(target) {
       document.querySelectorAll('[data-booking-subtab-target]').forEach(function(tab) {
         var isActive = tab.dataset.bookingSubtabTarget === target;
@@ -10540,7 +10635,6 @@
       });
 
       var workspace = document.querySelector('[data-booking-appointment-workspace]');
-      if (workspace) workspace.hidden = target === 'team';
       if (workspace) workspace.dataset.bookingLayout = target === 'calendar' ? 'calendar' : 'appointments';
       var appointmentPanel = document.querySelector('[data-booking-appointment-panel]');
       if (appointmentPanel) appointmentPanel.hidden = target !== 'calendar';
@@ -12648,16 +12742,195 @@ function getBookingCardCallStart(item) {
       });
     }
 
+    var TRIAL_PRICE_LIST_MAX_BYTES = 10 * 1024 * 1024;
+
+    function setTrialFormError(message) {
+      var error = document.querySelector('[data-trial-error]');
+      if (!error) return;
+      error.textContent = message || '';
+      error.hidden = !message;
+    }
+
+    function clearTrialFormValidation(modal) {
+      if (!modal) return;
+      modal.querySelectorAll('.is-invalid, [aria-invalid="true"]').forEach(function(field) {
+        field.classList.remove('is-invalid');
+        field.removeAttribute('aria-invalid');
+      });
+      setTrialFormError('');
+    }
+
+    function syncTrialHourRow(toggle) {
+      var row = toggle ? toggle.closest('[data-trial-hour-row]') : null;
+      if (!row) return;
+
+      var isOpen = toggle.checked;
+      row.classList.toggle('is-closed', !isOpen);
+      row.querySelectorAll('[data-trial-hour-start], [data-trial-hour-end]').forEach(function(input) {
+        input.disabled = !isOpen;
+      });
+    }
+
+    function trialClockMinutes(value) {
+      var text = (value || '').trim().toUpperCase();
+      var twelveHour = text.match(/^(\d{1,2})(?::([0-5]\d))?\s*(AM|PM)$/);
+      if (twelveHour) {
+        var hour = Number(twelveHour[1]);
+        var minute = Number(twelveHour[2] || 0);
+        if (hour < 1 || hour > 12) return null;
+        if (twelveHour[3] === 'AM' && hour === 12) hour = 0;
+        if (twelveHour[3] === 'PM' && hour !== 12) hour += 12;
+        return hour * 60 + minute;
+      }
+
+      var twentyFourHour = text.match(/^([01]?\d|2[0-3]):([0-5]\d)$/);
+      return twentyFourHour ? Number(twentyFourHour[1]) * 60 + Number(twentyFourHour[2]) : null;
+    }
+
+    function collectTrialHours() {
+      var modal = document.querySelector('[data-trial-modal]');
+      var hours = {};
+      if (!modal) return hours;
+
+      modal.querySelectorAll('[data-trial-hour-row]').forEach(function(row) {
+        var toggle = row.querySelector('[data-trial-hour-toggle]');
+        var start = row.querySelector('[data-trial-hour-start]');
+        var end = row.querySelector('[data-trial-hour-end]');
+        hours[row.dataset.trialHourRow] = {
+          open: !!(toggle && toggle.checked),
+          start: start ? start.value.trim() : '',
+          end: end ? end.value.trim() : ''
+        };
+      });
+
+      return hours;
+    }
+
+    function trialPriceListIsSupported(file) {
+      if (!file) return true;
+      var fileName = (file.name || '').toLowerCase();
+      var supportedExtension = /\.(pdf|png|jpe?g|csv|xlsx?|xls)$/i.test(fileName);
+      var supportedMime = /^(application\/pdf|image\/(png|jpe?g)|text\/csv|application\/vnd\.ms-excel|application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet)$/i.test(file.type || '');
+      return (supportedExtension || supportedMime) && file.size <= TRIAL_PRICE_LIST_MAX_BYTES;
+    }
+
+    function handleTrialPriceListChange(input) {
+      var modal = input ? input.closest('[data-trial-modal]') : null;
+      var label = modal ? modal.querySelector('[data-trial-price-list-label]') : null;
+      var file = input && input.files && input.files[0] ? input.files[0] : null;
+
+      if (!file) {
+        if (label) label.textContent = 'No file selected · PDF, image, or spreadsheet up to 10 MB';
+        setTrialFormError('');
+        return;
+      }
+
+      if (!trialPriceListIsSupported(file)) {
+        input.value = '';
+        if (label) label.textContent = 'No file selected · PDF, image, or spreadsheet up to 10 MB';
+        setTrialFormError('Price list must be a PDF, image, or spreadsheet no larger than 10 MB.');
+        return;
+      }
+
+      if (label) label.textContent = file.name + ' · ' + Math.max(1, Math.round(file.size / 1024)) + ' KB';
+      setTrialFormError('');
+    }
+
+    function validateTrialForm() {
+      var modal = document.querySelector('[data-trial-modal]');
+      if (!modal) return false;
+      clearTrialFormValidation(modal);
+
+      var checks = [
+        { field: modal.querySelector('[data-trial-salon]'), message: 'Salon name is required.' },
+        { field: modal.querySelector('[data-trial-owner]'), message: 'Owner name is required.' },
+        { field: modal.querySelector('[data-trial-phone]'), message: 'Salon phone number is required.' },
+        { field: modal.querySelector('[data-trial-owner-phone]'), message: 'Owner phone number is required.' },
+        { field: modal.querySelector('[data-trial-email]'), message: 'A valid email is required.' }
+      ];
+
+      for (var index = 0; index < checks.length; index += 1) {
+        var check = checks[index];
+        var value = check.field ? check.field.value.trim() : '';
+        if (!value || (check.field && check.field.matches('[type="tel"]') && value.replace(/\D/g, '').length < 10) || (check.field && check.field.matches('[type="email"]') && !/^\S+@\S+\.\S+$/.test(value))) {
+          if (check.field) {
+            check.field.classList.add('is-invalid');
+            check.field.setAttribute('aria-invalid', 'true');
+            check.field.focus();
+          }
+          setTrialFormError(check.field && check.field.matches('[type="tel"]') ? check.message.replace(' is required.', ' must contain at least 10 digits.') : check.message);
+          return false;
+        }
+      }
+
+      var hours = collectTrialHours();
+      var openDays = Object.keys(hours).filter(function(day) { return hours[day].open; });
+      if (!openDays.length) {
+        setTrialFormError('Select at least one open day.');
+        return false;
+      }
+
+      for (var hourIndex = 0; hourIndex < openDays.length; hourIndex += 1) {
+        var day = openDays[hourIndex];
+        var schedule = hours[day];
+        var startMinutes = trialClockMinutes(schedule.start);
+        var endMinutes = trialClockMinutes(schedule.end);
+        if (startMinutes === null || endMinutes === null || startMinutes >= endMinutes) {
+          var hourRow = modal.querySelector('[data-trial-hour-row="' + day + '"]');
+          var hourStart = hourRow ? hourRow.querySelector('[data-trial-hour-start]') : null;
+          var hourEnd = hourRow ? hourRow.querySelector('[data-trial-hour-end]') : null;
+          var dayLabel = hourRow && hourRow.querySelector('.settings-hour-toggle span') ? hourRow.querySelector('.settings-hour-toggle span').textContent : day;
+          if (hourStart) hourStart.classList.add('is-invalid');
+          if (hourEnd) hourEnd.classList.add('is-invalid');
+          setTrialFormError(dayLabel + ' must have a valid closing time later than its opening time.');
+          if (hourStart) hourStart.focus();
+          return false;
+        }
+      }
+
+      var priceList = modal.querySelector('[data-trial-price-list]');
+      var file = priceList && priceList.files && priceList.files[0] ? priceList.files[0] : null;
+      if (file && !trialPriceListIsSupported(file)) {
+        priceList.classList.add('is-invalid');
+        priceList.setAttribute('aria-invalid', 'true');
+        setTrialFormError('Price list must be a PDF, image, or spreadsheet no larger than 10 MB.');
+        priceList.focus();
+        return false;
+      }
+
+      return true;
+    }
+
     function submitTrialForm() {
       var modal = document.querySelector('[data-trial-modal]');
       if (!modal) return;
 
+      if (!validateTrialForm()) return;
+
       var email = modal.querySelector('[data-trial-email]');
       var emailValue = email ? email.value.trim() : '';
-      if (!emailValue || emailValue.indexOf('@') < 0) {
-        if (email) email.focus();
-        return;
-      }
+      var priceList = modal.querySelector('[data-trial-price-list]');
+      var priceListFile = priceList && priceList.files && priceList.files[0] ? priceList.files[0] : null;
+      var trialSubmission = {
+        plan: 'Trial',
+        salon: modal.querySelector('[data-trial-salon]') ? modal.querySelector('[data-trial-salon]').value.trim() : '',
+        owner: modal.querySelector('[data-trial-owner]') ? modal.querySelector('[data-trial-owner]').value.trim() : '',
+        salonPhone: modal.querySelector('[data-trial-phone]') ? modal.querySelector('[data-trial-phone]').value.trim() : '',
+        ownerPhone: modal.querySelector('[data-trial-owner-phone]') ? modal.querySelector('[data-trial-owner-phone]').value.trim() : '',
+        email: emailValue,
+        city: modal.querySelector('[data-trial-city]') ? modal.querySelector('[data-trial-city]').value.trim() : '',
+        website: modal.querySelector('[data-trial-website]') ? modal.querySelector('[data-trial-website]').value.trim() : '',
+        services: Array.prototype.map.call(modal.querySelectorAll('[data-trial-chip].is-active'), function(chip) { return chip.textContent.trim(); }),
+        hours: collectTrialHours(),
+        priceList: priceListFile ? { name: priceListFile.name, size: priceListFile.size, type: priceListFile.type || '' } : null,
+        painPoint: modal.querySelector('[data-trial-pain]') ? modal.querySelector('[data-trial-pain]').value : '',
+        referralCode: modal.querySelector('[data-trial-ref]') ? modal.querySelector('[data-trial-ref]').value.trim().toUpperCase() : ''
+      };
+
+      modal.dataset.trialSubmission = JSON.stringify(trialSubmission);
+      modal._trialSubmission = trialSubmission;
+      window.NEXORA_TRIAL_SUBMISSION = trialSubmission;
+      window.NEXORA_TRIAL_PRICE_LIST_FILE = priceListFile;
 
       var emailShow = modal.querySelector('[data-trial-email-show]');
       if (emailShow) emailShow.textContent = emailValue;
@@ -12712,7 +12985,7 @@ function getBookingCardCallStart(item) {
     function settingsServiceCategoryMarkup(category, index) {
       var services = Array.isArray(category.services) ? category.services : [];
       return '<details class="settings-service-category" data-service-category data-service-category-id="' + escapeHtml(category.id || '') + '"' + (index === 0 ? ' open' : '') + '>' +
-        '<summary class="settings-service-category-head"><span class="settings-service-category-name">' + escapeHtml(category.name || 'Other services') + '</span><span class="settings-service-category-count">' + services.length + '</span></summary>' +
+        '<summary class="settings-service-category-head"><span class="settings-service-category-name">' + escapeHtml(category.name || 'Other services') + '</span><span class="settings-service-category-count">' + services.length + '</span><i class="settings-service-category-chevron" data-lucide="chevron-down" aria-hidden="true"></i></summary>' +
         '<div class="settings-service-category-body"><div class="settings-service-header" aria-hidden="true"><span></span><span>Service</span><span>Price</span><span>Duration</span><span></span></div>' +
         services.map(function(service, serviceIndex) { return settingsServiceRowMarkup(service, index + serviceIndex); }).join('') + '</div></details>';
     }
@@ -12724,20 +12997,57 @@ function getBookingCardCallStart(item) {
       container.innerHTML = categories.length
         ? categories.map(settingsServiceCategoryMarkup).join('')
         : '<div class="settings-service-catalog-state">No services available.</div>';
+      renderLucideIcons();
       if (fallback) setSettingsStatus('Catalog JSON unavailable. Showing salon catalog services.');
     }
 
-    function settingsEnsureCustomCategory() {
+    function settingsEnsureCategory(categoryId, categoryName) {
       var container = document.querySelector('[data-settings-service-catalog]');
       if (!container) return null;
 
-      var category = container.querySelector('[data-service-category-id="custom-services"]');
+      var targetId = categoryId || 'custom-services';
+      var category = Array.from(container.querySelectorAll('[data-service-category]')).find(function(item) {
+        return item.dataset.serviceCategoryId === targetId;
+      });
       if (!category) {
-        container.insertAdjacentHTML('beforeend', settingsServiceCategoryMarkup({ id: 'custom-services', name: 'CUSTOM SERVICES', services: [] }, container.querySelectorAll('[data-service-category]').length));
-        category = container.querySelector('[data-service-category-id="custom-services"]');
+        container.insertAdjacentHTML('beforeend', settingsServiceCategoryMarkup({
+          id: targetId,
+          name: categoryName || 'CUSTOM SERVICES',
+          services: []
+        }, container.querySelectorAll('[data-service-category]').length));
+        renderLucideIcons();
+        category = Array.from(container.querySelectorAll('[data-service-category]')).find(function(item) {
+          return item.dataset.serviceCategoryId === targetId;
+        });
       }
       if (category) category.open = true;
       return category ? category.querySelector('.settings-service-category-body') : null;
+    }
+
+    function settingsEnsureCustomCategory() {
+      return settingsEnsureCategory('custom-services', 'CUSTOM SERVICES');
+    }
+
+    function populateSettingsServiceModalCategories() {
+      var select = document.querySelector('[data-service-modal-field="category"]');
+      if (!select) return;
+
+      var source = appointmentServiceCatalog || { services: catalog.services };
+      var categories = settingsServiceCategoriesFromCatalog(source);
+      var seen = {};
+      var options = categories.filter(function(category) {
+        if (!category || !category.id || seen[category.id]) return false;
+        seen[category.id] = true;
+        return true;
+      }).map(function(category) {
+        return '<option value="' + escapeHtml(category.id) + '">' + escapeHtml(category.name || 'Other services') + '</option>';
+      });
+
+      if (!seen['custom-services']) {
+        options.push('<option value="custom-services">CUSTOM SERVICES</option>');
+      }
+      select.innerHTML = options.join('');
+      select.value = 'custom-services';
     }
 
     function updateSettingsServiceCategoryCount(category) {
@@ -12784,8 +13094,10 @@ function getBookingCardCallStart(item) {
       setSettingsStatus('Promotion template filled in: ' + template.label + '. Edit it for your salon, then click Save.');
     }
 
-    function addSettingsServiceRow(name, price, duration) {
-      var list = settingsEnsureCustomCategory();
+    function addSettingsServiceRow(name, price, duration, categoryId, categoryName) {
+      var list = categoryId
+        ? settingsEnsureCategory(categoryId, categoryName)
+        : settingsEnsureCustomCategory();
       if (!list) return;
 
       var rowIndex = list.querySelectorAll('[data-service-row]').length;
@@ -12817,6 +13129,7 @@ function getBookingCardCallStart(item) {
       var modal = document.querySelector('[data-service-modal]');
       if (!modal) return;
 
+      populateSettingsServiceModalCategories();
       ['name', 'price', 'duration'].forEach(function(name) {
         var field = document.querySelector('[data-service-modal-field="' + name + '"]');
         if (field) field.value = '';
@@ -12842,6 +13155,10 @@ function getBookingCardCallStart(item) {
       var name = getSettingsServiceModalField('name');
       var priceValue = getSettingsServiceModalField('price');
       var durationValue = getSettingsServiceModalField('duration');
+      var categoryField = document.querySelector('[data-service-modal-field="category"]');
+      var categoryOption = categoryField && categoryField.options[categoryField.selectedIndex];
+      var categoryId = categoryField ? categoryField.value : 'custom-services';
+      var categoryName = categoryOption ? categoryOption.textContent.trim() : 'CUSTOM SERVICES';
       var price = Number(priceValue);
       var duration = Number(durationValue);
       var field;
@@ -12867,7 +13184,7 @@ function getBookingCardCallStart(item) {
         return;
       }
 
-      addSettingsServiceRow(name, price, duration);
+      addSettingsServiceRow(name, price, duration, categoryId, categoryName);
       closeSettingsServiceModal();
     }
 
@@ -13639,6 +13956,9 @@ function getBookingCardCallStart(item) {
       var trialChip = event.target.closest('[data-trial-chip], [data-trial-day]');
       if (trialChip) {
         trialChip.classList.toggle('is-active');
+        if (trialChip.matches('[data-trial-day]')) {
+          trialChip.setAttribute('aria-pressed', trialChip.classList.contains('is-active') ? 'true' : 'false');
+        }
       }
     });
 
@@ -13813,6 +14133,28 @@ function getBookingCardCallStart(item) {
     if (trialSubmit) {
       trialSubmit.addEventListener('click', submitTrialForm);
     }
+
+    var trialPriceList = document.querySelector('[data-trial-price-list]');
+    if (trialPriceList) {
+      trialPriceList.addEventListener('change', function() {
+        handleTrialPriceListChange(trialPriceList);
+      });
+    }
+
+    document.querySelectorAll('[data-trial-hour-toggle]').forEach(function(toggle) {
+      syncTrialHourRow(toggle);
+      toggle.addEventListener('change', function() {
+        syncTrialHourRow(toggle);
+        setTrialFormError('');
+      });
+    });
+
+    document.querySelectorAll('[data-trial-hour-start], [data-trial-hour-end]').forEach(function(input) {
+      input.addEventListener('input', function() {
+        input.classList.remove('is-invalid');
+        setTrialFormError('');
+      });
+    });
 
     var trialActivate = document.querySelector('[data-trial-activate]');
     if (trialActivate) {
@@ -14304,6 +14646,7 @@ function getBookingCardCallStart(item) {
     renderCustomers();
     renderCallStats();
     renderCalls();
+    moveTeamPanelToSettings();
     activateMainTabFromUrl();
     loadBookingAppointmentServiceCatalog();
     if (salonData.storageAvailable && !salonData.storageAvailable()) {

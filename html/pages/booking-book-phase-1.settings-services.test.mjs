@@ -26,6 +26,11 @@ test('Settings service markup is category-based and keeps dynamic row hooks', ()
   assert.doesNotMatch(SERVICES_PANEL, /value="Classic Manicure"/);
 });
 
+test('service category expand control uses the Lucide chevron icon', () => {
+  assert.match(SOURCE, /function settingsServiceCategoryMarkup\([\s\S]*data-lucide="chevron-down"/);
+  assert.doesNotMatch(SOURCE, /\.settings-service-category-head::after[\s\S]*content:\s*'⌄'/);
+});
+
 test('Settings has loading and catalog fallback behavior', () => {
   assert.match(SOURCE, /Loading services/);
   assert.match(SOURCE, /catalog\.services/);
@@ -49,12 +54,28 @@ test('Enter Manually opens a service modal with name, price, and minutes fields'
   assert.match(SOURCE, /if \(action === 'add-service'\) \{[\s\S]*openSettingsServiceModal\(\)/);
 });
 
+test('manual service modal lets the user choose a catalog category', () => {
+  assert.match(SOURCE, /data-service-modal-field="category"/);
+  assert.match(SOURCE, /function populateSettingsServiceModalCategories\(/);
+  assert.match(SOURCE, /function settingsEnsureCategory\(/);
+  assert.match(SOURCE, /addSettingsServiceRow\(name, price, duration, categoryId/);
+});
+
+test('manual service modal places category before the service name', () => {
+  const modalStart = SOURCE.indexOf('data-service-modal');
+  const categoryPosition = SOURCE.indexOf('data-service-modal-field="category"', modalStart);
+  const namePosition = SOURCE.indexOf('data-service-modal-field="name"', modalStart);
+  assert.ok(categoryPosition >= 0);
+  assert.ok(namePosition >= 0);
+  assert.ok(categoryPosition < namePosition);
+});
+
 test('service modal validates required values before adding a custom service', () => {
   assert.match(SOURCE, /setSettingsServiceModalError\(/);
   assert.match(SOURCE, /Service name is required/);
   assert.match(SOURCE, /Price must be a valid number/);
   assert.match(SOURCE, /Minutes must be greater than 0/);
-  assert.match(SOURCE, /addSettingsServiceRow\(name, price, duration\)/);
+  assert.match(SOURCE, /addSettingsServiceRow\(name, price, duration, categoryId/);
 });
 
 test('Settings service catalog body removes the outer chrome while keeping scrolling', () => {

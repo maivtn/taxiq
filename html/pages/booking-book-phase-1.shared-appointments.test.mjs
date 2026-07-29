@@ -104,13 +104,21 @@ test('Booking Book does not render the shared appointment workspace handoff card
   assert.doesNotMatch(SOURCE, /Shared appointment workspace/);
 });
 
-test('Booking Book exposes Appointments, Calendar, and Team subtabs', () => {
+test('Booking Book keeps Appointments and Calendar subtabs', () => {
   assert.match(SOURCE, /<div class="booking-legacy-appointments" data-booking-legacy-appointments>/);
   assert.match(SOURCE, /data-booking-subtab-target="today"[^>]*aria-controls="booking-subpanel-today"/);
   assert.match(SOURCE, /data-booking-subtab-target="calendar"[^>]*aria-controls="booking-subpanel-calendar"/);
   assert.match(SOURCE, /<span>Calendar<\/span>/);
-  assert.match(SOURCE, /data-booking-subtab-target="team"[^>]*aria-controls="booking-subpanel-team"/);
+  assert.doesNotMatch(SOURCE, /data-booking-subtab-target="team"/);
   assert.match(SOURCE, /id="booking-subpanel-calendar" data-booking-sub-panel="calendar"/);
+});
+
+test('Booking Book moves team management into Salon Settings', () => {
+  assert.match(SOURCE, /data-settings-team-slot/);
+  assert.match(SOURCE, /function moveTeamPanelToSettings\(/);
+  assert.match(SOURCE, /panel\.removeAttribute\('data-booking-sub-panel'\)/);
+  assert.match(SOURCE, /moveTeamPanelToSettings\(\);/);
+  assert.doesNotMatch(SOURCE, /workspace\.hidden = target === 'team'/);
 });
 
 test('Booking Book exposes its appointment workspace', () => {
