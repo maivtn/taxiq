@@ -9,6 +9,16 @@ test('Customers panel exposes a create customer action', () => {
   assert.match(SOURCE, /Create customer/);
 });
 
+test('Customers panel places create action after the filter controls', () => {
+  const panelStart = SOURCE.indexOf('<section class="tab-panel" id="panel-customers"');
+  const panelEnd = SOURCE.indexOf('<section class="tab-panel" id="panel-calllog"', panelStart);
+  const panel = SOURCE.slice(panelStart, panelEnd);
+  const filterIndex = panel.indexOf('data-booking-filter-toggle="customers"');
+  const createIndex = panel.indexOf('data-cust-create');
+  assert.ok(filterIndex >= 0, 'customer filter control should exist');
+  assert.ok(createIndex > filterIndex, 'create customer action should be last in the header actions');
+});
+
 test('Customer modal includes phone, create title, and inline validation hooks', () => {
   assert.match(SOURCE, /data-cust-modal-title/);
   assert.match(SOURCE, /data-cf-phone/);
