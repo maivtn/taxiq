@@ -7,7 +7,7 @@
   const SMS_PLAN_ALLOWANCE = 1000;
   const VOICE_USED_MINUTES = 620;
   const VOICE_TOTAL_MINUTES = 1000;
-  const VOICE_LOW_BALANCE_THRESHOLD = 200;
+  const VOICE_LOW_BALANCE_THRESHOLD = 400;
 
   const CREDITS_HISTORY = [
     { product: 'SMS', activity: 'All customers campaign', amount: '−1,284 SMS', date: 'Jul 28, 2026', balance: '847 SMS' },

@@ -711,11 +711,11 @@ test('adds an All audience option to step 1 of the SMS campaign composer', () =>
   assert.match(html, /function openComposer\(segId\)[\s\S]*COMPOSER_SEGMENTS\.find/);
 });
 
-test('links SMS Credits to the dedicated management page and keeps the purchase modal route', () => {
+test('links SMS Credits to the Credits tab and keeps the purchase modal route', () => {
   const html = source();
 
   assert.match(html, /data-sms-credits-management/);
-  assert.match(html, /href="nexora-credits\.html\?from=sms-campaigns"/);
+  assert.match(html, /href="nexora-packages\.html\?tab=credits"/);
   assert.match(html, /data-sms-credit-buy/);
   assert.match(html, /new URLSearchParams\(window\.location\.search\)[\s\S]*?get\('openCredits'\) === '1'[\s\S]*?openSmsCreditModal\(\)/);
 });

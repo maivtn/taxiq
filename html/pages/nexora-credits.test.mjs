@@ -262,7 +262,7 @@ test('renders monthly usage percentages and rollover SMS usage from the wallet',
   assert.equal(targets.get('[data-credits-voice-used]').textContent, '620');
   assert.equal(targets.get('[data-credits-voice-total]').textContent, '1,000');
   assert.equal(targets.get('[data-credits-voice-remaining]').textContent, '380');
-  assert.equal(targets.get('[data-credits-voice-warning]').hidden, true);
+  assert.equal(targets.get('[data-credits-voice-warning]').hidden, false);
   assert.equal(targets.get('[data-credits-voice-warning-remaining]').textContent, '380');
   assert.equal(targets.get('[data-credits-voice-progress]').style.width, '62%');
   assert.equal(targets.get('[data-credits-sms-plan-used]').textContent, '1,000');
@@ -362,7 +362,7 @@ test('adds a conditional Voice warning card above Usage history', () => {
     assert.match(page, /data-credits-voice-warning-remaining/);
   }
 
-  assert.match(runtime, /const VOICE_LOW_BALANCE_THRESHOLD\s*=\s*200/);
+  assert.match(runtime, /const VOICE_LOW_BALANCE_THRESHOLD\s*=\s*400/);
   assert.match(runtime, /function renderVoiceWarning\(/);
   assert.match(runtime, /renderVoiceWarning\(voiceRemaining\)/);
   assert.match(css, /\.credits-voice-warning\s*\{[\s\S]*?display:\s*flex/);
