@@ -29,6 +29,24 @@
     return currentDate.getFullYear() + '-' + String(currentDate.getMonth() + 1).padStart(2, '0');
   }
 
+  function getSmsPlanExpiryDate(date) {
+    const currentDate = date || new Date();
+    return new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  }
+
+  function formatLocalDateAttribute(date) {
+    return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+  }
+
+  function renderPlanExpiryDate() {
+    const expiryDate = getSmsPlanExpiryDate();
+    const label = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(expiryDate);
+    document.querySelectorAll('[data-credits-plan-expiry]').forEach(function (target) {
+      target.textContent = label;
+      target.setAttribute('datetime', formatLocalDateAttribute(expiryDate));
+    });
+  }
+
   function updateSmsWallet(wallet) {
     const topupBalance = normalizeCreditValue(wallet.topupBalance, 0);
     const topupTotal = normalizeCreditValue(wallet.topupTotal, topupBalance);
@@ -241,6 +259,7 @@
   function renderCreditsPage() {
     if (!document.querySelector('[data-credits-page]')) return;
 
+    renderPlanExpiryDate();
     const smsWallet = readSmsWallet();
     const smsTopupTotal = readSmsTopupTotal(smsWallet);
     const smsPlanUsed = SMS_PLAN_ALLOWANCE - smsWallet.planRemaining;

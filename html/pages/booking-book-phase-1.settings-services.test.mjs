@@ -70,6 +70,36 @@ test('manual service modal places category before the service name', () => {
   assert.ok(categoryPosition < namePosition);
 });
 
+test('Settings exposes category management controls', () => {
+  assert.match(SOURCE, /data-settings-category-manager/);
+  assert.match(SOURCE, /data-settings-category-list/);
+  assert.match(SOURCE, /data-settings-category-action="open"/);
+  assert.match(SOURCE, /data-settings-category-action="add"/);
+  assert.match(SOURCE, /data-settings-category-modal/);
+  assert.match(SOURCE, /data-settings-category-remove/);
+  assert.doesNotMatch(SOURCE, /data-settings-category-save/);
+  assert.match(SOURCE, /function renderSettingsCategoryManager\(/);
+  assert.match(SOURCE, /function addSettingsCategoryDraft\(/);
+  assert.match(SOURCE, /data-settings-category-new/);
+  assert.match(SOURCE, /data-settings-category-modal-save[^>]*>[\s\S]*Save/);
+  assert.match(SOURCE, /function saveSettingsCategoryModal\(/);
+  assert.match(SOURCE, /row\.dataset\.settingsCategoryNew/);
+  assert.match(SOURCE, /saveSettingsCategoryModal\([\s\S]*settings-category-row/);
+});
+
+test('Services & Pricing actions share a wrapping flex row', () => {
+  assert.match(SERVICES_PANEL, /<div class="settings-actions settings-service-actions"[^>]*>[\s\S]*data-settings-category-action="open"[\s\S]*data-settings-action="photo"[\s\S]*data-settings-action="add-service"[\s\S]*<\/div>/);
+  assert.doesNotMatch(SERVICES_PANEL, /data-settings-action="suggest"/);
+
+  const rowRule = SOURCE.match(/\.settings-service-actions\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
+  assert.match(rowRule, /display:\s*flex/);
+  assert.match(rowRule, /flex-wrap:\s*wrap/);
+
+  const buttonRule = SOURCE.match(/\.settings-service-actions\s*>\s*button\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
+  assert.match(buttonRule, /flex:\s*0\s+1\s+auto/);
+  assert.match(buttonRule, /min-width:\s*0/);
+});
+
 test('service modal validates required values before adding a custom service', () => {
   assert.match(SOURCE, /setSettingsServiceModalError\(/);
   assert.match(SOURCE, /Service name is required/);

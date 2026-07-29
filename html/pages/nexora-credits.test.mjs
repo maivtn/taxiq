@@ -43,12 +43,19 @@ test('creates the Credits Management page with the monthly plan and SMS credit c
   assert.match(html, /activeTab:\s*'sms-campaigns'/);
 });
 
-test('exposes SMS purchase and monthly reset information', () => {
+test('exposes SMS purchase and monthly plan reset information', () => {
   const html = source();
+  const packages = readFileSync(PACKAGES_URL, 'utf8');
+  const runtime = readFileSync(JS_URL, 'utf8');
 
   assert.match(html, /href="booking-book-phase-1\.html\?tab=sms-campaigns&amp;openCredits=1"/);
-  assert.match(html, /credits-reset-action/);
-  assert.match(html, /Reset \/ month/);
+  for (const page of [html, packages]) {
+    assert.match(page, /class="credits-reset-action"[\s\S]*<time data-credits-plan-expiry/);
+    assert.doesNotMatch(page, /Reset \/ month/);
+    assert.match(page, /Expires <time data-credits-plan-expiry/);
+  }
+  assert.match(runtime, /function renderPlanExpiryDate\(/);
+  assert.match(runtime, /data-credits-plan-expiry/);
 });
 
 test('labels the SMS top-up action in Vietnamese', () => {
@@ -97,7 +104,8 @@ test('matches the compact monthly plan and rollover credit layout in both pages'
     assert.match(page, /data-credits-sms-plan-progress/);
     assert.doesNotMatch(page, /credits-card-note-plan/);
     assert.match(page, /data-credits-card="sms-topup"/);
-    assert.match(page, /Không bị reset/);
+    assert.match(page, /Không hết hạn/);
+    assert.doesNotMatch(page, /Không bị reset/);
     assert.match(page, /data-credits-sms-topup-balance/);
     assert.match(page, /data-credits-sms-topup-usage/);
     assert.match(page, /data-credits-sms-topup-usage[\s\S]*?class="credits-usage-icon credits-usage-icon-sms"[\s\S]*?SMS Credits used/);

@@ -2729,6 +2729,186 @@
       text-align: center;
     }
 
+    .settings-category-manager {
+      margin-bottom: 12px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 11px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .settings-category-manager-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 9px;
+    }
+
+    .settings-category-manager-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--nexora-text);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .settings-category-manager-title svg {
+      width: 15px;
+      height: 15px;
+      color: var(--nexora-brand);
+    }
+
+    .settings-category-manager-sub {
+      margin-top: 3px;
+      color: var(--nexora-muted);
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .settings-category-manager-add {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid rgba(70, 72, 216, .22);
+      border-radius: 8px;
+      background: #f6f7ff;
+      padding: 6px 8px;
+      color: var(--nexora-brand);
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .settings-category-manager-add svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .settings-category-manager-open {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .settings-category-manager-open svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .settings-service-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      margin-bottom: 12px;
+    }
+
+    .settings-service-actions > button {
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+
+    .settings-category-list {
+      display: grid;
+      gap: 5px;
+    }
+
+    .settings-category-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: var(--nexora-surface-muted);
+      padding: 6px 7px;
+    }
+
+    .settings-category-row-main {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .settings-category-row-main > svg {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+      color: var(--nexora-brand);
+    }
+
+    .settings-category-name-input {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: transparent;
+      padding: 5px 6px;
+      color: var(--nexora-text);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .settings-category-name-input:focus {
+      border-color: var(--nexora-brand);
+      background: #fff;
+      outline: 0;
+      box-shadow: 0 0 0 2px rgba(70, 72, 216, .1);
+    }
+
+    .settings-category-count {
+      flex: 0 0 auto;
+      color: var(--nexora-subtle);
+      font-size: 10px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .settings-category-row-actions {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .settings-category-row-action {
+      display: inline-grid;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--nexora-muted);
+    }
+
+    .settings-category-row-action:hover {
+      border-color: var(--nexora-border);
+      background: #fff;
+      color: var(--nexora-brand);
+    }
+
+    .settings-category-row-action.is-danger:hover {
+      border-color: rgba(220, 38, 38, .18);
+      color: #dc2626;
+    }
+
+    .settings-category-row-action svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .settings-category-empty {
+      border: 1px dashed var(--nexora-border);
+      border-radius: 8px;
+      padding: 9px;
+      color: var(--nexora-subtle);
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center;
+    }
+
     .settings-service-category {
       overflow: hidden;
       border: 1px solid var(--nexora-border);
@@ -9400,9 +9580,9 @@
                     </div>
                     <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Collapse services and pricing"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
                   </div>
-                  <div class="settings-actions" style="margin-bottom: 12px;">
+                  <div class="settings-actions settings-service-actions">
+                    <button class="booking-secondary-button settings-category-manager-open" type="button" data-settings-category-action="open"><i data-lucide="folder-tree" aria-hidden="true"></i>Manage Categories</button>
                     <button class="booking-secondary-button" type="button" data-settings-action="photo"><i class="bi bi-camera" aria-hidden="true"></i>Scan Menu</button>
-                    <button class="booking-secondary-button" type="button" data-settings-action="suggest"><i class="bi bi-lightning-charge" aria-hidden="true"></i>Industry Suggestions</button>
                     <button class="booking-primary-button" type="button" data-settings-action="add-service"><i class="bi bi-plus-lg" aria-hidden="true"></i>Enter Manually</button>
                   </div>
 
@@ -9536,6 +9716,37 @@
                   <div class="settings-service-modal-actions">
                     <button class="booking-secondary-button" type="button" data-service-modal-close>Cancel</button>
                     <button class="booking-primary-button" type="button" data-service-modal-save><i class="bi bi-plus-lg" aria-hidden="true"></i>Add service</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-service-modal" data-settings-category-modal hidden>
+                <div class="settings-service-dialog" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+                  <div class="settings-service-modal-head">
+                    <div>
+                      <div class="settings-service-modal-title" id="category-modal-title">Manage Categories</div>
+                      <div class="settings-service-modal-sub">Rename categories, review service counts, or add a new category, then save your changes.</div>
+                    </div>
+                    <button class="settings-service-modal-close" type="button" data-settings-category-modal-close aria-label="Close category modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+                  </div>
+                  <div class="settings-service-modal-body">
+                    <div class="settings-category-manager" data-settings-category-manager>
+                      <div class="settings-category-manager-head">
+                        <div>
+                          <div class="settings-category-manager-title"><i data-lucide="folder-tree" aria-hidden="true"></i>Categories</div>
+                          <div class="settings-category-manager-sub">Services stay grouped under the category shown here.</div>
+                        </div>
+                        <button class="settings-category-manager-add" type="button" data-settings-category-action="add"><i data-lucide="plus" aria-hidden="true"></i>Add category</button>
+                      </div>
+                      <div class="settings-category-list" data-settings-category-list>
+                        <div class="settings-category-empty">Loading categories…</div>
+                      </div>
+                    </div>
+                    <div class="settings-service-modal-error" data-settings-category-modal-error role="alert" hidden></div>
+                  </div>
+                  <div class="settings-service-modal-actions">
+                    <button class="booking-secondary-button" type="button" data-settings-category-modal-close>Close</button>
+                    <button class="booking-primary-button" type="button" data-settings-category-modal-save><i class="bi bi-check-lg" aria-hidden="true"></i>Save</button>
                   </div>
                 </div>
               </div>
@@ -10434,6 +10645,8 @@
     var appointmentTicketUtils = window.NEXORA_APPOINTMENT_TICKETS;
     var appointmentServiceCatalogLoader = window.NEXORA_APPOINTMENT_SERVICE_CATALOG;
     var appointmentServiceCatalog = null;
+    var settingsManagedCategories = [];
+    var settingsCategoryDraft = null;
     var APPOINTMENT_SERVICE_CATALOG_URL = '../assets/booking-service-catalog-draft.json';
     var catalog = salonData.loadCatalog();
     var BOOKING_CALENDAR_SERVICE_OPTIONS = [];
@@ -12966,6 +13179,52 @@ function getBookingCardCallStart(item) {
       return Object.keys(groups).map(function(id) { return groups[id]; });
     }
 
+    function settingsCategoryRowMarkup(category) {
+      var services = Array.isArray(category.services) ? category.services : [];
+      var isDraft = Boolean(category.isDraft);
+      var countLabel = isDraft ? 'New category' : (services.length === 1 ? '1 service' : services.length + ' services');
+      var rowAttributes = ' data-settings-category-row data-settings-category-id="' + escapeHtml(isDraft ? '' : category.id || '') + '"' + (isDraft ? ' data-settings-category-new="true"' : '');
+      var inputValue = isDraft ? '' : (category.name || 'Other services');
+      var inputPlaceholder = isDraft ? 'Category name' : '';
+      return '<div class="settings-category-row' + (isDraft ? ' is-new' : '') + '"' + rowAttributes + '>' +
+        '<div class="settings-category-row-main"><i data-lucide="folder" aria-hidden="true"></i><input class="settings-category-name-input" type="text" value="' + escapeHtml(inputValue) + '"' + (inputPlaceholder ? ' placeholder="' + inputPlaceholder + '"' : '') + ' data-settings-category-name aria-label="Category name"><span class="settings-category-count" data-settings-category-count>' + countLabel + '</span></div>' +
+        '<div class="settings-category-row-actions"><button class="settings-category-row-action is-danger" type="button" data-settings-category-remove aria-label="' + (isDraft ? 'Cancel new category' : 'Remove category') + '"><i data-lucide="' + (isDraft ? 'x' : 'trash-2') + '" aria-hidden="true"></i></button></div>' +
+      '</div>';
+    }
+
+    function renderSettingsCategoryManager(source) {
+      var list = document.querySelector('[data-settings-category-list]');
+      if (!list) return;
+
+      if (source) {
+        settingsManagedCategories = settingsServiceCategoriesFromCatalog(source).map(function(category) {
+          return {
+            id: String(category.id || ''),
+            name: String(category.name || 'Other services'),
+            services: Array.isArray(category.services) ? category.services.slice() : []
+          };
+        }).filter(function(category) { return category.id; });
+      }
+
+      var categories = settingsManagedCategories.slice();
+      if (settingsCategoryDraft) categories.push(settingsCategoryDraft);
+      list.innerHTML = categories.length
+        ? categories.map(settingsCategoryRowMarkup).join('')
+        : '<div class="settings-category-empty">No categories yet.</div>';
+      renderLucideIcons();
+    }
+
+    function settingsEnsureManagedCategory(categoryId, categoryName) {
+      var targetId = categoryId || 'custom-services';
+      var category = settingsManagedCategories.find(function(item) { return item.id === targetId; });
+      if (!category) {
+        category = { id: targetId, name: categoryName || 'CUSTOM SERVICES', services: [] };
+        settingsManagedCategories.push(category);
+        renderSettingsCategoryManager();
+      }
+      return category;
+    }
+
     function settingsServiceRowMarkup(service, index) {
       service = service || {};
       var price = service.price == null ? '' : service.price;
@@ -12994,6 +13253,7 @@ function getBookingCardCallStart(item) {
       var container = document.querySelector('[data-settings-service-catalog]');
       if (!container) return;
       var categories = settingsServiceCategoriesFromCatalog(source);
+      renderSettingsCategoryManager(source);
       container.innerHTML = categories.length
         ? categories.map(settingsServiceCategoryMarkup).join('')
         : '<div class="settings-service-catalog-state">No services available.</div>';
@@ -13006,6 +13266,7 @@ function getBookingCardCallStart(item) {
       if (!container) return null;
 
       var targetId = categoryId || 'custom-services';
+      settingsEnsureManagedCategory(targetId, categoryName);
       var category = Array.from(container.querySelectorAll('[data-service-category]')).find(function(item) {
         return item.dataset.serviceCategoryId === targetId;
       });
@@ -13028,12 +13289,147 @@ function getBookingCardCallStart(item) {
       return settingsEnsureCategory('custom-services', 'CUSTOM SERVICES');
     }
 
+    function settingsCategorySlug(value) {
+      var slug = String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      return slug || 'category';
+    }
+
+    function setSettingsCategoryModalError(message) {
+      var error = document.querySelector('[data-settings-category-modal-error]');
+      if (!error) return;
+      error.textContent = message || '';
+      error.hidden = !message;
+    }
+
+    function openSettingsCategoryModal() {
+      var modal = document.querySelector('[data-settings-category-modal]');
+      if (!modal) return;
+      settingsCategoryDraft = null;
+      renderSettingsCategoryManager();
+      setSettingsCategoryModalError('');
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      var addButton = modal.querySelector('[data-settings-category-action="add"]');
+      if (addButton) addButton.focus();
+    }
+
+    function addSettingsCategoryDraft() {
+      var list = document.querySelector('[data-settings-category-list]');
+      if (!list) return;
+
+      var existingDraft = list.querySelector('[data-settings-category-new]');
+      if (existingDraft) {
+        var existingField = existingDraft.querySelector('[data-settings-category-name]');
+        if (existingField) existingField.focus();
+        return;
+      }
+
+      settingsCategoryDraft = { id: '', name: '', services: [], isDraft: true };
+      renderSettingsCategoryManager();
+      var row = list.querySelector('[data-settings-category-new]');
+      var field = row && row.querySelector('[data-settings-category-name]');
+      if (field) field.focus();
+    }
+
+    function closeSettingsCategoryModal() {
+      var modal = document.querySelector('[data-settings-category-modal]');
+      if (!modal) return;
+      modal.hidden = true;
+      settingsCategoryDraft = null;
+      renderSettingsCategoryManager();
+      setSettingsCategoryModalError('');
+      document.body.style.overflow = '';
+    }
+
+    function saveSettingsCategoryModal() {
+      var list = document.querySelector('[data-settings-category-list]');
+      var rows = list ? Array.from(list.querySelectorAll('[data-settings-category-row]')) : [];
+      var nextCategories = [];
+      var seenNames = {};
+      var draftAdded = false;
+
+      if (!rows.length) {
+        setSettingsCategoryModalError('Add at least one category before saving.');
+        return;
+      }
+
+      for (var index = 0; index < rows.length; index += 1) {
+        var row = rows[index];
+        var field = row.querySelector('[data-settings-category-name]');
+        var name = field ? field.value.trim() : '';
+        var normalizedName = name.toLowerCase();
+        if (!name) {
+          setSettingsCategoryModalError('Category name is required.');
+          if (field) field.focus();
+          return;
+        }
+        if (seenNames[normalizedName]) {
+          setSettingsCategoryModalError('A category with this name already exists.');
+          if (field) field.focus();
+          return;
+        }
+        seenNames[normalizedName] = true;
+
+        if (row.dataset.settingsCategoryNew === 'true') {
+          var baseId = 'custom-' + settingsCategorySlug(name);
+          var id = baseId;
+          var suffix = 2;
+          while (settingsManagedCategories.some(function(category) { return category.id === id; }) || nextCategories.some(function(category) { return category.id === id; })) id = baseId + '-' + suffix++;
+          nextCategories.push({ id: id, name: name, services: [] });
+          draftAdded = true;
+        } else {
+          var existingCategory = settingsManagedCategories.find(function(category) { return category.id === row.dataset.settingsCategoryId; });
+          if (existingCategory) {
+            existingCategory.name = name;
+            nextCategories.push(existingCategory);
+          }
+        }
+      }
+
+      settingsManagedCategories = nextCategories;
+      settingsCategoryDraft = null;
+      renderSettingsCategoryManager();
+      settingsManagedCategories.forEach(function(category) {
+        settingsEnsureCategory(category.id, category.name);
+        var serviceCategory = Array.from(document.querySelectorAll('[data-service-category-id]')).find(function(item) { return item.dataset.serviceCategoryId === category.id; });
+        var label = serviceCategory && serviceCategory.querySelector('.settings-service-category-name');
+        if (label) label.textContent = category.name;
+      });
+      populateSettingsServiceModalCategories();
+      setSettingsCategoryModalError('');
+      setSettingsStatus(draftAdded ? 'Categories saved. New category added.' : 'Categories saved.');
+    }
+
+    function removeSettingsCategory(row) {
+      if (!row) return;
+      if (row.dataset.settingsCategoryNew === 'true') {
+        settingsCategoryDraft = null;
+        renderSettingsCategoryManager();
+        setSettingsCategoryModalError('');
+        return;
+      }
+      var id = row.dataset.settingsCategoryId;
+      var category = settingsManagedCategories.find(function(item) { return item.id === id; });
+      if (!category) return;
+      if (category.services.length) {
+        setSettingsStatus('Remove all services from this category before deleting it.');
+        return;
+      }
+
+      settingsManagedCategories = settingsManagedCategories.filter(function(item) { return item.id !== id; });
+      var serviceCategory = Array.from(document.querySelectorAll('[data-service-category-id]')).find(function(item) { return item.dataset.serviceCategoryId === id; });
+      if (serviceCategory) serviceCategory.remove();
+      renderSettingsCategoryManager();
+      populateSettingsServiceModalCategories();
+      setSettingsStatus('Category removed.');
+    }
+
     function populateSettingsServiceModalCategories() {
       var select = document.querySelector('[data-service-modal-field="category"]');
       if (!select) return;
 
       var source = appointmentServiceCatalog || { services: catalog.services };
-      var categories = settingsServiceCategoriesFromCatalog(source);
+      var categories = settingsManagedCategories.length ? settingsManagedCategories : settingsServiceCategoriesFromCatalog(source);
       var seen = {};
       var options = categories.filter(function(category) {
         if (!category || !category.id || seen[category.id]) return false;
@@ -13101,14 +13497,18 @@ function getBookingCardCallStart(item) {
       if (!list) return;
 
       var rowIndex = list.querySelectorAll('[data-service-row]').length;
+      var serviceId = 'custom-' + Date.now();
       list.insertAdjacentHTML('beforeend', settingsServiceRowMarkup({
-        id: 'custom-' + Date.now(),
+        id: serviceId,
         name: name,
         price: Number(price),
         durationMin: Number(duration),
         icon: '✨'
       }, rowIndex));
       updateSettingsServiceCategoryCount(list.closest('[data-service-category]'));
+      var managedCategory = settingsEnsureManagedCategory(categoryId || 'custom-services', categoryName || 'CUSTOM SERVICES');
+      managedCategory.services.push({ id: serviceId, name: name, price: Number(price), durationMin: Number(duration), icon: '✨' });
+      renderSettingsCategoryManager();
       setSettingsStatus('Service added: ' + name + '.');
     }
 
@@ -13886,6 +14286,16 @@ function getBookingCardCallStart(item) {
         runSettingsAction(settingsAction.dataset.settingsAction, settingsAction);
       }
 
+      var settingsCategoryAction = event.target.closest('[data-settings-category-action]');
+      if (settingsCategoryAction && settingsCategoryAction.dataset.settingsCategoryAction === 'open') {
+        openSettingsCategoryModal();
+        return;
+      }
+      if (settingsCategoryAction && settingsCategoryAction.dataset.settingsCategoryAction === 'add') {
+        addSettingsCategoryDraft();
+        return;
+      }
+
       var settingsCollapse = event.target.closest('[data-settings-collapse]');
       if (settingsCollapse) {
         toggleSettingsCollapse(settingsCollapse);
@@ -13933,6 +14343,24 @@ function getBookingCardCallStart(item) {
         return;
       }
 
+      var settingsCategoryModalSave = event.target.closest('[data-settings-category-modal-save]');
+      if (settingsCategoryModalSave) {
+        saveSettingsCategoryModal();
+        return;
+      }
+
+      var settingsCategoryModalClose = event.target.closest('[data-settings-category-modal-close]');
+      if (settingsCategoryModalClose || event.target.matches('[data-settings-category-modal]')) {
+        closeSettingsCategoryModal();
+        return;
+      }
+
+      var settingsCategoryRemove = event.target.closest('[data-settings-category-remove]');
+      if (settingsCategoryRemove) {
+        removeSettingsCategory(settingsCategoryRemove.closest('[data-settings-category-row]'));
+        return;
+      }
+
       var settingsLanguage = event.target.closest('[data-settings-language]');
       if (settingsLanguage) {
         selectSettingsLanguage(settingsLanguage);
@@ -13948,8 +14376,15 @@ function getBookingCardCallStart(item) {
       if (serviceRemove) {
         var serviceRow = serviceRemove.closest('[data-service-row]');
         var serviceCategory = serviceRow ? serviceRow.closest('[data-service-category]') : null;
+        var removedServiceId = serviceRow ? serviceRow.dataset.serviceId : '';
+        var removedCategoryId = serviceCategory ? serviceCategory.dataset.serviceCategoryId : '';
         if (serviceRow) serviceRow.remove();
         updateSettingsServiceCategoryCount(serviceCategory);
+        var managedCategory = settingsManagedCategories.find(function(category) { return category.id === removedCategoryId; });
+        if (managedCategory) {
+          managedCategory.services = managedCategory.services.filter(function(service) { return service.id !== removedServiceId; });
+          renderSettingsCategoryManager();
+        }
         setSettingsStatus('Removed the service from the list.');
       }
 
