@@ -93,7 +93,7 @@ test('groups purchased Voice and SMS credits and keeps purchase actions inside t
   assert.match(creditsWarning, /<div class="credits-voice-warning-content">[\s\S]*credits-voice-warning-icon[\s\S]*AI Voice sắp hết/);
   assert.match(creditsWarning, /class="credits-actions"/);
   assert.doesNotMatch(html, /Hãy tắt chế độ AI Voice/);
-  assert.match(html, /Nâng cấp gói để tránh gián đoạn\./);
+  assert.match(html, /Mua thêm credit hoặc nâng cấp gói để tránh gián đoạn\./);
   assert.match(creditsRuntime, /VOICE_TOPUP_STARTING_CREDITS/);
   assert.match(creditsRuntime, /data-credits-voice-topup-balance/);
   assert.match(readFileSync(new URL('../assets/nexora-credits.css', import.meta.url), 'utf8'), /\.credits-actions\s*\{/);
