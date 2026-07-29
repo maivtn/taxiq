@@ -4,227 +4,107 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const html = fs.readFileSync(path.join(__dirname, 'pos-phase-1.html'), 'utf8');
+const runtime = fs.readFileSync(path.join(__dirname, '..', 'assets', 'pos-booking-runtime.js'), 'utf8');
+const source = html + '\n' + runtime;
 
-test('appointments tab loads DayPilot Lite and the external JavaScript seed data', () => {
-  assert.match(html, /@daypilot\/daypilot-lite-javascript@5\.9\.0\/daypilot-javascript\.min\.js/);
-  assert.match(html, /pos-appointments-data\.js/);
-  assert.match(html, /data-ap-calendar/);
-  assert.match(html, /new DayPilot\.Calendar/);
+test('POS exposes Booking instead of the legacy Appointments tab', () => {
+  assert.match(html, /\.\.\/assets\/pos-booking\.css/);
+  assert.match(html, /\.\.\/assets\/pos-booking-runtime\.js/);
+  assert.match(source, /data-pos-tab="booking"/);
+  assert.match(source, /data-pos-panel="booking"/);
+  assert.doesNotMatch(source, /data-pos-tab="appointments"/);
+  assert.doesNotMatch(source, /data-pos-panel="appointments"/);
 });
 
-test('appointments calendar renders technicians as resource columns with time on the vertical axis', () => {
-  assert.match(html, /viewType:\s*'Resources'/);
-  assert.match(html, /columns:\s*apResourceColumns\(\)/);
-  assert.match(html, /resource:\s*booking\.techId \|\| 'unassigned'/);
-  assert.match(html, /onEventMoved/);
-  assert.match(html, /onEventResized/);
-  assert.match(html, /data-ap-tech-filter/);
+test('POS Booking exposes the full Booking Book workspace contract', () => {
+  for (const hook of [
+    'data-booking-legacy-appointments',
+    'data-booking-table',
+    'data-booking-view-target="calendar"',
+    'data-booking-filter-toggle="booking"',
+    'data-booking-appointment-panel',
+    'data-booking-create-modal',
+    'data-booking-create-save',
+    'data-booking-action="detail"',
+    'data-booking-action="send-sms"'
+  ]) assert.match(source, new RegExp(hook));
 });
 
-test('empty appointment cells expose a subtle create affordance that keeps cell selection clickable', () => {
-  assert.match(html, /onBeforeCellRender/);
-  assert.match(html, /ap-cell-add/);
-  assert.match(html, /pointer-events:\s*none/);
-  assert.match(html, /onTimeRangeSelected:[\s\S]*apOpenNew/);
+test('POS Booking loads the shared catalog, ticket, store, and approved service catalog', () => {
+  assert.match(source, /\.\.\/assets\/salon-data\.js/);
+  assert.match(source, /\.\.\/assets\/appointment-service-catalog\.js/);
+  assert.match(source, /\.\.\/assets\/appointment-tickets\.js/);
+  assert.match(source, /\.\.\/assets\/appointments-store\.js/);
+  assert.match(source, /booking-service-catalog-draft\.json/);
+  assert.match(source, /appointmentServiceCatalogLoader\.load/);
 });
 
-test('selected time ranges stay highlighted while the new appointment form is open', () => {
-  assert.match(html, /onTimeRangeSelected:\s*function \(args\) \{[\s\S]*apOpenNew/);
-  assert.doesNotMatch(html, /onTimeRangeSelected:\s*function \(args\) \{[\s\S]{0,260}apCalendar\.clearSelection\(\)/);
-  assert.match(html, /data-ap-close\][\s\S]{0,220}apCalendar\.clearSelection\(\)/);
-  assert.match(html, /calendar_default_shadow_inner/);
+test('POS Booking uses the shared appointment store and no longer loads the phase-1 legacy seed runtime', () => {
+  assert.match(source, /appointmentStore\.ensureSource\(/);
+  assert.match(source, /appointmentStore\.subscribe\(/);
+  assert.match(source, /appointmentStore\.(create|update|cancel)/);
+  assert.doesNotMatch(source, /pos-appointments-data\.js/);
+  assert.doesNotMatch(source, /function renderAppt\(/);
+  assert.doesNotMatch(source, /data-ap-calendar/);
 });
 
-test('team calendar applies a polished resource-grid visual treatment', () => {
-  assert.match(html, /calendar_default_colheader_inner/);
-  assert.match(html, /calendar_default_rowheader_inner/);
-  assert.match(html, /calendar_default_event_inner/);
-  assert.match(html, /\.ap-cell-add\s*>\s*span/);
+test('POS keeps the shared mode and tab activation contracts', () => {
+  assert.match(source, /var TABS = \['dispatch', 'clock', 'management', 'booking'\]/);
+  assert.match(source, /function activateTab\(id\)/);
+  assert.match(source, /if \(id === ['"]booking['"]\)/);
+  assert.match(source, /data-pos-mode-modal[^>]*role="dialog"/);
 });
 
-test('opening a new appointment gives the soft detail card a short loading state', () => {
-  assert.match(html, /apPanelLoading/);
-  assert.match(html, /ap-panel-loading/);
-  assert.match(html, /aria-busy/);
-  assert.match(html, /function apBeginNewPanelLoad/);
-  assert.match(html, /function apOpenNew[\s\S]{0,900}apBeginNewPanelLoad\(\)/);
+test('POS Booking preserves the shared appointment source and action behavior', () => {
+  assert.match(runtime, /window\.NEXORA_POS_BOOKING\s*=\s*\{/);
+  assert.match(source, /ensureSource\(['"]booking-book-static-v1/);
+  assert.match(source, /function renderBookingStoreRows\(/);
+  assert.match(source, /function sendBookingSms\(/);
+  assert.match(source, /bookingAction\.dataset\.bookingAction === ['"]send-sms['"][\s\S]{0,180}sendBookingSms\(item\)/);
+  assert.match(source, /data-booking-panel-action-group="operational"/);
+  assert.match(source, /data-booking-panel-action-group="destructive"/);
 });
 
-test('legacy hand-built appointment table is removed', () => {
-  assert.doesNotMatch(html, /data-ap-table/);
-  assert.doesNotMatch(html, /class="ap-table"/);
+test('POS Booking preserves source badges and selected service totals', () => {
+  assert.match(source, /function bookingSourceBadgesFromText\(/);
+  assert.match(source, /bookingSourceBadgesFromText\([\s\S]*booking-source-voice/);
+  assert.match(source, /appointment-service-summary/);
+  assert.match(source, /Total price:/);
+  assert.match(source, /Total time:/);
+  assert.match(source, /function bookingPanelSelectedServiceTotals\(/);
 });
 
-test('legacy date-column FullCalendar integration is removed', () => {
-  assert.doesNotMatch(html, /new FullCalendar\.Calendar/);
-  assert.doesNotMatch(html, /timeGridWeek/);
-  assert.doesNotMatch(html, /fullcalendar@7\.0\.0/);
+test('POS Booking uses the approved category ticket pickers', () => {
+  for (const hook of [
+    'data-booking-panel-ticket-service-search',
+    'data-booking-panel-ticket-tech-search',
+    'data-booking-panel-ticket-add',
+    'data-booking-panel-ticket-remove',
+    'data-booking-create-ticket-service-search',
+    'data-booking-create-ticket-tech-search',
+    'data-booking-create-ticket-add'
+  ]) assert.match(source, new RegExp(hook));
+  assert.doesNotMatch(source, /data-booking-panel-field="duration"/);
 });
 
-test('SMS is not exposed as a POS tab because SMS Campaigns lives in Booking Hub', () => {
-  assert.doesNotMatch(html, /data-pos-tab="sms"/);
-  assert.doesNotMatch(html, /var TABS = \[[^\]]*['"]sms['"]/);
-  assert.match(html, /data-pos-tab="appointments"/);
-});
-
-test('appointments page loads shared salon catalog and appointment store', () => {
-  assert.match(html, /\.\.\/assets\/salon-data\.js/);
-  assert.match(html, /\.\.\/assets\/appointments-store\.js/);
-  assert.match(html, /\.\.\/assets\/appointment-service-catalog\.js/);
-});
-
-test('POS loads the approved category service JSON for appointment pickers', () => {
-  assert.match(html, /booking-service-catalog-draft\.json/);
-  assert.match(html, /appointmentServiceCatalogLoader\.load/);
-  assert.match(html, /data-ap-service-search/);
-  assert.match(html, /data-ap-service-category/);
-});
-
-test('POS migrates seed data into the shared appointment store', () => {
-  assert.match(html, /ensureSource\(['"]pos-seed-v1/);
-  assert.match(html, /createMigrationSeed\(/);
-  assert.match(html, /appointmentStore\.(create|upsert|update)|store\.(create|upsert|update)/);
-  assert.match(html, /appointmentStore\.cancel|store\.cancel/);
-  assert.match(html, /appointmentStore\.subscribe|store\.subscribe/);
+test('POS Booking renders a shared DayPilot resource calendar', () => {
+  assert.match(source, /@daypilot\/daypilot-lite-javascript@5\.9\.0\/daypilot-javascript\.min\.js/);
+  assert.match(source, /new DayPilot\.Calendar/);
+  assert.match(source, /viewType:\s*'Resources'/);
+  assert.match(source, /onEventMoved/);
+  assert.match(source, /onEventResized/);
+  assert.match(source, /data-booking-team-calendar/);
 });
 
 test('POS has no independent technician or service catalog literals', () => {
-  assert.doesNotMatch(html, /var TECHS = \[\s*{/);
-  assert.doesNotMatch(html, /var MENU = \[\s*{/);
-});
-
-test('POS derives appointment resources from the shared active roster', () => {
-  assert.match(html, /salonCatalog\.technicians/);
-  assert.doesNotMatch(html, /var TECHS = \[\s*{/);
+  assert.doesNotMatch(source, /var TECHS = \[\s*{/);
+  assert.doesNotMatch(source, /var MENU = \[\s*{/);
+  assert.doesNotMatch(source, /var APPOINTMENT_MENU = \[\s*{/);
 });
 
 test('POS retains salon-scoped storage and unknown-record safeguards', () => {
-  assert.match(html, /NEXORA_APPOINTMENTS_STORE/);
-  assert.match(html, /storage/);
-  assert.match(html, /serviceNames/);
-  assert.match(html, /cancelled/);
-});
-
-test('POS appointment panel exposes shared operational actions', () => {
-  assert.match(html, /data-ap-panel/);
-  assert.match(html, /data-ap-action="send-sms"/);
-  assert.match(html, /data-ap-action="done"/);
-  assert.match(html, /data-ap-action="noshow"/);
-  assert.match(html, /data-ap-action-group="operational"/);
-  assert.match(html, /data-ap-action-group="destructive"/);
-  assert.match(html, /appointmentStore\.(update|cancel)/);
-  assert.match(html, /function apApplySharedAction\(/);
-});
-
-test('POS appointment metadata shows explicit status and source labels', () => {
-  assert.match(html, /data-ap-meta="status"[\s\S]*?Status:/);
-  assert.match(html, /data-ap-meta="status"[\s\S]*?pos-chip/);
-  assert.match(html, /data-ap-meta="source"[\s\S]*?Nguồn:/);
-  assert.match(html, /data-ap-meta="source"[\s\S]*?pos-chip/);
-});
-
-test('POS appointment card uses the appointment details title', () => {
-  assert.match(html, /Appointment details/);
-  assert.doesNotMatch(html, /Edit appointment/);
-});
-
-test('POS appointment details expose the booking source', () => {
-  assert.match(html, /Nguồn:/);
-  assert.match(html, /data-ap-source/);
-  assert.match(html, /function apSourceLabel\(/);
-});
-
-test('POS appointment details render source badges like Booking Book', () => {
-  assert.match(html, /function apSourceBadgesFromText\(/);
-  assert.match(html, /apSourceBadgesFromText\(apDraft\.source/);
-  assert.match(html, /ap-source-list/);
-});
-
-test('POS appointment details show selected service totals', () => {
-  assert.match(html, /appointment-service-summary/);
-  assert.match(html, /Total price:/);
-  assert.match(html, /Total time:/);
-  assert.match(html, /function apSelectedServiceTotals\(/);
-});
-
-test('POS appointment card has a structured header with title spacing', () => {
-  assert.match(html, /ap-panel-title-icon/);
-  assert.match(html, /\.ap-panel-title \{[\s\S]*display: flex/);
-  assert.match(html, /\.ap-panel-head \{[\s\S]*border-bottom/);
-});
-
-test('POS marks new appointments as front-desk manual additions', () => {
-  assert.match(html, /['"]manual-add['"]/);
-  assert.match(html, /['"]manual add['"]:\s*'Manual add'/);
-});
-
-test('POS calendar events use the shared appointment fields', () => {
-  assert.match(html, /function apServiceSummary\(/);
-  assert.match(html, /apServiceSummary\([\s\S]*serviceDetails/);
-  assert.match(html, /apEvent[\s\S]*booking\.phone/);
-  assert.match(html, /apEvent[\s\S]*booking\.note/);
-  assert.match(html, /data-apf="note"/);
-  assert.match(html, /note:\s*apDraft\.note/);
-});
-
-test('POS calendar uses the shared calendar header and status contract', () => {
-  assert.match(html, /9:00 AM – 7:00 PM · appointments grouped by technician/);
-  assert.match(html, /AP_STATUS = \{ pending: 'Pending', confirmed: 'Confirmed', 'checked-in': 'Checked in', completed: 'Completed', 'no-show': 'No show' \}/);
-  assert.match(html, /data-ap-action-group="operational"/);
-  assert.match(html, /data-ap-action-group="destructive"/);
-});
-
-test('POS action cluster follows the Booking action order and groups Close separately', () => {
-  assert.match(html, /data-ap-save[\s\S]*data-ap-action-group="operational"[\s\S]*data-ap-action-group="destructive"[\s\S]*data-ap-action-group="close"/);
-  assert.match(html, /data-ap-action-group="operational"[\s\S]*data-ap-action="send-sms"[\s\S]*data-ap-action="done"[\s\S]*data-ap-action="noshow"/);
-  assert.match(html, /\.ap-panel-actions \{ display: grid; grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
-  assert.match(html, /\.ap-action-destructive, \.ap-action-close \{ margin-top: 8px; padding-top: 8px; border-top: 1px solid var\(--nexora-rule\); \}/);
-  assert.match(html, /@media \(max-width: 600px\) \{[\s\S]*\.ap-panel-actions \{ grid-template-columns: 1fr; \}/);
-});
-
-test('POS hides the duplicate duration field beside status', () => {
-  assert.doesNotMatch(html, /<select class="pos-input" data-apf="duration">/);
-  assert.doesNotMatch(html, /class="ap-duration-label" data-apf="duration"/);
-  assert.match(html, /data-ap-total-duration/);
-  assert.match(html, /function apSelectedServiceDuration\(/);
-  assert.match(html, /apDraft\.duration = apSelectedServiceDuration\(\)/);
-});
-
-test('POS service picker searches service and technician, then adds removable tickets', () => {
-  assert.match(html, /apServicePickerMarkup\(\)/);
-  assert.match(html, /data-ap-service-search/);
-  assert.match(html, /data-ap-service-category/);
-  assert.match(html, /ap-service-option-name[\s\S]*esc\(service\.label\)/);
-  assert.match(html, /ap-service-option-meta[\s\S]*service\.durationMin/);
-  assert.match(html, /data-ap-tech-search/);
-  assert.match(html, /data-ap-ticket-add/);
-  assert.match(html, /data-ap-ticket-remove/);
-  assert.match(html, /appointmentTicketUtils\.ticketTotals/);
-  assert.match(html, /apTicketSelectedTechName = 'Anyone'/);
-});
-
-test('POS service and technician dropdowns stay hidden until the user types', () => {
-  assert.match(html, /data-ap-ticket-service-results[^>]*hidden/);
-  assert.match(html, /data-ap-ticket-tech-results[^>]*hidden/);
-  assert.match(html, /function filterApServicePicker\([\s\S]*if \(!query\)[\s\S]*results\.hidden = true/);
-  assert.match(html, /function filterApTechPicker\([\s\S]*if \(!query\)[\s\S]*results\.hidden = true/);
-});
-
-test('POS service and technician search fields use the full picker width', () => {
-  const builderRule = html.match(/\.ap-ticket-builder-grid\s*\{([^}]*)\}/)?.[1] || '';
-  assert.match(builderRule, /grid-template-columns:\s*1fr/);
-  assert.match(html, /\.ap-ticket-add\s*\{[^}]*width:\s*100%/);
-});
-
-test('POS limits long service pickers and enables vertical scrolling', () => {
-  const servicePickerRule = html.match(/\.ap-chips\s*\{([^}]*)\}/)?.[1] || '';
-
-  assert.match(servicePickerRule, /max-height:\s*160px/);
-  assert.match(servicePickerRule, /overflow-y:\s*auto/);
-});
-
-test('POS removes decorative icons from imported service names', () => {
-  assert.match(html, /function apServiceDisplayName\(/);
-  assert.match(html, /ticket\.serviceName/);
-  assert.doesNotMatch(html, /title="Imported service">↗ /);
+  assert.match(source, /NEXORA_APPOINTMENTS_STORE/);
+  assert.match(source, /storage/);
+  assert.match(source, /serviceNames/);
+  assert.match(source, /cancelled/);
 });
