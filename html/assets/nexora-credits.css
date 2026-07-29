@@ -361,7 +361,6 @@
 .credits-action:focus-visible { opacity: 1; visibility: visible; }
 .credits-action:focus-visible { outline: 3px solid rgba(70,72,216,.2); outline-offset: 2px; }
 .credits-action:active { transform: translateY(1px); }
-.credits-action:disabled { cursor: not-allowed; opacity: .62; box-shadow: none; transform: none; }
 
 .credits-action-secondary {
   border: 1px solid #cfd7e8;
