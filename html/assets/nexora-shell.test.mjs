@@ -19,6 +19,7 @@ const packageItems = [
   ['overview', 'Overview'],
   ['nexora', 'Subscriptions'],
   ['voice', 'AI Voice Plans'],
+  ['credits', 'Credit Usage'],
   ['history', 'Purchase History']
 ];
 
@@ -86,7 +87,7 @@ test('adds a sign-out icon to the sidebar footer action', () => {
   assert.match(html, /class="logout-button"[\s\S]*data-lucide="log-out"[\s\S]*<span>Sign out<\/span><\/button>/);
 });
 
-test('renders all four Package Management submenu items on the native Packages page', () => {
+test('renders all five Package Management submenu items on the native Packages page', () => {
   const html = renderSidebar('packages', 'overview');
   for (const [tab, label] of packageItems) {
     const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
