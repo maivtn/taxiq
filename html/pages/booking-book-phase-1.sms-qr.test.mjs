@@ -107,11 +107,13 @@ test('keeps shared tab and query-string synchronization for new targets', () => 
   assert.match(html, /var DEFAULT_MAIN_TAB = 'booking'/);
 });
 
-test('adds a POS-style resource calendar to the booking view switch', () => {
+test('adds a POS-style resource calendar to the Booking Calendar subtab', () => {
   const html = source();
 
-  assert.match(html, /data-booking-view-target="calendar"/);
-  assert.match(html, /data-booking-view-panel="calendar"/);
+  assert.match(html, /data-booking-subtab-target="calendar"[^>]*aria-controls="booking-subpanel-calendar"/);
+  assert.match(html, /id="booking-subpanel-calendar" data-booking-sub-panel="calendar"/);
+  assert.doesNotMatch(html, /data-booking-view-target="calendar"/);
+  assert.doesNotMatch(html, /data-booking-view-panel="calendar"/);
   assert.match(html, /@daypilot\/daypilot-lite-javascript@5\.9\.0\/daypilot-javascript\.min\.js/);
   assert.match(html, /new DayPilot\.Calendar/);
   assert.match(html, /viewType:\s*'Resources'/);
@@ -387,16 +389,16 @@ test('shows the default +1 country code before New appointment phone', () => {
   );
 });
 
-test('places New appointment before the booking view switch', () => {
+test('keeps separate New appointment actions for Appointments and Calendar', () => {
   const html = source();
 
   assert.match(
     html,
-    /<div class="booking-daybar-actions">\s*<button class="booking-primary-button booking-overview-add-button"[^>]*data-booking-calendar-add[^>]*>[^<]*<i class="bi bi-plus-lg"[^>]*><\/i>New appointment<\/button>\s*<div class="booking-view-switch"/
+    /<div class="booking-daybar-actions">\s*<button class="booking-primary-button booking-overview-add-button"[^>]*data-booking-appointments-add[^>]*>[^<]*<i class="bi bi-plus-lg"[^>]*><\/i>New appointment<\/button>\s*<div class="booking-view-switch"/
   );
-  const dateBlock = html.match(/<div class="booking-date">([\s\S]*?)<\/div>\s*<div class="booking-daybar-actions">/)?.[1] || '';
-  assert.doesNotMatch(dateBlock, /data-booking-calendar-add/);
-  assert.doesNotMatch(html, /booking-calendar-head-actions">\s*<button[^>]*data-booking-calendar-add/);
+  const appointmentsPanel = html.match(/id="booking-subpanel-today"[\s\S]*?id="booking-subpanel-calendar"/)?.[0] || '';
+  assert.doesNotMatch(appointmentsPanel, /data-booking-calendar-add/);
+  assert.match(html, /booking-calendar-head-actions">\s*<button[^>]*data-booking-calendar-add/);
 });
 
 test('shows a manually closable success alert after saving an appointment', () => {

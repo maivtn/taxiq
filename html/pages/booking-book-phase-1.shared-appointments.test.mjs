@@ -104,35 +104,47 @@ test('Booking Book does not render the shared appointment workspace handoff card
   assert.doesNotMatch(SOURCE, /Shared appointment workspace/);
 });
 
-test('Booking Book keeps its appointment table, calendar, and action workspace visible', () => {
+test('Booking Book exposes Appointments, Calendar, and Team subtabs', () => {
   assert.match(SOURCE, /<div class="booking-legacy-appointments" data-booking-legacy-appointments>/);
-  assert.match(SOURCE, /data-booking-table/);
-  assert.match(SOURCE, /data-booking-view-target="calendar"/);
-  assert.match(SOURCE, /data-booking-action=/);
+  assert.match(SOURCE, /data-booking-subtab-target="today"[^>]*aria-controls="booking-subpanel-today"/);
+  assert.match(SOURCE, /data-booking-subtab-target="calendar"[^>]*aria-controls="booking-subpanel-calendar"/);
+  assert.match(SOURCE, /<span>Calendar<\/span>/);
+  assert.match(SOURCE, /data-booking-subtab-target="team"[^>]*aria-controls="booking-subpanel-team"/);
+  assert.match(SOURCE, /id="booking-subpanel-calendar" data-booking-sub-panel="calendar"/);
 });
 
 test('Booking Book exposes its appointment workspace', () => {
+  assert.match(SOURCE, /data-booking-table/);
+  assert.match(SOURCE, /data-booking-action=/);
   assert.match(SOURCE, /<aside class="booking-appointment-panel overview-card" data-booking-appointment-panel/);
   assert.match(SOURCE, /<div class="booking-legacy-appointments" data-booking-legacy-appointments>/);
   assert.match(SOURCE, /booking-appointment-layout/);
 });
 
-test('Booking Book calendar layout includes a right-side appointment detail panel', () => {
-  assert.match(SOURCE, /<div class="booking-appointment-layout"[^>]*>[\s\S]*<div class="booking-appointment-main">[\s\S]*<aside class="booking-appointment-panel overview-card" data-booking-appointment-panel/);
+test('Booking Book keeps one detail panel for appointment and calendar workspaces', () => {
+  assert.match(SOURCE, /data-booking-appointment-workspace/);
+  assert.match(SOURCE, /id="booking-subpanel-calendar" data-booking-sub-panel="calendar"[\s\S]*data-booking-team-calendar/);
+  assert.match(SOURCE, /<div class="booking-appointment-main">[\s\S]*<aside class="booking-appointment-panel overview-card" data-booking-appointment-panel/);
+  assert.match(SOURCE, /\.booking-appointment-panel \{[\s\S]*position: sticky/);
   assert.match(SOURCE, /data-booking-panel-state="empty"/);
 });
 
-test('Booking Book shows the right detail panel only in calendar mode', () => {
-  assert.match(SOURCE, /booking-appointment-layout[^>]*data-booking-view-mode="calendar"/);
-  assert.match(SOURCE, /booking-appointment-layout\[data-booking-view-mode="calendar"\]/);
-  assert.match(SOURCE, /booking-appointment-layout:not\(\[data-booking-view-mode="calendar"\]\)[\s\S]*booking-appointment-panel/);
-  assert.match(SOURCE, /appointmentLayout\.dataset\.bookingViewMode\s*=\s*nextMode/);
+test('Booking Book keeps Table and Card modes inside Appointments', () => {
+  assert.match(SOURCE, /data-booking-view-target="table"/);
+  assert.match(SOURCE, /data-booking-view-target="card"/);
+  assert.doesNotMatch(SOURCE, /data-booking-view-target="calendar"/);
+  assert.doesNotMatch(SOURCE, /data-booking-view-panel="calendar"/);
+  assert.match(SOURCE, /function initBookingViewMode\(\)[\s\S]*setBookingViewMode\('table'\)/);
+  assert.doesNotMatch(SOURCE, /setBookingViewMode\('calendar'\)/);
 });
 
-test('Booking Book opens the legacy create modal outside calendar mode', () => {
+test('Booking Book keeps appointment create in modal and calendar create in panel', () => {
   assert.match(SOURCE, /function openBookingNewAppointment\(/);
-  assert.match(SOURCE, /openBookingNewAppointment\([\s\S]*nextMode === 'calendar'[\s\S]*openBookingAppointmentPanelForNew[\s\S]*openBookingCreateModal/);
-  assert.match(SOURCE, /bookingCalendarAdd\.addEventListener\('click', function\(\) \{\s*openBookingNewAppointment\(\);/);
+  assert.match(SOURCE, /data-booking-appointments-add/);
+  assert.match(SOURCE, /data-booking-calendar-add/);
+  assert.match(SOURCE, /function openBookingNewAppointment\([\s\S]*closeBookingAppointmentPanel\(\)[\s\S]*openBookingCreateModal/);
+  assert.match(SOURCE, /bookingCalendarAdd\.addEventListener\('click', function\(\) \{[\s\S]*activateBookingSubTab\('calendar'\)[\s\S]*openBookingAppointmentPanelForNew/);
+  assert.doesNotMatch(SOURCE, /nextMode === 'calendar'/);
 });
 
 test('Booking Book calendar events use the shared appointment fields', () => {
@@ -188,10 +200,11 @@ test('Booking Book service and technician search fields use the full picker widt
   assert.match(SOURCE, /\.booking-ticket-add\s*\{[^}]*width:\s*100%/);
 });
 
-test('Booking Book opens the booking tab in calendar mode by default', () => {
+test('Booking Book opens Appointments in Table mode and initializes Calendar from its subtab', () => {
   assert.match(SOURCE, /function activateMainTabFromUrl\(\)[\s\S]*activateMainTab\(tab, \{ syncUrl: false \}\)[\s\S]*requestedTab !== tab/);
-  assert.match(SOURCE, /if \(activeTarget === 'booking'\) setBookingViewMode\('calendar'\)/);
-  assert.match(SOURCE, /function initBookingViewMode\(\)[\s\S]*setBookingViewMode\('calendar'\)/);
+  assert.match(SOURCE, /function activateBookingSubTab\([\s\S]*target === 'calendar'[\s\S]*initBookingCalendar\(\)/);
+  assert.match(SOURCE, /function initBookingViewMode\(\)[\s\S]*setBookingViewMode\('table'\)/);
+  assert.doesNotMatch(SOURCE, /if \(activeTarget === 'booking'\) setBookingViewMode\('calendar'\)/);
 });
 
 test('Booking Book hides the duplicate duration field beside status', () => {
