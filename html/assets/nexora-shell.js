@@ -82,10 +82,12 @@
       { label: 'Analytics', tab: 'analytics' }
     ] },
     { type: 'group', key: 'pos', label: 'POS', icon: 'monitor', page: 'pos', items: [
-      { label: 'Operations', tab: 'dispatch' },
+      { label: 'Check-in', tab: 'checkin' },
+      { label: 'Tickets', tab: 'tickets' },
+      { label: 'Booking', tab: 'booking' },
+      { label: 'Customers', tab: 'customers' },
       { label: 'Time Clock', tab: 'clock' },
-      { label: 'Management', tab: 'management' },
-      { label: 'Booking', tab: 'booking' }
+      { label: 'Management', tab: 'management' }
     ] },
     { type: 'item', label: 'Analytics', icon: 'chart-no-axes-combined' },
     { type: 'item', label: 'Settings', icon: 'settings' },

@@ -91,7 +91,7 @@ test('POS Booking uses the shared appointment store and no longer loads the phas
 });
 
 test('POS keeps the shared mode and tab activation contracts', () => {
-  assert.match(source, /var TABS = \['dispatch', 'clock', 'management', 'booking'\]/);
+  assert.match(source, /var TABS = \['checkin', 'tickets', 'booking', 'customers', 'clock', 'management'\]/);
   assert.match(source, /function activateTab\(id\)/);
   assert.match(source, /if \(id === ['"]booking['"]\)/);
   assert.match(source, /data-pos-mode-modal[^>]*role="dialog"/);

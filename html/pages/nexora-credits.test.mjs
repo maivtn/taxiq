@@ -304,7 +304,7 @@ test('renders both credit balances, progress indicators, and usage history', () 
   assert.match(packages, /credits-usage-progress/);
   assert.match(html, /<th scope="col">Product<\/th>/);
   assert.match(html, /<th scope="col">Activity<\/th>/);
-  assert.match(html, /<th scope="col">Amount<\/th>/);
+  assert.match(html, /<th scope="col">Usage<\/th>/);
   assert.match(html, /<th scope="col">Date<\/th>/);
   assert.doesNotMatch(html, /<th scope="col">Balance after<\/th>/);
   assert.doesNotMatch(packages, /<th scope="col">Balance after<\/th>/);
@@ -480,16 +480,23 @@ test('keeps the SMS credit action readable on hover', () => {
   assert.match(css, /\.credits-action-primary svg\s*\{[^}]*display:\s*inline-flex\s*!important[^}]*opacity:\s*1\s*!important/);
 });
 
-test('shows Voice usage history per incoming phone number', () => {
+test('shows Voice usage history activity without phone numbers', () => {
   const html = source();
   const runtime = readFileSync(JS_URL, 'utf8');
   const css = readFileSync(CSS_URL, 'utf8');
 
   assert.match(html, /<th scope="col">Activity<\/th>/);
-  assert.match(runtime, /phone:\s*'\+1 \(713\) 555-0182'/);
-  assert.match(runtime, /phone:\s*'\+1 \(832\) 555-0104'/);
+  assert.match(html, /<th scope="col">Usage<\/th>/);
+  assert.match(html, /<span class="credits-history-activity"><strong>Incoming call<\/strong><\/span>/);
+  assert.doesNotMatch(html, /\+1 \(713\) 555-0182|\+1 \(832\) 555-0104|\+1 \(281\) 555-0199/);
+  assert.doesNotMatch(runtime, /phone:\s*'\+1 \(713\) 555-0182'/);
+  assert.doesNotMatch(runtime, /phone:\s*'\+1 \(832\) 555-0104'/);
+  assert.doesNotMatch(runtime, /phone:\s*'\+1 \(281\) 555-0199'/);
+  assert.match(runtime, /activity:\s*'Incoming call'/);
   assert.match(runtime, /credits-history-activity/);
   assert.match(css, /\.credits-history-activity\s*{/);
+  assert.match(css, /\.credits-history-activity strong\s*\{[^}]*font-weight:\s*400/);
+  assert.match(css, /\.credits-history-table td:nth-child\(2\)\s*\{\s*font-weight:\s*400/);
 });
 
 test('keeps the credits history caption screen-reader only', () => {

@@ -22,11 +22,11 @@ test('POS mode uses the demo PIN and applies Front Desk management visibility', 
   assert.match(html, /function applyPosModeAccess\(/);
   assert.match(html, /managementTab\.hidden = isFrontDesk/);
   assert.match(html, /managementPanel\.hidden = isFrontDesk/);
-  assert.match(html, /if \(isFrontDesk && activeTabId === ['"]management['"]\) activateTab\(['"]dispatch['"]\)/);
+  assert.match(html, /if \(isFrontDesk && activeTabId === ['"]management['"]\) activateTab\(['"]checkin['"]\)/);
 });
 
 test('POS rejects direct Management activation for Front Desk mode', () => {
-  assert.match(html, /if \(id === ['"]management['"] && getActiveStaff\(\)\.role === ['"]frontdesk['"]\) id = ['"]dispatch['"]/);
+  assert.match(html, /if \(id === ['"]management['"] && getActiveStaff\(\)\.role === ['"]frontdesk['"]\) id = ['"]checkin['"]/);
 });
 
 test('POS mode UI exposes a labelled badge and keyboard-friendly PIN controls', () => {

@@ -11,9 +11,9 @@
 
   const CREDITS_HISTORY = [
     { product: 'SMS', activity: 'All customers campaign', amount: '−1,284 SMS', date: 'Jul 28, 2026', balance: '847 SMS' },
-    { product: 'Voice', activity: 'Incoming call', phone: '+1 (713) 555-0182', amount: '−18 min', date: 'Jul 28, 2026 · 10:42 AM', balance: '571 min' },
-    { product: 'Voice', activity: 'Incoming call', phone: '+1 (832) 555-0104', amount: '−27 min', date: 'Jul 28, 2026 · 9:18 AM', balance: '544 min' },
-    { product: 'Voice', activity: 'Incoming call', phone: '+1 (281) 555-0199', amount: '−31 min', date: 'Jul 27, 2026 · 5:50 PM', balance: '513 min' },
+    { product: 'Voice', activity: 'Incoming call', amount: '−18 min', date: 'Jul 28, 2026 · 10:42 AM', balance: '571 min' },
+    { product: 'Voice', activity: 'Incoming call', amount: '−27 min', date: 'Jul 28, 2026 · 9:18 AM', balance: '544 min' },
+    { product: 'Voice', activity: 'Incoming call', amount: '−31 min', date: 'Jul 27, 2026 · 5:50 PM', balance: '513 min' },
     { product: 'SMS', activity: 'VIP comeback campaign', amount: '−320 SMS', date: 'Jul 26, 2026', balance: '2,131 SMS' }
   ];
   let activeHistoryFilter = 'all';
@@ -230,8 +230,8 @@
       const badgeClass = item.product === 'Voice' ? 'credits-product-badge-voice' : 'credits-product-badge-sms';
       const amount = escapeHTML(item.amount);
       const amountClass = item.direction === 'credit' ? 'credits-amount-positive' : 'credits-amount-negative';
-      const activity = item.phone
-        ? '<span class="credits-history-activity"><strong>' + escapeHTML(item.phone) + '</strong><small>' + escapeHTML(item.activity) + '</small></span>'
+      const activity = item.product === 'Voice'
+        ? '<span class="credits-history-activity"><strong>' + escapeHTML(item.activity) + '</strong></span>'
         : escapeHTML(item.activity);
       return '<tr>' +
         '<td><span class="credits-product-badge ' + badgeClass + '">' + escapeHTML(item.product) + '</span></td>' +

@@ -116,16 +116,18 @@ test('links every Reward submenu from pages that share the sidebar', () => {
 });
 
 test('does not render the SMS submenu item under POS', () => {
-  const html = renderSidebar('pos', 'dispatch');
+  const html = renderSidebar('pos', 'checkin');
   assert.doesNotMatch(html, /data-shell-tab="sms"/);
   assert.match(html, /data-shell-tab="booking"[\s\S]*?<span>Booking<\/span>/);
   assert.doesNotMatch(html, /data-shell-tab="appointments"/);
 });
 
-test('labels the POS dispatch tab as Operations in the sidebar', () => {
-  const html = renderSidebar('pos', 'dispatch');
-  assert.match(html, /data-shell-tab="dispatch"[\s\S]*?<span>Operations<\/span>/);
-  assert.doesNotMatch(html, /data-shell-tab="dispatch"[\s\S]*?<span>Dispatch<\/span>/);
+test('labels the POS Check-in, Tickets, and Customers tabs in the sidebar', () => {
+  const html = renderSidebar('pos', 'checkin');
+  assert.match(html, /data-shell-tab="checkin"[\s\S]*?<span>Check-in<\/span>/);
+  assert.match(html, /data-shell-tab="tickets"[\s\S]*?<span>Tickets<\/span>/);
+  assert.match(html, /data-shell-tab="customers"[\s\S]*?<span>Customers<\/span>/);
+  assert.doesNotMatch(html, /data-shell-tab="dispatch"/);
 });
 
 test('keeps the shared sidebar in the drawer state through 1200px', () => {

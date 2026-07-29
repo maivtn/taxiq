@@ -411,10 +411,12 @@
           </div>
           <p class="page-description">Bitcoin Nail Bar · Houston, TX — run the front desk: time clock, salon management, and appointments.</p>
           <div class="page-tabs" role="tablist" aria-label="POS sections">
-            <button class="page-tab is-active" type="button" role="tab" data-pos-tab="dispatch"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Operations</button>
+            <button class="page-tab is-active" type="button" role="tab" data-pos-tab="checkin"><i class="bi bi-door-open" aria-hidden="true"></i> Check-in</button>
+            <button class="page-tab" type="button" role="tab" data-pos-tab="tickets"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Tickets</button>
+            <button class="page-tab" type="button" role="tab" data-pos-tab="booking"><i class="bi bi-calendar-check" aria-hidden="true"></i> Booking</button>
+            <button class="page-tab" type="button" role="tab" data-pos-tab="customers"><i class="bi bi-person-vcard" aria-hidden="true"></i> Customers</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="clock"><i class="bi bi-clock-history" aria-hidden="true"></i> Time Clock</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="management"><i class="bi bi-building-gear" aria-hidden="true"></i> Management</button>
-            <button class="page-tab" type="button" role="tab" data-pos-tab="booking"><i class="bi bi-calendar-check" aria-hidden="true"></i> Booking</button>
           </div>
         </div>
 
@@ -448,8 +450,37 @@
           </div>
         </div>
 
-        <!-- ══════════ 🪑 DISPATCH — QUEUE & TECH ASSIGNMENT (S2) ══════════ -->
-        <section class="pos-panel is-active" data-pos-panel="dispatch" aria-label="Operations">
+        <!-- ══════════ 🚪 CHECK-IN — GUEST ARRIVAL ══════════ -->
+        <section class="pos-panel is-active" data-pos-panel="checkin" aria-label="Check-in">
+          <div class="pos-stack">
+
+            <div class="pos-card panel-blue" data-eta-panel hidden>
+              <div class="pos-card-head"><h3><i class="bi bi-calendar-event" aria-hidden="true"></i> Today's bookings &amp; ETA — guests on the way (<span data-eta-count>0</span>)</h3></div>
+              <div data-eta-list></div>
+            </div>
+
+            <div class="pos-card panel-violet" data-ciq-panel hidden>
+              <div class="pos-card-head"><h3><i class="bi bi-inbox-fill" aria-hidden="true"></i> Check-in from the Nexora App / QR — waiting on the front desk (<span data-ciq-count>0</span>)</h3></div>
+              <div data-ciq-list></div>
+            </div>
+
+            <div class="pos-card">
+              <div class="pos-card-head">
+                <h3><i class="bi bi-person-plus-fill" aria-hidden="true"></i> Walk-in</h3>
+                <div class="pos-inline">
+                  <input class="pos-input" data-wl-name placeholder="Guest name" style="width:130px;height:34px">
+                  <input class="pos-input" data-wl-phone placeholder="Phone" style="width:120px;height:34px">
+                  <button class="pos-btn pos-btn-sm" type="button" data-wl-add><i class="bi bi-plus-lg"></i> Add</button>
+                </div>
+              </div>
+              <p class="pos-muted" style="margin:0">Checked-in guests move to the <b>Tickets</b> tab for tech assignment.</p>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ══════════ 🎫 TICKETS — QUEUE & TECH ASSIGNMENT (S2) ══════════ -->
+        <section class="pos-panel" data-pos-panel="tickets" aria-label="Tickets">
           <div class="pos-stack">
             <div class="disp-stats">
               <div class="disp-stat" style="--accent:var(--nexora-warning)"><div class="disp-num" data-fs-wait>0</div><div class="disp-lbl"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Waiting</div></div>
@@ -459,31 +490,14 @@
               <div class="disp-stat" style="--accent:var(--nexora-success)"><div class="disp-num" data-fs-rev>$0</div><div class="disp-lbl"><i class="bi bi-cash-stack" aria-hidden="true"></i> Revenue today</div></div>
             </div>
 
-            <div class="pos-card panel-violet" data-ciq-panel hidden>
-              <div class="pos-card-head"><h3><i class="bi bi-inbox-fill" aria-hidden="true"></i> Check-in from the Nexora App / QR — waiting on the front desk (<span data-ciq-count>0</span>)</h3></div>
-              <div data-ciq-list></div>
-            </div>
-
             <div class="pos-card panel-amber" data-arq-panel hidden>
               <div class="pos-card-head"><h3><i class="bi bi-shield-lock" aria-hidden="true"></i> Tech access requests — waiting on front desk / manager (<span data-arq-count>0</span>)</h3></div>
               <div data-arq-list></div>
             </div>
 
-            <div class="pos-card panel-blue" data-eta-panel hidden>
-              <div class="pos-card-head"><h3><i class="bi bi-calendar-event" aria-hidden="true"></i> Today's bookings &amp; ETA — guests on the way (<span data-eta-count>0</span>)</h3></div>
-              <div data-eta-list></div>
-            </div>
-
             <div class="disp-grid">
               <div class="pos-card">
-                <div class="pos-card-head">
-                  <h3><i class="bi bi-hourglass-split" aria-hidden="true"></i> Queue</h3>
-                  <div class="pos-inline">
-                    <input class="pos-input" data-wl-name placeholder="Guest name" style="width:130px;height:34px">
-                    <input class="pos-input" data-wl-phone placeholder="Phone" style="width:120px;height:34px">
-                    <button class="pos-btn pos-btn-sm" type="button" data-wl-add><i class="bi bi-plus-lg"></i> Add</button>
-                  </div>
-                </div>
+                <div class="pos-card-head"><h3><i class="bi bi-hourglass-split" aria-hidden="true"></i> Queue</h3></div>
                 <div data-wait-list></div>
               </div>
 
@@ -1513,6 +1527,26 @@
               </div>
               </div>
         </section>
+
+        <!-- ══════════ 🗂️ CUSTOMERS — LOOKUP ══════════ -->
+        <section class="pos-panel" data-pos-panel="customers" aria-label="Customers">
+          <div class="pos-stack">
+            <div class="pos-card">
+              <div class="pos-card-head">
+                <h3><i class="bi bi-search" aria-hidden="true"></i> Find a customer</h3>
+                <div class="pos-inline">
+                  <input class="pos-input" data-cust-search placeholder="Name or phone" style="width:220px;height:34px">
+                </div>
+              </div>
+              <div data-cust-results></div>
+            </div>
+
+            <div class="pos-card" data-cust-profile-card hidden>
+              <div class="pos-card-head"><h3><i class="bi bi-person-vcard" aria-hidden="true"></i> Profile</h3></div>
+              <div data-cust-profile></div>
+            </div>
+          </div>
+        </section>
     </main>
     </div>
   </div>
@@ -1525,7 +1559,7 @@
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    window.NEXORA_SHELL = { activePage: 'pos', activeTab: 'dispatch' };
+    window.NEXORA_SHELL = { activePage: 'pos', activeTab: 'checkin' };
   </script>
   <script src="../assets/nexora-shell.js"></script>
   <script src="../assets/pos-booking-runtime.js"></script>
@@ -1557,7 +1591,7 @@
       var POS_DEMO_PIN = '1234';
       var activeStaffId = 'owner';
       var selectedStaffId = 'owner';
-      var activeTabId = 'dispatch';
+      var activeTabId = 'checkin';
 
       var STAFF = [
         { id: 'owner', name: 'Brian', ava: '👑', role: 'owner' },
@@ -1650,7 +1684,7 @@
           managementPanel.hidden = isFrontDesk;
           managementPanel.setAttribute('aria-hidden', String(isFrontDesk));
         }
-        if (isFrontDesk && activeTabId === 'management') activateTab('dispatch');
+        if (isFrontDesk && activeTabId === 'management') activateTab('checkin');
       }
 
       var salonData = window.NEXORA_SALON_DATA;
@@ -1892,6 +1926,11 @@
         return null;   // can't tell → anyone can take it
       }
       function custOf(name) { return CUSTOMERS.find(function (c) { return c.name === name; }) || null; }
+      function custByPhone(phone) {
+        var digits = String(phone || '').replace(/\D/g, '');
+        if (!digits) return null;
+        return CUSTOMERS.find(function (c) { return String(c.phone || '').replace(/\D/g, '') === digits; }) || null;
+      }
       function matchScore(t, w) {
         var R = MATCH_RULES;
         var req = reqSkill(w);
@@ -1992,6 +2031,51 @@
         var pk = (CUSTPKGS[name] || []).filter(function (p) { return p.left > 0; })
           .map(function (p) { return '📦 ' + esc(p.name) + ': <b>' + p.left + '/' + p.total + '</b> left'; }).join(' · ');
         return uLine + (pk ? '<div class="cust-pkg">' + pk + ' prepaid</div>' : '') + custTagsHtml(name) + custStaffNote(name);
+      }
+
+      /* ── Customers tab: lookup + profile (#pos-nail-salon-ops Phase 1) ── */
+      var custSelected = null;
+      function custSearchMatches(q) {
+        q = String(q || '').trim().toLowerCase();
+        if (!q) return CUSTOMERS.slice(0, 20);
+        var qDigits = q.replace(/\D/g, '');
+        return CUSTOMERS.filter(function (c) {
+          var nameHit = c.name.toLowerCase().indexOf(q) !== -1;
+          var phoneHit = qDigits && String(c.phone || '').replace(/\D/g, '').indexOf(qDigits) !== -1;
+          return nameHit || phoneHit;
+        });
+      }
+      function custResultRowHtml(c) {
+        return '<button class="wl-card tappable" type="button" data-cust-pick="' + esc(c.name) + '" style="width:100%;text-align:left;cursor:pointer">' +
+          '<div class="wl-info"><div class="wl-name">' + esc(c.name) + (c.seg === 'vip' ? ' <span class="pos-chip pos-chip-gold">⭐ VIP</span>' : '') + '</div>' +
+          '<div class="wl-meta">' + esc(c.phone || 'No phone on file') + ' · ' + (c.visits || 0) + ' visits</div></div></button>';
+      }
+      function renderCustomersTab() {
+        var searchEl = $('[data-cust-search]');
+        var matches = custSearchMatches(searchEl ? searchEl.value : '');
+        html('[data-cust-results]', matches.length ? matches.map(custResultRowHtml).join('') : '<div class="wl-empty">No customers match.</div>');
+
+        var card = $('[data-cust-profile-card]');
+        var c = custSelected ? custOf(custSelected) : null;
+        if (!c) {
+          custSelected = null;
+          if (card) card.hidden = true;
+          return;
+        }
+        if (card) card.hidden = false;
+        var u = custUsual(c.name);
+        html('[data-cust-profile]',
+          '<div class="wl-name" style="font-size:16px;margin-bottom:4px">' + esc(c.name) + '</div>' +
+          '<div class="wl-meta">' + esc(c.phone || 'No phone on file') + (c.prefTech ? ' · 📌 prefers ' + esc(techName(c.prefTech)) : '') + '</div>' +
+          (u ? '<div class="cust-usual">🧠 Usual: ' + esc(u.svc || '—') + (u.tech ? ' · regular ' + esc(techName(u.tech)) : '') +
+            ' · last visit ' + (u.last === 0 ? 'today' : u.last + ' days ago') + '</div>' : '<p class="pos-muted" style="margin:6px 0">No visit history yet.</p>') +
+          custProfHtml(c.name) +
+          '<div class="pos-inline" style="margin-top:12px">' +
+          '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-cust-checkin="' + esc(c.name) + '"><i class="bi bi-door-open" aria-hidden="true"></i> Check in</button>' +
+          '<button class="pos-btn pos-btn-sm" type="button" data-cust-newbooking="' + esc(c.name) + '"><i class="bi bi-calendar-plus" aria-hidden="true"></i> New booking</button>' +
+          '<button class="pos-btn pos-btn-sm" type="button" data-cust-edit><i class="bi bi-pencil" aria-hidden="true"></i> Edit in Management</button>' +
+          '</div>'
+        );
       }
 
       /* ── check-in requests (📥) ── */
@@ -2180,7 +2264,37 @@
           return;
         }
 
-        if (!e.target.closest('[data-pos-panel="dispatch"]')) return;
+        /* customers lookup */
+        if (e.target.closest('[data-pos-panel="customers"]')) {
+          var cpick = e.target.closest('[data-cust-pick]');
+          if (cpick) { custSelected = cpick.getAttribute('data-cust-pick'); renderCustomersTab(); return; }
+          var cci = e.target.closest('[data-cust-checkin]');
+          if (cci) {
+            var ccName = cci.getAttribute('data-cust-checkin');
+            var ccCust = custOf(ccName);
+            activateTab('checkin');
+            var wlNameEl = $('[data-wl-name]'), wlPhoneEl = $('[data-wl-phone]');
+            if (wlNameEl) wlNameEl.value = ccName;
+            if (wlPhoneEl) wlPhoneEl.value = ccCust ? (ccCust.phone || '') : '';
+            return;
+          }
+          var cnb = e.target.closest('[data-cust-newbooking]');
+          if (cnb) {
+            var nbName = cnb.getAttribute('data-cust-newbooking');
+            var nbCust = custOf(nbName);
+            activateTab('booking');
+            if (typeof openBookingNewAppointment === 'function') openBookingNewAppointment();
+            var nameField = document.querySelector('[data-booking-create-field="name"]');
+            var phoneField = document.querySelector('[data-booking-create-field="phone"]');
+            if (nameField) nameField.value = nbName;
+            if (phoneField) phoneField.value = nbCust ? (nbCust.phone || '') : '';
+            return;
+          }
+          if (e.target.closest('[data-cust-edit]')) { activateTab('management'); return; }
+          return;
+        }
+
+        if (!e.target.closest('[data-pos-panel="checkin"], [data-pos-panel="tickets"]')) return;
 
         /* check-in requests */
         var cok = e.target.closest('[data-ciq-ok]'), cno = e.target.closest('[data-ciq-no]');
@@ -3413,6 +3527,7 @@
 
       document.addEventListener('input', function (e) {
         if (e.target.closest('[data-sms-text]')) updateCharCount();
+        if (e.target.matches('[data-cust-search]')) renderCustomersTab();
       });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && $('[data-sms-modal]').classList.contains('open')) closeComposer();
@@ -3437,11 +3552,14 @@
       function renderBookingTab() {
         if (window.NEXORA_POS_BOOKING && typeof window.NEXORA_POS_BOOKING.render === 'function') window.NEXORA_POS_BOOKING.render();
       }
-      var TABS = ['dispatch', 'clock', 'management', 'booking'];
+      // URL compatibility during the transition: old links keep working, pointed at their new home.
+      var TAB_ALIASES = { dispatch: 'tickets', appointments: 'booking' };
+      var TABS = ['checkin', 'tickets', 'booking', 'customers', 'clock', 'management'];
       var tabBtns = document.querySelectorAll('[data-pos-tab]');
       var panels = document.querySelectorAll('[data-pos-panel]');
       function activateTab(id) {
-        if (id === 'management' && getActiveStaff().role === 'frontdesk') id = 'dispatch';
+        if (TAB_ALIASES[id]) id = TAB_ALIASES[id];
+        if (id === 'management' && getActiveStaff().role === 'frontdesk') id = 'checkin';
         if (TABS.indexOf(id) === -1) id = TABS[0];
         activeTabId = id;
         tabBtns.forEach(function (t) { t.classList.toggle('is-active', t.getAttribute('data-pos-tab') === id); });
@@ -3449,10 +3567,11 @@
         var url = new URL(window.location.href);
         url.searchParams.set('tab', id);
         window.history.replaceState({ tab: id }, '', url.search);
-        if (id === 'dispatch') renderFloor();
+        if (id === 'checkin' || id === 'tickets') renderFloor();
         if (id === 'clock') renderClock();
         if (id === 'management') renderManagement();
         if (id === 'booking') { initBookingTab(); renderBookingTab(); }
+        if (id === 'customers') renderCustomersTab();
         if (id !== 'sms') closeComposer();
         if (window.NEXORA_SHELL && window.NEXORA_SHELL.setActiveTab) window.NEXORA_SHELL.setActiveTab(id);
       }
@@ -3469,16 +3588,19 @@
       renderSms();
       initBookingTab();
       renderBookingTab();
+      renderCustomersTab();
       applyPosModeAccess();
-      activateTab(new URL(window.location.href).searchParams.get('tab') || 'dispatch');
+      activateTab(new URL(window.location.href).searchParams.get('tab') || 'checkin');
       if (salonData.storageAvailable && !salonData.storageAvailable()) {
         setTimeout(function () { toast('Local changes are available in this tab; cross-tab sync is unavailable.', 'info'); }, 0);
       }
 
       // Wait / service / pay timers tick on their own; refresh the board while it is on screen.
       setInterval(function () {
-        var panel = $('[data-pos-panel="dispatch"]');
-        if (panel && panel.classList.contains('is-active')) renderFloor();
+        var checkinPanel = $('[data-pos-panel="checkin"]');
+        var ticketsPanel = $('[data-pos-panel="tickets"]');
+        var onScreen = (checkinPanel && checkinPanel.classList.contains('is-active')) || (ticketsPanel && ticketsPanel.classList.contains('is-active'));
+        if (onScreen) renderFloor();
       }, 30000);
 
       // The QR token rotates every 15s; only tick while the Time Clock tab is visible.

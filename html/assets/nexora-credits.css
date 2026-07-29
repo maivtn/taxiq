@@ -344,12 +344,13 @@
 .credits-history-table { width: 100%; min-width: 660px; border-collapse: collapse; color: var(--nexora-text); font-size: 12px; }
 .credits-history-table th { padding: 10px 12px; border-bottom: 1px solid var(--nexora-border); color: var(--nexora-subtle); font-size: 10px; font-weight: 900; letter-spacing: .06em; text-align: left; text-transform: uppercase; }
 .credits-history-table td { padding: 13px 12px; border-bottom: 1px solid var(--nexora-rule); font-weight: 600; white-space: nowrap; }
+.credits-history-table td:nth-child(2) { font-weight: 400; }
 .credits-history-table tbody tr:last-child td { border-bottom: 0; }
 .credits-product-badge { display: inline-flex; border-radius: 999px; padding: 4px 8px; font-size: 10px; font-weight: 900; }
 .credits-product-badge-sms { background: #edf2ff; color: var(--nexora-brand); }
 .credits-product-badge-voice { background: #f2edff; color: #6d28d9; }
 .credits-history-activity { display: grid; gap: 2px; }
-.credits-history-activity strong { color: var(--nexora-text); font-size: 12px; }
+.credits-history-activity strong { color: var(--nexora-text); font-size: 12px; font-weight: 400; }
 .credits-history-activity small { color: var(--nexora-subtle); font-size: 10px; font-weight: 700; }
 .credits-history-date { display: grid; gap: 2px; }
 .credits-history-date small { color: var(--nexora-subtle); font-size: 10px; font-weight: 700; }
