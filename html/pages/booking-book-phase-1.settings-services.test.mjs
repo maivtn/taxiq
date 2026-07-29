@@ -39,6 +39,24 @@ test('manual and industry services are added to CUSTOM SERVICES', () => {
   assert.match(SOURCE, /data-service-remove/);
 });
 
+test('Enter Manually opens a service modal with name, price, and minutes fields', () => {
+  assert.match(SOURCE, /data-service-modal/);
+  assert.match(SOURCE, /data-service-modal-field="name"/);
+  assert.match(SOURCE, /data-service-modal-field="price"/);
+  assert.match(SOURCE, /data-service-modal-field="duration"/);
+  assert.match(SOURCE, /function openSettingsServiceModal\(/);
+  assert.match(SOURCE, /function saveSettingsServiceModal\(/);
+  assert.match(SOURCE, /if \(action === 'add-service'\) \{[\s\S]*openSettingsServiceModal\(\)/);
+});
+
+test('service modal validates required values before adding a custom service', () => {
+  assert.match(SOURCE, /setSettingsServiceModalError\(/);
+  assert.match(SOURCE, /Service name is required/);
+  assert.match(SOURCE, /Price must be a valid number/);
+  assert.match(SOURCE, /Minutes must be greater than 0/);
+  assert.match(SOURCE, /addSettingsServiceRow\(name, price, duration\)/);
+});
+
 test('Settings service catalog body removes the outer chrome while keeping scrolling', () => {
   const rule = SOURCE.match(/\.settings-service-list\.settings-service-body\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
   assert.match(rule, /max-height:\s*540px/);

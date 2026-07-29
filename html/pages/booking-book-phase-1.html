@@ -2978,6 +2978,111 @@
       line-height: 1.8;
     }
 
+    .settings-service-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 125;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(8, 18, 38, 0.54);
+      padding: 18px;
+      backdrop-filter: blur(10px);
+    }
+
+    .settings-service-modal[hidden] {
+      display: none;
+    }
+
+    .settings-service-dialog {
+      width: min(100%, 520px);
+      border: 1px solid var(--nexora-border);
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 28px 80px rgba(8, 18, 38, 0.28);
+    }
+
+    .settings-service-modal-head,
+    .settings-service-modal-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .settings-service-modal-head {
+      align-items: flex-start;
+      border-bottom: 1px solid var(--nexora-rule);
+      padding: 18px;
+    }
+
+    .settings-service-modal-title {
+      color: var(--nexora-text);
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .settings-service-modal-sub {
+      margin-top: 4px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.45;
+    }
+
+    .settings-service-modal-close {
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: var(--nexora-surface-muted);
+      color: var(--nexora-muted);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .settings-service-modal-body {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .settings-service-modal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .settings-service-modal-field-name {
+      grid-column: 1 / -1;
+    }
+
+    .settings-service-modal-error {
+      border: 1px solid rgba(239, 68, 68, 0.24);
+      border-radius: 9px;
+      background: #fff5f5;
+      padding: 9px 10px;
+      color: #c24141;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .settings-service-modal-error[hidden] {
+      display: none;
+    }
+
+    .settings-service-modal-actions {
+      justify-content: flex-end;
+      border-top: 1px solid var(--nexora-rule);
+      padding: 14px 18px 18px;
+    }
+
     .settings-service-suggest-grid {
       display: flex;
       flex-wrap: wrap;
@@ -9349,6 +9454,39 @@
                   <button class="booking-primary-button" type="button" data-settings-action="save">Save Settings</button>
                 </div>
               </div>
+
+              <div class="settings-service-modal" data-service-modal hidden>
+                <div class="settings-service-dialog" role="dialog" aria-modal="true" aria-labelledby="service-modal-title">
+                  <div class="settings-service-modal-head">
+                    <div>
+                      <div class="settings-service-modal-title" id="service-modal-title">Add service</div>
+                      <div class="settings-service-modal-sub">Enter the service details to add it to your custom services.</div>
+                    </div>
+                    <button class="settings-service-modal-close" type="button" data-service-modal-close aria-label="Close service modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+                  </div>
+                  <div class="settings-service-modal-body">
+                    <div class="settings-service-modal-grid">
+                      <label class="settings-field settings-service-modal-field-name">
+                        <span class="settings-label">Service name</span>
+                        <input class="settings-input" type="text" data-service-modal-field="name" placeholder="e.g. Gel-X Extension" autocomplete="off">
+                      </label>
+                      <label class="settings-field">
+                        <span class="settings-label">Price</span>
+                        <input class="settings-input" type="number" data-service-modal-field="price" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+                      </label>
+                      <label class="settings-field">
+                        <span class="settings-label">Minutes</span>
+                        <input class="settings-input" type="number" data-service-modal-field="duration" min="1" step="1" placeholder="60" inputmode="numeric">
+                      </label>
+                    </div>
+                    <div class="settings-service-modal-error" data-service-modal-error role="alert" hidden></div>
+                  </div>
+                  <div class="settings-service-modal-actions">
+                    <button class="booking-secondary-button" type="button" data-service-modal-close>Cancel</button>
+                    <button class="booking-primary-button" type="button" data-service-modal-save><i class="bi bi-plus-lg" aria-hidden="true"></i>Add service</button>
+                  </div>
+                </div>
+              </div>
             </section>
 
             <section class="tab-panel" id="panel-customers" data-tab-panel="customers" aria-label="Customer list panel">
@@ -12662,6 +12800,77 @@ function getBookingCardCallStart(item) {
       setSettingsStatus('Service added: ' + name + '.');
     }
 
+    function getSettingsServiceModalField(name) {
+      var field = document.querySelector('[data-service-modal-field="' + name + '"]');
+      return field ? field.value.trim() : '';
+    }
+
+    function setSettingsServiceModalError(message) {
+      var error = document.querySelector('[data-service-modal-error]');
+      if (!error) return;
+
+      error.textContent = message || '';
+      error.hidden = !message;
+    }
+
+    function openSettingsServiceModal() {
+      var modal = document.querySelector('[data-service-modal]');
+      if (!modal) return;
+
+      ['name', 'price', 'duration'].forEach(function(name) {
+        var field = document.querySelector('[data-service-modal-field="' + name + '"]');
+        if (field) field.value = '';
+      });
+      setSettingsServiceModalError('');
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+
+      var firstField = document.querySelector('[data-service-modal-field="name"]');
+      if (firstField) firstField.focus();
+    }
+
+    function closeSettingsServiceModal() {
+      var modal = document.querySelector('[data-service-modal]');
+      if (!modal) return;
+
+      modal.hidden = true;
+      setSettingsServiceModalError('');
+      document.body.style.overflow = '';
+    }
+
+    function saveSettingsServiceModal() {
+      var name = getSettingsServiceModalField('name');
+      var priceValue = getSettingsServiceModalField('price');
+      var durationValue = getSettingsServiceModalField('duration');
+      var price = Number(priceValue);
+      var duration = Number(durationValue);
+      var field;
+
+      if (!name) {
+        setSettingsServiceModalError('Service name is required.');
+        field = document.querySelector('[data-service-modal-field="name"]');
+        if (field) field.focus();
+        return;
+      }
+
+      if (!priceValue || !Number.isFinite(price) || price < 0) {
+        setSettingsServiceModalError('Price must be a valid number.');
+        field = document.querySelector('[data-service-modal-field="price"]');
+        if (field) field.focus();
+        return;
+      }
+
+      if (!durationValue || !Number.isFinite(duration) || duration <= 0) {
+        setSettingsServiceModalError('Minutes must be greater than 0.');
+        field = document.querySelector('[data-service-modal-field="duration"]');
+        if (field) field.focus();
+        return;
+      }
+
+      addSettingsServiceRow(name, price, duration);
+      closeSettingsServiceModal();
+    }
+
     function showServiceScanPanel() {
       var panel = document.querySelector('[data-service-scan]');
       var progress = document.querySelector('[data-service-scan-progress]');
@@ -12692,7 +12901,7 @@ function getBookingCardCallStart(item) {
       }
 
       if (action === 'add-service') {
-        addSettingsServiceRow('New service', 30, 45);
+        openSettingsServiceModal();
         return;
       }
 
@@ -13395,6 +13604,18 @@ function getBookingCardCallStart(item) {
         return;
       }
 
+      var serviceModalSave = event.target.closest('[data-service-modal-save]');
+      if (serviceModalSave) {
+        saveSettingsServiceModal();
+        return;
+      }
+
+      var serviceModalClose = event.target.closest('[data-service-modal-close]');
+      if (serviceModalClose || event.target.matches('[data-service-modal]')) {
+        closeSettingsServiceModal();
+        return;
+      }
+
       var settingsLanguage = event.target.closest('[data-settings-language]');
       if (settingsLanguage) {
         selectSettingsLanguage(settingsLanguage);
@@ -13483,6 +13704,7 @@ function getBookingCardCallStart(item) {
 
     document.addEventListener('keydown', function(event) {
       var modal = document.querySelector('[data-offer-modal]');
+      var serviceModal = document.querySelector('[data-service-modal]');
       var techModal = document.querySelector('[data-tech-modal]');
       var bookingDetailModal = document.querySelector('[data-booking-detail-modal]');
       var bookingCreateModal = document.querySelector('[data-booking-create-modal]');
@@ -13510,6 +13732,11 @@ function getBookingCardCallStart(item) {
 
       if (event.key === 'Escape' && techModal && !techModal.hidden) {
         closeTechModal();
+        return;
+      }
+
+      if (event.key === 'Escape' && serviceModal && !serviceModal.hidden) {
+        closeSettingsServiceModal();
         return;
       }
 
