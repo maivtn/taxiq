@@ -13667,7 +13667,8 @@ function getBookingCardCallStart(item) {
       qr:      { icon: 'bi-qr-code',           label: 'QR' },
       receipt: { icon: 'bi-receipt',           label: 'Receipt' },
       call:    { icon: 'bi-telephone',         label: 'Incoming' },
-      pos:     { icon: 'bi-box-arrow-in-down', label: 'Import' }
+      pos:     { icon: 'bi-box-arrow-in-down', label: 'Import' },
+      manual:  { icon: 'bi-person-plus',       label: 'Manual' }
     };
 
     var custFilter = { search: '', seg: 'all' };
@@ -13887,6 +13888,13 @@ function getBookingCardCallStart(item) {
     function custTypeOf(c) { return c.type || (c.seg === 'vip' ? 'VIP' : 'Individual'); }
     function custStatusOf(c) { return c.status || 'active'; }
 
+    function setCustModalError(message) {
+      var error = document.querySelector('[data-cust-modal-error]');
+      if (!error) return;
+      error.textContent = message || '';
+      error.hidden = !message;
+    }
+
     function setCustStatusToggle(on) {
       var btn = document.querySelector('[data-cf-status]');
       var lbl = document.querySelector('[data-cf-status-label]');
@@ -13894,12 +13902,38 @@ function getBookingCardCallStart(item) {
       if (lbl) lbl.textContent = on ? 'Active' : 'Inactive';
     }
 
+    function resetCustModalFields() {
+      var modal = document.querySelector('[data-cust-modal]');
+      if (!modal) return;
+      modal.querySelector('[data-cf-name]').value = '';
+      modal.querySelector('[data-cf-phone]').value = '';
+      modal.querySelector('[data-cf-email]').value = '';
+      modal.querySelector('[data-cf-address]').value = '';
+      modal.querySelector('[data-cf-type]').value = 'Individual';
+      if (custBirthdayPicker) custBirthdayPicker.clear();
+      else modal.querySelector('[data-cf-birthday]').value = '';
+      setCustStatusToggle(true);
+      setCustModalError('');
+    }
+
+    function openCustCreateModal() {
+      var modal = document.querySelector('[data-cust-modal]');
+      var title = document.querySelector('[data-cust-modal-title]');
+      if (!modal) return;
+      custEditIndex = -1;
+      resetCustModalFields();
+      if (title) title.textContent = 'Create customer';
+      modal.hidden = false;
+    }
+
     function openCustModal(index) {
       var c = CUSTOMERS[index];
       var modal = document.querySelector('[data-cust-modal]');
+      var title = document.querySelector('[data-cust-modal-title]');
       if (!c || !modal) return;
       custEditIndex = index;
       modal.querySelector('[data-cf-name]').value = c.name || '';
+      modal.querySelector('[data-cf-phone]').value = c.phone || '';
       modal.querySelector('[data-cf-email]').value = c.email || '';
       modal.querySelector('[data-cf-address]').value = c.address || '';
       if (custBirthdayPicker) {
@@ -13910,6 +13944,8 @@ function getBookingCardCallStart(item) {
       }
       modal.querySelector('[data-cf-type]').value = custTypeOf(c);
       setCustStatusToggle(custStatusOf(c) === 'active');
+      setCustModalError('');
+      if (title) title.textContent = 'Update customer';
       modal.hidden = false;
     }
 
@@ -13917,25 +13953,60 @@ function getBookingCardCallStart(item) {
       var modal = document.querySelector('[data-cust-modal]');
       if (modal) modal.hidden = true;
       custEditIndex = -1;
+      setCustModalError('');
     }
 
     function saveCustModal() {
       var modal = document.querySelector('[data-cust-modal]');
+      if (!modal) return;
+
+      var name = (modal.querySelector('[data-cf-name]').value || '').trim();
+      var phone = (modal.querySelector('[data-cf-phone]').value || '').trim();
+      if (custEditIndex === -1 && (!name || !phone)) {
+        setCustModalError('Name and phone are required.');
+        return;
+      }
+
+      var email = (modal.querySelector('[data-cf-email]').value || '').trim();
+      var address = (modal.querySelector('[data-cf-address]').value || '').trim();
+      var birthday = modal.querySelector('[data-cf-birthday]').value || '';
+      var type = modal.querySelector('[data-cf-type]').value;
+      var status = modal.querySelector('[data-cf-status]').classList.contains('is-on') ? 'active' : 'inactive';
+      var isCreating = custEditIndex === -1;
       var c = CUSTOMERS[custEditIndex];
-      if (!modal || !c) { closeCustModal(); return; }
-      c.name = (modal.querySelector('[data-cf-name]').value || '').trim() || c.name;
-      c.email = (modal.querySelector('[data-cf-email]').value || '').trim();
-      c.address = (modal.querySelector('[data-cf-address]').value || '').trim();
-      c.birthday = modal.querySelector('[data-cf-birthday]').value || '';
-      c.type = modal.querySelector('[data-cf-type]').value;
-      c.status = modal.querySelector('[data-cf-status]').classList.contains('is-on') ? 'active' : 'inactive';
-      var savedName = c.name;
+
+      if (isCreating) {
+        CUSTOMERS.push({
+          name: name,
+          phone: phone,
+          email: email,
+          address: address,
+          birthday: birthday,
+          type: type,
+          status: status,
+          seg: 'new',
+          visits: 0,
+          last: '—',
+          src: 'manual'
+        });
+      } else {
+        if (!c) { closeCustModal(); return; }
+        c.name = name || c.name;
+        c.phone = phone || c.phone;
+        c.email = email;
+        c.address = address;
+        c.birthday = birthday;
+        c.type = type;
+        c.status = status;
+      }
+
+      var savedName = isCreating ? name : c.name;
       closeCustModal();
       renderCustomers();
       if (window.Swal) {
         Swal.fire({
           icon: 'success',
-          title: 'Customer updated',
+          title: isCreating ? 'Customer created' : 'Customer updated',
           text: savedName,
           timer: 1600,
           showConfirmButton: false
@@ -13950,6 +14021,12 @@ function getBookingCardCallStart(item) {
     });
 
     document.addEventListener('click', function(event) {
+      var custCreateBtn = event.target.closest('[data-cust-create]');
+      if (custCreateBtn) {
+        openCustCreateModal();
+        return;
+      }
+
       var custEditBtn = event.target.closest('[data-cust-edit]');
       if (custEditBtn) {
         openCustModal(parseInt(custEditBtn.dataset.custEdit, 10));
