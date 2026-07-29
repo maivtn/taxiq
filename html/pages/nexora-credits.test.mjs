@@ -39,6 +39,7 @@ test('creates the Credits Management page with the monthly plan and SMS credit c
   assert.match(html, /data-credits-card="plan"/);
   assert.match(html, /data-credits-card="sms-topup"/);
   assert.match(html, /data-credits-history/);
+  assert.doesNotMatch(html, /credits-heading-badge/);
   assert.match(html, /activePage:\s*'booking'/);
   assert.match(html, /activeTab:\s*'sms-campaigns'/);
 });
@@ -141,6 +142,17 @@ test('keeps Credit Usage cards compact without hiding their usage details', () =
   assert.match(css, /\.credits-plan-remaining-values\s*\{[\s\S]*?display:\s*flex/);
   assert.match(css, /\.credits-plan-remaining strong\s*\{[\s\S]*?font-size:\s*29px/);
   assert.match(css, /\.credits-plan-remaining-unit\s*\{/);
+});
+
+test('reduces Pro and SMS Credits typography on mobile', () => {
+  const css = readFileSync(CSS_URL, 'utf8');
+
+  assert.match(css, /@media\s*\(max-width:\s*520px\)[\s\S]*?\.credits-card\s*\{[^}]*padding:\s*10px/);
+  assert.match(css, /@media\s*\(max-width:\s*520px\)[\s\S]*?\.credits-card-head h2\s*\{[^}]*font-size:\s*14px/);
+  assert.match(css, /@media\s*\(max-width:\s*520px\)[\s\S]*?\.credits-plan-subtitle,[\s\S]*?\.credits-topup-subtitle\s*\{[^}]*font-size:\s*8px/);
+  assert.match(css, /@media\s*\(max-width:\s*520px\)[\s\S]*?\.credits-reset-action,[\s\S]*?\.credits-rollover-badge\s*\{[^}]*font-size:\s*8px/);
+  assert.match(css, /@media\s*\(max-width:\s*520px\)[\s\S]*?\.credits-label\s*\{[^}]*font-size:\s*9px/);
+  assert.match(css, /@media\s*\(max-width:\s*520px\)[\s\S]*?\.credits-plan-remaining strong,[\s\S]*?\.credits-topup-balance\s*\{[^}]*font-size:\s*18px/);
 });
 
 test('matches the reference card hierarchy and Pro monthly allowance', () => {

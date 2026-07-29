@@ -55,22 +55,6 @@
 .credits-heading .page-title { margin: 4px 0 5px; }
 .credits-heading .page-description { margin: 0; }
 
-.credits-heading-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--nexora-border);
-  border-radius: 999px;
-  background: #fff;
-  padding: 9px 13px;
-  color: var(--nexora-muted);
-  font-size: 12px;
-  font-weight: 800;
-  box-shadow: var(--nexora-card-shadow);
-}
-
-.credits-heading-badge svg { width: 16px; height: 16px; color: var(--nexora-brand); }
-
 .credits-balance-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -357,14 +341,28 @@
 @media (max-width: 760px) {
   .credits-heading,
   .credits-section-heading { align-items: flex-start; flex-direction: column; }
-  .credits-heading-badge { align-self: flex-start; }
   .credits-history-tools { justify-items: start; width: 100%; }
   .credits-balance-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 520px) {
-  .credits-card,
+  .credits-card { padding: 10px; }
   .credits-history-section { padding: 14px; }
+  .credits-card-head { gap: 5px; }
+  .credits-card-head h2 { font-size: 14px; }
+  .credits-plan-subtitle,
+  .credits-topup-subtitle { font-size: 8px; }
+  .credits-card-icon { width: 28px; height: 28px; flex-basis: 28px; border-radius: 7px; }
+  .credits-card-icon svg { width: 15px; height: 15px; }
+  .credits-reset-action,
+  .credits-rollover-badge { gap: 2px; padding: 3px 5px; font-size: 8px; }
+  .credits-reset-action svg,
+  .credits-rollover-badge svg { width: 11px; height: 11px; }
+    .credits-label { font-size: 9px; }
+    .credits-plan-remaining strong,
+    .credits-topup-balance { font-size: 18px; }
+    .credits-plan-remaining-unit,
+    .credits-topup-unit { font-size: 9px; }
   .credits-card-foot { align-items: flex-start; }
   .credits-action { width: 100%; }
 }
