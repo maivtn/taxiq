@@ -55,7 +55,7 @@
     { type: 'group', key: 'stations', label: 'Stations & QR Codes', icon: 'qr-code', items: [
       { label: 'QR Stations' }
     ] },
-    { type: 'group', key: 'booking', label: 'Booking Hub', icon: 'calendar-days', page: 'booking', items: [
+    { type: 'group', key: 'booking', label: 'Ai Hub', icon: 'calendar-days', page: 'booking', items: [
       { label: 'Booking Book', tab: 'booking' },
       { label: 'Customers', tab: 'customers' },
       { label: 'Call Log', tab: 'calllog' },

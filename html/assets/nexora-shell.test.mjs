@@ -50,6 +50,12 @@ function renderSidebar(activePage, activeTab) {
   return sidebar.innerHTML;
 }
 
+test('uses Ai Hub as the booking sidebar group label', () => {
+  const html = renderSidebar('booking', 'booking');
+  assert.match(html, /data-lucide="calendar-days"[\s\S]*?<span>Ai Hub<\/span>/);
+  assert.doesNotMatch(html, /<span>Booking Hub<\/span>/);
+});
+
 test('renders all Reward submenu buttons on the native Reward page', () => {
   const html = renderSidebar('reward', 'overview');
   for (const [tab, label] of rewardItems) {
