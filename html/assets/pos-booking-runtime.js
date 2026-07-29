@@ -1223,6 +1223,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       closeBookingAppointmentPanel();
       openBookingCreateModal(null, null, 'unassigned');
     }
+    window.openBookingNewAppointment = openBookingNewAppointment;
 
     function bookingCalendarHasConflict(start, end, tech) {
       var normalizedTech = bookingCalendarResourceTech(tech);

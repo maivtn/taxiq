@@ -73,15 +73,10 @@ test('groups purchased Voice and SMS credits and keeps purchase actions inside t
   assert.match(topupCard, /class="credits-plan-remaining(?: [^"]+)?" aria-label="Remaining Voice and SMS credits"[\s\S]*?class="credits-label">Còn lại<\/span>[\s\S]*?class="credits-plan-remaining-values"/);
   assert.match(topupCard, /class="credits-plan-remaining-values"[\s\S]*?data-credits-voice-topup-balance[\s\S]*?credits-plan-remaining-separator[\s\S]*?data-credits-sms-topup-balance/);
   assert.doesNotMatch(topupCard, /credits-topup-balance-grid/);
-  assert.match(topupCard, /data-credits-voice-topup-usage[\s\S]*?Voice Credits used[\s\S]*?data-credits-voice-topup-used[\s\S]*?data-credits-voice-topup-progress/);
-  assert.match(topupCard, /data-credits-voice-topup-used>0<\/span>[\s\S]*?data-credits-voice-topup-usage-total>0<\/span>/);
-  assert.match(topupCard, /aria-valuemax="0" aria-valuenow="0"[^>]*data-credits-voice-topup-progress-track[\s\S]*?data-credits-voice-topup-progress style="width:0%"/);
+  assert.doesNotMatch(topupCard, /credits-topup-usage|data-credits-voice-topup-usage|Voice Credits used/);
+  assert.doesNotMatch(topupCard, /data-credits-sms-topup-usage|SMS Credits used/);
+  assert.match(planCard, /<div class="credits-plan-usage"[^>]*hidden>/);
   assert.match(planCard, /data-lucide="phone"[^>]*aria-hidden="true"[\s\S]*?Minutes used/);
-  assert.match(topupCard, /data-lucide="phone"[^>]*aria-hidden="true"[\s\S]*?Voice Credits used/);
-  assert.match(creditsRuntime, /const VOICE_TOPUP_USED_MINUTES = 0/);
-  assert.match(creditsRuntime, /const VOICE_TOPUP_TOTAL_MINUTES = 0/);
-  assert.match(creditsRuntime, /setText\('\[data-credits-voice-topup-used\]', formatNumber\(VOICE_TOPUP_USED_MINUTES\)\)/);
-  assert.match(creditsRuntime, /setProgress\('\[data-credits-voice-topup-progress\]', '[^']*', VOICE_TOPUP_USED_MINUTES, VOICE_TOPUP_TOTAL_MINUTES\)/);
   assert.doesNotMatch(topupCard, /Mua SMS credit/);
   assert.match(creditsActions, /<button[^>]*class="credits-action credits-action-secondary"[^>]*data-credits-action="voice-buy"[^>]*type="button"/);
   assert.match(creditsActions, /data-lucide="phone-call"[^>]*aria-hidden="true"[\s\S]*?Mua Voice credit/);

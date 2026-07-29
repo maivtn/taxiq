@@ -69,7 +69,12 @@
   box-shadow: var(--nexora-card-shadow);
 }
 
-.credits-card { padding: 14px; }
+.credits-card {
+  display: flex;
+  min-height: 124px;
+  flex-direction: column;
+  padding: 14px;
+}
 .credits-card-plan { border-color: #dbe8ff; }
 .credits-card-topup { border-color: #d8eee2; }
 
@@ -97,6 +102,7 @@
 
 .credits-card-head {
   display: flex;
+  min-height: 36px;
   align-items: center;
   gap: 9px;
 }
@@ -163,11 +169,12 @@
   gap: 12px;
   margin-top: 12px;
 }
+.credits-plan-usage[hidden] { display: none; }
 
 .credits-plan-remaining {
   display: grid;
   gap: 3px;
-  margin-top: 10px;
+  margin-top: auto;
   color: #1264df;
 }
 

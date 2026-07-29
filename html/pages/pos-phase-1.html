@@ -222,6 +222,15 @@
     .wl-wait.bad { color: var(--nexora-danger); }
     .wl-actions { display: inline-flex; gap: 6px; align-items: center; flex-shrink: 0; }
     .wl-empty { color: var(--nexora-subtle); font-size: 13px; padding: 18px 0; text-align: center; }
+    /* Grouped order card — one guest/order with several service tickets (#pos-nail-salon-ops Phase 3) */
+    .wl-group { flex-direction: column; align-items: stretch; }
+    .wl-group-tickets { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-top: 6px; }
+    .wl-ticket-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 10px; border: 1px solid var(--nexora-border); border-radius: 9px; background: var(--nexora-panel, #f8f9fc); flex-wrap: wrap; }
+    .wl-ticket-row.is-sel { border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70, 72, 216, .14); }
+    .wl-ticket-svc { font-size: 12.5px; font-weight: 700; color: var(--nexora-text); }
+    .wl-ticket-actions { display: inline-flex; gap: 6px; align-items: center; flex-shrink: 0; }
+    .wl-group-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--nexora-border); }
+    .wl-group-total { font-size: 12.5px; font-weight: 800; color: var(--nexora-muted); }
     .x-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; color: var(--nexora-subtle); font-size: 13px; }
     .x-btn:hover { color: var(--nexora-danger); border-color: var(--nexora-danger); }
 
@@ -1776,9 +1785,101 @@
             { at: Date.now() - 4 * 60000, msg: '✋ Kim finished — guest waiting to pay' }
           ] }
       ];
+      // Operational ticket links (#pos-nail-salon-ops Phase 3): every WAITLIST row is one service ticket.
+      // orderId groups tickets that bill together; bookingId/serviceTicketId trace back to the shared
+      // appointment store when the guest came from a Booking. Legacy/walk-in rows get a synthetic orderId
+      // so the grouped Tickets view always has something to group on.
+      WAITLIST.forEach(function (w) {
+        if (w.orderId == null) w.orderId = 'walkin-' + w.id;
+        if (w.bookingId === undefined) w.bookingId = null;
+        if (w.serviceTicketId === undefined) w.serviceTicketId = null;
+        if (w.customerId === undefined) w.customerId = w.name;
+        if (w.durationMin === undefined) w.durationMin = 0;
+      });
       var wlSeq = 4;
       function wlog(w, msg) { if (w) (w.log || (w.log = [])).push({ at: Date.now(), msg: msg }); }
       function floorCount(st) { return WAITLIST.filter(function (w) { return w.status === st; }).length; }
+      function ticketOpen(w) { return w.status !== 'completed' && w.status !== 'cancelled'; }
+      function hasOpenTicketForServiceTicket(serviceTicketId) {
+        if (!serviceTicketId) return false;
+        return WAITLIST.some(function (w) { return w.serviceTicketId === serviceTicketId && ticketOpen(w); });
+      }
+      // Groups active tickets by orderId so Tickets can render one card per guest/order with a
+      // service line per ticket, while still billing and completing the whole order together.
+      function waitlistGroups() {
+        var order = [], byKey = {};
+        WAITLIST.filter(ticketOpen).forEach(function (w) {
+          var key = w.orderId || ('ticket-' + w.id);
+          if (!byKey[key]) {
+            byKey[key] = { key: key, orderId: w.orderId, bookingId: w.bookingId, name: w.name, phone: w.phone, tickets: [] };
+            order.push(byKey[key]);
+          }
+          byKey[key].tickets.push(w);
+        });
+        return order;
+      }
+      // Builds one operational ticket for one booking service ticket — shared by check-in and rehydrate
+      // so both paths create the exact same shape and never diverge.
+      function createOperationalTicket(booking, ticket) {
+        return {
+          id: ++wlSeq, bookingId: booking.id, orderId: booking.id, serviceTicketId: ticket.id, customerId: booking.name,
+          name: booking.name, phone: booking.phone, badge: 'blue', badgeTxt: '📅 ' + booking.time + ' booking',
+          svc: ticket.serviceName, at: nowTime(), atMs: Date.now(), status: 'waiting',
+          techId: ticket.technicianId || null, reqTech: ticket.technicianId || null,
+          durationMin: ticket.durationMin || 0,
+          items: [{ name: ticket.serviceName, price: ticket.price || 0, techId: ticket.technicianId, cat: '' }],
+          log: [], appt: true
+        };
+      }
+      // Atomic check-in (#pos-nail-salon-ops Phase 3): moves the Booking to checked-in and creates one
+      // operational ticket per non-cancelled service ticket that doesn't already have one — never a
+      // single flattened row, and never a duplicate for a service ticket that's already open or done.
+      function checkInBooking(eb) {
+        if (!eb) return;
+        if (eb.status === 'completed' || eb.status === 'no-show') { toast('This booking is already closed', 'info'); return; }
+        var result = appointmentStore.update(eb.id, { status: 'checked-in', metadata: Object.assign({}, eb.metadata || {}, { eta: { st: 'in' }, checkedInAt: Date.now() }) }, null, salonCatalog);
+        if (!result.ok) { toast(result.error.message, 'error'); return; }
+        reloadAppointmentSnapshot();
+        var booking = posBookingById(eb.id);
+        var created = 0;
+        (booking && booking.tickets || []).forEach(function (ticket) {
+          if (ticket.status === 'cancelled') return;
+          if (WAITLIST.some(function (w) { return w.serviceTicketId === ticket.id; })) return;
+          WAITLIST.push(createOperationalTicket(booking, ticket));
+          created++;
+        });
+        renderFloor(); renderManagement();
+        if (created) toast(booking.name + ' checked in — ' + created + ' service' + (created > 1 ? 's' : '') + ' added to Tickets');
+        else toast(booking.name + ' is already checked in');
+      }
+      // Booking → completed (#pos-nail-salon-ops Phase 4, rule 3): only once every non-cancelled
+      // service ticket of the booking has been paid (operational status 'completed').
+      function checkBookingOrderComplete(bookingId) {
+        var booking = posBookingById(bookingId);
+        if (!booking || booking.status === 'completed') return;
+        var relevantTickets = (booking.tickets || []).filter(function (t) { return t.status !== 'cancelled'; });
+        if (!relevantTickets.length) return;
+        var allDone = relevantTickets.every(function (t) {
+          var w = WAITLIST.find(function (x) { return x.serviceTicketId === t.id; });
+          return w && w.status === 'completed';
+        });
+        if (!allDone) return;
+        var result = appointmentStore.update(bookingId, { status: 'completed' }, null, salonCatalog);
+        if (result.ok) reloadAppointmentSnapshot();
+      }
+      // Rehydrate (#pos-nail-salon-ops Phase 3): WAITLIST is in-memory only, BOOKINGS persist. On boot
+      // (and after any store sync), regenerate operational tickets for every checked-in booking so a
+      // page reload never silently drops a guest from Tickets.
+      function rehydrateOperationalTickets() {
+        BOOKINGS.forEach(function (b) {
+          if (b.status !== 'checked-in') return;
+          (b.tickets || []).forEach(function (ticket) {
+            if (ticket.status === 'cancelled') return;
+            if (WAITLIST.some(function (w) { return w.serviceTicketId === ticket.id; })) return;
+            WAITLIST.push(createOperationalTicket(b, ticket));
+          });
+        });
+      }
 
       // Check-in requests from the Nexora App / web QR, waiting on the front desk
       var CHECKINQ = [
@@ -2141,6 +2242,97 @@
       }
 
       /* ── the board ── */
+      function ticketActionsHtml(w) {
+        if (w.status === 'waiting') {
+          var auto = fAutoTech(w);
+          return '<button class="pos-btn pos-btn-primary pos-btn-sm" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>' +
+            '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button>';
+        }
+        if (w.status === 'service') {
+          return '<button class="pos-btn pos-btn-sm" data-wswap="' + w.id + '" title="Swap tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button>' +
+            '<button class="pos-btn pos-btn-sm" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
+            '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button>';
+        }
+        return '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Ready</span>' +
+          '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button>';
+      }
+      function ticketLabelHtml(w) {
+        var svcName = esc(w.svc || 'No service chosen');
+        var techLbl = w.status === 'waiting'
+          ? (w.techId ? 'waiting on ' + esc(techName(w.techId)) : 'waiting')
+          : w.status === 'service' ? esc(techName(w.techId)) + ' — in service'
+          : esc(techName(w.techId)) + ' — ready';
+        return svcName + ' — ' + techLbl;
+      }
+      // One WAITLIST row = one service ticket (#pos-nail-salon-ops Phase 3). A single-ticket order
+      // renders exactly like the original floor card, so the common walk-in path is unchanged.
+      function renderSingleTicketCard(w, now, selW) {
+        var badge = w.badgeTxt ? '<span class="pos-chip pos-chip-' + w.badge + '">' + esc(w.badgeTxt) + '</span>' : '';
+        var sel = selW && selW.id === w.id ? ' is-sel' : '';
+        var itemsTot = w.items.reduce(function (s, i) { return s + i.price; }, 0);
+
+        if (w.status === 'waiting') {
+          var waitMin = w.atMs ? Math.max(0, Math.floor((now - w.atMs) / 60000)) : 0;
+          var late = waitMin > 20;
+          var reqBusy = w.reqTech && !freeTechs().find(function (t) { return t.id === w.reqTech; });
+          var reqTxt = w.reqTech ? ' · 📌 wants ' + esc(techName(w.reqTech)) + (reqBusy ? ' <span class="pos-warn-text">(busy)</span>' : '') : '';
+          var auto = fAutoTech(w);
+          return '<div class="wl-card tappable' + (late ? ' late' : (w.appt ? ' appt' : '')) + sel + '" data-wtap="' + w.id + '">' +
+            '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
+            '<div class="wl-meta">' + esc(w.svc || 'No service chosen') + ' · in at ' + w.at + (w.phone ? ' · ' + esc(w.phone) : '') + reqTxt + '</div>' +
+            custProfHtml(w.name) + '</div>' +
+            '<span class="wl-wait' + (late ? ' bad' : '') + '"><i class="bi bi-hourglass-split" aria-hidden="true"></i> ' + waitMin + "'</span>" +
+            '<div class="wl-actions">' +
+            '<button class="pos-btn pos-btn-primary pos-btn-sm" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>' +
+            '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
+        }
+        if (w.status === 'ready') {
+          var rdyMin = w.readyAtMs ? Math.max(0, Math.floor((now - w.readyAtMs) / 60000)) : 0;
+          return '<div class="wl-card rdy">' +
+            '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
+            '<div class="wl-meta"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> ' + esc(techName(w.techId)) + ' finished · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div>' +
+            custTagsHtml(w.name) + '</div>' +
+            '<span class="wl-wait' + (rdyMin > 5 ? ' bad' : '') + '"><i class="bi bi-cash-coin" aria-hidden="true"></i> waiting ' + rdyMin + "'</span>" +
+            '<div class="wl-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
+            '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
+        }
+        var svcMin = w.svcAtMs ? Math.max(0, Math.floor((now - w.svcAtMs) / 60000)) : 0;
+        return '<div class="wl-card svc' + sel + '">' +
+          '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
+          '<div class="wl-meta"><i class="bi bi-brush" aria-hidden="true"></i> ' + esc(techName(w.techId)) + ' in service · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div>' +
+          custTagsHtml(w.name) + custStaffNote(w.name) + '</div>' +
+          '<span class="wl-wait"><i class="bi bi-stopwatch" aria-hidden="true"></i> ' + svcMin + "'</span>" +
+          '<div class="wl-actions">' +
+          '<button class="pos-btn pos-btn-sm" data-wswap="' + w.id + '" title="Swap tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button>' +
+          '<button class="pos-btn pos-btn-sm" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
+          '<button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
+          '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
+      }
+      // Multi-ticket order card: one guest/order with several service tickets, each on its own line
+      // with its own status/actions, and one Charge button for the whole order (#pos-nail-salon-ops).
+      function renderTicketGroupCard(g, now, selW) {
+        var lines = g.tickets.map(function (w) {
+          var sel = selW && selW.id === w.id ? ' is-sel' : '';
+          return '<div class="wl-ticket-row' + sel + '" data-wtap="' + w.id + '">' +
+            '<span class="wl-ticket-svc">' + ticketLabelHtml(w) + '</span>' +
+            '<span class="wl-ticket-actions">' + ticketActionsHtml(w) + '</span></div>';
+        }).join('');
+        var activeTickets = g.tickets.filter(function (w) { return w.status !== 'cancelled'; });
+        var readyCount = activeTickets.filter(function (w) { return w.status === 'ready'; }).length;
+        var allReady = activeTickets.length > 0 && readyCount === activeTickets.length;
+        var total = g.tickets.reduce(function (s, w) { return s + (w.items || []).reduce(function (ss, i) { return ss + i.price; }, 0); }, 0);
+        var mins = g.tickets.reduce(function (s, w) { return s + (w.durationMin || 0); }, 0);
+        var checkedInBadge = g.bookingId ? ' <span class="pos-chip pos-chip-blue">Checked in</span>' : '';
+        var chargeBtn = allReady
+          ? '<button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + esc(g.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>'
+          : '<button class="pos-btn pos-btn-sm" disabled>' + readyCount + '/' + activeTickets.length + ' ready</button>';
+        return '<div class="wl-card wl-group">' +
+          '<div class="wl-info"><div class="wl-name">' + esc(g.name) + (g.phone ? ' · ' + esc(g.phone) : '') + checkedInBadge + '</div>' +
+          custProfHtml(g.name) + '</div>' +
+          '<div class="wl-group-tickets">' + lines + '</div>' +
+          '<div class="wl-group-foot"><span class="wl-group-total">Total ' + money(total) + (mins ? ' · ' + mins + ' min' : '') + '</span>' + chargeBtn + '</div>' +
+          '</div>';
+      }
       function renderFloor() {
         set('[data-fs-wait]', floorCount('waiting'));
         set('[data-fs-svc]', floorCount('service'));
@@ -2154,47 +2346,15 @@
         if (!selW) fSel = null;
         var ORD = { waiting: 0, service: 1, ready: 2 };
 
-        html('[data-wait-list]', WAITLIST.length ? WAITLIST.slice().sort(function (a, b) { return (ORD[a.status] || 0) - (ORD[b.status] || 0); }).map(function (w) {
-          var badge = w.badgeTxt ? '<span class="pos-chip pos-chip-' + w.badge + '">' + esc(w.badgeTxt) + '</span>' : '';
-          var sel = fSel === w.id ? ' is-sel' : '';
-          var itemsTot = w.items.reduce(function (s, i) { return s + i.price; }, 0);
-
-          if (w.status === 'waiting') {
-            var waitMin = w.atMs ? Math.max(0, Math.floor((now - w.atMs) / 60000)) : 0;
-            var late = waitMin > 20;
-            var reqBusy = w.reqTech && !freeTechs().find(function (t) { return t.id === w.reqTech; });
-            var reqTxt = w.reqTech ? ' · 📌 wants ' + esc(techName(w.reqTech)) + (reqBusy ? ' <span class="pos-warn-text">(busy)</span>' : '') : '';
-            var auto = fAutoTech(w);
-            return '<div class="wl-card tappable' + (late ? ' late' : (w.appt ? ' appt' : '')) + sel + '" data-wtap="' + w.id + '">' +
-              '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
-              '<div class="wl-meta">' + esc(w.svc || 'No service chosen') + ' · in at ' + w.at + (w.phone ? ' · ' + esc(w.phone) : '') + reqTxt + '</div>' +
-              custProfHtml(w.name) + '</div>' +
-              '<span class="wl-wait' + (late ? ' bad' : '') + '"><i class="bi bi-hourglass-split" aria-hidden="true"></i> ' + waitMin + "'</span>" +
-              '<div class="wl-actions">' +
-              '<button class="pos-btn pos-btn-primary pos-btn-sm" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>' +
-              '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
-          }
-          if (w.status === 'ready') {
-            var rdyMin = w.readyAtMs ? Math.max(0, Math.floor((now - w.readyAtMs) / 60000)) : 0;
-            return '<div class="wl-card rdy">' +
-              '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
-              '<div class="wl-meta"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> ' + esc(techName(w.techId)) + ' finished · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div>' +
-              custTagsHtml(w.name) + '</div>' +
-              '<span class="wl-wait' + (rdyMin > 5 ? ' bad' : '') + '"><i class="bi bi-cash-coin" aria-hidden="true"></i> waiting ' + rdyMin + "'</span>" +
-              '<div class="wl-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + w.id + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
-              '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
-          }
-          var svcMin = w.svcAtMs ? Math.max(0, Math.floor((now - w.svcAtMs) / 60000)) : 0;
-          return '<div class="wl-card svc' + sel + '">' +
-            '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
-            '<div class="wl-meta"><i class="bi bi-brush" aria-hidden="true"></i> ' + esc(techName(w.techId)) + ' in service · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div>' +
-            custTagsHtml(w.name) + custStaffNote(w.name) + '</div>' +
-            '<span class="wl-wait"><i class="bi bi-stopwatch" aria-hidden="true"></i> ' + svcMin + "'</span>" +
-            '<div class="wl-actions">' +
-            '<button class="pos-btn pos-btn-sm" data-wswap="' + w.id + '" title="Swap tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button>' +
-            '<button class="pos-btn pos-btn-sm" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
-            '<button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + w.id + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
-            '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
+        // Tickets: one card per guest/order, grouped by orderId. A single-ticket order renders the
+        // original floor card unchanged; a multi-ticket order (from a booking with several service
+        // tickets) renders one line per ticket under a shared header and a single order-level Charge.
+        var groups = waitlistGroups().sort(function (a, b) {
+          var rank = function (g) { return Math.min.apply(null, g.tickets.map(function (t) { return ORD[t.status] || 0; })); };
+          return rank(a) - rank(b);
+        });
+        html('[data-wait-list]', groups.length ? groups.map(function (g) {
+          return g.tickets.length === 1 ? renderSingleTicketCard(g.tickets[0], now, selW) : renderTicketGroupCard(g, now, selW);
         }).join('') : '<div class="wl-empty">No guests yet — add a walk-in, or let the kiosk check someone in.</div>');
 
         var next = nextTech();
@@ -2304,7 +2464,9 @@
           var r = CHECKINQ.find(function (x) { return x.id === cid; });
           CHECKINQ = CHECKINQ.filter(function (x) { return x.id !== cid; });
           if (cok && r) {
-            var nw = { id: ++wlSeq, name: r.name, phone: '', badge: 'violet', badgeTxt: r.src.indexOf('📱') === 0 ? '📱 App' : '🌐 QR', svc: r.svc,
+            var nwId = ++wlSeq;
+            var nw = { id: nwId, orderId: 'walkin-' + nwId, bookingId: null, serviceTicketId: null, customerId: r.name, durationMin: 0,
+              name: r.name, phone: '', badge: 'violet', badgeTxt: r.src.indexOf('📱') === 0 ? '📱 App' : '🌐 QR', svc: r.svc,
               at: nowTime(), atMs: Date.now(), status: 'waiting', techId: null, reqTech: r.reqTech || null, items: [], log: [] };
             WAITLIST.push(nw);
             wlog(nw, '📥 Checked in via ' + (r.src.indexOf('📱') === 0 ? 'the Nexora App' : 'the web QR') + ' — confirmed by the front desk' + (r.reqTech ? ' · 📌 wants ' + techName(r.reqTech) : ''));
@@ -2344,15 +2506,7 @@
         }
         var ei = e.target.closest('[data-eta-in]');
         if (ei) {
-          var eb = posBookingById(ei.getAttribute('data-eta-in'));
-          if (!eb) return;
-          updateAppointmentMetadata(eb.id, { eta: { st: 'in' } });
-          var ew = { id: ++wlSeq, name: eb.name, phone: eb.phone, badge: 'blue', badgeTxt: '📅 ' + eb.time + ' booking', svc: eb.svc,
-            at: nowTime(), atMs: Date.now(), status: 'waiting', techId: null, reqTech: eb.techId || null, items: [], log: [], appt: true };
-          WAITLIST.push(ew);
-          wlog(ew, '📅 ' + eb.time + ' booking arrived — checked in by the front desk' + (eb.techId ? ' · 📌 wants ' + techName(eb.techId) : ''));
-          renderFloor(); renderManagement();
-          toast(eb.name + ' checked in');
+          checkInBooking(posBookingById(ei.getAttribute('data-eta-in')));
           return;
         }
 
@@ -2362,8 +2516,10 @@
           var phone = pEl.value.trim();
           var known = phone ? custByPhone(phone) : null;
           var name = known ? known.name : (nEl.value.trim() || 'Walk-in');
+          var wlId = ++wlSeq;
           WAITLIST.push({
-            id: ++wlSeq, name: name, phone: phone,
+            id: wlId, orderId: 'walkin-' + wlId, bookingId: null, serviceTicketId: null, customerId: name, durationMin: 0,
+            name: name, phone: phone,
             badge: known ? (known.seg === 'vip' ? 'gold' : 'blue') : 'gray',
             badgeTxt: known ? (known.seg === 'vip' ? '⭐ VIP · ' + known.visits + ' visits' : '↩️ ' + known.visits + ' visits') : '🆕 New',
             svc: '', at: nowTime(), atMs: Date.now(), status: 'waiting', techId: null, reqTech: known ? known.prefTech : null, items: [], log: []
@@ -2400,31 +2556,42 @@
           }
           return;
         }
-        /* 💳 charge — checkout lives in the full build; here it closes the ticket into the ledger */
+        /* 💳 charge the whole order — one bill per orderId; every open ticket on it must be ready first */
         var pw = e.target.closest('[data-wpay]');
         if (pw) {
-          var cw = WAITLIST.find(function (x) { return x.id == pw.getAttribute('data-wpay'); });
-          if (!cw) return;
-          if (!cw.items.length) { toast('No items on this ticket yet — add them at checkout', 'info'); return; }
-          var sub = cw.items.reduce(function (s, i) { return s + i.price; }, 0);
+          var orderKey = pw.getAttribute('data-wpay');
+          var groupTickets = WAITLIST.filter(function (x) { return x.orderId === orderKey && ticketOpen(x); });
+          if (!groupTickets.length) return;
+          if (groupTickets.some(function (x) { return x.status !== 'ready'; })) {
+            toast('Every service on this order must be ready before charging', 'info');
+            return;
+          }
+          var allItems = groupTickets.reduce(function (acc, x) { return acc.concat(x.items || []); }, []);
+          if (!allItems.length) { toast('No items on this order yet — add them at checkout', 'info'); return; }
+          var sub = allItems.reduce(function (s, i) { return s + i.price; }, 0);
           var tip = Math.round(sub * 0.2 * 100) / 100;
-          SALES.push({ name: cw.name, method: 'card', tip: tip, total: sub + tip, items: cw.items.slice() });
-          var tt = techById(cw.techId);
-          if (tt) tt.turns += 1;   // the turn counts on payment, not on assignment
-          WAITLIST = WAITLIST.filter(function (x) { return x.id !== cw.id; });
-          if (fSel === cw.id) fSel = null;
+          var bookingId = groupTickets[0].bookingId || null;
+          SALES.push({ name: groupTickets[0].name, method: 'card', tip: tip, total: sub + tip, items: allItems, orderId: orderKey, bookingId: bookingId });
+          var turnedTechs = [];
+          groupTickets.forEach(function (x) {
+            x.status = 'completed';   // the turn counts on payment, not on assignment — credited per ticket's own tech
+            var tt = techById(x.techId);
+            if (tt) { tt.turns += 1; if (turnedTechs.indexOf(tt.name) === -1) turnedTechs.push(tt.name); }
+          });
+          if (fSel != null && groupTickets.some(function (x) { return x.id === fSel; })) fSel = null;
+          if (bookingId) checkBookingOrderComplete(bookingId);
           renderFloor(); renderManagement(); renderClock();
-          toast('Charged ' + money(sub + tip) + ' · turn +1 for ' + (tt ? tt.name : '—'));
+          toast('Charged ' + money(sub + tip) + (turnedTechs.length ? ' · turn +1 for ' + turnedTechs.join(', ') : ''));
           return;
         }
-        /* ✕ remove */
+        /* ✕ remove — marks the ticket cancelled instead of deleting it, so a rehydrate never recreates it */
         var cx = e.target.closest('[data-wcancel]');
         if (cx) {
           var xw = WAITLIST.find(function (x) { return x.id == cx.getAttribute('data-wcancel'); });
           if (!xw) return;
           confirmBox('Remove ' + xw.name + ' from the queue?', 'The ticket is dropped — production keeps it as a cancelled record.').then(function (ok) {
             if (!ok) return;
-            WAITLIST = WAITLIST.filter(function (x) { return x.id !== xw.id; });
+            xw.status = 'cancelled';
             if (fSel === xw.id) fSel = null;
             renderFloor(); renderManagement();
           });
@@ -3269,15 +3436,18 @@
         return posBookingById(id);
       }
       reloadAppointmentSnapshot();
+      rehydrateOperationalTickets();
       appointmentStore.subscribe(function () {
         rebuildSalonCatalogViews();
         reloadAppointmentSnapshot();
+        rehydrateOperationalTickets();
         renderFloor();
       }, window);
       window.addEventListener('storage', function (event) {
         if (!event || event.key !== salonData.STORAGE_KEY) return;
         rebuildSalonCatalogViews();
         reloadAppointmentSnapshot();
+        rehydrateOperationalTickets();
         renderManagement();
         renderClock();
         renderFloor();
