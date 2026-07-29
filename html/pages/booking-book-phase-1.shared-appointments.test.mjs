@@ -129,6 +129,11 @@ test('Booking Book keeps one detail panel for appointment and calendar workspace
   assert.match(SOURCE, /data-booking-panel-state="empty"/);
 });
 
+test('Booking Book hides the appointment detail panel outside the Calendar subtab', () => {
+  assert.match(SOURCE, /data-booking-appointment-panel[^>]*hidden/);
+  assert.match(SOURCE, /function activateBookingSubTab\([\s\S]*var appointmentPanel = document\.querySelector\('\[data-booking-appointment-panel\]'\)[\s\S]*appointmentPanel\.hidden = target !== 'calendar'/);
+});
+
 test('Booking Book keeps Table and Card modes inside Appointments', () => {
   assert.match(SOURCE, /data-booking-view-target="table"/);
   assert.match(SOURCE, /data-booking-view-target="card"/);

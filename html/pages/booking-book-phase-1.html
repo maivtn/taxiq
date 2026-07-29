@@ -8356,7 +8356,7 @@
                 </div>
               </div>
                 </div>
-                <aside class="booking-appointment-panel overview-card" data-booking-appointment-panel aria-label="Appointment details">
+                <aside class="booking-appointment-panel overview-card" data-booking-appointment-panel aria-label="Appointment details" hidden>
                   <div data-booking-panel-state="empty">
                     <i class="bi bi-calendar2-week" aria-hidden="true"></i>
                     <strong>Select an appointment</strong>
@@ -10467,6 +10467,8 @@
 
       var workspace = document.querySelector('[data-booking-appointment-workspace]');
       if (workspace) workspace.hidden = target === 'team';
+      var appointmentPanel = document.querySelector('[data-booking-appointment-panel]');
+      if (appointmentPanel) appointmentPanel.hidden = target !== 'calendar';
       if (target === 'calendar') {
         initBookingCalendar();
         renderBookingCalendar();
