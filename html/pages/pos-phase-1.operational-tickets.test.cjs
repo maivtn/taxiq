@@ -74,3 +74,15 @@ test('POS Customers "New booking" prefill can actually open the Booking create f
   const runtime = fs.readFileSync(path.join(__dirname, '..', 'assets', 'pos-booking-runtime.js'), 'utf8');
   assert.match(runtime, /window\.openBookingNewAppointment = openBookingNewAppointment;/);
 });
+
+test('POS Customers profile shows upcoming bookings, itemized visit history, and payment history from real data (no fabricated balance field)', () => {
+  assert.match(html, /function custUpcomingBookings\(c\) \{/);
+  assert.match(html, /function custBookingsHtml\(c\) \{/);
+  assert.match(html, /function custVisitHistoryHtml\(name\) \{/);
+  assert.match(html, /function custSalesHtml\(name\) \{/);
+  assert.match(html, /'<div class="cust-section-title">Upcoming bookings<\/div>' \+ custBookingsHtml\(c\)/);
+  assert.match(html, /'<div class="cust-section-title">Visit history<\/div>' \+ custVisitHistoryHtml\(c\.name\)/);
+  assert.match(html, /'<div class="cust-section-title">Payment history<\/div>' \+ custSalesHtml\(c\.name\)/);
+  assert.match(html, /lifetime ' \+ money0\(c\.spent \|\| 0\)/);
+  assert.doesNotMatch(html, /\bbalance\b/i);
+});

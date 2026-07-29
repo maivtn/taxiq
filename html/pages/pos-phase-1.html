@@ -239,6 +239,9 @@
     .cust-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
     .cust-tag { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 8px; background: #f3ecff; color: var(--nexora-violet); border: 1px solid rgba(142, 77, 248, .3); }
     .cust-note { font-size: 11px; font-weight: 600; color: var(--nexora-warning); margin-top: 3px; }
+    .cust-section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: var(--nexora-subtle); margin-top: 14px; margin-bottom: 4px; }
+    .cust-history-list { display: flex; flex-direction: column; gap: 4px; }
+    .cust-history-row { font-size: 12.5px; color: var(--nexora-text); font-weight: 600; padding: 6px 9px; border: 1px solid var(--nexora-border); border-radius: 8px; }
 
     .tech-row.pickable { border-color: var(--nexora-brand); background: #f2f3ff; cursor: pointer; }
     .tech-row.dim { opacity: .5; }
@@ -2135,7 +2138,43 @@
         return uLine + (pk ? '<div class="cust-pkg">' + pk + ' prepaid</div>' : '') + custTagsHtml(name) + custStaffNote(name);
       }
 
-      /* ── Customers tab: lookup + profile (#pos-nail-salon-ops Phase 1) ── */
+      /* ── Customers tab: lookup + profile (#pos-nail-salon-ops Phase 1 & 5) ── */
+      // Upcoming bookings for this customer, matched by name or phone against the shared appointment store.
+      function custUpcomingBookings(c) {
+        var qName = (c.name || '').toLowerCase();
+        var qDigits = String(c.phone || '').replace(/\D/g, '');
+        return BOOKINGS.filter(function (b) {
+          if (b.status === 'completed' || b.status === 'no-show' || b.status === 'cancelled') return false;
+          var nameHit = (b.name || '').toLowerCase() === qName;
+          var phoneHit = qDigits && String(b.phone || '').replace(/\D/g, '') === qDigits;
+          return nameHit || phoneHit;
+        });
+      }
+      function custBookingsHtml(c) {
+        var upcoming = custUpcomingBookings(c);
+        if (!upcoming.length) return '<p class="pos-muted" style="margin:2px 0">No upcoming bookings.</p>';
+        return '<div class="cust-history-list">' + upcoming.map(function (b) {
+          return '<div class="cust-history-row">' + esc(b.time || '') + ' · ' + esc(b.svc || 'Service TBD') + (b.techId ? ' · ' + esc(techName(b.techId)) : '') + '</div>';
+        }).join('') + '</div>';
+      }
+      // Itemized service history — the raw CUSTHIST rows custProfHtml already summarizes into "Usual".
+      function custVisitHistoryHtml(name) {
+        var h = CUSTHIST[name];
+        if (!h || !h.length) return '<p class="pos-muted" style="margin:2px 0">No visit history yet.</p>';
+        return '<div class="cust-history-list">' + h.slice().sort(function (a, b) { return a.daysAgo - b.daysAgo; }).map(function (x) {
+          return '<div class="cust-history-row">' + esc(x.svc) + (x.techId ? ' · ' + esc(techName(x.techId)) : '') +
+            ' · ' + (x.daysAgo === 0 ? 'today' : x.daysAgo + ' days ago') + (x.tip ? ' · tip $' + x.tip : '') + '</div>';
+        }).join('') + '</div>';
+      }
+      // Paid tickets for this customer — SALES rows carry no timestamp in this prototype, so these
+      // list as recent tickets rather than a dated history.
+      function custSalesHtml(name) {
+        var rows = SALES.filter(function (s) { return s.name === name; });
+        if (!rows.length) return '<p class="pos-muted" style="margin:2px 0">No paid tickets yet.</p>';
+        return '<div class="cust-history-list">' + rows.map(function (s) {
+          return '<div class="cust-history-row">' + s.items.length + ' item(s) · ' + money(s.total) + ' · ' + esc(s.method) + '</div>';
+        }).join('') + '</div>';
+      }
       var custSelected = null;
       function custSearchMatches(q) {
         q = String(q || '').trim().toLowerCase();
@@ -2168,10 +2207,14 @@
         var u = custUsual(c.name);
         html('[data-cust-profile]',
           '<div class="wl-name" style="font-size:16px;margin-bottom:4px">' + esc(c.name) + '</div>' +
-          '<div class="wl-meta">' + esc(c.phone || 'No phone on file') + (c.prefTech ? ' · 📌 prefers ' + esc(techName(c.prefTech)) : '') + '</div>' +
+          '<div class="wl-meta">' + esc(c.phone || 'No phone on file') + (c.prefTech ? ' · 📌 prefers ' + esc(techName(c.prefTech)) : '') +
+            ' · ' + (c.visits || 0) + ' visits · lifetime ' + money0(c.spent || 0) + '</div>' +
           (u ? '<div class="cust-usual">🧠 Usual: ' + esc(u.svc || '—') + (u.tech ? ' · regular ' + esc(techName(u.tech)) : '') +
             ' · last visit ' + (u.last === 0 ? 'today' : u.last + ' days ago') + '</div>' : '<p class="pos-muted" style="margin:6px 0">No visit history yet.</p>') +
           custProfHtml(c.name) +
+          '<div class="cust-section-title">Upcoming bookings</div>' + custBookingsHtml(c) +
+          '<div class="cust-section-title">Visit history</div>' + custVisitHistoryHtml(c.name) +
+          '<div class="cust-section-title">Payment history</div>' + custSalesHtml(c.name) +
           '<div class="pos-inline" style="margin-top:12px">' +
           '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-cust-checkin="' + esc(c.name) + '"><i class="bi bi-door-open" aria-hidden="true"></i> Check in</button>' +
           '<button class="pos-btn pos-btn-sm" type="button" data-cust-newbooking="' + esc(c.name) + '"><i class="bi bi-calendar-plus" aria-hidden="true"></i> New booking</button>' +
