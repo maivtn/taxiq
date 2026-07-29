@@ -38,3 +38,12 @@ test('manual and industry services are added to CUSTOM SERVICES', () => {
   assert.match(SOURCE, /data-service-suggest-add/);
   assert.match(SOURCE, /data-service-remove/);
 });
+
+test('Settings service catalog body removes the outer chrome while keeping scrolling', () => {
+  const rule = SOURCE.match(/\.settings-service-list\.settings-service-body\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
+  assert.match(rule, /max-height:\s*540px/);
+  assert.match(rule, /overflow-y:\s*auto/);
+  assert.doesNotMatch(rule, /padding:/);
+  assert.doesNotMatch(rule, /border:/);
+  assert.doesNotMatch(rule, /background:/);
+});
