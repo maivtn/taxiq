@@ -7426,6 +7426,15 @@
       padding: 0 16px;
     }
 
+    .cust-modal-error {
+      grid-column: 1 / -1;
+      margin: -4px 20px 16px;
+      color: #b91c1c;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
     .cust-inactive-tag {
       margin-left: 6px;
       color: var(--nexora-muted);
@@ -9439,6 +9448,7 @@
                       <span>Customer list</span>
                     </div>
                     <div class="booking-daybar-actions">
+                      <button class="booking-primary-button" type="button" data-cust-create><i class="bi bi-person-plus" aria-hidden="true"></i><span>Create customer</span></button>
                       <span class="cust-count" data-cust-count></span>
                       <div class="booking-filter-wrap">
                         <button class="booking-secondary-button booking-filter-toggle" type="button" data-booking-filter-toggle="customers" aria-controls="customers-filter-menu" aria-expanded="false"><i class="bi bi-funnel" aria-hidden="true"></i>Filter</button>
@@ -9711,13 +9721,17 @@
     <div class="cust-modal-overlay" data-cust-modal hidden>
       <div class="cust-modal" role="dialog" aria-modal="true" aria-labelledby="cust-modal-title">
         <div class="cust-modal-head">
-          <h3 id="cust-modal-title">Update customer</h3>
+          <h3 id="cust-modal-title" data-cust-modal-title>Update customer</h3>
           <button class="cust-modal-close" type="button" data-cust-modal-close aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
         </div>
         <div class="cust-modal-body">
           <label class="cust-field cust-field-full">
             <span>Name</span>
             <input class="booking-input" type="text" data-cf-name placeholder="Customer name">
+          </label>
+          <label class="cust-field">
+            <span>Phone</span>
+            <input class="booking-input" type="tel" data-cf-phone placeholder="(123) 456-7890" autocomplete="tel">
           </label>
           <label class="cust-field">
             <span>Email</span>
@@ -9748,6 +9762,7 @@
             </div>
           </div>
         </div>
+        <div class="cust-modal-error" data-cust-modal-error role="alert" aria-live="polite" hidden></div>
         <div class="cust-modal-foot">
           <button class="booking-mini-button" type="button" data-cust-modal-close>Cancel</button>
           <button class="booking-mini-button primary" type="button" data-cust-save><i class="bi bi-check-lg" aria-hidden="true"></i><span class="booking-mini-label">Save changes</span></button>
