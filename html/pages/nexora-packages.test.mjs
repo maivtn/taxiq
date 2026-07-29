@@ -28,7 +28,7 @@ test('adds the package heading and ordered management tabs', () => {
   assert.match(html, /<h1 class="page-title"[^>]*>Package Management<\/h1>/);
   assert.match(html, /<p class="page-description"[^>]*>Manage NEXORA and AI Voice plans for your salon\.<\/p>/);
   const tabs = [...html.matchAll(/data-package-tab="([^"]+)"/g)].map((match) => match[1]);
-  assert.deepEqual(tabs, ['overview', 'nexora', 'voice', 'history']);
+  assert.deepEqual(tabs, ['overview', 'nexora', 'voice', 'credits', 'history']);
   assert.match(html, /role="tablist"/);
   assert.match(html, /Overview/);
   assert.match(html, /<span>Subscriptions<\/span>/);
@@ -41,8 +41,13 @@ test('adds the package heading and ordered management tabs', () => {
   assert.doesNotMatch(voiceTab, /<rect\b/);
   assert.doesNotMatch(voiceTab, /data-lucide="(?:phone|sparkles)"/);
   assert.doesNotMatch(html, /<span>Voice \+ SMS<\/span>/);
+  assert.match(html, /<span>Credit Usage<\/span>/);
+  assert.match(html, /data-package-panel="credits"[\s\S]*?data-credits-page/);
+  assert.match(html, /data-credits-card="sms"/);
+  assert.match(html, /data-credits-card="voice"/);
+  assert.match(html, /data-credits-history/);
   assert.match(html, /Purchase History/);
-  assert.doesNotMatch(html, /SMS Credit/);
+  assert.match(html, /SMS Credits/);
   assert.equal((html.match(/class="package-tab is-active"/g) || []).length, 1);
 });
 
@@ -246,7 +251,7 @@ test('loads package-specific presentation styles', () => {
 test('matches the Booking Hub tab treatment', () => {
   const html = source();
   const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
-  assert.equal((html.match(/class="package-tab-icon(?: package-tab-icon-dual)?"/g) || []).length, 4);
+  assert.equal((html.match(/class="package-tab-icon(?: package-tab-icon-dual)?"/g) || []).length, 5);
   assert.match(css, /\.package-tab\s*\{[\s\S]*?border:\s*1px\s+solid\s+var\(--nexora-border\)/);
   assert.match(css, /\.package-tab\s*\{[\s\S]*?border-radius:\s*12px/);
   assert.match(css, /\.package-tab-icon\s*\{[\s\S]*?width:\s*28px[\s\S]*?height:\s*28px/);
