@@ -17,8 +17,6 @@ var DEFAULT_MAIN_TAB = 'booking';
     };
     var bookingStatusFilter = 'all';
     var bookingFilterOpen = null;
-    var bookingDateFromPicker = null;
-    var bookingDateToPicker = null;
     var bookingTeamCalendar = null;
     var bookingCalendarDate = BOOKING_TODAY_DATE;
     var salonData = window.NEXORA_SALON_DATA;
@@ -1686,16 +1684,8 @@ function getBookingCardCallStart(item) {
 
       if (fieldControl) fieldControl.value = 'name';
       if (searchInput) searchInput.value = '';
-      if (bookingDateFromPicker) {
-        bookingDateFromPicker.clear();
-      } else if (dateFromInput) {
-        dateFromInput.value = '';
-      }
-      if (bookingDateToPicker) {
-        bookingDateToPicker.clear();
-      } else if (dateToInput) {
-        dateToInput.value = '';
-      }
+      if (dateFromInput) dateFromInput.value = '';
+      if (dateToInput) dateToInput.value = '';
       bookingStatusFilter = 'all';
 
       updateBookingSearchPlaceholder();
@@ -2699,44 +2689,11 @@ function getBookingCardCallStart(item) {
       bookingSearchInput.addEventListener('input', filterBookingItems);
     }
 
-    var bookingDatePickerConfig = {
-      altInput: true,
-      altFormat: 'M j, Y',
-      dateFormat: 'Y-m-d',
-      altInputClass: 'booking-input',
-      disableMobile: true,
-      onChange: filterBookingItems
-    };
-
     var bookingDateFrom = document.querySelector('[data-booking-date-from]');
-    if (bookingDateFrom) {
-      if (window.flatpickr) {
-        bookingDateFromPicker = flatpickr(bookingDateFrom, bookingDatePickerConfig);
-      } else {
-        bookingDateFrom.addEventListener('change', filterBookingItems);
-      }
-    }
+    if (bookingDateFrom) bookingDateFrom.addEventListener('change', filterBookingItems);
 
     var bookingDateTo = document.querySelector('[data-booking-date-to]');
-    if (bookingDateTo) {
-      if (window.flatpickr) {
-        bookingDateToPicker = flatpickr(bookingDateTo, bookingDatePickerConfig);
-      } else {
-        bookingDateTo.addEventListener('change', filterBookingItems);
-      }
-    }
-
-    var custBirthdayInput = document.querySelector('[data-cf-birthday]');
-    var custBirthdayPicker = null;
-    if (custBirthdayInput && window.flatpickr) {
-      custBirthdayPicker = flatpickr(custBirthdayInput, {
-        altInput: true,
-        altFormat: 'M j, Y',
-        dateFormat: 'Y-m-d',
-        altInputClass: 'booking-input',
-        disableMobile: true
-      });
-    }
+    if (bookingDateTo) bookingDateTo.addEventListener('change', filterBookingItems);
 
     var bookingClearFilters = document.querySelector('[data-booking-clear-filters]');
     if (bookingClearFilters) {
@@ -3549,12 +3506,7 @@ function getBookingCardCallStart(item) {
       modal.querySelector('[data-cf-name]').value = c.name || '';
       modal.querySelector('[data-cf-email]').value = c.email || '';
       modal.querySelector('[data-cf-address]').value = c.address || '';
-      if (custBirthdayPicker) {
-        if (c.birthday) custBirthdayPicker.setDate(c.birthday, false);
-        else custBirthdayPicker.clear();
-      } else {
-        modal.querySelector('[data-cf-birthday]').value = c.birthday || '';
-      }
+      modal.querySelector('[data-cf-birthday]').value = c.birthday || '';
       modal.querySelector('[data-cf-type]').value = custTypeOf(c);
       setCustStatusToggle(custStatusOf(c) === 'active');
       modal.hidden = false;

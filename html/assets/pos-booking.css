@@ -1097,18 +1097,6 @@
       box-shadow: 0 0 0 2px rgba(70, 72, 216, 0.16);
     }
 
-    .flatpickr-day.selected,
-    .flatpickr-day.selected:hover,
-    .flatpickr-day.startRange,
-    .flatpickr-day.endRange {
-      border-color: var(--nexora-brand);
-      background: var(--nexora-brand);
-    }
-
-    .flatpickr-day.today {
-      border-color: var(--nexora-brand);
-    }
-
     .booking-clear-button {
       align-self: end;
       height: 40px;
