@@ -52,6 +52,32 @@ test('adds the package heading and ordered management tabs', () => {
   assert.equal((html.match(/class="package-tab is-active"/g) || []).length, 1);
 });
 
+test('groups purchased Voice and SMS credits and keeps purchase actions outside the card', () => {
+  const html = source();
+  const creditsRuntime = readFileSync(new URL('../assets/nexora-credits.js', import.meta.url), 'utf8');
+  const topupCard = html.match(/data-credits-card="sms-topup"[\s\S]*?<\/article>/)?.[0] || '';
+  const creditsActions = html.match(/<div class="credits-actions"[\s\S]*?<\/div>/)?.[0] || '';
+
+  assert.match(topupCard, /<h2 id="voice-sms-credits-title">Voice and SMS Credits<\/h2>/);
+  assert.match(topupCard, /data-credits-voice-topup-balance/);
+  assert.doesNotMatch(topupCard, /Mua thêm từ AI Voice Plans/);
+  assert.match(topupCard, /data-credits-sms-topup-balance/);
+  assert.match(topupCard, /class="credits-plan-remaining(?: [^"]+)?" aria-label="Remaining Voice and SMS credits"[\s\S]*?class="credits-label">Còn lại<\/span>[\s\S]*?class="credits-plan-remaining-values"/);
+  assert.match(topupCard, /class="credits-plan-remaining-values"[\s\S]*?data-credits-voice-topup-balance[\s\S]*?credits-plan-remaining-separator[\s\S]*?data-credits-sms-topup-balance/);
+  assert.doesNotMatch(topupCard, /credits-topup-balance-grid/);
+  assert.match(topupCard, /data-credits-voice-topup-usage[\s\S]*?Voice Credits used[\s\S]*?data-credits-voice-topup-used[\s\S]*?data-credits-voice-topup-progress/);
+  assert.match(creditsRuntime, /setText\('\[data-credits-voice-topup-used\]'[\s\S]*?setProgress\('\[data-credits-voice-topup-progress\]'/);
+  assert.doesNotMatch(topupCard, /Mua SMS credit/);
+  assert.match(creditsActions, /<button[^>]*class="credits-action credits-action-secondary"[^>]*data-credits-action="voice-buy"[^>]*type="button"[^>]*disabled/);
+  assert.match(creditsActions, /data-lucide="phone-call"[^>]*aria-hidden="true"[\s\S]*?Mua Voice credit/);
+  assert.match(creditsActions, /<button[^>]*class="credits-action credits-action-secondary"[^>]*data-credits-action="sms-buy"[^>]*type="button"[^>]*disabled/);
+  assert.match(creditsActions, /data-lucide="wallet-cards"[^>]*aria-hidden="true"[\s\S]*?Mua SMS credit/);
+  assert.doesNotMatch(creditsActions, /href="(?:booking-book-phase-1|nexora-packages)\.html/);
+  assert.match(creditsRuntime, /VOICE_TOPUP_STARTING_CREDITS/);
+  assert.match(creditsRuntime, /data-credits-voice-topup-balance/);
+  assert.match(readFileSync(new URL('../assets/nexora-credits.css', import.meta.url), 'utf8'), /\.credits-actions\s*\{/);
+});
+
 test('synchronizes package tabs with URL state and browser history', () => {
   const html = source();
   const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
