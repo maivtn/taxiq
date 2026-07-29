@@ -258,146 +258,6 @@
     .feed-line { font-size: 12px; font-weight: 600; color: var(--nexora-muted); padding: 8px 0; border-bottom: 1px solid var(--nexora-rule); line-height: 1.6; }
     .feed-line:last-child { border-bottom: 0; }
 
-    /* ── appointments / resource calendar ── */
-    .ap-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
-    .ap-summary { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .ap-count { font-size: 12px; font-weight: 800; color: var(--nexora-text); }
-    .ap-filter { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 800; color: var(--nexora-muted); text-transform: uppercase; letter-spacing: .04em; }
-    .ap-filter .pos-input { height: 36px; min-width: 160px; text-transform: none; letter-spacing: 0; }
-    .ap-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 14px; align-items: start; }
-    .ap-calendar-shell { min-width: 0; overflow: hidden; border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; }
-    .ap-calendar-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 14px; border-bottom: 1px solid var(--nexora-border); background: linear-gradient(180deg, #fff, #fafbff); }
-    .ap-calendar-title { color: var(--nexora-text); font-size: 14px; font-weight: 900; }
-    .ap-calendar-subtitle { margin-top: 3px; color: var(--nexora-subtle); font-size: 11px; font-weight: 700; }
-    .ap-date-nav { display: inline-flex; align-items: center; gap: 6px; }
-    .ap-date-label { min-width: 124px; color: var(--nexora-text); font-size: 12px; font-weight: 800; text-align: center; }
-    .ap-calendar-scroll { overflow: auto; }
-    [data-ap-calendar] { min-width: 720px; }
-    .ap-calendar-empty { display: grid; place-items: center; min-height: 540px; padding: 32px; color: var(--nexora-muted); font-size: 13px; font-weight: 700; text-align: center; line-height: 1.7; }
-    .ap-form-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 0 8px; }
-    .ap-form-grid > div { min-width: 0; }
-    .ap-panel-head { display: grid; gap: 6px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--nexora-rule); }
-    .ap-panel-title { display: flex; align-items: center; gap: 7px; min-height: 24px; color: var(--nexora-text); font-size: 14px; font-weight: 900; line-height: 1.25; }
-    .ap-panel-title-icon { display: inline-flex; width: 22px; height: 22px; flex: 0 0 22px; align-items: center; justify-content: center; border-radius: 6px; background: #eef1ff; color: var(--nexora-brand); font-size: 13px; }
-    .ap-form-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 8px 0 2px; }
-    .ap-panel-head .ap-form-meta { margin: 0; }
-    .ap-meta-item { display: flex; align-items: center; gap: 5px; min-width: 0; }
-    .ap-meta-label { color: var(--nexora-subtle); font-size: 10px; font-weight: 900; white-space: nowrap; }
-    .ap-meta-item .pos-chip { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .ap-source-list { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; gap: 4px; }
-    .ap-source-list .pos-chip { padding: 4px 8px; font-size: 10px; }
-    .ap-source-voice { background: rgba(50, 215, 255, 0.12); color: #087c99; }
-    .ap-source-lp { background: #e9e9ff; color: var(--nexora-brand); }
-    .ap-source-sms { background: rgba(0, 184, 115, 0.12); color: var(--nexora-success); }
-    .ap-source-qr { background: rgba(142, 77, 248, 0.13); color: var(--nexora-violet); }
-    .ap-source-manual { background: rgba(245, 158, 11, 0.14); color: #b45309; }
-    .ap-source-request { background: #fff4e2; color: var(--nexora-warning); }
-    .ap-source-default { background: #eef1f6; color: var(--nexora-muted); }
-    .ap-panel-empty { text-align: center; padding: 34px 10px; line-height: 1.8; }
-    .ap-panel-empty i { display: block; margin-bottom: 10px; color: var(--nexora-brand); font-size: 28px; }
-    [data-ap-panel].is-loading { overflow: hidden; }
-    .ap-panel-loading { display: grid; min-height: 450px; align-content: start; gap: 13px; padding: 4px 0; }
-    .ap-loading-kicker, .ap-loading-line, .ap-loading-block { overflow: hidden; border-radius: 8px; background: linear-gradient(100deg, #e9edf5 20%, #f7f9fc 38%, #e9edf5 56%); background-size: 220% 100%; animation: apPanelShimmer 1.05s ease-in-out infinite; }
-    .ap-loading-kicker { width: 42%; height: 15px; margin-bottom: 7px; }
-    .ap-loading-line { height: 11px; }
-    .ap-loading-line.short { width: 58%; }
-    .ap-loading-block { height: 40px; margin-bottom: 2px; }
-    .ap-loading-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    @keyframes apPanelShimmer { to { background-position: -120% 0; } }
-    .ap-form label { display: block; font-size: 11px; font-weight: 800; color: var(--nexora-muted); text-transform: uppercase; letter-spacing: .04em; margin: 10px 0 4px; }
-    .ap-form .pos-input { width: 100%; }
-    .ap-panel-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
-    .ap-panel-actions .pos-btn { justify-content: center; min-width: 0; }
-    .ap-action-destructive, .ap-action-close { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--nexora-rule); }
-    .ap-action-destructive .pos-btn, .ap-action-close .pos-btn { width: 100%; justify-content: center; }
-    .ap-chips { display: flex; max-height: 160px; flex-wrap: wrap; gap: 6px; overflow-y: auto; }
-    .ap-service-picker { display: grid; gap: 8px; }
-    .ap-service-search-shell { position: relative; display: flex; align-items: center; }
-    .ap-service-search-shell i { position: absolute; left: 11px; color: var(--nexora-subtle); font-size: 13px; pointer-events: none; }
-    .ap-service-search { width: 100%; height: 36px; border: 1px solid var(--nexora-border); border-radius: 9px; background: #fff; padding: 0 11px 0 31px; color: var(--nexora-text); font-size: 12px; font-weight: 600; }
-    .ap-service-search:focus { outline: 0; border-color: var(--nexora-brand); box-shadow: 0 0 0 2px rgba(70, 72, 216, .12); }
-    .ap-service-categories { display: grid; max-height: 280px; gap: 7px; overflow-y: auto; padding-right: 2px; }
-    .ap-service-category { overflow: hidden; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; }
-    .ap-service-category-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--nexora-rule); background: #f8faff; padding: 8px 10px; cursor: pointer; }
-    .ap-service-category-head::-webkit-details-marker { display: none; }
-    .ap-service-category-head::after { content: '⌄'; color: var(--nexora-subtle); font-size: 14px; font-weight: 900; line-height: 1; transition: transform .2s ease; }
-    .ap-service-category:not([open]) .ap-service-category-head::after { transform: rotate(-90deg); }
-    .ap-service-category-name { color: var(--nexora-text); font-size: 10px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
-    .ap-service-category-count { flex-shrink: 0; border-radius: 999px; background: #e9edff; padding: 2px 7px; color: var(--nexora-brand); font-size: 10px; font-weight: 800; }
-    .ap-service-category-options { display: grid; gap: 6px; padding: 8px; }
-    .ap-service-option { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 8px 9px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; line-height: 1.25; text-align: left; }
-    .ap-service-option:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
-    .ap-service-option.is-on { border-color: transparent; background: var(--nexora-brand); color: #fff; }
-    .ap-service-option[hidden] { display: none; }
-    .ap-service-option-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-    .ap-service-option-meta { flex-shrink: 0; color: var(--nexora-subtle); font-size: 10px; font-weight: 700; white-space: nowrap; }
-    .ap-service-option.is-on .ap-service-option-meta { color: rgba(255, 255, 255, .82); }
-    .ap-service-empty { padding: 12px; color: var(--nexora-subtle); font-size: 11px; font-weight: 700; text-align: center; }
-    .ap-ticket-builder-grid { display: grid; grid-template-columns: 1fr; gap: 8px; align-items: end; }
-    .ap-ticket-field { position: relative; display: grid; gap: 5px; min-width: 0; }
-    .ap-ticket-field > label { color: var(--nexora-muted); font-size: 10px; font-weight: 800; }
-    .ap-ticket-dropdown { position: absolute; z-index: 12; top: calc(100% + 4px); left: 0; right: 0; display: grid; max-height: 220px; gap: 4px; overflow-y: auto; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 6px; box-shadow: 0 12px 28px rgba(38, 43, 89, .14); }
-    .ap-ticket-dropdown[hidden] { display: none; }
-    .ap-ticket-dropdown button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid transparent; border-radius: 7px; background: #fff; padding: 8px; color: var(--nexora-muted); font-size: 11px; font-weight: 700; text-align: left; }
-    .ap-ticket-dropdown button:hover, .ap-ticket-dropdown button.is-selected { border-color: var(--nexora-brand); background: #f4f3ff; color: var(--nexora-brand); }
-    .ap-ticket-dropdown button[hidden] { display: none; }
-    .ap-ticket-add { width: 100%; height: 36px; white-space: nowrap; }
-    .ap-ticket-list { display: grid; gap: 6px; margin-top: 9px; }
-    .ap-ticket-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px; border: 1px solid var(--nexora-border); border-radius: 9px; background: #fbfcff; padding: 8px 9px; }
-    .ap-ticket-row-main { display: grid; gap: 2px; min-width: 0; }
-    .ap-ticket-row-main strong { overflow: hidden; color: var(--nexora-text); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-    .ap-ticket-row-main span, .ap-ticket-row-meta { color: var(--nexora-muted); font-size: 10px; font-weight: 700; }
-    .ap-ticket-row-meta { white-space: nowrap; }
-    .ap-ticket-remove { display: inline-grid; width: 24px; height: 24px; place-items: center; border: 0; border-radius: 6px; background: transparent; color: var(--nexora-subtle); }
-    .ap-ticket-remove:hover { background: #fff0f3; color: #d33d67; }
-    .ap-ticket-empty { border: 1px dashed var(--nexora-border); border-radius: 9px; padding: 10px; color: var(--nexora-subtle); font-size: 10px; font-weight: 700; text-align: center; }
-    @media (max-width: 520px) { .ap-ticket-builder-grid { grid-template-columns: 1fr; } .ap-ticket-add { width: 100%; } }
-    .appointment-service-summary { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
-    .appointment-service-summary-item { color: var(--nexora-muted); font-size: 11px; font-weight: 700; }
-    .appointment-service-summary-label { color: inherit; }
-    .appointment-service-summary-value { color: var(--nexora-text); font-size: 12px; font-weight: 800; white-space: nowrap; }
-    .ap-chip { border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 6px 9px; font-size: 12px; font-weight: 700; color: var(--nexora-muted); }
-    .ap-chip.is-on { background: var(--nexora-brand); border-color: transparent; color: #fff; }
-    .ap-warn { font-size: 11.5px; font-weight: 700; color: var(--nexora-warning); margin-top: 10px; min-height: 16px; }
-
-    /* DayPilot chrome: light, compact, and closer to a modern team schedule. */
-    .ap-calendar-shell .calendar_default_main { border: 0; background: #fff; font-family: Inter, system-ui, sans-serif; }
-    .ap-calendar-shell .calendar_default_corner_inner,
-    .ap-calendar-shell .calendar_default_colheader_inner,
-    .ap-calendar-shell .calendar_default_rowheader_inner { border-color: #e8edf5; background: #fbfcfe; }
-    .ap-calendar-shell .calendar_default_colheader_inner { color: #334155; font-size: 12px; font-weight: 800; letter-spacing: -.01em; }
-    .ap-calendar-shell .calendar_default_rowheader_inner { color: #64748b; font-size: 11px; font-weight: 800; letter-spacing: -.01em; }
-    .ap-calendar-shell .calendar_default_cell_inner { position: relative; border-color: #edf1f6; background: linear-gradient(90deg, rgba(248, 250, 252, .34), rgba(255, 255, 255, 0) 24px); }
-    .ap-calendar-shell .calendar_default_event_inner { overflow: hidden; border-radius: 11px !important; box-shadow: 0 6px 18px rgba(15, 23, 42, .10); transition: box-shadow .16s ease, transform .16s ease; }
-    .ap-calendar-shell .calendar_default_event:hover .calendar_default_event_inner { box-shadow: 0 10px 22px rgba(15, 23, 42, .16); transform: translateY(-1px); }
-    .ap-calendar-shell .ap-dp-event { overflow: hidden; font-family: Inter, system-ui, sans-serif; line-height: 1.32; }
-    .ap-dp-event-name { overflow: hidden; color: inherit; font-size: 11px; font-weight: 900; letter-spacing: -.015em; text-overflow: ellipsis; white-space: nowrap; }
-    .ap-dp-event-service { overflow: hidden; margin-top: 2px; color: inherit; font-size: 9.5px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
-    .ap-dp-event-meta { margin-top: 4px; color: inherit; font-size: 8.5px; font-weight: 700; opacity: .7; }
-    .ap-calendar-shell .ap-cell-add { position: absolute; inset: 0; display: grid; place-items: center; color: #5e63dc; font-size: 12px; font-weight: 700; line-height: 1; opacity: .07; pointer-events: none; transition: opacity .15s ease; }
-    .ap-calendar-shell .ap-cell-add > span { display: grid; width: 18px; height: 18px; place-items: center; border-radius: 999px; transition: background .15s ease, box-shadow .15s ease, transform .15s ease; }
-    .ap-calendar-shell .calendar_default_cell:hover .ap-cell-add { opacity: 1; }
-    .ap-calendar-shell .calendar_default_cell:hover .ap-cell-add > span { background: #eef0ff; box-shadow: 0 3px 9px rgba(70, 72, 216, .18); transform: scale(1.08); }
-    .ap-calendar-shell .calendar_default_shadow_inner { border: 1px solid rgba(70, 72, 216, .36); background: rgba(70, 72, 216, .16); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .45), 0 4px 12px rgba(70, 72, 216, .08); }
-    .ap-event { min-width: 0; overflow: hidden; }
-    .ap-event-top { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
-    .ap-event-time { font-size: 9.5px; font-weight: 900; opacity: .88; }
-    .ap-event-name { overflow: hidden; font-size: 10.5px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
-    .ap-event-service { overflow: hidden; margin-top: 2px; font-size: 9px; font-weight: 700; opacity: .82; text-overflow: ellipsis; white-space: nowrap; }
-    .ap-event-status { display: inline-block; margin-top: 3px; border-radius: 999px; background: rgba(255,255,255,.22); padding: 1px 5px; font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: .03em; }
-    @media (max-width: 1120px) { .ap-grid { grid-template-columns: 1fr; } }
-    @media (max-width: 720px) {
-      .ap-calendar-head { align-items: flex-start; flex-direction: column; }
-      .ap-date-nav { width: 100%; justify-content: space-between; }
-      .ap-filter { width: 100%; }
-      .ap-filter .pos-input { flex: 1; min-width: 0; }
-      .ap-form-grid { grid-template-columns: 1fr 1fr; }
-      .ap-form-meta { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 600px) {
-      .ap-panel-actions { grid-template-columns: 1fr; }
-    }
-
     /* ── sms campaigns ── */
     .sms-banner { display: none; align-items: center; gap: 10px; border: 1px solid rgba(0, 184, 115, .35); background: #e7f8f0; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-size: 13px; font-weight: 700; color: #04794f; }
     .sms-banner.show { display: flex; animation: posFade .2s ease; }
@@ -533,6 +393,7 @@
     }
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/pos-booking.css">
 </head>
 <body>
   <div class="shell">
@@ -553,7 +414,7 @@
             <button class="page-tab is-active" type="button" role="tab" data-pos-tab="dispatch"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Operations</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="clock"><i class="bi bi-clock-history" aria-hidden="true"></i> Time Clock</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="management"><i class="bi bi-building-gear" aria-hidden="true"></i> Management</button>
-            <button class="page-tab" type="button" role="tab" data-pos-tab="appointments"><i class="bi bi-calendar-check" aria-hidden="true"></i> Appointments</button>
+            <button class="page-tab" type="button" role="tab" data-pos-tab="booking"><i class="bi bi-calendar-check" aria-hidden="true"></i> Booking</button>
           </div>
         </div>
 
@@ -814,49 +675,836 @@
           </div>
         </section>
 
-        <!-- ══════════ 📅 APPOINTMENTS (S12) ══════════ -->
-        <section class="pos-panel" data-pos-panel="appointments" aria-label="Appointments">
-          <div class="pos-card">
-            <div class="pos-card-head">
-              <h3><i class="bi bi-calendar-check" aria-hidden="true"></i> Appointments</h3>
-              <div class="pos-inline">
-                <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-ap-add><i class="bi bi-plus-lg"></i> New appointment</button>
+        <!-- ══════════ 📅 BOOKING ══════════ -->
+        <section class="pos-panel" data-pos-panel="booking" aria-label="Booking">
+              <div class="booking-legacy-appointments" data-booking-legacy-appointments>
+              <div class="booking-toolbar">
+                <div class="booking-subtabs" role="tablist" aria-label="Booking Book views">
+                  <button class="booking-subtab is-active" type="button" role="tab" aria-selected="true" data-booking-subtab-target="today" aria-controls="booking-subpanel-today">
+                    <span class="booking-subtab-icon">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M8 2v4"></path>
+                        <path d="M16 2v4"></path>
+                        <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                        <path d="M3 10h18"></path>
+                        <path d="M8 14h.01"></path>
+                        <path d="M12 14h.01"></path>
+                        <path d="M16 14h.01"></path>
+                      </svg>
+                    </span>
+                    <span>Appointments</span>
+                  </button>
+                  <button class="booking-subtab" type="button" role="tab" aria-selected="false" data-booking-subtab-target="team" aria-controls="booking-subpanel-team">
+                    <span class="booking-subtab-icon">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                      </svg>
+                    </span>
+                    <span>Team</span>
+                  </button>
+                </div>
+                <div class="sync-note">Every channel lands in one book</div>
               </div>
-            </div>
-            <div class="ap-toolbar">
-              <div class="ap-summary">
-                <span class="pos-chip pos-chip-blue"><i class="bi bi-calendar3" aria-hidden="true"></i> <span class="ap-count" data-ap-count>0 appointments</span></span>
-                <span class="pos-chip pos-chip-green" data-ap-confirmed>0 confirmed</span>
-                <span class="pos-chip pos-chip-amber" data-ap-unassigned>0 unassigned</span>
-              </div>
-              <label class="ap-filter">
-                <i class="bi bi-person-badge" aria-hidden="true"></i> Technician
-                <select class="pos-input" data-ap-tech-filter aria-label="Filter appointments by technician">
-                  <option value="all">All technicians</option>
-                </select>
-              </label>
-            </div>
-            <div class="ap-grid">
-              <div class="ap-calendar-shell">
-                <div class="ap-calendar-head">
-                  <div>
-                    <div class="ap-calendar-title">Team calendar</div>
-                    <div class="ap-calendar-subtitle">9:00 AM – 7:00 PM · appointments grouped by technician</div>
+
+              <div class="booking-sub-panel is-active" id="booking-subpanel-today" data-booking-sub-panel="today">
+                <div class="overview-kpis">
+                  <article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-electric);">
+                    <div class="kpi-top">
+                      <div class="kpi-icon">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M8 2v4"></path>
+                          <path d="M16 2v4"></path>
+                          <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                          <path d="M3 10h18"></path>
+                        </svg>
+                      </div>
+                      <span class="badge booking-status booking-status-new">New</span>
+                    </div>
+                    <div class="kpi-label">Today's Appointments</div>
+                    <div class="kpi-value" data-booking-kpi="today">4</div>
+                    <div class="kpi-trend">All appointments today</div>
+                  </article>
+
+                  <article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-success);">
+                    <div class="kpi-top">
+                      <div class="kpi-icon">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M20 6 9 17l-5-5"></path>
+                        </svg>
+                      </div>
+                      <span class="badge booking-status booking-status-done">SMS activated</span>
+                    </div>
+                    <div class="kpi-label">Completed</div>
+                    <div class="kpi-value" data-booking-kpi="done">1</div>
+                    <div class="kpi-trend">Review SMS ready</div>
+                  </article>
+
+                  <article class="overview-card kpi-card" style="--kpi-accent: #ef4444;">
+                    <div class="kpi-top">
+                      <div class="kpi-icon">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M18 6 6 18"></path>
+                          <path d="m6 6 12 12"></path>
+                        </svg>
+                      </div>
+                      <span class="badge booking-status booking-status-noshow">No-show</span>
+                    </div>
+                    <div class="kpi-label">No review sent</div>
+                    <div class="kpi-value" data-booking-kpi="noshow">0</div>
+                    <div class="kpi-trend">No-show won't get a review</div>
+                  </article>
+
+                </div>
+
+                <div class="booking-appointment-layout" data-booking-view-mode="calendar">
+                  <div class="booking-appointment-main">
+                    <div class="booking-grid">
+                      <article class="overview-card overview-card-pad">
+                    <div class="booking-daybar">
+                      <div class="booking-date">
+                        <span class="booking-action-icon">
+                          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M8 2v4"></path>
+                            <path d="M16 2v4"></path>
+                            <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                            <path d="M3 10h18"></path>
+                          </svg>
+                        </span>
+                        <span>Appointments Overview</span>
+                      </div>
+                      <div class="booking-daybar-actions">
+                        <button class="booking-primary-button booking-overview-add-button" type="button" data-booking-calendar-add><i class="bi bi-plus-lg" aria-hidden="true"></i>New appointment</button>
+                        <div class="booking-view-switch" role="group" aria-label="Booking view mode">
+                          <button class="booking-view-button" type="button" data-booking-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
+                          <button class="booking-view-button" type="button" data-booking-view-target="card" aria-pressed="false"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
+                          <button class="booking-view-button" type="button" data-booking-view-target="calendar" aria-pressed="false"><i class="bi bi-calendar3" aria-hidden="true"></i>Calendar</button>
+                        </div>
+                        <div class="booking-filter-wrap">
+                          <button class="booking-secondary-button booking-filter-toggle" type="button" data-booking-filter-toggle="booking" aria-controls="booking-filter-menu" aria-expanded="false"><i class="bi bi-funnel" aria-hidden="true"></i>Filter</button>
+                          <div class="booking-filter-popover" id="booking-filter-menu" data-booking-filter-menu="booking" hidden>
+                            <div class="booking-filter-popover-head"><span>Filter appointments</span></div>
+                            <div class="booking-controls" aria-label="Booking filters">
+                              <label class="booking-control-field">
+                                <span class="booking-control-label">Search by</span>
+                                <select class="booking-select" data-booking-search-field>
+                                  <option value="name">Name</option>
+                                  <option value="phone">Phone</option>
+                                  <option value="email">Email</option>
+                                  <option value="service">Service</option>
+                                </select>
+                              </label>
+                              <label class="booking-control-field">
+                                <span class="booking-control-label">Keyword</span>
+                                <input class="booking-input" type="search" placeholder="Enter customer name" data-booking-search-input>
+                              </label>
+                              <label class="booking-control-field">
+                                <span class="booking-control-label">Date from</span>
+                                <input class="booking-input" type="text" placeholder="Select date" data-booking-date-from>
+                              </label>
+                              <label class="booking-control-field">
+                                <span class="booking-control-label">Date to</span>
+                                <input class="booking-input" type="text" placeholder="Select date" data-booking-date-to>
+                              </label>
+                              <button class="booking-mini-button booking-clear-button" type="button" data-booking-clear-filters>Clear</button>
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="booking-status-chips" data-booking-status-chips role="group" aria-label="Filter appointments by status">
+                      <button class="booking-status-chip is-active" type="button" data-booking-status-chip="all" aria-pressed="true">All <span class="booking-status-chip-count" data-booking-status-count="all">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="new" aria-pressed="false">New <span class="booking-status-chip-count" data-booking-status-count="new">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="sms-sent" aria-pressed="false">SMS Sent <span class="booking-status-chip-count" data-booking-status-count="sms-sent">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="done" aria-pressed="false">Completed <span class="booking-status-chip-count" data-booking-status-count="done">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="noshow" aria-pressed="false">No-show <span class="booking-status-chip-count" data-booking-status-count="noshow">0</span></button>
+                    </div>
+
+                    <div class="booking-table-wrap" data-booking-view-panel="table">
+                      <table class="booking-table" data-booking-table>
+                        <thead>
+                          <tr>
+                            <th scope="col">Time</th>
+                            <th scope="col">Customer</th>
+                            <th scope="col">Service</th>
+                            <th scope="col">Technician</th>
+                            <th scope="col">Appointment</th>
+                            <th scope="col">Duration</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr class="booking-table-row is-done" data-booking-item data-booking-id="booking-kim-phan" data-booking-name="Kim Phan" data-booking-phone="7135550148" data-booking-email="kim.phan@example.com" data-booking-service="Pedicure Gel Polish" data-booking-tech="Lan T." data-booking-date="2026-07-09" data-booking-note="Prefers warm water and extra heel care. Customer confirmed arrival by phone and asked to keep the same chair as last visit.">
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main booking-callstart-main">8:12 AM</div>
+                                <div class="booking-time-date booking-callstart-date">Jul 9, 2026</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-customer">
+                                <div class="booking-customer-name">Kim Phan <span class="badge booking-source-voice">Voice</span></div>
+                                <div class="booking-customer-meta">+1 (713) 555-0148 · kim.phan@example.com</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-service">
+                                <div class="booking-service-list">
+                                  <span class="booking-service-chip">Pedicure</span>
+                                  <span class="booking-service-chip">Gel Polish</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><div class="booking-tech"><span class="booking-tech-name">Lan T.</span></div></td>
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main">9:00 am</div>
+                                <div class="booking-time-date">Jul 09, 2026</div>
+                              </div>
+                            </td>
+                            <td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">2:34</span></span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-done">Completed</span></td>
+                            <td>
+                              <div class="booking-actions">
+                                <button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          <tr class="booking-table-row is-sms-sent" data-booking-item data-booking-id="booking-sophie-tran" data-booking-name="Sophie Tran" data-booking-phone="2815550196" data-booking-email="sophie.tran@example.com" data-booking-service="Gel Manicure Nail Art" data-booking-tech="Kim N." data-booking-date="2026-07-09" data-booking-note="Booked from landing page after seeing the gel manicure promo. Customer wants a neutral pink base with one simple accent nail.">
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main booking-callstart-main">9:05 AM</div>
+                                <div class="booking-time-date booking-callstart-date">Jul 9, 2026</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-customer">
+                                <div class="booking-customer-name">Sophie Tran <span class="badge booking-source-lp">Landing Page</span></div>
+                                <div class="booking-customer-meta">+1 (281) 555-0196 · sophie.tran@example.com</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-service">
+                                <div class="booking-service-list">
+                                  <span class="booking-service-chip">Gel Manicure</span>
+                                  <span class="booking-service-chip">Nail Art</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><div class="booking-tech"><span class="booking-tech-name">Kim N.</span></div></td>
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main">10:30 am</div>
+                                <div class="booking-time-date">Jul 09, 2026</div>
+                              </div>
+                            </td>
+                            <td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">1:47</span></span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-sms">SMS Sent</span></td>
+                            <td>
+                              <div class="booking-actions">
+                                <button class="booking-mini-button primary booking-done-action" type="button" data-booking-action="done" aria-label="Done" title="Done"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="booking-mini-label">Done</span></button>
+                                <button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          <tr class="booking-table-row is-new" data-booking-item data-booking-id="booking-mai-nguyen" data-booking-name="Mai Nguyen" data-booking-phone="8325550164" data-booking-email="mai.nguyen@example.com" data-booking-service="Gel Full Set Removal" data-booking-tech="Linda" data-booking-date="2026-07-09" data-booking-note="Customer initially requested Elio but he was unavailable; booked with Linda instead. Phone: 14182188221. Please confirm almond shape and light pink finish before start time.">
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main booking-callstart-main">11:36 AM</div>
+                                <div class="booking-time-date booking-callstart-date">Jul 9, 2026</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-customer">
+                                <div class="booking-customer-name">Mai Nguyen <span class="badge booking-source-voice">Voice</span> <span class="badge badge-warning">Request</span></div>
+                                <div class="booking-customer-meta">+1 (832) 555-0164 · mai.nguyen@example.com</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-service">
+                                <div class="booking-service-list">
+                                  <span class="booking-service-chip">Gel Full Set</span>
+                                  <span class="booking-service-chip">Removal</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><div class="booking-tech"><span class="booking-tech-name">Linda</span></div></td>
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main">1:00 pm</div>
+                                <div class="booking-time-date">Jul 09, 2026</div>
+                              </div>
+                            </td>
+                            <td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">3:12</span></span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
+                            <td>
+                              <div class="booking-actions">
+                                <button class="booking-mini-button primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>
+                                <button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          <tr class="booking-table-row is-new" data-booking-item data-booking-id="booking-jennifer-s" data-booking-name="Jennifer S." data-booking-phone="7135550127" data-booking-email="jennifer.s@example.com" data-booking-service="Full Set Acrylic French Tip" data-booking-tech="Mai P." data-booking-date="2026-07-09" data-booking-note="Customer asked for a quiet corner and extra time for acrylic removal. She may bring a reference photo for the French tip shape.">
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main booking-callstart-main">12:18 PM</div>
+                                <div class="booking-time-date booking-callstart-date">Jul 9, 2026</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-customer">
+                                <div class="booking-customer-name">Jennifer S. <span class="badge booking-source-sms">SMS</span></div>
+                                <div class="booking-customer-meta">+1 (713) 555-0127 · jennifer.s@example.com</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-service">
+                                <div class="booking-service-list">
+                                  <span class="booking-service-chip">Full Set Acrylic</span>
+                                  <span class="booking-service-chip">French Tip</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><div class="booking-tech"><span class="booking-tech-name">Mai P.</span></div></td>
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main">2:00 pm</div>
+                                <div class="booking-time-date">Jul 09, 2026</div>
+                              </div>
+                            </td>
+                            <td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">1:29</span></span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
+                            <td>
+                              <div class="booking-actions">
+                                <button class="booking-mini-button primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>
+                                <button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          <tr class="booking-table-row is-new" data-booking-item data-booking-id="booking-tina-vo" data-booking-name="Tina Vo" data-booking-phone="3465550188" data-booking-email="tina.vo@example.com" data-booking-service="Dip Powder Chrome Design" data-booking-tech="Lan T." data-booking-date="2026-07-17" data-booking-note="Requested chrome design but has not picked a color yet. Send reminder SMS the morning of the appointment.">
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main booking-callstart-main">6:44 PM</div>
+                                <div class="booking-time-date booking-callstart-date">Jul 16, 2026</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-customer">
+                                <div class="booking-customer-name">Tina Vo <span class="badge booking-source-lp">Landing Page</span></div>
+                                <div class="booking-customer-meta">+1 (346) 555-0188 · tina.vo@example.com</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-service">
+                                <div class="booking-service-list">
+                                  <span class="booking-service-chip">Dip Powder</span>
+                                  <span class="booking-service-chip">Chrome Design</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><div class="booking-tech"><span class="booking-tech-name">Lan T.</span></div></td>
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main">4:00 pm</div>
+                                <div class="booking-time-date">Jul 17, 2026</div>
+                              </div>
+                            </td>
+                            <td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">2:05</span></span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
+                            <td>
+                              <div class="booking-actions">
+                                <button class="booking-mini-button primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>
+                                <button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          <tr class="booking-table-row is-new" data-booking-item data-booking-id="booking-anna-le" data-booking-name="Anna Le" data-booking-phone="2815550119" data-booking-email="anna.le@example.com" data-booking-service="Pedicure Gel Polish" data-booking-tech="Mai P." data-booking-date="2026-07-17" data-booking-note="QR booking request came in after hours. Customer prefers an evening slot and asked to be notified if an earlier opening appears.">
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main booking-callstart-main">9:23 PM</div>
+                                <div class="booking-time-date booking-callstart-date">Jul 16, 2026</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-customer">
+                                <div class="booking-customer-name">Anna Le <span class="badge booking-source-qr">QR</span> <span class="badge badge-warning">Request</span></div>
+                                <div class="booking-customer-meta">+1 (281) 555-0119 · anna.le@example.com</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="booking-service">
+                                <div class="booking-service-list">
+                                  <span class="booking-service-chip">Pedicure</span>
+                                  <span class="booking-service-chip">Gel Polish</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><div class="booking-tech"><span class="booking-tech-name">Mai P.</span></div></td>
+                            <td>
+                              <div class="booking-time-block">
+                                <div class="booking-time-main">5:30 pm</div>
+                                <div class="booking-time-date">Jul 17, 2026</div>
+                              </div>
+                            </td>
+                            <td><span class="booking-duration"><i class="bi bi-stopwatch" aria-hidden="true"></i> <span class="booking-duration-value">0:58</span></span></td>
+                            <td class="booking-status-cell"><span class="badge booking-status booking-status-new">New</span></td>
+                            <td>
+                              <div class="booking-actions">
+                                <button class="booking-mini-button primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>
+                                <button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>
+                                <button class="booking-mini-button" type="button" data-booking-action="detail" aria-label="View" title="View"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="booking-card-panel" data-booking-view-panel="card" hidden>
+                      <div class="booking-card-list" data-booking-card-list></div>
+                    </div>
+                    <div class="booking-calendar-panel" data-booking-view-panel="calendar" hidden>
+                      <div class="booking-team-calendar">
+                        <div class="booking-calendar-head">
+                          <div>
+                            <div class="booking-calendar-title">Team calendar</div>
+                            <div class="booking-calendar-subtitle">9:00 AM – 7:00 PM · appointments grouped by technician</div>
+                          </div>
+                          <div class="booking-calendar-head-actions">
+                            <div class="booking-calendar-nav" aria-label="Calendar date controls">
+                              <button class="booking-mini-button" type="button" data-booking-calendar-prev aria-label="Previous day"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
+                              <span class="booking-calendar-nav-label" data-booking-calendar-date></span>
+                              <button class="booking-mini-button" type="button" data-booking-calendar-today>Today</button>
+                              <button class="booking-mini-button" type="button" data-booking-calendar-next aria-label="Next day"><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="booking-calendar-scroll"><div data-booking-team-calendar aria-label="Team booking calendar"></div></div>
+                      </div>
+                    </div>
+                    <div class="booking-empty" data-booking-empty hidden>No matching bookings found.</div>
+                      </article>
+                    </div>
                   </div>
-                  <div class="ap-date-nav" aria-label="Calendar date controls">
-                    <button class="pos-icon-btn" type="button" data-ap-prev aria-label="Previous day"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
-                    <span class="ap-date-label" data-ap-current-date></span>
-                    <button class="pos-btn pos-btn-sm" type="button" data-ap-today>Today</button>
-                    <button class="pos-icon-btn" type="button" data-ap-next aria-label="Next day"><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+                  <aside class="booking-appointment-panel overview-card" data-booking-appointment-panel aria-label="Appointment details">
+                    <div data-booking-panel-state="empty">
+                      <i class="bi bi-calendar2-week" aria-hidden="true"></i>
+                      <strong>Select an appointment</strong>
+                      <span>Click an event to edit it, or select a time in a technician column to create a booking.<br><br>Drag events to reschedule · drag an edge to change duration</span>
+                    </div>
+                  </aside>
+                </div>
+
+                <div class="booking-detail-modal" data-booking-detail-modal hidden>
+                  <div class="booking-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="booking-detail-title">
+                    <div class="booking-detail-head">
+                      <div>
+                        <div class="booking-detail-title" id="booking-detail-title">Appointment details</div>
+                        <div class="booking-detail-sub" data-booking-detail-sub>Customer, service, technician, status and internal notes.</div>
+                      </div>
+                      <button class="booking-detail-close" type="button" data-booking-detail-close aria-label="Close appointment details"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="booking-detail-body">
+                      <div class="booking-detail-hero">
+                        <div class="booking-detail-avatar" data-booking-detail-initials></div>
+                        <div>
+                          <div class="booking-detail-name" data-booking-detail-name></div>
+                          <div class="booking-detail-hero-sub">
+                            <span data-booking-detail-phone></span>
+                            <span data-booking-detail-email></span>
+                          </div>
+                        </div>
+                        <div class="booking-detail-status-pill" data-booking-detail-status></div>
+                      </div>
+
+                      <div class="booking-detail-section">
+                        <div class="booking-detail-section-title"><i class="bi bi-stars" aria-hidden="true"></i>Booked services</div>
+                        <div class="booking-detail-service-chips" data-booking-detail-services></div>
+                      </div>
+
+                      <div class="booking-detail-info-grid">
+                        <div class="booking-detail-info-item">
+                          <span class="booking-detail-info-icon"><i class="bi bi-person-workspace" aria-hidden="true"></i></span>
+                          <div>
+                            <div class="booking-detail-label">Technician</div>
+                            <div class="booking-detail-value" data-booking-detail-tech></div>
+                          </div>
+                        </div>
+                        <div class="booking-detail-info-item">
+                          <span class="booking-detail-info-icon"><i class="bi bi-clock" aria-hidden="true"></i></span>
+                          <div>
+                            <div class="booking-detail-label">Appointment</div>
+                            <div class="booking-detail-value" data-booking-detail-time></div>
+                          </div>
+                        </div>
+                        <div class="booking-detail-info-item">
+                          <span class="booking-detail-info-icon"><i class="bi bi-broadcast" aria-hidden="true"></i></span>
+                          <div>
+                            <div class="booking-detail-label">Source</div>
+                            <div class="booking-detail-value booking-source-list" data-booking-detail-source></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="booking-detail-note-card">
+                        <div class="booking-detail-section-title"><i class="bi bi-journal-text" aria-hidden="true"></i>Note</div>
+                        <div class="booking-detail-note" data-booking-detail-note></div>
+                      </div>
+                    </div>
+                    <div class="booking-detail-actions">
+                      <div class="booking-detail-action-list" data-booking-detail-actions></div>
+                      <button class="booking-secondary-button" type="button" data-booking-detail-close>Close</button>
+                    </div>
                   </div>
                 </div>
-                <div class="ap-calendar-scroll"><div data-ap-calendar aria-label="Team appointment calendar"></div></div>
+
+                <div class="booking-create-modal" data-booking-create-modal hidden>
+                  <div class="booking-create-dialog" role="dialog" aria-modal="true" aria-labelledby="booking-create-title">
+                    <div class="booking-create-head">
+                      <div>
+                        <div class="booking-create-title" id="booking-create-title"><i class="bi bi-calendar-plus" aria-hidden="true"></i> New appointment</div>
+                        <div class="booking-create-sub">Create a booking from an open calendar slot.</div>
+                      </div>
+                      <button class="booking-detail-close" type="button" data-booking-create-close aria-label="Close new appointment form"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="booking-create-body">
+                      <div class="booking-create-grid">
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Phone *</span>
+                          <span class="phone-input-shell">
+                            <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
+                            <input class="booking-input phone-mask-input" type="tel" maxlength="20" data-booking-create-field="phone" data-phone-mask placeholder="(555) 555-5555" inputmode="numeric" autocomplete="tel-national" required>
+                          </span>
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Customer name *</span>
+                          <input class="booking-input" type="text" maxlength="60" data-booking-create-field="name" placeholder="Enter customer name" autocomplete="name">
+                        </label>
+                        <label class="booking-create-field is-full">
+                          <span class="booking-create-label">Service — Technician *</span>
+                          <div class="booking-create-ticket-host" data-booking-create-ticket-host></div>
+                          <div class="booking-service-summary" aria-live="polite">
+                            <span class="booking-service-summary-item">
+                              <span class="booking-service-summary-label">Total price:</span>
+                              <strong class="booking-service-summary-value" data-booking-create-total-price>$0</strong>
+                            </span>
+                            <span class="booking-service-summary-item">
+                              <span class="booking-service-summary-label">Total time:</span>
+                              <strong class="booking-service-summary-value" data-booking-create-total-duration>0 min</strong>
+                            </span>
+                          </div>
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Technician</span>
+                          <select class="booking-select" data-booking-create-field="tech"></select>
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Status</span>
+                          <select class="booking-select" data-booking-create-field="status">
+                            <option value="new" selected>New</option>
+                            <option value="sms-sent">SMS Sent</option>
+                            <option value="done">Completed</option>
+                            <option value="noshow">No-show</option>
+                          </select>
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Date *</span>
+                          <input class="booking-input" type="date" data-booking-create-field="date">
+                        </label>
+                        <label class="booking-create-field">
+                          <span class="booking-create-label">Time *</span>
+                          <input class="booking-input" type="time" step="900" data-booking-create-field="time">
+                        </label>
+                        <label class="booking-create-field is-full">
+                          <span class="booking-create-label">Internal note</span>
+                          <textarea class="booking-input" maxlength="240" data-booking-create-field="note" placeholder="Optional staff note"></textarea>
+                        </label>
+                      </div>
+                      <div class="booking-create-error" data-booking-create-error role="alert" aria-live="polite"></div>
+                    </div>
+                    <div class="booking-create-actions">
+                      <button class="booking-secondary-button" type="button" data-booking-create-close>Cancel</button>
+                      <button class="booking-primary-button" type="button" data-booking-create-save><i class="bi bi-check-lg" aria-hidden="true"></i>Save appointment</button>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="pos-card soft" data-ap-panel></div>
-            </div>
-          </div>
+
+              <div class="booking-sub-panel" id="booking-subpanel-team" data-booking-sub-panel="team">
+                <div class="tech-intro">
+                  <div class="tech-intro-text">A shared technician profile powers customer SMS, QR tips, Reviews and Rewards.</div>
+                  <button class="booking-primary-button" type="button" data-tech-modal-open><i class="bi bi-plus-lg" aria-hidden="true"></i>Add Technician</button>
+                </div>
+
+                <div class="tech-grid">
+                  <article class="tech-card" data-tech-id="kim">
+                    <div class="tech-top">
+                      <div class="tech-avatar">K</div>
+                      <div class="tech-profile">
+                        <div class="tech-name">Kim Nguyen</div>
+                        <div class="tech-phone">832-555-0161</div>
+                      </div>
+                      <button class="toggle-pill is-on" type="button" aria-label="Toggle Kim SMS notify"></button>
+                    </div>
+                    <div class="tech-card-footer">
+                      <div class="tech-stats">
+                        <div class="tech-stat"><strong>3</strong><span>Clients today</span></div>
+                      </div>
+                      <div class="tech-card-actions">
+                        <button class="booking-secondary-button" type="button" data-tech-detail-open="kim" aria-label="Edit" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i><span class="booking-mini-label">Edit</span></button>
+                      </div>
+                    </div>
+                    <div class="tech-services">
+                      <span class="badge badge-plan">Gel</span>
+                      <span class="badge badge-plan">Full Set</span>
+                      <span class="badge badge-plan">Dip</span>
+                      <span class="badge badge-plan">Pedicure</span>
+                      <span class="badge badge-plan">Nail Art</span>
+                      <span class="badge badge-plan">Acrylic</span>
+                      <span class="badge badge-plan">Waxing</span>
+                      <span class="badge badge-plan">Eyelash</span>
+                      <span class="badge badge-plan">Gel Manicure</span>
+                      <span class="badge badge-plan">Classic Manicure</span>
+                      <span class="badge badge-plan">Manicure</span>
+                      <span class="badge badge-plan">Pedicure Gel</span>
+                      <span class="badge badge-plan">Acrylic Fill</span>
+                      <span class="badge badge-plan">Builder Gel</span>
+                      <span class="badge badge-plan">French Tip</span>
+                      <span class="badge badge-plan">Chrome</span>
+                      <span class="badge badge-plan">Ombre</span>
+                      <span class="badge badge-plan">Kids Manicure</span>
+                      <span class="badge badge-plan">Kids Pedicure</span>
+                      <span class="badge badge-plan">Soak Off</span>
+                    </div>
+                  </article>
+
+                  <article class="tech-card" data-tech-id="lan">
+                    <div class="tech-top">
+                      <div class="tech-avatar" style="background: linear-gradient(135deg, var(--brand-cyan), var(--nexora-electric));">L</div>
+                      <div class="tech-profile">
+                        <div class="tech-name">Lan Tran</div>
+                        <div class="tech-phone">713-555-0192</div>
+                      </div>
+                      <button class="toggle-pill is-on" type="button" aria-label="Toggle Lan SMS notify"></button>
+                    </div>
+                    <div class="tech-card-footer">
+                      <div class="tech-stats">
+                        <div class="tech-stat"><strong>2</strong><span>Clients today</span></div>
+                      </div>
+                      <div class="tech-card-actions">
+                        <button class="booking-secondary-button" type="button" data-tech-detail-open="lan" aria-label="Edit" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i><span class="booking-mini-label">Edit</span></button>
+                      </div>
+                    </div>
+                    <div class="tech-services">
+                      <span class="badge badge-plan">Pedicure</span>
+                      <span class="badge badge-plan">Gel</span>
+                      <span class="badge badge-plan">Nail Art</span>
+                    </div>
+                  </article>
+
+                  <article class="tech-card" data-tech-id="mai">
+                    <div class="tech-top">
+                      <div class="tech-avatar" style="background: linear-gradient(135deg, #f472b6, var(--nexora-violet));">M</div>
+                      <div class="tech-profile">
+                        <div class="tech-name">Mai Pham</div>
+                        <div class="tech-phone">281-555-0138</div>
+                      </div>
+                      <button class="toggle-pill is-on" type="button" aria-label="Toggle Mai SMS notify"></button>
+                    </div>
+                    <div class="tech-card-footer">
+                      <div class="tech-stats">
+                        <div class="tech-stat"><strong>2</strong><span>Clients today</span></div>
+                      </div>
+                      <div class="tech-card-actions">
+                        <button class="booking-secondary-button" type="button" data-tech-detail-open="mai" aria-label="Edit" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i><span class="booking-mini-label">Edit</span></button>
+                      </div>
+                    </div>
+                    <div class="tech-services">
+                      <span class="badge badge-plan">Acrylic</span>
+                      <span class="badge badge-plan">Dip</span>
+                      <span class="badge badge-plan">Pedicure</span>
+                    </div>
+                  </article>
+                </div>
+
+                <div class="tech-modal" data-tech-modal hidden>
+                  <div class="tech-dialog" role="dialog" aria-modal="true" aria-labelledby="tech-modal-title">
+                    <div class="tech-modal-head">
+                      <div class="tech-modal-heading">
+                        <span class="tech-title-mark"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
+                        <div>
+                          <div class="tech-modal-title" id="tech-modal-title" data-tech-modal-title>Technician Info</div>
+                          <div class="tech-modal-sub" data-tech-modal-sub>Enter new technician info, services and weekly schedule.</div>
+                        </div>
+                      </div>
+                      <button class="tech-modal-close" type="button" data-tech-modal-close aria-label="Close tech modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="tech-modal-body">
+                      <div class="tech-modal-section" data-tech-picker-section>
+                        <div class="tech-modal-section-title"><i class="bi bi-people" aria-hidden="true"></i>Choose from list</div>
+                        <div class="tech-select-row">
+                          <div class="tech-combobox" data-tech-combobox>
+                            <label class="tech-search">
+                              <i class="bi bi-search" aria-hidden="true"></i>
+                              <input type="search" data-tech-search data-tech-select-input role="combobox" aria-controls="tech-select-menu" aria-expanded="false" placeholder="Search or pick a technician..." autocomplete="off">
+                              <i class="bi bi-chevron-down tech-select-chevron" aria-hidden="true"></i>
+                            </label>
+                            <div class="tech-select-menu" id="tech-select-menu" data-tech-select-menu hidden>
+                              <div class="tech-choice-grid" role="listbox" aria-label="Technician list">
+                                <button class="tech-choice-card is-active" type="button" role="option" data-tech-choice="kim" data-name="Kim Nguyen" data-phone="832-555-0161" data-email="kim@nexoratouch.com" data-services="Gel, Full Set, Dip, Pedicure, Nail Art, Acrylic, Waxing, Eyelash, Gel Manicure, Classic Manicure, Manicure, Pedicure Gel, Acrylic Fill, Builder Gel, French Tip, Chrome, Ombre, Kids Manicure, Kids Pedicure, Soak Off" data-schedule="mon=09:00-18:00;tue=09:00-18:00;wed=09:00-18:00;thu=10:00-19:00;fri=09:00-18:00">
+                                  <span class="tech-avatar">K</span>
+                                  <span><span class="tech-choice-name">Kim Nguyen</span><span class="tech-choice-meta">kim@nexoratouch.com · 832-555-0161</span></span>
+                                </button>
+                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="lan" data-name="Lan Tran" data-phone="713-555-0192" data-email="lan.tran@nexoratouch.com" data-services="Pedicure, Gel, Nail Art" data-schedule="tue=10:00-19:00;wed=10:00-19:00;thu=10:00-19:00;fri=10:00-19:00;sat=09:00-16:00">
+                                  <span class="tech-avatar" style="background: linear-gradient(135deg, var(--brand-cyan), var(--nexora-electric));">L</span>
+                                  <span><span class="tech-choice-name">Lan Tran</span><span class="tech-choice-meta">lan.tran@nexoratouch.com · 713-555-0192</span></span>
+                                </button>
+                                <button class="tech-choice-card" type="button" role="option" data-tech-choice="mai" data-name="Mai Pham" data-phone="281-555-0138" data-email="mai.pham@nexoratouch.com" data-services="Acrylic, Dip, Pedicure" data-schedule="mon=11:00-20:00;wed=11:00-20:00;fri=11:00-20:00;sat=10:00-17:00;sun=10:00-15:00">
+                                  <span class="tech-avatar" style="background: linear-gradient(135deg, #f472b6, var(--nexora-violet));">M</span>
+                                  <span><span class="tech-choice-name">Mai Pham</span><span class="tech-choice-meta">mai.pham@nexoratouch.com · 281-555-0138</span></span>
+                                </button>
+                              </div>
+                              <div class="tech-empty" data-tech-empty>No matching technician found.</div>
+                            </div>
+                          </div>
+                          <button class="booking-secondary-button tech-create-button" type="button" data-tech-create><i class="bi bi-plus-lg" aria-hidden="true"></i>Enter manually</button>
+                        </div>
+                      </div>
+
+                      <div class="tech-modal-section">
+                        <div class="tech-modal-section-title"><i class="bi bi-person-vcard" aria-hidden="true"></i>Profile info</div>
+                        <div class="tech-modal-grid">
+                          <label class="settings-field"><span class="settings-label">Technician name</span><input class="settings-input" type="text" data-tech-field="name" value=""></label>
+                          <label class="settings-field">
+                            <span class="settings-label">Phone number</span>
+                            <span class="phone-input-shell">
+                              <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
+                              <input class="settings-input phone-mask-input" type="tel" data-tech-field="phone" value="" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
+                            </span>
+                          </label>
+                          <label class="settings-field"><span class="settings-label">Email</span><input class="settings-input" type="email" data-tech-field="email" value=""></label>
+                          <div class="settings-field">
+                            <span class="settings-label">Services</span>
+                            <div class="tech-service-checks" data-tech-field="services">
+                              <label class="tech-service-check is-all"><input type="checkbox" data-tech-service-all>Check all</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Gel" value="Gel">Gel</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Full Set" value="Full Set">Full Set</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Dip" value="Dip">Dip</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Pedicure" value="Pedicure">Pedicure</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Nail Art" value="Nail Art">Nail Art</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Acrylic" value="Acrylic">Acrylic</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Waxing" value="Waxing">Waxing</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Eyelash" value="Eyelash">Eyelash</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Gel Manicure" value="Gel Manicure">Gel Manicure</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Classic Manicure" value="Classic Manicure">Classic Manicure</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Manicure" value="Manicure">Manicure</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Pedicure Gel" value="Pedicure Gel">Pedicure Gel</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Acrylic Fill" value="Acrylic Fill">Acrylic Fill</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Builder Gel" value="Builder Gel">Builder Gel</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="French Tip" value="French Tip">French Tip</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Chrome" value="Chrome">Chrome</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Ombre" value="Ombre">Ombre</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Kids Manicure" value="Kids Manicure">Kids Manicure</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Kids Pedicure" value="Kids Pedicure">Kids Pedicure</label>
+                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Soak Off" value="Soak Off">Soak Off</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="tech-modal-section" data-tech-schedule-section>
+                        <div class="tech-modal-section-title"><i class="bi bi-calendar-week" aria-hidden="true"></i>Weekly schedule</div>
+                        <div class="tech-schedule" data-tech-field="schedule">
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Monday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="mon" value="mon">Day off</label>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="mon" value="">
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="mon" value="">
+                            </span>
+                          </div>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Tuesday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="tue" value="tue">Day off</label>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="tue" value="">
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="tue" value="">
+                            </span>
+                          </div>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Wednesday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="wed" value="wed">Day off</label>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="wed" value="">
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="wed" value="">
+                            </span>
+                          </div>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Thursday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="thu" value="thu">Day off</label>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="thu" value="">
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="thu" value="">
+                            </span>
+                          </div>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Friday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="fri" value="fri">Day off</label>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="fri" value="">
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="fri" value="">
+                            </span>
+                          </div>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Saturday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="sat" value="sat">Day off</label>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="sat" value="">
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="sat" value="">
+                            </span>
+                          </div>
+                          <div class="tech-schedule-row">
+                            <span class="tech-schedule-day">Sunday</span>
+                            <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-tech-day-off="sun" value="sun">Day off</label>
+                            <span class="tech-schedule-time">
+                              <input type="time" data-tech-schedule-start="sun" value="">
+                              <span>to</span>
+                              <input type="time" data-tech-schedule-end="sun" value="">
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tech-modal-actions">
+                      <button class="booking-secondary-button" type="button" data-tech-modal-close>Close</button>
+                      <button class="booking-primary-button" type="button" data-tech-modal-save><i class="bi bi-check2" aria-hidden="true"></i>Save technician</button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              </div>
         </section>
-      </main>
+    </main>
     </div>
   </div>
 
@@ -864,14 +1512,15 @@
   <script src="../assets/appointment-service-catalog.js"></script>
   <script src="../assets/appointment-tickets.js"></script>
   <script src="../assets/appointments-store.js"></script>
-  <script src="../assets/pos-appointments-data.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@daypilot/daypilot-lite-javascript@5.9.0/daypilot-javascript.min.js"></script>
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     window.NEXORA_SHELL = { activePage: 'pos', activeTab: 'dispatch' };
   </script>
   <script src="../assets/nexora-shell.js"></script>
+  <script src="../assets/pos-booking-runtime.js"></script>
   <script>
     (function () {
       'use strict';
@@ -998,9 +1647,6 @@
 
       var salonData = window.NEXORA_SALON_DATA;
       var salonCatalog = salonData.loadCatalog();
-      var appointmentServiceCatalogLoader = window.NEXORA_APPOINTMENT_SERVICE_CATALOG;
-      var appointmentServiceCatalog = null;
-      var APPOINTMENT_SERVICE_CATALOG_URL = '../assets/booking-service-catalog-draft.json';
       var SKILLS = Array.from(new Set(salonCatalog.services.map(function (service) { return service.requiredSkill; }).filter(Boolean).concat(['Design'])));
       var FIT_TAGS = ['VIP', 'New guest', 'Needs Extra Care', 'Sensitive Skin', 'Prefers Female Tech'];
       var TAG_LIB = ['Needs Extra Care', 'Sensitive Skin', 'Prefers Female Tech', 'Likes Warm Water', 'Confirm Price Before Add-on', 'Allergic to Acrylic'];
@@ -1010,7 +1656,6 @@
       // can use the same roster without inheriting POS concerns.
       var TECHS = null;
       var MENU = null;
-      var APPOINTMENT_MENU = null;
       var SVC_REQ = {};
       function rebuildSalonCatalogViews() {
         salonCatalog = salonData.loadCatalog();
@@ -1026,30 +1671,10 @@
         MENU = salonCatalog.services.filter(function (service) { return service.active; }).map(function (service) {
           return { id: service.id, label: service.name, icon: service.icon || '✨', price: service.price, durationMin: service.durationMin, requiredSkill: service.requiredSkill || '' };
         });
-        APPOINTMENT_MENU = appointmentServiceCatalog && appointmentServiceCatalog.services.length
-          ? appointmentServiceCatalog.services.map(function (service) {
-            var salonService = salonData.findService(salonCatalog, service.id) || salonData.findService(salonCatalog, service.name);
-            return { id: service.id, label: service.name, icon: service.icon || '✨', price: service.price, durationMin: service.durationMin, categoryId: service.categoryId, categoryName: service.categoryName, requiredSkill: service.requiredSkill || (salonService ? salonService.requiredSkill : '') || '' };
-          })
-          : MENU.slice().map(function (service) {
-            var requiredSkill = service.requiredSkill || '';
-            return Object.assign({}, service, { categoryId: 'category-' + (requiredSkill || 'other'), categoryName: requiredSkill || 'Other services', requiredSkill: requiredSkill });
-          });
         SVC_REQ = {};
         salonCatalog.services.forEach(function (service) { SVC_REQ[service.id] = service.requiredSkill || ''; });
       }
       rebuildSalonCatalogViews();
-      function loadAppointmentServiceCatalog() {
-        if (!appointmentServiceCatalogLoader || typeof appointmentServiceCatalogLoader.load !== 'function') return;
-        appointmentServiceCatalogLoader.load(APPOINTMENT_SERVICE_CATALOG_URL).then(function (nextCatalog) {
-          appointmentServiceCatalog = nextCatalog;
-          rebuildSalonCatalogViews();
-          if (apCalendar) apRefreshCalendar();
-          renderAppt();
-        }).catch(function () {
-          // Keep the salon catalog fallback when the JSON is unavailable in file-only previews.
-        });
-      }
       function techById(id) { for (var i = 0; i < TECHS.length; i++) if (TECHS[i].id === id) return TECHS[i]; return null; }
       function techName(id) { var t = techById(id); return t ? t.name : '—'; }
       function savePosTechnician(tech) {
@@ -1596,7 +2221,7 @@
         }
         var ei = e.target.closest('[data-eta-in]');
         if (ei) {
-          var eb = apBookingById(ei.getAttribute('data-eta-in'));
+          var eb = posBookingById(ei.getAttribute('data-eta-in'));
           if (!eb) return;
           updateAppointmentMetadata(eb.id, { eta: { st: 'in' } });
           var ew = { id: ++wlSeq, name: eb.name, phone: eb.phone, badge: 'blue', badgeTxt: '📅 ' + eb.time + ' booking', svc: eb.svc,
@@ -2352,7 +2977,7 @@
           REBOOK[id] = { elig: 0, rb: 0 };
           REWORK[id] = 0;
           logAdmin('➕ Added tech ' + nn + ' at ' + Math.round(cm * 100) + '% / ' + money0(gu) + ' guarantee');
-          renderManagement(); renderClock(); renderAppt(); toast(nn + ' added');
+          renderManagement(); renderClock(); renderBookingTab(); toast(nn + ' added');
           return;
         }
 
@@ -2375,7 +3000,7 @@
             if (si > -1) STAFF.splice(si, 1);
             delete PAYOUT[fid]; delete BEEP[fid];
             logAdmin('🚪 Deactivated ' + tfire.name + ' — payroll history kept, appointments released');
-            renderManagement(); renderClock(); renderAppt(); toast(tfire.name + ' deactivated', 'info');
+            renderManagement(); renderClock(); renderBookingTab(); toast(tfire.name + ' deactivated', 'info');
           });
           return;
         }
@@ -2456,19 +3081,37 @@
       });
 
       /* ═══════════ 📅 APPOINTMENTS ═══════════ */
-      var appointmentData = window.NEXORA_APPOINTMENTS_DATA;
       var appointmentStore = window.NEXORA_APPOINTMENTS_STORE;
       var BOOKINGS = [];
+      function posServiceDisplayName(value) {
+        return String(value == null ? '' : value).replace(/^\s*[^\wÀ-ỹ]+/i, '').trim();
+      }
+      function posBookingClock(date) {
+        var hour = date.getHours();
+        return (hour % 12 || 12) + ':' + String(date.getMinutes()).padStart(2, '0') + ' ' + (hour >= 12 ? 'PM' : 'AM');
+      }
+      function posBookingRelativeDay(start) {
+        var key = String(start || '').slice(0, 10);
+        var today = new Date().toISOString().slice(0, 10);
+        var tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        if (key === today) return 'today';
+        if (key === tomorrow.toISOString().slice(0, 10)) return 'tomorrow';
+        return 'future';
+      }
+      function posBookingById(id) {
+        return BOOKINGS.find(function (booking) { return String(booking.id) === String(id); }) || null;
+      }
       function posBookingView(record) {
         var names = record.serviceNames || [];
         var serviceLabels = names.map(function (name, index) {
           var service = salonData.findService(salonCatalog, (record.serviceIds || [])[index] || name);
-          return service ? service.name : apServiceDisplayName(name);
+          return service ? service.name : posServiceDisplayName(name);
         });
         if (!serviceLabels.length) {
           serviceLabels = (record.serviceIds || []).map(function (id) {
             var service = salonData.findService(salonCatalog, id);
-            return service ? service.name : apServiceDisplayName(id);
+            return service ? service.name : posServiceDisplayName(id);
           });
         }
         return Object.assign({}, record, {
@@ -2481,10 +3124,10 @@
           svc: serviceLabels.join(' + '),
           serviceDetails: Array.isArray(record.serviceDetails) ? record.serviceDetails : names.map(function (name, index) {
             var service = salonData.findService(salonCatalog, (record.serviceIds || [])[index] || name);
-            return service ? { id: service.id, name: service.name, price: service.price, durationMin: service.durationMin, icon: service.icon } : { name: apServiceDisplayName(name), price: null, durationMin: null, icon: '✨' };
+            return service ? { id: service.id, name: service.name, price: service.price, durationMin: service.durationMin, icon: service.icon } : { name: posServiceDisplayName(name), price: null, durationMin: null, icon: '✨' };
           }),
-          time: record.startAt ? apClock(new Date(record.startAt)) : '',
-          day: apRelativeDay(record.startAt),
+          time: record.startAt ? posBookingClock(new Date(record.startAt)) : '',
+          day: posBookingRelativeDay(record.startAt),
           eta: record.metadata && record.metadata.eta ? record.metadata.eta : null
         });
       }
@@ -2494,762 +3137,28 @@
         }).map(posBookingView);
       }
       function updateAppointmentMetadata(id, metadataPatch) {
-        var booking = apBookingById(id);
+        var booking = posBookingById(id);
         if (!booking) return null;
         var result = appointmentStore.update(id, { metadata: Object.assign({}, booking.metadata || {}, metadataPatch || {}) }, null, salonCatalog);
         if (!result.ok) { toast(result.error.message, 'error'); return null; }
         reloadAppointmentSnapshot();
         renderFloor();
-        return apBookingById(id);
+        return posBookingById(id);
       }
-      appointmentStore.ensureSource('pos-seed-v1', appointmentData.createMigrationSeed(new Date()), null, salonCatalog);
       reloadAppointmentSnapshot();
       appointmentStore.subscribe(function () {
         rebuildSalonCatalogViews();
         reloadAppointmentSnapshot();
-        if (apCalendar) apRefreshCalendar();
-        renderAppt();
         renderFloor();
       }, window);
       window.addEventListener('storage', function (event) {
         if (!event || event.key !== salonData.STORAGE_KEY) return;
         rebuildSalonCatalogViews();
-        renderAppt();
+        reloadAppointmentSnapshot();
         renderManagement();
         renderClock();
         renderFloor();
       });
-      var AP_COLORS = {
-        t1: { bg: '#ebe6ff', border: '#7456e9', text: '#272343' },
-        t2: { bg: '#e0f3f8', border: '#2b96ba', text: '#173a47' },
-        t3: { bg: '#e5f7f1', border: '#158a69', text: '#163d34' },
-        t4: { bg: '#fff1d6', border: '#d97706', text: '#654003' },
-        t5: { bg: '#fde7f0', border: '#c24182', text: '#5e203f' },
-        t6: { bg: '#e8f4ff', border: '#2879c7', text: '#1d4267' },
-        t7: { bg: '#f5eaff', border: '#9a50c7', text: '#4c2764' },
-        t8: { bg: '#e9f7df', border: '#5c9e2e', text: '#31591c' },
-        unassigned: { bg: '#fff1d6', border: '#d97706', text: '#654003' }
-      };
-      var AP_STATUS = { pending: 'Pending', confirmed: 'Confirmed', 'checked-in': 'Checked in', completed: 'Completed', 'no-show': 'No show' };
-      var appointmentTicketUtils = window.NEXORA_APPOINTMENT_TICKETS;
-      var apCalendar = null, apTechFilter = 'all', apSel = null, apMode = null, apDraft = null, apTickets = [], apTicketSelectedServiceId = '', apTicketSelectedTechId = null, apTicketSelectedTechName = 'Anyone', apExternalSvc = [], apWarn = '', apPanelLoading = false, apPanelTimer = null;
-      var apCalendarDate = apFormatLocal(new Date()).slice(0, 10);
-
-      function apFormatLocal(date) {
-        if (appointmentData) return appointmentData.formatLocalDateTime(date);
-        function pad(n) { return String(n).padStart(2, '0'); }
-        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) +
-          'T' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
-      }
-      function apClock(date) {
-        var hour = date.getHours(), suffix = hour >= 12 ? 'PM' : 'AM';
-        return (hour % 12 || 12) + ':' + String(date.getMinutes()).padStart(2, '0') + ' ' + suffix;
-      }
-      function apRelativeDay(start) {
-        var key = String(start || '').slice(0, 10);
-        var today = apFormatLocal(new Date()).slice(0, 10);
-        var tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-        if (key === today) return 'today';
-        if (key === apFormatLocal(tomorrow).slice(0, 10)) return 'tomorrow';
-        return 'future';
-      }
-      function apBookingById(id) {
-        return BOOKINGS.find(function (b) { return String(b.id) === String(id); }) || null;
-      }
-      function apSourceLabel(source) {
-        var raw = String(source || '').trim();
-        var normalized = raw.toLowerCase().replace(/[_-]+/g, ' ');
-        var labels = {
-          'booking book': 'Booking Book',
-          'manual add': 'Manual add',
-          'front desk': 'Front desk',
-          'online': 'Online',
-          'mobile app': 'Mobile app',
-          'phone': 'Phone',
-          'walk in request': 'Walk-in',
-          'voice': 'Voice',
-          'landing page': 'Landing Page',
-          'sms': 'SMS',
-          'qr': 'QR'
-        };
-        return labels[normalized] || raw || 'Front desk';
-      }
-      function apSourceBadgesFromText(source) {
-        var parts = String(source || '').split(/\s*[·|,]\s*/).map(function (part) {
-          return part.trim();
-        }).filter(Boolean);
-        if (!parts.length) parts = ['front desk'];
-        var sourceClasses = {
-          'voice': 'ap-source-voice',
-          'landing page': 'ap-source-lp',
-          'sms': 'ap-source-sms',
-          'qr': 'ap-source-qr',
-          'manual add': 'ap-source-manual',
-          'request': 'ap-source-request'
-        };
-        return parts.map(function (part) {
-          var normalized = part.toLowerCase().replace(/[_-]+/g, ' ');
-          return '<span class="pos-chip ap-source-badge ' + (sourceClasses[normalized] || 'ap-source-default') + '">' + esc(apSourceLabel(part)) + '</span>';
-        }).join('');
-      }
-      function apBookingIndex(id) {
-        return BOOKINGS.findIndex(function (b) { return String(b.id) === String(id); });
-      }
-      function apFilteredBookings() {
-        return BOOKINGS.slice();
-      }
-      function apTicketBookings() {
-        var events = [];
-        apFilteredBookings().forEach(function (booking) {
-          var tickets = Array.isArray(booking.tickets) && booking.tickets.length ? booking.tickets : [{
-            id: 'ticket-1', serviceId: (booking.serviceIds || [])[0] || '', serviceName: booking.svc || 'Service to confirm',
-            price: null, durationMin: Math.max(15, Math.round((new Date(booking.end) - new Date(booking.start)) / 60000)),
-            technicianId: booking.techId || null, technicianName: booking.techName || 'Anyone', startAt: booking.start, endAt: booking.end
-          }];
-          tickets.forEach(function (ticket) {
-            var start = ticket.startAt || booking.start;
-            var end = ticket.endAt || booking.end;
-            if (!start || !end || String(start).slice(0, 10) !== apCalendarDate) return;
-            var techId = ticket.technicianId || null;
-            if (apTechFilter !== 'all' && (apTechFilter === 'unassigned' ? techId : techId !== apTechFilter)) return;
-            events.push(Object.assign({}, booking, {
-              parentId: booking.id,
-              ticketId: ticket.id,
-              start: start,
-              end: end,
-              techId: techId,
-              techName: ticket.technicianName || (techId ? techName(techId) : 'Anyone'),
-              svc: ticket.serviceName || booking.svc,
-              serviceDetails: [ticket]
-            }));
-          });
-        });
-        return events;
-      }
-      function apVisibleBookings() {
-        return apTicketBookings();
-      }
-      function apVisibleAppointmentOrders() {
-        return apFilteredBookings().filter(function (b) { return b.start.slice(0, 10) === apCalendarDate; });
-      }
-      function apColor(techId) { return AP_COLORS[techId || 'unassigned'] || AP_COLORS.t1; }
-      function apServiceDisplayName(value) {
-        return String(value == null ? '' : value).replace(/^\s*[^\wÀ-ỹ]+/i, '').trim();
-      }
-
-      function apServiceSummary(booking) {
-        var details = booking && Array.isArray(booking.serviceDetails) ? booking.serviceDetails : [];
-        return details.map(function (detail) {
-          var price = detail.price == null ? '' : ' · $' + Number(detail.price).toFixed(2).replace(/\.00$/, '');
-          var duration = detail.durationMin ? ' · ' + detail.durationMin + ' min' : '';
-          return apServiceDisplayName(detail.name || 'Service') + price + duration;
-        }).join(' + ') || apServiceDisplayName(booking.svc || 'Service to confirm');
-      }
-      function apResourceColumns() {
-        var techs = TECHS;
-        if (apTechFilter !== 'all' && apTechFilter !== 'unassigned') {
-          techs = TECHS.filter(function (t) { return t.id === apTechFilter; });
-        } else if (apTechFilter === 'unassigned') techs = [];
-        var columns = techs.map(function (t) { return { name: t.name, id: t.id, toolTip: t.name }; });
-        if (apTechFilter === 'all' || apTechFilter === 'unassigned') {
-          columns.push({ name: 'Anyone', id: 'unassigned', toolTip: 'Unassigned appointment' });
-        }
-        return columns;
-      }
-      function apEvent(booking) {
-        var color = apColor(booking.techId);
-        var minutes = Math.max(15, Math.round((new Date(booking.end) - new Date(booking.start)) / 60000));
-        var serviceSummary = apServiceSummary(booking);
-        var source = apSourceLabel(booking.source);
-        var techLabel = booking.techName || (booking.techId ? techName(booking.techId) : 'Anyone / Unassigned');
-        var dateLabel = new Date(booking.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        var timeLabel = apClock(new Date(booking.start));
-        var tooltip = [
-          booking.name,
-          booking.phone ? 'Phone: ' + booking.phone : '',
-          serviceSummary,
-          'Tech: ' + techLabel,
-          'Date: ' + dateLabel,
-          'Time: ' + timeLabel,
-          'Duration: ' + minutes + ' min',
-          'Status: ' + (AP_STATUS[booking.status] || booking.status),
-          'Nguồn: ' + source,
-          booking.note ? 'Note: ' + booking.note : ''
-        ].filter(Boolean).join(' · ');
-        return {
-          id: String(booking.parentId || booking.id) + '::' + String(booking.ticketId || 'ticket-1'),
-          orderId: String(booking.parentId || booking.id),
-          ticketId: String(booking.ticketId || 'ticket-1'),
-          text: booking.name,
-          start: booking.start,
-          end: booking.end,
-          resource: booking.techId || 'unassigned',
-          backColor: color.bg,
-          borderColor: color.border,
-          barColor: color.border,
-          fontColor: color.text,
-          borderRadius: 8,
-          padding: 7,
-          cssClass: 'ap-dp-event',
-          html: '<div class="ap-dp-event"><div class="ap-dp-event-name">' + esc(booking.name) + '</div>' +
-            '<div class="ap-dp-event-service">' + esc(serviceSummary) + '</div>' +
-            '<div class="ap-dp-event-meta">' + esc(AP_STATUS[booking.status] || booking.status || 'Pending') + ' · ' + esc(source) + '</div></div>',
-          toolTip: tooltip
-        };
-      }
-      function apRenderSummary() {
-        var visible = apVisibleAppointmentOrders();
-        set('[data-ap-count]', visible.length + ' appointment' + (visible.length === 1 ? '' : 's'));
-        set('[data-ap-confirmed]', visible.filter(function (b) { return b.status === 'confirmed' || b.status === 'checked-in'; }).length + ' confirmed');
-        set('[data-ap-unassigned]', visible.filter(function (b) { return !b.techId; }).length + ' unassigned');
-      }
-      function apPopulateTechFilter() {
-        var select = $('[data-ap-tech-filter]');
-        if (!select) return;
-        var value = apTechFilter;
-        select.innerHTML = '<option value="all">All technicians</option>' +
-          TECHS.map(function (t) { return '<option value="' + t.id + '">' + esc(t.name) + '</option>'; }).join('') +
-          '<option value="unassigned">Unassigned</option>';
-        if (Array.from(select.options).some(function (o) { return o.value === value; })) select.value = value;
-        else { apTechFilter = 'all'; select.value = 'all'; }
-      }
-      function custByPhone(p) {
-        var d = String(p || '').replace(/\D/g, '');
-        if (d.length < 10) return null;
-        return CUSTOMERS.find(function (c) { return c.phone.replace(/\D/g, '').slice(-10) === d.slice(-10); }) || null;
-      }
-
-      function apDayPilotTime(value) {
-        if (value && value.toStringSortable) return value.toStringSortable();
-        if (value && value.toString) return value.toString('yyyy-MM-ddTHH:mm:ss');
-        return String(value || '');
-      }
-      function apResourceToTech(resource) { return resource === 'unassigned' ? null : (resource || null); }
-      function apCanPlace(id, start, end, techId) {
-        var candidate = { technicianId: techId, startAt: start, endAt: end };
-        return !appointmentStore.hasConflict(BOOKINGS, candidate, id);
-      }
-      function apCalendarEventMeta(event) {
-        var data = event && event.data ? event.data : {};
-        if (data.orderId) return { orderId: String(data.orderId), ticketId: String(data.ticketId || '') };
-        var raw = event && typeof event.id === 'function' ? event.id() : String(event || '');
-        var parts = raw.split('::');
-        return { orderId: parts[0], ticketId: parts[1] || '' };
-      }
-      function apTicketEventBooking(event) {
-        var meta = apCalendarEventMeta(event);
-        return apVisibleBookings().find(function (booking) {
-          return String(booking.parentId || booking.id) === meta.orderId && String(booking.ticketId || '') === meta.ticketId;
-        }) || null;
-      }
-      function apUpdateTicketPosition(orderId, ticketId, start, end, techId) {
-        var booking = apBookingById(orderId);
-        if (!booking) return;
-        var nextTickets = (booking.tickets || []).map(function (ticket) {
-          if (String(ticket.id) !== String(ticketId)) return ticket;
-          return Object.assign({}, ticket, { startAt: start, endAt: end, technicianId: techId, technicianName: techId ? techName(techId) : 'Anyone' });
-        });
-        var starts = nextTickets.map(function (ticket) { return new Date(ticket.startAt).getTime(); }).filter(Number.isFinite);
-        var ends = nextTickets.map(function (ticket) { return new Date(ticket.endAt).getTime(); }).filter(Number.isFinite);
-        var orderStart = new Date(Math.min.apply(Math, starts));
-        var orderEnd = new Date(Math.max.apply(Math, ends));
-        var parentTech = appointmentTicketUtils && appointmentTicketUtils.parentTechnicianId ? appointmentTicketUtils.parentTechnicianId(nextTickets) : null;
-        var result = appointmentStore.update(orderId, {
-          tickets: nextTickets,
-          technicianId: parentTech,
-          technicianName: parentTech ? techName(parentTech) : '',
-          startAt: apFormatLocal(orderStart),
-          endAt: apFormatLocal(orderEnd),
-          durationMin: Math.max(15, Math.round((orderEnd - orderStart) / 60000))
-        }, null, salonCatalog);
-        if (!result.ok) { toast(result.error.message, 'error'); return; }
-        reloadAppointmentSnapshot();
-        renderFloor();
-        apRefreshCalendar(); apRenderSummary();
-        toast('Ticket rescheduled · SMS update sent');
-      }
-      function apUpdatePosition(id, start, end, techId) {
-        var booking = apBookingById(id); if (!booking) return;
-        var result = appointmentStore.update(id, { technicianId: techId, startAt: start, endAt: end }, null, salonCatalog);
-        if (!result.ok) { toast(result.error.message, 'error'); return; }
-        reloadAppointmentSnapshot();
-        renderFloor();
-        if (apMode === 'edit' && String(apSel) === String(id)) apOpenEdit(id);
-        apRefreshCalendar(); apRenderSummary();
-        toast('Appointment rescheduled · SMS update sent');
-      }
-      function apValidateDayPilotMove(args, resize) {
-        var meta = apCalendarEventMeta(args.e);
-        var eventBooking = apTicketEventBooking(args.e);
-        var booking = apBookingById(meta.orderId);
-        if (!booking) { args.preventDefault(); return; }
-        var techId = resize ? (eventBooking ? eventBooking.techId : booking.techId) : apResourceToTech(args.newResource);
-        var start = apDayPilotTime(args.newStart), end = apDayPilotTime(args.newEnd);
-        if (!apCanPlace(booking.id, start, end, techId)) {
-          args.preventDefault();
-          toast((techId ? techName(techId) : 'This technician') + ' already has an overlapping appointment.', 'warning');
-        }
-      }
-      function apApplyDayPilotMove(args, resize) {
-        var meta = apCalendarEventMeta(args.e);
-        var eventBooking = apTicketEventBooking(args.e);
-        var booking = apBookingById(meta.orderId); if (!booking) return;
-        var start = apDayPilotTime(args.newStart), end = apDayPilotTime(args.newEnd);
-        if (eventBooking && booking.tickets && booking.tickets.length) {
-          apUpdateTicketPosition(booking.id, meta.ticketId, start, end, resize ? eventBooking.techId : apResourceToTech(args.newResource));
-        } else {
-          apUpdatePosition(booking.id, start, end, resize ? booking.techId : apResourceToTech(args.newResource));
-        }
-      }
-      function apUpdateDateLabel() {
-        var label = $('[data-ap-current-date]'); if (!label) return;
-        label.textContent = new Date(apCalendarDate + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-      }
-      function apRefreshCalendar() {
-        if (!apCalendar) return;
-        apCalendar.update({
-          startDate: apCalendarDate,
-          columns: apResourceColumns(),
-          events: apVisibleBookings().map(apEvent)
-        });
-        apUpdateDateLabel();
-      }
-      function apSetDate(date) {
-        apCalendarDate = apFormatLocal(date).slice(0, 10);
-        apRefreshCalendar(); apRenderSummary();
-      }
-      function apInitCalendar() {
-        var el = $('[data-ap-calendar]');
-        if (!el || apCalendar) return;
-        if (!window.DayPilot) {
-          el.innerHTML = '<div class="ap-calendar-empty"><div><i class="bi bi-wifi-off" aria-hidden="true"></i><br>The calendar library could not load.<br>Check the internet connection and refresh this page.</div></div>';
-          return;
-        }
-        apCalendar = new DayPilot.Calendar(el, {
-          viewType: 'Resources',
-          startDate: apCalendarDate,
-          columns: apResourceColumns(),
-          businessBeginsHour: 9,
-          businessEndsHour: 19,
-          heightSpec: 'BusinessHoursNoScroll',
-          cellDuration: 15,
-          cellHeight: 28,
-          hourWidth: 64,
-          headerHeight: 44,
-          timeFormat: 'Clock12Hours',
-          onBeforeCellRender: function (args) {
-            args.cell.properties.html = '<span class="ap-cell-add" aria-hidden="true"><span>+</span></span>';
-          },
-          eventMoveHandling: 'Update',
-          eventResizeHandling: 'Update',
-          timeRangeSelectedHandling: 'Enabled',
-          onTimeRangeSelected: function (args) {
-            apOpenNew(new Date(apDayPilotTime(args.start)), new Date(apDayPilotTime(args.end)), apResourceToTech(args.resource));
-          },
-          onEventClick: function (args) { apOpenEdit(apCalendarEventMeta(args.e).orderId); },
-          onEventMove: function (args) { apValidateDayPilotMove(args, false); },
-          onEventMoved: function (args) { apApplyDayPilotMove(args, false); },
-          onEventResize: function (args) { apValidateDayPilotMove(args, true); },
-          onEventResized: function (args) { apApplyDayPilotMove(args, true); }
-        });
-        apCalendar.init();
-        apRefreshCalendar();
-      }
-
-      function renderAppt() {
-        apPopulateTechFilter();
-        var panel = $('[data-pos-panel="appointments"]');
-        if (panel && panel.classList.contains('is-active')) apInitCalendar();
-        if (apCalendar) apRefreshCalendar();
-        apRenderSummary();
-        renderApPanel();
-      }
-
-      function apAppointmentServiceById(id) {
-        return APPOINTMENT_MENU.find(function (service) { return service.id === id; }) || null;
-      }
-
-      function apAppointmentServiceByName(name) {
-        var needle = String(name || '').trim().toLowerCase();
-        return APPOINTMENT_MENU.find(function (service) { return service.label.toLowerCase() === needle; }) || null;
-      }
-
-      function apServicePickerMarkup() {
-        var serviceMarkup = (APPOINTMENT_MENU || []).map(function (service) {
-          var price = service.price == null ? '—' : service.price;
-          return '<button class="ap-service-option" type="button" data-apsvc="' + esc(service.id) + '" data-ap-ticket-service="' + esc(service.id) + '" data-ap-service-name="' + esc(service.label) + '" data-category-name="' + esc(service.categoryName || 'Other services') + '">' +
-            '<span class="ap-service-option-name">' + esc(service.label) + '</span><span class="ap-service-option-meta">$' + price + ' · ' + service.durationMin + ' min</span></button>';
-        }).join('');
-        var techMarkup = '<button class="ap-tech-option is-selected" type="button" data-ap-ticket-tech="" data-tech-name="Anyone"><span>Anyone</span><span class="ap-service-option-meta">No technician assigned</span></button>' +
-          (TECHS || []).map(function (tech) {
-            return '<button class="ap-tech-option" type="button" data-ap-ticket-tech="' + esc(tech.id) + '" data-tech-name="' + esc(tech.name) + '"><span>' + esc(tech.name) + '</span></button>';
-          }).join('');
-        return '<div class="ap-service-picker" data-ap-service-picker>' +
-          '<div class="ap-ticket-builder-grid">' +
-          '<div class="ap-ticket-field"><label>Service</label><div class="ap-service-search-shell"><i class="bi bi-search" aria-hidden="true"></i><input class="ap-service-search" type="search" placeholder="Search service..." aria-label="Search service" data-ap-service-search autocomplete="off"><div class="ap-ticket-dropdown ap-service-results" data-ap-ticket-service-results data-ap-service-category hidden>' + serviceMarkup + '<div class="ap-service-empty" data-ap-service-empty hidden>No matching services found.</div></div></div></div>' +
-          '<div class="ap-ticket-field"><label>Technician</label><div class="ap-service-search-shell"><i class="bi bi-person-badge" aria-hidden="true"></i><input class="ap-service-search ap-tech-search" type="search" value="Anyone" placeholder="Search technician..." aria-label="Search technician" data-ap-tech-search autocomplete="off"><div class="ap-ticket-dropdown ap-tech-results" data-ap-ticket-tech-results hidden>' + techMarkup + '</div></div></div>' +
-          '<button class="pos-btn pos-btn-primary ap-ticket-add" type="button" data-ap-ticket-add><i class="bi bi-plus-lg" aria-hidden="true"></i>Add</button></div></div>';
-      }
-
-      function filterApServicePicker(input) {
-        var picker = input && input.closest('[data-ap-service-picker]');
-        if (!picker) return;
-        var query = String(input.value || '').trim().toLowerCase();
-        var visibleCount = 0;
-        picker.querySelectorAll('[data-ap-ticket-service]').forEach(function (button) {
-          var haystack = (button.dataset.apServiceName || '') + ' ' + (button.dataset.categoryName || '');
-          var visible = !query || haystack.toLowerCase().indexOf(query) !== -1;
-          button.hidden = !visible;
-          if (visible) visibleCount++;
-        });
-        var empty = picker.querySelector('[data-ap-service-empty]');
-        var results = picker.querySelector('[data-ap-ticket-service-results]');
-        if (!query) {
-          picker.querySelectorAll('[data-ap-ticket-service]').forEach(function (button) { button.hidden = false; });
-          if (empty) empty.hidden = true;
-          if (results) results.hidden = true;
-          return;
-        }
-        if (empty) empty.hidden = visibleCount !== 0;
-        if (results) results.hidden = false;
-      }
-
-      function filterApTechPicker(input) {
-        var picker = input && input.closest('[data-ap-service-picker]');
-        if (!picker) return;
-        var query = String(input.value || '').trim().toLowerCase();
-        var results = picker.querySelector('[data-ap-ticket-tech-results]');
-        if (!results) return;
-        if (!query) {
-          results.querySelectorAll('[data-ap-ticket-tech]').forEach(function (button) { button.hidden = false; });
-          results.hidden = true;
-          return;
-        }
-        results.hidden = false;
-        results.querySelectorAll('[data-ap-ticket-tech]').forEach(function (button) {
-          var visible = !query || String(button.dataset.techName || '').toLowerCase().indexOf(query) !== -1;
-          button.hidden = !visible;
-        });
-      }
-
-      function apTicketRowsMarkup() {
-        return apTickets.map(function (ticket, index) {
-          var price = ticket.price == null ? '—' : '$' + Number(ticket.price).toFixed(2).replace(/\.00$/, '');
-          return '<div class="ap-ticket-row" data-ap-ticket-row="' + index + '"><div class="ap-ticket-row-main"><strong>' + esc(ticket.serviceName || 'Service') + '</strong><span>' + esc(ticket.technicianName || 'Anyone') + '</span></div><div class="ap-ticket-row-meta">' + price + ' · ' + ticket.durationMin + ' min</div><button class="ap-ticket-remove" type="button" data-ap-ticket-remove="' + index + '" aria-label="Remove ' + esc(ticket.serviceName || 'service') + '"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>';
-        }).join('') || '<div class="ap-ticket-empty">Add one service and assign a technician. Anyone is used by default.</div>';
-      }
-
-      function apRenderTicketRows() {
-        var list = document.querySelector('[data-ap-ticket-list]');
-        if (list) list.innerHTML = apTicketRowsMarkup();
-        var totals = apSelectedServiceTotals();
-        var price = document.querySelector('[data-ap-total-price]');
-        var duration = document.querySelector('[data-ap-total-duration]');
-        if (price) price.textContent = '$' + totals.price;
-        if (duration) duration.textContent = totals.duration + ' min';
-      }
-
-      function renderApPanel() {
-        var p = $('[data-ap-panel]');
-        p.classList.toggle('is-loading', apPanelLoading);
-        p.setAttribute('aria-busy', apPanelLoading ? 'true' : 'false');
-        if (apPanelLoading) {
-          p.innerHTML = '<div class="ap-panel-loading" aria-label="Loading new appointment form"><div class="ap-loading-kicker"></div>' +
-            '<div class="ap-loading-line short"></div><div class="ap-loading-block"></div><div class="ap-loading-block"></div>' +
-            '<div class="ap-loading-line"></div><div class="ap-loading-grid"><div class="ap-loading-block"></div><div class="ap-loading-block"></div></div>' +
-            '<div class="ap-loading-block"></div><div class="ap-loading-line short"></div></div>';
-          return;
-        }
-        if (!apMode) {
-          p.innerHTML = '<div class="ap-panel-empty pos-muted"><i class="bi bi-calendar2-week" aria-hidden="true"></i>' +
-            '<strong>Select an appointment</strong><br>Click an event to edit it, or select a time in a technician column to create a booking.<br><br>Drag events to reschedule · drag an edge to change duration</div>';
-          return;
-        }
-        var editing = apMode === 'edit';
-        apDraft.duration = apSelectedServiceDuration();
-        var apServiceTotals = apSelectedServiceTotals();
-        var apServicePicker = apServicePickerMarkup();
-        p.innerHTML = '<div class="ap-panel-head"><div class="ap-panel-title"><i class="bi ' + (editing ? 'bi-card-text' : 'bi-plus-lg') + ' ap-panel-title-icon" aria-hidden="true"></i><span>' + (editing ? 'Appointment details' : 'New appointment') + '</span></div>' +
-          (editing ? '<div class="ap-form-meta">' +
-            '<span class="ap-meta-item" data-ap-meta="status"><span class="ap-meta-label">Status:</span><strong class="pos-chip pos-chip-blue">' + esc(AP_STATUS[apDraft.status] || apDraft.status) + '</strong></span>' +
-            '<span class="ap-meta-item" data-ap-meta="source"><span class="ap-meta-label">Nguồn:</span><span class="ap-source-list" data-ap-source>' + apSourceBadgesFromText(apDraft.source) + '</span></span>' +
-          '</div>' : '') + '</div>' +
-          '<div class="ap-form">' +
-          '<label>Customer</label><input class="pos-input" data-apf="name" maxlength="40" value="' + esc(apDraft.name || '') + '">' +
-          '<label>Phone</label><input class="pos-input" data-apf="phone" maxlength="14" value="' + esc(apDraft.phone || '') + '">' +
-          '<label>Service — Technician</label>' + apServicePicker + '<div class="ap-ticket-list" data-ap-ticket-list>' + apTicketRowsMarkup() + '</div>' +
-          '<div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-ap-total-price>$' + apServiceTotals.price + '</strong></span><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total time:</span> <strong class="appointment-service-summary-value" data-ap-total-duration>' + apServiceTotals.duration + ' min</strong></span></div>' +
-          '<div class="ap-form-grid"><div><label>Date</label><input class="pos-input" type="date" data-apf="date" value="' + esc(apDraft.date) + '"></div>' +
-          '<div><label>Start time</label><input class="pos-input" type="time" step="900" data-apf="time" value="' + esc(apDraft.time) + '"></div></div>' +
-          '<label>Status</label><select class="pos-input" data-apf="status">' +
-          Object.keys(AP_STATUS).map(function (s) { return '<option value="' + s + '"' + (apDraft.status === s ? ' selected' : '') + '>' + AP_STATUS[s] + '</option>'; }).join('') + '</select>' +
-          '<label>Note</label><textarea class="pos-input" rows="3" maxlength="240" data-apf="note">' + esc(apDraft.note || '') + '</textarea>' +
-          '<div class="ap-warn" data-ap-warn>' + esc(apWarn) + '</div>' +
-          '<button class="pos-btn pos-btn-primary" type="button" data-ap-save style="width:100%;justify-content:center"><i class="bi bi-check-lg"></i> Save appointment</button>' +
-          (editing ? '<div class="ap-panel-actions" data-ap-action-group="operational">' +
-            '<button class="pos-btn pos-btn-sm pos-btn-primary" type="button" data-ap-action="send-sms"><i class="bi bi-send" aria-hidden="true"></i> Send SMS</button>' +
-            '<button class="pos-btn pos-btn-sm pos-btn-success" type="button" data-ap-action="done"><i class="bi bi-check-lg" aria-hidden="true"></i> Done</button>' +
-            '<button class="pos-btn pos-btn-sm pos-btn-danger" type="button" data-ap-action="noshow"><i class="bi bi-x-lg" aria-hidden="true"></i> No-show</button>' +
-            '</div>' : '') +
-          (editing ? '<div class="ap-action-destructive" data-ap-action-group="destructive"><button class="pos-btn pos-btn-danger" type="button" data-ap-del data-ap-action="cancel"><i class="bi bi-trash" aria-hidden="true"></i> Cancel this appointment</button></div>' : '') +
-          '<div class="ap-action-close" data-ap-action-group="close"><button class="pos-btn" type="button" data-ap-close>Close</button></div>' +
-          '</div>';
-      }
-
-      function apApplySharedAction(action) {
-        if (apSel == null) return;
-        var booking = apBookingById(apSel);
-        if (!booking) return;
-        if (action === 'cancel') {
-          confirmBox('Cancel ' + booking.name + "'s appointment?", 'Production texts the guest and returns the slot to the pool.').then(function (ok) {
-            if (!ok) return;
-            var cancelResult = appointmentStore.cancel(apSel, null, salonCatalog);
-            if (!cancelResult.ok) { toast(cancelResult.error.message, 'error'); return; }
-            reloadAppointmentSnapshot();
-            apMode = null; apSel = null; apWarn = '';
-            if (apCalendar) apRefreshCalendar();
-            renderAppt(); renderFloor(); toast('Appointment cancelled · SMS sent', 'info');
-          });
-          return;
-        }
-        var patch = action === 'send-sms' ? { smsStatus: 'sent' }
-          : action === 'done' ? { status: 'completed' }
-            : action === 'noshow' ? { status: 'no-show' } : null;
-        if (!patch) return;
-        var result = appointmentStore.update(apSel, patch, null, salonCatalog);
-        if (!result.ok) { toast(result.error.message, 'error'); return; }
-        reloadAppointmentSnapshot();
-        apOpenEdit(result.record.id);
-        if (apCalendar) apRefreshCalendar();
-        renderFloor();
-        toast(action === 'send-sms' ? 'SMS status updated' : action === 'done' ? 'Appointment completed' : 'Appointment marked no-show');
-      }
-
-      function apSync() {
-        var p = $('[data-ap-panel]');
-        if (!p.querySelector('[data-apf="name"]')) return;
-        var f = function (k) { var el = p.querySelector('[data-apf="' + k + '"]'); return el ? el.value : ''; };
-        apDraft.name = f('name'); apDraft.phone = f('phone'); apDraft.note = f('note');
-        apDraft.techId = appointmentTicketUtils && appointmentTicketUtils.parentTechnicianId ? appointmentTicketUtils.parentTechnicianId(apTickets) : null; apDraft.date = f('date'); apDraft.time = f('time');
-        apDraft.duration = apSelectedServiceDuration(); apDraft.status = f('status') || 'confirmed';
-      }
-      function apSelectedServiceDuration() {
-        var totals = apSelectedServiceTotals();
-        return totals.duration || Number(apDraft && apDraft.duration) || 60;
-      }
-      function apSelectedServiceTotals() {
-        if (appointmentTicketUtils && appointmentTicketUtils.ticketTotals) {
-          var totals = appointmentTicketUtils.ticketTotals(apTickets);
-          return { price: Number(totals.price || 0), duration: Number(totals.duration || 0) };
-        }
-        return { price: 0, duration: 0 };
-      }
-      function apSelectedServiceDetails() {
-        return apTickets.map(function (ticket) {
-          var service = apAppointmentServiceById(ticket.serviceId);
-          return { id: ticket.serviceId || null, name: ticket.serviceName, price: ticket.price, durationMin: ticket.durationMin, icon: service ? service.icon : '✨' };
-        });
-      }
-      function apStopPanelLoading() {
-        if (apPanelTimer) clearTimeout(apPanelTimer);
-        apPanelTimer = null; apPanelLoading = false;
-      }
-      function apBeginNewPanelLoad() {
-        apStopPanelLoading();
-        apPanelLoading = true; renderApPanel();
-        apPanelTimer = setTimeout(function () {
-          apPanelTimer = null; apPanelLoading = false; renderApPanel();
-        }, 220);
-      }
-      function apOpenNew(start, end, techId) {
-        var startDate = start instanceof Date ? new Date(start) : new Date(apCalendarDate + 'T10:00:00');
-        if (!(start instanceof Date)) startDate.setHours(10, 0, 0, 0);
-        var endDate = end instanceof Date ? new Date(end) : new Date(startDate.getTime() + 60 * 60000);
-        apMode = 'new'; apSel = null; apTickets = []; apTicketSelectedServiceId = ''; apTicketSelectedTechId = null; apTicketSelectedTechName = 'Anyone'; apExternalSvc = []; apWarn = '';
-        apDraft = { name: '', phone: '', techId: null, date: apFormatLocal(startDate).slice(0, 10), time: apFormatLocal(startDate).slice(11, 16), duration: Math.max(15, Math.round((endDate - startDate) / 60000)), status: 'confirmed', source: 'manual-add', note: '' };
-        apBeginNewPanelLoad();
-      }
-      function apOpenEdit(id) {
-        var b = apBookingById(id); if (!b) return;
-        apStopPanelLoading();
-        var start = new Date(b.start), end = new Date(b.end);
-        apSel = b.id; apMode = 'edit'; apWarn = ''; apExternalSvc = [];
-        var sourceTickets = Array.isArray(b.tickets) && b.tickets.length ? b.tickets : (b.serviceDetails || []).map(function (detail, index) {
-          return { id: 'ticket-' + (index + 1), serviceId: detail.id, serviceName: detail.name, price: detail.price, durationMin: detail.durationMin, technicianId: b.techId || null, technicianName: b.techName || 'Anyone' };
-        });
-        apTickets = appointmentTicketUtils && appointmentTicketUtils.normalizeTickets ? appointmentTicketUtils.normalizeTickets(sourceTickets, { services: APPOINTMENT_MENU.map(function (service) { return { id: service.id, name: service.label, price: service.price, durationMin: service.durationMin }; }), technicians: TECHS }) : sourceTickets;
-        apTicketSelectedServiceId = ''; apTicketSelectedTechId = null; apTicketSelectedTechName = 'Anyone';
-        apDraft = { name: b.name, phone: b.phone, techId: b.techId || null, date: b.start.slice(0, 10), time: b.start.slice(11, 16), duration: Math.max(15, Math.round((end - start) / 60000)), status: b.status || 'confirmed', source: b.source || 'Front desk', note: b.note || '' };
-        renderApPanel();
-      }
-
-      document.addEventListener('click', function (e) {
-        if (!e.target.closest('[data-pos-panel="appointments"]')) return;
-
-        var serviceCategorySummary = e.target.closest('summary.ap-service-category-head');
-        if (serviceCategorySummary) {
-          e.preventDefault();
-          var serviceCategory = serviceCategorySummary.parentElement;
-          serviceCategory.open = !serviceCategory.open;
-          return;
-        }
-
-        if (e.target.closest('[data-ap-prev]')) {
-          var previous = new Date(apCalendarDate + 'T12:00:00'); previous.setDate(previous.getDate() - 1);
-          apSetDate(previous); return;
-        }
-        if (e.target.closest('[data-ap-next]')) {
-          var next = new Date(apCalendarDate + 'T12:00:00'); next.setDate(next.getDate() + 1);
-          apSetDate(next); return;
-        }
-        if (e.target.closest('[data-ap-today]')) { apSetDate(new Date()); return; }
-        if (e.target.closest('[data-ap-add]')) { apOpenNew(null, null, apTechFilter !== 'all' && apTechFilter !== 'unassigned' ? apTechFilter : null); return; }
-
-        var serviceChoice = e.target.closest('[data-ap-ticket-service]');
-        if (serviceChoice) {
-          apTicketSelectedServiceId = serviceChoice.getAttribute('data-ap-ticket-service') || '';
-          var serviceInput = e.target.closest('[data-ap-service-picker]') && e.target.closest('[data-ap-service-picker]').querySelector('[data-ap-service-search]');
-          if (serviceInput) serviceInput.value = serviceChoice.dataset.apServiceName || '';
-          var serviceResults = e.target.closest('[data-ap-service-picker]') && e.target.closest('[data-ap-service-picker]').querySelector('[data-ap-ticket-service-results]');
-          if (serviceResults) serviceResults.hidden = true;
-          return;
-        }
-
-        var techChoice = e.target.closest('[data-ap-ticket-tech]');
-        if (techChoice) {
-          apTicketSelectedTechId = techChoice.getAttribute('data-ap-ticket-tech') || null;
-          apTicketSelectedTechName = techChoice.dataset.techName || 'Anyone';
-          var techPicker = e.target.closest('[data-ap-service-picker]');
-          var techInput = techPicker && techPicker.querySelector('[data-ap-tech-search]');
-          if (techInput) techInput.value = apTicketSelectedTechName;
-          if (techPicker) {
-            techPicker.querySelectorAll('[data-ap-ticket-tech]').forEach(function (button) { button.classList.toggle('is-selected', button === techChoice); });
-            var techResults = techPicker.querySelector('[data-ap-ticket-tech-results]');
-            if (techResults) techResults.hidden = true;
-          }
-          return;
-        }
-
-        if (e.target.closest('[data-ap-ticket-add]')) {
-          var service = apAppointmentServiceById(apTicketSelectedServiceId);
-          if (!service) { apWarn = '⚠️ Search and select a service first.'; renderApPanel(); return; }
-          if (apTickets.some(function (ticket) { return String(ticket.serviceId) === String(service.id); })) {
-            apWarn = '⚠️ This service is already in the order.'; renderApPanel(); return;
-          }
-          apTickets.push({ id: 'ticket-' + (apTickets.length + 1), serviceId: service.id, serviceName: service.label, price: service.price, durationMin: service.durationMin, technicianId: apTicketSelectedTechId, technicianName: apTicketSelectedTechName, status: apDraft.status || 'confirmed' });
-          apTicketSelectedServiceId = ''; apTicketSelectedTechId = null; apTicketSelectedTechName = 'Anyone'; apWarn = '';
-          renderApPanel();
-          return;
-        }
-
-        var removeTicket = e.target.closest('[data-ap-ticket-remove]');
-        if (removeTicket) {
-          apTickets.splice(Number(removeTicket.getAttribute('data-ap-ticket-remove')), 1);
-          renderApPanel();
-          return;
-        }
-
-        var sharedAction = e.target.closest('[data-ap-action]');
-        if (sharedAction) {
-          apApplySharedAction(sharedAction.getAttribute('data-ap-action'));
-          return;
-        }
-
-        if (e.target.closest('[data-ap-close]')) {
-          apStopPanelLoading(); apMode = null; apSel = null; apWarn = '';
-          if (apCalendar) apCalendar.clearSelection();
-          renderAppt(); return;
-        }
-
-        if (e.target.closest('[data-ap-save]')) {
-          apSync();
-          var name = (apDraft.name || '').trim();
-          if (!name) { apWarn = '⚠️ Enter the customer name.'; renderApPanel(); return; }
-          if (!apTickets.length) { apWarn = '⚠️ Add at least one service.'; renderApPanel(); return; }
-          if (!(apDraft.phone || '').trim()) { apWarn = '⚠️ Enter the phone number.'; renderApPanel(); return; }
-          if (!apDraft.date || !apDraft.time) { apWarn = '⚠️ Pick a valid date and start time.'; renderApPanel(); return; }
-          var start = new Date(apDraft.date + 'T' + apDraft.time + ':00');
-          if (!Number.isFinite(start.getTime())) { apWarn = '⚠️ Pick a valid date and start time.'; renderApPanel(); return; }
-          var scheduledTickets = appointmentTicketUtils && appointmentTicketUtils.scheduleTickets ? appointmentTicketUtils.scheduleTickets(apTickets, apFormatLocal(start)) : apTickets;
-          var latestEnd = new Date(start.getTime() + (apDraft.duration || 60) * 60000);
-          scheduledTickets.forEach(function (ticket) { var ticketEnd = new Date(ticket.endAt); if (ticketEnd > latestEnd) latestEnd = ticketEnd; });
-          var conflict = scheduledTickets.some(function (ticket) {
-            return ticket.technicianId && !apCanPlace(apSel, ticket.startAt, ticket.endAt, ticket.technicianId);
-          });
-          if (conflict) {
-            apWarn = '⚠️ A technician already has an overlapping ticket. Change the time or technician.';
-            renderApPanel(); return;
-          }
-          var rec = apMode === 'edit' ? apBookingById(apSel) : null;
-          var parentTechId = appointmentTicketUtils && appointmentTicketUtils.parentTechnicianId ? appointmentTicketUtils.parentTechnicianId(scheduledTickets) : null;
-          var parentTech = parentTechId ? techById(parentTechId) : null;
-          var payload = {
-            id: rec ? rec.id : 'apt-' + Date.now(),
-            customerName: name,
-            phone: apDraft.phone,
-            serviceIds: scheduledTickets.map(function (ticket) { return ticket.serviceId; }),
-            serviceNames: scheduledTickets.map(function (ticket) { return ticket.serviceName; }),
-            serviceDetails: apSelectedServiceDetails(),
-            tickets: scheduledTickets,
-            technicianId: parentTechId,
-            technicianName: parentTech ? parentTech.name : '',
-            startAt: apFormatLocal(start),
-            endAt: apFormatLocal(latestEnd),
-            durationMin: Math.max(15, Math.round((latestEnd - start) / 60000)),
-            status: apDraft.status,
-            smsStatus: 'sent',
-            source: rec ? rec.source : 'manual-add',
-            note: apDraft.note,
-            metadata: rec ? (rec.metadata || {}) : {}
-          };
-          var result = rec
-            ? appointmentStore.update(rec.id, payload, null, salonCatalog)
-            : appointmentStore.create(payload, null, salonCatalog);
-          if (!result.ok) {
-            apWarn = '⚠️ ' + result.error.message;
-            renderApPanel();
-            return;
-          }
-          reloadAppointmentSnapshot();
-          var saved = apBookingById(result.record.id);
-          apMode = null; apSel = null; apWarn = '';
-          apCalendarDate = payload.startAt.slice(0, 10);
-          if (apCalendar) apCalendar.clearSelection();
-          if (apCalendar) apRefreshCalendar();
-          renderAppt(); renderFloor();
-          var known = custByPhone(saved.phone);
-          toast('Saved · SMS confirmation sent' + (known ? ' to ' + known.name : ''));
-          return;
-        }
-      });
-
-      document.addEventListener('change', function (e) {
-        var filter = e.target.closest('[data-ap-tech-filter]');
-        if (!filter) return;
-        apTechFilter = filter.value;
-        if (apCalendar) apRefreshCalendar();
-        apRenderSummary();
-      });
-
-      // Phone mask on the booking form
-      document.addEventListener('input', function (e) {
-        var serviceSearch = e.target.closest('[data-ap-service-search]');
-        if (serviceSearch) { filterApServicePicker(serviceSearch); return; }
-        var techSearch = e.target.closest('[data-ap-tech-search]');
-        if (techSearch) { filterApTechPicker(techSearch); return; }
-        var el = e.target.closest('[data-apf="phone"]'); if (!el) return;
-        var d = el.value.replace(/\D/g, '').slice(0, 10);
-        el.value = d.length > 6 ? '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6)
-          : d.length > 3 ? '(' + d.slice(0, 3) + ') ' + d.slice(3) : d;
-      });
-
-      document.addEventListener('focusin', function (e) {
-        var serviceSearch = e.target.closest('[data-ap-service-search]');
-        if (serviceSearch) { serviceSearch.select(); return; }
-        var techSearch = e.target.closest('[data-ap-tech-search]');
-        if (techSearch) { techSearch.select(); }
-      });
-
       /* ═══════════ 💬 SMS CAMPAIGNS (ported from nexora-sms-dashboard) ═══════════ */
       var PRICE_PER_SMS = 0.025;   // $ per message part
       var SEGMENTS = [
@@ -3514,7 +3423,13 @@
       });
 
       /* ═══════════ tabs ═══════════ */
-      var TABS = ['dispatch', 'clock', 'management', 'appointments'];
+      function initBookingTab() {
+        if (window.NEXORA_POS_BOOKING && typeof window.NEXORA_POS_BOOKING.init === 'function') window.NEXORA_POS_BOOKING.init();
+      }
+      function renderBookingTab() {
+        if (window.NEXORA_POS_BOOKING && typeof window.NEXORA_POS_BOOKING.render === 'function') window.NEXORA_POS_BOOKING.render();
+      }
+      var TABS = ['dispatch', 'clock', 'management', 'booking'];
       var tabBtns = document.querySelectorAll('[data-pos-tab]');
       var panels = document.querySelectorAll('[data-pos-panel]');
       function activateTab(id) {
@@ -3529,7 +3444,7 @@
         if (id === 'dispatch') renderFloor();
         if (id === 'clock') renderClock();
         if (id === 'management') renderManagement();
-        if (id === 'appointments') renderAppt();
+        if (id === 'booking') { initBookingTab(); renderBookingTab(); }
         if (id !== 'sms') closeComposer();
         if (window.NEXORA_SHELL && window.NEXORA_SHELL.setActiveTab) window.NEXORA_SHELL.setActiveTab(id);
       }
@@ -3544,10 +3459,10 @@
       renderClock();
       renderManagement();
       renderSms();
-      renderAppt();
+      initBookingTab();
+      renderBookingTab();
       applyPosModeAccess();
       activateTab(new URL(window.location.href).searchParams.get('tab') || 'dispatch');
-      loadAppointmentServiceCatalog();
       if (salonData.storageAvailable && !salonData.storageAvailable()) {
         setTimeout(function () { toast('Local changes are available in this tab; cross-tab sync is unavailable.', 'info'); }, 0);
       }
