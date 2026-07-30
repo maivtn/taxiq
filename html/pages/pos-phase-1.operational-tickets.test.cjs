@@ -78,6 +78,10 @@ test('POS Customers "New booking" prefill can actually open the Booking create f
 test('POS Customers profile surfaces upcoming bookings, visit history, and payment history from real data (no fabricated balance field)', () => {
   assert.match(html, /function custUpcomingBookings\(c\) \{/);
   assert.match(html, /function custUpcomingCardHtml\(c\) \{/);
+  const upcomingFn = html.match(/function custUpcomingCardHtml\(c\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  assert.match(upcomingFn, /data-cust-upcoming-checkin="' \+ esc\(b\.id\)/);
+  assert.match(upcomingFn, /b\.day \|\| 'Upcoming'/);
+  assert.match(upcomingFn, /Check in/);
   assert.match(html, /function custVisitHistoryTableHtml\(name\) \{/);
   assert.match(html, /function custPaymentHistoryTableHtml\(name\) \{/);
   const visitFn = html.match(/function custVisitHistoryTableHtml\(name\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
@@ -172,34 +176,40 @@ test('Tech access requests panel has a card/table view switch that carries the s
   assert.match(html, /html\('\[data-arq-list\]', arqViewMode === 'table' \? renderArqTable\(rows\) : rows\.map\(arqCardHtml\)\.join\(''\)\);/);
 });
 
-test('Customers table is collapsed to 7 columns (Customer/Status/Activity/Technician/Tags/Notes/Action) so it stays usable on an iPad landscape width, and Card mode mirrors the same summaries as a flat card', () => {
+test('Customers table uses 7 focused columns with a separate Source chip, and Notes stay in the profile modal', () => {
   assert.match(html, /var CUST_SEG_META = \{/);
   assert.match(html, /var CUST_SRC_META = \{/);
   assert.match(html, /var CUST_TYPES = \[/);
-  assert.match(html, /<th scope="col">Customer<\/th><th scope="col">Status<\/th><th scope="col">Activity<\/th><th scope="col">Technician<\/th>' \+\s*\n\s*'<th scope="col">Tags<\/th><th scope="col">Notes<\/th><th scope="col">Action<\/th>/);
+  assert.match(html, /<th scope="col">Customer<\/th><th scope="col">Status<\/th><th scope="col">Source<\/th><th scope="col">Activity<\/th><th scope="col">regular tech \(thợ ruột\)<\/th>' \+\s*\n\s*'<th scope="col">Tags<\/th><th scope="col">Action<\/th>/);
   assert.match(html, /function custTechSummaryHtml\(c\) \{/);
   assert.match(html, /function custTagsSummaryHtml\(c\) \{/);
-  assert.match(html, /function custNotesSummaryHtml\(c\) \{/);
   const tableRow = html.match(/function custTableRowHtml\(c\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(tableRow, /var seg = CUST_SEG_META\[c\.seg\];/);
+  assert.match(tableRow, /'<td>' \+ custSrcBadgeHtml\(c\) \+ '<\/td>' \+/);
   assert.match(tableRow, /'<td>' \+ custTechSummaryHtml\(c\) \+ '<\/td>' \+/);
   assert.match(tableRow, /'<td>' \+ custTagsSummaryHtml\(c\) \+ '<\/td>' \+/);
-  assert.match(tableRow, /'<td>' \+ custNotesSummaryHtml\(c\) \+ '<\/td>' \+/);
+  assert.doesNotMatch(tableRow, /custNotesSummaryHtml\(c\)/);
   // Tag/note/regular-tech editing is no longer inline in the table row — it moved to the profile
-  // modal (View) once the table collapsed from 11 columns to 7.
+  // modal (View) once the table was reduced to focused columns.
   assert.doesNotMatch(tableRow, /custTagsEditorHtml\(c, ci\)/);
   assert.doesNotMatch(tableRow, /custNoteLevelsHtml\(c, ci\)/);
   assert.doesNotMatch(tableRow, /custPrefTechHtml\(c, ci\)/);
   const cardRow = html.match(/function custResultRowHtml\(c\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(cardRow, /class="cust-card-name"/);
   assert.match(cardRow, /custTagsSummaryHtml\(c\)/);
-  assert.match(cardRow, /custNotesSummaryHtml\(c\)/);
-  assert.match(cardRow, /Regular tech: ' \+ \(c\.prefTech \? esc\(techName\(c\.prefTech\)\) : '—'\)/);
+  assert.doesNotMatch(cardRow, /custNotesSummaryHtml\(c\)/);
+  assert.match(cardRow, /custSrcBadgeHtml\(c\)/);
+  assert.doesNotMatch(cardRow, /custFitTechs\(c\)/);
+  assert.match(cardRow, /Regular tech: ' \+ custTechSummaryHtml\(c\)/);
   assert.match(html, /function custSrcBadgeHtml\(c\) \{/);
   assert.match(html, /function custFitTechs\(c\) \{/);
   const fitFn = html.match(/function custFitTechs\(c\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(fitFn, /\(t\.fit \|\| \[\]\)\.some\(function \(f\) \{ return \(c\.tags \|\| \[\]\)\.indexOf\(f\) !== -1 \|\| \(f === 'VIP' && c\.seg === 'vip'\); \}\);/);
   assert.match(html, /function renderCustSegChips\(\) \{/);
+});
+
+test('POS title row links to the Kiosk mockup', () => {
+  assert.match(html, /<a class="pos-btn pos-btn-sm" href="https:\/\/pos-nexoratouch\.vercel\.app\/mockups\/phase1\/kiosk\.html" target="_blank" rel="noopener noreferrer"><i class="bi bi-tablet" aria-hidden="true"><\/i> Kiosk<\/a>/);
 });
 
 test('Management is split into subtabs (Overview/Pay & Payroll/Staff & Roles/Skills & Catalog/Customers) instead of one long scroll', () => {
@@ -256,11 +266,18 @@ test('Customer profile modal (View) still edits Regular tech, Tags, and Notes in
   assert.match(profileFn, /segBadge \+ ' ' \+ custSrcBadgeHtml\(c\) \+ ' ' \+ inactiveBadge/);
   assert.match(profileFn, /custNoteLevelsHtml\(c, ci\)/);
   const insightsFn = html.match(/function custInsightsCardHtml\(c, ci\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
-  assert.match(insightsFn, /custPrefTechHtml\(c, ci\)/);
+  assert.match(insightsFn, /custPrefTechChipsHtml\(c, ci\)/);
+  assert.match(html, /function custFrequentTechIds\(c\) \{/);
+  const prefTechChipsFn = html.match(/function custPrefTechChipsHtml\(c, ci\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  assert.match(prefTechChipsFn, /custFrequentTechIds\(c\)/);
+  assert.match(prefTechChipsFn, /class="cust-pref-tech-chip/);
+  assert.match(prefTechChipsFn, /bi-person/);
   const prefsFn = html.match(/function custPrefsCardHtml\(c, ci\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(prefsFn, /data-mg-tag="' \+ ci \+ '\|' \+ tag \+ '"/);
   const notesFn = html.match(/function custNoteLevelsHtml\(c, ci\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(notesFn, /data-mg-note="' \+ ci \+ '\|' \+ l\[0\] \+ '"/);
   assert.match(html, /toggleCustTag\(\+ctPt\[0\], ctPt\[1\]\);\s*\n\s*renderCustomersTab\(\);\s*\n\s*refreshOpenCustProfile\(\+ctPt\[0\]\);/);
+  assert.match(html, /var custPrefChip = e\.target\.closest\('\[data-mg-pref-chip\]'\);/);
+  assert.match(html, /setCustPrefTech\(prefCi, prefCustomer && prefCustomer\.prefTech === prefParts\[1\] \? null : prefParts\[1\]\);/);
   assert.match(html, /setCustPrefTech\(cpCi, custPref\.value\);\s*\n\s*renderCustomersTab\(\);\s*\n\s*refreshOpenCustProfile\(cpCi\);/);
 });

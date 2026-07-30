@@ -32,14 +32,13 @@ test('POS aliases the legacy ?tab=dispatch and ?tab=appointments URLs to their n
   assert.match(html, /if \(TAB_ALIASES\[id\]\) id = TAB_ALIASES\[id\]/);
 });
 
-test('POS moves operational KPIs and the tech board into Tickets, and check-in intake into Check-in', () => {
+test('POS moves operational KPIs and the tech board into Tickets, and booking/request intake into Check-in', () => {
   const checkinPanel = html.match(/<section class="pos-panel is-active" data-pos-panel="checkin"[\s\S]*?<\/section>/)?.[0] || '';
   const ticketsPanel = html.match(/<section class="pos-panel" data-pos-panel="tickets"[\s\S]*?<\/section>/)?.[0] || '';
 
   assert.match(checkinPanel, /data-eta-panel/);
   assert.match(checkinPanel, /data-ciq-panel/);
-  assert.match(checkinPanel, /data-wl-name/);
-  assert.match(checkinPanel, /data-wl-add/);
+  assert.doesNotMatch(checkinPanel, /data-wl-name|data-wl-phone|data-wl-add/);
   assert.doesNotMatch(checkinPanel, /disp-stats/);
   assert.doesNotMatch(checkinPanel, /data-tech-board/);
 
