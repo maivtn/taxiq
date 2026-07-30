@@ -624,6 +624,40 @@
       line-height: 20px;
     }
 
+    .page-guide-link {
+      display: inline-flex;
+      max-width: 100%;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      border: 1px solid rgba(70, 72, 216, .2);
+      border-radius: 10px;
+      background: linear-gradient(135deg, #fff, #f5f6ff);
+      padding: 9px 12px;
+      color: var(--nexora-brand);
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: var(--nexora-card-shadow);
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+
+    .page-guide-link:hover {
+      border-color: var(--nexora-brand);
+      box-shadow: 0 8px 18px rgba(70, 72, 216, .12);
+      transform: translateY(-1px);
+    }
+
+    .page-guide-link .bi:first-child {
+      color: var(--nexora-electric);
+      font-size: 16px;
+    }
+
+    .page-guide-link .bi:last-child {
+      color: var(--nexora-subtle);
+      font-size: 13px;
+    }
+
     .page-tabs {
       display: flex;
       flex-wrap: wrap;
@@ -8215,6 +8249,11 @@
           <div class="page-heading">
             <h1 class="page-title">AI Hub</h1>
             <p class="page-description">Manage salon bookings, appointments, and client scheduling from this workspace.</p>
+            <a class="page-guide-link" href="salon-guide-ai-voice.html" aria-label="Open the AI Voice setup guide">
+              <i class="bi bi-journal-text" aria-hidden="true"></i>
+              <span>AI Voice setup guide</span>
+              <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+            </a>
             <div class="page-tabs" role="tablist" aria-label="Booking Book sections">
               <button class="page-tab is-active" type="button" role="tab" aria-selected="true" data-tab-target="booking" aria-controls="panel-booking">
                 <span class="page-tab-icon">

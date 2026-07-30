@@ -28,7 +28,8 @@
     }
 
     .ai-guide-page {
-      max-width: 1380px;
+      width: 100%;
+      max-width: 780px;
       margin: 0 auto;
     }
 
@@ -47,27 +48,27 @@
     .guide-support-label {
       margin: 0;
       color: var(--nexora-brand);
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 900;
-      letter-spacing: .12em;
+      letter-spacing: .09em;
       text-transform: uppercase;
     }
 
     .guide-heading h1 {
       margin: 5px 0 4px;
       color: var(--nexora-text);
-      font-size: clamp(28px, 4vw, 42px);
-      font-weight: 900;
+      font-size: clamp(24px, 2.4vw, 32px);
+      font-weight: 800;
       letter-spacing: -.045em;
-      line-height: 1.05;
+      line-height: 1.15;
     }
 
     .guide-description {
       max-width: 690px;
       margin: 0;
       color: var(--nexora-muted);
-      font-size: 15px;
-      line-height: 1.6;
+      font-size: 14px;
+      line-height: 1.55;
     }
 
     .guide-heading-actions {
@@ -182,7 +183,7 @@
       margin: 2px 0 0;
       color: var(--nexora-text);
       font-size: 18px;
-      font-weight: 900;
+      font-weight: 800;
       letter-spacing: -.025em;
     }
 
@@ -193,7 +194,7 @@
       background: #eef0ff;
       padding: 4px 8px;
       color: var(--nexora-brand);
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 900;
       letter-spacing: 0;
       vertical-align: middle;
@@ -218,7 +219,7 @@
       display: block;
       margin-bottom: 7px;
       color: var(--nexora-muted);
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 800;
       letter-spacing: .05em;
       text-transform: uppercase;
@@ -257,7 +258,7 @@
       background: var(--nexora-surface);
       padding: 0 38px 0 12px;
       color: var(--nexora-text);
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
     }
@@ -287,7 +288,7 @@
       background: var(--guide-danger);
       padding: 12px 18px;
       color: #fff;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 900;
       letter-spacing: .04em;
       text-transform: uppercase;
@@ -322,8 +323,8 @@
       background: #fff;
       padding: 17px 12px;
       color: var(--guide-danger);
-      font-size: clamp(30px, 5vw, 46px);
-      line-height: 1;
+      font-size: clamp(26px, 3.8vw, 34px);
+      line-height: 1.08;
     }
 
     .guide-danger-body p,
@@ -334,7 +335,7 @@
     .guide-script p {
       margin: 0;
       color: var(--nexora-muted);
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.65;
     }
 
@@ -348,15 +349,10 @@
 
     .guide-main-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.06fr) minmax(0, .94fr);
+      grid-template-columns: minmax(0, 1fr);
       align-items: start;
-      gap: 18px;
+      gap: 16px;
       margin-bottom: 18px;
-    }
-
-    .guide-stack {
-      display: grid;
-      gap: 18px;
     }
 
     .guide-code {
@@ -364,7 +360,7 @@
       background: var(--guide-success-soft);
       padding: 14px 12px;
       color: var(--guide-success);
-      font-size: clamp(17px, 2.2vw, 24px);
+      font-size: clamp(16px, 1.8vw, 20px);
       line-height: 1.25;
     }
 
@@ -380,7 +376,7 @@
       border-top: 1px dashed var(--nexora-border);
       padding-top: 13px;
       color: var(--nexora-muted);
-      font-size: 12px;
+      font-size: 13px;
       line-height: 1.5;
     }
 
@@ -423,14 +419,14 @@
     .guide-ring-item strong {
       display: block;
       color: var(--nexora-text);
-      font-size: 13px;
+      font-size: 15px;
     }
 
     .guide-ring-item span {
       display: block;
       margin-top: 2px;
       color: var(--nexora-subtle);
-      font-size: 11px;
+      font-size: 12px;
     }
 
     .guide-callout {
@@ -490,8 +486,8 @@
     .guide-callout h3 {
       margin: 1px 0 4px;
       color: var(--nexora-text);
-      font-size: 14px;
-      font-weight: 900;
+      font-size: 15px;
+      font-weight: 800;
     }
 
     .guide-callout p {
@@ -541,7 +537,7 @@
 
     .guide-metric-label {
       color: var(--nexora-subtle);
-      font-size: 9px;
+      font-size: 12px;
     }
 
     .guide-metric-value {
@@ -549,8 +545,8 @@
       margin-top: 5px;
       color: var(--nexora-text);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 16px;
-      font-weight: 900;
+      font-size: 14px;
+      font-weight: 800;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -570,7 +566,7 @@
       background: var(--nexora-surface);
       padding: 0 10px;
       color: var(--nexora-brand);
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 800;
       cursor: pointer;
     }
@@ -610,7 +606,7 @@
     .guide-situation-question {
       background: var(--nexora-surface-muted);
       color: var(--nexora-text);
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 800;
       line-height: 1.5;
     }
@@ -630,7 +626,7 @@
     .guide-script-label {
       margin-bottom: 8px;
       color: var(--guide-warning);
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 900;
       letter-spacing: .1em;
       line-height: 1.4;
@@ -639,7 +635,7 @@
 
     .guide-script p {
       color: #5c430f;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       line-height: 1.65;
     }
@@ -756,7 +752,7 @@
       }
 
       .guide-heading h1 {
-        font-size: 26px;
+        font-size: 24px;
       }
 
       .guide-description {
@@ -819,11 +815,7 @@
 
       .guide-big-code {
         padding: 14px 10px;
-        font-size: 34px;
-      }
-
-      .guide-stack {
-        gap: 14px;
+        font-size: 28px;
       }
 
       .guide-ring-track {
@@ -884,7 +876,7 @@
       }
 
       .guide-footer-note {
-        font-size: 11px;
+        font-size: 12px;
       }
     }
 
@@ -946,7 +938,7 @@
                 <button type="button" class="is-active" data-guide-language="vi" aria-pressed="true">VI</button>
                 <button type="button" data-guide-language="en" aria-pressed="false">EN</button>
               </div>
-              <button class="guide-print-button" type="button" onclick="window.print()">
+              <button class="guide-print-button" type="button" data-guide-print>
                 <i data-lucide="printer" aria-hidden="true"></i>
                 <span class="guide-vi">In hướng dẫn</span>
                 <span class="guide-en">Print guide</span>
@@ -1006,67 +998,63 @@
           </section>
 
           <div class="guide-main-grid">
-            <div class="guide-stack">
-              <section class="guide-panel" aria-labelledby="guide-on-title">
-                <div class="guide-panel-heading">
-                  <span class="guide-panel-heading-icon"><i data-lucide="phone-forwarded" aria-hidden="true"></i></span>
-                  <div>
-                    <p class="guide-panel-kicker">Step 2</p>
-                    <h2 id="guide-on-title"><span class="guide-vi">Bật lại</span><span class="guide-en">Turn it back on</span> <span class="guide-mode-tag" id="modeTag">3 rings · ~20 seconds</span></h2>
-                  </div>
-                </div>
-                <div class="guide-code" id="codeOn">*71 → [AI NUMBER]</div>
-                <p class="guide-panel-copy guide-code-note" id="onNote"></p>
-                <div class="guide-secondary-action">
-                  <i data-lucide="rotate-ccw" aria-hidden="true"></i>
-                  <span><span class="guide-vi">Tắt riêng kiểu này:</span><span class="guide-en">Turn off just this mode:</span> <strong id="codeOffOne">*73</strong></span>
-                </div>
-              </section>
-
-              <section class="guide-callout is-danger" id="vmWarn" aria-labelledby="vm-warn-title">
-                <span class="guide-callout-icon"><i data-lucide="voicemail" aria-hidden="true"></i></span>
+            <section class="guide-panel" aria-labelledby="guide-on-title">
+              <div class="guide-panel-heading">
+                <span class="guide-panel-heading-icon"><i data-lucide="phone-forwarded" aria-hidden="true"></i></span>
                 <div>
-                  <h3 id="vm-warn-title"><span class="guide-vi">Voicemail là thứ làm hỏng kiểu này</span><span class="guide-en">Voicemail is what breaks this mode</span></h3>
-                  <p><span class="guide-vi">Voicemail của tiệm cũng bắt máy khoảng 20–25 giây. Nếu nó bắt trước AI thì khách vào hộp thư thoại và tưởng tiệm không ai nghe. <strong>Tắt voicemail</strong>, hoặc đặt AI ở 15–20 giây còn voicemail ở 30 giây.</span><span class="guide-en">Your voicemail also picks up around 20–25 seconds. If it wins, callers land in voicemail and think nobody answered. <strong>Turn voicemail off</strong>, or set the AI to 15–20 seconds and voicemail to 30.</span></p>
+                  <p class="guide-panel-kicker">Step 2</p>
+                  <h2 id="guide-on-title"><span class="guide-vi">Bật lại</span><span class="guide-en">Turn it back on</span> <span class="guide-mode-tag" id="modeTag">3 rings · ~20 seconds</span></h2>
                 </div>
-              </section>
-            </div>
+              </div>
+              <div class="guide-code" id="codeOn">*71 → [AI NUMBER]</div>
+              <p class="guide-panel-copy guide-code-note" id="onNote"></p>
+              <div class="guide-secondary-action">
+                <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+                <span><span class="guide-vi">Tắt riêng kiểu này:</span><span class="guide-en">Turn off just this mode:</span> <strong id="codeOffOne">*73</strong></span>
+              </div>
+            </section>
 
-            <div class="guide-stack">
-              <section class="guide-panel" id="ringBox" aria-labelledby="ring-title">
-                <div class="guide-panel-heading">
-                  <span class="guide-panel-heading-icon"><i data-lucide="clock-3" aria-hidden="true"></i></span>
-                  <div>
-                    <p class="guide-panel-kicker">Timing</p>
-                    <h2 id="ring-title"><span class="guide-vi">“3 hồi chuông” là bao nhiêu giây?</span><span class="guide-en">What does “3 rings” mean?</span></h2>
-                  </div>
-                </div>
-                <p class="guide-panel-copy"><span class="guide-vi">Nhà mạng không có ô “số hồi chuông” — chỉ có <strong>số giây</strong>. Ở Mỹ một hồi chuông khoảng 6 giây.</span><span class="guide-en">Carriers have no “ring count” setting — only <strong>seconds</strong>. In the US one ring is about 6 seconds.</span></p>
-                <div class="guide-ring-track">
-                  <div class="guide-ring-item"><strong>2 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 12s</span></div>
-                  <div class="guide-ring-item is-selected"><strong>3 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 20s ✓</span></div>
-                  <div class="guide-ring-item"><strong>4 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 25s</span></div>
-                  <div class="guide-ring-item"><strong>5 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 30s</span></div>
-                </div>
-                <p class="guide-panel-copy"><span class="guide-vi">Chỉ đặt được bội số của 5, tối đa 30 giây.</span><span class="guide-en">Only multiples of 5, up to 30 seconds.</span></p>
-              </section>
-
-              <section class="guide-callout is-warning guide-warning guide-is-hidden" id="mvnoWarn" aria-labelledby="mvno-warn-title">
-                <span class="guide-callout-icon"><i data-lucide="info" aria-hidden="true"></i></span>
+            <section class="guide-panel" id="ringBox" aria-labelledby="ring-title">
+              <div class="guide-panel-heading">
+                <span class="guide-panel-heading-icon"><i data-lucide="clock-3" aria-hidden="true"></i></span>
                 <div>
-                  <h3 id="mvno-warn-title"><span class="guide-vi">Gói này có thể không cho “chuông reo trước”</span><span class="guide-en">This plan may not support “ring first”</span></h3>
-                  <p><span class="guide-vi">Nhiều gói mạng phụ chỉ cho chuyển toàn bộ cuộc gọi. Bấm mã mà báo lỗi hoặc không thấy gì xảy ra → đổi qua “AI bắt máy ngay”, hoặc gọi nhà mạng hỏi có mở được không.</span><span class="guide-en">Many prepaid plans only allow forwarding every call. If the code errors or nothing happens → switch to “AI answers immediately”, or ask the carrier to enable it.</span></p>
+                  <p class="guide-panel-kicker">Timing</p>
+                  <h2 id="ring-title"><span class="guide-vi">“3 hồi chuông” là bao nhiêu giây?</span><span class="guide-en">What does “3 rings” mean?</span></h2>
                 </div>
-              </section>
+              </div>
+              <p class="guide-panel-copy"><span class="guide-vi">Nhà mạng không có ô “số hồi chuông” — chỉ có <strong>số giây</strong>. Ở Mỹ một hồi chuông khoảng 6 giây.</span><span class="guide-en">Carriers have no “ring count” setting — only <strong>seconds</strong>. In the US one ring is about 6 seconds.</span></p>
+              <div class="guide-ring-track">
+                <div class="guide-ring-item"><strong>2 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 12s</span></div>
+                <div class="guide-ring-item is-selected"><strong>3 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 20s ✓</span></div>
+                <div class="guide-ring-item"><strong>4 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 25s</span></div>
+                <div class="guide-ring-item"><strong>5 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 30s</span></div>
+              </div>
+              <p class="guide-panel-copy"><span class="guide-vi">Chỉ đặt được bội số của 5, tối đa 30 giây.</span><span class="guide-en">Only multiples of 5, up to 30 seconds.</span></p>
+            </section>
 
-              <section class="guide-callout is-info guide-info guide-is-hidden" id="voipWarn" aria-labelledby="voip-warn-title">
-                <span class="guide-callout-icon"><i data-lucide="globe-2" aria-hidden="true"></i></span>
-                <div>
-                  <h3 id="voip-warn-title"><span class="guide-vi">Mạng internet không dùng mã bấm</span><span class="guide-en">Internet lines have no star codes</span></h3>
-                  <p><span class="guide-vi">Vào trang quản lý của nhà cung cấp → Voice → Call Forwarding. Chọn <strong>No Answer</strong> và đặt 20 giây, hoặc <strong>Always</strong> nếu muốn AI bắt ngay. Không rành thì gọi người hỗ trợ bên dưới.</span><span class="guide-en">Go to your provider portal → Voice → Call Forwarding. Choose <strong>No Answer</strong> and set 20 seconds, or <strong>Always</strong> for immediate. Not sure? Call your support contact below.</span></p>
-                </div>
-              </section>
-            </div>
+            <section class="guide-callout is-danger" id="vmWarn" aria-labelledby="vm-warn-title">
+              <span class="guide-callout-icon"><i data-lucide="voicemail" aria-hidden="true"></i></span>
+              <div>
+                <h3 id="vm-warn-title"><span class="guide-vi">Voicemail là thứ làm hỏng kiểu này</span><span class="guide-en">Voicemail is what breaks this mode</span></h3>
+                <p><span class="guide-vi">Voicemail của tiệm cũng bắt máy khoảng 20–25 giây. Nếu nó bắt trước AI thì khách vào hộp thư thoại và tưởng tiệm không ai nghe. <strong>Tắt voicemail</strong>, hoặc đặt AI ở 15–20 giây còn voicemail ở 30 giây.</span><span class="guide-en">Your voicemail also picks up around 20–25 seconds. If it wins, callers land in voicemail and think nobody answered. <strong>Turn voicemail off</strong>, or set the AI to 15–20 seconds and voicemail to 30.</span></p>
+              </div>
+            </section>
+
+            <section class="guide-callout is-warning guide-warning guide-is-hidden" id="mvnoWarn" aria-labelledby="mvno-warn-title">
+              <span class="guide-callout-icon"><i data-lucide="info" aria-hidden="true"></i></span>
+              <div>
+                <h3 id="mvno-warn-title"><span class="guide-vi">Gói này có thể không cho “chuông reo trước”</span><span class="guide-en">This plan may not support “ring first”</span></h3>
+                <p><span class="guide-vi">Nhiều gói mạng phụ chỉ cho chuyển toàn bộ cuộc gọi. Bấm mã mà báo lỗi hoặc không thấy gì xảy ra → đổi qua “AI bắt máy ngay”, hoặc gọi nhà mạng hỏi có mở được không.</span><span class="guide-en">Many prepaid plans only allow forwarding every call. If the code errors or nothing happens → switch to “AI answers immediately”, or ask the carrier to enable it.</span></p>
+              </div>
+            </section>
+
+            <section class="guide-callout is-info guide-info guide-is-hidden" id="voipWarn" aria-labelledby="voip-warn-title">
+              <span class="guide-callout-icon"><i data-lucide="globe-2" aria-hidden="true"></i></span>
+              <div>
+                <h3 id="voip-warn-title"><span class="guide-vi">Mạng internet không dùng mã bấm</span><span class="guide-en">Internet lines have no star codes</span></h3>
+                <p><span class="guide-vi">Vào trang quản lý của nhà cung cấp → Voice → Call Forwarding. Chọn <strong>No Answer</strong> và đặt 20 giây, hoặc <strong>Always</strong> nếu muốn AI bắt ngay. Không rành thì gọi người hỗ trợ bên dưới.</span><span class="guide-en">Go to your provider portal → Voice → Call Forwarding. Choose <strong>No Answer</strong> and set 20 seconds, or <strong>Always</strong> for immediate. Not sure? Call your support contact below.</span></p>
+              </div>
+            </section>
           </div>
 
           <section class="guide-number-card" aria-labelledby="guide-numbers-title">
@@ -1121,7 +1109,7 @@
             <div><div class="guide-support-label">Email</div><div class="guide-support-value guide-token" data-guide-token="semail">[SEMAIL]</div></div>
           </section>
 
-          <p class="guide-footer-note"><span class="guide-vi">In ra, ép nhựa, dán ở quầy.</span><span class="guide-en">Print it, laminate it, tape it to the counter.</span> <button type="button" onclick="window.print()"><span class="guide-vi">In tờ này</span><span class="guide-en">Print this</span></button></p>
+          <p class="guide-footer-note"><span class="guide-vi">In ra, ép nhựa, dán ở quầy.</span><span class="guide-en">Print it, laminate it, tape it to the counter.</span> <button type="button" data-guide-print><span class="guide-vi">In tờ này</span><span class="guide-en">Print this</span></button></p>
         </section>
       </main>
     </div>
@@ -1243,6 +1231,12 @@
       document.querySelectorAll('[data-guide-language]').forEach(function (button) {
         button.addEventListener('click', function () {
           setLanguage(button.getAttribute('data-guide-language'));
+        });
+      });
+
+      document.querySelectorAll('[data-guide-print]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          window.print();
         });
       });
 
