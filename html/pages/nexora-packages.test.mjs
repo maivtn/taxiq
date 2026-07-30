@@ -28,7 +28,7 @@ test('adds the package heading and ordered management tabs', () => {
   assert.match(html, /<h1 class="page-title"[^>]*>Package Management<\/h1>/);
   assert.match(html, /<p class="page-description"[^>]*>Manage NEXORA and AI Voice plans for your salon\.<\/p>/);
   const tabs = [...html.matchAll(/data-package-tab="([^"]+)"/g)].map((match) => match[1]);
-  assert.deepEqual(tabs, ['overview', 'nexora', 'voice', 'credits', 'history']);
+  assert.deepEqual(tabs, ['overview', 'nexora', 'voice', 'history']);
   assert.match(html, /role="tablist"/);
   assert.match(html, /Overview/);
   assert.match(html, /<span>Subscriptions<\/span>/);
@@ -41,57 +41,11 @@ test('adds the package heading and ordered management tabs', () => {
   assert.doesNotMatch(voiceTab, /<rect\b/);
   assert.doesNotMatch(voiceTab, /data-lucide="(?:phone|sparkles)"/);
   assert.doesNotMatch(html, /<span>Voice \+ SMS<\/span>/);
-  assert.match(html, /<span>Credit Usage<\/span>/);
-  assert.match(html, /data-package-panel="credits"[\s\S]*?data-credits-page/);
-  assert.doesNotMatch(html, /<div class="credits-heading">/);
-  assert.match(html, /data-credits-card="plan"/);
-  assert.match(html, /data-credits-card="sms-topup"/);
-  assert.match(html, /data-credits-history/);
+  assert.doesNotMatch(html, /<span>Credit Usage<\/span>/);
+  assert.doesNotMatch(html, /data-package-tab="credits"/);
+  assert.doesNotMatch(html, /data-package-panel="credits"/);
   assert.match(html, /Purchase History/);
-  assert.match(html, /<th scope="col">Used<\/th>/);
-  assert.doesNotMatch(html, /<th scope="col">Duration<\/th>/);
-  assert.doesNotMatch(html, /<th scope="col">Usage<\/th>/);
-  assert.doesNotMatch(html, /<th scope="col">Amount<\/th>/);
-  assert.match(html, /SMS Credits/);
   assert.equal((html.match(/class="package-tab is-active"/g) || []).length, 1);
-});
-
-test('groups purchased Voice and SMS credits and keeps purchase actions inside the warning card', () => {
-  const html = source();
-  const creditsRuntime = readFileSync(new URL('../assets/nexora-credits.js', import.meta.url), 'utf8');
-  const planCard = html.match(/data-credits-card="plan"[\s\S]*?<\/article>/)?.[0] || '';
-  const topupCard = html.match(/data-credits-card="sms-topup"[\s\S]*?<\/article>/)?.[0] || '';
-  const creditsActions = html.match(/<div class="credits-actions"[\s\S]*?<\/div>/)?.[0] || '';
-  const warningStart = html.indexOf('<div class="credits-voice-warning"');
-  const historyStart = html.indexOf('<section class="credits-history-section"', warningStart);
-  const creditsWarning = html.slice(warningStart, historyStart);
-
-  assert.match(topupCard, /<h2 id="voice-sms-credits-title">Voice and SMS Credits<\/h2>/);
-  assert.match(topupCard, /data-credits-voice-topup-balance/);
-  assert.doesNotMatch(topupCard, /Mua thêm từ AI Voice Plans/);
-  assert.match(topupCard, /data-credits-sms-topup-balance/);
-  assert.match(topupCard, /class="credits-plan-remaining(?: [^"]+)?" aria-label="Remaining Voice and SMS credits"[\s\S]*?class="credits-label">Còn lại<\/span>[\s\S]*?class="credits-plan-remaining-values"/);
-  assert.match(topupCard, /class="credits-plan-remaining-values"[\s\S]*?data-credits-voice-topup-balance[\s\S]*?credits-plan-remaining-separator[\s\S]*?data-credits-sms-topup-balance/);
-  assert.doesNotMatch(topupCard, /credits-topup-balance-grid/);
-  assert.doesNotMatch(topupCard, /credits-topup-usage|data-credits-voice-topup-usage|Voice Credits used/);
-  assert.doesNotMatch(topupCard, /data-credits-sms-topup-usage|SMS Credits used/);
-  assert.match(planCard, /<div class="credits-plan-usage"[^>]*hidden>/);
-  assert.match(planCard, /data-lucide="phone"[^>]*aria-hidden="true"[\s\S]*?Minutes used/);
-  assert.doesNotMatch(topupCard, /Mua SMS credit/);
-  assert.match(creditsActions, /<button[^>]*class="credits-action credits-action-secondary"[^>]*data-credits-action="voice-buy"[^>]*type="button"/);
-  assert.match(creditsActions, /data-lucide="phone-call"[^>]*aria-hidden="true"[\s\S]*?Mua Voice credit/);
-  assert.match(creditsActions, /<button[^>]*class="credits-action credits-action-secondary"[^>]*data-credits-action="sms-buy"[^>]*type="button"/);
-  assert.match(creditsActions, /data-lucide="message-circle"[^>]*aria-hidden="true"[\s\S]*?Mua SMS credit/);
-  assert.doesNotMatch(creditsActions, /href="(?:booking-book-phase-1|nexora-packages)\.html/);
-  assert.doesNotMatch(creditsActions, /disabled|aria-disabled/);
-  assert.match(creditsWarning, /data-credits-voice-warning/);
-  assert.match(creditsWarning, /<div class="credits-voice-warning-content">[\s\S]*credits-voice-warning-icon[\s\S]*AI Voice sắp hết/);
-  assert.match(creditsWarning, /class="credits-actions"/);
-  assert.doesNotMatch(html, /Hãy tắt chế độ AI Voice/);
-  assert.match(html, /Mua thêm credit hoặc nâng cấp gói để tránh gián đoạn\./);
-  assert.match(creditsRuntime, /VOICE_TOPUP_STARTING_CREDITS/);
-  assert.match(creditsRuntime, /data-credits-voice-topup-balance/);
-  assert.match(readFileSync(new URL('../assets/nexora-credits.css', import.meta.url), 'utf8'), /\.credits-actions\s*\{/);
 });
 
 test('synchronizes package tabs with URL state and browser history', () => {
@@ -299,7 +253,7 @@ test('loads package-specific presentation styles', () => {
 test('matches the Booking Hub tab treatment', () => {
   const html = source();
   const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
-  assert.equal((html.match(/class="package-tab-icon(?: package-tab-icon-dual)?"/g) || []).length, 5);
+  assert.equal((html.match(/class="package-tab-icon(?: package-tab-icon-dual)?"/g) || []).length, 4);
   assert.match(css, /\.package-tab\s*\{[\s\S]*?border:\s*1px\s+solid\s+var\(--nexora-border\)/);
   assert.match(css, /\.package-tab\s*\{[\s\S]*?border-radius:\s*12px/);
   assert.match(css, /\.package-tab-icon\s*\{[\s\S]*?width:\s*28px[\s\S]*?height:\s*28px/);

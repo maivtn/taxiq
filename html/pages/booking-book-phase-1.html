@@ -4445,6 +4445,7 @@
       border-radius: 10px;
       background: var(--nexora-surface-muted);
       padding: 3px;
+      justify-self: start;
     }
 
     .booking-view-button {
@@ -8019,6 +8020,7 @@
 
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/nexora-credits.css">
 </head>
 <body>
   <div class="shell">
@@ -9328,6 +9330,12 @@
 
             <section class="tab-panel" id="panel-plans" data-tab-panel="plans" aria-label="Service plans panel">
               <div style="display: grid; gap: 16px;">
+                <div class="booking-view-switch" role="group" aria-label="Plans view mode">
+                  <button class="booking-view-button is-active" type="button" data-plans-view-target="package" aria-pressed="true"><i class="bi bi-bag-check" aria-hidden="true"></i>Buy Package</button>
+                  <button class="booking-view-button" type="button" data-plans-view-target="credits" aria-pressed="false"><i class="bi bi-wallet2" aria-hidden="true"></i>Credit Usage</button>
+                </div>
+
+                <div data-plans-view-panel="package" style="display: grid; gap: 16px;">
                 <div class="plans-hero">
                   Founding Salon Offer - only 7 Founding spots left · Price locked for 12 months
                 </div>
@@ -9405,6 +9413,121 @@
                     <div>✓ Cancel anytime</div>
                   </div>
                 </article>
+                </div>
+
+                <section class="credits-page" data-plans-view-panel="credits" data-credits-page aria-labelledby="credits-page-title" hidden>
+                  <div class="credits-balance-grid">
+                    <article class="credits-card credits-card-plan" data-credits-card="plan" aria-labelledby="plan-credits-title">
+                      <div class="credits-card-head">
+                        <div class="credits-card-icon credits-card-icon-plan"><i data-lucide="crown" aria-hidden="true"></i></div>
+                        <div>
+                          <h2 id="plan-credits-title">Pro</h2>
+                          <p class="credits-plan-subtitle">AI Voice Plan</p>
+                        </div>
+                        <span class="credits-reset-action"><i data-lucide="refresh-cw" aria-hidden="true"></i><span>Expires <time data-credits-plan-expiry datetime="2026-07-31">Jul 31, 2026</time></span></span>
+                      </div>
+
+                      <div class="credits-plan-remaining" aria-label="Remaining plan credits">
+                        <span class="credits-label">Còn lại</span>
+                        <div class="credits-plan-remaining-values">
+                          <strong data-credits-voice-remaining>380</strong><span class="credits-plan-remaining-unit">min</span>
+                          <span class="credits-plan-remaining-separator" aria-hidden="true">·</span>
+                          <strong data-credits-sms-plan-remaining>0</strong><span class="credits-plan-remaining-unit">SMS</span>
+                        </div>
+                      </div>
+
+                      <div class="credits-plan-usage" hidden>
+                        <div class="credits-usage-row credits-usage-row-minutes">
+                          <div class="credits-usage-icon credits-usage-icon-minutes"><i data-lucide="phone" aria-hidden="true"></i></div>
+                          <div class="credits-usage-main">
+                            <div class="credits-usage-heading"><span>Minutes used</span><strong><span data-credits-voice-used>620</span> <small>/ <span data-credits-voice-total>1,000</span></small></strong></div>
+                            <div class="credits-usage-progress" role="progressbar" aria-label="Minutes used" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="620" data-credits-voice-progress-track><span class="credits-usage-fill credits-usage-fill-minutes" data-credits-voice-progress style="width:62%"></span></div>
+                          </div>
+                        </div>
+
+                        <div class="credits-usage-row credits-usage-row-sms">
+                          <div class="credits-usage-icon credits-usage-icon-sms"><i data-lucide="messages-square" aria-hidden="true"></i></div>
+                          <div class="credits-usage-main">
+                            <div class="credits-usage-heading"><span>SMS used</span><strong><span data-credits-sms-plan-used>1,000</span> <small>/ <span data-credits-sms-plan-total>1,000</span></small></strong></div>
+                            <div class="credits-usage-progress" role="progressbar" aria-label="SMS used" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="1000" data-credits-sms-plan-progress-track><span class="credits-usage-fill credits-usage-fill-sms" data-credits-sms-plan-progress style="width:100%"></span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </article>
+
+                    <article class="credits-card credits-card-topup" data-credits-card="sms-topup" aria-labelledby="voice-sms-credits-title">
+                      <div class="credits-card-head">
+                        <div class="credits-card-icon credits-card-icon-topup"><i data-lucide="layers-3" aria-hidden="true"></i></div>
+                        <div>
+                          <h2 id="voice-sms-credits-title">Voice and SMS Credits</h2>
+                          <p class="credits-topup-subtitle">Credit mua thêm, không hết hạn</p>
+                        </div>
+                        <span class="credits-rollover-badge"><i data-lucide="shield-check" aria-hidden="true"></i><span>Không hết hạn</span></span>
+                      </div>
+
+                      <div class="credits-plan-remaining credits-topup-remaining" aria-label="Remaining Voice and SMS credits">
+                        <span class="credits-label">Còn lại</span>
+                        <div class="credits-plan-remaining-values">
+                          <strong data-credits-voice-topup-balance>0</strong><span class="credits-plan-remaining-unit">min</span>
+                          <span class="credits-plan-remaining-separator" aria-hidden="true">·</span>
+                          <strong data-credits-sms-topup-balance>450</strong><span class="credits-plan-remaining-unit">SMS</span>
+                        </div>
+                      </div>
+
+                    </article>
+                  </div>
+
+                  <div class="credits-voice-warning" data-credits-voice-warning role="status" aria-live="polite" hidden>
+                    <div class="credits-voice-warning-content">
+                      <div class="credits-voice-warning-icon"><i data-lucide="triangle-alert" aria-hidden="true"></i></div>
+                      <div>
+                        <strong>AI Voice sắp hết</strong>
+                        <p>Bạn chỉ còn <span data-credits-voice-warning-remaining>380</span> phút Voice. Mua thêm credit hoặc nâng cấp gói để tránh gián đoạn.</p>
+                      </div>
+                    </div>
+                    <div class="credits-actions" aria-label="Buy additional credits">
+                      <button class="credits-action credits-action-secondary" data-credits-action="voice-buy" type="button"><i data-lucide="phone-call" aria-hidden="true"></i><span>Mua Voice credit</span></button>
+                      <button class="credits-action credits-action-secondary" data-credits-action="sms-buy" type="button"><i data-lucide="message-circle" aria-hidden="true"></i><span>Mua SMS credit</span></button>
+                    </div>
+                  </div>
+
+                  <section class="credits-history-section" aria-labelledby="credits-history-title">
+                    <div class="credits-section-heading">
+                      <div>
+                        <span class="credits-kicker">Activity</span>
+                        <h2 id="credits-history-title">Usage history</h2>
+                      </div>
+                      <div class="credits-history-tools">
+                        <div class="credits-history-filters" role="group" aria-label="Filter usage history">
+                          <button class="credits-history-filter is-active" type="button" data-credits-history-filter="all" aria-pressed="true">All</button>
+                          <button class="credits-history-filter" type="button" data-credits-history-filter="sms" aria-pressed="false">SMS</button>
+                          <button class="credits-history-filter" type="button" data-credits-history-filter="voice" aria-pressed="false">Voice</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="credits-history-scroll">
+                      <table class="credits-history-table">
+                        <caption class="sr-only">Recent SMS and Voice credit usage</caption>
+                        <thead>
+                          <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Activity</th>
+                            <th scope="col">Used</th>
+                            <th scope="col">Date</th>
+                          </tr>
+                        </thead>
+                        <tbody data-credits-history>
+                          <tr><td><span class="credits-product-badge credits-product-badge-sms">SMS</span></td><td>All customers campaign</td><td class="credits-amount-negative">−1,284 SMS</td><td>Jul 28, 2026</td></tr>
+                          <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>+1 (713) 555-0182</strong><small>Incoming call</small></span></td><td class="credits-amount-negative">−18 min</td><td><span class="credits-history-date">Jul 28, 2026<small>10:42 AM</small></span></td></tr>
+                          <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>+1 (832) 555-0104</strong><small>Incoming call</small></span></td><td class="credits-amount-negative">−27 min</td><td><span class="credits-history-date">Jul 28, 2026<small>9:18 AM</small></span></td></tr>
+                          <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>+1 (281) 555-0199</strong><small>Incoming call</small></span></td><td class="credits-amount-negative">−31 min</td><td><span class="credits-history-date">Jul 27, 2026<small>5:50 PM</small></span></td></tr>
+                          <tr><td><span class="credits-product-badge credits-product-badge-sms">SMS</span></td><td>VIP comeback campaign</td><td class="credits-amount-negative">−320 SMS</td><td>Jul 26, 2026</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+                </section>
               </div>
             </section>
 
@@ -9926,7 +10049,7 @@
                   <p>Chọn nhóm khách → Soạn tin → Gửi hoặc hẹn giờ</p>
                 </div>
                 <div class="marketing-panel-actions">
-                  <a class="sms-credit-pill" href="nexora-packages.html?tab=credits" data-sms-credits-management aria-label="Open SMS credits management">
+                  <a class="sms-credit-pill" href="?tab=plans" data-sms-credits-management aria-label="Open SMS credits management">
                     <span>SMS Credits</span>
                     <strong data-sms-credits>847</strong>
                     <small data-sms-credits-usd>≈ $21.18 remaining</small>
@@ -10352,6 +10475,97 @@
           <div class="sms-credit-modal-foot">
             <button class="btn-outline" type="button" data-sms-credit-close>Huỷ</button>
             <button class="btn-primary" type="button" data-sms-credit-confirm><i class="marketing-icon is-compact" data-lucide="shield-check" aria-hidden="true"></i><span>Xác nhận thanh toán</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="sms-credit-modal" data-voice-credit-modal hidden>
+        <div class="sms-credit-dialog" role="dialog" aria-modal="true" aria-labelledby="voice-credit-modal-title" aria-describedby="voice-credit-modal-description">
+          <div class="sms-credit-modal-head">
+            <div>
+              <div class="sms-credit-modal-title" id="voice-credit-modal-title"><i class="marketing-icon" data-lucide="phone-call" aria-hidden="true"></i><span>Mua Voice Credits</span></div>
+              <div class="sms-credit-modal-sub" id="voice-credit-modal-description">Chọn gói phút Voice phù hợp, sau đó thanh toán bằng ví hoặc thẻ của bạn.</div>
+            </div>
+            <button class="sms-credit-close" type="button" data-voice-credit-close aria-label="Đóng mua Voice credits"><i class="marketing-icon is-compact" data-lucide="x" aria-hidden="true"></i></button>
+          </div>
+          <div class="sms-credit-modal-body">
+            <section class="sms-credit-section" aria-labelledby="voice-credit-package-title">
+              <div class="sms-credit-section-label" id="voice-credit-package-title">Chọn gói Voice</div>
+              <div class="sms-credit-package-grid" data-voice-credit-package-list></div>
+            </section>
+            <section class="sms-credit-section" aria-labelledby="voice-credit-payment-title">
+              <div class="sms-credit-section-label" id="voice-credit-payment-title">Phương thức thanh toán</div>
+              <div class="sms-credit-payment-list" data-voice-credit-payment-list></div>
+              <div class="sms-credit-card-form" data-voice-credit-card-form hidden>
+                <div class="sms-credit-card-form-head"><i class="marketing-icon" data-lucide="credit-card" aria-hidden="true"></i><span>Credit or Debit Card</span></div>
+                <div class="sms-credit-card-required-note"><strong>*</strong> required</div>
+                <div class="sms-credit-card-fields">
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Cardholder name <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="cc-name" placeholder="Name on card" data-voice-credit-card-field="name" data-voice-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Card number <span>*</span></span>
+                      <span class="sms-credit-card-input-wrap">
+                        <i class="marketing-icon" data-lucide="credit-card" aria-hidden="true"></i>
+                        <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="1234 1234 1234 1234" data-voice-credit-card-field="number" data-voice-credit-card-required>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Expiration Date <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/YY" data-voice-credit-card-field="expiry" data-voice-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Security Code <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="CVC" data-voice-credit-card-field="cvc" data-voice-credit-card-required>
+                    </label>
+                  </div>
+                  <label class="sms-credit-card-field">
+                    <span class="sms-credit-card-label">Address line 1 <span>*</span></span>
+                    <input class="sms-credit-card-input" type="text" autocomplete="address-line1" placeholder="Street address" data-voice-credit-card-field="address1" data-voice-credit-card-required>
+                  </label>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">City <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="address-level2" placeholder="City" data-voice-credit-card-field="city" data-voice-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">State <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="address-level1" placeholder="State" data-voice-credit-card-field="state" data-voice-credit-card-required>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Zip code <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="Zip code" data-voice-credit-card-field="zip" data-voice-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Country <span>*</span></span>
+                      <select class="sms-credit-card-select" autocomplete="country" data-voice-credit-card-field="country" data-voice-credit-card-required>
+                        <option value="US" selected>United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="MX">Mexico</option>
+                        <option value="VN">Vietnam</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-error" data-voice-credit-card-error role="alert" aria-live="polite"></div>
+                </div>
+              </div>
+            </section>
+            <section class="sms-credit-section sms-credit-invoice" aria-labelledby="voice-credit-invoice-title">
+              <div class="sms-credit-section-label" id="voice-credit-invoice-title">Tóm tắt hoá đơn</div>
+              <div class="sms-credit-invoice-row"><span>Gói Voice:</span><strong data-voice-credit-invoice-package></strong></div>
+              <div class="sms-credit-invoice-row"><span>Phương thức:</span><strong data-voice-credit-invoice-payment></strong></div>
+              <div class="sms-credit-invoice-row sms-credit-invoice-total"><span>Tổng thanh toán:</span><strong data-voice-credit-invoice-total></strong></div>
+            </section>
+            <div class="sr-only" aria-live="polite" data-voice-credit-checkout-status></div>
+          </div>
+          <div class="sms-credit-modal-foot">
+            <button class="btn-outline" type="button" data-voice-credit-close>Huỷ</button>
+            <button class="btn-primary" type="button" data-voice-credit-confirm><i class="marketing-icon is-compact" data-lucide="shield-check" aria-hidden="true"></i><span>Xác nhận thanh toán</span></button>
           </div>
         </div>
       </div>
@@ -12273,6 +12487,31 @@
       if (statusChips) statusChips.hidden = false;
     }
 
+    function setPlansViewMode(mode) {
+      var panel = document.getElementById('panel-plans');
+      if (!panel) return;
+
+      var nextMode = mode === 'credits' ? 'credits' : 'package';
+
+      panel.querySelectorAll('[data-plans-view-panel]').forEach(function(viewPanel) {
+        var isActive = viewPanel.dataset.plansViewPanel === nextMode;
+        viewPanel.hidden = !isActive;
+        // The package panel carries an inline `display: grid` for its layout gap, which
+        // otherwise out-specifies the `[hidden]` UA rule — set display explicitly here too.
+        viewPanel.style.display = !isActive ? 'none' : (viewPanel.dataset.plansViewPanel === 'package' ? 'grid' : '');
+      });
+
+      panel.querySelectorAll('[data-plans-view-target]').forEach(function(button) {
+        var isActive = button.dataset.plansViewTarget === nextMode;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+
+      if (nextMode === 'credits' && window.NEXORA_CREDITS && typeof window.NEXORA_CREDITS.renderCreditsPage === 'function') {
+        window.NEXORA_CREDITS.renderCreditsPage();
+      }
+    }
+
     function findBookingItemById(id) {
       return Array.from(document.querySelectorAll('[data-booking-item]')).find(function(item) {
         return item.dataset.bookingId === id;
@@ -14125,6 +14364,12 @@ function getBookingCardCallStart(item) {
       });
     });
 
+    document.querySelectorAll('[data-plans-view-target]').forEach(function(button) {
+      button.addEventListener('click', function() {
+        setPlansViewMode(button.dataset.plansViewTarget);
+      });
+    });
+
     var bookingAppointmentsAdd = document.querySelector('[data-booking-appointments-add]');
     if (bookingAppointmentsAdd) bookingAppointmentsAdd.addEventListener('click', function() {
       openBookingNewAppointment();
@@ -15242,6 +15487,13 @@ function getBookingCardCallStart(item) {
         { id: 'sms-6000', credits: 6000, price: 175, name: 'Scale', note: 'Tiết kiệm nhất', featured: true }
       ];
 
+      const VOICE_CREDIT_PACKAGES = [
+        { id: 'voice-100', credits: 100, price: 19, name: 'Voice Mini', note: 'Phù hợp để dùng thử' },
+        { id: 'voice-500', credits: 500, price: 79, name: 'Voice Plus', note: 'Cho nhu cầu hằng tháng' },
+        { id: 'voice-1500', credits: 1500, price: 199, name: 'Voice Pro', note: 'Cho salon nhiều cuộc gọi' },
+        { id: 'voice-5000', credits: 5000, price: 599, name: 'Voice Business', note: 'Tiết kiệm nhất', featured: true }
+      ];
+
       const SMS_CREDIT_PAYMENT_METHODS = [
         { id: 'USDV', label: 'USDV', balance: '$79,000.00', asset: 'assets/usdv.png' },
         { id: 'USDT', label: 'USDT', balance: '$79,000.00', asset: 'assets/usdt.png' },
@@ -15403,8 +15655,11 @@ function getBookingCardCallStart(item) {
       let composerOpener = null;
       let composerBackgroundStates = [];
       let smsCreditModalOpener = null;
-      let smsCreditPackageId = SMS_CREDIT_PACKAGES[0].id;
+      let smsCreditPackageId = (SMS_CREDIT_PACKAGES.find(function(pkg) { return pkg.featured; }) || SMS_CREDIT_PACKAGES[0]).id;
       let smsCreditPaymentId = SMS_CREDIT_PAYMENT_METHODS[0].id;
+      let voiceCreditModalOpener = null;
+      let voiceCreditPackageId = (VOICE_CREDIT_PACKAGES.find(function(pkg) { return pkg.featured; }) || VOICE_CREDIT_PACKAGES[0]).id;
+      let voiceCreditPaymentId = SMS_CREDIT_PAYMENT_METHODS[0].id;
       let planPaymentModalOpener = null;
       let planPaymentId = SMS_CREDIT_PAYMENT_METHODS[0].id;
       let planPaymentPlan = 'Elite';
@@ -16074,8 +16329,162 @@ function getBookingCardCallStart(item) {
             paymentMethod: selectedPayment.label
           });
         }
+        if (window.NEXORA_CREDITS && typeof window.NEXORA_CREDITS.renderCreditsPage === 'function') {
+          window.NEXORA_CREDITS.renderCreditsPage();
+        }
         closeSmsCreditModal();
         showSmsCreditPurchaseSuccess(selectedPackage, selectedPayment);
+      }
+
+      function getSelectedVoiceCreditPackage() {
+        return VOICE_CREDIT_PACKAGES.find(function(pkg) { return pkg.id === voiceCreditPackageId; }) || VOICE_CREDIT_PACKAGES[0];
+      }
+
+      function getSelectedVoiceCreditPayment() {
+        return SMS_CREDIT_PAYMENT_METHODS.find(function(method) { return method.id === voiceCreditPaymentId; }) || SMS_CREDIT_PAYMENT_METHODS[0];
+      }
+
+      function renderVoiceCreditPackages() {
+        var target = document.querySelector('[data-voice-credit-package-list]');
+        if (!target) return;
+
+        target.innerHTML = VOICE_CREDIT_PACKAGES.map(function(pkg) {
+          var selected = pkg.id === voiceCreditPackageId;
+          return '<button class="sms-credit-package' + (selected ? ' is-selected' : '') + (pkg.featured ? ' is-featured' : '') + '" type="button" data-voice-credit-package="' + pkg.id + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
+            '<span class="sms-credit-package-check" aria-hidden="true">✓</span>' +
+            '<span class="sms-credit-package-name">' + pkg.name + '</span>' +
+            '<span class="sms-credit-package-amount">' + pkg.credits.toLocaleString() + ' phút</span>' +
+            '<span class="sms-credit-package-price">$' + pkg.price.toFixed(2) + '</span>' +
+            '<span class="sms-credit-package-note">' + pkg.note + '</span>' +
+          '</button>';
+        }).join('');
+      }
+
+      function renderVoiceCreditPayments() {
+        var target = document.querySelector('[data-voice-credit-payment-list]');
+        if (!target) return;
+        renderSmsCreditPaymentOptions(target, voiceCreditPaymentId, 'data-voice-credit-payment');
+      }
+
+      function renderVoiceCreditCardForm() {
+        var form = document.querySelector('[data-voice-credit-card-form]');
+        if (!form) return;
+        var isCard = getSelectedVoiceCreditPayment().id === 'CARD';
+        form.hidden = !isCard;
+        if (!isCard) {
+          var error = form.querySelector('[data-voice-credit-card-error]');
+          if (error) error.textContent = '';
+        }
+      }
+
+      function validateVoiceCreditCardForm() {
+        var form = document.querySelector('[data-voice-credit-card-form]');
+        if (!form || form.hidden) return true;
+
+        var firstMissing = null;
+        form.querySelectorAll('[data-voice-credit-card-required]').forEach(function(field) {
+          field.removeAttribute('aria-invalid');
+          if (!firstMissing && !field.value.trim()) firstMissing = field;
+        });
+        var error = form.querySelector('[data-voice-credit-card-error]');
+        if (firstMissing) {
+          firstMissing.setAttribute('aria-invalid', 'true');
+          if (error) error.textContent = 'Please complete all required card details.';
+          firstMissing.focus();
+          return false;
+        }
+        if (error) error.textContent = '';
+        return true;
+      }
+
+      function renderVoiceCreditInvoice() {
+        var selectedPackage = getSelectedVoiceCreditPackage();
+        var selectedPayment = getSelectedVoiceCreditPayment();
+        var packageTarget = document.querySelector('[data-voice-credit-invoice-package]');
+        var paymentTarget = document.querySelector('[data-voice-credit-invoice-payment]');
+        var totalTarget = document.querySelector('[data-voice-credit-invoice-total]');
+        var statusTarget = document.querySelector('[data-voice-credit-checkout-status]');
+
+        if (packageTarget) packageTarget.textContent = selectedPackage.credits.toLocaleString() + ' phút';
+        if (paymentTarget) paymentTarget.textContent = selectedPayment.label;
+        if (totalTarget) totalTarget.textContent = '$' + selectedPackage.price.toFixed(2);
+        if (statusTarget) statusTarget.textContent = selectedPackage.credits.toLocaleString() + ' phút Voice, thanh toán bằng ' + selectedPayment.label + '.';
+      }
+
+      function renderVoiceCreditModal() {
+        renderVoiceCreditPackages();
+        renderVoiceCreditPayments();
+        renderVoiceCreditCardForm();
+        renderVoiceCreditInvoice();
+        refreshBookingMarketingIcons();
+      }
+
+      function openVoiceCreditModal() {
+        var modal = document.querySelector('[data-voice-credit-modal]');
+        if (!modal) return;
+        voiceCreditModalOpener = document.activeElement;
+        renderVoiceCreditModal();
+        modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        var closeButton = modal.querySelector('[data-voice-credit-close]');
+        if (closeButton) closeButton.focus();
+      }
+
+      function closeVoiceCreditModal() {
+        var modal = document.querySelector('[data-voice-credit-modal]');
+        if (!modal || modal.hidden) return;
+        modal.hidden = true;
+        document.body.style.overflow = '';
+        var opener = voiceCreditModalOpener;
+        voiceCreditModalOpener = null;
+        if (opener && typeof opener.focus === 'function' && !opener.hidden) {
+          opener.focus();
+          return;
+        }
+        var fallback = document.querySelector('[data-credits-action="voice-buy"]');
+        if (fallback) fallback.focus();
+      }
+
+      function setVoiceCreditPackage(packageId) {
+        if (!VOICE_CREDIT_PACKAGES.some(function(pkg) { return pkg.id === packageId; })) return;
+        voiceCreditPackageId = packageId;
+        renderVoiceCreditModal();
+      }
+
+      function setVoiceCreditPayment(paymentId) {
+        if (!SMS_CREDIT_PAYMENT_METHODS.some(function(method) { return method.id === paymentId; })) return;
+        voiceCreditPaymentId = paymentId;
+        renderVoiceCreditModal();
+      }
+
+      function showVoiceCreditPurchaseSuccess(selectedPackage, selectedPayment) {
+        $('successText').textContent = 'Đã thêm ' + selectedPackage.credits.toLocaleString() + ' phút Voice credits qua ' + selectedPayment.label + '.';
+        $('successBanner').classList.add('show');
+        clearTimeout(showVoiceCreditPurchaseSuccess._timer);
+        showVoiceCreditPurchaseSuccess._timer = setTimeout(function() { $('successBanner').classList.remove('show'); }, 6000);
+      }
+
+      function confirmVoiceCreditPurchase() {
+        var selectedPackage = getSelectedVoiceCreditPackage();
+        var selectedPayment = getSelectedVoiceCreditPayment();
+        if (selectedPayment.id === 'CARD' && !validateVoiceCreditCardForm()) return;
+        var newBalance = selectedPackage.credits;
+        if (window.NEXORA_CREDITS && typeof window.NEXORA_CREDITS.addVoiceTopupCredits === 'function') {
+          newBalance = window.NEXORA_CREDITS.addVoiceTopupCredits(selectedPackage.credits);
+        }
+        if (window.NEXORA_CREDITS && typeof window.NEXORA_CREDITS.recordVoiceCreditPurchase === 'function') {
+          window.NEXORA_CREDITS.recordVoiceCreditPurchase({
+            credits: selectedPackage.credits,
+            balance: newBalance,
+            packageName: selectedPackage.name,
+            paymentMethod: selectedPayment.label
+          });
+        }
+        if (window.NEXORA_CREDITS && typeof window.NEXORA_CREDITS.renderCreditsPage === 'function') {
+          window.NEXORA_CREDITS.renderCreditsPage();
+        }
+        closeVoiceCreditModal();
+        showVoiceCreditPurchaseSuccess(selectedPackage, selectedPayment);
       }
 
       function sendCampaign() {
@@ -16155,6 +16564,12 @@ function getBookingCardCallStart(item) {
       document.querySelectorAll('[data-sms-credit-buy]').forEach(function(button) {
         button.addEventListener('click', openSmsCreditModal);
       });
+      document.querySelectorAll('[data-credits-action="sms-buy"]').forEach(function(button) {
+        button.addEventListener('click', openSmsCreditModal);
+      });
+      document.querySelectorAll('[data-credits-action="voice-buy"]').forEach(function(button) {
+        button.addEventListener('click', openVoiceCreditModal);
+      });
       var smsCreditCardNumber = document.querySelector('[data-sms-credit-card-field="number"]');
       if (smsCreditCardNumber) smsCreditCardNumber.addEventListener('input', function() {
         var digits = this.value.replace(/\D/g, '').slice(0, 16);
@@ -16172,6 +16587,16 @@ function getBookingCardCallStart(item) {
       });
       var planCardExpiry = document.querySelector('[data-plan-card-field="expiry"]');
       if (planCardExpiry) planCardExpiry.addEventListener('input', function() {
+        var digits = this.value.replace(/\D/g, '').slice(0, 4);
+        this.value = digits.length > 2 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
+      });
+      var voiceCreditCardNumber = document.querySelector('[data-voice-credit-card-field="number"]');
+      if (voiceCreditCardNumber) voiceCreditCardNumber.addEventListener('input', function() {
+        var digits = this.value.replace(/\D/g, '').slice(0, 16);
+        this.value = digits.replace(/(.{4})/g, '$1 ').trim();
+      });
+      var voiceCreditCardExpiry = document.querySelector('[data-voice-credit-card-field="expiry"]');
+      if (voiceCreditCardExpiry) voiceCreditCardExpiry.addEventListener('input', function() {
         var digits = this.value.replace(/\D/g, '').slice(0, 4);
         this.value = digits.length > 2 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
       });
@@ -16196,6 +16621,28 @@ function getBookingCardCallStart(item) {
           return;
         }
         if (event.target.closest('[data-sms-credit-confirm]')) confirmSmsCreditPurchase();
+      });
+      var voiceCreditModal = document.querySelector('[data-voice-credit-modal]');
+      if (voiceCreditModal) voiceCreditModal.addEventListener('click', function(event) {
+        if (event.target === voiceCreditModal) {
+          closeVoiceCreditModal();
+          return;
+        }
+        if (event.target.closest('[data-voice-credit-close]')) {
+          closeVoiceCreditModal();
+          return;
+        }
+        var packageButton = event.target.closest('[data-voice-credit-package]');
+        if (packageButton) {
+          setVoiceCreditPackage(packageButton.dataset.voiceCreditPackage);
+          return;
+        }
+        var paymentButton = event.target.closest('[data-voice-credit-payment]');
+        if (paymentButton) {
+          setVoiceCreditPayment(paymentButton.dataset.voiceCreditPayment);
+          return;
+        }
+        if (event.target.closest('[data-voice-credit-confirm]')) confirmVoiceCreditPurchase();
       });
       var planPaymentModal = document.querySelector('[data-plan-payment-modal]');
       if (planPaymentModal) planPaymentModal.addEventListener('click', function(event) {
@@ -16255,6 +16702,12 @@ function getBookingCardCallStart(item) {
         if (!modal || modal.hidden || event.key !== 'Escape') return;
         event.preventDefault();
         closeSmsCreditModal();
+      });
+      document.addEventListener('keydown', function(event) {
+        var modal = document.querySelector('[data-voice-credit-modal]');
+        if (!modal || modal.hidden || event.key !== 'Escape') return;
+        event.preventDefault();
+        closeVoiceCreditModal();
       });
       document.addEventListener('keydown', function(event) {
         var modal = document.querySelector('[data-plan-payment-modal]');

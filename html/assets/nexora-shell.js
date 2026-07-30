@@ -51,7 +51,6 @@
       { label: 'Overview', tab: 'overview' },
       { label: 'Subscriptions', tab: 'nexora' },
       { label: 'AI Voice Plans', tab: 'voice' },
-      { label: 'Credit Usage', tab: 'credits' },
       { label: 'Purchase History', tab: 'history' }
     ] },
     { type: 'group', key: 'stations', label: 'Stations & QR Codes', icon: 'qr-code', items: [

@@ -554,7 +554,7 @@ test('provides a selectable SMS credits checkout beside the credits pill', () =>
   assert.match(html, /data-sms-credit-card-field="city"/);
   assert.match(html, /data-sms-credit-card-field="state"/);
   assert.match(html, /data-sms-credit-card-field="zip"/);
-  assert.equal((html.match(/<option value="VN">Vietnam<\/option>/g) || []).length, 3);
+  assert.equal((html.match(/<option value="VN">Vietnam<\/option>/g) || []).length, 4);
   assert.match(html, /<div class="sms-credit-card-row">\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="name"[\s\S]*?<\/label>\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="number"/);
   assert.match(html, /<div class="sms-credit-card-row">\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="city"[\s\S]*?<\/label>\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="state"/);
   assert.match(html, /<div class="sms-credit-card-row">\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="zip"[\s\S]*?<\/label>\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="country"/);
@@ -711,11 +711,11 @@ test('adds an All audience option to step 1 of the SMS campaign composer', () =>
   assert.match(html, /function openComposer\(segId\)[\s\S]*COMPOSER_SEGMENTS\.find/);
 });
 
-test('links SMS Credits to the Credits tab and keeps the purchase modal route', () => {
+test('links SMS Credits to the Plans tab and keeps the purchase modal route', () => {
   const html = source();
 
   assert.match(html, /data-sms-credits-management/);
-  assert.match(html, /href="nexora-packages\.html\?tab=credits"/);
+  assert.match(html, /href="\?tab=plans"/);
   assert.match(html, /data-sms-credit-buy/);
   assert.match(html, /new URLSearchParams\(window\.location\.search\)[\s\S]*?get\('openCredits'\) === '1'[\s\S]*?openSmsCreditModal\(\)/);
 });

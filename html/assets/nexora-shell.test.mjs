@@ -28,7 +28,6 @@ const packageItems = [
   ['overview', 'Overview'],
   ['nexora', 'Subscriptions'],
   ['voice', 'AI Voice Plans'],
-  ['credits', 'Credit Usage'],
   ['history', 'Purchase History']
 ];
 

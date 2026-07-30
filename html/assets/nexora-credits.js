@@ -21,7 +21,8 @@
   ];
   let activeHistoryFilter = 'all';
   let smsWallet = null;
-  let smsCreditHistory = [];
+  let purchaseHistory = [];
+  let voiceTopupBalance = VOICE_TOPUP_STARTING_CREDITS;
 
   function normalizeCreditValue(value, fallback) {
     const numericValue = Number(value);
@@ -140,29 +141,50 @@
   }
 
   function readSmsCreditHistory() {
-    return smsCreditHistory.filter(function (item) {
+    return purchaseHistory.filter(function (item) {
       return item && item.product === 'SMS' && item.direction === 'credit';
     }).slice(0, 20);
   }
 
-  function recordSmsCreditPurchase(details) {
+  function readVoiceCreditHistory() {
+    return purchaseHistory.filter(function (item) {
+      return item && item.product === 'Voice' && item.direction === 'credit';
+    }).slice(0, 20);
+  }
+
+  function recordCreditPurchase(product, unitLabel, details) {
     const credits = Number(details && details.credits);
     const balance = Number(details && details.balance);
     if (!Number.isFinite(credits) || credits <= 0 || !Number.isFinite(balance) || balance < 0) return null;
 
-    const packageName = String(details.packageName || 'SMS credits');
-    const paymentMethod = details.paymentMethod ? ' via ' + String(details.paymentMethod) : '';
+    const packageName = String((details && details.packageName) || product + ' credits');
+    const paymentMethod = details && details.paymentMethod ? ' via ' + String(details.paymentMethod) : '';
     const entry = {
-      product: 'SMS',
+      product: product,
       direction: 'credit',
       activity: packageName + ' top-up' + paymentMethod,
-      amount: '+' + formatNumber(Math.round(credits)) + ' SMS',
+      amount: '+' + formatNumber(Math.round(credits)) + ' ' + unitLabel,
       date: new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).format(new Date()),
-      balance: formatNumber(Math.round(balance)) + ' SMS'
+      balance: formatNumber(Math.round(balance)) + ' ' + unitLabel
     };
 
-    smsCreditHistory = [entry].concat(readSmsCreditHistory()).slice(0, 20);
+    purchaseHistory = [entry].concat(purchaseHistory).slice(0, 20);
     return entry;
+  }
+
+  function recordSmsCreditPurchase(details) {
+    return recordCreditPurchase('SMS', 'SMS', details);
+  }
+
+  function recordVoiceCreditPurchase(details) {
+    return recordCreditPurchase('Voice', 'min', details);
+  }
+
+  function addVoiceTopupCredits(value) {
+    const credits = normalizeCreditValue(value, 0);
+    if (!credits) return voiceTopupBalance;
+    voiceTopupBalance += credits;
+    return voiceTopupBalance;
   }
 
   function escapeHTML(value) {
@@ -227,7 +249,7 @@
   function renderHistory() {
     const target = document.querySelector('[data-credits-history]');
     if (!target) return;
-    target.innerHTML = readSmsCreditHistory().concat(CREDITS_HISTORY).filter(function (item) {
+    target.innerHTML = purchaseHistory.concat(CREDITS_HISTORY).filter(function (item) {
       return activeHistoryFilter === 'all' || String(item.product).toLowerCase() === activeHistoryFilter;
     }).map(function (item) {
       const badgeClass = item.product === 'Voice' ? 'credits-product-badge-voice' : 'credits-product-badge-sms';
@@ -283,7 +305,7 @@
     setText('[data-credits-voice-used]', formatNumber(VOICE_USED_MINUTES));
     setText('[data-credits-voice-total]', formatNumber(VOICE_TOTAL_MINUTES));
     setText('[data-credits-voice-remaining]', formatNumber(voiceRemaining));
-    setText('[data-credits-voice-topup-balance]', formatNumber(VOICE_TOPUP_STARTING_CREDITS));
+    setText('[data-credits-voice-topup-balance]', formatNumber(voiceTopupBalance));
     setText('[data-credits-voice-topup-used]', formatNumber(VOICE_TOPUP_USED_MINUTES));
     setText('[data-credits-voice-topup-usage-total]', formatNumber(VOICE_TOPUP_TOTAL_MINUTES));
     setProgress('[data-credits-voice-topup-progress]', '[data-credits-voice-topup-progress-track]', VOICE_TOPUP_USED_MINUTES, VOICE_TOPUP_TOTAL_MINUTES);
@@ -315,6 +337,9 @@
     consumeSmsCredits,
     readSmsCreditHistory,
     recordSmsCreditPurchase,
+    addVoiceTopupCredits,
+    readVoiceCreditHistory,
+    recordVoiceCreditPurchase,
     setHistoryFilter,
     renderCreditsPage
   };

@@ -50,17 +50,36 @@ test('POS moves operational KPIs and the tech board into Tickets, and check-in i
   assert.doesNotMatch(ticketsPanel, /data-wl-add/);
 });
 
-test('POS Customers tab exposes search, profile, and Check-in/New booking actions', () => {
+test('POS Customers tab exposes search, table/card view, and Check-in/New booking actions', () => {
   const customersPanel = html.match(/<section class="pos-panel" data-pos-panel="customers"[\s\S]*?<\/section>/)?.[0] || '';
   assert.match(customersPanel, /data-cust-search/);
   assert.match(customersPanel, /data-cust-results/);
-  assert.match(customersPanel, /data-cust-profile-card/);
-  assert.match(customersPanel, /data-cust-profile/);
+  assert.match(customersPanel, /data-cust-table-wrap/);
+  assert.match(customersPanel, /data-cust-view-target="table"/);
+  assert.match(customersPanel, /data-cust-view-target="card"/);
+  assert.match(customersPanel, /data-cust-seg-chips/);
+  assert.match(customersPanel, /data-cust-create/);
+  assert.match(html, /data-cust-profile-modal/);
+  assert.match(html, /data-cust-profile/);
   assert.match(html, /function renderCustomersTab\(/);
   assert.match(html, /data-cust-pick="/);
   assert.match(html, /data-cust-checkin="/);
   assert.match(html, /data-cust-newbooking="/);
   assert.match(html, /activateTab\('booking'\);\s*\n\s*if \(typeof openBookingNewAppointment === 'function'\) openBookingNewAppointment\(\);/);
+});
+
+test('POS Customers create/edit modal merges AI Hub customer fields onto the existing model', () => {
+  assert.match(html, /data-cust-edit-modal/);
+  assert.match(html, /data-cf-name/);
+  assert.match(html, /data-cf-phone/);
+  assert.match(html, /data-cf-email/);
+  assert.match(html, /data-cf-birthday/);
+  assert.match(html, /data-cf-address/);
+  assert.match(html, /data-cf-type/);
+  assert.match(html, /data-cf-status/);
+  assert.match(html, /function openCustCreateModal\(/);
+  assert.match(html, /function openCustEditModal\(index\) \{/);
+  assert.match(html, /function saveCustModal\(/);
 });
 
 test('POS fixes the previously-undefined custByPhone lookup used by walk-in check-in', () => {

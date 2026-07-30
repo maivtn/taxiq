@@ -72,6 +72,7 @@
 .credits-card {
   display: flex;
   min-height: 124px;
+  min-width: 0;
   flex-direction: column;
   padding: 14px;
 }
@@ -108,6 +109,7 @@
 }
 
 .credits-card-head > div { min-width: 0; }
+.credits-card-head > div:not(.credits-card-icon) { flex: 1 1 auto; }
 
 .credits-card-head h2,
 .credits-section-heading h2 {
@@ -203,7 +205,13 @@
   font-size: 16px;
 }
 
-.credits-topup-remaining { color: #168b55; }
+.credits-topup-remaining {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  column-gap: 12px;
+  color: #168b55;
+}
+.credits-topup-remaining > .credits-label { margin-bottom: 4px; }
 .credits-topup-remaining .credits-plan-remaining-unit { color: #168b55; }
 .credits-topup-remaining .credits-plan-remaining-separator { color: #8acaab; }
 

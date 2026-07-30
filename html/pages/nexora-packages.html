@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/nexora-packages.css">
-  <link rel="stylesheet" href="../assets/nexora-credits.css">
 </head>
 <body>
   <div class="shell">
@@ -27,7 +26,6 @@
               <button id="package-tab-overview" class="package-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="package-panel-overview" data-package-tab="overview"><span class="package-tab-icon"><i data-lucide="layout-dashboard" aria-hidden="true"></i></span><span>Overview</span></button>
               <button id="package-tab-nexora" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-nexora" data-package-tab="nexora" tabindex="-1"><span class="package-tab-icon"><i data-lucide="gem" aria-hidden="true"></i></span><span>Subscriptions</span></button>
               <button id="package-tab-voice" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-voice" data-package-tab="voice" tabindex="-1"><span class="package-tab-icon package-tab-icon-dual"><svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false" data-package-icon="phone-sparkles"><path data-phone-shape="handset" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="m22.25 4.5.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2Z" fill="currentColor"></path><path d="m24.5 13 .45 1.2 1.2.45-1.2.45-.45 1.2-.45-1.2-1.2-.45 1.2-.45.45-1.2Z" fill="currentColor"></path></svg></span><span>AI Voice Plans</span></button>
-              <button id="package-tab-credits" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-credits" data-package-tab="credits" tabindex="-1"><span class="package-tab-icon"><i data-lucide="wallet-cards" aria-hidden="true"></i></span><span>Credit Usage</span></button>
               <button id="package-tab-history" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-history" data-package-tab="history" tabindex="-1"><span class="package-tab-icon"><i data-lucide="receipt" aria-hidden="true"></i></span><span>Purchase History</span></button>
             </div>
           </div>
@@ -217,121 +215,6 @@
                 </div>
               </article>
             </div>
-          </section>
-          <section id="package-panel-credits" class="package-panel" role="tabpanel" aria-labelledby="package-tab-credits" data-package-panel="credits" hidden>
-            <section class="credits-page" data-credits-page aria-labelledby="credits-page-title">
-              <div class="credits-balance-grid">
-                <article class="credits-card credits-card-plan" data-credits-card="plan" aria-labelledby="plan-credits-title">
-                  <div class="credits-card-head">
-                    <div class="credits-card-icon credits-card-icon-plan"><i data-lucide="crown" aria-hidden="true"></i></div>
-                    <div>
-                      <h2 id="plan-credits-title">Pro</h2>
-                      <p class="credits-plan-subtitle">AI Voice Plan</p>
-                    </div>
-                    <span class="credits-reset-action"><i data-lucide="refresh-cw" aria-hidden="true"></i><span>Expires <time data-credits-plan-expiry datetime="2026-07-31">Jul 31, 2026</time></span></span>
-                  </div>
-
-                  <div class="credits-plan-remaining" aria-label="Remaining plan credits">
-                    <span class="credits-label">Còn lại</span>
-                    <div class="credits-plan-remaining-values">
-                      <strong data-credits-voice-remaining>380</strong><span class="credits-plan-remaining-unit">min</span>
-                      <span class="credits-plan-remaining-separator" aria-hidden="true">·</span>
-                      <strong data-credits-sms-plan-remaining>0</strong><span class="credits-plan-remaining-unit">SMS</span>
-                    </div>
-                  </div>
-
-                  <div class="credits-plan-usage" hidden>
-                    <div class="credits-usage-row credits-usage-row-minutes">
-                      <div class="credits-usage-icon credits-usage-icon-minutes"><i data-lucide="phone" aria-hidden="true"></i></div>
-                      <div class="credits-usage-main">
-                        <div class="credits-usage-heading"><span>Minutes used</span><strong><span data-credits-voice-used>620</span> <small>/ <span data-credits-voice-total>1,000</span></small></strong></div>
-                        <div class="credits-usage-progress" role="progressbar" aria-label="Minutes used" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="620" data-credits-voice-progress-track><span class="credits-usage-fill credits-usage-fill-minutes" data-credits-voice-progress style="width:62%"></span></div>
-                      </div>
-                    </div>
-
-                    <div class="credits-usage-row credits-usage-row-sms">
-                      <div class="credits-usage-icon credits-usage-icon-sms"><i data-lucide="messages-square" aria-hidden="true"></i></div>
-                      <div class="credits-usage-main">
-                        <div class="credits-usage-heading"><span>SMS used</span><strong><span data-credits-sms-plan-used>1,000</span> <small>/ <span data-credits-sms-plan-total>1,000</span></small></strong></div>
-                        <div class="credits-usage-progress" role="progressbar" aria-label="SMS used" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="1000" data-credits-sms-plan-progress-track><span class="credits-usage-fill credits-usage-fill-sms" data-credits-sms-plan-progress style="width:100%"></span></div>
-                      </div>
-                    </div>
-                  </div>
-
-                </article>
-
-                <article class="credits-card credits-card-topup" data-credits-card="sms-topup" aria-labelledby="voice-sms-credits-title">
-                  <div class="credits-card-head">
-                    <div class="credits-card-icon credits-card-icon-topup"><i data-lucide="layers-3" aria-hidden="true"></i></div>
-                    <div>
-                      <h2 id="voice-sms-credits-title">Voice and SMS Credits</h2>
-                      <p class="credits-topup-subtitle">Credit mua thêm, không hết hạn</p>
-                    </div>
-                    <span class="credits-rollover-badge"><i data-lucide="shield-check" aria-hidden="true"></i><span>Không hết hạn</span></span>
-                  </div>
-
-                  <div class="credits-plan-remaining credits-topup-remaining" aria-label="Remaining Voice and SMS credits">
-                    <span class="credits-label">Còn lại</span>
-                    <div class="credits-plan-remaining-values">
-                      <strong data-credits-voice-topup-balance>0</strong><span class="credits-plan-remaining-unit">min</span>
-                      <span class="credits-plan-remaining-separator" aria-hidden="true">·</span>
-                      <strong data-credits-sms-topup-balance>450</strong><span class="credits-plan-remaining-unit">SMS</span>
-                    </div>
-                  </div>
-
-                </article>
-              </div>
-
-              <div class="credits-voice-warning" data-credits-voice-warning role="status" aria-live="polite" hidden>
-                <div class="credits-voice-warning-content">
-                  <div class="credits-voice-warning-icon"><i data-lucide="triangle-alert" aria-hidden="true"></i></div>
-                  <div>
-                    <strong>AI Voice sắp hết</strong>
-                    <p>Bạn chỉ còn <span data-credits-voice-warning-remaining>380</span> phút Voice. Mua thêm credit hoặc nâng cấp gói để tránh gián đoạn.</p>
-                  </div>
-                </div>
-                <div class="credits-actions" aria-label="Buy additional credits">
-                  <button class="credits-action credits-action-secondary" data-credits-action="voice-buy" type="button"><i data-lucide="phone-call" aria-hidden="true"></i><span>Mua Voice credit</span></button>
-                  <button class="credits-action credits-action-secondary" data-credits-action="sms-buy" type="button"><i data-lucide="message-circle" aria-hidden="true"></i><span>Mua SMS credit</span></button>
-                </div>
-              </div>
-
-              <section class="credits-history-section" aria-labelledby="credits-history-title">
-                <div class="credits-section-heading">
-                  <div>
-                    <span class="credits-kicker">Activity</span>
-                    <h2 id="credits-history-title">Usage history</h2>
-                  </div>
-                  <div class="credits-history-tools">
-                    <div class="credits-history-filters" role="group" aria-label="Filter usage history">
-                      <button class="credits-history-filter is-active" type="button" data-credits-history-filter="all" aria-pressed="true">All</button>
-                      <button class="credits-history-filter" type="button" data-credits-history-filter="sms" aria-pressed="false">SMS</button>
-                      <button class="credits-history-filter" type="button" data-credits-history-filter="voice" aria-pressed="false">Voice</button>
-                    </div>
-                  </div>
-                </div>
-                <div class="credits-history-scroll">
-                  <table class="credits-history-table">
-                    <caption class="sr-only">Recent SMS and Voice credit usage</caption>
-                    <thead>
-                      <tr>
-                        <th scope="col">Product</th>
-                        <th scope="col">Activity</th>
-                        <th scope="col">Used</th>
-                        <th scope="col">Date</th>
-                      </tr>
-                    </thead>
-                    <tbody data-credits-history>
-                      <tr><td><span class="credits-product-badge credits-product-badge-sms">SMS</span></td><td>All customers campaign</td><td class="credits-amount-negative">−1,284 SMS</td><td>Jul 28, 2026</td></tr>
-                      <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>+1 (713) 555-0182</strong><small>Incoming call</small></span></td><td class="credits-amount-negative">−18 min</td><td><span class="credits-history-date">Jul 28, 2026<small>10:42 AM</small></span></td></tr>
-                      <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>+1 (832) 555-0104</strong><small>Incoming call</small></span></td><td class="credits-amount-negative">−27 min</td><td><span class="credits-history-date">Jul 28, 2026<small>9:18 AM</small></span></td></tr>
-                      <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>+1 (281) 555-0199</strong><small>Incoming call</small></span></td><td class="credits-amount-negative">−31 min</td><td><span class="credits-history-date">Jul 27, 2026<small>5:50 PM</small></span></td></tr>
-                      <tr><td><span class="credits-product-badge credits-product-badge-sms">SMS</span></td><td>VIP comeback campaign</td><td class="credits-amount-negative">−320 SMS</td><td>Jul 26, 2026</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            </section>
           </section>
           <section id="package-panel-history" class="package-panel" role="tabpanel" aria-labelledby="package-tab-history" data-package-panel="history" data-purchase-history hidden></section>
         </section>
@@ -524,7 +407,6 @@
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="../assets/nexora-credits.js"></script>
   <script src="../assets/nexora-packages.js"></script>
   <script>
     window.NEXORA_SHELL = {
