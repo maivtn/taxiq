@@ -420,9 +420,10 @@
       display: block;
       color: var(--nexora-text);
       font-size: 15px;
+      white-space: nowrap;
     }
 
-    .guide-ring-item span {
+    .guide-ring-item > span {
       display: block;
       margin-top: 2px;
       color: var(--nexora-subtle);
@@ -786,7 +787,7 @@
 
       .guide-panel-heading h2,
       .guide-section-heading h2 {
-        font-size: 16px;
+        font-size: 17px;
       }
 
       .guide-mode-tag {
@@ -881,6 +882,20 @@
     }
 
     @media print {
+      @page {
+        size: A4;
+        margin: 12mm;
+      }
+
+      html,
+      body,
+      .shell,
+      .app-area,
+      .content {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
       .sidebar,
       .header,
       .guide-heading-actions {
@@ -892,7 +907,14 @@
       }
 
       .content {
+        min-height: 0;
         padding: 0 !important;
+      }
+
+      .ai-guide-page {
+        width: 100%;
+        max-width: 780px;
+        margin: 0 auto;
       }
 
       .guide-danger-card,
@@ -902,7 +924,12 @@
       .guide-script,
       .guide-support,
       .guide-callout {
-        box-shadow: none;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        break-inside: avoid;
+      }
+
+      .guide-situation {
         break-inside: avoid;
       }
 
@@ -950,7 +977,6 @@
             <div class="guide-panel-heading">
               <span class="guide-panel-heading-icon"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span>
               <div>
-                <p class="guide-panel-kicker">Step 1</p>
                 <h2 id="guide-controls-title"><span class="guide-vi">Chọn cấu hình điện thoại</span><span class="guide-en">Choose your phone setup</span></h2>
                 <p><span class="guide-vi">Mã bấm thay đổi theo nhà mạng và cách bạn muốn AI bắt máy.</span><span class="guide-en">Codes change by carrier and by when you want AI to answer.</span></p>
               </div>
@@ -1018,7 +1044,6 @@
               <div class="guide-panel-heading">
                 <span class="guide-panel-heading-icon"><i data-lucide="clock-3" aria-hidden="true"></i></span>
                 <div>
-                  <p class="guide-panel-kicker">Timing</p>
                   <h2 id="ring-title"><span class="guide-vi">“3 hồi chuông” là bao nhiêu giây?</span><span class="guide-en">What does “3 rings” mean?</span></h2>
                 </div>
               </div>
@@ -1059,7 +1084,6 @@
 
           <section class="guide-number-card" aria-labelledby="guide-numbers-title">
             <div class="guide-section-heading">
-              <p class="guide-panel-kicker">Your numbers</p>
               <h2 id="guide-numbers-title"><span class="guide-vi">Số cần dùng khi cài đặt</span><span class="guide-en">Numbers for setup</span></h2>
               <p><span class="guide-vi">Các số này có thể được truyền qua query params khi mở guide cho từng tiệm.</span><span class="guide-en">These numbers can be passed through query params when opening the guide for a salon.</span></p>
             </div>
@@ -1071,7 +1095,6 @@
 
           <section class="guide-situations" aria-labelledby="guide-situations-title">
             <div class="guide-situations-heading guide-section-heading">
-              <p class="guide-panel-kicker">Troubleshooting</p>
               <h2 id="guide-situations-title"><span class="guide-vi">Gặp tình huống này thì làm vầy</span><span class="guide-en">When this happens, do this</span></h2>
               <p><span class="guide-vi">Năm việc hay gặp nhất. Ngoài năm việc này thì gọi hỗ trợ.</span><span class="guide-en">The five most common ones. Anything else, call support.</span></p>
             </div>
