@@ -558,10 +558,10 @@ test('provides a selectable SMS credits checkout beside the credits pill', () =>
   assert.match(html, /<div class="sms-credit-card-row">\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="name"[\s\S]*?<\/label>\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="number"/);
   assert.match(html, /<div class="sms-credit-card-row">\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="city"[\s\S]*?<\/label>\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="state"/);
   assert.match(html, /<div class="sms-credit-card-row">\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="zip"[\s\S]*?<\/label>\s*<label class="sms-credit-card-field">[\s\S]*?data-sms-credit-card-field="country"/);
-  assert.match(html, /credits:\s*500,\s*price:\s*25/);
-  assert.match(html, /credits:\s*1500,\s*price:\s*60/);
-  assert.match(html, /credits:\s*3000,\s*price:\s*99/);
-  assert.match(html, /credits:\s*6000,\s*price:\s*175/);
+  assert.match(html, /credits:\s*500,\s*price:\s*12/);
+  assert.match(html, /credits:\s*1500,\s*price:\s*29/);
+  assert.match(html, /credits:\s*3000,\s*price:\s*49/);
+  assert.match(html, /credits:\s*6000,\s*price:\s*89/);
   assert.match(html, /function openSmsCreditModal\(\)/);
   assert.match(html, /function renderSmsCreditCardForm\(\)/);
   assert.match(html, /function validateSmsCreditCardForm\(\)/);

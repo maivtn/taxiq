@@ -17,7 +17,8 @@
     { product: 'Voice', activity: 'Incoming call', amount: '−18 min', date: 'Jul 28, 2026 · 10:42 AM', balance: '571 min' },
     { product: 'Voice', activity: 'Incoming call', amount: '−27 min', date: 'Jul 28, 2026 · 9:18 AM', balance: '544 min' },
     { product: 'Voice', activity: 'Incoming call', amount: '−31 min', date: 'Jul 27, 2026 · 5:50 PM', balance: '513 min' },
-    { product: 'SMS', activity: 'VIP comeback campaign', amount: '−320 SMS', date: 'Jul 26, 2026 · 11:05 AM', balance: '2,131 SMS' }
+    { product: 'SMS', activity: 'VIP comeback campaign', amount: '−320 SMS', date: 'Jul 26, 2026 · 11:05 AM', balance: '2,131 SMS' },
+    { product: 'SMS', direction: 'credit', activity: 'Buy SMS credit', amount: '+1,500 SMS', date: 'Jul 25, 2026 · 9:20 AM', balance: '2,451 SMS' }
   ];
   let activeHistoryFilter = 'all';
   let smsWallet = null;
