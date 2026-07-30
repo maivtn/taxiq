@@ -63,6 +63,10 @@ test('POS Booking starts in Appointments Table mode and opens Calendar on its su
 
 test('POS Booking View actions open the appointment detail modal', () => {
   assert.match(runtime, /bookingAction\.dataset\.bookingAction === ['"]detail['"][\s\S]*?openBookingDetailModal\(item\)/);
+  assert.match(runtime, /window\.openBookingDetailById = function\(id\)/);
+  assert.match(runtime, /data-booking-detail-checkin="' \+ escapeHtml\(item\.dataset\.bookingId\)/);
+  assert.match(html, /window\.NEXORA_POS_BOOKING_CHECKIN = function \(bookingId\)/);
+  assert.match(html, /var bookingDetailCheckin = e\.target\.closest\('\[data-booking-detail-checkin\]'\);/);
 });
 
 test('turns the appointment panel into a responsive modal below 1400px', () => {

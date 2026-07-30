@@ -80,8 +80,11 @@ test('POS Customers profile surfaces upcoming bookings, visit history, and payme
   assert.match(html, /function custUpcomingCardHtml\(c\) \{/);
   const upcomingFn = html.match(/function custUpcomingCardHtml\(c\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(upcomingFn, /data-cust-upcoming-checkin="' \+ esc\(b\.id\)/);
+  assert.match(upcomingFn, /data-cust-upcoming-detail="' \+ esc\(b\.id\)/);
   assert.match(upcomingFn, /b\.day \|\| 'Upcoming'/);
+  assert.match(upcomingFn, /View detail/);
   assert.match(upcomingFn, /Check in/);
+  assert.match(html, /closeCustProfileModal\(\);\s*\n\s*activateTab\('booking'\);\s*\n\s*if \(window\.openBookingDetailById\) window\.openBookingDetailById\(detailId\);/);
   assert.match(html, /function custVisitHistoryTableHtml\(name\) \{/);
   assert.match(html, /function custPaymentHistoryTableHtml\(name\) \{/);
   const visitFn = html.match(/function custVisitHistoryTableHtml\(name\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
@@ -118,7 +121,7 @@ test('Customer profile modal: compact horizontal stats row, an upcoming-booking 
   assert.doesNotMatch(html, /\.cust-profile-insights \{/);
 });
 
-test('Profile modal tag/prefTech edits refresh the open modal in place, guarded to the currently-open customer', () => {
+test('Profile modal edits refresh the open modal in place, guarded to the currently-open customer', () => {
   assert.match(html, /var custProfileOpenIndex = -1;/);
   assert.match(html, /function refreshOpenCustProfile\(ci\) \{/);
   const refreshFn = html.match(/function refreshOpenCustProfile\(ci\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
@@ -212,32 +215,27 @@ test('POS title row links to the Kiosk mockup', () => {
   assert.match(html, /<a class="pos-btn pos-btn-sm" href="https:\/\/pos-nexoratouch\.vercel\.app\/mockups\/phase1\/kiosk\.html" target="_blank" rel="noopener noreferrer"><i class="bi bi-tablet" aria-hidden="true"><\/i> Kiosk<\/a>/);
 });
 
-test('Management is split into subtabs (Overview/Pay & Payroll/Staff & Roles/Skills & Catalog/Customers) instead of one long scroll', () => {
+test('Management is split into four subtabs because Customers is already a top-level tab', () => {
   assert.match(html, /data-mg-subtab="overview"/);
   assert.match(html, /data-mg-subtab="payroll"/);
   assert.match(html, /data-mg-subtab="staff"/);
   assert.match(html, /data-mg-subtab="catalog"/);
-  assert.match(html, /data-mg-subtab="customers"/);
-  assert.match(html, /var MG_SUBTABS = \['overview', 'payroll', 'staff', 'catalog', 'customers'\];/);
+  assert.doesNotMatch(html, /data-mg-subtab="customers"/);
+  assert.match(html, /var MG_SUBTABS = \['overview', 'payroll', 'staff', 'catalog'\];/);
   const sections = html.match(/function mgSubtabSections\(ps\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(sections, /overview: function \(\) \{ return mgKpisHtml\(ps\) \+ '<div class="mg-split">' \+ mgRevenueHtml\(\) \+ mgPayrollHtml\(ps\) \+ '<\/div>' \+ mgPerfHtml\(ps\); \}/);
   assert.match(sections, /payroll: function \(\) \{ return mgOwnerHtml\(ps\) \+ mgSmartHtml\(ps\) \+ mgPayoutHtml\(ps\); \}/);
   assert.match(sections, /staff: function \(\) \{ return mgStaffHtml\(\) \+ mgRolesHtml\(\) \+ mgLogHtml\(\); \}/);
   assert.match(sections, /catalog: function \(\) \{ return mgSkillsHtml\(\) \+ mgSvcSkillHtml\(\); \}/);
-  assert.match(sections, /customers: function \(\) \{ return mgCustHtml\(\); \}/);
+  assert.doesNotMatch(sections, /customers:/);
+  assert.doesNotMatch(html, /function mgCustHtml\(\)/);
   assert.match(html, /var mgTab = e\.target\.closest\('\[data-mg-subtab\]'\);/);
 });
 
-test('Tag/note/prefTech editors are shared functions used by Management (mgCustHtml) and the profile modal, so both surfaces mutate the exact same data', () => {
+test('Customer profile keeps the shared tag/note/regular-tech editors after Management loses its duplicate Customers subtab', () => {
   assert.match(html, /function toggleCustTag\(ci, tag\) \{/);
   assert.match(html, /function saveCustNoteLevel\(ci, level, value\) \{/);
-  assert.match(html, /function setCustPrefTech\(ci, techId\) \{/);
-  assert.match(html, /function custTagsEditorHtml\(c, ci\) \{/);
   assert.match(html, /function custNoteLevelsHtml\(c, ci\) \{/);
-  assert.match(html, /function custPrefTechHtml\(c, ci\) \{/);
-  const tagsFn = html.match(/function custTagsEditorHtml\(c, ci\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
-  assert.match(tagsFn, /TAG_LIB\.map\(function \(tag\) \{/);
-  assert.match(tagsFn, /data-mg-tag="' \+ ci \+ '\|' \+ tag \+ '"/);
   const notesFn = html.match(/function custNoteLevelsHtml\(c, ci\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(notesFn, /NOTE_LEVELS\.map\(function \(l\) \{/);
   assert.match(notesFn, /data-mg-note="' \+ ci \+ '\|' \+ l\[0\] \+ '"/);
@@ -246,22 +244,12 @@ test('Tag/note/prefTech editors are shared functions used by Management (mgCustH
   const fitHtmlFn = html.match(/function custFitHtml\(c\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(fitHtmlFn, /<i class="bi bi-person-check-fill" aria-hidden="true"><\/i>/);
   assert.doesNotMatch(fitHtmlFn, /🤝/);
-  // Management's own handlers, and mgCustHtml's own rendering, now call the shared functions/renderers.
-  assert.match(html, /if \(tg\) \{\s*\n\s*var pt = tg\.getAttribute\('data-mg-tag'\)\.split\('\|'\);\s*\n\s*toggleCustTag\(\+pt\[0\], pt\[1\]\);\s*\n\s*renderManagement\(\); return;/);
-  assert.match(html, /if \(nt\) \{\s*\n\s*var pn = nt\.getAttribute\('data-mg-note'\)\.split\('\|'\);\s*\n\s*saveCustNoteLevel\(\+pn\[0\], pn\[1\], nt\.value\);/);
-  assert.match(html, /if \(pf2\) \{ setCustPrefTech\(\+pf2\.getAttribute\('data-mg-pref'\), pf2\.value\); renderManagement\(\); return; \}/);
-  const mgCustFn = html.match(/function mgCustHtml\(\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
-  assert.match(mgCustFn, /'<td>' \+ custPrefTechHtml\(c, ci\) \+ '<\/td>' \+/);
-  assert.match(mgCustFn, /'<td class="wrap">' \+ custTagsEditorHtml\(c, ci\) \+ '<\/td>' \+/);
-  assert.match(mgCustFn, /'<td class="wrap" style="min-width:300px">' \+ custNoteLevelsHtml\(c, ci\) \+ '<\/td>' \+/);
-  // Customers-panel handlers are guarded so a Management tag/note/pref change doesn't double-fire
-  // here — and the guard also covers the profile modal, which lives outside the panel section.
+  // Customer-panel handlers own the profile edits; Management has no duplicate customer surface.
   assert.match(html, /var custTag = e\.target\.closest\('\[data-mg-tag\]'\);\s*\n\s*if \(custTag && e\.target\.closest\('\[data-pos-panel="customers"\], \[data-cust-profile-modal\]'\)\) \{/);
   assert.match(html, /var custNote = e\.target\.closest\('\[data-mg-note\]'\);\s*\n\s*if \(custNote && e\.target\.closest\('\[data-pos-panel="customers"\], \[data-cust-profile-modal\]'\)\) \{/);
-  assert.match(html, /var custPref = e\.target\.closest\('\[data-mg-pref\]'\);\s*\n\s*if \(custPref && e\.target\.closest\('\[data-pos-panel="customers"\], \[data-cust-profile-modal\]'\)\) \{/);
 });
 
-test('Customer profile modal (View) still edits Regular tech, Tags, and Notes in place — via the Customer insights / Preferences & care cards and the same label+input Notes by visibility as the table', () => {
+test('Customer profile modal (View) still edits Regular tech, Tags, and Notes in place', () => {
   const profileFn = html.match(/function renderCustProfileModal\(c\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(profileFn, /segBadge \+ ' ' \+ custSrcBadgeHtml\(c\) \+ ' ' \+ inactiveBadge/);
   assert.match(profileFn, /custNoteLevelsHtml\(c, ci\)/);
@@ -271,13 +259,14 @@ test('Customer profile modal (View) still edits Regular tech, Tags, and Notes in
   const prefTechChipsFn = html.match(/function custPrefTechChipsHtml\(c, ci\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(prefTechChipsFn, /custFrequentTechIds\(c\)/);
   assert.match(prefTechChipsFn, /class="cust-pref-tech-chip/);
+  assert.match(prefTechChipsFn, /<span class="cust-pref-tech-chip/);
+  assert.doesNotMatch(prefTechChipsFn, /<button class="cust-pref-tech-chip/);
   assert.match(prefTechChipsFn, /bi-person/);
   const prefsFn = html.match(/function custPrefsCardHtml\(c, ci\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(prefsFn, /data-mg-tag="' \+ ci \+ '\|' \+ tag \+ '"/);
   const notesFn = html.match(/function custNoteLevelsHtml\(c, ci\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(notesFn, /data-mg-note="' \+ ci \+ '\|' \+ l\[0\] \+ '"/);
   assert.match(html, /toggleCustTag\(\+ctPt\[0\], ctPt\[1\]\);\s*\n\s*renderCustomersTab\(\);\s*\n\s*refreshOpenCustProfile\(\+ctPt\[0\]\);/);
-  assert.match(html, /var custPrefChip = e\.target\.closest\('\[data-mg-pref-chip\]'\);/);
-  assert.match(html, /setCustPrefTech\(prefCi, prefCustomer && prefCustomer\.prefTech === prefParts\[1\] \? null : prefParts\[1\]\);/);
-  assert.match(html, /setCustPrefTech\(cpCi, custPref\.value\);\s*\n\s*renderCustomersTab\(\);\s*\n\s*refreshOpenCustProfile\(cpCi\);/);
+  assert.doesNotMatch(html, /data-mg-pref-chip/);
+  assert.doesNotMatch(html, /setCustPrefTech\(/);
 });

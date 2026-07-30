@@ -195,23 +195,19 @@
     .rev-bar.today { color: var(--nexora-brand); }
 
     /* ── dispatch (floor) ── */
-    .disp-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
-    /* 2 tiles per row on tablet/mobile — the odd 5th tile spans the full row instead of leaving a hole */
-    @media (max-width: 900px) {
-      .disp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .disp-stats > .disp-stat:last-child:nth-child(odd) { grid-column: 1 / -1; }
-    }
-    .disp-stat { position: relative; overflow: hidden; background: var(--nexora-surface); border: 1px solid var(--nexora-border); border-radius: 14px; padding: 15px 14px; box-shadow: var(--nexora-card-shadow); text-align: center; transition: transform .18s, box-shadow .18s; }
+    .disp-stats { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; }
+    .disp-stat { position: relative; flex: 1 1 140px; min-width: 120px; overflow: hidden; background: var(--nexora-surface); border: 1px solid var(--nexora-border); border-radius: 12px; padding: 10px 11px; box-shadow: var(--nexora-card-shadow); text-align: center; transition: transform .18s, box-shadow .18s; }
     .disp-stat::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--accent, var(--nexora-brand)); opacity: .85; }
     .disp-stat:hover { transform: translateY(-2px); box-shadow: var(--nexora-soft-shadow); }
-    .disp-num { font-size: 24px; font-weight: 900; color: var(--nexora-text); }
-    .disp-lbl { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11px; font-weight: 800; color: var(--nexora-muted); margin-top: 3px; }
+    .disp-num { font-size: 20px; font-weight: 900; color: var(--nexora-text); }
+    .disp-lbl { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 10.5px; font-weight: 800; color: var(--nexora-muted); margin-top: 2px; }
     .disp-lbl i { font-size: 12px; line-height: 1; color: var(--accent, var(--nexora-brand)); }
     .disp-grid { display: grid; grid-template-columns: 1.45fr 1fr; gap: 14px; align-items: start; }
     @media (max-width: 1100px) { .disp-grid { grid-template-columns: 1fr; } }
 
     .panel-violet { border-color: rgba(142, 77, 248, .45); }
     .panel-amber { border-color: rgba(245, 158, 11, .5); }
+    .pos-card.panel-amber { padding: 0; border: 0; background: transparent; box-shadow: none; }
     .panel-blue { border-color: rgba(43, 89, 255, .4); }
 
     .wl-card { display: flex; align-items: center; gap: 10px; border: 1px solid var(--nexora-border); border-radius: 12px; padding: 11px 12px; margin-bottom: 10px; background: #fff; transition: border-color .15s, box-shadow .15s; flex-wrap: wrap; }
@@ -265,7 +261,7 @@
     .cust-upcoming-title { font-weight: 800; color: var(--nexora-brand); font-size: 13.5px; }
     .cust-upcoming-meta { font-size: 13px; color: var(--nexora-text); font-weight: 600; margin-top: 2px; }
     .cust-upcoming-detail { font-size: 11.5px; color: var(--nexora-muted); font-weight: 600; margin-top: 4px; }
-    .cust-upcoming-actions { flex-shrink: 0; margin-left: auto; }
+    .cust-upcoming-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; flex-shrink: 0; margin-left: auto; }
     .cust-upcoming-more { font-size: 11.5px; color: var(--nexora-muted); font-weight: 700; white-space: nowrap; }
     .cust-upcoming-chevron { color: var(--nexora-subtle); }
     .cust-insights-card, .cust-prefs-card { border: 1px solid var(--nexora-border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
@@ -280,7 +276,7 @@
     .cust-pref-tag.is-on { background: #f3ecff; border-color: rgba(142, 77, 248, .35); color: var(--nexora-violet); }
     .cust-tech-chip-row { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 5px; }
     .cust-pref-tech-list { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
-    .cust-pref-tech-chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 10.5px; font-weight: 400; background: #fff; color: var(--nexora-muted); cursor: pointer; }
+    .cust-pref-tech-chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 10.5px; font-weight: 400; background: #fff; color: var(--nexora-muted); cursor: default; }
     .cust-pref-tech-chip.is-on { background: #f3ecff; border-color: rgba(142, 77, 248, .35); color: var(--nexora-violet); }
     .cust-tag-chip-row { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 5px; }
     .cust-tag-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 10px; font-weight: 400; background: #fff; color: var(--nexora-muted); }
@@ -439,8 +435,8 @@
       .page-tabs::-webkit-scrollbar { display: none; }
       .page-tab { flex: 0 0 auto; scroll-snap-align: start; }
       .pos-card { padding: 14px; border-radius: 14px; }
-      .disp-stat { padding: 12px 10px; }
-      .disp-num { font-size: 21px; }
+      .disp-stat { flex-basis: 130px; padding: 9px 8px; }
+      .disp-num { font-size: 19px; }
       .pos-kpi-value { font-size: 22px; }
       .pos-card-head { margin-bottom: 12px; }
       /* the inline "add guest" row overflowed the card at 360px — let the fields fill the width */
@@ -673,7 +669,6 @@
             <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="payroll">Pay &amp; Payroll</button>
             <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="staff">Staff &amp; Roles</button>
             <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="catalog">Skills &amp; Catalog</button>
-            <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="customers">Customers</button>
           </div>
           <div data-mgmt-body></div>
         </section>
@@ -2096,6 +2091,12 @@
         if (created) toast(booking.name + ' checked in — ' + created + ' service' + (created > 1 ? 's' : '') + ' added to Tickets');
         else toast(booking.name + ' is already checked in');
       }
+      window.NEXORA_POS_BOOKING_CHECKIN = function (bookingId) {
+        var booking = posBookingById(bookingId);
+        if (!booking) return false;
+        checkInBooking(booking);
+        return true;
+      };
       // Booking → completed (#pos-nail-salon-ops Phase 4, rule 3): only once every non-cancelled
       // service ticket of the booking has been paid (operational status 'completed').
       function checkBookingOrderComplete(bookingId) {
@@ -2427,12 +2428,13 @@
         var checkinAction = checkedIn
           ? '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Checked in</span>'
           : '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-cust-upcoming-checkin="' + esc(b.id) + '"><i class="bi bi-door-open" aria-hidden="true"></i> Check in</button>';
+        var detailAction = '<button class="pos-btn pos-btn-sm" type="button" data-cust-upcoming-detail="' + esc(b.id) + '"><i class="bi bi-eye" aria-hidden="true"></i> View detail</button>';
         return '<div class="cust-upcoming-card">' +
           '<div class="cust-upcoming-icon"><i class="bi bi-calendar-event" aria-hidden="true"></i></div>' +
           '<div class="cust-upcoming-text"><div class="cust-upcoming-title">Upcoming booking</div>' +
           '<div class="cust-upcoming-meta">' + esc(b.day || 'Upcoming') + ' · ' + esc(b.time || '') + '</div>' +
           '<div class="cust-upcoming-detail">' + esc(b.svc || 'Service TBD') + (b.techId ? ' · ' + esc(techName(b.techId)) : ' · Anyone') + '</div></div>' +
-          more + '<div class="cust-upcoming-actions">' + checkinAction + '</div>' +
+          more + '<div class="cust-upcoming-actions">' + detailAction + checkinAction + '</div>' +
         '</div>';
       }
       // Customer insights: regular tech chips, usual service, visit frequency, and average tip.
@@ -2558,8 +2560,7 @@
         var src = CUST_SRC_META[c.src];
         return src ? '<span class="pos-chip pos-chip-gray"><i class="bi ' + src.icon + '" aria-hidden="true"></i> ' + esc(src.label) + '</span>' : '—';
       }
-      // Shared with Management → Customers (mgCustHtml): same tags/notes mutation, callable from
-      // either surface so the Customers table can edit tags & three-level notes directly.
+      // Shared by the Customers list and profile surfaces so tags & three-level notes stay in sync.
       var NOTE_LEVELS = [
         ['owner', '<i class="bi bi-lock-fill" aria-hidden="true"></i> Owner only', 'var(--nexora-danger)'],
         ['staff', '<i class="bi bi-people-fill" aria-hidden="true"></i> Techs / front desk', 'var(--nexora-warning)'],
@@ -2578,29 +2579,13 @@
         if (c.notes[level] !== value) logAdmin('🏷️ Note (' + level + ') edited for ' + c.name);
         c.notes[level] = value;
       }
-      function setCustPrefTech(ci, techId) {
-        var c = CUSTOMERS[ci]; if (!c) return;
-        c.prefTech = techId || null;
-      }
-      // Customer profiles — tags & three-level notes (#pos-nail-salon-ops — ported from Management)
-      function custTagsEditorHtml(c, ci) {
-        return '<div class="pill-row">' + TAG_LIB.map(function (tag) {
-          var on = (c.tags || []).indexOf(tag) !== -1;
-          return '<button class="pill' + (on ? ' is-on' : '') + '" type="button" data-mg-tag="' + ci + '|' + tag + '">' + esc(tag) + '</button>';
-        }).join('') + '</div>';
-      }
+      // Customer profile — tags & three-level notes.
       function custNoteLevelsHtml(c, ci) {
         return '<div class="cust-note-levels">' + NOTE_LEVELS.map(function (l) {
           return '<div class="pos-inline" style="gap:6px;margin:3px 0;flex-wrap:nowrap">' +
             '<span style="font-size:10px;font-weight:800;color:' + l[2] + ';white-space:nowrap;width:120px">' + l[1] + '</span>' +
             '<input class="pos-mini text" data-mg-note="' + ci + '|' + l[0] + '" value="' + esc((c.notes && c.notes[l[0]]) || '') + '" placeholder="—"></div>';
         }).join('') + '</div>';
-      }
-      function custPrefTechHtml(c, ci) {
-        return '<select class="pos-input" data-mg-pref="' + ci + '" style="height:32px;font-size:12.5px">' +
-          '<option value="">— none —</option>' +
-          TECHS.map(function (t) { return '<option value="' + t.id + '"' + (c.prefTech === t.id ? ' selected' : '') + '>' + esc(t.name) + '</option>'; }).join('') +
-          '</select>';
       }
       function custFrequentTechIds(c) {
         var counts = {}, lastSeen = {}, history = CUSTHIST[c.name] || [];
@@ -2625,8 +2610,8 @@
         return '<div class="cust-pref-tech-list">' + frequentIds.map(function (id) {
           var t = techById(id);
           var active = c.prefTech === t.id;
-          return '<button class="cust-pref-tech-chip' + (active ? ' is-on' : '') + '" type="button" data-mg-pref-chip="' + ci + '|' + esc(t.id) + '" aria-pressed="' + active + '">' +
-            '<i class="bi bi-person" aria-hidden="true"></i> ' + esc(t.name) + '</button>';
+          return '<span class="cust-pref-tech-chip' + (active ? ' is-on' : '') + '">' +
+            '<i class="bi bi-person" aria-hidden="true"></i> ' + esc(t.name) + '</span>';
         }).join('') + '</div>';
       }
       // Editing tags/notes/regular-tech happens in the profile modal (View), not inline in the list —
@@ -3419,6 +3404,14 @@
 
       /* ═══════════ 👤 CUSTOMERS — table/card view, segment chips, profile + create/edit modals ═══════════ */
       document.addEventListener('click', function (e) {
+        var bookingDetailCheckin = e.target.closest('[data-booking-detail-checkin]');
+        if (bookingDetailCheckin) {
+          var detailBookingId = bookingDetailCheckin.getAttribute('data-booking-detail-checkin');
+          if (window.NEXORA_POS_BOOKING_CHECKIN) window.NEXORA_POS_BOOKING_CHECKIN(detailBookingId);
+          if (window.openBookingDetailById) window.openBookingDetailById(detailBookingId);
+          return;
+        }
+
         var custView = e.target.closest('[data-cust-view-target]');
         if (custView) {
           custViewMode = custView.getAttribute('data-cust-view-target');
@@ -3441,19 +3434,16 @@
           return;
         }
 
-        var custPrefChip = e.target.closest('[data-mg-pref-chip]');
-        if (custPrefChip && e.target.closest('[data-pos-panel="customers"], [data-cust-profile-modal]')) {
-          var prefParts = custPrefChip.getAttribute('data-mg-pref-chip').split('|');
-          var prefCi = +prefParts[0];
-          var prefCustomer = CUSTOMERS[prefCi];
-          setCustPrefTech(prefCi, prefCustomer && prefCustomer.prefTech === prefParts[1] ? null : prefParts[1]);
-          renderCustomersTab();
-          refreshOpenCustProfile(prefCi);
+        var custUpcomingDetail = e.target.closest('[data-cust-upcoming-detail]');
+        if (custUpcomingDetail) {
+          var detailId = custUpcomingDetail.getAttribute('data-cust-upcoming-detail');
+          closeCustProfileModal();
+          activateTab('booking');
+          if (window.openBookingDetailById) window.openBookingDetailById(detailId);
           return;
         }
 
-        // Tags & three-level notes (shared with Management → Customers, mgCustHtml) — guarded to this
-        // panel so a tag click inside Management's own table doesn't also re-render Customers.
+        // Tags & three-level notes — guarded to the Customers panel/profile modal.
         var custTag = e.target.closest('[data-mg-tag]');
         if (custTag && e.target.closest('[data-pos-panel="customers"], [data-cust-profile-modal]')) {
           var ctPt = custTag.getAttribute('data-mg-tag').split('|');
@@ -3509,15 +3499,6 @@
         if (custNote && e.target.closest('[data-pos-panel="customers"], [data-cust-profile-modal]')) {
           var cnPn = custNote.getAttribute('data-mg-note').split('|');
           saveCustNoteLevel(+cnPn[0], cnPn[1], custNote.value);
-        }
-      });
-      document.addEventListener('change', function (e) {
-        var custPref = e.target.closest('[data-mg-pref]');
-        if (custPref && e.target.closest('[data-pos-panel="customers"], [data-cust-profile-modal]')) {
-          var cpCi = +custPref.getAttribute('data-mg-pref');
-          setCustPrefTech(cpCi, custPref.value);
-          renderCustomersTab();
-          refreshOpenCustProfile(cpCi);
         }
       });
       document.addEventListener('keydown', function (e) {
@@ -3776,23 +3757,6 @@
           '</div>';
       }
 
-      function mgCustHtml() {
-        return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3><i class="bi bi-tags" aria-hidden="true"></i> Customer profiles — tags &amp; three-level notes</h3></div>' +
-          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Guest</th><th>Regular tech</th><th>Tags</th><th>Notes by visibility</th></tr></thead><tbody>' +
-          CUSTOMERS.map(function (c, ci) {
-            return '<tr>' +
-              '<td><span class="pos-strong">' + esc(c.name) + '</span><div class="pos-muted" style="font-size:11px;font-weight:600">' + esc(c.phone) + ' · ' + c.visits + ' visits · ' + money0(c.spent) + '</div></td>' +
-              '<td>' + custPrefTechHtml(c, ci) + '</td>' +
-              '<td class="wrap">' + custTagsEditorHtml(c, ci) + '</td>' +
-              '<td class="wrap" style="min-width:300px">' + custNoteLevelsHtml(c, ci) + '</td>' +
-              '</tr>';
-          }).join('') +
-          '</tbody></table></div>' +
-          '<div class="pos-hint">🔒 Owner notes never leave this screen (complaints, sensitive history). 👥 Staff notes appear on the guest card in dispatch, checkout, and the Staff App. 📱 Guest notes show in the customer app and on the receipt. Type a note then click away to save.</div>' +
-          '</div>';
-      }
-
       function mgPerfHtml(ps) {
         var rows = TECHS.map(function (t) {
           var pf = TECH_PERF[t.id] || { wtd: 0, rating: null, rev: 0, bills: 0, upsBills: 0 };
@@ -4014,19 +3978,18 @@
           '</div>';
       }
 
-      // Management subtabs (#pos-nail-salon-ops): groups the 13 management sections by theme
+      // Management subtabs (#pos-nail-salon-ops): groups the management sections by theme
       // instead of one long scroll — Overview (today's numbers), Pay & Payroll (compensation
       // mechanics), Staff & Roles (accounts/access/audit), Skills & Catalog (service/skill config),
-      // Customers (profile notes).
+      // while customer profiles live in the dedicated Customers tab.
       var mgSubtab = 'overview';
-      var MG_SUBTABS = ['overview', 'payroll', 'staff', 'catalog', 'customers'];
+      var MG_SUBTABS = ['overview', 'payroll', 'staff', 'catalog'];
       function mgSubtabSections(ps) {
         return {
           overview: function () { return mgKpisHtml(ps) + '<div class="mg-split">' + mgRevenueHtml() + mgPayrollHtml(ps) + '</div>' + mgPerfHtml(ps); },
           payroll: function () { return mgOwnerHtml(ps) + mgSmartHtml(ps) + mgPayoutHtml(ps); },
           staff: function () { return mgStaffHtml() + mgRolesHtml() + mgLogHtml(); },
-          catalog: function () { return mgSkillsHtml() + mgSvcSkillHtml(); },
-          customers: function () { return mgCustHtml(); }
+          catalog: function () { return mgSkillsHtml() + mgSvcSkillHtml(); }
         };
       }
       function renderManagement() {
@@ -4070,13 +4033,6 @@
           var fi = tf.fit.indexOf(pf[1]);
           if (fi >= 0) tf.fit.splice(fi, 1); else tf.fit.push(pf[1]);
           savePosTechnician(tf);
-          renderManagement(); return;
-        }
-
-        var tg = e.target.closest('[data-mg-tag]');
-        if (tg) {
-          var pt = tg.getAttribute('data-mg-tag').split('|');
-          toggleCustTag(+pt[0], pt[1]);
           renderManagement(); return;
         }
 
@@ -4215,12 +4171,6 @@
           ts.baoSplit = Math.min(100, Math.max(0, parseFloat(sp.value) || 0)) / 100;
           savePosTechnician(ts); renderManagement(); return;
         }
-        var nt = e.target.closest('[data-mg-note]');
-        if (nt) {
-          var pn = nt.getAttribute('data-mg-note').split('|');
-          saveCustNoteLevel(+pn[0], pn[1], nt.value);
-          return;   // no re-render: keep the caret where the user left it
-        }
         var mr = e.target.closest('[data-mg-mr]');
         if (mr) { MATCH_RULES[mr.getAttribute('data-mg-mr')] = Math.max(0, parseFloat(mr.value) || 0); renderManagement(); return; }
         var sm = e.target.closest('[data-mg-sm]');
@@ -4247,8 +4197,6 @@
           if (tm) { logAdmin('💼 ' + tm.name + ' pay model → ' + PAY_MODELS[m.value] + ' (applies from the next pay period)'); tm.payModel = m.value; savePosTechnician(tm); }
           renderManagement(); return;
         }
-        var pf2 = e.target.closest('[data-mg-pref]');
-        if (pf2) { setCustPrefTech(+pf2.getAttribute('data-mg-pref'), pf2.value); renderManagement(); return; }
         var sq = e.target.closest('[data-mg-svcreq]');
         if (sq) {
           var cid = sq.getAttribute('data-mg-svcreq');

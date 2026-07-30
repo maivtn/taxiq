@@ -1572,7 +1572,16 @@ var DEFAULT_MAIN_TAB = 'booking';
     }
 
     function renderBookingDetailActions(item) {
-      return renderBookingOperationalActionButtons(item);
+      var actions = renderBookingOperationalActionButtons(item);
+      var record = item ? bookingPanelRecordById(item.dataset.bookingId) : null;
+      if (!record || typeof window.NEXORA_POS_BOOKING_CHECKIN !== 'function') return actions;
+      if (record.status === 'checked-in') {
+        return '<span class="badge booking-status booking-status-done"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Checked in</span>' + actions;
+      }
+      if (['completed', 'no-show', 'cancelled'].indexOf(record.status) === -1) {
+        actions = '<button class="booking-mini-button primary" type="button" data-booking-detail-checkin="' + escapeHtml(item.dataset.bookingId) + '"><i class="bi bi-door-open" aria-hidden="true"></i>Check in</button>' + actions;
+      }
+      return actions;
     }
 
 function getBookingCardCallStart(item) {
@@ -1851,6 +1860,13 @@ function getBookingCardCallStart(item) {
       modal.hidden = true;
       document.body.style.overflow = '';
     }
+
+    window.openBookingDetailById = function(id) {
+      var item = findBookingItemById(id);
+      if (!item) return false;
+      openBookingDetailModal(item);
+      return true;
+    };
 
     function parseTechSchedule(value) {
       var schedule = {};
