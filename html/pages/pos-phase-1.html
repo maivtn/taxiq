@@ -264,6 +264,8 @@
     .cust-upcoming-text { flex: 1; min-width: 0; }
     .cust-upcoming-title { font-weight: 800; color: var(--nexora-brand); font-size: 13.5px; }
     .cust-upcoming-meta { font-size: 13px; color: var(--nexora-text); font-weight: 600; margin-top: 2px; }
+    .cust-upcoming-detail { font-size: 11.5px; color: var(--nexora-muted); font-weight: 600; margin-top: 4px; }
+    .cust-upcoming-actions { flex-shrink: 0; margin-left: auto; }
     .cust-upcoming-more { font-size: 11.5px; color: var(--nexora-muted); font-weight: 700; white-space: nowrap; }
     .cust-upcoming-chevron { color: var(--nexora-subtle); }
     .cust-insights-card, .cust-prefs-card { border: 1px solid var(--nexora-border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
@@ -274,8 +276,15 @@
     .cust-insight-label { font-size: 11.5px; color: var(--nexora-muted); font-weight: 600; }
     .cust-insight-value { font-size: 14px; font-weight: 800; color: var(--nexora-text); }
     .cust-insight-value select.pos-input { border: 0; background: none; padding: 0; height: auto; font-size: 14px; font-weight: 800; color: var(--nexora-text); }
-    .cust-pref-tag { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 12.5px; font-weight: 700; background: #fff; color: var(--nexora-muted); }
+    .cust-pref-tag { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 11px; font-weight: 400; background: #fff; color: var(--nexora-muted); }
     .cust-pref-tag.is-on { background: #f3ecff; border-color: rgba(142, 77, 248, .35); color: var(--nexora-violet); }
+    .cust-tech-chip-row { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+    .cust-pref-tech-list { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+    .cust-pref-tech-chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 10.5px; font-weight: 400; background: #fff; color: var(--nexora-muted); cursor: pointer; }
+    .cust-pref-tech-chip.is-on { background: #f3ecff; border-color: rgba(142, 77, 248, .35); color: var(--nexora-violet); }
+    .cust-tag-chip-row { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+    .cust-tag-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 10px; font-weight: 400; background: #fff; color: var(--nexora-muted); }
+    .cust-tag-chip.is-on { background: #f3ecff; border-color: rgba(142, 77, 248, .35); color: var(--nexora-violet); }
     /* Customers table (7-col) sub-lines, and the Card-mode flat layout it collapses to on narrow widths. */
     .cust-table-sub { font-size: 11px; color: var(--nexora-muted); font-weight: 600; margin-top: 2px; }
     .cust-card { flex-direction: column; align-items: stretch; gap: 2px; }
@@ -469,6 +478,7 @@
             <h1 class="page-title">POS</h1>
             <span class="pos-chip pos-chip-gold"><i class="bi bi-award-fill" aria-hidden="true"></i> <span data-pos-mode-badge-text>Owner · Brian</span></span>
             <button class="pos-btn pos-btn-sm" type="button" data-pos-mode-open><i class="bi bi-shuffle" aria-hidden="true"></i> Đổi mode</button>
+            <a class="pos-btn pos-btn-sm" href="https://pos-nexoratouch.vercel.app/mockups/phase1/kiosk.html" target="_blank" rel="noopener noreferrer"><i class="bi bi-tablet" aria-hidden="true"></i> Kiosk</a>
           </div>
           <p class="page-description">Bitcoin Nail Bar · Houston, TX — run the front desk: time clock, salon management, and appointments.</p>
           <div class="page-tabs" role="tablist" aria-label="POS sections">
@@ -529,18 +539,6 @@
             <div class="pos-card panel-violet" data-ciq-panel hidden>
               <div class="pos-card-head"><h3><i class="bi bi-inbox-fill" aria-hidden="true"></i> Check-in from the Nexora App / QR — waiting on the front desk (<span data-ciq-count>0</span>)</h3></div>
               <div data-ciq-list></div>
-            </div>
-
-            <div class="pos-card">
-              <div class="pos-card-head">
-                <h3><i class="bi bi-person-plus-fill" aria-hidden="true"></i> Walk-in</h3>
-                <div class="pos-inline">
-                  <input class="pos-input" data-wl-name placeholder="Guest name" style="width:130px;height:34px">
-                  <input class="pos-input" data-wl-phone placeholder="Phone" style="width:120px;height:34px">
-                  <button class="pos-btn pos-btn-sm" type="button" data-wl-add><i class="bi bi-plus-lg"></i> Add</button>
-                </div>
-              </div>
-              <p class="pos-muted" style="margin:0">Checked-in guests move to the <b>Tickets</b> tab for tech assignment.</p>
             </div>
 
           </div>
@@ -2425,15 +2423,19 @@
         if (!upcoming.length) return '';
         var b = upcoming[0];
         var more = upcoming.length > 1 ? '<span class="cust-upcoming-more">+' + (upcoming.length - 1) + ' more</span>' : '';
+        var checkedIn = b.status === 'checked-in' || (b.eta && b.eta.st === 'in');
+        var checkinAction = checkedIn
+          ? '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Checked in</span>'
+          : '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-cust-upcoming-checkin="' + esc(b.id) + '"><i class="bi bi-door-open" aria-hidden="true"></i> Check in</button>';
         return '<div class="cust-upcoming-card">' +
           '<div class="cust-upcoming-icon"><i class="bi bi-calendar-event" aria-hidden="true"></i></div>' +
           '<div class="cust-upcoming-text"><div class="cust-upcoming-title">Upcoming booking</div>' +
-          '<div class="cust-upcoming-meta">' + esc(b.time || '') + ' — ' + esc(b.svc || 'Service TBD') + (b.techId ? ' · ' + esc(techName(b.techId)) : '') + '</div></div>' +
-          more + '<i class="bi bi-chevron-right cust-upcoming-chevron" aria-hidden="true"></i>' +
+          '<div class="cust-upcoming-meta">' + esc(b.day || 'Upcoming') + ' · ' + esc(b.time || '') + '</div>' +
+          '<div class="cust-upcoming-detail">' + esc(b.svc || 'Service TBD') + (b.techId ? ' · ' + esc(techName(b.techId)) : ' · Anyone') + '</div></div>' +
+          more + '<div class="cust-upcoming-actions">' + checkinAction + '</div>' +
         '</div>';
       }
-      // Customer insights: regular tech (editable, same select as the table), usual service, visit
-      // frequency, and average tip — all already computed by custUsual()/custPrefTechHtml().
+      // Customer insights: regular tech chips, usual service, visit frequency, and average tip.
       function custInsightItemHtml(icon, label, valueHtml) {
         return '<div class="cust-insight-item"><div class="cust-insight-icon"><i class="bi ' + icon + '" aria-hidden="true"></i></div>' +
           '<div><div class="cust-insight-label">' + esc(label) + '</div><div class="cust-insight-value">' + valueHtml + '</div></div></div>';
@@ -2443,7 +2445,7 @@
         return '<div class="cust-insights-card">' +
           '<div class="cust-section-title">Customer insights</div>' +
           '<div class="cust-insights-row">' +
-            custInsightItemHtml('bi-person', 'Regular tech', custPrefTechHtml(c, ci)) +
+            custInsightItemHtml('bi-person', 'Regular tech', custPrefTechChipsHtml(c, ci)) +
             custInsightItemHtml('bi-star', 'Usual service', esc(u ? (u.svc || '—') : '—')) +
           '</div>' +
           '<div class="cust-insights-row cust-insights-row-last">' +
@@ -2462,7 +2464,7 @@
           '<div class="cust-section-title"><i class="bi bi-heart" aria-hidden="true"></i> Preferences &amp; care</div>' +
           '<div class="pill-row">' + TAG_LIB.map(function (tag) {
             var on = (c.tags || []).indexOf(tag) !== -1;
-            return '<button class="cust-pref-tag' + (on ? ' is-on' : '') + '" type="button" data-mg-tag="' + ci + '|' + tag + '">' +
+            return '<button class="cust-tag-chip' + (on ? ' is-on' : '') + '" type="button" data-mg-tag="' + ci + '|' + tag + '">' +
               '<i class="bi ' + (TAG_ICONS[tag] || 'bi-tag') + '" aria-hidden="true"></i> ' + esc(tag) + '</button>';
           }).join('') + '</div>' +
         '</div>';
@@ -2519,26 +2521,22 @@
         var ci = CUSTOMERS.indexOf(c);
         var seg = CUST_SEG_META[c.seg];
         var segBadge = seg ? '<span class="pos-chip ' + seg.chip + '">' + esc(seg.label) + '</span>' : '';
+        var sourceBadge = custSrcBadgeHtml(c);
         var inactiveBadge = custStatusOf(c) === 'inactive' ? ' <span class="pos-chip pos-chip-gray">Inactive</span>' : '';
-        var src = CUST_SRC_META[c.src];
-        var fitTechs = custFitTechs(c);
         var tagsHtml = custTagsSummaryHtml(c);
-        var notesHtml = custNotesSummaryHtml(c);
         return '<div class="wl-card cust-card">' +
           '<div class="cust-card-head">' +
             '<button class="cust-card-name" type="button" data-cust-pick="' + esc(c.name) + '">' + esc(c.name) + '</button>' +
-            segBadge + inactiveBadge +
+            segBadge + sourceBadge + inactiveBadge +
             '<div class="wl-actions cust-card-actions">' +
               '<button class="pos-btn pos-btn-sm" type="button" data-cust-pick="' + esc(c.name) + '" title="View profile"><i class="bi bi-person-vcard" aria-hidden="true"></i></button>' +
               '<button class="pos-btn pos-btn-sm" type="button" data-cust-edit="' + ci + '" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></button>' +
             '</div>' +
           '</div>' +
-          '<div class="cust-card-meta">' + esc(c.phone || 'No phone on file') + (src ? ' · ' + esc(src.label) : '') + '</div>' +
+          '<div class="cust-card-meta">' + esc(c.phone || 'No phone on file') + '</div>' +
           '<div class="cust-card-meta">' + (c.visits || 0) + ' visits · Last visit ' + custLastVisitLabel(c) + '</div>' +
-          '<div class="cust-card-meta">Regular tech: ' + (c.prefTech ? esc(techName(c.prefTech)) : '—') + '</div>' +
-          (fitTechs.length ? '<div class="cust-card-meta">Fit: ' + fitTechs.map(function (t) { return esc(t.name); }).join(', ') + '</div>' : '') +
+          '<div class="cust-card-meta">Regular tech: ' + custTechSummaryHtml(c) + '</div>' +
           (tagsHtml !== '—' ? '<div class="pill-row" style="margin-top:6px">' + tagsHtml + '</div>' : '') +
-          (notesHtml !== '—' ? notesHtml : '') +
         '</div>';
       }
       // Table mode — columns ported from the AI Hub Customers workspace (Customer/Phone/Group/Source/Visits/Last Visit/Action)
@@ -2604,49 +2602,67 @@
           TECHS.map(function (t) { return '<option value="' + t.id + '"' + (c.prefTech === t.id ? ' selected' : '') + '>' + esc(t.name) + '</option>'; }).join('') +
           '</select>';
       }
-      // Compact read-only notes summary — one line per level that has content, icon + truncated text.
+      function custFrequentTechIds(c) {
+        var counts = {}, lastSeen = {}, history = CUSTHIST[c.name] || [];
+        history.forEach(function (visit, index) {
+          if (!visit.techId || !techById(visit.techId)) return;
+          counts[visit.techId] = (counts[visit.techId] || 0) + 1;
+          lastSeen[visit.techId] = index;
+        });
+        var ids = Object.keys(counts).sort(function (a, b) {
+          return counts[b] - counts[a] || lastSeen[b] - lastSeen[a];
+        });
+        var preferred = Array.isArray(c.prefTech) ? c.prefTech[0] : c.prefTech;
+        if (preferred && techById(preferred)) {
+          ids = ids.filter(function (id) { return id !== preferred; });
+          ids.unshift(preferred);
+        }
+        return ids.slice(0, 3);
+      }
+      function custPrefTechChipsHtml(c, ci) {
+        var frequentIds = custFrequentTechIds(c);
+        if (!frequentIds.length) return '<span class="pos-muted">No frequent tech yet</span>';
+        return '<div class="cust-pref-tech-list">' + frequentIds.map(function (id) {
+          var t = techById(id);
+          var active = c.prefTech === t.id;
+          return '<button class="cust-pref-tech-chip' + (active ? ' is-on' : '') + '" type="button" data-mg-pref-chip="' + ci + '|' + esc(t.id) + '" aria-pressed="' + active + '">' +
+            '<i class="bi bi-person" aria-hidden="true"></i> ' + esc(t.name) + '</button>';
+        }).join('') + '</div>';
+      }
       // Editing tags/notes/regular-tech happens in the profile modal (View), not inline in the list —
       // that's what let the table collapse from 11 columns down to 7 on narrower screens.
-      var NOTE_LEVEL_ICONS = { owner: 'bi-lock-fill', staff: 'bi-people-fill', customer: 'bi-phone' };
-      function custNotesSummaryHtml(c) {
-        var rows = NOTE_LEVELS.map(function (l) {
-          var val = (c.notes && c.notes[l[0]]) || '';
-          if (!val) return '';
-          var text = val.length > 42 ? val.slice(0, 42) + '…' : val;
-          return '<div class="cust-table-sub"><i class="bi ' + NOTE_LEVEL_ICONS[l[0]] + '" aria-hidden="true" style="color:' + l[2] + '"></i> ' + esc(text) + '</div>';
-        }).filter(Boolean).join('');
-        return rows || '—';
-      }
-      // Shared summary lines for both table rows and cards: technician (regular tech + fit) and tags
+      // Shared summary lines for both table rows and cards: regular tech chip and tags
       // (max 3 shown, "+N" for the rest) — kept in one place so table/card never drift apart.
       function custTechSummaryHtml(c) {
-        var fitTechs = custFitTechs(c);
-        return (c.prefTech ? esc(techName(c.prefTech)) : '—') +
-          (fitTechs.length ? '<div class="cust-table-sub">Fit: ' + fitTechs.map(function (t) { return esc(t.name); }).join(', ') + '</div>' : '');
+        var techIds = Array.isArray(c.prefTech) ? c.prefTech : (c.prefTech ? [c.prefTech] : []);
+        var chips = techIds.map(function (id) {
+          var name = techName(id);
+          return name === '—' ? '' : '<span class="cust-pref-tag is-on"><i class="bi bi-person" aria-hidden="true"></i>' + esc(name) + '</span>';
+        }).filter(Boolean).join('');
+        return chips ? '<span class="cust-tech-chip-row">' + chips + '</span>' : '—';
       }
       function custTagsSummaryHtml(c) {
         var tags = c.tags || [];
         if (!tags.length) return '—';
         var visible = tags.slice(0, 3), extra = tags.length - visible.length;
-        return visible.map(function (t) { return '<span class="cust-pref-tag is-on">' + esc(t) + '</span>'; }).join(' ') +
-          (extra > 0 ? ' <span class="pos-muted" style="font-size:11px;font-weight:700">+' + extra + '</span>' : '');
+        return '<span class="cust-tag-chip-row">' + visible.map(function (t) { return '<span class="cust-tag-chip is-on">' + esc(t) + '</span>'; }).join('') +
+          (extra > 0 ? '<span class="pos-muted" style="font-size:11px;font-weight:700">+' + extra + '</span>' : '') + '</span>';
       }
-      // Table mode: 7 columns instead of 11 — Customer/Status/Activity/Technician/Tags/Notes/Action —
+      // Table mode: 7 columns instead of 11 — Customer/Status/Source/Activity/Technician/Tags/Action —
       // so the table stays usable on an iPad landscape width instead of forcing horizontal scroll.
       function custTableRowHtml(c) {
         var ci = CUSTOMERS.indexOf(c);
         var seg = CUST_SEG_META[c.seg];
         var segHtml = seg ? '<span class="pos-chip ' + seg.chip + '"><i class="bi ' + seg.icon + '" aria-hidden="true"></i> ' + esc(seg.label) + '</span>' : '—';
         var inactiveTag = custStatusOf(c) === 'inactive' ? ' <span class="pos-chip pos-chip-gray">Inactive</span>' : '';
-        var src = CUST_SRC_META[c.src];
         return '<tr class="booking-table-row">' +
           '<td><button class="booking-customer-name" type="button" data-cust-pick="' + esc(c.name) + '" style="background:none;border:0;padding:0;cursor:pointer;text-align:left;color:inherit;font:inherit">' + esc(c.name) + '</button>' + inactiveTag +
-            '<div class="cust-table-sub">' + esc(c.phone || '—') + (src ? ' · ' + esc(src.label) : '') + '</div></td>' +
+            '<div class="cust-table-sub">' + esc(c.phone || '—') + '</div></td>' +
           '<td>' + segHtml + '</td>' +
+          '<td>' + custSrcBadgeHtml(c) + '</td>' +
           '<td>' + (c.visits || 0) + ' visits<div class="cust-table-sub">Last ' + custLastVisitLabel(c) + '</div></td>' +
           '<td>' + custTechSummaryHtml(c) + '</td>' +
           '<td>' + custTagsSummaryHtml(c) + '</td>' +
-          '<td>' + custNotesSummaryHtml(c) + '</td>' +
           '<td><div class="wl-actions">' +
             '<button class="pos-btn pos-btn-sm" type="button" data-cust-pick="' + esc(c.name) + '" title="View profile"><i class="bi bi-person-vcard" aria-hidden="true"></i> View</button>' +
             '<button class="pos-btn pos-btn-sm" type="button" data-cust-edit="' + ci + '" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button>' +
@@ -2656,8 +2672,8 @@
       function renderCustomersTable(rows) {
         if (!rows.length) return '<div class="wl-empty">No customers match.</div>';
         return '<div class="booking-table-wrap"><table class="booking-table"><thead><tr>' +
-          '<th scope="col">Customer</th><th scope="col">Status</th><th scope="col">Activity</th><th scope="col">Technician</th>' +
-          '<th scope="col">Tags</th><th scope="col">Notes</th><th scope="col">Action</th>' +
+          '<th scope="col">Customer</th><th scope="col">Status</th><th scope="col">Source</th><th scope="col">Activity</th><th scope="col">regular tech (thợ ruột)</th>' +
+          '<th scope="col">Tags</th><th scope="col">Action</th>' +
           '</tr></thead><tbody>' + rows.map(custTableRowHtml).join('') + '</tbody></table></div>';
       }
       function renderCustomersTab() {
@@ -3416,6 +3432,25 @@
         }
         var segChip = e.target.closest('[data-cust-seg-chip]');
         if (segChip) { custSegFilter = segChip.getAttribute('data-cust-seg-chip'); renderCustomersTab(); return; }
+
+        var custUpcomingCheckin = e.target.closest('[data-cust-upcoming-checkin]');
+        if (custUpcomingCheckin) {
+          checkInBooking(posBookingById(custUpcomingCheckin.getAttribute('data-cust-upcoming-checkin')));
+          closeCustProfileModal();
+          activateTab('checkin');
+          return;
+        }
+
+        var custPrefChip = e.target.closest('[data-mg-pref-chip]');
+        if (custPrefChip && e.target.closest('[data-pos-panel="customers"], [data-cust-profile-modal]')) {
+          var prefParts = custPrefChip.getAttribute('data-mg-pref-chip').split('|');
+          var prefCi = +prefParts[0];
+          var prefCustomer = CUSTOMERS[prefCi];
+          setCustPrefTech(prefCi, prefCustomer && prefCustomer.prefTech === prefParts[1] ? null : prefParts[1]);
+          renderCustomersTab();
+          refreshOpenCustProfile(prefCi);
+          return;
+        }
 
         // Tags & three-level notes (shared with Management → Customers, mgCustHtml) — guarded to this
         // panel so a tag click inside Management's own table doesn't also re-render Customers.
