@@ -13,11 +13,11 @@
   const VOICE_LOW_BALANCE_THRESHOLD = 400;
 
   const CREDITS_HISTORY = [
-    { product: 'SMS', activity: 'All customers campaign', amount: '−1,284 SMS', date: 'Jul 28, 2026', balance: '847 SMS' },
+    { product: 'SMS', activity: 'All customers campaign', amount: '−1,284 SMS', date: 'Jul 28, 2026 · 2:15 PM', balance: '847 SMS' },
     { product: 'Voice', activity: 'Incoming call', amount: '−18 min', date: 'Jul 28, 2026 · 10:42 AM', balance: '571 min' },
     { product: 'Voice', activity: 'Incoming call', amount: '−27 min', date: 'Jul 28, 2026 · 9:18 AM', balance: '544 min' },
     { product: 'Voice', activity: 'Incoming call', amount: '−31 min', date: 'Jul 27, 2026 · 5:50 PM', balance: '513 min' },
-    { product: 'SMS', activity: 'VIP comeback campaign', amount: '−320 SMS', date: 'Jul 26, 2026', balance: '2,131 SMS' }
+    { product: 'SMS', activity: 'VIP comeback campaign', amount: '−320 SMS', date: 'Jul 26, 2026 · 11:05 AM', balance: '2,131 SMS' }
   ];
   let activeHistoryFilter = 'all';
   let smsWallet = null;
@@ -41,6 +41,12 @@
 
   function formatLocalDateAttribute(date) {
     return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+  }
+
+  function formatHistoryTimestamp(date) {
+    const dateLabel = new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).format(date);
+    const timeLabel = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(date);
+    return dateLabel + ' · ' + timeLabel;
   }
 
   function renderPlanExpiryDate() {
@@ -164,7 +170,7 @@
       direction: 'credit',
       activity: packageName + ' top-up' + paymentMethod,
       amount: '+' + formatNumber(Math.round(credits)) + ' ' + unitLabel,
-      date: new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).format(new Date()),
+      date: formatHistoryTimestamp(new Date()),
       balance: formatNumber(Math.round(balance)) + ' ' + unitLabel
     };
 
