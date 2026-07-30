@@ -6,10 +6,13 @@
   <title>AI Voice Guide | Nexora Touch</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..800&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <style>
     :root {
+      --guide-display: 'Archivo', system-ui, sans-serif;
+      --guide-body: 'Be Vietnam Pro', system-ui, sans-serif;
+      --guide-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       --guide-danger: #b42318;
       --guide-danger-soft: #fff1f0;
       --guide-warning: #a15c00;
@@ -31,6 +34,34 @@
       width: 100%;
       max-width: 780px;
       margin: 0 auto;
+      font-family: var(--guide-body);
+    }
+
+    .guide-heading h1,
+    .guide-panel-heading h2,
+    .guide-section-heading h2,
+    .guide-callout h3,
+    .guide-danger-header {
+      font-family: var(--guide-display);
+      font-variation-settings: 'wdth' 115;
+    }
+
+    .guide-eyebrow,
+    .guide-panel-kicker,
+    .guide-metric-label,
+    .guide-support-label,
+    .guide-field label,
+    .guide-script-label,
+    .guide-mode-tag {
+      font-family: var(--guide-mono);
+    }
+
+    .guide-big-code,
+    .guide-code,
+    .guide-ring-item strong,
+    .guide-secondary-action strong,
+    .guide-metric-value {
+      font-family: var(--guide-mono);
     }
 
     .guide-heading {
@@ -49,7 +80,7 @@
       margin: 0;
       color: var(--nexora-brand);
       font-size: 12px;
-      font-weight: 900;
+      font-weight: 700;
       letter-spacing: .09em;
       text-transform: uppercase;
     }
@@ -97,7 +128,7 @@
       background: transparent;
       color: var(--nexora-muted);
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 700;
       cursor: pointer;
     }
 
@@ -195,7 +226,7 @@
       padding: 4px 8px;
       color: var(--nexora-brand);
       font-size: 12px;
-      font-weight: 900;
+      font-weight: 700;
       letter-spacing: 0;
       vertical-align: middle;
       white-space: nowrap;
@@ -220,7 +251,7 @@
       margin-bottom: 7px;
       color: var(--nexora-muted);
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 700;
       letter-spacing: .05em;
       text-transform: uppercase;
     }
@@ -289,7 +320,7 @@
       padding: 12px 18px;
       color: #fff;
       font-size: 14px;
-      font-weight: 900;
+      font-weight: 800;
       letter-spacing: .04em;
       text-transform: uppercase;
     }
@@ -310,8 +341,7 @@
     .guide-big-code,
     .guide-code {
       border-radius: 10px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-weight: 900;
+      font-weight: 700;
       letter-spacing: -.04em;
       text-align: center;
       overflow-wrap: anywhere;
@@ -331,6 +361,7 @@
     .guide-panel-copy,
     .guide-warning p,
     .guide-info p,
+    .guide-callout p,
     .guide-situation-answer,
     .guide-script p {
       margin: 0;
@@ -383,8 +414,8 @@
     .guide-secondary-action strong {
       margin-left: 2px;
       color: var(--nexora-text);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 13px;
+      font-weight: 700;
     }
 
     .guide-secondary-action svg {
@@ -420,6 +451,7 @@
       display: block;
       color: var(--nexora-text);
       font-size: 15px;
+      font-weight: 700;
       white-space: nowrap;
     }
 
@@ -545,9 +577,8 @@
       overflow: hidden;
       margin-top: 5px;
       color: var(--nexora-text);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 14px;
-      font-weight: 800;
+      font-weight: 700;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -568,7 +599,7 @@
       padding: 0 10px;
       color: var(--nexora-brand);
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 700;
       cursor: pointer;
     }
 
@@ -628,7 +659,7 @@
       margin-bottom: 8px;
       color: var(--guide-warning);
       font-size: 12px;
-      font-weight: 900;
+      font-weight: 700;
       letter-spacing: .1em;
       line-height: 1.4;
       text-transform: uppercase;
@@ -679,7 +710,7 @@
       padding: 5px 0;
       color: var(--nexora-brand);
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 700;
       cursor: pointer;
     }
 
@@ -917,6 +948,127 @@
         margin: 0 auto;
       }
 
+      .guide-heading {
+        align-items: flex-end;
+        flex-direction: row;
+        gap: 20px;
+        margin-bottom: 22px;
+      }
+
+      .guide-heading h1 {
+        font-size: 32px;
+      }
+
+      .guide-description {
+        font-size: 14px;
+      }
+
+      .guide-controls,
+      .guide-danger-card,
+      .guide-situations,
+      .guide-script,
+      .guide-support,
+      .guide-number-card {
+        margin-bottom: 18px;
+      }
+
+      .guide-panel {
+        padding: 20px;
+      }
+
+      .guide-panel-heading {
+        gap: 11px;
+        margin-bottom: 16px;
+      }
+
+      .guide-panel-heading-icon {
+        width: 34px;
+        height: 34px;
+      }
+
+      .guide-panel-heading h2,
+      .guide-section-heading h2 {
+        font-size: 18px;
+      }
+
+      .guide-danger-header {
+        padding: 12px 18px;
+      }
+
+      .guide-danger-body {
+        padding: 18px;
+      }
+
+      .guide-big-code {
+        padding: 17px 12px;
+        font-size: 34px;
+      }
+
+      .guide-ring-track {
+        margin: 14px 0 10px;
+      }
+
+      .guide-callout {
+        gap: 11px;
+        padding: 16px 18px;
+      }
+
+      .guide-warning,
+      .guide-info {
+        padding: 17px 18px;
+      }
+
+      .guide-number-card,
+      .guide-script {
+        padding: 18px;
+      }
+
+      .guide-support {
+        padding: 20px;
+      }
+
+      .guide-number {
+        padding: 12px;
+      }
+
+      .guide-situations-heading {
+        padding: 18px 18px 4px;
+      }
+
+      .guide-control-grid,
+      .guide-number-grid,
+      .guide-support {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .guide-danger-body {
+        grid-template-columns: minmax(190px, .5fr) 1fr;
+        gap: 20px;
+      }
+
+      .guide-number-grid {
+        gap: 12px;
+        margin-top: 15px;
+      }
+
+      .guide-support {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .guide-situation {
+        grid-template-columns: minmax(200px, .72fr) minmax(0, 1.28fr);
+      }
+
+      .guide-situation-question,
+      .guide-situation-answer {
+        padding: 14px 18px;
+      }
+
+      .guide-situation-answer {
+        border-left: 1px solid var(--nexora-border);
+      }
+
       .guide-danger-card,
       .guide-panel,
       .guide-number-card,
@@ -1028,7 +1180,6 @@
               <div class="guide-panel-heading">
                 <span class="guide-panel-heading-icon"><i data-lucide="phone-forwarded" aria-hidden="true"></i></span>
                 <div>
-                  <p class="guide-panel-kicker">Step 2</p>
                   <h2 id="guide-on-title"><span class="guide-vi">Bật lại</span><span class="guide-en">Turn it back on</span> <span class="guide-mode-tag" id="modeTag">3 rings · ~20 seconds</span></h2>
                 </div>
               </div>
