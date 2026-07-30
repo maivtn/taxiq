@@ -1,0 +1,1288 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Voice Guide | Nexora Touch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <style>
+    :root {
+      --guide-danger: #b42318;
+      --guide-danger-soft: #fff1f0;
+      --guide-warning: #a15c00;
+      --guide-warning-soft: #fff8e7;
+      --guide-success: #087443;
+      --guide-success-soft: #ecfdf3;
+      --guide-info: #175cd3;
+      --guide-info-soft: #eff8ff;
+    }
+
+    .content {
+      background:
+        radial-gradient(circle at 95% 0%, rgba(70, 72, 216, .08), transparent 22rem),
+        linear-gradient(180deg, #fff 0, var(--nexora-canvas) 320px);
+      padding-bottom: 72px;
+    }
+
+    .ai-guide-page {
+      max-width: 1380px;
+      margin: 0 auto;
+    }
+
+    .guide-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 22px;
+      padding: 2px 2px 0;
+    }
+
+    .guide-eyebrow,
+    .guide-panel-kicker,
+    .guide-metric-label,
+    .guide-support-label {
+      margin: 0;
+      color: var(--nexora-brand);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .guide-heading h1 {
+      margin: 5px 0 4px;
+      color: var(--nexora-text);
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 900;
+      letter-spacing: -.045em;
+      line-height: 1.05;
+    }
+
+    .guide-description {
+      max-width: 690px;
+      margin: 0;
+      color: var(--nexora-muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .guide-heading-actions {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .guide-language-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 999px;
+      background: var(--nexora-surface);
+      padding: 4px;
+      box-shadow: var(--nexora-card-shadow);
+    }
+
+    .guide-language-switcher button,
+    .guide-print-button {
+      min-height: 38px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .guide-language-switcher button {
+      min-height: 28px;
+      padding: 0 9px;
+      border-radius: 999px;
+    }
+
+    .guide-language-switcher button.is-active {
+      background: var(--nexora-surface-muted);
+      color: var(--nexora-brand);
+    }
+
+    .guide-print-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border-color: var(--nexora-border);
+      background: var(--nexora-surface);
+      padding: 0 13px;
+      box-shadow: var(--nexora-card-shadow);
+    }
+
+    .guide-print-button:hover,
+    .guide-language-switcher button:hover {
+      border-color: var(--nexora-brand);
+      color: var(--nexora-brand);
+    }
+
+    .guide-print-button svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .guide-panel,
+    .guide-number-card,
+    .guide-situations,
+    .guide-script,
+    .guide-support {
+      border: 1px solid var(--nexora-border);
+      border-radius: 14px;
+      background: var(--nexora-surface);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .055);
+    }
+
+    .guide-panel {
+      background: linear-gradient(180deg, #fff 0%, #fbfcff 100%);
+      padding: 20px;
+    }
+
+    .guide-controls {
+      margin-bottom: 18px;
+      border-top: 3px solid var(--nexora-brand);
+    }
+
+    .guide-panel-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      margin-bottom: 16px;
+    }
+
+    .guide-panel-heading-icon {
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9px;
+      background: #eef0ff;
+      color: var(--nexora-brand);
+    }
+
+    .guide-panel-heading-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .guide-panel-heading h2,
+    .guide-section-heading h2 {
+      margin: 2px 0 0;
+      color: var(--nexora-text);
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -.025em;
+    }
+
+    .guide-mode-tag {
+      display: inline-block;
+      margin-left: 5px;
+      border-radius: 999px;
+      background: #eef0ff;
+      padding: 4px 8px;
+      color: var(--nexora-brand);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .guide-panel-heading p,
+    .guide-section-heading p {
+      margin: 3px 0 0;
+      color: var(--nexora-muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .guide-control-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .guide-field label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .guide-select-wrap {
+      position: relative;
+    }
+
+    .guide-select-wrap::after {
+      position: absolute;
+      top: 50%;
+      right: 13px;
+      width: 7px;
+      height: 7px;
+      border-right: 1.75px solid var(--nexora-subtle);
+      border-bottom: 1.75px solid var(--nexora-subtle);
+      content: '';
+      pointer-events: none;
+      transform: translateY(-65%) rotate(45deg);
+      transition: border-color .2s ease;
+    }
+
+    .guide-select-wrap:focus-within::after {
+      border-color: var(--nexora-brand);
+    }
+
+    .guide-field select {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 9px;
+      outline: 0;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--nexora-surface);
+      padding: 0 38px 0 12px;
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .guide-field select::-ms-expand {
+      display: none;
+    }
+
+    .guide-field select:focus {
+      border-color: var(--nexora-brand);
+      box-shadow: 0 0 0 3px rgba(70, 72, 216, .14);
+    }
+
+    .guide-danger-card {
+      overflow: hidden;
+      margin-bottom: 18px;
+      border: 1px solid #f3c6c1;
+      border-radius: 14px;
+      background: var(--guide-danger-soft);
+      box-shadow: var(--nexora-card-shadow);
+    }
+
+    .guide-danger-header {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--guide-danger);
+      padding: 12px 18px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .guide-danger-header svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .guide-danger-body {
+      display: grid;
+      grid-template-columns: minmax(190px, .5fr) 1fr;
+      align-items: center;
+      gap: 20px;
+      padding: 18px;
+    }
+
+    .guide-big-code,
+    .guide-code {
+      border-radius: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 900;
+      letter-spacing: -.04em;
+      text-align: center;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .guide-big-code {
+      border: 2px solid var(--guide-danger);
+      background: #fff;
+      padding: 17px 12px;
+      color: var(--guide-danger);
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1;
+    }
+
+    .guide-danger-body p,
+    .guide-panel-copy,
+    .guide-warning p,
+    .guide-info p,
+    .guide-situation-answer,
+    .guide-script p {
+      margin: 0;
+      color: var(--nexora-muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .guide-danger-body p strong,
+    .guide-panel-copy strong,
+    .guide-warning strong,
+    .guide-info strong,
+    .guide-situation-answer strong {
+      color: var(--nexora-text);
+    }
+
+    .guide-main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(0, .94fr);
+      align-items: start;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .guide-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .guide-code {
+      border: 1px solid #b7ead1;
+      background: var(--guide-success-soft);
+      padding: 14px 12px;
+      color: var(--guide-success);
+      font-size: clamp(17px, 2.2vw, 24px);
+      line-height: 1.25;
+    }
+
+    .guide-code-note {
+      margin-top: 10px;
+    }
+
+    .guide-secondary-action {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-top: 13px;
+      border-top: 1px dashed var(--nexora-border);
+      padding-top: 13px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .guide-secondary-action strong {
+      margin-left: 2px;
+      color: var(--nexora-text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+    }
+
+    .guide-secondary-action svg {
+      width: 15px;
+      height: 15px;
+      flex: 0 0 auto;
+      color: var(--nexora-subtle);
+    }
+
+    .guide-ring-track {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: hidden;
+      margin: 14px 0 10px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+    }
+
+    .guide-ring-item {
+      padding: 9px 5px;
+      text-align: center;
+    }
+
+    .guide-ring-item + .guide-ring-item {
+      border-left: 1px solid var(--nexora-border);
+    }
+
+    .guide-ring-item.is-selected {
+      background: var(--guide-warning-soft);
+    }
+
+    .guide-ring-item strong {
+      display: block;
+      color: var(--nexora-text);
+      font-size: 13px;
+    }
+
+    .guide-ring-item span {
+      display: block;
+      margin-top: 2px;
+      color: var(--nexora-subtle);
+      font-size: 11px;
+    }
+
+    .guide-callout {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      border-radius: 14px;
+      padding: 16px 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .045);
+    }
+
+    .guide-callout.is-danger {
+      border: 1px solid #f3c6c1;
+      background: var(--guide-danger-soft);
+    }
+
+    .guide-callout.is-warning {
+      border: 1px solid #f7dba7;
+      background: var(--guide-warning-soft);
+    }
+
+    .guide-callout.is-info {
+      border: 1px solid #b9ddff;
+      background: var(--guide-info-soft);
+    }
+
+    .guide-callout-icon {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .guide-callout-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .is-danger .guide-callout-icon {
+      background: var(--guide-danger);
+      color: #fff;
+    }
+
+    .is-warning .guide-callout-icon {
+      background: #f5b544;
+      color: #fff;
+    }
+
+    .is-info .guide-callout-icon {
+      background: var(--guide-info);
+      color: #fff;
+    }
+
+    .guide-callout h3 {
+      margin: 1px 0 4px;
+      color: var(--nexora-text);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .guide-callout p {
+      color: var(--nexora-muted);
+    }
+
+    .guide-warning,
+    .guide-info {
+      padding: 17px 18px;
+    }
+
+    .guide-number-card {
+      margin-bottom: 18px;
+      border-top: 3px solid var(--brand-cyan);
+      padding: 18px;
+    }
+
+    .guide-number-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .guide-number {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-width: 0;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: var(--nexora-surface-muted);
+      padding: 12px;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+
+    .guide-number:hover {
+      border-color: rgba(70, 72, 216, .35);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, .06);
+      transform: translateY(-1px);
+    }
+
+    .guide-number-copy {
+      min-width: 0;
+    }
+
+    .guide-metric-label {
+      color: var(--nexora-subtle);
+      font-size: 9px;
+    }
+
+    .guide-metric-value {
+      overflow: hidden;
+      margin-top: 5px;
+      color: var(--nexora-text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 16px;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .guide-token.empty {
+      border-radius: 5px;
+      background: #fff2cc;
+      padding: 2px 5px;
+      color: #8a5b06;
+    }
+
+    .guide-copy-button {
+      flex: 0 0 auto;
+      min-height: 34px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: var(--nexora-surface);
+      padding: 0 10px;
+      color: var(--nexora-brand);
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .guide-copy-button:hover,
+    .guide-copy-button.is-done {
+      border-color: #b7ead1;
+      background: var(--guide-success-soft);
+      color: var(--guide-success);
+    }
+
+    .guide-section-heading {
+      margin-bottom: 13px;
+    }
+
+    .guide-situations {
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .guide-situations-heading {
+      background: linear-gradient(180deg, #fff 0%, #fbfcff 100%);
+      padding: 18px 18px 4px;
+    }
+
+    .guide-situation {
+      display: grid;
+      grid-template-columns: minmax(200px, .72fr) minmax(0, 1.28fr);
+      border-top: 1px solid var(--nexora-border);
+    }
+
+    .guide-situation-question,
+    .guide-situation-answer {
+      padding: 14px 18px;
+    }
+
+    .guide-situation-question {
+      background: var(--nexora-surface-muted);
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .guide-situation-answer {
+      border-left: 1px solid var(--nexora-border);
+    }
+
+    .guide-script {
+      margin-bottom: 18px;
+      border-color: #f3d48f;
+      border-left: 4px solid #f5b544;
+      background: var(--guide-warning-soft);
+      padding: 18px;
+    }
+
+    .guide-script-label {
+      margin-bottom: 8px;
+      color: var(--guide-warning);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .1em;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .guide-script p {
+      color: #5c430f;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.65;
+    }
+
+    .guide-support {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+      border: 0;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #081f49 0%, #12356d 100%);
+      padding: 20px;
+      color: #fff;
+      box-shadow: 0 12px 28px rgba(8, 31, 73, .16);
+    }
+
+    .guide-support-label {
+      color: rgba(255, 255, 255, .52);
+    }
+
+    .guide-support-value {
+      overflow-wrap: anywhere;
+      margin-top: 5px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .guide-footer-note {
+      margin: 0;
+      color: var(--nexora-subtle);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .guide-footer-note button {
+      border: 0;
+      background: transparent;
+      padding: 5px 0;
+      color: var(--nexora-brand);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .guide-is-hidden {
+      display: none !important;
+    }
+
+    .guide-en {
+      display: none;
+    }
+
+    .ai-guide-page[data-guide-lang="en"] .guide-vi {
+      display: none !important;
+    }
+
+    .ai-guide-page[data-guide-lang="en"] .guide-en {
+      display: revert;
+    }
+
+    :focus-visible {
+      outline: 3px solid rgba(70, 72, 216, .35);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 1024px) {
+      .content {
+        padding: 18px 18px 56px;
+      }
+
+      .guide-main-grid {
+        gap: 14px;
+      }
+
+      .guide-panel,
+      .guide-number-card {
+        padding: 17px;
+      }
+
+      .guide-situations-heading {
+        padding: 16px 17px 4px;
+      }
+
+      .guide-situation-question,
+      .guide-situation-answer {
+        padding: 12px 15px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .guide-main-grid,
+      .guide-danger-body {
+        grid-template-columns: 1fr;
+      }
+
+      .guide-danger-body {
+        gap: 14px;
+      }
+
+      .content {
+        padding: 12px 12px 48px;
+      }
+
+      .guide-heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .guide-heading {
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .guide-heading h1 {
+        font-size: 26px;
+      }
+
+      .guide-description {
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .guide-heading-actions {
+        width: 100%;
+        gap: 8px;
+        justify-content: space-between;
+      }
+
+      .guide-controls {
+        margin-bottom: 14px;
+      }
+
+      .guide-panel {
+        padding: 15px;
+      }
+
+      .guide-panel-heading {
+        gap: 9px;
+        margin-bottom: 12px;
+      }
+
+      .guide-panel-heading-icon {
+        width: 30px;
+        height: 30px;
+      }
+
+      .guide-panel-heading h2,
+      .guide-section-heading h2 {
+        font-size: 16px;
+      }
+
+      .guide-mode-tag {
+        display: block;
+        width: max-content;
+        max-width: 100%;
+        margin: 6px 0 0;
+        white-space: normal;
+      }
+
+      .guide-danger-card,
+      .guide-situations,
+      .guide-script,
+      .guide-support {
+        margin-bottom: 14px;
+      }
+
+      .guide-danger-header {
+        padding: 10px 14px;
+      }
+
+      .guide-danger-body {
+        gap: 12px;
+        padding: 14px;
+      }
+
+      .guide-big-code {
+        padding: 14px 10px;
+        font-size: 34px;
+      }
+
+      .guide-stack {
+        gap: 14px;
+      }
+
+      .guide-ring-track {
+        margin: 11px 0 8px;
+      }
+
+      .guide-callout,
+      .guide-warning,
+      .guide-info {
+        gap: 9px;
+        padding: 13px 14px;
+      }
+
+      .guide-number-card {
+        margin-bottom: 14px;
+        padding: 15px;
+      }
+
+      .guide-control-grid,
+      .guide-number-grid,
+      .guide-support {
+        grid-template-columns: 1fr;
+      }
+
+      .guide-number-grid {
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .guide-number {
+        padding: 10px;
+      }
+
+      .guide-situation {
+        grid-template-columns: 1fr;
+      }
+
+      .guide-situations-heading {
+        padding: 15px 15px 3px;
+      }
+
+      .guide-situation-question,
+      .guide-situation-answer {
+        padding: 11px 15px;
+      }
+
+      .guide-situation-answer {
+        border-left: 0;
+      }
+
+      .guide-script {
+        padding: 15px;
+      }
+
+      .guide-support {
+        gap: 12px;
+        padding: 15px;
+      }
+
+      .guide-footer-note {
+        font-size: 11px;
+      }
+    }
+
+    @media print {
+      .sidebar,
+      .header,
+      .guide-heading-actions {
+        display: none !important;
+      }
+
+      .app-area {
+        padding-left: 0 !important;
+      }
+
+      .content {
+        padding: 0 !important;
+      }
+
+      .guide-danger-card,
+      .guide-panel,
+      .guide-number-card,
+      .guide-situations,
+      .guide-script,
+      .guide-support,
+      .guide-callout {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      .guide-footer-note {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content" aria-label="AI Voice setup guide">
+        <section class="ai-guide-page" data-guide-lang="vi" aria-labelledby="guide-page-title">
+          <div class="guide-heading">
+            <div>
+              <p class="guide-eyebrow">AI Voice setup</p>
+              <h1 id="guide-page-title">
+                <span class="guide-vi">Hướng dẫn AI Voice cho tiệm</span>
+                <span class="guide-en">Salon AI Voice guide</span>
+              </h1>
+              <p class="guide-description">
+                <span class="guide-vi">Cài một lần, xử lý cuộc gọi hàng ngày dễ dàng hơn — kèm mã tắt khẩn cấp và cách xử lý các tình huống thường gặp.</span>
+                <span class="guide-en">Set it up once, handle calls with confidence every day — with an emergency off code and answers for common situations.</span>
+              </p>
+            </div>
+            <div class="guide-heading-actions">
+              <div class="guide-language-switcher" aria-label="Guide language">
+                <button type="button" class="is-active" data-guide-language="vi" aria-pressed="true">VI</button>
+                <button type="button" data-guide-language="en" aria-pressed="false">EN</button>
+              </div>
+              <button class="guide-print-button" type="button" onclick="window.print()">
+                <i data-lucide="printer" aria-hidden="true"></i>
+                <span class="guide-vi">In hướng dẫn</span>
+                <span class="guide-en">Print guide</span>
+              </button>
+            </div>
+          </div>
+
+          <section class="guide-panel guide-controls" aria-labelledby="guide-controls-title">
+            <div class="guide-panel-heading">
+              <span class="guide-panel-heading-icon"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span>
+              <div>
+                <p class="guide-panel-kicker">Step 1</p>
+                <h2 id="guide-controls-title"><span class="guide-vi">Chọn cấu hình điện thoại</span><span class="guide-en">Choose your phone setup</span></h2>
+                <p><span class="guide-vi">Mã bấm thay đổi theo nhà mạng và cách bạn muốn AI bắt máy.</span><span class="guide-en">Codes change by carrier and by when you want AI to answer.</span></p>
+              </div>
+            </div>
+            <div class="guide-control-grid">
+              <div class="guide-field">
+                <label for="carrier"><span class="guide-vi">Nhà mạng của tiệm</span><span class="guide-en">Your carrier</span></label>
+                <div class="guide-select-wrap">
+                  <select id="carrier">
+                    <option value="verizon">Verizon</option>
+                    <option value="att">AT&amp;T</option>
+                    <option value="tmobile">T-Mobile</option>
+                    <option value="cricket">Cricket (mạng AT&amp;T)</option>
+                    <option value="metro">Metro / Mint (mạng T-Mobile)</option>
+                    <option value="visible">Visible / Total (mạng Verizon)</option>
+                    <option value="landline">Điện thoại bàn · Landline</option>
+                    <option value="voip">Internet · VoIP</option>
+                  </select>
+                </div>
+              </div>
+              <div class="guide-field">
+                <label for="mode"><span class="guide-vi">Kiểu trả lời</span><span class="guide-en">Answering mode</span></label>
+                <div class="guide-select-wrap">
+                  <select id="mode">
+                    <option value="ring">Chuông reo 3 hồi rồi mới qua AI</option>
+                    <option value="now">AI bắt máy ngay từ đầu</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="guide-danger-card" aria-labelledby="guide-panic-title">
+            <div class="guide-danger-header">
+              <i data-lucide="phone-off" aria-hidden="true"></i>
+              <span id="guide-panic-title"><span class="guide-vi">Tắt ngay khi có sự cố</span><span class="guide-en">Turn it off now</span></span>
+            </div>
+            <div class="guide-danger-body">
+              <div class="guide-big-code" id="codePanic">*73</div>
+              <p>
+                <span class="guide-vi">Bấm mã này <strong>từ điện thoại của tiệm</strong>. Nó xoá <strong>hết mọi kiểu chuyển tiếp</strong> — không cần biết đang cài kiểu nào. Cuộc gọi về tiệm ngay lập tức.</span>
+                <span class="guide-en">Dial this <strong>from the shop phone</strong>. It clears <strong>every kind of forwarding</strong> — no need to know which mode is set. Calls come straight back to you.</span>
+              </p>
+            </div>
+          </section>
+
+          <div class="guide-main-grid">
+            <div class="guide-stack">
+              <section class="guide-panel" aria-labelledby="guide-on-title">
+                <div class="guide-panel-heading">
+                  <span class="guide-panel-heading-icon"><i data-lucide="phone-forwarded" aria-hidden="true"></i></span>
+                  <div>
+                    <p class="guide-panel-kicker">Step 2</p>
+                    <h2 id="guide-on-title"><span class="guide-vi">Bật lại</span><span class="guide-en">Turn it back on</span> <span class="guide-mode-tag" id="modeTag">3 rings · ~20 seconds</span></h2>
+                  </div>
+                </div>
+                <div class="guide-code" id="codeOn">*71 → [AI NUMBER]</div>
+                <p class="guide-panel-copy guide-code-note" id="onNote"></p>
+                <div class="guide-secondary-action">
+                  <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+                  <span><span class="guide-vi">Tắt riêng kiểu này:</span><span class="guide-en">Turn off just this mode:</span> <strong id="codeOffOne">*73</strong></span>
+                </div>
+              </section>
+
+              <section class="guide-callout is-danger" id="vmWarn" aria-labelledby="vm-warn-title">
+                <span class="guide-callout-icon"><i data-lucide="voicemail" aria-hidden="true"></i></span>
+                <div>
+                  <h3 id="vm-warn-title"><span class="guide-vi">Voicemail là thứ làm hỏng kiểu này</span><span class="guide-en">Voicemail is what breaks this mode</span></h3>
+                  <p><span class="guide-vi">Voicemail của tiệm cũng bắt máy khoảng 20–25 giây. Nếu nó bắt trước AI thì khách vào hộp thư thoại và tưởng tiệm không ai nghe. <strong>Tắt voicemail</strong>, hoặc đặt AI ở 15–20 giây còn voicemail ở 30 giây.</span><span class="guide-en">Your voicemail also picks up around 20–25 seconds. If it wins, callers land in voicemail and think nobody answered. <strong>Turn voicemail off</strong>, or set the AI to 15–20 seconds and voicemail to 30.</span></p>
+                </div>
+              </section>
+            </div>
+
+            <div class="guide-stack">
+              <section class="guide-panel" id="ringBox" aria-labelledby="ring-title">
+                <div class="guide-panel-heading">
+                  <span class="guide-panel-heading-icon"><i data-lucide="clock-3" aria-hidden="true"></i></span>
+                  <div>
+                    <p class="guide-panel-kicker">Timing</p>
+                    <h2 id="ring-title"><span class="guide-vi">“3 hồi chuông” là bao nhiêu giây?</span><span class="guide-en">What does “3 rings” mean?</span></h2>
+                  </div>
+                </div>
+                <p class="guide-panel-copy"><span class="guide-vi">Nhà mạng không có ô “số hồi chuông” — chỉ có <strong>số giây</strong>. Ở Mỹ một hồi chuông khoảng 6 giây.</span><span class="guide-en">Carriers have no “ring count” setting — only <strong>seconds</strong>. In the US one ring is about 6 seconds.</span></p>
+                <div class="guide-ring-track">
+                  <div class="guide-ring-item"><strong>2 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 12s</span></div>
+                  <div class="guide-ring-item is-selected"><strong>3 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 20s ✓</span></div>
+                  <div class="guide-ring-item"><strong>4 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 25s</span></div>
+                  <div class="guide-ring-item"><strong>5 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 30s</span></div>
+                </div>
+                <p class="guide-panel-copy"><span class="guide-vi">Chỉ đặt được bội số của 5, tối đa 30 giây.</span><span class="guide-en">Only multiples of 5, up to 30 seconds.</span></p>
+              </section>
+
+              <section class="guide-callout is-warning guide-warning guide-is-hidden" id="mvnoWarn" aria-labelledby="mvno-warn-title">
+                <span class="guide-callout-icon"><i data-lucide="info" aria-hidden="true"></i></span>
+                <div>
+                  <h3 id="mvno-warn-title"><span class="guide-vi">Gói này có thể không cho “chuông reo trước”</span><span class="guide-en">This plan may not support “ring first”</span></h3>
+                  <p><span class="guide-vi">Nhiều gói mạng phụ chỉ cho chuyển toàn bộ cuộc gọi. Bấm mã mà báo lỗi hoặc không thấy gì xảy ra → đổi qua “AI bắt máy ngay”, hoặc gọi nhà mạng hỏi có mở được không.</span><span class="guide-en">Many prepaid plans only allow forwarding every call. If the code errors or nothing happens → switch to “AI answers immediately”, or ask the carrier to enable it.</span></p>
+                </div>
+              </section>
+
+              <section class="guide-callout is-info guide-info guide-is-hidden" id="voipWarn" aria-labelledby="voip-warn-title">
+                <span class="guide-callout-icon"><i data-lucide="globe-2" aria-hidden="true"></i></span>
+                <div>
+                  <h3 id="voip-warn-title"><span class="guide-vi">Mạng internet không dùng mã bấm</span><span class="guide-en">Internet lines have no star codes</span></h3>
+                  <p><span class="guide-vi">Vào trang quản lý của nhà cung cấp → Voice → Call Forwarding. Chọn <strong>No Answer</strong> và đặt 20 giây, hoặc <strong>Always</strong> nếu muốn AI bắt ngay. Không rành thì gọi người hỗ trợ bên dưới.</span><span class="guide-en">Go to your provider portal → Voice → Call Forwarding. Choose <strong>No Answer</strong> and set 20 seconds, or <strong>Always</strong> for immediate. Not sure? Call your support contact below.</span></p>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <section class="guide-number-card" aria-labelledby="guide-numbers-title">
+            <div class="guide-section-heading">
+              <p class="guide-panel-kicker">Your numbers</p>
+              <h2 id="guide-numbers-title"><span class="guide-vi">Số cần dùng khi cài đặt</span><span class="guide-en">Numbers for setup</span></h2>
+              <p><span class="guide-vi">Các số này có thể được truyền qua query params khi mở guide cho từng tiệm.</span><span class="guide-en">These numbers can be passed through query params when opening the guide for a salon.</span></p>
+            </div>
+            <div class="guide-number-grid">
+              <div class="guide-number"><div class="guide-number-copy"><div class="guide-metric-label"><span class="guide-vi">Số AI</span><span class="guide-en">AI number</span></div><div class="guide-metric-value guide-token" data-guide-token="ai">[AI]</div></div><button class="guide-copy-button" type="button" data-guide-copy="ai"><span class="guide-vi">Chép</span><span class="guide-en">Copy</span></button></div>
+              <div class="guide-number"><div class="guide-number-copy"><div class="guide-metric-label"><span class="guide-vi">Số tiệm</span><span class="guide-en">Shop number</span></div><div class="guide-metric-value guide-token" data-guide-token="phone">[PHONE]</div></div><button class="guide-copy-button" type="button" data-guide-copy="phone"><span class="guide-vi">Chép</span><span class="guide-en">Copy</span></button></div>
+            </div>
+          </section>
+
+          <section class="guide-situations" aria-labelledby="guide-situations-title">
+            <div class="guide-situations-heading guide-section-heading">
+              <p class="guide-panel-kicker">Troubleshooting</p>
+              <h2 id="guide-situations-title"><span class="guide-vi">Gặp tình huống này thì làm vầy</span><span class="guide-en">When this happens, do this</span></h2>
+              <p><span class="guide-vi">Năm việc hay gặp nhất. Ngoài năm việc này thì gọi hỗ trợ.</span><span class="guide-en">The five most common ones. Anything else, call support.</span></p>
+            </div>
+            <div class="guide-situation">
+              <div class="guide-situation-question"><span class="guide-vi">Điện thoại báo “cuộc gọi nhỡ”</span><span class="guide-en">You get a “missed call” alert</span></div>
+              <div class="guide-situation-answer"><span class="guide-vi">Mở app, đọc <strong>tóm tắt</strong> — không cần nghe lại. Khách hỏi giá hoặc muốn đặt hẹn thì gọi lại trong <strong>15 phút</strong>.</span><span class="guide-en">Open the app, read the <strong>summary</strong>. If they asked about price or wanted to book, call back within <strong>15 minutes</strong>.</span></div>
+            </div>
+            <div class="guide-situation">
+              <div class="guide-situation-question"><span class="guide-vi">Có tin nhắn mới trong app</span><span class="guide-en">A new text in the app</span></div>
+              <div class="guide-situation-answer"><span class="guide-vi">Trả lời ngay trong app, đừng nhắn từ điện thoại riêng. Khách nhắn <strong>STOP</strong> thì <strong>đừng nhắn lại</strong>.</span><span class="guide-en">Reply inside the app, not your personal phone. If they text <strong>STOP</strong>, <strong>do not text back</strong>.</span></div>
+            </div>
+            <div class="guide-situation">
+              <div class="guide-situation-question"><span class="guide-vi">Khách gọi mà không ai bắt, cũng không qua AI</span><span class="guide-en">Nobody answers and it never reaches the AI</span></div>
+              <div class="guide-situation-answer"><span class="guide-vi">Chín phần mười là <strong>voicemail bắt trước</strong>. Tắt voicemail rồi thử lại. Vẫn vậy thì bấm mã đỏ ở trên và gọi hỗ trợ.</span><span class="guide-en">Nine times out of ten it is <strong>voicemail winning</strong>. Turn voicemail off and retest. Still broken → dial the red code above and call support.</span></div>
+            </div>
+            <div class="guide-situation">
+              <div class="guide-situation-question"><span class="guide-vi">AI nói sai giá hoặc sai giờ</span><span class="guide-en">The AI gave a wrong price or time</span></div>
+              <div class="guide-situation-answer"><span class="guide-vi">Chụp màn hình, ghi <strong>giờ gọi</strong>, gửi người hỗ trợ. Đang có khách bị ảnh hưởng thì <strong>gọi</strong>, đừng email.</span><span class="guide-en">Screenshot, note the <strong>call time</strong>, send to support. Customer affected right now → <strong>call</strong>, do not email.</span></div>
+            </div>
+            <div class="guide-situation">
+              <div class="guide-situation-question"><span class="guide-vi">Cuối ngày</span><span class="guide-en">End of day</span></div>
+              <div class="guide-situation-answer"><span class="guide-vi">Mở app 2 phút: còn tin nào chưa trả lời, còn cuộc gọi nhỡ nào chưa gọi lại. Xong là đóng.</span><span class="guide-en">Two minutes in the app: unanswered texts, missed calls not returned. Then close it.</span></div>
+            </div>
+          </section>
+
+          <section class="guide-script" aria-labelledby="guide-script-title">
+            <div class="guide-script-label" id="guide-script-title"><span class="guide-vi">Khách quen hỏi “sao gọi lại gặp máy?” — nói câu này</span><span class="guide-en">Regular asks “why did a machine answer?” — say this</span></div>
+            <p class="guide-vi">“Dạ tiệm mới có thêm trợ lý trả lời điện thoại, để lúc tụi em đang làm khách thì không ai bị bỏ lỡ nữa. Chị cứ nói bình thường, hoặc chị nhắn tin cũng được, em thấy liền.”</p>
+            <p class="guide-en">“We added an assistant that answers the phone so nobody gets missed while we are with a client. You can talk to it normally, or just text us — we see it right away.”</p>
+          </section>
+
+          <section class="guide-support" aria-label="AI Voice support">
+            <div><div class="guide-support-label"><span class="guide-vi">Kẹt thì gọi</span><span class="guide-en">Stuck? Call</span></div><div class="guide-support-value guide-token" data-guide-token="sname">[SNAME]</div></div>
+            <div><div class="guide-support-label"><span class="guide-vi">Điện thoại</span><span class="guide-en">Phone</span></div><div class="guide-support-value guide-token" data-guide-token="sphone">[SPHONE]</div></div>
+            <div><div class="guide-support-label">Email</div><div class="guide-support-value guide-token" data-guide-token="semail">[SEMAIL]</div></div>
+          </section>
+
+          <p class="guide-footer-note"><span class="guide-vi">In ra, ép nhựa, dán ở quầy.</span><span class="guide-en">Print it, laminate it, tape it to the counter.</span> <button type="button" onclick="window.print()"><span class="guide-vi">In tờ này</span><span class="guide-en">Print this</span></button></p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>
+    window.NEXORA_SHELL = { activePage: 'packages', activeTab: 'voice' };
+  </script>
+  <script src="../assets/nexora-shell.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var page = document.querySelector('.ai-guide-page');
+      var keys = ['phone', 'ai', 'sname', 'sphone', 'semail'];
+      var config = {};
+
+      try {
+        var params = new URLSearchParams(window.location.search);
+        keys.forEach(function (key) {
+          if (params.get(key)) config[key] = params.get(key);
+        });
+      } catch (error) {
+        config = {};
+      }
+
+      function currentLanguage() {
+        return page.getAttribute('data-guide-lang') || 'vi';
+      }
+
+      function fillTokens() {
+        document.querySelectorAll('[data-guide-token]').forEach(function (element) {
+          var key = element.getAttribute('data-guide-token');
+          var value = config[key];
+          if (value) {
+            element.textContent = value;
+            element.classList.remove('empty');
+          } else {
+            element.textContent = '[' + key.toUpperCase() + ']';
+            element.classList.add('empty');
+          }
+        });
+      }
+
+      function aiNumber() {
+        return config.ai || '[AI NUMBER]';
+      }
+
+      var panicCodes = {
+        verizon: '*73',
+        att: '##002#',
+        tmobile: '##002#',
+        cricket: '##002#',
+        metro: '##002#',
+        visible: '*73',
+        landline: '*73',
+        voip: '—'
+      };
+
+      var networkAliases = { cricket: 'att', metro: 'tmobile', visible: 'verizon' };
+      var mvno = { cricket: true, metro: true, visible: true };
+      var codes = {
+        verizon: {
+          ring: { on: '*71 → {AI}', off: '*73', vi: 'Nhấc máy, bấm *71, rồi bấm số AI. Verizon <strong>không cho chỉnh số giây</strong> — mạng tự đặt, thường khoảng 4–5 hồi chuông.', en: 'Dial *71 then the AI number. Verizon <strong>does not let you set the delay</strong> — the network picks it, usually 4–5 rings.' },
+          now: { on: '*72 → {AI}', off: '*73', vi: 'Nhấc máy, bấm *72, rồi bấm số AI. Nghe hai tiếng bíp là xong.', en: 'Dial *72 then the AI number. Two beeps means it worked.' }
+        },
+        att: {
+          ring: { on: '**61*1{AI}*11*20#', off: '##61#', vi: 'Bấm nguyên chuỗi, có dấu <strong>#</strong> ở cuối. Số <strong>20</strong> gần cuối là số giây chờ — đổi thành 15 nếu voicemail hay bắt trước.', en: 'Dial the whole string including the final <strong>#</strong>. The <strong>20</strong> near the end is the delay in seconds — use 15 if voicemail keeps winning.' },
+          now: { on: '**21*1{AI}#', off: '##21#', vi: 'Bấm nguyên chuỗi, có dấu <strong>#</strong> ở cuối.', en: 'Dial the whole string including the final <strong>#</strong>.' }
+        },
+        tmobile: {
+          ring: { on: '**61*1{AI}**20#', off: '##61#', vi: 'Bấm nguyên chuỗi, có dấu <strong>#</strong> ở cuối. Số <strong>20</strong> là số giây chờ — chỉ nhận 5, 10, 15, 20, 25, 30.', en: 'Dial the whole string including the final <strong>#</strong>. The <strong>20</strong> is the delay in seconds — only 5, 10, 15, 20, 25, 30 are accepted.' },
+          now: { on: '**21*1{AI}#', off: '##21#', vi: 'Bấm nguyên chuỗi, có dấu <strong>#</strong> ở cuối.', en: 'Dial the whole string including the final <strong>#</strong>.' }
+        },
+        landline: {
+          ring: { on: '*92 → {AI} → #', off: '*93', vi: 'Nhấc máy, bấm *92, chờ tiếng bíp, bấm số AI rồi dấu #. Mã này <strong>không tự đặt số giây</strong> — nhà cung cấp quyết, muốn đổi phải gọi họ.', en: 'Lift the handset, dial *92, wait for the tone, enter the AI number then #. This code <strong>does not set the delay</strong> — the provider does; call them to change it.' },
+          now: { on: '*72 → {AI} → #', off: '*73', vi: 'Nhấc máy, bấm *72, chờ tiếng bíp, bấm số AI rồi dấu #.', en: 'Lift the handset, dial *72, wait for the tone, enter the AI number then #.' }
+        },
+        voip: {
+          ring: { on: '—', off: '—', vi: 'Không dùng mã bấm. Xem hướng dẫn màu xanh bên dưới.', en: 'No star codes. See the note below.' },
+          now: { on: '—', off: '—', vi: 'Không dùng mã bấm. Xem hướng dẫn màu xanh bên dưới.', en: 'No star codes. See the note below.' }
+        }
+      };
+
+      function applyGuide() {
+        var carrier = document.getElementById('carrier').value;
+        var mode = document.getElementById('mode').value;
+        var network = networkAliases[carrier] || carrier;
+        var currentCode = codes[network][mode];
+        var language = currentLanguage();
+
+        document.getElementById('codePanic').textContent = panicCodes[carrier];
+        document.getElementById('codeOn').textContent = currentCode.on.replace('{AI}', aiNumber());
+        document.getElementById('codeOffOne').textContent = currentCode.off;
+        document.getElementById('onNote').innerHTML = '<span class="guide-vi">' + currentCode.vi + '</span><span class="guide-en">' + currentCode.en + '</span>';
+        document.getElementById('modeTag').textContent = mode === 'ring' ? (language === 'vi' ? '3 hồi · khoảng 20 giây' : '3 rings · ~20 seconds') : (language === 'vi' ? 'AI bắt ngay' : 'AI answers immediately');
+
+        document.getElementById('ringBox').classList.toggle('guide-is-hidden', mode !== 'ring' || carrier === 'voip');
+        document.getElementById('vmWarn').classList.toggle('guide-is-hidden', mode !== 'ring' || carrier === 'voip');
+        document.getElementById('mvnoWarn').classList.toggle('guide-is-hidden', !(mode === 'ring' && mvno[carrier]));
+        document.getElementById('voipWarn').classList.toggle('guide-is-hidden', carrier !== 'voip');
+      }
+
+      function setLanguage(language) {
+        page.setAttribute('data-guide-lang', language);
+        document.documentElement.lang = language === 'en' ? 'en' : 'vi';
+        document.querySelectorAll('[data-guide-language]').forEach(function (button) {
+          var active = button.getAttribute('data-guide-language') === language;
+          button.classList.toggle('is-active', active);
+          button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        applyGuide();
+      }
+
+      document.getElementById('carrier').addEventListener('change', applyGuide);
+      document.getElementById('mode').addEventListener('change', applyGuide);
+
+      document.querySelectorAll('[data-guide-language]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          setLanguage(button.getAttribute('data-guide-language'));
+        });
+      });
+
+      document.querySelectorAll('[data-guide-copy]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var value = config[button.getAttribute('data-guide-copy')];
+          if (!value) return;
+
+          var original = button.innerHTML;
+          var doneText = currentLanguage() === 'vi' ? 'Đã chép' : 'Copied';
+          var finish = function () {
+            button.classList.add('is-done');
+            button.textContent = doneText;
+            window.setTimeout(function () {
+              button.classList.remove('is-done');
+              button.innerHTML = original;
+            }, 1300);
+          };
+
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(value).then(finish).catch(function () {});
+          } else {
+            var textarea = document.createElement('textarea');
+            textarea.value = value;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+              document.execCommand('copy');
+              finish();
+            } catch (error) {}
+            textarea.remove();
+          }
+        });
+      });
+
+      fillTokens();
+      applyGuide();
+    }());
+  </script>
+</body>
+</html>

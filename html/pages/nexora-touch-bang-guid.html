@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>NEXORA TOUCH — Bảng quầy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0B1D28; --paper:#fff; --wash:#EFF3F5; --wash2:#E3EAEE; --line:#CBD8DE;
+  --lamp:#E9A020; --lampbg:#FCF1DC; --alert:#C33F2A; --alertbg:#FBE9E5;
+  --live:#0E8560; --livebg:#E2F3EC; --muted:#5B7280; --muted2:#87999F;
+  --d:'Archivo',system-ui,sans-serif; --b:'Be Vietnam Pro',system-ui,sans-serif; --m:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--b);font-size:16px;line-height:1.5}
+h1,h2,.d{font-family:var(--d);font-variation-settings:'wdth' 115;letter-spacing:-.015em;margin:0;font-weight:800}
+p{margin:0}
+.card{max-width:780px;margin:0 auto;background:var(--paper);min-height:100vh}
+body[data-lang="vi"] .en{display:none}
+body[data-lang="en"] .vi{display:none}
+.en{color:var(--muted);font-size:.86em;display:block}
+
+.top{background:var(--ink);color:#fff;padding:13px 20px;display:flex;align-items:center;gap:10px}
+.g{width:26px;height:26px;border-radius:7px;background:var(--lamp);color:var(--ink);display:grid;place-items:center;font-family:var(--d);font-weight:800;font-size:14px;flex:none}
+.top b{font-family:var(--d);font-size:14px;letter-spacing:.02em}
+.top .biz{margin-left:auto;font-size:13px;color:#9DB6C2;text-align:right}
+.seg{display:flex;background:rgba(255,255,255,.1);border-radius:99px;padding:3px;margin-left:8px}
+.seg button{border:0;background:transparent;color:#9FB6C1;font:600 11px/1 var(--b);padding:6px 9px;border-radius:99px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--ink)}
+
+.pick{background:var(--wash);border-bottom:2px solid var(--ink);padding:13px 20px;display:grid;gap:11px}
+@media(min-width:600px){.pick{grid-template-columns:1fr 1fr}}
+.pk label{display:block;font-family:var(--m);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+select{width:100%;font:600 15px/1 var(--b);padding:10px 11px;border:1.5px solid var(--ink);border-radius:9px;background:#fff;color:var(--ink)}
+
+/* panic */
+.panic{border:3px solid var(--alert);border-radius:12px;margin:18px 20px;overflow:hidden}
+.panic .hd{background:var(--alert);color:#fff;padding:11px 16px;font-family:var(--d);font-weight:800;font-size:17px}
+.panic .hd .en{color:#F6D3CC;font-size:.72em}
+.panic .bd{padding:15px}
+.big{font-family:var(--m);font-weight:700;font-size:clamp(30px,9vw,46px);line-height:1;text-align:center;padding:14px 8px;background:var(--alertbg);border:2px solid var(--alert);border-radius:10px;word-break:break-all}
+.why{color:var(--muted);font-size:14px;margin-top:11px}
+.why b{color:var(--ink)}
+
+/* on box */
+.box{border:1.5px solid var(--line);border-radius:11px;margin:0 20px 16px;overflow:hidden}
+.box .bh{background:var(--wash);padding:11px 15px;font-weight:700;font-size:15px;border-bottom:1.5px solid var(--line);display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.box .bh .tagm{font-family:var(--m);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--lamp);background:var(--lampbg);border-radius:5px;padding:3px 7px}
+.box .bb{padding:15px}
+.code{font-family:var(--m);font-weight:700;font-size:clamp(17px,4.6vw,23px);background:var(--livebg);border:1.5px solid var(--live);border-radius:9px;padding:12px 13px;word-break:break-all;text-align:center}
+.sub{font-size:13.5px;color:var(--muted);margin-top:9px}
+.sub b{color:var(--ink)}
+.offline{font-size:13.5px;color:var(--muted);margin-top:11px;padding-top:11px;border-top:1px dashed var(--line)}
+.offline .c2{font-family:var(--m);font-weight:700;color:var(--ink)}
+
+.call{display:flex;gap:11px;border-radius:11px;padding:14px 15px;margin:0 20px 16px;font-size:14.5px}
+.call .ic{font-family:var(--d);font-weight:800;flex:none;width:21px;height:21px;border-radius:6px;display:grid;place-items:center;font-size:12px}
+.call.warn{background:var(--lampbg);border:1px solid #F2D9A6}.call.warn .ic{background:var(--lamp);color:#fff}
+.call.stop{background:var(--alertbg);border:1px solid #F0C8C0}.call.stop .ic{background:var(--alert);color:#fff}
+.call b{display:block;margin-bottom:2px}
+
+/* ring explainer */
+.ring{margin:0 20px 16px;border:1.5px solid var(--line);border-radius:11px;padding:14px 15px}
+.rt{display:flex;gap:0;margin-top:11px;border:1.5px solid var(--line);border-radius:9px;overflow:hidden}
+.rt div{flex:1;text-align:center;padding:9px 4px}
+.rt div+div{border-left:1.5px solid var(--line)}
+.rt .r{font-family:var(--m);font-weight:700;font-size:15px}
+.rt .s{font-size:11.5px;color:var(--muted);margin-top:2px}
+.rt div.hi{background:var(--lampbg)}
+
+.nums{display:grid;gap:10px;margin:0 20px 18px}
+@media(min-width:520px){.nums{grid-template-columns:1fr 1fr}}
+.nb{border:1.5px solid var(--line);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px}
+.nb .k{font-family:var(--m);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.nb .v{font-family:var(--m);font-weight:700;font-size:18px;margin-top:3px}
+.cp{margin-left:auto;border:1px solid var(--line);background:var(--wash);border-radius:8px;padding:8px 11px;font:600 12px/1 var(--b);cursor:pointer;flex:none}
+.cp.done{background:var(--livebg);border-color:var(--live);color:var(--live)}
+
+h2.sh{font-size:19px;margin:0 20px 4px;padding-top:4px}
+.shx{margin:0 20px 13px;color:var(--muted);font-size:14px}
+.sits{margin:0 20px 18px;border:1.5px solid var(--line);border-radius:12px;overflow:hidden}
+.sit{display:grid;border-top:1.5px solid var(--line)}
+@media(min-width:560px){.sit{grid-template-columns:1fr 1.35fr}}
+.sit:first-child{border-top:0}
+.sit .q{padding:13px 15px;background:var(--wash);font-weight:600;font-size:15px}
+.sit .a{padding:13px 15px;font-size:15px}
+@media(min-width:560px){.sit .a{border-left:1.5px solid var(--line)}}
+
+.script{margin:0 20px 18px;border:2px dashed var(--lamp);background:var(--lampbg);border-radius:12px;padding:15px}
+.script .lb{font-family:var(--m);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8A5B06;margin-bottom:8px}
+.script .say{font-size:16.5px;line-height:1.55;font-weight:500}
+.script .say+.say{margin-top:10px}
+
+.help{background:var(--ink);color:#fff;padding:17px 20px;display:grid;gap:11px}
+@media(min-width:560px){.help{grid-template-columns:repeat(3,1fr)}}
+.help .k{font-family:var(--m);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:#7E97A3}
+.help .v{font-weight:600;margin-top:4px;word-break:break-word}
+.help .en{color:#7E97A3}
+.foot{padding:15px 20px 28px;text-align:center;color:var(--muted);font-size:12.5px}
+.prbtn{border:1.5px solid var(--line);background:var(--wash);border-radius:9px;padding:10px 15px;font:600 13px/1 var(--b);cursor:pointer;margin-top:9px}
+.tok.empty{background:var(--lampbg);color:#8A5B06;border-radius:4px;padding:0 4px}
+.hide{display:none!important}
+:focus-visible{outline:2.5px solid var(--lamp);outline-offset:2px}
+
+@media print{
+  @page{size:A4;margin:10mm}
+  body{background:#fff;font-size:10pt;line-height:1.34}
+  .seg,.cp,.prbtn,.pick{display:none!important}
+  .card{max-width:none;min-height:0}
+  .vi,.en{display:block!important}
+  .en{font-size:.8em;color:#555}
+  .top{background:#fff!important;color:#000!important;border-bottom:2.5px solid #000;padding:0 0 6px}
+  .top .g{background:#000;color:#fff}.top .biz{color:#000}
+  .help{background:#fff!important;color:#000!important;border:2px solid #000;border-radius:10px;margin:0 0 6px}
+  .help .k,.help .en{color:#444!important}
+  .panic,.box,.call,.ring,.nums,.sits,.script,h2.sh,.shx{margin-left:0;margin-right:0}
+  .panic{margin:8px 0;border-color:#000;break-inside:avoid}
+  .panic .hd{background:#000}.panic .hd .en{color:#ccc}
+  .big,.code{background:#fff;border-color:#000}
+  .box,.sit,.sits,.nb,.ring,.rt,.rt div{border-color:#000}
+  .script{border-color:#000;background:#fff}
+  .box,.sit,.script,.ring{break-inside:avoid}
+  .foot{display:none}
+}
+</style>
+</head>
+<body data-lang="vi">
+<div class="card">
+
+  <div class="top">
+    <span class="g">N</span><b>NEXORA TOUCH</b>
+    <div class="seg"><button data-lang="vi" aria-pressed="true">VI</button><button data-lang="en" aria-pressed="false">EN</button></div>
+    <div class="biz tok" data-tok="biz">—</div>
+  </div>
+
+  <div class="pick">
+    <div class="pk">
+      <label for="carrier"><span class="vi">Nhà mạng của tiệm</span><span class="en">Your carrier</span></label>
+      <select id="carrier">
+        <option value="verizon">Verizon</option>
+        <option value="att">AT&T</option>
+        <option value="tmobile">T-Mobile</option>
+        <option value="cricket">Cricket (mạng AT&T)</option>
+        <option value="metro">Metro / Mint (mạng T-Mobile)</option>
+        <option value="visible">Visible / Total (mạng Verizon)</option>
+        <option value="landline">Điện thoại bàn · Landline</option>
+        <option value="voip">Internet · VoIP</option>
+      </select>
+    </div>
+    <div class="pk">
+      <label for="mode"><span class="vi">Kiểu trả lời</span><span class="en">Answering mode</span></label>
+      <select id="mode">
+        <option value="ring">Chuông reo 3 hồi rồi mới qua AI</option>
+        <option value="now">AI bắt máy ngay từ đầu</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- PANIC -->
+  <div class="panic">
+    <div class="hd">■ <span class="vi">TẮT NGAY KHI CÓ SỰ CỐ</span><span class="en">TURN IT OFF NOW</span></div>
+    <div class="bd">
+      <div class="big" id="codePanic">*73</div>
+      <p class="why">
+        <span class="vi">Bấm mã này <b>từ điện thoại của tiệm</b>. Nó xoá <b>hết mọi kiểu chuyển tiếp</b> — không cần biết đang cài kiểu nào. Cuộc gọi về tiệm ngay lập tức.</span>
+        <span class="en">Dial this <b>from the shop phone</b>. It clears <b>every kind of forwarding</b> — no need to know which mode is set. Calls come straight back to you.</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- TURN ON -->
+  <div class="box">
+    <div class="bh">
+      <span class="vi">Bật lại</span><span class="en">Turn it back on</span>
+      <span class="tagm" id="modeTag"></span>
+    </div>
+    <div class="bb">
+      <div class="code" id="codeOn">*71 + [số AI]</div>
+      <p class="sub" id="onNote"></p>
+      <p class="offline"><span class="vi">Tắt riêng kiểu này:</span><span class="en">Turn off just this mode:</span> <span class="c2" id="codeOffOne">*73</span></p>
+    </div>
+  </div>
+
+  <!-- ring explainer -->
+  <div class="ring" id="ringBox">
+    <b><span class="vi">"3 hồi chuông" thật ra là bao nhiêu giây?</span><span class="en">What does "3 rings" actually mean?</span></b>
+    <p class="sub" style="margin-top:6px"><span class="vi">Nhà mạng không có ô "số hồi chuông" — chỉ có <b>số giây</b>. Ở Mỹ một hồi chuông khoảng 6 giây.</span><span class="en">Carriers have no "ring count" setting — only <b>seconds</b>. In the US one ring is about 6 seconds.</span></p>
+    <div class="rt">
+      <div><div class="r">2 <span class="vi">hồi</span><span class="en">rings</span></div><div class="s">≈ 12s</div></div>
+      <div class="hi"><div class="r">3 <span class="vi">hồi</span><span class="en">rings</span></div><div class="s">≈ 20s ✓</div></div>
+      <div><div class="r">4 <span class="vi">hồi</span><span class="en">rings</span></div><div class="s">≈ 25s</div></div>
+      <div><div class="r">5 <span class="vi">hồi</span><span class="en">rings</span></div><div class="s">≈ 30s</div></div>
+    </div>
+    <p class="sub"><span class="vi">Chỉ đặt được bội số của 5, tối đa 30 giây.</span><span class="en">Only multiples of 5, up to 30 seconds.</span></p>
+  </div>
+
+  <!-- voicemail -->
+  <div class="call stop" id="vmWarn">
+    <span class="ic">!</span>
+    <div>
+      <b><span class="vi">Voicemail là thứ làm hỏng kiểu này</span><span class="en">Voicemail is what breaks this mode</span></b>
+      <span class="vi">Voicemail của tiệm cũng bắt máy khoảng 20–25 giây. Nếu nó bắt trước AI thì khách vào hộp thư thoại và tưởng tiệm không ai nghe. <b>Tắt voicemail</b>, hoặc đặt AI ở 15–20 giây còn voicemail ở 30 giây.</span>
+      <span class="en">Your voicemail also picks up around 20–25 seconds. If it wins, callers land in voicemail and think nobody answered. <b>Turn voicemail off</b>, or set the AI to 15–20 seconds and voicemail to 30.</span>
+    </div>
+  </div>
+
+  <div class="call warn hide" id="mvnoWarn">
+    <span class="ic">i</span>
+    <div>
+      <b><span class="vi">Gói này có thể không cho "chuông reo trước"</span><span class="en">This plan may not support "ring first"</span></b>
+      <span class="vi">Nhiều gói mạng phụ chỉ cho chuyển toàn bộ cuộc gọi. Bấm mã mà báo lỗi hoặc không thấy gì xảy ra → đổi qua "AI bắt máy ngay", hoặc gọi nhà mạng hỏi có mở được không.</span>
+      <span class="en">Many prepaid plans only allow forwarding every call. If the code errors or nothing happens → switch to "AI answers immediately", or ask the carrier to enable it.</span>
+    </div>
+  </div>
+
+  <div class="call warn hide" id="voipWarn">
+    <span class="ic">i</span>
+    <div>
+      <b><span class="vi">Mạng internet không dùng mã bấm</span><span class="en">Internet lines have no star codes</span></b>
+      <span class="vi">Vào trang quản lý của nhà cung cấp → Voice → Call Forwarding. Chọn <b>No Answer</b> và đặt 20 giây, hoặc <b>Always</b> nếu muốn AI bắt ngay. Không rành thì gọi người hỗ trợ bên dưới.</span>
+      <span class="en">Go to your provider portal → Voice → Call Forwarding. Choose <b>No Answer</b> and set 20 seconds, or <b>Always</b> for immediate. Not sure? Call your support contact below.</span>
+    </div>
+  </div>
+
+  <div class="nums">
+    <div class="nb"><div><div class="k"><span class="vi">Số AI</span><span class="en">AI number</span></div><div class="v tok" data-tok="ai">—</div></div>
+      <button class="cp" data-copy="ai"><span class="vi">Chép</span><span class="en">Copy</span></button></div>
+    <div class="nb"><div><div class="k"><span class="vi">Số tiệm</span><span class="en">Shop number</span></div><div class="v tok" data-tok="phone">—</div></div>
+      <button class="cp" data-copy="phone"><span class="vi">Chép</span><span class="en">Copy</span></button></div>
+  </div>
+
+  <h2 class="sh"><span class="vi">Gặp tình huống này thì làm vầy</span><span class="en">When this happens, do this</span></h2>
+  <p class="shx"><span class="vi">Năm việc hay gặp nhất. Ngoài năm việc này thì gọi hỗ trợ.</span><span class="en">The five most common ones. Anything else, call support.</span></p>
+
+  <div class="sits">
+    <div class="sit">
+      <div class="q"><span class="vi">Điện thoại báo "cuộc gọi nhỡ"</span><span class="en">You get a "missed call" alert</span></div>
+      <div class="a"><span class="vi">Mở app, đọc <b>tóm tắt</b> — không cần nghe lại. Khách hỏi giá hoặc muốn đặt hẹn thì gọi lại trong <b>15 phút</b>.</span><span class="en">Open the app, read the <b>summary</b>. If they asked about price or wanted to book, call back within <b>15 minutes</b>.</span></div>
+    </div>
+    <div class="sit">
+      <div class="q"><span class="vi">Có tin nhắn mới trong app</span><span class="en">A new text in the app</span></div>
+      <div class="a"><span class="vi">Trả lời ngay trong app, đừng nhắn từ điện thoại riêng. Khách nhắn <b>STOP</b> thì <b>đừng nhắn lại</b>.</span><span class="en">Reply inside the app, not your personal phone. If they text <b>STOP</b>, <b>do not text back</b>.</span></div>
+    </div>
+    <div class="sit">
+      <div class="q"><span class="vi">Khách gọi mà không ai bắt, cũng không qua AI</span><span class="en">Nobody answers and it never reaches the AI</span></div>
+      <div class="a"><span class="vi">Chín phần mười là <b>voicemail bắt trước</b>. Tắt voicemail rồi thử lại. Vẫn vậy thì bấm mã đỏ ở trên và gọi hỗ trợ.</span><span class="en">Nine times out of ten it's <b>voicemail winning</b>. Turn voicemail off and retest. Still broken → dial the red code above and call support.</span></div>
+    </div>
+    <div class="sit">
+      <div class="q"><span class="vi">AI nói sai giá hoặc sai giờ</span><span class="en">The AI gave a wrong price or time</span></div>
+      <div class="a"><span class="vi">Chụp màn hình, ghi <b>giờ gọi</b>, gửi người hỗ trợ. Đang có khách bị ảnh hưởng thì <b>gọi</b>, đừng email.</span><span class="en">Screenshot, note the <b>call time</b>, send to support. Customer affected right now → <b>call</b>, don't email.</span></div>
+    </div>
+    <div class="sit">
+      <div class="q"><span class="vi">Cuối ngày</span><span class="en">End of day</span></div>
+      <div class="a"><span class="vi">Mở app 2 phút: còn tin nào chưa trả lời, còn cuộc gọi nhỡ nào chưa gọi lại. Xong là đóng.</span><span class="en">Two minutes in the app: unanswered texts, missed calls not returned. Then close it.</span></div>
+    </div>
+  </div>
+
+  <div class="script">
+    <div class="lb"><span class="vi">Khách quen hỏi "sao gọi lại gặp máy?" — nói câu này</span><span class="en">Regular asks "why did a machine answer?" — say this</span></div>
+    <p class="say vi">"Dạ tiệm mới có thêm trợ lý trả lời điện thoại, để lúc tụi em đang làm khách thì không ai bị bỏ lỡ nữa. Chị cứ nói bình thường, hoặc chị nhắn tin cũng được, em thấy liền."</p>
+    <p class="say en">"We added an assistant that answers the phone so nobody gets missed while we're with a client. You can talk to it normally, or just text us — we see it right away."</p>
+  </div>
+
+  <div class="help">
+    <div><div class="k"><span class="vi">Kẹt thì gọi</span><span class="en">Stuck? Call</span></div><div class="v tok" data-tok="sname">—</div></div>
+    <div><div class="k"><span class="vi">Điện thoại</span><span class="en">Phone</span></div><div class="v tok" data-tok="sphone">—</div></div>
+    <div><div class="k">Email</div><div class="v tok" data-tok="semail">—</div></div>
+  </div>
+
+  <div class="foot">
+    <span class="vi">In ra, ép nhựa, dán ở quầy.</span><span class="en">Print it, laminate it, tape it to the counter.</span>
+    <br><button class="prbtn" onclick="window.print()">⇩ <span class="vi">In tờ này</span><span class="en">Print this</span></button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var KEYS=['biz','phone','ai','sname','sphone','semail'], CFG={};
+try{ var q=new URLSearchParams(location.search); KEYS.forEach(function(k){ if(q.get(k)) CFG[k]=q.get(k); }); }catch(e){}
+function AI(){ return CFG.ai || '[số AI]'; }
+
+function fill(){
+  document.querySelectorAll('.tok').forEach(function(el){
+    var v=CFG[el.dataset.tok];
+    if(v){ el.textContent=v; el.classList.remove('empty'); }
+    else { el.textContent='['+el.dataset.tok.toUpperCase()+']'; el.classList.add('empty'); }
+  });
+}
+
+/* panic = clears ALL forwarding regardless of mode */
+var PANIC={ verizon:'*73', att:'##002#', tmobile:'##002#', cricket:'##002#', metro:'##002#',
+            visible:'*73', landline:'*73', voip:'—' };
+
+var NET={ cricket:'att', metro:'tmobile', visible:'verizon' };
+var MVNO={cricket:1,metro:1,visible:1};
+
+var CODES={
+  verizon:{
+    ring:{on:'*71 → '+'{AI}', off:'*73', nvi:'Nhấc máy, bấm *71, rồi bấm số AI. Verizon <b>không cho chỉnh số giây</b> — mạng tự đặt, thường khoảng 4–5 hồi chuông.', nen:'Dial *71 then the AI number. Verizon <b>does not let you set the delay</b> — the network picks it, usually 4–5 rings.'},
+    now:{on:'*72 → {AI}', off:'*73', nvi:'Nhấc máy, bấm *72, rồi bấm số AI. Nghe hai tiếng bíp là xong.', nen:'Dial *72 then the AI number. Two beeps means it worked.'}
+  },
+  att:{
+    ring:{on:'**61*1{AI}*11*20#', off:'##61#', nvi:'Bấm nguyên chuỗi, có dấu <b>#</b> ở cuối. Số <b>20</b> gần cuối là số giây chờ — đổi thành 15 nếu voicemail hay bắt trước.', nen:'Dial the whole string including the final <b>#</b>. The <b>20</b> near the end is the delay in seconds — use 15 if voicemail keeps winning.'},
+    now:{on:'**21*1{AI}#', off:'##21#', nvi:'Bấm nguyên chuỗi, có dấu <b>#</b> ở cuối.', nen:'Dial the whole string including the final <b>#</b>.'}
+  },
+  tmobile:{
+    ring:{on:'**61*1{AI}**20#', off:'##61#', nvi:'Bấm nguyên chuỗi, có dấu <b>#</b> ở cuối. Số <b>20</b> là số giây chờ — chỉ nhận 5, 10, 15, 20, 25, 30.', nen:'Dial the whole string including the final <b>#</b>. The <b>20</b> is the delay in seconds — only 5, 10, 15, 20, 25, 30 are accepted.'},
+    now:{on:'**21*1{AI}#', off:'##21#', nvi:'Bấm nguyên chuỗi, có dấu <b>#</b> ở cuối.', nen:'Dial the whole string including the final <b>#</b>.'}
+  },
+  landline:{
+    ring:{on:'*92 → {AI} → #', off:'*93', nvi:'Nhấc máy, bấm *92, chờ tiếng bíp, bấm số AI rồi dấu #. Mã này <b>không tự đặt số giây</b> — nhà cung cấp quyết, muốn đổi phải gọi họ.', nen:'Lift the handset, dial *92, wait for the tone, enter the AI number then #. This code <b>does not set the delay</b> — the provider does; call them to change it.'},
+    now:{on:'*72 → {AI} → #', off:'*73', nvi:'Nhấc máy, bấm *72, chờ tiếng bíp, bấm số AI rồi dấu #.', nen:'Lift the handset, dial *72, wait for the tone, enter the AI number then #.'}
+  },
+  voip:{
+    ring:{on:'—', off:'—', nvi:'Không dùng mã bấm. Xem hướng dẫn màu vàng bên dưới.', nen:'No star codes. See the note below.'},
+    now:{on:'—', off:'—', nvi:'Không dùng mã bấm. Xem hướng dẫn màu vàng bên dưới.', nen:'No star codes. See the note below.'}
+  }
+};
+
+function apply(){
+  var car=document.getElementById('carrier').value;
+  var mode=document.getElementById('mode').value;
+  var net=NET[car]||car;
+  var c=CODES[net][mode];
+
+  document.getElementById('codePanic').textContent = PANIC[car];
+  document.getElementById('codeOn').textContent = c.on.replace('{AI}', AI());
+  document.getElementById('codeOffOne').textContent = c.off;
+  document.getElementById('onNote').innerHTML = '<span class="vi">'+c.nvi+'</span><span class="en">'+c.nen+'</span>';
+  document.getElementById('modeTag').textContent = mode==='ring' ? '3 hồi ≈ 20 giây' : 'AI bắt ngay';
+
+  var isRing = mode==='ring', isVoip = car==='voip';
+  document.getElementById('ringBox').classList.toggle('hide', !isRing || isVoip);
+  document.getElementById('vmWarn').classList.toggle('hide', !isRing || isVoip);
+  document.getElementById('mvnoWarn').classList.toggle('hide', !(isRing && MVNO[car]));
+  document.getElementById('voipWarn').classList.toggle('hide', !isVoip);
+}
+document.getElementById('carrier').addEventListener('change',apply);
+document.getElementById('mode').addEventListener('change',apply);
+
+document.querySelectorAll('.seg button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.body.dataset.lang=b.dataset.lang;
+    document.querySelectorAll('.seg button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+  });
+});
+
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.cp'); if(!b) return;
+  var v=CFG[b.dataset.copy]; if(!v) return;
+  var t=b.innerHTML, fin=function(){ b.classList.add('done'); b.textContent='✓'; setTimeout(function(){b.classList.remove('done');b.innerHTML=t;},1300); };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(v).then(fin).catch(function(){}); }
+  else { var ta=document.createElement('textarea'); ta.value=v; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');fin();}catch(err){} ta.remove(); }
+});
+
+fill(); apply();
+})();
+</script>
+</body>
+</html>

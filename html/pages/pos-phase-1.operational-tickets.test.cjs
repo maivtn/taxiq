@@ -81,10 +81,16 @@ test('POS Customers profile surfaces upcoming bookings, visit history, and payme
   const upcomingFn = html.match(/function custUpcomingCardHtml\(c\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(upcomingFn, /data-cust-upcoming-checkin="' \+ esc\(b\.id\)/);
   assert.match(upcomingFn, /data-cust-upcoming-detail="' \+ esc\(b\.id\)/);
+  assert.match(upcomingFn, /data-cust-upcoming-collapse/);
+  assert.match(upcomingFn, /Booked services/);
+  assert.match(upcomingFn, /Technician/);
+  assert.match(upcomingFn, /Source/);
+  assert.match(upcomingFn, /Note:/);
   assert.match(upcomingFn, /b\.day \|\| 'Upcoming'/);
   assert.match(upcomingFn, /View detail/);
   assert.match(upcomingFn, /Check in/);
-  assert.match(html, /closeCustProfileModal\(\);\s*\n\s*activateTab\('booking'\);\s*\n\s*if \(window\.openBookingDetailById\) window\.openBookingDetailById\(detailId\);/);
+  assert.match(html, /var detailCollapse = detailCard && detailCard\.querySelector\('\[data-cust-upcoming-collapse\]'\);/);
+  assert.match(html, /custUpcomingDetail\.setAttribute\('aria-expanded', String\(!expanded\)\);/);
   assert.match(html, /function custVisitHistoryTableHtml\(name\) \{/);
   assert.match(html, /function custPaymentHistoryTableHtml\(name\) \{/);
   const visitFn = html.match(/function custVisitHistoryTableHtml\(name\) \{[\s\S]*?\n {6}\}/)?.[0] || '';

@@ -207,7 +207,6 @@
 
     .panel-violet { border-color: rgba(142, 77, 248, .45); }
     .panel-amber { border-color: rgba(245, 158, 11, .5); }
-    .pos-card.panel-amber { padding: 0; border: 0; background: transparent; box-shadow: none; }
     .panel-blue { border-color: rgba(43, 89, 255, .4); }
 
     .wl-card { display: flex; align-items: center; gap: 10px; border: 1px solid var(--nexora-border); border-radius: 12px; padding: 11px 12px; margin-bottom: 10px; background: #fff; transition: border-color .15s, box-shadow .15s; flex-wrap: wrap; }
@@ -255,7 +254,7 @@
     .cust-profile-stat-value { font-size: 15px; font-weight: 900; color: var(--nexora-brand); }
     .cust-profile-stat-value.is-text { font-size: 11.5px; font-weight: 800; }
     .cust-profile-stat-label { font-size: 10px; font-weight: 600; color: var(--nexora-muted); }
-    .cust-upcoming-card { display: flex; align-items: center; gap: 14px; background: var(--nexora-surface-muted); border: 1px solid var(--nexora-border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
+    .cust-upcoming-card { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; background: var(--nexora-surface-muted); border: 1px solid var(--nexora-border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
     .cust-upcoming-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; background: #efeafe; color: var(--nexora-brand); display: flex; align-items: center; justify-content: center; font-size: 17px; }
     .cust-upcoming-text { flex: 1; min-width: 0; }
     .cust-upcoming-title { font-weight: 800; color: var(--nexora-brand); font-size: 13.5px; }
@@ -264,6 +263,16 @@
     .cust-upcoming-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; flex-shrink: 0; margin-left: auto; }
     .cust-upcoming-more { font-size: 11.5px; color: var(--nexora-muted); font-weight: 700; white-space: nowrap; }
     .cust-upcoming-chevron { color: var(--nexora-subtle); }
+    .cust-upcoming-collapse { flex: 1 0 100%; min-width: 0; border-top: 1px solid var(--nexora-border); padding-top: 12px; }
+    .cust-upcoming-collapse[hidden] { display: none; }
+    .cust-upcoming-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; }
+    .cust-upcoming-detail-item { min-width: 0; }
+    .cust-upcoming-detail-label { color: var(--nexora-muted); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+    .cust-upcoming-detail-value { margin-top: 3px; color: var(--nexora-text); font-size: 12px; font-weight: 700; overflow-wrap: anywhere; }
+    .cust-upcoming-detail-services { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+    .cust-upcoming-detail-note { margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--nexora-border); color: var(--nexora-muted); font-size: 11.5px; line-height: 1.5; }
+    .cust-upcoming-detail-actions { display: flex; justify-content: flex-end; margin-top: 10px; }
+    @media (max-width: 600px) { .cust-upcoming-detail-grid { grid-template-columns: 1fr; } }
     .cust-insights-card, .cust-prefs-card { border: 1px solid var(--nexora-border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
     .cust-insights-row { display: flex; gap: 16px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--nexora-border); }
     .cust-insights-row-last { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
@@ -818,7 +827,6 @@
                     <span>Calendar</span>
                   </button>
                 </div>
-                <div class="sync-note">Every channel lands in one book</div>
               </div>
 
               <div class="booking-appointment-layout" data-booking-appointment-workspace data-booking-layout="appointments">
@@ -2428,13 +2436,33 @@
         var checkinAction = checkedIn
           ? '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Checked in</span>'
           : '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-cust-upcoming-checkin="' + esc(b.id) + '"><i class="bi bi-door-open" aria-hidden="true"></i> Check in</button>';
-        var detailAction = '<button class="pos-btn pos-btn-sm" type="button" data-cust-upcoming-detail="' + esc(b.id) + '"><i class="bi bi-eye" aria-hidden="true"></i> View detail</button>';
+        var detailAction = '<button class="pos-btn pos-btn-sm" type="button" data-cust-upcoming-detail="' + esc(b.id) + '" aria-expanded="false" aria-controls="cust-upcoming-detail-' + esc(b.id) + '"><i class="bi bi-eye" aria-hidden="true"></i> <span data-cust-upcoming-detail-label>View detail</span></button>';
+        var serviceChips = (b.serviceDetails || []).map(function (detail) {
+          var label = detail && detail.name ? detail.name : 'Service';
+          var duration = detail && detail.durationMin ? ' · ' + detail.durationMin + ' min' : '';
+          var price = detail && detail.price != null ? ' · ' + money(detail.price) : '';
+          return '<span class="pos-chip pos-chip-blue">' + esc(label + duration + price) + '</span>';
+        }).join('');
+        if (!serviceChips) serviceChips = '<span class="pos-muted">' + esc(b.svc || 'Service TBD') + '</span>';
+        var statusLabel = b.status === 'checked-in' ? 'Checked in' : b.status === 'confirmed' ? 'Confirmed' : 'Upcoming';
+        var detailCollapse = '<div class="cust-upcoming-collapse" id="cust-upcoming-detail-' + esc(b.id) + '" data-cust-upcoming-collapse hidden>' +
+          '<div class="cust-upcoming-detail-grid">' +
+            '<div class="cust-upcoming-detail-item"><div class="cust-upcoming-detail-label">Customer</div><div class="cust-upcoming-detail-value">' + esc(b.name || c.name) + (b.phone ? ' · ' + esc(b.phone) : '') + '</div></div>' +
+            '<div class="cust-upcoming-detail-item"><div class="cust-upcoming-detail-label">Status</div><div class="cust-upcoming-detail-value">' + esc(statusLabel) + '</div></div>' +
+            '<div class="cust-upcoming-detail-item"><div class="cust-upcoming-detail-label">Booked services</div><div class="cust-upcoming-detail-services">' + serviceChips + '</div></div>' +
+            '<div class="cust-upcoming-detail-item"><div class="cust-upcoming-detail-label">Technician</div><div class="cust-upcoming-detail-value">' + esc(b.techName || (b.techId ? techName(b.techId) : 'Anyone')) + '</div></div>' +
+            '<div class="cust-upcoming-detail-item"><div class="cust-upcoming-detail-label">Appointment</div><div class="cust-upcoming-detail-value">' + esc(b.day || 'Upcoming') + ' · ' + esc(b.time || '') + '</div></div>' +
+            '<div class="cust-upcoming-detail-item"><div class="cust-upcoming-detail-label">Source</div><div class="cust-upcoming-detail-value">' + esc(b.source || 'Front desk') + '</div></div>' +
+          '</div>' +
+          (b.note ? '<div class="cust-upcoming-detail-note"><strong>Note:</strong> ' + esc(b.note) + '</div>' : '') +
+          '<div class="cust-upcoming-detail-actions">' + (checkedIn ? '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Checked in</span>' : '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-cust-upcoming-checkin="' + esc(b.id) + '"><i class="bi bi-door-open" aria-hidden="true"></i> Check in</button>') + '</div>' +
+        '</div>';
         return '<div class="cust-upcoming-card">' +
           '<div class="cust-upcoming-icon"><i class="bi bi-calendar-event" aria-hidden="true"></i></div>' +
           '<div class="cust-upcoming-text"><div class="cust-upcoming-title">Upcoming booking</div>' +
           '<div class="cust-upcoming-meta">' + esc(b.day || 'Upcoming') + ' · ' + esc(b.time || '') + '</div>' +
           '<div class="cust-upcoming-detail">' + esc(b.svc || 'Service TBD') + (b.techId ? ' · ' + esc(techName(b.techId)) : ' · Anyone') + '</div></div>' +
-          more + '<div class="cust-upcoming-actions">' + detailAction + checkinAction + '</div>' +
+          more + '<div class="cust-upcoming-actions">' + detailAction + checkinAction + '</div>' + detailCollapse +
         '</div>';
       }
       // Customer insights: regular tech chips, usual service, visit frequency, and average tip.
@@ -3436,10 +3464,13 @@
 
         var custUpcomingDetail = e.target.closest('[data-cust-upcoming-detail]');
         if (custUpcomingDetail) {
-          var detailId = custUpcomingDetail.getAttribute('data-cust-upcoming-detail');
-          closeCustProfileModal();
-          activateTab('booking');
-          if (window.openBookingDetailById) window.openBookingDetailById(detailId);
+          var detailCard = custUpcomingDetail.closest('.cust-upcoming-card');
+          var detailCollapse = detailCard && detailCard.querySelector('[data-cust-upcoming-collapse]');
+          var expanded = !!detailCollapse && !detailCollapse.hidden;
+          if (detailCollapse) detailCollapse.hidden = expanded;
+          custUpcomingDetail.setAttribute('aria-expanded', String(!expanded));
+          var detailLabel = custUpcomingDetail.querySelector('[data-cust-upcoming-detail-label]');
+          if (detailLabel) detailLabel.textContent = expanded ? 'View detail' : 'Hide detail';
           return;
         }
 
