@@ -175,6 +175,29 @@ test('Check-in "no booking found" path has a service/technician ticket picker li
   assert.match(addWalkInFn, /var list = \(tickets && tickets\.length\) \? tickets : \[null\];/);
 });
 
+test('Check-in request inbox has App/QR sample data and a Card/Table view switch', () => {
+  assert.match(html, /var CHECKINQ = \[/);
+  assert.match(html, /src: '📱 App/);
+  assert.match(html, /src: '🌐 QR/);
+  assert.match(html, /data-ciq-view-target="card"/);
+  assert.match(html, /data-ciq-view-target="table"/);
+  assert.match(html, /var ciqViewMode = 'card';/);
+  assert.match(html, /function ciqCardHtml\(r\) \{/);
+  assert.match(html, /function renderCiqTable\(items\) \{/);
+  assert.match(html, /html\('\[data-ciq-list\]', ciqViewMode === 'table' \? renderCiqTable\(CHECKINQ\) : CHECKINQ\.map\(ciqCardHtml\)\.join\(''\)\);/);
+});
+
+test('Check-in request Card/Table renderers preserve the same request actions and clean service labels', () => {
+  const card = html.match(/function ciqCardHtml\(r\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const table = html.match(/function renderCiqTable\(items\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(card, /data-ciq-ok/);
+  assert.match(card, /data-ciq-no/);
+  assert.match(table, /data-ciq-ok/);
+  assert.match(table, /data-ciq-no/);
+  assert.match(html, /function posServiceDisplayName\(value\) \{/);
+  assert.match(html, /posServiceDisplayName\(r\.svc\)/);
+});
+
 test('Tech access requests panel has a card/table view switch that carries the same info both ways', () => {
   assert.match(html, /data-arq-view-target="card"/);
   assert.match(html, /data-arq-view-target="table"/);
