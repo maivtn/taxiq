@@ -85,7 +85,7 @@ test('creates a canonical booking request with consent and service summary', () 
 test('page includes booking controls and removes check-in copy', () => {
   assert.match(SOURCE, /id="booking-phone"/);
   assert.match(SOURCE, /id="service-options"[^>]*data-service-catalog/);
-  assert.match(SOURCE, /booking-service-catalog-draft\.json/);
+  assert.match(SOURCE, /\.\.\/menu\/menu\.json/);
   assert.match(SOURCE, /data-staff-id="any"/);
   assert.match(SOURCE, /data-booking-date/);
   assert.match(SOURCE, /data-booking-time/);
@@ -111,6 +111,77 @@ test('renders customer services under visible categories from the shared catalog
   assert.doesNotMatch(SOURCE, /content: "⌄"/);
   assert.doesNotMatch(SOURCE, /data-service-category="\$\{escapeHtml\(category\.id\)\}" open/);
   assert.match(SOURCE, /SERVICE_CATALOG_URL/);
+});
+
+test('loads booking services from the shared menu JSON', () => {
+  assert.match(SOURCE, /const SERVICE_CATALOG_URL = '\.\.\/menu\/menu\.json';/);
+  assert.doesNotMatch(SOURCE, /booking-service-catalog-draft\.json/);
+});
+
+test('opens service descriptions in a modal with a separate view action', () => {
+  assert.match(SOURCE, /description: String\(service\.description \|\| ''\)\.trim\(\)/);
+  assert.match(SOURCE, /service\.description \?/);
+  assert.match(SOURCE, /id="service-description-modal"/);
+  assert.match(SOURCE, /role="dialog"/);
+  assert.match(SOURCE, /data-service-view-id/);
+  assert.match(SOURCE, /function openServiceDescription\(/);
+  assert.match(SOURCE, /data-service-modal-close/);
+  assert.match(SOURCE, />Xem</);
+  assert.doesNotMatch(SOURCE, /data-service-select-id/);
+  assert.doesNotMatch(SOURCE, /service-action-select/);
+  assert.doesNotMatch(SOURCE, />Chọn</);
+  assert.doesNotMatch(SOURCE, /\.choice-card\[aria-pressed="true"\] \.choice-description/);
+});
+
+test('keeps the service view button at its content width', () => {
+  const actionStyle = SOURCE.match(/\.service-action \{([^}]*)\}/)?.[1] || '';
+  assert.match(actionStyle, /width: auto/);
+  assert.match(actionStyle, /flex: 0 0 auto/);
+  assert.doesNotMatch(actionStyle, /flex: 1/);
+});
+
+test('uses readable typography for service descriptions', () => {
+  const descriptionStyle = SOURCE.match(/\.service-description-content \{([^}]*)\}/)?.[1] || '';
+  assert.match(descriptionStyle, /color: #4d4968/);
+  assert.match(descriptionStyle, /font-size: 15px/);
+  assert.match(descriptionStyle, /line-height: 1\.75/);
+});
+
+test('shows optional service includes in the description modal', () => {
+  assert.match(SOURCE, /includes: Array\.isArray\(service\.includes\)/);
+  assert.match(SOURCE, /id="service-description-includes"/);
+  assert.match(SOURCE, /id="service-description-includes-list"/);
+  assert.match(SOURCE, /service\.includes\.map/);
+  assert.match(SOURCE, /setText\('#service-description-content', service\.description\)/);
+});
+
+test('shows service price and duration in the description modal', () => {
+  assert.match(SOURCE, /id="service-description-price"/);
+  assert.match(SOURCE, /id="service-description-duration"/);
+  assert.match(SOURCE, /setText\('#service-description-price'/);
+  assert.match(SOURCE, /setText\('#service-description-duration'/);
+  assert.match(SOURCE, /service-description-meta/);
+});
+
+test('selects services when clicking the item while keeping view details separate', () => {
+  assert.match(SOURCE, /role="button" tabindex="0"/);
+  assert.match(SOURCE, /const serviceCard = event\.target\.closest\?\.\('\[data-service-id\]'\)/);
+  assert.match(SOURCE, /if \(serviceCard\) \{ chooseService\(serviceCard\.dataset\.serviceId\); return; \}/);
+  assert.match(SOURCE, /event\.key === 'Enter' \|\| event\.key === ' '/);
+  assert.ok(SOURCE.indexOf('if (viewService)') < SOURCE.indexOf('if (serviceCard)'));
+});
+
+test('shows optional service type tags next to service names', () => {
+  assert.match(SOURCE, /type: String\(service\.type \|\| ''\)\.trim\(\)/);
+  assert.match(SOURCE, /service\.type \?/);
+  assert.match(SOURCE, /class="service-type-tag"/);
+});
+
+test('shows shared menu notes below the service catalog', () => {
+  assert.match(SOURCE, /id="service-notes"/);
+  assert.match(SOURCE, /id="service-notes-list"/);
+  assert.match(SOURCE, /notes: Array\.isArray\(catalog\.notes\)/);
+  assert.match(SOURCE, /notes\.map/);
 });
 
 test('shows selected services as removable chips below the catalog', () => {

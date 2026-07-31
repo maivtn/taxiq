@@ -1,0 +1,359 @@
+{
+  "source": {
+    "url": "https://bitcoinnailbar.com/menu",
+    "retrievedAt": "2026-07-30",
+    "pageCount": 12,
+    "currency": "USD"
+  },
+  "business": {
+    "name": "Bitcoin Nail Bar",
+    "address": "9793 Westheimer Rd Suite A, Houston, TX 77042",
+    "phone": "(346) 802-4906",
+    "website": "https://bitcoinnailbar.com",
+    "hours": {
+      "mondayToSaturday": "9:30 am - 7:00 pm",
+      "sunday": "11:00 am - 5:00 pm"
+    }
+  },
+  "sections": [
+    {
+      "id": "pedicure",
+      "title": "Pedicure",
+      "kind": "service",
+      "page": 2,
+      "items": [
+        {
+          "name": "President 7 Star",
+          "priceLabel": "$499",
+          "description": "The ultimate royal treatment: an elite, head-to-toe pampering experience with an exclusive royal soak, advanced skincare, and a 70-minute combination of hot stone, reflexology, and therapeutic massage.",
+          "includes": [
+            "Your choice of any premium manicure or full set nail enhancement (Gel-X, dip, acrylic, etc.)",
+            "Simultaneous collagen hand treatment and double paraffin wax for hands and feet",
+            "Premium champagne or wine"
+          ],
+          "durationMinutes": 70,
+          "page": 2
+        },
+        {
+          "name": "Bitcoin 24k Gold",
+          "priceLabel": "$99",
+          "description": "A gold-infused pedicure that nourishes, detoxifies, supports circulation, and leaves the skin hydrated and silky smooth.",
+          "includes": [
+            "Bath bomb",
+            "Shea sugar scrub",
+            "Collagen mask",
+            "Butter lotion",
+            "Paraffin treatment",
+            "Soothing hot stone massage",
+            "Collagen sock wrap and hot towel"
+          ],
+          "durationMinutes": 75,
+          "page": 2
+        },
+        {
+          "name": "Paris Pearl",
+          "priceLabel": "$75",
+          "description": "Pearl powder delivers calcium, protein, and amino acids for brighter, silky-smooth skin. Includes a pearl-infused soak, sugar scrub, hydrating mask with hot towels, paraffin wax treatment, and a massage with pearly lotion.",
+          "durationMinutes": 60,
+          "page": 3
+        },
+        {
+          "name": "Milk and Honey",
+          "priceLabel": "$55",
+          "description": "A warm milk soak, exfoliation, leg mask wrap, calming hot towel application, and massage to rejuvenate the legs and feet.",
+          "durationMinutes": 45,
+          "page": 3
+        },
+        {
+          "name": "Classic Pedicure",
+          "priceLabel": "$40",
+          "description": "Soaking, trimming, cuticle care, exfoliation, callus removal, and a soothing massage with a hot towel.",
+          "durationMinutes": 30,
+          "page": 3
+        },
+        {
+          "name": "Add Gel Polish On Any Pedicure",
+          "priceLabel": "$20",
+          "page": 3,
+          "type": "add-on"
+        },
+        {
+          "name": "Surcharge for A removal Gel or Power",
+          "priceLabel": "$10+",
+          "page": 3,
+          "type": "add-on"
+        },
+        {
+          "name": "Extra massage a minute",
+          "priceLabel": "$2 minimum 5+",
+          "page": 3,
+          "type": "add-on"
+        }
+      ]
+    },
+    {
+      "id": "manicure",
+      "title": "Manicure",
+      "kind": "service",
+      "page": 4,
+      "items": [
+        {
+          "name": "Milk & Honey",
+          "priceLabel": "$50",
+          "description": "A warm milk and honey hand treatment with exfoliation, warm towels wrapped with paraffin wax, a hand massage, and collagen gloves.",
+          "page": 4
+        },
+        {
+          "name": "Gel Shellac Manicure",
+          "priceLabel": "$45",
+          "description": "Nail trimming, cuticle grooming, and a relaxing hand massage.",
+          "page": 4
+        },
+        {
+          "name": "Gel Polish Change (without manicure)",
+          "priceLabel": "$30",
+          "page": 4,
+          "type": "add-on"
+        },
+        {
+          "name": "Add Gel Polish Manicure or Pedicure",
+          "priceLabel": "$20",
+          "page": 4,
+          "type": "add-on"
+        },
+        {
+          "name": "Gel Polish Remover",
+          "priceLabel": "$10",
+          "page": 4,
+          "type": "add-on"
+        },
+        {
+          "name": "Deluxe Manicure",
+          "priceLabel": "$35",
+          "description": "A deluxe manicure featuring exfoliation of dead skin, two warm towels wrapped with a mask, a gentle massage, and polish in your preferred color.",
+          "page": 4
+        },
+        {
+          "name": "Classic Manicure",
+          "priceLabel": "$25",
+          "description": "Nail shaping, cuticle care, a light massage, and polish in your choice of color.",
+          "page": 4
+        }
+      ]
+    },
+    {
+      "id": "kids-menu",
+      "title": "Kid's Menu",
+      "kind": "service",
+      "page": 4,
+      "sourcePages": [4, 7],
+      "items": [
+        { "name": "Pedicure", "priceLabel": "$25", "page": 4 },
+        { "name": "Manicure", "priceLabel": "$15", "page": 4 },
+        { "name": "Regular Polish on Nails", "priceLabel": "$10", "page": 4 },
+        { "name": "Regular Polish on Toes", "priceLabel": "$10", "page": 4 },
+        { "name": "Gel Add-On", "priceLabel": "$15", "page": 4, "type": "add-on" }
+      ]
+    },
+    {
+      "id": "acrylic-full-set",
+      "title": "Acrylic Nail — Full Set",
+      "kind": "service",
+      "page": 5,
+      "items": [
+        { "name": "Acrylic with polish", "priceLabel": "$50", "page": 5 },
+        { "name": "Full Set Shellac", "priceLabel": "$60", "page": 5 },
+        { "name": "White or Pear Tip", "priceLabel": "$55", "page": 5 },
+        { "name": "Color Powder", "priceLabel": "$60", "page": 5 },
+        { "name": "Ombre Full Set", "priceLabel": "$70", "page": 5 },
+        { "name": "Pink & White", "priceLabel": "$70", "page": 5 },
+        { "name": "Ombre full 2 color", "priceLabel": "$65", "page": 5 },
+        { "name": "Ombre 3 color", "priceLabel": "$75", "page": 5 }
+      ]
+    },
+    {
+      "id": "acrylic-fill-in",
+      "title": "Acrylic Nail — Fill-in",
+      "kind": "service",
+      "page": 5,
+      "items": [
+        { "name": "Acrylic with polish", "priceLabel": "$40", "page": 5 },
+        { "name": "Shellac", "priceLabel": "$50", "page": 5 },
+        { "name": "White or Pear Tip", "priceLabel": "$40", "page": 5 },
+        { "name": "Color Powder", "priceLabel": "$50", "page": 5 },
+        { "name": "Ombre", "priceLabel": "$60", "page": 5 },
+        { "name": "Pink & White", "priceLabel": "$60", "page": 5 },
+        { "name": "Ombre full 2 color", "priceLabel": "$55", "page": 5 },
+        { "name": "Ombre 3 color", "priceLabel": "$60", "page": 5 }
+      ]
+    },
+    {
+      "id": "dipping-nail",
+      "title": "Dipping Nail",
+      "kind": "service",
+      "page": 5,
+      "items": [
+        { "name": "Dipping Powder", "priceLabel": "$52", "page": 5 },
+        { "name": "Dipping Powder With Tip", "priceLabel": "$60", "page": 5 },
+        { "name": "Pink & White Dipping Powder", "priceLabel": "$70", "page": 5 },
+        { "name": "Dipping Powder Ombre", "priceLabel": "$70", "page": 5 },
+        { "name": "Add Full Manicure", "priceLabel": "$20", "page": 5, "type": "add-on" },
+        { "name": "Add Cuticle Care", "priceLabel": "$10", "page": 5, "type": "add-on" }
+      ]
+    },
+    {
+      "id": "builder-gel",
+      "title": "Builder Gel — Full Set",
+      "kind": "service",
+      "page": 6,
+      "items": [
+        { "name": "Natural Nail Set", "priceLabel": "$65", "page": 6 },
+        { "name": "Full Set With Tip", "priceLabel": "$70", "page": 6 }
+      ]
+    },
+    {
+      "id": "gel-x",
+      "title": "Gel-X",
+      "kind": "service",
+      "page": 6,
+      "items": [
+        { "name": "Full Set Gel X", "priceLabel": "$65", "page": 6 },
+        { "name": "Refill Gel X", "priceLabel": "$55", "page": 6 }
+      ]
+    },
+    {
+      "id": "gel-additional-services",
+      "title": "Gel Service — Additional Services",
+      "kind": "service",
+      "page": 6,
+      "items": [
+        { "name": "Shellac Polish Change Hand", "priceLabel": "$25", "page": 6, "type": "add-on" },
+        { "name": "Shellac Polish Change Toes", "priceLabel": "$25", "page": 6, "type": "add-on" },
+        { "name": "Special Shapes", "priceLabel": "$7+", "page": 6, "type": "add-on" },
+        { "name": "Different Shapes", "priceLabel": "$5+", "page": 6, "type": "add-on" },
+        { "name": "Long Length", "priceLabel": "$7+", "page": 6, "type": "add-on" },
+        { "name": "Cut Down + Change Different Shape", "priceLabel": "$15+", "page": 6, "type": "add-on" },
+        { "name": "Cuticle Trim (With Services)", "priceLabel": "$10+", "page": 6, "type": "add-on" },
+        { "name": "Gel Color Change On Acrylic Nail", "priceLabel": "$30+", "page": 6, "type": "add-on" },
+        { "name": "Nail Repair (Dip Gel Polish)", "priceLabel": "$5+", "page": 6, "type": "add-on" },
+        { "name": "Take Off With Service", "priceLabel": "$10", "page": 6, "type": "add-on" },
+        { "name": "Take Off Without Services", "priceLabel": "$20", "page": 6, "type": "add-on" }
+      ]
+    },
+    {
+      "id": "additional",
+      "title": "Additional",
+      "kind": "add-on",
+      "page": 7,
+      "items": [
+        { "name": "Extra Massage", "priceLabel": "$2 a minute", "page": 7 },
+        { "name": "Paraffin Wax", "priceLabel": "$15", "page": 7 },
+        { "name": "Collagen Sock", "priceLabel": "$15", "page": 7 },
+        { "name": "Collagen Gloves", "priceLabel": "$15", "page": 7 },
+        { "name": "Hot Stone Massage Added on", "priceLabel": "$10+", "page": 7 },
+        { "name": "Gel Polish Add-On", "priceLabel": "$20", "page": 7 },
+        { "name": "Shellac Polish Change Hand", "priceLabel": "$25", "page": 7 },
+        { "name": "Shellac Polish Change Toes", "priceLabel": "$25", "page": 7 },
+        { "name": "Shellac with Pedicure or Manicure", "priceLabel": "$20+", "page": 7 },
+        { "name": "Shellac Take Off with Services", "priceLabel": "$5+", "page": 7 },
+        { "name": "Shellac Take Off without Services", "priceLabel": "$15+", "page": 7 },
+        { "name": "French Tips or Color Tips add on", "priceLabel": "$15+", "page": 7 },
+        { "name": "Regular Polish Change Hand", "priceLabel": "$20", "page": 7 },
+        { "name": "Regular Polish Change Toes", "priceLabel": "$20", "page": 7 },
+        { "name": "Nail Take Off Without Services", "priceLabel": "$20", "page": 7 },
+        { "name": "Nail Take Off with Services", "priceLabel": "$10", "page": 7 },
+        { "name": "Nail Cut Down", "priceLabel": "$7+", "page": 7 },
+        { "name": "Nail Repair", "priceLabel": "$7+", "page": 7 },
+        { "name": "Nail Design", "priceLabel": "$7+", "page": 7 },
+        { "name": "Acrylic Gel Color Change", "priceLabel": "$30+", "page": 7 },
+        { "name": "Acrylic Toe", "priceLabel": "$8", "page": 7 },
+        { "name": "Acrylic Toe Refill", "priceLabel": "$5+", "page": 7 },
+        { "name": "Extra-long nail 1 in", "priceLabel": "$7+", "page": 7 },
+        { "name": "Extra-long nail 2 in", "priceLabel": "$14+", "page": 7 },
+        { "name": "Nail Buffing Cream", "priceLabel": "$10+", "page": 7 }
+      ]
+    },
+    {
+      "id": "waxing",
+      "title": "Waxing Services",
+      "kind": "service",
+      "page": 8,
+      "items": [
+        { "name": "Eyebrow", "priceLabel": "$15+", "page": 8 },
+        { "name": "Lip", "priceLabel": "$10+", "page": 8 },
+        { "name": "Chin", "priceLabel": "$15+", "page": 8 },
+        { "name": "Sideburns", "priceLabel": "$15+", "page": 8 },
+        { "name": "Full Face", "priceLabel": "$45+", "page": 8 },
+        { "name": "Underarms", "priceLabel": "$25+", "page": 8 },
+        { "name": "Half Arms", "priceLabel": "$25+", "page": 8 },
+        { "name": "Full Arms", "priceLabel": "$40+", "page": 8 },
+        { "name": "Lower Legs", "priceLabel": "$45+", "page": 8 },
+        { "name": "Upper Legs", "priceLabel": "$45+", "page": 8 },
+        { "name": "Full Legs", "priceLabel": "$60+", "page": 8 },
+        { "name": "Back", "priceLabel": "$45+", "page": 8 },
+        { "name": "Bikini", "priceLabel": "$45+", "page": 8 },
+        { "name": "Brazilian", "priceLabel": "$60+", "page": 8 }
+      ]
+    },
+    {
+      "id": "complimentary-wine",
+      "title": "Complimentary Drinks — Wine List",
+      "kind": "beverage",
+      "page": 9,
+      "items": [
+        { "name": "Champagne - Mimosa", "priceLabel": "Complimentary", "page": 9 },
+        { "name": "Red Wines - Cabernet - Merlot", "priceLabel": "Complimentary", "page": 9 },
+        { "name": "White Wines - Chardonnay - Moscato", "priceLabel": "Complimentary", "page": 9 }
+      ]
+    },
+    {
+      "id": "complimentary-cocktails",
+      "title": "Complimentary Drinks — Cocktails",
+      "kind": "beverage",
+      "page": 10,
+      "items": [
+        { "name": "Mojito", "priceLabel": "Complimentary", "description": "White rum, lime juice, sugar, fresh mint, and club soda.", "page": 10 },
+        { "name": "Blue Hawaiian", "priceLabel": "Complimentary", "description": "Light rum, blue curacao, pineapple juice, and cream of coconut.", "page": 10 },
+        { "name": "Espresso Martini", "priceLabel": "Complimentary", "description": "Vodka, Bailey's, Irish cream liqueur, cocoa powder.", "page": 10 },
+        { "name": "Apple Martini", "priceLabel": "Complimentary", "description": "Vodka, sour apple liqueur, lemon juice.", "page": 10 },
+        { "name": "Paloma", "priceLabel": "Complimentary", "description": "Tequila, lime juice, and grapefruit soda.", "page": 10 },
+        { "name": "Margarita", "priceLabel": "Complimentary", "description": "Tequila, orange liqueur (like Cointreau or Triple Sec), fresh lime juice.", "page": 10 },
+        { "name": "Screwdriver", "priceLabel": "Complimentary", "description": "Vodka, orange juice.", "page": 11 },
+        { "name": "Jack & Coke", "priceLabel": "Complimentary", "description": "Jack Daniel's Tennessee Whiskey with Coca-Cola.", "page": 11 },
+        { "name": "Tequila Sunrise", "priceLabel": "Complimentary", "description": "Tequila, orange juice, and grenadine, usually served in a highball glass.", "page": 11 },
+        { "name": "Pina Colada", "priceLabel": "Complimentary", "description": "White rum, cream of coconut, and pineapple juice.", "page": 11 },
+        { "name": "Bloody Mary", "priceLabel": "Complimentary", "description": "Vodka, Zing Zang, lemon, and extra spicy Tabasco.", "page": 11 },
+        { "name": "Lady in Red", "priceLabel": "Complimentary", "description": "Maker's Mark Bourbon, POM pomegranate juice, lemon juice, and one ginger beer.", "page": 11 },
+        { "name": "Pink Barbie", "priceLabel": "Complimentary", "description": "Malibu coconut rum, cranberry juice, pineapple juice, lime juice, and grenadine syrup.", "page": 11 },
+        { "name": "Old Fashioned", "priceLabel": "Complimentary", "description": "Bourbon or rye whiskey, sugar cube, Angostura bitters.", "page": 11 },
+        { "name": "Gin & Tonic", "priceLabel": "Complimentary", "description": "1 part gin and 3 parts tonic water.", "page": 11 },
+        { "name": "Godfather", "priceLabel": "Complimentary", "description": "Whiskey and amaretto.", "page": 11 },
+        { "name": "Rum & Coke", "priceLabel": "Complimentary", "description": "1 part rum and 1 part Coke.", "page": 11 },
+        { "name": "Cosmopolitan", "priceLabel": "Complimentary", "description": "Vodka, orange liqueur, cranberry juice, and fresh lime juice.", "page": 11 },
+        { "name": "Lemon Drop", "priceLabel": "Complimentary", "description": "Vodka, triple sec, lemon juice, simple syrup, and a sugar rim.", "page": 11 },
+        { "name": "Long Island Iced Tea", "priceLabel": "Complimentary", "description": "Gin, rum, tequila, triple sec, vodka, and cola, with a lemon wedge.", "page": 11 }
+      ]
+    },
+    {
+      "id": "non-alcoholic-drinks",
+      "title": "Non-Alcohol Drinks",
+      "kind": "beverage",
+      "page": 11,
+      "items": [
+        { "name": "Coke-Sprite - Sparkling Water", "priceLabel": "Complimentary", "page": 11 },
+        { "name": "Lemonade", "priceLabel": "Complimentary", "page": 11 },
+        { "name": "Sweet Iced Tea", "priceLabel": "Complimentary", "page": 11 },
+        { "name": "Hot Tea - Green Tea, Ginger Tea, Chamomile Tea", "priceLabel": "Complimentary", "page": 11 },
+        { "name": "Hot Vietnamese Coffee", "priceLabel": "Complimentary", "page": 11 },
+        { "name": "Cold Vietnamese Coffee", "priceLabel": "Complimentary", "page": 11 },
+        { "name": "Black Coffee", "priceLabel": "Complimentary", "page": 11 }
+      ]
+    }
+  ],
+  "notes": [
+    "Complimentary drinks are limited to 2 per person.",
+    "Guests must be 21 and over for alcoholic drinks.",
+    "Prices marked with + are starting prices and may vary.",
+    "Menu source includes a complimentary wine and cocktail selection; beverage availability may vary."
+  ]
+}

@@ -57,9 +57,9 @@ const PACKAGE_PAYMENT_METHODS = [
 
 const PACKAGE_PLAN_DETAILS = {
   nexora: {
-    Starter: { product: 'NEXORA', monthlyAmount: 29, totalLabel: '$29/mo' },
-    Pro: { product: 'NEXORA', monthlyAmount: 79, totalLabel: '$79/mo' },
-    Enterprise: { product: 'NEXORA', monthlyAmount: null, totalLabel: 'Custom quote' }
+    Starter: { product: 'NEXPRA TOUCH', monthlyAmount: 29, totalLabel: '$29/mo' },
+    Pro: { product: 'NEXPRA TOUCH', monthlyAmount: 79, totalLabel: '$79/mo' },
+    Enterprise: { product: 'NEXPRA TOUCH', monthlyAmount: null, totalLabel: 'Custom quote' }
   },
   voice: {
     Starter: { product: 'AI Voice Plans', monthlyAmount: 99, totalLabel: '$99/mo' },

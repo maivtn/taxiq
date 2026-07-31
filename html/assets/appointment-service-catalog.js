@@ -24,10 +24,44 @@
       .replace(/^-|-$/g, '') || 'service';
   }
 
+  function priceFromLabel(value) {
+    var match = asString(value).replace(/,/g, '').match(/\d+(?:\.\d+)?/);
+    return match ? finiteNumber(match[0], null) : null;
+  }
+
+  function menuSectionsToCategories(sections) {
+    return sections.filter(function (section) {
+      return section && section.kind !== 'beverage';
+    }).map(function (section) {
+      section = section || {};
+      return {
+        id: section.id,
+        name: section.title,
+        services: (Array.isArray(section.items) ? section.items : []).map(function (item) {
+          item = item || {};
+          return {
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            includes: item.includes,
+            type: item.type,
+            price: item.price == null ? priceFromLabel(item.priceLabel) : item.price,
+            durationMin: item.durationMin == null ? item.durationMinutes : item.durationMin,
+            requiredSkill: item.requiredSkill,
+            icon: item.icon
+          };
+        })
+      };
+    });
+  }
+
   function normalize(input) {
     input = input || {};
+    var inputCategories = Array.isArray(input.categories)
+      ? input.categories
+      : (Array.isArray(input.sections) ? menuSectionsToCategories(input.sections) : []);
     var seenCategoryIds = {};
-    var categories = (Array.isArray(input.categories) ? input.categories : []).map(function (category, categoryIndex) {
+    var categories = inputCategories.map(function (category, categoryIndex) {
       category = category || {};
       var name = asString(category.name, 'Other services');
       var baseId = asString(category.id, 'category-' + slug(name) + '-' + categoryIndex);
@@ -58,6 +92,11 @@
           name: name,
           categoryId: category.id,
           categoryName: category.name,
+          description: asString(service.description),
+          includes: Array.isArray(service.includes) ? service.includes.map(function (entry) {
+            return asString(entry);
+          }).filter(Boolean) : [],
+          type: asString(service.type),
           price: service.price == null || service.price === '' ? null : finiteNumber(service.price, null),
           durationMin: finiteNumber(service.durationMin, 60),
           requiredSkill: asString(service.requiredSkill),
@@ -72,7 +111,10 @@
     return {
       source: input.source || {},
       categories: categories,
-      services: services
+      services: services,
+      notes: Array.isArray(input.notes) ? input.notes.map(function (entry) {
+        return asString(entry);
+      }).filter(Boolean) : []
     };
   }
 

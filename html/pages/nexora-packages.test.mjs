@@ -112,6 +112,7 @@ test('opens a payment modal for paid plans and a Booking-style form for the AI V
   assert.match(runtime, /openPackageTrialModal/);
   assert.match(runtime, /submitPackageTrial/);
   assert.match(runtime, /data-package-payment-confirm/);
+  assert.equal((runtime.match(/product: 'NEXPRA TOUCH'/g) || []).length, 3);
   assert.match(css, /\.package-payment-modal\s*\{/);
   assert.match(css, /\.package-payment-list\s*\{/);
   assert.match(css, /\.package-payment-invoice\s*\{/);

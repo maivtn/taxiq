@@ -76,8 +76,14 @@
     .choice-icon { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: var(--purple); background: #f8eafe; font-size: 11px; font-weight: 850; letter-spacing: .02em; }
     .choice-card:disabled .choice-icon { filter: grayscale(1); opacity: .55; }
     .choice-title { display: block; margin-top: 5px; font-size: 12.5px; font-weight: 850; letter-spacing: -.01em; line-height: 1.2; }
+    .service-type-tag { display: inline-block; margin-left: 5px; padding: 2px 5px; border-radius: 999px; color: var(--purple); background: #f1edff; font-size: 9px; font-weight: 850; letter-spacing: 0; line-height: 1.2; vertical-align: middle; }
     .choice-detail { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 6px; margin-top: 3px; color: var(--muted); font-size: 10px; }
     .choice-price { color: var(--pink-dark); font-size: 13px; font-weight: 850; }
+    .service-choice-actions { display: flex; width: 100%; gap: 6px; margin-top: 7px; }
+    .service-action { width: auto; min-height: 29px; flex: 0 0 auto; padding: 4px 8px; border: 1px solid #ded5f0; border-radius: 9px; color: var(--purple); background: #fff; font-size: 11px; font-weight: 850; transition: border-color .18s, background .18s, color .18s, transform .18s; }
+    .service-action:hover { border-color: #c9b8ee; background: #faf7ff; transform: translateY(-1px); }
+    .service-choice-card { cursor: pointer; }
+    .service-choice-card:focus-visible { outline: 3px solid rgba(247, 53, 152, .28); outline-offset: 3px; }
     .service-grid .choice-card { justify-content: flex-start; gap: 2px; padding: 6px 8px; }
     .service-grid .choice-card[aria-pressed="true"] { padding: 6px 8px; }
     .service-grid .choice-title { margin-top: 0; }
@@ -95,6 +101,27 @@
     .service-category-count { flex: 0 0 auto; margin-left: auto; padding: 3px 8px; border-radius: 999px; color: var(--purple); background: #f1edff; font-size: 10px; font-weight: 850; }
     .service-category .service-grid { padding: 8px; }
     .service-catalog-loading { padding: 16px 12px; border: 1px dashed #d8cceb; border-radius: 14px; color: var(--muted); background: #faf8ff; font-size: 12px; font-weight: 700; text-align: center; }
+    .service-notes { display: grid; gap: 8px; margin-top: 12px; padding: 12px 14px; border: 1px solid #eadff5; border-radius: 14px; color: #4d4968; background: #fbf8ff; }
+    .service-notes-label { color: var(--ink); font-size: 12px; font-weight: 850; }
+    .service-notes ul { display: grid; gap: 5px; margin: 0; padding-left: 19px; font-size: 12px; line-height: 1.5; }
+    .service-description-modal { position: fixed; z-index: 20; inset: 0; display: grid; place-items: center; padding: 18px; }
+    .service-description-backdrop { position: absolute; inset: 0; background: rgba(29, 27, 58, .42); backdrop-filter: blur(5px); }
+    .service-description-dialog { position: relative; width: min(100%, 520px); max-height: min(85vh, 620px); overflow: auto; padding: 22px; border: 1px solid rgba(226, 220, 241, .95); border-radius: 24px; background: #fff; box-shadow: 0 24px 70px rgba(46, 28, 81, .28); }
+    .service-description-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .service-description-eyebrow { margin: 0 0 6px; color: var(--pink-dark); font-size: 11px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    .service-description-dialog h2 { margin: 0; color: var(--ink); font-size: 22px; line-height: 1.2; }
+    .service-description-close { display: grid; width: 32px; height: 32px; flex: 0 0 32px; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); background: #fff; font-size: 20px; line-height: 1; }
+    .service-description-close:hover { color: var(--ink); background: var(--surface-soft); }
+    .service-description-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .service-description-meta span { display: inline-flex; align-items: baseline; gap: 5px; padding: 7px 10px; border-radius: 10px; color: var(--muted); background: #f8f5ff; font-size: 12px; }
+    .service-description-meta small { font-size: 11px; font-weight: 700; }
+    .service-description-meta strong { color: var(--ink); font-size: 13px; font-weight: 850; }
+    .service-description-content { margin: 18px 0 0; color: #4d4968; font-size: 15px; font-weight: 500; line-height: 1.75; letter-spacing: .005em; white-space: pre-line; }
+    .service-description-includes { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .service-description-includes h3 { margin: 0; color: var(--ink); font-size: 14px; font-weight: 850; }
+    .service-description-includes ul { display: grid; gap: 8px; margin: 10px 0 0; padding-left: 20px; color: #4d4968; font-size: 14px; line-height: 1.55; }
+    .service-description-dialog .secondary-button { width: 100%; margin-top: 18px; }
+    body.service-description-open { overflow: hidden; }
     .selected-services { display: grid; gap: 8px; margin-top: 10px; padding: 10px 12px; border: 1px solid #eadff5; border-radius: 14px; background: #fff; }
     .selected-services-label { color: var(--muted); font-size: 11px; font-weight: 850; }
     .selected-service-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -243,6 +270,10 @@
         <div class="service-category-list" id="service-options" data-service-catalog aria-live="polite">
           <div class="service-catalog-loading">Đang tải danh mục dịch vụ…</div>
         </div>
+        <div class="service-notes" id="service-notes" hidden aria-live="polite">
+          <span class="service-notes-label">Lưu ý</span>
+          <ul id="service-notes-list"></ul>
+        </div>
         <div class="selected-services" id="selected-services" hidden aria-live="polite">
           <span class="selected-services-label">Dịch vụ đã chọn</span>
           <div class="selected-service-chips" id="selected-service-chips"></div>
@@ -333,6 +364,28 @@
         <button class="secondary-button" type="button" data-action="new-booking">＋ Đặt lịch mới</button>
       </section>
     </main>
+    <div class="service-description-modal" id="service-description-modal" hidden aria-hidden="true">
+      <div class="service-description-backdrop" data-service-modal-close></div>
+      <section class="service-description-dialog" role="dialog" aria-modal="true" aria-labelledby="service-description-title">
+        <div class="service-description-dialog-head">
+          <div>
+            <p class="service-description-eyebrow">Mô tả dịch vụ</p>
+            <h2 id="service-description-title"></h2>
+          </div>
+          <button class="service-description-close" type="button" data-service-modal-close aria-label="Đóng mô tả">×</button>
+        </div>
+        <div class="service-description-meta" aria-label="Thông tin dịch vụ">
+          <span><small>Giá</small><strong id="service-description-price"></strong></span>
+          <span><small>Thời gian</small><strong id="service-description-duration"></strong></span>
+        </div>
+        <p class="service-description-content" id="service-description-content"></p>
+        <div class="service-description-includes" id="service-description-includes" hidden>
+          <h3>Bao gồm</h3>
+          <ul id="service-description-includes-list"></ul>
+        </div>
+        <button class="secondary-button" type="button" data-service-modal-close>Đóng</button>
+      </section>
+    </div>
     <p class="screen-reader" id="booking-status" role="status" aria-live="polite"></p>
   </div>
 
@@ -345,49 +398,9 @@
         { phone: '8325550198', name: 'Mary Smith' },
         { phone: '7135550142', name: 'Jessica Nguyen' }
       ];
-      const LEGACY_SERVICES = [
-        { id: 'gel', name: 'Gel Manicure', priceCents: 4500, durationMinutes: 45 },
-        { id: 'pedi', name: 'Signature Pedicure', priceCents: 5500, durationMinutes: 60 },
-        { id: 'acrylic', name: 'Acrylic Full Set', priceCents: 7500, durationMinutes: 90 },
-        { id: 'fill', name: 'Acrylic Fill-in', priceCents: 5500, durationMinutes: 60 },
-        { id: 'dipping', name: 'Dipping Nail', priceCents: 5000, durationMinutes: 50 },
-        { id: 'waxing', name: 'Waxing', priceCents: 2500, durationMinutes: 30 },
-        { id: 'classic', name: 'Classic Manicure', priceCents: 3000, durationMinutes: 30 },
-        { id: 'spa-pedi', name: 'Spa Pedicure', priceCents: 7000, durationMinutes: 75 },
-        { id: 'gel-x', name: 'Gel-X Full Set', priceCents: 8500, durationMinutes: 100 },
-        { id: 'builder-gel', name: 'Builder Gel', priceCents: 6500, durationMinutes: 75 },
-        { id: 'french-tip', name: 'French Tip', priceCents: 1500, durationMinutes: 20 },
-        { id: 'nail-art', name: 'Nail Art', priceCents: 2000, durationMinutes: 25 },
-        { id: 'chrome', name: 'Chrome Finish', priceCents: 2000, durationMinutes: 20 },
-        { id: 'paraffin', name: 'Paraffin Treatment', priceCents: 1800, durationMinutes: 20 },
-        { id: 'acrylic-soak', name: 'Acrylic Soak-off', priceCents: 1500, durationMinutes: 20 },
-        { id: 'gel-removal', name: 'Gel Polish Removal', priceCents: 1000, durationMinutes: 15 },
-        { id: 'eyebrow-wax', name: 'Eyebrow Wax', priceCents: 1500, durationMinutes: 15 },
-        { id: 'lip-wax', name: 'Lip Wax', priceCents: 1000, durationMinutes: 10 },
-        { id: 'kids-mani', name: 'Kids Manicure', priceCents: 2500, durationMinutes: 25 },
-        { id: 'kids-pedi', name: 'Kids Pedicure', priceCents: 3500, durationMinutes: 35 }
-      ];
-      let SERVICES = LEGACY_SERVICES;
-      const SERVICE_CATALOG_URL = '../assets/booking-service-catalog-draft.json';
-      const LEGACY_SERVICE_CATEGORIES = [
-        { id: 'manicure', name: 'Manicure', serviceIds: ['classic', 'gel', 'builder-gel', 'french-tip', 'nail-art', 'chrome'] },
-        { id: 'pedicure', name: 'Pedicure', serviceIds: ['pedi', 'spa-pedi'] },
-        { id: 'full-set', name: 'Full set', serviceIds: ['acrylic', 'fill', 'dipping', 'gel-x'] },
-        { id: 'waxing-kids', name: 'Waxing & Kids', serviceIds: ['waxing', 'eyebrow-wax', 'lip-wax', 'kids-mani', 'kids-pedi'] },
-        { id: 'add-ons', name: 'Add-ons', serviceIds: ['paraffin', 'acrylic-soak', 'gel-removal'] }
-      ];
-      function legacyServiceCategories() {
-        return LEGACY_SERVICE_CATEGORIES.map((category) => ({
-          id: category.id,
-          name: category.name,
-          services: category.serviceIds.map((id) => SERVICES.find((service) => service.id === id)).filter(Boolean).map((service) => ({
-            ...service,
-            categoryId: category.id,
-            categoryName: category.name
-          }))
-        })).filter((category) => category.services.length);
-      }
-      let SERVICE_CATEGORIES = legacyServiceCategories();
+      let SERVICES = [];
+      const SERVICE_CATALOG_URL = '../menu/menu.json';
+      let SERVICE_CATEGORIES = [];
       const STAFF = [
         { id: 'any', name: 'Bất kỳ chuyên viên nào', available: true, status: 'Sắp xếp sớm nhất', specialties: SERVICES.map((service) => service.id) },
         { id: 'tina', name: 'Tina', available: true, status: 'Còn lịch trống', specialties: ['gel', 'pedi', 'acrylic', 'fill', 'dipping', 'classic', 'spa-pedi', 'gel-x', 'builder-gel', 'french-tip', 'nail-art', 'chrome'] },
@@ -407,12 +420,22 @@
       const CATALOG = { services: SERVICES, staff: STAFF, slots: [] };
 
       function applyCustomerServiceCatalog(catalog) {
+        const normalizedCatalog = {
+          notes: Array.isArray(catalog.notes)
+            ? catalog.notes.map((entry) => String(entry || '').trim()).filter(Boolean)
+            : []
+        };
         const categories = (Array.isArray(catalog?.categories) ? catalog.categories : []).map((category) => ({
           id: String(category.id || ''),
           name: String(category.name || 'Dịch vụ khác').trim() || 'Dịch vụ khác',
           services: (Array.isArray(category.services) ? category.services : []).map((service) => ({
             id: String(service.id || ''),
             name: String(service.name || 'Dịch vụ chưa đặt tên').trim() || 'Dịch vụ chưa đặt tên',
+            description: String(service.description || '').trim(),
+            includes: Array.isArray(service.includes)
+              ? service.includes.map((entry) => String(entry || '').trim()).filter(Boolean)
+              : [],
+            type: String(service.type || '').trim(),
             priceCents: service.price == null || !Number.isFinite(Number(service.price)) ? 0 : Math.max(0, Math.round(Number(service.price) * 100)),
             durationMinutes: Number(service.durationMin) > 0 ? Number(service.durationMin) : 60,
             categoryId: String(category.id || ''),
@@ -425,6 +448,7 @@
         SERVICES = services;
         SERVICE_CATEGORIES = categories;
         CATALOG.services = SERVICES;
+        CATALOG.notes = normalizedCatalog.notes;
         STAFF.forEach((staff) => {
           if (staff.available) staff.specialties = SERVICES.map((service) => service.id);
         });
@@ -537,6 +561,7 @@
       }[character]));
       const serviceById = (id) => SERVICES.find((service) => service.id === id);
       const staffById = (id) => STAFF.find((staff) => staff.id === id);
+      let serviceDescriptionModalOpener = null;
 
       function renderServiceCatalog(categories = SERVICE_CATEGORIES) {
         const container = $('#service-options');
@@ -544,10 +569,13 @@
         container.innerHTML = categories.map((category) => {
           const services = category.services.map((service) => {
             const price = Number(service.priceCents) > 0 ? money(service.priceCents) : 'Liên hệ';
-            return `<button class="choice-card" type="button" data-service-id="${escapeHtml(service.id)}" aria-pressed="false">
-              <span class="choice-title">${escapeHtml(service.name)}</span>
+            const viewButton = service.description ? `<button class="service-action service-action-view" type="button" data-service-view-id="${escapeHtml(service.id)}">Xem</button>` : '';
+            const serviceActions = viewButton ? `<span class="service-choice-actions">${viewButton}</span>` : '';
+            return `<div class="choice-card service-choice-card" data-service-id="${escapeHtml(service.id)}" role="button" tabindex="0" aria-label="Chọn ${escapeHtml(service.name)}" aria-pressed="false">
+              <span class="choice-title">${escapeHtml(service.name)}${service.type ? ` <span class="service-type-tag">${escapeHtml(service.type)}</span>` : ''}</span>
               <span class="choice-detail"><span>${escapeHtml(service.durationMinutes)} phút</span><strong class="choice-price">${escapeHtml(price)}</strong></span>
-            </button>`;
+              ${serviceActions}
+            </div>`;
           }).join('');
           return `<details class="service-category" data-service-category="${escapeHtml(category.id)}">
             <summary><span class="service-category-name" data-service-category-name>${escapeHtml(category.name)}</span><span class="service-category-count" data-service-category-count>${category.services.length} dịch vụ</span><i data-lucide="chevron-down" class="service-category-chevron" aria-hidden="true"></i></summary>
@@ -555,6 +583,55 @@
           </details>`;
         }).join('') || '<div class="service-catalog-loading">Chưa có dịch vụ.</div>';
         window.lucide?.createIcons();
+      }
+
+      function renderServiceNotes(notes = CATALOG.notes) {
+        const section = $('#service-notes');
+        const list = $('#service-notes-list');
+        if (!section || !list) return;
+        const entries = Array.isArray(notes) ? notes.filter(Boolean) : [];
+        list.replaceChildren(...entries.map((entry) => {
+          const item = document.createElement('li');
+          item.textContent = entry;
+          return item;
+        }));
+        section.hidden = entries.length === 0;
+      }
+
+      function openServiceDescription(id, opener) {
+        const service = serviceById(id);
+        const modal = $('#service-description-modal');
+        if (!service?.description || !modal) return;
+        setText('#service-description-title', service.name);
+        setText('#service-description-price', Number(service.priceCents) > 0 ? money(service.priceCents) : 'Liên hệ');
+        setText('#service-description-duration', Number(service.durationMinutes) > 0 ? `${service.durationMinutes} phút` : '—');
+        setText('#service-description-content', service.description);
+        const includes = Array.isArray(service.includes) ? service.includes.filter(Boolean) : [];
+        const includesSection = $('#service-description-includes');
+        const includesList = $('#service-description-includes-list');
+        if (includesSection && includesList) {
+          includesList.replaceChildren(...includes.map((entry) => {
+            const item = document.createElement('li');
+            item.textContent = entry;
+            return item;
+          }));
+          includesSection.hidden = includes.length === 0;
+        }
+        serviceDescriptionModalOpener = opener || null;
+        modal.hidden = false;
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('service-description-open');
+        modal.querySelector('button[data-service-modal-close]')?.focus();
+      }
+
+      function closeServiceDescription() {
+        const modal = $('#service-description-modal');
+        if (!modal) return;
+        modal.hidden = true;
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('service-description-open');
+        serviceDescriptionModalOpener?.focus();
+        serviceDescriptionModalOpener = null;
       }
 
       function renderSelectedServices() {
@@ -572,13 +649,25 @@
 
       function loadCustomerServiceCatalog() {
         const loader = window.NEXORA_APPOINTMENT_SERVICE_CATALOG;
-        if (!loader || typeof loader.load !== 'function') return Promise.resolve(false);
+        if (!loader || typeof loader.load !== 'function') {
+          setServiceCatalogMessage('Không thể tải danh mục dịch vụ.');
+          return Promise.resolve(false);
+        }
         return loader.load(SERVICE_CATALOG_URL).then((catalog) => {
           if (!applyCustomerServiceCatalog(catalog)) return false;
           renderServiceCatalog(SERVICE_CATEGORIES);
+          renderServiceNotes(CATALOG.notes);
           renderSelections();
           return true;
-        }).catch(() => false);
+        }).catch(() => {
+          setServiceCatalogMessage('Không thể tải danh mục dịch vụ.');
+          return false;
+        });
+      }
+
+      function setServiceCatalogMessage(message) {
+        const container = $('#service-options');
+        if (container) container.innerHTML = `<div class="service-catalog-loading">${escapeHtml(message)}</div>`;
       }
 
       function renderSlotOptions() {
@@ -681,10 +770,10 @@
       }
 
       function renderSelections() {
-        $$('[data-service-id]').forEach((button) => {
-          const selected = state.selectedServiceIds.includes(button.dataset.serviceId);
-          button.setAttribute('aria-pressed', String(selected));
-        });
+            $$('[data-service-id]').forEach((card) => {
+              const selected = state.selectedServiceIds.includes(card.dataset.serviceId);
+              card.setAttribute('aria-pressed', String(selected));
+            });
         renderSelectedServices();
         const dateOptions = $('#date-options');
         const timeOptions = $('#time-options');
@@ -861,13 +950,17 @@
 
       document.addEventListener('click', (event) => {
         const removeService = event.target.closest?.('[data-remove-service-id]');
-        const service = event.target.closest?.('[data-service-id]');
+        const viewService = event.target.closest?.('[data-service-view-id]');
+        const closeDescription = event.target.closest?.('[data-service-modal-close]');
+        const serviceCard = event.target.closest?.('[data-service-id]');
         const staff = event.target.closest?.('[data-staff-id]');
         const date = event.target.closest?.('[data-booking-date]');
         const time = event.target.closest?.('[data-booking-time]');
         const action = event.target.closest?.('[data-action]');
         if (removeService) { chooseService(removeService.dataset.removeServiceId); return; }
-        if (service) chooseService(service.dataset.serviceId);
+        if (viewService) { openServiceDescription(viewService.dataset.serviceViewId, viewService); return; }
+        if (closeDescription) { closeServiceDescription(); return; }
+        if (serviceCard) { chooseService(serviceCard.dataset.serviceId); return; }
         if (staff && !staff.disabled) { state.selectedStaffId = staff.dataset.staffId; renderSelections(); }
         if (date) { state.selectedDate = date.dataset.bookingDate; renderSelections(); }
         if (time) { state.selectedTime = time.dataset.bookingTime; renderSelections(); }
@@ -878,10 +971,19 @@
         if (action.dataset.action === 'new-booking') { state = defaultState(); renderSteps(); }
       });
 
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !$('#service-description-modal')?.hidden) closeServiceDescription();
+        const serviceCard = event.target.closest?.('[data-service-id]');
+        if (!serviceCard || event.target.closest?.('button')) return;
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          chooseService(serviceCard.dataset.serviceId);
+        }
+      });
+
       renderSlotOptions();
       const smsOptIn = $('#sms-opt-in');
       if (smsOptIn) smsOptIn.checked = Boolean(state.customer.smsOptIn);
-      renderServiceCatalog(SERVICE_CATEGORIES);
       renderSteps();
       loadCustomerServiceCatalog();
     })();
