@@ -330,7 +330,8 @@ test('Queue cards keep responsive flex columns while their child rows fill each 
   assert.match(html, /@media \(max-width: 900px\) \{[\s\S]*\[data-wait-list\] > \.wl-card \{[\s\S]*flex-basis: calc\(50% - 6px\)/);
   assert.match(html, /@media \(max-width: 640px\) \{[\s\S]*\[data-wait-list\] > \.wl-card \{[\s\S]*flex-basis: 100%/);
   assert.doesNotMatch(html, /\[data-wait-list\] > \.wl-card \{[^}]*flex: 1 1 100%/);
-  assert.doesNotMatch(html, /\.queue-card \{[^}]*width: 100%/);
+  const baseQueueCardRule = html.match(/^\s*\.queue-card \{[^}]*\}/m)?.[0] || '';
+  assert.doesNotMatch(baseQueueCardRule, /(?:^|[;{]\s*)width:\s*100%/);
   assert.doesNotMatch(html, /\[data-wait-list\][^{]*\{ display: grid/);
 });
 
@@ -409,6 +410,38 @@ test('Tech access requests panel has a card/table view switch that carries the s
   const table = html.match(/function renderArqTable\(rows\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(table, /<th scope="col">Tech<\/th><th scope="col">Ticket<\/th><th scope="col">Currently<\/th><th scope="col">Skill<\/th><th scope="col">Actions<\/th>/);
   assert.match(html, /html\('\[data-arq-list\]', arqViewMode === 'table' \? renderArqTable\(rows\) : rows\.map\(arqCardHtml\)\.join\(''\)\);/);
+});
+
+test('Tech access request cards use the Queue card hierarchy with access-request content', () => {
+  const card = html.match(/function arqCardHtml\(row\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(card, /class="wl-card queue-card/);
+  assert.match(card, /queue-card-head/);
+  assert.match(card, /queue-card-identity/);
+  assert.match(card, /queue-card-status/);
+  assert.match(card, /queue-card-details/);
+  assert.match(card, /queue-card-service/);
+  assert.match(card, /queue-card-meta/);
+  assert.match(card, /queue-card-tech/);
+  assert.match(card, /queue-card-booking/);
+  assert.match(card, /queue-card-actions/);
+  assert.match(card, /arqActionsHtml\(r, t\)/);
+  assert.match(card, /esc\(t\.name\)/);
+  assert.match(card, /w\.id/);
+  assert.match(card, /esc\(w\.name\)/);
+  assert.match(card, /posServiceDisplayName\(w\.svc \|\| ''\)/);
+  assert.match(card, /techName\(w\.techId\)/);
+  assert.match(card, /arqSkillHtml\(req, ok\)/);
+  assert.doesNotMatch(card, /wl-info/);
+  assert.doesNotMatch(card, /wl-actions/);
+});
+
+test('Tech access request card mode uses the same responsive flex columns as Queue', () => {
+  assert.match(html, /\[data-arq-list\]:has\(> \.queue-card\) \{[\s\S]*display: flex;[\s\S]*flex-wrap: wrap/);
+  assert.match(html, /\[data-arq-list\] > \.queue-card \{[\s\S]*flex: 0 0 calc\(25% - 9px\);[\s\S]*max-width: calc\(25% - 9px\);[\s\S]*margin-bottom: 0/);
+  assert.match(html, /\[data-arq-list\] > \.booking-table-wrap \{[\s\S]*flex: 1 1 100%;[\s\S]*width: 100%/);
+  assert.match(html, /@media \(max-width: 1199px\) \{[\s\S]*\[data-arq-list\] > \.queue-card \{ flex-basis: calc\(33\.333% - 8px\); max-width: calc\(33\.333% - 8px\); \}/);
+  assert.match(html, /@media \(max-width: 900px\) \{[\s\S]*\[data-arq-list\] > \.queue-card \{ flex-basis: calc\(50% - 6px\); max-width: calc\(50% - 6px\); \}/);
+  assert.match(html, /@media \(max-width: 640px\) \{[\s\S]*\[data-arq-list\]:has\(> \.queue-card\) \{ gap: 8px; \}[\s\S]*\[data-arq-list\] > \.queue-card \{ flex-basis: 100%; max-width: 100%; \}/);
 });
 
 test('Customers table uses 7 focused columns with a separate Source chip, and Notes stay in the profile modal', () => {

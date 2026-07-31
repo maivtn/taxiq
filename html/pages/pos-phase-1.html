@@ -218,16 +218,21 @@
     }
     .wl-card:last-child { margin-bottom: 0; }
 
-    /* ── queue (Tickets tab) list — Bootstrap-style flex row/col (not CSS grid): cards
+    /* ── queue-style card lists — Bootstrap-style flex row/col (not CSS grid): cards
        keep responsive columns; each card's child rows own the full left-aligned width. ── */
     [data-wait-list]:has(> .wl-card) { display: flex; flex-wrap: wrap; gap: 12px; }
     [data-wait-list] > .wl-card { flex: 0 0 calc(25% - 9px); max-width: calc(25% - 9px); min-width: 0; margin-bottom: 0; }
     [data-wait-list] > .booking-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
+    [data-arq-list]:has(> .queue-card) { display: flex; flex-wrap: wrap; gap: 12px; }
+    [data-arq-list] > .queue-card { flex: 0 0 calc(25% - 9px); max-width: calc(25% - 9px); min-width: 0; margin-bottom: 0; }
+    [data-arq-list] > .booking-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
     @media (max-width: 1199px) {
       [data-wait-list] > .wl-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
+      [data-arq-list] > .queue-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
     }
     @media (max-width: 900px) {
       [data-wait-list] > .wl-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
+      [data-arq-list] > .queue-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
     }
 
     /* ── single ticket card: a flex column of full-width rows (Bootstrap-style row/col via
@@ -535,6 +540,8 @@
       .wl-actions { flex-wrap: wrap; }
       [data-wait-list]:has(> .wl-card) { gap: 8px; }
       [data-wait-list] > .wl-card { flex-basis: 100%; max-width: 100%; }
+      [data-arq-list]:has(> .queue-card) { gap: 8px; }
+      [data-arq-list] > .queue-card { flex-basis: 100%; max-width: 100%; }
       .queue-card { padding: 8px; }
       .queue-card-actions { justify-content: flex-start; }
       .queue-card-status { flex-wrap: nowrap; white-space: nowrap; }
@@ -2975,11 +2982,20 @@
       }
       function arqCardHtml(row) {
         var r = row.r, w = row.w, t = row.t, req = row.req, ok = row.ok;
-        return '<div class="wl-card">' +
-          '<div class="wl-info"><div class="wl-name"><i class="bi bi-brush" aria-hidden="true"></i> ' + esc(t.name) + ' wants ticket #' + w.id + ' — ' + esc(w.name) + '</div>' +
-          '<div class="wl-meta">' + esc(posServiceDisplayName(w.svc || '')) + ' · currently: ' + (w.techId ? esc(techName(w.techId)) : 'unassigned') + ' · skill ' + (req || '—') + ': ' +
-          (ok ? '<span class="pos-good-text">Eligible ✓</span>' : '<span class="pos-danger-text">Missing ⚠ — approving is an override and is logged</span>') +
-          '</div></div><div class="wl-actions">' + arqActionsHtml(r, t) + '</div></div>';
+        var skillChip = ok
+          ? '<span class="pos-chip pos-chip-green">Eligible</span>'
+          : '<span class="pos-chip pos-chip-amber">Override needed</span>';
+        return '<div class="wl-card queue-card">' +
+          '<div class="queue-card-head"><div class="queue-card-identity">' +
+          '<div class="wl-name"><i class="bi bi-brush" aria-hidden="true"></i> ' + esc(t.name) + '</div>' +
+          '<div class="queue-card-phone"><i class="bi bi-ticket-perforated" aria-hidden="true"></i> wants ticket #' + w.id + ' · ' + esc(w.name) + '</div></div>' +
+          '<div class="queue-card-status"><span class="pos-chip pos-chip-violet">Access request</span>' + skillChip + '</div></div>' +
+          '<div class="queue-card-details"><div class="queue-card-service"><strong>' + esc(posServiceDisplayName(w.svc || '')) + '</strong>' +
+          '<span class="queue-card-sub">Ticket #' + w.id + ' · ' + esc(w.name) + '</span></div>' +
+          '<div class="queue-card-meta">' +
+          '<span class="queue-card-tech"><i class="bi bi-person-check" aria-hidden="true"></i> currently: ' + (w.techId ? esc(techName(w.techId)) : 'Unassigned') + '</span>' +
+          '<span class="queue-card-booking"><i class="bi bi-patch-check" aria-hidden="true"></i> skill ' + arqSkillHtml(req, ok) + '</span>' +
+          '</div></div><div class="queue-card-actions">' + arqActionsHtml(r, t) + '</div></div>';
       }
       // Table mode carries the same info as the card view (tech, ticket, current assignment, skill match).
       function renderArqTable(rows) {
