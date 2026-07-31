@@ -45,6 +45,7 @@
             description: item.description,
             includes: item.includes,
             type: item.type,
+            priceLabel: item.priceLabel,
             price: item.price == null ? priceFromLabel(item.priceLabel) : item.price,
             durationMin: item.durationMin == null ? item.durationMinutes : item.durationMin,
             requiredSkill: item.requiredSkill,
@@ -87,6 +88,14 @@
         var suffix = 1;
         while (seenServiceIds[id]) id = baseId + '-' + suffix++;
         seenServiceIds[id] = true;
+        var priceLabel = asString(service.priceLabel);
+        if (!priceLabel && typeof service.price === 'string') priceLabel = asString(service.price);
+        var numericPrice = service.price == null || service.price === ''
+          ? priceFromLabel(priceLabel)
+          : finiteNumber(service.price, priceFromLabel(service.price));
+        var durationMin = service.durationMin == null || service.durationMin === ''
+          ? null
+          : finiteNumber(service.durationMin, null);
         var normalized = {
           id: id,
           name: name,
@@ -97,12 +106,13 @@
             return asString(entry);
           }).filter(Boolean) : [],
           type: asString(service.type),
-          price: service.price == null || service.price === '' ? null : finiteNumber(service.price, null),
-          durationMin: finiteNumber(service.durationMin, 60),
+          priceLabel: priceLabel,
+          price: numericPrice,
+          durationMin: durationMin,
           requiredSkill: asString(service.requiredSkill),
           icon: asString(service.icon, '✨')
         };
-        if (!(normalized.durationMin > 0)) normalized.durationMin = 60;
+        if (!(normalized.durationMin > 0)) normalized.durationMin = null;
         services.push(normalized);
         return normalized;
       });

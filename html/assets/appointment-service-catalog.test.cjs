@@ -29,6 +29,7 @@ test('normalizes category services into appointment picker options', () => {
       description: '',
       includes: [],
       type: '',
+      priceLabel: '',
       price: 35,
       durationMin: 60,
       requiredSkill: '',
@@ -42,6 +43,7 @@ test('normalizes category services into appointment picker options', () => {
       description: '',
       includes: [],
       type: '',
+      priceLabel: '',
       price: 55,
       durationMin: 75,
       requiredSkill: '',
@@ -61,8 +63,21 @@ test('normalizes missing values without dropping a category service', () => {
   assert.equal(catalog.services[0].description, '');
   assert.deepEqual(catalog.services[0].includes, []);
   assert.equal(catalog.services[0].type, '');
+  assert.equal(catalog.services[0].priceLabel, '');
   assert.equal(catalog.services[0].price, null);
-  assert.equal(catalog.services[0].durationMin, 60);
+  assert.equal(catalog.services[0].durationMin, null);
+});
+
+test('preserves menu price labels and leaves missing durations empty', () => {
+  const catalog = serviceCatalog.normalize(menu);
+  const surcharge = catalog.services.find((service) => service.name === 'Surcharge for A removal Gel or Power');
+  const addOn = catalog.services.find((service) => service.name === 'Add Gel Polish On Any Pedicure');
+
+  assert.equal(surcharge.priceLabel, '$10+');
+  assert.equal(surcharge.price, 10);
+  assert.equal(surcharge.durationMin, null);
+  assert.equal(addOn.priceLabel, '$20');
+  assert.equal(addOn.durationMin, null);
 });
 
 test('normalizes the shared menu into bookable service categories', () => {
@@ -83,6 +98,7 @@ test('normalizes the shared menu into bookable service categories', () => {
       'Premium champagne or wine'
     ],
     type: '',
+    priceLabel: '$499',
     price: 499,
     durationMin: 70,
     requiredSkill: '',

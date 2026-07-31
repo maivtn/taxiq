@@ -168,6 +168,23 @@ test('shows service price and duration in the description modal', () => {
   assert.match(SOURCE, /service-description-meta/);
 });
 
+test('keeps menu price labels and hides missing service durations', () => {
+  assert.match(SOURCE, /priceLabel: String\(service\.priceLabel \|\| ''\)\.trim\(\)/);
+  assert.match(SOURCE, /durationMinutes: Number\(service\.durationMin\) > 0 \? Number\(service\.durationMin\) : null/);
+  assert.match(SOURCE, /const price = service\.priceLabel \|\|/);
+  assert.match(SOURCE, /const duration = Number\(service\.durationMinutes\) > 0/);
+  assert.match(SOURCE, /choice-detail\$\{duration \? '' : ' choice-detail-no-duration'\}/);
+  assert.match(SOURCE, /service\.priceLabel \|\| \(Number\(service\.priceCents\)/);
+});
+
+test('omits unavailable service durations from compact summary UI', () => {
+  assert.match(SOURCE, /data-service-duration-meta/);
+  assert.match(SOURCE, /const durationMeta = \$\('#service-description-duration'\)\?\.closest\('span'\)/);
+  assert.match(SOURCE, /durationMeta\.hidden = !hasDuration/);
+  assert.match(SOURCE, /const durationLabel = total\.durationMinutes > 0/);
+  assert.match(SOURCE, /choice-detail-no-duration/);
+});
+
 test('selects services when clicking the item while keeping view details separate', () => {
   assert.match(SOURCE, /role="button" tabindex="0"/);
   assert.match(SOURCE, /const serviceCard = event\.target\.closest\?\.\('\[data-service-id\]'\)/);
@@ -210,9 +227,9 @@ test('keeps the selected-service trash icon small and light', () => {
   assert.match(removeButtonStyle, /height: 26px/);
   assert.match(removeButtonStyle, /flex: 0 0 26px/);
   const trashStyle = SOURCE.match(/\.selected-service-remove svg \{([^}]*)\}/)?.[1] || '';
-  assert.match(trashStyle, /width: 13px/);
-  assert.match(trashStyle, /height: 13px/);
-  assert.match(trashStyle, /stroke-width: 2/);
+  assert.match(trashStyle, /width: 8px/);
+  assert.match(trashStyle, /height: 8px/);
+  assert.match(trashStyle, /stroke-width: 1(?:\.0)?/);
 });
 
 test('shows selected services as removable chips below the catalog', () => {

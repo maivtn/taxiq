@@ -88,6 +88,7 @@
     .service-grid .choice-detail { width: auto; justify-content: flex-start; gap: 8px; margin-top: 0; }
     .service-grid .choice-price { order: -1; }
     .service-grid .choice-price::after { content: "·"; margin-left: 8px; color: var(--soft-muted); }
+    .service-grid .choice-detail-no-duration .choice-price::after { content: none; }
     .service-category-list { display: grid; gap: 10px; }
     .service-category { overflow: hidden; border: 1px solid var(--line); border-radius: 15px; background: #fff; }
     .service-category > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 12px; color: var(--ink); background: linear-gradient(145deg, #fff, #faf7ff); cursor: pointer; list-style: none; }
@@ -133,7 +134,7 @@
     .selected-service-remove { display: grid; width: 26px; height: 26px; flex: 0 0 26px; place-items: center; padding: 0; border: 1px solid #e7a9c6; border-radius: 50%; color: #c62a69; background: #fff4fa; transition: border-color .18s, color .18s, background .18s, transform .18s; }
     .selected-service-remove:hover { border-color: #c62a69; color: #fff; background: #c62a69; transform: scale(1.06); }
     .selected-service-remove:focus-visible { border-color: #c62a69; color: #fff; background: #c62a69; outline: 3px solid rgba(198, 42, 105, .2); outline-offset: 2px; }
-    .selected-service-remove svg { width: 13px; height: 13px; stroke-width: 2; }
+    .selected-service-remove svg { width: 8px; height: 8px; stroke-width: 1; }
     .selection-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding: 10px 12px; border-radius: 14px; color: var(--muted); background: #f8f5ff; font-size: 12px; }
     .selection-summary strong { color: var(--ink); font-size: 14px; }
     .section-title { margin: 20px 0 6px; font-size: 14px; font-weight: 850; letter-spacing: 0; }
@@ -379,7 +380,7 @@
         </div>
         <div class="service-description-meta" aria-label="Thông tin dịch vụ">
           <span><small>Giá</small><strong id="service-description-price"></strong></span>
-          <span><small>Thời gian</small><strong id="service-description-duration"></strong></span>
+          <span data-service-duration-meta><small>Thời gian</small><strong id="service-description-duration"></strong></span>
         </div>
         <p class="service-description-content" id="service-description-content"></p>
         <div class="service-description-includes" id="service-description-includes" hidden>
@@ -439,8 +440,9 @@
               ? service.includes.map((entry) => String(entry || '').trim()).filter(Boolean)
               : [],
             type: String(service.type || '').trim(),
+            priceLabel: String(service.priceLabel || '').trim(),
             priceCents: service.price == null || !Number.isFinite(Number(service.price)) ? 0 : Math.max(0, Math.round(Number(service.price) * 100)),
-            durationMinutes: Number(service.durationMin) > 0 ? Number(service.durationMin) : 60,
+            durationMinutes: Number(service.durationMin) > 0 ? Number(service.durationMin) : null,
             categoryId: String(category.id || ''),
             categoryName: String(category.name || 'Dịch vụ khác').trim() || 'Dịch vụ khác'
           })).filter((service) => service.id)
@@ -571,12 +573,13 @@
         if (!container) return;
         container.innerHTML = categories.map((category) => {
           const services = category.services.map((service) => {
-            const price = Number(service.priceCents) > 0 ? money(service.priceCents) : 'Liên hệ';
+            const price = service.priceLabel || (Number(service.priceCents) > 0 ? money(service.priceCents) : 'Liên hệ');
+            const duration = Number(service.durationMinutes) > 0 ? `<span>${escapeHtml(service.durationMinutes)} phút</span>` : '';
             const viewButton = service.description ? `<button class="service-action service-action-view" type="button" data-service-view-id="${escapeHtml(service.id)}">View details</button>` : '';
             const serviceActions = viewButton ? `<span class="service-choice-actions">${viewButton}</span>` : '';
             return `<div class="choice-card service-choice-card" data-service-id="${escapeHtml(service.id)}" role="button" tabindex="0" aria-label="Chọn ${escapeHtml(service.name)}" aria-pressed="false">
               <span class="choice-title">${escapeHtml(service.name)}${service.type ? ` <span class="service-type-tag">${escapeHtml(service.type)}</span>` : ''}</span>
-              <span class="choice-detail"><span>${escapeHtml(service.durationMinutes)} phút</span><strong class="choice-price">${escapeHtml(price)}</strong></span>
+              <span class="choice-detail${duration ? '' : ' choice-detail-no-duration'}">${duration}<strong class="choice-price">${escapeHtml(price)}</strong></span>
               ${serviceActions}
             </div>`;
           }).join('');
@@ -615,8 +618,11 @@
         const modal = $('#service-description-modal');
         if (!service?.description || !modal) return;
         setText('#service-description-title', service.name);
-        setText('#service-description-price', Number(service.priceCents) > 0 ? money(service.priceCents) : 'Liên hệ');
-        setText('#service-description-duration', Number(service.durationMinutes) > 0 ? `${service.durationMinutes} phút` : '—');
+        const hasDuration = Number(service.durationMinutes) > 0;
+        const durationMeta = $('#service-description-duration')?.closest('span');
+        if (durationMeta) durationMeta.hidden = !hasDuration;
+        setText('#service-description-price', service.priceLabel || (Number(service.priceCents) > 0 ? money(service.priceCents) : 'Liên hệ'));
+        setText('#service-description-duration', hasDuration ? `${service.durationMinutes} phút` : '');
         setText('#service-description-content', service.description);
         const includes = Array.isArray(service.includes) ? service.includes.filter(Boolean) : [];
         const includesSection = $('#service-description-includes');
@@ -809,7 +815,8 @@
           }
         });
         const total = calculateBookingTotal(state.selectedServiceIds, SERVICES);
-        setText('#service-count', state.selectedServiceIds.length ? `${state.selectedServiceIds.length} dịch vụ · ${minutes(total.durationMinutes)}` : 'Chưa có dịch vụ được chọn');
+        const durationLabel = total.durationMinutes > 0 ? ` · ${minutes(total.durationMinutes)}` : '';
+        setText('#service-count', state.selectedServiceIds.length ? `${state.selectedServiceIds.length} dịch vụ${durationLabel}` : 'Chưa có dịch vụ được chọn');
         setText('#service-total', money(total.totalCents));
         renderActionStates();
       }
