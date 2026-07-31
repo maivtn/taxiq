@@ -542,7 +542,13 @@
             </div>
 
             <div class="pos-card panel-violet" data-ciq-panel hidden>
-              <div class="pos-card-head"><h3><i class="bi bi-inbox-fill" aria-hidden="true"></i> Check-in from the Nexora App / QR — waiting on the front desk (<span data-ciq-count>0</span>)</h3></div>
+              <div class="pos-card-head">
+                <h3><i class="bi bi-inbox-fill" aria-hidden="true"></i> Check-in from the Nexora App / QR — waiting on the front desk (<span data-ciq-count>0</span>)</h3>
+                <div class="booking-view-switch" role="group" aria-label="Check-in requests view mode">
+                  <button class="booking-view-button is-active" type="button" data-ciq-view-target="card" aria-pressed="true"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
+                  <button class="booking-view-button" type="button" data-ciq-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
+                </div>
+              </div>
               <div data-ciq-list></div>
             </div>
 
@@ -1863,7 +1869,7 @@
           });
         });
         MENU = salonCatalog.services.filter(function (service) { return service.active; }).map(function (service) {
-          return { id: service.id, label: service.name, icon: service.icon || '✨', price: service.price, durationMin: service.durationMin, requiredSkill: service.requiredSkill || '' };
+          return { id: service.id, label: posServiceDisplayName(service.name), price: service.price, durationMin: service.durationMin, requiredSkill: service.requiredSkill || '' };
         });
         SVC_REQ = {};
         salonCatalog.services.forEach(function (service) { SVC_REQ[service.id] = service.requiredSkill || ''; });
@@ -1914,12 +1920,12 @@
 
       // Guests on the floor right now. atMs/svcAtMs/readyAtMs drive the live timers.
       var WAITLIST = [
-        { id: 1, name: 'Jessica Kim', phone: '(832) 906-4471', badge: 'blue', badgeTxt: '↩️ 8 visits', svc: '🦶 Pedicure', at: '1:05 PM', atMs: Date.now() - 25 * 60000, status: 'waiting', techId: null, reqTech: null, items: [], log: [] },
-        { id: 4, name: 'Lisa Trương', phone: '(281) 903-5517', badge: 'gray', badgeTxt: '🆕 New', svc: '✨ Acrylic — Full Set', at: '1:32 PM', atMs: Date.now() - 8 * 60000, status: 'waiting', techId: null, reqTech: 't2', items: [],
+        { id: 1, name: 'Jessica Kim', phone: '(832) 906-4471', badge: 'blue', badgeTxt: '↩️ 8 visits', svc: 'Pedicure', at: '1:05 PM', atMs: Date.now() - 25 * 60000, status: 'waiting', techId: null, reqTech: null, items: [], log: [] },
+        { id: 4, name: 'Lisa Trương', phone: '(281) 903-5517', badge: 'gray', badgeTxt: '🆕 New', svc: 'Acrylic — Full Set', at: '1:32 PM', atMs: Date.now() - 8 * 60000, status: 'waiting', techId: null, reqTech: 't2', items: [],
           log: [{ at: Date.now() - 8 * 60000, msg: '📥 Kiosk check-in — requested Kim (⚠ Kim has no Acrylic skill)' }] },
-        { id: 2, name: 'Linh Trần', phone: '(832) 431-8827', badge: 'gold', badgeTxt: '⭐ VIP · 24 visits', svc: '✨ Acrylic — Full Set', at: '1:20 PM', atMs: Date.now() - 40 * 60000, status: 'service', techId: 't3', svcAtMs: Date.now() - 35 * 60000,
+        { id: 2, name: 'Linh Trần', phone: '(832) 431-8827', badge: 'gold', badgeTxt: '⭐ VIP · 24 visits', svc: 'Acrylic — Full Set', at: '1:20 PM', atMs: Date.now() - 40 * 60000, status: 'service', techId: 't3', svcAtMs: Date.now() - 35 * 60000,
           items: [{ name: 'Ombre Full Set', price: 70, techId: 't3', cat: 'full' }], log: [] },
-        { id: 3, name: 'Amy Đặng', phone: '(713) 550-2214', badge: 'blue', badgeTxt: '↩️ 5 visits', svc: '🤲 Manicure', at: '12:50 PM', atMs: Date.now() - 55 * 60000, status: 'ready', techId: 't2', svcAtMs: Date.now() - 50 * 60000, readyAtMs: Date.now() - 4 * 60000,
+        { id: 3, name: 'Amy Đặng', phone: '(713) 550-2214', badge: 'blue', badgeTxt: '↩️ 5 visits', svc: 'Manicure', at: '12:50 PM', atMs: Date.now() - 55 * 60000, status: 'ready', techId: 't2', svcAtMs: Date.now() - 50 * 60000, readyAtMs: Date.now() - 4 * 60000,
           items: [{ name: 'Gel Shellac Manicure', price: 45, techId: 't2', cat: 'mani' }],
           log: [
             { at: Date.now() - 55 * 60000, msg: '📥 Kiosk check-in — returning guest (5 visits)' },
@@ -2039,7 +2045,7 @@
           html('[data-ci-results]', matches.map(function (b) {
             return '<div class="wl-card">' +
               '<div class="wl-info"><div class="wl-name">' + esc(b.name) + ' <span class="pos-chip pos-chip-blue">' + esc(b.time || '') + '</span></div>' +
-              '<div class="wl-meta">' + esc(b.svc || 'Service TBD') + (b.techId ? ' · 📌 ' + esc(techName(b.techId)) : '') + '</div></div>' +
+              '<div class="wl-meta">' + esc(posServiceDisplayName(b.svc || 'Service TBD')) + (b.techId ? ' · 📌 ' + esc(techName(b.techId)) : '') + '</div></div>' +
               '<div class="wl-actions"><button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-ci-checkin="' + esc(b.id) + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Check in</button></div>' +
               '</div>';
           }).join(''));
@@ -2136,7 +2142,10 @@
 
       // Check-in requests from the Nexora App / web QR, waiting on the front desk
       var CHECKINQ = [
-        { id: 'rq1', name: 'Mia Chen', src: '📱 App · 312 pts', svc: 'Milk and Honey Pedicure', reqTech: 't1', promo: 'Reward −$5' }
+        { id: 'rq1', name: 'Mia Chen', src: '📱 App · 312 pts', svc: 'Milk and Honey Pedicure', reqTech: 't1', promo: 'Reward −$5' },
+        { id: 'rq2', name: 'Olivia Park', src: '🌐 QR · guest', svc: 'Gel Shellac Manicure', reqTech: null, promo: '' },
+        { id: 'rq3', name: 'Daniela Ruiz', src: '📱 App · 86 pts', svc: 'Acrylic — Full Set', reqTech: 't3', promo: 'First visit −10%' },
+        { id: 'rq4', name: 'Sophia Nguyen', src: '🌐 QR · returning', svc: 'Paraffin Wax', reqTech: null, promo: 'Member price' }
       ];
       // Techs asking for access to a ticket they scanned in the Staff App
       var ACCESSQ = [
@@ -2147,18 +2156,18 @@
       /* 🧠 #80 tier 1 — ticket history writes itself on every paid bill; "usual" is derived, never typed. */
       var CUSTHIST = {
         'Jessica Kim': [
-          { svc: '🦶 Pedicure', techId: 't3', daysAgo: 78, tip: 15 },
-          { svc: '🦶 Pedicure', techId: 't2', daysAgo: 52, tip: 18 },
-          { svc: '🦶 Pedicure', techId: 't2', daysAgo: 26, tip: 18 }
+          { svc: 'Pedicure', techId: 't3', daysAgo: 78, tip: 15 },
+          { svc: 'Pedicure', techId: 't2', daysAgo: 52, tip: 18 },
+          { svc: 'Pedicure', techId: 't2', daysAgo: 26, tip: 18 }
         ],
         'Linh Trần': [
-          { svc: '✨ Full Set', techId: 't3', daysAgo: 42, tip: 25 },
-          { svc: '✨ Fill', techId: 't3', daysAgo: 28, tip: 22 },
-          { svc: '✨ Fill', techId: 't3', daysAgo: 14, tip: 24 }
+          { svc: 'Full Set', techId: 't3', daysAgo: 42, tip: 25 },
+          { svc: 'Fill', techId: 't3', daysAgo: 28, tip: 22 },
+          { svc: 'Fill', techId: 't3', daysAgo: 14, tip: 24 }
         ],
         'Mai Nguyễn': [
-          { svc: '💅 Gel Service', techId: 't2', daysAgo: 60, tip: 20 },
-          { svc: '💅 Gel Service', techId: 't2', daysAgo: 30, tip: 22 }
+          { svc: 'Gel Service', techId: 't2', daysAgo: 60, tip: 20 },
+          { svc: 'Gel Service', techId: 't2', daysAgo: 30, tip: 22 }
         ]
       };
       // 📦 #90 — prepaid packages: sold once, one visit deducted each time
@@ -2400,7 +2409,7 @@
       // factored out so the profile modal can show its own editable Tags section without duplicating them.
       function custUsualPkgHtml(name) {
         var u = custUsual(name);
-        var uLine = u ? '<div class="cust-usual">🧠 Usual: ' + esc(u.svc || '—') +
+        var uLine = u ? '<div class="cust-usual">🧠 Usual: ' + esc(posServiceDisplayName(u.svc || '—')) +
           (u.tech ? ' · regular ' + esc(techName(u.tech)) : '') +
           (u.cyc ? ' · every ~' + u.cyc + ' days' : '') +
           ' · last visit ' + (u.last === 0 ? 'today' : u.last + ' days ago') +
@@ -2443,7 +2452,7 @@
           var price = detail && detail.price != null ? ' · ' + money(detail.price) : '';
           return '<span class="pos-chip pos-chip-blue">' + esc(label + duration + price) + '</span>';
         }).join('');
-        if (!serviceChips) serviceChips = '<span class="pos-muted">' + esc(b.svc || 'Service TBD') + '</span>';
+        if (!serviceChips) serviceChips = '<span class="pos-muted">' + esc(posServiceDisplayName(b.svc || 'Service TBD')) + '</span>';
         var statusLabel = b.status === 'checked-in' ? 'Checked in' : b.status === 'confirmed' ? 'Confirmed' : 'Upcoming';
         var detailCollapse = '<div class="cust-upcoming-collapse" id="cust-upcoming-detail-' + esc(b.id) + '" data-cust-upcoming-collapse hidden>' +
           '<div class="cust-upcoming-detail-grid">' +
@@ -2461,7 +2470,7 @@
           '<div class="cust-upcoming-icon"><i class="bi bi-calendar-event" aria-hidden="true"></i></div>' +
           '<div class="cust-upcoming-text"><div class="cust-upcoming-title">Upcoming booking</div>' +
           '<div class="cust-upcoming-meta">' + esc(b.day || 'Upcoming') + ' · ' + esc(b.time || '') + '</div>' +
-          '<div class="cust-upcoming-detail">' + esc(b.svc || 'Service TBD') + (b.techId ? ' · ' + esc(techName(b.techId)) : ' · Anyone') + '</div></div>' +
+          '<div class="cust-upcoming-detail">' + esc(posServiceDisplayName(b.svc || 'Service TBD')) + (b.techId ? ' · ' + esc(techName(b.techId)) : ' · Anyone') + '</div></div>' +
           more + '<div class="cust-upcoming-actions">' + detailAction + checkinAction + '</div>' + detailCollapse +
         '</div>';
       }
@@ -2476,7 +2485,7 @@
           '<div class="cust-section-title">Customer insights</div>' +
           '<div class="cust-insights-row">' +
             custInsightItemHtml('bi-person', 'Regular tech', custPrefTechChipsHtml(c, ci)) +
-            custInsightItemHtml('bi-star', 'Usual service', esc(u ? (u.svc || '—') : '—')) +
+            custInsightItemHtml('bi-star', 'Usual service', esc(u ? posServiceDisplayName(u.svc || '—') : '—')) +
           '</div>' +
           '<div class="cust-insights-row cust-insights-row-last">' +
             custInsightItemHtml('bi-calendar3', 'Visit frequency', u && u.cyc ? 'Every ~' + u.cyc + ' days' : '—') +
@@ -2506,7 +2515,7 @@
         if (!h || !h.length) return '<p class="pos-muted" style="margin:2px 0">No visit history yet.</p>';
         return '<div class="cust-history-table-wrap"><table class="cust-history-table"><thead><tr><th scope="col">Service</th><th scope="col">Tech</th><th scope="col">When</th><th scope="col">Tip</th></tr></thead><tbody>' +
           h.slice().sort(function (a, b) { return a.daysAgo - b.daysAgo; }).map(function (x) {
-            return '<tr><td><i class="bi bi-stars" aria-hidden="true" style="color:var(--nexora-warning)"></i> ' + esc(x.svc) + '</td><td>' + (x.techId ? esc(techName(x.techId)) : '—') + '</td>' +
+            return '<tr><td><i class="bi bi-stars" aria-hidden="true" style="color:var(--nexora-warning)"></i> ' + esc(posServiceDisplayName(x.svc)) + '</td><td>' + (x.techId ? esc(techName(x.techId)) : '—') + '</td>' +
               '<td>' + (x.daysAgo === 0 ? 'Today' : x.daysAgo + 'd ago') + '</td><td>' + (x.tip ? '$' + x.tip : '—') + '</td></tr>';
           }).join('') + '</tbody></table></div>';
       }
@@ -2827,17 +2836,32 @@
       }
 
       /* ── check-in requests (📥) ── */
+      var ciqViewMode = 'card'; // 'card' | 'table'
+      function ciqActionsHtml(r) {
+        return '<button class="pos-btn pos-btn-success pos-btn-sm" data-ciq-ok="' + r.id + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Accept</button>' +
+          '<button class="x-btn" data-ciq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i></button>';
+      }
+      function ciqCardHtml(r) {
+        return '<div class="wl-card">' +
+          '<div class="wl-info"><div class="wl-name">' + esc(r.name) + ' <span class="pos-chip pos-chip-violet">' + esc(r.src) + '</span></div>' +
+          '<div class="wl-meta">' + esc(posServiceDisplayName(r.svc)) + (r.reqTech ? ' · 📌 wants ' + esc(techName(r.reqTech)) : '') + (r.promo ? ' · 🎁 ' + esc(r.promo) : '') + '</div>' +
+          custProfHtml(r.name) + '</div><div class="wl-actions">' + ciqActionsHtml(r) + '</div></div>';
+      }
+      function renderCiqTable(items) {
+        if (!items.length) return '<div class="wl-empty">No check-in requests right now.</div>';
+        return '<div class="booking-table-wrap"><table class="booking-table"><thead><tr>' +
+          '<th scope="col">Guest</th><th scope="col">Source</th><th scope="col">Service</th><th scope="col">Technician request</th><th scope="col">Promo</th><th scope="col">Actions</th>' +
+          '</tr></thead><tbody>' + items.map(function (r) {
+            return '<tr class="booking-table-row"><td><div class="booking-customer-name">' + esc(r.name) + '</div>' + custProfHtml(r.name) + '</td>' +
+              '<td>' + esc(r.src) + '</td><td>' + esc(posServiceDisplayName(r.svc)) + '</td>' +
+              '<td>' + (r.reqTech ? '📌 ' + esc(techName(r.reqTech)) : 'Anyone') + '</td>' +
+              '<td>' + (r.promo ? '🎁 ' + esc(r.promo) : '—') + '</td><td><div class="wl-actions">' + ciqActionsHtml(r) + '</div></td></tr>';
+          }).join('') + '</tbody></table></div>';
+      }
       function renderCiq() {
         $('[data-ciq-panel]').hidden = !CHECKINQ.length;
         set('[data-ciq-count]', CHECKINQ.length);
-        html('[data-ciq-list]', CHECKINQ.map(function (r) {
-          return '<div class="wl-card">' +
-            '<div class="wl-info"><div class="wl-name">' + esc(r.name) + ' <span class="pos-chip pos-chip-violet">' + esc(r.src) + '</span></div>' +
-            '<div class="wl-meta">' + esc(r.svc) + (r.reqTech ? ' · 📌 wants ' + esc(techName(r.reqTech)) : '') + (r.promo ? ' · 🎁 ' + esc(r.promo) : '') + '</div>' +
-            custProfHtml(r.name) + '</div>' +
-            '<div class="wl-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-ciq-ok="' + r.id + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Accept</button>' +
-            '<button class="x-btn" data-ciq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
-        }).join(''));
+        html('[data-ciq-list]', ciqViewMode === 'table' ? renderCiqTable(CHECKINQ) : CHECKINQ.map(ciqCardHtml).join(''));
       }
 
       /* ── access requests (🔐) ── */
@@ -2853,7 +2877,7 @@
         var r = row.r, w = row.w, t = row.t, req = row.req, ok = row.ok;
         return '<div class="wl-card">' +
           '<div class="wl-info"><div class="wl-name"><i class="bi bi-brush" aria-hidden="true"></i> ' + esc(t.name) + ' wants ticket #' + w.id + ' — ' + esc(w.name) + '</div>' +
-          '<div class="wl-meta">' + esc(w.svc || '') + ' · currently: ' + (w.techId ? esc(techName(w.techId)) : 'unassigned') + ' · skill ' + (req || '—') + ': ' +
+          '<div class="wl-meta">' + esc(posServiceDisplayName(w.svc || '')) + ' · currently: ' + (w.techId ? esc(techName(w.techId)) : 'unassigned') + ' · skill ' + (req || '—') + ': ' +
           (ok ? '<span class="pos-good-text">Eligible ✓</span>' : '<span class="pos-danger-text">Missing ⚠ — approving is an override and is logged</span>') +
           '</div></div><div class="wl-actions">' + arqActionsHtml(r, t) + '</div></div>';
       }
@@ -2865,7 +2889,7 @@
           '</tr></thead><tbody>' + rows.map(function (row) {
             var r = row.r, w = row.w, t = row.t, req = row.req, ok = row.ok;
             return '<tr class="booking-table-row"><td><div class="booking-customer-name">' + esc(t.name) + '</div></td>' +
-              '<td>#' + w.id + ' — ' + esc(w.name) + (w.svc ? ' · ' + esc(w.svc) : '') + '</td>' +
+              '<td>#' + w.id + ' — ' + esc(w.name) + (w.svc ? ' · ' + esc(posServiceDisplayName(w.svc)) : '') + '</td>' +
               '<td>' + (w.techId ? esc(techName(w.techId)) : 'Unassigned') + '</td>' +
               '<td>' + arqSkillHtml(req, ok) + '</td>' +
               '<td><div class="wl-actions">' + arqActionsHtml(r, t) + '</div></td></tr>';
@@ -2906,7 +2930,7 @@
           ? '<div class="live-map">🚗··········💅 Live trip — guest is sharing their route · ~' + etaRem(e) + "' out</div>" : '';
         return '<div class="wl-card">' +
           '<div class="wl-info"><div class="wl-name">' + esc(b.name) + ' <span class="pos-chip pos-chip-blue"><i class="bi bi-calendar-event" aria-hidden="true"></i> ' + b.time + '</span></div>' +
-          '<div class="wl-meta">' + esc(b.svc) + (b.techId ? ' · 📌 ' + esc(techName(b.techId)) : '') + '</div>' +
+          '<div class="wl-meta">' + esc(posServiceDisplayName(b.svc)) + (b.techId ? ' · 📌 ' + esc(techName(b.techId)) : '') + '</div>' +
           custProfHtml(b.name) + '</div>' +
           etaStatusChipHtml(e) + '<div class="wl-actions">' + etaActionHtml(x) + '</div>' + map + '</div>';
       }
@@ -2919,7 +2943,7 @@
             var b = x.b;
             return '<tr class="booking-table-row"><td><div class="booking-customer-name">' + esc(b.name) + '</div></td>' +
               '<td>' + esc(b.time || '') + '</td>' +
-              '<td>' + esc(b.svc || '') + (b.techId ? ' · ' + esc(techName(b.techId)) : '') + '</td>' +
+              '<td>' + esc(posServiceDisplayName(b.svc || '')) + (b.techId ? ' · ' + esc(techName(b.techId)) : '') + '</td>' +
               '<td>' + etaStatusChipHtml(b.eta) + '</td>' +
               '<td><div class="wl-actions">' + etaActionHtml(x) + '</div></td></tr>';
           }).join('') + '</tbody></table></div>';
@@ -2989,7 +3013,7 @@
               (r.g.tickets.length > 1 ? ' <span class="pos-muted" style="font-size:11px;font-weight:600">· ' + r.g.tickets.length + ' svc</span>' : '') + '</div>' +
               reqTxt + custTagsHtml(w.name) + '</td>' +
               '<td>' + esc(w.phone || '—') + '</td>' +
-              '<td>' + esc(w.svc || 'No service chosen') + '</td>' +
+              '<td>' + esc(posServiceDisplayName(w.svc || 'No service chosen')) + '</td>' +
               '<td>' + (w.techId ? esc(techName(w.techId)) : '—') + '</td>' +
               '<td>' + ticketStatusBadge(w.status) + '</td>' +
               '<td>' + timeLabel + '</td>' +
@@ -3016,7 +3040,7 @@
         return ticketStatusBadge(w.status);
       }
       function ticketLabelHtml(w) {
-        var svcName = esc(w.svc || 'No service chosen');
+        var svcName = esc(posServiceDisplayName(w.svc || 'No service chosen'));
         var techLbl = w.status === 'waiting' ? (w.techId ? 'waiting on ' + esc(techName(w.techId)) : 'waiting')
           : w.status === 'service' ? esc(techName(w.techId)) + ' — in service'
           : w.status === 'ready' ? esc(techName(w.techId)) + ' — ready'
@@ -3039,7 +3063,7 @@
           var auto = fAutoTech(w);
           return '<div class="wl-card tappable' + (late ? ' late' : (w.appt ? ' appt' : '')) + sel + '" data-wtap="' + w.id + '">' +
             '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
-            '<div class="wl-meta">' + esc(w.svc || 'No service chosen') + ' · in at ' + w.at + (w.phone ? ' · ' + esc(w.phone) : '') + reqTxt + '</div>' +
+            '<div class="wl-meta">' + esc(posServiceDisplayName(w.svc || 'No service chosen')) + ' · in at ' + w.at + (w.phone ? ' · ' + esc(w.phone) : '') + reqTxt + '</div>' +
             custProfHtml(w.name) + '</div>' +
             '<span class="wl-wait' + (late ? ' bad' : '') + '"><i class="bi bi-hourglass-split" aria-hidden="true"></i> ' + waitMin + "'</span>" +
             '<div class="wl-actions">' +
@@ -3072,7 +3096,7 @@
         // completed/cancelled — only reachable via the Tickets status-chip filter; read-only
         return '<div class="wl-card">' +
           '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
-          '<div class="wl-meta">' + esc(w.svc || 'No service chosen') + ' · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div></div>' +
+          '<div class="wl-meta">' + esc(posServiceDisplayName(w.svc || 'No service chosen')) + ' · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div></div>' +
           '<div class="wl-actions">' + ticketStatusBadge(w.status) + '</div></div>';
       }
       // Multi-ticket order card: one guest/order with several service tickets, each on its own line
@@ -3149,7 +3173,7 @@
               : '<button class="pos-btn pos-btn-sm" data-fpage="' + t.id + '" title="Beep this tech"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i></button>') +
             '</div>';
           if (m && !m.okSkill && fWarn && fWarn.tid === t.id && selW && fWarn.wid === selW.id) {
-            row += '<div class="warn-row">⚠ ' + esc(t.name) + ' has no <b>' + m.req + '</b> skill for "' + esc(selW.svc || '') + '" — tap again to ASSIGN ANYWAY (logged as an override; the manager owns it)</div>';
+            row += '<div class="warn-row">⚠ ' + esc(t.name) + ' has no <b>' + m.req + '</b> skill for "' + esc(posServiceDisplayName(selW.svc || '')) + '" — tap again to ASSIGN ANYWAY (logged as an override; the manager owns it)</div>';
           }
           return row;
         }).join('');
@@ -3245,6 +3269,18 @@
         /* Tickets: status chip filter */
         var tixChip = e.target.closest('[data-tix-status-chip]');
         if (tixChip) { ticketsFilter = tixChip.getAttribute('data-tix-status-chip'); renderFloor(); return; }
+        /* Check-in requests: card/table view switch */
+        var ciqView = e.target.closest('[data-ciq-view-target]');
+        if (ciqView) {
+          ciqViewMode = ciqView.getAttribute('data-ciq-view-target');
+          document.querySelectorAll('[data-ciq-view-target]').forEach(function (b) {
+            var active = b === ciqView;
+            b.classList.toggle('is-active', active);
+            b.setAttribute('aria-pressed', String(active));
+          });
+          renderCiq();
+          return;
+        }
         /* Tech access requests: card/table view switch */
         var arqView = e.target.closest('[data-arq-view-target]');
         if (arqView) {
@@ -3767,7 +3803,7 @@
             var elTxt = !req ? '<span class="pos-muted">all techs</span>'
               : el.length ? el.map(function (t) { return esc(t.name) + ((t.exp || []).indexOf(req) !== -1 ? ' ★' : ''); }).join(', ')
               : '<span class="pos-danger-text">⚠ No tech has this skill — guests will get stuck</span>';
-            return '<tr><td class="pos-strong">' + c.icon + ' ' + esc(c.label) + '</td>' +
+            return '<tr><td class="pos-strong">' + esc(c.label) + '</td>' +
               '<td><select class="pos-input" data-mg-svcreq="' + c.id + '" style="height:32px;font-size:12.5px">' +
               '<option value="">— none required —</option>' +
               SKILLS.map(function (s) { return '<option value="' + s + '"' + (req === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
@@ -4283,9 +4319,11 @@
           techId: record.technicianId,
           techName: record.technicianName || '',
           svc: serviceLabels.join(' + '),
-          serviceDetails: Array.isArray(record.serviceDetails) ? record.serviceDetails : names.map(function (name, index) {
+          serviceDetails: (Array.isArray(record.serviceDetails) ? record.serviceDetails : names.map(function (name, index) {
             var service = salonData.findService(salonCatalog, (record.serviceIds || [])[index] || name);
-            return service ? { id: service.id, name: service.name, price: service.price, durationMin: service.durationMin, icon: service.icon } : { name: posServiceDisplayName(name), price: null, durationMin: null, icon: '✨' };
+            return service ? { id: service.id, name: posServiceDisplayName(service.name), price: service.price, durationMin: service.durationMin } : { name: posServiceDisplayName(name), price: null, durationMin: null };
+          })).map(function (detail) {
+            return Object.assign({}, detail || {}, { name: posServiceDisplayName(detail && detail.name) });
           }),
           time: record.startAt ? posBookingClock(new Date(record.startAt)) : '',
           day: posBookingRelativeDay(record.startAt),

@@ -188,12 +188,13 @@ test('Check-in request inbox has App/QR sample data and a Card/Table view switch
 });
 
 test('Check-in request Card/Table renderers preserve the same request actions and clean service labels', () => {
+  const actions = html.match(/function ciqActionsHtml\(r\) \{[\s\S]*?\n      \}/)?.[0] || '';
   const card = html.match(/function ciqCardHtml\(r\) \{[\s\S]*?\n      \}/)?.[0] || '';
   const table = html.match(/function renderCiqTable\(items\) \{[\s\S]*?\n      \}/)?.[0] || '';
-  assert.match(card, /data-ciq-ok/);
-  assert.match(card, /data-ciq-no/);
-  assert.match(table, /data-ciq-ok/);
-  assert.match(table, /data-ciq-no/);
+  assert.match(actions, /data-ciq-ok/);
+  assert.match(actions, /data-ciq-no/);
+  assert.match(card, /ciqActionsHtml\(r\)/);
+  assert.match(table, /ciqActionsHtml\(r\)/);
   assert.match(html, /function posServiceDisplayName\(value\) \{/);
   assert.match(html, /posServiceDisplayName\(r\.svc\)/);
 });
