@@ -199,6 +199,11 @@ test('Check-in request Card/Table renderers preserve the same request actions an
   assert.match(html, /posServiceDisplayName\(r\.svc\)/);
 });
 
+test('POS normalizes service names in the check-in service picker too', () => {
+  assert.match(html, /function posServiceDisplayName\(value\) \{/);
+  assert.match(html, /esc\(posServiceDisplayName\(t\.serviceName\)\)/);
+});
+
 test('Tech access requests panel has a card/table view switch that carries the same info both ways', () => {
   assert.match(html, /data-arq-view-target="card"/);
   assert.match(html, /data-arq-view-target="table"/);

@@ -2014,7 +2014,7 @@
       // Booking "New appointment" service/technician picker, minus date/time (a walk-in is always now).
       var ciTickets = [];
       function ciTicketRowHtml(t, idx) {
-        return '<div class="wl-ticket-row"><span class="wl-ticket-svc">' + esc(t.serviceName) + ' — ' + esc(t.technicianName || 'Anyone') + ' · ' + money(t.price || 0) + '</span>' +
+        return '<div class="wl-ticket-row"><span class="wl-ticket-svc">' + esc(posServiceDisplayName(t.serviceName)) + ' — ' + esc(t.technicianName || 'Anyone') + ' · ' + money(t.price || 0) + '</span>' +
           '<span class="wl-ticket-actions"><button class="x-btn" type="button" data-ci-ticket-remove="' + idx + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></span></div>';
       }
       function renderCiTickets() {
