@@ -32,6 +32,16 @@ test('technician picker synchronizes checked and indeterminate states', () => {
   assert.match(SOURCE, /event\.target\.matches\('\[data-tech-service\]'\)/);
 });
 
+test('keeps technician service picker controls visible and aligned while scrolling', () => {
+  const toolbarStyles = SOURCE.match(/\.tech-service-picker-toolbar\s*\{[\s\S]*?\n    \}/)?.[0] || '';
+  const categoryArrowStyles = SOURCE.match(/\.tech-service-category-head::after\s*\{[\s\S]*?\n    \}/)?.[0] || '';
+
+  assert.match(toolbarStyles, /position:\s*sticky/);
+  assert.match(toolbarStyles, /top:\s*0/);
+  assert.match(categoryArrowStyles, /margin-left:\s*0/);
+  assert.doesNotMatch(categoryArrowStyles, /margin-left:\s*auto/);
+});
+
 test('technician service picker has loading and error handling', () => {
   assert.match(SOURCE, /Loading services/);
   assert.match(SOURCE, /renderTechServicePicker\([\s\S]*error/);

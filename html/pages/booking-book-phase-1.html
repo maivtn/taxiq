@@ -6698,6 +6698,9 @@
     }
 
     .tech-service-picker-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 2;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -6762,7 +6765,7 @@
 
     .tech-service-category-head::after {
       content: '⌄';
-      margin-left: auto;
+      margin-left: 0;
       color: var(--nexora-subtle);
       font-size: 14px;
       font-weight: 900;
