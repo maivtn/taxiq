@@ -32,3 +32,17 @@ test('keeps the existing first-call SMS switch intact', () => {
   assert.match(SOURCE, /data-settings-first-call-sms-toggle/);
   assert.match(SOURCE, /function syncFirstCallSmsToggle\(toggle\)/);
 });
+
+test('groups related Settings cards in the requested desktop order', () => {
+  const positions = [
+    SETTINGS_PANEL.indexOf('>Salon Info</div>'),
+    SETTINGS_PANEL.indexOf('>Operating Hours</div>'),
+    SETTINGS_PANEL.indexOf('>AI Voice</div>'),
+    SETTINGS_PANEL.indexOf('data-settings-booking-sms-card')
+  ];
+
+  assert.ok(positions.every((position) => position >= 0), 'all Settings card markers must exist');
+  assert.ok(positions[0] < positions[1], 'Salon Info should appear before Operating Hours');
+  assert.ok(positions[1] < positions[2], 'Operating Hours should appear before AI Voice');
+  assert.ok(positions[2] < positions[3], 'AI Voice should appear before Booking SMS Notifications');
+});
