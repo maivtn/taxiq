@@ -419,6 +419,23 @@
     .sms-mbody { padding: 20px; }
     .sms-mfoot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px 20px; border-top: 1px solid var(--nexora-border); background: var(--nexora-surface-muted); }
 
+    /* ── quick note ── */
+    .sms-modal[data-qn-modal] { background: rgba(8, 16, 34, .58); backdrop-filter: blur(4px); }
+    .quick-note-dialog { width: min(100%, 520px); border: 1px solid rgba(221, 229, 239, .95); border-radius: 22px; box-shadow: 0 26px 70px rgba(8, 16, 34, .34); }
+    .quick-note-dialog .sms-mhead { padding: 15px 18px; background: linear-gradient(180deg, #fff, #fbfcff); }
+    .quick-note-dialog .sms-mhead h3 { display: flex; align-items: center; gap: 8px; font-size: 17px; letter-spacing: -.02em; }
+    .quick-note-dialog .sms-mhead h3 i { color: var(--nexora-brand); font-size: 17px; }
+    .quick-note-dialog .sms-mbody { padding: 18px; }
+    .quick-note-copy { margin: 0 0 14px !important; line-height: 1.55; }
+    .quick-note-dialog .ap-chips { max-height: none; gap: 8px; overflow: visible; }
+    .quick-note-dialog .ap-chip { display: inline-flex; min-height: 36px; align-items: center; border: 1px solid #dce2ee; border-radius: 11px; padding: 7px 10px; color: var(--nexora-text); background: #f8f9fc; font-size: 12px; font-weight: 700; line-height: 1.3; text-align: left; transition: border-color .18s, background .18s, color .18s, transform .18s, box-shadow .18s; }
+    .quick-note-dialog .ap-chip:hover { border-color: rgba(70, 72, 216, .45); background: #f1f2ff; transform: translateY(-1px); }
+    .quick-note-dialog .ap-chip.is-on { border-color: transparent; background: var(--nexora-brand); color: #fff; box-shadow: 0 6px 14px rgba(70, 72, 216, .2); }
+    .quick-note-input { width: 100%; min-height: 96px; height: 96px; margin-top: 14px !important; padding: 11px 12px !important; border-radius: 12px; font-size: 13px; font-weight: 500; line-height: 1.5; }
+    .quick-note-footer { justify-content: flex-end !important; gap: 8px; padding: 12px 18px; }
+    .quick-note-footer .pos-btn { min-height: 36px; padding: 8px 12px; border-radius: 10px; }
+    .quick-note-footer .pos-btn-primary { box-shadow: 0 6px 14px rgba(70, 72, 216, .2); }
+
     .pos-mode-dialog { max-width: 560px; }
     .pos-mode-copy { margin: 0; line-height: 1.6; }
     .pos-mode-roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 16px 0 20px; }
@@ -426,12 +443,12 @@
     .pos-mode-role-card:hover { border-color: rgba(70, 72, 216, .45); transform: translateY(-1px); }
     .pos-mode-role-card:focus-visible { outline: 0; border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70, 72, 216, .16); }
     .pos-mode-role-card.is-selected { border-color: var(--nexora-brand); background: #f2f3ff; box-shadow: 0 0 0 2px rgba(70, 72, 216, .12); }
-    .pos-mode-role-avatar { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 999px; background: var(--nexora-surface-muted); font-size: 24px; }
+    .pos-mode-role-avatar { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 999px; background: var(--nexora-surface-muted); font-size: 14px; font-weight: 800; }
     .pos-mode-role-name { overflow: hidden; max-width: 100%; font-size: 13px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
     .pos-mode-role-label { color: var(--nexora-subtle); font-size: 11px; font-weight: 600; }
     .pos-mode-pin { width: 100%; margin-top: 6px; }
     .pos-mode-error { margin-top: 8px; border: 1px solid rgba(239, 68, 68, .25); border-radius: 9px; background: #fff1f1; padding: 8px 10px; color: var(--nexora-danger); font-size: 12px; font-weight: 700; }
-    @media (max-width: 480px) { .pos-mode-roles { grid-template-columns: 1fr; } .pos-mode-role-card { flex-direction: row; justify-content: flex-start; padding: 10px 12px; text-align: left; } .pos-mode-role-avatar { width: 36px; height: 36px; font-size: 20px; } }
+    @media (max-width: 480px) { .pos-mode-roles { grid-template-columns: 1fr; } .pos-mode-role-card { flex-direction: row; justify-content: flex-start; padding: 10px 12px; text-align: left; } .pos-mode-role-avatar { width: 36px; height: 36px; font-size: 14px; } }
 
     .sms-step { margin-bottom: 18px; }
     .sms-step > .sms-step-lbl { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 800; color: var(--nexora-muted); text-transform: uppercase; letter-spacing: .04em; }
@@ -567,13 +584,13 @@
               <p class="pos-muted pos-mode-copy">Chọn tài khoản rồi nhập PIN để chuyển mode.</p>
               <div class="pos-mode-roles" role="group" aria-label="Chọn vai trò POS">
                 <button class="pos-mode-role-card is-selected" type="button" aria-pressed="true" data-pos-role="owner">
-                  <span class="pos-mode-role-avatar">👑</span><span class="pos-mode-role-name">Brian</span><span class="pos-mode-role-label">Owner</span>
+                  <span class="pos-mode-role-avatar">B</span><span class="pos-mode-role-name">Brian</span><span class="pos-mode-role-label">Owner</span>
                 </button>
                 <button class="pos-mode-role-card" type="button" aria-pressed="false" data-pos-role="manager">
-                  <span class="pos-mode-role-avatar">🧑‍💼</span><span class="pos-mode-role-name">Mia</span><span class="pos-mode-role-label">Manager</span>
+                  <span class="pos-mode-role-avatar">M</span><span class="pos-mode-role-name">Mia</span><span class="pos-mode-role-label">Manager</span>
                 </button>
                 <button class="pos-mode-role-card" type="button" aria-pressed="false" data-pos-role="frontdesk">
-                  <span class="pos-mode-role-avatar">💁</span><span class="pos-mode-role-name">Cindy</span><span class="pos-mode-role-label">Front Desk</span>
+                  <span class="pos-mode-role-avatar">C</span><span class="pos-mode-role-name">Cindy</span><span class="pos-mode-role-label">Front Desk</span>
                 </button>
               </div>
               <label class="pos-inline-lbl" for="pos-mode-pin">PIN</label>
@@ -637,17 +654,17 @@
 
         <!-- Quick note after a tech finishes (#80 tier 2) -->
         <div class="sms-modal" data-qn-modal role="dialog" aria-modal="true" aria-label="Quick note">
-          <div class="sms-dialog" style="max-width:520px">
+          <div class="sms-dialog quick-note-dialog">
             <div class="sms-mhead">
               <h3><i class="bi bi-lightbulb" aria-hidden="true"></i> Quick note — <span data-qn-name></span></h3>
               <button class="pos-icon-btn" type="button" data-qn-skip aria-label="Skip"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
             </div>
             <div class="sms-mbody">
-              <p class="pos-muted" style="margin:0 0 10px">Anything worth remembering for next time? One tap, or skip it — this shows on the Staff App right after ✋ Done.</p>
+              <p class="pos-muted quick-note-copy">Anything worth remembering for next time? One tap, or skip it — this shows on the Staff App right after ✋ Done.</p>
               <div class="ap-chips" data-qn-chips></div>
-              <textarea class="pos-input" data-qn-free placeholder="Free-form note (staff-visible)…" style="width:100%;height:70px;padding:10px;margin-top:12px;resize:vertical"></textarea>
+              <textarea class="pos-input quick-note-input" data-qn-free placeholder="Free-form note (staff-visible)…"></textarea>
             </div>
-            <div class="sms-mfoot" style="justify-content:flex-end">
+            <div class="sms-mfoot quick-note-footer">
               <button class="pos-btn pos-btn-sm" type="button" data-qn-skip>Skip</button>
               <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-qn-save><i class="bi bi-floppy" aria-hidden="true"></i> Save note</button>
             </div>
@@ -903,14 +920,14 @@
       var activeTabId = 'dispatch';
 
       var STAFF = [
-        { id: 'owner', name: 'Brian', ava: '👑', role: 'owner' },
-        { id: 'mgr1', name: 'Mia', ava: '🧑‍💼', role: 'manager' },
-        { id: 'cash1', name: 'Cindy', ava: '💁', role: 'frontdesk' },
-        { id: 't1', name: 'Tina', ava: '💅', role: 'tech' },
-        { id: 't2', name: 'Kim', ava: '💅', role: 'tech' },
-        { id: 't3', name: 'Helen', ava: '💅', role: 'tech' },
-        { id: 't4', name: 'Andy', ava: '💅', role: 'tech' },
-        { id: 't5', name: 'Vy', ava: '💅', role: 'tech' }
+        { id: 'owner', name: 'Brian', ava: 'B', role: 'owner' },
+        { id: 'mgr1', name: 'Mia', ava: 'M', role: 'manager' },
+        { id: 'cash1', name: 'Cindy', ava: 'C', role: 'frontdesk' },
+        { id: 't1', name: 'Tina', ava: 'T', role: 'tech' },
+        { id: 't2', name: 'Kim', ava: 'K', role: 'tech' },
+        { id: 't3', name: 'Helen', ava: 'H', role: 'tech' },
+        { id: 't4', name: 'Andy', ava: 'A', role: 'tech' },
+        { id: 't5', name: 'Vy', ava: 'V', role: 'tech' }
       ];
       var stSeq = 0;
 
@@ -1794,7 +1811,7 @@
           var hrs = clockHours(s.id);
           var pos = ord.indexOf(s.id) + 1;
           return '<div class="tech-row">' +
-            '<span class="pos-avatar' + (t ? '' : ' plain') + '">' + (t ? initials(s.name) : s.ava) + '</span>' +
+            '<span class="pos-avatar' + (t ? '' : ' plain') + '">' + initials(s.name) + '</span>' +
             '<span class="tech-dot ' + (open ? 'tech-free' : 'tech-off') + '"></span>' +
             '<span class="tech-name">' + esc(s.name) + ' <span style="font-weight:600;color:var(--nexora-subtle);font-size:11px">· ' + ROLE_LBL[s.role] + '</span></span>' +
             (t ? '<span class="pos-muted" style="font-size:11.5px">Station</span><input class="clk-station" data-clk-bnum="' + s.id + '" value="' + t.bnum + '">' : '') +
@@ -2174,7 +2191,7 @@
                 ['manager', 'frontdesk', 'tech'].map(function (r) { return '<option value="' + r + '"' + (s.role === r ? ' selected' : '') + '>' + ROLE_LBL[r] + '</option>'; }).join('') +
                 '</select>';
             return '<tr>' +
-              '<td><span class="pos-people"><span class="pos-avatar plain">' + s.ava + '</span> <span class="pos-strong">' + esc(s.name) + '</span></span></td>' +
+              '<td><span class="pos-people"><span class="pos-avatar plain">' + esc(initials(s.name)) + '</span> <span class="pos-strong">' + esc(s.name) + '</span></span></td>' +
               '<td>' + roleCell + '</td>' +
               '<td>•••• <button class="pos-btn pos-btn-sm" data-mg-stpin="' + s.id + '"><i class="bi bi-key" aria-hidden="true"></i> Reset PIN</button></td>' +
               '<td class="pos-muted wrap">' + ROLE_ACCESS[s.role] + '</td></tr>';
@@ -2317,7 +2334,7 @@
           var nm = (nameEl.value || '').trim();
           if (!nm) { toast('Enter an employee name', 'info'); return; }
           var role = roleEl.value;
-          STAFF.push({ id: 'st' + (++stSeq), name: nm, ava: role === 'manager' ? '🧑‍💼' : '💁', role: role });
+          STAFF.push({ id: 'st' + (++stSeq), name: nm, ava: initials(nm), role: role });
           logAdmin('👥 Created ' + ROLE_LBL[role] + ' account: ' + nm + ' (temporary PIN sent by SMS)');
           renderManagement(); renderClock(); toast(nm + ' added');
           return;
@@ -2345,7 +2362,7 @@
           nextCatalog.technicians.push({ id: id, name: nn, aliases: [], active: true, skills: [], exp: [], fit: [], services: [], posProfile: { bnum: bn, turns: 0, comm: cm, guar: gu, payModel: 'max', baoSplit: cm, vlink: null } });
           salonData.saveCatalog(nextCatalog);
           rebuildSalonCatalogViews();
-          STAFF.push({ id: id, name: nn, ava: '💅', role: 'tech' });
+          STAFF.push({ id: id, name: nn, ava: initials(nn), role: 'tech' });
           CLOCK[id] = [];
           PAYOUT[id] = { st: 'pending', method: null };
           TECH_PERF[id] = { wtd: 0, rating: null, rev: 0, bills: 0, upsBills: 0 };

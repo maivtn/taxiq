@@ -183,15 +183,21 @@ test('Queue table separates hour, customer group, note, technician, and elapsed 
   assert.match(bookingCss, /\.queue-table td:nth-child\(10\)::before \{ content: "Note"; \}/);
 });
 
+test('Queue table mode stays full-width and is not constrained by the card grid', () => {
+  assert.match(html, /\[data-wait-list\]:has\(> \.wl-card\) \{[\s\S]*display: grid/);
+  assert.match(html, /\[data-wait-list\] > \.booking-table-wrap \{[\s\S]*width: 100%/);
+  assert.doesNotMatch(html, /\[data-wait-list\] \{ display: grid;/);
+});
+
 test('Queue single-ticket cards have a clear identity, details, note, status, and action hierarchy', () => {
   const card = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}/)?.[0] || '';
   assert.match(card, /class="wl-card queue-card/);
   assert.match(card, /ticketQueueCardHeadHtml\(w, badge/);
   assert.match(card, /ticketQueueCardDetailsHtml\(w/);
   assert.match(card, /ticketQueueCardNoteHtml\(w\)/);
-  assert.match(html, /function ticketQueueCardIdentityHtml\(w, badge\) \{[\s\S]*queue-card-identity[\s\S]*queue-card-phone[\s\S]*ticketCustomerGroupHtml\(w\)/);
+  assert.match(html, /function ticketQueueCardIdentityHtml\(w, badge\) \{[\s\S]*queue-card-identity[\s\S]*ticketQueueCardGroupHtml\(w\)[\s\S]*queue-card-phone/);
   assert.match(html, /function ticketQueueCardDetailsHtml\(w, techExtra\) \{[\s\S]*queue-card-details[\s\S]*queue-card-service[\s\S]*queue-card-tech[\s\S]*ticketTechHtml\(w, 'card'\)/);
-  assert.match(html, /function ticketQueueCardHeadHtml\(w, badge, timerHtml\) \{[\s\S]*queue-card-head[\s\S]*queue-card-status[\s\S]*ticketStatusBadge\(w\.status\)/);
+  assert.match(html, /function ticketQueueCardHeadHtml\(w, badge, timerLabel, timerIcon, timerBad\) \{[\s\S]*queue-card-head[\s\S]*queue-card-status[\s\S]*ticketStatusBadge\(w\.status\)[\s\S]*ticketQueueCardWaitHtml\(timerLabel, timerIcon, timerBad\)/);
   assert.match(card, /queue-card-actions/);
 });
 
@@ -213,10 +219,81 @@ test('Queue single-ticket cards retain their status actions and state accents', 
 test('Queue card CSS wraps content safely on narrow screens', () => {
   assert.match(html, /\.queue-card \{[\s\S]*min-width:\s*0/);
   assert.match(html, /\.queue-card-head \{[\s\S]*min-width:\s*0/);
-  assert.match(html, /\.queue-card-details \{[\s\S]*min-width:\s*0/);
   assert.match(html, /\.queue-card-note \{[\s\S]*overflow-wrap:\s*anywhere/);
   assert.match(html, /\.queue-card-actions \{[\s\S]*flex-wrap:\s*wrap/);
   assert.match(html, /@media \(max-width: 640px\) \{[\s\S]*\.queue-card-actions/);
+});
+
+test('Queue card identity places customer-group chips beside the guest name and phone on its own line', () => {
+  const identity = html.match(/function ticketQueueCardIdentityHtml\(w, badge\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(identity, /<div class="wl-name">[\s\S]*ticketQueueCardGroupHtml\(w\)/);
+  assert.match(identity, /<div class="queue-card-phone">/);
+  assert.match(html, /function ticketQueueCardGroupHtml\(w\) \{[\s\S]*ticketCustomerGroupHtml\(w\)/);
+  assert.match(html, /\.queue-card \.queue-customer-group \{[\s\S]*margin-top: 0/);
+});
+
+test('Queue cards use a compact two-column footer layout without changing their content hierarchy', () => {
+  assert.match(html, /\.queue-card \{[\s\S]*display: grid;[\s\S]*grid-template-columns: minmax\(0, 1fr\) auto;[\s\S]*padding: 10px/);
+  assert.match(html, /\.queue-card-head \{[\s\S]*grid-column: 1 \/ -1/);
+  assert.match(html, /\.queue-card-note \{[\s\S]*grid-column: 1/);
+  assert.match(html, /\.queue-card-actions \{[\s\S]*grid-column: 2[\s\S]*gap: 5px[\s\S]*margin-top: 8px[\s\S]*padding-top: 0/);
+  assert.match(html, /@media \(max-width: 640px\) \{[\s\S]*\.queue-card \{[\s\S]*grid-template-columns: minmax\(0, 1fr\)/);
+});
+
+test('Queue card notes size to their content without overflowing the card', () => {
+  assert.match(html, /\.queue-card-note \{[\s\S]*justify-self: start;[\s\S]*width: fit-content;[\s\S]*max-width: 100%/);
+});
+
+test('Queue card identity does not duplicate the combined customer-group badge', () => {
+  const identity = html.match(/function ticketQueueCardIdentityHtml\(w, badge\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(identity, /ticketQueueCardGroupHtml\(w\)/);
+  assert.doesNotMatch(identity, /badge \+ ticketQueueCardGroupHtml\(w\)/);
+  assert.doesNotMatch(identity, /<div class="wl-name">[\s\S]*badge/);
+});
+
+test('Queue card status chip and elapsed time remain separate synchronized elements', () => {
+  assert.match(html, /function ticketQueueCardWaitHtml\(timerLabel, timerIcon, timerBad\) \{[\s\S]*class="wl-wait/);
+  assert.match(html, /function ticketQueueCardHeadHtml\(w, badge, timerLabel, timerIcon, timerBad\) \{[\s\S]*ticketStatusBadge\(w\.status\)[\s\S]*ticketQueueCardWaitHtml\(timerLabel, timerIcon, timerBad\)/);
+  assert.match(html, /\.wl-wait \{[\s\S]*display: inline-flex/);
+  assert.doesNotMatch(html, /queue-card-status-chip/);
+});
+
+test('Queue card mobile spacing remains compact after details CSS removal', () => {
+  assert.match(html, /@media \(max-width: 640px\) \{[\s\S]*\.queue-card \{[\s\S]*padding: 8px/);
+});
+
+test('Queue card mobile footer shares a row for simple actions and stays full-width for multi-action cards', () => {
+  assert.match(html, /@media \(max-width: 640px\) \{[\s\S]*\.queue-card \{[\s\S]*grid-template-columns: minmax\(0, 1fr\) auto/);
+  assert.match(html, /\.queue-card:not\(:has\(\.queue-card-note\)\) \.queue-card-actions \{[\s\S]*grid-column: 1 \/ -1/);
+  assert.match(html, /\.queue-card:has\(\.queue-card-actions \.pos-btn:nth-child\(3\)\) \{[\s\S]*grid-template-columns: minmax\(0, 1fr\)/);
+});
+
+test('Queue card action buttons keep intrinsic widths instead of stretching', () => {
+  assert.match(html, /\.queue-card-actions \.pos-btn \{[\s\S]*flex: 0 0 auto;[\s\S]*width: auto/);
+  assert.match(html, /\.queue-card-actions \.x-btn \{[\s\S]*width: auto;[\s\S]*min-width: 30px/);
+  assert.doesNotMatch(html, /\.queue-card-actions \.pos-btn \{ flex: 1 1 auto/);
+});
+
+test('Queue cards use a responsive grid that fits three to four items per row', () => {
+  assert.match(html, /\[data-wait-list\]:has\(> \.wl-card\) \{[\s\S]*display: grid;[\s\S]*grid-template-columns: repeat\(4, minmax\(0, 1fr\)\)/);
+  assert.match(html, /\[data-wait-list\] > \.wl-card \{[\s\S]*min-width: 0[\s\S]*margin-bottom: 0/);
+  assert.match(html, /@media \(max-width: 1199px\) \{[\s\S]*\[data-wait-list\]:has\(> \.wl-card\) \{[\s\S]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(html, /@media \(max-width: 900px\) \{[\s\S]*\[data-wait-list\]:has\(> \.wl-card\) \{[\s\S]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(html, /@media \(max-width: 640px\) \{[\s\S]*\[data-wait-list\]:has\(> \.wl-card\) \{[\s\S]*grid-template-columns: minmax\(0, 1fr\)/);
+});
+
+test('Queue card details have no dedicated CSS rules', () => {
+  const inlineCss = html.match(/<style[^>]*>[\s\S]*?<\/style>/)?.[0] || '';
+  assert.doesNotMatch(inlineCss, /\.queue-card-details\b/);
+});
+
+test('Queue card notes stay on one line and truncate long text', () => {
+  assert.match(html, /\.queue-card-note span \{[^}]*overflow: hidden;[^}]*white-space: nowrap;[^}]*text-overflow: ellipsis/);
+});
+
+test('Queue card status stays on one line for every item', () => {
+  assert.match(html, /\.queue-card-status \{[\s\S]*flex-wrap: nowrap;[\s\S]*white-space: nowrap/);
+  assert.match(html, /@media \(max-width: 640px\) \{[\s\S]*\.queue-card-status \{[\s\S]*flex-wrap: nowrap;[\s\S]*white-space: nowrap/);
 });
 
 test('Check-in has a table/card view switch on Bookings today, and Add opens a phone-search modal that checks in a match or adds a walk-in', () => {

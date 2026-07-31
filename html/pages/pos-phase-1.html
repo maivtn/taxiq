@@ -220,8 +220,6 @@
     .wl-info { flex: 1; min-width: 190px; }
     .wl-name { font-size: 14px; font-weight: 800; color: var(--nexora-text); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .wl-meta { font-size: 12px; color: var(--nexora-muted); margin-top: 3px; font-weight: 600; }
-    .wl-wait { font-size: 12px; font-weight: 800; color: var(--nexora-muted); white-space: nowrap; }
-    .wl-wait.bad { color: var(--nexora-danger); }
     .wl-actions { display: inline-flex; gap: 6px; align-items: center; flex-shrink: 0; }
     .wl-empty { color: var(--nexora-subtle); font-size: 13px; padding: 18px 0; text-align: center; }
     /* Grouped order card — one guest/order with several service tickets (#pos-nail-salon-ops Phase 3) */
@@ -237,29 +235,16 @@
     .x-btn:hover { color: var(--nexora-danger); border-color: var(--nexora-danger); }
 
     /* Queue single-ticket cards — operations-first hierarchy, isolated from grouped orders and tables. */
-    .queue-card { display: block; min-width: 0; padding: 14px; overflow: hidden; }
-    .queue-card-head { min-width: 0; }
-    .queue-card-details { min-width: 0; }
-    .queue-card-actions { min-width: 0; }
-    .queue-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
-    .queue-card-identity { flex: 1 1 240px; min-width: 0; }
-    .queue-card-phone, .queue-card-booking, .queue-card-sub { color: var(--nexora-muted); font-size: 11.5px; font-weight: 650; margin-top: 4px; }
-    .queue-card-phone { overflow-wrap: anywhere; }
-    .queue-card .queue-customer-group { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px; max-width: 100%; margin-top: 7px; }
-    .queue-card-status { display: flex; align-items: flex-end; flex-direction: column; gap: 6px; flex: 0 0 auto; }
-    .queue-card-status .wl-wait { margin: 0; }
-    .queue-card-details { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(150px, .9fr) minmax(110px, .65fr); gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--nexora-border); }
-    .queue-card-service, .queue-card-tech, .queue-card-booking { min-width: 0; }
-    .queue-card-label { display: block; color: var(--nexora-subtle); font-size: 9.5px; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
-    .queue-card-service strong { display: block; color: var(--nexora-text); font-size: 13px; line-height: 1.35; margin-top: 3px; overflow-wrap: anywhere; }
-    .queue-card-tech-value { display: block; color: var(--nexora-text); font-size: 12px; font-weight: 800; line-height: 1.35; margin-top: 3px; overflow-wrap: anywhere; }
-    .queue-card-tech-value.is-requested { color: var(--nexora-warning); }
-    .queue-card-note { display: flex; align-items: flex-start; gap: 7px; min-width: 0; margin-top: 12px; padding: 8px 10px; border: 1px solid rgba(245, 158, 11, .24); border-radius: 9px; background: #fffaf0; color: #8a5a00; font-size: 11.5px; line-height: 1.45; overflow-wrap: anywhere; }
-    .queue-card-note i { flex: 0 0 auto; margin-top: 2px; }
-    .queue-card-note span { display: -webkit-box; min-width: 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
-    .queue-card-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-wrap: wrap; margin-top: 14px; padding-top: 11px; border-top: 1px solid var(--nexora-border); }
-    .queue-card-actions .pos-btn-primary, .queue-card-actions .pos-btn-success { order: -1; }
-    .queue-card-actions .x-btn { margin-left: auto; }
+    [data-wait-list]:has(> .wl-card) { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; align-items: start; }
+    [data-wait-list] > .wl-card { min-width: 0; margin-bottom: 0; }
+    [data-wait-list] > .booking-table-wrap { width: 100%; min-width: 0; }
+
+    @media (max-width: 1199px) {
+      [data-wait-list]:has(> .wl-card) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 900px) {
+      [data-wait-list]:has(> .wl-card) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
 
     .cust-usual { font-size: 11px; font-weight: 600; color: var(--nexora-electric); margin-top: 3px; line-height: 1.6; }
     .cust-pkg { font-size: 11px; font-weight: 700; color: var(--nexora-violet); margin-top: 3px; }
@@ -502,15 +487,7 @@
       .pos-card-head .pos-inline { width: 100%; }
       .pos-card-head .pos-inline .pos-input { flex: 1 1 120px; width: auto !important; min-width: 0; }
       .wl-actions { flex-wrap: wrap; }
-      .queue-card { padding: 12px; }
-      .queue-card-head { align-items: stretch; flex-direction: column; gap: 10px; }
-      .queue-card-identity { flex: 0 1 auto; }
-      .queue-card-status { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
-      .queue-card-details { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px 8px; }
-      .queue-card-service { grid-column: 1 / -1; }
-      .queue-card-actions { justify-content: flex-start; }
-      .queue-card-actions .pos-btn { flex: 1 1 auto; min-width: 0; }
-      .queue-card-actions .x-btn { margin-left: 0; }
+      [data-wait-list]:has(> .wl-card) { grid-template-columns: minmax(0, 1fr); gap: 8px; }
       .tech-sub { margin-left: 0; }
       /* 44px tap targets on touch */
       .x-btn, .pos-icon-btn { width: 36px; height: 36px; }
@@ -3064,6 +3041,10 @@
         var meta = TICKET_STATUS_BADGE[status] || ['pos-chip-gray', status];
         return '<span class="pos-chip ' + meta[0] + '">' + esc(meta[1]) + '</span>';
       }
+      function ticketQueueCardWaitHtml(timerLabel, timerIcon, timerBad) {
+        if (!timerLabel) return '';
+        return '<span class="wl-wait' + (timerBad ? ' bad' : '') + '"><i class="bi ' + esc(timerIcon || 'bi-clock') + '" aria-hidden="true"></i> ' + esc(timerLabel) + '</span>';
+      }
       function ticketCustomerGroupHtml(w) {
         var c = custOf(w.name);
         var seg = c && CUST_SEG_META[c.seg];
@@ -3079,6 +3060,10 @@
           : '<span class="pos-chip pos-chip-gray">' + esc(label) + '</span>') : '';
         var visitTag = visits ? '<span class="pos-chip pos-chip-gray">' + visits + ' visits</span>' : '';
         return groupTag || visitTag ? '<span class="queue-customer-group">' + groupTag + visitTag + '</span>' : '<span class="pos-muted">—</span>';
+      }
+      function ticketQueueCardGroupHtml(w) {
+        var groupHtml = ticketCustomerGroupHtml(w);
+        return groupHtml === '<span class="pos-muted">—</span>' ? '' : groupHtml;
       }
       function ticketQueueNoteHtml(w) {
         var c = custOf(w.name);
@@ -3155,9 +3140,8 @@
         return svcName + ' — ' + techLbl;
       }
       function ticketQueueCardIdentityHtml(w, badge) {
-        return '<div class="queue-card-identity"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
-          '<div class="queue-card-phone"><i class="bi bi-telephone" aria-hidden="true"></i> ' + esc(w.phone || 'No phone') + '</div>' +
-          ticketCustomerGroupHtml(w) + '</div>';
+        return '<div class="queue-card-identity"><div class="wl-name">' + esc(w.name) + ' ' + ticketQueueCardGroupHtml(w) + '</div>' +
+          '<div class="queue-card-phone"><i class="bi bi-telephone" aria-hidden="true"></i> ' + esc(w.phone || 'No phone') + '</div></div>';
       }
       function ticketQueueCardDetailsHtml(w, techExtra) {
         var items = w.items || [];
@@ -3167,9 +3151,9 @@
           '<div class="queue-card-tech"><span class="queue-card-label">Tech</span>' + ticketTechHtml(w, 'card') + (techExtra || '') + '</div>' +
           '<div class="queue-card-booking"><span class="queue-card-label">Booked</span><span>' + esc(w.bookingTime || w.at || 'Walk-in') + '</span></div></div>';
       }
-      function ticketQueueCardHeadHtml(w, badge, timerHtml) {
+      function ticketQueueCardHeadHtml(w, badge, timerLabel, timerIcon, timerBad) {
         return '<div class="queue-card-head">' + ticketQueueCardIdentityHtml(w, badge) +
-          '<div class="queue-card-status">' + ticketStatusBadge(w.status) + timerHtml + '</div></div>';
+          '<div class="queue-card-status">' + ticketStatusBadge(w.status) + ticketQueueCardWaitHtml(timerLabel, timerIcon, timerBad) + '</div></div>';
       }
       // One WAITLIST row = one service ticket (#pos-nail-salon-ops Phase 3). A single-ticket order
       // renders exactly like the original floor card, so the common walk-in path is unchanged.
@@ -3183,7 +3167,7 @@
           var reqBusy = w.reqTech && !freeTechs().find(function (t) { return t.id === w.reqTech; });
           var auto = fAutoTech(w);
           return '<div class="wl-card queue-card tappable' + (late ? ' late' : (w.appt ? ' appt' : '')) + sel + '" data-wtap="' + w.id + '">' +
-            ticketQueueCardHeadHtml(w, badge, '<span class="wl-wait' + (late ? ' bad' : '') + '"><i class="bi bi-hourglass-split" aria-hidden="true"></i> ' + waitMin + "'</span>") +
+            ticketQueueCardHeadHtml(w, badge, waitMin + "'", 'bi-hourglass-split', late) +
             ticketQueueCardDetailsHtml(w, reqBusy ? ' <span class="queue-card-sub pos-warn-text">(busy)</span>' : '') +
             ticketQueueCardNoteHtml(w) +
             '<div class="queue-card-actions">' +
@@ -3193,7 +3177,7 @@
         if (w.status === 'ready') {
           var rdyMin = w.readyAtMs ? Math.max(0, Math.floor((now - w.readyAtMs) / 60000)) : 0;
           return '<div class="wl-card queue-card rdy">' +
-            ticketQueueCardHeadHtml(w, badge, '<span class="wl-wait' + (rdyMin > 5 ? ' bad' : '') + '"><i class="bi bi-cash-coin" aria-hidden="true"></i> waiting ' + rdyMin + "'</span>") +
+            ticketQueueCardHeadHtml(w, badge, 'waiting ' + rdyMin + "'", 'bi-cash-coin', rdyMin > 5) +
             ticketQueueCardDetailsHtml(w) +
             ticketQueueCardNoteHtml(w) +
             '<div class="queue-card-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
@@ -3202,7 +3186,7 @@
         if (w.status === 'service') {
           var svcMin = w.svcAtMs ? Math.max(0, Math.floor((now - w.svcAtMs) / 60000)) : 0;
           return '<div class="wl-card queue-card svc' + sel + '">' +
-            ticketQueueCardHeadHtml(w, badge, '<span class="wl-wait"><i class="bi bi-stopwatch" aria-hidden="true"></i> ' + svcMin + "'</span>") +
+            ticketQueueCardHeadHtml(w, badge, svcMin + "'", 'bi-stopwatch', false) +
             ticketQueueCardDetailsHtml(w) +
             ticketQueueCardNoteHtml(w) +
             '<div class="queue-card-actions">' +
@@ -3213,7 +3197,7 @@
         }
         // completed/cancelled — only reachable via the Tickets status-chip filter; read-only
         return '<div class="wl-card queue-card">' +
-          ticketQueueCardHeadHtml(w, badge, '') +
+          ticketQueueCardHeadHtml(w, badge, '', '', false) +
           ticketQueueCardDetailsHtml(w) +
           ticketQueueCardNoteHtml(w) + '</div>';
       }
