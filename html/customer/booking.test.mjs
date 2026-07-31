@@ -227,9 +227,9 @@ test('keeps the selected-service trash icon small and light', () => {
   assert.match(removeButtonStyle, /height: 26px/);
   assert.match(removeButtonStyle, /flex: 0 0 26px/);
   const trashStyle = SOURCE.match(/\.selected-service-remove svg \{([^}]*)\}/)?.[1] || '';
-  assert.match(trashStyle, /width: 7px/);
-  assert.match(trashStyle, /height: 7px/);
-  assert.match(trashStyle, /stroke-width: (?:0)?\.9/);
+  assert.match(trashStyle, /width: 6px/);
+  assert.match(trashStyle, /height: 6px/);
+  assert.match(trashStyle, /stroke-width: (?:0)?\.8/);
 });
 
 test('shows selected services as removable chips below the catalog', () => {
