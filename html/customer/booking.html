@@ -73,8 +73,6 @@
     .choice-card[aria-pressed="true"] { border: 1px solid var(--pink); padding: 9px; background: linear-gradient(145deg, #fff5fb, #fcf1ff); box-shadow: 0 7px 16px rgba(247, 53, 152, .12); }
     .choice-card[aria-pressed="true"]::after { position: absolute; top: 7px; right: 8px; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; color: white; background: var(--pink); content: "✓"; font-size: 11px; font-weight: 900; }
     .choice-card:disabled { border-color: #efedf5; color: #aaa8b8; background: #fafafd; }
-    .choice-icon { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: var(--purple); background: #f8eafe; font-size: 11px; font-weight: 850; letter-spacing: .02em; }
-    .choice-card:disabled .choice-icon { filter: grayscale(1); opacity: .55; }
     .choice-title { display: block; margin-top: 5px; font-size: 12.5px; font-weight: 850; letter-spacing: -.01em; line-height: 1.2; }
     .service-type-tag { display: inline-block; margin-left: 5px; padding: 2px 5px; border-radius: 999px; color: var(--purple); background: #f1edff; font-size: 9px; font-weight: 850; letter-spacing: 0; line-height: 1.2; vertical-align: middle; }
     .choice-detail { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 6px; margin-top: 3px; color: var(--muted); font-size: 10px; }
@@ -148,10 +146,9 @@
     .booking-select:focus { border-color: #cfbaf0; box-shadow: 0 0 0 4px rgba(113, 98, 242, .08); outline: none; }
 
     .staff-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
-    .staff-card { min-height: 72px; align-items: center; padding: 7px; text-align: center; }
+    .staff-card { align-items: center; padding: 7px; text-align: center; }
     .staff-card::after { right: 10px; }
-    .staff-card .choice-icon { width: 28px; height: 28px; border-radius: 50%; font-size: 11px; }
-    .staff-card .choice-title { margin-top: 3px; font-size: 12px; }
+    .staff-card .choice-title { margin-top: 0; font-size: 12px; }
     .staff-status { display: block; margin-top: 2px; color: var(--green); font-size: 10px; font-weight: 750; }
     .staff-status.busy { color: var(--orange); }
     .staff-status.unavailable { color: #b6b4c1; }
@@ -212,15 +209,13 @@
       .service-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .choice-card { padding: 9px; border-radius: 13px; }
       .choice-card[aria-pressed="true"] { padding: 9px; }
-      .choice-icon { width: 28px; height: 28px; border-radius: 50%; font-size: 11px; }
       .choice-title { margin-top: 5px; }
       .choice-detail { margin-top: 3px; }
       .selection-summary { margin-top: 10px; padding: 10px 12px; }
       .section-copy { margin-bottom: 13px; }
       .staff-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .staff-card { min-height: 72px; padding: 7px; }
-      .staff-card .choice-icon { width: 28px; height: 28px; font-size: 11px; }
-      .staff-card .choice-title { margin-top: 3px; }
+      .staff-card { padding: 7px; }
+      .staff-card .choice-title { margin-top: 0; }
       .staff-status { margin-top: 2px; }
       .action-row { position: static; display: flex; gap: 10px; margin-top: 22px; padding: 0; border-top: 0; background: transparent; backdrop-filter: none; }
       .action-row > button { width: auto; }
@@ -292,22 +287,22 @@
         <h3 class="section-title">Chuyên viên thực hiện</h3>
         <div class="staff-grid" id="staff-options">
           <button class="choice-card staff-card" type="button" data-staff-id="any" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">✨</span><span class="choice-title">Bất kỳ chuyên viên nào</span><span class="staff-status">Sắp xếp sớm nhất</span>
+            <span class="choice-title">Bất kỳ chuyên viên nào</span><span class="staff-status">Sắp xếp sớm nhất</span>
           </button>
           <button class="choice-card staff-card" type="button" data-staff-id="tina" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">TN</span><span class="choice-title">Tina</span><span class="staff-status">Còn lịch trống</span>
+            <span class="choice-title">Tina</span><span class="staff-status">Còn lịch trống</span>
           </button>
           <button class="choice-card staff-card" type="button" data-staff-id="helen" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">HE</span><span class="choice-title">Helen</span><span class="staff-status">Còn lịch trống</span>
+            <span class="choice-title">Helen</span><span class="staff-status">Còn lịch trống</span>
           </button>
           <button class="choice-card staff-card" type="button" data-staff-id="andy" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">AN</span><span class="choice-title">Andy</span><span class="staff-status">Còn lịch trống</span>
+            <span class="choice-title">Andy</span><span class="staff-status">Còn lịch trống</span>
           </button>
           <button class="choice-card staff-card" type="button" data-staff-id="maria" aria-pressed="false">
-            <span class="choice-icon" aria-hidden="true">MA</span><span class="choice-title">Maria</span><span class="staff-status">Còn lịch trống</span>
+            <span class="choice-title">Maria</span><span class="staff-status">Còn lịch trống</span>
           </button>
           <button class="choice-card staff-card" type="button" data-staff-id="kim" aria-pressed="false" disabled>
-            <span class="choice-icon" aria-hidden="true">KI</span><span class="choice-title">Kim</span><span class="staff-status unavailable">Hiện chưa có lịch trống</span>
+            <span class="choice-title">Kim</span><span class="staff-status unavailable">Hiện chưa có lịch trống</span>
           </button>
         </div>
         <p class="field-error" id="staff-error" role="alert"></p>

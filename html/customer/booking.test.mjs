@@ -333,22 +333,16 @@ test('removes decorative card emoji icons from section headers', () => {
   assert.doesNotMatch(SOURCE, /\.card-emoji\s*\{/);
 });
 
-test('renders choice icons as visible text avatars', () => {
-  const icons = [...SOURCE.matchAll(/<span class="choice-icon" aria-hidden="true">([^<]+)<\/span>/g)].map((match) => match[1]);
-  assert.equal(icons.length, 6);
-  assert.equal(icons.filter((icon) => /^[A-Z]{1,3}$/.test(icon)).length, 5);
+test('removes decorative choice icons from staff cards', () => {
+  assert.doesNotMatch(SOURCE, /class="choice-icon"/);
+  assert.doesNotMatch(SOURCE, /\.choice-icon\s*\{/);
+  assert.doesNotMatch(SOURCE, /\.staff-card \.choice-icon/);
 });
 
-test('keeps choice icons only on staff cards', () => {
-  const serviceGrid = SOURCE.match(/<div class="service-grid" id="service-options">([\s\S]*?)<\/div>\s*<div class="selection-summary"[^>]*>/)?.[1] || '';
-  const staffGrid = SOURCE.match(/<div class="staff-grid" id="staff-options">([\s\S]*?)<\/div>\s*<p class="field-error" id="staff-error"/)?.[1] || '';
-  assert.doesNotMatch(serviceGrid, /choice-icon/);
-  assert.equal([...staffGrid.matchAll(/<span class="choice-icon" aria-hidden="true">([^<]+)<\/span>/g)].length, 6);
-});
-
-test('uses an icon for the any-staff option', () => {
-  const anyStaff = SOURCE.match(/<button class="choice-card staff-card"[^>]*data-staff-id="any"[^>]*>[\s\S]*?<\/button>/)?.[0] || '';
-  assert.match(anyStaff, /<span class="choice-icon" aria-hidden="true">✨<\/span>/);
+test('keeps staff cards compact without a minimum height', () => {
+  const staffStyles = [...SOURCE.matchAll(/\.staff-card \{([^}]*)\}/g)].map((match) => match[1]);
+  assert.ok(staffStyles.length >= 2);
+  staffStyles.forEach((style) => assert.doesNotMatch(style, /min-height/));
 });
 
 test('uses a thin border for active choice cards', () => {
