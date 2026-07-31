@@ -2756,6 +2756,45 @@
       gap: 8px;
     }
 
+    .settings-booking-sms-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: var(--nexora-canvas);
+      padding: 10px;
+    }
+
+    .settings-booking-sms-copy,
+    .settings-booking-sms-control {
+      min-width: 0;
+    }
+
+    .settings-booking-sms-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .settings-booking-sms-status {
+      color: var(--nexora-success);
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .settings-booking-sms-status.is-off {
+      color: var(--nexora-subtle);
+    }
+
+    @media (max-width: 520px) {
+      .settings-booking-sms-row {
+        align-items: start;
+      }
+    }
+
     .settings-service-list.settings-service-body {
       max-height: 540px;
       overflow-y: auto;
@@ -9677,6 +9716,48 @@
                     </div>
                   </article>
 
+                  <article class="settings-card" data-settings-booking-sms-card>
+                    <div class="settings-card-head">
+                      <div>
+                        <div class="settings-card-title"><i class="bi bi-chat-square-text" aria-hidden="true"></i>Booking SMS Notifications</div>
+                        <div class="settings-card-sub">Choose who receives an SMS when a customer booking is received.</div>
+                      </div>
+                      <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Collapse booking SMS notifications"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="settings-config-stack">
+                      <div class="settings-booking-sms-row" data-settings-booking-sms-row>
+                        <div class="settings-booking-sms-copy">
+                          <div class="settings-config-title">Send to customer</div>
+                          <div class="settings-config-desc">Confirm that the booking request was received.</div>
+                        </div>
+                        <div class="settings-booking-sms-control">
+                          <span class="settings-booking-sms-status" data-settings-booking-sms-status aria-live="polite">On</span>
+                          <button class="toggle-pill is-on" type="button" data-settings-booking-sms-toggle="customer" data-settings-booking-sms-recipient="Customer" role="switch" aria-checked="true" aria-label="Disable customer booking SMS"></button>
+                        </div>
+                      </div>
+                      <div class="settings-booking-sms-row" data-settings-booking-sms-row>
+                        <div class="settings-booking-sms-copy">
+                          <div class="settings-config-title">Send to salon</div>
+                          <div class="settings-config-desc">Notify the salon's booking notification number.</div>
+                        </div>
+                        <div class="settings-booking-sms-control">
+                          <span class="settings-booking-sms-status" data-settings-booking-sms-status aria-live="polite">On</span>
+                          <button class="toggle-pill is-on" type="button" data-settings-booking-sms-toggle="salon" data-settings-booking-sms-recipient="Salon" role="switch" aria-checked="true" aria-label="Disable salon booking SMS"></button>
+                        </div>
+                      </div>
+                      <div class="settings-booking-sms-row" data-settings-booking-sms-row>
+                        <div class="settings-booking-sms-copy">
+                          <div class="settings-config-title">Send to assigned staff</div>
+                          <div class="settings-config-desc">Alert the staff member assigned to the appointment.</div>
+                        </div>
+                        <div class="settings-booking-sms-control">
+                          <span class="settings-booking-sms-status" data-settings-booking-sms-status aria-live="polite">On</span>
+                          <button class="toggle-pill is-on" type="button" data-settings-booking-sms-toggle="staff" data-settings-booking-sms-recipient="Assigned staff" role="switch" aria-checked="true" aria-label="Disable assigned staff booking SMS"></button>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+
                   <article class="settings-card">
                     <div class="settings-card-head">
                       <div>
@@ -14042,6 +14123,22 @@ function getBookingCardCallStart(item) {
       }
     }
 
+    function syncBookingSmsNotificationToggle(toggle) {
+      if (!toggle) return;
+
+      var enabled = toggle.classList.contains('is-on');
+      var recipient = toggle.dataset.settingsBookingSmsRecipient || 'booking recipient';
+      var row = toggle.closest('[data-settings-booking-sms-row]');
+      var status = row ? row.querySelector('[data-settings-booking-sms-status]') : null;
+
+      toggle.setAttribute('aria-checked', enabled ? 'true' : 'false');
+      toggle.setAttribute('aria-label', enabled ? 'Disable ' + recipient.toLowerCase() + ' booking SMS' : 'Enable ' + recipient.toLowerCase() + ' booking SMS');
+      if (status) {
+        status.textContent = enabled ? 'On' : 'Off';
+        status.classList.toggle('is-off', !enabled);
+      }
+    }
+
     var settingsLanguageGreetings = {
       auto: 'Hi! Thanks for calling Bitcoin Nail Bar. I\'m your bilingual AI assistant — I can help you book an appointment, check pricing, or answer questions in English or Vietnamese. How can I help today?',
       vi: 'Hi! Thanks for calling Bitcoin Nail Bar. I\'m your AI assistant — I can help you book an appointment, check pricing, or answer questions. How can I help today?',
@@ -15007,6 +15104,15 @@ function getBookingCardCallStart(item) {
       toggle.addEventListener('click', function() {
         syncFirstCallSmsToggle(toggle);
         setSettingsStatus('First-call SMS ' + (toggle.classList.contains('is-on') ? 'enabled' : 'disabled') + '.');
+      });
+    });
+
+    document.querySelectorAll('[data-settings-booking-sms-toggle]').forEach(function(toggle) {
+      syncBookingSmsNotificationToggle(toggle);
+      toggle.addEventListener('click', function() {
+        syncBookingSmsNotificationToggle(toggle);
+        var recipient = toggle.dataset.settingsBookingSmsRecipient || 'Booking recipient';
+        setSettingsStatus(recipient + ' booking SMS ' + (toggle.classList.contains('is-on') ? 'enabled' : 'disabled') + '.');
       });
     });
 
