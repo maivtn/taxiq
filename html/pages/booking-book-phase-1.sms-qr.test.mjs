@@ -502,18 +502,46 @@ test('places appointment status chips below the search filters', () => {
 test('keeps status chips outside the filter dropdown and directly above each table', () => {
   const html = source();
 
-  assert.match(
-    html,
-    /data-booking-clear-filters>Clear<\/button>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="booking-status-chips" data-booking-status-chips/
-  );
-  assert.match(
-    html,
-    /data-cust-search>\s*<\/label>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="booking-status-chips" data-cust-seg-filter/
-  );
-  assert.match(
-    html,
-    /data-call-search>\s*<\/label>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="booking-status-chips" data-call-status-filter/
-  );
+  function closingDivEnd(startIndex) {
+    const tags = /<\/?div\b[^>]*>/g;
+    tags.lastIndex = startIndex;
+    let depth = 0;
+    let match;
+    while ((match = tags.exec(html))) {
+      depth += match[0].startsWith('</') ? -1 : 1;
+      if (depth === 0) return tags.lastIndex;
+    }
+    return -1;
+  }
+
+  for (const { scope, chipMarker, tableMarker } of [
+    {
+      scope: 'booking',
+      chipMarker: '<div class="booking-status-chips" data-booking-status-chips',
+      tableMarker: '<div class="booking-table-wrap" data-booking-view-panel="table">'
+    },
+    {
+      scope: 'customers',
+      chipMarker: '<div class="booking-status-chips" data-cust-seg-filter',
+      tableMarker: '<div class="booking-table-wrap"'
+    },
+    {
+      scope: 'calllog',
+      chipMarker: '<div class="booking-status-chips" data-call-status-filter',
+      tableMarker: '<div class="booking-table-wrap"'
+    }
+  ]) {
+    const filterStart = html.indexOf(`<div class="booking-filter-popover" id="${scope}-filter-menu"`);
+    const filterEnd = closingDivEnd(filterStart);
+    const chipStart = html.indexOf(chipMarker);
+    const chipEnd = closingDivEnd(chipStart);
+    const tableStart = html.indexOf(tableMarker, chipEnd);
+
+    assert.ok(filterStart > -1 && filterEnd > filterStart, `${scope} filter dropdown should be well formed`);
+    assert.ok(chipStart > filterEnd, `${scope} status chips should be outside the filter dropdown`);
+    assert.ok(chipEnd > chipStart && tableStart > chipEnd, `${scope} status chips should sit directly above its table`);
+    assert.equal(html.slice(chipEnd, tableStart).trim(), '');
+  }
 });
 
 test('puts booking filters behind right-aligned dropdown triggers', () => {

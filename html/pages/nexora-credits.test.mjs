@@ -3,16 +3,14 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
-const PAGE_URL = new URL('./nexora-credits.html', import.meta.url);
 const CSS_URL = new URL('../assets/nexora-credits.css', import.meta.url);
 const JS_URL = new URL('../assets/nexora-credits.js', import.meta.url);
 const BOOKING_URL = new URL('./booking-book-phase-1.html', import.meta.url);
-const PACKAGES_URL = new URL('./nexora-packages.html', import.meta.url);
 const SHELL_JS_URL = new URL('../assets/nexora-shell.js', import.meta.url);
 
 function source() {
-  assert.ok(existsSync(PAGE_URL), 'nexora-credits.html must exist');
-  return readFileSync(PAGE_URL, 'utf8');
+  assert.ok(existsSync(BOOKING_URL), 'booking-book-phase-1.html must exist');
+  return readFileSync(BOOKING_URL, 'utf8');
 }
 
 function loadCreditsRuntime(seed, document) {
@@ -28,54 +26,48 @@ function loadCreditsRuntime(seed, document) {
   return { api: window.NEXORA_CREDITS };
 }
 
-test('creates the Credits Management page with the monthly plan and SMS credit cards', () => {
+test('renders the Credit Usage view inside Booking Book Plans', () => {
   const html = source();
 
-  assert.match(html, /<title>Nexora Touch - Credits Management<\/title>/);
+  assert.match(html, /<title>Nexora Touch - Booking Book Shell<\/title>/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-credits\.css">/);
-  assert.match(html, /<main class="content" aria-label="Credits management content">/);
-  assert.match(html, /href="booking-book-phase-1\.html\?tab=sms-campaigns"[^>]*data-credits-back/);
+  assert.match(html, /<main class="content" aria-label="Booking Book content">/);
+  assert.match(html, /data-plans-view-target="credits"/);
+  assert.match(html, /data-plans-view-panel="credits" data-credits-page/);
   assert.match(html, /data-credits-card="plan"/);
   assert.match(html, /data-credits-card="sms-topup"/);
   assert.match(html, /data-credits-history/);
   assert.doesNotMatch(html, /credits-heading-badge/);
   assert.match(html, /activePage:\s*'booking'/);
-  assert.match(html, /activeTab:\s*'sms-campaigns'/);
+  assert.match(html, /activeTab:\s*'booking'/);
 });
 
-test('exposes SMS purchase and monthly plan reset information', () => {
+test('exposes SMS purchase and monthly plan expiry information', () => {
   const html = source();
-  const packages = readFileSync(PACKAGES_URL, 'utf8');
   const runtime = readFileSync(JS_URL, 'utf8');
 
-  assert.match(html, /href="booking-book-phase-1\.html\?tab=sms-campaigns&amp;openCredits=1"/);
-  for (const page of [html, packages]) {
-    assert.match(page, /class="credits-reset-action"[\s\S]*<time data-credits-plan-expiry/);
-    assert.doesNotMatch(page, /Reset \/ month/);
-    assert.match(page, /Expires <time data-credits-plan-expiry/);
-  }
+  assert.match(html, /data-credits-action="sms-buy"/);
+  assert.match(html, /data-credits-action="voice-buy"/);
+  assert.match(html, /class="credits-reset-action"[\s\S]*<time data-credits-plan-expiry/);
+  assert.doesNotMatch(html, /Reset \/ month/);
+  assert.match(html, /Expires <time data-credits-plan-expiry/);
   assert.match(runtime, /function renderPlanExpiryDate\(/);
   assert.match(runtime, /data-credits-plan-expiry/);
 });
 
 test('labels the SMS top-up action in Vietnamese', () => {
   const html = source();
-  const packages = readFileSync(PACKAGES_URL, 'utf8');
 
   assert.match(html, />Mua SMS credit<\/span>/);
-  assert.match(packages, />Mua SMS credit<\/span>/);
   assert.doesNotMatch(html, />Buy SMS Credits<\/span>/);
-  assert.doesNotMatch(packages, />Buy SMS Credits<\/span>/);
 });
 
-test('adds a confirmed local storage clear action to the Credits and Package headers', () => {
+test('keeps the embedded Credits view on the shared Booking shell', () => {
   const html = source();
-  const packages = readFileSync(PACKAGES_URL, 'utf8');
   const shell = readFileSync(SHELL_JS_URL, 'utf8');
 
-  assert.match(html, /showClearStorage:\s*true/);
-  assert.match(packages, /showClearStorage:\s*true/);
+  assert.match(html, /window\.NEXORA_SHELL = \{ activePage: 'booking', activeTab: 'booking' \}/);
   assert.match(shell, /data-shell-clear-storage/);
   assert.match(shell, /localStorage\.clear\(\)/);
   assert.match(shell, /window\.confirm\(/);
@@ -88,12 +80,11 @@ test('keeps credit state out of browser local storage', () => {
   assert.doesNotMatch(runtime, /taxiq:sms-(?:credits|credit-wallet|credit-history)/);
 });
 
-test('matches the compact monthly plan and rollover credit layout in both pages', () => {
+test('matches the compact monthly plan and rollover credit layout in Booking Book', () => {
   const html = source();
-  const packages = readFileSync(PACKAGES_URL, 'utf8');
   const css = readFileSync(CSS_URL, 'utf8');
 
-  for (const page of [html, packages]) {
+  for (const page of [html]) {
     assert.match(page, /data-credits-card="plan"/);
     assert.doesNotMatch(page, /credits-plan-allowance/);
     assert.match(page, /class="credits-usage-row credits-usage-row-minutes"/);
@@ -108,8 +99,8 @@ test('matches the compact monthly plan and rollover credit layout in both pages'
     assert.match(page, /Không hết hạn/);
     assert.doesNotMatch(page, /Không bị reset/);
     assert.match(page, /data-credits-sms-topup-balance/);
-    assert.match(page, /data-credits-sms-topup-usage/);
-    assert.match(page, /data-credits-sms-topup-usage[\s\S]*?class="credits-usage-icon credits-usage-icon-sms"[\s\S]*?SMS Credits used/);
+    assert.match(page, /data-credits-voice-topup-balance/);
+    assert.match(page, /data-credits-sms-topup-balance/);
     assert.doesNotMatch(page, /class="credits-card-note credits-card-note-topup"/);
     assert.doesNotMatch(page, /SMS Credits sẽ tự động được dùng khi 1,000 SMS trong gói Pro đã hết/);
     assert.doesNotMatch(page, /credits-card-voice/);
@@ -131,7 +122,7 @@ test('keeps Credit Usage cards compact without hiding their usage details', () =
   const css = readFileSync(CSS_URL, 'utf8');
 
   assert.match(css, /\.credits-balance-grid\s*\{[\s\S]*?gap:\s*12px/);
-  assert.match(css, /\.credits-card\s*\{\s*padding:\s*14px;/);
+  assert.match(css, /\.credits-card\s*\{[\s\S]*?padding:\s*14px;/);
   assert.match(css, /\.credits-card-head\s*\{[\s\S]*?gap:\s*9px/);
   assert.match(css, /\.credits-plan-usage\s*\{[\s\S]*?gap:\s*12px[\s\S]*?margin-top:\s*12px/);
   assert.match(css, /\.credits-usage-progress\s*\{[\s\S]*?height:\s*6px[\s\S]*?margin-top:\s*5px/);
@@ -157,17 +148,16 @@ test('reduces Pro and SMS Credits typography on mobile', () => {
 
 test('matches the reference card hierarchy and Pro monthly allowance', () => {
   const html = source();
-  const packages = readFileSync(PACKAGES_URL, 'utf8');
   const runtime = readFileSync(JS_URL, 'utf8');
 
-  for (const page of [html, packages]) {
+  for (const page of [html]) {
     const planCard = page.match(/data-credits-card="plan"[\s\S]*?<\/article>/)?.[0] || '';
     const topupCard = page.match(/data-credits-card="sms-topup"[\s\S]*?<\/article>/)?.[0] || '';
     assert.match(planCard, /<h2 id="plan-credits-title">Pro<\/h2>/);
     assert.match(planCard, /<h2 id="plan-credits-title">Pro<\/h2>\s*<p class="credits-plan-subtitle">AI Voice Plan<\/p>/);
     assert.doesNotMatch(planCard, /credits-plan-allowance/);
     assert.doesNotMatch(planCard, /credits-card-kicker[^>]*>Monthly plan<\/span>/);
-    assert.match(topupCard, /<h2 id="sms-credits-title">SMS Credits<\/h2>[\s\S]*?<p class="credits-topup-subtitle">/);
+    assert.match(topupCard, /<h2 id="voice-sms-credits-title">Voice and SMS Credits<\/h2>[\s\S]*?<p class="credits-topup-subtitle">/);
     assert.doesNotMatch(topupCard, /Purchased balance/);
   }
 
@@ -176,24 +166,18 @@ test('matches the reference card hierarchy and Pro monthly allowance', () => {
 
 test('uses the reference default credit usage data in both Credit Usage views', () => {
   const html = source();
-  const packages = readFileSync(PACKAGES_URL, 'utf8');
   const runtime = readFileSync(JS_URL, 'utf8');
 
-  for (const page of [html, packages]) {
+  for (const page of [html]) {
     const planCard = page.match(/data-credits-card="plan"[\s\S]*?<\/article>/)?.[0] || '';
     const topupCard = page.match(/data-credits-card="sms-topup"[\s\S]*?<\/article>/)?.[0] || '';
     assert.match(planCard, /data-credits-voice-used>620<\/span>/);
     assert.match(planCard, /data-credits-sms-plan-used>1,000<\/span>/);
     assert.match(planCard, /class="credits-plan-remaining"[\s\S]*?class="credits-label">Còn lại<\/span>[\s\S]*?class="credits-plan-remaining-values"[\s\S]*?data-credits-voice-remaining>380[\s\S]*?data-credits-sms-plan-remaining>0/);
-    assert.match(topupCard, /class="credits-usage-heading"><span>SMS Credits used<\/span>/);
-    assert.doesNotMatch(topupCard, /SMS Credits used \(sau khi gói hết\)/);
+    assert.match(topupCard, /data-credits-voice-topup-balance>0<\/strong>/);
     assert.match(topupCard, /data-credits-sms-topup-balance>450<\/strong>/);
-    assert.doesNotMatch(topupCard, /class="credits-topup-total"/);
-    assert.match(topupCard, /data-credits-sms-topup-used>50<\/span>/);
-    assert.match(topupCard, /data-credits-sms-topup-usage-total>500<\/span>/);
-    assert.doesNotMatch(topupCard, /data-credits-sms-topup-usage hidden/);
-    assert.match(topupCard, /width:10%/);
-    assert.match(page, /Dùng khi SMS trong gói đã hết/);
+    assert.doesNotMatch(topupCard, /data-credits-sms-topup-usage/);
+    assert.match(page, /Credit mua thêm, không hết hạn/);
   }
 
   assert.match(runtime, /const SMS_STARTING_CREDITS = 0/);
@@ -213,11 +197,9 @@ test('keeps usage icons free of an extra outer border', () => {
 
 test('keeps progress bars without visible percentage labels', () => {
   const html = source();
-  const packages = readFileSync(PACKAGES_URL, 'utf8');
   const css = readFileSync(CSS_URL, 'utf8');
 
   assert.doesNotMatch(html, /credits-usage-percent/);
-  assert.doesNotMatch(packages, /credits-usage-percent/);
   assert.doesNotMatch(css, /\.credits-usage-percent\s*\{/);
 });
 
@@ -279,35 +261,24 @@ test('renders monthly usage percentages and rollover SMS usage from the wallet',
 test('renders both credit balances, progress indicators, and usage history', () => {
   const html = source();
   const runtime = readFileSync(JS_URL, 'utf8');
-  const packages = readFileSync(PACKAGES_URL, 'utf8');
   const css = readFileSync(CSS_URL, 'utf8');
 
   assert.doesNotMatch(html, /Recent activity across SMS and Voice/);
-  assert.doesNotMatch(packages, /Recent activity across SMS and Voice/);
   assert.match(html, /Pro/);
-  assert.match(packages, /Pro/);
   assert.match(html, /SMS Credits/);
-  assert.match(packages, /SMS Credits/);
   assert.doesNotMatch(html, /credits-balance-unit/);
-  assert.doesNotMatch(packages, /credits-balance-unit/);
   assert.doesNotMatch(html, /Total available/);
-  assert.doesNotMatch(packages, /Total available/);
   assert.doesNotMatch(html, /<span class="credits-balance-unit">AI Voice minutes<\/span>/);
-  assert.doesNotMatch(packages, /<span class="credits-balance-unit">AI Voice minutes<\/span>/);
   assert.doesNotMatch(html, /Credits are shared with SMS Campaigns/);
-  assert.doesNotMatch(packages, /Credits are shared with SMS Campaigns/);
   assert.doesNotMatch(html, /Top-ups are managed through your voice plan/);
-  assert.doesNotMatch(packages, /Top-ups are managed through your voice plan/);
   assert.match(html, /data-credits-sms-topup-balance/);
   assert.match(html, /data-credits-voice-used/);
   assert.match(html, /credits-usage-progress/);
-  assert.match(packages, /credits-usage-progress/);
   assert.match(html, /<th scope="col">Product<\/th>/);
   assert.match(html, /<th scope="col">Activity<\/th>/);
-  assert.match(html, /<th scope="col">Usage<\/th>/);
+  assert.match(html, /<th scope="col">Change<\/th>/);
   assert.match(html, /<th scope="col">Date<\/th>/);
   assert.doesNotMatch(html, /<th scope="col">Balance after<\/th>/);
-  assert.doesNotMatch(packages, /<th scope="col">Balance after<\/th>/);
   assert.match(runtime, /SMS_STARTING_CREDITS\s*=\s*0/);
   assert.match(runtime, /VOICE_USED_MINUTES\s*=\s*620/);
   assert.match(runtime, /VOICE_TOTAL_MINUTES\s*=\s*1000/);
@@ -331,12 +302,8 @@ test('renders both credit balances, progress indicators, and usage history', () 
   assert.match(readFileSync(BOOKING_URL, 'utf8'), /consumeSmsCredits\(/);
   assert.match(html, /data-credits-sms-plan-used/);
   assert.match(html, /data-credits-sms-topup-balance/);
-  assert.match(packages, /data-credits-sms-plan-used/);
-  assert.match(packages, /data-credits-sms-topup-balance/);
   assert.doesNotMatch(html, /Estimated value/);
   assert.doesNotMatch(html, /data-credits-sms-value/);
-  assert.doesNotMatch(packages, /Estimated value/);
-  assert.doesNotMatch(packages, /data-credits-sms-value/);
   assert.match(css, /\.credits-balance-grid\s*\{/);
   assert.match(css, /\.credits-card-foot\s*\{[\s\S]*?border-top:\s*0/);
   assert.match(css, /\.credits-usage-progress\s*\{/);
@@ -347,18 +314,17 @@ test('renders both credit balances, progress indicators, and usage history', () 
 
 test('adds a conditional Voice warning card above Usage history', () => {
   const html = source();
-  const packages = readFileSync(PACKAGES_URL, 'utf8');
   const runtime = readFileSync(JS_URL, 'utf8');
   const css = readFileSync(CSS_URL, 'utf8');
 
-  for (const page of [html, packages]) {
+  for (const page of [html]) {
     const warningIndex = page.indexOf('class="credits-voice-warning"');
     const historyIndex = page.indexOf('class="credits-history-section"');
     assert.ok(warningIndex >= 0, 'Voice warning card must exist');
     assert.ok(warningIndex < historyIndex, 'Voice warning card must appear above Usage history');
     assert.match(page, /data-credits-voice-warning[^>]*role="status"[^>]*hidden/);
     assert.match(page, /AI Voice sắp hết/);
-    assert.match(page, /tắt chế độ AI Voice hoặc nâng cấp gói/);
+    assert.match(page, /Mua thêm credit hoặc nâng cấp gói/);
     assert.match(page, /data-credits-voice-warning-remaining/);
   }
 
@@ -371,7 +337,6 @@ test('adds a conditional Voice warning card above Usage history', () => {
 
 test('filters usage history by All, SMS, and Voice products', () => {
   const html = source();
-  const packages = readFileSync(PACKAGES_URL, 'utf8');
   const runtime = readFileSync(JS_URL, 'utf8');
   const historyTarget = { innerHTML: '' };
   const filterButtons = ['all', 'sms', 'voice'].map(function (filter) {
@@ -392,16 +357,14 @@ test('filters usage history by All, SMS, and Voice products', () => {
   };
   const { api } = loadCreditsRuntime({}, document);
 
-  for (const page of [html, packages]) {
+  for (const page of [html]) {
     assert.match(page, /data-credits-history-filter="all"/);
     assert.match(page, /data-credits-history-filter="sms"/);
     assert.match(page, /data-credits-history-filter="voice"/);
   }
   assert.match(runtime, /function setHistoryFilter\(filter\)/);
   assert.doesNotMatch(html, /Jul 28, 2026 · 10:42 AM/);
-  assert.doesNotMatch(packages, /Jul 28, 2026 · 10:42 AM/);
   assert.match(html, /credits-history-date[^>]*>[\s\S]*?Jul 28, 2026[\s\S]*?<small>10:42 AM<\/small>/);
-  assert.match(packages, /credits-history-date[^>]*>[\s\S]*?Jul 28, 2026[\s\S]*?<small>10:42 AM<\/small>/);
 
   api.setHistoryFilter('voice');
   assert.match(historyTarget.innerHTML, /credits-product-badge-voice/);
@@ -486,7 +449,7 @@ test('shows Voice usage history activity without phone numbers', () => {
   const css = readFileSync(CSS_URL, 'utf8');
 
   assert.match(html, /<th scope="col">Activity<\/th>/);
-  assert.match(html, /<th scope="col">Usage<\/th>/);
+  assert.match(html, /<th scope="col">Change<\/th>/);
   assert.match(html, /<span class="credits-history-activity"><strong>Incoming call<\/strong><\/span>/);
   assert.doesNotMatch(html, /\+1 \(713\) 555-0182|\+1 \(832\) 555-0104|\+1 \(281\) 555-0199/);
   assert.doesNotMatch(runtime, /phone:\s*'\+1 \(713\) 555-0182'/);
