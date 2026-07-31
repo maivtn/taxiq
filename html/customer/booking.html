@@ -101,9 +101,14 @@
     .service-category-count { flex: 0 0 auto; margin-left: auto; padding: 3px 8px; border-radius: 999px; color: var(--purple); background: #f1edff; font-size: 10px; font-weight: 850; }
     .service-category .service-grid { padding: 8px; }
     .service-catalog-loading { padding: 16px 12px; border: 1px dashed #d8cceb; border-radius: 14px; color: var(--muted); background: #faf8ff; font-size: 12px; font-weight: 700; text-align: center; }
-    .service-notes { display: grid; gap: 8px; margin-top: 12px; padding: 12px 14px; border: 1px solid #eadff5; border-radius: 14px; color: #4d4968; background: #fbf8ff; }
-    .service-notes-label { color: var(--ink); font-size: 12px; font-weight: 850; }
-    .service-notes ul { display: grid; gap: 5px; margin: 0; padding-left: 19px; font-size: 12px; line-height: 1.5; }
+    .service-notes { margin-top: 10px; border: 1px solid #eadff5; border-radius: 14px; color: #4d4968; background: #fbf8ff; }
+    .service-notes > summary { display: flex; align-items: center; justify-content: space-between; gap: 5px; padding: 9px 11px; color: var(--ink); cursor: pointer; list-style: none; }
+    .service-notes > summary::-webkit-details-marker { display: none; }
+    .service-notes-label { font-size: 12px; font-weight: 850; }
+    .service-notes-chevron { width: 14px; height: 14px; color: var(--muted); stroke-width: 2.5; transition: transform .18s ease; }
+    .service-notes:not([open]) .service-notes-chevron { transform: rotate(-90deg); }
+    .service-notes[open] > summary { border-bottom: 1px solid #eadff5; }
+    .service-notes ul { display: grid; gap: 3px; margin: 7px 11px 9px; padding-left: 19px; font-size: 11px; line-height: 1.25; }
     .service-description-modal { position: fixed; z-index: 20; inset: 0; display: grid; place-items: center; padding: 18px; }
     .service-description-backdrop { position: absolute; inset: 0; background: rgba(29, 27, 58, .42); backdrop-filter: blur(5px); }
     .service-description-dialog { position: relative; width: min(100%, 520px); max-height: min(85vh, 620px); overflow: auto; padding: 22px; border: 1px solid rgba(226, 220, 241, .95); border-radius: 24px; background: #fff; box-shadow: 0 24px 70px rgba(46, 28, 81, .28); }
@@ -125,9 +130,12 @@
     .selected-services { display: grid; gap: 8px; margin-top: 10px; padding: 10px 12px; border: 1px solid #eadff5; border-radius: 14px; background: #fff; }
     .selected-services-label { color: var(--muted); font-size: 11px; font-weight: 850; }
     .selected-service-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .selected-service-chip { display: inline-flex; align-items: center; gap: 5px; min-height: 30px; padding: 6px 8px 6px 10px; border: 1px solid #eadcf6; border-radius: 999px; color: var(--ink); background: #fbf8ff; font-size: 11px; font-weight: 800; transition: border-color .18s, background .18s, transform .18s; }
+    .selected-service-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 4px 5px 4px 8px; border: 1px solid #eadcf6; border-radius: 999px; color: var(--ink); background: #fbf8ff; font-size: 11px; font-weight: 800; transition: border-color .18s, background .18s, transform .18s; }
     .selected-service-chip:hover { border-color: #d8b7ee; background: #f7f0ff; transform: translateY(-1px); }
-    .selected-service-chip svg { width: 14px; height: 14px; color: var(--soft-muted); stroke-width: 2.5; }
+    .selected-service-remove { display: grid; width: 26px; height: 26px; flex: 0 0 26px; place-items: center; padding: 0; border: 1px solid #e7a9c6; border-radius: 50%; color: #c62a69; background: #fff4fa; transition: border-color .18s, color .18s, background .18s, transform .18s; }
+    .selected-service-remove:hover { border-color: #c62a69; color: #fff; background: #c62a69; transform: scale(1.06); }
+    .selected-service-remove:focus-visible { border-color: #c62a69; color: #fff; background: #c62a69; outline: 3px solid rgba(198, 42, 105, .2); outline-offset: 2px; }
+    .selected-service-remove svg { width: 13px; height: 13px; stroke-width: 2; }
     .selection-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding: 10px 12px; border-radius: 14px; color: var(--muted); background: #f8f5ff; font-size: 12px; }
     .selection-summary strong { color: var(--ink); font-size: 14px; }
     .section-title { margin: 20px 0 6px; font-size: 14px; font-weight: 850; letter-spacing: 0; }
@@ -270,15 +278,15 @@
         <div class="service-category-list" id="service-options" data-service-catalog aria-live="polite">
           <div class="service-catalog-loading">Đang tải danh mục dịch vụ…</div>
         </div>
-        <div class="service-notes" id="service-notes" hidden aria-live="polite">
-          <span class="service-notes-label">Lưu ý</span>
-          <ul id="service-notes-list"></ul>
-        </div>
         <div class="selected-services" id="selected-services" hidden aria-live="polite">
           <span class="selected-services-label">Dịch vụ đã chọn</span>
           <div class="selected-service-chips" id="selected-service-chips"></div>
         </div>
         <div class="selection-summary" aria-live="polite"><span id="service-count">Chưa chọn dịch vụ</span><strong id="service-total">$0</strong></div>
+        <details class="service-notes" id="service-notes" hidden aria-live="polite">
+          <summary><span class="service-notes-label">Lưu ý</span><i data-lucide="chevron-down" class="service-notes-chevron" aria-hidden="true"></i></summary>
+          <ul id="service-notes-list"></ul>
+        </details>
         <p class="field-error" id="service-error" role="alert"></p>
 
         <h3 class="section-title">Chuyên viên thực hiện</h3>
@@ -582,6 +590,15 @@
             <div class="service-grid">${services}</div>
           </details>`;
         }).join('') || '<div class="service-catalog-loading">Chưa có dịch vụ.</div>';
+        const categoryDetails = [...container.querySelectorAll('.service-category')];
+        categoryDetails.forEach((category) => {
+          category.addEventListener('toggle', () => {
+            if (!category.open) return;
+            categoryDetails.forEach((other) => {
+              if (other !== category) other.open = false;
+            });
+          });
+        });
         window.lucide?.createIcons();
       }
 
@@ -642,7 +659,7 @@
         container.hidden = selectedServices.length === 0;
         chipsContainer.innerHTML = selectedServices.map((service) => {
           const selectedLabel = `${service.categoryName || 'Dịch vụ khác'} - ${service.name}`;
-          return `<button class="selected-service-chip" type="button" data-remove-service-id="${escapeHtml(service.id)}" aria-label="Bỏ chọn ${escapeHtml(selectedLabel)}"><span>${escapeHtml(selectedLabel)}</span><i data-lucide="x" aria-hidden="true"></i></button>`;
+          return `<div class="selected-service-chip"><span>${escapeHtml(selectedLabel)}</span><button class="selected-service-remove" type="button" data-remove-service-id="${escapeHtml(service.id)}" aria-label="Bỏ chọn ${escapeHtml(selectedLabel)}" title="Bỏ chọn"><i data-lucide="trash-2" aria-hidden="true"></i></button></div>`;
         }).join('');
         window.lucide?.createIcons();
       }

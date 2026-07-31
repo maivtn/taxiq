@@ -113,6 +113,11 @@ test('renders customer services under visible categories from the shared catalog
   assert.match(SOURCE, /SERVICE_CATALOG_URL/);
 });
 
+test('keeps only one service category expanded at a time', () => {
+  assert.match(SOURCE, /category\.addEventListener\('toggle'/);
+  assert.match(SOURCE, /if \(other !== category\) other\.open = false/);
+});
+
 test('loads booking services from the shared menu JSON', () => {
   assert.match(SOURCE, /const SERVICE_CATALOG_URL = '\.\.\/menu\/menu\.json';/);
   assert.doesNotMatch(SOURCE, /booking-service-catalog-draft\.json/);
@@ -178,10 +183,36 @@ test('shows optional service type tags next to service names', () => {
 });
 
 test('shows shared menu notes below the service catalog', () => {
-  assert.match(SOURCE, /id="service-notes"/);
+  assert.match(SOURCE, /<details class="service-notes" id="service-notes"/);
+  assert.match(SOURCE, /<summary><span class="service-notes-label">Lưu ý<\/span>/);
   assert.match(SOURCE, /id="service-notes-list"/);
+  assert.match(SOURCE, /data-lucide="chevron-down"/);
   assert.match(SOURCE, /notes: Array\.isArray\(catalog\.notes\)/);
   assert.match(SOURCE, /notes\.map/);
+  assert.ok(SOURCE.indexOf('<details class="service-notes"') > SOURCE.indexOf('<div class="selection-summary"'));
+});
+
+test('keeps shared menu note text compact', () => {
+  const notesSummaryStyle = SOURCE.match(/\.service-notes > summary \{([^}]*)\}/)?.[1] || '';
+  const notesStyle = SOURCE.match(/\.service-notes ul \{([^}]*)\}/)?.[1] || '';
+  assert.match(notesSummaryStyle, /padding: 9px 11px/);
+  assert.match(notesSummaryStyle, /gap: 5px/);
+  assert.match(notesStyle, /font-size: 11px/);
+  assert.match(notesStyle, /line-height: 1\.25/);
+  assert.match(notesStyle, /gap: 3px/);
+});
+
+test('keeps the selected-service trash icon small and light', () => {
+  const chipStyle = SOURCE.match(/\.selected-service-chip \{([^}]*)\}/)?.[1] || '';
+  const removeButtonStyle = SOURCE.match(/\.selected-service-remove \{([^}]*)\}/)?.[1] || '';
+  assert.match(chipStyle, /padding: 4px 5px 4px 8px/);
+  assert.match(removeButtonStyle, /width: 26px/);
+  assert.match(removeButtonStyle, /height: 26px/);
+  assert.match(removeButtonStyle, /flex: 0 0 26px/);
+  const trashStyle = SOURCE.match(/\.selected-service-remove svg \{([^}]*)\}/)?.[1] || '';
+  assert.match(trashStyle, /width: 13px/);
+  assert.match(trashStyle, /height: 13px/);
+  assert.match(trashStyle, /stroke-width: 2/);
 });
 
 test('shows selected services as removable chips below the catalog', () => {
@@ -189,7 +220,11 @@ test('shows selected services as removable chips below the catalog', () => {
   assert.match(SOURCE, /id="selected-service-chips"/);
   assert.match(SOURCE, /function renderSelectedServices\(/);
   assert.match(SOURCE, /data-remove-service-id/);
-  assert.match(SOURCE, /data-lucide="x"/);
+  assert.match(SOURCE, /data-lucide="trash-2"/);
+  assert.doesNotMatch(SOURCE, /data-lucide="x"/);
+  assert.match(SOURCE, /class="selected-service-remove"/);
+  assert.match(SOURCE, /\.selected-service-remove svg/);
+  assert.doesNotMatch(SOURCE, /<button class="selected-service-chip"/);
   assert.match(SOURCE, /service\.categoryName \|\| 'Dịch vụ khác'/);
   assert.match(SOURCE, /selectedLabel = `\$\{service\.categoryName \|\| 'Dịch vụ khác'\} - \$\{service\.name\}`/);
   assert.match(SOURCE, /closest\?\.\('\[data-remove-service-id\]'\)/);
