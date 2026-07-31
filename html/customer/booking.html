@@ -569,7 +569,7 @@
         container.innerHTML = categories.map((category) => {
           const services = category.services.map((service) => {
             const price = Number(service.priceCents) > 0 ? money(service.priceCents) : 'Liên hệ';
-            const viewButton = service.description ? `<button class="service-action service-action-view" type="button" data-service-view-id="${escapeHtml(service.id)}">Xem</button>` : '';
+            const viewButton = service.description ? `<button class="service-action service-action-view" type="button" data-service-view-id="${escapeHtml(service.id)}">View details</button>` : '';
             const serviceActions = viewButton ? `<span class="service-choice-actions">${viewButton}</span>` : '';
             return `<div class="choice-card service-choice-card" data-service-id="${escapeHtml(service.id)}" role="button" tabindex="0" aria-label="Chọn ${escapeHtml(service.name)}" aria-pressed="false">
               <span class="choice-title">${escapeHtml(service.name)}${service.type ? ` <span class="service-type-tag">${escapeHtml(service.type)}</span>` : ''}</span>

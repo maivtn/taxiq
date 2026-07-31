@@ -126,7 +126,7 @@ test('opens service descriptions in a modal with a separate view action', () => 
   assert.match(SOURCE, /data-service-view-id/);
   assert.match(SOURCE, /function openServiceDescription\(/);
   assert.match(SOURCE, /data-service-modal-close/);
-  assert.match(SOURCE, />Xem</);
+  assert.match(SOURCE, />View details</);
   assert.doesNotMatch(SOURCE, /data-service-select-id/);
   assert.doesNotMatch(SOURCE, /service-action-select/);
   assert.doesNotMatch(SOURCE, />Chọn</);
