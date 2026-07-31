@@ -31,12 +31,13 @@
 
   function menuSectionsToCategories(sections) {
     return sections.filter(function (section) {
-      return section && section.kind !== 'beverage';
+      return section && (section.kind === 'service' || section.kind === 'add-on');
     }).map(function (section) {
       section = section || {};
       return {
         id: section.id,
         name: section.title,
+        kind: section.kind,
         services: (Array.isArray(section.items) ? section.items : []).map(function (item) {
           item = item || {};
           return {
@@ -73,6 +74,7 @@
       return {
         id: id,
         name: name,
+        kind: asString(category.kind),
         services: Array.isArray(category.services) ? category.services : []
       };
     });
