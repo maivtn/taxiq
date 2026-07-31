@@ -16,15 +16,17 @@ Out of scope: new ticket actions, data-model changes, backend persistence, Queue
 
 ## Design
 
+Layout rule: Queue cards should use Bootstrap-style flex row/col composition instead of CSS grid unless a future design has a specific grid-only requirement. The Queue list itself should remain responsive by column count; only the direct child rows inside each `.queue-card` should fill the card width and align to the left reading axis.
+
 Each single-ticket card will use an operations-first layout:
 
 1. A compact header shows the guest name and customer-group tags, with the current status and elapsed timer visually separated.
 2. A service block shows the selected service as the primary detail and the assigned/requested technician as supporting context.
 3. A note block uses a subtle surface and truncation/wrapping rules so staff notes remain readable without dominating the card.
 4. Actions sit in a dedicated bottom row. The primary next action is visually emphasized; secondary actions remain compact and aligned.
-5. Existing state accents remain meaningful: amber for waiting, warning/violet for in service, green for ready, and neutral styling for historical rows. Late waiting tickets retain the danger treatment.
+5. Existing state cues remain meaningful through status chips and subtle card states. In-service and ready cards should not add heavy border accents; late waiting tickets retain the danger treatment.
 
-Cards remain full-width within the Queue panel, use flexible wrapping on narrow screens, and prevent long names, notes, or action groups from forcing horizontal overflow.
+Cards use responsive flex columns within the Queue panel, use flexible wrapping on narrow screens, and prevent long names, notes, or action groups from forcing horizontal overflow. The direct children inside each card own the full width so content aligns predictably without making every card item consume an entire row.
 
 ## Data flow and behavior
 

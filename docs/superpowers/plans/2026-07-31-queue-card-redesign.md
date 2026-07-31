@@ -14,7 +14,8 @@
 - Keep multi-ticket orders grouped and preserve the existing card-level charge behavior.
 - Keep the existing table view unchanged except for shared styling helpers where needed.
 - Do not add Queue actions, change the data model, change persistence, or redesign other POS tabs.
-- Cards must remain full-width inside the Queue panel, wrap on narrow screens, and prevent long names, notes, or action groups from causing horizontal overflow.
+- Prefer Bootstrap-style flex row/col composition for Queue card layouts. Do not use CSS grid for Queue card/item layout unless a future spec gives a specific grid-only requirement.
+- Queue card items must stay responsive by column count. Only the direct child rows inside each `.queue-card` should fill the card width, align left, and prevent long names, notes, or action groups from causing horizontal overflow.
 
 ---
 
@@ -51,7 +52,7 @@ test('Queue single-ticket cards have a clear identity, details, note, status, an
 Add this test immediately after the structure test:
 
 ~~~
-test('Queue single-ticket cards retain their status actions and state accents', () => {
+test('Queue single-ticket cards retain their status actions and state class hooks', () => {
   const card = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}/)?.[0] || '';
   assert.match(card, /class="wl-card queue-card tappable/);
   assert.match(card, /class="wl-card queue-card rdy/);
@@ -192,44 +193,46 @@ Expected: the new hierarchy/action tests still report only CSS failures; all ren
 Add the following rules next to the existing `.wl-card` rules in the page's inline `<style>` block:
 
 ~~~
-.queue-card { display: block; min-width: 0; padding: 14px; overflow: hidden; }
-.queue-card-head { min-width: 0; }
-.queue-card-details { min-width: 0; }
-.queue-card-actions { min-width: 0; }
-.queue-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
-.queue-card-identity { flex: 1 1 240px; min-width: 0; }
+[data-wait-list]:has(> .wl-card) { display: flex; flex-wrap: wrap; gap: 12px; }
+[data-wait-list] > .wl-card { flex: 0 0 calc(25% - 9px); max-width: calc(25% - 9px); min-width: 0; margin-bottom: 0; }
+[data-wait-list] > .booking-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
+@media (max-width: 1199px) {
+  [data-wait-list] > .wl-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
+}
+@media (max-width: 900px) {
+  [data-wait-list] > .wl-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
+}
+.queue-card { display: flex; flex-direction: column; gap: 10px; min-width: 0; padding: 12px; overflow: hidden; }
+.queue-card > :not(.queue-card-note) { width: 100%; min-width: 0; }
+.queue-card-head { display: flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start; justify-content: flex-start; gap: 8px; min-width: 0; }
+.queue-card-identity { flex: 1 1 0; min-width: 0; }
 .queue-card-phone, .queue-card-booking, .queue-card-sub { color: var(--nexora-muted); font-size: 11.5px; font-weight: 650; margin-top: 4px; }
 .queue-card-phone { overflow-wrap: anywhere; }
-.queue-card-status { display: flex; align-items: flex-end; flex-direction: column; gap: 6px; flex: 0 0 auto; }
-.queue-card-status .wl-wait { margin: 0; }
-.queue-card-details { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(150px, .9fr) minmax(110px, .65fr); gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--nexora-border); }
-.queue-card-service, .queue-card-tech, .queue-card-booking { min-width: 0; }
-.queue-card-label { display: block; color: var(--nexora-subtle); font-size: 9.5px; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+.queue-card-status { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 4px; flex: 0 0 auto; max-width: 100%; flex-wrap: nowrap; white-space: nowrap; }
+.queue-card-service { min-width: 0; }
 .queue-card-service strong { display: block; color: var(--nexora-text); font-size: 13px; line-height: 1.35; margin-top: 3px; overflow-wrap: anywhere; }
-.queue-card-tech-value { display: block; color: var(--nexora-text); font-size: 12px; font-weight: 800; line-height: 1.35; margin-top: 3px; overflow-wrap: anywhere; }
+.queue-card-meta { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: 6px; flex-wrap: wrap; }
+.queue-card-tech, .queue-card-booking { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; min-width: 0; overflow-wrap: anywhere; }
+.queue-card-tech-value { overflow-wrap: anywhere; color: var(--nexora-text); font-size: 12px; font-weight: 800; line-height: 1.35; margin-top: 3px; }
 .queue-card-tech-value.is-requested { color: var(--nexora-warning); }
-.queue-card-note { display: flex; align-items: flex-start; gap: 7px; min-width: 0; margin-top: 12px; padding: 8px 10px; border: 1px solid rgba(245, 158, 11, .24); border-radius: 9px; background: #fffaf0; color: #8a5a00; font-size: 11.5px; line-height: 1.45; overflow-wrap: anywhere; }
-.queue-card-note i { flex: 0 0 auto; margin-top: 2px; }
-.queue-card-note span { display: -webkit-box; min-width: 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
-.queue-card-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-wrap: wrap; margin-top: 14px; padding-top: 11px; border-top: 1px solid var(--nexora-border); }
-.queue-card-actions .pos-btn-primary, .queue-card-actions .pos-btn-success { order: -1; }
+.queue-card-note { align-self: flex-start; width: fit-content; max-width: 100%; overflow-wrap: anywhere; display: flex; align-items: center; gap: 5px; }
+.queue-card-note span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.queue-card-actions { display: flex; align-items: center; justify-content: flex-start; gap: 5px; width: 100%; flex-wrap: wrap; padding-top: 8px; }
+.queue-card-actions .pos-btn { flex: 0 0 auto; width: auto; }
 ~~~
 
-Keep the existing `.wl-card.svc`, `.wl-card.rdy`, `.wl-card.late`, `.wl-card.appt`, and selection rules so state accents continue to work; the new `.queue-card` layout must not be applied to `.wl-group`.
+Keep the existing `.wl-card.svc`, `.wl-card.rdy`, `.wl-card.late`, `.wl-card.appt`, and selection class hooks. Service and ready cards should not add heavy border accents; the new `.queue-card` layout must not be applied to `.wl-group`.
 
 - [ ] **Step 2: Add the narrow-screen rules**
 
 Inside the existing inline `@media (max-width: 640px)` block, add:
 
 ~~~
-.queue-card { padding: 12px; }
-.queue-card-head { align-items: stretch; flex-direction: column; gap: 10px; }
-.queue-card-identity { flex: 0 1 auto; }
-.queue-card-status { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
-.queue-card-details { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px 8px; }
-.queue-card-service { grid-column: 1 / -1; }
+[data-wait-list]:has(> .wl-card) { gap: 8px; }
+[data-wait-list] > .wl-card { flex-basis: 100%; max-width: 100%; }
+.queue-card { padding: 8px; }
 .queue-card-actions { justify-content: flex-start; }
-.queue-card-actions .pos-btn { flex: 1 1 auto; }
+.queue-card-status { flex-wrap: nowrap; white-space: nowrap; }
 ~~~
 
 These rules must keep long guest names, phone numbers, service names, notes, and action groups inside the card width without introducing horizontal scrolling.

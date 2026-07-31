@@ -19,6 +19,10 @@ http://localhost:8123/
 
 No build step is required. The app uses CDN assets for Tailwind, Font Awesome icons, and browser OCR, so open it while online for full styling, icons, and OCR behavior. A local server is recommended because the app loads `assets/app-data.json`; opening through `file://` may be blocked by browser security.
 
+## UI Layout Rule
+
+For new or touched card/list/workspace layouts, prefer Bootstrap-style flex row/col composition (`display: flex`, `flex-wrap`, `flex-basis`) over CSS grid. Use CSS grid only for genuinely two-dimensional surfaces such as calendars, dense matrices, or layouts with an explicit grid-only design requirement.
+
 ## Structure
 
 ```text

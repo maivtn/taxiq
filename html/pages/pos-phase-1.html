@@ -207,7 +207,74 @@
     .panel-amber { border-color: rgba(245, 158, 11, .5); }
     .panel-blue { border-color: rgba(43, 89, 255, .4); }
 
-     
+    /* ── shared list-row card (Check-in ETA, App/QR check-in requests, tech access requests,
+       check-in-modal results, customers table's card mode) — a flex row of info + actions that
+       wraps on narrow screens. The Tickets queue overrides this to a full-width flex list. ── */
+    .wl-card {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+      padding: 14px 16px; margin-bottom: 10px;
+      border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff;
+      box-shadow: var(--nexora-card-shadow);
+    }
+    .wl-card:last-child { margin-bottom: 0; }
+
+    /* ── queue (Tickets tab) list — Bootstrap-style flex row/col (not CSS grid): cards
+       keep responsive columns; each card's child rows own the full left-aligned width. ── */
+    [data-wait-list]:has(> .wl-card) { display: flex; flex-wrap: wrap; gap: 12px; }
+    [data-wait-list] > .wl-card { flex: 0 0 calc(25% - 9px); max-width: calc(25% - 9px); min-width: 0; margin-bottom: 0; }
+    [data-wait-list] > .booking-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
+    @media (max-width: 1199px) {
+      [data-wait-list] > .wl-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
+    }
+    @media (max-width: 900px) {
+      [data-wait-list] > .wl-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
+    }
+
+    /* ── single ticket card: a flex column of full-width rows (Bootstrap-style row/col via
+       flexbox — no CSS grid) — head, then service + tech/time, an optional note, then actions ── */
+    .queue-card {
+      display: flex; flex-direction: column; gap: 10px; min-width: 0;
+      padding: 12px; border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff;
+      box-shadow: var(--nexora-card-shadow);
+    }
+    .queue-card > :not(.queue-card-note) { width: 100%; min-width: 0; }
+    .queue-card.tappable { cursor: pointer; transition: border-color .2s, box-shadow .2s, transform .15s; }
+    .queue-card.tappable:hover { border-color: rgba(70, 72, 216, .4); transform: translateY(-1px); }
+    .queue-card.is-sel { border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70, 72, 216, .14); }
+    .queue-card.late { border-color: rgba(239, 68, 68, .45); }
+    .queue-card.appt { border-color: rgba(70, 72, 216, .35); }
+
+    /* row 1 — identity and status/timer share one left-aligned flex row */
+    .queue-card-head { display: flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start; justify-content: flex-start; gap: 8px; min-width: 0; }
+    .queue-card-identity { flex: 1 1 0; min-width: 0; }
+    /* three separate rows in the identity block: name, then phone, then customer-group tags */
+    .queue-card-phone { display: flex; align-items: center; gap: 5px; margin-top: 3px; font-size: 12px; font-weight: 600; color: var(--nexora-muted); }
+    .queue-card-status { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 4px; flex: 0 0 auto; max-width: 100%; flex-wrap: nowrap; white-space: nowrap; }
+    .queue-card .queue-customer-group { display: flex; align-items: center; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+
+    /* row 2 — service (a step below the guest name in the hierarchy) + tech/time meta */
+    .queue-card-service { min-width: 0; }
+    .queue-card-service strong { display: block; overflow-wrap: anywhere; font-size: 13.5px; font-weight: 700; color: var(--nexora-text); }
+    .queue-card-sub { display: block; margin-top: 2px; font-size: 11px; font-weight: 600; color: var(--nexora-muted); }
+    .queue-card-tech-value { overflow-wrap: anywhere; font-size: 12.5px; font-weight: 700; color: var(--nexora-text); }
+    .queue-card-tech-value.is-requested { color: var(--nexora-warning); }
+    .queue-card-meta { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: 6px; flex-wrap: wrap; }
+    .queue-card-tech, .queue-card-booking { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; min-width: 0; overflow-wrap: anywhere; font-size: 11.5px; font-weight: 600; color: var(--nexora-muted); }
+    .queue-card-tech i, .queue-card-booking i { font-size: 11px; }
+
+    /* row 3 — note, set apart as a muted annotation chip instead of plain text */
+    .queue-card-note { align-self: flex-start; width: fit-content; max-width: 100%; overflow-wrap: anywhere; display: flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: 8px; background: var(--nexora-surface-muted); font-size: 11.5px; font-weight: 600; color: var(--nexora-muted); }
+    .queue-card-note span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+    /* row 4 — actions, always full-width with no divider — no special-casing by button count */
+    .queue-card-actions { display: flex; align-items: center; justify-content: flex-start; gap: 5px; width: 100%; flex-wrap: wrap; padding-top: 8px; }
+    .queue-card-actions .pos-btn { flex: 0 0 auto; width: auto; }
+    .queue-card-actions .x-btn { width: auto; min-width: 30px; }
+
+    .wl-wait { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--nexora-muted); white-space: nowrap; }
+    .wl-wait i { font-size: 11px; }
+    .wl-wait.bad { color: var(--nexora-danger); }
+
     .wl-info { flex: 1; min-width: 190px; }
     .wl-name { font-size: 14px; font-weight: 800; color: var(--nexora-text); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .wl-meta { font-size: 12px; color: var(--nexora-muted); margin-top: 3px; font-weight: 600; }
@@ -466,7 +533,11 @@
       .pos-card-head .pos-inline { width: 100%; }
       .pos-card-head .pos-inline .pos-input { flex: 1 1 120px; width: auto !important; min-width: 0; }
       .wl-actions { flex-wrap: wrap; }
-      [data-wait-list]:has(> .wl-card) { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+      [data-wait-list]:has(> .wl-card) { gap: 8px; }
+      [data-wait-list] > .wl-card { flex-basis: 100%; max-width: 100%; }
+      .queue-card { padding: 8px; }
+      .queue-card-actions { justify-content: flex-start; }
+      .queue-card-status { flex-wrap: nowrap; white-space: nowrap; }
       .tech-sub { margin-left: 0; }
       /* 44px tap targets on touch */
       .x-btn, .pos-icon-btn { width: 36px; height: 36px; }
@@ -3052,7 +3123,7 @@
       function ticketTechHtml(w, variant) {
         var cls = variant === 'card' ? 'queue-card-tech-value' : 'queue-table-tech';
         if (w.techId) return '<span class="' + cls + '">' + esc(techName(w.techId)) + '</span>';
-        if (w.reqTech) return '<span class="' + cls + ' is-requested">Requested: ' + esc(techName(w.reqTech)) + '</span>';
+        if (w.reqTech) return '<span class="' + cls + ' is-requested">' + esc(techName(w.reqTech)) + '</span>';
         return '<span class="pos-muted">Unassigned</span>';
       }
       function ticketQueueCardNoteHtml(w) {
@@ -3119,16 +3190,19 @@
         return svcName + ' — ' + techLbl;
       }
       function ticketQueueCardIdentityHtml(w, badge) {
-        return '<div class="queue-card-identity"><div class="wl-name">' + esc(w.name) + ' ' + ticketQueueCardGroupHtml(w) + '</div>' +
-          '<div class="queue-card-phone"><i class="bi bi-telephone" aria-hidden="true"></i> ' + esc(w.phone || 'No phone') + '</div></div>';
+        return '<div class="queue-card-identity"><div class="wl-name">' + esc(w.name) + '</div>' +
+          '<div class="queue-card-phone"><i class="bi bi-telephone" aria-hidden="true"></i> ' + esc(w.phone || 'No phone') + '</div>' +
+          ticketQueueCardGroupHtml(w) + '</div>';
       }
       function ticketQueueCardDetailsHtml(w, techExtra) {
         var items = w.items || [];
         var total = items.reduce(function (s, i) { return s + i.price; }, 0);
-        return '<div class="queue-card-details"><div class="queue-card-service"><span class="queue-card-label">Service</span><strong>' +
+        return '<div class="queue-card-details"><div class="queue-card-service"><strong>' +
           esc(posServiceDisplayName(w.svc || 'No service chosen')) + '</strong><span class="queue-card-sub">' + items.length + ' item(s) · ' + money(total) + '</span></div>' +
-          '<div class="queue-card-tech"><span class="queue-card-label">Tech</span>' + ticketTechHtml(w, 'card') + (techExtra || '') + '</div>' +
-          '<div class="queue-card-booking"><span class="queue-card-label">Booked</span><span>' + esc(w.bookingTime || w.at || 'Walk-in') + '</span></div></div>';
+          '<div class="queue-card-meta">' +
+          '<span class="queue-card-tech"><i class="bi bi-person" aria-hidden="true"></i> ' + ticketTechHtml(w, 'card') + (techExtra || '') + '</span>' +
+          '<span class="queue-card-booking"><i class="bi bi-clock" aria-hidden="true"></i> ' + esc(w.bookingTime || w.at || 'Walk-in') + '</span>' +
+          '</div></div>';
       }
       function ticketQueueCardHeadHtml(w, badge, timerLabel, timerIcon, timerBad) {
         return '<div class="queue-card-head">' + ticketQueueCardIdentityHtml(w, badge) +
@@ -3151,7 +3225,7 @@
             ticketQueueCardNoteHtml(w) +
             '<div class="queue-card-actions">' +
             '<button class="pos-btn pos-btn-primary pos-btn-sm" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>' +
-            '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
+            '<button class="pos-btn pos-btn-sm" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i> Close</button></div></div>';
         }
         if (w.status === 'ready') {
           var rdyMin = w.readyAtMs ? Math.max(0, Math.floor((now - w.readyAtMs) / 60000)) : 0;
@@ -3160,7 +3234,7 @@
             ticketQueueCardDetailsHtml(w) +
             ticketQueueCardNoteHtml(w) +
             '<div class="queue-card-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
-            '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
+            '<button class="pos-btn pos-btn-sm" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i> Close</button></div></div>';
         }
         if (w.status === 'service') {
           var svcMin = w.svcAtMs ? Math.max(0, Math.floor((now - w.svcAtMs) / 60000)) : 0;
@@ -3172,7 +3246,7 @@
             '<button class="pos-btn pos-btn-sm" data-wswap="' + w.id + '" title="Swap tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button>' +
             '<button class="pos-btn pos-btn-sm" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
             '<button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
-            '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
+            '<button class="pos-btn pos-btn-sm" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i> Close</button></div></div>';
         }
         // completed/cancelled — only reachable via the Tickets status-chip filter; read-only
         return '<div class="wl-card queue-card">' +
