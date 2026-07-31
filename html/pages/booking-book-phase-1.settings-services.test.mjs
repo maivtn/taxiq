@@ -123,6 +123,15 @@ test('manual service modal includes an optional multiline description field', ()
   assert.match(SOURCE, /\['name', 'description', 'price', 'duration'\]\.forEach/);
 });
 
+test('manual service modal places description after minutes', () => {
+  const modalStart = SOURCE.indexOf('data-service-modal');
+  const minutesPosition = SOURCE.indexOf('data-service-modal-field="duration"', modalStart);
+  const descriptionPosition = SOURCE.indexOf('data-service-modal-field="description"', modalStart);
+  assert.ok(minutesPosition >= 0);
+  assert.ok(descriptionPosition >= 0);
+  assert.ok(minutesPosition < descriptionPosition);
+});
+
 test('Services & Pricing spans the full Settings grid width', () => {
   assert.ok(
     /<div class="settings-two-grid">\s*<article class="settings-card settings-service-pricing-card">[\s\S]*?Services & Pricing/.test(SOURCE),
