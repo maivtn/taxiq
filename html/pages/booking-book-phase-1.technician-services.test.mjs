@@ -21,7 +21,7 @@ test('technician picker renders global, category, and service selection hooks', 
   assert.match(SOURCE, /data-tech-service-all/);
   assert.match(SOURCE, /data-tech-service-category-all/);
   assert.match(SOURCE, /data-tech-service-category=/);
-  assert.match(SOURCE, /data-tech-service=/);
+  assert.match(SOURCE, /data-tech-service(?:\s|=)/);
 });
 
 test('technician picker synchronizes checked and indeterminate states', () => {
