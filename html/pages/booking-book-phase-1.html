@@ -6686,9 +6686,130 @@
     }
 
     .tech-service-checks {
+      display: block;
+    }
+
+    .tech-service-picker {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
+      max-height: 360px;
       gap: 6px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .tech-service-picker-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border: 1px solid rgba(70, 72, 216, 0.28);
+      border-radius: 9px;
+      background: color-mix(in srgb, var(--nexora-brand) 5%, white);
+      padding: 8px 9px;
+      color: var(--nexora-text);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .tech-service-picker-toolbar label,
+    .tech-service-category-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .tech-service-picker-toolbar input,
+    .tech-service-category-all input {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+      accent-color: var(--nexora-brand);
+    }
+
+    .tech-service-picker-count,
+    .tech-service-category-count {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #e9edff;
+      padding: 2px 7px;
+      color: var(--nexora-brand);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .tech-service-category {
+      overflow: hidden;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .tech-service-category-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+      cursor: pointer;
+      background: #f8faff;
+      padding: 8px 9px;
+    }
+
+    .tech-service-category-head::-webkit-details-marker {
+      display: none;
+    }
+
+    .tech-service-category-head::after {
+      content: '⌄';
+      margin-left: auto;
+      color: var(--nexora-subtle);
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1;
+      transition: transform .16s ease;
+    }
+
+    .tech-service-category:not([open]) .tech-service-category-head::after {
+      transform: rotate(-90deg);
+    }
+
+    .tech-service-category-title {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--nexora-text);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .tech-service-category-all {
+      margin-left: auto;
+      color: var(--nexora-muted);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .tech-service-category-body {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 6px;
+      border-top: 1px solid var(--nexora-rule);
+      padding: 8px;
+    }
+
+    .tech-service-catalog-state {
+      border: 1px dashed var(--nexora-border);
+      border-radius: 9px;
+      background: #fff;
+      padding: 14px 10px;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
     }
 
     .tech-service-check {
@@ -9213,28 +9334,8 @@
                           <label class="settings-field"><span class="settings-label">Email</span><input class="settings-input" type="email" data-tech-field="email" value=""></label>
                           <div class="settings-field">
                             <span class="settings-label">Services</span>
-                            <div class="tech-service-checks" data-tech-field="services">
-                              <label class="tech-service-check is-all"><input type="checkbox" data-tech-service-all>Check all</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Gel" value="Gel">Gel</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Full Set" value="Full Set">Full Set</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Dip" value="Dip">Dip</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Pedicure" value="Pedicure">Pedicure</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Nail Art" value="Nail Art">Nail Art</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Acrylic" value="Acrylic">Acrylic</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Waxing" value="Waxing">Waxing</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Eyelash" value="Eyelash">Eyelash</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Gel Manicure" value="Gel Manicure">Gel Manicure</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Classic Manicure" value="Classic Manicure">Classic Manicure</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Manicure" value="Manicure">Manicure</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Pedicure Gel" value="Pedicure Gel">Pedicure Gel</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Acrylic Fill" value="Acrylic Fill">Acrylic Fill</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Builder Gel" value="Builder Gel">Builder Gel</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="French Tip" value="French Tip">French Tip</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Chrome" value="Chrome">Chrome</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Ombre" value="Ombre">Ombre</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Kids Manicure" value="Kids Manicure">Kids Manicure</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Kids Pedicure" value="Kids Pedicure">Kids Pedicure</label>
-                              <label class="tech-service-check"><input type="checkbox" data-tech-service="Soak Off" value="Soak Off">Soak Off</label>
+                            <div class="tech-service-checks tech-service-picker" data-tech-field="services" data-tech-service-picker>
+                              <div class="tech-service-catalog-state" data-tech-service-state>Loading services…</div>
                             </div>
                           </div>
                         </div>
@@ -11059,6 +11160,10 @@
     var appointmentTicketUtils = window.NEXORA_APPOINTMENT_TICKETS;
     var appointmentServiceCatalogLoader = window.NEXORA_APPOINTMENT_SERVICE_CATALOG;
     var appointmentServiceCatalog = null;
+    var technicianServiceCatalog = null;
+    var pendingTechServices = [];
+    var technicianServicePickerReady = false;
+    var TECHNICIAN_SERVICE_CATALOG_URL = '../menu/menu.json';
     var settingsManagedCategories = [];
     var settingsCategoryDraft = null;
     var APPOINTMENT_SERVICE_CATALOG_URL = '../assets/booking-service-catalog-draft.json';
@@ -11120,6 +11225,43 @@
 
     rebuildBookingCatalogViews();
 
+    function techServiceCategoriesFromCatalog(source) {
+      return (source && Array.isArray(source.categories) ? source.categories : []).filter(function(category) {
+        return category && (category.kind === 'service' || category.kind === 'add-on');
+      });
+    }
+
+    function techServiceItemMarkup(service, categoryId, index) {
+      service = service || {};
+      var name = service.name || 'Unnamed service';
+      var id = service.id || categoryId + '-service-' + index;
+      return '<label class="tech-service-check"><input type="checkbox" data-tech-service data-tech-service-category="' + escapeHtml(categoryId) + '" data-tech-service-id="' + escapeHtml(id) + '" value="' + escapeHtml(name) + '">' + escapeHtml(name) + '</label>';
+    }
+
+    function techServiceCategoryMarkup(category, index) {
+      category = category || {};
+      var categoryId = category.id || 'category-' + index;
+      var services = Array.isArray(category.services) ? category.services : [];
+      return '<details class="tech-service-category" data-tech-service-category-panel="' + escapeHtml(categoryId) + '"' + (index === 0 ? ' open' : '') + '>' +
+        '<summary class="tech-service-category-head"><span class="tech-service-category-title">' + escapeHtml(category.name || 'Other services') + '</span><span class="tech-service-category-count">' + services.length + '</span><label class="tech-service-category-all"><input type="checkbox" data-tech-service-category-all="' + escapeHtml(categoryId) + '">Check all</label></summary>' +
+        '<div class="tech-service-category-body">' + services.map(function(service, serviceIndex) { return techServiceItemMarkup(service, categoryId, serviceIndex); }).join('') + '</div></details>';
+    }
+
+    function renderTechServicePicker(source, error) {
+      var container = document.querySelector('[data-tech-service-picker]');
+      if (!container) return;
+
+      var categories = techServiceCategoriesFromCatalog(source);
+      var serviceCount = categories.reduce(function(total, category) {
+        return total + (Array.isArray(category.services) ? category.services.length : 0);
+      }, 0);
+      var state = error ? 'Unable to load services from menu.json.' : 'No services available.';
+      technicianServicePickerReady = !error;
+      container.innerHTML = '<div class="tech-service-picker-toolbar"><label><input type="checkbox" data-tech-service-all>Check all categories</label><span class="tech-service-picker-count" data-tech-service-count>' + serviceCount + '</span></div>' + (categories.length ? categories.map(techServiceCategoryMarkup).join('') : '<div class="tech-service-catalog-state" data-tech-service-state>' + state + '</div>');
+      applyPendingTechServices();
+      syncTechServiceCheckAll();
+    }
+
     function loadBookingAppointmentServiceCatalog() {
       var fallbackCatalog = { services: catalog.services };
       if (!appointmentServiceCatalogLoader || typeof appointmentServiceCatalogLoader.load !== 'function') {
@@ -11135,6 +11277,19 @@
         if (createModal && !createModal.hidden) populateBookingCreateForm();
       }).catch(function() {
         renderSettingsServiceCatalog(fallbackCatalog, true);
+      });
+    }
+
+    function loadTechnicianServiceCatalog() {
+      if (!appointmentServiceCatalogLoader || typeof appointmentServiceCatalogLoader.load !== 'function') {
+        renderTechServicePicker(null, true);
+        return;
+      }
+      appointmentServiceCatalogLoader.load(TECHNICIAN_SERVICE_CATALOG_URL).then(function(nextCatalog) {
+        technicianServiceCatalog = nextCatalog;
+        renderTechServicePicker(nextCatalog, false);
+      }).catch(function() {
+        renderTechServicePicker(null, true);
       });
     }
 
@@ -13053,15 +13208,24 @@ function getBookingCardCallStart(item) {
       }).filter(Boolean).join(';');
     }
 
+    function techServiceOptionsForCategory(categoryId) {
+      var selectorValue = String(categoryId || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      return Array.from(document.querySelectorAll('[data-tech-service][data-tech-service-category="' + selectorValue + '"]'));
+    }
+
+    function applyPendingTechServices() {
+      document.querySelectorAll('[data-tech-service]').forEach(function(option) {
+        option.checked = pendingTechServices.indexOf(option.value.toLowerCase()) !== -1;
+      });
+    }
+
     function setTechField(name, value, options) {
       if (name === 'services') {
-        var selectedServices = (value || '').split(',').map(function(service) {
+        pendingTechServices = String(value || '').split(',').map(function(service) {
           return service.trim().toLowerCase();
         }).filter(Boolean);
 
-        document.querySelectorAll('[data-tech-service]').forEach(function(option) {
-          option.checked = selectedServices.indexOf(option.value.toLowerCase()) !== -1;
-        });
+        applyPendingTechServices();
         syncTechServiceCheckAll();
         return;
       }
@@ -13082,17 +13246,28 @@ function getBookingCardCallStart(item) {
     function syncTechServiceCheckAll() {
       var services = Array.from(document.querySelectorAll('[data-tech-service]'));
       var checkAll = document.querySelector('[data-tech-service-all]');
-      if (!checkAll) return;
       var checkedCount = services.filter(function(option) { return option.checked; }).length;
-      checkAll.checked = services.length > 0 && checkedCount === services.length;
-      checkAll.indeterminate = checkedCount > 0 && checkedCount < services.length;
+      if (checkAll) {
+        checkAll.disabled = services.length === 0;
+        checkAll.checked = services.length > 0 && checkedCount === services.length;
+        checkAll.indeterminate = checkedCount > 0 && checkedCount < services.length;
+      }
+      document.querySelectorAll('[data-tech-service-category-all]').forEach(function(categoryAll) {
+        var categoryServices = techServiceOptionsForCategory(categoryAll.dataset.techServiceCategoryAll);
+        var categoryCheckedCount = categoryServices.filter(function(option) { return option.checked; }).length;
+        categoryAll.disabled = categoryServices.length === 0;
+        categoryAll.checked = categoryServices.length > 0 && categoryCheckedCount === categoryServices.length;
+        categoryAll.indeterminate = categoryCheckedCount > 0 && categoryCheckedCount < categoryServices.length;
+      });
     }
 
     function getTechField(name) {
       if (name === 'services') {
-        return Array.from(document.querySelectorAll('[data-tech-service]:checked')).map(function(option) {
+        var checkedServices = Array.from(document.querySelectorAll('[data-tech-service]:checked')).map(function(option) {
           return option.value;
-        }).join(', ');
+        }).filter(Boolean);
+        if (!technicianServicePickerReady) return pendingTechServices.join(', ');
+        return checkedServices.join(', ');
       }
 
       if (name === 'schedule') {
@@ -14498,6 +14673,11 @@ function getBookingCardCallStart(item) {
           option.checked = event.target.checked;
         });
         syncTechServiceCheckAll();
+      } else if (event.target.matches('[data-tech-service-category-all]')) {
+        techServiceOptionsForCategory(event.target.dataset.techServiceCategoryAll).forEach(function(option) {
+          option.checked = event.target.checked;
+        });
+        syncTechServiceCheckAll();
       } else if (event.target.matches('[data-tech-service]')) {
         syncTechServiceCheckAll();
       }
@@ -15592,6 +15772,7 @@ function getBookingCardCallStart(item) {
     moveTeamPanelToSettings();
     activateMainTabFromUrl();
     loadBookingAppointmentServiceCatalog();
+    loadTechnicianServiceCatalog();
     if (salonData.storageAvailable && !salonData.storageAvailable()) {
       setTimeout(function() {
         if (window.Swal) {

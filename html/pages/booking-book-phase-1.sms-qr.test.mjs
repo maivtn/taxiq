@@ -668,14 +668,21 @@ test('keeps technician card footers at a fixed height', () => {
   assert.match(footerRule, /min-height:\s*42px/);
 });
 
-test('provides twenty technician services with a Check all option', () => {
+test('renders menu-driven technician services with global and category Check all options', () => {
   const html = source();
-  const serviceChecks = html.match(/data-tech-service="[^"]+"/g) || [];
+  const modalStart = html.indexOf('<div class="tech-modal" data-tech-modal');
+  const modalEnd = html.indexOf('<article class="settings-card settings-team-card"', modalStart);
+  const techModal = html.slice(modalStart, modalEnd);
 
-  assert.equal(serviceChecks.length, 20);
-  assert.match(html, /data-tech-service-all>Check all/);
+  assert.match(html, /TECHNICIAN_SERVICE_CATALOG_URL\s*=\s*['"]\.\.\/menu\/menu\.json['"]/);
+  assert.match(techModal, /data-tech-service-picker/);
+  assert.doesNotMatch(techModal, /data-tech-service="Gel"/);
+  assert.match(html, /data-tech-service-all>Check all categories/);
+  assert.match(html, /data-tech-service-category-all=/);
+  assert.match(html, /function techServiceCategoryMarkup\(/);
   assert.match(html, /function syncTechServiceCheckAll\(\)/);
   assert.match(html, /event\.target\.matches\('\[data-tech-service-all\]'\)/);
+  assert.match(html, /event\.target\.matches\('\[data-tech-service-category-all\]'\)/);
   assert.match(html, /event\.target\.matches\('\[data-tech-service\]'\)/);
 });
 

@@ -108,3 +108,11 @@ test('normalizes the shared menu into bookable service categories', () => {
   assert.deepEqual(catalog.notes, menu.notes);
   assert.doesNotMatch(JSON.stringify(catalog.categories), /Complimentary|Drinks|Alcohol/);
 });
+
+test('normalizes only service and add-on menu categories with their kind', () => {
+  const catalog = serviceCatalog.normalize(menu);
+
+  assert.equal(catalog.categories.length, 11);
+  assert.ok(catalog.categories.every((category) => category.kind === 'service' || category.kind === 'add-on'));
+  assert.doesNotMatch(JSON.stringify(catalog.categories), /Complimentary|Drinks|Alcohol/);
+});
