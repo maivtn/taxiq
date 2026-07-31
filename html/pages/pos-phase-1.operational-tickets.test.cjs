@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const html = fs.readFileSync(path.join(__dirname, 'pos-phase-1.html'), 'utf8');
+const bookingCss = fs.readFileSync(path.join(__dirname, '..', 'assets', 'pos-booking.css'), 'utf8');
 
 test('POS gives every WAITLIST row operational-ticket links back to the booking/order', () => {
   assert.match(html, /if \(w\.orderId == null\) w\.orderId = 'walkin-' \+ w\.id;/);
@@ -143,12 +144,79 @@ test('Tickets (Queue) has a status-chip filter and a table/card view switch, and
   assert.match(html, /function ticketsMatchesFilter\(w\) \{/);
   assert.match(html, /function renderTicketsStatusChips\(\) \{/);
   const table = html.match(/function renderTicketsTable\(groups, now\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
-  assert.match(table, /var badge = w\.badgeTxt \?/);
   assert.match(table, /var itemsTot = \(w\.items \|\| \[\]\)\.reduce/);
-  assert.match(table, /custTagsHtml\(w\.name\)/);
+  assert.match(table, /ticketCustomerGroupHtml\(w\)/);
+  assert.match(table, /ticketQueueNoteHtml\(w\)/);
   assert.match(table, /<th scope="col">Phone<\/th>/);
   assert.match(table, /<th scope="col">Total<\/th>/);
   assert.match(html, /if \(ticketsViewMode === 'table'\) \{\s*\n\s*html\('\[data-wait-list\]', renderTicketsTable\(groups, now\)\);/);
+});
+
+test('Queue table separates hour, customer group, note, technician, and elapsed time columns', () => {
+  const table = html.match(/function renderTicketsTable\(groups, now\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  assert.match(table, /<table class="booking-table queue-table">/);
+  assert.match(table, /<th scope="col">Hour<\/th>/);
+  assert.match(table, /<th scope="col">Customer group<\/th>/);
+  assert.match(table, /<th scope="col">Service<\/th>/);
+  assert.match(table, /<th scope="col">Tech<\/th>/);
+  assert.match(table, /<th scope="col">Total<\/th><th scope="col">Note<\/th><th scope="col">Actions<\/th>/);
+  assert.match(table, /<th scope="col">Elapsed<\/th>/);
+  assert.match(table, /esc\(w\.bookingTime \|\| w\.at \|\| '—'\)/);
+  assert.match(table, /ticketCustomerGroupHtml\(w\)/);
+  assert.match(table, /ticketQueueNoteHtml\(w\)/);
+  assert.match(table, /ticketTechHtml\(w\)/);
+  assert.match(html, /function ticketCustomerGroupHtml\(w\) \{[\s\S]*var fallback = w\.customerGroup/);
+  assert.match(html, /var visits = c \? c\.visits : w\.visits/);
+  assert.match(html, /var visitTag = visits \? '<span class="pos-chip pos-chip-gray">' \+ visits \+ ' visits<\/span>' : ''/);
+  assert.match(html, /class="queue-customer-group"/);
+  assert.match(bookingCss, /\.queue-table \.queue-customer-group \{[\s\S]*gap:\s*4px/);
+  assert.match(html, /name: 'Lisa Trương',[\s\S]*?customerGroup: 'New'/);
+  assert.doesNotMatch(table, /esc\(w\.badgeTxt\)/);
+  const createTicket = html.match(/function createOperationalTicket\(booking, ticket\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  assert.match(createTicket, /note: booking\.note \|\| ''/);
+  assert.match(createTicket, /bookingTime: booking\.time \|\| ''/);
+  assert.match(createTicket, /badgeTxt: booking\.time \? 'Booking' : ''/);
+  assert.match(bookingCss, /\.queue-table td:nth-child\(3\)::before \{ content: "Hour"; \}/);
+  assert.match(bookingCss, /\.queue-table td:nth-child\(4\)::before \{ content: "Customer group"; \}/);
+  assert.match(bookingCss, /\.queue-table td:nth-child\(6\)::before \{ content: "Tech"; \}/);
+  assert.match(bookingCss, /\.queue-table td:nth-child\(8\)::before \{ content: "Elapsed"; \}/);
+  assert.match(bookingCss, /\.queue-table td:nth-child\(10\)::before \{ content: "Note"; \}/);
+});
+
+test('Queue single-ticket cards have a clear identity, details, note, status, and action hierarchy', () => {
+  const card = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(card, /class="wl-card queue-card/);
+  assert.match(card, /ticketQueueCardHeadHtml\(w, badge/);
+  assert.match(card, /ticketQueueCardDetailsHtml\(w/);
+  assert.match(card, /ticketQueueCardNoteHtml\(w\)/);
+  assert.match(html, /function ticketQueueCardIdentityHtml\(w, badge\) \{[\s\S]*queue-card-identity[\s\S]*queue-card-phone[\s\S]*ticketCustomerGroupHtml\(w\)/);
+  assert.match(html, /function ticketQueueCardDetailsHtml\(w, techExtra\) \{[\s\S]*queue-card-details[\s\S]*queue-card-service[\s\S]*queue-card-tech[\s\S]*ticketTechHtml\(w, 'card'\)/);
+  assert.match(html, /function ticketQueueCardHeadHtml\(w, badge, timerHtml\) \{[\s\S]*queue-card-head[\s\S]*queue-card-status[\s\S]*ticketStatusBadge\(w\.status\)/);
+  assert.match(card, /queue-card-actions/);
+});
+
+test('Queue single-ticket cards retain their status actions and state accents', () => {
+  const card = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(card, /class="wl-card queue-card tappable/);
+  assert.match(card, /class="wl-card queue-card rdy/);
+  assert.match(card, /class="wl-card queue-card svc/);
+  assert.match(card, /data-wtap="' \+ w\.id/);
+  assert.match(card, /data-wstart="' \+ w\.id/);
+  assert.match(card, /data-wswap="' \+ w\.id/);
+  assert.match(card, /data-wdone="' \+ w\.id/);
+  assert.match(card, /data-wpay="' \+ esc\(w\.orderId\)/);
+  assert.match(card, /data-wcancel="' \+ w\.id/);
+  assert.match(card, /late/);
+  assert.match(card, /appt/);
+});
+
+test('Queue card CSS wraps content safely on narrow screens', () => {
+  assert.match(html, /\.queue-card \{[\s\S]*min-width:\s*0/);
+  assert.match(html, /\.queue-card-head \{[\s\S]*min-width:\s*0/);
+  assert.match(html, /\.queue-card-details \{[\s\S]*min-width:\s*0/);
+  assert.match(html, /\.queue-card-note \{[\s\S]*overflow-wrap:\s*anywhere/);
+  assert.match(html, /\.queue-card-actions \{[\s\S]*flex-wrap:\s*wrap/);
+  assert.match(html, /@media \(max-width: 640px\) \{[\s\S]*\.queue-card-actions/);
 });
 
 test('Check-in has a table/card view switch on Bookings today, and Add opens a phone-search modal that checks in a match or adds a walk-in', () => {
@@ -246,8 +314,8 @@ test('Customers table uses 7 focused columns with a separate Source chip, and No
   assert.match(html, /function renderCustSegChips\(\) \{/);
 });
 
-test('POS title row links to the Kiosk mockup', () => {
-  assert.match(html, /<a class="pos-btn pos-btn-sm" href="https:\/\/pos-nexoratouch\.vercel\.app\/mockups\/phase1\/kiosk\.html" target="_blank" rel="noopener noreferrer"><i class="bi bi-tablet" aria-hidden="true"><\/i> Kiosk<\/a>/);
+test('POS title row links to the working repository kiosk', () => {
+  assert.match(html, /<a class="pos-btn pos-btn-sm" href="kiosk\.html" target="_blank" rel="noopener noreferrer"><i class="bi bi-tablet" aria-hidden="true"><\/i> Kiosk<\/a>/);
 });
 
 test('Management is split into four subtabs because Customers is already a top-level tab', () => {

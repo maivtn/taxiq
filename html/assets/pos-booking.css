@@ -794,6 +794,57 @@
       background: #fff;
     }
 
+    .phone-input-shell {
+      display: flex;
+      width: 100%;
+      min-height: 42px;
+      overflow: hidden;
+      align-items: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .phone-input-shell:focus-within {
+      border-color: rgba(70, 72, 216, 0.55);
+      box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.1);
+    }
+
+    .phone-country-select {
+      width: 74px;
+      min-height: 100%;
+      flex-shrink: 0;
+      border: 0;
+      border-right: 1px solid var(--nexora-border);
+      border-radius: 0;
+      background: transparent;
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 800;
+      outline: none;
+      padding: 0 12px;
+    }
+
+    .phone-mask-input,
+    .phone-input-shell .settings-input,
+    .phone-input-shell .booking-input {
+      flex: 1;
+      min-width: 0;
+      min-height: auto;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      padding: 0 14px;
+    }
+
+    .phone-input-shell .settings-input:focus,
+    .phone-input-shell .booking-input:focus {
+      border-color: transparent;
+      box-shadow: none;
+    }
+
     .booking-create-title { color: var(--nexora-text); font-size: 16px; font-weight: 800; }
     .booking-create-sub { margin-top: 3px; color: var(--nexora-muted); font-size: 12px; font-weight: 500; line-height: 1.45; }
     .booking-create-body { display: grid; gap: 14px; overflow: auto; background: #f7f9fc; padding: 16px; }
@@ -1172,6 +1223,38 @@
       min-width: 1040px;
       border-collapse: collapse;
       font-size: 12px;
+    }
+
+    /* Tickets Queue table — keep the operational columns readable at desktop widths. */
+    .queue-table {
+      min-width: 1240px;
+    }
+
+    .queue-table .queue-table-note {
+      display: block;
+      max-width: 250px;
+      min-width: 150px;
+      overflow: hidden;
+      color: var(--nexora-muted);
+      line-height: 1.45;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .queue-table .queue-customer-group {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .queue-table .queue-table-tech {
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .queue-table .queue-table-tech.is-requested {
+      color: var(--nexora-warning);
     }
 
     .booking-table th {
@@ -3494,6 +3577,25 @@
       .booking-table[data-booking-table] td:nth-child(5)::before { content: "Appointment"; }
       .booking-table[data-booking-table] td:nth-child(7)::before { content: "Status"; }
       .booking-table[data-booking-table] td:nth-child(8)::before { content: "Action"; }
+
+      /* Tickets Queue table — all operational fields stay identifiable in the mobile card layout. */
+      .queue-table td:nth-child(1)::before { content: "Guest"; }
+      .queue-table td:nth-child(2)::before { content: "Phone"; }
+      .queue-table td:nth-child(3)::before { content: "Hour"; }
+      .queue-table td:nth-child(4)::before { content: "Customer group"; }
+      .queue-table td:nth-child(5)::before { content: "Service"; }
+      .queue-table td:nth-child(6)::before { content: "Tech"; }
+      .queue-table td:nth-child(7)::before { content: "Status"; }
+      .queue-table td:nth-child(8)::before { content: "Elapsed"; }
+      .queue-table td:nth-child(9)::before { content: "Total"; }
+      .queue-table td:nth-child(10)::before { content: "Note"; }
+      .queue-table td:nth-child(11)::before { content: "Actions"; }
+      .queue-table .queue-table-note {
+        max-width: none;
+        min-width: 0;
+        overflow: visible;
+        white-space: normal;
+      }
 
       /* Chips stay auto-width (never stretch full-width) on mobile */
       .booking-status-chips {

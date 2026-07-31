@@ -202,8 +202,8 @@
     .disp-num { font-size: 20px; font-weight: 900; color: var(--nexora-text); }
     .disp-lbl { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 10.5px; font-weight: 800; color: var(--nexora-muted); margin-top: 2px; }
     .disp-lbl i { font-size: 12px; line-height: 1; color: var(--accent, var(--nexora-brand)); }
-    .disp-grid { display: grid; grid-template-columns: 1.45fr 1fr; gap: 14px; align-items: start; }
-    @media (max-width: 1100px) { .disp-grid { grid-template-columns: 1fr; } }
+    .disp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 14px; align-items: start; }
+    .disp-grid > * { min-width: 0; }
 
     .panel-violet { border-color: rgba(142, 77, 248, .45); }
     .panel-amber { border-color: rgba(245, 158, 11, .5); }
@@ -235,6 +235,31 @@
     .wl-group-total { font-size: 12.5px; font-weight: 800; color: var(--nexora-muted); }
     .x-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; color: var(--nexora-subtle); font-size: 13px; }
     .x-btn:hover { color: var(--nexora-danger); border-color: var(--nexora-danger); }
+
+    /* Queue single-ticket cards — operations-first hierarchy, isolated from grouped orders and tables. */
+    .queue-card { display: block; min-width: 0; padding: 14px; overflow: hidden; }
+    .queue-card-head { min-width: 0; }
+    .queue-card-details { min-width: 0; }
+    .queue-card-actions { min-width: 0; }
+    .queue-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+    .queue-card-identity { flex: 1 1 240px; min-width: 0; }
+    .queue-card-phone, .queue-card-booking, .queue-card-sub { color: var(--nexora-muted); font-size: 11.5px; font-weight: 650; margin-top: 4px; }
+    .queue-card-phone { overflow-wrap: anywhere; }
+    .queue-card .queue-customer-group { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px; max-width: 100%; margin-top: 7px; }
+    .queue-card-status { display: flex; align-items: flex-end; flex-direction: column; gap: 6px; flex: 0 0 auto; }
+    .queue-card-status .wl-wait { margin: 0; }
+    .queue-card-details { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(150px, .9fr) minmax(110px, .65fr); gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--nexora-border); }
+    .queue-card-service, .queue-card-tech, .queue-card-booking { min-width: 0; }
+    .queue-card-label { display: block; color: var(--nexora-subtle); font-size: 9.5px; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+    .queue-card-service strong { display: block; color: var(--nexora-text); font-size: 13px; line-height: 1.35; margin-top: 3px; overflow-wrap: anywhere; }
+    .queue-card-tech-value { display: block; color: var(--nexora-text); font-size: 12px; font-weight: 800; line-height: 1.35; margin-top: 3px; overflow-wrap: anywhere; }
+    .queue-card-tech-value.is-requested { color: var(--nexora-warning); }
+    .queue-card-note { display: flex; align-items: flex-start; gap: 7px; min-width: 0; margin-top: 12px; padding: 8px 10px; border: 1px solid rgba(245, 158, 11, .24); border-radius: 9px; background: #fffaf0; color: #8a5a00; font-size: 11.5px; line-height: 1.45; overflow-wrap: anywhere; }
+    .queue-card-note i { flex: 0 0 auto; margin-top: 2px; }
+    .queue-card-note span { display: -webkit-box; min-width: 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+    .queue-card-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-wrap: wrap; margin-top: 14px; padding-top: 11px; border-top: 1px solid var(--nexora-border); }
+    .queue-card-actions .pos-btn-primary, .queue-card-actions .pos-btn-success { order: -1; }
+    .queue-card-actions .x-btn { margin-left: auto; }
 
     .cust-usual { font-size: 11px; font-weight: 600; color: var(--nexora-electric); margin-top: 3px; line-height: 1.6; }
     .cust-pkg { font-size: 11px; font-weight: 700; color: var(--nexora-violet); margin-top: 3px; }
@@ -322,6 +347,19 @@
     .clk-token { font-size: 13px; font-weight: 800; color: var(--nexora-violet); letter-spacing: .04em; }
     .clk-countdown { max-width: 300px; margin: 10px 0 6px; }
     .clk-countdown > span { transition: width 1s linear; }
+    .tech-roster-table-wrap { overflow-x: auto; border: 1px solid var(--nexora-border); border-radius: 12px; background: #fff; }
+    .tech-roster-table { width: 100%; min-width: 860px; border-collapse: collapse; font-size: 12px; }
+    .tech-roster-table th { padding: 9px 10px; background: var(--nexora-surface-muted); color: var(--nexora-muted); text-align: left; font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+    .tech-roster-table td { padding: 9px 10px; border-top: 1px solid var(--nexora-rule); color: var(--nexora-text); vertical-align: middle; }
+    .tech-roster-table tbody tr:hover { background: #fbfcff; }
+    .tech-roster-person { display: flex; align-items: center; gap: 8px; min-width: 150px; }
+    .tech-roster-person-name { font-weight: 800; white-space: nowrap; }
+    .tech-roster-person-role { margin-top: 2px; color: var(--nexora-subtle); font-size: 10.5px; font-weight: 600; }
+    .tech-roster-shift, .tech-roster-ticket, .tech-roster-turns { white-space: nowrap; }
+    .tech-roster-ticket { font-weight: 700; }
+    .tech-roster-ticket.is-free { color: var(--nexora-success); }
+    .tech-roster-ticket.is-busy { color: var(--nexora-warning); }
+    .tech-roster-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 176px; }
     .tech-row { display: flex; align-items: center; gap: 10px; border: 1px solid var(--nexora-border); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; background: #fff; flex-wrap: nowrap; }
     @media (max-width: 780px) { .tech-row { flex-wrap: wrap; } }
     .tech-dot { width: 9px; height: 9px; border-radius: 999px; flex-shrink: 0; }
@@ -354,6 +392,18 @@
     .sms-mbody { padding: 20px; }
     .sms-mfoot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px 20px; border-top: 1px solid var(--nexora-border); background: var(--nexora-surface-muted); }
 
+    .swap-tech-dialog { max-width: 520px; }
+    .swap-tech-copy { margin: 0 0 12px; line-height: 1.6; }
+    .swap-tech-list { display: grid; gap: 8px; }
+    .swap-tech-option { display: flex; width: 100%; min-width: 0; align-items: center; gap: 10px; border: 1px solid var(--nexora-border); border-radius: 12px; background: #fff; padding: 10px 12px; color: var(--nexora-text); text-align: left; transition: border-color .2s, background .2s, box-shadow .2s; }
+    .swap-tech-option:hover, .swap-tech-option:focus-visible { border-color: var(--nexora-brand); background: #f2f3ff; box-shadow: 0 0 0 3px rgba(70, 72, 216, .12); outline: 0; }
+    .swap-tech-option-main { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+    .swap-tech-option-name { overflow: hidden; font-size: 13px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+    .swap-tech-option-meta { margin-top: 3px; color: var(--nexora-muted); font-size: 11px; font-weight: 600; }
+    .swap-tech-option .pos-chip, .swap-tech-option .match-badge { flex-shrink: 0; }
+    .swap-tech-option .match-badge { margin-left: 0; }
+    .swap-tech-empty { border: 1px dashed var(--nexora-border); border-radius: 10px; padding: 14px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; text-align: center; }
+
     .pos-mode-dialog { max-width: 560px; }
     .pos-mode-copy { margin: 0; line-height: 1.6; }
     .pos-mode-roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 16px 0 20px; }
@@ -361,12 +411,12 @@
     .pos-mode-role-card:hover { border-color: rgba(70, 72, 216, .45); transform: translateY(-1px); }
     .pos-mode-role-card:focus-visible { outline: 0; border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70, 72, 216, .16); }
     .pos-mode-role-card.is-selected { border-color: var(--nexora-brand); background: #f2f3ff; box-shadow: 0 0 0 2px rgba(70, 72, 216, .12); }
-    .pos-mode-role-avatar { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 999px; background: var(--nexora-surface-muted); font-size: 24px; }
+    .pos-mode-role-avatar { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 999px; background: var(--nexora-surface-muted); font-size: 14px; font-weight: 800; }
     .pos-mode-role-name { overflow: hidden; max-width: 100%; font-size: 13px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
     .pos-mode-role-label { color: var(--nexora-subtle); font-size: 11px; font-weight: 600; }
     .pos-mode-pin { width: 100%; margin-top: 6px; }
     .pos-mode-error { margin-top: 8px; border: 1px solid rgba(239, 68, 68, .25); border-radius: 9px; background: #fff1f1; padding: 8px 10px; color: var(--nexora-danger); font-size: 12px; font-weight: 700; }
-    @media (max-width: 480px) { .pos-mode-roles { grid-template-columns: 1fr; } .pos-mode-role-card { flex-direction: row; justify-content: flex-start; padding: 10px 12px; text-align: left; } .pos-mode-role-avatar { width: 36px; height: 36px; font-size: 20px; } }
+    @media (max-width: 480px) { .pos-mode-roles { grid-template-columns: 1fr; } .pos-mode-role-card { flex-direction: row; justify-content: flex-start; padding: 10px 12px; text-align: left; } .pos-mode-role-avatar { width: 36px; height: 36px; font-size: 14px; } }
 
     .sms-step { margin-bottom: 18px; }
     .sms-step > .sms-step-lbl { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 800; color: var(--nexora-muted); text-transform: uppercase; letter-spacing: .04em; }
@@ -452,6 +502,15 @@
       .pos-card-head .pos-inline { width: 100%; }
       .pos-card-head .pos-inline .pos-input { flex: 1 1 120px; width: auto !important; min-width: 0; }
       .wl-actions { flex-wrap: wrap; }
+      .queue-card { padding: 12px; }
+      .queue-card-head { align-items: stretch; flex-direction: column; gap: 10px; }
+      .queue-card-identity { flex: 0 1 auto; }
+      .queue-card-status { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+      .queue-card-details { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px 8px; }
+      .queue-card-service { grid-column: 1 / -1; }
+      .queue-card-actions { justify-content: flex-start; }
+      .queue-card-actions .pos-btn { flex: 1 1 auto; min-width: 0; }
+      .queue-card-actions .x-btn { margin-left: 0; }
       .tech-sub { margin-left: 0; }
       /* 44px tap targets on touch */
       .x-btn, .pos-icon-btn { width: 36px; height: 36px; }
@@ -483,7 +542,7 @@
             <h1 class="page-title">POS</h1>
             <span class="pos-chip pos-chip-gold"><i class="bi bi-award-fill" aria-hidden="true"></i> <span data-pos-mode-badge-text>Owner · Brian</span></span>
             <button class="pos-btn pos-btn-sm" type="button" data-pos-mode-open><i class="bi bi-shuffle" aria-hidden="true"></i> Đổi mode</button>
-            <a class="pos-btn pos-btn-sm" href="https://pos-nexoratouch.vercel.app/mockups/phase1/kiosk.html" target="_blank" rel="noopener noreferrer"><i class="bi bi-tablet" aria-hidden="true"></i> Kiosk</a>
+            <a class="pos-btn pos-btn-sm" href="kiosk.html" target="_blank" rel="noopener noreferrer"><i class="bi bi-tablet" aria-hidden="true"></i> Kiosk</a>
           </div>
           <p class="page-description">Bitcoin Nail Bar · Houston, TX — run the front desk: time clock, salon management, and appointments.</p>
           <div class="page-tabs" role="tablist" aria-label="POS sections">
@@ -506,13 +565,13 @@
               <p class="pos-muted pos-mode-copy">Chọn tài khoản rồi nhập PIN để chuyển mode.</p>
               <div class="pos-mode-roles" role="group" aria-label="Chọn vai trò POS">
                 <button class="pos-mode-role-card is-selected" type="button" aria-pressed="true" data-pos-role="owner">
-                  <span class="pos-mode-role-avatar">👑</span><span class="pos-mode-role-name">Brian</span><span class="pos-mode-role-label">Owner</span>
+                  <span class="pos-mode-role-avatar">B</span><span class="pos-mode-role-name">Brian</span><span class="pos-mode-role-label">Owner</span>
                 </button>
                 <button class="pos-mode-role-card" type="button" aria-pressed="false" data-pos-role="manager">
-                  <span class="pos-mode-role-avatar">🧑‍💼</span><span class="pos-mode-role-name">Mia</span><span class="pos-mode-role-label">Manager</span>
+                  <span class="pos-mode-role-avatar">M</span><span class="pos-mode-role-name">Mia</span><span class="pos-mode-role-label">Manager</span>
                 </button>
                 <button class="pos-mode-role-card" type="button" aria-pressed="false" data-pos-role="frontdesk">
-                  <span class="pos-mode-role-avatar">💁</span><span class="pos-mode-role-name">Cindy</span><span class="pos-mode-role-label">Front Desk</span>
+                  <span class="pos-mode-role-avatar">C</span><span class="pos-mode-role-name">Cindy</span><span class="pos-mode-role-label">Front Desk</span>
                 </button>
               </div>
               <label class="pos-inline-lbl" for="pos-mode-pin">PIN</label>
@@ -605,10 +664,6 @@
                 <div data-wait-list></div>
               </div>
 
-              <div class="pos-card">
-                <div class="pos-card-head"><h3><i class="bi bi-brush" aria-hidden="true"></i> Techs on shift — turns today</h3></div>
-                <div data-tech-board></div>
-              </div>
             </div>
 
           </div>
@@ -629,6 +684,23 @@
             <div class="sms-mfoot" style="justify-content:flex-end">
               <button class="pos-btn pos-btn-sm" type="button" data-qn-skip>Skip</button>
               <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-qn-save><i class="bi bi-floppy" aria-hidden="true"></i> Save note</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Swap a ticket to another available technician -->
+        <div class="sms-modal" data-swap-tech-modal role="dialog" aria-modal="true" aria-labelledby="swap-tech-title">
+          <div class="sms-dialog swap-tech-dialog">
+            <div class="sms-mhead">
+              <h3 id="swap-tech-title"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Swap technician</h3>
+              <button class="pos-icon-btn" type="button" data-swap-tech-close aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+            </div>
+            <div class="sms-mbody">
+              <p class="pos-muted swap-tech-copy">Choose a free technician to take over <strong data-swap-tech-guest>this guest</strong>.</p>
+              <div class="swap-tech-list" data-swap-tech-list role="listbox" aria-label="Available technicians"></div>
+            </div>
+            <div class="sms-mfoot" style="justify-content:flex-end">
+              <button class="pos-btn pos-btn-sm" type="button" data-swap-tech-close>Cancel</button>
             </div>
           </div>
         </div>
@@ -658,8 +730,8 @@
                   <h3><i class="bi bi-people-fill" aria-hidden="true"></i> Today's shift — turn order follows clock-in time</h3>
                   <span class="pos-chip pos-chip-green" data-clk-oncount>0 on shift</span>
                 </div>
-                <div data-clk-grid></div>
-                <div class="pos-hint">Tap <b>Clock in</b> to simulate a tech scanning the QR (the token is consumed and rotated). Station # is editable inline — type a number and click away.</div>
+                <div data-tech-roster-table></div>
+                <div class="pos-hint">One roster table combines clock status, station, current ticket, turns, beeper, and actions. Station # is editable inline.</div>
               </div>
 
               <div class="pos-stack">
@@ -1752,14 +1824,14 @@
       var activeTabId = 'checkin';
 
       var STAFF = [
-        { id: 'owner', name: 'Brian', ava: '👑', role: 'owner' },
-        { id: 'mgr1', name: 'Mia', ava: '🧑‍💼', role: 'manager' },
-        { id: 'cash1', name: 'Cindy', ava: '💁', role: 'frontdesk' },
-        { id: 't1', name: 'Tina', ava: '💅', role: 'tech' },
-        { id: 't2', name: 'Kim', ava: '💅', role: 'tech' },
-        { id: 't3', name: 'Helen', ava: '💅', role: 'tech' },
-        { id: 't4', name: 'Andy', ava: '💅', role: 'tech' },
-        { id: 't5', name: 'Vy', ava: '💅', role: 'tech' }
+        { id: 'owner', name: 'Brian', ava: 'B', role: 'owner' },
+        { id: 'mgr1', name: 'Mia', ava: 'M', role: 'manager' },
+        { id: 'cash1', name: 'Cindy', ava: 'C', role: 'frontdesk' },
+        { id: 't1', name: 'Tina', ava: 'T', role: 'tech' },
+        { id: 't2', name: 'Kim', ava: 'K', role: 'tech' },
+        { id: 't3', name: 'Helen', ava: 'H', role: 'tech' },
+        { id: 't4', name: 'Andy', ava: 'A', role: 'tech' },
+        { id: 't5', name: 'Vy', ava: 'V', role: 'tech' }
       ];
       var stSeq = 0;
 
@@ -1920,12 +1992,12 @@
 
       // Guests on the floor right now. atMs/svcAtMs/readyAtMs drive the live timers.
       var WAITLIST = [
-        { id: 1, name: 'Jessica Kim', phone: '(832) 906-4471', badge: 'blue', badgeTxt: '↩️ 8 visits', svc: 'Pedicure', at: '1:05 PM', atMs: Date.now() - 25 * 60000, status: 'waiting', techId: null, reqTech: null, items: [], log: [] },
-        { id: 4, name: 'Lisa Trương', phone: '(281) 903-5517', badge: 'gray', badgeTxt: '🆕 New', svc: 'Acrylic — Full Set', at: '1:32 PM', atMs: Date.now() - 8 * 60000, status: 'waiting', techId: null, reqTech: 't2', items: [],
+        { id: 1, name: 'Jessica Kim', phone: '(832) 906-4471', customerGroup: 'Returning', badge: 'blue', badgeTxt: '↩️ 8 visits', svc: 'Pedicure', at: '1:05 PM', atMs: Date.now() - 25 * 60000, status: 'waiting', techId: null, reqTech: null, items: [], log: [] },
+        { id: 4, name: 'Lisa Trương', phone: '(281) 903-5517', customerGroup: 'New', badge: 'gray', badgeTxt: '🆕 New', svc: 'Acrylic — Full Set', at: '1:32 PM', atMs: Date.now() - 8 * 60000, status: 'waiting', techId: null, reqTech: 't2', items: [],
           log: [{ at: Date.now() - 8 * 60000, msg: '📥 Kiosk check-in — requested Kim (⚠ Kim has no Acrylic skill)' }] },
-        { id: 2, name: 'Linh Trần', phone: '(832) 431-8827', badge: 'gold', badgeTxt: '⭐ VIP · 24 visits', svc: 'Acrylic — Full Set', at: '1:20 PM', atMs: Date.now() - 40 * 60000, status: 'service', techId: 't3', svcAtMs: Date.now() - 35 * 60000,
+        { id: 2, name: 'Linh Trần', phone: '(832) 431-8827', customerGroup: 'VIP', badge: 'gold', badgeTxt: '⭐ VIP · 24 visits', svc: 'Acrylic — Full Set', at: '1:20 PM', atMs: Date.now() - 40 * 60000, status: 'service', techId: 't3', svcAtMs: Date.now() - 35 * 60000,
           items: [{ name: 'Ombre Full Set', price: 70, techId: 't3', cat: 'full' }], log: [] },
-        { id: 3, name: 'Amy Đặng', phone: '(713) 550-2214', badge: 'blue', badgeTxt: '↩️ 5 visits', svc: 'Manicure', at: '12:50 PM', atMs: Date.now() - 55 * 60000, status: 'ready', techId: 't2', svcAtMs: Date.now() - 50 * 60000, readyAtMs: Date.now() - 4 * 60000,
+        { id: 3, name: 'Amy Đặng', phone: '(713) 550-2214', customerGroup: 'Returning', badge: 'blue', badgeTxt: '↩️ 5 visits', svc: 'Manicure', at: '12:50 PM', atMs: Date.now() - 55 * 60000, status: 'ready', techId: 't2', svcAtMs: Date.now() - 50 * 60000, readyAtMs: Date.now() - 4 * 60000,
           items: [{ name: 'Gel Shellac Manicure', price: 45, techId: 't2', cat: 'mani' }],
           log: [
             { at: Date.now() - 55 * 60000, msg: '📥 Kiosk check-in — returning guest (5 visits)' },
@@ -1974,8 +2046,8 @@
       function createOperationalTicket(booking, ticket) {
         return {
           id: ++wlSeq, bookingId: booking.id, orderId: booking.id, serviceTicketId: ticket.id, customerId: booking.name,
-          name: booking.name, phone: booking.phone, badge: 'blue', badgeTxt: '📅 ' + booking.time + ' booking',
-          svc: ticket.serviceName, at: nowTime(), atMs: Date.now(), status: 'waiting',
+          name: booking.name, phone: booking.phone, customerGroup: booking.customerGroup || 'New', badge: 'blue', badgeTxt: booking.time ? 'Booking' : '', bookingTime: booking.time || '',
+          svc: ticket.serviceName, note: booking.note || '', at: nowTime(), atMs: Date.now(), status: 'waiting',
           techId: ticket.technicianId || null, reqTech: ticket.technicianId || null,
           durationMin: ticket.durationMin || 0,
           items: [{ name: ticket.serviceName, price: ticket.price || 0, techId: ticket.technicianId, cat: '' }],
@@ -1999,7 +2071,7 @@
           var wlId = ++wlSeq;
           WAITLIST.push({
             id: wlId, orderId: orderId, bookingId: null, serviceTicketId: null, customerId: name, durationMin: t ? (t.durationMin || 0) : 0,
-            name: name, phone: phone, badge: badge, badgeTxt: badgeTxt,
+            name: name, phone: phone, customerGroup: known ? (CUST_SEG_META[known.seg] ? CUST_SEG_META[known.seg].label : 'New') : 'New', badge: badge, badgeTxt: badgeTxt,
             svc: t ? t.serviceName : '', at: nowTime(), atMs: Date.now(), status: 'waiting',
             techId: t ? (t.technicianId || null) : null, reqTech: t ? (t.technicianId || null) : (known ? known.prefTech : null),
             items: t ? [{ name: t.serviceName, price: t.price || 0, techId: t.technicianId, cat: '' }] : [],
@@ -2045,7 +2117,7 @@
           html('[data-ci-results]', matches.map(function (b) {
             return '<div class="wl-card">' +
               '<div class="wl-info"><div class="wl-name">' + esc(b.name) + ' <span class="pos-chip pos-chip-blue">' + esc(b.time || '') + '</span></div>' +
-              '<div class="wl-meta">' + esc(posServiceDisplayName(b.svc || 'Service TBD')) + (b.techId ? ' · 📌 ' + esc(techName(b.techId)) : '') + '</div></div>' +
+              '<div class="wl-meta">' + esc(posServiceDisplayName(b.svc || 'Service TBD')) + (b.techId ? ' · <i class="bi bi-person" aria-hidden="true"></i> ' + esc(techName(b.techId)) : '') + '</div></div>' +
               '<div class="wl-actions"><button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-ci-checkin="' + esc(b.id) + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Check in</button></div>' +
               '</div>';
           }).join(''));
@@ -2398,8 +2470,9 @@
       }
       function custTagsHtml(name) {
         var c = custOf(name); if (!c) return '';
-        var tags = (c.prefTech ? ['📌 Prefers ' + techName(c.prefTech)] : []).concat(c.tags || []);
-        return tags.length ? '<div class="cust-tags">' + tags.map(function (tg) { return '<span class="cust-tag">' + esc(tg) + '</span>'; }).join('') + '</div>' : '';
+        var prefTag = c.prefTech ? '<span class="cust-tag"><i class="bi bi-person" aria-hidden="true"></i> Prefers ' + esc(techName(c.prefTech)) + '</span>' : '';
+        var tags = (c.tags || []).map(function (tg) { return '<span class="cust-tag">' + esc(tg) + '</span>'; }).join('');
+        return prefTag || tags ? '<div class="cust-tags">' + prefTag + tags + '</div>' : '';
       }
       function custStaffNote(name) {
         var c = custOf(name);
@@ -2842,9 +2915,9 @@
           '<button class="x-btn" data-ciq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i></button>';
       }
       function ciqCardHtml(r) {
-        return '<div class="wl-card">' +
-          '<div class="wl-info"><div class="wl-name">' + esc(r.name) + ' <span class="pos-chip pos-chip-violet">' + esc(r.src) + '</span></div>' +
-          '<div class="wl-meta">' + esc(posServiceDisplayName(r.svc)) + (r.reqTech ? ' · 📌 wants ' + esc(techName(r.reqTech)) : '') + (r.promo ? ' · 🎁 ' + esc(r.promo) : '') + '</div>' +
+          return '<div class="wl-card">' +
+            '<div class="wl-info"><div class="wl-name">' + esc(r.name) + ' <span class="pos-chip pos-chip-violet">' + esc(r.src) + '</span></div>' +
+          '<div class="wl-meta">' + esc(posServiceDisplayName(r.svc)) + (r.reqTech ? ' · <i class="bi bi-person" aria-hidden="true"></i> wants ' + esc(techName(r.reqTech)) : '') + (r.promo ? ' · 🎁 ' + esc(r.promo) : '') + '</div>' +
           custProfHtml(r.name) + '</div><div class="wl-actions">' + ciqActionsHtml(r) + '</div></div>';
       }
       function renderCiqTable(items) {
@@ -2854,7 +2927,7 @@
           '</tr></thead><tbody>' + items.map(function (r) {
             return '<tr class="booking-table-row"><td><div class="booking-customer-name">' + esc(r.name) + '</div>' + custProfHtml(r.name) + '</td>' +
               '<td>' + esc(r.src) + '</td><td>' + esc(posServiceDisplayName(r.svc)) + '</td>' +
-              '<td>' + (r.reqTech ? '📌 ' + esc(techName(r.reqTech)) : 'Anyone') + '</td>' +
+              '<td>' + (r.reqTech ? '<i class="bi bi-person" aria-hidden="true"></i> ' + esc(techName(r.reqTech)) : 'Anyone') + '</td>' +
               '<td>' + (r.promo ? '🎁 ' + esc(r.promo) : '—') + '</td><td><div class="wl-actions">' + ciqActionsHtml(r) + '</div></td></tr>';
           }).join('') + '</tbody></table></div>';
       }
@@ -2930,7 +3003,7 @@
           ? '<div class="live-map">🚗··········💅 Live trip — guest is sharing their route · ~' + etaRem(e) + "' out</div>" : '';
         return '<div class="wl-card">' +
           '<div class="wl-info"><div class="wl-name">' + esc(b.name) + ' <span class="pos-chip pos-chip-blue"><i class="bi bi-calendar-event" aria-hidden="true"></i> ' + b.time + '</span></div>' +
-          '<div class="wl-meta">' + esc(posServiceDisplayName(b.svc)) + (b.techId ? ' · 📌 ' + esc(techName(b.techId)) : '') + '</div>' +
+          '<div class="wl-meta">' + esc(posServiceDisplayName(b.svc)) + (b.techId ? ' · <i class="bi bi-person" aria-hidden="true"></i> ' + esc(techName(b.techId)) : '') + '</div>' +
           custProfHtml(b.name) + '</div>' +
           etaStatusChipHtml(e) + '<div class="wl-actions">' + etaActionHtml(x) + '</div>' + map + '</div>';
       }
@@ -2991,33 +3064,66 @@
         var meta = TICKET_STATUS_BADGE[status] || ['pos-chip-gray', status];
         return '<span class="pos-chip ' + meta[0] + '">' + esc(meta[1]) + '</span>';
       }
+      function ticketCustomerGroupHtml(w) {
+        var c = custOf(w.name);
+        var seg = c && CUST_SEG_META[c.seg];
+        var fallback = w.customerGroup || (c && c.seg) || '';
+        if (!seg && fallback) {
+          var fallbackKey = String(fallback).toLowerCase();
+          seg = CUST_SEG_META[fallbackKey] || Object.keys(CUST_SEG_META).map(function (id) { return CUST_SEG_META[id]; }).find(function (meta) { return meta.label.toLowerCase() === fallbackKey; });
+        }
+        var label = seg ? seg.label : fallback;
+        var visits = c ? c.visits : w.visits;
+        var groupTag = label ? (seg
+          ? '<span class="pos-chip ' + seg.chip + '"><i class="bi ' + seg.icon + '" aria-hidden="true"></i> ' + esc(label) + '</span>'
+          : '<span class="pos-chip pos-chip-gray">' + esc(label) + '</span>') : '';
+        var visitTag = visits ? '<span class="pos-chip pos-chip-gray">' + visits + ' visits</span>' : '';
+        return groupTag || visitTag ? '<span class="queue-customer-group">' + groupTag + visitTag + '</span>' : '<span class="pos-muted">—</span>';
+      }
+      function ticketQueueNoteHtml(w) {
+        var c = custOf(w.name);
+        var note = String(w.note || (c && c.notes && c.notes.staff) || '').trim();
+        return note ? '<span class="queue-table-note" title="' + esc(note) + '">' + esc(note) + '</span>' : '<span class="pos-muted">—</span>';
+      }
+      function ticketTechHtml(w, variant) {
+        var cls = variant === 'card' ? 'queue-card-tech-value' : 'queue-table-tech';
+        if (w.techId) return '<span class="' + cls + '">' + esc(techName(w.techId)) + '</span>';
+        if (w.reqTech) return '<span class="' + cls + ' is-requested">Requested: ' + esc(techName(w.reqTech)) + '</span>';
+        return '<span class="pos-muted">Unassigned</span>';
+      }
+      function ticketQueueCardNoteHtml(w) {
+        var c = custOf(w.name);
+        var note = String(w.note || (c && c.notes && c.notes.staff) || '').trim();
+        return note ? '<div class="queue-card-note" title="' + esc(note) + '"><i class="bi bi-sticky" aria-hidden="true"></i><span>' + esc(note) + '</span></div>' : '';
+      }
       // Table mode: one row per service ticket (not per order), same actions as the card view.
-      // Table mode carries the same information as the card view (badge, phone, wait/service time,
-      // preference tags, item total) — just laid out as rows instead of cards.
+      // Table mode carries the operational fields as separate columns so the queue can be scanned
+      // quickly: appointment hour, customer group, note, service, tech, status, elapsed time, total.
       function renderTicketsTable(groups, now) {
         var rows = groups.reduce(function (acc, g) { return acc.concat(g.tickets.map(function (w) { return { w: w, g: g }; })); }, []);
         if (!rows.length) return '<div class="wl-empty">No guests yet — add a walk-in, or let the kiosk check someone in.</div>';
-        return '<div class="booking-table-wrap"><table class="booking-table"><thead><tr>' +
-          '<th scope="col">Guest</th><th scope="col">Phone</th><th scope="col">Service</th><th scope="col">Tech</th>' +
-          '<th scope="col">Status</th><th scope="col">Time</th><th scope="col">Total</th><th scope="col">Actions</th>' +
+        return '<div class="booking-table-wrap"><table class="booking-table queue-table"><thead><tr>' +
+          '<th scope="col">Guest</th><th scope="col">Phone</th><th scope="col">Hour</th><th scope="col">Customer group</th>' +
+          '<th scope="col">Service</th><th scope="col">Tech</th><th scope="col">Status</th><th scope="col">Elapsed</th><th scope="col">Total</th><th scope="col">Note</th><th scope="col">Actions</th>' +
           '</tr></thead><tbody>' + rows.map(function (r) {
             var w = r.w;
-            var badge = w.badgeTxt ? '<span class="pos-chip pos-chip-' + w.badge + '" style="margin-left:6px">' + esc(w.badgeTxt) + '</span>' : '';
             var itemsTot = (w.items || []).reduce(function (s, i) { return s + i.price; }, 0);
-            var timeLabel = w.status === 'waiting' ? (w.atMs ? Math.max(0, Math.floor((now - w.atMs) / 60000)) + "' waiting" : '—')
+            var elapsedLabel = w.status === 'waiting' ? (w.atMs ? Math.max(0, Math.floor((now - w.atMs) / 60000)) + "' waiting" : '—')
               : w.status === 'service' ? (w.svcAtMs ? Math.max(0, Math.floor((now - w.svcAtMs) / 60000)) + "' in service" : '—')
               : w.status === 'ready' ? (w.readyAtMs ? Math.max(0, Math.floor((now - w.readyAtMs) / 60000)) + "' to pay" : '—')
               : '—';
-            var reqTxt = (w.status === 'waiting' && w.reqTech) ? '<div class="pos-muted" style="font-size:11px;font-weight:600">📌 wants ' + esc(techName(w.reqTech)) + '</div>' : '';
-            return '<tr class="booking-table-row"><td><div class="booking-customer-name">' + esc(w.name) + badge +
+            return '<tr class="booking-table-row"><td><div class="booking-customer-name">' + esc(w.name) +
               (r.g.tickets.length > 1 ? ' <span class="pos-muted" style="font-size:11px;font-weight:600">· ' + r.g.tickets.length + ' svc</span>' : '') + '</div>' +
-              reqTxt + custTagsHtml(w.name) + '</td>' +
+              '</td>' +
               '<td>' + esc(w.phone || '—') + '</td>' +
+              '<td>' + esc(w.bookingTime || w.at || '—') + '</td>' +
+              '<td>' + ticketCustomerGroupHtml(w) + '</td>' +
               '<td>' + esc(posServiceDisplayName(w.svc || 'No service chosen')) + '</td>' +
-              '<td>' + (w.techId ? esc(techName(w.techId)) : '—') + '</td>' +
+              '<td>' + ticketTechHtml(w) + '</td>' +
               '<td>' + ticketStatusBadge(w.status) + '</td>' +
-              '<td>' + timeLabel + '</td>' +
+              '<td>' + elapsedLabel + '</td>' +
               '<td>' + money(itemsTot) + '</td>' +
+              '<td>' + ticketQueueNoteHtml(w) + '</td>' +
               '<td><div class="wl-actions">' + ticketActionsHtml(w) + '</div></td></tr>';
           }).join('') + '</tbody></table></div>';
       }
@@ -3048,56 +3154,68 @@
           : esc(techName(w.techId)) + ' — cancelled';
         return svcName + ' — ' + techLbl;
       }
+      function ticketQueueCardIdentityHtml(w, badge) {
+        return '<div class="queue-card-identity"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
+          '<div class="queue-card-phone"><i class="bi bi-telephone" aria-hidden="true"></i> ' + esc(w.phone || 'No phone') + '</div>' +
+          ticketCustomerGroupHtml(w) + '</div>';
+      }
+      function ticketQueueCardDetailsHtml(w, techExtra) {
+        var items = w.items || [];
+        var total = items.reduce(function (s, i) { return s + i.price; }, 0);
+        return '<div class="queue-card-details"><div class="queue-card-service"><span class="queue-card-label">Service</span><strong>' +
+          esc(posServiceDisplayName(w.svc || 'No service chosen')) + '</strong><span class="queue-card-sub">' + items.length + ' item(s) · ' + money(total) + '</span></div>' +
+          '<div class="queue-card-tech"><span class="queue-card-label">Tech</span>' + ticketTechHtml(w, 'card') + (techExtra || '') + '</div>' +
+          '<div class="queue-card-booking"><span class="queue-card-label">Booked</span><span>' + esc(w.bookingTime || w.at || 'Walk-in') + '</span></div></div>';
+      }
+      function ticketQueueCardHeadHtml(w, badge, timerHtml) {
+        return '<div class="queue-card-head">' + ticketQueueCardIdentityHtml(w, badge) +
+          '<div class="queue-card-status">' + ticketStatusBadge(w.status) + timerHtml + '</div></div>';
+      }
       // One WAITLIST row = one service ticket (#pos-nail-salon-ops Phase 3). A single-ticket order
       // renders exactly like the original floor card, so the common walk-in path is unchanged.
       function renderSingleTicketCard(w, now, selW) {
         var badge = w.badgeTxt ? '<span class="pos-chip pos-chip-' + w.badge + '">' + esc(w.badgeTxt) + '</span>' : '';
         var sel = selW && selW.id === w.id ? ' is-sel' : '';
-        var itemsTot = w.items.reduce(function (s, i) { return s + i.price; }, 0);
 
         if (w.status === 'waiting') {
           var waitMin = w.atMs ? Math.max(0, Math.floor((now - w.atMs) / 60000)) : 0;
           var late = waitMin > 20;
           var reqBusy = w.reqTech && !freeTechs().find(function (t) { return t.id === w.reqTech; });
-          var reqTxt = w.reqTech ? ' · 📌 wants ' + esc(techName(w.reqTech)) + (reqBusy ? ' <span class="pos-warn-text">(busy)</span>' : '') : '';
           var auto = fAutoTech(w);
-          return '<div class="wl-card tappable' + (late ? ' late' : (w.appt ? ' appt' : '')) + sel + '" data-wtap="' + w.id + '">' +
-            '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
-            '<div class="wl-meta">' + esc(posServiceDisplayName(w.svc || 'No service chosen')) + ' · in at ' + w.at + (w.phone ? ' · ' + esc(w.phone) : '') + reqTxt + '</div>' +
-            custProfHtml(w.name) + '</div>' +
-            '<span class="wl-wait' + (late ? ' bad' : '') + '"><i class="bi bi-hourglass-split" aria-hidden="true"></i> ' + waitMin + "'</span>" +
-            '<div class="wl-actions">' +
+          return '<div class="wl-card queue-card tappable' + (late ? ' late' : (w.appt ? ' appt' : '')) + sel + '" data-wtap="' + w.id + '">' +
+            ticketQueueCardHeadHtml(w, badge, '<span class="wl-wait' + (late ? ' bad' : '') + '"><i class="bi bi-hourglass-split" aria-hidden="true"></i> ' + waitMin + "'</span>") +
+            ticketQueueCardDetailsHtml(w, reqBusy ? ' <span class="queue-card-sub pos-warn-text">(busy)</span>' : '') +
+            ticketQueueCardNoteHtml(w) +
+            '<div class="queue-card-actions">' +
             '<button class="pos-btn pos-btn-primary pos-btn-sm" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>' +
             '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
         }
         if (w.status === 'ready') {
           var rdyMin = w.readyAtMs ? Math.max(0, Math.floor((now - w.readyAtMs) / 60000)) : 0;
-          return '<div class="wl-card rdy">' +
-            '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
-            '<div class="wl-meta"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> ' + esc(techName(w.techId)) + ' finished · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div>' +
-            custTagsHtml(w.name) + '</div>' +
-            '<span class="wl-wait' + (rdyMin > 5 ? ' bad' : '') + '"><i class="bi bi-cash-coin" aria-hidden="true"></i> waiting ' + rdyMin + "'</span>" +
-            '<div class="wl-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
+          return '<div class="wl-card queue-card rdy">' +
+            ticketQueueCardHeadHtml(w, badge, '<span class="wl-wait' + (rdyMin > 5 ? ' bad' : '') + '"><i class="bi bi-cash-coin" aria-hidden="true"></i> waiting ' + rdyMin + "'</span>") +
+            ticketQueueCardDetailsHtml(w) +
+            ticketQueueCardNoteHtml(w) +
+            '<div class="queue-card-actions"><button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
             '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
         }
         if (w.status === 'service') {
           var svcMin = w.svcAtMs ? Math.max(0, Math.floor((now - w.svcAtMs) / 60000)) : 0;
-          return '<div class="wl-card svc' + sel + '">' +
-            '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
-            '<div class="wl-meta"><i class="bi bi-brush" aria-hidden="true"></i> ' + esc(techName(w.techId)) + ' in service · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div>' +
-            custTagsHtml(w.name) + custStaffNote(w.name) + '</div>' +
-            '<span class="wl-wait"><i class="bi bi-stopwatch" aria-hidden="true"></i> ' + svcMin + "'</span>" +
-            '<div class="wl-actions">' +
+          return '<div class="wl-card queue-card svc' + sel + '">' +
+            ticketQueueCardHeadHtml(w, badge, '<span class="wl-wait"><i class="bi bi-stopwatch" aria-hidden="true"></i> ' + svcMin + "'</span>") +
+            ticketQueueCardDetailsHtml(w) +
+            ticketQueueCardNoteHtml(w) +
+            '<div class="queue-card-actions">' +
             '<button class="pos-btn pos-btn-sm" data-wswap="' + w.id + '" title="Swap tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button>' +
             '<button class="pos-btn pos-btn-sm" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
             '<button class="pos-btn pos-btn-success pos-btn-sm" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
             '<button class="x-btn" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div></div>';
         }
         // completed/cancelled — only reachable via the Tickets status-chip filter; read-only
-        return '<div class="wl-card">' +
-          '<div class="wl-info"><div class="wl-name">' + esc(w.name) + ' ' + badge + '</div>' +
-          '<div class="wl-meta">' + esc(posServiceDisplayName(w.svc || 'No service chosen')) + ' · ' + w.items.length + ' item(s) · ' + money(itemsTot) + '</div></div>' +
-          '<div class="wl-actions">' + ticketStatusBadge(w.status) + '</div></div>';
+        return '<div class="wl-card queue-card">' +
+          ticketQueueCardHeadHtml(w, badge, '') +
+          ticketQueueCardDetailsHtml(w) +
+          ticketQueueCardNoteHtml(w) + '</div>';
       }
       // Multi-ticket order card: one guest/order with several service tickets, each on its own line
       // with its own status/actions, and one Charge button for the whole order (#pos-nail-salon-ops).
@@ -3154,33 +3272,6 @@
           }).join('') : '<div class="wl-empty">No guests yet — add a walk-in, or let the kiosk check someone in.</div>');
         }
 
-        var next = nextTech();
-        var board = selW ? '<div class="sel-hint"><i class="bi bi-hand-index" aria-hidden="true"></i> Tap a free tech to ' + (selW.status === 'service' ? 'reassign' : 'assign') + ' <b>' + esc(selW.name) + '</b> — tap the card again to deselect</div>' : '';
-        board += TECHS.map(function (t) {
-          var busy = busyName(t.id);
-          var pickable = selW && !busy && t.id !== selW.techId;
-          var m = selW ? matchScore(t, selW) : null;
-          var mBadge = m ? '<span class="match-badge" style="color:' + (m.sc >= 75 ? 'var(--nexora-success)' : m.sc >= 50 ? 'var(--nexora-warning)' : 'var(--nexora-danger)') + '">' + m.sc + '%' + (m.okSkill ? '' : ' ⚠') + '</span>' : '';
-          var row = '<div class="tech-row' + (pickable ? ' pickable' : '') + (selW && !pickable ? ' dim' : '') + '"' + (pickable ? ' data-fassign="' + t.id + '"' : '') + '>' +
-            '<span class="pos-avatar">' + initials(t.name) + '</span>' +
-            '<span class="tech-dot ' + (busy ? 'tech-busy' : 'tech-free') + '"></span>' +
-            '<span class="tech-name">' + esc(t.name) + '</span>' +
-            (BEEP[t.id] ? '<span class="pos-chip pos-chip-violet" style="font-size:10px;padding:2px 7px"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> #' + BEEP[t.id] + '</span>' : '') +
-            (!busy && next && next.id === t.id ? '<span class="next-chip"><i class="bi bi-bullseye" aria-hidden="true"></i> Next up</span>' : '') +
-            '<span class="tech-sub">' + (busy ? '<i class="bi bi-brush" aria-hidden="true"></i> ' + esc(busy) : 'Free') + ' · ' + t.turns + ' turns</span>' +
-            mBadge +
-            (pickable ? '<span class="pick-arrow"><i class="bi bi-hand-index" aria-hidden="true"></i> Assign</span>'
-              : '<button class="pos-btn pos-btn-sm" data-fpage="' + t.id + '" title="Beep this tech"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i></button>') +
-            '</div>';
-          if (m && !m.okSkill && fWarn && fWarn.tid === t.id && selW && fWarn.wid === selW.id) {
-            row += '<div class="warn-row">⚠ ' + esc(t.name) + ' has no <b>' + m.req + '</b> skill for "' + esc(posServiceDisplayName(selW.svc || '')) + '" — tap again to ASSIGN ANYWAY (logged as an override; the manager owns it)</div>';
-          }
-          return row;
-        }).join('');
-        board += selW
-          ? '<div class="pos-hint">% = match score: the service\'s required skill + turn fairness + an explicit request from the guest (skills are configured in 🏢 Management).</div>'
-          : '<div class="pos-hint"><i class="bi bi-record-fill" style="color:var(--nexora-success)" aria-hidden="true"></i> free · <i class="bi bi-record-fill" style="color:var(--nexora-warning)" aria-hidden="true"></i> in service — a turn is added when the ticket is paid. <i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> beeps the tech straight to their Staff App.</div>';
-        html('[data-tech-board]', board);
       }
 
       /* ── quick note (🧠 #80 tier 2) ── */
@@ -3197,6 +3288,65 @@
         $('[data-qn-modal]').classList.remove('open');
         document.body.style.overflow = '';
         qnFor = null;
+      }
+
+      /* ── swap technician picker ── */
+      var swapTechFor = null;
+      function swapTechOptionsHtml(w) {
+        var options = freeTechs()
+          .filter(function (t) { return t.id !== w.techId; })
+          .map(function (t) { return { t: t, match: matchScore(t, w) }; })
+          .sort(function (a, b) { return b.match.sc - a.match.sc || a.t.turns - b.t.turns; });
+        if (!options.length) return '<div class="swap-tech-empty"><i class="bi bi-person-x" aria-hidden="true"></i> No other free technician is available right now.</div>';
+        return options.map(function (option) {
+          var t = option.t, m = option.match;
+          var skillLabel = m.okSkill ? 'Qualified for ' + (m.req || 'this service') : 'Missing ' + (m.req || 'required') + ' skill';
+          var skillClass = m.okSkill ? 'pos-chip-green' : 'pos-chip-amber';
+          var scoreColor = m.sc >= 75 ? 'var(--nexora-success)' : m.sc >= 50 ? 'var(--nexora-warning)' : 'var(--nexora-danger)';
+          return '<button class="swap-tech-option" type="button" role="option" data-swap-tech-pick="' + esc(t.id) + '">' +
+            '<span class="pos-avatar">' + esc(initials(t.name)) + '</span>' +
+            '<span class="swap-tech-option-main"><span class="swap-tech-option-name">' + esc(t.name) + '</span>' +
+            '<span class="swap-tech-option-meta">' + esc(skillLabel) + ' · ' + t.turns + ' turns</span></span>' +
+            '<span class="pos-chip ' + skillClass + '">' + (m.okSkill ? 'Qualified' : 'Override') + '</span>' +
+            '<span class="match-badge" style="color:' + scoreColor + '">' + m.sc + '%</span>' +
+            '</button>';
+        }).join('');
+      }
+      function openSwapTechModal(wid) {
+        var w = WAITLIST.find(function (x) { return x.id == wid; });
+        var modal = $('[data-swap-tech-modal]');
+        if (!w || !modal) return;
+        swapTechFor = w.id;
+        fSel = null; fWarn = null;
+        set('[data-swap-tech-guest]', w.name);
+        html('[data-swap-tech-list]', swapTechOptionsHtml(w));
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeSwapTechModal() {
+        var modal = $('[data-swap-tech-modal]');
+        if (modal) modal.classList.remove('open');
+        document.body.style.overflow = '';
+        swapTechFor = null;
+      }
+      function chooseSwapTech(tid) {
+        var w = WAITLIST.find(function (x) { return x.id === swapTechFor; });
+        var t = techById(tid);
+        if (!w || !t || busyName(tid) || w.techId === tid) return;
+        var match = matchScore(t, w);
+        var apply = function (override) {
+          if (override) wlog(w, '⚠ Skill override: swapped to ' + t.name + ' without the ' + match.req + ' skill');
+          fAssign(w, tid);
+          closeSwapTechModal();
+          renderManagement();
+          toast(w.name + ' → ' + t.name + (override ? ' (override logged)' : ''));
+        };
+        if (!match.okSkill) {
+          closeSwapTechModal();
+          confirmBox('Swap to ' + t.name + ' anyway?', t.name + ' does not have the ' + match.req + ' skill required for ' + (w.svc || 'this service') + '.').then(function (ok) { if (ok) apply(true); });
+          return;
+        }
+        apply(false);
       }
 
       document.addEventListener('click', function (e) {
@@ -3219,6 +3369,14 @@
           closeQuickNote();
           renderFloor(); renderManagement();
           toast('Note saved to the guest profile');
+          return;
+        }
+
+        /* swap technician modal */
+        if (e.target.closest('[data-swap-tech-close]') || e.target.matches('[data-swap-tech-modal]')) { closeSwapTechModal(); return; }
+        var swapPick = e.target.closest('[data-swap-tech-pick]');
+        if (swapPick) {
+          chooseSwapTech(swapPick.getAttribute('data-swap-tech-pick'));
           return;
         }
 
@@ -3252,7 +3410,7 @@
           return;
         }
 
-        if (!e.target.closest('[data-pos-panel="checkin"], [data-pos-panel="tickets"]')) return;
+        if (!e.target.closest('[data-pos-panel="checkin"], [data-pos-panel="tickets"], [data-pos-panel="clock"]')) return;
 
         /* Tickets: card/table view switch */
         var tixView = e.target.closest('[data-tix-view-target]');
@@ -3303,10 +3461,10 @@
           if (cok && r) {
             var nwId = ++wlSeq;
             var nw = { id: nwId, orderId: 'walkin-' + nwId, bookingId: null, serviceTicketId: null, customerId: r.name, durationMin: 0,
-              name: r.name, phone: '', badge: 'violet', badgeTxt: r.src.indexOf('📱') === 0 ? '📱 App' : '🌐 QR', svc: r.svc,
+              name: r.name, phone: '', customerGroup: 'New', badge: 'violet', badgeTxt: r.src.indexOf('📱') === 0 ? '📱 App' : '🌐 QR', svc: r.svc,
               at: nowTime(), atMs: Date.now(), status: 'waiting', techId: null, reqTech: r.reqTech || null, items: [], log: [] };
             WAITLIST.push(nw);
-            wlog(nw, '📥 Checked in via ' + (r.src.indexOf('📱') === 0 ? 'the Nexora App' : 'the web QR') + ' — confirmed by the front desk' + (r.reqTech ? ' · 📌 wants ' + techName(r.reqTech) : ''));
+            wlog(nw, '📥 Checked in via ' + (r.src.indexOf('📱') === 0 ? 'the Nexora App' : 'the web QR') + ' — confirmed by the front desk' + (r.reqTech ? ' · wants ' + techName(r.reqTech) : ''));
             toast(r.name + ' added to the queue');
           } else if (r) { toast(r.name + ' declined — the app tells them why', 'info'); }
           renderFloor(); renderManagement();
@@ -3378,7 +3536,7 @@
         }
         /* ⇄ swap tech */
         var sp = e.target.closest('[data-wswap]');
-        if (sp) { var sid = +sp.getAttribute('data-wswap'); fSel = fSel === sid ? null : sid; fWarn = null; renderFloor(); return; }
+        if (sp) { openSwapTechModal(+sp.getAttribute('data-wswap')); return; }
         /* ✋ done */
         var dn = e.target.closest('[data-wdone]');
         if (dn) {
@@ -3637,31 +3795,57 @@
         if (bar) bar.style.width = Math.round(left / 15 * 100) + '%';
       }
 
+      function renderTechRosterTable() {
+        var selW = fSel ? WAITLIST.find(function (x) { return x.id === fSel; }) : null;
+        if (!selW) fSel = null;
+        var ord = turnOrder();
+        var next = nextTech();
+        var roster = STAFF.filter(function (s) { return s.role !== 'owner'; });
+        var rows = roster.map(function (s) {
+          var ses = CLOCK[s.id] || (CLOCK[s.id] = []);
+          var open = ses.find(function (x) { return !x.out; });
+          var t = techById(s.id);
+          var busy = t ? busyName(t.id) : null;
+          var pos = t ? ord.indexOf(t.id) + 1 : 0;
+          var match = selW && t ? matchScore(t, selW) : null;
+          var pickable = !!(selW && t && !busy && t.id !== selW.techId);
+          var shiftLabel = open ? '<i class="bi bi-record-fill" style="color:var(--nexora-success)" aria-hidden="true"></i> In since ' + timeFmt(open.in) : (ses.length ? 'Clocked out' : 'Not in');
+          var shiftCell = '<span class="tech-roster-shift">' + shiftLabel + '</span><div class="pos-muted" style="font-size:11px;margin-top:3px">' + clockHours(s.id).toFixed(1) + 'h today</div>';
+          var ticketCell = !t ? '<span class="pos-muted">—</span>' : busy
+            ? '<span class="tech-roster-ticket is-busy"><i class="bi bi-brush" aria-hidden="true"></i> ' + esc(busy) + '</span>'
+            : '<span class="tech-roster-ticket is-free">Free</span>';
+          if (match) ticketCell += '<div class="pos-muted" style="font-size:11px;margin-top:3px">Match <span class="match-badge" style="color:' + (match.sc >= 75 ? 'var(--nexora-success)' : match.sc >= 50 ? 'var(--nexora-warning)' : 'var(--nexora-danger)') + '">' + match.sc + '%' + (match.okSkill ? '' : ' ⚠') + '</span></div>';
+          var turnsCell = t ? '<span class="tech-roster-turns">' + t.turns + ' turns' + (pos ? ' · #' + pos : '') + '</span>' + (!busy && next && next.id === t.id ? '<div class="next-chip"><i class="bi bi-bullseye" aria-hidden="true"></i> Next up</div>' : '') : '<span class="pos-muted">—</span>';
+          var beepCell = t && BEEP[t.id] ? '<span class="pos-chip pos-chip-violet"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> #' + BEEP[t.id] + '</span>' : '<span class="pos-muted">—</span>';
+          var actions = '<button class="pos-btn ' + (open ? '' : 'pos-btn-primary ') + 'pos-btn-sm" data-clk="' + esc(s.id) + '">' + (open ? '<i class="bi bi-stop-circle" aria-hidden="true"></i> Clock out' : '<i class="bi bi-camera" aria-hidden="true"></i> Clock in') + '</button>';
+          if (t) actions += '<button class="pos-btn pos-btn-sm" data-fpage="' + esc(t.id) + '" title="Beep this tech"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> Beep</button>';
+          if (pickable) actions += '<button class="pos-btn pos-btn-primary pos-btn-sm" data-fassign="' + esc(t.id) + '"><i class="bi bi-person-check" aria-hidden="true"></i> Assign</button>';
+          var row = '<tr class="tech-roster-row' + (selW && !pickable ? ' dim' : '') + '">' +
+            '<td><div class="tech-roster-person"><span class="pos-avatar' + (t ? '' : ' plain') + '">' + esc(initials(s.name)) + '</span><div><div class="tech-roster-person-name">' + esc(s.name) + '</div><div class="tech-roster-person-role">' + ROLE_LBL[s.role] + '</div></div></div></td>' +
+            '<td>' + shiftCell + '</td>' +
+            '<td>' + (t ? '<label class="sr-only" for="clk-station-' + esc(s.id) + '">Station for ' + esc(s.name) + '</label><input class="clk-station" id="clk-station-' + esc(s.id) + '" data-clk-bnum="' + esc(s.id) + '" value="' + esc(t.bnum) + '">' : '<span class="pos-muted">—</span>') + '</td>' +
+            '<td>' + ticketCell + '</td>' +
+            '<td>' + turnsCell + '</td>' +
+            '<td>' + beepCell + '</td>' +
+            '<td><div class="tech-roster-actions">' + actions + '</div></td>' +
+            '</tr>';
+          if (match && !match.okSkill && fWarn && fWarn.tid === t.id && selW && fWarn.wid === selW.id) {
+            row += '<tr><td colspan="7" class="warn-row">⚠ ' + esc(t.name) + ' has no <b>' + esc(match.req) + '</b> skill for "' + esc(posServiceDisplayName(selW.svc || '')) + '" — click Assign again to override (logged).</td></tr>';
+          }
+          return row;
+        }).join('');
+        var hint = selW ? '<div class="sel-hint"><i class="bi bi-hand-index" aria-hidden="true"></i> Select Assign for a free tech to ' + (selW.status === 'service' ? 'reassign' : 'assign') + ' <b>' + esc(selW.name) + '</b>.</div>' : '';
+        html('[data-tech-roster-table]', hint + '<div class="tech-roster-table-wrap"><table class="tech-roster-table"><thead><tr><th scope="col">Technician</th><th scope="col">Shift</th><th scope="col">Station</th><th scope="col">Current ticket</th><th scope="col">Turns today</th><th scope="col">Beeper</th><th scope="col">Actions</th></tr></thead><tbody>' + rows + '</tbody></table></div>');
+      }
+
       function renderClock() {
         var d = new Date();
         set('[data-clk-date]', d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }));
         renderQr();
 
-        var ord = turnOrder();
         var roster = STAFF.filter(function (s) { return s.role !== 'owner'; });
         set('[data-clk-oncount]', roster.filter(function (s) { return isOnShift(s.id); }).length + ' on shift');
-
-        html('[data-clk-grid]', roster.map(function (s) {
-          var ses = CLOCK[s.id] || (CLOCK[s.id] = []);
-          var open = ses.find(function (x) { return !x.out; });
-          var t = techById(s.id);
-          var hrs = clockHours(s.id);
-          var pos = ord.indexOf(s.id) + 1;
-          return '<div class="tech-row">' +
-            '<span class="pos-avatar' + (t ? '' : ' plain') + '">' + (t ? initials(s.name) : s.ava) + '</span>' +
-            '<span class="tech-dot ' + (open ? 'tech-free' : 'tech-off') + '"></span>' +
-            '<span class="tech-name">' + esc(s.name) + ' <span style="font-weight:600;color:var(--nexora-subtle);font-size:11px">· ' + ROLE_LBL[s.role] + '</span></span>' +
-            (t ? '<span class="pos-muted" style="font-size:11.5px">Station</span><input class="clk-station" data-clk-bnum="' + s.id + '" value="' + t.bnum + '">' : '') +
-            (t && BEEP[s.id] ? '<span class="pos-chip pos-chip-violet"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> #' + BEEP[s.id] + (pos ? ' · turn ' + pos : '') + '</span>' : '') +
-            '<span class="tech-sub">' + (open ? '<i class="bi bi-record-fill" aria-hidden="true"></i> In since ' + timeFmt(open.in) : (ses.length ? 'Clocked out' : 'Not in')) + ' · ' + hrs.toFixed(1) + 'h today</span>' +
-            '<button class="pos-btn ' + (open ? '' : 'pos-btn-primary ') + 'pos-btn-sm" data-clk="' + s.id + '">' + (open ? '<i class="bi bi-stop-circle" aria-hidden="true"></i> Clock out' : '<i class="bi bi-camera" aria-hidden="true"></i> Clock in') + '</button>' +
-            '</div>';
-        }).join(''));
+        renderTechRosterTable();
 
         html('[data-clk-notif]', NOTIF.length
           ? NOTIF.slice(-6).reverse().map(function (n) { return '<div class="feed-line"><i class="bi bi-phone" aria-hidden="true"></i> ' + esc(n.msg) + '</div>'; }).join('')
@@ -3813,7 +3997,7 @@
           '<div class="pos-section-title"><i class="bi bi-sliders" aria-hidden="true"></i> Match rules — assignment weights (dispatch reads them live)</div>' +
           '<div class="pos-inline" style="gap:14px">' +
           mrInp('wSkill', '✓ Has the skill (base)') + mrInp('wMiss', '⚠ Missing the skill') + mrInp('wExp', '★ Expert +') +
-          mrInp('wTurn', '⚖️ Fairness max +') + mrInp('wReq', '📌 Guest requested +') + mrInp('wPref', '🏷️ Regular tech +') + mrInp('wFit', '🤝 Customer fit +') +
+          mrInp('wTurn', '⚖️ Fairness max +') + mrInp('wReq', '<i class="bi bi-person" aria-hidden="true"></i> Guest requested +') + mrInp('wPref', '🏷️ Regular tech +') + mrInp('wFit', '🤝 Customer fit +') +
           '<label class="pos-inline-lbl"><input type="checkbox" data-mg-mruse' + (MATCH_RULES.useTurn ? ' checked' : '') + ' style="accent-color:var(--nexora-brand);width:16px;height:16px"> ⚖️ Count turn fairness</label>' +
           '<label class="pos-inline-lbl">Wrong-skill override:<select class="pos-input" data-mg-mrovr style="height:32px;font-size:12.5px">' +
           ['manager|Manager PIN required', 'reason|Reason required (text)', 'free|Two taps, log only'].map(function (o) {
@@ -4006,7 +4190,7 @@
                 ['manager', 'frontdesk', 'tech'].map(function (r) { return '<option value="' + r + '"' + (s.role === r ? ' selected' : '') + '>' + ROLE_LBL[r] + '</option>'; }).join('') +
                 '</select>';
             return '<tr>' +
-              '<td><span class="pos-people"><span class="pos-avatar plain">' + s.ava + '</span> <span class="pos-strong">' + esc(s.name) + '</span></span></td>' +
+              '<td><span class="pos-people"><span class="pos-avatar plain">' + esc(initials(s.name)) + '</span> <span class="pos-strong">' + esc(s.name) + '</span></span></td>' +
               '<td>' + roleCell + '</td>' +
               '<td>•••• <button class="pos-btn pos-btn-sm" data-mg-stpin="' + s.id + '"><i class="bi bi-key" aria-hidden="true"></i> Reset PIN</button></td>' +
               '<td class="pos-muted wrap">' + ROLE_ACCESS[s.role] + '</td></tr>';
@@ -4150,7 +4334,7 @@
           var nm = (nameEl.value || '').trim();
           if (!nm) { toast('Enter an employee name', 'info'); return; }
           var role = roleEl.value;
-          STAFF.push({ id: 'st' + (++stSeq), name: nm, ava: role === 'manager' ? '🧑‍💼' : '💁', role: role });
+          STAFF.push({ id: 'st' + (++stSeq), name: nm, ava: initials(nm), role: role });
           logAdmin('👥 Created ' + ROLE_LBL[role] + ' account: ' + nm + ' (temporary PIN sent by SMS)');
           renderManagement(); renderClock(); toast(nm + ' added');
           return;
@@ -4178,7 +4362,7 @@
           nextCatalog.technicians.push({ id: id, name: nn, aliases: [], active: true, skills: [], exp: [], fit: [], services: [], posProfile: { bnum: bn, turns: 0, comm: cm, guar: gu, payModel: 'max', baoSplit: cm, vlink: null } });
           salonData.saveCatalog(nextCatalog);
           rebuildSalonCatalogViews();
-          STAFF.push({ id: id, name: nn, ava: '💅', role: 'tech' });
+          STAFF.push({ id: id, name: nn, ava: initials(nn), role: 'tech' });
           CLOCK[id] = [];
           PAYOUT[id] = { st: 'pending', method: null };
           TECH_PERF[id] = { wtd: 0, rating: null, rev: 0, bills: 0, upsBills: 0 };
@@ -4612,6 +4796,8 @@
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && $('[data-sms-modal]').classList.contains('open')) closeComposer();
         if (e.key === 'Escape' && $('[data-ci-modal]').classList.contains('open')) closeCheckinModal();
+        var swapModal = $('[data-swap-tech-modal]');
+        if (e.key === 'Escape' && swapModal && swapModal.classList.contains('open')) closeSwapTechModal();
       });
 
       document.addEventListener('click', function (e) {
