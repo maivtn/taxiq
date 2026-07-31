@@ -44,3 +44,22 @@ test('technician service selection survives menu loading and remains comma-separ
   assert.match(SOURCE, /getTechField\('services'/);
   assert.match(SOURCE, /\.filter\(Boolean\)\.join\(', '\)/);
 });
+
+test('category selection changes only items in its category', () => {
+  assert.match(SOURCE, /querySelectorAll\('\[data-tech-service\]\[data-tech-service-category=/);
+  assert.match(SOURCE, /function techServiceOptionsForCategory\(/);
+  assert.match(SOURCE, /data-tech-service-category-all/);
+  assert.match(SOURCE, /data-tech-service-category-panel=/);
+});
+
+test('saved technician service names are reapplied after the menu renderer runs', () => {
+  assert.match(SOURCE, /pendingTechServices\s*=\s*String\(value/);
+  assert.match(SOURCE, /pendingTechServices\.indexOf\(/);
+  assert.match(SOURCE, /syncTechServiceCheckAll\(\)/);
+});
+
+test('clearing every service after the menu loads returns an empty selection', () => {
+  assert.match(SOURCE, /technicianServicePickerReady/);
+  assert.match(SOURCE, /if \(!technicianServicePickerReady\)/);
+  assert.match(SOURCE, /return checkedServices\.join\(', '\)/);
+});

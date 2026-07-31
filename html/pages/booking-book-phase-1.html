@@ -11157,6 +11157,8 @@
     var appointmentServiceCatalogLoader = window.NEXORA_APPOINTMENT_SERVICE_CATALOG;
     var appointmentServiceCatalog = null;
     var technicianServiceCatalog = null;
+    var pendingTechServices = [];
+    var technicianServicePickerReady = false;
     var TECHNICIAN_SERVICE_CATALOG_URL = '../menu/menu.json';
     var settingsManagedCategories = [];
     var settingsCategoryDraft = null;
@@ -11250,7 +11252,9 @@
         return total + (Array.isArray(category.services) ? category.services.length : 0);
       }, 0);
       var state = error ? 'Unable to load services from menu.json.' : 'No services available.';
+      technicianServicePickerReady = !error;
       container.innerHTML = '<div class="tech-service-picker-toolbar"><label><input type="checkbox" data-tech-service-all>Check all categories</label><span class="tech-service-picker-count" data-tech-service-count>' + serviceCount + '</span></div>' + (categories.length ? categories.map(techServiceCategoryMarkup).join('') : '<div class="tech-service-catalog-state" data-tech-service-state>' + state + '</div>');
+      applyPendingTechServices();
       syncTechServiceCheckAll();
     }
 
@@ -13200,15 +13204,24 @@ function getBookingCardCallStart(item) {
       }).filter(Boolean).join(';');
     }
 
+    function techServiceOptionsForCategory(categoryId) {
+      var selectorValue = String(categoryId || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      return Array.from(document.querySelectorAll('[data-tech-service][data-tech-service-category="' + selectorValue + '"]'));
+    }
+
+    function applyPendingTechServices() {
+      document.querySelectorAll('[data-tech-service]').forEach(function(option) {
+        option.checked = pendingTechServices.indexOf(option.value.toLowerCase()) !== -1;
+      });
+    }
+
     function setTechField(name, value, options) {
       if (name === 'services') {
-        var selectedServices = (value || '').split(',').map(function(service) {
+        pendingTechServices = String(value || '').split(',').map(function(service) {
           return service.trim().toLowerCase();
         }).filter(Boolean);
 
-        document.querySelectorAll('[data-tech-service]').forEach(function(option) {
-          option.checked = selectedServices.indexOf(option.value.toLowerCase()) !== -1;
-        });
+        applyPendingTechServices();
         syncTechServiceCheckAll();
         return;
       }
@@ -13229,17 +13242,28 @@ function getBookingCardCallStart(item) {
     function syncTechServiceCheckAll() {
       var services = Array.from(document.querySelectorAll('[data-tech-service]'));
       var checkAll = document.querySelector('[data-tech-service-all]');
-      if (!checkAll) return;
       var checkedCount = services.filter(function(option) { return option.checked; }).length;
-      checkAll.checked = services.length > 0 && checkedCount === services.length;
-      checkAll.indeterminate = checkedCount > 0 && checkedCount < services.length;
+      if (checkAll) {
+        checkAll.disabled = services.length === 0;
+        checkAll.checked = services.length > 0 && checkedCount === services.length;
+        checkAll.indeterminate = checkedCount > 0 && checkedCount < services.length;
+      }
+      document.querySelectorAll('[data-tech-service-category-all]').forEach(function(categoryAll) {
+        var categoryServices = techServiceOptionsForCategory(categoryAll.dataset.techServiceCategoryAll);
+        var categoryCheckedCount = categoryServices.filter(function(option) { return option.checked; }).length;
+        categoryAll.disabled = categoryServices.length === 0;
+        categoryAll.checked = categoryServices.length > 0 && categoryCheckedCount === categoryServices.length;
+        categoryAll.indeterminate = categoryCheckedCount > 0 && categoryCheckedCount < categoryServices.length;
+      });
     }
 
     function getTechField(name) {
       if (name === 'services') {
-        return Array.from(document.querySelectorAll('[data-tech-service]:checked')).map(function(option) {
+        var checkedServices = Array.from(document.querySelectorAll('[data-tech-service]:checked')).map(function(option) {
           return option.value;
-        }).join(', ');
+        }).filter(Boolean);
+        if (!technicianServicePickerReady) return pendingTechServices.join(', ');
+        return checkedServices.join(', ');
       }
 
       if (name === 'schedule') {
@@ -14642,6 +14666,11 @@ function getBookingCardCallStart(item) {
     document.addEventListener('change', function(event) {
       if (event.target.matches('[data-tech-service-all]')) {
         document.querySelectorAll('[data-tech-service]').forEach(function(option) {
+          option.checked = event.target.checked;
+        });
+        syncTechServiceCheckAll();
+      } else if (event.target.matches('[data-tech-service-category-all]')) {
+        techServiceOptionsForCategory(event.target.dataset.techServiceCategoryAll).forEach(function(option) {
           option.checked = event.target.checked;
         });
         syncTechServiceCheckAll();
