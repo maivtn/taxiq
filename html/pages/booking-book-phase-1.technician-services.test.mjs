@@ -42,6 +42,14 @@ test('keeps technician service picker controls visible and aligned while scrolli
   assert.doesNotMatch(categoryArrowStyles, /margin-left:\s*auto/);
 });
 
+test('keeps expanded technician categories in flow so service items remain visible', () => {
+  const pickerStyles = SOURCE.match(/\.tech-service-picker\s*\{[\s\S]*?\n    \}/)?.[0] || '';
+
+  assert.match(pickerStyles, /display:\s*block/);
+  assert.doesNotMatch(pickerStyles, /display:\s*grid/);
+  assert.match(SOURCE, /\.tech-service-picker\s*>\s*\*\s*\+\s*\*\s*\{[\s\S]*?margin-top:\s*6px/);
+});
+
 test('technician service picker has loading and error handling', () => {
   assert.match(SOURCE, /Loading services/);
   assert.match(SOURCE, /renderTechServicePicker\([\s\S]*error/);

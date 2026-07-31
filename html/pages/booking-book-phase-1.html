@@ -6690,11 +6690,14 @@
     }
 
     .tech-service-picker {
-      display: grid;
+      display: block;
       max-height: 360px;
-      gap: 6px;
       overflow-y: auto;
       padding-right: 2px;
+    }
+
+    .tech-service-picker > * + * {
+      margin-top: 6px;
     }
 
     .tech-service-picker-toolbar {
