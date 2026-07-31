@@ -10021,6 +10021,10 @@
                         <span class="settings-label">Service name</span>
                         <input class="settings-input" type="text" data-service-modal-field="name" placeholder="e.g. Gel-X Extension" autocomplete="off">
                       </label>
+                      <label class="settings-field settings-service-modal-field-name">
+                        <span class="settings-label">Description</span>
+                        <textarea class="settings-input" data-service-modal-field="description" rows="4" placeholder="Describe the service (optional)" aria-label="Service description"></textarea>
+                      </label>
                       <label class="settings-field">
                         <span class="settings-label">Price</span>
                         <input class="settings-input" type="number" data-service-modal-field="price" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
@@ -13989,7 +13993,7 @@ function getBookingCardCallStart(item) {
       if (!modal) return;
 
       populateSettingsServiceModalCategories();
-      ['name', 'price', 'duration'].forEach(function(name) {
+      ['name', 'description', 'price', 'duration'].forEach(function(name) {
         var field = document.querySelector('[data-service-modal-field="' + name + '"]');
         if (field) field.value = '';
       });

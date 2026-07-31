@@ -117,6 +117,12 @@ test('Settings service catalog body removes the outer chrome while keeping scrol
   assert.doesNotMatch(rule, /background:/);
 });
 
+test('manual service modal includes an optional multiline description field', () => {
+  assert.match(SOURCE, /<textarea[^>]*class="settings-input"[^>]*data-service-modal-field="description"[^>]*><\/textarea>/);
+  assert.match(SOURCE, /data-service-modal-field="description"[^>]*rows="4"/);
+  assert.match(SOURCE, /\['name', 'description', 'price', 'duration'\]\.forEach/);
+});
+
 test('Services & Pricing spans the full Settings grid width', () => {
   assert.ok(
     /<div class="settings-two-grid">\s*<article class="settings-card settings-service-pricing-card">[\s\S]*?Services & Pricing/.test(SOURCE),
