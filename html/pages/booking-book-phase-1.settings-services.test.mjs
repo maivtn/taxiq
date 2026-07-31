@@ -116,3 +116,13 @@ test('Settings service catalog body removes the outer chrome while keeping scrol
   assert.doesNotMatch(rule, /border:/);
   assert.doesNotMatch(rule, /background:/);
 });
+
+test('Services & Pricing spans the full Settings grid width', () => {
+  assert.ok(
+    /<div class="settings-two-grid">\s*<article class="settings-card settings-service-pricing-card">[\s\S]*?Services & Pricing/.test(SOURCE),
+    'Services & Pricing must be the full-width card inside settings-two-grid'
+  );
+
+  const cardRule = SOURCE.match(/\.settings-two-grid\s*>\s*\.settings-service-pricing-card\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
+  assert.match(cardRule, /grid-column:\s*1\s*\/\s*-1/);
+});
