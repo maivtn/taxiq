@@ -93,6 +93,13 @@ test('POS keeps ticket KPIs in Tickets and merges the Time Clock roster into one
   assert.match(html, /<th scope="col">Turns today<\/th>/);
 });
 
+test('Time Clock station cells only show the station input, not per-tech Station labels', () => {
+  const roster = html.match(/function renderTechRosterTable\(\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(roster, /<input class="clk-station"/);
+  assert.match(roster, /aria-label="Station"/);
+  assert.doesNotMatch(roster, /Station for/);
+});
+
 test('POS Customers tab exposes search, table/card view, and Check-in/New booking actions', () => {
   const customersPanel = html.match(/<section class="pos-panel" data-pos-panel="customers"[\s\S]*?<\/section>/)?.[0] || '';
   assert.match(customersPanel, /data-cust-search/);

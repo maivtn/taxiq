@@ -223,16 +223,26 @@
     [data-wait-list]:has(> .wl-card) { display: flex; flex-wrap: wrap; gap: 12px; }
     [data-wait-list] > .wl-card { flex: 0 0 calc(25% - 9px); max-width: calc(25% - 9px); min-width: 0; margin-bottom: 0; }
     [data-wait-list] > .booking-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
+    [data-ciq-list]:has(> .queue-card) { display: flex; flex-wrap: wrap; gap: 12px; }
+    [data-ciq-list] > .queue-card { flex: 0 0 calc(25% - 9px); max-width: calc(25% - 9px); min-width: 0; margin-bottom: 0; }
+    [data-ciq-list] > .booking-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
     [data-arq-list]:has(> .queue-card) { display: flex; flex-wrap: wrap; gap: 12px; }
     [data-arq-list] > .queue-card { flex: 0 0 calc(25% - 9px); max-width: calc(25% - 9px); min-width: 0; margin-bottom: 0; }
     [data-arq-list] > .booking-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
+    [data-eta-list]:has(> .queue-card) { display: flex; flex-wrap: wrap; gap: 12px; }
+    [data-eta-list] > .queue-card { flex: 0 0 calc(25% - 9px); max-width: calc(25% - 9px); min-width: 0; margin-bottom: 0; }
+    [data-eta-list] > .booking-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
     @media (max-width: 1199px) {
       [data-wait-list] > .wl-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
+      [data-ciq-list] > .queue-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
       [data-arq-list] > .queue-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
+      [data-eta-list] > .queue-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
     }
     @media (max-width: 900px) {
       [data-wait-list] > .wl-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
+      [data-ciq-list] > .queue-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
       [data-arq-list] > .queue-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
+      [data-eta-list] > .queue-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
     }
 
     /* ── single ticket card: a flex column of full-width rows (Bootstrap-style row/col via
@@ -540,8 +550,12 @@
       .wl-actions { flex-wrap: wrap; }
       [data-wait-list]:has(> .wl-card) { gap: 8px; }
       [data-wait-list] > .wl-card { flex-basis: 100%; max-width: 100%; }
+      [data-ciq-list]:has(> .queue-card) { gap: 8px; }
+      [data-ciq-list] > .queue-card { flex-basis: 100%; max-width: 100%; }
       [data-arq-list]:has(> .queue-card) { gap: 8px; }
       [data-arq-list] > .queue-card { flex-basis: 100%; max-width: 100%; }
+      [data-eta-list]:has(> .queue-card) { gap: 8px; }
+      [data-eta-list] > .queue-card { flex-basis: 100%; max-width: 100%; }
       .queue-card { padding: 8px; }
       .queue-card-actions { justify-content: flex-start; }
       .queue-card-status { flex-wrap: nowrap; white-space: nowrap; }
@@ -2949,10 +2963,20 @@
           '<button class="x-btn" data-ciq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i></button>';
       }
       function ciqCardHtml(r) {
-          return '<div class="wl-card">' +
-            '<div class="wl-info"><div class="wl-name">' + esc(r.name) + ' <span class="pos-chip pos-chip-violet">' + esc(r.src) + '</span></div>' +
-          '<div class="wl-meta">' + esc(posServiceDisplayName(r.svc)) + (r.reqTech ? ' · <i class="bi bi-person" aria-hidden="true"></i> wants ' + esc(techName(r.reqTech)) : '') + (r.promo ? ' · 🎁 ' + esc(r.promo) : '') + '</div>' +
-          custProfHtml(r.name) + '</div><div class="wl-actions">' + ciqActionsHtml(r) + '</div></div>';
+        var tech = r.reqTech ? '<span class="queue-card-tech-value is-requested">' + esc(techName(r.reqTech)) + '</span>' : '<span class="pos-muted">Anyone</span>';
+        var promo = r.promo ? '<div class="queue-card-note" title="' + esc(r.promo) + '"><i class="bi bi-gift" aria-hidden="true"></i><span>' + esc(r.promo) + '</span></div>' : '';
+        return '<div class="wl-card queue-card">' +
+          '<div class="queue-card-head"><div class="queue-card-identity">' +
+          '<div class="wl-name">' + esc(r.name) + '</div>' +
+          '<div class="queue-card-phone"><i class="bi bi-inbox" aria-hidden="true"></i> ' + esc(r.src) + '</div></div>' +
+          '<div class="queue-card-status"><span class="pos-chip pos-chip-violet">Check-in request</span></div></div>' +
+          '<div class="queue-card-details"><div class="queue-card-service"><strong>' + esc(posServiceDisplayName(r.svc)) + '</strong>' +
+          '<span class="queue-card-sub">Waiting on front desk</span></div>' +
+          '<div class="queue-card-meta">' +
+          '<span class="queue-card-tech"><i class="bi bi-person" aria-hidden="true"></i> wants ' + tech + '</span>' +
+          '<span class="queue-card-booking"><i class="bi bi-door-open" aria-hidden="true"></i> App / QR check-in</span>' +
+          '</div></div>' + custProfHtml(r.name) + promo +
+          '<div class="queue-card-actions">' + ciqActionsHtml(r) + '</div></div>';
       }
       function renderCiqTable(items) {
         if (!items.length) return '<div class="wl-empty">No check-in requests right now.</div>';
@@ -2987,7 +3011,7 @@
           : '<span class="pos-chip pos-chip-amber">Override needed</span>';
         return '<div class="wl-card queue-card">' +
           '<div class="queue-card-head"><div class="queue-card-identity">' +
-          '<div class="wl-name"><i class="bi bi-brush" aria-hidden="true"></i> ' + esc(t.name) + '</div>' +
+          '<div class="wl-name">TECH ' + esc(t.name) + '</div>' +
           '<div class="queue-card-phone"><i class="bi bi-ticket-perforated" aria-hidden="true"></i> wants ticket #' + w.id + ' · ' + esc(w.name) + '</div></div>' +
           '<div class="queue-card-status"><span class="pos-chip pos-chip-violet">Access request</span>' + skillChip + '</div></div>' +
           '<div class="queue-card-details"><div class="queue-card-service"><strong>' + esc(posServiceDisplayName(w.svc || '')) + '</strong>' +
@@ -3044,11 +3068,19 @@
         var b = x.b, e = b.eta;
         var map = (e && e.share && (e.st === 'otw' || e.st === 'late'))
           ? '<div class="live-map">🚗··········💅 Live trip — guest is sharing their route · ~' + etaRem(e) + "' out</div>" : '';
-        return '<div class="wl-card">' +
-          '<div class="wl-info"><div class="wl-name">' + esc(b.name) + ' <span class="pos-chip pos-chip-blue"><i class="bi bi-calendar-event" aria-hidden="true"></i> ' + b.time + '</span></div>' +
-          '<div class="wl-meta">' + esc(posServiceDisplayName(b.svc)) + (b.techId ? ' · <i class="bi bi-person" aria-hidden="true"></i> ' + esc(techName(b.techId)) : '') + '</div>' +
-          custProfHtml(b.name) + '</div>' +
-          etaStatusChipHtml(e) + '<div class="wl-actions">' + etaActionHtml(x) + '</div>' + map + '</div>';
+        var tech = b.techId ? '<span class="queue-card-tech-value">' + esc(techName(b.techId)) + '</span>' : '<span class="pos-muted">Any tech</span>';
+        return '<div class="wl-card queue-card">' +
+          '<div class="queue-card-head"><div class="queue-card-identity">' +
+          '<div class="wl-name">' + esc(b.name) + '</div>' +
+          '<div class="queue-card-phone"><i class="bi bi-calendar-event" aria-hidden="true"></i> ' + esc(b.time || 'No time') + '</div></div>' +
+          '<div class="queue-card-status">' + etaStatusChipHtml(e) + '</div></div>' +
+          '<div class="queue-card-details"><div class="queue-card-service"><strong>' + esc(posServiceDisplayName(b.svc)) + '</strong>' +
+          '<span class="queue-card-sub">Today booking</span></div>' +
+          '<div class="queue-card-meta">' +
+          '<span class="queue-card-tech"><i class="bi bi-person" aria-hidden="true"></i> ' + tech + '</span>' +
+          '<span class="queue-card-booking"><i class="bi bi-clock" aria-hidden="true"></i> ' + esc(b.time || 'No time') + '</span>' +
+          '</div></div>' + custProfHtml(b.name) + map +
+          '<div class="queue-card-actions">' + etaActionHtml(x) + '</div></div>';
       }
       // Check-in "Bookings today" table mode — one row per booking, same actions as the card view.
       function renderEtaTable(items) {
@@ -3876,7 +3908,7 @@
           var row = '<tr class="tech-roster-row' + (selW && !pickable ? ' dim' : '') + '">' +
             '<td><div class="tech-roster-person"><span class="pos-avatar' + (t ? '' : ' plain') + '">' + esc(initials(s.name)) + '</span><div><div class="tech-roster-person-name">' + esc(s.name) + '</div><div class="tech-roster-person-role">' + ROLE_LBL[s.role] + '</div></div></div></td>' +
             '<td>' + shiftCell + '</td>' +
-            '<td>' + (t ? '<label class="sr-only" for="clk-station-' + esc(s.id) + '">Station for ' + esc(s.name) + '</label><input class="clk-station" id="clk-station-' + esc(s.id) + '" data-clk-bnum="' + esc(s.id) + '" value="' + esc(t.bnum) + '">' : '<span class="pos-muted">—</span>') + '</td>' +
+            '<td>' + (t ? '<input class="clk-station" id="clk-station-' + esc(s.id) + '" data-clk-bnum="' + esc(s.id) + '" aria-label="Station" value="' + esc(t.bnum) + '">' : '<span class="pos-muted">—</span>') + '</td>' +
             '<td>' + ticketCell + '</td>' +
             '<td>' + turnsCell + '</td>' +
             '<td>' + beepCell + '</td>' +

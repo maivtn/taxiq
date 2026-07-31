@@ -397,6 +397,64 @@ test('Check-in request Card/Table renderers preserve the same request actions an
   assert.match(html, /posServiceDisplayName\(r\.svc\)/);
 });
 
+test('Check-in request cards use the Queue card hierarchy with request content', () => {
+  const card = html.match(/function ciqCardHtml\(r\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(card, /class="wl-card queue-card/);
+  assert.match(card, /queue-card-head/);
+  assert.match(card, /queue-card-identity/);
+  assert.match(card, /queue-card-status/);
+  assert.match(card, /queue-card-details/);
+  assert.match(card, /queue-card-service/);
+  assert.match(card, /queue-card-meta/);
+  assert.match(card, /queue-card-tech/);
+  assert.match(card, /queue-card-booking/);
+  assert.match(card, /queue-card-note/);
+  assert.match(card, /queue-card-actions/);
+  assert.match(card, /ciqActionsHtml\(r\)/);
+  assert.match(card, /esc\(r\.name\)/);
+  assert.match(card, /esc\(r\.src\)/);
+  assert.match(card, /posServiceDisplayName\(r\.svc\)/);
+  assert.match(card, /techName\(r\.reqTech\)/);
+  assert.match(card, /custProfHtml\(r\.name\)/);
+  assert.doesNotMatch(card, /wl-info/);
+  assert.doesNotMatch(card, /wl-actions/);
+});
+
+test('Check-in booking ETA cards use the Queue card hierarchy with booking content', () => {
+  const card = html.match(/function etaCardHtml\(x\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(card, /class="wl-card queue-card/);
+  assert.match(card, /queue-card-head/);
+  assert.match(card, /queue-card-identity/);
+  assert.match(card, /queue-card-status/);
+  assert.match(card, /queue-card-details/);
+  assert.match(card, /queue-card-service/);
+  assert.match(card, /queue-card-meta/);
+  assert.match(card, /queue-card-tech/);
+  assert.match(card, /queue-card-booking/);
+  assert.match(card, /queue-card-actions/);
+  assert.match(card, /etaStatusChipHtml\(e\)/);
+  assert.match(card, /etaActionHtml\(x\)/);
+  assert.match(card, /esc\(b\.name\)/);
+  assert.match(card, /b\.time/);
+  assert.match(card, /posServiceDisplayName\(b\.svc\)/);
+  assert.match(card, /techName\(b\.techId\)/);
+  assert.match(card, /custProfHtml\(b\.name\)/);
+  assert.match(card, /live-map/);
+  assert.doesNotMatch(card, /wl-info/);
+  assert.doesNotMatch(card, /wl-actions/);
+});
+
+test('Check-in card modes use the same responsive flex columns as Queue', () => {
+  ['ciq', 'eta'].forEach((kind) => {
+    assert.match(html, new RegExp('\\[data-' + kind + '-list\\]:has\\(> \\.queue-card\\) \\{[\\s\\S]*display: flex;[\\s\\S]*flex-wrap: wrap'));
+    assert.match(html, new RegExp('\\[data-' + kind + '-list\\] > \\.queue-card \\{[\\s\\S]*flex: 0 0 calc\\(25% - 9px\\);[\\s\\S]*max-width: calc\\(25% - 9px\\);[\\s\\S]*margin-bottom: 0'));
+    assert.match(html, new RegExp('\\[data-' + kind + '-list\\] > \\.booking-table-wrap \\{[\\s\\S]*flex: 1 1 100%;[\\s\\S]*width: 100%'));
+    assert.match(html, new RegExp('@media \\(max-width: 1199px\\) \\{[\\s\\S]*\\[data-' + kind + '-list\\] > \\.queue-card \\{ flex-basis: calc\\(33\\.333% - 8px\\); max-width: calc\\(33\\.333% - 8px\\); \\}'));
+    assert.match(html, new RegExp('@media \\(max-width: 900px\\) \\{[\\s\\S]*\\[data-' + kind + '-list\\] > \\.queue-card \\{ flex-basis: calc\\(50% - 6px\\); max-width: calc\\(50% - 6px\\); \\}'));
+    assert.match(html, new RegExp('@media \\(max-width: 640px\\) \\{[\\s\\S]*\\[data-' + kind + '-list\\]:has\\(> \\.queue-card\\) \\{ gap: 8px; \\}[\\s\\S]*\\[data-' + kind + '-list\\] > \\.queue-card \\{ flex-basis: 100%; max-width: 100%; \\}'));
+  });
+});
+
 test('POS normalizes service names in the check-in service picker too', () => {
   assert.match(html, /function posServiceDisplayName\(value\) \{/);
   assert.match(html, /esc\(posServiceDisplayName\(t\.serviceName\)\)/);
@@ -425,12 +483,14 @@ test('Tech access request cards use the Queue card hierarchy with access-request
   assert.match(card, /queue-card-booking/);
   assert.match(card, /queue-card-actions/);
   assert.match(card, /arqActionsHtml\(r, t\)/);
+  assert.match(card, /TECH/);
   assert.match(card, /esc\(t\.name\)/);
   assert.match(card, /w\.id/);
   assert.match(card, /esc\(w\.name\)/);
   assert.match(card, /posServiceDisplayName\(w\.svc \|\| ''\)/);
   assert.match(card, /techName\(w\.techId\)/);
   assert.match(card, /arqSkillHtml\(req, ok\)/);
+  assert.doesNotMatch(card, /bi-brush/);
   assert.doesNotMatch(card, /wl-info/);
   assert.doesNotMatch(card, /wl-actions/);
 });
