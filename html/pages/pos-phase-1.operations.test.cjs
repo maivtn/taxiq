@@ -114,8 +114,8 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(servicesRuntime, /data-mg-service-card-category="/);
   assert.match(servicesRuntime, /var serviceBodyHtml = serviceViewMode === 'card' \? serviceCardsHtml : serviceTableHtml;/);
   assert.doesNotMatch(servicesRuntime, /data-mg-service-(?:table|cards)[\s\S]{0,120}hidden/);
-  assert.match(servicesRuntime, /<th>Service<\/th><th>Price<\/th><th>Minutes<\/th><th>Category<\/th><th>Actions<\/th>/);
-  assert.doesNotMatch(servicesRuntime, /<th>Description<\/th>|<th>Includes<\/th>|<th>Skill<\/th>|<th>Type<\/th>|<th>Status<\/th>/);
+  assert.match(servicesRuntime, /<th>Service<\/th><th>Price<\/th><th>Minutes<\/th><th>Status<\/th><th>Category<\/th><th>Actions<\/th>/);
+  assert.doesNotMatch(servicesRuntime, /<th>Description<\/th>|<th>Includes<\/th>|<th>Skill<\/th>|<th>Type<\/th>/);
   assert.match(servicesRuntime, /data-mg-service-add/);
   assert.match(servicesRuntime, /data-mg-service-view="/);
   assert.match(servicesRuntime, /data-mg-service-edit="/);

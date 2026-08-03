@@ -4646,14 +4646,15 @@
             a.name.localeCompare(b.name);
         });
         var serviceCategoryGroups = groupedServicesByCategory(services);
-        var serviceTableHtml = '<div class="pos-table-wrap" data-mg-service-table><table class="pos-table tight"><thead><tr><th>Service</th><th>Price</th><th>Minutes</th><th>Category</th><th>Actions</th></tr></thead><tbody>' +
+        var serviceTableHtml = '<div class="pos-table-wrap" data-mg-service-table><table class="pos-table tight"><thead><tr><th>Service</th><th>Price</th><th>Minutes</th><th>Status</th><th>Category</th><th>Actions</th></tr></thead><tbody>' +
           serviceCategoryGroups.map(function (group) {
-            return '<tr data-mg-service-category-group="' + esc(group.name) + '"><td colspan="5" style="background:var(--nexora-surface-muted);color:var(--nexora-muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.03em">' + esc(group.name) + ' · ' + group.services.length + '</td></tr>' +
+            return '<tr data-mg-service-category-group="' + esc(group.name) + '"><td colspan="6" style="background:var(--nexora-surface-muted);color:var(--nexora-muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.03em">' + esc(group.name) + ' · ' + group.services.length + '</td></tr>' +
               group.services.map(function (service) {
                 return '<tr>' +
                   '<td><span class="pos-strong">' + esc(service.name) + '</span></td>' +
                   '<td>' + (service.price == null ? '—' : money(service.price)) + '</td>' +
                   '<td>' + (service.durationMin || '—') + '</td>' +
+                  '<td>' + serviceStatusChip(service) + '</td>' +
                   '<td>' + esc(serviceCategoryLabel(service)) + '</td>' +
                   '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-view="' + esc(service.id) + '"><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div></td>' +
                   '</tr>';
