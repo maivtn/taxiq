@@ -455,6 +455,25 @@
     .service-editor-summary-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px dashed var(--nexora-rule); padding-top: 8px; color: var(--nexora-muted); font-size: 11.5px; font-weight: 700; }
     .service-editor-summary-item strong { color: var(--nexora-text); font-size: 12px; font-weight: 900; text-align: right; }
     .service-editor-form { min-width: 0; }
+    .service-detail-view { display: grid; grid-column: 1 / -1; min-width: 0; gap: 14px; }
+    .service-detail-view[hidden] { display: none; }
+    .service-detail-hero { border: 1px solid var(--nexora-border); border-left: 4px solid var(--nexora-brand); border-radius: 14px; background: #fff; padding: 16px; }
+    .service-detail-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .service-detail-kicker { color: var(--nexora-muted); font-size: 11.5px; font-weight: 800; }
+    .service-detail-name { margin: 6px 0 0; color: var(--nexora-text); font-size: 22px; font-weight: 900; line-height: 1.2; overflow-wrap: anywhere; }
+    .service-detail-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .service-detail-stat { display: inline-flex; min-height: 30px; align-items: center; gap: 6px; border: 1px solid var(--nexora-border); border-radius: 999px; background: var(--nexora-surface-muted); padding: 5px 10px; color: var(--nexora-text); font-size: 12px; font-weight: 800; }
+    .service-detail-body-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(240px, .75fr); gap: 14px; }
+    .service-detail-section { border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; padding: 14px; }
+    .service-detail-section-title { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; color: var(--nexora-text); font-size: 12px; font-weight: 900; text-transform: uppercase; }
+    .service-detail-text { margin: 0; color: var(--nexora-text); font-size: 13px; font-weight: 600; line-height: 1.65; white-space: pre-wrap; }
+    .service-detail-empty { color: var(--nexora-muted); font-size: 12px; font-weight: 700; }
+    .service-detail-list { display: grid; gap: 8px; margin: 0; padding-left: 18px; color: var(--nexora-text); font-size: 13px; font-weight: 600; line-height: 1.55; }
+    .service-detail-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .service-detail-kv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 10px; }
+    .service-detail-kv { display: grid; min-width: 0; gap: 4px; border: 1px solid var(--nexora-rule); border-radius: 10px; background: var(--nexora-surface-muted); padding: 10px; }
+    .service-detail-kv span { color: var(--nexora-muted); font-size: 11px; font-weight: 800; }
+    .service-detail-kv strong { color: var(--nexora-text); font-size: 12.5px; font-weight: 900; line-height: 1.35; overflow-wrap: anywhere; }
     .service-editor-section { border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; padding: 14px; }
     .service-editor-section + .service-editor-section { margin-top: 12px; }
     .service-editor-section-title { display: flex; align-items: center; gap: 7px; margin-bottom: 12px; color: var(--nexora-text); font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .04em; }
@@ -467,6 +486,7 @@
     .service-editor-actions { justify-content: space-between; }
     .service-editor-actions .pos-warn-text { margin: 0; }
     [data-service-modal-mode="view"] .service-editor-field .pos-input:disabled { background: var(--nexora-surface-muted); color: var(--nexora-text); opacity: 1; }
+    [data-service-modal-mode="view"] .service-editor-body { grid-template-columns: 1fr; }
     .service-category-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
     .service-category-toggle { border: 0; background: transparent; padding: 0; color: inherit; font-size: inherit; font-weight: inherit; text-transform: inherit; letter-spacing: inherit; }
     .service-category-add { background: #fff; color: var(--nexora-brand); text-transform: none; letter-spacing: 0; }
@@ -479,6 +499,7 @@
       .service-editor-body { grid-template-columns: 1fr; padding: 14px; }
       .service-editor-grid-main, .service-editor-grid-three { grid-template-columns: 1fr; }
       .service-editor-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .service-detail-body-grid { grid-template-columns: 1fr; }
       .service-editor-actions { align-items: stretch; }
       .service-editor-actions .pos-inline { width: 100%; justify-content: flex-end; }
     }
@@ -866,7 +887,7 @@
               </div>
               <div class="sms-mbody service-editor-body">
                 <aside class="service-editor-summary" data-mg-service-summary></aside>
-                <div class="service-editor-form">
+                <div class="service-editor-form" data-mg-service-form-shell>
                   <div class="service-editor-section">
                     <div class="service-editor-section-title"><i class="bi bi-info-circle" aria-hidden="true"></i>Basics</div>
                     <div class="service-editor-grid service-editor-grid-main">
@@ -892,11 +913,12 @@
                     </div>
                   </div>
                 </div>
+                <div class="service-detail-view" data-mg-service-detail hidden></div>
               </div>
               <div class="sms-mfoot service-editor-actions">
                 <div class="pos-warn-text" data-mg-service-form-error hidden></div>
                 <div class="pos-inline">
-                  <button class="pos-btn pos-btn-sm" type="button" data-mg-service-cancel>Cancel</button>
+                  <button class="pos-btn pos-btn-sm" type="button" data-mg-service-cancel><span data-mg-service-cancel-label>Cancel</span></button>
                   <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-service-save><i class="bi bi-check2" aria-hidden="true"></i> <span data-mg-service-save-label>Save service</span></button>
                 </div>
               </div>
@@ -4810,6 +4832,67 @@
         '</div>';
       }
 
+      function serviceDetailValue(value, fallback) {
+        if (Array.isArray(value)) return value.length ? value.join(', ') : (fallback || 'None');
+        if (value === true) return 'true';
+        if (value === false) return 'false';
+        if (value == null || value === '') return fallback || 'None';
+        return String(value);
+      }
+
+      function serviceDetailFieldHtml(label, value, fallback) {
+        return '<div class="service-detail-kv"><span>' + esc(label) + '</span><strong>' + esc(serviceDetailValue(value, fallback)) + '</strong></div>';
+      }
+
+      function serviceDetailHtml(service) {
+        if (!service) return '<div class="service-detail-section"><div class="service-detail-empty">Service not found.</div></div>';
+        var category = serviceCategoryLabel(service);
+        var price = service.price == null ? 'No price' : money(service.price);
+        var duration = service.durationMin ? service.durationMin + ' min' : 'No duration';
+        var skill = service.requiredSkill || 'No skill';
+        var type = service.type || 'standard';
+        var kind = service.kind || (service.type === 'add-on' ? 'add-on' : 'service');
+        var description = (service.description || '').trim();
+        var includes = Array.isArray(service.includes) ? service.includes : [];
+        var aliases = Array.isArray(service.aliases) ? service.aliases : [];
+        var includesHtml = includes.length
+          ? '<ul class="service-detail-list">' + includes.map(function (item) { return '<li>' + esc(item) + '</li>'; }).join('') + '</ul>'
+          : '<div class="service-detail-empty">No includes</div>';
+        var aliasesHtml = aliases.length
+          ? '<div class="service-detail-pills">' + aliases.map(function (alias) { return '<span class="pos-chip pos-chip-blue">' + esc(alias) + '</span>'; }).join('') + '</div>'
+          : '<div class="service-detail-empty">No aliases</div>';
+        var detailRows = [
+          ['Service ID', service.id, 'No ID'],
+          ['Name', service.name, 'No name'],
+          ['Category ID', service.categoryId, 'No category ID'],
+          ['Category name', service.categoryName || category, 'No category'],
+          ['Price', service.price == null ? '' : money(service.price), 'No price'],
+          ['Price label', service.priceLabel, 'No price label'],
+          ['Minutes', service.durationMin ? service.durationMin + ' min' : '', 'No duration'],
+          ['Required skill', service.requiredSkill, 'No skill'],
+          ['Type', type],
+          ['Kind', kind],
+          ['Icon', service.icon, 'No icon'],
+          ['Status', service.active === false ? 'Inactive' : 'Active'],
+          ['Source', service.source, 'Local catalog']
+        ].map(function (row) { return serviceDetailFieldHtml(row[0], row[1], row[2]); }).join('');
+        return '<div class="service-detail-hero">' +
+          '<div class="service-detail-top"><div><div class="service-detail-kicker">' + esc(category) + '</div><h3 class="service-detail-name">' + esc(service.name || 'Service') + '</h3></div>' + serviceStatusChip(service) + '</div>' +
+          '<div class="service-detail-meta">' +
+            '<span class="service-detail-stat"><i class="bi bi-currency-dollar" aria-hidden="true"></i>' + esc(price) + '</span>' +
+            '<span class="service-detail-stat"><i class="bi bi-clock" aria-hidden="true"></i>' + esc(duration) + '</span>' +
+            '<span class="service-detail-stat"><i class="bi bi-person-check" aria-hidden="true"></i>' + esc(skill) + '</span>' +
+            '<span class="service-detail-stat"><i class="bi bi-tags" aria-hidden="true"></i>' + esc(type) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="service-detail-body-grid">' +
+          '<div class="service-detail-section"><div class="service-detail-section-title"><i class="bi bi-text-paragraph" aria-hidden="true"></i>Description</div><p class="service-detail-text">' + esc(description || 'No description') + '</p></div>' +
+          '<div class="service-detail-section"><div class="service-detail-section-title"><i class="bi bi-list-check" aria-hidden="true"></i>Includes</div>' + includesHtml + '</div>' +
+        '</div>' +
+        '<div class="service-detail-section"><div class="service-detail-section-title"><i class="bi bi-info-circle" aria-hidden="true"></i>Service information</div><div class="service-detail-kv-grid">' + detailRows + '</div></div>' +
+        '<div class="service-detail-section"><div class="service-detail-section-title"><i class="bi bi-bookmark" aria-hidden="true"></i>Aliases</div>' + aliasesHtml + '</div>';
+      }
+
       function openServiceModal(id, mode, categoryName) {
         var modal = $('[data-mg-service-modal]');
         if (!modal) return;
@@ -4822,6 +4905,8 @@
         var titleEl = $('[data-mg-service-modal-title]');
         var subtitleEl = $('[data-mg-service-modal-subtitle]');
         var summaryEl = $('[data-mg-service-summary]');
+        var detailEl = $('[data-mg-service-detail]');
+        var formShellEl = $('[data-mg-service-form-shell]');
         var nameEl = $('[data-mg-service-form-name]');
         var categoryEl = $('[data-mg-service-form-category]');
         var priceEl = $('[data-mg-service-form-price]');
@@ -4833,9 +4918,18 @@
         var includesEl = $('[data-mg-service-form-includes]');
         var saveEl = $('[data-mg-service-save]');
         var saveLabelEl = $('[data-mg-service-save-label]');
-        if (titleEl) titleEl.textContent = isReadOnly ? 'View service' : (service ? 'Edit service' : 'Add service');
+        var serviceModalCancelLabel = $('[data-mg-service-cancel-label]');
+        if (titleEl) titleEl.textContent = isReadOnly ? 'Service details' : (service ? 'Edit service' : 'Add service');
         if (subtitleEl) subtitleEl.textContent = serviceModalMode === 'add' ? 'Create a new menu service' : (isReadOnly ? 'Read-only service detail' : 'Update service details');
-        if (summaryEl) summaryEl.innerHTML = serviceModalSummaryHtml(summaryService, serviceModalMode);
+        if (summaryEl) {
+          summaryEl.innerHTML = serviceModalSummaryHtml(summaryService, serviceModalMode);
+          summaryEl.hidden = isReadOnly;
+        }
+        if (detailEl) {
+          detailEl.innerHTML = isReadOnly ? serviceDetailHtml(service) : '';
+          detailEl.hidden = !isReadOnly;
+        }
+        if (formShellEl) formShellEl.hidden = isReadOnly;
         if (skillEl) skillEl.innerHTML = serviceSkillOptions(service ? service.requiredSkill || '' : '');
         if (typeEl) typeEl.innerHTML = serviceTypeOptions(service ? service.type || '' : '');
         if (activeEl) activeEl.value = service && service.active === false ? 'inactive' : 'active';
@@ -4848,6 +4942,7 @@
         [nameEl, categoryEl, priceEl, durationEl, skillEl, typeEl, activeEl, descriptionEl, includesEl].forEach(function (field) {
           if (field) field.disabled = isReadOnly;
         });
+        if (serviceModalCancelLabel) serviceModalCancelLabel.textContent = isReadOnly ? 'Close' : 'Cancel';
         if (saveLabelEl) saveLabelEl.textContent = serviceModalMode === 'add' ? 'Create service' : 'Save changes';
         if (saveEl) saveEl.hidden = isReadOnly;
         modal.setAttribute('data-service-modal-mode', serviceModalMode);
@@ -4864,9 +4959,20 @@
       function closeServiceModal() {
         var modal = $('[data-mg-service-modal]');
         if (!modal) return;
+        var detailEl = $('[data-mg-service-detail]');
+        var formShellEl = $('[data-mg-service-form-shell]');
+        var summaryEl = $('[data-mg-service-summary]');
+        var serviceModalCancelLabel = $('[data-mg-service-cancel-label]');
         modal.classList.remove('open');
         modal.setAttribute('aria-hidden', 'true');
         modal.removeAttribute('data-service-modal-mode');
+        if (detailEl) {
+          detailEl.innerHTML = '';
+          detailEl.hidden = true;
+        }
+        if (formShellEl) formShellEl.hidden = false;
+        if (summaryEl) summaryEl.hidden = false;
+        if (serviceModalCancelLabel) serviceModalCancelLabel.textContent = 'Cancel';
         document.body.style.overflow = '';
         serviceModalId = null;
         serviceModalMode = 'edit';
