@@ -109,9 +109,17 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(servicesRuntime, /data-mg-service-table/);
   assert.match(servicesRuntime, /data-mg-service-cards/);
   assert.match(html, /function groupedServicesByCategory\(services\)/);
+  assert.match(html, /function serviceCategoryKey\(name\)/);
+  assert.match(html, /var serviceCollapsedCategories = \{\};/);
   assert.match(servicesRuntime, /var serviceCategoryGroups = groupedServicesByCategory\(services\);/);
+  assert.match(servicesRuntime, /serviceCollapsedCategories\[serviceCategoryKey\(group\.name\)\]/);
+  assert.match(servicesRuntime, /data-mg-service-category-toggle="/);
+  assert.match(servicesRuntime, /aria-expanded="/);
   assert.match(servicesRuntime, /data-mg-service-category-group="/);
   assert.match(servicesRuntime, /data-mg-service-card-category="/);
+  assert.match(html, /var serviceCategoryToggle = e\.target\.closest\('\[data-mg-service-category-toggle\]'\);/);
+  assert.match(html, /var serviceCategoryStateKey = serviceCategoryKey\(serviceCategoryToggle\.getAttribute\('data-mg-service-category-toggle'\)\);/);
+  assert.match(html, /serviceCollapsedCategories\[serviceCategoryStateKey\] = !serviceCollapsedCategories\[serviceCategoryStateKey\];/);
   assert.match(servicesRuntime, /var serviceBodyHtml = serviceViewMode === 'card' \? serviceCardsHtml : serviceTableHtml;/);
   assert.doesNotMatch(servicesRuntime, /data-mg-service-(?:table|cards)[\s\S]{0,120}hidden/);
   assert.match(servicesRuntime, /<th>Service<\/th><th>Price<\/th><th>Minutes<\/th><th>Status<\/th><th>Category<\/th><th>Actions<\/th>/);

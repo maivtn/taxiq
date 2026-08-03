@@ -4429,12 +4429,16 @@
         return String(service.categoryName || service.requiredSkill || 'Other services').trim() || 'Other services';
       }
 
+      function serviceCategoryKey(name) {
+        return String(name || 'Other services').toLowerCase().replace(/\s+/g, ' ').trim() || 'other services';
+      }
+
       function serviceCategories() {
         var seen = {};
         return salonCatalog.services.map(function (service) {
           return serviceCategoryLabel(service);
         }).filter(function (name) {
-          var key = name.toLowerCase();
+          var key = serviceCategoryKey(name);
           if (seen[key]) return false;
           seen[key] = true;
           return true;
@@ -4445,7 +4449,7 @@
         var groups = [], seen = {};
         services.forEach(function (service) {
           var name = serviceCategoryLabel(service);
-          var key = name.toLowerCase();
+          var key = serviceCategoryKey(name);
           if (!seen[key]) {
             seen[key] = { name: name, services: [] };
             groups.push(seen[key]);
@@ -4476,6 +4480,7 @@
       }
 
       var serviceViewMode = 'table';
+      var serviceCollapsedCategories = {};
       var serviceModalId = null;
       var serviceModalMode = 'edit';
 
@@ -4648,8 +4653,10 @@
         var serviceCategoryGroups = groupedServicesByCategory(services);
         var serviceTableHtml = '<div class="pos-table-wrap" data-mg-service-table><table class="pos-table tight"><thead><tr><th>Service</th><th>Price</th><th>Minutes</th><th>Status</th><th>Category</th><th>Actions</th></tr></thead><tbody>' +
           serviceCategoryGroups.map(function (group) {
-            return '<tr data-mg-service-category-group="' + esc(group.name) + '"><td colspan="6" style="background:var(--nexora-surface-muted);color:var(--nexora-muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.03em">' + esc(group.name) + ' · ' + group.services.length + '</td></tr>' +
-              group.services.map(function (service) {
+            var collapsed = !!serviceCollapsedCategories[serviceCategoryKey(group.name)];
+            var categoryToggleHtml = '<button class="pos-btn pos-btn-sm" type="button" data-mg-service-category-toggle="' + esc(group.name) + '" aria-expanded="' + (collapsed ? 'false' : 'true') + '" style="border:0;background:transparent;padding:0;color:inherit;font-size:inherit;text-transform:inherit;letter-spacing:inherit"><i class="bi ' + (collapsed ? 'bi-chevron-right' : 'bi-chevron-down') + '" aria-hidden="true"></i> ' + esc(group.name) + ' · ' + group.services.length + '</button>';
+            return '<tr data-mg-service-category-group="' + esc(group.name) + '"><td colspan="6" style="background:var(--nexora-surface-muted);color:var(--nexora-muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.03em">' + categoryToggleHtml + '</td></tr>' +
+              (collapsed ? '' : group.services.map(function (service) {
                 return '<tr>' +
                   '<td><span class="pos-strong">' + esc(service.name) + '</span></td>' +
                   '<td>' + (service.price == null ? '—' : money(service.price)) + '</td>' +
@@ -4658,14 +4665,16 @@
                   '<td>' + esc(serviceCategoryLabel(service)) + '</td>' +
                   '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-view="' + esc(service.id) + '"><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div></td>' +
                   '</tr>';
-              }).join('');
+              }).join(''));
           }).join('') +
           '</tbody></table></div>';
         var serviceCardsHtml = '<div data-mg-service-cards style="display:grid;gap:16px">' +
           serviceCategoryGroups.map(function (group) {
+            var collapsed = !!serviceCollapsedCategories[serviceCategoryKey(group.name)];
+            var categoryToggleHtml = '<button class="pos-btn pos-btn-sm" type="button" data-mg-service-category-toggle="' + esc(group.name) + '" aria-expanded="' + (collapsed ? 'false' : 'true') + '" style="border:0;background:transparent;padding:0;color:inherit;font-size:inherit"><i class="bi ' + (collapsed ? 'bi-chevron-right' : 'bi-chevron-down') + '" aria-hidden="true"></i> ' + esc(group.name) + ' · ' + group.services.length + '</button>';
             return '<section data-mg-service-card-category="' + esc(group.name) + '">' +
-              '<div class="pos-section-title" style="margin-top:0"><i class="bi bi-folder2-open" aria-hidden="true"></i> ' + esc(group.name) + ' · ' + group.services.length + '</div>' +
-              '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px">' +
+              '<div class="pos-section-title" style="margin-top:0">' + categoryToggleHtml + '</div>' +
+              (collapsed ? '' : '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px">' +
               group.services.map(function (service) {
                 var description = (service.description || '').trim();
                 return '<article class="queue-card">' +
@@ -4676,7 +4685,7 @@
                   '<div class="wl-actions" style="margin-top:10px"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-view="' + esc(service.id) + '"><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div>' +
                   '</article>';
               }).join('') +
-              '</div></section>';
+              '</div>') + '</section>';
           }).join('') +
           '</div>';
         var serviceBodyHtml = serviceViewMode === 'card' ? serviceCardsHtml : serviceTableHtml;
@@ -4782,6 +4791,14 @@
         var serviceView = e.target.closest('[data-mg-service-view-target]');
         if (serviceView) {
           serviceViewMode = serviceView.getAttribute('data-mg-service-view-target') === 'card' ? 'card' : 'table';
+          renderManagement();
+          return;
+        }
+
+        var serviceCategoryToggle = e.target.closest('[data-mg-service-category-toggle]');
+        if (serviceCategoryToggle) {
+          var serviceCategoryStateKey = serviceCategoryKey(serviceCategoryToggle.getAttribute('data-mg-service-category-toggle'));
+          serviceCollapsedCategories[serviceCategoryStateKey] = !serviceCollapsedCategories[serviceCategoryStateKey];
           renderManagement();
           return;
         }
