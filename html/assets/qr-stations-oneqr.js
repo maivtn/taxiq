@@ -429,7 +429,7 @@
       '@page { size: 5in 7in; margin: 0; }' +
       'html, body { margin: 0; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }' +
       'body { display: grid; min-height: 100vh; place-items: center; }' +
-      '.oneqr-view-print-card { width: 5in !important; height: 7in !important; max-width: 5in !important; max-height: 7in !important; box-shadow: none !important; animation: none !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }' +
+      '.oneqr-view-print-card { box-sizing: border-box !important; width: 5in !important; height: 7in !important; max-width: 5in !important; max-height: 7in !important; aspect-ratio: 5 / 7 !important; overflow: hidden !important; box-shadow: none !important; animation: none !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }' +
       '</style>' +
       '</head><body>' + printCard.outerHTML + '</body></html>'
     );
@@ -487,7 +487,13 @@
     printCard.style.position = 'fixed';
     printCard.style.top = '0';
     printCard.style.left = '-9999px';
-    printCard.style.width = '380px';
+    printCard.style.boxSizing = 'border-box';
+    printCard.style.width = '5in';
+    printCard.style.height = '7in';
+    printCard.style.maxWidth = 'none';
+    printCard.style.maxHeight = 'none';
+    printCard.style.aspectRatio = '5 / 7';
+    printCard.style.overflow = 'hidden';
     document.body.appendChild(printCard);
 
     window.html2canvas(printCard, {

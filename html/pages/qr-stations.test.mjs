@@ -5,6 +5,7 @@ import { existsSync, readFileSync } from 'node:fs';
 const PAGE_URL = new URL('./qr-stations.html', import.meta.url);
 const SHELL_URL = new URL('../assets/nexora-shell.js', import.meta.url);
 const CSS_URL = new URL('../assets/qr-stations.css', import.meta.url);
+const ONEQR_URL = new URL('../assets/qr-stations-oneqr.js', import.meta.url);
 
 function source() {
   assert.ok(existsSync(PAGE_URL), 'qr-stations.html must exist');
@@ -19,6 +20,11 @@ function shellSource() {
 function cssSource() {
   assert.ok(existsSync(CSS_URL), 'qr-stations.css must exist');
   return readFileSync(CSS_URL, 'utf8');
+}
+
+function oneqrSource() {
+  assert.ok(existsSync(ONEQR_URL), 'qr-stations-oneqr.js must exist');
+  return readFileSync(ONEQR_URL, 'utf8');
 }
 
 test('creates the QR Stations page from the shared merchant shell', () => {
@@ -81,4 +87,17 @@ test('keeps QR Stations dense on tablet and phone viewports', () => {
   assert.match(phoneMedia, /\.qr-code-frame\s*\{[^}]*width:\s*68px;[^}]*height:\s*68px/);
   assert.match(phoneMedia, /\.qr-code-art\s*\{[^}]*width:\s*52px;[^}]*height:\s*52px/);
   assert.match(phoneMedia, /\.qr-link-device\s*\{[^}]*min-height:\s*30px/);
+});
+
+test('keeps the OneQR print card in a 5 by 7 portrait ratio', () => {
+  const html = source();
+  const css = cssSource();
+  const oneqr = oneqrSource();
+
+  assert.match(html, /class="oneqr-view-print-card"[^>]*data-oneqr-print-card/);
+  assert.match(css, /\.oneqr-view-print-card\s*\{[^}]*aspect-ratio:\s*5\s*\/\s*7;[^}]*overflow:\s*hidden/);
+  assert.match(css, /\.oneqr-view-dialog\s*\{[^}]*width:\s*min\(100%,\s*360px\)/);
+  assert.match(oneqr, /printCard\.style\.width\s*=\s*'5in'/);
+  assert.match(oneqr, /printCard\.style\.height\s*=\s*'7in'/);
+  assert.doesNotMatch(oneqr, /printCard\.style\.width\s*=\s*'380px'/);
 });
