@@ -1771,6 +1771,9 @@
                     <button class="booking-view-button" type="button" data-cust-view-target="card" aria-pressed="false"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
                   </div>
                   <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-cust-create><i class="bi bi-person-plus" aria-hidden="true"></i> Create customer</button>
+                  <button class="pos-btn pos-btn-sm" type="button" data-cust-import><i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i> Import Excel</button>
+                  <input data-cust-import-file type="file" accept=".xlsx,.xls,.csv,.tsv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/tab-separated-values" hidden>
+                  <span class="pos-chip pos-chip-gray" data-cust-import-status hidden></span>
                 </div>
               </div>
               <div class="booking-status-chips" data-cust-seg-chips role="group" aria-label="Filter customers by group"></div>
@@ -1836,11 +1839,13 @@
   <script src="https://cdn.jsdelivr.net/npm/@daypilot/daypilot-lite-javascript@5.9.0/daypilot-javascript.min.js"></script>
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script>
     window.NEXORA_SHELL = { activePage: 'pos', activeTab: 'checkin' };
   </script>
   <script src="../assets/nexora-shell.js"></script>
   <script src="../assets/pos-booking-runtime.js"></script>
+  <script src="../assets/pos-customer-import.js"></script>
   <script>
     (function () {
       'use strict';
@@ -2336,7 +2341,8 @@
         qr: { icon: 'bi-qr-code', label: 'QR' },
         receipt: { icon: 'bi-receipt', label: 'Receipt' },
         call: { icon: 'bi-telephone', label: 'Incoming call' },
-        manual: { icon: 'bi-person-plus', label: 'Manual' }
+        manual: { icon: 'bi-person-plus', label: 'Manual' },
+        excel: { icon: 'bi-file-earmark-spreadsheet', label: 'Excel' }
       };
       var CUST_TYPES = ['Individual', 'Business', 'VIP', 'Partner'];
       function custTypeOf(c) { return c.type || (c.seg === 'vip' ? 'VIP' : 'Individual'); }
@@ -2954,6 +2960,76 @@
         closeCustEditModal();
         renderCustomersTab();
         toast((isCreating ? 'Customer created — ' : 'Customer updated — ') + savedName);
+      }
+      function setCustImportStatus(message, tone) {
+        var el = $('[data-cust-import-status]'); if (!el) return;
+        el.textContent = message || '';
+        el.hidden = !message;
+        el.className = 'pos-chip ' + (tone === 'success' ? 'pos-chip-green' : tone === 'error' ? 'pos-chip-amber' : 'pos-chip-gray');
+      }
+      function custImportSummaryText(result) {
+        return 'Imported ' + result.imported + ' | Updated ' + result.updated + (result.skipped ? ' | Skipped ' + result.skipped : '');
+      }
+      function clearCustImportFileInput() {
+        var input = $('[data-cust-import-file]');
+        if (input) input.value = '';
+      }
+      function triggerCustExcelImport() {
+        var input = $('[data-cust-import-file]');
+        if (input) input.click();
+      }
+      function applyCustImportRows(rows) {
+        var importer = window.NEXORA_CUSTOMER_IMPORT || window.NexoraCustomerImport;
+        if (!importer) { setCustImportStatus('Excel import unavailable', 'error'); toast('Excel import unavailable', 'warning'); return null; }
+        var result = importer.mergeCustomers(CUSTOMERS, rows, { techs: TECHS });
+        renderCustomersTab();
+        var summary = custImportSummaryText(result);
+        setCustImportStatus(summary, result.imported || result.updated ? 'success' : 'error');
+        if (typeof logAdmin === 'function') logAdmin('Customer Excel import: ' + summary);
+        toast(result.imported || result.updated ? summary : 'No customers imported', result.imported || result.updated ? 'success' : 'warning');
+        return result;
+      }
+      function handleCustImportFile(file) {
+        if (!file) return;
+        var importer = window.NEXORA_CUSTOMER_IMPORT || window.NexoraCustomerImport;
+        if (!importer) { setCustImportStatus('Excel import unavailable', 'error'); clearCustImportFileInput(); return; }
+        setCustImportStatus('Importing...', 'info');
+        var reader = new FileReader();
+        reader.onerror = function () {
+          clearCustImportFileInput();
+          setCustImportStatus('Could not read file', 'error');
+          toast('Could not read file', 'warning');
+        };
+        if (/\.(xlsx|xls)$/i.test(file.name || '')) {
+          reader.onload = function (event) {
+            try {
+              if (!window.XLSX) throw new Error('XLSX library missing');
+              var workbook = XLSX.read(event.target.result, { type: 'array' });
+              var firstSheet = workbook.SheetNames[0];
+              var rows = firstSheet ? XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], { defval: '', raw: false }) : [];
+              applyCustImportRows(rows);
+            } catch (err) {
+              setCustImportStatus('Could not import Excel file', 'error');
+              toast('Could not import Excel file', 'warning');
+            } finally {
+              clearCustImportFileInput();
+            }
+          };
+          reader.readAsArrayBuffer(file);
+        } else {
+          reader.onload = function (event) {
+            try {
+              var delimiter = /\.tsv$/i.test(file.name || '') ? '\t' : null;
+              applyCustImportRows(importer.parseDelimited(event.target.result, delimiter));
+            } catch (err) {
+              setCustImportStatus('Could not import customer file', 'error');
+              toast('Could not import customer file', 'warning');
+            } finally {
+              clearCustImportFileInput();
+            }
+          };
+          reader.readAsText(file);
+        }
       }
 
       /* ── check-in requests (📥) ── */
@@ -3765,6 +3841,10 @@
         var cpick = e.target.closest('[data-cust-pick]');
         if (cpick) { openCustProfileModal(cpick.getAttribute('data-cust-pick')); return; }
 
+        if (e.target.closest('[data-cust-import]')) {
+          triggerCustExcelImport();
+          return;
+        }
         if (e.target.closest('[data-cust-create]')) { openCustCreateModal(); return; }
         var custEdit = e.target.closest('[data-cust-edit]');
         if (custEdit) {
@@ -3803,6 +3883,9 @@
       });
       document.addEventListener('input', function (e) {
         if (e.target.matches('[data-cust-search]')) renderCustomersTab();
+      });
+      document.addEventListener('change', function (e) {
+        if (e.target.matches('[data-cust-import-file]')) handleCustImportFile(e.target.files && e.target.files[0]);
       });
       document.addEventListener('focusout', function (e) {
         var custNote = e.target.closest('[data-mg-note]');

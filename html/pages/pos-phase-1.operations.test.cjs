@@ -109,6 +109,10 @@ test('POS Customers tab exposes search, table/card view, and Check-in/New bookin
   assert.match(customersPanel, /data-cust-view-target="card"/);
   assert.match(customersPanel, /data-cust-seg-chips/);
   assert.match(customersPanel, /data-cust-create/);
+  assert.match(customersPanel, /data-cust-import/);
+  assert.match(customersPanel, /data-cust-import-file/);
+  assert.match(customersPanel, /data-cust-import-status/);
+  assert.match(html, /src="\.\.\/assets\/pos-customer-import\.js"/);
   assert.match(html, /data-cust-profile-modal/);
   assert.match(html, /data-cust-profile/);
   assert.match(html, /function renderCustomersTab\(/);
@@ -130,6 +134,18 @@ test('POS Customers create/edit modal merges AI Hub customer fields onto the exi
   assert.match(html, /function openCustCreateModal\(/);
   assert.match(html, /function openCustEditModal\(index\) \{/);
   assert.match(html, /function saveCustModal\(/);
+});
+
+test('POS Customers tab exposes Excel import controls and wires file handling', () => {
+  const customersPanel = html.match(/<section class="pos-panel" data-pos-panel="customers"[\s\S]*?<\/section>/)?.[0] || '';
+  assert.match(customersPanel, /data-cust-import/);
+  assert.match(customersPanel, /data-cust-import-file/);
+  assert.match(customersPanel, /accept="[^"]*\.xlsx[^"]*\.xls[^"]*\.csv/);
+  assert.match(html, /xlsx\.full\.min\.js/);
+  assert.match(html, /src="\.\.\/assets\/pos-customer-import\.js"/);
+  assert.match(html, /function handleCustImportFile\(file\)/);
+  assert.match(html, /NexoraCustomerImport/);
+  assert.match(html, /importer\.mergeCustomers\(CUSTOMERS/);
 });
 
 test('POS fixes the previously-undefined custByPhone lookup used by walk-in check-in', () => {
