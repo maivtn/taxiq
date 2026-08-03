@@ -144,8 +144,8 @@ test('prints the salon QR lower cluster at a compact matching width', () => {
   const oneqr = oneqrSource();
 
   for (const selector of ['data-print-panel', 'data-print-benefits', 'data-print-steps', 'data-print-rewards-panel']) {
-    assert.match(css, new RegExp(`body\\.is-printing-salon-qr \\[${selector}\\]\\s*\\{[\\s\\S]*width:\\s*70% !important`));
-    assert.match(oneqr, new RegExp(`\\[${selector}\\] \\{ width:\\s*70% !important;`));
+    assert.match(css, new RegExp(`body\\.is-printing-salon-qr \\[${selector}\\]\\s*\\{[\\s\\S]*width:\\s*62% !important`));
+    assert.match(oneqr, new RegExp(`\\[${selector}\\] \\{ width:\\s*62% !important;`));
   }
   for (const selector of ['data-print-panel', 'data-print-benefits', 'data-print-steps', 'data-print-rewards-panel']) {
     assert.doesNotMatch(css, new RegExp(`body\\.is-printing-salon-qr \\[${selector}\\]\\s*\\{[^}]*width:\\s*8[048]%`));

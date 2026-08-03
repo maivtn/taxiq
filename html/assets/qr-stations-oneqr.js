@@ -488,10 +488,10 @@
       '[data-print-accent] { background: none !important; color: #F0ABFC !important; -webkit-text-fill-color: #F0ABFC !important; }' +
       '[data-print-body], [data-print-benefit-label], [data-print-powered] { background: none !important; color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }' +
       '[data-print-powered] { display: block !important; margin-top: 0.06in !important; }' +
-      '[data-print-panel] { width: 70% !important; margin-left: auto !important; margin-right: auto !important; background: rgba(11, 16, 36, 0.92) !important; border-color: rgba(103, 232, 249, 0.72) !important; box-shadow: inset 0 0 18px rgba(244, 114, 182, 0.12), 0 0 18px rgba(34, 211, 238, 0.18) !important; }' +
-      '[data-print-benefits] { width: 70% !important; margin-left: auto !important; margin-right: auto !important; }' +
-      '[data-print-steps] { width: 70% !important; margin-left: auto !important; margin-right: auto !important; }' +
-      '[data-print-rewards-panel] { width: 70% !important; }' +
+      '[data-print-panel] { width: 62% !important; margin-left: auto !important; margin-right: auto !important; background: rgba(11, 16, 36, 0.92) !important; border-color: rgba(103, 232, 249, 0.72) !important; box-shadow: inset 0 0 18px rgba(244, 114, 182, 0.12), 0 0 18px rgba(34, 211, 238, 0.18) !important; }' +
+      '[data-print-benefits] { width: 62% !important; margin-left: auto !important; margin-right: auto !important; }' +
+      '[data-print-steps] { width: 62% !important; margin-left: auto !important; margin-right: auto !important; }' +
+      '[data-print-rewards-panel] { width: 62% !important; }' +
       '</style>' +
       '</head><body>' + printCard.outerHTML + '</body></html>'
     );

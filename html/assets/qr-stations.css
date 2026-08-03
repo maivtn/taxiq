@@ -1936,7 +1936,7 @@
   }
 
   body.is-printing-salon-qr [data-print-panel] {
-    width: 70% !important;
+    width: 62% !important;
     margin-left: auto !important;
     margin-right: auto !important;
     background: rgba(11, 16, 36, 0.92) !important;
@@ -1945,19 +1945,19 @@
   }
 
   body.is-printing-salon-qr [data-print-benefits] {
-    width: 70% !important;
+    width: 62% !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
 
   body.is-printing-salon-qr [data-print-steps] {
-    width: 70% !important;
+    width: 62% !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
 
   body.is-printing-salon-qr [data-print-rewards-panel] {
-    width: 70% !important;
+    width: 62% !important;
   }
 
   body.is-printing-salon-qr [data-salon-modal-close],
