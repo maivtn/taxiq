@@ -18,8 +18,7 @@
     }
 
     .overview-kpis > .kpi-card {
-      flex: 1 1 220px;
-      min-width: min(100%, 220px);
+      flex: 1;
     }
 
     /* Call Log stats: keep two cards per row on compact screens and four on larger screens. */
@@ -165,38 +164,39 @@
     }
 
     .overview-kpis .kpi-card {
-      display: grid;
-      grid-template-columns: 24px minmax(0, 1fr);
+      display: flex;
+      flex-wrap: wrap;
       column-gap: 8px;
+      row-gap: 1px;
       align-items: center;
     }
 
     .overview-kpis .kpi-top {
-      display: contents;
+      display: flex;
+      flex: 0 0 24px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0;
     }
 
     .overview-kpis .kpi-icon {
-      grid-column: 1;
-      grid-row: 1 / span 3;
+      flex: 0 0 24px;
     }
 
     .overview-kpis .kpi-label,
     .overview-kpis .kpi-value,
     .overview-kpis .kpi-trend {
-      grid-column: 2;
       min-width: 0;
     }
 
     .overview-kpis .kpi-label {
-      grid-row: 1;
+      flex: 1 1 calc(100% - 32px);
     }
 
-    .overview-kpis .kpi-value {
-      grid-row: 2;
-    }
-
+    .overview-kpis .kpi-value,
     .overview-kpis .kpi-trend {
-      grid-row: 3;
+      flex: 0 0 calc(100% - 32px);
+      margin-left: 32px;
     }
 
     .overview-kpis .kpi-top .badge {
@@ -207,7 +207,9 @@
 
     @media (max-width: 767px) {
       .overview-kpis .kpi-card {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: stretch;
+        column-gap: 0;
       }
 
       .overview-kpis .kpi-icon {
@@ -217,7 +219,8 @@
       .overview-kpis .kpi-label,
       .overview-kpis .kpi-value,
       .overview-kpis .kpi-trend {
-        grid-column: 1;
+        flex-basis: auto;
+        margin-left: 0;
       }
 
       .overview-kpis .kpi-label,
@@ -1108,6 +1111,17 @@
 
     .booking-mini-button.booking-noshow-action:hover {
       background: #fbd5d5;
+    }
+
+    .booking-mini-button.booking-checkout-action {
+      border-color: transparent;
+      background: var(--nexora-brand);
+      color: #fff;
+      box-shadow: none;
+    }
+
+    .booking-mini-button.booking-checkout-action:hover {
+      background: var(--nexora-brand-dark);
     }
 
     .booking-mini-button.icon-only {
@@ -2202,6 +2216,11 @@
     .booking-status-noshow {
       background: rgba(239, 68, 68, 0.12);
       color: #dc2626;
+    }
+
+    .booking-status-checkedout {
+      background: rgba(100, 116, 139, 0.14);
+      color: #475569;
     }
 
     .booking-status-chips {

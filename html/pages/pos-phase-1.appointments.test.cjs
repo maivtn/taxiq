@@ -91,12 +91,19 @@ test('lays out overview KPIs with flex wrapping instead of CSS grid', () => {
   const overviewKpisBlock = css.match(/\.overview-kpis\s*\{[^}]*\}/)?.[0] || '';
   const overviewKpiCardBlock = css.match(/\.overview-kpis\s*>\s*\.kpi-card\s*\{[^}]*\}/)?.[0] || '';
   const callStatsBlock = css.match(/#panel-calllog \.overview-kpis\[data-call-stats\]\s*\{[^}]*\}/)?.[0] || '';
+  const overviewKpiScopedBlocks = css.match(/\.overview-kpis(?:\s|>|\[)[^{]*\{[^}]*\}/g) || [];
+  const kpiCardLayoutBlock = overviewKpiScopedBlocks.find((block) => (
+    /\.overview-kpis\s+\.kpi-card\s*\{/.test(block) && /display:/.test(block)
+  )) || '';
 
   assert.match(overviewKpisBlock, /display:\s*flex;/);
   assert.match(overviewKpisBlock, /flex-wrap:\s*wrap;/);
-  assert.match(overviewKpiCardBlock, /flex:\s*1 1/);
+  assert.match(overviewKpiCardBlock, /flex:\s*1;/);
+  assert.doesNotMatch(overviewKpiCardBlock, /flex:\s*1\s+1\s+220px|min-width:\s*min\(100%,\s*220px\)/);
+  assert.match(kpiCardLayoutBlock, /display:\s*flex;/);
   assert.doesNotMatch(overviewKpisBlock, /grid-template-columns/);
   assert.doesNotMatch(callStatsBlock, /grid-template-columns/);
+  assert.doesNotMatch(overviewKpiScopedBlocks.join('\n'), /display:\s*grid|grid-template-columns|grid-column|grid-row/);
 });
 
 test('POS Booking gives Appointments the full workspace width and reserves a Calendar detail rail', () => {

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - QR Stations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/qr-stations.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content qr-stations-page" aria-label="QR Stations content">
+        <section class="qr-stations-shell" aria-labelledby="qr-stations-title">
+          <div class="qr-stations-heading">
+            <h1 id="qr-stations-title">Stations &amp; QR Codes</h1>
+            <div class="qr-stations-rule" aria-hidden="true"></div>
+            <p>Create and manage tip stations. Customers scan to tip your staff.</p>
+          </div>
+
+          <section class="qr-stats-grid" aria-label="QR station summary">
+            <article class="qr-stat-card is-indigo">
+              <div class="qr-stat-copy">
+                <span class="qr-stat-label">Total Stations</span>
+                <strong>3</strong>
+              </div>
+              <span class="qr-stat-icon"><i data-lucide="layers" aria-hidden="true"></i></span>
+            </article>
+            <article class="qr-stat-card is-amber">
+              <div class="qr-stat-copy">
+                <span class="qr-stat-label">Active NFC Stands</span>
+                <strong>0</strong>
+              </div>
+              <span class="qr-stat-icon"><i data-lucide="smartphone" aria-hidden="true"></i></span>
+            </article>
+            <article class="qr-stat-card is-emerald">
+              <div class="qr-stat-copy">
+                <span class="qr-stat-label">Total Scans</span>
+                <strong>272</strong>
+              </div>
+              <span class="qr-stat-icon"><i data-lucide="activity" aria-hidden="true"></i></span>
+            </article>
+            <article class="qr-stat-card is-red">
+              <div class="qr-stat-copy">
+                <span class="qr-stat-label">Device Issues</span>
+                <strong>0</strong>
+              </div>
+              <span class="qr-stat-icon"><i data-lucide="octagon-alert" aria-hidden="true"></i></span>
+            </article>
+          </section>
+
+          <button class="qr-add-station" type="button">
+            <i data-lucide="plus" aria-hidden="true"></i>
+            <span>Add Station</span>
+          </button>
+
+          <section class="qr-station-grid" aria-label="Salon QR stations">
+            <article class="qr-station-card">
+              <div class="qr-code-frame" aria-label="QR code for 332332">
+                <svg class="qr-code-art" viewBox="0 0 29 29" role="img" aria-label="332332 QR code preview">
+                  <rect width="29" height="29" fill="#fff"></rect>
+                  <path fill="#111827" d="M1 1h7v7H1zM21 1h7v7h-7zM1 21h7v7H1zM3 3h3v3H3zM23 3h3v3h-3zM3 23h3v3H3zM10 1h1v2h-1zM13 1h3v1h-3zM18 2h1v3h-1zM10 5h2v1h-2zM14 4h2v3h-2zM17 7h3v1h-3zM9 9h1v3H9zM11 10h3v1h-3zM15 9h1v2h-1zM18 10h2v3h-2zM22 10h1v1h-1zM25 10h2v2h-2zM1 10h2v2H1zM4 11h3v1H4zM2 14h2v3H2zM6 14h2v1H6zM10 14h1v4h-1zM12 13h2v2h-2zM15 14h4v1h-4zM20 15h2v3h-2zM24 14h4v1h-4zM26 16h2v2h-2zM1 18h1v2H1zM4 18h2v1H4zM8 18h2v2H8zM12 18h2v1h-2zM16 17h2v3h-2zM19 20h3v1h-3zM23 19h1v3h-1zM26 20h2v2h-2zM10 22h2v1h-2zM13 21h1v3h-1zM15 22h3v2h-3zM20 23h2v2h-2zM24 24h4v1h-4zM9 25h1v3H9zM11 26h3v1h-3zM16 26h1v2h-1zM18 27h5v1h-5zM25 27h2v1h-2z"></path>
+                </svg>
+              </div>
+              <div class="qr-station-detail">
+                <div class="qr-station-title-row">
+                  <h2>332332</h2>
+                  <a class="qr-open-link" href="https://staging-web.nexoratouch.com/touch/blnexora/332332" target="_blank" rel="noopener" aria-label="Open 332332 station link">
+                    <i data-lucide="external-link" aria-hidden="true"></i>
+                  </a>
+                </div>
+                <div class="qr-station-url">staging-web.nexoratouch.com/touch/blnexora/332332</div>
+                <div class="qr-status-row">
+                  <span class="qr-toggle" aria-hidden="true"></span>
+                  <span class="qr-status">Active</span>
+                </div>
+                <div class="qr-station-actions">
+                  <span class="qr-paper-note">Paper QR Only</span>
+                  <button class="qr-link-device" type="button"><i data-lucide="link" aria-hidden="true"></i><span>Link Device</span></button>
+                </div>
+                <div class="qr-station-meta">
+                  <div><span>Scans:</span> <strong>11</strong></div>
+                  <div><span>Revenue:</span> <strong class="qr-revenue">$0.00</strong></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="qr-station-card">
+              <div class="qr-code-frame" aria-label="QR code for Front Desk">
+                <svg class="qr-code-art" viewBox="0 0 29 29" role="img" aria-label="Front Desk QR code preview">
+                  <rect width="29" height="29" fill="#fff"></rect>
+                  <path fill="#111827" d="M1 1h7v7H1zM21 1h7v7h-7zM1 21h7v7H1zM3 3h3v3H3zM23 3h3v3h-3zM3 23h3v3H3zM10 1h2v1h-2zM14 1h1v4h-1zM17 1h2v2h-2zM10 4h3v2h-3zM16 5h1v3h-1zM18 7h2v1h-2zM9 9h3v1H9zM13 10h1v3h-1zM16 9h3v2h-3zM20 11h2v1h-2zM24 10h1v3h-1zM27 10h1v1h-1zM1 10h1v3H1zM4 10h4v1H4zM5 13h2v2H5zM9 14h3v1H9zM14 14h2v4h-2zM18 14h1v1h-1zM21 14h4v2h-4zM26 15h2v1h-2zM2 17h3v2H2zM7 18h1v2H7zM10 17h1v3h-1zM12 19h3v1h-3zM17 18h2v2h-2zM20 19h3v2h-3zM25 18h3v2h-3zM10 22h1v2h-1zM12 21h4v1h-4zM17 22h1v2h-1zM20 22h2v2h-2zM24 23h1v2h-1zM27 23h1v4h-1zM9 26h4v2H9zM15 25h1v2h-1zM18 26h3v1h-3zM22 27h4v1h-4z"></path>
+                </svg>
+              </div>
+              <div class="qr-station-detail">
+                <div class="qr-station-title-row">
+                  <h2>Front Desk</h2>
+                  <a class="qr-open-link" href="https://staging-web.nexoratouch.com/touch/blnexora/front-desk" target="_blank" rel="noopener" aria-label="Open Front Desk station link">
+                    <i data-lucide="external-link" aria-hidden="true"></i>
+                  </a>
+                </div>
+                <div class="qr-station-url">staging-web.nexoratouch.com/touch/blnexora/front-desk</div>
+                <div class="qr-status-row">
+                  <span class="qr-toggle" aria-hidden="true"></span>
+                  <span class="qr-status">Active</span>
+                </div>
+                <div class="qr-station-actions">
+                  <span class="qr-paper-note">Paper QR Only</span>
+                  <button class="qr-link-device" type="button"><i data-lucide="link" aria-hidden="true"></i><span>Link Device</span></button>
+                </div>
+                <div class="qr-station-meta">
+                  <div><span>Scans:</span> <strong>5</strong></div>
+                  <div><span>Revenue:</span> <strong class="qr-revenue">$0.00</strong></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="qr-station-card">
+              <div class="qr-code-frame" aria-label="QR code for Master Store">
+                <svg class="qr-code-art" viewBox="0 0 29 29" role="img" aria-label="Master Store QR code preview">
+                  <rect width="29" height="29" fill="#fff"></rect>
+                  <path fill="#111827" d="M1 1h7v7H1zM21 1h7v7h-7zM1 21h7v7H1zM3 3h3v3H3zM23 3h3v3h-3zM3 23h3v3H3zM10 1h1v1h-1zM12 2h2v2h-2zM15 1h4v1h-4zM18 4h2v3h-2zM10 6h3v2h-3zM14 7h1v1h-1zM9 9h2v2H9zM12 10h2v1h-2zM15 9h4v3h-4zM20 10h1v1h-1zM23 10h3v1h-3zM27 11h1v3h-1zM1 10h3v1H1zM5 10h2v3H5zM2 14h1v3H2zM4 15h3v1H4zM8 14h2v4H8zM11 15h2v1h-2zM14 14h1v2h-1zM17 16h3v1h-3zM21 15h1v4h-1zM23 14h2v2h-2zM26 17h2v2h-2zM1 18h2v2H1zM5 18h2v2H5zM10 19h3v1h-3zM14 18h4v2h-4zM19 20h1v1h-1zM22 20h3v1h-3zM10 22h2v2h-2zM13 21h3v1h-3zM17 22h2v4h-2zM20 23h1v1h-1zM22 24h2v3h-2zM25 23h3v1h-3zM9 26h2v2H9zM12 27h3v1h-3zM18 27h3v1h-3zM24 26h4v2h-4z"></path>
+                </svg>
+              </div>
+              <div class="qr-station-detail">
+                <div class="qr-station-title-row">
+                  <h2>Master Store</h2>
+                  <a class="qr-open-link" href="https://staging-web.nexoratouch.com/touch/blnexora/master-store" target="_blank" rel="noopener" aria-label="Open Master Store station link">
+                    <i data-lucide="external-link" aria-hidden="true"></i>
+                  </a>
+                </div>
+                <div class="qr-station-url">staging-web.nexoratouch.com/touch/blnexora/master-store</div>
+                <div class="qr-status-row">
+                  <span class="qr-toggle" aria-hidden="true"></span>
+                  <span class="qr-status">Active</span>
+                </div>
+                <div class="qr-station-actions">
+                  <span class="qr-paper-note">Paper QR Only</span>
+                  <button class="qr-link-device" type="button"><i data-lucide="link" aria-hidden="true"></i><span>Link Device</span></button>
+                </div>
+                <div class="qr-station-meta">
+                  <div><span>Scans:</span> <strong>256</strong></div>
+                  <div><span>Revenue:</span> <strong class="qr-revenue">$11,217.36</strong></div>
+                </div>
+              </div>
+            </article>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>
+    window.NEXORA_SHELL = {
+      activePage: 'stations',
+      activeTab: 'qr-stations'
+    };
+  </script>
+  <script src="../assets/nexora-shell.js"></script>
+</body>
+</html>

@@ -15,6 +15,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       'new': 'is-new',
       'sms-sent': 'is-sms-sent',
       'done': 'is-done',
+      'checked-out': 'is-checked-out',
       'noshow': 'is-noshow'
     };
     var bookingStatusFilter = 'all';
@@ -335,6 +336,8 @@ var DEFAULT_MAIN_TAB = 'booking';
     function bookingRecordToRowData(record) {
       var start = new Date(record.startAt);
       var names = bookingRecordServiceNames(record);
+      var status = appointmentStore.mapCanonicalToBookingStatus(record);
+      if (status === 'done' && record.metadata && record.metadata.checkedOut) status = 'checked-out';
       return {
         id: record.id,
         name: record.customerName,
@@ -347,7 +350,7 @@ var DEFAULT_MAIN_TAB = 'booking';
         date: record.startAt.slice(0, 10),
         time: record.startAt.slice(11, 16),
         duration: record.durationMin,
-        status: appointmentStore.mapCanonicalToBookingStatus(record),
+        status: status,
         note: record.note || '',
         source: record.source || 'booking-book'
       };
@@ -913,7 +916,8 @@ var DEFAULT_MAIN_TAB = 'booking';
         'cancelled': 'Cancelled',
         'new': 'Pending',
         'sms-sent': 'Pending',
-        'done': 'Completed',
+        'done': 'Ready to pay',
+        'checked-out': 'Checked out',
         'noshow': 'No show'
       }[status] || 'Pending';
     }
@@ -1363,8 +1367,8 @@ var DEFAULT_MAIN_TAB = 'booking';
     }
 
     function bookingCalendarStatusMarkup(status) {
-      var labels = { 'new': 'New', 'sms-sent': 'SMS Sent', 'done': 'Completed', 'noshow': 'No-show' };
-      var classes = { 'new': 'booking-status-new', 'sms-sent': 'booking-status-sms', 'done': 'booking-status-done', 'noshow': 'booking-status-noshow' };
+      var labels = { 'new': 'New', 'sms-sent': 'SMS Sent', 'done': 'Ready to pay', 'checked-out': 'Checked out', 'noshow': 'No-show' };
+      var classes = { 'new': 'booking-status-new', 'sms-sent': 'booking-status-sms', 'done': 'booking-status-done', 'checked-out': 'booking-status-checkedout', 'noshow': 'booking-status-noshow' };
       var value = labels[status] ? status : 'new';
       return '<span class="badge booking-status ' + classes[value] + '">' + labels[value] + '</span>';
     }
@@ -1455,7 +1459,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       renderBookingCalendar();
       if (window.Swal) {
         var techLabel = parentTechId ? bookingTechName(parentTechId) : 'Anyone';
-        var statusLabels = { 'new': 'New', 'sms-sent': 'SMS Sent', 'done': 'Completed', 'noshow': 'No-show' };
+        var statusLabels = { 'new': 'New', 'sms-sent': 'SMS Sent', 'done': 'Ready to pay', 'noshow': 'No-show' };
         var bookingSuccessHtml = [
           '<div class="booking-save-summary">',
           '<div class="booking-save-summary-row"><span class="booking-save-summary-label">Customer</span><strong class="booking-save-summary-value">' + escapeHtml(name) + '</strong></div>',
@@ -1592,6 +1596,8 @@ var DEFAULT_MAIN_TAB = 'booking';
         actions += '<button class="booking-mini-button primary booking-sms-action" type="button" data-booking-action="send-sms" aria-label="Send SMS" title="Send SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>';
       } else if (item && item.classList.contains('is-sms-sent')) {
         actions += '<button class="booking-mini-button primary booking-done-action" type="button" data-booking-action="done" aria-label="Done" title="Done"><i class="bi bi-check-lg" aria-hidden="true"></i><span class="booking-mini-label">Done</span></button>';
+      } else if (item && item.classList.contains('is-done')) {
+        actions += '<button class="booking-mini-button primary booking-checkout-action" type="button" data-booking-action="checkout" aria-label="Check-out" title="Check-out"><i class="bi bi-credit-card" aria-hidden="true"></i><span class="booking-mini-label">Check-out</span></button>';
       }
       if (item && (item.classList.contains('is-new') || item.classList.contains('is-sms-sent'))) {
         actions += '<button class="booking-mini-button booking-noshow-action" type="button" data-booking-action="noshow" aria-label="No-show" title="No-show"><i class="bi bi-x-lg" aria-hidden="true"></i><span class="booking-mini-label">No-show</span></button>';
@@ -1695,6 +1701,21 @@ function getBookingCardCallStart(item) {
 
     function markBookingNoShow(item) {
       setBookingStatus(item, 'noshow');
+    }
+
+    function checkOutBookingItem(item) {
+      if (!item) return;
+      var record = bookingPanelRecordById(item.dataset.bookingId);
+      if (!record) return;
+      var result = appointmentStore.update(item.dataset.bookingId, {
+        metadata: Object.assign({}, record.metadata, { checkedOut: true })
+      }, null, catalog);
+      if (!result.ok) { setBookingCreateError(result.error.message); return; }
+      renderBookingStoreRows();
+      filterBookingItems();
+      if (window.Swal) {
+        Swal.fire({ icon: 'success', title: 'Checked out', text: (record.customerName || 'Customer') + ' has been checked out.', timer: 1800, showConfirmButton: false });
+      }
     }
 
     function getBookingSearchValue(item, field) {
@@ -2996,10 +3017,12 @@ function getBookingCardCallStart(item) {
           completeBookingItem(item);
         } else if (bookingAction.dataset.bookingAction === 'noshow') {
           markBookingNoShow(item);
+        } else if (bookingAction.dataset.bookingAction === 'checkout') {
+          checkOutBookingItem(item);
         } else if (bookingAction.dataset.bookingAction === 'detail') {
           openBookingDetailModal(item);
         }
-        if (detailModal && item && (bookingAction.dataset.bookingAction === 'done' || bookingAction.dataset.bookingAction === 'noshow')) {
+        if (detailModal && item && (bookingAction.dataset.bookingAction === 'done' || bookingAction.dataset.bookingAction === 'noshow' || bookingAction.dataset.bookingAction === 'checkout')) {
           openBookingDetailModal(item);
         }
       }

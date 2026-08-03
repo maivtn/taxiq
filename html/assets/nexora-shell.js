@@ -6,7 +6,7 @@
 
    Per-page config (set BEFORE this script runs):
      window.NEXORA_SHELL = {
-       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'packages' | 'staff',
+       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'packages' | 'stations' | 'staff',
                                            // which functional group is native
        activeTab:  '<tabId>',              // initial highlighted sub-item
        showClearStorage: true,             // optional header action for local development
@@ -27,7 +27,8 @@
     reward: 'salon-setup-reward.html',
     pos: 'pos-phase-1.html',
     review: 'nexora-review.html',
-    packages: 'nexora-packages.html'
+    packages: 'nexora-packages.html',
+    stations: 'qr-stations.html'
   };
 
   // Single source of truth for the whole sidebar.
@@ -53,8 +54,8 @@
       { label: 'AI Voice Plans', tab: 'voice' },
       { label: 'Purchase History', tab: 'history' }
     ] },
-    { type: 'group', key: 'stations', label: 'Stations & QR Codes', icon: 'qr-code', items: [
-      { label: 'QR Stations' }
+    { type: 'group', key: 'stations', label: 'Stations & QR Codes', icon: 'qr-code', page: 'stations', items: [
+      { label: 'QR Stations', tab: 'qr-stations' }
     ] },
     { type: 'group', key: 'booking', label: 'Ai Hub', icon: 'calendar-days', page: 'booking', items: [
       { label: 'Booking Book', tab: 'booking' },
