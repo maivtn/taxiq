@@ -3072,10 +3072,10 @@
         return '<div class="wl-card queue-card">' +
           '<div class="queue-card-head"><div class="queue-card-identity">' +
           '<div class="wl-name">' + esc(b.name) + '</div>' +
-          '<div class="queue-card-phone"><i class="bi bi-calendar-event" aria-hidden="true"></i> ' + esc(b.time || 'No time') + '</div></div>' +
+          '<div class="queue-card-phone"><i class="bi bi-telephone" aria-hidden="true"></i> ' + esc(b.phone || 'No phone') + '</div></div>' +
           '<div class="queue-card-status">' + etaStatusChipHtml(e) + '</div></div>' +
           '<div class="queue-card-details"><div class="queue-card-service"><strong>' + esc(posServiceDisplayName(b.svc)) + '</strong>' +
-          '<span class="queue-card-sub">Today booking</span></div>' +
+          '<span class="queue-card-sub">Today booking - ' + esc(b.source || 'front-desk') + '</span></div>' +
           '<div class="queue-card-meta">' +
           '<span class="queue-card-tech"><i class="bi bi-person" aria-hidden="true"></i> ' + tech + '</span>' +
           '<span class="queue-card-booking"><i class="bi bi-clock" aria-hidden="true"></i> ' + esc(b.time || 'No time') + '</span>' +
@@ -4585,6 +4585,7 @@
           end: record.endAt,
           name: record.customerName || 'Guest',
           phone: record.phone || '',
+          source: record.source || 'front-desk',
           techId: record.technicianId,
           techName: record.technicianName || '',
           svc: serviceLabels.join(' + '),

@@ -435,13 +435,20 @@ test('Check-in booking ETA cards use the Queue card hierarchy with booking conte
   assert.match(card, /etaStatusChipHtml\(e\)/);
   assert.match(card, /etaActionHtml\(x\)/);
   assert.match(card, /esc\(b\.name\)/);
+  assert.match(card, /esc\(b\.phone \|\| 'No phone'\)/);
   assert.match(card, /b\.time/);
+  assert.match(card, /b\.source/);
   assert.match(card, /posServiceDisplayName\(b\.svc\)/);
   assert.match(card, /techName\(b\.techId\)/);
   assert.match(card, /custProfHtml\(b\.name\)/);
   assert.match(card, /live-map/);
   assert.doesNotMatch(card, /wl-info/);
   assert.doesNotMatch(card, /wl-actions/);
+});
+
+test('Check-in ETA booking view keeps appointment source data', () => {
+  const bookingView = html.match(/function posBookingView\(record\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(bookingView, /source: record\.source \|\| 'front-desk'/);
 });
 
 test('Check-in card modes use the same responsive flex columns as Queue', () => {
