@@ -467,6 +467,9 @@
     .service-editor-actions { justify-content: space-between; }
     .service-editor-actions .pos-warn-text { margin: 0; }
     [data-service-modal-mode="view"] .service-editor-field .pos-input:disabled { background: var(--nexora-surface-muted); color: var(--nexora-text); opacity: 1; }
+    .service-category-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .service-category-toggle { border: 0; background: transparent; padding: 0; color: inherit; font-size: inherit; font-weight: inherit; text-transform: inherit; letter-spacing: inherit; }
+    .service-category-add { background: #fff; color: var(--nexora-brand); text-transform: none; letter-spacing: 0; }
     @media (max-width: 760px) {
       .service-editor-body { grid-template-columns: 1fr; padding: 14px; }
       .service-editor-grid-main, .service-editor-grid-three { grid-template-columns: 1fr; }
@@ -4600,7 +4603,7 @@
       function serviceModalSummaryHtml(service, mode) {
         var current = service || {};
         var name = current.name || (mode === 'add' ? 'New service' : 'Service');
-        var category = current.name ? serviceCategoryLabel(current) : 'Choose category';
+        var category = current.categoryName || current.requiredSkill || (current.name ? serviceCategoryLabel(current) : 'Choose category');
         var price = current.price == null ? 'No price' : money(current.price);
         var duration = current.durationMin ? current.durationMin + ' min' : 'No duration';
         var skill = current.requiredSkill || 'No skill';
@@ -4619,12 +4622,14 @@
         '</div>';
       }
 
-      function openServiceModal(id, mode) {
+      function openServiceModal(id, mode, categoryName) {
         var modal = $('[data-mg-service-modal]');
         if (!modal) return;
         serviceModalId = id || null;
         serviceModalMode = mode === 'view' ? 'view' : (serviceModalId ? 'edit' : 'add');
         var service = serviceModalId ? serviceById(serviceModalId) : null;
+        var categoryPrefill = !serviceModalId && categoryName ? categoryName : '';
+        var summaryService = service || (categoryPrefill ? { categoryName: categoryPrefill, active: true } : null);
         var isReadOnly = serviceModalMode === 'view';
         var titleEl = $('[data-mg-service-modal-title]');
         var subtitleEl = $('[data-mg-service-modal-subtitle]');
@@ -4642,12 +4647,12 @@
         var saveLabelEl = $('[data-mg-service-save-label]');
         if (titleEl) titleEl.textContent = isReadOnly ? 'View service' : (service ? 'Edit service' : 'Add service');
         if (subtitleEl) subtitleEl.textContent = serviceModalMode === 'add' ? 'Create a new menu service' : (isReadOnly ? 'Read-only service detail' : 'Update service details');
-        if (summaryEl) summaryEl.innerHTML = serviceModalSummaryHtml(service, serviceModalMode);
+        if (summaryEl) summaryEl.innerHTML = serviceModalSummaryHtml(summaryService, serviceModalMode);
         if (skillEl) skillEl.innerHTML = serviceSkillOptions(service ? service.requiredSkill || '' : '');
         if (typeEl) typeEl.innerHTML = serviceTypeOptions(service ? service.type || '' : '');
         if (activeEl) activeEl.value = service && service.active === false ? 'inactive' : 'active';
         if (nameEl) nameEl.value = service ? service.name || '' : '';
-        if (categoryEl) categoryEl.value = service ? service.categoryName || '' : '';
+        if (categoryEl) categoryEl.value = service ? service.categoryName || '' : categoryPrefill;
         if (priceEl) priceEl.value = service && service.price != null ? service.price : '';
         if (durationEl) durationEl.value = service && service.durationMin ? service.durationMin : '';
         if (descriptionEl) descriptionEl.value = service ? service.description || '' : '';
@@ -4744,8 +4749,9 @@
         var serviceTableHtml = '<div class="pos-table-wrap" data-mg-service-table><table class="pos-table tight"><thead><tr><th>Service</th><th>Price</th><th>Minutes</th><th>Status</th><th>Category</th><th>Actions</th></tr></thead><tbody>' +
           serviceCategoryGroups.map(function (group) {
             var collapsed = !!serviceCollapsedCategories[serviceCategoryKey(group.name)];
-            var categoryToggleHtml = '<button class="pos-btn pos-btn-sm" type="button" data-mg-service-category-toggle="' + esc(group.name) + '" aria-expanded="' + (collapsed ? 'false' : 'true') + '" style="border:0;background:transparent;padding:0;color:inherit;font-size:inherit;text-transform:inherit;letter-spacing:inherit"><i class="bi ' + (collapsed ? 'bi-chevron-right' : 'bi-chevron-down') + '" aria-hidden="true"></i> ' + esc(group.name) + ' · ' + group.services.length + '</button>';
-            return '<tr data-mg-service-category-group="' + esc(group.name) + '"><td colspan="6" style="background:var(--nexora-surface-muted);color:var(--nexora-muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.03em">' + categoryToggleHtml + '</td></tr>' +
+            var categoryToggleHtml = '<button class="pos-btn pos-btn-sm service-category-toggle" type="button" data-mg-service-category-toggle="' + esc(group.name) + '" aria-expanded="' + (collapsed ? 'false' : 'true') + '"><i class="bi ' + (collapsed ? 'bi-chevron-right' : 'bi-chevron-down') + '" aria-hidden="true"></i> ' + esc(group.name) + ' · ' + group.services.length + '</button>';
+            var categoryAddHtml = '<button class="pos-btn pos-btn-sm service-category-add" type="button" data-mg-service-add-category="' + esc(group.name) + '"><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>';
+            return '<tr data-mg-service-category-group="' + esc(group.name) + '"><td colspan="6" style="background:var(--nexora-surface-muted);color:var(--nexora-muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.03em"><div class="service-category-head">' + categoryToggleHtml + categoryAddHtml + '</div></td></tr>' +
               (collapsed ? '' : group.services.map(function (service) {
                 return '<tr>' +
                   '<td><span class="pos-strong">' + esc(service.name) + '</span></td>' +
@@ -4761,9 +4767,10 @@
         var serviceCardsHtml = '<div data-mg-service-cards style="display:grid;gap:16px">' +
           serviceCategoryGroups.map(function (group) {
             var collapsed = !!serviceCollapsedCategories[serviceCategoryKey(group.name)];
-            var categoryToggleHtml = '<button class="pos-btn pos-btn-sm" type="button" data-mg-service-category-toggle="' + esc(group.name) + '" aria-expanded="' + (collapsed ? 'false' : 'true') + '" style="border:0;background:transparent;padding:0;color:inherit;font-size:inherit"><i class="bi ' + (collapsed ? 'bi-chevron-right' : 'bi-chevron-down') + '" aria-hidden="true"></i> ' + esc(group.name) + ' · ' + group.services.length + '</button>';
+            var categoryToggleHtml = '<button class="pos-btn pos-btn-sm service-category-toggle" type="button" data-mg-service-category-toggle="' + esc(group.name) + '" aria-expanded="' + (collapsed ? 'false' : 'true') + '"><i class="bi ' + (collapsed ? 'bi-chevron-right' : 'bi-chevron-down') + '" aria-hidden="true"></i> ' + esc(group.name) + ' · ' + group.services.length + '</button>';
+            var categoryAddHtml = '<button class="pos-btn pos-btn-sm service-category-add" type="button" data-mg-service-add-category="' + esc(group.name) + '"><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>';
             return '<section data-mg-service-card-category="' + esc(group.name) + '">' +
-              '<div class="pos-section-title" style="margin-top:0">' + categoryToggleHtml + '</div>' +
+              '<div class="pos-section-title" style="margin-top:0"><div class="service-category-head">' + categoryToggleHtml + categoryAddHtml + '</div></div>' +
               (collapsed ? '' : '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px">' +
               group.services.map(function (service) {
                 var description = (service.description || '').trim();
@@ -4882,6 +4889,12 @@
         if (serviceView) {
           serviceViewMode = serviceView.getAttribute('data-mg-service-view-target') === 'card' ? 'card' : 'table';
           renderManagement();
+          return;
+        }
+
+        var serviceCategoryAdd = e.target.closest('[data-mg-service-add-category]');
+        if (serviceCategoryAdd) {
+          openServiceModal(null, 'add', serviceCategoryAdd.getAttribute('data-mg-service-add-category'));
           return;
         }
 

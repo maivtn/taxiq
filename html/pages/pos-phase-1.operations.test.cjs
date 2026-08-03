@@ -114,10 +114,18 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(servicesRuntime, /var serviceCategoryGroups = groupedServicesByCategory\(services\);/);
   assert.match(servicesRuntime, /serviceCollapsedCategories\[serviceCategoryKey\(group\.name\)\]/);
   assert.match(servicesRuntime, /data-mg-service-category-toggle="/);
+  assert.match(servicesRuntime, /data-mg-service-add-category="/);
   assert.match(servicesRuntime, /aria-expanded="/);
   assert.match(servicesRuntime, /data-mg-service-category-group="/);
   assert.match(servicesRuntime, /data-mg-service-card-category="/);
+  assert.match(html, /var serviceCategoryAdd = e\.target\.closest\('\[data-mg-service-add-category\]'\);/);
+  assert.match(html, /openServiceModal\(null, 'add', serviceCategoryAdd\.getAttribute\('data-mg-service-add-category'\)\);/);
   assert.match(html, /var serviceCategoryToggle = e\.target\.closest\('\[data-mg-service-category-toggle\]'\);/);
+  assert.ok(
+    html.indexOf("var serviceCategoryAdd = e.target.closest('[data-mg-service-add-category]');") <
+      html.indexOf("var serviceCategoryToggle = e.target.closest('[data-mg-service-category-toggle]');"),
+    'category Add service click should run before category collapse toggle'
+  );
   assert.match(html, /var serviceCategoryStateKey = serviceCategoryKey\(serviceCategoryToggle\.getAttribute\('data-mg-service-category-toggle'\)\);/);
   assert.match(html, /serviceCollapsedCategories\[serviceCategoryStateKey\] = !serviceCollapsedCategories\[serviceCategoryStateKey\];/);
   assert.match(servicesRuntime, /var serviceBodyHtml = serviceViewMode === 'card' \? serviceCardsHtml : serviceTableHtml;/);
@@ -140,9 +148,12 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(html, /\.service-editor-dialog\s*\{/);
   assert.match(html, /\.service-editor-body\s*\{/);
   assert.match(html, /function serviceModalSummaryHtml\(service, mode\)/);
+  assert.match(html, /function openServiceModal\(id, mode, categoryName\)/);
+  assert.match(serviceModalRuntime, /var categoryPrefill = !serviceModalId && categoryName \? categoryName : '';/);
+  assert.match(serviceModalRuntime, /categoryEl\.value = service \? service\.categoryName \|\| '' : categoryPrefill;/);
   assert.match(serviceModalRuntime, /modal\.setAttribute\('data-service-modal-mode', serviceModalMode\)/);
   assert.match(serviceModalRuntime, /subtitleEl\.textContent = serviceModalMode === 'add' \? 'Create a new menu service' : \(isReadOnly \? 'Read-only service detail' : 'Update service details'\);/);
-  assert.match(serviceModalRuntime, /summaryEl\.innerHTML = serviceModalSummaryHtml\(service, serviceModalMode\);/);
+  assert.match(serviceModalRuntime, /summaryEl\.innerHTML = serviceModalSummaryHtml\(summaryService, serviceModalMode\);/);
   assert.match(serviceModalRuntime, /saveLabelEl\.textContent = serviceModalMode === 'add' \? 'Create service' : 'Save changes';/);
   assert.match(html, /openServiceModal\(serviceView\.getAttribute\('data-mg-service-view'\), 'view'\)/);
   assert.match(serviceModalRuntime, /data-mg-service-form-name/);
