@@ -146,6 +146,7 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(html, /data-mg-category-view="/);
   assert.match(html, /data-mg-category-edit="/);
   assert.doesNotMatch(categoryManagerRuntime, /data-mg-category-name-edit|data-mg-category-kind-edit/);
+  assert.doesNotMatch(categoryManagerRuntime, /data-mg-service-add-category|Add service/);
   assert.match(html, /data-mg-category-delete="/);
   assert.match(html, /function categoryDetailHtml\(category\)/);
   assert.match(html, /function openCategoryModal\(key, mode\)/);

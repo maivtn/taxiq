@@ -5012,7 +5012,7 @@
                 '<td><span class="pos-strong">' + row.activeServices + '</span> active · ' + row.totalServices + ' total</td>' +
                 '<td>' + (row.active === false ? '<span class="pos-chip pos-chip-gray">Inactive</span>' : '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Active</span>') + '</td>' +
                 '<td>' + esc(categoryKindLabel(row.kind)) + '</td>' +
-                '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-category-view="' + esc(row.key) + '"><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="pos-btn pos-btn-sm" type="button" data-mg-category-edit="' + esc(row.key) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-sm" type="button" data-mg-service-add-category="' + esc(row.name) + '"><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>' +
+                '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-category-view="' + esc(row.key) + '"><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="pos-btn pos-btn-sm" type="button" data-mg-category-edit="' + esc(row.key) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button>' +
                 (row.active === false ? '<button class="pos-btn pos-btn-sm" type="button" data-mg-category-restore="' + esc(row.key) + '">Restore</button>' : '<button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-category-delete="' + esc(row.key) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button>') +
                 '</div></td></tr>';
             }).join('') +
