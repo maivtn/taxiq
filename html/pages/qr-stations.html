@@ -23,8 +23,20 @@
             <h1 id="qr-stations-title">Stations &amp; QR Codes</h1>
             <div class="qr-stations-rule" aria-hidden="true"></div>
             <p>Create and manage tip stations. Customers scan to tip your staff.</p>
+
+            <div class="qr-tabs" role="tablist" aria-label="Stations and QR tabs">
+              <button id="qr-tab-qr-stations" class="qr-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="qr-panel-qr-stations" data-qr-tab="qr-stations">
+                <span class="qr-tab-icon"><i data-lucide="qr-code" aria-hidden="true"></i></span>
+                <span>QR Stations</span>
+              </button>
+              <button id="qr-tab-one-qr" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-one-qr" data-qr-tab="one-qr" tabindex="-1">
+                <span class="qr-tab-icon"><i data-lucide="scan-line" aria-hidden="true"></i></span>
+                <span>OneQR</span>
+              </button>
+            </div>
           </div>
 
+          <section id="qr-panel-qr-stations" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-qr-stations" data-qr-panel="qr-stations">
           <section class="qr-stats-grid" aria-label="QR station summary">
             <article class="qr-stat-card is-indigo">
               <div class="qr-stat-copy">
@@ -64,10 +76,7 @@
           <section class="qr-station-grid" aria-label="Salon QR stations">
             <article class="qr-station-card">
               <div class="qr-code-frame" aria-label="QR code for 332332">
-                <svg class="qr-code-art" viewBox="0 0 29 29" role="img" aria-label="332332 QR code preview">
-                  <rect width="29" height="29" fill="#fff"></rect>
-                  <path fill="#111827" d="M1 1h7v7H1zM21 1h7v7h-7zM1 21h7v7H1zM3 3h3v3H3zM23 3h3v3h-3zM3 23h3v3H3zM10 1h1v2h-1zM13 1h3v1h-3zM18 2h1v3h-1zM10 5h2v1h-2zM14 4h2v3h-2zM17 7h3v1h-3zM9 9h1v3H9zM11 10h3v1h-3zM15 9h1v2h-1zM18 10h2v3h-2zM22 10h1v1h-1zM25 10h2v2h-2zM1 10h2v2H1zM4 11h3v1H4zM2 14h2v3H2zM6 14h2v1H6zM10 14h1v4h-1zM12 13h2v2h-2zM15 14h4v1h-4zM20 15h2v3h-2zM24 14h4v1h-4zM26 16h2v2h-2zM1 18h1v2H1zM4 18h2v1H4zM8 18h2v2H8zM12 18h2v1h-2zM16 17h2v3h-2zM19 20h3v1h-3zM23 19h1v3h-1zM26 20h2v2h-2zM10 22h2v1h-2zM13 21h1v3h-1zM15 22h3v2h-3zM20 23h2v2h-2zM24 24h4v1h-4zM9 25h1v3H9zM11 26h3v1h-3zM16 26h1v2h-1zM18 27h5v1h-5zM25 27h2v1h-2z"></path>
-                </svg>
+                <div class="qr-code-art" data-qr-value="https://staging-web.nexoratouch.com/touch/blnexora/332332" data-qr-size="168" role="img" aria-label="332332 QR code preview"></div>
               </div>
               <div class="qr-station-detail">
                 <div class="qr-station-title-row">
@@ -94,10 +103,7 @@
 
             <article class="qr-station-card">
               <div class="qr-code-frame" aria-label="QR code for Front Desk">
-                <svg class="qr-code-art" viewBox="0 0 29 29" role="img" aria-label="Front Desk QR code preview">
-                  <rect width="29" height="29" fill="#fff"></rect>
-                  <path fill="#111827" d="M1 1h7v7H1zM21 1h7v7h-7zM1 21h7v7H1zM3 3h3v3H3zM23 3h3v3h-3zM3 23h3v3H3zM10 1h2v1h-2zM14 1h1v4h-1zM17 1h2v2h-2zM10 4h3v2h-3zM16 5h1v3h-1zM18 7h2v1h-2zM9 9h3v1H9zM13 10h1v3h-1zM16 9h3v2h-3zM20 11h2v1h-2zM24 10h1v3h-1zM27 10h1v1h-1zM1 10h1v3H1zM4 10h4v1H4zM5 13h2v2H5zM9 14h3v1H9zM14 14h2v4h-2zM18 14h1v1h-1zM21 14h4v2h-4zM26 15h2v1h-2zM2 17h3v2H2zM7 18h1v2H7zM10 17h1v3h-1zM12 19h3v1h-3zM17 18h2v2h-2zM20 19h3v2h-3zM25 18h3v2h-3zM10 22h1v2h-1zM12 21h4v1h-4zM17 22h1v2h-1zM20 22h2v2h-2zM24 23h1v2h-1zM27 23h1v4h-1zM9 26h4v2H9zM15 25h1v2h-1zM18 26h3v1h-3zM22 27h4v1h-4z"></path>
-                </svg>
+                <div class="qr-code-art" data-qr-value="https://staging-web.nexoratouch.com/touch/blnexora/front-desk" data-qr-size="168" role="img" aria-label="Front Desk QR code preview"></div>
               </div>
               <div class="qr-station-detail">
                 <div class="qr-station-title-row">
@@ -124,10 +130,7 @@
 
             <article class="qr-station-card">
               <div class="qr-code-frame" aria-label="QR code for Master Store">
-                <svg class="qr-code-art" viewBox="0 0 29 29" role="img" aria-label="Master Store QR code preview">
-                  <rect width="29" height="29" fill="#fff"></rect>
-                  <path fill="#111827" d="M1 1h7v7H1zM21 1h7v7h-7zM1 21h7v7H1zM3 3h3v3H3zM23 3h3v3h-3zM3 23h3v3H3zM10 1h1v1h-1zM12 2h2v2h-2zM15 1h4v1h-4zM18 4h2v3h-2zM10 6h3v2h-3zM14 7h1v1h-1zM9 9h2v2H9zM12 10h2v1h-2zM15 9h4v3h-4zM20 10h1v1h-1zM23 10h3v1h-3zM27 11h1v3h-1zM1 10h3v1H1zM5 10h2v3H5zM2 14h1v3H2zM4 15h3v1H4zM8 14h2v4H8zM11 15h2v1h-2zM14 14h1v2h-1zM17 16h3v1h-3zM21 15h1v4h-1zM23 14h2v2h-2zM26 17h2v2h-2zM1 18h2v2H1zM5 18h2v2H5zM10 19h3v1h-3zM14 18h4v2h-4zM19 20h1v1h-1zM22 20h3v1h-3zM10 22h2v2h-2zM13 21h3v1h-3zM17 22h2v4h-2zM20 23h1v1h-1zM22 24h2v3h-2zM25 23h3v1h-3zM9 26h2v2H9zM12 27h3v1h-3zM18 27h3v1h-3zM24 26h4v2h-4z"></path>
-                </svg>
+                <div class="qr-code-art" data-qr-value="https://staging-web.nexoratouch.com/touch/blnexora/master-store" data-qr-size="168" role="img" aria-label="Master Store QR code preview"></div>
               </div>
               <div class="qr-station-detail">
                 <div class="qr-station-title-row">
@@ -152,8 +155,225 @@
               </div>
             </article>
           </section>
+          </section>
+
+          <section id="qr-panel-one-qr" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-one-qr" data-qr-panel="one-qr" hidden>
+          <section class="oneqr-section" aria-labelledby="oneqr-title">
+            <div class="oneqr-heading">
+              <h2 id="oneqr-title">OneQR Configuration</h2>
+              <p>One QR code that connects the entire customer journey and back-of-house operations.</p>
+            </div>
+
+            <div class="oneqr-qrcard">
+              <div class="qr-code-frame oneqr-qrcard-frame" aria-label="OneQR code preview">
+                <div class="qr-code-art" data-qr-value="../customer/oneqr-landing.html" data-qr-size="216" role="img" aria-label="OneQR code preview"></div>
+              </div>
+              <div class="oneqr-qrcard-detail">
+                <div class="oneqr-qrcard-title-row">
+                  <h3>Bitcoin Nail Bar — Main</h3>
+                  <a class="qr-open-link" href="../customer/oneqr-landing.html" target="_blank" rel="noopener" aria-label="Open OneQR landing page">
+                    <i data-lucide="external-link" aria-hidden="true"></i>
+                  </a>
+                </div>
+                <div class="oneqr-qrcard-url" id="oneqrShareUrl">../customer/oneqr-landing.html</div>
+                <p>This QR code stays the same. Content and permissions behind it can be updated anytime.</p>
+                <div class="oneqr-qrcard-actions">
+                  <button class="oneqr-qrcard-btn is-primary" type="button" id="oneqrViewQr">
+                    <i data-lucide="eye" aria-hidden="true"></i>
+                    <span>View QR</span>
+                  </button>
+                  <button class="oneqr-qrcard-btn" type="button" id="oneqrCopyUrl">
+                    <i data-lucide="copy" aria-hidden="true"></i>
+                    <span>Copy URL</span>
+                  </button>
+                  <button class="oneqr-qrcard-btn" type="button" id="oneqrPrintQr">
+                    <i data-lucide="printer" aria-hidden="true"></i>
+                    <span>Print</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="oneqr-builder">
+              <div class="oneqr-panel oneqr-modules">
+                <div class="oneqr-panel-head">
+                  <h3>Modules</h3>
+                  <span class="oneqr-pill">Drag &amp; drop</span>
+                </div>
+                <div class="oneqr-module-list" id="oneqrModuleList"></div>
+                <button class="oneqr-add-module" type="button" id="oneqrAddModule">
+                  <i data-lucide="plus" aria-hidden="true"></i>
+                  <span>Add Module</span>
+                </button>
+              </div>
+
+              <div class="oneqr-panel oneqr-config">
+                <div class="oneqr-panel-head">
+                  <h3>Configuration</h3>
+                  <span class="oneqr-badge">Master QR</span>
+                </div>
+                <div class="oneqr-field">
+                  <label for="oneqr-name">OneQR Name</label>
+                  <input id="oneqr-name" type="text" value="Bitcoin Nail Bar — Main">
+                </div>
+                <div class="oneqr-field">
+                  <label for="oneqr-welcome">Welcome Message</label>
+                  <input id="oneqr-welcome" type="text" value="Welcome to Bitcoin Nail Bar">
+                </div>
+                <div class="oneqr-field">
+                  <label for="oneqr-template">Template</label>
+                  <select id="oneqr-template">
+                    <option>Beauty &amp; Salon</option>
+                    <option>Business</option>
+                    <option>Organization</option>
+                    <option>Government Service</option>
+                  </select>
+                </div>
+                <div class="oneqr-field">
+                  <label for="oneqr-landing">Landing View</label>
+                  <select id="oneqr-landing">
+                    <option>Auto-suggest based on user</option>
+                    <option>Full module list</option>
+                    <option>Intro page</option>
+                  </select>
+                </div>
+                <div class="oneqr-field">
+                  <label for="oneqr-identity">Identity</label>
+                  <select id="oneqr-identity">
+                    <option>Public first, verify when needed</option>
+                    <option>Always sign in</option>
+                  </select>
+                </div>
+                <p class="oneqr-note">AI can prioritize content, but cannot self-grant permissions or self-approve.</p>
+              </div>
+
+              <div class="oneqr-panel oneqr-preview">
+                <div class="oneqr-panel-head">
+                  <h3>Live Preview</h3>
+                  <span class="oneqr-pill">Mobile</span>
+                </div>
+                <div class="oneqr-role-tabs" role="tablist" aria-label="Preview role">
+                  <button class="oneqr-role-tab is-active" type="button" data-role="customer">Customer</button>
+                  <button class="oneqr-role-tab" type="button" data-role="staff">Staff</button>
+                  <button class="oneqr-role-tab" type="button" data-role="owner">Owner</button>
+                </div>
+                <div class="oneqr-phone">
+                  <div class="oneqr-phone-screen">
+                    <div class="oneqr-phone-hero">
+                      <img class="oneqr-phone-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1280px-Bitcoin.svg.png" alt="Bitcoin Nail Bar logo">
+                      <div>
+                        <strong>Bitcoin Nail Bar</strong>
+                        <p>One QR. Everything Connected.</p>
+                      </div>
+                    </div>
+                    <div class="oneqr-phone-body">
+                      <div class="oneqr-phone-welcome" id="oneqrWelcomeText"></div>
+                      <div class="oneqr-phone-tiles" id="oneqrPreviewTiles"></div>
+                      <button class="oneqr-phone-viewall" type="button">View All</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          </section>
         </section>
       </main>
+    </div>
+  </div>
+
+  <div class="oneqr-view-modal" data-oneqr-view-modal hidden aria-hidden="true">
+    <div class="oneqr-view-dialog" role="dialog" aria-modal="true" aria-labelledby="oneqr-view-modal-title">
+      <div class="oneqr-view-print-card" data-oneqr-print-card>
+        <div class="oneqr-view-dots" aria-hidden="true"></div>
+        <button class="oneqr-view-close" type="button" data-oneqr-view-close aria-label="Close QR preview">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+
+        <div class="oneqr-view-logo">
+          <img class="oneqr-view-logo-mark" src="assets/icon-nexora.png" alt="">
+          <p class="oneqr-view-logo-word">NEXORA</p>
+          <p class="oneqr-view-logo-sub">TOUCH</p>
+        </div>
+
+        <div class="oneqr-view-headline" id="oneqr-view-modal-title">
+          <p class="oneqr-view-scanto">Scan To</p>
+          <p class="oneqr-view-title-gradient">Pay, Tip, Review<br>&amp; Earn Rewards</p>
+        </div>
+
+        <div class="oneqr-view-qr-frame">
+          <div class="oneqr-view-qr">
+            <div class="qr-code-art" data-qr-value="../customer/oneqr-landing.html" data-qr-size="400" role="img" aria-label="Bitcoin Nail Bar OneQR code"></div>
+            <img class="oneqr-view-qr-logo" src="assets/icon-nexora.png" alt="">
+          </div>
+        </div>
+
+        <div class="oneqr-view-steps">
+          <div class="oneqr-view-step">
+            <span class="oneqr-view-step-num is-pink">1</span>
+            <i data-lucide="qr-code" aria-hidden="true"></i>
+            <p>Scan QR</p>
+          </div>
+          <i data-lucide="arrow-right" class="oneqr-view-step-arrow" aria-hidden="true"></i>
+          <div class="oneqr-view-step">
+            <span class="oneqr-view-step-num is-purple">2</span>
+            <i data-lucide="credit-card" aria-hidden="true"></i>
+            <p>Pay</p>
+          </div>
+          <i data-lucide="arrow-right" class="oneqr-view-step-arrow" aria-hidden="true"></i>
+          <div class="oneqr-view-step">
+            <span class="oneqr-view-step-num is-fuchsia">3</span>
+            <i data-lucide="heart" aria-hidden="true"></i>
+            <p>Tip</p>
+          </div>
+          <i data-lucide="arrow-right" class="oneqr-view-step-arrow" aria-hidden="true"></i>
+          <div class="oneqr-view-step">
+            <span class="oneqr-view-step-num is-cyan">4</span>
+            <i data-lucide="star" aria-hidden="true"></i>
+            <p>Review</p>
+          </div>
+        </div>
+
+        <div class="oneqr-view-rewards">
+          <span class="oneqr-view-rewards-icon"><i data-lucide="gift" aria-hidden="true"></i></span>
+          <div class="oneqr-view-rewards-copy">
+            <p class="oneqr-view-rewards-title">Customer Rewards</p>
+            <p class="oneqr-view-rewards-body">Earn rewards on eligible visits</p>
+            <p class="oneqr-view-rewards-sub">Ask our team about points, offers, or member rewards</p>
+          </div>
+        </div>
+
+        <div class="oneqr-view-benefits">
+          <div class="oneqr-view-benefit"><i data-lucide="wallet" class="is-fuchsia" aria-hidden="true"></i><p>Easy<br>Payment</p></div>
+          <span class="oneqr-view-benefit-dot is-pink" aria-hidden="true"></span>
+          <div class="oneqr-view-benefit"><i data-lucide="heart" class="is-pink" aria-hidden="true"></i><p>Easy<br>Tipping</p></div>
+          <span class="oneqr-view-benefit-dot is-purple" aria-hidden="true"></span>
+          <div class="oneqr-view-benefit"><i data-lucide="bell" class="is-cyan" aria-hidden="true"></i><p>Review<br>Reminder</p></div>
+          <span class="oneqr-view-benefit-dot is-cyan" aria-hidden="true"></span>
+          <div class="oneqr-view-benefit"><i data-lucide="gift" class="is-fuchsia" aria-hidden="true"></i><p>Earn<br>Rewards</p></div>
+        </div>
+
+        <div class="oneqr-view-thanks">
+          <div class="oneqr-view-thanks-rule" aria-hidden="true"></div>
+          <p class="oneqr-view-thanks-text">Thank you for visiting</p>
+          <p class="oneqr-view-powered">Powered by Nexora Touch</p>
+        </div>
+      </div>
+
+      <div class="oneqr-view-actions">
+        <button class="oneqr-view-action-btn" type="button" id="oneqrViewCopy">
+          <i data-lucide="link" aria-hidden="true"></i>
+          <span>Copy Link</span>
+        </button>
+        <button class="oneqr-view-action-btn" type="button" id="oneqrViewPrint">
+          <i data-lucide="printer" aria-hidden="true"></i>
+          <span>Print</span>
+        </button>
+        <button class="oneqr-view-action-btn is-primary" type="button" id="oneqrViewDownload">
+          <i data-lucide="download" aria-hidden="true"></i>
+          <span>Download</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -161,9 +381,16 @@
   <script>
     window.NEXORA_SHELL = {
       activePage: 'stations',
-      activeTab: 'qr-stations'
+      activeTab: 'qr-stations',
+      onNavigate: function (tabId) {
+        if (window.NEXORA_QR_SELECT_TAB) window.NEXORA_QR_SELECT_TAB(tabId, { updateURL: true });
+      }
     };
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="../assets/qr-stations-qrcode.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="../assets/nexora-shell.js"></script>
+  <script src="../assets/qr-stations-oneqr.js"></script>
 </body>
 </html>

@@ -55,7 +55,8 @@
       { label: 'Purchase History', tab: 'history' }
     ] },
     { type: 'group', key: 'stations', label: 'Stations & QR Codes', icon: 'qr-code', page: 'stations', items: [
-      { label: 'QR Stations', tab: 'qr-stations' }
+      { label: 'QR Stations', tab: 'qr-stations' },
+      { label: 'OneQR', tab: 'one-qr' }
     ] },
     { type: 'group', key: 'booking', label: 'Ai Hub', icon: 'calendar-days', page: 'booking', items: [
       { label: 'Booking Book', tab: 'booking' },
