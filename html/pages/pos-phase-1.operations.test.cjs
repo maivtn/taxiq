@@ -169,14 +169,18 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(managementPanel, /data-mg-service-form-shell/);
   assert.match(managementPanel, /data-mg-service-cancel-label/);
   assert.match(managementPanel, /class="service-editor-grid service-editor-grid-main"/);
+  assert.match(managementPanel, /<label class="service-editor-field">Category<select class="pos-input" data-mg-service-form-category><\/select><\/label>/);
+  assert.doesNotMatch(managementPanel, /Category<input class="pos-input" list="mg-service-categories" data-mg-service-form-category>/);
   assert.match(managementPanel, /class="service-editor-grid service-editor-grid-three"/);
   assert.match(managementPanel, /data-mg-service-save-label/);
   assert.match(html, /\.service-editor-dialog\s*\{/);
   assert.match(html, /\.service-editor-body\s*\{/);
+  assert.match(html, /function serviceCategoryOptions\(selected\)/);
   assert.match(html, /function serviceModalSummaryHtml\(service, mode\)/);
   assert.match(html, /function serviceDetailHtml\(service\)/);
   assert.match(html, /function openServiceModal\(id, mode, categoryName\)/);
   assert.match(serviceModalRuntime, /var categoryPrefill = !serviceModalId && categoryName \? categoryName : '';/);
+  assert.match(serviceModalRuntime, /categoryEl\.innerHTML = serviceCategoryOptions\(service \? service\.categoryName \|\| '' : categoryPrefill\);/);
   assert.match(serviceModalRuntime, /categoryEl\.value = service \? service\.categoryName \|\| '' : categoryPrefill;/);
   assert.match(serviceModalRuntime, /modal\.setAttribute\('data-service-modal-mode', serviceModalMode\)/);
   assert.match(serviceModalRuntime, /subtitleEl\.textContent = serviceModalMode === 'add' \? 'Create a new menu service' : \(isReadOnly \? 'Read-only service detail' : 'Update service details'\);/);

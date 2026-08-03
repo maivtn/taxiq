@@ -892,7 +892,7 @@
                     <div class="service-editor-section-title"><i class="bi bi-info-circle" aria-hidden="true"></i>Basics</div>
                     <div class="service-editor-grid service-editor-grid-main">
                       <label class="service-editor-field">Name<input class="pos-input" data-mg-service-form-name></label>
-                      <label class="service-editor-field">Category<input class="pos-input" list="mg-service-categories" data-mg-service-form-category></label>
+                      <label class="service-editor-field">Category<select class="pos-input" data-mg-service-form-category></select></label>
                     </div>
                   </div>
                   <div class="service-editor-section">
@@ -4600,6 +4600,18 @@
         }).join('');
       }
 
+      function serviceCategoryOptions(selected) {
+        var current = String(selected || '').trim();
+        var currentKey = serviceCategoryKey(current);
+        var categories = serviceCategories();
+        if (current && !categories.some(function (name) { return serviceCategoryKey(name) === currentKey; })) {
+          categories = categories.concat(current);
+        }
+        return '<option value="">Choose category</option>' + categories.map(function (name) {
+          return '<option value="' + esc(name) + '"' + (serviceCategoryKey(name) === currentKey ? ' selected' : '') + '>' + esc(name) + '</option>';
+        }).join('');
+      }
+
       function priceLabelForService(price) {
         if (price == null || price === '') return '';
         var n = Math.round(Number(price) * 100) / 100;
@@ -4933,6 +4945,7 @@
           detailEl.hidden = !isReadOnly;
         }
         if (formShellEl) formShellEl.hidden = isReadOnly;
+        if (categoryEl) categoryEl.innerHTML = serviceCategoryOptions(service ? service.categoryName || '' : categoryPrefill);
         if (skillEl) skillEl.innerHTML = serviceSkillOptions(service ? service.requiredSkill || '' : '');
         if (typeEl) typeEl.innerHTML = serviceTypeOptions(service ? service.type || '' : '');
         if (activeEl) activeEl.value = service && service.active === false ? 'inactive' : 'active';
@@ -5035,8 +5048,6 @@
       }
 
       function mgServicesHtml() {
-        var categories = serviceCategories();
-        var categoryOptions = categories.map(function (name) { return '<option value="' + esc(name) + '"></option>'; }).join('');
         var services = salonCatalog.services.slice();
         var categoryRows = serviceCategoryRows();
         var serviceCategoryGroups = groupedServicesByCategory(services);
@@ -5090,7 +5101,6 @@
               '</div>' +
               '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-service-add><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>' +
             '</div></div>' +
-          '<datalist id="mg-service-categories">' + categoryOptions + '</datalist>' +
           categoryManagerHtml +
           serviceBodyHtml +
           '<div class="pos-hint">Delete marks a service inactive so old bookings and tickets keep their history. Active services appear in Booking and Check-in immediately after Save.</div>' +
