@@ -95,6 +95,7 @@ test('POS keeps ticket KPIs in Tickets and merges the Time Clock roster into one
 
 test('Management exposes Services as table/card views with modal CRUD detail fields', () => {
   const managementPanel = html.match(/<section class="pos-panel" data-pos-panel="management"[\s\S]*?<\/section>/)?.[0] || '';
+  const serviceCategoryRowsRuntime = html.match(/function serviceCategoryRows\(\)[\s\S]*?function serviceCategories\(\)/)?.[0] || '';
   const servicesRuntime = html.match(/function mgServicesHtml\(\)[\s\S]*?function mgStaffHtml\(\)/)?.[0] || '';
   const serviceModalRuntime = html.match(/function openServiceModal\([\s\S]*?function mgServicesHtml\(\)/)?.[0] || '';
 
@@ -111,7 +112,11 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(html, /function groupedServicesByCategory\(services\)/);
   assert.match(html, /function serviceCategoryKey\(name\)/);
   assert.match(html, /function serviceCategoryRows\(\)/);
+  assert.match(serviceCategoryRowsRuntime, /return rows;/);
+  assert.doesNotMatch(serviceCategoryRowsRuntime, /rows\.sort|name\.localeCompare/);
   assert.match(html, /var serviceCollapsedCategories = \{\};/);
+  assert.match(servicesRuntime, /var services = salonCatalog\.services\.slice\(\);/);
+  assert.doesNotMatch(servicesRuntime, /salonCatalog\.services\.slice\(\)\.sort|serviceCategoryLabel\(a\)\.localeCompare|a\.name\.localeCompare/);
   assert.match(servicesRuntime, /var serviceCategoryGroups = groupedServicesByCategory\(services\);/);
   assert.match(html, /data-mg-category-manager/);
   assert.match(html, /data-mg-category-name/);

@@ -4556,9 +4556,7 @@
           row.totalServices += 1;
           if (service.active !== false) row.activeServices += 1;
         });
-        return rows.sort(function (a, b) {
-          return (a.active === b.active ? 0 : (a.active ? -1 : 1)) || a.name.localeCompare(b.name);
-        });
+        return rows;
       }
 
       function serviceCategories() {
@@ -5039,11 +5037,7 @@
       function mgServicesHtml() {
         var categories = serviceCategories();
         var categoryOptions = categories.map(function (name) { return '<option value="' + esc(name) + '"></option>'; }).join('');
-        var services = salonCatalog.services.slice().sort(function (a, b) {
-          return serviceCategoryLabel(a).localeCompare(serviceCategoryLabel(b)) ||
-            ((a.active !== false) !== (b.active !== false) ? (a.active === false ? 1 : -1) : 0) ||
-            a.name.localeCompare(b.name);
-        });
+        var services = salonCatalog.services.slice();
         var categoryRows = serviceCategoryRows();
         var serviceCategoryGroups = groupedServicesByCategory(services);
         var categoryManagerHtml = serviceCategoryManagerHtml(categoryRows);
