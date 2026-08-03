@@ -4616,17 +4616,7 @@
           if ((a.active !== false) !== (b.active !== false)) return a.active === false ? 1 : -1;
           return (a.categoryName || '').localeCompare(b.categoryName || '') || a.name.localeCompare(b.name);
         });
-        return '<div class="pos-card">' +
-          '<div class="pos-card-head"><div><h3><i class="bi bi-card-checklist" aria-hidden="true"></i> Services</h3></div>' +
-            '<div class="pos-inline">' +
-              '<div class="booking-view-switch" role="group" aria-label="Service view mode">' +
-                '<button class="booking-view-button' + (serviceViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-service-view-target="table" aria-pressed="' + (serviceViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
-                '<button class="booking-view-button' + (serviceViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-service-view-target="card" aria-pressed="' + (serviceViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
-              '</div>' +
-              '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-service-add><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>' +
-            '</div></div>' +
-          '<datalist id="mg-service-categories">' + categoryOptions + '</datalist>' +
-          '<div class="pos-table-wrap" data-mg-service-table' + (serviceViewMode === 'table' ? '' : ' hidden') + '><table class="pos-table tight"><thead><tr><th>Service</th><th>Description</th><th>Includes</th><th>Category</th><th>Price</th><th>Minutes</th><th>Skill</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead><tbody>' +
+        var serviceTableHtml = '<div class="pos-table-wrap" data-mg-service-table><table class="pos-table tight"><thead><tr><th>Service</th><th>Description</th><th>Includes</th><th>Category</th><th>Price</th><th>Minutes</th><th>Skill</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead><tbody>' +
           services.map(function (service) {
             var description = (service.description || '').trim();
             return '<tr>' +
@@ -4642,8 +4632,8 @@
               '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div></td>' +
               '</tr>';
           }).join('') +
-          '</tbody></table></div>' +
-          '<div data-mg-service-cards' + (serviceViewMode === 'card' ? '' : ' hidden') + ' style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px">' +
+          '</tbody></table></div>';
+        var serviceCardsHtml = '<div data-mg-service-cards style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px">' +
           services.map(function (service) {
             var description = (service.description || '').trim();
             return '<article class="queue-card">' +
@@ -4654,7 +4644,19 @@
               '<div class="wl-actions" style="margin-top:10px"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div>' +
               '</article>';
           }).join('') +
-          '</div>' +
+          '</div>';
+        var serviceBodyHtml = serviceViewMode === 'card' ? serviceCardsHtml : serviceTableHtml;
+        return '<div class="pos-card">' +
+          '<div class="pos-card-head"><div><h3><i class="bi bi-card-checklist" aria-hidden="true"></i> Services</h3></div>' +
+            '<div class="pos-inline">' +
+              '<div class="booking-view-switch" role="group" aria-label="Service view mode">' +
+                '<button class="booking-view-button' + (serviceViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-service-view-target="table" aria-pressed="' + (serviceViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
+                '<button class="booking-view-button' + (serviceViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-service-view-target="card" aria-pressed="' + (serviceViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
+              '</div>' +
+              '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-service-add><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>' +
+            '</div></div>' +
+          '<datalist id="mg-service-categories">' + categoryOptions + '</datalist>' +
+          serviceBodyHtml +
           '<div class="pos-hint">Delete marks a service inactive so old bookings and tickets keep their history. Active services appear in Booking and Check-in immediately after Save.</div>' +
           '</div>';
       }
