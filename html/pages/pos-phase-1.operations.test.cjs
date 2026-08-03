@@ -103,6 +103,7 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(html, /seedServicesFromMenuCatalog/);
   assert.match(html, /var MG_SUBTABS = \['overview', 'payroll', 'services', 'staff', 'catalog'\]/);
   assert.match(html, /services: function \(\) \{ return mgServicesHtml\(\); \}/);
+  assert.doesNotMatch(servicesRuntime, /active · .*total · source: html\/menu\/menu\.json/);
   assert.match(servicesRuntime, /data-mg-service-view-target="table"/);
   assert.match(servicesRuntime, /data-mg-service-view-target="card"/);
   assert.match(servicesRuntime, /data-mg-service-table/);

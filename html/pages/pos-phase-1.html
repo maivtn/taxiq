@@ -4610,7 +4610,6 @@
       }
 
       function mgServicesHtml() {
-        var activeCount = salonCatalog.services.filter(function (service) { return service.active !== false; }).length;
         var categories = serviceCategories();
         var categoryOptions = categories.map(function (name) { return '<option value="' + esc(name) + '"></option>'; }).join('');
         var services = salonCatalog.services.slice().sort(function (a, b) {
@@ -4618,7 +4617,7 @@
           return (a.categoryName || '').localeCompare(b.categoryName || '') || a.name.localeCompare(b.name);
         });
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><div><h3><i class="bi bi-card-checklist" aria-hidden="true"></i> Services</h3><div class="pos-muted" style="margin-top:4px">' + activeCount + ' active · ' + salonCatalog.services.length + ' total · source: html/menu/menu.json</div></div>' +
+          '<div class="pos-card-head"><div><h3><i class="bi bi-card-checklist" aria-hidden="true"></i> Services</h3></div>' +
             '<div class="pos-inline">' +
               '<div class="booking-view-switch" role="group" aria-label="Service view mode">' +
                 '<button class="booking-view-button' + (serviceViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-service-view-target="table" aria-pressed="' + (serviceViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
