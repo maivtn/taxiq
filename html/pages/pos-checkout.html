@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - Checkout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/pos-booking.css">
+  <link rel="stylesheet" href="../assets/pos-checkout.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content" aria-label="Checkout content">
+        <div class="page-heading checkout-hero">
+          <div>
+            <a class="checkout-back-link" href="pos-phase-1.html?tab=booking"><i class="bi bi-arrow-left" aria-hidden="true"></i>Back to Booking</a>
+            <h1 class="page-title">💳 Checkout</h1>
+            <p class="page-description" data-checkout-meta>Loading ticket…</p>
+          </div>
+          <span class="badge booking-status booking-status-done" data-checkout-status-badge>Ready to pay</span>
+        </div>
+
+        <div data-checkout-empty class="checkout-panel checkout-empty" hidden>
+          <i class="bi bi-receipt" aria-hidden="true"></i>
+          <strong>No ticket to check out</strong>
+          <span>Open this page from a "Ready to pay" appointment in the Booking tab.</span>
+          <a class="booking-primary-button" href="pos-phase-1.html?tab=booking">Go to Booking</a>
+        </div>
+
+        <div data-checkout-root class="checkout-layout">
+          <section class="checkout-main">
+
+            <article class="checkout-panel">
+              <div class="checkout-panel-head">
+                <h2>① Service ticket</h2>
+                <span class="badge booking-status booking-status-new" data-checkout-customer-badge></span>
+              </div>
+              <div class="checkout-line checkout-line-head">
+                <span>Service</span><span>Technician</span><span>Price</span>
+              </div>
+              <div data-checkout-lines></div>
+              <div class="checkout-add-row">
+                <button class="booking-mini-button" type="button" data-checkout-open-modal="add-service">+ Add service</button>
+                <button class="booking-mini-button" type="button" data-checkout-open-modal="add-product">+ Add product</button>
+                <button class="booking-mini-button" type="button" data-checkout-open-modal="discount">+ Discount</button>
+              </div>
+            </article>
+
+            <article class="checkout-panel">
+              <div class="checkout-panel-head"><h2>② Tip &amp; technician split</h2></div>
+              <div class="checkout-tip-chips" data-checkout-tip-chips>
+                <button class="tip-chip" type="button" data-tip-mode="fixed" data-tip-value="5">$5</button>
+                <button class="tip-chip" type="button" data-tip-mode="fixed" data-tip-value="10">$10</button>
+                <button class="tip-chip is-active" type="button" data-tip-mode="fixed" data-tip-value="15">$15</button>
+                <button class="tip-chip" type="button" data-tip-mode="percent" data-tip-value="18">18%</button>
+                <button class="tip-chip" type="button" data-tip-mode="percent" data-tip-value="20">20%</button>
+              </div>
+              <div class="checkout-tip-split">
+                <div>
+                  <strong data-checkout-tip-tech>Technician</strong>
+                  <span>100% of this ticket's tip</span>
+                </div>
+                <div class="checkout-tip-amount" data-checkout-tip-amount>$15.00</div>
+              </div>
+              <div class="checkout-note">The tip is posted to the technician's payout ledger once this ticket is charged.</div>
+            </article>
+
+            <article class="checkout-panel">
+              <div class="checkout-panel-head"><h2>③ Payment method</h2></div>
+              <div class="checkout-pay-methods" data-checkout-pay-methods></div>
+              <div class="checkout-form-row">
+                <label class="checkout-field"><span>Email receipt</span><input class="booking-input" type="email" data-checkout-email placeholder="customer@example.com"></label>
+                <label class="checkout-field"><span>Phone</span><input class="booking-input" type="tel" data-checkout-phone placeholder="(555) 555-0100"></label>
+              </div>
+            </article>
+          </section>
+
+          <aside class="checkout-aside">
+            <article class="checkout-panel checkout-summary-panel">
+              <div class="checkout-panel-head"><h2>Payment summary</h2></div>
+              <div class="checkout-receipt">
+                <div class="receipt-row"><span>Services</span><strong data-checkout-subtotal>$0.00</strong></div>
+                <div class="receipt-row"><span>Tip</span><strong data-checkout-tip-total>$0.00</strong></div>
+                <div class="receipt-row" data-checkout-discount-row hidden><span>Discount</span><strong data-checkout-discount-amount>-$0.00</strong></div>
+                <div class="receipt-row"><span>Payment method</span><strong data-checkout-method-label>Card</strong></div>
+                <div class="receipt-row receipt-row-total"><span>Total</span><strong data-checkout-total>$0.00</strong></div>
+              </div>
+              <button class="booking-primary-button checkout-charge-button" type="button" data-checkout-charge>Charge $0.00</button>
+              <div class="checkout-sync" data-checkout-sync>
+                <div data-checkout-sync-item="receipt"><i class="bi bi-circle" aria-hidden="true"></i><span>Receipt ready to send</span></div>
+                <div data-checkout-sync-item="tip"><i class="bi bi-circle" aria-hidden="true"></i><span>Tip posted to ledger</span></div>
+                <div data-checkout-sync-item="status"><i class="bi bi-circle" aria-hidden="true"></i><span>Booking marked checked out</span></div>
+              </div>
+            </article>
+
+            <article class="checkout-panel">
+              <div class="checkout-panel-head"><h2>After checkout</h2></div>
+              <div class="checkout-next-list">
+                <div><strong>Send receipt</strong><span>Email/SMS the receipt to the guest.</span></div>
+                <div><strong>Free the technician</strong><span>Their station returns to the Turn Board.</span></div>
+                <div><strong>Post the tip</strong><span>Tip is posted to the technician's ledger.</span></div>
+                <div><strong>Update the booking</strong><span>Status flips from Ready to pay to Checked out.</span></div>
+              </div>
+            </article>
+          </aside>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="checkout-modal-backdrop" data-checkout-modal="add-service" hidden>
+    <div class="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-add-service-title">
+      <div class="checkout-modal-head">
+        <h2 id="checkout-modal-add-service-title">Add service</h2>
+        <button class="checkout-modal-close" type="button" data-checkout-modal-close aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+      </div>
+      <div class="checkout-modal-body">
+        <label class="checkout-field"><span>Service</span><select class="booking-select" data-checkout-add-service-select></select></label>
+        <label class="checkout-field"><span>Technician</span><select class="booking-select" data-checkout-add-service-tech></select></label>
+      </div>
+      <div class="checkout-modal-foot">
+        <button class="booking-secondary-button" type="button" data-checkout-modal-close>Cancel</button>
+        <button class="booking-primary-button" type="button" data-checkout-add-service-confirm>Add to ticket</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="checkout-modal-backdrop" data-checkout-modal="discount" hidden>
+    <div class="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-discount-title">
+      <div class="checkout-modal-head">
+        <h2 id="checkout-modal-discount-title">Discount</h2>
+        <button class="checkout-modal-close" type="button" data-checkout-modal-close aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+      </div>
+      <div class="checkout-modal-body">
+        <div class="checkout-discount-type">
+          <button class="tip-chip is-active" type="button" data-discount-mode="percent">%</button>
+          <button class="tip-chip" type="button" data-discount-mode="fixed">$</button>
+        </div>
+        <label class="checkout-field"><span data-checkout-discount-label>Discount (%)</span><input class="booking-input" type="number" min="0" step="1" inputmode="decimal" data-checkout-discount-value placeholder="0"></label>
+      </div>
+      <div class="checkout-modal-foot">
+        <button class="booking-mini-button" type="button" data-checkout-discount-remove>Remove discount</button>
+        <button class="booking-primary-button" type="button" data-checkout-discount-confirm>Apply discount</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/salon-data.js"></script>
+  <script src="../assets/appointment-service-catalog.js"></script>
+  <script src="../assets/appointment-tickets.js"></script>
+  <script src="../assets/appointments-store.js"></script>
+  <script>
+    window.NEXORA_SHELL = { activePage: 'pos', activeTab: 'booking' };
+    window.activateMainTab = function (tab) {
+      window.location.href = 'pos-phase-1.html?tab=' + encodeURIComponent(tab);
+    };
+  </script>
+  <script src="../assets/nexora-shell.js"></script>
+  <script src="../assets/pos-checkout.js"></script>
+</body>
+</html>

@@ -23,6 +23,10 @@ No build step is required. The app uses CDN assets for Tailwind, Font Awesome ic
 
 For new or touched card/list/workspace layouts, prefer Bootstrap-style flex row/col composition (`display: flex`, `flex-wrap`, `flex-basis`) over CSS grid. Use CSS grid only for genuinely two-dimensional surfaces such as calendars, dense matrices, or layouts with an explicit grid-only design requirement.
 
+## Responsive Density Rule
+
+For every new or touched UI page, optimize space on tablet and phone. On phone, make components smaller and denser so customers and staff do not have to scroll too much: reduce section gaps, card padding, large media/QR sizes, button heights, and oversized text while keeping labels readable and actions tappable.
+
 ## Structure
 
 ```text

@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const PAGE_URL = new URL('./qr-stations.html', import.meta.url);
 const SHELL_URL = new URL('../assets/nexora-shell.js', import.meta.url);
+const CSS_URL = new URL('../assets/qr-stations.css', import.meta.url);
 
 function source() {
   assert.ok(existsSync(PAGE_URL), 'qr-stations.html must exist');
@@ -13,6 +14,11 @@ function source() {
 function shellSource() {
   assert.ok(existsSync(SHELL_URL), 'nexora-shell.js must exist');
   return readFileSync(SHELL_URL, 'utf8');
+}
+
+function cssSource() {
+  assert.ok(existsSync(CSS_URL), 'qr-stations.css must exist');
+  return readFileSync(CSS_URL, 'utf8');
 }
 
 test('creates the QR Stations page from the shared merchant shell', () => {
@@ -57,4 +63,22 @@ test('links Stations & QR Codes sidebar items to the QR Stations page', () => {
 
   assert.match(shell, /stations:\s*'qr-stations\.html'/);
   assert.match(shell, /key:\s*'stations'[\s\S]*page:\s*'stations'[\s\S]*label:\s*'QR Stations',\s*tab:\s*'qr-stations'/);
+});
+
+test('keeps QR Stations dense on tablet and phone viewports', () => {
+  const css = cssSource();
+
+  const tabletMedia = /@media \(max-width: 900px\) \{[\s\S]*?\n\}/.exec(css)?.[0] || '';
+  assert.match(tabletMedia, /\.qr-stats-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(tabletMedia, /\.qr-station-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
+
+  const phoneMedia = /@media \(max-width: 520px\) \{[\s\S]*$/.exec(css)?.[0] || '';
+  assert.match(phoneMedia, /\.qr-stations-shell\s*\{[^}]*gap:\s*12px/);
+  assert.match(phoneMedia, /\.qr-stats-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(phoneMedia, /\.qr-stat-card\s*\{[^}]*min-height:\s*58px;[^}]*padding:\s*10px 12px/);
+  assert.match(phoneMedia, /\.qr-station-grid\s*\{[^}]*gap:\s*10px/);
+  assert.match(phoneMedia, /\.qr-station-card\s*\{[^}]*grid-template-columns:\s*76px minmax\(0, 1fr\);[^}]*padding:\s*18px 10px 10px/);
+  assert.match(phoneMedia, /\.qr-code-frame\s*\{[^}]*width:\s*68px;[^}]*height:\s*68px/);
+  assert.match(phoneMedia, /\.qr-code-art\s*\{[^}]*width:\s*52px;[^}]*height:\s*52px/);
+  assert.match(phoneMedia, /\.qr-link-device\s*\{[^}]*min-height:\s*30px/);
 });

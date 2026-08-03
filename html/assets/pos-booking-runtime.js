@@ -1703,19 +1703,9 @@ function getBookingCardCallStart(item) {
       setBookingStatus(item, 'noshow');
     }
 
-    function checkOutBookingItem(item) {
+    function openBookingCheckout(item) {
       if (!item) return;
-      var record = bookingPanelRecordById(item.dataset.bookingId);
-      if (!record) return;
-      var result = appointmentStore.update(item.dataset.bookingId, {
-        metadata: Object.assign({}, record.metadata, { checkedOut: true })
-      }, null, catalog);
-      if (!result.ok) { setBookingCreateError(result.error.message); return; }
-      renderBookingStoreRows();
-      filterBookingItems();
-      if (window.Swal) {
-        Swal.fire({ icon: 'success', title: 'Checked out', text: (record.customerName || 'Customer') + ' has been checked out.', timer: 1800, showConfirmButton: false });
-      }
+      window.location.href = 'pos-checkout.html?bookingId=' + encodeURIComponent(item.dataset.bookingId);
     }
 
     function getBookingSearchValue(item, field) {
@@ -3018,11 +3008,11 @@ function getBookingCardCallStart(item) {
         } else if (bookingAction.dataset.bookingAction === 'noshow') {
           markBookingNoShow(item);
         } else if (bookingAction.dataset.bookingAction === 'checkout') {
-          checkOutBookingItem(item);
+          openBookingCheckout(item);
         } else if (bookingAction.dataset.bookingAction === 'detail') {
           openBookingDetailModal(item);
         }
-        if (detailModal && item && (bookingAction.dataset.bookingAction === 'done' || bookingAction.dataset.bookingAction === 'noshow' || bookingAction.dataset.bookingAction === 'checkout')) {
+        if (detailModal && item && (bookingAction.dataset.bookingAction === 'done' || bookingAction.dataset.bookingAction === 'noshow')) {
           openBookingDetailModal(item);
         }
       }

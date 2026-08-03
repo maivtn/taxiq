@@ -98,9 +98,13 @@ Rules:
 
 Nexora POS screens should be optimized for landscape tablet usage in nail salons. The Vietnamese design rule is: tối ưu không gian cho tablet ngang.
 
+General responsive rule for all Nexora Touch pages: tối ưu không gian trên tablet phone; phone cần nhỏ lại tối ưu không gian tránh scroll nhiều.
+
 Rules:
 
 - Prioritize vertical efficiency before visual decoration; compact header, navigation, quick actions, filters, and summaries so the operating surface stays visible.
+- For tablet and phone breakpoints, keep dense but readable layouts. Prefer two-column summaries/cards on tablet when content still fits, and avoid collapsing to one column too early.
+- On phone, shrink spacing, card padding, media/QR previews, icon tiles, button heights, and large text before accepting long vertical scroll.
 - Use single-row controls when landscape width allows it. Let quick actions, filters, and summary controls wrap only when the viewport truly needs it.
 - Show the full primary tab set by default on landscape tablets. Use `More` only as an overflow control when the tab count truly exceeds available width.
 - Primary navigation tabs should use icon-above-label layout on compact tablet headers to save horizontal width while preserving clear click affordance.

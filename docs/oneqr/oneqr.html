@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nexora OneQR Prototype</title>
+<style>
+:root{--bg:#f5f7fb;--panel:#fff;--ink:#172033;--muted:#6d7688;--line:#e5e9f2;--primary:#6c4df6;--primary2:#8f72ff;--good:#18a66a;--warn:#ef9b21;--bad:#dc4d5b;--nav:#11182a;--shadow:0 12px 36px rgba(30,38,70,.10)}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)} button,input,select{font:inherit} button{cursor:pointer}
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}.side{background:var(--nav);color:#fff;padding:24px 18px;position:sticky;top:0;height:100vh}.brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--primary),#1ed6d0);display:grid;place-items:center;font-weight:900}.brand small{display:block;color:#9ba5bd;margin-top:2px}.nav button{width:100%;border:0;background:transparent;color:#bfc7da;text-align:left;padding:12px 14px;border-radius:12px;margin:3px 0}.nav button.active,.nav button:hover{background:#252e46;color:#fff}.sideFoot{position:absolute;left:18px;right:18px;bottom:20px;padding:13px;border:1px solid #313b54;border-radius:14px;color:#cbd2e1;font-size:13px}
+main{padding:24px 28px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.top h1{margin:0;font-size:25px}.top p{margin:5px 0 0;color:var(--muted)}.actions{display:flex;gap:10px}.btn{border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:11px;color:var(--ink)}.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.good{background:var(--good);border-color:var(--good);color:#fff}.grid{display:grid;gap:18px}.kpis{grid-template-columns:repeat(4,1fr)}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}.kpi .num{font-size:28px;font-weight:800;margin-top:8px}.kpi .sub{font-size:13px;color:var(--muted);margin-top:6px}.two{grid-template-columns:1.2fr .8fr}.three{grid-template-columns:repeat(3,1fr)}.sectionTitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.sectionTitle h2{font-size:18px;margin:0}.pill{font-size:12px;padding:5px 9px;border-radius:999px;background:#eeeaff;color:#5b40d3}.list{display:flex;flex-direction:column;gap:10px}.row{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--line);border-radius:13px}.row small{color:var(--muted)}.status{font-size:12px;padding:5px 9px;border-radius:999px}.status.green{background:#e9f8f1;color:#08784a}.status.orange{background:#fff3df;color:#ad6500}.status.blue{background:#ebf1ff;color:#3159ba}.status.gray{background:#eef0f4;color:#616a7b}.hidden{display:none!important}
+.builder{display:grid;grid-template-columns:290px 1fr 350px;gap:16px}.module{display:flex;align-items:center;gap:10px;padding:11px;border:1px solid var(--line);border-radius:12px;margin:8px 0;background:#fff}.module .drag{color:#aab0bf}.module strong{flex:1}.switch{width:38px;height:22px;border-radius:20px;background:#d8dce6;position:relative}.switch:after{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}.switch.on{background:var(--primary)}.switch.on:after{left:19px}.phone{width:320px;margin:auto;background:#111827;border-radius:34px;padding:10px;box-shadow:0 22px 55px rgba(20,25,50,.25)}.screen{background:#f7f7fb;border-radius:27px;min-height:610px;overflow:hidden}.hero{padding:23px 20px 18px;background:linear-gradient(135deg,#6c4df6,#a58cff);color:#fff}.hero .biz{display:flex;gap:12px;align-items:center}.avatar{width:46px;height:46px;border-radius:15px;background:#fff;color:var(--primary);display:grid;place-items:center;font-weight:900}.hero h3{margin:0}.hero p{margin:4px 0 0;opacity:.85;font-size:12px}.scanbody{padding:16px}.welcome{background:#fff;border-radius:15px;padding:13px;margin-bottom:12px;border:1px solid #e8e9f0}.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tile{background:#fff;border:1px solid #e6e8ef;border-radius:15px;padding:14px;min-height:88px}.tile b{display:block;margin-top:12px;font-size:13px}.tile .ico{font-size:20px}.viewAll{margin-top:12px;width:100%;padding:11px;border:0;border-radius:12px;background:#ebe7ff;color:#563cd1;font-weight:700}.tabs{display:flex;gap:7px;flex-wrap:wrap}.tab{padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:#fff}.tab.active{background:#ede9ff;border-color:#c7bbff;color:#5d42dc}.formGroup{margin-bottom:14px}.formGroup label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}.formGroup input,.formGroup select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}.note{padding:12px;border-radius:12px;background:#f0edff;color:#4f3ab4;font-size:13px}.approval{border-left:4px solid var(--warn)}.approvalHead{display:flex;justify-content:space-between;gap:10px}.approvalActions{display:flex;gap:8px;margin-top:14px}.approvalActions .btn{flex:1}.rolePreview{display:flex;gap:8px;margin-bottom:12px}.rolePreview button{flex:1}.qrbox{display:grid;place-items:center;padding:24px}.fakeqr{width:190px;height:190px;background:repeating-conic-gradient(#111 0 25%,#fff 0 50%) 0/24px 24px;border:12px solid #fff;box-shadow:0 0 0 1px var(--line)}.toast{position:fixed;right:22px;bottom:22px;background:#172033;color:#fff;padding:13px 16px;border-radius:12px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:.25s}.toast.show{opacity:1;transform:none}.mobileNav{display:none}
+@media(max-width:1100px){.kpis{grid-template-columns:1fr 1fr}.builder{grid-template-columns:1fr 1fr}.builder>.card:last-child{grid-column:1/-1}.two,.three{grid-template-columns:1fr}}
+@media(max-width:760px){.app{display:block}.side{display:none}.mobileNav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#11182a;z-index:5;padding:8px;justify-content:space-around}.mobileNav button{background:transparent;border:0;color:#fff;font-size:12px}.top{align-items:flex-start;gap:12px}.actions{flex-wrap:wrap;justify-content:flex-end}.kpis,.builder{grid-template-columns:1fr}main{padding:18px 14px 78px}.phone{width:100%;max-width:340px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand"><div class="logo">N</div><div><b>NEXORA</b><small>OneQR Control Center</small></div></div>
+  <nav class="nav">
+    <button class="active" data-view="dashboard">⌂ Tổng quan</button>
+    <button data-view="builder">✦ OneQR Builder</button>
+    <button data-view="hierarchy">⌘ Master & Child QR</button>
+    <button data-view="permissions">◈ Quyền truy cập</button>
+    <button data-view="approvals">✓ Phê duyệt</button>
+    <button data-view="scan">▣ Scan Portal</button>
+  </nav>
+  <div class="sideFoot"><b>Bitcoin Nail Bar</b><br>Primary Owner: Brian Nguyen</div>
+</aside>
+<main>
+  <div class="top">
+    <div><h1 id="pageTitle">Tổng quan OneQR</h1><p id="pageSub">Một mã QR kết nối toàn bộ hành trình khách hàng và vận hành.</p></div>
+    <div class="actions"><button class="btn" onclick="showToast('Đã lưu bản nháp')">Lưu nháp</button><button class="btn primary" onclick="showToast('OneQR đã được xuất bản')">Xuất bản</button></div>
+  </div>
+
+  <section id="dashboard" class="view">
+    <div class="grid kpis">
+      <div class="card kpi"><small>Lượt scan hôm nay</small><div class="num">284</div><div class="sub">↑ 18% so với hôm qua</div></div>
+      <div class="card kpi"><small>OneQR đang hoạt động</small><div class="num">12</div><div class="sub">1 Master · 11 Child QR</div></div>
+      <div class="card kpi"><small>Yêu cầu chờ duyệt</small><div class="num">3</div><div class="sub">1 yêu cầu ưu tiên</div></div>
+      <div class="card kpi"><small>Tỷ lệ tự phục vụ</small><div class="num">91%</div><div class="sub">Không cần kiosk riêng</div></div>
+    </div>
+    <div class="grid two" style="margin-top:18px">
+      <div class="card"><div class="sectionTitle"><h2>Hoạt động gần đây</h2><span class="pill">Live</span></div><div class="list">
+        <div class="row"><div><b>Khách check-in</b><br><small>Front Door QR · 2 phút trước</small></div><span class="status green">Hoàn tất</span></div>
+        <div class="row"><div><b>Chloe yêu cầu discount 20%</b><br><small>Invoice $180 · 5 phút trước</small></div><span class="status orange">Chờ duyệt</span></div>
+        <div class="row"><div><b>Party Room QR được cập nhật</b><br><small>Kế thừa branding từ Master</small></div><span class="status blue">Đã đồng bộ</span></div>
+      </div></div>
+      <div class="card"><div class="sectionTitle"><h2>OneQR Promise</h2></div><div class="note"><b>Print Once. Configure Forever.</b><br><br>Khách dùng điện thoại của họ. Doanh nghiệp dùng thiết bị đang có. Không cần kiosk hoặc iPad chuyên dụng.</div><button class="btn primary" style="width:100%;margin-top:15px" onclick="openView('builder')">Mở OneQR Builder</button></div>
+    </div>
+  </section>
+
+  <section id="builder" class="view hidden">
+    <div class="builder">
+      <div class="card"><div class="sectionTitle"><h2>Modules</h2><span class="pill">Kéo & thả</span></div>
+        <div id="moduleList"></div>
+        <button class="btn" style="width:100%;margin-top:8px" onclick="addModule()">+ Thêm module</button>
+      </div>
+      <div class="card"><div class="sectionTitle"><h2>Cấu hình</h2><span class="status green">Master QR</span></div>
+        <div class="formGroup"><label>Tên OneQR</label><input value="Bitcoin Nail Bar — Main" /></div>
+        <div class="formGroup"><label>Thông điệp chào mừng</label><input value="Welcome to Bitcoin Nail Bar" /></div>
+        <div class="formGroup"><label>Template</label><select><option>Beauty & Salon</option><option>Business</option><option>Organization</option><option>Government Service</option></select></div>
+        <div class="formGroup"><label>Hiển thị đầu tiên</label><select><option>Tự động đề xuất theo người dùng</option><option>Danh sách tất cả module</option><option>Trang giới thiệu</option></select></div>
+        <div class="formGroup"><label>Nhận diện</label><select><option>Public trước, xác thực khi cần</option><option>Luôn đăng nhập</option></select></div>
+        <div class="note">AI có thể ưu tiên nội dung nhưng không được tự cấp quyền hoặc tự phê duyệt.</div>
+      </div>
+      <div class="card"><div class="sectionTitle"><h2>Live Preview</h2><span class="pill">Mobile</span></div>
+        <div class="rolePreview"><button class="tab active" onclick="setRole('customer',this)">Customer</button><button class="tab" onclick="setRole('staff',this)">Staff</button><button class="tab" onclick="setRole('owner',this)">Owner</button></div>
+        <div class="phone"><div class="screen"><div class="hero"><div class="biz"><div class="avatar">BN</div><div><h3>Bitcoin Nail Bar</h3><p>One QR. Everything Connected.</p></div></div></div><div class="scanbody"><div class="welcome" id="welcomeText"><b>Welcome back, Brian 👋</b><br><small>Booking của bạn bắt đầu lúc 3:00 PM</small></div><div class="tiles" id="previewTiles"></div><button class="viewAll">Xem tất cả</button></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="hierarchy" class="view hidden">
+    <div class="grid two">
+      <div class="card"><div class="sectionTitle"><h2>QR Hierarchy</h2><button class="btn">+ Child QR</button></div><div class="list">
+        <div class="row"><div><b>◆ Bitcoin Nail Bar — Main</b><br><small>Master QR · Active</small></div><span class="status green">Master</span></div>
+        <div class="row"><div><b>↳ Front Door Check-in</b><br><small>Check-in, Booking</small></div><span class="status blue">Inherited</span></div>
+        <div class="row"><div><b>↳ Party Room</b><br><small>Event, Booking, Payment</small></div><span class="status orange">Customized</span></div>
+        <div class="row"><div><b>↳ Chloe Tip Profile</b><br><small>Tip, Review</small></div><span class="status orange">Customized</span></div>
+        <div class="row"><div><b>↳ Table 06</b><br><small>Payment, Tip</small></div><span class="status gray">1 Disabled</span></div>
+      </div></div>
+      <div class="card qrbox"><div class="fakeqr"></div><h3>Bitcoin Nail Bar — Main</h3><p style="color:var(--muted);text-align:center">QR giữ nguyên. Nội dung và quyền phía sau có thể cập nhật bất kỳ lúc nào.</p><div class="actions"><button class="btn" onclick="showToast('Đã tạo bản in PDF')">Tải bản in</button><button class="btn primary" onclick="showToast('Đã sao chép link OneQR')">Chia sẻ</button></div></div>
+    </div>
+  </section>
+
+  <section id="permissions" class="view hidden">
+    <div class="grid two">
+      <div class="card"><div class="sectionTitle"><h2>Permission Profiles</h2><button class="btn">+ Tạo profile</button></div><div class="list">
+        <div class="row"><div><b>Public Visitor</b><br><small>Menu, Services, Booking</small></div><span class="status green">Public</span></div>
+        <div class="row"><div><b>Customer</b><br><small>Check-in, Rewards, Membership</small></div><span class="status blue">OTP</span></div>
+        <div class="row"><div><b>Staff</b><br><small>Clock-in, Queue, Service Status</small></div><span class="status orange">Assigned</span></div>
+        <div class="row"><div><b>Manager</b><br><small>Operations, Approve ≤ 15%</small></div><span class="status orange">Restricted</span></div>
+        <div class="row"><div><b>Primary Owner</b><br><small>Full workspace control</small></div><span class="status green">Owner</span></div>
+      </div></div>
+      <div class="card"><div class="sectionTitle"><h2>Context Rules</h2></div>
+        <div class="formGroup"><label>Selected profile</label><select><option>Manager</option><option>Staff</option><option>Customer</option></select></div>
+        <div class="formGroup"><label>Location scope</label><select><option>Houston Branch only</option><option>All branches</option></select></div>
+        <div class="formGroup"><label>Discount limit</label><input value="15%" /></div>
+        <div class="formGroup"><label>Outside limit</label><select><option>Create Approval Request</option><option>Deny</option></select></div>
+        <div class="note">Khi quyền xung đột, giới hạn hoặc từ chối được ưu tiên. Ngoại lệ phải được cấu hình rõ ràng.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="approvals" class="view hidden">
+    <div class="grid two">
+      <div class="card approval"><div class="approvalHead"><div><span class="status orange">Ưu tiên</span><h2 style="margin:10px 0 4px">Discount Request</h2><small>5 phút trước · Houston Branch</small></div><div style="text-align:right"><b>$180.00</b><br><small>Invoice total</small></div></div><hr style="border:0;border-top:1px solid var(--line);margin:16px 0"><p><b>Chloe</b> yêu cầu giảm giá <b>20%</b> cho khách <b>Sarah Lee</b>.</p><p style="color:var(--muted)">Lý do: Khách VIP gặp sự cố chờ lâu hơn dự kiến.</p><div class="approvalActions"><button class="btn" onclick="decision('Yêu cầu thêm thông tin')">Yêu cầu chi tiết</button><button class="btn" onclick="decision('Đã từ chối')">Từ chối</button><button class="btn good" onclick="decision('Đã phê duyệt')">Phê duyệt</button></div></div>
+      <div class="card"><div class="sectionTitle"><h2>Approval Rules</h2></div><div class="list">
+        <div class="row"><div><b>Discount ≤ 15%</b><br><small>Manager được phép</small></div><span class="status green">Tự xử lý</span></div>
+        <div class="row"><div><b>Discount > 15%</b><br><small>Brian Nguyen</small></div><span class="status orange">Cần duyệt</span></div>
+        <div class="row"><div><b>Refund > $100</b><br><small>Owner + Finance</small></div><span class="status orange">2 cấp</span></div>
+        <div class="row"><div><b>Đổi payout account</b><br><small>Primary Owner only</small></div><span class="status gray">Nhạy cảm</span></div>
+      </div></div>
+    </div>
+  </section>
+
+  <section id="scan" class="view hidden">
+    <div class="grid two">
+      <div class="card"><div class="sectionTitle"><h2>Scan Portal Simulator</h2><span class="pill">Không cần app</span></div><div class="formGroup"><label>Người truy cập</label><select id="simRole" onchange="renderSimulator()"><option value="public">Khách mới / Anonymous</option><option value="customer">Khách quay lại</option><option value="staff">Nhân viên</option><option value="owner">Owner</option></select></div><div class="formGroup"><label>Tình huống</label><select id="simContext" onchange="renderSimulator()"><option value="normal">Bình thường</option><option value="pending">Có tác vụ dang dở</option><option value="untrusted">Thiết bị lạ</option></select></div><div class="note">Cùng một QR, nhưng nội dung và hành động thay đổi theo vai trò, quyền và bối cảnh.</div></div>
+      <div class="card"><div class="phone"><div class="screen"><div class="hero"><div class="biz"><div class="avatar">BN</div><div><h3>Bitcoin Nail Bar</h3><p id="simSubtitle">Welcome</p></div></div></div><div class="scanbody"><div class="welcome" id="simWelcome"></div><div class="tiles" id="simTiles"></div><button class="viewAll">Xem tất cả</button></div></div></div></div>
+    </div>
+  </section>
+</main>
+</div>
+<div class="mobileNav"><button onclick="openView('dashboard')">Home</button><button onclick="openView('builder')">Builder</button><button onclick="openView('approvals')">Duyệt</button><button onclick="openView('scan')">Scan</button></div>
+<div class="toast" id="toast"></div>
+<script>
+const modules=['Check-in','Booking','Services','Payment','Tip','Review','Rewards','Membership','AI Assistant','Staff Portal'];
+let enabled=new Set(modules);
+const moduleIcons={'Check-in':'✓','Booking':'◷','Services':'✦','Payment':'$','Tip':'♡','Review':'★','Rewards':'◆','Membership':'♛','AI Assistant':'✦','Staff Portal':'◎'};
+function renderModules(){const el=document.getElementById('moduleList');el.innerHTML=modules.map((m,i)=>`<div class="module"><span class="drag">⋮⋮</span><span>${moduleIcons[m]}</span><strong>${m}</strong><span class="switch ${enabled.has(m)?'on':''}" onclick="toggleModule('${m}',this)"></span></div>`).join('');renderPreview('customer')}
+function toggleModule(m,el){enabled.has(m)?enabled.delete(m):enabled.add(m);el.classList.toggle('on');renderPreview(currentRole)}
+function addModule(){showToast('Marketplace module sẽ được bổ sung ở phiên bản tiếp theo')}
+let currentRole='customer';
+const roleData={customer:{welcome:'<b>Welcome back, Brian 👋</b><br><small>Booking của bạn bắt đầu lúc 3:00 PM</small>',mods:['Check-in','Booking','Rewards','Membership','Tip','Review']},staff:{welcome:'<b>Chào Chloe</b><br><small>Ca làm việc 10:00 AM–7:00 PM</small>',mods:['Staff Portal','Check-in','Services','Tip']},owner:{welcome:'<b>Good afternoon, Brian</b><br><small>3 yêu cầu đang chờ phê duyệt</small>',mods:['Staff Portal','Payment','AI Assistant','Booking']}};
+function setRole(role,btn){currentRole=role;document.querySelectorAll('.rolePreview .tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');renderPreview(role)}
+function renderPreview(role){const d=roleData[role]||roleData.customer;document.getElementById('welcomeText').innerHTML=d.welcome;document.getElementById('previewTiles').innerHTML=d.mods.filter(x=>enabled.has(x)).slice(0,6).map(x=>`<div class="tile"><span class="ico">${moduleIcons[x]}</span><b>${x}</b></div>`).join('')}
+const titles={dashboard:['Tổng quan OneQR','Một mã QR kết nối toàn bộ hành trình khách hàng và vận hành.'],builder:['OneQR Builder','Cấu hình module, quyền và trải nghiệm mà không cần in lại QR.'],hierarchy:['Master & Child QR','Quản lý một QR gốc và các QR liên kết theo mục đích.'],permissions:['Quyền truy cập','Đúng người, đúng quyền, đúng bối cảnh.'],approvals:['Trung tâm phê duyệt','Hành động vượt quyền được chuyển đến đúng người quyết định.'],scan:['Scan Portal','Mô phỏng trải nghiệm của từng người trên cùng một QR.']};
+function openView(id){document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));document.getElementById('pageTitle').textContent=titles[id][0];document.getElementById('pageSub').textContent=titles[id][1];if(id==='scan')renderSimulator();window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>openView(b.dataset.view));
+function showToast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2400)}
+function decision(t){showToast(t);document.querySelector('.approval').style.opacity=.55}
+function renderSimulator(){const role=document.getElementById('simRole').value,ctx=document.getElementById('simContext').value;let w='',mods=[],sub='One QR. Everything Connected.';
+if(role==='public'){w='<b>Welcome to Bitcoin Nail Bar</b><br><small>Scan để xem dịch vụ hoặc check-in</small>';mods=['Check-in','Booking','Services','Review']}
+if(role==='customer'){w='<b>Welcome back, Brian 👋</b><br><small>Bạn có 250 reward points</small>';mods=['Check-in','Booking','Rewards','Membership','Tip','Review']}
+if(role==='staff'){w='<b>Chào Chloe</b><br><small>Bạn đang ở lượt số 2</small>';mods=['Staff Portal','Check-in','Services','Tip']}
+if(role==='owner'){w='<b>Good afternoon, Brian</b><br><small>3 yêu cầu đang chờ duyệt</small>';mods=['Staff Portal','Payment','AI Assistant','Booking']}
+if(ctx==='pending'){w='<b>Tiếp tục công việc đang dang dở</b><br><small>Checkout chưa hoàn tất</small>';mods=['Payment','Tip','Review',...mods]}
+if(ctx==='untrusted'){w='<b>Cần xác minh thêm</b><br><small>Thiết bị này chưa được tin cậy</small>';mods=mods.filter(x=>!['Payment','Staff Portal'].includes(x));sub='Limited access for your protection'}
+document.getElementById('simWelcome').innerHTML=w;document.getElementById('simSubtitle').textContent=sub;document.getElementById('simTiles').innerHTML=[...new Set(mods)].slice(0,6).map(x=>`<div class="tile"><span class="ico">${moduleIcons[x]||'•'}</span><b>${x}</b></div>`).join('')}
+renderModules();renderSimulator();
+</script>
+</body>
+</html>

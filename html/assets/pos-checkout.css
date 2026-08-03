@@ -1,0 +1,373 @@
+/* Checkout page — content structure adapted for a Ready-to-pay booking ticket.
+   Reuses Nexora tokens (nexora-shell.css) and shared components (pos-booking.css:
+   .badge/.booking-status, .booking-mini-button, .booking-primary-button, .booking-input). */
+
+:root {
+  --nexora-success: #00b873;
+  --nexora-warning: #f59e0b;
+  --nexora-danger: #ef4444;
+  --nexora-brand-dark: #393bc8;
+}
+
+.content { min-height: calc(100vh - 64px); padding: 16px 16px 96px; }
+@media (min-width: 1201px) { .content { padding: 28px 28px 96px; } }
+
+.page-title { margin: 0; color: var(--nexora-text); font-size: 24px; font-weight: 800; line-height: 32px; }
+.page-description { margin: 4px 0 0; color: var(--nexora-muted); font-size: 13.5px; }
+
+.checkout-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.checkout-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--nexora-muted);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-decoration: none;
+  margin-bottom: 6px;
+}
+
+.checkout-back-link:hover { color: var(--nexora-brand); }
+
+.checkout-empty:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 420px;
+  padding: 24px;
+}
+
+.checkout-empty i { font-size: 22px; color: var(--nexora-subtle); }
+.checkout-empty span { color: var(--nexora-muted); font-size: 13px; }
+
+.checkout-layout:not([hidden]) {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.checkout-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1 1 560px;
+  min-width: 320px;
+}
+
+.checkout-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1 1 300px;
+  min-width: 280px;
+  max-width: 360px;
+}
+
+.checkout-panel {
+  background: var(--nexora-surface);
+  border: 1px solid var(--nexora-border);
+  border-radius: 16px;
+  box-shadow: var(--nexora-card-shadow);
+  padding: 18px;
+}
+
+.checkout-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.checkout-panel-head h2 {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--nexora-text);
+}
+
+.checkout-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--nexora-rule, var(--nexora-border));
+}
+
+.checkout-line > * { flex: 1 1 0; min-width: 0; }
+.checkout-line > *:last-child { flex: 0 0 auto; text-align: right; font-weight: 800; }
+
+.checkout-line-head {
+  color: var(--nexora-subtle);
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom-color: var(--nexora-border);
+}
+
+.checkout-line-title { font-weight: 800; color: var(--nexora-text); font-size: 13px; }
+.checkout-line-sub { color: var(--nexora-subtle); font-size: 11.5px; margin-top: 2px; }
+
+.checkout-add-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.checkout-tip-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tip-chip {
+  border: 1px solid var(--nexora-border);
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--nexora-muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.tip-chip:hover { border-color: rgba(70, 72, 216, 0.4); }
+
+.tip-chip.is-active {
+  border-color: transparent;
+  background: var(--nexora-brand);
+  color: #fff;
+}
+
+.checkout-tip-split {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--nexora-surface-muted);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.checkout-tip-split strong { display: block; font-size: 13px; color: var(--nexora-text); }
+.checkout-tip-split span { color: var(--nexora-subtle); font-size: 11.5px; }
+.checkout-tip-amount { font-size: 18px; font-weight: 900; color: var(--nexora-success); }
+
+.checkout-note {
+  margin-top: 12px;
+  color: var(--nexora-muted);
+  font-size: 12px;
+  background: rgba(70, 72, 216, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.checkout-pay-methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.pay-method-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 130px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 12px;
+  background: #fff;
+  padding: 12px 14px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--nexora-text);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.pay-method-card:hover { border-color: rgba(70, 72, 216, 0.4); }
+
+.pay-method-card.is-active {
+  border-color: transparent;
+  background: var(--nexora-brand);
+  color: #fff;
+}
+
+.checkout-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.checkout-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.checkout-form-row .checkout-field {
+  flex: 1 1 200px;
+}
+
+.checkout-field span {
+  color: var(--nexora-subtle);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.checkout-receipt { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+
+.receipt-row:not([hidden]) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--nexora-muted);
+}
+
+.receipt-row strong { color: var(--nexora-text); }
+
+.receipt-row-total {
+  border-top: 1px dashed var(--nexora-border);
+  padding-top: 10px;
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.receipt-row-total strong { color: var(--nexora-text); font-size: 17px; }
+
+.checkout-charge-button {
+  width: 100%;
+  justify-content: center;
+  font-size: 13.5px;
+}
+
+.checkout-charge-button.is-paid {
+  background: var(--nexora-success);
+  cursor: default;
+  transform: none;
+}
+
+.checkout-sync {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.checkout-sync > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--nexora-subtle);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.checkout-sync > div i { font-size: 13px; }
+
+.checkout-sync > div.is-complete {
+  color: var(--nexora-success);
+}
+
+.checkout-sync > div.is-complete i::before { content: "\f26a"; } /* bi-check-circle-fill */
+
+.checkout-next-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkout-next-list > div { display: flex; flex-direction: column; gap: 2px; }
+.checkout-next-list strong { font-size: 12.5px; color: var(--nexora-text); }
+.checkout-next-list span { font-size: 11.5px; color: var(--nexora-subtle); }
+
+.checkout-modal-backdrop:not([hidden]) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(11, 18, 32, 0.45);
+  padding: 20px;
+}
+
+.checkout-modal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 380px;
+  background: var(--nexora-surface);
+  border-radius: 16px;
+  box-shadow: var(--nexora-soft-shadow);
+  overflow: hidden;
+}
+
+.checkout-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--nexora-border);
+}
+
+.checkout-modal-head h2 { margin: 0; font-size: 14.5px; font-weight: 800; color: var(--nexora-text); }
+
+.checkout-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--nexora-muted);
+}
+
+.checkout-modal-close:hover { color: var(--nexora-brand); border-color: var(--nexora-brand); }
+
+.checkout-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+}
+
+.checkout-modal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--nexora-border);
+  background: var(--nexora-surface-muted);
+}
+
+.checkout-modal-foot .booking-mini-button { margin-right: auto; }
+
+.checkout-discount-type {
+  display: flex;
+  gap: 8px;
+}
