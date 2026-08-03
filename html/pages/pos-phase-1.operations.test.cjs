@@ -100,6 +100,9 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   const categoryModalRuntime = html.match(/function openCategoryModal\([\s\S]*?function serviceCategoryManagerHtml\(categoryRows\)/)?.[0] || '';
   const servicesRuntime = html.match(/function mgServicesHtml\(\)[\s\S]*?function mgStaffHtml\(\)/)?.[0] || '';
   const serviceModalRuntime = html.match(/function openServiceModal\([\s\S]*?function mgServicesHtml\(\)/)?.[0] || '';
+  const serviceCollapseResetRuntime = html.match(/function resetServiceCategoryCollapses\(\)[\s\S]*?function isServiceCategoryCollapsed\(name\)/)?.[0] || '';
+  const managementClicksRuntime = html.match(/\/\* ── management: clicks ── \*\/[\s\S]*?\/\* ── management: numeric \/ text edits ── \*\//)?.[0] || '';
+  const activateTabRuntime = html.match(/function activateTab\(id\) \{[\s\S]*?\/\/ The sidebar's POS sub-items drive this page's tabs through the shell's navigate hook\./)?.[0] || '';
 
   assert.match(managementPanel, /data-mg-subtab="services"[^>]*>Services/);
   assert.match(html, /var SERVICE_MENU_URL = '\.\.\/menu\/menu\.json'/);
@@ -117,6 +120,9 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(serviceCategoryRowsRuntime, /return rows;/);
   assert.doesNotMatch(serviceCategoryRowsRuntime, /rows\.sort|name\.localeCompare/);
   assert.match(html, /var serviceCollapsedCategories = \{\};/);
+  assert.match(html, /function resetServiceCategoryCollapses\(\)/);
+  assert.match(serviceCollapseResetRuntime, /serviceCollapsedCategories = \{\};/);
+  assert.match(serviceCollapseResetRuntime, /serviceCategoryManagerCollapsed = true;/);
   assert.match(servicesRuntime, /var services = salonCatalog\.services\.slice\(\);/);
   assert.doesNotMatch(servicesRuntime, /salonCatalog\.services\.slice\(\)\.sort|serviceCategoryLabel\(a\)\.localeCompare|a\.name\.localeCompare/);
   assert.match(servicesRuntime, /var serviceCategoryGroups = groupedServicesByCategory\(services\);/);
@@ -172,6 +178,10 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(html, /var serviceCategoryAdd = e\.target\.closest\('\[data-mg-service-add-category\]'\);/);
   assert.match(html, /openServiceModal\(null, 'add', serviceCategoryAdd\.getAttribute\('data-mg-service-add-category'\)\);/);
   assert.match(html, /var serviceCategoryToggle = e\.target\.closest\('\[data-mg-service-category-toggle\]'\);/);
+  assert.match(managementClicksRuntime, /var nextMgSubtab = mgTab\.getAttribute\('data-mg-subtab'\);/);
+  assert.match(managementClicksRuntime, /if \(nextMgSubtab === 'services'\) resetServiceCategoryCollapses\(\);/);
+  assert.match(managementClicksRuntime, /serviceViewMode = serviceView\.getAttribute\('data-mg-service-view-target'\) === 'card' \? 'card' : 'table';[\s\S]{0,100}resetServiceCategoryCollapses\(\);/);
+  assert.match(activateTabRuntime, /if \(id === 'management'\) \{[\s\S]{0,80}if \(mgSubtab === 'services'\) resetServiceCategoryCollapses\(\);[\s\S]{0,80}renderManagement\(\);[\s\S]{0,20}\}/);
   assert.ok(
     html.indexOf("var serviceCategoryAdd = e.target.closest('[data-mg-service-add-category]');") <
       html.indexOf("var serviceCategoryToggle = e.target.closest('[data-mg-service-category-toggle]');"),

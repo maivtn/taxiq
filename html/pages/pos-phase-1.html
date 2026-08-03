@@ -4670,6 +4670,11 @@
       var categoryModalKey = null;
       var categoryModalMode = 'edit';
 
+      function resetServiceCategoryCollapses() {
+        serviceCollapsedCategories = {};
+        serviceCategoryManagerCollapsed = true;
+      }
+
       function isServiceCategoryCollapsed(name) {
         var key = serviceCategoryKey(name);
         return Object.prototype.hasOwnProperty.call(serviceCollapsedCategories, key) ? serviceCollapsedCategories[key] : true;
@@ -5412,11 +5417,18 @@
         if (!e.target.closest('[data-pos-panel="management"]')) return;
 
         var mgTab = e.target.closest('[data-mg-subtab]');
-        if (mgTab) { mgSubtab = mgTab.getAttribute('data-mg-subtab'); renderManagement(); return; }
+        if (mgTab) {
+          var nextMgSubtab = mgTab.getAttribute('data-mg-subtab');
+          if (nextMgSubtab === 'services') resetServiceCategoryCollapses();
+          mgSubtab = nextMgSubtab;
+          renderManagement();
+          return;
+        }
 
         var serviceView = e.target.closest('[data-mg-service-view-target]');
         if (serviceView) {
           serviceViewMode = serviceView.getAttribute('data-mg-service-view-target') === 'card' ? 'card' : 'table';
+          resetServiceCategoryCollapses();
           renderManagement();
           return;
         }
@@ -6112,7 +6124,10 @@
         window.history.replaceState({ tab: id }, '', url.search);
         if (id === 'checkin' || id === 'tickets') renderFloor();
         if (id === 'clock') renderClock();
-        if (id === 'management') renderManagement();
+        if (id === 'management') {
+          if (mgSubtab === 'services') resetServiceCategoryCollapses();
+          renderManagement();
+        }
         if (id === 'booking') { initBookingTab(); renderBookingTab(); }
         if (id === 'customers') renderCustomersTab();
         if (id !== 'sms') closeComposer();
