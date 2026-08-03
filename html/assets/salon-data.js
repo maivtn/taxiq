@@ -26,6 +26,17 @@
       name: 'Bitcoin Nail Bar',
       location: 'Houston, TX',
     },
+    categories: [
+      { id: 'pedicure', name: 'Pedicure', kind: 'service', active: true },
+      { id: 'manicure', name: 'Manicure', kind: 'service', active: true },
+      { id: 'acrylic', name: 'Acrylic', kind: 'service', active: true },
+      { id: 'dipping-nail', name: 'Dipping Nail', kind: 'service', active: true },
+      { id: 'gel-service', name: 'Gel Service', kind: 'service', active: true },
+      { id: 'waxing', name: 'Waxing', kind: 'service', active: true },
+      { id: 'add-on-extra', name: 'Add-on & Extra', kind: 'add-on', active: true },
+      { id: 'kids-menu', name: "Kid's Menu", kind: 'service', active: true },
+      { id: 'eyelash', name: 'Eyelash', kind: 'service', active: true },
+    ],
     services: [
       { id: 'pedi', name: 'Pedicure', aliases: ['Classic Pedicure', 'Pedicure Gel Polish'], price: 30, durationMin: 60, requiredSkill: 'Pedicure', icon: '🦶', active: true },
       { id: 'mani', name: 'Manicure', aliases: ['Classic Manicure'], price: 22, durationMin: 45, requiredSkill: 'Manicure', icon: '🤲', active: true },
@@ -57,6 +68,13 @@
   function asString(value, fallback) {
     var result = value == null ? '' : String(value).trim();
     return result || (fallback || '');
+  }
+
+  function slug(value) {
+    return asString(value, 'category')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || 'category';
   }
 
   function uniqueStrings(values) {
@@ -96,6 +114,55 @@
     };
   }
 
+  function serviceCategoryName(service) {
+    return asString(service && service.categoryName, asString(service && service.requiredSkill, 'Other services'));
+  }
+
+  function categoryKey(value) {
+    return asString(value).toLowerCase();
+  }
+
+  function normalizeCategories(categories, services) {
+    var seenIds = {};
+    var seenNames = {};
+    var result = [];
+
+    function addCategory(category, index) {
+      category = category || {};
+      var name = asString(category.name || category.title, 'Other services');
+      var baseId = asString(category.id, slug(name) + '-' + index);
+      var id = baseId;
+      var suffix = 1;
+      while (seenIds[id]) id = baseId + '-' + suffix++;
+      var key = categoryKey(name);
+      if (seenNames[key]) return;
+      seenIds[id] = true;
+      seenNames[key] = true;
+      result.push({
+        id: id,
+        name: name,
+        kind: asString(category.kind, 'service'),
+        active: category.active !== false,
+        source: asString(category.source),
+      });
+    }
+
+    (Array.isArray(categories) ? categories : []).forEach(addCategory);
+    (Array.isArray(services) ? services : []).forEach(function (service, index) {
+      var name = serviceCategoryName(service);
+      if (!seenNames[categoryKey(name)]) {
+        addCategory({
+          id: asString(service && service.categoryId, slug(name)),
+          name: name,
+          kind: service && service.type === 'add-on' ? 'add-on' : 'service',
+          active: true,
+          source: service && service.source
+        }, result.length + index);
+      }
+    });
+    return result;
+  }
+
   function normalizeTechnician(technician) {
     technician = technician || {};
     return {
@@ -126,16 +193,21 @@
   function normalizeCatalog(input) {
     input = input || {};
     var salon = input.salon || {};
+    var services = uniqueById(
+      Array.isArray(input.services) && input.services.length ? input.services : DEFAULT_CATALOG.services,
+      normalizeService
+    );
+    var sourceCategories = Array.isArray(input.categories) && input.categories.length
+      ? input.categories
+      : DEFAULT_CATALOG.categories;
     return {
       salon: {
         id: SALON_ID,
         name: asString(salon.name, DEFAULT_CATALOG.salon.name),
         location: asString(salon.location, DEFAULT_CATALOG.salon.location),
       },
-      services: uniqueById(
-        Array.isArray(input.services) && input.services.length ? input.services : DEFAULT_CATALOG.services,
-        normalizeService
-      ),
+      categories: normalizeCategories(sourceCategories, services),
+      services: services,
       technicians: uniqueById(
         Array.isArray(input.technicians) && input.technicians.length ? input.technicians : DEFAULT_CATALOG.technicians,
         normalizeTechnician
@@ -197,6 +269,17 @@
     });
   }
 
+  function salonCategoryFromMenuCategory(category) {
+    category = category || {};
+    return {
+      id: category.id,
+      name: category.name,
+      kind: category.kind,
+      active: true,
+      source: MENU_SERVICE_SOURCE
+    };
+  }
+
   function catalogUsesMenuServices(catalog) {
     return !!((catalog && catalog.services) || []).some(function (service) {
       return service && service.source === MENU_SERVICE_SOURCE;
@@ -212,6 +295,7 @@
     }
     return {
       catalog: normalizeCatalog(Object.assign({}, normalized, {
+        categories: (Array.isArray(serviceCatalog.categories) ? serviceCatalog.categories : []).map(salonCategoryFromMenuCategory),
         services: menuServices.map(salonServiceFromMenuService)
       })),
       seeded: true

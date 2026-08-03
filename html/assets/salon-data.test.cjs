@@ -29,8 +29,11 @@ test('default catalog is scoped to one salon with unique services and technician
   assert.equal(SALON_ID, 'bitcoin-nail-bar-houston');
   assert.equal(STORAGE_KEY, 'nexora:salon-data:v1:bitcoin-nail-bar-houston');
   assert.equal(DEFAULT_CATALOG.salon.id, SALON_ID);
+  assert.ok(Array.isArray(DEFAULT_CATALOG.categories));
+  assert.equal(new Set(DEFAULT_CATALOG.categories.map((item) => item.id)).size, DEFAULT_CATALOG.categories.length);
   assert.equal(new Set(DEFAULT_CATALOG.services.map((item) => item.id)).size, DEFAULT_CATALOG.services.length);
   assert.equal(new Set(DEFAULT_CATALOG.technicians.map((item) => item.id)).size, DEFAULT_CATALOG.technicians.length);
+  assert.ok(DEFAULT_CATALOG.categories.some((item) => item.name === 'Pedicure'));
   assert.ok(DEFAULT_CATALOG.services.some((item) => item.name === 'Eyelash'));
   assert.ok(DEFAULT_CATALOG.technicians.some((item) => item.name === 'Mai P.'));
 });
@@ -45,9 +48,11 @@ test('lookup resolves canonical IDs, names, and aliases', () => {
 test('normalizeCatalog removes duplicate IDs and supplies safe defaults', () => {
   const catalog = normalizeCatalog({
     salon: { id: SALON_ID, name: 'Test Salon', location: 'Houston, TX' },
+    categories: [{ id: 'pedi', name: 'Pedicure' }, { id: 'pedi', name: 'Duplicate' }],
     services: [{ id: 'pedi', name: 'Pedicure' }, { id: 'pedi', name: 'Duplicate' }],
     technicians: [{ id: 't1', name: 'Tina' }, { id: 't1', name: 'Duplicate' }],
   });
+  assert.ok(catalog.categories.some((item) => item.name === 'Pedicure'));
   assert.equal(catalog.services.length, 1);
   assert.equal(catalog.technicians.length, 1);
   assert.equal(catalog.services[0].active, true);
@@ -59,6 +64,8 @@ test('seeds editable salon services from the menu JSON catalog once', () => {
   const seeded = seedServicesFromMenuCatalog(DEFAULT_CATALOG, menuCatalog);
 
   assert.equal(seeded.seeded, true);
+  assert.ok(seeded.catalog.categories.some((category) => category.id === 'pedicure' && category.name === 'Pedicure' && category.source === MENU_SERVICE_SOURCE));
+  assert.ok(seeded.catalog.categories.some((category) => category.id === 'additional' && category.kind === 'add-on'));
   assert.equal(seeded.catalog.services.length, 96);
   assert.deepEqual({
     id: seeded.catalog.services[0].id,
@@ -102,9 +109,12 @@ test('saveCatalog writes a normalized clone under the salon-scoped key', () => {
   const target = storage();
   const result = saveCatalog({
     salon: { id: SALON_ID, name: 'Saved Salon', location: 'Houston, TX' },
+    categories: [{ id: 'custom', name: 'Custom Category', kind: 'service' }],
     services: [], technicians: [],
   }, target);
   assert.equal(result.salon.name, 'Saved Salon');
+  assert.equal(result.categories[0].name, 'Custom Category');
+  assert.equal(loadCatalog(target).categories[0].name, 'Custom Category');
   assert.match(target.getItem('nexora:salon-data:v1:' + SALON_ID), /Saved Salon/);
 });
 
