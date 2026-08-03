@@ -26,7 +26,7 @@ var DEFAULT_MAIN_TAB = 'booking';
     var appointmentTicketUtils = window.NEXORA_APPOINTMENT_TICKETS;
     var appointmentServiceCatalogLoader = window.NEXORA_APPOINTMENT_SERVICE_CATALOG;
     var appointmentServiceCatalog = null;
-    var APPOINTMENT_SERVICE_CATALOG_URL = '../assets/booking-service-catalog-draft.json';
+    var APPOINTMENT_SERVICE_CATALOG_URL = '../menu/menu.json';
     var catalog = salonData.loadCatalog();
     var BOOKING_CALENDAR_SERVICE_OPTIONS = [];
     var BOOKING_CALENDAR_COLORS = {
@@ -47,9 +47,11 @@ var DEFAULT_MAIN_TAB = 'booking';
       catalog = salonData.loadCatalog();
       BOOKING_CALENDAR_SERVICE_OPTIONS = [];
       BOOKING_CALENDAR_SERVICE_DURATIONS = {};
-      var serviceSource = appointmentServiceCatalog && appointmentServiceCatalog.services.length
+      var activeSalonServices = catalog.services.filter(function(service) { return service.active; });
+      var hasManagedMenuServices = salonData.catalogUsesMenuServices && salonData.catalogUsesMenuServices(catalog);
+      var serviceSource = (!hasManagedMenuServices && appointmentServiceCatalog && appointmentServiceCatalog.services.length)
         ? appointmentServiceCatalog.services
-        : catalog.services.filter(function(service) { return service.active; });
+        : activeSalonServices;
       serviceSource.forEach(function(service) {
         var salonService = salonData.findService(catalog, service.id) || salonData.findService(catalog, service.name);
         BOOKING_CALENDAR_SERVICE_OPTIONS.push({
@@ -89,6 +91,10 @@ var DEFAULT_MAIN_TAB = 'booking';
       if (!appointmentServiceCatalogLoader || typeof appointmentServiceCatalogLoader.load !== 'function') return;
       appointmentServiceCatalogLoader.load(APPOINTMENT_SERVICE_CATALOG_URL).then(function(nextCatalog) {
         appointmentServiceCatalog = nextCatalog;
+        if (salonData.seedServicesFromMenuCatalog) {
+          var seeded = salonData.seedServicesFromMenuCatalog(salonData.loadCatalog(), nextCatalog);
+          if (seeded.seeded) salonData.saveCatalog(seeded.catalog);
+        }
         rebuildBookingCatalogViews();
         if (bookingPanelMode) renderBookingAppointmentPanel();
         var createModal = document.querySelector('[data-booking-create-modal]');
@@ -3708,6 +3714,7 @@ function getBookingCardCallStart(item) {
     window.NEXORA_POS_BOOKING = {
       init: function() {},
       render: function() {
+        rebuildBookingCatalogViews();
         renderBookingStoreRows();
         filterBookingItems();
         renderBookingCalendar();

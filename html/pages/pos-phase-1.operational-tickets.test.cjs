@@ -547,16 +547,18 @@ test('POS title row links to the working repository kiosk', () => {
   assert.match(html, /<a class="pos-btn pos-btn-sm" href="kiosk\.html" target="_blank" rel="noopener noreferrer"><i class="bi bi-tablet" aria-hidden="true"><\/i> Kiosk<\/a>/);
 });
 
-test('Management is split into four subtabs because Customers is already a top-level tab', () => {
+test('Management keeps Customers out while adding a Services subtab for menu management', () => {
   assert.match(html, /data-mg-subtab="overview"/);
   assert.match(html, /data-mg-subtab="payroll"/);
+  assert.match(html, /data-mg-subtab="services"/);
   assert.match(html, /data-mg-subtab="staff"/);
   assert.match(html, /data-mg-subtab="catalog"/);
   assert.doesNotMatch(html, /data-mg-subtab="customers"/);
-  assert.match(html, /var MG_SUBTABS = \['overview', 'payroll', 'staff', 'catalog'\];/);
+  assert.match(html, /var MG_SUBTABS = \['overview', 'payroll', 'services', 'staff', 'catalog'\];/);
   const sections = html.match(/function mgSubtabSections\(ps\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(sections, /overview: function \(\) \{ return mgKpisHtml\(ps\) \+ '<div class="mg-split">' \+ mgRevenueHtml\(\) \+ mgPayrollHtml\(ps\) \+ '<\/div>' \+ mgPerfHtml\(ps\); \}/);
   assert.match(sections, /payroll: function \(\) \{ return mgOwnerHtml\(ps\) \+ mgSmartHtml\(ps\) \+ mgPayoutHtml\(ps\); \}/);
+  assert.match(sections, /services: function \(\) \{ return mgServicesHtml\(\); \}/);
   assert.match(sections, /staff: function \(\) \{ return mgStaffHtml\(\) \+ mgRolesHtml\(\) \+ mgLogHtml\(\); \}/);
   assert.match(sections, /catalog: function \(\) \{ return mgSkillsHtml\(\) \+ mgSvcSkillHtml\(\); \}/);
   assert.doesNotMatch(sections, /customers:/);

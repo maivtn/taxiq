@@ -93,6 +93,25 @@ test('POS keeps ticket KPIs in Tickets and merges the Time Clock roster into one
   assert.match(html, /<th scope="col">Turns today<\/th>/);
 });
 
+test('Management exposes a Services subtab with menu-backed CRUD controls', () => {
+  const managementPanel = html.match(/<section class="pos-panel" data-pos-panel="management"[\s\S]*?<\/section>/)?.[0] || '';
+  const servicesRuntime = html.match(/function mgServicesHtml\(\)[\s\S]*?function mgStaffHtml\(\)/)?.[0] || '';
+
+  assert.match(managementPanel, /data-mg-subtab="services"[^>]*>Services/);
+  assert.match(html, /var SERVICE_MENU_URL = '\.\.\/menu\/menu\.json'/);
+  assert.match(html, /seedServicesFromMenuCatalog/);
+  assert.match(html, /var MG_SUBTABS = \['overview', 'payroll', 'services', 'staff', 'catalog'\]/);
+  assert.match(html, /services: function \(\) \{ return mgServicesHtml\(\); \}/);
+  assert.match(servicesRuntime, /data-mg-service-add/);
+  assert.match(servicesRuntime, /data-mg-service-save="/);
+  assert.match(servicesRuntime, /data-mg-service-delete="/);
+  assert.match(servicesRuntime, /data-mg-service-name="/);
+  assert.match(servicesRuntime, /data-mg-service-category="/);
+  assert.match(servicesRuntime, /data-mg-service-price="/);
+  assert.match(servicesRuntime, /data-mg-service-duration="/);
+  assert.match(servicesRuntime, /data-mg-service-skill="/);
+});
+
 test('Time Clock station cells only show the station input, not per-tech Station labels', () => {
   const roster = html.match(/function renderTechRosterTable\(\) \{[\s\S]*?\n      \}/)?.[0] || '';
   assert.match(roster, /<input class="clk-station"/);

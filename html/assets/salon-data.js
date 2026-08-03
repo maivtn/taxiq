@@ -9,6 +9,7 @@
 
   var SALON_ID = 'bitcoin-nail-bar-houston';
   var STORAGE_KEY = 'nexora:salon-data:v1:' + SALON_ID;
+  var MENU_SERVICE_SOURCE = 'html/menu/menu.json';
   var POS_PROFILE_DEFAULTS = {
     bnum: null,
     turns: 0,
@@ -74,15 +75,24 @@
   function normalizeService(service) {
     service = service || {};
     var duration = Number(service.durationMin);
+    var price = service.price == null || service.price === '' ? null : Number(service.price);
     return {
       id: asString(service.id, 'service-' + Date.now()),
       name: asString(service.name, asString(service.id, 'Service')),
       aliases: uniqueStrings(service.aliases),
-      price: service.price == null || service.price === '' ? null : Number(service.price),
+      price: Number.isFinite(price) ? price : null,
       durationMin: Number.isFinite(duration) && duration > 0 ? duration : 60,
       requiredSkill: asString(service.requiredSkill),
       icon: asString(service.icon, '✨'),
       active: service.active !== false,
+      categoryId: asString(service.categoryId),
+      categoryName: asString(service.categoryName),
+      kind: asString(service.kind),
+      priceLabel: asString(service.priceLabel),
+      description: asString(service.description),
+      includes: uniqueStrings(service.includes),
+      type: asString(service.type),
+      source: asString(service.source),
     };
   }
 
@@ -151,6 +161,63 @@
     return findByValue((catalog && catalog.technicians) || [], value);
   }
 
+  function requiredSkillFromMenuService(service) {
+    var explicit = asString(service && service.requiredSkill);
+    if (explicit) return explicit;
+    var text = asString(service && service.categoryName, asString(service && service.name)).toLowerCase();
+    if (/pedicure/.test(text)) return 'Pedicure';
+    if (/manicure/.test(text)) return 'Manicure';
+    if (/acrylic|full set|fill-in|fill in/.test(text)) return 'Acrylic';
+    if (/dipping|dip powder|dip\b/.test(text)) return 'Dip';
+    if (/gel|shellac|builder/.test(text)) return 'Gel';
+    if (/wax/.test(text)) return 'Waxing';
+    if (/design|chrome|art|add-on|additional/.test(text)) return 'Design';
+    return '';
+  }
+
+  function salonServiceFromMenuService(service) {
+    service = service || {};
+    return normalizeService({
+      id: service.id,
+      name: service.name,
+      aliases: service.aliases,
+      price: service.price,
+      durationMin: service.durationMin,
+      requiredSkill: requiredSkillFromMenuService(service),
+      icon: service.icon,
+      active: service.active !== false,
+      categoryId: service.categoryId,
+      categoryName: service.categoryName,
+      kind: service.kind,
+      priceLabel: service.priceLabel,
+      description: service.description,
+      includes: service.includes,
+      type: service.type,
+      source: MENU_SERVICE_SOURCE
+    });
+  }
+
+  function catalogUsesMenuServices(catalog) {
+    return !!((catalog && catalog.services) || []).some(function (service) {
+      return service && service.source === MENU_SERVICE_SOURCE;
+    });
+  }
+
+  function seedServicesFromMenuCatalog(catalog, serviceCatalog, options) {
+    var normalized = normalizeCatalog(catalog);
+    var menuServices = (serviceCatalog && Array.isArray(serviceCatalog.services)) ? serviceCatalog.services : [];
+    if (!menuServices.length) return { catalog: cloneCatalog(normalized), seeded: false };
+    if (!(options && options.force) && catalogUsesMenuServices(normalized)) {
+      return { catalog: cloneCatalog(normalized), seeded: false };
+    }
+    return {
+      catalog: normalizeCatalog(Object.assign({}, normalized, {
+        services: menuServices.map(salonServiceFromMenuService)
+      })),
+      seeded: true
+    };
+  }
+
   function resolveStorage(storage) {
     if (storage) return storage;
     try { return typeof localStorage !== 'undefined' ? localStorage : null; } catch (error) { return null; }
@@ -195,9 +262,12 @@
   return {
     SALON_ID: SALON_ID,
     STORAGE_KEY: STORAGE_KEY,
+    MENU_SERVICE_SOURCE: MENU_SERVICE_SOURCE,
     DEFAULT_CATALOG: cloneCatalog(DEFAULT_CATALOG),
     cloneCatalog: cloneCatalog,
     normalizeCatalog: normalizeCatalog,
+    catalogUsesMenuServices: catalogUsesMenuServices,
+    seedServicesFromMenuCatalog: seedServicesFromMenuCatalog,
     findService: findService,
     findTechnician: findTechnician,
     loadCatalog: loadCatalog,

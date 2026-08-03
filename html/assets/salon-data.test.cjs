@@ -3,7 +3,9 @@ const assert = require('node:assert/strict');
 const {
   SALON_ID,
   DEFAULT_CATALOG,
+  MENU_SERVICE_SOURCE,
   STORAGE_KEY,
+  seedServicesFromMenuCatalog,
   findService,
   findTechnician,
   normalizeCatalog,
@@ -11,6 +13,8 @@ const {
   saveCatalog,
   storageAvailable,
 } = require('./salon-data.js');
+const serviceCatalog = require('./appointment-service-catalog.js');
+const menu = require('../menu/menu.json');
 
 function storage(seed = {}) {
   const values = new Map(Object.entries(seed));
@@ -48,6 +52,40 @@ test('normalizeCatalog removes duplicate IDs and supplies safe defaults', () => 
   assert.equal(catalog.technicians.length, 1);
   assert.equal(catalog.services[0].active, true);
   assert.deepEqual(catalog.technicians[0].skills, []);
+});
+
+test('seeds editable salon services from the menu JSON catalog once', () => {
+  const menuCatalog = serviceCatalog.normalize(menu);
+  const seeded = seedServicesFromMenuCatalog(DEFAULT_CATALOG, menuCatalog);
+
+  assert.equal(seeded.seeded, true);
+  assert.equal(seeded.catalog.services.length, 96);
+  assert.deepEqual({
+    id: seeded.catalog.services[0].id,
+    name: seeded.catalog.services[0].name,
+    categoryId: seeded.catalog.services[0].categoryId,
+    categoryName: seeded.catalog.services[0].categoryName,
+    priceLabel: seeded.catalog.services[0].priceLabel,
+    price: seeded.catalog.services[0].price,
+    durationMin: seeded.catalog.services[0].durationMin,
+    requiredSkill: seeded.catalog.services[0].requiredSkill,
+    source: seeded.catalog.services[0].source,
+  }, {
+    id: 'pedicure-president-7-star-0',
+    name: 'President 7 Star',
+    categoryId: 'pedicure',
+    categoryName: 'Pedicure',
+    priceLabel: '$499',
+    price: 499,
+    durationMin: 70,
+    requiredSkill: 'Pedicure',
+    source: MENU_SERVICE_SOURCE,
+  });
+
+  seeded.catalog.services[0].price = 488;
+  const secondPass = seedServicesFromMenuCatalog(seeded.catalog, menuCatalog);
+  assert.equal(secondPass.seeded, false);
+  assert.equal(secondPass.catalog.services[0].price, 488);
 });
 
 test('catalog persistence falls back to defaults for missing or invalid JSON', () => {

@@ -802,6 +802,7 @@
           <div class="mg-subtabs" role="tablist" aria-label="Management sections">
             <button class="mg-subtab is-active" type="button" role="tab" aria-selected="true" data-mg-subtab="overview">Overview</button>
             <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="payroll">Pay &amp; Payroll</button>
+            <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="services">Services</button>
             <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="staff">Staff &amp; Roles</button>
             <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="catalog">Skills &amp; Catalog</button>
           </div>
@@ -1972,8 +1973,10 @@
       }
 
       var salonData = window.NEXORA_SALON_DATA;
+      var appointmentServiceCatalogLoader = window.NEXORA_APPOINTMENT_SERVICE_CATALOG;
+      var SERVICE_MENU_URL = '../menu/menu.json';
       var salonCatalog = salonData.loadCatalog();
-      var SKILLS = Array.from(new Set(salonCatalog.services.map(function (service) { return service.requiredSkill; }).filter(Boolean).concat(['Design'])));
+      var SKILLS = [];
       var FIT_TAGS = ['VIP', 'New guest', 'Needs Extra Care', 'Sensitive Skin', 'Prefers Female Tech'];
       var TAG_LIB = ['Needs Extra Care', 'Sensitive Skin', 'Prefers Female Tech', 'Likes Warm Water', 'Confirm Price Before Add-on', 'Allergic to Acrylic'];
 
@@ -1983,8 +1986,22 @@
       var TECHS = null;
       var MENU = null;
       var SVC_REQ = {};
+      function legacyServiceGroupKey(service) {
+        var text = (service.categoryName || service.requiredSkill || service.name || '').toLowerCase();
+        if (/pedicure/.test(text)) return 'pedi';
+        if (/manicure/.test(text)) return 'mani';
+        if (/full set/.test(text)) return 'full';
+        if (/fill/.test(text)) return 'fill';
+        if (/dipping|dip/.test(text)) return 'dip';
+        if (/gel/.test(text)) return 'gel';
+        if (/wax/.test(text)) return 'wax';
+        if (/add-on|additional|design|chrome|art/.test(text)) return 'addon';
+        if (/kid/.test(text)) return 'kid';
+        return '';
+      }
       function rebuildSalonCatalogViews() {
         salonCatalog = salonData.loadCatalog();
+        SKILLS = Array.from(new Set(salonCatalog.services.map(function (service) { return service.requiredSkill; }).filter(Boolean).concat(['Design'])));
         TECHS = salonCatalog.technicians.filter(function (technician) { return technician.active; }).map(function (technician) {
           return Object.assign({ bnum: null, turns: 0, comm: 0, guar: 0, payModel: 'max', baoSplit: 0, vlink: null }, technician.posProfile || {}, {
             id: technician.id,
@@ -1995,10 +2012,16 @@
           });
         });
         MENU = salonCatalog.services.filter(function (service) { return service.active; }).map(function (service) {
-          return { id: service.id, label: posServiceDisplayName(service.name), price: service.price, durationMin: service.durationMin, requiredSkill: service.requiredSkill || '' };
+          return { id: service.id, label: posServiceDisplayName(service.name), price: service.price, durationMin: service.durationMin, requiredSkill: service.requiredSkill || '', categoryId: service.categoryId || '', categoryName: service.categoryName || '', type: service.type || '' };
         });
         SVC_REQ = {};
-        salonCatalog.services.forEach(function (service) { SVC_REQ[service.id] = service.requiredSkill || ''; });
+        salonCatalog.services.forEach(function (service) {
+          var requiredSkill = service.requiredSkill || '';
+          SVC_REQ[service.id] = requiredSkill;
+          if (service.categoryId && !SVC_REQ[service.categoryId]) SVC_REQ[service.categoryId] = requiredSkill;
+          var legacyKey = legacyServiceGroupKey(service);
+          if (legacyKey && !SVC_REQ[legacyKey]) SVC_REQ[legacyKey] = requiredSkill;
+        });
       }
       rebuildSalonCatalogViews();
       function techById(id) { for (var i = 0; i < TECHS.length; i++) if (TECHS[i].id === id) return TECHS[i]; return null; }
@@ -2028,6 +2051,26 @@
         });
         salonData.saveCatalog(Object.assign({}, nextCatalog, { technicians: nextTechnicians }));
         rebuildSalonCatalogViews();
+      }
+
+      function refreshSalonCatalogConsumers() {
+        rebuildSalonCatalogViews();
+        renderFloor();
+        renderManagement();
+        renderBookingTab();
+      }
+
+      function loadMenuServicesIntoSalonCatalog() {
+        if (!appointmentServiceCatalogLoader || typeof appointmentServiceCatalogLoader.load !== 'function') return;
+        if (!salonData.seedServicesFromMenuCatalog) return;
+        appointmentServiceCatalogLoader.load(SERVICE_MENU_URL).then(function (menuCatalog) {
+          var seeded = salonData.seedServicesFromMenuCatalog(salonData.loadCatalog(), menuCatalog);
+          if (!seeded.seeded) return;
+          salonData.saveCatalog(seeded.catalog);
+          refreshSalonCatalogConsumers();
+        }).catch(function () {
+          // Keep the bundled fallback catalog when menu.json cannot be fetched in a local preview.
+        });
       }
 
       function catById(id) { for (var i = 0; i < MENU.length; i++) if (MENU[i].id === id) return MENU[i]; return null; }
@@ -4348,6 +4391,179 @@
           '</div>';
       }
 
+      function slugText(value) {
+        return String(value || 'service').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'service';
+      }
+
+      function serviceCategories() {
+        var seen = {};
+        return salonCatalog.services.map(function (service) {
+          return service.categoryName || service.requiredSkill || 'Other services';
+        }).filter(function (name) {
+          var key = name.toLowerCase();
+          if (seen[key]) return false;
+          seen[key] = true;
+          return true;
+        }).sort(function (a, b) { return a.localeCompare(b); });
+      }
+
+      function serviceSkillOptions(selected) {
+        var skills = Array.from(new Set(SKILLS.concat(selected ? [selected] : []))).filter(Boolean);
+        return '<option value="">— none —</option>' + skills.map(function (skill) {
+          return '<option value="' + esc(skill) + '"' + (selected === skill ? ' selected' : '') + '>' + esc(skill) + '</option>';
+        }).join('');
+      }
+
+      function serviceTypeOptions(selected) {
+        return ['', 'service', 'add-on'].map(function (type) {
+          var label = type || 'standard';
+          return '<option value="' + esc(type) + '"' + (selected === type ? ' selected' : '') + '>' + esc(label) + '</option>';
+        }).join('');
+      }
+
+      function priceLabelForService(price) {
+        if (price == null || price === '') return '';
+        var n = Math.round(Number(price) * 100) / 100;
+        return Number.isFinite(n) ? '$' + String(n).replace(/\.00$/, '') : '';
+      }
+
+      function serviceField(id, field) {
+        var attr = 'data-mg-service-' + field;
+        var list = document.querySelectorAll('[' + attr + ']');
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].getAttribute(attr) === id) return list[i];
+        }
+        return null;
+      }
+
+      function serviceById(id, catalog) {
+        var source = (catalog || salonCatalog).services || [];
+        for (var i = 0; i < source.length; i++) if (source[i].id === id) return source[i];
+        return null;
+      }
+
+      function uniqueServiceId(catalog, categoryName, name) {
+        var base = slugText((categoryName ? categoryName + '-' : '') + name);
+        var id = base, suffix = 1;
+        while (serviceById(id, catalog)) id = base + '-' + suffix++;
+        return id;
+      }
+
+      function saveSalonService(service, message) {
+        var nextCatalog = salonData.loadCatalog();
+        var found = false;
+        var nextServices = nextCatalog.services.map(function (existing) {
+          if (existing.id !== service.id) return existing;
+          found = true;
+          return Object.assign({}, existing, service);
+        });
+        if (!found) nextServices.push(service);
+        salonData.saveCatalog(Object.assign({}, nextCatalog, { services: nextServices }));
+        logAdmin('🧾 ' + message);
+        refreshSalonCatalogConsumers();
+      }
+
+      function readManagedService(id) {
+        var existing = serviceById(id);
+        if (!existing) return null;
+        var nameEl = serviceField(id, 'name');
+        var categoryEl = serviceField(id, 'category');
+        var priceEl = serviceField(id, 'price');
+        var durationEl = serviceField(id, 'duration');
+        var skillEl = serviceField(id, 'skill');
+        var typeEl = serviceField(id, 'type');
+        var activeEl = serviceField(id, 'active');
+        var name = (nameEl && nameEl.value || '').trim();
+        if (!name) return null;
+        var categoryName = (categoryEl && categoryEl.value || '').trim();
+        var price = priceEl && priceEl.value !== '' ? Number(priceEl.value) : null;
+        var duration = durationEl && durationEl.value !== '' ? parseInt(durationEl.value, 10) : null;
+        return Object.assign({}, existing, {
+          name: name,
+          categoryName: categoryName,
+          categoryId: categoryName ? slugText(categoryName) : '',
+          price: Number.isFinite(price) ? price : null,
+          priceLabel: Number.isFinite(price) ? priceLabelForService(price) : '',
+          durationMin: Number.isFinite(duration) && duration > 0 ? duration : null,
+          requiredSkill: skillEl ? skillEl.value : '',
+          type: typeEl ? typeEl.value : '',
+          active: activeEl ? activeEl.value === 'active' : existing.active !== false
+        });
+      }
+
+      function readNewService() {
+        var nameEl = $('[data-mg-service-add-name]');
+        var categoryEl = $('[data-mg-service-add-category]');
+        var priceEl = $('[data-mg-service-add-price]');
+        var durationEl = $('[data-mg-service-add-duration]');
+        var skillEl = $('[data-mg-service-add-skill]');
+        var typeEl = $('[data-mg-service-add-type]');
+        var name = (nameEl && nameEl.value || '').trim();
+        if (!name) return null;
+        var categoryName = (categoryEl && categoryEl.value || '').trim();
+        var price = priceEl && priceEl.value !== '' ? Number(priceEl.value) : null;
+        var duration = durationEl && durationEl.value !== '' ? parseInt(durationEl.value, 10) : null;
+        var catalog = salonData.loadCatalog();
+        return {
+          id: uniqueServiceId(catalog, categoryName, name),
+          name: name,
+          aliases: [],
+          price: Number.isFinite(price) ? price : null,
+          durationMin: Number.isFinite(duration) && duration > 0 ? duration : null,
+          requiredSkill: skillEl ? skillEl.value : '',
+          icon: '✨',
+          active: true,
+          categoryId: categoryName ? slugText(categoryName) : '',
+          categoryName: categoryName,
+          kind: 'service',
+          priceLabel: Number.isFinite(price) ? priceLabelForService(price) : '',
+          description: '',
+          includes: [],
+          type: typeEl ? typeEl.value : '',
+          source: 'pos-management'
+        };
+      }
+
+      function mgServicesHtml() {
+        var activeCount = salonCatalog.services.filter(function (service) { return service.active !== false; }).length;
+        var categories = serviceCategories();
+        var categoryOptions = categories.map(function (name) { return '<option value="' + esc(name) + '"></option>'; }).join('');
+        var services = salonCatalog.services.slice().sort(function (a, b) {
+          if ((a.active !== false) !== (b.active !== false)) return a.active === false ? 1 : -1;
+          return (a.categoryName || '').localeCompare(b.categoryName || '') || a.name.localeCompare(b.name);
+        });
+        return '<div class="pos-card">' +
+          '<div class="pos-card-head"><div><h3><i class="bi bi-card-checklist" aria-hidden="true"></i> Services</h3><div class="pos-muted" style="margin-top:4px">' + activeCount + ' active · ' + salonCatalog.services.length + ' total · source: html/menu/menu.json</div></div></div>' +
+          '<datalist id="mg-service-categories">' + categoryOptions + '</datalist>' +
+          '<div class="pos-card soft" style="margin-bottom:14px">' +
+            '<div class="pos-inline" style="align-items:flex-end">' +
+              '<label class="pos-inline-lbl" style="flex:1;min-width:180px">Name<input class="pos-input" data-mg-service-add-name placeholder="Service name" style="width:100%;margin-top:4px"></label>' +
+              '<label class="pos-inline-lbl" style="width:180px">Category<input class="pos-input" list="mg-service-categories" data-mg-service-add-category placeholder="Pedicure" style="width:100%;margin-top:4px"></label>' +
+              '<label class="pos-inline-lbl" style="width:96px">Price<input class="pos-input" type="number" min="0" step="0.01" data-mg-service-add-price placeholder="40" style="width:100%;margin-top:4px"></label>' +
+              '<label class="pos-inline-lbl" style="width:110px">Minutes<input class="pos-input" type="number" min="1" step="5" data-mg-service-add-duration placeholder="60" style="width:100%;margin-top:4px"></label>' +
+              '<label class="pos-inline-lbl" style="width:150px">Skill<select class="pos-input" data-mg-service-add-skill style="width:100%;margin-top:4px">' + serviceSkillOptions('') + '</select></label>' +
+              '<label class="pos-inline-lbl" style="width:120px">Type<select class="pos-input" data-mg-service-add-type style="width:100%;margin-top:4px">' + serviceTypeOptions('') + '</select></label>' +
+              '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-service-add><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Service</th><th>Category</th><th>Price</th><th>Minutes</th><th>Skill</th><th>Type</th><th>Status</th><th></th></tr></thead><tbody>' +
+          services.map(function (service) {
+            return '<tr>' +
+              '<td><input class="pos-input" data-mg-service-name="' + esc(service.id) + '" value="' + esc(service.name) + '" style="min-width:190px;width:100%"></td>' +
+              '<td><input class="pos-input" list="mg-service-categories" data-mg-service-category="' + esc(service.id) + '" value="' + esc(service.categoryName || '') + '" style="min-width:150px;width:100%"></td>' +
+              '<td><input class="pos-mini" type="number" min="0" step="0.01" data-mg-service-price="' + esc(service.id) + '" value="' + esc(service.price == null ? '' : service.price) + '" style="width:86px"></td>' +
+              '<td><input class="pos-mini" type="number" min="1" step="5" data-mg-service-duration="' + esc(service.id) + '" value="' + esc(service.durationMin || '') + '" style="width:74px"></td>' +
+              '<td><select class="pos-input" data-mg-service-skill="' + esc(service.id) + '" style="height:32px;font-size:12.5px;min-width:128px">' + serviceSkillOptions(service.requiredSkill || '') + '</select></td>' +
+              '<td><select class="pos-input" data-mg-service-type="' + esc(service.id) + '" style="height:32px;font-size:12.5px;min-width:104px">' + serviceTypeOptions(service.type || '') + '</select></td>' +
+              '<td><select class="pos-input" data-mg-service-active="' + esc(service.id) + '" style="height:32px;font-size:12.5px;min-width:96px"><option value="active"' + (service.active !== false ? ' selected' : '') + '>Active</option><option value="inactive"' + (service.active === false ? ' selected' : '') + '>Inactive</option></select></td>' +
+              '<td><div class="pos-inline"><button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-service-save="' + esc(service.id) + '"><i class="bi bi-check2" aria-hidden="true"></i> Save</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div></td>' +
+              '</tr>';
+          }).join('') +
+          '</tbody></table></div>' +
+          '<div class="pos-hint">Delete marks a service inactive so old bookings and tickets keep their history. Active services appear in Booking and Check-in immediately after Save.</div>' +
+          '</div>';
+      }
+
       function mgStaffHtml() {
         return '<div class="pos-card">' +
           '<div class="pos-card-head"><h3><i class="bi bi-person-badge" aria-hidden="true"></i> Staff accounts — the role decides what a login sees</h3><span class="pos-muted">per-permission detail lives in the 🔐 matrix below</span></div>' +
@@ -4400,14 +4616,15 @@
 
       // Management subtabs (#pos-nail-salon-ops): groups the management sections by theme
       // instead of one long scroll — Overview (today's numbers), Pay & Payroll (compensation
-      // mechanics), Staff & Roles (accounts/access/audit), Skills & Catalog (service/skill config),
+      // mechanics), Services (menu CRUD), Staff & Roles (accounts/access/audit), Skills & Catalog (service/skill config),
       // while customer profiles live in the dedicated Customers tab.
       var mgSubtab = 'overview';
-      var MG_SUBTABS = ['overview', 'payroll', 'staff', 'catalog'];
+      var MG_SUBTABS = ['overview', 'payroll', 'services', 'staff', 'catalog'];
       function mgSubtabSections(ps) {
         return {
           overview: function () { return mgKpisHtml(ps) + '<div class="mg-split">' + mgRevenueHtml() + mgPayrollHtml(ps) + '</div>' + mgPerfHtml(ps); },
           payroll: function () { return mgOwnerHtml(ps) + mgSmartHtml(ps) + mgPayoutHtml(ps); },
+          services: function () { return mgServicesHtml(); },
           staff: function () { return mgStaffHtml() + mgRolesHtml() + mgLogHtml(); },
           catalog: function () { return mgSkillsHtml() + mgSvcSkillHtml(); }
         };
@@ -4430,6 +4647,37 @@
 
         var mgTab = e.target.closest('[data-mg-subtab]');
         if (mgTab) { mgSubtab = mgTab.getAttribute('data-mg-subtab'); renderManagement(); return; }
+
+        if (e.target.closest('[data-mg-service-add]')) {
+          var newService = readNewService();
+          if (!newService) { toast('Enter a service name', 'info'); return; }
+          saveSalonService(newService, 'Added service "' + newService.name + '"');
+          toast(newService.name + ' added');
+          return;
+        }
+
+        var serviceSave = e.target.closest('[data-mg-service-save]');
+        if (serviceSave) {
+          var serviceId = serviceSave.getAttribute('data-mg-service-save');
+          var savedService = readManagedService(serviceId);
+          if (!savedService) { toast('Enter a service name', 'info'); return; }
+          saveSalonService(savedService, 'Updated service "' + savedService.name + '"');
+          toast(savedService.name + ' saved');
+          return;
+        }
+
+        var serviceDelete = e.target.closest('[data-mg-service-delete]');
+        if (serviceDelete) {
+          var deleteId = serviceDelete.getAttribute('data-mg-service-delete');
+          var deleteService = serviceById(deleteId);
+          if (!deleteService) return;
+          confirmBox('Delete ' + deleteService.name + '?', 'The service will be hidden from Booking and Check-in, while old tickets keep their history.').then(function (ok) {
+            if (!ok) return;
+            saveSalonService(Object.assign({}, deleteService, { active: false }), 'Deleted service "' + deleteService.name + '"');
+            toast(deleteService.name + ' deleted', 'info');
+          });
+          return;
+        }
 
         var sk = e.target.closest('[data-mg-skill]');
         if (sk) {
@@ -5026,6 +5274,7 @@
       initBookingTab();
       renderBookingTab();
       renderCustomersTab();
+      loadMenuServicesIntoSalonCatalog();
       applyPosModeAccess();
       activateTab(new URL(window.location.href).searchParams.get('tab') || 'checkin');
       if (salonData.storageAvailable && !salonData.storageAvailable()) {

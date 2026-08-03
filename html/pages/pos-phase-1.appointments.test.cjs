@@ -115,7 +115,7 @@ test('POS Booking loads the shared catalog, ticket, store, and approved service 
   assert.match(source, /\.\.\/assets\/appointment-service-catalog\.js/);
   assert.match(source, /\.\.\/assets\/appointment-tickets\.js/);
   assert.match(source, /\.\.\/assets\/appointments-store\.js/);
-  assert.match(source, /booking-service-catalog-draft\.json/);
+  assert.match(source, /\.\.\/menu\/menu\.json/);
   assert.match(source, /appointmentServiceCatalogLoader\.load/);
 });
 
@@ -137,6 +137,13 @@ test('POS Booking rolls static demo rows to the current operating date before Ch
   assert.match(runtime, /var BOOKING_TODAY_DATE = bookingDemoDate\.localDateKey\(\)/);
   assert.match(runtime, /normalizeBookingStaticDates\(initialBookingRows\);\s*\n\s*appointmentStore\.ensureSource\('booking-book-static-v1'/);
   assert.match(runtime, /repairBookingStaticDates\(initialBookingRows\);/);
+});
+
+test('POS Booking refreshes from the salon-managed menu service catalog', () => {
+  assert.match(runtime, /var APPOINTMENT_SERVICE_CATALOG_URL = '\.\.\/menu\/menu\.json'/);
+  assert.match(runtime, /catalogUsesMenuServices\(catalog\)/);
+  assert.match(runtime, /var activeSalonServices = catalog\.services\.filter\(function\(service\) \{ return service\.active; \}\)/);
+  assert.match(runtime, /render: function\(\) \{[\s\S]*rebuildBookingCatalogViews\(\);/);
 });
 
 test('POS keeps the shared mode and tab activation contracts', () => {
