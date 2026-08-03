@@ -4459,6 +4459,7 @@
 
       var serviceViewMode = 'table';
       var serviceModalId = null;
+      var serviceModalMode = 'edit';
 
       function serviceById(id, catalog) {
         var source = (catalog || salonCatalog).services || [];
@@ -4516,11 +4517,13 @@
         }).join(' ') + (includes.length > 3 ? ' <span class="pos-muted">+' + (includes.length - 3) + '</span>' : '');
       }
 
-      function openServiceModal(id) {
+      function openServiceModal(id, mode) {
         var modal = $('[data-mg-service-modal]');
         if (!modal) return;
         serviceModalId = id || null;
+        serviceModalMode = mode === 'view' ? 'view' : (serviceModalId ? 'edit' : 'add');
         var service = serviceModalId ? serviceById(serviceModalId) : null;
+        var isReadOnly = serviceModalMode === 'view';
         var titleEl = $('[data-mg-service-modal-title]');
         var nameEl = $('[data-mg-service-form-name]');
         var categoryEl = $('[data-mg-service-form-category]');
@@ -4531,7 +4534,8 @@
         var activeEl = $('[data-mg-service-form-active]');
         var descriptionEl = $('[data-mg-service-form-description]');
         var includesEl = $('[data-mg-service-form-includes]');
-        if (titleEl) titleEl.textContent = service ? 'Edit service' : 'Add service';
+        var saveEl = $('[data-mg-service-save]');
+        if (titleEl) titleEl.textContent = isReadOnly ? 'View service' : (service ? 'Edit service' : 'Add service');
         if (skillEl) skillEl.innerHTML = serviceSkillOptions(service ? service.requiredSkill || '' : '');
         if (typeEl) typeEl.innerHTML = serviceTypeOptions(service ? service.type || '' : '');
         if (activeEl) activeEl.value = service && service.active === false ? 'inactive' : 'active';
@@ -4541,6 +4545,10 @@
         if (durationEl) durationEl.value = service && service.durationMin ? service.durationMin : '';
         if (descriptionEl) descriptionEl.value = service ? service.description || '' : '';
         if (includesEl) includesEl.value = service ? serviceIncludesText(service.includes) : '';
+        [nameEl, categoryEl, priceEl, durationEl, skillEl, typeEl, activeEl, descriptionEl, includesEl].forEach(function (field) {
+          if (field) field.disabled = isReadOnly;
+        });
+        if (saveEl) saveEl.hidden = isReadOnly;
         setServiceFormError('');
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
@@ -4555,6 +4563,7 @@
         modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
         serviceModalId = null;
+        serviceModalMode = 'edit';
         setServiceFormError('');
       }
 
@@ -4596,6 +4605,7 @@
       }
 
       function saveServiceModal() {
+        if (serviceModalMode === 'view') { closeServiceModal(); return; }
         var service = readServiceModal();
         if (!service) {
           setServiceFormError('Enter a service name.');
@@ -4616,20 +4626,14 @@
           if ((a.active !== false) !== (b.active !== false)) return a.active === false ? 1 : -1;
           return (a.categoryName || '').localeCompare(b.categoryName || '') || a.name.localeCompare(b.name);
         });
-        var serviceTableHtml = '<div class="pos-table-wrap" data-mg-service-table><table class="pos-table tight"><thead><tr><th>Service</th><th>Description</th><th>Includes</th><th>Category</th><th>Price</th><th>Minutes</th><th>Skill</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead><tbody>' +
+        var serviceTableHtml = '<div class="pos-table-wrap" data-mg-service-table><table class="pos-table tight"><thead><tr><th>Service</th><th>Price</th><th>Minutes</th><th>Category</th><th>Actions</th></tr></thead><tbody>' +
           services.map(function (service) {
-            var description = (service.description || '').trim();
             return '<tr>' +
               '<td><span class="pos-strong">' + esc(service.name) + '</span></td>' +
-              '<td class="wrap" style="min-width:220px">' + (description ? esc(description) : '<span class="pos-muted">—</span>') + '</td>' +
-              '<td class="wrap" style="min-width:180px"><div class="pill-row">' + serviceIncludesHtml(service) + '</div></td>' +
-              '<td>' + esc(service.categoryName || '—') + '</td>' +
               '<td>' + (service.price == null ? '—' : money(service.price)) + '</td>' +
               '<td>' + (service.durationMin || '—') + '</td>' +
-              '<td>' + esc(service.requiredSkill || '—') + '</td>' +
-              '<td>' + esc(service.type || 'standard') + '</td>' +
-              '<td>' + serviceStatusChip(service) + '</td>' +
-              '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div></td>' +
+              '<td>' + esc(service.categoryName || '—') + '</td>' +
+              '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-view="' + esc(service.id) + '"><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div></td>' +
               '</tr>';
           }).join('') +
           '</tbody></table></div>';
@@ -4757,9 +4761,15 @@
           return;
         }
 
+        var serviceView = e.target.closest('[data-mg-service-view]');
+        if (serviceView) {
+          openServiceModal(serviceView.getAttribute('data-mg-service-view'), 'view');
+          return;
+        }
+
         var serviceEdit = e.target.closest('[data-mg-service-edit]');
         if (serviceEdit) {
-          openServiceModal(serviceEdit.getAttribute('data-mg-service-edit'));
+          openServiceModal(serviceEdit.getAttribute('data-mg-service-edit'), 'edit');
           return;
         }
 

@@ -110,12 +110,15 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(servicesRuntime, /data-mg-service-cards/);
   assert.match(servicesRuntime, /var serviceBodyHtml = serviceViewMode === 'card' \? serviceCardsHtml : serviceTableHtml;/);
   assert.doesNotMatch(servicesRuntime, /data-mg-service-(?:table|cards)[\s\S]{0,120}hidden/);
-  assert.match(servicesRuntime, /<th>Service<\/th><th>Description<\/th><th>Includes<\/th><th>Category<\/th><th>Price<\/th><th>Minutes<\/th><th>Skill<\/th><th>Type<\/th><th>Status<\/th><th>Actions<\/th>/);
+  assert.match(servicesRuntime, /<th>Service<\/th><th>Price<\/th><th>Minutes<\/th><th>Category<\/th><th>Actions<\/th>/);
+  assert.doesNotMatch(servicesRuntime, /<th>Description<\/th>|<th>Includes<\/th>|<th>Skill<\/th>|<th>Type<\/th>|<th>Status<\/th>/);
   assert.match(servicesRuntime, /data-mg-service-add/);
+  assert.match(servicesRuntime, /data-mg-service-view="/);
   assert.match(servicesRuntime, /data-mg-service-edit="/);
   assert.match(servicesRuntime, /data-mg-service-delete="/);
   assert.doesNotMatch(servicesRuntime, /data-mg-service-name="/);
   assert.match(html, /data-mg-service-modal/);
+  assert.match(html, /openServiceModal\(serviceView\.getAttribute\('data-mg-service-view'\), 'view'\)/);
   assert.match(serviceModalRuntime, /data-mg-service-form-name/);
   assert.match(serviceModalRuntime, /data-mg-service-form-category/);
   assert.match(serviceModalRuntime, /data-mg-service-form-price/);
