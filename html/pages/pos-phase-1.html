@@ -4425,16 +4425,34 @@
         return String(value || 'service').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'service';
       }
 
+      function serviceCategoryLabel(service) {
+        return String(service.categoryName || service.requiredSkill || 'Other services').trim() || 'Other services';
+      }
+
       function serviceCategories() {
         var seen = {};
         return salonCatalog.services.map(function (service) {
-          return service.categoryName || service.requiredSkill || 'Other services';
+          return serviceCategoryLabel(service);
         }).filter(function (name) {
           var key = name.toLowerCase();
           if (seen[key]) return false;
           seen[key] = true;
           return true;
         }).sort(function (a, b) { return a.localeCompare(b); });
+      }
+
+      function groupedServicesByCategory(services) {
+        var groups = [], seen = {};
+        services.forEach(function (service) {
+          var name = serviceCategoryLabel(service);
+          var key = name.toLowerCase();
+          if (!seen[key]) {
+            seen[key] = { name: name, services: [] };
+            groups.push(seen[key]);
+          }
+          seen[key].services.push(service);
+        });
+        return groups;
       }
 
       function serviceSkillOptions(selected) {
@@ -4623,30 +4641,41 @@
         var categories = serviceCategories();
         var categoryOptions = categories.map(function (name) { return '<option value="' + esc(name) + '"></option>'; }).join('');
         var services = salonCatalog.services.slice().sort(function (a, b) {
-          if ((a.active !== false) !== (b.active !== false)) return a.active === false ? 1 : -1;
-          return (a.categoryName || '').localeCompare(b.categoryName || '') || a.name.localeCompare(b.name);
+          return serviceCategoryLabel(a).localeCompare(serviceCategoryLabel(b)) ||
+            ((a.active !== false) !== (b.active !== false) ? (a.active === false ? 1 : -1) : 0) ||
+            a.name.localeCompare(b.name);
         });
+        var serviceCategoryGroups = groupedServicesByCategory(services);
         var serviceTableHtml = '<div class="pos-table-wrap" data-mg-service-table><table class="pos-table tight"><thead><tr><th>Service</th><th>Price</th><th>Minutes</th><th>Category</th><th>Actions</th></tr></thead><tbody>' +
-          services.map(function (service) {
-            return '<tr>' +
-              '<td><span class="pos-strong">' + esc(service.name) + '</span></td>' +
-              '<td>' + (service.price == null ? '—' : money(service.price)) + '</td>' +
-              '<td>' + (service.durationMin || '—') + '</td>' +
-              '<td>' + esc(service.categoryName || '—') + '</td>' +
-              '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-view="' + esc(service.id) + '"><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div></td>' +
-              '</tr>';
+          serviceCategoryGroups.map(function (group) {
+            return '<tr data-mg-service-category-group="' + esc(group.name) + '"><td colspan="5" style="background:var(--nexora-surface-muted);color:var(--nexora-muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.03em">' + esc(group.name) + ' · ' + group.services.length + '</td></tr>' +
+              group.services.map(function (service) {
+                return '<tr>' +
+                  '<td><span class="pos-strong">' + esc(service.name) + '</span></td>' +
+                  '<td>' + (service.price == null ? '—' : money(service.price)) + '</td>' +
+                  '<td>' + (service.durationMin || '—') + '</td>' +
+                  '<td>' + esc(serviceCategoryLabel(service)) + '</td>' +
+                  '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-view="' + esc(service.id) + '"><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div></td>' +
+                  '</tr>';
+              }).join('');
           }).join('') +
           '</tbody></table></div>';
-        var serviceCardsHtml = '<div data-mg-service-cards style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px">' +
-          services.map(function (service) {
-            var description = (service.description || '').trim();
-            return '<article class="queue-card">' +
-              '<div class="cust-card-head"><div><div class="pos-strong">' + esc(service.name) + '</div><div class="pos-muted" style="font-size:11.5px;margin-top:3px">' + esc(service.categoryName || 'No category') + '</div></div>' + serviceStatusChip(service) + '</div>' +
-              '<div class="pos-inline" style="margin-top:8px"><span class="pos-chip pos-chip-gray">' + (service.price == null ? 'No price' : money(service.price)) + '</span><span class="pos-chip pos-chip-gray">' + (service.durationMin || '—') + ' min</span><span class="pos-chip pos-chip-gray">' + esc(service.requiredSkill || 'No skill') + '</span></div>' +
-              (description ? '<div class="pos-muted wrap" style="font-size:12px;margin-top:8px">' + esc(description) + '</div>' : '') +
-              '<div class="pill-row" style="margin-top:8px">' + serviceIncludesHtml(service) + '</div>' +
-              '<div class="wl-actions" style="margin-top:10px"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div>' +
-              '</article>';
+        var serviceCardsHtml = '<div data-mg-service-cards style="display:grid;gap:16px">' +
+          serviceCategoryGroups.map(function (group) {
+            return '<section data-mg-service-card-category="' + esc(group.name) + '">' +
+              '<div class="pos-section-title" style="margin-top:0"><i class="bi bi-folder2-open" aria-hidden="true"></i> ' + esc(group.name) + ' · ' + group.services.length + '</div>' +
+              '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px">' +
+              group.services.map(function (service) {
+                var description = (service.description || '').trim();
+                return '<article class="queue-card">' +
+                  '<div class="cust-card-head"><div><div class="pos-strong">' + esc(service.name) + '</div><div class="pos-muted" style="font-size:11.5px;margin-top:3px">' + esc(serviceCategoryLabel(service)) + '</div></div>' + serviceStatusChip(service) + '</div>' +
+                  '<div class="pos-inline" style="margin-top:8px"><span class="pos-chip pos-chip-gray">' + (service.price == null ? 'No price' : money(service.price)) + '</span><span class="pos-chip pos-chip-gray">' + (service.durationMin || '—') + ' min</span><span class="pos-chip pos-chip-gray">' + esc(service.requiredSkill || 'No skill') + '</span></div>' +
+                  (description ? '<div class="pos-muted wrap" style="font-size:12px;margin-top:8px">' + esc(description) + '</div>' : '') +
+                  '<div class="pill-row" style="margin-top:8px">' + serviceIncludesHtml(service) + '</div>' +
+                  '<div class="wl-actions" style="margin-top:10px"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-view="' + esc(service.id) + '"><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div>' +
+                  '</article>';
+              }).join('') +
+              '</div></section>';
           }).join('') +
           '</div>';
         var serviceBodyHtml = serviceViewMode === 'card' ? serviceCardsHtml : serviceTableHtml;

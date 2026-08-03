@@ -108,6 +108,10 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(servicesRuntime, /data-mg-service-view-target="card"/);
   assert.match(servicesRuntime, /data-mg-service-table/);
   assert.match(servicesRuntime, /data-mg-service-cards/);
+  assert.match(html, /function groupedServicesByCategory\(services\)/);
+  assert.match(servicesRuntime, /var serviceCategoryGroups = groupedServicesByCategory\(services\);/);
+  assert.match(servicesRuntime, /data-mg-service-category-group="/);
+  assert.match(servicesRuntime, /data-mg-service-card-category="/);
   assert.match(servicesRuntime, /var serviceBodyHtml = serviceViewMode === 'card' \? serviceCardsHtml : serviceTableHtml;/);
   assert.doesNotMatch(servicesRuntime, /data-mg-service-(?:table|cards)[\s\S]{0,120}hidden/);
   assert.match(servicesRuntime, /<th>Service<\/th><th>Price<\/th><th>Minutes<\/th><th>Category<\/th><th>Actions<\/th>/);
