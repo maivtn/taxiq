@@ -438,6 +438,43 @@
     .sms-mbody { padding: 20px; }
     .sms-mfoot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px 20px; border-top: 1px solid var(--nexora-border); background: var(--nexora-surface-muted); }
 
+    .service-editor-dialog { max-width: 940px; border-radius: 20px; }
+    .service-editor-hero { align-items: flex-start; padding: 18px 22px; background: linear-gradient(135deg, #ffffff 0%, #edf7ff 100%); }
+    .service-editor-heading { display: flex; min-width: 0; align-items: center; gap: 12px; }
+    .service-editor-icon { display: inline-flex; width: 44px; height: 44px; flex: 0 0 44px; align-items: center; justify-content: center; border: 1px solid #dbeafe; border-radius: 14px; background: #eff6ff; color: var(--nexora-brand); font-size: 18px; }
+    .service-editor-subtitle { margin-top: 4px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; line-height: 1.5; }
+    .service-editor-body { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 16px; padding: 18px; }
+    .service-editor-summary { align-self: start; border: 1px solid var(--nexora-border); border-radius: 14px; background: #f8fafc; padding: 14px; }
+    .service-editor-preview { display: grid; gap: 10px; }
+    .service-editor-preview-top { display: flex; align-items: center; gap: 10px; }
+    .service-editor-preview-icon { display: inline-flex; width: 38px; height: 38px; flex: 0 0 38px; align-items: center; justify-content: center; border-radius: 12px; background: #eaf0ff; color: var(--nexora-brand); font-size: 16px; }
+    .service-editor-preview-copy { min-width: 0; }
+    .service-editor-preview-name { overflow: hidden; color: var(--nexora-text); font-size: 16px; font-weight: 900; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+    .service-editor-preview-category { margin-top: 3px; color: var(--nexora-muted); font-size: 11.5px; font-weight: 700; }
+    .service-editor-summary-grid { display: grid; gap: 8px; margin-top: 12px; }
+    .service-editor-summary-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px dashed var(--nexora-rule); padding-top: 8px; color: var(--nexora-muted); font-size: 11.5px; font-weight: 700; }
+    .service-editor-summary-item strong { color: var(--nexora-text); font-size: 12px; font-weight: 900; text-align: right; }
+    .service-editor-form { min-width: 0; }
+    .service-editor-section { border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; padding: 14px; }
+    .service-editor-section + .service-editor-section { margin-top: 12px; }
+    .service-editor-section-title { display: flex; align-items: center; gap: 7px; margin-bottom: 12px; color: var(--nexora-text); font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .04em; }
+    .service-editor-grid { display: grid; gap: 12px; }
+    .service-editor-grid-main { grid-template-columns: minmax(0, 1.35fr) minmax(0, .95fr); }
+    .service-editor-grid-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .service-editor-field { display: grid; min-width: 0; gap: 6px; color: var(--nexora-muted); font-size: 11.5px; font-weight: 800; }
+    .service-editor-field .pos-input { width: 100%; min-width: 0; }
+    .service-editor-field textarea.pos-input { height: auto; min-height: 104px; padding-top: 10px; line-height: 1.55; resize: vertical; }
+    .service-editor-actions { justify-content: space-between; }
+    .service-editor-actions .pos-warn-text { margin: 0; }
+    [data-service-modal-mode="view"] .service-editor-field .pos-input:disabled { background: var(--nexora-surface-muted); color: var(--nexora-text); opacity: 1; }
+    @media (max-width: 760px) {
+      .service-editor-body { grid-template-columns: 1fr; padding: 14px; }
+      .service-editor-grid-main, .service-editor-grid-three { grid-template-columns: 1fr; }
+      .service-editor-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .service-editor-actions { align-items: stretch; }
+      .service-editor-actions .pos-inline { width: 100%; justify-content: flex-end; }
+    }
+
     .swap-tech-dialog { max-width: 520px; }
     .swap-tech-copy { margin: 0 0 12px; line-height: 1.6; }
     .swap-tech-list { display: grid; gap: 8px; }
@@ -807,33 +844,53 @@
             <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="catalog">Skills &amp; Catalog</button>
           </div>
           <div data-mgmt-body></div>
-          <div class="sms-modal" data-mg-service-modal role="dialog" aria-modal="true" aria-hidden="true" aria-label="Service editor">
-            <div class="sms-dialog" style="max-width:760px">
-              <div class="sms-mhead">
-                <h3><i class="bi bi-card-checklist" aria-hidden="true"></i> <span data-mg-service-modal-title>Service</span></h3>
+          <div class="sms-modal service-editor-modal" data-mg-service-modal role="dialog" aria-modal="true" aria-hidden="true" aria-label="Service editor">
+            <div class="sms-dialog service-editor-dialog">
+              <div class="sms-mhead service-editor-hero">
+                <div class="service-editor-heading">
+                  <span class="service-editor-icon"><i class="bi bi-card-checklist" aria-hidden="true"></i></span>
+                  <div>
+                    <h3><span data-mg-service-modal-title>Service</span></h3>
+                    <div class="service-editor-subtitle" data-mg-service-modal-subtitle></div>
+                  </div>
+                </div>
                 <button class="pos-icon-btn" type="button" data-mg-service-cancel aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
               </div>
-              <div class="sms-mbody">
-                <div class="pos-inline" style="align-items:flex-start;gap:12px">
-                  <label class="pos-inline-lbl" style="flex:1 1 250px">Name<input class="pos-input" data-mg-service-form-name style="width:100%;margin-top:4px"></label>
-                  <label class="pos-inline-lbl" style="flex:1 1 190px">Category<input class="pos-input" list="mg-service-categories" data-mg-service-form-category style="width:100%;margin-top:4px"></label>
+              <div class="sms-mbody service-editor-body">
+                <aside class="service-editor-summary" data-mg-service-summary></aside>
+                <div class="service-editor-form">
+                  <div class="service-editor-section">
+                    <div class="service-editor-section-title"><i class="bi bi-info-circle" aria-hidden="true"></i>Basics</div>
+                    <div class="service-editor-grid service-editor-grid-main">
+                      <label class="service-editor-field">Name<input class="pos-input" data-mg-service-form-name></label>
+                      <label class="service-editor-field">Category<input class="pos-input" list="mg-service-categories" data-mg-service-form-category></label>
+                    </div>
+                  </div>
+                  <div class="service-editor-section">
+                    <div class="service-editor-section-title"><i class="bi bi-sliders" aria-hidden="true"></i>Pricing &amp; settings</div>
+                    <div class="service-editor-grid service-editor-grid-three">
+                      <label class="service-editor-field">Price<input class="pos-input" type="number" min="0" step="0.01" data-mg-service-form-price></label>
+                      <label class="service-editor-field">Minutes<input class="pos-input" type="number" min="1" step="5" data-mg-service-form-duration></label>
+                      <label class="service-editor-field">Skill<select class="pos-input" data-mg-service-form-skill></select></label>
+                      <label class="service-editor-field">Type<select class="pos-input" data-mg-service-form-type></select></label>
+                      <label class="service-editor-field">Status<select class="pos-input" data-mg-service-form-active><option value="active">Active</option><option value="inactive">Inactive</option></select></label>
+                    </div>
+                  </div>
+                  <div class="service-editor-section">
+                    <div class="service-editor-section-title"><i class="bi bi-text-paragraph" aria-hidden="true"></i>Details</div>
+                    <div class="service-editor-grid">
+                      <label class="service-editor-field">Description<textarea class="pos-input" rows="4" data-mg-service-form-description></textarea></label>
+                      <label class="service-editor-field">Includes<textarea class="pos-input" rows="5" data-mg-service-form-includes></textarea></label>
+                    </div>
+                  </div>
                 </div>
-                <div class="pos-inline" style="align-items:flex-start;gap:12px;margin-top:10px">
-                  <label class="pos-inline-lbl" style="flex:1 1 100px">Price<input class="pos-input" type="number" min="0" step="0.01" data-mg-service-form-price style="width:100%;margin-top:4px"></label>
-                  <label class="pos-inline-lbl" style="flex:1 1 100px">Minutes<input class="pos-input" type="number" min="1" step="5" data-mg-service-form-duration style="width:100%;margin-top:4px"></label>
-                  <label class="pos-inline-lbl" style="flex:1 1 150px">Skill<select class="pos-input" data-mg-service-form-skill style="width:100%;margin-top:4px"></select></label>
-                </div>
-                <div class="pos-inline" style="align-items:flex-start;gap:12px;margin-top:10px">
-                  <label class="pos-inline-lbl" style="flex:1 1 150px">Type<select class="pos-input" data-mg-service-form-type style="width:100%;margin-top:4px"></select></label>
-                  <label class="pos-inline-lbl" style="flex:1 1 150px">Status<select class="pos-input" data-mg-service-form-active style="width:100%;margin-top:4px"><option value="active">Active</option><option value="inactive">Inactive</option></select></label>
-                </div>
-                <label class="pos-inline-lbl" style="display:block;margin-top:12px">Description<textarea class="pos-input" rows="4" data-mg-service-form-description style="width:100%;margin-top:4px;resize:vertical"></textarea></label>
-                <label class="pos-inline-lbl" style="display:block;margin-top:12px">Includes<textarea class="pos-input" rows="5" data-mg-service-form-includes style="width:100%;margin-top:4px;resize:vertical"></textarea></label>
-                <div class="pos-warn-text" data-mg-service-form-error hidden style="margin-top:10px"></div>
               </div>
-              <div class="sms-mfoot" style="justify-content:flex-end">
-                <button class="pos-btn pos-btn-sm" type="button" data-mg-service-cancel>Cancel</button>
-                <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-service-save><i class="bi bi-check2" aria-hidden="true"></i> Save service</button>
+              <div class="sms-mfoot service-editor-actions">
+                <div class="pos-warn-text" data-mg-service-form-error hidden></div>
+                <div class="pos-inline">
+                  <button class="pos-btn pos-btn-sm" type="button" data-mg-service-cancel>Cancel</button>
+                  <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-service-save><i class="bi bi-check2" aria-hidden="true"></i> <span data-mg-service-save-label>Save service</span></button>
+                </div>
               </div>
             </div>
           </div>
@@ -4540,6 +4597,28 @@
         }).join(' ') + (includes.length > 3 ? ' <span class="pos-muted">+' + (includes.length - 3) + '</span>' : '');
       }
 
+      function serviceModalSummaryHtml(service, mode) {
+        var current = service || {};
+        var name = current.name || (mode === 'add' ? 'New service' : 'Service');
+        var category = current.name ? serviceCategoryLabel(current) : 'Choose category';
+        var price = current.price == null ? 'No price' : money(current.price);
+        var duration = current.durationMin ? current.durationMin + ' min' : 'No duration';
+        var skill = current.requiredSkill || 'No skill';
+        var type = current.type || 'standard';
+        var includesCount = Array.isArray(current.includes) ? current.includes.length : 0;
+        return '<div class="service-editor-preview">' +
+          '<div class="service-editor-preview-top"><span class="service-editor-preview-icon"><i class="bi bi-card-checklist" aria-hidden="true"></i></span><div class="service-editor-preview-copy"><div class="service-editor-preview-name">' + esc(name) + '</div><div class="service-editor-preview-category">' + esc(category) + '</div></div></div>' +
+          '<div>' + serviceStatusChip(current) + '</div>' +
+          '<div class="service-editor-summary-grid">' +
+            '<div class="service-editor-summary-item"><span>Price</span><strong>' + esc(price) + '</strong></div>' +
+            '<div class="service-editor-summary-item"><span>Minutes</span><strong>' + esc(duration) + '</strong></div>' +
+            '<div class="service-editor-summary-item"><span>Skill</span><strong>' + esc(skill) + '</strong></div>' +
+            '<div class="service-editor-summary-item"><span>Type</span><strong>' + esc(type) + '</strong></div>' +
+            '<div class="service-editor-summary-item"><span>Includes</span><strong>' + includesCount + '</strong></div>' +
+          '</div>' +
+        '</div>';
+      }
+
       function openServiceModal(id, mode) {
         var modal = $('[data-mg-service-modal]');
         if (!modal) return;
@@ -4548,6 +4627,8 @@
         var service = serviceModalId ? serviceById(serviceModalId) : null;
         var isReadOnly = serviceModalMode === 'view';
         var titleEl = $('[data-mg-service-modal-title]');
+        var subtitleEl = $('[data-mg-service-modal-subtitle]');
+        var summaryEl = $('[data-mg-service-summary]');
         var nameEl = $('[data-mg-service-form-name]');
         var categoryEl = $('[data-mg-service-form-category]');
         var priceEl = $('[data-mg-service-form-price]');
@@ -4558,7 +4639,10 @@
         var descriptionEl = $('[data-mg-service-form-description]');
         var includesEl = $('[data-mg-service-form-includes]');
         var saveEl = $('[data-mg-service-save]');
+        var saveLabelEl = $('[data-mg-service-save-label]');
         if (titleEl) titleEl.textContent = isReadOnly ? 'View service' : (service ? 'Edit service' : 'Add service');
+        if (subtitleEl) subtitleEl.textContent = serviceModalMode === 'add' ? 'Create a new menu service' : (isReadOnly ? 'Read-only service detail' : 'Update service details');
+        if (summaryEl) summaryEl.innerHTML = serviceModalSummaryHtml(service, serviceModalMode);
         if (skillEl) skillEl.innerHTML = serviceSkillOptions(service ? service.requiredSkill || '' : '');
         if (typeEl) typeEl.innerHTML = serviceTypeOptions(service ? service.type || '' : '');
         if (activeEl) activeEl.value = service && service.active === false ? 'inactive' : 'active';
@@ -4571,12 +4655,17 @@
         [nameEl, categoryEl, priceEl, durationEl, skillEl, typeEl, activeEl, descriptionEl, includesEl].forEach(function (field) {
           if (field) field.disabled = isReadOnly;
         });
+        if (saveLabelEl) saveLabelEl.textContent = serviceModalMode === 'add' ? 'Create service' : 'Save changes';
         if (saveEl) saveEl.hidden = isReadOnly;
+        modal.setAttribute('data-service-modal-mode', serviceModalMode);
         setServiceFormError('');
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
-        setTimeout(function () { if (nameEl) nameEl.focus(); }, 0);
+        setTimeout(function () {
+          var focusEl = isReadOnly ? $('[data-mg-service-cancel]') : nameEl;
+          if (focusEl) focusEl.focus();
+        }, 0);
       }
 
       function closeServiceModal() {
@@ -4584,6 +4673,7 @@
         if (!modal) return;
         modal.classList.remove('open');
         modal.setAttribute('aria-hidden', 'true');
+        modal.removeAttribute('data-service-modal-mode');
         document.body.style.overflow = '';
         serviceModalId = null;
         serviceModalMode = 'edit';
