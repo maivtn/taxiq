@@ -93,23 +93,33 @@ test('POS keeps ticket KPIs in Tickets and merges the Time Clock roster into one
   assert.match(html, /<th scope="col">Turns today<\/th>/);
 });
 
-test('Management exposes a Services subtab with menu-backed CRUD controls', () => {
+test('Management exposes Services as table/card views with modal CRUD detail fields', () => {
   const managementPanel = html.match(/<section class="pos-panel" data-pos-panel="management"[\s\S]*?<\/section>/)?.[0] || '';
   const servicesRuntime = html.match(/function mgServicesHtml\(\)[\s\S]*?function mgStaffHtml\(\)/)?.[0] || '';
+  const serviceModalRuntime = html.match(/function openServiceModal\([\s\S]*?function mgServicesHtml\(\)/)?.[0] || '';
 
   assert.match(managementPanel, /data-mg-subtab="services"[^>]*>Services/);
   assert.match(html, /var SERVICE_MENU_URL = '\.\.\/menu\/menu\.json'/);
   assert.match(html, /seedServicesFromMenuCatalog/);
   assert.match(html, /var MG_SUBTABS = \['overview', 'payroll', 'services', 'staff', 'catalog'\]/);
   assert.match(html, /services: function \(\) \{ return mgServicesHtml\(\); \}/);
+  assert.match(servicesRuntime, /data-mg-service-view-target="table"/);
+  assert.match(servicesRuntime, /data-mg-service-view-target="card"/);
+  assert.match(servicesRuntime, /data-mg-service-table/);
+  assert.match(servicesRuntime, /data-mg-service-cards/);
   assert.match(servicesRuntime, /data-mg-service-add/);
-  assert.match(servicesRuntime, /data-mg-service-save="/);
+  assert.match(servicesRuntime, /data-mg-service-edit="/);
   assert.match(servicesRuntime, /data-mg-service-delete="/);
-  assert.match(servicesRuntime, /data-mg-service-name="/);
-  assert.match(servicesRuntime, /data-mg-service-category="/);
-  assert.match(servicesRuntime, /data-mg-service-price="/);
-  assert.match(servicesRuntime, /data-mg-service-duration="/);
-  assert.match(servicesRuntime, /data-mg-service-skill="/);
+  assert.doesNotMatch(servicesRuntime, /data-mg-service-name="/);
+  assert.match(html, /data-mg-service-modal/);
+  assert.match(serviceModalRuntime, /data-mg-service-form-name/);
+  assert.match(serviceModalRuntime, /data-mg-service-form-category/);
+  assert.match(serviceModalRuntime, /data-mg-service-form-price/);
+  assert.match(serviceModalRuntime, /data-mg-service-form-duration/);
+  assert.match(serviceModalRuntime, /data-mg-service-form-skill/);
+  assert.match(serviceModalRuntime, /data-mg-service-form-description/);
+  assert.match(serviceModalRuntime, /data-mg-service-form-includes/);
+  assert.match(html, /function serviceIncludesFromText\(value\)/);
 });
 
 test('Time Clock station cells only show the station input, not per-tech Station labels', () => {
