@@ -128,6 +128,17 @@ test('POS Booking uses the shared appointment store and no longer loads the phas
   assert.doesNotMatch(source, /data-ap-calendar/);
 });
 
+test('POS Booking rolls static demo rows to the current operating date before Check-in ETA reads them', () => {
+  const demoDateScriptIndex = html.indexOf('../assets/booking-demo-date.js');
+  const runtimeScriptIndex = html.indexOf('../assets/pos-booking-runtime.js');
+  assert.ok(demoDateScriptIndex >= 0, 'booking demo date helper should load on POS');
+  assert.ok(demoDateScriptIndex < runtimeScriptIndex, 'date helper must load before booking runtime');
+  assert.match(runtime, /var BOOKING_STATIC_BASE_DATE = '2026-07-09'/);
+  assert.match(runtime, /var BOOKING_TODAY_DATE = bookingDemoDate\.localDateKey\(\)/);
+  assert.match(runtime, /normalizeBookingStaticDates\(initialBookingRows\);\s*\n\s*appointmentStore\.ensureSource\('booking-book-static-v1'/);
+  assert.match(runtime, /repairBookingStaticDates\(initialBookingRows\);/);
+});
+
 test('POS keeps the shared mode and tab activation contracts', () => {
   assert.match(source, /var TABS = \['checkin', 'tickets', 'booking', 'customers', 'clock', 'management'\]/);
   assert.match(source, /function activateTab\(id\)/);

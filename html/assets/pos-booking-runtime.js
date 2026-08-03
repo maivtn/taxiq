@@ -1,7 +1,9 @@
 /* Booking workspace runtime ported from the canonical Booking Book surface. */
 
 var DEFAULT_MAIN_TAB = 'booking';
-    var BOOKING_TODAY_DATE = '2026-07-09';
+    var bookingDemoDate = window.NEXORA_BOOKING_DEMO_DATE;
+    var BOOKING_STATIC_BASE_DATE = '2026-07-09';
+    var BOOKING_TODAY_DATE = bookingDemoDate.localDateKey();
     var BOOKING_SEARCH_PLACEHOLDERS = {
       name: 'Enter customer name',
       phone: 'Enter phone number',
@@ -255,6 +257,32 @@ var DEFAULT_MAIN_TAB = 'booking';
       var hour = Number(match[1]) % 12;
       if (String(match[3]).toUpperCase() === 'PM') hour += 12;
       return String(hour).padStart(2, '0') + ':' + match[2];
+    }
+
+    function normalizeBookingStaticDates(items) {
+      (items || []).forEach(function(item) {
+        var seedDate = item.dataset.bookingSeedDate || item.dataset.bookingDate || BOOKING_STATIC_BASE_DATE;
+        item.dataset.bookingSeedDate = seedDate;
+        item.dataset.bookingDate = bookingDemoDate.rollDateKey(seedDate, BOOKING_STATIC_BASE_DATE, BOOKING_TODAY_DATE);
+      });
+    }
+
+    function repairBookingStaticDates(items) {
+      var rolledById = {};
+      (items || []).forEach(function(item) {
+        if (!item.dataset.bookingId || !item.dataset.bookingDate) return;
+        rolledById[String(item.dataset.bookingId)] = item.dataset.bookingDate;
+      });
+
+      appointmentStore.loadAll(null, catalog).forEach(function(record) {
+        var targetDate = rolledById[String(record.id)];
+        var currentDate = String(record.startAt || '').slice(0, 10);
+        if (!targetDate || !currentDate || currentDate === targetDate || !record.endAt) return;
+        appointmentStore.update(record.id, {
+          startAt: bookingDemoDate.shiftDateTime(record.startAt, currentDate, targetDate),
+          endAt: bookingDemoDate.shiftDateTime(record.endAt, currentDate, targetDate)
+        }, null, catalog);
+      });
     }
 
     function statusKeyFromItem(item) {
@@ -3649,7 +3677,9 @@ function getBookingCardCallStart(item) {
       }
     });
     var initialBookingRows = Array.from(document.querySelectorAll('[data-booking-item]'));
+    normalizeBookingStaticDates(initialBookingRows);
     appointmentStore.ensureSource('booking-book-static-v1', initialBookingRows.map(bookingRecordFromItem), null, catalog);
+    repairBookingStaticDates(initialBookingRows);
     repairBookingStaticSources(initialBookingRows);
     renderBookingTechnicianRoster();
     renderBookingStoreRows();
