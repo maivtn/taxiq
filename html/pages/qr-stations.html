@@ -4,6 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexora Touch - QR Stations</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            nexoraCanvas: '#F8FAFC',
+            nexoraSurface: '#FFFFFF',
+            nexoraSurfaceMuted: '#F1F5F9',
+            nexoraBorder: '#E2E8F0',
+            nexoraRule: '#CBD5E1',
+            nexoraText: '#0B1C30',
+            nexoraMuted: '#565E74',
+            nexoraSubtle: '#64748B',
+            nexoraBrand: '#4648D4',
+            nexoraBrandDark: '#3A3BBF',
+            nexoraViolet: '#2D2EAA',
+            nexoraElectric: '#4648D4',
+            nexoraCyan: '#3A3BBF',
+            nexoraInfo: '#0284C7',
+            nexoraSuccess: '#10B981',
+            nexoraWarning: '#F59E0B',
+            nexoraWarningHover: '#D97706',
+            nexoraWarningActive: '#B45309',
+            nexoraDanger: '#EF4444',
+            nexoraInk: '#050505',
+            nexoraSidebar: '#0D1117',
+            nexoraPrimarySubtleDark: '#1E1E5F',
+            nexoraDarkSecondaryText: '#94A3B8',
+            nexoraDarkDisabled: '#4B5563',
+            nailPearl: '#F8FAFC',
+            nailBlush: '#E9E9FF',
+            nailRose: '#4648D4',
+            nailPlum: '#1E1E5F',
+            nailGold: '#F59E0B',
+            nailMint: '#EAFBF3'
+          },
+          boxShadow: {
+            phone: '0 24px 68px rgba(5, 5, 5, 0.36)',
+            card: '0 8px 24px rgba(70, 72, 212, 0.08)',
+            lift: '0 14px 32px rgba(70, 72, 212, 0.14)'
+          }
+        }
+      }
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -268,7 +314,7 @@
                     <div class="oneqr-phone-body">
                       <div class="oneqr-phone-welcome" id="oneqrWelcomeText"></div>
                       <div class="oneqr-phone-tiles" id="oneqrPreviewTiles"></div>
-                      <button class="oneqr-phone-viewall" type="button">View All</button>
+                      <button class="oneqr-phone-viewall" type="button" id="oneqrPreviewViewAll" aria-controls="oneqrPreviewTiles" aria-expanded="false">View All</button>
                     </div>
                   </div>
                 </div>
@@ -281,97 +327,124 @@
     </div>
   </div>
 
-  <div class="oneqr-view-modal" data-oneqr-view-modal hidden aria-hidden="true">
-    <div class="oneqr-view-dialog" role="dialog" aria-modal="true" aria-labelledby="oneqr-view-modal-title">
-      <div class="oneqr-view-print-card" data-oneqr-print-card>
-        <div class="oneqr-view-dots" aria-hidden="true"></div>
-        <button class="oneqr-view-close" type="button" data-oneqr-view-close aria-label="Close QR preview">
-          <i data-lucide="x" aria-hidden="true"></i>
-        </button>
-
-        <div class="oneqr-view-logo">
-          <img class="oneqr-view-logo-mark" src="assets/icon-nexora.png" alt="">
-          <p class="oneqr-view-logo-word">NEXORA</p>
-          <p class="oneqr-view-logo-sub">TOUCH</p>
-        </div>
-
-        <div class="oneqr-view-headline" id="oneqr-view-modal-title">
-          <p class="oneqr-view-scanto">Scan To</p>
-          <p class="oneqr-view-title-gradient">Pay, Tip, Review<br>&amp; Earn Rewards</p>
-        </div>
-
-        <div class="oneqr-view-qr-frame">
-          <div class="oneqr-view-qr">
-            <div class="qr-code-art" data-qr-value="../customer/oneqr-landing.html" data-qr-size="400" role="img" aria-label="Bitcoin Nail Bar OneQR code"></div>
-            <img class="oneqr-view-qr-logo" src="assets/icon-nexora.png" alt="">
+  <div class="absolute inset-0 z-50 hidden items-center justify-center bg-nexoraInk/45 px-3 backdrop-blur-sm" data-oneqr-view-modal data-salon-qr-modal aria-hidden="true">
+    <div class="max-h-[calc(100%-18px)] w-full max-w-[390px] overflow-y-auto rounded-[28px] bg-white/95 p-1.5 shadow-phone">
+      <div class="overflow-hidden rounded-[24px] border border-white/15 bg-[#050505] text-white shadow-[0_18px_44px_rgba(0,0,0,0.42)]">
+        <div class="relative min-h-[720px] w-full overflow-hidden bg-[radial-gradient(circle_at_50%_-4%,rgba(255,255,255,0.16)_0,transparent_19%),radial-gradient(circle_at_14%_22%,rgba(236,72,153,0.34)_0,transparent_25%),radial-gradient(circle_at_91%_58%,rgba(34,211,238,0.32)_0,transparent_26%),linear-gradient(160deg,#050505_0%,#0B0F1A_46%,#111056_100%)] px-4 py-4" data-oneqr-print-card data-salon-print-card>
+          <div class="absolute inset-0 opacity-[0.16] [background-image:radial-gradient(circle,rgba(255,255,255,0.52)_0.55px,transparent_0.8px)] [background-size:3px_3px]" data-print-dot-overlay></div>
+          <button class="absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-lg border border-white/20 bg-white/10 text-white backdrop-blur" aria-label="Close salon QR preview" data-oneqr-view-close data-salon-modal-close>
+            <i data-lucide="x" class="h-4 w-4"></i>
+          </button>
+          <div class="relative mx-auto grid justify-items-center text-center">
+            <img src="https://i.ibb.co/mCt5J2dK/Xexora-TOUCH-USPTO-03.png" alt="Nexora Touch" class="h-auto w-[118px] object-contain drop-shadow-[0_0_20px_rgba(34,211,238,0.48)]" data-print-logo />
+            <div class="hidden">
+              <span>
+                <img alt="Bitcoin Nail Bar logo" class="hidden h-full w-full rounded-full object-contain" data-salon-modal-logo />
+                <span data-salon-modal-initials>BI</span>
+              </span>
+              <span data-salon-modal-name>Bitcoin Nail Bar</span>
+              <span data-salon-modal-status>Active</span>
+            </div>
+          </div>
+          <div class="relative mt-5 text-center" data-print-headline>
+            <p class="text-[20px] font-extrabold uppercase leading-tight tracking-[0.16em] text-white" data-print-body>Scan To</p>
+            <p class="mt-1 bg-[linear-gradient(90deg,#F472B6_0%,#C084FC_50%,#67E8F9_100%)] bg-clip-text text-[32px] font-extrabold uppercase leading-[0.92] tracking-[0.02em] text-transparent drop-shadow-[0_0_16px_rgba(34,211,238,0.28)]" data-print-rewarded>Pay, Tip, Review<br />&amp; Earn Rewards</p>
+          </div>
+          <div class="relative mt-3 grid justify-items-center" data-print-qr-focus>
+            <div class="rounded-[24px] border border-[#67E8F9]/70 bg-[#0B1024]/76 p-2 shadow-[0_0_26px_rgba(34,211,238,0.34),0_0_18px_rgba(244,114,182,0.16)]">
+              <div
+                class="qr-code aspect-square w-[255px] rounded-[18px] border-[9px] border-white bg-white shadow-[0_0_24px_rgba(255,255,255,0.18)]"
+                aria-label="Large salon QR preview"
+                data-qr-size="260"
+                data-qr-value="https://pay.nexoratouch.com/salon/bitcoin-nail-bar"
+                data-salon-modal-qr
+              ></div>
+            </div>
+            <p class="hidden" data-salon-modal-link>pay.nexoratouch.com/salon/bitcoin-nail-bar</p>
+          </div>
+          <div class="relative mt-3 grid grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] items-end gap-1 text-center" data-print-steps>
+            <div class="px-0.5">
+              <span class="mx-auto grid h-6 w-6 place-items-center rounded-full border border-[#F472B6] text-[12px] font-bold text-[#F472B6]">1</span>
+              <i data-lucide="qr-code" class="mx-auto mt-1 h-7 w-7 text-white drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]"></i>
+              <p class="mt-0.5 text-[10px] font-semibold text-white" data-print-benefit-label>Scan QR</p>
+            </div>
+            <i data-lucide="arrow-right" class="mb-5 h-4 w-4 text-white/70 drop-shadow-[0_0_8px_rgba(255,255,255,0.28)]"></i>
+            <div class="px-0.5">
+              <span class="mx-auto grid h-6 w-6 place-items-center rounded-full border border-[#C084FC] text-[12px] font-bold text-[#C084FC]">2</span>
+              <i data-lucide="credit-card" class="mx-auto mt-1 h-7 w-7 text-white drop-shadow-[0_0_10px_rgba(192,132,252,0.5)]"></i>
+              <p class="mt-0.5 text-[10px] font-semibold text-white" data-print-benefit-label>Pay</p>
+            </div>
+            <i data-lucide="arrow-right" class="mb-5 h-4 w-4 text-white/70 drop-shadow-[0_0_8px_rgba(255,255,255,0.28)]"></i>
+            <div class="px-0.5">
+              <span class="mx-auto grid h-6 w-6 place-items-center rounded-full border border-[#F0ABFC] text-[12px] font-bold text-[#F0ABFC]">3</span>
+              <i data-lucide="heart" class="mx-auto mt-1 h-7 w-7 text-white drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]"></i>
+              <p class="mt-0.5 text-[10px] font-semibold text-white" data-print-benefit-label>Tip</p>
+            </div>
+            <i data-lucide="arrow-right" class="mb-5 h-4 w-4 text-white/70 drop-shadow-[0_0_8px_rgba(255,255,255,0.28)]"></i>
+            <div class="px-0.5">
+              <span class="mx-auto grid h-6 w-6 place-items-center rounded-full border border-[#67E8F9] text-[12px] font-bold text-[#67E8F9]">4</span>
+              <i data-lucide="star" class="mx-auto mt-1 h-7 w-7 text-white drop-shadow-[0_0_10px_rgba(103,232,249,0.5)]"></i>
+              <p class="mt-0.5 text-[10px] font-semibold text-white" data-print-benefit-label>Review</p>
+            </div>
+          </div>
+          <div class="relative mt-3 grid grid-cols-[70px_minmax(0,1fr)] items-center gap-3 rounded-[18px] border border-[#67E8F9]/65 bg-[#0B1024]/76 p-3 shadow-[0_0_24px_rgba(34,211,238,0.28),inset_0_0_20px_rgba(244,114,182,0.12)]" data-print-panel data-print-rewards-panel>
+            <div class="grid h-[58px] w-[58px] place-items-center rounded-xl border border-white/14 bg-white/[0.05] text-[#F472B6]">
+              <i data-lucide="gift" class="h-10 w-10 drop-shadow-[0_0_14px_rgba(244,114,182,0.62)]"></i>
+            </div>
+            <div class="min-w-0 text-left">
+              <p class="bg-[linear-gradient(90deg,#F472B6,#22D3EE)] bg-clip-text text-[19px] font-bold uppercase leading-tight tracking-[0.04em] text-transparent" data-print-accent>Customer Rewards</p>
+              <p class="mt-1 text-[11px] font-semibold leading-tight text-white" data-print-body>Earn rewards on eligible visits</p>
+              <p class="mt-0.5 text-[9px] font-medium leading-tight text-white/78" data-print-body>Ask our team about points, offers, or member rewards</p>
+            </div>
+          </div>
+          <div class="relative mt-3 grid grid-cols-[1fr_28px_1fr_28px_1fr_28px_1fr] items-start gap-0 text-center" data-print-benefits>
+            <div class="px-1 py-1">
+              <i data-lucide="wallet" class="mx-auto h-6 w-6 text-[#F0ABFC] drop-shadow-[0_0_10px_rgba(240,171,252,0.5)]"></i>
+              <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Easy<br />Payment</p>
+            </div>
+            <div class="relative mt-[15px] h-2" aria-hidden="true">
+              <span class="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-[#F0ABFC]/45 via-[#F472B6]/85 to-[#C084FC]/45"></span>
+              <span class="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#F472B6] shadow-[0_0_8px_rgba(244,114,182,0.7)]"></span>
+            </div>
+            <div class="px-1 py-1">
+              <i data-lucide="heart" class="mx-auto h-6 w-6 text-[#F472B6] drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]"></i>
+              <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Easy<br />Tipping</p>
+            </div>
+            <div class="relative mt-[15px] h-2" aria-hidden="true">
+              <span class="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-[#F472B6]/45 via-[#C084FC]/85 to-[#67E8F9]/45"></span>
+              <span class="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C084FC] shadow-[0_0_8px_rgba(192,132,252,0.7)]"></span>
+            </div>
+            <div class="px-1 py-1">
+              <i data-lucide="bell" class="mx-auto h-6 w-6 text-[#67E8F9] drop-shadow-[0_0_10px_rgba(103,232,249,0.5)]"></i>
+              <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Review<br />Reminder</p>
+            </div>
+            <div class="relative mt-[15px] h-2" aria-hidden="true">
+              <span class="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-[#67E8F9]/45 via-[#F0ABFC]/85 to-[#F472B6]/45"></span>
+              <span class="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#67E8F9] shadow-[0_0_8px_rgba(103,232,249,0.7)]"></span>
+            </div>
+            <div class="px-1 py-1">
+              <i data-lucide="gift" class="mx-auto h-6 w-6 text-[#F0ABFC] drop-shadow-[0_0_10px_rgba(240,171,252,0.5)]"></i>
+              <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Earn<br />Rewards</p>
+            </div>
+          </div>
+          <div class="hidden">
+            <p data-salon-modal-address>9738 Hammerly Blvd Ste A, Houston, TX 77080</p>
+            <p data-salon-modal-hours>Mon-Sat 9:00 AM-7:00 PM</p>
+            <p data-salon-modal-phone>(832) 418-9406</p>
+            <p class="hidden" data-salon-modal-station>Front desk and table QR</p>
+          </div>
+          <div class="relative mt-3 text-center">
+            <div class="mx-auto mb-1 h-px w-[78%] bg-[linear-gradient(90deg,transparent,#F472B6,#22D3EE,transparent)]"></div>
+            <p class="text-[18px] font-semibold bg-[linear-gradient(90deg,#F472B6,#22D3EE)] bg-clip-text text-transparent" data-print-accent>Thank you for visiting</p>
+            <p class="mt-1 text-[7px] font-semibold uppercase tracking-[0.2em] text-white/46" data-print-powered>Powered by VLINKPAY</p>
+            <p class="hidden" data-salon-modal-methods>Zelle, Apple Cash, Venmo, PayPal, Cash App</p>
           </div>
         </div>
-
-        <div class="oneqr-view-steps">
-          <div class="oneqr-view-step">
-            <span class="oneqr-view-step-num is-pink">1</span>
-            <i data-lucide="qr-code" aria-hidden="true"></i>
-            <p>Scan QR</p>
-          </div>
-          <i data-lucide="arrow-right" class="oneqr-view-step-arrow" aria-hidden="true"></i>
-          <div class="oneqr-view-step">
-            <span class="oneqr-view-step-num is-purple">2</span>
-            <i data-lucide="credit-card" aria-hidden="true"></i>
-            <p>Pay</p>
-          </div>
-          <i data-lucide="arrow-right" class="oneqr-view-step-arrow" aria-hidden="true"></i>
-          <div class="oneqr-view-step">
-            <span class="oneqr-view-step-num is-fuchsia">3</span>
-            <i data-lucide="heart" aria-hidden="true"></i>
-            <p>Tip</p>
-          </div>
-          <i data-lucide="arrow-right" class="oneqr-view-step-arrow" aria-hidden="true"></i>
-          <div class="oneqr-view-step">
-            <span class="oneqr-view-step-num is-cyan">4</span>
-            <i data-lucide="star" aria-hidden="true"></i>
-            <p>Review</p>
-          </div>
+        <div class="grid grid-cols-3 gap-2 border-t border-nexoraBrand/15 bg-[#EEF2FF]/95 p-3 backdrop-blur" data-oneqr-modal-actions data-salon-modal-actions>
+          <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Copy salon QR link" data-salon-modal-copy data-copy-link="pay.nexoratouch.com/salon/bitcoin-nail-bar" id="oneqrViewCopy"><i data-lucide="link" class="h-3.5 w-3.5"></i>Copy Link</button>
+          <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Print salon QR" data-salon-modal-print id="oneqrViewPrint"><i data-lucide="printer" class="h-3.5 w-3.5"></i>Print</button>
+          <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-nexoraBrand text-[10px] font-semibold text-white" id="oneqrViewDownload"><i data-lucide="download" class="h-3.5 w-3.5"></i>Save QR</button>
         </div>
-
-        <div class="oneqr-view-rewards">
-          <span class="oneqr-view-rewards-icon"><i data-lucide="gift" aria-hidden="true"></i></span>
-          <div class="oneqr-view-rewards-copy">
-            <p class="oneqr-view-rewards-title">Customer Rewards</p>
-            <p class="oneqr-view-rewards-body">Earn rewards on eligible visits</p>
-            <p class="oneqr-view-rewards-sub">Ask our team about points, offers, or member rewards</p>
-          </div>
-        </div>
-
-        <div class="oneqr-view-benefits">
-          <div class="oneqr-view-benefit"><i data-lucide="wallet" class="is-fuchsia" aria-hidden="true"></i><p>Easy<br>Payment</p></div>
-          <span class="oneqr-view-benefit-dot is-pink" aria-hidden="true"></span>
-          <div class="oneqr-view-benefit"><i data-lucide="heart" class="is-pink" aria-hidden="true"></i><p>Easy<br>Tipping</p></div>
-          <span class="oneqr-view-benefit-dot is-purple" aria-hidden="true"></span>
-          <div class="oneqr-view-benefit"><i data-lucide="bell" class="is-cyan" aria-hidden="true"></i><p>Review<br>Reminder</p></div>
-          <span class="oneqr-view-benefit-dot is-cyan" aria-hidden="true"></span>
-          <div class="oneqr-view-benefit"><i data-lucide="gift" class="is-fuchsia" aria-hidden="true"></i><p>Earn<br>Rewards</p></div>
-        </div>
-
-        <div class="oneqr-view-thanks">
-          <div class="oneqr-view-thanks-rule" aria-hidden="true"></div>
-          <p class="oneqr-view-thanks-text">Thank you for visiting</p>
-          <p class="oneqr-view-powered">Powered by Nexora Touch</p>
-        </div>
-      </div>
-
-      <div class="oneqr-view-actions">
-        <button class="oneqr-view-action-btn" type="button" id="oneqrViewCopy">
-          <i data-lucide="link" aria-hidden="true"></i>
-          <span>Copy Link</span>
-        </button>
-        <button class="oneqr-view-action-btn" type="button" id="oneqrViewPrint">
-          <i data-lucide="printer" aria-hidden="true"></i>
-          <span>Print</span>
-        </button>
-        <button class="oneqr-view-action-btn is-primary" type="button" id="oneqrViewDownload">
-          <i data-lucide="download" aria-hidden="true"></i>
-          <span>Download</span>
-        </button>
       </div>
     </div>
   </div>

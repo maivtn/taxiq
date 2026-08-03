@@ -6,6 +6,7 @@ const PAGE_URL = new URL('./qr-stations.html', import.meta.url);
 const SHELL_URL = new URL('../assets/nexora-shell.js', import.meta.url);
 const CSS_URL = new URL('../assets/qr-stations.css', import.meta.url);
 const ONEQR_URL = new URL('../assets/qr-stations-oneqr.js', import.meta.url);
+const QRCODE_URL = new URL('../assets/qr-stations-qrcode.js', import.meta.url);
 
 function source() {
   assert.ok(existsSync(PAGE_URL), 'qr-stations.html must exist');
@@ -25,6 +26,11 @@ function cssSource() {
 function oneqrSource() {
   assert.ok(existsSync(ONEQR_URL), 'qr-stations-oneqr.js must exist');
   return readFileSync(ONEQR_URL, 'utf8');
+}
+
+function qrCodeSource() {
+  assert.ok(existsSync(QRCODE_URL), 'qr-stations-qrcode.js must exist');
+  return readFileSync(QRCODE_URL, 'utf8');
 }
 
 test('creates the QR Stations page from the shared merchant shell', () => {
@@ -94,10 +100,69 @@ test('keeps the OneQR print card in a 5 by 7 portrait ratio', () => {
   const css = cssSource();
   const oneqr = oneqrSource();
 
-  assert.match(html, /class="oneqr-view-print-card"[^>]*data-oneqr-print-card/);
-  assert.match(css, /\.oneqr-view-print-card\s*\{[^}]*aspect-ratio:\s*5\s*\/\s*7;[^}]*overflow:\s*hidden/);
-  assert.match(css, /\.oneqr-view-dialog\s*\{[^}]*width:\s*min\(100%,\s*360px\)/);
-  assert.match(oneqr, /printCard\.style\.width\s*=\s*'5in'/);
-  assert.match(oneqr, /printCard\.style\.height\s*=\s*'7in'/);
+  assert.match(html, /data-oneqr-print-card[^>]*data-salon-print-card/);
+  assert.match(css, /@page\s*\{[\s\S]*?size:\s*5in 7in/);
+  assert.match(oneqr, /width:\s*5in !important/);
+  assert.match(oneqr, /height:\s*7in !important/);
   assert.doesNotMatch(oneqr, /printCard\.style\.width\s*=\s*'380px'/);
+});
+
+test('copies the Staff App salon QR modal and QR rendering contract', () => {
+  const html = source();
+  const css = cssSource();
+  const oneqr = oneqrSource();
+  const qrcode = qrCodeSource();
+
+  assert.match(html, /<script src="https:\/\/cdn\.tailwindcss\.com"><\/script>/);
+  assert.match(html, /tailwind\.config\s*=\s*\{[\s\S]*nexoraInk:\s*'#050505'[\s\S]*boxShadow:\s*\{[\s\S]*phone:\s*'0 24px 68px rgba\(5, 5, 5, 0\.36\)'/);
+  assert.match(html, /class="absolute inset-0 z-50 hidden items-center justify-center bg-nexoraInk\/45 px-3 backdrop-blur-sm"[^>]*data-oneqr-view-modal[^>]*data-salon-qr-modal/);
+  assert.match(html, /class="relative min-h-\[720px\] w-full overflow-hidden bg-\[radial-gradient\(circle_at_50%_-4%,rgba\(255,255,255,0\.16\)_0,transparent_19%\),radial-gradient\(circle_at_14%_22%,rgba\(236,72,153,0\.34\)_0,transparent_25%\),radial-gradient\(circle_at_91%_58%,rgba\(34,211,238,0\.32\)_0,transparent_26%\),linear-gradient\(160deg,#050505_0%,#0B0F1A_46%,#111056_100%\)\] px-4 py-4"[^>]*data-oneqr-print-card[^>]*data-salon-print-card/);
+  assert.match(html, /src="https:\/\/i\.ibb\.co\/mCt5J2dK\/Xexora-TOUCH-USPTO-03\.png"[^>]*class="h-auto w-\[118px\] object-contain drop-shadow-\[0_0_20px_rgba\(34,211,238,0\.48\)\]"[^>]*data-print-logo/);
+  assert.match(html, /class="qr-code aspect-square w-\[255px\] rounded-\[18px\] border-\[9px\] border-white bg-white shadow-\[0_0_24px_rgba\(255,255,255,0\.18\)\]"[\s\S]*data-salon-modal-qr/);
+  assert.match(html, /data-print-headline[\s\S]*?data-print-rewarded[\s\S]*?Pay, Tip, Review<br \/>&amp; Earn Rewards/);
+  assert.match(html, /data-print-panel data-print-rewards-panel/);
+  assert.match(html, /data-print-benefits/);
+  assert.match(css, /\[data-salon-qr-modal\]\s+\[data-salon-print-card\]\s*\{[^}]*transform:\s*scale\(0\.84\);[^}]*margin-bottom:\s*-145px/);
+  assert.match(oneqr, /printContent\.setAttribute\('data-print-content',\s*'salon-qr'\)/);
+  assert.match(oneqr, /\[data-print-content="salon-qr"\][\s\S]*--print-scale:\s*0\.70/);
+  assert.match(qrcode, /container\.classList\.contains\('qr-code'\)/);
+  assert.match(qrcode, /logoBadge\.className\s*=\s*'qr-logo-mark'/);
+});
+
+test('prints the salon QR headline with the modal gradient colors', () => {
+  const css = cssSource();
+  const oneqr = oneqrSource();
+
+  assert.match(css, /body\.is-printing-salon-qr \[data-print-rewarded\]\s*\{[\s\S]*background:\s*linear-gradient\(90deg, #F472B6 0%, #C084FC 50%, #67E8F9 100%\) !important;[\s\S]*-webkit-text-fill-color:\s*transparent !important/);
+  assert.doesNotMatch(css, /body\.is-printing-salon-qr \[data-print-rewarded\]\s*\{[^}]*color:\s*#67E8F9/);
+  assert.match(oneqr, /\[data-print-rewarded\] \{ background:\s*linear-gradient\(90deg, #F472B6 0%, #C084FC 50%, #67E8F9 100%\) !important;[\s\S]*-webkit-text-fill-color:\s*transparent !important/);
+  assert.doesNotMatch(oneqr, /\[data-print-rewarded\] \{ background: none !important; color: #67E8F9/);
+});
+
+test('prints the salon QR lower cluster at a compact matching width', () => {
+  const css = cssSource();
+  const oneqr = oneqrSource();
+
+  for (const selector of ['data-print-panel', 'data-print-benefits', 'data-print-steps', 'data-print-rewards-panel']) {
+    assert.match(css, new RegExp(`body\\.is-printing-salon-qr \\[${selector}\\]\\s*\\{[\\s\\S]*width:\\s*70% !important`));
+    assert.match(oneqr, new RegExp(`\\[${selector}\\] \\{ width:\\s*70% !important;`));
+  }
+  for (const selector of ['data-print-panel', 'data-print-benefits', 'data-print-steps', 'data-print-rewards-panel']) {
+    assert.doesNotMatch(css, new RegExp(`body\\.is-printing-salon-qr \\[${selector}\\]\\s*\\{[^}]*width:\\s*8[048]%`));
+    assert.doesNotMatch(oneqr, new RegExp(`\\[${selector}\\] \\{ width:\\s*8[048]%`));
+  }
+});
+
+test('lets the OneQR Live Preview View All button show every enabled module', () => {
+  const html = source();
+  const oneqr = oneqrSource();
+
+  assert.match(html, /id="oneqrPreviewTiles"[\s\S]*<button class="oneqr-phone-viewall" type="button" id="oneqrPreviewViewAll" aria-controls="oneqrPreviewTiles" aria-expanded="false">View All<\/button>/);
+  assert.match(oneqr, /var PREVIEW_COLLAPSED_MODULE_LIMIT = 6/);
+  assert.match(oneqr, /var previewExpanded = false/);
+  assert.match(oneqr, /var previewViewAllBtn = document\.getElementById\('oneqrPreviewViewAll'\)/);
+  assert.match(oneqr, /var allEnabledModules = MODULES\.filter\(function \(name\) \{[\s\S]*return enabled\.has\(name\);[\s\S]*\}\)/);
+  assert.match(oneqr, /var previewModules = previewExpanded \? allEnabledModules : roleModules\.slice\(0, PREVIEW_COLLAPSED_MODULE_LIMIT\)/);
+  assert.match(oneqr, /previewViewAllBtn\.setAttribute\('aria-expanded', String\(previewExpanded\)\)/);
+  assert.match(oneqr, /previewViewAllBtn\.addEventListener\('click', function \(\) \{[\s\S]*previewExpanded = !previewExpanded;[\s\S]*renderPreview\(\);[\s\S]*\}\)/);
 });

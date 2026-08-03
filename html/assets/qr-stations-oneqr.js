@@ -112,6 +112,9 @@
   var welcomeEl = document.getElementById('oneqrWelcomeText');
   var tilesEl = document.getElementById('oneqrPreviewTiles');
   var addModuleBtn = document.getElementById('oneqrAddModule');
+  var previewViewAllBtn = document.getElementById('oneqrPreviewViewAll');
+  var PREVIEW_COLLAPSED_MODULE_LIMIT = 6;
+  var previewExpanded = false;
 
   if (!moduleListEl || !welcomeEl || !tilesEl) return;
 
@@ -141,12 +144,22 @@
   function renderPreview() {
     var data = ROLE_DATA[currentRole] || ROLE_DATA.customer;
     welcomeEl.innerHTML = data.welcome;
-    var orderedModules = MODULES.filter(function (name) {
+    var allEnabledModules = MODULES.filter(function (name) {
+      return enabled.has(name);
+    });
+    var roleModules = allEnabledModules.filter(function (name) {
       return enabled.has(name) && data.modules.indexOf(name) !== -1;
     });
-    tilesEl.innerHTML = orderedModules.slice(0, 6).map(function (name) {
+    var previewModules = previewExpanded ? allEnabledModules : roleModules.slice(0, PREVIEW_COLLAPSED_MODULE_LIMIT);
+    tilesEl.innerHTML = previewModules.map(function (name) {
       return '<div class="oneqr-phone-tile">' + iconHtml(name) + '<b>' + name + '</b></div>';
     }).join('');
+    if (previewViewAllBtn) {
+      var canExpand = allEnabledModules.length > roleModules.length || roleModules.length > PREVIEW_COLLAPSED_MODULE_LIMIT;
+      previewViewAllBtn.hidden = !canExpand;
+      previewViewAllBtn.textContent = previewExpanded ? 'View Less' : 'View All';
+      previewViewAllBtn.setAttribute('aria-expanded', String(previewExpanded));
+    }
     refreshIcons();
   }
 
@@ -236,11 +249,19 @@
   document.querySelectorAll('.oneqr-role-tab').forEach(function (tab) {
     tab.addEventListener('click', function () {
       currentRole = tab.getAttribute('data-role');
+      previewExpanded = false;
       document.querySelectorAll('.oneqr-role-tab').forEach(function (t) { t.classList.remove('is-active'); });
       tab.classList.add('is-active');
       renderPreview();
     });
   });
+
+  if (previewViewAllBtn) {
+    previewViewAllBtn.addEventListener('click', function () {
+      previewExpanded = !previewExpanded;
+      renderPreview();
+    });
+  }
 
   if (addModuleBtn) {
     addModuleBtn.addEventListener('click', function () {
@@ -259,7 +280,9 @@
   var printQrBtn = document.getElementById('oneqrPrintQr');
 
   function flashButtonLabel(button, text) {
-    var label = button.querySelector('span');
+    var label = button.querySelector('span') || Array.prototype.find.call(button.childNodes, function (node) {
+      return node.nodeType === 3 && node.textContent.trim();
+    });
     if (!label) return;
     var original = label.textContent;
     button.disabled = true;
@@ -296,20 +319,26 @@
   var viewModalPreviousOverflow = '';
   var modalOpenedForPrint = false;
 
+  function isViewModalOpen() {
+    return Boolean(viewModal && !viewModal.classList.contains('hidden'));
+  }
+
   function openViewModal(opener) {
     if (!viewModal) return;
     viewModalOpener = opener;
     viewModalPreviousOverflow = document.body.style.overflow;
-    viewModal.hidden = false;
+    viewModal.classList.remove('hidden');
+    viewModal.classList.add('flex');
     viewModal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-    var closeButton = viewModal.querySelector('[data-oneqr-view-close]');
+    var closeButton = viewModal.querySelector('[data-oneqr-view-close], [data-salon-modal-close]');
     if (closeButton) closeButton.focus();
   }
 
   function closeViewModal() {
-    if (!viewModal || viewModal.hidden) return;
-    viewModal.hidden = true;
+    if (!isViewModalOpen()) return;
+    viewModal.classList.add('hidden');
+    viewModal.classList.remove('flex');
     viewModal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = viewModalPreviousOverflow;
     if (viewModalOpener && typeof viewModalOpener.focus === 'function') viewModalOpener.focus();
@@ -322,12 +351,12 @@
 
   if (viewModal) {
     viewModal.addEventListener('click', function (event) {
-      if (event.target === viewModal || event.target.closest('[data-oneqr-view-close]')) closeViewModal();
+      if (event.target === viewModal || event.target.closest('[data-oneqr-view-close], [data-salon-modal-close]')) closeViewModal();
     });
   }
 
   document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && viewModal && !viewModal.hidden) closeViewModal();
+    if (event.key === 'Escape' && isViewModalOpen()) closeViewModal();
   });
 
   var viewCopyBtn = document.getElementById('oneqrViewCopy');
@@ -355,14 +384,16 @@
   }
 
   function fallbackPrint(opener) {
-    if (viewModal && viewModal.hidden) {
+    if (viewModal && !isViewModalOpen()) {
       openViewModal(opener);
       modalOpenedForPrint = true;
     }
+    document.body.classList.add('is-printing-salon-qr');
     window.print();
   }
 
   window.addEventListener('afterprint', function () {
+    document.body.classList.remove('is-printing-salon-qr');
     if (modalOpenedForPrint) {
       closeViewModal();
       modalOpenedForPrint = false;
@@ -371,30 +402,46 @@
 
   function buildPrintableCard() {
     if (!viewModal) return null;
-    var printCardSource = viewModal.querySelector('[data-oneqr-print-card]');
+    var printCardSource = viewModal.querySelector('[data-oneqr-print-card], [data-salon-print-card]');
     if (!printCardSource) return null;
     var card = printCardSource.cloneNode(true);
-    var closeButton = card.querySelector('[data-oneqr-view-close]');
+    var closeButton = card.querySelector('[data-oneqr-view-close], [data-salon-modal-close]');
     if (closeButton) closeButton.remove();
+    var actions = card.querySelector('[data-oneqr-modal-actions], [data-salon-modal-actions]');
+    if (actions) actions.remove();
 
     var sourceCanvases = printCardSource.querySelectorAll('canvas');
     var cardCanvases = card.querySelectorAll('canvas');
     sourceCanvases.forEach(function (sourceCanvas, index) {
       var cardCanvas = cardCanvases[index];
       if (!cardCanvas) return;
-      var container = cardCanvas.parentNode;
-      if (container && container.querySelector('img')) {
-        cardCanvas.remove();
-        return;
-      }
       var image = document.createElement('img');
+      var qrLabelSource = sourceCanvas.closest('.qr-code, .qr-code-art');
       image.src = sourceCanvas.toDataURL('image/png');
-      image.alt = 'Bitcoin Nail Bar OneQR code';
+      image.alt = (qrLabelSource && qrLabelSource.getAttribute('aria-label')) || 'Bitcoin Nail Bar OneQR code';
       image.style.width = '100%';
       image.style.height = '100%';
       image.style.display = 'block';
+      image.style.borderRadius = '6px';
+      image.style.imageRendering = 'pixelated';
       cardCanvas.replaceWith(image);
     });
+
+    var printContent = document.createElement('div');
+    printContent.setAttribute('data-print-content', 'salon-qr');
+    printContent.style.setProperty('--print-scale', '0.70');
+    printContent.style.setProperty('--print-side-gutter', '0.24in');
+    printContent.style.setProperty('--print-top-offset', '0.16in');
+    printContent.style.position = 'relative';
+    printContent.style.zIndex = '2';
+    printContent.style.width = 'calc((100% - (var(--print-side-gutter) * 2)) / var(--print-scale))';
+    printContent.style.margin = 'var(--print-top-offset) 0 0 var(--print-side-gutter)';
+    printContent.style.transform = 'scale(var(--print-scale))';
+    printContent.style.transformOrigin = 'top left';
+    while (card.firstChild) {
+      printContent.appendChild(card.firstChild);
+    }
+    card.appendChild(printContent);
 
     return card;
   }
@@ -408,6 +455,7 @@
 
     var printFrame = document.createElement('iframe');
     printFrame.setAttribute('aria-hidden', 'true');
+    printFrame.dataset.printFrame = 'salon-qr';
     printFrame.style.position = 'fixed';
     printFrame.style.right = '0';
     printFrame.style.bottom = '0';
@@ -428,8 +476,22 @@
       '<style>' +
       '@page { size: 5in 7in; margin: 0; }' +
       'html, body { margin: 0; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }' +
-      'body { display: grid; min-height: 100vh; place-items: center; }' +
-      '.oneqr-view-print-card { box-sizing: border-box !important; width: 5in !important; height: 7in !important; max-width: 5in !important; max-height: 7in !important; aspect-ratio: 5 / 7 !important; overflow: hidden !important; box-shadow: none !important; animation: none !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }' +
+      'body { display: grid; min-height: 100vh; place-items: start center; }' +
+      '[data-salon-print-card] { position: relative !important; width: 5in !important; height: 7in !important; min-height: 7in !important; max-width: 5in !important; max-height: 7in !important; overflow: hidden !important; border-radius: 0 !important; box-shadow: none !important; background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.12) 0, transparent 20%), radial-gradient(circle at 12% 24%, rgba(244, 114, 182, 0.32) 0, transparent 26%), radial-gradient(circle at 90% 58%, rgba(34, 211, 238, 0.3) 0, transparent 27%), linear-gradient(160deg, #050505 0%, #0B0F1A 45%, #111056 100%) !important; color: #ffffff !important; padding: 0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }' +
+      '[data-salon-print-card]::before { content: "" !important; position: absolute !important; inset: 0 !important; z-index: 1 !important; pointer-events: none !important; opacity: 0.16 !important; background-image: radial-gradient(circle, rgba(255, 255, 255, 0.52) 0.55px, transparent 0.8px) !important; background-size: 3px 3px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }' +
+      '[data-print-dot-overlay] { display: none !important; }' +
+      '[data-print-content="salon-qr"] { --print-scale: 0.70; --print-side-gutter: 0.24in; --print-top-offset: 0.16in; position: relative !important; z-index: 2 !important; width: calc((100% - (var(--print-side-gutter) * 2)) / var(--print-scale)); margin: var(--print-top-offset) 0 0 var(--print-side-gutter); transform: scale(var(--print-scale)); transform-origin: top left; }' +
+      '[data-salon-modal-qr] { width: 285px !important; }' +
+      '[data-print-logo] { width: 196px !important; max-width: 196px !important; height: auto !important; object-fit: contain !important; object-position: center !important; margin-top: -0.2in !important; margin-bottom: -0.34in !important; }' +
+      '[data-print-headline] { margin-top: 0 !important; }' +
+      '[data-print-rewarded] { background: linear-gradient(90deg, #F472B6 0%, #C084FC 50%, #67E8F9 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; color: transparent !important; -webkit-text-fill-color: transparent !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }' +
+      '[data-print-accent] { background: none !important; color: #F0ABFC !important; -webkit-text-fill-color: #F0ABFC !important; }' +
+      '[data-print-body], [data-print-benefit-label], [data-print-powered] { background: none !important; color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }' +
+      '[data-print-powered] { display: block !important; margin-top: 0.06in !important; }' +
+      '[data-print-panel] { width: 70% !important; margin-left: auto !important; margin-right: auto !important; background: rgba(11, 16, 36, 0.92) !important; border-color: rgba(103, 232, 249, 0.72) !important; box-shadow: inset 0 0 18px rgba(244, 114, 182, 0.12), 0 0 18px rgba(34, 211, 238, 0.18) !important; }' +
+      '[data-print-benefits] { width: 70% !important; margin-left: auto !important; margin-right: auto !important; }' +
+      '[data-print-steps] { width: 70% !important; margin-left: auto !important; margin-right: auto !important; }' +
+      '[data-print-rewards-panel] { width: 70% !important; }' +
       '</style>' +
       '</head><body>' + printCard.outerHTML + '</body></html>'
     );
@@ -494,6 +556,8 @@
     printCard.style.maxHeight = 'none';
     printCard.style.aspectRatio = '5 / 7';
     printCard.style.overflow = 'hidden';
+    printCard.style.padding = '0';
+    printCard.style.borderRadius = '0';
     document.body.appendChild(printCard);
 
     window.html2canvas(printCard, {
@@ -501,7 +565,7 @@
       scale: 2,
       useCORS: true,
       ignoreElements: function (el) {
-        return el.classList && el.classList.contains('oneqr-view-dots');
+        return (el.classList && el.classList.contains('oneqr-view-dots')) || el.hasAttribute('data-print-dot-overlay');
       }
     }).then(function (canvas) {
       document.body.removeChild(printCard);
