@@ -490,11 +490,16 @@
     .service-category-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
     .service-category-toggle { border: 0; background: transparent; padding: 0; color: inherit; font-size: inherit; font-weight: inherit; text-transform: inherit; letter-spacing: inherit; }
     .service-category-add { background: #fff; color: var(--nexora-brand); text-transform: none; letter-spacing: 0; }
-    .service-category-manager { margin-bottom: 16px; border: 1px solid var(--nexora-border); border-radius: 14px; background: var(--nexora-surface-muted); padding: 14px; }
-    .service-category-manager-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
-    .service-category-manager-title { color: var(--nexora-text); font-size: 13px; font-weight: 900; }
-    .service-category-manager .pos-input { height: 34px; font-size: 12.5px; }
+    .service-category-manager { margin-bottom: 12px; border: 1px solid var(--nexora-border); border-radius: 12px; background: var(--nexora-surface-muted); padding: 12px; }
+    .service-category-manager.is-collapsed { padding: 10px 12px; }
+    .service-category-manager-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .service-category-manager:not(.is-collapsed) .service-category-manager-head { margin-bottom: 12px; }
+    .service-category-manager-title { display: inline-flex; align-items: center; gap: 8px; border: 0; background: transparent; padding: 0; color: var(--nexora-text); font-size: 13px; font-weight: 900; }
+    .service-category-manager-title i { color: var(--nexora-brand); }
     .service-category-manager .pos-table td { background: #fff; }
+    .category-editor-dialog { max-width: 640px; }
+    .category-editor-body { display: block; }
+    .category-editor-form { display: grid; gap: 12px; }
     @media (max-width: 760px) {
       .service-editor-body { grid-template-columns: 1fr; padding: 14px; }
       .service-editor-grid-main, .service-editor-grid-three { grid-template-columns: 1fr; }
@@ -920,6 +925,45 @@
                 <div class="pos-inline">
                   <button class="pos-btn pos-btn-sm" type="button" data-mg-service-cancel><span data-mg-service-cancel-label>Cancel</span></button>
                   <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-service-save><i class="bi bi-check2" aria-hidden="true"></i> <span data-mg-service-save-label>Save service</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sms-modal service-editor-modal" data-mg-category-modal role="dialog" aria-modal="true" aria-hidden="true" aria-label="Category editor">
+            <div class="sms-dialog service-editor-dialog category-editor-dialog">
+              <div class="sms-mhead service-editor-hero">
+                <div class="service-editor-heading">
+                  <span class="service-editor-icon"><i class="bi bi-folder2-open" aria-hidden="true"></i></span>
+                  <div>
+                    <h3><span data-mg-category-modal-title>Category</span></h3>
+                    <div class="service-editor-subtitle" data-mg-category-modal-subtitle></div>
+                  </div>
+                </div>
+                <button class="pos-icon-btn" type="button" data-mg-category-cancel aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+              </div>
+              <div class="sms-mbody service-editor-body category-editor-body">
+                <div class="category-editor-form" data-mg-category-form-shell>
+                  <div class="service-editor-section">
+                    <div class="service-editor-section-title"><i class="bi bi-info-circle" aria-hidden="true"></i>Basics</div>
+                    <div class="service-editor-grid service-editor-grid-main">
+                      <label class="service-editor-field">Name<input class="pos-input" data-mg-category-form-name></label>
+                      <label class="service-editor-field">Type<select class="pos-input" data-mg-category-form-kind></select></label>
+                    </div>
+                  </div>
+                  <div class="service-editor-section">
+                    <div class="service-editor-section-title"><i class="bi bi-sliders" aria-hidden="true"></i>Status</div>
+                    <div class="service-editor-grid">
+                      <label class="service-editor-field">Status<select class="pos-input" data-mg-category-form-active><option value="active">Active</option><option value="inactive">Inactive</option></select></label>
+                    </div>
+                  </div>
+                </div>
+                <div class="service-detail-view" data-mg-category-detail hidden></div>
+              </div>
+              <div class="sms-mfoot service-editor-actions">
+                <div class="pos-warn-text" data-mg-category-form-error hidden></div>
+                <div class="pos-inline">
+                  <button class="pos-btn pos-btn-sm" type="button" data-mg-category-cancel><span data-mg-category-cancel-label>Cancel</span></button>
+                  <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-category-save><i class="bi bi-check2" aria-hidden="true"></i> <span data-mg-category-save-label>Save category</span></button>
                 </div>
               </div>
             </div>
@@ -4619,13 +4663,22 @@
       }
 
       var serviceViewMode = 'table';
+      var serviceCategoryManagerCollapsed = true;
       var serviceCollapsedCategories = {};
       var serviceModalId = null;
       var serviceModalMode = 'edit';
+      var categoryModalKey = null;
+      var categoryModalMode = 'edit';
 
       function isServiceCategoryCollapsed(name) {
         var key = serviceCategoryKey(name);
         return Object.prototype.hasOwnProperty.call(serviceCollapsedCategories, key) ? serviceCollapsedCategories[key] : true;
+      }
+
+      function categoryByKey(key) {
+        var rows = serviceCategoryRows();
+        for (var i = 0; i < rows.length; i++) if (rows[i].key === key) return rows[i];
+        return null;
       }
 
       function serviceById(id, catalog) {
@@ -4806,22 +4859,159 @@
         }).join('');
       }
 
+      function categoryKindLabel(kind) {
+        return kind === 'add-on' ? 'Add-on' : 'Service';
+      }
+
+      function setCategoryFormError(message) {
+        var errorEl = $('[data-mg-category-form-error]');
+        if (!errorEl) return;
+        errorEl.textContent = message || '';
+        errorEl.hidden = !message;
+      }
+
+      function categoryDetailHtml(category) {
+        if (!category) return '<div class="service-detail-section"><div class="service-detail-empty">Category not found.</div></div>';
+        var status = category.active === false ? 'Inactive' : 'Active';
+        var detailRows = [
+          ['Category ID', category.id, 'No category ID'],
+          ['Name', category.name, 'No name'],
+          ['Type', categoryKindLabel(category.kind)],
+          ['Status', status],
+          ['Active services', category.activeServices],
+          ['Total services', category.totalServices]
+        ].map(function (row) { return serviceDetailFieldHtml(row[0], row[1], row[2]); }).join('');
+        return '<div class="service-detail-hero">' +
+          '<div class="service-detail-top"><div><div class="service-detail-kicker">Menu category</div><h3 class="service-detail-name">' + esc(category.name || 'Category') + '</h3></div>' + serviceStatusChip(category) + '</div>' +
+          '<div class="service-detail-meta">' +
+            '<span class="service-detail-stat"><i class="bi bi-tags" aria-hidden="true"></i>' + esc(categoryKindLabel(category.kind)) + '</span>' +
+            '<span class="service-detail-stat"><i class="bi bi-card-checklist" aria-hidden="true"></i>' + category.activeServices + ' active services</span>' +
+            '<span class="service-detail-stat"><i class="bi bi-list-ul" aria-hidden="true"></i>' + category.totalServices + ' total services</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="service-detail-section"><div class="service-detail-section-title"><i class="bi bi-info-circle" aria-hidden="true"></i>Category information</div><div class="service-detail-kv-grid">' + detailRows + '</div></div>';
+      }
+
+      function openCategoryModal(key, mode) {
+        var modal = $('[data-mg-category-modal]');
+        if (!modal) return;
+        categoryModalKey = key || null;
+        categoryModalMode = mode === 'view' ? 'view' : (categoryModalKey ? 'edit' : 'add');
+        var category = categoryModalKey ? categoryByKey(categoryModalKey) : null;
+        var isReadOnly = categoryModalMode === 'view';
+        var titleEl = $('[data-mg-category-modal-title]');
+        var subtitleEl = $('[data-mg-category-modal-subtitle]');
+        var detailEl = $('[data-mg-category-detail]');
+        var formShellEl = $('[data-mg-category-form-shell]');
+        var nameEl = $('[data-mg-category-form-name]');
+        var kindEl = $('[data-mg-category-form-kind]');
+        var activeEl = $('[data-mg-category-form-active]');
+        var saveEl = $('[data-mg-category-save]');
+        var saveLabelEl = $('[data-mg-category-save-label]');
+        var cancelLabelEl = $('[data-mg-category-cancel-label]');
+        if (titleEl) titleEl.textContent = isReadOnly ? 'Category details' : (category ? 'Edit category' : 'Add category');
+        if (subtitleEl) subtitleEl.textContent = categoryModalMode === 'add' ? 'Create a new menu category' : (isReadOnly ? 'Read-only category detail' : 'Update category details');
+        if (detailEl) {
+          detailEl.innerHTML = isReadOnly ? categoryDetailHtml(category) : '';
+          detailEl.hidden = !isReadOnly;
+        }
+        if (formShellEl) formShellEl.hidden = isReadOnly;
+        if (nameEl) nameEl.value = category ? category.name || '' : '';
+        if (kindEl) kindEl.innerHTML = categoryKindOptions(category ? category.kind || 'service' : 'service');
+        if (activeEl) activeEl.value = category && category.active === false ? 'inactive' : 'active';
+        [nameEl, kindEl, activeEl].forEach(function (field) {
+          if (field) field.disabled = isReadOnly;
+        });
+        if (cancelLabelEl) cancelLabelEl.textContent = isReadOnly ? 'Close' : 'Cancel';
+        if (saveLabelEl) saveLabelEl.textContent = categoryModalMode === 'add' ? 'Create category' : 'Save changes';
+        if (saveEl) saveEl.hidden = isReadOnly;
+        modal.setAttribute('data-category-modal-mode', categoryModalMode);
+        setCategoryFormError('');
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function () {
+          var focusEl = isReadOnly ? $('[data-mg-category-cancel]') : nameEl;
+          if (focusEl) focusEl.focus();
+        }, 0);
+      }
+
+      function closeCategoryModal() {
+        var modal = $('[data-mg-category-modal]');
+        if (!modal) return;
+        var detailEl = $('[data-mg-category-detail]');
+        var formShellEl = $('[data-mg-category-form-shell]');
+        var cancelLabelEl = $('[data-mg-category-cancel-label]');
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        modal.removeAttribute('data-category-modal-mode');
+        if (detailEl) {
+          detailEl.innerHTML = '';
+          detailEl.hidden = true;
+        }
+        if (formShellEl) formShellEl.hidden = false;
+        if (cancelLabelEl) cancelLabelEl.textContent = 'Cancel';
+        document.body.style.overflow = '';
+        categoryModalKey = null;
+        categoryModalMode = 'edit';
+        setCategoryFormError('');
+      }
+
+      function readCategoryModal() {
+        var existing = categoryModalKey ? categoryByKey(categoryModalKey) : null;
+        var nameEl = $('[data-mg-category-form-name]');
+        var kindEl = $('[data-mg-category-form-kind]');
+        var activeEl = $('[data-mg-category-form-active]');
+        var name = (nameEl && nameEl.value || '').trim();
+        if (!name) return null;
+        return {
+          id: existing ? existing.id : uniqueCategoryId(salonData.loadCatalog(), name),
+          name: name,
+          kind: kindEl ? kindEl.value : 'service',
+          active: activeEl ? activeEl.value === 'active' : true,
+          source: 'pos-management'
+        };
+      }
+
+      function saveCategoryModal() {
+        if (categoryModalMode === 'view') { closeCategoryModal(); return; }
+        var category = readCategoryModal();
+        if (!category) {
+          setCategoryFormError('Enter a category name.');
+          var nameEl = $('[data-mg-category-form-name]');
+          if (nameEl) nameEl.focus();
+          return;
+        }
+        var isNew = !categoryModalKey;
+        if (isNew) {
+          if (!saveSalonCategory(category, 'Added category "' + category.name + '"')) return;
+        } else {
+          if (!renameSalonCategory(categoryModalKey, category.name, category.kind)) return;
+          if (category.active === false) setSalonCategoryActive(serviceCategoryKey(category.name), false);
+        }
+        closeCategoryModal();
+        renderManagement();
+        toast(category.name + (isNew ? ' category added' : ' category saved'));
+      }
+
       function serviceCategoryManagerHtml(categoryRows) {
-        return '<div class="service-category-manager" data-mg-category-manager>' +
-          '<div class="service-category-manager-head"><div><div class="service-category-manager-title"><i class="bi bi-folder2-open" aria-hidden="true"></i> Categories</div><div class="pos-muted" style="font-size:11.5px;margin-top:3px">Manage menu groups, then add services directly into each category.</div></div>' +
-            '<div class="pos-inline"><input class="pos-input" data-mg-category-name placeholder="New category name" style="width:220px"><select class="pos-input" data-mg-category-kind style="width:120px">' + categoryKindOptions('service') + '</select><button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-category-add><i class="bi bi-plus-lg" aria-hidden="true"></i> Add category</button></div></div>' +
-          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Category</th><th>Services</th><th>Status</th><th>Type</th><th>Actions</th></tr></thead><tbody>' +
+        var activeCategories = categoryRows.filter(function (row) { return row.active !== false; }).length;
+        return '<div class="service-category-manager' + (serviceCategoryManagerCollapsed ? ' is-collapsed' : '') + '" data-mg-category-manager>' +
+          '<div class="service-category-manager-head"><button class="service-category-manager-title" type="button" data-mg-category-manager-toggle aria-expanded="' + (!serviceCategoryManagerCollapsed ? 'true' : 'false') + '"><i class="bi ' + (serviceCategoryManagerCollapsed ? 'bi-chevron-right' : 'bi-chevron-down') + '" aria-hidden="true"></i> Categories <span class="pos-muted">' + activeCategories + ' active · ' + categoryRows.length + ' total</span></button>' +
+            '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-category-add><i class="bi bi-plus-lg" aria-hidden="true"></i> Add category</button></div>' +
+          (serviceCategoryManagerCollapsed ? '' :
+          '<div class="pos-table-wrap" data-mg-category-table><table class="pos-table tight"><thead><tr><th>Category</th><th>Services</th><th>Status</th><th>Type</th><th>Actions</th></tr></thead><tbody>' +
             categoryRows.map(function (row) {
               return '<tr data-mg-category-row="' + esc(row.key) + '">' +
-                '<td><input class="pos-input" data-mg-category-name-edit="' + esc(row.key) + '" value="' + esc(row.name) + '" style="min-width:210px"></td>' +
+                '<td><span class="pos-strong">' + esc(row.name) + '</span></td>' +
                 '<td><span class="pos-strong">' + row.activeServices + '</span> active · ' + row.totalServices + ' total</td>' +
                 '<td>' + (row.active === false ? '<span class="pos-chip pos-chip-gray">Inactive</span>' : '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Active</span>') + '</td>' +
-                '<td><select class="pos-input" data-mg-category-kind-edit="' + esc(row.key) + '" style="width:120px">' + categoryKindOptions(row.kind || 'service') + '</select></td>' +
-                '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-category-save="' + esc(row.key) + '"><i class="bi bi-check2" aria-hidden="true"></i> Save</button><button class="pos-btn pos-btn-sm" type="button" data-mg-service-add-category="' + esc(row.name) + '"><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>' +
+                '<td>' + esc(categoryKindLabel(row.kind)) + '</td>' +
+                '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-category-view="' + esc(row.key) + '"><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="pos-btn pos-btn-sm" type="button" data-mg-category-edit="' + esc(row.key) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-sm" type="button" data-mg-service-add-category="' + esc(row.name) + '"><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>' +
                 (row.active === false ? '<button class="pos-btn pos-btn-sm" type="button" data-mg-category-restore="' + esc(row.key) + '">Restore</button>' : '<button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-category-delete="' + esc(row.key) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button>') +
                 '</div></td></tr>';
             }).join('') +
-          '</tbody></table></div>' +
+          '</tbody></table></div>') +
         '</div>';
       }
 
@@ -5231,31 +5421,34 @@
           return;
         }
 
-        var categoryAdd = e.target.closest('[data-mg-category-add]');
-        if (categoryAdd) {
-          var categoryNameEl = $('[data-mg-category-name]');
-          var categoryKindEl = $('[data-mg-category-kind]');
-          var newCategoryName = (categoryNameEl && categoryNameEl.value || '').trim();
-          if (!newCategoryName) { toast('Enter a category name', 'info'); if (categoryNameEl) categoryNameEl.focus(); return; }
-          if (saveSalonCategory({ name: newCategoryName, kind: categoryKindEl ? categoryKindEl.value : 'service', active: true, source: 'pos-management' }, 'Added category "' + newCategoryName + '"')) {
-            renderManagement();
-            toast(newCategoryName + ' category added');
-          }
+        var categoryManagerToggle = e.target.closest('[data-mg-category-manager-toggle]');
+        if (categoryManagerToggle) {
+          serviceCategoryManagerCollapsed = !serviceCategoryManagerCollapsed;
+          renderManagement();
           return;
         }
 
-        var categorySave = e.target.closest('[data-mg-category-save]');
-        if (categorySave) {
-          var categoryRow = categorySave.closest('[data-mg-category-row]');
-          var categoryKey = categorySave.getAttribute('data-mg-category-save');
-          var categoryNameInput = categoryRow && categoryRow.querySelector('[data-mg-category-name-edit]');
-          var categoryKindInput = categoryRow && categoryRow.querySelector('[data-mg-category-kind-edit]');
-          if (renameSalonCategory(categoryKey, categoryNameInput && categoryNameInput.value, categoryKindInput && categoryKindInput.value)) {
-            renderManagement();
-            toast('Category saved');
-          }
+        var categoryAdd = e.target.closest('[data-mg-category-add]');
+        if (categoryAdd) {
+          openCategoryModal(null, 'add');
           return;
         }
+
+        var categoryView = e.target.closest('[data-mg-category-view]');
+        if (categoryView) {
+          openCategoryModal(categoryView.getAttribute('data-mg-category-view'), 'view');
+          return;
+        }
+
+        var categoryEdit = e.target.closest('[data-mg-category-edit]');
+        if (categoryEdit) {
+          openCategoryModal(categoryEdit.getAttribute('data-mg-category-edit'), 'edit');
+          return;
+        }
+
+        if (e.target.closest('[data-mg-category-save]')) { saveCategoryModal(); return; }
+
+        if (e.target.closest('[data-mg-category-cancel]') || e.target.matches('[data-mg-category-modal]')) { closeCategoryModal(); return; }
 
         var categoryDelete = e.target.closest('[data-mg-category-delete]');
         if (categoryDelete) {
