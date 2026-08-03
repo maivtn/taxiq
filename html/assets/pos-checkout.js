@@ -170,6 +170,66 @@
     }
   }
 
+  var drinkProducts = [];
+
+  function loadDrinkProducts() {
+    if (typeof fetch !== 'function') return;
+    fetch('../menu/menu.json').then(function (response) {
+      if (!response || response.ok === false) throw new Error('menu unavailable');
+      return response.json();
+    }).then(function (data) {
+      var sections = Array.isArray(data.sections) ? data.sections : [];
+      sections.filter(function (section) {
+        return section && section.kind === 'beverage';
+      }).forEach(function (section) {
+        (Array.isArray(section.items) ? section.items : []).forEach(function (item) {
+          var label = item && item.priceLabel ? String(item.priceLabel) : 'Complimentary';
+          var match = label.replace(/,/g, '').match(/\d+(?:\.\d+)?/);
+          drinkProducts.push({
+            name: item.name,
+            price: match ? Number(match[0]) : 0,
+            priceLabel: label,
+            category: section.title
+          });
+        });
+      });
+      populateAddProductOptions();
+    }).catch(function () {
+      var select = document.querySelector('[data-checkout-add-product-select]');
+      if (select) select.innerHTML = '<option value="">Menu unavailable</option>';
+    });
+  }
+
+  function populateAddProductOptions() {
+    var select = document.querySelector('[data-checkout-add-product-select]');
+    if (!select) return;
+    if (!drinkProducts.length) {
+      select.innerHTML = '<option value="">No drinks available</option>';
+      return;
+    }
+    var groups = {};
+    var order = [];
+    drinkProducts.forEach(function (product, index) {
+      if (!groups[product.category]) { groups[product.category] = []; order.push(product.category); }
+      groups[product.category].push(index);
+    });
+    select.innerHTML = order.map(function (category) {
+      return '<optgroup label="' + esc(category) + '">' + groups[category].map(function (index) {
+        var product = drinkProducts[index];
+        return '<option value="' + index + '">' + esc(product.name) + ' — ' + esc(product.priceLabel) + '</option>';
+      }).join('') + '</optgroup>';
+    }).join('');
+    syncProductPriceField();
+  }
+
+  function syncProductPriceField() {
+    var select = document.querySelector('[data-checkout-add-product-select]');
+    var priceInput = document.querySelector('[data-checkout-add-product-price]');
+    if (!select || !priceInput) return;
+    var product = drinkProducts[Number(select.value)];
+    priceInput.value = product ? product.price.toFixed(2) : '0.00';
+  }
+
   function openCheckoutModal(name) {
     var modal = document.querySelector('[data-checkout-modal="' + name + '"]');
     if (!modal) return;
@@ -199,6 +259,7 @@
     renderPaymentMethods();
     renderSummary();
     populateAddServiceOptions();
+    loadDrinkProducts();
     if (alreadyCheckedOut) markPaid(false);
   }
 
@@ -328,19 +389,23 @@
 
     var addProductConfirm = event.target.closest('[data-checkout-add-product-confirm]');
     if (addProductConfirm) {
-      var nameInput = document.querySelector('[data-checkout-add-product-name]');
+      var productSelect = document.querySelector('[data-checkout-add-product-select]');
       var priceInput = document.querySelector('[data-checkout-add-product-price]');
-      var productName = nameInput ? nameInput.value.trim() : '';
-      var productPrice = Number(priceInput && priceInput.value) || 0;
-      if (productName) {
-        items.push({ name: productName, price: productPrice, isProduct: true });
+      var product = productSelect ? drinkProducts[Number(productSelect.value)] : null;
+      var priceValue = Number(priceInput && priceInput.value);
+      if (product) {
+        items.push({ name: product.name, price: Number.isFinite(priceValue) ? priceValue : product.price, isProduct: true });
         renderLines();
         renderSummary();
-        if (nameInput) nameInput.value = '';
-        if (priceInput) priceInput.value = '';
       }
       closeCheckoutModal(addProductConfirm.closest('[data-checkout-modal]'));
       return;
+    }
+  });
+
+  document.addEventListener('change', function (event) {
+    if (event.target.matches('[data-checkout-add-product-select]')) {
+      syncProductPriceField();
     }
   });
 
