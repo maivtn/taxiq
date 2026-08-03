@@ -1,34 +1,595 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Services Menu | Bitcoin Nail Bar</title>
   <style>
-    :root{--ink:#0a0a0c;--ink-soft:#1a1510;--cream:#fff8ea;--muted:#c4b9a5;--gold:#c9a15a;--gold-light:#f3d995;--paper:#fcf7ed;--card:#fffcf6;--line:rgba(243,217,149,.28)}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--ink);color:var(--cream);font:16px Arial,Helvetica,sans-serif}.wrap{max-width:1440px;margin:auto}.top{border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:22px clamp(20px,6vw,90px)}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}.mark{display:grid;place-items:center;background:var(--gold);color:var(--ink);font-size:25px;font-weight:900;border-radius:50%;width:42px;height:42px}.brand b,.brand small{display:block;letter-spacing:.16em}.brand b{font-size:15px}.brand small{font-size:9px;color:var(--gold-light);margin-top:3px}.top a{color:var(--gold-light);text-decoration:none;font-size:12px}.hero{padding:clamp(65px,9vw,130px) clamp(20px,10vw,150px);min-height:450px;background:radial-gradient(circle at 78% 20%,rgba(201,161,90,.2),transparent 30%)}.eyebrow{color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;margin:0 0 18px}.hero h1,.intro h2,.visit h2{font-size:clamp(44px,7vw,92px);letter-spacing:-.065em;line-height:.9;margin:0 0 25px}.hero em,.intro em,.visit em{font-family:Georgia,serif;font-weight:400;color:var(--gold-light)}.hero p:not(.eyebrow){max-width:540px;color:var(--muted);line-height:1.65;font-size:17px}.menu{background:var(--paper);color:var(--ink);padding:clamp(55px,8vw,110px) clamp(20px,7vw,105px)}.intro{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:40px}.intro .eyebrow{color:#8b5a1c}.intro h2{font-size:clamp(38px,5vw,66px);margin:0}.controls{display:flex;flex-wrap:wrap;justify-content:space-between;gap:18px;border-bottom:1px solid rgba(16,17,22,.18);padding-bottom:22px;margin-bottom:36px}.search{display:flex;align-items:center;gap:9px;border:1px solid rgba(16,17,22,.24);border-radius:999px;padding:0 14px;min-width:min(100%,340px)}.search input{border:0;background:transparent;outline:0;padding:12px 0;width:100%;color:var(--ink)}.filters{display:flex;gap:8px;flex-wrap:wrap}.filters button{cursor:pointer;border:1px solid rgba(16,17,22,.2);background:transparent;border-radius:999px;padding:10px 14px;color:#655f57;font-size:12px}.filters button.active,.filters button:hover{background:var(--ink);color:var(--cream);border-color:var(--ink)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.card{background:var(--card);border:1px solid rgba(161,116,41,.18);padding:25px;box-shadow:0 10px 26px rgba(57,36,12,.08)}.card.beverage{background:#f5ebdd}.card.add-on{background:#f8e4b9}.card-head{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(16,17,22,.18);padding-bottom:16px}.card-head small{color:#8b5a1c;font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}.card h3{font-size:clamp(22px,2.3vw,31px);letter-spacing:-.045em;line-height:1;margin:8px 0 0}.page{color:#756345;font-size:10px}.item{border-bottom:1px dotted rgba(16,17,22,.2);padding:17px 0}.item:last-child{border-bottom:0;padding-bottom:3px}.item-line{display:flex;justify-content:space-between;align-items:baseline;gap:12px}.item h4{font-size:16px;line-height:1.2;margin:0}.price{color:#825416;font-weight:800;white-space:nowrap}.item p{color:#5b554c;font-size:13px;line-height:1.55;margin:8px 0 0}.tags{display:flex;gap:6px;margin-top:10px}.tags span{background:rgba(130,84,22,.12);color:#825416;border-radius:99px;font-size:9px;font-weight:800;letter-spacing:.08em;padding:5px 8px;text-transform:uppercase}.included{color:#825416;font-size:11px;font-weight:800;margin-top:12px}.included ul{color:#5b554c;font-size:12px;font-weight:400;line-height:1.5;margin:8px 0 0;padding-left:17px}.empty{color:#5b554c;text-align:center;padding:60px 0}.visit{background:linear-gradient(135deg,#d6ae64,#b77f32);color:var(--ink);display:flex;justify-content:space-between;gap:30px;padding:clamp(55px,7vw,100px) clamp(20px,10vw,150px)}.visit .eyebrow{color:#604313}.visit h2{font-size:clamp(38px,5vw,70px)}.visit-detail{font-size:14px;line-height:1.6;text-align:right;color:#3f2c10}.button{display:inline-block;background:var(--ink);color:var(--gold-light);padding:12px 18px;border-radius:999px;text-decoration:none;font-size:12px;font-weight:800;margin-top:10px}.footer{display:flex;justify-content:space-between;gap:12px;padding:24px clamp(20px,6vw,90px);color:#b5aa98;font-size:11px}.footer a{color:var(--gold-light)}
-    @media(max-width:800px){.intro,.visit{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}.visit-detail{text-align:left}.footer{flex-direction:column}.top a{display:none}}
+    :root {
+      --ink: #0a0a0c;
+      --ink-soft: #1a1510;
+      --cream: #fff8ea;
+      --muted: #c4b9a5;
+      --gold: #c9a15a;
+      --gold-light: #f3d995;
+      --paper: #fcf7ed;
+      --card: #fffcf6;
+      --line: rgba(243, 217, 149, .28)
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      background: var(--ink);
+      color: var(--cream);
+      font: 16px Arial, Helvetica, sans-serif
+    }
+
+    .wrap {
+      max-width: 1440px;
+      margin: auto
+    }
+
+    .top {
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px clamp(20px, 6vw, 90px)
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      background: var(--gold);
+      color: var(--ink);
+      font-size: 25px;
+      font-weight: 900;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px
+    }
+
+    .brand b,
+    .brand small {
+      display: block;
+      letter-spacing: .16em
+    }
+
+    .brand b {
+      font-size: 15px
+    }
+
+    .brand small {
+      font-size: 9px;
+      color: var(--gold-light);
+      margin-top: 3px
+    }
+
+    .top a {
+      color: var(--gold-light);
+      text-decoration: none;
+      font-size: 12px
+    }
+
+    .hero {
+      padding: clamp(65px, 9vw, 130px) clamp(20px, 10vw, 150px);
+      min-height: 450px;
+      background: radial-gradient(circle at 78% 20%, rgba(201, 161, 90, .2), transparent 30%)
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      margin: 0 0 18px
+    }
+
+    .hero h1,
+    .intro h2,
+    .visit h2 {
+      font-size: clamp(44px, 7vw, 92px);
+      letter-spacing: -.065em;
+      line-height: .9;
+      margin: 0 0 25px
+    }
+
+    .hero em,
+    .intro em,
+    .visit em {
+      font-family: Georgia, serif;
+      font-weight: 400;
+      color: var(--gold-light)
+    }
+
+    .hero p:not(.eyebrow) {
+      max-width: 540px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 17px
+    }
+
+    .menu {
+      background: var(--paper);
+      color: var(--ink);
+      padding: 3vw ;
+    }
+
+    .intro {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 30px;
+      margin-bottom: 40px
+    }
+
+    .intro .eyebrow {
+      color: #8b5a1c
+    }
+
+    .intro h2 {
+      font-size: clamp(38px, 5vw, 66px);
+      margin: 0
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 18px;
+      border-bottom: 1px solid rgba(16, 17, 22, .18);
+      padding-bottom: 22px;
+      margin-bottom: 36px
+    }
+
+    .search {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border: 1px solid rgba(16, 17, 22, .24);
+      border-radius: 999px;
+      padding: 0 14px;
+      min-width: min(100%, 340px)
+    }
+
+    .search input {
+      border: 0;
+      background: transparent;
+      outline: 0;
+      padding: 12px 0;
+      width: 100%;
+      color: var(--ink)
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .filters button {
+      cursor: pointer;
+      border: 1px solid rgba(16, 17, 22, .2);
+      background: transparent;
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: #655f57;
+      font-size: 12px
+    }
+
+    .filters button.active,
+    .filters button:hover {
+      background: var(--ink);
+      color: var(--cream);
+      border-color: var(--ink)
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(161, 116, 41, .18);
+      padding: 25px;
+      box-shadow: 0 10px 26px rgba(57, 36, 12, .08)
+    }
+
+    .card.beverage {
+      background: #f5ebdd
+    }
+
+    .card.add-on {
+      background: #f8e4b9
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid rgba(16, 17, 22, .18);
+      padding-bottom: 16px
+    }
+
+    .card-head small {
+      color: #8b5a1c;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase
+    }
+
+    .card h3 {
+      font-size: clamp(22px, 2.3vw, 31px);
+      letter-spacing: -.045em;
+      line-height: 1;
+      margin: 8px 0 0
+    }
+
+    .page {
+      color: #756345;
+      font-size: 10px
+    }
+
+    .item {
+      border-bottom: 1px dotted rgba(16, 17, 22, .2);
+      padding: 17px 0
+    }
+
+    .item:last-child {
+      border-bottom: 0;
+      padding-bottom: 3px
+    }
+
+    .item-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px
+    }
+
+    .item h4 {
+      font-size: 16px;
+      line-height: 1.2;
+      margin: 0
+    }
+
+    .price {
+      color: #825416;
+      font-weight: 800;
+      white-space: nowrap
+    }
+
+    .item p {
+      color: #5b554c;
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 8px 0 0
+    }
+
+    .tags {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px
+    }
+
+    .tags span {
+      background: rgba(130, 84, 22, .12);
+      color: #825416;
+      border-radius: 99px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      padding: 5px 8px;
+      text-transform: uppercase
+    }
+
+    .included {
+      color: #825416;
+      font-size: 11px;
+      font-weight: 800;
+      margin-top: 12px
+    }
+
+    .included ul {
+      color: #5b554c;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.5;
+      margin: 8px 0 0;
+      padding-left: 17px
+    }
+
+    .empty {
+      color: #5b554c;
+      text-align: center;
+      padding: 60px 0
+    }
+
+    .visit {
+      background: var(--ink);
+      color: var(--gold-light);
+      display: flex;
+      justify-content: space-between;
+      gap: 30px;
+      padding: clamp(24px, 7vw, 100px) clamp(20px, 10vw, 150px)
+    }
+
+    .visit .eyebrow {
+      color: var(--gold)
+    }
+
+    .visit h2 {
+      font-size: clamp(38px, 5vw, 70px)
+    }
+
+    .visit-detail {
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: right;
+      color: var(--muted)
+    }
+
+    .visit-detail .button {
+      background: var(--gold-light);
+      color: var(--ink)
+    }
+
+    .button {
+      display: inline-block;
+      background: var(--ink);
+      color: var(--gold-light);
+      padding: 12px 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 800;
+      margin-top: 10px
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 24px clamp(20px, 6vw, 90px);
+      color: #b5aa98;
+      font-size: 11px
+    }
+
+    .footer a {
+      color: var(--gold-light)
+    }
+
+    @media(max-width:800px) {
+
+      .intro,
+      .visit {
+        align-items: flex-start;
+        flex-direction: column
+      }
+
+      .grid {
+        grid-template-columns: 1fr
+      }
+
+      .visit-detail {
+        text-align: left
+      }
+
+      .footer {
+        flex-direction: column
+      }
+
+      
+    }
   </style>
   <style>
-    .hero{display:grid;grid-template-columns:minmax(0,.9fr) minmax(360px,1.1fr);gap:clamp(35px,7vw,100px);min-height:575px;align-items:center}.hero-copy{position:relative;z-index:1}.hero-brand-lockup{color:var(--gold-light);letter-spacing:.2em;line-height:1;margin:0 0 28px;text-transform:uppercase}.hero-brand-lockup strong,.hero-brand-lockup span{display:block}.hero-brand-lockup strong{font-size:clamp(18px,2.4vw,26px)}.hero-brand-lockup span{color:var(--gold);font-size:11px;font-weight:800;margin-top:7px}.hero h1{font-size:clamp(62px,10vw,132px);margin:0 0 28px}.hero-text{color:var(--muted);font-size:17px;line-height:1.65;max-width:510px}.hero-details{align-self:center;background:rgba(26,21,16,.72);border:1px solid rgba(243,217,149,.52);box-shadow:0 20px 60px rgba(0,0,0,.22);padding:clamp(26px,4vw,44px)}.hero-contact,.hero-hours{border-bottom:1px solid var(--line);color:var(--muted);font-size:15px;line-height:1.65;padding-bottom:22px}.hero-contact a{color:var(--gold-light);text-decoration:none}.hero-contact p{margin:0 0 7px}.hero-contact p:last-child{margin-bottom:0}.hero-hours{padding:22px 0}.hero-hours p{margin:0}.hero-detail-label{color:var(--gold-light);font-size:11px;font-weight:800;letter-spacing:.2em;margin-bottom:7px!important;text-transform:uppercase}.hero-actions{display:flex;flex-wrap:wrap;gap:10px;padding-top:24px}.hero-actions .button{margin-top:0}.hero-actions .button.outline{background:transparent;border:1px solid var(--gold);color:var(--gold-light)}
-    @media(max-width:800px){.hero{grid-template-columns:1fr;min-height:0}.hero-details{margin-top:8px}.hero-actions{flex-direction:column}.hero-actions .button{text-align:center}}
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(360px, 1.1fr);
+      gap: clamp(35px, 7vw, 100px);
+      min-height: 575px;
+      align-items: center
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-brand-lockup {
+      color: var(--gold-light);
+      letter-spacing: .2em;
+      line-height: 1;
+      margin: 0 0 28px;
+      text-transform: uppercase
+    }
+
+    .hero-brand-lockup strong,
+    .hero-brand-lockup span {
+      display: block
+    }
+
+    .hero-brand-lockup strong {
+      font-size: clamp(18px, 2.4vw, 26px)
+    }
+
+    .hero-brand-lockup span {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      margin-top: 7px
+    }
+
+    .hero h1 {
+      font-size: clamp(62px, 10vw, 132px);
+      margin: 0 0 28px
+    }
+
+    .hero-text {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.65;
+      max-width: 510px
+    }
+
+    .hero-details {
+      align-self: center;
+      background: rgba(26, 21, 16, .72);
+      border: 1px solid rgba(243, 217, 149, .52);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .22);
+      padding: clamp(26px, 4vw, 44px)
+    }
+
+    .hero-contact,
+    .hero-hours {
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+      padding-bottom: 22px
+    }
+
+    .hero-contact a {
+      color: var(--gold-light);
+      text-decoration: none
+    }
+
+    .hero-contact p {
+      margin: 0 0 7px
+    }
+
+    .hero-contact p:last-child {
+      margin-bottom: 0
+    }
+
+    .hero-hours {
+      padding: 22px 0
+    }
+
+    .hero-hours p {
+      margin: 0
+    }
+
+    .hero-detail-label {
+      color: var(--gold-light);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .2em;
+      margin-bottom: 7px !important;
+      text-transform: uppercase
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-top: 24px
+    }
+
+    .hero-actions .button {
+      margin-top: 0
+    }
+
+    .hero-actions .button.outline {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold-light)
+    }
+
+    @media(max-width:800px) {
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: 0
+      }
+
+      .hero-details {
+        margin-top: 8px
+      }
+
+      .hero-actions {
+        flex-direction: column
+      }
+
+      .hero-actions .button {
+        text-align: center
+      }
+    }
   </style>
 </head>
+
 <body>
-  <header class="top wrap"><a class="brand" href="#top"><span class="mark">₿</span><span><b>BITCOIN</b><small>NAIL BAR</small></span></a><a href="https://bitcoinnailbar.com/booking">Book now ↗</a></header>
-  <section class="hero wrap" id="top"><div class="hero-copy"><p class="hero-brand-lockup"><strong>BITCOIN</strong><span>NAIL BAR</span></p><p class="eyebrow">Houston · Luxury nail care</p><h1>MENU</h1><p class="hero-text">Explore the complete Bitcoin Nail Bar services menu, from signature treatments and enhancements to add-ons and complimentary drinks.</p></div><div class="hero-details"><div class="hero-contact"><p>9793 Westheimer Rd Suite A, Houston, TX 77042</p><a href="tel:13468024906">(346) 802-4906</a><p>Website: <a href="https://bitcoinnailbar.com" target="_blank" rel="noreferrer">bitcoinnailbar.com</a></p></div><div class="hero-hours"><p class="hero-detail-label">Salon Hours</p><p>Monday – Saturday: 9:30 am - 7:00 pm<br>Sunday: 11:00 am - 5:00 pm</p></div><div class="hero-actions"><a class="button" href="https://bitcoinnailbar.com/booking">Book an Appointment ↗</a><a class="button outline" href="https://bitcoinnailbar.com/membership">Join Free Membership ↗</a></div></div></section>
-  <main class="menu wrap"><div class="controls"><label class="search">⌕<input id="search" placeholder="Search services, nails, waxing..." aria-label="Search menu"></label><div class="filters" id="filters"></div></div><div class="grid" id="grid"></div></main>
-  <section class="visit wrap"><div><p class="eyebrow">Make it yours</p><h2>Ready for your<br><em>next appointment?</em></h2></div><div class="visit-detail"><p>9793 Westheimer Rd Suite A, Houston, TX 77042</p><p>9:30 am - 7:00 pm<br>11:00 am - 5:00 pm</p><a class="button" href="https://bitcoinnailbar.com/booking">Book an appointment ↗</a></div></section>
+  <header class="top wrap"><a class="brand" href="#top"><span class="mark">₿</span><span><b>BITCOIN</b><small>NAIL
+          BAR</small></span></a><a href="https://bitcoinnailbar.com/booking">Book now ↗</a></header>
+  <!-- <section class="hero wrap" id="top">
+    <div class="hero-copy">
+      <p class="hero-brand-lockup"><strong>BITCOIN</strong><span>NAIL BAR</span></p>
+      <p class="eyebrow">Houston · Luxury nail care</p>
+      <h1>MENU</h1>
+      <p class="hero-text">Explore the complete Bitcoin Nail Bar services menu, from signature treatments and
+        enhancements to add-ons and complimentary drinks.</p>
+    </div>
+    <div class="hero-details">
+      <div class="hero-contact">
+        <p>9793 Westheimer Rd Suite A, Houston, TX 77042</p><a href="tel:13468024906">(346) 802-4906</a>
+        <p>Website: <a href="https://bitcoinnailbar.com" target="_blank" rel="noreferrer">bitcoinnailbar.com</a></p>
+      </div>
+      <div class="hero-hours">
+        <p class="hero-detail-label">Salon Hours</p>
+        <p>Monday – Saturday: 9:30 am - 7:00 pm<br>Sunday: 11:00 am - 5:00 pm</p>
+      </div>
+      <div class="hero-actions"><a class="button" href="https://bitcoinnailbar.com/booking">Book an Appointment ↗</a><a
+          class="button outline" href="https://bitcoinnailbar.com/membership">Join Free Membership ↗</a></div>
+    </div>
+  </section> -->
+  <main class="menu wrap">
+    <div class="controls"><label class="search">⌕<input id="search" placeholder="Search services, nails, waxing..."
+          aria-label="Search menu"></label>
+      <div class="filters" id="filters"></div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </main>
+  <section class="visit wrap">
+    <div>
+      <p class="eyebrow">Make it yours</p>
+      <h2>Ready for your<br><em>next appointment?</em></h2>
+    </div>
+    <div class="visit-detail">
+      <p>9793 Westheimer Rd Suite A, Houston, TX 77042</p>
+      <p>9:30 am - 7:00 pm<br>11:00 am - 5:00 pm</p><a class="button" href="https://bitcoinnailbar.com/booking">Book an
+        appointment ↗</a>
+    </div>
+  </section>
   <script>
-    const menu = {"source":{"url":"https://bitcoinnailbar.com/menu","retrievedAt":"2026-07-30","pageCount":12,"currency":"USD"},"business":{"name":"Bitcoin Nail Bar","address":"9793 Westheimer Rd Suite A, Houston, TX 77042","phone":"(346) 802-4906","website":"https://bitcoinnailbar.com","hours":{"mondayToSaturday":"9:30 am - 7:00 pm","sunday":"11:00 am - 5:00 pm"}},"sections":[{"id":"pedicure","title":"Pedicure","kind":"service","page":2,"items":[{"name":"President 7 Star","priceLabel":"$499","description":"The ultimate royal treatment: an elite, head-to-toe pampering experience with an exclusive royal soak, advanced skincare, and a 70-minute combination of hot stone, reflexology, and therapeutic massage.","includes":["Your choice of any premium manicure or full set nail enhancement (Gel-X, dip, acrylic, etc.)","Simultaneous collagen hand treatment and double paraffin wax for hands and feet","Premium champagne or wine"],"durationMinutes":70,"page":2},{"name":"Bitcoin 24k Gold","priceLabel":"$99","description":"A gold-infused pedicure that nourishes, detoxifies, supports circulation, and leaves the skin hydrated and silky smooth.","includes":["Bath bomb","Shea sugar scrub","Collagen mask","Butter lotion","Paraffin treatment","Soothing hot stone massage","Collagen sock wrap and hot towel"],"durationMinutes":75,"page":2},{"name":"Paris Pearl","priceLabel":"$75","description":"Pearl powder delivers calcium, protein, and amino acids for brighter, silky-smooth skin. Includes a pearl-infused soak, sugar scrub, hydrating mask with hot towels, paraffin wax treatment, and a massage with pearly lotion.","durationMinutes":60,"page":3},{"name":"Milk and Honey","priceLabel":"$55","description":"A warm milk soak, exfoliation, leg mask wrap, calming hot towel application, and massage to rejuvenate the legs and feet.","durationMinutes":45,"page":3},{"name":"Classic Pedicure","priceLabel":"$40","description":"Soaking, trimming, cuticle care, exfoliation, callus removal, and a soothing massage with a hot towel.","durationMinutes":30,"page":3},{"name":"Add Gel Polish On Any Pedicure","priceLabel":"$20","page":3,"type":"add-on"},{"name":"Surcharge for A removal Gel or Power","priceLabel":"$10+","page":3,"type":"add-on"},{"name":"Extra massage a minute","priceLabel":"$2 minimum 5+","page":3,"type":"add-on"}]},{"id":"manicure","title":"Manicure","kind":"service","page":4,"items":[{"name":"Milk & Honey","priceLabel":"$50","description":"A warm milk and honey hand treatment with exfoliation, warm towels wrapped with paraffin wax, a hand massage, and collagen gloves.","page":4},{"name":"Gel Shellac Manicure","priceLabel":"$45","description":"Nail trimming, cuticle grooming, and a relaxing hand massage.","page":4},{"name":"Gel Polish Change (without manicure)","priceLabel":"$30","page":4,"type":"add-on"},{"name":"Add Gel Polish Manicure or Pedicure","priceLabel":"$20","page":4,"type":"add-on"},{"name":"Gel Polish Remover","priceLabel":"$10","page":4,"type":"add-on"},{"name":"Deluxe Manicure","priceLabel":"$35","description":"A deluxe manicure featuring exfoliation of dead skin, two warm towels wrapped with a mask, a gentle massage, and polish in your preferred color.","page":4},{"name":"Classic Manicure","priceLabel":"$25","description":"Nail shaping, cuticle care, a light massage, and polish in your choice of color.","page":4}]},{"id":"kids-menu","title":"Kid's Menu","kind":"service","page":4,"sourcePages":[4,7],"items":[{"name":"Pedicure","priceLabel":"$25","page":4},{"name":"Manicure","priceLabel":"$15","page":4},{"name":"Regular Polish on Nails","priceLabel":"$10","page":4},{"name":"Regular Polish on Toes","priceLabel":"$10","page":4},{"name":"Gel Add-On","priceLabel":"$15","page":4,"type":"add-on"}]},{"id":"acrylic-full-set","title":"Acrylic Nail — Full Set","kind":"service","page":5,"items":[{"name":"Acrylic with polish","priceLabel":"$50","page":5},{"name":"Full Set Shellac","priceLabel":"$60","page":5},{"name":"White or Pear Tip","priceLabel":"$55","page":5},{"name":"Color Powder","priceLabel":"$60","page":5},{"name":"Ombre Full Set","priceLabel":"$70","page":5},{"name":"Pink & White","priceLabel":"$70","page":5},{"name":"Ombre full 2 color","priceLabel":"$65","page":5},{"name":"Ombre 3 color","priceLabel":"$75","page":5}]},{"id":"acrylic-fill-in","title":"Acrylic Nail — Fill-in","kind":"service","page":5,"items":[{"name":"Acrylic with polish","priceLabel":"$40","page":5},{"name":"Shellac","priceLabel":"$50","page":5},{"name":"White or Pear Tip","priceLabel":"$40","page":5},{"name":"Color Powder","priceLabel":"$50","page":5},{"name":"Ombre","priceLabel":"$60","page":5},{"name":"Pink & White","priceLabel":"$60","page":5},{"name":"Ombre full 2 color","priceLabel":"$55","page":5},{"name":"Ombre 3 color","priceLabel":"$60","page":5}]},{"id":"dipping-nail","title":"Dipping Nail","kind":"service","page":5,"items":[{"name":"Dipping Powder","priceLabel":"$52","page":5},{"name":"Dipping Powder With Tip","priceLabel":"$60","page":5},{"name":"Pink & White Dipping Powder","priceLabel":"$70","page":5},{"name":"Dipping Powder Ombre","priceLabel":"$70","page":5},{"name":"Add Full Manicure","priceLabel":"$20","page":5,"type":"add-on"},{"name":"Add Cuticle Care","priceLabel":"$10","page":5,"type":"add-on"}]},{"id":"builder-gel","title":"Builder Gel — Full Set","kind":"service","page":6,"items":[{"name":"Natural Nail Set","priceLabel":"$65","page":6},{"name":"Full Set With Tip","priceLabel":"$70","page":6}]},{"id":"gel-x","title":"Gel-X","kind":"service","page":6,"items":[{"name":"Full Set Gel X","priceLabel":"$65","page":6},{"name":"Refill Gel X","priceLabel":"$55","page":6}]},{"id":"gel-additional-services","title":"Gel Service — Additional Services","kind":"service","page":6,"items":[{"name":"Shellac Polish Change Hand","priceLabel":"$25","page":6,"type":"add-on"},{"name":"Shellac Polish Change Toes","priceLabel":"$25","page":6,"type":"add-on"},{"name":"Special Shapes","priceLabel":"$7+","page":6,"type":"add-on"},{"name":"Different Shapes","priceLabel":"$5+","page":6,"type":"add-on"},{"name":"Long Length","priceLabel":"$7+","page":6,"type":"add-on"},{"name":"Cut Down + Change Different Shape","priceLabel":"$15+","page":6,"type":"add-on"},{"name":"Cuticle Trim (With Services)","priceLabel":"$10+","page":6,"type":"add-on"},{"name":"Gel Color Change On Acrylic Nail","priceLabel":"$30+","page":6,"type":"add-on"},{"name":"Nail Repair (Dip Gel Polish)","priceLabel":"$5+","page":6,"type":"add-on"},{"name":"Take Off With Service","priceLabel":"$10","page":6,"type":"add-on"},{"name":"Take Off Without Services","priceLabel":"$20","page":6,"type":"add-on"}]},{"id":"additional","title":"Additional","kind":"add-on","page":7,"items":[{"name":"Extra Massage","priceLabel":"$2 a minute","page":7},{"name":"Paraffin Wax","priceLabel":"$15","page":7},{"name":"Collagen Sock","priceLabel":"$15","page":7},{"name":"Collagen Gloves","priceLabel":"$15","page":7},{"name":"Hot Stone Massage Added on","priceLabel":"$10+","page":7},{"name":"Gel Polish Add-On","priceLabel":"$20","page":7},{"name":"Shellac Polish Change Hand","priceLabel":"$25","page":7},{"name":"Shellac Polish Change Toes","priceLabel":"$25","page":7},{"name":"Shellac with Pedicure or Manicure","priceLabel":"$20+","page":7},{"name":"Shellac Take Off with Services","priceLabel":"$5+","page":7},{"name":"Shellac Take Off without Services","priceLabel":"$15+","page":7},{"name":"French Tips or Color Tips add on","priceLabel":"$15+","page":7},{"name":"Regular Polish Change Hand","priceLabel":"$20","page":7},{"name":"Regular Polish Change Toes","priceLabel":"$20","page":7},{"name":"Nail Take Off Without Services","priceLabel":"$20","page":7},{"name":"Nail Take Off with Services","priceLabel":"$10","page":7},{"name":"Nail Cut Down","priceLabel":"$7+","page":7},{"name":"Nail Repair","priceLabel":"$7+","page":7},{"name":"Nail Design","priceLabel":"$7+","page":7},{"name":"Acrylic Gel Color Change","priceLabel":"$30+","page":7},{"name":"Acrylic Toe","priceLabel":"$8","page":7},{"name":"Acrylic Toe Refill","priceLabel":"$5+","page":7},{"name":"Extra-long nail 1 in","priceLabel":"$7+","page":7},{"name":"Extra-long nail 2 in","priceLabel":"$14+","page":7},{"name":"Nail Buffing Cream","priceLabel":"$10+","page":7}]},{"id":"waxing","title":"Waxing Services","kind":"service","page":8,"items":[{"name":"Eyebrow","priceLabel":"$15+","page":8},{"name":"Lip","priceLabel":"$10+","page":8},{"name":"Chin","priceLabel":"$15+","page":8},{"name":"Sideburns","priceLabel":"$15+","page":8},{"name":"Full Face","priceLabel":"$45+","page":8},{"name":"Underarms","priceLabel":"$25+","page":8},{"name":"Half Arms","priceLabel":"$25+","page":8},{"name":"Full Arms","priceLabel":"$40+","page":8},{"name":"Lower Legs","priceLabel":"$45+","page":8},{"name":"Upper Legs","priceLabel":"$45+","page":8},{"name":"Full Legs","priceLabel":"$60+","page":8},{"name":"Back","priceLabel":"$45+","page":8},{"name":"Bikini","priceLabel":"$45+","page":8},{"name":"Brazilian","priceLabel":"$60+","page":8}]},{"id":"complimentary-wine","title":"Complimentary Drinks — Wine List","kind":"beverage","page":9,"items":[{"name":"Champagne - Mimosa","priceLabel":"Complimentary","page":9},{"name":"Red Wines - Cabernet - Merlot","priceLabel":"Complimentary","page":9},{"name":"White Wines - Chardonnay - Moscato","priceLabel":"Complimentary","page":9}]},{"id":"complimentary-cocktails","title":"Complimentary Drinks — Cocktails","kind":"beverage","page":10,"items":[{"name":"Mojito","priceLabel":"Complimentary","description":"White rum, lime juice, sugar, fresh mint, and club soda.","page":10},{"name":"Blue Hawaiian","priceLabel":"Complimentary","description":"Light rum, blue curacao, pineapple juice, and cream of coconut.","page":10},{"name":"Espresso Martini","priceLabel":"Complimentary","description":"Vodka, Bailey's, Irish cream liqueur, cocoa powder.","page":10},{"name":"Apple Martini","priceLabel":"Complimentary","description":"Vodka, sour apple liqueur, lemon juice.","page":10},{"name":"Paloma","priceLabel":"Complimentary","description":"Tequila, lime juice, and grapefruit soda.","page":10},{"name":"Margarita","priceLabel":"Complimentary","description":"Tequila, orange liqueur (like Cointreau or Triple Sec), fresh lime juice.","page":10},{"name":"Screwdriver","priceLabel":"Complimentary","description":"Vodka, orange juice.","page":11},{"name":"Jack & Coke","priceLabel":"Complimentary","description":"Jack Daniel's Tennessee Whiskey with Coca-Cola.","page":11},{"name":"Tequila Sunrise","priceLabel":"Complimentary","description":"Tequila, orange juice, and grenadine, usually served in a highball glass.","page":11},{"name":"Pina Colada","priceLabel":"Complimentary","description":"White rum, cream of coconut, and pineapple juice.","page":11},{"name":"Bloody Mary","priceLabel":"Complimentary","description":"Vodka, Zing Zang, lemon, and extra spicy Tabasco.","page":11},{"name":"Lady in Red","priceLabel":"Complimentary","description":"Maker's Mark Bourbon, POM pomegranate juice, lemon juice, and one ginger beer.","page":11},{"name":"Pink Barbie","priceLabel":"Complimentary","description":"Malibu coconut rum, cranberry juice, pineapple juice, lime juice, and grenadine syrup.","page":11},{"name":"Old Fashioned","priceLabel":"Complimentary","description":"Bourbon or rye whiskey, sugar cube, Angostura bitters.","page":11},{"name":"Gin & Tonic","priceLabel":"Complimentary","description":"1 part gin and 3 parts tonic water.","page":11},{"name":"Godfather","priceLabel":"Complimentary","description":"Whiskey and amaretto.","page":11},{"name":"Rum & Coke","priceLabel":"Complimentary","description":"1 part rum and 1 part Coke.","page":11},{"name":"Cosmopolitan","priceLabel":"Complimentary","description":"Vodka, orange liqueur, cranberry juice, and fresh lime juice.","page":11},{"name":"Lemon Drop","priceLabel":"Complimentary","description":"Vodka, triple sec, lemon juice, simple syrup, and a sugar rim.","page":11},{"name":"Long Island Iced Tea","priceLabel":"Complimentary","description":"Gin, rum, tequila, triple sec, vodka, and cola, with a lemon wedge.","page":11}]},{"id":"non-alcoholic-drinks","title":"Non-Alcohol Drinks","kind":"beverage","page":11,"items":[{"name":"Coke-Sprite - Sparkling Water","priceLabel":"Complimentary","page":11},{"name":"Lemonade","priceLabel":"Complimentary","page":11},{"name":"Sweet Iced Tea","priceLabel":"Complimentary","page":11},{"name":"Hot Tea - Green Tea, Ginger Tea, Chamomile Tea","priceLabel":"Complimentary","page":11},{"name":"Hot Vietnamese Coffee","priceLabel":"Complimentary","page":11},{"name":"Cold Vietnamese Coffee","priceLabel":"Complimentary","page":11},{"name":"Black Coffee","priceLabel":"Complimentary","page":11}]}],"notes":["Complimentary drinks are limited to 2 per person.","Guests must be 21 and over for alcoholic drinks.","Prices marked with + are starting prices and may vary.","Menu source includes a complimentary wine and cocktail selection; beverage availability may vary."]};
-    const filters = [{id:'all',label:'All menu'},{id:'service',label:'Services'},{id:'add-on',label:'Add-ons'},{id:'beverage',label:'Drinks'}];
-    const normalize = (text) => (text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const menu = { "source": { "url": "https://bitcoinnailbar.com/menu", "retrievedAt": "2026-07-30", "pageCount": 12, "currency": "USD" }, "business": { "name": "Bitcoin Nail Bar", "address": "9793 Westheimer Rd Suite A, Houston, TX 77042", "phone": "(346) 802-4906", "website": "https://bitcoinnailbar.com", "hours": { "mondayToSaturday": "9:30 am - 7:00 pm", "sunday": "11:00 am - 5:00 pm" } }, "sections": [{ "id": "pedicure", "title": "Pedicure", "kind": "service", "page": 2, "items": [{ "name": "President 7 Star", "priceLabel": "$499", "description": "The ultimate royal treatment: an elite, head-to-toe pampering experience with an exclusive royal soak, advanced skincare, and a 70-minute combination of hot stone, reflexology, and therapeutic massage.", "includes": ["Your choice of any premium manicure or full set nail enhancement (Gel-X, dip, acrylic, etc.)", "Simultaneous collagen hand treatment and double paraffin wax for hands and feet", "Premium champagne or wine"], "durationMinutes": 70, "page": 2 }, { "name": "Bitcoin 24k Gold", "priceLabel": "$99", "description": "A gold-infused pedicure that nourishes, detoxifies, supports circulation, and leaves the skin hydrated and silky smooth.", "includes": ["Bath bomb", "Shea sugar scrub", "Collagen mask", "Butter lotion", "Paraffin treatment", "Soothing hot stone massage", "Collagen sock wrap and hot towel"], "durationMinutes": 75, "page": 2 }, { "name": "Paris Pearl", "priceLabel": "$75", "description": "Pearl powder delivers calcium, protein, and amino acids for brighter, silky-smooth skin. Includes a pearl-infused soak, sugar scrub, hydrating mask with hot towels, paraffin wax treatment, and a massage with pearly lotion.", "durationMinutes": 60, "page": 3 }, { "name": "Milk and Honey", "priceLabel": "$55", "description": "A warm milk soak, exfoliation, leg mask wrap, calming hot towel application, and massage to rejuvenate the legs and feet.", "durationMinutes": 45, "page": 3 }, { "name": "Classic Pedicure", "priceLabel": "$40", "description": "Soaking, trimming, cuticle care, exfoliation, callus removal, and a soothing massage with a hot towel.", "durationMinutes": 30, "page": 3 }, { "name": "Add Gel Polish On Any Pedicure", "priceLabel": "$20", "page": 3, "type": "add-on" }, { "name": "Surcharge for A removal Gel or Power", "priceLabel": "$10+", "page": 3, "type": "add-on" }, { "name": "Extra massage a minute", "priceLabel": "$2 minimum 5+", "page": 3, "type": "add-on" }] }, { "id": "manicure", "title": "Manicure", "kind": "service", "page": 4, "items": [{ "name": "Milk & Honey", "priceLabel": "$50", "description": "A warm milk and honey hand treatment with exfoliation, warm towels wrapped with paraffin wax, a hand massage, and collagen gloves.", "page": 4 }, { "name": "Gel Shellac Manicure", "priceLabel": "$45", "description": "Nail trimming, cuticle grooming, and a relaxing hand massage.", "page": 4 }, { "name": "Gel Polish Change (without manicure)", "priceLabel": "$30", "page": 4, "type": "add-on" }, { "name": "Add Gel Polish Manicure or Pedicure", "priceLabel": "$20", "page": 4, "type": "add-on" }, { "name": "Gel Polish Remover", "priceLabel": "$10", "page": 4, "type": "add-on" }, { "name": "Deluxe Manicure", "priceLabel": "$35", "description": "A deluxe manicure featuring exfoliation of dead skin, two warm towels wrapped with a mask, a gentle massage, and polish in your preferred color.", "page": 4 }, { "name": "Classic Manicure", "priceLabel": "$25", "description": "Nail shaping, cuticle care, a light massage, and polish in your choice of color.", "page": 4 }] }, { "id": "kids-menu", "title": "Kid's Menu", "kind": "service", "page": 4, "sourcePages": [4, 7], "items": [{ "name": "Pedicure", "priceLabel": "$25", "page": 4 }, { "name": "Manicure", "priceLabel": "$15", "page": 4 }, { "name": "Regular Polish on Nails", "priceLabel": "$10", "page": 4 }, { "name": "Regular Polish on Toes", "priceLabel": "$10", "page": 4 }, { "name": "Gel Add-On", "priceLabel": "$15", "page": 4, "type": "add-on" }] }, { "id": "acrylic-full-set", "title": "Acrylic Nail — Full Set", "kind": "service", "page": 5, "items": [{ "name": "Acrylic with polish", "priceLabel": "$50", "page": 5 }, { "name": "Full Set Shellac", "priceLabel": "$60", "page": 5 }, { "name": "White or Pear Tip", "priceLabel": "$55", "page": 5 }, { "name": "Color Powder", "priceLabel": "$60", "page": 5 }, { "name": "Ombre Full Set", "priceLabel": "$70", "page": 5 }, { "name": "Pink & White", "priceLabel": "$70", "page": 5 }, { "name": "Ombre full 2 color", "priceLabel": "$65", "page": 5 }, { "name": "Ombre 3 color", "priceLabel": "$75", "page": 5 }] }, { "id": "acrylic-fill-in", "title": "Acrylic Nail — Fill-in", "kind": "service", "page": 5, "items": [{ "name": "Acrylic with polish", "priceLabel": "$40", "page": 5 }, { "name": "Shellac", "priceLabel": "$50", "page": 5 }, { "name": "White or Pear Tip", "priceLabel": "$40", "page": 5 }, { "name": "Color Powder", "priceLabel": "$50", "page": 5 }, { "name": "Ombre", "priceLabel": "$60", "page": 5 }, { "name": "Pink & White", "priceLabel": "$60", "page": 5 }, { "name": "Ombre full 2 color", "priceLabel": "$55", "page": 5 }, { "name": "Ombre 3 color", "priceLabel": "$60", "page": 5 }] }, { "id": "dipping-nail", "title": "Dipping Nail", "kind": "service", "page": 5, "items": [{ "name": "Dipping Powder", "priceLabel": "$52", "page": 5 }, { "name": "Dipping Powder With Tip", "priceLabel": "$60", "page": 5 }, { "name": "Pink & White Dipping Powder", "priceLabel": "$70", "page": 5 }, { "name": "Dipping Powder Ombre", "priceLabel": "$70", "page": 5 }, { "name": "Add Full Manicure", "priceLabel": "$20", "page": 5, "type": "add-on" }, { "name": "Add Cuticle Care", "priceLabel": "$10", "page": 5, "type": "add-on" }] }, { "id": "builder-gel", "title": "Builder Gel — Full Set", "kind": "service", "page": 6, "items": [{ "name": "Natural Nail Set", "priceLabel": "$65", "page": 6 }, { "name": "Full Set With Tip", "priceLabel": "$70", "page": 6 }] }, { "id": "gel-x", "title": "Gel-X", "kind": "service", "page": 6, "items": [{ "name": "Full Set Gel X", "priceLabel": "$65", "page": 6 }, { "name": "Refill Gel X", "priceLabel": "$55", "page": 6 }] }, { "id": "gel-additional-services", "title": "Gel Service — Additional Services", "kind": "service", "page": 6, "items": [{ "name": "Shellac Polish Change Hand", "priceLabel": "$25", "page": 6, "type": "add-on" }, { "name": "Shellac Polish Change Toes", "priceLabel": "$25", "page": 6, "type": "add-on" }, { "name": "Special Shapes", "priceLabel": "$7+", "page": 6, "type": "add-on" }, { "name": "Different Shapes", "priceLabel": "$5+", "page": 6, "type": "add-on" }, { "name": "Long Length", "priceLabel": "$7+", "page": 6, "type": "add-on" }, { "name": "Cut Down + Change Different Shape", "priceLabel": "$15+", "page": 6, "type": "add-on" }, { "name": "Cuticle Trim (With Services)", "priceLabel": "$10+", "page": 6, "type": "add-on" }, { "name": "Gel Color Change On Acrylic Nail", "priceLabel": "$30+", "page": 6, "type": "add-on" }, { "name": "Nail Repair (Dip Gel Polish)", "priceLabel": "$5+", "page": 6, "type": "add-on" }, { "name": "Take Off With Service", "priceLabel": "$10", "page": 6, "type": "add-on" }, { "name": "Take Off Without Services", "priceLabel": "$20", "page": 6, "type": "add-on" }] }, { "id": "additional", "title": "Additional", "kind": "add-on", "page": 7, "items": [{ "name": "Extra Massage", "priceLabel": "$2 a minute", "page": 7 }, { "name": "Paraffin Wax", "priceLabel": "$15", "page": 7 }, { "name": "Collagen Sock", "priceLabel": "$15", "page": 7 }, { "name": "Collagen Gloves", "priceLabel": "$15", "page": 7 }, { "name": "Hot Stone Massage Added on", "priceLabel": "$10+", "page": 7 }, { "name": "Gel Polish Add-On", "priceLabel": "$20", "page": 7 }, { "name": "Shellac Polish Change Hand", "priceLabel": "$25", "page": 7 }, { "name": "Shellac Polish Change Toes", "priceLabel": "$25", "page": 7 }, { "name": "Shellac with Pedicure or Manicure", "priceLabel": "$20+", "page": 7 }, { "name": "Shellac Take Off with Services", "priceLabel": "$5+", "page": 7 }, { "name": "Shellac Take Off without Services", "priceLabel": "$15+", "page": 7 }, { "name": "French Tips or Color Tips add on", "priceLabel": "$15+", "page": 7 }, { "name": "Regular Polish Change Hand", "priceLabel": "$20", "page": 7 }, { "name": "Regular Polish Change Toes", "priceLabel": "$20", "page": 7 }, { "name": "Nail Take Off Without Services", "priceLabel": "$20", "page": 7 }, { "name": "Nail Take Off with Services", "priceLabel": "$10", "page": 7 }, { "name": "Nail Cut Down", "priceLabel": "$7+", "page": 7 }, { "name": "Nail Repair", "priceLabel": "$7+", "page": 7 }, { "name": "Nail Design", "priceLabel": "$7+", "page": 7 }, { "name": "Acrylic Gel Color Change", "priceLabel": "$30+", "page": 7 }, { "name": "Acrylic Toe", "priceLabel": "$8", "page": 7 }, { "name": "Acrylic Toe Refill", "priceLabel": "$5+", "page": 7 }, { "name": "Extra-long nail 1 in", "priceLabel": "$7+", "page": 7 }, { "name": "Extra-long nail 2 in", "priceLabel": "$14+", "page": 7 }, { "name": "Nail Buffing Cream", "priceLabel": "$10+", "page": 7 }] }, { "id": "waxing", "title": "Waxing Services", "kind": "service", "page": 8, "items": [{ "name": "Eyebrow", "priceLabel": "$15+", "page": 8 }, { "name": "Lip", "priceLabel": "$10+", "page": 8 }, { "name": "Chin", "priceLabel": "$15+", "page": 8 }, { "name": "Sideburns", "priceLabel": "$15+", "page": 8 }, { "name": "Full Face", "priceLabel": "$45+", "page": 8 }, { "name": "Underarms", "priceLabel": "$25+", "page": 8 }, { "name": "Half Arms", "priceLabel": "$25+", "page": 8 }, { "name": "Full Arms", "priceLabel": "$40+", "page": 8 }, { "name": "Lower Legs", "priceLabel": "$45+", "page": 8 }, { "name": "Upper Legs", "priceLabel": "$45+", "page": 8 }, { "name": "Full Legs", "priceLabel": "$60+", "page": 8 }, { "name": "Back", "priceLabel": "$45+", "page": 8 }, { "name": "Bikini", "priceLabel": "$45+", "page": 8 }, { "name": "Brazilian", "priceLabel": "$60+", "page": 8 }] }, { "id": "complimentary-wine", "title": "Complimentary Drinks — Wine List", "kind": "beverage", "page": 9, "items": [{ "name": "Champagne - Mimosa", "priceLabel": "Complimentary", "page": 9 }, { "name": "Red Wines - Cabernet - Merlot", "priceLabel": "Complimentary", "page": 9 }, { "name": "White Wines - Chardonnay - Moscato", "priceLabel": "Complimentary", "page": 9 }] }, { "id": "complimentary-cocktails", "title": "Complimentary Drinks — Cocktails", "kind": "beverage", "page": 10, "items": [{ "name": "Mojito", "priceLabel": "Complimentary", "description": "White rum, lime juice, sugar, fresh mint, and club soda.", "page": 10 }, { "name": "Blue Hawaiian", "priceLabel": "Complimentary", "description": "Light rum, blue curacao, pineapple juice, and cream of coconut.", "page": 10 }, { "name": "Espresso Martini", "priceLabel": "Complimentary", "description": "Vodka, Bailey's, Irish cream liqueur, cocoa powder.", "page": 10 }, { "name": "Apple Martini", "priceLabel": "Complimentary", "description": "Vodka, sour apple liqueur, lemon juice.", "page": 10 }, { "name": "Paloma", "priceLabel": "Complimentary", "description": "Tequila, lime juice, and grapefruit soda.", "page": 10 }, { "name": "Margarita", "priceLabel": "Complimentary", "description": "Tequila, orange liqueur (like Cointreau or Triple Sec), fresh lime juice.", "page": 10 }, { "name": "Screwdriver", "priceLabel": "Complimentary", "description": "Vodka, orange juice.", "page": 11 }, { "name": "Jack & Coke", "priceLabel": "Complimentary", "description": "Jack Daniel's Tennessee Whiskey with Coca-Cola.", "page": 11 }, { "name": "Tequila Sunrise", "priceLabel": "Complimentary", "description": "Tequila, orange juice, and grenadine, usually served in a highball glass.", "page": 11 }, { "name": "Pina Colada", "priceLabel": "Complimentary", "description": "White rum, cream of coconut, and pineapple juice.", "page": 11 }, { "name": "Bloody Mary", "priceLabel": "Complimentary", "description": "Vodka, Zing Zang, lemon, and extra spicy Tabasco.", "page": 11 }, { "name": "Lady in Red", "priceLabel": "Complimentary", "description": "Maker's Mark Bourbon, POM pomegranate juice, lemon juice, and one ginger beer.", "page": 11 }, { "name": "Pink Barbie", "priceLabel": "Complimentary", "description": "Malibu coconut rum, cranberry juice, pineapple juice, lime juice, and grenadine syrup.", "page": 11 }, { "name": "Old Fashioned", "priceLabel": "Complimentary", "description": "Bourbon or rye whiskey, sugar cube, Angostura bitters.", "page": 11 }, { "name": "Gin & Tonic", "priceLabel": "Complimentary", "description": "1 part gin and 3 parts tonic water.", "page": 11 }, { "name": "Godfather", "priceLabel": "Complimentary", "description": "Whiskey and amaretto.", "page": 11 }, { "name": "Rum & Coke", "priceLabel": "Complimentary", "description": "1 part rum and 1 part Coke.", "page": 11 }, { "name": "Cosmopolitan", "priceLabel": "Complimentary", "description": "Vodka, orange liqueur, cranberry juice, and fresh lime juice.", "page": 11 }, { "name": "Lemon Drop", "priceLabel": "Complimentary", "description": "Vodka, triple sec, lemon juice, simple syrup, and a sugar rim.", "page": 11 }, { "name": "Long Island Iced Tea", "priceLabel": "Complimentary", "description": "Gin, rum, tequila, triple sec, vodka, and cola, with a lemon wedge.", "page": 11 }] }, { "id": "non-alcoholic-drinks", "title": "Non-Alcohol Drinks", "kind": "beverage", "page": 11, "items": [{ "name": "Coke-Sprite - Sparkling Water", "priceLabel": "Complimentary", "page": 11 }, { "name": "Lemonade", "priceLabel": "Complimentary", "page": 11 }, { "name": "Sweet Iced Tea", "priceLabel": "Complimentary", "page": 11 }, { "name": "Hot Tea - Green Tea, Ginger Tea, Chamomile Tea", "priceLabel": "Complimentary", "page": 11 }, { "name": "Hot Vietnamese Coffee", "priceLabel": "Complimentary", "page": 11 }, { "name": "Cold Vietnamese Coffee", "priceLabel": "Complimentary", "page": 11 }, { "name": "Black Coffee", "priceLabel": "Complimentary", "page": 11 }] }], "notes": ["Complimentary drinks are limited to 2 per person.", "Guests must be 21 and over for alcoholic drinks.", "Prices marked with + are starting prices and may vary.", "Menu source includes a complimentary wine and cocktail selection; beverage availability may vary."] };
+    const filters = [{ id: 'all', label: 'All menu' }, { id: 'service', label: 'Services' }, { id: 'add-on', label: 'Add-ons' }, { id: 'beverage', label: 'Drinks' }];
+    const normalize = (text) => (text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const search = document.getElementById('search');
     const filterRoot = document.getElementById('filters');
     const grid = document.getElementById('grid');
     let active = 'all';
-    filterRoot.innerHTML = filters.map((f) => '<button type="button" data-filter="'+f.id+'">'+f.label+'</button>').join('');
-    const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]));
+    filterRoot.innerHTML = filters.map((f) => '<button type="button" data-filter="' + f.id + '">' + f.label + '</button>').join('');
+    const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
     function render() {
       const query = normalize(search.value.trim());
       document.querySelectorAll('[data-filter]').forEach((button) => button.classList.toggle('active', button.dataset.filter === active));
@@ -38,15 +599,16 @@
         const items = section.items.filter((item) => {
           if (active === 'add-on' && section.kind !== 'add-on' && item.type !== 'add-on') return false;
           if (!query) return true;
-          return normalize([item.name,item.description,...(item.includes || [])].filter(Boolean).join(' ')).includes(query);
+          return normalize([item.name, item.description, ...(item.includes || [])].filter(Boolean).join(' ')).includes(query);
         });
-        return items.length ? {...section,items} : null;
+        return items.length ? { ...section, items } : null;
       }).filter(Boolean);
-      grid.innerHTML = sections.length ? sections.map((section) => '<section class="card '+section.kind+'"><div class="card-head"><div><small>'+(section.kind === 'beverage' ? 'Complimentary' : section.kind === 'add-on' ? 'Finishing touch' : 'Bitcoin Nail Bar')+'</small><h3>'+escapeHtml(section.title)+'</h3></div><span class="page">p.'+section.page+'</span></div>'+section.items.map((item) => '<article class="item"><div class="item-line"><h4>'+escapeHtml(item.name)+'</h4><span class="price">'+escapeHtml(item.priceLabel)+'</span></div>'+(item.description ? '<p>'+escapeHtml(item.description)+'</p>' : '')+((item.durationMinutes || item.type === 'add-on') ? '<div class="tags">'+(item.durationMinutes ? '<span>'+item.durationMinutes+' min</span>' : '')+(item.type === 'add-on' ? '<span>Add-on</span>' : '')+'</div>' : '')+(item.includes ? '<div class="included">What’s included<ul>'+item.includes.map((entry) => '<li>'+escapeHtml(entry)+'</li>').join('')+'</ul></div>' : '')+'</article>').join('')+'</section>').join('') : '<div class="empty"><h3>No matches yet</h3><p>Try a broader search or browse all menu items.</p></div>';
+      grid.innerHTML = sections.length ? sections.map((section) => '<section class="card ' + section.kind + '"><div class="card-head"><div><small>' + (section.kind === 'beverage' ? 'Complimentary' : section.kind === 'add-on' ? 'Finishing touch' : 'Bitcoin Nail Bar') + '</small><h3>' + escapeHtml(section.title) + '</h3></div><span class="page">p.' + section.page + '</span></div>' + section.items.map((item) => '<article class="item"><div class="item-line"><h4>' + escapeHtml(item.name) + '</h4><span class="price">' + escapeHtml(item.priceLabel) + '</span></div>' + (item.description ? '<p>' + escapeHtml(item.description) + '</p>' : '') + ((item.durationMinutes || item.type === 'add-on') ? '<div class="tags">' + (item.durationMinutes ? '<span>' + item.durationMinutes + ' min</span>' : '') + (item.type === 'add-on' ? '<span>Add-on</span>' : '') + '</div>' : '') + (item.includes ? '<div class="included">What’s included<ul>' + item.includes.map((entry) => '<li>' + escapeHtml(entry) + '</li>').join('') + '</ul></div>' : '') + '</article>').join('') + '</section>').join('') : '<div class="empty"><h3>No matches yet</h3><p>Try a broader search or browse all menu items.</p></div>';
     }
     filterRoot.addEventListener('click', (event) => { const button = event.target.closest('[data-filter]'); if (!button) return; active = button.dataset.filter; render(); });
     search.addEventListener('input', render);
     render();
   </script>
 </body>
+
 </html>
