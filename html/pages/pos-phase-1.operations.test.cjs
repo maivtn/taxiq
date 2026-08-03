@@ -177,6 +177,11 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(html, /\.service-editor-body\s*\{/);
   assert.match(html, /function serviceCategoryOptions\(selected\)/);
   assert.match(html, /function serviceModalSummaryHtml\(service, mode\)/);
+  assert.match(html, /function serviceModalDraft\(\)/);
+  assert.match(html, /function updateServiceModalSummary\(\)/);
+  assert.match(html, /summaryEl\.innerHTML = serviceModalSummaryHtml\(serviceModalDraft\(\), serviceModalMode\);/);
+  assert.match(html, /e\.target\.matches\('\[data-mg-service-form-name\], \[data-mg-service-form-price\], \[data-mg-service-form-duration\], \[data-mg-service-form-description\], \[data-mg-service-form-includes\]'\)/);
+  assert.match(html, /e\.target\.matches\('\[data-mg-service-form-category\], \[data-mg-service-form-skill\], \[data-mg-service-form-type\], \[data-mg-service-form-active\]'\)/);
   assert.match(html, /function serviceDetailHtml\(service\)/);
   assert.match(html, /function openServiceModal\(id, mode, categoryName\)/);
   assert.match(serviceModalRuntime, /var categoryPrefill = !serviceModalId && categoryName \? categoryName : '';/);
@@ -185,6 +190,7 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(serviceModalRuntime, /modal\.setAttribute\('data-service-modal-mode', serviceModalMode\)/);
   assert.match(serviceModalRuntime, /subtitleEl\.textContent = serviceModalMode === 'add' \? 'Create a new menu service' : \(isReadOnly \? 'Read-only service detail' : 'Update service details'\);/);
   assert.match(serviceModalRuntime, /summaryEl\.innerHTML = serviceModalSummaryHtml\(summaryService, serviceModalMode\);/);
+  assert.match(serviceModalRuntime, /if \(!isReadOnly\) updateServiceModalSummary\(\);/);
   assert.match(serviceModalRuntime, /detailEl\.innerHTML = isReadOnly \? serviceDetailHtml\(service\) : '';/);
   assert.match(serviceModalRuntime, /detailEl\.hidden = !isReadOnly;/);
   assert.match(serviceModalRuntime, /formShellEl\.hidden = isReadOnly;/);

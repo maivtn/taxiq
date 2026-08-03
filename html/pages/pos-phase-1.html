@@ -4962,6 +4962,7 @@
         if (saveLabelEl) saveLabelEl.textContent = serviceModalMode === 'add' ? 'Create service' : 'Save changes';
         if (saveEl) saveEl.hidden = isReadOnly;
         modal.setAttribute('data-service-modal-mode', serviceModalMode);
+        if (!isReadOnly) updateServiceModalSummary();
         setServiceFormError('');
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
@@ -4993,6 +4994,38 @@
         serviceModalId = null;
         serviceModalMode = 'edit';
         setServiceFormError('');
+      }
+
+      function serviceModalDraft() {
+        var existing = serviceModalId ? serviceById(serviceModalId) : null;
+        var nameEl = $('[data-mg-service-form-name]');
+        var categoryEl = $('[data-mg-service-form-category]');
+        var priceEl = $('[data-mg-service-form-price]');
+        var durationEl = $('[data-mg-service-form-duration]');
+        var skillEl = $('[data-mg-service-form-skill]');
+        var typeEl = $('[data-mg-service-form-type]');
+        var activeEl = $('[data-mg-service-form-active]');
+        var descriptionEl = $('[data-mg-service-form-description]');
+        var includesEl = $('[data-mg-service-form-includes]');
+        var price = priceEl && priceEl.value !== '' ? Number(priceEl.value) : null;
+        var duration = durationEl && durationEl.value !== '' ? parseInt(durationEl.value, 10) : null;
+        return Object.assign({}, existing || {}, {
+          name: (nameEl && nameEl.value || '').trim(),
+          categoryName: (categoryEl && categoryEl.value || '').trim(),
+          price: Number.isFinite(price) ? price : null,
+          durationMin: Number.isFinite(duration) && duration > 0 ? duration : null,
+          requiredSkill: skillEl ? skillEl.value : '',
+          active: activeEl ? activeEl.value === 'active' : true,
+          description: (descriptionEl && descriptionEl.value || '').trim(),
+          includes: serviceIncludesFromText(includesEl && includesEl.value),
+          type: typeEl ? typeEl.value : ''
+        });
+      }
+
+      function updateServiceModalSummary() {
+        if (serviceModalMode === 'view') return;
+        var summaryEl = $('[data-mg-service-summary]');
+        if (summaryEl) summaryEl.innerHTML = serviceModalSummaryHtml(serviceModalDraft(), serviceModalMode);
       }
 
       function readServiceModal() {
@@ -5434,6 +5467,15 @@
       });
 
       /* ── management: numeric / text edits ── */
+      document.addEventListener('input', function (e) {
+        if (!e.target.closest('[data-pos-panel="management"]')) return;
+
+        if (e.target.matches('[data-mg-service-form-name], [data-mg-service-form-price], [data-mg-service-form-duration], [data-mg-service-form-description], [data-mg-service-form-includes]')) {
+          updateServiceModalSummary();
+          return;
+        }
+      });
+
       document.addEventListener('focusout', function (e) {
         if (!e.target.closest('[data-pos-panel="management"]')) return;
 
@@ -5466,6 +5508,11 @@
       /* ── management: selects & checkboxes ── */
       document.addEventListener('change', function (e) {
         if (!e.target.closest('[data-pos-panel="management"]')) return;
+
+        if (e.target.matches('[data-mg-service-form-category], [data-mg-service-form-skill], [data-mg-service-form-type], [data-mg-service-form-active]')) {
+          updateServiceModalSummary();
+          return;
+        }
 
         var sr = e.target.closest('[data-mg-strole]');
         if (sr) {
