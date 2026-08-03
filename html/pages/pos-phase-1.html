@@ -4627,18 +4627,20 @@
               '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-service-add><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>' +
             '</div></div>' +
           '<datalist id="mg-service-categories">' + categoryOptions + '</datalist>' +
-          '<div class="pos-table-wrap" data-mg-service-table' + (serviceViewMode === 'table' ? '' : ' hidden') + '><table class="pos-table tight"><thead><tr><th>Service</th><th>Category</th><th>Price</th><th>Minutes</th><th>Skill</th><th>Type</th><th>Status</th><th></th></tr></thead><tbody>' +
+          '<div class="pos-table-wrap" data-mg-service-table' + (serviceViewMode === 'table' ? '' : ' hidden') + '><table class="pos-table tight"><thead><tr><th>Service</th><th>Description</th><th>Includes</th><th>Category</th><th>Price</th><th>Minutes</th><th>Skill</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead><tbody>' +
           services.map(function (service) {
             var description = (service.description || '').trim();
             return '<tr>' +
-              '<td><span class="pos-strong">' + esc(service.name) + '</span>' + (description ? '<div class="pos-muted wrap" style="font-size:11.5px;margin-top:3px">' + esc(description) + '</div>' : '') + '<div class="pill-row" style="margin-top:5px">' + serviceIncludesHtml(service) + '</div></td>' +
+              '<td><span class="pos-strong">' + esc(service.name) + '</span></td>' +
+              '<td class="wrap" style="min-width:220px">' + (description ? esc(description) : '<span class="pos-muted">—</span>') + '</td>' +
+              '<td class="wrap" style="min-width:180px"><div class="pill-row">' + serviceIncludesHtml(service) + '</div></td>' +
               '<td>' + esc(service.categoryName || '—') + '</td>' +
               '<td>' + (service.price == null ? '—' : money(service.price)) + '</td>' +
               '<td>' + (service.durationMin || '—') + '</td>' +
               '<td>' + esc(service.requiredSkill || '—') + '</td>' +
               '<td>' + esc(service.type || 'standard') + '</td>' +
               '<td>' + serviceStatusChip(service) + '</td>' +
-              '<td><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div></td>' +
+              '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-service-edit="' + esc(service.id) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button><button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-service-delete="' + esc(service.id) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button></div></td>' +
               '</tr>';
           }).join('') +
           '</tbody></table></div>' +

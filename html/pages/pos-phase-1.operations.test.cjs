@@ -107,6 +107,7 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(servicesRuntime, /data-mg-service-view-target="card"/);
   assert.match(servicesRuntime, /data-mg-service-table/);
   assert.match(servicesRuntime, /data-mg-service-cards/);
+  assert.match(servicesRuntime, /<th>Service<\/th><th>Description<\/th><th>Includes<\/th><th>Category<\/th><th>Price<\/th><th>Minutes<\/th><th>Skill<\/th><th>Type<\/th><th>Status<\/th><th>Actions<\/th>/);
   assert.match(servicesRuntime, /data-mg-service-add/);
   assert.match(servicesRuntime, /data-mg-service-edit="/);
   assert.match(servicesRuntime, /data-mg-service-delete="/);
