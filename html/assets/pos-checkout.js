@@ -109,7 +109,7 @@
     host.innerHTML = items.map(function (item) {
       return '<div class="checkout-line">' +
         '<div><div class="checkout-line-title">' + esc(item.name || 'Service') + '</div></div>' +
-        '<div class="checkout-line-sub">' + esc(item.technicianName || primaryTechName) + '</div>' +
+        '<div class="checkout-line-sub">' + (item.isProduct ? '—' : esc(item.technicianName || primaryTechName)) + '</div>' +
         '<div>' + (item.price == null ? '—' : money(item.price)) + '</div>' +
         '</div>';
     }).join('');
@@ -323,6 +323,23 @@
         renderSummary();
       }
       closeCheckoutModal(addServiceConfirm.closest('[data-checkout-modal]'));
+      return;
+    }
+
+    var addProductConfirm = event.target.closest('[data-checkout-add-product-confirm]');
+    if (addProductConfirm) {
+      var nameInput = document.querySelector('[data-checkout-add-product-name]');
+      var priceInput = document.querySelector('[data-checkout-add-product-price]');
+      var productName = nameInput ? nameInput.value.trim() : '';
+      var productPrice = Number(priceInput && priceInput.value) || 0;
+      if (productName) {
+        items.push({ name: productName, price: productPrice, isProduct: true });
+        renderLines();
+        renderSummary();
+        if (nameInput) nameInput.value = '';
+        if (priceInput) priceInput.value = '';
+      }
+      closeCheckoutModal(addProductConfirm.closest('[data-checkout-modal]'));
       return;
     }
   });

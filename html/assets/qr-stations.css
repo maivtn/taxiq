@@ -159,6 +159,258 @@
   height: 15px;
 }
 
+.oneqr-master-config {
+  display: grid;
+  gap: 12px;
+}
+
+.oneqr-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.oneqr-eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  color: #4b48e7;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.oneqr-section-head h2 {
+  margin: 0;
+  color: var(--nexora-text);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.oneqr-section-head p {
+  margin: 5px 0 0;
+  color: #53617a;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.oneqr-chip,
+.oneqr-status,
+.oneqr-hierarchy-row b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.oneqr-chip {
+  min-height: 26px;
+  background: #efedff;
+  padding: 0 10px;
+  color: #4b48e7;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.oneqr-layout {
+  display: grid;
+  grid-template-columns: 1.05fr 1.2fr 0.9fr;
+  gap: 14px;
+}
+
+.oneqr-panel {
+  border: 1px solid var(--nexora-border);
+  border-radius: 8px;
+  background: #fff;
+  padding: 14px;
+}
+
+.oneqr-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.oneqr-panel-head h3,
+.oneqr-print-panel h3 {
+  margin: 0;
+  color: var(--nexora-text);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.oneqr-status {
+  min-height: 24px;
+  background: #e6fbf1;
+  padding: 0 8px;
+  color: #09a66a;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.oneqr-config-list {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+
+.oneqr-config-list div,
+.oneqr-hierarchy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid #e9eef6;
+  border-radius: 7px;
+  background: #fbfcff;
+  padding: 8px 10px;
+}
+
+.oneqr-config-list dt {
+  color: #6f7891;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.oneqr-config-list dd {
+  margin: 0;
+  color: var(--nexora-text);
+  font-size: 11px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.oneqr-note {
+  margin: 10px 0 0;
+  border-radius: 7px;
+  background: #f2efff;
+  padding: 9px 10px;
+  color: #4934ad;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.oneqr-mini-button,
+.oneqr-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #cbd2ff;
+  border-radius: 6px;
+  background: #fff;
+  color: #4b48e7;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.oneqr-mini-button {
+  min-height: 28px;
+  padding: 0 9px;
+}
+
+.oneqr-mini-button svg,
+.oneqr-action-button svg {
+  width: 12px;
+  height: 12px;
+}
+
+.oneqr-hierarchy-list {
+  display: grid;
+  gap: 7px;
+}
+
+.oneqr-hierarchy-row {
+  min-height: 46px;
+}
+
+.oneqr-hierarchy-row strong {
+  display: block;
+  color: var(--nexora-text);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.oneqr-hierarchy-row span {
+  display: block;
+  margin-top: 3px;
+  color: #78839a;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.oneqr-hierarchy-row b {
+  min-height: 22px;
+  background: #eef4ff;
+  padding: 0 8px;
+  color: #3159ba;
+  font-size: 9px;
+}
+
+.oneqr-hierarchy-row.is-master b {
+  background: #e6fbf1;
+  color: #0c9b63;
+}
+
+.oneqr-print-panel {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.oneqr-print-qr {
+  display: flex;
+  width: 118px;
+  height: 118px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dce5f1;
+  border-radius: 8px;
+  background: #fff;
+  padding: 9px;
+}
+
+.oneqr-qr-art {
+  width: 94px;
+  height: 94px;
+  display: block;
+  shape-rendering: crispEdges;
+}
+
+.oneqr-print-panel h3 {
+  margin-top: 10px;
+}
+
+.oneqr-print-panel p {
+  max-width: 240px;
+  margin: 7px 0 12px;
+  color: #65718a;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.oneqr-print-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.oneqr-action-button {
+  min-height: 34px;
+  padding: 0 10px;
+}
+
+.oneqr-action-button.is-primary {
+  border-color: #4b48e7;
+  background: #4b48e7;
+  color: #fff;
+}
+
 .qr-station-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -361,6 +613,14 @@
 }
 
 @media (max-width: 1280px) {
+  .oneqr-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .oneqr-print-panel {
+    grid-column: 1 / -1;
+  }
+
   .qr-station-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -395,6 +655,14 @@
     flex-direction: column;
     justify-content: center;
     gap: 7px;
+  }
+
+  .oneqr-layout {
+    gap: 10px;
+  }
+
+  .oneqr-panel {
+    padding: 12px;
   }
 }
 
@@ -452,6 +720,116 @@
   .qr-add-station {
     min-height: 38px;
     font-size: 12px;
+  }
+
+  .oneqr-master-config {
+    gap: 9px;
+  }
+
+  .oneqr-section-head {
+    align-items: flex-start;
+  }
+
+  .oneqr-eyebrow {
+    font-size: 8px;
+  }
+
+  .oneqr-section-head h2 {
+    font-size: 15px;
+  }
+
+  .oneqr-section-head p {
+    font-size: 9px;
+    line-height: 1.35;
+  }
+
+  .oneqr-chip {
+    min-height: 22px;
+    padding: 0 8px;
+    font-size: 8px;
+  }
+
+  .oneqr-layout {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .oneqr-print-panel {
+    grid-column: auto;
+  }
+
+  .oneqr-panel {
+    padding: 10px;
+  }
+
+  .oneqr-panel-head {
+    margin-bottom: 8px;
+  }
+
+  .oneqr-panel-head h3,
+  .oneqr-print-panel h3 {
+    font-size: 11px;
+  }
+
+  .oneqr-config-list {
+    gap: 5px;
+  }
+
+  .oneqr-config-list div,
+  .oneqr-hierarchy-row {
+    padding: 6px 8px;
+  }
+
+  .oneqr-config-list dt,
+  .oneqr-print-panel p {
+    font-size: 8px;
+  }
+
+  .oneqr-config-list dd,
+  .oneqr-hierarchy-row strong {
+    font-size: 9px;
+  }
+
+  .oneqr-note {
+    margin-top: 7px;
+    padding: 7px 8px;
+    font-size: 8px;
+  }
+
+  .oneqr-hierarchy-list {
+    gap: 5px;
+  }
+
+  .oneqr-hierarchy-row {
+    min-height: 38px;
+  }
+
+  .oneqr-hierarchy-row span,
+  .oneqr-hierarchy-row b,
+  .oneqr-status,
+  .oneqr-mini-button,
+  .oneqr-action-button {
+    font-size: 8px;
+  }
+
+  .oneqr-print-qr {
+    width: 78px;
+    height: 78px;
+    padding: 6px;
+  }
+
+  .oneqr-qr-art {
+    width: 62px;
+    height: 62px;
+  }
+
+  .oneqr-print-panel p {
+    margin: 5px 0 8px;
+  }
+
+  .oneqr-action-button {
+    min-height: 28px;
+    padding: 0 8px;
   }
 
   .qr-station-grid {

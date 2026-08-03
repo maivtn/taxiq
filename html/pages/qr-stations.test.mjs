@@ -58,6 +58,35 @@ test('renders the salon QR station dashboard shown in the mockup', () => {
   assert.equal((html.match(/class="qr-link-device"/g) || []).length, 3);
 });
 
+test('brings OneQR master QR and config content into QR Stations without prototype styling', () => {
+  const html = source();
+
+  assert.match(html, /id="oneqr-master-config"/);
+  assert.match(html, /<h2[^>]*>OneQR Master &amp; Config<\/h2>/);
+  for (const text of [
+    'Bitcoin Nail Bar - Main',
+    'Welcome to Bitcoin Nail Bar',
+    'Beauty &amp; Salon',
+    'Auto-suggest by user',
+    'Public first, verify when needed',
+    'AI can prioritize content but cannot grant access or approve requests.',
+    'Master &amp; Child QR',
+    'Front Door Check-in',
+    'Party Room',
+    'Chloe Tip Profile',
+    'Table 06',
+    'QR stays the same. Content and permissions behind it can be updated any time.',
+    'Download print',
+    'Share'
+  ]) {
+    assert.match(html, new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+
+  assert.doesNotMatch(html, /<style\b/i);
+  assert.doesNotMatch(html, /class="(?:app|side|card|builder|phone|fakeqr|module|row|pill|note|tabs|tab)"/);
+  assert.doesNotMatch(html, /Nexora OneQR Prototype/);
+});
+
 test('links Stations & QR Codes sidebar items to the QR Stations page', () => {
   const shell = shellSource();
 

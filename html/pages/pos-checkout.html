@@ -134,6 +134,23 @@
     </div>
   </div>
 
+  <div class="checkout-modal-backdrop" data-checkout-modal="add-product" hidden>
+    <div class="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-add-product-title">
+      <div class="checkout-modal-head">
+        <h2 id="checkout-modal-add-product-title">Add product</h2>
+        <button class="checkout-modal-close" type="button" data-checkout-modal-close aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+      </div>
+      <div class="checkout-modal-body">
+        <label class="checkout-field"><span>Product name</span><input class="booking-input" type="text" maxlength="60" data-checkout-add-product-name placeholder="e.g. Gel polish bottle"></label>
+        <label class="checkout-field"><span>Price</span><input class="booking-input" type="number" min="0" step="0.01" inputmode="decimal" data-checkout-add-product-price placeholder="0.00"></label>
+      </div>
+      <div class="checkout-modal-foot">
+        <button class="booking-secondary-button" type="button" data-checkout-modal-close>Cancel</button>
+        <button class="booking-primary-button" type="button" data-checkout-add-product-confirm>Add to ticket</button>
+      </div>
+    </div>
+  </div>
+
   <div class="checkout-modal-backdrop" data-checkout-modal="discount" hidden>
     <div class="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-discount-title">
       <div class="checkout-modal-head">
