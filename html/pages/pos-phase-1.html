@@ -4613,6 +4613,11 @@
       var serviceModalId = null;
       var serviceModalMode = 'edit';
 
+      function isServiceCategoryCollapsed(name) {
+        var key = serviceCategoryKey(name);
+        return Object.prototype.hasOwnProperty.call(serviceCollapsedCategories, key) ? serviceCollapsedCategories[key] : true;
+      }
+
       function serviceById(id, catalog) {
         var source = (catalog || salonCatalog).services || [];
         for (var i = 0; i < source.length; i++) if (source[i].id === id) return source[i];
@@ -5044,7 +5049,7 @@
         var categoryManagerHtml = serviceCategoryManagerHtml(categoryRows);
         var serviceTableHtml = '<div class="pos-table-wrap" data-mg-service-table><table class="pos-table tight"><thead><tr><th>Service</th><th>Price</th><th>Minutes</th><th>Status</th><th>Category</th><th>Actions</th></tr></thead><tbody>' +
           serviceCategoryGroups.map(function (group) {
-            var collapsed = !!serviceCollapsedCategories[serviceCategoryKey(group.name)];
+            var collapsed = isServiceCategoryCollapsed(group.name);
             var categoryToggleHtml = '<button class="pos-btn pos-btn-sm service-category-toggle" type="button" data-mg-service-category-toggle="' + esc(group.name) + '" aria-expanded="' + (collapsed ? 'false' : 'true') + '"><i class="bi ' + (collapsed ? 'bi-chevron-right' : 'bi-chevron-down') + '" aria-hidden="true"></i> ' + esc(group.name) + ' · ' + group.services.length + '</button>';
             var categoryAddHtml = '<button class="pos-btn pos-btn-sm service-category-add" type="button" data-mg-service-add-category="' + esc(group.name) + '"><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>';
             return '<tr data-mg-service-category-group="' + esc(group.name) + '"><td colspan="6" style="background:var(--nexora-surface-muted);color:var(--nexora-muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.03em"><div class="service-category-head">' + categoryToggleHtml + categoryAddHtml + '</div></td></tr>' +
@@ -5062,7 +5067,7 @@
           '</tbody></table></div>';
         var serviceCardsHtml = '<div data-mg-service-cards style="display:grid;gap:16px">' +
           serviceCategoryGroups.map(function (group) {
-            var collapsed = !!serviceCollapsedCategories[serviceCategoryKey(group.name)];
+            var collapsed = isServiceCategoryCollapsed(group.name);
             var categoryToggleHtml = '<button class="pos-btn pos-btn-sm service-category-toggle" type="button" data-mg-service-category-toggle="' + esc(group.name) + '" aria-expanded="' + (collapsed ? 'false' : 'true') + '"><i class="bi ' + (collapsed ? 'bi-chevron-right' : 'bi-chevron-down') + '" aria-hidden="true"></i> ' + esc(group.name) + ' · ' + group.services.length + '</button>';
             var categoryAddHtml = '<button class="pos-btn pos-btn-sm service-category-add" type="button" data-mg-service-add-category="' + esc(group.name) + '"><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>';
             return '<section data-mg-service-card-category="' + esc(group.name) + '">' +
@@ -5249,7 +5254,7 @@
         var serviceCategoryToggle = e.target.closest('[data-mg-service-category-toggle]');
         if (serviceCategoryToggle) {
           var serviceCategoryStateKey = serviceCategoryKey(serviceCategoryToggle.getAttribute('data-mg-service-category-toggle'));
-          serviceCollapsedCategories[serviceCategoryStateKey] = !serviceCollapsedCategories[serviceCategoryStateKey];
+          serviceCollapsedCategories[serviceCategoryStateKey] = !isServiceCategoryCollapsed(serviceCategoryToggle.getAttribute('data-mg-service-category-toggle'));
           renderManagement();
           return;
         }

@@ -128,7 +128,9 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(html, /var categoryAdd = e\.target\.closest\('\[data-mg-category-add\]'\);/);
   assert.match(html, /var categorySave = e\.target\.closest\('\[data-mg-category-save\]'\);/);
   assert.match(html, /var categoryDelete = e\.target\.closest\('\[data-mg-category-delete\]'\);/);
-  assert.match(servicesRuntime, /serviceCollapsedCategories\[serviceCategoryKey\(group\.name\)\]/);
+  assert.match(html, /function isServiceCategoryCollapsed\(name\)/);
+  assert.match(html, /Object\.prototype\.hasOwnProperty\.call\(serviceCollapsedCategories, key\) \? serviceCollapsedCategories\[key\] : true/);
+  assert.match(servicesRuntime, /var collapsed = isServiceCategoryCollapsed\(group\.name\);/);
   assert.match(servicesRuntime, /data-mg-service-category-toggle="/);
   assert.match(servicesRuntime, /data-mg-service-add-category="/);
   assert.match(servicesRuntime, /aria-expanded="/);
@@ -143,7 +145,7 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
     'category Add service click should run before category collapse toggle'
   );
   assert.match(html, /var serviceCategoryStateKey = serviceCategoryKey\(serviceCategoryToggle\.getAttribute\('data-mg-service-category-toggle'\)\);/);
-  assert.match(html, /serviceCollapsedCategories\[serviceCategoryStateKey\] = !serviceCollapsedCategories\[serviceCategoryStateKey\];/);
+  assert.match(html, /serviceCollapsedCategories\[serviceCategoryStateKey\] = !isServiceCategoryCollapsed\(serviceCategoryToggle\.getAttribute\('data-mg-service-category-toggle'\)\);/);
   assert.match(servicesRuntime, /var serviceBodyHtml = serviceViewMode === 'card' \? serviceCardsHtml : serviceTableHtml;/);
   assert.doesNotMatch(servicesRuntime, /data-mg-service-(?:table|cards)[\s\S]{0,120}hidden/);
   assert.match(servicesRuntime, /<th>Service<\/th><th>Price<\/th><th>Minutes<\/th><th>Status<\/th><th>Category<\/th><th>Actions<\/th>/);
