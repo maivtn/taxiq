@@ -28,7 +28,7 @@ const packageItems = [
   ['overview', 'Overview'],
   ['nexora', 'Subscriptions'],
   ['voice', 'AI Voice Plans'],
-  ['history', 'Purchase History']
+  ['history', 'Package History']
 ];
 
 function classList() {
@@ -105,6 +105,7 @@ test('renders all five Package Management submenu items on the native Packages p
   assert.match(html, /class="nav-item nav-parent is-expanded"[\s\S]*?<span>Package Management<\/span>/);
   assert.match(html, /class="nav-item nav-parent is-expanded"[\s\S]*?data-lucide="crown"/);
   assert.match(html, /data-nav-subnav[\s\S]*?data-shell-tab="overview"/);
+  assert.doesNotMatch(html, /Purchase History/);
 });
 
 test('links every Reward submenu from pages that share the sidebar', () => {

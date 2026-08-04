@@ -122,7 +122,9 @@ test('adds the package heading and ordered management tabs', () => {
   assert.doesNotMatch(html, /<span>Credit Usage<\/span>/);
   assert.doesNotMatch(html, /data-package-tab="credits"/);
   assert.doesNotMatch(html, /data-package-panel="credits"/);
-  assert.match(html, /Purchase History/);
+  const historyTab = html.match(/<button[^>]*data-package-tab="history"[\s\S]*?<\/button>/)?.[0] || '';
+  assert.match(historyTab, /<span>Package History<\/span>/);
+  assert.doesNotMatch(historyTab, /Purchase History/);
   assert.equal((html.match(/class="package-tab is-active"/g) || []).length, 1);
 });
 

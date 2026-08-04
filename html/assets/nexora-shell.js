@@ -52,7 +52,7 @@
       { label: 'Overview', tab: 'overview' },
       { label: 'Subscriptions', tab: 'nexora' },
       { label: 'AI Voice Plans', tab: 'voice' },
-      { label: 'Purchase History', tab: 'history' }
+      { label: 'Package History', tab: 'history' }
     ] },
     { type: 'group', key: 'stations', label: 'Stations & QR Codes', icon: 'qr-code', page: 'stations', items: [
       { label: 'QR Stations', tab: 'qr-stations' },
