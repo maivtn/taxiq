@@ -624,6 +624,20 @@ test('uses the same payment modal for Starter with the Starter invoice amount', 
   assert.match(html, /selectServicePlan\(planPaymentPlan\)/);
 });
 
+test('adds Package History as a Plans view switch sub tab', () => {
+  const html = source();
+  const plansPanel = html.match(/<section class="tab-panel" id="panel-plans"[\s\S]*?<section class="tab-panel" id="panel-settings"/)?.[0] || '';
+  const switcher = plansPanel.match(/<div class="booking-view-switch" role="group" aria-label="Plans view mode">([\s\S]*?)<\/div>/)?.[1] || '';
+  const viewTargets = [...switcher.matchAll(/data-plans-view-target="([^"]+)"/g)].map((match) => match[1]);
+
+  assert.deepEqual(viewTargets, ['package', 'credits', 'history']);
+  assert.match(switcher, /data-plans-view-target="history"[\s\S]*Package History/);
+  assert.match(plansPanel, /data-plans-view-panel="history"[\s\S]*id="plans-package-history-title"[\s\S]*Package History/);
+  assert.match(plansPanel, /data-package-history/);
+  assert.match(plansPanel, /<th scope="col">Date &amp; time<\/th>[\s\S]*<th scope="col">Amount<\/th>[\s\S]*<th scope="col">Package purchased<\/th>[\s\S]*<th scope="col">Term<\/th>[\s\S]*<th scope="col">Valid Until<\/th>[\s\S]*<th scope="col">Status<\/th>[\s\S]*<th scope="col">Transaction ID<\/th>/);
+  assert.match(html, /mode === 'history' \? 'history' : mode === 'credits' \? 'credits' : 'package'/);
+});
+
 test('removes the extra number allowance from the Elite plan', () => {
   const html = source();
 

@@ -36,6 +36,123 @@ function fakeElement(dataset = {}) {
   };
 }
 
+function fakeInteractiveElement(dataset = {}, options = {}) {
+  const listeners = {};
+  const attributes = new Set(options.attributes || []);
+  const element = {
+    dataset,
+    hidden: Boolean(options.hidden),
+    style: { overflow: '' },
+    value: options.value || '',
+    type: options.type || '',
+    textContent: '',
+    innerHTML: '',
+    classList: {
+      add() {},
+      remove() {},
+      toggle() {}
+    },
+    addEventListener(type, handler) {
+      listeners[type] = handler;
+    },
+    dispatch(type, event = {}) {
+      if (listeners[type]) listeners[type]({ preventDefault() {}, ...event });
+    },
+    focus() {},
+    hasAttribute(name) {
+      return attributes.has(name);
+    },
+    removeAttribute(name) {
+      attributes.delete(name);
+    },
+    setAttribute(name) {
+      attributes.add(name);
+    },
+    querySelector(selector) {
+      return options.querySelector ? options.querySelector(selector) : null;
+    },
+    querySelectorAll(selector) {
+      return options.querySelectorAll ? options.querySelectorAll(selector) : [];
+    }
+  };
+  return element;
+}
+
+function createPackageActionRuntime() {
+  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  const trialButton = fakeInteractiveElement({ planTrial: 'Pro' }, { attributes: ['data-plan-trial'] });
+  const buyButton = fakeInteractiveElement({ planSelect: 'Pro' }, { attributes: ['data-plan-select'] });
+  const overview = fakeInteractiveElement();
+  const purchaseHistory = fakeInteractiveElement();
+  const tabs = ['overview', 'nexora', 'voice', 'history'].map((packageTab) => fakeInteractiveElement({ packageTab }));
+  const panels = ['overview', 'nexora', 'voice', 'history'].map((packagePanel) => fakeInteractiveElement({ packagePanel }));
+  const paymentClose = fakeInteractiveElement();
+  const paymentChildren = new Map([
+    ['[data-package-payment-list]', fakeInteractiveElement()],
+    ['[data-package-payment-title]', fakeInteractiveElement()],
+    ['[data-package-invoice-product]', fakeInteractiveElement()],
+    ['[data-package-invoice-plan]', fakeInteractiveElement()],
+    ['[data-package-invoice-payment]', fakeInteractiveElement()],
+    ['[data-package-invoice-total]', fakeInteractiveElement()],
+    ['[data-package-payment-confirm-label]', fakeInteractiveElement()],
+    ['[data-package-payment-close]', paymentClose],
+    ['[data-package-payment-status]', fakeInteractiveElement()],
+    ['[data-package-card-form]', fakeInteractiveElement({}, { hidden: true })],
+    ['[data-package-card-error]', fakeInteractiveElement()]
+  ]);
+  const paymentModal = fakeInteractiveElement({}, {
+    hidden: true,
+    querySelector(selector) {
+      return paymentChildren.get(selector) || null;
+    }
+  });
+  const trialModal = fakeInteractiveElement({}, {
+    hidden: true,
+    querySelector(selector) {
+      if (selector === '[data-trial-required]') return fakeInteractiveElement({}, { value: 'Demo Salon' });
+      return null;
+    }
+  });
+
+  const context = {
+    Date,
+    Intl,
+    URL,
+    document: {
+      body: {
+        classList: { add() {}, remove() {} },
+        style: { overflow: '' }
+      },
+      addEventListener() {},
+      querySelector(selector) {
+        if (selector === '[data-package-overview]') return overview;
+        if (selector === '[data-purchase-history]') return purchaseHistory;
+        if (selector === '[data-package-payment-modal]') return paymentModal;
+        if (selector === '[data-package-trial-modal]') return trialModal;
+        return null;
+      },
+      querySelectorAll(selector) {
+        if (selector === '[data-package-tab]') return tabs;
+        if (selector === '[data-package-panel]') return panels;
+        if (selector.includes('data-plan-trial')) return [trialButton, buyButton];
+        if (selector.includes('data-plan-select')) return [buyButton];
+        return [];
+      }
+    },
+    window: {
+      addEventListener() {},
+      history: { pushState() {}, replaceState() {} },
+      location: { href: 'https://example.test/nexora-packages.html?tab=voice' },
+      localStorage: { getItem() { return null; }, setItem() {} },
+      lucide: { createIcons() {} },
+      setInterval() {}
+    }
+  };
+
+  vm.runInNewContext(runtime, context);
+  return { trialButton, buyButton, paymentModal, trialModal };
+}
+
 function renderPackageHistoryHTML() {
   const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
   const purchaseHistory = fakeElement();
@@ -198,6 +315,26 @@ test('opens a payment modal for paid plans and a Booking-style form for the AI V
   assert.match(css, /\.package-payment-invoice\s*\{/);
   assert.match(css, /\.package-trial-modal\s*\{/);
   assert.match(css, /\.package-trial-grid\s*\{/);
+});
+
+test('renders separate trial and purchase actions for the Pro AI Voice plan', () => {
+  const html = source();
+  const voicePanel = html.match(/<section[^>]*data-package-panel="voice"[^>]*>([\s\S]*?)<\/section>/)?.[1] || '';
+  const proCard = voicePanel.match(/<article class="service-plan-card is-recommended" data-plan-card="pro">([\s\S]*?)<\/article>/)?.[1] || '';
+  assert.match(proCard, /data-plan-trial="Pro"[\s\S]*?>Start 14-Day Free Trial<\/button>/);
+  assert.match(proCard, /data-plan-select="Pro"[\s\S]*data-plan-buy[\s\S]*?>Choose Pro<\/button>/);
+  assert.doesNotMatch(proCard, /No credit card required · Cancel anytime/);
+  assert.equal((proCard.match(/<button class="plan-select-button/g) || []).length, 2);
+
+  const trialRuntime = createPackageActionRuntime();
+  trialRuntime.trialButton.dispatch('click');
+  assert.equal(trialRuntime.trialModal.hidden, false);
+  assert.equal(trialRuntime.paymentModal.hidden, true);
+
+  const buyRuntime = createPackageActionRuntime();
+  buyRuntime.buyButton.dispatch('click');
+  assert.equal(buyRuntime.paymentModal.hidden, false);
+  assert.equal(buyRuntime.trialModal.hidden, true);
 });
 
 test('shows a SweetAlert pending message when the Free Trial is submitted twice', () => {

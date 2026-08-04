@@ -72,7 +72,7 @@ const PACKAGE_PLAN_DETAILS = {
   },
   voice: {
     Starter: { product: 'AI Voice Plans', monthlyAmount: 99, totalLabel: '$99/mo' },
-    Pro: { product: 'AI Voice Plans', monthlyAmount: 199, totalLabel: '$199/mo after trial', trial: true },
+    Pro: { product: 'AI Voice Plans', monthlyAmount: 199, totalLabel: '$199/mo', trial: true },
     Elite: { product: 'AI Voice Plans', monthlyAmount: 349, totalLabel: '$349/mo' }
   }
 };
@@ -215,11 +215,13 @@ const PACKAGE_PLAN_DETAILS = {
 
   function getPackagePlanDetails(button) {
     const nexoraPlan = button.dataset.nexoraSelect;
-    const voicePlan = button.dataset.planSelect;
+    const voiceTrialPlan = button.dataset.planTrial;
+    const voicePlan = button.dataset.planSelect || voiceTrialPlan;
     const tabId = nexoraPlan ? 'nexora' : voicePlan ? 'voice' : '';
     const plan = nexoraPlan || voicePlan;
     const detail = plan && PACKAGE_PLAN_DETAILS[tabId] ? PACKAGE_PLAN_DETAILS[tabId][plan] : null;
-    return detail ? { ...detail, plan, tabId } : null;
+    const trialAction = Boolean(voiceTrialPlan);
+    return detail ? { ...detail, plan, tabId, trial: trialAction && Boolean(detail.trial) } : null;
   }
 
   function showPendingTrialAlert() {
@@ -575,7 +577,7 @@ const PACKAGE_PLAN_DETAILS = {
     });
   });
 
-  document.querySelectorAll('[data-nexora-select], [data-plan-select]').forEach((button) => {
+  document.querySelectorAll('[data-nexora-select], [data-plan-select], [data-plan-trial]').forEach((button) => {
     button.addEventListener('click', () => {
       const details = getPackagePlanDetails(button);
       if (details?.trial) {

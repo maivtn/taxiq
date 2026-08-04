@@ -417,6 +417,13 @@
 .credits-history-date small { color: var(--nexora-subtle); font-size: 10px; font-weight: 700; }
 .credits-amount-negative { color: #b42318; font-weight: 800; }
 .credits-amount-positive { color: #07834f; font-weight: 800; }
+.package-history-section { margin-top: 0; }
+.package-history-plan-table { min-width: 960px; }
+.package-history-plan-amount { color: var(--nexora-text); font-weight: 900 !important; }
+.package-history-status { display: inline-flex; border-radius: 999px; padding: 4px 8px; font-size: 10px; font-weight: 900; }
+.package-history-status.is-active { background: #e6fbf2; color: #008f5a; }
+.package-history-status.is-expired { background: #fff1f0; color: #c2410c; }
+.package-history-transaction { border-radius: 6px; background: #f3f6fa; padding: 4px 7px; color: var(--nexora-brand); font-family: inherit; font-size: 10px; font-weight: 900; }
 
 @media (max-width: 760px) {
   .credits-heading,

@@ -9522,6 +9522,7 @@
                 <div class="booking-view-switch" role="group" aria-label="Plans view mode">
                   <button class="booking-view-button is-active" type="button" data-plans-view-target="package" aria-pressed="true"><i class="bi bi-bag-check" aria-hidden="true"></i>Buy Package</button>
                   <button class="booking-view-button" type="button" data-plans-view-target="credits" aria-pressed="false"><i class="bi bi-wallet2" aria-hidden="true"></i>Credit Usage</button>
+                  <button class="booking-view-button" type="button" data-plans-view-target="history" aria-pressed="false"><i class="bi bi-clock-history" aria-hidden="true"></i>Package History</button>
                 </div>
 
                 <div data-plans-view-panel="package" style="display: grid; gap: 16px;">
@@ -9597,9 +9598,7 @@
                   </div>
                   <div class="guarantee-grid">
                     <div>✓ 14-day free pilot</div>
-                    <div>✓ No credit card required</div>
                     <div>✓ Set up within 24 hours</div>
-                    <div>✓ Cancel anytime</div>
                   </div>
                 </article>
                 </div>
@@ -9717,6 +9716,51 @@
                       </table>
                     </div>
                   </section>
+                </section>
+
+                <section class="credits-history-section package-history-section" data-plans-view-panel="history" aria-labelledby="plans-package-history-title" hidden>
+                  <div class="credits-section-heading">
+                    <div>
+                      <span class="credits-kicker">Billing</span>
+                      <h2 id="plans-package-history-title">Package History</h2>
+                    </div>
+                  </div>
+                  <div class="credits-history-scroll">
+                    <table class="credits-history-table package-history-plan-table">
+                      <caption class="sr-only">Package purchase history</caption>
+                      <thead>
+                        <tr>
+                          <th scope="col">Date &amp; time</th>
+                          <th scope="col">Amount</th>
+                          <th scope="col">Package purchased</th>
+                          <th scope="col">Term</th>
+                          <th scope="col">Valid Until</th>
+                          <th scope="col">Status</th>
+                          <th scope="col">Transaction ID</th>
+                        </tr>
+                      </thead>
+                      <tbody data-package-history>
+                        <tr>
+                          <td><span class="credits-history-date">Aug 01, 2026<small>9:30 AM</small></span></td>
+                          <td class="package-history-plan-amount">$199.00</td>
+                          <td><span class="credits-history-activity"><strong>AI Voice Pro</strong><small>Monthly subscription</small></span></td>
+                          <td><span class="credits-product-badge credits-product-badge-voice">1 month</span></td>
+                          <td>Aug 31, 2026</td>
+                          <td><span class="package-history-status is-active">Active</span></td>
+                          <td><code class="package-history-transaction">VMS-20260801-0003</code></td>
+                        </tr>
+                        <tr>
+                          <td><span class="credits-history-date">Jul 01, 2026<small>9:35 AM</small></span></td>
+                          <td class="package-history-plan-amount">$199.00</td>
+                          <td><span class="credits-history-activity"><strong>AI Voice Pro</strong><small>Monthly subscription</small></span></td>
+                          <td><span class="credits-product-badge credits-product-badge-voice">1 month</span></td>
+                          <td>Jul 31, 2026</td>
+                          <td><span class="package-history-status is-expired">Expired</span></td>
+                          <td><code class="package-history-transaction">VMS-20260701-0002</code></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </section>
               </div>
             </section>
@@ -10956,7 +11000,6 @@
 
           <div class="trial-benefits">
             <div class="trial-benefit"><i class="bi bi-check2" aria-hidden="true"></i> 100% done-for-you setup</div>
-            <div class="trial-benefit"><i class="bi bi-check2" aria-hidden="true"></i> Cancel anytime</div>
             <div class="trial-benefit"><i class="bi bi-check2" aria-hidden="true"></i> Vietnamese-speaking support</div>
           </div>
 
@@ -12791,7 +12834,7 @@
       var panel = document.getElementById('panel-plans');
       if (!panel) return;
 
-      var nextMode = mode === 'credits' ? 'credits' : 'package';
+      var nextMode = mode === 'history' ? 'history' : mode === 'credits' ? 'credits' : 'package';
 
       panel.querySelectorAll('[data-plans-view-panel]').forEach(function(viewPanel) {
         var isActive = viewPanel.dataset.plansViewPanel === nextMode;
