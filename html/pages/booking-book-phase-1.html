@@ -11189,6 +11189,16 @@
     var BOOKING_CALENDAR_TECHNICIANS = null;
     var BOOKING_CALENDAR_SERVICE_DURATIONS = null;
 
+    function bookingMoney(value, options) {
+      var amount = Number(value) || 0;
+      var roundedCents = Math.round(amount * 100);
+      var hasCents = roundedCents % 100 !== 0;
+      return '$' + amount.toLocaleString('en-US', {
+        minimumFractionDigits: options && options.cents || hasCents ? 2 : 0,
+        maximumFractionDigits: 2
+      });
+    }
+
     function rebuildBookingCatalogViews() {
       catalog = salonData.loadCatalog();
       BOOKING_CALENDAR_SERVICE_OPTIONS = [];
@@ -11657,7 +11667,7 @@
 
     function bookingPanelTicketRowsMarkup() {
       return bookingPanelTickets.map(function(ticket, index) {
-        var price = ticket.price == null ? '—' : '$' + Number(ticket.price).toFixed(2).replace(/\.00$/, '');
+        var price = ticket.price == null ? '—' : bookingMoney(ticket.price);
         return '<div class="booking-ticket-row"><div class="booking-ticket-row-main"><strong>' + escapeHtml(ticket.serviceName || 'Service') + '</strong><span>' + escapeHtml(ticket.technicianName || 'Anyone') + '</span></div><div class="booking-ticket-row-meta">' + price + ' · ' + ticket.durationMin + ' min</div><button class="booking-ticket-remove" type="button" data-booking-panel-ticket-remove="' + index + '" aria-label="Remove ' + escapeHtml(ticket.serviceName || 'service') + '"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>';
       }).join('') || '<div class="booking-ticket-empty">Add one service and assign a technician. Anyone is used by default.</div>';
     }
@@ -11670,8 +11680,8 @@
 
     function bookingPanelTicketPickerMarkup() {
       var services = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
-        var price = option.price == null ? '—' : option.price;
-        return '<button class="booking-service-chip-button" type="button" data-booking-panel-ticket-service="' + escapeHtml(option.serviceId) + '" data-service-name="' + escapeHtml(option.name) + '" data-category-name="' + escapeHtml(option.categoryName || 'Other services') + '"><span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">$' + price + ' · ' + option.duration + ' min</span></button>';
+        var price = option.price == null ? '—' : bookingMoney(option.price);
+        return '<button class="booking-service-chip-button" type="button" data-booking-panel-ticket-service="' + escapeHtml(option.serviceId) + '" data-service-name="' + escapeHtml(option.name) + '" data-category-name="' + escapeHtml(option.categoryName || 'Other services') + '"><span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">' + price + ' · ' + option.duration + ' min</span></button>';
       }).join('');
       var technicians = '<button class="booking-ticket-option is-selected" type="button" data-booking-panel-ticket-tech="" data-tech-name="Anyone"><span>Anyone</span><span class="booking-service-option-meta">No technician assigned</span></button>' +
         BOOKING_CALENDAR_TECHNICIANS.map(function(id) {
@@ -11802,12 +11812,12 @@
       var buttons = categories.map(function(category) {
         var serviceButtons = category.services.map(function(option) {
           var isSelected = Boolean(selected[option.name.toLowerCase()]);
-          var price = option.price == null ? '—' : option.price;
+          var price = option.price == null ? '—' : bookingMoney(option.price);
           var buttonAttributes = mode === 'create'
             ? 'data-booking-create-service="' + escapeHtml(option.name) + '"'
             : 'data-booking-panel-select="service" data-service-name="' + escapeHtml(option.name) + '"';
           return '<button class="booking-service-chip-button' + (isSelected ? ' is-selected' : '') + '" type="button" ' + buttonAttributes + ' data-service-category="' + escapeHtml(category.name) + '" aria-pressed="' + (isSelected ? 'true' : 'false') + '">' +
-            '<span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">$' + price + ' · ' + option.duration + ' min</span></button>';
+            '<span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">' + price + ' · ' + option.duration + ' min</span></button>';
         }).join('');
         var categoryOpen = category.services.some(function(option) { return selected[option.name.toLowerCase()]; });
         return '<details class="booking-service-category" data-booking-service-category data-category-name="' + escapeHtml(category.name) + '"' + (categoryOpen ? ' open' : '') + '>' +
@@ -11892,7 +11902,7 @@
         '<div class="booking-panel-form">' +
         '<label class="booking-create-field"><span class="booking-create-label">Customer</span><input class="booking-input" type="text" maxlength="60" data-booking-panel-field="name" value="' + escapeHtml(bookingPanelDraft.name) + '"></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Phone</span><input class="booking-input" type="tel" maxlength="20" data-booking-panel-field="phone" value="' + escapeHtml(bookingPanelDraft.phone) + '"></label>' +
-        '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Service — Technician</span>' + ticketPicker + '<div class="booking-ticket-list" data-booking-panel-ticket-list>' + bookingPanelTicketRowsMarkup() + '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-price>$' + panelServiceTotals.price + '</strong></span><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total time:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-duration>' + panelServiceTotals.duration + ' min</strong></span></div></div>' +
+        '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Service — Technician</span>' + ticketPicker + '<div class="booking-ticket-list" data-booking-panel-ticket-list>' + bookingPanelTicketRowsMarkup() + '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-price>' + bookingMoney(panelServiceTotals.price) + '</strong></span><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total time:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-duration>' + panelServiceTotals.duration + ' min</strong></span></div></div>' +
         '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Date</span><input class="booking-input" type="date" data-booking-panel-field="date" value="' + escapeHtml(bookingPanelDraft.date) + '"></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Time</span><input class="booking-input" type="time" step="900" data-booking-panel-field="time" value="' + escapeHtml(bookingPanelDraft.time) + '"></label></div>' +
         '<label class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Status</span><select class="booking-select" data-booking-panel-field="status">' + statusOptions + '</select></label>' +
@@ -12130,7 +12140,7 @@
         });
       }
       return details.map(function(detail) {
-        var price = detail.price == null ? '' : ' · $' + Number(detail.price).toFixed(2).replace(/\.00$/, '');
+        var price = detail.price == null ? '' : ' · ' + bookingMoney(detail.price);
         var duration = detail.durationMin ? ' · ' + detail.durationMin + ' min' : '';
         return bookingServiceDisplayName(detail.name || 'Service') + price + duration;
       }).join(' + ') || 'Service to confirm';
@@ -12321,14 +12331,14 @@
 
     function bookingCreateTicketMarkup() {
       var services = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
-        var price = option.price == null ? '—' : option.price;
-        return '<button class="booking-service-chip-button" type="button" data-booking-create-ticket-service="' + escapeHtml(option.serviceId) + '" data-service-name="' + escapeHtml(option.name) + '" data-category-name="' + escapeHtml(option.categoryName || 'Other services') + '"><span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">$' + price + ' · ' + option.duration + ' min</span></button>';
+        var price = option.price == null ? '—' : bookingMoney(option.price);
+        return '<button class="booking-service-chip-button" type="button" data-booking-create-ticket-service="' + escapeHtml(option.serviceId) + '" data-service-name="' + escapeHtml(option.name) + '" data-category-name="' + escapeHtml(option.categoryName || 'Other services') + '"><span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">' + price + ' · ' + option.duration + ' min</span></button>';
       }).join('');
       var technicians = '<button class="booking-ticket-option is-selected" type="button" data-booking-create-ticket-tech="" data-tech-name="Anyone"><span>Anyone</span><span class="booking-service-option-meta">No technician assigned</span></button>' + BOOKING_CALENDAR_TECHNICIANS.map(function(id) {
         return '<button class="booking-ticket-option" type="button" data-booking-create-ticket-tech="' + escapeHtml(id) + '" data-tech-name="' + escapeHtml(bookingTechName(id)) + '"><span>' + escapeHtml(bookingTechName(id)) + '</span></button>';
       }).join('');
       var rows = bookingCreateTickets.map(function(ticket, index) {
-        var price = ticket.price == null ? '—' : '$' + Number(ticket.price).toFixed(2).replace(/\.00$/, '');
+        var price = ticket.price == null ? '—' : bookingMoney(ticket.price);
         return '<div class="booking-ticket-row"><div class="booking-ticket-row-main"><strong>' + escapeHtml(ticket.serviceName) + '</strong><span>' + escapeHtml(ticket.technicianName || 'Anyone') + '</span></div><div class="booking-ticket-row-meta">' + price + ' · ' + ticket.durationMin + ' min</div><button class="booking-ticket-remove" type="button" data-booking-create-ticket-remove="' + index + '" aria-label="Remove service"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>';
       }).join('') || '<div class="booking-ticket-empty">Add one service and assign a technician. Anyone is used by default.</div>';
       return '<div class="booking-ticket-builder-grid" data-booking-create-ticket-picker>' +
@@ -12344,7 +12354,7 @@
       var totals = appointmentTicketUtils && appointmentTicketUtils.ticketTotals ? appointmentTicketUtils.ticketTotals(bookingCreateTickets) : { price: 0, duration: 0 };
       var price = document.querySelector('[data-booking-create-total-price]');
       var duration = document.querySelector('[data-booking-create-total-duration]');
-      if (price) price.textContent = '$' + totals.price;
+      if (price) price.textContent = bookingMoney(totals.price);
       if (duration) duration.textContent = totals.duration + ' min';
     }
 
@@ -12437,7 +12447,7 @@
       var totalDuration = bookingServiceDurationMinutes(services);
       var price = document.querySelector('[data-booking-create-total-price]');
       var duration = document.querySelector('[data-booking-create-total-duration]');
-      if (price) price.textContent = '$' + totalPrice;
+      if (price) price.textContent = bookingMoney(totalPrice);
       if (duration) duration.textContent = totalDuration + ' min';
     }
 
@@ -15800,6 +15810,15 @@ function getBookingCardCallStart(item) {
       const refreshBookingMarketingIcons = window.refreshBookingMarketingIcons;
       const PRICE_PER_SMS = 0.025; // $ mỗi tin (1 segment)
 
+      function marketingMoney(value, options) {
+        const amount = Number(value) || 0;
+        const hasCents = Math.round(amount * 100) % 100 !== 0;
+        return '$' + amount.toLocaleString('en-US', {
+          minimumFractionDigits: options && options.cents || hasCents ? 2 : 0,
+          maximumFractionDigits: 2
+        });
+      }
+
       const SEGMENTS = [
         { id: 'new',      icon: 'user-plus', name: 'Khách Mới',           shortName: 'Khách Mới', count: 234, accent: 'var(--cyan)',   badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
           desc: 'Gọi lần đầu, chưa quay lại. Welcome + offer để chốt lần 2.' },
@@ -16395,12 +16414,12 @@ function getBookingCardCallStart(item) {
         const info = smsInfo($('smsText').value);
         const parts = Math.max(info.parts, 1);
         const totalSms = state.segment.count * parts;
-        const cost = (totalSms * PRICE_PER_SMS).toFixed(2);
+        const cost = marketingMoney(totalSms * PRICE_PER_SMS, { cents: true });
         const enough = state.credits >= totalSms;
         const lowCredits = state.credits > 0 && totalSms >= state.credits * 0.8;
         const needsCreditWarning = lowCredits || !enough;
 
-        $('costPreview').textContent = `${state.segment.count} khách × ${parts} tin = ${totalSms} SMS ($${cost})`;
+        $('costPreview').textContent = `${state.segment.count} khách × ${parts} tin = ${totalSms} SMS (${cost})`;
         $('costLabel').textContent = !enough
           ? `Không đủ credits (còn ${state.credits})`
           : lowCredits
@@ -16421,7 +16440,7 @@ function getBookingCardCallStart(item) {
           el.classList.toggle('low', newVal < 100);
         });
         document.querySelectorAll('[data-sms-credits-usd]').forEach(function(el) {
-          el.textContent = `≈ $${(newVal * PRICE_PER_SMS).toFixed(2)} remaining`;
+          el.textContent = `≈ ${marketingMoney(newVal * PRICE_PER_SMS, { cents: true })} remaining`;
         });
         updateCost();
       }
@@ -16444,7 +16463,7 @@ function getBookingCardCallStart(item) {
             '<span class="sms-credit-package-check" aria-hidden="true">✓</span>' +
             '<span class="sms-credit-package-name">' + pkg.name + '</span>' +
             '<span class="sms-credit-package-amount">' + pkg.credits.toLocaleString() + ' SMS</span>' +
-            '<span class="sms-credit-package-price">$' + pkg.price.toFixed(2) + '</span>' +
+            '<span class="sms-credit-package-price">' + marketingMoney(pkg.price, { cents: true }) + '</span>' +
             '<span class="sms-credit-package-note">' + pkg.note + '</span>' +
           '</button>';
         }).join('');
@@ -16519,7 +16538,7 @@ function getBookingCardCallStart(item) {
         if (title) title.textContent = 'Choose ' + planPaymentPlan;
         if (invoicePlan) invoicePlan.textContent = planPaymentPlan;
         if (invoicePayment) invoicePayment.textContent = selectedPayment.label;
-        if (invoiceTotal) invoiceTotal.textContent = '$' + planPrice + '/mo';
+        if (invoiceTotal) invoiceTotal.textContent = marketingMoney(planPrice) + '/mo';
         if (confirmLabel) confirmLabel.textContent = 'Confirm ' + planPaymentPlan;
         if (status) status.textContent = planPaymentPlan + ', thanh toán bằng ' + selectedPayment.label + '.';
         var cardForm = document.querySelector('[data-plan-card-form]');
@@ -16580,7 +16599,7 @@ function getBookingCardCallStart(item) {
         var planPrice = planPaymentPlan === 'Starter' ? 99 : 349;
         selectServicePlan(planPaymentPlan);
         closeServicePlanPaymentModal();
-        $('successText').textContent = planPaymentPlan + ' plan selected — $' + planPrice + '/mo via ' + selectedPayment.label + '.';
+        $('successText').textContent = planPaymentPlan + ' plan selected — ' + marketingMoney(planPrice) + '/mo via ' + selectedPayment.label + '.';
         $('successBanner').classList.add('show');
         clearTimeout(confirmServicePlanPayment._timer);
         confirmServicePlanPayment._timer = setTimeout(function() { $('successBanner').classList.remove('show'); }, 6000);
@@ -16596,7 +16615,7 @@ function getBookingCardCallStart(item) {
 
         if (packageTarget) packageTarget.textContent = selectedPackage.credits.toLocaleString() + ' SMS';
         if (paymentTarget) paymentTarget.textContent = selectedPayment.label;
-        if (totalTarget) totalTarget.textContent = '$' + selectedPackage.price.toFixed(2);
+        if (totalTarget) totalTarget.textContent = marketingMoney(selectedPackage.price, { cents: true });
         if (statusTarget) statusTarget.textContent = selectedPackage.credits.toLocaleString() + ' SMS, thanh toán bằng ' + selectedPayment.label + '.';
       }
 
@@ -16695,7 +16714,7 @@ function getBookingCardCallStart(item) {
             '<span class="sms-credit-package-check" aria-hidden="true">✓</span>' +
             '<span class="sms-credit-package-name">' + pkg.name + '</span>' +
             '<span class="sms-credit-package-amount">' + pkg.credits.toLocaleString() + ' phút</span>' +
-            '<span class="sms-credit-package-price">$' + pkg.price.toFixed(2) + '</span>' +
+            '<span class="sms-credit-package-price">' + marketingMoney(pkg.price, { cents: true }) + '</span>' +
             '<span class="sms-credit-package-note">' + pkg.note + '</span>' +
           '</button>';
         }).join('');
@@ -16748,7 +16767,7 @@ function getBookingCardCallStart(item) {
 
         if (packageTarget) packageTarget.textContent = selectedPackage.credits.toLocaleString() + ' phút';
         if (paymentTarget) paymentTarget.textContent = selectedPayment.label;
-        if (totalTarget) totalTarget.textContent = '$' + selectedPackage.price.toFixed(2);
+        if (totalTarget) totalTarget.textContent = marketingMoney(selectedPackage.price, { cents: true });
         if (statusTarget) statusTarget.textContent = selectedPackage.credits.toLocaleString() + ' phút Voice, thanh toán bằng ' + selectedPayment.label + '.';
       }
 
@@ -16862,7 +16881,7 @@ function getBookingCardCallStart(item) {
           $('confirmDetail').innerHTML =
             `Nhóm: <strong>${escapeHtml(state.segment.name)}</strong> (${state.segment.count} khách)<br>` +
             `Số tin: <strong>${totalSms} SMS</strong> (${info.parts} tin/khách, ${info.encoding})<br>` +
-            `Chi phí: <strong>$${(totalSms * PRICE_PER_SMS).toFixed(2)}</strong> — trừ ${totalSms} credits<br>` +
+            `Chi phí: <strong>${marketingMoney(totalSms * PRICE_PER_SMS, { cents: true })}</strong> — trừ ${totalSms} credits<br>` +
             `Lịch: <strong>${when}</strong>`;
           $('confirmBox').classList.add('show');
           $('confirmBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });

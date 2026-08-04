@@ -3269,9 +3269,9 @@ const modalCopy = {
         const vendor = lines.find(l=>/[a-zA-Z]{3}/.test(l))||"";
         const dollars= [...txt.matchAll(/\$?\s*(\d{1,5}[,.]?\d{2})/g)]
                          .map(m=>parseFloat(m[1].replace(",",".")));
-        const total  = dollars.length ? "$"+Math.max(...dollars).toFixed(2) : "";
+        const total  = dollars.length ? moneyTextCents(Math.max(...dollars)) : "";
         const taxM   = txt.match(/tax[:\s]+\$?\s*([\d,.]+)/i);
-        const tax    = taxM ? "$"+parseFloat(taxM[1].replace(",",".")).toFixed(2) : "";
+        const tax    = taxM ? moneyTextCents(parseFloat(taxM[1].replace(",","."))) : "";
         const dateM  = txt.match(/\b(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*\.?\s+\d{1,2},?\s+\d{4})\b/i);
         const date   = dateM ? dateM[0] : "";
         const numM   = txt.match(/(?:receipt|invoice|order|ref|no\.?)[:\s#]*([A-Z0-9\-]{3,20})/i);
@@ -4117,10 +4117,10 @@ const modalCopy = {
         if(!parseFloat(amount)){ toast("Enter a tip amount before saving."); return; }
         const tipId = "tip_"+String(data.tips.length+1).padStart(3,"0");
         const now   = new Date().toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
-        data.tips.unshift([tipId,date,selectedMethod,"$"+parseFloat(amount).toFixed(2),service,
+        data.tips.unshift([tipId,date,selectedMethod,moneyTextCents(parseFloat(amount)),service,
           /Cash/.test(selectedMethod)?"CASH":"DIRECT","LIKELY_QUALIFIED",now,"None"]);
         document.getElementById("modalRoot").classList.remove("open");
-        renderPage(); toast("Tip saved: $"+parseFloat(amount).toFixed(2)+" via "+selectedMethod);
+        renderPage(); toast("Tip saved: "+moneyTextCents(parseFloat(amount))+" via "+selectedMethod);
       });
     },
     content:()=>[

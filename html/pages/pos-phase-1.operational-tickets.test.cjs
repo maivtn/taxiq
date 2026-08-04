@@ -102,6 +102,11 @@ test('POS Customers profile surfaces upcoming bookings, visit history, and payme
   assert.doesNotMatch(html, /\bbalance\b/i);
 });
 
+test('POS money helper keeps cents and inserts comma thousands separators', () => {
+  assert.match(html, /function money\(n\) \{ return '\$' \+ \(Math\.round\(\(n \|\| 0\) \* 100\) \/ 100\)\.toLocaleString\('en-US', \{ minimumFractionDigits: 2, maximumFractionDigits: 2 \}\); \}/);
+  assert.doesNotMatch(html, /function money\(n\) \{ return '\$' \+ \(Math\.round\(\(n \|\| 0\) \* 100\) \/ 100\)\.toFixed\(2\); \}/);
+});
+
 test('Customer profile modal: compact horizontal stats row, an upcoming-booking highlight card, a Customer insights card, Preferences & care tags, and label+input Notes/Visit/Payment tables like the table view', () => {
   assert.match(html, /\.cust-profile-stats \{ display: flex; border: 1px solid var\(--nexora-border\)/);
   assert.match(html, /function custInsightsCardHtml\(c, ci\) \{/);

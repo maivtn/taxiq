@@ -30,6 +30,12 @@ test('kiosk loads its local menu and exposes a retry-safe submit flow', () => {
   assert.match(html, /window\.checkIn\s*=\s*checkIn/);
 });
 
+test('kiosk service prices use comma thousands separators', () => {
+  assert.match(html, /function formatMoney\(/);
+  assert.match(html, /formatMoney\(service\.price,\s*\{ cents: true \}\)/);
+  assert.doesNotMatch(html, /\$' \+ service\.price\.toFixed\(2\)/);
+});
+
 test('POS opens the repository kiosk page instead of the stale external mockup', () => {
   assert.match(posHtml, /href="kiosk\.html"[^>]*target="_blank"/);
   assert.doesNotMatch(posHtml, /pos-nexoratouch\.vercel\.app\/mockups\/phase1\/kiosk\.html/);

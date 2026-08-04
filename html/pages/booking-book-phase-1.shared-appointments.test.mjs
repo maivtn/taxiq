@@ -65,6 +65,17 @@ test('Booking Book appointment details show selected service totals', () => {
   assert.match(SOURCE, /function bookingPanelSelectedServiceTotals\([\s\S]*bookingServicePriceTotal/);
 });
 
+test('Booking Book formats appointment prices with comma thousands separators', () => {
+  assert.match(SOURCE, /function bookingMoney\(/);
+  assert.match(SOURCE, /bookingPanelTicketRowsMarkup\([\s\S]*bookingMoney\(ticket\.price\)/);
+  assert.match(SOURCE, /bookingPanelTicketPickerMarkup\([\s\S]*bookingMoney\(option\.price\)/);
+  assert.match(SOURCE, /bookingServicePickerMarkup\([\s\S]*bookingMoney\(option\.price\)/);
+  assert.match(SOURCE, /bookingCalendarServiceSummary\([\s\S]*bookingMoney\(detail\.price\)/);
+  assert.match(SOURCE, /data-booking-panel-total-price>[\s\S]*bookingMoney\(panelServiceTotals\.price\)/);
+  assert.match(SOURCE, /renderBookingCreateTicketPicker\([\s\S]*bookingMoney\(totals\.price\)/);
+  assert.match(SOURCE, /updateBookingCreateServiceSummary\([\s\S]*bookingMoney\(totalPrice\)/);
+});
+
 test('Booking Book appointment card has a structured header with title spacing', () => {
   assert.match(SOURCE, /booking-panel-title-icon/);
   assert.match(SOURCE, /\.booking-panel-title \{[\s\S]*display: flex/);

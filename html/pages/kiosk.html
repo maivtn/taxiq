@@ -180,6 +180,16 @@
       return digits;
     }
 
+    function formatMoney(value, options = {}) {
+      const amount = Number(value) || 0;
+      const roundedCents = Math.round(amount * 100);
+      const hasCents = roundedCents % 100 !== 0;
+      return '$' + amount.toLocaleString('en-US', {
+        minimumFractionDigits: options.cents || hasCents ? 2 : 0,
+        maximumFractionDigits: 2
+      });
+    }
+
     function setStatus(message, kind) {
       statusEl.textContent = message || '';
       statusEl.style.color = kind === 'success' ? 'var(--success)' : 'var(--danger)';
@@ -213,7 +223,7 @@
         const duration = service.duration ? ' · ' + service.duration + ' min' : '';
         return '<button class="service' + (selected ? ' selected' : '') + '" type="button" data-service-id="' + service.id + '" aria-pressed="' + selected + '">' +
           '<span class="service-name">' + escapeHtml(service.name) + '</span>' +
-          '<span class="service-meta">$' + service.price.toFixed(2) + duration + '</span></button>';
+          '<span class="service-meta">' + formatMoney(service.price, { cents: true }) + duration + '</span></button>';
       }).join('') : '<div class="loading">No services are available right now.</div>';
       updateCheckinButton();
     }

@@ -10431,6 +10431,13 @@ function getBookingCardCallStart(item) {
     (function () {
       const PRICE_PER_SMS = 0.025; // $ mỗi tin (1 segment)
 
+      function formatMoney(value) {
+        return '$' + (Number(value) || 0).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      }
+
       const SEGMENTS = [
         { id: 'new',      icon: '<i class="bi bi-stars" aria-hidden="true"></i>', name: 'Khách Mới',           shortName: 'Khách Mới', count: 234, accent: 'var(--cyan)',   badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
           desc: 'Gọi lần đầu, chưa quay lại. Welcome + offer để chốt lần 2.' },
@@ -10605,10 +10612,10 @@ function getBookingCardCallStart(item) {
         const info = smsInfo($('smsText').value);
         const parts = Math.max(info.parts, 1);
         const totalSms = state.segment.count * parts;
-        const cost = (totalSms * PRICE_PER_SMS).toFixed(2);
+        const cost = formatMoney(totalSms * PRICE_PER_SMS);
         const enough = state.credits >= totalSms;
 
-        $('costPreview').textContent = `${state.segment.count} khách × ${parts} tin = ${totalSms} SMS ($${cost})`;
+        $('costPreview').textContent = `${state.segment.count} khách × ${parts} tin = ${totalSms} SMS (${cost})`;
         $('costLabel').textContent = enough ? 'Chi phí ước tính' : `Không đủ credits (còn ${state.credits})`;
         $('costBox').classList.toggle('warn', !enough);
         $('sendCampaignBtn').disabled = !enough;
@@ -10619,7 +10626,7 @@ function getBookingCardCallStart(item) {
         const el = $('creditsDisplay');
         if (el) { el.textContent = newVal.toLocaleString(); el.classList.toggle('low', newVal < 100); }
         const usd = $('creditsUsd');
-        if (usd) usd.textContent = `≈ ${(newVal * PRICE_PER_SMS).toFixed(2)} remaining`;
+        if (usd) usd.textContent = `≈ ${formatMoney(newVal * PRICE_PER_SMS)} remaining`;
       }
 
       function sendCampaign() {
@@ -10648,7 +10655,7 @@ function getBookingCardCallStart(item) {
           $('confirmDetail').innerHTML =
             `Nhóm: <strong>${escapeHtml(state.segment.name)}</strong> (${state.segment.count} khách)<br>` +
             `Số tin: <strong>${totalSms} SMS</strong> (${info.parts} tin/khách, ${info.encoding})<br>` +
-            `Chi phí: <strong>$${(totalSms * PRICE_PER_SMS).toFixed(2)}</strong> — trừ ${totalSms} credits<br>` +
+            `Chi phí: <strong>${formatMoney(totalSms * PRICE_PER_SMS)}</strong> — trừ ${totalSms} credits<br>` +
             `Lịch: <strong>${when}</strong>`;
           $('confirmBox').classList.add('show');
           $('confirmBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });

@@ -532,20 +532,32 @@
   white-space: nowrap;
 }
 
-.package-paid-status {
+.package-history-status {
+  white-space: nowrap;
+}
+
+.package-history-status-badge {
   display: inline-flex !important;
   align-items: center;
   gap: 6px;
   margin-top: 0 !important;
   border-radius: 999px;
-  background: #e6fbf2;
   padding: 6px 9px;
-  color: #008f5a !important;
   font-size: 11px !important;
   font-weight: 900 !important;
 }
 
-.package-paid-status svg {
+.package-history-status-badge.is-active {
+  background: #e6fbf2;
+  color: #008f5a !important;
+}
+
+.package-history-status-badge.is-expired {
+  background: #fff1f0;
+  color: #c2410c !important;
+}
+
+.package-history-status-badge svg {
   width: 14px;
   height: 14px;
 }

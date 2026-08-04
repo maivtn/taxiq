@@ -44,6 +44,16 @@ var DEFAULT_MAIN_TAB = 'booking';
     var BOOKING_CALENDAR_TECHNICIANS = null;
     var BOOKING_CALENDAR_SERVICE_DURATIONS = null;
 
+    function bookingMoney(value, options) {
+      var amount = Number(value) || 0;
+      var roundedCents = Math.round(amount * 100);
+      var hasCents = roundedCents % 100 !== 0;
+      return '$' + amount.toLocaleString('en-US', {
+        minimumFractionDigits: options && options.cents || hasCents ? 2 : 0,
+        maximumFractionDigits: 2
+      });
+    }
+
     function rebuildBookingCatalogViews() {
       catalog = salonData.loadCatalog();
       BOOKING_CALENDAR_SERVICE_OPTIONS = [];
@@ -404,7 +414,7 @@ var DEFAULT_MAIN_TAB = 'booking';
 
     function bookingPanelTicketRowsMarkup() {
       return bookingPanelTickets.map(function(ticket, index) {
-        var price = ticket.price == null ? '—' : '$' + Number(ticket.price).toFixed(2).replace(/\.00$/, '');
+        var price = ticket.price == null ? '—' : bookingMoney(ticket.price);
         return '<div class="booking-ticket-row"><div class="booking-ticket-row-main"><strong>' + escapeHtml(ticket.serviceName || 'Service') + '</strong><span>' + escapeHtml(ticket.technicianName || 'Anyone') + '</span></div><div class="booking-ticket-row-meta">' + price + ' · ' + ticket.durationMin + ' min</div><button class="booking-ticket-remove" type="button" data-booking-panel-ticket-remove="' + index + '" aria-label="Remove ' + escapeHtml(ticket.serviceName || 'service') + '"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>';
       }).join('') || '<div class="booking-ticket-empty">Add one service and assign a technician. Anyone is used by default.</div>';
     }
@@ -417,8 +427,8 @@ var DEFAULT_MAIN_TAB = 'booking';
 
     function bookingPanelTicketPickerMarkup() {
       var services = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
-        var price = option.price == null ? '—' : option.price;
-        return '<button class="booking-service-chip-button" type="button" data-booking-panel-ticket-service="' + escapeHtml(option.serviceId) + '" data-service-name="' + escapeHtml(option.name) + '" data-category-name="' + escapeHtml(option.categoryName || 'Other services') + '"><span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">$' + price + ' · ' + option.duration + ' min</span></button>';
+        var price = option.price == null ? '—' : bookingMoney(option.price);
+        return '<button class="booking-service-chip-button" type="button" data-booking-panel-ticket-service="' + escapeHtml(option.serviceId) + '" data-service-name="' + escapeHtml(option.name) + '" data-category-name="' + escapeHtml(option.categoryName || 'Other services') + '"><span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">' + price + ' · ' + option.duration + ' min</span></button>';
       }).join('');
       var technicians = '<button class="booking-ticket-option is-selected" type="button" data-booking-panel-ticket-tech="" data-tech-name="Anyone"><span>Anyone</span><span class="booking-service-option-meta">No technician assigned</span></button>' +
         BOOKING_CALENDAR_TECHNICIANS.map(function(id) {
@@ -549,12 +559,12 @@ var DEFAULT_MAIN_TAB = 'booking';
       var buttons = categories.map(function(category) {
         var serviceButtons = category.services.map(function(option) {
           var isSelected = Boolean(selected[option.name.toLowerCase()]);
-          var price = option.price == null ? '—' : option.price;
+          var price = option.price == null ? '—' : bookingMoney(option.price);
           var buttonAttributes = mode === 'create'
             ? 'data-booking-create-service="' + escapeHtml(option.name) + '"'
             : 'data-booking-panel-select="service" data-service-name="' + escapeHtml(option.name) + '"';
           return '<button class="booking-service-chip-button' + (isSelected ? ' is-selected' : '') + '" type="button" ' + buttonAttributes + ' data-service-category="' + escapeHtml(category.name) + '" aria-pressed="' + (isSelected ? 'true' : 'false') + '">' +
-            '<span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">$' + price + ' · ' + option.duration + ' min</span></button>';
+            '<span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">' + price + ' · ' + option.duration + ' min</span></button>';
         }).join('');
         var categoryOpen = category.services.some(function(option) { return selected[option.name.toLowerCase()]; });
         return '<details class="booking-service-category" data-booking-service-category data-category-name="' + escapeHtml(category.name) + '"' + (categoryOpen ? ' open' : '') + '>' +
@@ -659,7 +669,7 @@ var DEFAULT_MAIN_TAB = 'booking';
         '<div class="booking-panel-form">' +
         '<label class="booking-create-field"><span class="booking-create-label">Customer</span><input class="booking-input" type="text" maxlength="60" data-booking-panel-field="name" value="' + escapeHtml(bookingPanelDraft.name) + '"></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Phone</span><input class="booking-input" type="tel" maxlength="20" data-booking-panel-field="phone" value="' + escapeHtml(bookingPanelDraft.phone) + '"></label>' +
-        '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Service — Technician</span>' + ticketPicker + '<div class="booking-ticket-list" data-booking-panel-ticket-list>' + bookingPanelTicketRowsMarkup() + '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-price>$' + panelServiceTotals.price + '</strong></span><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total time:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-duration>' + panelServiceTotals.duration + ' min</strong></span></div></div>' +
+        '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Service — Technician</span>' + ticketPicker + '<div class="booking-ticket-list" data-booking-panel-ticket-list>' + bookingPanelTicketRowsMarkup() + '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-price>' + bookingMoney(panelServiceTotals.price) + '</strong></span><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total time:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-duration>' + panelServiceTotals.duration + ' min</strong></span></div></div>' +
         '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Date</span><input class="booking-input" type="date" data-booking-panel-field="date" value="' + escapeHtml(bookingPanelDraft.date) + '"></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Time</span><input class="booking-input" type="time" step="900" data-booking-panel-field="time" value="' + escapeHtml(bookingPanelDraft.time) + '"></label></div>' +
         '<label class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Status</span><select class="booking-select" data-booking-panel-field="status">' + statusOptions + '</select></label>' +
@@ -900,7 +910,7 @@ var DEFAULT_MAIN_TAB = 'booking';
         });
       }
       return details.map(function(detail) {
-        var price = detail.price == null ? '' : ' · $' + Number(detail.price).toFixed(2).replace(/\.00$/, '');
+        var price = detail.price == null ? '' : ' · ' + bookingMoney(detail.price);
         var duration = detail.durationMin ? ' · ' + detail.durationMin + ' min' : '';
         return bookingServiceDisplayName(detail.name || 'Service') + price + duration;
       }).join(' + ') || 'Service to confirm';
@@ -1092,14 +1102,14 @@ var DEFAULT_MAIN_TAB = 'booking';
 
     function bookingCreateTicketMarkup() {
       var services = BOOKING_CALENDAR_SERVICE_OPTIONS.map(function(option) {
-        var price = option.price == null ? '—' : option.price;
-        return '<button class="booking-service-chip-button" type="button" data-booking-create-ticket-service="' + escapeHtml(option.serviceId) + '" data-service-name="' + escapeHtml(option.name) + '" data-category-name="' + escapeHtml(option.categoryName || 'Other services') + '"><span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">$' + price + ' · ' + option.duration + ' min</span></button>';
+        var price = option.price == null ? '—' : bookingMoney(option.price);
+        return '<button class="booking-service-chip-button" type="button" data-booking-create-ticket-service="' + escapeHtml(option.serviceId) + '" data-service-name="' + escapeHtml(option.name) + '" data-category-name="' + escapeHtml(option.categoryName || 'Other services') + '"><span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">' + price + ' · ' + option.duration + ' min</span></button>';
       }).join('');
       var technicians = '<button class="booking-ticket-option is-selected" type="button" data-booking-create-ticket-tech="" data-tech-name="Anyone"><span>Anyone</span><span class="booking-service-option-meta">No technician assigned</span></button>' + BOOKING_CALENDAR_TECHNICIANS.map(function(id) {
         return '<button class="booking-ticket-option" type="button" data-booking-create-ticket-tech="' + escapeHtml(id) + '" data-tech-name="' + escapeHtml(bookingTechName(id)) + '"><span>' + escapeHtml(bookingTechName(id)) + '</span></button>';
       }).join('');
       var rows = bookingCreateTickets.map(function(ticket, index) {
-        var price = ticket.price == null ? '—' : '$' + Number(ticket.price).toFixed(2).replace(/\.00$/, '');
+        var price = ticket.price == null ? '—' : bookingMoney(ticket.price);
         return '<div class="booking-ticket-row"><div class="booking-ticket-row-main"><strong>' + escapeHtml(ticket.serviceName) + '</strong><span>' + escapeHtml(ticket.technicianName || 'Anyone') + '</span></div><div class="booking-ticket-row-meta">' + price + ' · ' + ticket.durationMin + ' min</div><button class="booking-ticket-remove" type="button" data-booking-create-ticket-remove="' + index + '" aria-label="Remove service"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>';
       }).join('') || '<div class="booking-ticket-empty">Add one service and assign a technician. Anyone is used by default.</div>';
       return '<div class="booking-ticket-builder-grid" data-booking-create-ticket-picker>' +
@@ -1115,7 +1125,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       var totals = appointmentTicketUtils && appointmentTicketUtils.ticketTotals ? appointmentTicketUtils.ticketTotals(bookingCreateTickets) : { price: 0, duration: 0 };
       var price = document.querySelector('[data-booking-create-total-price]');
       var duration = document.querySelector('[data-booking-create-total-duration]');
-      if (price) price.textContent = '$' + totals.price;
+      if (price) price.textContent = bookingMoney(totals.price);
       if (duration) duration.textContent = totals.duration + ' min';
     }
 
@@ -1208,7 +1218,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       var totalDuration = bookingServiceDurationMinutes(services);
       var price = document.querySelector('[data-booking-create-total-price]');
       var duration = document.querySelector('[data-booking-create-total-duration]');
-      if (price) price.textContent = '$' + totalPrice;
+      if (price) price.textContent = bookingMoney(totalPrice);
       if (duration) duration.textContent = totalDuration + ' min';
     }
 

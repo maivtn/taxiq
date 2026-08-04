@@ -3139,6 +3139,12 @@ body.dark .tip-wrap { background: radial-gradient(1000px 500px at 50% -10%, rgba
    DATA — một nguồn duy nhất cho segments, templates, giá
    ============================================================ */
 const PRICE_PER_SMS = 0.025; // $ mỗi tin (1 segment)
+function formatMoney(value) {
+  return '$' + (Number(value) || 0).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
 
 const SEGMENTS = [
   { id: 'new',      icon: '🌟', name: 'Khách Mới',           shortName: 'Khách Mới', count: 234, accent: 'var(--cyan)',   badge: 'ready',     badgeText: 'Sẵn sàng', countLabel: 'khách',
@@ -3342,10 +3348,10 @@ function updateCost() {
   const info = smsInfo($('smsText').value);
   const parts = Math.max(info.parts, 1);
   const totalSms = state.segment.count * parts;
-  const cost = (totalSms * PRICE_PER_SMS).toFixed(2);
+  const cost = formatMoney(totalSms * PRICE_PER_SMS);
   const enough = state.credits &gt;= totalSms;
 
-  $('costPreview').textContent = `${state.segment.count} khách × ${parts} tin = ${totalSms} SMS ($${cost})`;
+  $('costPreview').textContent = `${state.segment.count} khách × ${parts} tin = ${totalSms} SMS (${cost})`;
   $('costLabel').textContent = enough ? 'Chi phí ước tính' : `⚠️ Không đủ credits (còn ${state.credits})`;
   $('costBox').classList.toggle('warn', !enough);
   $('sendCampaignBtn').disabled = !enough;
@@ -3356,7 +3362,7 @@ function updateCredits(newVal) {
   const el = $('creditsDisplay');
   el.textContent = newVal.toLocaleString();
   el.classList.toggle('low', newVal &lt; 100);
-  $('creditsUsd').textContent = `≈ $${(newVal * PRICE_PER_SMS).toFixed(2)} remaining`;
+  $('creditsUsd').textContent = `≈ ${formatMoney(newVal * PRICE_PER_SMS)} remaining`;
 }
 
 function sendCampaign() {
@@ -3385,7 +3391,7 @@ function sendCampaign() {
     $('confirmDetail').innerHTML =
       `Nhóm: &lt;strong&gt;${escapeHtml(state.segment.name)}&lt;/strong&gt; (${state.segment.count} khách)&lt;br&gt;` +
       `Số tin: &lt;strong&gt;${totalSms} SMS&lt;/strong&gt; (${info.parts} tin/khách, ${info.encoding})&lt;br&gt;` +
-      `Chi phí: &lt;strong&gt;$${(totalSms * PRICE_PER_SMS).toFixed(2)}&lt;/strong&gt; — trừ ${totalSms} credits&lt;br&gt;` +
+      `Chi phí: &lt;strong&gt;${formatMoney(totalSms * PRICE_PER_SMS)}&lt;/strong&gt; — trừ ${totalSms} credits&lt;br&gt;` +
       `Lịch: &lt;strong&gt;${when}&lt;/strong&gt;`;
     $('confirmBox').classList.add('show');
     $('confirmBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -5520,7 +5526,11 @@ let activeTicketId = 1;
 
 function activeT() { return TICKETS.find(t =&gt; t.id === activeTicketId) || null; }
 
-const money = n =&gt; '$' + n.toFixed(2).replace(/\.00$/, '');
+const money = n =&gt; {
+  const amount = Number(n) || 0;
+  const hasCents = Math.round(amount * 100) % 100 !== 0;
+  return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: hasCents ? 2 : 0, maximumFractionDigits: 2 });
+};
 
 function posNextTech() {
   const on = TECHS.filter(t =&gt; t.onShift);
@@ -6296,7 +6306,11 @@ renderPosAll();
 'use strict';
 /* ================= CORE: helpers + data + router ================= */
 const $ = id => document.getElementById(id);
-const money = n => '$' + n.toFixed(2).replace(/\.00$/, '');
+const money = n => {
+  const amount = Number(n) || 0;
+  const hasCents = Math.round(amount * 100) % 100 !== 0;
+  return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: hasCents ? 2 : 0, maximumFractionDigits: 2 });
+};
 const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 // Menu THẬT — Bitcoin Nail Bar (bitcoinnailbar.com, 07/2026)

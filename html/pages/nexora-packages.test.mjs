@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
+import vm from 'node:vm';
 
 const PAGE_URL = new URL('./nexora-packages.html', import.meta.url);
 const BOOKING_PAGE_URL = new URL('./booking-book-phase-1.html', import.meta.url);
@@ -11,6 +12,83 @@ const PACKAGE_JS_URL = new URL('../assets/nexora-packages.js', import.meta.url);
 function source() {
   assert.ok(existsSync(PAGE_URL), 'nexora-packages.html must exist');
   return readFileSync(PAGE_URL, 'utf8');
+}
+
+function decodeEntities(value) {
+  return value.replace(/&amp;/g, '&');
+}
+
+function fakeElement(dataset = {}) {
+  return {
+    dataset,
+    hidden: false,
+    tabIndex: 0,
+    classList: {
+      add() {},
+      remove() {},
+      toggle() {}
+    },
+    addEventListener() {},
+    focus() {},
+    querySelector() { return null; },
+    querySelectorAll() { return []; },
+    setAttribute() {}
+  };
+}
+
+function renderPackageHistoryHTML() {
+  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  const purchaseHistory = fakeElement();
+  const overview = fakeElement();
+  const tabs = ['overview', 'nexora', 'voice', 'history'].map((packageTab) => fakeElement({ packageTab }));
+  const panels = ['overview', 'nexora', 'voice', 'history'].map((packagePanel) => fakeElement({ packagePanel }));
+  const fixedNow = new Date('2026-08-04T12:00:00+07:00');
+  class FixedDate extends Date {
+    constructor(...args) {
+      super(...(args.length ? args : [fixedNow]));
+    }
+
+    static now() {
+      return fixedNow.getTime();
+    }
+  }
+  Object.setPrototypeOf(FixedDate, Date);
+
+  const context = {
+    Date: FixedDate,
+    Intl,
+    URL,
+    document: {
+      body: {
+        classList: { add() {}, remove() {} },
+        style: { overflow: '' }
+      },
+      addEventListener() {},
+      querySelector(selector) {
+        if (selector === '[data-package-overview]') return overview;
+        if (selector === '[data-purchase-history]') return purchaseHistory;
+        if (selector === '[data-package-payment-modal]') return null;
+        if (selector === '[data-package-trial-modal]') return null;
+        return null;
+      },
+      querySelectorAll(selector) {
+        if (selector === '[data-package-tab]') return tabs;
+        if (selector === '[data-package-panel]') return panels;
+        if (selector === '[data-nexora-select], [data-plan-select]') return [];
+        return [];
+      }
+    },
+    window: {
+      addEventListener() {},
+      history: { pushState() {}, replaceState() {} },
+      location: { href: 'https://example.test/nexora-packages.html?tab=history' },
+      localStorage: { getItem() { return null; }, setItem() {} },
+      lucide: { createIcons() {} },
+      setInterval() {}
+    }
+  };
+  vm.runInNewContext(runtime, context);
+  return purchaseHistory.innerHTML;
 }
 
 test('creates the empty Package Management page from the shared shell', () => {
@@ -222,20 +300,52 @@ test('provides the package purchase history panel and transaction data contract'
   assert.match(runtime, /term: '1 month'/);
   assert.match(runtime, /validUntil/);
   assert.match(runtime, /amount/);
-  assert.match(runtime, /status: 'paid'/);
+  assert.match(runtime, /function getPackageHistoryStatus/);
   assert.match(runtime, /function renderPurchaseHistory/);
   assert.doesNotMatch(runtime, /package-history-head/);
   assert.match(runtime, /<th scope="col">Term<\/th>/);
   assert.match(runtime, /<th scope="col">Valid Until<\/th>/);
+  assert.match(runtime, /<th scope="col">Status<\/th>/);
   assert.match(runtime, /item\.term/);
   assert.match(runtime, /item\.validUntil/);
-  assert.match(runtime, />Paid</);
+  assert.match(runtime, /package-history-status-badge/);
+  assert.doesNotMatch(runtime, />Paid</);
   assert.match(css, /\.package-history/);
   assert.doesNotMatch(css, /\.package-history-head/);
   assert.match(css, /\.package-history-table/);
   assert.match(css, /\.package-history-term/);
   assert.match(css, /\.package-history-valid-until/);
+  assert.match(css, /\.package-history-status-badge/);
   assert.match(css, /\.package-history-table caption\s*\{[\s\S]*?position:\s*absolute/);
+});
+
+test('renders package history columns in the requested order with package activity status', () => {
+  const historyHTML = renderPackageHistoryHTML();
+  const columnLabels = [...historyHTML.matchAll(/<th scope="col">([^<]+)<\/th>/g)].map((match) => decodeEntities(match[1]));
+  assert.deepEqual(columnLabels, [
+    'Date & time',
+    'Amount',
+    'Package purchased',
+    'Term',
+    'Valid Until',
+    'Status',
+    'Transaction ID'
+  ]);
+
+  const firstRow = historyHTML.match(/<tbody>\s*<tr>([\s\S]*?)<\/tr>/)?.[1] || '';
+  const rowLabels = [...firstRow.matchAll(/<td\b[^>]*data-label="([^"]+)"/g)].map((match) => decodeEntities(match[1]));
+  assert.deepEqual(rowLabels, [
+    'Date & time',
+    'Amount',
+    'Package purchased',
+    'Term',
+    'Valid Until',
+    'Status',
+    'Transaction ID'
+  ]);
+  assert.match(historyHTML, /package-history-status-badge is-active[\s\S]*?>Active</);
+  assert.match(historyHTML, /package-history-status-badge is-expired[\s\S]*?>Expired</);
+  assert.doesNotMatch(historyHTML, />Paid</);
 });
 
 test('loads package-specific presentation styles', () => {

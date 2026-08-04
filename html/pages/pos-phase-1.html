@@ -2037,7 +2037,7 @@
 
       /* ═══════════ helpers ═══════════ */
       function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-      function money(n) { return '$' + (Math.round((n || 0) * 100) / 100).toFixed(2); }
+      function money(n) { return '$' + (Math.round((n || 0) * 100) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
       function money0(n) { return '$' + Math.round(n || 0).toLocaleString('en-US'); }
       function pct(n) { return Math.round((n || 0) * 100) + '%'; }
       function $(sel) { return document.querySelector(sel); }
@@ -5949,7 +5949,7 @@
       }
       function renderCredits() {
         set('[data-sms-credits]', 'SMS credits: ' + smsState.credits.toLocaleString('en-US') +
-          ' (≈$' + (smsState.credits * PRICE_PER_SMS).toFixed(2) + ')');
+          ' (≈' + money(smsState.credits * PRICE_PER_SMS) + ')');
         var chip = $('[data-sms-credits]');
         if (chip) chip.className = 'pos-chip ' + (smsState.credits < 100 ? 'pos-chip-red' : 'pos-chip-blue');
       }
@@ -5975,7 +5975,7 @@
         var parts = Math.max(info.parts, 1);
         var totalSms = smsState.segment.count * parts;
         var enough = smsState.credits >= totalSms;
-        set('[data-cost-amt]', smsState.segment.count + ' khách × ' + parts + ' tin = ' + totalSms + ' SMS ($' + (totalSms * PRICE_PER_SMS).toFixed(2) + ')');
+        set('[data-cost-amt]', smsState.segment.count + ' khách × ' + parts + ' tin = ' + totalSms + ' SMS (' + money(totalSms * PRICE_PER_SMS) + ')');
         set('[data-cost-lbl]', enough ? 'Chi phí ước tính' : '⚠️ Không đủ credits (còn ' + smsState.credits + ')');
         $('[data-cost-box]').classList.toggle('warn', !enough);
         $('[data-sms-send]').disabled = !enough;
@@ -6025,7 +6025,7 @@
           html('[data-confirm-detail]',
             'Nhóm: <strong>' + esc(smsState.segment.name) + '</strong> (' + smsState.segment.count + ' khách)<br>' +
             'Số tin: <strong>' + totalSms + ' SMS</strong> (' + info.parts + ' tin/khách, ' + info.encoding + ')<br>' +
-            'Chi phí: <strong>$' + (totalSms * PRICE_PER_SMS).toFixed(2) + '</strong> — trừ ' + totalSms + ' credits<br>' +
+            'Chi phí: <strong>' + money(totalSms * PRICE_PER_SMS) + '</strong> — trừ ' + totalSms + ' credits<br>' +
             'Lịch: <strong>' + esc(when) + '</strong>');
           $('[data-confirm-box]').classList.add('show');
           $('[data-confirm-box]').scrollIntoView({ behavior: 'smooth', block: 'nearest' });

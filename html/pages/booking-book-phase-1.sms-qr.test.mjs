@@ -298,7 +298,8 @@ test('shows service price between name and duration in New appointment', () => {
   const html = source();
 
   assert.match(html, /booking-service-option-name[\s\S]*escapeHtml\(option\.name\)/);
-  assert.match(html, /booking-service-option-meta[\s\S]*\$' \+ price[\s\S]*option\.duration \+ ' min/);
+  assert.match(html, /var price = option\.price == null \? '—' : bookingMoney\(option\.price\)/);
+  assert.match(html, /booking-service-option-meta[\s\S]*' \+ price \+ ' · ' \+ option\.duration \+ ' min/);
 });
 
 test('uses regular weight for service duration in New appointment', () => {
@@ -619,7 +620,7 @@ test('uses the same payment modal for Starter with the Starter invoice amount', 
 
   assert.match(html, /data-plan-select="Starter"/);
   assert.match(html, /planPaymentPlan === 'Starter' \? 99 : 349/);
-  assert.match(html, /invoiceTotal\.textContent = '\$' \+ planPrice \+ '\/mo'/);
+  assert.match(html, /invoiceTotal\.textContent = marketingMoney\(planPrice\) \+ '\/mo'/);
   assert.match(html, /selectServicePlan\(planPaymentPlan\)/);
 });
 

@@ -4,8 +4,8 @@ const OWNED_PACKAGES = [
     product: 'NEXORA',
     name: 'Professional Pro',
     description: 'Owner dashboard and growth tools for a growing salon team.',
-    activatedAt: '2026-07-01T00:00:00+07:00',
-    expiresAt: '2026-07-31T23:59:59+07:00',
+    activatedAt: '2026-08-01T00:00:00+07:00',
+    expiresAt: '2026-08-31T23:59:59+07:00',
     features: ['Owner Dashboard', 'Auto Google Review', 'Landing Pages + AI Design']
   },
   {
@@ -13,13 +13,24 @@ const OWNED_PACKAGES = [
     product: 'Voice + SMS',
     name: 'Pro',
     description: 'AI voice and SMS campaigns for missed calls and follow-ups.',
-    activatedAt: '2026-07-01T00:00:00+07:00',
-    expiresAt: '2026-07-31T23:59:59+07:00',
+    activatedAt: '2026-08-01T00:00:00+07:00',
+    expiresAt: '2026-08-31T23:59:59+07:00',
     features: ['AI Voice + SMS Campaigns', '1,000 min + 1,000 SMS', 'Auto Google Review']
   }
 ];
 
 const PURCHASE_HISTORY = [
+  {
+    transactionId: 'NXR-20260801-0003',
+    purchasedAt: '2026-08-01T09:30:00+07:00',
+    product: 'NEXORA',
+    packageName: 'Professional Pro',
+    billing: 'Monthly subscription',
+    term: '1 month',
+    validUntil: '2026-08-31T23:59:59+07:00',
+    amount: 79,
+    currency: 'USD'
+  },
   {
     transactionId: 'NXR-20260701-0001',
     purchasedAt: '2026-07-01T09:30:00+07:00',
@@ -29,8 +40,7 @@ const PURCHASE_HISTORY = [
     term: '1 month',
     validUntil: '2026-07-31T23:59:59+07:00',
     amount: 79,
-    currency: 'USD',
-    status: 'paid'
+    currency: 'USD'
   },
   {
     transactionId: 'VMS-20260701-0002',
@@ -41,8 +51,7 @@ const PURCHASE_HISTORY = [
     term: '1 month',
     validUntil: '2026-07-31T23:59:59+07:00',
     amount: 199,
-    currency: 'USD',
-    status: 'paid'
+    currency: 'USD'
   }
 ];
 
@@ -131,6 +140,14 @@ const PACKAGE_PLAN_DETAILS = {
       style: 'currency',
       currency
     }).format(value);
+  }
+
+  function getPackageHistoryStatus(validUntil, reference = new Date()) {
+    const end = new Date(validUntil);
+    const active = Number.isFinite(end.getTime()) && end >= new Date(reference);
+    return active
+      ? { label: 'Active', className: 'is-active', icon: 'circle-check' }
+      : { label: 'Expired', className: 'is-expired', icon: 'circle-x' };
   }
 
   function renderPackagePaymentOptions() {
@@ -468,36 +485,41 @@ const PACKAGE_PLAN_DETAILS = {
           <thead>
             <tr>
               <th scope="col">Date &amp; time</th>
-              <th scope="col">Transaction ID</th>
+              <th scope="col">Amount</th>
               <th scope="col">Package purchased</th>
               <th scope="col">Term</th>
               <th scope="col">Valid Until</th>
-              <th scope="col">Amount</th>
               <th scope="col">Status</th>
+              <th scope="col">Transaction ID</th>
             </tr>
           </thead>
           <tbody>
-            ${PURCHASE_HISTORY.map((item) => `
-              <tr>
-                <td data-label="Date &amp; time">
-                  <strong>${formatPurchaseDate(item.purchasedAt)}</strong>
-                  <span>${formatPurchaseTime(item.purchasedAt)}</span>
-                </td>
-                <td data-label="Transaction ID">
-                  <code>${escapeHTML(item.transactionId)}</code>
-                </td>
-                <td data-label="Package purchased">
-                  <div class="package-history-package">
-                    <strong>${escapeHTML(`${item.product} ${item.packageName}`)}</strong>
-                    <span>${escapeHTML(item.billing)}</span>
-                  </div>
-                </td>
-                <td data-label="Term"><span class="package-history-term">${escapeHTML(item.term)}</span></td>
-                <td class="package-history-valid-until" data-label="Valid Until"><strong>${formatPurchaseDate(item.validUntil)}</strong></td>
-                <td class="package-history-amount" data-label="Amount">${formatAmount(item.amount, item.currency)}</td>
-                <td data-label="Status"><span class="package-paid-status"><i data-lucide="circle-check" aria-hidden="true"></i>Paid</span></td>
-              </tr>
-            `).join('')}
+            ${PURCHASE_HISTORY.map((item) => {
+              const status = getPackageHistoryStatus(item.validUntil);
+              return `
+                <tr>
+                  <td data-label="Date &amp; time">
+                    <strong>${formatPurchaseDate(item.purchasedAt)}</strong>
+                    <span>${formatPurchaseTime(item.purchasedAt)}</span>
+                  </td>
+                  <td class="package-history-amount" data-label="Amount">${formatAmount(item.amount, item.currency)}</td>
+                  <td data-label="Package purchased">
+                    <div class="package-history-package">
+                      <strong>${escapeHTML(`${item.product} ${item.packageName}`)}</strong>
+                      <span>${escapeHTML(item.billing)}</span>
+                    </div>
+                  </td>
+                  <td data-label="Term"><span class="package-history-term">${escapeHTML(item.term)}</span></td>
+                  <td class="package-history-valid-until" data-label="Valid Until"><strong>${formatPurchaseDate(item.validUntil)}</strong></td>
+                  <td class="package-history-status" data-label="Status">
+                    <span class="package-history-status-badge ${status.className}"><i data-lucide="${status.icon}" aria-hidden="true"></i>${status.label}</span>
+                  </td>
+                  <td data-label="Transaction ID">
+                    <code>${escapeHTML(item.transactionId)}</code>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
           </tbody>
         </table>
       </div>

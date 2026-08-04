@@ -19,7 +19,10 @@
   }
 
   function money(value) {
-    return '$' + (Number(value) || 0).toFixed(2);
+    return '$' + (Number(value) || 0).toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
   }
 
   function findRecord() {
