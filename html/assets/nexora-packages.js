@@ -456,9 +456,6 @@ const PACKAGE_PLAN_DETAILS = {
                   <div class="package-countdown-heading"><span class="package-countdown-icon"><i data-lucide="clock-3" aria-hidden="true"></i></span><span class="package-countdown-label">Remaining Time</span></div>
                   <div class="package-countdown-units" role="group" aria-label="Remaining time">${renderCountdownUnits(item.expiresAt)}</div>
                 </div>
-            <ul class="package-feature-list">
-              ${item.features.map((feature) => `<li><i data-lucide="check" aria-hidden="true"></i>${escapeHTML(feature)}</li>`).join('')}
-            </ul>
           </article>
         `).join('')}
       </div>
