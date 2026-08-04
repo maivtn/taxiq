@@ -1915,6 +1915,23 @@
       box-shadow: 0 10px 22px rgba(70, 72, 216, 0.22);
     }
 
+    .plan-action-stack {
+      display: grid;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .plan-action-stack .plan-select-button {
+      margin-top: 0;
+    }
+
+    .service-plan-card.is-recommended .plan-buy-button {
+      border-color: var(--nexora-brand);
+      background: #fff;
+      color: var(--nexora-brand);
+      box-shadow: none;
+    }
+
     .roi-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -9559,7 +9576,10 @@
                       <div class="plan-feature"><span class="plan-check">✓</span><span>1,000 min · 1,000 SMS</span></div>
                       <div class="plan-aio">AIO ENGINE - Review Velocity + 30 FAQ + Schema + AI Visibility</div>
                     </div>
-                    <button class="plan-select-button is-primary" type="button" data-plan-select="Pro" data-trial-open>Start 14-Day Free Trial</button>
+                    <div class="plan-action-stack">
+                      <button class="plan-select-button is-primary" type="button" data-plan-select="Pro" data-trial-open>Start 14-Day Free Trial</button>
+                      <button class="plan-select-button plan-buy-button" type="button" data-plan-select="Pro" data-plan-buy>Choose Pro</button>
+                    </div>
                   </article>
 
                   <article class="service-plan-card" data-plan-card="elite">
@@ -13611,7 +13631,7 @@ function getBookingCardCallStart(item) {
     function selectServicePlan(plan) {
       var labels = {
         Starter: 'Choose Starter',
-        Pro: 'Start 14-Day Free Trial',
+        Pro: 'Choose Pro',
         Elite: 'Choose Elite'
       };
 
@@ -13619,7 +13639,7 @@ function getBookingCardCallStart(item) {
         card.classList.toggle('is-selected', card.dataset.planCard === plan.toLowerCase());
       });
 
-      document.querySelectorAll('[data-plan-select]').forEach(function(button) {
+      document.querySelectorAll('[data-plan-select]:not([data-trial-open])').forEach(function(button) {
         var selected = button.dataset.planSelect === plan;
         button.classList.toggle('is-primary', selected);
         button.textContent = selected ? plan + ' selected' : labels[button.dataset.planSelect];
@@ -15257,7 +15277,7 @@ function getBookingCardCallStart(item) {
           return;
         }
 
-        if ((button.dataset.planSelect === 'Starter' || button.dataset.planSelect === 'Elite') && typeof window.openServicePlanPaymentModal === 'function') {
+        if ((button.dataset.planSelect === 'Starter' || button.dataset.planSelect === 'Pro' || button.dataset.planSelect === 'Elite') && typeof window.openServicePlanPaymentModal === 'function') {
           window.openServicePlanPaymentModal(button.dataset.planSelect);
           return;
         }
@@ -16575,7 +16595,7 @@ function getBookingCardCallStart(item) {
         var invoiceTotal = document.querySelector('[data-plan-invoice-total]');
         var confirmLabel = document.querySelector('[data-plan-payment-confirm-label]');
         var status = document.querySelector('[data-plan-payment-status]');
-        var planPrice = planPaymentPlan === 'Starter' ? 99 : 349;
+        var planPrice = planPaymentPlan === 'Starter' ? 99 : planPaymentPlan === 'Pro' ? 199 : 349;
         if (target) renderSmsCreditPaymentOptions(target, planPaymentId, 'data-plan-payment');
         var selectedPayment = SMS_CREDIT_PAYMENT_METHODS.find(function(method) { return method.id === planPaymentId; }) || SMS_CREDIT_PAYMENT_METHODS[0];
         if (title) title.textContent = 'Choose ' + planPaymentPlan;
@@ -16614,7 +16634,7 @@ function getBookingCardCallStart(item) {
 
       function openServicePlanPaymentModal(plan) {
         var modal = document.querySelector('[data-plan-payment-modal]');
-        if (!modal || (plan !== 'Starter' && plan !== 'Elite')) return;
+        if (!modal || (plan !== 'Starter' && plan !== 'Pro' && plan !== 'Elite')) return;
         planPaymentModalOpener = document.activeElement;
         planPaymentPlan = plan;
         planPaymentId = SMS_CREDIT_PAYMENT_METHODS[0].id;
@@ -16639,7 +16659,7 @@ function getBookingCardCallStart(item) {
       function confirmServicePlanPayment() {
         var selectedPayment = SMS_CREDIT_PAYMENT_METHODS.find(function(method) { return method.id === planPaymentId; }) || SMS_CREDIT_PAYMENT_METHODS[0];
         if (selectedPayment.id === 'CARD' && !validateElitePlanCardForm()) return;
-        var planPrice = planPaymentPlan === 'Starter' ? 99 : 349;
+        var planPrice = planPaymentPlan === 'Starter' ? 99 : planPaymentPlan === 'Pro' ? 199 : 349;
         selectServicePlan(planPaymentPlan);
         closeServicePlanPaymentModal();
         $('successText').textContent = planPaymentPlan + ' plan selected — ' + marketingMoney(planPrice) + '/mo via ' + selectedPayment.label + '.';
