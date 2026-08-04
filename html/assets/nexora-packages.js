@@ -483,7 +483,7 @@ const PACKAGE_PLAN_DETAILS = {
             <tr>
               <th scope="col">Date &amp; time</th>
               <th scope="col">Amount</th>
-              <th scope="col">Package purchased</th>
+              <th scope="col">Package</th>
               <th scope="col">Term</th>
               <th scope="col">Valid Until</th>
               <th scope="col">Status</th>
@@ -500,7 +500,7 @@ const PACKAGE_PLAN_DETAILS = {
                     <span>${formatPurchaseTime(item.purchasedAt)}</span>
                   </td>
                   <td class="package-history-amount" data-label="Amount">${formatAmount(item.amount, item.currency)}</td>
-                  <td data-label="Package purchased">
+                  <td data-label="Package">
                     <div class="package-history-package">
                       <strong>${escapeHTML(`${item.product} ${item.packageName}`)}</strong>
                       <span>${escapeHTML(item.billing)}</span>

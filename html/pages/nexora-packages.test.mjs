@@ -327,7 +327,7 @@ test('renders package history columns in the requested order with package activi
   assert.deepEqual(columnLabels, [
     'Date & time',
     'Amount',
-    'Package purchased',
+    'Package',
     'Term',
     'Valid Until',
     'Status',
@@ -339,7 +339,7 @@ test('renders package history columns in the requested order with package activi
   assert.deepEqual(rowLabels, [
     'Date & time',
     'Amount',
-    'Package purchased',
+    'Package',
     'Term',
     'Valid Until',
     'Status',
