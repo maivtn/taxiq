@@ -467,6 +467,26 @@
   var copyUrlBtn = document.getElementById('oneqrCopyUrl');
   var printQrBtn = document.getElementById('oneqrPrintQr');
 
+  function resolveUrl(value) {
+    try {
+      return new URL(value, window.location.href).href;
+    } catch (error) {
+      return value;
+    }
+  }
+
+  // Every relative OneQR path in the markup gets swapped for the real,
+  // currently-running absolute URL — never shown or copied as "../…".
+  if (shareUrlEl) shareUrlEl.textContent = resolveUrl(shareUrlEl.textContent.trim());
+
+  var salonModalLinkEl = document.querySelector('[data-salon-modal-link]');
+  if (salonModalLinkEl) salonModalLinkEl.textContent = resolveUrl(salonModalLinkEl.textContent.trim());
+
+  var viewCopyBtnForLink = document.getElementById('oneqrViewCopy');
+  if (viewCopyBtnForLink && viewCopyBtnForLink.hasAttribute('data-copy-link')) {
+    viewCopyBtnForLink.setAttribute('data-copy-link', resolveUrl(viewCopyBtnForLink.getAttribute('data-copy-link')));
+  }
+
   function flashButtonLabel(button, text) {
     var label = button.querySelector('span') || Array.prototype.find.call(button.childNodes, function (node) {
       return node.nodeType === 3 && node.textContent.trim();

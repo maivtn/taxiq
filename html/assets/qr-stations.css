@@ -630,6 +630,36 @@
   font-weight: 600;
 }
 
+.oneqr-stats-bar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.oneqr-stat {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 8px;
+  background: #fff;
+  padding: 16px 20px;
+}
+
+.oneqr-stat-label {
+  color: #53617a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.oneqr-stat strong {
+  color: var(--nexora-text);
+  font-size: 22px;
+  font-weight: 900;
+}
+
 .oneqr-qrcard {
   display: flex;
   flex-wrap: wrap;
@@ -1254,6 +1284,10 @@
 
   .oneqr-qrcard-actions {
     width: 100%;
+  }
+
+  .oneqr-stat {
+    flex: 1 1 calc(50% - 6px);
   }
 
   .oneqr-qrcard-btn {

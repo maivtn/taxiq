@@ -209,6 +209,25 @@
               <p>One QR code that connects the entire customer journey and back-of-house operations.</p>
             </div>
 
+            <section class="oneqr-stats-bar" aria-label="OneQR summary">
+              <div class="oneqr-stat">
+                <span class="oneqr-stat-label">Scans Today</span>
+                <strong>284</strong>
+              </div>
+              <div class="oneqr-stat">
+                <span class="oneqr-stat-label">Active QR</span>
+                <strong>12</strong>
+              </div>
+              <div class="oneqr-stat">
+                <span class="oneqr-stat-label">Pending Approvals</span>
+                <strong>3</strong>
+              </div>
+              <div class="oneqr-stat">
+                <span class="oneqr-stat-label">Self-service</span>
+                <strong>91%</strong>
+              </div>
+            </section>
+
             <div class="oneqr-qrcard">
               <div class="qr-code-frame oneqr-qrcard-frame" aria-label="OneQR code preview">
                 <div class="qr-code-art" data-qr-value="../customer/oneqr-landing.html" data-qr-size="216" role="img" aria-label="OneQR code preview"></div>
@@ -345,11 +364,11 @@
                 class="qr-code aspect-square w-[255px] rounded-[18px] border-[9px] border-white bg-white shadow-[0_0_24px_rgba(255,255,255,0.18)]"
                 aria-label="Large salon QR preview"
                 data-qr-size="260"
-                data-qr-value="https://pay.nexoratouch.com/salon/bitcoin-nail-bar"
+                data-qr-value="../customer/oneqr-landing.html"
                 data-salon-modal-qr
               ></div>
             </div>
-            <p class="hidden" data-salon-modal-link>pay.nexoratouch.com/salon/bitcoin-nail-bar</p>
+            <p class="hidden" data-salon-modal-link>../customer/oneqr-landing.html</p>
           </div>
           <div class="relative mt-3 grid grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] items-end gap-1 text-center" data-print-steps>
             <div class="px-0.5">
@@ -430,7 +449,7 @@
           </div>
         </div>
         <div class="grid grid-cols-3 gap-2 border-t border-nexoraBrand/15 bg-[#EEF2FF]/95 p-3 backdrop-blur" data-oneqr-modal-actions data-salon-modal-actions>
-          <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Copy salon QR link" data-salon-modal-copy data-copy-link="pay.nexoratouch.com/salon/bitcoin-nail-bar" id="oneqrViewCopy"><i data-lucide="link" class="h-3.5 w-3.5"></i>Copy Link</button>
+          <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Copy salon QR link" data-salon-modal-copy data-copy-link="../customer/oneqr-landing.html" id="oneqrViewCopy"><i data-lucide="link" class="h-3.5 w-3.5"></i>Copy Link</button>
           <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Print salon QR" data-salon-modal-print id="oneqrViewPrint"><i data-lucide="printer" class="h-3.5 w-3.5"></i>Print</button>
           <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-nexoraBrand text-[10px] font-semibold text-white" id="oneqrViewDownload"><i data-lucide="download" class="h-3.5 w-3.5"></i>Save QR</button>
         </div>

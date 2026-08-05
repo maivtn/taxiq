@@ -248,7 +248,7 @@
 
     <div class="oneqr-otp-body">
       <section class="oneqr-otp-step" id="oneqrOtpStep1">
-        <div class="oneqr-otp-field">
+        <div class="oneqr-otp-field" id="oneqrOtpNameField">
           <label for="oneqrOtpName">Your name (optional)</label>
           <input id="oneqrOtpName" type="text" placeholder="e.g., Brian" autocomplete="given-name">
         </div>
@@ -256,9 +256,13 @@
           <label for="oneqrOtpPhone">Mobile number</label>
           <input id="oneqrOtpPhone" type="tel" placeholder="(832) 555-0148" inputmode="tel" autocomplete="tel">
         </div>
+        <div class="oneqr-otp-field" id="oneqrOtpPasswordField" hidden>
+          <label for="oneqrOtpPassword">Password</label>
+          <input id="oneqrOtpPassword" type="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
         <button class="oneqr-otp-btn is-primary" type="button" id="oneqrOtpSendBtn">Send Code</button>
         <button class="oneqr-otp-btn is-link" type="button" id="oneqrOtpGuestBtn">Continue as Guest</button>
-        <p class="oneqr-otp-note">No password. We text you a one-time code.</p>
+        <p class="oneqr-otp-note" id="oneqrOtpNote">No password. We text you a one-time code.</p>
       </section>
 
       <section class="oneqr-otp-step" id="oneqrOtpStep2" hidden>
@@ -281,6 +285,8 @@
       var isStaffContext = /oneqr-staff\.html/.test(returnUrl);
 
       var nameInput = document.getElementById('oneqrOtpName');
+      var nameField = document.getElementById('oneqrOtpNameField');
+      var passwordField = document.getElementById('oneqrOtpPasswordField');
       var phoneInput = document.getElementById('oneqrOtpPhone');
       var step1 = document.getElementById('oneqrOtpStep1');
       var step2 = document.getElementById('oneqrOtpStep2');
@@ -288,17 +294,42 @@
       var backLink = document.getElementById('oneqrOtpBack');
       var troubleLink = document.getElementById('oneqrOtpTrouble');
       var guestBtn = document.getElementById('oneqrOtpGuestBtn');
+      var sendBtn = document.getElementById('oneqrOtpSendBtn');
+      var noteEl = document.getElementById('oneqrOtpNote');
 
       backLink.href = returnUrl;
       troubleLink.href = 'oneqr-limited-access.html?return=' + encodeURIComponent(returnUrl);
 
       if (isStaffContext) {
         document.getElementById('oneqrOtpHeadline').textContent = 'Staff Sign In';
-        document.getElementById('oneqrOtpSubtext').textContent = 'Verify your identity to open the Staff Portal.';
+        document.getElementById('oneqrOtpSubtext').textContent = 'Sign in with your staff phone and password.';
         if (guestBtn) guestBtn.hidden = true;
+        if (nameField) nameField.hidden = true;
+        if (passwordField) passwordField.hidden = false;
+        sendBtn.textContent = 'Sign In';
+        // TODO: OTP is temporarily skipped for staff sign-in — phone + password
+        // goes straight through. Re-enable the OTP step once staff accounts
+        // have a real backend to verify against.
+        noteEl.textContent = 'OTP is temporarily skipped for staff sign-in.';
       }
 
-      document.getElementById('oneqrOtpSendBtn').addEventListener('click', function () {
+      function goToSuccess(name) {
+        try {
+          if (name) window.localStorage.setItem('taxiq:customer-name', name);
+        } catch (error) { /* storage unavailable */ }
+
+        var successUrl = new URL('oneqr-success.html', window.location.href);
+        successUrl.searchParams.set('title', "You're verified!");
+        successUrl.searchParams.set('message', 'You can now use private features like payments and bookings.');
+        successUrl.searchParams.set('next', returnUrl);
+        window.location.href = successUrl.href;
+      }
+
+      sendBtn.addEventListener('click', function () {
+        if (isStaffContext) {
+          window.location.href = returnUrl;
+          return;
+        }
         var phone = phoneInput.value.trim();
         phoneEcho.textContent = phone || 'your phone';
         step1.hidden = true;
@@ -321,16 +352,7 @@
       });
 
       document.getElementById('oneqrOtpVerifyBtn').addEventListener('click', function () {
-        var name = nameInput.value.trim();
-        try {
-          if (name) window.localStorage.setItem('taxiq:customer-name', name);
-        } catch (error) { /* storage unavailable */ }
-
-        var successUrl = new URL('oneqr-success.html', window.location.href);
-        successUrl.searchParams.set('title', "You're verified!");
-        successUrl.searchParams.set('message', 'You can now use private features like payments and bookings.');
-        successUrl.searchParams.set('next', returnUrl);
-        window.location.href = successUrl.href;
+        goToSuccess(nameInput.value.trim());
       });
 
       lucide.createIcons();
