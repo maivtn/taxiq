@@ -2,13 +2,6 @@
    Reuses Nexora tokens (nexora-shell.css) and shared components (pos-booking.css:
    .badge/.booking-status, .booking-mini-button, .booking-primary-button, .booking-input). */
 
-:root {
-  --nexora-success: #00b873;
-  --nexora-warning: #f59e0b;
-  --nexora-danger: #ef4444;
-  --nexora-brand-dark: #393bc8;
-}
-
 .content { min-height: calc(100vh - 64px); padding: 16px 16px 96px; }
 @media (min-width: 1201px) { .content { padding: 28px 28px 96px; } }
 

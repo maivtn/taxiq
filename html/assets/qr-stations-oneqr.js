@@ -77,15 +77,14 @@
 
   var TEMPLATE_PRESETS = {
     'Beauty & Salon': {
-      modules: ['Book Appointment', 'Smart Check-in', 'Services & Prices', "Today's Promotion", 'Tip & Pay', 'Leave a Google Review', 'Social Media'],
+      modules: ['Book Appointment', 'Smart Check-in', 'Services & Prices', "Today's Promotion", 'Tip & Pay', 'Leave a Google Review'],
       icons: {
         'Book Appointment': 'calendar-check',
         'Smart Check-in': 'check',
         'Services & Prices': 'list',
         "Today's Promotion": 'percent',
         'Tip & Pay': 'dollar-sign',
-        'Leave a Google Review': 'star',
-        'Social Media': 'share-2'
+        'Leave a Google Review': 'star'
       },
       roles: {
         staff: ['Smart Check-in', 'Tip & Pay'],
@@ -93,15 +92,14 @@
       }
     },
     'Business': {
-      modules: ['Book Appointment', 'Check-in', 'Catalog & Pricing', "Today's Promotion", 'Tip & Pay', 'Leave a Review', 'Social Media'],
+      modules: ['Book Appointment', 'Check-in', 'Catalog & Pricing', "Today's Promotion", 'Tip & Pay', 'Leave a Review'],
       icons: {
         'Book Appointment': 'calendar-check',
         'Check-in': 'check',
         'Catalog & Pricing': 'list',
         "Today's Promotion": 'percent',
         'Tip & Pay': 'dollar-sign',
-        'Leave a Review': 'star',
-        'Social Media': 'share-2'
+        'Leave a Review': 'star'
       },
       roles: {
         staff: ['Check-in', 'Tip & Pay'],
@@ -109,15 +107,14 @@
       }
     },
     'Organization': {
-      modules: ['Membership', 'Events', 'Donation', 'Volunteer', 'Voting', 'Announcements', 'Committees'],
+      modules: ['Membership', 'Events', 'Donation', 'Volunteer', 'Voting', 'Announcements'],
       icons: {
         'Membership': 'crown',
         'Events': 'calendar-clock',
         'Donation': 'heart',
         'Volunteer': 'user-cog',
         'Voting': 'check-circle-2',
-        'Announcements': 'star',
-        'Committees': 'share-2'
+        'Announcements': 'star'
       },
       roles: {
         staff: ['Events', 'Volunteer'],
@@ -125,12 +122,11 @@
       }
     },
     'Government Service': {
-      modules: ['Citizen Services', 'Appointment', 'Permit & License', 'Fee Payment', 'Case Tracking', 'Public Notices', 'Complaint Submission'],
+      modules: ['Citizen Services', 'Appointment', 'Permit & License', 'Case Tracking', 'Public Notices', 'Complaint Submission'],
       icons: {
         'Citizen Services': 'user-cog',
         'Appointment': 'calendar-clock',
         'Permit & License': 'check-circle-2',
-        'Fee Payment': 'dollar-sign',
         'Case Tracking': 'list',
         'Public Notices': 'star',
         'Complaint Submission': 'share-2'
@@ -143,26 +139,21 @@
   };
 
   var DEFAULT_TEMPLATE = 'Beauty & Salon';
+  var ROLES = ['customer', 'staff', 'owner'];
 
-  var MODULES = TEMPLATE_PRESETS[DEFAULT_TEMPLATE].modules.slice();
-  var MODULE_ICONS = TEMPLATE_PRESETS[DEFAULT_TEMPLATE].icons;
-
-  var ROLE_DATA = {
-    customer: {
-      welcome: '<strong>Welcome back, Brian 👋</strong><small>Your booking starts at 3:00 PM</small>',
-      modules: MODULES.slice()
-    },
-    staff: {
-      welcome: '<strong>Hi Chloe</strong><small>Shift 10:00 AM–7:00 PM</small>',
-      modules: TEMPLATE_PRESETS[DEFAULT_TEMPLATE].roles.staff
-    },
-    owner: {
-      welcome: '<strong>Good afternoon, Brian</strong><small>3 requests pending approval</small>',
-      modules: TEMPLATE_PRESETS[DEFAULT_TEMPLATE].roles.owner
-    }
+  var ROLE_WELCOME = {
+    customer: '<strong>Welcome back, Brian 👋</strong><small>Your booking starts at 3:00 PM</small>',
+    staff: '<strong>Hi Chloe</strong><small>Shift 10:00 AM–7:00 PM</small>',
+    owner: '<strong>Good afternoon, Brian</strong><small>3 requests pending approval</small>'
   };
 
-  var enabled = new Set(MODULES);
+  var MODULE_ICONS = TEMPLATE_PRESETS[DEFAULT_TEMPLATE].icons;
+
+  // Each role keeps its own module order and enabled set — Staff and Owner
+  // see a different slice of the same module pool than Customer does.
+  var moduleOrderByRole = {};
+  var enabledByRole = {};
+
   var currentRole = 'customer';
 
   var moduleListEl = document.getElementById('oneqrModuleList');
@@ -186,14 +177,12 @@
 
   function applyTemplate(templateName) {
     var preset = TEMPLATE_PRESETS[templateName] || TEMPLATE_PRESETS[DEFAULT_TEMPLATE];
-    MODULES = preset.modules.slice();
     MODULE_ICONS = preset.icons;
-    ROLE_DATA = {
-      customer: { welcome: ROLE_DATA.customer.welcome, modules: MODULES.slice() },
-      staff: { welcome: ROLE_DATA.staff.welcome, modules: preset.roles.staff },
-      owner: { welcome: ROLE_DATA.owner.welcome, modules: preset.roles.owner }
-    };
-    enabled = new Set(MODULES);
+    ROLES.forEach(function (role) {
+      var defaultEnabled = role === 'customer' ? preset.modules : preset.roles[role];
+      moduleOrderByRole[role] = preset.modules.slice();
+      enabledByRole[role] = new Set(defaultEnabled);
+    });
     previewExpanded = false;
     renderModules();
     renderPreview();
@@ -210,8 +199,10 @@
   }
 
   function renderModules() {
-    moduleListEl.innerHTML = MODULES.map(function (name) {
-      var on = enabled.has(name);
+    var order = moduleOrderByRole[currentRole] || [];
+    var enabledSet = enabledByRole[currentRole] || new Set();
+    moduleListEl.innerHTML = order.map(function (name) {
+      var on = enabledSet.has(name);
       return '<div class="oneqr-module" data-module-row="' + name + '" draggable="false">' +
         '<span class="oneqr-module-drag" aria-hidden="true" title="Drag to reorder"><i data-lucide="grip-vertical"></i></span>' +
         '<span class="oneqr-module-icon">' + iconHtml(name) + '</span>' +
@@ -223,19 +214,17 @@
   }
 
   function renderPreview() {
-    var data = ROLE_DATA[currentRole] || ROLE_DATA.customer;
+    var order = moduleOrderByRole[currentRole] || [];
+    var enabledSet = enabledByRole[currentRole] || new Set();
     var identityValue = identitySelect ? identitySelect.value : 'Public first, verify when needed';
     if (identityValue === 'Always sign in') {
       welcomeEl.innerHTML = '<strong>🔒 Sign in required</strong><small>Verify your identity to continue</small>';
     } else {
-      welcomeEl.innerHTML = data.welcome;
+      welcomeEl.innerHTML = ROLE_WELCOME[currentRole] || ROLE_WELCOME.customer;
     }
 
-    var allEnabledModules = MODULES.filter(function (name) {
-      return enabled.has(name);
-    });
-    var roleModules = allEnabledModules.filter(function (name) {
-      return enabled.has(name) && data.modules.indexOf(name) !== -1;
+    var allEnabledModules = order.filter(function (name) {
+      return enabledSet.has(name);
     });
 
     var landingView = landingViewSelect ? landingViewSelect.value : 'Auto-suggest based on user';
@@ -248,8 +237,8 @@
       previewModules = previewExpanded ? allEnabledModules : [];
       canExpand = allEnabledModules.length > 0;
     } else {
-      previewModules = previewExpanded ? allEnabledModules : roleModules.slice(0, PREVIEW_COLLAPSED_MODULE_LIMIT);
-      canExpand = allEnabledModules.length > roleModules.length || roleModules.length > PREVIEW_COLLAPSED_MODULE_LIMIT;
+      previewModules = previewExpanded ? allEnabledModules : allEnabledModules.slice(0, PREVIEW_COLLAPSED_MODULE_LIMIT);
+      canExpand = allEnabledModules.length > PREVIEW_COLLAPSED_MODULE_LIMIT;
     }
 
     tilesEl.innerHTML = previewModules.map(function (name) {
@@ -314,10 +303,11 @@
     if (targetName === draggedModuleName) return;
     var rect = row.getBoundingClientRect();
     var isAfter = (event.clientY - rect.top) > rect.height / 2;
-    var fromIndex = MODULES.indexOf(draggedModuleName);
-    MODULES.splice(fromIndex, 1);
-    var toIndex = MODULES.indexOf(targetName);
-    MODULES.splice(isAfter ? toIndex + 1 : toIndex, 0, draggedModuleName);
+    var order = moduleOrderByRole[currentRole];
+    var fromIndex = order.indexOf(draggedModuleName);
+    order.splice(fromIndex, 1);
+    var toIndex = order.indexOf(targetName);
+    order.splice(isAfter ? toIndex + 1 : toIndex, 0, draggedModuleName);
     renderModules();
     renderPreview();
   });
@@ -336,24 +326,29 @@
     var btn = event.target.closest('.oneqr-switch');
     if (!btn) return;
     var name = btn.getAttribute('data-module');
-    if (enabled.has(name)) {
-      enabled.delete(name);
+    var enabledSet = enabledByRole[currentRole];
+    if (enabledSet.has(name)) {
+      enabledSet.delete(name);
     } else {
-      enabled.add(name);
+      enabledSet.add(name);
     }
     btn.classList.toggle('is-on');
-    btn.setAttribute('aria-pressed', enabled.has(name));
+    btn.setAttribute('aria-pressed', enabledSet.has(name));
     renderPreview();
   });
 
-  document.querySelectorAll('.oneqr-role-tab').forEach(function (tab) {
-    tab.addEventListener('click', function () {
-      currentRole = tab.getAttribute('data-role');
-      previewExpanded = false;
-      document.querySelectorAll('.oneqr-role-tab').forEach(function (t) { t.classList.remove('is-active'); });
-      tab.classList.add('is-active');
-      renderPreview();
+  function setActiveRole(role) {
+    currentRole = role;
+    previewExpanded = false;
+    document.querySelectorAll('.oneqr-role-tab').forEach(function (t) {
+      t.classList.toggle('is-active', t.getAttribute('data-role') === role);
     });
+    renderModules();
+    renderPreview();
+  }
+
+  document.querySelectorAll('.oneqr-role-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () { setActiveRole(tab.getAttribute('data-role')); });
   });
 
   if (previewViewAllBtn) {
@@ -715,6 +710,5 @@
     identitySelect.addEventListener('change', renderPreview);
   }
 
-  renderModules();
-  renderPreview();
+  applyTemplate(DEFAULT_TEMPLATE);
 })();
