@@ -6,7 +6,8 @@ const OWNED_PACKAGES = [
     description: 'Owner dashboard and growth tools for a growing salon team.',
     activatedAt: '2026-08-01T00:00:00+07:00',
     expiresAt: '2026-08-31T23:59:59+07:00',
-    features: ['Owner Dashboard', 'Auto Google Review', 'Landing Pages + AI Design']
+    features: ['Owner Dashboard', 'Auto Google Review', 'Landing Pages + AI Design'],
+    autoRenew: true
   },
   {
     id: 'voice-pro',
@@ -15,7 +16,8 @@ const OWNED_PACKAGES = [
     description: 'AI voice and SMS campaigns for missed calls and follow-ups.',
     activatedAt: '2026-08-01T00:00:00+07:00',
     expiresAt: '2026-08-31T23:59:59+07:00',
-    features: ['AI Voice + SMS Campaigns', '1,000 min + 1,000 SMS', 'Auto Google Review']
+    features: ['AI Voice + SMS Campaigns', '1,000 min + 1,000 SMS', 'Auto Google Review'],
+    autoRenew: false
   }
 ];
 
@@ -438,15 +440,29 @@ const PACKAGE_PLAN_DETAILS = {
     if (!overview) return;
     overview.innerHTML = `
       <div class="package-overview-grid">
-        ${OWNED_PACKAGES.map((item) => `
+        ${OWNED_PACKAGES.map((item) => {
+          const status = getPackageHistoryStatus(item.expiresAt);
+          return `
           <article class="package-owned-card" data-owned-package="${escapeHTML(item.id)}">
             <div class="package-owned-card-top">
               <span class="package-product-badge">${escapeHTML(item.product)}</span>
-              <span class="package-status"><i data-lucide="circle-check" aria-hidden="true"></i>Active</span>
+              <span class="package-status ${status.className}"><i data-lucide="${status.icon}" aria-hidden="true"></i>${status.label}</span>
             </div>
             <div class="package-owned-title-row">
-                <div>
-                  <h3>${escapeHTML(item.name)}</h3>
+                <div class="package-owned-info">
+                  <div class="package-owned-name-row">
+                    <h3>${escapeHTML(item.name)}</h3>
+                    <div class="package-autorenew-row">
+                      <span class="package-autorenew-label">Auto Renew</span>
+                      <label class="package-switch">
+                        <input type="checkbox" data-autorenew-input data-owned-package-id="${escapeHTML(item.id)}" ${item.autoRenew ? 'checked' : ''} aria-label="Auto renew ${escapeHTML(item.name)}">
+                        <span class="package-switch-track">
+                          <span class="package-switch-thumb"></span>
+                          <span class="package-autorenew-state" data-autorenew-state>${item.autoRenew ? 'ON' : 'OFF'}</span>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
                   <p>${escapeHTML(item.description)}</p>
                 </div>
             </div>
@@ -459,10 +475,20 @@ const PACKAGE_PLAN_DETAILS = {
                   <div class="package-countdown-units" role="group" aria-label="Remaining time">${renderCountdownUnits(item.expiresAt)}</div>
                 </div>
           </article>
-        `).join('')}
+        `;
+        }).join('')}
       </div>
     `;
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+  }
+
+  function handleAutoRenewChange(event) {
+    const input = event.target.closest('[data-autorenew-input]');
+    if (!input) return;
+    const item = OWNED_PACKAGES.find((packageItem) => packageItem.id === input.dataset.ownedPackageId);
+    if (item) item.autoRenew = input.checked;
+    const stateLabel = input.closest('.package-switch')?.querySelector('[data-autorenew-state]');
+    if (stateLabel) stateLabel.textContent = input.checked ? 'ON' : 'OFF';
   }
 
   function updateCountdowns() {
@@ -639,6 +665,7 @@ const PACKAGE_PLAN_DETAILS = {
   };
 
   window.addEventListener('popstate', () => activateTab(getTabFromURL(), false, false));
+  if (overview) overview.addEventListener('change', handleAutoRenewChange);
 
   renderOverview();
   renderPurchaseHistory();

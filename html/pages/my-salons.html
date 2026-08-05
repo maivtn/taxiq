@@ -103,7 +103,6 @@
     .skill-group-head { display: flex; align-items: center; gap: 8px; list-style: none; cursor: pointer; background: #f8faff; padding: 8px 9px; }
     .skill-group-head::-webkit-details-marker { display: none; }
     .skill-group-check { width: 14px; height: 14px; flex: 0 0 auto; accent-color: var(--nexora-brand); cursor: pointer; }
-    .skill-group-icon { width: 14px; height: 14px; flex: 0 0 auto; color: var(--nexora-brand); }
     .skill-group-title { min-width: 0; overflow: hidden; color: var(--nexora-text); font-size: 10px; font-weight: 900; letter-spacing: .04em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
     .skill-group-count { flex: 0 0 auto; border-radius: 999px; background: #e9edff; padding: 2px 7px; color: var(--nexora-brand); font-size: 10px; font-weight: 800; }
     .skill-group-chevron { width: 14px; height: 14px; flex: 0 0 auto; margin-left: auto; color: var(--nexora-subtle); transition: transform .16s ease; }
@@ -229,19 +228,6 @@
       ];
 
       var SKILL_SERVICE_CATALOG_URL = '../menu/menu.json';
-      var SKILL_CATEGORY_ICONS = {
-        pedicure: 'footprints',
-        manicure: 'sparkles',
-        'kids-menu': 'hand',
-        'acrylic-full-set': 'gem',
-        'acrylic-fill-in': 'gem',
-        'dipping-nail': 'layers-3',
-        'builder-gel': 'droplets',
-        'gel-x': 'droplets',
-        'gel-additional-services': 'droplets',
-        additional: 'folder-tree',
-        waxing: 'flower-2'
-      };
 
       var SKILL_CATEGORIES = [];
       var skillCatalogState = 'loading';
@@ -328,7 +314,6 @@
             '<details class="skill-group" data-skill-group="' + esc(cat.key) + '">' +
               '<summary class="skill-group-head">' +
                 '<input type="checkbox" class="skill-group-check" data-skill-category="' + esc(cat.key) + '" aria-label="Select all ' + esc(cat.label) + ' services">' +
-                '<i data-lucide="' + esc(cat.icon) + '" class="skill-group-icon" aria-hidden="true"></i>' +
                 '<span class="skill-group-title">' + esc(cat.label) + '</span>' +
                 '<span class="skill-group-count">' + cat.services.length + '</span>' +
                 '<i data-lucide="chevron-down" class="skill-group-chevron" aria-hidden="true"></i>' +
@@ -358,7 +343,6 @@
             return {
               key: cat.id,
               label: cat.name,
-              icon: SKILL_CATEGORY_ICONS[cat.id] || 'folder-tree',
               services: cat.services
             };
           });
