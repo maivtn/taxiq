@@ -1,0 +1,2327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - Customer Kiosk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    /* Nexora shared salon store — one validated state, serialized with Web Locks or an IndexedDB transaction fallback. */
+    window.NexoraStore = (function(){
+      const KEY='nexora-touch-salon-v1';
+      const LOCK=KEY+':writer';
+      const FALLBACK_DB=KEY+'-coordination';
+      const FALLBACK_STORE='writer-locks';
+      const REQUIRED_ARRAYS=['categoryList','services','products','salonRoles','orders','tickets','bookings','customers','staff','pendingCheckins','paymentProofs','addonRequests','destructiveAuditLog'];
+      const LEGACY_ROLE_PERMISSIONS={
+        Owner:['booking','customer','orderticket','checkout','void','staff','report','payment'],
+        Manager:['booking','customer','orderticket','checkout','void','staff','report'],
+        Cashier:['booking','customer','orderticket','checkout'],
+        Technician:['orderticket']
+      };
+
+      const plain=value=>Boolean(value)&&typeof value==='object'&&!Array.isArray(value);
+      const finite=value=>typeof value==='number'&&Number.isFinite(value);
+      const nonNegative=value=>finite(value)&&value>=0;
+      const integer=value=>Number.isInteger(value)&&value>=0;
+      const clone=value=>JSON.parse(JSON.stringify(value));
+      const validId=value=>typeof value==='string'&&value.trim().length>0;
+      const stringArray=value=>Array.isArray(value)&&value.every(item=>typeof item==='string');
+      const hasOwn=(value,key)=>Object.keys(value).includes(key);
+      const optional=(item,key,check)=>!(key in item)||check(item[key]);
+      const pricedItem=item=>plain(item)&&validId(item.name)&&nonNegative(item.price)&&optional(item,'qty',integer)&&optional(item,'dur',nonNegative)&&optional(item,'cats',stringArray);
+      const scheduleRow=item=>plain(item)&&validId(item.d)&&typeof item.on==='boolean'&&optional(item,'from',value=>typeof value==='string')&&optional(item,'to',value=>typeof value==='string');
+      const timelineItem=item=>typeof item==='string';
+      const tipAllocationItem=item=>plain(item)&&validId(item.staff)&&validId(item.ticket)&&nonNegative(item.svc)&&nonNegative(item.share);
+      const validOrder=item=>plain(item)&&validId(item.id)&&validId(item.customer)&&
+        Array.isArray(item.unassigned)&&item.unassigned.every(pricedItem)&&Array.isArray(item.products)&&item.products.every(pricedItem)&&
+        Array.isArray(item.timeline)&&item.timeline.every(timelineItem)&&optional(item,'qty',integer)&&optional(item,'tk',integer)&&optional(item,'tip',nonNegative)&&
+        optional(item,'rating',nonNegative)&&optional(item,'discount',nonNegative)&&optional(item,'closed',value=>typeof value==='boolean')&&
+        optional(item,'voided',value=>typeof value==='boolean')&&optional(item,'tipAlloc',value=>value===null||(Array.isArray(value)&&value.every(tipAllocationItem)));
+      const validTicket=item=>plain(item)&&validId(item.id)&&validId(item.orderId)&&validId(item.status)&&Array.isArray(item.services)&&
+        item.services.every(pricedItem)&&Array.isArray(item.timeline)&&item.timeline.every(timelineItem)&&optional(item,'tip',nonNegative)&&
+        optional(item,'tipShare',nonNegative)&&optional(item,'rating',nonNegative);
+
+      function validateState(state){
+        if(!plain(state))return {ok:false,reason:'invalid'};
+        if(!integer(state.rev))return {ok:false,reason:'invalid'};
+        if(!REQUIRED_ARRAYS.every(key=>Array.isArray(state[key])))return {ok:false,reason:'invalid'};
+        if(!plain(state.catalog)||!plain(state.salonCfg)||!plain(state.payTotals))return {ok:false,reason:'invalid'};
+        if(!['seq','bookingSeq','proofSeq','addonSeq'].every(key=>integer(state[key])))return {ok:false,reason:'invalid'};
+        if(!stringArray(state.categoryList))return {ok:false,reason:'invalid'};
+        if(!state.services.every(item=>pricedItem(item)&&stringArray(item.cats)))return {ok:false,reason:'invalid'};
+        if(!Object.values(state.catalog).every(list=>Array.isArray(list)&&list.every(pricedItem)))return {ok:false,reason:'invalid'};
+        if(!state.products.every(item=>pricedItem(item)&&stringArray(item.cats)&&optional(item,'active',value=>typeof value==='boolean')))return {ok:false,reason:'invalid'};
+        if(!state.salonRoles.every(item=>plain(item)&&validId(item.name)&&stringArray(item.perms)&&optional(item,'builtin',value=>typeof value==='boolean')))return {ok:false,reason:'invalid'};
+        if(!optional(state.salonCfg,'sched',value=>Array.isArray(value)&&value.every(scheduleRow)))return {ok:false,reason:'invalid'};
+        if(!state.orders.every(validOrder))return {ok:false,reason:'invalid'};
+        if(!state.tickets.every(validTicket))return {ok:false,reason:'invalid'};
+        if(!state.bookings.every(item=>plain(item)&&validId(item.id)&&validId(item.status)&&Array.isArray(item.history)&&item.history.every(timelineItem)&&optional(item,'duration',nonNegative)))return {ok:false,reason:'invalid'};
+        if(!state.customers.every(item=>plain(item)&&validId(item.name)&&optional(item,'tags',stringArray)&&optional(item,'notes',plain)))return {ok:false,reason:'invalid'};
+        if(!state.staff.every(item=>plain(item)&&validId(item.short)&&typeof item.clocked==='boolean'&&integer(item.turn)&&optional(item,'schedule',value=>Array.isArray(value)&&value.every(scheduleRow))&&optional(item,'services',stringArray)))return {ok:false,reason:'invalid'};
+        if(!nonNegative(state.baseTips)||!integer(state.baseTipCount))return {ok:false,reason:'invalid'};
+        if(!Object.values(state.payTotals).every(nonNegative))return {ok:false,reason:'invalid'};
+        if(!state.pendingCheckins.every(item=>plain(item)&&validId(item.id)&&validId(item.name)&&Array.isArray(item.services)&&item.services.every(pricedItem)&&optional(item,'tags',stringArray)))return {ok:false,reason:'invalid'};
+        if(!state.paymentProofs.every(item=>plain(item)&&validId(item.id)&&validId(item.orderId)&&validId(item.status)&&nonNegative(item.amount)&&optional(item,'tip',nonNegative)&&optional(item,'discount',nonNegative)&&optional(item,'rating',nonNegative)&&optional(item,'history',value=>Array.isArray(value)&&value.every(timelineItem))))return {ok:false,reason:'invalid'};
+        if(!state.addonRequests.every(item=>plain(item)&&validId(item.id)&&validId(item.ticketId)&&validId(item.orderId)&&validId(item.status)&&pricedItem(item.service)&&optional(item,'history',value=>Array.isArray(value)&&value.every(timelineItem))))return {ok:false,reason:'invalid'};
+        if(!state.destructiveAuditLog.every(item=>plain(item)&&validId(item.entity)&&validId(item.target)&&validId(item.reason)))return {ok:false,reason:'invalid'};
+        return {ok:true,reason:'valid',state};
+      }
+
+      function migrateLegacyState(state){
+        if(!plain(state))return {state,migrated:false};
+        const roleEntries=plain(state.rolePermissions)?Object.entries(state.rolePermissions):[];
+        const knownLegacyShape=!hasOwn(state,'salonRoles')&&!hasOwn(state,'destructiveAuditLog')&&
+          roleEntries.length>0&&state.rolePermissions.Owner==='Owner'&&
+          roleEntries.every(([name,template])=>validId(name)&&typeof template==='string'&&hasOwn(LEGACY_ROLE_PERMISSIONS,template));
+        if(!knownLegacyShape)return {state,migrated:false};
+        const next=clone(state);
+        next.salonRoles=roleEntries.map(([name,template])=>({name,perms:[...LEGACY_ROLE_PERMISSIONS[template]],builtin:name==='Owner'}));
+        next.destructiveAuditLog=[];
+        return {state:next,migrated:true};
+      }
+
+      function inspect(){
+        try{
+          const raw=localStorage.getItem(KEY);
+          if(!raw)return {ok:true,state:null,reason:'missing'};
+          const migration=migrateLegacyState(JSON.parse(raw));
+          const state=migration.state;
+          const validation=validateState(state);
+          return validation.ok?{ok:true,state,reason:migration.migrated?'migrated':'valid'}:{ok:false,state:null,reason:'invalid'};
+        }catch(error){return {ok:false,state:null,reason:'invalid'};}
+      }
+
+      function load(){
+        const result=inspect();
+        return result.ok&&result.state?result.state:null;
+      }
+
+      function unavailable(state=null){return {ok:false,state,reason:'unavailable'};}
+
+      let fallbackDatabasePromise=null;
+      function openFallbackDatabase(){
+        if(fallbackDatabasePromise)return fallbackDatabasePromise;
+        if(typeof indexedDB==='undefined'||!indexedDB||typeof indexedDB.open!=='function')return Promise.reject(new Error('IndexedDB unavailable'));
+        fallbackDatabasePromise=new Promise((resolve,reject)=>{
+          let request,finished=false;
+          const fail=error=>{if(!finished){finished=true;reject(error);}};
+          try{request=indexedDB.open(FALLBACK_DB,1);}
+          catch(error){fail(error);return;}
+          request.onupgradeneeded=()=>{
+            const database=request.result;
+            if(!database.objectStoreNames.contains(FALLBACK_STORE))database.createObjectStore(FALLBACK_STORE);
+          };
+          request.onsuccess=()=>{
+            const database=request.result;
+            if(finished){database.close();return;}
+            finished=true;
+            database.onversionchange=()=>{fallbackDatabasePromise=null;database.close();};
+            database.onclose=()=>{fallbackDatabasePromise=null;};
+            resolve(database);
+          };
+          request.onerror=()=>fail(request.error||new Error('IndexedDB open failed'));
+          request.onblocked=()=>fail(new Error('IndexedDB open blocked'));
+        }).catch(error=>{fallbackDatabasePromise=null;throw error;});
+        return fallbackDatabasePromise;
+      }
+
+      async function underFallbackLock(work){
+        let database;
+        try{database=await openFallbackDatabase();}
+        catch(error){return unavailable();}
+        return new Promise(resolve=>{
+          let transaction,store;
+          let keepAlive=true,started=false,settled=false;
+          let result=unavailable();
+          const finish=value=>{if(!settled){settled=true;resolve(value);}};
+          const fail=()=>finish(unavailable(result&&result.state||null));
+          try{
+            transaction=database.transaction(FALLBACK_STORE,'readwrite');
+            store=transaction.objectStore(FALLBACK_STORE);
+          }catch(error){finish(unavailable());return;}
+          transaction.oncomplete=()=>finish(result);
+          transaction.onabort=fail;
+          transaction.onerror=fail;
+          const pulse=()=>{
+            if(!keepAlive)return;
+            let request;
+            try{request=store.get(LOCK);}
+            catch(error){keepAlive=false;try{transaction.abort();}catch(abortError){fail();}return;}
+            request.onerror=()=>{keepAlive=false;try{transaction.abort();}catch(error){fail();}};
+            request.onsuccess=()=>{
+              if(!started){
+                started=true;
+                pulse();
+                Promise.resolve().then(work).then(value=>{result=value;keepAlive=false;},()=>{result=unavailable();keepAlive=false;});
+              }else if(keepAlive)pulse();
+            };
+          };
+          pulse();
+        });
+      }
+
+      async function underLock(work){
+        if(typeof navigator!=='undefined'&&navigator.locks&&typeof navigator.locks.request==='function'){
+          try{return await navigator.locks.request(LOCK,{mode:'exclusive'},work);}
+          catch(error){return unavailable();}
+        }
+        return underFallbackLock(work);
+      }
+
+      function writeCandidate(candidate,nextRevision,current){
+        const validation=validateState(candidate);
+        if(!validation.ok)return {ok:false,state:current,reason:'invalid'};
+        const next=clone(candidate);
+        next.rev=nextRevision;
+        next.savedAt=new Date().toISOString();
+        const nextValidation=validateState(next);
+        if(!nextValidation.ok)return {ok:false,state:current,reason:'invalid'};
+        try{localStorage.setItem(KEY,JSON.stringify(next));}
+        catch(error){return unavailable(current);}
+        return {ok:true,state:clone(next),reason:'saved'};
+      }
+
+      async function saveAtomic(state,expectedRevision){
+        const expected=Number(expectedRevision);
+        if(!Number.isInteger(expected)||expected<0)return {ok:false,state:null,reason:'invalid'};
+        const candidate=clone(state);
+        candidate.rev=expected;
+        if(!validateState(candidate).ok)return {ok:false,state:null,reason:'invalid'};
+        return underLock(async()=>{
+          const currentResult=inspect();
+          if(!currentResult.ok)return currentResult;
+          const current=currentResult.state;
+          if(!current&&expected!==0)return unavailable();
+          if(current&&Number(current.rev)!==expected)return {ok:false,state:clone(current),reason:'stale'};
+          return writeCandidate(candidate,expected+1,current);
+        });
+      }
+
+      async function transact(expectedRevision,mutate){
+        const expected=Number(expectedRevision);
+        if(!Number.isInteger(expected)||expected<0||typeof mutate!=='function')return {ok:false,state:null,reason:'invalid'};
+        return underLock(async()=>{
+          const currentResult=inspect();
+          if(!currentResult.ok||!currentResult.state)return currentResult.ok?unavailable():currentResult;
+          const current=currentResult.state;
+          if(Number(current.rev)!==expected)return {ok:false,state:clone(current),reason:'stale'};
+          const candidate=clone(current);
+          try{if(await mutate(candidate)===false)return {ok:false,state:clone(current),reason:'rejected'};}
+          catch(error){return unavailable(clone(current));}
+          return writeCandidate(candidate,expected+1,current);
+        });
+      }
+
+      async function updateAtomic(mutate){
+        if(typeof mutate!=='function')return {ok:false,state:null,reason:'invalid'};
+        return underLock(async()=>{
+          const currentResult=inspect();
+          if(!currentResult.ok||!currentResult.state)return currentResult.ok?unavailable():currentResult;
+          const current=currentResult.state;
+          const candidate=clone(current);
+          try{if(await mutate(candidate)===false)return {ok:false,state:clone(current),reason:'rejected'};}
+          catch(error){return unavailable(clone(current));}
+          return writeCandidate(candidate,Number(current.rev)+1,current);
+        });
+      }
+
+      function subscribe(callback){
+        window.addEventListener('storage',event=>{
+          if(event.key!==KEY||!event.newValue)return;
+          try{
+            const state=JSON.parse(event.newValue);
+            if(validateState(state).ok)callback(state);
+          }catch(error){/* Invalid remote authority is ignored. */}
+        });
+      }
+
+      async function resetAtomic(resetState){
+        if(!plain(resetState))return {ok:false,state:null,reason:'invalid'};
+        let candidate;
+        try{candidate=clone(resetState);}catch(error){return {ok:false,state:null,reason:'invalid'};}
+        candidate.rev=0;
+        if(!validateState(candidate).ok)return {ok:false,state:null,reason:'invalid'};
+        return underLock(async()=>{
+          const currentResult=inspect();
+          if(!currentResult.ok||!currentResult.state)return currentResult.ok?unavailable():currentResult;
+          return writeCandidate(candidate,Number(currentResult.state.rev)+1,currentResult.state);
+        });
+      }
+
+      return {KEY,LOCK,load,inspect,validateState,saveAtomic,transact,updateAtomic,subscribe,resetAtomic};
+    })();
+  </script>
+  <style>
+    :root {
+      /* Brand */
+      --primary-base: #4648D4;
+      --primary-hover: #3A3BBF;
+      --primary-subtle: #E9E9FF;
+      --background-default: #F8FAFC;
+      --surface-default: #FFFFFF;
+      --surface-selected: #F6F7FF;
+      --border-default: #E2E8F0;
+      --border-strong: #CBD5E1;
+      --radius-control: 12px;
+      --radius-card: 14px;
+      --radius-panel: 18px;
+      --radius-pill: 999px;
+      --shadow-panel: 0 18px 48px rgba(11, 28, 48, .10);
+      --shadow-modal: 0 24px 64px rgba(11, 28, 48, .16);
+      --violet: #7C3AED;
+      --indigo: #6366F1;
+      --fuchsia: #D946EF;
+      --blue: #3B82F6;
+      --pink: #EC4899;
+      --pink-bg: #FDF2F8;
+      /* Text */
+      --text-primary: #191634;
+      --text-secondary: #6B7185;
+      --text-muted: #8A8FA3;
+      --text-placeholder: #A9AEC2;
+      /* Surface */
+      --surface-hover: #F7F6FD;
+      /* Status */
+      --status-success: #10B981;
+      --status-warning: #F59E0B;
+      --status-error: #EF4444;
+      /* Signature aurora gradient */
+      --aurora: linear-gradient(100deg, #D946EF 0%, #8B5CF6 42%, #6366F1 72%, #3B82F6 100%);
+      /* Shadows — soft, layered, violet-tinted */
+      --shadow-sm: 0 1px 2px rgba(24, 20, 54, .05);
+      --shadow-key: 0 1px 2px rgba(24, 20, 54, .06), 0 4px 12px -6px rgba(76, 29, 149, .16);
+      --shadow-card: 0 1px 2px rgba(24, 20, 54, .04), 0 16px 38px -16px rgba(76, 29, 149, .22);
+      --shadow-modal: 0 24px 64px -14px rgba(24, 20, 54, .30);
+      /* Legacy aliases */
+      --ink: var(--text-primary);
+      --muted: var(--text-secondary);
+      --line: var(--border-default);
+      --green: var(--status-success);
+      --amber: var(--status-warning);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text-primary);
+      background:
+        radial-gradient(1100px 620px at 8% -10%, rgba(217, 70, 239, .10), transparent 58%),
+        radial-gradient(1000px 640px at 100% -8%, rgba(99, 102, 241, .13), transparent 56%),
+        radial-gradient(1200px 760px at 50% 120%, rgba(124, 58, 237, .10), transparent 60%),
+        linear-gradient(170deg, #F5F3FC 0%, #F7F1FB 52%, #EEF1FD 100%);
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .kiosk-language {
+      position: relative;
+      display: none;
+      flex-shrink: 0;
+    }
+
+    .language-trigger {
+      height: auto;
+      min-width: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      border-radius: 999px;
+      padding: 4px 2px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0;
+      box-shadow: none;
+      transition: opacity .15s ease, transform .05s ease;
+    }
+
+    .language-trigger:hover {
+      opacity: .72;
+    }
+
+    .language-trigger:active {
+      transform: scale(.97);
+    }
+
+    .language-trigger .lucide-globe-2 {
+      width: 10px;
+      height: 10px;
+    }
+
+    .language-trigger .language-chevron {
+      width: 10px;
+      height: 10px;
+      color: var(--text-secondary);
+      transition: transform .18s ease;
+    }
+
+    .language-trigger[aria-expanded="true"] .language-chevron {
+      transform: rotate(180deg);
+    }
+
+    .language-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 10px);
+      z-index: 90;
+      width: 172px;
+      padding: 7px;
+      background: var(--surface-default);
+      border: 1px solid var(--border-default);
+      border-radius: 16px;
+      box-shadow: var(--shadow-modal);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px) scale(.98);
+      transform-origin: top right;
+      transition: opacity .16s ease, transform .16s ease, visibility .16s;
+    }
+
+    .language-menu.on {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    .language-option {
+      width: 100%;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border: 0;
+      background: transparent;
+      color: var(--text-primary);
+      border-radius: 11px;
+      padding: 0 12px;
+      font-size: 14px;
+      font-weight: 650;
+      text-align: left;
+      transition: background .12s ease;
+    }
+
+    .language-option:hover,
+    .language-option:focus-visible {
+      outline: none;
+      background: var(--surface-hover);
+    }
+
+    .language-option.active {
+      background: var(--primary-subtle);
+      color: var(--primary-base);
+      font-weight: 800;
+    }
+
+    .language-option .language-check {
+      width: 15px;
+      height: 15px;
+      color: var(--primary-base);
+      opacity: 0;
+      transition: opacity .12s ease;
+    }
+
+    .language-option.active .language-check {
+      opacity: 1;
+    }
+
+    /* ===== Mobile app shell (default frame) ===== */
+    #customer-kiosk {
+      min-height: 100dvh;
+    }
+
+    .mc-shell {
+      position: relative;
+      width: 100%;
+      max-width: 460px;
+      min-height: 100dvh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (min-width:461px) {
+      .mc-shell {
+        box-shadow: var(--shadow-panel);
+      }
+    }
+
+    .kiosk-top {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 14px 18px 0;
+      padding-top: calc(14px + env(safe-area-inset-top));
+    }
+
+    .mc-brand-row {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 4px 18px 14px;
+    }
+
+    .mc-brand-mark {
+      display: flex;
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 13px;
+      background: #fff;
+      padding: 6px;
+      box-shadow: var(--shadow-key);
+    }
+
+    .mc-brand-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .mc-brand-copy {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .mc-brand-copy b {
+      display: block;
+      font-size: 15px;
+      font-weight: 850;
+      color: var(--text-primary);
+      letter-spacing: 0;
+    }
+
+    .mc-brand-copy span {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      font-weight: 650;
+      color: var(--text-secondary);
+    }
+
+    /* ===== Shell / screens ===== */
+    .kiosk-shell {
+      flex: 1;
+      padding: 0 18px 34px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .kiosk-screen {
+      display: none;
+      width: 100%;
+    }
+
+    .kiosk-screen.active {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      animation: screenIn .45s cubic-bezier(.22, .61, .36, 1);
+    }
+
+    /* ===== Phone-number step ===== */
+    .mc-input {
+      width: 100%;
+      min-height: 56px;
+      margin-top: 14px;
+      border: 1.5px solid var(--border-default);
+      border-radius: 15px;
+      padding: 15px 17px;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      font-variant-numeric: tabular-nums;
+      background: #fff;
+      color: var(--text-primary);
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .mc-input::placeholder {
+      color: var(--text-placeholder);
+      font-weight: 600;
+    }
+
+    .mc-input:focus {
+      outline: none;
+      border-color: var(--primary-base);
+      box-shadow: 0 0 0 4px var(--primary-subtle);
+    }
+
+    #formState {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      position: relative;
+      background: linear-gradient(180deg, #FFFFFF, #FDFCFF);
+      border: 1px solid var(--border-default);
+      border-radius: 18px;
+      box-shadow: var(--shadow-card);
+      padding: 16px;
+    }
+
+    .card.tight {
+      padding: 18px 22px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      letter-spacing: 0;
+    }
+
+    .card-lead {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 7px;
+      line-height: 1.55;
+    }
+
+    .info-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .info-lines div {
+      font-size: 14px;
+      color: var(--text-primary);
+      line-height: 1.5;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .info-lines .em {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-hover);
+      box-shadow: inset 0 0 0 1px rgba(124, 58, 237, .06);
+    }
+
+    .info-lines .em i {
+      width: 20px;
+      height: 20px;
+      color: var(--primary-base);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* recognized banner */
+    .recog-banner {
+      border: 1px solid #E9D5FF;
+      background: linear-gradient(135deg, #FAF5FF, #F3F0FF);
+      color: #6D28D9;
+      border-radius: 18px;
+      padding: 15px 17px;
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 1.5;
+      display: flex;
+      gap: 11px;
+      align-items: center;
+      box-shadow: 0 10px 24px -16px rgba(124, 58, 237, .5);
+    }
+
+    .name-input {
+      width: 100%;
+      min-height: 56px;
+      border: 1.5px solid var(--border-default);
+      border-radius: 15px;
+      padding: 15px 17px;
+      font-size: 16px;
+      font-weight: 600;
+      background: #fff;
+      color: var(--text-primary);
+      margin-top: 16px;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .name-input::placeholder {
+      color: var(--text-placeholder);
+      font-weight: 500;
+    }
+
+    .name-input:focus {
+      outline: none;
+      border-color: var(--primary-base);
+      box-shadow: 0 0 0 4px var(--primary-subtle);
+    }
+
+    /* ===== Service selection ===== */
+    .service-selection-card {
+      padding: 16px;
+    }
+
+    .service-panel-head {
+      margin-bottom: 16px;
+    }
+
+    .service-panel-head .card-title {
+      gap: 8px;
+    }
+
+    .service-panel-head .card-title i {
+      width: 19px;
+      height: 19px;
+      color: var(--primary-base);
+    }
+
+    .service-panel-hint {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-top: 5px;
+    }
+
+    .service-accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .service-category {
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-panel);
+      background: var(--surface-default);
+      overflow: hidden;
+    }
+
+    .service-category.open {
+      border-color: rgba(70, 72, 212, .42);
+      box-shadow: 0 8px 20px rgba(70, 72, 212, .10);
+    }
+
+    .category-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 0;
+      background: var(--surface-default);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      text-align: left;
+    }
+
+    .service-category.open .category-trigger {
+      background: var(--surface-selected);
+    }
+
+    .category-trigger:hover,
+    .category-trigger:focus-visible {
+      background: var(--surface-hover);
+      outline: none;
+    }
+
+    .category-trigger:focus-visible {
+      box-shadow: inset 0 0 0 3px var(--primary-subtle);
+    }
+
+    .category-trigger i {
+      width: 18px;
+      height: 18px;
+      color: var(--text-secondary);
+      transition: transform .16s ease;
+    }
+
+    .service-category.open .category-trigger i {
+      transform: rotate(180deg);
+    }
+
+    .category-title {
+      min-width: 0;
+      flex: 1;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .category-kind {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    .category-count {
+      min-width: 28px;
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: var(--background-default);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .category-content {
+      display: none;
+      padding: 8px 12px 12px;
+    }
+
+    .service-category.open .category-content {
+      display: block;
+    }
+
+    .service-category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .service-card {
+      position: relative;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 2px;
+      border: 1px solid #e1d8f3;
+      border-radius: 13px;
+      background: linear-gradient(145deg, #fff, #fdfbff);
+      padding: 6px 8px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+
+    .service-card:hover {
+      border-color: #edacd0;
+      background: #fffafd;
+      transform: translateY(-1px);
+      box-shadow: 0 7px 16px rgba(247, 53, 152, .12);
+    }
+
+    .service-card:focus-visible {
+      outline: 3px solid rgba(247, 53, 152, .28);
+      outline-offset: 3px;
+    }
+
+    .service-card:active {
+      transform: translateY(0);
+    }
+
+    .service-card[aria-pressed="true"] {
+      border-color: var(--pink);
+      background: linear-gradient(145deg, #fff5fb, #fcf1ff);
+      box-shadow: 0 7px 16px rgba(247, 53, 152, .12);
+    }
+
+    .service-card-main {
+      display: contents;
+    }
+
+    .service-selected-check {
+      position: absolute;
+      top: 6px;
+      right: 7px;
+      display: grid;
+      width: 17px;
+      height: 17px;
+      place-items: center;
+      color: #b8b1cb;
+      background: transparent;
+      border-radius: 50%;
+    }
+
+    .service-selected-check.is-selected {
+      color: #fff;
+      background: var(--pink);
+      box-shadow: 0 1px 3px rgba(236, 72, 153, .45);
+    }
+
+    .selected-check-icon {
+      width: 11px;
+      height: 11px;
+      stroke-width: 3.4;
+    }
+
+    .service-selected-check:not(.is-selected) .selected-check-icon {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2;
+    }
+
+    .service-card-title {
+      order: 1;
+      display: block;
+      width: 100%;
+      min-width: 0;
+      margin-top: 0;
+      line-height: 1.25;
+    }
+
+    .service-card-title strong {
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .service-type-tag {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 5px;
+      padding: 2px 5px;
+      border-radius: 999px;
+      color: #6d5be6;
+      background: #f1edff;
+      font-size: 10px;
+      font-weight: 850;
+      line-height: 1.2;
+      vertical-align: middle;
+    }
+
+    .service-card-meta {
+      order: 2;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      width: auto;
+      margin-top: 0;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .service-card-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      min-width: 0;
+    }
+
+    .service-card-meta>span:first-child {
+      order: 2;
+    }
+
+    .service-price {
+      order: 1;
+      color: #d21c73;
+      font-size: 16px;
+      font-weight: 900;
+      text-align: left;
+    }
+
+    .service-price::after {
+      content: "·";
+      margin-left: 8px;
+      color: #aea6c5;
+    }
+
+    .service-price.is-complimentary {
+      font-size: 11px;
+    }
+
+    .service-details-button {
+      order: 3;
+      width: auto;
+      min-height: 29px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      margin-top: 7px;
+      flex: 0 0 auto;
+      padding: 4px 8px;
+      border: 1px solid #ded5f0;
+      border-radius: 9px;
+      color: #6d5be6;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .service-details-button:hover,
+    .service-details-button:focus-visible {
+      border-color: #c9b8ee;
+      background: #faf7ff;
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .service-details-button i {
+      display: none;
+    }
+
+    .service-loading,
+    .service-error {
+      padding: 18px;
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-card, 14px);
+      color: var(--text-secondary);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    /* selected services */
+    #selectedServices {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-default);
+    }
+
+    .selected-services-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .selected-services-head h3 {
+      font-size: 15px;
+      font-weight: 850;
+      color: var(--text-primary);
+    }
+
+    .selected-services-empty {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .selected-service-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .selected-service-chip {
+      min-width: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border-default);
+      border-radius: 999px;
+      background: var(--surface-hover);
+      padding: 5px 6px 5px 10px;
+    }
+
+    .selected-service-chip-text {
+      min-width: 0;
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 4px;
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .selected-service-chip-category {
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    .selected-service-chip-remove {
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 50%;
+      background: var(--surface-default);
+      color: var(--status-error);
+    }
+
+    .selected-service-chip-remove:hover,
+    .selected-service-chip-remove:focus-visible {
+      background: #FEE2E2;
+      outline: none;
+    }
+
+    .selected-service-chip-remove i,
+    .selected-service-chip-remove svg {
+      width: 11px;
+      height: 11px;
+      stroke-width: 1.5;
+    }
+
+    .service-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .service-summary-item {
+      min-width: 0;
+      padding: 9px 8px;
+      border-radius: var(--radius-control, 12px);
+      background: var(--background-default);
+    }
+
+    .service-summary-label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .service-summary-value {
+      display: block;
+      margin-top: 3px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 850;
+      overflow-wrap: anywhere;
+    }
+
+    .service-note-card {
+      margin-top: 10px;
+      padding: 0;
+      border: 1px solid #e3d9f4;
+      border-radius: 18px;
+      background: #fbf8ff;
+      box-shadow: none;
+      overflow: hidden;
+    }
+
+    .service-note {
+      margin: 0;
+    }
+
+    .service-note-toggle {
+      width: 100%;
+      min-height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border: 0;
+      background: transparent;
+      color: var(--text-primary);
+      padding: 0 14px;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .service-note-toggle:hover,
+    .service-note-toggle:focus-visible {
+      color: var(--primary-base);
+      background: #f7f1ff;
+      outline: none;
+    }
+
+    .service-note-toggle[aria-expanded="true"] {
+      border-bottom: 1px solid #e3d9f4;
+    }
+
+    .service-note-toggle i {
+      width: 16px;
+      height: 16px;
+      transition: transform .16s ease;
+    }
+
+    .service-note-toggle[aria-expanded="true"] i {
+      transform: rotate(180deg);
+    }
+
+    .service-note-content {
+      margin: 0;
+      padding: 10px 16px 14px;
+      color: #4d4968;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .service-note-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin: 0;
+      padding-left: 20px;
+      list-style: disc;
+    }
+
+    .service-note-list li::marker {
+      color: #6d5be6;
+    }
+
+    /* service details modal */
+    .service-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(29, 27, 58, .42);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+
+    .service-modal.hidden {
+      display: none;
+    }
+
+    .service-modal-card {
+      position: relative;
+      width: min(100%, 520px);
+      max-height: min(85vh, 620px);
+      overflow: auto;
+      padding: 22px;
+      border: 1px solid rgba(226, 220, 241, .95);
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: 0 24px 70px rgba(46, 28, 81, .28);
+    }
+
+    .service-modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .service-modal-head h2 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 850;
+    }
+
+    .service-modal-close {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 32px;
+      border: 1px solid var(--border-default);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--text-secondary);
+    }
+
+    .service-modal-close:hover,
+    .service-modal-close:focus-visible {
+      border-color: var(--primary-base);
+      color: var(--primary-base);
+      outline: none;
+    }
+
+    .service-modal-close i {
+      width: 16px;
+      height: 16px;
+    }
+
+    .service-modal-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .service-modal-meta span {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 5px;
+      padding: 7px 10px;
+      border-radius: 10px;
+      color: var(--text-secondary);
+      background: #f8f5ff;
+      font-size: 12px;
+    }
+
+    .service-modal-meta [data-service-duration-meta][hidden] {
+      display: none !important;
+    }
+
+    .service-modal-meta small {
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .service-modal-meta strong {
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .service-modal-description {
+      margin: 18px 0 0;
+      color: #4d4968;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.75;
+      letter-spacing: 0;
+      white-space: pre-line;
+    }
+
+    .service-modal-includes {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-default);
+    }
+
+    .service-modal-includes h3 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .service-modal-includes ul {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 0 0;
+      padding-left: 0;
+      color: #4d4968;
+      font-size: 14px;
+      line-height: 1.55;
+      list-style: none;
+    }
+
+    .service-modal-includes li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .service-modal-includes li i,
+    .service-modal-includes li svg {
+      width: 8px;
+      height: 8px;
+      flex: 0 0 8px;
+      margin-top: 7px;
+      color: var(--primary-base);
+      fill: currentColor;
+      stroke-width: 0;
+    }
+
+    .service-modal-footer {
+      width: 100%;
+      margin-top: 18px;
+      min-height: 44px;
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--primary-base);
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .service-modal-footer:hover,
+    .service-modal-footer:focus-visible {
+      border-color: var(--primary-base);
+      background: #faf7ff;
+      outline: none;
+    }
+
+    /* technician grid */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .tech {
+      position: relative;
+      border: 1px solid #e1d8f3;
+      background: linear-gradient(145deg, #fff, #fdfbff);
+      border-radius: 13px;
+      padding: 7px;
+      min-height: 58px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 2px;
+      text-align: center;
+      transition: border-color .18s ease, background .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+
+    .tech:hover {
+      border-color: #edacd0;
+      transform: translateY(-1px);
+      box-shadow: 0 7px 16px rgba(247, 53, 152, .12);
+    }
+
+    .tech:focus-visible {
+      outline: 3px solid rgba(247, 53, 152, .28);
+      outline-offset: 3px;
+    }
+
+    .tech .avatar {
+      display: none;
+    }
+
+    .tech .nm {
+      margin-top: 0;
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .tech .st {
+      margin-top: 2px;
+      font-size: 12px;
+      font-weight: 750;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .tech .st.avail {
+      color: var(--status-success);
+    }
+
+    .tech .st.busy {
+      color: var(--status-warning);
+    }
+
+    .tech .st.muted {
+      color: var(--text-placeholder);
+      font-weight: 600;
+    }
+
+    .tech .st .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 16%, transparent);
+    }
+
+    .tech.on {
+      border-color: var(--pink);
+      background: linear-gradient(145deg, #fff5fb, #fcf1ff);
+      box-shadow: 0 7px 16px rgba(247, 53, 152, .12);
+    }
+
+    .tech-selected-check {
+      position: absolute;
+      top: 7px;
+      right: 8px;
+      display: grid;
+      width: 17px;
+      height: 17px;
+      place-items: center;
+      border-radius: 50%;
+      color: #b8b1cb;
+      background: transparent;
+    }
+
+    .tech.on .tech-selected-check {
+      color: #fff;
+      background: var(--pink);
+      box-shadow: 0 1px 3px rgba(236, 72, 153, .45);
+    }
+
+    .tech-selected-check:not(.is-selected) .selected-check-icon {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2;
+    }
+
+    .tech.disabled {
+      opacity: .5;
+      cursor: default;
+    }
+
+    .tech.disabled:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: var(--border-default);
+    }
+
+    .tech.disabled .avatar {
+      filter: grayscale(1);
+    }
+
+    .sec-head {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: 0;
+    }
+
+    .sec-head span {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    /* check-in button */
+    .checkin-btn {
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      border-radius: 18px;
+      padding: 20px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0;
+      color: #fff;
+      background: var(--aurora);
+      background-size: 160% 100%;
+      background-position: 0% 50%;
+      box-shadow: 0 16px 34px -12px rgba(99, 102, 241, .5), inset 0 1px 0 rgba(255, 255, 255, .25);
+      transition: background-position .5s ease, filter .15s ease, opacity .15s ease, transform .06s ease, box-shadow .15s ease;
+    }
+
+    .checkin-btn:hover {
+      background-position: 100% 50%;
+      box-shadow: 0 20px 44px -12px rgba(99, 102, 241, .6), inset 0 1px 0 rgba(255, 255, 255, .3);
+    }
+
+    .checkin-btn:active {
+      transform: scale(.99);
+    }
+
+    .checkin-btn:disabled {
+      cursor: default;
+      filter: saturate(.25);
+      opacity: .5;
+      box-shadow: none;
+    }
+
+    .checkin-btn i {
+      width: 19px;
+      height: 19px;
+    }
+
+    /* ===== Done screen ===== */
+    #stepDone .done-wrap {
+      margin: 5vh 0 0;
+      text-align: center;
+      padding: 32px 22px;
+      background: linear-gradient(180deg, #FFFFFF, #FDFCFF);
+      border: 1px solid var(--border-default);
+      border-radius: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .done-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto;
+      display: grid;
+      place-items: center;
+      color: var(--primary-base);
+      animation: pop .5s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    .done-icon i {
+      width: 52px;
+      height: 52px;
+      stroke-width: 1.7;
+    }
+
+    .done-title {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--text-primary);
+      margin-top: 18px;
+      letter-spacing: 0;
+    }
+
+    .done-pos {
+      display: inline-block;
+      font-size: 62px;
+      font-weight: 900;
+      margin: 16px 0 10px;
+      line-height: 1;
+      background: var(--aurora);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    .done-sub {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .done-sub i {
+      width: 17px;
+      height: 17px;
+      color: var(--primary-base);
+    }
+
+    .done-again {
+      margin-top: 28px;
+    }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%) translateY(8px);
+      background: var(--text-primary);
+      color: #fff;
+      border-radius: 14px;
+      box-shadow: var(--shadow-modal);
+      padding: 13px 20px;
+      font-size: 14px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s ease, transform .22s ease;
+      z-index: 80;
+      max-width: calc(100vw - 32px);
+      text-align: center;
+    }
+
+    #toast.on {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @keyframes screenIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes formIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+
+      60% {
+        transform: scale(1.12);
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    #formState:not(.hidden) {
+      animation: formIn .4s cubic-bezier(.22, .61, .36, 1);
+    }
+
+    @media (max-width:360px) {
+      .service-category-grid,
+      .tech-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mc-brand-row {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .kiosk-shell {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="customer-kiosk">
+   <div class="mc-shell" data-checkin-mobile="true">
+    <header class="kiosk-top">
+      <div class="kiosk-language" id="kioskLanguage">
+        <button class="language-trigger" id="kioskLanguageTrigger" type="button" aria-haspopup="menu"
+          aria-expanded="false" aria-controls="kioskLanguageMenu" onclick="toggleKioskLanguageMenu(event)">
+          <i data-lucide="globe-2" aria-hidden="true"></i><span id="kioskLanguageCode">EN</span><i
+            data-lucide="chevron-down" class="language-chevron" aria-hidden="true"></i>
+        </button>
+        <div class="language-menu" id="kioskLanguageMenu" role="menu" aria-label="Language">
+          <button class="language-option active" type="button" data-language="en" role="menuitemradio"
+            aria-checked="true" onclick="setKioskLanguage('en')"><span>English</span><i data-lucide="check"
+              class="language-check" aria-hidden="true"></i></button>
+        </div>
+      </div>
+    </header>
+    <div class="mc-brand-row">
+      <div class="mc-brand-mark" aria-hidden="true"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1280px-Bitcoin.svg.png" alt=""></div>
+      <div class="mc-brand-copy">
+        <b>Bitcoin Nail Bar</b>
+        <span>Self check-in</span>
+      </div>
+    </div>
+
+    <main class="kiosk-shell">
+      <!-- ===== Check-in screen: phone stays visible + editable throughout ===== -->
+      <section class="kiosk-screen active" id="stepCheckin">
+        <div class="card tight">
+          <div class="card-title"><i data-lucide="phone" aria-hidden="true"></i><span>Enter your mobile
+              number</span></div>
+          <input class="mc-input" id="phoneInput" type="tel" inputmode="numeric" autocomplete="tel" autofocus
+            aria-label="Mobile number" placeholder="(555) 123-4567" oninput="onPhoneInput(this)">
+        </div>
+
+        <!-- Info state (phone not yet complete) -->
+        <div id="infoState">
+          <div class="card">
+            <div class="info-lines">
+              <div><span class="em"><i data-lucide="calendar-days" aria-hidden="true"></i></span><span>Have an
+                  appointment today? We'll find it automatically.</span></div>
+              <div><span class="em"><i data-lucide="heart" aria-hidden="true"></i></span><span>Been here before?
+                  We'll recognize you.</span></div>
+              <div><span class="em"><i data-lucide="sparkles" aria-hidden="true"></i></span><span>First visit? Just
+                  add your name — takes 10 seconds.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form state (phone complete) -->
+        <div id="formState" class="hidden">
+          <div class="recog-banner hidden" id="recogBanner"></div>
+
+          <div class="card">
+            <div class="card-title" id="nameCardTitle"><i data-lucide="sparkles" aria-hidden="true"></i><span>Nice
+                to meet you!</span></div>
+            <input class="name-input" id="nameInput" type="text" autocomplete="name" placeholder="Your name"
+              oninput="updateCheckinBtn()">
+          </div>
+
+          <div class="card service-selection-card">
+            <div class="service-panel-head">
+              <div>
+                <div class="card-title"><i data-lucide="sparkles" aria-hidden="true"></i><span>Choose
+                    services</span></div>
+                <p class="service-panel-hint">Tap a service card to select or remove it. Open one category at a time
+                  to keep the list easy to scan.</p>
+              </div>
+            </div>
+            <div class="service-accordion" id="serviceAccordion" aria-label="Services">
+              <div class="service-loading">Loading services…</div>
+
+            </div>
+            <div class="card service-note-card hidden" id="serviceNoteCard">
+              <div class="service-note">
+                <button class="service-note-toggle" id="serviceNoteToggle" type="button" aria-controls="serviceNote"
+                  aria-expanded="false" onclick="toggleServiceNote()"><span>Note</span><i data-lucide="chevron-down"
+                    aria-hidden="true"></i></button>
+                <div class="service-note-content hidden" id="serviceNote"></div>
+              </div>
+            </div>
+            <section id="selectedServices" class="hidden" aria-labelledby="selectedServicesTitle">
+              <div class="selected-services-head">
+                <h3 id="selectedServicesTitle">Selected services</h3>
+                <span class="selected-services-empty" id="selectedServicesEmpty">Choose one or more services</span>
+              </div>
+              <div class="selected-service-chips" id="selectedServiceChips"></div>
+              <div class="service-summary" aria-label="Service summary">
+                <div class="service-summary-item"><span class="service-summary-label">Services</span><strong
+                    class="service-summary-value" id="serviceSelectedCount">0</strong></div>
+                <div class="service-summary-item"><span class="service-summary-label">Total time</span><strong
+                    class="service-summary-value" id="serviceTotalDuration">—</strong></div>
+                <div class="service-summary-item"><span class="service-summary-label">Total</span><strong
+                    class="service-summary-value" id="serviceTotalPrice">$0.00</strong></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="card">
+            <div class="sec-head"><b>Technician</b><span>— optional, "First available" is fastest</span></div>
+            <div class="tech-grid" id="techGrid"></div>
+          </div>
+
+          <button class="checkin-btn" id="checkinBtn" type="button" disabled onclick="checkIn()"><i
+              data-lucide="check" aria-hidden="true"></i><span>Check me in</span></button>
+        </div>
+      </section>
+
+      <!-- ===== Done screen ===== -->
+      <section class="kiosk-screen" id="stepDone">
+        <div id="kiosk-done-card"></div>
+      </section>
+    </main>
+   </div>
+    <div id="toast" aria-live="polite"></div>
+    <div class="service-modal hidden" id="serviceDetailsModal" role="dialog" aria-modal="true"
+      aria-labelledby="serviceDetailsTitle" aria-describedby="serviceDetailsDescription"
+      onclick="if(event.target===this) closeServiceDetails()">
+      <div class="service-modal-card">
+        <div class="service-modal-head">
+          <div>
+            <h2 id="serviceDetailsTitle">Service details</h2>
+          </div>
+          <button class="service-modal-close" type="button" aria-label="Close details"
+            onclick="closeServiceDetails()"><i data-lucide="x" aria-hidden="true"></i></button>
+        </div>
+        <div class="service-modal-meta" aria-label="Service information">
+          <span><small>Price</small><strong id="serviceDetailsPrice">—</strong></span>
+          <span data-service-duration-meta><small>Duration</small><strong id="serviceDetailsDuration">—</strong></span>
+        </div>
+        <p class="service-modal-description" id="serviceDetailsDescription"></p>
+        <div class="service-modal-includes">
+          <h3>Includes</h3>
+          <ul id="serviceDetailsIncludes"></ul>
+        </div>
+        <button class="service-modal-footer" type="button" onclick="closeServiceDetails()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let toastTimer = null;
+    let kioskLanguage = 'en';
+
+    /* ===== Kiosk menu loaded from the salon menu source ===== */
+    const MENU_DATA_URL = '../../html/menu/menu.json';
+    let SERVICE_CATEGORIES = [];
+    let SERVICES = [];
+    let ALL_SVC = [];
+    let menuNotes = [];
+    let menuLoaded = false;
+    let menuLoadError = null;
+    const TECHS = [
+      { id: 'first', name: 'First available', services: [], status: 'first' },
+      { id: 'tina', name: 'Tina', services: [], status: 'available' },
+      { id: 'kim', name: 'Kim', services: [], status: 'available' },
+      { id: 'helen', name: 'Helen', services: [], status: 'busy' },
+      { id: 'andy', name: 'Andy', services: [], status: 'available' },
+      { id: 'vy', name: 'Vy', services: [], status: 'available' }
+    ];
+
+    /* ===== Runtime state ===== */
+    let phoneDigits = '';
+    let selectedServices = [];
+    let selectedTech = 'first';
+    let recognized = null;
+
+    const sharedStore = window.NexoraStore || null;
+    const money = n => '$' + Number(n || 0).toFixed(2);
+    const digitsOf = s => String(s || '').replace(/\D/g, '');
+
+    /* Minimal valid snapshot so this page works standalone (no need to open the POS app first
+       just to create the shared salon store). Only used to bootstrap a totally missing store —
+       saveAtomic(seed, 0) is a no-op if real salon data already exists. */
+    const SHARED_STORE_SEED = {
+      rev: 0,
+      categoryList: [], services: [], products: [], salonRoles: [],
+      orders: [], tickets: [], bookings: [], customers: [], staff: [],
+      pendingCheckins: [], paymentProofs: [], addonRequests: [], destructiveAuditLog: [],
+      catalog: {}, salonCfg: {}, payTotals: {},
+      seq: 0, bookingSeq: 0, proofSeq: 0, addonSeq: 0,
+      baseTips: 0, baseTipCount: 0
+    };
+    async function ensureSharedStore() {
+      if (!sharedStore || sharedStore.load()) return;
+      await sharedStore.saveAtomic(SHARED_STORE_SEED, 0);
+    }
+
+    /* ===== Remember this guest's phone/name on this device ===== */
+    const CONTACT_KEY = 'nexora-checkin-contact';
+    function loadSavedContact() {
+      try { return JSON.parse(localStorage.getItem(CONTACT_KEY)); } catch { return null; }
+    }
+    function saveContact(phone, name) {
+      try { localStorage.setItem(CONTACT_KEY, JSON.stringify({ phone, name })); } catch { }
+    }
+    const escapeHtml = s => String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    function refreshIcons(root = document) {
+      if (window.lucide?.createIcons) {
+        if (root === document) window.lucide.createIcons();
+        else window.lucide.createIcons({ root });
+      }
+    }
+    function kioskNow() { return new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); }
+    function formatPhone(d) {
+      d = digitsOf(d).slice(0, 10);
+      if (d.length > 6) return '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6);
+      if (d.length > 3) return '(' + d.slice(0, 3) + ') ' + d.slice(3);
+      if (d.length > 0) return '(' + d;
+      return '';
+    }
+
+    /* ===== Phone number step ===== */
+    function onPhoneInput(el) {
+      const caretAtEnd = el.selectionEnd === el.value.length;
+      phoneDigits = digitsOf(el.value).slice(0, 10);
+      el.value = formatPhone(phoneDigits);
+      if (caretAtEnd) el.setSelectionRange(el.value.length, el.value.length);
+      if (phoneDigits.length === 10) {
+        enterFormState();
+      } else {
+        $('formState').classList.add('hidden');
+        $('infoState').classList.remove('hidden');
+      }
+    }
+
+    /* ===== Returning-customer / appointment recognition ===== */
+    /* Some seeded records mask part of the number (e.g. "832-***-5555") for privacy —
+       treat a fully-masked 3 or 4 digit group as a wildcard instead of requiring an exact match. */
+    function phoneMatches(stored, last10) {
+      if (last10.length < 10) return false;
+      const groups = String(stored || '').replace(/^\+?1[\s-]?/, '').match(/(\d{3}|\*{3})\D*(\d{3}|\*{3})\D*(\d{4}|\*{4})\D*$/);
+      if (!groups) return digitsOf(stored).slice(-10) === last10;
+      const [, area, mid, last] = groups;
+      const groupOk = (group, entered) => /^\*+$/.test(group) ? true : group === entered;
+      return groupOk(area, last10.slice(0, 3)) && groupOk(mid, last10.slice(3, 6)) && groupOk(last, last10.slice(6));
+    }
+    function lookupByPhone(digits) {
+      if (!sharedStore) return null;
+      const st = sharedStore.load();
+      if (!st) return null;
+      const last10 = digits.slice(-10);
+      if (last10.length < 10) return null;
+      const cust = Array.isArray(st.customers)
+        ? st.customers.find(c => phoneMatches(c.phone, last10)) : null;
+      const booking = Array.isArray(st.bookings)
+        ? st.bookings.find(b => phoneMatches(b.phone, last10) && /pending|confirmed/i.test(b.status || '')) : null;
+      if (!cust && !booking) return null;
+      return { name: cust ? cust.name : (booking ? booking.customer : ''), booking };
+    }
+
+    /* ===== Enter form state (right panel becomes the check-in form) ===== */
+    function enterFormState() {
+      recognized = lookupByPhone(phoneDigits);
+      const banner = $('recogBanner');
+      if (recognized) {
+        $('nameInput').value = recognized.name || '';
+        $('nameCardTitle').innerHTML = '<i data-lucide="heart" aria-hidden="true"></i><span>Welcome back!</span>';
+        if (recognized.booking) {
+          const b = recognized.booking;
+          banner.innerHTML = `<i data-lucide="calendar-days" aria-hidden="true"></i><span>We found your appointment${b.service ? ' — ' + escapeHtml(b.service) : ''}${b.time ? ' at ' + escapeHtml(b.time) : ''}. We'll let your technician know you're here.</span>`;
+        } else {
+          banner.innerHTML = `<i data-lucide="heart" aria-hidden="true"></i><span>Good to see you again, ${escapeHtml(recognized.name)}!</span>`;
+        }
+        banner.classList.remove('hidden');
+      } else {
+        $('nameCardTitle').innerHTML = '<i data-lucide="sparkles" aria-hidden="true"></i><span>Nice to meet you!</span>';
+        banner.classList.add('hidden');
+      }
+      renderServices();
+      renderSelectedServices();
+      renderTechs();
+      updateCheckinBtn();
+      $('infoState').classList.add('hidden');
+      $('formState').classList.remove('hidden');
+      refreshIcons($('nameCardTitle'));
+      refreshIcons(banner);
+    }
+
+    /* ===== Services ===== */
+    function normalizeMenuData(data) {
+      const sections = Array.isArray(data?.sections) ? data.sections : [];
+      return sections
+        .map(section => ({
+          id: section.id,
+          title: section.title,
+          kind: section.kind,
+          items: (Array.isArray(section.items) ? section.items : [])
+            .map((item, index) => ({
+              id: `${section.id}--${index}`,
+              categoryId: section.id,
+              categoryTitle: section.title,
+              name: item.name,
+              type: item.type || (section.kind === 'add-on' ? 'add-on' : ''),
+              priceLabel: item.priceLabel || 'Price on request',
+              price: parseServicePrice(item.priceLabel),
+              durationMinutes: Number.isFinite(Number(item.durationMinutes)) ? Number(item.durationMinutes) : 0,
+              description: item.description || '',
+              includes: Array.isArray(item.includes) ? item.includes : []
+            }))
+        }))
+        .filter(section => section.items.length > 0);
+    }
+    function parseServicePrice(value) {
+      const match = String(value || '').replace(/,/g, '').match(/\d+(?:\.\d+)?/);
+      return match ? Number(match[0]) : 0;
+    }
+    function serviceById(id) { return SERVICES.find(service => service.id === id) || null; }
+    function serviceDurationLabel(service) { return service?.durationMinutes ? `${service.durationMinutes} min` : ''; }
+    function serviceTotalDurationLabel(minutes) {
+      if (!minutes) return '—';
+      const hours = Math.floor(minutes / 60), remainder = minutes % 60;
+      return hours ? `${hours}h${remainder ? ` ${remainder}m` : ''}` : `${remainder} min`;
+    }
+    function syncTechnicianServices() {
+      const allIds = SERVICES.map(service => service.id);
+      const nailOnlyIds = SERVICES
+        .filter(service => service.categoryId !== 'pedicure' && !service.categoryId.startsWith('acrylic-'))
+        .map(service => service.id);
+      TECHS.forEach(tech => { tech.services = tech.id === 'kim' || tech.id === 'vy' ? nailOnlyIds : allIds; });
+    }
+    function toggleServiceSelection(id) {
+      const index = selectedServices.indexOf(id);
+      if (index >= 0) selectedServices.splice(index, 1); else selectedServices.push(id);
+      renderServices();
+      renderSelectedServices();
+      renderTechs();
+      updateCheckinBtn();
+    }
+    function handleServiceCardKeydown(event, id) {
+      if (event.target.closest?.('.service-details-button')) return;
+      const isActivationKey = event.key === 'Enter' || event.key === ' ';
+      if (!isActivationKey) return;
+      event.preventDefault();
+      toggleServiceSelection(id);
+    }
+    function toggleServiceCategory(id) {
+      const target = document.querySelector(`[data-category-id="${id}"]`);
+      if (!target) return;
+      const shouldOpen = !target.classList.contains('open');
+      document.querySelectorAll('.service-category').forEach(category => {
+        const open = category === target && shouldOpen;
+        category.classList.toggle('open', open);
+        category.querySelector('.category-trigger')?.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    }
+    function renderServices() {
+      const container = $('serviceAccordion');
+      if (!container) return;
+      if (!SERVICE_CATEGORIES.length) {
+        container.innerHTML = `<div class="service-${menuLoadError ? 'error' : 'loading'}">${menuLoadError ? 'Services could not be loaded. Please try again.' : 'Loading services…'}</div>`;
+        return;
+      }
+      const hasOpenCategory = container.querySelector('.service-category.open');
+      const initialOpenId = hasOpenCategory?.dataset.categoryId || SERVICE_CATEGORIES[0].id;
+      container.innerHTML = SERVICE_CATEGORIES.map(category => {
+        const categoryOpen = category.id === initialOpenId;
+        const categoryItems = category.items.map(service => {
+          const selected = selectedServices.includes(service.id);
+          const typeTag = service.type ? `<span class="service-type-tag">${escapeHtml(service.type)}</span>` : '';
+          const duration = service.durationMinutes ? `<span>${escapeHtml(serviceDurationLabel(service))}</span>` : '';
+          const details = service.description ? `<button class="service-details-button" type="button" onclick='openServiceDetails(event,${JSON.stringify(service.id)})'><span>View details</span></button>` : '';
+          const priceClass = service.priceLabel === 'Complimentary' ? ' is-complimentary' : '';
+          return `<div class="service-card" role="button" tabindex="0" data-service-id="${escapeHtml(service.id)}" aria-pressed="${selected ? 'true' : 'false'}" onclick='toggleServiceSelection(${JSON.stringify(service.id)})' onkeydown='handleServiceCardKeydown(event,${JSON.stringify(service.id)})'>
+        <div class="service-card-main"><div class="service-card-title"><strong>${escapeHtml(service.name)}</strong>${typeTag}</div><div class="service-card-meta">${duration}<span class="service-price${priceClass}">${escapeHtml(service.priceLabel)}</span></div></div><span class="service-selected-check${selected ? ' is-selected' : ''}" aria-hidden="true"><i data-lucide="${selected ? 'check' : 'circle'}" class="selected-check-icon"></i></span>${details}
+      </div>`;
+        }).join('');
+        return `<article class="service-category${categoryOpen ? ' open' : ''}" data-category-id="${escapeHtml(category.id)}">
+      <button class="category-trigger" type="button" aria-expanded="${categoryOpen ? 'true' : 'false'}" aria-controls="category-${escapeHtml(category.id)}" onclick='toggleServiceCategory(${JSON.stringify(category.id)})'><span class="category-title">${escapeHtml(category.title)}</span><span class="category-count">${category.items.length}</span><span class="category-kind">${escapeHtml(category.kind)}</span><i data-lucide="chevron-down" aria-hidden="true"></i></button>
+      <div class="category-content" id="category-${escapeHtml(category.id)}"><div class="service-category-grid">${categoryItems}</div></div>
+    </article>`;
+      }).join('');
+      refreshIcons(container);
+    }
+    function renderSelectedServices() {
+      const selectedSection = $('selectedServices'), chips = $('selectedServiceChips');
+      if (!selectedSection || !chips) return;
+      const selected = selectedServices.map(serviceById).filter(Boolean);
+      selectedSection.classList.toggle('hidden', selected.length === 0);
+      $('selectedServicesEmpty').classList.toggle('hidden', selected.length > 0);
+      $('serviceSelectedCount').textContent = String(selected.length);
+      const totalMinutes = selected.reduce((sum, service) => sum + service.durationMinutes, 0);
+      const totalPrice = selected.reduce((sum, service) => sum + service.price, 0);
+      $('serviceTotalDuration').textContent = serviceTotalDurationLabel(totalMinutes);
+      $('serviceTotalPrice').textContent = money(totalPrice);
+      chips.innerHTML = selected.map(service => `<div class="selected-service-chip"><span class="selected-service-chip-text"><span class="selected-service-chip-category">${escapeHtml(service.categoryTitle)}</span><span>${escapeHtml(service.name)}</span></span><button class="selected-service-chip-remove" type="button" aria-label="Remove ${escapeHtml(service.name)}" onclick='event.stopPropagation();toggleServiceSelection(${JSON.stringify(service.id)})'><i data-lucide="trash-2" aria-hidden="true"></i></button></div>`).join('');
+      refreshIcons(chips);
+    }
+    function renderServiceNotes() {
+      const note = $('serviceNote'), card = $('serviceNoteCard');
+      if (!note || !card) return;
+      note.innerHTML = `<ul class="service-note-list">${menuNotes.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+      card.classList.toggle('hidden', menuNotes.length === 0);
+    }
+    function openServiceDetails(event, id) {
+      event?.stopPropagation();
+      const service = serviceById(id), modal = $('serviceDetailsModal');
+      if (!service || !modal) return;
+      $('serviceDetailsTitle').textContent = service.name;
+      $('serviceDetailsDuration').textContent = serviceDurationLabel(service);
+      const durationMeta = modal.querySelector('[data-service-duration-meta]');
+      if (durationMeta) durationMeta.hidden = !service.durationMinutes;
+      $('serviceDetailsPrice').textContent = service.priceLabel;
+      $('serviceDetailsDescription').textContent = service.description || 'More details will be confirmed by the salon team at check-in.';
+      const includeIcon = '<i data-lucide="circle" aria-hidden="true"></i>';
+      $('serviceDetailsIncludes').innerHTML = service.includes.length
+        ? service.includes.map(item => `<li>${includeIcon}<span>${escapeHtml(item)}</span></li>`).join('')
+        : `<li>${includeIcon}<span>Details will be confirmed by the salon team.</span></li>`;
+      modal.classList.remove('hidden');
+      document.body.classList.add('modal-open');
+      modal.querySelector('.service-modal-close')?.focus();
+      refreshIcons(modal);
+    }
+    function closeServiceDetails() {
+      const modal = $('serviceDetailsModal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      document.body.classList.remove('modal-open');
+    }
+    function toggleServiceNote() {
+      const note = $('serviceNote'), button = $('serviceNoteToggle');
+      const expanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      note.classList.toggle('hidden', expanded);
+    }
+    /* Embedded copy of ../../html/menu/menu.json so the page still works when opened
+       directly as a file (fetch() of local files is blocked under file://). */
+    const MENU_DATA_FALLBACK = {"source":{"url":"https://bitcoinnailbar.com/menu","retrievedAt":"2026-07-30","pageCount":12,"currency":"USD"},"business":{"name":"Bitcoin Nail Bar","address":"9793 Westheimer Rd Suite A, Houston, TX 77042","phone":"(346) 802-4906","website":"https://bitcoinnailbar.com","hours":{"mondayToSaturday":"9:30 am - 7:00 pm","sunday":"11:00 am - 5:00 pm"}},"sections":[{"id":"pedicure","title":"Pedicure","kind":"service","page":2,"items":[{"name":"President 7 Star","priceLabel":"$499","description":"The ultimate royal treatment: an elite, head-to-toe pampering experience with an exclusive royal soak, advanced skincare, and a 70-minute combination of hot stone, reflexology, and therapeutic massage.","includes":["Your choice of any premium manicure or full set nail enhancement (Gel-X, dip, acrylic, etc.)","Simultaneous collagen hand treatment and double paraffin wax for hands and feet","Premium champagne or wine"],"durationMinutes":70,"page":2},{"name":"Bitcoin 24k Gold","priceLabel":"$99","description":"A gold-infused pedicure that nourishes, detoxifies, supports circulation, and leaves the skin hydrated and silky smooth.","includes":["Bath bomb","Shea sugar scrub","Collagen mask","Butter lotion","Paraffin treatment","Soothing hot stone massage","Collagen sock wrap and hot towel"],"durationMinutes":75,"page":2},{"name":"Paris Pearl","priceLabel":"$75","description":"Pearl powder delivers calcium, protein, and amino acids for brighter, silky-smooth skin. Includes a pearl-infused soak, sugar scrub, hydrating mask with hot towels, paraffin wax treatment, and a massage with pearly lotion.","durationMinutes":60,"page":3},{"name":"Milk and Honey","priceLabel":"$55","description":"A warm milk soak, exfoliation, leg mask wrap, calming hot towel application, and massage to rejuvenate the legs and feet.","durationMinutes":45,"page":3},{"name":"Classic Pedicure","priceLabel":"$40","description":"Soaking, trimming, cuticle care, exfoliation, callus removal, and a soothing massage with a hot towel.","durationMinutes":30,"page":3},{"name":"Add Gel Polish On Any Pedicure","priceLabel":"$20","page":3,"type":"add-on"},{"name":"Surcharge for A removal Gel or Power","priceLabel":"$10+","page":3,"type":"add-on"},{"name":"Extra massage a minute","priceLabel":"$2 minimum 5+","page":3,"type":"add-on"}]},{"id":"manicure","title":"Manicure","kind":"service","page":4,"items":[{"name":"Milk & Honey","priceLabel":"$50","description":"A warm milk and honey hand treatment with exfoliation, warm towels wrapped with paraffin wax, a hand massage, and collagen gloves.","page":4},{"name":"Gel Shellac Manicure","priceLabel":"$45","description":"Nail trimming, cuticle grooming, and a relaxing hand massage.","page":4},{"name":"Gel Polish Change (without manicure)","priceLabel":"$30","page":4,"type":"add-on"},{"name":"Add Gel Polish Manicure or Pedicure","priceLabel":"$20","page":4,"type":"add-on"},{"name":"Gel Polish Remover","priceLabel":"$10","page":4,"type":"add-on"},{"name":"Deluxe Manicure","priceLabel":"$35","description":"A deluxe manicure featuring exfoliation of dead skin, two warm towels wrapped with a mask, a gentle massage, and polish in your preferred color.","page":4},{"name":"Classic Manicure","priceLabel":"$25","description":"Nail shaping, cuticle care, a light massage, and polish in your choice of color.","page":4}]},{"id":"kids-menu","title":"Kid's Menu","kind":"service","page":4,"sourcePages":[4,7],"items":[{"name":"Pedicure","priceLabel":"$25","page":4},{"name":"Manicure","priceLabel":"$15","page":4},{"name":"Regular Polish on Nails","priceLabel":"$10","page":4},{"name":"Regular Polish on Toes","priceLabel":"$10","page":4},{"name":"Gel Add-On","priceLabel":"$15","page":4,"type":"add-on"}]},{"id":"acrylic-full-set","title":"Acrylic Nail \u2014 Full Set","kind":"service","page":5,"items":[{"name":"Acrylic with polish","priceLabel":"$50","page":5},{"name":"Full Set Shellac","priceLabel":"$60","page":5},{"name":"White or Pear Tip","priceLabel":"$55","page":5},{"name":"Color Powder","priceLabel":"$60","page":5},{"name":"Ombre Full Set","priceLabel":"$70","page":5},{"name":"Pink & White","priceLabel":"$70","page":5},{"name":"Ombre full 2 color","priceLabel":"$65","page":5},{"name":"Ombre 3 color","priceLabel":"$75","page":5}]},{"id":"acrylic-fill-in","title":"Acrylic Nail \u2014 Fill-in","kind":"service","page":5,"items":[{"name":"Acrylic with polish","priceLabel":"$40","page":5},{"name":"Shellac","priceLabel":"$50","page":5},{"name":"White or Pear Tip","priceLabel":"$40","page":5},{"name":"Color Powder","priceLabel":"$50","page":5},{"name":"Ombre","priceLabel":"$60","page":5},{"name":"Pink & White","priceLabel":"$60","page":5},{"name":"Ombre full 2 color","priceLabel":"$55","page":5},{"name":"Ombre 3 color","priceLabel":"$60","page":5}]},{"id":"dipping-nail","title":"Dipping Nail","kind":"service","page":5,"items":[{"name":"Dipping Powder","priceLabel":"$52","page":5},{"name":"Dipping Powder With Tip","priceLabel":"$60","page":5},{"name":"Pink & White Dipping Powder","priceLabel":"$70","page":5},{"name":"Dipping Powder Ombre","priceLabel":"$70","page":5},{"name":"Add Full Manicure","priceLabel":"$20","page":5,"type":"add-on"},{"name":"Add Cuticle Care","priceLabel":"$10","page":5,"type":"add-on"}]},{"id":"builder-gel","title":"Builder Gel \u2014 Full Set","kind":"service","page":6,"items":[{"name":"Natural Nail Set","priceLabel":"$65","page":6},{"name":"Full Set With Tip","priceLabel":"$70","page":6}]},{"id":"gel-x","title":"Gel-X","kind":"service","page":6,"items":[{"name":"Full Set Gel X","priceLabel":"$65","page":6},{"name":"Refill Gel X","priceLabel":"$55","page":6}]},{"id":"gel-additional-services","title":"Gel Service \u2014 Additional Services","kind":"service","page":6,"items":[{"name":"Shellac Polish Change Hand","priceLabel":"$25","page":6,"type":"add-on"},{"name":"Shellac Polish Change Toes","priceLabel":"$25","page":6,"type":"add-on"},{"name":"Special Shapes","priceLabel":"$7+","page":6,"type":"add-on"},{"name":"Different Shapes","priceLabel":"$5+","page":6,"type":"add-on"},{"name":"Long Length","priceLabel":"$7+","page":6,"type":"add-on"},{"name":"Cut Down + Change Different Shape","priceLabel":"$15+","page":6,"type":"add-on"},{"name":"Cuticle Trim (With Services)","priceLabel":"$10+","page":6,"type":"add-on"},{"name":"Gel Color Change On Acrylic Nail","priceLabel":"$30+","page":6,"type":"add-on"},{"name":"Nail Repair (Dip Gel Polish)","priceLabel":"$5+","page":6,"type":"add-on"},{"name":"Take Off With Service","priceLabel":"$10","page":6,"type":"add-on"},{"name":"Take Off Without Services","priceLabel":"$20","page":6,"type":"add-on"}]},{"id":"additional","title":"Additional","kind":"add-on","page":7,"items":[{"name":"Extra Massage","priceLabel":"$2 a minute","page":7},{"name":"Paraffin Wax","priceLabel":"$15","page":7},{"name":"Collagen Sock","priceLabel":"$15","page":7},{"name":"Collagen Gloves","priceLabel":"$15","page":7},{"name":"Hot Stone Massage Added on","priceLabel":"$10+","page":7},{"name":"Gel Polish Add-On","priceLabel":"$20","page":7},{"name":"Shellac Polish Change Hand","priceLabel":"$25","page":7},{"name":"Shellac Polish Change Toes","priceLabel":"$25","page":7},{"name":"Shellac with Pedicure or Manicure","priceLabel":"$20+","page":7},{"name":"Shellac Take Off with Services","priceLabel":"$5+","page":7},{"name":"Shellac Take Off without Services","priceLabel":"$15+","page":7},{"name":"French Tips or Color Tips add on","priceLabel":"$15+","page":7},{"name":"Regular Polish Change Hand","priceLabel":"$20","page":7},{"name":"Regular Polish Change Toes","priceLabel":"$20","page":7},{"name":"Nail Take Off Without Services","priceLabel":"$20","page":7},{"name":"Nail Take Off with Services","priceLabel":"$10","page":7},{"name":"Nail Cut Down","priceLabel":"$7+","page":7},{"name":"Nail Repair","priceLabel":"$7+","page":7},{"name":"Nail Design","priceLabel":"$7+","page":7},{"name":"Acrylic Gel Color Change","priceLabel":"$30+","page":7},{"name":"Acrylic Toe","priceLabel":"$8","page":7},{"name":"Acrylic Toe Refill","priceLabel":"$5+","page":7},{"name":"Extra-long nail 1 in","priceLabel":"$7+","page":7},{"name":"Extra-long nail 2 in","priceLabel":"$14+","page":7},{"name":"Nail Buffing Cream","priceLabel":"$10+","page":7}]},{"id":"waxing","title":"Waxing Services","kind":"service","page":8,"items":[{"name":"Eyebrow","priceLabel":"$15+","page":8},{"name":"Lip","priceLabel":"$10+","page":8},{"name":"Chin","priceLabel":"$15+","page":8},{"name":"Sideburns","priceLabel":"$15+","page":8},{"name":"Full Face","priceLabel":"$45+","page":8},{"name":"Underarms","priceLabel":"$25+","page":8},{"name":"Half Arms","priceLabel":"$25+","page":8},{"name":"Full Arms","priceLabel":"$40+","page":8},{"name":"Lower Legs","priceLabel":"$45+","page":8},{"name":"Upper Legs","priceLabel":"$45+","page":8},{"name":"Full Legs","priceLabel":"$60+","page":8},{"name":"Back","priceLabel":"$45+","page":8},{"name":"Bikini","priceLabel":"$45+","page":8},{"name":"Brazilian","priceLabel":"$60+","page":8}]},{"id":"complimentary-wine","title":"Complimentary Drinks \u2014 Wine List","kind":"beverage","page":9,"items":[{"name":"Champagne - Mimosa","priceLabel":"Complimentary","page":9},{"name":"Red Wines - Cabernet - Merlot","priceLabel":"Complimentary","page":9},{"name":"White Wines - Chardonnay - Moscato","priceLabel":"Complimentary","page":9}]},{"id":"complimentary-cocktails","title":"Complimentary Drinks \u2014 Cocktails","kind":"beverage","page":10,"items":[{"name":"Mojito","priceLabel":"Complimentary","description":"White rum, lime juice, sugar, fresh mint, and club soda.","page":10},{"name":"Blue Hawaiian","priceLabel":"Complimentary","description":"Light rum, blue curacao, pineapple juice, and cream of coconut.","page":10},{"name":"Espresso Martini","priceLabel":"Complimentary","description":"Vodka, Bailey's, Irish cream liqueur, cocoa powder.","page":10},{"name":"Apple Martini","priceLabel":"Complimentary","description":"Vodka, sour apple liqueur, lemon juice.","page":10},{"name":"Paloma","priceLabel":"Complimentary","description":"Tequila, lime juice, and grapefruit soda.","page":10},{"name":"Margarita","priceLabel":"Complimentary","description":"Tequila, orange liqueur (like Cointreau or Triple Sec), fresh lime juice.","page":10},{"name":"Screwdriver","priceLabel":"Complimentary","description":"Vodka, orange juice.","page":11},{"name":"Jack & Coke","priceLabel":"Complimentary","description":"Jack Daniel's Tennessee Whiskey with Coca-Cola.","page":11},{"name":"Tequila Sunrise","priceLabel":"Complimentary","description":"Tequila, orange juice, and grenadine, usually served in a highball glass.","page":11},{"name":"Pina Colada","priceLabel":"Complimentary","description":"White rum, cream of coconut, and pineapple juice.","page":11},{"name":"Bloody Mary","priceLabel":"Complimentary","description":"Vodka, Zing Zang, lemon, and extra spicy Tabasco.","page":11},{"name":"Lady in Red","priceLabel":"Complimentary","description":"Maker's Mark Bourbon, POM pomegranate juice, lemon juice, and one ginger beer.","page":11},{"name":"Pink Barbie","priceLabel":"Complimentary","description":"Malibu coconut rum, cranberry juice, pineapple juice, lime juice, and grenadine syrup.","page":11},{"name":"Old Fashioned","priceLabel":"Complimentary","description":"Bourbon or rye whiskey, sugar cube, Angostura bitters.","page":11},{"name":"Gin & Tonic","priceLabel":"Complimentary","description":"1 part gin and 3 parts tonic water.","page":11},{"name":"Godfather","priceLabel":"Complimentary","description":"Whiskey and amaretto.","page":11},{"name":"Rum & Coke","priceLabel":"Complimentary","description":"1 part rum and 1 part Coke.","page":11},{"name":"Cosmopolitan","priceLabel":"Complimentary","description":"Vodka, orange liqueur, cranberry juice, and fresh lime juice.","page":11},{"name":"Lemon Drop","priceLabel":"Complimentary","description":"Vodka, triple sec, lemon juice, simple syrup, and a sugar rim.","page":11},{"name":"Long Island Iced Tea","priceLabel":"Complimentary","description":"Gin, rum, tequila, triple sec, vodka, and cola, with a lemon wedge.","page":11}]},{"id":"non-alcoholic-drinks","title":"Non-Alcohol Drinks","kind":"beverage","page":11,"items":[{"name":"Coke-Sprite - Sparkling Water","priceLabel":"Complimentary","page":11},{"name":"Lemonade","priceLabel":"Complimentary","page":11},{"name":"Sweet Iced Tea","priceLabel":"Complimentary","page":11},{"name":"Hot Tea - Green Tea, Ginger Tea, Chamomile Tea","priceLabel":"Complimentary","page":11},{"name":"Hot Vietnamese Coffee","priceLabel":"Complimentary","page":11},{"name":"Cold Vietnamese Coffee","priceLabel":"Complimentary","page":11},{"name":"Black Coffee","priceLabel":"Complimentary","page":11}]}],"notes":["Complimentary drinks are limited to 2 per person.","Guests must be 21 and over for alcoholic drinks.","Prices marked with + are starting prices and may vary.","Menu source includes a complimentary wine and cocktail selection; beverage availability may vary."]};
+
+    async function loadMenuData() {
+      let data;
+      try {
+        const response = await fetch(MENU_DATA_URL);
+        if (!response.ok) throw new Error(`Menu request failed: ${response.status}`);
+        data = await response.json();
+      } catch (error) {
+        data = MENU_DATA_FALLBACK;
+      }
+      try {
+        menuNotes = Array.isArray(data.notes) ? data.notes : [];
+        SERVICE_CATEGORIES = normalizeMenuData(data);
+        SERVICES = SERVICE_CATEGORIES.flatMap(category => category.items);
+        ALL_SVC = SERVICES.map(service => service.id);
+        syncTechnicianServices();
+        menuLoaded = true;
+        renderServices();
+        renderSelectedServices();
+        renderServiceNotes();
+        renderTechs();
+        updateCheckinBtn();
+      } catch (error) {
+        menuLoadError = error;
+        renderServices();
+      }
+    }
+
+    /* ===== Technicians ===== */
+    function techDisabled(t) {
+      if (t.id === 'first') return false;
+      return selectedServices.some(s => !t.services.includes(s));
+    }
+    function selectTech(id) {
+      const t = TECHS.find(x => x.id === id);
+      if (!t || techDisabled(t)) return;
+      selectedTech = id;
+      renderTechs();
+    }
+    function renderTechs() {
+      // If the current pick can no longer do the selected services, fall back to First available.
+      const cur = TECHS.find(t => t.id === selectedTech);
+      if (cur && techDisabled(cur)) selectedTech = 'first';
+      $('techGrid').innerHTML = TECHS.map(t => {
+        const disabled = techDisabled(t);
+        const on = selectedTech === t.id && !disabled;
+        let st;
+        if (disabled) st = '<span class="st muted">Not available for this service</span>';
+        else if (t.status === 'first') st = '<span class="st muted">shortest wait</span>';
+        else if (t.status === 'busy') st = '<span class="st busy"><span class="dot"></span>busy now</span>';
+        else st = '<span class="st avail"><span class="dot"></span>available</span>';
+        return `<button class="tech ${on ? 'on' : ''} ${disabled ? 'disabled' : ''}" type="button" ${disabled ? 'aria-disabled="true"' : ''} onclick="selectTech('${t.id}')">
+          <span class="tech-selected-check${on ? ' is-selected' : ''}" aria-hidden="true"><i data-lucide="${on ? 'check' : 'circle'}" class="selected-check-icon"></i></span><span class="avatar"><i data-lucide="user-round" aria-hidden="true"></i></span><span class="nm">${escapeHtml(t.name)}</span>${st}</button>`;
+      }).join('');
+      refreshIcons($('techGrid'));
+    }
+
+    /* ===== Check-in button ===== */
+    function updateCheckinBtn() {
+      const btn = $('checkinBtn');
+      const named = ($('nameInput').value || '').trim().length > 0;
+      const n = selectedServices.length;
+      btn.disabled = !(named && n > 0);
+      btn.innerHTML = `<i data-lucide="check" aria-hidden="true"></i><span>Check me in${n > 0 ? ` (${n} selected)` : ''}</span>`;
+      refreshIcons(btn);
+    }
+
+    /* ===== Submit -> shared POS queue ===== */
+    async function checkIn() {
+      const name = ($('nameInput').value || '').trim();
+      if (!name) { toast('Please enter your name.'); return; }
+      if (!selectedServices.length) { toast('Please choose at least one service.'); return; }
+
+      const services = selectedServices.map(serviceById).filter(Boolean).map(service => ({ name: service.name, price: service.price }));
+      if (!services.length) { toast('The service list changed — please choose again.'); return; }
+      const techObj = TECHS.find(t => t.id === selectedTech) || TECHS[0];
+      const phone = formatPhone(phoneDigits);
+      const isReturning = !!(recognized && recognized.name);
+      const tags = [isReturning ? 'Returning' : 'New guest'];
+      const bookingMatch = (recognized && recognized.booking)
+        ? ('Appointment ' + (recognized.booking.time || recognized.booking.date || '')).trim()
+        : 'Walk-in — no appointment match';
+      const note = `Self check-in · Prefers ${techObj.name}`;
+
+      let position = 1;
+      if (sharedStore) {
+        await ensureSharedStore();
+        const result = await sharedStore.updateAtomic(st => {
+          if (!Array.isArray(st.pendingCheckins) || !Array.isArray(st.customers)) return false;
+          st.pendingCheckins.unshift({
+            id: 'KC-' + String(Date.now()).slice(-5),
+            name, phone,
+            services,
+            bookingMatch,
+            warning: '',
+            note,
+            tags,
+            created: kioskNow()
+          });
+          if (!st.customers.some(c => c.name === name)) {
+            st.customers.unshift({ name, phone: phone || '—', last: 'Kiosk check-in today', note: '', tags: [], notes: { owner: '', staff: '', customer: '' } });
+          }
+        });
+        if (!result || !result.ok) {
+          toast('Salon data just changed — please try again.');
+          return;
+        }
+        position = Array.isArray(result.state.pendingCheckins) ? result.state.pendingCheckins.length : 1;
+      }
+      saveContact(phoneDigits, name);
+      renderDone(name, position);
+      showScreen('stepDone');
+    }
+
+    function renderDone(name, position) {
+      $('kiosk-done-card').innerHTML = `
+    <div class="done-wrap">
+      <div class="done-icon"><i data-lucide="party-popper" aria-hidden="true"></i></div>
+      <h2 class="done-title">You're checked in, ${escapeHtml(name)}!</h2>
+      <div class="done-pos">#${position} in line</div>
+      <p class="done-sub">A technician will be with you shortly.</p>
+      <p class="done-sub"><i data-lucide="glass-water" aria-hidden="true"></i><span>Enjoy a complimentary drink while you wait</span></p>
+    </div>`;
+      refreshIcons($('kiosk-done-card'));
+    }
+
+    /* ===== Screen nav ===== */
+    function showScreen(id) {
+      document.querySelectorAll('.kiosk-screen').forEach(s => s.classList.toggle('active', s.id === id));
+      window.scrollTo(0, 0);
+    }
+
+    /* ===== Toast ===== */
+    function toast(message) {
+      const el = $('toast');
+      el.textContent = message;
+      el.classList.add('on');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('on'), 2400);
+    }
+
+    /* ===== Language menu ===== */
+    function closeKioskLanguageMenu(restoreFocus = false) {
+      const menu = $('kioskLanguageMenu'), trigger = $('kioskLanguageTrigger');
+      if (!menu || !trigger) return;
+      menu.classList.remove('on');
+      trigger.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) trigger.focus();
+    }
+    function toggleKioskLanguageMenu(event) {
+      event.stopPropagation();
+      const menu = $('kioskLanguageMenu'), trigger = $('kioskLanguageTrigger');
+      const open = !menu.classList.contains('on');
+      menu.classList.toggle('on', open);
+      trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    function setKioskLanguage(language) {
+      if (language !== 'en') return;
+      kioskLanguage = 'en';
+      document.documentElement.lang = 'en';
+      $('kioskLanguageCode').textContent = 'EN';
+      document.querySelectorAll('.language-option').forEach(option => {
+        const selected = option.dataset.language === language;
+        option.classList.toggle('active', selected);
+        option.setAttribute('aria-checked', selected ? 'true' : 'false');
+      });
+      closeKioskLanguageMenu();
+      toast('English selected.');
+    }
+    document.addEventListener('click', event => { if (!$('kioskLanguage')?.contains(event.target)) closeKioskLanguageMenu(); });
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape') return;
+      if (!$('serviceDetailsModal')?.classList.contains('hidden')) closeServiceDetails();
+      closeKioskLanguageMenu(true);
+    });
+
+    /* ===== init ===== */
+    refreshIcons();
+    renderSelectedServices();
+    void loadMenuData();
+
+    const savedContact = loadSavedContact();
+    if (savedContact?.phone) {
+      phoneDigits = digitsOf(savedContact.phone).slice(0, 10);
+      $('phoneInput').value = formatPhone(phoneDigits);
+      if (phoneDigits.length === 10) {
+        enterFormState();
+        if (savedContact.name && !$('nameInput').value) $('nameInput').value = savedContact.name;
+        updateCheckinBtn();
+      }
+    }
+  </script>
+</body>
+
+</html>

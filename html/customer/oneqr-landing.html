@@ -27,49 +27,40 @@
       box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12);
     }
 
-    .oneqr-scan-banner {
-      height: 92px;
-      background: linear-gradient(90deg, #8b2fd0 0%, #6d4de0 50%, #2f6feb 100%);
-    }
-
-    .oneqr-scan-tag {
-      margin: 0;
-      padding: 18px 22px 0;
-      color: #fff;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-
-    .oneqr-scan-badge {
+    .oneqr-scan-top {
       display: flex;
-      width: 76px;
-      height: 76px;
-      margin: -38px auto 0;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e7e6f5;
+      padding: 14px 20px;
+    }
+
+    .oneqr-scan-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .oneqr-scan-mark {
+      display: flex;
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
       align-items: center;
       justify-content: center;
-      border-radius: 22px;
-      background: #fff;
-      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);
+      border-radius: 10px;
+      background: linear-gradient(135deg, #8b2fd0 0%, #6d4de0 50%, #2f6feb 100%);
     }
 
-    .oneqr-scan-badge img {
-      width: 44px;
-      height: 44px;
+    .oneqr-scan-mark img {
+      width: 22px;
+      height: 22px;
       object-fit: contain;
     }
 
-    .oneqr-scan-intro {
-      margin: 14px 0 20px;
-      padding: 0 24px;
-      text-align: center;
-    }
-
-    .oneqr-scan-intro h1 {
-      margin: 0;
+    .oneqr-scan-brand-name {
       color: #0b1220;
-      font-size: 21px;
+      font-size: 16px;
       font-weight: 900;
     }
 
@@ -95,30 +86,6 @@
 
     .oneqr-scan-welcome[hidden] {
       display: none;
-    }
-
-    .oneqr-scan-signin {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin: 0 20px 14px;
-      border-radius: 14px;
-      background: #f6f7fb;
-      padding: 12px 14px;
-      color: #6d7688;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .oneqr-scan-signin[hidden] {
-      display: none;
-    }
-
-    .oneqr-scan-signin a {
-      color: #6d4de0;
-      font-weight: 800;
-      text-decoration: none;
     }
 
     .oneqr-scan-welcome-icon {
@@ -198,30 +165,38 @@
       letter-spacing: 0.02em;
       text-transform: capitalize;
     }
+
+    .oneqr-scan-footer {
+      margin: 0 20px 28px;
+      border-top: 1px solid #e7e6f5;
+      padding: 16px 0 0;
+      text-align: center;
+    }
+
+    .oneqr-scan-footer p {
+      margin: 4px 0 0;
+      color: #6d7688;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .oneqr-scan-footer p:first-child {
+      margin-top: 0;
+    }
   </style>
 </head>
 <body>
   <main class="oneqr-scan-page">
-    <header class="oneqr-scan-banner">
-      <p class="oneqr-scan-tag">One QR &middot; Every Connection</p>
+    <header class="oneqr-scan-top">
+      <div class="oneqr-scan-brand">
+        <span class="oneqr-scan-mark"><img src="../pages/assets/icon-nexora.png" alt="Nexora Touch"></span>
+        <span class="oneqr-scan-brand-name">Bitcoin Nail Bar</span>
+      </div>
     </header>
-
-    <div class="oneqr-scan-badge">
-      <img src="../pages/assets/icon-nexora.png" alt="Nexora Touch">
-    </div>
-
-    <div class="oneqr-scan-intro">
-      <h1>Bitcoin Nail Bar</h1>
-      <p>Houston&rsquo;s modern nail &amp; beauty destination</p>
-    </div>
 
     <div class="oneqr-scan-welcome" id="oneqrWelcome" hidden>
       <span class="oneqr-scan-welcome-icon"><i data-lucide="sparkles" aria-hidden="true"></i></span>
       <p>Welcome back, <strong id="oneqrWelcomeName"></strong> &#128075;</p>
-    </div>
-
-    <div class="oneqr-scan-signin" id="oneqrSignin" hidden>
-      <span><a href="oneqr-otp.html">Sign in</a> for a personalized experience</span>
     </div>
 
     <nav class="oneqr-scan-menu" aria-label="Bitcoin Nail Bar quick links">
@@ -229,7 +204,7 @@
         <span class="oneqr-scan-icon"><i data-lucide="calendar-check" aria-hidden="true"></i></span>
         <span>Book Appointment</span>
       </a>
-      <a class="oneqr-scan-item" href="https://pos-nexoratouch.vercel.app/mockups/phase1/check-in-mobile.html">
+      <a class="oneqr-scan-item" href="check-in-mobile.html">
         <span class="oneqr-scan-icon"><i data-lucide="check" aria-hidden="true"></i></span>
         <span>Smart Check-in</span>
       </a>
@@ -266,6 +241,12 @@
         <span>AI Assistant</span>
       </a>
     </nav>
+
+    <footer class="oneqr-scan-footer">
+      <p>9793 Westheimer Rd Suite A, Houston, TX 77042</p>
+      <p>9:30 AM&ndash;7:00 PM</p>
+      <p>11:00 AM&ndash;5:00 PM</p>
+    </footer>
   </main>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
@@ -273,7 +254,6 @@
     (function () {
       var welcomeEl = document.getElementById('oneqrWelcome');
       var nameEl = document.getElementById('oneqrWelcomeName');
-      var signinEl = document.getElementById('oneqrSignin');
       if (!welcomeEl || !nameEl) return;
       var name = '';
       try {
@@ -284,8 +264,6 @@
       if (name) {
         nameEl.textContent = name;
         welcomeEl.hidden = false;
-      } else if (signinEl) {
-        signinEl.hidden = false;
       }
     })();
 
