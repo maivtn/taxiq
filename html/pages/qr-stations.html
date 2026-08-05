@@ -248,7 +248,6 @@
                 <div class="oneqr-role-tabs" role="tablist" aria-label="Configure role">
                   <button class="oneqr-role-tab is-active" type="button" data-role="customer">Customer</button>
                   <button class="oneqr-role-tab" type="button" data-role="staff">Staff</button>
-                  <button class="oneqr-role-tab" type="button" data-role="owner">Owner</button>
                 </div>
                 <div class="oneqr-module-list" id="oneqrModuleList"></div>
                 <button class="oneqr-add-module" type="button" id="oneqrAddModule">
@@ -271,30 +270,16 @@
                   <input id="oneqr-welcome" type="text" value="Welcome to Bitcoin Nail Bar">
                 </div>
                 <div class="oneqr-field">
-                  <label for="oneqr-template">Template</label>
-                  <select id="oneqr-template">
-                    <option>Beauty &amp; Salon</option>
-                    <option>Business</option>
-                    <option>Organization</option>
-                    <option>Government Service</option>
-                  </select>
-                </div>
-                <div class="oneqr-field">
-                  <label for="oneqr-landing">Landing View</label>
-                  <select id="oneqr-landing">
-                    <option>Auto-suggest based on user</option>
-                    <option>Full module list</option>
-                    <option>Intro page</option>
-                  </select>
-                </div>
-                <div class="oneqr-field">
                   <label for="oneqr-identity">Identity</label>
                   <select id="oneqr-identity">
                     <option>Public first, verify when needed</option>
                     <option>Always sign in</option>
                   </select>
                 </div>
-                <p class="oneqr-note">AI can prioritize content, but cannot self-grant permissions or self-approve.</p>
+                <button class="oneqr-save-btn" type="button" id="oneqrSaveSettings">
+                  <i data-lucide="save" aria-hidden="true"></i>
+                  <span>Save Settings</span>
+                </button>
               </div>
 
               <div class="oneqr-panel oneqr-preview">
@@ -305,7 +290,6 @@
                 <div class="oneqr-role-tabs" role="tablist" aria-label="Preview role">
                   <button class="oneqr-role-tab is-active" type="button" data-role="customer">Customer</button>
                   <button class="oneqr-role-tab" type="button" data-role="staff">Staff</button>
-                  <button class="oneqr-role-tab" type="button" data-role="owner">Owner</button>
                 </div>
                 <div class="oneqr-phone">
                   <div class="oneqr-phone-screen">
@@ -451,6 +435,19 @@
           <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-nexoraBrand text-[10px] font-semibold text-white" id="oneqrViewDownload"><i data-lucide="download" class="h-3.5 w-3.5"></i>Save QR</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="oneqr-modal" id="oneqrAddModuleModal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Add module">
+    <div class="oneqr-modal-backdrop" data-oneqr-add-module-close></div>
+    <div class="oneqr-modal-dialog">
+      <div class="oneqr-modal-head">
+        <h3>Add Module</h3>
+        <button type="button" class="oneqr-modal-close" data-oneqr-add-module-close aria-label="Close">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="oneqr-modal-list" id="oneqrAddModuleList"></div>
     </div>
   </div>
 

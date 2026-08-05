@@ -77,82 +77,123 @@
 
   var TEMPLATE_PRESETS = {
     'Beauty & Salon': {
-      modules: ['Book Appointment', 'Smart Check-in', 'Services & Prices', "Today's Promotion", 'Tip & Pay', 'Leave a Google Review'],
+      modules: ['Check-in', 'Booking', 'Services', 'Payment', 'Tip', 'Review', 'Rewards', 'Membership', 'Staff Portal', 'AI Assistant', 'Clock-in', 'Turn', 'Receive Customer', 'Complete Service', 'Request Approval'],
       icons: {
         'Book Appointment': 'calendar-check',
         'Smart Check-in': 'check',
         'Services & Prices': 'list',
         "Today's Promotion": 'percent',
         'Tip & Pay': 'dollar-sign',
-        'Leave a Google Review': 'star'
+        'Leave a Google Review': 'star',
+        'Check-in': 'check',
+        'Booking': 'calendar-check',
+        'Services': 'list',
+        'Payment': 'dollar-sign',
+        'Tip': 'heart',
+        'Review': 'star',
+        'Rewards': 'gift',
+        'Membership': 'crown',
+        'Staff Portal': 'user-cog',
+        'AI Assistant': 'bot',
+        'Clock-in': 'check-circle-2',
+        'Turn': 'user-cog',
+        'Receive Customer': 'check',
+        'Appointment': 'calendar-clock',
+        'Walk-in': 'check',
+        'Complete Service': 'star',
+        'Request Approval': 'external-link'
       },
       roles: {
-        staff: ['Smart Check-in', 'Tip & Pay'],
-        owner: ['Book Appointment', 'Services & Prices', "Today's Promotion"]
+        customer: ['Check-in', 'Booking', 'Services', 'Payment', 'Tip', 'Review', 'Rewards', 'Membership', 'Staff Portal', 'AI Assistant'],
+        staff: ['Clock-in', 'Turn', 'Receive Customer', 'Complete Service', 'Tip', 'Request Approval']
       }
     },
     'Business': {
-      modules: ['Book Appointment', 'Check-in', 'Catalog & Pricing', "Today's Promotion", 'Tip & Pay', 'Leave a Review'],
+      modules: ['Book Appointment', 'Check-in', 'Catalog & Pricing', "Today's Promotion", 'Tip & Pay', 'Leave a Review', 'Rewards', 'Membership', 'Clock-in', 'Turn', 'Appointment', 'Walk-in', 'Complete Service', 'Request Approval'],
       icons: {
         'Book Appointment': 'calendar-check',
         'Check-in': 'check',
         'Catalog & Pricing': 'list',
         "Today's Promotion": 'percent',
         'Tip & Pay': 'dollar-sign',
-        'Leave a Review': 'star'
+        'Leave a Review': 'star',
+        'Rewards': 'gift',
+        'Membership': 'crown',
+        'Clock-in': 'check-circle-2',
+        'Turn': 'user-cog',
+        'Appointment': 'calendar-clock',
+        'Walk-in': 'check',
+        'Complete Service': 'star',
+        'Request Approval': 'external-link'
       },
       roles: {
-        staff: ['Check-in', 'Tip & Pay'],
-        owner: ['Book Appointment', 'Catalog & Pricing', "Today's Promotion"]
+        customer: ['Book Appointment', 'Check-in', 'Catalog & Pricing', "Today's Promotion", 'Tip & Pay', 'Leave a Review', 'Rewards', 'Membership'],
+        staff: ['Clock-in', 'Turn', 'Appointment', 'Walk-in', 'Complete Service', 'Catalog & Pricing', 'Tip & Pay', 'Request Approval']
       }
     },
     'Organization': {
-      modules: ['Membership', 'Events', 'Donation', 'Volunteer', 'Voting', 'Announcements'],
+      modules: ['Membership', 'Events', 'Donation', 'Volunteer', 'Voting', 'Announcements', 'Committees', 'Chapters'],
       icons: {
         'Membership': 'crown',
         'Events': 'calendar-clock',
         'Donation': 'heart',
         'Volunteer': 'user-cog',
         'Voting': 'check-circle-2',
-        'Announcements': 'star'
+        'Announcements': 'star',
+        'Committees': 'list',
+        'Chapters': 'share-2'
       },
       roles: {
-        staff: ['Events', 'Volunteer'],
-        owner: ['Membership', 'Donation', 'Announcements']
+        customer: ['Membership', 'Events', 'Donation', 'Volunteer', 'Voting', 'Announcements', 'Committees', 'Chapters'],
+        staff: ['Events', 'Volunteer']
       }
     },
     'Government Service': {
-      modules: ['Citizen Services', 'Appointment', 'Permit & License', 'Case Tracking', 'Public Notices', 'Complaint Submission'],
+      modules: ['Citizen Services', 'Appointment', 'Permit & License', 'Case Tracking', 'Public Notices', 'Complaint Submission', 'Fee Payment', 'Document Upload'],
       icons: {
         'Citizen Services': 'user-cog',
         'Appointment': 'calendar-clock',
         'Permit & License': 'check-circle-2',
         'Case Tracking': 'list',
         'Public Notices': 'star',
-        'Complaint Submission': 'share-2'
+        'Complaint Submission': 'share-2',
+        'Fee Payment': 'dollar-sign',
+        'Document Upload': 'square'
       },
       roles: {
-        staff: ['Appointment', 'Case Tracking'],
-        owner: ['Citizen Services', 'Public Notices', 'Complaint Submission']
+        customer: ['Citizen Services', 'Appointment', 'Permit & License', 'Case Tracking', 'Public Notices', 'Complaint Submission', 'Fee Payment', 'Document Upload'],
+        staff: ['Appointment', 'Case Tracking']
       }
     }
   };
 
   var DEFAULT_TEMPLATE = 'Beauty & Salon';
-  var ROLES = ['customer', 'staff', 'owner'];
+  var ROLES = ['customer', 'staff'];
 
   var ROLE_WELCOME = {
     customer: '<strong>Welcome back, Brian 👋</strong><small>Your booking starts at 3:00 PM</small>',
-    staff: '<strong>Hi Chloe</strong><small>Shift 10:00 AM–7:00 PM</small>',
-    owner: '<strong>Good afternoon, Brian</strong><small>3 requests pending approval</small>'
+    staff: '<strong>Hi Chloe</strong><small>Shift 10:00 AM–7:00 PM</small>'
   };
 
   var MODULE_ICONS = TEMPLATE_PRESETS[DEFAULT_TEMPLATE].icons;
 
-  // Each role keeps its own module order and enabled set — Staff and Owner
-  // see a different slice of the same module pool than Customer does.
+  // Each role owns its own module list — Customer only ever sees customer
+  // modules, Staff only ever sees staff modules. Adding a module (once wired
+  // up) adds to whichever role list is currently active, not a shared pool.
   var moduleOrderByRole = {};
   var enabledByRole = {};
+
+  // Configuration (Welcome Message, Landing View, Identity) is also
+  // role-specific — switching the active role swaps these field values too.
+  // OneQR Name stays global: it names the single Master QR, not a role view.
+  var ROLE_CONFIG_DEFAULTS = {
+    customer: { welcome: 'Welcome to Bitcoin Nail Bar', identity: 'Public first, verify when needed' },
+    staff: { welcome: 'Welcome to the Staff Portal', identity: 'Always sign in' }
+  };
+  var roleConfig = {
+    customer: Object.assign({}, ROLE_CONFIG_DEFAULTS.customer),
+    staff: Object.assign({}, ROLE_CONFIG_DEFAULTS.staff)
+  };
 
   var currentRole = 'customer';
 
@@ -167,21 +208,27 @@
   var nameInput = document.getElementById('oneqr-name');
   var welcomeInput = document.getElementById('oneqr-welcome');
   var templateSelect = document.getElementById('oneqr-template');
-  var landingViewSelect = document.getElementById('oneqr-landing');
   var identitySelect = document.getElementById('oneqr-identity');
   var cardTitleEl = document.getElementById('oneqrCardTitle');
   var heroNameEl = document.getElementById('oneqrHeroName');
   var heroTaglineEl = document.getElementById('oneqrHeroTagline');
+  var saveSettingsBtn = document.getElementById('oneqrSaveSettings');
+  var ONEQR_CONFIG_STORAGE_KEY = 'taxiq:oneqr-config';
+
+  var addModuleModal = document.getElementById('oneqrAddModuleModal');
+  var addModuleListEl = document.getElementById('oneqrAddModuleList');
+  var currentPreset = null;
 
   if (!moduleListEl || !welcomeEl || !tilesEl) return;
 
   function applyTemplate(templateName) {
     var preset = TEMPLATE_PRESETS[templateName] || TEMPLATE_PRESETS[DEFAULT_TEMPLATE];
+    currentPreset = preset;
     MODULE_ICONS = preset.icons;
     ROLES.forEach(function (role) {
-      var defaultEnabled = role === 'customer' ? preset.modules : preset.roles[role];
-      moduleOrderByRole[role] = preset.modules.slice();
-      enabledByRole[role] = new Set(defaultEnabled);
+      var roleModules = (preset.roles[role] || []).slice();
+      moduleOrderByRole[role] = roleModules;
+      enabledByRole[role] = new Set(roleModules);
     });
     previewExpanded = false;
     renderModules();
@@ -227,26 +274,15 @@
       return enabledSet.has(name);
     });
 
-    var landingView = landingViewSelect ? landingViewSelect.value : 'Auto-suggest based on user';
-    var previewModules;
-    var canExpand;
-    if (landingView === 'Full module list') {
-      previewModules = allEnabledModules;
-      canExpand = false;
-    } else if (landingView === 'Intro page') {
-      previewModules = previewExpanded ? allEnabledModules : [];
-      canExpand = allEnabledModules.length > 0;
-    } else {
-      previewModules = previewExpanded ? allEnabledModules : allEnabledModules.slice(0, PREVIEW_COLLAPSED_MODULE_LIMIT);
-      canExpand = allEnabledModules.length > PREVIEW_COLLAPSED_MODULE_LIMIT;
-    }
+    var previewModules = previewExpanded ? allEnabledModules : allEnabledModules.slice(0, PREVIEW_COLLAPSED_MODULE_LIMIT);
+    var canExpand = allEnabledModules.length > PREVIEW_COLLAPSED_MODULE_LIMIT;
 
     tilesEl.innerHTML = previewModules.map(function (name) {
       return '<div class="oneqr-phone-tile">' + iconHtml(name) + '<b>' + name + '</b></div>';
     }).join('');
     if (previewViewAllBtn) {
       previewViewAllBtn.hidden = !canExpand;
-      previewViewAllBtn.textContent = previewExpanded ? 'View Less' : (landingView === 'Intro page' ? 'View Services' : 'View All');
+      previewViewAllBtn.textContent = previewExpanded ? 'View Less' : 'View All';
       previewViewAllBtn.setAttribute('aria-expanded', String(previewExpanded));
     }
     refreshIcons();
@@ -337,12 +373,20 @@
     renderPreview();
   });
 
+  function syncConfigFieldsToRole(role) {
+    var config = roleConfig[role] || roleConfig.customer;
+    if (welcomeInput) welcomeInput.value = config.welcome;
+    if (heroTaglineEl) heroTaglineEl.textContent = config.welcome || 'One QR. Everything Connected.';
+    if (identitySelect) identitySelect.value = config.identity;
+  }
+
   function setActiveRole(role) {
     currentRole = role;
     previewExpanded = false;
     document.querySelectorAll('.oneqr-role-tab').forEach(function (t) {
       t.classList.toggle('is-active', t.getAttribute('data-role') === role);
     });
+    syncConfigFieldsToRole(role);
     renderModules();
     renderPreview();
   }
@@ -358,15 +402,64 @@
     });
   }
 
+  function renderAddModuleList() {
+    if (!addModuleListEl || !currentPreset) return;
+    var order = moduleOrderByRole[currentRole] || [];
+    var catalog = Array.from(new Set(currentPreset.modules || []));
+    addModuleListEl.innerHTML = catalog.map(function (name) {
+      var checked = order.indexOf(name) !== -1;
+      return '<button type="button" class="oneqr-modal-item' + (checked ? ' is-checked' : '') + '" data-add-module="' + name + '">' +
+        '<span class="oneqr-modal-item-check">' + (checked ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>' : '') + '</span>' +
+        '<span class="oneqr-modal-item-icon">' + iconHtml(name) + '</span>' +
+        '<span>' + name + '</span>' +
+        '</button>';
+    }).join('');
+    refreshIcons();
+  }
+
+  function openAddModuleModal() {
+    if (!addModuleModal) return;
+    renderAddModuleList();
+    addModuleModal.hidden = false;
+    addModuleModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeAddModuleModal() {
+    if (!addModuleModal) return;
+    addModuleModal.hidden = true;
+    addModuleModal.setAttribute('aria-hidden', 'true');
+  }
+
   if (addModuleBtn) {
-    addModuleBtn.addEventListener('click', function () {
-      addModuleBtn.disabled = true;
-      var original = addModuleBtn.querySelector('span').textContent;
-      addModuleBtn.querySelector('span').textContent = 'More modules coming soon';
-      setTimeout(function () {
-        addModuleBtn.querySelector('span').textContent = original;
-        addModuleBtn.disabled = false;
-      }, 2000);
+    addModuleBtn.addEventListener('click', openAddModuleModal);
+  }
+
+  if (addModuleModal) {
+    addModuleModal.addEventListener('click', function (event) {
+      if (event.target.closest('[data-oneqr-add-module-close]')) closeAddModuleModal();
+    });
+
+    addModuleListEl.addEventListener('click', function (event) {
+      var btn = event.target.closest('[data-add-module]');
+      if (!btn) return;
+      var name = btn.getAttribute('data-add-module');
+      var order = moduleOrderByRole[currentRole];
+      var enabledSet = enabledByRole[currentRole];
+      var index = order.indexOf(name);
+      if (index === -1) {
+        order.push(name);
+        enabledSet.add(name);
+      } else {
+        order.splice(index, 1);
+        enabledSet.delete(name);
+      }
+      renderAddModuleList();
+      renderModules();
+      renderPreview();
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !addModuleModal.hidden) closeAddModuleModal();
     });
   }
 
@@ -689,7 +782,9 @@
 
   if (welcomeInput && heroTaglineEl) {
     welcomeInput.addEventListener('input', function () {
-      heroTaglineEl.textContent = welcomeInput.value.trim() || 'One QR. Everything Connected.';
+      var value = welcomeInput.value.trim() || 'One QR. Everything Connected.';
+      heroTaglineEl.textContent = value;
+      roleConfig[currentRole].welcome = welcomeInput.value.trim();
     });
   }
 
@@ -699,16 +794,47 @@
     });
   }
 
-  if (landingViewSelect) {
-    landingViewSelect.addEventListener('change', function () {
-      previewExpanded = false;
+  if (identitySelect) {
+    identitySelect.addEventListener('change', function () {
+      roleConfig[currentRole].identity = identitySelect.value;
       renderPreview();
     });
   }
 
-  if (identitySelect) {
-    identitySelect.addEventListener('change', renderPreview);
+  function loadSavedConfig() {
+    try {
+      var raw = window.localStorage.getItem(ONEQR_CONFIG_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
   }
 
-  applyTemplate(DEFAULT_TEMPLATE);
+  var savedConfig = loadSavedConfig();
+  var initialTemplate = DEFAULT_TEMPLATE;
+  if (savedConfig) {
+    if (savedConfig.name && nameInput) { nameInput.value = savedConfig.name; if (cardTitleEl) cardTitleEl.textContent = savedConfig.name; if (heroNameEl) heroNameEl.textContent = savedConfig.name; }
+    if (savedConfig.template && templateSelect && TEMPLATE_PRESETS[savedConfig.template]) { templateSelect.value = savedConfig.template; initialTemplate = savedConfig.template; }
+    if (savedConfig.roleConfig) {
+      ROLES.forEach(function (role) {
+        if (savedConfig.roleConfig[role]) roleConfig[role] = Object.assign({}, roleConfig[role], savedConfig.roleConfig[role]);
+      });
+    }
+  }
+
+  if (saveSettingsBtn) {
+    saveSettingsBtn.addEventListener('click', function () {
+      try {
+        window.localStorage.setItem(ONEQR_CONFIG_STORAGE_KEY, JSON.stringify({
+          name: nameInput ? nameInput.value.trim() : '',
+          template: templateSelect ? templateSelect.value : DEFAULT_TEMPLATE,
+          roleConfig: roleConfig
+        }));
+      } catch (error) { /* storage unavailable */ }
+      flashButtonLabel(saveSettingsBtn, 'Saved!');
+    });
+  }
+
+  applyTemplate(initialTemplate);
+  syncConfigFieldsToRole(currentRole);
 })();

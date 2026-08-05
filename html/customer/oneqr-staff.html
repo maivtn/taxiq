@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Staff Portal - OneQR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #eef0f6;
+      color: #0b1220;
+      font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    .oneqr-scan-page {
+      max-width: 420px;
+      min-height: 100vh;
+      margin: 0 auto;
+      background: #fff;
+      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12);
+    }
+
+    .oneqr-scan-banner {
+      display: flex;
+      align-items: flex-start;
+      height: 92px;
+      background: linear-gradient(90deg, #8b2fd0 0%, #6d4de0 50%, #2f6feb 100%);
+    }
+
+    .oneqr-scan-back {
+      display: flex;
+      width: 32px;
+      height: 32px;
+      align-items: center;
+      justify-content: center;
+      margin: 14px 0 0 16px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .oneqr-scan-back svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .oneqr-scan-tag {
+      flex: 1;
+      margin: 0;
+      padding: 18px 22px 0;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .oneqr-scan-badge {
+      display: flex;
+      width: 76px;
+      height: 76px;
+      margin: -38px auto 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);
+    }
+
+    .oneqr-scan-badge img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+    }
+
+    .oneqr-scan-welcome {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 20px 20px;
+      border-radius: 14px;
+      background: #f1edfc;
+      padding: 12px 14px;
+      color: #4a3aa0;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .oneqr-scan-welcome-icon {
+      display: flex;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: #fff;
+      color: #6d4de0;
+    }
+
+    .oneqr-scan-welcome-icon svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .oneqr-scan-welcome strong {
+      display: block;
+      color: #0b1220;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .oneqr-scan-welcome small {
+      display: block;
+      margin-top: 2px;
+      color: #6d7688;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .oneqr-scan-menu {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 0 20px 20px;
+    }
+
+    .oneqr-scan-item {
+      display: flex;
+      flex: 0 0 calc(50% - 6px);
+      min-height: 92px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1px solid #e7e6f5;
+      border-radius: 16px;
+      background: #fff;
+      padding: 14px 10px;
+      color: inherit;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+
+    .oneqr-scan-item:hover {
+      border-color: #cabdf7;
+      box-shadow: 0 10px 22px rgba(109, 77, 224, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .oneqr-scan-item.is-active {
+      border-color: #6d4de0;
+      box-shadow: 0 10px 22px rgba(109, 77, 224, 0.18);
+    }
+
+    .oneqr-scan-icon {
+      display: flex;
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: #f1edfc;
+      color: #6d4de0;
+    }
+
+    .oneqr-scan-icon svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .oneqr-scan-item span:last-child {
+      color: #17182b;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: capitalize;
+    }
+
+    .oneqr-staff-panel {
+      margin: 0 20px 32px;
+      border-radius: 16px;
+      border: 1px solid #e7e6f5;
+      background: #fafaff;
+      padding: 16px;
+    }
+
+    .oneqr-staff-panel[hidden] {
+      display: none;
+    }
+
+    .oneqr-staff-panel-title {
+      margin: 0 0 12px;
+      color: #0b1220;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .oneqr-staff-choices {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .oneqr-staff-choice {
+      display: flex;
+      flex: 0 0 calc(50% - 6px);
+      min-height: 84px;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid #e7e6f5;
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+    }
+
+    .oneqr-staff-choice:hover {
+      border-color: #cabdf7;
+    }
+
+    .oneqr-staff-choice-num {
+      display: flex;
+      width: 26px;
+      height: 26px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #f1edfc;
+      color: #6d4de0;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .oneqr-staff-choice span:last-child {
+      color: #17182b;
+      font-size: 13px;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <main class="oneqr-scan-page">
+    <header class="oneqr-scan-banner">
+      <a class="oneqr-scan-back" id="oneqrStaffBack" href="oneqr-landing.html" aria-label="Back">
+        <i data-lucide="arrow-left" aria-hidden="true"></i>
+      </a>
+      <p class="oneqr-scan-tag">Staff Portal</p>
+    </header>
+
+    <div class="oneqr-scan-badge">
+      <img src="../pages/assets/icon-nexora.png" alt="Nexora Touch">
+    </div>
+
+    <div class="oneqr-scan-welcome">
+      <span class="oneqr-scan-welcome-icon"><i data-lucide="sparkles" aria-hidden="true"></i></span>
+      <span>
+        <strong id="oneqrStaffName">Hi Chloe</strong>
+        <small>Shift 10:00 AM&ndash;7:00 PM</small>
+      </span>
+    </div>
+
+    <nav class="oneqr-scan-menu" aria-label="Staff quick actions">
+      <a class="oneqr-scan-item" href="#">
+        <span class="oneqr-scan-icon"><i data-lucide="check-circle-2" aria-hidden="true"></i></span>
+        <span>Clock-in</span>
+      </a>
+      <a class="oneqr-scan-item" href="#">
+        <span class="oneqr-scan-icon"><i data-lucide="user-cog" aria-hidden="true"></i></span>
+        <span>Turn 2</span>
+      </a>
+      <button class="oneqr-scan-item" type="button" id="oneqrReceiveCustomerBtn" aria-expanded="false" aria-controls="oneqrReceiveCustomerPanel">
+        <span class="oneqr-scan-icon"><i data-lucide="check" aria-hidden="true"></i></span>
+        <span>Receive Customer</span>
+      </button>
+      <a class="oneqr-scan-item" href="#">
+        <span class="oneqr-scan-icon"><i data-lucide="star" aria-hidden="true"></i></span>
+        <span>Complete Service</span>
+      </a>
+      <a class="oneqr-scan-item" href="#">
+        <span class="oneqr-scan-icon"><i data-lucide="dollar-sign" aria-hidden="true"></i></span>
+        <span>Tip</span>
+      </a>
+      <a class="oneqr-scan-item" href="#">
+        <span class="oneqr-scan-icon"><i data-lucide="external-link" aria-hidden="true"></i></span>
+        <span>Request Approval</span>
+      </a>
+    </nav>
+
+    <div class="oneqr-staff-panel" id="oneqrReceiveCustomerPanel" hidden>
+      <p class="oneqr-staff-panel-title">How is this customer arriving?</p>
+      <div class="oneqr-staff-choices">
+        <button class="oneqr-staff-choice" type="button" data-choice="Appointment">
+          <span class="oneqr-staff-choice-num">1</span>
+          <span>Appointment</span>
+        </button>
+        <button class="oneqr-staff-choice" type="button" data-choice="Walk-in">
+          <span class="oneqr-staff-choice-num">2</span>
+          <span>Walk-in</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>
+    (function () {
+      var nameEl = document.getElementById('oneqrStaffName');
+      try {
+        var name = (window.localStorage.getItem('taxiq:customer-name') || '').trim();
+        if (name) nameEl.textContent = 'Hi ' + name;
+      } catch (error) { /* storage unavailable */ }
+
+      var receiveBtn = document.getElementById('oneqrReceiveCustomerBtn');
+      var panel = document.getElementById('oneqrReceiveCustomerPanel');
+      if (receiveBtn && panel) {
+        receiveBtn.addEventListener('click', function () {
+          var expanded = receiveBtn.getAttribute('aria-expanded') === 'true';
+          receiveBtn.setAttribute('aria-expanded', String(!expanded));
+          receiveBtn.classList.toggle('is-active', !expanded);
+          panel.hidden = expanded;
+          if (!expanded) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+      }
+
+      document.querySelectorAll('.oneqr-staff-choice').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.querySelectorAll('.oneqr-staff-choice').forEach(function (b) { b.style.borderColor = ''; });
+          btn.style.borderColor = '#6d4de0';
+        });
+      });
+
+      lucide.createIcons();
+    })();
+  </script>
+</body>
+</html>

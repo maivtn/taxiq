@@ -4353,14 +4353,6 @@
           }).join('') +
           '</tbody></table></div>' +
           '<div class="pos-hint">Tap a cell to cycle: — → ✓ Good → ★ Expert → off. ★ Expert adds +' + MATCH_RULES.wExp + ' match points on the required skill and is a 💎 Smart Commission condition. Techs missing a skill get flagged at assignment (an override is written to the audit log).</div>' +
-          '<div class="pos-section-title"><i class="bi bi-people" aria-hidden="true"></i> Customer fit — which guest groups each tech suits (+' + MATCH_RULES.wFit + ' match points on a tag hit)</div>' +
-          TECHS.map(function (t) {
-            return '<div class="pill-row" style="margin:6px 0"><b style="font-size:12px;min-width:60px">' + esc(t.name) + '</b>' +
-              FIT_TAGS.map(function (f) {
-                var on = (t.fit || []).indexOf(f) !== -1;
-                return '<button class="pill' + (on ? ' is-on' : '') + '" data-mg-fit="' + t.id + '|' + f + '">' + (on ? '✓ ' : '') + f + '</button>';
-              }).join('') + '</div>';
-          }).join('') +
           '</div>';
       }
 
@@ -4370,18 +4362,22 @@
         };
         return '<div class="pos-card">' +
           '<div class="pos-card-head"><h3><i class="bi bi-receipt" aria-hidden="true"></i> Service → required skill</h3><span class="pos-muted">kiosk · dispatch · Staff App all read this — no guessing</span></div>' +
-          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Service group</th><th>Required skill</th><th>Eligible techs (★ = expert)</th></tr></thead><tbody>' +
-          MENU.map(function (c) {
-            var req = SVC_REQ[c.id] || '';
-            var el = TECHS.filter(function (t) { return !req || (t.skills || []).indexOf(req) !== -1; });
-            var elTxt = !req ? '<span class="pos-muted">all techs</span>'
-              : el.length ? el.map(function (t) { return esc(t.name) + ((t.exp || []).indexOf(req) !== -1 ? ' ★' : ''); }).join(', ')
-              : '<span class="pos-danger-text">⚠ No tech has this skill — guests will get stuck</span>';
-            return '<tr><td class="pos-strong">' + esc(c.label) + '</td>' +
-              '<td><select class="pos-input" data-mg-svcreq="' + c.id + '" style="height:32px;font-size:12.5px">' +
-              '<option value="">— none required —</option>' +
-              SKILLS.map(function (s) { return '<option value="' + s + '"' + (req === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
-              '</select></td><td class="wrap">' + elTxt + '</td></tr>';
+          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Service</th><th>Required skill</th><th>Eligible techs (★ = expert)</th></tr></thead><tbody>' +
+          groupedServicesByCategory(MENU).map(function (group) {
+            if (!group.services.length) return '';
+            return '<tr><td colspan="3" style="background:var(--nexora-surface-muted);color:var(--nexora-muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.03em">' + esc(group.name) + ' · ' + group.services.length + '</td></tr>' +
+              group.services.map(function (c) {
+                var req = SVC_REQ[c.id] || '';
+                var el = TECHS.filter(function (t) { return !req || (t.skills || []).indexOf(req) !== -1; });
+                var elTxt = !req ? '<span class="pos-muted">all techs</span>'
+                  : el.length ? el.map(function (t) { return esc(t.name) + ((t.exp || []).indexOf(req) !== -1 ? ' ★' : ''); }).join(', ')
+                  : '<span class="pos-danger-text">⚠ No tech has this skill — guests will get stuck</span>';
+                return '<tr><td class="pos-strong">' + esc(c.label) + '</td>' +
+                  '<td><select class="pos-input" data-mg-svcreq="' + c.id + '" style="height:32px;font-size:12.5px">' +
+                  '<option value="">— none required —</option>' +
+                  SKILLS.map(function (s) { return '<option value="' + s + '"' + (req === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
+                  '</select></td><td class="wrap">' + elTxt + '</td></tr>';
+              }).join('');
           }).join('') +
           '</tbody></table></div>' +
           '<div class="pos-section-title"><i class="bi bi-sliders" aria-hidden="true"></i> Match rules — assignment weights (dispatch reads them live)</div>' +
