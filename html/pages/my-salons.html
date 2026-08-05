@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - My Salons</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .page-heading { margin-bottom: 20px; }
+    .page-title { margin: 0; color: var(--nexora-text); font-size: 24px; font-weight: 800; line-height: 32px; }
+    @media (min-width: 640px) { .page-title { font-size: 30px; line-height: 36px; } }
+    .page-description { margin: 8px 0 0; color: var(--nexora-muted); font-size: 14px; font-weight: 500; line-height: 20px; }
+
+    /* ── salon list ── */
+    .salon-list { display: flex; flex-direction: column; gap: 16px; max-width: 960px; margin: 0 auto; }
+    .salon-list[hidden] { display: none; }
+
+    .salon-card { display: flex; flex-direction: column; gap: 16px; border: 1px solid var(--nexora-border); border-radius: 16px; background: var(--nexora-surface); padding: 20px 24px; box-shadow: var(--nexora-card-shadow); }
+
+    .salon-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .salon-card-identity { display: flex; align-items: center; gap: 14px; min-width: 0; }
+
+    .salon-avatar { flex-shrink: 0; width: 56px; height: 56px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: #fff; }
+    .salon-avatar-golden { background: linear-gradient(135deg, #fde68a, #f59e0b); color: #7c4a03; }
+    .salon-avatar-rose { background: linear-gradient(135deg, #fde3ef, #f9a8d4); color: #be185d; }
+
+    .salon-identity-copy { min-width: 0; }
+    .salon-name { margin: 0; font-size: 17px; font-weight: 800; color: var(--nexora-text); }
+    .salon-location { display: flex; align-items: center; gap: 4px; margin-top: 4px; color: var(--nexora-muted); font-size: 13px; font-weight: 600; }
+    .salon-location i { width: 14px; height: 14px; color: var(--nexora-danger); }
+    .salon-joined { margin-top: 2px; color: var(--nexora-subtle); font-size: 12px; font-weight: 500; }
+
+    .salon-status { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .salon-status-pill { display: inline-flex; align-items: center; height: 26px; padding: 0 14px; border-radius: 999px; background: rgba(0, 184, 115, .12); color: var(--nexora-success); font-size: 12px; font-weight: 800; }
+    .salon-status-pill.is-inactive { background: var(--nexora-surface-muted); color: var(--nexora-subtle); }
+
+    .info-tooltip { position: relative; display: inline-flex; }
+    .info-tooltip-trigger { display: inline-flex; width: 20px; height: 20px; align-items: center; justify-content: center; border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; color: var(--nexora-subtle); padding: 0; cursor: help; }
+    .info-tooltip-trigger i { width: 12px; height: 12px; }
+    .info-tooltip-trigger:hover { color: var(--nexora-brand); border-color: var(--nexora-brand); }
+    .info-tooltip-content { position: absolute; bottom: calc(100% + 10px); right: -6px; z-index: 30; display: none; width: 250px; border: 1px solid var(--nexora-border); border-radius: 12px; background: var(--nexora-surface); color: var(--nexora-muted); font-size: 12px; font-weight: 600; line-height: 1.5; padding: 12px 14px; box-shadow: var(--nexora-soft-shadow); }
+    .info-tooltip:hover .info-tooltip-content,
+    .info-tooltip:focus-within .info-tooltip-content,
+    .info-tooltip.is-open .info-tooltip-content { display: block; }
+
+    .salon-card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 16px; border-top: 1px solid var(--nexora-rule); }
+    .nickname-line { font-size: 14px; }
+    .nickname-label { color: var(--nexora-muted); font-weight: 600; }
+    .nickname-value { margin-left: 4px; font-size: 15px; font-weight: 800; color: var(--nexora-text); }
+
+    .salon-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .salon-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; padding: 0 16px; border-radius: 10px; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: transform .15s, background .15s, border-color .15s; }
+    .salon-btn-outline-danger { border: 1px solid rgba(239, 68, 68, .35); background: #fff; color: var(--nexora-danger); }
+    .salon-btn-outline-danger:hover { background: rgba(239, 68, 68, .06); }
+    .salon-btn-outline-brand { border: 1px solid var(--nexora-brand); background: #fff; color: var(--nexora-brand); }
+    .salon-btn-outline-brand:hover { background: rgba(70, 72, 216, .06); }
+    .salon-btn-solid { border: 1px solid transparent; background: var(--nexora-brand); color: #fff; box-shadow: 0 10px 20px rgba(70, 72, 216, .22); }
+    .salon-btn-solid:hover { background: var(--nexora-brand-dark); transform: translateY(-1px); }
+
+    .salon-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; max-width: 960px; margin: 0 auto; border: 1px dashed var(--nexora-border); border-radius: 16px; background: var(--nexora-surface); padding: 48px 24px; color: var(--nexora-subtle); text-align: center; }
+    .salon-empty[hidden] { display: none; }
+    .salon-empty i { width: 28px; height: 28px; }
+    .salon-empty p { margin: 0; font-size: 14px; font-weight: 600; }
+
+    /* ── modals ── */
+    .modal-backdrop { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(15, 23, 42, .55); }
+    .modal-backdrop[hidden] { display: none; }
+    .modal-card { width: 100%; max-width: 420px; max-height: calc(100vh - 40px); overflow-y: auto; border-radius: 20px; background: var(--nexora-surface); box-shadow: 0 24px 48px rgba(15, 23, 42, .28); padding: 24px; }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .modal-title { margin: 0; font-size: 18px; font-weight: 800; color: var(--nexora-text); }
+    .modal-close { display: inline-flex; width: 28px; height: 28px; flex-shrink: 0; align-items: center; justify-content: center; border: 0; background: transparent; color: var(--nexora-subtle); border-radius: 8px; cursor: pointer; }
+    .modal-close:hover { background: var(--nexora-surface-muted); color: var(--nexora-text); }
+    .modal-body { margin-top: 16px; }
+    .modal-divider { height: 1px; background: var(--nexora-rule); margin: 16px 0; }
+    .modal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+    .modal-btn { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 22px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: transform .15s, background .15s; }
+    .modal-btn-outline { border: 1px solid var(--nexora-border); background: #fff; color: var(--nexora-muted); }
+    .modal-btn-outline:hover { background: var(--nexora-surface-muted); color: var(--nexora-text); }
+    .modal-btn-solid { border: 1px solid transparent; background: var(--nexora-brand); color: #fff; box-shadow: 0 10px 20px rgba(70, 72, 216, .22); }
+    .modal-btn-solid:hover { background: var(--nexora-brand-dark); transform: translateY(-1px); }
+    .modal-btn-caps { text-transform: uppercase; letter-spacing: .04em; }
+
+    .unlink-title-highlight { background: rgba(70, 72, 216, .16); border-radius: 4px; padding: 1px 6px; }
+    .unlink-body-text { margin: 14px 0 0; color: var(--nexora-muted); font-size: 14px; font-weight: 500; line-height: 1.6; }
+
+    .form-label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; color: var(--nexora-text); }
+    .form-input { width: 100%; height: 42px; border: 1px solid var(--nexora-border); border-radius: 10px; padding: 0 12px; font-size: 14px; color: var(--nexora-text); background: #fff; }
+    .form-input:focus { outline: none; border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70, 72, 216, .12); }
+    .form-hint { margin: 8px 0 0; font-size: 12px; font-weight: 500; color: var(--nexora-subtle); }
+
+    .skill-tree-scroll { max-height: 340px; overflow-y: auto; padding-right: 4px; }
+    .skill-tree-state { border: 1px dashed var(--nexora-border); border-radius: 9px; background: #fff; padding: 14px 10px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; text-align: center; }
+
+    .skill-toolbar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid rgba(70, 72, 216, .28); border-radius: 9px; background: color-mix(in srgb, var(--nexora-brand) 5%, white); padding: 8px 9px; margin-bottom: 8px; color: var(--nexora-text); font-size: 11px; font-weight: 900; }
+    .skill-toolbar label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; }
+    .skill-toolbar input { width: 14px; height: 14px; flex: 0 0 auto; accent-color: var(--nexora-brand); }
+    .skill-toolbar-count { flex: 0 0 auto; border-radius: 999px; background: #e9edff; padding: 2px 7px; color: var(--nexora-brand); font-size: 10px; font-weight: 800; }
+
+    .skill-group { border: 1px solid var(--nexora-border); border-radius: 10px; overflow: hidden; margin-bottom: 8px; background: #fff; }
+    .skill-group:last-child { margin-bottom: 0; }
+    .skill-group-head { display: flex; align-items: center; gap: 8px; list-style: none; cursor: pointer; background: #f8faff; padding: 8px 9px; }
+    .skill-group-head::-webkit-details-marker { display: none; }
+    .skill-group-check { width: 14px; height: 14px; flex: 0 0 auto; accent-color: var(--nexora-brand); cursor: pointer; }
+    .skill-group-icon { width: 14px; height: 14px; flex: 0 0 auto; color: var(--nexora-brand); }
+    .skill-group-title { min-width: 0; overflow: hidden; color: var(--nexora-text); font-size: 10px; font-weight: 900; letter-spacing: .04em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+    .skill-group-count { flex: 0 0 auto; border-radius: 999px; background: #e9edff; padding: 2px 7px; color: var(--nexora-brand); font-size: 10px; font-weight: 800; }
+    .skill-group-chevron { width: 14px; height: 14px; flex: 0 0 auto; margin-left: auto; color: var(--nexora-subtle); transition: transform .16s ease; }
+    .skill-group:not([open]) .skill-group-chevron { transform: rotate(-90deg); }
+
+    .skill-subitems { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; border-top: 1px solid var(--nexora-rule); padding: 8px; }
+    .skill-row-service { display: flex; min-height: 34px; align-items: center; gap: 6px; border: 1px solid var(--nexora-border); border-radius: 9px; background: #fff; padding: 7px 8px; color: var(--nexora-muted); font-size: 11px; font-weight: 700; cursor: pointer; }
+    .skill-row-service input { width: 14px; height: 14px; flex: 0 0 auto; accent-color: var(--nexora-brand); }
+    .skill-row-service:has(input:checked) { border-color: rgba(70, 72, 216, .42); background: color-mix(in srgb, var(--nexora-brand) 7%, white); color: var(--nexora-text); }
+
+    @media (max-width: 480px) {
+      .salon-card { padding: 16px; }
+      .salon-actions { width: 100%; }
+      .salon-actions .salon-btn { flex: 1; }
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/staff-shell.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar staff-sidebar" aria-label="Staff sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content" aria-label="My Salons content">
+        <div class="page-heading">
+          <h1 class="page-title">My Salons</h1>
+          <p class="page-description">Salons linked to your staff profile.</p>
+        </div>
+
+        <div class="salon-list" data-salon-list></div>
+
+        <div class="salon-empty" data-salon-empty hidden>
+          <i data-lucide="store" aria-hidden="true"></i>
+          <p>You don't have any linked salons yet.</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" data-unlink-modal hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="unlink-modal-title">
+      <h2 class="modal-title" id="unlink-modal-title"><span class="unlink-title-highlight">UNLINK</span> FROM SALON?</h2>
+      <p class="unlink-body-text">You are about to unlink from <strong data-unlink-salon-name>this salon</strong>. You will immediately lose the tip QR for this salon. Any tips already sent to you will still be handled under the salon's payout policy. Do you want to continue?</p>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-outline modal-btn-caps" type="button" data-modal-close>Cancel</button>
+        <button class="modal-btn modal-btn-solid modal-btn-caps" type="button" data-unlink-confirm>Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" data-skill-modal hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="skill-modal-title">
+      <div class="modal-head">
+        <h2 class="modal-title" id="skill-modal-title">Edit Work Skill</h2>
+        <button class="modal-close" type="button" data-modal-close aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="skill-tree-scroll">
+        <div data-skill-tree></div>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-outline" type="button" data-modal-close>Cancel</button>
+        <button class="modal-btn modal-btn-solid" type="button" data-skill-save>Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" data-nickname-modal hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="nickname-modal-title">
+      <div class="modal-head">
+        <h2 class="modal-title" id="nickname-modal-title">Edit Nickname</h2>
+        <button class="modal-close" type="button" data-modal-close aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label" for="nickname-input">Nickname</label>
+        <input class="form-input" id="nickname-input" type="text" maxlength="24" placeholder="e.g. Kim" data-nickname-input>
+        <p class="form-hint">This is how this salon's team will see you.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-outline" type="button" data-modal-close>Cancel</button>
+        <button class="modal-btn modal-btn-solid" type="button" data-nickname-save>Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>
+    window.NEXORA_SHELL = { activePage: 'staff', activeTab: 'my-salons' };
+  </script>
+  <script src="../assets/nexora-shell.js"></script>
+  <script src="../assets/appointment-service-catalog.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var SALONS = [
+        {
+          id: 'golden-nails-spa',
+          name: 'Golden Nails & Spa',
+          location: 'Miami, Florida',
+          joinedLabel: 'Jul 24, 2026',
+          nickname: 'Kim',
+          initials: 'GN',
+          avatarClass: 'salon-avatar-golden',
+          active: true,
+          skills: []
+        },
+        {
+          id: 'elite-beauty-lounge',
+          name: 'Elite Beauty Lounge',
+          location: 'Houston, Texas',
+          joinedLabel: 'Jun 26, 2026',
+          nickname: 'Mike',
+          initials: 'QP',
+          avatarClass: 'salon-avatar-rose',
+          active: true,
+          skills: []
+        }
+      ];
+
+      var SKILL_SERVICE_CATALOG_URL = '../menu/menu.json';
+      var SKILL_CATEGORY_ICONS = {
+        pedicure: 'footprints',
+        manicure: 'sparkles',
+        'kids-menu': 'hand',
+        'acrylic-full-set': 'gem',
+        'acrylic-fill-in': 'gem',
+        'dipping-nail': 'layers-3',
+        'builder-gel': 'droplets',
+        'gel-x': 'droplets',
+        'gel-additional-services': 'droplets',
+        additional: 'folder-tree',
+        waxing: 'flower-2'
+      };
+
+      var SKILL_CATEGORIES = [];
+      var skillCatalogState = 'loading';
+
+      var listEl = document.querySelector('[data-salon-list]');
+      var emptyEl = document.querySelector('[data-salon-empty]');
+      var skillTreeEl = document.querySelector('[data-skill-tree]');
+
+      function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+        });
+      }
+
+      function findSalon(id) {
+        for (var i = 0; i < SALONS.length; i++) if (SALONS[i].id === id) return SALONS[i];
+        return null;
+      }
+
+      function renderCard(salon) {
+        var statusLabel = salon.active ? 'Active' : 'Inactive';
+        var infoText = salon.active
+          ? 'You are currently linked to this salon and can use the salon features available to your staff profile.'
+          : 'You are no longer linked to this salon. Reconnect to regain access to its staff features.';
+        return (
+          '<article class="salon-card" data-salon-card data-salon-id="' + esc(salon.id) + '">' +
+            '<div class="salon-card-top">' +
+              '<div class="salon-card-identity">' +
+                '<div class="salon-avatar ' + esc(salon.avatarClass) + '" aria-hidden="true">' + esc(salon.initials) + '</div>' +
+                '<div class="salon-identity-copy">' +
+                  '<h3 class="salon-name">' + esc(salon.name) + '</h3>' +
+                  '<div class="salon-location"><i data-lucide="map-pin" aria-hidden="true"></i><span>' + esc(salon.location) + '</span></div>' +
+                  '<div class="salon-joined">Joined ' + esc(salon.joinedLabel) + '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="salon-status">' +
+                '<span class="salon-status-pill' + (salon.active ? '' : ' is-inactive') + '">' + statusLabel + '</span>' +
+                '<span class="info-tooltip" data-info-tooltip>' +
+                  '<button class="info-tooltip-trigger" type="button" aria-label="' + statusLabel + ' status info">' +
+                    '<i data-lucide="info" aria-hidden="true"></i>' +
+                  '</button>' +
+                  '<span class="info-tooltip-content" role="tooltip">' + infoText + '</span>' +
+                '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="salon-card-bottom">' +
+              '<div class="nickname-line">' +
+                '<span class="nickname-label">Nickname:</span>' +
+                '<span class="nickname-value">' + esc(salon.nickname) + '</span>' +
+              '</div>' +
+              '<div class="salon-actions">' +
+                '<button class="salon-btn salon-btn-outline-danger" type="button" data-action="unlink">Unlink</button>' +
+                '<button class="salon-btn salon-btn-outline-brand" type="button" data-action="edit-skill">Edit Work Skill</button>' +
+                '<button class="salon-btn salon-btn-solid" type="button" data-action="edit-nickname">Edit Nickname</button>' +
+              '</div>' +
+            '</div>' +
+          '</article>'
+        );
+      }
+
+      function render() {
+        if (!listEl) return;
+        listEl.innerHTML = SALONS.map(renderCard).join('');
+        listEl.hidden = SALONS.length === 0;
+        if (emptyEl) emptyEl.hidden = SALONS.length !== 0;
+        if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+      }
+
+      function buildSkillTree() {
+        if (!skillTreeEl) return;
+        if (skillCatalogState !== 'ready') {
+          skillTreeEl.innerHTML = '<div class="skill-tree-state">' +
+            (skillCatalogState === 'error' ? 'Unable to load services from menu.json.' : 'Loading services…') +
+            '</div>';
+          return;
+        }
+        var totalServices = SKILL_CATEGORIES.reduce(function (sum, cat) { return sum + cat.services.length; }, 0);
+        var html = '<div class="skill-toolbar"><label><input type="checkbox" data-skill-select-all><span>Select All Services</span></label><span class="skill-toolbar-count">' + totalServices + '</span></div>';
+        html += SKILL_CATEGORIES.map(function (cat) {
+          var services = cat.services.map(function (service) {
+            return '<label class="skill-row-service"><input type="checkbox" data-skill-service="' + esc(cat.key) + '" value="' + esc(service.id) + '"><span>' + esc(service.name) + '</span></label>';
+          }).join('');
+          return (
+            '<details class="skill-group" data-skill-group="' + esc(cat.key) + '">' +
+              '<summary class="skill-group-head">' +
+                '<input type="checkbox" class="skill-group-check" data-skill-category="' + esc(cat.key) + '" aria-label="Select all ' + esc(cat.label) + ' services">' +
+                '<i data-lucide="' + esc(cat.icon) + '" class="skill-group-icon" aria-hidden="true"></i>' +
+                '<span class="skill-group-title">' + esc(cat.label) + '</span>' +
+                '<span class="skill-group-count">' + cat.services.length + '</span>' +
+                '<i data-lucide="chevron-down" class="skill-group-chevron" aria-hidden="true"></i>' +
+              '</summary>' +
+              '<div class="skill-subitems">' + services + '</div>' +
+            '</details>'
+          );
+        }).join('');
+        skillTreeEl.innerHTML = html;
+        // The category checkbox lives inside <summary>; without stopping the
+        // click here, toggling it would also expand/collapse the <details>.
+        var categoryInputs = skillTreeEl.querySelectorAll('[data-skill-category]');
+        for (var c = 0; c < categoryInputs.length; c++) {
+          categoryInputs[c].addEventListener('click', function (event) { event.stopPropagation(); });
+        }
+        if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+      }
+
+      function loadSkillCatalog() {
+        if (!window.NEXORA_APPOINTMENT_SERVICE_CATALOG) {
+          skillCatalogState = 'error';
+          buildSkillTree();
+          return;
+        }
+        window.NEXORA_APPOINTMENT_SERVICE_CATALOG.load(SKILL_SERVICE_CATALOG_URL).then(function (catalog) {
+          SKILL_CATEGORIES = catalog.categories.map(function (cat) {
+            return {
+              key: cat.id,
+              label: cat.name,
+              icon: SKILL_CATEGORY_ICONS[cat.id] || 'folder-tree',
+              services: cat.services
+            };
+          });
+          skillCatalogState = 'ready';
+          buildSkillTree();
+          // The picker may already be open for a salon when the catalog
+          // resolves; re-apply its selection now that the tree has content.
+          var openSalon = findSalon(pendingSkillId);
+          if (openSalon) setSkillTreeSelection(openSalon.skills);
+        }).catch(function () {
+          skillCatalogState = 'error';
+          buildSkillTree();
+        });
+      }
+
+      function syncSkillTreeAncestors() {
+        var allChecked = true;
+        var anyChecked = false;
+        var groupEls = skillTreeEl.querySelectorAll('[data-skill-group]');
+        for (var g = 0; g < groupEls.length; g++) {
+          var groupEl = groupEls[g];
+          var categoryInput = groupEl.querySelector('[data-skill-category]');
+          var serviceInputs = groupEl.querySelectorAll('[data-skill-service]');
+          var checkedCount = 0;
+          for (var i = 0; i < serviceInputs.length; i++) if (serviceInputs[i].checked) checkedCount++;
+          categoryInput.checked = checkedCount > 0 && checkedCount === serviceInputs.length;
+          categoryInput.indeterminate = checkedCount > 0 && checkedCount < serviceInputs.length;
+          if (checkedCount > 0) anyChecked = true;
+          if (!categoryInput.checked) allChecked = false;
+        }
+        var selectAll = skillTreeEl.querySelector('[data-skill-select-all]');
+        if (selectAll) {
+          selectAll.checked = allChecked;
+          selectAll.indeterminate = !allChecked && anyChecked;
+        }
+      }
+
+      function setSkillTreeSelection(selected) {
+        var selectedSet = {};
+        (selected || []).forEach(function (s) { selectedSet[s] = true; });
+        var serviceInputs = skillTreeEl.querySelectorAll('[data-skill-service]');
+        for (var i = 0; i < serviceInputs.length; i++) serviceInputs[i].checked = !!selectedSet[serviceInputs[i].value];
+        syncSkillTreeAncestors();
+
+        // Open categories that already have a selection so edits are visible
+        // at a glance; if nothing is selected yet, open just the first one.
+        var groupEls = skillTreeEl.querySelectorAll('[data-skill-group]');
+        var anyOpen = false;
+        for (var g = 0; g < groupEls.length; g++) {
+          var hasSelection = groupEls[g].querySelector('[data-skill-service]:checked') !== null;
+          groupEls[g].open = hasSelection;
+          if (hasSelection) anyOpen = true;
+        }
+        if (!anyOpen && groupEls.length) groupEls[0].open = true;
+      }
+
+      function getSelectedSkills() {
+        var out = [];
+        var serviceInputs = skillTreeEl.querySelectorAll('[data-skill-service]:checked');
+        for (var i = 0; i < serviceInputs.length; i++) out.push(serviceInputs[i].value);
+        return out;
+      }
+
+      if (skillTreeEl) {
+        buildSkillTree();
+        skillTreeEl.addEventListener('change', function (event) {
+          var target = event.target;
+          if (target.matches('[data-skill-select-all]')) {
+            var allInputs = skillTreeEl.querySelectorAll('[data-skill-category], [data-skill-service]');
+            for (var i = 0; i < allInputs.length; i++) { allInputs[i].checked = target.checked; allInputs[i].indeterminate = false; }
+            target.indeterminate = false;
+            return;
+          }
+          if (target.matches('[data-skill-category]')) {
+            var groupEl = target.closest('[data-skill-group]');
+            var serviceInputs = groupEl.querySelectorAll('[data-skill-service]');
+            for (var j = 0; j < serviceInputs.length; j++) serviceInputs[j].checked = target.checked;
+            target.indeterminate = false;
+            syncSkillTreeAncestors();
+            return;
+          }
+          if (target.matches('[data-skill-service]')) syncSkillTreeAncestors();
+        });
+        loadSkillCatalog();
+      }
+
+      var unlinkModal = document.querySelector('[data-unlink-modal]');
+      var unlinkNameEl = document.querySelector('[data-unlink-salon-name]');
+      var unlinkConfirmBtn = document.querySelector('[data-unlink-confirm]');
+      var pendingUnlinkId = null;
+
+      var skillModal = document.querySelector('[data-skill-modal]');
+      var skillSaveBtn = document.querySelector('[data-skill-save]');
+      var pendingSkillId = null;
+
+      var nicknameModal = document.querySelector('[data-nickname-modal]');
+      var nicknameInput = document.querySelector('[data-nickname-input]');
+      var nicknameSaveBtn = document.querySelector('[data-nickname-save]');
+      var pendingNicknameId = null;
+
+      function openModal(el) { if (el) el.hidden = false; }
+      function closeModal(el) { if (el) el.hidden = true; }
+
+      if (listEl) {
+        listEl.addEventListener('click', function (event) {
+          var actionBtn = event.target.closest('[data-action]');
+          if (!actionBtn) return;
+          var card = actionBtn.closest('[data-salon-card]');
+          var salon = card && findSalon(card.getAttribute('data-salon-id'));
+          if (!salon) return;
+          var action = actionBtn.getAttribute('data-action');
+
+          if (action === 'unlink') {
+            pendingUnlinkId = salon.id;
+            if (unlinkNameEl) unlinkNameEl.textContent = salon.name;
+            openModal(unlinkModal);
+          } else if (action === 'edit-skill') {
+            pendingSkillId = salon.id;
+            setSkillTreeSelection(salon.skills);
+            openModal(skillModal);
+          } else if (action === 'edit-nickname') {
+            pendingNicknameId = salon.id;
+            if (nicknameInput) nicknameInput.value = salon.nickname;
+            openModal(nicknameModal);
+          }
+        });
+      }
+
+      if (unlinkConfirmBtn) {
+        unlinkConfirmBtn.addEventListener('click', function () {
+          if (pendingUnlinkId) {
+            SALONS = SALONS.filter(function (s) { return s.id !== pendingUnlinkId; });
+            pendingUnlinkId = null;
+            render();
+          }
+          closeModal(unlinkModal);
+        });
+      }
+
+      if (skillSaveBtn) {
+        skillSaveBtn.addEventListener('click', function () {
+          var salon = findSalon(pendingSkillId);
+          if (salon) salon.skills = getSelectedSkills();
+          pendingSkillId = null;
+          closeModal(skillModal);
+        });
+      }
+
+      if (nicknameSaveBtn) {
+        nicknameSaveBtn.addEventListener('click', function () {
+          var salon = findSalon(pendingNicknameId);
+          var value = nicknameInput ? nicknameInput.value.trim() : '';
+          if (salon && value) {
+            salon.nickname = value;
+            render();
+          }
+          pendingNicknameId = null;
+          closeModal(nicknameModal);
+        });
+      }
+
+      var modals = [unlinkModal, skillModal, nicknameModal];
+      modals.forEach(function (modal) {
+        if (!modal) return;
+        modal.addEventListener('click', function (event) {
+          if (event.target === modal) closeModal(modal);
+        });
+        var closers = modal.querySelectorAll('[data-modal-close]');
+        for (var i = 0; i < closers.length; i++) {
+          (function (closer) { closer.addEventListener('click', function () { closeModal(modal); }); })(closers[i]);
+        }
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        modals.forEach(function (modal) { if (modal && !modal.hidden) closeModal(modal); });
+      });
+
+      document.addEventListener('click', function (event) {
+        var trigger = event.target.closest && event.target.closest('.info-tooltip-trigger');
+        var openTooltips = document.querySelectorAll('.info-tooltip.is-open');
+        for (var i = 0; i < openTooltips.length; i++) {
+          if (!trigger || openTooltips[i] !== trigger.closest('.info-tooltip')) openTooltips[i].classList.remove('is-open');
+        }
+        if (trigger) trigger.closest('.info-tooltip').classList.toggle('is-open');
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

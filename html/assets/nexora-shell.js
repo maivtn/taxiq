@@ -191,7 +191,7 @@
     '</div>' +
     '<nav class="sidebar-nav staff-sidebar-nav" aria-label="Staff menu">' +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="home">' + iconWrap('home') + '<span>Home</span></a>' +
-      '<a class="nav-item is-active staff-nav-item" href="#" data-staff-nav="dashboard">' + iconWrap('layout-dashboard') + '<span>Dashboard</span></a>' +
+      '<a class="nav-item staff-nav-item' + (activeTab === 'dashboard' ? ' is-active' : '') + '" href="staff.html" data-staff-nav="dashboard">' + iconWrap('layout-dashboard') + '<span>Dashboard</span></a>' +
       '<button class="nav-item nav-parent is-expanded staff-nav-item" type="button" data-nav-group aria-expanded="true" aria-controls="staff-subnav-workspace">' +
         iconWrap('briefcase-business') + '<span>My Workspace</span>' + CARET +
       '</button>' +
@@ -199,7 +199,7 @@
         '<a class="nav-subitem" href="#" data-staff-nav="my-qr"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My QR</span></a>' +
         '<a class="nav-subitem" href="#" data-staff-nav="my-earnings"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Earnings</span></a>' +
         '<a class="nav-subitem" href="#" data-staff-nav="my-reviews"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Reviews</span></a>' +
-        '<a class="nav-subitem" href="#" data-staff-nav="my-salons"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Salons</span></a>' +
+        '<a class="nav-subitem' + (activeTab === 'my-salons' ? ' is-active' : '') + '" href="my-salons.html" data-staff-nav="my-salons"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Salons</span></a>' +
       '</div></div>' +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="tips">' + iconWrap('circle-dollar-sign') + '<span>Tips</span></a>' +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="transactions">' + iconWrap('receipt') + '<span>Transactions</span></a>' +

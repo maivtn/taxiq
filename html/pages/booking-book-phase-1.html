@@ -6762,6 +6762,10 @@
       font-weight: 800;
     }
 
+    .tech-service-category-count {
+      margin-left: auto;
+    }
+
     .tech-service-category {
       overflow: hidden;
       border: 1px solid var(--nexora-border);
@@ -6810,7 +6814,6 @@
     }
 
     .tech-service-category-all {
-      margin-left: auto;
       color: var(--nexora-muted);
       font-size: 10px;
       font-weight: 800;
@@ -11322,7 +11325,7 @@
       var categoryId = category.id || 'category-' + index;
       var services = Array.isArray(category.services) ? category.services : [];
       return '<details class="tech-service-category" data-tech-service-category-panel="' + escapeHtml(categoryId) + '"' + (index === 0 ? ' open' : '') + '>' +
-        '<summary class="tech-service-category-head"><span class="tech-service-category-title">' + escapeHtml(category.name || 'Other services') + '</span><span class="tech-service-category-count">' + services.length + '</span><label class="tech-service-category-all"><input type="checkbox" data-tech-service-category-all="' + escapeHtml(categoryId) + '">Check all</label></summary>' +
+        '<summary class="tech-service-category-head"><label class="tech-service-category-all"><input type="checkbox" data-tech-service-category-all="' + escapeHtml(categoryId) + '">Check all</label><span class="tech-service-category-title">' + escapeHtml(category.name || 'Other services') + '</span><span class="tech-service-category-count">' + services.length + '</span></summary>' +
         '<div class="tech-service-category-body">' + services.map(function(service, serviceIndex) { return techServiceItemMarkup(service, categoryId, serviceIndex); }).join('') + '</div></details>';
     }
 
@@ -11337,6 +11340,11 @@
       var state = error ? 'Unable to load services from menu.json.' : 'No services available.';
       technicianServicePickerReady = !error;
       container.innerHTML = '<div class="tech-service-picker-toolbar"><label><input type="checkbox" data-tech-service-all>Check all categories</label><span class="tech-service-picker-count" data-tech-service-count>' + serviceCount + '</span></div>' + (categories.length ? categories.map(techServiceCategoryMarkup).join('') : '<div class="tech-service-catalog-state" data-tech-service-state>' + state + '</div>');
+      // The category checkbox now sits inside <summary>; without stopping the
+      // click here, toggling it would also expand/collapse the <details>.
+      container.querySelectorAll('[data-tech-service-category-all]').forEach(function(categoryAll) {
+        categoryAll.addEventListener('click', function(event) { event.stopPropagation(); });
+      });
       applyPendingTechServices();
       syncTechServiceCheckAll();
     }

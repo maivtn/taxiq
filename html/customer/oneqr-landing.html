@@ -80,6 +80,44 @@
       font-weight: 600;
     }
 
+    .oneqr-scan-welcome {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 20px 14px;
+      border-radius: 14px;
+      background: #f1edfc;
+      padding: 12px 14px;
+      color: #4a3aa0;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .oneqr-scan-welcome[hidden] {
+      display: none;
+    }
+
+    .oneqr-scan-welcome-icon {
+      display: flex;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: #fff;
+      color: #6d4de0;
+    }
+
+    .oneqr-scan-welcome-icon svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .oneqr-scan-welcome p {
+      margin: 0;
+    }
+
     .oneqr-scan-menu {
       display: flex;
       flex-direction: column;
@@ -148,6 +186,11 @@
       <p>Houston&rsquo;s modern nail &amp; beauty destination</p>
     </div>
 
+    <div class="oneqr-scan-welcome" id="oneqrWelcome" hidden>
+      <span class="oneqr-scan-welcome-icon"><i data-lucide="sparkles" aria-hidden="true"></i></span>
+      <p>Welcome back, <strong id="oneqrWelcomeName"></strong> &#128075;</p>
+    </div>
+
     <nav class="oneqr-scan-menu" aria-label="Bitcoin Nail Bar quick links">
       <a class="oneqr-scan-item" href="booking.html">
         <span class="oneqr-scan-icon"><i data-lucide="calendar-check" aria-hidden="true"></i></span>
@@ -182,6 +225,22 @@
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
+    (function () {
+      var welcomeEl = document.getElementById('oneqrWelcome');
+      var nameEl = document.getElementById('oneqrWelcomeName');
+      if (!welcomeEl || !nameEl) return;
+      var name = '';
+      try {
+        name = (window.localStorage.getItem('taxiq:customer-name') || '').trim();
+      } catch (error) {
+        name = '';
+      }
+      if (name) {
+        nameEl.textContent = name;
+        welcomeEl.hidden = false;
+      }
+    })();
+
     lucide.createIcons();
   </script>
 </body>
