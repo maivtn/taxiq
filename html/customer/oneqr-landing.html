@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/oneqr-header.css">
   <style>
     * {
       box-sizing: border-box;
@@ -14,7 +15,7 @@
 
     body {
       margin: 0;
-      background: #eef0f6;
+      background: #fff;
       color: #0b1220;
       font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     }
@@ -24,51 +25,6 @@
       min-height: 100vh;
       margin: 0 auto;
       background: #fff;
-      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12);
-    }
-
-    .oneqr-scan-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #e7e6f5;
-      padding: 14px 20px;
-    }
-
-    .oneqr-scan-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .oneqr-scan-mark {
-      display: flex;
-      width: 36px;
-      height: 36px;
-      flex-shrink: 0;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #8b2fd0 0%, #6d4de0 50%, #2f6feb 100%);
-    }
-
-    .oneqr-scan-mark img {
-      width: 22px;
-      height: 22px;
-      object-fit: contain;
-    }
-
-    .oneqr-scan-brand-name {
-      color: #0b1220;
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    .oneqr-scan-intro p {
-      margin: 4px 0 0;
-      color: #6d7688;
-      font-size: 13px;
-      font-weight: 600;
     }
 
     .oneqr-scan-welcome {
@@ -114,7 +70,7 @@
       flex-direction: row;
       flex-wrap: wrap;
       gap: 12px;
-      padding: 0 20px 32px;
+      padding: 20px 20px 32px;
     }
 
     .oneqr-scan-item {
@@ -167,32 +123,45 @@
     }
 
     .oneqr-scan-footer {
-      margin: 0 20px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 0 20px 20px;
       border-top: 1px solid #e7e6f5;
-      padding: 16px 0 0;
-      text-align: center;
+      padding: 14px 0 0;
     }
 
-    .oneqr-scan-footer p {
-      margin: 4px 0 0;
-      color: #6d7688;
+    .oneqr-scan-footer-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #4a5568;
       font-size: 12px;
       font-weight: 600;
+      line-height: 1.35;
+      text-align: left;
     }
 
-    .oneqr-scan-footer p:first-child {
-      margin-top: 0;
+    .oneqr-scan-footer-icon {
+      display: flex;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      color: #6d4de0;
+    }
+
+    .oneqr-scan-footer-icon svg {
+      width: 13px;
+      height: 13px;
     }
   </style>
 </head>
 <body>
   <main class="oneqr-scan-page">
-    <header class="oneqr-scan-top">
-      <div class="oneqr-scan-brand">
-        <span class="oneqr-scan-mark"><img src="../pages/assets/icon-nexora.png" alt="Nexora Touch"></span>
-        <span class="oneqr-scan-brand-name">Bitcoin Nail Bar</span>
-      </div>
-    </header>
+    <div data-oneqr-header></div>
+    <script src="../assets/oneqr-header.js"></script>
 
     <div class="oneqr-scan-welcome" id="oneqrWelcome" hidden>
       <span class="oneqr-scan-welcome-icon"><i data-lucide="sparkles" aria-hidden="true"></i></span>
@@ -243,9 +212,14 @@
     </nav>
 
     <footer class="oneqr-scan-footer">
-      <p>9793 Westheimer Rd Suite A, Houston, TX 77042</p>
-      <p>9:30 AM&ndash;7:00 PM</p>
-      <p>11:00 AM&ndash;5:00 PM</p>
+      <div class="oneqr-scan-footer-row">
+        <span class="oneqr-scan-footer-icon"><i data-lucide="map-pin" aria-hidden="true"></i></span>
+        <span>9793 Westheimer Rd Suite A, Houston, TX 77042</span>
+      </div>
+      <div class="oneqr-scan-footer-row">
+        <span class="oneqr-scan-footer-icon"><i data-lucide="clock" aria-hidden="true"></i></span>
+        <span>9:30 AM&ndash;7:00 PM<br>11:00 AM&ndash;5:00 PM</span>
+      </div>
     </footer>
   </main>
 

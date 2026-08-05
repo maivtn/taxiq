@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/oneqr-header.css">
   <style>
     * {
       box-sizing: border-box;
@@ -27,60 +28,6 @@
       box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12);
     }
 
-    .oneqr-scan-banner {
-      display: flex;
-      align-items: flex-start;
-      height: 92px;
-      background: linear-gradient(90deg, #8b2fd0 0%, #6d4de0 50%, #2f6feb 100%);
-    }
-
-    .oneqr-scan-back {
-      display: flex;
-      width: 32px;
-      height: 32px;
-      align-items: center;
-      justify-content: center;
-      margin: 14px 0 0 16px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.16);
-      color: #fff;
-      text-decoration: none;
-    }
-
-    .oneqr-scan-back svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .oneqr-scan-tag {
-      flex: 1;
-      margin: 0;
-      padding: 18px 22px 0;
-      color: #fff;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.14em;
-      text-align: center;
-      text-transform: uppercase;
-    }
-
-    .oneqr-scan-badge {
-      display: flex;
-      width: 76px;
-      height: 76px;
-      margin: -38px auto 0;
-      align-items: center;
-      justify-content: center;
-      border-radius: 22px;
-      background: #fff;
-      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);
-    }
-
-    .oneqr-scan-badge img {
-      width: 44px;
-      height: 44px;
-      object-fit: contain;
-    }
 
     .oneqr-scan-welcome {
       display: flex;
@@ -259,16 +206,8 @@
 </head>
 <body>
   <main class="oneqr-scan-page">
-    <header class="oneqr-scan-banner">
-      <a class="oneqr-scan-back" id="oneqrStaffBack" href="oneqr-landing.html" aria-label="Back">
-        <i data-lucide="arrow-left" aria-hidden="true"></i>
-      </a>
-      <p class="oneqr-scan-tag">Staff Portal</p>
-    </header>
-
-    <div class="oneqr-scan-badge">
-      <img src="../pages/assets/icon-nexora.png" alt="Nexora Touch">
-    </div>
+    <div data-oneqr-header data-back-href="oneqr-landing.html"></div>
+    <script src="../assets/oneqr-header.js"></script>
 
     <div class="oneqr-scan-welcome">
       <span class="oneqr-scan-welcome-icon"><i data-lucide="sparkles" aria-hidden="true"></i></span>
