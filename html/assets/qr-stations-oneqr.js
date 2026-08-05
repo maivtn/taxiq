@@ -75,33 +75,90 @@
 (function () {
   'use strict';
 
-  var MODULES = ['Check-in', 'Booking', 'Services', 'Payment', 'Tip', 'Review', 'Rewards', 'Membership', 'AI Assistant', 'Staff Portal'];
-
-  var MODULE_ICONS = {
-    'Check-in': 'check-circle-2',
-    'Booking': 'calendar-clock',
-    'Services': 'sparkles',
-    'Payment': 'credit-card',
-    'Tip': 'heart',
-    'Review': 'star',
-    'Rewards': 'gift',
-    'Membership': 'crown',
-    'AI Assistant': 'bot',
-    'Staff Portal': 'user-cog'
+  var TEMPLATE_PRESETS = {
+    'Beauty & Salon': {
+      modules: ['Book Appointment', 'Smart Check-in', 'Services & Prices', "Today's Promotion", 'Tip & Pay', 'Leave a Google Review', 'Social Media'],
+      icons: {
+        'Book Appointment': 'calendar-check',
+        'Smart Check-in': 'check',
+        'Services & Prices': 'list',
+        "Today's Promotion": 'percent',
+        'Tip & Pay': 'dollar-sign',
+        'Leave a Google Review': 'star',
+        'Social Media': 'share-2'
+      },
+      roles: {
+        staff: ['Smart Check-in', 'Tip & Pay'],
+        owner: ['Book Appointment', 'Services & Prices', "Today's Promotion"]
+      }
+    },
+    'Business': {
+      modules: ['Book Appointment', 'Check-in', 'Catalog & Pricing', "Today's Promotion", 'Tip & Pay', 'Leave a Review', 'Social Media'],
+      icons: {
+        'Book Appointment': 'calendar-check',
+        'Check-in': 'check',
+        'Catalog & Pricing': 'list',
+        "Today's Promotion": 'percent',
+        'Tip & Pay': 'dollar-sign',
+        'Leave a Review': 'star',
+        'Social Media': 'share-2'
+      },
+      roles: {
+        staff: ['Check-in', 'Tip & Pay'],
+        owner: ['Book Appointment', 'Catalog & Pricing', "Today's Promotion"]
+      }
+    },
+    'Organization': {
+      modules: ['Membership', 'Events', 'Donation', 'Volunteer', 'Voting', 'Announcements', 'Committees'],
+      icons: {
+        'Membership': 'crown',
+        'Events': 'calendar-clock',
+        'Donation': 'heart',
+        'Volunteer': 'user-cog',
+        'Voting': 'check-circle-2',
+        'Announcements': 'star',
+        'Committees': 'share-2'
+      },
+      roles: {
+        staff: ['Events', 'Volunteer'],
+        owner: ['Membership', 'Donation', 'Announcements']
+      }
+    },
+    'Government Service': {
+      modules: ['Citizen Services', 'Appointment', 'Permit & License', 'Fee Payment', 'Case Tracking', 'Public Notices', 'Complaint Submission'],
+      icons: {
+        'Citizen Services': 'user-cog',
+        'Appointment': 'calendar-clock',
+        'Permit & License': 'check-circle-2',
+        'Fee Payment': 'dollar-sign',
+        'Case Tracking': 'list',
+        'Public Notices': 'star',
+        'Complaint Submission': 'share-2'
+      },
+      roles: {
+        staff: ['Appointment', 'Case Tracking'],
+        owner: ['Citizen Services', 'Public Notices', 'Complaint Submission']
+      }
+    }
   };
+
+  var DEFAULT_TEMPLATE = 'Beauty & Salon';
+
+  var MODULES = TEMPLATE_PRESETS[DEFAULT_TEMPLATE].modules.slice();
+  var MODULE_ICONS = TEMPLATE_PRESETS[DEFAULT_TEMPLATE].icons;
 
   var ROLE_DATA = {
     customer: {
       welcome: '<strong>Welcome back, Brian 👋</strong><small>Your booking starts at 3:00 PM</small>',
-      modules: ['Check-in', 'Booking', 'Rewards', 'Membership', 'Tip', 'Review']
+      modules: MODULES.slice()
     },
     staff: {
       welcome: '<strong>Hi Chloe</strong><small>Shift 10:00 AM–7:00 PM</small>',
-      modules: ['Staff Portal', 'Check-in', 'Services', 'Tip']
+      modules: TEMPLATE_PRESETS[DEFAULT_TEMPLATE].roles.staff
     },
     owner: {
       welcome: '<strong>Good afternoon, Brian</strong><small>3 requests pending approval</small>',
-      modules: ['Staff Portal', 'Payment', 'AI Assistant', 'Booking']
+      modules: TEMPLATE_PRESETS[DEFAULT_TEMPLATE].roles.owner
     }
   };
 
@@ -116,7 +173,31 @@
   var PREVIEW_COLLAPSED_MODULE_LIMIT = 6;
   var previewExpanded = false;
 
+  var nameInput = document.getElementById('oneqr-name');
+  var welcomeInput = document.getElementById('oneqr-welcome');
+  var templateSelect = document.getElementById('oneqr-template');
+  var landingViewSelect = document.getElementById('oneqr-landing');
+  var identitySelect = document.getElementById('oneqr-identity');
+  var cardTitleEl = document.getElementById('oneqrCardTitle');
+  var heroNameEl = document.getElementById('oneqrHeroName');
+  var heroTaglineEl = document.getElementById('oneqrHeroTagline');
+
   if (!moduleListEl || !welcomeEl || !tilesEl) return;
+
+  function applyTemplate(templateName) {
+    var preset = TEMPLATE_PRESETS[templateName] || TEMPLATE_PRESETS[DEFAULT_TEMPLATE];
+    MODULES = preset.modules.slice();
+    MODULE_ICONS = preset.icons;
+    ROLE_DATA = {
+      customer: { welcome: ROLE_DATA.customer.welcome, modules: MODULES.slice() },
+      staff: { welcome: ROLE_DATA.staff.welcome, modules: preset.roles.staff },
+      owner: { welcome: ROLE_DATA.owner.welcome, modules: preset.roles.owner }
+    };
+    enabled = new Set(MODULES);
+    previewExpanded = false;
+    renderModules();
+    renderPreview();
+  }
 
   function iconHtml(name) {
     return '<i data-lucide="' + (MODULE_ICONS[name] || 'square') + '" aria-hidden="true"></i>';
@@ -143,21 +224,40 @@
 
   function renderPreview() {
     var data = ROLE_DATA[currentRole] || ROLE_DATA.customer;
-    welcomeEl.innerHTML = data.welcome;
+    var identityValue = identitySelect ? identitySelect.value : 'Public first, verify when needed';
+    if (identityValue === 'Always sign in') {
+      welcomeEl.innerHTML = '<strong>🔒 Sign in required</strong><small>Verify your identity to continue</small>';
+    } else {
+      welcomeEl.innerHTML = data.welcome;
+    }
+
     var allEnabledModules = MODULES.filter(function (name) {
       return enabled.has(name);
     });
     var roleModules = allEnabledModules.filter(function (name) {
       return enabled.has(name) && data.modules.indexOf(name) !== -1;
     });
-    var previewModules = previewExpanded ? allEnabledModules : roleModules.slice(0, PREVIEW_COLLAPSED_MODULE_LIMIT);
+
+    var landingView = landingViewSelect ? landingViewSelect.value : 'Auto-suggest based on user';
+    var previewModules;
+    var canExpand;
+    if (landingView === 'Full module list') {
+      previewModules = allEnabledModules;
+      canExpand = false;
+    } else if (landingView === 'Intro page') {
+      previewModules = previewExpanded ? allEnabledModules : [];
+      canExpand = allEnabledModules.length > 0;
+    } else {
+      previewModules = previewExpanded ? allEnabledModules : roleModules.slice(0, PREVIEW_COLLAPSED_MODULE_LIMIT);
+      canExpand = allEnabledModules.length > roleModules.length || roleModules.length > PREVIEW_COLLAPSED_MODULE_LIMIT;
+    }
+
     tilesEl.innerHTML = previewModules.map(function (name) {
       return '<div class="oneqr-phone-tile">' + iconHtml(name) + '<b>' + name + '</b></div>';
     }).join('');
     if (previewViewAllBtn) {
-      var canExpand = allEnabledModules.length > roleModules.length || roleModules.length > PREVIEW_COLLAPSED_MODULE_LIMIT;
       previewViewAllBtn.hidden = !canExpand;
-      previewViewAllBtn.textContent = previewExpanded ? 'View Less' : 'View All';
+      previewViewAllBtn.textContent = previewExpanded ? 'View Less' : (landingView === 'Intro page' ? 'View Services' : 'View All');
       previewViewAllBtn.setAttribute('aria-expanded', String(previewExpanded));
     }
     refreshIcons();
@@ -582,6 +682,37 @@
 
   if (viewDownloadBtn) {
     viewDownloadBtn.addEventListener('click', function () { downloadOneQrCard(viewDownloadBtn); });
+  }
+
+  if (nameInput && cardTitleEl && heroNameEl) {
+    nameInput.addEventListener('input', function () {
+      var value = nameInput.value.trim() || 'Untitled OneQR';
+      cardTitleEl.textContent = value;
+      heroNameEl.textContent = value;
+    });
+  }
+
+  if (welcomeInput && heroTaglineEl) {
+    welcomeInput.addEventListener('input', function () {
+      heroTaglineEl.textContent = welcomeInput.value.trim() || 'One QR. Everything Connected.';
+    });
+  }
+
+  if (templateSelect) {
+    templateSelect.addEventListener('change', function () {
+      applyTemplate(templateSelect.value);
+    });
+  }
+
+  if (landingViewSelect) {
+    landingViewSelect.addEventListener('change', function () {
+      previewExpanded = false;
+      renderPreview();
+    });
+  }
+
+  if (identitySelect) {
+    identitySelect.addEventListener('change', renderPreview);
   }
 
   renderModules();

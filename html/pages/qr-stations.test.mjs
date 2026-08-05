@@ -162,7 +162,7 @@ test('lets the OneQR Live Preview View All button show every enabled module', ()
   assert.match(oneqr, /var previewExpanded = false/);
   assert.match(oneqr, /var previewViewAllBtn = document\.getElementById\('oneqrPreviewViewAll'\)/);
   assert.match(oneqr, /var allEnabledModules = MODULES\.filter\(function \(name\) \{[\s\S]*return enabled\.has\(name\);[\s\S]*\}\)/);
-  assert.match(oneqr, /var previewModules = previewExpanded \? allEnabledModules : roleModules\.slice\(0, PREVIEW_COLLAPSED_MODULE_LIMIT\)/);
+  assert.match(oneqr, /previewModules = previewExpanded \? allEnabledModules : roleModules\.slice\(0, PREVIEW_COLLAPSED_MODULE_LIMIT\)/);
   assert.match(oneqr, /previewViewAllBtn\.setAttribute\('aria-expanded', String\(previewExpanded\)\)/);
   assert.match(oneqr, /previewViewAllBtn\.addEventListener\('click', function \(\) \{[\s\S]*previewExpanded = !previewExpanded;[\s\S]*renderPreview\(\);[\s\S]*\}\)/);
 });

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Success - OneQR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #eef0f6;
+      color: #0b1220;
+      font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    .oneqr-scan-page {
+      display: flex;
+      max-width: 420px;
+      min-height: 100vh;
+      margin: 0 auto;
+      flex-direction: column;
+      background: #fff;
+      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12);
+    }
+
+    .oneqr-scan-banner {
+      height: 92px;
+      background: linear-gradient(90deg, #8b2fd0 0%, #6d4de0 50%, #2f6feb 100%);
+    }
+
+    .oneqr-success-icon {
+      display: flex;
+      width: 88px;
+      height: 88px;
+      margin: -44px auto 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);
+      color: #22c55e;
+    }
+
+    .oneqr-success-icon svg {
+      width: 44px;
+      height: 44px;
+    }
+
+    .oneqr-success-copy {
+      margin: 20px 0 0;
+      padding: 0 28px;
+      text-align: center;
+    }
+
+    .oneqr-success-copy h1 {
+      margin: 0;
+      color: #0b1220;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .oneqr-success-copy p {
+      margin: 8px 0 0;
+      color: #6d7688;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .oneqr-success-actions {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px 20px 32px;
+    }
+
+    .oneqr-success-btn {
+      display: flex;
+      width: 100%;
+      min-height: 50px;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(90deg, #8b2fd0 0%, #6d4de0 50%, #2f6feb 100%);
+      box-shadow: 0 10px 22px rgba(109, 77, 224, 0.24);
+      color: #fff;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <main class="oneqr-scan-page">
+    <header class="oneqr-scan-banner"></header>
+
+    <div class="oneqr-success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12.5l4.5 4.5L19 7.5"></path>
+      </svg>
+    </div>
+
+    <div class="oneqr-success-copy">
+      <h1 id="oneqrSuccessTitle">You're all set!</h1>
+      <p id="oneqrSuccessMessage">Your request went through.</p>
+    </div>
+
+    <div class="oneqr-success-actions">
+      <a class="oneqr-success-btn" id="oneqrSuccessContinue" href="oneqr-landing.html">Continue</a>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var params = new URL(window.location.href).searchParams;
+      var title = params.get('title');
+      var message = params.get('message');
+      var next = params.get('next') || 'oneqr-landing.html';
+
+      if (title) document.getElementById('oneqrSuccessTitle').textContent = title;
+      if (message) document.getElementById('oneqrSuccessMessage').textContent = message;
+      document.getElementById('oneqrSuccessContinue').href = next;
+    })();
+  </script>
+</body>
+</html>

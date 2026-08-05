@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Sign In - OneQR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #eef0f6;
+      color: #0b1220;
+      font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    .oneqr-scan-page {
+      max-width: 420px;
+      min-height: 100vh;
+      margin: 0 auto;
+      background: #fff;
+      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12);
+    }
+
+    .oneqr-scan-banner {
+      display: flex;
+      align-items: flex-start;
+      height: 92px;
+      background: linear-gradient(90deg, #8b2fd0 0%, #6d4de0 50%, #2f6feb 100%);
+    }
+
+    .oneqr-scan-back {
+      display: flex;
+      width: 32px;
+      height: 32px;
+      align-items: center;
+      justify-content: center;
+      margin: 14px 0 0 16px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .oneqr-scan-back svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .oneqr-scan-tag {
+      flex: 1;
+      margin: 0;
+      padding: 18px 22px 0;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .oneqr-scan-badge {
+      display: flex;
+      width: 76px;
+      height: 76px;
+      margin: -38px auto 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);
+    }
+
+    .oneqr-scan-badge img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+    }
+
+    .oneqr-scan-intro {
+      margin: 14px 0 20px;
+      padding: 0 24px;
+      text-align: center;
+    }
+
+    .oneqr-scan-intro h1 {
+      margin: 0;
+      color: #0b1220;
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .oneqr-scan-intro p {
+      margin: 4px 0 0;
+      color: #6d7688;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .oneqr-otp-body {
+      padding: 0 20px 32px;
+    }
+
+    .oneqr-otp-step[hidden] {
+      display: none;
+    }
+
+    .oneqr-otp-field {
+      margin-bottom: 14px;
+    }
+
+    .oneqr-otp-field label {
+      display: block;
+      margin-bottom: 6px;
+      color: #4a5568;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .oneqr-otp-field input {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #e7e6f5;
+      border-radius: 12px;
+      padding: 0 14px;
+      color: #0b1220;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .oneqr-otp-field input:focus {
+      outline: none;
+      border-color: #6d4de0;
+      box-shadow: 0 0 0 3px rgba(109, 77, 224, 0.14);
+    }
+
+    .oneqr-otp-sentto {
+      margin: 0 0 14px;
+      color: #6d7688;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .oneqr-otp-code {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .oneqr-otp-code span {
+      display: flex;
+      width: 48px;
+      height: 56px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e7e6f5;
+      border-radius: 12px;
+      background: #f8f8fc;
+      color: #17182b;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .oneqr-otp-btn {
+      display: flex;
+      width: 100%;
+      min-height: 50px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 10px;
+      border: 1px solid #e7e6f5;
+      border-radius: 14px;
+      background: #fff;
+      color: #17182b;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .oneqr-otp-btn.is-primary {
+      border-color: transparent;
+      background: linear-gradient(90deg, #8b2fd0 0%, #6d4de0 50%, #2f6feb 100%);
+      box-shadow: 0 10px 22px rgba(109, 77, 224, 0.24);
+      color: #fff;
+    }
+
+    .oneqr-otp-btn.is-link {
+      border-color: transparent;
+      background: transparent;
+      box-shadow: none;
+      color: #6d4de0;
+    }
+
+    .oneqr-otp-trouble {
+      display: block;
+      margin-top: 16px;
+      color: #8792a2;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: underline;
+    }
+
+    .oneqr-otp-note {
+      margin: 16px 0 0;
+      color: #8792a2;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main class="oneqr-scan-page">
+    <header class="oneqr-scan-banner">
+      <a class="oneqr-scan-back" id="oneqrOtpBack" href="oneqr-landing.html" aria-label="Back">
+        <i data-lucide="arrow-left" aria-hidden="true"></i>
+      </a>
+      <p class="oneqr-scan-tag">Verify Your Identity</p>
+    </header>
+
+    <div class="oneqr-scan-badge">
+      <img src="../pages/assets/icon-nexora.png" alt="Nexora Touch">
+    </div>
+
+    <div class="oneqr-scan-intro">
+      <h1>Quick Verification</h1>
+      <p>Only needed for private actions like payments or bookings.</p>
+    </div>
+
+    <div class="oneqr-otp-body">
+      <section class="oneqr-otp-step" id="oneqrOtpStep1">
+        <div class="oneqr-otp-field">
+          <label for="oneqrOtpName">Your name (optional)</label>
+          <input id="oneqrOtpName" type="text" placeholder="e.g., Brian" autocomplete="given-name">
+        </div>
+        <div class="oneqr-otp-field">
+          <label for="oneqrOtpPhone">Mobile number</label>
+          <input id="oneqrOtpPhone" type="tel" placeholder="(832) 555-0148" inputmode="tel" autocomplete="tel">
+        </div>
+        <button class="oneqr-otp-btn is-primary" type="button" id="oneqrOtpSendBtn">Send Code</button>
+        <button class="oneqr-otp-btn is-link" type="button" id="oneqrOtpGuestBtn">Continue as Guest</button>
+        <p class="oneqr-otp-note">No password. We text you a one-time code.</p>
+      </section>
+
+      <section class="oneqr-otp-step" id="oneqrOtpStep2" hidden>
+        <p class="oneqr-otp-sentto">Code sent to <strong id="oneqrOtpPhoneEcho">your phone</strong></p>
+        <div class="oneqr-otp-code" aria-hidden="true">
+          <span>8</span><span>3</span><span>2</span><span>5</span>
+        </div>
+        <button class="oneqr-otp-btn is-primary" type="button" id="oneqrOtpVerifyBtn">Verify (demo)</button>
+        <button class="oneqr-otp-btn is-link" type="button" id="oneqrOtpResendBtn">Resend code</button>
+        <a class="oneqr-otp-trouble" id="oneqrOtpTrouble" href="oneqr-limited-access.html">Trouble verifying?</a>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>
+    (function () {
+      var params = new URL(window.location.href).searchParams;
+      var returnUrl = params.get('return') || 'oneqr-landing.html';
+
+      var nameInput = document.getElementById('oneqrOtpName');
+      var phoneInput = document.getElementById('oneqrOtpPhone');
+      var step1 = document.getElementById('oneqrOtpStep1');
+      var step2 = document.getElementById('oneqrOtpStep2');
+      var phoneEcho = document.getElementById('oneqrOtpPhoneEcho');
+      var backLink = document.getElementById('oneqrOtpBack');
+      var troubleLink = document.getElementById('oneqrOtpTrouble');
+
+      backLink.href = returnUrl;
+      troubleLink.href = 'oneqr-limited-access.html?return=' + encodeURIComponent(returnUrl);
+
+      document.getElementById('oneqrOtpSendBtn').addEventListener('click', function () {
+        var phone = phoneInput.value.trim();
+        phoneEcho.textContent = phone || 'your phone';
+        step1.hidden = true;
+        step2.hidden = false;
+      });
+
+      document.getElementById('oneqrOtpGuestBtn').addEventListener('click', function () {
+        window.location.href = returnUrl;
+      });
+
+      document.getElementById('oneqrOtpResendBtn').addEventListener('click', function (event) {
+        var btn = event.currentTarget;
+        var original = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Code resent';
+        setTimeout(function () {
+          btn.textContent = original;
+          btn.disabled = false;
+        }, 1800);
+      });
+
+      document.getElementById('oneqrOtpVerifyBtn').addEventListener('click', function () {
+        var name = nameInput.value.trim();
+        try {
+          if (name) window.localStorage.setItem('taxiq:customer-name', name);
+        } catch (error) { /* storage unavailable */ }
+
+        var successUrl = new URL('oneqr-success.html', window.location.href);
+        successUrl.searchParams.set('title', "You're verified!");
+        successUrl.searchParams.set('message', 'You can now use private features like payments and bookings.');
+        successUrl.searchParams.set('next', returnUrl);
+        window.location.href = successUrl.href;
+      });
+
+      lucide.createIcons();
+    })();
+  </script>
+</body>
+</html>

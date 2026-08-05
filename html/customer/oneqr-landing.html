@@ -97,6 +97,30 @@
       display: none;
     }
 
+    .oneqr-scan-signin {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 0 20px 14px;
+      border-radius: 14px;
+      background: #f6f7fb;
+      padding: 12px 14px;
+      color: #6d7688;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .oneqr-scan-signin[hidden] {
+      display: none;
+    }
+
+    .oneqr-scan-signin a {
+      color: #6d4de0;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
     .oneqr-scan-welcome-icon {
       display: flex;
       width: 28px;
@@ -120,21 +144,26 @@
 
     .oneqr-scan-menu {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      flex-wrap: wrap;
       gap: 12px;
       padding: 0 20px 32px;
     }
 
     .oneqr-scan-item {
       display: flex;
-      min-height: 56px;
+      flex: 0 0 calc(50% - 6px);
+      min-height: 92px;
+      flex-direction: column;
       align-items: center;
-      gap: 12px;
+      justify-content: center;
+      gap: 10px;
       border: 1px solid #e7e6f5;
       border-radius: 16px;
       background: #fff;
-      padding: 0 16px;
+      padding: 14px 10px;
       color: inherit;
+      text-align: center;
       text-decoration: none;
       transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
     }
@@ -167,7 +196,7 @@
       font-size: 13px;
       font-weight: 800;
       letter-spacing: 0.02em;
-      text-transform: uppercase;
+      text-transform: capitalize;
     }
   </style>
 </head>
@@ -189,6 +218,10 @@
     <div class="oneqr-scan-welcome" id="oneqrWelcome" hidden>
       <span class="oneqr-scan-welcome-icon"><i data-lucide="sparkles" aria-hidden="true"></i></span>
       <p>Welcome back, <strong id="oneqrWelcomeName"></strong> &#128075;</p>
+    </div>
+
+    <div class="oneqr-scan-signin" id="oneqrSignin" hidden>
+      <span><a href="oneqr-otp.html">Sign in</a> for a personalized experience</span>
     </div>
 
     <nav class="oneqr-scan-menu" aria-label="Bitcoin Nail Bar quick links">
@@ -228,6 +261,7 @@
     (function () {
       var welcomeEl = document.getElementById('oneqrWelcome');
       var nameEl = document.getElementById('oneqrWelcomeName');
+      var signinEl = document.getElementById('oneqrSignin');
       if (!welcomeEl || !nameEl) return;
       var name = '';
       try {
@@ -238,6 +272,8 @@
       if (name) {
         nameEl.textContent = name;
         welcomeEl.hidden = false;
+      } else if (signinEl) {
+        signinEl.hidden = false;
       }
     })();
 
