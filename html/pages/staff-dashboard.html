@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - Staff Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .dash { display: flex; flex-direction: column; gap: 16px; max-width: 620px; margin: 0 auto; }
+
+    .dash-heading { display: flex; flex-direction: column; gap: 6px; }
+    .dash-heading-top { display: flex; align-items: center; gap: 8px; }
+    .dash-role-badge { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; background: var(--nexora-surface-muted); color: var(--nexora-muted); font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+    .dash-user-name { color: var(--nexora-subtle); font-size: 13px; font-weight: 600; }
+    .page-title { margin: 0; color: var(--nexora-text); font-size: 24px; font-weight: 800; line-height: 32px; }
+
+    .dash-alert { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; border: 1px solid rgba(245, 158, 11, .28); border-radius: 14px; background: rgba(245, 158, 11, .08); padding: 14px 18px; }
+    .dash-alert-tag { display: inline-flex; align-items: center; height: 20px; padding: 0 10px; border-radius: 999px; background: rgba(245, 158, 11, .16); color: #b45309; font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+    .dash-alert-text { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; color: var(--nexora-text); font-size: 20px; font-weight: 800; }
+    .dash-alert-sub { color: var(--nexora-muted); font-size: 13px; font-weight: 600; }
+    .dash-alert-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 20px; border: 0; border-radius: 10px; background: var(--nexora-brand); color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 20px rgba(70, 72, 216, .22); }
+    .dash-alert-btn:hover { background: var(--nexora-brand-dark); }
+    .dash-alert[hidden] { display: none; }
+
+    .dash-stat-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .dash-stat-card { flex: 1 1 220px; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--nexora-border); border-radius: 14px; background: var(--nexora-surface); padding: 16px; box-shadow: var(--nexora-card-shadow); cursor: pointer; transition: transform .15s, box-shadow .15s; }
+    .dash-stat-card:hover { transform: translateY(-1px); box-shadow: var(--nexora-soft-shadow); }
+    .dash-stat-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .dash-stat-label { display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--nexora-subtle); font-size: 11px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; }
+    .dash-stat-icon { flex-shrink: 0; display: inline-flex; width: 30px; height: 30px; align-items: center; justify-content: center; border-radius: 9px; color: #fff; }
+    .dash-stat-icon i { width: 16px; height: 16px; }
+    .dash-stat-icon.is-brand { background: var(--nexora-brand); }
+    .dash-stat-icon.is-warning { background: var(--nexora-warning); }
+    .dash-stat-icon.is-gold { background: #eab308; }
+    .dash-stat-chevron { flex-shrink: 0; width: 16px; height: 16px; color: var(--nexora-subtle); }
+    .dash-stat-bottom { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .dash-stat-value { color: var(--nexora-text); font-size: 20px; font-weight: 800; }
+    .dash-stat-sub { font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .dash-stat-sub.is-success { color: var(--nexora-success); }
+    .dash-stat-sub.is-brand { color: var(--nexora-brand); }
+    .dash-stat-sub.is-warning { color: var(--nexora-warning); }
+
+    .dash-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+    .dash-section-head h2 { margin: 0; color: var(--nexora-text); font-size: 15px; font-weight: 800; }
+    .dash-manage-link { border: 0; background: none; padding: 0; color: var(--nexora-brand); font-size: 13px; font-weight: 700; cursor: pointer; }
+    .dash-manage-link:hover { text-decoration: underline; }
+
+    .dash-quick-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .dash-quick-btn { flex: 1 1 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: 76px; border: 1px solid var(--nexora-border); border-radius: 12px; background: var(--nexora-surface); font-size: 12px; font-weight: 700; color: var(--nexora-text); cursor: pointer; transition: transform .15s, box-shadow .15s; }
+    .dash-quick-btn:hover { transform: translateY(-1px); box-shadow: var(--nexora-soft-shadow); }
+    .dash-quick-btn i { width: 20px; height: 20px; }
+    .dash-quick-btn.is-brand { border-color: rgba(70, 72, 216, .22); background: rgba(70, 72, 216, .06); }
+    .dash-quick-btn.is-brand i { color: var(--nexora-brand); }
+    .dash-quick-btn.is-warning { border-color: rgba(245, 158, 11, .28); background: rgba(245, 158, 11, .08); }
+    .dash-quick-btn.is-warning i { color: var(--nexora-warning); }
+    .dash-quick-btn.is-danger { border-color: rgba(239, 68, 68, .24); background: rgba(239, 68, 68, .06); }
+    .dash-quick-btn.is-danger i { color: var(--nexora-danger); }
+
+    .dash-panel { border: 1px solid var(--nexora-border); border-radius: 14px; background: var(--nexora-surface); padding: 16px; box-shadow: var(--nexora-card-shadow); }
+    .dash-panel-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .dash-panel-head h2 { margin: 0; color: var(--nexora-text); font-size: 15px; font-weight: 800; }
+    .dash-panel-head i { width: 14px; height: 14px; color: var(--nexora-subtle); }
+    .dash-panel-title { margin: 0 0 12px; color: var(--nexora-text); font-size: 15px; font-weight: 800; }
+
+    .dash-pending-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .dash-pending-item { display: flex; align-items: center; gap: 12px; }
+    .dash-pending-icon { flex-shrink: 0; display: inline-flex; width: 38px; height: 38px; align-items: center; justify-content: center; border-radius: 10px; background: rgba(0, 184, 115, .12); color: var(--nexora-success); }
+    .dash-pending-icon i { width: 18px; height: 18px; }
+    .dash-pending-copy { min-width: 0; flex: 1; }
+    .dash-pending-title { color: var(--nexora-text); font-size: 14px; font-weight: 700; }
+    .dash-pending-sub { margin-top: 2px; overflow: hidden; color: var(--nexora-subtle); font-size: 12px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+    .dash-pending-amount { flex-shrink: 0; color: var(--nexora-success); font-size: 15px; font-weight: 800; }
+    .dash-pending-confirm { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 16px; border: 1px solid var(--nexora-brand); border-radius: 999px; background: #fff; color: var(--nexora-brand); font-size: 12px; font-weight: 700; cursor: pointer; }
+    .dash-pending-confirm:hover { background: rgba(70, 72, 216, .06); }
+    .dash-pending-empty { padding: 8px 0; color: var(--nexora-subtle); font-size: 13px; font-weight: 600; text-align: center; }
+
+    .dash-confirm-all { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 44px; border: 1px solid var(--nexora-brand); border-radius: 10px; background: #fff; color: var(--nexora-brand); font-size: 13px; font-weight: 700; cursor: pointer; }
+    .dash-confirm-all:hover { background: rgba(70, 72, 216, .06); }
+    .dash-confirm-all i { width: 16px; height: 16px; }
+    .dash-confirm-all[hidden] { display: none; }
+
+    .dash-two-col { display: flex; flex-wrap: wrap; gap: 12px; }
+    .dash-two-col .dash-panel { flex: 1 1 260px; }
+
+    .dash-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+    .dash-list-item { display: flex; align-items: center; gap: 10px; }
+    .dash-list-icon { flex-shrink: 0; display: inline-flex; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 9px; }
+    .dash-list-icon i { width: 15px; height: 15px; }
+    .dash-list-icon.is-brand { background: rgba(70, 72, 216, .12); color: var(--nexora-brand); }
+    .dash-list-icon.is-success { background: rgba(0, 184, 115, .12); color: var(--nexora-success); }
+    .dash-list-icon.is-warning { background: rgba(245, 158, 11, .14); color: var(--nexora-warning); }
+    .dash-list-copy { min-width: 0; flex: 1; }
+    .dash-list-title { overflow: hidden; color: var(--nexora-text); font-size: 13px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .dash-list-sub { margin-top: 2px; color: var(--nexora-subtle); font-size: 11px; font-weight: 600; }
+    .dash-list-value { flex-shrink: 0; font-size: 13px; font-weight: 800; }
+    .dash-list-value.is-success { color: var(--nexora-success); }
+    .dash-list-value.is-warning { color: var(--nexora-warning); }
+
+    .dash-salon-avatar { flex-shrink: 0; display: inline-flex; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 999px; background: var(--nexora-brand); color: #fff; font-size: 11px; font-weight: 800; }
+    .dash-salon-status { flex-shrink: 0; display: inline-flex; align-items: center; height: 22px; padding: 0 10px; border-radius: 999px; background: rgba(0, 184, 115, .12); color: var(--nexora-success); font-size: 11px; font-weight: 800; }
+    .dash-salon-status.is-inactive { background: var(--nexora-surface-muted); color: var(--nexora-subtle); }
+
+    .dash-view-all { display: block; border: 0; background: none; padding: 0; width: 100%; text-align: center; color: var(--nexora-brand); font-size: 12px; font-weight: 700; text-decoration: none; cursor: pointer; }
+    .dash-view-all:hover { text-decoration: underline; }
+
+    .dash-banner { position: relative; overflow: hidden; border: 1px solid var(--nexora-border); border-radius: 14px; background: var(--nexora-surface-muted); aspect-ratio: 3.2 / 1; }
+    .dash-banner img { display: block; width: 100%; height: 100%; object-fit: cover; transition: opacity .25s; }
+    .dash-banner-dots { position: absolute; inset-inline: 0; bottom: 10px; display: flex; justify-content: center; gap: 6px; }
+    .dash-banner-dots button { width: 6px; height: 6px; padding: 0; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .6); cursor: pointer; }
+    .dash-banner-dots button.is-active { width: 16px; background: #fff; }
+
+    .dash-invite { display: flex; align-items: center; gap: 14px; border-radius: 14px; background: linear-gradient(100deg, #4648d4 0%, #5b4bf2 52%, #8b3dff 100%); padding: 16px 18px; color: #fff; box-shadow: 0 14px 28px rgba(70, 72, 212, .24); }
+    .dash-invite-icon { flex-shrink: 0; display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; border-radius: 12px; background: rgba(255, 255, 255, .18); border: 1px solid rgba(255, 255, 255, .25); }
+    .dash-invite-icon i { width: 18px; height: 18px; }
+    .dash-invite-copy { min-width: 0; flex: 1; }
+    .dash-invite-title { font-size: 14px; font-weight: 800; }
+    .dash-invite-sub { margin-top: 2px; color: rgba(255, 255, 255, .78); font-size: 12px; font-weight: 600; }
+    .dash-invite-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; height: 34px; padding: 0 18px; border: 0; border-radius: 10px; background: #fff; color: var(--nexora-brand-dark); font-size: 12px; font-weight: 800; cursor: pointer; }
+    .dash-invite-btn:hover { background: #f1f5f9; }
+  </style>
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/staff-shell.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar staff-sidebar" aria-label="Staff sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content" aria-label="Staff dashboard content">
+        <div class="dash">
+          <div class="dash-heading">
+            <div class="dash-heading-top">
+              <span class="dash-role-badge">Staff</span>
+              <span class="dash-user-name">John Doe</span>
+            </div>
+            <h1 class="page-title">Dashboard</h1>
+          </div>
+
+          <div class="dash-alert" data-pending-banner data-total="105" data-count="7">
+            <div>
+              <span class="dash-alert-tag">Needs confirmation</span>
+              <div class="dash-alert-text"><span data-pending-total>$105</span><span class="dash-alert-sub"><span data-pending-count>7</span> tips</span></div>
+            </div>
+            <button class="dash-alert-btn" type="button">View all</button>
+          </div>
+
+          <div class="dash-stat-row">
+            <div class="dash-stat-card">
+              <div class="dash-stat-top">
+                <span class="dash-stat-label"><span class="dash-stat-icon is-brand"><i data-lucide="wallet" aria-hidden="true"></i></span>Today's Tips</span>
+                <svg class="dash-stat-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <div class="dash-stat-bottom">
+                <span class="dash-stat-value">$0</span>
+                <span class="dash-stat-sub">0 tips</span>
+              </div>
+            </div>
+            <div class="dash-stat-card">
+              <div class="dash-stat-top">
+                <span class="dash-stat-label"><span class="dash-stat-icon is-brand"><i data-lucide="calendar-days" aria-hidden="true"></i></span>This Month</span>
+                <svg class="dash-stat-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <div class="dash-stat-bottom">
+                <span class="dash-stat-value">$0</span>
+                <span class="dash-stat-sub is-brand">Track payout</span>
+              </div>
+            </div>
+            <div class="dash-stat-card">
+              <div class="dash-stat-top">
+                <span class="dash-stat-label"><span class="dash-stat-icon is-warning"><i data-lucide="clock-3" aria-hidden="true"></i></span>Pending</span>
+                <svg class="dash-stat-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <div class="dash-stat-bottom">
+                <span class="dash-stat-value" data-pending-stat-value>$105</span>
+                <span class="dash-stat-sub is-warning" data-pending-stat-sub>7 awaiting confirmation</span>
+              </div>
+            </div>
+            <div class="dash-stat-card">
+              <div class="dash-stat-top">
+                <span class="dash-stat-label"><span class="dash-stat-icon is-gold"><i data-lucide="star" aria-hidden="true"></i></span>Rating</span>
+                <svg class="dash-stat-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <div class="dash-stat-bottom">
+                <span class="dash-stat-value">3.9</span>
+                <span class="dash-stat-sub is-brand">Excellent</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="dash-section-head">
+              <h2>Quick actions</h2>
+              <button class="dash-manage-link" type="button">Manage</button>
+            </div>
+            <div class="dash-quick-actions">
+              <button class="dash-quick-btn is-brand" type="button"><i data-lucide="credit-card" aria-hidden="true"></i>Receive Tips</button>
+              <button class="dash-quick-btn is-warning" type="button"><i data-lucide="star" aria-hidden="true"></i>Reviews</button>
+              <button class="dash-quick-btn is-brand" type="button"><i data-lucide="qr-code" aria-hidden="true"></i>QR Pay</button>
+              <button class="dash-quick-btn is-danger" type="button"><i data-lucide="gift" aria-hidden="true"></i>Refer</button>
+            </div>
+          </div>
+
+          <div class="dash-panel">
+            <div class="dash-panel-head">
+              <h2>Pending Confirmations</h2>
+              <i data-lucide="info" aria-hidden="true"></i>
+            </div>
+            <div class="dash-pending-list" data-pending-list>
+              <div class="dash-pending-item" data-pending-item data-amount="15">
+                <span class="dash-pending-icon"><i data-lucide="smartphone" aria-hidden="true"></i></span>
+                <div class="dash-pending-copy">
+                  <div class="dash-pending-title">Zelle</div>
+                  <div class="dash-pending-sub">via Zelle · Master Store · aaa</div>
+                </div>
+                <span class="dash-pending-amount">$15</span>
+                <button class="dash-pending-confirm" type="button" data-confirm-item>Confirm</button>
+              </div>
+            </div>
+            <button class="dash-confirm-all" type="button" data-confirm-all>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m20 6-11 11-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              Confirm All Received
+            </button>
+          </div>
+
+          <div class="dash-two-col">
+            <div class="dash-panel">
+              <h2 class="dash-panel-title">Recent Activity</h2>
+              <div class="dash-list">
+                <div class="dash-list-item">
+                  <span class="dash-list-icon is-brand"><i data-lucide="sparkles" aria-hidden="true"></i></span>
+                  <div class="dash-list-copy">
+                    <div class="dash-list-title">Tip received</div>
+                    <div class="dash-list-sub">Today</div>
+                  </div>
+                  <span class="dash-list-value">$0</span>
+                </div>
+                <div class="dash-list-item">
+                  <span class="dash-list-icon is-success"><i data-lucide="calendar-check" aria-hidden="true"></i></span>
+                  <div class="dash-list-copy">
+                    <div class="dash-list-title">Monthly tips</div>
+                    <div class="dash-list-sub">This Month</div>
+                  </div>
+                  <span class="dash-list-value">$0</span>
+                </div>
+                <div class="dash-list-item">
+                  <span class="dash-list-icon is-warning"><i data-lucide="star" aria-hidden="true"></i></span>
+                  <div class="dash-list-copy">
+                    <div class="dash-list-title">Rating</div>
+                    <div class="dash-list-sub">Latest score</div>
+                  </div>
+                  <span class="dash-list-value is-warning">3.9</span>
+                </div>
+              </div>
+              <button class="dash-view-all" type="button">View all activity</button>
+            </div>
+
+            <div class="dash-panel">
+              <h2 class="dash-panel-title">My Salons</h2>
+              <div class="dash-list">
+                <div class="dash-list-item">
+                  <span class="dash-salon-avatar">QU</span>
+                  <div class="dash-list-copy">
+                    <div class="dash-list-title">QUÂN PM</div>
+                    <div class="dash-list-sub">nexora_02</div>
+                  </div>
+                  <span class="dash-salon-status">Active</span>
+                </div>
+              </div>
+              <a class="dash-view-all" href="my-salons.html">View all salons</a>
+            </div>
+          </div>
+
+          <section class="dash-banner" data-banner-slider>
+            <img data-banner-image alt="">
+            <div class="dash-banner-dots" data-banner-dots></div>
+          </section>
+
+          <div class="dash-invite">
+            <span class="dash-invite-icon"><i data-lucide="gift" aria-hidden="true"></i></span>
+            <div class="dash-invite-copy">
+              <div class="dash-invite-title">Invite fellow nail techs</div>
+              <div class="dash-invite-sub">Earn $10 for each friend who joins!</div>
+            </div>
+            <button class="dash-invite-btn" type="button">Invite Now</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>
+    window.NEXORA_SHELL = { activePage: 'staff', activeTab: 'dashboard' };
+  </script>
+  <script src="../assets/nexora-shell.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var bannerItems = [
+        { src: 'https://vlinkpay-storages-prod.nyc3.cdn.digitaloceanspaces.com/vlinkpay-storages-prod/cryptomap360/posting/0c2b09ef-b84a-4398-abe0-be1839c1c9fc/banner-5.png', alt: 'Promotion banner 1' },
+        { src: 'https://vlinkpay-storages-prod.nyc3.cdn.digitaloceanspaces.com/vlinkpay-storages-prod/cryptomap360/posting/dd35f14d-e2f4-4c17-a42a-f9805abecec9/banner-1.png', alt: 'Promotion banner 2' },
+        { src: 'https://vlinkpay-storages-prod.nyc3.cdn.digitaloceanspaces.com/vlinkpay-storages-prod/cryptomap360/posting/5615bd4b-cabb-491f-b1f4-db9abb81065f/banner-12.png', alt: 'Promotion banner 3' }
+      ];
+
+      var slider = document.querySelector('[data-banner-slider]');
+      if (slider) {
+        var image = slider.querySelector('[data-banner-image]');
+        var dotsEl = slider.querySelector('[data-banner-dots]');
+        var activeIndex = 0;
+
+        var dotButtons = bannerItems.map(function (item, index) {
+          var dot = document.createElement('button');
+          dot.type = 'button';
+          dot.setAttribute('aria-label', 'Show banner ' + (index + 1));
+          dot.addEventListener('click', function () { showBanner(index); });
+          dotsEl.appendChild(dot);
+          return dot;
+        });
+
+        function updateDots() {
+          dotButtons.forEach(function (dot, index) { dot.classList.toggle('is-active', index === activeIndex); });
+        }
+
+        function showBanner(index) {
+          activeIndex = index;
+          image.style.opacity = '0';
+          window.setTimeout(function () {
+            var item = bannerItems[activeIndex];
+            image.src = item.src;
+            image.alt = item.alt;
+            image.style.opacity = '1';
+            updateDots();
+          }, 140);
+        }
+
+        showBanner(0);
+        window.setInterval(function () { showBanner((activeIndex + 1) % bannerItems.length); }, 6500);
+      }
+
+      // The pending-confirmations panel only ever previews a couple of items;
+      // the account-wide total/count in the banner + stat card is broader than
+      // what's listed here, so confirming an item decrements that running
+      // total instead of recomputing it from the (partial) list on screen.
+      var pendingList = document.querySelector('[data-pending-list]');
+      var pendingBanner = document.querySelector('[data-pending-banner]');
+      var confirmAllBtn = document.querySelector('[data-confirm-all]');
+      var pendingTotalEl = document.querySelector('[data-pending-total]');
+      var pendingCountEl = document.querySelector('[data-pending-count]');
+      var pendingStatValueEl = document.querySelector('[data-pending-stat-value]');
+      var pendingStatSubEl = document.querySelector('[data-pending-stat-sub]');
+
+      var pendingState = {
+        total: Number(pendingBanner && pendingBanner.getAttribute('data-total')) || 0,
+        count: Number(pendingBanner && pendingBanner.getAttribute('data-count')) || 0
+      };
+
+      function renderPendingSummary() {
+        if (pendingTotalEl) pendingTotalEl.textContent = '$' + pendingState.total;
+        if (pendingCountEl) pendingCountEl.textContent = pendingState.count;
+        if (pendingStatValueEl) pendingStatValueEl.textContent = '$' + pendingState.total;
+        if (pendingStatSubEl) pendingStatSubEl.textContent = pendingState.count + ' awaiting confirmation';
+        if (pendingBanner) pendingBanner.hidden = pendingState.count === 0;
+        if (confirmAllBtn) confirmAllBtn.hidden = pendingState.count === 0;
+      }
+
+      function confirmItem(item) {
+        pendingState.total = Math.max(0, pendingState.total - (Number(item.getAttribute('data-amount')) || 0));
+        pendingState.count = Math.max(0, pendingState.count - 1);
+        item.remove();
+      }
+
+      function showEmptyListIfNeeded() {
+        if (!pendingList.querySelector('[data-pending-item]')) {
+          pendingList.innerHTML = '<div class="dash-pending-empty">No pending confirmations.</div>';
+        }
+      }
+
+      if (pendingList) {
+        pendingList.addEventListener('click', function (event) {
+          var btn = event.target.closest('[data-confirm-item]');
+          if (!btn) return;
+          var item = btn.closest('[data-pending-item]');
+          if (item) confirmItem(item);
+          showEmptyListIfNeeded();
+          renderPendingSummary();
+        });
+      }
+
+      if (confirmAllBtn) {
+        confirmAllBtn.addEventListener('click', function () {
+          var items = pendingList.querySelectorAll('[data-pending-item]');
+          for (var i = 0; i < items.length; i++) confirmItem(items[i]);
+          showEmptyListIfNeeded();
+          renderPendingSummary();
+        });
+      }
+
+      renderPendingSummary();
+    })();
+  </script>
+</body>
+</html>

@@ -105,7 +105,8 @@
       },
       roles: {
         customer: ['Check-in', 'Booking', 'Services', 'Payment', 'Tip', 'Review', 'Rewards', 'Membership', 'Staff Portal', 'AI Assistant'],
-        staff: ['Clock-in', 'Turn', 'Receive Customer', 'Complete Service', 'Tip', 'Request Approval']
+        staff: ['Clock-in', 'Turn', 'Receive Customer', 'Complete Service', 'Tip', 'Request Approval'],
+        owner: ['Booking', 'Services', 'Payment', 'Staff Portal']
       }
     },
     'Business': {
@@ -128,7 +129,8 @@
       },
       roles: {
         customer: ['Book Appointment', 'Check-in', 'Catalog & Pricing', "Today's Promotion", 'Tip & Pay', 'Leave a Review', 'Rewards', 'Membership'],
-        staff: ['Clock-in', 'Turn', 'Appointment', 'Walk-in', 'Complete Service', 'Catalog & Pricing', 'Tip & Pay', 'Request Approval']
+        staff: ['Clock-in', 'Turn', 'Appointment', 'Walk-in', 'Complete Service', 'Catalog & Pricing', 'Tip & Pay', 'Request Approval'],
+        owner: ['Book Appointment', 'Catalog & Pricing', "Today's Promotion"]
       }
     },
     'Organization': {
@@ -145,7 +147,8 @@
       },
       roles: {
         customer: ['Membership', 'Events', 'Donation', 'Volunteer', 'Voting', 'Announcements', 'Committees', 'Chapters'],
-        staff: ['Events', 'Volunteer']
+        staff: ['Events', 'Volunteer'],
+        owner: ['Membership', 'Donation', 'Announcements']
       }
     },
     'Government Service': {
@@ -162,24 +165,26 @@
       },
       roles: {
         customer: ['Citizen Services', 'Appointment', 'Permit & License', 'Case Tracking', 'Public Notices', 'Complaint Submission', 'Fee Payment', 'Document Upload'],
-        staff: ['Appointment', 'Case Tracking']
+        staff: ['Appointment', 'Case Tracking'],
+        owner: ['Citizen Services', 'Public Notices', 'Complaint Submission']
       }
     }
   };
 
   var DEFAULT_TEMPLATE = 'Beauty & Salon';
-  var ROLES = ['customer', 'staff'];
+  var ROLES = ['customer', 'staff', 'owner'];
 
   var ROLE_WELCOME = {
     customer: '<strong>Welcome back, Brian 👋</strong><small>Your booking starts at 3:00 PM</small>',
-    staff: '<strong>Hi Chloe</strong><small>Shift 10:00 AM–7:00 PM</small>'
+    staff: '<strong>Hi Chloe</strong><small>Shift 10:00 AM–7:00 PM</small>',
+    owner: '<strong>Good afternoon, Brian</strong><small>3 requests pending approval</small>'
   };
 
   var MODULE_ICONS = TEMPLATE_PRESETS[DEFAULT_TEMPLATE].icons;
 
-  // Each role owns its own module list — Customer only ever sees customer
-  // modules, Staff only ever sees staff modules. Adding a module (once wired
-  // up) adds to whichever role list is currently active, not a shared pool.
+  // Each role (Customer, Staff, Owner) owns its own module list — switching
+  // roles never leaks another role's modules. Adding a module (once wired up)
+  // adds to whichever role list is currently active, not a shared pool.
   var moduleOrderByRole = {};
   var enabledByRole = {};
 
@@ -188,11 +193,13 @@
   // OneQR Name stays global: it names the single Master QR, not a role view.
   var ROLE_CONFIG_DEFAULTS = {
     customer: { welcome: 'Welcome to Bitcoin Nail Bar', identity: 'Public first, verify when needed' },
-    staff: { welcome: 'Welcome to the Staff Portal', identity: 'Always sign in' }
+    staff: { welcome: 'Welcome to the Staff Portal', identity: 'Always sign in' },
+    owner: { welcome: 'Welcome to the Owner Dashboard', identity: 'Always sign in' }
   };
   var roleConfig = {
     customer: Object.assign({}, ROLE_CONFIG_DEFAULTS.customer),
-    staff: Object.assign({}, ROLE_CONFIG_DEFAULTS.staff)
+    staff: Object.assign({}, ROLE_CONFIG_DEFAULTS.staff),
+    owner: Object.assign({}, ROLE_CONFIG_DEFAULTS.owner)
   };
 
   var currentRole = 'customer';
