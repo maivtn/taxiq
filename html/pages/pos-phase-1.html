@@ -699,6 +699,219 @@
   </style>
   <link rel="stylesheet" href="../assets/pos-booking.css">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <style>
+    /* Tech modal — categorized services picker (ported from booking-book-phase-1.html; pos-booking.css only has the older flat checkbox layout) */
+    .tech-service-checks { display: block; }
+
+    .tech-service-picker {
+      display: block;
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .tech-service-picker > * + * {
+      margin-top: 6px;
+    }
+
+    .tech-service-picker-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border: 1px solid rgba(70, 72, 216, 0.28);
+      border-radius: 9px;
+      background: color-mix(in srgb, var(--nexora-brand) 5%, white);
+      padding: 8px 9px;
+      color: var(--nexora-text);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .tech-service-picker-toolbar label,
+    .tech-service-category-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .tech-service-picker-toolbar input,
+    .tech-service-category-all input {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+      accent-color: var(--nexora-brand);
+    }
+
+    .tech-service-picker-count,
+    .tech-service-category-count {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #e9edff;
+      padding: 2px 7px;
+      color: var(--nexora-brand);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .tech-service-category-count {
+      margin-left: auto;
+    }
+
+    .tech-service-category {
+      overflow: hidden;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .tech-service-category-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+      cursor: pointer;
+      background: #f8faff;
+      padding: 8px 9px;
+    }
+
+    .tech-service-category-head::-webkit-details-marker {
+      display: none;
+    }
+
+    .tech-service-category-chevron {
+      flex-shrink: 0;
+      margin-left: 0;
+      color: var(--nexora-subtle);
+      font-size: 13px;
+      line-height: 1;
+      transition: transform .16s ease;
+    }
+
+    .tech-service-category:not([open]) .tech-service-category-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .tech-service-category-title {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--nexora-text);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .tech-service-category-all {
+      color: var(--nexora-muted);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .tech-service-category-body {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 6px;
+      border-top: 1px solid var(--nexora-rule);
+      padding: 8px;
+    }
+
+    .tech-service-catalog-state {
+      border: 1px dashed var(--nexora-border);
+      border-radius: 9px;
+      background: #fff;
+      padding: 14px 10px;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* Tech modal — settings-field/-label/-input base rules (ported from booking-book-phase-1.html; pos-booking.css only has nested overrides, not the base rules) */
+    .settings-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* Row/col flex instead of pos-booking.css's grid-based .tech-modal-grid */
+    .tech-modal-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tech-modal-grid .settings-field {
+      flex: 1 1 calc(33.333% - 7px);
+      min-width: 180px;
+    }
+
+    .tech-modal-grid.cols-2 .settings-field {
+      flex-basis: calc(50% - 5px);
+    }
+
+    .tech-modal-grid.cols-4 .settings-field {
+      flex-basis: calc(25% - 7.5px);
+    }
+
+    @media (max-width: 767px) {
+      .tech-modal-grid .settings-field {
+        flex-basis: 100%;
+      }
+    }
+
+    .settings-label {
+      color: var(--nexora-subtle);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .settings-input,
+    .settings-select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 9px;
+      background: #fff;
+      padding: 0 12px;
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .settings-input:focus,
+    .settings-select:focus {
+      border-color: rgba(70, 72, 216, 0.42);
+      box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.1);
+    }
+
+    /* Shared select-arrow rule: keep the chevron off the right edge instead of flush against it — applies to every <select> in the tech modal */
+    .tech-modal select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 12px;
+      padding-right: 32px;
+    }
+
+    .tech-modal select.phone-country-select {
+      background-position: right 6px center;
+      padding-right: 22px;
+    }
+  </style>
 </head>
 <body>
   <div class="shell">
@@ -1034,13 +1247,31 @@
                 <div class="tech-modal-heading">
                   <span class="tech-title-mark"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
                   <div>
-                    <div class="tech-modal-title" id="mg-tech-modal-title">Add technician</div>
-                    <div class="tech-modal-sub">Enter new technician info, services, schedule, login and pay.</div>
+                    <div class="tech-modal-title" id="mg-tech-modal-title" data-mg-tech-modal-title>Add technician</div>
+                    <div class="tech-modal-sub" data-mg-tech-modal-sub>Enter new technician info, services, schedule, login and pay.</div>
                   </div>
                 </div>
                 <button class="tech-modal-close" type="button" data-mg-tech-cancel aria-label="Close tech modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
               </div>
               <div class="tech-modal-body">
+                <div class="tech-modal-section" data-mg-tech-picker-section>
+                  <div class="tech-modal-section-title"><i class="bi bi-people" aria-hidden="true"></i>Choose from list</div>
+                  <div class="tech-select-row">
+                    <div class="tech-combobox" data-mg-tech-combobox>
+                      <label class="tech-search">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        <input type="search" data-mg-tech-search data-mg-tech-select-input role="combobox" aria-controls="mg-tech-select-menu" aria-expanded="false" placeholder="Search or pick a technician..." autocomplete="off">
+                        <i class="bi bi-chevron-down tech-select-chevron" aria-hidden="true"></i>
+                      </label>
+                      <div class="tech-select-menu" id="mg-tech-select-menu" data-mg-tech-select-menu hidden>
+                        <div class="tech-choice-grid" data-mg-tech-choice-grid role="listbox" aria-label="Technician list"></div>
+                        <div class="tech-empty" data-mg-tech-empty>No matching technician found.</div>
+                      </div>
+                    </div>
+                    <button class="booking-secondary-button tech-create-button" type="button" data-mg-tech-create><i class="bi bi-plus-lg" aria-hidden="true"></i>Enter manually</button>
+                  </div>
+                </div>
+
                 <div class="tech-modal-section">
                   <div class="tech-modal-section-title"><i class="bi bi-person-vcard" aria-hidden="true"></i>Profile info</div>
                   <div class="tech-modal-grid">
@@ -1053,11 +1284,42 @@
                       </span>
                     </label>
                     <label class="settings-field"><span class="settings-label">Email</span><input class="settings-input" type="email" data-mg-tech-form-email></label>
-                    <div class="settings-field">
-                      <span class="settings-label">Services</span>
-                      <div class="tech-service-checks tech-service-picker" data-mg-tech-service-picker></div>
-                    </div>
                   </div>
+                </div>
+
+                <div class="tech-modal-section">
+                  <div class="tech-modal-section-title"><i class="bi bi-shield-lock" aria-hidden="true"></i>Role &amp; login</div>
+                  <div class="tech-modal-grid cols-2">
+                    <label class="settings-field"><span class="settings-label">Role</span>
+                      <select class="settings-input" data-mg-tech-form-role>
+                        <option value="tech" selected>Technician</option>
+                        <option value="manager">Manager</option>
+                        <option value="frontdesk">Front Desk</option>
+                      </select>
+                    </label>
+                    <label class="settings-field"><span class="settings-label">Login PIN</span>
+                      <span class="phone-input-shell">
+                        <input class="settings-input" data-mg-tech-form-pin maxlength="4" inputmode="numeric" style="max-width:110px">
+                        <button class="pos-btn pos-btn-sm" type="button" data-mg-tech-pin-generate><i class="bi bi-shuffle" aria-hidden="true"></i> Generate</button>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="pos-hint" style="margin-top:8px">Sent by SMS on first login; the account must set a new PIN before clocking in.</div>
+                </div>
+
+                <div class="tech-modal-section" data-mg-tech-pay-section>
+                  <div class="tech-modal-section-title"><i class="bi bi-cash-coin" aria-hidden="true"></i>Pay &amp; payroll</div>
+                  <div class="tech-modal-grid cols-4">
+                    <label class="settings-field"><span class="settings-label">Pay model</span><select class="settings-input" data-mg-tech-form-paymodel></select></label>
+                    <label class="settings-field"><span class="settings-label">Commission %</span><input class="settings-input" data-mg-tech-form-comm value="60"></label>
+                    <label class="settings-field" data-mg-tech-guar-field><span class="settings-label">Weekly guarantee $</span><input class="settings-input" data-mg-tech-form-guar value="0"></label>
+                    <label class="settings-field" data-mg-tech-split-field><span class="settings-label">Split over target %</span><input class="settings-input" data-mg-tech-form-split value="60"></label>
+                  </div>
+                </div>
+
+                <div class="tech-modal-section">
+                  <div class="tech-modal-section-title"><i class="bi bi-card-checklist" aria-hidden="true"></i>Work skills</div>
+                  <div class="tech-service-checks tech-service-picker" data-mg-tech-service-picker></div>
                 </div>
 
                 <div class="tech-modal-section" data-mg-tech-schedule-section>
@@ -1098,36 +1360,6 @@
                       <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-mg-tech-day-off="sun">Day off</label>
                       <span class="tech-schedule-time"><input type="time" data-mg-tech-schedule-start="sun"><span>to</span><input type="time" data-mg-tech-schedule-end="sun"></span>
                     </div>
-                  </div>
-                </div>
-
-                <div class="tech-modal-section">
-                  <div class="tech-modal-section-title"><i class="bi bi-shield-lock" aria-hidden="true"></i>Role &amp; login</div>
-                  <div class="tech-modal-grid">
-                    <label class="settings-field"><span class="settings-label">Role</span>
-                      <select class="settings-input" data-mg-tech-form-role>
-                        <option value="tech" selected>Technician</option>
-                        <option value="manager">Manager</option>
-                        <option value="frontdesk">Front Desk</option>
-                      </select>
-                    </label>
-                    <label class="settings-field"><span class="settings-label">Login PIN</span>
-                      <span class="phone-input-shell">
-                        <input class="settings-input" data-mg-tech-form-pin maxlength="4" inputmode="numeric" style="max-width:110px">
-                        <button class="pos-btn pos-btn-sm" type="button" data-mg-tech-pin-generate><i class="bi bi-shuffle" aria-hidden="true"></i> Generate</button>
-                      </span>
-                    </label>
-                  </div>
-                  <div class="pos-hint" style="margin-top:8px">Sent by SMS on first login; the account must set a new PIN before clocking in.</div>
-                </div>
-
-                <div class="tech-modal-section" data-mg-tech-pay-section>
-                  <div class="tech-modal-section-title"><i class="bi bi-cash-coin" aria-hidden="true"></i>Pay &amp; payroll</div>
-                  <div class="tech-modal-grid">
-                    <label class="settings-field"><span class="settings-label">Pay model</span><select class="settings-input" data-mg-tech-form-paymodel></select></label>
-                    <label class="settings-field"><span class="settings-label">Commission %</span><input class="settings-input" data-mg-tech-form-comm value="60"></label>
-                    <label class="settings-field" data-mg-tech-guar-field><span class="settings-label">Weekly guarantee $</span><input class="settings-input" data-mg-tech-form-guar value="0"></label>
-                    <label class="settings-field" data-mg-tech-split-field><span class="settings-label">Split over target %</span><input class="settings-input" data-mg-tech-form-split value="60"></label>
                   </div>
                 </div>
 
@@ -4553,17 +4785,7 @@
         return '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
       }
 
-      /* ── tech modal: services picker (checkboxes built from the live Menu catalog) ── */
-      function mgTechServiceCategoryMarkup(group, index) {
-        var categoryId = 'mgtechcat-' + index;
-        var services = group.services || [];
-        return '<details class="tech-service-category" data-mg-tech-service-category-panel="' + esc(categoryId) + '"' + (index === 0 ? ' open' : '') + '>' +
-          '<summary class="tech-service-category-head"><label class="tech-service-category-all"><input type="checkbox" data-mg-tech-service-category-all="' + esc(categoryId) + '">Check all</label><span class="tech-service-category-title">' + esc(group.name || 'Other services') + '</span><span class="tech-service-category-count">' + services.length + '</span></summary>' +
-          '<div class="tech-service-category-body">' + services.map(function (service) {
-            return '<label class="tech-service-check"><input type="checkbox" data-mg-tech-service data-mg-tech-service-category="' + esc(categoryId) + '" value="' + esc(service.label) + '">' + esc(service.label) + '</label>';
-          }).join('') + '</div></details>';
-      }
-
+      /* ── tech modal: services picker — categorized, collapsible checklist built from the live Menu catalog ── */
       function mgTechServiceOptionsForCategory(categoryId) {
         var selectorValue = String(categoryId || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
         return Array.from(document.querySelectorAll('[data-mg-tech-service][data-mg-tech-service-category="' + selectorValue + '"]'));
@@ -4585,6 +4807,16 @@
           categoryAll.checked = categoryServices.length > 0 && categoryCheckedCount === categoryServices.length;
           categoryAll.indeterminate = categoryCheckedCount > 0 && categoryCheckedCount < categoryServices.length;
         });
+      }
+
+      function mgTechServiceCategoryMarkup(group, index) {
+        var categoryId = 'mgtechcat-' + index;
+        var services = group.services || [];
+        return '<details class="tech-service-category" data-mg-tech-service-category-panel="' + esc(categoryId) + '"' + (index === 0 ? ' open' : '') + '>' +
+          '<summary class="tech-service-category-head"><label class="tech-service-category-all"><input type="checkbox" data-mg-tech-service-category-all="' + esc(categoryId) + '">Check all</label><span class="tech-service-category-title">' + esc(group.name || 'Other services') + '</span><span class="tech-service-category-count">' + services.length + '</span><i class="bi bi-chevron-down tech-service-category-chevron" aria-hidden="true"></i></summary>' +
+          '<div class="tech-service-category-body">' + services.map(function (service) {
+            return '<label class="tech-service-check"><input type="checkbox" data-mg-tech-service data-mg-tech-service-category="' + esc(categoryId) + '" value="' + esc(service.label) + '">' + esc(service.label) + '</label>';
+          }).join('') + '</div></details>';
       }
 
       function buildMgTechServicePicker() {
@@ -4622,14 +4854,30 @@
         });
       }
 
-      function resetMgTechSchedule() {
-        document.querySelectorAll('[data-mg-tech-day-off]').forEach(function (dayOff) {
-          dayOff.checked = false;
-          var day = dayOff.getAttribute('data-mg-tech-day-off');
+      function parseMgTechSchedule(value) {
+        var schedule = {};
+        (value || '').split(';').forEach(function (entry) {
+          var parts = entry.split('=');
+          if (parts.length !== 2) return;
+          var day = parts[0].trim();
+          var range = parts[1].split('-');
+          if (!day || range.length !== 2) return;
+          schedule[day] = { start: range[0].trim(), end: range[1].trim() };
+        });
+        return schedule;
+      }
+
+      function setMgTechScheduleValue(value, options) {
+        var schedule = parseMgTechSchedule(value);
+        MG_TECH_DAYS.forEach(function (day) {
+          var dayOff = $('[data-mg-tech-day-off="' + day + '"]');
+          if (!dayOff) return;
+          var daySchedule = schedule[day];
           var start = $('[data-mg-tech-schedule-start="' + day + '"]');
           var end = $('[data-mg-tech-schedule-end="' + day + '"]');
-          if (start) start.value = '';
-          if (end) end.value = '';
+          dayOff.checked = options && options.blank ? false : !daySchedule;
+          if (start) start.value = daySchedule ? daySchedule.start : '';
+          if (end) end.value = daySchedule ? daySchedule.end : '';
           syncMgTechDayOffRow(dayOff);
         });
       }
@@ -4644,6 +4892,106 @@
           var endValue = end ? end.value : '';
           return startValue && endValue ? day + '=' + startValue + '-' + endValue : '';
         }).filter(Boolean).join(';');
+      }
+
+      /* ── tech modal: "Choose from list" combobox (search an existing tech, or Enter manually) ── */
+      function mgTechChoiceRecords() {
+        return TECHS.map(function (t) {
+          var raw = salonData.findTechnician(salonCatalog, t.id) || {};
+          var services = Array.isArray(raw.services) && raw.services.length ? raw.services : (t.skills || []);
+          return { id: t.id, name: t.name, phone: raw.phone || '', email: raw.email || '', services: services, schedule: raw.schedule || '' };
+        });
+      }
+
+      function renderMgTechChoices() {
+        var grid = $('[data-mg-tech-choice-grid]');
+        if (!grid) return;
+        grid.innerHTML = mgTechChoiceRecords().map(function (t) {
+          return '<button class="tech-choice-card" type="button" role="option" data-mg-tech-choice="' + esc(t.id) + '" data-name="' + esc(t.name) + '" data-phone="' + esc(t.phone) + '" data-email="' + esc(t.email) + '" data-services="' + esc(t.services.join(', ')) + '" data-schedule="' + esc(t.schedule) + '">' +
+            '<span class="tech-avatar">' + esc((t.name || 'T').charAt(0).toUpperCase()) + '</span>' +
+            '<span><span class="tech-choice-name">' + esc(t.name) + '</span><span class="tech-choice-meta">' + esc([t.email, t.phone].filter(Boolean).join(' · ') || (t.services[0] || '')) + '</span></span></button>';
+        }).join('');
+      }
+
+      function filterMgTechChoices(query) {
+        var normalized = (query || '').trim().toLowerCase();
+        var visibleCount = 0;
+        document.querySelectorAll('[data-mg-tech-choice]').forEach(function (choice) {
+          var haystack = [choice.dataset.name, choice.dataset.phone, choice.dataset.email, choice.dataset.services, choice.textContent].join(' ').toLowerCase();
+          var visible = !normalized || haystack.indexOf(normalized) !== -1;
+          choice.hidden = !visible;
+          if (visible) visibleCount++;
+        });
+        var empty = $('[data-mg-tech-empty]');
+        if (empty) empty.classList.toggle('is-visible', Boolean(normalized) && visibleCount === 0);
+      }
+
+      function setMgTechSelectOpen(open) {
+        var menu = $('[data-mg-tech-select-menu]');
+        var input = $('[data-mg-tech-select-input]');
+        var combobox = $('[data-mg-tech-combobox]');
+        if (menu) menu.hidden = !open;
+        if (input) input.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (combobox) combobox.classList.toggle('is-open', Boolean(open));
+      }
+
+      function updateMgTechModalCopy(mode, techName) {
+        var title = $('[data-mg-tech-modal-title]');
+        var sub = $('[data-mg-tech-modal-sub]');
+        var isCreate = mode === 'create';
+        if (title) title.textContent = isCreate ? 'Add technician' : 'Edit technician';
+        if (sub) sub.textContent = isCreate ? 'Enter new technician info, services, schedule, login and pay.' : ('Update profile, services, schedule, login and pay for ' + (techName || 'this technician') + '.');
+      }
+
+      function fillMgTechModalFromChoice(choice) {
+        if (!choice) return;
+        document.querySelectorAll('[data-mg-tech-choice], [data-mg-tech-create]').forEach(function (button) {
+          button.classList.toggle('is-active', button === choice);
+        });
+
+        var isCreate = choice.hasAttribute('data-mg-tech-create');
+        var modal = $('[data-mg-tech-modal]');
+        var selectInput = $('[data-mg-tech-select-input]');
+        if (modal) modal.dataset.mgTechMode = isCreate ? 'create' : 'edit';
+        if (selectInput) selectInput.value = isCreate ? '' : (choice.dataset.name || '');
+        updateMgTechModalCopy(isCreate ? 'create' : 'edit', choice.dataset.name);
+
+        $('[data-mg-tech-form-name]').value = isCreate ? '' : (choice.dataset.name || '');
+        $('[data-mg-tech-form-phone]').value = isCreate ? '' : formatUsPhoneInput(choice.dataset.phone || '');
+        $('[data-mg-tech-form-email]').value = isCreate ? '' : (choice.dataset.email || '');
+        var services = isCreate ? [] : String(choice.dataset.services || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        document.querySelectorAll('[data-mg-tech-service]').forEach(function (option) {
+          option.checked = services.map(function (s) { return s.toLowerCase(); }).indexOf(option.value.toLowerCase()) !== -1;
+        });
+        syncMgTechServiceCheckAll();
+        setMgTechScheduleValue(isCreate ? '' : (choice.dataset.schedule || ''), { blank: isCreate });
+
+        $('[data-mg-tech-form-pin]').value = techModalRandomPin();
+        if (!isCreate) {
+          var staffRec = STAFF.find(function (s) { return s.id === choice.getAttribute('data-mg-tech-choice'); });
+          if (staffRec && staffRec.pin) $('[data-mg-tech-form-pin]').value = staffRec.pin;
+        }
+
+        var roleEl = $('[data-mg-tech-form-role]');
+        if (roleEl) { roleEl.value = 'tech'; roleEl.disabled = !isCreate; }
+
+        var payModelEl = $('[data-mg-tech-form-paymodel]');
+        if (!isCreate) {
+          var t = techById(choice.getAttribute('data-mg-tech-choice'));
+          if (payModelEl && t) payModelEl.value = t.payModel || 'max';
+          $('[data-mg-tech-form-comm]').value = t ? Math.round((t.comm || 0) * 100) : 60;
+          $('[data-mg-tech-form-guar]').value = t ? (t.guar || 0) : 0;
+          $('[data-mg-tech-form-split]').value = t ? Math.round((t.baoSplit || t.comm || 0) * 100) : 60;
+        } else {
+          if (payModelEl) payModelEl.value = 'max';
+          $('[data-mg-tech-form-comm]').value = '60';
+          $('[data-mg-tech-form-guar]').value = '0';
+          $('[data-mg-tech-form-split]').value = '60';
+        }
+        updateTechModalPayVisibility();
+
+        setMgTechSelectOpen(false);
+        $('[data-mg-tech-form-name]').focus();
       }
 
       function updateTechModalPayVisibility() {
@@ -4665,65 +5013,61 @@
         errorEl.hidden = !msg;
       }
 
-      function openTechModal() {
+      function openTechModal(initialChoice, mode) {
         var modal = $('[data-mg-tech-modal]');
         if (!modal) return;
         var payModelEl = $('[data-mg-tech-form-paymodel]');
         if (payModelEl) payModelEl.innerHTML = Object.keys(PAY_MODELS).map(function (k) { return '<option value="' + k + '">' + esc(PAY_MODELS[k]) + '</option>'; }).join('');
-        $('[data-mg-tech-form-name]').value = '';
-        $('[data-mg-tech-form-role]').value = 'tech';
-        $('[data-mg-tech-form-phone]').value = '';
-        $('[data-mg-tech-form-email]').value = '';
-        $('[data-mg-tech-form-pin]').value = techModalRandomPin();
-        if (payModelEl) payModelEl.value = 'max';
-        $('[data-mg-tech-form-comm]').value = '60';
-        $('[data-mg-tech-form-guar]').value = '0';
-        $('[data-mg-tech-form-split]').value = '60';
+        renderMgTechChoices();
         buildMgTechServicePicker();
-        resetMgTechSchedule();
+        var search = $('[data-mg-tech-search]');
+        if (search) search.value = '';
+        filterMgTechChoices('');
         setTechModalError('');
-        updateTechModalPayVisibility();
+        var createButton = $('[data-mg-tech-create]');
+        var fallbackChoice = mode === 'create'
+          ? createButton
+          : ($('[data-mg-tech-choice].is-active') || $('[data-mg-tech-choice]') || createButton);
+        fillMgTechModalFromChoice(initialChoice || fallbackChoice);
         modal.hidden = false;
         document.body.style.overflow = 'hidden';
-        setTimeout(function () { $('[data-mg-tech-form-name]').focus(); }, 0);
+        setMgTechSelectOpen(false);
+      }
+
+      function openNewTechModal() {
+        openTechModal($('[data-mg-tech-create]'), 'create');
       }
 
       function closeTechModal() {
         var modal = $('[data-mg-tech-modal]');
         if (!modal) return;
         modal.hidden = true;
+        setMgTechSelectOpen(false);
         document.body.style.overflow = '';
         setTechModalError('');
       }
 
       function saveTechModal() {
+        var modal = $('[data-mg-tech-modal]');
+        var mode = modal ? modal.dataset.mgTechMode : 'create';
+        var activeChoice = $('[data-mg-tech-choice].is-active');
         var nameEl = $('[data-mg-tech-form-name]');
         var roleEl = $('[data-mg-tech-form-role]');
         var phoneEl = $('[data-mg-tech-form-phone]');
         var emailEl = $('[data-mg-tech-form-email]');
         var pinEl = $('[data-mg-tech-form-pin]');
-        var nm = (nameEl.value || '').trim();
-        if (!nm) { setTechModalError('Enter a name for the new account.'); nameEl.focus(); return; }
-        var pin = (pinEl.value || '').trim();
-        if (!/^\d{4}$/.test(pin)) { setTechModalError('Login PIN must be 4 digits.'); pinEl.focus(); return; }
-        var role = roleEl.value;
-        var phone = (phoneEl.value || '').trim();
-        var email = (emailEl.value || '').trim();
-        var services = getMgTechServicesValue();
-        var schedule = getMgTechScheduleValue();
-
-        if (role !== 'tech') {
-          STAFF.push({ id: 'st' + (++stSeq), name: nm, ava: initials(nm), role: role, phone: phone, email: email, pin: pin });
-          logAdmin('👥 Created ' + ROLE_LBL[role] + ' account: ' + nm + ' (PIN ' + pin + ', sent by SMS)');
-          closeTechModal();
-          renderManagement(); renderClock(); toast(nm + ' added');
-          return;
-        }
-
         var payModelEl = $('[data-mg-tech-form-paymodel]');
         var commEl = $('[data-mg-tech-form-comm]');
         var guarEl = $('[data-mg-tech-form-guar]');
         var splitEl = $('[data-mg-tech-form-split]');
+        var nm = (nameEl.value || '').trim();
+        if (!nm) { setTechModalError('Enter a name for the account.'); nameEl.focus(); return; }
+        var pin = (pinEl.value || '').trim();
+        if (!/^\d{4}$/.test(pin)) { setTechModalError('Login PIN must be 4 digits.'); pinEl.focus(); return; }
+        var phone = (phoneEl.value || '').trim();
+        var email = (emailEl.value || '').trim();
+        var services = getMgTechServicesValue();
+        var schedule = getMgTechScheduleValue();
         var payModel = payModelEl.value || 'max';
         var cm = Math.min(100, Math.max(1, parseFloat(commEl.value) || 60)) / 100;
         var gu = Math.max(0, parseFloat(guarEl.value) || 0);
@@ -4732,6 +5076,37 @@
           var service = salonData.findService(salonCatalog, serviceName);
           return service && service.requiredSkill ? service.requiredSkill : serviceName;
         });
+
+        if (mode === 'edit' && activeChoice) {
+          var editId = activeChoice.getAttribute('data-mg-tech-choice');
+          var nextCatalog = salonData.loadCatalog();
+          var nextTechnicians = nextCatalog.technicians.map(function (technician) {
+            if (technician.id !== editId) return technician;
+            return Object.assign({}, technician, {
+              name: nm, phone: phone, email: email, schedule: schedule, services: services,
+              skills: Array.from(new Set(skills)),
+              posProfile: Object.assign({}, technician.posProfile || {}, { comm: cm, guar: gu, payModel: payModel, baoSplit: payModel === 'baoshare' ? sp : cm })
+            });
+          });
+          salonData.saveCatalog(Object.assign({}, nextCatalog, { technicians: nextTechnicians }));
+          rebuildSalonCatalogViews();
+          var staffRec = STAFF.find(function (s) { return s.id === editId; });
+          if (staffRec) { staffRec.name = nm; staffRec.ava = initials(nm); staffRec.phone = phone; staffRec.email = email; staffRec.pin = pin; }
+          logAdmin('✏️ Updated tech ' + nm + ' — ' + PAY_MODELS[payModel] + ', ' + Math.round(cm * 100) + '%');
+          closeTechModal();
+          renderManagement(); renderClock(); renderBookingTab(); toast(nm + ' updated');
+          return;
+        }
+
+        var role = roleEl.value;
+        if (role !== 'tech') {
+          STAFF.push({ id: 'st' + (++stSeq), name: nm, ava: initials(nm), role: role, phone: phone, email: email, pin: pin });
+          logAdmin('👥 Created ' + ROLE_LBL[role] + ' account: ' + nm + ' (PIN ' + pin + ', sent by SMS)');
+          closeTechModal();
+          renderManagement(); renderClock(); toast(nm + ' added');
+          return;
+        }
+
         var maxN = TECHS.reduce(function (m, t) { return Math.max(m, +t.id.slice(1) || 0); }, 0);
         var id = 't' + (maxN + 1);
         var bn = TECHS.reduce(function (m, t) { return Math.max(m, t.bnum || 0); }, 0) + 1;
@@ -5650,9 +6025,7 @@
           ['Required skill', service.requiredSkill, 'No skill'],
           ['Type', type],
           ['Kind', kind],
-          ['Icon', service.icon, 'No icon'],
-          ['Status', service.active === false ? 'Inactive' : 'Active'],
-          ['Source', service.source, 'Local catalog']
+          ['Status', service.active === false ? 'Inactive' : 'Active']
         ].map(function (row) { return serviceDetailFieldHtml(row[0], row[1], row[2]); }).join('');
         return '<div class="service-detail-hero">' +
           '<div class="service-detail-top"><div><div class="service-detail-kicker">' + esc(category) + '</div><h3 class="service-detail-name">' + esc(service.name || 'Service') + '</h3></div>' + serviceStatusChip(service) + '</div>' +
@@ -6227,7 +6600,13 @@
           return;
         }
 
-        if (e.target.closest('[data-mg-addtech]')) { openTechModal(); return; }
+        if (e.target.closest('[data-mg-addtech]')) { openNewTechModal(); return; }
+
+        var mgTechCombobox = e.target.closest('[data-mg-tech-combobox]');
+        if (mgTechCombobox && !e.target.closest('[data-mg-tech-choice]')) { setMgTechSelectOpen(true); }
+
+        var mgTechChoice = e.target.closest('[data-mg-tech-choice], [data-mg-tech-create]');
+        if (mgTechChoice) { fillMgTechModalFromChoice(mgTechChoice); return; }
 
         if (e.target.closest('[data-mg-tech-cancel]') || e.target.matches('[data-mg-tech-modal]')) { closeTechModal(); return; }
 
@@ -6236,6 +6615,11 @@
         if (e.target.closest('[data-mg-tech-pin-generate]')) {
           $('[data-mg-tech-form-pin]').value = techModalRandomPin();
           return;
+        }
+
+        var mgTechModalEl = $('[data-mg-tech-modal]');
+        if (mgTechModalEl && !mgTechModalEl.hidden && !e.target.closest('[data-mg-tech-combobox]')) {
+          setMgTechSelectOpen(false);
         }
 
         var fr = e.target.closest('[data-mg-fire]');
@@ -6273,6 +6657,12 @@
         }
 
         if (e.target.matches('[data-mg-tech-form-phone]')) { e.target.value = formatUsPhoneInput(e.target.value); return; }
+
+        if (e.target.matches('[data-mg-tech-search]')) { filterMgTechChoices(e.target.value); setMgTechSelectOpen(true); return; }
+      });
+
+      document.addEventListener('focusin', function (e) {
+        if (e.target.matches('[data-mg-tech-select-input]')) setMgTechSelectOpen(true);
       });
 
       document.addEventListener('focusout', function (e) {
@@ -6326,9 +6716,9 @@
           return;
         }
 
-        var techServiceCategoryAll = e.target.closest('[data-mg-tech-service-category-all]');
-        if (techServiceCategoryAll) {
-          mgTechServiceOptionsForCategory(techServiceCategoryAll.getAttribute('data-mg-tech-service-category-all')).forEach(function (option) { option.checked = techServiceCategoryAll.checked; });
+        var mgTechServiceCategoryAll = e.target.closest('[data-mg-tech-service-category-all]');
+        if (mgTechServiceCategoryAll) {
+          mgTechServiceOptionsForCategory(mgTechServiceCategoryAll.getAttribute('data-mg-tech-service-category-all')).forEach(function (option) { option.checked = mgTechServiceCategoryAll.checked; });
           syncMgTechServiceCheckAll();
           return;
         }
@@ -6702,6 +7092,10 @@
         if (e.key === 'Escape' && $('[data-ci-modal]').classList.contains('open')) closeCheckinModal();
         var swapModal = $('[data-swap-tech-modal]');
         if (e.key === 'Escape' && swapModal && swapModal.classList.contains('open')) closeSwapTechModal();
+        var mgTechSelectMenu = $('[data-mg-tech-select-menu]');
+        if (e.key === 'Escape' && mgTechSelectMenu && !mgTechSelectMenu.hidden) { setMgTechSelectOpen(false); return; }
+        var mgTechModal = $('[data-mg-tech-modal]');
+        if (e.key === 'Escape' && mgTechModal && !mgTechModal.hidden) closeTechModal();
       });
 
       document.addEventListener('click', function (e) {
