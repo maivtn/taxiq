@@ -8302,11 +8302,11 @@ function adSmartCommHtml(ps) {
       const delta = SMART.on ? done * sb.tot / 100 : 0;
       return `<tr><td>${avaHtml(t.id, 30, false)} <b>${escapeHtml(t.name)}</b></td><td>${Math.round(t.comm * 100)}%</td>
         <td style="font-size:11px;">${sb.list.length ? sb.list.map(x => `<span style="color:var(--green);">${x[0]} +${x[1]}%</span>`).join(' · ') : '<span style="color:var(--text-dim);">chưa đạt mốc nào</span>'}</td>
-        <td><b style="${SMART.on && sb.tot ? 'color:var(--purple-light);' : ''}">${Math.round(effComm(t) * 100)}%</b>${sb.tot >= SMART.cap ? ' 🧢' : ''}</td>
+        <td><b style="${SMART.on && sb.tot ? 'color:var(--purple-light);' : ''}">${Math.round(effComm(t) * 100)}%</b>${sb.tot >= SMART.cap ? '' : ''}</td>
         <td>${SMART.on ? (delta ? '+' + money(delta) : '—') : '<span style="color:var(--text-dim);">tắt</span>'}</td></tr>`;
     }).join('')}
     </table>
-    <div class="spec-note"><b>📐 SPEC 💎 — Smart Commission:</b> Bonus tính trên tiêu chí ĐO ĐƯỢC từ ledger: skill Expert (bảng 🧰), rating (SMS review S7), upsell rate (bill có add-on), khách đều (bản thật = <b>rebook rate</b> từ S7, demo tạm dùng số bill/tuần). Bật/tắt + đổi mốc chỉ áp dụng <b>từ kỳ lương sau</b>, không hồi tố — ghi audit log. % hiệu lực đổ thẳng vào 💼 kiểu lương + 💸 Payout (techPayWeek dùng effComm). Trần 🧢 chống chồng bonus vượt kiểm soát chi phí; owner xem Δ lương tuần trước khi bật thật. Scorecard per thợ nên hiện trong Staff App (thợ biết cần gì để lên %) — minh bạch thay vì cãi nhau.</div>
+    <div class="spec-note"><b>📐 SPEC 💎 — Smart Commission:</b> Bonus tính trên tiêu chí ĐO ĐƯỢC từ ledger: skill Expert (bảng 🧰), rating (SMS review S7), upsell rate (bill có add-on), khách đều (bản thật = <b>rebook rate</b> từ S7, demo tạm dùng số bill/tuần). Bật/tắt + đổi mốc chỉ áp dụng <b>từ kỳ lương sau</b>, không hồi tố — ghi audit log. % hiệu lực đổ thẳng vào 💼 kiểu lương + 💸 Payout (techPayWeek dùng effComm). Trần chống chồng bonus vượt kiểm soát chi phí; owner xem Δ lương tuần trước khi bật thật. Scorecard per thợ nên hiện trong Staff App (thợ biết cần gì để lên %) — minh bạch thay vì cãi nhau.</div>
   </div>`;
 }
 /* 💸 Payout Center — trả lương cuối kỳ: số tiền từ 💼 (kiểu lương), phương thức + trạng thái per thợ */

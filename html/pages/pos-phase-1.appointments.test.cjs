@@ -56,7 +56,8 @@ test('POS Booking keeps Calendar as a subtab and Table/Card as the Appointments 
 
 test('POS Booking starts in Appointments Table mode and opens Calendar on its subtab', () => {
   assert.match(runtime, /function activateBookingSubTab\([\s\S]*target === 'calendar'[\s\S]*initBookingCalendar\(\)/);
-  assert.match(runtime, /function initBookingViewMode\([\s\S]*setBookingViewMode\('table'\)/);
+  // initBookingViewMode defaults to 'card' on narrow screens (<=1366px) and 'table' otherwise.
+  assert.match(runtime, /function initBookingViewMode\([\s\S]*setBookingViewMode\([\s\S]{0,120}'table'/);
   assert.doesNotMatch(runtime, /setBookingViewMode\('calendar'\)/);
   assert.match(runtime, /appointmentPanel\.hidden = target !== 'calendar'/);
 });

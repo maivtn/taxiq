@@ -2314,19 +2314,33 @@
     }
 
     .booking-card-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .booking-card-list > .booking-appointment-card {
+      flex: 0 0 calc(33.333% - 8px);
+      max-width: calc(33.333% - 8px);
+      min-width: 0;
+    }
+
+    @media (max-width: 1099px) {
+      .booking-card-list > .booking-appointment-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
+    }
+
+    @media (max-width: 640px) {
+      .booking-card-list > .booking-appointment-card { flex-basis: 100%; max-width: 100%; }
     }
 
     .booking-appointment-card {
       display: grid;
-      gap: 12px;
+      gap: 10px;
       border: 1px solid var(--nexora-border);
-      border-radius: 10px;
+      border-radius: 14px;
       background: #fff;
-      padding: 14px;
-      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+      padding: 12px;
+      box-shadow: var(--nexora-card-shadow);
     }
 
     .booking-card-top {
@@ -2336,9 +2350,75 @@
       gap: 10px;
     }
 
+    .booking-card-avatar {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: #e9e9ff;
+      color: var(--nexora-brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .booking-card-identity {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .booking-card-services-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--nexora-subtle);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .booking-card-services-label .bi { color: var(--nexora-brand); }
+
+    .booking-card-split {
+      display: flex;
+      gap: 10px;
+      border-top: 1px solid var(--nexora-rule);
+      padding-top: 8px;
+    }
+
+    .booking-card-split > div { flex: 1; min-width: 0; border-left: 1px solid var(--nexora-rule); padding-left: 10px; }
+    .booking-card-split > div:first-child { border-left: 0; padding-left: 0; }
+    .booking-card-split .booking-card-label { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+    .booking-card-split .booking-card-label .bi { color: var(--nexora-brand); font-size: 11px; }
+
+    .booking-card-status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-top: 1px solid var(--nexora-rule);
+      padding-top: 8px;
+    }
+
+    .booking-card-status-icon {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
     .booking-card-name {
       color: var(--nexora-text);
-      font-size: 14px;
+      font-size: var(--pos-card-content-fs, 15px);
       font-weight: 800;
       line-height: 1.3;
     }
@@ -2352,21 +2432,6 @@
       overflow-wrap: anywhere;
     }
 
-    .booking-card-info-list {
-      display: grid;
-      gap: 7px;
-      border-top: 1px solid var(--nexora-rule);
-      padding-top: 10px;
-    }
-
-    .booking-card-info-row {
-      display: grid;
-      grid-template-columns: 76px minmax(0, 1fr);
-      align-items: baseline;
-      gap: 10px;
-      min-width: 0;
-    }
-
     .booking-card-label {
       color: var(--nexora-subtle);
       font-size: 11px;
@@ -2377,18 +2442,25 @@
 
     .booking-card-value {
       color: var(--nexora-text);
-      font-size: 12px;
+      font-size: var(--pos-card-content-fs, 15px);
       font-weight: 700;
       line-height: 1.4;
       overflow-wrap: anywhere;
     }
 
-    .booking-card-actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 7px;
-      padding-top: 1px;
+    /* Even tighter than the shared .perf-cta-btn default — labels like "Send SMS"
+       would still wrap onto two lines at this card's narrower width otherwise,
+       making that button taller than the one-line buttons in the same row. */
+    .booking-appointment-card .perf-cta-row {
+      gap: 6px;
+    }
+
+    .booking-appointment-card .perf-cta-btn {
+      padding: 7px 8px;
+      gap: 5px;
+      font-size: 14px;
+      border-radius: 9px;
+      white-space: nowrap;
     }
 
     .booking-source-voice {

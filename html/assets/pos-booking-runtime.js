@@ -1634,17 +1634,29 @@ var DEFAULT_MAIN_TAB = 'booking';
       return actions;
     }
 
-function getBookingCardCallStart(item) {
-      var main = item.querySelector('.booking-callstart-main');
-      var date = item.querySelector('.booking-callstart-date');
-      var m = main ? main.textContent.trim() : '';
-      var d = date ? date.textContent.trim() : '';
-      return (m + (d ? ' · ' + d : '')).trim() || '-';
+function bookingCardStatusIcon(item) {
+      if (item.classList.contains('is-done')) return { icon: 'bi-check-lg', bg: 'rgba(0, 184, 115, 0.12)', color: 'var(--nexora-success)' };
+      if (item.classList.contains('is-sms-sent')) return { icon: 'bi-send', bg: 'rgba(70, 72, 216, 0.12)', color: 'var(--nexora-brand)' };
+      if (item.classList.contains('is-noshow') || item.classList.contains('is-cancelled')) return { icon: 'bi-x-lg', bg: 'rgba(239, 68, 68, 0.12)', color: '#dc2626' };
+      return { icon: 'bi-clock', bg: 'rgba(245, 158, 11, 0.14)', color: '#9a5a00' };
     }
 
-    function getBookingCardDuration(item) {
-      var v = item.querySelector('.booking-duration-value');
-      return v ? v.textContent.trim() : '-';
+    // Big full-width CTA buttons for the card layout — same states/attributes as
+    // renderBookingActionButtons, styled with pos-phase-1.html's shared .perf-cta-btn.
+    function renderBookingCardActionButtons(item) {
+      var primary = '';
+      if (item && item.classList.contains('is-new')) {
+        primary = '<button class="perf-cta-btn perf-cta-btn-primary" type="button" data-booking-action="send-sms"><i class="bi bi-send" aria-hidden="true"></i> Send SMS</button>';
+      } else if (item && item.classList.contains('is-sms-sent')) {
+        primary = '<button class="perf-cta-btn perf-cta-btn-primary" type="button" data-booking-action="done"><i class="bi bi-check-lg" aria-hidden="true"></i> Done</button>';
+      } else if (item && item.classList.contains('is-done')) {
+        primary = '<button class="perf-cta-btn perf-cta-btn-primary" type="button" data-booking-action="checkout"><i class="bi bi-credit-card" aria-hidden="true"></i> Check-out</button>';
+      }
+      var view = '<button class="perf-cta-btn" type="button" data-booking-action="detail"><i class="bi bi-eye" aria-hidden="true"></i> View</button>';
+      var noshow = (item && (item.classList.contains('is-new') || item.classList.contains('is-sms-sent')))
+        ? '<button class="perf-cta-btn perf-cta-btn-danger" type="button" data-booking-action="noshow"><i class="bi bi-x-lg" aria-hidden="true"></i> No-show</button>'
+        : '';
+      return primary + view + noshow;
     }
 
     function renderBookingCards() {
@@ -1661,32 +1673,38 @@ function getBookingCardCallStart(item) {
       list.innerHTML = rows.map(function(item) {
         var statusBadge = item.querySelector('.booking-status');
         var statusClass = statusBadge ? statusBadge.className : 'badge booking-status';
+        var statusIcon = bookingCardStatusIcon(item);
         var services = Array.from(item.querySelectorAll('.booking-service-chip')).map(function(service) {
           return '<span class="booking-service-chip">' + escapeHtml(bookingServiceDisplayName(service.textContent.trim())) + '</span>';
         }).join('');
 
         return '<article class="booking-appointment-card" data-booking-card-id="' + escapeHtml(item.dataset.bookingId) + '">' +
           '<div class="booking-card-top">' +
-            '<div><div class="booking-card-name">' + escapeHtml(item.dataset.bookingName || '-') + '</div>' +
-            '<div class="booking-card-contact">' + escapeHtml(formatBookingPhone(item.dataset.bookingPhone)) + ' · ' + escapeHtml(item.dataset.bookingEmail || '-') + '</div></div>' +
-            '<span class="' + escapeHtml(statusClass) + '">' + escapeHtml(getBookingStatusText(item)) + '</span>' +
+            '<div class="booking-card-identity">' +
+              '<span class="booking-card-avatar">' + escapeHtml(getBookingCustomerInitials(item.dataset.bookingName)) + '</span>' +
+              '<div><div class="booking-card-name">' + escapeHtml(item.dataset.bookingName || '-') + '</div>' +
+              '<div class="booking-card-contact">' + escapeHtml(formatBookingPhone(item.dataset.bookingPhone)) + '</div></div>' +
+            '</div>' +
+            '<span class="booking-card-value booking-source-list">' 
+            + '<span class="' + escapeHtml(statusClass) + '">' + escapeHtml(getBookingStatusText(item)) + '</span>'
+            + renderBookingSourceBadges(item) + '</span>' +
           '</div>' +
-          '<div class="booking-service-list">' + services + '</div>' +
-          '<div class="booking-card-info-list">' +
-            '<div class="booking-card-info-row"><span class="booking-card-label">Time</span><span class="booking-card-value">' + escapeHtml(getBookingCardCallStart(item)) + '</span></div>' +
-            '<div class="booking-card-info-row"><span class="booking-card-label">Technician</span><span class="booking-card-value">' + escapeHtml(bookingTechName(item.dataset.bookingTech)) + '</span></div>' +
-            '<div class="booking-card-info-row"><span class="booking-card-label">Appointment</span><span class="booking-card-value">' + escapeHtml(getBookingCardTimeText(item)) + '</span></div>' +
-            '<div class="booking-card-info-row"><span class="booking-card-label">Duration</span><span class="booking-card-value">' + escapeHtml(getBookingCardDuration(item)) + '</span></div>' +
-            '<div class="booking-card-info-row"><span class="booking-card-label">Source</span><span class="booking-card-value booking-source-list">' + renderBookingSourceBadges(item) + '</span></div>' +
+          '<div>' +
+            '<div class="booking-card-services-label">Services</div>' +
+            '<div class="booking-service-list">' + services + '</div>' +
           '</div>' +
-          '<div class="booking-card-actions">' + renderBookingActionButtons(item) + '</div>' +
+          '<div class="booking-card-split">' +
+            '<div><span class="booking-card-label"> Technician</span><span class="booking-card-value">' + escapeHtml(bookingTechName(item.dataset.bookingTech)) + '</span></div>' +
+            '<div><span class="booking-card-label"> Appointment</span><span class="booking-card-value">' + escapeHtml(getBookingCardTimeText(item)) + '</span></div>' +
+          '</div>' +
+          '<div class="perf-cta-row">' + renderBookingCardActionButtons(item) + '</div>' +
         '</article>';
       }).join('');
     }
 
     function initBookingViewMode() {
       renderBookingCards();
-      setBookingViewMode('table');
+      setBookingViewMode(window.innerWidth <= 1366 ? 'card' : 'table');
     }
 
     function setBookingStatus(item, status) {

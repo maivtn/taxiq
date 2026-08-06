@@ -25,6 +25,9 @@
       --nexora-violet: #8e4df8;
       --nexora-card-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
       --nexora-soft-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      /* Single dial for every Card/Table view mode's content text (names, service,
+         tech, status, amounts) — retune here instead of hunting each card function. */
+      --pos-card-content-fs: 15px;
     }
  
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -218,8 +221,9 @@
 
     /* ── queue-style card lists — Bootstrap-style flex row/col (not CSS grid): cards
        keep responsive columns; each card's child rows own the full left-aligned width. ── */
-    [data-wait-list]:has(> .wl-card) { display: flex; flex-wrap: wrap; gap: 12px; }
-    [data-wait-list] > .wl-card { flex: 0 0 calc(33.33% - 9px); max-width: calc(33.33% - 9px); min-width: 0; margin-bottom: 0; }
+    [data-wait-list]:has(> .wl-card) { display: flex; flex-wrap: wrap; gap: 6px; }
+    [data-wait-list] > .wl-card { flex: 0 0 calc(33.33% - 9px); max-width: calc(33.33% - 9px); min-width: 0; margin-bottom: 0; padding: 6px 10px; gap: 4px; }
+    [data-wait-list] > .wl-card .perf-divider { margin: 2px 0; }
     [data-wait-list] > .booking-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
     [data-ciq-list]:has(> .queue-card) { display: flex; flex-wrap: wrap; gap: 12px; }
     [data-ciq-list] > .queue-card { flex: 0 0 calc(33.33% - 9px); max-width: calc(33.33% - 9px); min-width: 0; margin-bottom: 0; }
@@ -282,18 +286,18 @@
     .perf-avatar { width: 52px; height: 52px; flex-shrink: 0; border-radius: 50%; background: #efeafe; color: var(--nexora-brand); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 19px; }
     .perf-head-main { flex: 1; min-width: 0; }
     .perf-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .perf-name { font-size: 17px; font-weight: 800; color: var(--nexora-text); }
+    .perf-name { font-size: var(--pos-card-content-fs); font-weight: 800; color: var(--nexora-text); }
     .perf-sub { margin-top: 4px; font-size: 12.5px; font-weight: 600; color: var(--nexora-muted); }
     .perf-divider { height: 1px; background: var(--nexora-rule); margin: 8px 0; flex-shrink: 0; }
-    .perf-section-label { display: block; font-size: 12px; font-weight: 700; color: var(--nexora-muted); margin-bottom: 8px; }
+    .perf-section-label { display: block; font-size: 11px; font-weight: 700; color: var(--nexora-muted); margin-bottom: 8px; }
     .perf-sales-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-    .perf-sales-value { font-size: 26px; font-weight: 900; color: var(--nexora-text); }
-    .perf-sales-of { font-size: 13px; font-weight: 600; color: var(--nexora-muted); margin-left: 6px; }
-    .perf-sales-pct { font-size: 22px; font-weight: 900; color: var(--nexora-brand); }
+    .perf-sales-value { font-size: var(--pos-card-content-fs); font-weight: 900; color: var(--nexora-text); }
+    .perf-sales-of { font-size: var(--pos-card-content-fs); font-weight: 600; color: var(--nexora-muted); margin-left: 6px; }
+    .perf-sales-pct { font-size: var(--pos-card-content-fs); font-weight: 900; color: var(--nexora-brand); }
     .perf-stat-row { display: flex; }
     .perf-stat-col { flex: 1; min-width: 0; padding: 0 14px; border-left: 1px solid var(--nexora-rule); }
     .perf-stat-col:first-child { padding-left: 0; border-left: 0; }
-    .perf-stat-value { display: block; font-size: 17px; font-weight: 800; color: var(--nexora-text); margin-top: 2px; }
+    .perf-stat-value { display: block; font-size: var(--pos-card-content-fs); font-weight: 800; color: var(--nexora-text); margin-top: 2px; }
     .perf-stat-sub { display: block; font-size: 11.5px; font-weight: 600; color: var(--nexora-muted); margin-top: 2px; }
 
     /* ── Techs & pay card: avatar+name+shift-chips head with a pinned Deactivate button,
@@ -305,7 +309,7 @@
     .payroll-foot-row { display: flex; }
     .payroll-foot-col { flex: 1; min-width: 0; text-align: center; padding: 0 10px; border-left: 1px solid var(--nexora-rule); }
     .payroll-foot-col:first-child { border-left: 0; }
-    .payroll-foot-input { width: 100%; text-align: center; border: none; background: transparent; font-size: 17px; font-weight: 800; color: var(--nexora-text); margin-top: 2px; font-family: inherit; }
+    .payroll-foot-input { width: 100%; text-align: center; border: none; background: transparent; font-size: var(--pos-card-content-fs); font-weight: 800; color: var(--nexora-text); margin-top: 2px; font-family: inherit; }
     .payroll-foot-input:focus { outline: none; background: var(--nexora-surface-muted); border-radius: 6px; }
     .pos-btn-danger-outline { border: 1.5px solid var(--nexora-danger); background: #fff; color: var(--nexora-danger); }
     .pos-btn-danger-outline:hover { background: #fdecec; }
@@ -314,14 +318,14 @@
        bordered 2×3 metric grid with both row and column dividers, then a plain-text
        action narrative (one short sentence per line) below a final divider. ── */
     .owner-card { padding: 18px 20px; gap: 0; }
-    .owner-model-bar { background: var(--nexora-surface-muted); border-radius: 10px; padding: 10px 14px; font-size: 14px; color: var(--nexora-text); }
+    .owner-model-bar { background: var(--nexora-surface-muted); border-radius: 10px; padding: 10px 14px; font-size: var(--pos-card-content-fs); color: var(--nexora-text); }
     .owner-model-bar select { border: 0; background: transparent; height: auto; padding: 0; font: inherit; font-weight: 700; color: var(--nexora-text); margin-left: 4px; }
     .owner-metric-grid { border: 1px solid var(--nexora-border); border-radius: 14px; overflow: hidden; }
     .owner-metric-row { display: flex; border-top: 1px solid var(--nexora-rule); }
     .owner-metric-row:first-child { border-top: 0; }
     .owner-metric-cell { flex: 1; min-width: 0; padding: 12px 16px; border-left: 1px solid var(--nexora-rule); }
     .owner-metric-cell:first-child { border-left: 0; }
-    .owner-metric-cell input { border: none; background: transparent; font: inherit; font-weight: 800; font-size: 17px; color: var(--nexora-text); width: 100%; margin-top: 2px; }
+    .owner-metric-cell input { border: none; background: transparent; font: inherit; font-weight: 800; font-size: var(--pos-card-content-fs); color: var(--nexora-text); width: 100%; margin-top: 2px; }
     .owner-metric-cell input:focus { outline: none; background: #fff; border-radius: 6px; }
     .owner-note-line { font-size: 13.5px; font-weight: 600; color: var(--nexora-text); margin-top: 6px; }
     .owner-note-line:first-child { margin-top: 0; }
@@ -331,12 +335,27 @@
        footer (reuses the Payroll card's centered-columns-with-divider pattern). ── */
     .smart-card { padding: 18px 20px; gap: 0; }
     .smart-bonus-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-    .smart-bonus-chip { flex: 1 1 calc(50% - 5px); min-width: 150px; background: #e7f8f0; color: var(--nexora-success); border-radius: 12px; padding: 12px 14px; font-size: 14px; font-weight: 800; }
+    .smart-bonus-chip { flex: 1 1 calc(50% - 5px); min-width: 150px; background: #e7f8f0; color: var(--nexora-success); border-radius: 12px; padding: 12px 14px; font-size: var(--pos-card-content-fs); font-weight: 800; }
+
+    /* ── Staff accounts card: avatar+name+role head with PIN dots and a Reset PIN
+       button pinned to the right, a divider, then an Access section — name/access text
+       share --pos-card-content-fs with every other management card, and Reset PIN reuses
+       the plain .pos-btn.pos-btn-sm so it matches the table view's button exactly. ── */
+    .staff-card { padding: 16px 18px; gap: 0; }
+    .staff-head { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .staff-avatar { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: 999px; background: var(--nexora-surface-muted); color: var(--nexora-text); font-size: 17px; font-weight: 800; }
+    .staff-name { font-size: var(--pos-card-content-fs); font-weight: 800; color: var(--nexora-text); }
+    .staff-role-select { height: 32px; font-size: 13px; width: auto; min-width: 118px; }
+    .staff-head-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+    .staff-pin-dots { font-size: 13px; font-weight: 700; color: var(--nexora-muted); letter-spacing: 2px; }
+    .staff-access-value { font-size: var(--pos-card-content-fs); font-weight: 800; color: var(--nexora-text); margin-top: 2px; }
 
     /* ── shared big CTA button — Today's bookings/ETA and Tickets queue cards' primary
        actions: full-width (or half, in a .perf-cta-row) brand-outline by default, plus
-       filled/muted/danger variants for the different ticket states. ── */
-    .perf-cta-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; border-radius: 12px; border: 1.5px solid var(--nexora-brand); background: #fff; color: var(--nexora-brand); font-size: 15px; font-weight: 800; }
+       filled/muted/danger variants for the different ticket states. Kept compact (not
+       full 44px touch-target padding) since these sit in dense card grids — still
+       tall enough to tap reliably, just not wasting card real estate. ── */
+    .perf-cta-btn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--nexora-brand); background: #fff; color: var(--nexora-brand); font-size: 14px; font-weight: 800; }
     .perf-cta-btn:hover { background: #f1f2ff; }
     .perf-cta-btn:disabled { opacity: .5; cursor: not-allowed; }
     .perf-cta-btn-success { border-color: var(--nexora-success); color: var(--nexora-success); }
@@ -349,7 +368,7 @@
     .perf-cta-btn-muted:hover { background: var(--nexora-surface-muted); }
     .perf-cta-btn-danger { border-color: var(--nexora-danger); color: var(--nexora-danger); }
     .perf-cta-btn-danger:hover { background: #fdecec; }
-    .perf-cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .perf-cta-row { display: flex; flex-wrap: wrap; gap: 8px; }
     .perf-cta-row .perf-cta-btn { width: auto; flex: 1 1 calc(50% - 5px); }
 
     /* ── single ticket card: a flex column of full-width rows (Bootstrap-style row/col via
@@ -376,9 +395,9 @@
 
     /* row 2 — service (a step below the guest name in the hierarchy) + tech/time meta */
     .queue-card-service { min-width: 0; }
-    .queue-card-service strong { display: block; overflow-wrap: anywhere; font-size: 14px; font-weight: 700; color: var(--nexora-text); }
+    .queue-card-service strong { display: block; overflow-wrap: anywhere; font-size: var(--pos-card-content-fs); font-weight: 700; color: var(--nexora-text); }
     .queue-card-sub { display: block; margin-top: 2px; font-size: 12px; font-weight: 600; color: var(--nexora-muted); }
-    .queue-card-tech-value { overflow-wrap: anywhere; font-size: 13px; font-weight: 700; color: var(--nexora-text); }
+    .queue-card-tech-value { overflow-wrap: anywhere; font-size: var(--pos-card-content-fs); font-weight: 700; color: var(--nexora-text); }
     .queue-card-tech-value.is-requested { color: var(--nexora-warning); }
     .queue-card-meta { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: 6px; flex-wrap: wrap; }
     .queue-card-tech, .queue-card-booking { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; min-width: 0; overflow-wrap: anywhere; font-size: 12px; font-weight: 600; color: var(--nexora-muted); }
@@ -401,6 +420,16 @@
     .queue-action-arrived { border-color: rgba(43, 89, 255, .22); background: #eef4ff; color: #2451d6; }
     .queue-action-arrived:hover { border-color: rgba(43, 89, 255, .42); background: #e5edff; color: var(--nexora-electric); }
     .queue-action-muted { border-color: var(--nexora-border); background: var(--nexora-surface-muted); color: var(--nexora-muted); }
+
+    /* Tech access request card — stacked labeled rows (TECH/TICKET/CURRENTLY/SKILL),
+       each set apart by a full-width divider, so the tech being asked for is the
+       first thing front desk reads. */
+    .arq-card-row { border-top: 1px solid var(--nexora-rule); padding-top: 8px; }
+    .arq-card-row:first-child { border-top: 0; padding-top: 0; }
+    .arq-card-label { color: var(--nexora-subtle); font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 4px; }
+    .arq-card-value { font-size: var(--pos-card-content-fs); font-weight: 800; color: var(--nexora-text); overflow-wrap: anywhere; }
+    .arq-card-value-xl { font-size: var(--pos-card-content-fs); line-height: 1.3; }
+    .arq-card-value-plain { font-weight: 600; }
     .queue-action-muted:hover { border-color: rgba(70, 72, 216, .32); background: #f8faff; color: var(--nexora-brand); }
     .queue-action-danger { border-color: rgba(239, 68, 68, .22); background: #fff5f5; color: var(--nexora-danger); }
     .queue-action-danger:hover { border-color: rgba(239, 68, 68, .42); background: #fee2e2; color: #dc2626; }
@@ -410,7 +439,7 @@
     .wl-wait.bad { color: var(--nexora-danger); }
 
     .wl-info { flex: 1; min-width: 190px; }
-    .wl-name { font-size: 14px; font-weight: 800; color: var(--nexora-text); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .wl-name { font-size: var(--pos-card-content-fs); font-weight: 800; color: var(--nexora-text); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .wl-meta { font-size: 12px; color: var(--nexora-muted); margin-top: 3px; font-weight: 600; }
     .wl-actions { display: inline-flex; gap: 6px; align-items: center; flex-shrink: 0; }
     .wl-empty { color: var(--nexora-subtle); font-size: 13px; padding: 18px 0; text-align: center; }
@@ -494,7 +523,7 @@
     @media (max-width: 640px) { [data-cust-results] > .cust-card { flex-basis: 100%; max-width: 100%; } }
     .cust-card { flex-direction: column; align-items: stretch; gap: 2px; }
     .cust-card-head { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
-    .cust-card-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font: inherit; font-size: 14px; font-weight: 800; color: var(--nexora-text); }
+    .cust-card-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font: inherit; font-size: var(--pos-card-content-fs); font-weight: 800; color: var(--nexora-text); }
     .cust-card-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
     .cust-card-meta { font-size: 12px; color: var(--nexora-muted); font-weight: 600; margin-top: 3px; }
     /* Compact history tables (Visit history / Payment history) — full width, columns auto-size to
@@ -3383,7 +3412,7 @@
         return '<div class="wl-card cust-card perf-card">' +
           '<div class="perf-head">' +
             '<div class="perf-head-main">' +
-              '<button class="cust-card-name" type="button" data-cust-pick="' + esc(c.name) + '" style="display:block;font-size:19px">' + esc(c.name) + '</button>' +
+              '<button class="cust-card-name" type="button" data-cust-pick="' + esc(c.name) + '" style="display:block">' + esc(c.name) + '</button>' +
               '<div class="perf-sub" style="font-size:13.5px">' + esc(c.phone || 'No phone on file') + '</div>' +
             '</div>' +
             (cornerBadges ? '<div style="margin-left:auto;flex-shrink:0">' + cornerBadges + '</div>' : '') +
@@ -3398,8 +3427,8 @@
           (tags.length ? '<div class="perf-divider"></div><div><span class="perf-section-label" style="' + labelStyle + '">Tags</span><div class="pill-row">' + tags.map(function (tg) { return '<span class="cust-tag-chip is-on">' + esc(tg) + '</span>'; }).join('') + '</div></div>' : '') +
           '<div class="perf-divider"></div>' +
           '<div class="pos-inline" style="gap:10px">' +
-            '<button class="pos-btn" style="flex:1;justify-content:center" type="button" data-cust-pick="' + esc(c.name) + '" title="View profile">View</button>' +
-            '<button class="pos-btn" style="flex:1;justify-content:center" type="button" data-cust-edit="' + ci + '" title="Edit">Edit</button>' +
+            '<button class="pos-btn" style="flex:1;justify-content:center" type="button" data-cust-pick="' + esc(c.name) + '" title="View profile"><i class="bi bi-person-vcard" aria-hidden="true"></i> View</button>' +
+            '<button class="pos-btn" style="flex:1;justify-content:center" type="button" data-cust-edit="' + ci + '" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button>' +
           '</div>' +
         '</div>';
       }
@@ -3741,21 +3770,26 @@
         return '<button class="pos-btn pos-btn-success pos-btn-sm queue-action-approve" data-ciq-ok="' + r.id + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Accept</button>' +
           '<button class="pos-btn pos-btn-sm queue-action-danger" data-ciq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i> Decline</button>';
       }
+      // Big full-width Accept/Decline for the card layout — same data-ciq-ok/-no
+      // hooks as ciqActionsHtml, styled with the shared .perf-cta-btn card CTA.
+      function ciqCardActionsHtml(r) {
+        return '<button class="perf-cta-btn perf-cta-btn-success-fill" data-ciq-ok="' + r.id + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Accept</button>' +
+          '<button class="perf-cta-btn perf-cta-btn-danger" data-ciq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i> Decline</button>';
+      }
       function ciqCardHtml(r) {
-        var tech = r.reqTech ? '<span class="queue-card-tech-value is-requested">' + esc(techName(r.reqTech)) + '</span>' : '<span class="pos-muted">Anyone</span>';
-        var promo = r.promo ? '<div class="queue-card-note" title="' + esc(r.promo) + '"><i class="bi bi-gift" aria-hidden="true"></i><span>' + esc(r.promo) + '</span></div>' : '';
+        var tech = r.reqTech ? esc(techName(r.reqTech)) : '<span class="pos-muted">Anyone</span>';
+        var promo = r.promo ? '<span class="pos-chip pos-chip-red">' + esc(r.promo) + '</span>' : '<span class="pos-muted">—</span>';
         return '<div class="wl-card queue-card">' +
-          '<div class="queue-card-head"><div class="queue-card-identity">' +
-          '<div class="wl-name">' + esc(r.name) + '</div>' +
-          '<div class="queue-card-phone"><i class="bi bi-inbox" aria-hidden="true"></i> ' + esc(r.src) + '</div></div>' +
-          '<div class="queue-card-status"><span class="pos-chip pos-chip-violet">Check-in request</span></div></div>' +
-          '<div class="queue-card-details"><div class="queue-card-service"><strong>' + esc(posServiceDisplayName(r.svc)) + '</strong>' +
-          '<span class="queue-card-sub">Waiting on front desk</span></div>' +
-          '<div class="queue-card-meta">' +
-          '<span class="queue-card-tech"><i class="bi bi-person" aria-hidden="true"></i> wants ' + tech + '</span>' +
-          '<span class="queue-card-booking"><i class="bi bi-door-open" aria-hidden="true"></i> App / QR check-in</span>' +
-          '</div></div>' + custProfHtml(r.name) + promo +
-          '<div class="queue-card-actions">' + ciqActionsHtml(r) + '</div></div>';
+          '<div class="booking-card-name">' + esc(r.name) + '</div>' +
+          '<div class="booking-card-split">' +
+            '<div><span class="booking-card-label">Source</span><span class="pos-chip pos-chip-gray">' + esc(r.src) + '</span></div>' +
+            '<div><span class="booking-card-label">Service</span><span class="booking-card-value">' + esc(posServiceDisplayName(r.svc)) + '</span></div>' +
+          '</div>' +
+          '<div class="booking-card-split">' +
+            '<div><span class="booking-card-label">Technician request</span><span class="booking-card-value">' + tech + '</span></div>' +
+            '<div><span class="booking-card-label">Promo</span>' + promo + '</div>' +
+          '</div>' + custProfHtml(r.name) +
+          '<div class="perf-cta-row" style="border-top:1px solid var(--nexora-rule);padding-top:10px">' + ciqCardActionsHtml(r) + '</div></div>';
       }
       function renderCiqTable(items) {
         if (!items.length) return '<div class="wl-empty">No check-in requests right now.</div>';
@@ -3780,25 +3814,23 @@
         return '<button class="pos-btn pos-btn-success pos-btn-sm queue-action-approve" data-arq-ok="' + r.id + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Give to ' + esc(t.name) + '</button>' +
           '<button class="pos-btn pos-btn-sm queue-action-danger" data-arq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i> Decline</button>';
       }
+      // Big full-width Give to/Decline for the card layout — same data-arq-ok/-no
+      // hooks as arqActionsHtml, styled with the shared .perf-cta-btn card CTA.
+      function arqCardActionsHtml(r, t) {
+        return '<button class="perf-cta-btn perf-cta-btn-success-fill" data-arq-ok="' + r.id + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Give to ' + esc(t.name) + '</button>' +
+          '<button class="perf-cta-btn perf-cta-btn-danger" data-arq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i> Decline</button>';
+      }
       function arqSkillHtml(req, ok) {
         return req ? esc(req) + ': ' + (ok ? '<span class="pos-good-text">Eligible ✓</span>' : '<span class="pos-danger-text">Missing ⚠</span>') : '—';
       }
       function arqCardHtml(row) {
         var r = row.r, w = row.w, t = row.t, req = row.req, ok = row.ok;
-        var skillChip = ok
-          ? '<span class="pos-chip pos-chip-green">Eligible</span>'
-          : '<span class="pos-chip pos-chip-amber">Override needed</span>';
         return '<div class="wl-card queue-card">' +
-          '<div class="queue-card-head"><div class="queue-card-identity">' +
-          '<div class="wl-name">TECH ' + esc(t.name) + '</div>' +
-          '<div class="queue-card-phone"><i class="bi bi-ticket-perforated" aria-hidden="true"></i> wants ticket #' + w.id + ' · ' + esc(w.name) + '</div></div>' +
-          '<div class="queue-card-status"><span class="pos-chip pos-chip-violet">Access request</span>' + skillChip + '</div></div>' +
-          '<div class="queue-card-details"><div class="queue-card-service"><strong>' + esc(posServiceDisplayName(w.svc || '')) + '</strong>' +
-          '<span class="queue-card-sub">Ticket #' + w.id + ' · ' + esc(w.name) + '</span></div>' +
-          '<div class="queue-card-meta">' +
-          '<span class="queue-card-tech"><i class="bi bi-person-check" aria-hidden="true"></i> currently: ' + (w.techId ? esc(techName(w.techId)) : 'Unassigned') + '</span>' +
-          '<span class="queue-card-booking"><i class="bi bi-patch-check" aria-hidden="true"></i> skill ' + arqSkillHtml(req, ok) + '</span>' +
-          '</div></div><div class="queue-card-actions">' + arqActionsHtml(r, t) + '</div></div>';
+          '<div class="arq-card-row"><div class="arq-card-label">Tech</div><div class="arq-card-value arq-card-value-xl">' + esc(t.name) + '</div></div>' +
+          '<div class="arq-card-row"><div class="arq-card-label">Ticket</div><div class="arq-card-value">#' + w.id + ' — ' + esc(w.name) + (w.svc ? ' · ' + esc(posServiceDisplayName(w.svc)) : '') + '</div></div>' +
+          '<div class="arq-card-row"><div class="arq-card-label">Currently</div><div class="arq-card-value arq-card-value-plain">' + (w.techId ? esc(techName(w.techId)) : 'Unassigned') + '</div></div>' +
+          '<div class="arq-card-row"><div class="arq-card-label">Skill</div><div class="arq-card-value arq-card-value-plain">' + arqSkillHtml(req, ok) + '</div></div>' +
+          '<div class="perf-cta-row">' + arqCardActionsHtml(r, t) + '</div></div>';
       }
       // Table mode carries the same info as the card view (tech, ticket, current assignment, skill match).
       function renderArqTable(rows) {
@@ -3857,23 +3889,23 @@
           ? '<div class="live-map">🚗··········💅 Live trip — guest is sharing their route · ~' + etaRem(e) + "' out</div>" : '';
         var tech = b.techId ? esc(techName(b.techId)) : 'Any tech';
         var extra = custProfHtml(b.name);
-        return '<article class="queue-card perf-card">' +
-          '<div class="perf-head">' +
-            '<div class="perf-head-main">' +
-              '<span class="perf-name" style="font-size:19px">' + esc(b.name) + '</span>' +
-              (b.phone ? '<div class="perf-sub" style="font-size:12.5px"><i class="bi bi-telephone" aria-hidden="true"></i> ' + esc(b.phone) + '</div>' : '') +
+        return '<div class="wl-card queue-card">' +
+          '<div class="queue-card-head">' +
+            '<div class="queue-card-identity">' +
+              '<div class="booking-card-name">' + esc(b.name) + '</div>' +
+              (b.phone ? '<div class="queue-card-phone"><i class="bi bi-telephone" aria-hidden="true"></i> ' + esc(b.phone) + '</div>' : '') +
             '</div>' +
-            '<span class="pos-chip" style="margin-left:auto;flex-shrink:0;white-space:nowrap;background:#eef1fb;color:var(--nexora-brand)"><i class="bi bi-clock" aria-hidden="true"></i> ' + esc(b.time || 'No time') + '</span>' +
+            '<span class="pos-chip pos-chip-blue"><i class="bi bi-clock" aria-hidden="true"></i> ' + esc(b.time || 'No time') + '</span>' +
           '</div>' +
-          '<div class="perf-divider"></div>' +
-          '<div><span class="perf-section-label">Service</span><span class="perf-stat-value" style="font-size:19px">' + esc(posServiceDisplayName(b.svc)) + '</span></div>' +
-          '<div style="margin-top:12px"><span class="perf-section-label">With</span><span class="perf-stat-value" style="font-size:16px">' + esc(tech) + '</span></div>' +
-          (extra ? '<div style="margin-top:10px">' + extra + '</div>' : '') +
+          '<div class="booking-card-split">' +
+            '<div><span class="booking-card-label">Service</span><span class="booking-card-value">' + esc(posServiceDisplayName(b.svc)) + '</span></div>' +
+            '<div><span class="booking-card-label">With</span><span class="booking-card-value">' + esc(tech) + '</span></div>' +
+          '</div>' +
+          (extra ? '<div>' + extra + '</div>' : '') +
           map +
-          '<div class="perf-divider"></div>' +
-          '<div><span class="perf-section-label">Status</span>' + etaStatusChipHtml(e) + '</div>' +
-          '<div style="margin-top:14px">' + etaCardActionHtml(x) + '</div>' +
-          '</article>';
+          '<div><span class="booking-card-label">Status</span> ' + etaStatusChipHtml(e) + '</div>' +
+          '<div class="perf-cta-row" style="border-top:1px solid var(--nexora-rule);padding-top:10px">' + etaCardActionHtml(x) + '</div>' +
+          '</div>';
       }
       // Check-in "Bookings today" table mode — one row per booking, same actions as the card view.
       function renderEtaTable(items) {
@@ -4032,7 +4064,7 @@
         var noteText = String(w.note || (c && c.notes && c.notes.staff) || '').trim();
         return '<div class="perf-head">' +
             '<div class="perf-head-main">' +
-              '<span class="perf-name" style="font-size:19px">' + esc(w.name) + '</span>' +
+              '<span class="perf-name">' + esc(w.name) + '</span>' +
               '<div class="perf-sub" style="font-size:13px"><i class="bi bi-telephone" aria-hidden="true"></i> ' + esc(w.phone || 'No phone') + '</div>' +
             '</div>' +
             '<span class="pos-chip" style="margin-left:auto;flex-shrink:0;white-space:nowrap;background:#eef1fb;color:var(--nexora-brand)"><i class="bi bi-clock" aria-hidden="true"></i> ' + esc(w.bookingTime || w.at || 'Walk-in') + '</span>' +
@@ -4040,17 +4072,17 @@
           (groupHtml ? '<div style="margin-top:10px">' + groupHtml + '</div>' : '') +
           '<div class="perf-divider"></div>' +
           '<div class="perf-stat-row">' +
-            '<div class="perf-stat-col"><span class="perf-section-label">Service</span><span class="perf-stat-value" style="font-size:16px">' + esc(posServiceDisplayName(w.svc || 'No service chosen')) + '</span></div>' +
-            '<div class="perf-stat-col"><span class="perf-section-label">Tech</span><span class="perf-stat-value" style="font-size:16px">' + ticketTechHtml(w, 'card') + (techExtra || '') + '</span></div>' +
+            '<div class="perf-stat-col"><span class="perf-section-label">Service</span><span class="perf-stat-value">' + esc(posServiceDisplayName(w.svc || 'No service chosen')) + '</span></div>' +
+            '<div class="perf-stat-col"><span class="perf-section-label">Tech</span><span class="perf-stat-value">' + ticketTechHtml(w, 'card') + (techExtra || '') + '</span></div>' +
           '</div>' +
           '<div class="perf-divider"></div>' +
           '<div class="perf-stat-row">' +
             '<div class="perf-stat-col"><span class="perf-section-label">Status</span>' + statusChipHtml + '</div>' +
-            '<div class="perf-stat-col"><span class="perf-section-label">Elapsed</span><span class="perf-stat-value" style="font-size:16px">' + esc(elapsedLabel || '—') + '</span></div>' +
+            '<div class="perf-stat-col"><span class="perf-section-label">Elapsed</span><span class="perf-stat-value">' + esc(elapsedLabel || '—') + '</span></div>' +
           '</div>' +
           '<div class="perf-divider"></div>' +
-          '<div><span class="perf-section-label">Total</span><span class="perf-stat-value" style="font-size:19px">' + money(total) + '</span></div>' +
-          (noteText ? '<div class="perf-divider"></div><div><span class="perf-section-label">Note</span><span class="perf-stat-value" style="font-size:14px;font-weight:600">' + esc(noteText) + '</span></div>' : '');
+          '<div><span class="perf-section-label">Total</span><span class="perf-stat-value">' + money(total) + '</span></div>' +
+          (noteText ? '<div class="perf-divider"></div><div><span class="perf-section-label">Note</span><span class="perf-stat-value" style="font-weight:600">' + esc(noteText) + '</span></div>' : '');
       }
       // One WAITLIST row = one service ticket (#pos-nail-salon-ops Phase 3). A single-ticket order
       // renders exactly like the original floor card, so the common walk-in path is unchanged.
@@ -4738,9 +4770,9 @@
             '<div class="perf-head">' +
               '<span class="payroll-avatar">' + esc(initials(s.name)) + '</span>' +
               '<div class="perf-head-main">' +
-                '<span class="perf-name" style="font-size:20px">' + esc(s.name) + '</span>' +
+                '<span class="perf-name">' + esc(s.name) + '</span>' +
                 '<div class="perf-sub" style="font-size:13px;margin-top:2px">' + ROLE_LBL[s.role] + '</div>' +
-                '<div style="margin-top:10px;font-size:15px;font-weight:800">' + shiftLabel + '</div>' +
+                '<div style="margin-top:10px;font-size:14px;font-weight:800">' + shiftLabel + '</div>' +
                 '<div class="perf-sub" style="font-size:13px">' + clockHours(s.id).toFixed(1) + 'h today</div>' +
               '</div>' +
             '</div>' +
@@ -4749,13 +4781,13 @@
               '<div class="owner-metric-row">' +
                 '<div class="owner-metric-cell"><span class="perf-section-label">Station</span>' + stationCell + '</div>' +
                 '<div class="owner-metric-cell"><span class="perf-section-label">Current ticket</span>' +
-                  (t ? '<span class="perf-stat-value ' + (busy ? 'tech-roster-ticket is-busy' : 'tech-roster-ticket is-free') + '" style="font-size:19px">' + (busy ? esc(busy) : 'Free') + '</span>' : '<span class="perf-stat-value pos-muted" style="font-size:19px">—</span>') +
+                  (t ? '<span class="perf-stat-value ' + (busy ? 'tech-roster-ticket is-busy' : 'tech-roster-ticket is-free') + '">' + (busy ? esc(busy) : 'Free') + '</span>' : '<span class="perf-stat-value pos-muted">—</span>') +
                   (match ? '<div class="pos-muted" style="font-size:12px;margin-top:3px">Match <span class="match-badge" style="color:' + (match.sc >= 75 ? 'var(--nexora-success)' : match.sc >= 50 ? 'var(--nexora-warning)' : 'var(--nexora-danger)') + '">' + match.sc + '%' + (match.okSkill ? '' : ' ⚠') + '</span></div>' : '') +
                 '</div>' +
               '</div>' +
               '<div class="owner-metric-row">' +
                 '<div class="owner-metric-cell"><span class="perf-section-label">Turns today</span>' +
-                  (t ? '<span class="perf-stat-value" style="font-size:19px">' + t.turns + ' turns' + (pos ? ' · #' + pos : '') + '</span>' + (!busy && next && next.id === t.id ? '<div class="next-chip" style="margin-top:5px">Next up</div>' : '') : '<span class="perf-stat-value pos-muted" style="font-size:19px">—</span>') +
+                  (t ? '<span class="perf-stat-value">' + t.turns + ' turns' + (pos ? ' · #' + pos : '') + '</span>' + (!busy && next && next.id === t.id ? '<div class="next-chip" style="margin-top:5px">Next up</div>' : '') : '<span class="perf-stat-value pos-muted">—</span>') +
                 '</div>' +
                 '<div class="owner-metric-cell"><span class="perf-section-label">Beeper</span>' + beepCell + '</div>' +
               '</div>' +
@@ -4895,10 +4927,10 @@
             '</div>' +
             '<div class="perf-divider"></div>' +
             '<div class="payroll-metric-grid">' +
-              '<div class="payroll-metric-box"><span class="perf-section-label">Service $</span><span class="perf-stat-value" style="font-size:19px">' + money(p.svc) + '</span></div>' +
-              '<div class="payroll-metric-box"><span class="perf-section-label">Commission</span><span class="perf-stat-value" style="font-size:19px">' + money(comm) + '</span></div>' +
-              '<div class="payroll-metric-box"><span class="perf-section-label">Tip</span><span class="perf-stat-value pos-good-text" style="font-size:19px">' + money(p.tip) + '</span></div>' +
-              '<div class="payroll-metric-box"><span class="perf-section-label">Tech takes</span><span class="perf-stat-value" style="font-size:19px">' + money(comm + p.tip) + '</span></div>' +
+              '<div class="payroll-metric-box"><span class="perf-section-label">Service $</span><span class="perf-stat-value">' + money(p.svc) + '</span></div>' +
+              '<div class="payroll-metric-box"><span class="perf-section-label">Commission</span><span class="perf-stat-value">' + money(comm) + '</span></div>' +
+              '<div class="payroll-metric-box"><span class="perf-section-label">Tip</span><span class="perf-stat-value pos-good-text">' + money(p.tip) + '</span></div>' +
+              '<div class="payroll-metric-box"><span class="perf-section-label">Tech takes</span><span class="perf-stat-value">' + money(comm + p.tip) + '</span></div>' +
             '</div>' +
             '<div class="perf-divider"></div>' +
             '<div class="payroll-foot-row">' +
@@ -5553,7 +5585,7 @@
           var t = r.t, x = ownerRowHtml(r), parts = ownerCardParts(r);
           return '<article class="queue-card owner-card">' +
             '<div class="perf-head">' +
-              '<div class="perf-head-main"><span class="perf-name" style="font-size:19px">' + esc(t.name) + '</span></div>' +
+              '<div class="perf-head-main"><span class="perf-name">' + esc(t.name) + '</span></div>' +
               '<span class="pos-chip" style="margin-left:auto;flex-shrink:0;white-space:nowrap;border:1.5px solid ' + parts.statusChip.color + ';background:#fff;color:' + parts.statusChip.color + '">' + esc(parts.statusChip.text) + '</span>' +
             '</div>' +
             '<div class="owner-model-bar" style="margin-top:12px"><b>Pay model:</b>' + x.modelSel + '</div>' +
@@ -5597,7 +5629,7 @@
           var done = weekDone(t, ps);
           var delta = SMART.on ? done * sb.tot / 100 : 0;
           var bonuses = sb.list.length ? sb.list.map(function (x) { return '<span class="pos-good-text" style="font-size:12px">' + x[0] + ' +' + x[1] + '%</span>'; }).join(' · ') : '<span class="pos-muted">no thresholds met</span>';
-          var eff = '<b class="' + (SMART.on && sb.tot ? 'pos-good-text' : '') + '">' + Math.round(effComm(t) * 100) + '%</b>' + (sb.tot >= SMART.cap ? ' 🧢' : '');
+          var eff = '<b class="' + (SMART.on && sb.tot ? 'pos-good-text' : '') + '">' + Math.round(effComm(t) * 100) + '%</b>' + (sb.tot >= SMART.cap ? '' : '');
           var deltaHtml = SMART.on ? (delta ? '+' + money(delta) : '—') : '<span class="pos-muted">off</span>';
           return { sb: sb, delta: delta, bonuses: bonuses, eff: eff, deltaHtml: deltaHtml };
         };
@@ -5623,8 +5655,8 @@
             '<div class="perf-head">' +
               '<span class="payroll-avatar">' + initials(t.name) + '</span>' +
               '<div class="perf-head-main">' +
-                '<span class="perf-name" style="font-size:20px">' + esc(t.name) + '</span>' +
-                '<div style="margin-top:8px"><span class="perf-section-label" style="margin-bottom:4px">Base %</span><span class="perf-stat-value" style="font-size:22px">' + Math.round(t.comm * 100) + '%</span></div>' +
+                '<span class="perf-name">' + esc(t.name) + '</span>' +
+                '<div style="margin-top:8px"><span class="perf-section-label" style="margin-bottom:4px">Base %</span><span class="perf-stat-value">' + Math.round(t.comm * 100) + '%</span></div>' +
               '</div>' +
             '</div>' +
             '<div class="perf-divider"></div>' +
@@ -5632,8 +5664,8 @@
             '<div class="smart-bonus-grid" style="margin-top:10px">' + bonusChips + '</div>' +
             '<div class="perf-divider"></div>' +
             '<div class="payroll-foot-row">' +
-              '<div class="payroll-foot-col" style="text-align:left"><span class="perf-section-label">Effective %</span><span class="perf-stat-value' + (SMART.on && x.sb.tot ? ' pos-good-text' : '') + '" style="font-size:20px">' + Math.round(effComm(t) * 100) + '%</span>' + (x.sb.tot >= SMART.cap ? ' 🧢' : '') + '</div>' +
-              '<div class="payroll-foot-col" style="text-align:left"><span class="perf-section-label">Δ weekly pay (on production)</span><span class="perf-stat-value" style="font-size:20px">' + deltaVal + '</span></div>' +
+              '<div class="payroll-foot-col" style="text-align:left"><span class="perf-section-label">Effective %</span><span class="perf-stat-value' + (SMART.on && x.sb.tot ? ' pos-good-text' : '') + '">' + Math.round(effComm(t) * 100) + '%</span>' + (x.sb.tot >= SMART.cap ? '' : '') + '</div>' +
+              '<div class="payroll-foot-col" style="text-align:left"><span class="perf-section-label">Δ weekly pay (on production)</span><span class="perf-stat-value">' + deltaVal + '</span></div>' +
             '</div>' +
             '</article>';
         }).join('') + '</div>';
@@ -5690,12 +5722,30 @@
           '</tbody></table></div>';
         var cardsHtml = '<div data-mg-payout-list>' + rows.map(function (r) {
           var x = payoutRowHtml(r);
-          return '<article class="queue-card">' +
-            '<div class="queue-card-head"><div class="queue-card-identity"><span class="pos-people"><span class="pos-avatar">' + initials(r.t.name) + '</span> <span class="pos-strong">' + esc(r.t.name) + '</span></span></div>' +
-            '<div class="queue-card-status">' + x.stChip + '</div></div>' +
-            '<div class="pos-inline" style="flex-wrap:wrap;gap:8px"><span class="pos-chip pos-chip-gray">Pay ' + money(r.pay) + '</span><span class="pos-chip pos-chip-green">Tip ' + money(r.tip) + '</span><span class="pos-chip pos-chip-gray">' + (x.m ? PAYOUT_M[x.m] : 'no method') + '</span></div>' +
-            '<div class="pos-strong" style="font-size:13px">Total ' + money(r.tot) + '</div>' +
-            (x.act ? '<div class="queue-card-actions">' + x.act + '</div>' : '') +
+          var bigAct = r.po.st === 'paid' ? ''
+            : !x.m ? '<button class="perf-cta-btn" data-mg-paysetup="' + r.t.id + '"><i class="bi bi-link-45deg" aria-hidden="true"></i> Set up method</button>'
+            : '<button class="perf-cta-btn perf-cta-btn-success-fill" data-mg-payout="' + r.t.id + '"><i class="bi bi-wallet2" aria-hidden="true"></i> Pay ' + money(r.tot) + '</button>';
+          return '<article class="queue-card payroll-card">' +
+            '<div class="perf-head">' +
+              '<span class="payroll-avatar">' + initials(r.t.name) + '</span>' +
+              '<div class="perf-head-main">' +
+                '<span class="perf-name">' + esc(r.t.name) + '</span>' +
+                '<div class="perf-sub" style="font-size:13px;margin-top:2px">Tech</div>' +
+                '<div style="margin-top:8px">' + x.stChip + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="perf-divider"></div>' +
+            '<div class="owner-metric-grid">' +
+              '<div class="owner-metric-row">' +
+                '<div class="owner-metric-cell"><span class="perf-section-label">Weekly pay</span><span class="perf-stat-value">' + money(r.pay) + '</span></div>' +
+                '<div class="owner-metric-cell"><span class="perf-section-label">Tips today</span><span class="perf-stat-value">' + money(r.tip) + '</span></div>' +
+              '</div>' +
+              '<div class="owner-metric-row">' +
+                '<div class="owner-metric-cell"><span class="perf-section-label">Total</span><span class="perf-stat-value pos-good-text">' + money(r.tot) + '</span></div>' +
+                '<div class="owner-metric-cell"><span class="perf-section-label">Method</span><span class="perf-stat-value">' + (x.m ? PAYOUT_M[x.m] : '<span class="pos-warn-text">— none</span>') + '</span></div>' +
+              '</div>' +
+            '</div>' +
+            (bigAct ? '<div class="perf-divider"></div>' + bigAct : '') +
             '</article>';
         }).join('') + '</div>';
         return '<div class="pos-card">' +
@@ -6517,7 +6567,7 @@
         var staffRowHtml = function (s) {
           var roleCell = s.role === 'owner'
             ? '<span class="pos-chip pos-chip-gold">👑 Owner</span>'
-            : '<select class="pos-input" data-mg-strole="' + s.id + '" style="height:32px;font-size:13px">' +
+            : '<select class="pos-input staff-role-select" data-mg-strole="' + s.id + '">' +
               ['manager', 'frontdesk', 'tech'].map(function (r) { return '<option value="' + r + '"' + (s.role === r ? ' selected' : '') + '>' + ROLE_LBL[r] + '</option>'; }).join('') +
               '</select>';
           return { roleCell: roleCell };
@@ -6534,11 +6584,18 @@
           '</tbody></table></div>';
         var cardsHtml = '<div data-mg-staff-list>' + STAFF.map(function (s) {
           var x = staffRowHtml(s);
-          return '<article class="queue-card">' +
-            '<div class="queue-card-head"><div class="queue-card-identity"><span class="pos-people"><span class="pos-avatar plain">' + esc(initials(s.name)) + '</span> <span class="pos-strong">' + esc(s.name) + '</span></span></div></div>' +
-            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:11px">Role</span>' + x.roleCell + '</div>' +
-            '<div class="pos-muted wrap" style="font-size:12px">' + ROLE_ACCESS[s.role] + '</div>' +
-            '<div class="queue-card-actions"><button class="pos-btn pos-btn-sm" data-mg-stpin="' + s.id + '"><i class="bi bi-key" aria-hidden="true"></i> Reset PIN</button></div>' +
+          return '<article class="queue-card staff-card">' +
+            '<div class="staff-head">' +
+              '<span class="staff-avatar">' + esc(initials(s.name)) + '</span>' +
+              '<span class="staff-name">' + esc(s.name) + '</span>' +
+              x.roleCell +
+              '<div class="staff-head-actions">' +
+                '<span class="staff-pin-dots">••••</span>' +
+                '<button class="pos-btn pos-btn-sm" data-mg-stpin="' + s.id + '"><i class="bi bi-key" aria-hidden="true"></i> Reset PIN</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="perf-divider"></div>' +
+            '<div><span class="perf-section-label">Access</span><div class="staff-access-value">' + ROLE_ACCESS[s.role] + '</div></div>' +
             '</article>';
         }).join('') + '</div>';
         return '<div class="pos-card">' +
