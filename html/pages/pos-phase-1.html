@@ -33,6 +33,7 @@
       margin: 0;
       min-height: 100%;
       font-family: "Inter", sans-serif;
+      font-size: 14px;
       background: var(--nexora-canvas);
       color: var(--nexora-text);
     }
@@ -90,10 +91,10 @@
     .pos-card { background: var(--nexora-surface); border: 1px solid var(--nexora-border); border-radius: 16px; padding: 18px; box-shadow: var(--nexora-card-shadow); }
     .pos-card.soft { background: var(--nexora-surface-muted); box-shadow: none; }
     .pos-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
-    .pos-card-head h3 { margin: 0; font-size: 15px; font-weight: 800; color: var(--nexora-text); }
+    .pos-card-head h3 { margin: 0; font-size: 16px; font-weight: 800; color: var(--nexora-text); }
 
     .pos-kpi-label { color: var(--nexora-muted); font-size: 12px; font-weight: 700; }
-    .pos-kpi-value { font-size: 26px; font-weight: 900; color: var(--nexora-text); margin-top: 4px; }
+    .pos-kpi-value { font-size: 24px; font-weight: 900; color: var(--nexora-text); margin-top: 4px; }
     .pos-kpi-foot { margin-top: 6px; }
 
     .pos-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
@@ -362,7 +363,7 @@
     .cust-profile-stat { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 9px 6px; text-align: center; border-right: 1px solid var(--nexora-border); }
     .cust-profile-stat:last-child { border-right: 0; }
     .cust-profile-stat-value { font-size: 15px; font-weight: 900; color: var(--nexora-brand); }
-    .cust-profile-stat-value.is-text { font-size: 12px; font-weight: 800; }
+    .cust-profile-stat-value.is-text { font-size: 13px; font-weight: 800; }
     .cust-profile-stat-label { font-size: 11px; font-weight: 600; color: var(--nexora-muted); }
     .cust-upcoming-card { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; background: var(--nexora-surface-muted); border: 1px solid var(--nexora-border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
     .cust-upcoming-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; background: #efeafe; color: var(--nexora-brand); display: flex; align-items: center; justify-content: center; font-size: 17px; }
@@ -378,7 +379,7 @@
     .cust-upcoming-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; }
     .cust-upcoming-detail-item { min-width: 0; }
     .cust-upcoming-detail-label { color: var(--nexora-muted); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
-    .cust-upcoming-detail-value { margin-top: 3px; color: var(--nexora-text); font-size: 12px; font-weight: 700; overflow-wrap: anywhere; }
+    .cust-upcoming-detail-value { margin-top: 3px; color: var(--nexora-text); font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
     .cust-upcoming-detail-services { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
     .cust-upcoming-detail-note { margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--nexora-border); color: var(--nexora-muted); font-size: 12px; line-height: 1.5; }
     .cust-upcoming-detail-actions { display: flex; justify-content: flex-end; margin-top: 10px; }
@@ -418,7 +419,7 @@
     /* Compact history tables (Visit history / Payment history) — full width, columns auto-size to
        their content instead of the wide booking-table's fixed min-width. */
     .cust-history-table-wrap { overflow-x: auto; border: 1px solid var(--nexora-border); border-radius: 10px; margin-top: 2px; }
-    .cust-history-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: auto; }
+    .cust-history-table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: auto; }
     .cust-history-table th { padding: 8px 10px; background: var(--nexora-surface-muted); color: var(--nexora-muted); text-align: left; font-size: 11px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; width: 1%; }
     .cust-history-table th:last-child, .cust-history-table td:last-child { width: auto; }
     .cust-history-table td { padding: 8px 10px; border-top: 1px solid var(--nexora-border); color: var(--nexora-text); font-weight: 600; white-space: nowrap; }
@@ -431,7 +432,7 @@
     .pick-arrow { font-size: 12px; font-weight: 800; color: var(--nexora-brand); white-space: nowrap; }
     .match-badge { font-size: 12px; font-weight: 800; margin-left: auto; white-space: nowrap; }
     .sel-hint { font-size: 12px; font-weight: 700; color: var(--nexora-brand); background: #f2f3ff; border: 1px dashed rgba(70, 72, 216, .4); border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; }
-    .warn-row { font-size: 12px; font-weight: 600; color: #9a6608; background: #fff9ee; border: 1px solid rgba(245, 158, 11, .4); border-radius: 8px; padding: 7px 10px; margin: -4px 0 8px; line-height: 1.6; }
+    .warn-row { font-size: 13px; font-weight: 600; color: #9a6608; background: #fff9ee; border: 1px solid rgba(245, 158, 11, .4); border-radius: 8px; padding: 7px 10px; margin: -4px 0 8px; line-height: 1.6; }
     .live-map { height: 44px; border-radius: 10px; background: linear-gradient(135deg, #dce9ff, #edf1ff); display: flex; align-items: center; justify-content: center; color: #6f7d96; font-size: 12px; font-weight: 700; margin-top: 6px; flex-basis: 100%; }
 
     /* ── time clock ── */
@@ -441,7 +442,7 @@
     .clk-countdown { max-width: 300px; margin: 10px 0 6px; }
     .clk-countdown > span { transition: width 1s linear; }
     .tech-roster-table-wrap { overflow-x: auto; border: 1px solid var(--nexora-border); border-radius: 12px; background: #fff; }
-    .tech-roster-table { width: 100%; min-width: 860px; border-collapse: collapse; font-size: 12px; }
+    .tech-roster-table { width: 100%; min-width: 860px; border-collapse: collapse; font-size: 13px; }
     .tech-roster-table th { padding: 9px 10px; background: var(--nexora-surface-muted); color: var(--nexora-muted); text-align: left; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
     .tech-roster-table td { padding: 9px 10px; border-top: 1px solid var(--nexora-rule); color: var(--nexora-text); vertical-align: middle; }
     .tech-roster-table tbody tr:hover { background: #fbfcff; }
@@ -461,7 +462,7 @@
     .tech-name { font-weight: 800; font-size: 13px; color: var(--nexora-text); }
     .tech-sub { margin-left: auto; font-size: 12px; color: var(--nexora-muted); white-space: nowrap; }
     .clk-station { width: 46px; height: 32px; text-align: center; border: 1px solid var(--nexora-border); border-radius: 8px; font-size: 12px; font-weight: 700; }
-    .feed-line { font-size: 12px; font-weight: 600; color: var(--nexora-muted); padding: 8px 0; border-bottom: 1px solid var(--nexora-rule); line-height: 1.6; }
+    .feed-line { font-size: 13px; font-weight: 600; color: var(--nexora-muted); padding: 8px 0; border-bottom: 1px solid var(--nexora-rule); line-height: 1.6; }
     .feed-line:last-child { border-bottom: 0; }
 
     /* ── sms campaigns ── */
@@ -518,9 +519,9 @@
     .service-detail-body-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(240px, .75fr); gap: 14px; }
     .service-detail-section { border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; padding: 14px; }
     .service-detail-section-title { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; color: var(--nexora-text); font-size: 12px; font-weight: 900; text-transform: uppercase; }
-    .service-detail-text { margin: 0; color: var(--nexora-text); font-size: 13px; font-weight: 600; line-height: 1.65; white-space: pre-wrap; }
+    .service-detail-text { margin: 0; color: var(--nexora-text); font-size: 14px; font-weight: 600; line-height: 1.65; white-space: pre-wrap; }
     .service-detail-empty { color: var(--nexora-muted); font-size: 12px; font-weight: 700; }
-    .service-detail-list { display: grid; gap: 8px; margin: 0; padding-left: 18px; color: var(--nexora-text); font-size: 13px; font-weight: 600; line-height: 1.55; }
+    .service-detail-list { display: grid; gap: 8px; margin: 0; padding-left: 18px; color: var(--nexora-text); font-size: 14px; font-weight: 600; line-height: 1.55; }
     .service-detail-pills { display: flex; flex-wrap: wrap; gap: 6px; }
     .service-detail-kv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 10px; }
     .service-detail-kv { display: grid; min-width: 0; gap: 4px; border: 1px solid var(--nexora-rule); border-radius: 10px; background: var(--nexora-surface-muted); padding: 10px; }
@@ -543,7 +544,7 @@
     .service-category-toggle { border: 0; background: transparent; padding: 0; color: inherit; font-size: inherit; font-weight: inherit; text-transform: inherit; letter-spacing: inherit; }
     .service-category-add { background: #fff; color: var(--nexora-brand); text-transform: none; letter-spacing: 0; }
     .service-category-card.is-collapsed .pos-card-head { margin-bottom: 0; }
-    .service-category-manager-title { display: inline-flex; align-items: center; gap: 8px; border: 0; background: transparent; padding: 0; color: var(--nexora-text); font-size: 15px; font-weight: 800; }
+    .service-category-manager-title { display: inline-flex; align-items: center; gap: 8px; border: 0; background: transparent; padding: 0; color: var(--nexora-text); font-size: 16px; font-weight: 800; }
     .service-category-manager-title i { color: var(--nexora-brand); }
     .category-editor-dialog { max-width: 640px; }
     .category-editor-body { display: block; }
@@ -596,20 +597,20 @@
     .tpl-list { display: grid; gap: 8px; }
     .tpl-item { border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 10px 12px; text-align: left; }
     .tpl-item:hover { border-color: var(--nexora-brand); background: #f7f8ff; }
-    .tpl-title { font-size: 13px; font-weight: 800; color: var(--nexora-text); }
+    .tpl-title { font-size: 14px; font-weight: 800; color: var(--nexora-text); }
     .tpl-text { margin-top: 4px; font-size: 12px; font-weight: 500; color: var(--nexora-muted); line-height: 1.6; }
 
     .sms-composer { border: 1px solid var(--nexora-border); border-radius: 12px; overflow: hidden; background: #fff; }
     .sms-toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 8px 10px; background: var(--nexora-surface-muted); border-bottom: 1px solid var(--nexora-border); }
     .tag-btn { border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 4px 10px; font-size: 12px; font-weight: 700; color: var(--nexora-muted); }
     .tag-btn:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
-    .sms-textarea { width: 100%; min-height: 108px; border: 0; padding: 12px; font-size: 13px; font-weight: 500; line-height: 1.7; color: var(--nexora-text); resize: vertical; display: block; }
+    .sms-textarea { width: 100%; min-height: 108px; border: 0; padding: 12px; font-size: 14px; font-weight: 500; line-height: 1.7; color: var(--nexora-text); resize: vertical; display: block; }
     .sms-textarea:focus { outline: 0; }
     .sms-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border-top: 1px solid var(--nexora-rule); font-size: 12px; font-weight: 600; color: var(--nexora-subtle); }
     .char-count.multi { color: var(--nexora-warning); font-weight: 800; }
     .sms-preview { margin-top: 12px; }
     .sms-preview-lbl { font-size: 12px; font-weight: 800; color: var(--nexora-muted); margin-bottom: 6px; }
-    .sms-bubble { border-radius: 14px 14px 14px 4px; background: #eaf0ff; border: 1px solid #d9e2ff; padding: 12px 14px; font-size: 13px; font-weight: 500; line-height: 1.7; color: var(--nexora-text); max-width: 420px; }
+    .sms-bubble { border-radius: 14px 14px 14px 4px; background: #eaf0ff; border: 1px solid #d9e2ff; padding: 12px 14px; font-size: 14px; font-weight: 500; line-height: 1.7; color: var(--nexora-text); max-width: 420px; }
     .sms-bubble .lnk { color: var(--nexora-brand); text-decoration: underline; }
     .sms-bubble-empty { color: var(--nexora-subtle); font-style: italic; }
 
@@ -623,7 +624,7 @@
     .confirm-box { display: none; border: 1px solid rgba(245, 158, 11, .4); background: #fff9ee; border-radius: 12px; padding: 12px 14px; }
     .confirm-box.show { display: block; animation: posFade .2s ease; }
     .confirm-title { font-size: 13px; font-weight: 800; color: #9a6608; margin-bottom: 6px; }
-    .confirm-detail { font-size: 12px; font-weight: 500; color: var(--nexora-muted); line-height: 1.9; }
+    .confirm-detail { font-size: 13px; font-weight: 500; color: var(--nexora-muted); line-height: 1.9; }
 
     .cost-box { border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 8px 12px; }
     .cost-box.warn { border-color: rgba(239, 68, 68, .5); background: #fdecec; }
@@ -661,7 +662,7 @@
       .pos-card { padding: 14px; border-radius: 14px; }
       .disp-stat { flex-basis: 130px; padding: 9px 8px; }
       .disp-num { font-size: 19px; }
-      .pos-kpi-value { font-size: 22px; }
+      .pos-kpi-value { font-size: 20px; }
       .pos-card-head { margin-bottom: 12px; }
       /* the inline "add guest" row overflowed the card at 360px — let the fields fill the width */
       .pos-card-head .pos-inline { width: 100%; }
@@ -1018,6 +1019,70 @@
                 <div class="pos-inline">
                   <button class="pos-btn pos-btn-sm" type="button" data-mg-category-cancel><span data-mg-category-cancel-label>Cancel</span></button>
                   <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-category-save><i class="bi bi-check2" aria-hidden="true"></i> <span data-mg-category-save-label>Save category</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sms-modal service-editor-modal" data-mg-tech-modal role="dialog" aria-modal="true" aria-hidden="true" aria-label="Technician editor">
+            <div class="sms-dialog service-editor-dialog">
+              <div class="sms-mhead service-editor-hero">
+                <div class="service-editor-heading">
+                  <span class="service-editor-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
+                  <div>
+                    <h3><span data-mg-tech-modal-title>Add technician</span></h3>
+                    <div class="service-editor-subtitle" data-mg-tech-modal-subtitle>Profile, login and pay setup for a new team member.</div>
+                  </div>
+                </div>
+                <button class="pos-icon-btn" type="button" data-mg-tech-cancel aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+              </div>
+              <div class="sms-mbody service-editor-body">
+                <div class="service-editor-form" data-mg-tech-form-shell>
+                  <div class="service-editor-section">
+                    <div class="service-editor-section-title"><i class="bi bi-person-vcard" aria-hidden="true"></i>Profile</div>
+                    <div class="service-editor-grid service-editor-grid-main">
+                      <label class="service-editor-field">Full name<input class="pos-input" data-mg-tech-form-name maxlength="40" placeholder="Tech name"></label>
+                      <label class="service-editor-field">Role<select class="pos-input" data-mg-tech-form-role>
+                        <option value="tech" selected>Technician</option>
+                        <option value="manager">Manager</option>
+                        <option value="frontdesk">Front Desk</option>
+                      </select></label>
+                    </div>
+                    <div class="service-editor-grid service-editor-grid-main" style="margin-top:12px">
+                      <label class="service-editor-field">Phone<input class="pos-input" type="tel" data-mg-tech-form-phone placeholder="(555) 555-5555"></label>
+                      <label class="service-editor-field">Email<input class="pos-input" type="email" data-mg-tech-form-email placeholder="name@nexoratouch.com"></label>
+                    </div>
+                  </div>
+                  <div class="service-editor-section">
+                    <div class="service-editor-section-title"><i class="bi bi-key" aria-hidden="true"></i>Login</div>
+                    <div class="service-editor-grid service-editor-grid-main">
+                      <label class="service-editor-field">Login PIN
+                        <span class="pos-inline">
+                          <input class="pos-input" data-mg-tech-form-pin maxlength="4" inputmode="numeric" style="max-width:110px">
+                          <button class="pos-btn pos-btn-sm" type="button" data-mg-tech-pin-generate><i class="bi bi-shuffle" aria-hidden="true"></i> Generate</button>
+                        </span>
+                      </label>
+                    </div>
+                    <div class="pos-hint" style="margin-top:8px">Sent by SMS on first login; the account must set a new PIN before clocking in.</div>
+                  </div>
+                  <div class="service-editor-section" data-mg-tech-pay-section>
+                    <div class="service-editor-section-title"><i class="bi bi-cash-coin" aria-hidden="true"></i>Pay &amp; payroll</div>
+                    <div class="service-editor-grid service-editor-grid-main">
+                      <label class="service-editor-field">Pay model<select class="pos-input" data-mg-tech-form-paymodel></select></label>
+                      <label class="service-editor-field">Commission %<input class="pos-input" data-mg-tech-form-comm value="60"></label>
+                    </div>
+                    <div class="service-editor-grid service-editor-grid-main" style="margin-top:12px">
+                      <label class="service-editor-field" data-mg-tech-guar-field>Weekly guarantee $<input class="pos-input" data-mg-tech-form-guar value="0"></label>
+                      <label class="service-editor-field" data-mg-tech-split-field>Split over target %<input class="pos-input" data-mg-tech-form-split value="60"></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="sms-mfoot service-editor-actions">
+                <div class="pos-warn-text" data-mg-tech-form-error hidden></div>
+                <div class="pos-inline">
+                  <button class="pos-btn pos-btn-sm" type="button" data-mg-tech-cancel>Cancel</button>
+                  <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-tech-save><i class="bi bi-check2" aria-hidden="true"></i> Add technician</button>
                 </div>
               </div>
             </div>
@@ -1990,7 +2055,6 @@
                   <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-cust-create><i class="bi bi-person-plus" aria-hidden="true"></i> Create customer</button>
                   <button class="pos-btn pos-btn-sm" type="button" data-cust-import><i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i> Import Excel</button>
                   <input data-cust-import-file type="file" accept=".xlsx,.xls,.csv,.tsv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/tab-separated-values" hidden>
-                  <span class="pos-chip pos-chip-gray" data-cust-import-status hidden></span>
                 </div>
               </div>
               <div class="booking-status-chips" data-cust-seg-chips role="group" aria-label="Filter customers by group"></div>
@@ -4421,9 +4485,111 @@
             '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-addtech><i class="bi bi-person-plus"></i> Add tech</button>' +
           '</div></div>' +
           (mgPayrollViewMode === 'card' ? cardsHtml : tableHtml) +
-          '<div data-mg-addform></div>' +
           '<div class="pos-hint">Edit commission % or the weekly guarantee: type a number then click away. "Deactivate" keeps payroll and tax history — nothing is deleted.</div>' +
           '</div>';
+      }
+
+      function techModalRandomPin() { return String(Math.floor(1000 + Math.random() * 9000)); }
+
+      function updateTechModalPayVisibility() {
+        var roleEl = $('[data-mg-tech-form-role]');
+        var payModelEl = $('[data-mg-tech-form-paymodel]');
+        var paySection = $('[data-mg-tech-pay-section]');
+        var guarField = $('[data-mg-tech-guar-field]');
+        var splitField = $('[data-mg-tech-split-field]');
+        if (paySection) paySection.hidden = roleEl && roleEl.value !== 'tech';
+        var m = payModelEl ? payModelEl.value : 'max';
+        if (guarField) guarField.hidden = m === 'comm';
+        if (splitField) splitField.hidden = m !== 'baoshare';
+      }
+
+      function setTechModalError(msg) {
+        var errorEl = $('[data-mg-tech-form-error]');
+        if (!errorEl) return;
+        errorEl.textContent = msg || '';
+        errorEl.hidden = !msg;
+      }
+
+      function openTechModal() {
+        var modal = $('[data-mg-tech-modal]');
+        if (!modal) return;
+        var payModelEl = $('[data-mg-tech-form-paymodel]');
+        if (payModelEl) payModelEl.innerHTML = Object.keys(PAY_MODELS).map(function (k) { return '<option value="' + k + '">' + esc(PAY_MODELS[k]) + '</option>'; }).join('');
+        $('[data-mg-tech-form-name]').value = '';
+        $('[data-mg-tech-form-role]').value = 'tech';
+        $('[data-mg-tech-form-phone]').value = '';
+        $('[data-mg-tech-form-email]').value = '';
+        $('[data-mg-tech-form-pin]').value = techModalRandomPin();
+        if (payModelEl) payModelEl.value = 'max';
+        $('[data-mg-tech-form-comm]').value = '60';
+        $('[data-mg-tech-form-guar]').value = '0';
+        $('[data-mg-tech-form-split]').value = '60';
+        setTechModalError('');
+        updateTechModalPayVisibility();
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function () { $('[data-mg-tech-form-name]').focus(); }, 0);
+      }
+
+      function closeTechModal() {
+        var modal = $('[data-mg-tech-modal]');
+        if (!modal) return;
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        setTechModalError('');
+      }
+
+      function saveTechModal() {
+        var nameEl = $('[data-mg-tech-form-name]');
+        var roleEl = $('[data-mg-tech-form-role]');
+        var phoneEl = $('[data-mg-tech-form-phone]');
+        var emailEl = $('[data-mg-tech-form-email]');
+        var pinEl = $('[data-mg-tech-form-pin]');
+        var nm = (nameEl.value || '').trim();
+        if (!nm) { setTechModalError('Enter a name for the new account.'); nameEl.focus(); return; }
+        var pin = (pinEl.value || '').trim();
+        if (!/^\d{4}$/.test(pin)) { setTechModalError('Login PIN must be 4 digits.'); pinEl.focus(); return; }
+        var role = roleEl.value;
+        var phone = (phoneEl.value || '').trim();
+        var email = (emailEl.value || '').trim();
+
+        if (role !== 'tech') {
+          STAFF.push({ id: 'st' + (++stSeq), name: nm, ava: initials(nm), role: role, phone: phone, email: email, pin: pin });
+          logAdmin('👥 Created ' + ROLE_LBL[role] + ' account: ' + nm + ' (PIN ' + pin + ', sent by SMS)');
+          closeTechModal();
+          renderManagement(); renderClock(); toast(nm + ' added');
+          return;
+        }
+
+        var payModelEl = $('[data-mg-tech-form-paymodel]');
+        var commEl = $('[data-mg-tech-form-comm]');
+        var guarEl = $('[data-mg-tech-form-guar]');
+        var splitEl = $('[data-mg-tech-form-split]');
+        var payModel = payModelEl.value || 'max';
+        var cm = Math.min(100, Math.max(1, parseFloat(commEl.value) || 60)) / 100;
+        var gu = Math.max(0, parseFloat(guarEl.value) || 0);
+        var sp = Math.min(100, Math.max(0, parseFloat(splitEl.value) || 0)) / 100;
+        var maxN = TECHS.reduce(function (m, t) { return Math.max(m, +t.id.slice(1) || 0); }, 0);
+        var id = 't' + (maxN + 1);
+        var bn = TECHS.reduce(function (m, t) { return Math.max(m, t.bnum || 0); }, 0) + 1;
+        var nextCatalog = salonData.loadCatalog();
+        nextCatalog.technicians.push({
+          id: id, name: nm, phone: phone, email: email, aliases: [], active: true, skills: [], exp: [], fit: [], services: [],
+          posProfile: { bnum: bn, turns: 0, comm: cm, guar: gu, payModel: payModel, baoSplit: payModel === 'baoshare' ? sp : cm, vlink: null }
+        });
+        salonData.saveCatalog(nextCatalog);
+        rebuildSalonCatalogViews();
+        STAFF.push({ id: id, name: nm, ava: initials(nm), role: 'tech', phone: phone, email: email, pin: pin });
+        CLOCK[id] = [];
+        PAYOUT[id] = { st: 'pending', method: null };
+        TECH_PERF[id] = { wtd: 0, rating: null, rev: 0, bills: 0, upsBills: 0 };
+        REBOOK[id] = { elig: 0, rb: 0 };
+        REWORK[id] = 0;
+        logAdmin('➕ Added tech ' + nm + ' — ' + PAY_MODELS[payModel] + ', ' + Math.round(cm * 100) + '%' + (payModel !== 'comm' ? ' / ' + money0(gu) + ' guarantee' : '') + ' (PIN ' + pin + ')');
+        closeTechModal();
+        renderManagement(); renderClock(); renderBookingTab(); toast(nm + ' added');
       }
 
       function mgSkillsHtml() {
@@ -5899,36 +6065,14 @@
           return;
         }
 
-        if (e.target.closest('[data-mg-addtech]')) {
-          html('[data-mg-addform]', '<div class="pos-inline" style="margin-top:12px">' +
-            '<input class="pos-input" data-mg-newname placeholder="Tech name" maxlength="30" style="flex:1;min-width:140px">' +
-            '<input class="pos-input" data-mg-newcomm placeholder="Comm % (60)" style="width:130px">' +
-            '<input class="pos-input" data-mg-newguar placeholder="Weekly guarantee $" style="width:170px">' +
-            '<button class="pos-btn pos-btn-primary pos-btn-sm" data-mg-newsave>Save</button></div>' +
-            '<div class="pos-hint">A new tech gets their own login (demo PIN 1234) and shows up on the time clock, the dispatch board, the kiosk, and online booking.</div>');
-          return;
-        }
+        if (e.target.closest('[data-mg-addtech]')) { openTechModal(); return; }
 
-        if (e.target.closest('[data-mg-newsave]')) {
-          var nn = ($('[data-mg-newname]').value || '').trim();
-          if (!nn) { toast('Enter a tech name', 'info'); return; }
-          var maxN = TECHS.reduce(function (m, t) { return Math.max(m, +t.id.slice(1) || 0); }, 0);
-          var id = 't' + (maxN + 1);
-          var cm = Math.min(100, Math.max(1, parseFloat($('[data-mg-newcomm]').value) || 60)) / 100;
-          var gu = Math.max(0, parseFloat($('[data-mg-newguar]').value) || 0);
-          var bn = TECHS.reduce(function (m, t) { return Math.max(m, t.bnum || 0); }, 0) + 1;
-          var nextCatalog = salonData.loadCatalog();
-          nextCatalog.technicians.push({ id: id, name: nn, aliases: [], active: true, skills: [], exp: [], fit: [], services: [], posProfile: { bnum: bn, turns: 0, comm: cm, guar: gu, payModel: 'max', baoSplit: cm, vlink: null } });
-          salonData.saveCatalog(nextCatalog);
-          rebuildSalonCatalogViews();
-          STAFF.push({ id: id, name: nn, ava: initials(nn), role: 'tech' });
-          CLOCK[id] = [];
-          PAYOUT[id] = { st: 'pending', method: null };
-          TECH_PERF[id] = { wtd: 0, rating: null, rev: 0, bills: 0, upsBills: 0 };
-          REBOOK[id] = { elig: 0, rb: 0 };
-          REWORK[id] = 0;
-          logAdmin('➕ Added tech ' + nn + ' at ' + Math.round(cm * 100) + '% / ' + money0(gu) + ' guarantee');
-          renderManagement(); renderClock(); renderBookingTab(); toast(nn + ' added');
+        if (e.target.closest('[data-mg-tech-cancel]') || e.target.matches('[data-mg-tech-modal]')) { closeTechModal(); return; }
+
+        if (e.target.closest('[data-mg-tech-save]')) { saveTechModal(); return; }
+
+        if (e.target.closest('[data-mg-tech-pin-generate]')) {
+          $('[data-mg-tech-form-pin]').value = techModalRandomPin();
           return;
         }
 
@@ -6002,6 +6146,11 @@
 
         if (e.target.matches('[data-mg-service-form-category], [data-mg-service-form-skill], [data-mg-service-form-type], [data-mg-service-form-active]')) {
           updateServiceModalSummary();
+          return;
+        }
+
+        if (e.target.matches('[data-mg-tech-form-role], [data-mg-tech-form-paymodel]')) {
+          updateTechModalPayVisibility();
           return;
         }
 
