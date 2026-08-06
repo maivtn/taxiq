@@ -79,10 +79,10 @@
     /* stat grids stay 2-up all the way down to the smallest phone */
     @media (max-width: 1000px) { .pos-g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 900px) { .pos-g2 { grid-template-columns: 1fr; } }
-    .pos-split { display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px; align-items: start; }
+    .pos-split { display: grid; grid-template-columns: 2.4fr 1fr; gap: 14px; align-items: start; }
     @media (max-width: 1000px) { .pos-split { grid-template-columns: 1fr; } }
     .mg-split { display: grid; grid-template-columns: 1.1fr 2.4fr; gap: 14px; align-items: start; }
-    @media (max-width: 1100px) { .mg-split { grid-template-columns: 1fr; } }
+    @media (max-width: 1200px) { .mg-split { grid-template-columns: 1fr; } }
     /* grid children default to min-width:auto, which lets a wide table blow the column out */
     .pos-grid > *, .pos-split > *, .mg-split > *, .ap-grid > * { min-width: 0; }
     .pos-stack > * + * { margin-top: 14px; }
@@ -232,11 +232,30 @@
     [data-tech-roster-table]:has(> .queue-card) { display: flex; flex-wrap: wrap; gap: 12px; }
     [data-tech-roster-table] > .queue-card { flex: 0 0 calc(50% - 6px); max-width: calc(50% - 6px); min-width: 0; margin-bottom: 0; }
     [data-tech-roster-table] > .tech-roster-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
+    /* ── management: tech-roster-style card lists (Techs & pay, Guarantee, Pay model, Smart
+       Commission, Payout Center, Service→skill, Categories, Staff) — same flex row/col idiom ── */
+    [data-mg-payroll-list], [data-mg-perf-list], [data-mg-owner-list], [data-mg-smart-list],
+    [data-mg-payout-list], [data-mg-svcskill-list], [data-mg-category-list], [data-mg-staff-list] {
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
+    [data-mg-payroll-list] > .queue-card, [data-mg-perf-list] > .queue-card, [data-mg-owner-list] > .queue-card,
+    [data-mg-smart-list] > .queue-card, [data-mg-payout-list] > .queue-card, [data-mg-svcskill-list] > .queue-card,
+    [data-mg-category-list] > .queue-card, [data-mg-staff-list] > .queue-card {
+      flex: 0 0 calc(33.333% - 8px); max-width: calc(33.333% - 8px); min-width: 0; margin-bottom: 0;
+    }
+    [data-mg-perf-list] > .queue-card, [data-mg-owner-list] > .queue-card {
+      flex-basis: calc(50% - 6px); max-width: calc(50% - 6px);
+    }
     @media (max-width: 1199px) {
       [data-wait-list] > .wl-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
       [data-ciq-list] > .queue-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
       [data-arq-list] > .queue-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
       [data-eta-list] > .queue-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
+      [data-mg-payroll-list] > .queue-card, [data-mg-smart-list] > .queue-card, [data-mg-payout-list] > .queue-card,
+      [data-mg-svcskill-list] > .queue-card, [data-mg-category-list] > .queue-card, [data-mg-staff-list] > .queue-card {
+        flex-basis: calc(50% - 6px); max-width: calc(50% - 6px);
+      }
+      [data-mg-perf-list] > .queue-card, [data-mg-owner-list] > .queue-card { flex-basis: 100%; max-width: 100%; }
     }
     @media (max-width: 900px) {
       [data-wait-list] > .wl-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
@@ -244,6 +263,11 @@
       [data-arq-list] > .queue-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
       [data-eta-list] > .queue-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
       [data-tech-roster-table] > .queue-card { flex-basis: 100%; max-width: 100%; }
+      [data-mg-payroll-list] > .queue-card, [data-mg-perf-list] > .queue-card, [data-mg-owner-list] > .queue-card,
+      [data-mg-smart-list] > .queue-card, [data-mg-payout-list] > .queue-card, [data-mg-svcskill-list] > .queue-card,
+      [data-mg-category-list] > .queue-card, [data-mg-staff-list] > .queue-card {
+        flex-basis: 100%; max-width: 100%;
+      }
     }
 
     /* ── single ticket card: a flex column of full-width rows (Bootstrap-style row/col via
@@ -518,13 +542,9 @@
     .service-category-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
     .service-category-toggle { border: 0; background: transparent; padding: 0; color: inherit; font-size: inherit; font-weight: inherit; text-transform: inherit; letter-spacing: inherit; }
     .service-category-add { background: #fff; color: var(--nexora-brand); text-transform: none; letter-spacing: 0; }
-    .service-category-manager { margin-bottom: 12px; border: 1px solid var(--nexora-border); border-radius: 12px; background: var(--nexora-surface-muted); padding: 12px; }
-    .service-category-manager.is-collapsed { padding: 10px 12px; }
-    .service-category-manager-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-    .service-category-manager:not(.is-collapsed) .service-category-manager-head { margin-bottom: 12px; }
-    .service-category-manager-title { display: inline-flex; align-items: center; gap: 8px; border: 0; background: transparent; padding: 0; color: var(--nexora-text); font-size: 13px; font-weight: 900; }
+    .service-category-card.is-collapsed .pos-card-head { margin-bottom: 0; }
+    .service-category-manager-title { display: inline-flex; align-items: center; gap: 8px; border: 0; background: transparent; padding: 0; color: var(--nexora-text); font-size: 15px; font-weight: 800; }
     .service-category-manager-title i { color: var(--nexora-brand); }
-    .service-category-manager .pos-table td { background: #fff; }
     .category-editor-dialog { max-width: 640px; }
     .category-editor-body { display: block; }
     .category-editor-form { display: grid; gap: 12px; }
@@ -4426,30 +4446,55 @@
           '</div>';
       }
 
+      var mgSvcSkillViewMode = 'table';
       function mgSvcSkillHtml() {
         var mrInp = function (k, lbl) {
           return '<label class="pos-inline-lbl">' + lbl + '<input class="pos-mini" data-mg-mr="' + k + '" value="' + MATCH_RULES[k] + '" style="width:52px"></label>';
         };
-        return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3><i class="bi bi-receipt" aria-hidden="true"></i> Service → required skill</h3><span class="pos-muted">kiosk · dispatch · Staff App all read this — no guessing</span></div>' +
-          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Service</th><th>Required skill</th><th>Eligible techs (★ = expert)</th></tr></thead><tbody>' +
-          groupedServicesByCategory(MENU).map(function (group) {
-            if (!group.services.length) return '';
+        var svcSkillRowHtml = function (c) {
+          var req = SVC_REQ[c.id] || '';
+          var el = TECHS.filter(function (t) { return !req || (t.skills || []).indexOf(req) !== -1; });
+          var elTxt = !req ? '<span class="pos-muted">all techs</span>'
+            : el.length ? el.map(function (t) { return esc(t.name) + ((t.exp || []).indexOf(req) !== -1 ? ' ★' : ''); }).join(', ')
+            : '<span class="pos-danger-text">⚠ No tech has this skill — guests will get stuck</span>';
+          var reqSelect = '<select class="pos-input" data-mg-svcreq="' + c.id + '" style="height:32px;font-size:13px">' +
+            '<option value="">— none required —</option>' +
+            SKILLS.map(function (s) { return '<option value="' + s + '"' + (req === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
+            '</select>';
+          return { reqSelect: reqSelect, elTxt: elTxt };
+        };
+        var groups = groupedServicesByCategory(MENU).filter(function (group) { return group.services.length; });
+        var tableHtml = '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Service</th><th>Required skill</th><th>Eligible techs (★ = expert)</th></tr></thead><tbody>' +
+          groups.map(function (group) {
             return '<tr><td colspan="3" style="background:var(--nexora-surface-muted);color:var(--nexora-muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.03em">' + esc(group.name) + ' · ' + group.services.length + '</td></tr>' +
               group.services.map(function (c) {
-                var req = SVC_REQ[c.id] || '';
-                var el = TECHS.filter(function (t) { return !req || (t.skills || []).indexOf(req) !== -1; });
-                var elTxt = !req ? '<span class="pos-muted">all techs</span>'
-                  : el.length ? el.map(function (t) { return esc(t.name) + ((t.exp || []).indexOf(req) !== -1 ? ' ★' : ''); }).join(', ')
-                  : '<span class="pos-danger-text">⚠ No tech has this skill — guests will get stuck</span>';
+                var x = svcSkillRowHtml(c);
                 return '<tr><td class="pos-strong">' + esc(c.label) + '</td>' +
-                  '<td><select class="pos-input" data-mg-svcreq="' + c.id + '" style="height:32px;font-size:13px">' +
-                  '<option value="">— none required —</option>' +
-                  SKILLS.map(function (s) { return '<option value="' + s + '"' + (req === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
-                  '</select></td><td class="wrap">' + elTxt + '</td></tr>';
+                  '<td>' + x.reqSelect + '</td><td class="wrap">' + x.elTxt + '</td></tr>';
               }).join('');
           }).join('') +
-          '</tbody></table></div>' +
+          '</tbody></table></div>';
+        var cardsHtml = groups.map(function (group) {
+          return '<div class="pos-section-title">' + esc(group.name) + ' · ' + group.services.length + '</div>' +
+            '<div data-mg-svcskill-list>' + group.services.map(function (c) {
+              var x = svcSkillRowHtml(c);
+              return '<article class="queue-card">' +
+                '<div class="queue-card-head"><div class="queue-card-identity pos-strong">' + esc(c.label) + '</div></div>' +
+                '<div class="queue-card-meta"><span class="pos-muted" style="font-size:11px">Required skill</span>' + x.reqSelect + '</div>' +
+                '<div class="wrap" style="font-size:12px">' + x.elTxt + '</div>' +
+                '</article>';
+            }).join('') + '</div>';
+        }).join('');
+        return '<div class="pos-card">' +
+          '<div class="pos-card-head"><h3><i class="bi bi-receipt" aria-hidden="true"></i> Service → required skill</h3>' +
+          '<div class="pos-inline">' +
+            '<span class="pos-muted">kiosk · dispatch · Staff App all read this — no guessing</span>' +
+            '<div class="booking-view-switch" role="group" aria-label="Service skill view mode">' +
+              '<button class="booking-view-button' + (mgSvcSkillViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-svcskill-view-target="table" aria-pressed="' + (mgSvcSkillViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
+              '<button class="booking-view-button' + (mgSvcSkillViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-svcskill-view-target="card" aria-pressed="' + (mgSvcSkillViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
+            '</div>' +
+          '</div></div>' +
+          (mgSvcSkillViewMode === 'card' ? cardsHtml : tableHtml) +
           '<div class="pos-section-title"><i class="bi bi-sliders" aria-hidden="true"></i> Match rules — assignment weights (dispatch reads them live)</div>' +
           '<div class="pos-inline" style="gap:14px">' +
           mrInp('wSkill', '✓ Has the skill (base)') + mrInp('wMiss', '⚠ Missing the skill') + mrInp('wExp', '★ Expert +') +
@@ -4544,6 +4589,7 @@
           '</div>';
       }
 
+      var mgOwnerViewMode = 'table';
       function mgOwnerHtml(ps) {
         var daysLeft = AD_DAYS_WEEK - AD_DAYS_DONE;
         var rows = TECHS.map(function (t) {
@@ -4558,68 +4604,116 @@
           return { t: t, m: m, done: done, pay: pay, own: own, ownPct: ownPct, stdPct: stdPct, T: T, proj: proj };
         }).sort(function (a, b) { return a.own - b.own; });
 
-        return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3><i class="bi bi-briefcase" aria-hidden="true"></i> Pay model &amp; real split — on what techs actually produced (day ' + AD_DAYS_DONE + '/' + AD_DAYS_WEEK + ')</h3><span class="pos-muted">riskiest tech first · tips excluded (100% to techs)</span></div>' +
-          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr>' +
+        var ownerRowHtml = function (r) {
+          var t = r.t;
+          var modelSel = '<select class="pos-input" data-mg-model="' + t.id + '" style="height:32px;font-size:13px">' +
+            Object.keys(PAY_MODELS).map(function (k) { return '<option value="' + k + '"' + (r.m === k ? ' selected' : '') + '>' + PAY_MODELS[k] + '</option>'; }).join('') + '</select>';
+          var splitInp = r.m === 'baoshare'
+            ? '<input class="pos-mini" data-mg-split="' + t.id + '" value="' + Math.round((t.baoSplit || t.comm) * 100) + '" style="width:52px"> %'
+            : '<span class="pos-muted">—</span>';
+          var act;
+          if (r.m === 'comm') act = '<span class="pos-good-text">Straight split on every dollar — no guarantee, no top-up risk.</span>';
+          else if (r.done >= r.T) act = '<span class="pos-good-text">✅ Past ' + money0(r.T) + ' — standard split, keep the pace.</span>';
+          else {
+            var need = Math.max(0, r.T - r.done);
+            var head = r.own < 0
+              ? '<div class="pos-danger-text">🔴 Right now the salon is ~' + money0(-r.own) + ' out of pocket (produced ' + money0(r.done) + ' &lt; guarantee ' + money0(t.guar || 0) + ').</div>'
+              : '<div class="pos-warn-text">🟠 Below the target — the salon keeps ' + pct(r.ownPct) + ' instead of ' + pct(r.stdPct) + '.</div>';
+            act = head + '<div class="pos-muted" style="font-size:12px;font-weight:600">Needs <b>' + money0(need) + '</b> more service (≈' + money0(daysLeft ? need / daysLeft : need) + '/day, ' + daysLeft + ' day(s) left) to clear ' + money0(r.T) + '. → Give them the walk-ins, push upsell/design. Run-rate projection: ' + money0(r.proj) + (r.proj < (t.guar || 0) ? ' — still short; two weeks in a row means revisiting the guarantee or the schedule' : '') + '.</div>';
+          }
+          var pctCls = r.ownPct < 0 ? 'pos-danger-text' : r.ownPct < r.stdPct - 0.05 ? 'pos-warn-text' : 'pos-good-text';
+          return { modelSel: modelSel, splitInp: splitInp, act: act, pctCls: pctCls };
+        };
+        var tableHtml = '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr>' +
           '<th>Tech</th><th>Pay model</th><th>Split over target</th><th>Guarantee</th><th><i class="bi bi-inbox-fill" aria-hidden="true"></i> Produced this week</th><th>Tech takes</th><th>Salon keeps</th><th>Salon % (standard → real)</th><th><i class="bi bi-compass" aria-hidden="true"></i> What to do</th>' +
           '</tr></thead><tbody>' +
           rows.map(function (r) {
-            var t = r.t;
-            var modelSel = '<select class="pos-input" data-mg-model="' + t.id + '" style="height:32px;font-size:13px">' +
-              Object.keys(PAY_MODELS).map(function (k) { return '<option value="' + k + '"' + (r.m === k ? ' selected' : '') + '>' + PAY_MODELS[k] + '</option>'; }).join('') + '</select>';
-            var splitInp = r.m === 'baoshare'
-              ? '<input class="pos-mini" data-mg-split="' + t.id + '" value="' + Math.round((t.baoSplit || t.comm) * 100) + '" style="width:52px"> %'
-              : '<span class="pos-muted">—</span>';
-            var act;
-            if (r.m === 'comm') act = '<span class="pos-good-text">Straight split on every dollar — no guarantee, no top-up risk.</span>';
-            else if (r.done >= r.T) act = '<span class="pos-good-text">✅ Past ' + money0(r.T) + ' — standard split, keep the pace.</span>';
-            else {
-              var need = Math.max(0, r.T - r.done);
-              var head = r.own < 0
-                ? '<div class="pos-danger-text">🔴 Right now the salon is ~' + money0(-r.own) + ' out of pocket (produced ' + money0(r.done) + ' &lt; guarantee ' + money0(t.guar || 0) + ').</div>'
-                : '<div class="pos-warn-text">🟠 Below the target — the salon keeps ' + pct(r.ownPct) + ' instead of ' + pct(r.stdPct) + '.</div>';
-              act = head + '<div class="pos-muted" style="font-size:12px;font-weight:600">Needs <b>' + money0(need) + '</b> more service (≈' + money0(daysLeft ? need / daysLeft : need) + '/day, ' + daysLeft + ' day(s) left) to clear ' + money0(r.T) + '. → Give them the walk-ins, push upsell/design. Run-rate projection: ' + money0(r.proj) + (r.proj < (t.guar || 0) ? ' — still short; two weeks in a row means revisiting the guarantee or the schedule' : '') + '.</div>';
-            }
-            var pctCls = r.ownPct < 0 ? 'pos-danger-text' : r.ownPct < r.stdPct - 0.05 ? 'pos-warn-text' : 'pos-good-text';
+            var t = r.t, x = ownerRowHtml(r);
             return '<tr>' +
               '<td><span class="pos-people"><span class="pos-avatar">' + initials(t.name) + '</span> <span class="pos-strong">' + esc(t.name) + '</span></span></td>' +
-              '<td>' + modelSel + '</td><td>' + splitInp + '</td><td>' + (r.m === 'comm' ? '—' : money0(t.guar || 0)) + '</td>' +
+              '<td>' + x.modelSel + '</td><td>' + x.splitInp + '</td><td>' + (r.m === 'comm' ? '—' : money0(t.guar || 0)) + '</td>' +
               '<td class="pos-strong">' + money0(r.done) + '</td><td>' + money(r.pay) + '</td>' +
               '<td class="' + (r.own < 0 ? 'pos-danger-text' : '') + '">' + money(r.own) + '</td>' +
-              '<td>' + pct(r.stdPct) + ' → <b class="' + pctCls + '">' + pct(r.ownPct) + '</b></td>' +
-              '<td class="wrap" style="min-width:260px">' + act + '</td>' +
+              '<td>' + pct(r.stdPct) + ' → <b class="' + x.pctCls + '">' + pct(r.ownPct) + '</b></td>' +
+              '<td class="wrap" style="min-width:260px">' + x.act + '</td>' +
               '</tr>';
           }).join('') +
-          '</tbody></table></div>' +
+          '</tbody></table></div>';
+        var cardsHtml = '<div data-mg-owner-list>' + rows.map(function (r) {
+          var t = r.t, x = ownerRowHtml(r);
+          return '<article class="queue-card">' +
+            '<div class="queue-card-head"><div class="queue-card-identity"><span class="pos-people"><span class="pos-avatar">' + initials(t.name) + '</span> <span class="pos-strong">' + esc(t.name) + '</span></span></div>' +
+            '<div class="queue-card-status"><b class="' + x.pctCls + '">' + pct(r.ownPct) + '</b> <span class="pos-muted" style="font-size:11px">vs ' + pct(r.stdPct) + ' std</span></div></div>' +
+            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:11px">Pay model</span>' + x.modelSel + '</div>' +
+            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:11px">Split over target</span>' + x.splitInp + '</div>' +
+            '<div class="pos-inline" style="flex-wrap:wrap;gap:8px"><span class="pos-chip pos-chip-gray">Guarantee ' + (r.m === 'comm' ? '—' : money0(t.guar || 0)) + '</span><span class="pos-chip pos-chip-gray">Produced ' + money0(r.done) + '</span><span class="pos-chip pos-chip-gray">Tech takes ' + money(r.pay) + '</span><span class="pos-chip ' + (r.own < 0 ? 'pos-chip-red' : 'pos-chip-gray') + '">Salon keeps ' + money(r.own) + '</span></div>' +
+            '<div class="queue-card-note wrap" style="white-space:normal">' + x.act + '</div>' +
+            '</article>';
+        }).join('') + '</div>';
+        return '<div class="pos-card">' +
+          '<div class="pos-card-head"><h3><i class="bi bi-briefcase" aria-hidden="true"></i> Pay model &amp; real split — on what techs actually produced (day ' + AD_DAYS_DONE + '/' + AD_DAYS_WEEK + ')</h3>' +
+          '<div class="pos-inline">' +
+            '<span class="pos-muted">riskiest tech first · tips excluded (100% to techs)</span>' +
+            '<div class="booking-view-switch" role="group" aria-label="Pay model view mode">' +
+              '<button class="booking-view-button' + (mgOwnerViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-owner-view-target="table" aria-pressed="' + (mgOwnerViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
+              '<button class="booking-view-button' + (mgOwnerViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-owner-view-target="card" aria-pressed="' + (mgOwnerViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
+            '</div>' +
+          '</div></div>' +
+          (mgOwnerViewMode === 'card' ? cardsHtml : tableHtml) +
           '<div class="pos-hint">📥 Input = service $ the tech produced (from the ledger, each item tagged to its tech). Three states: ✅ past target → standard split · 🟠 below target but production &gt; guarantee → salon still positive, thinner % · 🔴 production &lt; guarantee → salon pays the difference. "Guarantee + split over target": tech takes the guarantee + (production − target) × split %.</div>' +
           '</div>';
       }
 
+      var mgSmartViewMode = 'table';
       function mgSmartHtml(ps) {
         var smInp = function (k, lbl) { return '<label class="pos-inline-lbl">' + lbl + '<input class="pos-mini" data-mg-sm="' + k + '" value="' + SMART[k] + '" style="width:46px"> %</label>'; };
-        return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3><i class="bi bi-gem" aria-hidden="true"></i> Smart Commission — performance bonus on top of the base %</h3>' +
-          '<button class="pos-btn pos-btn-sm ' + (SMART.on ? 'pos-btn-success' : '') + '" data-mg-smart>' + (SMART.on ? '<i class="bi bi-check-circle-fill" aria-hidden="true"></i> On — turn off' : '<i class="bi bi-circle" aria-hidden="true"></i> Off — turn on') + '</button></div>' +
-          '<div class="pos-inline" style="gap:14px;margin-bottom:12px">' +
-          smInp('skillB', '💎 3+ expert skills +') + smInp('revB', '⭐ Rating 4.8+ +') + smInp('upsB', '✨ Upsell 20%+ +') + smInp('retB', '🔁 Steady guests +') + smInp('cap', '🧢 Max total bonus') +
-          '</div>' +
-          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Tech</th><th>Base %</th><th>Bonuses earned</th><th>Effective %</th><th>Δ weekly pay (on production)</th></tr></thead><tbody>' +
+        var smartRowHtml = function (t) {
+          var sb = smartBonus(t);
+          var done = weekDone(t, ps);
+          var delta = SMART.on ? done * sb.tot / 100 : 0;
+          var bonuses = sb.list.length ? sb.list.map(function (x) { return '<span class="pos-good-text" style="font-size:12px">' + x[0] + ' +' + x[1] + '%</span>'; }).join(' · ') : '<span class="pos-muted">no thresholds met</span>';
+          var eff = '<b class="' + (SMART.on && sb.tot ? 'pos-good-text' : '') + '">' + Math.round(effComm(t) * 100) + '%</b>' + (sb.tot >= SMART.cap ? ' 🧢' : '');
+          var deltaHtml = SMART.on ? (delta ? '+' + money(delta) : '—') : '<span class="pos-muted">off</span>';
+          return { bonuses: bonuses, eff: eff, deltaHtml: deltaHtml };
+        };
+        var tableHtml = '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Tech</th><th>Base %</th><th>Bonuses earned</th><th>Effective %</th><th>Δ weekly pay (on production)</th></tr></thead><tbody>' +
           TECHS.map(function (t) {
-            var sb = smartBonus(t);
-            var done = weekDone(t, ps);
-            var delta = SMART.on ? done * sb.tot / 100 : 0;
+            var x = smartRowHtml(t);
             return '<tr>' +
               '<td><span class="pos-people"><span class="pos-avatar">' + initials(t.name) + '</span> <span class="pos-strong">' + esc(t.name) + '</span></span></td>' +
               '<td>' + Math.round(t.comm * 100) + '%</td>' +
-              '<td class="wrap">' + (sb.list.length ? sb.list.map(function (x) { return '<span class="pos-good-text" style="font-size:12px">' + x[0] + ' +' + x[1] + '%</span>'; }).join(' · ') : '<span class="pos-muted">no thresholds met</span>') + '</td>' +
-              '<td><b class="' + (SMART.on && sb.tot ? 'pos-good-text' : '') + '">' + Math.round(effComm(t) * 100) + '%</b>' + (sb.tot >= SMART.cap ? ' 🧢' : '') + '</td>' +
-              '<td>' + (SMART.on ? (delta ? '+' + money(delta) : '—') : '<span class="pos-muted">off</span>') + '</td>' +
+              '<td class="wrap">' + x.bonuses + '</td>' +
+              '<td>' + x.eff + '</td>' +
+              '<td>' + x.deltaHtml + '</td>' +
               '</tr>';
           }).join('') +
-          '</tbody></table></div>' +
+          '</tbody></table></div>';
+        var cardsHtml = '<div data-mg-smart-list>' + TECHS.map(function (t) {
+          var x = smartRowHtml(t);
+          return '<article class="queue-card">' +
+            '<div class="queue-card-head"><div class="queue-card-identity"><span class="pos-people"><span class="pos-avatar">' + initials(t.name) + '</span> <span class="pos-strong">' + esc(t.name) + '</span></span></div>' +
+            '<div class="queue-card-status">' + x.eff + '</div></div>' +
+            '<div class="pos-inline" style="flex-wrap:wrap;gap:8px"><span class="pos-chip pos-chip-gray">Base ' + Math.round(t.comm * 100) + '%</span><span class="pos-chip pos-chip-gray">Δ pay ' + x.deltaHtml + '</span></div>' +
+            '<div class="wrap" style="font-size:12px">' + x.bonuses + '</div>' +
+            '</article>';
+        }).join('') + '</div>';
+        return '<div class="pos-card">' +
+          '<div class="pos-card-head"><h3><i class="bi bi-gem" aria-hidden="true"></i> Smart Commission — performance bonus on top of the base %</h3>' +
+          '<div class="pos-inline">' +
+            '<button class="pos-btn pos-btn-sm ' + (SMART.on ? 'pos-btn-success' : '') + '" data-mg-smart>' + (SMART.on ? '<i class="bi bi-check-circle-fill" aria-hidden="true"></i> On — turn off' : '<i class="bi bi-circle" aria-hidden="true"></i> Off — turn on') + '</button>' +
+            '<div class="booking-view-switch" role="group" aria-label="Smart Commission view mode">' +
+              '<button class="booking-view-button' + (mgSmartViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-smart-view-target="table" aria-pressed="' + (mgSmartViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
+              '<button class="booking-view-button' + (mgSmartViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-smart-view-target="card" aria-pressed="' + (mgSmartViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
+            '</div>' +
+          '</div></div>' +
+          '<div class="pos-inline" style="gap:14px;margin-bottom:12px">' +
+          smInp('skillB', '💎 3+ expert skills +') + smInp('revB', '⭐ Rating 4.8+ +') + smInp('upsB', '✨ Upsell 20%+ +') + smInp('retB', '🔁 Steady guests +') + smInp('cap', '🧢 Max total bonus') +
+          '</div>' +
+          (mgSmartViewMode === 'card' ? cardsHtml : tableHtml) +
           '</div>';
       }
 
+      var mgPayoutViewMode = 'table';
       function mgPayoutHtml(ps) {
         var rows = TECHS.map(function (t) {
           var done = weekDone(t, ps);
@@ -4633,31 +4727,50 @@
         var readyN = rows.filter(function (r) { return r.po.st === 'ready'; }).length;
         var missN = rows.filter(function (r) { return !r.po.method; }).length;
 
+        var payoutRowHtml = function (r) {
+          var m = r.po.method;
+          var stChip = r.po.st === 'paid' ? '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Paid ' + (r.po.paidAt ? timeFmt(r.po.paidAt) : '') + '</span>'
+            : !m ? '<span class="pos-chip pos-chip-amber"><i class="bi bi-pause-circle" aria-hidden="true"></i> Held — no method</span>'
+            : r.po.st === 'ready' ? '<span class="pos-chip pos-chip-violet"><i class="bi bi-check2-circle" aria-hidden="true"></i> Ready</span>'
+            : '<span class="pos-chip pos-chip-gray"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Locking amount</span>';
+          var act = r.po.st === 'paid' ? ''
+            : !m ? '<button class="pos-btn pos-btn-sm" data-mg-paysetup="' + r.t.id + '"><i class="bi bi-link-45deg" aria-hidden="true"></i> Set up method</button>'
+            : '<button class="pos-btn pos-btn-success pos-btn-sm" data-mg-payout="' + r.t.id + '"><i class="bi bi-wallet2" aria-hidden="true"></i> Pay ' + money(r.tot) + '</button>';
+          return { m: m, stChip: stChip, act: act };
+        };
+        var tableHtml = '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Tech</th><th>Weekly pay (<i class="bi bi-briefcase" aria-hidden="true"></i>)</th><th>Tips today</th><th>Total</th><th>Method</th><th>Status</th><th></th></tr></thead><tbody>' +
+          rows.map(function (r) {
+            var x = payoutRowHtml(r);
+            return '<tr>' +
+              '<td><span class="pos-people"><span class="pos-avatar">' + initials(r.t.name) + '</span> <span class="pos-strong">' + esc(r.t.name) + '</span></span></td>' +
+              '<td>' + money(r.pay) + '</td><td class="pos-good-text">' + money(r.tip) + '</td><td class="pos-strong">' + money(r.tot) + '</td>' +
+              '<td>' + (x.m ? PAYOUT_M[x.m] : '<span class="pos-warn-text">— none</span>') + '</td>' +
+              '<td>' + x.stChip + '</td><td>' + x.act + '</td></tr>';
+          }).join('') +
+          '</tbody></table></div>';
+        var cardsHtml = '<div data-mg-payout-list>' + rows.map(function (r) {
+          var x = payoutRowHtml(r);
+          return '<article class="queue-card">' +
+            '<div class="queue-card-head"><div class="queue-card-identity"><span class="pos-people"><span class="pos-avatar">' + initials(r.t.name) + '</span> <span class="pos-strong">' + esc(r.t.name) + '</span></span></div>' +
+            '<div class="queue-card-status">' + x.stChip + '</div></div>' +
+            '<div class="pos-inline" style="flex-wrap:wrap;gap:8px"><span class="pos-chip pos-chip-gray">Pay ' + money(r.pay) + '</span><span class="pos-chip pos-chip-green">Tip ' + money(r.tip) + '</span><span class="pos-chip pos-chip-gray">' + (x.m ? PAYOUT_M[x.m] : 'no method') + '</span></div>' +
+            '<div class="pos-strong" style="font-size:13px">Total ' + money(r.tot) + '</div>' +
+            (x.act ? '<div class="queue-card-actions">' + x.act + '</div>' : '') +
+            '</article>';
+        }).join('') + '</div>';
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3><i class="bi bi-wallet2" aria-hidden="true"></i> Payout Center — weekly run (amount from 💼 pay model + 100% of tips)</h3></div>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-wallet2" aria-hidden="true"></i> Payout Center — weekly run (amount from 💼 pay model + 100% of tips)</h3>' +
+          '<div class="booking-view-switch" role="group" aria-label="Payout Center view mode">' +
+            '<button class="booking-view-button' + (mgPayoutViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-payout-view-target="table" aria-pressed="' + (mgPayoutViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
+            '<button class="booking-view-button' + (mgPayoutViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-payout-view-target="card" aria-pressed="' + (mgPayoutViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
+          '</div></div>' +
           '<div class="pos-grid pos-g4" style="margin-bottom:14px">' +
           '<div class="pos-card soft"><div class="pos-kpi-label">⏳ Unpaid</div><div class="pos-kpi-value">' + money0(pendTot) + '</div><div class="pos-muted" style="font-size:12px">pay + tips still owed</div></div>' +
           '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-heart-fill" aria-hidden="true"></i> Tips today</div><div class="pos-kpi-value">' + money0(tipTot) + '</div><div class="pos-muted" style="font-size:12px">100% to techs, paid with payroll</div></div>' +
           '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Ready to pay</div><div class="pos-kpi-value">' + readyN + '</div><div class="pos-muted" style="font-size:12px">amount locked, waiting on a tap</div></div>' +
           '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> Missing method</div><div class="pos-kpi-value ' + (missN ? 'pos-warn-text' : '') + '">' + missN + '</div><div class="pos-muted" style="font-size:12px">no payout destination — held</div></div>' +
           '</div>' +
-          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Tech</th><th>Weekly pay (<i class="bi bi-briefcase" aria-hidden="true"></i>)</th><th>Tips today</th><th>Total</th><th>Method</th><th>Status</th><th></th></tr></thead><tbody>' +
-          rows.map(function (r) {
-            var m = r.po.method;
-            var stChip = r.po.st === 'paid' ? '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Paid ' + (r.po.paidAt ? timeFmt(r.po.paidAt) : '') + '</span>'
-              : !m ? '<span class="pos-chip pos-chip-amber"><i class="bi bi-pause-circle" aria-hidden="true"></i> Held — no method</span>'
-              : r.po.st === 'ready' ? '<span class="pos-chip pos-chip-violet"><i class="bi bi-check2-circle" aria-hidden="true"></i> Ready</span>'
-              : '<span class="pos-chip pos-chip-gray"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Locking amount</span>';
-            var act = r.po.st === 'paid' ? ''
-              : !m ? '<button class="pos-btn pos-btn-sm" data-mg-paysetup="' + r.t.id + '"><i class="bi bi-link-45deg" aria-hidden="true"></i> Set up method</button>'
-              : '<button class="pos-btn pos-btn-success pos-btn-sm" data-mg-payout="' + r.t.id + '"><i class="bi bi-wallet2" aria-hidden="true"></i> Pay ' + money(r.tot) + '</button>';
-            return '<tr>' +
-              '<td><span class="pos-people"><span class="pos-avatar">' + initials(r.t.name) + '</span> <span class="pos-strong">' + esc(r.t.name) + '</span></span></td>' +
-              '<td>' + money(r.pay) + '</td><td class="pos-good-text">' + money(r.tip) + '</td><td class="pos-strong">' + money(r.tot) + '</td>' +
-              '<td>' + (m ? PAYOUT_M[m] : '<span class="pos-warn-text">— none</span>') + '</td>' +
-              '<td>' + stChip + '</td><td>' + act + '</td></tr>';
-          }).join('') +
-          '</tbody></table></div>' +
+          (mgPayoutViewMode === 'card' ? cardsHtml : tableHtml) +
           '<div class="pos-hint">Demo: "Pay" flips the status and stamps the time. A missing method holds the money — it is never lost; set the method and pay as normal.</div>' +
           '</div>';
       }
@@ -5109,24 +5222,41 @@
         toast(category.name + (isNew ? ' category added' : ' category saved'));
       }
 
+      var serviceCategoryViewMode = 'table';
       function serviceCategoryManagerHtml(categoryRows) {
         var activeCategories = categoryRows.filter(function (row) { return row.active !== false; }).length;
-        return '<div class="service-category-manager' + (serviceCategoryManagerCollapsed ? ' is-collapsed' : '') + '" data-mg-category-manager>' +
-          '<div class="service-category-manager-head"><button class="service-category-manager-title" type="button" data-mg-category-manager-toggle aria-expanded="' + (!serviceCategoryManagerCollapsed ? 'true' : 'false') + '"><i class="bi ' + (serviceCategoryManagerCollapsed ? 'bi-chevron-right' : 'bi-chevron-down') + '" aria-hidden="true"></i> Categories <span class="pos-muted">' + activeCategories + ' active · ' + categoryRows.length + ' total</span></button>' +
-            '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-category-add><i class="bi bi-plus-lg" aria-hidden="true"></i> Add category</button></div>' +
-          (serviceCategoryManagerCollapsed ? '' :
-          '<div class="pos-table-wrap" data-mg-category-table><table class="pos-table tight"><thead><tr><th>Category</th><th>Services</th><th>Status</th><th>Type</th><th>Actions</th></tr></thead><tbody>' +
-            categoryRows.map(function (row) {
-              return '<tr data-mg-category-row="' + esc(row.key) + '">' +
-                '<td><span class="pos-strong">' + esc(row.name) + '</span></td>' +
-                '<td><span class="pos-strong">' + row.activeServices + '</span> active · ' + row.totalServices + ' total</td>' +
-                '<td>' + (row.active === false ? '<span class="pos-chip pos-chip-gray">Inactive</span>' : '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Active</span>') + '</td>' +
-                '<td>' + esc(categoryKindLabel(row.kind)) + '</td>' +
-                '<td style="white-space:nowrap"><div class="pos-inline"><button class="pos-btn pos-btn-sm" type="button" data-mg-category-view="' + esc(row.key) + '"><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="pos-btn pos-btn-sm" type="button" data-mg-category-edit="' + esc(row.key) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button>' +
-                (row.active === false ? '<button class="pos-btn pos-btn-sm" type="button" data-mg-category-restore="' + esc(row.key) + '">Restore</button>' : '<button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-category-delete="' + esc(row.key) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button>') +
-                '</div></td></tr>';
-            }).join('') +
-          '</tbody></table></div>') +
+        var categoryActionsHtml = function (row) {
+          return '<button class="pos-btn pos-btn-sm" type="button" data-mg-category-view="' + esc(row.key) + '"><i class="bi bi-eye" aria-hidden="true"></i> View</button><button class="pos-btn pos-btn-sm" type="button" data-mg-category-edit="' + esc(row.key) + '"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button>' +
+            (row.active === false ? '<button class="pos-btn pos-btn-sm" type="button" data-mg-category-restore="' + esc(row.key) + '">Restore</button>' : '<button class="pos-btn pos-btn-danger pos-btn-sm" type="button" data-mg-category-delete="' + esc(row.key) + '"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button>');
+        };
+        var tableHtml = '<div class="pos-table-wrap" data-mg-category-table><table class="pos-table tight"><thead><tr><th>Category</th><th>Services</th><th>Status</th><th>Type</th><th>Actions</th></tr></thead><tbody>' +
+          categoryRows.map(function (row) {
+            return '<tr data-mg-category-row="' + esc(row.key) + '">' +
+              '<td><span class="pos-strong">' + esc(row.name) + '</span></td>' +
+              '<td><span class="pos-strong">' + row.activeServices + '</span> active · ' + row.totalServices + ' total</td>' +
+              '<td>' + (row.active === false ? '<span class="pos-chip pos-chip-gray">Inactive</span>' : '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Active</span>') + '</td>' +
+              '<td>' + esc(categoryKindLabel(row.kind)) + '</td>' +
+              '<td style="white-space:nowrap"><div class="pos-inline">' + categoryActionsHtml(row) + '</div></td></tr>';
+          }).join('') +
+          '</tbody></table></div>';
+        var cardsHtml = '<div data-mg-category-list>' + categoryRows.map(function (row) {
+          return '<article class="queue-card" data-mg-category-row="' + esc(row.key) + '">' +
+            '<div class="queue-card-head"><div class="queue-card-identity pos-strong">' + esc(row.name) + '</div>' +
+            (row.active === false ? '<span class="pos-chip pos-chip-gray">Inactive</span>' : '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Active</span>') + '</div>' +
+            '<div class="pos-inline" style="flex-wrap:wrap;gap:8px"><span class="pos-chip pos-chip-gray">' + row.activeServices + ' active · ' + row.totalServices + ' total</span><span class="pos-chip pos-chip-gray">' + esc(categoryKindLabel(row.kind)) + '</span></div>' +
+            '<div class="queue-card-actions">' + categoryActionsHtml(row) + '</div>' +
+            '</article>';
+        }).join('') + '</div>';
+        return '<div class="pos-card service-category-card' + (serviceCategoryManagerCollapsed ? ' is-collapsed' : '') + '" data-mg-category-manager>' +
+          '<div class="pos-card-head"><div><button class="service-category-manager-title" type="button" data-mg-category-manager-toggle aria-expanded="' + (!serviceCategoryManagerCollapsed ? 'true' : 'false') + '"><i class="bi bi-tags" aria-hidden="true"></i> Categories <i class="bi ' + (serviceCategoryManagerCollapsed ? 'bi-chevron-right' : 'bi-chevron-down') + '" aria-hidden="true"></i></button><div class="pos-muted" style="font-size:12px;margin-top:2px">' + activeCategories + ' active · ' + categoryRows.length + ' total</div></div>' +
+            '<div class="pos-inline">' +
+              '<div class="booking-view-switch" role="group" aria-label="Service categories view mode">' +
+                '<button class="booking-view-button' + (serviceCategoryViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-category-view-target="table" aria-pressed="' + (serviceCategoryViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
+                '<button class="booking-view-button' + (serviceCategoryViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-category-view-target="card" aria-pressed="' + (serviceCategoryViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
+              '</div>' +
+              '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-category-add><i class="bi bi-plus-lg" aria-hidden="true"></i> Add category</button>' +
+            '</div></div>' +
+          (serviceCategoryManagerCollapsed ? '' : (serviceCategoryViewMode === 'card' ? cardsHtml : tableHtml)) +
         '</div>';
       }
 
@@ -5430,7 +5560,8 @@
           }).join('') +
           '</div>';
         var serviceBodyHtml = serviceViewMode === 'card' ? serviceCardsHtml : serviceTableHtml;
-        return '<div class="pos-card">' +
+        return categoryManagerHtml +
+          '<div class="pos-card">' +
           '<div class="pos-card-head"><div><h3><i class="bi bi-card-checklist" aria-hidden="true"></i> Services</h3></div>' +
             '<div class="pos-inline">' +
               '<div class="booking-view-switch" role="group" aria-label="Service view mode">' +
@@ -5439,29 +5570,50 @@
               '</div>' +
               '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-service-add><i class="bi bi-plus-lg" aria-hidden="true"></i> Add service</button>' +
             '</div></div>' +
-          categoryManagerHtml +
           serviceBodyHtml +
           '<div class="pos-hint">Delete marks a service inactive so old bookings and tickets keep their history. Active services appear in Booking and Check-in immediately after Save.</div>' +
           '</div>';
       }
 
+      var mgStaffViewMode = 'table';
       function mgStaffHtml() {
-        return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3><i class="bi bi-person-badge" aria-hidden="true"></i> Staff accounts — the role decides what a login sees</h3><span class="pos-muted">per-permission detail lives in the 🔐 matrix below</span></div>' +
-          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Employee</th><th>Role</th><th>Login PIN</th><th>Access</th></tr></thead><tbody>' +
+        var staffRowHtml = function (s) {
+          var roleCell = s.role === 'owner'
+            ? '<span class="pos-chip pos-chip-gold">👑 Owner</span>'
+            : '<select class="pos-input" data-mg-strole="' + s.id + '" style="height:32px;font-size:13px">' +
+              ['manager', 'frontdesk', 'tech'].map(function (r) { return '<option value="' + r + '"' + (s.role === r ? ' selected' : '') + '>' + ROLE_LBL[r] + '</option>'; }).join('') +
+              '</select>';
+          return { roleCell: roleCell };
+        };
+        var tableHtml = '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Employee</th><th>Role</th><th>Login PIN</th><th>Access</th></tr></thead><tbody>' +
           STAFF.map(function (s) {
-            var roleCell = s.role === 'owner'
-              ? '<span class="pos-chip pos-chip-gold">👑 Owner</span>'
-              : '<select class="pos-input" data-mg-strole="' + s.id + '" style="height:32px;font-size:13px">' +
-                ['manager', 'frontdesk', 'tech'].map(function (r) { return '<option value="' + r + '"' + (s.role === r ? ' selected' : '') + '>' + ROLE_LBL[r] + '</option>'; }).join('') +
-                '</select>';
+            var x = staffRowHtml(s);
             return '<tr>' +
               '<td><span class="pos-people"><span class="pos-avatar plain">' + esc(initials(s.name)) + '</span> <span class="pos-strong">' + esc(s.name) + '</span></span></td>' +
-              '<td>' + roleCell + '</td>' +
+              '<td>' + x.roleCell + '</td>' +
               '<td>•••• <button class="pos-btn pos-btn-sm" data-mg-stpin="' + s.id + '"><i class="bi bi-key" aria-hidden="true"></i> Reset PIN</button></td>' +
               '<td class="pos-muted wrap">' + ROLE_ACCESS[s.role] + '</td></tr>';
           }).join('') +
-          '</tbody></table></div>' +
+          '</tbody></table></div>';
+        var cardsHtml = '<div data-mg-staff-list>' + STAFF.map(function (s) {
+          var x = staffRowHtml(s);
+          return '<article class="queue-card">' +
+            '<div class="queue-card-head"><div class="queue-card-identity"><span class="pos-people"><span class="pos-avatar plain">' + esc(initials(s.name)) + '</span> <span class="pos-strong">' + esc(s.name) + '</span></span></div></div>' +
+            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:11px">Role</span>' + x.roleCell + '</div>' +
+            '<div class="pos-muted wrap" style="font-size:12px">' + ROLE_ACCESS[s.role] + '</div>' +
+            '<div class="queue-card-actions"><button class="pos-btn pos-btn-sm" data-mg-stpin="' + s.id + '"><i class="bi bi-key" aria-hidden="true"></i> Reset PIN</button></div>' +
+            '</article>';
+        }).join('') + '</div>';
+        return '<div class="pos-card">' +
+          '<div class="pos-card-head"><h3><i class="bi bi-person-badge" aria-hidden="true"></i> Staff accounts — the role decides what a login sees</h3>' +
+          '<div class="pos-inline">' +
+            '<span class="pos-muted">per-permission detail lives in the 🔐 matrix below</span>' +
+            '<div class="booking-view-switch" role="group" aria-label="Staff accounts view mode">' +
+              '<button class="booking-view-button' + (mgStaffViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-staff-view-target="table" aria-pressed="' + (mgStaffViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
+              '<button class="booking-view-button' + (mgStaffViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-staff-view-target="card" aria-pressed="' + (mgStaffViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
+            '</div>' +
+          '</div></div>' +
+          (mgStaffViewMode === 'card' ? cardsHtml : tableHtml) +
           '<div class="pos-inline" style="margin-top:12px">' +
           '<input class="pos-input" data-mg-stname placeholder="New employee name" style="width:220px">' +
           '<select class="pos-input" data-mg-strolenew style="width:150px"><option value="manager">Manager</option><option value="frontdesk" selected>Front Desk</option></select>' +
@@ -5542,6 +5694,30 @@
           renderManagement();
           return;
         }
+
+        var payrollView = e.target.closest('[data-mg-payroll-view-target]');
+        if (payrollView) { mgPayrollViewMode = payrollView.getAttribute('data-mg-payroll-view-target') === 'card' ? 'card' : 'table'; renderManagement(); return; }
+
+        var perfView = e.target.closest('[data-mg-perf-view-target]');
+        if (perfView) { mgPerfViewMode = perfView.getAttribute('data-mg-perf-view-target') === 'card' ? 'card' : 'table'; renderManagement(); return; }
+
+        var ownerView = e.target.closest('[data-mg-owner-view-target]');
+        if (ownerView) { mgOwnerViewMode = ownerView.getAttribute('data-mg-owner-view-target') === 'card' ? 'card' : 'table'; renderManagement(); return; }
+
+        var smartView = e.target.closest('[data-mg-smart-view-target]');
+        if (smartView) { mgSmartViewMode = smartView.getAttribute('data-mg-smart-view-target') === 'card' ? 'card' : 'table'; renderManagement(); return; }
+
+        var payoutView = e.target.closest('[data-mg-payout-view-target]');
+        if (payoutView) { mgPayoutViewMode = payoutView.getAttribute('data-mg-payout-view-target') === 'card' ? 'card' : 'table'; renderManagement(); return; }
+
+        var svcSkillView = e.target.closest('[data-mg-svcskill-view-target]');
+        if (svcSkillView) { mgSvcSkillViewMode = svcSkillView.getAttribute('data-mg-svcskill-view-target') === 'card' ? 'card' : 'table'; renderManagement(); return; }
+
+        var staffView = e.target.closest('[data-mg-staff-view-target]');
+        if (staffView) { mgStaffViewMode = staffView.getAttribute('data-mg-staff-view-target') === 'card' ? 'card' : 'table'; renderManagement(); return; }
+
+        var categoryView = e.target.closest('[data-mg-category-view-target]');
+        if (categoryView) { serviceCategoryViewMode = categoryView.getAttribute('data-mg-category-view-target') === 'card' ? 'card' : 'table'; renderManagement(); return; }
 
         var categoryManagerToggle = e.target.closest('[data-mg-category-manager-toggle]');
         if (categoryManagerToggle) {
