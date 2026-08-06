@@ -5272,10 +5272,10 @@
             '<div style="min-width:0">' + money0(r.done) + ' <span class="pos-muted" style="font-size:12px">of ' + money0(r.target) + ' (' + x.p + '%)</span>' +
             '<div class="pos-meter ' + (r.gap > 0 ? 'warn' : 'good') + '" style="margin-top:5px"><span style="width:' + x.p + '%"></span></div></div>' +
             '<div class="pos-inline" style="flex-wrap:wrap;gap:8px"><span class="pos-chip pos-chip-gray">Guarantee ' + money0(r.t.guar || 0) + '</span><span class="pos-chip pos-chip-gray">/day ' + money0(r.daily) + '</span><span class="pos-chip pos-chip-gray">Projected ' + money0(r.proj) + '</span></div>' +
-            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:12px"><i class="bi bi-star-fill" aria-hidden="true"></i> Rating</span><span>' + x.rating + '</span></div>' +
-            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:12px">Upsell</span><span>' + x.upsTxt + '</span></div>' +
-            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:12px"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Rebook</span><span class="' + (r.rbRate < 0.45 ? 'pos-danger-text' : '') + '">' + pct(r.rbRate) + ' <span class="pos-muted" style="font-size:12px">' + r.rbk.rb + '/' + r.rbk.elig + '</span></span></div>' +
-            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:12px"><i class="bi bi-wrench" aria-hidden="true"></i> Rework</span><span class="' + (r.rework > 2 ? 'pos-danger-text' : '') + '">' + r.rework + '</span></div>' +
+            '<div class="pos-inline" style="align-items:flex-start;gap:8px;margin-top:6px"><span class="pos-muted" style="font-size:12px;flex:0 0 66px"><i class="bi bi-star-fill" aria-hidden="true"></i> Rating</span><span>' + x.rating + '</span></div>' +
+            '<div class="pos-inline" style="align-items:flex-start;gap:8px"><span class="pos-muted" style="font-size:12px;flex:0 0 66px">Upsell</span><span>' + x.upsTxt + '</span></div>' +
+            '<div class="pos-inline" style="align-items:flex-start;gap:8px"><span class="pos-muted" style="font-size:12px;flex:0 0 66px"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Rebook</span><span class="' + (r.rbRate < 0.45 ? 'pos-danger-text' : '') + '">' + pct(r.rbRate) + ' <span class="pos-muted" style="font-size:12px">' + r.rbk.rb + '/' + r.rbk.elig + '</span></span></div>' +
+            '<div class="pos-inline" style="align-items:flex-start;gap:8px"><span class="pos-muted" style="font-size:12px;flex:0 0 66px"><i class="bi bi-wrench" aria-hidden="true"></i> Rework</span><span class="' + (r.rework > 2 ? 'pos-danger-text' : '') + '">' + r.rework + '</span></div>' +
             '</article>';
         }).join('') + '</div>';
         return '<div class="pos-card">' +
