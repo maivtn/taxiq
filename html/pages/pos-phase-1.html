@@ -256,13 +256,16 @@
       [data-mg-svcskill-list] > .queue-card, [data-mg-category-list] > .queue-card, [data-mg-staff-list] > .queue-card {
         flex-basis: calc(50% - 6px); max-width: calc(50% - 6px);
       }
-      [data-mg-perf-list] > .queue-card, [data-mg-owner-list] > .queue-card { flex-basis: 100%; max-width: 100%; }
     }
+    /* iPad and up (≥768px): every management card list keeps a 2-column floor —
+       never collapses to a single column until phone widths. */
     @media (max-width: 900px) {
       [data-wait-list] > .wl-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
       [data-ciq-list] > .queue-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
       [data-arq-list] > .queue-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
       [data-eta-list] > .queue-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
+    }
+    @media (max-width: 600px) {
       [data-tech-roster-table] > .queue-card { flex-basis: 100%; max-width: 100%; }
       [data-mg-payroll-list] > .queue-card, [data-mg-perf-list] > .queue-card, [data-mg-owner-list] > .queue-card,
       [data-mg-smart-list] > .queue-card, [data-mg-payout-list] > .queue-card, [data-mg-svcskill-list] > .queue-card,
@@ -1024,70 +1027,65 @@
             </div>
           </div>
 
-          <div class="sms-modal service-editor-modal" data-mg-tech-modal role="dialog" aria-modal="true" aria-hidden="true" aria-label="Technician editor">
-            <div class="sms-dialog service-editor-dialog">
-              <div class="sms-mhead service-editor-hero">
-                <div class="service-editor-heading">
-                  <span class="service-editor-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
-                  <div>
-                    <h3><span data-mg-tech-modal-title>Add technician</span></h3>
-                    <div class="service-editor-subtitle" data-mg-tech-modal-subtitle>Profile, login and pay setup for a new team member.</div>
-                  </div>
+        </section>
+
+        <!-- Add technician modal — matches the AI Hub create/edit customer modal (data-cust-edit-modal) look and feel -->
+        <div class="sms-modal" data-mg-tech-modal role="dialog" aria-modal="true" aria-label="Add technician">
+          <div class="sms-dialog" style="max-width:520px">
+            <div class="sms-mhead">
+              <h3><i class="bi bi-person-plus" aria-hidden="true"></i> <span data-mg-tech-modal-title>Add technician</span></h3>
+              <button class="pos-icon-btn" type="button" data-mg-tech-cancel aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+            </div>
+            <div class="sms-mbody">
+              <label class="pos-inline-lbl" for="tf-name">Full name</label>
+              <input class="pos-input" id="tf-name" data-mg-tech-form-name style="width:100%;margin-bottom:8px" placeholder="Tech name" maxlength="40">
+
+              <label class="pos-inline-lbl" for="tf-role">Role</label>
+              <select class="pos-input" id="tf-role" data-mg-tech-form-role style="width:100%;margin-bottom:8px">
+                <option value="tech" selected>Technician</option>
+                <option value="manager">Manager</option>
+                <option value="frontdesk">Front Desk</option>
+              </select>
+
+              <label class="pos-inline-lbl" for="tf-phone">Phone</label>
+              <input class="pos-input" id="tf-phone" data-mg-tech-form-phone type="tel" style="width:100%;margin-bottom:8px" placeholder="(555) 555-5555">
+
+              <label class="pos-inline-lbl" for="tf-email">Email</label>
+              <input class="pos-input" id="tf-email" data-mg-tech-form-email type="email" style="width:100%;margin-bottom:8px" placeholder="name@nexoratouch.com">
+
+              <label class="pos-inline-lbl" for="tf-pin">Login PIN</label>
+              <span class="pos-inline" style="margin-bottom:8px">
+                <input class="pos-input" id="tf-pin" data-mg-tech-form-pin maxlength="4" inputmode="numeric" style="max-width:110px" placeholder="1234">
+                <button class="pos-btn pos-btn-sm" type="button" data-mg-tech-pin-generate><i class="bi bi-shuffle" aria-hidden="true"></i> Generate</button>
+              </span>
+              <div class="pos-hint" style="margin-bottom:8px">Sent by SMS on first login; the account must set a new PIN before clocking in.</div>
+
+              <div data-mg-tech-pay-section>
+                <label class="pos-inline-lbl" for="tf-paymodel">Pay model</label>
+                <select class="pos-input" id="tf-paymodel" data-mg-tech-form-paymodel style="width:100%;margin-bottom:8px"></select>
+
+                <label class="pos-inline-lbl" for="tf-comm">Commission %</label>
+                <input class="pos-input" id="tf-comm" data-mg-tech-form-comm style="width:100%;margin-bottom:8px" value="60">
+
+                <div data-mg-tech-guar-field>
+                  <label class="pos-inline-lbl" for="tf-guar">Weekly guarantee $</label>
+                  <input class="pos-input" id="tf-guar" data-mg-tech-form-guar style="width:100%;margin-bottom:8px" value="0">
                 </div>
-                <button class="pos-icon-btn" type="button" data-mg-tech-cancel aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
-              </div>
-              <div class="sms-mbody service-editor-body">
-                <div class="service-editor-form" data-mg-tech-form-shell>
-                  <div class="service-editor-section">
-                    <div class="service-editor-section-title"><i class="bi bi-person-vcard" aria-hidden="true"></i>Profile</div>
-                    <div class="service-editor-grid service-editor-grid-main">
-                      <label class="service-editor-field">Full name<input class="pos-input" data-mg-tech-form-name maxlength="40" placeholder="Tech name"></label>
-                      <label class="service-editor-field">Role<select class="pos-input" data-mg-tech-form-role>
-                        <option value="tech" selected>Technician</option>
-                        <option value="manager">Manager</option>
-                        <option value="frontdesk">Front Desk</option>
-                      </select></label>
-                    </div>
-                    <div class="service-editor-grid service-editor-grid-main" style="margin-top:12px">
-                      <label class="service-editor-field">Phone<input class="pos-input" type="tel" data-mg-tech-form-phone placeholder="(555) 555-5555"></label>
-                      <label class="service-editor-field">Email<input class="pos-input" type="email" data-mg-tech-form-email placeholder="name@nexoratouch.com"></label>
-                    </div>
-                  </div>
-                  <div class="service-editor-section">
-                    <div class="service-editor-section-title"><i class="bi bi-key" aria-hidden="true"></i>Login</div>
-                    <div class="service-editor-grid service-editor-grid-main">
-                      <label class="service-editor-field">Login PIN
-                        <span class="pos-inline">
-                          <input class="pos-input" data-mg-tech-form-pin maxlength="4" inputmode="numeric" style="max-width:110px">
-                          <button class="pos-btn pos-btn-sm" type="button" data-mg-tech-pin-generate><i class="bi bi-shuffle" aria-hidden="true"></i> Generate</button>
-                        </span>
-                      </label>
-                    </div>
-                    <div class="pos-hint" style="margin-top:8px">Sent by SMS on first login; the account must set a new PIN before clocking in.</div>
-                  </div>
-                  <div class="service-editor-section" data-mg-tech-pay-section>
-                    <div class="service-editor-section-title"><i class="bi bi-cash-coin" aria-hidden="true"></i>Pay &amp; payroll</div>
-                    <div class="service-editor-grid service-editor-grid-main">
-                      <label class="service-editor-field">Pay model<select class="pos-input" data-mg-tech-form-paymodel></select></label>
-                      <label class="service-editor-field">Commission %<input class="pos-input" data-mg-tech-form-comm value="60"></label>
-                    </div>
-                    <div class="service-editor-grid service-editor-grid-main" style="margin-top:12px">
-                      <label class="service-editor-field" data-mg-tech-guar-field>Weekly guarantee $<input class="pos-input" data-mg-tech-form-guar value="0"></label>
-                      <label class="service-editor-field" data-mg-tech-split-field>Split over target %<input class="pos-input" data-mg-tech-form-split value="60"></label>
-                    </div>
-                  </div>
+
+                <div data-mg-tech-split-field>
+                  <label class="pos-inline-lbl" for="tf-split">Split over target %</label>
+                  <input class="pos-input" id="tf-split" data-mg-tech-form-split style="width:100%" value="60">
                 </div>
               </div>
-              <div class="sms-mfoot service-editor-actions">
-                <div class="pos-warn-text" data-mg-tech-form-error hidden></div>
-                <div class="pos-inline">
-                  <button class="pos-btn pos-btn-sm" type="button" data-mg-tech-cancel>Cancel</button>
-                  <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-tech-save><i class="bi bi-check2" aria-hidden="true"></i> Add technician</button>
-                </div>
-              </div>
+
+              <div class="pos-warn-text" data-mg-tech-form-error style="margin-top:8px" hidden></div>
+            </div>
+            <div class="sms-mfoot" style="justify-content:flex-end">
+              <button class="pos-btn" type="button" data-mg-tech-cancel>Cancel</button>
+              <button class="pos-btn pos-btn-primary" type="button" data-mg-tech-save><i class="bi bi-check2" aria-hidden="true"></i> Add technician</button>
             </div>
           </div>
-        </section>
+        </div>
 
         <!-- ══════════ 💬 SMS (S21) ══════════ -->
         <section class="pos-panel" data-pos-panel="sms" aria-label="SMS &amp; Marketing">
@@ -4730,8 +4728,8 @@
         var cardsHtml = '<div data-mg-perf-list>' + rows.map(function (r) {
           var x = perfRowHtml(r);
           return '<article class="queue-card">' +
-            '<div class="queue-card-head"><div class="queue-card-identity"><span class="pos-people"><span class="pos-avatar">' + initials(r.t.name) + '</span> <span class="pos-strong">' + esc(r.t.name) + '</span></span></div>' +
-            '<div class="queue-card-status">' + x.status + '</div></div>' +
+            '<div class="queue-card-head"><div class="queue-card-identity"><span class="pos-people"><span class="pos-avatar">' + initials(r.t.name) + '</span> <span class="pos-strong">' + esc(r.t.name) + '</span></span></div></div>' +
+            '<div class="wrap" style="min-width:0">' + x.status + '</div>' +
             '<div style="min-width:0">' + money0(r.done) + ' <span class="pos-muted" style="font-size:12px">of ' + money0(r.target) + ' (' + x.p + '%)</span>' +
             '<div class="pos-meter ' + (r.gap > 0 ? 'warn' : 'good') + '" style="margin-top:5px"><span style="width:' + x.p + '%"></span></div></div>' +
             '<div class="pos-inline" style="flex-wrap:wrap;gap:8px"><span class="pos-chip pos-chip-gray">Guarantee ' + money0(r.t.guar || 0) + '</span><span class="pos-chip pos-chip-gray">/day ' + money0(r.daily) + '</span><span class="pos-chip pos-chip-gray">Projected ' + money0(r.proj) + '</span></div>' +
