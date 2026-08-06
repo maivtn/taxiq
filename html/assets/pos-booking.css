@@ -3356,7 +3356,7 @@
       }
     }
 
-    @media (min-width: 1201px) {
+    @media (min-width: 1367px) {
       .sidebar {
         display: flex;
       }
@@ -3368,7 +3368,9 @@
       .mobile-brand {
         display: none;
       }
+    }
 
+    @media (min-width: 1366px) {
       .header {
         padding: 0 28px;
       }

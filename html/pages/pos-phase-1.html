@@ -49,7 +49,7 @@
 
     /* ── content ── */
     .content { min-height: calc(100vh - 64px); padding: 16px 16px 96px; }
-    @media (min-width: 1201px) { .content { padding: 28px 28px 96px; } }
+    @media (min-width: 1366px) { .content { padding: 28px 28px 96px; } }
 
     .page-heading { margin-bottom: 20px; }
     .page-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -4543,6 +4543,109 @@
 
       function techModalRandomPin() { return String(Math.floor(1000 + Math.random() * 9000)); }
 
+      function formatUsPhoneInput(value) {
+        var raw = value || '';
+        var digits = raw.replace(/\D/g, '');
+        if (/^\s*\+1/.test(raw) && digits.charAt(0) === '1') digits = digits.slice(1);
+        if (!digits) return '';
+        if (digits.length <= 3) return '(' + digits;
+        if (digits.length <= 6) return '(' + digits.slice(0, 3) + ') ' + digits.slice(3);
+        return '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+      }
+
+      /* ── tech modal: services picker (checkboxes built from the live Menu catalog) ── */
+      function mgTechServiceCategoryMarkup(group, index) {
+        var categoryId = 'mgtechcat-' + index;
+        var services = group.services || [];
+        return '<details class="tech-service-category" data-mg-tech-service-category-panel="' + esc(categoryId) + '"' + (index === 0 ? ' open' : '') + '>' +
+          '<summary class="tech-service-category-head"><label class="tech-service-category-all"><input type="checkbox" data-mg-tech-service-category-all="' + esc(categoryId) + '">Check all</label><span class="tech-service-category-title">' + esc(group.name || 'Other services') + '</span><span class="tech-service-category-count">' + services.length + '</span></summary>' +
+          '<div class="tech-service-category-body">' + services.map(function (service) {
+            return '<label class="tech-service-check"><input type="checkbox" data-mg-tech-service data-mg-tech-service-category="' + esc(categoryId) + '" value="' + esc(service.label) + '">' + esc(service.label) + '</label>';
+          }).join('') + '</div></details>';
+      }
+
+      function mgTechServiceOptionsForCategory(categoryId) {
+        var selectorValue = String(categoryId || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+        return Array.from(document.querySelectorAll('[data-mg-tech-service][data-mg-tech-service-category="' + selectorValue + '"]'));
+      }
+
+      function syncMgTechServiceCheckAll() {
+        var services = Array.from(document.querySelectorAll('[data-mg-tech-service]'));
+        var checkAll = $('[data-mg-tech-service-all]');
+        var checkedCount = services.filter(function (option) { return option.checked; }).length;
+        if (checkAll) {
+          checkAll.disabled = services.length === 0;
+          checkAll.checked = services.length > 0 && checkedCount === services.length;
+          checkAll.indeterminate = checkedCount > 0 && checkedCount < services.length;
+        }
+        document.querySelectorAll('[data-mg-tech-service-category-all]').forEach(function (categoryAll) {
+          var categoryServices = mgTechServiceOptionsForCategory(categoryAll.getAttribute('data-mg-tech-service-category-all'));
+          var categoryCheckedCount = categoryServices.filter(function (option) { return option.checked; }).length;
+          categoryAll.disabled = categoryServices.length === 0;
+          categoryAll.checked = categoryServices.length > 0 && categoryCheckedCount === categoryServices.length;
+          categoryAll.indeterminate = categoryCheckedCount > 0 && categoryCheckedCount < categoryServices.length;
+        });
+      }
+
+      function buildMgTechServicePicker() {
+        var container = $('[data-mg-tech-service-picker]');
+        if (!container) return;
+        var groups = groupedServicesByCategory(MENU).filter(function (group) { return group.services.length; });
+        var serviceCount = groups.reduce(function (total, group) { return total + group.services.length; }, 0);
+        container.innerHTML = '<div class="tech-service-picker-toolbar"><label><input type="checkbox" data-mg-tech-service-all>Check all categories</label><span class="tech-service-picker-count">' + serviceCount + '</span></div>' +
+          (groups.length ? groups.map(mgTechServiceCategoryMarkup).join('') : '<div class="tech-service-catalog-state">No services available.</div>');
+        container.querySelectorAll('[data-mg-tech-service-category-all]').forEach(function (categoryAll) {
+          categoryAll.addEventListener('click', function (event) { event.stopPropagation(); });
+        });
+        syncMgTechServiceCheckAll();
+      }
+
+      function getMgTechServicesValue() {
+        return Array.from(document.querySelectorAll('[data-mg-tech-service]:checked')).map(function (option) { return option.value; }).filter(Boolean);
+      }
+
+      /* ── tech modal: weekly schedule grid ── */
+      var MG_TECH_DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+      function syncMgTechDayOffRow(dayOff) {
+        if (!dayOff) return;
+        var day = dayOff.getAttribute('data-mg-tech-day-off');
+        var row = dayOff.closest('.tech-schedule-row');
+        var start = $('[data-mg-tech-schedule-start="' + day + '"]');
+        var end = $('[data-mg-tech-schedule-end="' + day + '"]');
+        var isDayOff = Boolean(dayOff.checked);
+        if (row) row.classList.toggle('is-day-off', isDayOff);
+        [start, end].forEach(function (input) {
+          if (!input) return;
+          input.disabled = isDayOff;
+          if (isDayOff) input.value = '';
+        });
+      }
+
+      function resetMgTechSchedule() {
+        document.querySelectorAll('[data-mg-tech-day-off]').forEach(function (dayOff) {
+          dayOff.checked = false;
+          var day = dayOff.getAttribute('data-mg-tech-day-off');
+          var start = $('[data-mg-tech-schedule-start="' + day + '"]');
+          var end = $('[data-mg-tech-schedule-end="' + day + '"]');
+          if (start) start.value = '';
+          if (end) end.value = '';
+          syncMgTechDayOffRow(dayOff);
+        });
+      }
+
+      function getMgTechScheduleValue() {
+        return MG_TECH_DAYS.map(function (day) {
+          var dayOff = $('[data-mg-tech-day-off="' + day + '"]');
+          if (!dayOff || dayOff.checked) return '';
+          var start = $('[data-mg-tech-schedule-start="' + day + '"]');
+          var end = $('[data-mg-tech-schedule-end="' + day + '"]');
+          var startValue = start ? start.value : '';
+          var endValue = end ? end.value : '';
+          return startValue && endValue ? day + '=' + startValue + '-' + endValue : '';
+        }).filter(Boolean).join(';');
+      }
+
       function updateTechModalPayVisibility() {
         var roleEl = $('[data-mg-tech-form-role]');
         var payModelEl = $('[data-mg-tech-form-paymodel]');
@@ -4576,10 +4679,11 @@
         $('[data-mg-tech-form-comm]').value = '60';
         $('[data-mg-tech-form-guar]').value = '0';
         $('[data-mg-tech-form-split]').value = '60';
+        buildMgTechServicePicker();
+        resetMgTechSchedule();
         setTechModalError('');
         updateTechModalPayVisibility();
-        modal.classList.add('open');
-        modal.setAttribute('aria-hidden', 'false');
+        modal.hidden = false;
         document.body.style.overflow = 'hidden';
         setTimeout(function () { $('[data-mg-tech-form-name]').focus(); }, 0);
       }
@@ -4587,8 +4691,7 @@
       function closeTechModal() {
         var modal = $('[data-mg-tech-modal]');
         if (!modal) return;
-        modal.classList.remove('open');
-        modal.setAttribute('aria-hidden', 'true');
+        modal.hidden = true;
         document.body.style.overflow = '';
         setTechModalError('');
       }
@@ -4606,6 +4709,8 @@
         var role = roleEl.value;
         var phone = (phoneEl.value || '').trim();
         var email = (emailEl.value || '').trim();
+        var services = getMgTechServicesValue();
+        var schedule = getMgTechScheduleValue();
 
         if (role !== 'tech') {
           STAFF.push({ id: 'st' + (++stSeq), name: nm, ava: initials(nm), role: role, phone: phone, email: email, pin: pin });
@@ -4623,12 +4728,17 @@
         var cm = Math.min(100, Math.max(1, parseFloat(commEl.value) || 60)) / 100;
         var gu = Math.max(0, parseFloat(guarEl.value) || 0);
         var sp = Math.min(100, Math.max(0, parseFloat(splitEl.value) || 0)) / 100;
+        var skills = services.map(function (serviceName) {
+          var service = salonData.findService(salonCatalog, serviceName);
+          return service && service.requiredSkill ? service.requiredSkill : serviceName;
+        });
         var maxN = TECHS.reduce(function (m, t) { return Math.max(m, +t.id.slice(1) || 0); }, 0);
         var id = 't' + (maxN + 1);
         var bn = TECHS.reduce(function (m, t) { return Math.max(m, t.bnum || 0); }, 0) + 1;
         var nextCatalog = salonData.loadCatalog();
         nextCatalog.technicians.push({
-          id: id, name: nm, phone: phone, email: email, aliases: [], active: true, skills: [], exp: [], fit: [], services: [],
+          id: id, name: nm, phone: phone, email: email, schedule: schedule, aliases: [], active: true,
+          skills: Array.from(new Set(skills)), exp: [], fit: [], services: services,
           posProfile: { bnum: bn, turns: 0, comm: cm, guar: gu, payModel: payModel, baoSplit: payModel === 'baoshare' ? sp : cm, vlink: null }
         });
         salonData.saveCatalog(nextCatalog);
@@ -6161,6 +6271,8 @@
           updateServiceModalSummary();
           return;
         }
+
+        if (e.target.matches('[data-mg-tech-form-phone]')) { e.target.value = formatUsPhoneInput(e.target.value); return; }
       });
 
       document.addEventListener('focusout', function (e) {
@@ -6205,6 +6317,23 @@
           updateTechModalPayVisibility();
           return;
         }
+
+        if (e.target.matches('[data-mg-tech-day-off]')) { syncMgTechDayOffRow(e.target); return; }
+
+        if (e.target.matches('[data-mg-tech-service-all]')) {
+          document.querySelectorAll('[data-mg-tech-service]').forEach(function (option) { option.checked = e.target.checked; });
+          syncMgTechServiceCheckAll();
+          return;
+        }
+
+        var techServiceCategoryAll = e.target.closest('[data-mg-tech-service-category-all]');
+        if (techServiceCategoryAll) {
+          mgTechServiceOptionsForCategory(techServiceCategoryAll.getAttribute('data-mg-tech-service-category-all')).forEach(function (option) { option.checked = techServiceCategoryAll.checked; });
+          syncMgTechServiceCheckAll();
+          return;
+        }
+
+        if (e.target.matches('[data-mg-tech-service]')) { syncMgTechServiceCheckAll(); return; }
 
         var sr = e.target.closest('[data-mg-strole]');
         if (sr) {

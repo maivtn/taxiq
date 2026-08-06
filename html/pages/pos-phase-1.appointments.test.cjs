@@ -24,7 +24,7 @@ test('POS loads the shared shell stylesheet after workspace overrides', () => {
   assert.ok(bookingCssIndex >= 0, 'POS Booking stylesheet should be present');
   assert.ok(shellCssIndex > bookingCssIndex, 'shared shell stylesheet must load last');
   assert.doesNotMatch(css, /@media\s*\(min-width:\s*1024px\)[\s\S]{0,300}\.app-area/);
-  assert.match(css, /@media\s*\(min-width:\s*1201px\)[\s\S]{0,300}\.app-area/);
+  assert.match(css, /@media\s*\(min-width:\s*1366px\)[\s\S]{0,300}\.app-area/);
 });
 
 test('POS Booking exposes the full Booking Book workspace contract', () => {

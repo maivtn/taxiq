@@ -132,15 +132,15 @@ test('labels the POS Check-in, Tickets, and Customers tabs in the sidebar', () =
 
 test('keeps the shared sidebar in the drawer state through 1200px', () => {
   assert.match(shellCss, /@media\s*\(max-width:\s*1200px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?transform:\s*translateX\(-105%\)/);
-  assert.match(shellCss, /@media\s*\(min-width:\s*1201px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
-  assert.match(shellCss, /@media\s*\(min-width:\s*1201px\)[\s\S]*?\.app-area\s*\{[\s\S]*?padding-left:\s*288px/);
+  assert.match(shellCss, /@media\s*\(min-width:\s*1366px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
+  assert.match(shellCss, /@media\s*\(min-width:\s*1366px\)[\s\S]*?\.app-area\s*\{[\s\S]*?padding-left:\s*288px/);
 });
 
-test('keeps inline shell pages on the same 1201px desktop breakpoint', () => {
+test('keeps inline shell pages on the same 1366px desktop breakpoint', () => {
   for (const file of INLINE_SHELL_PAGES) {
     const html = readFileSync(new URL(`../pages/${file}`, import.meta.url), 'utf8');
     assert.doesNotMatch(html, /@media\s*\(min-width:\s*1024px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
-    assert.match(html, /@media\s*\(min-width:\s*1201px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
+    assert.match(html, /@media\s*\(min-width:\s*1366px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
   }
 });
 

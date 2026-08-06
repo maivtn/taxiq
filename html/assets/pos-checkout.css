@@ -3,7 +3,7 @@
    .badge/.booking-status, .booking-mini-button, .booking-primary-button, .booking-input). */
 
 .content { min-height: calc(100vh - 64px); padding: 16px 16px 96px; }
-@media (min-width: 1201px) { .content { padding: 28px 28px 96px; } }
+@media (min-width: 1366px) { .content { padding: 28px 28px 96px; } }
 
 .page-title { margin: 0; color: var(--nexora-text); font-size: 24px; font-weight: 800; line-height: 32px; }
 .page-description { margin: 4px 0 0; color: var(--nexora-muted); font-size: 13.5px; }
