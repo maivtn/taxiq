@@ -194,10 +194,10 @@ Add the following rules next to the existing `.wl-card` rules in the page's inli
 
 ~~~
 [data-wait-list]:has(> .wl-card) { display: flex; flex-wrap: wrap; gap: 12px; }
-[data-wait-list] > .wl-card { flex: 0 0 calc(25% - 9px); max-width: calc(25% - 9px); min-width: 0; margin-bottom: 0; }
+[data-wait-list] > .wl-card { flex: 0 0 calc(33.33% - 9px); max-width: calc(33.33% - 9px); min-width: 0; margin-bottom: 0; }
 [data-wait-list] > .booking-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
 @media (max-width: 1199px) {
-  [data-wait-list] > .wl-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
+  [data-wait-list] > .wl-card { flex-basis: calc(50% - 8px); max-width: calc(50% - 8px); }
 }
 @media (max-width: 900px) {
   [data-wait-list] > .wl-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
