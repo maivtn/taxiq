@@ -1027,65 +1027,119 @@
             </div>
           </div>
 
-        </section>
-
-        <!-- Add technician modal — matches the AI Hub create/edit customer modal (data-cust-edit-modal) look and feel -->
-        <div class="sms-modal" data-mg-tech-modal role="dialog" aria-modal="true" aria-label="Add technician">
-          <div class="sms-dialog" style="max-width:520px">
-            <div class="sms-mhead">
-              <h3><i class="bi bi-person-plus" aria-hidden="true"></i> <span data-mg-tech-modal-title>Add technician</span></h3>
-              <button class="pos-icon-btn" type="button" data-mg-tech-cancel aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
-            </div>
-            <div class="sms-mbody">
-              <label class="pos-inline-lbl" for="tf-name">Full name</label>
-              <input class="pos-input" id="tf-name" data-mg-tech-form-name style="width:100%;margin-bottom:8px" placeholder="Tech name" maxlength="40">
-
-              <label class="pos-inline-lbl" for="tf-role">Role</label>
-              <select class="pos-input" id="tf-role" data-mg-tech-form-role style="width:100%;margin-bottom:8px">
-                <option value="tech" selected>Technician</option>
-                <option value="manager">Manager</option>
-                <option value="frontdesk">Front Desk</option>
-              </select>
-
-              <label class="pos-inline-lbl" for="tf-phone">Phone</label>
-              <input class="pos-input" id="tf-phone" data-mg-tech-form-phone type="tel" style="width:100%;margin-bottom:8px" placeholder="(555) 555-5555">
-
-              <label class="pos-inline-lbl" for="tf-email">Email</label>
-              <input class="pos-input" id="tf-email" data-mg-tech-form-email type="email" style="width:100%;margin-bottom:8px" placeholder="name@nexoratouch.com">
-
-              <label class="pos-inline-lbl" for="tf-pin">Login PIN</label>
-              <span class="pos-inline" style="margin-bottom:8px">
-                <input class="pos-input" id="tf-pin" data-mg-tech-form-pin maxlength="4" inputmode="numeric" style="max-width:110px" placeholder="1234">
-                <button class="pos-btn pos-btn-sm" type="button" data-mg-tech-pin-generate><i class="bi bi-shuffle" aria-hidden="true"></i> Generate</button>
-              </span>
-              <div class="pos-hint" style="margin-bottom:8px">Sent by SMS on first login; the account must set a new PIN before clocking in.</div>
-
-              <div data-mg-tech-pay-section>
-                <label class="pos-inline-lbl" for="tf-paymodel">Pay model</label>
-                <select class="pos-input" id="tf-paymodel" data-mg-tech-form-paymodel style="width:100%;margin-bottom:8px"></select>
-
-                <label class="pos-inline-lbl" for="tf-comm">Commission %</label>
-                <input class="pos-input" id="tf-comm" data-mg-tech-form-comm style="width:100%;margin-bottom:8px" value="60">
-
-                <div data-mg-tech-guar-field>
-                  <label class="pos-inline-lbl" for="tf-guar">Weekly guarantee $</label>
-                  <input class="pos-input" id="tf-guar" data-mg-tech-form-guar style="width:100%;margin-bottom:8px" value="0">
+          <!-- Add technician modal — same tech-modal/tech-dialog markup as the "Technician Info" modal in booking-book-phase-1.html, plus Role, Login and Pay &amp; payroll sections -->
+          <div class="tech-modal" data-mg-tech-modal hidden>
+            <div class="tech-dialog" role="dialog" aria-modal="true" aria-labelledby="mg-tech-modal-title">
+              <div class="tech-modal-head">
+                <div class="tech-modal-heading">
+                  <span class="tech-title-mark"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
+                  <div>
+                    <div class="tech-modal-title" id="mg-tech-modal-title">Add technician</div>
+                    <div class="tech-modal-sub">Enter new technician info, services, schedule, login and pay.</div>
+                  </div>
                 </div>
-
-                <div data-mg-tech-split-field>
-                  <label class="pos-inline-lbl" for="tf-split">Split over target %</label>
-                  <input class="pos-input" id="tf-split" data-mg-tech-form-split style="width:100%" value="60">
-                </div>
+                <button class="tech-modal-close" type="button" data-mg-tech-cancel aria-label="Close tech modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
               </div>
+              <div class="tech-modal-body">
+                <div class="tech-modal-section">
+                  <div class="tech-modal-section-title"><i class="bi bi-person-vcard" aria-hidden="true"></i>Profile info</div>
+                  <div class="tech-modal-grid">
+                    <label class="settings-field"><span class="settings-label">Technician name</span><input class="settings-input" type="text" data-mg-tech-form-name maxlength="40"></label>
+                    <label class="settings-field">
+                      <span class="settings-label">Phone number</span>
+                      <span class="phone-input-shell">
+                        <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
+                        <input class="settings-input phone-mask-input" type="tel" data-mg-tech-form-phone placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national">
+                      </span>
+                    </label>
+                    <label class="settings-field"><span class="settings-label">Email</span><input class="settings-input" type="email" data-mg-tech-form-email></label>
+                    <div class="settings-field">
+                      <span class="settings-label">Services</span>
+                      <div class="tech-service-checks tech-service-picker" data-mg-tech-service-picker></div>
+                    </div>
+                  </div>
+                </div>
 
-              <div class="pos-warn-text" data-mg-tech-form-error style="margin-top:8px" hidden></div>
-            </div>
-            <div class="sms-mfoot" style="justify-content:flex-end">
-              <button class="pos-btn" type="button" data-mg-tech-cancel>Cancel</button>
-              <button class="pos-btn pos-btn-primary" type="button" data-mg-tech-save><i class="bi bi-check2" aria-hidden="true"></i> Add technician</button>
+                <div class="tech-modal-section" data-mg-tech-schedule-section>
+                  <div class="tech-modal-section-title"><i class="bi bi-calendar-week" aria-hidden="true"></i>Weekly schedule</div>
+                  <div class="tech-schedule">
+                    <div class="tech-schedule-row">
+                      <span class="tech-schedule-day">Monday</span>
+                      <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-mg-tech-day-off="mon">Day off</label>
+                      <span class="tech-schedule-time"><input type="time" data-mg-tech-schedule-start="mon"><span>to</span><input type="time" data-mg-tech-schedule-end="mon"></span>
+                    </div>
+                    <div class="tech-schedule-row">
+                      <span class="tech-schedule-day">Tuesday</span>
+                      <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-mg-tech-day-off="tue">Day off</label>
+                      <span class="tech-schedule-time"><input type="time" data-mg-tech-schedule-start="tue"><span>to</span><input type="time" data-mg-tech-schedule-end="tue"></span>
+                    </div>
+                    <div class="tech-schedule-row">
+                      <span class="tech-schedule-day">Wednesday</span>
+                      <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-mg-tech-day-off="wed">Day off</label>
+                      <span class="tech-schedule-time"><input type="time" data-mg-tech-schedule-start="wed"><span>to</span><input type="time" data-mg-tech-schedule-end="wed"></span>
+                    </div>
+                    <div class="tech-schedule-row">
+                      <span class="tech-schedule-day">Thursday</span>
+                      <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-mg-tech-day-off="thu">Day off</label>
+                      <span class="tech-schedule-time"><input type="time" data-mg-tech-schedule-start="thu"><span>to</span><input type="time" data-mg-tech-schedule-end="thu"></span>
+                    </div>
+                    <div class="tech-schedule-row">
+                      <span class="tech-schedule-day">Friday</span>
+                      <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-mg-tech-day-off="fri">Day off</label>
+                      <span class="tech-schedule-time"><input type="time" data-mg-tech-schedule-start="fri"><span>to</span><input type="time" data-mg-tech-schedule-end="fri"></span>
+                    </div>
+                    <div class="tech-schedule-row">
+                      <span class="tech-schedule-day">Saturday</span>
+                      <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-mg-tech-day-off="sat">Day off</label>
+                      <span class="tech-schedule-time"><input type="time" data-mg-tech-schedule-start="sat"><span>to</span><input type="time" data-mg-tech-schedule-end="sat"></span>
+                    </div>
+                    <div class="tech-schedule-row">
+                      <span class="tech-schedule-day">Sunday</span>
+                      <label class="tech-schedule-off"><input class="tech-schedule-toggle" type="checkbox" data-mg-tech-day-off="sun">Day off</label>
+                      <span class="tech-schedule-time"><input type="time" data-mg-tech-schedule-start="sun"><span>to</span><input type="time" data-mg-tech-schedule-end="sun"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tech-modal-section">
+                  <div class="tech-modal-section-title"><i class="bi bi-shield-lock" aria-hidden="true"></i>Role &amp; login</div>
+                  <div class="tech-modal-grid">
+                    <label class="settings-field"><span class="settings-label">Role</span>
+                      <select class="settings-input" data-mg-tech-form-role>
+                        <option value="tech" selected>Technician</option>
+                        <option value="manager">Manager</option>
+                        <option value="frontdesk">Front Desk</option>
+                      </select>
+                    </label>
+                    <label class="settings-field"><span class="settings-label">Login PIN</span>
+                      <span class="phone-input-shell">
+                        <input class="settings-input" data-mg-tech-form-pin maxlength="4" inputmode="numeric" style="max-width:110px">
+                        <button class="pos-btn pos-btn-sm" type="button" data-mg-tech-pin-generate><i class="bi bi-shuffle" aria-hidden="true"></i> Generate</button>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="pos-hint" style="margin-top:8px">Sent by SMS on first login; the account must set a new PIN before clocking in.</div>
+                </div>
+
+                <div class="tech-modal-section" data-mg-tech-pay-section>
+                  <div class="tech-modal-section-title"><i class="bi bi-cash-coin" aria-hidden="true"></i>Pay &amp; payroll</div>
+                  <div class="tech-modal-grid">
+                    <label class="settings-field"><span class="settings-label">Pay model</span><select class="settings-input" data-mg-tech-form-paymodel></select></label>
+                    <label class="settings-field"><span class="settings-label">Commission %</span><input class="settings-input" data-mg-tech-form-comm value="60"></label>
+                    <label class="settings-field" data-mg-tech-guar-field><span class="settings-label">Weekly guarantee $</span><input class="settings-input" data-mg-tech-form-guar value="0"></label>
+                    <label class="settings-field" data-mg-tech-split-field><span class="settings-label">Split over target %</span><input class="settings-input" data-mg-tech-form-split value="60"></label>
+                  </div>
+                </div>
+
+                <div class="pos-warn-text" data-mg-tech-form-error hidden></div>
+              </div>
+              <div class="tech-modal-actions">
+                <button class="booking-secondary-button" type="button" data-mg-tech-cancel>Close</button>
+                <button class="booking-primary-button" type="button" data-mg-tech-save><i class="bi bi-check2" aria-hidden="true"></i>Add technician</button>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
         <!-- ══════════ 💬 SMS (S21) ══════════ -->
         <section class="pos-panel" data-pos-panel="sms" aria-label="SMS &amp; Marketing">
