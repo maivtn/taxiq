@@ -1041,9 +1041,13 @@
 }
 
 .nexora-plan-grid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 16px;
+}
+
+.nexora-plan-grid .nexora-plan-card {
+  flex: 0 0 100%;
 }
 
 .nexora-plan-card {
@@ -2038,6 +2042,10 @@ body.package-payment-open {
 }
 
 @media (min-width: 768px) {
+  .nexora-plan-grid .nexora-plan-card {
+    flex: 0 0 calc(33.333% - 11px);
+  }
+
   .package-plan-content .plans-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
